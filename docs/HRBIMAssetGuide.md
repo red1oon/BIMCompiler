@@ -20,24 +20,32 @@ If you want to know *how it works* (or you administer the data), read **Under th
 You need nothing but the Viewer and a building that carries some operate data (the **HHS office** sample does).
 
 1. **Open the building.** In the Viewer, load a building (e.g. the *HHS Office* sample). Let the 3D model finish
-   streaming in.
-2. **Find the `FM / Operate` pill.** Look on the right-hand toolbar for a **building glyph**. It appears **only**
-   when the building has operate data — if you don't see it, there's nothing to operate yet (see
-   [Troubleshooting](#troubleshooting)).
-3. **Open the drawer.** Tap the pill. A small **FM / Operate** drawer opens listing the lenses. Lenses with data
-   are bright and clickable; lenses with no data for *this* building are **greyed and marked "no data"**.
+   streaming in — the FM pill only lights once the model is FULLY streamed (a half-loaded model won't show a
+   lens the tail of the stream hasn't carried in yet, so the pill deliberately waits).
+2. **Reveal the toolbar.** On a fresh load the icon rail is tucked behind the **⋯** button (bottom-right) — tap
+   it to unfold the full icon rail.
+3. **Find the `FM / Operate` pill.** Look for the **building glyph** in the rail — it turns **blue** once tapped
+   (see the screenshot below). It appears **only** when the building has operate data — if you don't see it,
+   there's nothing to operate yet (see [Troubleshooting](#troubleshooting)).
+4. **Open the drawer.** Tap the pill — it highlights blue and a small **FM / Operate** drawer opens listing the
+   lenses. Lenses with data are bright and clickable; lenses with no data for *this* building are **greyed and
+   marked "no data"**.
 
-   ![The FM / Operate drawer — five lenses (Occupancy, Presence, Unit class, Assets / IoT, Dashboard); "Unit class" is active (● on)](img/hba_fm_drawer.png)
+   ![The toolbar with the FM / Operate pill lit (blue, bottom-right rail) and its drawer open — five lenses: Occupancy, Presence, Unit class, Assets / IoT, Dashboard](img/hba_fm_drawer.png)
 
-4. **Turn on a lens.** Tap **Occupancy**. The rooms tint by status, and the status bar reads e.g.
-   *“HR · occupancy · 11 units lit”*.
+5. **Turn on a lens.** Tap **Occupancy**. Tapping a row applies the lens **and closes the drawer**; re-tap the
+   pill to reopen it and see which lens is active (highlighted, "● on"). The status bar reads e.g.
+   *“HR · occupancy · 11 units lit”* — that status line is the reliable readout of what's lit; on this sample
+   building the bound elements are small real fixtures, so at a building-wide view the wash can be subtle — zoom
+   toward a room to see an individual tinted element close up.
 
-   ![The Occupancy lens applied on the HHS office — rooms tinted by lease status across all three storeys](img/hba_occupancy_live.png)
+   ![The Occupancy lens applied on the HHS office — drawer reopened showing "Occupancy ● on" and "11 units lit" on the status bar](img/hba_occupancy_live.png)
 
-5. **Turn it off.** Tap the lens again (or pick another). The model is restored **exactly** — overlays never
+6. **Turn it off.** Tap the lens row again (or pick another). The model is restored **exactly** — overlays never
    leave residue and never disturb other panels.
 
-That's the whole interaction model: **open → pill → drawer → toggle a lens**. Everything below is variations on it.
+That's the whole interaction model: **open → reveal toolbar → pill → drawer → toggle a lens**. Everything below
+is variations on it.
 
 ---
 
@@ -53,7 +61,14 @@ That's the whole interaction model: **open → pill → drawer → toggle a lens
    | 🟡 amber | **expiring** — the lease ends within the horizon |
    | ⚪ grey | **vacant** — *no* booking (vacancy is read from the absence of one, never a faked tenant) |
    | 🟣 purple | **unavailable** — a maintenance / renovation blackout |
-3. The status bar tells you how many units lit. Toggle off to restore.
+3. The status bar tells you how many units lit (verified live: *"HR · occupancy · 11 units lit"* on the HHS
+   sample). Toggle off to restore.
+
+> **Where the colour actually lands.** A room (`IfcSpace`) usually isn't its own mesh — the lens tints its real
+> rendered **contained members** instead (see [How a unit binds to the model](#under-the-hood--the-data-model)).
+> On the HHS sample those members are small fixtures, so from a building-wide view the wash reads as a subtle
+> tint; the **GardenWorld** warehouse below tints a whole aisle-floor at once and is the clearest example to look
+> at first if you want to *see* the effect from a distance.
 
 > **Tenancy is part of Occupancy.** An earlier alpha had a separate *Tenancy* lens; it's now folded in. Occupancy
 > replays each room's signed booking log (`ASSIGN` / `RELEASE` / `UNAVAIL`), so it *is* the lease-status superset.
@@ -65,20 +80,27 @@ That's the whole interaction model: **open → pill → drawer → toggle a lens
    put them. People cluster in a ring when several share a room — you're looking at the workforce *in situ*, not a
    number in a grid.
 
-   ![Presence — little avatars standing in the rooms where real check-ins placed them, clustered where several people share a space](img/hba_presence_avatars.png)
+   ![Presence — avatars standing in the rooms where real check-ins placed them, at two LOD tiers (full figures nearby, mini domes further off), with a hover card reading "EMP-131 · RM_Level_3_2 · present · checked in · since 2026-07-15 08:32 · SAMPLE — NOT OFFICIAL"](img/hba_presence_avatars.png)
 
-3. **Hover an avatar** → their card (name, room, since when, status), watermarked. **Draw nearer** and the nearest
-   person auto-labels; **zoom out** and the avatars collapse back to **dots** — an automatic level-of-detail ladder
-   (dot → mini → full) so a full floor never turns to soup.
+3. **Hover an avatar** → their card (name, room, since when, status), watermarked — exactly as captured above.
+   **Draw nearer** and the nearest person auto-labels; **zoom out** and the avatars collapse back to **dots** — an
+   automatic level-of-detail ladder (dot → mini → full) so a full floor never turns to soup. The screenshot above
+   catches the ladder mid-transition: a full-figure cluster close to camera, mini-dome clusters further back.
 4. Headcount comes from **signed check-ins** — a room with no check-in has no avatar (never a faked person).
 
 ### Spot equipment that needs service
 1. Open the drawer → tap **Assets / IoT**.
 2. Equipment tints **ok (green) · due (amber) · overdue (red)**, driven by each asset's next-due date and cycle.
+
+   ![The Assets / IoT lens on the HHS office — drawer showing "Assets / IoT ● on" and "1 unit lit" (this sample carries one seeded asset record)](img/hba_maintenance_lens.png)
+
 3. If this entry is **greyed “no data”**, the building simply carries no asset/IoT records — nothing is faked.
 
 ### Classify spaces
-1. Open the drawer → tap **Unit class** (the drawer screenshot above shows it active).
+1. Open the drawer → tap **Unit class**.
+
+   ![The Unit class lens on the HHS office — drawer showing "Unit class ● on" and "4 units lit"](img/hba_class_lens.png)
+
 2. Spaces tint **residential (green) · commercial (orange) · office (indigo) · unclassified (grey)**.
 3. The class is never guessed — see [How a space gets its class](#how-a-space-gets-its-class-non-invent).
 
@@ -100,12 +122,15 @@ That's the whole interaction model: **open → pill → drawer → toggle a lens
 
 Not every building has `IfcSpace` rooms. A **warehouse** like the *GardenWorld* sample has none — just elements
 grouped into **aisles**. The module detects this and falls back to **aisle-as-zone**: each aisle becomes a zone,
-its members are the real elements parked in that aisle, and the same lenses light it. Below, Occupancy is on (two
-aisles lit) while *Unit class* and *Assets / IoT* are greyed because this warehouse carries neither.
+its members are the real elements parked in that aisle, and the same lenses light it. Below, Occupancy is on
+("HR · occupancy · 2 units lit") while *Unit class* and *Assets / IoT* are greyed because this warehouse carries
+neither.
 
-![GardenWorld warehouse with the FM / Operate drawer — Occupancy lit on aisle-zones; Unit class and Assets / IoT greyed “no data”](img/hba_gardenworld_aisles.png)
+![GardenWorld warehouse with the FM / Operate drawer — Occupancy lit on an aisle-zone (the green floor patch, aisle A), Unit class and Assets / IoT greyed "no data"](img/hba_gardenworld_aisles.png)
 
-Nothing is invented to make this work: the aisle labels and the element guids are all read from the model.
+This is also the clearest example of the wash itself: the aisle's whole floor-slab tints green (occupied), an easy
+contrast to spot from a distance — unlike a room bound only to small fixtures (see the note under Occupancy
+above). Nothing is invented to make this work: the aisle labels and the element guids are all read from the model.
 
 ---
 
