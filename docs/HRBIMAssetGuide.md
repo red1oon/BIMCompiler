@@ -220,5 +220,25 @@ the one signed op-log — see **[Spatial ERP × BIM × HR — One Building, One 
 
 ---
 
+## Future roadmap (addendum)
+
+Two directions under consideration, not yet built:
+
+- **Find ↔ FM linking.** Today, *Find* (the Viewer's element search) and the *FM / Operate* drawer are separate
+  surfaces — Find locates a spatial element, FM toggles a building-wide lens. The natural next step is linking
+  them rather than merging them: extend Find's search index to also cover HR_BIM_Asset records (a tenant's name,
+  a lease number, a ticket ID), so a search hit that resolves to an operate record both zooms to the unit *and*
+  deep-links into the FM drawer already scoped to that record (e.g. searching a tenant opens Occupancy with
+  their lease highlighted). One front door — "find anything, including people" — without forcing lens-toggle
+  behaviour into a search box.
+- **Larger property-portfolio management.** The compile-not-model foundation laid in this module (a leasable
+  unit already compiles to a real `M_Product`/`M_Locator` under a `M_Warehouse`-as-building, a lease/strata
+  charge is a real `C_Subscription`, an asset is a real `a_asset`) is structured to scale past a single
+  demonstrator building — the same native AD tables carry a portfolio of many buildings/units without a new
+  schema per building. Find↔FM linking would be the natural cross-portfolio search layer once more than one
+  building is loaded at once.
+
+---
+
 *Spec: `prompts/RESUME_HR_BIM_ASSET.md` (§FM-FAMILY · §REAL-BIND · §AISLE-ZONES · §RICH-DEMO · §AVATAR-LOD ·
-§BINDING · §CLASS · §PILLAR 1–4). Back to the [BIM Viewer Guide](BIMUserGuide.md).*
+§BINDING · §CLASS · §PILLAR 1–4 · §CRITICAL "Compile not Model"). Back to the [BIM Viewer Guide](BIMUserGuide.md).*
