@@ -7,6 +7,10 @@
 # Spatial ERP OOTB — Every Record Has a Place
 *[← Back to the **User Guide**](USER_GUIDE.md) · [Home](index.md)*
 
+> **See it fused with BIM + HR:** [Spatial ERP × BIM × HR — One Building, One Log, Three Surfaces](SpatialERPIntegration.md)
+> shows how this ERP, the 3D Viewer and the HR/Operate lenses are the *same* system — one building, one signed
+> op-log, no redundant screens.
+
 
 ![Data Globe — Spatial UI for ERP](assets/images/SpatialERP.png)
 

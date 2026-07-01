@@ -97,6 +97,7 @@ nav:
       - "Cross-ERP Rosetta Stone (concept + cost)": ERPConceptRosetta.html
       - "BIM Modeller OOTB": BIM_Modeller_OOTB.md
       - "Spatial ERP — Every Record Has a Place": SpatialERP_OOTB.md
+      - "Spatial ERP × BIM × HR — One Building, One Log": SpatialERPIntegration.md
       - "Distributed ERP": DistributedERP.md
       - "Red Pill — Design From Grammar": RED_PILL.md
       - "Clash Detection": CLASH_DETECTION.md
