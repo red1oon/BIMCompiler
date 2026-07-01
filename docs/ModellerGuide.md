@@ -73,6 +73,26 @@ retreat across every tool below.
 
 ---
 
+## Getting started — your first five minutes
+
+1. **Open the app** — [red1oon.github.io/bim-ootb/viewer/modeller.html](https://red1oon.github.io/bim-ootb/viewer/modeller.html)
+   (desktop; the B-rep kernel is heavy). Tap **⋯** at the bottom-right to fan the pill toolbar open.
+2. **Open a building** — tap **📂 Open** and pick a resident building (e.g. *Duplex*). Its **ARC** model loads
+   onto the grid and its BOM tree fills the Outliner on the left. You're now editing a real building, not a
+   blank canvas.
+3. **Frame it** — press **`F`** (or tap **Fit**) to zoom the whole building into view.
+4. **Select something** — click an element (a wall, a door). It highlights; the status line names it.
+   **Shift-drag** to marquee-select many.
+5. **Do one edit** — tap **Move**, drag an axis arrow, and release. Watch the status line print the signed op
+   (e.g. `moved #142  dx=0.50  verify=true`). That edit is now one fact in the op-log.
+6. **Undo it** — drag the **history scrubber** (bottom) one notch left. The edit reverses exactly, because the
+   3D is a pure fold of the log. Drag right to redo.
+
+That's the whole loop: **open → select → tool → commit → scrub**. Every tool below is a variation on it. Press
+**? Help** any time for the live list of pills and shortcuts, or **`Esc`** to cancel a mode.
+
+---
+
 ## Assemble & draw
 
 ### Insert — assemble from the catalog
@@ -337,6 +357,23 @@ The toolbar is a **⋯ pill rail** at the right edge: tap **⋯** to fan the pil
 | **Clear** | Empty the scene |
 | **Sound** | Toggle authoring sound feedback |
 | **Connect** | Connect Scene — share selection / timeline with the Viewer & ERP (opt-in) |
+
+---
+
+## Troubleshooting
+
+Each row below is a real behaviour the tool suite exercised (and, where it was a defect, fixed) — not a
+hypothetical. If you hit something else, **? Help** lists every tool and shortcut, and the history scrubber is
+always a safe retreat.
+
+| Symptom | Why | What to do |
+|---|---|---|
+| **A pill looks stuck in the top-left corner** and won't click | A mode-revealed pill (Extrude, Sweep-Run, Apply) is shown only after you start its mode; the rail lays them out on reveal. | Start the mode first (e.g. finish the Sketch before reaching for **Extrude**). The rail re-positions the pill as it appears — if one still looks stranded, toggle the **⋯** rail closed and open. |
+| **Cut / Scale seems to do nothing on a wall from an opened building** | A seeded ARC wall is a *baked* box, not a B-rep. Cut promotes it to a B-rep just-in-time so the subtraction is exact; a rotated/non-box insert is refused up-front (logged) rather than approximated. | Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is *refused*, it isn't box-like enough to cut exactly; sketch the void instead. |
+| **A Walk seems to hang on a big building** | A discipline walk places hundreds of fixtures; they commit as **one batched signed group**, so a large walk takes a couple of seconds, not a frozen minute. | Wait for the batch — the status line reports the count when it lands (e.g. `walked ELEC · 267 placed`). Scrub the slider back to clear them. |
+| **I want to "make an opening" but there's no Opening tool** | Opening is not a separate authoring tool — the real "cut a window/door" is the **Cut** tool (`GEOM_CUT`). | Select the wall, tap **Cut**. `GEOM_OPENING` is only a legacy sample primitive, never a user action. |
+| **Fillet won't pick an edge** | Fillet needs a **B-rep solid**; a seeded ARC insert has no worker edges to round. | Author a solid first (Sketch → Extrude), select it, then **Fillet** — its edges become pickable markers. |
+| **An edit didn't land the way I expected** | Every edit is a signed op; nothing is silently applied. | Drag the **history scrubber** back one notch to undo it exactly, then retry. There is no separate undo buffer to drift out of sync. |
 
 ---
 
