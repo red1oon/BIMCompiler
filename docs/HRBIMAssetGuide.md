@@ -26,12 +26,16 @@ You need nothing but the Viewer and a building that carries some operate data (t
    [Troubleshooting](#troubleshooting)).
 3. **Open the drawer.** Tap the pill. A small **FM / Operate** drawer opens listing the lenses. Lenses with data
    are bright and clickable; lenses with no data for *this* building are **greyed and marked "no data"**.
-4. **Turn on a lens.** Tap **Occupancy**. The entry shows a blue **● on**, the rooms tint by status, and the
-   status bar reads e.g. *“HR · occupancy · 11 units lit”*.
+
+   ![The FM / Operate drawer — five lenses (Occupancy, Presence, Unit class, Assets / IoT, Dashboard); "Unit class" is active (● on)](img/hba_fm_drawer.png)
+
+4. **Turn on a lens.** Tap **Occupancy**. The rooms tint by status, and the status bar reads e.g.
+   *“HR · occupancy · 11 units lit”*.
+
+   ![The Occupancy lens applied on the HHS office — rooms tinted by lease status across all three storeys](img/hba_occupancy_live.png)
+
 5. **Turn it off.** Tap the lens again (or pick another). The model is restored **exactly** — overlays never
    leave residue and never disturb other panels.
-
-![The Occupancy lens applied on the HHS office building — the FM / Operate drawer open, Occupancy active, rooms tinted by lease status across all three storeys](img/hba_occupancy_live.png)
 
 That's the whole interaction model: **open → pill → drawer → toggle a lens**. Everything below is variations on it.
 
@@ -40,7 +44,7 @@ That's the whole interaction model: **open → pill → drawer → toggle a lens
 ## Common tasks
 
 ### See which rooms are occupied
-1. Open the **FM / Operate** drawer → tap **Occupancy**.
+1. Open the **FM / Operate** drawer → tap **Occupancy** (see the screenshot above).
 2. Read the wash:
 
    | Colour | Meaning |
@@ -54,17 +58,19 @@ That's the whole interaction model: **open → pill → drawer → toggle a lens
 > **Tenancy is part of Occupancy.** An earlier alpha had a separate *Tenancy* lens; it's now folded in. Occupancy
 > replays each room's signed booking log (`ASSIGN` / `RELEASE` / `UNAVAIL`), so it *is* the lease-status superset.
 
-### See who is physically here right now
-1. Open the drawer → tap **Presence**.
-2. Zones tint by **live headcount density** (blue, deepening with people):
+### See who is physically here right now — with people you can walk up to
+1. Open the drawer → tap **Presence**. Zones tint by **live headcount density** (light → deep blue as more people
+   are present).
+2. **Zoom in.** Each present person becomes a **little avatar standing in the room** where their signed check-in
+   put them. People cluster in a ring when several share a room — you're looking at the workforce *in situ*, not a
+   number in a grid.
 
-   | Colour | Headcount |
-   |---|---|
-   | light blue | **1** present |
-   | mid blue | **2–4** present |
-   | deep blue | **5+** present |
+   ![Presence — little avatars standing in the rooms where real check-ins placed them, clustered where several people share a space](img/hba_presence_avatars.png)
 
-   Headcount comes from **signed check-ins** at real building zones — a zone with no check-in is honestly empty.
+3. **Hover an avatar** → their card (name, room, since when, status), watermarked. **Draw nearer** and the nearest
+   person auto-labels; **zoom out** and the avatars collapse back to **dots** — an automatic level-of-detail ladder
+   (dot → mini → full) so a full floor never turns to soup.
+4. Headcount comes from **signed check-ins** — a room with no check-in has no avatar (never a faked person).
 
 ### Spot equipment that needs service
 1. Open the drawer → tap **Assets / IoT**.
@@ -72,17 +78,21 @@ That's the whole interaction model: **open → pill → drawer → toggle a lens
 3. If this entry is **greyed “no data”**, the building simply carries no asset/IoT records — nothing is faked.
 
 ### Classify spaces
-1. Open the drawer → tap **Unit class**.
+1. Open the drawer → tap **Unit class** (the drawer screenshot above shows it active).
 2. Spaces tint **residential (green) · commercial (orange) · office (indigo) · unclassified (grey)**.
 3. The class is never guessed — see [How a space gets its class](#how-a-space-gets-its-class-non-invent).
 
 ### Read the numbers (Dashboard)
-1. Open the drawer → tap **Dashboard**.
-2. An additive charts pane opens (it never touches the 3D scene): **per-storey utilization**, **availability over
-   time**, and an **open-ticket aging** doughnut, with KPI tiles. Every number is a read-only fold of the same
-   signed op-log — nothing is entered by hand.
+1. Open the drawer → tap **Dashboard**. An additive pane opens (it never touches the 3D scene) with three KPI
+   tiles and three charts, every value a read-only fold of the same signed op-log — nothing typed by hand.
 
-![The occupancy / availability dashboard — KPIs, per-storey utilization, ticket-aging doughnut, all watermarked](img/hba_occupancy_dashboard.png)
+   ![The occupancy / availability dashboard — KPI tiles (14 rooms · 60% utilisation · 7 open), per-storey utilisation across all three levels, an open-ticket aging doughnut, and a 12-month availability trend — all watermarked](img/hba_occupancy_dashboard.png)
+
+2. What you're seeing:
+   - **KPI tiles** — rooms, overall utilisation, open tickets.
+   - **Occupancy by storey** — utilisation % per level (all storeys, not just the ground floor).
+   - **Open requests by age** — the SLA doughnut, tickets bucketed `<1d · 1–3d · 3–7d · >7d`.
+   - **Room availability over time** — a 12-month stacked trend of occupied / expiring / unavailable / vacant.
 
 ---
 
@@ -104,7 +114,7 @@ Nothing is invented to make this work: the aisle labels and the element guids ar
 | Lens | The one question | Colour legend |
 |---|---|---|
 | **Occupancy** | *Is this unit occupied — and what's its lease status?* | occupied `#2e7d32` · expiring `#f9a825` · vacant `#9e9e9e` · unavailable `#8e24aa` |
-| **Presence** | *Who is physically here right now?* | 1 `#90caf9` · 2–4 `#1976d2` · 5+ `#0d47a1` |
+| **Presence** | *Who is physically here right now?* | 1 `#90caf9` · 2–4 `#1976d2` · 5+ `#0d47a1` (+ per-person avatars near-field) |
 | **Unit class** | *What is this space?* | residential `#43a047` · commercial `#fb8c00` · office `#3949ab` · unclassified `#9e9e9e` |
 | **Assets / IoT** | *What equipment needs service?* | ok `#2e7d32` · due `#f9a825` · overdue `#c62828` |
 | **Dashboard** | *Give me the numbers.* | opens the charts pane (no 3D wash) |
@@ -134,7 +144,7 @@ You don't need this to *use* the lenses, but it explains why every wash is trust
   real mesh** in the loaded building. An `IfcSpace` room usually isn't drawn as its own mesh, so the lens resolves
   and tints it through its **rendered contained members** (`rel_contained_in_space`). A guid that resolves to
   nothing is honestly **un-linked** — shown nowhere, never a faked tint. For a room-less building the same join
-  runs over **aisle-zones** (see above).
+  runs over **aisle-zones** (see above). Avatars stand at the **centroid** of a zone's rendered members.
 
 - **Occupancy = a signed resource ledger (`S_Resource`-style).** A room is a *resource*; you **`ASSIGN`** a party
   to it for a period, **`RELEASE`** it early, or mark it **`UNAVAIL`** for a blackout. *Availability at any month*
@@ -169,7 +179,7 @@ the room guids are real, the labels are sample lease declarations.
 | **No `FM / Operate` pill** | The building has **no operate data that resolves to a real element** (no lease/asset/check-in binds to a drawn guid). | Expected on a bare model. Load a building with operate records (e.g. the HHS sample), or seed records bound to real guids. |
 | **A lens is greyed “no data”** | That lens's data type isn't present here (e.g. no IoT assets → *Assets / IoT* greyed). | Normal and honest — the lens won't fabricate data to look busy. |
 | **A room I expected isn't lit** | Either its guid doesn't resolve to a drawn element, or it's genuinely **vacant** (no booking). | Check the record's guid exists in the model; remember vacancy is the *absence* of a booking, not an error. |
-| **The dashboard shows fewer storeys than the building has** | Only storeys whose rooms carry op-log data appear. | Seed bookings/check-ins across the other storeys — the dashboard reads whatever the log contains. |
+| **The dashboard charts are blank** | Chart.js didn't load (offline / blocked). | The KPI tiles still read correctly; reload with the chart library reachable and the three charts render. |
 | **Toggled a lens off and the colours look odd** | Overlays restore on toggle-off; a stuck state is rare. | Toggle the lens off again, or reopen the drawer — the scene restores fully (zero residue by design). |
 
 ---
@@ -180,10 +190,10 @@ The **deal and money** half of a tenancy — the lease as a signed **agreement**
 (`C_Invoice → C_Payment → allocation → GL`), the **Request/ticket** workflow, and the product catalog (rental vs
 purchase, installment schedules) — lives in the **[Kernel-ERP guide → Tenancy](ERPUserGuide.md#hr-tenancy)**. HR
 supplies the **people + access** (party = `C_BPartner`, signed check-in, capability tokens); the Viewer supplies
-the **spatial** lenses above; ERP supplies the **money**. One lease threads all three over the shared BIM model
-and the one signed op-log.
+the **spatial** view above; ERP supplies the **money**. One lease threads all three over the shared BIM model and
+the one signed op-log — see **[Spatial ERP × BIM × HR — One Building, One Log](SpatialERPIntegration.md)**.
 
 ---
 
-*Spec: `prompts/RESUME_HR_BIM_ASSET.md` (§FM-FAMILY · §REAL-BIND · §AISLE-ZONES · §RICH-DEMO · §BINDING · §CLASS ·
-§PILLAR 1–4). Back to the [BIM Viewer Guide](BIMUserGuide.md).*
+*Spec: `prompts/RESUME_HR_BIM_ASSET.md` (§FM-FAMILY · §REAL-BIND · §AISLE-ZONES · §RICH-DEMO · §AVATAR-LOD ·
+§BINDING · §CLASS · §PILLAR 1–4). Back to the [BIM Viewer Guide](BIMUserGuide.md).*

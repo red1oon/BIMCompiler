@@ -142,6 +142,11 @@ operate-phase lenses — **Occupancy** (incl. lease status) · **Presence** · *
 
 → **Full walkthrough (with screenshots): [HR / Tenancy / Operate Module guide](HRBIMAssetGuide.md).**
 
+**Collaborate on the model — the Teams overlay.** One toolbar toggle overlays **who-did-what** on the building:
+identity-coloured dots on elements and Find-panel rooms, a history/blame tree, a chat that **is** the signed log,
+and dashboard graphs — off by default, pixel-identical until you turn it on.
+→ **[Teams Overlay guide (with screenshots)](TeamsOverlayGuide.md).**
+
 **Mobile-only (touch-optimised):**
 
 - Site Camera — phone camera with GPS + compass + timestamp overlay

@@ -301,4 +301,12 @@ without ever being widened. (An ARC-only building with no pipes routes **0**, ne
 
 ---
 
+**Collaborate on the design — the Teams overlay.** The Modeller shares one signed op-log with the Viewer and
+ERP, so the same **Teams overlay** rides on it: git-style **design branches** ("you build that wing, I build
+this"), a **spatial merge gate** that flags where two branches clash, identity-coloured **who-dots** on
+elements, and the tabbed Outliner (Tree / Chat / Dashboard). Off by default, pixel-identical until toggled.
+→ **[Teams Overlay guide (with screenshots)](TeamsOverlayGuide.md).**
+
+---
+
 *Part of [BIM OOTB](USER_GUIDE.md). Copyright (c) 2025–2026 Redhuan D. Oon. MIT Licensed.*

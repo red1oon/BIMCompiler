@@ -90,6 +90,7 @@ nav:
       - "DAGeVu Modeller Guide (toolbar index)": ModellerGuide.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
+      - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:
       - "Fold Engine Black Book (dev manual)": FoldEngineBlackBook.html

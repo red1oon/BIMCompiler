@@ -432,6 +432,11 @@ than before, and modelling the working calendar is a clean follow-up for a later
 > lenses (Occupancy · Presence · Unit class · Assets) and the dashboard, on the building — is in the
 > **[HR / Tenancy / Operate Module guide](HRBIMAssetGuide.md)**.
 
+> **Collaborate on any ERP window — the Teams overlay.** Toggle it on and each document row grows **who-dots**
+> (who touched it, a `+N` for a crowd), a **Teams Outliner** pane opens (Tree / Chat / Dashboard), and the
+> involvement · flow · gate · post-it-aging graphs fold from the same signed log — every value read, never typed.
+> → **[Teams Overlay guide (with screenshots)](TeamsOverlayGuide.md).**
+
 Most property tools treat a unit as a database row. Here a unit **is** a room in the model — so a lease binds
 to **real geometry**, and the ERP's money cycle runs against it. One lease threads **three apps over one signed
 op-log**:
