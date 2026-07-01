@@ -4,6 +4,15 @@
 
 ## Current State
 
+**▶ MODELLER USER GUIDE — ✅ INTEGRATED 2026-07-01 (bim-compiler PR #10, `docs/modeller-guide-integrate`).** The
+screenshot-rich per-tool `ModellerGuide.md` revamp (20 real E2E frames under `docs/img/modeller/`, `mkdocs build
+--strict`=0) integrated onto the live docs tip `0967ebcdd`. Closed the 3 handoff coherence gates: stale-base fixed,
+Teams cross-link restored, orphan `ModellerUserGuide.md` deleted + nav collapsed to ONE entry. **OUTWARD STEP LEFT TO
+USER:** merge PR #10, then deploy via `ALLOW_SHRINK=1 paths="ModellerUserGuide/" scripts/safe_gh_deploy.sh` (orphan
+deletion removes a live gh-pages page → seatbelt aborts unless blessed). Deferred polish (non-gating): live-app 2× frame
+recapture, Getting-started→Troubleshooting scaffold. Handoff record: bim-ootb `modeller/tests/E2E_SUITE_RESUME.md
+§HANDOFF-RESOLVED`.
+
 **▶ MODELLER FIRST-CLASS: real-user E2E gates + Walk-tool fixes — ✅ DONE+LIVE 2026-07-01 (bim-ootb #584, sw v25).**
 User standard: tests must emulate a real USER SERIES OF ACTIONS through the PRODUCTION path and confirm complete/
 perfect/atomic by MATHS — engine-seam witnesses gave FALSE confidence. Built the E2E pattern (real `pg.mouse`/
