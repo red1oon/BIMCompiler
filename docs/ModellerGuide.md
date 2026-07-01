@@ -176,6 +176,8 @@ scaling and rotating.
 Release commits one signed `GEOM_MOVE`; a moved host **drags its hosted fillings** (a door rides its
 wall). Undo is exact to the micron.
 
+![Move engaged on a selected element — dragging the X arrow moves it on that axis only (the commit is X-only, exact, reversible)](img/modeller/move-gizmo.png)
+
 ### Scale
 *Commits `GEOM_SCALE {fx,fy,fz}`.* On a single component, drag a **cube** handle to stretch that axis
 (edge-anchored — the opposite face stays put). The rendered extent grows by exactly the committed factor.
@@ -370,7 +372,7 @@ always a safe retreat.
 |---|---|---|
 | **A pill looks stuck in the top-left corner** and won't click | A mode-revealed pill (Extrude, Sweep-Run, Apply) is shown only after you start its mode; the rail lays them out on reveal. | Start the mode first (e.g. finish the Sketch before reaching for **Extrude**). The rail re-positions the pill as it appears — if one still looks stranded, toggle the **⋯** rail closed and open. |
 | **Cut / Scale seems to do nothing on a wall from an opened building** | A seeded ARC wall is a *baked* box, not a B-rep. Cut promotes it to a B-rep just-in-time so the subtraction is exact; a rotated/non-box insert is refused up-front (logged) rather than approximated. | Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is *refused*, it isn't box-like enough to cut exactly; sketch the void instead. |
-| **A Walk seems to hang on a big building** | A discipline walk places hundreds of fixtures; they commit as **one batched signed group**, so a large walk takes a couple of seconds, not a frozen minute. | Wait for the batch — the status line reports the result when it lands (e.g. `routed 0 runs + 771 fixtures for ELEC`). Scrub the slider back to clear them. |
+| **A Walk seems to hang on a big building** | A discipline walk places hundreds of fixtures; they commit as **one batched signed group**, so a large walk takes a couple of seconds, not a frozen minute. | Wait for the batch — the status line reports the result when it lands (e.g. `ELEC — 267 placed across 5 storeys · 0 routed`). Scrub the slider back to clear them. |
 | **I want to "make an opening" but there's no Opening tool** | Opening is not a separate authoring tool — the real "cut a window/door" is the **Cut** tool (`GEOM_CUT`). | Select the wall, tap **Cut**. `GEOM_OPENING` is only a legacy sample primitive, never a user action. |
 | **Fillet won't pick an edge** | Fillet needs a **B-rep solid**; a seeded ARC insert has no worker edges to round. | Author a solid first (Sketch → Extrude), select it, then **Fillet** — its edges become pickable markers. |
 | **An edit didn't land the way I expected** | Every edit is a signed op; nothing is silently applied. | Drag the **history scrubber** back one notch to undo it exactly, then retry. There is no separate undo buffer to drift out of sync. |
