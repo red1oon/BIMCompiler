@@ -1,182 +1,238 @@
 # DAGeVu Modeller — User Guide
 *[← Back to the **User Guide**](USER_GUIDE.md) · [Home](index.md)*
 
+DAGeVu is a **browser BIM authoring surface** that sits beside the read-only viewer. You don't edit a
+dead file — every action (drop a component, cut a window, route a duct, move a wall) is **one signed
+operation** folded into a verifiable hash-chain. The 3D you see is a pure *fold* of that operation log,
+so **every edit is exact, reversible, and provable** — never invented. The same signed-log engine drives
+the Kernel-ERP.
 
-> **Work in progress.** The DAGeVu modeller is an early, spine-proven authoring surface — this guide is
-> deliberately a short intro plus an index of the toolbar icons. Expect it to grow as the modeller does.
+**Open it:** [red1oon.github.io/bim-ootb/viewer/modeller.html](https://red1oon.github.io/bim-ootb/viewer/modeller.html)
+(desktop — the B-rep kernel is heavy). The **Home** pill returns to the Matrix landing.
+
+> **Every tool on this page is proven by a real-user, end-to-end test** — the tool is driven through the
+> production path with real mouse/keyboard and the result checked by numbers (the op-log, the scene graph,
+> the pixels), not by eye. **The screenshots are real frames captured from those test runs** — nothing here
+> is a mock-up.
 
 ---
 
-> ## ⚠ UNDER DEPRECATION — a major direction shift is in progress *(2026-06-25)*
->
-> **The from-scratch authoring surface described below is not broken — it is being *inverted*.** We are
-> experimenting with a new primary direction for the modeller, and the existing tools (insert · sketch ·
-> extrude · sweep · the grid) remain available while the shift lands. Nothing here is going away without a
-> replacement; this note is so you don't feel stranded if the surface starts changing under you.
->
-> **The inversion — *don't author from scratch; open a ready-made building and edit it.*** Instead of drawing a
-> model up from a blank grid, you **📂 Open an existing `extracted.db`** (a real building's **ARC** model — its
-> *digital twin*) and **edit that**. The other disciplines and dimensions are not re-drawn — they **follow**:
-> structure, MEP, the 4D schedule, the 5D cost and the ERP all **auto-complete** by "crawling" against the ARC
-> (RouteWalk), and every edit and every follow is one **signed operation** the enterprise folds from.
->
-> **Why the shift — four benefits you feel immediately:**
-> - **Speed** — you start *complete* (a real building), not from an empty canvas.
-> - **Completion** — open a bare ARC and the rest *fills itself in* (RouteWalk), rather than you placing every part.
-> - **Reuse** — the real building is the substrate; you compose and edit *batches*, never reconstruct.
-> - **Trust** — the opened twin is a faithful, verified reconstruction, so editing starts from truth (no invention).
->
-> **The underlying principle: *Open = ARC only.*** What you open and edit is the **architectural** model — the single
-> editable substrate. Structure / MEP / 4D / 5D / ERP are shown but *derived* (they regenerate against your ARC
-> edits). This makes the digital twin **editable + generative** (it completes itself), not a read-only mirror.
+## The big idea — open a building and edit it
 
-*How it works (the inversion at a glance):*
+Don't draw a model up from a blank grid. **📂 Open** a real building's **ARC** (architectural) model — its
+*digital twin* — and edit *that*. The other disciplines and dimensions aren't re-drawn; they **follow**:
+structure, MEP, the 4D schedule, the 5D cost and the ERP auto-complete by *crawling* against your ARC
+(the **Walk** tools), and every edit and every follow is one signed operation the enterprise folds from.
 
 <svg viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The modelling inversion: open a ready ARC twin, edit it, and the rest auto-completes from one signed op-log." style="max-width:100%;height:auto;font-family:system-ui,-apple-system,sans-serif">
   <rect x="0" y="0" width="820" height="320" fill="#fbfcfe"/>
-  <text x="20" y="28" font-size="16" font-weight="700" fill="#1b2b3a">The Modelling Inversion — open a ready ARC twin, edit, auto-complete</text>
-  <rect x="20" y="46" width="780" height="40" rx="6" fill="#f1f1f1" stroke="#cfcfcf"/>
-  <text x="34" y="63" font-size="12.5" font-weight="700" fill="#9a9a9a">OLD ✗ author from scratch</text>
-  <text x="34" y="79" font-size="12" fill="#9a9a9a">blank canvas  →  draw walls  →  place every element by hand  →  slow, and still incomplete (no STR/MEP/4D/5D/ERP)</text>
+  <text x="20" y="28" font-size="16" font-weight="700" fill="#1b2b3a">Open a ready ARC twin · edit · the rest auto-completes</text>
   <g font-size="12" fill="#16324a">
-    <rect x="20" y="118" width="170" height="74" rx="8" fill="#e9f2fb" stroke="#3f78b5" stroke-width="1.5"/>
-    <text x="105" y="140" text-anchor="middle" font-weight="700">📂 Open extracted.db</text>
-    <text x="105" y="158" text-anchor="middle">the ARC twin</text>
-    <text x="105" y="176" text-anchor="middle" fill="#5b6473">(real building, verbatim)</text>
-    <rect x="232" y="118" width="170" height="74" rx="8" fill="#e9f2fb" stroke="#3f78b5" stroke-width="1.5"/>
-    <text x="317" y="140" text-anchor="middle" font-weight="700">Edit the ARC</text>
-    <text x="317" y="158" text-anchor="middle">Outliner BOM Tree</text>
-    <text x="317" y="176" text-anchor="middle" fill="#5b6473">re-parent · grid · move</text>
-    <rect x="444" y="118" width="170" height="74" rx="8" fill="#eef6ee" stroke="#5a9e5a" stroke-width="1.5"/>
-    <text x="529" y="140" text-anchor="middle" font-weight="700">Followers crawl</text>
-    <text x="529" y="158" text-anchor="middle">RouteWalk</text>
-    <text x="529" y="176" text-anchor="middle" fill="#5b6473">STR · MEP regenerate</text>
-    <rect x="656" y="118" width="144" height="74" rx="8" fill="#eef6ee" stroke="#5a9e5a" stroke-width="1.5"/>
-    <text x="728" y="140" text-anchor="middle" font-weight="700">Auto-complete</text>
-    <text x="728" y="158" text-anchor="middle">4D · 5D · ERP</text>
-    <text x="728" y="176" text-anchor="middle" fill="#5b6473">the live twin</text>
+    <rect x="20" y="70" width="170" height="74" rx="8" fill="#e9f2fb" stroke="#3f78b5" stroke-width="1.5"/>
+    <text x="105" y="98" text-anchor="middle" font-weight="700">📂 Open extracted.db</text>
+    <text x="105" y="116" text-anchor="middle">the ARC twin</text>
+    <text x="105" y="134" text-anchor="middle" fill="#5b6473">(real building, verbatim)</text>
+    <rect x="232" y="70" width="170" height="74" rx="8" fill="#e9f2fb" stroke="#3f78b5" stroke-width="1.5"/>
+    <text x="317" y="98" text-anchor="middle" font-weight="700">Edit the ARC</text>
+    <text x="317" y="116" text-anchor="middle">move · cut · insert · grid</text>
+    <text x="317" y="134" text-anchor="middle" fill="#5b6473">each a signed op</text>
+    <rect x="444" y="70" width="170" height="74" rx="8" fill="#eef6ee" stroke="#5a9e5a" stroke-width="1.5"/>
+    <text x="529" y="98" text-anchor="middle" font-weight="700">Followers crawl</text>
+    <text x="529" y="116" text-anchor="middle">Walk · RouteWalk</text>
+    <text x="529" y="134" text-anchor="middle" fill="#5b6473">STR · MEP regenerate</text>
+    <rect x="656" y="70" width="144" height="74" rx="8" fill="#eef6ee" stroke="#5a9e5a" stroke-width="1.5"/>
+    <text x="728" y="98" text-anchor="middle" font-weight="700">Auto-complete</text>
+    <text x="728" y="116" text-anchor="middle">4D · 5D · ERP</text>
+    <text x="728" y="134" text-anchor="middle" fill="#5b6473">the live twin</text>
   </g>
   <g fill="#3f78b5" font-size="20" font-weight="700">
-    <text x="201" y="161">→</text><text x="413" y="161">→</text><text x="625" y="161">→</text>
+    <text x="201" y="113">→</text><text x="413" y="113">→</text><text x="625" y="113">→</text>
   </g>
-  <rect x="20" y="222" width="780" height="44" rx="8" fill="#1b1d23"/>
-  <text x="410" y="243" text-anchor="middle" font-size="13" font-weight="700" fill="#dce6f4">ONE signed op-log</text>
-  <text x="410" y="260" text-anchor="middle" font-size="11.5" fill="#aab4c4">every edit &amp; every follow is a signed fact — model · structure · MEP · 4D · 5D · ERP all fold from it</text>
-  <text x="20" y="292" font-size="11" fill="#8a93a0">Open = ARC only (the single editable substrate). The twin becomes editable + generative — it completes itself.</text>
-  <text x="20" y="308" font-size="10.5" fill="#aab4c4">Experimental: modeller.html?bomtree · spec SPATIAL_DEPENDENCY_GRAPH §INVERT-TWIN-EDITING</text>
+  <rect x="20" y="178" width="780" height="44" rx="8" fill="#1b1d23"/>
+  <text x="410" y="199" text-anchor="middle" font-size="13" font-weight="700" fill="#dce6f4">ONE signed op-log</text>
+  <text x="410" y="216" text-anchor="middle" font-size="11.5" fill="#aab4c4">every edit &amp; every follow is a signed fact — model · structure · MEP · 4D · 5D · ERP all fold from it</text>
+  <text x="20" y="250" font-size="12" fill="#16324a" font-weight="700">Why it's faster</text>
+  <text x="20" y="270" font-size="11.5" fill="#5b6473">Speed — you start complete (a real building), not a blank canvas.   ·   Completion — open a bare ARC and the rest fills itself in.</text>
+  <text x="20" y="288" font-size="11.5" fill="#5b6473">Reuse — the real building is the substrate; you edit batches, never reconstruct.   ·   Trust — a verified twin, so editing starts from truth.</text>
+  <text x="20" y="310" font-size="10.5" fill="#8a93a0">Open = ARC only (the single editable substrate). Structure / MEP / 4D / 5D / ERP are shown but derived — they regenerate against your ARC edits.</text>
 </svg>
 
-> *Status:* the first slice — the **📂 Open** icon and the editable **BOM Tree** in the Outliner — is live behind the
-> experimental `?bomtree` flag. The auto-complete (RouteWalk) and the geometry-on-canvas editing land next. The
-> classic authoring surface documented below stays usable throughout.
+---
+
+## The workspace
+
+![The modeller workspace: the Outliner (left) over the BOM tree, the ARC building on the grid, the ⋯ pill toolbar down the right edge, and the history scrubber along the bottom](img/modeller/workspace-open.png)
+
+- **Outliner** (left) — the BOM tree of the opened building (`Building → Level → Room → ARC → element`), plus the **Walk** rows and a live **find** filter. Collapse it with its chevron to free the canvas.
+- **Canvas** (centre) — the 3D building on the construction grid. Click an element to select it; **Shift-drag** marquee-selects many.
+- **Pill toolbar** (right edge) — an icon rail. Tap **⋯** (bottom-right) to fan the pills open; hover a pill for its name; **? Help** lists every tool + shortcut. `Esc` cancels any active mode.
+- **History scrubber** (bottom) — the signed op-log *is* the timeline. Drag it to travel through every edit. The status line beneath it echoes what each op did (e.g. `scaled #183 X ×1.50  verify=true`).
+
+**How to read it:** the op-log is the model, the 3D is a fold of it, and the slider is the single honest
+retreat across every tool below.
 
 ---
 
-## What it is
+## Getting started — your first five minutes
 
-DAGeVu is a **browser BIM authoring** surface that sits beside the read-only viewer. Instead of editing a file,
-you apply **operations** — insert a component, sketch a profile, extrude, sweep, fillet — and the model is a
-**deterministic fold** of that signed operation log. The op-log *is* the feature tree: every action is
-recorded, replayable, and reversible, and the same signed-log idea drives the Kernel-ERP engine.
+1. **Open the app** — [red1oon.github.io/bim-ootb/viewer/modeller.html](https://red1oon.github.io/bim-ootb/viewer/modeller.html)
+   (desktop; the B-rep kernel is heavy). Tap **⋯** at the bottom-right to fan the pill toolbar open.
+2. **Open a building** — tap **📂 Open** and pick a resident building (e.g. *Duplex*). Its **ARC** model loads
+   onto the grid and its BOM tree fills the Outliner on the left. You're now editing a real building, not a
+   blank canvas.
+3. **Frame it** — press **`F`** (or tap **Fit**) to zoom the whole building into view.
+4. **Select something** — click an element (a wall, a door). It highlights; the status line names it.
+   **Shift-drag** to marquee-select many.
+5. **Do one edit** — tap **Move**, drag an axis arrow, and release. Watch the status line print the signed op
+   (e.g. `moved #142 Δ(0.50,0.00,0.00)  verify=true`). That edit is now one fact in the op-log.
+6. **Undo it** — drag the **history scrubber** (bottom) one notch left. The edit reverses exactly, because the
+   3D is a pure fold of the log. Drag right to redo.
 
-**Open it:** [red1oon.github.io/bim-ootb/viewer/modeller.html](https://red1oon.github.io/bim-ootb/viewer/modeller.html)
-(desktop — the B-rep kernel is heavy). The **Home** button returns to the Matrix landing.
-
-![DAGeVu Modeller — the INSERT · BOM CATALOG panel open (left), the authored scene on the grid, the ⋯ toolbar pill rail at the bottom‑right, and the op-log history scrubber along the bottom](assets/modeller.png)
-
-## Your first insert — the BOM catalog
-
-The fastest way to build is to **assemble, not draw**. Tap the **Insert** tool (the cube icon in the
-toolbar — open the **⋯** pill rail at the bottom‑right if the pills are collapsed) to open the
-**INSERT · BOM CATALOG** panel on the left:
-
-1. **Find a component.** Type in **search parts…**, or narrow with the filter chips —
-   **All · Structure · Openings · Furniture · Sets**. The catalog is extracted from the real
-   component library (`component_library.db` plus the per-building BOMs), so what you see are actual
-   parts and pre-built assemblies.
-2. **Pick a part — or a whole set.** Single parts drop one element. **Sets** are *assemblies* (whole
-   BOM sets) grouped by level — **Buildings · Floors · Rooms · Sets · Items** — each collapsible, with a
-   part-count badge (e.g. *Duplex Single Half-Unit*, *DX Level 1 Structured*). Pick one to drop the
-   entire recipe at once.
-3. **Aim and place.** The status line prompts **"aim on the grid, R to rotate, click to place"**. Move
-   the cursor over the grid to position the ghost preview; press **R** to rotate (the **Rotate** angle
-   in the panel footer updates); set **Elev** (metres) to lift it to a storey height; then **click** to
-   drop it.
-4. **It's a signed op.** The placement lands as one operation in the op-log — visible on the history
-   scrubber at the bottom and fully **undoable** (`Ctrl+Z`). An assembly drops as a single grouped op
-   of *N* parts, each seated and oriented from the recipe — e.g. **doors and windows take their host
-   wall's facing automatically**, rotating with the wall rather than landing flat.
-
-From there, use the toolbar pills to refine: move/rotate a placed object, sketch and extrude new geometry,
-cut, sweep an MEP run, or bump a component's level of detail. The **Outliner** panel (left) lists the
-placed elements; collapse it with its chevron to free up the canvas.
-
-## The toolbar — icon index
-
-The toolbar is a **⋯ pill rail** at the bottom-right: tap **⋯** to fan the icon-only glass pills up,
-and hover any pill for its name. The **? Help** pill opens the **TOOLBAR · PILL REGISTRY** — the live
-list of every tool's icon, name, and keyboard shortcut (`Esc` always cancels the current mode).
-
-| Icon | Does |
-|------|------|
-| **⋯ Toolbar** | Fan the toolbar pills open / closed (bottom-right) |
-| **? Help** | Toolbar & shortcuts — the live pill registry |
-| **Home** | Back to the Matrix landing |
-| **Fit** | Zoom to fit — frames the selection, or the whole scene (`F`) |
-| **Iso** | Cycle the view: Iso ⇄ Top |
-| **Wall** | Draw a wall |
-| **Opening** | Place an opening (door / window) in a wall |
-| **Grid** | Show / add a construction grid |
-| **Move Grid** | Drag a gridline — attached walls recompose with it |
-| **Move** | Move the selected object — drag an axis handle or nudge with the arrow keys (`M`) |
-| **Sketch** | Start a 2D sketch |
-| **Extrude** | Push a sketch profile into a solid |
-| **Axis** | Set the constraint intent the solver enforces on the sketch |
-| **Cut** | Boolean-cut one solid with another |
-| **Route** | Define a route to sweep a profile along (e.g. an MEP run) |
-| **Sweep Run** | Sweep the profile along the route |
-| **Fillet** | Round a selected solid's picked edges |
-| **Apply** | Commit the pending fillet / chamfer |
-| **Insert** | Insert a library component — assemble, don't draw (catalog + BOM-assembly drop) |
-| **LOD 200** | Refine the selected component's level of detail (same signed row) |
-| **IFC** | Export the authored model as IFC4 |
-| **Undo** | Undo the last operation (`Ctrl+Z`) |
-| **Redo** | Redo (`Ctrl+Shift+Z`) |
-| **Delete** | Delete the selection (`Del`) |
-| **Clear** | Empty the scene |
-| **Sound** | Toggle authoring sound feedback |
-| **Connect** | Connect Scene — share selection / timeline with the Viewer & ERP (opt-in; surfaces stay separate) |
+That's the whole loop: **open → select → tool → commit → scrub**. Every tool below is a variation on it. Press
+**? Help** any time for the live list of pills and shortcuts, or **`Esc`** to cancel a mode.
 
 ---
 
-## Walk · Disciplines
+## Assemble & draw
 
-The inversion above promises that when you open a bare **ARC** building, *the other disciplines fill
-themselves in*. That is the **Walk · Disciplines** roster in the Outliner. You pick a discipline that is
-**absent** from the building — Structure, Electrical, Fire-Protection, Plumbing, HVAC — and the modeller
-**walks** it: it places that trade's elements at the **measured cadence** of a real coordinated building,
-chains the runs it can, gates the clashes, and **honestly refuses** when the building has nothing to hang the
-trade on. Nothing is invented — every placement uses a spacing/clearance rule *mined from a real IFC model*.
+### Insert — assemble from the catalog
+*Commits `GEOM_INSERT`.*
 
-**One engine, two standards.** A single walker (`disc_walker.js`) drives every discipline — the discipline is
-just a data filter, not a separate code path. It carries **two measured rule-sets**, and the modeller
-**auto-selects** by building class:
+The fastest way to build is to **assemble, not draw**.
+
+1. Tap **Insert** (the cube pill) to open the **BOM catalog** on the left.
+2. Search or filter (**All · Structure · Openings · Furniture · Sets**), then click a **component** — or a whole **Set** (an assembly that drops its entire recipe at once).
+3. Aim on the grid (press **R** to rotate, set **Elev** for storey height) — a ghost previews the landing — then **click** to place.
+
+![The Insert catalog armed — a component picked, ghost preview following the cursor on the grid](img/modeller/insert-catalog.png)
+
+The component lands as one signed `GEOM_INSERT` (a LOD-200 box that lazily refines to its real library
+mesh). An assembly drops as one grouped op of *N* seated, oriented parts — a door takes its host wall's
+facing automatically. Undo removes it exactly.
+
+![After the click — the component placed on the grid as a signed operation](img/modeller/insert-placed.png)
+
+### Sketch → Extrude — draw a wall
+*Commits `GEOM_EXTRUDE_POLY` (a real occt B-rep solid).*
+
+1. Tap **Sketch** and click **≥3 points** on the grid to lay a closed profile.
+2. Set the **depth**, then tap **Extrude**.
+
+![Sketch — a closed profile laid on the grid, ready to extrude](img/modeller/sketch-profile.png)
+
+The solved polygon is swept to depth and committed as one signed operation.
+
+![Extrude — the profile pushed into a B-rep wall solid](img/modeller/sketch-wall.png)
+
+### Route → Sweep-Run — lay a run / duct
+*Commits `GEOM_SWEEP`.*
+
+1. Tap **Route** and click **≥2 points** to lay a spine.
+2. Set the **profile** size, then tap **Sweep-Run**.
+
+![Route — a poly-line spine laid across the grid](img/modeller/route-spine.png)
+
+The profile is swept along the spine (an occt pipe) as one signed op — the way MEP runs are authored.
+
+![Sweep-Run — the profile swept along the spine into a run](img/modeller/route-run.png)
+
+### Cut — open a wall
+*Commits `GEOM_CUT` (a child of the selected wall).*
+
+1. Click a wall to **select** it.
+2. Tap **Cut** — a window void is derived from the wall and subtracted.
+
+![Select the wall to open](img/modeller/cut-select.png)
+
+The opening shows immediately; undo closes it to the exact original frame. (Cutting a seeded ARC wall
+promotes its measured box to a B-rep just-in-time, so the subtraction is exact — never approximated.)
+
+![Cut — a signed opening void subtracted from the wall](img/modeller/cut-open.png)
+
+### Fillet — round a solid's edge
+*Commits `GEOM_FILLET`.*
+
+1. Select a B-rep solid and tap **Fillet** — its edges become pickable markers.
+2. Click an edge (or several), set the **radius**, then tap **Apply**.
+
+![Fillet — the solid's edges shown as pickable markers](img/modeller/fillet-edges2.png)
+
+The picked edge is rounded in place (the wall's triangle count grows exactly where the round lands); undo
+restores it.
+
+![Apply — the picked edge rounded](img/modeller/fillet-rounded.png)
+
+---
+
+## Transform
+
+Select an element and tap **Move** to raise the **transform gizmo** — the shared handle for moving,
+scaling and rotating.
+
+![The transform gizmo on a selected element — XYZ arrows (move), cube handles (scale), yaw ring (rotate)](img/modeller/gizmo.png)
+
+### Move
+*Commits `GEOM_MOVE {dx,dy,dz}`.* Drag an **axis arrow** (with grid snap) or nudge with the arrow keys.
+Release commits one signed `GEOM_MOVE`; a moved host **drags its hosted fillings** (a door rides its
+wall). Undo is exact to the micron.
+
+![Move engaged on a selected element — dragging the X arrow moves it on that axis only (the commit is X-only, exact, reversible)](img/modeller/move-gizmo.png)
+
+### Scale
+*Commits `GEOM_SCALE {fx,fy,fz}`.* On a single component, drag a **cube** handle to stretch that axis
+(edge-anchored — the opposite face stays put). The rendered extent grows by exactly the committed factor.
+
+![Scale — dragging the cube handle stretched the element; the status line reads the signed factor](img/modeller/scale-stretched.png)
+
+### Rotate
+*Commits `GEOM_ROTATE {drot}`.* Drag the yellow **yaw ring** to spin the selection about its centre (15°
+snap, Shift for free angle). The rendered footprint turns by exactly the committed angle.
+
+![Rotate — the yaw ring spins the element in place](img/modeller/rotate-yaw.png)
+
+### Grid-Stretch
+*Commits `GEOM_GRID_MOVE`.* Tap **Move Grid**, then drag a **gridline**. Walls attached to that line
+**recompose** — a span stretches, an attached wall translates — as one signed operation.
+
+![Before — a wall spanning two gridlines](img/modeller/gridstretch-before.png)
+![After — dragging the gridline stretched the attached wall by exactly the drag distance](img/modeller/gridstretch-after.png)
+
+### Delete
+*Soft-deletes from the signed log (reversible).* Select and tap **Delete** (or press `Del`). The feature
+(and its children) hide from the model — the signed payload is never rewritten, so the chain stays valid.
+**Redo** (`Ctrl+Y`) brings it back exactly.
+
+![Delete — the selected feature removed; Redo restores it](img/modeller/delete-gone.png)
+
+---
+
+## Generate — walkers fill the ARC
+
+When you open a bare **ARC** building, the other disciplines *fill themselves in*. You pick a discipline
+that is **absent** — Structure, Electrical, Fire-Protection, Plumbing, HVAC — and the modeller **walks**
+it: it places that trade's elements at the **measured cadence** of a real coordinated building, chains the
+runs it can, gates the clashes, and **honestly refuses** when the building has nothing to hang the trade
+on. Nothing is invented — every placement uses a spacing/clearance rule *mined from a real IFC model*.
+
+![Walk · ELEC — the walker placed 267 electrical fixtures across the Duplex at the measured residential cadence](img/modeller/walk-fixtures.png)
+
+**One engine, two standards.** A single walker drives every discipline; the discipline is just a data
+filter. It carries two measured rule-sets and auto-selects by building class:
 
 | Building class | Standard used | Mined from | Why |
 |---|---|---|---|
 | House / residential (SampleHouse, Duplex, SampleCastle) | **residential** (`duplex_rules.db`) | the Duplex's *own* real MEP — 908 elements | tight residential cadence (~0.5 m trade separation) |
 | Large / complex (airport, hospital) | **large-complex** (`terminal_rules.db`) | a real airport terminal | sparse, plenum-scale cadence |
 
-On open you'll see `§DW-PROV` print the standard and its provenance stamp, so you always know which rule-set is
-driving the walk and where it came from. The rest of this section is the **evidence** that the walk produces
-sensible numbers — every figure below traces to a witnessed `§`-log from the build (no estimates).
+On open you'll see `§DW-PROV` print the standard and its provenance, so you always know which rule-set is
+driving the walk. The tables below are the **evidence** that the walk produces sensible numbers — every
+figure traces to a witnessed `§`-log (no estimates).
 
 ### What a walk actually places
 
-This is what you see in the status line when you walk each discipline on the three residential buildings
-(`§DW §WALK …`, from `build/logs/witness_disc_walk_generalize.log`). *Placed* is how many elements the walk
-seated; *chains* is how many runs it could link end-to-end; the honesty note is what the walk reported when a
-trade had nothing to route:
+Status-line results per discipline on the three residential buildings
+(`build/logs/witness_disc_walk_generalize.log`). *Placed* = elements seated; *chains* = runs linked
+end-to-end; the note is what the walk reported when a trade had nothing to route:
 
 | Building (storeys) | Discipline | Placed | Chains | Honesty note |
 |---|---|---:|---:|---|
@@ -193,16 +249,14 @@ trade had nothing to route:
 | | Structure | 1 836 | 1 | members linked |
 | | Plumbing | 14 | 0 | sparse → honest |
 
-Place counts scale with footprint (a 7-storey castle gets ~50× the fixtures of a 3-storey house) because the
-**cadence is constant** — the same measured spacing rule simply tiles a bigger floor. Walking an *unknown*
-discipline returns **REFUSE — no measured rule** rather than guessing.
+Counts scale with footprint because the **cadence is constant** — the same measured spacing tiles a bigger
+floor. Walking an *unknown* discipline returns **REFUSE — no measured rule** rather than guessing.
 
 ### Why the right standard matters — clash collapse
 
-The walk also gates clashes between the fixtures it placed. Using the **right** standard for the building
-class collapses the phantom clashes a mismatched (too-wide) standard would raise. Same layout, same fixtures —
-only the clearance standard changes (`build/logs/witness_disc_walk_duplex_generalize.log`, gated irreducible
-residual):
+The walk gates clashes between the fixtures it placed. Using the **right** standard for the building class
+collapses the phantom clashes a mismatched (too-wide) standard would raise — same layout, only the
+clearance standard changes (`witness_disc_walk_duplex_generalize.log`, gated irreducible residual):
 
 | Building | Residual @ large-complex standard | Residual @ residential standard | Collapse |
 |---|---:|---:|---:|
@@ -210,76 +264,27 @@ residual):
 | Duplex | 32 | **2** | 94 % |
 | SampleCastle | 501 | **3** | 99.4 % |
 
-The plenum-scale (large-complex) clearance flags far more phantom clashes than the residential one, and the gap
-widens with building size — on the dense castle it is **501 vs 3**. (Every residual is **flagged, none silent** —
-the walk never hides a clash to make the number look good.)
-
-> These are clashes between **generated** fixtures (the walk fills a discipline the building lacks), so they
-> illustrate the *clearance standard's* effect, not a measured fact about a real building — the fixture **count**
-> is exact (area-scaled from measured quantity), the **positions** are plausible, not landed. The measured,
-> real-building evidence is the survey in the next-but-one table. *(Earlier builds of this table showed much
-> larger numbers; those were inflated by a placer that tiled the floor area instead of scaling the measured
-> per-floor count — fixed 2026-06-28, witness `witness_disc_walk_density.js` 43/0.)*
+Every residual is **flagged, none silent** — the walk never hides a clash to make the number look good.
 
 ### Does the residential standard reproduce a real house's MEP?
 
-The residential standard was mined from the Duplex's own MEP — so the acid test is whether it *re-grows* that
-same MEP (`build/logs/witness_duplex_rules.log`, `§DXM-RT`):
+The residential standard was mined from the Duplex's own MEP, so the acid test is whether it *re-grows*
+that MEP (`witness_duplex_rules.log`, `§DXM-RT`):
 
 | Discipline | Verdict | What it means |
 |---|---|---|
-| Plumbing | ✅ **GREEN** (4/4 classes) | the bulk of a house's MEP reproduces — segments cover 0.93, fittings 0.85 |
-| Electrical | 🟡 **WEAK** | fixtures (receptacles/lights, n = 89) GREEN; the sparse 8-segment conduit is honestly WEAK |
-| HVAC | 🔴 **RED** (n = 2) | a house has ~no ductwork — honest RED, *not* a failure (there is nothing to reproduce) |
+| Plumbing | ✅ **GREEN** (4/4 classes) | the bulk of a house's MEP reproduces — segments 0.93, fittings 0.85 |
+| Electrical | 🟡 **WEAK** | fixtures (n = 89) GREEN; the sparse 8-segment conduit is honestly WEAK |
+| HVAC | 🔴 **RED** (n = 2) | a house has ~no ductwork — honest RED, *not* a failure |
 
-RED/WEAK here are **honesty**, not breakage: a single-family house genuinely has almost no ducting, so the walk
-declines to fabricate it.
-
-### The real finding — it's density, not clearance
-
-Surveying four real, fully-coordinated buildings (`build/logs/survey_class_boundary_postfix.log`, `§CB`), the
-trade-to-trade separation is *about the same everywhere* — there is **no clearance class-boundary**. The
-"phantom-flag" column is the share of a building's *real* trade pairs that each standard wrongly calls a clash:
-
-| Building | Median cross-disc clearance | Phantom-flagged by residential | Phantom-flagged by large-complex |
-|---|---:|---:|---:|
-| Duplex (residential) | 1.10 m | 1.7 % | 0.7 % |
-| Clinic (healthcare) | 0.62 m | 3.2 % | 0.4 % |
-| Hospital (LOD400) | 0.62 m | 2.1 % | 0.4 % |
-| Terminal (LOD400 airport) | 0.43 m | 11.4 % | 4.8 % |
-
-The tightest real trade pair (electrical vs plumbing) sits at ~0.45–0.62 m in *every* building, house to airport.
-What separates classes is **density and count**, not clearance — a takeaway that corrected an earlier
-Terminal rule that over-stated separation (it had been flagging 37.5 % of the airport's *own* coordinated MEP;
-re-mined, that drops to 4.8 %).
-
-### After the walk — service hookups and assembly
-
-A walked fixture is not just a marker. Each one now carries its **fixture → service hookup**, read verbatim from
-the rules (a sprinkler's **TOP** face connects to the **fire main** at Ø25 mm; a ceiling light's TOP to the
-electrical conduit at Ø20 mm). On the canvas the hookup shows as a short edge from the fixture toward the service
-it feeds — so you can *see* which way each device wants to be served, not just where it sits. The face, diameter
-and service are measured patterns, never invented; a fixture with no recorded hookup is simply left plain.
-
-Where the building has a **real routed network**, the walk goes one step further and **assembles** it: at each
-real pipe/duct node it instantiates the matching catalog part (a fitting, sized to its **measured** diameter) and
-orients it along the run. Where there is **no network to assemble** — a castle whose fire trade is generated, not
-ducted — it says so (`§DW-ASSEMBLE … assemble REFUSE: no routed network`) and places nothing. Same honesty rule
-as everywhere else: real nodes get real parts, absent networks get a refusal, never a fabricated pipe.
-
-*(Trace: connectors are a projected rule per building class — fire-sprinkler and light hookups for the
-large-complex set, none for the generic residential flow classes, honestly. Witnessed by `W-RULE-CONNECTOR`,
-`W-ASSEMBLE-CONNECT`, and live in the modeller by `W-DW-PIXELPROBE` — the hookup edges render on every walked
-sprinkler.)*
+RED/WEAK here are **honesty**, not breakage: a single-family house genuinely has almost no ducting, so the
+walk declines to fabricate it.
 
 ### Does it generalize to a building it never saw?
 
-Re-growing the Duplex's own MEP (the table above) proves the rules are *self-consistent*. The harder, honest
-question is whether they **generalize** — does a rule-set mined from one house route sensibly on **buildings it
-was never shown**? We routed the residential rules (mined from the Duplex) onto a *spectrum* of held-out
-buildings and scored each against **that building's own pipes** (`build/logs/witness_generalize_curve_*.log`,
-`§GC`). Precision is the **don't-fabricate** score: of the pipe joins the walker drew, how many land on a real
-pipe touch.
+We routed the residential rules (mined from the Duplex) onto held-out buildings and scored each against
+*that building's own pipes* (`witness_generalize_curve_*.log`, `§GC`). Precision is the **don't-fabricate**
+score: of the joins the walker drew, how many land on a real pipe touch.
 
 | Building | Type | In/out of domain | Segments | Precision @0.15 m | Fabricated |
 |---|---|---|---:|---:|---:|
@@ -289,22 +294,97 @@ pipe touch.
 | Clinic | healthcare | out-of-domain | 4 906 | 0.705 | 0 |
 | HHS_Office | office | out-of-domain | 1 380 | 0.620 | 0 |
 
-The model **degrades gracefully**: an unseen *house* (its own type) scores 0.839, and unseen *offices and
-clinics* still score 0.62–0.75 — below the in-sample ceiling of 0.969, as expected, but never collapsing. The
-honest reading is in the spread, not a single number. Crucially, on **every** building **0 joins were fabricated**
-and **0 exceeded the gap bound** — the 3.298 m bound mined from the small Duplex held on a building 40× larger
-without ever being widened. (An ARC-only building with no pipes routes **0**, never a guess.)
+The model **degrades gracefully** and never collapses. On **every** building **0 joins were fabricated** and
+**0 exceeded the gap bound**. An ARC-only building with no pipes routes **0**, never a guess.
 
-> **Deeper proof.** The full mining, round-trip, boundary and generalization analysis lives in the resume cards
-> `prompts/RESUME_DX_MEP_RESIDENTIAL_STANDARD.md`, `prompts/RESUME_TERMINAL_RULE_MINING.md` and
-> `prompts/RESUME_DISC_WALKER_ENVELOPE_BOUND.md`, each backed by the witnessed `build/logs/` set summarised above.
+### Seed-Trunk — route a service trunk
+
+After walking a discipline, route its **service trunk** from a real entry.
+
+1. In the Outliner, open the **Route trunk** row for the walked discipline.
+2. A popup offers the real service **entry** elements (doors / stairs) — confirm the default or choose one.
+3. Tap **Route ▶**.
+
+![Route trunk — choose the service entry (a real door / stair) from the popup, then Route ▶](img/modeller/seedtrunk-entry.png)
+
+A corridor-aware trunk is routed from that entry through the walked fixtures — around walls, through real
+doors, up risers between storeys.
+
+![The routed corridor trunk over the walked ELEC fixtures](img/modeller/seedtrunk-trunk.png)
+
+> **Deeper proof.** The full mining, round-trip, boundary and generalization analysis lives in the resume
+> cards `prompts/RESUME_DX_MEP_RESIDENTIAL_STANDARD.md`, `RESUME_TERMINAL_RULE_MINING.md` and
+> `RESUME_DISC_WALKER_ENVELOPE_BOUND.md`, each backed by the witnessed `build/logs/` set summarised above.
 
 ---
 
-**Collaborate on the design — the Teams overlay.** The Modeller shares one signed op-log with the Viewer and
-ERP, so the same **Teams overlay** rides on it: git-style **design branches** ("you build that wing, I build
-this"), a **spatial merge gate** that flags where two branches clash, identity-coloured **who-dots** on
-elements, and the tabbed Outliner (Tree / Chat / Dashboard). Off by default, pixel-identical until toggled.
+## History — the slider *is* the timeline
+
+- Drag the **history scrubber** back to undo, forward to redo — it scrubs the signed op-log and re-folds the
+  geometry deterministically. It is a strict superset of the keyboard shortcuts.
+- **`Ctrl+Z`** undo · **`Ctrl+Y`** (or `Ctrl+Shift+Z`) redo · **`Del`** delete selection · **`F`** fit · **`Esc`** cancel mode · **`R`** rotate a pending insert.
+- Every retreat is exact because the geometry is a pure fold of the log — there is no separate "undo buffer"
+  to drift out of sync.
+
+---
+
+## Toolbar — icon index
+
+The toolbar is a **⋯ pill rail** at the right edge: tap **⋯** to fan the pills, hover for a name, and open
+**? Help** for the live registry (icon · name · shortcut). `Esc` always cancels the current mode.
+
+| Icon | Does |
+|------|------|
+| **⋯ Toolbar** | Fan the pills open / closed |
+| **? Help** | Toolbar & shortcuts — the live pill registry |
+| **Home** | Back to the Matrix landing |
+| **Fit** | Zoom to fit — the selection, or the whole scene (`F`) |
+| **Iso** | Cycle the view: Iso ⇄ Top |
+| **Grid** | Show / add a construction grid |
+| **Move Grid** | Drag a gridline — attached walls recompose (`GEOM_GRID_MOVE`) |
+| **Move** | Transform gizmo — move / scale / rotate the selection (`M`) |
+| **Sketch** | Start a 2D sketch |
+| **Extrude** | Push a sketch profile into a solid (`GEOM_EXTRUDE_POLY`) |
+| **Axis** | Set the constraint intent the solver enforces on the sketch |
+| **Cut** | Cut an opening in the selected wall (`GEOM_CUT`) |
+| **Route** | Lay a spine to sweep a profile along (e.g. an MEP run) |
+| **Sweep Run** | Sweep the profile along the route (`GEOM_SWEEP`) |
+| **Fillet** | Round a selected solid's picked edges (`GEOM_FILLET`) |
+| **Apply** | Commit the pending fillet / chamfer |
+| **Insert** | Insert a library component — assemble, don't draw (`GEOM_INSERT`) |
+| **LOD 200** | Refine the selected component's level of detail (same signed row) |
+| **IFC** | Export the authored model as IFC4 |
+| **Undo / Redo** | Undo (`Ctrl+Z`) · Redo (`Ctrl+Y`) |
+| **Delete** | Delete the selection (`Del`) |
+| **Clear** | Empty the scene |
+| **Sound** | Toggle authoring sound feedback |
+| **Connect** | Connect Scene — share selection / timeline with the Viewer & ERP (opt-in) |
+
+---
+
+## Troubleshooting
+
+Each row below is a real behaviour the tool suite exercised (and, where it was a defect, fixed) — not a
+hypothetical. If you hit something else, **? Help** lists every tool and shortcut, and the history scrubber is
+always a safe retreat.
+
+| Symptom | Why | What to do |
+|---|---|---|
+| **A pill looks stuck in the top-left corner** and won't click | A mode-revealed pill (Extrude, Sweep-Run, Apply) is shown only after you start its mode; the rail lays them out on reveal. | Start the mode first (e.g. finish the Sketch before reaching for **Extrude**). The rail re-positions the pill as it appears — if one still looks stranded, toggle the **⋯** rail closed and open. |
+| **Cut / Scale seems to do nothing on a wall from an opened building** | A seeded ARC wall is a *baked* box, not a B-rep. Cut promotes it to a B-rep just-in-time so the subtraction is exact; a rotated/non-box insert is refused up-front (logged) rather than approximated. | Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is *refused*, it isn't box-like enough to cut exactly; sketch the void instead. |
+| **A Walk seems to hang on a big building** | A discipline walk places hundreds of fixtures; they commit as **one batched signed group**, so a large walk takes a couple of seconds, not a frozen minute. | Wait for the batch — the status line reports the result when it lands (e.g. `ELEC — 267 placed across 5 storeys · 0 routed`). Scrub the slider back to clear them. |
+| **I want to "make an opening" but there's no Opening tool** | Opening is not a separate authoring tool — the real "cut a window/door" is the **Cut** tool (`GEOM_CUT`). | Select the wall, tap **Cut**. `GEOM_OPENING` is only a legacy sample primitive, never a user action. |
+| **Fillet won't pick an edge** | Fillet needs a **B-rep solid**; a seeded ARC insert has no worker edges to round. | Author a solid first (Sketch → Extrude), select it, then **Fillet** — its edges become pickable markers. |
+| **An edit didn't land the way I expected** | Every edit is a signed op; nothing is silently applied. | Drag the **history scrubber** back one notch to undo it exactly, then retry. There is no separate undo buffer to drift out of sync. |
+
+---
+
+## Collaborate on the design — the Teams overlay
+
+The Modeller shares **one signed op-log** with the Viewer and the Kernel-ERP, so the same **Teams overlay**
+rides on it: git-style **design branches** ("you build that wing, I build this"), a **spatial merge gate**
+that flags where two branches clash, identity-coloured **who-dots** on elements, and the tabbed Outliner
+(Tree / Chat / Dashboard). Off by default, pixel-identical until you toggle it on.
 → **[Teams Overlay guide (with screenshots)](TeamsOverlayGuide.md).**
 
 ---
