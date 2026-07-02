@@ -33,6 +33,9 @@ You need nothing but the Viewer and a building that carries some operate data (t
 
    ![The toolbar with the FM / Operate pill lit (blue, bottom-right rail) and its drawer open — five lenses: Occupancy, Presence, Unit class, Assets / IoT, Dashboard](img/hba_fm_drawer.png)
 
+   *(The drawer has since grown to 8 entries — the 4 lenses above plus Tenancy / AD, Dashboard, Payslip, and
+   Leave; see [The lenses at a glance](#the-lenses-at-a-glance-reference) for the full current list.)*
+
 5. **Turn on a lens.** Tap **Occupancy**. Tapping a row applies the lens **and closes the drawer**; re-tap the
    pill to reopen it and see which lens is active (highlighted, "● on"). The status bar reads e.g.
    *“HR · occupancy · 11 units lit”* — that status line is the reliable readout of what's lit; on this sample
@@ -117,7 +120,30 @@ discipline the rest of this module follows:
 
 This is the clearest illustration of the module's **Spatial ERP** idea: a sensor bound to a real element in
 the model is, at the same time, a line item a real ERP order can bill — one binding, two views (the 3D tint
-and the ledger line), off the same record.
+and the ledger line), off the same record. Each billing row's **open ↗** deep-links straight to that
+`C_Order`/`C_OrderLine` in iDempiere — "here's a real billable document, ready for management's follow-up",
+not just a mockup number:
+
+![The IoT billing table with an "open ↗" link on each row, deep-linking to the real C_Order in iDempiere](img/hba_iot_billing_link.png)
+
+### Jump straight to the ERP record
+Every pane above that shows data compiled onto a **real AD table** carries a small **open ↗** link per row —
+Dashboard's Resources, Payslip's concept lines, Leave's unpaid entries, Tenancy's subscriptions, and IoT's
+billing lines. Tapping it opens that exact record in `erp/idempiere.html` in a new tab — the *same* deep-link
+mechanism the Viewer's own **Find** panel already uses to reopen a pushed Project Order (`?client=garden&
+window=<id>&record=<pk>`), reused here rather than invented fresh. Every window number below was looked up
+from the real AD dictionary, never guessed:
+
+| Pane · row | iDempiere window | Native table |
+|---|---|---|
+| Dashboard → Resources | Resource | `S_Resource` |
+| Payslip → concept line | Payroll Movement | `HR_Movement` |
+| Leave → unpaid entry | Payroll Concept Catalog | `HR_Concept` (the "Leave without pay" concept it feeds — Leave has no native table of its own) |
+| Tenancy → subscription | Subscription | `C_Subscription` |
+| IoT → billing line | Sales Order | `C_Order` |
+
+No link appears on a row that doesn't (yet) resolve to a real record — the same non-invent discipline as
+everywhere else in this module: an absent link is honest, never a dead one.
 
 ### Classify spaces
 1. Open the drawer → tap **Unit class**.
@@ -138,6 +164,44 @@ and the ledger line), off the same record.
    - **Occupancy by storey** — utilisation % per level (all storeys, not just the ground floor).
    - **Open requests by age** — the SLA doughnut, tickets bucketed `<1d · 1–3d · 3–7d · >7d`.
    - **Room availability over time** — a 12-month stacked trend of occupied / expiring / unavailable / vacant.
+3. **Resources**, scrolled further down the same pane — one row per real room (name · storey · utilisation),
+   each a genuine `S_Resource` record ("a room is a bookable resource"). Every row carries an **open ↗** link
+   straight to that record in iDempiere — see [Jump straight to the ERP record](#jump-straight-to-the-erp-record)
+   below.
+
+   ![The Dashboard pane scrolled to its Resources list — one row per real room with storey, utilisation %, and an "open ↗" link into iDempiere's Resource window](img/hba_dashboard_resources.png)
+
+### Payroll — payslip
+1. Open the drawer → tap **Payslip**. An additive pane opens with an employee picker and that employee's
+   payslip — gross/net KPIs and a per-concept line trace (Base Salary, Allowance, EPF, PCB…), each line showing
+   the **rule it came from** (glass-box, not a black-box number).
+
+   ![The Payslip pane — EMP001 selected, gross 5200 / net 4234, four concept lines (Base Salary, Allowance, EPF, PCB) each with its rule trace and an "open ↗" link into iDempiere's Payroll Movement window](img/hba_payslip.png)
+
+2. Every line is a real `HR_Movement` row — the native iDempiere payroll table (dormant everywhere else this
+   dictionary ships, first activated here). Each line's **open ↗** deep-links straight to that movement record.
+
+### Leave — balance & statement
+1. Open the drawer → tap **Leave**. Balances (taken / unpaid / per-type) are **replayed** from a signed
+   accrue/take op-log — never a stored number — with a chain-integrity check shown inline.
+
+   ![The Leave pane — EMP001, 10d taken, 4d unpaid, per-entry statement rows, with an "open ↗" link on unpaid rows into iDempiere's Payroll Concept Catalog](img/hba_leave.png)
+
+2. Leave itself has **no native AD table anywhere** in iDempiere (checked against the real dictionary) — it's a
+   genuine addition, not a reinvention of something that already existed. So an unpaid row's **open ↗** doesn't
+   point at a fabricated "leave record" window; it points at the real **"Leave without pay" payroll concept**
+   the unpaid days feed into once payroll runs — the honest, real thing an unpaid entry actually compiles onto.
+
+### Tenancy — AD compile
+1. Open the drawer → tap **Tenancy / AD**. Every lease and strata charge in the building compiled onto real
+   iDempiere tables — a unit is a `M_Locator` + `M_Product` under a `M_Warehouse`-as-building, a lease or strata
+   fee is a real `C_Subscription` (party · unit · cadence · term).
+
+   ![The Tenancy pane — Warehouse/Units/Leases/Strata KPI tiles and a per-subscription row list (party, storey, cadence, term), each row with an "open ↗" link into iDempiere's Subscription window, plus a skipped-record footer](img/hba_tenancy.png)
+
+2. Row click flies the camera to that unit (the same shared fly-to used by the Presence roster above); the
+   **open ↗** link is separate and deep-links straight to the `C_Subscription` record. A record whose unit
+   doesn't resolve to a real room in this building is **skipped**, never fabricated — the footer says so.
 
 ---
 
@@ -165,7 +229,10 @@ above). Nothing is invented to make this work: the aisle labels and the element 
 | **Presence** | *Who is physically here right now?* | 1 `#90caf9` · 2–4 `#1976d2` · 5+ `#0d47a1` (+ per-person avatars near-field) |
 | **Unit class** | *What is this space?* | residential `#43a047` · commercial `#fb8c00` · office `#3949ab` · unclassified `#9e9e9e` |
 | **Assets / IoT** | *What equipment needs service?* | ok `#2e7d32` · due `#f9a825` · overdue `#c62828` |
+| **Tenancy / AD** | *What's the AD-compiled lease/strata detail?* | opens the AD-compile pane (no 3D wash) |
 | **Dashboard** | *Give me the numbers.* | opens the charts pane (no 3D wash) |
+| **Payslip** | *What did this employee actually get paid, and why?* | opens the payslip pane (no 3D wash) |
+| **Leave** | *What's this employee's leave balance and statement?* | opens the leave pane (no 3D wash) |
 
 **Wake-aware, always.** The `FM` pill appears only when the building has *some* operate data; inside the drawer
 each lens is enabled only when *its* data exists here. No data → greyed “no data” → no clutter, nothing faked.
