@@ -96,6 +96,29 @@ is variations on it.
 
 3. If this entry is **greyed “no data”**, the building simply carries no asset/IoT records — nothing is faked.
 
+#### The IoT sensor + CCTV cockpit (mockup)
+Tapping **Assets / IoT** does two things at once: it tints the asset in the model (above) **and** opens a
+supplementary pane for that asset — a small operate-cockpit showing what a real IoT feed would look like.
+This whole pane is an **explicit mockup** — every reading is a deterministic synthetic curve (same input,
+same output, always — never `Math.random`), watermarked, and never claimed as a real sensor value.
+
+**Six sensor channels, last 24 hours** — temperature, boiler pressure, sound level, dust (PM2.5), solar
+output, and electrical load — each its own small trend chart:
+
+![The IoT pane's six sensor charts — temperature, boiler pressure, sound level, dust, solar output, electrical load — each a 24h trend line, watermarked SAMPLE/CONTOH](img/hba_iot_sensors.png)
+
+**A CCTV mockup grid and the ERP billing table**, scrolled further down the same pane — six camera tiles
+(explicitly captioned "MOCKUP — NO REAL FEED", no invented video), and underneath, each sensor's *latest*
+reading compiled into a **billable line** — a real `C_OrderLine` (quantity, unit of measure, net amount)
+under a `C_Order` header, the same "compile into the real ERP dictionary, don't invent a parallel one"
+discipline the rest of this module follows:
+
+![The CCTV mockup grid (6 tiles, no real feed) and the ERP billing table underneath — each sensor reading compiled as a billable order line with qty/UOM/net amount](img/hba_iot_cctv.png)
+
+This is the clearest illustration of the module's **Spatial ERP** idea: a sensor bound to a real element in
+the model is, at the same time, a line item a real ERP order can bill — one binding, two views (the 3D tint
+and the ledger line), off the same record.
+
 ### Classify spaces
 1. Open the drawer → tap **Unit class**.
 
