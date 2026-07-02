@@ -8,8 +8,9 @@
 //   3. SALE — ring 2 tiles, pick the walk-in BP (112 Standard), Complete → ONE signed group commits
 //      through window.ERP.opDb (kernel_ops.commitGroup): §POS-SALE … newVerbs=[] chainOk=Y; receipt
 //      card shows signed=Y.
-//   4. REPLENISH — the suggestion panel folds live: §POS-LIVE-REPLENISH suggestions=8 (the W-POS-REPLENISH
-//      baseline, == iDempiere formula headless).
+//   4. REPLENISH (§T1-SPEC staged shape) — NO auto-fire: opening the panel logs §POS-REPLENISH-IDLE and
+//      renders zero rows; clicking #pos-repl-generate folds §POS-REPLENISH-GEN suggestions=8 (the
+//      W-POS-REPLENISH baseline, == iDempiere formula headless) into an EDITABLE staging list.
 //   5. HONESTY — Complete with an EMPTY cart or NO partner refuses (no silent commit; seed
 //      c_pos.BPartnerCashTrx is NULL → explicit choice required).
 //   6. §POS-CENT (MIGRATE_POSTING_CONFIG matrix flip) — the rung sale's DERIVED POSTING balances to the
@@ -105,12 +106,20 @@ const server = http.createServer((q, r) => {
   await pg.evaluate(() => document.getElementById('pos-pill-payment').dispatchEvent(new PointerEvent('pointerup', { bubbles: true })));
   await pg.waitForSelector('#pos-float-panel.open', { timeout: 8000 }).catch(() => fail('panel did not re-summon after dispose'));
 
-  // ── 4. the replenishment fold renders live ──
-  console.log('— 4. replenishment suggestions fold live');
-  const repl = logs.filter(t => t.startsWith('§POS-LIVE-REPLENISH')).pop();
+  // ── 4. replenishment is STAGED now (§T1-SPEC): no auto-fire, Generate folds the same 8-product baseline ──
+  console.log('— 4. replenishment: idle until asked, Generate stages the fold');
+  // the user closes the §P-11 receipt overlay first (it covers the panel after a sale)
+  if (await pg.$('#pos-receipt-overlay.active')) await pg.click('#pos-receipt-close');
+  if (!logs.find(t => t.startsWith('§POS-REPLENISH-IDLE'))) fail('no §POS-REPLENISH-IDLE (auto-fire came back?)');
+  if (logs.find(t => t.startsWith('§POS-REPLENISH-GEN'))) fail('§POS-REPLENISH-GEN before any click — auto-fire came back');
+  const preRows = await pg.$$eval('.pos-repl-stage-row', e => e.length);
+  if (preRows !== 0) fail('staging rows rendered before Generate (want 0): ' + preRows);
+  await pg.click('#pos-repl-generate');
+  await pg.waitForSelector('.pos-repl-stage-row', { timeout: 8000 }).catch(() => fail('Generate rendered no staging rows'));
+  const repl = logs.filter(t => t.startsWith('§POS-REPLENISH-GEN')).pop();
   if (!repl || !/suggestions=8/.test(repl)) fail('replenish fold wrong (want the 8-product W-POS-REPLENISH baseline): ' + repl);
-  const replRows = await pg.$eval('#pos-float-replenish', e => e.textContent);
-  if (!replRows.includes('order')) fail('suggestion rows not rendered on-screen');
+  const stageRows = await pg.$$eval('.pos-repl-stage-row', e => e.length);
+  if (stageRows !== 8) fail('staging rows != suggestions (want 8): ' + stageRows);
 
   // ── 6. §POS-CENT — the rung sale's derived posting balances to the cent on the DEFAULT seed ──
   console.log('— 5. §POS-CENT: derive posting for the completed live order (frozen DocPoster on the default seed)');
@@ -151,7 +160,7 @@ const server = http.createServer((q, r) => {
     if (!cent.balanced || cent.maxDiff !== 0) fail('§POS-CENT not balanced to the cent: Dr=' + cent.sumDr + ' Cr=' + cent.sumCr + ' cart=' + cent.totalCents);
   }
 
-  console.log('\n' + (pass ? '🟢 W-POS-LIVE PASS — the POS lens rides the rails live: gated pill, 16 dictionary tiles, one signed group (chainOk=Y, newVerbs=[]), live replenishment fold, §POS-CENT derived posting balanced to the cent on the DEFAULT seed, refusals honest.'
+  console.log('\n' + (pass ? '🟢 W-POS-LIVE PASS — the POS lens rides the rails live: gated pill, 16 dictionary tiles, one signed group (chainOk=Y, newVerbs=[]), staged replenishment (idle till Generate), §POS-CENT derived posting balanced to the cent on the DEFAULT seed, refusals honest.'
     : '🔴 W-POS-LIVE FAIL'));
   await br.close(); server.close();
   process.exit(pass ? 0 : 1);

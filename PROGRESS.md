@@ -4,15 +4,17 @@
 
 ## Current State
 
-**▶ 2026-07-03 — POS/Kitchen lane: Fable5 threads ✅ SHIPPED (bim-ootb #617 + bim-compiler #19 both MERGED).**
-Kitchen Display BUILT: queue = FOLD over the op log (open C- deliver-later shipments, oldest-first), serve =
-pos_core's own `completeShipmentOps` — zero new business verbs; `kitchen_core.js` (truth: `build/erp/`,
-mirror: bim-ootb `erp/`) + `kitchen_lens.js` + pill (pos-station gated) + sw v757. Witnesses W-KDS-QUEUE
-12/12 + W-KDS-LIVE real-user path (ring→deliver-later→ticket qty-maths→Serve chainOk=Y→empty) + W-POS-LIVE
-regression PASS. POS HMI restyled onto the app slate/blue baseline (109 token swaps, all extracted; replenish
-rows now 12px stylesheet classes). STILL OPEN on this lane: Thread-1 steps 1-5 (staged replenishment
-review + QtyBatchSize + PO-vs-Move routing — Opus, spec ready in §DESIGN) · Thread-3 E-Invoice ⛔ behind the
-7-box research gate. Spec + closeout: `prompts/RESUME_POS_KITCHEN_EINVOICE_OPS_PANELS.md`.
+**▶ 2026-07-03 — POS/Kitchen lane: Thread-1 staged replenishment ✅ SHIPPED (bim-ootb #619 + bc #22 MERGED)**
+(post-crash resume session; Kitchen Display + POS restyle were already shipped #617/#19 — see prompt file).
+"Generate Replenishment" is now the traditional propose→stage→review/edit→route→commit: pos_core QtyBatchSize
+ceil-rounding + `routeReplenishment` (M_WarehouseSource_ID→Move / absent→PO) + `buildReplenishMove` via the
+same buildDoc archetype (newVerbs=[]); lens auto-fire retired → explicit button + EDITABLE staging list +
+ONE signed commitGroup (PO per wh+vendor, Move per source wh) + gid-linked pendingInbound fold (re-generate
+proposes only the remainder — no double order, witnessed 25−3=22 to the unit). erp sw v758. Witnesses:
+W-REPLEN-STAGE 11/11 + W-REPLEN-LIVE real-user path PASS + W-POS-LIVE/W-KDS-LIVE + 13 headless re-run green
+(only pre-existing red: docs-branch `poc_pos_eoda`, fails identically on the old core — not this lane).
+STILL OPEN on this lane: Thread-3 E-Invoice ⛔ behind the 7-box research gate (Sonnet+user dialogue, not
+coding). Spec + closeout: `prompts/RESUME_POS_KITCHEN_EINVOICE_OPS_PANELS.md` §T1-SPEC (now tracked in git).
 
 **▶ 2026-07-03 — Modeller competitive-polish: §FABLE5-NOW ✅ ALL 10 SHIPPED (bim-ootb PR #616 merged).**
 Outliner⇄canvas made symmetric (hover both ways, multi-select tints + ctrl-click rows), geomap seed-audit
