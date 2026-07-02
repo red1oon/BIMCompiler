@@ -1462,3 +1462,33 @@ new "Payroll — payslip" / "Leave — balance & statement" / "Tenancy — AD co
 screenshot. Not done: recapturing the intro `hba_fm_drawer.png` screenshot against a live 8-lens HHS session
 (still shows the old 5-lens drawer) — flagged inline in the guide with a footnote instead of a stale/misleading
 silent gap.
+
+## 🔎 2026-07-02 NIGHT — watchdog quality-review pass (independent re-read, no code changes)
+
+Mechanism is solid, plainly: `erpLink()`/`AD_WINDOWS` (`hba_lens.js:453-469`) and all 5 panes use the identical
+defensive idiom (null-check the real PK AND null-check `HBALens.erpLink` exists before appending the `<a>`) —
+a missing/unresolved record never produces a dead link, matches the guide's claim verbatim. No TODO/FIXME
+anywhere. Four small gaps, sized and assigned (per [[feedback_model_allocation_mastermind_vs_execution]]):
+
+1. **Hardcoded `client=garden` tenant string** (`hba_lens.js:468`, inherited unchanged from `navigate_find.js`'s
+   precedent) + the 5 numeric `AD_Window_ID`s in `AD_WINDOWS` are coupled to this one demo tenant/schema with
+   no re-validation if it ever changes. Not urgent (single-tenant demo today) but worth a one-line comment
+   flagging the coupling so a future multi-tenant session doesn't get silently misroutes. **Assign: Fable5.**
+2. **`docs/img/hba_iot_billing_link.png` under-shows its own claim** — the billing table always renders 6 rows
+   (`hr_bim_asset/iot.js:74-87`, one per sensor) but the screenshot is cropped to show only 4 (Solar/Electrical
+   cut off), which could wrongly read as "only 4 of 6 sensors bill." **Assign: Fable5** (recapture scrolled to
+   show all 6, or caption "first four shown").
+3. **No mobile/narrow-viewport story anywhere** — all 5 panes use fixed pixel widths (`hba_payslip.js:75`
+   width:340px, `hba_tenancy.js:39` width:380px) anchored `right:12px`, no `@media` query found in any
+   `hba_*.js`, and it's never stated as an explicit desktop-only non-goal in this spec — it's just silent. On a
+   phone-width viewport these panes will overflow. **Assign: Sonnet first** (is mobile actually in scope for
+   this feature, or should the spec just say "desktop-only" and close the gap that way) **→ Fable5** to either
+   write the non-goal note, or (if in scope) hand a real responsive pass to **Opus** (5 panes need consistent
+   cross-file layout treatment, more than a one-file mechanical fix).
+4. **Three screenshots (`hba_payslip.png`, `hba_leave.png`, `hba_tenancy.png`) show a near-empty 3D backdrop**
+   behind the drawer (bare wireframe quad, no visible building), and "Human-Asset" header text is partially
+   occluded by the pane in 2 of 3 — legible and functionally fine, but could read as "the model failed to
+   load" to a first-time viewer. **Assign: Fable5** (recapture with a populated scene, or reposition the pane).
+
+The Leave "indirect link" (→ payroll concept, not a native table) reads clearly on a first pass in the guide —
+explained twice, framed as honesty not inconsistency. **No fix needed there.**
