@@ -28,6 +28,15 @@ spec `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md` — likely also the real 
 fragments.** Still open: (3) proximity-clustering-as-BOM design call (user go-ahead needed, unchanged).
 Spec: `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`.
 
+**▶ HR_BIM_Asset (bim-ootb Viewer) — §P10d ✅ DONE+LIVE 2026-07-02** (PR #609/#611/#612). `lane/hr-overlay` merged
+to main — surfaced + resolved a real duplicate-lineage collision with PR #592 (two independent sessions had
+built the same module; verified `lane/hr-overlay` was a strict superset, kept its content). Live: real ContaCam
+CCTV still (6 distinct crops), animated per-sensor colored horizontal bars (Bonsai federation/river-inspired,
+replaces static charts), fly-to-zone bug fixed (instanced/batched meshes weren't resolved — same class of bug
+`setTint` already had fixed), pill tooltip fix (was showing internal id). **⛔ §P11 QUEUED, next session:**
+deep-link Dashboard (Resource/Employee Payroll) + IoT billing (Order/Line) into `erp/idempiere.html`, reusing
+`navigate_find.js`'s existing deep-link pattern. Spec: `prompts/RESUME_HR_BIM_ASSET.md` §P10d/§P11.
+
 **Gate:** `./scripts/run_RosettaStones.sh` — S190 fleet: 116/157 PASS, 4 ALL GREEN (BR,MO,RL,WI). 21 buildings, 9-gate system.
 
 | PFX | EL | GATES | Notes |
