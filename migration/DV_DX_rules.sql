@@ -1,15 +1,59 @@
 -- ════════════════════════════════════════════════════════
 -- DX: Duplex (Duplex)
 -- Source: DAGCompiler/lib/output/duplex.db
--- Generated: 2026-05-02 11:15
+-- Generated: 2026-06-22 23:00
 -- ════════════════════════════════════════════════════════
 
 -- §1: Structural dimensions per (ifc_class, storey)
 -- Use: identify typical element sizes for validation rules
 
+-- ifc_class             storey   cnt  avg_W_mm  avg_D_mm  avg_H_mm  min_W_mm  max_W_mm
+-- --------------------  -------  ---  --------  --------  --------  --------  --------
+-- IfcFlowTerminal       ROOM L1  60   270.0     253.0     207.0     70.0      1200.0  
+-- IfcFlowTerminal       ROOM L2  54   272.0     261.0     159.0     70.0      1200.0  
+-- IfcOpeningElement     Unknown  50   883.0     683.0     1661.0    124.0     4835.0  
+-- IfcFurnishingElement  Level 1  41   1259.0    639.0     655.0     475.0     4024.0  
+-- IfcWallStandardCase   Level 2  24   1541.0    2561.0    2004.0    54.0      8800.0  
+-- IfcWallStandardCase   Level 1  21   2079.0    3027.0    2704.0    124.0     8800.0  
+-- IfcFurnishingElement  Level 2  20   936.0     826.0     1213.0    475.0     2007.0  
+-- IfcWindow             Level 2  18   816.0     853.0     1286.0    417.0     2800.0  
+-- IfcSlab               Level 1  10   5799.0    5480.0    64.0      1456.0    7966.0  
+-- IfcSlab               Level 2  10   2947.0    7834.0    75.0      1524.0    3708.0  
+-- IfcCovering           Level 2  8    2750.0    5490.0    57.0      1619.0    3708.0  
+-- IfcDoor               Level 2  8    780.0     385.0     2108.0    174.0     1016.0  
+-- IfcFooting            T/FDN    7    3721.0    5924.0    300.0     900.0     8383.0  
+-- IfcWallStandardCase   T/FDN    7    3836.0    5403.0    1232.0    417.0     8800.0  
+-- IfcDoor               Level 1  6    535.0     928.0     2230.0    174.0     965.0   
+-- IfcCovering           Level 1  5    4117.0    4952.0    57.0      1551.0    7966.0  
+-- IfcBeam               Level 1  4    3192.0    3800.0    355.0     203.0     6182.0  
+-- IfcBeam               Level 2  4    2139.0    2150.0    407.0     178.0     4100.0  
+-- IfcMember             Unknown  4    50.0      3750.0    3100.0    50.0      50.0    
+-- IfcRailing            Unknown  4    65.0      3778.0    3454.0    40.0      90.0    
+-- IfcWallStandardCase   Roof     4    4504.0    8796.0    609.0     417.0     8800.0  
+-- IfcWindow             Level 1  4    2626.0    584.0     2310.0    417.0     4835.0  
+-- IfcStairFlight        Unknown  2    914.0     3772.0    3050.0    914.0     914.0   
+-- IfcWindow             Roof     2    1173.0    1225.0    178.0     1173.0    1173.0  
 
 -- §2: Material distribution
 
+-- ifc_class            material_name                                               cnt
+-- -------------------  ----------------------------------------------------------  ---
+-- IfcWallStandardCase  Basic Wall:Interior - Partition (92mm Stud)                 18 
+-- IfcCovering          Compound Ceiling:Gypsum Board                               13 
+-- IfcWallStandardCase  Basic Wall:Exterior - Brick on Block                        12 
+-- IfcBeam              Metal - Steel - 345 MPa                                     8  
+-- IfcSlab              Floor:Finish Floor - Wood                                   8  
+-- IfcWallStandardCase  Basic Wall:Interior - Furring (38 mm Stud)                  8  
+-- IfcSlab              Floor:Finish Floor - Ceramic Tile                           6  
+-- IfcWallStandardCase  Basic Wall:Interior - Furring (152 mm Stud)                 6  
+-- IfcWallStandardCase  Basic Wall:Foundation - Concrete (417mm)                    4  
+-- IfcWallStandardCase  Basic Wall:Foundation - Concrete (435mm)                    3  
+-- IfcWallStandardCase  Basic Wall:Party Wall - CMU Residential Unit Dimising Wall  3  
+-- IfcSlab              Floor:127mm Slab on Grade                                   2  
+-- IfcSlab              Floor:150mm Exterior Slab on Grade                          2  
+-- IfcSlab              Floor:Residential - Wood Joist with Subflooring             2  
+-- IfcWallStandardCase  Basic Wall:Interior - Plumbing (152mm Stud)                 2  
+-- IfcWall              Basic Wall:Party Wall - CMU Residential Unit Dimising Wall  1  
 
 -- §3: Spacing patterns (adjacent element gaps)
 -- Elements of the same ifc_class on the same storey, sorted by X
@@ -17,8 +61,314 @@
 
 -- §4: IFC class inventory
 
+-- ifc_class             discipline  cnt
+-- --------------------  ----------  ---
+-- IfcFlowTerminal       ELEC        73 
+-- IfcFurnishingElement  ARC         61 
+-- IfcWallStandardCase   STR         56 
+-- IfcOpeningElement     ARC         50 
+-- IfcWindow             ARC         24 
+-- IfcSlab               STR         21 
+-- IfcDoor               ARC         14 
+-- IfcCovering           ARC         13 
+-- IfcFlowTerminal       ACMV        13 
+-- IfcFlowTerminal       FP          13 
+-- IfcFlowTerminal       CW          10 
+-- IfcBeam               STR         8  
+-- IfcFooting            STR         7  
+-- IfcFlowTerminal       SP          5  
+-- IfcMember             STR         4  
+-- IfcRailing            ARC         4  
+-- IfcStairFlight        ARC         2  
+-- IfcWall               STR         1  
 
 -- §5: Candidate validation rules for ERP.db
 -- Review and adjust before applying. Rule IDs are placeholders.
+
+-- Rule: IfcFlowTerminal_ROOM_L1 (60 instances, avg 270.0x253.0x207.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcFlowTerminal_ROOM_L1', 'IfcFlowTerminal', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcFlowTerminal on ROOM L1: 60 instances, avg W=270.0 D=253.0 H=207.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '270.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '253.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '207.0');
+
+-- Rule: IfcFlowTerminal_ROOM_L2 (54 instances, avg 272.0x261.0x159.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcFlowTerminal_ROOM_L2', 'IfcFlowTerminal', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcFlowTerminal on ROOM L2: 54 instances, avg W=272.0 D=261.0 H=159.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '272.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '261.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '159.0');
+
+-- Rule: IfcOpeningElement_Unknown (50 instances, avg 883.0x683.0x1661.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcOpeningElement_Unknown', 'IfcOpeningElement', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcOpeningElement on Unknown: 50 instances, avg W=883.0 D=683.0 H=1661.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '883.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '683.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1661.0');
+
+-- Rule: IfcFurnishingElement_Level_1 (41 instances, avg 1259.0x639.0x655.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcFurnishingElement_Level_1', 'IfcFurnishingElement', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcFurnishingElement on Level 1: 41 instances, avg W=1259.0 D=639.0 H=655.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1259.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '639.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '655.0');
+
+-- Rule: IfcWallStandardCase_Level_2 (24 instances, avg 1541.0x2561.0x2004.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_Level_2', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on Level 2: 24 instances, avg W=1541.0 D=2561.0 H=2004.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1541.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '2561.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2004.0');
+
+-- Rule: IfcWallStandardCase_Level_1 (21 instances, avg 2079.0x3027.0x2704.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_Level_1', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on Level 1: 21 instances, avg W=2079.0 D=3027.0 H=2704.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '2079.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '3027.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2704.0');
+
+-- Rule: IfcFurnishingElement_Level_2 (20 instances, avg 936.0x826.0x1213.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcFurnishingElement_Level_2', 'IfcFurnishingElement', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcFurnishingElement on Level 2: 20 instances, avg W=936.0 D=826.0 H=1213.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '936.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '826.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1213.0');
+
+-- Rule: IfcWindow_Level_2 (18 instances, avg 816.0x853.0x1286.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWindow_Level_2', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWindow on Level 2: 18 instances, avg W=816.0 D=853.0 H=1286.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '816.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '853.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1286.0');
+
+-- Rule: IfcSlab_Level_1 (10 instances, avg 5799.0x5480.0x64.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcSlab_Level_1', 'IfcSlab', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcSlab on Level 1: 10 instances, avg W=5799.0 D=5480.0 H=64.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '5799.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '5480.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '64.0');
+
+-- Rule: IfcSlab_Level_2 (10 instances, avg 2947.0x7834.0x75.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcSlab_Level_2', 'IfcSlab', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcSlab on Level 2: 10 instances, avg W=2947.0 D=7834.0 H=75.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '2947.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '7834.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '75.0');
+
+-- Rule: IfcCovering_Level_2 (8 instances, avg 2750.0x5490.0x57.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcCovering_Level_2', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcCovering on Level 2: 8 instances, avg W=2750.0 D=5490.0 H=57.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '2750.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '5490.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '57.0');
+
+-- Rule: IfcDoor_Level_2 (8 instances, avg 780.0x385.0x2108.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcDoor_Level_2', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcDoor on Level 2: 8 instances, avg W=780.0 D=385.0 H=2108.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '780.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '385.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2108.0');
+
+-- Rule: IfcFooting_T/FDN (7 instances, avg 3721.0x5924.0x300.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcFooting_T/FDN', 'IfcFooting', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcFooting on T/FDN: 7 instances, avg W=3721.0 D=5924.0 H=300.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '3721.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '5924.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '300.0');
+
+-- Rule: IfcWallStandardCase_T/FDN (7 instances, avg 3836.0x5403.0x1232.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_T/FDN', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on T/FDN: 7 instances, avg W=3836.0 D=5403.0 H=1232.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '3836.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '5403.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1232.0');
+
+-- Rule: IfcDoor_Level_1 (6 instances, avg 535.0x928.0x2230.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcDoor_Level_1', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcDoor on Level 1: 6 instances, avg W=535.0 D=928.0 H=2230.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '535.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '928.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2230.0');
+
+-- Rule: IfcCovering_Level_1 (5 instances, avg 4117.0x4952.0x57.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcCovering_Level_1', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcCovering on Level 1: 5 instances, avg W=4117.0 D=4952.0 H=57.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '4117.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '4952.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '57.0');
+
+-- Rule: IfcBeam_Level_1 (4 instances, avg 3192.0x3800.0x355.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcBeam_Level_1', 'IfcBeam', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcBeam on Level 1: 4 instances, avg W=3192.0 D=3800.0 H=355.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '3192.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '3800.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '355.0');
+
+-- Rule: IfcBeam_Level_2 (4 instances, avg 2139.0x2150.0x407.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcBeam_Level_2', 'IfcBeam', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcBeam on Level 2: 4 instances, avg W=2139.0 D=2150.0 H=407.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '2139.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '2150.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '407.0');
+
+-- Rule: IfcMember_Unknown (4 instances, avg 50.0x3750.0x3100.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcMember_Unknown', 'IfcMember', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcMember on Unknown: 4 instances, avg W=50.0 D=3750.0 H=3100.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '50.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '3750.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '3100.0');
+
+-- Rule: IfcRailing_Unknown (4 instances, avg 65.0x3778.0x3454.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcRailing_Unknown', 'IfcRailing', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcRailing on Unknown: 4 instances, avg W=65.0 D=3778.0 H=3454.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '65.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '3778.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '3454.0');
+
+-- Rule: IfcWallStandardCase_Roof (4 instances, avg 4504.0x8796.0x609.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_Roof', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on Roof: 4 instances, avg W=4504.0 D=8796.0 H=609.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '4504.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '8796.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '609.0');
+
+-- Rule: IfcWindow_Level_1 (4 instances, avg 2626.0x584.0x2310.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWindow_Level_1', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWindow on Level 1: 4 instances, avg W=2626.0 D=584.0 H=2310.0mm',
+--     'Duplex');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '2626.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '584.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2310.0');
 
 

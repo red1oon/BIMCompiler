@@ -1,7 +1,7 @@
 -- ════════════════════════════════════════════════════════
 -- SC: Schependomlaan Residential (Schependomlaan)
 -- Source: DAGCompiler/lib/output/schependomlaan.db
--- Generated: 2026-03-31 00:21
+-- Generated: 2026-06-23 07:29
 -- ════════════════════════════════════════════════════════
 
 -- §1: Structural dimensions per (ifc_class, storey)
@@ -9,48 +9,55 @@
 
 -- ifc_class                storey                cnt  avg_W_mm  avg_D_mm  avg_H_mm  min_W_mm  max_W_mm
 -- -----------------------  --------------------  ---  --------  --------  --------  --------  --------
--- IfcCovering              00 begane grond       417  738.0     671.0     1172.0    10.0      11930.0 
--- IfcCovering              02 tweede verdieping  351  872.0     837.0     811.0     10.0      15790.0 
--- IfcCovering              01 eerste verdieping  338  725.0     752.0     842.0     10.0      16856.0 
--- IfcWall                  01 eerste verdieping  252  800.0     749.0     1926.0    68.0      11772.0 
--- IfcCovering              03 derde verdieping   226  1263.0    938.0     1230.0    10.0      17646.0 
--- IfcCovering              04 dak                150  593.0     595.0     75.0      1.0       12320.0 
--- IfcDoor                  00 begane grond       144  803.0     558.0     1394.0    12.0      2936.0  
--- IfcWall                  00 begane grond       138  941.0     909.0     2422.0    70.0      11772.0 
--- IfcDoor                  01 eerste verdieping  114  738.0     704.0     1507.0    12.0      2936.0  
--- IfcDoor                  02 tweede verdieping  102  725.0     694.0     1400.0    12.0      1787.0  
--- IfcWall                  03 derde verdieping   98   1018.0    956.0     1996.0    49.0      5722.0  
--- IfcBeam                  -1 fundering          82   1897.0    1972.0    347.0     150.0     16400.0 
+-- IfcCovering              01 eerste verdieping  334  708.0     761.0     851.0     10.0      16856.0 
+-- IfcBuildingElementPart   Unknown               277  2246.0    2861.0    142.0     8.0       17362.0 
+-- IfcWall                  00 begane grond       270  793.0     760.0     1809.0    70.0      11772.0 
+-- IfcCovering              02 tweede verdieping  264  877.0     766.0     769.0     10.0      15790.0 
+-- IfcCovering              00 begane grond       251  736.0     647.0     1121.0    10.0      6214.0  
+-- IfcWall                  01 eerste verdieping  224  794.0     721.0     1894.0    68.0      11772.0 
+-- IfcCovering              03 derde verdieping   216  1267.0    908.0     1253.0    10.0      17646.0 
+-- IfcCovering              04 dak                148  529.0     705.0     75.0      80.0      12320.0 
+-- IfcWall                  02 tweede verdieping  140  913.0     877.0     1576.0    70.0      15132.0 
+-- IfcWindow                01 eerste verdieping  88   864.0     510.0     1154.0    12.0      1787.0  
+-- IfcWall                  03 derde verdieping   86   975.0     1006.0    1960.0    49.0      5722.0  
+-- IfcSlab                  03 derde verdieping   84   3278.0    3339.0    1134.0    325.0     16000.0 
+-- IfcWindow                00 begane grond       84   584.0     720.0     1169.0    12.0      1286.0  
+-- IfcBeam                  -1 fundering          82   1907.0    1981.0    347.0     150.0     16400.0 
+-- IfcDoor                  00 begane grond       80   981.0     431.0     1740.0    12.0      2936.0  
 -- IfcSlab                  00 begane grond       80   4143.0    2882.0    246.0     505.0     21300.0 
--- IfcWall                  02 tweede verdieping  77   1077.0    1081.0    2409.0    70.0      15132.0 
--- IfcSlab                  03 derde verdieping   74   3643.0    3192.0    1179.0    325.0     16000.0 
--- IfcSlab                  01 eerste verdieping  62   3493.0    3630.0    330.0     3.0       21300.0 
--- IfcWall                  -1 fundering          50   1033.0    941.0     500.0     100.0     12010.0 
--- IfcRailing               01 eerste verdieping  39   411.0     518.0     538.0     20.0      1835.0  
+-- IfcOpeningElement        Unknown               79   884.0     787.0     2078.0    140.0     2860.0  
+-- IfcSlab                  01 eerste verdieping  66   3333.0    3483.0    320.0     3.0       21300.0 
+-- IfcWindow                02 tweede verdieping  66   703.0     618.0     912.0     12.0      1286.0  
+-- IfcDoor                  02 tweede verdieping  50   757.0     784.0     2009.0    45.0      1787.0  
+-- IfcDoor                  01 eerste verdieping  48   536.0     992.0     2301.0    12.0      2936.0  
+-- IfcWall                  -1 fundering          41   993.0     1060.0    510.0     100.0     12010.0 
+-- IfcRailing               01 eerste verdieping  39   413.0     518.0     593.0     20.0      1835.0  
+-- IfcSlab                  02 tweede verdieping  37   4632.0    3849.0    107.0     129.0     16000.0 
 -- IfcBeam                  02 tweede verdieping  36   917.0     2313.0    103.0     80.0      9515.0  
--- IfcSlab                  02 tweede verdieping  31   4964.0    3456.0    95.0      129.0     16000.0 
+-- IfcWallStandardCase      00 begane grond       33   1197.0    1152.0    1509.0    40.0      11930.0 
+-- IfcWallStandardCase      01 eerste verdieping  28   867.0     989.0     2179.0    68.0      5243.0  
 -- IfcDoor                  03 derde verdieping   27   348.0     793.0     2415.0    45.0      1028.0  
 -- IfcRailing               02 tweede verdieping  26   1101.0    256.0     406.0     42.0      1835.0  
 -- IfcBeam                  00 begane grond       24   800.0     739.0     158.0     90.0      2000.0  
--- IfcFlowSegment           01 eerste verdieping  24   106.0     119.0     1326.0    80.0      242.0   
 -- IfcBeam                  01 eerste verdieping  22   664.0     1023.0    158.0     90.0      3204.0  
--- IfcWindow                01 eerste verdieping  22   804.0     559.0     1825.0    114.0     1715.0  
--- IfcFlowSegment           02 tweede verdieping  21   112.0     87.0      742.0     80.0      189.0   
 -- IfcRailing               03 derde verdieping   21   976.0     178.0     243.0     42.0      1406.0  
--- IfcWindow                00 begane grond       20   596.0     715.0     1838.0    114.0     1210.0  
--- IfcWall                  04 dak                16   1634.0    1056.0    730.0     74.0      3328.0  
+-- IfcWallStandardCase      02 tweede verdieping  18   802.0     972.0     2523.0    70.0      3200.0  
 -- IfcWindow                03 derde verdieping   16   908.0     376.0     1872.0    114.0     1530.0  
--- IfcFlowSegment           00 begane grond       15   81.0      136.0     2569.0    80.0      86.0    
--- IfcWindow                02 tweede verdieping  14   739.0     661.0     1273.0    114.0     1210.0  
+-- IfcWall                  04 dak                14   1419.0    1016.0    649.0     1.0       3328.0  
 -- IfcBuildingElementProxy  00 begane grond       12   397.0     333.0     360.0     135.0     1000.0  
+-- IfcWallStandardCase      03 derde verdieping   12   1327.0    592.0     2254.0    214.0     3349.0  
 -- IfcSlab                  04 dak                11   6165.0    3435.0    92.0      2816.0    13240.0 
--- IfcColumn                03 derde verdieping   10   787.0     220.0     1459.0    220.0     1353.0  
 -- IfcBeam                  04 dak                9    2969.0    2693.0    218.0     220.0     11650.0 
+-- IfcDistributionElement   02 tweede verdieping  9    142.0     816.0     60.0      63.0      740.0   
+-- IfcWallStandardCase      -1 fundering          9    1248.0    431.0     453.0     100.0     2860.0  
 -- IfcColumn                02 tweede verdieping  8    111.0     111.0     973.0     110.0     113.0   
 -- IfcColumn                00 begane grond       5    94.0      94.0      3424.0    80.0      152.0   
--- IfcColumn                01 eerste verdieping  5    98.0      100.0     2381.0    80.0      171.0   
+-- IfcMember                03 derde verdieping   5    1353.0    220.0     2650.0    1353.0    1353.0  
 -- IfcWindow                04 dak                5    1193.0    1193.0    535.0     1193.0    1193.0  
+-- IfcColumn                01 eerste verdieping  4    80.0      80.0      2720.0    80.0      80.0    
+-- IfcDistributionElement   00 begane grond       4    830.0     206.0     105.0     830.0     830.0   
 -- IfcRailing               00 begane grond       4    1387.0    86.0      1892.0    42.0      1835.0  
+-- IfcWallStandardCase      04 dak                4    1571.0    904.0     690.0     214.0     2928.0  
 -- IfcMember                01 eerste verdieping  3    797.0     127.0     1484.0    268.0     1159.0  
 -- IfcStair                 00 begane grond       3    1747.0    1639.0    1135.0    1570.0    1835.0  
 -- IfcStair                 01 eerste verdieping  3    1747.0    1639.0    1135.0    1570.0    1835.0  
@@ -58,6 +65,116 @@
 
 -- §2: Material distribution
 
+-- ifc_class                material_name                                   cnt
+-- -----------------------  ----------------------------------------------  ---
+-- IfcCovering              02 Beton ongewapend                             223
+-- IfcWall                  03 mw-baksteen - bruin (liggend)                202
+-- IfcCovering              99 Isolatie - Glaswol 115mm                     180
+-- IfcWall                  99 Lichte scheidingswand - normaal              163
+-- IfcWall                  03 Metselwerk - kalkzandsteen C                 127
+-- IfcCovering              99 Isolatie - PIR 74mm                          119
+-- IfcCovering              wandtegels 250x200                              110
+-- IfcCovering              02 Beton gewapend - prefab                      108
+-- IfcBuildingElementPart   01 Hout - dak                                   100
+-- IfcCovering              99 Brandwering                                  99 
+-- IfcCovering              04 Zink                                         95 
+-- IfcBeam                  02 Beton gewapend - ihw                         82 
+-- IfcWall                  03 mw-baksteen - bruin (staand)                 81 
+-- IfcCovering              01 plaatmateriaal - platsica 10mm               63 
+-- IfcWindow                305 loofhout (02)                               63 
+-- IfcCovering              11 Natuursteen AFW                              59 
+-- IfcBuildingElementPart   01 Hout - vloer                                 55 
+-- IfcRailing               05 Staal - RAL 7016                             53 
+-- IfcBeam                  05 Staal - RAL 7016                             50 
+-- IfcWall                  03 mw-baksteen - geel (staand)                  45 
+-- IfcSlab                  IFC_breedplaat_schil_60mm                       44 
+-- IfcSlab                  IFC_vloer_geisoleerde_kanaalplaat_Rc=3,00       43 
+-- IfcBuildingElementPart   04 Zink                                         40 
+-- IfcCovering              01 plaatmateriaal - multiplex                   37 
+-- IfcWall                  01 plaatmateriaal - gipsvezelplaat              36 
+-- IfcCovering              Metaal - Aluminium                              34 
+-- IfcBeam                  033 - constructief staal                        32 
+-- IfcWall                  01 plaatmateriaal - spaanplaat - wit knieschot  32 
+-- IfcSlab                  99 Isolatie - zwevende dekvloer                 30 
+-- IfcWall                  01 plaatmateriaal - spaanplaat - wit            30 
+-- IfcSlab                  99 Lucht frame                                  29 
+-- IfcBuildingElementPart   01 plaatmateriaal - underlayment                27 
+-- IfcSlab                  01 plaatmateriaal - spaanplaat - wit            26 
+-- IfcSlab                  24 Cementdekvloer 90mm                          26 
+-- IfcWallStandardCase      IFC_kalkzandsteen_214mm                         25 
+-- IfcSlab                  IFC_dekvloer_zwevend                            22 
+-- IfcWall                  01 plaatmateriaal - multiplex                   22 
+-- IfcWall                  03 mw-baksteen - geel (liggend)                 22 
+-- IfcWallStandardCase      IFC_kalkzandsteen_300mm                         20 
+-- IfcBuildingElementPart   99 Lucht frame                                  18 
+-- IfcCovering              01 Hout C                                       16 
+-- IfcDoor                  305 loofhout (02)                               16 
+-- IfcCovering              12 Coramic 301 - leipan                         14 
+-- IfcDoor                  Lege arcering (2)                               14 
+-- IfcRailing               08 Glas hekwerk                                 14 
+-- IfcDistributionElement   Metaal - Aluminium                              13 
+-- IfcRailing               05 Staal C                                      13 
+-- IfcBuildingElementPart   Metaal - Aluminium                              12 
+-- IfcWallStandardCase      IFC_kalkzandsteen_175mm                         12 
+-- IfcBuildingElementProxy  Metaal - Aluminium                              11 
+-- IfcSlab                  02 Beton gewapend - prefab                      11 
+-- IfcWallStandardCase      IFC_kalkzandsteen_100mm                         11 
+-- IfcBuildingElementPart   01 Hout - boeideel dakrand                      10 
+-- IfcCovering              01 Hout - vloer                                 10 
+-- IfcCovering              01 plaatmateriaal - underlayment                10 
+-- IfcRailing               05 Staal_bordes_hoeklijnen                      10 
+-- IfcBuildingElementPart   99 Isolatie - Glaswol 190mm                     9  
+-- IfcColumn                033 - constructief staal                        9  
+-- IfcCovering              vloertegels 200x200                             9  
+-- IfcMember                033 - constructief staal                        9  
+-- IfcStair                 02 Beton gewapend - prefab                      9  
+-- IfcWallStandardCase      IFC_baksteen_roodbruin_100mm_staand             9  
+-- IfcColumn                05 Staal - RAL 7016                             8  
+-- IfcCovering              99 Isolatie - Glaswol 170mm                     8  
+-- IfcSlab                  99 Isolatie - EPS                               7  
+-- IfcWallStandardCase      IFC_kalkzandsteen_120mm                         7  
+-- IfcBeam                  05 Staal_bordes_hoeklijnen                      6  
+-- IfcBuildingElementPart   01 plaatmateriaal - multiplex                   6  
+-- IfcCovering              99 Isolatie - Glaswol 190mm                     6  
+-- IfcSlab                  02 Beton gewapend - ihw VLOER                   6  
+-- IfcSlab                  99 Isolatie - Glaswol 170mm                     6  
+-- IfcWall                  03 Metselwerk - cellenbeton                     6  
+-- IfcCovering              01 plaatmateriaal - promatect brandwerend       5  
+-- IfcWallStandardCase      IFC_dakkapel_zijwang                            5  
+-- IfcBeam                  02 Beton gewapend - prefab                      4  
+-- IfcCovering              99 Isolatie - PIR 120mm                         4  
+-- IfcSlab                  01 plaatmateriaal - spaanplaat                  4  
+-- IfcSlab                  IFC_vloer_EPS_stortstrook_Rc=3,00               4  
+-- IfcWall                  99 Isolatie - PIR 74mm                          4  
+-- IfcWallStandardCase      IFC_baksteen_kopergeel_100mm_liggend            4  
+-- IfcWindow                Lege arcering (2)                               4  
+-- IfcCovering              26 Gipsplaat                                    3  
+-- IfcSlab                  01 plaatmateriaal - multiplex 18                3  
+-- IfcSlab                  99 Isolatie - Glaswol 115mm                     3  
+-- IfcSlab                  99 Isolatie - Glaswol 190mm                     3  
+-- IfcWallStandardCase      IFC_separatiewand_gasbeton_70mm                 3  
+-- IfcSlab                  IFC_isolatie_110mm_glaswol                      2  
+-- IfcSlab                  IFC_verlaagd_plafond                            2  
+-- IfcWall                  04 Zink                                         2  
+-- IfcWall                  99 Lichte scheidingswand - gipsblokken          2  
+-- IfcWallStandardCase      IFC_baksteen_kopergeel_100mm_staand             2  
+-- IfcWallStandardCase      IFC_baksteen_roodbruin_100mm_liggend            2  
+-- IfcBuildingElementProxy  01 Hout - hardhout                              1  
+-- IfcBuildingElementProxy  Lege arcering (2)                               1  
+-- IfcCovering              99 Isolatie - EPS                               1  
+-- IfcSlab                  02 Beton gewapend - ihw                         1  
+-- IfcSlab                  02 Beton ongewapend                             1  
+-- IfcSlab                  04 Zink                                         1  
+-- IfcSlab                  12 Keramisch - vloertegel                       1  
+-- IfcSlab                  99 Isolatie - PIR 120mm                         1  
+-- IfcSlab                  IFC schoonloopmat                               1  
+-- IfcSlab                  IFC_betonvloer_prefab_200mm                     1  
+-- IfcSlab                  IFC_dakplaat_geisoleerd_Rc=4,00                 1  
+-- IfcWall                  99 Isolatie - Glaswol 190mm                     1  
+-- IfcWallStandardCase      IFC_gipsblokken_70mm                            1  
+-- IfcWallStandardCase      IFC_kozijn_90x114                               1  
+-- IfcWallStandardCase      IFC_separatiewand_gasbeton_100mm                1  
+-- IfcWallStandardCase      IFC_separatiewand_gasbeton_100mm_hydro          1  
 
 -- §3: Spacing patterns (adjacent element gaps)
 -- Elements of the same ifc_class on the same storey, sorted by X
@@ -67,178 +184,219 @@
 
 -- ifc_class                discipline  cnt 
 -- -----------------------  ----------  ----
--- IfcCovering              ARC         1482
--- IfcWall                  STR         631 
--- IfcDoor                  ARC         387 
--- IfcSlab                  STR         259 
+-- IfcCovering              ARC         1213
+-- IfcWall                  STR         775 
+-- IfcSlab                  STR         279 
+-- IfcBuildingElementPart   ARC         277 
+-- IfcWindow                ARC         259 
+-- IfcDoor                  ARC         205 
 -- IfcBeam                  STR         174 
+-- IfcWallStandardCase      STR         104 
 -- IfcRailing               ARC         90  
--- IfcWindow                ARC         77  
--- IfcFlowSegment           ARC         40  
--- IfcColumn                STR         28  
--- IfcFlowSegment           MEP         20  
+-- IfcOpeningElement        ARC         79  
+-- IfcColumn                STR         17  
 -- IfcBuildingElementProxy  ARC         13  
+-- IfcDistributionElement   ARC         13  
+-- IfcMember                STR         9   
 -- IfcStair                 ARC         9   
--- IfcMember                STR         4   
 
 -- §5: Candidate validation rules for ERP.db
 -- Review and adjust before applying. Rule IDs are placeholders.
 
--- Rule: IfcCovering_00_begane_grond (417 instances, avg 738.0x671.0x1172.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcCovering_00_begane_grond', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcCovering on 00 begane grond: 417 instances, avg W=738.0 D=671.0 H=1172.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '738.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '671.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1172.0');
-
--- Rule: IfcCovering_02_tweede_verdieping (351 instances, avg 872.0x837.0x811.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcCovering_02_tweede_verdieping', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcCovering on 02 tweede verdieping: 351 instances, avg W=872.0 D=837.0 H=811.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '872.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '837.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '811.0');
-
--- Rule: IfcCovering_01_eerste_verdieping (338 instances, avg 725.0x752.0x842.0 mm)
+-- Rule: IfcCovering_01_eerste_verdieping (334 instances, avg 708.0x761.0x851.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
 -- VALUES ('IfcCovering_01_eerste_verdieping', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcCovering on 01 eerste verdieping: 338 instances, avg W=725.0 D=752.0 H=842.0mm',
+--     'IfcCovering on 01 eerste verdieping: 334 instances, avg W=708.0 D=761.0 H=851.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '725.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '708.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '752.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '761.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '842.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '851.0');
 
--- Rule: IfcWall_01_eerste_verdieping (252 instances, avg 800.0x749.0x1926.0 mm)
+-- Rule: IfcBuildingElementPart_Unknown (277 instances, avg 2246.0x2861.0x142.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcWall_01_eerste_verdieping', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWall on 01 eerste verdieping: 252 instances, avg W=800.0 D=749.0 H=1926.0mm',
+-- VALUES ('IfcBuildingElementPart_Unknown', 'IfcBuildingElementPart', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcBuildingElementPart on Unknown: 277 instances, avg W=2246.0 D=2861.0 H=142.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '800.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '2246.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '749.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '2861.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1926.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '142.0');
 
--- Rule: IfcCovering_03_derde_verdieping (226 instances, avg 1263.0x938.0x1230.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcCovering_03_derde_verdieping', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcCovering on 03 derde verdieping: 226 instances, avg W=1263.0 D=938.0 H=1230.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '1263.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '938.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1230.0');
-
--- Rule: IfcCovering_04_dak (150 instances, avg 593.0x595.0x75.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcCovering_04_dak', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcCovering on 04 dak: 150 instances, avg W=593.0 D=595.0 H=75.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '593.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '595.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '75.0');
-
--- Rule: IfcDoor_00_begane_grond (144 instances, avg 803.0x558.0x1394.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcDoor_00_begane_grond', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcDoor on 00 begane grond: 144 instances, avg W=803.0 D=558.0 H=1394.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '803.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '558.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1394.0');
-
--- Rule: IfcWall_00_begane_grond (138 instances, avg 941.0x909.0x2422.0 mm)
+-- Rule: IfcWall_00_begane_grond (270 instances, avg 793.0x760.0x1809.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
 -- VALUES ('IfcWall_00_begane_grond', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWall on 00 begane grond: 138 instances, avg W=941.0 D=909.0 H=2422.0mm',
+--     'IfcWall on 00 begane grond: 270 instances, avg W=793.0 D=760.0 H=1809.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '941.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '793.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '909.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '760.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '2422.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1809.0');
 
--- Rule: IfcDoor_01_eerste_verdieping (114 instances, avg 738.0x704.0x1507.0 mm)
+-- Rule: IfcCovering_02_tweede_verdieping (264 instances, avg 877.0x766.0x769.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcDoor_01_eerste_verdieping', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcDoor on 01 eerste verdieping: 114 instances, avg W=738.0 D=704.0 H=1507.0mm',
+-- VALUES ('IfcCovering_02_tweede_verdieping', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcCovering on 02 tweede verdieping: 264 instances, avg W=877.0 D=766.0 H=769.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '738.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '877.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '704.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '766.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1507.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '769.0');
 
--- Rule: IfcDoor_02_tweede_verdieping (102 instances, avg 725.0x694.0x1400.0 mm)
+-- Rule: IfcCovering_00_begane_grond (251 instances, avg 736.0x647.0x1121.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcDoor_02_tweede_verdieping', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcDoor on 02 tweede verdieping: 102 instances, avg W=725.0 D=694.0 H=1400.0mm',
+-- VALUES ('IfcCovering_00_begane_grond', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcCovering on 00 begane grond: 251 instances, avg W=736.0 D=647.0 H=1121.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '725.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '736.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '694.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '647.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1400.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1121.0');
 
--- Rule: IfcWall_03_derde_verdieping (98 instances, avg 1018.0x956.0x1996.0 mm)
+-- Rule: IfcWall_01_eerste_verdieping (224 instances, avg 794.0x721.0x1894.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWall_01_eerste_verdieping', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWall on 01 eerste verdieping: 224 instances, avg W=794.0 D=721.0 H=1894.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '794.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '721.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1894.0');
+
+-- Rule: IfcCovering_03_derde_verdieping (216 instances, avg 1267.0x908.0x1253.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcCovering_03_derde_verdieping', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcCovering on 03 derde verdieping: 216 instances, avg W=1267.0 D=908.0 H=1253.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1267.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '908.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1253.0');
+
+-- Rule: IfcCovering_04_dak (148 instances, avg 529.0x705.0x75.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcCovering_04_dak', 'IfcCovering', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcCovering on 04 dak: 148 instances, avg W=529.0 D=705.0 H=75.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '529.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '705.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '75.0');
+
+-- Rule: IfcWall_02_tweede_verdieping (140 instances, avg 913.0x877.0x1576.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWall_02_tweede_verdieping', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWall on 02 tweede verdieping: 140 instances, avg W=913.0 D=877.0 H=1576.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '913.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '877.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1576.0');
+
+-- Rule: IfcWindow_01_eerste_verdieping (88 instances, avg 864.0x510.0x1154.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWindow_01_eerste_verdieping', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWindow on 01 eerste verdieping: 88 instances, avg W=864.0 D=510.0 H=1154.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '864.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '510.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1154.0');
+
+-- Rule: IfcWall_03_derde_verdieping (86 instances, avg 975.0x1006.0x1960.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
 -- VALUES ('IfcWall_03_derde_verdieping', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWall on 03 derde verdieping: 98 instances, avg W=1018.0 D=956.0 H=1996.0mm',
+--     'IfcWall on 03 derde verdieping: 86 instances, avg W=975.0 D=1006.0 H=1960.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '1018.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '975.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '956.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '1006.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1996.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1960.0');
 
--- Rule: IfcBeam_-1_fundering (82 instances, avg 1897.0x1972.0x347.0 mm)
+-- Rule: IfcSlab_03_derde_verdieping (84 instances, avg 3278.0x3339.0x1134.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcSlab_03_derde_verdieping', 'IfcSlab', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcSlab on 03 derde verdieping: 84 instances, avg W=3278.0 D=3339.0 H=1134.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '3278.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '3339.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1134.0');
+
+-- Rule: IfcWindow_00_begane_grond (84 instances, avg 584.0x720.0x1169.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWindow_00_begane_grond', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWindow on 00 begane grond: 84 instances, avg W=584.0 D=720.0 H=1169.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '584.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '720.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1169.0');
+
+-- Rule: IfcBeam_-1_fundering (82 instances, avg 1907.0x1981.0x347.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
 -- VALUES ('IfcBeam_-1_fundering', 'IfcBeam', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcBeam on -1 fundering: 82 instances, avg W=1897.0 D=1972.0 H=347.0mm',
+--     'IfcBeam on -1 fundering: 82 instances, avg W=1907.0 D=1981.0 H=347.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '1897.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1907.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '1972.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '1981.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '347.0');
+
+-- Rule: IfcDoor_00_begane_grond (80 instances, avg 981.0x431.0x1740.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcDoor_00_begane_grond', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcDoor on 00 begane grond: 80 instances, avg W=981.0 D=431.0 H=1740.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '981.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '431.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1740.0');
 
 -- Rule: IfcSlab_00_begane_grond (80 instances, avg 4143.0x2882.0x246.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -253,70 +411,109 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '246.0');
 
--- Rule: IfcWall_02_tweede_verdieping (77 instances, avg 1077.0x1081.0x2409.0 mm)
+-- Rule: IfcOpeningElement_Unknown (79 instances, avg 884.0x787.0x2078.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcWall_02_tweede_verdieping', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWall on 02 tweede verdieping: 77 instances, avg W=1077.0 D=1081.0 H=2409.0mm',
+-- VALUES ('IfcOpeningElement_Unknown', 'IfcOpeningElement', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcOpeningElement on Unknown: 79 instances, avg W=884.0 D=787.0 H=2078.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '1077.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '884.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '1081.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '787.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '2409.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2078.0');
 
--- Rule: IfcSlab_03_derde_verdieping (74 instances, avg 3643.0x3192.0x1179.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcSlab_03_derde_verdieping', 'IfcSlab', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcSlab on 03 derde verdieping: 74 instances, avg W=3643.0 D=3192.0 H=1179.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '3643.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '3192.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1179.0');
-
--- Rule: IfcSlab_01_eerste_verdieping (62 instances, avg 3493.0x3630.0x330.0 mm)
+-- Rule: IfcSlab_01_eerste_verdieping (66 instances, avg 3333.0x3483.0x320.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
 -- VALUES ('IfcSlab_01_eerste_verdieping', 'IfcSlab', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcSlab on 01 eerste verdieping: 62 instances, avg W=3493.0 D=3630.0 H=330.0mm',
+--     'IfcSlab on 01 eerste verdieping: 66 instances, avg W=3333.0 D=3483.0 H=320.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '3493.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '3333.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '3630.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '3483.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '330.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '320.0');
 
--- Rule: IfcWall_-1_fundering (50 instances, avg 1033.0x941.0x500.0 mm)
+-- Rule: IfcWindow_02_tweede_verdieping (66 instances, avg 703.0x618.0x912.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWindow_02_tweede_verdieping', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWindow on 02 tweede verdieping: 66 instances, avg W=703.0 D=618.0 H=912.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '703.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '618.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '912.0');
+
+-- Rule: IfcDoor_02_tweede_verdieping (50 instances, avg 757.0x784.0x2009.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcDoor_02_tweede_verdieping', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcDoor on 02 tweede verdieping: 50 instances, avg W=757.0 D=784.0 H=2009.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '757.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '784.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2009.0');
+
+-- Rule: IfcDoor_01_eerste_verdieping (48 instances, avg 536.0x992.0x2301.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcDoor_01_eerste_verdieping', 'IfcDoor', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcDoor on 01 eerste verdieping: 48 instances, avg W=536.0 D=992.0 H=2301.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '536.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '992.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2301.0');
+
+-- Rule: IfcWall_-1_fundering (41 instances, avg 993.0x1060.0x510.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
 -- VALUES ('IfcWall_-1_fundering', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWall on -1 fundering: 50 instances, avg W=1033.0 D=941.0 H=500.0mm',
+--     'IfcWall on -1 fundering: 41 instances, avg W=993.0 D=1060.0 H=510.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '1033.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '993.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '941.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '1060.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '500.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '510.0');
 
--- Rule: IfcRailing_01_eerste_verdieping (39 instances, avg 411.0x518.0x538.0 mm)
+-- Rule: IfcRailing_01_eerste_verdieping (39 instances, avg 413.0x518.0x593.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
 -- VALUES ('IfcRailing_01_eerste_verdieping', 'IfcRailing', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcRailing on 01 eerste verdieping: 39 instances, avg W=411.0 D=518.0 H=538.0mm',
+--     'IfcRailing on 01 eerste verdieping: 39 instances, avg W=413.0 D=518.0 H=593.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '411.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '413.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_depth_mm', '518.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '538.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '593.0');
+
+-- Rule: IfcSlab_02_tweede_verdieping (37 instances, avg 4632.0x3849.0x107.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcSlab_02_tweede_verdieping', 'IfcSlab', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcSlab on 02 tweede verdieping: 37 instances, avg W=4632.0 D=3849.0 H=107.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '4632.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '3849.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '107.0');
 
 -- Rule: IfcBeam_02_tweede_verdieping (36 instances, avg 917.0x2313.0x103.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -331,18 +528,31 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '103.0');
 
--- Rule: IfcSlab_02_tweede_verdieping (31 instances, avg 4964.0x3456.0x95.0 mm)
+-- Rule: IfcWallStandardCase_00_begane_grond (33 instances, avg 1197.0x1152.0x1509.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcSlab_02_tweede_verdieping', 'IfcSlab', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcSlab on 02 tweede verdieping: 31 instances, avg W=4964.0 D=3456.0 H=95.0mm',
+-- VALUES ('IfcWallStandardCase_00_begane_grond', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on 00 begane grond: 33 instances, avg W=1197.0 D=1152.0 H=1509.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '4964.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1197.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '3456.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '1152.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '95.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '1509.0');
+
+-- Rule: IfcWallStandardCase_01_eerste_verdieping (28 instances, avg 867.0x989.0x2179.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_01_eerste_verdieping', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on 01 eerste verdieping: 28 instances, avg W=867.0 D=989.0 H=2179.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '867.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '989.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2179.0');
 
 -- Rule: IfcDoor_03_derde_verdieping (27 instances, avg 348.0x793.0x2415.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -383,19 +593,6 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '158.0');
 
--- Rule: IfcFlowSegment_01_eerste_verdieping (24 instances, avg 106.0x119.0x1326.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcFlowSegment_01_eerste_verdieping', 'IfcFlowSegment', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcFlowSegment on 01 eerste verdieping: 24 instances, avg W=106.0 D=119.0 H=1326.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '106.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '119.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1326.0');
-
 -- Rule: IfcBeam_01_eerste_verdieping (22 instances, avg 664.0x1023.0x158.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
@@ -408,32 +605,6 @@
 -- VALUES (last_insert_rowid(), 'typical_depth_mm', '1023.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '158.0');
-
--- Rule: IfcWindow_01_eerste_verdieping (22 instances, avg 804.0x559.0x1825.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcWindow_01_eerste_verdieping', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWindow on 01 eerste verdieping: 22 instances, avg W=804.0 D=559.0 H=1825.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '804.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '559.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1825.0');
-
--- Rule: IfcFlowSegment_02_tweede_verdieping (21 instances, avg 112.0x87.0x742.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcFlowSegment_02_tweede_verdieping', 'IfcFlowSegment', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcFlowSegment on 02 tweede verdieping: 21 instances, avg W=112.0 D=87.0 H=742.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '112.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '87.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '742.0');
 
 -- Rule: IfcRailing_03_derde_verdieping (21 instances, avg 976.0x178.0x243.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -448,31 +619,18 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '243.0');
 
--- Rule: IfcWindow_00_begane_grond (20 instances, avg 596.0x715.0x1838.0 mm)
+-- Rule: IfcWallStandardCase_02_tweede_verdieping (18 instances, avg 802.0x972.0x2523.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcWindow_00_begane_grond', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWindow on 00 begane grond: 20 instances, avg W=596.0 D=715.0 H=1838.0mm',
+-- VALUES ('IfcWallStandardCase_02_tweede_verdieping', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on 02 tweede verdieping: 18 instances, avg W=802.0 D=972.0 H=2523.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '596.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '802.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '715.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '972.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1838.0');
-
--- Rule: IfcWall_04_dak (16 instances, avg 1634.0x1056.0x730.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcWall_04_dak', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWall on 04 dak: 16 instances, avg W=1634.0 D=1056.0 H=730.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '1634.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '1056.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '730.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2523.0');
 
 -- Rule: IfcWindow_03_derde_verdieping (16 instances, avg 908.0x376.0x1872.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -487,31 +645,18 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '1872.0');
 
--- Rule: IfcFlowSegment_00_begane_grond (15 instances, avg 81.0x136.0x2569.0 mm)
+-- Rule: IfcWall_04_dak (14 instances, avg 1419.0x1016.0x649.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcFlowSegment_00_begane_grond', 'IfcFlowSegment', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcFlowSegment on 00 begane grond: 15 instances, avg W=81.0 D=136.0 H=2569.0mm',
+-- VALUES ('IfcWall_04_dak', 'IfcWall', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWall on 04 dak: 14 instances, avg W=1419.0 D=1016.0 H=649.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '81.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1419.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '136.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '1016.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '2569.0');
-
--- Rule: IfcWindow_02_tweede_verdieping (14 instances, avg 739.0x661.0x1273.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcWindow_02_tweede_verdieping', 'IfcWindow', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcWindow on 02 tweede verdieping: 14 instances, avg W=739.0 D=661.0 H=1273.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '739.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '661.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1273.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '649.0');
 
 -- Rule: IfcBuildingElementProxy_00_begane_grond (12 instances, avg 397.0x333.0x360.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -526,6 +671,19 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '360.0');
 
+-- Rule: IfcWallStandardCase_03_derde_verdieping (12 instances, avg 1327.0x592.0x2254.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_03_derde_verdieping', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on 03 derde verdieping: 12 instances, avg W=1327.0 D=592.0 H=2254.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1327.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '592.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2254.0');
+
 -- Rule: IfcSlab_04_dak (11 instances, avg 6165.0x3435.0x92.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
@@ -539,19 +697,6 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '92.0');
 
--- Rule: IfcColumn_03_derde_verdieping (10 instances, avg 787.0x220.0x1459.0 mm)
--- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
---     description, provenance)
--- VALUES ('IfcColumn_03_derde_verdieping', 'IfcColumn', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcColumn on 03 derde verdieping: 10 instances, avg W=787.0 D=220.0 H=1459.0mm',
---     'Schependomlaan');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '787.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '220.0');
--- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '1459.0');
-
 -- Rule: IfcBeam_04_dak (9 instances, avg 2969.0x2693.0x218.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
@@ -564,6 +709,32 @@
 -- VALUES (last_insert_rowid(), 'typical_depth_mm', '2693.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '218.0');
+
+-- Rule: IfcDistributionElement_02_tweede_verdieping (9 instances, avg 142.0x816.0x60.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcDistributionElement_02_tweede_verdieping', 'IfcDistributionElement', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcDistributionElement on 02 tweede verdieping: 9 instances, avg W=142.0 D=816.0 H=60.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '142.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '816.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '60.0');
+
+-- Rule: IfcWallStandardCase_-1_fundering (9 instances, avg 1248.0x431.0x453.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_-1_fundering', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on -1 fundering: 9 instances, avg W=1248.0 D=431.0 H=453.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1248.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '431.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '453.0');
 
 -- Rule: IfcColumn_02_tweede_verdieping (8 instances, avg 111.0x111.0x973.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -591,18 +762,18 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '3424.0');
 
--- Rule: IfcColumn_01_eerste_verdieping (5 instances, avg 98.0x100.0x2381.0 mm)
+-- Rule: IfcMember_03_derde_verdieping (5 instances, avg 1353.0x220.0x2650.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
--- VALUES ('IfcColumn_01_eerste_verdieping', 'IfcColumn', 'DIMENSION_RANGE', 'WARNING', 1,
---     'IfcColumn on 01 eerste verdieping: 5 instances, avg W=98.0 D=100.0 H=2381.0mm',
+-- VALUES ('IfcMember_03_derde_verdieping', 'IfcMember', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcMember on 03 derde verdieping: 5 instances, avg W=1353.0 D=220.0 H=2650.0mm',
 --     'Schependomlaan');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_width_mm', '98.0');
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1353.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_depth_mm', '100.0');
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '220.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
--- VALUES (last_insert_rowid(), 'typical_height_mm', '2381.0');
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2650.0');
 
 -- Rule: IfcWindow_04_dak (5 instances, avg 1193.0x1193.0x535.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
@@ -617,6 +788,32 @@
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '535.0');
 
+-- Rule: IfcColumn_01_eerste_verdieping (4 instances, avg 80.0x80.0x2720.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcColumn_01_eerste_verdieping', 'IfcColumn', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcColumn on 01 eerste verdieping: 4 instances, avg W=80.0 D=80.0 H=2720.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '80.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '80.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '2720.0');
+
+-- Rule: IfcDistributionElement_00_begane_grond (4 instances, avg 830.0x206.0x105.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcDistributionElement_00_begane_grond', 'IfcDistributionElement', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcDistributionElement on 00 begane grond: 4 instances, avg W=830.0 D=206.0 H=105.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '830.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '206.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '105.0');
+
 -- Rule: IfcRailing_00_begane_grond (4 instances, avg 1387.0x86.0x1892.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
 --     description, provenance)
@@ -629,6 +826,19 @@
 -- VALUES (last_insert_rowid(), 'typical_depth_mm', '86.0');
 -- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
 -- VALUES (last_insert_rowid(), 'typical_height_mm', '1892.0');
+
+-- Rule: IfcWallStandardCase_04_dak (4 instances, avg 1571.0x904.0x690.0 mm)
+-- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
+--     description, provenance)
+-- VALUES ('IfcWallStandardCase_04_dak', 'IfcWallStandardCase', 'DIMENSION_RANGE', 'WARNING', 1,
+--     'IfcWallStandardCase on 04 dak: 4 instances, avg W=1571.0 D=904.0 H=690.0mm',
+--     'Schependomlaan');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_width_mm', '1571.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_depth_mm', '904.0');
+-- INSERT INTO ad_val_rule_param (ad_val_rule_id, param_name, param_value)
+-- VALUES (last_insert_rowid(), 'typical_height_mm', '690.0');
 
 -- Rule: IfcMember_01_eerste_verdieping (3 instances, avg 797.0x127.0x1484.0 mm)
 -- INSERT INTO ad_val_rule (rule_name, ifc_class, check_method, severity, is_active,
