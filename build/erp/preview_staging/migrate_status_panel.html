@@ -1,0 +1,101 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MigrateComparison — status panel mockup</title>
+<style>
+body{font-family:-apple-system,system-ui,Segoe UI,Roboto,sans-serif;max-width:860px;margin:30px auto;padding:0 18px;background:#1b2127;color:#eceff1;line-height:1.5}
+h2{font-size:20px;margin:26px 0 4px}
+.sub{opacity:.6;font-size:12.5px;margin:0 0 14px}
+/* ── status3: the migration-completeness strip ── */
+.status3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:16px 0}
+.status3 .band{border:1px solid var(--bc);border-top:4px solid var(--bc);border-radius:11px;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.status3 .bh{padding:11px 14px 8px}
+.status3 .tag{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--bc);display:flex;align-items:center;gap:6px}
+.status3 .ttl{font-size:14.5px;font-weight:800;line-height:1.2;margin:4px 0 2px}
+.status3 .gloss{font-size:11.5px;opacity:.72;line-height:1.38}
+.status3 ul{list-style:none;margin:8px 0 0;padding:9px 14px 13px;border-top:1px solid rgba(128,128,128,.18)}
+.status3 li{font-size:12px;line-height:1.34;margin:0 0 7px;padding-left:14px;position:relative}
+.status3 li:last-child{margin-bottom:0}
+.status3 li::before{content:"";position:absolute;left:0;top:6px;width:5px;height:5px;border-radius:50%;background:var(--bc);opacity:.8}
+.status3 li b{font-weight:700}
+.status3 .foot{margin-top:auto;padding:8px 14px;background:var(--ft);font-size:11px;font-weight:700;color:var(--bc);border-top:1px solid var(--bc)}
+.green{--bc:#7cb342;--bg:rgba(124,179,66,.07);--ft:rgba(124,179,66,.14)}
+.amberx{--bc:#ffa000;--bg:rgba(255,160,0,.06);--ft:rgba(255,160,0,.13)}
+.redf{--bc:#ef5350;--bg:rgba(239,83,80,.06);--ft:rgba(239,83,80,.13)}
+.bluen{--bc:#42a5f5;--bg:rgba(66,165,245,.06);--ft:rgba(66,165,245,.13)}
+.lead{border-left:4px solid #7cb342;background:rgba(124,179,66,.07);border-radius:0 8px 8px 0;padding:11px 16px;font-size:13px;margin:10px 0 2px}
+.lead b{color:#7cb342}
+</style></head><body>
+
+<h2>What's in the new experience — and what isn't</h2>
+<p class="sub">A migration honesty panel. Four states, not a pass/fail: a flow folds to the cent today (🟢), or its fold is proven and only data-wiring remains (🟠), or the capability is still unbuilt (🔴), or the legacy code has <b>no counterpart by design</b> and leaves the denominator entirely (🔵). Counts trace to the <a href="#" style="color:#90caf9">coverage-by-capability table</a> below (live Odoo&nbsp;17 <code>search_count</code> + GardenWorld seed); deleted-tier LOC from the iDempiere source sweep.</p>
+
+<div class="lead">This is a claim about <b>substrate and delivery</b>, not feature parity — only ~1% of iDempiere's M-class logic is ported. What the strip shows is which <i>business flows</i> the kernel already reproduces <b>indistinguishably from iDempiere</b> (<code>maxDiff=0c</code>), and exactly what stands between that and a full tenant cut-over.</div>
+
+<div class="status3">
+
+  <div class="band green">
+    <div class="bh">
+      <div class="tag">🟢 In the new experience</div>
+      <div class="ttl">Folds to the cent today</div>
+      <div class="gloss">Oracle-equivalent vs real iDempiere output, <code>maxDiff=0c</code>, both USD + EUR schemas. <b>43 surfaces.</b></div>
+    </div>
+    <ul>
+      <li><b>Trade loop</b> — order → ship → invoice → 3-way match → pay → allocate</li>
+      <li><b>Inventory loop</b> — movement → on-hand → replenishment PO</li>
+      <li><b>GL</b> — inter-org journals + FX, reverse / void (nets to zero)</li>
+      <li><b>Reports</b> — Balance Sheet · Income · Cash Flow + invoice print</li>
+      <li><b>Model layer</b> — <code>beforeSave</code> + DocAction-FSM of every doc class</li>
+    </ul>
+    <div class="foot">16 cent-exact · 6 declarative · 21 model-layer — each with a §FALSIFIER</div>
+  </div>
+
+  <div class="band amberx">
+    <div class="bh">
+      <div class="tag">🟠 Extraction gap</div>
+      <div class="ttl">Fold proven — data not yet wired</div>
+      <div class="gloss">The engine already folds these flows (passing witness each). Mechanical extractor work, <b>not engine development.</b></div>
+    </div>
+    <ul>
+      <li><b>Master data</b> — 38 partners · 30 products · 47 COA · 8 journals · 11 terms</li>
+      <li><b>Sale orders</b> — 26 of 27 (1 chain folded; loop the proven path)</li>
+      <li><b>Purchasing</b> — all 13 POs + vendor bills (buy-side adapter <i>written, unused</i>)</li>
+      <li><b>Money</b> — 3 real payments + reconciles, 13 manual journals, 7 credit notes</li>
+      <li><b>Inventory state</b> — 43 on-hand quants as opening balances</li>
+    </ul>
+    <div class="foot">Backlog → MIGRATE_INSTALL_TENANT.md §RESUME</div>
+  </div>
+
+  <div class="band redf">
+    <div class="bh">
+      <div class="tag">🔴 Fold gap</div>
+      <div class="ttl">Capability still unbuilt</div>
+      <div class="gloss">The engine can't yet compute these even with the data present — mapping / interpreter work, the genuine remainder.</div>
+    </div>
+    <ul>
+      <li><b>Cost-valued inventory GL</b> — qty spine proven; cost→GL deferred</li>
+      <li><b>AR / AP aging</b> — open-items + date-bucket fold (distinct)</li>
+      <li><b>Document print mapping</b> — Odoo QWeb defs → print tree</li>
+      <li><b>Analytic / cost-centre</b> accounting dimensions</li>
+      <li><b>Server-action interpretation</b> — Odoo automation (64 actions)</li>
+    </ul>
+    <div class="foot">On-demand procs (454/476) amortise here by design — not blocking</div>
+  </div>
+
+  <div class="band bluen">
+    <div class="bh">
+      <div class="tag">🔵 Not applicable</div>
+      <div class="ttl">Deleted by architecture — no port</div>
+      <div class="gloss">Whole tiers the serverless model removes. Not "missing features" — they have <b>no counterpart</b> by design, so they leave the denominator.</div>
+    </div>
+    <ul>
+      <li><b>ZK web UI</b> (189,786 LOC) → the browser renderer</li>
+      <li><b>Generated <code>X_*</code> ORM</b> (345,490 LOC) → the AD rides as <i>data</i></li>
+      <li><b>Server-side HTML lib</b> (43,816 LOC) → no server</li>
+      <li><b>JDBC · OSGi · app server · installer</b> → no server of record</li>
+      <li><b>Web services tier</b> → the signed op-log <i>is</i> the wire</li>
+    </ul>
+    <div class="foot">≈40%+ of the 1.4M-LOC tree — deleted, not unported</div>
+  </div>
+
+</div>
+
+</body></html>

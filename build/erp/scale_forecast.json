@@ -1,0 +1,166 @@
+{
+  "mix": {
+    "orders": 8,
+    "invoices": 8,
+    "shipments": 9,
+    "payments": 2,
+    "factrows": 300
+  },
+  "factPerDoc": 7.142857142857143,
+  "postedDocs": 42,
+  "opsDoc": {
+    "create": 1,
+    "complete": 1,
+    "post": 1,
+    "full": 3,
+    "glLinesPerDoc": 8
+  },
+  "write": {
+    "pts": [
+      {
+        "x": 100,
+        "y": 1.7559880018234253
+      },
+      {
+        "x": 1000,
+        "y": 8.941773056983948
+      },
+      {
+        "x": 5000,
+        "y": 41.11583888530731
+      },
+      {
+        "x": 15000,
+        "y": 130.2572638988495
+      }
+    ],
+    "fit": {
+      "a": -0.09826609049184754,
+      "b": 0.008647579535778747,
+      "r2": 0.9994603665409638
+    },
+    "cross100ms": 11575.29291015392
+  },
+  "boot": {
+    "pts": [
+      {
+        "x": 2000,
+        "y": 2.4323019981384277
+      },
+      {
+        "x": 20000,
+        "y": 13.57690703868866
+      },
+      {
+        "x": 100000,
+        "y": 19.928395986557007
+      },
+      {
+        "x": 400000,
+        "y": 90.65598404407501
+      }
+    ],
+    "fit": {
+      "a": 3.564961869959319,
+      "b": 0.00021519873867360503,
+      "r2": 0.986949209146217
+    },
+    "checkpointMs": 0.2869519889354706,
+    "tail": 1000
+  },
+  "store": {
+    "pts": [
+      {
+        "x": 500,
+        "y": 307200
+      },
+      {
+        "x": 1500,
+        "y": 827392
+      }
+    ],
+    "bytesPerOp": 520.192
+  },
+  "thru": {
+    "naiveThru": 6812.170566721617,
+    "batchThru": 13411.536632426814,
+    "speedup": 1.9687611314290925
+  },
+  "forecast": {
+    "tiers": [
+      {
+        "tier": "small",
+        "docsYr": 5000,
+        "years": 1,
+        "D": 500,
+        "N": 15000,
+        "writeMs": 4.2255236773975255,
+        "writeMeasured": true,
+        "genMs": 6.792942950063395,
+        "genMeasured": true,
+        "ckMs": 0.2869519889354706,
+        "mWriteMs": 16.902094709590102,
+        "mGenMs": 27.17177180025358,
+        "dbBytes": 7802880,
+        "dailyLoad": 20,
+        "utilPct": 0.000015533889892200627,
+        "clerksLo": 1,
+        "clerksHi": 1,
+        "limit": "none — headroom (0.000% throughput used)"
+      },
+      {
+        "tier": "mid",
+        "docsYr": 50000,
+        "years": 3,
+        "D": 5000,
+        "N": 450000,
+        "writeMs": 43.13963158840188,
+        "writeMeasured": true,
+        "genMs": 100.40439427308158,
+        "genMeasured": false,
+        "ckMs": 0.2869519889354706,
+        "mWriteMs": 172.55852635360753,
+        "mGenMs": 401.6175770923263,
+        "dbBytes": 234086400,
+        "dailyLoad": 200,
+        "utilPct": 0.00015533889892200629,
+        "clerksLo": 1,
+        "clerksHi": 4,
+        "limit": "none — headroom (0.000% throughput used)"
+      },
+      {
+        "tier": "large",
+        "docsYr": 500000,
+        "years": 5,
+        "D": 50000,
+        "N": 7500000,
+        "writeMs": 432.2807106984455,
+        "writeMeasured": false,
+        "genMs": 1617.555501921997,
+        "genMeasured": false,
+        "ckMs": 0.2869519889354706,
+        "mWriteMs": 1729.122842793782,
+        "mGenMs": 6470.222007687988,
+        "dbBytes": 3901440000,
+        "dailyLoad": 2000,
+        "utilPct": 0.0015533889892200628,
+        "clerksLo": 10,
+        "clerksHi": 40,
+        "limit": "S-WRITE (432ms/save @ 50,000 live docs)"
+      }
+    ],
+    "k": 3,
+    "bytesPerOp": 520.192,
+    "workSeconds": 28800,
+    "workDays": 250,
+    "clerkBand": [
+      50,
+      200
+    ],
+    "engineDocsDay": 128750752,
+    "engineDocsDayNoBatch": 65396837,
+    "mobileThrottle": 4,
+    "mobileCross100msD": 2902.3457936003424,
+    "desktopCross100msD": 11575.29291015392
+  }
+}

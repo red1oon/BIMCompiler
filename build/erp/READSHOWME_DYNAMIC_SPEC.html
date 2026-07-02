@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ReadMe / ShowMe — Dynamic Help-Tour (spec)</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+  body{max-width:860px;margin:32px auto;padding:0 22px;font:16px/1.65 -apple-system,system-ui,sans-serif;color:#1c2733;background:#fbfdfe}
+  h1{font-size:30px;border-bottom:2px solid #cfe0e6;padding-bottom:8px}
+  h2{font-size:23px;margin-top:34px;border-bottom:1px solid #e3edf0;padding-bottom:5px;color:#0f3a4a}
+  h3{font-size:18px;color:#16586e}
+  code{background:#eef4f6;padding:1px 5px;border-radius:4px;font-size:14px}
+  pre{background:#0f1a22;color:#dbe9ee;padding:14px 16px;border-radius:8px;overflow:auto;font-size:13px}
+  pre code{background:none;color:inherit}
+  blockquote{border-left:4px solid #56a0b0;margin:0;padding:4px 16px;color:#41606c;background:#f0f7f9}
+  ol>li,ul>li{margin:5px 0}
+  strong{color:#0c2c38}
+  a{color:#1668a8}
+  hr{border:none;border-top:1px solid #d8e4e8;margin:28px 0}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">ReadMe / ShowMe — Dynamic Help-Tour (spec)</h1>
+</header>
+<h1 id="-do-not-remove--scope-guard">⚠ DO NOT REMOVE — Scope guard</h1>
+<h1
+id="scope-the-readmeshowme-dynamic-help-tour-on-the-main-working-page-glassbowlhtml-generated-from">Scope:
+the ReadMe/ShowMe DYNAMIC help-tour on the MAIN working page
+(glassbowl.html), generated from</h1>
+<h1
+id="doc-structure--live-data-not-hand-wired-spec-first-witness-led--log-first-read-the-log">(doc
+structure × live data), NOT hand-wired. Spec-first; witness-led; §-log
+first. Read the log.</h1>
+<h1
+id="supersedes-the-hand-authored-linear-tour-in-builderptourerphtml-c0c1-scaffold--that-proved-the">Supersedes
+the hand-authored linear tour in build/erp/TourERP.html (C0/C1 scaffold)
+— that proved the</h1>
+<h1
+id="data-path-this-spec-is-the-real-design-audio--viewlog-debounce-already-landed-in-glassbowlhtml">data
+path; this spec is the real design. Audio + §VIEWLOG-debounce already
+landed in glassbowl.html.</h1>
+<hr />
+<h1 id="readme--showme--dynamic-help-tour-spec-2026-06-01">ReadMe /
+ShowMe — Dynamic Help-Tour (spec, 2026-06-01)</h1>
+<h2 id="north-star">North star</h2>
+<p>The newbie's question is always <strong>"where is it?"</strong> —
+they can read <em>what</em> to do but cannot <em>find</em> the control.
+So: a newcomer presses <strong>?</strong>, reads <strong>what a thing
+is</strong> (ReadMe = detail), then presses <strong>ShowMe</strong> and
+the page <strong>takes them to it and does it</strong> — highlights the
+field, opens the list, traces the flow (req 11). ShowMe answers "where
+is it?", which plain docs never can. It lives ON the main working page,
+is opt-in, fully dismissible, and — critically — is <strong>generated
+from data + the keyed doc</strong>, so adding a paragraph or a data hop
+extends the help with <strong>no code change</strong>. It cannot drift
+from truth: ShowMe replays the real instance.</p>
+<h2
+id="the-ten-requirements-from-the-design-conversation-verbatim-intent">The
+ten requirements (from the design conversation, verbatim intent)</h2>
+<ol type="1">
+<li><strong>? trigger — a "NeedHelp?" checkbox, top-right (iDempiere
+help-toggle pattern).</strong> Unchecked by default (off =
+non-burdensome). Checking it turns ON the <code>?</code>
+tooltip-assistants: a <code>?</code> appears on every element that has a
+ReadMe tag (req 9). This is the iDempiere "show help" toggle, not a
+generic pill. (R: "NeedHelp? check box at top right which was to show a
+panel … perhaps this be a better approach"; "presses a ? … or it
+appears")</li>
+<li><strong>? → ReadMe → ShowMe.</strong> Press <code>?</code>/select a
+thing → a card shows <strong>HTML explaining what it is</strong>
+(ReadMe); the card has a <strong>▶ ShowMe</strong> that "leads back and
+does it for the user" (drives the page). (R: the core flow)</li>
+<li><strong>On the main working HTML, not an orphan page.</strong> The
+tour is a layer IN <code>glassbowl.html</code> (the page it drives), not
+a separate <code>TourERP.html</code>. (R: "called from the main working
+HTMLs right?")</li>
+<li><strong>ReadMe is arranged in logical steps for standard ops, so
+they sync.</strong> The help doc is ordered: per standard operation
+(O2C, P2P, GL…), an ordered sequence of paragraphs. (R: "arranged in
+logical steps … so they synch")</li>
+<li><strong>Each Next ↔︎ next paragraph; ShowMe shows in the open
+tab.</strong> Tour "Next" advances to the next ReadMe paragraph; that
+paragraph's ShowMe demonstrates in the actual open tab/panel. (R: "each
+next correlate to its next para. Its ShowMe goes back to the open tab to
+show")</li>
+<li><strong>ShowMe = direct steps, light on detail (detail is in
+ReadMe).</strong> The in-page step prompt is terse — just enough to
+drive — because the explanation lives in the ReadMe. (R: "more direct
+steps without much details")</li>
+<li><strong>Dynamic, not concretely wired.</strong> Steps are GENERATED,
+not hand-authored: zip the ReadMe doc's ordered step-units against the
+live data lineage; each step's ShowMe action is DERIVED from the data,
+not coded per step. (R: "if we can make it dynamic.. then we need not
+wire it concretely")</li>
+<li><strong>Distinct audio per action.</strong> Each action has its own
+cue. (R: "certain sounds for certain actions… more diff clips") —
+LANDED: <code>navJive</code>(Back/Next) · <code>helpJive</code>(? open)
+· <code>showmeJive</code>(ShowMe go) · <code>toggleJive</code> (legend)
+· <code>tabJive</code>(dossier tab) + enriched bar/dismiss/dossier
+motifs. §-witness: no pageerror, jives present.</li>
+<li><strong>A <code>?</code> per tagged ReadMe answer (the
+<code>_TRL</code> analogy).</strong> Help content is a KEYED store —
+keyed to an element the way iDempiere
+<code>_Trl</code>/<code>AD_Element.Help</code> keys translation/help to
+a record. Wherever a ReadMe tag exists for an on-screen element, a
+<code>?</code> assistant appears (when NeedHelp? is checked). (R: "like
+how _TRL is in iDempiere"; "each time there is a tag answer in the
+ReadMe, it can have tool tip assistant ?")</li>
+<li><strong>Devs write ReadMe only; the HTML has hooks that
+correlate.</strong> Correlation is by KEY, not hand-wiring: on-screen
+elements already carry a stable key (every bubble has its table id; a
+dossier tab has its name), and the ReadMe store is keyed by exactly
+those. A dev adds/edits a help entry; the <code>?</code>, the card, and
+the ShowMe step appear automatically — no per-feature tour code. (R:
+"devs just write such ReadMe and the HTML has hooks to corelate")</li>
+<li><strong>ShowMe is type-aware — it goes to the element and performs
+the matching affordance.</strong> The driver dispatches by element KIND,
+not one fixed action: text field → focus + highlight; list/dropdown →
+open it; tab → switch to it; bubble → trace/focus it; button → pulse it.
+The keyed entry may hint <code>kind</code>/<code>tab</code>, else the
+driver infers from the resolved DOM element. This is what makes the SAME
+keyed-help mechanism work on <code>erp.html</code> AD fields/lists/tabs
+later, not only glassbowl bubbles. (R: "wonder if ShowMe goes to the
+field, or if text field, highlighted, if list, list is open")</li>
+</ol>
+<h2
+id="the-dynamic-model--how-it-is-generated-not-wired-req-7-the-keystone">The
+dynamic model — how it is generated, not wired (req 7, the
+keystone)</h2>
+<p>Two ordered sequences are ZIPPED at runtime; their order is the
+single source of truth:</p>
+<ul>
+<li><strong>Data spine (already present):</strong>
+<code>walkBundle(GDB, seed)</code> returns the ordered O2C chain
+<code>[c_order, m_inout, c_invoice, c_payment, c_allocationline]</code>
+(witnessed: <code>§TOUR walk … agree=Y</code>, docnos
+<code>[80001,$100.70,$98.50]</code>, 0 invented). The chain order = the
+step order. A new hop in the data ⇒ a new step, automatically.</li>
+<li><strong>Doc spine (ReadMe):</strong> an ordered list of step-units
+per operation, each
+<code>{ opKey, stepKey, title, paraHTML, readmeAnchor }</code>. Parsed
+from a STRUCTURED help source (see "ReadMe source" below) — NOT inlined
+per step.</li>
+<li><strong>Correlation by KEY (req 10), not by hand-wiring.</strong>
+Each on-screen element carries a stable key it already has (a bubble =
+its table id <code>c_invoice</code>; a dossier tab = its name
+<code>Data</code>). The ReadMe store is keyed by those same keys
+(<code>help_ops.json["c_invoice"] = {title, paraHTML, readmeAnchor, op, ordinal}</code>).
+The <code>?</code> for an element is "does a ReadMe key exist for it."
+The ShowMe <code>drive()</code> is DERIVED from the key:
+<code>setTrace(true); setFocus(key); openDossierTab(key, entry.tab?)</code>.
+No per-step code; add a keyed entry ⇒ a new <code>?</code> + step.</li>
+<li><strong>Ordering for Next/Back</strong> comes from the data spine
+(the lineage hop order) intersected with the keys that have ReadMe
+entries — so "Next" walks the real op sequence and its paragraph in
+lockstep (req 5/6); the terse prompt is derived
+(<code>"Show the {friendly} — #{documentno}"</code>), the detail is the
+keyed paragraph.</li>
+<li><strong>Generalises beyond O2C:</strong> other operations (P2P, GL)
+supply their own seed + <code>LIN.steps</code>-style declarative walk +
+their doc step-units; the same zip builds their tour. Nothing
+O2C-specific is hard-coded.</li>
+</ul>
+<h2
+id="does-this-make-ops--maintenance-easier-the-users-question--assessment">Does
+this make ops &amp; maintenance easier? (the user's question —
+assessment)</h2>
+<p>Yes, materially, for five concrete reasons — with the honest
+caveats:</p>
+<ol type="1">
+<li><strong>One keyed source, no code↔︎doc drift.</strong> Help text, the
+<code>?</code> assistants, the guided ShowMe, and (the <code>_TRL</code>
+parallel) future translations all read ONE keyed store. The tour cannot
+silently rot: ShowMe replays the REAL instance, so a wrong paragraph is
+<em>visibly</em> wrong next to the live data.</li>
+<li><strong>Add-a-feature = add-a-row, not edit-the-tour.</strong> A new
+document/bubble gets a <code>?</code>, a card, and a tour step the
+moment a dev writes its keyed ReadMe entry — because the HTML hook (the
+element's id) already exists. Zero tour code touched. New verticals
+(P2P, GL) ship their keyed entries + a declarative walk; same
+engine.</li>
+<li><strong>Doc-writers maintain it, not engineers.</strong> The skill
+is "write a help paragraph keyed to <code>c_invoice</code>," not "code a
+step driver." Lowers who can keep it current — analysts/writers, the
+people who know the ops.</li>
+<li><strong>iDempiere-familiar mental model.</strong> It is the
+<code>_Trl</code>/<code>AD_Element.Help</code> + "show help" toggle
+pattern ERP maintainers already run. Nothing new to learn
+operationally.</li>
+<li><strong>Drift is a GATE, not a surprise.</strong> The
+<code>§READSHOWME zip=aligned</code> witness fails CI if a hook has no
+keyed entry (or an entry points at a missing element) — so the build
+<em>catches</em> stale help instead of shipping it.</li>
+</ol>
+<p>Honest caveats (and the mitigation):</p>
+<ul>
+<li>Keys must stay in sync with element ids → the alignment witness
+enforces it mechanically (req-7 witness).</li>
+<li>Prefer a STRUCTURED keyed store (<code>help_ops.json</code>, Option
+A) over scraping live mkdocs HTML (Option B): parsing rendered docs is
+brittle to doc edits; a keyed store is the maintainable choice and keeps
+ShowMe terse.</li>
+<li>ShowMe can only demonstrate what the page can already drive
+(<code>setTrace/setFocus/openDossierTab</code>); a step that needs an
+action the page can't do yet is a real code task, not a ReadMe row. That
+boundary is the honest line.</li>
+</ul>
+<h2
+id="readme-source-req-4--decided-option-a-structured-help_opsjson-user-2026-06-01">ReadMe
+source (req 4) — DECIDED: Option A, structured
+<code>help_ops.json</code> (user, 2026-06-01)</h2>
+<p>A keyed JSON store:
+<code>key (element id) → {op, ordinal, target, title, paraHTML, readmeAnchor, tab?, shots?}</code>.
+Devs edit ONE file; the page hooks read it by key (every bubble already
+= its table id). The TOUR reads it; never inlined per step. (Rejected
+Option B = scraping rendered mkdocs — brittle to doc edits, ShowMe can't
+stay terse.)</p>
+<p><strong>ReadMe content grows with screenshots (req: "later I put
+screenshots").</strong> <code>paraHTML</code> is rich HTML — detail now,
+images later, no code change. The generator pre-seeds <strong>figure
+placeholders that ARE authoring advice</strong>: a token like
+<code>[[FIG 1.1: screenshot of the Invoice Data tab]]</code> renders as
+a dashed placeholder box reading "Figure 1.1 — put screenshot of the
+Invoice Data tab" so the author knows exactly what to capture; dropping
+a real image (set <code>shots:[{fig:"1.1", src:"…png"}]</code> or inline
+<code>&lt;img&gt;</code>) replaces the placeholder. Until then the help
+still works (text + ShowMe); the figure box is a to-do the author can
+see. (R: "u put Figure 1.1 [Put screenshot of ..] &lt;-- to advice
+me")</p>
+<h2
+id="surfaces-to-reuse-no-new-renderer-all-present-in-glassbowlhtml">Surfaces
+to reuse (no new renderer; all present in glassbowl.html)</h2>
+<p><code>setTrace</code>/<code>applyChain</code>/<code>walkBundle</code>(via
+GDB)/<code>setFocus</code>/<code>openDossier</code>/<code>openDossierTab</code>
+(window-exposed); projection globals
+<code>N/idx/project/px/py/k/radius</code> for anchored tooltips
+(verified top-level); the dossier
+<code>Data|Rules|Columns|History</code> tabs are the "open tab" ShowMe
+shows in (req 5). Audio: <code>showmeJive</code>/<code>navJive</code>/
+<code>helpJive</code>. ReadMe "Read more" → live mkdocs anchor (the §13
+grep method, verified at C3).</p>
+<h2 id="witnesses-headless--log-first-playwright-wiring-only">Witnesses
+(headless §-log first; Playwright wiring only)</h2>
+<ul>
+<li><code>§HELP mode=on badges=K</code> (help-mode toggles, K helpable
+bubbles).</li>
+<li><code>§READSHOWME ops=[o2c,…] o2c.steps=N docSteps=N dataHops=N zip=aligned</code>
+(req 7: counts MUST match; a mismatch = the spines drifted).</li>
+<li><code>§READSHOWME step=i op=o2c para=&lt;anchor&gt; drive=focus:&lt;table&gt; docno=&lt;real&gt;</code>
+per step (req 5/6).</li>
+<li><code>§SHOWME op=o2c drove=[setTrace,setFocus:c_invoice,tab:Data] invented=0</code>
+(req 2/5; terse drive derived).</li>
+<li>Reuse the landed <code>§TOUR walk … agree=Y</code> as the data-spine
+proof; <code>deploy/dev/tests/test_tour.js</code> extends.</li>
+</ul>
+<h2 id="already-landed-this-session-do-not-redo">Already landed this
+session (do not redo)</h2>
+<ul>
+<li><code>§VIEWLOG</code> orbit-debounce in <code>glassbowl.html</code>
+(record on REST, 350ms trailing; discrete actions immediate). Witnessed:
+20-move orbit drag ⇒ delta=1 entry (was ~20).</li>
+<li>Audio palette (req 8) in <code>glassbowl.html</code>: motif helper +
+5 new cues + enriched bar/dismiss/dossier; wired
+<code>toggleJive</code>(legend) + <code>tabJive</code>(dossier tab).
+Boots clean (pageerror=0).</li>
+<li>Data-spine proof (<code>test_tour.js</code>,
+<code>build/erp/tour_witness.log</code>): O2C chain walks to real
+docnos, agree=Y.</li>
+</ul>
+<h2
+id="build-order-each-names-its-witness-nothing-deploys-without-explicit-go">Build
+order (each names its witness; nothing deploys without EXPLICIT GO)</h2>
+<ul>
+<li><strong>D1 — ReadMe source.</strong> Author
+<code>help_ops.json</code> (O2C first) from the docs; witness
+<code>§READSHOWME ops/steps</code>.</li>
+<li><strong>D2 — Dynamic generator.</strong> Zip doc-steps ⟂ data-hops
+into runtime STEPS; witness <code>zip=aligned</code>.</li>
+<li><strong>D3 — ? help mode + ReadMe card + ShowMe.</strong> In
+<code>glassbowl.html</code>: <code>?</code> pill → badges → card
+(paraHTML + Read-more + ▶ ShowMe) → derived drive in the open tab; audio
+wired. Witness <code>§HELP</code>/<code>§SHOWME</code>.</li>
+<li><strong>D4 — Playwright wiring + visual.</strong>
+pill→badge→card→ShowMe drives the trace/tab; serve + eyeball.</li>
+<li><strong>D5 — Deploy (Glassbowl-way, EXPLICIT GO):</strong> copy
+<code>build/erp/{glassbowl.html,glassbowl_data.db,sqljs/}</code> →
+<code>docs/</code>, commit <code>full</code>,
+<code>mkdocs gh-deploy --force</code>. Retire <code>TourERP.html</code>
+(folded into glassbowl.html).</li>
+</ul>
+</body>
+</html>

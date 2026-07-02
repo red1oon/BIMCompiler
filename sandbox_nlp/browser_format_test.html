@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>browser parity</title>
+<script src="sql-wasm.js"></script><script src="decoder.js"></script></head><body>
+<script>
+// Proves decode()+formatResult() work under REAL sql.js exec (the viewer's A.db.exec
+// shape) — the only thing better-sqlite3 Node tests can't cover. Mirrors format_test.js.
+(async () => {
+  const SQL = await initSqlJs({ locateFile: f => f });
+  const db = new SQL.Database(new Uint8Array(await (await fetch('Hospital_meta.db')).arrayBuffer()));
+  const exec = (sql, params) => db.exec(sql, params || []);     // sql.js shape [{columns,values}]
+  const storeys = (db.exec('SELECT DISTINCT storey FROM elements_meta WHERE storey IS NOT NULL')[0].values).map(v => v[0]);
+  const CASES = [
+    ['show me all the doors', s => /^440 — /.test(s.summary) && s.guids.length === 440],
+    ['total cost',           s => /^RM 76,439,535 /.test(s.summary)],
+    ['total area of walls',  s => /^49,906 m² — /.test(s.summary)],
+    ['which floor has the most doors', s => /^Level 1 — /.test(s.summary)],
+    ['doors and windows',    s => /^571 — /.test(s.summary) && s.guids.length === 571],
+    ['doors not on level 1', s => /^326 — /.test(s.summary)],
+    ['banana milkshake',     s => s.kind === 'none'],
+  ];
+  let pass = 0;
+  for (const [q, ok] of CASES) {
+    const f = BimDecoder.formatResult(BimDecoder.decode(q, { storeys }), exec, { cur: 'RM', cur2: 'USD', rate: 3.91 });
+    const good = ok(f); if (good) pass++;
+    console.log(`${good ? '§OK ' : '§FAIL'} "${q}" → kind=${f.kind} guids=${f.guids.length} | ${f.summary}`);
+  }
+  console.log(`§BROWSER_FORMAT pass=${pass}/${CASES.length}`);
+  window.__done = pass + '/' + CASES.length;
+})();
+</script></body></html>

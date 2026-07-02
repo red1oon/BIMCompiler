@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!-- index.html — ISOLATED typed-NL sandbox. Self-contained: local sql.js + local
+     Hospital_meta.db + decoder.js. References NOTHING under deploy/dev. Voice removed
+     (typed-only, per 2026-06-06 decision). Serve from this folder:
+       cd sandbox_nlp && python3 -m http.server 8131  →  http://localhost:8131 -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask the Building — Hospital (typed NL sandbox)</title>
+<style>
+  body { margin:0; background:#0e1116; color:#e6edf3; font:15px/1.45 'Segoe UI',system-ui,sans-serif; }
+  header { padding:14px 18px; border-bottom:1px solid #222; }
+  header h1 { margin:0; font-size:18px; } header .sub { color:#8b949e; font-size:12px; margin-top:3px; }
+  .wrap { max-width:780px; margin:0 auto; padding:18px; }
+  .bar { display:flex; gap:8px; }
+  #q { flex:1; background:#161b22; border:1px solid #30363d; color:#fff; border-radius:8px; padding:12px 14px; font-size:16px; outline:none; }
+  #q:focus { border-color:#388bfd; }
+  #go { background:#238636; color:#fff; border:0; border-radius:8px; padding:0 20px; font-size:15px; font-weight:600; cursor:pointer; }
+  .chips { margin:10px 0 4px; display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { background:#21262d; color:#58a6ff; border:1px solid #30363d; border-radius:14px; padding:4px 12px; font-size:12px; cursor:pointer; }
+  .chip:hover { background:#30363d; }
+  #out { margin-top:18px; }
+  .card { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:16px; margin-bottom:12px; }
+  .big { font-size:28px; font-weight:700; color:#fff; }
+  .desc { color:#8b949e; font-size:13px; margin-top:2px; }
+  .sql { font-family:ui-monospace,Menlo,monospace; font-size:11px; color:#6e7681; background:#0d1117; border-radius:6px; padding:8px 10px; margin-top:10px; white-space:pre-wrap; word-break:break-word; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; }
+  th,td { text-align:left; padding:5px 8px; border-bottom:1px solid #21262d; }
+  th { color:#58a6ff; } td { font-family:ui-monospace,monospace; }
+  .warn { color:#d29922; } .err { color:#f85149; }
+  #status { color:#8b949e; font-size:13px; padding:8px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🏥 Ask the Building <span style="font-weight:400;color:#8b949e">— Hospital</span></h1>
+  <div class="sub">Type plain English. It decodes to a DB query and answers. 63,415 elements · offline · no server, no LLM.</div>
+</header>
+<div class="wrap">
+  <div class="bar">
+    <input id="q" placeholder="show me all the doors…" autocomplete="off" autofocus>
+    <button id="go">Ask</button>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div id="status">Loading Hospital database…</div>
+  <div id="out"></div>
+</div>
+
+<script src="sql-wasm.js"></script>
+<script src="decoder.js"></script>
+<script>
+const EXAMPLES = ['show me all the doors','how many windows','total cost','how much do the doors cost',
+  'cost of structural','pipes on level 3','what disciplines are there','how many storeys','highlight all light fixtures'];
+let DB = null;
+
+async function boot() {
+  const SQL = await initSqlJs({ locateFile: f => f });           // local sql-wasm.wasm
+  const buf = await (await fetch('Hospital_meta.db')).arrayBuffer();
+  DB = new SQL.Database(new Uint8Array(buf));
+  const n = DB.exec('SELECT COUNT(*) FROM elements_meta')[0].values[0][0];
+  document.getElementById('status').textContent = `Ready — ${n.toLocaleString()} elements loaded. Try a question.`;
+  console.log('§READY elements=' + n);
+}
+
+function run(text) {
+  const out = document.getElementById('out');
+  const d = BimDecoder.decode(text);
+  console.log('§DECODE "' + text + '" → kind=' + d.kind + ' desc=' + d.desc);
+  if (d.kind === 'none') {
+    out.innerHTML = `<div class="card warn">🤔 Didn't understand "<b>${esc(text)}</b>".<div class="desc">Try an element (doors, walls, pipes), a cost, a discipline, or a level.</div></div>`;
+    return;
+  }
+  try {
+    let html = '';
+    if (d.kind === 'cost') {
+      const r = DB.exec(d.sql, d.params)[0].values[0];
+      html = `<div class="big">RM ${Number(r[0]||0).toLocaleString()}</div><div class="desc">${esc(d.desc)} · ${Number(r[1]||0).toLocaleString()} elements (extracted from qto_cache)</div>`;
+    } else if (d.kind === 'qto') {
+      const r = DB.exec(d.sql, d.params)[0].values[0];
+      const unit = {M2:'m²',M:'m',M3:'m³'}[d.uom]||d.uom;
+      html = `<div class="big">${Number(r[0]||0).toLocaleString()} ${unit}</div><div class="desc">${esc(d.desc)} · ${Number(r[1]||0).toLocaleString()} elements (extracted dimensions)</div>`;
+    } else if (d.kind === 'rank') {
+      const res = DB.exec(d.sql, d.params)[0] || {values:[[null,0]]};
+      const [lbl,cnt] = res.values[0];
+      html = `<div class="big">${esc(lbl==null?'—':String(lbl))}</div><div class="desc">${esc(d.desc)} · ${Number(cnt||0).toLocaleString()} elements</div>`;
+    } else if (d.kind === 'list') {
+      const n = DB.exec(d.countSql, d.countParams)[0].values[0][0];
+      const res = DB.exec(d.sql, d.params)[0] || {columns:[],values:[]};
+      html = `<div class="big">${n.toLocaleString()}</div><div class="desc">${esc(d.desc)} — showing first ${res.values.length}</div>${table(res)}`;
+    } else { // count / group
+      const res = DB.exec(d.sql, d.params)[0] || {columns:[],values:[]};
+      const ci = res.columns.indexOf('count');
+      const tot = res.values.reduce((s,v)=>s+(v[ci]||0),0);
+      html = `<div class="big">${tot.toLocaleString()}</div><div class="desc">${esc(d.desc)}</div>${table(res)}`;
+    }
+    out.innerHTML = `<div class="card">${html}<div class="sql">${esc(d.sql)}</div></div>`;
+    console.log('§RESULT ok kind=' + d.kind);
+  } catch (e) {
+    out.innerHTML = `<div class="card err">Query error: ${esc(e.message)}</div>`;
+    console.log('§ERR ' + e.message);
+  }
+}
+function table(res) {
+  if (!res.values.length) return '<div class="desc warn">No rows.</div>';
+  const rows = res.values.slice(0, 25);
+  let h = '<table><tr>' + res.columns.map(c=>`<th>${esc(c)}</th>`).join('') + '</tr>';
+  h += rows.map(v=>'<tr>'+v.map(x=>`<td>${esc(x==null?'—':String(x))}</td>`).join('')+'</tr>').join('');
+  if (res.values.length>25) h += `<tr><td colspan="${res.columns.length}" class="desc">… ${res.values.length-25} more</td></tr>`;
+  return h + '</table>';
+}
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+const chips = document.getElementById('chips');
+EXAMPLES.forEach(t => { const b=document.createElement('span'); b.className='chip'; b.textContent=t;
+  b.onclick=()=>{ document.getElementById('q').value=t; if(DB) run(t); }; chips.appendChild(b); });
+document.getElementById('go').onclick = () => DB && run(document.getElementById('q').value);
+document.getElementById('q').addEventListener('keydown', e => { if(e.key==='Enter' && DB) run(e.target.value); });
+boot();
+</script>
+</body>
+</html>

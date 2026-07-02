@@ -1,0 +1,15 @@
+{
+  "__meta": {
+    "spec": "prompts/IDEMPIERE_TOUR_GUIDE.md + docs/TourGuideHostContract.md",
+    "host": "idempiere",
+    "note": "Maps each help_ops.json O2C step (keyed by AD table name) to idempiere's AD window. The KEYS are the agreed vocabulary the frontend lane (IDEMPIERE_RECORD_PANEL.md) tags onto its DOM; this file does NOT tag chrome and contains NO coach logic. coverage defaults to 'partial' (op-log only) until the engine read seam + real Fact_Acct land (§13.7) → 'complete'.",
+    "order": "Order-to-Cash chain of real Sales Order #80001 ($100.70), traced in docs/HelpO2C.md",
+    "globalsExpected": ["IdmpHost.trace", "IdmpHost.focus", "IdmpHost.openTab", "IdmpHost.has", "IdmpHost.locate"]
+  },
+  "o2c":             { "kind": "overview", "window": null,            "coverage": "n/a" },
+  "c_order":         { "window": "Sales Order",       "table": "c_order",          "record": "#80001", "coverage": "partial" },
+  "m_inout":         { "window": "Shipment (Customer)", "table": "m_inout",        "coverage": "partial" },
+  "c_invoice":       { "window": "Sales Invoice",     "table": "c_invoice",        "coverage": "partial" },
+  "c_payment":       { "window": "Payment",           "table": "c_payment",        "coverage": "partial" },
+  "c_allocationline":{ "window": "Allocation",        "table": "c_allocationline", "coverage": "partial" }
+}

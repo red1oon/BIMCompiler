@@ -1,0 +1,5822 @@
+{
+  "source": "db:build/erp/glassbowl_data.db",
+  "errors": 0,
+  "warns": 706,
+  "rubbish": 263,
+  "findings": [
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.c_allocationhdr_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationhdr.c_allocationhdr_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.documentno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.datetrx",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.dateacct",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.c_currency_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationhdr.c_currency_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.approvalamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.ismanual",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.docstatus",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.docaction",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.isapproved",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.processing",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.posted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.processedon",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.c_allocationhdr_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.reversal_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationhdr.reversal_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationhdr.c_doctype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationhdr.c_doctype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_allocationline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_allocationline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.allocationno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.datetrx",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.ismanual",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_invoice_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_invoice_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_payment_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_payment_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_cashline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_cashline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.amount",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.discountamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.writeoffamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.overunderamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_allocationhdr_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_allocationhdr_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_allocationline_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_allocationline.c_banktransfer_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_allocationline.c_banktransfer_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.c_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.value",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.name",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.name2",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.issummary",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_bp_group_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.c_bp_group_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.isonetime",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.isprospect",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.isvendor",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.iscustomer",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.isemployee",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.issalesrep",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.referenceno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.duns",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.url",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.ad_language",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.taxid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.istaxexempt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_invoiceschedule_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.c_invoiceschedule_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.rating",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.salesvolume",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.numberemployees",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.naics",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.firstsale",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.acqusitioncost",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.potentiallifetimevalue",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.actuallifetimevalue",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.shareofcustomer",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.paymentrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.so_creditlimit",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.so_creditused",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_paymentterm_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.c_paymentterm_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.m_pricelist_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.m_pricelist_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.m_discountschema_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.m_discountschema_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_dunning_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.c_dunning_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.isdiscountprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.so_description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.poreference",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.paymentrulepo",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.po_pricelist_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.po_pricelist_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.po_discountschema_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.po_discountschema_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.po_paymentterm_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.po_paymentterm_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.documentcopies",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_greeting_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.c_greeting_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.invoicerule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.deliveryrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.freightcostrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.deliveryviarule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.salesrep_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.salesrep_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.sendemail",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.bpartner_parent_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.bpartner_parent_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.invoice_printformat_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.invoice_printformat_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.socreditstatus",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.shelflifeminpct",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.ad_orgbp_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.ad_orgbp_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.flatdiscount",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.totalopenbalance",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.dunninggrace",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_taxgroup_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.c_taxgroup_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.logo_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.logo_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.ispotaxexempt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.ismanufacturer",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.c_bpartner_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.customerprofileid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.default1099box_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_bpartner.default1099box_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_bpartner.is1099vendor",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_elementvalue.c_elementvalue_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_invoice_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_invoice_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.issotrx",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.documentno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.docstatus",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.docaction",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.processing",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.posted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_doctype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_doctype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_doctypetarget_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_doctypetarget_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isapproved",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.istransferred",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.salesrep_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.salesrep_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.dateinvoiced",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.dateprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.dateacct",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_bpartner_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_bpartner_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.poreference",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isdiscountprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.dateordered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_currency_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_currency_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.paymentrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_paymentterm_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_paymentterm_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.chargeamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.totallines",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.grandtotal",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.m_pricelist_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.m_pricelist_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.istaxincluded",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_campaign_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_campaign_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_project_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_project_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_activity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_activity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.ispaid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_payment_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_payment_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_cashline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_cashline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.createfrom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.generateto",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.sendemail",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.ad_user_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.ad_user_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.copyfrom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isselfservice",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.ad_orgtrx_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.ad_orgtrx_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.user1_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.user1_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.user2_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.user2_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_conversiontype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_conversiontype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.ispayschedulevalid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.ref_invoice_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.ref_invoice_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isindispute",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.invoicecollectiontype",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.m_rma_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.m_rma_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.dunninggrace",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_dunninglevel_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_dunninglevel_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.reversal_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.reversal_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.processedon",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_cashplanline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_cashplanline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_invoice_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isfixedassetinvoice",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.relatedinvoice_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.relatedinvoice_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.isoverridecurrencyrate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.currencyrate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.createlinesfrom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_department_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_department_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_costcenter_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_costcenter_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoice.c_employee_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoice.c_employee_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_invoiceline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_invoiceline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_invoice_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_invoice_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_orderline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_orderline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.m_inoutline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.m_inoutline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.line",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.m_product_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.m_product_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.qtyinvoiced",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.pricelist",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.priceactual",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.pricelimit",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.linenetamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_uom_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_uom_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_tax_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_tax_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.s_resourceassignment_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.s_resourceassignment_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.a_asset_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.a_asset_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.taxamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.m_attributesetinstance_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.m_attributesetinstance_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.isdescription",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.isprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.linetotalamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.ref_invoiceline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.ref_invoiceline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.qtyentered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.priceentered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_project_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_project_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_projectphase_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_projectphase_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_projecttask_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_projecttask_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.rrstartdate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.rramt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_campaign_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_campaign_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_activity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_activity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.user1_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.user1_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.user2_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.user2_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.ad_orgtrx_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.ad_orgtrx_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.m_rmaline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.m_rmaline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.a_createasset",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.a_processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.a_capvsexp",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.a_asset_group_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.a_asset_group_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_invoiceline_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.isfixedassetinvoice",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_1099box_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_1099box_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_department_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_department_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_costcenter_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_costcenter_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_invoiceline.c_employee_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_invoiceline.c_employee_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.issotrx",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.documentno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.docstatus",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.docaction",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.processing",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_doctype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_doctype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_doctypetarget_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_doctypetarget_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isapproved",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.iscreditapproved",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isdelivered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isinvoiced",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.istransferred",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isselected",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.salesrep_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.salesrep_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.dateordered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.datepromised",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.dateprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.dateacct",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_bpartner_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_bpartner_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.poreference",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isdiscountprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_currency_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_currency_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.paymentrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_paymentterm_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_paymentterm_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.invoicerule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.deliveryrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.freightcostrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.freightamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.deliveryviarule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.m_shipper_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.m_shipper_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.chargeamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.priorityrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.totallines",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.grandtotal",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.m_warehouse_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.m_warehouse_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.m_pricelist_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.m_pricelist_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.istaxincluded",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_campaign_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_campaign_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_project_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_project_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_activity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_activity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.posted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_payment_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_payment_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_cashline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_cashline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.sendemail",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ad_user_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.ad_user_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.copyfrom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isselfservice",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ad_orgtrx_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.ad_orgtrx_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.user1_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.user1_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.user2_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.user2_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_conversiontype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_conversiontype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.bill_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.bill_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.bill_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.bill_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.bill_user_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.bill_user_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.pay_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.pay_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.pay_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.pay_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ref_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.ref_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.isdropship",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.volume",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.weight",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ordertype",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_pos_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_pos_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.amounttendered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.amountrefunded",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.link_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.link_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.m_freightcategory_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.m_freightcategory_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.dropship_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.dropship_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.dropship_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.dropship_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.dropship_user_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.dropship_user_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.promotioncode",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_ordersource_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_ordersource_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.processedon",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ispayschedulevalid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_cashplanline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_cashplanline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_order_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.shippingrateinquiry",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.ispriviledgedrate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_opportunity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_opportunity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.quotationorder_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.quotationorder_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_department_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_department_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_order.c_costcenter_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_order.c_costcenter_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_orderline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_orderline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.line",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_bpartner_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_bpartner_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.dateordered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.datepromised",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.datedelivered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.dateinvoiced",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.m_product_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.m_product_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.m_warehouse_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.m_warehouse_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_uom_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_uom_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.qtyordered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.qtyreserved",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.qtydelivered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.qtyinvoiced",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.m_shipper_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.m_shipper_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_currency_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_currency_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.pricelist",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.priceactual",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.pricelimit",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.linenetamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.discount",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.freightamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_tax_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_tax_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.s_resourceassignment_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.s_resourceassignment_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.ref_orderline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.ref_orderline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.m_attributesetinstance_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.m_attributesetinstance_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.isdescription",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.qtyentered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.priceentered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_project_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_project_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.pricecost",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.qtylostsales",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_projectphase_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_projectphase_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_projecttask_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_projecttask_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.rrstartdate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.rramt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_campaign_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_campaign_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_activity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_activity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.user1_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.user1_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.user2_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.user2_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.ad_orgtrx_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.ad_orgtrx_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.link_orderline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.link_orderline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.pp_cost_collector_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.pp_cost_collector_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.m_promotion_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.m_promotion_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_orderline_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.createshipment",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.createproduction",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_department_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_department_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_orderline.c_costcenter_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_orderline.c_costcenter_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_payment_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_payment_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.documentno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.datetrx",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isreceipt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_doctype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_doctype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.trxtype",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_bankaccount_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_bankaccount_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_invoice_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_invoice_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_bp_bankaccount_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_bp_bankaccount_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_paymentbatch_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_paymentbatch_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.tendertype",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.creditcardtype",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.creditcardnumber",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.creditcardvv",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.creditcardexpmm",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.creditcardexpyy",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.micr",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.routingno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.accountno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.checkno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_name",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_street",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_city",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_state",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_zip",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_ident_dl",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_ident_ssn",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_email",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.voiceauthcode",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.orig_trxid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.ponum",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_currency_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_currency_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.payamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.discountamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.writeoffamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.taxamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isapproved",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_pnref",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_result",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_respmsg",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_authcode",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_avsaddr",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_avszip",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_info",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.processing",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.oprocessing",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.docstatus",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.docaction",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isreconciled",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isallocated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isonline",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.posted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isoverunderpayment",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.overunderamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.a_country",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_project_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_project_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isselfservice",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.chargeamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isdelayedcapture",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_authcode_dc",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_cvv2match",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_pnref_dc",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.swipe",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.ad_orgtrx_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.ad_orgtrx_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_campaign_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_campaign_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_activity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_activity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.user1_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.user1_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.user2_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.user2_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_conversiontype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_conversiontype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.dateacct",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isprepayment",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.ref_payment_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.ref_payment_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.reversal_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.reversal_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_cashbook_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_cashbook_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.processedon",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_payment_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_postendertype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_postendertype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_paymentprocessor_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_paymentprocessor_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.customerpaymentprofileid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.customerprofileid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.customeraddressid",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isvoided",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.r_voidmsg",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_depositbatch_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_depositbatch_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.iban",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.swiftcode",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.currencyrate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.convertedamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.isoverridecurrencyrate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_banktransfer_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_banktransfer_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_department_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_department_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_costcenter_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_costcenter_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "c_payment.c_employee_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "c_payment.c_employee_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "fact_acct.fact_acct_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "fact_acct.c_acctschema_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "fact_acct.account_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "fact_acct.c_period_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.m_inout_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.m_inout_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.issotrx",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.documentno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.docaction",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.docstatus",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.posted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.processing",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_doctype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_doctype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_order_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_order_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.dateordered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.isprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.movementtype",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.movementdate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.dateacct",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_bpartner_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_bpartner_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.m_warehouse_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.m_warehouse_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.poreference",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.deliveryrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.freightcostrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.freightamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.deliveryviarule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.m_shipper_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.m_shipper_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.chargeamt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.priorityrule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.dateprinted",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_invoice_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_invoice_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.createfrom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.generateto",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.sendemail",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.ad_user_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.ad_user_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.salesrep_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.salesrep_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.nopackages",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.pickdate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.shipdate",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.trackingno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.ad_orgtrx_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.ad_orgtrx_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_project_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_project_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_campaign_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_campaign_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_activity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_activity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.user1_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.user1_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.user2_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.user2_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.datereceived",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.isintransit",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.ref_inout_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.ref_inout_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.createconfirm",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.createpackage",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.isapproved",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.isindispute",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.volume",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.weight",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.m_rma_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.m_rma_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.reversal_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.reversal_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.isdropship",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.dropship_bpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.dropship_bpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.dropship_location_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.dropship_location_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.dropship_user_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.dropship_user_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.processedon",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.m_inout_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.freightcharges",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.shipperaccount",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.insurance",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.fob",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.isalternatereturnaddress",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.returnbpartner_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.returnbpartner_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.returnlocation_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.returnlocation_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.returnuser_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.returnuser_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.createlinesfrom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_costcenter_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_costcenter_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inout.c_department_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inout.c_department_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.m_inoutline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.m_inoutline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.line",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.m_inout_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.m_inout_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_orderline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_orderline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.m_locator_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.m_locator_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.m_product_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.m_product_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_uom_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_uom_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.movementqty",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.isinvoiced",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.m_attributesetinstance_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.m_attributesetinstance_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.isdescription",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.confirmedqty",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.pickedqty",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.scrappedqty",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.targetqty",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.ref_inoutline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.ref_inoutline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.processed",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.qtyentered",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_charge_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_charge_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_project_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_project_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_projectphase_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_projectphase_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_projecttask_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_projecttask_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_campaign_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_campaign_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_activity_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_activity_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.user1_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.user1_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.user2_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.user2_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.ad_orgtrx_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.ad_orgtrx_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.m_rmaline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.m_rmaline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.reversalline_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.reversalline_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.m_inoutline_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.qtyoverreceipt",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.isautoproduce",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_costcenter_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_costcenter_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_inoutline.c_department_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_inoutline.c_department_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_product_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.m_product_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.ad_client_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.ad_org_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isactive",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.created",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.createdby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.updated",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.updatedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.value",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.name",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.description",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.documentnote",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.help",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.upc",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.sku",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.c_uom_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.c_uom_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.salesrep_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.salesrep_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.issummary",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isstocked",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.ispurchased",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.issold",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isbom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isinvoiceprintdetails",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.ispicklistprintdetails",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isverified",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.c_revenuerecognition_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.c_revenuerecognition_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_product_category_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.m_product_category_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.classification",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.volume",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.weight",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.shelfwidth",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.shelfheight",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.shelfdepth",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.unitsperpallet",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.c_taxcategory_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.c_taxcategory_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.s_resource_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.s_resource_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.discontinued",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.discontinuedby",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.processing",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.s_expensetype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.s_expensetype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.producttype",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.imageurl",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.descriptionurl",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.guaranteedays",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.r_mailtext_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.r_mailtext_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.versionno",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_attributeset_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.m_attributeset_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_attributesetinstance_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.m_attributesetinstance_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.downloadurl",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_freightcategory_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.m_freightcategory_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_locator_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.m_locator_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.guaranteedaysmin",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.iswebstorefeatured",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isselfservice",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.c_subscriptiontype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.c_subscriptiontype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isdropship",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isexcludeautodelivery",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.group1",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.group2",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.istoformule",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.lowlevel",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.unitsperpack",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.discontinuedat",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.copyfrom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_product_uu",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.m_parttype_id",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "inferred-fk",
+      "where": "m_product.m_parttype_id",
+      "detail": "no declared FK, name ends _id → assumed Table Direct"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.iskanban",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.ismanufactured",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isphantom",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isownbox",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.customstariffnumber",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "warn",
+      "code": "undeducible-type",
+      "where": "m_product.isautoproduce",
+      "detail": "unknown SQL type \"\" → String"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_allocationhdr.c_allocationhdr_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_allocationline.c_allocationline_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_bpartner.c_bpartner_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_elementvalue.c_elementvalue_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_invoice.c_invoice_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_invoiceline.c_invoiceline_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_order.c_order_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_orderline.c_orderline_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "c_payment.c_payment_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "fact_acct.fact_acct_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "m_inout.m_inout_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "m_inoutline.m_inoutline_id",
+      "detail": "no PK — *_id chosen as key"
+    },
+    {
+      "severity": "rubbish",
+      "code": "positive-key",
+      "where": "m_product.m_product_id",
+      "detail": "no PK — *_id chosen as key"
+    }
+  ]
+}

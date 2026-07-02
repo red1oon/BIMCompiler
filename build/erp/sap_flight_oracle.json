@@ -1,0 +1,43 @@
+{
+  "__README": "SAP /DMO/ Flight Reference Scenario oracle — Apache-2.0 (github.com/SAP-samples/abap-platform-refscen-flight). SOURCES: carrier_id/connection_id/airport_id are hardcoded in /DMO/CL_FLIGHT_DATA_GENERATOR VALUE #() literals (extracted 2026-06-14). Supplement price (2.30 EUR) is hardcoded in the same class ('Hot Chocolate', supplement_category=beverage). flight_price and IDs (travel_id/agency_id/customer_id/booking_id) are PLACEHOLDER — the ABAP generator assigns these dynamically; replace with a real export when available. total_price satisfies the kernel invariant: booking_fee + Σflight_price + Σsupplement_price = 527.30. SCOPE: witnesses document-lifecycle verbs ONLY (CREATE_DOCUMENT/CREATE_LINE/SET_STATUS) — the /DMO/ model has no FI tables, so POST/ALLOCATE/MATCH are NOT exercised here. Runner: scripts/poc_sap_flight.js.",
+  "meta": {
+    "travel_id": "T00001",
+    "agency_id": "A00001",
+    "customer_id": "C00001",
+    "currency": "EUR",
+    "booking_fee": 25.00,
+    "total_price": 527.30,
+    "overall_status": "A",
+    "source": "derived-from-abap-literals 2026-06-14; carrier/connection/supplement hardcoded in /DMO/CL_FLIGHT_DATA_GENERATOR; flight_price=placeholder; IDs=placeholder; refresh from real export when available"
+  },
+  "reference": {
+    "carrier": { "carrier_id": "LH", "name": "Deutsche Lufthansa AG", "currency_code": "EUR", "hardcoded": true },
+    "connection": { "carrier_id": "LH", "connection_id": "0400", "airport_from_id": "FRA", "airport_to_id": "JFK", "departure_time": "101000", "arrival_time": "113400", "distance": 6162, "distance_unit": "KM", "hardcoded": true },
+    "supplement_product": { "description": "Hot Chocolate", "supplement_category": "beverage", "price_hardcoded": 2.30, "currency_code": "EUR", "hardcoded": true }
+  },
+  "bookings": [
+    {
+      "travel_id": "T00001",
+      "booking_id": 1,
+      "customer_id": "C00001",
+      "carrier_id": "LH",
+      "connection_id": "0400",
+      "flight_date": "2026-09-15",
+      "flight_price": 500.00,
+      "currency_code": "EUR",
+      "booking_status": "B",
+      "__note": "carrier_id/connection_id hardcoded in ABAP source; flight_price=placeholder (ABAP computes dynamically from distance+occupancy)"
+    }
+  ],
+  "supplements": [
+    {
+      "travel_id": "T00001",
+      "booking_id": 1,
+      "booking_supplement_id": 1,
+      "supplement_id": "SUPP-0001",
+      "price": 2.30,
+      "currency_code": "EUR",
+      "__note": "price=2.30 EUR hardcoded in ABAP source ('Hot Chocolate', supplement_category=beverage); supplement_id=placeholder (ABAP assigns via sequence)"
+    }
+  ]
+}

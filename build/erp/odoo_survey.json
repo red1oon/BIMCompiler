@@ -1,0 +1,1011 @@
+{
+  "meta": {
+    "uid": 2,
+    "server_version": "17.0-20260528",
+    "db": "odoodemo",
+    "host": "localhost:8069",
+    "ts": "2026-06-10T03:11:32.968Z"
+  },
+  "modules": [
+    {
+      "name": "account",
+      "label": "Invoicing",
+      "category": "Invoicing"
+    },
+    {
+      "name": "account_add_gln",
+      "label": "Add Partner GLN",
+      "category": "Invoicing"
+    },
+    {
+      "name": "account_check_printing",
+      "label": "Check Printing Base",
+      "category": "Invoicing"
+    },
+    {
+      "name": "account_edi_ubl_cii",
+      "label": "Import/Export electronic invoices with UBL/CII",
+      "category": "Invoicing"
+    },
+    {
+      "name": "account_payment",
+      "label": "Payment - Account",
+      "category": "Invoicing"
+    },
+    {
+      "name": "account_payment_term",
+      "label": "Payment Term - Days end of month on the",
+      "category": "Invoicing"
+    },
+    {
+      "name": "analytic",
+      "label": "Analytic Accounting",
+      "category": "Invoicing"
+    },
+    {
+      "name": "auth_signup",
+      "label": "Signup",
+      "category": "Tools"
+    },
+    {
+      "name": "auth_totp",
+      "label": "Two-Factor Authentication (TOTP)",
+      "category": "Extra Tools"
+    },
+    {
+      "name": "auth_totp_mail",
+      "label": "2FA Invite mail",
+      "category": "Extra Tools"
+    },
+    {
+      "name": "auth_totp_portal",
+      "label": "TOTPortal",
+      "category": "Technical"
+    },
+    {
+      "name": "barcodes",
+      "label": "Barcode",
+      "category": "Technical"
+    },
+    {
+      "name": "barcodes_gs1_nomenclature",
+      "label": "Barcode - GS1 Nomenclature",
+      "category": "Technical"
+    },
+    {
+      "name": "base",
+      "label": "Base",
+      "category": "Technical"
+    },
+    {
+      "name": "base_import",
+      "label": "Base import",
+      "category": "Tools"
+    },
+    {
+      "name": "base_import_module",
+      "label": "Base import module",
+      "category": "Tools"
+    },
+    {
+      "name": "base_install_request",
+      "label": "Base - Module Install Request",
+      "category": "Technical"
+    },
+    {
+      "name": "base_setup",
+      "label": "Initial Setup Tools",
+      "category": "Technical"
+    },
+    {
+      "name": "bus",
+      "label": "IM Bus",
+      "category": "Technical"
+    },
+    {
+      "name": "digest",
+      "label": "KPI Digests",
+      "category": "Marketing"
+    },
+    {
+      "name": "google_gmail",
+      "label": "Google Gmail",
+      "category": "Technical"
+    },
+    {
+      "name": "http_routing",
+      "label": "Web Routing",
+      "category": "Technical"
+    },
+    {
+      "name": "iap",
+      "label": "In-App Purchases",
+      "category": "Tools"
+    },
+    {
+      "name": "iap_mail",
+      "label": "IAP / Mail",
+      "category": "Tools"
+    },
+    {
+      "name": "mail",
+      "label": "Discuss",
+      "category": "Discuss"
+    },
+    {
+      "name": "mail_bot",
+      "label": "OdooBot",
+      "category": "Discuss"
+    },
+    {
+      "name": "onboarding",
+      "label": "Onboarding Toolbox",
+      "category": "Technical"
+    },
+    {
+      "name": "partner_autocomplete",
+      "label": "Partner Autocomplete",
+      "category": "Tools"
+    },
+    {
+      "name": "payment",
+      "label": "Payment Engine",
+      "category": "Technical"
+    },
+    {
+      "name": "phone_validation",
+      "label": "Phone Numbers Validation",
+      "category": "Technical"
+    },
+    {
+      "name": "portal",
+      "label": "Customer Portal",
+      "category": "Technical"
+    },
+    {
+      "name": "privacy_lookup",
+      "label": "Privacy",
+      "category": "Technical"
+    },
+    {
+      "name": "product",
+      "label": "Products & Pricelists",
+      "category": "Sales"
+    },
+    {
+      "name": "purchase",
+      "label": "Purchase",
+      "category": "Purchase"
+    },
+    {
+      "name": "purchase_stock",
+      "label": "Purchase Stock",
+      "category": "Purchase"
+    },
+    {
+      "name": "resource",
+      "label": "Resource",
+      "category": "Technical"
+    },
+    {
+      "name": "sale",
+      "label": "Sales",
+      "category": "Sales"
+    },
+    {
+      "name": "sale_async_emails",
+      "label": "Sales - Async Emails",
+      "category": "Sales"
+    },
+    {
+      "name": "sale_management",
+      "label": "Sales",
+      "category": "Sales"
+    },
+    {
+      "name": "sale_pdf_quote_builder",
+      "label": "Sales PDF Quotation Builder",
+      "category": "Sales"
+    },
+    {
+      "name": "sale_product_configurator",
+      "label": "Sale Product Configurator",
+      "category": "Technical"
+    },
+    {
+      "name": "sale_purchase",
+      "label": "Sale Purchase",
+      "category": "Technical"
+    },
+    {
+      "name": "sale_purchase_stock",
+      "label": "MTO Sale <-> Purchase",
+      "category": "Technical"
+    },
+    {
+      "name": "sale_sms",
+      "label": "Sale - SMS",
+      "category": "Technical"
+    },
+    {
+      "name": "sale_stock",
+      "label": "Sales and Warehouse Management",
+      "category": "Technical"
+    },
+    {
+      "name": "sales_team",
+      "label": "Sales Teams",
+      "category": "Sales"
+    },
+    {
+      "name": "sms",
+      "label": "SMS gateway",
+      "category": "Tools"
+    },
+    {
+      "name": "snailmail",
+      "label": "Snail Mail",
+      "category": "Tools"
+    },
+    {
+      "name": "snailmail_account",
+      "label": "Snail Mail - Account",
+      "category": "Tools"
+    },
+    {
+      "name": "spreadsheet",
+      "label": "Spreadsheet",
+      "category": "Technical"
+    },
+    {
+      "name": "spreadsheet_account",
+      "label": "Spreadsheet Accounting Formulas",
+      "category": "Accounting"
+    },
+    {
+      "name": "spreadsheet_dashboard",
+      "label": "Spreadsheet dashboard",
+      "category": "Technical"
+    },
+    {
+      "name": "spreadsheet_dashboard_account",
+      "label": "Spreadsheet dashboard for accounting",
+      "category": "Technical"
+    },
+    {
+      "name": "spreadsheet_dashboard_purchase",
+      "label": "Spreadsheet dashboard for purchases",
+      "category": "Technical"
+    },
+    {
+      "name": "spreadsheet_dashboard_purchase_stock",
+      "label": "Spreadsheet dashboard for purchases",
+      "category": "Technical"
+    },
+    {
+      "name": "spreadsheet_dashboard_sale",
+      "label": "Spreadsheet dashboard for sales",
+      "category": "Technical"
+    },
+    {
+      "name": "spreadsheet_dashboard_stock_account",
+      "label": "Spreadsheet dashboard for stock",
+      "category": "Technical"
+    },
+    {
+      "name": "stock",
+      "label": "Inventory",
+      "category": "Inventory"
+    },
+    {
+      "name": "stock_account",
+      "label": "WMS Accounting",
+      "category": "Technical"
+    },
+    {
+      "name": "stock_sms",
+      "label": "Stock - SMS",
+      "category": "Technical"
+    },
+    {
+      "name": "uom",
+      "label": "Units of measure",
+      "category": "Sales"
+    },
+    {
+      "name": "utm",
+      "label": "UTM Trackers",
+      "category": "Technical"
+    },
+    {
+      "name": "web",
+      "label": "Web",
+      "category": "Technical"
+    },
+    {
+      "name": "web_editor",
+      "label": "Web Editor",
+      "category": "Technical"
+    },
+    {
+      "name": "web_tour",
+      "label": "Tours",
+      "category": "Technical"
+    },
+    {
+      "name": "web_unsplash",
+      "label": "Unsplash Image Library",
+      "category": "Technical"
+    }
+  ],
+  "counts": {
+    "res.partner": 38,
+    "res.company": 2,
+    "res.currency": 1,
+    "product.template": 30,
+    "product.product": 35,
+    "product.category": 9,
+    "uom.uom": 28,
+    "account.account": 47,
+    "account.journal": 8,
+    "account.tax": 2,
+    "account.payment.term": 11,
+    "account.fiscal.position": 0,
+    "sale.order": 27,
+    "sale.order.line": 56,
+    "crm.lead": null,
+    "purchase.order": 13,
+    "purchase.order.line": 24,
+    "stock.picking": 31,
+    "stock.move": 59,
+    "stock.move.line": 51,
+    "stock.quant": 43,
+    "stock.location": 22,
+    "stock.warehouse": 2,
+    "stock.valuation.layer": 13,
+    "account.move": 34,
+    "account.move.line": 99,
+    "account.payment": 3,
+    "account.bank.statement": 1,
+    "account.bank.statement.line": 8,
+    "account.full.reconcile": 1,
+    "account.partial.reconcile": 3,
+    "account.analytic.line": 0,
+    "account.analytic.account": 19,
+    "account.report": 3,
+    "account.report.line": 0,
+    "ir.actions.report": 41,
+    "base.automation": null,
+    "ir.cron": 18,
+    "ir.actions.server": 64,
+    "mail.template": 17,
+    "mrp.production": null,
+    "mrp.bom": null,
+    "project.project": null,
+    "project.task": null,
+    "hr.employee": null,
+    "pos.order": null,
+    "repair.order": null,
+    "account.asset": null,
+    "sale.subscription": null,
+    "helpdesk.ticket": null
+  },
+  "splits": {
+    "res.partner.customer": 4,
+    "sale.order.state": [
+      {
+        "state": "draft",
+        "n": 4
+      },
+      {
+        "state": "sent",
+        "n": 1
+      },
+      {
+        "state": "sale",
+        "n": 22
+      },
+      {
+        "state": "cancel",
+        "n": 0
+      }
+    ],
+    "purchase.order.state": [
+      {
+        "state": "draft",
+        "n": 6
+      },
+      {
+        "state": "purchase",
+        "n": 6
+      },
+      {
+        "state": "sent",
+        "n": 1
+      }
+    ],
+    "stock.picking.state": [
+      {
+        "state": "assigned",
+        "n": 15
+      },
+      {
+        "state": "confirmed",
+        "n": 3
+      },
+      {
+        "state": "done",
+        "n": 7
+      },
+      {
+        "state": "draft",
+        "n": 6
+      }
+    ],
+    "account.move.move_type": [
+      {
+        "move_type": "entry",
+        "n": 13
+      },
+      {
+        "move_type": "in_invoice",
+        "n": 6
+      },
+      {
+        "move_type": "in_refund",
+        "n": 2
+      },
+      {
+        "move_type": "out_invoice",
+        "n": 8
+      },
+      {
+        "move_type": "out_refund",
+        "n": 5
+      }
+    ],
+    "account.move.state": [
+      {
+        "state": "draft",
+        "n": 2
+      },
+      {
+        "state": "posted",
+        "n": 32
+      }
+    ],
+    "account.payment.state": [
+      {
+        "state": "posted",
+        "n": 3
+      }
+    ]
+  },
+  "samples": {
+    "account.report": [
+      "Generic Tax report",
+      "Group by: Account > Tax ",
+      "Group by: Tax > Account "
+    ],
+    "ir.actions.report": [
+      {
+        "name": "Statement",
+        "report_name": "account.report_statement",
+        "model": "account.bank.statement"
+      },
+      {
+        "name": "Invoices",
+        "report_name": "account.report_invoice_with_payments",
+        "model": "account.move"
+      },
+      {
+        "name": "Invoices without Payment",
+        "report_name": "account.report_invoice",
+        "model": "account.move"
+      },
+      {
+        "name": "Original Bills",
+        "report_name": "account.report_original_vendor_bill",
+        "model": "account.move"
+      },
+      {
+        "name": "Payment Receipt",
+        "report_name": "account.report_payment_receipt",
+        "model": "account.payment"
+      },
+      {
+        "name": "Model Overview",
+        "report_name": "base.report_irmodeloverview",
+        "model": "ir.model"
+      },
+      {
+        "name": "Technical guide",
+        "report_name": "base.report_irmodulereference",
+        "model": "ir.module.module"
+      },
+      {
+        "name": "Product Packaging (PDF)",
+        "report_name": "product.report_packagingbarcode",
+        "model": "product.packaging"
+      },
+      {
+        "name": "Product Packaging (ZPL)",
+        "report_name": "stock.label_product_packaging_view",
+        "model": "product.packaging"
+      },
+      {
+        "name": "Pricelist",
+        "report_name": "product.report_pricelist",
+        "model": "product.product"
+      },
+      {
+        "name": "Product Label (ZPL)",
+        "report_name": "stock.label_product_product_view",
+        "model": "product.product"
+      },
+      {
+        "name": "Product Routes Report",
+        "report_name": "stock.report_stock_rule",
+        "model": "product.template"
+      },
+      {
+        "name": "Product Label 4x12 (PDF)",
+        "report_name": "product.report_producttemplatelabel4x12",
+        "model": "product.template"
+      },
+      {
+        "name": "Product Label 4x12 No Price (PDF)",
+        "report_name": "product.report_producttemplatelabel4x12noprice",
+        "model": "product.template"
+      },
+      {
+        "name": "Product Label (PDF)",
+        "report_name": "product.report_producttemplatelabel_dymo",
+        "model": "product.template"
+      },
+      {
+        "name": "Product Label 2x7 (PDF)",
+        "report_name": "product.report_producttemplatelabel2x7",
+        "model": "product.template"
+      },
+      {
+        "name": "Product Label 4x7 (PDF)",
+        "report_name": "product.report_producttemplatelabel4x7",
+        "model": "product.template"
+      },
+      {
+        "name": "Purchase Order",
+        "report_name": "purchase.report_purchaseorder",
+        "model": "purchase.order"
+      },
+      {
+        "name": "Request for Quotation",
+        "report_name": "purchase.report_purchasequotation",
+        "model": "purchase.order"
+      },
+      {
+        "name": "Hash integrity result PDF",
+        "report_name": "account.report_hash_integrity",
+        "model": "res.company"
+      },
+      {
+        "name": "Preview External Report",
+        "report_name": "web.preview_externalreport",
+        "model": "res.company"
+      },
+      {
+        "name": "Report Layout Preview",
+        "report_name": "web.preview_layout_report",
+        "model": "res.company"
+      },
+      {
+        "name": "Preview Internal Report",
+        "report_name": "web.preview_internalreport",
+        "model": "res.company"
+      },
+      {
+        "name": "PDF Quote",
+        "report_name": "sale.report_saleorder",
+        "model": "sale.order"
+      },
+      {
+        "name": "Quotation / Order",
+        "report_name": "sale.report_saleorder_raw",
+        "model": "sale.order"
+      },
+      {
+        "name": "PRO-FORMA Invoice",
+        "report_name": "sale.report_saleorder_pro_forma",
+        "model": "sale.order"
+      },
+      {
+        "name": "Location Barcode",
+        "report_name": "stock.report_location_barcode",
+        "model": "stock.location"
+      },
+      {
+        "name": "Lot/Serial Number (ZPL)",
+        "report_name": "stock.label_lot_template_view",
+        "model": "stock.lot"
+      },
+      {
+        "name": "Lot/Serial Number (PDF)",
+        "report_name": "stock.report_lot_label",
+        "model": "stock.lot"
+      },
+      {
+        "name": "Reception Report Label",
+        "report_name": "stock.report_reception_report_label",
+        "model": "stock.move"
+      },
+      {
+        "name": "Reception Report",
+        "report_name": "stock.report_reception",
+        "model": "stock.picking"
+      },
+      {
+        "name": "Return slip",
+        "report_name": "stock.report_return_slip",
+        "model": "stock.picking"
+      },
+      {
+        "name": "Packages",
+        "report_name": "stock.report_picking_packages",
+        "model": "stock.picking"
+      },
+      {
+        "name": "Delivery Slip",
+        "report_name": "stock.report_deliveryslip",
+        "model": "stock.picking"
+      },
+      {
+        "name": "Picking Operations",
+        "report_name": "stock.report_picking",
+        "model": "stock.picking"
+      },
+      {
+        "name": "Operation type (PDF)",
+        "report_name": "stock.report_picking_type_label",
+        "model": "stock.picking.type"
+      },
+      {
+        "name": "Operation type (ZPL)",
+        "report_name": "stock.label_picking_type_view",
+        "model": "stock.picking.type"
+      },
+      {
+        "name": "Count Sheet",
+        "report_name": "stock.report_inventory",
+        "model": "stock.quant"
+      },
+      {
+        "name": "Package Barcode (ZPL)",
+        "report_name": "stock.label_package_template_view",
+        "model": "stock.quant.package"
+      },
+      {
+        "name": "Package Barcode with Content",
+        "report_name": "stock.report_package_barcode",
+        "model": "stock.quant.package"
+      },
+      {
+        "name": "Package Barcode (PDF)",
+        "report_name": "stock.report_package_barcode_small",
+        "model": "stock.quant.package"
+      }
+    ]
+  },
+  "absent": [
+    "crm.lead",
+    "base.automation",
+    "mrp.production",
+    "mrp.bom",
+    "project.project",
+    "project.task",
+    "hr.employee",
+    "pos.order",
+    "repair.order",
+    "account.asset",
+    "sale.subscription",
+    "helpdesk.ticket"
+  ],
+  "gap_inventory": {
+    "meta": {
+      "uid": 2,
+      "server_version": "17.0-20260528",
+      "db": "odoodemo",
+      "host": "localhost:8069",
+      "ts": "2026-06-10T03:11:32.968Z"
+    },
+    "captured_today": {
+      "scope": "ONE sale order chain (S00023) folded sell-side via agent.js + odoo_adapter.js",
+      "models_touched": [
+        "sale.order(1)",
+        "sale.order.line(of 1 SO)",
+        "stock.move(done, of that SO)",
+        "account.move(1 out_invoice)",
+        "account.move.line(GL of that 1 invoice)",
+        "account.payment(synthetic ALLOCATE)",
+        "account.full.reconcile(synthetic)"
+      ],
+      "note": "buy-side adapter (buildBuyEvents: purchase.order/stock.move-in/in_invoice/MATCH) EXISTS in odoo_adapter.js but agent.js runs ONLY the sell-side S00023 chain. No master data, no other documents pulled."
+    },
+    "areas": [
+      {
+        "area": "Master: Partners",
+        "has": 38,
+        "captured": 0,
+        "gap": "all 38 res.partner NOT extracted (migrate references partner only inside the 1 SO)",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Companies",
+        "has": 2,
+        "captured": 0,
+        "gap": "2 companies NOT extracted",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Currencies",
+        "has": 1,
+        "captured": 0,
+        "gap": "1 currency NOT extracted",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Products (tmpl/variant)",
+        "has": "30/35",
+        "captured": 0,
+        "gap": "30 templates / 35 variants NOT extracted as master; only product_id refs inside the 1 SO seen",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Product categories",
+        "has": 9,
+        "captured": 0,
+        "gap": "9 categories NOT extracted",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: UoM",
+        "has": 28,
+        "captured": 0,
+        "gap": "28 UoM NOT extracted",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Chart of Accounts",
+        "has": 47,
+        "captured": 0,
+        "gap": "47 accounts NOT extracted as master; agent takes Odoo's RESOLVED account strings inline on the 1 invoice GL",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Journals",
+        "has": 8,
+        "captured": 0,
+        "gap": "8 journals NOT extracted",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Taxes",
+        "has": 2,
+        "captured": 0,
+        "gap": "2 taxes (15% sale / 15% purchase) NOT extracted as master; tax amounts ride inline on the 1 invoice",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Payment terms",
+        "has": 11,
+        "captured": 0,
+        "gap": "11 payment terms NOT extracted",
+        "kind": "extraction"
+      },
+      {
+        "area": "Master: Fiscal positions",
+        "has": 0,
+        "captured": 0,
+        "gap": "0 in instance — n/a",
+        "kind": "n/a"
+      },
+      {
+        "area": "Sales orders",
+        "has": 27,
+        "captured": 1,
+        "gap": "26 of 27 sale.order NOT pulled (22 confirmed; agent re-pulls only S00023). 56 SO lines total",
+        "kind": "extraction"
+      },
+      {
+        "area": "CRM leads",
+        "has": "ABSENT(crm not installed)",
+        "captured": 0,
+        "gap": "crm.lead model absent — n/a",
+        "kind": "n/a"
+      },
+      {
+        "area": "Purchase orders",
+        "has": 13,
+        "captured": 0,
+        "gap": "ALL 13 purchase.order (6 confirmed) + 24 lines NOT pulled. Adapter buildBuyEvents EXISTS but agent.js never invokes it",
+        "kind": "extraction(adapter-ready)"
+      },
+      {
+        "area": "Inventory: pickings",
+        "has": 31,
+        "captured": "moves of 1 SO",
+        "gap": "ALL 31 stock.picking (7 done) NOT pulled as documents; agent reads only done stock.move lines tied to S00023",
+        "kind": "extraction"
+      },
+      {
+        "area": "Inventory: moves/move.lines",
+        "has": "59/51",
+        "captured": "subset of 1 SO",
+        "gap": "59 moves / 51 move.lines total; only the few for S00023 pulled",
+        "kind": "extraction"
+      },
+      {
+        "area": "Inventory: quants (on-hand)",
+        "has": 43,
+        "captured": 0,
+        "gap": "43 stock.quant (on-hand balances) NOT pulled — no opening-stock migration",
+        "kind": "extraction"
+      },
+      {
+        "area": "Inventory: locations/warehouses",
+        "has": "22/2",
+        "captured": 0,
+        "gap": "22 locations / 2 warehouses NOT pulled",
+        "kind": "extraction"
+      },
+      {
+        "area": "Inventory: valuation layers",
+        "has": 13,
+        "captured": 0,
+        "gap": "13 valuation layers (cost) NOT pulled — engine cost-valued GL is named-deferred (fold gap too)",
+        "kind": "both"
+      },
+      {
+        "area": "Acct: customer invoices (out_invoice)",
+        "has": 34,
+        "captured": 1,
+        "gap": "7 posted out_invoice; agent folds 1 (the S00023 invoice). 6 others NOT pulled",
+        "kind": "extraction"
+      },
+      {
+        "area": "Acct: vendor bills (in_invoice)",
+        "has": "6 (5 posted)",
+        "captured": 0,
+        "gap": "6 in_invoice NOT pulled; AP fold path exists in adapter but unused",
+        "kind": "extraction(adapter-ready)"
+      },
+      {
+        "area": "Acct: credit notes (out_refund/in_refund)",
+        "has": "5 out_refund / 2 in_refund",
+        "captured": 0,
+        "gap": "7 refunds NOT pulled. reverseCorrect/void fold proven (W-FOLD-REVERSE) but refund DOCS not extracted",
+        "kind": "both"
+      },
+      {
+        "area": "Acct: manual journals (entry)",
+        "has": "13 posted",
+        "captured": 0,
+        "gap": "13 manual journal entries NOT pulled; GL_Journal inter-org fold proven (e0e635c2) but these specific entries not extracted",
+        "kind": "both"
+      },
+      {
+        "area": "Acct: journal lines (GL)",
+        "has": 99,
+        "captured": "~3-4 (1 invoice)",
+        "gap": "99 account.move.line total; only the GL of the 1 invoice folded",
+        "kind": "extraction"
+      },
+      {
+        "area": "Acct: payments",
+        "has": 3,
+        "captured": "1 synthetic",
+        "gap": "3 real account.payment NOT pulled; agent fabricates a synthetic ALLOCATE (payment_id='pay'+invId) rather than reading the real payment",
+        "kind": "extraction"
+      },
+      {
+        "area": "Acct: bank statements",
+        "has": "1 stmt / 8 lines",
+        "captured": 0,
+        "gap": "bank statement + 8 statement lines NOT pulled; no bank-rec migration",
+        "kind": "both"
+      },
+      {
+        "area": "Acct: reconciliation",
+        "has": "1 full / 3 partial",
+        "captured": "1 synthetic",
+        "gap": "real reconcile edges (1 full, 3 partial) NOT pulled; ALLOCATE is synthesized",
+        "kind": "extraction"
+      },
+      {
+        "area": "Acct: analytic",
+        "has": "19 accts / 0 lines",
+        "captured": 0,
+        "gap": "19 analytic accounts (0 lines) NOT pulled; no analytic/cost-center fold",
+        "kind": "both"
+      },
+      {
+        "area": "Reporting: financial report defs",
+        "has": "3 account.report",
+        "captured": 0,
+        "gap": "3 report defs (Generic Tax + 2 groupings) — migrate folds 0; foldStatement is iDempiere-side, Odoo report defs unmapped. Note: standard BS/P&L are code-defined in Odoo 17 not account.report rows here",
+        "kind": "fold"
+      },
+      {
+        "area": "Reporting: report lines",
+        "has": 0,
+        "captured": 0,
+        "gap": "0 account.report.line in instance (defs are code-side) — n/a as data",
+        "kind": "n/a"
+      },
+      {
+        "area": "Reporting: QWeb print defs",
+        "has": 41,
+        "captured": 0,
+        "gap": "41 ir.actions.report (QWeb print: invoices, delivery slip, PO, pricelist, labels...) — migrate maps 0 print formats",
+        "kind": "fold"
+      },
+      {
+        "area": "Reporting: aging (AR/AP)",
+        "has": "no stored model; aged report is on-the-fly wizard",
+        "captured": 0,
+        "gap": "no account.aged.* persisted data in Odoo 17 (computed report); gap is a fold capability, not extractable rows",
+        "kind": "fold"
+      },
+      {
+        "area": "Config: automation rules",
+        "has": "base.automation ABSENT",
+        "captured": 0,
+        "gap": "base.automation module not installed — n/a",
+        "kind": "n/a"
+      },
+      {
+        "area": "Config: scheduled actions",
+        "has": 18,
+        "captured": 0,
+        "gap": "18 ir.cron NOT pulled — n/a for data migration (runtime config)",
+        "kind": "n/a"
+      },
+      {
+        "area": "Config: server actions",
+        "has": 64,
+        "captured": 0,
+        "gap": "64 ir.actions.server NOT pulled — automation logic, fold gap (no server-action interpreter)",
+        "kind": "fold"
+      },
+      {
+        "area": "Config: mail templates",
+        "has": 17,
+        "captured": 0,
+        "gap": "17 mail.template NOT pulled — out of accounting scope",
+        "kind": "n/a"
+      }
+    ],
+    "absent_modules": [
+      "crm.lead",
+      "mrp.production",
+      "mrp.bom",
+      "project.project",
+      "project.task",
+      "hr.employee",
+      "pos.order",
+      "repair.order",
+      "account.asset",
+      "sale.subscription",
+      "helpdesk.ticket",
+      "base.automation"
+    ],
+    "installed_apps_functional": [
+      "account(Invoicing)",
+      "sale/sale_management(Sales)",
+      "purchase/purchase_stock(Purchase)",
+      "stock/stock_account(Inventory)",
+      "product/uom",
+      "analytic",
+      "payment/account_payment"
+    ]
+  }
+}
