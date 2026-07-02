@@ -4,6 +4,14 @@
 
 ## Current State
 
+**▶ 2026-07-03 — Modeller competitive-polish research done, Fable5 backlog ready.** 5 parallel investigations
+(Outliner→canvas wiring, canvas→Outliner sync+visual consistency, IFC/BCF interop, 3D-grid geometric accuracy,
+authoring-toolset+canvas-render polish) against `~/bim-ootb`. Verdict: the core math is solid (grid-stretch
+kinematics exact to 1e-9-1e-12, real snapping, real signed-op undo/redo, real IFC GUID stability) — the gap is
+almost entirely surfacing/polish, not correctness. ~11 Fable5-ready quick wins + ~10 needs-design items + a
+real (but incremental, not from-scratch) BCF/IFC interop opportunity. Full spec, prioritized:
+`prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md`.
+
 **▶ 2026-07-03 — HBA ERP-governed-display research done, DECISION PENDING.** User wants pane display (not just
 §P11's deep-link target) to derive from a real iDempiere chain (HHS↔`M_Warehouse`, personnel↔`C_BPartner`↔
 `AD_User`). Live-verified: `HR_Employee` has zero rows anywhere — seed-data gap, not a code gap. Full spec +
