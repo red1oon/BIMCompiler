@@ -1,0 +1,1371 @@
+{
+ "building": "DX",
+ "min_area_m2": 1.0,
+ "refused": {},
+ "snap_m": 0.1,
+ "spaces": {
+  "0BTBFw6f90Nfh9rP1dlXr$": {
+   "cites": [
+    "0NKEaUzf99fuxDk1J5MoVr",
+    "1k4hIEDl1BT9RWoHAB6QDd",
+    "1p84SA86LAMRtYYIdn_veE",
+    "2OHwB_Ecr7u97VWeavxW8d",
+    "2QuCH3GPT7dAer_nm8vgiG",
+    "2nBVf5QaH7HPFad_rQemLo",
+    "2rYu$EZYHFhffqCabO85Du"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Kitchen",
+   "name": "A103",
+   "polygon": [
+    [
+     6.226,
+     -12.6
+    ],
+    [
+     0.2085,
+     -12.6
+    ],
+    [
+     0.2085,
+     -11.855
+    ],
+    [
+     0.2085,
+     -10.294
+    ],
+    [
+     4.694,
+     -10.301
+    ],
+    [
+     6.288,
+     -10.308
+    ],
+    [
+     6.257,
+     -10.995
+    ],
+    [
+     6.226,
+     -12.6
+    ]
+   ],
+   "segments": 7,
+   "snap_bridges": 5,
+   "storey": "Level 1",
+   "virtual_rels": 2
+  },
+  "0BTBFw6f90Nfh9rP1dlXr2": {
+   "cites": [
+    "0z9dsmE5H5XBcUTKn5LEOC",
+    "1U6hWyLM91i9RoMdXOllWF",
+    "1fV4DvLsj7KgSAcD8SKGus",
+    "2f6dudzG18HO5EnWqfe16C",
+    "3FaYkKlMH8MPhtHmtX1O4t",
+    "3XigBlHYfFnxzvgV9_gBmP",
+    "3Ygg$nATn8ZAUY8bCUYNkA",
+    "3fWnuEx3P0og1rpzyjtqAc",
+    "3gUS2r7bXFl8_EZ3iDGzGe"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Living Room",
+   "name": "A102",
+   "polygon": [
+    [
+     6.2,
+     -12.6
+    ],
+    [
+     6.231,
+     -13.8
+    ],
+    [
+     6.2515,
+     -17.5915
+    ],
+    [
+     5.264,
+     -17.5915
+    ],
+    [
+     0.417,
+     -17.5915
+    ],
+    [
+     0.2085,
+     -17.5915
+    ],
+    [
+     0.2085,
+     -12.6017
+    ],
+    [
+     6.0882,
+     -12.6
+    ],
+    [
+     6.2,
+     -12.6
+    ]
+   ],
+   "segments": 9,
+   "snap_bridges": 6,
+   "storey": "Level 1",
+   "virtual_rels": 3
+  },
+  "0BTBFw6f90Nfh9rP1dlXrb": {
+   "cites": [
+    "07z4digYL2Ugc$fmWe$948",
+    "08nNUS6u9EmupEA6KIiux2",
+    "0IUNhDzrb2TAPVpFWREIOP",
+    "0NNiwF12P8HQBEfdehonZR",
+    "0NmaZMmFX4tAn04BxQWGHq",
+    "0TNGlfOHPADBaqWyjYiukT",
+    "0Uq2GbhFL3RgLfpES4cSui",
+    "0oiZ351sn0Qf9kWW7FGO$U",
+    "0q5tSQzs52qfIX$TXzCOvK",
+    "1IZczdjVv1N9curWCrwlAW",
+    "1Y4tYvb550hwQxGTHBeoh8",
+    "1s$qfe3c5118UWEBHFGYzc",
+    "2Lz3RuvFHD88JVCriXod2n",
+    "2lbonkM0DBi8ascGhiXIIP",
+    "3N7BulULbCxetZ72qbmtUK"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0219,
+    "storey-parent": 0.0219
+   },
+   "long_name": "Bedroom 2",
+   "name": "A203",
+   "polygon": [
+    [
+     4.4,
+     -17.5915
+    ],
+    [
+     4.4,
+     -11.057
+    ],
+    [
+     4.694,
+     -11.042
+    ],
+    [
+     6.356,
+     -11.042
+    ],
+    [
+     6.3686,
+     -11.612
+    ],
+    [
+     7.383,
+     -11.612
+    ],
+    [
+     8.5915,
+     -11.612
+    ],
+    [
+     8.5915,
+     -11.774
+    ],
+    [
+     8.5915,
+     -12.524
+    ],
+    [
+     8.5915,
+     -17.383
+    ],
+    [
+     8.5915,
+     -17.5915
+    ],
+    [
+     8.383,
+     -17.5915
+    ],
+    [
+     7.5195,
+     -17.5915
+    ],
+    [
+     4.675,
+     -17.5915
+    ],
+    [
+     4.4,
+     -17.5915
+    ]
+   ],
+   "segments": 15,
+   "snap_bridges": 5,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dlXrc": {
+   "cites": [
+    "0JXyPqK755fecBPOf5QCdZ",
+    "0XYL9kUALDxO2iAdFtEaoR",
+    "0_fZKZpPv6CBSGp31BHB24",
+    "1UBIr6xAD8De8A_ka6CKo0",
+    "1WJfzN$CzCChXtapaz$WfB",
+    "1y6r9rob93wgP1cJD6kRoV",
+    "2CUwysrAz8p9A5KXE94C4H",
+    "2eHq0SHtL3KRgmYuwd4PnC",
+    "3VgMwxQ5X12usjyFLYBLDC",
+    "3fwmupldL22udbMYNao8hQ",
+    "3ihNCgEiH4xfLNRIEVJDUz"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0384,
+    "storey-parent": 0.0384
+   },
+   "long_name": "Bedroom 1",
+   "name": "A202",
+   "polygon": [
+    [
+     4.4,
+     -6.728
+    ],
+    [
+     4.4,
+     -0.2085
+    ],
+    [
+     8.383,
+     -0.2085
+    ],
+    [
+     8.5915,
+     -0.2085
+    ],
+    [
+     8.5915,
+     -0.417
+    ],
+    [
+     8.5915,
+     -3.267
+    ],
+    [
+     8.5915,
+     -4.136
+    ],
+    [
+     8.5915,
+     -6.188
+    ],
+    [
+     7.418,
+     -6.188
+    ],
+    [
+     6.379,
+     -6.188
+    ],
+    [
+     6.356,
+     -6.728
+    ],
+    [
+     4.694,
+     -6.728
+    ],
+    [
+     4.4,
+     -6.728
+    ]
+   ],
+   "segments": 11,
+   "snap_bridges": 3,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dlXre": {
+   "cites": [
+    "05C88JbmH5tgpglRfgGcM$",
+    "0GHgMCoT9ApubkEfNqOb2q",
+    "17RllTwtD6dvTOcxVpMVje",
+    "1P8Dov$sf1lvyHacH1vW0A",
+    "24gJ4dpnjAiRJcuKTs_Q8x",
+    "2HonGtAk13vOXT004TCKAJ",
+    "2SjtlmXkD6QwniKWuqV9WZ"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Bathroom 2",
+   "name": "A204",
+   "polygon": [
+    [
+     6.356,
+     -8.8854
+    ],
+    [
+     6.356,
+     -11.042
+    ],
+    [
+     4.694,
+     -11.042
+    ],
+    [
+     4.694,
+     -7.7834
+    ],
+    [
+     6.356,
+     -7.8411
+    ],
+    [
+     6.356,
+     -8.8854
+    ]
+   ],
+   "segments": 7,
+   "snap_bridges": 2,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dlXri": {
+   "cites": [
+    "0Db$GUOLH2qA84rc2CuCov",
+    "0N54PX785EZALKkWiUmW8E",
+    "13X5qv$fz3KQcoqJWDUQPF",
+    "1KgGAQm9PCTPo1hv5KxY9r",
+    "1egfhPyif1lxV77F9hI3yV",
+    "1xHCvD$49B5BBXDkTPXEsu",
+    "202LunCU9Dqep$q8aXC99d",
+    "2K2U$N2i994AK7Qdw3UuTk",
+    "2e9$apiDjFs9NpbUtDaoeU",
+    "2vXPye7EnBv9QW2pQUB634",
+    "2xWkIj4Iz79OxKi_CU3oH8",
+    "38R_dMNrj0iBl3uvZqNUhs",
+    "3ZEp8x6R1CqQgoMH2z8wg2",
+    "3ohtn0UHjE0RMVdPXWFK$z"
+   ],
+   "faces": 1,
+   "frame": "storey-parent",
+   "frame_scores": {
+    "space-local": 11.7728,
+    "storey-parent": 0.0316
+   },
+   "long_name": "Hallway",
+   "name": "A201",
+   "polygon": [
+    [
+     7.3686,
+     -8.075
+    ],
+    [
+     7.3686,
+     -11.612
+    ],
+    [
+     6.3686,
+     -11.612
+    ],
+    [
+     6.356,
+     -11.042
+    ],
+    [
+     6.356,
+     -8.8854
+    ],
+    [
+     6.356,
+     -7.8411
+    ],
+    [
+     6.356,
+     -6.9594
+    ],
+    [
+     6.356,
+     -6.728
+    ],
+    [
+     6.379,
+     -6.188
+    ],
+    [
+     7.418,
+     -6.188
+    ],
+    [
+     8.5915,
+     -6.188
+    ],
+    [
+     8.5915,
+     -8.075
+    ],
+    [
+     7.3686,
+     -8.075
+    ]
+   ],
+   "segments": 14,
+   "snap_bridges": 4,
+   "storey": "Level 2",
+   "virtual_rels": 2
+  },
+  "0BTBFw6f90Nfh9rP1dlXrr": {
+   "cites": [
+    "094t1_4X5EmufokRgNuGdW",
+    "0Ejx$tRWXCXPS2O9j77IiH",
+    "0PioX_SwT5FOkI7pnoPwMI",
+    "1YaAqOeeD3uh9XYyKyeaJA",
+    "1s527tn196NuzF9kHrCbcC",
+    "260FWehdf7pB_qfNUjpchq",
+    "2BixqGFLPDbRzR4PZKrLSe",
+    "2KrUt4lijC3BdHahKF0QMW",
+    "2b6F_wJnT4jh1ATwgxKwJF",
+    "3KQFyDa3r3w9wSQuiIrFje",
+    "3lRLhmFbXF29m53KMsH6rL",
+    "3u5iJAXJDBHOMKA2nXH38K",
+    "3uC3f8oRj24e0ANGAMwUTt"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Foyer",
+   "name": "A101",
+   "polygon": [
+    [
+     7.3686,
+     -11.825
+    ],
+    [
+     8.5915,
+     -11.825
+    ],
+    [
+     8.5915,
+     -15.477
+    ],
+    [
+     8.5915,
+     -16.879
+    ],
+    [
+     8.5915,
+     -17.5915
+    ],
+    [
+     6.262,
+     -17.5915
+    ],
+    [
+     6.231,
+     -13.8
+    ],
+    [
+     6.213,
+     -12.6
+    ],
+    [
+     6.226,
+     -12.4622
+    ],
+    [
+     6.257,
+     -10.995
+    ],
+    [
+     6.288,
+     -10.308
+    ],
+    [
+     6.288,
+     -10.129
+    ],
+    [
+     6.288,
+     -9.215
+    ],
+    [
+     6.288,
+     -7.8
+    ],
+    [
+     7.3686,
+     -7.8
+    ],
+    [
+     7.3686,
+     -11.825
+    ]
+   ],
+   "segments": 13,
+   "snap_bridges": 4,
+   "storey": "Level 1",
+   "virtual_rels": 5
+  },
+  "0BTBFw6f90Nfh9rP1dlXru": {
+   "cites": [
+    "0B7mMtUTv0jPQCuDzN2CTw",
+    "0SRXOKh3b9J97$2XvZxKwu",
+    "1qRDZWTOP6Ifmv79j5$60W",
+    "2P9mBa3mX9mfIOxvXMeKS_",
+    "3_CRg97C13fvey0HdWtGUB",
+    "3s_uz26L13yv8Z1xz3UuAB"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Bathroom 1",
+   "name": "A104",
+   "polygon": [
+    [
+     4.694,
+     -7.8
+    ],
+    [
+     6.288,
+     -7.8
+    ],
+    [
+     6.288,
+     -9.215
+    ],
+    [
+     6.288,
+     -10.129
+    ],
+    [
+     6.288,
+     -10.308
+    ],
+    [
+     4.694,
+     -10.301
+    ],
+    [
+     4.694,
+     -7.8
+    ]
+   ],
+   "segments": 6,
+   "snap_bridges": 2,
+   "storey": "Level 1",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dl_39": {
+   "cites": [
+    "0AAdo09w9B5xm9TWG7u9Dy",
+    "0IX0rLm9LDy8OwTDcBD519",
+    "0sjRBoxqT4POrTwEY_2dZx",
+    "1Ub7Pvtff4$uJxEIe5bVUi",
+    "1WOuyEhYH7Hud3Y1nwXhOT",
+    "1ag4iwt5nAlObHc0yz2U35",
+    "1iOt1Y65n6RxwI9htVP46B",
+    "2HXe_QdyH2nwOGPU_jCwud",
+    "2U8f9x1azBgxJXm_BtR2Ve",
+    "2akMDHX4P2JwXBD_fuqOes",
+    "3Ea0QW0_17wP7lb4_z17$N",
+    "3OchC7f6f17gUESvLs7egD",
+    "3Q5DYQ$D969w2zkKbtVFhO",
+    "3Y406OjY18reqCMDH3jKlJ",
+    "3wvebZRmL8hOBhHnD3VGFU"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0224,
+    "storey-parent": 0.0224
+   },
+   "long_name": "Bedroom 2",
+   "name": "B203",
+   "polygon": [
+    [
+     4.4,
+     -0.2085
+    ],
+    [
+     4.4,
+     -6.743
+    ],
+    [
+     4.106,
+     -6.758
+    ],
+    [
+     2.444,
+     -6.758
+    ],
+    [
+     2.4337,
+     -6.188
+    ],
+    [
+     1.4193,
+     -6.188
+    ],
+    [
+     0.2085,
+     -6.188
+    ],
+    [
+     0.2085,
+     -6.026
+    ],
+    [
+     0.2085,
+     -5.276
+    ],
+    [
+     0.2085,
+     -0.417
+    ],
+    [
+     0.2085,
+     -0.2085
+    ],
+    [
+     0.417,
+     -0.2085
+    ],
+    [
+     1.2805,
+     -0.2085
+    ],
+    [
+     4.125,
+     -0.2085
+    ],
+    [
+     4.4,
+     -0.2085
+    ]
+   ],
+   "segments": 15,
+   "snap_bridges": 5,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dl_3A": {
+   "cites": [
+    "03zEL46e54kvwMort0K0hk",
+    "07La4RUKb3ve2KmqyyWv7l",
+    "0QKj7TirnCK9PekLFKbtZW",
+    "0iWfpCYpX2PghMMVTcGd_U",
+    "1LNrKUJ2f3xwGm49vCi5Y0",
+    "1gPDmwNePCIA3BwC1YP_DE",
+    "1iq4wnetbDr9wJxJXUWvyA",
+    "2KtAiwUKr18eXW$JNSNNag",
+    "3FSCR_8xD0WBnjFxufq4js",
+    "3WzVsP9yz1uhcU0gxFpZg1",
+    "3ryHqG7fLB9xzIBjsbqtoB"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0384,
+    "storey-parent": 0.0384
+   },
+   "long_name": "Bedroom 1",
+   "name": "B202",
+   "polygon": [
+    [
+     4.4,
+     -11.072
+    ],
+    [
+     4.4,
+     -17.5915
+    ],
+    [
+     0.417,
+     -17.5915
+    ],
+    [
+     0.2085,
+     -17.5915
+    ],
+    [
+     0.2085,
+     -17.383
+    ],
+    [
+     0.2085,
+     -14.533
+    ],
+    [
+     0.2085,
+     -13.664
+    ],
+    [
+     0.2085,
+     -11.612
+    ],
+    [
+     1.342,
+     -11.612
+    ],
+    [
+     2.401,
+     -11.612
+    ],
+    [
+     2.444,
+     -11.072
+    ],
+    [
+     4.106,
+     -11.072
+    ],
+    [
+     4.4,
+     -11.072
+    ]
+   ],
+   "segments": 11,
+   "snap_bridges": 5,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dl_3C": {
+   "cites": [
+    "0IqR4G5oX50O9ApPiWUpZe",
+    "1Gg0wB$W55EerR6RK98ICz",
+    "1TXA6nz857ie2C6YS5UaeG",
+    "1YBCU3qu16yP9m84_yzGvR",
+    "3O9f30zWLA69TZCfnb6RgG",
+    "3pGW_TEM9DcOTc7x8ZL91P"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Bathroom 2",
+   "name": "B204",
+   "polygon": [
+    [
+     2.446,
+     -10.0034
+    ],
+    [
+     2.444,
+     -6.758
+    ],
+    [
+     4.106,
+     -6.758
+    ],
+    [
+     4.106,
+     -10.0321
+    ],
+    [
+     2.446,
+     -10.0034
+    ]
+   ],
+   "segments": 6,
+   "snap_bridges": 2,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dl_3G": {
+   "cites": [
+    "0qMtzGUBrBagLXPY45t5HS",
+    "0s4WENF6bDGfrQ6QCjU$na",
+    "0umBldgSv1NBiDkCDNRKYF",
+    "1CxRzFYOv6uh1cdV2K8ERB",
+    "1Vuc0Qsk58gfOv1NGG$oo3",
+    "2$lO2UtVH1agG1IgAy$Vs9",
+    "35jYgA3R9BExRxQTKx8ZPM",
+    "3FOrEqThv2Se1u23AHtKvk",
+    "3JL$HrTHv03Bmx00gxBWO0",
+    "3LJDjlrmL5ausYt5oeScq9",
+    "3o1W1Ta6H4ufOfq6KP6A8Z",
+    "3zQOidAd1CehinO_61Deii"
+   ],
+   "faces": 1,
+   "frame": "storey-parent",
+   "frame_scores": {
+    "space-local": 9.3385,
+    "storey-parent": 0.0069
+   },
+   "long_name": "Hallway",
+   "name": "B201",
+   "polygon": [
+    [
+     1.4314,
+     -9.725
+    ],
+    [
+     1.4314,
+     -6.188
+    ],
+    [
+     2.4337,
+     -6.188
+    ],
+    [
+     2.444,
+     -6.758
+    ],
+    [
+     2.444,
+     -8.9301
+    ],
+    [
+     2.444,
+     -9.9891
+    ],
+    [
+     2.444,
+     -11.072
+    ],
+    [
+     2.401,
+     -11.612
+    ],
+    [
+     1.342,
+     -11.612
+    ],
+    [
+     0.2085,
+     -11.612
+    ],
+    [
+     0.2085,
+     -9.725
+    ],
+    [
+     1.4314,
+     -9.725
+    ]
+   ],
+   "segments": 12,
+   "snap_bridges": 4,
+   "storey": "Level 2",
+   "virtual_rels": 2
+  },
+  "0BTBFw6f90Nfh9rP1dl_3P": {
+   "cites": [
+    "0RxjjfO$D2fw3NKvkDdDx2",
+    "1nb93mV7H9TPktEdLEgrCV",
+    "2Bqhax6nLEcfMw$nf$$v_v",
+    "2F_V8bQAX2uAfdZ0QSu0pk",
+    "2egbDLoAX48uUHGh_Ss$na",
+    "3V3Z94lIz7hxuzP2B5aZEz"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0033,
+    "storey-parent": 0.0033
+   },
+   "long_name": "Bathroom 1",
+   "name": "B104",
+   "polygon": [
+    [
+     2.512,
+     -7.673
+    ],
+    [
+     2.512,
+     -7.492
+    ],
+    [
+     4.106,
+     -7.499
+    ],
+    [
+     4.106,
+     -10.0
+    ],
+    [
+     2.512,
+     -10.0
+    ],
+    [
+     2.512,
+     -8.587
+    ],
+    [
+     2.512,
+     -7.673
+    ]
+   ],
+   "segments": 6,
+   "snap_bridges": 1,
+   "storey": "Level 1",
+   "virtual_rels": 0
+  },
+  "0BTBFw6f90Nfh9rP1dl_3Q": {
+   "cites": [
+    "05qaYpLH93q8bV_usOol_y",
+    "0TLIvp0iX6aQdm_XsRHEZX",
+    "0itN8O2BLF4eOfxfXwTzGU",
+    "0k1g$r7Pz2Kw9l0hLaXHUz",
+    "0nyrB$JYbBtOzW$pRowvi3",
+    "0zII6NuhLCDw0dH_YTBfXc",
+    "18hS5hC0b398Cpt8fWGnxK",
+    "1XbHnAJy16hwLnvs3WmBkC",
+    "2884r4dyjFqw_ldViO12XK",
+    "2FeTxvKij96elVo2FGBFar",
+    "3MZClbwNT31vcds2jE6t$t",
+    "3kgs_8svj8jfkCLGJ9ge0L",
+    "3vKNaysxf8Xh_vyXsyKSdW"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Foyer",
+   "name": "B101",
+   "polygon": [
+    [
+     1.4314,
+     -5.975
+    ],
+    [
+     0.2085,
+     -5.975
+    ],
+    [
+     0.2085,
+     -2.323
+    ],
+    [
+     0.2085,
+     -0.921
+    ],
+    [
+     0.2085,
+     -0.2085
+    ],
+    [
+     2.538,
+     -0.2085
+    ],
+    [
+     2.569,
+     -4.0
+    ],
+    [
+     2.587,
+     -5.2
+    ],
+    [
+     2.574,
+     -5.3378
+    ],
+    [
+     2.543,
+     -6.805
+    ],
+    [
+     2.512,
+     -7.492
+    ],
+    [
+     2.512,
+     -7.673
+    ],
+    [
+     2.512,
+     -8.587
+    ],
+    [
+     2.512,
+     -10.0
+    ],
+    [
+     1.4314,
+     -10.0
+    ],
+    [
+     1.4314,
+     -5.975
+    ]
+   ],
+   "segments": 13,
+   "snap_bridges": 6,
+   "storey": "Level 1",
+   "virtual_rels": 5
+  },
+  "0BTBFw6f90Nfh9rP1dl_3S": {
+   "cites": [
+    "0IKd_z8DTFeeiO_Qs4WGF0",
+    "0SRFlAA6rEBf1LtkEtwrgG",
+    "0h3btEICP42POXeFy82bLJ",
+    "15uCwyCCD3ZxGKJP7BUFD4",
+    "1OTW5qw6D5MulXWTawzmte",
+    "21qBGuuJz5T8ARHJW4EVR0",
+    "36RWj1$QP36PDdIaupXs53"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Kitchen",
+   "name": "B103",
+   "polygon": [
+    [
+     2.574,
+     -5.2
+    ],
+    [
+     8.5915,
+     -5.2
+    ],
+    [
+     8.5915,
+     -5.945
+    ],
+    [
+     8.5915,
+     -7.506
+    ],
+    [
+     4.106,
+     -7.499
+    ],
+    [
+     2.512,
+     -7.492
+    ],
+    [
+     2.543,
+     -6.805
+    ],
+    [
+     2.574,
+     -5.2
+    ]
+   ],
+   "segments": 7,
+   "snap_bridges": 4,
+   "storey": "Level 1",
+   "virtual_rels": 2
+  },
+  "0BTBFw6f90Nfh9rP1dl_CZ": {
+   "cites": [
+    "01PXMxNMf1894RHCq$MVTu",
+    "01k_4bjc99PAq3$W0ozloY",
+    "0kz_PUqVz1W89Cd_u_9a1x",
+    "1RlIFplynD_OFGArRhDIM7",
+    "1eiEFsPgr9D8AdGm6imDvK",
+    "22RX6mvMf13PKH$ZhWJVvu",
+    "290ApAb750heqA8d87Kkqf",
+    "3L02RVqRTAM8Ba4QuY72gO",
+    "3SI3SRj65DFBty7jHWkIOD"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Living Room",
+   "name": "B102",
+   "polygon": [
+    [
+     2.6,
+     -5.2
+    ],
+    [
+     2.569,
+     -4.0
+    ],
+    [
+     2.5485,
+     -0.2085
+    ],
+    [
+     3.536,
+     -0.2085
+    ],
+    [
+     8.383,
+     -0.2085
+    ],
+    [
+     8.5915,
+     -0.2085
+    ],
+    [
+     8.5915,
+     -5.1983
+    ],
+    [
+     2.7118,
+     -5.2
+    ],
+    [
+     2.6,
+     -5.2
+    ]
+   ],
+   "segments": 9,
+   "snap_bridges": 6,
+   "storey": "Level 1",
+   "virtual_rels": 3
+  },
+  "0pNy6pOyf7JPmXRLgxs3sW": {
+   "cites": [
+    "1lyRfWyQ19_86V_BJH5Yox",
+    "2C57Ygq25AxwaS6iYxInw3",
+    "3B6dOANnLEI9SPSTnuJl5m",
+    "3Zrva4Xaj2$eTT3wN1QGk6"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Roof",
+   "name": "R301",
+   "polygon": [
+    [
+     0.2085,
+     -0.2085
+    ],
+    [
+     8.5915,
+     -0.2085
+    ],
+    [
+     8.5915,
+     -17.5915
+    ],
+    [
+     0.2085,
+     -17.5915
+    ],
+    [
+     0.2085,
+     -0.2085
+    ]
+   ],
+   "segments": 4,
+   "snap_bridges": 3,
+   "storey": "Roof",
+   "virtual_rels": 0
+  },
+  "10mjSDZJj9gPS2PrQaxa3z": {
+   "cites": [
+    "10HL$ueNrB1R94UdaIhUbl",
+    "2JKv28W6T8aOXGWa9KHV1V",
+    "2YUvhk3jT6YwLU_yfgqVlI",
+    "3QsXxaUgv51R0_iTL4CqMm"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Stair",
+   "name": "A105",
+   "polygon": [
+    [
+     7.3686,
+     -11.825
+    ],
+    [
+     7.3686,
+     -7.8
+    ],
+    [
+     8.5915,
+     -7.8
+    ],
+    [
+     8.5915,
+     -11.825
+    ],
+    [
+     7.3686,
+     -11.825
+    ]
+   ],
+   "segments": 4,
+   "snap_bridges": 1,
+   "storey": "Level 1",
+   "virtual_rels": 2
+  },
+  "10mjSDZJj9gPS2PrQaxa4o": {
+   "cites": [
+    "0ZkK2Ft01CRAsouJq8Eqd8",
+    "21UcPKH4152uFYkS5dhyTV",
+    "3nyuifzr1BFRNFQ1nmXAiL",
+    "3soPq3Su93eg$m77FtkmVk"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Room",
+   "name": "B105",
+   "polygon": [
+    [
+     1.4314,
+     -5.975
+    ],
+    [
+     1.4314,
+     -10.0
+    ],
+    [
+     0.2085,
+     -10.0
+    ],
+    [
+     0.2085,
+     -5.975
+    ],
+    [
+     1.4314,
+     -5.975
+    ]
+   ],
+   "segments": 4,
+   "snap_bridges": 1,
+   "storey": "Level 1",
+   "virtual_rels": 2
+  },
+  "2gRXFgjRn2HPE$YoDLX3FC": {
+   "cites": [
+    "0$aEejlcj2cf1QkBkMgHFK",
+    "0JBMDJMk93r8kVkjBQY3$G",
+    "0YYk3fCYn8mBfgD492X9sf",
+    "2X0vNm8zn419ZBRjlqsZSx",
+    "2v_eYUM691QBGURAECJAbf"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.0,
+    "storey-parent": 0.0
+   },
+   "long_name": "Utility",
+   "name": "B205",
+   "polygon": [
+    [
+     2.444,
+     -11.072
+    ],
+    [
+     2.447,
+     -10.0321
+    ],
+    [
+     3.364,
+     -10.0321
+    ],
+    [
+     4.106,
+     -10.0321
+    ],
+    [
+     4.106,
+     -11.072
+    ],
+    [
+     2.444,
+     -11.072
+    ]
+   ],
+   "segments": 5,
+   "snap_bridges": 1,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  },
+  "2gRXFgjRn2HPE$YoDLX3FV": {
+   "cites": [
+    "1RXgL4oVrDfvUfzUVj2Yn7",
+    "2X_8c05a9AseFV$A4w307e",
+    "2at7cyxFzDVOb6EqNa1ohN",
+    "2ej26Q0sDCkOM5ONtrY32R",
+    "38v$4R3HfBlRO0EH2U28cD",
+    "3bcFeFBMnAq9qOfDk2wgys"
+   ],
+   "faces": 1,
+   "frame": "space-local",
+   "frame_scores": {
+    "space-local": 0.053,
+    "storey-parent": 0.053
+   },
+   "long_name": "Utility",
+   "name": "A205",
+   "polygon": [
+    [
+     6.356,
+     -6.9594
+    ],
+    [
+     6.356,
+     -7.7834
+    ],
+    [
+     5.4554,
+     -7.7834
+    ],
+    [
+     4.694,
+     -7.7834
+    ],
+    [
+     4.694,
+     -6.728
+    ],
+    [
+     6.356,
+     -6.728
+    ],
+    [
+     6.356,
+     -6.9594
+    ]
+   ],
+   "segments": 6,
+   "snap_bridges": 0,
+   "storey": "Level 2",
+   "virtual_rels": 0
+  }
+ },
+ "src": "internal/sources/Ifc2x3_Duplex_Architecture.ifc"
+}
