@@ -4,6 +4,12 @@
 
 ## Current State
 
+**▶ 2026-07-03 — HBA ERP-governed-display research done, DECISION PENDING.** User wants pane display (not just
+§P11's deep-link target) to derive from a real iDempiere chain (HHS↔`M_Warehouse`, personnel↔`C_BPartner`↔
+`AD_User`). Live-verified: `HR_Employee` has zero rows anywhere — seed-data gap, not a code gap. Full spec +
+3 open questions + staged plan: `prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md`. Do not start building until the
+open questions are answered.
+
 **▶ 2026-07-02 NIGHT — watchdog quality-review pass across all 4 lanes below.** All hold up structurally (no
 TODO/FIXME, no silent-degradation, no invented claims) but each has 3-6 small polish/coverage gaps + one real
 open design call. Findings + Fable5/Opus/Sonnet assignment logged in each lane's own §FOLLOWUP/§NIGHT section:

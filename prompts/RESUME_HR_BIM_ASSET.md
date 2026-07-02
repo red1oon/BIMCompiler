@@ -1492,3 +1492,13 @@ anywhere. Four small gaps, sized and assigned (per [[feedback_model_allocation_m
 
 The Leave "indirect link" (→ payroll concept, not a native table) reads clearly on a first pass in the guide —
 explained twice, framed as honesty not inconsistency. **No fix needed there.**
+
+## ▶ 2026-07-03 — NEW THREAD: ERP-governed display (research done, decision pending)
+
+User proposed a further convention: pane DISPLAY data (not just the §P11 deep-link target) should be derived
+from a real iDempiere AD chain — HHS↔`M_Warehouse` (Name/Value), personnel↔`C_BPartner`↔`AD_User`, presence↔
+`C_Attendance` etc. Full research (live-verified against `ad_full.db`'s real schema + `ad_seed.db`'s real rows,
+not assumed), implications, 3 open design questions, and a staged Fable5/Opus/Sonnet plan are in the dedicated
+spec: **`prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md`**. Headline finding: `HR_Employee` has zero rows anywhere
+in this codebase — this is a seed-data-authoring gap before it's a code-wiring gap. Do not start Stage 1 there
+until §OPEN-QUESTIONS resolves.
