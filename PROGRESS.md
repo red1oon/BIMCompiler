@@ -4,6 +4,17 @@
 
 ## Current State
 
+**▶ 2026-07-03 — POS replenishment redesign + Kitchen Display + E-Invoice research done, mixed readiness.**
+POS sale cycle (Order→Ship→Invoice→backflush) is genuinely real, dispatched via the shared archetype engine —
+not the gap. The "replenishment drawer" IS the gap: reads real `m_replenish` policy (19 real seed rows) but
+auto-commits on click with no staging/review, ignores `QtyBatchSize`, never routes inter-warehouse vs external
+PO. POS also uses its own green-on-black palette, zero shared classes with the rest of the app (confirms
+"rough" HMI). Kitchen Display: absent but well-scoped to build NOW (real `AD_InfoWindow` mechanism exists,
+unused; `C_OrderLine` already has every field needed; `pos_lens.js` has a copyable JOIN precedent). E-Invoice:
+stays blocked — deliberately gated behind an existing 7-box research gate in `RESUME_HR_BIM_ASSET.md`, not
+just unbuilt. Full spec, staged design, Fable5/Opus assignment per thread:
+`prompts/RESUME_POS_KITCHEN_EINVOICE_OPS_PANELS.md`.
+
 **▶ 2026-07-03 — Modeller competitive-polish research done, Fable5 backlog ready.** 5 parallel investigations
 (Outliner→canvas wiring, canvas→Outliner sync+visual consistency, IFC/BCF interop, 3D-grid geometric accuracy,
 authoring-toolset+canvas-render polish) against `~/bim-ootb`. Verdict: the core math is solid (grid-stretch
