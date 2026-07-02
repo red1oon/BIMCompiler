@@ -29,14 +29,30 @@ Spec+closeout: `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md`. Still open: (3
 design call (user go-ahead needed, unchanged).
 Spec: `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`.
 
-**▶ HR_BIM_Asset (bim-ootb Viewer) — §P10d ✅ DONE+LIVE 2026-07-02** (PR #609/#611/#612). `lane/hr-overlay` merged
-to main — surfaced + resolved a real duplicate-lineage collision with PR #592 (two independent sessions had
-built the same module; verified `lane/hr-overlay` was a strict superset, kept its content). Live: real ContaCam
-CCTV still (6 distinct crops), animated per-sensor colored horizontal bars (Bonsai federation/river-inspired,
-replaces static charts), fly-to-zone bug fixed (instanced/batched meshes weren't resolved — same class of bug
-`setTint` already had fixed), pill tooltip fix (was showing internal id). **⛔ §P11 QUEUED, next session:**
-deep-link Dashboard (Resource/Employee Payroll) + IoT billing (Order/Line) into `erp/idempiere.html`, reusing
-`navigate_find.js`'s existing deep-link pattern. Spec: `prompts/RESUME_HR_BIM_ASSET.md` §P10d/§P11.
+**▶ MODELLER GUIDE (bim-compiler side) — SC ARC screenshot ✅ DONE+EMBEDDED 2026-07-02 (3rd attempt, prior 2 were
+retracted as premature).** Confirmed PR #598/#613 live on `main` (`8449306`) independently before embedding —
+`witness_arc_editable.js` 10/10, `witness_e2e_mv_parity.js` 12/12, fresh real-click capture shows genuine detail
+(dormers/window frames/skylights), the one isolated-looking object traced by raycast to the scene's `AxesHelper`
+origin marker (not a data defect). `docs/img/modeller/samplecastle-arc-open.png` embedded in `ModellerGuide.md`,
+`mkdocs build --strict` exit 0. Detail + the two earlier false starts: `prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md`.
+The other 21 §F2 frame-composition bugs (`cut-select`/`gizmo`/`route-spine`) are reported fixed bim-ootb-side (PR
+#608) — NOT yet re-verified or pulled into bim-compiler's `docs/img/modeller/*.png`; check before trusting.
+
+**▶ HR_BIM_Asset (bim-ootb Viewer) — §P10d + §P11 ✅ BOTH DONE+LIVE 2026-07-02** (PR #609/#611/#612, then
+#614/#615). `lane/hr-overlay` merged to main — surfaced + resolved a real duplicate-lineage collision with
+PR #592 (two independent sessions had built the same module; verified `lane/hr-overlay` was a strict superset,
+kept its content). Live: real ContaCam CCTV still (6 distinct crops), animated per-sensor colored horizontal
+bars (Bonsai federation/river-inspired, replaces static charts), fly-to-zone bug fixed (instanced/batched
+meshes weren't resolved — same class of bug `setTint` already had fixed), pill tooltip fix (was showing
+internal id). **§P11 ✅ DONE+LIVE (PR #614, main `5a83955`):** every pane showing a real AD-compiled record
+(Dashboard Resources, Payslip lines, Leave unpaid entries, Tenancy subscriptions, IoT billing rows) now
+deep-links into its real iDempiere window (`hba_lens.js erpLink()`+`AD_WINDOWS`, every id sourced from
+`ad_full.db`, reusing `navigate_find.js`'s proven URL shape) — includes a mid-session user extension (Leave,
+which has no native AD table of its own, links to the real "Leave without pay" `hr_concept` it feeds on
+payroll instead). New `witness_erp_deeplink.js` 19/19, full 34-file HBA suite zero regression, live chromium
+smoke on all 5 panes. Docs: `docs/HRBIMAssetGuide.md` gained the Payslip/Leave/Tenancy pane sections (never
+documented before) + a "Jump straight to the ERP record" explainer, 5 new screenshots. Spec:
+`prompts/RESUME_HR_BIM_ASSET.md` §P10d/§P11.
 
 **Gate:** `./scripts/run_RosettaStones.sh` — S190 fleet: 116/157 PASS, 4 ALL GREEN (BR,MO,RL,WI). 21 buildings, 9-gate system.
 
