@@ -172,35 +172,48 @@ scaling and rotating.
 ![The transform gizmo on a selected element — XYZ arrows (move), cube handles (scale), yaw ring (rotate)](img/modeller/gizmo.png)
 
 ### Move
-*Commits `GEOM_MOVE {dx,dy,dz}`.* Drag an **axis arrow** (with grid snap) or nudge with the arrow keys.
-Release commits one signed `GEOM_MOVE`; a moved host **drags its hosted fillings** (a door rides its
-wall). Undo is exact to the micron.
+*Commits `GEOM_MOVE {dx,dy,dz}`.*
+
+1. Select an element to raise the transform gizmo.
+2. Drag an **axis arrow** (X/Y/Z, grid-snapped) — or nudge with the arrow keys for a free move.
+3. Release to commit. A moved host **drags its hosted fillings** (a door rides its wall); undo is exact to the micron.
 
 ![Move engaged on a selected element — dragging the X arrow moves it on that axis only (the commit is X-only, exact, reversible)](img/modeller/move-gizmo.png)
 
 ### Scale
-*Commits `GEOM_SCALE {fx,fy,fz}`.* On a single component, drag a **cube** handle to stretch that axis
-(edge-anchored — the opposite face stays put). The rendered extent grows by exactly the committed factor.
+*Commits `GEOM_SCALE {fx,fy,fz}`.*
+
+1. Select a single component to raise the gizmo.
+2. Drag a **cube handle** to stretch that axis — it's edge-anchored, so the opposite face stays put.
+3. Release to commit. The rendered extent grows by exactly the committed factor (the status line reads the signed factor).
 
 ![Scale — dragging the cube handle stretched the element; the status line reads the signed factor](img/modeller/scale-stretched.png)
 
 ### Rotate
-*Commits `GEOM_ROTATE {drot}`.* Drag the yellow **yaw ring** to spin the selection about its centre (15°
-snap, Shift for free angle). The rendered footprint turns by exactly the committed angle.
+*Commits `GEOM_ROTATE {drot}`.*
+
+1. Select an element to raise the gizmo.
+2. Drag the yellow **yaw ring** to spin the selection about its centre — 15° snap, hold `Shift` for a free angle.
+3. Release to commit. The rendered footprint turns by exactly the committed angle.
 
 ![Rotate — the yaw ring spins the element in place](img/modeller/rotate-yaw.png)
 
 ### Grid-Stretch
-*Commits `GEOM_GRID_MOVE`.* Tap **Move Grid**, then drag a **gridline**. Walls attached to that line
-**recompose** — a span stretches, an attached wall translates — as one signed operation.
+*Commits `GEOM_GRID_MOVE`.*
+
+1. Tap **Move Grid**.
+2. Drag a **gridline**.
+3. Release to commit. Walls attached to that line **recompose** — a span stretches, an attached wall translates — as one signed operation.
 
 ![Before — a wall spanning two gridlines](img/modeller/gridstretch-before.png)
 ![After — dragging the gridline stretched the attached wall by exactly the drag distance](img/modeller/gridstretch-after.png)
 
 ### Delete
-*Soft-deletes from the signed log (reversible).* Select and tap **Delete** (or press `Del`). The feature
-(and its children) hide from the model — the signed payload is never rewritten, so the chain stays valid.
-**Redo** (`Ctrl+Y`) brings it back exactly.
+*Soft-deletes from the signed log (reversible).*
+
+1. Select the feature — its children (hosted fillings) come along.
+2. Tap **Delete** (or press `Del`).
+3. The feature hides from the model — the signed payload is never rewritten, so the chain stays valid. **Redo** (`Ctrl+Y`) brings it back exactly.
 
 ![Delete — the selected feature removed; Redo restores it](img/modeller/delete-gone.png)
 
@@ -227,6 +240,8 @@ filter. It carries two measured rule-sets and auto-selects by building class:
 On open you'll see `§DW-PROV` print the standard and its provenance, so you always know which rule-set is
 driving the walk. The tables below are the **evidence** that the walk produces sensible numbers — every
 figure traces to a witnessed `§`-log (no estimates).
+
+![SampleCastle opened as its bare ARC twin — the largest of the residential-class buildings the tables below cover, 7 storeys / 3225 elements, real per-element geometry (dormers, window frames, skylights), before any walk](img/modeller/samplecastle-arc-open.png)
 
 ### What a walk actually places
 

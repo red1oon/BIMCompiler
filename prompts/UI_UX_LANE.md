@@ -523,5 +523,45 @@ fold `diffs=0` UNCHANGED (proves the restored W.done seals identically). Train: 
 - [ ] WH walk — pick an item → reload the page → reopen the SAME sale → picked counter restored.
 - [ ] WH walk — tap a route row frames that bin; ✕ exits keeping a partial pick.
 
-## ROUND 3 — dictated observations (verbatim, fill on live-test)
-- (await user)
+## ROUND 3 — dictated observations (verbatim, 2026-06-15) — POS register completeness
+# User dictation (verbatim intent): "Keep the panel one bar line slim thus the rims are needed.
+# Do not want them expanded." · "check that adding items do create its underlying records. And that
+# payment has a button to processIt/Complete the Order." · "we forgot to have a previous sales records,
+# as cashier need to recall what was sold or previous sale to be reverted. Organise it well in the scene."
+# · "backflush should be a late process … it is an EODA … thus in the pill, organise such. Unicenta
+# plugin already that way, learn from it." · "WH walk, also do your own as a user." · "Issues arise when
+# you are not driving it as a user." → DRIVE EVERY CHANGE AS A USER (browser screenshots), not just witnesses.
+#
+# NON-INVENT GROUND (all extracted, witnessed):
+#  - Doc chain proven: W-POS-{RING,HOLD,WR,REGISTER,BACKFLUSH,DELIVERLATER,VOID,REPLENISH} all green.
+#  - Rim panel = restore e820d2d/v667 edge-rim drawers (.pos-rim-top orange #e65c00 = items drawer;
+#    .pos-rim-bottom green #2e7d32 = replenish drawer); collapsed by default; total back INSIDE slim center bar.
+#  - Pay = SET_STATUS CO = processIt (already wired §R2-3); keep R2: single Pay, draggable, partner-default, earcons.
+#  - Previous Sales = query op-log kernel_ops CREATE_DOCUMENT C_Order; Revert = DocFSM VO (CO→VO,
+#    reversePosting nets 0c, shipment C- negated → on-hand restored). Engine ready (ad_docfsm.js, W-POS-VOID).
+#  - EODA = the late End-of-Day fold (POSLens.md §195 "fold the day: sales, stock, reorder, variance";
+#    §206 "AutoBOMOrder + Replenishment Report → the fold"). MOVE backflush OUT of pos_core.completionOps
+#    (per-sale CONSUME, lines ~118-126) INTO the EOD fold. New witness poc_pos_eoda.js: EOD CONSUME ==
+#    Σ per-sale explodeBOM (nothing lost), qty spine moves ONCE at close, chainOk=Y.
+#
+# REFINEMENT (user 2026-06-15, round 2 of dictation):
+#  - Big central total: KEEP large (easy to read the clocking-up total; handy to press).
+#  - Pay needs an OK-CONFIRM before commit (R2-3 retired the modal; user wants confirm-to-pay back).
+#  - Bottom GREEN rim = PREVIOUS SALES (recall + Revert/Void), NOT replenishment.
+#  - Replenishment leaves the panel entirely → it is an EODA op.
+#  - EODA = CLOSE CASH (Unicenta/any-POS close-till): one press → BOM backflush → Generate Replenishment
+#    Report (iDempiere ops). The REPORT is issued from the MENU, not the panel.
+#  - Cashier daily routine: open cash POS → sales → (send WH to collect if needed) → close till. All records generated.
+#  - HISTORY LINE: record each sale (+ each ship/pick) as a history event (shared history_bar.js). POC volume
+#    is light (few sales/day × few demo days = trivial; bounded by cache/client lifetime, TBD-not-spec'd).
+#
+# A. [x] Slim rim-drawer pay panel restored (items-rim / big total+Pay / bottom-rim), R2 bits kept.
+#        DONE+user-driven: §POS-R3-SHAPE rims=true both collapsed total-in-panel 175.75 panelH=168;
+#        shots r3_pos_{1_slim,2_items,3_replenish}.png. (bottom rim repurposes to Previous Sales in B.)
+# A2.[ ] Pay → OK-confirm before commit (no direct complete on a stray tap).
+# B. [ ] Bottom green rim = Previous-Sales recall drawer + per-sale Revert(Void). Replenish OUT of panel.
+# C. [ ] EODA = Close Cash control: BOM backflush (moved off per-sale) → Generate Replenishment Report
+#        (iDempiere ops, issued from menu). New witness poc_pos_eoda.js.
+# D. [ ] History line records each sale + ship/pick (shared history_bar.js).
+# E. [ ] WH walk user-drive (phone) + POS day-loop user-drive — screenshots, friction logged, fixed; deploy.
+# Worktree: /tmp/wt-r3-pos (branch feat/r3-pos-eoda off origin/main @ 25b5b4b, sw v689).

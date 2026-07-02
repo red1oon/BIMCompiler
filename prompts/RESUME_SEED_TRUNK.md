@@ -1,7 +1,18 @@
-# RESUME — seed→3D corridor trunk: render gate + construction animation (continue new session)
+# RESUME — seed→3D corridor trunk: render gate + construction animation — ✅ DONE+LIVE 2026-06-30
 
 ```
-# ⚠ DO NOT REMOVE
+# ✅ DONE+LIVE 2026-06-30 — T1 + T2 + held-out ALL complete (bim-ootb #582 sw v24, #583).
+# T1 RENDER GATE: window.__seedTrunkProbe + W-SEED-TRUNK-RENDER 8/8 (modeller/tests/witness_seed_trunk_render.js,
+#   headless swiftshader). Render==planTrunk net (vertices==2×data segs, risers, no-drift maxDrift 5e-7m, litPct 64%).
+#   Eyeball gap CLOSED. Gate caught a real bug: _renderSeedTrunk/seedTrunk guarded on net.refused truthy, but on a
+#   SUCCESS net refused is the integer COUNT of unreachable fixtures → empty trunk whenever any fixture unreachable
+#   (Duplex ELEC refuses 112/267); fixed to === true.
+# T2 ANIMATION: seed-outward draw-range reveal (graph-path-distance keyed, ground→riser→upper, ~2s easeOutCubic,
+#   prefers-reduced-motion→instant); §SEED-TRUNK-ANIM gate-asserts ends EXACTLY on net (32 frames finalSegs==5936).
+# HELD-OUT: SampleCastle 7-storey, 3 risers, 208415 segs exact==net, maxDrift 1.13e-6m (witness argv [bldg] [disc]).
+# W-DW-PIXELPROBE regression green. PROGRESS.md + WalkerMaturity.md updated. NOTHING LEFT on this card.
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────
+# (original scope, for the record:)
 SCOPE: close the "eyeball gap" on the seed-trunk RENDER and make the disc construction a VISIBLE, verifiable UX.
 The seed→3D-trunk capability is DONE + LIVE (bim-ootb PR #580 MERGED, sw v23; engine proven W-SEED-TRUNK/
 -CORRIDOR/-RISER/-ENGINE + W-SEEDTRUNK-ENGINE 6/6). What is NOT yet a standing gate: the modeller RENDER of the

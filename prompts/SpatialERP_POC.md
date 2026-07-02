@@ -7,7 +7,7 @@
 # ⚠ DO NOT REMOVE — Scope guard
 # Scope: Spatial ERP OOTB — doc_engine.js + category_registry + Construction ERP POC.
 #        Browser-only. No server. No iDempiere dependency.
-#        Replaces prompts/iDempiereOOTB.md — same iDempiere AD thinking,
+#        Replaces prompts/done/iDempiereOOTB.md — same iDempiere AD thinking,
 #        zero iDempiere infrastructure.
 #        Requirement source: ~/Downloads/Idempiere Construction ERP.pptx (Sysnova / Kazi Farms Group)
 # Read the log after every run. Exit code is not evidence.
@@ -45,7 +45,7 @@ between all 6 stakeholder perspectives.**
 
 ## §0. What This Replaces
 
-`prompts/iDempiereOOTB.md` planned an OSGi plugin embedding BIM OOTB inside
+`prompts/done/iDempiereOOTB.md` planned an OSGi plugin embedding BIM OOTB inside
 iDempiere (Iframe in ZK, postMessage bridge, C_Project tab, Java handlers).
 That approach required iDempiere server (JVM + PostgreSQL + OSGi bundle).
 
@@ -1380,6 +1380,6 @@ Activity score = freshness(Updated date) × 0.4 + field_completeness × 0.6
 - `deploy/dev/boq_charts.html` — existing BOQ/QTO engine
 - `deploy/dev/rates.js` — existing rate templates
 - `deploy/dev/share.js` — existing share mechanism
-- `prompts/iDempiereOOTB.md` — the old approach (OSGi). Superseded.
+- `prompts/done/iDempiereOOTB.md` — the old approach (OSGi). Superseded.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

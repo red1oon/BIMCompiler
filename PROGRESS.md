@@ -29,14 +29,19 @@ Spec+closeout: `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md`. Still open: (3
 design call (user go-ahead needed, unchanged).
 Spec: `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`.
 
-**▶ MODELLER GUIDE (bim-compiler side) — SC ARC screenshot ✅ DONE+EMBEDDED 2026-07-02 (3rd attempt, prior 2 were
-retracted as premature).** Confirmed PR #598/#613 live on `main` (`8449306`) independently before embedding —
-`witness_arc_editable.js` 10/10, `witness_e2e_mv_parity.js` 12/12, fresh real-click capture shows genuine detail
-(dormers/window frames/skylights), the one isolated-looking object traced by raycast to the scene's `AxesHelper`
-origin marker (not a data defect). `docs/img/modeller/samplecastle-arc-open.png` embedded in `ModellerGuide.md`,
-`mkdocs build --strict` exit 0. Detail + the two earlier false starts: `prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md`.
-The other 21 §F2 frame-composition bugs (`cut-select`/`gizmo`/`route-spine`) are reported fixed bim-ootb-side (PR
-#608) — NOT yet re-verified or pulled into bim-compiler's `docs/img/modeller/*.png`; check before trusting.
+**▶ MODELLER GUIDE (bim-compiler side) — ✅ FULLY DONE 2026-07-02, both threads closed, guide is now accurate+detailed.**
+SC ARC screenshot embedded (3rd attempt, prior 2 retracted as premature — confirmed PR #598/#613 live on `main`
+`8449306` independently: `witness_arc_editable.js` 10/10, `witness_e2e_mv_parity.js` 12/12, real-click capture
+shows genuine detail — dormers/window frames/skylights, one isolated object traced by raycast to the scene's
+`AxesHelper`, not a data defect). The other 21 §F2 frames: a concurrent bim-ootb session fixed the harness (PR
+#608) and committed the 8 recaptures straight to `docs/img/modeller/` — found this mid-session while
+independently recapturing the same 8 myself; eyeballed both sets (equivalent), reverted my redundant copies
+rather than clobber already-committed work. **Full visual audit, all 22 frames opened and eyeballed one by
+one** (not trusting witness-pass): all legible, close-ups actually zoom to the element, `insert-placed`/
+`delete-gone` whole-building crops confirmed intentional (PR #608's own design split), not a defect. Also
+brought Move/Scale/Rotate/Grid-Stretch/Delete's prose-only sections up to the same numbered-step format as the
+rest of the guide. `mkdocs build --strict` exit 0, 22/22 image refs resolve. Detail:
+`prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md` (now archivable).
 
 **▶ HR_BIM_Asset (bim-ootb Viewer) — §P10d + §P11 ✅ BOTH DONE+LIVE 2026-07-02** (PR #609/#611/#612, then
 #614/#615). `lane/hr-overlay` merged to main — surfaced + resolved a real duplicate-lineage collision with

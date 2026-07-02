@@ -28,21 +28,27 @@ If one breaks, compare with the others to spot what's wrong without needing git 
 
 ## Architecture
 
-Single DB per building. Each building is one `{Name}_extracted.db` containing metadata,
-transforms (with IFC bbox), instances, AND geometry BLOBs. No separate library DB.
-Landing page loads `manifest.json`, user clicks a building, viewer downloads one DB.
-Cached in IndexedDB — second visit is instant. DB is queryable immediately (4D/5D/clash)
-before meshing starts.
+Single DB per building in the **common bucket `bim-ootb`**. Small buildings use one
+`{Name}_extracted.db`. Large buildings (≥15K elements) use split format: `_meta.db` +
+`_geo.db` + `_positions.bin`. The viewer auto-detects split mode via HEAD on `_meta.db`.
+Landing page loads `manifest.json` from its own bucket, user clicks a building,
+viewer downloads the DB from `bim-ootb` (common). Cached in IndexedDB — second visit
+is instant. DB is queryable immediately (4D/5D/clash) before meshing starts.
 
 ## Buckets
 
-| Bucket | Purpose |
-|--------|---------|
-| `bim-ootb-live` | **PRODUCTION** — landing + viewer JS |
-| `bim-ootb-live` | **DATABASES** — 30 per-building single DBs + city index (referenced by landing `_prodBase`) |
-| `bim-ootb-backup` | **SNAPSHOT** — copy of prod taken before each deploy |
-| `bim-ootb-dev` | **STAGING** — test before production |
-| `bim-ootb-live2` | **TEST** — fresh bucket for cache isolation testing |
+| Bucket | Purpose | Contains |
+|--------|---------|----------|
+| `bim-ootb` | **COMMON — building databases ONLY** | `buildings/*.db`, `buildings/*.bin`, `manifest.json`, `city_index.db` |
+| `bim-ootb-live` | **PRODUCTION — viewer code ONLY** | `index.html` (landing), `sandbox/*.js` (viewer) |
+| `bim-ootb-dev` | **STAGING — viewer code ONLY** | Same structure as live, safe to break |
+| `bim-ootb-backup` | **SNAPSHOT** — copy of prod taken before each deploy | Copy of `bim-ootb-live` |
+| `bim-ootb-full` | **FULL — standalone viewer + DBs** | Self-contained, has its own building DBs |
+| `bim-ootb-live2` | **TEST** — fresh bucket for cache isolation testing | Mirror of live |
+
+⚠ **DATABASES GO IN `bim-ootb` ONLY.** Never upload building DBs to `bim-ootb-live` or `bim-ootb-dev`.
+Both landing pages set `_prodBase = '.../b/bim-ootb/o/'` — the common bucket. This is the single source
+of truth for all building data. The viewer/staging buckets hold code only.
 
 Region: `ap-kulai-2` (Malaysia West 2 Kulai). Always Free tier.
 
@@ -52,7 +58,7 @@ Region: `ap-kulai-2` (Malaysia West 2 Kulai). Always Free tier.
 https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/index.html
 ```
 
-## Files in bim-ootb-live
+## Files in bim-ootb-live (CODE ONLY — no databases)
 
 ```
 index.html                          ← landing page (SYSNOVA branded, manifest-driven)
@@ -63,13 +69,18 @@ sandbox/mep_report.html             ← MEP Bill of Quantities
 sandbox/locales/*.js                ← 18 locale translations
 sandbox/rates/*.json                ← 17 country rate templates
 manifest.json                       ← 30 archetypes metadata
-buildings/
-  {Name}_extracted.db               ← single DB: metadata + transforms + bbox + geometry BLOBs
-  city_index.db                     ← 786 building bboxes for city mode (324KB)
 ```
 
-Single DB per building (e.g. `Duplex_extracted.db`). Contains elements_meta,
-element_transforms (with bbox_x/y/z), element_instances, component_geometries.
+⚠ NO `buildings/` folder here. All building DBs are in `bim-ootb` (common bucket).
+
+## Files in bim-ootb (COMMON — databases only)
+
+```
+buildings/
+  {Name}_extracted.db               ← single DB (small buildings)
+  {Name}_meta.db + _geo.db + _positions.bin  ← split DB (large buildings ≥15K)
+  city_index.db                     ← 786 building bboxes for city mode (324KB)
+```
 
 ## CLI Commands
 
@@ -91,8 +102,8 @@ for f in config scene helpers streaming panels tools picking tour measure siteca
     --content-type application/javascript --force
 done
 
-# Upload a per-building DB (single DB — no separate library)
-oci os object put --bucket-name bim-ootb-live \
+# Upload a per-building DB to COMMON bucket (NEVER to bim-ootb-live)
+oci os object put --bucket-name bim-ootb \
   --file deploy/buildings/Hospital_extracted.db \
   --name buildings/Hospital_extracted.db --force
 
@@ -175,9 +186,12 @@ Steps 1–4 operate at OCI level. Step 5 syncs back locally so `deploy/live/` st
 **⚠ BEFORE ANY UPLOAD: download the target file from bucket, diff against local. NEVER overwrite blind.**
 
 ```
-Step 1 — TEST        Run ALL tests. Both must pass.
-                       a) node deploy/live/test_all.js   (full suite)
-                       b) node deploy/dev/s2XX_test.js      (feature-specific)
+Step 1 — TEST        Run the gate. All must pass (exit 0).
+                       a) node deploy/dev/tests/whitebox_regression.js   (§-tagged regression SOP)
+                       b) node deploy/dev/test_all.js                    (LOCAL GATE — deterministic;
+                          syntax, wiring, refactor-location, URL integrity. No network, no Playwright.)
+                       c) node deploy/dev/s2XX_test.js                   (feature-specific)
+                       NOTE: edit/run tests in deploy/dev/ ONLY — deploy/live/ is the prod snapshot.
 Step 2 — MINIFY      Build deploy/min/ from deploy/dev/ (never edit min/ directly)
                        bash scripts/minify_viewer.sh
                        - Output: deploy/min/*.js  (45% smaller, what goes to OCI)
@@ -194,7 +208,9 @@ Step 4 — DEPLOY      minify_viewer.sh --upload full  OR manual OCI upload from
                               --content-type text/html --force
                           One artifact, one location. Durable, git-tracked, survives reboots.
 Step 5 — SMOKE       Verify deploy before visual check.
-                       a) curl checks (all must pass):
+                       a) node deploy/dev/test_all.js --live   (OCI sync + routing + Playwright;
+                          drift here is expected until upload completes — confirms it cleared)
+                       b) curl checks (all must pass):
                           curl -s -o /dev/null -w "%{http_code}" .../index.html   # must be 200
                           curl -s .../index.html | grep -c "DEV ENVIRONMENT"      # must be 0
                           curl -s .../index.html | grep -c "Drop IFC"             # must be ≥1
@@ -227,9 +243,10 @@ No git involved. Backup bucket IS the known-good version.
 
 **Commands:**
 ```bash
-# Step 1: Tests
-node deploy/live/test_all.js
-node deploy/dev/s211_test.js      # adjust per sprint
+# Step 1: Tests (local gate — must exit 0 before any upload)
+node deploy/dev/tests/whitebox_regression.js
+node deploy/dev/test_all.js        # LOCAL GATE (add --live in Step 5 for OCI/Playwright)
+node deploy/dev/s211_test.js       # adjust per sprint
 
 # Step 2: Minify dev → min
 bash scripts/minify_viewer.sh

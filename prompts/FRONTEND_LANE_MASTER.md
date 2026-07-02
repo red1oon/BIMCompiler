@@ -67,25 +67,41 @@ Do NOT re-walk it — it is provenance, not work.
 doctrine) + the current RESUME card (`prompts/RESUME_IDMP_FIDELITY.md`) + MEMORY.md §SPINE. New dictated items append
 to **§NEW BACKLOG** below (this is the WORK-TO-ZERO list going forward).
 
-**⛔ CARRIED FORWARD — parked on a user fact / roadmap call (NOT active work; surfaced so they're never silently dropped):**
-- **G-3 — headless WH-confirm (doctype-148) PG-drive.** `Adempiere.startup` NPEs on OSGi BundleContext (SecureEngine
-  service locator) — needs an OSGi runtime to drive. `ConfirmOracle.java` written+compiled+rollback-safe (`35b8e96f`).
-  The browser-side `inout_confirm.js` rule already ships (E-5 W-WH-CONFIRM); this is only the Java-oracle cross-check.
-- **§P-11 payable-QR (real DuitNow).** A real DuitNow QR is a registered-merchant EMVCo payload; a self-composed amount
-  QR won't parse in bank apps. RESOLVED for the demo via an explicit DEMO/SAMPLE-labeled generic QR. Real variant:
-  owner snaps their OWN static DuitNow QR once (stored as an AD_Image like §P-9), receipt shows it beside the total.
-  ⛔ the one user fact: does the user want to provide/wire that real static QR, or leave the demo QR?
-- **renderer #2 (Odoo) descriptor seam.** Building the AD-as-first-descriptor seam now = a speculative one-consumer
-  abstraction the recorded decision pre-empts (`docs/IDEMPIERE_2.md §pivot`: build the seam WHEN renderer #2 starts).
-  ⛔ the one roadmap call (user owns): greenlight a 2nd renderer (Odoo/ERPNext) → then build the seam.
+**CARRIED-FORWARD — RESOLVED by user 2026-07-01 (all three closed; kept here as the record, not active work):**
+- **G-3 — headless WH-confirm (doctype-148) oracle. ⛔ DROPPED (low value).** User (2026-07-01) didn't recall needing
+  it; clarified. The blocker was never the DB — it's the Java **OSGi/Equinox runtime** (`Adempiere.startup` NPEs on the
+  BundleContext / SecureEngine service locator); docker Postgres (GardenWorld) is necessary-not-sufficient. The
+  browser-side `inout_confirm.js` rule already SHIPS (E-5 W-WH-CONFIRM) with every fold citing its exact
+  `MInOut`/`MInOutConfirm` source line + a rule-consistency arm → the Java fact-diff is a nice-to-have, not load-bearing.
+  If ever wanted: run `ConfirmOracle.java` (`35b8e96f`, compiled+rollback-safe) INSIDE the already-bootable iDempiere
+  server's OSGi runtime (the A2 Release-13 instance) against a throwaway docker-PG GardenWorld — NOT as a standalone main.
+- **§P-11 payable-QR. ✅ CLOSED — QR is always a demo "SAMPLE".** User (2026-07-01): the explicit DEMO/SAMPLE-labelled
+  generic QR IS the answer; no real registered-merchant DuitNow payload is wanted. Nothing further to do.
+- **renderer #2 (Odoo) descriptor seam. ⛔ CANCELLED by doctrine (not blocked).** User (2026-07-01): the framework's
+  end-state is that all other ERPs are ABSORBED into a single iDempiere(-2.0) base — they exist only TRANSITIONALLY as
+  migration sources after a fresh migration off their legacy. So there is no permanent "2nd renderer" to abstract a
+  descriptor seam for; Odoo's view types/reconciliation become fold-projections in the ONE core (`docs/internal/IDEMPIERE_2.md`
+  §pivot: "a lingua franca other ERPs map onto"). Building the seam = the speculative one-consumer abstraction the recorded
+  decision pre-empts. Retired. See [[project_erp_one_base_doctrine]].
 
 ### NEW BACKLOG — dictated items go here (WORK-TO-ZERO list, post-retire)
 _(append new dictated items below. NOTE: the TM/variance/shopfloor + Zoom-Across arc has its OWN dedicated
  prompts — do NOT track it here: `prompts/ZOOM_ACROSS_SCOPE_SESSION.md`, `prompts/GW_HOSPITAL_SHOWCASE_SPEC.md`,
  `prompts/TM_SHOPFLOOR_COSTING_SPEC.md`.)_
 
-- [ ] **Retire `viewer/2d.html` (deprecated DXF/Canvas2D plan viewer)** — dictated 2026-06-22. Last touched 2026-05-23,
-  superseded by `grid_overlay.js` overlay toggle. **NOT a file move** — it is still wired live, so retirement = 4 steps,
+- [✅] **Retire `viewer/2d.html`** — RESOLVED 2026-06-27 (user call): the viewer-side 2D/red-pill work is
+  **DEPRECATED by the Modeller/3DGrid — leave it as-is** (dead-weight but harmless, lazy/new-tab only; nothing
+  to learn from it). Do NOT spend effort on the mechanical retirement. Focus shifted to Modeller feature UI polish.
+  (Step-1 witness below still stands as the record of WHY a naive retirement was wrong.)
+  **Step-1 witness: `grid_overlay.js` does NOT cover what `2d.html` serves.** EXTRACTED (not assumed): `grid_overlay.js` has ZERO DXF capability
+  (grep dxf|bimsrc|aia-layer|drag-drop = 0); `2d.html` is a standalone DXF/CAD plan viewer — parse DXF,
+  AIA layers panel, BIMSRC xdata→GUID correlation, drag-drop external DXF (per `tests/specs/14-2d-plans.spec.js`).
+  They overlap ONLY on the 2D toolbar button (already routed to the in-scene grid overlay); `2d.html` is now
+  reachable only via the `main.js:264` error-fallback + direct URL. So retiring it DELETES the DXF-import
+  capability, not just dead weight. **THE ONE QUESTION (user owns):** accept losing the standalone DXF/CAD
+  floor-plan viewer (drag-drop DXF, AIA layers, BIMSRC correlation), or keep `2d.html` until a replacement
+  DXF path exists? If "accept loss" → the 4 steps below are mechanical and ready to run.
+  Last touched 2026-05-23. **NOT a file move** — it is still wired live, so retirement = 4 steps,
   all in a `/tmp/wt-*` worktree (shared `~/bim-ootb` checkout is hook-blocked):
   1. CONFIRM `grid_overlay.js` fully covers the 2D-plan cases that `2d.html` served (don't assume — witness it).
   2. Delete the fallback in `viewer/main.js:242` (`open2DPlans()` → `window.open('2d.html?...')`).
