@@ -39,60 +39,8 @@ open design call. Findings + Fable5/Opus/Sonnet assignment logged in each lane's
 §NIGHT (top), `prompts/RESUME_HR_BIM_ASSET.md` §NIGHT (bottom), `prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md`
 §NIGHT (reopens that card — was marked archivable, now isn't until its 6 items land).
 
-**▶ GEOMAPPING (IFC→BOM classifier) — ✅ LANE CONCLUDED 2026-07-02, foundation fix + verification pass same day.**
-All 3 tiers + Rung-1 rooms (21/21 IoU ground-truth Duplex) + graph-context alias layer (mining + runtime),
-all shipped/wired/witnessed (bc PR #12–#18, ootb PR #600–#603+#605). Corpus = SH/DX/SC/Terminal/Clinic/Hospital/
-HHS, **every building's sidecar GUID join now measured 100.0%** — HHS was re-mined off the weak 69%-join
-`Ifc4_Revit_MEP.ifc` onto the 6 `opensourceBIM_HHS_Office_*.ifc` files (100.0%, 6,871/6,871), alias_map.json
-re-mined on the corrected foundation (HHS's LOBO sample grew 4,718→6,726 elements, same 99.7% recovery rate),
-zero regression on the other 6 buildings (bit-identical bands). §ALIAS-SPEC's runtime half (`alias()` + IFC2x3→4
-rename table in bim-ootb `classify_geom.js`) was checked and found already shipped (PR #603) — re-verified GREEN,
-not re-implemented. Item 5 (topology-transfer cross-building spike) deliberately deferred to the RosettaStone
-graph-hypothesis thread, not duplicated here. Spec: `prompts/RESUME_IFC_BOM_GEOMAPPING.md`.
-
-**▶ MODELLER (bim-ootb) — LOD400 real-geometry, Walk-All-Disciplines, §STRETCH-RIDE all ✅ DONE+LIVE 2026-07-02**
-(PR #598/#599/#604). Evening session same day closed the two follow-ups: (1) **Terminal-scale perf-guard ✅ PR #606
-MERGED** — real 35,552-mesh run proved the 50k guard never fires + the flash blew its 1.2s budget 33× (39.3s);
-fixed (rAF time-budget + chain group-commit), standing witness `witness_e2e_walkall_terminal_scale.js` 6/6;
-(2) **guide-frame framing ✅ PR #608 MERGED + guide LIVE** (8 frames recaptured+eyeballed, harness clamp/wall-pick/
-frameElement/clearGround). **✅ ARC anchor-placement bug FIXED+MERGED same day (W-MV-PARITY → PR #613, main 8449306):** `center_xyz`
-is the IFC placement ANCHOR; fix = render-side `R·anchorOffset` at fold (`foldInsert §ARC-ANCHOR`), signed op-log
-byte-identical. W-MV-PARITY 12/12 tolerances unchanged (T2/X1 18.03 m → ~1e-6 m); NEW standing witness
-`witness_residents_anchor_sweep.js` 15/15 — all 5 residents by maths (Terminal 35552 @7.6e-6) + screenshots;
-13-witness blast radius all green; **SampleCastle's floating fragments confirmed GONE** (that saga is closed).
-Spec+closeout: `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md`. Still open: (3) proximity-clustering-as-BOM
-design call (user go-ahead needed, unchanged).
-Spec: `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`.
-
-**▶ MODELLER GUIDE (bim-compiler side) — ✅ FULLY DONE 2026-07-02, both threads closed, guide is now accurate+detailed.**
-SC ARC screenshot embedded (3rd attempt, prior 2 retracted as premature — confirmed PR #598/#613 live on `main`
-`8449306` independently: `witness_arc_editable.js` 10/10, `witness_e2e_mv_parity.js` 12/12, real-click capture
-shows genuine detail — dormers/window frames/skylights, one isolated object traced by raycast to the scene's
-`AxesHelper`, not a data defect). The other 21 §F2 frames: a concurrent bim-ootb session fixed the harness (PR
-#608) and committed the 8 recaptures straight to `docs/img/modeller/` — found this mid-session while
-independently recapturing the same 8 myself; eyeballed both sets (equivalent), reverted my redundant copies
-rather than clobber already-committed work. **Full visual audit, all 22 frames opened and eyeballed one by
-one** (not trusting witness-pass): all legible, close-ups actually zoom to the element, `insert-placed`/
-`delete-gone` whole-building crops confirmed intentional (PR #608's own design split), not a defect. Also
-brought Move/Scale/Rotate/Grid-Stretch/Delete's prose-only sections up to the same numbered-step format as the
-rest of the guide. `mkdocs build --strict` exit 0, 22/22 image refs resolve. Detail:
-`prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md` (now archivable).
-
-**▶ HR_BIM_Asset (bim-ootb Viewer) — §P10d + §P11 ✅ BOTH DONE+LIVE 2026-07-02** (PR #609/#611/#612, then
-#614/#615). `lane/hr-overlay` merged to main — surfaced + resolved a real duplicate-lineage collision with
-PR #592 (two independent sessions had built the same module; verified `lane/hr-overlay` was a strict superset,
-kept its content). Live: real ContaCam CCTV still (6 distinct crops), animated per-sensor colored horizontal
-bars (Bonsai federation/river-inspired, replaces static charts), fly-to-zone bug fixed (instanced/batched
-meshes weren't resolved — same class of bug `setTint` already had fixed), pill tooltip fix (was showing
-internal id). **§P11 ✅ DONE+LIVE (PR #614, main `5a83955`):** every pane showing a real AD-compiled record
-(Dashboard Resources, Payslip lines, Leave unpaid entries, Tenancy subscriptions, IoT billing rows) now
-deep-links into its real iDempiere window (`hba_lens.js erpLink()`+`AD_WINDOWS`, every id sourced from
-`ad_full.db`, reusing `navigate_find.js`'s proven URL shape) — includes a mid-session user extension (Leave,
-which has no native AD table of its own, links to the real "Leave without pay" `hr_concept` it feeds on
-payroll instead). New `witness_erp_deeplink.js` 19/19, full 34-file HBA suite zero regression, live chromium
-smoke on all 5 panes. Docs: `docs/HRBIMAssetGuide.md` gained the Payslip/Leave/Tenancy pane sections (never
-documented before) + a "Jump straight to the ERP record" explainer, 5 new screenshots. Spec:
-`prompts/RESUME_HR_BIM_ASSET.md` §P10d/§P11.
+**▶ MODELLER (bim-ootb) — one genuinely-open design call:** proximity-clustering-as-BOM (window-as-assembly),
+user go-ahead needed. The LOD400/Walk-All/anchor lane itself is ✅ concluded (see Archive).
 
 **Gate:** `./scripts/run_RosettaStones.sh` — S190 fleet: 116/157 PASS, 4 ALL GREEN (BR,MO,RL,WI). 21 buildings, 9-gate system.
 
@@ -109,6 +57,11 @@ documented before) + a "Jump straight to the ERP record" explainer, 5 new screen
 **Pipeline:** 11 stages. 77 verbs. 7403 products (ERP.db). 4-DB architecture.
 
 ## Archive — DONE/shipped (one-line pointers; detail in specs + memory topic files)
+- GEOMAPPING lane ✅ CONCLUDED 2026-07-02 — 7-building corpus ALL 100% GUID joins (HHS re-mined off the 69% MEP file), alias layer mining+runtime shipped (bc #12–#18, ootb #600–#603+#605) — `prompts/RESUME_IFC_BOM_GEOMAPPING.md` → [[project_ifc_bom_geomapping]]
+- Modeller LOD400 real-geometry + Walk-All + §STRETCH-RIDE + Terminal perf-guard (#606) + guide frames (#608) + ARC anchor fix (#613, W-MV-PARITY 12/12, anchor-sweep 15/15, SC floating fragments GONE) ✅ 2026-07-02 — `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`, `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md`
+- Modeller GUIDE ✅ FULLY DONE 2026-07-02 — all 22 §F2 frames eyeballed, SC ARC shot embedded, prose sections numbered, mkdocs --strict 0 — `prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md`
+- Modeller competitive-polish §FABLE5-NOW 10/10 ✅ 2026-07-03 (bim-ootb #616; W-GRID-NUMERIC measures grid accuracy) — bim-ootb `prompts/RESUME_MODELLER_POLISH_BATCH.md` → [[project_modeller_competitive_polish]]
+- HR_BIM_Asset §P10d + §P11 ✅ DONE+LIVE 2026-07-02 (#609–#615) — all 5 HBA panes deep-link real iDempiere windows, witness_erp_deeplink 19/19 — `prompts/RESUME_HR_BIM_ASSET.md` → [[project_hba_compile_not_model]]
 - Modeller VISION-LOCK arc: §ARC-1 editable substrate → §SDG-CASCADE ride → §GATE-1 RED/ORANGE conformity →
   §STRETCH-1 grid-stretchable, all DONE+LIVE 2026-06-29 (bim-ootb PR #571/#573/#574/#575) — `prompts/RESUME_ARC_EDITABLE_SUBSTRATE.md`, `prompts/RESUME_MODELLER_CONFORMITY_GATE.md`, `prompts/RESUME_ARC_STRETCHABLE.md` → [[project_arc_editable_substrate]]
 - Terminal §8E TE-walk suite complete (ARC/STR-canopy/MEP-density/clash/GREEN-report), cross-building held-out
