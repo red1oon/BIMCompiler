@@ -78,7 +78,9 @@ Before ending, update PROGRESS.md with:
 
 ## Sacred Files (edit with extreme care)
 - `deploy/live/*` — PRODUCTION snapshot, never edit (see PRIME RULE)
-- `migration/*.sql` — append only, never modify existing migrations
+- `migration/*.sql` — append only, never modify existing migrations. EXEMPT: `DV_<prefix>_rules.sql` — regenerated
+  mined artifacts (written by `run_RosettaStones.sh`/`onboard_ifc.sh` each gate run, applied by `rebuild_erp.sh`),
+  not ledger migrations; in-place regeneration is their normal lifecycle (decided 2026-07-03).
 - `BuildingCompiler.java` — main orchestrator, many dependencies
 - `RosettaStoneGateTest.java` — defines G1-G6 gates (compiler-reconstruction truth). NOTE: no CI in this repo runs it — "GREEN before commit" is a LOCAL discipline (Anti-Drift #5), not automation. See `docs/TestArchitecture.md` §Truth Model (2026). The headless smoke subset runs via `.github/workflows/ci.yml` + `scripts/system_is_real.sh`.
 - `X_M_BOM.java` / `X_M_BOMLine.java` — EntityType guards, GodMode bypass
