@@ -15,13 +15,16 @@ stays blocked — deliberately gated behind an existing 7-box research gate in `
 just unbuilt. Full spec, staged design, Fable5/Opus assignment per thread:
 `prompts/RESUME_POS_KITCHEN_EINVOICE_OPS_PANELS.md`.
 
-**▶ 2026-07-03 — Modeller competitive-polish research done, Fable5 backlog ready.** 5 parallel investigations
-(Outliner→canvas wiring, canvas→Outliner sync+visual consistency, IFC/BCF interop, 3D-grid geometric accuracy,
-authoring-toolset+canvas-render polish) against `~/bim-ootb`. Verdict: the core math is solid (grid-stretch
-kinematics exact to 1e-9-1e-12, real snapping, real signed-op undo/redo, real IFC GUID stability) — the gap is
-almost entirely surfacing/polish, not correctness. ~11 Fable5-ready quick wins + ~10 needs-design items + a
-real (but incremental, not from-scratch) BCF/IFC interop opportunity. Full spec, prioritized:
-`prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md`.
+**▶ 2026-07-03 — Modeller competitive-polish: §FABLE5-NOW ✅ ALL 10 SHIPPED (bim-ootb PR #616 merged).**
+Outliner⇄canvas made symmetric (hover both ways, multi-select tints + ctrl-click rows), geomap seed-audit
+surfaced, typed Rotate/Scale inputs, gesture undo (stretch+riders = one Ctrl+Z, arcseed can never mass-undo),
+collapse persistence, dead-click toast, help panel — six new witnesses green incl. W-GRID-NUMERIC 6/6 which
+MEASURES grid-alignment accuracy for the first time (0–208.5mm vs 300mm tol on 3 real buildings). STILL OPEN
+from the research: §NEEDS-DESIGN band (keystone = per-instance pick identity for walked InstancedMesh) + real
+BCF file interop — both need Sonnet scope calls first. New witnessed finding for that pile: GEOM_SCALE folds
+LOCAL-axes while cube handles/preview are world-aligned. Research spec:
+`prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md`; implementation spec: bim-ootb
+`prompts/RESUME_MODELLER_POLISH_BATCH.md`.
 
 **▶ 2026-07-03 — HBA ERP-governed-display research done, DECISION PENDING.** User wants pane display (not just
 §P11's deep-link target) to derive from a real iDempiere chain (HHS↔`M_Warehouse`, personnel↔`C_BPartner`↔
