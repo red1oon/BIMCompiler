@@ -18,48 +18,17 @@
 
 **Pipeline:** 11 stages. 77 verbs. 7403 products (ERP.db). 4-DB architecture.
 
-## Ninja Create (PackOut/PackIn) — 2026-06-14
-- ✅ **SHIPPED** Create face on the Plugin Engine pill (bim-ootb PR #301, erp sw v673): drop .xlsx model sheet →
-  preview → Emit & Install through the writable `window.__idmpDb`. Witness `§NINJA-DOM-WITNESS PASS`
-  (headless-chrome on the real deploy scripts). Card `prompts/NINJA_MODE_PILL.md` (done).
-- ✅ **Witnessed** behaviour teaching sample: `build/erp/fixtures/plugins/asset_status_callout.mjs` +
-  `scripts/poc_asset_status.js` → **W-ASSET-STATUS PASS** (callout fires via the `AD_Column.Callout` seam; both
-  falsifiers hold). Doctrine documented `docs/ERPUserGuide.md §9` (one .foldbundle = structure+behaviour ≡ 2Pack+JAR).
-- ✅ **TWO-WAY ENGINE DONE 2026-06-14** (Opus, feat/erp-substrate-phase012): (1) `NinjaStage.extractModel(db,AD_Window_ID)
-  →model` reverse-export — **W-NINJA-EXTRACT** `roundtrip=MATCH` (72285fee) · (2) `Col@class.method` grammar token
-  → `AD_Column.Callout` auto-wire — **W-NINJA-CALLOUT** dispatch fires `derived={Description:'Ready'}` (82320be6) ·
-  (3) structural-only round-trip caveat documented (3b6b590a).
-- ✅ **W-NINJA-EXPORT DONE 2026-06-14** (Opus, 95d0136a) — the workbook-serialize leg: `build/erp/ninja_export.js`
-  (`modelToRows`/`modelToWorkbook`/`exportWindow`/`exportBlob`, inverse of `parseRomo`). Full round-trip
-  **DB→extractModel→workbook→XLSX bytes→re-read→parseSheet == original**, 21/21 tables MATCH (starter + 19-table
-  HRMIS), §FALSIFIER ghost→null. Hardened `extractModel` master-FK detection (LAST *_ID col, not first — fixed
-  HRMIS tables with a user `_ID` col before the real FK; W-NINJA-EXTRACT still PASS).
-- ✅ **W-NINJA-EXPORT-LIVE SHIPPED 2026-06-14** (bim-ootb PR #309, erp sw v681): Create face "Export an existing
-  window" picker (live AD `<select>` → `exportBlob` → `.xlsx` download); `ninja_stage.js?v=2` (extractModel now
-  deployed) + `plugin_overlay.js?v=4` + new `ninja_export.js`. Live DOM smoke in headless chrome on the deploy
-  bundle: pill→Create→picker 370 windows→stage Ninja window→Export→`AST_Asset.xlsx` re-parses EXACT to
-  extractModel (6 grammar cols). **`§W-NINJA-EXPORT-LIVE PASS`.** Item 1 of §OUTSTANDING = DONE.
-
-## Reflexive AD self-edit — engine legs DONE (2026-06-14, Opus)
-- ✅ **W-AD-OPLOG-DISTRIB** (`scripts/poc_ad_oplog_distrib.js`, e3e677cd) — dictionary edit → signed append-log →
-  re-folds to the SAME dictionary on a 2nd node (verifyChain ok both sides; §FALSIFIER load-bearing). "Mail the append log."
-- ✅ **W-AD-SELFEDIT** (`scripts/poc_ad_selfedit.js`) — edit `AD_Field` → form's displayed set re-folds 26→25→26
-  = rebuild is re-read, not recompile.
-- ✅ **W-AD-SELFEDIT-LIVE SHIPPED 2026-06-14** (bim-ootb PR #312, erp sw v683) — a signed dictionary edit
-  repaints the form on the spot, no reload. 3 legs: `ad_parser.js?v=23` `setTipSource` (AD_Field/AD_Window
-  reads overlay the sidecar edit via `CrudOverlay.listTip(window.__crud.kernelDb(),…)`); `crud_overlay.js?v=7`
-  emits `overlay:committed`; `idempiere.html` wires the tip-source + a refold hook (AD_* commit → invalidate
-  `_openWins` + re-`openWindow`/`buildMenu`). Live witness (headless chrome on the bundle): M_MatchInv
-  "Organization" grid column vanishes on `IsDisplayed Y→N`, returns on `N→Y`; commit sealed+verifyChain=ok.
-  **`§W-AD-SELFEDIT-LIVE PASS`.** Reflexive-AD loop now proven engine + distribution + LIVE DOM.
-
-## Odoo red-band fold-gap — RE-AUDITED (2026-06-14, Opus)
-- ✅ **W-ODOO-QWEB** (`scripts/poc_fold_qweb.js`, 852dea16) — `CORE.foldQWeb` folds Odoo invoice line-loop to the cent
-  (`price_subtotal=4350.00 maxDiff=0c`); 41/41 QWeb defs extracted → `build/erp/odoo_extras.db`.
-- ✅ **Server actions = NOT a code gap** — `§SRVACT-CLASSIFY code=64` all Python, no declarative subset; honestly deferred.
-- Panel re-published: https://red1oon.github.io/BIMCompiler/migrate_status_panel.html (44 surfaces, live-verified).
+## Codebase quality audit (2026-07-02) — TRIAGED 2026-07-03
+- ✅ §5 self-XSS fixed BOTH repos (bim-ootb PR #618 sw v758 + bc PR #20; W-XSS-FILENAME 10/10 + 5/5, incl. the
+  download-link sink the audit missed) · ✅ §2 doc-vs-code drift fixed, every number re-verified (bc PR #20).
+- ⛔ BLOCKED (user call): are `migration/DV_*_rules.sql` mined-rule files EXEMPT from append-only, or enforce?
+- OPEN: §1 refactors (spec-first, Sacred file), §2 dead-code removal, §3 shallow specs 27/29 (bim-ootb).
+  Full triage: `prompts/CODEBASE_QUALITY_AUDIT_2026-07-02.md §TRIAGE`.
 
 ## Archive — DONE/shipped (one-line pointers; detail in cards + memory topic files)
+- Ninja Create two-way engine + live export — `prompts/NINJA_MODE_PILL.md # DONE`, W-NINJA-{EXTRACT,CALLOUT,EXPORT,EXPORT-LIVE} + W-ASSET-STATUS (bim-ootb PR #301/#309, sw v673/v681, 2026-06-14)
+- Reflexive AD self-edit — W-AD-{OPLOG-DISTRIB,SELFEDIT,SELFEDIT-LIVE} (bim-ootb PR #312 sw v683, 2026-06-14)
+- Odoo red-band fold-gap re-audit — W-ODOO-QWEB 41/41 to-the-cent; server actions honestly deferred; migrate_status_panel live (2026-06-14)
 - POS gap-close banked — `prompts/POS_GAP_CLOSE.md # DONE` (2026-06-12g2)
 - WH×POS pick lane BUILT, live-verified — `prompts/WH_POS_PICK_LANE.md # DONE` (2026-06-13)
 - Multi-lane WAVE 3 — `prompts/MULTI_LANE_WAVE3.md # DONE` (2026-06-12e)
