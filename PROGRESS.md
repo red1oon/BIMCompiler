@@ -16,16 +16,17 @@ W-REPLEN-STAGE 11/11 + W-REPLEN-LIVE real-user path PASS + W-POS-LIVE/W-KDS-LIVE
 STILL OPEN on this lane: Thread-3 E-Invoice ⛔ behind the 7-box research gate (Sonnet+user dialogue, not
 coding). Spec + closeout: `prompts/RESUME_POS_KITCHEN_EINVOICE_OPS_PANELS.md` §T1-SPEC (now tracked in git).
 
-**▶ 2026-07-03 — Modeller competitive-polish: §FABLE5-NOW ✅ ALL 10 SHIPPED (bim-ootb PR #616 merged).**
-Outliner⇄canvas made symmetric (hover both ways, multi-select tints + ctrl-click rows), geomap seed-audit
-surfaced, typed Rotate/Scale inputs, gesture undo (stretch+riders = one Ctrl+Z, arcseed can never mass-undo),
-collapse persistence, dead-click toast, help panel — six new witnesses green incl. W-GRID-NUMERIC 6/6 which
-MEASURES grid-alignment accuracy for the first time (0–208.5mm vs 300mm tol on 3 real buildings). STILL OPEN
-from the research: §NEEDS-DESIGN band (keystone = per-instance pick identity for walked InstancedMesh) + real
-BCF file interop — both need Sonnet scope calls first. New witnessed finding for that pile: GEOM_SCALE folds
-LOCAL-axes while cube handles/preview are world-aligned. Research spec:
-`prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md`; implementation spec: bim-ootb
-`prompts/RESUME_MODELLER_POLISH_BATCH.md`.
+**▶ 2026-07-03 — Modeller competitive-polish: §FABLE5-NOW ✅ 10/10 (PR #616) + §DECISIONS ✅ ALL 3 BUILT
+(bim-ootb PR #620, `lane/modeller-polish-2`, crash-recovered session).** §Q1 scale cubes/ghost follow LOCAL
+axes — preview==fold to 4.8e-7 on a rotated insert (W-E2E-SCALEROT 6/6; fold untouched, ghost mirrors its
+true recentre semantics); §Q2 instanceId pick identity (dwSub-stamped buckets, hover capped 20k, Terminal 35k
+guard unchanged) + Outliner no-bridge rows now FLY to the element's real element_transforms row instead of
+toasting (W-E2E-INSTPICK 7/7, W-OL-SYNC S5 re-pinned); §Q3 real BCF 2.1 `.bcfzip` export via #b-bcf —
+Info-ZIP-validated container, live camera viewpoint, real extracted IfcGuids only (W-E2E-BCF 7/7). Full
+15-witness gate green. STILL OPEN: §NEEDS-DESIGN rest (outline shader, shadows/AO, virtualization,
+filter→scene sync, floating dims, R/S shortcut scope call). Research spec:
+`prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md`; implementation specs: bim-ootb
+`prompts/RESUME_MODELLER_POLISH_BATCH.md` + `prompts/RESUME_MODELLER_POLISH2.md`.
 
 **▶ 2026-07-03 — HBA ERP-governed-display research done, DECISION PENDING.** User wants pane display (not just
 §P11's deep-link target) to derive from a real iDempiere chain (HHS↔`M_Warehouse`, personnel↔`C_BPartner`↔
