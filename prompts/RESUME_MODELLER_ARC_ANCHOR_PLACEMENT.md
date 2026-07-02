@@ -1,6 +1,29 @@
 <!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
 # ⚠ DO NOT REMOVE — RESUME: Modeller ARC-seed ANCHOR-PLACEMENT bug (proven 2026-07-02, W-MV-PARITY)
 
+## ✅ FIX DONE 2026-07-02 (same day) — bim-ootb PR #613 **MERGED to main (8449306)**, verified landed (not agent-report-only); worktree was /tmp/wt-anchor-fix
+Render-side offset exactly per §Fix design below; signed op-log byte-identical. Seam landed:
+`real_geometry.js recenter()` returns `anchorOffset` per hash → `arc_editable.js` carries it on geomAssets
+(assets, NOT op params) → `bonsai_library.js registerRealGeometry` stores it and `foldInsert §ARC-ANCHOR`
+adds back `R·anchorOffset` (`rotAnchor` mirrors `place()`'s yaw + §ARC-3AXIS branches; corrected pl.x/y/z
+threaded through the GEOM_MOVE fold; tilted seeds drop the bogus assumedHalfZ re-seat).
+**Definition of done MET (logs read, `/tmp/wt-anchor-fix/logs/`):**
+- W-MV-PARITY **12/12**, tolerances unchanged — T2 18.03 m → **7.2e-7 m**; X1 18.03 m → **1.2e-6 m**;
+  M2 repointed at anchor truth (the modeller's convention IS anchor now — witness updated in the same PR).
+- NEW standing witness `modeller/tests/witness_residents_anchor_sweep.js` (W-ANCHOR-SWEEP **15/15**):
+  all 5 residents, real user open path, rendered AABB centres vs node-independent
+  `center + AABBcentre(R·rawVerts)` — SH 39@2.7e-7 · DX 253@7.2e-7 · SC 3225@1.0e-6 ·
+  SC-ARC 3225@1.0e-6 · Terminal **35552@7.6e-6** — plus a screenshot per resident, eyeballed:
+  **SampleCastle's "floating panels/scattered fragments" are GONE** (fix-design point 6 confirmed).
+- Blast radius ALL green: W-ARC-EDITABLE 10/10 (no-register node path byte-identical), foldinsert-regression
+  5/5, W-E2E-{LOD-MATCH 6, TERMINAL-OPEN 7, CUT 7, MOVE 9, ROTATE 7, SCALE 7, WALK 8, WALK-ALL 10,
+  STRETCH-RIDE 9, GRIDSTRETCH 7}, W-TERMINAL-WALKALL-PERF 6/6.
+- Note: all CURRENT resident DBs have 0 tilted (rotation_x/y≠0) rows — the 497/3317 SampleCastle figure in
+  older comments was a previous file version; the 3-axis rotAnchor branch is dormant-but-correct safety.
+- Environment note: `witness_arc_editable_smoke.js` needs `playwright`, which is installed NOWHERE on this
+  machine (pre-existing; not a regression) — covered by W-ARC-EDITABLE (node) + the puppeteer E2E suite.
+Secondary findings below (viewer `building` column, §SEL-TINT-REFOLD) remain PARKED/unclaimed.
+
 ```
 # ⚠ DO NOT REMOVE
 SCOPE: fix the Modeller's ARC-seed element placement to the PROVEN anchor semantics (below), flip

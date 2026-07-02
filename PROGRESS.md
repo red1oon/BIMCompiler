@@ -20,12 +20,13 @@ graph-hypothesis thread, not duplicated here. Spec: `prompts/RESUME_IFC_BOM_GEOM
 MERGED** — real 35,552-mesh run proved the 50k guard never fires + the flash blew its 1.2s budget 33× (39.3s);
 fixed (rAF time-budget + chain group-commit), standing witness `witness_e2e_walkall_terminal_scale.js` 6/6;
 (2) **guide-frame framing ✅ PR #608 MERGED + guide LIVE** (8 frames recaptured+eyeballed, harness clamp/wall-pick/
-frameElement/clearGround). **⚠ NEW PROVEN BUG (W-MV-PARITY, PR #610): the ARC-seed misplaces elements — `center_xyz`
-is the IFC placement ANCHOR (proven cross-extraction to 1.4e-5 m), but `real_geometry.js recenter()` seats the blob's
-AABB centre on it → Duplex 253/265 elements >0.5 m off, max 18.03 m; Viewer renders the same file correctly; LOD400
-tri-parity itself is perfect (253/253, 1119/1119). Witness deliberately RED on T2/X1 until fixed. FIX = fresh session,
-spec `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md` — likely also the real cause of SampleCastle's floating
-fragments.** Still open: (3) proximity-clustering-as-BOM design call (user go-ahead needed, unchanged).
+frameElement/clearGround). **✅ ARC anchor-placement bug FIXED+MERGED same day (W-MV-PARITY → PR #613, main 8449306):** `center_xyz`
+is the IFC placement ANCHOR; fix = render-side `R·anchorOffset` at fold (`foldInsert §ARC-ANCHOR`), signed op-log
+byte-identical. W-MV-PARITY 12/12 tolerances unchanged (T2/X1 18.03 m → ~1e-6 m); NEW standing witness
+`witness_residents_anchor_sweep.js` 15/15 — all 5 residents by maths (Terminal 35552 @7.6e-6) + screenshots;
+13-witness blast radius all green; **SampleCastle's floating fragments confirmed GONE** (that saga is closed).
+Spec+closeout: `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md`. Still open: (3) proximity-clustering-as-BOM
+design call (user go-ahead needed, unchanged).
 Spec: `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`.
 
 **▶ HR_BIM_Asset (bim-ootb Viewer) — §P10d ✅ DONE+LIVE 2026-07-02** (PR #609/#611/#612). `lane/hr-overlay` merged
