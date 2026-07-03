@@ -4,16 +4,21 @@
 
 ## Current State
 
-**▶ 2026-07-03 — HBA ERP-governed display: §STAGED-PLAN Stage 1 ✅ SHIPPED (bim-ootb PR #621 MERGED,
-`lane/hba-erp-governed`, W-HBA-ERP-SEED 7/7).** Real seed rows in `erp/ad_seed.db`: M_Warehouse 990000
-`Value='HHS_Office_Federated'` (Q1) + 14 M_Locator (real room centers) + C_BPartner 1001/1002 + AD_User 1/2
-(Q2: EMP001/EMP002 only, fixture ids verbatim) + HR_* physical tables (real ad_full.db cols; HR_Employee was
-ZERO rows anywhere) with engine-extracted payroll rows (gross 5200/net 4234 from runPeriod, not typed) +
-Ninja-staged `C_Attendance` (ids at 7,000,000) + `ad_infowindow` 7600000 lens (exact §DESIGN-ATTENDANCE JOIN,
-proven lossless 7/7) + `attendance.js demoSeed` re-scoped to the 2 real people (3 witnesses re-pinned; suite
-33/33). NEXT = **Stage 2 compile-layer rewrite (Opus)**; flag for Stage 3: §P11 deep-link windows
-53042/316/53036 have NO AD_Window rows in ad_seed.db. Spec+closeout:
-`prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md` §STAGE1-DONE (now tracked in git).
+**▶ 2026-07-03 — HBA ERP-governed display: §STAGED-PLAN Stage 2 ✅ SHIPPED (bim-ootb PR #622 auto-merge armed,
+`lane/hba-erp-stage2`; Stage 1 was #621 MERGED, W-HBA-ERP-SEED 7/7).** Compile-layer rewrite (Opus): every HBA
+pane spec now COMPILES from the real Stage-1 seeded `ad_seed.db` via an injected sync `erpQuery` seam with
+**byte-identical literal fallback** (all 33 prior witnesses stay green, viewer zero-impact when ERP db
+unloaded). NEW `ad_attendance.js` (sessions→C_Attendance child rows, real FKs, honest SKIP/open-NULL),
+`ad_tenancy` match-or-create by Value (**kills the id=1 blind-mint landmine** — HHS→durable M_Warehouse 990000),
+`ad_payroll.demoSpec` + `models.officialByName` DB-first identity join, `occupancy.toResourceRow` threads real
+availability→isavailable/percentutilization (no hardcoded 'Y'), NEW `ad_bom.js` pure transform (⚠ flagged: no
+viewer-side BOM source in bim-ootb). `hba_lens.js` lazy-loads ad_seed.db → `A.erpQuery` + `_regovern` (literal-
+first, re-govern on db arrival; `_buildingName` EXTRACTS the match key from project_metadata). Witnesses:
+**W-HBA-ERP-GOVERNED 9/9** (crux — real db injected, payslip 5200/4234==seeded HR_Movement) + W-HBA-ERP-GOVERN-
+WIRE 4/4 (warehouse=990000, C_Attendance 7/7) + W-HBA-AD-ATTENDANCE 8/8 + W-HBA-AD-BOM 9/9; **suite 37/37**,
+ad_seed.db untouched. NEXT = **Stage 3 (Fable5)**: pane read-through-`AD_InfoWindow`-lens + a live headless-Chrome
+smoke of the async governance path; still open: §P11 windows 53042/316/53036 lack AD_Window rows. Spec+closeout:
+`prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md` §STAGE2-DONE.
 
 **▶ 2026-07-03 — POS/Kitchen lane: Thread-1 staged replenishment ✅ SHIPPED (bim-ootb #619 + bc #22 MERGED)**
 (post-crash resume session; Kitchen Display + POS restyle were already shipped #617/#19 — see prompt file).

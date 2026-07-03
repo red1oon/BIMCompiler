@@ -4,7 +4,9 @@
 **Scope:** research + design only. No code changes have been made against this spec yet. Do not implement
 until §OPEN-QUESTIONS below is resolved (Sonnet+user dialogue) — this is Stage 0 work, not Stage 1+.
 
-**Status: ✅ STAGE 1 DONE (2026-07-03, Fable5) — see §STAGE1-DONE at the bottom. Stage 2 (compile-layer, Opus) is next.**
+**Status: ✅ STAGE 1 + STAGE 2 DONE (2026-07-03). Stage 1 (Fable5, PR #621 MERGED) — §STAGE1-DONE. Stage 2
+(compile-layer, Opus, PR #622 auto-merge armed) — §STAGE2-DONE, suite 37/37 green. Stage 3 (render read-through-
+lens + live headless smoke, Fable5) is next.**
 Original research status when this spec was written: 🔎 RESEARCH DONE, DECISION PENDING (2026-07-03). Investigated with a read-only Explore agent
 against `~/bim-ootb` + direct sqlite queries against `build/erp/ad_full.db` (the real iDempiere AD dictionary)
 and `~/bim-ootb/erp/ad_seed.db` (the seed data currently loaded). Every claim below is cited file:line or a
@@ -415,6 +417,55 @@ after the witness re-pins below; `ad_seed`-reading node tests: 3 reds verified P
 `witness_richdemo` R4 re-pinned bands ≥3→≥2 (mathematically capped), `witness_presspane` PP1 zone0 3→2,
 `witness_p10a` P3 EMP-1→EMP001. The §RICH-DEMO many-people variety returns only when real headcount does —
 that is the ERP-governed point.
+
+## §STAGE2-DONE — executed 2026-07-03 (Opus) · bim-ootb PR #622 (`lane/hba-erp-stage2`, auto-merge armed)
+
+**Design decision (the crux):** the compile layer gains an optional **sync `erpQuery(sql,params)→rows`** seam
+(house-style host-injection). Present → each module RESOLVES against the real Stage-1 seeded `ad_seed.db`;
+absent → today's witnessed literal path verbatim. This makes real-governance an ADDITIVE CAPABILITY with
+**zero regression** (all 33 prior witnesses stay green; the viewer stays zero-impact when the ERP db isn't
+loaded) — and the new witnesses inject the REAL `ad_seed.db` to prove "every displayed field traces to a
+queried row." Architectural reason it's a seam not a rewrite: the runtime already loads `ad_seed.db` lazily
+(navigate_find's `_ensureErpDb`); a sync query over the in-memory sql.js DB is the natural fit, and the only
+async part (loading the bytes) is confined to the viewer/witness bootstrap.
+
+**Compile layer (`hr_bim_asset/`):**
+- **NEW `ad_attendance.js`** — `toAttendanceRow`/`compileAttendance` resolve `attendance.js`'s signed sessions
+  onto the Ninja-staged `C_Attendance` child rows (real `C_BPartner`/`M_Locator`/`HR_Process` FKs; unresolved
+  employee/zone → honest SKIP; open session → NULL `CheckOutTime`+`Qty`). `W-HBA-AD-ATTENDANCE` 8/8.
+- **`ad_tenancy.js`** — `toWarehouseRow`/`toLocatorRow`/`toProductRow` + `compileBuilding` MATCH-OR-CREATE by
+  Value/guid → **kills the id=1 blind-mint determinism landmine (§IMPLICATIONS pt2)**: HHS now resolves to the
+  durable seeded `M_Warehouse` 990000, not a re-mint.
+- **`ad_payroll.js`** — `demoSpec(erpQuery)` resolves employee identities from real `HR_Employee⋈C_BPartner`;
+  the engine run stays numerically identical to the seeded `HR_Movement` (gross 5200/net 4234).
+- **`models.js`** — `officialByName`/`officialRecords` are DB-first-per-name over real `AD_User` (governed
+  where a real user exists — EMP001/EMP002 — honest literal for the tenant/overflow contacts that have none).
+- **`occupancy.js`** — §DESIGN-RESOURCE-AVAILABILITY: `toResourceRow` threads the real signed-replay
+  `availability()` onto `isavailable`/`percentutilization` instead of a hardcoded `'Y'`.
+- **NEW `ad_bom.js`** — pure BIM-recipe→`pp_product_bom`/`pp_product_bomline` transform (`bomtype='B'`, the
+  two-`M_Product` resolver landmine handled, geometry as a view-trace wrapper). ⚠ **RUNTIME-SOURCE GAP flagged,
+  not hidden:** no viewer-side BOM source exists in bim-ootb (the streamed building DBs carry NO `bom` table;
+  `library/*_BOM.db` is bim-compiler's transient Java output) — so it's witnessed as the PURE TRANSFORM
+  (`W-HBA-AD-BOM` 9/9) and live wiring awaits a viewer-side source + the `AD_Ref_List 'B'` seed (a Stage-1-style
+  seed step, NOT yet done).
+
+**Viewer wiring (additive, zero-regression):** `hba_lens.js` gains a lazy `ad_seed.db` loader exposing a sync
+`A.erpQuery`; the seeding gate seeds LITERAL first (panes work immediately) then RE-GOVERNS the ERP-sourced
+specs (`_regovern`) on db arrival. `_buildingName` EXTRACTS the warehouse match key from `project_metadata`
+(⚠ `A.buildingName` is UNSET in the streaming path — the silent-miss landmine this guards; verified HHS
+`building_name='HHS_Office_Federated'` == the pinned warehouse Value). `viewer.html` loads `ad_attendance.js`.
+
+**Witnesses:** `W-HBA-ERP-GOVERNED` 9/9 (crux — real `ad_seed.db` injected, every id traces to a queried row,
+governed payslip == seeded `HR_Movement`, fallback byte-identical) + `W-HBA-ERP-GOVERN-WIRE` 4/4 (drives
+`_regovern` with browser-style globals → `§HBA_GOVERN on … warehouse=990000 C_Attendance=7/7`) +
+`W-HBA-AD-ATTENDANCE` 8/8 + `W-HBA-AD-BOM` 9/9. **Full `hr_bim_asset` suite 37/37 green** (33 prior + 4 new).
+`ad_seed.db` read-only (untouched — verified `git status` clean on it).
+
+**Follow-ups (NOT this stage):** **Stage 3 (Fable5)** — retarget the Presence drawer + panes to READ THROUGH
+the `C_Attendance`→`AD_InfoWindow` lens (and a **live headless-Chrome smoke** of the async governance path — the
+one thing node witnesses can't cover, per the browser-IIFE/whitebox discipline). BOM: seed a viewer-side source
++ the `AD_Ref_List 'B'` row before `ad_bom.js` governs live. Also still open from Stage 1: §P11 deep-link
+windows 53042/316/53036 have no `AD_Window` rows in `ad_seed.db`.
 
 ## Non-invent / process notes
 
