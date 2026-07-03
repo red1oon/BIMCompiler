@@ -13,13 +13,20 @@ treating `m_bom`/`m_bom_line` (bim-compiler's transient Java output) as a live d
 User's words: *"the DB or JS maybe deviating, that has to be set right at source... this is for exact mapping
 to iDempiere."*
 
-**Decided fix (scoped narrowly, not a full audit first):**
-1. Seed `pp_product_bom`/`pp_product_bomline` into `ad_seed.db` from a compiled building's real elements
-   (reusing `ProductRegistrar`'s `M_Product` ids) + add the `AD_Ref_List 'B'` value — the ERP becomes the
-   authority.
-2. An `AD_InfoWindow` lens row for the BOM JOIN, mirroring the `C_Attendance` lens pattern from HBA Stage 1/2.
-3. `ad_bom.js` reframed to seed-builder + lens-read only; Java `m_bom` explicitly marked migration-source,
-   not a live dependency.
+**Decided fix (scoped narrowly, not a full audit first) — ✅ DONE 2026-07-03, bim-ootb PR #626 MERGED
+(`lane/hba-bom-erp`, Opus):**
+1. ✅ `scripts/seed_hba_bom.js` seeds `pp_product_bom`/`pp_product_bomline` into `ad_seed.db` from the REAL IFC
+   extraction (HHS's own `rel_contained_in_space`, 13 rooms/88 lines) + `AD_Ref_List 'B'`=BIM (AD_Reference
+   347) + `M_Product` per room (IsBOM=Y)/element (Value=guid). EXACT MAPPING: every AD row PROTO-CLONED from a
+   real row of the target table (no deviating enums — `componenttype='CO'`, `bomtype` FK-valid). The ERP is now
+   the authority.
+2. ✅ `AD_InfoWindow` BOM lens (id 7700000) mirroring the C_Attendance lens pattern.
+3. ✅ `ad_bom.js` reframed to seed-builder + `readBom` lens-read; Java `m_bom` demoted to migration-source in
+   the header. `viewer/hba_lens.js` `_regovern` reads `A._hbaBomSpec` via the lens.
+Witnesses: `W-HBA-BOM-SEED` 6/6 (lens JOIN lossless 88/88, exact-map, idempotent) + `W-HBA-BOM-GOVERNED` 6/6 +
+`W-HBA-ERP-GOVERN-WIRE` 5/5; suite 38/38. Side effect: tenancy `toProductRow` product governance completed
+(room guid → real seeded M_Product). **The `ad_bom.js`-reads-Java-`m_bom` leak that triggered this watchdog is
+closed.** The STANDING RULE above stays active for future modules.
 
 ## Open question — NOT settled, don't assume either way
 **Q1 (deferred, undecided):** should this become a terse `docs/`-level doctrine file, peer to
@@ -40,5 +47,5 @@ don't treat it as normal just because it works today.
 
 Relates: `docs/internal/IDEMPIERE_2.md` §pivot / the "ERP end-state = ONE iDempiere base" doctrine (same
 "one authoritative store, others are migration sources" shape, applied ERP↔ERP there, BIM↔ERP here) and the
-"Compile not Model" doctrine this extends. Spec: `prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md` (bim-ootb) —
-Stage-2-done, this BOM lane is the next slice.
+"Compile not Model" doctrine this extends. Spec: `prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md` §BOM-ERP-CENTERED
+(the BOM lane closeout) — Stage-2 done, BOM lane ✅ done (PR #626). Next slice: Stage 3 BOM pane + live smoke.
