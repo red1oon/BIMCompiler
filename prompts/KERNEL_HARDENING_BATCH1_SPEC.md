@@ -1,4 +1,11 @@
 # ⚠ DO NOT REMOVE — Scope guard
+# §STATUS 2026-07-03: T3 ✅ SHIPPED + T6 ✅ SHIPPED — bim-ootb PR #623 (erp sw v759, kernel v9→v10).
+#   T3 W-PCLOSE-ARCHIVE 10/10, T6 W-CROSS-TAB-PERSIST 9/9, both red-before/green-after in node over the
+#   REAL kernel; poc_teams_phase_d 11/11 unchanged (no regression). DEFERRED from T6: the commitGroup
+#   id-race retry (touches the atomic-commit transaction — needs its own concurrency witness; the caller
+#   res.committed guards already stop the silent-loss symptom). STILL HELD: T4+T5 (unify 3 kernel copies),
+#   T2 canonicalization + T1 trust-root (need the visionary's three-fork decision first). Detail below.
+#
 # Implementation spec for the FIRST greenlit batch of kernel-timebomb fixes (visionary greenlit the
 # no-design-call items 2026-07-03). Source findings: prompts/KERNEL_TIMEBOMB_AUDIT_2026-07-03.md.
 # This is spec-first per CLAUDE.md — code is written AGAINST this doc, in dedicated bim-ootb /tmp/wt-*
