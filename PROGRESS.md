@@ -23,7 +23,8 @@
   selection edge outline, real shadows+perf guard) — bim-ootb **PR #625** MERGED; item 8 (floating drag
   dims) — **PR #627** MERGED. Spec+decisions+DONE log: bim-ootb `prompts/RESUME_MODELLER_POLISH3.md`.
   New witnesses 30/30 (OLVIRT/OLEYE/OLFILTER/SELOUTLINE/SHADOWS/FLOATDIM); regression 7 suites green.
-- ⛔ item 10 (R/S shortcuts): `R` collides with existing `R`=Insert — user pick: other keys (T/S) or rebind?
+- Item 10 DECIDED (user delegated): keep R=Insert; `T`=arm rotate ring, `S`=arm scale cubes (Move sub-modes).
+  Ready to build — spec in `prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md` §DECISIONS note, witness W-E2E-RSARM.
 - OPEN (unassigned): item 9 PBR textures; SSAO (needs EffectComposer vendored); per-instance hide (§DECISIONS-2).
 
 ## Kernel op-log timebomb audit (2026-07-03) — 3-agent scalability/macro/security sweep
