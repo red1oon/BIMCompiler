@@ -292,7 +292,7 @@ Then decide:
   saves it), so the schedule now reflects the slip.
 - **Discard** drops the what-if entirely — the official plan was never touched.
 
-This is the **[Blue Future](#15-blue-future--the-speculative-branch-built-in-pre-release-test-harness)**
+This is the **[Blue Future](#15-blue-future-the-speculative-branch-built-in-pre-release-test-harness)**
 branch model applied to the schedule: the what-if lives on a speculative blue branch over the same signed
 op-log, so it is real (not a mock) yet completely reversible until you accept it. The same engine that
 unifies a planner, a cost tool, and a 4D/5D viewer onto one log gives you free what-if — no separate
@@ -658,7 +658,7 @@ CONSUME          M_Transaction P−  (one per BOM leaf, the backflush)
 ### Kitchen Display
 
 The **Kitchen** pill (visible at a POS station) shows every order currently waiting to be served —
-the same *deliver-later* shipments described in [§S-2b](#deliver-later--pick-at-the-warehouse-s-2b),
+the same *deliver-later* shipments described in [§S-2b](#deliver-later-pick-at-the-warehouse-s-2b),
 but for a kitchen counter rather than a warehouse pick. The queue is a live view of the ledger, not a
 separate list: as soon as a sale is rung with **Deliver later**, the ticket appears here, oldest first.
 

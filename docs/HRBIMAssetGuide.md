@@ -68,7 +68,7 @@ is variations on it.
    sample). Toggle off to restore.
 
 > **Where the colour actually lands.** A room (`IfcSpace`) usually isn't its own mesh — the lens tints its real
-> rendered **contained members** instead (see [How a unit binds to the model](#under-the-hood--the-data-model)).
+> rendered **contained members** instead (see [How a unit binds to the model](#under-the-hood-the-data-model)).
 > On the HHS sample those members are small fixtures, so from a building-wide view the wash reads as a subtle
 > tint; the **GardenWorld** warehouse below tints a whole aisle-floor at once and is the clearest example to look
 > at first if you want to *see* the effect from a distance.
@@ -208,12 +208,11 @@ everywhere else in this module: an absent link is honest, never a dead one.
    every element physically contained in it, compiled onto iDempiere's native Bill of Materials tables
    — the same recipe structure iDempiere uses for manufacturing, not a bolt-on BIM-only concept.
 
-   *(Screenshot pending — the pane shows a per-room assembly list, each row expandable into its
-   contained elements with quantities, and an "open ↗" link into iDempiere's Bill of Materials and
-   Formula window.)*
+   ![The BIM BOM pane over the HHS office model — assembly/component KPI tiles, then a per-room assembly list (RM_Level_1_1, RM_Level_1_2, …) with each room's contained elements listed underneath with quantities, an "open ↗" link on every assembly, and the SAMPLE — NOT OFFICIAL watermark](img/hba_bom.png)
 
-2. Expand an assembly to see its component lines — one row per contained element, with the recipe
-   quantity carried over from the model. The **open ↗** link deep-links to the real **"Bill of
+2. Each assembly lists its component lines right underneath — one row per contained element, with the
+   recipe quantity carried over from the model. Click an assembly row and the camera flies to that room.
+   The **open ↗** link deep-links to the real **"Bill of
    Materials and Formula"** window, the same one a manufacturing user would use for a physical product's
    recipe — a room's contents are read through the identical lens, not a parallel BIM-only screen.
 3. This pane has no 3D wash — it's a compiled list, like Tenancy and Dashboard.

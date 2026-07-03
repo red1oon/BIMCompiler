@@ -321,7 +321,7 @@ The performance problem was solved by the schema (geometry BLOBs as pre-computed
 
 ## What This Means for the Open BIM Community
 
-The [osArch community](MANIFESTO.md#the-open-bim-question--where-the-community-got-stuck) debates which geometry kernel, which file format, which desktop application. The question this project asks is: **what if the modelling session is the database transaction log?**
+The [osArch community](MANIFESTO.md#the-open-bim-question-where-the-community-got-stuck) debates which geometry kernel, which file format, which desktop application. The question this project asks is: **what if the modelling session is the database transaction log?**
 
 IFC export becomes what glTF export is to a game engine — a delivery format for other tools, not the primary artefact. The primary artefact is the `kernel_ops` log in SQLite, offline, in the browser, owned by the architect without a server, a license, or a Blender install.
 
