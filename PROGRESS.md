@@ -18,6 +18,11 @@
 
 **Pipeline:** 11 stages. 77 verbs. 7403 products (ERP.db). 4-DB architecture.
 
+## Unified docs pass leftovers (2026-07-03, Fable5) — ✅ CLOSED (bc #35)
+- Real HBA BOM pane screenshot (`docs/img/hba_bom.png`, live cdp harness, `§DIAG_BOM_SHOT … bomAsmRows=13
+  bomLineRows=88 openLinks=13`) + 4 anchor-slug fixes (`--strict` 0 anchor notices) + 15 remote / 17 local
+  superseded `docs/*` branches deleted after per-branch diff verification. Trail: `prompts/RESUME_UNIFIED_DOCS_PASS_2026-07-03.md`.
+
 ## HBA ERP-governed Stage 3 + C_Attendance retirement (2026-07-03, Fable5) — ✅ SHIPPED
 - Prereq (watchdog): invented `C_Attendance` RETIRED (Ninja rollback + physical DROP); attendance retargeted
   onto native `S_Resource`/`S_ResourceAssignment` (Mary-Consultant pattern); zone stays BIM op-log fact
