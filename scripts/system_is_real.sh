@@ -64,6 +64,9 @@ fi
 # here it is an INFORMATIONAL line so a PRE-EXISTING violation (e.g. 38-sh-dx skip-guards) is
 # surfaced (never silently skipped) without falsely failing the smoke — it is the hard gate in
 # the Playwright-change workflow, not the system-is-real smoke.
+# Under CI, test_all.js itself downgrades its two structurally-unverifiable-in-CI regimes
+# (live-vs-checkout fingerprint/sync §9b/§13, Playwright Browser E2E §15) to the same WARN tier
+# — see prompts/CI_GATE_FIRST_REAL_RUN_FINDINGS_2026-07-03.md (decision (a), 2026-07-03).
 section "(b) Browser — local gate (test_all.js); anti-drift audit = informational"
 ( node deploy/dev/test_all.js ) >> "$LOG" 2>&1
 B1=$?

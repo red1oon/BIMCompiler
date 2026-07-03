@@ -11,10 +11,22 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const DIR = path.join(__dirname);
-let pass = 0, fail = 0;
+let pass = 0, fail = 0, warn = 0;
 
 function ok(label, cond, detail) {
   if (cond) { pass++; console.log(`  ✓ ${label}`); }
+  else { fail++; console.log(`  ✗ ${label}  ${detail || ''}`); }
+}
+
+// A CI runner never deploys and ships no Playwright browsers, so the live-vs-checkout content
+// checks (§9b/§13) and Browser E2E (§15) are structurally unverifiable there — in CI they WARN
+// (surfaced, non-gating; same tier system_is_real.sh gives audit_specs.js). Locally they stay
+// hard FAILs: they are the pre-deploy discipline. prompts/CI_GATE_FIRST_REAL_RUN_FINDINGS_2026-07-03.md
+const CI_WARN = !!process.env.CI;
+
+function okOrWarn(label, cond, detail) {
+  if (cond) { pass++; console.log(`  ✓ ${label}`); }
+  else if (CI_WARN) { warn++; console.log(`  ⚠ WARN ${label}  ${detail || ''}`); }
   else { fail++; console.log(`  ✗ ${label}  ${detail || ''}`); }
 }
 
@@ -144,9 +156,9 @@ for (const f of sandboxFiles) {
     const remote = execSync(`curl -s "${BASE_FULL}/${f}"`, { stdio: 'pipe', timeout: 10000 }).toString();
     const remoteHash = crypto.createHash('md5').update(remote).digest('hex').slice(0, 8);
     const match = localHash === remoteHash;
-    ok(`full/${f} synced (${localHash})`, match, `DRIFT local=${localHash} live=${remoteHash}`);
+    okOrWarn(`full/${f} synced (${localHash})`, match, `DRIFT local=${localHash} live=${remoteHash}`);
     if (!match) syncDrift.push(f);
-  } catch(e) { ok(`full/${f} fetch`, false, 'curl failed'); }
+  } catch(e) { okOrWarn(`full/${f} fetch`, false, 'curl failed'); }
 }
 if (syncDrift.length > 0) {
   console.log(`  ⚠ DRIFT in ${syncDrift.length} file(s): ${syncDrift.join(', ')}`);
@@ -368,7 +380,7 @@ try {
   const synced = localFingerprint === liveFingerprint;
   console.log(`  LOCAL  ${localFingerprint}  ← git: ${lastCommit}`);
   console.log(`  LIVE   ${liveFingerprint}  ← bim-ootb-full/sandbox/`);
-  ok('version: local ↔ live fingerprint match', synced, `MISMATCH — local=${localFingerprint} live=${liveFingerprint}. Deploy needed or rollback required.`);
+  okOrWarn('version: local ↔ live fingerprint match', synced, `MISMATCH — local=${localFingerprint} live=${liveFingerprint}. Deploy needed or rollback required.`);
   if (!synced && syncDrift.length > 0) {
     console.log(`  DRIFTED FILES (${syncDrift.length}):`);
     for (const f of syncDrift) console.log(`    - ${f}`);
@@ -376,7 +388,7 @@ try {
     console.log('  → To restore to specific commit: git checkout <commit> -- deploy/sandbox/ && re-upload');
   }
 } catch(e) {
-  ok('version fingerprint', false, e.message);
+  okOrWarn('version fingerprint', false, e.message);
 }
 
 // ═══ 14. Rollback Dry Run (git restore proof) ═══
@@ -480,8 +492,8 @@ try {
   const pwPassMatch = pwOut.match(/(\d+) passed/);
   const pwFailMatch = pwOut.match(/(\d+) failed/);
   if (pwFailMatch) {
-    fail += parseInt(pwFailMatch[1]);
-    ok('browser E2E', false, pwFailMatch[1] + ' failed');
+    if (CI_WARN) warn += parseInt(pwFailMatch[1]); else fail += parseInt(pwFailMatch[1]);
+    okOrWarn('browser E2E', false, pwFailMatch[1] + ' failed');
   } else {
     const pwPassCount = pwPassMatch ? parseInt(pwPassMatch[1]) : 0;
     pass += pwPassCount;
@@ -492,11 +504,11 @@ try {
   const pwPassMatch = pwOut.match(/(\d+) passed/);
   const pwFailMatch = pwOut.match(/(\d+) failed/);
   if (pwPassMatch) pass += parseInt(pwPassMatch[1]);
-  if (pwFailMatch) fail += parseInt(pwFailMatch[1]);
+  if (pwFailMatch) { if (CI_WARN) warn += parseInt(pwFailMatch[1]); else fail += parseInt(pwFailMatch[1]); }
   const failLines = pwOut.split('\n').filter(l => l.includes('✗') || l.includes('failed'));
-  ok('browser E2E', false, failLines.slice(0, 3).join('; '));
+  okOrWarn('browser E2E', false, failLines.slice(0, 3).join('; '));
 }
 
 // ═══ SUMMARY ═══
-console.log(`\n═══ SUMMARY: ${pass}/${pass + fail} passed, ${fail} failed ═══\n`);
+console.log(`\n═══ SUMMARY: ${pass}/${pass + fail} passed, ${fail} failed${warn ? `, ${warn} warned (non-gating — CI cannot verify live-deploy sync or run browsers)` : ''} ═══\n`);
 process.exit(fail > 0 ? 1 : 0);
