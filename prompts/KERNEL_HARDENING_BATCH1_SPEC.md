@@ -136,7 +136,49 @@ regulatory gate: decision/dialogue, not implementation. **Bring answers → I tu
 
 ## SEQUENCING FOR THE COODER SESSIONS
 1. Build the shared witness harness (W-LOG-VS-IMAGE + W-CROSS-TAB) — prove it goes RED on current bugs.
-2. Session A: T3 (archive-gated close). Session B: T6 (locked+tip-guarded persist + commit-race). Independent.
-3. Session C: T4+T5 unify (its own bounded session, diff-three-copies first).
-4. T2 canonicalization once T1 is decided; T1 code after the dialogue.
-Each session: spec-cite this doc, §-log first, real-user witness, push before finish, PR + auto-merge.
+2. Session A: T3 (archive-gated close) ✅ SHIPPED #623. Session B: T6 (persist tip-guard) ✅ SHIPPED #623.
+3. Session C: T4+T5 unify — ⛔ BROWSER-GATED (analysis done, see §STATUS; needs W-ONE-KERNEL building-load smoke).
+4. T2 canonicalization + T1 code — ✅ UNBLOCKED (T1 decided). Execution plan below. ← START HERE next session.
+
+## ══ NEXT SESSION — T2 then T1 (trust model). Node-verifiable. Cite this §. ══
+Order is T2 → T1: today the verifier holds ONE local key and sigs bind to the local rowid (`_canonical`
+hashes `op.id`), so roster-verification across a merge is impossible until content-signing lands first.
+
+### CANONICAL FORK — RECOMMENDED PATH = ADDITIVE-VERSION (confirm at session start; visionary leaned proceed).
+Changing `_canonical` changes EVERY `op_hash` → a blunt cut invalidates every historical signature (the
+T2/T11 permanence trap). Land it additively, NOT as a flag-day migration over signed financial history:
+- Old ops keep verifying under the v1 canonical (`id|ts|type|params|inG|outG`); NEW ops sign a v2
+  content-addressed payload gated by `_sv` (the D2 version stamper already exists, `kernel_ops.setVersionStamper`).
+- `sealChain`/`verifyChain` pick the canonical form per op's `_sv` — v1 rows unchanged, v2 rows content-signed.
+- No re-seal of history, no migration event. (Clean-cut-with-migration is the alternative IF the visionary
+  prefers a single canonical form + a one-time re-sign — more risk, cleaner end state. Default = additive.)
+
+### T2 — content-addressed signing (build first). Witness W-CONTENT-SIGN, RED-first:
+- v2 `_canonicalV2(op)` = length-prefixed or JSON-canonical over `op_uuid|timestamp|op_type|parameters|actor`
+  (adopt teams `stableStringify` from teams/connectors.js so kernel + teams canonical AGREE — closes the
+  `'|'` delimiter-injection: two distinct field partitions currently collide to one `op_hash`, §T2/security#6).
+  ⚠ `actor` stays a PLACEHOLDER field here — do NOT bind identity yet (that's T1); just include it in the payload.
+- Witness asserts: (a) a v2-signed op survives a simulated id-renumbering (its sig still verifies after
+  ids shift — the merge property v1 fails); (b) `'|'`-bearing params can't be re-partitioned to a colliding
+  hash; (c) EXISTING v1 logs still verify unchanged (no regression). RED against current `_canonical` first.
+
+### T1 — roster + ROTATE/REVOKE on the verify path. EXCAVATE, don't design. Witness W-ROSTER-VERIFY:
+- Source: `scripts/poc_rotate.js` (bim-compiler master + feat/erp-substrate-phase012) is already witnessed
+  §ROTATE-OP/§HISTORY-VALID/§FUTURE-GATED/§REVOKE — PORT it into the bim-ootb kernel verify path, don't rebuild.
+- Device-level CENTRAL roster: a signed `{device_id → pubkey}` list, HQ-signed, extending the pinned-key
+  pattern already in `erp/erp_snapshot_sign.js` (PINNED_PUBKEY). Replace kernel_ops' single module-global
+  `_signer` with per-op ISSUER-key resolution from the roster + key-epoch map (verify each op under the key
+  valid at its seq — DistributedERP.md §290). Wire it onto the MERGE/import path (teams/erp/erp_sync.js
+  `importBranch` + `erpVerifyChain`), which today checks the keyless chain only (the T1/security#1 gap).
+- ROTATE (counter-signed by outgoing key) installs a new key going forward; REVOKE kills future, keeps past
+  (burn-not-reattribute — DECIDED). Witness: rotate→past still valid under old key; post-rotation old-key op
+  rejected; a forged foreign-key op on import REJECTED (today it's silently accepted).
+
+### SEPARATE 4th question (NOT T1, do not inflate the lane): employee attribution — self-asserted `actor`
+  defeats maker-checker (two typed names, security#2). Cheap answer when scoped: a PIN/login recorded as op
+  METADATA (audit-logged human-accountability), NOT per-employee signing keys (PKI won't stop an insider
+  forging the business's own key — wrong tool for that threat). Leave unscoped until explicitly picked up.
+
+Each session: spec-cite this §, §-log first, RED-before/GREEN-after node witness over the REAL kernel,
+push before finish, PR + auto-merge. Kernel = Sacred: one bounded task per session, never cowboy the
+hashed path without a witness that can go red.

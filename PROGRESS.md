@@ -18,6 +18,20 @@
 
 **Pipeline:** 11 stages. 77 verbs. 7403 products (ERP.db). 4-DB architecture.
 
+## Kernel op-log timebomb audit (2026-07-03) — 3-agent scalability/macro/security sweep
+- Findings: `prompts/KERNEL_TIMEBOMB_AUDIT_2026-07-03.md` (13 defects, root cause: sound at op-CREATION,
+  green-by-construction everywhere else → armed by success milestones). Batch-1 spec + full next-session plan:
+  `prompts/KERNEL_HARDENING_BATCH1_SPEC.md`.
+- ✅ T3 period-close DELETE gated behind confirmed archive (W-PCLOSE-ARCHIVE 10/10) + ✅ T6 multi-tab persist
+  tip-guard + caller committed-checks (W-CROSS-TAB-PERSIST 9/9) — bim-ootb PR #623, erp sw v759, kernel v9→v10.
+  Both red-before/green-after in node over the REAL kernel; poc_teams_phase_d 11/11 unchanged.
+- ✅ T1 trust-root DECIDED by doctrine excavation (not fresh design): device-level central roster +
+  ROTATE/REVOKE + burn-not-reattribute already in DistributedERP.md §228/§290/§445 + witnessed
+  `scripts/poc_rotate.js`. Employee-attribution (PIN-as-metadata) split out as a separate question.
+- ⛔ T4+T5 (unify 3 kernel copies) BROWSER-GATED — analysis done (neither copy is a superset), needs the
+  W-ONE-KERNEL building-load smoke. NEXT LANE = **T2→T1** (node-verifiable, additive-canonical recommended) —
+  execution plan in the batch-1 spec §NEXT SESSION. Deferred id-race retry + T7 scale cliff (~5k ops).
+
 ## Codebase quality audit (2026-07-02) — TRIAGED 2026-07-03
 - ✅ §5 self-XSS fixed BOTH repos (bim-ootb PR #618 sw v758 + bc PR #20; W-XSS-FILENAME 10/10 + 5/5, incl. the
   download-link sink the audit missed) · ✅ §2 doc-vs-code drift fixed, every number re-verified (bc PR #20).
