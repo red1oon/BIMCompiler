@@ -1076,11 +1076,29 @@ privacy preserved.
 - Strategy = build a **ground-swell** that pressures a more consumer-friendly mandate **without compromising
   legal commitment** (the books are correct and provable; only the *disclosure mechanism* is the proposal).
 
-### ⚠ §RESEARCH GATE (NON-INVENT — must be SOURCED + CITED before ANY code)
-**Deep-research pass run 2026-07-03** (105-agent fan-out, 23 primary/secondary sources fetched, 81 claims
-extracted, 25 adversarially verified 3-vote — 21 confirmed / 4 refuted). Result: 2 of 7 fully sourced, 5 have
-real gaps — do NOT treat the partial ones as settled. Full transcript in this session's workflow journal
-(`wf_5ac9fdc0-8f1`); re-run before any public claim, figures are 2024-2026 vintage and move with Budget cycles.
+### ⚠ §RESEARCH GATE — RECLASSIFIED AS MOCKUP/STUB (user decision 2026-07-03)
+**Pillar 3 is a demo mockup, not a real filer.** Do not keep sinking research passes into lawyer-grade
+closure of every box — user call 2026-07-03: build it as a **stub**, with every regulatory value/rule
+clearly labeled non-authoritative, behind a seam that lets a later interested party (accountant, Malaysian
+tax lawyer, MyInvois-integration partner) drop in the real mapping without a design change. Concretely:
+- Any PCB bracket, EPF/SOCSO/EIS rate, or MFRS clause used in code = a **placeholder constant**, name-tagged
+  `MOCK_` or equivalent, sourced from whatever partial citation exists below (never invented from nothing),
+  with a single obvious injection point (config/table) for a real professional to overwrite later.
+- The clearance-vs-self-attestation legal question (box 3) does **not** block building the demo — the
+  counter-proposal's *mechanism* (local signing, selective disclosure, replay-hash audit) can be built and
+  demonstrated on mock data; the legal question only matters if/when this moves toward a real compliance claim.
+- The 2 research passes below stay as reference — useful partial citations for the stub's placeholder
+  values — but the gate is no longer a blocker for Pillar 3 coding work. Second pass was interrupted by a
+  session-limit mid-run; one bonus finding survived: a fetched Finance Act text
+  (`myttx.customs.gov.my/wp-content/uploads/2024/02/WJW23%EF%80%A21341-BI.pdf`) contains what reads as
+  **Income Tax Act 1967 §82C(1)** — "a person shall, in a year of assessment, issue an electronic invoice for
+  each transaction..." (3-0 confirmed) — a real statutory citation for the mock's "e-invoice issuance is a
+  codified duty" placeholder, though the deeper clearance-vs-attestation legal question this box asked was
+  never resolved and is now explicitly out of scope for the stub.
+
+**First deep-research pass run 2026-07-03** (105-agent fan-out, 23 primary/secondary sources fetched, 81
+claims extracted, 25 adversarially verified 3-vote — 21 confirmed / 4 refuted). Result: 2 of 7 fully sourced,
+5 have real gaps. Full transcript in this session's workflow journal (`wf_5ac9fdc0-8f1`).
 
 - [~] **1. MyInvois mandate current state** — PARTIAL. The widely-repeated phase grid (Phase 1 >RM100m from
       1 Aug 2024; Phase 2 RM25–100m from 1 Jan 2025; Phase 3 RM5–25m from 1 Jul 2025; Phase 4 RM1–5m from
@@ -1145,12 +1163,11 @@ real gaps — do NOT treat the partial ones as settled. Full transcript in this 
       Partner, HSF Kramer, CMS, Allen & Gledhill. This directly supports a local-first/selective-disclosure
       design: no whitelist pre-clearance, self-assessed adequacy gives design latitude for local processing.
 
-> **Net:** boxes 2 and 7 are sourced enough to build against. Boxes 1, 4, 5 are partially sourced (structure
-> known, exact numeric tables still need a direct primary-source pull). Boxes 3 and 6 are **still genuinely
-> open** — 3 is the load-bearing legal question for the whole counter-proposal thesis and must not be treated
-> as answered by "how MyInvois currently operates."
-> **Legal note (unchanged):** regulatory/tax compliance design must be verified by a qualified professional
-> before any claim is made publicly — do not assert compliance on the project's behalf.
+> **Net (superseded by the stub decision above):** boxes 2 and 7 are sourced enough to build against as-is.
+> Boxes 1, 4, 5 are partially sourced — good enough for a labeled placeholder value. Boxes 3 and 6 are
+> genuinely open and NOT worth another research pass for a mockup — stub them and move on.
+> **Legal note (unchanged):** if this ever moves beyond mockup toward a real compliance claim, every value
+> must be verified by a qualified professional first — do not assert compliance on the project's behalf.
 
 ---
 
