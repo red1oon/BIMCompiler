@@ -24,7 +24,7 @@
   dims) — **PR #627** MERGED. Spec+decisions+DONE log: bim-ootb `prompts/RESUME_MODELLER_POLISH3.md`.
   New witnesses 30/30 (OLVIRT/OLEYE/OLFILTER/SELOUTLINE/SHADOWS/FLOATDIM); regression 7 suites green.
 - Item 10 ✅ BUILT 2026-07-03 (Fable5): T=arm rotate ring / S=arm scale cubes (R kept Insert) — bim-ootb
-  **PR #631** (`lane/modeller-polish-5`), W-E2E-RSARM 8/8 + regression MOVE/ROTATE/SCALE/NUMROT/FLOATDIM 36/36.
+  **PR #631 MERGED** (squash `8d73fb0`, verified on main), W-E2E-RSARM 8/8 + regression 36/36 green.
   First-RED fix: gizmo arrow shaft+tip share one material → arm-dim base opacity recorded on material.
 - OPEN (unassigned): item 9 PBR textures; SSAO (needs EffectComposer vendored); per-instance hide (§DECISIONS-2).
 
