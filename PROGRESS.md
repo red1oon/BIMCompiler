@@ -4,63 +4,7 @@
 
 ## Current State
 
-**▶ 2026-07-03 — HBA ERP-governed display: §STAGED-PLAN Stage 2 ✅ SHIPPED (bim-ootb PR #622 auto-merge armed,
-`lane/hba-erp-stage2`; Stage 1 was #621 MERGED, W-HBA-ERP-SEED 7/7).** Compile-layer rewrite (Opus): every HBA
-pane spec now COMPILES from the real Stage-1 seeded `ad_seed.db` via an injected sync `erpQuery` seam with
-**byte-identical literal fallback** (all 33 prior witnesses stay green, viewer zero-impact when ERP db
-unloaded). NEW `ad_attendance.js` (sessions→C_Attendance child rows, real FKs, honest SKIP/open-NULL),
-`ad_tenancy` match-or-create by Value (**kills the id=1 blind-mint landmine** — HHS→durable M_Warehouse 990000),
-`ad_payroll.demoSpec` + `models.officialByName` DB-first identity join, `occupancy.toResourceRow` threads real
-availability→isavailable/percentutilization (no hardcoded 'Y'), NEW `ad_bom.js` pure transform (⚠ flagged: no
-viewer-side BOM source in bim-ootb). `hba_lens.js` lazy-loads ad_seed.db → `A.erpQuery` + `_regovern` (literal-
-first, re-govern on db arrival; `_buildingName` EXTRACTS the match key from project_metadata). Witnesses:
-**W-HBA-ERP-GOVERNED 9/9** (crux — real db injected, payslip 5200/4234==seeded HR_Movement) + W-HBA-ERP-GOVERN-
-WIRE 4/4 (warehouse=990000, C_Attendance 7/7) + W-HBA-AD-ATTENDANCE 8/8 + W-HBA-AD-BOM 9/9; **suite 37/37**,
-ad_seed.db untouched. NEXT = **Stage 3 (Fable5)**: pane read-through-`AD_InfoWindow`-lens + a live headless-Chrome
-smoke of the async governance path; still open: §P11 windows 53042/316/53036 lack AD_Window rows. Spec+closeout:
-`prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md` §STAGE2-DONE.
-
-**▶ 2026-07-03 — POS/Kitchen lane: Thread-1 staged replenishment ✅ SHIPPED (bim-ootb #619 + bc #22 MERGED)**
-(post-crash resume session; Kitchen Display + POS restyle were already shipped #617/#19 — see prompt file).
-"Generate Replenishment" is now the traditional propose→stage→review/edit→route→commit: pos_core QtyBatchSize
-ceil-rounding + `routeReplenishment` (M_WarehouseSource_ID→Move / absent→PO) + `buildReplenishMove` via the
-same buildDoc archetype (newVerbs=[]); lens auto-fire retired → explicit button + EDITABLE staging list +
-ONE signed commitGroup (PO per wh+vendor, Move per source wh) + gid-linked pendingInbound fold (re-generate
-proposes only the remainder — no double order, witnessed 25−3=22 to the unit). erp sw v758. Witnesses:
-W-REPLEN-STAGE 11/11 + W-REPLEN-LIVE real-user path PASS + W-POS-LIVE/W-KDS-LIVE + 13 headless re-run green
-(only pre-existing red: docs-branch `poc_pos_eoda`, fails identically on the old core — not this lane).
-STILL OPEN on this lane: Thread-3 E-Invoice ⛔ behind the 7-box research gate (Sonnet+user dialogue, not
-coding). Spec + closeout: `prompts/RESUME_POS_KITCHEN_EINVOICE_OPS_PANELS.md` §T1-SPEC (now tracked in git).
-
-**▶ 2026-07-03 — Modeller competitive-polish: §FABLE5-NOW ✅ 10/10 (PR #616) + §DECISIONS ✅ ALL 3 BUILT
-(bim-ootb PR #620, `lane/modeller-polish-2`, crash-recovered session).** §Q1 scale cubes/ghost follow LOCAL
-axes — preview==fold to 4.8e-7 on a rotated insert (W-E2E-SCALEROT 6/6; fold untouched, ghost mirrors its
-true recentre semantics); §Q2 instanceId pick identity (dwSub-stamped buckets, hover capped 20k, Terminal 35k
-guard unchanged) + Outliner no-bridge rows now FLY to the element's real element_transforms row instead of
-toasting (W-E2E-INSTPICK 7/7, W-OL-SYNC S5 re-pinned); §Q3 real BCF 2.1 `.bcfzip` export via #b-bcf —
-Info-ZIP-validated container, live camera viewpoint, real extracted IfcGuids only (W-E2E-BCF 7/7). Full
-15-witness gate green. STILL OPEN: §NEEDS-DESIGN rest (outline shader, shadows/AO, virtualization,
-filter→scene sync, floating dims, R/S shortcut scope call). Research spec:
-`prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md`; implementation specs: bim-ootb
-`prompts/RESUME_MODELLER_POLISH_BATCH.md` + `prompts/RESUME_MODELLER_POLISH2.md`.
-
-**▶ 2026-07-03 — HBA ERP-governed-display research done, DECISION PENDING.** User wants pane display (not just
-§P11's deep-link target) to derive from a real iDempiere chain (HHS↔`M_Warehouse`, personnel↔`C_BPartner`↔
-`AD_User`). Live-verified: `HR_Employee` has zero rows anywhere — seed-data gap, not a code gap. Full spec +
-3 open questions + staged plan: `prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md`. Do not start building until the
-open questions are answered.
-
-**▶ 2026-07-02 NIGHT — watchdog quality-review pass across all 4 lanes below.** All hold up structurally (no
-TODO/FIXME, no silent-degradation, no invented claims) but each has 3-6 small polish/coverage gaps + one real
-open design call. Findings + Fable5/Opus/Sonnet assignment logged in each lane's own §FOLLOWUP/§NIGHT section:
-`prompts/RESUME_IFC_BOM_GEOMAPPING.md` §FOLLOWUP-POLISH, `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`
-§NIGHT (top), `prompts/RESUME_HR_BIM_ASSET.md` §NIGHT (bottom), `prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md`
-§NIGHT (reopens that card — was marked archivable, now isn't until its 6 items land).
-
-**▶ MODELLER (bim-ootb) — one genuinely-open design call:** proximity-clustering-as-BOM (window-as-assembly),
-user go-ahead needed. The LOD400/Walk-All/anchor lane itself is ✅ concluded (see Archive).
-
-**Gate:** `./scripts/run_RosettaStones.sh` — S190 fleet: 116/157 PASS, 4 ALL GREEN (BR,MO,RL,WI). 21 buildings, 9-gate system.
+**Gate:** `./scripts/run_RosettaStones.sh` — S190 fleet: 116/157 PASS, 4 ALL GREEN (BR,MO,RL,WI). 21 buildings. 9-gate system.
 
 | PFX | EL | GATES | Notes |
 |-----|----|-------|-------|
@@ -74,57 +18,76 @@ user go-ahead needed. The LOD400/Walk-All/anchor lane itself is ✅ concluded (s
 
 **Pipeline:** 11 stages. 77 verbs. 7403 products (ERP.db). 4-DB architecture.
 
-## Archive — DONE/shipped (one-line pointers; detail in specs + memory topic files)
-- GEOMAPPING lane ✅ CONCLUDED 2026-07-02 — 7-building corpus ALL 100% GUID joins (HHS re-mined off the 69% MEP file), alias layer mining+runtime shipped (bc #12–#18, ootb #600–#603+#605) — `prompts/RESUME_IFC_BOM_GEOMAPPING.md` → [[project_ifc_bom_geomapping]]
-- Modeller LOD400 real-geometry + Walk-All + §STRETCH-RIDE + Terminal perf-guard (#606) + guide frames (#608) + ARC anchor fix (#613, W-MV-PARITY 12/12, anchor-sweep 15/15, SC floating fragments GONE) ✅ 2026-07-02 — `prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`, `prompts/RESUME_MODELLER_ARC_ANCHOR_PLACEMENT.md`
-- Modeller GUIDE ✅ FULLY DONE 2026-07-02 — all 22 §F2 frames eyeballed, SC ARC shot embedded, prose sections numbered, mkdocs --strict 0 — `prompts/RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md`
-- Modeller competitive-polish §FABLE5-NOW 10/10 ✅ 2026-07-03 (bim-ootb #616; W-GRID-NUMERIC measures grid accuracy) — bim-ootb `prompts/RESUME_MODELLER_POLISH_BATCH.md` → [[project_modeller_competitive_polish]]
-- HR_BIM_Asset §P10d + §P11 ✅ DONE+LIVE 2026-07-02 (#609–#615) — all 5 HBA panes deep-link real iDempiere windows, witness_erp_deeplink 19/19 — `prompts/RESUME_HR_BIM_ASSET.md` → [[project_hba_compile_not_model]]
-- Modeller VISION-LOCK arc: §ARC-1 editable substrate → §SDG-CASCADE ride → §GATE-1 RED/ORANGE conformity →
-  §STRETCH-1 grid-stretchable, all DONE+LIVE 2026-06-29 (bim-ootb PR #571/#573/#574/#575) — `prompts/RESUME_ARC_EDITABLE_SUBSTRATE.md`, `prompts/RESUME_MODELLER_CONFORMITY_GATE.md`, `prompts/RESUME_ARC_STRETCHABLE.md` → [[project_arc_editable_substrate]]
-- Terminal §8E TE-walk suite complete (ARC/STR-canopy/MEP-density/clash/GREEN-report), cross-building held-out
-  generalization (LTU_AHouse 0.839 precision), route-to-FACE ACMV fix, ELEC host-bind anti-float — all DONE
-  2026-06-29/30 (bim-compiler + bim-ootb `lane/arc-mesh-readpixels`) — `prompts/WALKER_GUARDS_ROSETTASTONE_SPEC.md` → [[project_terminal_rule_mining]]
-- SEED→3D corridor trunk (engine+render-gate+animation) DONE+LIVE 2026-06-30 (bim-ootb #580/#582/#583) — `prompts/RESUME_SEED_TRUNK.md`
-- disc-walker density-fix (area-scaled counts, LANDED-tube/GENERATED-cube render split, offline IDB cache) DONE+LIVE
-  2026-06-28 (bim-ootb #558/#559/#560/#562) — `prompts/RESUME_DISC_WALKER_ENVELOPE_BOUND.md`
-- Modeller editor + Outliner polish backlog → ZERO except user-gated #3b solid-scale (deferred, occt-wasm kernel
-  rework needed) — 2026-06-28 (bim-ootb #562–#570) — `prompts/RESUME_MODELLER_POLISH.md`
-- Modeller FIRST-CLASS real-user E2E gates + Walk-tool IDB-hang/112s-freeze fixes DONE+LIVE 2026-07-01 (bim-ootb
-  #584 sw v25) — full E2E suite (INSERT/SCALE/ROTATE/SKETCH/ROUTE/etc.) still IN PROGRESS, `modeller/tests/E2E_SUITE_RESUME.md` → [[project_modeller_vision_lock]] [[feedback_test_real_user_path_not_seams]]
-- SC (Schependomlaan) IFC2BOM onboarding 2/4→7/10 gates, BOM-cascade-as-modelling-grammar vision banked —
-  2026-06-23 — `prompts/MODELLING_FROM_BOM_CASCADE.md`
-- Benchmark & Clash-Resolution lane — Phase A DONE (bench_suite.html LIVE, IfcClash/pick/rich-clash measured);
-  Phase B-F NOT STARTED, A2 full-stack iDempiere blocked on missing REST plugin — `prompts/BENCHMARK_AND_CLASH_RESOLUTION_LANE.md`
-- TM 4D/5D variance + 360 loop/kanban/pivot/shopfloor S-curve LIVE 2026-06-21 (bim-ootb #462) — `prompts/TM_4D5D_VARIANCE_LANE.md`
-- Ninja Create (PackOut/PackIn) two-way engine + export + live DOM SHIPPED 2026-06-14 (bim-ootb #301/#309)
-- Reflexive AD self-edit (dictionary edit → live repaint, no reload) SHIPPED 2026-06-14 (bim-ootb #312)
-- Odoo red-band fold-gap re-audited, server actions confirmed not a code gap — 2026-06-14
-- AD_Process FOLD lane — P1 GeneratePO + P2-leg1 GenShipment DONE/LIVE 2026-06-17 (bim-ootb #352/#355); NEXT
-  (unstarted) = C_Invoice_Generate (proc 119)
-- POS gap-close banked — `prompts/POS_GAP_CLOSE.md # DONE` (2026-06-12g2)
-- WH×POS pick lane BUILT, live-verified — `prompts/WH_POS_PICK_LANE.md # DONE` (2026-06-13)
-- Multi-lane WAVE 2+3 — `prompts/MULTI_LANE_LAUNCH.md`, `prompts/MULTI_LANE_WAVE3.md # DONE` (2026-06-12)
-- MIGRATE_POSTING_CONFIG — bim-ootb PR #271 sw v653, IDB ad_seed_v15 (2026-06-12b)
-- POS lens addon §P-1..§P-4 — `prompts/POS_LENS_SESSION.md # DONE` LIVE (2026-06-12)
-- ERP backend-gap arc + backend lane DATA/ENGINE-SEAM — `prompts/ERP_BACKEND_GAP.md` (2026-06-03/09)
-- Lens-family doctrine + FRONTEND Accts-Posted lens + iDempiere Renderer #1 + LENS lane-3 chrome fleet — PR
-  #82/#83/#84/#92/#94, sw v560/v565, LIVE (2026-06-02/03)
-- STEP-0 §SEAM-FROZEN host conformance, Migrate ShowMe + ERP folder home — LIVE (2026-06-02/03)
-- Engine POST plugin §13.1 accounting genome PROVEN (2026-06-02) → [[project_glassbowl]]
-- ERPMaker/AnyAppMaker docs + Odoo fold source (2026-06-02) → [[project_erpmaker]]
-- Holy Grail doc + falsifier POC prompts + MIT license sweep (2026-06-01)
-- ERP Secured/Distributed doctrine + 6-witness POC suite + W-CHAIN live (2026-06-01) → [[project_erp_secured_phase]]
-- Glassbowl engine-as-data explorer + lifecycle chain + orbit viz — `docs/GLASSBOWL{,_DOSSIER}.md`, LIVE → [[project_glassbowl]]
+## HBA ERP-governed Stage 3 + C_Attendance retirement (2026-07-03, Fable5) — ✅ SHIPPED
+- Prereq (watchdog): invented `C_Attendance` RETIRED (Ninja rollback + physical DROP); attendance retargeted
+  onto native `S_Resource`/`S_ResourceAssignment` (Mary-Consultant pattern); zone stays BIM op-log fact
+  (spatial view-trace). Stage 3: Presence drawer reads governed rows; NEW BIM BOM pane (FAMILY 9th, deep-link
+  AD_Window 53006); live headless-Chrome smoke GREEN (`§HBA_GOVERN … S_ResourceAssignment=7/7 BOM=13`, 0 errors).
+- Live-smoke finding FIXED: #628 regression — `ad_payroll.js` needs `mock_rates.js` loaded first or its IIFE
+  dies silently (payslip/leave panes dead). viewer.html + fm_panel.html fixed; witness F8 pins script order.
+- bim-ootb **PR #632** (lane/hba-attendance-native), suite 40/40. Spec: `prompts/RESUME_HBA_ERP_STAGE3.md` (all ✅).
+
+## Modeller §NEEDS-DESIGN batch (2026-07-03, watchdog→Fable5) — ✅ SHIPPED
+- Items 1,2,4,5,6,7 (eye-toggle, filter→scene dim, auto-expand-on-pick, Outliner windowing+O(k) pick,
+  selection edge outline, real shadows+perf guard) — bim-ootb **PR #625** MERGED; item 8 (floating drag
+  dims) — **PR #627** MERGED. Spec+decisions+DONE log: bim-ootb `prompts/RESUME_MODELLER_POLISH3.md`.
+  New witnesses 30/30 (OLVIRT/OLEYE/OLFILTER/SELOUTLINE/SHADOWS/FLOATDIM); regression 7 suites green.
+- Item 10 ✅ BUILT 2026-07-03 (Fable5): T=arm rotate ring / S=arm scale cubes (R kept Insert) — bim-ootb
+  **PR #631 MERGED** (squash `8d73fb0`, verified on main), W-E2E-RSARM 8/8 + regression 36/36 green.
+  First-RED fix: gizmo arrow shaft+tip share one material → arm-dim base opacity recorded on material.
+- OPEN (unassigned): item 9 PBR textures; SSAO (needs EffectComposer vendored); per-instance hide (§DECISIONS-2).
+
+## HBA lane/hr-overlay sync+PR handoff (2026-07-03, Fable5) — ✅ DONE
+- Queued task from `bim-ootb prompts/RESUME_HR_BIM_ASSET.md ⏭ NEXT` executed: merged origin/main (12 squash
+  add/add conflicts re-merged 3-way vs PR #609 head `cc67ed3`, union kept — S2 `_regovern` #622 + BOM #626
+  intact alongside P10b/E-Invoice), witness suite **39/39 green** post-merge (AD1 gross=5200/net=4234 held,
+  W-HBA-EINVOICE 19/19, main's W-HBA-ERP-GOVERNED 9/9 + BOM-GOVERNED 6/6 + GOVERN-WIRE 5/5 green in-branch),
+  **PR #628 MERGED** (`e42a96b`, verified landed) + doc closeout PR #629. `lane/hr-overlay` now squash-merged —
+  do NOT reuse; next HBA slice (Stage 3 pane read-through-lens + live smoke) starts off fresh origin/main.
+
+## Kernel op-log timebomb audit (2026-07-03) — 3-agent scalability/macro/security sweep
+- Findings: `prompts/KERNEL_TIMEBOMB_AUDIT_2026-07-03.md` (13 defects, root cause: sound at op-CREATION,
+  green-by-construction everywhere else → armed by success milestones). Batch-1 spec + full next-session plan:
+  `prompts/KERNEL_HARDENING_BATCH1_SPEC.md`.
+- ✅ T3 period-close DELETE gated behind confirmed archive (W-PCLOSE-ARCHIVE 10/10) + ✅ T6 multi-tab persist
+  tip-guard + caller committed-checks (W-CROSS-TAB-PERSIST 9/9) — bim-ootb PR #623, erp sw v759, kernel v9→v10.
+  Both red-before/green-after in node over the REAL kernel; poc_teams_phase_d 11/11 unchanged.
+- ✅ T1 trust-root DECIDED by doctrine excavation (not fresh design): device-level central roster +
+  ROTATE/REVOKE + burn-not-reattribute already in DistributedERP.md §228/§290/§445 + witnessed
+  `scripts/poc_rotate.js`. Employee-attribution (PIN-as-metadata) split out as a separate question.
+- ✅ T2 content-addressed signing (W-CONTENT-SIGN 14/14: v2 `_sigv` content sigs survive id renumbering,
+  delimiter injection closed, v1 history + chain bytes untouched) + ✅ T1 roster/key-epoch verify
+  (W-ROSTER-VERIFY 17/17: NEW erp/erp_key_epochs.js HQ-signed device roster + ROTATE/REVOKE ported from
+  poc_rotate; importBranch(opts.roster) rejects the forged-foreign-key import, security#1 closed) —
+  bim-ootb PR #630, erp sw v760, kernel v10→v11. Red-before/green-after; teams suite 25/25 green.
+- ⛔ T4+T5 (unify 3 kernel copies) BROWSER-GATED — analysis done (neither copy is a superset), needs the
+  W-ONE-KERNEL building-load smoke. Deferred: commitGroup id-race retry + T7 scale cliff (~5k ops) +
+  employee attribution (PIN-as-metadata, separate question). Lane status: batch-1 spec §STATUS.
+
+## Codebase quality audit (2026-07-02) — TRIAGED 2026-07-03
+- ✅ §5 self-XSS fixed BOTH repos (bim-ootb PR #618 sw v758 + bc PR #20; W-XSS-FILENAME 10/10 + 5/5, incl. the
+  download-link sink the audit missed) · ✅ §2 doc-vs-code drift fixed, every number re-verified (bc PR #20).
+- ⛔ BLOCKED (user call): are `migration/DV_*_rules.sql` mined-rule files EXEMPT from append-only, or enforce?
+- OPEN: §1 refactors (spec-first, Sacred file), §2 dead-code removal, §3 shallow specs 27/29 (bim-ootb).
+  Full triage: `prompts/CODEBASE_QUALITY_AUDIT_2026-07-02.md §TRIAGE`.
+
+## Archive — DONE/shipped (one-line pointers; detail in cards + memory topic files)
+- HBA lane/hr-overlay sync+PR handoff — bim-ootb PR #628 `e42a96b` + closeout #629, 39/39 (2026-07-03; memory [[project_hba_erp_governed_display]])
+- Ninja Create two-way engine + live export — `prompts/NINJA_MODE_PILL.md # DONE`, W-NINJA-{EXTRACT,CALLOUT,EXPORT,EXPORT-LIVE} + W-ASSET-STATUS (bim-ootb PR #301/#309, sw v673/v681, 2026-06-14)
+- Reflexive AD self-edit — W-AD-{OPLOG-DISTRIB,SELFEDIT,SELFEDIT-LIVE} (bim-ootb PR #312 sw v683, 2026-06-14)
+- Odoo red-band fold-gap re-audit — W-ODOO-QWEB 41/41 to-the-cent; server actions honestly deferred; migrate_status_panel live (2026-06-14)
+- Pre-2026-06-14 DONE items (21 lines) → `prompts/archive/PROGRESS_DONE_ARCHIVE_pre_2026-06-14.md`
 - Viewer S-series (S188–S286): browser viewer, DLOD, mobile perf, find/nav, multi-format import, cinematic — see MEMORY.md "Project — Shipped"
 
 ## OCI Deployment
+
 - Live: `bim-ootb-live` (SYSNOVA landing + viewer + single DBs). Always upload here.
 - Single DB per building: `buildings/{Name}_extracted.db` (metadata + geometry + bbox).
 - `deploy/sandbox/` stale (last ~S225) — not used for deploy. `deploy/dev/` is canonical.
 - Deploy SOP: `deploy/OCI_UPLOAD.md`
 
 ## Earlier Work (compressed)
+
 - **S200-S210:** BIM OOTB browser viewer, OCI deployment, BOQ charts, health checks
 - **S195-S198:** Direct DB streaming (replaced Blender .blend pipeline)
 - **S188-S193:** RTree, nD engine, DLOD — all Blender-era, superseded by browser viewer
@@ -133,6 +96,7 @@ user go-ahead needed. The LOD400/Walk-All/anchor lane itself is ✅ concluded (s
 - **DAGCompiler:** S190 fleet 21 buildings. S104 IFCtoERP complete.
 
 ## Reference
+
 - Docs site: https://red1oon.github.io/BIMCompiler/
 - Academic paper: `docs/SPATIAL_COMPILATION_PAPER.md`
 - OCI setup: `internal/OCI_SETUP.md`

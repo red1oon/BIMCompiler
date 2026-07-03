@@ -1,0 +1,18 @@
+{
+  "devDependencies": {
+    "@salusoft89/planegcs": "^1.1.7",
+    "better-sqlite3": "^12.10.0",
+    "dxf-parser": "^1.1.2",
+    "fast-check": "^4.8.0",
+    "manifold-3d": "^3.5.1",
+    "occt-wasm": "^3.4.0",
+    "puppeteer": "^24.42.0"
+  },
+  "dependencies": {
+    "rtree-sql.js": "^1.7.0",
+    "sql.js": "^1.14.1",
+    "sql.js-fts5": "^1.4.0",
+    "web-ifc": "^0.0.77",
+    "xlsx": "^0.18.5"
+  }
+}

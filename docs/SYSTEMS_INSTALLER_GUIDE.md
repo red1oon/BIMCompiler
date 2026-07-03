@@ -48,7 +48,7 @@
 git clone git@github.com:red1oon/BIMCompiler.git
 cd BIMCompiler
 
-# 2.2 Compile all 9 modules
+# 2.2 Compile all 10 modules
 mvn compile -q
 
 # 2.3 Verify — run the full test gate
@@ -68,6 +68,7 @@ TopologyMaker     → grid strategy, PO lifecycle
 BIM_COBOL         → 77 domain verbs, witness engine
 IFCtoBOM          → IFC extraction to BOM database
 BIMBackOffice     → ERP reporting, sessions, portfolio
+BIMEyes           → geometric comprehension, shape proofs
 BonsaiBIMDesigner → GUI server, validation, assembly
 ```
 
@@ -482,6 +483,7 @@ BIMCompiler/
 ├── BIM_COBOL/             # 77 domain verbs, witness engine
 ├── IFCtoBOM/              # IFC extraction → BOM database pipeline
 ├── BIMBackOffice/         # ERP reporting, sessions, portfolio, 4D-7D
+├── BIMEyes/               # Geometric comprehension: 28 shape proofs
 ├── BonsaiBIMDesigner/     # GUI server, validation, assembly, placement
 ├── library/               # SQLite databases (product catalog, BOMs)
 ├── migration/             # SQL migration scripts (append-only)
@@ -490,7 +492,7 @@ BIMCompiler/
 ├── docs/                  # All specifications and analysis documents
 ├── docker-compose.yml     # WAN deployment
 ├── Dockerfile             # Multi-stage build
-└── pom.xml                # Parent POM (9 modules)
+└── pom.xml                # Parent POM (10 modules)
 ```
 
 ---

@@ -12,7 +12,7 @@
 [![Op-Log ERP](https://img.shields.io/badge/Op--Log_ERP-Browser_Native-9c6ade.svg)](#op-log-erp--browser-native-erp-engine)
 [![Java 17+](https://img.shields.io/badge/Java-17+-orange.svg)](https://openjdk.org/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite-003B57.svg)](https://www.sqlite.org/)
-[![Tests](https://img.shields.io/badge/Tests-392_GREEN-brightgreen.svg)](#project-stats)
+[![Tests](https://img.shields.io/badge/Tests-382_PASS_%2F_94_intentional_RED-brightgreen.svg)](#project-stats)
 [![Docs](https://img.shields.io/badge/Docs-50_specs-8CA1AF.svg)](https://red1oon.github.io/BIMCompiler/)
 
 ### [Try It Live — drop IFC or OBJ in your browser, zero install](https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/index.html)
@@ -149,7 +149,7 @@ git clone https://github.com/red1oon/BIMCompiler.git && cd bim-compiler
 
 mvn compile -q                                        # Compile all modules
 ./scripts/run_RosettaStones.sh classify_sh.yaml       # Compile Sample House + verify gates
-./scripts/run_tests.sh                                # Full test gate (392 tests)
+./scripts/run_tests.sh                                # Full test gate (382 PASS / 94 intentional RED / 1 SKIP — see script header)
 ```
 
 ## Documentation
@@ -166,8 +166,8 @@ bim-compiler/
 │   ├── dev/               # BIM OOTB working copy (53 JS + 6 HTML modules)
 │   ├── live/              # Production snapshot (promoted from dev)
 │   └── buildings/         # Per-building SQLite databases
-├── DAGCompiler/           # 12-stage compilation pipeline (G1-G6 gates)
-├── BIM_COBOL/             # 64 domain verbs, witness engine
+├── DAGCompiler/           # 11-stage compilation pipeline (G1-G6 gates; steps numbered 1-12, Step 3 retired)
+├── BIM_COBOL/             # 77 domain verbs, witness engine
 ├── BIMEyes/               # Geometric comprehension: 28 shape proofs
 ├── IFCtoBOM/              # IFC extraction → BOM database pipeline
 ├── BonsaiBIMDesigner/     # GUI server + validation (TCP :9876)
@@ -193,9 +193,9 @@ Led [ADempiere](https://www.adempierebr.com/User:Red1) (2006), paved the way for
 | | |
 |:---|:---|
 | **BIM OOTB (Browser)** | 88 files, 90K lines (JS + HTML), 155 Playwright tests |
-| **Java Compiler** | 1,140 files, 261K lines across 12 Maven modules |
-| **Java Tests** | 129 test classes, 392+ assertions, all GREEN |
-| **SQL** | 106 migration scripts (append-only) |
+| **Java Compiler** | 1,207 files, 278K lines across 10 Maven modules |
+| **Java Tests** | 201 test classes; gate baseline 382 PASS / 94 intentional RED / 1 SKIP |
+| **SQL** | 178 migration scripts (append-only) |
 | **Databases** | 35 per-building single DBs (0.1-173 MB each) |
 | **Specifications** | 50 docs, governed by SystemContract.md |
 | **Buildings** | 35 compiled (34 extracted + 1 generative) |
