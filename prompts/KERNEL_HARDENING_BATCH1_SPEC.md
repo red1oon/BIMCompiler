@@ -3,8 +3,25 @@
 #   T3 W-PCLOSE-ARCHIVE 10/10, T6 W-CROSS-TAB-PERSIST 9/9, both red-before/green-after in node over the
 #   REAL kernel; poc_teams_phase_d 11/11 unchanged (no regression). DEFERRED from T6: the commitGroup
 #   id-race retry (touches the atomic-commit transaction — needs its own concurrency witness; the caller
-#   res.committed guards already stop the silent-loss symptom). STILL HELD: T4+T5 (unify 3 kernel copies),
-#   T2 canonicalization + T1 trust-root (need the visionary's three-fork decision first). Detail below.
+#   res.committed guards already stop the silent-loss symptom).
+#   T4+T5 (unify 3 kernel copies): ANALYSIS DONE 2026-07-03, ⛔ BROWSER-GATED. The three-way diff proves
+#   NEITHER copy is a superset: erp/kernel_ops.js (now v10) has branch+emitter+T6-guard but LACKS viewer's
+#   three persist guards (§KRN_PERSIST_GUARD foreign-db skip, _cacheDisabled, openCacheDB version-fix = the
+#   2026-06-12 P0). viewer/modeller copies (v8) lack branch support (the T4 what-if bomb — blue_fold.js:36
+#   commits {branch_id} but the active branch-blind viewer copy drops it → what-if commits as OFFICIAL).
+#   Host surface = 10 HTML loaders; viewer.html DOUBLE-loads (erp copy 825 THEN viewer copy 854 → last wins).
+#   The unify = merge viewer's 3 persist guards INTO the erp copy (safe: erp/*.js never reference APP.db so
+#   the foreign-db guard is inert there), delete viewer/+modeller/ copies, repoint their hosts, boot-assert
+#   on double-define, commitGroup throw-on-unknown-groupMeta-key. The persist-merge + host-repoint CANNOT be
+#   node-witnessed (IDB/navigator.locks/openCacheDB/APP.db are browser runtime) — it REQUIRES the W-ONE-KERNEL
+#   building-load browser smoke to prove no 2026-06-12 regression. Held for a browser-capable session.
+#   T1 trust-root: ✅ DECIDED (Watchdog excavation 2026-07-03) — adopt the doctrine's OWN answer, not a fresh
+#   design: device-level CENTRAL roster (DistributedERP.md §228 edge/merchant-key signing + §445/§8 key-trust
+#   root stays central), ROTATE/REVOKE + key-epoch map (§290, burn-not-reattribute), starting from the
+#   witnessed scripts/poc_rotate.js (bim-compiler master + feat/erp-substrate-phase012, §ROTATE-OP/HISTORY-
+#   VALID/FUTURE-GATED/REVOKE). SEPARATE 4th question (NOT T1): employee attribution (self-asserted actor
+#   defeats maker-checker) → cheap answer is a PIN/login as op METADATA (audit-logged, not per-employee PKI).
+#   T2 canonicalization now UNBLOCKED by T1's decision. NEXT LANE = T1/T2 (node-verifiable) over browser-gated T4+T5.
 #
 # Implementation spec for the FIRST greenlit batch of kernel-timebomb fixes (visionary greenlit the
 # no-design-call items 2026-07-03). Source findings: prompts/KERNEL_TIMEBOMB_AUDIT_2026-07-03.md.
