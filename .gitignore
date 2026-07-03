@@ -104,8 +104,6 @@ deploy/test_browser.py
 
 # Node (root)
 /node_modules/
-/package-lock.json
-/package.json
 
 # Reports (generated)
 boq_reports/
