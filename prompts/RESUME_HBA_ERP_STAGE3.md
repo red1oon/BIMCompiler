@@ -2,6 +2,8 @@
 # Scope: wire the HBA panes/drawers to READ the seeded iDempiere data THROUGH the AD_InfoWindow lenses; then a
 # live headless-Chrome smoke of the async governance path. Read the log after every run. Honour until DONE.
 # Model: Fable5 (execution, well-specified) per [[feedback_model_allocation_mastermind_vs_execution]].
+#
+# ✅✅✅ ALL DONE 2026-07-03 (Fable5) — bim-ootb PR #632 `lane/hba-attendance-native`. See §DONE appendix at EOF.
 
 ## Where the lane stands (all MERGED to bim-ootb main, 2026-07-03)
 - **Stage 1** (#621) — real seed rows in `erp/ad_seed.db`: M_Warehouse 990000 `HHS_Office_Federated`, 14
@@ -106,5 +108,37 @@ execution = Fable5 once the room-granularity call is confirmed; escalate to Opus
 ## Full spec + closeouts
 `prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md` (bim-ootb-side; §STAGE1-DONE / §STAGE2-DONE / §BOM-ERP-CENTERED).
 Memory: [[project_hba_erp_governed_display]] · doctrine [[project_erp_one_base_doctrine]].
-Witnesses to keep green: `node hr_bim_asset/tests/witness_*.js` (38 files). Re-seed if ad_seed.db is rebuilt:
-`node scripts/seed_hba_erp.js` then `node scripts/seed_hba_bom.js` (both idempotent, self-witnessing).
+Witnesses to keep green: `node hr_bim_asset/tests/witness_*.js` (40 files after this lane). Re-seed if
+ad_seed.db is rebuilt: `node scripts/seed_hba_erp.js` then `node scripts/seed_hba_bom.js` (idempotent, self-witnessing).
+
+## §DONE (2026-07-03, Fable5 — bim-ootb PR #632, every claim has a §-log line)
+- **⛔ PREREQUISITE ✅** — invention retired + native retarget, one PR off fresh origin/main:
+  `§SEED_HBA_RETIRE … changes=48` (dictionary IsActive=N ≥7000000, physical DROP, old lens rows deleted);
+  `§SEED_HBA_RESTYPE ADD Employee id=990000` (proto=Consultant 100); `§SEED_HBA_RES ADD S_Resource 990109/990110`
+  (EMP001/EMP002 → AD_User 1/2 @ warehouse 990000, proto=Mary 100); `§SEED_HBA_INFOWIN ADD id=7600000 over REAL
+  AD_Table 485`; `§SEED_HBA_ATT sessions=7 added=7`; seed self-witness 8/8 PASS incl. `INVENTION-GONE` +
+  `READPRESENCE-LENS`; 2nd run `NO-OP` (idempotent). Room-granularity recommendation ACCEPTED: zone stays the
+  BIM op-log fact — carried as a `spatial` view-trace keyed by row PK (ad_bom geometry idiom), never a column.
+  `ad_attendance.js` DELEGATES to occupancy.js's witnessed builders (no duplicate); old partnerMap/locatorMap
+  surface gone (W-HBA-AD-ATTENDANCE AA7). Witnesses 9/9 + W-HBA-ERP-GOVERN-WIRE 8/8 (WIRE3b invention-gone in
+  the SHIPPED db, WIRE3c readPresence round-trip).
+- **Item 1 ✅** Presence drawer governed — `§HBA_PRESENCE_DRAWER open — 7 sessions (ERP-governed
+  S_ResourceAssignment, skipped=0)`; hours(Qty)+IsConfirmed rendered, honest-open kept, fly-to-zone via spatial
+  trace; ungoverned fallback = the old op-log fold (witness_p10a still 24/24). WIRE5 witnesses the governed render.
+- **Item 2 ✅** BIM BOM pane — NEW `viewer/hba_bom.js` (FAMILY 9th entry, pane registry `bom`), gates on
+  `A._hbaBomSpec.assemblies.length`, deep-link AD_Window **53006** "Bill of Materials and Formula" (verified in
+  ad_seed.db + ad_full.db). `§HBA_BOM_PANE mounted assemblies=13 components=88`. W-HBA-BOM-PANE 11/11 (new).
+- **Item 3 ✅** spot-check — every pane reads `A._hba*Spec` through APP at mount time (payslip/leave/tenancy/
+  bom specs; dashboard reads the signed op-logs by design — those are the BIM facts, not governable literals).
+- **Item 4 ✅** LIVE smoke (cdp_shot.js, HHS, real user path) — `§HBA_GOVERN on — re-compiled 4 governable
+  spec(s) … payroll _governed=true warehouse=990000 S_ResourceAssignment=7/7 BOM=13 assemblies`; FM drawer 9/9
+  available; `§DIAG_STAGE3 … presGoverned=true bomAsmRows=13 bomLineRows=88 tinted=28`; 0 console errors.
+  Standing harness: `hr_bim_asset/tests/live/ready_hhs_govern.js` + `action_stage3.js`.
+- **🔥 LIVE-SMOKE FINDING (fixed here, pre-existing #628 regression)** — `ad_payroll.js` reads
+  `self.HbaMockRates.MOCK_RATES` at EVAL time; viewer.html + fm_panel.html never loaded `mock_rates.js` → the
+  whole IIFE died silently: `HbaAdPayroll` undefined, payslip/leave panes dead, payroll governance stuck
+  literal (the exact [[feedback_browser_iife_wrap_engines]] class — invisible to node witnesses). Both pages
+  fixed (mock_rates.js before ad_payroll.js); witness_family F8 pins the <script> order durably.
+- Full suite **40/40** green (`logs/full_suite_final.log` in the worktree). sw.js CACHE_VERSION v738→v739.
+- Open flags UNCHANGED (not this lane's scope): §P11 windows 53042/316/53036 still lack AD_Window rows in
+  ad_seed.db; deferred component_library.db/building_BOM.db audit; doctrine-promotion question.

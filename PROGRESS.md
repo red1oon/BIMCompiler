@@ -18,6 +18,15 @@
 
 **Pipeline:** 11 stages. 77 verbs. 7403 products (ERP.db). 4-DB architecture.
 
+## HBA ERP-governed Stage 3 + C_Attendance retirement (2026-07-03, Fable5) — ✅ SHIPPED
+- Prereq (watchdog): invented `C_Attendance` RETIRED (Ninja rollback + physical DROP); attendance retargeted
+  onto native `S_Resource`/`S_ResourceAssignment` (Mary-Consultant pattern); zone stays BIM op-log fact
+  (spatial view-trace). Stage 3: Presence drawer reads governed rows; NEW BIM BOM pane (FAMILY 9th, deep-link
+  AD_Window 53006); live headless-Chrome smoke GREEN (`§HBA_GOVERN … S_ResourceAssignment=7/7 BOM=13`, 0 errors).
+- Live-smoke finding FIXED: #628 regression — `ad_payroll.js` needs `mock_rates.js` loaded first or its IIFE
+  dies silently (payslip/leave panes dead). viewer.html + fm_panel.html fixed; witness F8 pins script order.
+- bim-ootb **PR #632** (lane/hba-attendance-native), suite 40/40. Spec: `prompts/RESUME_HBA_ERP_STAGE3.md` (all ✅).
+
 ## Modeller §NEEDS-DESIGN batch (2026-07-03, watchdog→Fable5) — ✅ SHIPPED
 - Items 1,2,4,5,6,7 (eye-toggle, filter→scene dim, auto-expand-on-pick, Outliner windowing+O(k) pick,
   selection edge outline, real shadows+perf guard) — bim-ootb **PR #625** MERGED; item 8 (floating drag
@@ -27,14 +36,6 @@
   **PR #631 MERGED** (squash `8d73fb0`, verified on main), W-E2E-RSARM 8/8 + regression 36/36 green.
   First-RED fix: gizmo arrow shaft+tip share one material → arm-dim base opacity recorded on material.
 - OPEN (unassigned): item 9 PBR textures; SSAO (needs EffectComposer vendored); per-instance hide (§DECISIONS-2).
-
-## HBA lane/hr-overlay sync+PR handoff (2026-07-03, Fable5) — ✅ DONE
-- Queued task from `bim-ootb prompts/RESUME_HR_BIM_ASSET.md ⏭ NEXT` executed: merged origin/main (12 squash
-  add/add conflicts re-merged 3-way vs PR #609 head `cc67ed3`, union kept — S2 `_regovern` #622 + BOM #626
-  intact alongside P10b/E-Invoice), witness suite **39/39 green** post-merge (AD1 gross=5200/net=4234 held,
-  W-HBA-EINVOICE 19/19, main's W-HBA-ERP-GOVERNED 9/9 + BOM-GOVERNED 6/6 + GOVERN-WIRE 5/5 green in-branch),
-  **PR #628 MERGED** (`e42a96b`, verified landed) + doc closeout PR #629. `lane/hr-overlay` now squash-merged —
-  do NOT reuse; next HBA slice (Stage 3 pane read-through-lens + live smoke) starts off fresh origin/main.
 
 ## Kernel op-log timebomb audit (2026-07-03) — 3-agent scalability/macro/security sweep
 - Findings: `prompts/KERNEL_TIMEBOMB_AUDIT_2026-07-03.md` (13 defects, root cause: sound at op-CREATION,
@@ -63,6 +64,7 @@
   Full triage: `prompts/CODEBASE_QUALITY_AUDIT_2026-07-02.md §TRIAGE`.
 
 ## Archive — DONE/shipped (one-line pointers; detail in cards + memory topic files)
+- HBA lane/hr-overlay sync+PR handoff — bim-ootb PR #628 `e42a96b` + closeout #629, 39/39 (2026-07-03; memory [[project_hba_erp_governed_display]])
 - Ninja Create two-way engine + live export — `prompts/NINJA_MODE_PILL.md # DONE`, W-NINJA-{EXTRACT,CALLOUT,EXPORT,EXPORT-LIVE} + W-ASSET-STATUS (bim-ootb PR #301/#309, sw v673/v681, 2026-06-14)
 - Reflexive AD self-edit — W-AD-{OPLOG-DISTRIB,SELFEDIT,SELFEDIT-LIVE} (bim-ootb PR #312 sw v683, 2026-06-14)
 - Odoo red-band fold-gap re-audit — W-ODOO-QWEB 41/41 to-the-cent; server actions honestly deferred; migrate_status_panel live (2026-06-14)
