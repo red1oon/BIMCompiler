@@ -37,6 +37,14 @@
   First-RED fix: gizmo arrow shaft+tip share one material → arm-dim base opacity recorded on material.
 - OPEN (unassigned): item 9 PBR textures; SSAO (needs EffectComposer vendored); per-instance hide (§DECISIONS-2).
 
+## HBA lane/hr-overlay sync+PR handoff (2026-07-03, Fable5) — ✅ DONE
+- Queued task from `bim-ootb prompts/RESUME_HR_BIM_ASSET.md ⏭ NEXT` executed: merged origin/main (12 squash
+  add/add conflicts re-merged 3-way vs PR #609 head `cc67ed3`, union kept — S2 `_regovern` #622 + BOM #626
+  intact alongside P10b/E-Invoice), witness suite **39/39 green** post-merge (AD1 gross=5200/net=4234 held,
+  W-HBA-EINVOICE 19/19, main's W-HBA-ERP-GOVERNED 9/9 + BOM-GOVERNED 6/6 + GOVERN-WIRE 5/5 green in-branch),
+  **PR #628 MERGED** (`e42a96b`, verified landed) + doc closeout PR #629. `lane/hr-overlay` now squash-merged —
+  do NOT reuse; next HBA slice (Stage 3 pane read-through-lens + live smoke) starts off fresh origin/main.
+
 ## Kernel op-log timebomb audit (2026-07-03) — 3-agent scalability/macro/security sweep
 - Findings: `prompts/KERNEL_TIMEBOMB_AUDIT_2026-07-03.md` (13 defects, root cause: sound at op-CREATION,
   green-by-construction everywhere else → armed by success milestones). Batch-1 spec + full next-session plan:
