@@ -64,7 +64,7 @@ structure, MEP, the 4D schedule, the 5D cost and the ERP auto-complete by *crawl
 ![The modeller workspace: the Outliner (left) over the BOM tree, the ARC building on the grid, the ⋯ pill toolbar down the right edge, and the history scrubber along the bottom](img/modeller/workspace-open.png)
 
 - **Outliner** (left) — the BOM tree of the opened building (`Building → Level → Room → ARC → element`), plus the **Walk** rows and a live **find** filter. Collapse it with its chevron to free the canvas.
-- **Canvas** (centre) — the 3D building on the construction grid. Click an element to select it; **Shift-drag** marquee-selects many.
+- **Canvas** (centre) — the 3D building on the construction grid. Click an element to select it; **Shift-drag** marquee-selects many. Elements cast real shadows onto each other and the ground, so massing and floor-to-floor relationships read correctly at a glance — not a flat, shadowless render.
 - **Pill toolbar** (right edge) — an icon rail. Tap **⋯** (bottom-right) to fan the pills open; hover a pill for its name; **? Help** lists every tool + shortcut. `Esc` cancels any active mode.
 - **History scrubber** (bottom) — the signed op-log *is* the timeline. Drag it to travel through every edit. The status line beneath it echoes what each op did (e.g. `scaled #183 X ×1.50  verify=true`).
 
@@ -90,6 +90,26 @@ retreat across every tool below.
 
 That's the whole loop: **open → select → tool → commit → scrub**. Every tool below is a variation on it. Press
 **? Help** any time for the live list of pills and shortcuts, or **`Esc`** to cancel a mode.
+
+---
+
+## Outliner — find, focus, and manage what's shown
+
+The Outliner is more than a tree of rows — it's the fastest way to find an element and control what the
+canvas shows, especially on a large building.
+
+- **Click a row** to select that element and fly the camera to it — this works even for a row with no
+  direct canvas widget of its own; it flies to the element's real position, not a fallback toast.
+- **Selecting anything expands its ancestors automatically** — you never have to manually drill down
+  through Building → Level → Room to see where a selected element sits in the tree.
+- **The selected element gets a highlighted outline** on the canvas, in addition to the existing status-line
+  name — easier to spot on a busy, similarly-coloured floor.
+- **Type in the find filter** and the tree narrows to matches — everything that doesn't match **dims** on
+  the canvas too, so filtering the list and seeing where those elements actually are happen together.
+- **Toggle the eye icon** on any row to hide or show that element (and its children) on the canvas without
+  deleting it — useful for looking inside a wall or floor you'd otherwise have to work around.
+- The tree stays responsive on large buildings — rows render only as you scroll near them, so opening a
+  building with thousands of elements doesn't stall the panel.
 
 ---
 
@@ -171,6 +191,10 @@ scaling and rotating.
 
 ![The transform gizmo on a selected element — XYZ arrows (move), cube handles (scale), yaw ring (rotate)](img/modeller/gizmo.png)
 
+While you drag any handle, a **floating readout** follows your cursor showing the live delta (distance
+moved, scale factor, or degrees turned) — the same number the status line prints on release, just visible
+mid-drag instead of only after.
+
 ### Move
 *Commits `GEOM_MOVE {dx,dy,dz}`.*
 
@@ -185,6 +209,8 @@ scaling and rotating.
 
 1. Select a single component to raise the gizmo.
 2. Drag a **cube handle** to stretch that axis — it's edge-anchored, so the opposite face stays put.
+   The preview follows the element's own **local axes** (not the world grid), so a rotated element
+   previews and commits identically — no snap-back or mismatch on release.
 3. Release to commit. The rendered extent grows by exactly the committed factor (the status line reads the signed factor).
 
 ![Scale — dragging the cube handle stretched the element; the status line reads the signed factor](img/modeller/scale-stretched.png)
@@ -197,6 +223,14 @@ scaling and rotating.
 3. Release to commit. The rendered footprint turns by exactly the committed angle.
 
 ![Rotate — the yaw ring spins the element in place](img/modeller/rotate-yaw.png)
+
+### Keyboard-arm a handle (`T` / `S`)
+
+With an element selected, press **`T`** to arm the rotate ring or **`S`** to arm the scale cubes directly
+— no need to first tap Move and then find the right handle. Arming is a pure affordance: the armed handle
+lights at full opacity while the rest of the gizmo dims, and dragging it commits through the exact same
+`GEOM_ROTATE`/`GEOM_SCALE` path as clicking the handle normally would. Press the same key again (or `Esc`)
+to disarm. `R` is reserved for Insert, so it doesn't arm anything here.
 
 ### Grid-Stretch
 *Commits `GEOM_GRID_MOVE`.*
@@ -340,6 +374,17 @@ doors, up risers between storeys.
 - **`Ctrl+Z`** undo · **`Ctrl+Y`** (or `Ctrl+Shift+Z`) redo · **`Del`** delete selection · **`F`** fit · **`Esc`** cancel mode · **`R`** rotate a pending insert.
 - Every retreat is exact because the geometry is a pure fold of the log — there is no separate "undo buffer"
   to drift out of sync.
+
+---
+
+## Share an issue — BCF export
+
+Tap the **BCF** pill to export your current view as a **BCF 2.1** file (`.bcfzip`) — the open
+buildingSMART format for exchanging issues between BIM tools. The export carries your live camera
+viewpoint and the real `IfcGuid`s of whatever's selected, so the file opens correctly in Navisworks,
+Solibri, BIMcollab, Revit (via plugin), or Trimble Connect — never a synthetic ID that only means
+something inside this app. See [Clash Detection §8.5](CLASH_DETECTION.md#85-bcf-export) for exporting a
+whole batch of detected clashes as one topic set.
 
 ---
 

@@ -203,6 +203,21 @@ everywhere else in this module: an absent link is honest, never a dead one.
    **open ↗** link is separate and deep-links straight to the `C_Subscription` record. A record whose unit
    doesn't resolve to a real room in this building is **skipped**, never fabricated — the footer says so.
 
+### BIM BOM — assembly & recipe
+1. Open the drawer → tap **BOM**. Every room in the building is an **assembly**: the room itself plus
+   every element physically contained in it, compiled onto iDempiere's native Bill of Materials tables
+   — the same recipe structure iDempiere uses for manufacturing, not a bolt-on BIM-only concept.
+
+   *(Screenshot pending — the pane shows a per-room assembly list, each row expandable into its
+   contained elements with quantities, and an "open ↗" link into iDempiere's Bill of Materials and
+   Formula window.)*
+
+2. Expand an assembly to see its component lines — one row per contained element, with the recipe
+   quantity carried over from the model. The **open ↗** link deep-links to the real **"Bill of
+   Materials and Formula"** window, the same one a manufacturing user would use for a physical product's
+   recipe — a room's contents are read through the identical lens, not a parallel BIM-only screen.
+3. This pane has no 3D wash — it's a compiled list, like Tenancy and Dashboard.
+
 ---
 
 ## A building with no rooms? Aisle-zones
@@ -230,6 +245,7 @@ above). Nothing is invented to make this work: the aisle labels and the element 
 | **Unit class** | *What is this space?* | residential `#43a047` · commercial `#fb8c00` · office `#3949ab` · unclassified `#9e9e9e` |
 | **Assets / IoT** | *What equipment needs service?* | ok `#2e7d32` · due `#f9a825` · overdue `#c62828` |
 | **Tenancy / AD** | *What's the AD-compiled lease/strata detail?* | opens the AD-compile pane (no 3D wash) |
+| **BOM** | *What's this room's assembly recipe?* | opens the BOM pane (no 3D wash) |
 | **Dashboard** | *Give me the numbers.* | opens the charts pane (no 3D wash) |
 | **Payslip** | *What did this employee actually get paid, and why?* | opens the payslip pane (no 3D wash) |
 | **Leave** | *What's this employee's leave balance and statement?* | opens the leave pane (no 3D wash) |

@@ -189,6 +189,4 @@ The Teams overlay supplies the **collaboration + optics** layer; the surfaces su
 
 ---
 
-*Spec + witnesses: `bim-ootb` `lane/teams-overlay` — `prompts/RESUME_TEAMS_UI_CONSISTENCY.md`,
-`teams/UI_CONSISTENCY_GUIDE.md`. Every claim here has a named `§`-witness (dot optics, tab schema, find
-placement, dashboard folds, PERT gate) you can run. Back to the [User Guide](USER_GUIDE.md).*
+*Back to the [User Guide](USER_GUIDE.md).*

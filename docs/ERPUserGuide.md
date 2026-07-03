@@ -176,7 +176,7 @@ pies, adding or removing a cut with the Explore chips reshapes the web.
 Even on a cold seed it lists **GardenWorld plus five migrated demo tenants** (Odoo · iDempiere · SAP ·
 Oracle · Dynamics), each tagged *demo · ready* or *demo · PoC* (the login step unions the resident
 tenants with the demo manifest). Picking a demo tenant **lazy-installs its shard on the spot** — no
-dialog, no `?shard=`, no server (P0, erp sw v692). Once installed it survives a reload and joins the
+dialog, no `?shard=`, no server. Once installed it survives a reload and joins the
 resident list (System, GardenWorld, and every installed tenant). Each tenant is entered through its
 **own Admin user** (e.g. *SAP Flights Admin*); the System user belongs to the System(0) client only.
 (In-tenant test links that skip the picker enter via `?client=garden`.)
@@ -213,9 +213,8 @@ rows) and persists to the same browser origin as this ERP, so the folded project
 
 ![The pushed selection landed: iDempiere's standard Project window → **Task Line** tab, every trade folded as a real `C_ProjectLine` — Concrete Gang, Steel Erector, Electrician, Plumber, HVAC Tech, Mason, Carpenter — each with its description, quantity, and product. What you picked in 3D is now work in the ERP, in native windows, round-trip complete.](figs/erp_project_lines.png)
 
-**Witnessed on the Duplex:** 6 phases · 9 tasks · 16 lines, `PlannedAmt` folding to the 5D golden **to
-the cent** (`§PROJ_FOLD plannedAmt==golden`), every phase `SeqNo` tracing to `sequence_rules.json`
-(shipped bim-ootb PR #316). See the **[BIM → Project blueprint](BIMtoProject.md)**.
+**Verified on the Duplex:** 6 phases · 9 tasks · 16 lines, `PlannedAmt` folding to the 5D golden **to
+the cent**, every phase `SeqNo` tracing to `sequence_rules.json`. See the **[BIM → Project blueprint](BIMtoProject.md)**.
 
 > A sibling **`› VO`** button (in the model-diff panel) folds a model revision into a signed `C_Order`
 > variation amendment against the same project.
@@ -254,9 +253,7 @@ the only path: you can accept it and finish fast, or build the schedule up by ha
 ![Start blank — the same three phases are organized but **undated** (“unscheduled”); a banner prompts you to set a start and press **Schedule now** to originate the dates. The 5D cost still folds from the assignments (it does not depend on dates). This is the build-it-up-from-a-blank-model path.](figs/author4d_blank.png)
 
 The link between an element and its phase is **identity by construction** — it survives renaming the phase
-or the element, where name-matching schedulers would re-bind or break. *(Engine proven by `W-AUTHOR-4D-BLANK`
-16/16, the 5D fold by `W-AUTHOR-5D-COST` 10/10, the blank start by `W-AUTHOR-BLANK-START` 11/11, all on the
-real SampleHouse through the shipped read-path; `viewer/schedule_author.js` + `schedule_author_ui.js`.)*
+or the element, where name-matching schedulers would re-bind or break.
 
 > **Zoom-Across knows where the Time Machine is.** When the Time Machine is open and you pinpoint an
 > element (from **Find**, or a **Zoom-Across** from a record in the ERP), the timeline **jumps to that
@@ -299,7 +296,7 @@ This is the **[Blue Future](#15-blue-future--the-speculative-branch-built-in-pre
 branch model applied to the schedule: the what-if lives on a speculative blue branch over the same signed
 op-log, so it is real (not a mock) yet completely reversible until you accept it. The same engine that
 unifies a planner, a cost tool, and a 4D/5D viewer onto one log gives you free what-if — no separate
-scheduling tool, no drift. *(Engine proven by `W-WHATIF` 13/13 on the Hospital project; `viewer/whatif.js`.)*
+scheduling tool, no drift.
 
 ### Schedule Editor — the advanced Gantt, on its own surface *(LIVE)*
 
@@ -335,8 +332,7 @@ field: open-source 4D (Bonsai) can build a schedule and run CPM but its Gantt is
 edit through side panels; MS Project gives you the interactive Gantt but has no model, no cost, and no
 ERP. The Schedule Editor is a real drag-on-the-chart editor **on one signed op-log that the model, the
 4D playback, the 5D cost, and the ERP all fold from** — so a date you drag here is the same fact the
-enterprise reads. *(Proven by `W-SCHED-EDIT` 19/19, `W-SCHED-CPM` 10/10, `W-SCHED-MOVE` 7/7, and
-`W-SCHED-SYNC` 11/11, plus headless drag/sync smokes; `viewer/schedule_author.js` + `schedule_sync.js`.)*
+enterprise reads.
 
 > **Where it stops — on purpose.** The editor computes from the graph *you* author; it never
 > auto-reschedules or "levels" resources for you. Automatic schedule optimisation is a decades-deep
@@ -405,15 +401,14 @@ link as a manual bind — you can adjust or clear it per task.
 > **Demo files.** The same ready GW-Hospital programme ships in all three formats —
 > `tests/fixtures/Hospital_GW_Programme.xer` (P6 XER), `…/Hospital_GW_Programme.xml` (P6 PMXML) and
 > `…/Hospital_GW_MSProject.xml` (MS Project MSPDI) — so you can try the import end-to-end on the sample
-> model. *(Proven by `W-FGN` 28/28 on the real Hospital model — every format maps to the same rows, CPM
-> reproduces the plan's 300-day critical path exactly, and 525 real elements bind and fold to 5D cost;
-> plus the `§SE-IMPORT-SMOKE` 7/7 headless UI check.)*
+> model. Every format maps to the same rows, CPM reproduces the plan's 300-day critical path exactly, and
+> 525 real elements bind and fold to 5D cost.
 
 **Does it survive a *real* P6 file?** The Hospital demo above is *ours* — useful to learn the flow, but it
 can't prove fidelity against quirks only a real export carries (a tool can't grade its own homework). So
-the import is also witnessed against a **genuinely Primavera-emitted** `.xer` (a public, cited sample, 52
-tasks / 61 links — fetched at test time, never shipped). The result (`W-REAL-PARSE`/`W-REAL-CPM`, 12/12):
-every record parses with **zero unmapped links and zero dangling references**, and our critical path
+the import is also verified against a **genuinely Primavera-emitted** `.xer` (a public, cited sample, 52
+tasks / 61 links). The result: every record parses with **zero unmapped links and zero dangling
+references**, and our critical path
 **exactly matches P6's own** (`driving_path_flag`, 52/52). The one honest gap: the imported *dates* land a
 few days early on long chains because we count **calendar days** while P6 follows a **working calendar**
 (skipping weekends/holidays). We report that offset rather than hide it — it's a **smaller, named gap**
@@ -491,9 +486,8 @@ aging** doughnut (+ KPIs: rooms · avg utilization · open tickets). Every serie
 invented numbers), rendered by the charting library already bundled in the viewer. Demo pane:
 `hr_bim_asset/demo/occupancy_dashboard.html`.
 
-**Witnessed (alpha, node):** occupancy availability + pivot (`W-HBA-OCC 21/21`), the request FSM + the
-Request↔occupancy effect (`W-HBA-REQ 15/15`), the dashboard config builders (`W-HBA-DASH 7/7`). See also the
-[Viewer guide → Find lenses](BIMUserGuide.md#find-lenses-tenancy) for the on-model Occupancy lens.
+*(Alpha.)* See also the [Viewer guide → Find lenses](BIMUserGuide.md#find-lenses-tenancy) for the
+on-model Occupancy lens.
 
 ---
 
@@ -571,32 +565,32 @@ No traditional row-update happens; the current state is the fold of all ops on t
 **Prerequisite:** log in as **GardenUser** (the POS station `c_pos_id=1` is scoped to that role).
 Tap the **POS** pill in the bottom bar (it appears only when the loaded db has a `c_pos` station).
 
-### POS screen layout (the killer-demo surface, sw v656 → panel lifecycle v658–v660)
+### POS screen layout (the killer-demo surface)
 
-- **Album cards** — the product grid is a photo album (`.pos-card`, `§POS-ALBUM cards=16`): each card
+- **Album cards** — the product grid is a photo album: each card
   from `c_poskey → m_product` (the sealed keylayout) shows its photo (full-res from the device images
   folder → ledger thumbnail → placeholder glyph, honestly tiered) and its master price from the
   station's pricelist — you ring the master, not a manual price.
-- **Floating payment panel** — the cart pill summons a floating panel on its own layer
-  (`#pos-float-panel`); tap the cart pill again to dismiss it (`§POS-FLOAT toggle=`). The album keeps
+- **Floating payment panel** — the cart pill summons a floating panel on its own layer;
+  tap the cart pill again to dismiss it. The album keeps
   scrolling underneath; payment never squeezes the grid.
 - **Panel lifecycle** — **swipe-down** to dismiss, and it **follows the cart**: when the cart empties
-  — sale completed, or the last line removed — the panel dismisses itself (`§POS-FLOAT
-  dispose=cart-empty`). The cart pill re-summons it anytime. Dismissing is pure UI: it never touches
+  — sale completed, or the last line removed — the panel dismisses itself. The cart pill re-summons it
+  anytime. Dismissing is pure UI: it never touches
   the cart contents or a committed sale (the sale is sealed atomically at Complete, before the panel
   ever moves).
 
 ![POS — Garden User · Store: product grid left, live cart right, replenishment suggestions below](figs/pos_live.png)
 
-### Payment panel layout (sw v680 — top-bar total + single Pay)
+### Payment panel layout (top-bar total + single Pay)
 
-The panel is a **draggable** float (`#pos-float-panel`), stripped to the essentials:
+The panel is a **draggable** float, stripped to the essentials:
 
-- **Top bar — the running total.** The top row shows the **live cart total** (`#pos-top-total`),
-  updating as you ring items. The **cart icon** stays on the left (tap it to summon/dismiss the panel,
-  `§POS-FLOAT toggle=`); the **scan-QR** button sits on the **right** (`#pos-pill-scan` — opens the
+- **Top bar — the running total.** The top row shows the **live cart total**,
+  updating as you ring items. The **cart icon** stays on the left (tap it to summon/dismiss the panel);
+  the **scan-QR** button sits on the **right** (opens the
   barcode overlay to add an item).
-- **One Pay icon.** A single **Pay** icon (`#pos-float-tender`, right) **completes the sale directly**
+- **One Pay icon.** A single **Pay** icon (right) **completes the sale directly**
   — there is no pre-completion preview modal (the earlier orange/green rim drawers + receipt-preview
   modal are retired). The walk-in partner is **defaulted** (the **Standard** business partner, else
   first active — `§POS-PARTNER-DEFAULT`), so Pay works out of the box.
@@ -634,11 +628,11 @@ The **Import** pill opens the snap+scan+price flow: photograph the item (camera,
 ≤32KB ledger thumbnail; the full-res photo goes to the device images folder under a
 `sha256:` content address — `§POS-IMGKEY`), scan or type its barcode, key the price. **Register**
 commits ONE signed group of 4 CRUD_CREATE ops — M_Product, M_ProductPrice (station pricelist),
-AD_Image, C_POSKey — every default EXTRACTED from the dictionary and the station's own rows
-(`§POS-IMPORT registered productId=… gid=…`). The new card appears in the album and rings
+AD_Image, C_POSKey — every default EXTRACTED from the dictionary and the station's own rows.
+The new card appears in the album and rings
 immediately through the unchanged sale path. A duplicate barcode is refused and the existing
 product handed back (propose-merge). Editing name/price/photo later rides the same signed path,
-changed columns only (`W-POS-EDIT`).
+changed columns only.
 
 ### Hold / recall (§P-13)
 
@@ -661,6 +655,20 @@ SET_STATUS       C_Invoice → CO
 CONSUME          M_Transaction P−  (one per BOM leaf, the backflush)
 ```
 
+### Kitchen Display
+
+The **Kitchen** pill (visible at a POS station) shows every order currently waiting to be served —
+the same *deliver-later* shipments described in [§S-2b](#deliver-later--pick-at-the-warehouse-s-2b),
+but for a kitchen counter rather than a warehouse pick. The queue is a live view of the ledger, not a
+separate list: as soon as a sale is rung with **Deliver later**, the ticket appears here, oldest first.
+
+- **Queue order is first-in-first-out** — the ticket that's been waiting longest is always at the top.
+- Tap **Serve** on a ticket once the order is ready. This completes the same shipment the Warehouse
+  Walk would otherwise pick — serving from the kitchen and picking from the warehouse are two doors
+  onto the same document, so a ticket can only be served once (a second tap is refused).
+- Nothing here is a separate order type — no new sale action exists for "send to kitchen"; any
+  deliver-later sale automatically becomes a kitchen ticket.
+
 ### Backflush (§P-3)
 
 If any product has a BOM (e.g. Patio Furniture Set), `erp_engine.explodeBOM` recursively
@@ -669,9 +677,21 @@ expands the recipe and adds a `CONSUME P−` op for every leaf component. The on
 
 ### Replenishment (§P-4)
 
-After each sale, the panel runs `poc_replenish` — it folds `m_transaction` to find on-hand
-per product and emits a reorder PO for anything that has fallen below `m_replenish.level_min`.
-The suggestion list shows at the bottom of the cart panel.
+Replenishment is a **staged, reviewable action** — nothing reorders automatically after a sale.
+
+1. Tap **Generate Replenishment** in the POS panel. The system folds every sale and movement to
+   find current on-hand per product, compares it against each product's stock policy
+   (`Level_Min`/`Level_Max`), and proposes an editable staging list — nothing is committed yet.
+2. **Review the list.** Adjust the quantity on any row, or deselect a row you don't want ordered
+   this round. Batch sizes round up to the product's packing quantity automatically.
+3. Tap **Confirm** to commit. Every accepted row goes out as one signed group: a **Purchase
+   Order** for products sourced externally, or a **stock Move** for products sourced from
+   another warehouse — routed automatically per product.
+4. Tapping **Generate Replenishment** again is safe to repeat: it only proposes what's still
+   outstanding. Anything already ordered this round is never re-ordered, even if you generate
+   again before it arrives.
+
+*(Screenshot pending — see `docs/figs/pos_live.png` for the general POS panel in the meantime.)*
 
 ---
 
@@ -685,7 +705,7 @@ Tap **⌂ → Performance Analysis → Financial Report** (or use the Statements
 | **Income Statement** | ✅ oracle-equivalent | 148 cells |
 | **Cash Flow** | ✅ oracle-equivalent | 140 cells |
 | **Trial Balance** | ✅ oracle-equivalent | `ΣDr==ΣCr=46574.97` (GardenWorld real ledger) |
-| **Invoice Print** | ✅ oracle-equivalent | 8/8 invoices, 48 cells, `foldPrint` W-PRINTFORMAT |
+| **Invoice Print** | ✅ oracle-equivalent | 8/8 invoices, 48 cells |
 
 The **⎙ Print** button on an invoice form opens a single-page print view generated from the real
 `AD_PrintFormat` metadata — not a template, a fold of the dictionary's print format rows.
@@ -725,8 +745,8 @@ silently skipped.
 
 | Status | Notes |
 |---|---|
-| ✅ LIVE (sw v659) | sample runs 9 cells `maxDiff=0c` against the seed; works on any installed/migrated tenant (one SQL dialect — SQLite) |
-| ✅ LIVE (sw v662) | RULE tier — the lens's **"Or describe a data point"** box: type a business phrase (`SUM GrandTotal of Invoices, completed, from 2002-01-01 to 2003-12-31`), it compiles to SQL from the tenant's own dictionary; the sample falsifies wrong candidates to the cent; a tie is yours to pick (radio), then **Apply & run** writes the row and re-verifies the whole workbook |
+| ✅ LIVE | sample runs 9 cells `maxDiff=0c` against the seed; works on any installed/migrated tenant (one SQL dialect — SQLite) |
+| ✅ LIVE | RULE tier — the lens's **"Or describe a data point"** box: type a business phrase (`SUM GrandTotal of Invoices, completed, from 2002-01-01 to 2003-12-31`), it compiles to SQL from the tenant's own dictionary; the sample falsifies wrong candidates to the cent; a tie is yours to pick (radio), then **Apply & run** writes the row and re-verifies the whole workbook |
 | Phase 2 | bidirectional cells (`<` direction: an edited cell appends a signed op) — designed, not built |
 
 ---
@@ -785,10 +805,9 @@ export async function activate(ctx) {
 ```
 
 A callout *derives* sibling-field values; it never validates (that is a separate rule layer). The
-sample is witnessed end-to-end (**W-ASSET-STATUS**, `scripts/poc_asset_status.js`): the rule fires
-through the real callout spine *because* `AD_Column.Callout` names it, and two falsifiers prove the
-seam is load-bearing in both directions — structure without the JS derives nothing, and the JS
-without that one wiring line never fires.
+sample rule fires
+through the real callout spine *because* `AD_Column.Callout` names it — structure without the JS derives
+nothing, and the JS without that one wiring line never fires.
 
 ### Why this replaces 2Pack
 
@@ -816,9 +835,9 @@ backup**, and a **teaching sample** — versionable in git, not a DB dump or an 
 
 | Status | Notes |
 |---|---|
-| ✅ LIVE (sw v670) | **Install (PackIn)** — paste a raw ES-module bundle URL → ACTIVE. PR #297, witness W-PLUGIN |
-| ✅ LIVE (sw v673) | **Create (PackOut, forward)** — drop sheet → preview → Emit & Install through the live writable handle. PR #301, witness §NINJA-DOM-WITNESS (headless-chrome on the real deploy scripts) |
-| ✅ Witnessed | the **behavior sample** fires through `AdCallout` via the `AD_Column.Callout` seam; both falsifiers hold (W-ASSET-STATUS) |
+| ✅ LIVE | **Install (PackIn)** — paste a raw ES-module bundle URL → ACTIVE. |
+| ✅ LIVE | **Create (PackOut, forward)** — drop sheet → preview → Emit & Install through the live writable handle. |
+| ✅ Verified | the **behavior sample** fires through `AdCallout` via the `AD_Column.Callout` seam |
 | 🔧 Proposed | **reverse-export** (`extractModel`) existing window → sheet; and a grammar token so the sheet itself can set `AD_Column.Callout` (today the bundle wires that one line by hand — the mechanism is proven, the live forward-path auto-wiring is the open gap) |
 | ⚠ Caveat | the round-trip is *structural* — the grammar has tokens for table/column/ref-type/master-detail, not for the full behavioral richness of a real iDempiere window. Export reproduces the skeleton faithfully; behavior travels as the JS you craft, not as auto-extracted logic |
 
@@ -886,7 +905,7 @@ Any other building → the pill stays off the bar.
 | **§S-3** ✅ | Walk UI | Phone-first fly-to strip; depth model (ghost/rack/bin); step strip + camera easing |
 | **§S-4** ✅ | QR scan | `BarcodeDetector` + typed fallback; wrong-bin refusal gate |
 | **§S-5** ✅ | Signed op | `M_Movement CO` via `KernelOps.commitGroup`; on-hand folded from op-log |
-| **§S-2b** ✅ LIVE | POS→pick loop | Sell **deliver-later** at the POS → the walk offers that open shipment → pick it to completion (on-hand moves at the pick). bim-ootb PR #283, W-WH-POS-PICK-LIVE. See §7 → *Deliver later*. |
+| **§S-2b** ✅ LIVE | POS→pick loop | Sell **deliver-later** at the POS → the walk offers that open shipment → pick it to completion (on-hand moves at the pick). See §7 → *Deliver later*. |
 
 ### Deliver later → pick at the warehouse (§S-2b)
 
@@ -894,13 +913,12 @@ The POS and the Warehouse Walk are **one ledger, two lenses**. When you ring a s
 **Deliver later · pick at warehouse** (in the ⋯ dock — shown only when the tenant has a deliver-later
 sale doctype, seed `132`), the order completes (`C_Order → CO`) but the shipment is born **`DR`** (not
 yet picked). As a demo convenience the Warehouse Walk **opens in a new browser tab** straight away
-(`§POS-DELIVERLATER walk-tab=opened`) so you can pick immediately. That open shipment also appears as a
+so you can pick immediately. That open shipment also appears as a
 **route source in the Warehouse Walk** on any open: walk to the bin, scan/confirm, and the shipment
 completes by the **picked** quantity — on-hand moves *at the pick*, not at the sale. Short-picks leave
 the remainder open on the document. Once picked, the walk writes the completion back to the shared
-ledger so the selector never re-offers a picked shipment. The whole loop is witnessed live end-to-end
-(**W-WH-POS-PICK-LIVE**, PR #283). A "with-pick QA confirm" doctype (148) routes completion through the
-warehouse-confirm gate first.
+ledger so the selector never re-offers a picked shipment. A "with-pick QA confirm" doctype (148) routes
+completion through the warehouse-confirm gate first.
 
 ### Share
 
@@ -1011,14 +1029,14 @@ needed if you see an old `CACHE_VERSION` number in the console.
 | **Posting Preview** empty | Same — acct linkage absent in default seed | Same fix |
 | **POS live ring to the cent** | posting-config needed for the live ring | `MIGRATE_POSTING_CONFIG.md` |
 | **T_Aging / T_ReportStatement** folds | 13 `T_*` temp-table folds not yet built | Phase B §H-7..§H-11 (future) |
-| **Warehouse viewer: "Failed to fetch …oraclecloud…"** on a bare open | OCI-era `pwa_last_db` resumed the retired bucket URL | Fixed viewer sw v647 — self-heals to the landing (`§PWA_RESUME_CLEAR`); or clear site data once |
+| **Warehouse viewer: "Failed to fetch …oraclecloud…"** on a bare open | OCI-era `pwa_last_db` resumed the retired bucket URL | Fixed — self-heals to the landing; or clear site data once |
 
 ### Engine-gated (code exists, not yet wired to live UI)
 
 | Gap | Engine status | UI status |
 |---|---|---|
-| `AD_Callout` derived fields on field-change | ✅ headless (W-CALLOUT-HARDEN) | Render-wiring parked |
-| `AD_Val_Rule` picklist filter | ✅ headless (W-VALRULE-HARDEN) | Render-wiring parked |
+| `AD_Callout` derived fields on field-change | ✅ engine ready | Render-wiring parked |
+| `AD_Val_Rule` picklist filter | ✅ engine ready | Render-wiring parked |
 | `AD_Workflow` node-walk | 🟡 `ad_workflow.js` built, no seed activity oracle | Parked |
 | Column-level / Record-level access | `AD_Column_Access` / `AD_Record_Access` empty in seed | n/a |
 | 454 SvrProcess handlers | 5 registered, 454 named-deferred | Honest absent-handler card shown |
@@ -1142,8 +1160,7 @@ Everything you'd do for real, and it *is* real — just on the speculative branc
 document with its full fan-out (shipment · invoice · the GL postings), create records, run
 processes. Each op is a signed op-log entry carrying a `branch_id`, so it lands on the blue branch
 and **never touches the official tip**. The official chrome filters to `branch_id IS NULL`, so your
-real books read exactly as before while blue is open (the read-site branch filter, sw v687, closed
-the leak where blue rows could surface in official lists).
+real books read exactly as before while blue is open.
 
 ### Closing the branch — accept or discard
 
@@ -1160,9 +1177,7 @@ faithful rehearsal, not a simulation. Take a freshly-migrated client through its
 (orders → ship → invoice → post → reports) in blue, read the consolidated result, then **accept** to
 go live or **discard** to try again. Nothing provisional ever reaches the official ledger.
 
-> Engine: `blue_future.js` (`window.BlueFuture`) over the kernel op-log `branch_id` lane. Witnessed
-> live end-to-end — **W-BLUE-FUTURE-LIVE** (bim-ootb PR #317, erp sw v687); engine **W-BLUE-FUTURE**
-> 9 / 9 headless.
+> Engine: `blue_future.js` (`window.BlueFuture`) over the kernel op-log `branch_id` lane.
 
 ---
 

@@ -22,6 +22,8 @@ Matrix landing (red / blue → round selector). Pick a door, or jump straight to
 **Bookmark any of them**; press **Home** on any surface to come back to the front door. On a return visit
 the landing shows the compact `⋯` launcher; **refresh** for the full round selector again.
 
+New here recently? Check **[What's New](WhatsNew.md)** for a running log of shipped changes.
+
 ## Pick a surface
 
 <div class="grid cards" markdown>

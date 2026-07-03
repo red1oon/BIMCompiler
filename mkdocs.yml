@@ -76,6 +76,7 @@ nav:
   - Start Here:
       - Home: index.md
       - "📖 User Guide": USER_GUIDE.md
+      - "🆕 What's New": WhatsNew.md
       - About BIM OOTB: AboutMore.md
       - Feature Comparison: FeatureComparison.md
       - "Migrate & Compare (ERP)": MigrateComparisonPaper.md
