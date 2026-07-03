@@ -4,6 +4,17 @@
 
 ## Current State
 
+**▶ 2026-07-03 — HBA ERP-governed display: §STAGED-PLAN Stage 1 ✅ SHIPPED (bim-ootb PR #621 MERGED,
+`lane/hba-erp-governed`, W-HBA-ERP-SEED 7/7).** Real seed rows in `erp/ad_seed.db`: M_Warehouse 990000
+`Value='HHS_Office_Federated'` (Q1) + 14 M_Locator (real room centers) + C_BPartner 1001/1002 + AD_User 1/2
+(Q2: EMP001/EMP002 only, fixture ids verbatim) + HR_* physical tables (real ad_full.db cols; HR_Employee was
+ZERO rows anywhere) with engine-extracted payroll rows (gross 5200/net 4234 from runPeriod, not typed) +
+Ninja-staged `C_Attendance` (ids at 7,000,000) + `ad_infowindow` 7600000 lens (exact §DESIGN-ATTENDANCE JOIN,
+proven lossless 7/7) + `attendance.js demoSeed` re-scoped to the 2 real people (3 witnesses re-pinned; suite
+33/33). NEXT = **Stage 2 compile-layer rewrite (Opus)**; flag for Stage 3: §P11 deep-link windows
+53042/316/53036 have NO AD_Window rows in ad_seed.db. Spec+closeout:
+`prompts/RESUME_HBA_ERP_GOVERNED_DISPLAY.md` §STAGE1-DONE (now tracked in git).
+
 **▶ 2026-07-03 — POS/Kitchen lane: Thread-1 staged replenishment ✅ SHIPPED (bim-ootb #619 + bc #22 MERGED)**
 (post-crash resume session; Kitchen Display + POS restyle were already shipped #617/#19 — see prompt file).
 "Generate Replenishment" is now the traditional propose→stage→review/edit→route→commit: pos_core QtyBatchSize
