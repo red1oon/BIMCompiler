@@ -1,4 +1,19 @@
 # ⚠ DO NOT REMOVE — Scope guard
+# §STATUS 2026-07-03 (PM): T2 ✅ SHIPPED + T1 ✅ SHIPPED — bim-ootb PR #630 (erp sw v760, kernel v10→v11).
+#   T2 W-CONTENT-SIGN 14/14 (additive-version per §NEXT SESSION: v2 `_sigv:2`-gated content sigs via
+#   stableStringify — sig survives id renumbering, delimiter injection closed, v1 history + chain bytes
+#   UNTOUCHED, witnessed against the v1 formula). Two documented deviations from the § shorthand: gate is
+#   a dedicated `_sigv` (NOT D2 `_sv` — that's per-op-type schema version; reusing it flips sig semantics
+#   on a schema bump) and input_guids/output_guid STAY in the signed payload (never shrink signed coverage).
+#   `actor` = user_tag placeholder in the payload, identity NOT bound (per §T2 ⚠).
+#   T1 W-ROSTER-VERIFY 17/17 (PORTED poc_rotate/erp_key_epochs per §T1, not redesigned): NEW bim-ootb
+#   erp/erp_key_epochs.js = HQ-signed device roster (pinned-key pattern) + ROTATE/REVOKE key epochs,
+#   verifying each op under the key valid at its seq over the T2 content hash for v2 rows; wired onto
+#   teams/erp/erp_sync.js importBranch(opts.roster) — the forged-foreign-key import (security#1) now
+#   REJECTS (witnessed live: keyless path accepts, roster path throws). Both RED-before/GREEN-after in
+#   node over the REAL kernel; regression W-CROSS-TAB-PERSIST + W-PCLOSE-ARCHIVE + teams 25/25 green.
+#   REMAINING in this lane: T4+T5 (⛔ browser-gated, below) · deferred commitGroup id-race retry ·
+#   T7 scale cliff (~5k ops) · the SEPARATE employee-attribution question (PIN-as-metadata, unscoped).
 # §STATUS 2026-07-03: T3 ✅ SHIPPED + T6 ✅ SHIPPED — bim-ootb PR #623 (erp sw v759, kernel v9→v10).
 #   T3 W-PCLOSE-ARCHIVE 10/10, T6 W-CROSS-TAB-PERSIST 9/9, both red-before/green-after in node over the
 #   REAL kernel; poc_teams_phase_d 11/11 unchanged (no regression). DEFERRED from T6: the commitGroup

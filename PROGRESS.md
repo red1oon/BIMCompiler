@@ -23,8 +23,9 @@
   selection edge outline, real shadows+perf guard) — bim-ootb **PR #625** MERGED; item 8 (floating drag
   dims) — **PR #627** MERGED. Spec+decisions+DONE log: bim-ootb `prompts/RESUME_MODELLER_POLISH3.md`.
   New witnesses 30/30 (OLVIRT/OLEYE/OLFILTER/SELOUTLINE/SHADOWS/FLOATDIM); regression 7 suites green.
-- Item 10 DECIDED (user delegated): keep R=Insert; `T`=arm rotate ring, `S`=arm scale cubes (Move sub-modes).
-  Ready to build — spec in `prompts/RESUME_MODELLER_COMPETITIVE_POLISH.md` §DECISIONS note, witness W-E2E-RSARM.
+- Item 10 ✅ BUILT 2026-07-03 (Fable5): T=arm rotate ring / S=arm scale cubes (R kept Insert) — bim-ootb
+  **PR #631** (`lane/modeller-polish-5`), W-E2E-RSARM 8/8 + regression MOVE/ROTATE/SCALE/NUMROT/FLOATDIM 36/36.
+  First-RED fix: gizmo arrow shaft+tip share one material → arm-dim base opacity recorded on material.
 - OPEN (unassigned): item 9 PBR textures; SSAO (needs EffectComposer vendored); per-instance hide (§DECISIONS-2).
 
 ## HBA lane/hr-overlay sync+PR handoff (2026-07-03, Fable5) — ✅ DONE
@@ -45,9 +46,14 @@
 - ✅ T1 trust-root DECIDED by doctrine excavation (not fresh design): device-level central roster +
   ROTATE/REVOKE + burn-not-reattribute already in DistributedERP.md §228/§290/§445 + witnessed
   `scripts/poc_rotate.js`. Employee-attribution (PIN-as-metadata) split out as a separate question.
+- ✅ T2 content-addressed signing (W-CONTENT-SIGN 14/14: v2 `_sigv` content sigs survive id renumbering,
+  delimiter injection closed, v1 history + chain bytes untouched) + ✅ T1 roster/key-epoch verify
+  (W-ROSTER-VERIFY 17/17: NEW erp/erp_key_epochs.js HQ-signed device roster + ROTATE/REVOKE ported from
+  poc_rotate; importBranch(opts.roster) rejects the forged-foreign-key import, security#1 closed) —
+  bim-ootb PR #630, erp sw v760, kernel v10→v11. Red-before/green-after; teams suite 25/25 green.
 - ⛔ T4+T5 (unify 3 kernel copies) BROWSER-GATED — analysis done (neither copy is a superset), needs the
-  W-ONE-KERNEL building-load smoke. NEXT LANE = **T2→T1** (node-verifiable, additive-canonical recommended) —
-  execution plan in the batch-1 spec §NEXT SESSION. Deferred id-race retry + T7 scale cliff (~5k ops).
+  W-ONE-KERNEL building-load smoke. Deferred: commitGroup id-race retry + T7 scale cliff (~5k ops) +
+  employee attribution (PIN-as-metadata, separate question). Lane status: batch-1 spec §STATUS.
 
 ## Codebase quality audit (2026-07-02) — TRIAGED 2026-07-03
 - ✅ §5 self-XSS fixed BOTH repos (bim-ootb PR #618 sw v758 + bc PR #20; W-XSS-FILENAME 10/10 + 5/5, incl. the
