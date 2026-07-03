@@ -17,10 +17,43 @@
 - Doctrine: `prompts/WATCHDOG_BIM_ERP_SOURCE_OF_TRUTH.md` — ERP AD table = authority, BIM/Java output =
   migration source. hr_bim_asset suite **38/38 green**. ad_seed.db is the authority; panes are lenses.
 
+## ⛔ PREREQUISITE — do this BEFORE item 1 (watchdog finding, 2026-07-03, verified live against docker `idempiere` DB)
+**`C_Attendance` is not a real iDempiere table.** `SELECT tablename FROM ad_table WHERE name ILIKE
+'%ATTENDANCE%'` → **0 rows** against the live `postgres`-container `idempiere` schema. Stage 1's "Ninja-staged
+C_Attendance" was invented, not extracted — a PRIME RULE violation already shipped in #621/#622. Building
+Stage 3's Presence lens on top of it would cement a fictitious table into the read path.
+
+**Real native equivalent: `S_Resource` + `S_ResourceAssignment`** (the "Mary Consultant" GardenWorld pattern —
+a literal seeded row, `s_resource_id=100, value=Mary, name="Mary Consultant", m_warehouse_id=103`, sitting
+unused in the same DB). Field mapping, all verified via `\d` against the live schema:
+| Attendance need | Native column |
+|---|---|
+| check-in/check-out | `S_ResourceAssignment.assigndatefrom` / `assigndateto` (NULL `assigndateto` = open session) |
+| hours worked | `.qty` |
+| approval / maker-checker | `.isconfirmed` |
+| person identity | `S_Resource.ad_user_id` → real `AD_User` (consistent with how `ad_payroll.js`/`models.js` already resolve employees — C_Attendance's direct C_BPartner FK was a separate, inconsistent join path) |
+| building/location | `S_Resource.m_warehouse_id` → same `M_Warehouse` FK `ad_tenancy.js` already resolves HHS onto (990000) |
+| shift schedule | `S_ResourceType` day-of-week + time-slot flags — attendance had no schedule model before |
+| billable fallout | `S_TimeExpenseLine.s_resourceassignment_id` → `C_OrderLine`/`C_InvoiceLine` (free, matches the Mary-Consultant demo pattern) |
+
+**0. Retarget the seed + compile layer onto the real tables** before wiring any pane:
+   - Re-seed Stage 1's attendance rows as `S_Resource` (per employee, `ad_user_id` + `m_warehouse_id`) +
+     `S_ResourceAssignment` (per session) instead of the invented `C_Attendance` — same script
+     (`scripts/seed_hba_erp.js`), same idempotent/self-witnessing discipline.
+   - `hr_bim_asset/ad_attendance.js`: `compileAttendance` reads/writes `S_ResourceAssignment` rows, resolves
+     employee via `S_Resource.ad_user_id`, keeps the honest-open (NULL `assigndateto`)/honest-skip behavior.
+   - New/updated witness proves the retarget, not just a rename: assert the real `S_Resource`/`S_ResourceAssignment`
+     FK chain resolves, `isconfirmed` reads correctly, and the old `C_Attendance` path is gone (no residual
+     reference). RED-before (current `C_Attendance` reads) / GREEN-after.
+   - This is additive/isolated to the attendance slice — does NOT touch payroll, tenancy, or the BOM lane
+     (those already resolve on `AD_User`/`M_Warehouse` correctly and are unaffected).
+
 ## Stage 3 — DO (each item: spec → implement → §-log witness → mark DONE)
-1. **Presence drawer reads the C_Attendance lens.** `viewer/hba_lens.js openPresenceDrawer` currently folds
-   `attendance.js`'s raw op-log. Retarget it to read `A._hbaAttendanceSpec` (the governed C_Attendance rows) /
-   the `ad_infowindow 7600000` JOIN via `A.erpQuery`. Keep the honest-open (NULL checkout) + fly-to-zone.
+1. **Presence drawer reads the (retargeted) S_ResourceAssignment lens.** `viewer/hba_lens.js
+   openPresenceDrawer` currently folds `attendance.js`'s raw op-log. Retarget it to read the governed
+   `S_Resource`/`S_ResourceAssignment` rows (via `A.erpQuery`, mirroring the `ad_infowindow` JOIN pattern —
+   add a new InfoWindow if 7600000 was defined against C_Attendance). Keep the honest-open (NULL checkout) +
+   fly-to-zone.
 2. **NEW BOM pane off `A._hbaBomSpec`.** Add a FAMILY drawer entry (like `tenancy`/`payslip`) → a pane that
    renders `ad_bom.readBom` assemblies→components (room = assembly, contained elements = lines, QtyBOM). Detect
    gates on `A._hbaBomSpec.assemblies.length`. Mirror `viewer/hba_tenancy.js` structure. Deep-link each row via
