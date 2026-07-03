@@ -18,6 +18,14 @@
 
 **Pipeline:** 11 stages. 77 verbs. 7403 products (ERP.db). 4-DB architecture.
 
+## Modeller §NEEDS-DESIGN batch (2026-07-03, watchdog→Fable5) — ✅ SHIPPED
+- Items 1,2,4,5,6,7 (eye-toggle, filter→scene dim, auto-expand-on-pick, Outliner windowing+O(k) pick,
+  selection edge outline, real shadows+perf guard) — bim-ootb **PR #625** MERGED; item 8 (floating drag
+  dims) — **PR #627** MERGED. Spec+decisions+DONE log: bim-ootb `prompts/RESUME_MODELLER_POLISH3.md`.
+  New witnesses 30/30 (OLVIRT/OLEYE/OLFILTER/SELOUTLINE/SHADOWS/FLOATDIM); regression 7 suites green.
+- ⛔ item 10 (R/S shortcuts): `R` collides with existing `R`=Insert — user pick: other keys (T/S) or rebind?
+- OPEN (unassigned): item 9 PBR textures; SSAO (needs EffectComposer vendored); per-instance hide (§DECISIONS-2).
+
 ## Kernel op-log timebomb audit (2026-07-03) — 3-agent scalability/macro/security sweep
 - Findings: `prompts/KERNEL_TIMEBOMB_AUDIT_2026-07-03.md` (13 defects, root cause: sound at op-CREATION,
   green-by-construction everywhere else → armed by success milestones). Batch-1 spec + full next-session plan:
@@ -43,26 +51,7 @@
 - Ninja Create two-way engine + live export — `prompts/NINJA_MODE_PILL.md # DONE`, W-NINJA-{EXTRACT,CALLOUT,EXPORT,EXPORT-LIVE} + W-ASSET-STATUS (bim-ootb PR #301/#309, sw v673/v681, 2026-06-14)
 - Reflexive AD self-edit — W-AD-{OPLOG-DISTRIB,SELFEDIT,SELFEDIT-LIVE} (bim-ootb PR #312 sw v683, 2026-06-14)
 - Odoo red-band fold-gap re-audit — W-ODOO-QWEB 41/41 to-the-cent; server actions honestly deferred; migrate_status_panel live (2026-06-14)
-- POS gap-close banked — `prompts/POS_GAP_CLOSE.md # DONE` (2026-06-12g2)
-- WH×POS pick lane BUILT, live-verified — `prompts/WH_POS_PICK_LANE.md # DONE` (2026-06-13)
-- Multi-lane WAVE 3 — `prompts/MULTI_LANE_WAVE3.md # DONE` (2026-06-12e)
-- Multi-lane WAVE 2 — `prompts/MULTI_LANE_LAUNCH.md # DONE` (2026-06-12)
-- MIGRATE_POSTING_CONFIG — bim-ootb PR #271 sw v653, IDB ad_seed_v15 (2026-06-12b)
-- POS lens addon §P-1..§P-4 — `prompts/POS_LENS_SESSION.md # DONE` LIVE (2026-06-12)
-- ERP backend-gap arc — `prompts/ERP_BACKEND_GAP.md` (feat/erp-substrate-phase012, 2026-06-09)
-- Backend lane DATA + ENGINE-SEAM half — D2/D3/R2 + C0 + readPostings (2026-06-03)
-- Lens-family doctrine — published docs (2026-06-03)
-- FRONTEND Item C Accts-Posted lens — bim-ootb PR #94 sw v565 LIVE (2026-06-03)
-- iDempiere Renderer #1 (I1) + master-detail drill — sw v560, PR #82/#83/#84 (2026-06-02)
-- LENS family lane-3 chrome fleet — PR #92 gh-pages LIVE (2026-06-03)
-- STEP-0 §SEAM-FROZEN host conformance — record-panel deliverable (2026-06-03)
-- Migrate ShowMe + ERP folder home — LIVE (2026-06-02)
-- Lens family phone∥desktop one engine — SPEC hardened + 2 witnesses (2026-06-03)
-- Engine POST plugin §13.1 — accounting genome PROVEN (2026-06-02) → [[project_glassbowl]]
-- ERPMaker/AnyAppMaker docs + Odoo fold source (2026-06-02) → [[project_erpmaker]]
-- Holy Grail doc + falsifier POC prompts + MIT license sweep (2026-06-01)
-- ERP Secured/Distributed doctrine + 6-witness POC suite + W-CHAIN live (2026-06-01) → [[project_erp_secured_phase]]
-- Glassbowl engine-as-data explorer + lifecycle chain + orbit viz — `docs/GLASSBOWL{,_DOSSIER}.md`, LIVE → [[project_glassbowl]]
+- Pre-2026-06-14 DONE items (21 lines) → `prompts/archive/PROGRESS_DONE_ARCHIVE_pre_2026-06-14.md`
 - Viewer S-series (S188–S286): browser viewer, DLOD, mobile perf, find/nav, multi-format import, cinematic — see MEMORY.md "Project — Shipped"
 
 ## OCI Deployment
