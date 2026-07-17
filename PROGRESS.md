@@ -20,8 +20,8 @@
 not push/open a PR unless the user explicitly lifts it for that session. `CLAUDE.md` §⏸ PUSH PAUSE.
 
 ## OPEN — to be assigned to sessions (user dispatches from this list, check before starting cold)
-- `prompts/RESUME_ERP_POST_TAIL_AND_USERGUIDE.md` — SONNET: finish Cash/Inventory posting oracles
-  (generator built, reuse) + ERPUserGuide navigation + core S&D-flow chapter. Fresh branch off master.
+- `prompts/RESUME_ERP_POST_TAIL_AND_USERGUIDE.md` — §A (Cash/Inventory) CLOSED 2026-07-18, see Archive;
+  §B (ERPUserGuide navigation + core S&D-flow chapter) still open on this branch.
 - `prompts/RESUME_HR_BIM_ASSET.md` §2026-07-06c — A/B/C bugs + E decision.
 - `prompts/RESUME_WORLD_HISTORY_DEDUP_RESTORE.md` §2026-07-06 — G6, Ph3, Pt1 parked.
 - `prompts/PILL_DRAWER_REORGANIZATION.md` — first-touch flicker.
@@ -50,6 +50,12 @@ not push/open a PR unless the user explicitly lifts it for that session. `CLAUDE
 - ✅ B-3 + W-POST-TAIL posting oracles (2026-07-17/18, Fable 5) — 6 G-seed classes + BankStatement/
   MatchPO/Requisition `maxDiff=0c`; ledger 43→52; 17/20 posters fold; Cash/Inventory next, Production ⛔.
   `prompts/FABLE5_B3_POSTING_ORACLE.md` + `prompts/HARDEN_MATRIX.md §W-POST-TAIL`.
+- ✅ §W-POST-TAIL-2 Cash/Inventory CLOSED (2026-07-18, Sonnet) — drove the REAL posters on a fresh
+  scratch clone over the 5 real remaining docs: BOTH C_Cash docs are `IsActive='N'` (CannotPostInactive-
+  Document); 2/3 M_Inventory drafts have zero lines (`@NoLines@`), the 1 completable draft has no cost
+  data anywhere (`"No Costs for TShirt - Red Large"`). Neither worked around (data mutation on existing
+  docs, out of scope). Ledger STAYS 52/17-of-20 — Cash+Inventory join Production as named ⛔, each
+  precisely cited, none a placeholder. `prompts/HARDEN_MATRIX.md §W-POST-TAIL` (§W-POST-TAIL-2 band).
 - ✅ 2026-07-10 marathon branches (2026-07-17 verify) — `fix/grid-tilt-guard`, `fix/dw-rot-units`,
   `fable/dwprobe-dedup`, `fix/terminal-oracle-source` all confirmed fully superseded (exact fix
   content already verbatim on main via other commits) and pruned, local+origin, bim-ootb.

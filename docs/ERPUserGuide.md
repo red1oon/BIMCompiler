@@ -55,6 +55,47 @@ Both are marked *CONCEPT* and run fully offline.
 
 ---
 
+## The lay of the land
+
+Before the window-by-window detail, here is the map: what's where, and why. Every box below is a real
+surface with its own section later in this guide — this is navigation only, not a feature tour.
+
+```mermaid
+flowchart TD
+    A["bubbles front door<br/>(erp.html)"] -->|long-press / double-tap| B["Login<br/>(§1) — pick a role"]
+    B --> C["Bottom Pill Bar<br/>(§3) — the one entry point for every tool"]
+    C --> D["Windows / Tabs / Fields<br/>(§4, §5) — role-pruned menu → records → forms"]
+    D --> E["the Process Button<br/>(§6) — the ▶ on any doc-bearing form"]
+    E --> F["where documents live<br/>Sales Order · Purchase Order · Shipment · Invoice · Payment"]
+    F --> G["where the books live<br/>Posting Preview · Trial Balance · Financial Reports (§8)"]
+```
+
+**How to read it, left to right:**
+
+- **The front door** (§Quick start above) is the bubble launcher — playful, but every bubble is a real
+  AD entity. A long-press or double-tap is the bridge into the classic renderer described below; if you
+  don't want the bubbles at all, open `idempiere.html` directly and skip straight there.
+- **Login (§1)** picks the *role* — GardenUser, Admin, WebService — and the menu you see next is pruned
+  live by that role's real `AD_Window_Access`/`AD_Process_Access` grants, not a mock.
+- **The Bottom Pill Bar (§3)** is the one control surface you return to for everything else: opening the
+  menu (⌂), finding a record (🔍), the process/plugin/history tools, and Help. Everything past this
+  point is reached FROM the pill bar, not around it.
+- **Windows → Tabs → Fields (§4, §5)** is the drill-down: a role-pruned window list, a record list per
+  window, a detail form per record, tabs/fields on that form driven by real `AD_Tab`/`AD_Field` rows
+  (DisplayLogic, mandatory flags — nothing hand-styled).
+- **The Process Button (§6)** is how a document *moves* — Complete, Void, Close, whatever the current
+  `AD_Docfsm` state legally allows. This is the same button whether you're on a Sales Order, a Purchase
+  Order, a Payment, or a GL Journal — one dispatch spine, not one-off per window.
+- **Where documents live** is simply "which window": Sales Order, Purchase Order, Shipment (`M_InOut`),
+  Invoice (`C_Invoice`), Payment (`C_Payment`) — each a normal AD window reached via ⌂, nothing special
+  about its URL or location.
+- **Where the books live** is the destination every document eventually posts to: open **Posting
+  Preview** on any completed document to see its journal before/after it posts, or jump straight to
+  **Trial Balance**/the **Financial Reports** (§8) to see the ledger as a whole. **"The standard
+  flow"** section below walks this entire left-to-right path as one continuous story, with the demo data.
+
+---
+
 ## Initial Tenant Setup — born a new client *(LIVE)*
 
 This is iDempiere's **Initial Client Setup**, on our engine. Open **genesis.html**, give the new
@@ -557,6 +598,135 @@ No traditional row-update happens; the current state is the fold of all ops on t
 
 **Unregistered classnames** show an honest "absent handler" card (the 333-falsifier) — 454 of the
 476 `SvrProcess` handlers are named-deferred; the 5 registered ones cover the demo flows.
+
+---
+
+## The standard flow — order to cash, procure to pay, books to reports
+
+Everything above (§3-§6) is *mechanism* — the pill bar, the menu, the form, the process button. This
+section is the *trade cycle itself*, told once as a continuous story over the GardenWorld demo data:
+one sale pulls stock down, stock falling triggers a purchase, the purchase brings stock back, and every
+step along the way lands in the books. Each step below is already **live and oracle-proven** — the
+aside after each one names the witness that proves it, so this walkthrough inherits that credibility
+instead of re-arguing it. (Addon lenses — POS, Kitchen, Warehouse Walk, Tenancy, BIM-4D scheduling,
+Ninja mode — ride this SAME cycle from a friendlier surface; they are documented in their own sections
+and are not repeated here.)
+
+```mermaid
+flowchart LR
+    SO["1 Sales Order"] --> SH["2 Shipment"]
+    SH --> INV["3 Customer Invoice → AR"]
+    INV --> AL["4 Receipt & Allocation"]
+    SH -.on-hand falls.-> RP["5 Replenishment"]
+    RP --> PO["6a Purchase Order"]
+    PO --> RC["6b Receipt"]
+    RC --> VI["6c Vendor Invoice"]
+    VI --> MI["6d Match"]
+    AL --> FA["7 Final accounts"]
+    MI --> FA
+    FA --> FR["8 Financial reporting"]
+```
+
+### 1 · Sales Order
+
+Open **Sales Order** from the menu (⌂ → Sales), create a line or two, and press the **Process** button
+(§6) → **Complete**. Completion is not just a status flip: `completeIt` fans out into the shipment and
+invoice that follow it, in the SAME signed op-group.
+
+> *Proven by* **W-FOLD-COMPLETE** (`poc_fold_complete.js`) — the whole Order→Ship→Invoice fan-out folds
+> against the real `m_inoutline`/`c_invoiceline`/`fact_acct` rows, `maxDiff=0c`.
+
+### 2 · Shipment
+
+The **Shipment** (`M_InOut`) that Complete generated is a real window of its own (⌂ → Inventory →
+Shipment) — open it to see the same document from the warehouse side. On-hand for every shipped product
+drops immediately; the shipment also carries its own GL leg (Cost of Goods Sold against Inventory), not
+just a paper movement.
+
+> *Proven by* **W-FOLD-QTYONHAND** (on-hand = the signed movement ledger, 28/28 real movements
+> reconstructed, `maxDiff=0`) and **W-FOLD-INOUTGL** (the shipment's COGS/Inventory posting, folded as
+> part of W-FOLD-COMPLETE's `fact_acct(319)` diff).
+
+### 3 · Customer Invoice → AR
+
+The **Invoice** the same Complete generated posts DR **Receivable** / CR **Revenue** (per line) / CR
+**Tax Due**. Open **Posting Preview** on the invoice (any completed document has this) to see that exact
+journal before you take our word for it — it is the SAME derivation the guide's Posting-Preview panel
+runs live, not a separate report-only calculation.
+
+> *Proven by* **W-POST-HARDEN** (4/4 sales invoices resolve iDempiere's exact accounts, 3/4 to the cent —
+> the 4th is a named post-posting source edit, not a derivation gap) and **W-DOC-POSTER** (the shipped
+> `derivePostings` verb Posting Preview actually calls, oracle-anchored to `fact_acct(318)`).
+
+### 4 · Receipt & Allocation
+
+Record the customer's **Payment** (⌂ → Sales → Payment) against the invoice, then run **Allocation**
+to match payment to invoice. A real allocation is rarely an exact match — it can carry a discount, a
+write-off, and (because tax rides the discounted portion too) a VAT correction, all in the same posting.
+
+> *Proven by* **W-FOLD-PAYMENT** (`Doc_Payment` receipt, `fact_acct(335)` `maxDiff=0c`) and
+> **W-FOLD-ALLOC** / **W-FOLD-ALLOC-FX** (the allocation incl. discount/write-off + the proportional
+> tax-correction sub-cents, `fact_acct(735)` `maxDiff=0c` in both the home and the foreign-currency
+> accounting schema).
+
+### 5 · Replenishment
+
+The sale just dropped on-hand. Rather than reorder on every sale, **Replenishment** is the staged,
+reviewable action that watches on-hand against each product's stock policy and proposes what to order —
+walked in detail in the POS section's **§P-4** (the same engine, reached from a friendlier panel there;
+not repeated here).
+
+> *Proven by* **W-FOLD-REPLENISH** (the proposal == iDempiere's own `ReplenishReport` formula-SQL,
+> 8/8 products, `maxDiff=0`).
+
+### 6 · Purchase Order → Receipt → Vendor Invoice → Match
+
+Accepting a replenishment proposal (or creating one by hand, ⌂ → Purchasing → Purchase Order) and
+completing it is the buy-side mirror of step 1. It flows the same way in reverse:
+
+- **Purchase Order** — completes; under this seed's configuration (commitment accounting off) it posts
+  no commitment/reservation entry — an honest, config-derived ∅, not a gap.
+- **Receipt** (`M_InOut`, incoming) — stock arrives, on-hand rises.
+- **Vendor Invoice** — posts DR **Inventory Clearing** / CR **Vendor Liability**.
+- **Match** (`M_MatchInv`) — clears the Inventory-Clearing/Not-Invoiced-Receipts pair the receipt and
+  invoice each opened, including any invoice-price-variance split against on-hand at match time.
+  `M_MatchPO`'s own leg stays an honest ∅ under this seed's Average costing (the variance-posting branch
+  only fires under Standard costing) — a config fact, proven by flipping it in the witness, not assumed.
+
+> *Proven by* **W-MORDER-POST** (the PO's zero-set is config-derived, the order-posting chain diffs per
+> fact line against the real oracle), **W-FOLD-AP-INVOICE** (4/4 vendor invoices, exact accounts,
+> `maxDiff=0c`), **W-FOLD-MATCHINV** / **W-FOLD-MATCHINV-FX** (18/18 matches incl. the IPV split, both
+> accounting schemas, `maxDiff=0c`), and **W-POST-TAIL** (`M_MatchPO`'s ∅ over all 37 real matched docs,
+> falsified by flipping the costing method to prove the gate — not the witness — is what closes it).
+
+### 7 · Final accounts
+
+Two more postings close the period: a **GL Journal** for anything that isn't a document (a manual
+accrual, an inter-org transfer) and a **Bank Statement** reconciling the bank's own records against
+what the ledger expects. Once every document for the period is posted, the period's `fact_acct` **is**
+the ledger — there is no separate "close" step that recomputes anything; Trial Balance is a live fold
+of the same rows, and it balances to the cent.
+
+> *Proven by* **W-FOLD-GLJOURNAL** (manual journal incl. per-org intercompany balancing, both schemas,
+> `maxDiff=0c`) and **W-POST-TAIL**'s `C_BankStatement` band (the real 13-row statement, `maxDiff=0c`
+> incl. the currency-balancing residual). Trial Balance: `ΣDr==ΣCr=46574.97` over the real GardenWorld
+> ledger (`test_report_fin.js`).
+
+### 8 · Financial reporting
+
+From here, everything is read-only fold: **Balance Sheet**, **Income Statement**, **Cash Flow**, and
+**Trial Balance** are all oracle-equivalent to the real ledger (§8 *Financial Reporting*, below, has the
+per-report cell counts), and the same ledger is what the **NinjaExcel** workbook lens (§8, "Excel
+Report") binds into your own spreadsheet layout.
+
+### Also in the books: fixed assets and projects
+
+Six more document classes — asset addition, transfer, revaluation, and disposal, plus depreciation
+entries and project-issue postings — fold to the cent against the real compiled posters the same way
+(oracle-generated on a scratch clone over a GardenWorld-model seed, since this demo tenant carries no
+source documents for them out of the box). They ride the same Posting-Preview/Trial-Balance surfaces as
+everything above; see `docs/internal/ERP_COVERAGE_MATRIX.md` (B-3, W-POST-B3) for the per-class detail —
+this guide's walkthrough stays the trade cycle.
 
 ---
 

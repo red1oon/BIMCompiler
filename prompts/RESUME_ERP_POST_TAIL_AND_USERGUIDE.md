@@ -111,3 +111,54 @@ so the guide inherits credibility without turning into a test report:
 ## SESSION END
 - Every §A/§B item ✅ or ⛔-with-the-one-question. Update THIS file's DONE appendix (§-lined), PROGRESS.md,
   push everything (zero local-only commits), PR + merge per the git note at top.
+
+# DONE — 2026-07-18, Sonnet session (§A + §B both worked to zero). Every claim = a § line in
+# `build/erp/generate_post_tail_oracle.log` / `build/erp/poc_post_tail.log` (exit 0, READ).
+
+- **§A-1/§A-2 CLOSED, empirically — NOT the outcome this card predicted.** Read `Doc_Cash.createFacts`
+  (Doc_Cash.java:150-249) and `Doc_Inventory.createFacts` (Doc_Inventory.java:211-513) first, wrote the
+  manifest spec into `HARDEN_MATRIX.md §W-POST-TAIL-2` before coding (per Spec-First), then built the
+  reusable machinery: `scripts/logic_oracle/PostingTailTest.java` (sibling of `PostingOracleTest.java`,
+  same vendor OSGi harness) + `scripts/generate_post_tail_oracle.sh` (twin of `generate_post_oracle.sh`,
+  scratch clone `idempiere_tail`) + `scripts/capture_post_tail_fixture.js` → `build/erp/oracle/
+  post_tail_fixture.json`. Drove the REAL engine over the REAL 2 CO cash journals + 3 inventory drafts —
+  ZERO seed authoring, every document already existed. Result: **both classes are ∅-by-DATA-STATE**,
+  distinct from B-3's seed-generation and from MatchPO/Requisition's config-gates: `§TAILORACLE class=
+  C_Cash record_id=100/101 isactive=N` (BOTH real docs — `Doc.java:591-605`'s lock UPDATE requires
+  `IsActive='Y'`, `DocManager.postDocument` returns `"CannotPostInactiveDocument"`); `§TAILORACLE class=
+  M_Inventory record_id=200000/200001 processIt_ok=false processMsg=@NoLines@` (zero lines each,
+  `MInventory.java:401-406`); `§TAILORACLE class=M_Inventory record_id=100 ... postErr=Posting Error
+  (No Costs for TShirt - Red Large)` (the 1 completable draft — product 147 has `currentcostprice=0`
+  everywhere and 0 `M_CostDetail` rows, `Doc_Inventory.java:319-336`). **Neither blocker worked
+  around** — flipping `IsActive` or seeding lines/costs onto an EXISTING document is data mutation, the
+  same out-of-scope boundary this card itself drew for Inventory's `@NoLines@` docs (not a new judgment
+  call, the consistent application of it). `doc_poster.js` gained `deriveCash` + `deriveInventory`
+  anyway (full source-cited translations, reusable for any FUTURE active/costed document) and proved
+  them LIVE via falsifier since no oracle-diff is possible: `§TAIL-FALSIFIER cash-live doc100_lines=2
+  doc101_lines=4` (the manifest computes real non-empty legs — the ∅ is the `IsActive` gate, not a dead
+  verb) and `§TAIL-FALSIFIER inv-bless-flip doc=100 before_lines=0 after_lines=2` (the manifest
+  reproduces the SAME "No Costs" refusal, 0==0 non-vacuously, and a synthetic blessing row opens it).
+  **Ledger STAYS 52 / 17-of-20 posters** (not 54 — the card's own optimistic headline was wrong; this is
+  the corrected, evidence-based number). Whole regression bundle re-run green: `poc_post_b3` ·
+  `poc_post_harden` · `poc_factacct_doc` · `poc_doc_poster` · `poc_morder_post` · `poc_alloc_fx` ·
+  `poc_money_post` · `poc_matchinv_fx` · `poc_gljournal` · `poc_post_tail` · `test_report_fin` all exit 0,
+  TB 46574.97/300 intact. Banked: `docs/internal/ERP_COVERAGE_MATRIX.md` (the W-POST-TAIL row extended +
+  the "17 of 20" summary line corrected), `prompts/HARDEN_MATRIX.md` (§W-POST-TAIL-2 CLOSED band),
+  `PROGRESS.md` (archive line + OPEN line updated).
+- **§B-1/§B-2 DONE** — `docs/ERPUserGuide.md` gained **"The lay of the land"** (inserted after Quick
+  start: a mermaid map + prose walking front-door → Login → Pill Bar → Windows/Tabs/Fields → Process
+  Button → where documents live → where the books live, every claim pointing at an existing section) and
+  **"The standard flow — order to cash, procure to pay, books to reports"** (inserted after §6 Process
+  Button, before §7 POS, matching this guide's existing convention of unnumbered thematic sections
+  interleaved with the numbered core-manual sections — renumbering the 15 numbered sections was
+  considered and rejected as unnecessary blast radius for a doc-only change). All 8 steps told as one
+  continuous story over the GardenWorld demo data (Sales Order → Shipment → Invoice/AR → Receipt &
+  Allocation → Replenishment → PO/Receipt/Vendor-Invoice/Match → Final accounts → Financial reporting),
+  each citing its real witness (W-FOLD-COMPLETE/QTYONHAND/INOUTGL/PAYMENT/ALLOC/REPLENISH/MORDER-POST/
+  AP-INVOICE/MATCHINV/GLJOURNAL/POST-TAIL/PA-REPORT) plus a one-paragraph "also in the books" note for
+  the B-3 fixed-asset/project classes. POS/Kitchen/WH/Tenancy/4D-5D/Ninja addon lenses untouched, per
+  scope. Verified: `mkdocs build --strict` clean (no new broken anchors/warnings vs. the pre-existing
+  HRBIMAssetGuide.md ones), mermaid fence syntax matches the one other file already using it
+  (`docs/internal/FoldEngineQuality.md`) — confirms the pattern is established, not novel.
+- **Housekeeping:** this card's own DONE appendix is the record (per `feedback_prompt_file_organization`
+  rule 0 — a session working a `prompts/#.md` file updates only that file, not `MEMORY.md`).

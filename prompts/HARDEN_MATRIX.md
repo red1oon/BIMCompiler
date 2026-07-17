@@ -137,6 +137,98 @@ conversion + 0.01 CurrencyBalancing residual) · `§TAIL-POST M_MatchPO docs=37 
 17/20 factory posters fold. Remaining: Cash (post 2 real CO docs on clone) · Inventory (complete 3 real
 drafts on clone) · Production ⛔ (no docs, no component costs). Log: `build/erp/poc_post_tail.log`.
 
+### §W-POST-TAIL-2 manifest spec (2026-07-18, Sonnet session — written BEFORE coding, per Spec-First)
+**C_Cash (407) — Doc_Cash.createFacts:150-249 (`Doc_Cash.java`), DocLine_Cash.java for the CashType
+constants.** Facts (re-verified live): 2 real CO docs, posted='N' — `c_cash_id=100` 1 line (CashType=I
+Invoice, amount=50.35, c_invoice_id=100) · `c_cash_id=101` 3 lines (E −10, T −50 bankaccount=100, R +10).
+No Charge/Difference lines in this seed → those two branches are manifest-complete (source-parsed) but
+UNEXERCISED by the real docs; do not claim them oracle-diffed. Per-line legs, header running `assetAmt`:
+- **E (Expense, :174-181):** DR `{CashBook.CashExpense}`=amount.negate(); assetAmt −= amount.negate().
+- **R (Receipt, :182-189):** assetAmt += amount; CR `{CashBook.CashReceipt}`=amount (raw, not abs).
+- **C (Charge, :190-197):** DR `line.getChargeAccount` (`c_charge_acct.ch_expense_acct`, C_Charge_ID/schema)
+  =amount.negate(); assetAmt −= amount.negate(). Charge_ID=0 on any real line ⇒ this branch never fires here.
+- **D (Difference, :198-205):** DR `{CashBook.CashDifference}`=amount.negate(); assetAmt += amount.
+- **I (Invoice, :206-219):** if line currency == cashbook currency (true, both 100/USD): assetAmt += amount,
+  no separate CashAsset line; ELSE DR `{CashBook.CashAsset}` at line currency. ALWAYS: CR `{CashBook.CashTransfer}`
+  =amount.negate(), at LINE currency (not doc currency).
+- **T (Transfer, :220-236):** DR `{BankAccount.InTransit}` (`c_bankaccount_acct.b_intransit_acct`, keyed by
+  the LINE's own C_BankAccount_ID/schema, not the doc's) =amount.negate(), at line currency; if line
+  currency==cashbook currency: assetAmt += amount; else DR `{CashBook.CashAsset}` at line currency.
+- **Header close (:239-243):** if assetAmt≠0, one more leg on `{CashBook.CashAsset}` (doc/cashbook
+  currency) = assetAmt (sign-dependent DR/CR, 4-arg `Fact.createLine`).
+- **Accounts:** `c_cashbook_acct` columns CB_Asset_Acct/CB_CashTransfer_Acct/CB_Expense_Acct/
+  CB_Receipt_Acct/CB_Differences_Acct keyed by (C_CashBook_ID=101, schema) — `Doc.java:1478-1502`.
+  Schema 200000 carries ONLY `cb_cashtransfer_acct` (200065) — asset/expense/receipt/differences are
+  NULL there; `Fact.createLine` silently DROPS a null-account line (`Fact.java:116-122`, not an error) —
+  so schema-200000 posts a partial (possibly source-imbalanced) leg set BY DESIGN, not a bug. `Doc.getAccount`
+  returns null on a 0-combination (`Doc.java:1602-1610`), same drop behaviour.
+- **maxDiff=0c gate** over both real docs × both schemas × (account,side), same shape as BankStatement.
+
+**M_Inventory (321) — Doc_Inventory.createFacts:211-513 (`Doc_Inventory.java`), physical-inventory branch
+only** (this seed's 3 docs are all DocSubTypeInv=PI, doctype 144). Facts (re-verified live): `m_inventory_id`
+100 (DR client 11) has 1 real line (product 147 "TShirt - Red Large", locator 101→warehouse 103, qtycount=1/
+qtybook=0 → qtyDiff=+1, no charge, no ASI, not reversal) — the ONLY completable doc. **`m_inventory_id`
+200000 and 200001 have ZERO lines each** (`m_inventoryline` count=0, verified live) → `MInventory.prepareIt`
+(`MInventory.java:401-406`) fails BEFORE completion with `@NoLines@`, STATUS_Invalid — these 2 CANNOT
+reach docstatus=CO, let alone post. This is the engine's own validation, not a workaround decision:
+⛔ both BY NAME, do not attempt to seed lines onto them (that would be inventing source data on someone
+else's document, banned regardless of the seed-prep ruling — the ruling covers NEW documents, not
+patching existing ones). **1 of 3 is the honest ceiling for this seed.**
+- Manifest for doc 100 (PI, :279-340): `costs = line.getProductCosts(as, orgId, true, "M_InventoryLine_ID=?")`
+  (`ProductCost.getProductCosts`, the schema-costingmethod → cost-element → `m_cost.currentcostprice` hop,
+  same as `deriveProjectIssue`'s `{Product}` cost lookup already in `doc_poster.js`). Product 147's `m_cost`
+  rows are ALL currentcostprice=0 (schema 101; NO rows at all for schema 200000) and `m_costdetail` has
+  ZERO rows for this product (verified live) — so the `costs==0` zero-cost-blessing check
+  (`Doc_Inventory.java:319-336`, requires a processed zero-cost purchase M_CostDetail row) FAILS → the
+  REAL engine's own `createFacts` returns `p_Error="No Costs for TShirt - Red Large"` UNLESS the scratch
+  run shows otherwise (to be confirmed empirically against the actual OSGi-driven posting — the source
+  reading above is the prediction, the scratch-clone run is the oracle; if posting truly fails this is
+  ALSO an honest ⛔-by-data-state, named with the engine's exact error, not invented around).
+- IF posting succeeds (costs resolve non-zero via a path not visible from static reading — e.g. batch/lot
+  MA rows, or a costingLevel hop this trace missed): DR `{Product.Asset}` (service→`{Product.Expense}`,
+  `ProductCost.ACCTTYPE_P_Asset`, m_product_category_acct via product→category, same token already in
+  `post_resolver.js`) = costs; CR `line.getChargeAccount` if C_Charge_ID≠0 (0 here → null) ELSE
+  `M_Warehouse_Acct.W_Differences_Acct` keyed by (M_Warehouse_ID=103, schema) — `Doc.java:1505-1509`,
+  `Doc.ACCTTYPE_InvDifferences` — = costs.negate(). `M_Warehouse_ID` resolved from the line's locator
+  (`m_locator.m_warehouse_id`), not a doc column.
+- Capture additive: `m_inventory`, `m_inventoryline`, `m_warehouse_acct`, `m_locator` (locator→warehouse),
+  `m_cost`, `m_costelement`, `m_costdetail` (for the zero-cost-blessing count), `m_product`,
+  `m_product_category_acct`, `c_validcombination`.
+
+Witness extension: new diff bands in `scripts/poc_post_tail.js` reading a NEW fixture
+`build/erp/oracle/post_tail_fixture.json` (twin of `post_b3_fixture.json`, via a new
+`scripts/logic_oracle/PostingTailTest.java` + `scripts/generate_post_tail_oracle.sh` +
+`scripts/capture_post_tail_fixture.js` — same scratch-clone-drive-capture-drop machinery, reused not
+reinvented), same maxDiff=0c per-doc/per-schema gate. `M_Production` ⛔ stays untouched (0 docs).
+
+**✅ §W-POST-TAIL-2 CLOSED 2026-07-18 (same session as the spec above) — empirically driven, NOT the
+optimistic outcome the spec predicted.** Ran the REAL compiled posters on a fresh scratch clone
+`idempiere_tail` over the 2 real CO cash journals + 3 real inventory drafts (zero seed authoring — every
+document already existed). Ground truth (`§TAILORACLE`, `build/erp/generate_post_tail_oracle.log`):
+**C_Cash — both docs (100/101) are `IsActive='N'`**, not merely "never posted" as first assumed;
+`Doc.postIt`'s lock UPDATE (`Doc.java:591-605`, requires `IsActive='Y'`) never fires →
+`DocManager.postDocument` returns `"CannotPostInactiveDocument"` for both. **M_Inventory — 200000/200001
+have ZERO lines each** → `MInventory.prepareIt` (`:401-406`) refuses with `@NoLines@` before completion;
+**doc 100 (1 line, product 147) DOES complete** (DocStatus=Completed) but the REAL engine then refuses to
+POST it — `"No Costs for TShirt - Red Large"` (`Doc_Inventory.java:319-336` — product 147 has
+`currentcostprice=0` everywhere and ZERO `M_CostDetail` rows, so the zero-cost-blessing check fails).
+**Neither blocker worked around** — flipping `IsActive` or seeding lines/costs onto an EXISTING document
+is data mutation, the same out-of-scope boundary this very card already drew for Inventory's `@NoLines@`
+docs; extending it to Cash's `IsActive` flag is the consistent, non-invented call, not a new judgment.
+`doc_poster.js` still gained `deriveCash` (all 6 CashType legs, Doc_Cash.createFacts:150-249, fully
+source-cited) and `deriveInventory` (physical-inventory branch, Doc_Inventory.createFacts:211-513) —
+reusable for any FUTURE active/costed document — proven LIVE via falsifier since no oracle-diff is
+possible here: `deriveCash` computes real non-empty legs from the real line data (§TAIL-FALSIFIER
+cash-live, doc100 2 lines / doc101 4 lines — the ∅ is the `IsActive` gate, not a dead verb);
+`deriveInventory` reproduces the SAME "No Costs" refusal (0==0, non-vacuous — §TAIL-FALSIFIER
+inv-bless-flip: a synthetic zero-cost-blessing row in an in-memory copy opens the gate, 0→2 lines).
+**Ledger STAYS 52 / 17 of 20 posters** — Cash and Inventory join Production as named ⛔, each for a
+different, precisely-cited reason; none is a "next session" placeholder anymore. Whole bundle re-run
+green (`poc_post_b3` · `poc_post_harden` · `poc_factacct_doc` · `poc_doc_poster` · `poc_morder_post` ·
+`poc_alloc_fx` · `poc_money_post` · `poc_matchinv_fx` · `poc_gljournal` · `poc_post_tail` ·
+`test_report_fin` all exit 0, TB 46574.97/300 intact). Logs: `build/erp/generate_post_tail_oracle.log` ·
+`build/erp/poc_post_tail.log`.
+
 ### H-3 Spot-harden the declarative engines
 `ad_evaluator`/`ad_access`/`ad_valrule`/`ad_reference` are 🟡 on parse; oracle-diff a SAMPLE of each against
 `GridField`/`MRole`/`MValRule` outputs — confirm the verdict matches, not just that it parses. The master-data

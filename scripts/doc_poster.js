@@ -411,6 +411,117 @@ function deriveRequisition(db, id, schema) {
   return d;
 }
 
+// Doc_Cash.createFacts:150-249 (HARDEN_MATRIX.md §W-POST-TAIL-2) — per c_cashline CashType leg + the
+// header running assetAmt close. NOT oracle-diffable in THIS seed: both real c_cash docs (100/101) carry
+// IsActive='N' — Doc.postIt's lock UPDATE (Doc.java:591-605) requires IsActive='Y' before createFacts
+// ever runs, so the REAL engine posts ZERO rows for these two (verified live: DocManager.postDocument →
+// "CannotPostInactiveDocument"). This manifest is a faithful, source-cited translation (reusable for any
+// FUTURE active C_Cash doc) — its role HERE is only the falsifier: it computes REAL non-empty legs from
+// the real line data, proving the ∅ is an IsActive-gate fact (Doc.postIt, outside createFacts), not a
+// dead/no-op verb or a manifest bug. NEVER invents: IsActive is read, never flipped, on the real rows.
+function deriveCash(db, id, schema) {
+  var hdr = getRow(db, 'SELECT * FROM c_cash WHERE c_cash_id=?', num(id));
+  if (!hdr) return null;
+  var cb = getRow(db, 'SELECT * FROM c_cashbook WHERE c_cashbook_id=?', num(hdr.c_cashbook_id));
+  var cbAcct = getRow(db, 'SELECT * FROM c_cashbook_acct WHERE c_cashbook_id=? AND c_acctschema_id=?', [num(hdr.c_cashbook_id), num(schema)]);
+  var docCur = cb ? num(cb.c_currency_id) : null;
+  var d = b3New();
+  if (!cbAcct) { d.absent.push('c_cashbook_acct#' + hdr.c_cashbook_id + '/' + schema); return d; }
+  var lines = allRows(db, 'SELECT * FROM c_cashline WHERE c_cash_id=? ORDER BY c_cashline_id', num(id));
+  var assetAmt = 0;
+  function cbEl(col, token) { return elOf(db, vcAcct(db, cbAcct[col]), d.absent, token); }
+  lines.forEach(function (l) {
+    var amt = cents(l.amount);
+    var lineCur = num(l.c_currency_id);
+    if (l.cashtype === 'E') {                                              // Expense :174-181
+      var expEl = cbEl('cb_expense_acct', '{CashBook.CashExpense}');
+      if (expEl) d.add('DR', expEl, -amt);
+      assetAmt -= -amt;
+    } else if (l.cashtype === 'R') {                                       // Receipt :182-189
+      assetAmt += amt;
+      var rcvEl = cbEl('cb_receipt_acct', '{CashBook.CashReceipt}');
+      if (rcvEl) d.add('CR', rcvEl, amt);
+    } else if (l.cashtype === 'C') {                                       // Charge :190-197
+      var chg = getRow(db, 'SELECT ch_expense_acct AS acct FROM c_charge_acct WHERE c_charge_id=? AND c_acctschema_id=?', [num(l.c_charge_id), num(schema)]);
+      var chgEl = elOf(db, vcAcct(db, chg && chg.acct), d.absent, '{Charge.Expense}');
+      if (chgEl) d.add('DR', chgEl, -amt);
+      assetAmt -= -amt;
+    } else if (l.cashtype === 'D') {                                       // Difference :198-205
+      var diffEl = cbEl('cb_differences_acct', '{CashBook.CashDifference}');
+      if (diffEl) d.add('DR', diffEl, -amt);
+      assetAmt += amt;
+    } else if (l.cashtype === 'I') {                                       // Invoice :206-219
+      if (lineCur === docCur) assetAmt += amt;
+      else { var caEl = cbEl('cb_asset_acct', '{CashBook.CashAsset}'); if (caEl) d.add('DR', caEl, amt); }
+      var trEl = cbEl('cb_cashtransfer_acct', '{CashBook.CashTransfer}');
+      if (trEl) d.add('CR', trEl, amt);                                    // amount.negate() → CR |amt|
+    } else if (l.cashtype === 'T') {                                       // Transfer :220-236
+      var ba = getRow(db, 'SELECT * FROM c_bankaccount_acct WHERE c_bankaccount_id=? AND c_acctschema_id=?', [num(l.c_bankaccount_id), num(schema)]);
+      var itEl = elOf(db, vcAcct(db, ba && ba.b_intransit_acct), d.absent, '{BankAccount.InTransit}');
+      if (itEl) d.add('DR', itEl, -amt);
+      if (lineCur === docCur) assetAmt += amt;
+      else { var caEl2 = cbEl('cb_asset_acct', '{CashBook.CashAsset}'); if (caEl2) d.add('DR', caEl2, amt); }
+    }
+  });
+  if (assetAmt !== 0) {                                                    // header close :239-243
+    var assetEl = cbEl('cb_asset_acct', '{CashBook.CashAsset}');
+    if (assetEl) d.add(assetAmt > 0 ? 'DR' : 'CR', assetEl, Math.abs(assetAmt));
+  }
+  return d;
+}
+
+// Doc_Inventory.createFacts:211-513 (HARDEN_MATRIX.md §W-POST-TAIL-2), physical-inventory branch only
+// (this seed's docs are all DocSubTypeInv=PI). costs = the schema-costingmethod → cost-element →
+// m_cost.currentcostprice hop (same lookup as deriveProjectIssue); if costs resolves to 0 AND no
+// qualifying zero-cost-blessing M_CostDetail row exists (Doc_Inventory.java:319-336: Processed='Y',
+// Amt=0, Qty>0, from an order/invoice line), the REAL engine REFUSES the whole doc ("No Costs for
+// <product>") — createFacts returns null, ZERO fact rows, NOT a partial post. Verified live: product 147
+// (doc 100's only line) has currentcostprice=0 everywhere and ZERO m_costdetail rows → the REAL engine
+// refused doc 100 exactly this way (§TAILORACLE postErr="No Costs for TShirt - Red Large"). This manifest
+// reproduces that SAME refusal (0==0, a genuine match, not a vacuous one) and the falsifier flips the
+// blessing count to prove the gate — not the manifest — is what closes to ∅.
+function deriveInventory(db, id, schema) {
+  var hdr = getRow(db, 'SELECT * FROM m_inventory WHERE m_inventory_id=?', num(id));
+  if (!hdr) return null;
+  var lines = allRows(db, 'SELECT * FROM m_inventoryline WHERE m_inventory_id=? AND isactive=\'Y\'', num(id));
+  var d = b3New();
+  if (lines.length === 0) { d.absent.push('@NoLines@#' + id); return d; }   // MInventory.prepareIt:401-406
+  lines.forEach(function (l) {
+    var as = schemaRow(db, schema);
+    var cost = getRow(db,
+      "SELECT c.currentcostprice AS p FROM m_cost c JOIN m_costelement e ON e.m_costelement_id=c.m_costelement_id" +
+      " AND e.costelementtype='M' AND e.costingmethod=? WHERE c.m_product_id=? AND c.c_acctschema_id=? AND c.m_costtype_id=?",
+      [as ? String(as.costingmethod) : '', num(l.m_product_id), num(schema), as ? num(as.m_costtype_id) : 0]);
+    var qtyDiff = Number(l.qtycount) - Number(l.qtybook);                  // PI branch :164-165
+    var costCents = cents(cost ? cost.p : 0);
+    if (costCents === 0) {
+      var bless = getRow(db,
+        "SELECT COUNT(*) AS n FROM m_costdetail WHERE m_product_id=? AND processed='Y' AND amt=0.00 AND qty>0" +
+        " AND (c_orderline_id>0 OR c_invoiceline_id>0)", num(l.m_product_id));
+      if (!bless || Number(bless.n) === 0) { d.absent.push('{Product.NoCosts}#' + l.m_product_id); return; }  // :332-335 refusal
+    }
+    var amt = Math.round(costCents * qtyDiff);
+    var prod = getRow(db, 'SELECT producttype, m_product_category_id FROM m_product WHERE m_product_id=?', num(l.m_product_id));
+    var isService = prod && prod.producttype === 'S';
+    var pcol = isService ? 'p_expense_acct' : 'p_asset_acct';
+    var pacct = prod ? getRow(db, 'SELECT ' + pcol + ' AS acct FROM m_product_category_acct WHERE m_product_category_id=? AND c_acctschema_id=?', [num(prod.m_product_category_id), num(schema)]) : null;
+    var drEl = elOf(db, vcAcct(db, pacct && pacct.acct), d.absent, '{Product.' + (isService ? 'Expense' : 'Asset') + '}');
+    if (drEl) d.add('DR', drEl, amt);
+    // CR: line.getChargeAccount if C_Charge_ID≠0, else M_Warehouse_Acct.W_Differences_Acct (:1505-1509)
+    if (num(l.c_charge_id) > 0) {
+      var chg = getRow(db, 'SELECT ch_expense_acct AS acct FROM c_charge_acct WHERE c_charge_id=? AND c_acctschema_id=?', [num(l.c_charge_id), num(schema)]);
+      var chgEl = elOf(db, vcAcct(db, chg && chg.acct), d.absent, '{Charge.Expense}');
+      if (chgEl) d.add('CR', chgEl, amt);
+    } else {
+      var loc = getRow(db, 'SELECT m_warehouse_id FROM m_locator WHERE m_locator_id=?', num(l.m_locator_id));
+      var wa = loc ? getRow(db, 'SELECT w_differences_acct AS acct FROM m_warehouse_acct WHERE m_warehouse_id=? AND c_acctschema_id=?', [num(loc.m_warehouse_id), num(schema)]) : null;
+      var crEl = elOf(db, vcAcct(db, wa && wa.acct), d.absent, '{Warehouse.Differences}');
+      if (crEl) d.add('CR', crEl, amt);
+    }
+  });
+  return d;
+}
+
 function finish(d, basis) {
   if (!d) return { lines: [], balanced: false, sumDr: 0, sumCr: 0, absent: [], basis: 'none' };
   var lines = Object.keys(d.by).map(function (k) {
@@ -450,6 +561,8 @@ function derivePostings(db, recordRef, schema, R) {
   if (table === 'C_BankStatement') return finish(deriveBankStatement(db, id, schema), 'bank-statement');
   if (table === 'M_MatchPO') return finish(deriveMatchPO(db, id, schema), 'matchpo');
   if (table === 'M_Requisition') return finish(deriveRequisition(db, id, schema), 'requisition');
+  if (table === 'C_Cash') return finish(deriveCash(db, id, schema), 'cash');
+  if (table === 'M_Inventory') return finish(deriveInventory(db, id, schema), 'inventory');
   return { lines: [], balanced: false, sumDr: 0, sumCr: 0, absent: [], basis: 'none' };
 }
 

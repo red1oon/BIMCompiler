@@ -99,7 +99,76 @@ console.log('§TAIL-POST class=M_Requisition docs=' + reqs.length + ' oracle_row
 verdict(reqs.length === 1 && reqFacts === 0 && reqNonEmpty === 0,
   'M_Requisition: engine ∅ == the REAL engine\'s ∅ (reservation gate closed)');
 
-// ── 4. §FALSIFIERS (load-bearing) on a THROWAWAY copy ──────────────────────────────────────────────
+// ── 4. C_Cash (407) / M_Inventory (321) — REAL scratch-clone run (generate_post_tail_oracle.sh):
+//    both classes' real documents hit ENGINE-ENFORCED data-state blockers, distinct from B-3's seed
+//    generation and from MatchPO/Requisition's CONFIG gates. NON-INVENT: neither blocker is worked
+//    around (flipping IsActive or seeding lines onto an existing doc would be mutating someone else's
+//    document, out of the seed-prep ruling's scope — same boundary the card itself draws for Inventory).
+console.log('\n── C_Cash (407) / M_Inventory (321) — REAL engine run, both ∅-by-data-state ──');
+var fs = require('fs');
+var TAIL_FIXTURE = path.join(__dirname, '..', 'build', 'erp', 'oracle', 'post_tail_fixture.json');
+if (!fs.existsSync(TAIL_FIXTURE)) {
+  console.log('§TAIL-SKIP tail fixture absent (' + TAIL_FIXTURE + ') — run: bash scripts/generate_post_tail_oracle.sh');
+  fails++;
+} else {
+  var tfx = JSON.parse(fs.readFileSync(TAIL_FIXTURE, 'utf8'));
+  var tdb = new Database(':memory:');
+  Object.keys(tfx.tables).forEach(function (t) {
+    var spec = tfx.tables[t];
+    tdb.prepare('CREATE TABLE ' + t + ' (' + spec.cols.join(',') + ')').run();
+    var ins = tdb.prepare('INSERT INTO ' + t + ' VALUES (' + spec.cols.map(function () { return '?'; }).join(',') + ')');
+    spec.rows.forEach(function (r) { ins.run(r.map(function (v) { return /^-?\d+(\.\d+)?$/.test(v) ? Number(v) : v; })); });
+  });
+
+  // §TAIL-POST2 re-assert: the REAL engine (scratch-clone, generate_post_tail_oracle.sh) wrote ZERO
+  // fact_acct rows for either class — read from the captured oracle, not assumed.
+  var cashOracleRows = tdb.prepare('SELECT count(*) c FROM fact_acct WHERE ad_table_id=407').get().c;
+  var invOracleRows = tdb.prepare('SELECT count(*) c FROM fact_acct WHERE ad_table_id=321').get().c;
+
+  // C_Cash: both real docs are IsActive='N' (re-read from the captured oracle, not the Java log alone)
+  var cashRows = tdb.prepare('SELECT c_cash_id, isactive FROM c_cash ORDER BY c_cash_id').all();
+  var cashInactive = cashRows.filter(function (r) { return r.isactive === 'N'; });
+  console.log('§TAIL-POST2 C_Cash docs=' + cashRows.length + ' isactive_N=' + cashInactive.length +
+    ' oracle_rows=' + cashOracleRows + ' basis=∅-by-data-state (Doc.java:591-605 CannotPostInactiveDocument)');
+  verdict(cashRows.length === 2 && cashInactive.length === 2 && cashOracleRows === 0,
+    'C_Cash: both real CO docs are IsActive=N → the REAL engine\'s lock-UPDATE never fires, ∅ oracle confirmed',
+    'docs=' + cashRows.map(function (r) { return r.c_cash_id; }).join(','));
+  // falsifier: the manifest itself is LIVE — it computes REAL non-empty legs from the real line data,
+  // proving the ∅ is the IsActive gate (outside createFacts), not a dead/no-op verb or a manifest bug.
+  var cashLive0 = DP.derivePostings(tdb, { table: 'C_Cash', id: 100 }, 101);
+  var cashLive1 = DP.derivePostings(tdb, { table: 'C_Cash', id: 101 }, 101);
+  var cashLiveOk = cashLive0.lines.length > 0 && cashLive1.lines.length > 0;
+  verdict(cashLiveOk, '§FALSIFIER C_Cash manifest is LIVE (non-empty legs from the real line data) — the ∅ is IsActive-gate-derived, not dead',
+    'doc100 lines=' + cashLive0.lines.length + ' doc101 lines=' + cashLive1.lines.length);
+  console.log('§TAIL-FALSIFIER cash-live doc100_lines=' + cashLive0.lines.length + ' doc101_lines=' + cashLive1.lines.length + ' (must be >0)');
+
+  // M_Inventory: 2/3 never even complete (@NoLines@); the 1 completable doc (100) hits the REAL
+  // engine's own "No Costs" refusal (Doc_Inventory.java:319-336) — product 147 has zero cost data.
+  var invNoLines = tdb.prepare('SELECT m_inventory_id FROM m_inventory WHERE m_inventory_id IN (200000,200001)').all();
+  var inv100Lines = tdb.prepare('SELECT count(*) c FROM m_inventoryline WHERE m_inventory_id=100').get().c;
+  var costRow = tdb.prepare("SELECT currentcostprice FROM m_cost WHERE m_product_id=147 AND currentcostprice<>0").all();
+  var blessRows = tdb.prepare("SELECT count(*) c FROM m_costdetail WHERE m_product_id=147 AND processed='Y' AND amt=0.00 AND qty>0 AND (c_orderline_id>0 OR c_invoiceline_id>0)").get().c;
+  console.log('§TAIL-POST2 M_Inventory noLines_docs=' + invNoLines.length + ' doc100_lines=' + inv100Lines +
+    ' nonzero_cost_rows=' + costRow.length + ' zero_cost_blessing_rows=' + blessRows +
+    ' oracle_rows=' + invOracleRows + ' basis=∅-by-data-state (MInventory.java:401-406 @NoLines@ + Doc_Inventory.java:319-336 No-Costs)');
+  verdict(invNoLines.length === 2 && inv100Lines === 1 && costRow.length === 0 && blessRows === 0 && invOracleRows === 0,
+    'M_Inventory: 2 docs cannot even complete (@NoLines@), the 1 completable doc has zero cost data anywhere → ∅ oracle confirmed',
+    'noLines=' + invNoLines.map(function (r) { return r.m_inventory_id; }).join(','));
+  // falsifier: the manifest matches the SAME "No Costs" refusal (0==0, not vacuous — flip the blessing
+  // count in an in-memory copy and the gate opens, a real DR/CR pair appears).
+  var invReal = DP.derivePostings(tdb, { table: 'M_Inventory', id: 100 }, 101);
+  var invRealOk = invReal.lines.length === 0 && invReal.absent.some(function (a) { return String(a).indexOf('NoCosts') >= 0; });
+  verdict(invRealOk, 'M_Inventory doc 100: manifest ALSO refuses (0 lines, {Product.NoCosts} named absent) — matches the real engine\'s refusal exactly',
+    'lines=' + invReal.lines.length + ' absent=[' + invReal.absent.join(',') + ']');
+  tdb.prepare("INSERT INTO m_costdetail (m_costdetail_id,m_product_id,processed,amt,qty,c_orderline_id,c_invoiceline_id) VALUES (999,147,'Y',0.00,1,500,0)").run();
+  var invFlip = DP.derivePostings(tdb, { table: 'M_Inventory', id: 100 }, 101);
+  var invFlipOk = invFlip.lines.length > 0 || invFlip.absent.some(function (a) { return String(a).indexOf('NoCosts') < 0; });
+  verdict(invFlipOk, '§FALSIFIER M_Inventory blessing-flip: adding a qualifying zero-cost M_CostDetail row opens the gate (0 → a real DR/CR pair at cost=0)',
+    'lines=' + invFlip.lines.length + ' absent=[' + invFlip.absent.join(',') + ']');
+  console.log('§TAIL-FALSIFIER inv-bless-flip doc=100 before_lines=' + invReal.lines.length + ' after_lines=' + invFlip.lines.length + ' (must open)');
+}
+
+// ── 5. §FALSIFIERS (load-bearing) on a THROWAWAY copy ──────────────────────────────────────────────
 console.log('\n── §FALSIFIERS (in-memory copy; the oracle db stays read-only) ──');
 var mem = new Database(':memory:');
 ['c_acctschema', 'c_acctschema_gl', 'c_bankstatement', 'c_bankstatementline', 'c_bankaccount_acct',
@@ -150,14 +219,25 @@ verdict(gotDr !== wantDr, '§FALSIFIER scale-one-line: doubling stmtamt breaks t
 console.log('§TAIL-FALSIFIER bs-scale line=100 oracleΣDR=' + wantDr + 'c scaledΣDR=' + gotDr + 'c (must differ)');
 mem.close();
 
-// ── 5. named skips (the honest remainder) ──────────────────────────────────────────────────────────
-console.log('\n§TAIL-SKIPS C_Cash (407): 2 real CO docs NEVER posted (posted=N, 0 facts) → post them on a scratch');
-console.log('§TAIL-SKIPS   clone via the B-3 generator (zero seed prep) — NEXT session, not claimed here.');
-console.log('§TAIL-SKIPS M_Inventory (321): 3 real DRAFTS → complete+post on the clone — NEXT session.');
+// ── 6. named ⛔ (the honest remainder, all empirically driven on a scratch clone — nothing assumed) ──
+console.log('\n§TAIL-SKIPS C_Cash (407): drove the REAL engine on scratch idempiere_tail (generate_post_tail_oracle.sh)');
+console.log('§TAIL-SKIPS   over the 2 real CO docs — BOTH are IsActive=N, DocManager.postDocument refuses');
+console.log('§TAIL-SKIPS   ("CannotPostInactiveDocument", Doc.java:591-605) → ⛔ BY THE ENGINE\'S OWN ERROR.');
+console.log('§TAIL-SKIPS   NOT worked around: flipping IsActive on an existing document is out of the');
+console.log('§TAIL-SKIPS   seed-prep ruling\'s scope (same boundary as the Inventory @NoLines@ docs below).');
+console.log('§TAIL-SKIPS M_Inventory (321): drove processIt(CO) on all 3 real drafts on the same scratch —');
+console.log('§TAIL-SKIPS   200000/200001 have ZERO lines each, MInventory.prepareIt refuses BEFORE completion');
+console.log('§TAIL-SKIPS   (@NoLines@, MInventory.java:401-406); doc 100 (1 line, product 147) DOES complete');
+console.log('§TAIL-SKIPS   but the REAL engine then REFUSES to post it ("No Costs for TShirt - Red Large",');
+console.log('§TAIL-SKIPS   Doc_Inventory.java:319-336 — product 147 has currentcostprice=0 everywhere and');
+console.log('§TAIL-SKIPS   zero M_CostDetail rows, so the zero-cost-blessing check fails) → ⛔, 0/3 posted.');
 console.log('§TAIL-SKIPS M_Production (325): 0 docs + component m_cost absent (W-FOLD-PRODUCTION deferral) → ⛔');
 console.log('§TAIL-SKIPS   until a costed BOM seed exists; costs are NOT synthesized.');
+console.log('§TAIL-SKIPS Matrix ledger stays 52 oracle-equivalent / 17-of-20 posters — Cash+Inventory join');
+console.log('§TAIL-SKIPS   Production as named ⛔, each for a DIFFERENT, precisely-cited engine-level reason.');
 
 db.close();
 console.log('\n' + (fails === 0 ? '🟢 W-POST-TAIL PASS' : '🔴 W-POST-TAIL FAIL (' + fails + ')') +
-  ' — BankStatement folds the REAL journal to the cent; MatchPO(37)+Requisition ∅==∅ config-derived; 3 named skips.');
+  ' — BankStatement folds the REAL journal to the cent; MatchPO(37)+Requisition ∅==∅ config-derived;' +
+  ' Cash+Inventory ∅==∅ data-state-derived (REAL scratch-clone run); 3 named ⛔ (Cash/Inventory/Production).');
 process.exit(fails === 0 ? 0 : 1);
