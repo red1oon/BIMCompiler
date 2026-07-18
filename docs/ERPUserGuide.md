@@ -1351,6 +1351,49 @@ go live or **discard** to try again. Nothing provisional ever reaches the offici
 
 ---
 
+## Appendix — maintenance cost, a rough 5-year comparison
+
+**This is a planning estimate, not a measurement.** Unlike the witness-cited claims throughout this
+guide, nothing here is benchmarked against a real deployment history on either side — there is no
+10-user install of either stack with 5 years of support tickets to pull numbers from. Treat every
+figure below as order-of-magnitude, for internal planning, not a quotable external claim.
+
+**Scope:** a 10-user shop, comparing this engine (static CDN + browser + signed op-log) against a
+self-hosted traditional stack (iDempiere/Odoo-shaped: a DB server + an app server, on-prem or a VM).
+
+| Category | Traditional, self-hosted (mandays/yr) | This engine (mandays/yr) |
+|---|---|---|
+| OS/DB/app-server patching, restarts | 5–8 | 0 — no server exists to patch |
+| Backup/DR + restore drills | 2 | 1 — exporting/verifying an op-log is a simpler shape, still needs discipline |
+| Networking (VPN/reverse-proxy/TLS for remote access) | 1–2 | ~0 — the CDN handles TLS/DNS |
+| Security fire-drills (amortized — e.g. a Log4Shell-class event) | 1–3 | ~1 — a much smaller vendored-JS surface, not zero |
+| User/access admin, support tickets | 3–5 | 3–5 — same order; still 10 humans needing help |
+| Device/key management (signed op-log needs per-device keys + revocation) | n/a to their model | 2–4 — a genuinely new admin task class |
+| Browser/platform-drift watch (the COOP/COEP-class constraint) | n/a | 2–4 |
+| Periodic major-version upgrade (real migrations run 10–30 mandays every 2–3 yrs, amortized) | 4–12 | ~0–2 — no server version to migrate off of |
+| **Async multi-writer fold, maturing to production-solid for 10 concurrent users** | n/a — RDBMS row-locking transactions solved this decades ago, at no extra cost to them | **front-loaded: ~20–60 mandays, mostly years 1–2** |
+| **Steady-state total/yr (years 3–5)** | **≈ 16–30** | **≈ 9–17** |
+| **5-year total** | **≈ 80–150** | **≈ 65–110 (front-loaded, not flat)** |
+
+**Where this favors the traditional stack, honestly:** multi-writer conflict resolution is a *solved*
+problem in a row-locking RDBMS, and has been for decades, at zero incremental cost to them. Taking
+this engine's async signed op-log from single-writer to a mature 10-node fold is real, front-loaded
+engineering — not routine maintenance. That line is this engine paying now what row-locking databases
+already paid down in the 1980s; it is not minimized here just to make the table favorable.
+
+**Where this favors this engine:** the entire server-ops block (patching, backup/DR of a live DB,
+networking, the version-upgrade treadmill) is not a discount — it is a cost *category* that does not
+exist when there is no server process to run.
+
+**The shape matters more than the 5-year sum.** The traditional curve is close to flat forever, with
+recurring upgrade spikes every 2–3 years indefinitely (year 8 costs about what year 3 did). This
+engine's curve is a hump in years 1–2 (maturing the fold) that converts into a materially lighter
+tail — once the fold is solid, there is no server-upgrade treadmill to keep paying into. A 10-year
+window would separate the two curves more than this 5-year one does, since the traditional side's
+recurring tax does not decay and this engine's does.
+
+---
+
 *For architecture details see ERP.md. For the coverage evidence see
 ERP_COVERAGE_MATRIX.md. For the migration story see
 [MigrateComparisonPaper.md](MigrateComparisonPaper.md).*
