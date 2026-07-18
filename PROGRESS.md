@@ -20,6 +20,9 @@
 not push/open a PR unless the user explicitly lifts it for that session. `CLAUDE.md` §⏸ PUSH PAUSE.
 
 ## OPEN — to be assigned to sessions (user dispatches from this list, check before starting cold)
+- `prompts/ERP_MULTIUSER_CONCURRENCY_POC.md` — NOT started. #1 ERP adoption gap (3/10, scored
+  2026-07-18): low-tech multi-user handoff (email/social/simplest file server) built + documented,
+  reusing the already-witnessed clipboard/email-DR substrate. Real-compute relay stays deferred.
 - `prompts/RESUME_HR_BIM_ASSET.md` §2026-07-06c — A/B/C bugs + E decision.
 - `prompts/RESUME_WORLD_HISTORY_DEDUP_RESTORE.md` §2026-07-06 — G6, Ph3, Pt1 parked.
 - `prompts/PILL_DRAWER_REORGANIZATION.md` — first-touch flicker.
