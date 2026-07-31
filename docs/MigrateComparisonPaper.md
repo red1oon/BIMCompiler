@@ -220,7 +220,7 @@ details.fold .fbd{padding:6px 16px 14px}
  
 <span id="status"></span>
 
-<p style="margin:16px 0;font-size:15px"><a href="../migrate_status_panel.html"><b>What is Done and Pending</b> — the four-state migration honesty map &nbsp;🟢🟠🔴🔵&nbsp; ↗</a></p>
+<p style="margin:16px 0;font-size:15px"><a href="migrate_status_panel.html"><b>What is Done and Pending</b> — the four-state migration honesty map &nbsp;🟢🟠🔴🔵&nbsp; ↗</a></p>
 
 ---
 
@@ -528,7 +528,7 @@ op, none overwriting another (witnessed **10 windows at once → 10/10 edits sur
 across machines a shared relay folds every device's log into **one identical signed history** (witnessed
 **10 devices → all converge to the same signed tip, 0 lost**). *Open piece:* cross-device *document-action*
 attribution (Complete/Void/Close re-signed under the merging device's key) awaits opt-in per-step signing
-— field edits are covered, same-device workflows unaffected. See the [Done & Pending map](../migrate_status_panel.html).
+— field edits are covered, same-device workflows unaffected. See the [Done & Pending map](migrate_status_panel.html).
 
 Full doctrine + the hard multi-writer cases (shared stock, credit limits, client version skew): [DistributedERP.md](DistributedERP.md) §0, §9.
 

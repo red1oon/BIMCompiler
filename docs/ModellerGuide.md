@@ -167,14 +167,21 @@ A plain-looking wall box in the Modeller is real geometry, not a shortcut — th
 described the wall as one outer shape plus a list of layer thicknesses, never as separate layer shapes.
 
 Take a real one: the party wall between two Duplex units (`2O2Fr$t4X7Zf8NOew3FNbT`) is built from 7
-layers — plasterboard (16mm), metal stud (41mm), block (193mm), an air gap (50mm), block again (193mm),
-metal stud (41mm), plasterboard (16mm). That's real, measured construction. But the source file never
-draws those 7 slabs as 7 shapes — it draws **one outer box** the size of the whole stack, and records the
-7 thicknesses as a side list ("this box is made of, in order..."). The Modeller renders exactly what's
-there: one box — 14 triangles for this wall (a perfectly plain box tessellates to 12, two per face on
-six faces, and 35 of the Duplex's walls are exactly that; this one's outline carries two more). That's
-not a placeholder standing in for the real wall. It *is* the real wall, drawn at the detail the file
-actually authored.
+authored layers — plasterboard (16mm), metal stud (41mm), block (193mm), an air gap (50mm), block again
+(193mm), metal stud (41mm), plasterboard (16mm), summing to 550mm. Until 2026-07-30 the source file's
+shape data went unused for this: the Modeller drew **one outer box** the size of the whole stack (14
+triangles — a perfectly plain box tessellates to 12, two per face on six faces, and 35 of the Duplex's
+walls are exactly that; this one's outline carried two more) and kept the 7 thicknesses as a side list
+only. That was still real geometry, not a placeholder — just drawn at less detail than the file carried.
+
+**What ships now.** The Modeller slices a layered wall at its authored layer thicknesses instead of
+drawing one box. This exact party wall renders as **5 real slabs today, not 7** — the outer metal-stud
+and plasterboard courses belong to the *neighbouring* unit (an authored unit-demising clip in the source
+file), so they're correctly excluded rather than invented (§ROW33-EXCEPTION, ruling 2026-07-31). The 5
+slabs sum to **493mm of the wall type's 550mm** — an honest whole-layer subset, not a shortfall. Across
+the whole building, 71 walls carry this per-layer detail (80 multi-layer edges resolved, 0 elements
+refused). A wall whose layers can't be resolved is refused outright rather than drawn as a guessed
+average — the same no-invent rule as everywhere else in the Modeller.
 
 You can tell a real box from a broken one by whether it can be cut. A door or window cut through a wall
 only works if the wall has a real shape to cut — a stand-in box has nothing behind it to carve. In the
@@ -192,11 +199,6 @@ Viewer somehow has.
 test building (heavily irregular massing) that fix visibly cleaned up the model. On the Duplex it changed
 nothing you could see, because a plain wall's honestly-tessellated box and a fake placeholder box are both
 12 triangles — removing the fake ones simply left the real ones exactly as they were.
-
-**What changes next.** The file-side link from a wall to its own layer list is now extracted
-(`rel_material_layer_set`), so the data needed to draw those 7 slabs individually — instead of one box —
-already exists. Once that slicing ships (§LOD400-LAYERS-REAL), this same party wall will render as 7
-stacked slabs whose thicknesses sum to the wall's true 550mm, not a single block.
 
 ---
 
@@ -387,9 +389,12 @@ to disarm. `R` is reserved for Insert, so it doesn't arm anything here.
 The ride is not a guess about what looks hosted. It follows the **authored** host↔opening↔filling chain
 recovered verbatim from the building's own IFC, so a door rides the wall its designer actually put it in —
 and where a building's author never declared that relationship, the modeller says so rather than inventing
-one. In practice that means the ride is exact on *SampleHouse* (all 7 hosted openings) and *Duplex* (36 of
-its 38), and partial on *SampleCastle*, whose window-frame walls are consumed by their own openings and so
-aren't separate things to ride.
+one. The ride is exact on *SampleHouse* (all 7 hosted openings), *Duplex* (36 of its 38), and — as of
+2026-07-31 — *SampleCastle* (all 74 of 74; up from 9). SampleCastle's window-frame walls are consumed by
+their own openings, so 65 of them never render at all — nothing there to ride. Rather than silently
+dropping those windows from the recompose, the Modeller seeds each void-consumed host as an invisible ride
+anchor (real placement, never rendered, never counted, never pickable) so its window still rides correctly
+when the grid moves.
 
 ![Before — a wall spanning two gridlines](img/modeller/gridstretch-before.png)
 ![After — dragging the gridline stretched the attached wall by exactly the drag distance](img/modeller/gridstretch-after.png)

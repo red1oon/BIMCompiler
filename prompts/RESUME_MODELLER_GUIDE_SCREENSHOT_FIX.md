@@ -374,3 +374,124 @@ unaffected and stay.
 `prompts/Modeller/DISC_Walker/RESUME_DISC_WALKER_ENVELOPE_BOUND.md`'s 2026-07-09 dated section — that is now the
 canonical doc for this thread. Do not re-derive; do not re-attempt items 4/6's screenshots until that doc's §NEXT
 items 3/4 (the actual code fixes, numeric-witness-gated, spec-first) land.
+
+---
+
+## ▶ 2026-07-31 — RESUME HERE. The guide is worth re-shooting now, for a reason it wasn't before.
+
+```
+# ⚠ DO NOT REMOVE
+SCOPE: capture new/replacement screenshots for docs/ModellerGuide.md and publish. Read the log after
+every run. Screenshots here are GUIDE CONTENT, never proof of correctness — see §CAPTURE DISCIPLINE.
+User, 2026-07-31: "Good to update Modeller User Guide with some good pics?"
+```
+
+### Why now, and not before (this is the whole point — read it)
+Every existing guide image was captured on **localhost**. That was not a style choice, it was the only
+place the Modeller worked: `modeller/mesh.db` is Git-LFS-tracked and GitHub Pages does not resolve LFS, so
+the LIVE site received a 134-byte pointer, the geometry index came back empty, and every element fell back
+to its measured bounding box. **The live Modeller drew boxes for months while the guide showed real
+geometry.** Fixed 2026-07-30 (§GEO-SERVED): per-resident geo files on object storage + a guard that
+refuses non-SQLite bytes. So for the first time, **a screenshot of the live site and a screenshot of
+localhost show the same thing.** Shoot the LIVE site now — and if a shot looks like the old boxy render,
+that is a deployment regression, not a framing problem.
+
+### What is newly worth showing (all live-verified 2026-07-31, `geoV 6` / `sw v43`)
+1. **A wall's real material layers.** `component_geometry_layers` ships live. Duplex has **71 walls
+   indexed, 215 slabs**. Two good subjects: a full-span 7-layer wall (Σ0.550 m), and the party wall
+   `2O2Fr$t4X7Zf8NOew3FNbT` — **5 slabs, Σ0.493 m**, an honest whole-layer subset (the outer stud +
+   plasterboard belong to the neighbouring unit; §ROW33-EXCEPTION). The 5-slab one is the better teaching
+   image: it shows the model telling the truth about a boundary.
+2. **A window riding its wall on a grid stretch.** SampleCastle went **9/74 → 74/74** once void-consumed
+   hosts got invisible anchors. A before/after pair on one host wall is the clearest single image of what
+   the grid handle actually does.
+3. **The honest-refusal behaviour**, if a still can carry it — the Modeller now refuses rather than
+   substituting, and says why. Worth one image + the log line beside it.
+
+### Still open from §THREAD 1 — 7 bad frames, unfixed, verify before re-shooting
+`cut-select.png` / `cut-open.png` (random roof crop, no wall or cut visible) · `route-spine.png` /
+`sketch-profile.png` (unrecognisable wall-corner close-ups) · `route-run.png` (confusing interior angle) ·
+`gizmo.png` / `scale-stretched.png` / `rotate-yaw.png` (real captures that never zoom to the element —
+three near-identical wide shots). Root-cause hypothesis unchanged and still unproven: `shotClip()` /
+`shotPts()` / `bboxScreen()` in `modeller/tests/e2e_harness.js` pick the wrong element or camera state at
+capture time. **Fix the harness first** — re-shooting by hand papers over a capture bug that will keep
+producing bad frames. The guide currently carries **33 images**.
+
+### §CAPTURE DISCIPLINE — the one thing that must not drift
+A screenshot is guide content. It is **never** evidence that something works — that is FUNDAMENTAL LAW in
+`CLAUDE.md`, hardened twice. So: prove the state numerically FIRST (mesh counts, slab counts, thickness
+sums, ride deltas — read programmatically), and only then capture an image OF that proven state. Never the
+reverse, and never "it looks right" as a pass condition. Caption each new image with the number it
+illustrates, so the page teaches the measurement, not the impression.
+
+### Ship path
+Publish ONLY via `scripts/safe_gh_deploy.sh` — never bare `mkdocs gh-deploy` (it has silently wiped live
+pages twice). Verify after: the published page carries the new images AND the existing 33 stay
+byte-identical to the repo. Then poll the live URL for the new bytes — a merge is not a publish, and the
+edge can lag ~10 min.
+
+### Where the surrounding work is tracked
+`prompts/MODELLER_MASTER.md` — the objectives (O13 is this file) and the ranked queue. The three decisions
+still with the user, and the marked next build item (row 34, anchor export/save leak), are listed there.
+
+## ▶ 2026-07-31, later same day — TEXT SHIPPED, screenshots (1) and (2) above are NOT achievable as
+## conceived; do not re-attempt either without reading why first.
+
+Picked this up directly (not delegated — see [[feedback_model_allocation_mastermind_vs_execution]], a
+blanket Sonnet-only restriction landed mid-session). Verified every number above **live**, myself, against
+`https://red1oon.github.io/bim-ootb/modeller/modeller.html` (not trusted from this file or from a separate
+Fable session's own report, which arrived independently and agrees): `§LAYER-GATE armed multiLayer=80
+layeredHashes=71 refused=0`; party wall `2O2Fr$t4X7Zf8NOew3FNbT` resolves to a real mesh, 124 triangles,
+bbox thickness exactly 0.493m; SampleCastle `§ANCHOR seeded n=65`, `stretchRide` reach **74/74** exactly;
+a real production-path ride (`Bonsai.oplog.commitGesture`, the same call the app uses) moved a filling by
+precisely the host's delta, rigid, no scale.
+
+**Then tried to capture subjects 1 and 2 above and both failed the "does the image show what the caption
+claims" test** (§ORIGINAL CARD's own lesson, reconfirmed):
+- **Subject 1 (wall layers) is not photographable at all right now** — not a bug, a separate un-shipped
+  gap: per-layer render COLOUR was deliberately never wired (`MODELLER_MASTER.md` row 3: "needs face-group
+  materials through the fold payload — own slice; data already ships"). All 5 slabs render in one
+  material, so no camera angle shows 5 visually distinct pieces — the wall looks exactly like it did
+  before, from outside. The geometry is real (verified above); the *picture* of that fact doesn't exist
+  until layer colour ships.
+- **Subject 2 (window riding its wall) actively misleads if captured the obvious way.** Picked a real
+  anchor host+filling pair, ran the real ride, screenshotted before/after
+  (`samplecastle-ride-before.png`/`-after.png`, not committed — scratch only). The window visibly slides
+  AWAY from the wall/frame next to it in the frame — because that visible neighbour is a DIFFERENT,
+  untouched element; the actual host it rides (fid 3266, guid `1xkmYzLHD1VPKdNI8y8Me1`) is one of the 65
+  void-consumed hosts and was never rendered to begin with, by construction, since long before this fix.
+  Every one of the 65 anchor cases has this exact shape (invisible host, unrelated visible neighbours) —
+  no different pick avoids it. The math is provably correct; the optics of illustrating an intentionally
+  invisible mechanism are not achievable with a simple before/after pair.
+- Also worth naming for whoever next tries this: the Duplex/SampleCastle default "fit-to-building" camera
+  frame is itself a bad crop (a roof-corner close-up, not a whole-building shot) — the SAME `e2e_harness.js`
+  framing gap §THREAD 1 already tracks, encountered here independently while looking for a clean base shot.
+
+**User's call, asked directly rather than guessed:** ship the text only, no new images this pass. Done:
+- `docs/ModellerGuide.md` "What a wall is made of" — the stale closing "**What changes next**" paragraph
+  (which promised 7-slab rendering as a future feature) is gone; replaced with a present-tense "**What ships
+  now**" paragraph carrying the real, live-verified numbers (5 slabs not 7, 493mm of 550mm, 71 walls / 80
+  multi-layer edges resolved building-wide). The two paragraphs immediately above it (plain-box case, why
+  the July fix was invisible here) were kept but edited so they no longer contradict the new paragraph —
+  they now read "until 2026-07-30" instead of stating the pre-fix box count as still-current.
+- Grid-Stretch section's SampleCastle sentence ("partial... whose window-frame walls are consumed by their
+  own openings and so aren't separate things to ride") was equally stale — replaced with the shipped
+  74/74 figure and one sentence on how the invisible-anchor mechanism gets there.
+- Drive-by: fixed an unrelated pre-existing `mkdocs build --strict` failure (`docs/MigrateComparisonPaper.md`
+  had `../migrate_status_panel.html` where both files sit in the same `docs/` dir — should never have had
+  the `../`). Confirmed pre-existing on this branch before my edit (same failure with my change stashed
+  out), so not something I introduced — just something that would have blocked ANY deploy, including
+  someone else's unrelated one, so fixed it in passing.
+- `mkdocs build --strict` exit 0. Committed `be3e6f694` on `fix/layer-count-assert` (PR #64), pushed.
+  `scripts/safe_gh_deploy.sh` run for real (not dry-run): guard PASS (269/269 files, superset), published,
+  all 7 canaries 200. **Live-byte-verified after, not assumed**: fetched
+  `https://red1oon.github.io/BIMCompiler/ModellerGuide/` fresh (`x-cache: MISS`, `Last-Modified` matching
+  the deploy timestamp to the second) and grepped the actual served HTML for the new paragraphs — both
+  present verbatim (`grep -c` on "493mm"/"5 real slabs"/"ROW33"/"all 74 of 74" all non-zero).
+
+**Still open, unchanged from this file's earlier sections:** §THREAD 1's 7 bad frames (harness fix needed
+first) · `move-gizmo.png` recapture (queue row 19) · a real photographable capture of subjects 1/2 above,
+which needs either per-layer render colour to ship (subject 1) or a genuinely different illustration
+strategy for an intentionally-invisible mechanism, e.g. a diagram/annotation rather than a plain
+before/after screenshot (subject 2) — do not re-attempt either as a plain screenshot without addressing
+the root gap named above first.
