@@ -448,13 +448,25 @@ byte-exact. Witnessed end-to-end: `modeller/tests/witness_e2e_gridmove_roof.js`,
 
 ![Delete — the selected feature removed; Redo restores it](img/modeller/delete-gone.png)
 
-### Room Move *(engine-ready — not yet on the toolbar)*
+### Room Move
 *Commits `GEOM_ROOM_MOVE {spaceGuid,dx,dy,members[]}`.*
 
 Moving furniture around a room one piece at a time divorces the room from its contents the moment anything
 gets left behind. Room Move grabs the **whole room** instead — everything it actually contains, plus
 anything sitting freestanding inside its footprint, plus any hosted door or window riding a wall that moves
 with it — and translates it all by one shared delta, as a single signed operation with one-step undo.
+
+1. Open the **Outliner**'s BOM Tree and expand down to the room you want (Building → Storey → Room).
+   An `IfcSpace` has no rendered mesh of its own, so the room's Outliner row — not a click in the 3D view —
+   is the grab target.
+2. Click the **⛶** icon next to the room's name. It enumerates every real member for that room right then
+   (logged to the status line and the console) and arms the drag; a room with nothing honest to move (zero
+   members across every leg) refuses the grab instead of dragging an empty box.
+3. Drag anywhere on the canvas — it's the **ground-plane delta** that moves the room, not where inside the
+   room you happened to click.
+4. Release to commit. Everything the grab found moves together, as one signed operation with one-step undo
+   (`Esc` cancels an armed grab before you release).
+
 Membership is never a proximity guess: an element joins the move only because a real recovered relationship
 says so —
 
@@ -470,45 +482,66 @@ Because the whole set shares one rigid `(dx,dy)` — never a per-member recomput
 the same relative arrangement, and the BOM needs zero work to follow: no containment edge changes, so the
 same tree replay is valid before and after. The move is in-plane only (a `dz` is refused outright — moving a
 room to a different storey is a bigger, separate decision this tool doesn't make) and it snaps back to
-nothing on an empty room (nothing honest to move).
+nothing on an empty room (nothing honest to move). Like every other geometry edit, a room move still runs
+through the modeller's conformity gate — if the delta pushes a member into another element's real footprint,
+the status line names the clash the same way Move or Grid-Stretch would.
 
 Verified on SampleHouse's "1 - Living room" (`witness_room_move.js`, 10/10): 16 real members — 12 via
 `rel_contained_in_space`, 4 via `derived-footprint` — move as one `GEOM_ROOM_MOVE`, every member's rendered
 centre landing on the committed delta to within float32 precision (max error 2.4×10⁻⁷ m). Round-tripping
 `(dx,dy)` then `(−dx,−dy)` (`witness_room_move_roundtrip.js`, 7/7) returns all 16 members to their exact
-starting position — 0.000 mm residual. The engine module (`bonsai_roommove.js`) is loaded and proven; it
-isn't hooked up to a grab handle or Outliner gesture yet, so there's no click-path or screenshot for this
-section until that wiring lands.
+starting position — 0.000 mm residual. The Outliner grab-to-drag UI above is verified the same way, with real
+pointer input instead of a direct engine call: `witness_e2e_roommove_ui.js` (9/9, real Duplex) clicks a real
+⛶ glyph, drags a real mouse gesture across the canvas, and asserts the committed op's member list is
+byte-identical to what the grab enumerated, the moved elements' rendered centres shifted by exactly the
+committed delta, and one scrub undoes it exactly.
 
-### Item Drag *(engine-ready — not yet on the toolbar)*
+![Room Move armed on Duplex — the Outliner's ⛶ glyph next to A101 grabbed 4 real members; the status line tracks the live ground-plane delta as the drag continues](img/modeller/room-move.png)
+
+### Item Drag
 *Commits `GEOM_MOVE {parent,dx,dy,dz}`.*
 
 A free single-item drag for one non-structural piece — a fixture, fitting, or loose furnishing — placed by
-eye onto a real surface rather than nudged axis-by-axis. Two refusals happen before anything can move, and
-neither ever falls back to a guess:
+eye onto a real surface rather than nudged axis-by-axis. It's a dedicated tool (its own **Drag Item** toolbar
+button), not the Move gizmo from the [Transform](#move) section above — Move is an ungated axis drag for
+anything already selected; Item Drag is specifically gated by real product data and a real drop surface, so
+it stays a separate button rather than silently changing what Move already does.
 
-- **No real dimensions, no lift.** The drag session looks up the item's real product dimensions before it
-  starts; with nothing to match, it throws `WalkerGapError` and the item never leaves its spot — never a
-  placeholder box standing in for a real size.
-- **No real host, no drop.** A wall-mounted item must find an actual wall face under the cursor (a floor
-  item an actual slab, a ceiling item an actual soffit) — no real host at the candidate point refuses that
-  drop.
-- A drop that collides with another element's real footprint is refused the same way, and every refusal
-  reports what it hit — never a silent nudge into validity.
+1. Tap **Drag Item**.
+2. Click a fixture or fitting in the 3D view to grab it. Two refusals happen before anything can move, and
+   neither ever falls back to a guess:
+   - **No real dimensions, no lift.** The drag session looks up the item's real product dimensions before it
+     starts; with nothing to match, it throws `WalkerGapError`, refuses the grab, and the item never leaves
+     its spot — never a placeholder box standing in for a real size.
+   - **Not a valid subject.** A wall, or an element already hosting a door or window, is refused as a drag
+     *subject* outright — those move via Grid-Stretch or Room Move instead.
+3. Drag across the canvas. The preview tints **green** where the drop would be valid, **red** where it
+   wouldn't — a wall-mounted item must find an actual wall face under the cursor (a floor item an actual
+   slab, a ceiling item an actual soffit), and a drop that collides with another element's real footprint is
+   refused the same way, with every refusal reporting what it hit.
+4. Release. A valid drop commits one ordinary `GEOM_MOVE` — item-drag introduces no new op type, so it plays
+   back through the exact same fold and undo path as the Move gizmo. An invalid release snaps the item
+   straight back to its pre-drag position, uncommitted (`Esc` cancels an armed grab before you release).
 
-While dragging, the preview tints **green** where the drop would be valid and **red** where it wouldn't; an
-invalid release snaps the item straight back to its pre-drag position, uncommitted. A valid release commits
-one ordinary `GEOM_MOVE` — item-drag introduces no new op type, so it plays back through the exact same fold
-and undo path as the Move gizmo.
+On today's building data, every already-placed fixture in the log honestly refuses at step 2 — the product
+identity a walker used to place it lives only in a transient value at commit time, never written to the
+signed log, so there's nothing left afterward for a generic pick to match against. That's not a UI gap, it's
+the same refuse-don't-fabricate rule the rest of the modeller runs on: a future catalog-drop flow that still
+holds the product id at drag time reaches the real match/commit path shown below; a plain pick on existing
+content reaches the refusal path, cleanly, every time.
 
-`witness_item_drag_gate.js` (9/9, real SampleHouse data) proves both refusals live: a session with no
-product hint throws `WalkerGapError` and adds zero rows to the op-log; a matched item (a real sink,
-0.5×0.45×0.2 m from `ad_product_dim`) that collides with a neighbour is refused with the colliding fids named
-and the log length unchanged; the same item dropped against a real wall face commits exactly one `GEOM_MOVE`
-with a `snappedPos` read off that wall's own geometry. A wall itself, or an element already hosting a door or
-window, is refused as a drag *subject* outright — those move via Grid-Stretch or Room Move instead. Like Room
-Move, `bonsai_itemdrag.js` is loaded and witness-proven but has no pointer-drag surface wired into the canvas
-yet, so this section has no screenshot until that lands.
+`witness_item_drag_gate.js` (9/9, real SampleHouse data) proves both refusals live at the engine level: a
+session with no product hint throws `WalkerGapError` and adds zero rows to the op-log; a matched item (a real
+sink, 0.5×0.45×0.2 m from `ad_product_dim`) that collides with a neighbour is refused with the colliding fids
+named and the log length unchanged; the same item dropped against a real wall face commits exactly one
+`GEOM_MOVE` with a `snappedPos` read off that wall's own geometry. `witness_e2e_itemdrag_ui.js` (8/8, real
+Duplex) proves the UI above end-to-end with real pointer input: a real **Drag Item** arm + real canvas pick
+on existing content refuses cleanly (zero ops); a held product hint reaches a real wall face found by
+scanning with the tool's own validity check and commits one `GEOM_MOVE`, the dragged mesh's rendered centre
+landing on the exact committed delta; the same grab dropped onto another element's real box refuses the
+commit and leaves the mesh exactly where it started.
+
+![Item Drag armed on Duplex — a real fixture grabbed and dragged to a wall face; the status line reads "valid drop — release to commit" as the live preview tints green](img/modeller/item-drag.png)
 
 ---
 
