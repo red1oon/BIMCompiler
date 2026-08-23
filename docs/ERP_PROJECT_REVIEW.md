@@ -392,3 +392,82 @@ This is a genuinely different, larger task than "add 2 tables to a manifest," an
 just re-run the proven exporter is the concrete falsifier proving that assumption wrong.
 
 **Access-gate fix:** closed separately, same day — see §2.1 CLOSED above.
+
+---
+
+## §8 — 2026-08-23: Forms/ValRules baked additively, root cause found, four named witnesses don't exist
+
+Closes the Forms/ValRules half of §7. Does NOT touch the access-gate finding (a sibling PR against
+`erp/idmp_session.js` + `erp/ad_access.js` owns that).
+
+**Root cause, confirmed:** `bim-ootb/erp/ad_seed.db` was never reproducible from one pipeline run.
+`git log --oneline --follow -- erp/ad_seed.db` shows one full export (`fd09ad1`, PR #265) followed by
+**~20 separate incremental "bake X into ad_seed.db" commits** over a month (HBA IoT sirens, Payslip/
+Leave windows, Hospital cost variance, POSTING-CONFIG fact_acct linkage, etc.), each additively
+merging new rows into the shipped sqlite file — never re-deriving the whole thing from Postgres. This
+IS the "recipe": not a lost pipeline stage, but an established idempotent-bake pattern this repo has
+used ~15 times (see `git show 3773ff6` / `tests/bake_all_erps_seed.js` for the house convention).
+Regenerating from scratch was never the right move for adding 2 tables — appending was.
+
+**Fix shipped:** `erp/tests/bake_forms_valrules_seed.js` (new, following the `bake_*_seed.js`
+convention, sql.js-based to match the repo's own available deps) — queries the live docker PG
+directly for `AD_Form` (canonical case, `IsActive='Y'`) and `ad_val_rule` (lower case, all rows) using
+the exact column/case/PK-derivation logic ported verbatim from `scripts/export_ad_seed.js` (the same
+proven machinery PR #265/#266 shipped with), `CREATE TABLE` for both (neither existed), `INSERT` the
+rows.
+
+```
+§BAKE_FV_BEFORE tables=399 bytes=27066368
+§BAKE_FV table=AD_Form rows=49 cols=19 pk=ad_form_id
+§BAKE_FV table=ad_val_rule rows=332 cols=14 pk=ad_val_rule_id
+§BAKE_FV_REGRESSION_CHECK other_tables=399 regressed=0
+§BAKE_FV_DONE new_tables=2 total_rows=381 bytes=27189248 (25.9MB)
+```
+
+**Zero regression on all 399 pre-existing tables** (row-counted before/after, diffed programmatically
+— the exact proof that was missing before this fix and that a naive re-export would have failed).
+Size grew 27,066,368 → 27,189,248 bytes (+122,880 B, +0.45%) — nowhere near the historical size-gate
+concern (v14-fullwidth was 24.9MB at 200ms boot median; this lands at 25.9MB, well inside that budget,
+no boot-time regression plausible at this data volume).
+
+**Consumption verified, not assumed:**
+- `ad_val_rule` has real, existing consumers today: `erp/crud_core.js` / `erp/crud_overlay.js` (the
+  field-validation engine — `effectiveFlags`/`validate`/`docPolicyFor`), `erp/ninja_stage.js`,
+  `erp/idempiere_agent/migrate_agent.js`, plus a dedicated headless twin `build/erp/ad_valrule.js`.
+  These were running against an always-empty table until this fix — the bake activates real,
+  previously-dead behavior, not just adds inert rows. Some rule types are expected to still legitimately
+  refuse (already-documented honest ⛔ for ruletype-Q SQL over empty referenced tables, per §2's
+  W-POST-TAIL-2 precedent) — that is correct behavior, not a new defect.
+- `AD_Form` has one real consumer: `erp/genesis.js`'s `grant('AD_Form', 'AD_Form_Access', ...)` — the
+  role-provisioning/access-grant machinery, directly relevant to the sibling access-gate work. **Honest
+  gap named, not hidden:** there is no dedicated Form-screen renderer anywhere in this codebase. Real
+  iDempiere Forms are bespoke coded screens (Bank Statement matching, GL Journal generator, etc.) —
+  this project's declarative Window/Tab/Field renderer does not and cannot render them without
+  per-form UI work that doesn't exist yet. AD_Form is now structurally present and feeds access-grant
+  provisioning; it is NOT yet a working "open a Form and use it" feature. Do not credit this as closing
+  that gap — it closes the *data* gap only.
+
+**Live regression proof:** `poc_ad_displaylogic.js` (W-AD-DISPLAYLOGIC-LIVE, real Playwright browser,
+serves the modified `erp.html`/`ad_seed.db`) — `🟢 PASS`, DisplayLogic still correctly evaluates
+AD_Menu action-gating with the new tables present, zero page errors.
+
+**A finding that must be corrected, not just noted:** the four other live witnesses named in
+`prompts/archive/IDMP_FULLWIDTH_SEED.md` §3 as the re-witness set for the last seed change
+(`poc_ad_docfsm_live.js`, `W-AD-ACCESS-LIVE`, `W-AD-MODELVAL-LIVE`, `W-AD-MENU-PRF-LIVE`) **do not
+exist under those names anywhere in the current tree** (`grep -rl` across `erp/` for both the file
+names and the `W-*-LIVE` code strings found nothing beyond `poc_ad_displaylogic.js`). Most likely:
+they were verification scripts local to that PR's branch, never intended as permanent repo files, and
+were not preserved after the PR merged. This is itself worth flagging to whoever owns the T-0
+truth-maintenance pass (§5.1) — a doc citing witnesses as the re-run protocol for future seed changes
+is not re-runnable if the witnesses it names don't exist. This session ran what actually exists and
+is relevant instead of fabricating a pass on witnesses that aren't there.
+
+**Deploy:** `ad_seed_v16` → `ad_seed_v17` IndexedDB cache key (2 sites in `erp.html`, 8 in
+`idempiere.html`) so returning users' stale-cached seed gets replaced. `erp/sw.js` `CACHE_VERSION`
+v767→v768 (bim-ootb). **Note for whoever merges next:** a sibling PR (access-gate fix) also bumps
+bim-ootb's `sw.js` to v768 independently — whichever merges second will show the documented
+"sw.js is the conflict magnet" conflict; per this project's own rule, take the HIGHER number on
+rebase, keep both precache/version-comment additions, never drop one session's hunk for the other's.
+
+**Not done, sequenced correctly as a separate task:** building an actual Form-screen renderer (UI
+work, not data work — a new task, not a regression of this one).
