@@ -7,11 +7,30 @@
 // for row (guid/name/coords/predefined_type), not just aggregate counts. Read the log after every
 // run — exit code alone is not evidence.
 const fs = require('fs');
+const path = require('path');
 const { execFileSync } = require('child_process');
-const initSqlJs = require('/home/red1/bim-compiler/node_modules/sql.js');
+const ROOT = path.resolve(__dirname, '..');
+// §S74 candidate 1 (2026-08-23): no hardcoded absolute requires — same loader pattern as
+// witness_disc_walk_shim.js, so the witness runs from any checkout/worktree of this repo.
+function loadSqlJs() {
+  const cands = [path.join(ROOT, 'node_modules/sql.js'), 'sql.js'];
+  for (const c of cands) { try { return require(c); } catch (e) { /* next */ } }
+  throw new Error('sql.js not found (npm install, or NODE_PATH to a node_modules with sql.js)');
+}
+const initSqlJs = loadSqlJs();
 const RoomWalker = require('./room_walker.js');
+const COMPILE_ROOMS_PY = path.join(ROOT, 'scripts', 'compile_rooms.py'); // this checkout's py, not the primary's
 
-const LIVEWIRE = '/tmp/wt-fable-livewire/modeller';
+// §S74 candidate 1 (2026-08-23): the old hardcoded '/tmp/wt-fable-livewire/modeller' died with its
+// pruned worktree and turned every run into all-SKIP pass=0 fail=0 exit-0 — green-but-vacuous
+// (§S61.3 class B). Resolve instead: env override → the DBs' long-lived home → the old path;
+// first existing dir wins. The per-building SKIP below still covers genuinely absent DBs.
+const ARC_CANDIDATES = [
+  process.env.ARC_DB_DIR,
+  path.join(process.env.HOME || '', 'bim-ootb/modeller'),
+  '/tmp/wt-fable-livewire/modeller',
+].filter(Boolean);
+const LIVEWIRE = ARC_CANDIDATES.find(d => fs.existsSync(d)) || ARC_CANDIDATES[ARC_CANDIDATES.length - 1];
 const SCRATCH = '/tmp/w_room_walker_parity';
 const BUILDINGS = ['SampleCastle', 'HHS', 'Clinic', 'Garage', 'Hospital', 'Terminal'];
 
@@ -49,7 +68,7 @@ function dumpRel(dbPath, SQL) {
     fs.copyFileSync(src, jsDb);
 
     // Python: real compile_rooms.py, --write, against its own scratch copy
-    const pyOut = execFileSync('python3', ['/home/red1/bim-compiler/scripts/compile_rooms.py', pyDb, '--write'], { encoding: 'utf8' });
+    const pyOut = execFileSync('python3', [COMPILE_ROOMS_PY, pyDb, '--write'], { encoding: 'utf8' });
     const pyTotalMatch = pyOut.match(/TOTAL compiled rooms = (\d+)/);
     const pyTotal = pyTotalMatch ? parseInt(pyTotalMatch[1], 10) : -1;
 

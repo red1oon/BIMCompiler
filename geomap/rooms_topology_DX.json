@@ -485,7 +485,7 @@
   }
  ],
  "db": "deploy/buildings/Duplex_extracted.db",
- "db_md5": "72f89bb20ec1a72e6797766b226305d2",
+ "db_md5": "6c855b7316d246e00a68f98bf596b913",
  "frame": {
   "frame": "world-zup",
   "rotation_semantics": "none-baked-into-mesh",

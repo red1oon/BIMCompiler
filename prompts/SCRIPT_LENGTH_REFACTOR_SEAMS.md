@@ -863,3 +863,72 @@ actual runs saved to `scratchpad/{parity_asis,parity_realdata,geomap_t3}.log` (L
 logs, not exit codes, are the evidence). The scratch parity run copied DBs to `/tmp` scratch and
 wrote nothing to any repo; geomap-tier3 re-wrote its artifact byte-identically (its own PASS line
 asserts this).
+
+## Addendum 2026-08-23 — candidate 1 EXECUTED (witness-side only, zero product lines)
+
+Branch off `origin/fable/meshdb-livewire` @ `42dc237c6`. Four files changed, all witnesses:
+`build/witness_room_walker_parity.js`, `build/witness_room_fill.js`,
+`build/witness_room_wellformed.js`, `scripts/witness_geomap_tier3.py` (+ the geomap artifact's
+one-line `db_md5` re-record, below). All before/after logs in this session's scratchpad
+(`{parity,fill,wellformed,geomap}_{before,after}*.log` + probe logs cited inline).
+
+**Fix 1 — the dead LIVEWIRE front door.** BEFORE: all three JS witnesses all-SKIP ×6,
+`pass=0 fail=0`, exit 0 — vacuous exactly as surveyed. Changes, per this section's own spec:
+- `LIVEWIRE` = first existing dir of `process.env.ARC_DB_DIR` → `$HOME/bim-ootb/modeller` → the old
+  `/tmp/wt-fable-livewire/modeller`; per-building SKIP kept for genuinely absent DBs.
+- The hardcoded `/home/red1/bim-compiler/node_modules/sql.js` requires (landmine 6) → the
+  `loadSqlJs()` candidate loop already used by `build/witness_disc_walk_shim.js:28–36`.
+- Parity's exec of `/home/red1/bim-compiler/scripts/compile_rooms.py` (:52) →
+  `path.join(ROOT, 'scripts/compile_rooms.py')` — the old absolute path silently tested the
+  PRIMARY checkout's py no matter which worktree ran the witness; same landmine class as LIVEWIRE.
+- `KNOWN_TYPES` += `SUSPECT_ELONGATED`, `SUSPECT_LARGE` (the specced latent-misfire fix).
+
+AFTER: parity `pass=6 fail=0`, zero SKIP, all six byte-identical on both dumps (51/33/207/6/201/45
+rooms — the banked `parity_realdata.log` shape reproduced through the witness's own front door).
+**But the proof protocol's "wellformed and fill must print fail=0" prediction was WRONG** — both
+came back RED on real data, because two product changes shipped inside the dead-gate window
+(2026-07-12/13) while the witnesses stayed frozen at 2026-07-11. Both are witness-staleness, not
+product defects (parity byte-identity proves py+js agree; each mechanism has its own witnessed
+commit). Measured, then re-locked:
+
+- **Finding A — fill F2 `suspectMulti` stale** ("SUSPECT rooms have exactly ONE row"): 7
+  multi-rect suspects fleet-wide (Clinic 3, Hospital 3, Terminal 1), each explained by exactly one
+  post-freeze mechanism (probe `suspect_multi_probe2.log`): R-MERGE rect-concat with a suspect
+  representative (`room_walker.js:990–998`, `ef2d5fe80` 2026-07-12; 6 rooms, `merged_from` 2–3)
+  or R-REJECT's post-decompose `SUSPECT_OPEN` flag (`room_walker.js:1063`; Terminal `Aras 01 R4`,
+  `merged_from=0`, enclosure 0.391 < `SUSPECT_OPEN_ENCLOSURE` 0.50). Re-lock: exempt exactly those
+  two, keyed on the compiled in-memory state; an unexplained multi-row suspect (the original
+  suspects-don't-decompose defect) still FAILs. Fill now `pass=18 fail=0`, zero SKIP.
+- **Finding B — wellformed W3 stale** ("ZERO raw wall cells inside any non-SUSPECT rect"): RED on
+  ALL SIX buildings (59/62, 42/43, 247/268, 1/4, 213/240, 55/57 rects "crossing"). Cause:
+  §WALL-SNAP (`room_walker.js:432–467`, `ab31dbee7` 2026-07-13 — two days after the witness froze)
+  moves every rect side OUT to its wall's continuous near face, so the rect boundary now COINCIDES
+  with the wall AABB by construction, and the witness's two independent quantizations (round() rect
+  cells vs floor() wall cells) share boundary cells. Depth-classified fleet-wide
+  (`w3_ring_probe.log`): 16,391 hits at depth ≤1, ZERO at depth ≥2; the single depth-1 non-ring
+  cell is two sub-cell wall slivers (0.054 m / 0.289 m, both < RES) at one snapped Clinic corner
+  (`clinic119_probe.log`). Re-lock: depth ≤1 = expected snap-band contact, counted and reported
+  (`snapBandHits=`), never failed; depth ≥2 — a wall LINE genuinely inside a room, the defect W3
+  exists to catch — still FAILs. Wellformed now `pass=19 fail=0`, zero SKIP.
+
+**Fix 2 — geomap baseline re-lock.** BEFORE: RED, `baseline measured 3/21 over 3 candidates` vs
+the locked 1 — the survey's measurement confirmed fresh. `EXPECT["baseline_iou_recall"]` 1→3 with
+a dated comment; assertion shape untouched (exact-lock + the BEATS strict-inequality both kept;
+13/21 still clears 3). AFTER: all asserts PASS, `RESULT: GREEN`, exit 0. Side-record: the rewrite
+refreshed the artifact's `db_md5` to the fixture's actual hash `6c855b73…` (the committed artifact
+still carried `72f89bb2…`; `deploy/buildings/Duplex_extracted.db` was rebuilt 2026-07-10, after
+the artifact was committed — every scored number re-verified identical). Correcting the survey's
+method note: "re-wrote its artifact byte-identically" was imprecise — `recover()` WRITES the
+artifact before the witness loads `disk`, so the byte-equivalence PASS compares against the
+just-rewritten file and cannot detect artifact-vs-git drift. Not fixed today; named here.
+
+**Perturbation proof (both specced must-go-reds demonstrated, scratch copies only):**
+- `mergeRooms` groupOrder → `Object.keys()`: parity `pass=4 fail=2`, exit 1 — Clinic + Hospital
+  fail on same-count/wrong-room-per-guid, the :974–985 historical red re-demonstrated
+  (`parity_perturbed.log`).
+- `KNOWN_TYPES` minus `SUSPECT_OPEN`: wellformed `pass=14 fail=5`, badType 9/23/1/8/13 across the
+  five suspect-bearing buildings (`wellformed_perturbed.log`).
+
+**Still open from candidate 1 (unchanged):** the optional `system_is_real.sh` wiring
+(SKIP-when-DBs-absent verdict). Candidate 2 (copy-drift collapse) is now UNBLOCKED — the locks it
+was gated on are live and proven falsifiable.
