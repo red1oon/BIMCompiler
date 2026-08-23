@@ -655,3 +655,211 @@ this lesson: classify before you count. Suggested sequence — (1) widen the sca
 KNOWN_RED harvest that must be triaged by hand, not bulk-labelled; (3) only then let the wider scan
 gate. Two of the three causes §S61.3 named (stale slices, hardcoded absolute paths) are exactly what a
 150-file directory nobody has run in months will be full of.
+
+---
+
+# §S74 — room_walker.js / compile_rooms.py Refactor Survey (2026-08-23)
+
+**Numbering note:** the task brief said "§S67 is the next free number." It is not — §S67–§S73 are
+taken by `prompts/4D_GANTT_TM_REFACTOR.md` (same shared S58+ sequence; §S67 = its 2026-08-22
+redisplay fix, line 4216). Verified by grep across `prompts/*.md`: §S74 is the first unused number
+in the band. The file wins over the brief, per this file's own habit.
+
+**Scope:** the paired room-compilation pipeline in **bim-compiler** — `build/room_walker.js`
+(**1,347** lines, `wc -l`, verified 2026-08-23) and `scripts/compile_rooms.py` (**1,321** lines),
+surveyed at `origin/fable/meshdb-livewire` @ `8a084610a` (identical to the worktree copy read; the
+two files are byte-identical between this branch tip and `origin/master`). Every `file:line` below
+was read directly from those copies, not guessed from function names. Priority convention = §S59's
+(1 = extract first, 5 = leave alone; note §S60's table inverted this — this section uses §S59's).
+No product code was changed by this session — spec only.
+
+**The one architectural fact that frames everything below:** `room_walker.js` is a **verbatim JS
+port of `compile_rooms.py`** (its header, :1), locked to it by a byte-level output-parity witness —
+and the pair is *already* the target state every §S59/§S60 extraction aims at: dual-mode export
+(`ROOT.RoomWalker` + `module.exports`, room_walker.js:1330–1346), ~35 small named functions, no DOM,
+no closure-trapped state, every consumer a `require()`. **Zero slice-based (text-marker/`sliceFn`)
+consumers exist for either file** — verified by grepping `readFileSync`/`sliceFn` against both
+basenames repo-wide: no hits. The §S61.3-A "sliced function cannot state its own dependencies" bug
+class structurally cannot occur here. What CAN occur — and has — is dead-path witness vacuity and
+multi-copy drift; both are measured below.
+
+## Seams table — build/room_walker.js (1,347 lines)
+
+| Region | Span | What it actually does | Witness coverage (see census below) | Pri | Reason |
+|---|---|---|---|---|---|
+| Header + tuned constants | 1–92 | Doctrine comments + every threshold (RES/MIN_AREA/§SUSPECT-LARGE/§RASTER-EPS/§DOOR-RESCUE/§DOOR-PARTITION…), each with its measured derivation attached | Parity witness locks their combined effect (byte-diff of output rows) | 5 | The derivation prose IS the value; constants are exported (`API.RES` etc., :1337–1342) and read by witnesses — moving them breaks the API contract for zero gain |
+| DB readers | 102–218 | `_rows` :102, `_median` :109, `doorStats` :116, `storeyZAnchors` :132, `_assignByZ` :146, `storeyWalls` :157 (§DISC-ARC/§WALL-VERT), `storeyStairs` :188, `storeyDoors` :204 (§STOREY-Z/§DOOR-NOT-ROOM) | `witness_room_wellformed.js:73–76` calls `doorStats`/`storeyZAnchors`/`storeyWalls` BY NAME to build its independent W3 oracle — vacuous today (dead path) | 4 | Cohesive sql.js-facade block; a `require`-able seam already (exported) — nothing to extract, but the wellformed witness's by-name calls freeze these export names |
+| Pure grid kernel | 220–556 | `doorAdjacent` :220, `stairOverlapFrac` :230, `_gridExtent` :243, `_rasterizeWalls` :257, `_dilate` :275, `_floodExterior` :295, `_openPerimeterM` :330, `_inscribedRect` :367, `_growRegion` :400, `_snapRectToWalls` :441, `_inscribedRectMin` :472, `_decomposeRegion` :509, `_classify` :536, `_isElongated` :552 | Locked ONLY through the compile passes (parity byte-diff + `witness_room_fill.js` F1 coverage asserts on `cover1`/`cover_n`) — no per-function witness; all locks vacuous today | 5 | Param-complete pure functions, yes — but each is a knife-edge parity twin of its Python double (§RASTER-EPS floor/ceil conventions :251–261, strict-`>` tie-breaks :384/:491). "Tidying" any of them into a utils module is exactly how byte-parity dies, and the gate that would catch it currently catches nothing |
+| Compile passes | 558–799 | `floodRooms` :558–650 (flood-fill → door-rescue → stair-exclude → §ROOM-FORM/§MULTI-RECT emit), `_exteriorMask` :657, `partitionByDoors` :686–799 (§DOOR-PARTITION-EXT-EXCLUDE nearest-door BFS) | Parity (whole-output), `witness_room_wellformed.js` W3/W4 (rect-vs-raster oracle; HHS flood-not-partition), `witness_room_fill.js` F1 — ALL vacuous today | 5 | The algorithm itself; single-purpose, comment-dense, parity-coupled line by line to compile_rooms.py:553–850 |
+| R-MERGE / R-REJECT / stack | 801–1067 | Constants :810–822, `allWallsRaw` :826, `allStairsZ` :836, `rejectStairwell` :846 (§STAIRWELL-STACK), `allDoorsRaw` :867, `_wallThickness`/`_unionLen`/`_roomBbox`/`_sharedEdge` :874–918, `mergeRooms` :924–1005 (union-find; §DETERMINISM insertion-order block :974–985), `_rectEnclosure`/`_roomEnclosure`/`rejectRooms` :1007–1067 | Parity only (byte-diff covers merge/reject output) — vacuous today | 5 | `mergeRooms` :974–985 exists BECAUSE a plain `Object.keys()` desynced guid order from Python dict order (Hospital/Terminal parity caught it — when the gate was alive). Highest-risk region to touch with the gate dead |
+| Orchestrator | 1073–1194 | `compileRooms` — anchors, §LOCAL-FRAME rebase (`QUANT`/`_q` :1110–1129, `Math.floor(v/QUANT+0.5)` matching py-round), per-storey loop, merge→reject→stairwell ordering, guid/name assignment :1175–1184 | Parity + `witness_s1_room_injector.js` G3b (deploy copy) — parity vacuous | 5 | The py `main()` counterpart; ordering is the spec |
+| `_verifyNoOverlap` | 1200–1230 | §NO-OVERLAP invariant, informs-never-blocks, `console.log` | Its own § line appears in every parity/fill run log | 5 | 30 lines, self-contained, already fine |
+| `writeRooms` + `walk` | 1234–1328 | Idempotent RM_/STC_ persist, §MULTI-RECT lettered sub-rect guids :1274, suspect-no-containment rule :1289–1294, `walk` CLI-equivalent :1317 | `witness_room_fill.js` F2/F3 (rect-row identity, rel purity), `witness_room_wellformed.js` W1/W2, s1-injector G3b `RW.walk()` direct-call — first two vacuous today | 4 | The only region with THREE distinct witnesses aimed at it — all currently blind (below) |
+| API export | 1330–1346 | 17 functions + 13 constants exported | Every consumer in 2 repos binds these names | 5 | THE preservation contract (landmines) |
+
+## Seams table — scripts/compile_rooms.py (1,321 lines)
+
+| Region | Span | What it actually does | Witness coverage | Pri | Reason |
+|---|---|---|---|---|---|
+| Docstring + constants | 1–109 | Same constants as the JS, same derivations, + `_is_room_door` :76 | Parity (vacuous) | 5 | Twin of JS :1–92 |
+| **§PHASE0-HEALTH** | 111–212 | `wall_door_ratio` :130, `discipline_fingerprint` :156, `circulation_completeness` :173, `data_health_guard` :186 — pre-flood sparsity flags, informs-never-blocks. **PY-ONLY: never ported to the JS** (no counterpart in room_walker.js; `main()` calls it at :1143) | **ZERO** — grep for `data_health_guard`/`wall_door_ratio` across the repo hits only the two product files themselves | 4 | The one genuinely separable block (own doctrine, own thresholds, no callers of its return dict) — but zero coverage DISQUALIFIES moving it, per this file's governing rule |
+| Readers + grid kernel | 214–551 | `door_stats` :218 … `_classify` :542 — line-for-line twins of JS 102–556 (incl. `_rasterize` :333, `_snap_rect_to_walls` :456) | Parity (vacuous) + `witness_geomap_tier3.py` calls `storey_walls`/`storey_stairs` directly (:141–143 of that file) — RED today | 5 | Same knife-edge parity coupling as the JS side |
+| Compile passes | 553–850 | `flood_rooms` :553–669 (exterior flood INLINE :569–588, unlike the JS's factored `_floodExterior`), `_flood_exterior` :716, `partition_by_doors` :740–850; §DOOR-PARTITION/§SUSPECT-ELONGATED doctrine :671–714 | Parity (vacuous); `witness_geomap_tier3.py:145–149` executes `flood_rooms` on Duplex as its scored baseline — the ONLY live executable lock on this file, and it is red-stale (below) | 5 | Note the asymmetry: py flood_rooms carries its own inline exterior flood; a "deduplicate with `_flood_exterior`" cleanup is behavior-identical in theory and exactly the class of edit nothing can currently prove |
+| R-MERGE/R-REJECT/stack | 852–1136 | Constants :862–879, `all_walls_raw` :881 … `_reject_rooms` :1085, `_verify_no_overlap` :1103 — twins of JS 801–1230 | Parity (vacuous) | 5 | Same §DETERMINISM coupling (py dict insertion order is the reference the JS :974–985 block mimics) |
+| **`main()`** | 1138–1318 | Monolithic: CLI parse, health guard, anchors, §LOCAL-FRAME rebase :1179–1191, per-storey compile loop :1194–1242, report prints, `--write` persist :1249–1315, containment :1296–1315 | Parity `--write` run covers all of it (vacuous); **its stdout is load-bearing** — parity witness :53 regex-parses `TOTAL compiled rooms = (\d+)` from :1244 | 3 | The one honest line-count seam in the pair: the JS already split this shape into `compileRooms`/`writeRooms`/`walk`; mirroring that split in py (`main()` → `compile(c)` + `write(c, compiled)`) is mechanical and would let witnesses import the halves. Still gated on reviving the locks first — see Top candidates |
+
+## Witness-coverage census (every repo reference to either basename, classified — grepped, then read, then RUN)
+
+| File | Refers via | What it actually exercises | Live? |
+|---|---|---|---|
+| `build/witness_room_walker_parity.js` (89 ln) | `require('./room_walker.js')` :12 + `execFileSync(python3, compile_rooms.py --write)` :52 | THE lock: runs BOTH implementations `--write` on 6 real buildings, byte-diffs `spatial_structure` + `rel_contained_in_space` row dumps (:68–71), gates `fail>0 → exit 1` | **NO — vacuous.** `LIVEWIRE = '/tmp/wt-fable-livewire/modeller'` :14 no longer exists. Run 2026-08-23: `SKIP ×6, SUMMARY pass=0 fail=0`, exit 0 (`scratchpad/parity_asis.log`). §S61.3 class B, textbook |
+| `build/witness_room_wellformed.js` (138 ln) | `require` :16 | W1 tag integrity, W2 containment purity, W3 independent-raster wall-crossing oracle, W4 HHS corridor-collapse | **NO** — same dead `LIVEWIRE` :18. Also stale: `KNOWN_TYPES` :21 lacks `SUSPECT_ELONGATED`/`SUSPECT_LARGE` (witness last touched 2026-07-11 `b156ed42b`; those types landed 2026-07-13/14). Measured today: 0 rows of either type across the 6-building fleet, so revival alone won't redden W1 — but the list is a latent misfire |
+| `build/witness_room_fill.js` (87 ln) | `require` :17 | F1 §MULTI-RECT coverage (cover1→cover_n medians/worst), F2 rect-row identity via `room_guid`, F3 rel purity | **NO** — same dead `LIVEWIRE` :19 |
+| `deploy/dev/tests/witness_s1_room_injector.js` (297 ln) | `require(DEV/lib/room_walker.js)` :102 | G3b: `RW.walk({write:true})` directly on the 21-authored-room Duplex, asserts zero authored IfcSpaces clobbered; gates properly :296 | **YES** — its fixture `deploy/dev/buildings/Duplex_extracted.db` is in-tree. But it locks the **deploy copy**, not `build/` |
+| `scripts/witness_geomap_tier3.py` (181 ln) | `import compile_rooms as cr` :137; calls `cr.storey_walls`/`storey_stairs`/`flood_rooms` on Duplex :141–149 | Exact-locks the flood-fill baseline recall on ground-truth Duplex (`EXPECT baseline_iou_recall: 1` :44) | **RED-STALE.** Run 2026-08-23 (`scratchpad/geomap_t3.log`): every topology assert PASS, but `baseline[iou] recall == 1/21` FAILS — flood_rooms now measures **3/21 over 3 candidates**. The baseline IMPROVED since the 2026-07-02 claim; the exact-lock was never re-recorded. §S63's own lesson ("lock the measured number") applied to itself. Also needs primary-checkout-only fixtures (`deploy/buildings/Duplex_extracted.db`, gitignored) + numpy/shapely |
+| `prompts/Modeller/DISC_Walker/embed8_scripts/witness_room008_terminal_correction.js` | `require('/home/red1/bim-compiler/build/room_walker.js')` :9 (absolute, primary checkout) | Migration check: ROOM008 SQL reproduces a fresh walker run on Terminal | Runnable (its `~/bim-ootb/modeller/Terminal_ARC.db` path exists) — but it locks one migration artifact, not the walker |
+| `scripts/hull/probe_s50_early.js` | `require(__dirname/../lib/room_walker.js)` :26 | §S50 study probe — **an archived bim-ootb copy**: from `scripts/hull/` the path resolves to `scripts/lib/room_walker.js`, which does not exist; it runs only in its bim-ootb home against `viewer/lib/room_walker.js` | Not runnable in-place here; incidental |
+| `prompts/Modeller/DISC_Walker/bench_compile.js` (23 ln) | requires a worktree's `viewer/lib/room_walker.js` :7 | Benchmark, not a gate | Incidental |
+| `build/room_type_classifier.js` / `building_parts_taxonomy.js` / `level_deriver.js` / `measure_door_counts.js` / `disc_walker.js` / `scripts/extractIFC2DB.js` / `deploy/dev/room_graph.js` / `room_habitability.js` / `room_graph_bridge.js` | comments/conventions only (no `require` of the pair), except `room_graph_bridge.js` :61 which lazy-`<script>`-loads `lib/room_walker.js?v=3` in the browser | — | Incidental / runtime loader |
+
+**CI runs NONE of these** — `.github/workflows/ci.yml` + `scripts/system_is_real.sh` gate a browser
+local gate, one ERP witness and the Red Pill witness only (grepped; zero room-witness references).
+So the pair's effective live gate count today is: **one** (s1-injector, deploy copy only) plus one
+**red** py witness. Everything protecting `build/room_walker.js` ↔ `compile_rooms.py` parity is
+currently blind.
+
+**Proof the blind lock still holds when fed (banked baseline for any future work):** a scratch copy
+of the parity witness with `LIVEWIRE` repointed to `/home/red1/bim-ootb/modeller` (where all six
+`{b}_ARC.db` live today) and require/exec repointed at this branch's own pair:
+`§W-ROOM-WALKER-PARITY SUMMARY pass=6 fail=0`, exit 0 — SampleCastle 51, HHS 33, Clinic 207,
+Garage 6, Hospital 201, Terminal 45 rooms; `spatial_structure` AND `rel_contained_in_space`
+byte-identical py↔js on all six (`scratchpad/parity_realdata.log`, 2026-08-23). The port is still
+verbatim; only the witness's front door is dead.
+
+## The copy-drift finding (the real structural debt — it is not line count)
+
+Four JS copies + one py exist; they are THREE algorithm generations:
+
+| Copy | Lines | Delta | Locked by |
+|---|---|---|---|
+| `scripts/compile_rooms.py` | 1,321 | ground truth, **no §CONTAINMENT-ALIAS** | parity (vacuous), geomap-tier3 (red) |
+| `build/room_walker.js` | 1,347 | verbatim port of the py | parity (vacuous) |
+| `deploy/dev/lib/room_walker.js` | 1,474 | +127 lines the build copy lacks: `ROOM_WALKER_V='v3…'` stamp, §CONTAINMENT-ALIAS (`FLOOR_ALIAS_RE`/`_canonicalFloor` :164–178), `_makeJoinKey` :1260, `buildCameraRoomIndex` :1285, `rooms_meta` stamp :1429–1436 — and its `writeRooms` containment join USES `_makeJoinKey` (canonical-floor Z-anchor join), which the build/py pair's raw-storey join does not | `witness_s1_room_injector.js` (live) |
+| `~/bim-ootb/viewer/lib/room_walker.js` | 1,478 | deploy copy +4 lines (§S50 export of `_canonicalFloor`/`_makeJoinKey`) | bim-ootb's strongest suite — `witness_midair_zero.js:104`, `witness_s50_cell_engine.js:15`, `witness_s55_identity_vs_cell.js:63` all `require` it |
+| | | | |
+
+The deploy copy's own comment (:22–25) claims `ROOM_WALKER_V` is "kept in LOCKSTEP with the
+same-named constant in scripts/compile_rooms.py" — **there is no such constant in compile_rooms.py**
+(grepped: zero hits for `ROOM_WALKER_V`/`CONTAINMENT`/`FLOOR_ALIAS`). The lockstep claim is already
+false: the deployed algorithm (v3 containment join) moved ahead of the "checked ground truth" pair,
+and the parity witness — which could never have caught this cross-copy drift anyway (it compares
+build↔py, both still at the old join) — has been vacuous since `/tmp/wt-fable-livewire` was pruned.
+
+## Top candidates
+
+### 1. Revive the three dead-path witnesses + re-lock the geomap baseline (priority 1 — this is the §S63 `witness_zone_index` fix class, NOT an extraction)
+By this file's own RESUME rule — *"take a seam because it retires a named failure, never because of
+a line count"* — the only work sanctioned today retires four named failures, all witness-side, zero
+product lines:
+- `witness_room_walker_parity.js` / `witness_room_fill.js` / `witness_room_wellformed.js`: replace
+  the dead `const LIVEWIRE = '/tmp/wt-fable-livewire/modeller'` (parity :14, fill :19, wellformed
+  :18) with an env override + existing-dir fallback (`process.env.ARC_DB_DIR`, then
+  `~/bim-ootb/modeller`, then the old /tmp path), keeping the per-building SKIP for genuinely
+  absent DBs. Do NOT "fix" it to another hardcoded absolute — §S63 already paid for that lesson
+  (`OLD` was a revision, not a file; a one-line reclassification is a hypothesis).
+- `witness_room_wellformed.js:21`: add `'SUSPECT_ELONGATED', 'SUSPECT_LARGE'` to `KNOWN_TYPES`
+  (types shipped 2026-07-13/14, witness frozen 2026-07-11). Measured 2026-08-23: no building emits
+  them today, so this is a latent misfire fix, not a red fix.
+- `scripts/witness_geomap_tier3.py:44`: re-lock `baseline_iou_recall` at the measured **3** (and
+  re-read :45's centroid 3 — it already matches). §S63's W-ZDA-4a discipline verbatim: lock the
+  measured number, name the trade in the witness comment (the flood baseline improved 1→3 between
+  2026-07-02 and today; topology's 13/21 still clears it, so the BEATS assert keeps its meaning).
+- **Proof protocol:** parity must print `pass=6 fail=0` with all six buildings PASS byte-identical
+  (the banked `scratchpad/parity_realdata.log` numbers above are the expected shape); wellformed
+  and fill must print their SUMMARY with fail=0 and zero SKIPs on the six; geomap-tier3 exits 0.
+  Perturbation (each must go red): flip `mergeRooms`'s `groupOrder` iteration to `Object.keys()`
+  order in a scratch copy → parity FAILs on guid desync (the :974–985 comment documents this exact
+  historical red); delete one `KNOWN_TYPES` entry → wellformed W1 FAILs on that building.
+- Optional but named: wire the trio into `scripts/system_is_real.sh` as a SKIP-when-DBs-absent
+  verdict, so "nothing runs the suite" (§S61.3's actual finding) stops being true for this lane.
+
+### 2. AFTER the locks are live: `room_walker_ext.js` — collapse the three-generation copy drift (priority 2, blocked on candidate 1)
+The extraction that actually helps is cross-copy, not intra-file: make
+`deploy/dev/lib/room_walker.js` = the build copy VERBATIM + a separate `room_walker_ext.js`
+carrying the deployed additions (§CONTAINMENT-ALIAS `FLOOR_ALIAS_RE`/`_canonicalFloor`,
+`_makeJoinKey`, `buildCameraRoomIndex`, the `rooms_meta` version stamp — ~130 lines), so the
+algorithm core exists ONCE and syncs byte-for-byte across build/ + deploy/dev/lib + bim-ootb
+viewer/lib.
+- **Witness locks:** `witness_s1_room_injector.js` G3b (asserts `RW.walk()` leaves Duplex's 21
+  authored IfcSpaces intact — quoted from its header: "assert all 21 survive BY NAME AND BY GUID");
+  bim-ootb `witness_midair_zero.js` (49/49, §S58's own control instrument — it `require`s the
+  viewer copy at :104, so a broken split fails the strongest gate in the fleet); the revived parity
+  witness for the core.
+- **The hard decision the spec must settle, not bury:** the deployed `writeRooms` containment join
+  (`_makeJoinKey`, canonical-floor Z-anchor) DIFFERS behaviorally from the parity-locked raw-storey
+  join. Either (a) the ext module wraps/overrides `writeRooms`' join and the core keeps the py-
+  parity behavior, or (b) §CONTAINMENT-ALIAS is finally ported to `compile_rooms.py` (as its own
+  comment already promised) and the parity witness locks the NEW join on all six buildings + LTU.
+  (b) is the honest end state; it is also a behavior change on any building with aliased storey
+  names and must be measured before/after, not assumed neutral.
+- Until candidate 1 lands, this is DISQUALIFIED by the governing rule — the witnesses that would
+  prove it are exactly the vacuous ones.
+
+**No line-count split of either file is recommended, now or after.** Both files are cohesive
+single-purpose compilers; the JS is already the model output-state (like `schedule_author.js` in
+§S59 and `common/room_graph.js` in §S60 — big, pure, witness-shaped). The only intra-file seam
+worth a future spec is mirroring the JS's `compileRooms`/`writeRooms`/`walk` split into py
+`main()` (1138–1318) so witnesses can import the halves — mechanical, but still gated on live locks.
+
+## Preservation landmines (for whoever executes either candidate)
+
+1. **The API export map is the contract** (room_walker.js:1330–1346): witnesses in TWO repos bind
+   `walk`/`compileRooms`/`writeRooms`/`doorStats`/`storeyZAnchors`/`storeyWalls`/`RES`/`VERT_FACTOR`
+   by name (`witness_room_wellformed.js:22,73–76`, s1-injector :107, bim-ootb midair/s50/s55).
+   No renames, additive-only.
+2. **`TOTAL compiled rooms = ` is load-bearing stdout** — `witness_room_walker_parity.js:53`
+   regex-parses it from `compile_rooms.py:1244`. Reword it and `pyTotal` becomes −1 → guaranteed
+   (at least loud) FAIL. Same family as §S58's frozen `§PHASE_OVERLAP_SUPPORT_GUARD` wording.
+3. **Parity is bit-parity, not idea-parity.** The knife-edge couplings that must move verbatim if
+   anything ever moves: §RASTER-EPS floor/ceil conventions (js :251–261 ↔ py :335–337/:560–562),
+   strict-`>` tie-breaks in both inscribed-rect scans (js :384/:491 ↔ py :416/:505), §LOCAL-FRAME
+   `QUANT` rounding `Math.floor(v/QUANT+0.5)` chosen because `Math.round` ≠ py `round` on .5 ties
+   (js :1109–1111 ↔ py :1179–1180), and `mergeRooms`' first-seen group order (js :974–985) mimicking
+   py dict insertion order (py :1025–1027). Each has a comment naming the historical red it fixed.
+4. **No slice-based consumers** — verified zero `readFileSync`/`sliceFn`/text-marker references to
+   either basename repo-wide, so §S61.3-A/§S66-style slice rot cannot bite here. Do not introduce
+   the first one.
+5. **Copy-sync is manual.** Any change to `build/room_walker.js` must be re-applied to
+   `deploy/dev/lib/` and bim-ootb `viewer/lib/` (and the browser loader's `?v=` bumped,
+   `room_graph_bridge.js:61`) — the 127/131-line drift measured above is what happens when it isn't.
+   Candidate 2 exists to shrink this surface, not to add to it.
+6. **Witness environment couplings** (fix in candidate 1, don't re-create): hardcoded
+   `/home/red1/bim-compiler/node_modules/sql.js` requires (parity :11, fill :16, wellformed :15),
+   primary-checkout-only fixtures for geomap-tier3, and `witness_room008`'s absolute require of the
+   primary checkout's build copy.
+
+## Dangerously low coverage (same format as §S59's)
+
+- **build/room_walker.js — 1,347 lines, THREE dedicated witnesses, ZERO of them live.** The parity/
+  fill/wellformed trio all front-door on a pruned worktree path and have printed all-SKIP
+  `pass=0 fail=0` exit-0 since `/tmp/wt-fable-livewire` was removed — green-but-vacuous, the §S61.3
+  class-B failure with §S61.3's "nothing runs the suite" as the reason nobody noticed. Every
+  product edit to this file since that pruning has shipped unproven.
+- **scripts/compile_rooms.py — 1,321 lines**, same vacuous parity front door; its one independent
+  executable lock (`witness_geomap_tier3.py`) is RED on a stale exact-lock (1/21 vs measured 3/21)
+  and requires primary-checkout fixtures + numpy/shapely to run at all.
+- **§PHASE0-HEALTH (py :111–212) — 0 references anywhere.** ~100 lines of measured-threshold health
+  doctrine that only its own `main()` ever executes; its return dict has no consumer. Invisible to
+  every witness.
+- **`deploy/dev/lib/room_walker.js` — 1,474 lines, one witness** (s1-injector) whose G3b exercises
+  one property (authored-space non-clobber); the 127 lines it carries beyond the build copy
+  (§CONTAINMENT-ALIAS join, camera index) have no lock in this repo at all — their only real
+  coverage is downstream, in bim-ootb's suite, against a third copy.
+- CI: zero room-lane witnesses wired (`ci.yml`/`system_is_real.sh` grepped).
+
+**Method note:** both files read end-to-end from this branch @ `8a084610a`; all coverage claims from
+repo-wide basename greps followed by reading each hit; all "vacuous"/"red"/"pass=6" claims from
+actual runs saved to `scratchpad/{parity_asis,parity_realdata,geomap_t3}.log` (Log Mandate — the
+logs, not exit codes, are the evidence). The scratch parity run copied DBs to `/tmp` scratch and
+wrote nothing to any repo; geomap-tier3 re-wrote its artifact byte-identically (its own PASS line
+asserts this).
