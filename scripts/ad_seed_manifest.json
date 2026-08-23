@@ -1,3066 +1,3050 @@
 [
-  {
-    "table": "AD_Column",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 26144,
-    "prevCols": 15
-  },
-  {
-    "table": "AD_Element",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 6024,
-    "prevCols": 6
-  },
-  {
-    "table": "AD_Field",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 20911,
-    "prevCols": 13
-  },
-  {
-    "table": "AD_Menu",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 587,
-    "prevCols": 9
-  },
-  {
-    "table": "AD_Ref_List",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 1499,
-    "prevCols": 6
-  },
-  {
-    "table": "AD_Reference",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 604,
-    "prevCols": 5
-  },
-  {
-    "table": "AD_Ref_Table",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": false,
-    "prevRows": 243,
-    "prevCols": 13
-  },
-  {
-    "table": "AD_Tab",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 1130,
-    "prevCols": 13
-  },
-  {
-    "table": "AD_Table",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 1003,
-    "prevCols": 6
-  },
-  {
-    "table": "AD_TreeNodeMM",
-    "case": "canonical",
-    "where": "AD_Tree_ID = 10",
-    "activeOnly": true,
-    "prevRows": 826,
-    "prevCols": 5
-  },
-  {
-    "table": "AD_User",
-    "case": "canonical",
-    "where": "AD_Client_ID IN (0, 11)",
-    "activeOnly": true,
-    "prevRows": 8,
-    "prevCols": 9
-  },
-  {
-    "table": "AD_Window",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 370,
-    "prevCols": 6
-  },
-  {
-    "table": "C_AcctSchema",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 2,
-    "prevCols": 7
-  },
-  {
-    "table": "C_BP_Group",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 3,
-    "prevCols": 7
-  },
-  {
-    "table": "C_BPartner",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 18,
-    "prevCols": 12
-  },
-  {
-    "table": "C_BPartner_Location",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 16,
-    "prevCols": 7
-  },
-  {
-    "table": "C_BankStatement",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 2,
-    "prevCols": 10
-  },
-  {
-    "table": "C_BankStatementLine",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 2,
-    "prevCols": 12
-  },
-  {
-    "table": "C_Charge",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 3,
-    "prevCols": 7
-  },
-  {
-    "table": "C_Country",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 249,
-    "prevCols": 5
-  },
-  {
-    "table": "C_Currency",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 163,
-    "prevCols": 7
-  },
-  {
-    "table": "C_DocType",
-    "case": "canonical",
-    "where": "AD_Client_ID IN (0, 11)",
-    "activeOnly": true,
-    "prevRows": 52,
-    "prevCols": 9
-  },
-  {
-    "table": "C_ElementValue",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 379,
-    "prevCols": 12
-  },
-  {
-    "table": "C_Invoice",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 8,
-    "prevCols": 17
-  },
-  {
-    "table": "C_InvoiceLine",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 24,
-    "prevCols": 15
-  },
-  {
-    "table": "C_Location",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 33,
-    "prevCols": 10
-  },
-  {
-    "table": "C_Order",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 8,
-    "prevCols": 16
-  },
-  {
-    "table": "C_OrderLine",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 27,
-    "prevCols": 16
-  },
-  {
-    "table": "C_Payment",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 2,
-    "prevCols": 16
-  },
-  {
-    "table": "C_Project",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "C_ProjectPhase",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 0,
-    "prevCols": 10
-  },
-  {
-    "table": "C_ProjectTask",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 0,
-    "prevCols": 10
-  },
-  {
-    "table": "C_Region",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 399,
-    "prevCols": 5
-  },
-  {
-    "table": "C_Tax",
-    "case": "canonical",
-    "where": "AD_Client_ID IN (0, 11)",
-    "activeOnly": true,
-    "prevRows": 6,
-    "prevCols": 8
-  },
-  {
-    "table": "C_TaxCategory",
-    "case": "canonical",
-    "where": "AD_Client_ID IN (0, 11)",
-    "activeOnly": true,
-    "prevRows": 1,
-    "prevCols": 5
-  },
-  {
-    "table": "C_UOM",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 15,
-    "prevCols": 7
-  },
-  {
-    "table": "M_InOut",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 9,
-    "prevCols": 15
-  },
-  {
-    "table": "M_InOutLine",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 27,
-    "prevCols": 13
-  },
-  {
-    "table": "M_Locator",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 11,
-    "prevCols": 10
-  },
-  {
-    "table": "M_PriceList",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 4,
-    "prevCols": 8
-  },
-  {
-    "table": "M_PriceList_Version",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 5,
-    "prevCols": 8
-  },
-  {
-    "table": "M_Product",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 55,
-    "prevCols": 10
-  },
-  {
-    "table": "M_ProductPrice",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 114,
-    "prevCols": 6
-  },
-  {
-    "table": "M_Product_Category",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 14,
-    "prevCols": 6
-  },
-  {
-    "table": "M_Storage",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 20,
-    "prevCols": 6
-  },
-  {
-    "table": "M_Warehouse",
-    "case": "canonical",
-    "where": "AD_Client_ID = 11",
-    "activeOnly": true,
-    "prevRows": 11,
-    "prevCols": 8
-  },
-  {
-    "table": "a_asset",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 69
-  },
-  {
-    "table": "a_asset_group",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 21
-  },
-  {
-    "table": "a_asset_group_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 53
-  },
-  {
-    "table": "a_asset_group_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 14
-  },
-  {
-    "table": "a_depreciation",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 11,
-    "prevCols": 15
-  },
-  {
-    "table": "a_depreciation_convention",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 15
-  },
-  {
-    "table": "a_depreciation_method",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 14
-  },
-  {
-    "table": "a_depreciation_table_detail",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2579,
-    "prevCols": 14
-  },
-  {
-    "table": "a_depreciation_table_header",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 122,
-    "prevCols": 14
-  },
-  {
-    "table": "ad_attachment",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 15
-  },
-  {
-    "table": "ad_client",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 42
-  },
-  {
-    "table": "ad_clientinfo",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 37
-  },
-  {
-    "table": "ad_document_action_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2142,
-    "prevCols": 11
-  },
-  {
-    "table": "ad_form_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 120,
-    "prevCols": 11
-  },
-  {
-    "table": "ad_image",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "ad_impformat",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 8,
-    "prevCols": 15
-  },
-  {
-    "table": "ad_impformat_row",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 65,
-    "prevCols": 23
-  },
-  {
-    "table": "ad_infowindow_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 52,
-    "prevCols": 10
-  },
-  {
-    "table": "ad_issue",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 8,
-    "prevCols": 50
-  },
-  {
-    "table": "ad_org",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 13
-  },
-  {
-    "table": "ad_orginfo",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 27
-  },
-  {
-    "table": "ad_orgtype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_package_imp",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 24
-  },
-  {
-    "table": "ad_package_imp_detail",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 12,
-    "prevCols": 22
-  },
-  {
-    "table": "ad_package_imp_inst",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 23
-  },
-  {
-    "table": "ad_package_imp_proc",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 17
-  },
-  {
-    "table": "ad_pinstance_log",
-    "case": "lower",
-    "where": null,
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 11
-  },
-  {
-    "table": "ad_preference",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 11,
-    "prevCols": 17
-  },
-  {
-    "table": "ad_printform",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 25
-  },
-  {
-    "table": "ad_printformat",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 13,
-    "prevCols": 32
-  },
-  {
-    "table": "ad_printformat_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 13,
-    "prevCols": 14
-  },
-  {
-    "table": "ad_printformatitem",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 468,
-    "prevCols": 69
-  },
-  {
-    "table": "ad_printformatitem_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 468,
-    "prevCols": 14
-  },
-  {
-    "table": "ad_process_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1170,
-    "prevCols": 11
-  },
-  {
-    "table": "ad_replication",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 24
-  },
-  {
-    "table": "ad_replicationdocument",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "ad_replicationstrategy",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "ad_replicationtable",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "ad_role",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 56
-  },
-  {
-    "table": "ad_role_orgaccess",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 17,
-    "prevCols": 10
-  },
-  {
-    "table": "ad_sequence",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 205,
-    "prevCols": 27
-  },
-  {
-    "table": "ad_table_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "ad_tree",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 12,
-    "prevCols": 20
-  },
-  {
-    "table": "ad_tree_favorite",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 10
-  },
-  {
-    "table": "ad_tree_favorite_node",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 7,
-    "prevCols": 18
-  },
-  {
-    "table": "ad_treebar",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 13
-  },
-  {
-    "table": "ad_treenode",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 398,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_treenodebp",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 18,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_treenodecmc",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_treenodecmm",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_treenodecms",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_treenodecmt",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_treenodepr",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 55,
-    "prevCols": 12
-  },
-  {
-    "table": "ad_user_roles",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 10
-  },
-  {
-    "table": "ad_usermail",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "ad_userpreference",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "ad_userquery",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 18
-  },
-  {
-    "table": "ad_wf_activity",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 13,
-    "prevCols": 25
-  },
-  {
-    "table": "ad_wf_eventaudit",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 13,
-    "prevCols": 23
-  },
-  {
-    "table": "ad_wf_nextcondition",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 18
-  },
-  {
-    "table": "ad_wf_node_para",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "ad_wf_node_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 13,
-    "prevCols": 14
-  },
-  {
-    "table": "ad_wf_nodenext",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 16
-  },
-  {
-    "table": "ad_wf_process",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 11,
-    "prevCols": 20
-  },
-  {
-    "table": "ad_window_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1080,
-    "prevCols": 11
-  },
-  {
-    "table": "ad_workflow_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 168,
-    "prevCols": 11
-  },
-  {
-    "table": "ad_workflow_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 14
-  },
-  {
-    "table": "c_acctprocessor",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "c_acctschema_default",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 84
-  },
-  {
-    "table": "c_acctschema_element",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 12,
-    "prevCols": 34
-  },
-  {
-    "table": "c_acctschema_gl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 22
-  },
-  {
-    "table": "c_allocationhdr",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 25
-  },
-  {
-    "table": "c_allocationline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 24
-  },
-  {
-    "table": "c_bank",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 15
-  },
-  {
-    "table": "c_bankaccount",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 22
-  },
-  {
-    "table": "c_bankaccount_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 22
-  },
-  {
-    "table": "c_bankaccount_processor",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 27
-  },
-  {
-    "table": "c_bankaccountdoc",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 15
-  },
-  {
-    "table": "c_bp_bankaccount",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 36
-  },
-  {
-    "table": "c_bp_customer_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 36,
-    "prevCols": 13
-  },
-  {
-    "table": "c_bp_employee_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 17,
-    "prevCols": 12
-  },
-  {
-    "table": "c_bp_group_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 24
-  },
-  {
-    "table": "c_bp_relation",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 19
-  },
-  {
-    "table": "c_bp_vendor_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 36,
-    "prevCols": 13
-  },
-  {
-    "table": "c_bpartner_product",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 18
-  },
-  {
-    "table": "c_calendar",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 11
-  },
-  {
-    "table": "c_campaign",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 17
-  },
-  {
-    "table": "c_campaign_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "c_cashbook",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "c_cashbook_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 15
-  },
-  {
-    "table": "c_cashline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 23
-  },
-  {
-    "table": "c_channel",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 12
-  },
-  {
-    "table": "c_charge_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 12
-  },
-  {
-    "table": "c_charge_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 13
-  },
-  {
-    "table": "c_commission",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "c_commissionline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 25
-  },
-  {
-    "table": "c_conversion_rate",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 16
-  },
-  {
-    "table": "c_cycle",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 12
-  },
-  {
-    "table": "c_cyclephase",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 10,
-    "prevCols": 10
-  },
-  {
-    "table": "c_cyclestep",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 13
-  },
-  {
-    "table": "c_doctype_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 51,
-    "prevCols": 14
-  },
-  {
-    "table": "c_doctypecounter",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 17
-  },
-  {
-    "table": "c_dunning",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "c_dunninglevel",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 28
-  },
-  {
-    "table": "c_dunninglevel_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "c_element",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 16
-  },
-  {
-    "table": "c_elementvalue_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 379,
-    "prevCols": 13
-  },
-  {
-    "table": "c_greeting",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "c_greeting_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "c_invoicepayschedule",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 18
-  },
-  {
-    "table": "c_invoiceschedule",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 20
-  },
-  {
-    "table": "c_invoicetax",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 8,
-    "prevCols": 15
-  },
-  {
-    "table": "c_job",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 14
-  },
-  {
-    "table": "c_jobcategory",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 12
-  },
-  {
-    "table": "c_nonbusinessday",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "c_ordertax",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 8,
-    "prevCols": 15
-  },
-  {
-    "table": "c_paymentterm",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 30
-  },
-  {
-    "table": "c_paymentterm_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 14
-  },
-  {
-    "table": "c_payschedule",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 17
-  },
-  {
-    "table": "c_payselection",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 20
-  },
-  {
-    "table": "c_payselectioncheck",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 23
-  },
-  {
-    "table": "c_payselectionline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 23
-  },
-  {
-    "table": "c_period",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 360,
-    "prevCols": 16
-  },
-  {
-    "table": "c_periodcontrol",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 10464,
-    "prevCols": 14
-  },
-  {
-    "table": "c_phase",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 13,
-    "prevCols": 16
-  },
-  {
-    "table": "c_pos",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 26
-  },
-  {
-    "table": "c_poskey",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 163,
-    "prevCols": 22
-  },
-  {
-    "table": "c_poskeylayout",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 16
-  },
-  {
-    "table": "c_project_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 12
-  },
-  {
-    "table": "c_projectline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 31
-  },
-  {
-    "table": "c_projecttype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 13
-  },
-  {
-    "table": "c_recurring",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 26
-  },
-  {
-    "table": "c_revenuerecognition",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 15
-  },
-  {
-    "table": "c_rfq",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 38
-  },
-  {
-    "table": "c_rfq_topic",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "c_rfq_topicsubscriber",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 15
-  },
-  {
-    "table": "c_rfqline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 18
-  },
-  {
-    "table": "c_rfqlineqty",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 19
-  },
-  {
-    "table": "c_salesregion",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 15
-  },
-  {
-    "table": "c_salesregion_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "c_task",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 16
-  },
-  {
-    "table": "c_tax_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 12,
-    "prevCols": 15
-  },
-  {
-    "table": "c_tax_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 14
-  },
-  {
-    "table": "c_taxcategory_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "c_uom_conversion",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "c_uom_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 14
-  },
-  {
-    "table": "c_validcombination",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 157,
-    "prevCols": 29
-  },
-  {
-    "table": "c_year",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 30,
-    "prevCols": 13
-  },
-  {
-    "table": "cm_container",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 35
-  },
-  {
-    "table": "cm_container_element",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 15
-  },
-  {
-    "table": "cm_container_element_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 15
-  },
-  {
-    "table": "cm_container_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 17
-  },
-  {
-    "table": "cm_cstage",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 37
-  },
-  {
-    "table": "cm_cstage_element",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 7,
-    "prevCols": 15
-  },
-  {
-    "table": "cm_cstage_element_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 7,
-    "prevCols": 15
-  },
-  {
-    "table": "cm_cstage_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 17
-  },
-  {
-    "table": "cm_media",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 18
-  },
-  {
-    "table": "cm_media_server",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 19
-  },
-  {
-    "table": "cm_template",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 22
-  },
-  {
-    "table": "cm_webproject",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "cm_webproject_domain",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "dbreplicasyncverifier",
-    "case": "lower",
-    "where": null,
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 1
-  },
-  {
-    "table": "dd_networkdistribution",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 20
-  },
-  {
-    "table": "dd_networkdistributionline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 10,
-    "prevCols": 18
-  },
-  {
-    "table": "exp_format",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 19
-  },
-  {
-    "table": "exp_formatline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 21
-  },
-  {
-    "table": "exp_processor",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 18
-  },
-  {
-    "table": "exp_processor_type",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "exp_processorparameter",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 7,
-    "prevCols": 15
-  },
-  {
-    "table": "gl_budget",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "gl_category",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 16
-  },
-  {
-    "table": "gl_category_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 13
-  },
-  {
-    "table": "gl_distribution",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 62
-  },
-  {
-    "table": "gl_distributionline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 53
-  },
-  {
-    "table": "gl_journal",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 36
-  },
-  {
-    "table": "gl_journalbatch",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 28
-  },
-  {
-    "table": "gl_journalgenerator",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 19
-  },
-  {
-    "table": "gl_journalgeneratorline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 22
-  },
-  {
-    "table": "gl_journalgeneratorsource",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 8,
-    "prevCols": 15
-  },
-  {
-    "table": "gl_journalline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 50
-  },
-  {
-    "table": "i_conversion_rate",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 25
-  },
-  {
-    "table": "imp_processor_type",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "imp_processorparameter",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 15
-  },
-  {
-    "table": "k_category",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "k_source",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 11
-  },
-  {
-    "table": "k_topic",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "k_type",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "m_attribute",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 21
-  },
-  {
-    "table": "m_attributeinstance",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 15
-  },
-  {
-    "table": "m_attributesearch",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 11
-  },
-  {
-    "table": "m_attributeset",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 30
-  },
-  {
-    "table": "m_attributesetinstance",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 15
-  },
-  {
-    "table": "m_attributeuse",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 13
-  },
-  {
-    "table": "m_attributevalue",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 14
-  },
-  {
-    "table": "m_bom",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 17
-  },
-  {
-    "table": "m_bomalternative",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "m_changenotice",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 16
-  },
-  {
-    "table": "m_cost",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 267,
-    "prevCols": 23
-  },
-  {
-    "table": "m_costelement",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 9,
-    "prevCols": 14
-  },
-  {
-    "table": "m_costtype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "m_discountschema",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 19
-  },
-  {
-    "table": "m_discountschemabreak",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 17
-  },
-  {
-    "table": "m_discountschemaline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 11,
-    "prevCols": 43
-  },
-  {
-    "table": "m_distributionlist",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "m_distributionlistline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 15
-  },
-  {
-    "table": "m_distributionrun",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "m_distributionrunline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 16
-  },
-  {
-    "table": "m_forecast",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 17
-  },
-  {
-    "table": "m_forecastline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 50,
-    "prevCols": 17
-  },
-  {
-    "table": "m_freight",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 20
-  },
-  {
-    "table": "m_freightcategory",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "m_inoutconfirm",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 25
-  },
-  {
-    "table": "m_inoutlineconfirm",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 20
-  },
-  {
-    "table": "m_inventory",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 37
-  },
-  {
-    "table": "m_inventoryline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 27
-  },
-  {
-    "table": "m_lotctl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 16
-  },
-  {
-    "table": "m_matchinv",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 18,
-    "prevCols": 24
-  },
-  {
-    "table": "m_matchpo",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 37,
-    "prevCols": 27
-  },
-  {
-    "table": "m_movement",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 49
-  },
-  {
-    "table": "m_movementline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 28
-  },
-  {
-    "table": "m_package",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 72
-  },
-  {
-    "table": "m_packageline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "m_pricelist_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 13
-  },
-  {
-    "table": "m_pricelist_version_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 6,
-    "prevCols": 12
-  },
-  {
-    "table": "m_product_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 110,
-    "prevCols": 34
-  },
-  {
-    "table": "m_product_bom_old",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 20,
-    "prevCols": 15
-  },
-  {
-    "table": "m_product_category_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 28,
-    "prevCols": 37
-  },
-  {
-    "table": "m_product_category_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 14,
-    "prevCols": 13
-  },
-  {
-    "table": "m_product_po",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 29,
-    "prevCols": 32
-  },
-  {
-    "table": "m_product_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 55,
-    "prevCols": 14
-  },
-  {
-    "table": "m_productdownload",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "m_relatedproduct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "m_replenish",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 19,
-    "prevCols": 16
-  },
-  {
-    "table": "m_requisition",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 27
-  },
-  {
-    "table": "m_requisitionline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "m_rma",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 31
-  },
-  {
-    "table": "m_rmaline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 25
-  },
-  {
-    "table": "m_rmatype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "m_sernoctl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 16
-  },
-  {
-    "table": "m_shipper",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 14
-  },
-  {
-    "table": "m_shippercfg",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 19
-  },
-  {
-    "table": "m_shippingprocessor",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "m_shippingprocessorcfg",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 19
-  },
-  {
-    "table": "m_storageonhand",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 20,
-    "prevCols": 14
-  },
-  {
-    "table": "m_storagereservation",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "m_transaction",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 28,
-    "prevCols": 21
-  },
-  {
-    "table": "m_warehouse_acct",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 22,
-    "prevCols": 14
-  },
-  {
-    "table": "mp_assetmeter",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 16
-  },
-  {
-    "table": "mp_assetmeter_log",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 7,
-    "prevCols": 16
-  },
-  {
-    "table": "mp_jobstandar",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 14
-  },
-  {
-    "table": "mp_jobstandar_task",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 12,
-    "prevCols": 13
-  },
-  {
-    "table": "mp_maintain",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 32
-  },
-  {
-    "table": "mp_maintain_task",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 12,
-    "prevCols": 13
-  },
-  {
-    "table": "mp_meter",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 11
-  },
-  {
-    "table": "mp_ot",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 22
-  },
-  {
-    "table": "mp_ot_request",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 21
-  },
-  {
-    "table": "mp_ot_resource",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 17
-  },
-  {
-    "table": "mp_ot_task",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 12,
-    "prevCols": 16
-  },
-  {
-    "table": "pa_dashboardcontent",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 33
-  },
-  {
-    "table": "pa_dashboardcontent_access",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "pa_dashboardcontent_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 15
-  },
-  {
-    "table": "pa_documentstatus",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 24
-  },
-  {
-    "table": "pa_documentstatus_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "pa_goal",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 29
-  },
-  {
-    "table": "pa_measure",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 22
-  },
-  {
-    "table": "pa_ratio",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "pa_ratioelement",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 20
-  },
-  {
-    "table": "pa_report",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 24
-  },
-  {
-    "table": "pa_reportcolumn",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 59
-  },
-  {
-    "table": "pa_reportcolumn_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 5,
-    "prevCols": 13
-  },
-  {
-    "table": "pa_reportcolumnset",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "pa_reportline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 113,
-    "prevCols": 31
-  },
-  {
-    "table": "pa_reportline_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 113,
-    "prevCols": 13
-  },
-  {
-    "table": "pa_reportlineset",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 12
-  },
-  {
-    "table": "pa_reportsource",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 93,
-    "prevCols": 36
-  },
-  {
-    "table": "pa_sla_criteria",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "pa_sla_goal",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "pa_sla_measure",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 17
-  },
-  {
-    "table": "pp_mrp",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 56,
-    "prevCols": 41
-  },
-  {
-    "table": "pp_order",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 68
-  },
-  {
-    "table": "pp_order_bom",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 26
-  },
-  {
-    "table": "pp_order_bom_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "pp_order_bomline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 44
-  },
-  {
-    "table": "pp_order_bomline_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 13
-  },
-  {
-    "table": "pp_order_node_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "pp_order_workflow_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 14
-  },
-  {
-    "table": "pp_product_bom",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 7,
-    "prevCols": 25
-  },
-  {
-    "table": "pp_product_bom_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 7,
-    "prevCols": 14
-  },
-  {
-    "table": "pp_product_bomline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 21,
-    "prevCols": 32
-  },
-  {
-    "table": "pp_product_bomline_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 21,
-    "prevCols": 13
-  },
-  {
-    "table": "pp_product_planning",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 219,
-    "prevCols": 34
-  },
-  {
-    "table": "r_category",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 13
-  },
-  {
-    "table": "r_categoryupdates",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 11
-  },
-  {
-    "table": "r_contactinterest",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "r_group",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 15
-  },
-  {
-    "table": "r_groupupdates",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 11
-  },
-  {
-    "table": "r_interestarea",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "r_mailtext",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 15
-  },
-  {
-    "table": "r_mailtext_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 16
-  },
-  {
-    "table": "r_request",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 68
-  },
-  {
-    "table": "r_requestaction",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 46
-  },
-  {
-    "table": "r_requestprocessor_route",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "r_requesttype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 25
-  },
-  {
-    "table": "r_requesttypeupdates",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 11
-  },
-  {
-    "table": "r_requestupdate",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 17
-  },
-  {
-    "table": "r_resolution",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 12
-  },
-  {
-    "table": "r_standardresponse",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 11
-  },
-  {
-    "table": "r_status",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 23
-  },
-  {
-    "table": "r_statuscategory",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "s_expensetype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 16
-  },
-  {
-    "table": "s_resource",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 11,
-    "prevCols": 24
-  },
-  {
-    "table": "s_resourceassignment",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 16
-  },
-  {
-    "table": "s_resourcetype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 3,
-    "prevCols": 29
-  },
-  {
-    "table": "s_resourceunavailable",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 13
-  },
-  {
-    "table": "s_timeexpense",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 21
-  },
-  {
-    "table": "s_timeexpenseline",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 4,
-    "prevCols": 39
-  },
-  {
-    "table": "s_training",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 19
-  },
-  {
-    "table": "test",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 35
-  },
-  {
-    "table": "testuu",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 12
-  },
-  {
-    "table": "testuu_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 14
-  },
-  {
-    "table": "testuudet",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 2,
-    "prevCols": 12
-  },
-  {
-    "table": "u_posterminal",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 37
-  },
-  {
-    "table": "u_rolemenu",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 73,
-    "prevCols": 11
-  },
-  {
-    "table": "w_advertisement",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 28
-  },
-  {
-    "table": "w_clickcount",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "w_countercount",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 13
-  },
-  {
-    "table": "w_store",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 43
-  },
-  {
-    "table": "w_store_trl",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 1,
-    "prevCols": 20
-  },
-  {
-    "table": "ws_webservice_para",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 46,
-    "prevCols": 13
-  },
-  {
-    "table": "ws_webservicefieldinput",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 45,
-    "prevCols": 17
-  },
-  {
-    "table": "ws_webservicefieldoutput",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 8,
-    "prevCols": 11
-  },
-  {
-    "table": "ws_webservicetype",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 16,
-    "prevCols": 17
-  },
-  {
-    "table": "ws_webservicetypeaccess",
-    "case": "lower",
-    "where": "ad_client_id = 11",
-    "activeOnly": false,
-    "prevRows": 16,
-    "prevCols": 11
-  },
-  {
-    "table": "ad_process",
-    "case": "lower",
-    "where": null,
-    "activeOnly": false,
-    "prevRows": 0,
-    "prevCols": 0
-  },
-  {
-    "table": "ad_process_para",
-    "case": "lower",
-    "where": null,
-    "activeOnly": false,
-    "prevRows": 0,
-    "prevCols": 0
-  },
-  {
-    "table": "AD_Form",
-    "case": "canonical",
-    "where": null,
-    "activeOnly": true,
-    "prevRows": 0,
-    "prevCols": 0
-  },
-  {
-    "table": "ad_val_rule",
-    "case": "lower",
-    "where": null,
-    "activeOnly": false,
-    "prevRows": 0,
-    "prevCols": 0
-  }
+ {
+  "table": "AD_Column",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 26144,
+  "prevCols": 15
+ },
+ {
+  "table": "AD_Element",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 6024,
+  "prevCols": 6
+ },
+ {
+  "table": "AD_Field",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 20911,
+  "prevCols": 13
+ },
+ {
+  "table": "AD_Menu",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 587,
+  "prevCols": 9
+ },
+ {
+  "table": "AD_Ref_List",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 1499,
+  "prevCols": 6
+ },
+ {
+  "table": "AD_Reference",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 604,
+  "prevCols": 5
+ },
+ {
+  "table": "AD_Ref_Table",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": false,
+  "prevRows": 243,
+  "prevCols": 13
+ },
+ {
+  "table": "AD_Tab",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 1130,
+  "prevCols": 13
+ },
+ {
+  "table": "AD_Table",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 1003,
+  "prevCols": 6
+ },
+ {
+  "table": "AD_TreeNodeMM",
+  "case": "canonical",
+  "where": "AD_Tree_ID = 10",
+  "activeOnly": true,
+  "prevRows": 826,
+  "prevCols": 5
+ },
+ {
+  "table": "AD_User",
+  "case": "canonical",
+  "where": "AD_Client_ID IN (0, 11)",
+  "activeOnly": true,
+  "prevRows": 8,
+  "prevCols": 9
+ },
+ {
+  "table": "AD_Window",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 370,
+  "prevCols": 6
+ },
+ {
+  "table": "C_AcctSchema",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 2,
+  "prevCols": 7
+ },
+ {
+  "table": "C_BP_Group",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 3,
+  "prevCols": 7
+ },
+ {
+  "table": "C_BPartner",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 18,
+  "prevCols": 12
+ },
+ {
+  "table": "C_BPartner_Location",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 16,
+  "prevCols": 7
+ },
+ {
+  "table": "C_BankStatement",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 2,
+  "prevCols": 10
+ },
+ {
+  "table": "C_BankStatementLine",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 2,
+  "prevCols": 12
+ },
+ {
+  "table": "C_Charge",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 3,
+  "prevCols": 7
+ },
+ {
+  "table": "C_Country",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 249,
+  "prevCols": 5
+ },
+ {
+  "table": "C_Currency",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 163,
+  "prevCols": 7
+ },
+ {
+  "table": "C_DocType",
+  "case": "canonical",
+  "where": "AD_Client_ID IN (0, 11)",
+  "activeOnly": true,
+  "prevRows": 52,
+  "prevCols": 9
+ },
+ {
+  "table": "C_ElementValue",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 379,
+  "prevCols": 12
+ },
+ {
+  "table": "C_Invoice",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 8,
+  "prevCols": 17
+ },
+ {
+  "table": "C_InvoiceLine",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 24,
+  "prevCols": 15
+ },
+ {
+  "table": "C_Location",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 33,
+  "prevCols": 10
+ },
+ {
+  "table": "C_Order",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 8,
+  "prevCols": 16
+ },
+ {
+  "table": "C_OrderLine",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 27,
+  "prevCols": 16
+ },
+ {
+  "table": "C_Payment",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 2,
+  "prevCols": 16
+ },
+ {
+  "table": "C_Project",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "C_ProjectPhase",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 0,
+  "prevCols": 10
+ },
+ {
+  "table": "C_ProjectTask",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 0,
+  "prevCols": 10
+ },
+ {
+  "table": "C_Region",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 399,
+  "prevCols": 5
+ },
+ {
+  "table": "C_Tax",
+  "case": "canonical",
+  "where": "AD_Client_ID IN (0, 11)",
+  "activeOnly": true,
+  "prevRows": 6,
+  "prevCols": 8
+ },
+ {
+  "table": "C_TaxCategory",
+  "case": "canonical",
+  "where": "AD_Client_ID IN (0, 11)",
+  "activeOnly": true,
+  "prevRows": 1,
+  "prevCols": 5
+ },
+ {
+  "table": "C_UOM",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 15,
+  "prevCols": 7
+ },
+ {
+  "table": "M_InOut",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 9,
+  "prevCols": 15
+ },
+ {
+  "table": "M_InOutLine",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 27,
+  "prevCols": 13
+ },
+ {
+  "table": "M_Locator",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 11,
+  "prevCols": 10
+ },
+ {
+  "table": "M_PriceList",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 4,
+  "prevCols": 8
+ },
+ {
+  "table": "M_PriceList_Version",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 5,
+  "prevCols": 8
+ },
+ {
+  "table": "M_Product",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 55,
+  "prevCols": 10
+ },
+ {
+  "table": "M_ProductPrice",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 114,
+  "prevCols": 6
+ },
+ {
+  "table": "M_Product_Category",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 14,
+  "prevCols": 6
+ },
+ {
+  "table": "M_Storage",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 20,
+  "prevCols": 6
+ },
+ {
+  "table": "M_Warehouse",
+  "case": "canonical",
+  "where": "AD_Client_ID = 11",
+  "activeOnly": true,
+  "prevRows": 11,
+  "prevCols": 8
+ },
+ {
+  "table": "a_asset",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 69
+ },
+ {
+  "table": "a_asset_group",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 21
+ },
+ {
+  "table": "a_asset_group_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 53
+ },
+ {
+  "table": "a_asset_group_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 14
+ },
+ {
+  "table": "a_depreciation",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 11,
+  "prevCols": 15
+ },
+ {
+  "table": "a_depreciation_convention",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 15
+ },
+ {
+  "table": "a_depreciation_method",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 14
+ },
+ {
+  "table": "a_depreciation_table_detail",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2579,
+  "prevCols": 14
+ },
+ {
+  "table": "a_depreciation_table_header",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 122,
+  "prevCols": 14
+ },
+ {
+  "table": "ad_attachment",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 15
+ },
+ {
+  "table": "ad_client",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 42
+ },
+ {
+  "table": "ad_clientinfo",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 37
+ },
+ {
+  "table": "ad_document_action_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2142,
+  "prevCols": 11
+ },
+ {
+  "table": "ad_form_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 120,
+  "prevCols": 11
+ },
+ {
+  "table": "ad_image",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "ad_impformat",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 8,
+  "prevCols": 15
+ },
+ {
+  "table": "ad_impformat_row",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 65,
+  "prevCols": 23
+ },
+ {
+  "table": "ad_infowindow_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 52,
+  "prevCols": 10
+ },
+ {
+  "table": "ad_issue",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 8,
+  "prevCols": 50
+ },
+ {
+  "table": "ad_org",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 13
+ },
+ {
+  "table": "ad_orginfo",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 27
+ },
+ {
+  "table": "ad_orgtype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_package_imp",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 24
+ },
+ {
+  "table": "ad_package_imp_detail",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 12,
+  "prevCols": 22
+ },
+ {
+  "table": "ad_package_imp_inst",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 23
+ },
+ {
+  "table": "ad_package_imp_proc",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 17
+ },
+ {
+  "table": "ad_pinstance_log",
+  "case": "lower",
+  "where": null,
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 11
+ },
+ {
+  "table": "ad_preference",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 11,
+  "prevCols": 17
+ },
+ {
+  "table": "ad_printform",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 25
+ },
+ {
+  "table": "ad_printformat",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 13,
+  "prevCols": 32
+ },
+ {
+  "table": "ad_printformat_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 13,
+  "prevCols": 14
+ },
+ {
+  "table": "ad_printformatitem",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 468,
+  "prevCols": 69
+ },
+ {
+  "table": "ad_printformatitem_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 468,
+  "prevCols": 14
+ },
+ {
+  "table": "ad_process_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1170,
+  "prevCols": 11
+ },
+ {
+  "table": "ad_replication",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 24
+ },
+ {
+  "table": "ad_replicationdocument",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "ad_replicationstrategy",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "ad_replicationtable",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "ad_role",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 56
+ },
+ {
+  "table": "ad_role_orgaccess",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 17,
+  "prevCols": 10
+ },
+ {
+  "table": "ad_sequence",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 205,
+  "prevCols": 27
+ },
+ {
+  "table": "ad_table_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "ad_tree",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 12,
+  "prevCols": 20
+ },
+ {
+  "table": "ad_tree_favorite",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 10
+ },
+ {
+  "table": "ad_tree_favorite_node",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 7,
+  "prevCols": 18
+ },
+ {
+  "table": "ad_treebar",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 13
+ },
+ {
+  "table": "ad_treenode",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 398,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_treenodebp",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 18,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_treenodecmc",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_treenodecmm",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_treenodecms",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_treenodecmt",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_treenodepr",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 55,
+  "prevCols": 12
+ },
+ {
+  "table": "ad_user_roles",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 10
+ },
+ {
+  "table": "ad_usermail",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "ad_userpreference",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "ad_userquery",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 18
+ },
+ {
+  "table": "ad_wf_activity",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 13,
+  "prevCols": 25
+ },
+ {
+  "table": "ad_wf_eventaudit",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 13,
+  "prevCols": 23
+ },
+ {
+  "table": "ad_wf_nextcondition",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 18
+ },
+ {
+  "table": "ad_wf_node_para",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "ad_wf_node_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 13,
+  "prevCols": 14
+ },
+ {
+  "table": "ad_wf_nodenext",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 16
+ },
+ {
+  "table": "ad_wf_process",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 11,
+  "prevCols": 20
+ },
+ {
+  "table": "ad_window_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1080,
+  "prevCols": 11
+ },
+ {
+  "table": "ad_workflow_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 168,
+  "prevCols": 11
+ },
+ {
+  "table": "ad_workflow_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 14
+ },
+ {
+  "table": "c_acctprocessor",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "c_acctschema_default",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 84
+ },
+ {
+  "table": "c_acctschema_element",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 12,
+  "prevCols": 34
+ },
+ {
+  "table": "c_acctschema_gl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 22
+ },
+ {
+  "table": "c_allocationhdr",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 25
+ },
+ {
+  "table": "c_allocationline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 24
+ },
+ {
+  "table": "c_bank",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 15
+ },
+ {
+  "table": "c_bankaccount",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 22
+ },
+ {
+  "table": "c_bankaccount_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 22
+ },
+ {
+  "table": "c_bankaccount_processor",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 27
+ },
+ {
+  "table": "c_bankaccountdoc",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 15
+ },
+ {
+  "table": "c_bp_bankaccount",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 36
+ },
+ {
+  "table": "c_bp_customer_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 36,
+  "prevCols": 13
+ },
+ {
+  "table": "c_bp_employee_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 17,
+  "prevCols": 12
+ },
+ {
+  "table": "c_bp_group_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 24
+ },
+ {
+  "table": "c_bp_relation",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 19
+ },
+ {
+  "table": "c_bp_vendor_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 36,
+  "prevCols": 13
+ },
+ {
+  "table": "c_bpartner_product",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 18
+ },
+ {
+  "table": "c_calendar",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 11
+ },
+ {
+  "table": "c_campaign",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 17
+ },
+ {
+  "table": "c_campaign_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "c_cashbook",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "c_cashbook_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 15
+ },
+ {
+  "table": "c_cashline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 23
+ },
+ {
+  "table": "c_channel",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 12
+ },
+ {
+  "table": "c_charge_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 12
+ },
+ {
+  "table": "c_charge_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 13
+ },
+ {
+  "table": "c_commission",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "c_commissionline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 25
+ },
+ {
+  "table": "c_conversion_rate",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 16
+ },
+ {
+  "table": "c_cycle",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 12
+ },
+ {
+  "table": "c_cyclephase",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 10,
+  "prevCols": 10
+ },
+ {
+  "table": "c_cyclestep",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 13
+ },
+ {
+  "table": "c_doctype_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 51,
+  "prevCols": 14
+ },
+ {
+  "table": "c_doctypecounter",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 17
+ },
+ {
+  "table": "c_dunning",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "c_dunninglevel",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 28
+ },
+ {
+  "table": "c_dunninglevel_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "c_element",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 16
+ },
+ {
+  "table": "c_elementvalue_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 379,
+  "prevCols": 13
+ },
+ {
+  "table": "c_greeting",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "c_greeting_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "c_invoicepayschedule",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 18
+ },
+ {
+  "table": "c_invoiceschedule",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 20
+ },
+ {
+  "table": "c_invoicetax",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 8,
+  "prevCols": 15
+ },
+ {
+  "table": "c_job",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 14
+ },
+ {
+  "table": "c_jobcategory",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 12
+ },
+ {
+  "table": "c_nonbusinessday",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "c_ordertax",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 8,
+  "prevCols": 15
+ },
+ {
+  "table": "c_paymentterm",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 30
+ },
+ {
+  "table": "c_paymentterm_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 14
+ },
+ {
+  "table": "c_payschedule",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 17
+ },
+ {
+  "table": "c_payselection",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 20
+ },
+ {
+  "table": "c_payselectioncheck",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 23
+ },
+ {
+  "table": "c_payselectionline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 23
+ },
+ {
+  "table": "c_period",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 360,
+  "prevCols": 16
+ },
+ {
+  "table": "c_periodcontrol",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 10464,
+  "prevCols": 14
+ },
+ {
+  "table": "c_phase",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 13,
+  "prevCols": 16
+ },
+ {
+  "table": "c_pos",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 26
+ },
+ {
+  "table": "c_poskey",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 163,
+  "prevCols": 22
+ },
+ {
+  "table": "c_poskeylayout",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 16
+ },
+ {
+  "table": "c_project_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 12
+ },
+ {
+  "table": "c_projectline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 31
+ },
+ {
+  "table": "c_projecttype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 13
+ },
+ {
+  "table": "c_recurring",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 26
+ },
+ {
+  "table": "c_revenuerecognition",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 15
+ },
+ {
+  "table": "c_rfq",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 38
+ },
+ {
+  "table": "c_rfq_topic",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "c_rfq_topicsubscriber",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 15
+ },
+ {
+  "table": "c_rfqline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 18
+ },
+ {
+  "table": "c_rfqlineqty",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 19
+ },
+ {
+  "table": "c_salesregion",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 15
+ },
+ {
+  "table": "c_salesregion_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "c_task",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 16
+ },
+ {
+  "table": "c_tax_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 12,
+  "prevCols": 15
+ },
+ {
+  "table": "c_tax_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 14
+ },
+ {
+  "table": "c_taxcategory_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "c_uom_conversion",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "c_uom_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 14
+ },
+ {
+  "table": "c_validcombination",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 157,
+  "prevCols": 29
+ },
+ {
+  "table": "c_year",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 30,
+  "prevCols": 13
+ },
+ {
+  "table": "cm_container",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 35
+ },
+ {
+  "table": "cm_container_element",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 15
+ },
+ {
+  "table": "cm_container_element_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 15
+ },
+ {
+  "table": "cm_container_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 17
+ },
+ {
+  "table": "cm_cstage",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 37
+ },
+ {
+  "table": "cm_cstage_element",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 7,
+  "prevCols": 15
+ },
+ {
+  "table": "cm_cstage_element_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 7,
+  "prevCols": 15
+ },
+ {
+  "table": "cm_cstage_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 17
+ },
+ {
+  "table": "cm_media",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 18
+ },
+ {
+  "table": "cm_media_server",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 19
+ },
+ {
+  "table": "cm_template",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 22
+ },
+ {
+  "table": "cm_webproject",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "cm_webproject_domain",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "dbreplicasyncverifier",
+  "case": "lower",
+  "where": null,
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 1
+ },
+ {
+  "table": "dd_networkdistribution",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 20
+ },
+ {
+  "table": "dd_networkdistributionline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 10,
+  "prevCols": 18
+ },
+ {
+  "table": "exp_format",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 19
+ },
+ {
+  "table": "exp_formatline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 21
+ },
+ {
+  "table": "exp_processor",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 18
+ },
+ {
+  "table": "exp_processor_type",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "exp_processorparameter",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 7,
+  "prevCols": 15
+ },
+ {
+  "table": "gl_budget",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "gl_category",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 16
+ },
+ {
+  "table": "gl_category_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 13
+ },
+ {
+  "table": "gl_distribution",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 62
+ },
+ {
+  "table": "gl_distributionline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 53
+ },
+ {
+  "table": "gl_journal",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 36
+ },
+ {
+  "table": "gl_journalbatch",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 28
+ },
+ {
+  "table": "gl_journalgenerator",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 19
+ },
+ {
+  "table": "gl_journalgeneratorline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 22
+ },
+ {
+  "table": "gl_journalgeneratorsource",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 8,
+  "prevCols": 15
+ },
+ {
+  "table": "gl_journalline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 50
+ },
+ {
+  "table": "i_conversion_rate",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 25
+ },
+ {
+  "table": "imp_processor_type",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "imp_processorparameter",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 15
+ },
+ {
+  "table": "k_category",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "k_source",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 11
+ },
+ {
+  "table": "k_topic",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "k_type",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "m_attribute",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 21
+ },
+ {
+  "table": "m_attributeinstance",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 15
+ },
+ {
+  "table": "m_attributesearch",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 11
+ },
+ {
+  "table": "m_attributeset",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 30
+ },
+ {
+  "table": "m_attributesetinstance",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 15
+ },
+ {
+  "table": "m_attributeuse",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 13
+ },
+ {
+  "table": "m_attributevalue",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 14
+ },
+ {
+  "table": "m_bom",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 17
+ },
+ {
+  "table": "m_bomalternative",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "m_changenotice",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 16
+ },
+ {
+  "table": "m_cost",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 267,
+  "prevCols": 23
+ },
+ {
+  "table": "m_costelement",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 9,
+  "prevCols": 14
+ },
+ {
+  "table": "m_costtype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "m_discountschema",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 19
+ },
+ {
+  "table": "m_discountschemabreak",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 17
+ },
+ {
+  "table": "m_discountschemaline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 11,
+  "prevCols": 43
+ },
+ {
+  "table": "m_distributionlist",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "m_distributionlistline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 15
+ },
+ {
+  "table": "m_distributionrun",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "m_distributionrunline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 16
+ },
+ {
+  "table": "m_forecast",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 17
+ },
+ {
+  "table": "m_forecastline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 50,
+  "prevCols": 17
+ },
+ {
+  "table": "m_freight",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 20
+ },
+ {
+  "table": "m_freightcategory",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "m_inoutconfirm",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 25
+ },
+ {
+  "table": "m_inoutlineconfirm",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 20
+ },
+ {
+  "table": "m_inventory",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 37
+ },
+ {
+  "table": "m_inventoryline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 27
+ },
+ {
+  "table": "m_lotctl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 16
+ },
+ {
+  "table": "m_matchinv",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 18,
+  "prevCols": 24
+ },
+ {
+  "table": "m_matchpo",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 37,
+  "prevCols": 27
+ },
+ {
+  "table": "m_movement",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 49
+ },
+ {
+  "table": "m_movementline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 28
+ },
+ {
+  "table": "m_package",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 72
+ },
+ {
+  "table": "m_packageline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "m_pricelist_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 13
+ },
+ {
+  "table": "m_pricelist_version_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 6,
+  "prevCols": 12
+ },
+ {
+  "table": "m_product_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 110,
+  "prevCols": 34
+ },
+ {
+  "table": "m_product_bom_old",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 20,
+  "prevCols": 15
+ },
+ {
+  "table": "m_product_category_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 28,
+  "prevCols": 37
+ },
+ {
+  "table": "m_product_category_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 14,
+  "prevCols": 13
+ },
+ {
+  "table": "m_product_po",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 29,
+  "prevCols": 32
+ },
+ {
+  "table": "m_product_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 55,
+  "prevCols": 14
+ },
+ {
+  "table": "m_productdownload",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "m_relatedproduct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "m_replenish",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 19,
+  "prevCols": 16
+ },
+ {
+  "table": "m_requisition",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 27
+ },
+ {
+  "table": "m_requisitionline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "m_rma",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 31
+ },
+ {
+  "table": "m_rmaline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 25
+ },
+ {
+  "table": "m_rmatype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "m_sernoctl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 16
+ },
+ {
+  "table": "m_shipper",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 14
+ },
+ {
+  "table": "m_shippercfg",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 19
+ },
+ {
+  "table": "m_shippingprocessor",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "m_shippingprocessorcfg",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 19
+ },
+ {
+  "table": "m_storageonhand",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 20,
+  "prevCols": 14
+ },
+ {
+  "table": "m_storagereservation",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "m_transaction",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 28,
+  "prevCols": 21
+ },
+ {
+  "table": "m_warehouse_acct",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 22,
+  "prevCols": 14
+ },
+ {
+  "table": "mp_assetmeter",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 16
+ },
+ {
+  "table": "mp_assetmeter_log",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 7,
+  "prevCols": 16
+ },
+ {
+  "table": "mp_jobstandar",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 14
+ },
+ {
+  "table": "mp_jobstandar_task",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 12,
+  "prevCols": 13
+ },
+ {
+  "table": "mp_maintain",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 32
+ },
+ {
+  "table": "mp_maintain_task",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 12,
+  "prevCols": 13
+ },
+ {
+  "table": "mp_meter",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 11
+ },
+ {
+  "table": "mp_ot",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 22
+ },
+ {
+  "table": "mp_ot_request",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 21
+ },
+ {
+  "table": "mp_ot_resource",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 17
+ },
+ {
+  "table": "mp_ot_task",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 12,
+  "prevCols": 16
+ },
+ {
+  "table": "pa_dashboardcontent",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 33
+ },
+ {
+  "table": "pa_dashboardcontent_access",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "pa_dashboardcontent_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 15
+ },
+ {
+  "table": "pa_documentstatus",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 24
+ },
+ {
+  "table": "pa_documentstatus_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "pa_goal",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 29
+ },
+ {
+  "table": "pa_measure",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 22
+ },
+ {
+  "table": "pa_ratio",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "pa_ratioelement",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 20
+ },
+ {
+  "table": "pa_report",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 24
+ },
+ {
+  "table": "pa_reportcolumn",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 59
+ },
+ {
+  "table": "pa_reportcolumn_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 5,
+  "prevCols": 13
+ },
+ {
+  "table": "pa_reportcolumnset",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "pa_reportline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 113,
+  "prevCols": 31
+ },
+ {
+  "table": "pa_reportline_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 113,
+  "prevCols": 13
+ },
+ {
+  "table": "pa_reportlineset",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 12
+ },
+ {
+  "table": "pa_reportsource",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 93,
+  "prevCols": 36
+ },
+ {
+  "table": "pa_sla_criteria",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "pa_sla_goal",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "pa_sla_measure",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 17
+ },
+ {
+  "table": "pp_mrp",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 56,
+  "prevCols": 41
+ },
+ {
+  "table": "pp_order",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 68
+ },
+ {
+  "table": "pp_order_bom",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 26
+ },
+ {
+  "table": "pp_order_bom_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "pp_order_bomline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 44
+ },
+ {
+  "table": "pp_order_bomline_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 13
+ },
+ {
+  "table": "pp_order_node_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "pp_order_workflow_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 14
+ },
+ {
+  "table": "pp_product_bom",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 7,
+  "prevCols": 25
+ },
+ {
+  "table": "pp_product_bom_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 7,
+  "prevCols": 14
+ },
+ {
+  "table": "pp_product_bomline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 21,
+  "prevCols": 32
+ },
+ {
+  "table": "pp_product_bomline_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 21,
+  "prevCols": 13
+ },
+ {
+  "table": "pp_product_planning",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 219,
+  "prevCols": 34
+ },
+ {
+  "table": "r_category",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 13
+ },
+ {
+  "table": "r_categoryupdates",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 11
+ },
+ {
+  "table": "r_contactinterest",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "r_group",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 15
+ },
+ {
+  "table": "r_groupupdates",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 11
+ },
+ {
+  "table": "r_interestarea",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "r_mailtext",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 15
+ },
+ {
+  "table": "r_mailtext_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 16
+ },
+ {
+  "table": "r_request",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 68
+ },
+ {
+  "table": "r_requestaction",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 46
+ },
+ {
+  "table": "r_requestprocessor_route",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "r_requesttype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 25
+ },
+ {
+  "table": "r_requesttypeupdates",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 11
+ },
+ {
+  "table": "r_requestupdate",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 17
+ },
+ {
+  "table": "r_resolution",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 12
+ },
+ {
+  "table": "r_standardresponse",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 11
+ },
+ {
+  "table": "r_status",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 23
+ },
+ {
+  "table": "r_statuscategory",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "s_expensetype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 16
+ },
+ {
+  "table": "s_resource",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 11,
+  "prevCols": 24
+ },
+ {
+  "table": "s_resourceassignment",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 16
+ },
+ {
+  "table": "s_resourcetype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 3,
+  "prevCols": 29
+ },
+ {
+  "table": "s_resourceunavailable",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 13
+ },
+ {
+  "table": "s_timeexpense",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 21
+ },
+ {
+  "table": "s_timeexpenseline",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 4,
+  "prevCols": 39
+ },
+ {
+  "table": "s_training",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 19
+ },
+ {
+  "table": "test",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 35
+ },
+ {
+  "table": "testuu",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 12
+ },
+ {
+  "table": "testuu_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 14
+ },
+ {
+  "table": "testuudet",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 2,
+  "prevCols": 12
+ },
+ {
+  "table": "u_posterminal",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 37
+ },
+ {
+  "table": "u_rolemenu",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 73,
+  "prevCols": 11
+ },
+ {
+  "table": "w_advertisement",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 28
+ },
+ {
+  "table": "w_clickcount",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "w_countercount",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 13
+ },
+ {
+  "table": "w_store",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 43
+ },
+ {
+  "table": "w_store_trl",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 1,
+  "prevCols": 20
+ },
+ {
+  "table": "ws_webservice_para",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 46,
+  "prevCols": 13
+ },
+ {
+  "table": "ws_webservicefieldinput",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 45,
+  "prevCols": 17
+ },
+ {
+  "table": "ws_webservicefieldoutput",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 8,
+  "prevCols": 11
+ },
+ {
+  "table": "ws_webservicetype",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 16,
+  "prevCols": 17
+ },
+ {
+  "table": "ws_webservicetypeaccess",
+  "case": "lower",
+  "where": "ad_client_id = 11",
+  "activeOnly": false,
+  "prevRows": 16,
+  "prevCols": 11
+ },
+ {
+  "table": "ad_process",
+  "case": "lower",
+  "where": null,
+  "activeOnly": false,
+  "prevRows": 0,
+  "prevCols": 0
+ },
+ {
+  "table": "ad_process_para",
+  "case": "lower",
+  "where": null,
+  "activeOnly": false,
+  "prevRows": 0,
+  "prevCols": 0
+ }
 ]
