@@ -284,3 +284,61 @@ impossible.
 highest-leverage target is the T-0 truth-maintenance pass of §5.1 — re-score/wire the access-gate rows, make
 the 52-ledger enumerable + bundle-re-runnable, write back the lane index — followed by the §RULE-EDIT grail
 witness as the next build keystone.**
+
+---
+
+## §7 — 2026-08-23: T-0 still not started; a fresh structural triage against the live PG found a new
+## showstopper before it found a fix
+
+11 days after this review, **T-0 had not been started** (verified: 0 ERP commits since 2026-08-12, `ad_access.js`
+still doesn't exist in bim-ootb, `idmp_session.js` still has no `IsReadWrite`/`canView`/org-scope). The ERP lane
+had been fully code-dark the entire interval.
+
+**New structural finding (declarative/navigation layer, not the oracle-equivalence engine):** the shipped
+`erp/ad_seed.db` carries 82-100% of the real iDempiere AD dictionary (Windows 375/458, Tabs 1135/1166, Fields
+20988/21432, Menus 590/826, Processes 476/476, References 604/606) — but `AD_Form` and `ad_val_rule` were
+**entirely absent** (0 rows / no table), against 53 and 332 real rows. `build/erp/ad_full.db` (the raw migration
+dump) has essentially perfect fidelity on all of these — the gap is specifically in what gets trimmed into the
+shipped seed, not in the migration capability.
+
+**Attempted fix, found a bigger gap instead.** `scripts/ad_seed_manifest.json` was missing both tables (a prior
+substring-based scan wrongly credited `AD_Form` as present — it had matched `ad_form_access` instead; corrected
+here). Both were added with real PK/case/column contracts extracted from the live PG catalog (bim-compiler PR
+#91) and verified: `export_ad_seed.js` lands `AD_Form=49` (53 real, 4 inactive, exact match) and
+`ad_val_rule=332` (exact match), zero errors, reproduced twice.
+
+**But re-running the full export against the CURRENT live docker PG (`postgres`/`idempiere`) regresses
+production, badly**, not just for the 2 new tables:
+
+| table | shipped `ad_seed.db` (2026-07-05) | fresh export (2026-08-23) |
+|---|---|---|
+| ad_client | 6 | 1 |
+| ad_role | 14 | 4 |
+| C_BPartner | 113 | 18 |
+| ad_window_access | 4448 | 1080 |
+| fact_acct | present | not in the manifest at all |
+| HR_*, C_Subscription* | present | not in the manifest at all |
+| kernel_ops | present | not a PG table — bim-ootb's own op-log, confirms the shipped seed is POST-PROCESSED, not a raw export |
+
+Checked both live PG databases (`idempiere` AND `idempiere_test`, the posted-fact_acct oracle) — **neither holds
+anywhere near the data state that built the shipped seed.** `idempiere_test.c_bpartner=18` matches the fresh
+export exactly, not the shipped seed's 113. The container has drifted or been reset since July. **This means:
+the shipped `erp/ad_seed.db` was never a straight `export_ad_seed.js` run — some further pipeline stage (likely
+`fact_acct` pulled from `idempiere_test` via `extract_fact_acct.sh` per `reference_idempiere_source.md`, plus HR/
+Subscription seeding, plus the §4 PK-reband/client-13-shard step from `prompts/archive/IDMP_FULLWIDTH_SEED.md`)
+folds additional sources in, and that stage's exact recipe is not identified anywhere checked so far.**
+
+**Not shipped, deliberately.** The manifest fix (PR #91) is real and safe on its own — it's a correct, minimal,
+verified addition that costs nothing to merge. But regenerating and deploying the seed right now, even just to
+add Forms/ValRules, would silently wipe fact_acct, HR, Subscriptions, and most of the accumulated demo/shard
+data from production. That is a materially worse outcome than shipping nothing.
+
+**The real next step, named not guessed:** before touching `erp/ad_seed.db` again, reconstruct (or find, if it
+already exists and is merely undocumented) the FULL pipeline recipe — base GardenWorld export → fact_acct fold
+→ HR/Subscription seed → client-13 shard reband → whatever else — and either automate it end-to-end or write
+down the manual steps precisely enough that Forms/ValRules can be folded in without regressing everything else.
+This is a genuinely different, larger task than "add 2 tables to a manifest," and this session's attempt to
+just re-run the proven exporter is the concrete falsifier proving that assumption wrong.
+
+**Access-gate fix:** out of scope for this addendum — handled in a sibling session/PR against
+`erp/idmp_session.js` + `build/erp/ad_access.js`, not touched here.
