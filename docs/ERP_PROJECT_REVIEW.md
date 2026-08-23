@@ -287,6 +287,57 @@ witness as the next build keystone.**
 
 ---
 
+## §2.1 CLOSED — the access-gate finding, wired live (2026-08-23)
+
+11 days after this review, the T-0 pass had not started (0 ERP commits in that window — confirmed by
+`git log --since=2026-08-12 -- erp/`). Closed now, scoped to exactly the §2.1 finding, nothing else:
+
+- `erp/ad_access.js` shipped as a true twin of `build/erp/ad_access.js` (md5-identical, verified before AND
+  after a defensive bugfix described below — the twin was re-synced, not allowed to drift).
+- `erp/idmp_session.js`'s `accessibleWindows`/`accessibleProcesses`/`accessibleForms` now delegate to
+  `AdAccess.buildRole(...).gateWindow/gateProcess/gateForm` via a `db.prepare().get()/.all()` shim
+  (`toB3`, the same shape `idempiere.html`'s own `_b3w` and `erp/doc_cycle_validator.js`'s `mkAdapter`
+  already use for this exact node-shaped-code-on-sql.js problem — not a new pattern). External return
+  shape is unchanged (`{id: {rw:bool}}`, still truthy — every caller only tests presence); a loud
+  `§ACCESS_GATE_MISSING`/`§ACCESS_GATE_ERR` log + honest fallback fires if `AdAccess` fails to load, so a
+  future regression here is never silent. A `gateRecordFor` (record-level `canView` + org/client scope) is
+  now exposed but NOT wired into every CRUD call site — that is a whole-app integration, out of scope for
+  the 4 Role/Window/Process/Form rows this closes; named so it isn't mistaken for done.
+- **A real bug found while wiring, not before:** `ad_access.js:buildRole`'s entity-type query assumed
+  `ad_entitytype` exists; it doesn't in the browser's trimmed `ad_seed.db` (only in the full `ad_full.db`
+  dump) — the exact same class of gap the sibling Forms/ValRules fork found the same day. Fixed defensively
+  (try/catch → empty set, same idiom `idmp_session.js` already used for `isShowAcct`); re-verified the
+  headless oracle-equivalence witness (`poc_access_harden.js`, 15/15 maps diff=0, 42/42 canView combos)
+  still passes unchanged after the fix, and re-synced the twin's md5 after.
+- **Live proof** (`erp/tests/poc_access_gate_live.js`, new — the matrix's prior citations
+  `poc_ad_access_live.js`/`poc_ad_menu_prf_live.js` do not exist anywhere in bim-ootb, confirming they
+  never shipped either): `window.AdAccess` loads; `accessibleWindows` logs `source=AdAccess/...` not the
+  fallback path; role 103 (User) and 102 (Admin) differ on window 114 "Task" exactly as the real grant
+  rows say; a real `?login=` auto-login (the same production code path the click-through dialog calls)
+  shows `menu-visible=163/332` for User vs `294/332` for Admin from the live `§IDEMPIERE-LOGIN` log; window
+  114 cross-checked as a real tree-reachable `AD_Menu` leaf, not a synthetic fixture. 0 page errors.
+  **Honest ⬜, not fabricated:** this seed carries zero `isreadwrite='N'` grant rows across every
+  role/window/process/form — the read-write-vs-read-only distinction is implemented and exposed
+  (`{rw:bool}`) and already headless-oracle-proven, but cannot be demonstrated against live browser data
+  today; named rather than claimed.
+- Regression check: `erp/tests/poc_client_switcher.js` fails 3/many pre-existing, unrelated to this fix —
+  its fixture assumes `ad_seed.db` starts with exactly 1 resident tenant, the live seed now carries 7 (the
+  same seed-drift class §2.5 already named). `test_idempiere_login.js` couldn't run in this worktree
+  (`Cannot find module 'sql.js'`, a pre-existing environment gap, not evaluated). Neither touches
+  `accessibleWindows`/`AdAccess`/`idmp_session.js`'s changed functions.
+- CI: not wired in — `scripts/system_is_real.sh` runs exactly one headless ERP witness
+  (`ERP_WITNESS`/`poc_fold_complete.js`); this is a live-browser Playwright witness, a different class,
+  and there is still no bundle runner (§4, unchanged). Named, not silently skipped.
+- `docs/internal/ERP_COVERAGE_MATRIX.md`'s 4 access rows re-scored ✅ with the real witness cited, the
+  phantom `poc_ad_*_live.js` citations corrected in place.
+- Ships: `sw.js` v767→v768 (new precached file `ad_access.js` + the delegation change to `idmp_session.js`).
+
+**What this does NOT close:** §5.1's other two T-0 items (the 52-ledger enumerable list, the lane-index
+write-back) — untouched, still open. The §RULE-EDIT grail witness — untouched. This is exactly one
+finding, closed precisely, not a re-run of the whole T-0 pass.
+
+---
+
 ## §7 — 2026-08-23: T-0 still not started; a fresh structural triage against the live PG found a new
 ## showstopper before it found a fix
 
@@ -340,5 +391,4 @@ down the manual steps precisely enough that Forms/ValRules can be folded in with
 This is a genuinely different, larger task than "add 2 tables to a manifest," and this session's attempt to
 just re-run the proven exporter is the concrete falsifier proving that assumption wrong.
 
-**Access-gate fix:** out of scope for this addendum — handled in a sibling session/PR against
-`erp/idmp_session.js` + `build/erp/ad_access.js`, not touched here.
+**Access-gate fix:** closed separately, same day — see §2.1 CLOSED above.
