@@ -310,7 +310,7 @@ floor slabs in a fixed height window that missed Hospital's real floor plates by
 wider-than-local detour search (`§PATH_LEGAL_DETOUR_NONLOCAL`), and the line passes one door twice — a
 real ~3m back-step out of room R9 — so the drawn route is on real floor but not always the tidiest
 line. Full technical trail, for anyone who wants it:
-`prompts/Modeller/DISC_Walker/VIEWER_FIND_PANEL_ROOM_ACCURACY.md` §17 (supersedes §9–§16), shipped in
+`prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md` §17 (supersedes §9–§16), shipped in
 bim-ootb PRs #1006–#1009.
 
 *Future feature — fire escape:* the same routing will pin a **Fire Escape** entry at the top of the
@@ -351,18 +351,24 @@ one icon:
   try a What-if slip, share a `?tm=play` link. On a large building (100K+ elements), a box-cube pill
   in the panel header trims GPU cost by rendering already-built-but-out-of-view elements as lightweight
   wireframe boxes, keeping whatever you're actually looking at full LOD400.
+  The schedule it plays is generated element-by-element from the model's own geometry, and it holds a
+  measured invariant — **no element appears before the first element it physically touches appears**
+  (0 violations across 266,954 elements on seven buildings; see
+  **[the generated 4D movie](4D5DAnalysis.md#the-generated-4d-movie-support-order-is-a-measured-invariant)**
+  for the numbers and the stated limits).
 
   <figure style="margin: 12px 0;">
   <a href="https://youtu.be/juwOrpqKhFE" target="_blank"><img src="https://img.youtube.com/vi/juwOrpqKhFE/hqdefault.jpg" alt="Time Machine box-proxy demo" style="width:100%; max-width:480px; border:1px solid #333; border-radius:8px;"/></a>
   <figcaption style="text-align:center; font-style:italic; color:#666; margin-top:6px;"><a href="https://youtu.be/juwOrpqKhFE">Watch on YouTube</a> — Time Machine playback on a large building with the box-cube proxy toggle.</figcaption>
   </figure>
 
-  Full authoring/playback walkthrough already lives in
-  **[Kernel-ERP User Guide → Time Machine](ERPUserGuide.md)** (not re-documented here — same building,
-  same feature, reached from either app), including the
-  **[ERP-side entry point](ERPUserGuide.md#author-the-4d5d-schedule--build-it-up-from-the-model-live)** —
-  picking an element in 3D (or a red **Zoom Across** pill on an ERP record) jumps the Time Machine
-  straight to that element's construction moment.
+  Full authoring/editing/import walkthrough — including direct Gantt drag/resize/link and the
+  **⏪ Pull Back** (reschedule-as-early-as-possible) action — lives on its own page:
+  **[Time Machine — the 4D construction timeline](TimeMachine.md)** (not re-documented here — same
+  building, same feature, reached from either app), including the
+  **[ERP-side entry point](TimeMachine.md)** — picking an
+  element in 3D (or a red **Zoom Across** pill on an ERP record) jumps the Time Machine straight to
+  that element's construction moment.
 - **4D / 5D** (key **4**) opens the analytics dashboard (`boq_charts.html`) for the loaded building in a
   new tab — full coverage: **[4D/5D Analysis guide](4D5DAnalysis.md)**.
 
@@ -419,6 +425,36 @@ To work with them:
 
 ![The same panel after authoring — the yellow flight tube now bent through the model with draggable band handles along it, and the list grown to settle, four added sticks (each labelled with how far along the walk it sits and carrying a × to remove it) and stop, above the same Whole path block and the Preview / Cancel / Save this path / OK row](img/viewer/filmmaker-path-editor.png)
 
+#### Walk finger mode — walk into the shot, plant the stick where you stand
+
+Dropping sticks by clicking the tube works from the outside looking in. **Walk finger mode** does the
+same edit from the inside: you walk through the building in first person and plant the stick exactly
+where you are standing, aimed exactly where you are looking.
+
+1. Press the **eye** on the Cinema path panel's title row — the **POV frame** opens bottom-left,
+   showing the film's own camera view.
+2. Press the **shoes** (footprints) icon on the POV frame's header. You are now standing inside the
+   film, at the start of its walkable stretch, at walking height. (Optional shortcut: drag the
+   timeline bar to a point along the walk first, and the shoes start you there instead.)
+3. **Walk with the usual trackpad moves, all shown in the POV frame:** move your finger to look
+   around; pinch out or scroll to glide toward what you are facing (hold **Shift** to glide faster);
+   the **W A S D** keys do the same moving from the keyboard. The rest of the screen freezes while
+   you walk — that is deliberate, it keeps the walk smooth on large buildings.
+4. **Enter or Spacebar plants the stick** — where you stand becomes its position, where you look
+   becomes its aim — and drops you straight back into the editor to review it. A **click** plants
+   the stick and keeps you walking, for laying several in one pass. **Esc** leaves without planting.
+   Pressing the shoes again continues from the exact spot you left.
+
+Proof from a real session on the Terminal building: the user walked into the POV, hit Spacebar, and
+**stick @ 13%** appeared — the new row highlighted in the panel and its blue middle dot on the path
+in canvas right beside it. One keypress, one stick, position and aim both set:
+
+![Walk finger mode's result the moment Spacebar was hit — the Cinema path panel now lists a highlighted "stick @ 13%" row with its pinned aim coordinates, the same stick's blue middle dot visible on the yellow flight tube in canvas just left of the panel, the POV frame bottom-left still showing the walker's own view, and the Time Machine's construction timeline still running top-left](img/viewer/filmmaker-walk-stick13.png)
+
+Two small behaviours keep this honest: planting re-shapes the flight around the new stick immediately
+(the brief pause is the film re-deriving), and clicking again at the stick you just planted does
+**not** stack a duplicate — the editor reads it as "I'm done here" and returns you to review.
+
 #### Whole path — the controls that act on the entire film
 
 - **reach %** — how far a drag on the tube carries along the walk. Drag the tube *between* the bands and
@@ -429,6 +465,9 @@ To work with them:
   the yellow tube* where the cut belongs before pressing — marking from a wide exterior view lands on
   whichever part of the flight happens to pass closest to your eye. **whole film** clears the window.
 - **build the model as the camera flies** — the construction reveal. See the 4D note below.
+- **room titles** — a name card appears as the camera enters each room, sourced from the room's own
+  friendly name, never invented.
+- **Reveal** — cycles every discipline in the model past the camera in turn. See below.
 - **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
   **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
   the clip window and when it was saved.
@@ -462,6 +501,56 @@ workflow is to **preview the Time Machine first** — its Gantt is in the Inspec
 your **mark in / mark out** against what the programme actually shows.
 
 [Watch the film](https://youtu.be/sUTscAgnQMc) this feature produced on a real building.
+
+#### Discipline Reveal — walk it twice, once dressed, once bare
+
+Tick **Reveal** (beside **room titles**) and the film grows a second act after the normal walk-out
+ends, before the closing orbit:
+
+1. **A brief pull-out** from the spot the walk just ended on — the camera eases back a short distance,
+   still looking the way it was looking, a beat to mark that the walk itself is done.
+2. **A fast retrace back to where the walk began** — the camera flies back along the exact same route
+   it just walked, at a quicker pace than the walk itself, easing in and out so the motion reads as
+   one continuous flight, never a jump cut.
+3. **The same walk, a second time, with the architecture hidden.** Walls, slabs and structure fade out
+   of the shot for this lap only, so every other discipline present in the model — mechanical,
+   electrical, fire protection, plumbing, whatever the building actually has — shows through at once,
+   exactly where it really sits.
+4. **A parade, one discipline at a time.** Each discipline present takes its own short turn alone on
+   screen, named on the title card in place of the room name, smallest-average-element disciplines
+   first and MEP last — MEP's own ducts and pipework tend to be large and easy to spot even briefly, so
+   it doesn't need the early slot the finer trades do. Each hand-off holds both the outgoing and
+   incoming discipline on screen together for a moment rather than swapping instantly, before **All
+   Disciplines** together closes the parade.
+
+Every distance and duration in this second act is derived from the same real geometry the rest of the
+film uses — the pull-out, the retrace and the walk are each priced by a real speed times a real
+measured length, never a fixed number tuned to look right on one building.
+
+#### Sun, sky and shadow while the film records
+
+A recorded film is not lit the way the live viewport is. The moment recording starts, the viewer stages a
+photographic pass — and it keeps running *while the 4D reveal assembles the building*, so the light and the
+construction sequence advance together in the same take:
+
+| what happens | detail |
+|---|---|
+| **The sun travels** | It starts at a high 55° "late morning" angle and sinks to a 6° dusk by the last frame. Shadows lengthen and swing across the film — the sun is not parked. |
+| **Real cast shadows** | The building, its rooftop plant, and the distant skyline all cast real shadows onto the ground, at a 4096² shadow map for the recording only (the live viewport uses a cheaper one). The shadow frustum widens as the sun drops so a long dusk shadow isn't clipped at its tip. |
+| **Atmospheric sky** | A physically-based clear-sky scattering model (Preetham), pushed warmer and hazier for the shoot — deeper reds and a tighter sun glow near the horizon than normal navigation shows. |
+| **Photographic reflections** | Glass and metal reflect a real photographed sky (HDRI), refreshed as the sun moves, so the glint tracks where the sun actually is at that moment of the film. |
+| **Warm evening key light** | The sun tints warm and window/fixture glow comes up as the light falls. |
+
+You can also stage a **single still** rather than a whole film: **Alt+S** applies the same photographic pass
+and then refines the frozen frame over 16 jittered sub-pixel samples for clean edges. **Alt+J** adds an
+optional bounce-light (GI) pass — off by default, and deliberately excluded from film recording because it
+costs far more per frame than a film's frame budget allows.
+
+**What this is honestly not.** There is no weather: no rain, no snow, no cloud shapes — the sky model is a
+clear-sky one and has no cloud geometry at all. And it does not claim to be indistinguishable from a
+photograph: the geometry is idealised IFC with no real-world wear, materials are assigned by class rather
+than hand-tuned per surface, and nothing is colour-graded per shot. What it does target is the good-archviz
+tier — and, unlike a still-render tool, it does it *while the building assembles itself to the programme*.
 
 ### Display options — Palette, Night, Shadow + Ground, Background, Sound FX
 
@@ -568,6 +657,8 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 | **Roof** | Roof plan view |
 | **Alt+Z** | Toggle X-ray mode |
 | **Alt+C** | [Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker) — derive a cinematic film, edit the flight, record |
+| **Alt+S** | [Photographic still](#sun-sky-and-shadow-while-the-film-records) — stages the sun/sky/shadow pass, then refines the frozen frame over 16 sub-pixel samples |
+| **Alt+J** | Bounce-light (GI) pass — optional, off by default, not used while recording a film |
 | **Click the flight tube** (in the Film-Maker) | Add a stick — a new band you can drag |
 | **Ctrl+Z / Ctrl+Shift+Z** (in the Film-Maker) | Undo / redo a path edit |
 | **F11** | Toggle fullscreen |
@@ -586,6 +677,12 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 | [Clash Detection](CLASH_DETECTION.md) | Clash detection engine |
 | [4D/5D Analysis](4D5DAnalysis.md) | nD analytics (4D–8D) |
 | [Asset Classification & JKR/SKATA](JKR_SKATA.md) | Classification codes, Malaysian handover compliance — what we measure, and what we don't yet certify |
+
+### For developers
+
+| Doc | What |
+|-----|------|
+| [Viewer Component Model](ViewerComponentModel.html) | The viewer's 128 JS modules as dependency strata, derived from the call graph — layers, fan-in, and where the scheduling subsystem sits |
 
 ---
 

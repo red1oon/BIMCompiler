@@ -106,10 +106,12 @@ nav:
       - "Spatial ERP × BIM × HR — One Building, One Log": SpatialERPIntegration.md
       - "Distributed ERP": DistributedERP.md
       - "How the Database Works (big picture)": SQLiteWasmArchitectureActual.html
+      - "Viewer Component Model (dev architecture)": ViewerComponentModel.html
       - "Red Pill — Design From Grammar": RED_PILL.md
       - "Clash Detection": CLASH_DETECTION.md
       - "Asset Classification & JKR/SKATA": JKR_SKATA.md
       - "IFC Export Guide (for the BIM author)": IFC_ExportGuide.md
+      - "Time Machine (4D Scheduling & Editing)": TimeMachine.md
       - "4D/5D Analysis": 4D5DAnalysis.md
       - "BIM → Project Order (ERP)": BIMtoProject.md
       - "Geometry as a Signed-Log Fold": ModellerKernelFold.md
@@ -120,6 +122,9 @@ nav:
       - "Strategic Positioning": StrategicIndustryPositioning.md
       - "Local-First Prior Art": LocalFirstPriorArt.md
       - "Enabling-Tech Timeline": EnablingTechTimeline.md
+      - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
+      - "The Last Mile — drift tracking": LAST_MILE_PROBLEM.md
+      - "Project Chronology": PROJECT_CHRONOLOGY.md
       - "Beyond Buildings": ShipYard.md
       - "Find & Navigate (wayfinding)": RouteTemplate.md
       - "Self-Host (DIY installer)": SYSTEMS_INSTALLER_GUIDE.md
