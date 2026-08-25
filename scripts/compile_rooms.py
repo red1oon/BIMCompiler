@@ -14,7 +14,14 @@ Usage:
   compile_rooms.py <db>            # DRY: print detected rooms per storey, write nothing
   compile_rooms.py <db> --write    # inject spatial_structure + rel_contained_in_space
 """
-import sqlite3, sys, math, itertools
+import sqlite3, sys, math, itertools, datetime
+
+# §ROOM_WALKER_VERSION_STAMP (ROOM_INJECTOR_NEEDLE.md) — algorithm version, EFFECTS_V convention:
+# bump on every ALGORITHM change, never on cosmetic edits. Kept in LOCKSTEP with the same-named
+# constant in build/room_walker.js (py/js parity discipline, ROOM_WALKER_PHASE_INVARIANCE.md's
+# §RASTER-EPS parity sweep is the precedent). 'v2' continues the existing lib/room_walker.js?v=2
+# loader lineage rather than restarting at an arbitrary v1.
+ROOM_WALKER_V = 'v2 (§LOCAL-FRAME + §RASTER-EPS, post-§SUSPECT-LARGE)'
 
 RES = 0.20          # grid cell size (m)
 MIN_AREA = 4.0      # m^2 — drop slivers / wall cavities
@@ -1313,9 +1320,17 @@ def main():
             if hit:
                 c.execute("INSERT INTO rel_contained_in_space (space_guid, element_guid) VALUES (?,?)", (r["guid"], g)); rel += 1
                 break
+    # §ROOM_WALKER_VERSION_STAMP stage 2 (write side only): record WHICH algorithm version compiled
+    # these rooms, so stage 3 can later trust-until-version-moves-on instead of trust-forever.
+    # Missing row = compiled before this shipped (counts as maximally stale once stage 3 reads it).
+    c.execute("CREATE TABLE IF NOT EXISTS rooms_meta (id INTEGER PRIMARY KEY CHECK(id=1), "
+              "version TEXT, built_at TEXT, room_count INTEGER)")
+    c.execute("INSERT OR REPLACE INTO rooms_meta (id, version, built_at, room_count) VALUES (1,?,?,?)",
+              (ROOM_WALKER_V, datetime.datetime.now(datetime.timezone.utc).isoformat(), len(allrooms)))
     con.commit()
     rect_rows = sum(len(r.get("rects") or [None]) for r in allrooms)
     print(f"WROTE {len(allrooms)} rooms as {rect_rows} IfcSpace rect rows + {rel} rel_contained_in_space rows")
+    print(f"§ROOMS_META stamped version={ROOM_WALKER_V} room_count={len(allrooms)}")
 
 if __name__ == "__main__":
     main()
