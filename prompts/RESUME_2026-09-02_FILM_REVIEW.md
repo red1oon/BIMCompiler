@@ -105,10 +105,13 @@ is a knob with a stated trade, not a bug.
 
 ## §OPEN — smaller items, each with its evidence
 
-1. **PR #1602 (bim-ootb) is OPEN, not merged** — the CLI silent bake plus `§NIGHT_BAKE_POOL`.
-   **Until it merges, the interactive Alt+C bake does NOT get the speed fix.** The fix is gated on
-   `A._maxqActive` (any bake, not headless-only), so the user's own bake should benefit — PREDICTED,
-   never measured on the interactive path. Measuring that is a real, bounded task.
+1. **PR #1602 is MERGED** (`d37eb109` on `origin/main`, 2026-09-01T12:36:55Z) — the CLI silent bake
+   plus `§NIGHT_BAKE_POOL`. So `cli_silent_bake.js` is now at the bim-ootb repo root, and the perf
+   fix is live for the interactive Alt+C bake too, since it is gated on `A._maxqActive` (any bake,
+   not headless-only). **⚠ The interactive gain is PREDICTED, never measured** — headless went
+   26.4 → 1.27 s/frame, and the user's own bake was 2.26 s/frame before. Measuring one real Alt+C
+   bake against that 2.26 baseline is a bounded, high-value task and the user cares about it
+   ("it's bad bake if far above 2 hrs").
 2. **`§CPE_PIE_HOLD` contradicts its own documentation.** The full Hospital bake logged
    `heldFrames=283/2027 (14%)`, but `CINEMA_PATH_EDITOR.md` asserts the hold will NOT fire on
    Hospital because Finisher ops run to the last day ("that is correct, not a bug"). One of the two
