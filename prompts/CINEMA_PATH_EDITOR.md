@@ -1,5 +1,12 @@
 # ⚠ DO NOT REMOVE
-**▶ RESUME 2026-09-01 (latest) — READ §CPE_AIM_DEPTH_FREEZE AT THE END OF THIS FILE FIRST.**
+**▶ RESUME 2026-09-01 (latest) — §CPE_PIE_FLYOUT_DROP SHIPPED, PR #1599 (auto-merge armed), sw
+v1118, `cinema_maxq.js?v=8` + `cpe_resource_panel.js?v=2`.** The Reveal round (fly-out) no longer
+draws the pie — the revolving cards + roster take the full plate width (0.494→0.827·bw cards,
+0.867·bw roster). NOT a revert of §CPE_PIE_HOLD: round 1 untouched, boundary = the frame loop's
+own `_inReveal` (no new constant). Witness 27/27; full record §CPE_PIE_FLYOUT_DROP at the end of
+this file. The next bake's log must show `§CPE_STATS_TAIL … pie=dropped (§CPE_PIE_FLYOUT_DROP)`.
+
+**▶ RESUME 2026-09-01 (earlier) — READ §CPE_AIM_DEPTH_FREEZE AT THE END OF THIS FILE FIRST.**
 **§CPE_AIM_DEPTH_FREEZE SHIPPED — PR #1598 (auto-merge armed), sw v1117, effects.js?v=29.** Inside
 a correction window the blend-from is now FROZEN at the window's own edges (entry gaze through
 ramp+hold, exit gaze through decay — §CPE_CORR_BRANCH's resolve-once machinery extended, not a
@@ -4780,3 +4787,20 @@ Full width: cards `colW = 346 − 2·30 = 286 px (0.827·bw)`; roster `availW = 
   output means the change did nothing and the witness says NO-OP, not PASS.
 
 ### MEASURED (to be filled from the witness log before this section is closed)
+
+### MEASURED — witness 27/27 PASS (was 18/18), NODE, no browser. bim-ootb PR #1599, auto-merge armed. sw v1117→v1118, `cinema_maxq.js?v=8`, `cpe_resource_panel.js?v=2`.
+From `/tmp/wt-pie-flyout-witness.log` (saved, read before these conclusions — Log Mandate):
+| claim | measured |
+|---|---|
+| boundary | frame **120** of 200 (`u>=0.60`, the sweep's synthetic `_revealU`; the predicate is `cinema_maxq.js`'s own `_inReveal`, copied verbatim) |
+| pie before boundary | **120/120** frames blit exactly one pie (round 1 untouched) |
+| pie during fly-out | **0/80** frames, roster slots included |
+| card column | measured **0.486·bw → 0.815·bw** (6px-quantized lower bounds); derived exact **286 px = 0.827·bw** at h=960, was 171 px = 0.494·bw |
+| §CPE_CARD_FIT re-proven | the #1592 card prints label IN FULL, **no ellipsis anywhere**, long sub complete (wraps `"…not a bill of" / "quantities"`) at the new width |
+| roster full width | `Mechanical Ventilation & Ductwork` (33 ch) **ellipsised beside the pie (maxW 121 px), whole without it (250 px)**; heading+dots x **152 → 23** (G.lx → G.pad); roster availW 171 → **300 px = 0.867·bw** |
+| stack closure | plate rect **`1479,87,346,230,21` identical across all 6 draw modes**, every draw inside it — the pie lives INSIDE the fixed §CPE_PIE_HOLD box, so the §CPE_HUD_ORDER `_stackY` column keeps its exact y-extent (87..317) and cannot gap or overlap |
+| round-1 leak guard | G-FD-7: resource panel still blits the pie and lists at the reserved column (lx=152) — `fullW` did not leak |
+| wiring | G-FD-8 reads the shipped `cinema_maxq.js`: reveal branch carries `held: null`, entered-log carries `pie=dropped (§CPE_PIE_FLYOUT_DROP)` — the next real bake asserts it end-to-end |
+| self-report | verdict machinery prints VACUOUS (either side of the sweep empty), NO-OP (modes render identically), WRONG — never PASS unjudged. This run: `verdict=judged`, NO-OP guard exercised (blits 1 vs 0, colX 1631 → 1509) |
+
+**What the next real bake's log should show:** `§CPE_STATS_TAIL reveal round entered at frame … pie=dropped (§CPE_PIE_FLYOUT_DROP)` — and the Reveal-round cards/roster at full plate width with no pie. Round 1 and the nothing-to-revolve fallback (pie kept — never blank) are unchanged.
