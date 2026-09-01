@@ -2268,3 +2268,4 @@ Tree = branch merged with origin/main @4fb753c6 (#1599); sw conflict resolved v1
   4096² figure circulating in the lane brief is NOT what the live sun carries; measured 512².
 - Ship state: branch feat/wall-side-light-floor, commit bd5adf10 + merge 2fbea94a; PR + merge
   verification recorded below when landed.
+- **LANDED 2026-09-01: bim-ootb PR #1601 MERGED as origin/main d16646db (verified by fetch, not the PR page: sw v1119, FRONT_SIDE_CLASSES, ambient 0.386 / hemi 0.617 all present on main).**
