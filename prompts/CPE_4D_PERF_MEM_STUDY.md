@@ -18,14 +18,16 @@ real session's `§PHOTO_PREWARM` line and bake wall-clock are what prove they la
   staging + stitch is unchanged, so this is a ~47 min saving, NOT a halving)
 
 **Next open items, in the order I would take them:**
-1. **§R12 memory — MEASURE BEFORE FIXING.** Run the `§MEM_PROBE` breakdown on Hospital (Terminal's
-   is the only one on record: heap 1,226 MB, geometry attributes 469 MB). The user's log shows the
-   staging is NOT the hog — ~17 MB retained per Alt+S on a ~1.57 GB baseline, ~1%. The weight is
-   63,182 elements + `§SPLIT_GEO_LOADED size=229MB` resident in WASM for the tab's life. Closed
-   doors: dropping the `normal` attribute is WITHDRAWN, and 129.6 MB "weldable" is an upper bound.
-2. **⛔ The section-cut case is UNMEASURED.** The user's Alt+S after `§SECTION ON axis=Y` was
-   interrupted (`soft-cancel (camera move) elapsedMs=7887`) and never completed. Needs a run left
-   alone until `§STILL_REFINE done`, with and without the cut, same pose.
+1. **✅ §R12 memory — MEASURED 2026-09-01.** The Hospital `§MEM_PROBE` breakdown is TAKEN — read
+   **§R12_HOSPITAL_MEM** at the end of this file: heap 1,577 MB reproduced headless (user saw
+   ~1.57 GB), full table + ranked levers with measured bytes. Nothing was shipped off it — next
+   step is the user picking a lever.
+2. **✅ CLOSED 2026-09-01 — the section-cut case, by USER ATTRIBUTION, NEVER MEASURED.** The user:
+   *"the section cut? Scissors? Is no longer a suspected issue as it seemed to be some other
+   sessions hogging."* Closed as a machine-contention artefact (concurrent sessions competing for
+   this machine), NOT a rendering defect — and NOT "measured and found fine": the only run on
+   record soft-cancelled at 7887 ms and never completed. Do not re-open it as an unmeasured
+   mystery; re-measure only if the user re-reports it on a quiet machine.
 3. **§MAXQ_BACKGROUND** (spec in `CINEMA_PATH_EDITOR.md`) — facts given, user has NOT approved
    building it. It saves ZERO bake time; it buys back attention. ~270 LOC, 2 new files.
 4. R7 / R8 / R9 — still unstarted, still not urgent, and none of them move the bake clock.
@@ -401,9 +403,119 @@ underneath it would be the square peg this file's own §0a warns about.
 **Closed, do not reopen:** dropping the `normal` attribute is WITHDRAWN (it breaks §TRIPLANAR's
 `vTriWorldNormal` and all texturing collapses), and the 129.6 MB "weldable" figure is an upper bound.
 
-### ⛔ The section-cut case is NOT measured — the log cannot answer it
+### ✅ CLOSED 2026-09-01 — section-cut case closed by user attribution, NEVER measured
 The third Alt+S, the one taken after `§SECTION ON axis=Y range=[-45.3, 90.5]`, ends with
 `§STILL_REFINE soft-cancel (camera move) elapsedMs=7887` — **it was interrupted, so it never
 produced a completed timing.** The repeated `[GridScissors] §GRID_SCISSORS skipped — overlay not
-active` lines are no-ops and cost nothing. To answer "slow with X section cut" a run is needed where
-the fold is left alone until `§STILL_REFINE done`, with and without the cut, same pose.
+active` lines are no-ops and cost nothing.
+**CLOSED 2026-09-01 by the user's own attribution:** *"the section cut? Scissors? Is no longer a
+suspected issue as it seemed to be some other sessions hogging."* The slowness is attributed to
+concurrent sessions competing for this machine, not to the cut or the grid scissors. Read this
+closure precisely: it is a machine-contention artefact, NOT "measured and found fine" — no
+completed with/without-cut timing ever existed. Do not re-open it as an unmeasured mystery, and do
+not cite it as a cleared rendering path either; re-measure only if the user re-reports the symptom
+on a quiet machine (a run left alone until `§STILL_REFINE done`, with and without the cut, same pose).
+
+---
+
+## §R12_HOSPITAL_MEM — the Hospital memory breakdown, TAKEN 2026-09-01 (measurement only, nothing shipped)
+
+**Method:** headless `§MEM_PROBE` (extended from bim-ootb `probe_memory.js`) against the live split
+pair `Hospital_meta.db` + `Hospital_geo.db` served from the local checkout at bim-ootb `742ea66b`
+(#1588, v1111-equivalent — the SAME version the user's 1.57 GB observation came from; nothing
+between it and origin/main touches geometry sizes or DB residency). Split mode engaged exactly as
+live: `§DB_SPLIT_DETECT found=true`, `§SPLIT_GEO_LOADED size=229MB`, `§CONTRACT_CHECK batch=38171
+instanced=25011 merged=0 streamed=63182` (user's on-record line: batch=38169 instanced=25013 — ±2,
+entourage-variant jitter). Machine load was checked before every probe launch; ONE headless
+instance at a time, three aborted attempts documented below. Probe log:
+scratchpad `mem_probe_hospital.log` (session-ephemeral; every number below is copied from it).
+
+**Probe deltas vs the Terminal-era script — needed to reproduce:**
+- **§PROBE_RENDER_SKIP** — swiftshader pays 10-14 s per frame on Hospital and `animate()` renders
+  EVERY frame while `APP.streaming` (main.js §S286 gate includes streaming), starving `streamTick`
+  to ~250 elements/frame → the run projects to HOURS. Monkey-patch `A.renderer.render` to no-op
+  during streaming only (page-side, repo untouched), re-enable + let real frames run 45 s before
+  sampling. With it, all 63,182 elements stream in **9 s**. Memory numbers are render-independent.
+- **§PROBE_WAIT_FIX** — the old completion predicate `!APP.streaming` is TRUE before streaming ever
+  starts (declared STREAM_DONE at +10 s, would have sampled a partial scene). The unambiguous
+  marker is `APP.buildingsRendered.has(APP.activeBuilding)`, set exactly at stream end.
+- **meshCache census** — the Terminal probe only traversed the SCENE; per-element source
+  geometries in `A.meshCache` that were COPIED into BatchedMesh buffers are scene-invisible.
+  Terminal's 469 MB was therefore an UNDERCOUNT of geometry heap; treat cross-building comparisons
+  of the attr table as scene-only.
+- The viewer defines a non-function `window.gc` (DOM id collision) — `typeof` guard required; and
+  headless-new did not expose a callable gc, so heap figures are un-forced (pre/post shown anyway).
+
+### The table — Hospital, SAMPLE A right after streaming; SAMPLE B (+90 s idle) identical ±6 MB
+| component | measured | notes |
+|---|---|---|
+| **JS heap used** | **1,546-1,577 MB** (A), 1,545-1,583 (B) | matches the user's ~1.57 GB baseline |
+| scene position | 338.2 MB | batched 331.1 / instanced 7.2 / plain 0.0 |
+| scene normal | 338.2 MB | 100% CPU-derived (`normals_cpu`, no DB column — verified in Hospital_geo.db schema) |
+| scene index | 103.0 MB | 69.9 u32 + 33.1 u16 (§IDX16 live and working — 33.1 MB already saved; the u32 rest is BatchedMesh shared buffers ≥65,536 verts, NOT shrinkable) |
+| **scene attrs TOTAL** | **779.5 MB** | 29,554,583 verts, 2,821 unique scene geometries, meshes: 1,407 batched + 2,872 instanced + 2 plain |
+| **meshCache batch-only DUPLICATES** | **324.8 MB** | 19,197 of 20,609 entries serve ONLY batched elements — their data was copied into BatchedMesh buffers and the source is retained too. The other 1,412 entries are the live shared geometries of InstancedMesh (zero-copy, correct) |
+| meshCache BVH | 50.2 MB | `§BVH_DEFERRED built=20609` — BVH on every cache entry; scene-side BVH a further 2.4 MB |
+| WASM sqlite images | 253.2 MB | meta.db 24.6 + geo.db 228.6 (PRAGMA page_count×page_size, live handles) — resident for the tab's life |
+| instanceMatrix+color | 1.5 MB | not a lever |
+| textures decoded | 4.1 MB | not a lever (3 real images; the 2,826 renderer texture count is tiny procedural objects) |
+| accounted total | ≈1,412 MB | remainder ≈165 MB = streamQueue (63,182 rows, retained by design for x-ray/TM re-stream), _batchMeta/_instanceMeta/guidMap (63k entries each), kernel_ops persist buffers, DOM |
+| renderer RSS | 1,955 MB | headless; GPU process a further 1,198 MB = the GPU copies of the 779.5 MB attrs + targets (on the user's RTX 4060 that sits in VRAM, not RAM) |
+
+For scale, Terminal on record (scene-only): heap 1,226 MB, position 198.6, normal 198.6, index
+71.8, attrs 469 MB, 17.35M verts / 864 geoms — Hospital carries 1.7× the verts in 3.3× the scene
+geometries, and the batched-era double-copy did not exist in Terminal's numbers because that probe
+never looked.
+
+### Ranked levers — measured bytes, what each breaks, confidence
+1. **meshCache batch-only duplicates — 324.8 MB (+~47 MB its BVH share).** The single largest
+   avoidable block. Consumers of meshCache post-streaming (all verified by code read): DLOD
+   promote (`streaming.js:2164`), x-ray/TM re-stream rebuild (`:2300` "rebuild from streamQueue +
+   meshCache"), measure.js, tools.js find, navigate_find.js, dlod_nav slot cross-fade via
+   `bm.userData.slotGeo` — NOTE `slotGeo[slotId]` keeps a per-slot REFERENCE to the same
+   geometry (`streaming.js:~1869`), so deleting cache entries alone frees NOTHING; both must be
+   released and consumers re-fetch from the resident geo.db on demand (the blobs are RIGHT THERE
+   in WASM; blobToGeometry is ms-scale per hash). Effort MEDIUM (5-6 consumer sites), visible
+   change NONE if re-fetch is correct. Confidence in the bytes: HIGH (measured).
+2. **Quantized normals (Int16 normalized) — ~169 MB scene + ~77 MB meshCache ≈ 246 MB JS, plus
+   ~169 MB off the GPU copy.** This is NOT the withdrawn "drop normals" door: the attribute stays,
+   at half width. Verified by code read: §TRIPLANAR reads `objectNormal` (three's standard chunk —
+   a normalized Int16 attribute reaches GLSL as float in [-1,1] transparently, and
+   `vTriWorldNormal` re-normalizes anyway); `mepSmoothNormals` reads/writes via
+   getX/setXYZ accessors — normalized-safe on r184/185. Touch-points that must change: (a)
+   `blobToGeometry` convert after `computeVertexNormals()`; (b) merged-path `mergedNorm`; (c)
+   BatchedMesh internal buffer type propagation — needs a 20-line witness on r185; (d)
+   `§NORMAL_REPAIR` (streaming.js ~:1181) writes RAW float arrays (`narr[vi*3]=…`) and WOULD
+   break — currently disabled (`§RED_GREY_MYSTERY`, call commented out) but must be converted in
+   the same PR. Ship gate: an R10-style seeded luma-RMS witness at the floor. Confidence:
+   MEDIUM-HIGH viable; savings arithmetic exact.
+3. **One-BatchedMesh-per-bucket + per-hash dedup — 35.3 MB minimum, ~234 MB ceiling.** Measured
+   two ways: (a) exact node arithmetic over the shipped DBs (global ≤3-instance cohort, unique per
+   storey|disc|rgba bucket): only **35.3 MB** — most hash reuse is cross-bucket or in the
+   instanced cohort; (b) BUT the LIVE batched position is 331.1 MB against 217.3 MB
+   unique-per-bucket, because `_flushInstanced` partitions per FLUSH WINDOW (~5,000 elements) and
+   builds a NEW BatchedMesh per bucket per flush — multi-use hashes fragment into extra copies and
+   the ≤3 rule misclassifies split counts (contract batch=38,171 vs 23,177 by global count). One
+   persistent bm per bucket + addGeometry-once/addInstance-many recovers ≈(331.1−217.3)×2+index ≈
+   **234 MB** JS + the same off GPU, and cuts draw-call bucket count. Breaks: touches the §S280d
+   contract structures (_batchMeta/_registerBatchSlot), TM re-stream, DLOD — the "sacred, do not
+   change without testing" line sits exactly here. Effort MEDIUM-HIGH. Confidence in bytes: HIGH
+   (both ends measured); in safety: MEDIUM.
+4. **Freeing the geo.db WASM image — 228.6 MB, structural.** Post-build readers (verified):
+   section-cut/elevation 2D (`grid_overlay.js:613/701` → `section_cut.js lookupGeometry`),
+   save-export fold (`scene.js:661-787`), merge, city swaps — and lever 1's re-fetch would ADD
+   one. Mechanism matters: all Databases share ONE emscripten Module (`APP._SQL` cache), and an
+   emscripten heap NEVER shrinks — `close()` recycles pages but returns nothing to the OS. Real
+   reclaim = geo.db in its OWN `initSqlJs` Module (drop every ref → the whole Memory is GC-able)
+   or a terminable Worker, reopened on demand from the IDB cache (measured full-load: 1.2-1.8 s).
+   The vendored httpvfs range-VFS (`lib/httpvfs.js`, `_useRangeStream`) is DEAD CODE — never
+   assigned anywhere — but is the eventual no-resident-DB path R6(b) named. Effort MEDIUM-HIGH.
+   Confidence: bytes HIGH; reclaim mechanism needs a small witness first.
+5. **NOT levers, measured so the next session doesn't re-walk:** textures 4.1 MB; instance
+   matrices 1.5 MB; index u32 remainder 69.9 MB (inherent to big batched buffers, §IDX16 already
+   harvested the rest); weldable 226.3 MB re-confirmed an UPPER BOUND (sampled subset, normals
+   must split on flat faces — stays closed); Alt+S staging ~17 MB/press (~1%) re-confirmed NOT
+   the hog; §R11 prewarm absent at #1588 changes WHEN one-time work runs, not the baseline.
+
+**Shipped off this measurement: NOTHING.** No candidate met the bar of invisible + witnessed +
+trivially reversible in one pass; every lever above needs a spec + witness first (Spec-First).
