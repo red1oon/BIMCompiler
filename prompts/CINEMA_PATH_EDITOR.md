@@ -1,5 +1,5 @@
 # ⚠ DO NOT REMOVE
-**▶ RESUME 2026-09-01 (latest) — §CPE_PIE_FLYOUT_DROP SHIPPED, PR #1599 (auto-merge armed), sw
+**▶ RESUME 2026-09-01 (latest) — §CPE_PIE_FLYOUT_DROP MERGED — PR #1599 (e2e+fast-checks green, squash 4fb753c6), sw
 v1118, `cinema_maxq.js?v=8` + `cpe_resource_panel.js?v=2`.** The Reveal round (fly-out) no longer
 draws the pie — the revolving cards + roster take the full plate width (0.494→0.827·bw cards,
 0.867·bw roster). NOT a revert of §CPE_PIE_HOLD: round 1 untouched, boundary = the frame loop's
@@ -4788,7 +4788,7 @@ Full width: cards `colW = 346 − 2·30 = 286 px (0.827·bw)`; roster `availW = 
 
 ### MEASURED (to be filled from the witness log before this section is closed)
 
-### MEASURED — witness 27/27 PASS (was 18/18), NODE, no browser. bim-ootb PR #1599, auto-merge armed. sw v1117→v1118, `cinema_maxq.js?v=8`, `cpe_resource_panel.js?v=2`.
+### MEASURED — witness 27/27 PASS (was 18/18), NODE, no browser. bim-ootb PR #1599 MERGED 2026-09-01T10:52:59Z (squash 4fb753c6). sw v1117→v1118, `cinema_maxq.js?v=8`, `cpe_resource_panel.js?v=2`.
 From `/tmp/wt-pie-flyout-witness.log` (saved, read before these conclusions — Log Mandate):
 | claim | measured |
 |---|---|
