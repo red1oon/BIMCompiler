@@ -4717,3 +4717,66 @@ seam + pose tap all committed and pushed; `node --check` clean on both files.
   egl_vendor.d/10_nvidia.json` → the real RTX 4060, fully headless, no X** — wired as
   `--gpu real`. nvidia-smi healthy (driver 595.84, no kernel/lib mismatch; uptime 11 d).
 - Stages 3-5 held pending machine slot (mem-probe + rendering agents ahead in the queue).
+
+---
+
+## §CPE_PIE_FLYOUT_DROP (2026-09-01) — the fly-out drops the pie; the revolving highlights take its column. SPEC (written before code).
+
+**User, 2026-09-01:** *"a small change to the overview HUD, during last fly out, the last pie is
+not needed. Remove to give max space to the revolving highlights."*
+
+### The boundary — an existing beat, no new constant
+"Last fly out" = the frames where the revolving highlights exist at all: **`_inReveal`**
+(`cinema_maxq.js` frame loop), the §CPE_STATS_TAIL Reveal-round predicate
+`u >= _revealU` where `_revealU = _buildupTopoutU(plan).u` — i.e. `plan.beats.pullout`
+(degrading to `plan.beats.out`) when the reveal round is on the plan, else `plan.beats.rise`,
+else the ops-frozen degrade when the plan has no beats. The pie-to-remove and the highlights
+co-occur EXACTLY on `_inReveal` frames — reusing the same predicate in the same branch means the
+drop boundary can never diverge from the rotation boundary, and no threshold is invented.
+
+### The rule
+- **Round 1 (u < boundary): UNTOUCHED.** §CPE_PIE_HOLD (#1586) keeps its whole contract — live
+  pie while trades work, held+dimmed+day-captioned pie on a silent day. This spec is a NARROWER
+  rule, not a revert: the hold still owns every frame before the boundary.
+- **Reveal round (u ≥ boundary): the pie is NOT drawn at all.** `_statInfo.held = null` — the one
+  line of wiring. The cards fall back to the full-width column that pre-dates §CPE_PIE_HOLD
+  (`colW = bw − 2·round(0.13·bh)`), with §CPE_CARD_FIT's shrink/wrap running at that width.
+- **The roster is NOT lost** (§CPE_STATS_TAIL's own rule): `tailPanelAt` still receives
+  `_holdInfo`, so the crew list stays one of the revolving slots — now full-width like the cards.
+  `_drawList` gains an optional `fullW` flag used ONLY by the pie-less roster slot; the round-1
+  caller passes nothing and is byte-identical.
+- **"Nothing to revolve" fallback keeps the pie** (`_resInfo` hold in the reveal branch): if there
+  are no revolving highlights, dropping the pie would leave a blank panel — "never blank" wins,
+  and the user's rationale (space for the highlights) is vacuous there.
+- **The panel box does not move or resize.** `_box()` is shared by both modes (§CPE_PIE_HOLD's
+  "ONE panel, ONE fixed geometry"), and the §CPE_HUD_ORDER `_stackY` chain is untouched — the pie
+  lives INSIDE the fixed box, so the stack cannot open a hole; only the interior relayouts.
+- Hospital note stands: the pie hold not firing there is correct; nothing here "fixes" it. The
+  drop applies to the REVEAL round regardless of whether the pie would have been live or held.
+
+### Width, re-derived not left at 0.56 (§CPE_CARD_FIT's fraction was chosen beside the pie)
+At the bake's own h=960: bw=346, bh=230. Beside the pie the content column was
+`availW = listW − pad = max(round(0.56·bw),110) − round(0.10·bh) = 194−23 = 171 px (0.494·bw)`.
+Full width: cards `colW = 346 − 2·30 = 286 px (0.827·bw)`; roster `availW = 346 − 2·23 = 300 px
+(0.867·bw)`. Truncation must be re-proven at the new width (G-CARD gates re-run with held=null).
+
+### Witness — extends `witness_cpe_resource_hold.js` (NODE, no browser, no bake contention)
+- **G-FD-1** pie PRESENT (exactly one 3-arg pie blit) on EVERY frame before the boundary, absent
+  after, full sweep by frame index, boundary frame named. VACUOUS if either side judged 0 frames.
+- **G-FD-2** pie ABSENT (zero pie blits) on EVERY reveal frame, roster slots included.
+- **G-FD-3** measured card column: longest label printed un-ellipsised beside the pie vs full
+  width — the rendered width must reach the derived 286 px / 0.827·bw.
+- **G-FD-4** §CPE_CARD_FIT re-run at the new width: long label prints IN FULL, nothing ends in
+  an ellipsis, the long sub survives complete.
+- **G-FD-5** roster slot full-width: a long trade name that ellipsises beside the pie prints in
+  full without it; heading + dots x move from the right column (G.lx) to the left pad.
+- **G-FD-6** stack closure: the plate path's rect is IDENTICAL across resource mode, stats+held
+  and stats-alone (same x,y,bw,bh from recorded path calls), and every draw stays inside it.
+- **G-FD-7** round-1 path unchanged: all 18 existing G-HOLD/G-TAIL/G-CARD gates still pass; the
+  PR diff touches only `bigStatsCompositeOntoCanvas`/`_drawList` + the maxq reveal branch.
+- **G-FD-8** wiring: the shipped maxq reveal branch carries `held: null` and the entered-log
+  gains `pie=dropped (§CPE_PIE_FLYOUT_DROP)` so the next real bake asserts it end-to-end.
+- **G-FD-9** NO-OP guard: stats-alone vs stats+held must DIFFER (blits and colX) — identical
+  output means the change did nothing and the witness says NO-OP, not PASS.
+
+### MEASURED (to be filled from the witness log before this section is closed)
