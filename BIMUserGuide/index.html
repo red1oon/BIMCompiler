@@ -1148,6 +1148,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#baking-without-the-browser-the-silent-bake-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Baking without the browser — the silent bake (developers)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2645,6 +2656,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#baking-without-the-browser-the-silent-bake-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Baking without the browser — the silent bake (developers)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3446,6 +3468,45 @@ clear-sky one and has no cloud geometry at all. And it does not claim to be indi
 photograph: the geometry is idealised IFC with no real-world wear, materials are assigned by class rather
 than hand-tuned per surface, and nothing is colour-graded per shot. What it does target is the good-archviz
 tier — and, unlike a still-render tool, it does it <em>while the building assembles itself to the programme</em>.</p>
+<h4 id="baking-without-the-browser-the-silent-bake-developers">Baking without the browser — the silent bake (developers)<a class="headerlink" href="#baking-without-the-browser-the-silent-bake-developers" title="Permanent link">&para;</a></h4>
+<p>Everything above records the film from the viewer window: press <strong>Alt+C</strong>, edit, press <strong>OK</strong>, and watch
+it bake. There is also a <strong>command-line path that bakes the same film with no window and nobody
+watching</strong>, added 2026-09-01. It is a development tool — it is gated behind an internal flag that a
+normal viewer session never sets, and there is no button for it.</p>
+<p>It exists because a film is expensive to check. A bake takes tens of minutes, so a defect in the HUD or
+the pacing used to be found only after sitting through the result. The silent bake lets the same film be
+produced, measured and re-run from a terminal, so what used to be a wait becomes a test.</p>
+<div class="highlight"><pre><span></span><code>node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
+  [--plan NAME | --override file.json]          path source (default: the DB&#39;s cinema_path table)
+  [--buildup] [--label] [--reveal] [--day tr|tl|br|bl|off]
+  [--frames N | --seconds S] [--fps N]          length (default: the plan&#39;s own pacing)
+  [--gpu sw|real|headful]
+  [--width W --height H] [--port P] [--log FILE] [--profile DIR]
+  [--stall-min N] [--max-frame-ms N]            health watchdog — aborts early, not at the end
+  [--timeout-min N]                             hard wall-clock cap
+</code></pre></div>
+<p><strong>It bakes your saved path, not a fresh derived one.</strong> When you press <strong>Save this path</strong>, the plan is
+written to two places: a browsable copy in the browser's own storage, and a portable copy in the
+building DB's <code>cinema_path</code> table that travels with the file. The command line reads the second one by
+default, so a path saved in the viewer bakes from the terminal with no export step. <code>--plan NAME</code> picks
+a named plan instead; <code>--override file.json</code> takes one directly.</p>
+<p><strong>The saved path carries its settings with it</strong>, not just its shape — the buildup, room titles, Reveal
+and day-counter corner you had ticked are all restored. The run announces what it resolved, so there is
+no guessing whether a flag survived:</p>
+<div class="highlight"><pre><span></span><code>§CLI_BAKE_RESOLVED source=db:cinema_path bands=3 total=81.9s buildup=1 roomTitle=1 reveal=1 dayCounter=tr
+</code></pre></div>
+<p><strong>Use <code>--gpu real</code>.</strong> Headless Chrome defaults to software rendering, which is far too slow to finish a
+film. <code>--gpu real</code> reaches the machine's actual GPU with no display attached, and the run prints which
+renderer it got so the choice is never assumed. <code>--gpu sw</code> is kept only for comparison.</p>
+<p><strong>Measured on this machine (RTX 4060, headless, 2026-09-01):</strong> <strong>1.37 s/frame</strong> with zero frame
+timeouts. For scale, Hospital's saved 81.9 s path becomes a <strong>135.1 s</strong> film once the Reveal round's
+53.1 s is added — the second act is derived, so a saved path is shorter than the film it produces.</p>
+<p><strong>What this is honestly not.</strong> It is not a faster renderer — it bakes the same frames at the same
+quality settings as the window does, and it will not make a film cheaper than the frame budget allows.
+It is not a user feature, and it does not replace watching the result; what it replaces is <em>guessing</em>.
+Its real value is that the film's own <code>§</code>-tagged log can be read afterwards and asserted against — which
+is how several shipped-but-unverified behaviours were finally confirmed to fire in a real bake rather
+than only in theory.</p>
 <h3 id="display-options-palette-night-shadow-ground-background-sound-fx">Display options — Palette, Night, Shadow + Ground, Background, Sound FX<a class="headerlink" href="#display-options-palette-night-shadow-ground-background-sound-fx" title="Permanent link">&para;</a></h3>
 <p>The <strong>Palette</strong> pill (key <strong>P</strong>) opens one panel for every visual-appearance control — five lighting
 sliders, plus four more toggles appended below them:</p>
