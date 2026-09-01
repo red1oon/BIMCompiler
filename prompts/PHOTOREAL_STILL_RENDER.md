@@ -2211,3 +2211,40 @@ premise is measured false, and a side-flip alone cannot darken anything because 
 - Wider win than the ask: the census shows the SEGMENT MEP classes (pipe/duct/cable runs,
   18k+5k+84 elements) are 100 % closed-outward — they get backface culling for free; only the
   FITTING classes are the open-ended sheet population.
+
+### MEASURED 2 — derive + witness run 1 (2026-09-01, wwslf_derive.log + wwslf_assert.log, session scratchpad)
+- **Calibration (in-page single-light probe renders, linear RT):** unit response = 0.31831 =
+  1/π exactly (the Lambert albedo/π — the probe measures the real BRDF, nothing assumed);
+  hemi 0.6109/unit intensity at horizontal N; envMap term 0.2029 at intensity 0.6 (the PMREM
+  IS live in plain nav); sun 0.9578/unit at N=L.
+- **Fill model, measured:** fill_old = 0.785 + 1.257·0.6109 + 0.2029 = **1.756** vs sun term
+  4.4·0.9578·0.669 = **2.820** → contrast_old = **0.384** (the "roughly a third" of
+  §WALL_WINDING_MEASURE, now exact). T2 (0.25) solves k=0.475; **T3's p25-fill floor 0.55 binds
+  first at k=0.491 — the declared conflict happened**, clamped at the floor: shipped
+  **ambient 0.386, hemi 0.617**, predicted contrast **0.255**.
+- **Witness run 1 (Hospital live, 109 sampled elements/28 classes + 12 in-room rays): 19 PASS /
+  1 FAIL — the FAIL is the S3 pick gate doing its job.** One ray of 121 diverged:
+  `out|IfcElectricAppliance|1cL9Mv$oTAD8jv7e2bmYul` — its origin (target + 8.5 m radial offset)
+  lands INSIDE a recessed IfcLightFixture shell; DoubleSide first-hit was that fixture's own
+  interior back face, FrontSide resolves to the supply diffuser beyond it. Winding census had
+  IfcLightFixture at 0 % defect — the withdrawal is PICK-behavioural, not winding.
+  **Action per spec: IfcLightFixture dropped from FRONT_SIDE_CLASSES (25→24), re-run required.**
+- Everything else green, with the numbers:
+  - S1: 96 live materials — 59 FrontSide / 34 DoubleSide / transparent all DoubleSide,
+    0 mismatched, origSide 100 % coherent.
+  - S4: submitted triangles identical 10,105,100 = 10,105,100; draw calls 4,001 = 4,001;
+    background-pixel delta 0.0000 at all three standpoints (nothing vanished, no cache
+    fragmentation).
+  - T3 interior (real render, ACES-mapped): mean retention 0.822, p25 retention 0.833 — well
+    above the 0.70/0.55 floors, because interiors keep their sun term (castShadow=false).
+  - Away facade real render: mean ratio 0.848 (view mixes lit fragments + env specular);
+    pure away-face irradiance (S5 census): **0.550** — the actual darkening of the claim.
+  - S5 wall-face census (IfcWall+IfcWallStandardCase, area-weighted, real transforms):
+    Terminal 69,154 faces, contrast 0.471→**0.329**; Hospital 50,443 faces, 0.463→**0.322**
+    (meanNL of lit faces ≈ 0.47, grazing included — the representative pair is 0.384→0.255).
+  - M1 materials 96=96, calls Δ0. M2 frame median 2433→2320 ms headless-swiftshader
+    (**−4.7 %**, the backface-culling win, sign checked). M3 heap Δ **0 MB** (1,640 MB both
+    states, against the memory probe's measured 1,546–1,583 MB baseline). M4 shadow config
+    identical (castShadow=false, 512² — the 4096² note was historical; measured value logged).
+  - Mean hit-count drop per ray 12.41 (back-face exit hits gone) with first-hit identity held
+    on 120/121 — the WYSIWYG contract intact.
