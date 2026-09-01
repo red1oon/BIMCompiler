@@ -552,6 +552,57 @@ photograph: the geometry is idealised IFC with no real-world wear, materials are
 than hand-tuned per surface, and nothing is colour-graded per shot. What it does target is the good-archviz
 tier — and, unlike a still-render tool, it does it *while the building assembles itself to the programme*.
 
+#### Baking without the browser — the silent bake (developers)
+
+Everything above records the film from the viewer window: press **Alt+C**, edit, press **OK**, and watch
+it bake. There is also a **command-line path that bakes the same film with no window and nobody
+watching**, added 2026-09-01. It is a development tool — it is gated behind an internal flag that a
+normal viewer session never sets, and there is no button for it.
+
+It exists because a film is expensive to check. A bake takes tens of minutes, so a defect in the HUD or
+the pacing used to be found only after sitting through the result. The silent bake lets the same film be
+produced, measured and re-run from a terminal, so what used to be a wait becomes a test.
+
+```
+node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
+  [--plan NAME | --override file.json]          path source (default: the DB's cinema_path table)
+  [--buildup] [--label] [--reveal] [--day tr|tl|br|bl|off]
+  [--frames N | --seconds S] [--fps N]          length (default: the plan's own pacing)
+  [--gpu sw|real|headful]
+  [--width W --height H] [--port P] [--log FILE] [--profile DIR]
+  [--stall-min N] [--max-frame-ms N]            health watchdog — aborts early, not at the end
+  [--timeout-min N]                             hard wall-clock cap
+```
+
+**It bakes your saved path, not a fresh derived one.** When you press **Save this path**, the plan is
+written to two places: a browsable copy in the browser's own storage, and a portable copy in the
+building DB's `cinema_path` table that travels with the file. The command line reads the second one by
+default, so a path saved in the viewer bakes from the terminal with no export step. `--plan NAME` picks
+a named plan instead; `--override file.json` takes one directly.
+
+**The saved path carries its settings with it**, not just its shape — the buildup, room titles, Reveal
+and day-counter corner you had ticked are all restored. The run announces what it resolved, so there is
+no guessing whether a flag survived:
+
+```
+§CLI_BAKE_RESOLVED source=db:cinema_path bands=3 total=81.9s buildup=1 roomTitle=1 reveal=1 dayCounter=tr
+```
+
+**Use `--gpu real`.** Headless Chrome defaults to software rendering, which is far too slow to finish a
+film. `--gpu real` reaches the machine's actual GPU with no display attached, and the run prints which
+renderer it got so the choice is never assumed. `--gpu sw` is kept only for comparison.
+
+**Measured on this machine (RTX 4060, headless, 2026-09-01):** **1.37 s/frame** with zero frame
+timeouts. For scale, Hospital's saved 81.9 s path becomes a **135.1 s** film once the Reveal round's
+53.1 s is added — the second act is derived, so a saved path is shorter than the film it produces.
+
+**What this is honestly not.** It is not a faster renderer — it bakes the same frames at the same
+quality settings as the window does, and it will not make a film cheaper than the frame budget allows.
+It is not a user feature, and it does not replace watching the result; what it replaces is *guessing*.
+Its real value is that the film's own `§`-tagged log can be read afterwards and asserted against — which
+is how several shipped-but-unverified behaviours were finally confirmed to fire in a real bake rather
+than only in theory.
+
 ### Display options — Palette, Night, Shadow + Ground, Background, Sound FX
 
 The **Palette** pill (key **P**) opens one panel for every visual-appearance control — five lighting
