@@ -4723,7 +4723,37 @@ seam + pose tap all committed and pushed; `node --check` clean on both files.
   Intel UHD (Mesa ADL-S); **gl-egl + `__EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/
   egl_vendor.d/10_nvidia.json` → the real RTX 4060, fully headless, no X** — wired as
   `--gpu real`. nvidia-smi healthy (driver 595.84, no kernel/lib mismatch; uptime 11 d).
-- Stages 3-5 held pending machine slot (mem-probe + rendering agents ahead in the queue).
+- **STAGE 3 — GPU feasibility, MEASURED (24-frame short film, Hospital stored path, 2026-09-01):**
+  - `--gpu real` (headless, no X): `§CLI_BAKE_GL renderer="ANGLE (NVIDIA Corporation, NVIDIA
+    GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL ES 3.2)"` — direct identification. Full run
+    (load→24 frames→H.264 encode→delivery) wall clock **321 s**; per-frame median **3.1 s**,
+    mean 11.4 s poisoned by 3 sparse-sampling outliers (frames 15-17: 25.8/81.5/50.3 s, 2×
+    §MAXQ_FRAME_TIMEOUT — 24 frames over an 81.9 s path = 3.4 s of film per frame, every frame
+    lands in cold-shader territory; an upper bound, not the dense-bake cost).
+  - `--gpu sw` (SwiftShader): identity `"ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device
+    (Subzero)...), SwiftShader driver)"`; warm-up fold 122.1 s; **frame 0 = 210.4 s vs the RTX's
+    5.8 s on the same frame (36×)** → a full Hospital bake ≈ 71 h. Arm KILLED at that point,
+    deliberately — the GPU-vs-fallback question is answered by the identity string + the 36×
+    frame-0 contrast; a full SwiftShader timing run buys nothing (nobody bakes on SwiftShader).
+  - **Prediction (gate: stop if > ~4 h):** stored path 81.9 s ≈ 1,228 frames @15fps flags-off;
+    median 3.1 s/frame → ≈ 63 min; even the outlier-poisoned mean → 3.9 h. UNDER the gate →
+    proceed. (Reveal/buildup lengthen the film — stage 4 measures the real per-frame + length.)
+  - **Stage 1/2 witnessed end-to-end in the same run:** `§CLI_BAKE_RESOLVED source=db:cinema_path
+    bands=3 total=81.9s` → `§MAXQ_OVERRIDE_IN` → `§CPE_APPLIED total=1.6s frames=24` →
+    `§MAXQ_DONE frames=24 bytes=608818 type=video/mp4 codec=avc1.640034` (WebCodecs H.264 WORKS
+    headless — no webm fallback) → `§CLI_BAKE_FILE bytes=608818` → ffprobe h264 1280x720
+    24 frames 15 fps 1.6 s. **§CLI_BAKE_POSECHECK maxErrVsOverridePlanM=0 (MATCH),
+    meanDistVsDerivedPlanM=94.43 (the STORED path drove the camera, not the derived one),
+    bandAnchorMinDistM=[1.4, 2.86, 2.0]** (≈ eye-height offset from the stored band anchors).
+  - R11 first live sighting: `§PHOTO_PREWARM ms=9391 did=[mepSmooth,hdri,groundTex]`. R10 live:
+    `§MAXQ_FRAME_BUDGET taa=8 ao=12 renders/frame=20 (was 16+24=40)`.
+- **REBASED for stage 5:** branch now on origin/main `4fb753c6` (#1599 §CPE_PIE_FLYOUT_DROP —
+  the fly-out drops the pie; bake log must show `pie=dropped` at the §CPE_STATS_TAIL boundary).
+  Both sides had bumped v1118/`?v=8` identically so the rebase deduped them — re-bumped to
+  **v1119 / cinema_maxq.js?v=9** (5f907b6c). Class-keyed material-side + light-floor rendering
+  change NOT merged at this point — stage 5 runs WITHOUT it unless it lands first.
+- Stage 4 (300-frame validation, warm shaders, full flags) + stage 5 pending one queued short
+  run by another agent.
 
 ---
 
