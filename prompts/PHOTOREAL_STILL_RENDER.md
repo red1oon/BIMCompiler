@@ -2087,3 +2087,127 @@ solution to a defect that does not exist.**
 - Separate lever, NOT this measurement: ambient 0.785 + hemisphere 1.257 vs sun 4.4 + envMap 0.6
   (`scene.js:178-190`, `streaming.js:839-853`) means even perfectly-wound geometry only drops to
   ~1/3 of lit value on the dark side. Side-flip alone will not give the user dark shadow faces.
+
+## §WALL_SIDE_AND_LIGHT_FLOOR (2026-09-01) — class-keyed side + fill-floor retune. SPEC FIRST; measured numbers appended below after each run.
+
+**Goal (user ask):** walls facing away from the sun render DARK. Input = §WALL_WINDING_MEASURE
+(above): winding is consistent (2/111,610 inverted fleet-wide), §S260d's "inconsistent normals"
+premise is measured false, and a side-flip alone cannot darken anything because ambient+hemi
+≈ 2.04 vs sun 4.4. So the ship is TWO levers together: (1) class-keyed `material.side`,
+(2) a lowered non-directional fill — gated by (3) pick integrity, plus perf/mem non-regression
+(user, this session: "watch mem hog not to slow down, look for any oppurtunity to perf").
+
+### SPEC S1 — class-keyed side (streaming.js `_getMaterial`)
+- Opaque side = `THREE.FrontSide` iff the element's `ifc_class` passes **T1**; else `DoubleSide`.
+  Transparent path (`a < 1.0`, streaming.js:819) stays `DoubleSide` — untouched.
+- **T1 (the threshold, a number):** pooled across the two measured buildings
+  (Terminal_geo + Hospital_geo, the DBs the viewer streams), the class's
+  `(true-sheet + mixed-winding + uniformly-inverted)` element fraction is **≤ 2.0 %** of its
+  elements-with-geometry, with pooled population **≥ 30**. Classes not measured, or under
+  population, default `DoubleSide` (conservative). Rationale for 2.0 %: the measured wall-class
+  defect fractions sit at 0–1.4 % fleet-wide while the sheet-heavy classes sit at ≥ 8 %
+  (PipeFitting/DuctFitting/proxies, §WALL_WINDING_MEASURE) — 2.0 % separates the two measured
+  populations with margin on both sides and admits no class whose FrontSide cost is triangles
+  the user can see through. Class table = derived by a fresh per-class census probe (same
+  methodology as §WALL_WINDING_MEASURE: signed volume, directed-edge multiset @0.1 mm weld,
+  1 mm/5 mm false-open retest, boundary-fraction buckets ≤0.5 %/≤5 %/>5 %), cross-checked
+  against that section's published per-class numbers before being trusted.
+- `side` is a pure function of `(ifcClass, a<1.0)`. `ifcClass` is ALREADY a cacheKey dimension
+  (streaming.js:780) → the material cache CANNOT fragment. Asserted (S6).
+- `mat.userData.origSide` (streaming.js:1132) := the RESOLVED side (today it records FrontSide
+  for every opaque material while the material is actually created DoubleSide — a latent
+  mismatch against the x-ray restore fallback chain, tools.js:337/359). X-ray path
+  (streaming.js:1133, tools.js:317-360, walk.js:507/588) reads live `mat.side` at toggle time
+  and restores it — stays coherent with no change beyond origSide.
+- The §S260d comment at streaming.js:839 is corrected to cite the measurement.
+
+### SPEC S2 — light floor (scene.js:178-190)
+- Lighting model (three.js physical lights; every term MEASURED in-harness in
+  ambient-equivalent units via single-light probe renders to a linear render target —
+  no factor is hand-assumed): fill `F(N) = Ia + Ih·h(N) + Ienv·env(N)`;
+  lit `= F + Is·cs·max(0, N·L)`. Real sun vector L = (200,400,300)/‖·‖ = (0.371, 0.743, 0.557);
+  representative vertical-wall pair uses the max horizontal N·L = **0.669**.
+- **T2 (target contrast):** away-facing/sun-facing ≤ **0.25** for that pair (today ≈ 0.35).
+  Rationale: clear-day shade-to-sun luminance ratios span ~1:4–1:10; 1:4 is the conservative
+  edge, chosen because the same fill lights the interiors.
+- **T3 (interior floor — the constraint that may bind first):** at a real interior standpoint,
+  linear frame luminance must retain **p25 ≥ 0.55×** and **mean ≥ 0.70×** the pre-change value.
+  Rationale: perceived lightness ~ Y^(1/3) (CIELAB), so these bound the darkest interior
+  quartile to ≤ 18 % perceived loss and the room overall to ≤ 11 %. (Interiors keep their sun
+  term — `castShadow=false` means the sun lights interior surfaces through walls — only the
+  fill fraction of interior light drops.)
+- Derivation: one scale k applied to (ambient, hemi) JOINTLY (preserves today's colour
+  balance); solve k from T2 given the measured env term; **if that k violates T3, clamp k at
+  the T3 floor and report BOTH numbers as a declared conflict** — never silently favour one.
+  Sun intensity, envMapIntensity, PHOTO_ENVMAP_BOOST (CPE lane) untouched.
+
+### SPEC S3 — pick integrity (GATES the ship)
+- §S260d's stated reason for DoubleSide was "ensures pick works"; `Raycaster` respects
+  `material.side`. In the LIVE viewer (real DB, real `A.raycaster`, the picking.js:225-231
+  mesh collection): sample real elements of EVERY FrontSide class; cast identical rays
+  before (all-DoubleSide, toggled on the live material cache) and after (shipped sides), from
+  OUTSIDE toward element centroids and from INSIDE a real room toward inner wall faces.
+  Assert per-ray top-hit element identity and hit counts. Any regression → that class drops
+  back to DoubleSide and the census table is annotated; the witness re-runs to green before
+  ship.
+
+### SPEC S4 — nothing vanishes
+- `renderer.info.render.triangles` and `.calls` before vs after: EQUAL (side changes GPU
+  culling, not submission — a triangle-count drop means a mesh was lost, a rise means the
+  cache fragmented).
+- Uncovered-pixel proof: sky mesh hidden, clear colour set to a sentinel, one deterministic
+  render per standpoint (exterior sun side, exterior away side, interior), count sentinel
+  pixels before vs after; delta ≤ **0.5 %** of the frame. Catches walls holing out.
+
+### SPEC S5 — the actual shading claim
+- Per-face N·L census over the real wall-class geometry (world-transformed, the same decode
+  as `A.blobToGeometry`): mean linear irradiance of away-facing (N·L ≤ 0) wall faces and
+  sun-facing faces, BEFORE (DoubleSide + Ia 0.785/Ih 1.257) vs AFTER (class side + retuned).
+  Report the before/after away-face ratio and the contrast pair. If the away face does not
+  measurably darken, SAY SO and do not ship part 2. (Expected honest split: for CLOSED walls
+  the camera only ever sees front fragments, so part 1 changes their shading by ~0 —
+  the darkening is part 2's; part 1's render value is back-face-fragment correctness on the
+  open/sheet population + the culling win. The witness measures rather than assumes this.)
+- **In-harness verify-then-report:** measured contrast ratio must round to the derived
+  prediction within ±0.02 or the run is INCONCLUSIVE.
+
+### SPEC S6 — perf/mem non-regression (user scope addition, same session)
+- M1 unique-material count + draw calls per building: before == after (no cache fragmentation).
+- M2 backface-culling win: median frame time over ≥ 30 timed renders at the same pose,
+  before vs after — FrontSide should be ≤; report the signed number either way.
+- M3 heap: `performance.memory.usedJSHeapSize` same building+pose before vs after; known
+  Hospital baseline ≈ 1.57 GB; delta above noise (± ~50 MB run-to-run) = flag, do not ship.
+- M4 shadow config untouched: `sun.castShadow === false` and `sun.shadow.mapSize` identical
+  before/after (the 4096² map cost note stays historical).
+- If any of M1–M4 is negative, that part does NOT ship; the number is the finding.
+
+### Witness
+- `viewer/tests/witness_wall_side_light_floor.js` (live Playwright harness, own static server,
+  real Hospital split DB; Terminal covered by the node-side census + N·L probe). Prints one
+  `§WWSLF_*` line per claim, a final verdict line able to say `NO-OP` / `VACUOUS` /
+  `INCONCLUSIVE`, exit 1 on any FAIL. Log saved and read before any conclusion.
+
+### MEASURED 1 — per-class census + T1 table (2026-09-01, census_winding_class.js, logs census_{Terminal,Hospital}.log + t1_decision.log in session scratchpad)
+- **Probe validity, proven against §WALL_WINDING_MEASURE before trusting anything:** first run
+  mis-defined "mixed" as ANY repeated same-direction edge — that counts multi-shell solids
+  (shared internal faces carry 2+2 directed copies) and mis-bucketed 2,777 Terminal elements
+  (doc says 0). Corrected to the doc's definition (an edge used exactly TWICE, both copies the
+  same way). After the fix the cross-check reproduces every decision-relevant number EXACTLY:
+  Terminal closed_out 45,520→(with false-open fold-in 47,229 — bookkeeping split only), mixed 0,
+  inverted 0, sheets 21; Hospital with_geo 63,182, inverted 2, mixed 303, sheets+open_neg
+  5,275+39 = 5,314, outward net 57,563. (My closed/near-closed boundary differs from the doc's
+  drill bookkeeping — welding earlier closes more shells — but that split does not feed T1;
+  defect = sheet+mixed+inverted+open_negative matches exactly.)
+- **T1 applied (≤2.0 % pooled defect, pop ≥30) — FrontSide (25):** IfcAirTerminal, IfcAlarm,
+  IfcBeam, IfcCableCarrierFitting, IfcCableCarrierSegment, IfcColumn (0.52 %), IfcCovering
+  (1.32 %), IfcDistributionControlElement, IfcDuctSegment, IfcElectricAppliance,
+  IfcFireSuppressionTerminal, IfcFooting, IfcFurniture, IfcLightFixture, IfcMember (0.03 %),
+  IfcPipeSegment, IfcPlate (0.00 %), IfcRailing, IfcSlab (0.14 %), IfcStair, IfcStairFlight,
+  IfcSwitchingDevice, IfcValve (0.17 %), IfcWall (1.02 %), IfcWallStandardCase (0.61 %).
+- **DoubleSide kept (10):** IfcPipeFitting 20.4 %, IfcBuildingElementProxy 16.4 %,
+  IfcDuctFitting 14.9 %, IfcWindow 32.7 %, IfcFlowTerminal 5.1 %, IfcDoor 2.09 % (just over —
+  honest miss, not rounded down), + under-population IfcController(6), IfcFlowController(21),
+  IfcRampFlight(1), IfcRoof(2). Unlisted classes default DoubleSide.
+- Wider win than the ask: the census shows the SEGMENT MEP classes (pipe/duct/cable runs,
+  18k+5k+84 elements) are 100 % closed-outward — they get backface culling for free; only the
+  FITTING classes are the open-ended sheet population.
