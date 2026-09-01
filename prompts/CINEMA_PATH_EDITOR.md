@@ -10,6 +10,14 @@ own position); dead-end rescue intact outside the window (fires 28/91, turns 83.
 11/12 — only the pre-existing filed G-BR-5. ⚠ If you touch the correction blend: the witness's
 branch A/B must stay freeze-OFF or the frozen from-dir masks the wrap defect.
 
+**⛔ CLOSED BY THE USER 2026-09-01 — do NOT resume the aim / "dense depth" lane.** User, after the
+bake that followed #1598: *"Earlier last session i did asked about cam head face dense depth, no
+need as this last mp4 shows how it is already good."* §CPE_AIM_DENSITY was already retired
+2026-08-13 and §CPE_AIM_DEPTH_FREEZE shipped today; the user has now judged the camera's facing
+behaviour GOOD on a real mp4, which closes the ask that opened this lane. Further aim/gaze-subject
+tuning is OUT OF SCOPE unless the user reopens it. This is a user verdict on a real bake, not an
+untested assumption — do not "improve" it unprompted.
+
 **Earlier same day (all merged + live):** §CPE_PIE_HOLD #1586, §CPE_STATS_TAIL #1587, §R10 #1588,
 §R11 #1590, §CPE_CARD_FIT #1592, §SUNGLASS_GROUPING_RULES #1594 (v1114), §CPE_MATERIAL_KEY #1595
 (v1115), §CPE_CORR_BRANCH #1597 (v1116 — the 110.44 deg 2π-branch flip, A/B 110.436 → 13.114).
