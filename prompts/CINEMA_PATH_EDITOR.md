@@ -4778,8 +4778,59 @@ seam + pose tap all committed and pushed; `node --check` clean on both files.
   the first nav update after the bake. Interactive paths untouched. NOT cut (deliberately):
   §PHOTO_AO 12-frame pass + taa=8 (R10 quality budget — schedule/quality over shortcuts), the
   per-frame stop/restart (by design), §PHOTO_SHADOW_FORCE_REASSERT (ms-scale, not the cost).
-- Stage 4b (80-frame A/B re-run with the fix — harsher churn than the 300-frame film) + stage 5
-  pending; verdict = per-frame vs the 5.9 s/frame bar.
+- **STAGE 4b — fix PROVEN on the short film (80 frames, full flags, 1854x963, RTX):**
+  `§NIGHT_BAKE_POOL created n=200`; mean **1.36 s/frame**, p50 1.26 s, worst 8.7 s,
+  **unconverged=0** (pre-fix regime: 26.4 s/frame climbing, 21 timeouts). Wall 129 s total.
+  Posecheck MATCH; `§CPE_STATS_TAIL … pie=dropped (§CPE_PIE_FLYOUT_DROP)` first confirmed here
+  (frame 34/80, u=0.430, boundary=topoutU 0.428).
+
+### STAGE 5 — THE REAL HOSPITAL BAKE (2026-09-01, CLEAN, exit 0)
+**Ran against:** worktree e1369b7a = origin/main `d16646db` (#1601 §WALL_SIDE_AND_LIGHT_FLOOR
+**INCLUDED** — merged mid-session; recorded, the film shows the new class-keyed side + light
+floor) + `4fb753c6` (#1599 §CPE_PIE_FLYOUT_DROP) + the 5 §CLI_SILENT_BAKE commits; sw
+`CACHE_VERSION = v1120`. GPU proof: `§CLI_BAKE_GL renderer="ANGLE (NVIDIA … RTX 4060 …)"`.
+- **Film:** stored path `db:cinema_path` (HospitalAjaibPath.db, 3 bands, authored 81.9 s) +
+  buildup+label+reveal → `§MAXQ_OVERRIDE_IN durationSec=135.1` → **2,027 frames @ 15 fps**.
+- **Perf:** wall **2,680 s = 44 m 40 s** (fire→file, encode included; ~40 s load+TM-prime before).
+  Per-frame mean **1,264 ms**, p50 1,221 ms, worst 2,864 ms; `§MAXQ_QUALITY unconverged=0`,
+  hiddenPauses=0. Heap flat: 133 samples, 229-477 MB, last 331 MB.
+  **vs the ~2 h 10-15 m / 3,447-frame interactive reference (≈2.26-2.35 s/frame at the old 40
+  renders): 1.26 s/frame = §R10's halved budget SHOWED UP (-44% per frame), plus §R11 prewarm
+  confirmed every run (`§PHOTO_PREWARM ms=7965-9391 did=[mepSmooth,hdri,groundTex]`).**
+- **mp4 (numeric):** delivered byte-exact through the sink, 90,152,015 bytes; ffprobe (with
+  -count_frames): h264 (avc1.640034) 1854x962, **2,027 decoded frames**, 15/1 fps, duration
+  **135.133 s** (= 2027/15 exactly), 5.34 Mbps. Frame pixel stats (ffprobe signalstats):
+  n=30 YAVG=199.5/edge=2.79 (bare site, bright, sparse) → n=860 YAVG=123.1 (building fills
+  frame at pullout) → n=1500 edge=6.32 (finished building in orbit, 2.3x the bare-site edge
+  density) — construction progression reached the exported bytes.
+- **Stored path drove the camera (the lane's reason to exist):** `§CLI_BAKE_POSECHECK
+  maxErrVsOverridePlanM=0 (MATCH), meanDistVsDerivedPlanM=80.07 (differs),
+  bandAnchorMinDistM=[0, 0.02, 0.03]` — the dense track passes through the stored band anchors.
+- **Shipped-claim verdicts (all first-ever real-bake sightings):**
+  - §PHOTO_PREWARM (R11): **CONFIRMED** — `ms=7965 did=[mepSmooth,hdri,groundTex]`.
+  - §MAXQ_FRAME_BUDGET (R10): **CONFIRMED** — `taa=8 ao=12 renders/frame=20 (was 16+24=40)`,
+    and the per-frame number shows the saving is real.
+  - §CPE_STATS_TAIL: **CONFIRMED** — `reveal round entered at frame 868/2027 u=0.428
+    boundary=topoutU 0.428 slots=10 (roster + 9 cards) pie=dropped (§CPE_PIE_FLYOUT_DROP)`;
+    revolvedFrames=1159/2027 (57%).
+  - §CPE_PIE_HOLD: **FIRED, contrary to the 'never fires on Hospital' expectation** —
+    `heldFrames=283/2027 (14%) — pie holds the last real crew through the silent tail`:
+    round 1 DOES have silent days on Hospital; a finding, not a bug (the hold is the designed
+    behavior; the old expectation predated §CPE_PIE_HOLD/#1586 semantics).
+- **§MAXQ_MP4_FALLBACK: never fired** — WebCodecs H.264 encode works headless on this machine.
+
+### THE COMMAND LINE (future sessions — from a bim-ootb checkout/worktree)
+```
+node cli_silent_bake.js --db HospitalAjaibPath --gpu real \
+  --width 1854 --height 963 --buildup --label --reveal --day tr \
+  --out /path/to/out.mp4 --log /path/to/out.log \
+  --stall-min 15 --timeout-min 200 --max-frame-ms 45000 [--port 854X]
+```
+Path source: default = the building DB's `cinema_path` table; `--plan NAME` = named IndexedDB
+plan; `--override file.json` = a `_buildOverride()`-shaped object. `--frames N` forces length.
+`--gpu real` = headless RTX 4060 (gl-egl + glvnd nvidia pin, wired in). Short validation first:
+add `--frames 80`. READ THE LOG — `§CLI_BAKE_*` lines are the witness; exit code is not evidence.
+Ports: pick a fresh `--port` if EADDRINUSE (a killed run's node can hold the old one).
 
 ---
 
