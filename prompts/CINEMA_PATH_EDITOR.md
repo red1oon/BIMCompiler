@@ -4752,8 +4752,34 @@ seam + pose tap all committed and pushed; `node --check` clean on both files.
   Both sides had bumped v1118/`?v=8` identically so the rebase deduped them — re-bumped to
   **v1119 / cinema_maxq.js?v=9** (5f907b6c). Class-keyed material-side + light-floor rendering
   change NOT merged at this point — stage 5 runs WITHOUT it unless it lands first.
-- Stage 4 (300-frame validation, warm shaders, full flags) + stage 5 pending one queued short
-  run by another agent.
+- **STAGE 4 ABORT #2 (product bug FOUND + FIXED — the run that justified the lane):** first
+  300-frame full-flags run (1854x963, RTX, buildup+label+reveal) aborted at i=67: rolling
+  perFrameMs=26,390 and climbing linearly, 21× §MAXQ_FRAME_TIMEOUT, ≈9 h projected against the
+  user's hard bar ("bad bake if far above 2 hrs" = ≤5.9 s/frame for this ~1,230-frame film).
+  **Diagnosis (measured, not guessed):**
+  - heap flat (230-320 MB) — not GC; §SHADOW_FRONTIER trivial (2-30 guids, idx 10.8 ms);
+    direct probe: composer.render() with TM active + 30 cursor moves = **43 ms flat** — the
+    render path itself is clean and O(placed) is NOT in the draw.
+  - `§TRIPLANAR_PERF ms=` is a MISLABEL — it prints the refine's whole elapsedMs (same var as
+    `§STILL_REFINE … elapsedMs`), so "triplanar = 99%" attributions read the label, not a cost.
+    `cancelled (interaction)` ×160 is likewise the bake's own by-design per-frame
+    stopStillRefine(true,true) (§MAXQ_STAGE_KEEP), not a phantom input.
+  - **The real mechanism, proven by correlation in s4_300.log:** §NIGHT_STILL_LIGHTS count per
+    re-stage: stable count → fold 0.8-1.3 s (even at 200 lights); count CHANGED → 13-53 s.
+    Sequence measured: 200×14 frames stable = 0.8-1.3 s each; then 182→125→47→0 = 13.7/44.5/
+    21.8/8.3 s; 0 stable ×20 = 0.6-1.9 s; then 164→126→105→92 = 16/52.8/44.3/38.5 s; the one
+    stable pair in the tail (88→88) = **1.2 s**. Point-light COUNT is a three.js shader DEFINE —
+    every count change recompiles every program in the scene. §NIGHT_LIGHT_CHURN_FIX (08-08) had
+    named this exact cost but its delta reuse still moves the count; during a bake the in-frustum
+    fixture census changes almost every frame (flying camera + buildup placing fixtures).
+  **FIX — §NIGHT_BAKE_POOL (bd8872ac, tools.js?v=44, sw v1120), bake-gated (A._maxqActive):**
+  fixed-size pool at the still cap created once; per-frame assignment is position/color/intensity
+  only (uniform updates, no recompile); unused slots intensity 0 (quality-identical); disposed on
+  the first nav update after the bake. Interactive paths untouched. NOT cut (deliberately):
+  §PHOTO_AO 12-frame pass + taa=8 (R10 quality budget — schedule/quality over shortcuts), the
+  per-frame stop/restart (by design), §PHOTO_SHADOW_FORCE_REASSERT (ms-scale, not the cost).
+- Stage 4b (80-frame A/B re-run with the fix — harsher churn than the 300-frame film) + stage 5
+  pending; verdict = per-frame vs the 5.9 s/frame bar.
 
 ---
 
