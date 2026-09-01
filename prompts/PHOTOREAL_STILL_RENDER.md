@@ -2248,3 +2248,23 @@ premise is measured false, and a side-flip alone cannot darken anything because 
     identical (castShadow=false, 512² — the 4096² note was historical; measured value logged).
   - Mean hit-count drop per ray 12.41 (back-face exit hits gone) with first-hit identity held
     on 120/121 — the WYSIWYG contract intact.
+
+### MEASURED 3 — confirmation run 2, merged tree, SHIPPED (2026-09-01, wwslf_assert2.log)
+Tree = branch merged with origin/main @4fb753c6 (#1599); sw conflict resolved v1118→**v1119**
+(both-notes, higher-version, own-bump rule). **§WWSLF_VERDICT PASS judged=20 fails=0** —
+`§WITNESS_WALL_SIDE_LIGHT_FLOOR pass=20 fail=0 ran=20`.
+- S3 pick gate GREEN after the IfcLightFixture withdrawal: **121/121 rays, 0 first-hit
+  divergences** (outside + in-room), mean hit-count drop 12.36 (back-face exit hits gone —
+  expected, identity intact). Final list = **24 FrontSide classes** (S1: 54 front / 39 double
+  / transparent all double, 0 mismatched, origSide coherent).
+- Same derivation reproduced exactly (calib deterministic): fill 1.756 → 0.966
+  ambient-equivalents, contrast 0.384 → 0.255, T3-clamp conflict again declared.
+- T3 interior: retention mean 0.822 / p25 0.833 (floors 0.70/0.55) — interiors keep their sun
+  term, so the fill cut lands mostly on exterior away faces, as designed.
+- M2 honest note: frame median run 1 **−113 ms** (−4.7 %), run 2 **+30 ms** (+1.5 %) on
+  ~2 s software-GL frames — the backface-culling win is WITHIN HEADLESS NOISE, sign checked
+  both runs; no reliable frame-time claim either way. M3 heap 1,545 MB both states (Δ 0 MB;
+  measured baseline band 1,546–1,583 MB). M4 shadow {cast:false, 512²} identical — note the
+  4096² figure circulating in the lane brief is NOT what the live sun carries; measured 512².
+- Ship state: branch feat/wall-side-light-floor, commit bd5adf10 + merge 2fbea94a; PR + merge
+  verification recorded below when landed.
