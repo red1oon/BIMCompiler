@@ -4644,3 +4644,76 @@ clusters, printed in the log, same treatment as the hazard's 20-deg line); non-r
 **Honest cost, stated:** total in-window turn RISES 188.2 → 203.8 deg (ramp 155.0 → 169.7) — a
 monotone fixed-to-fixed sweep is longer than a partially-self-cancelling wobble. Smoothness
 (peak step -41%, jerk -65%) is what the freeze buys; path length is what it pays.
+
+## §CLI_SILENT_BAKE — dev-only command-line silent bake (2026-09-01)
+
+# ⚠ DO NOT REMOVE
+# Scope: a dev-only scripted entry into the SHIPPED MaxQ bake (window.__maxqBake + cli_silent_bake.js),
+# taking a STORED PATH as its argument. Read the log after every run — exit code is not evidence.
+
+### SPEC (written before code — Spec-First)
+1. **Entry** — `window.__maxqBake(opts)` in `viewer/cinema_maxq.js`, defined ONLY when
+   `window.__MAXQ_SILENT` was pre-set by the launcher (puppeteer `evaluateOnNewDocument`), so no
+   user session ever sees it. Resolves the stored path in exactly three forms, no second schema:
+   - `opts.override` — a `_buildOverride()`-shaped object passed straight in;
+   - `opts.name` — a named plan from IndexedDB `bim_ootb_cinema_paths` store `paths`
+     (key `building|name`, field `.override`) — the working store, only present in a profile that saved it;
+   - neither — the building DB's own `cinema_path` TABLE (the portable store), loaded through the
+     SHIPPED lazy loader (`A.cinemaPathPlan(60)` → `_cpeLoadFromDb` → `A._getCinemaPathEdit()`).
+   `opts.flags` `{buildup, roomTitle, reveal, dayCounter}` compose onto the resolved override —
+   only keys explicitly sent (the DB table carries geometry+timing only, never the checkboxes).
+   Logs `§CLI_BAKE_RESOLVED source=… bands=… total=…`.
+2. **start() grows ONE branch, no duplicated bake loop** — `opts.override` synthesizes the same
+   `_cpeRes` the editor returns (`{action:'ok', override, durationSec}`; durationSec from
+   `override._total`, corrected by the override-plan's own `naturalTotal` when `opts.frames` is
+   absent — the §CPE_PACING contract applied to the override plan, so caller-added reveal/hose get
+   real frames). The EXISTING application block (re-derive frames → re-plan → clip/buildup/
+   roomTitle/reveal/dayCounter) runs unchanged for both sources; the editor path stays
+   byte-identical (its gate merely adds `&& !opts.override`). Logs `§MAXQ_OVERRIDE_IN`.
+3. **Output capture** — the `a.download` click is inert headless. When `window.__maxqDeliverBlob`
+   exists (runner-installed), `_stitchMp4`/`_stitch` hand it the finished Blob instead of clicking
+   (`§MAXQ_DELIVERED bytes=N name=…`); node writes the file and ASSERTS exists && bytes>0
+   (`§CLI_BAKE_FILE`) — a zero-byte mp4 that "succeeded" is the guarded failure mode. H.264 encode
+   missing headless → the existing `§MAXQ_MP4_FALLBACK` webm path is carried, not treated as a blocker.
+4. **Pose tap** — one guarded line in the frame loop: `window.__maxqPoseTap(i, x,y,z, tx,ty,tz)`
+   when defined. The runner records every frame's real pose and asserts it numerically against an
+   independently built plan from the SAME stored override — a bake that runs but ignores the passed
+   path is the silent failure this catches.
+5. **Runner** — `cli_silent_bake.js` (bim-ootb root, same family as `probe_*.js`): serves the
+   checkout on a local port, fresh Chrome profile, streams EVERY console line to a log file
+   (Log Mandate), samples `performance.memory` on an interval, live health-watchdog on the `§` stream
+   (may abort a sick bake early — user authorization 2026-09-01: "if u detect a bug u can kill the
+   bake and fix and redo the bake by command line"; every abort is recorded here with its § line),
+   writes the delivered video, then ffprobe asserts duration/frames/resolution/fps against the plan.
+6. **Buildup headless** — `tmHasExistingSchedule` gates on a profile-local gantt cache OR
+   kernel_ops ELEMENT_PLACE rows; a fresh headless profile on a DB with none (HospitalAjaibPath.db
+   kernel_ops = 1 BUILDING_OPEN row) would skip buildup. The runner therefore activates TM first via
+   the shipped `window.tmActivateForBake()` (the same template-path generation a real TM open runs)
+   when `--buildup` is asked — EXTRACT of the shipped verb, not a new generation path.
+7. **GPU feasibility gates the long run** — measure real per-frame ms on a short film with a genuine
+   GPU context vs SwiftShader, print `GL_VENDOR`/`GL_RENDERER` as proof of which ran, predict the
+   full-Hospital wall clock from measured per-frame time, STOP and report if > ~4 h.
+   Known real-GPU reference: ~2 h 10–15 m after §R10.
+
+### MEASURED (filled as stages complete)
+**STAGE 1+2 BUILT (2026-09-01, branch `feat/cli-silent-bake`, commits ec99483d+dcaad675 off
+origin/main debed8e1 / sw v1117→v1118, `cinema_maxq.js?v=8`):** viewer entry + runner + delivery
+seam + pose tap all committed and pushed; `node --check` clean on both files.
+- **ABORT #1 (runner bug, recorded per the kill-fix-redo authorization):** first smoke run
+  (12-frame Hospital, SwiftShader) failed in 7 s with `no stored path` — the runner's readiness
+  wait (`!APP.streaming`) RACED the load: `__maxqBake` fired before the DB was open, and
+  effects.js `_cpeLoadFromDb` LATCHES `_cpeLoaded=true` on entry, permanently blinding that
+  session to the stored path. Fix (both sides): runner now waits for streaming.js's own
+  completion signal `APP.buildingsRendered.has(APP.activeBuilding)` (set the same tick as
+  `A.streaming=false`), and `__maxqBake` throws `building DB not open yet` before probing —
+  the latch can no longer fire early. Bake path untouched — this was a RUNNER defect.
+- **Hospital's stored path CONFIRMED in the portable store:** `buildings/HospitalAjaibPath.db`
+  `cinema_path` = 3 bands, total_sec=81.87, old 13-column format (no hold_sec — the reader's
+  by-name fallback covers it). `Hospital_extracted.db` has NO cinema_path table. kernel_ops in
+  AjaibPath = 1 row (BUILDING_OPEN) → buildup NEEDS the runner's TM priming (spec item 6).
+- **GPU feasibility probe (blank-context, this machine, 2026-09-01):** headless
+  `--use-angle=vulkan` → NO-CONTEXT; plain headless → SwiftShader; `--use-angle=gl-egl` →
+  Intel UHD (Mesa ADL-S); **gl-egl + `__EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/
+  egl_vendor.d/10_nvidia.json` → the real RTX 4060, fully headless, no X** — wired as
+  `--gpu real`. nvidia-smi healthy (driver 595.84, no kernel/lib mismatch; uptime 11 d).
+- Stages 3-5 held pending machine slot (mem-probe + rendering agents ahead in the queue).
