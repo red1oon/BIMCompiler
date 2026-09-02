@@ -469,6 +469,25 @@ orders a level trade-by-trade so the slabs sit contiguous. **Candidate: area-wei
 the machinery already exists** (`§LABOR_QUANTITY_WEIGHT` does exactly this for fragmented classes,
 using `analysis_sidecar.js`'s dominant-face formula). This changes dates, so it is U-8's ruling.
 
+### A-11 · ⚠ LAND PR #1551 — it is now load-bearing for two other items
+**Twice confirmed today that #1551 is NOT superseded** (this file's original premise was wrong):
+(a) the PR triage verified #1552 only fixed a sub-bug #1551 itself flagged; (b) B-1 measured that
+**C2 Duplex's 3 DAY-0 failures ARE exactly #1551's three overrides** — `IfcWallStandardCase`
+"Basic Wall:Foundation…", `IfcMember` "Stair:Residential…", `IfcSlab` "Floor:Finish Floor - Ceramic
+Tile" (13 mm). Scoping re-measured: `IfcWall* /foundation/` Duplex 7 / Hospital 28 / 0 elsewhere;
+`IfcMember ^Stair` 4/4 Duplex, **0 of 9,019 elsewhere**; `IfcSlab /finish floor/` Duplex 14, 0 elsewhere.
+**It also BLOCKS a named fix:** widening `stair_member_architecture` to `IfcSlab` closes C3 HHS
+(`IfcSlab ^Stair` = HHS 4/83, 0 elsewhere) but appends to the same array #1551 appends to and moves
+`IfcSlab` out of `supportPool`. **Land #1551 first, then that.**
+
+### A-12 · §I ownership-table row is FALSE, correct it · autonomous, small
+B-1 measured against the shipped bytes: `deriveStoreyMergeMap` is recorded in
+`4D_MODEL_INTEGRITY.md` §I as "✅ RUNS as of 2026-08-27 (Terminal 23 names → 15 bands)". **It runs on
+nothing in the fleet** — `§S18_STOREY_MERGE_FAIL no such column: elevation` on Terminal AND HHS,
+`no such table` on Duplex and Hospital. §I is the table every 4D session is ordered to read first,
+so a false row there is expensive. Correct it, and decide whether the merge map should be repaired
+or retired (it is the storey-banding owner — this is not cosmetic).
+
 ## ⛔ USER DECISIONS — never dispatch these as agent work
 | # | the decision | the number that forces it |
 |---|---|---|
@@ -479,6 +498,7 @@ using `analysis_sidecar.js`'s dominant-face formula). This changes dates, so it 
 | U-4 | ~~Is the OCI sandbox viewer still a supported front?~~ superseded by U-4b — It is a far older build — `effects.js` absent, `scene.js` **7 KB vs 191 KB** — with no patch self-heal, so it cannot receive fixes. **Measured 2026-09-02:** deployed `sw.js` is **v387 (live) / v505 (dev)** against **v1120** local, and `HospitalAjaibPath.db` is **404 on OCI**. `Hospital_meta.db` differs by exactly **735 `IfcOpeningElement`** rows with all **63,415 shared rows byte-identical** — so the divergence is the DEPLOYED BUILD, not the data. | sw **v387/v505 vs v1120** |
 | U-8 | **The slab half of the complaint is only PARTLY relieved — decide whether to go further.** Per (task, IfcSlab) group, share in the densest decile, before → after: Hospital Superstructure L3 (22) **100% → 100%** (but 8 → 22 distinct instants, width 0.07 → 0.09 d) · HHS L1 (27) 100% → 96% · HHS L2 (37) 78% → **81%** · HHS L3 (12) 92% → 92% · HHS Roof (7) 86% → **14%** · Terminal 02 FIRST FLOOR (72) 100% → 68% · Terminal 04 THIRD FLOOR (53) **100% → 100%** · Terminal foundation (449) 52.6% → 20.9% · Duplex mild throughout. Cause of the residual: `_installSecs` prices every `IfcSlab` at a flat **823 s** (0.8% of Hospital L3's labour) and §S50 lays a level out trade-by-trade, so the slab block sits contiguous at the bar's tail. **Both are rulings, not bugs.** Note before spending on it: 0.09 d of 318 days in a 135 s film is **sub-frame either way** — the residual is invisible in the FILM, and would only show on the TM scrubber. | slab sets still **100%** in one decile |
 | U-9 | **Hospital Levels 2-6 floor plates are ONE `IfcSlab` each** (7.6-9.2k m², 100% of the level's slab area). Progressive reveal of a single element requires sub-element geometry splitting — a new mechanism, and invention under the PRIME RULE. Not built, not proposed. Do you want it explored? | **1 element = a whole floor** |
+| U-10 | **§GROUNDWORK_SLAB prices 21 promoted `IfcBeam` as STEEL_ERECTOR** (Terminal 20 + Hospital 1) — its own comment's claim "CONCRETE_GANG already" is false for beams. Correcting the trade changes durations and therefore dates, so it is a U-1/U-8-class ruling, not a bug fix. Measured by B-1, not shipped. | **21 beams on the wrong trade** |
 | U-7 | **Trim `§R10`'s AO margin?** `ao=12` was shipped on an assumed 18.75 ms/render; measured it is **27.26 ms** (and TAA is 49.06 ms, not the assumed 75.0). The margin costs **109.0 ms/frame = 221 s (3m41s) per Hospital bake**. Trimming it is a quality-vs-time trade only the user can price. | **3m41s/bake** |
 | U-6 | **Lift the no-bake restriction for witnesses that structurally need a whole film?** `§FILM_UNSUPPORTED` is the first item to hit this. A cheaper re-scope exists (short `--frames` run against `§SUPPORT_UNCHECKED_SUMMARY`) — the question is whether that is accepted as sufficient, or whether whole-film witnesses get a sanctioned bake budget. | — |
 | U-10 | **§GROUNDWORK_SLAB prices 21 promoted `IfcBeam` as steel erection — fix it, or leave it?** Its own comment says *"seq/resource unchanged (CONCRETE_GANG already)"*; that is true for `IfcSlab` (seq 4, CONCRETE_GANG) and **false for `IfcBeam`** (seq 3, STEEL_ERECTOR). Measured 2026-09-02 (B-1, §J.6.4): Terminal 20 + Hospital 1 = **21** elements the pipeline itself calls Substructure groundwork are priced and crewed as steel. Correcting it changes `_installSecs` and crew allocation, therefore **dates** — the same class of lever as U-1/U-8, not an agent's call. | **21** elements · Terminal's promotion set is 233 (213 `IfcSlab` + 20 `IfcBeam`) |
