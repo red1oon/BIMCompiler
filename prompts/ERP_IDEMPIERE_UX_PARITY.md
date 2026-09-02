@@ -243,3 +243,123 @@ it becomes visible the moment those tables carry a completed doc. Note the trans
   (§P4-CANDIDATES); **one real latent defect found that the green witness could not see** (§P4-DEFECT —
   3 tables' Completed legal-set short by VO/RE because the oracle's parse window stops at line 1248);
   8 open items named, 1 ⛔ question raised. **No FSM code written**, as §P4 requires.
+
+- 2026-09-02 — **§P6 DONE (witness).** §P4-DEFECT CLOSED. Oracle parse window extended to the real end of
+  `getValidActions` (:1333 text anchor, 18 arms, `byTable` 11→17 keys, pre-existing slices byte-identical);
+  W-GENERIC-TAIL-FSM driven **RED on purpose** (`setDiffs=6`, all at CO) to prove the blind spot, then the
+  three `block` arms added (`M_RMA`/`C_BankTransfer` CO→`[CL,VO]`, `C_DepositBatch` CO→`[CL,VO,RE]`, all
+  ungated) and `§FALSIFIER-A` — which had asserted the WRONG behaviour — rewritten as two opposing arms.
+  **12/12 FSM witnesses green**, incl. W-AD-DOCFSM-LIVE on the changed engine. Blast radius ZERO (re-measured).
+  bim-ootb **PR #1611** (engine + `sw.js` v772→v773); oracle/witness fixes in bim-compiler. Full logs: §P6-EVIDENCE.
+
+## §P6 — SPEC: close §P4-DEFECT (oracle parse window → engine blocks → falsifier)
+**Spec-First. Written before any code; §P4-OPEN item 6 is the parent.** Scope is the truth instrument,
+not a live bug: measured blast radius today is **ZERO** (the only seeded `m_rma` is `IP`; `c_banktransfer`
+and `c_depositbatch` are not tables in `ad_seed.db`). Do not inflate it.
+
+**§P6.1 — the parse window is wrong, and the boundary is EXTRACTED not guessed.** `docfsm_oracle.js
+:38-51 MARKERS` terminates at `_end = 'else if (AD_Table_ID == I_PP_Cost_Collector.Table_ID)'`. Read from
+the checkout this session, `DocumentEngine.java` carries **18 `AD_Table_ID ==` arms** inside
+`getValidActions` (`int index = 0;` :1016 → the `if (po instanceof DocOptions)` customization hook
+**:1333**, which is the real end of the per-table if/else chain). Six arms live at or after the old
+terminator and are therefore invisible to the oracle: `I_PP_Cost_Collector` :1248 · `I_DD_Order` :1266 ·
+`I_HR_Process` :1284 · `MRMA` :1302 · `MBankTransfer` :1313 · `MDepositBatch` :1323.
+*Fix:* append those six as real markers and move `_end` to the **text** marker `'if (po instanceof
+DocOptions)'` — a text anchor, never a line number. `sliceRegions` slices `idx[k]…idx[k+1]` and drops the
+last, so earlier slices (`generic`, `MOrder`…`MProduction`) are **byte-identical after the change**; the
+nine sibling witnesses that index a named `byTable` key are untouched.
+
+**§P6.2 — let the witness go RED before fixing the engine.** `poc_generic_tail_fsm.js:56` passes `{}` as
+the per-table block for all 11 tables. Once §P6.1 lands, three of them have a real parsed block, so the
+DIFF-1 set-compare must go RED on exactly those three at `CO`. **That RED is the deliverable of step 2** —
+it is the proof the blind spot was real. Fixing the engine first would re-hide it.
+
+**§P6.3 — the engine arms (`ad_docfsm.js` `legalActionsFor`), parsed sets, all UNGATED.**
+| table | id | block arm | CO set | source |
+|---|---|---|---|---|
+| `M_RMA` | 661 | `rma` | `[CL, VO]` | `:1302-1309` (IDEMPIERE-98, void for completed RMAs) |
+| `C_BankTransfer` | 200246 | `banktransfer` | `[CL, VO]` | `:1313-1320` |
+| `C_DepositBatch` | 200056 | `depositbatch` | `[CL, VO, RE]` | `:1323-1330` |
+Three separate arms, not one shared arm: iDempiere writes three separate blocks and each carries its own
+line cite. **`RE` on DepositBatch is UNGATED** — the Java pushes `ACTION_ReActivate` with no
+`canReactivateThisDocType` test (unlike the invoice/payment/journal/bankstmt arms), so the arm must NOT
+consult `iscanbereactivated`. Transitions are already correct (`DOC_FAMILY[661].vo.CO='VO'`,
+`[200056].reActivate=true` → `RE`→`IP`) — **only the legal SET is short, so the fix is a `block`, not new
+transition logic.** `build/erp/ad_docfsm.js` and `~/bim-ootb/erp/ad_docfsm.js` are md5-identical
+(`461e339c0acbe17c3b725eb541f19b67`) and MUST stay so.
+
+**§P6.4 — `§FALSIFIER-A` currently asserts the WRONG behaviour and must be inverted.** It reads *"Void
+from CO on M_RMA → rejected … implemented in the class yet NEVER offered"*; iDempiere **does** offer it.
+Replacement must stay load-bearing in BOTH directions: arm 1 asserts `VO@CO` on `M_RMA` **is** offered and
+dispatches `CO→VO` (fires if the block is ever dropped again); arm 2 asserts `VO@CO` on `M_Requisition`
+(702, genuinely block-less) is **still rejected** (fires if someone over-corrects and pushes `VO` for the
+whole tail). The witness's "11 generic-only tables" / "CO→[CL] only" prose and the `§HARDEN_RESIDUAL`
+line become false for the three and must be corrected in the same edit.
+
+**§P6.5 — falsifiable claim.** All 12 FSM witnesses green again with `M_RMA`/`C_BankTransfer`/
+`C_DepositBatch` diffed against a **parsed** block instead of `{}`, red-then-green logs quoted below.
+
+### §P6-EVIDENCE — 2026-09-02 · RED then GREEN (Log Mandate: logs read, exit codes are not evidence)
+**§P6 is BUILT and CLOSED.** Order honoured exactly as specced — oracle first, witness RED, then engine.
+
+**Step 1 · oracle (`scripts/docfsm_oracle.js`).** `MARKERS` extended by the six arms that sat at/after the
+old terminator, `_end` moved to the TEXT anchor `'if (po instanceof DocOptions)'` (:1333). Boundary
+extracted, never guessed: `getValidActions` carries **18 `AD_Table_ID ==` arms**, six of them at :1248
+(`I_PP_Cost_Collector`) · :1266 (`I_DD_Order`) · :1284 (`I_HR_Process`) · :1302 (`MRMA`) · :1313
+(`MBankTransfer`) · :1323 (`MDepositBatch`). `byTable` 11 keys → **17**. Non-disruption PROVEN against the
+pre-change module rather than asserted — the nine sibling witnesses index named keys, so their slices had to
+be bit-stable: `§P6_SLICE_IDENTITY generic_identical=true oldKeys=11 newKeys=17 changedOldSlices=[]`.
+Parsed CO-sets, straight off the runtime parse: `MRMA=[VO]` · `MBankTransfer=[VO]` · `MDepositBatch=[VO,RE]`
+(and, not in `DOC_FAMILY` so still correctly THROWN by `legalActionsFor`: `PP_CostCollector=[VO,RC]` ·
+`DD_Order=[VO,RE]` · `HR_Process=[VO,RE]`).
+
+**Step 2 · the witness went RED — the proof the blind spot was real** (`build/erp/poc_generic_tail_fsm.log`,
+engine deliberately still short at this point):
+```
+§HARDEN surface=M_RMA.docaction.legal          status=CO engine=[CL] oracle=[CL,VO]    diff=SET-MISMATCH
+§HARDEN surface=C_BankTransfer.docaction.legal status=CO engine=[CL] oracle=[CL,VO]    diff=SET-MISMATCH
+§HARDEN surface=C_DepositBatch.docaction.legal status=CO engine=[CL] oracle=[CL,RE,VO] diff=SET-MISMATCH
+   🔴 242 legal-set fixtures ... — setDiffs=6
+🔴 W-GENERIC-TAIL-FSM FAIL (1)
+§RUN_WITNESS poc_generic_tail_fsm VERDICT=FAIL exit=1
+```
+`setDiffs=6` of 242 = the 3 tables × 2 gate corners, **all at `CO`** — matching §P4-DEFECT's predicted
+divergence exactly, on both the tables and the missing codes.
+
+**Step 3 · engine (`ad_docfsm.js`, bim-ootb PR #1611).** Three `block` arms added — `rma` (:1302-1309,
+IDEMPIERE-98) · `banktransfer` (:1313-1320) · `depositbatch` (:1323-1330), each entry carrying its parsed
+cite. All three **UNGATED**; the DepositBatch `RE` in particular carries no `canReactivateThisDocType` test,
+so that arm must not read `iscanbereactivated`. No transition logic changed — §P4-DEFECT was right that only
+the legal SET was short. Twin files stay byte-identical: `build/erp/ad_docfsm.js` == `~/bim-ootb/erp/ad_docfsm.js`
+== **`fdf16f960504d1656259c4a14de9b467`** (was `461e339c0acbe17c3b725eb541f19b67`).
+
+**Step 4 · `§FALSIFIER-A` corrected.** The old single arm asserted the WRONG behaviour as correct. Replaced
+by two arms load-bearing in OPPOSITE directions, so neither a re-regression nor an over-correction survives:
+```
+§FALSIFIER-A1 action=VO from=CO table=661 ok=true  to=VO legal=[CL,VO]  (must be ok=true to=VO)
+§FALSIFIER-A2 action=VO from=CO table=702 ok=false reason=illegal-action (must be ok=false illegal-action)
+```
+A1 fires if the per-table block is ever dropped again; A2 (`M_Requisition`, genuinely block-less) fires if the
+correction ever leaks into the fall-through classes. The witness's "11 generic-only tables"/"CO→[CL] only"
+prose, its `(GENERIC)` per-fixture label (now `(BLOCK <name>)` where one applies) and `§HARDEN_RESIDUAL`
+were all corrected in the same edit — they had become false statements.
+
+**Step 5 · GREEN, and green on the CORRECTED values, not by re-hiding:**
+```
+§HARDEN surface=M_RMA.docaction.legal          status=CO engine=[CL,VO]    oracle=[CL,VO](BLOCK MRMA)           diff=0
+§HARDEN surface=C_BankTransfer.docaction.legal status=CO engine=[CL,VO]    oracle=[CL,VO](BLOCK MBankTransfer)  diff=0
+§HARDEN surface=C_DepositBatch.docaction.legal status=CO engine=[CL,RE,VO] oracle=[CL,RE,VO](BLOCK MDepositBatch) diff=0
+§HARDEN surface=M_Requisition.docaction.legal  status=CO engine=[CL]       oracle=[CL](GENERIC)                 diff=0
+   🟢 242 legal-set fixtures ... — setDiffs=0
+🟢 W-GENERIC-TAIL-FSM PASS
+```
+**12/12 FSM witnesses green** (`§RUN_WITNESS … VERDICT=PASS` each): W-MORDER · W-MINOUT · W-MINVOICE ·
+W-MPAYMENT · W-MINVENTORY-FAMILY · W-MJOURNAL · W-MALLOCHDR · W-MCASH · W-MBANKSTMT · W-GENERIC-TAIL ·
+W-DOCFSM · **W-AD-DOCFSM-LIVE** (re-run against the CHANGED engine, `ERP_ROOT=/tmp/wt-fsm-oracle/erp` — real
+DOM, real clicks, not a synthetic call).
+
+**Blast radius stays ZERO and is not inflated.** Re-confirmed, not re-assumed: the only seeded `m_rma` is
+`IP`; `c_banktransfer`/`c_depositbatch` are not tables in `ad_seed.db`. Nothing user-visible changed — this
+was correctness of the truth instrument. `ad_seed.db` untouched; none of the four Fable-owned files touched.
+
+**§P4-OPEN item 6 → ✅ DONE (witness).** Items 1,2,3,4,5,7,8 and the ⛔ period question remain as written.
