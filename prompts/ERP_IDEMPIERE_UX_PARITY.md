@@ -707,3 +707,34 @@ pinned field's picker offers.
    was skipped in this work; they remain deferred at the engine level.
 5. **`ad_modelval` twin reconciliation** (§IMPL-RESULT-F7) is still open and still the right next item before
    any `ad_modelval` change — untouched here.
+
+## §TWIN-WIDENED 2026-09-02 — the gate had the blind spot it was built to catch
+`check_erp_twins.js` scanned for the literal string `build/erp/<mod>` only. `scripts/poc_valrule.js:13`
+requires via `path.join(__dirname,'..','build','erp','ad_valrule.js')` — separate segments — so that idiom was
+**invisible to the gate**. Same defect class as the §P4 oracle whose parse window ended early, and the same
+class CLAUDE.md rule 4 names *scope-blind*: it passed because the defect sat outside the pairs it inspected.
+Found while verifying §P3's own twin declaration, one run after the gate first went green.
+
+**Scan widened to both idioms. What the blind spot was hiding, measured:**
+
+| | before | after |
+|---|---|---|
+| judged pairs | 43 | **57** |
+| witness refs judging an UNREVIEWED copy | 47 | **94** |
+| undeclared (would fail the gate) | 0 | 11, now classified |
+
+Newly seen and locked `identical` (matched what ships): `bigdecimal` n=3 · `inout_confirm` n=2 ·
+`kitchen_core` n=1 · `ninja_bundle` n=2 · `ninja_create` n=1 · `ninja_export` n=1 · `ninja_stage` n=5 ·
+`ninja_starter` n=1 · **`pos_core` n=15**. Newly seen and DRIFTED, so `unreviewed`: `img_store` n=2 ·
+**`ninja_model` n=6**.
+
+Gate green again on the widened scan: **57 pairs · 22 identical · 11 unreviewed · 0 undeclared**. Falsifier
+re-proved on the widened scan against a newly-locked pair (`pos_core`, n=15): one appended line → `BROKEN`,
+exit 1, restored to `9b394091…`.
+
+**⬜ Still not done, and now bigger than it looked:** classify the **11 UNREVIEWED** pairs — **94 witness
+references** currently attest a copy nobody has confirmed is the shipped code. Rank by n: `kernel_ops` **16**
+(the signed write path), `ad_modelval` **11**, `crud_overlay` **9** (partly expected — §S60 split `crud_core.js`
+out of the shipped file after the copy was taken), `ninja_model` **6**, `erp_period_close` 5, then the tail.
+Each is either a deliberate node-harness shape (→ `divergent`, with the reason recorded) or a stale copy
+(→ reconcile, then `identical`). **Never move a pair to `divergent` to silence the gate.**

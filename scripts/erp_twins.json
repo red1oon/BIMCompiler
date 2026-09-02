@@ -1,5 +1,5 @@
 {
-  "__doc": "Declared relationship between each bim-compiler build/erp/*.js module and the file that SHIPS at bim-ootb erp/*.js. Written 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md §IMPL-RESULT-F7) after a witness was found judging a drifted copy: W-MORDER-SAVE reported 4 FAILs that were purely the copy lacking hooks the shipped file has. Values: 'identical' = must stay byte-identical, drift is a FAIL. 'divergent' = the copy is deliberately a different shape (node/UMD harness vs browser); needs a stated reason, and check_erp_twins.js reports it every run so it can never be forgotten. 'unreviewed' = drifted today, nobody has yet decided which of the two it is — reported LOUDLY, does not fail the gate until classified. Never move a pair to 'divergent' to silence the gate; that is the one way this check can be defeated.",
+  "__doc": "Declared relationship between each bim-compiler build/erp/*.js module and the file that SHIPS at bim-ootb erp/*.js. Written 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md \u00a7IMPL-RESULT-F7) after a witness was found judging a drifted copy: W-MORDER-SAVE reported 4 FAILs that were purely the copy lacking hooks the shipped file has. Values: 'identical' = must stay byte-identical, drift is a FAIL. 'divergent' = the copy is deliberately a different shape (node/UMD harness vs browser); needs a stated reason, and check_erp_twins.js reports it every run so it can never be forgotten. 'unreviewed' = drifted today, nobody has yet decided which of the two it is \u2014 reported LOUDLY, does not fail the gate until classified. Never move a pair to 'divergent' to silence the gate; that is the one way this check can be defeated.",
   "twins": {
     "ad_access": {
       "rel": "identical",
@@ -27,11 +27,15 @@
     },
     "ad_valrule": {
       "rel": "identical",
-      "why": "ships for the first time with ERP_IDEMPIERE_UX_PARITY.md §P3 (the live FK picker consumes it); copied byte-identical from build/erp at that PR, locked so a later drift fails loudly"
+      "why": "ships for the first time with ERP_IDEMPIERE_UX_PARITY.md \u00a7P3 (the live FK picker consumes it); copied byte-identical from build/erp at that PR, locked so a later drift fails loudly"
+    },
+    "bigdecimal": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
     },
     "crud_overlay": {
       "rel": "unreviewed",
-      "why": "9 witnesses. Part of this gap is expected — §S60 split crud_core.js out of the shipped file; the copy predates that split."
+      "why": "9 witnesses. Part of this gap is expected \u2014 \u00a7S60 split crud_core.js out of the shipped file; the copy predates that split."
     },
     "erp_engine": {
       "rel": "unreviewed",
@@ -57,17 +61,53 @@
       "rel": "identical",
       "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
     },
+    "img_store": {
+      "rel": "unreviewed",
+      "why": "drifted from what ships when the widened scan first saw it 2026-09-02; not yet classified"
+    },
+    "inout_confirm": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
     "kernel_ops": {
       "rel": "unreviewed",
       "why": "16 witnesses judge the copy; the signed write path. Highest-value pair to classify."
+    },
+    "kitchen_core": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_bundle": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_create": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
     },
     "ninja_excel": {
       "rel": "identical",
       "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
     },
+    "ninja_export": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_model": {
+      "rel": "unreviewed",
+      "why": "drifted from what ships when the widened scan first saw it 2026-09-02; not yet classified"
+    },
     "ninja_rule": {
       "rel": "identical",
       "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_stage": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_starter": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
     },
     "op_upcaster": {
       "rel": "identical",
@@ -76,6 +116,10 @@
     "plugin_registry": {
       "rel": "identical",
       "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "pos_core": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
     },
     "report_overlay": {
       "rel": "unreviewed",

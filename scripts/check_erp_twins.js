@@ -41,13 +41,19 @@ function shipped(base) {
 var judged = {};
 ['scripts'].forEach(function (d) {
   fs.readdirSync(path.join(HERE, d)).filter(function (f) { return /^(poc_|witness_).*\.js$/.test(f); }).forEach(function (f) {
-    var src = fs.readFileSync(path.join(HERE, d, f), 'utf8'), m, re = /build\/erp\/([a-z_0-9]+)/g;
-    while ((m = re.exec(src))) {
-      var b = m[1];
-      if (b === 'run_witness') continue;
-      if (!fs.existsSync(path.join(HERE, 'build/erp', b + '.js'))) continue;   // a .db/.sh/log, not a module
+    var src = fs.readFileSync(path.join(HERE, d, f), 'utf8'), m, hits = [];
+    // TWO require idioms, both real in this tree — matching only the first is how this gate would acquire the
+    // very scope-blindness it exists to catch (found 2026-09-02: poc_valrule.js uses the path.join form and was
+    // invisible to the literal-string scan). (a) a literal 'build/erp/<mod>'; (b) path.join(…,'build','erp','<mod>.js').
+    var reLit = /build\/erp\/([a-z_0-9]+)/g;
+    while ((m = reLit.exec(src))) hits.push(m[1]);
+    var reJoin = /['"]build['"]\s*,\s*['"]erp['"]\s*,\s*['"]([a-z_0-9]+)\.js['"]/g;
+    while ((m = reJoin.exec(src))) hits.push(m[1]);
+    hits.forEach(function (b) {
+      if (b === 'run_witness') return;
+      if (!fs.existsSync(path.join(HERE, 'build/erp', b + '.js'))) return;   // a .db/.sh/log, not a module
       (judged[b] = judged[b] || {})[f] = 1;
-    }
+    });
   });
 });
 
