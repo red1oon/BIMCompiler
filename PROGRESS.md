@@ -1,94 +1,72 @@
 # PROGRESS — Current Development State
 
-## Current State — 2026-09-02b ("Clinic still doesn't load like local" — root-caused, no deploy)
-**Lane file: `prompts/LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §AD.** Not a DB bug, not GH Pages, not
-the OCI **object-storage bucket** (`bim-ootb`, DB files only — confirmed byte-identical to
-`~/Downloads/Clinic.db`, md5 `636c8ef1…` both sides). The complaint reproduces on a **second,
-independent OCI-hosted landing page** — `bim-ootb-live/o/index.html`, sourced from
-`bim-compiler/SYSNOVA/index.html` (last touched 2026-07-28) with its own `deploy/dev`-sourced
-`sandbox/*.js` viewer (May 2026) — which the Aug 27–31 Clinic fix PRs (#1565/#1585/#1589, all merged
-into the separate `bim-ootb` GitHub repo / GH Pages) never reached. That page still maps
-`Clinic` → `Clinic_extracted.db` (md5 `b57a2866…`, 16,912 elements, missing `calendars`/`kernel_ops`/
-`scene_state`) instead of `Clinic.db` (md5 `636c8ef1…`, 16,071 elements — the fixed file). Deploying
-the fix is explicitly out of scope for this pass (not attempted) — the recipe is in §AD.3.
+## ⚡ §RESUME_PROTOCOL — when an agent dies on a rate limit (one point, mandatory)
+A 429 **terminates** the agent but still fires a task-notification to the live session, and the error
+text carries the reset time (`resets 2:50am (Asia/Kuala_Lumpur)`). So: **parse that time → record the
+agent + its last finding in `prompts/AGENT_QUEUE.md` §MID-FLIGHT → schedule a wakeup just past the
+reset → resume by `SendMessage` to the agent id** (its transcript survives; never re-dispatch fresh,
+that discards what it found) → tell the user. If the SESSION ends, the agent id dies with it —
+§MID-FLIGHT is what lets a new session re-dispatch from the written brief. **Never defer writing this
+kind of rule until "after the current agent finishes"** — that is how it gets lost. Full text:
+`prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
-## Current State — 2026-09-02 (film-review handoff worked to zero; 2 PRs merged, 2 explicit blocks)
-**Lane file: `prompts/RESUME_2026-09-02_FILM_REVIEW.md` — read §SESSION_2026-09-02B first (the
-per-item status table).** Merged: **#1603** `§PIE_HOLD_PREDICATE` (e15da67c) · **#1604**
-`§MEP_DISC_PALETTE` (318b4dd3, witness `W-MEP-DISC-PALETTE` **24/24** on 3 buildings — 516/517
-InstancedMeshes went from `'Unknown'` to a real discipline key; `distinctHues=7 discs=7`;
-identity 6/6 exact vs `A.DISC_COLORS`; RED CONTROL 0/6).
-- **§CPE_PIE_HOLD contradiction SETTLED** — the "never fires on Hospital" claim counted days with no
-  *task* active; the panel's predicate is no *staffed element op*. Hospital has real idle days
-  (`§CPE_RESOURCE_HOLD first hold at day=137 holding day=133`, `withResource=63415/63417`).
-- **§Z.2 CORROBORATED with numbers:** deployed viewer `sw.js` is **v387 (live) / v505 (dev)** vs
-  **v1120 local** — that, not the DB, is the local-vs-OCI difference (`HospitalAjaibPath.db` is 404
-  on OCI; `Hospital_meta.db` differs by exactly 735 `IfcOpeningElement` rows, all 63,415 shared rows
-  byte-identical).
-- **⛔ `§CPE_AIM_DEPTH` retirement — SPECCED + loss QUANTIFIED, awaiting ONE user go/no-go.** From
-  the shipped formula `clearM=8.0 m` on Hospital, half the rule's authority is spent at 4 m clearance
-  — a "something within 8 m" rule, not a dead-end rescue. Second cost found: `§CPE_STICK_HOLD` loses
-  its aim half (`_holdBoostAt` only feeds `_aimDepthApply`).
-- **⛔ `§FILM_UNSUPPORTED` not started** — acceptance gate is a full bake; re-scope to `--frames`.
-- **⚠ NEW STANDING CONSTRAINT (user, 2026-09-02): bakes are a proven, expensive facility, NOT a
-  measurement tool.** Do not launch a film to settle a number; ask first. Keep every `§` line on the
-  bake path intact and observable — preserving the instrumentation is the ask.
+## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
+It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
+constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-01 (LTU + Clinic shipped to OCI; Clinic glass root-caused; one new TM bug open)
-**Lane file for all of it: `prompts/LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` — read §Z first
-(resume handoff: live state, open items, next measurements).**
+## Current State — 2026-09-03
+**23 bim-ootb PRs merged 2026-09-02/03; release v1.58.0 published.** Headlines:
+- **§TM_REVEAL_TILED (#1605 `c8a6df61`)** — the movie **never played `remapSolveToTasks`**; it played
+  an outlier-sensitive affine in `_tmRescaleToTaskWindow`. Dead air 44-71% → **0.0%** on four
+  buildings; Hospital pile-up 77.0% → 5.6%. **Every reveal-spread number predating this measured a
+  map nobody plays** — struck by #1610.
+- **§CACHE_PLAYED_LAYER (#1607)** — the cache now carries BOTH layers and every judge prints `layer=`.
+- **DAY-0: `PASS=5 FAIL=8` → `PASS=8 FAIL=5`** (#1551 `59736505` + #1615 + #1625). All 8 originals
+  attributed: 3 witness defects, 3 modelling facts, 1 scope, 1 real. The old "regression" premise was
+  retired — `claims=13` was a 3-building cache artefact, never a regression signature.
+- **§SUN_FILL_RATIO (#1622 `85fd0732`)** — Alt+S pushed a photographed HDRI onto matte concrete; IBL
+  is non-directional and **not shadow-occluded in three.js**, so it lit away-facing walls as hard as
+  sun-facing (85%/83% of all light on the away wall). Away÷sun **1.0453 → 0.2388** (Clinic).
+- **§MEP_COLOR_SURVIVES_PHOTOREAL (#1621 `8d8320ee`)** — Hospital 3→8 distinct hues, 40,634
+  colourless MEP → 0. Fire-red valve preserved 1300/1300. **Confirmed live by the user in a real bake.**
+- **§CPE_AIM_DEPTH RETIRED (#1619 `dfe5a58e`)** — on Hospital's real stored path, gaze-vs-chord
+  90.657° → **0.000°**, tangent mean 85.127° → **6.930°** (12× closer to the path).
+- **§DUCT_SILHOUETTE (#1631 `da0521c4`)** — sagitta 21.3 → 3.4 mm (6.3×) on Hospital's 1,419
+  qualifying elements. The lamps-vs-ducts split is **size, ~50× wide**, not detection.
+- **Clinic landing FIXED and deployed** — the live OCI page mapped `Clinic` → `Clinic_extracted.db`.
+  Repointed to `Clinic.db`, uploaded, fetched back byte-identical (78,872 B, `text/html`).
+  ⚠ The earlier §AD diagnosis was partly wrong: the live object **already** used bucket `bim-ootb`;
+  the stale `bim-ootb-live` base was in the **repo copy**. Local/live still diverge 105 lines both
+  ways — do NOT upload `SYSNOVA/index.html` wholesale.
+- Also: 5D constants → JSON (#1616), dead `4D_policy.json` deleted (#1617), CPM-clamp toast (#1618),
+  nine vacuous `§` tags guarded (#1608), witness progress logging (#1623), B-2 support consolidation
+  (#1627-#1630 — **keep the AND**, measured: giving copy 1 the §S64 bound flips 0/32 lock verdicts).
 
-**Shipped and verified end-to-end from the live landing page, not just uploaded:**
-- **LTU_AHouse** — the user's client-side 9-discipline import (122,330 elements) split and live on
-  OCI, `positions.bin` added (was 404). §V / §V.4. Costs recorded honestly: bbox-first got faster
-  (21.0→19.4 MB) but the mesh stream is 3.8× heavier (24.1→91.3 MB gz) because web-ifc bakes
-  rotation into vertices, halving instancing (59,917→104,340 geometries).
-- **Clinic** — the user's own `Downloads/Clinic.db`, **byte-identical, single file, no split, no
-  patch, nothing transplanted** (16,071 elements; below `split_db.sh`'s own >20,000 threshold).
-  Stale `Clinic_meta.db`/`Clinic_geo.db` DELETED — while they existed `streaming.js:2495` derived
-  and HEAD-probed them and loaded the pair regardless of the landing link. Landing repointed,
-  bim-ootb PR #1589. §Z.1.
+## ⛔ OPEN
+- **Interior lighting / liveliness** — running. **"Lively" is variance, not brightness** (user: *"it
+  should be lively, so far it has never been though lighting has been bright"*). Measured on two real
+  bakes bracketing #1622: CV **0.344 → 0.430**, spread 42.9 → 59.1 — but the **bright register
+  drained** (brightest fifth 140.7 → 79.2). Lead: *the still's near-field boost never fires.*
+- **§Z.3 Clinic ground-slab appears late, then persists on scrub-back** — untouched. Two named
+  hypotheses in `LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §Z.
+- **§FILM_UNSUPPORTED** — not started; take the short `--frames` re-scope, not a full bake.
+- **§LIGHT_SHAFT (D-5)** — specced, queued behind the lighting lane (shares `effects.js`).
+- ⛔USER decisions (12 open) live in `AGENT_QUEUE.md`: calibration lever (Hospital 318→940 d), LFS
+  8.53 GB pay-vs-rewrite, sub-element slab splitting, Terminal's 673 `Ceiling Level NN` elements.
 
-**Four bim-ootb PRs merged this session:**
-| PR | what |
-|---|---|
-| #1578 | merge→save→reopen lost the merged building — geo fold died on a table-name mismatch (`base_geometries` vs `component_geometries`); + unguarded `GROUP BY m.building` on a DB with no such column |
-| #1585 | **Clinic glass**: transparent IFC materials were given their class's opaque METAL preset. `STD_MAT`/`TRIPLANAR_MAT` are keyed on `ifc_class` alone; §S265c's "trust IFC data" was only ever wired to COLOUR. 167 of 225 glass panels rendered as steel |
-| #1589 | landing → single `Clinic.db` |
-| (#1576 verified merged) | split meta/geo pair open fix from the prior session |
-
-**Witnesses added, all measured red→green, never green-only:**
-`W-MERGE-SAVE-ROUNDTRIP` 6/14→14/14 · `W-GLASS-NOT-METAL` 6/9→9/9 · `§LTU_LANDING` 7/7 ·
-`§CLINIC_FINAL` 5/5 · `§CLINIC_GLASS` (X-ray mechanism, GH+OCI) PASS.
-
-**⛔ OPEN — carried into the next session (all detailed in §Z):**
-1. **§Z.3 NEW — Clinic TM ground-floor slab appears late, then persists on scrub-back.** Measured
-   offline from the shipped DB (schedule is baked in): the 4 `Slab on Grade` elements are in
-   `TASK_Substructure_TOF_Footing`, the FIRST task, data clean (0 orphans/nulls/unmapped). **The
-   baked schedule contradicts the symptom** — two named, unverified hypotheses (runtime re-authoring
-   through the broken band derivation; or the non-timeline ground plane from `_calcGroundY`) with the
-   measurement that falsifies each. Read `4D_MODEL_INTEGRITY.md` §I ownership table first.
-2. **§Z.2 — the OCI sandbox viewer is a far older build than GH Pages** (`effects.js` absent
-   entirely, `scene.js` 7 KB vs 191 KB). It has no patch self-heal and cannot receive the glass fix.
-   Decide whether it is still a supported front before spending a deploy on it.
-3. **§T.4 — client-side import schema gaps** (`spatial_structure`, openings, material-layer names).
-   Elements themselves are complete: web-ifc is a strict SUPERSET of the server extraction, 0 missed
-   on both files tested (§T).
-
-**Process lessons banked to memory this session** (three real corrections from the user):
-`feedback_ship_the_file_as_given.md` (send the file AS GIVEN — no transplant, no split, no patch) ·
-`feedback_verify_the_end_of_the_chain.md` (uploaded ≠ live, merged ≠ deployed, fixed-mechanism-A ≠
-symptom-solved) · an addition to `feedback_measure_compute_matchback.md` (find an ORACLE INSIDE THE
-DATA — every wrong turn this session was a self-chosen proxy).
+## Standing constraints added 2026-09-02/03
+- **Bakes are a proven, expensive facility, NOT a measurement tool.** Do not launch a film to settle a
+  number — ask first. Keep every `§` line on the bake path intact.
+- **4D generation is building-independent.** No per-building constants, no branching on a building
+  name. Audited clean: every building name in the scheduling files sits in a comment; the only
+  non-comment hits are the IFC classes `IfcFlowTerminal`/`IfcAirTerminal`/`IfcFireSuppressionTerminal`.
+- **DBs stay on OCI, GH Pages serves the app.** Settled with measurements — GitHub hard-rejects any
+  file >100 MB and every major DB exceeds it.
+- **Beware checks that cannot fail.** Four hit in one day: `eslint | tail` returning tail's exit code,
+  a witness reading its own comment block, a 0-byte log from a buffered `page.evaluate`, and a
+  `(none above = clean)` line printed unconditionally.
 
 ## Older session log
-Archived 2026-09-01 to **`prompts/archive/PROGRESS_sessions_archived_2026-09-01.md`** (690 lines,
-2026-08-29 back to 2026-08-14 — nothing deleted, only moved) because this file had reached 717 lines
-against its 80-line budget. Per-lane detail lives in the `prompts/*.md` file for each lane; that
-archive is a historical trail, not a live worklist.
-
-⚠ Two ⛔ items from the 2026-08-29 state that are still live and were NOT closed this session:
-- **DAY-0 headline (`§W_D0`) is STALE** against `origin/main` — reproduces `PASS=4 FAIL=5` on a fresh
-  cache, not the `14 PASS/0 FAIL` the old text claimed. Re-baseline before trusting it.
-- **5D cost/rate policy still hardcoded in 11 places** (`4D_GANTT_TM_REFACTOR.md` §FUTURE-5A) —
-  inventory written, not actioned. Sequencing/duration/crew policy belongs in JSON, not JS.
+Archived to `prompts/archive/PROGRESS_sessions_archived_2026-09-01.md` (2026-08-29 → 2026-08-14).
+The 2026-09-01/02 entries this file used to carry are superseded by the state above; per-lane detail
+lives in each lane's own `prompts/*.md`.
