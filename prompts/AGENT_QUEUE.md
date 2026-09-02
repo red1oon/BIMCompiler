@@ -126,13 +126,26 @@ the TM editing UI open. Named fix already written (split a data-only entry point
 witness — build it as specced.
 Then **§CPE_PANEL_PERF**'s three measured stalls, if the perf agent's report has not superseded them.
 
-### A-7 · vacuous-tag-audit · autonomous
-The perf agent found **nine per-frame `§` tags that are vacuous or unguarded** — they fire every
-frame while judging nothing. Worst named case: **`§SHADOW_FRONTIER_AT_CAPTURE`, 286 firings, every
-one with `singleMesh_matched=0`**. That is a **CLAUDE.md rule-4 violation** — a witness that cannot
-report its own failure. Audit the nine, make each print `VACUOUS`/`INCONCLUSIVE` rather than a bare
-line, per the witness contract. Full list in `CPE_4D_PERF_MEM_STUDY.md` §R13.
-CONFLICTS: none (logging only). DONE WHEN: each of the nine either guards itself or is removed.
+### A-7 · vacuous-tag-audit · ✅ **DONE (witness) 2026-09-02** — PR **#1608** `fix/vacuous-tag-audit`
+Nine tags: **7 GUARD · 2 GUARD+FIX · 0 REMOVE**. **W-VACUOUS-TAG-GUARDS 10/10, redControl green**,
+plus two source-level red arms. Written up as **`CPE_4D_PERF_MEM_STUDY.md` §R14_VACUOUS_TAG_AUDIT**
+(spec) + **§R14.4** (measured). No bake, no browser, no behaviour change — only what is printed.
+- **`§SHADOW_FRONTIER_AT_CAPTURE` was an EMPTY POPULATION, not a broken matcher.** `§SHADOW_FRONTIER_IDX
+  meshGuids=0 groupGuids=63182`; all three `streaming.js` single-mesh sites are BatchedMesh FALLBACKS and
+  `§BATCHED_FAIL`=0 with `multi_draw=on`; the batch half judged on **286/286** firings. → GUARD. But the
+  **FIX** half is real: the `forEach`'s third outcome (guid in NEITHER index) was never counted — added
+  `unmatched=`, which will attribute the **63,182 streamed vs 63,417 placed** gap on the next bake, free.
+- **`§GROUP_SPARK_TICK` was a second FIX** — `_gspRoll % 10` is a DEAD throttle in the bake path
+  (`_gspRoll++` only in `playTick()`; `roll=0` on 2,027/2,027). ⚠ **`§PERF_TRAVERSE` carries the SAME dead
+  expression** (2,027 firings) — named, deliberately NOT changed, someone should take it deliberately.
+- **`§IDLE_GATE` was already compliant** — its 165+165 lines are a 1-in-25 sample of **4,050+** real
+  cycles; §R13.9 read them as the event count. Wording only.
+- Lossless, replaying the real series through the SHIPPED `_vacLog`: 2,028→10 · 2,026→10 · 1,751→24 ·
+  1,751→24 · 1,740→29 · 2,027→467, every one reconstructing its original count exactly.
+- ⚠ Two self-inflicted defects the witness caught, not review: C2 was **scope-blind** (passed while
+  reading its own comment block — now strips comments), and the first `§GROUND_WETNESS_OVERRIDE` guard
+  would have **dropped** 2,027 repeats to emit 1 line. Both recorded in §R14.4.
+- `sw.js` v1122 → **v1123**.
 
 ### A-8 · heap-instrument-fix · autonomous, rides free
 **`§CLI_BAKE_HEAP`'s 229-477 MB range is an aliased sawtooth, not a memory profile.** The same

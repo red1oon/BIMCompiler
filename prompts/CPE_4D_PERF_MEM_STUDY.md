@@ -519,3 +519,515 @@ never looked.
 
 **Shipped off this measurement: NOTHING.** No candidate met the bar of invisible + witnessed +
 trivially reversible in one pass; every lever above needs a spec + witness first (Spec-First).
+
+---
+
+## §R13_BAKE_FRAME_MINING — the 2,027-frame Hospital bake, mined past its headline (2026-09-02, READ-ONLY, no run performed)
+
+**Method (and its hard constraint).** Nothing was executed. Every number below is extracted from logs
+already on disk from the 2026-09-01 session, plus read-only code reads of `~/bim-ootb` to establish
+what a `§` line means. **No bake, no browser, no probe** — the user stopped a running bake and two
+other agents were on this machine, so any live timing taken today would be a contention artefact (the
+same class of error this file already closed once, §R12's section-cut closure). Where a number can
+only come from a live run it is written down as a NAMED FUTURE MEASUREMENT, not estimated.
+
+**Primary source:** `s5_hospital.log` (4.1 MB, 41,705 lines) — Hospital `HospitalAjaibPath`,
+`commit=e1369b7a sw=v1120 gpu=real` (RTX 4060 Laptop via ANGLE), 2,027 frames, wall 2,680 s,
+`aborted=no fileOk=true`. Contrast arms: `s4b_80.log` (80 frames, `bd8872ac`), `s4_300.log`,
+`s3_real24.log`, `mem_probe_hospital.log`, `daybatch_*.log`. Partial/contended arm:
+`…/6bdc5d30…/scratchpad/bake/{post,pre,armB_headful}.log` (an A/B killed mid-run — see §R13.11).
+
+### §R13.0 — the parsing fact everything else rests on, and the trap it exposes
+Per exported frame the fold emits, in order: `§STILL_REFINE start` → `§STILL_REFINE done
+accumulateIndex=8 elapsedMs=X` → `§PHOTO_AO start frames=12` → `§PHOTO_AO done totalMs=Y
+avgRenderMs=Z` → `§PHOTO_AO off` → `§STILL_REFINE cancelled (interaction) elapsedMs=T`.
+2,028 complete folds (fold #0 is the PRE-BAKE staging fold; folds #1-2027 are the exported frames).
+
+**`§STILL_REFINE cancelled elapsedMs` is the WHOLE fold. `§STILL_REFINE done elapsedMs` is the
+TAA-only fold.** `§PHOTO_AO`'s time is INSIDE the `cancelled` figure. **§R10's "§STILL_REFINE
+~1,200 ms = 62% / §PHOTO_AO ~450 ms = 23%" double-counted AO** — it read a whole-fold number as the
+TAA number. That split is retracted below. (§R10's *shipped change* is unaffected: it was decided on
+image RMS and a per-frame projection, not on that split.)
+
+### §R13.1 — where the 1,264 ms frame actually goes — MEASURED, n=2,027
+| component | mean | p10 | p50 | p90 | max | total over the bake |
+|---|---|---|---|---|---|---|
+| `§STILL_REFINE done` — 8 TAA renders | **392.5 ms** | 158 | 362 | 685 | 1,381 | 795.6 s |
+|   per TAA render | 49.06 ms | 19.75 | 45.25 | 85.62 | 172.62 | — |
+| `§PHOTO_AO done totalMs` — 12 AO renders | **382.5 ms** | 190 | 351 | 641 | 939 | 775.3 s |
+|   per AO render (`avgRenderMs`) | 27.26 ms | 9.80 | 25.30 | 49.10 | 73.50 | — |
+| **20 composer renders, subtotal** | **775.0 ms** | 352 | 715 | 1,328 | 1,704 | **1,570.9 s** |
+| **tail = fold − TAA − AO** | **371.1 ms** | **315** | **370** | **427** | 662 | **752.2 s** |
+| `§STILL_REFINE cancelled` — whole fold | 1,146.0 ms | 699 | 1,116 | 1,727 | 2,017 | 2,323.0 s |
+
+- Fold = **90.6%** of the 2,564 s frame loop (`§MAXQ_FRAME i=2026 elapsedMs=2563867`). The other
+  241 s (≈119 ms/frame) is the between-frame staging block + capture, outside the fold's own clock.
+- **The tail is 32.4% of the fold and 28.1% of the 44m40s wall clock — 12 min 32 s.**
+- **The tail is FLAT** (p10 315 → p90 427; r vs visible-mesh count only **+0.391**). It is a fixed
+  per-frame overhead, not scene-dependent work.
+
+**§R10's sentence "nothing outside those two constants is worth touching for speed" is measurably
+wrong.** §R10's own projection arithmetic already carried a 339 ms tail term (measured here at
+371 ms) — it was in the model and never named as a lever.
+
+**INCONCLUSIVE — what is IN the 371 ms.** No `§` line inside the fold carries a millisecond value
+except the two above. Candidates present on every frame, from the log's own ordering:
+`§SUN_ARC_STEP`, `§PHOTO_SHADOW_FORCE_REASSERT` (a whole-scene traverse, §R13.7),
+`§PHOTO_AO off`, `§GLOW_LENS_QUAD`, `§PHOTO_GLOW_SPRITE removed`, plus the untagged canvas
+readback/encoder submit. **FUTURE MEASUREMENT (needs a live bake, cannot be answered from disk):**
+put a `§FOLD_PHASE` timer around each non-render phase of `_finishStillRefine` and one around the
+capture, then re-read one short bake. Until then no sub-item of the tail may be quoted as a cost.
+
+### §R13.2 — the per-render costs §R10 shipped on are both wrong, in opposite directions
+| | §R10's figure (user's v1111 log) | measured here, n=2,027 | delta |
+|---|---|---|---|
+| per TAA render | 75.0 ms | **49.06 ms** | −35% |
+| per AO render | 18.75 ms | **27.26 ms** | **+45%** |
+| tail | 339 ms | 371.1 ms | +9% |
+| **frame total** | **1,164 ms projected** | **1,146.0 ms fold / 1,264.4 ms wall** | **+1.6% / +8.6%** |
+
+**§R10's total was right; its decomposition was not.** The decision-ready consequence:
+
+> §R10 shipped `ao=12` rather than the also-at-the-floor `ao=8` for "one AO step of margin", costed
+> at 75 ms/frame. **Measured, that margin costs 4 × 27.26 = 109.0 ms/frame = 221 s = 3 min 41 s per
+> Hospital bake (8.2% of the wall clock).** The RMS evidence for 8/8 is already in §R10's table
+> (0.37 against a 0.21 floor). This is a user decision, not a defect — but it should be made against
+> 3m41s, not against the 75 ms/frame figure now known to be wrong.
+
+### §R13.3 — what distinguishes an expensive frame: VISIBLE MESH COUNT, nothing episodic
+Pearson r against fold total (n=2,027): **visible meshes +0.875** (against AO per-render cost:
+**+0.920**), sun elevation −0.565, frame index +0.565. visMeshes↔sun r = −0.388, i.e. sun elevation
+is a **confound**, not a driver — proved by holding mesh count fixed:
+
+| cohort | n | fold total | TAA | AO | tail |
+|---|---|---|---|---|---|
+| visMeshes 0-499 | 91 | 630.7 | 172.3 | 176.9 | 281.4 |
+| visMeshes 2,500-2,999 | 691 | 1,008.0 | 317.4 | 304.4 | 386.2 |
+| visMeshes 4,000-4,499 | 591 | **1,575.8** | 610.7 | 579.1 | 386.0 |
+| **visMeshes = 4,318, sun 0-9°** | 164 | 1,735.0 | 695.1 | 651.4 | 388.4 |
+| **visMeshes = 4,318, sun 10-19°** | 221 | 1,677.8 | 660.0 | 618.0 | 399.8 |
+
+Same mesh count, 10° of sun apart → **3.4% difference**. Mesh count 0-499 → 4,000-4,499 → **2.5×**.
+There is no tag present only in the worst decile, no light-count change (`§NIGHT_STILL_LIGHTS` reads
+200 on 2,026/2,028 frames), no staging event, no DLOD signature (§R13.8).
+
+**Where the bake's time is spent, by film decile:**
+
+| decile | frames | fold mean | visMeshes | sun° | seconds |
+|---|---|---|---|---|---|
+| 0 | 0-202 | 701.4 | 956 | 52.6 | 141.7 |
+| 3 | 608-810 | 1,295.7 | 4,033 | 37.9 | 261.7 |
+| 7 | 1418-1621 | 809.0 | 1,581 | 18.3 | 164.2 |
+| **8** | 1621-1824 | **1,597.3** | 4,153 | 13.4 | **324.3** |
+| **9** | 1824-2027 | **1,738.6** | 4,318 | 8.4 | **352.9** |
+
+**The closing 20% of the film — the pull-back and orbit around the finished building — is 29.1% of
+all fold time (677.2 s).** It is also the phase in which §R10's own stated reason for holding `ao=12`
+("interior corners are what AO carries") does not apply: the camera is outside, looking at facades.
+A **phase-aware budget** (full AO inside, reduced AO on the exterior orbit) is the concrete proposal
+this measurement supports; it is testable with §R10's existing seeded-RMS harness, per pose.
+
+### §R13.4 — the heap reconciliation: the 133-sample series is an ALIASED SAWTOOTH, not a profile
+The brief's question ("133 samples span 229-477 MB but §R12 records 1,577 MB — reconcile") is
+settled, and the answer is that **neither bake-time series is a memory measurement.**
+
+Read-only code read: `cli_silent_bake.js:201-203` samples `page.metrics().JSHeapUsedSize` on a
+20 s interval. `viewer/tools.js:1474` emits `§NIGHT_MEM_WITNESS` from page-side
+`performance.memory.usedJSHeapSize`. Both were live in the SAME run:
+
+| run | page-side `§NIGHT_MEM_WITNESS` (pre-bake / post-bake) | harness `§CLI_BAKE_HEAP` |
+|---|---|---|
+| `s5_hospital` (2,027 fr, e1369b7a) | 2,296.3 / 2,292.7 / 2,328.5 → **1,806.8** | samples=133 min 229 max **477** last 331 |
+| `s4b_80` (80 fr, bd8872ac, 6 min earlier) | 5,170.5 / 5,206.1 / **5,223.0** → 1,727.5 | samples=6 min 224 max **2,388.8** last 312 |
+| `post.log` (80 fr headful, d37eb109) | — | samples=12 min 230 max **2,431** last 273 |
+
+Three facts kill the 229-477 MB reading:
+1. **The same harness instrument reads 2,388.8 MB and 2,431 MB in the short runs.** In `s4b_80` it
+   read 2,388.8 MB right after frame 0 and **224.0 MB eight frames (~14 s) later** — a 2.16 GB drop
+   inside one sampling gap. A 20 s sampler over 2,680 s simply never landed on a peak in `s5`.
+2. **The page-side witness read 5,223.0 MB and 2,328.5 MB at the SAME pipeline point in two runs of
+   the same code six minutes apart** (`bd8872ac` and `e1369b7a` are the pre-/post-rebase pair of the
+   *same* §NIGHT_BAKE_POOL commit — verified by `git log -1`; both logs contain
+   `§NIGHT_BAKE_POOL created n=200`). A 2.9 GB run-to-run swing at a fixed point is uncollected
+   garbage, not retained size.
+3. Neither instrument counts WASM linear memory, where `§R12` puts 253.2 MB of resident DB.
+
+**Therefore: §R12_HOSPITAL_MEM's 1,546-1,577 MB (settled, post-stream, reproduced ±6 MB at +90 s
+idle) remains the only defensible baseline. §R12 is untouched by this and must not be re-derived.**
+Nothing in this bake contradicts it. **Do not quote 229-477 MB as the bake's memory profile.**
+
+**FUTURE MEASUREMENT (harness fix, lands free on the next bake anyone runs):** in
+`cli_silent_bake.js`'s sampler, evaluate page-side `performance.memory.usedJSHeapSize` on the SAME
+tick as `page.metrics()` and log both, plus `totalJSHeapSize`; raise the rate to ~2 s. Then
+`§CLI_BAKE_HEAP` can state min/max/last for both instruments and say when they diverge — today it
+silently reports one aliased series as if it were the answer.
+
+**Relative shape (same instrument throughout — MEDIUM confidence, absolute scale unreliable):** the
+133-sample series sits at ~261 MB over frames 200-530, rises to **410-463 MB across frames 666-925**,
+and falls back to ~261-280 MB by frame 1094. Topout is frame 868. **The bake's peak-memory phase is
+the TM buildup, not the still fold, and it is fully released.** Whole-bake slope 13.85 MB per 1,000
+frames — no leak trend.
+
+### §R13.5 — `§CINEMA_PLAN_MS` runs SEVEN times per Alt+C open on Hospital, 10,253 ms
+`2309.6 · 1717.4 · 1339.7 · 1334.6 · 1210.8 · 1208.6 · 1132.5` ms — all with identical
+`fanRays=32 spaceCands=0 exitCands=400`. `§CPE_REPLAN_LAZY` shows `miss=1 prefixMs=1046.1` then
+**`hit=1 savedMs=1046.1` six times on a byte-identical key**
+(`Hospital|2814|135.7692,181.0256,135.7692`) — R3's prefix cache absorbs 6,276.6 ms; the remaining
+~10.25 s is the un-cached suffix, recomputed seven times on the same key.
+
+**Already known as a defect** — `CINEMA_PATH_EDITOR.md §CPE_PANEL_PERF` item 2 — **at 3× and 559 ms**
+(`§CINEMA_PLAN_MS 291+133+135`). **NEW: on Hospital it is 7× and 10,253 ms, 18× the recorded cost.**
+
+### §R13.6 — the bake pre-roll, itemised (≈116 s of the 2,680 s wall)
+| item | s5_hospital | other runs (n) | note |
+|---|---|---|---|
+| `§BVH_DEFERRED built=20609` | **ms=26,981** | — (n=1) | 27.0 s of BVH build. **Never on record as a time** — §R12 recorded only its 50.2 MB. |
+| `§CLI_BAKE_TM_PRIME ok` | **ms=14,917** | 14,836 / 15,233 / 15,400 / 14,912 (n=5) | very tight across runs |
+| `§PHOTO_PREWARM` | **ms=7,965** | 7,993 / 7,999 / 8,026 / 8,039 / 9,391 (n=6) | `did=[mepSmooth,hdri,groundTex]` |
+| `§MEP_SMOOTH_NORMALS` | ms=7,963.9 | — | geoms=1,662 ranges=14,617 verts 23.73M smoothed / 8.87M hard — i.e. it IS the whole prewarm |
+| `§CLI_BAKE_LOADED` → nav | 12 s | 13 / 12 / 21 / 30 | streaming to `meshes=4287` |
+
+TM prime interior (one run): `§S4_ACTIVATION_TIMING elemQuery=682 computeSchedule=1032
+displayTimeline=1966 insertLoop=3236 supportCheck=3726 generativeBranchEnd=3784` then
+`_CAP capBranchPreWrite=5069 capBranchWrite=7606`; `§S4_ACTIVATION_TIMING_MID
+afterMaterializeNative=5670 afterLoadOps=13896 afterInjectGantt=13277 afterCachePut=13897`;
+`§WRITE_LOOP_TIMING rows=63182 ms=2536.4`; `§XRAY_CACHE_BUILD elemMs=288.1 edgeMs=257.8
+total_ms=576.3 elemMemo=miss edgeMemo=miss staged=611`.
+
+**§R11 IS CONFIRMED ON A REAL HOSPITAL RUN — six times.** `§PHOTO_PREWARM` fires before the bake in
+every run, carrying the full 7,963.9 ms of `§MEP_SMOOTH_NORMALS` off the Alt+S critical path.
+**§R10 IS ALSO CONFIRMED**: `§MAXQ_FRAME_BUDGET taa=8 ao=12 renders/frame=20` is present on all
+2,028 folds. ⚠ **This file's own ▶RESUME block (lines 13-18) still says "⛔ NEITHER IS CONFIRMED ON A
+REAL HOSPITAL RUN YET" — that text is now STALE and should be struck**; the confirmation also sits in
+`CINEMA_PATH_EDITOR.md §CLI_SILENT_BAKE` stage 5.
+
+⚠ **Caution the next session must not skip:** the bake path's per-TAA-render cost is **49.06 ms**;
+the user's interactive Alt+S log gives 6,868 ms for 16 TAA renders = **429 ms/render**, an 8.7× gap
+on the same GPU and building. **Bake-path timings do not transfer to the Alt+S path.** Any first-
+Alt+S latency work must be measured on the Alt+S path. Cause of the gap: **INCONCLUSIVE** from disk.
+
+### §R13.7 — `§PHOTO_SHADOW_FORCE_REASSERT`: 1,163 provably-empty whole-scene traverses per bake
+Summary line, one bake: **`§PHOTO_SHADOW disabled reassertRuns=2040 reassertSkips=14176
+forcedSaves=2027`.** Code read (`effects.js:2781-2807`): `_finishStillRefine` calls the reassert with
+`force`, which **bypasses** the `_wouldSkip` gate (idx/kids/vis unchanged) and runs a full
+`A.scene.traverse` setting `castShadow` on every visible mesh. `forcedSaves=2027` means **every one
+of the 2,027 forced calls bypassed a gate that would have skipped it.**
+
+The bypass is NOT gratuitous — it is load-bearing on 321 frames (15.8%), which really did flip
+`castShadow` on 4,201 meshes between them. But:
+
+- **The last frame that ever flips anything is frame 864.** Topout (`§CPE_BUILDUP_TOPOUT
+  topoutU=0.428`) is frame 868; `§CPE_BUILDUP` first reads `t=1.000 placed=63417/63417` at frame 900.
+- **After frame 864, 1,163 frames (57.4% of the film) traverse 4,300+ visible meshes and flip
+  exactly zero** — `flippedOn=0` on every one, in the log.
+
+**Safe, zero-behaviour-change gate: stop forcing once the buildup has topped out.** Proven safe by
+this log, not by argument.
+
+**Saving in ms: INCONCLUSIVE.** The traverse carries no timer. Bounded from the one full-traverse
+analogue on the same scene (`§PERF_TRAVERSE ms=26.5 objs=4288 mode=full`, frame 0) at
+**≤ 30.8 s (1.1% of wall)**; the delta-mode figure on the same scene is 0.77-0.94 ms, so the floor is
+~1 s. **FUTURE MEASUREMENT:** one `§` timer around the traverse; needs a live bake. Rank this on its
+zero risk, not on its size.
+
+### §R13.8 — the DLOD flip storm IS present in this bake and is NOT a bake-time cost (R9 closes, for bake)
+`§DLOD_TICK` fires on 666 of 2,027 frames. Flip distribution: p50 **119**, p90 **829**, p99 **3,421**,
+**max 8,626**, total **218,570** flips; **48 ticks at ≥1,000 flips**. `§CPE_PANEL_PERF` item 3
+recorded `flips_mean=2671` — so at its peak the storm here is **3.2× worse** than the recorded case.
+
+But it costs nothing measurable in a bake:
+
+| cohort | n frames | fold total mean | max `ms_max` in cohort | visMeshes |
+|---|---|---|---|---|
+| tick, flips = 0 | 79 | 1,647.5 | 2.50 | 3,907 |
+| tick, flips 1-99 | 210 | 1,019.0 | 3.30 | 2,512 |
+| tick, flips 100-999 | 328 | 1,166.0 | 4.00 | 3,281 |
+| **tick, flips ≥ 1,000** | 48 | **986.9** | **3.60** | 2,333 |
+| no tick at all | 1,362 | 1,137.3 | — | — |
+
+`§DLOD_TICK ms_max` **never exceeds 4.0 ms** in any bucket, and the ≥1,000-flip frames are
+**faster** than the 1,146.0 ms bake mean (they are the frames where little is on screen — the
+correlation with cost runs through visible-mesh count, §R13.3, and it runs the *other* way).
+
+**Verdict: R9 / §CPE_PANEL_PERF item 3 is confirmed PRESENT and confirmed NOT A LEVER for bake
+time.** It may still matter for interactive nav FPS, which is where it was originally observed and
+which this bake does not test. Do not spend bake-perf effort on it.
+
+### §R13.9 — per-frame work that is vacuous or unguarded (counts exact, ms unmeasured)
+All of these sit inside the 371 ms tail of §R13.1. Counts are over 2,027-2,028 folds:
+
+| `§` tag | fires | what the log says every time |
+|---|---|---|
+| `§GROUP_SPARK_TICK` | 2,027 | `playing=false cand=0 (frontier=0 recent=0) roll=0` — **VACUOUS on every frame of the bake** |
+| `§GROUND_WETNESS_OVERRIDE` | 2,028 | `value=0.5 userSet=false` — identical every frame |
+| `§NIGHT_STILL_LIGHTS` | 2,026 | `raised to 200 lights` — identical every frame |
+| `§PHOTO_GLOW_SPRITE` | 3,502 | `removed 57 sprites` **then** `staged 57/1273 sprites` — a per-frame teardown+rebuild of an unchanged set |
+| `§GLOW_LENS_QUAD` | 1,770 | `skip (count unchanged 1273)` on 1,740 of them — **the sibling two lines away HAS the guard the sprite path lacks.** That asymmetry is the finding |
+| `§ENVMAP_STOMP_GUARD` | 906 | `skipped procedural regen — HDRI active`, **100% skips**. The guard works; the smell is a caller requesting a procedural envmap regen on 44.7% of bake frames |
+| `§IDLE_GATE` | 330 | **165 `park` + 165 `wake`** pairs during a continuously-rendering bake |
+| `§SHADOW_FRONTIER` | 33 | `casters=0 receivers=0` — vacuous |
+| `§SHADOW_FRONTIER_AT_CAPTURE` | 286 | `singleMesh_matched=0 castShadowTrue=0 castShadowFalse=0` on **every single one** |
+
+`§SHADOW_FRONTIER_AT_CAPTURE` is a **CLAUDE.md rule-4 violation**: it has never matched a single mesh
+in 286 firings, so its zeros mean nothing — it must print `INCONCLUSIVE`/`VACUOUS`, not a number.
+
+**Which of these costs the 371 ms: INCONCLUSIVE** — same future measurement as §R13.1.
+
+### §R13.10 — cross-check against what was already on record
+| finding | status |
+|---|---|
+| §R13.1 fold split (⅓/⅓/⅓), 752 s tail | **NEW** — and it retracts §R10's 62/23/15 split |
+| §R13.2 per-render costs, 3m41s AO margin | **NEW numbers on a KNOWN decision** (§R10's `ao=12` choice) |
+| §R13.3 visible-mesh count is the driver; closing orbit = 29.1% of fold time | **NEW** |
+| §R13.4 heap sawtooth / §CLI_BAKE_HEAP unusable | **NEW**; §R12_HOSPITAL_MEM's 1,546-1,577 MB stands unchanged |
+| §R13.5 `§CINEMA_PLAN_MS` ×7 / 10,253 ms | **KNOWN defect** (§CPE_PANEL_PERF item 2, 3× / 559 ms); **NEW magnitude, 18×** |
+| §R13.6 BVH 27.0 s, TM prime 14.9 s, prewarm 7,965 ms | prewarm/R11 **CONFIRMED** (was "not confirmed"); BVH time **NEW**; TM prime relates to §CPE_PANEL_PERF item 1 (`setupMs=2052`) but is a different, larger measurement |
+| §R13.7 1,163 empty forced traverses | **NEW** |
+| §R13.8 DLOD storm present, not a bake cost | **KNOWN defect** (§CPE_PANEL_PERF item 3 / R9); **NEW negative result** |
+| §R13.9 vacuous per-frame work | **NEW** |
+| memory levers 1-4 of §R12_HOSPITAL_MEM | **untouched, not re-derived, still the ranked memory list** |
+
+### §R13.11 — the partial A/B: headful vs headless (NOT A RESULT, do not cite as one)
+`…/6bdc5d30…/scratchpad/bake/` holds a §NIGHT_BAKE_POOL isolation A/B that **was killed mid-run**:
+ARM A died `EADDRINUSE 127.0.0.1:8561` (exit 1), ARM B was `Killed` (exit 137), and the PRE arm
+(`pre.log`) logged **zero** `§MAXQ_FRAME` lines — it never reached the frame loop. Only ARM POST
+completed.
+
+The one comparison it permits, and its caveat:
+- `post.log` — headful (real window, the Alt+C environment), 80 frames, `d37eb109`:
+  `meanMs=2711 p50Ms=1688.4 worstMs=10802.3`
+- `s4b_80.log` — headless real-GPU, 80 frames, `e1369b7a`: `meanMs=1359.1 p50Ms=1258.5 worstMs=8664.1`
+
+**2.0× on the mean.** This is INDICATIVE ONLY: the A/B ran 07:47-07:54 today with two other agents
+on this machine, and the headless arm ran on a quiet machine yesterday. It matters because **the
+number a user experiences is the headful one** — every measurement in §R13.1-§R13.9 is from the
+headless arm. **NAMED FUTURE MEASUREMENT: one headful and one headless 80-frame bake, same commit,
+back to back, on a quiet machine.** Until then, treat §R13's absolute ms as headless-path figures
+and its ratios/shares as the transferable part.
+
+### §R13.12 — handed to the TM/4D schedule lane (buildup pacing, not bake time)
+From `daybatch_Hospital.log` / `daybatch_burst.log`, already measured, unmined until now:
+- `§DAYBATCH_FRAMES frames=3118 mean=20.3/frame worst=94 at f1250 = 4.6x mean`
+- `§DAYBATCH_PULSE_PREDICTION framesPerDay=9.81` — a 1-frame daily pulse would put **399 elements on
+  one frame (19.7× mean)**, and `daysWhoseFullCountExceedsCurrentWorstFrame=299/319`
+- `§DAYBATCH_BURST_TASKFRAMES TASK_MEP_Rough_in_Level_3 aloneOccupies 629 frames: perFrame p50=14
+  p90=23 max=82 mean=15.1` — a **5.4× sub-day swing inside ONE task** whose per-DAY rate is near-flat
+  (`CV=0.23`), because tiling is duration-weighted, not calendar-weighted
+- `§DAYBATCH_BURST_INSTALLSECS burstRun installSecs p50=114 vs task p50=1920` — the grouping key that
+  exists in the data is per-element crew DURATION, not calendar day
+
+Also from the bake: **the TM buildup is the bake's peak-memory phase** (§R13.4 relative series) and
+it finishes at frame 868 of 2,027 — after which `§PERF_TRAVERSE` still runs every frame at
+`mode=delta span=0h` (0.77-0.94 ms, **not** a lever) and the shadow reassert runs empty (§R13.7,
+which **is** one).
+
+### §R13.13 — ranked, with lane
+| # | finding | measured | phase | confidence | lane |
+|---|---|---|---|---|---|
+| 1 | non-render tail = 32.4% of every fold | **371.1 ms/frame · 752.2 s/bake** | Alt+C bake | HIGH (2,027-frame series) | perf → film |
+| 2 | AO margin `ao=12` vs `ao=8` | **109.0 ms/frame · 221 s (3m41s)** | Alt+C bake | HIGH | film (user decision) |
+| 3 | closing 20% of film = 29.1% of fold time; driver is visible-mesh count r=+0.875 | **677.2 s** | Alt+C bake | HIGH | film |
+| 4 | `§CLI_BAKE_HEAP` 229-477 MB is an aliased sawtooth; peaks 2,389/2,431/5,223 MB observed | 5 series compared | bake + harness | HIGH (values), MEDIUM (mechanism) | perf |
+| 5 | `§CINEMA_PLAN_MS` ×7 = 10,253 ms per Alt+C open | **10,253 ms** | Alt+C open | HIGH | film |
+| 6 | pre-roll: BVH **26,981 ms**, TM prime **14,917 ms**, prewarm **7,965 ms** | as shown | buildup / first-Alt+S | HIGH (n=5-6 on the last two, n=1 on BVH) | TM lane + perf |
+| 7 | 1,163 provably-empty forced whole-scene traverses | count exact, ms ≤30.8 s | Alt+C bake | HIGH (count), INCONCLUSIVE (ms) | film |
+| 8 | DLOD flip storm real (max 8,626) but **not** a bake cost | tick ≤4.0 ms | Alt+C bake | HIGH | perf (closes R9 for bake) |
+| 9 | vacuous/unguarded per-frame work, 9 tags | counts exact, ms unknown | Alt+C bake | HIGH (counts) | film |
+| 10 | headful ≈ 2.0× headless per frame | 2,711 vs 1,359 ms | Alt+C bake | **LOW — partial + contended** | perf (re-measure) |
+
+### §R13.14 — the four measurements that genuinely need a live run, with their reason
+1. **Decompose the 371 ms tail** — `§FOLD_PHASE` timers around each non-render phase of the fold and
+   around the capture. *Reason: no existing `§` line inside the tail carries a millisecond value.*
+2. **Cost of one `§PHOTO_SHADOW_FORCE_REASSERT` traverse** — one timer. *Reason: needed to rank
+   §R13.7 against the other tail items; bounded today only at 1-30 s.*
+3. **Headful vs headless, back to back, quiet machine** — 80 frames each, same commit.
+   *Reason: every absolute ms in §R13 is headless; the user's Alt+C is headful and the only
+   comparison available is a killed, contended run.*
+4. **Dual-instrument heap sampling in `cli_silent_bake.js`** — page-side `performance.memory` on the
+   same tick as `page.metrics()`, ~2 s rate. *Reason: today's single 20 s series aliases a quantity
+   that moves 2.16 GB inside one sampling gap, and reports the miss as if it were the answer.*
+   (This one is a harness edit that then rides free on whatever bake happens next — it needs no
+   dedicated run.)
+
+**Nothing was run and no product code was changed in this pass.**
+
+---
+
+## §R14_VACUOUS_TAG_AUDIT — the nine per-frame tags of §R13.9, diagnosed and treated (2026-09-02, queue item A-7)
+
+```
+# ⚠ DO NOT REMOVE
+SCOPE: CLAUDE.md rule 4 — "a witness that cannot report its own failure is not a witness." The
+nine per-frame `§` tags §R13.9 listed fire every frame while judging nothing, or judge something
+and repeat the identical verdict thousands of times. Each one gets ONE of: GUARD (say VACUOUS /
+name the empty predicate), FIX (the vacuity is an upstream defect, not an empty population), or
+REMOVE (provably cannot ever judge, and duplicates another).
+EVIDENCE: read-only. `s5_hospital.log` (2,027 frames, 41,705 lines, commit e1369b7a, sw v1120) +
+`s4b_80.log`, both already on disk from 2026-09-01. NO BAKE, NO BROWSER, NO PROBE was run for
+this item — user directive 2026-09-02. Every count below is `grep -c` on those logs.
+READ THE LOG AFTER EVERY RUN. Honour this block until §R14 is DONE.
+```
+
+### §R14.0 — the contract the nine are being held to (`§VAC`)
+
+Three rules, applied per tag. They are the operational form of CLAUDE.md rule 4:
+
+- **V1 — VACUOUS must be sayable.** When the population a tag judges is provably empty, the line
+  says the word `VACUOUS` and **names the empty predicate**. A bare `0` is banned, because it is
+  indistinguishable from "judged a real population, found nothing wrong."
+- **V2 — a repeated verdict is reported once, with its repeat count.** A per-frame line that emits
+  an identical verdict N times prints it on the first firing, suppresses the rest, and emits
+  `repeats=N` when the verdict changes. **The signal is never dropped, only compressed** — the
+  count is the signal.
+- **V3 — a guard that logs only its skip path must count the other path too.** "100% skips" with no
+  denominator cannot distinguish "the guard saved us 906 times" from "the guarded branch was never
+  reachable."
+
+### §R14.1 — the decisive question: empty population, or broken matcher?
+
+The item's own warning is that quietly stamping `VACUOUS` on a **broken lookup** hides a live
+defect behind a compliant-looking log line. Each of the nine was tested against that distinction
+before treatment. **Two came back FIX, seven came back GUARD, none REMOVE.**
+
+#### `§SHADOW_FRONTIER_AT_CAPTURE` — **EMPTY POPULATION, not a broken matcher. Settled.**
+
+The tag fires 286 times, every one `singleMesh_matched=0 castShadowTrue=0 castShadowFalse=0`.
+Three independent facts settle it as a genuinely empty population:
+
+1. **The index the matcher queries is itself empty, and says so.** `s5_hospital.log`:
+   `§SHADOW_FRONTIER_IDX built gen=2814 meshGuids=0 groupGuids=63182 ms=8.6` — one firing, whole
+   bake. All 63,182 streamed guids landed in the **group** (batched/instanced) index; the
+   single-mesh index has zero entries. Identical in `s4b_80.log`: `meshGuids=0 groupGuids=63182`.
+   The matcher (`cinema_maxq.js:1632-1636`) is a `Map.get` against a Map of size 0 — it cannot
+   match, and nothing is wrong with it.
+2. **The single-mesh population is a FALLBACK that did not fire.** `viewer/streaming.js` writes
+   `userData.guid` onto an individual `THREE.Mesh` in exactly three places — `:2069-2075` (the
+   `new THREE.BatchedMesh(...)` constructor threw, `§BATCHED_FAIL`), `:2143-2146` (BatchedMesh
+   unavailable on the device), `:2438-2445` (oversized / over-budget elements spilled out of the
+   slot reservation). In this run: `§RENDERER_CAPS multi_draw=on (fast batched path)`,
+   `§UPGRADE_API_CHECK BatchedMesh=function`, and **`grep -c BATCHED_FAIL` = 0**. None of the
+   three fallbacks fired, so `meshGuids=0` is the CORRECT answer on this device for this building.
+3. **The other half of the same line is answering normally.** `batchObjsContainingFrontier` is
+   non-zero on **every one of the 286 firings** and `batchCastShadowTrue` equals it every time
+   (e.g. `frontierGuids=30 … batchObjsContainingFrontier=7 batchCastShadowTrue=7`). The check is
+   working; the single-mesh half is the empty half.
+
+> **Verdict: GUARD, not fix.** The `singleMesh_*` triplet must print `VACUOUS (no individually-
+> meshed elements in this scene: §SHADOW_FRONTIER_IDX meshGuids=0)`, not three zeros.
+
+**But the same read found a REAL reporting hole in this tag, and that half is a FIX.** The
+forEach at `cinema_maxq.js:1632-1636` has three outcomes — mesh hit, group hit, **and a silent
+`return`-less fall-through when the guid is in NEITHER index** — and only the first two are
+counted. A frontier guid that is missing from both indexes is today indistinguishable from one
+that was deduped into an already-seen batch object, because `batchObjsContainingFrontier` is
+deduplicated by object (`frontierGuids=10 → batchObjs=4` is normal dedup, or four hits and six
+misses — the line cannot say which). **Fix: add `unmatched=`.** It is a counter on an existing
+else-branch, not a new measurement. Standing evidence it will earn its keep on the next bake
+anyone runs: `§SHADOW_FRONTIER_IDX groupGuids=63182` against `§CPE_BUILDUP … placed=63417/63417`
+— a **235-guid** difference between the streamed set and the set TM places. Whether any of those
+235 ever appear in a frontier set is exactly what `unmatched=` answers, and nothing on disk today
+can.
+
+#### `§GROUP_SPARK_TICK` — **FIX: its throttle is DEAD in the bake path.**
+
+`time_machine.js:1017` gates the log on `_gspRoll % 10 === 0`, intending a 1-in-10 sample.
+`_gspRoll++` happens in **exactly one place**: `time_machine.js:3386`, inside `playTick()`, behind
+`if (!_playing) return;` — "one re-roll per playback tick." A bake never calls `playTick()`; it
+drives `renderAtTime()` directly. So during a bake **`_gspRoll` is frozen at 0, `0 % 10 === 0` is
+always true, and the 1-in-10 throttle degrades to 1-in-1.** The log proves it: all 2,027 firings
+carry `roll=0`, and the count is 2,027 = one per frame, not ~203.
+
+**The same dead expression gates `§PERF_TRAVERSE` (`time_machine.js:1613`)** — also exactly 2,027
+firings in the same log. That is **4,054 log lines emitted where ~406 were intended.**
+`§PERF_TRAVERSE` is out of A-7's scope (it is a real per-frame measurement someone may still be
+mining, and §R13.12 quotes it) and is **left alone, named here**, not silently re-cadenced.
+
+On top of the dead throttle the tag is also vacuous: 1,681 of 2,027 firings read
+`playing=false cand=0 (frontier=0 recent=0)` — no candidates, no playback, nothing judged.
+
+#### The other seven — GUARD, population genuinely empty or verdict genuinely repeated
+
+| tag | site | why its zeros/repeats are honest | treatment |
+|---|---|---|---|
+| `§SHADOW_FRONTIER` | `time_machine.js:1665` | `casters=0 receivers=0` ×33 is **structurally forced twice over**: `_shadowCasters++` (`:1463`) sits behind `if (app._shadowOn)`, and the log says `§TM_SHADOW_INHERIT shadowOn=false` / `§TM_SUN_INHERIT shadowOn=false` for this run; and the counter lives in the **single-mesh branch**, which the comment at `:1342` names explicitly — the same empty population as §SHADOW_FRONTIER_AT_CAPTURE. The log line sits OUTSIDE the `if (app._shadowOn …)` block at `:1645`, so it fires either way and names neither reason. | **V1** — print `VACUOUS` and which of the two predicates is empty |
+| `§GROUND_WETNESS_OVERRIDE` | `effects.js:3186` | 2,028 firings, **one distinct line**: `value=0.5 userSet=false`. `A._setGroundWetness` logs unconditionally, including when it re-sets the value it already holds (staging is torn down and rebuilt every bake frame). | **V2** |
+| `§NIGHT_STILL_LIGHTS` | `effects.js:4814` | 2,026 firings, **one distinct line**: `raised to 200 lights, near-fade floor 1 …`. | **V2** |
+| `§PHOTO_GLOW_SPRITE` | `effects.js:4538` + `:4553` | 1,730 `staged`/`removed` pairs but only **11 count-runs** across the whole film (57→9→19→21→24→26→35→36→46→55→57). ⚠ §R13.9's phrase "an unchanged set" is imprecise and is corrected here: the staged COUNT does change, 11 times. And the WORK is not redundant — sprite positions carry a camera-dependent `GLOW_EYE_OFFSET` nudge (`effects.js:4387,4495`), which is precisely why `§GLOW_LENS_QUAD` was given a stage-keep guard and this was not (`0d80b03b`). **The work is correct; the log is the defect.** | **V2** on both lines |
+| `§GLOW_LENS_QUAD` | `effects.js:4177` | 1,740 of 1,770 firings are the identical `skip (count unchanged 1273)`. The guard is doing its job — it just says so 1,740 times. | **V2** |
+| `§ENVMAP_STOMP_GUARD` | `scene.js:305` | 906 firings, **100% skips**, and the `_setEnvMap(...)` arm two lines up logs nothing at all, so the ratio has no denominator (V3). At 906 over a 2,680 s bake this is the 2,000 ms `A._envMapThrottle` timer firing ~every 3 s, not per frame — so the count is honest; what is missing is the other arm. | **V2 + V3** |
+| `§IDLE_GATE` | `main.js:876` / `:937` | **NOT a rule-4 violation — the only one of the nine that is already compliant.** Its 165 park + 165 wake lines are the existing `_idleCycles % 25` sample reporting **4,050+ real park/wake cycles** (`§IDLE_GATE wake cycles=4050` is the largest in the log), and 162 of the 165 park lines already say `(throttled: every 25th)`. The unthrottled sibling at `main.js:941` fired **0 times** (`grep -c "desktop loop idle"` = 0). ⚠ §R13.9 read "165 park + 165 wake pairs" as the EVENT count; the event count is 4,050+. That misreading is the one real defect — a line that invites it. | **wording only** — state the sample rate and running total on the line itself; **no mechanism change** |
+
+### §R14.2 — implementation rule: compress, never drop
+
+Every V2 site uses the same shape, written locally in each file (no new shared script — a new
+file would need a `viewer.html` tag, a `sw.js` `PRECACHE_ASSETS` entry, and a load-order guarantee
+before `effects.js`, which is the 8th script tag; that is more risk than five six-line closures):
+
+```
+if (line !== _lastLine) {
+  if (_repeats > 0) console.log(TAG + ' repeats=' + _repeats + ' (identical, suppressed)');
+  console.log(line); _lastLine = line; _repeats = 0;
+} else _repeats++;
+```
+
+The suppressed count is emitted **before** the next distinct line, so the log reads as a run-length
+encoding of the same series. Nothing is lost; a reader can still reconstruct the exact per-frame
+count. Where a run never ends (the bake exits mid-run), the pending `repeats` is flushed by the
+tag's own teardown/summary path where one exists.
+
+### §R14.3 — what this item did NOT do
+
+- **No bake, no browser, no probe.** The treatments are logging-shape changes verified by reading
+  the code and the two logs already on disk. **The next bake anyone runs is the confirmation** —
+  it rides free, exactly like §A-8's heap fix.
+- **`§PERF_TRAVERSE`'s dead throttle is named, not fixed** (§R14.1) — out of scope, and it is a
+  real per-frame measurement other sections quote.
+- **No behaviour changed.** Not one of the nine treatments alters what is rendered, staged, torn
+  down, or scheduled. Only what is printed.
+
+### §R14.4 — MEASURED result of the treatments (bim-ootb PR #1608, `fix/vacuous-tag-audit`)
+
+**W-VACUOUS-TAG-GUARDS 10/10 PASS, redControl green** (`viewer/tests/witness_vacuous_tag_guards.js`,
+auto-discovered by `tests/run_witness_suite.js` headless class, `§SUITE_SUMMARY green=1 new_red=0`).
+The archived series is replayed through the **SHIPPED `_vacLog`** — extracted out of `effects.js`
+and **executed**, not modelled, because a reimplementation would only prove the witness is lossless.
+
+| tag | fired before | lines after | reconstructed | lossless |
+|---|---|---|---|---|
+| `§GROUND_WETNESS_OVERRIDE` | 2,028 | **10** | 2,028 | ✅ |
+| `§NIGHT_STILL_LIGHTS` | 2,026 | **10** | 2,026 | ✅ |
+| `§PHOTO_GLOW_SPRITE staged` | 1,751 | **24** | 1,751 | ✅ |
+| `§PHOTO_GLOW_SPRITE removed` | 1,751 | **24** | 1,751 | ✅ |
+| `§GLOW_LENS_QUAD skip` | 1,740 | **29** | 1,740 | ✅ |
+| `§GROUP_SPARK_TICK` | 2,027 | **467** | 2,027 | ✅ (rule simulated — inline, not callable) |
+| `§SHADOW_FRONTIER_AT_CAPTURE` | 286 | 286 | — | volume unchanged BY DESIGN; the CONTENT was the defect |
+| `§SHADOW_FRONTIER` | 33 | 33 | — | already a 1-in-60 sample; CONTENT was the defect |
+| `§ENVMAP_STOMP_GUARD` | 906 | **10** | exact totals via `A._envmapStompStats()` | ✅ |
+| `§IDLE_GATE` | 330 | 330 | — | already compliant; wording only |
+
+**Two things this pass got WRONG first, both caught by the witness rather than by review — recorded
+because they are the exact failure modes §R14.0 was written to prevent:**
+
+1. **A scope-blind witness.** C2 ("can this tag say VACUOUS?") originally grepped a ±2,500-char
+   window around the emit site. The falsification arm deleted `VACUOUS` from the *emit statement*
+   and **C2 still passed** — it was reading the explanatory comment block above it. The region check
+   now strips comments first. A witness that passes because the defect sits inside the window it
+   inspects is the same rule-4 defect it was written to close (CLAUDE.md rule 4, third mode).
+2. **A silent DROP dressed as compression.** `§GROUND_WETNESS_OVERRIDE`'s first guard was its own
+   inline change-only rule with no heartbeat and no flush. On this series — one distinct line,
+   2,028 firings, a run that never ends — it would have emitted **1** line and never reported the
+   2,027 repeats. C3 (losslessness) caught it. It is routed through the shared `_vacLog` now, which
+   carries a bounded heartbeat and a flush at real still exit.
+
+**Compatibility, checked by reading the consumers (not by running them — no-bake directive):**
+`witness_glow_lens_stage_keep.js` asserts `ft.skip > 0` and reads `§GLOW_LENS_QUAD staged rect=` /
+`removed`, all still emitted verbatim; `witness_tour_wake.js` and `tests/probe_idle_blank.js` match
+the `§IDLE_GATE park` prefix, unchanged. `sw.js` `CACHE_VERSION` v1122 → **v1123**.
+
+**Two items handed on, deliberately not done here:**
+- **`§PERF_TRAVERSE` carries the same dead `_gspRoll % 10` throttle** (2,027 firings in the same
+  log, where ~203 were intended). Out of A-7's scope — it is a real per-frame measurement §R13.12
+  quotes. Fixing it is a one-line change to the same counter; someone should take it deliberately.
+- **`unmatched=` will attribute the 235-guid gap** between `§SHADOW_FRONTIER_IDX groupGuids=63182`
+  (streamed) and `§CPE_BUILDUP placed=63417` (TM). Nothing on disk can answer that today. **It rides
+  free on the next bake anyone runs** — no dedicated run needed, same as §A-8's heap fix.
