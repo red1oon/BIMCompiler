@@ -6424,14 +6424,36 @@ turn it's written.
    is now STALE against current `origin/main`** (something between that measurement's commit and
    `a2e582b` regressed it) — flagged here for whoever next owns that lane; NOT fixed, NOT re-derived
    further, out of scope for §FUTURE item 7 stages 1-2.
-3. **Stage 4 — edit-legality investigation** (not yet started): `verifyGanttIntegrity()` ANDs two
-   already-known-disagreeing "does S support T" copies instead of using the one with the later
-   false-positive fix. Investigate which is more correct; recommend, do not silently pick one.
-4. **Stage 5 — bundle if straightforward** (not yet started): floating judged by 4 disagreeing
-   implementations (name them, consolidate only what's clearly safe); 3 rival storey-suffix rules
-   where the merge map and elements disagree; tag the untagged 3rd task-grid producer
-   (`materializeDefault`); consolidate re-typed `SEQUENCE_DEFAULT`/`EPS`/`GAP` constants where
-   mechanically safe.
+3. ✅ **DONE (measured + RECOMMENDED, nothing applied) — Stage 4, bim-ootb PR #1627** (probe only,
+   2026-09-02, queue item B-2). **The recommendation is NOT a silent pick and the code is unchanged.**
+   Full evidence in `4D_MODEL_INTEGRITY.md` §I.5d's ✅ block. Headline: the two judges' offender sets
+   are largely DISJOINT (Hospital onlyFloating 332 / onlyMidair 395; Terminal 209 / 474), so the AND
+   is redundant in neither direction; across **32 simulated drags** `floatingOnly=0` and
+   `midairOnly=0/0/2/3`, so the refusals are carried by `_midairAudit`; and the decisive number,
+   **`lockVerdictFlipsIfCopy1GetsTheBound = 0/32`** — porting §S64's bound would change no verdict
+   while ADDING 448 Hospital offenders (82% of the bound-violating elections are `IfcColumn`, not
+   walls; §S64's bound is sound only in its own wall-pool context). **RECOMMEND: keep the AND, port
+   nothing, fix the stale §I ROW** (done). No observability gap — `§GANTT_LOCK_BREACH` already prints
+   both deltas separately.
+4. ✅ **DONE — Stage 5, bim-ootb PRs #1628 / #1629 / #1630** (2026-09-02, queue item B-2). Per item:
+   - **four floating judges** — named with file:line **and the LAYER each judges**
+     (`4D_MODEL_INTEGRITY.md` §I.5e ✅ block). Two corrections: copy 3 has **FIVE** sites, not three,
+     and **the layer is the CALLER's, not the judge's** — the same function scores PLAYED at
+     `time_machine.js:4431`/`:4419` and RAW-SOLVE / CPM-DISPLAY at `:5109`/`:4058`. Copies 3 and 4
+     deliberately NOT consolidated (copy 4 is a declared independent judge; copy 3's five sites
+     already call the real graph and one uses the sliced `time_machine.js` copies on purpose).
+   - **3 rival storey-suffix rules → PR #1629.** `collapsePhase` made a strict SUPERSET of
+     `import_worker.js normalizeStorey` (`T.O.S.`, the one divergent token). Zero fleet change proved
+     twice: 623 real storey names across seven DBs, and a full `materializeZones` A/B with
+     byte-identical grid hashes. ⛔ Terminal's `Ceiling Level NN` PREFIX form (673 live elements) left
+     alone — renaming live bands is a modelling decision, not a de-drift.
+   - **untagged 3rd task-grid producer → PR #1628.** `materializeDefault` emits `§TPL_MODEL
+     model=default-materialize`; log-only, all four producer grid hashes byte-identical to main.
+   - **re-typed constants → PR #1630.** 2 consolidated, **3 blocked by a MEASURED mechanism** (the
+     text-slicing witness family — `witness_og_guard_bearing_bound.js` supplies a STUB
+     `ScheduleGate: { CELL: 4 }`), **7 stale `SEQUENCE_DEFAULT` literals NOT corrected** because that
+     is a duration change and not a de-drift. A drift-detector witness now covers what could not be
+     consolidated.
 5. **§FUTURE item 6 — CPM-clamp on-screen feedback** (queued, low risk, independent of 1-4): surface
    `blockedBy=TASK_X(FS)` as a `_tmSay` toast when `§GANTT_EDIT_CLAMP` fires. Can be done any time
    relative to the others — no shared code path with items 1-4.
@@ -6441,6 +6463,54 @@ Numeric before/after proof, never visual. Stop and report — do not push throug
 measured scope turns out bigger than described here (same rule that already worked twice today).
 Commit/PR per item, not one giant batch. Update this section in place marking each item done with
 evidence when it lands.
+
+### §STAGE45_PLAN — MANDATORY STEP 0 discharged (queue item B-2, 2026-09-02)
+
+✅ **EXECUTED AND CLOSED, same day.** Every row below landed as its own PR off fresh `origin/main`
+(none stacked, so they merge in any order): **#1627** Stage 4 probe (measure-only) · **#1628**
+§TPL_MODEL third producer · **#1629** §STOREY_SUFFIX_PARITY · **#1630** §RETYPED_CONSTANTS. The
+cache did NOT need rebuilding — code key `490944538d2f` was already CURRENT for all four buildings,
+contrary to the dispatch's warning. **No per-building constant and no branch on a building name was
+introduced**: the only building names added anywhere are inside comments recording a measurement.
+Two deliberate NON-actions, both on evidence and both reported rather than pushed through: §S64's
+bound is NOT ported into `_midairAudit` (0/32 verdict flips, +448 Hospital offenders), and the seven
+stale `SEQUENCE_DEFAULT` literals are NOT corrected (a duration change, not a de-drift).
+
+**Step 0 read, in the order the section demands, before any code:** `4D_MODEL_INTEGRITY.md` §I.5
+(whole sweep, §I.5a–§I.5k, plus §I.1/§I.2 and the §I ownership table incl. the PLAYED-layer row);
+the actual DIFFS of **#1567** (`cda73c17`) and **#1568** (`53f7f113`) — not their summaries; the
+Stage 3 probe **#1563** (`3c4b6822`, `viewer/tests/probe_tpl_layer_bearing_scope.js` — its
+guard-throws-if-the-predicate-moved design is what the fix retired); and §FUTURE items **2** and
+**6**. Queue context read too: `AGENT_QUEUE.md` §SESSION 2026-09-02 (A-0/A-9/#1605/#1607/#1610 —
+**the movie plays kernel_ops, never `remapSolveToTasks`'s `displaySchedule`**), B-1/#1615, #1551
+(merged `59736505`), #1625.
+
+**Baseline for every number below:** `origin/main` @ `bc470d71`; `~/.cache/bim4d` code key
+`490944538d2f` is CURRENT for all four buildings (Duplex / HHS_Office_Federated / Hospital /
+Terminal, 119,568 elements) — **no rebuild needed**, contrary to the dispatch's warning. No bake,
+no browser: cache + node probes only.
+
+#### Order, dependencies, and the witness/probe that proves each step
+
+| # | item | depends on | what proves it BEFORE moving on |
+|---|---|---|---|
+| P0 | this plan | — | written here, in place, before any edit |
+| S4 | **Stage 4 — edit legality (§I.5d).** `verifyGanttIntegrity()` (`time_machine.js:4395`) ANDs `ScheduleGate.auditFloating` (`:4419`) with `_midairAudit` (`:4431`). RECOMMEND ONLY — no silent pick. | P0 | a NEW probe measuring the two judges over the SAME population on all four buildings: (a) each judge's count and offender SET, (b) set overlap/disjointness, (c) **the decisive number — what fraction of `_designatedSupport`'s ELECTED supports would be rejected by §S64's `S.tz <= T.bz + GAP` bound**, i.e. the false-positive exposure `_midairAudit` carries and `auditFloating`'s wall pool does not, (d) a simulated EDIT (move a task earlier) and the DELTA each judge reports, since the gate is a delta gate not an absolute one. Recommendation is written here with those numbers; **code change, if any, is proposed not applied.** |
+| S5a | **four `floating` judges named** with file:line **and the LAYER each judges** (A-9's warning: some disagreement may be layer, not physics) | S4's probe (same harness) | the §I row is rewritten to carry all four + their layer; no code consolidation unless a pair is proven byte-equivalent |
+| S5b | **`materializeDefault` — tag the 3rd task-grid producer** (§I.5g) | none | purely additive `§TPL_MODEL model=default-materialize` line; witness asserts the line exists on the `materializeDefault` path and that `witness_gantt_edit_coherence`'s third state stops being unattributable. Task grid / totalDays byte-identical (nothing but a log line added). |
+| S5c | **3 rival storey-suffix rules** (§I.5f) | S5a (same file family) | the ONE divergent token is `T.O.S.` — rule 2 (`import_worker.js` `normalizeStorey`) strips it, rule 1 (`schedule_gate.js:424` `collapsePhase`) does not, so the merge map's key cannot match the element's band key for such a name. §I.5f measured the fleet population as **EMPTY**. Proof required: (i) re-measure that population is still empty on the four cached buildings, (ii) if empty, aligning rule 1 to rule 2 is a **zero-fleet-change** de-drift — prove byte-identical band/task/totalDays, plus a RED control on a synthetic `Level 2 T.O.S.` that goes red without the fix. **Rule 3 (`panels.js:2042` `collapseLevel`) is a DIFFERENT concern (WBS task names, `Level`-anchored) — §I.5f already says so; NOT consolidated.** |
+| S5d | **`SEQUENCE_DEFAULT` ×7** (§I.5i) | S5b/S5c independent | every copy is the PRE-§S65 object (`resource:null`, legacy `phase:'Architecture'`). Prove first whether any is REACHED: `cache_4d_run.js` passes `defaultRule: sb.SEQUENCE_DEFAULT`, so the fleet path does not reach the literal. If unreached ⇒ correcting the literals is a pure de-drift with a provable zero delta; if reached anywhere ⇒ it changes durations, which is a **calibration-lever-class change and is REPORTED, not shipped**. |
+| S5e | **`EPS`/`GAP` re-typed** (§I.5b) | S5d | consolidate only sites where the same statement ALREADY reads the module (`time_machine.js:5133` reads `ScheduleGate.CELL` then hand-types EPS/GAP). ⚠ **The B-3 slicing trap governs here**: several witnesses slice one function out of a file as raw text and eval it standalone, so a symbol declared elsewhere in the file is `undefined` in that sandbox (this is why §FUTURE-5A's A7/B1 were reverted same-day). Any site inside a sliced block is LEFT with its literal and a comment saying why. `level_deriver.js:49`'s `EPS` is §I.5b's own OPEN QUESTION (different concern) — **not touched**. |
+
+#### Standing constraints this plan adopts verbatim
+- **No per-building constant, no branching on a building name** (user, 2026-09-02). Class + name
+  pattern is data-driven and allowed; "if building === X" is not. Audited clean before starting.
+- Numeric before/after, never visual. Commit/PR per item, not one batch.
+- **Stop and report if any item's measured scope exceeds the brief** — that escape clause has
+  fired twice on this lane and was right both times.
+- Do NOT touch: `bar_model.js` (dead, hook-blocked), `viewer/rates/4D_policy.json` (deleted by
+  #1617, do not resurrect), the calibration lever (`_installSecs` 28800 / `shiftHours` 24 /
+  `min_days`), Alt+C / film files, `viewer/effects.js` + lighting, geometry/tessellation.
 
 ## §BUILDING_SCOPE_FLOOR — ✅ DONE (bim-ootb PR #1569, stacked on #1568/#1567), 2026-08-27, NOT part
 of the plan above — surfaced from a live-log investigation mid-session

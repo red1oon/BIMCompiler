@@ -483,8 +483,8 @@ Paths are `~/bim-ootb/viewer/` unless stated. Line numbers are `origin/main` @ `
 | **what level is it on?** | **OWNER: `viewer/lib/level_deriver.js` `LevelDeriver.derive/levelFor`** (T1 containment → T2 declared name → T3 geometry grid → T4 counted). Two callers: `location_axis.js` (display) and, **flag-gated**, the task grid — `schedule_author.js` `_deriverLevelAxis()` behind `opts.levelSource === 'deriver'`, **default OFF**, see §I.3a | re-derive it from `e.storey`. The OLD path (`schedule_gate.js:404` `collapsePhase` → `:338` `deriveBandRanks`) is still what runs by default and is **broken — see §I.3**; do not build new work on it |
 | **are two storey names one floor?** | `schedule_gate.js:382` `deriveStoreyMergeMap(spatialStructure)` | ⛔ **CORRECTED 2026-09-02 (§J.6.3): it runs on NOTHING in the fleet.** Measured against the shipped bytes every cache/probe/witness reads — `§S18_STOREY_MERGE_FAIL no such column: elevation` on **Terminal AND HHS**, `no such table: spatial_structure` on Duplex and Hospital. `buildings/*_extracted.db` carry a `spatial_structure` written by `compile_rooms.py` (100% `object_type='COMPILED'`, `STC_*` guids) whose schema has `center_z` and **no `elevation` column at all**. The earlier wording — *"✅ RUNS as of 2026-08-27 (Terminal 23 names → 15 bands) … ⚠ still throws for HHS"* — is dead and must not be reintroduced; §I.3 §CLOSED addressed the OCI upload, which is a different thing from this column existing |
 | **is this slab ground-bearing?** | `schedule_gate.js:201` `groundworkSlabs(els)`, one shared definition | reclassify slabs inline in a recipe |
-| **is anything floating?** | `support_sweep.js:500` `_midairAudit(items)` (movie) · `schedule_gate.js:1122` `auditFloating(...)` (gate) | ⚠ these two disagree on the support top bound — §I.1 |
-| **is an edit legal?** (🔓→🔒) | `verifyGanttIntegrity()` → `_midairAudit` | re-score with your own physics |
+| **is anything floating?** | `support_sweep.js:500` `_midairAudit(items)` · `schedule_gate.js:1147` `auditFloating(...)` | ⚠ **FOUR judges, not two — §I.5e**, and **the layer is the CALLER's**, not the judge's: neither takes a layer argument, so the same function judges PLAYED at `time_machine.js:4431`/`:4419` and RAW SOLVE / CPM-DISPLAY at `:5109`/`:4058`. Copy 3 (`census`/`floatingCensus`) has **five** sites, copy 4 (`witness_midair_zero.js:308`) is a deliberately INDEPENDENT judge and must not be deleted. Do not call two of them "disagreeing" before checking they judged the same layer |
+| **is an edit legal?** (🔓→🔒) | `time_machine.js:4395` `verifyGanttIntegrity()` → `ScheduleGate.auditFloating` **AND** `_midairAudit`, both over the PLAYED layer (`_ops`), **delta-gated against `_lockBaseline`** — a breach is an INCREASE in either measure, never absolute zero | re-score with your own physics; and do not read this row as naming ONE judge — that stale wording is what §I.5d found. **MEASURED 2026-09-02 (§I.5d, bim-ootb PR #1627): the AND is redundant in neither direction** (Hospital onlyFloating 332 / onlyMidair 395), and porting §S64's bound into `_midairAudit`'s graph flips **0 of 32** simulated lock verdicts while adding **448** Hospital offenders. Keep both, port nothing |
 | **is it on screen at cursor?** | `time_machine.js:169` — `placed` = `start_ts <= cursor && end_ts <= cursor`; `frontier` = `start_ts <= cursor < end_ts` | invent a visibility rule. A probe using `s <= cursor` is counting placed **+** frontier |
 | **WHICH MODEL produced this schedule?** | `schedule_author.js:715` — the `§TPL_MODEL` line. `model=template` = CANONICAL, `model=legacy-deriveZones` = the dead model (PR #1553) | assume the canonical model ran because the code *can* pass `template:`. 24 of 35 witnesses pass none, and the fork was SILENT until 2026-08-27 |
 | **what did the run actually say?** | the persisted `witness.log` — `bim-ootb scripts/cache_4d_run.js` | re-run `materializeZones`, and **never** wrap it to silence `console.log` (PRIMAL LAW clause 3) |
@@ -734,8 +734,12 @@ those rows without it makes each look like an isolated inconsistency.
 | §I.5a support pool — copy 5 (`_buildXraySupportCache`) | ⛔ **HELD** | applying it fails `W-OGB-3a` Terminal `staged=0 → 14`; isolated (9/0 without, 8/1 with). Real guard/judge asymmetry — needs a decision on `_ogSupportSweep`, not a re-baseline |
 | §I.5a copy 7 (`witness_og_guard_bearing_bound:140`) — **NEW, §I.5a counted six** | ✅ **DONE** — PR #1562 | the witness asserting pool parity enforced it by *re-typing* the pool; now calls `supportPool()` |
 | §I.5c `§TPL_LAYER_ORDER` narrowed predicate | ✅ **DONE** — bim-ootb **PR #1567** (§FUTURE item 7 stage 1) | Both narrowing clauses (`schedule_author.js:1345`,`:1412`) dropped; predicate now matches `SupportSweep.contactGraph`'s own (no upper bound). `SupportSweep` also registered in `witness_4d_template_instantiation.js`, which never ran the pass before (`§TPL_LAYER_ORDER_FAIL`, silent no-op). MEASURED via the real witness (not just the probe): `stillInverted` Duplex 5, HHS 9, Hospital 794 — matches PR #1563's "after fix" column exactly. Task grid membership/`totalDays` byte-identical (13/13, 50/50, 318/318). Full 72-witness suite: 59 green, 6 new_red all verified pre-existing on unmodified `origin/main` (isolated in a clean baseline worktree) — zero caused by this change. |
-| §I.5d edit-legality ANDs two disagreeing judges | ⏸ **NOT STARTED** | bundled into §FUTURE item 7, Stage 4 |
-| §I.5e/f/g/h/i (four floating judges, storey-suffix rules, third task-grid producer, `SEQUENCE_DEFAULT`×7, EPS/GAP×3) | ⏸ **NOT STARTED** | bundled into §FUTURE item 7, Stage 5 |
+| §I.5d edit-legality ANDs two disagreeing judges | ✅ **MEASURED + RECOMMENDED, nothing applied** — bim-ootb **PR #1627** (probe only) | See §I.5d's ✅ block. `probe_edit_legality_judges.js`, 4 buildings / 119,568 elements / `layer=played`: offender sets largely DISJOINT (Hospital onlyFloating 332, onlyMidair 395); 32 simulated drags → `floatingOnly=0`, `midairOnly=0/0/2/3`; **`lockVerdictFlipsIfCopy1GetsTheBound=0/32`**; porting the bound would ADD 448 Hospital offenders. **KEEP the AND, port NOTHING, fix the ROW.** |
+| §I.5e four floating judges | ✅ **DONE (documentation)** — see §I.5e's ✅ block | Copy 3 has **FIVE** sites, not three (`probe_captured_floating.js:48`, `probe_schedule_engine.js:45` were missing). **The LAYER is the caller's**: the same judge scores PLAYED at `time_machine.js:4431`/`:4419` and RAW-SOLVE / CPM-DISPLAY at `:5109`/`:4058`. Copies 3 and 4 deliberately NOT consolidated, reasons recorded. |
+| §I.5f three rival storey-suffix rules | ✅ **DONE** — bim-ootb **PR #1629** | `collapsePhase` is now a strict SUPERSET of `import_worker.js` `normalizeStorey`: `T.O.S.` added, the one divergent token. Population EMPTY on all **seven** shipped buildings (0 rows, `elements_meta` AND `spatial_structure`) → zero fleet change, proved twice: `§WITNESS_STOREY_SUFFIX_PARITY pass=7 fail=0 ran=629` (623 real names) GREEN vs `pass=5 fail=2` RED on main, and a full `materializeZones` A/B with byte-identical task-grid hashes + totalDays on Duplex 12d / HHS 54d / Terminal 103d / Hospital 317d. ⛔ Terminal's `Ceiling Level NN` PREFIX form (673 live elements) deliberately NOT touched — renaming live bands is a modelling decision. |
+| §I.5g third task-grid producer untagged | ✅ **DONE** — bim-ootb **PR #1628** | `materializeDefault` now emits `§TPL_MODEL model=default-materialize`. `§WITNESS_TPL_MODEL_THREE_PRODUCERS pass=7 fail=0 ran=4` GREEN vs `pass=3 fail=4` RED on main. LOG-ONLY proved not asserted: all four producer gridHashes byte-identical to main. ⚠ Its own W-TPL3P-2 was SCOPE-BLIND when first written (`Set(...).size === 3` passed on main, because `''` is a third distinct string) — fixed to set equality before landing. |
+| §I.5i `SEQUENCE_DEFAULT`×7 · §I.5b EPS/GAP | 🟡 **PART DONE** — bim-ootb **PR #1630** | 2 consolidated (`time_machine.js` §4D_WALLS_BEFORE_ROOF reads `ScheduleGate.EPS/GAP`; `matchRule` consults `global.SEQUENCE_DEFAULT` before its literal). **3 blocked by a MEASURED mechanism**, now machine-checked: `witness_og_guard_bearing_bound.js` evals `_ogSupportSweep` with a STUB `ScheduleGate: { CELL: 4 }` — reading the module there would silently NaN the whole sweep; `_buildXraySupportCache` and `_promoteRoofLoadPath` are text-sliced into bare sandboxes. **The 7 stale literals are NOT corrected** — that is a duration change, not a de-drift. `§WITNESS_RETYPED_CONSTANTS pass=8 fail=0 ran=8` GREEN vs `pass=5 fail=3` RED on main, and it is a DRIFT DETECTOR (fails when a registered copy stops matching, or a NEW unregistered re-type appears). |
+| §I.5h smaller/low-severity | ⏸ **NOT STARTED** | not in queue item B-2's brief |
 
 **Two measurement traps cost real time here and are now guarded in the probes — read before writing
 another one.** (1) **Field-name shape.** `auditFloating` reads `base_z`/`top_z` and `sched[g].start/.end`;
@@ -853,6 +857,8 @@ pool parity. It asserted "guard and judge are one physics" by RE-TYPING the guar
 copies of the same mistake also satisfy. Now calls `supportPool()` (PR #1562).
 
 ### §I.5b ⛔ EPS AND GAP ARE RE-TYPED AS LITERALS IN THE FILES THE EXPORT COMMENT NAMES
+
+🟡 **PART DONE 2026-09-02 — bim-ootb PR #1630 (§RETYPED_CONSTANTS).** One site consolidated (`time_machine.js` §4D_WALLS_BEFORE_ROOF now reads `ScheduleGate.EPS/GAP` in the same `||` shape it already used for CELL); three BLOCKED by a measured mechanism (witnesses that text-slice one function into a bare sandbox — `witness_og_guard_bearing_bound.js` supplies a STUB `ScheduleGate: { CELL: 4 }`). TWO SITES THIS SECTION NEVER LISTED were found by the scan: `time_machine.js:9676`/`:9722` (`tmFirstAboveGroundMs`/`tmGroundSchedule`) — a Z-bottom epsilon over `element_transforms`, registered as DIFFERENT CONCERN beside this section's own `level_deriver.js` open question. The copies that remain are now covered by a DRIFT DETECTOR (`witness_retyped_constants.js`) instead of prose.
 
 `schedule_gate.js:1298-1300` exports EPS/GAP with an explicit reason: *"EPS/GAP exported alongside
 CELL so a consumer of the same geometry (time_machine.js §MIDAIR_REPAIR) can test contact with THIS
@@ -979,6 +985,60 @@ carries `base_z`/`top_z`; `mrItems` is remapped to `bz`/`tz` at `:4291`).
 **Correct row:** `verifyGanttIntegrity()` → `ScheduleGate.auditFloating` **AND** `_midairAudit`,
 delta-gated against `_lockBaseline` (`:4326`), never absolute zero.
 
+### ✅ §I.5d MEASURED AND ANSWERED 2026-09-02 (queue item B-2, Stage 4) — **RECOMMENDATION, NOT A SILENT PICK**
+
+**Evidence: `viewer/tests/probe_edit_legality_judges.js` (bim-ootb PR #1627, measure-only — it
+changes nothing and picks nothing).** Four buildings, 119,568 elements, persisted cache,
+`layer=played` (verifyGanttIntegrity audits `_ops`, so `display` would be the wrong map — A-9).
+No bake, no browser. Both judges shaken against a time-MIRRORED programme before any number was
+reported.
+
+**C — COVERAGE. Neither judge is a superset of the other, so the AND is redundant in NEITHER
+direction.**
+
+| building | auditFloating | midair | both | onlyFloating | onlyMidair |
+|---|---|---|---|---|---|
+| Duplex | 354 | 257 | 212 | 142 | 45 |
+| HHS_Office_Federated | 186 | 152 | 30 | 156 | 122 |
+| Hospital | 432 | 495 | 100 | 332 | 395 |
+| Terminal | 228 | 493 | 19 | 209 | 474 |
+
+**D — 32 SIMULATED DRAGS** (the 8 largest draggable tasks per building, each pulled 30 days
+earlier — the gesture the editor performs). `floatingOnly = 0` on every building; `midairOnly` =
+0 / 0 / 2 / 3. **The gate's refusals are carried by `_midairAudit`**; `auditFloating` never refused
+an edit on its own in this sample (it co-signed 20 of the 25 refusals).
+
+**THE DECISIVE NUMBER — `lockVerdictFlipsIfCopy1GetsTheBound = 0/8` on all four buildings (0/32).**
+Giving copy 1 the §S64 bound copy 3 has would not change a single lock verdict.
+
+**P — AND IT WOULD NOT BE A FIX EITHER.** Applying the bound to `contactGraph` + `designatedSupport`
+moves the absolute baseline mostly UP: **Hospital 495 → 917** (+448 added, −26 removed), Terminal
+493 → 572, Duplex 257 → 261, HHS 152 → 147; elections change on 2,564/63,182 Hospital elements.
+Mechanism: excluding a high-topped bearer from the graph makes the element's election fall to a
+different, later-starting support, or demotes a bearing election to carrier-above/embedded.
+**82 % of Hospital's bound-violating elections are `IfcColumn` (2,346 of 3,253), not walls (579)** —
+a column whose top rises past the base of the beam it carries is ordinary framing, not the phantom
+§S64 was written about. §S64's bound is sound only in copy 3's context: a WALL pool offered
+specifically to a promoted slab.
+
+**⛔ THE RECOMMENDATION (the user's call, nothing applied):**
+1. **KEEP the AND.** Both judges carry unique coverage; dropping either is a measured loss (Terminal
+   would lose 474 offenders, Hospital 395, by dropping `_midairAudit`; 209/332 the other way).
+2. **DO NOT port §S64's upper bound into `contactGraph`/`designatedSupport`.** 0/32 verdict flips
+   (so there is no legality bug to fix) and +448/−26 on Hospital's baseline (so it would be a
+   regression, not a fix). §I.1's "copies 1 and 2 never got it" is TRUE and is **not** a defect at
+   this gate.
+3. **THE DEFECT §I.5d NAMED IS THE ROW, AND IT IS FIXED HERE** — see the §I table's edit-legality
+   row, now naming both judges and the delta gate.
+4. **No observability gap found**, checked rather than assumed: `§GANTT_LOCK_BREACH`
+   (`time_machine.js:7836`) already prints `floating=N(+dF) midair=M(+dM)` separately, and
+   `§GANTT_LOCK_VERIFY` prints both against their baselines. Nothing to add.
+
+**LIMIT, stated: the edit simulation is a uniform −30 day shift of whole tasks, 8 per building = 32
+edits.** It is not exhaustive over gesture shapes (resize, single-bar, forward moves). It is enough
+to answer "does the missing bound decide legality" — 0/32 — and not enough to claim `auditFloating`'s
+delta is redundant, which is why recommendation 1 keeps it.
+
 ### §I.5e ⛔ "IS ANYTHING FLOATING?" HAS FOUR JUDGES, AND THE ONE THAT GATES CI HAS DRIFTED
 
 The §I row names two (`_midairAudit`, `auditFloating`) and flags one disagreement (the top bound).
@@ -987,9 +1047,45 @@ There are four, and the drift is in the one the row does not mention.
 | # | where | shape | agrees? |
 |---|---|---|---|
 | 1 | `support_sweep.js:500` `_midairAudit` | directional: `des[i] >= 0 && items[des[i]].s > items[i].s + 1` | — the reference |
-| 2 | `schedule_gate.js:1122` `auditFloating` | pool-scoped, `se > 0 && start < se - 1` | differs by design (§I.1) |
-| 3 | `viewer/tests/witness_zone_display_authoring.js:121` + `witness_crosstask_judge_parity.js:74` + `scripts/probe_cpm_schedule.js:56` `census/floatingCensus` | call the **real** `contactGraph`/`designatedSupport`, reproduce #1's 3-line loop verbatim | ✅ agrees |
+| 2 | `schedule_gate.js:1147` `auditFloating` | pool-scoped, `se > 0 && start < se - 1` | differs by design (§I.1) |
+| 3 | `viewer/tests/witness_zone_display_authoring.js:121` + `witness_crosstask_judge_parity.js:74` + `scripts/probe_cpm_schedule.js:56` + **`scripts/probe_captured_floating.js:48`** + **`scripts/probe_schedule_engine.js:45`** `census`/`floatingCensus` | call the **real** `contactGraph`/`designatedSupport`, reproduce #1's 3-line loop verbatim | ✅ agrees |
 | 4 | `viewer/tests/witness_midair_zero.js:308` `census` | **fully independent**, symmetric ("earliest contact of ANY kind"), own grid, own `isGround` | ⛔ **DIVERGED** |
+
+### ✅ §I.5e COMPLETED 2026-09-02 (queue item B-2, Stage 5) — WITH THE LAYER EACH ONE JUDGES
+
+**Two corrections to the table above, both measured against `origin/main` @ `bc470d71`:**
+- **Copy 3 has FIVE sites, not three.** `probe_captured_floating.js:48` and
+  `probe_schedule_engine.js:45` carry the same `floatingCensus` and were not listed.
+- `auditFloating` is at `:1147`, not `:1122` (offset only; PR #1562 grew the function's header).
+
+**⚠ THE LAYER IS THE CALLER'S, NOT THE JUDGE'S — and that is why two of these can disagree without
+either being wrong.** A-9 (`§CACHE_PLAYED_LAYER`, PR #1607) established that a judge which cannot
+name its own input cannot report being pointed at the wrong one. Neither shipped judge takes a layer
+argument: each judges whatever `{s,e}` / `sched[guid]` it is handed. Measured, per call site:
+
+| judge | shipped call site | LAYER it judges there |
+|---|---|---|
+| 1 `_midairAudit` | `time_machine.js:4431` — `verifyGanttIntegrity`, `mrItems` built from `_ops` | **PLAYED** (kernel_ops — what the film and scrubber reveal) |
+| 1 `_midairAudit` | `time_machine.js:4058` `§CPM_DISPLAY_REUSE` · `:4079` — inside `_displayTimeline` | **CPM DISPLAY, mid-authoring** (before `injectGantt` ever runs) |
+| 2 `auditFloating` | `time_machine.js:4419` — `verifyGanttIntegrity`, `sched` built from `_ops` | **PLAYED** |
+| 2 `auditFloating` | `time_machine.js:5109` `§SUPPORT_CHECK` — `_sched` | **RAW SOLVE** (`ScheduleGate.computeSchedule`; `:4971` says outright *"`_sched` itself stays RAW"*) |
+| 3 `census`/`floatingCensus` ×5 | witnesses/probes only | **CPM solve / authored windows / captured-rescaled**, per probe — never the played layer |
+| 4 `witness_midair_zero.js` `census` | that witness's own fixture | **its own synthetic population** |
+
+**So the ONLY place two of them judge the SAME layer over the SAME population is
+`verifyGanttIntegrity` — which is exactly §I.5d, and §I.5d is now measured and answered above (0/32
+verdict flips).** Every other apparent disagreement in this table is at least partly a LAYER
+difference, and must be re-derived per call site before it is called a physics disagreement.
+
+**⛔ NOT CONSOLIDATED, deliberately, and this is the "only what is unambiguous" line:**
+- **Copy 4 stays.** Both code notes (`witness_midair_zero.js:301-307`, `support_sweep.js:489-499`)
+  say it is a deliberately independent judge. Deleting it is explicitly forbidden by §I.5e's own
+  text. The open question — whether the two describe one physics — is unchanged and still open.
+- **Copy 3's five sites stay.** They already call the REAL `contactGraph`/`designatedSupport`; only
+  the 3-line verdict loop is re-typed. Replacing that loop with a call to `SupportSweep.midairAudit`
+  would remove the last independent thing about a set of JUDGES, and
+  `witness_zone_display_authoring.js` deliberately uses the **sliced** `time_machine.js` copies, not
+  the module. Named here so the next sweep does not re-discover them as drift.
 
 Copy 4 is the judge `witness_midair_zero` locks the lane's headline metric with. Its own code says so
 (`:301-307`): *"it mirrors `_contactGraph`'s symmetric carrier clause, while `SupportSweep.midairAudit`
@@ -1004,6 +1100,8 @@ has four and the CI lock is on the stale one. **Do not delete copy 4** — both 
 deliberately independent judge; the open question is whether the two describe one physics.
 
 ### §I.5f ⛔ THREE RIVAL RULES FOR "STRIP THE SUB-STOREY SUFFIX", AND THE MERGE MAP KEYS OFF A DIFFERENT ONE THAN THE ELEMENTS DO
+
+✅ **CLOSED 2026-09-02 — bim-ootb PR #1629 (§STOREY_SUFFIX_PARITY).** `collapsePhase` is now a strict SUPERSET of `normalizeStorey` (`T.O.S.` added), so rule 2 running first can never change the band key. `T.O.S.` population re-measured EMPTY on all seven shipped buildings → zero fleet change, proved by 623 real names + a full `materializeZones` A/B (byte-identical grids). ⛔ The `Ceiling Level NN` PREFIX finding below is STILL OPEN and was deliberately not touched. Details in the §I.5 REMEDIATION STATUS table.
 
 `collapsePhase` (`schedule_gate.js:404`) is the §I-implied owner of storey-name normalisation. Two
 others exist:
@@ -1043,6 +1141,8 @@ never sees Terminal's Malay `Aras *` names at all. **Stated as an open question 
 as one relation.**
 
 ### §I.5g THE TASK GRID AND THE MODEL TAG BOTH HAVE A THIRD PRODUCER THE ROW DOES NOT NAME
+
+✅ **CLOSED 2026-09-02 — bim-ootb PR #1628.** `materializeDefault` emits `§TPL_MODEL model=default-materialize`; the third state is now attributable, log-only (all four producer grid hashes byte-identical to main). ⚠ The `getInstallSecs` silent-floor note at the end of this section is NOT closed — it was out of Stage 5's brief. Details in the §I.5 REMEDIATION STATUS table.
 
 Both rows present a two-way fork. There are three generators, all writing the same `SCH_AUTHORED`
 schedule id:
@@ -1110,6 +1210,8 @@ not mention the log.
   CpmSchedule in that process would read green on zero contacts.
 
 ### §I.5i ⛔ `SEQUENCE_DEFAULT` IS RE-TYPED SEVEN TIMES AND EVERY COPY IS THE PRE-§S65 VALUE
+
+🟡 **PART DONE 2026-09-02 — bim-ootb PR #1630.** The one real trap this section names — `schedule_author.js:19` `matchRule` falling to the literal WITHOUT ever consulting `global.SEQUENCE_DEFAULT` — is closed; every existing call site was verified to pass a third argument, so it is inert today. **The seven stale literals are NOT corrected**: correcting a value that a path actually reaches is a duration change, not a de-drift. ⛔ **MECHANISM MEASURED, and it sharpens this section's own 'in node … `defaultRule` MUST be passed'**: `schedule_author.js` closes as `})(typeof self !== 'undefined' ? self : this)`, and in a node CommonJS module `this` is the ORIGINAL `module.exports` object which the file then REPLACES — so the IIFE's `global` is an **orphaned object no caller can ever reach**, and EVERY `global.SEQUENCE_DEFAULT` fallback in that file is unreachable in node, not merely usually-unset.
 
 The declared home is `rates.js:276`:
 

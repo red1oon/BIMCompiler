@@ -274,13 +274,55 @@ a commit. Rewrite this item around THOSE five specific failures before dispatchi
 
 </details>
 
-### B-2 · future7-stage4-5 · autonomous, plan-first
-`4D_GANTT_TM_REFACTOR.md` §FUTURE item 7. **Stage 4:** `verifyGanttIntegrity()` ANDs two
-known-disagreeing "does S support T" implementations, one lacking the false-positive fix — edit
-legality is decided by the wrong copy. Investigate and RECOMMEND, do not silently pick one.
-**Stage 5:** floating judged by 4 disagreeing implementations; 3 rival storey-suffix rules; the
-untagged 3rd task-grid producer (`materializeDefault`). The section's own MANDATORY STEP 0 requires
-posting a written plan before code — honour it: write the plan into the file, then proceed.
+### B-2 · future7-stage4-5 · ✅ **DONE (witness) 2026-09-02** — bim-ootb PRs **#1627, #1628, #1629, #1630**
+MANDATORY STEP 0 honoured: the plan is written into `4D_GANTT_TM_REFACTOR.md` **§STAGE45_PLAN**
+before any code. Four independent branches off fresh `origin/main` — **none stacked**, safe to merge
+in any order. No bake, no browser; the `~/.cache/bim4d` code key was already CURRENT for all four
+buildings, so no rebuild was needed. **No per-building constant and no branch on a building name
+introduced** — every building name added is inside a comment recording a measurement.
+
+- **STAGE 4 — RECOMMENDATION, and it was NOT a silent pick. PR #1627 is a probe; no product code
+  changed.** `probe_edit_legality_judges.js`, 4 buildings / 119,568 elements / `layer=played` /
+  32 simulated drags. (a) The two judges' offender sets are largely **DISJOINT** — Hospital
+  onlyFloating **332** vs onlyMidair **395**, Terminal **209** vs **474** — so the AND is redundant
+  in neither direction. (b) Under edits `floatingOnly=0` everywhere and `midairOnly=0/0/2/3`: the
+  refusals are carried by `_midairAudit`. (c) **The decisive number:
+  `lockVerdictFlipsIfCopy1GetsTheBound = 0/32`** — giving copy 1 the §S64 bound changes NO lock
+  verdict. (d) And it would not be a fix: it moves Hospital's baseline **495 → 917** (+448/−26),
+  and **82 % of the bound-violating elections are `IfcColumn` (2,346/3,253), not walls (579)** — a
+  column topping out above the beam it carries is ordinary framing. **⛔ RECOMMEND: keep the AND,
+  port nothing, and fix the stale §I row (done).** Observability was checked, not assumed:
+  `§GANTT_LOCK_BREACH` already prints both deltas separately — nothing to add.
+- **STAGE 5.** *Four floating judges* — named with file:line **and the layer each judges**
+  (`4D_MODEL_INTEGRITY.md` §I.5e). Two corrections to that section: copy 3 has **FIVE** sites, not
+  three, and **the LAYER is the caller's, not the judge's** (the same function scores PLAYED at
+  `time_machine.js:4431`/`:4419` and RAW-SOLVE / CPM-DISPLAY at `:5109`/`:4058`) — so an apparent
+  physics disagreement must be re-derived per call site first. Copies 3 and 4 deliberately NOT
+  consolidated, with reasons. · **#1628** `materializeDefault` now emits `§TPL_MODEL
+  model=default-materialize`; **W-TPL3P 7/0 GREEN vs 3/4 RED on main**, all four producer grid
+  hashes byte-identical (log-only, proved). · **#1629** `collapsePhase` made a strict SUPERSET of
+  `import_worker.js normalizeStorey` (`T.O.S.`); **W-SSP 7/0 ran=629 GREEN vs 5/2 RED**, 623 real
+  storey names across seven DBs, plus a full `materializeZones` A/B with byte-identical grid hashes
+  and totalDays on all four buildings. · **#1630** 2 constants consolidated, **3 blocked by a
+  MEASURED mechanism** (`witness_og_guard_bearing_bound.js` evals `_ogSupportSweep` with a STUB
+  `ScheduleGate: { CELL: 4 }` — reading the module there NaNs the whole sweep), **W-RTC 8/0 GREEN vs
+  5/3 RED**, and it is a drift detector.
+- **TWO DELIBERATE NON-ACTIONS, both on evidence, both reported not pushed through:** §S64's bound
+  is NOT ported into `_midairAudit`; the **seven stale `SEQUENCE_DEFAULT` literals are NOT
+  corrected** (correcting a value a path actually reaches is a duration change, not a de-drift —
+  proving which paths reach it needs a full-suite canary).
+- **⛔ LEFT OPEN, named:** Terminal's `Ceiling Level NN` PREFIX form (673 live elements) is
+  unmergeable by any of the three storey rules — fixing it RENAMES live bands and moves the
+  schedule, so it is a **⛔USER modelling decision**, not de-drift. §I.5g's `getInstallSecs`
+  silent-floor note and §I.5h were outside this brief.
+- **Findings worth more than the fixes:** (1) `schedule_author.js` closes as
+  `})(typeof self !== 'undefined' ? self : this)`, so in a node CommonJS module the IIFE's `global`
+  is an **ORPHANED** `module.exports` object the file then replaces — **every**
+  `global.SEQUENCE_DEFAULT` fallback in that file is unreachable in node, not merely usually-unset.
+  (2) Two EPS re-types §I.5b never listed (`time_machine.js:9676`/`:9722`). (3) A vacuity guard that
+  starts every element at once reports a **false VACUOUS** for `midairAudit` — its test is
+  `support.s > mine.s + 1`, which equal starts can never satisfy; the guard mirrors the programme in
+  time instead.
 
 ### B-3 · 4d-policy-to-json · ✅ **DONE (witness) 2026-09-02** — bim-ootb PRs **#1616, #1617, #1618**, all CI green
 Three related items, `4D_GANTT_TM_REFACTOR.md` §FUTURE-5A (inventory written 2026-08-27) — implemented
