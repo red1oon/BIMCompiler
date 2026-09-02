@@ -40,24 +40,41 @@
     return out;
   }
 
-  // quote a substituted value the iDempiere way: numbers bare, everything else single-quoted (escaped).
+  // quote a value SQL-style: numbers bare, everything else single-quoted (escaped). RETAINED as public API
+  // for callers that need to build a literal — it is deliberately NOT the val-rule substitution path (see
+  // envValue/substitute below; using it there was ERP_IDEMPIERE_UX_PARITY.md §P3-DEFECT).
   function quote(v) {
     if (v == null) return 'NULL';
     if (typeof v === 'number' || (/^-?\d+(\.\d+)?$/.test(String(v)))) return String(v);
     return "'" + String(v).replace(/'/g, "''") + "'";
   }
 
+  // envValue — the substitution semantics of Env.parseContext(…, forSQL=true), EXTRACTED from the source, not
+  // assumed (Env.java:1636-1639, and its own javadoc :1540-1543): the context value is appended VERBATIM with
+  // only ' -> '' escaping. It is NOT wrapped in quotes — the RULE AUTHOR writes them, which is why 25 of the
+  // 332 Type-S rules read  IsSOTrx='@IsSOTrx@' . Auto-quoting those emitted  ''Y''  — a SQL syntax error, so
+  // the filter could not run at all (measured: 6 of the 43 in-seed val-rule fields on the five document tabs).
+  // An EMPTY value is not a value: Env.java:1641-1645 treats it as an unparsable token and returns "" for the
+  // WHOLE expression; MLookup.java:1128-1140 then clears the lookup — no rows, NOT an unfiltered list.
+  function envValue(v) {
+    if (v == null) return '';
+    var s = String(v);
+    return s.indexOf("'") >= 0 ? s.replace(/'/g, "''") : s;
+  }
+
   // substitute(code, ctx) -> { sql, unresolved:[] }. ctx keys may be bare ("AD_Table_ID") or global
-  // ("#AD_Client_ID"); a token with no ctx value is LEFT in place and recorded unresolved (caller defers).
+  // ("#AD_Client_ID"); a token with no ctx value — or an EMPTY one (Env: same thing) — is LEFT in place and
+  // recorded unresolved, so the caller defers rather than filtering on a half-substituted clause.
   function substitute(code, ctx) {
     ctx = ctx || {};
     var unresolved = [];
     var sql = String(code).replace(/@([#$]?[A-Za-z0-9_]+)@/g, function (whole, name) {
       var key = name.replace(/^[#$]/, '');
-      if (Object.prototype.hasOwnProperty.call(ctx, name)) return quote(ctx[name]);
-      if (Object.prototype.hasOwnProperty.call(ctx, key)) return quote(ctx[key]);
-      unresolved.push(name);
-      return whole;
+      var hit = Object.prototype.hasOwnProperty.call(ctx, name) ? name
+              : (Object.prototype.hasOwnProperty.call(ctx, key) ? key : null);
+      var sv = hit === null ? '' : envValue(ctx[hit]);
+      if (sv === '') { unresolved.push(name); return whole; }
+      return sv;
     });
     return { sql: sql, unresolved: unresolved };
   }
@@ -113,7 +130,7 @@
   }
 
   var API = {
-    classify: classify, tokensIn: tokensIn, substitute: substitute, quote: quote,
+    classify: classify, tokensIn: tokensIn, substitute: substitute, quote: quote, envValue: envValue,
     inferTable: inferTable, evalValRule: evalValRule, coverageScan: coverageScan
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;   // node witness

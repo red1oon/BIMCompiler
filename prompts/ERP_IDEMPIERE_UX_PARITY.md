@@ -504,3 +504,206 @@ unchanged so the other 10 witnesses and CI are untouched — and re-ran against 
 **Reconciling the copy itself is NOT done and is the real item here** — a three-way drift now exists
 (`build/erp` copy · the shipped `erp/` file · whatever a stale checkout holds). Queue it before the next
 `ad_modelval` change, or the next session's witness will judge code that is not what ships.
+
+## §IMPL-P3 2026-09-02 — build spec for §P3, WRITTEN BEFORE CODE (Spec-First)
+Base: bim-ootb `origin/main` **138af115** (PR #1613 already in, as `1dffb397`). Worktree `/tmp/wt-erp-valrule`,
+branch `feat/erp-parity-valrule`. Every number below was measured from `erp/ad_seed.db` + the iDempiere
+checkout THIS session; nothing carried over from §MEASURED on trust.
+
+### §P3-EXTRACT — five facts read from the iDempiere source, none guessed
+- **E1 · substitution is RAW TEXT, not quoted.** `Env.java:1636-1639` (`parseContext`, `forSQL=true`): the ctx
+  value is appended verbatim, with only `'` → `''` escaping. It is NOT wrapped in quotes — the rule author
+  writes them, which is why 25 rules read `IsSOTrx='@IsSOTrx@'`. The javadoc says so outright (`:1540-1543`).
+- **E2 · an unresolvable token empties the WHOLE clause.** `Env.java:1641-1645`: `ctxInfo.isEmpty()` with
+  `ignoreUnparsable=false` → `return ""` for the entire expression, not just that token.
+- **E3 · and an emptied clause means the lookup offers NO ROWS.** `MLookup.java:1128-1140` (Loader): parsed
+  length 0 while `ValidationCode` is non-empty → *"Loader NOT Validated"* → `m_lookup.clear(); return;`.
+  **This is the parity behaviour**: on a New Sales Order with no BPartner chosen, `C_BPartner_Location_ID`'s
+  picker is EMPTY in iDempiere — it is NOT silently unfiltered. A degrade-to-unfiltered would be WIDER than
+  iDempiere and would defeat the whole item.
+- **E4 · AD_Field wins over AD_Column.** `AD_Field_v` view, `migration/iD10/postgresql/202209141520_IDEMPIERE-5396.sql:7,14`:
+  `COALESCE(f.ad_val_rule_id, c.ad_val_rule_id) AS AD_Val_Rule_ID`, and `validationcode` is joined on that same
+  COALESCE — exactly the precedence `ad_parser.getFields` already applies to DefaultValue / AD_Reference_ID /
+  AD_Reference_Value_ID (§IMPL P2.1). Not a new convention, the same one.
+- **E5 · the rule's Code IS the lookup's where-clause.** `MLookupFactory.java:122-125` reads
+  `column.getAD_Val_Rule_ID()` → `MValRule.getCode()` → `MLookupInfo.ValidationCode`, appended to the query.
+
+### §P3-DEFECT — the engine's token feed is BROKEN for a quarter of the token rules (found + measured here)
+`build/erp/ad_valrule.js substitute()` wraps every non-numeric substituted value in single quotes (`quote()`,
+`:44-48`). Against **E1** that is wrong, and on the pre-quoted idiom it does not merely differ — it emits
+`''Y''`, which is a **SQLite syntax error**, so the filter cannot run at all. Measured, both halves:
+
+| measure | value |
+|---|---|
+| Type-S rules using the pre-quoted `'@Tok@'` idiom | **25 of 332** |
+| of the 43 in-seed val-rule fields on the five header tabs, how many hit it | **6** — `m_pricelist_id` (186, 263) · `c_paymentterm_id` (186, 263) · `c_order_id` + `m_rma_id` (257) · `c_doctype_id` (186, 263) |
+| what the clause does today | `M_PriceList.IsSOPriceList = ''Y'' …` → `SQL ERROR: near "Y": syntax error` |
+
+**Why W-VALRULE never saw it (PRIMAL LAW §4 — scope-blind, not a lie):** every fixture in `poc_valrule.js`
+and `poc_valrule_harden.js` passes NUMERIC context (`AD_Table_ID:318`, `AD_Client_ID:11`, `AD_Org_ID:0`), and
+`quote()` emits numbers bare — so the defect lives entirely outside the pairs those witnesses inspect.
+*Fix:* `substitute()` becomes a faithful `Env.parseContext(forSQL=true)` port — raw text, `'`→`''`, and an
+absent **or empty** ctx value counts as unresolved (E2). `quote()` stays exported (public API) but is no
+longer the substitution path. **Both W-VALRULE witnesses re-run and must not move** — one owner for the
+question, no second substituter; proof by re-run, not by assertion.
+
+### §P3-MEASURED — the population, before a line of code
+`AD_Field ⋈ AD_Column` over tabs 186/257/263/330/349, `IsActive='Y' AND IsDisplayed='Y'`:
+**264 displayed fields, 61 carrying an `AD_Val_Rule_ID`** — the spec's number, reproduced independently.
+Classified by the engine: **25 static · 36 token · 0 empty · 0 unsafe.** By reference: 36×19 (Table) ·
+13×30 (Search) · 11×18 (TableDir) · 1×17 (List). Exactly **1** of the 61 is field-level, and it DISAGREES
+with its column — so E4's precedence is load-bearing at n=1 and is witnessed, not assumed:
+
+| tab | column | AD_Field rule | AD_Column rule |
+|---|---|---|---|
+| 257 | `C_DocType_ID` | **52053** `C_DocType.DocBaseType IN ('MMS') AND IsSOTrx='Y'` | 125 `… IN ('MMR','MMS') AND AD_Client_ID=@#AD_Client_ID@` |
+
+**Which rules actually BITE** (row count on the target table, before → after, measured against `ad_seed.db`):
+
+| tab | column | rule | before → after | verdict |
+|---|---|---|---|---|
+| 257 | `c_doctype_id` | 52053 | **52 → 3** | BITES (and proves E4) |
+| 186/257/263/330/349 | `c_bpartner_id` | 230 | **113 → 42** | BITES |
+| 330 | `c_order_id` | 218 | **44 → 2** | BITES |
+| all 5 | `ad_org_id` | 130 | **23 → 20** | BITES |
+| 186 | `c_bpartner_location_id` | 167 `@C_BPartner_ID@` | 16 → *ctx-dependent* | the TOKEN arm |
+| all 5 | `ad_client_id` | 129 | 6 → 6 | **NO-BITE — reported, never counted as a pass** |
+| 330 | `c_invoice_id` | 220 | 20 → 20 | **NO-BITE** |
+| 186/263 | `c_campaign_id` | 236 | 2 → 2 | **NO-BITE** |
+
+### §P3-SPEC — the wiring (this item is wiring + the ctx feed; the evaluator already exists)
+- **P3.1** `ad_valrule.substitute()` → faithful `Env.parseContext(forSQL=true)` (§P3-DEFECT). Twin-synced.
+- **P3.2** `ad_parser.getFields`: extend the EXT SELECT with `COALESCE(NULLIF(f.AD_Val_Rule_ID,''), c.AD_Val_Rule_ID)`
+  → `field.valRuleId` (E4). The existing legacy-shape try/catch fallback covers a seed without the columns.
+- **P3.3** `crud_core.foldCrudSpec`: carry it as `spec.valruleid`. The fold stays **PURE** — no db, no engine call.
+- **P3.4** `crud_overlay.populateRefs`, the editable-fk arm — THE SEAM. Call
+  `AdValRule.evalValRule(_mvB3(db), id, {ctx, table:f.ref})` — the SAME better-sqlite3 shim
+  `fireBeforeSaveHooks` already uses (`crud_overlay.js:950`), so the witnessed engine runs **verbatim** in the
+  browser; no reimplementation. Then:
+  - `ok` → picker `SELECT pk,name FROM t WHERE (<r.sql>) ORDER BY pk LIMIT 200`, and `f.admitted` = the
+    **unlimited** id set from the same clause (so a legal row past row 200 is never rejected on save).
+  - `deferred==='unresolved-tokens'` → **no rows**, blank option only (E3), tokens named in the log.
+  - any other `deferred`, or the WHERE throws (a column this narrower seed lacks) → **degrade to the
+    unfiltered picker**, reason logged. Rationale: those are OUR interpreter's limits, not iDempiere's
+    verdict — narrowing to zero on our own gap would hide rows iDempiere DOES show. Named, never silent.
+  - **the §IMPL F5 blank option is preserved in every arm** — the filter narrows the list, it must never
+    re-introduce the auto-select-row-1 bug PR #1613 just fixed.
+  - `§VALRULE col= vr= rule="" table= before= after= admitted= verdict=` logged per field.
+- **P3.5** the `@token@` feed, `_valRuleCtx(code, e, orig)`: iDempiere's window context is every column of the
+  row under edit plus the globals. Record first (`orig` overlaid with `gatherVals(e)`, lower-cased), then
+  globals fill only what the record lacks: `AD_Client_ID`/`#AD_Client_ID` ← `APP.clientId`, `AD_Org_ID`/
+  `#AD_Org_ID` ← `APP.orgId`, `#AD_User_ID`/`SalesRep_ID` ← `APP.actor`, `#Date` ← today, and `IsSOTrx` ←
+  `APP._createIsSOTrx` on a CREATE (**the per-window signal `_docCtx` already extracts — reuse it, do not
+  write a second reader**). AD tokens are CamelCase and our records are lowercase, so the ctx is built by
+  resolving `AdValRule.tokensIn(code)` case-insensitively — that mapping is OURS (a storage detail), so it
+  lives in the wiring, not in the engine. **A token whose value is absent or empty is left OUT of the ctx**,
+  so the engine reports it unresolved and E3 fires — never defaulted to something plausible.
+- **P3.6** `crud_core.validateField` fk arm: `f.admitted && !f.admitted[String(val)]` → `'valrule:not-admitted'`.
+  PURE, and it reads the **same** map the picker was built from, so the offered set and the accepted set
+  cannot disagree. No `admitted` map (no rule, or a degraded arm) → behaviour unchanged.
+- **P3.7** ship `erp/ad_valrule.js` (byte-identical to `build/erp/ad_valrule.js`), `<script>` it in
+  `idempiere.html`, add it to `sw.js` PRECACHE + bump CACHE_VERSION, and declare the pair `identical` in
+  `scripts/erp_twins.json` (W-ERP-TWIN: an undeclared judged twin fails the gate by design).
+
+### §P3-WITNESS — W-PARITY-VALRULE, claim and falsifier
+`erp/tests/poc_parity_valrule_live.js`, modelled on `poc_parity_reflist_live.js`/`poc_parity_fieldset_live.js`.
+Real DOM, real render. **Every expected value is read from `window.__idmpDb` at run time — none typed in.**
+- **A** (static + E4 precedence) tab 257 `c_doctype_id`: options == the seed's own count for rule **52053**,
+  and `before > after` (**52 → 3**). Proves the AD_Field rule beat the AD_Column rule.
+- **B** tab 186 `c_bpartner_id`: **113 → 42** (rule 230).
+- **C** tab 330 `c_order_id`: **44 → 2** (rule 218).
+- **D** (the token arm, E3) tab 186 `c_bpartner_location_id`, rule 167 `@C_BPartner_ID@`: New form, no BP →
+  **0 option rows** (blank only); then set `c_bpartner_id` → repopulate → exactly that BP's ship-to locations.
+- **FALSIFIER** a row the rule EXCLUDES — an id read from the seed as `IN (all) NOT IN (admitted)` — is
+  (i) absent from the picker's options and (ii) `CORE.validateField(f, thatId)` returns `valrule:not-admitted`.
+- **VACUITY** `ad_client_id` (129, 6→6), `c_invoice_id` (220, 20→20) and `c_campaign_id` (236, 2→2) are
+  reported **NO-BITE**, never as passes; any A–D column whose `before == after` at run time is reported
+  **INCONCLUSIVE**, not PASS.
+- 0 pageerrors, per the sibling witnesses.
+
+### §P3-LIMITS — named, measured, NOT built here
+- **18 of the 61** resolve to a target table that does not exist under the picker's `<col minus _id>`
+  convention — `c_doctypetarget_id`, `bill_bpartner_id`/`bill_location_id`/`bill_user_id`, `dropship_*`,
+  `returnlocation_id`/`returnuser_id`, `salesrep_id`, `c_activity_id`, `c_cashplanline_id`. These fk pickers
+  **already** degrade to the raw value today and are unchanged by this item; resolving an AD_Ref_Table/Search
+  target is the same out-of-scope item §IMPL already named.
+- **1 of the 61 is a List, not an FK** — `trxtype` on tab 330 (ref 17). A val rule over an `AD_Ref_List` set
+  is a different surface from the FK picker. Named, not wired.
+- **The 5-of-332 uninterpretable rules, named as required:** id **118** (`empty` — blank Code) and
+  **52056 · 210 · 200162 · 200064** (`unsafe` — the clause carries `;`, `--`, `/*` or `union`, which this
+  engine refuses to embed in a SELECT by design). **None of the five is bound to any field on the five
+  document tabs** (the 61 classify 25 static / 36 token, zero empty, zero unsafe), so none was skipped here.
+
+## §P3-RESULT 2026-09-02 — §P3 SHIPPED. W-PARITY-VALRULE 23/23 PASS, 0 FAIL, 0 INCONCLUSIVE
+**bim-ootb PR #1626** (`feat/erp-parity-valrule`, base `origin/main` 138af115 with #1613 already in), 7 files
++537/−15, `erp/sw.js` **v774 → v775**. Logs read, not exit codes (Log Mandate).
+
+**The item is DONE as specced: wiring, not a new evaluator.** `build/erp/ad_valrule.js` now SHIPS as
+`erp/ad_valrule.js`, byte-identical (`14c565231a8e0136f89f851e9a6cc144`), declared `identical` in
+`scripts/erp_twins.json`, and it runs in the browser through `_mvB3` — the SAME better-sqlite3 shim
+`fireBeforeSaveHooks` already used — so the witnessed engine executes verbatim. No second interpreter exists.
+
+### What the witness asserts (`erp/tests/poc_parity_valrule_live.js`, real DOM, 71 `§VALRULE` lines)
+Every expected count, id and clause is read from the seed through `window.__idmpDb` **at run time**; the
+oracle's own token substitution is a plain `String.replace`, deliberately NOT `ad_valrule.substitute`, so the
+expectation is independent of the engine under test.
+
+| arm | column | rule | before → after | note |
+|---|---|---|---|---|
+| **A** | 257 `c_doctype_id` | **52053** | **52 → 3** | the ONE field-level rule on the five tabs; **it beat its column's rule 125** — E4 proven live, not assumed |
+| **B** | 186 `c_bpartner_id` | 230 | **113 → 42** | curated AND val-ruled — see the merge defect below |
+| **C** | 330 `c_order_id` | 218 | **44 → 2** | |
+| **D** | 186 `c_bpartner_location_id` | 167 `@C_BPartner_ID@` | **16 → 0**, then **→ 1** | the TOKEN arm, both halves |
+
+- **D is the E3 proof.** With no BPartner chosen: `§VALRULE … verdict=unresolved-tokens unresolved=[C_BPartner_ID]
+  ctx={} offered=0` — the lookup offers **NO ROWS**, matching `MLookup.java:1128-1140`, instead of silently
+  showing all 16. Then `c_bpartner_id=112` → the dependent lookup re-narrows to exactly `["108"]`, that
+  partner's only active ship-to location, with `ctx={"C_BPartner_ID":"112"}` in the log.
+- **FALSIFIER fires in BOTH directions.** Excluded `C_BPartner 1200001`: absent from the picker AND
+  `validateField → valrule:not-admitted`. Control, admitted `119`: `null`. Before the merge fix the same
+  falsifier read `inOptions=true validate(excluded)=null` — it was **RED first**, which is what makes it real.
+- **Vacuity is reported, never passed:** `§PARITY-VALRULE-VACUITY applied=32 BITE=24 NO-BITE=8`, with the 8
+  named (`c_paymentterm_id` 5→5, `c_campaign_id` 2→2, `c_invoice_id` 20→20). `§PARITY-VALRULE-DEGRADED 0`.
+
+### §P3-RESULT-DEFECT-1 — the engine's token feed was broken for a quarter of the token rules
+As specced in §P3-DEFECT and confirmed empirically: `substitute()`'s auto-quoting emitted `''Y''` on the
+pre-quoted idiom — `SQL ERROR: near "Y": syntax error`, so the filter **could not run at all**. Fixed to the
+faithful `Env.parseContext(forSQL=true)` semantics. Measured after the fix, the four rules that had been
+dead now filter: **271 → 3 · 52098 → 5 · 52055 → 6 · 200096 → 8 rows**.
+**Both W-VALRULE witnesses re-run and NOTHING MOVED** — `W-VALRULE PASS`, and `W-VALRULE-HARDEN PASS` with
+its membership sets still diff=0 against the **live iDempiere Postgres oracle** (its `§FALSIFIER` still fires,
+`diff=8`). That is the proof the correction is a correction, not a re-baseline.
+
+### §P3-RESULT-DEFECT-2 — a curated pin swallowed the rule (found by the witness going RED)
+`mergeCuratedWithFold` (§IMPL P1.1) layered only `displaylogic/readonlylogic/mandatorylogic/seq` onto a
+pinned curated field, so a lookup that is **both curated and val-ruled** kept the unfiltered picker:
+`c_order.C_BPartner_ID` offered all **113** partners while the identical rule bit correctly on every
+non-curated column. `valruleid` joined the layered key list — additive (no curated field has ever carried
+one) and it does not touch the attributes §IMPL F3 pinned deliberately. **This is exactly the class of defect
+§P1's own witness could not see**, because W-PARITY-FIELDSET counts fields and checks pin ORDER, never what a
+pinned field's picker offers.
+
+### Regression (all re-run this session, on the work tree)
+- **W-PARITY-REFLIST 14/14 PASS** · **W-PARITY-FIELDSET 30/30 PASS** — #1613's contract held.
+- **W-ERP-TWIN PASS**, `pairs=43 identical=11 unreviewed=9 undeclared_or_broken=0`. `ad_valrule` reads
+  `NO-SHIP` until #1626 merges (the gate compares against `origin/main` bytes by design), then becomes `SAME`.
+- **O2C `WITNESS_ROOT=/tmp/wt-erp-valrule`: stages 1/2/3/5/6/7 PASS** — the contract nine merged PRs closed
+  against still holds, and stage 1 completed on `c_bpartner_id=112`, one of the 42 the new filter admits.
+  Stage 4 FAIL / stage 8 ABSENT are the known pre-existing structural gaps, untouched.
+
+### Still open after §P3 (named, not built — no ⛔ questions arose; nothing needed a user decision)
+1. **18 of the 61** val-ruled fields resolve to a target table absent under the `<col minus _id>` convention
+   (`c_doctypetarget_id`, `bill_bpartner_id`/`bill_location_id`/`bill_user_id`, `dropship_*`,
+   `returnlocation_id`/`returnuser_id`, `salesrep_id`, `c_activity_id`, `c_cashplanline_id`). Their pickers
+   already degraded to the raw value BEFORE this change and are unchanged by it — the fix is AD_Ref_Table/
+   Search target resolution, the same out-of-scope item §IMPL named, not a §P3 regression.
+2. **`trxtype` (330, ref 17)** — the one val-ruled LIST on the five tabs. A rule over an `AD_Ref_List` set is
+   a different surface from the FK picker; `foldCrudSpec` carries the id, nothing consumes it for lists yet.
+3. **`AD_Val_Rule_Lookup_ID`** — the second rule column `AD_Field_v` also resolves
+   (`COALESCE(f.ad_val_rule_lookup_id, c.ad_val_rule_lookup_id)`, used by the Info-window lookup). Not read.
+4. **The 5-of-332 uninterpretable rules, named as required:** **118** (`empty` — blank Code) and
+   **52056 · 210 · 200162 · 200064** (`unsafe` — the clause carries `;`, `--`, `/*` or `union`, which the
+   engine refuses to embed in a SELECT). **None is bound to any field on the five document tabs**, so none
+   was skipped in this work; they remain deferred at the engine level.
+5. **`ad_modelval` twin reconciliation** (§IMPL-RESULT-F7) is still open and still the right next item before
+   any `ad_modelval` change — untouched here.
