@@ -470,3 +470,76 @@ unaddressed, just not the current top priority.
 
 Session end for THIS lane = each of 1-4 is ✅ or gets its own `⛔ BLOCKED: <question>` if it hits a
 wall — don't loop on one, move to the next, per this project's WORK-TO-ZERO rule.
+
+---
+
+## §W_PROGRESS — SPEC, 2026-09-02. A witness that cannot report its own PROGRESS is not a witness.
+**Queue item `AGENT_QUEUE.md` A-16b. This is CLAUDE.md clause 4 extended from _failure_ to
+_liveness_, and it is written because the missing half cost two false reports in one day.**
+
+### The defect, stated as the sequence that produced the wrong answer
+`witness_cpe_aim_retire.js` (and its four cinema/aim siblings) has exactly one shape:
+
+```
+puppeteer.launch → p.goto → waitForFunction × 4 (streaming, element_transforms; Hospital: tens of
+minutes) → ONE long `await p.evaluate(...)` → *every* console.log
+```
+
+Nothing is printed until the last arrow. A run redirected to a log file therefore holds a **0-byte
+log** for its entire duration. On 2026-09-02 a polling loop read that 0-byte log, concluded the
+Hospital run had never happened, and reported "never measured" — while the run had in fact
+completed. A second attempt truncated the same file. Both conclusions were retracted (`A-16`).
+
+**The 0-byte log is the defect, not the reporting.** A log that is empty at minute 40 is
+indistinguishable from a log that is empty because the process died at second 3, and a witness that
+cannot tell those apart cannot be read at all.
+
+### The rule
+> **Silence must be distinguishable from "still working".** A witness with a long-running phase
+> MUST emit, unbuffered, (a) a line naming each stage as it *completes*, and (b) a heartbeat while a
+> stage is open. A 0-byte log for a live run is a §CRISIS-class defect in the same family as a
+> witness that cannot print FAIL.
+
+Three states, exactly parallel to PASS / FAIL / INCONCLUSIVE:
+- **a stage line** — this much definitely finished;
+- **a heartbeat under an open stage** — still working, here is where;
+- **nothing at all** — the process is gone, and the last stage line names how far it got.
+
+### The mechanism — no new plumbing, the hook already exists
+Every one of these witnesses ALREADY installs `p.on('console', …)` and already keeps the page's
+`§`-lines (CLAUDE.md rule 3). In-page progress therefore needs no new channel: the page emits a
+tagged `console.log`, the existing hook forwards it. What was missing is only that (i) nothing in
+the page emitted progress and (ii) the node side buffered.
+
+`witness_kit/progress.js` — one shared module, so this is not re-hand-rolled per witness:
+- `Progress(name)` → `pr.stage(label)` closes the previous stage with its duration and opens a new
+  one; `pr.attach(page)` forwards in-page `§W_PROGRESS` console lines; `pr.end()` closes the last
+  stage and stops the heartbeat.
+- **Writes go through `fs.writeSync(1, …)`, never `console.log`.** Node buffers stdout when it is a
+  pipe; a SIGKILL then loses exactly the lines that mattered. `writeSync` is the whole point.
+- The heartbeat is a `setInterval` (default 15 s, `unref`'d so it can never hold the process open)
+  printing the OPEN stage and its elapsed time.
+- `W_PROGRESS=0` disables it — needed so the acceptance test below has a red control.
+
+### Acceptance test — `viewer/tests/witness_progress_flush.js`
+The claim is about what survives a kill, so the witness kills. It spawns a real fixture
+(`viewer/tests/fixtures/progress_fixture.js`: a real puppeteer page, a real long `page.evaluate`
+emitting in-page progress), waits, then `SIGKILL`s the whole process group, and reads the log:
+
+- **P1 STAGE SURVIVES A KILL** — log is non-empty and its last stage line names the last COMPLETED
+  stage.
+- **P2 IN-PAGE PROGRESS CROSSES THE `p.on('console')` HOOK** — at least one forwarded in-page stage
+  is present, proving the mechanism the spec names actually carries during a long `evaluate`.
+- **P3 HEARTBEAT** — an open stage that outlives the interval emits a heartbeat, so a hung run is
+  distinguishable from a dead one.
+- **P4 RED CONTROL** — the identical fixture with `W_PROGRESS=0`, killed identically, MUST produce
+  the **0-byte log**. If it does not, the witness is not measuring what it claims and says so.
+- Any of P1-P3 whose fixture never reached the kill (chrome failed to launch, port busy) prints
+  **INCONCLUSIVE**, never PASS — an assertion over a run that did not happen judges nothing.
+
+### Scope
+All five cinema/aim witnesses share the shape and all five get instrumented:
+`witness_cpe_aim_retire.js`, `witness_cpe_corr_brush.js`, `witness_cpe_aim_pin.js`,
+`witness_cpe_stick_hold.js`, `witness_cpe_hose.js`. No product code is touched — this is entirely
+harness-side, so it cannot perturb any measured number, and every existing `§`-line keeps its exact
+text (progress lines are a NEW tag, not a rewrite of an old one).

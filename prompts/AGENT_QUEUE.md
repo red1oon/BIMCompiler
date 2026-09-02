@@ -656,11 +656,31 @@ maxBlend=0.94` on the ON arm: the rule governed essentially the whole Hospital w
    #1619 and #1620 and the doc carries the correction of record. What DOES stand from #1620:
    `GPU_REAL=1` is useful, and `python3 -m http.server` genuinely cannot serve a Hospital load (§S78).
 
-### A-16b · THE REAL DEFECT — a witness that cannot report its own progress
+### A-16b · ✅ **DONE (witness) 2026-09-02 — bim-ootb PR #1623, CI green** · a witness that cannot report its own progress
 This is what produced the wrong report, and it is unfixed. The witness prints only after its single
 `page.evaluate` returns, so a long run leaves a **0-byte log and cannot say where it is**. CLAUDE.md
 clause 4 territory. **Named next step: forward per-stage progress through the `p.on('console')` hook
 that already exists.** Small, and it prevents this whole class of false absence.
+
+**DONE exactly that.** `witness_kit/progress.js` — stage lines written with `fs.writeSync(1, …)`,
+never `console.log` (node buffers stdout on a pipe and a SIGKILL then discards the lines that
+mattered), a heartbeat naming the OPEN stage (default 15 s, `unref`'d), and `attach(page)` forwarding
+in-page `§W_PROGRESS` lines through the hook that was already there. Wired into all five cinema/aim
+witnesses (`aim_retire`, `corr_brush`, `aim_pin`, `stick_hold`, `hose`). **Product code untouched, so
+no measured number can move.**
+Acceptance test `viewer/tests/witness_progress_flush.js` **KILLS a real run and reads what survived**:
+`§W_PROGRESS_VERDICT claims=6 PASS=6 FAIL=0 INCONCLUSIVE=0 GREEN`. SIGKILL at 14.0 s → **1801 bytes,
+22 lines**, completed `[launch-browser → open-page]`, killed inside `[long-evaluate]`; **13 forwarded
+in-page lines**; 4 heartbeats. **RED CONTROL: identical fixture, identical kill, `W_PROGRESS=0` →
+0 bytes** — the defect still reproduces, so the green is not passing for some other reason.
+P5 checks all five files are really wired with **comment lines stripped first** (a grep matching a
+file's own prose is the check-that-cannot-fail class this file caught three of); verified negatively —
+the same predicate on `origin/main`'s uninstrumented `witness_cpe_aim_retire.js` reads `req=false
+stages=0` → FAIL. P6 exists because the FIRST run leaked **3 orphaned chrome trees**: puppeteer spawns
+the browser `detached`, in its own process group, so the group kill never reached it; the fixture now
+records the browser pid OUTSIDE the progress channel (the red-control arm has no log at all) and P6
+verifies the reap with `kill(pid,0)`.
+Spec written first: `WITNESS_INTERFACE_FRAMEWORK.md` §W_PROGRESS.
 
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
@@ -675,17 +695,55 @@ is plausibly the first honest reading of a better model against a stale threshol
 Re-derive the gate against the new band model and show the working. Consider wiring this witness
 into CI once it is trustworthy, since its invisibility is half the defect.
 
-### A-14 · §W_D0A A4 prints FAIL over an EMPTY population · PRIMAL LAW clause 4 violation
+### A-14 · ✅ **DONE (witness) 2026-09-02 — bim-ootb PR #1624, CI green** · §W_D0A A4 printed FAIL over an EMPTY population
 `witness_day0_attribution.js` went GREEN→RED after #1551, **by design** — its header states the
 attribution should go red the day a cause stops being true. Correct behaviour. **But claim A4 is a
 real defect:** Terminal's early-MEP set is now empty *because #1551 fixed it*, and A4 prints **FAIL
 over an empty population**. That is exactly the vacuous case CLAUDE.md's witness contract requires
 to print **INCONCLUSIVE**, never a bare verdict. Small, self-contained fix.
 
-### A-15 · `IfcSlab ^Stair` widening — NOW UNBLOCKED by #1551
+**MEASURED before → after** (`origin/main` @ `85fd0732` cache, 4 buildings / 119,568 elements):
+```
+BEFORE  A4_TERMINAL_PHANTOM_LVL  Terminal  FAIL          judged=1 bad=1   early MEP spans 0 bands []
+AFTER   A4_TERMINAL_PHANTOM_LVL  Terminal  INCONCLUSIVE  judged=0 bad=0   VACUOUS — Terminal has 11850
+        scheduled ^MEP elements but NONE starts inside the 3-day window (earliest = t0+15.00d)
+§W_D0A_VERDICT claims=6 PASS=3 FAIL=3 INCONCLUSIVE=0  ->  PASS=3 FAIL=2 INCONCLUSIVE=1   (still RED)
+```
+**A4 is NOT made to pass**, and A2/A6 stay red by design. The emptiness is reported WITH its evidence
+so it cannot become a silent skip: the MEP population is counted *without* the window (11,850) and the
+earliest real start printed, because a broken filter would also produce an empty set — that case takes
+a different branch and **FAILs**. **Vacuity control** (`W_D0A_RED=1`) widens the window to the
+MEASURED earliest start; A4 goes back to judging (`FAIL judged=3 bad=1`), proving the INCONCLUSIVE is
+caused by emptiness alone. Written up as `4D_MODEL_INTEGRITY.md` §J.6.6, which also strikes §J.6.1
+row 8 as STALE — `§W_D0 C4 Terminal` is now `PASS judged=499 bad=0 firstMEP=+15.00d`.
+
+### A-15 · ✅ **DONE (witness) 2026-09-02 — bim-ootb PR #1625, CI green** · `IfcSlab ^Stair` widening
 Closes the HHS C3 DAY-0 failure. Measured scope: `IfcSlab ^Stair` = **HHS 4/83, 0 elsewhere**. It
 appends to the same `stair_member_architecture` array #1551 appends to and moves `IfcSlab` out of
 `supportPool` — which is why it had to wait. #1551 has landed, so it can go.
+
+**SHIPPED. Scope re-measured on the `origin/main` cache and CONFIRMED: HHS 4/83, Duplex 0/21,
+Hospital 0/35, Terminal 0/705.** Result, played layer:
+```
+HHS C3_DAY0_SUPPORT  FAIL judged=4 bad=3 hanging{IfcSlab:3}  ->  FAIL judged=2 bad=1 hanging{IfcSlab:1}
+§W_D0_VERDICT  claims=16 PASS=8 FAIL=5 INCONCLUSIVE=3 RED  ->  UNCHANGED
+```
+**C3 HHS improves 3→1 — exactly §J.6.5's prediction — but the headline does NOT move**, and that is
+reported, not dressed up. The residual is named: `IfcSlab "Floor:STB 30.0:573302"`, a real floor slab
+(not a stair component) supported by a later `IfcStairFlight` — the §F cross-phase class. The 4 treads
+move Superstructure/seq4/day 0.08–0.09 → Architecture Envelope/seq6/day 15.13–22.07. **Zero
+collateral: Duplex/Hospital/Terminal run logs byte-identical before and after.** HHS programmeDays
+54.00 and makespanDays 35.4 unchanged — not a U-1/U-8-class date lever.
+⚠ **Two unpredicted effects, both measured:** (a) `§TPL_ZERO_MINUTE` fired — CARPENTER carried no
+`IfcSlab` productivity, fixed by copying CONCRETE_GANG's canonical **35**, the rule the FINISHER entry
+was already built by (`n=0/68` after); (b) `§TPL_LAYER_SELFCHECK stillInverted 107 → 109` on HHS,
+consistent with the tread↔flight pairs entering a within-task check that previously could not see them
+(they were cross-task before, one task after) — stated as an inference, not a proof.
+⛔ **THE PREMISE THAT DEFERRED THIS — "it moves `IfcSlab` out of `supportPool`" — IS FALSE.**
+`supportPool` is `e.seq <= 4 || (e.cls === 'IfcSlab' && e.seq > 4) || e.cls === 'IfcStairFlight'`
+(`schedule_gate.js:1348`); the second clause keeps an `IfcSlab` in the pool at ANY sequence — verified
+4 in / 4 in. It is true for `IfcMember` only. Corrected in `rates.js`, `sequence_rules.json` and
+§J.6.4.
 
 ## ⚠ RE-CLASSIFIED 2026-09-02 — these were parked as "user decisions" and should NOT have been
 **User: "Why are those waiting on me? I given direction, u can help manage."** Correct. Direction

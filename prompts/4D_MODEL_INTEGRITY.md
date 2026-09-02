@@ -1783,20 +1783,73 @@ they judge is the unmerged one. The §I row is corrected in place.
    **false for `IfcBeam`** (seq 3, STEEL_ERECTOR). Census: **Terminal 20 + Hospital 1 = 21**
    `IfcBeam` are Substructure groundwork priced and crewed as steel. Fixing it changes duration and
    crew allocation, therefore dates — a **U-8-class ruling**, not an agent's call. Not touched.
-2. **An `IfcSlab`-typed stair tread has no name override.** `stair_member_architecture` (#1551)
-   gates on `classes: ['IfcMember']`. Fleet measurement of the sibling population, taken today:
-   **`IfcSlab` whose name starts `Stair` = HHS 4/83, Duplex 0/21, Hospital 0/35, Terminal 0/705** —
-   widening that rule's class gate would hit exactly HHS's 4 and nothing else, and would close
-   C3 HHS's 2 stair-tread FAILs. **Deliberately not shipped**: it appends to the same
-   `SEQUENCE_NAME_OVERRIDES` array PR #1551 appends to (guaranteed textual conflict), and it moves
-   `IfcSlab` out of `supportPool` (`schedule_gate.js:1323`), which perturbs the locked floating /
-   `§SUPPORT_UNCHECKED` baselines `sequence_rules.json` already names as a reason not to reclassify
-   `IfcSlab`. Land #1551 first, then take this as one deliberate change with its own A/B.
+2. ~~**An `IfcSlab`-typed stair tread has no name override.**~~ ✅ **SHIPPED 2026-09-02 as
+   `§STAIR_SLAB_WIDEN`, bim-ootb PR #1625 (queue A-15).** The scope this section recorded was
+   re-measured against the `origin/main` @ `85fd0732` cache and is CONFIRMED unchanged: `IfcSlab`
+   whose name matches this rule's own `^\s*stair\b` = **HHS 4/83, Duplex 0/21, Hospital 0/35,
+   Terminal 0/705**. Measured result, played layer: **C3 HHS `FAIL judged=4 bad=3` →
+   `FAIL judged=2 bad=1`** — the 3→1 this file predicted in §J.6.5, exactly. The **`§W_D0` headline
+   does not move** (`claims=16 PASS=8 FAIL=5 INCONCLUSIVE=3 RED`, unchanged) because 1 hanging slab
+   remains, and it is now NAMED: `IfcSlab "Floor:STB 30.0:573302"`, a real floor slab whose
+   designated support is an `IfcStairFlight` scheduled later — the §F cross-phase class, not a stair
+   component, correctly untouched by this rule. The 4 treads move Superstructure/seq4/day 0.08–0.09
+   → Architecture Envelope/seq6/day 15.13–22.07. Duplex/Hospital/Terminal run logs byte-identical
+   before and after (0 differing lines) — zero collateral, as "0 elsewhere" predicts.
+   **⛔ THIS SECTION'S OWN `supportPool` PREMISE WAS FALSE, and it is the reason the change was
+   deferred — do not reintroduce it.** `supportPool` (`schedule_gate.js:1348`, not :1323) is
+   `e.seq <= 4 || (e.cls === 'IfcSlab' && e.seq > 4) || e.cls === 'IfcStairFlight'`: the **second
+   clause keeps an `IfcSlab` in the pool at ANY sequence**, so all four treads are in the pool
+   before AND after (verified on both caches, 4 in / 4 in). The removal consequence is real for
+   `IfcMember` only, where seq 3 → 6 crosses the `<= 4` clause.
+   Two effects the proposal did not predict, both measured and both in the PR: (a)
+   `§TPL_ZERO_MINUTE` fired — CARPENTER carried no `IfcSlab` productivity, fixed by copying
+   CONCRETE_GANG's canonical **35**, the same rule the FINISHER entry was built by (`n=0/68` after);
+   (b) `§TPL_LAYER_SELFCHECK stillInverted 107 → 109` on HHS, consistent with the tread↔flight pairs
+   entering a within-task check that previously could not see them (measured: they were in
+   `TASK_Superstructure_Level_1/2` vs `TASK_Architecture_Envelope_Level_1/2` before, one task after)
+   — stated as an inference, not a proof.
+
+## §J.6.6 ⛔ CORRECTION 2026-09-02 — ROW 8 AND ITS `§W_D0A` CLAIM A4 ARE NOW UNJUDGED, NOT FAILING
+**Row 8 (`C4 Terminal`, bad=4) is STALE.** Re-measured on the `origin/main` @ `85fd0732` cache
+(4 buildings, 119,568 elements): `§W_D0 C4_NO_EARLY_MEP Terminal **PASS** judged=499 bad=0
+window=3d programmeDays=103.00 firstMEP=**+15.00d**`. PR #1551 (`§STOREY_DATUM`, squash `59736505`)
+moved Terminal's opening off day 0, so the 4-element phantom band no longer produces early MEP.
+
+**The attribution witness could not say that, and said something false instead** — `witness_day0_attribution.js`
+claim A4 printed a bare **FAIL over an EMPTY population** (`judged=1 bad=1 · early MEP spans 0 bands []`):
+`pop++` ran unconditionally and `names.length !== 1` was satisfied by `names.length === 0`. Fixed in
+bim-ootb **PR #1624** (queue A-14) — that is the vacuous case the witness contract requires to print
+**INCONCLUSIVE**, a third state, never a bare verdict:
+
+```
+§W_D0A A4_TERMINAL_PHANTOM_LVL  Terminal  INCONCLUSIVE  judged=0 bad=0
+  VACUOUS — Terminal has 11850 scheduled ^MEP elements but NONE starts inside the 3-day window
+  (earliest MEP start = t0+15.00d, window = t0+3.00d)
+§W_D0A_VERDICT  claims=6 PASS=3 FAIL=3 INCONCLUSIVE=0  ->  PASS=3 FAIL=2 INCONCLUSIVE=1   (still RED)
+```
+
+**A4 was NOT made to pass**, and the emptiness is reported WITH its evidence so it cannot become a
+silent skip: the MEP population is counted *without* the window (11,850) and the earliest real start
+is printed, because a filter that stopped matching would also produce an empty set — and that is a
+DEFECT, not a vacuum, and takes a different branch that FAILs. A vacuity control (`W_D0A_RED=1`)
+widens the window to the MEASURED earliest start and A4 goes back to judging (`FAIL judged=3 bad=1`),
+proving the INCONCLUSIVE is caused by emptiness and nothing else.
+
+**What a future session must decide, and must NOT decide by widening the window:** row 8's
+attribution is now neither confirmed nor refuted. Either re-derive it against a population that
+exists, or retire the row. The phantom band itself is unchanged in the model.
+
+⚠ **Cache-key note, cheap to pay once and expensive to rediscover:** `~/.cache/bim4d` is keyed on the
+full CONTENT of 11 viewer inputs. The pre-existing 4-building cache was keyed to `59736505`, and the
+only difference from `origin/main` across those 11 files was a **comment-only** edit to
+`viewer/time_machine.js` (#1619). A comment rewrite invalidates a four-building cache.
 
 ## §J.6.5 WHAT WOULD MOVE THE VERDICT, IN ORDER
 1. **Land #1551** → C2 Duplex 3→1 and C3 Duplex 1→0 (2 of the 8). Its payload is confirmed
    unshipped (A-2, 2026-09-02) and this section re-confirms the exact populations it targets.
-2. **Widen `stair_member_architecture` to `IfcSlab`** (§J.6.4 item 2) → C3 HHS 3→1.
+2. ~~**Widen `stair_member_architecture` to `IfcSlab`**~~ ✅ **DONE 2026-09-02, PR #1625** — the
+   predicted **C3 HHS 3→1** is the measured result. The `§W_D0` headline is unchanged because the
+   remaining 1 is a real floor slab, not a stair component (§J.6.4 item 2).
 3. The remaining five are a **modelling fact ×3**, a **witness-scope constant**, and the
    §GROUNDWORK_SLAB relation now reported rather than conflated. **None of them is fixed by a
    scheduler change**, and inventing one to move the number is §J.2's failure mode.
