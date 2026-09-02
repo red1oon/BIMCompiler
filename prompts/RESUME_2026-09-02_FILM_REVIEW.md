@@ -244,8 +244,16 @@ I reported the absence instead of re-checking. The commit message on bim-ootb #1
 ("swiftshader cannot load Hospital") is overstated for the same reason and cannot be rewritten —
 it is merged; **treat this paragraph as the correction of record.** What IS true from those attempts,
 and worth keeping: `python3 -m http.server` genuinely cannot serve a Hospital page load (this repo's
-own `scripts/_fast_static_server.js` header, §S78) — use the fast server. `GPU_REAL=1` (the `--gpu
-real` wiring) is now available on the witness and is what both Hospital arms below ran under.
+own `scripts/_fast_static_server.js` header, §S78) — use the fast server, and `GPU_REAL=1` (the
+`--gpu real` wiring) is now on the witness.
+
+**⚠ One thing I deliberately do NOT claim, because the artifacts cannot settle it: which rasteriser
+produced the depth-ON arm.** The depth-OFF arm was run under `GPU_REAL=1`; the ON log survived a
+swiftshader attempt and a real-GPU attempt on the same output path and the witness records no
+renderer string, so attribution is not recoverable. **It does not affect a single number below** —
+the gaze chain is pure JS and `§CPE_AIM_DEPTH`'s only raycast went through three-mesh BVH on the CPU,
+so the rasteriser cannot move these values. Naming an attempt I cannot verify is the same mistake as
+the retraction above, one layer down; the fix is the same per-stage `§`-logging named at the end.
 
 `buildings/HospitalAjaibPath.db`, `storedPath=true bands=3(db:cinema_path)`, 70.68 m walk, 82 s,
 63,182 elements, `§CPE_AIM_DEPTH_SERIES active=65/65 maxBlend=0.94` on the depth-ON arm:
