@@ -607,18 +607,30 @@ would convert a free path into a metered one.
 ⚠ This does NOT resolve **U-3** (reclaiming the stranded historical 8.53 GB) — that is separate and
 still open.
 
-### A-16 · Hospital's real stored path was NEVER measured — and the harness cannot say why
-Landing the `§CPE_AIM_DEPTH` retirement, **`HospitalAjaibPath.db` — the only authored `cinema_path`
-on disk — could not be measured. Five attempts, none completed.** The shipped claim does not depend
-on it (HHS + Duplex carried the proof), but it is absent and was not counted.
-**Ruled OUT by measurement:** the static server (`python3 -m http.server`; this repo's own script
-already documents it never completing a Hospital load) and the rasteriser (a real RTX 4060 behaved
-identically to swiftshader). **Untested candidates, named:** the 250 MB single-file DB through
-sql.js, and ~6 `cinemaPathPlan()` rebuilds over 63k elements.
-**⚠ It also exposed a REAL harness gap worth fixing on its own:** the witness prints only after its
-single `page.evaluate` returns, so an abandoned run leaves a **0-byte log and cannot say where it
-got to**. That is a witness that cannot report its own failure — CLAUDE.md clause 4. Stream
-progress out incrementally so a hung run still names its last completed stage.
+### A-16 · ⚠ RETRACTED AND REPLACED — Hospital WAS measured; the harness gap is the real item
+**The "never measured" claim was WRONG and is withdrawn.** The run had completed; a polling loop
+read a 0-byte log while a second attempt truncated the file, and the absence was reported instead of
+re-checked. Hospital `HospitalAjaibPath.db` (`storedPath=true bands=3(db:cinema_path)`, 70.68 m walk,
+82 s, 63,182 elements, both arms under `GPU_REAL=1`) is measured and is the headline for U-2:
+gaze-vs-chord **max 90.657 / mean 86.207 → max 0.000 / mean 0.000**; tangent **max 95.753 / mean
+85.127 → max 51.936 / mean 6.930** — mean falls **12x**. `§CPE_AIM_DEPTH_SERIES active=65/65
+maxBlend=0.94` on the ON arm: the rule governed essentially the whole Hospital walk.
+
+**Two inferences this corrects, both of which had been reported upward:**
+1. **The "rising tangent max" on HHS is a FIXTURE ARTEFACT, not a property of the change.** HHS and
+   Duplex carry **no `cinema_path` at all** — the witness says `bandSrc=synthesized-from-plan-waypoints`,
+   and a route through auto-picked waypoints doubles back inside the 15% look-ahead window far more
+   than an authored one. **Do not read HHS/Duplex as stored-path evidence.** Hospital is the row.
+2. **The rasteriser was never the blocker.** `PR #1620`'s title/message ("swiftshader cannot load
+   Hospital") is **overstated and merged, so it cannot be rewritten** — corrections are posted on
+   #1619 and #1620 and the doc carries the correction of record. What DOES stand from #1620:
+   `GPU_REAL=1` is useful, and `python3 -m http.server` genuinely cannot serve a Hospital load (§S78).
+
+### A-16b · THE REAL DEFECT — a witness that cannot report its own progress
+This is what produced the wrong report, and it is unfixed. The witness prints only after its single
+`page.evaluate` returns, so a long run leaves a **0-byte log and cannot say where it is**. CLAUDE.md
+clause 4 territory. **Named next step: forward per-stage progress through the `p.on('console')` hook
+that already exists.** Small, and it prevents this whole class of false absence.
 
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
