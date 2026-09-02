@@ -697,6 +697,26 @@ were cross-task from their flights before and are in one task after, so those pa
 that could not previously see them. Confirm or refute by measurement. If confirmed it is scope
 widening, not a regression — but it is currently an untested story attached to a number that moved.
 
+### D-5 · §LIGHT_SHAFT — sun through windows, the cheap class first · SPEC + MEASURE, do not build blind
+**User, 2026-09-02:** *"no way to make the sunlight that goes thru the windows or glass walls to give
+that shine thru air effect? Even from indoor lighting, thus the slight gloomy as background will give
+good amplification. Is this cheap?"*
+**Their instinct on amplification is right and now measured:** #1622 dropped interior retention to
+**0.41-0.51**, so a shaft lands on a genuinely dark ground instead of a washed one.
+**What exists (checked, do not re-derive):** NO godray/volumetric code anywhere. But `scene.fog` is
+present AND already photoreal-tuned — `effects.js` sets `fog.color 0xc9a878` and clamps
+`density` to `0.00006` with its own comment *"lighter haze, not a wall of fog"*. `EffectComposer`
+is in use (6 refs). So the ingredients are there; the pass is not.
+**Two cost classes, and they are far apart — price both before choosing:**
+- **(a) Screen-space radial god rays** — occlusion mask + radial blur from the sun's screen position,
+  1-2 low-res passes. Only works with the sun IN FRAME — which IS the user's case (stood inside,
+  looking toward a window with sun behind it). **Start here.**
+- **(b) True volumetric scattering** — raymarching the shadow map. Physically right, multiplies
+  per-frame cost. Hospital already bakes 44m40s at 20 renders/frame; a raymarch is not free.
+**Gate: measure the per-frame cost delta BEFORE building.** That number decides it, not the look.
+⚠ Touches `effects.js` / post-processing — **must not run concurrently with the interior-lighting
+lane.** Sequence it after that lane reports.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
