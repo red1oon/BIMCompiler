@@ -2290,3 +2290,276 @@ Tree = branch merged with origin/main @4fb753c6 (#1599); sw conflict resolved v1
 - Ship state: branch feat/wall-side-light-floor, commit bd5adf10 + merge 2fbea94a; PR + merge
   verification recorded below when landed.
 - **LANDED 2026-09-01: bim-ootb PR #1601 MERGED as origin/main d16646db (verified by fetch, not the PR page: sw v1119, FRONT_SIDE_CLASSES, ambient 0.386 / hemi 0.617 all present on main).**
+
+## §SUN_FILL_RATIO (2026-09-02) — the wall away from the sun, in the PHOTOREAL path. SPEC FIRST; measured numbers appended below after each run.
+
+**User ask (AGENT_QUEUE D-1, 2026-09-02 film review):** *"Wall away from Sun shadow?"* — a wall
+facing away from the sun should read darker than one facing it.
+
+**Not re-opened here (settled, on record, correct):** shadows are on and correct in Alt+S
+(`§PHOTO_SHADOW enabled casters=382 … texelPerM=11.4`); nothing is clipped (`outsideFrustum=0` on two
+buildings); N8AO is contact/crease-only by architecture (`STILL_AO_RADIUS = 32` is in SCREEN pixels),
+so a broad flat wall legitimately reads AO≈1.0. This is an ORIENTATION read, not an occlusion one.
+
+**Why this is a PHOTOREAL-ONLY defect.** `§WALL_SIDE_AND_LIGHT_FLOOR` (PR #1601, merged `d16646db`,
+2026-09-01) already cut the non-directional fill in `scene.js` and took the plain-navigation
+away/sun contrast 0.384 → 0.255. The user's complaint is dated AFTER that landed and is about the
+FILM. So the only question is narrow: **does #1601's separation survive into the Alt+S / bake path?**
+Measured answer: **no.**
+
+### The instrument — `viewer/tests/witness_sun_fill_ratio.js`
+Real viewer, real split building DB, the real `A.startStillRefine()` staging. No mock, no synthetic
+scene, no screenshot anywhere, no bake.
+- **The pair:** two REAL wall elements of the SAME `ifc_class` AND the SAME `material_rgba`, so
+  albedo cannot be the confound. One outward normal toward the LIVE sun, one away.
+- **Outward is signed by the building centroid, NOT by face area.** A first pass classified by which
+  face carried more area and produced 556 "sun-facing" of 602 walls — a wall slab has near-equal
+  area on both faces, so that test is degenerate and its answer is a coin flip. The axis is the
+  principal eigenvector of the area-weighted orientation tensor of the element's vertical face
+  normals (real geometry, real transforms, the same decode as `A.blobToGeometry`); the sign points
+  away from the building centroid; **exteriority is then GATED by a 25-ray coverage test** — an
+  interior wall's camera lands inside the building and fails. Coverage ≥ 0.88 or the pair is dropped.
+- **The sun vector is READ from `A.sun`, never assumed.** `A.updateSky()` repositions the light at
+  load: the live direction is `[0.000, 0.707, −0.707]`, NOT `scene.js`'s source constant
+  `(200,400,300)` → `(0.371,0.743,0.557)`. Assuming the constant INVERTED the sun/away labels on the
+  first run — the sun-labelled wall measured `sun=0.0001` and the away-labelled one `sun=0.494`.
+  A whole session's finding would have been reported backwards. Read the live scene, always.
+- **Camera:** 12 m standoff, deliberately beyond `CAM_LIGHT_DISTANCE = 4` so the camera torch
+  provably cannot contribute, with the FOV narrowed so the wall fills the frame.
+- **Luminance is scene-linear.** three.js applies tone mapping ONLY when the destination is the
+  canvas, so a `FloatType` render-target read is raw linear radiance (`renderer.toneMapping` is
+  ACESFilmic, `scene.js:110`, and is logged). ACES + exposure are monotonic and applied afterwards,
+  so a linear "not brighter" verdict survives them; and a uniform exposure scale cannot change a
+  ratio at all.
+- **Lighting is therefore ADDITIVE**, so each group's share is measured exactly as (all on) −
+  (that group off): `sun / ambient / hemi / env / pl / camlight`. **Closure of the sum against the
+  total is asserted** — measured 0.990–1.007, so the decomposition is trusted, not assumed.
+- **A/B on ONE page load, and the `CPE_4D_PERF_MEM_STUDY §R10` trade-off was RE-CHECKED rather than
+  copied:** these are deterministic single renders, not AO/TAA accumulations, so there is no
+  first-fold-does-the-work effect and no scene reseed between conditions. `Math.random` is seeded
+  anyway, and a **RED CONTROL** re-measures the untouched condition at the end and asserts it
+  reproduces.
+- The verdict line prints NO-OP / VACUOUS / INCONCLUSIVE and did so for real: Hospital's first run
+  ended `INCONCLUSIVE — no albedo-matched exterior pair passed the 0.88 coverage gate`, which is the
+  witness refusing to score a population it never judged.
+
+### ⚠ INSTRUMENT COST FOUND — a 4096² shadow map re-rendered on EVERY staged render
+Under SwiftShader the staged scene carries a **4096² shadow map over 708 casters plus ~216 night
+fixture point lights**, and every camera move ALSO restarts a 16-frame AO+TAA accumulation. A
+14-render decomposition ran **>25 minutes with no change to any measured quantity**. This is exactly
+the class of instrument cost §R10 warns about, so it is recorded rather than quietly worked around.
+It is a SPEED cost, not a noise cost — and that claim is not asserted, it is **gated**: the witness
+reads the SAME pose immediately before and after freezing (`shadowMap.autoUpdate = false` +
+`_stillRefineActive = false`) and requires the two to agree (`§SFR_FREEZE … relDrift`, gate < 0.005).
+The sun's shadow frustum is fixed to the building envelope and the geometry does not move, so the map
+is camera-independent and valid for every pose. **No RED number was taken from an un-gated run.**
+
+### The measured cause — it is the envMap, and this codebase already banned exactly this
+`_applyPhotoStaging()` swaps `A._envMap` from the procedural sky PMREM to a real photographed HDRI
+(`textures/hdri/belfast_sunset_puresky_1k.hdr`, `§LAYER2_HDRI_READY`) and `_reassertPhotoEnvMap()`
+then pushes that map onto **every** cached material — matte concrete and plaster included. IBL is a
+whole-hemisphere, **non-directional** term and in three.js **it is not shadow-map-occluded**, so it
+lands on a wall regardless of which way that wall faces.
+
+This is not a new insight; it is a route around a gate this file already argued for and shipped.
+`PHOTO_GLOSSY_ROUGHNESS_MAX = 0.5` exists (`effects.js:2680`) with the comment *"excludes
+concrete/plaster/wood (STD_MAT rough 0.6-0.95), whose shadow-darkened diffuse read must stay
+untouched"*, and `PHOTO_ENVMAP_BOOST`'s own history records the symptom from when that gate was
+missing: *"user reported 'all shadows on building are gone.' Root cause of THAT: env-map/IBL
+reflection is NOT shadow-map-occluded in three.js … the old gate applied the boost to EVERY
+material."* The gate that was added limits the **intensity multiplier**. The **map swap** was never
+gated, so the same defect returned through the other door — and bigger, because the HDRI is far
+brighter than the procedural sky it replaced.
+
+### SPEC — the change, and why this knob and not another
+**Constraint honoured first: measure before adding light.** The user's standing words are *"we
+already got things too bright, shiny reflection, it be shadow effects for realism"*. Every candidate
+was scored against the measured decomposition, and the one shipped **removes** light. No sun
+intensity was raised; the separation was not bought with brightness.
+
+| candidate | what it does | why NOT it — the number |
+|---|---|---|
+| raise `A.sun.intensity` | more N·L range | ADDS light against a standing "too bright" complaint; also breaks `§MOVIE_SHADOW_TM`'s deliberate sun/fill parity with Time Machine (`sunFillRatio 4.387` today) |
+| cut `scene.js` ambient/hemi again | lowers fill | already clamped at the T3 interior floor by #1601 (`k_T2=0.475` wanted, `k_T3=0.491` bound) — and it is not the large term: measured ambient+hemi ≈ **0.123 of the away wall's 0.582** staged luminance |
+| `PHOTO_AMBIENT/HEMI_INTENSITY_SCALE` (staged-only, both 1.0) | lowers staged fill only | same 21% ceiling, cannot reach the target; and `§MOVIE_SHADOW_TM` set both to 1.0 by explicit user directive |
+| `_nightPLScaleStill` (0.5) | dims the ~216 fixture point lights | measured `pl = 0.007` of 0.582 on the away wall — **1.2%**. Not the cause. *(This also answers §PHOTO_REALISM_RETUNE item 1 for the EXTERIOR read: the staged point lights are not what washes out a facade.)* |
+| `CAM_LIGHT_INTENSITY` (3) | dims the camera torch | measured `camlight = 0.000` at 12 m — `CAM_LIGHT_DISTANCE = 4` means it provably cannot reach an exterior facade |
+| **matte materials keep the plain-nav sky env map** | removes the staged HDRI's unshadowed diffuse fill from concrete/plaster, keeps it on glass and metal | **SHIPPED** — the only term big enough (**76%** of the away wall's staged light), it only ever removes light, it needs **no new constant**, and it re-states a policy this file already shipped |
+
+**The change (`viewer/effects.js`, `_reassertPhotoEnvMap`):** the env-map target becomes
+room-probe → glossy: `A._envMap` (the HDRI) → **matte: `_photoEnvMapSaved`** (the sky PMREM captured
+at staging entry — exactly what plain navigation uses). Glossiness is decided by a new SHARED
+predicate `_isPhotoGlossyMat()` (room-probe/mirror flag, `metalness > PHOTO_METAL_THRESHOLD`, or
+`roughness <= PHOTO_GLOSSY_ROUGHNESS_MAX`) so the two reassert loops cannot disagree and the outcome
+does not depend on which ran first this tick. **No constant is introduced, tuned or fitted** — the
+matte term is restored to the value plain navigation already ships, which is the value
+§WALL_SIDE_AND_LIGHT_FLOOR derived and T3-clamped.
+
+**Second, required half (teardown).** Matte materials are not in `_photoEnvBoostedMats`, so they
+would keep a reference to `_photoEnvMapSaved` after Alt+S exits — and a later `A.updateSky()` regen
+DISPOSES the previous render target (`§MEMLEAK_PMREM_DISPOSE`, `scene.js:227`). One pass at teardown
+points every cached material back at the live `A._envMap` (`§SUN_FILL_RATIO teardown envMap restored
+on N material(s)`), witness-asserted. **This also closes a pre-existing leak: before this change
+matte materials kept the staged HDRI as their envMap after Alt+S exited**, so plain navigation after
+a photoshoot was not the same plain navigation as before it.
+
+**Named caveat, not hidden.** Under the opt-in dusk mood (`A._photoDuskMood`, default OFF),
+`A.updateSky(PHOTO_SUN_ELEVATION, …)` runs *after* `_envMapHdriActive` is set, so the PMREM is not
+regenerated and `_photoEnvMapSaved` stays the pre-staging daytime sky; matte walls would then take a
+daytime-sky IBL in a dusk frame. The term is small (21% of an away wall's light in plain nav) and
+dusk mood is off by default, so it was NOT chased in the same pass — single-variable discipline.
+Recorded as the next thing to measure if dusk mood is ever defaulted on.
+
+---
+
+## §MEP_COLOR_SURVIVES_PHOTOREAL — 2026-09-02 (queue D-2)
+
+> **User, 2026-09-02:** *"The bad coloring or material in IFC elements, to get standard MEP look
+> during Alt-S and movie, is that tackled? At the moment still see greyish metallic good contrast,
+> but if there is use of std color for certain diff devices such as Yellow, Blue, Green, Red. Only a
+> certain turn lever is already fire red which is fine."*
+
+### ⚠ THE PALETTE IS AN AUTHORED CHOICE, NOT A PUBLISHED STANDARD
+
+Same boundary PR #1604 shipped under, restated because this section extends that palette's reach.
+**No MEP colour convention exists anywhere in the model data** — no `IfcSystem` / `system` column on
+any shipped building DB, and the colour columns that do exist are either a single undifferentiated
+default or the extractor's own `≈`-prefixed approximations. What is EXTRACTED is the *key*
+(`elements_meta.discipline`, `material_rgba`, `material_name`); what is AUTHORED is the
+discipline→hue *assignment*, and it reuses `A.DISC_COLORS` (`viewer/config.js:43-49`) **verbatim** —
+the same 12-entry table the HUD bars, bbox placeholders, `city.js`, `measure.js` and the §SUNGLASS
+band already paint with. **No new colour value is introduced by this section.** It is not, and is
+not claimed to be, an industry standard.
+
+### The measured defect — the tint was a total no-op on 4 of 5 buildings
+
+`§MEP_DISC_TINT` (`streaming.js`, 2026-08-14) already supplies a trade colour to MEP. Its gate is
+`if (!rgbaStr && stdMat) { … if (DISC_TINT_CLASSES[ifcClass]) … }`. Two scoping failures, both
+measured against the shipped meta DBs (`sat_census.log`, `gap2.log`):
+
+**(a) `!rgbaStr` — "the element has no colour" is the wrong question.** MEP elements carrying a
+`material_rgba` value:
+
+| building | MEP elements | with an rgba | dominant value | its HSV saturation |
+|---|---|---|---|---|
+| Hospital | 41,987 | **41,987 (100%)** | `0.920,0.900,0.850,1.000` × 40,563, `material_name` **NULL** | **0.076** |
+| Clinic | 12,480 | **12,480 (100%)** | `0.920,0.900,0.850,1.000` × 11,712, name `≈ Off-White` | **0.076** |
+| Terminal | 11,844 | **11,844 (100%)** | `1.000,1.000,1.000` × 6,552 / `Silver` × 3,612 (real authored names) | 0.000 |
+| LTU_AHouse | 84,675 | **84,675 (100%)** | four fully-saturated trade colours (green/magenta/blue/yellow) | **1.000** |
+| HHS_Office_Federated | 3,391 | 1 | — (3,390 NULL) | — |
+
+So the tint fires **only on HHS**. On Hospital and Clinic every MEP element carries an *achromatic
+off-white default*, `_TRI_METAL` multiplies over it (`diffuseColor.rgb *= triContrasted`, the shader
+already tints rather than replaces), and the result is exactly the user's words: greyish metallic.
+
+**(b) `DISC_TINT_CLASSES` is 3 classes.** `{IfcFlowSegment, IfcFlowFitting, IfcFlowTerminal}` —
+the IFC2x3 generic trio. Hospital/Terminal export IFC4-style `IfcPipeSegment` / `IfcPipeFitting` /
+`IfcDuctSegment` / `IfcDuctFitting` / `IfcCableCarrier*` / `IfcAirTerminal` / `IfcLightFixture` /
+`IfcFireSuppressionTerminal`. **0 of Hospital's 41,987 MEP elements are in `DISC_TINT_CLASSES`.**
+
+**The user's fire-red lever, identified exactly:** Hospital `IfcPipeFitting | FP |
+0.843,0.137,0.102,1.000` × **1,298** (+2 `IfcValve`, +1 `IfcDistributionControlElement`) — the
+grooved/Victaulic couplings §MEP_DISC_TINT's own comment already names. Saturation **0.879**. It
+survives because its own colour carries a hue. That is the tier this change must not touch.
+
+### The rule — ONE owner, three tiers, hue from the first source that has one
+
+`A._mepDiscAlbedo()` (`streaming.js`) is the single owner. Value/luminance always comes from the
+element; only HUE is ever supplied.
+
+| tier | test (all EXTRACTED) | outcome |
+|---|---|---|
+| **1a** | `material_name` present and **not** `≈`-prefixed → a real authored IFC material | **untouched, byte-identical** |
+| **1b** | the element's own `material_rgba` has HSV saturation ≥ `T` → its colour already carries a hue | **untouched, byte-identical** |
+| **2** | MEP class, no authored name, colour absent or achromatic | hue+saturation from the trade colour, **V from the element's own albedo** |
+| **3** | anything else (non-MEP class, no trade colour available) | unchanged — STD_MAT class default |
+
+Within tier 2 the trade colour is the first source that carries a hue: `_mepNameHint(element_name)`
+(the authored Revit family name — a *more specific* real-BIM signal) → `A.DISC_COLORS[discipline]`.
+An **achromatic** hint carries no trade hue and falls through — this is what finally moves
+`_mepNameHint`'s `DUCT` entry (STD_MAT galvanized grey, sat 0.052), which was itself part of the
+"uniform grey metal" complaint. A discipline whose legend entry is achromatic (`VOID`, `0x666666`)
+supplies no hue either, and the element is left alone.
+
+**Hue transfer is HSV, not HSL.** HSL desaturates hard as L→1, so at the off-white default's
+L = 0.885 an HSL recombination returns near-white. HSV keeps chroma: H and S from the trade colour,
+**V = max(r,g,b) of the element's own albedo**. The off-white `0.920,0.900,0.850` under FP
+(`0xcc8844`, H 30°, S 0.667) becomes `0.920,0.613,0.306` — a solid orange at the element's own
+brightness. The metal normal/roughness maps, `metalness`, `envMapIntensity` and the triplanar
+multiply are all untouched, so the *"greyish metallic good contrast"* the user complimented is the
+shading response, and it survives — only the hue moves.
+
+**When the element has no colour at all** (HHS's 3,390 NULL rows) the trade colour is used verbatim
+— **byte-identical to shipped `§MEP_DISC_TINT`**, so that path is preserved, not re-derived.
+
+### `T` — the achromatic threshold, derived from the data, not picked
+
+Over the tier-2-eligible population fleet-wide (MEP classes, no authored name), the distinct HSV
+saturations present are `{0.000, 0.033, 0.076, 0.100, 0.588, 0.713, 0.879, 1.000}`. The distribution
+is starkly bimodal and the **widest empty band is 0.100 → 0.588, width 0.4884**; its midpoint is
+**T = 0.344**. Split: 53,204 achromatic / 85,934 chromatic, and **0 elements lie within ±0.1 of T** —
+the classification is not knife-edge and no element's tier depends on the third decimal. The witness
+re-measures this gap per run and fails if any element lands inside the band.
+
+### Verification — `viewer/tests/witness_mep_color_photoreal.js` (W-MEP-COLOR-PHOTOREAL)
+
+Tier-A style (the `W-CPE-MATERIAL-KEY` pattern): boot the viewer once on a small building, then for
+each meta DB run the real stream `SELECT` through `sql.js` in-page and call the **shipped**
+`A._getMaterial()` on every element, reading `mat.color` back. Hues are COUNTED off real material
+objects. **No frame, no screenshot** (CLAUDE.md FUNDAMENTAL LAW).
+
+Gates: distinct MEP hues after ≥ before and ≤ the 12-entry legend ceiling; distinct-hue count equals
+the count of disciplines that actually reached tier 2; **RED CONTROL** — with `A._mepHueOff = true`
+every gate must fail (before==after); **TIER-1 CONTROL** — every tier-1a/1b element's material
+`color` is byte-identical before and after, asserted element-for-element, including the 1,298
+fire-red Hospital fittings and Terminal's 11,844 authored-name MEP; `T`-gap re-measured live.
+Self-failure: `VACUOUS` on an empty population, `NO-OP` when nothing moved, `INCONCLUSIVE` — never
+PASS — when nothing was judged.
+
+### MEASURED — 2026-09-02, W-MEP-COLOR-PHOTOREAL **55/55, five buildings, 0 red**
+
+Hues are COUNTED off real `THREE.Material` objects built by the shipped `A._getMaterial()`, plus the
+app's own `§MEP_HUE_TALLY` read off a live HHS stream. **No frame, screenshot or film was rendered
+or inspected.** Log: `viewer/tests/witness_mep_color_photoreal.log`.
+
+| building | distinct MEP hues pre → shipped | colourless MEP elements pre → shipped | tinted | RED CONTROL (`_mepHueOff`) |
+|---|---|---|---|---|
+| **Hospital** | **3 → 8** | **40,634 → 0** | 40,634 | 3 hues — the gain disappears |
+| **Clinic** | **2 → 5** | **12,467 → 43** | 12,467 | 2 hues — the gain disappears |
+| **HHS_Office_Federated** | 6 → 6 | **1,768 → 0** | 3,391 | **0 hues** — the gain disappears |
+| **LTU_AHouse** | **4 → 6** | 107 → 91 | 102 | 4 hues — the gain disappears |
+| **Terminal** | 2 → 2 | 11,828 → 11,828 | **0** | unchanged — every MEP element is tier 1a |
+
+Hospital's tinted split: `PLB 17,096 · MEP 13,495 · FP 6,832 · ELEC 1,623 · SAN 1,588` — **5 trade
+codes, 5 distinct hues painted, no collisions.** HHS: 6 codes → 6 hues, live-confirmed by the shipped
+line `§MEP_HUE_TALLY bld=HHS_Office_Federated mep_elements=3391 tinted=3391 distinct_hues=6
+trade_codes=6 legend_ceiling=12 T=0.344 inst_mep_uniform=283 inst_mep_mixed=0`.
+
+**Gate 1 is deliberately two-sided.** HHS gains real colour *without* gaining a distinct hue — its
+1,768 ducts moved off `_mepNameHint`'s galvanized-grey `DUCT` entry onto a hue other elements
+already carried. Counting hues alone would have scored that a NO-OP, which is the exact
+scope-blindness PRIMAL LAW 4 names.
+
+**TIER-1 CONTROL:** 98,283 tier-1 elements byte-identical with the rule on and off, asserted
+element-for-element. **The user's fire-red lever: 1300/1300 elements, `#d7231a` → `#d7231a`.**
+
+**Terminal's Gate 5 reports VACUOUS, not PASS** — 0 of its elements ever consult `T` (all 11,844 are
+settled at tier 1a by a real authored material name), so a min-distance there would mean nothing.
+
+### MIXED-BUCKET SAFETY — a real hazard this change created, measured and closed
+
+The merge/batch path gives a whole `(storey|disc|rgba|matVariant|mepHintCode)` bucket **one**
+material built from `items[0]`'s class. **MEASURED: Hospital had 21 of 160 such buckets mixing an MEP
+class with a non-MEP one, up to 3,714 non-MEP elements** (Clinic 2/65, LTU 21/231, Terminal 0/244) —
+they would have taken an MEP trade hue they do not belong to. The bucket key therefore gains an
+MEP-hue-class bit; splitting keeps both halves correct and costs at most 21 extra buckets.
+
+The **InstancedMesh** branch buckets by GEOMETRY HASH ALONE — the same caveat §MEP_DISC_PALETTE
+recorded for discipline — and cannot be split without a draw call per hash. MEASURED: Hospital
+**0 of 20,609** and Clinic **0 of 8,459** hashes span an MEP and a non-MEP class; LTU_AHouse has
+**108 of 51,393** (1,386 elements). On a set that is not uniform on MEP-ness the hue is **SUPPRESSED**
+(prior behaviour) and COUNTED (`inst_mep_mixed`), never applied.
+
+### Shipped in bim-ootb PR #1621 · `sw.js` v1126 → **v1127**, `viewer.html streaming.js?v=67 → 68`
+Owner: `A._mepDiscAlbedo` (`viewer/streaming.js`). Kill switch for the red control: `A._mepHueOff`
+— deliberately NOT a `cacheKey` dimension, so a caller flipping it MUST clear `A._matCache`.

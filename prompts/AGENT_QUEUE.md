@@ -465,17 +465,33 @@ realism". Raising contrast by adding light would fight that. Measure the current
 **Witness:** numeric per-pixel luminance separation between a sun-facing and an away-facing wall on
 the same building, before and after — not a screenshot, not "looks better".
 
-### D-2 · §MEP_COLOR_SURVIVES_PHOTOREAL · autonomous
+### D-2 · §MEP_COLOR_SURVIVES_PHOTOREAL · ✅ **DONE (witness) 2026-09-02** — PR **#1621**
 **User: standard MEP colours (yellow/blue/green/red per device) during Alt+S and the movie.**
-Half-shipped. `§MEP_DISC_PALETTE` (PR #1604) works — HHS bake shows `§MEP_DISC_COVERAGE
-uniformDisc=283 mixedDisc=0 (100% now keyed)`. **But the photoreal path paints over it:** the same
-log carries `§TRIPLANAR_INIT class=IfcFlowSegment tex=metal_color_1k.jpg`, same for
-`IfcFlowFitting` and `IfcFlowTerminal` — a metal texture keyed on `ifc_class` wins over the
-discipline colour. The user's fire-red valve survives only because it is a REAL IFC material.
-**The job:** let the discipline colour survive the triplanar material path (tint the albedo rather
-than replace it, most likely), so MEP reads by system in a photoreal frame.
-**⚠ The palette is AUTHORED, not a published standard** — that boundary was set when #1604 shipped;
-keep saying so. Witness counts distinct hues, does not look at a frame.
+Spec + full measurements: `prompts/PHOTOREAL_STILL_RENDER.md` §MEP_COLOR_SURVIVES_PHOTOREAL.
+Witness `viewer/tests/witness_mep_color_photoreal.js` — **W-MEP-COLOR-PHOTOREAL 55/55, five
+buildings, 0 red.** `sw.js` v1126→v1127, `streaming.js?v=67→68`.
+
+**⚠ This item's stated mechanism was WRONG and is corrected here, so no future session re-derives
+it.** The triplanar shader does NOT paint over the albedo — it already MULTIPLIES
+(`diffuseColor.rgb *= triContrasted`), so a hue in the base colour always survived it. **The real
+defect is upstream:** `§MEP_DISC_TINT`'s gate is `!rgbaStr` ("the element has no colour"), but 100%
+of MEP elements on Hospital / Clinic / Terminal / LTU **do** carry one — an *achromatic* default
+(Hospital `0.920,0.900,0.850` × 40,563 with `material_name` NULL; Clinic the same value × 11,712 as
+`≈ Off-White`). The tint therefore fired **only on HHS**. Its second gate, `DISC_TINT_CLASSES`, is
+the 3 IFC2x3 generic classes — **0 of Hospital's 41,987 MEP elements are in it.**
+
+**Fix:** one owner `A._mepDiscAlbedo` — hue from the first source that HAS one, the element always
+keeps its own V, roughness/metalness/envMap/triplanar untouched. Tier 1a a real (non-`≈`) authored
+material name, tier 1b an rgba that already carries a hue (HSV sat ≥ T = 0.344, the midpoint of the
+widest EMPTY band 0.100→0.588 in the fleet distribution) — both byte-identical.
+Measured: **Hospital 3→8 hues, 40,634 colourless MEP elements → 0 · Clinic 2→5, 12,467→43 ·
+HHS 1,768→0 · LTU 4→6 · Terminal 0 tinted (all tier 1a).** RED control green on all four gainers.
+**The user's fire-red lever = Hospital `IfcPipeFitting|FP|0.843,0.137,0.102` × 1,298 (sat 0.879) —
+1300/1300 byte-identical `#d7231a`.** Palette labelled AUTHORED in spec, code, witness header and PR.
+**Found and closed a hazard the fix itself created:** 21 of Hospital's 160 merge/batch buckets mix an
+MEP with a non-MEP class (up to 3,714 elements) and take `items[0]`'s class — the bucket key now
+carries an MEP-hue bit; the geometry-hash-keyed InstancedMesh branch suppresses the hue on a
+non-uniform set instead (Hospital 0/20,609 and Clinic 0/8,459 mixed hashes, LTU 108/51,393).
 
 ### D-3 · §DUCT_SILHOUETTE — jagged large ducts · autonomous, spec first
 **User: roundness works on lamps, large duct piping still jagged.** Diagnosed:
