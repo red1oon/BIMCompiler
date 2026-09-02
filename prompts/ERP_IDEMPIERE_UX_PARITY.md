@@ -108,7 +108,14 @@ FSM against `DocumentEngine.getValidActions` (the W-*-FSM witnesses already walk
 the row, and only THEN name what is actually missing. Known candidates to CHECK, not to assume:
 period control on Complete (is `C_Period` open/closed honoured?), `IsDocNoControlled`, GL category,
 and whether `iscanbereactivated` gates ReActivate in the live bar as it does in the module.
-**Do not write a second FSM.** `crud_core.js:200 legalDocActions` is the one seam.
+**Do not write a second FSM.**
+**⚠ CORRECTION 2026-09-02 (this line was WRONG when written, fixed after the §P4 audit):** the seam is
+NOT `crud_core.js:200 legalDocActions` — that function has **zero callers in the shipped app** (verified:
+only its definition and its export; its one caller anywhere is the bim-compiler witness
+`scripts/poc_docaction_full.js`). The real live seam is **`idempiere.html:2166 _fsmCtx`** → `fsm.dispatch`
+via `docActionOutcome`, feeding the form bar, the grid batch bar and the Process pill. Wiring
+`legalDocActions` as-is would WIDEN the bar back to the generic union. Also: the docstatus-cell edit path
+(`crud_core.js:626`) is not FSM-gated at all.
 
 ## §P5 — Consequence of §P1 to state explicitly, not a separate build
 `c_order` has **49 mandatory columns**; the curated form exposes 8. Once §P1 lands, mandatory
