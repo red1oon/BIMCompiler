@@ -478,8 +478,8 @@ Paths are `~/bim-ootb/viewer/` unless stated. Line numbers are `origin/main` @ `
 | **how long does it take?** | `schedule_author.js:78` `_installSecs(cls, rule, laborRates, realQty, lengthRatio)` | hand-roll it. `time_machine.js:4494` `getInstallSecs` already delegates here; its local fallback is documented as a divergence risk |
 | **what is the task grid?** | `schedule_author.js:425` `instantiateTemplate(...)` from **`rates/4D_template.json`** | derive phases from what the elements did. §B: an envelope cannot constrain what drew it |
 | **when does each element happen?** | `schedule_gate.js:421` `computeSchedule(...)`, then `cpm_schedule.js:796` `run(...)` | re-solve. The template path ends at `schedule_author.js:884` `remapSolveToTasks` |
-| **where inside its task?** | `schedule_author.js:924` `remapSolveToTasks(solve, tasks, startISO, layerOf)` — the `layerOf` 4th arg is MERGED (`§TPL_LAYER_ORDER`, 2026-08-26, `origin/main`), corrected 2026-08-27 (was stale, said "unmerged" — see `4D_GANTT_TM_REFACTOR.md` §FUTURE, which caught this first) | assume elements inside a task are in solve order — they're laid out in SUPPORT order via `layerOf` now |
-| **where inside its bar does it PLAY?** (the kernel_ops timestamp the scrubber + film read) | `time_machine.js` `_tmTilePlayWithinTasks(disp, cap, displayAuthored)` → **calls** `ScheduleAuthor.remapSolveToTasks(cpmDisplay, tasksFromCap, base, null)`; `injectGantt`'s `_tmRescaleToTaskWindow` returns its interval, affine only as the fallback (§TM_REVEAL_TILED, 2026-09-02, `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 §TM_REVEAL_SHIPPED). ⚠ `displaySchedule` (the row above) has NO reader in `time_machine.js` — the cache/`§TPL_REVEAL_SPREAD`/`witness_day0_integrity` judge it, the movie does not play it | measure the reveal distribution on `displaySchedule` and call it the movie's (this lane did, for a week); re-derive a within-bar layout in `time_machine.js` (the affine did — 44-71% of every bar dead) |
+| **where inside its task?** (`displaySchedule`, the AUTHORED map — **not the one that plays**, see the next row) | `schedule_author.js:924` `remapSolveToTasks(solve, tasks, startISO, layerOf)`. The `layerOf` 4th arg is **MERGED** (`§TPL_LAYER_ORDER`, 2026-08-26, on `origin/main`) — corrected 2026-08-27, and re-confirmed 2026-09-02 against `origin/main` @ `c8a6df61`; the old "exists only on unmerged `fix/tpl-layer-order`" wording is dead and must not be reintroduced. ⚠ **This verb has TWO call sites with DIFFERENT arguments**: here with the support-layer `layerOf`, and from `time_machine.js` with `layerOf = null` over the CPM display times (next row). They are different maps — measured 2026-09-02, they disagree on the START INSTANT of **99.6%** of Hospital's 63,182 elements (§CACHE_PLAYED_LAYER §K) | assume elements inside a task are in solve order — they're laid out in SUPPORT order via `layerOf` now. And do not assume this row answers "when does it appear on screen": it does not, the next row does |
+| **where inside its bar does it PLAY?** (the kernel_ops timestamp the scrubber + film read) | `time_machine.js` `_tmTilePlayWithinTasks(disp, cap, displayAuthored)` → **calls** `ScheduleAuthor.remapSolveToTasks(cpmDisplay, tasksFromCap, base, null)` — same verb as the row above, **different solve input and `layerOf = null`**; `injectGantt`'s `_tmRescaleToTaskWindow` returns its interval, affine only as the fallback (§TM_REVEAL_TILED, 2026-09-02, `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 §TM_REVEAL_SHIPPED). ⚠ `displaySchedule` (the row above) has NO reader in `time_machine.js`. **Since 2026-09-02 the persisted cache carries BOTH maps and every judge PRINTS which one it read** — `CACHE.layerOf(run)`, default `played` (§CACHE_PLAYED_LAYER, bim-ootb PR #1607); `§W_D0`, `§TPL_REVEAL_SPREAD`, `§TPL_PARALLEL_REVEAL`, `§STAIR_POOL` and `§DAYBATCH_*` all judge `played` now | measure the reveal distribution on `displaySchedule` and call it the movie's (this lane did, for a week — every number so produced is struck in §J.1 and `GANTT_ACCURACY.md`); re-derive a within-bar layout in `time_machine.js` (the affine did — 44-71% of every bar dead); read a cached schedule without saying which layer it is (`layerOf` throws on an unknown id and reports MISSING rather than substituting, W-CLA C5) |
 | **what level is it on?** | **OWNER: `viewer/lib/level_deriver.js` `LevelDeriver.derive/levelFor`** (T1 containment → T2 declared name → T3 geometry grid → T4 counted). Two callers: `location_axis.js` (display) and, **flag-gated**, the task grid — `schedule_author.js` `_deriverLevelAxis()` behind `opts.levelSource === 'deriver'`, **default OFF**, see §I.3a | re-derive it from `e.storey`. The OLD path (`schedule_gate.js:404` `collapsePhase` → `:338` `deriveBandRanks`) is still what runs by default and is **broken — see §I.3**; do not build new work on it |
 | **are two storey names one floor?** | `schedule_gate.js:382` `deriveStoreyMergeMap(spatialStructure)` | ✅ **RUNS as of 2026-08-27** (Terminal 23 names → 15 bands) — the elevation patches were never uploaded to OCI, not never written; §I.3 §CLOSED. ⚠ still throws for `HHS_Office_Federated` |
 | **is this slab ground-bearing?** | `schedule_gate.js:201` `groundworkSlabs(els)`, one shared definition | reclassify slabs inline in a recipe |
@@ -1311,14 +1311,42 @@ hole where a RULE should be is the square peg. Write the rule first.
 
 ## §J.1 ✅ WHAT IS AT ZERO, AND HOW IT IS CHECKED
 Witness: **`bim-ootb viewer/tests/witness_day0_integrity.js`** (§W_D0), run off the persisted cache.
-Fleet verdict went **4 PASS / 9 FAIL / 3 INCONCLUSIVE → 14 PASS / 0 FAIL / 2 INCONCLUSIVE.**
+~~Fleet verdict went **4 PASS / 9 FAIL / 3 INCONCLUSIVE → 14 PASS / 0 FAIL / 2 INCONCLUSIVE.**~~
 
-| claim | what it asserts | result |
+⛔ **C2 / C3 / C4 IN THE TABLE BELOW ARE VOID — STRUCK 2026-09-02 (queue item A-0). They judged
+`displaySchedule`, a map `viewer/time_machine.js` has ZERO readers of (`4D_GANTT_TM_REFACTOR.md`
+§FUTURE item 2 §TM_REVEAL_SHIPPED), on a cached run that additionally never ran the CPM display
+pass at all (no `opts.displayRemap` — §CACHE_PLAYED_LAYER §G.1). C1 is band GEOMETRY and is
+layer-independent: it STANDS.** Re-baselined on the layer the film actually plays (bim-ootb PR
+#1607; `§W_D0` now prints `layer=` on every line, and `LAYER=display` re-points it deliberately):
+
+**`§W_D0_VERDICT layer=played claims=16 PASS=5 FAIL=8 INCONCLUSIVE=3 RED`** — 4 buildings ×
+4 claims. (16, not the 13 of the §"State, honestly" note below: that table was read off a cache
+covering only three buildings, so the fourth contributed a single INCONCLUSIVE instead of four
+claims. Cache coverage, not a code regression — which also answers B-1's premise.)
+
+| claim | Duplex | HHS | Hospital | Terminal |
+|---|---|---|---|---|
+| C1 BAND MODEL (layer-independent) | INCONCLUSIVE (no `spatial_structure`) | FAIL 3 declared / 4 bands | INCONCLUSIVE (no `spatial_structure`) | FAIL 6 declared / 22 bands, 5 datum collisions |
+| C2 DAY-0 PURITY | FAIL judged=14 bad=3 | PASS judged=75 | **PASS judged=51 impure=0** | FAIL judged=245 bad=9 (IfcBeam) |
+| C3 DAY-0 SUPPORT | FAIL judged=2 bad=1 | FAIL judged=4 bad=3 (IfcSlab) | INCONCLUSIVE judged=0 | PASS judged=9 |
+| C4 NO EARLY MEP (3 d) | FAIL judged=160 bad=83 | PASS judged=237 | PASS judged=152 | FAIL judged=525 bad=4 |
+
+**Why the strike matters even where the verdict LETTER is unchanged:** running the same witness with
+`LAYER=display` gives the same 5/8/3 pattern but different populations and counts — HHS C3
+`judged=4 bad=3` (played) vs `judged=11 bad=5` (display); Duplex C4 `bad=83` vs `88`; Terminal C2
+`bad=9` vs `10`; HHS C2 `judged=75` vs `86`. A coincidence of verdicts is not evidence the old
+measurement was right. Hospital C2's played `judged=51` is `555/11` — exactly the value
+§TM_REVEAL_SHIPPED predicted for the tiled layer, which is the cross-check that this is the right map.
+
+~~ORIGINAL TABLE, kept for the trail only — do not quote C2/C3/C4 from it:~~
+
+| claim | what it asserts | ~~result~~ |
 |---|---|---|
 | C1 BAND MODEL | bands used == storeys the IFC declares | PASS Duplex 4/4 · HHS 3/3 · Terminal 6/6 · Hospital INCONCLUSIVE |
-| C2 SUB FIRST | nothing starts before the Substructure it sits on finishes | PASS ×4 |
-| C3 DAY0 SUPPORT | nothing on screen is unheld — **split ORDER vs MODEL** | **ORDER = 0 on all four** |
-| C4 NO EARLY MEP | no MEP phase on DAY 0 | PASS ×4 |
+| ~~C2 SUB FIRST~~ | nothing starts before the Substructure it sits on finishes | ~~PASS ×4~~ |
+| ~~C3 DAY0 SUPPORT~~ | nothing on screen is unheld — **split ORDER vs MODEL** | ~~**ORDER = 0 on all four**~~ |
+| ~~C4 NO EARLY MEP~~ | no MEP phase on DAY 0 | ~~PASS ×4~~ |
 
 Plus, measured directly off the shipped contact graph: **of 718 `IfcColumn` that rest on a real
 `IfcSlab`/`IfcFooting`, ZERO start before that support finishes** (Duplex 0/0, HHS 0/221,
@@ -1663,7 +1691,7 @@ while the other ten still pass. That asymmetry is precisely why this was invisib
 ## State, honestly
 - ⛔ **STALE 2026-08-27 (§FUTURE item 7 stage 2, bim-ootb PR #1568) — this "DAY 0 is at zero" line no
   longer holds against current `origin/main`.** Re-run with a fresh cache: `§W_D0` now scores
-  `claims=13 PASS=4 FAIL=5 INCONCLUSIVE=4 RED` — reproduces identically on unmodified `origin/main`
+  ~~`claims=13 PASS=4 FAIL=5 INCONCLUSIVE=4 RED`~~ — reproduces identically on unmodified `origin/main`
   (isolated in a clean baseline worktree), so nothing PR #1567/#1568 did caused it; something between
   whatever commit this 14/0/2 line was measured against and `a2e582b` regressed it. The "14 PASS"
   below is what this line ORIGINALLY reported and is being kept for the trail, not re-derived —
@@ -1671,6 +1699,12 @@ while the other ten still pass. That asymmetry is precisely why this was invisib
   assume the old table). ~~DAY 0 is at zero.~~ `§W_D0` **14 PASS / 0 FAIL / 2 INCONCLUSIVE** (`bim-ootb
   viewer/tests/witness_day0_integrity.js`). It refuses to print GREEN because two claims judged an
   empty population — both Hospital, both honest unknowns, not hidden failures.
+  **⛔ RE-BASELINED 2026-09-02 (queue item A-0/A-9) — read §J.1's table, not this line.** `claims=13`
+  was read off a cache covering only THREE buildings; with all four current it is
+  **`claims=16 PASS=5 FAIL=8 INCONCLUSIVE=3`**, on the PLAYED layer. So the "13" figure is not a
+  regression signature at all, and **B-1 must not be dispatched to bisect it** — there is nothing
+  there to bisect. The genuinely open question is unchanged: C2/C3/C4's FAILs are real on the layer
+  that plays, and nobody has yet attributed them to a commit.
 - ✅ **0 of 718 `IfcColumn`** start before the slab/footing that bears them.
 - ✅ **§K.4 FIXED 2026-08-27 (bim-ootb PR #1552)** — was: injected storey datum = mean wall
   CENTRE-z, 0.64–3.16 m above the floor, so `§STOREY_DATUM` assigned every element one level DOWN,

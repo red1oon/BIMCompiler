@@ -5751,19 +5751,26 @@ investigated or fixed yet, don't assume any of these are closed by today's other
      happens for every task now. `4D_MODEL_INTEGRITY.md` §I's own ownership-table row for "where
      inside its task?" is *also* stale the same way — it says the `layerOf` 4th arg "exists only on
      unmerged `fix/tpl-layer-order`" at `6b12783`; that branch is merged into current `main`. Fix
-     that row next time §I is touched.
-   - **Measured (Hospital, `bim-ootb scripts/probe_tpl_reveal_spread.js Hospital`, reads the cache
+     that row next time §I is touched. ✅ **DONE 2026-09-02 (queue item A-4 item 3)** — §I's row
+     states MERGED in its own words, re-confirmed against `origin/main` @ `c8a6df61`, and is now
+     cross-referenced with the "where inside its bar does it PLAY?" row PR #1605 added beneath it
+     (same verb, two call sites, different arguments — the maps disagree on 99.6% of Hospital's
+     elements). See also `4D_SCHEDULE_ARCHITECTURE_REDESIGN.md` §L1.
+   - ⛔ **VOID — STRUCK 2026-09-02 (queue item A-0). Both bullets below measured a map nobody
+     plays, in a configuration the browser never runs. Do not quote either number.** See
+     §CACHE_PLAYED_LAYER §K at the end of this item for the re-measurement that replaces them.
+   - ~~**Measured (Hospital, `bim-ootb scripts/probe_tpl_reveal_spread.js Hospital`, reads the cache
      — `cache_4d_run.js` extended to persist `res.tasks` so this didn't need re-deriving, PR #1558):
      `§TPL_REVEAL_SPREAD n=63182 skipped=0 decilePct=[12.8,9.7,10.0,9.7,9.4,10.4,9.0,8.8,10.0,10.3]`
      — roughly UNIFORM across all 42 tasks pooled (first-decile 1.28x uniform, "mild skew"). This
      contradicts the item's premise of bulk cramming — at the aggregate level `remapSolveToTasks`
-     already spreads elements across the bar.**
-   - **But `§TPL_REVEAL_SPREAD_WORST` shows real localized cramming**, concentrated in short,
+     already spreads elements across the bar.**~~
+   - ~~**But `§TPL_REVEAL_SPREAD_WORST` shows real localized cramming**, concentrated in short,
      dense tasks: `TASK_MEP_Final_Level_4` (n=499, 3-day window) had 42.7% of its elements in the
      FIRST DECILE (i.e. first ~7.2h of 3 days); `TASK_MEP_Final_Level_5` (n=564, 3 days) had 38.8%.
      Both are MEP Final phase — many small fixtures, short declared duration. This is the closest
      match to the user's "whole task springs into existence" complaint, and it is scoped to a
-     specific phase shape (short window + high element count), not the general case.
+     specific phase shape (short window + high element count), not the general case.~~
    - **Open, unresolved caveat before either closing this or fixing it:** the measurement above ran
      `remapSolveToTasks` on the RAW `computeSchedule` output — the probe (like `cache_4d_run.js`)
      passes no `opts.displayRemap`. Every REAL UI call site (`time_machine.js:5330,6910,6952`) DOES
@@ -6072,6 +6079,122 @@ investigated or fixed yet, don't assume any of these are closed by today's other
    Residual named in §D ("does NOT do") confirmed on the shipped function: `Superstructure_Level_3
    IfcSlab n=22 maxDecile=100% distinct=22` — 22 distinct instants, but the set's width is its 0.8%
    labour share (flat 823 s/slab) placed as one CPM trade block — user decision, not code.
+
+   **2026-09-02 — §CACHE_PLAYED_LAYER: THE JUDGES NOW NAME THE LAYER THEY JUDGE (queue item A-9,
+   bim-ootb `fix/cache-played-layer`). SPEC, written before code.**
+
+   **G. THE DEFECT BEING REMOVED.** §TM_REVEAL_SHIPPED (§A above) established that the movie and
+   the scrubber never read `displaySchedule`. It did **not** change what `scripts/cache_4d_run.js`
+   persists — so `~/.cache/bim4d/*/run.json` still carries exactly one schedule, the unplayed one,
+   under the neutral key `sched`, and every cache reader silently inherited it:
+   `viewer/tests/witness_day0_integrity.js` (§W_D0 C2/C3/C4), `scripts/probe_tpl_reveal_spread.js`
+   (§TPL_REVEAL_SPREAD), `scripts/probe_tpl_parallel_reveal.js`, `scripts/probe_tpl_calibration_scope.js`,
+   `viewer/tests/probe_stair_flight_support_pool.js`. **None of them prints which layer it judged**,
+   which is why the wrong layer survived four weeks of measurement. That anonymity is the defect,
+   not the layer choice — a judge that cannot name its own input cannot report being pointed at
+   the wrong one (PRIMAL LAW clause 4).
+
+   **G.1 A SECOND, INDEPENDENT DIVERGENCE FOUND WHILE SPECCING THIS — the cached run was not even
+   the live CONFIGURATION.** `cache_4d_run.js` calls `materializeZones` **without `opts.displayRemap`**.
+   Read `schedule_author.js:728-736`: that hook is what sets `_displayAuthored = 1` and what replaces
+   the raw solve with the CPM display timeline before windows are authored. Measured consequences on
+   the current Hospital cache (`~/.cache/bim4d/Hospital/567de7d89253_569fac128caf/witness.log`,
+   29 lines, read in full): **no `§ZONE_DISPLAY_AUTHORING` line, no `§CELL_GATE` line, no
+   `§CPM_DISPLAY` line** — the cached run authored its windows from the RAW schedule and never ran
+   the CPM display pass at all, while the live probe on the same building reports
+   `§CELL_GATE repr=99.42% path=CELL`. So the cache was not "the played layer's sibling"; it was a
+   third configuration nobody runs. Persisting a played layer on top of that would still be wrong,
+   so the hook is wired in as part of this change and `schedules.display_authored` is read from the
+   DB, never assumed.
+
+   **H. THE FIX (spec).**
+   - **New module `scripts/lib/tm_played_layer.js` — ONE owner for "the played layer, in node".**
+     It holds the brace-matched slicing of the live `time_machine.js` functions (`_tukeyBound`,
+     `_displayTimelineRemember`, `_displayTimeline`, `_tmDisplayRemap`, `_tmRescaleToTaskWindow`,
+     `_tmTilePlayWithinTasks`) and the `injectGantt` mirror that turns them into a `guid -> {s,e}`
+     map. This is the approach `scripts/probe_tm_reveal_shipped.js` proved in PR #1605, **lifted,
+     not re-invented** — the probe is refactored onto the module in the same commit so exactly one
+     copy exists. `applyTiling:false` reproduces the pre-#1605 affine (the probe's A column and its
+     red control); `applyTiling:true` reproduces the shipped play path byte-identically by setting
+     the sandbox's `_tiledPlay` and calling the shipped `_tmRescaleToTaskWindow`.
+   - **`cache_4d_run.js` persists BOTH layers, named.** `run.json` gains `play` (the kernel_ops
+     timestamps the film and the scrubber read) and `layers` (a self-describing record: id, what
+     writes it, whether `time_machine.js` reads it). `sched` is KEPT under its existing key so no
+     reader breaks, and is additionally aliased as `display`. `INPUTS` gains `time_machine.js`,
+     `gantt_model.js`, `lib/room_walker.js`, `lib/level_deriver.js`, `location_axis.js` — the
+     played layer depends on all five, so a stale cache stays impossible.
+   - **`read()` gains `layerOf(run, id)`** returning `{ id, map, desc }`. Every judge selects
+     through it and prints `layer=<id>` on its own `§` line. Default = `played`; `LAYER=display`
+     re-points a judge at the old map deliberately, and it still says so on every line.
+   - **Re-pointed judges:** `§W_D0` (C2/C3/C4 — C1 is band geometry, layer-independent, and stays),
+     `§TPL_REVEAL_SPREAD`, `§TPL_PARALLEL_REVEAL`, `probe_stair_flight_support_pool`,
+     `probe_tpl_calibration_scope`.
+
+   **I. WITNESS CLAIM (before code): `viewer/tests/witness_cache_layer_attribution.js`, W-CLA.**
+   Reads the persisted cache only — no pipeline re-run, no browser, no bake.
+   - **W-CLA-1 BOTH LAYERS** — every building with a current-code cache carries both `play` and
+     `sched`, with equal guid coverage. Population = cached buildings; **INCONCLUSIVE, never PASS,
+     when zero are cached.**
+   - **W-CLA-2 NOT THE SAME MAP** (the anti-vacuous claim) — the two layers must actually differ,
+     or re-pointing every judge is a no-op dressed as a fix. Asserted as: ≥1% of shared guids have
+     a different start instant, AND the aggregate within-task decile vectors differ. Both vectors
+     printed, both layers named.
+   - **W-CLA-3 PLAYED IS IN-WINDOW** — every played interval satisfies `wS ≤ s ≤ e ≤ wE` for the
+     task that claims it (the invariant `_tmRescaleToTaskWindow` exists to hold). Population =
+     elements with a resolvable task.
+   - **W-CLA-4 EVERY CACHE READER NAMES ITS LAYER** (source-text claim, the actual DONE-WHEN) —
+     for each file that calls `CACHE.read(`, its source must reference `layerOf(` **and** emit
+     `layer=` in a `§` line. Population = the reader files found by grep; a file added later and
+     not re-pointed makes this claim FAIL, which is the point.
+   - **W-CLA-5 NO SILENT DEFAULT** — `layerOf` on an unknown id throws rather than falling back,
+     and on a cache built before this change reports `MISSING` rather than substituting `sched`.
+
+   **J. WHAT THIS DOES NOT DO.** It does not change one line of shipped viewer behaviour — the
+   film, the scrubber, task windows, dates, crews and cost are untouched; `time_machine.js` is
+   READ (sliced) by node, never edited. It does not re-verify §TM_REVEAL_SHIPPED's numbers; those
+   were measured on the played layer already and stand. It does not decide anything about the
+   residual slab compaction (U-8/U-9 remain the user's).
+
+   **K. MEASURED after the code (bim-ootb PR #1607 `fix/cache-played-layer`; all four buildings
+   rebuilt = 119,568 elements; logs `scratchpad/cache_fleet.log`, `wcla_fleet.log`,
+   `wd0_played.log`, `wd0_display.log`, `spread_both.log`).**
+   - `§W_CLA_SUMMARY claims=5 PASS=5 FAIL=0 INCONCLUSIVE=0 GREEN`. C3 judged **119,568**
+     element-task pairs, bad=0. C4 found **5 cache-reading files**, all now naming their layer
+     (4 select through `layerOf`, `probe_tpl_calibration_scope` declares `layer=NONE`).
+   - **C2, the anti-vacuous claim: the two layers really are different maps.** Share of shared
+     guids whose START INSTANT differs — Duplex **97.1%**, HHS **99.8%**, Hospital **99.6%**,
+     Terminal **99.6%**. They differ for two independent reasons: the played layer's solve input
+     is the CPM display timeline, and it calls `remapSolveToTasks` with `layerOf = null` where
+     `displaySchedule` passes the §TPL_LAYER_ORDER support-layer bands.
+   - **The cached run is now the live configuration, and `§CELL_GATE` proves it** — it did not
+     appear in the cache log at all before this change, and now matches `probe_tm_reveal_shipped`'s
+     live values EXACTLY: Duplex **97.34% CELL**, HHS **85.21% GRAPH**, Hospital **99.42% CELL**,
+     Terminal **99.56% CELL**.
+   - **`§TPL_REVEAL_SPREAD` RE-MEASURED, replacing the struck `[12.8,9.7,…]`.** Aggregate
+     within-task decile %, PLAYED layer, post-§TM_REVEAL_TILED:
+     Duplex `[8.0,11.5,9.6,9.7,9.8,10.0,9.5,10.5,10.7,10.8]` ·
+     HHS `[9.1,8.3,9.9,9.6,9.4,9.4,10.3,11.2,11.3,11.5]` ·
+     **Hospital `[10.6,11.0,9.9,9.7,8.0,9.1,10.1,10.2,10.7,10.7]`** ·
+     Terminal `[6.9,8.1,9.1,10.8,10.4,10.7,10.7,10.9,11.1,11.4]`. First-decile ratio 0.80x /
+     0.91x / 1.06x / 0.69x — **roughly uniform, and now that is a statement about the film.**
+     ⚠ Three different vectors exist for Hospital and they must not be confused:
+     the struck `[12.8,…]` (unplayed map, no-displayRemap configuration), the PRE-#1605 played
+     layer `[12.1,16.2,19.3,9.2,8,7.7,4.5,3.7,6.6,12.6]` (§TM_REVEAL_SHIPPED §B, the affine —
+     that one is the real defect this lane fixed), and this one.
+   - **`§W_D0` re-baselined on the played layer: `claims=16 PASS=5 FAIL=8 INCONCLUSIVE=3`.**
+     (16 not 13 — the old table's 13 came from one building having no current cache, contributing
+     a single INCONCLUSIVE instead of four claims. That is cache coverage, not a code regression:
+     B-1's "reproduces `claims=13 PASS=4 FAIL=5 INCONCLUSIVE=4` on unmodified `origin/main`" was
+     read off an incomplete cache.) Same run with `LAYER=display` gives the SAME 5/8/3 pattern but
+     DIFFERENT populations and counts, which is exactly why the old numbers were void as
+     measurements even where the verdict letter happened to agree: HHS C3 `judged=4 bad=3` (played)
+     vs `judged=11 bad=5` (display); Duplex C4 `bad=83` vs `88`; Terminal C2 `bad=9` vs `10`;
+     HHS C2 `judged=75` vs `86`. Hospital C2 on the played layer is `judged=51 impure=0`, which is
+     `555/11` — the same value §TM_REVEAL_SHIPPED predicted for the tiled candidate.
+   - Cross-checks that the cache's played layer IS the shipped one: `§STAIR_POOL Hospital
+     floating 416` matches §TM_REVEAL_SHIPPED §D's predicted post-tiling `424 -> 416`; W-RWB
+     re-run on Duplex `pass=8 fail=0`, `auditFloating 20 -> 17` unchanged;
+     `§TPL_REVEAL_ABSOLUTE Hospital layer=played 63182/63182 outside=0`.
 
 4. **Editor full-cycle review.** Whether the standalone Schedule Editor (`schedule_editor_ui.js`)
    actually supports a complete edit cycle end-to-end is *already* named as unverified above, in this

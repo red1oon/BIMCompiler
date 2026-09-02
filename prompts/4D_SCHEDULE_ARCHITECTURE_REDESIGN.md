@@ -587,6 +587,15 @@ time §I is touched."* A session obeying PRIMAL LAW clause 0 reads §I, finds th
 the one place you have to read; a correction parked in another file's futures list defeats it.
 ➡ **Apply the correction INTO §I's row** (and re-check §I's other `origin/main @ 6b12783` line
 numbers while there — the whole table is pinned to that commit). §FUTURE keeps a one-line pointer.
+✅ **DONE 2026-09-02 (queue item A-4 item 3).** §I's row now states MERGED in its own words,
+re-confirmed against `origin/main` @ `c8a6df61`, and says explicitly that the stale wording must
+not be reintroduced. It is also now made consistent with the row PR #1605 added beneath it
+(**"where inside its bar does it PLAY?"**): the two rows describe the SAME verb called from TWO
+sites with different arguments, which is precisely the confusion that let a month of measurement
+judge the wrong map — so each row now names the other. `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2's
+"fix that row next time §I is touched" instruction is discharged.
+⚠ The second half of the ➡ — re-checking §I's other line numbers against `6b12783` — was **NOT**
+done in that pass and is still open.
 
 **L2 — `4D_MODEL_INTEGRITY.md` §L is carrying TM edit-path status that §S5b already owns in depth.**
 §L's *"✅ THE TM WIRING IS SOUND — TRACED 2026-08-27, PR #1553"* and its persistence bullets

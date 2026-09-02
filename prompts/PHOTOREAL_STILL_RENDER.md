@@ -1830,7 +1830,25 @@ look** — verify live: corner/edge contact shadow should now read as visible wi
 the original over-dark look. If still too weak or too strong, the next lever is intensity again
 (not radius, until intensity is confirmed right) — keep changes single-variable per round.
 
-## §PHOTO_REALISM_RETUNE — over-bright/over-reflective washing out shadow contrast + cool indoor read (2026-08-27, user-queued, SPEC ONLY, not built)
+## §PHOTO_REALISM_RETUNE — over-bright/over-reflective washing out shadow contrast + cool indoor read (2026-08-27, user-queued) — **2 of 3 items SHIPPED AND MERGED; item 1 still open**
+
+> ⛔ **HEADING CORRECTED 2026-09-02 (queue item A-4 item 2). It used to read "SPEC ONLY, not built",
+> which was already false when written down and got more false afterwards** — a session reading only
+> the heading would have re-specced work that is live on `main`. Verified against `origin/main`
+> @ `c8a6df61`, in the code, not from the PR titles:
+>
+> | item | state | evidence in the shipped tree |
+> |---|---|---|
+> | **1** brightness / staged-PL re-measure vs the post-`§TRINORM_LINEAR` baseline | ⛔ **NOT DONE** | `A._nightPLScaleStill = 0.5` unchanged (`viewer/tools.js:1100`), and no re-measurement against that baseline is recorded anywhere in this file or `NIGHT_AND_FIXTURE_LIGHTING.md` |
+> | **2** `PHOTO_ENVMAP_BOOST` 3.0 → 2.0 (the room probe double-counts) | ✅ **SHIPPED** — bim-ootb **PR #1575**, merged `81599696` | `var PHOTO_ENVMAP_BOOST = 2.0;` (`viewer/effects.js:2643`), with the full history comment and `witness_envmap_retune.js` |
+> | **3** warm camera fill, `CAM_LIGHT_COLOR` → the `0xffdca8` family | ✅ **SHIPPED** — bim-ootb **PR #1579** (`§TRIPLANAR_NORMAL`), which names "§PHOTO_REALISM_RETUNE item 3" in its own commit message | `var CAM_LIGHT_COLOR = 0xffdca8` (`viewer/effects.js:332`) — the spec text below still says `0xfff2e0`; that value is gone |
+>
+> **Scope note, so item 2 is not overstated:** #1575 changed the CONSTANT and added a witness. There
+> was no separate "room-probe double-counting" code fix — double-counting is the *reason* the
+> constant was stepped down, not a second thing that shipped.
+>
+> The item-1/2/3 prose below is the ORIGINAL spec and is left intact for the trail. Read items 2 and
+> 3 as history, not as work to do.
 
 **User's ask, verbatim:** *"we already got things too bright, shiny reflection, it be shadow effects
 for realism"* — then, same session: *"Indoor lighting should have more warm lighting."* Studied
@@ -1886,6 +1904,9 @@ confirmed the change reaches its real 17-19 glossy materials the same way, but a
 before/after there was blocked by unrelated environment flakiness (a hang, then a puppeteer crash) —
 flagged honestly, not claimed as verified. **Items 1 (brightness/PL-scale re-measure) and 3 (warm
 camera fill) deliberately NOT touched in this pass** — single-variable discipline, per spec.
+**⚠ 2026-09-02: item 3 shipped LATER, in bim-ootb PR #1579 (`§TRIPLANAR_NORMAL`), which cites
+"§PHOTO_REALISM_RETUNE item 3" by name — `CAM_LIGHT_COLOR` is `0xffdca8` on `main` today. Only
+item 1 is still open.** See the corrected heading table at the top of this section.
 
 **Order, and why:** items 1+2 first (both are literally "step back an already-known-overtuned
 constant," lowest risk, most likely source of "too bright/shiny" exactly as reported) — verify those

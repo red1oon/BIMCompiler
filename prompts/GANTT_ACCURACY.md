@@ -1664,13 +1664,21 @@ flipped, nothing built.** Data: the persisted `~/.cache/bim4d` runs, rebuilt onc
 codeKey `567de7d89253` (the 2026-08-27 cache predates §PHASE_WATERMARK_FLOOR + 3 other schedule-input
 commits) — Hospital 63,182 els + Duplex 1,119 els, shipped pipeline, §-logs read
 (`witness.log`: `§TPL_MOVIE_BINDS_BARS remapped=63182/63182 degenerateTasksSpreadEvenly=0`).
-Probe scripts + logs: session scratchpad `daybatch_measure.py` / `daybatch_burst_probe.py`.
+⚠ **That `§TPL_MOVIE_BINDS_BARS` line used to end "every element now PLAYS inside the bar that
+claims it" — a false claim about `displaySchedule`, which `time_machine.js` has zero readers of.
+The shipped log string was corrected 2026-09-02 (A-0); the COUNTS are unchanged.**
+Probe scripts + logs: session scratchpad `daybatch_measure.py` / `daybatch_burst_probe.py`;
+the re-measurement is `bim-ootb scripts/probe_daybatch_played.js` (in the repo, not a scratchpad).
 
 **0. The question's premise is stale.** "The current `_cap` linear i/n distribution" is no longer
 the mechanism: the canonical template path's `remapSolveToTasks` (`schedule_author.js:965-1044`,
 §TPL_MOVIE_BINDS_BARS + §TPL_LAYER_ORDER + §FUTURE-item-2 tiling) now lays each task's elements out
 in support-layer bands, tiled edge-to-edge with each element's width ∝ its own solve duration
 (installSecs/crew). That is MORE continuous than i/n — duration-weighted, no day concept anywhere.
+⚠ **Corrected 2026-09-02:** that describes `displaySchedule`. Since #1605 the PLAYED layer is the
+same verb called with different arguments (CPM display times as the solve, `layerOf = null`), so
+"duration-weighted, no day concept" holds for the film too — but the two maps are NOT the same
+schedule: they differ on **99.6%** of Hospital's guids by start instant.
 
 **1. Real day-buckets do NOT exist.** Hospital (`§DAYBATCH_*`, cache `567de7d89253_569fac128caf`):
 - `§DAYBATCH_TIES distinctEnds=63179/63182 largestExactTie=2` — end_ts are pairwise-distinct
@@ -1678,22 +1686,38 @@ in support-layer bands, tiled edge-to-edge with each element's width ∝ its own
 - `§DAYBATCH_INTRADAY` hour-of-day histogram min=2505/max=2779 vs 2633 expected if uniform (±5.5%),
   ends within 1 min of midnight = 123/63,182 = **0.19%**. No day-boundary concentration at all
   (24/7 calendar: `§CREW_DAY shift=24h/24h`). Duplex: 1.79%, same verdict.
-- `§DAYBATCH_GAPS` biggest task (MEP Rough-in L3, 9,507 els): successive-completion gap p50 =
-  **631,738 ms ≈ 10.5 min**, p90 ≈ 15 min, max 2.2 h — a smooth drip, never a daily clump.
-- `§DAYBATCH_TASK_DAYRATE` per-day counts within each big task are near-FLAT: MEP RI L3 mean
-  146.3/day CV=0.23; L4 153.0 CV=0.22; L5 149.5 CV=0.21; Arch Env L4 90.7 CV=0.31. A per-day
+- ~~`§DAYBATCH_GAPS` biggest task (MEP Rough-in L3, 9,507 els): successive-completion gap p50 =
+  **631,738 ms ≈ 10.5 min**, p90 ≈ 15 min, max 2.2 h~~ — ⛔ **NUMBERS VOID (A-0, 2026-09-02): the
+  unplayed map.** Re-measured on the PLAYED layer: **p50 = 691,392 ms ≈ 11.52 min**, p90 14.40 min,
+  max 1.96 h. The FINDING is unchanged — a smooth drip, never a daily clump.
+- ~~`§DAYBATCH_TASK_DAYRATE` per-day counts within each big task are near-FLAT: MEP RI L3 mean
+  146.3/day CV=0.23; L4 153.0 CV=0.22; L5 149.5 CV=0.21; Arch Env L4 90.7 CV=0.31.~~ ⛔ **CVs VOID
+  (A-0).** Re-measured on the PLAYED layer, same tasks, same means: MEP RI L3 146.3/day **CV=0.35**;
+  L4 153.0 **CV=0.36**; L5 149.5 **CV=0.28**; L2 151.0 **CV=0.40**. Still flat enough that a per-day
   "bucket" is exactly N/window — the binning of a continuous tiling, i.e. **an artifact of the
-  spread, not schedule structure**. (Duplex's higher CVs, median 0.93, are 2-day-window edge
-  fractions on tiny tasks, not structure either.)
+  spread, not schedule structure** — but the spread is ~50% less even than the struck figures said.
+  (Duplex's higher CVs, 0.54-0.96 on the played layer, are 2-3-day-window edge fractions on tiny
+  tasks, not structure either.)
 
 **Where the pop actually comes from (also measured, since it bears on the recommendation):** the
-worst frames sit MID-TASK, not at phase handovers. Hospital, 3,118 frames, cache pipeline:
+worst frames sit MID-TASK, not at phase handovers. ⛔ **EVERY MAGNITUDE IN THIS PARAGRAPH IS VOID
+(A-0, 2026-09-02) — struck below and re-measured on the played layer immediately after. The
+MECHANISM it names survives the re-measurement; only its numbers were wrong.**
+~~Hospital, 3,118 frames, cache pipeline:
 `§DAYBATCH_FRAMES worst=94 at f1250 = 4.6x mean(20.3)`; f1250 = day 127.5, **no task boundary
 within ±0.5d** — 82/94 els are ONE task's (TASK_MEP_Rough_in_Level_3, win [110,174]) run of SHORT
 elements: `§DAYBATCH_BURST_MIX` their width median **45 s vs the task's 632 s** (installSecs p50
-114 vs 1920) — the duration-weighted tiling packs a short-duration run (pipe fittings/short
-segments) ~5-14x denser than the task's own mean. One task alone swings **p50=14 → max=82 per
-frame** (`§DAYBATCH_BURST_TASKFRAMES`) while its per-DAY rate is flat (CV 0.23). The pop is
+114 vs 1920)~~ — the duration-weighted tiling packs a short-duration run (pipe fittings/short
+segments) several times denser than the task's own mean.
+**RE-MEASURED on the PLAYED layer** (`bim-ootb scripts/probe_daybatch_played.js Hospital`, reads
+the two-layer cache — §CACHE_PLAYED_LAYER): `§DAYBATCH_FRAMES layer=played frames=3118
+mean=20.3/frame worst=142 at f1504 = 7.0x mean, day 153.4`; `§DAYBATCH_BURST_MIX worstFrame=f1504
+dominatedBy=TASK_MEP_Rough_in_Level_3 (115/142 of the frame) burstWidth p50=77s vs taskWidth
+p50=691s | installSecs p50 burst=214 vs task=1920`. **So the lever the section named — short-
+element-run clustering inside one task's duration-weighted tiling — is REAL on the layer that
+plays, and it is worse than the struck numbers said (7.0x mean, not 4.6x; 81% of the worst frame
+from one task, not 87% of a smaller frame).** ~~One task alone swings **p50=14 → max=82 per
+frame** (`§DAYBATCH_BURST_TASKFRAMES`) while its per-DAY rate is flat (CV 0.23).~~ The pop is
 WITHIN-TASK DURATION-MIX CLUSTERING, sub-day scale, plus task overlap (f1250 adds 12 els of
 Arch Env L4). The A/B's live worst f345 sits at d35.2 — the project's peak 3-task concurrency
 plateau (`§DAYBATCH_DENSITY` d35-39 = 338 els/day: MEP RI L1 [34,69] + Arch Env L2 [34,47] +
@@ -1704,11 +1728,19 @@ cache pipeline doesn't replay; the SHAPE — clustering, not ties, worst 4.6-6.1
 
 **2. Prediction under day-batching (labelled prediction, computed from the measured per-day
 distribution — not a claim it works):** batching a day's completions into one visible pulse puts
-that day's WHOLE count on one frame. Hospital: 9.81 frames/day, per-day p50=195 p90=298 **max=399**
+that day's WHOLE count on one frame. ⛔ **The numbers below were computed on the unplayed map
+(A-0) — struck; the VERDICT they support is unchanged and re-derived on the played layer
+immediately after.** ~~Hospital: 9.81 frames/day, per-day p50=195 p90=298 **max=399**
 → predicted worst frame **399 = 19.7x mean vs today's 4.6x — ~4x WORSE**, and
 `§DAYBATCH_PULSE_PREDICTION daysWhoseFullCountExceedsCurrentWorstFrame=299/319` — 94% of all days
 would each individually out-pop today's single worst frame. Duplex is worse still (101.5
-frames/day: a pulse = 198 els on one frame = 234x mean vs 14.2x today). Spreading each "pulse"
+frames/day: a pulse = 198 els on one frame = 234x mean vs 14.2x today).~~
+**RE-MEASURED, PLAYED layer:** Hospital `§DAYBATCH_PULSE_PREDICTION framesPerDay=9.81 perDay
+p50=190 p90=310 max=528 -> predictedWorstFrameIfBatched=528 = 26.1x mean (today 7.0x)
+daysWhoseFullCountExceedsCurrentWorstFrame=235/319` — batching still makes the worst frame
+**~3.7x worse**, and 74% of all days would each individually out-pop today's worst frame. Duplex,
+played: `framesPerDay=239.85 max=194 = 540.6x mean (today 30.7x)`. **Two buildings, same verdict,
+on the layer that plays.** Spreading each "pulse"
 over k frames needs k≥4.25 (~0.43 day) just to break even with today — at which point it is no
 longer a pulse, it is roughly the existing spread. **There is no batching parameter that reduces
 the worst-frame count; the mechanism can only trade it worse.** (Two buildings, same verdict —
@@ -1749,6 +1781,29 @@ fix and witness: `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 "2026-09-02 — §TM_
 (bim-ootb `§TM_REVEAL_TILED`: injectGantt now CALLS `remapSolveToTasks` in CPM order, dead air 0.0%
 on 4 buildings, order preserved). After that lands, the played layer IS a duration-weighted tiling
 and this section's residual levers (short-element runs, task overlap) apply to it as written.
-`cache_4d_run.js` still persists `displaySchedule`, not the played map — a probe of the movie must
+~~`cache_4d_run.js` still persists `displaySchedule`, not the played map — a probe of the movie must
 run `scripts/probe_tm_reveal_shipped.js` (sliced live functions, ~10 s on Hospital) or extend the
-cache to persist the played map (not done, named here).
+cache to persist the played map (not done, named here).~~
+
+**2026-09-02, LATER THE SAME DAY — DONE, and the within-task numbers above are now struck in place
+rather than only warned about (queue item A-0).** `cache_4d_run.js` persists BOTH layers
+(bim-ootb PR #1607 `§CACHE_PLAYED_LAYER`, spec `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2
+§CACHE_PLAYED_LAYER), every cache reader names the layer it judged, and
+`scripts/probe_daybatch_played.js` re-measures this section's `§DAYBATCH_*` family on a selected
+layer (`LAYER=display` reproduces the old view, still labelled). **A SECOND reason the originals
+were void, found while doing it:** `cache_4d_run.js` also called `materializeZones` WITHOUT
+`opts.displayRemap`, so the cached run never ran the CPM display pass at all (no
+`§ZONE_DISPLAY_AUTHORING`, no `§CELL_GATE`, no `§CPM_DISPLAY` in its 29 log lines) — it was a third
+configuration the browser never runs. Both causes are fixed; every `§DAYBATCH_*` figure above is
+either struck with its played-layer replacement inline, or was layer-independent to begin with.
+
+**WHAT SURVIVES, UNTOUCHED — do not re-litigate these when reading the strikes:**
+- **No real day-buckets exist.** Re-measured on the played layer: `§DAYBATCH_TIES Hospital
+  layer=played distinctEnds=63178/63182 largestExactTie=2`, `§DAYBATCH_INTRADAY
+  endsWithin1minOfDayBoundary=126/63182 (0.20%)`. Property of a continuous schedule, true of BOTH
+  maps.
+- **The NO-GO verdict on within-phase day-batching.** Re-derived above on the played layer.
+- **The task-overlap density lever** — task WINDOWS are template-priced and were not touched by
+  either map, so every window/date/concurrency number in this file stands as written.
+- **The short-element-run lever** — re-measured TRUE on the played layer (see §"Where the pop
+  actually comes from"); its magnitudes were the void part, not its existence.

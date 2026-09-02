@@ -48,15 +48,31 @@ standing "leave no committed-but-unpushed branch" rule. **Before removing any wo
 occupied — 8 were occupied at last check. Never touch `.claude/worktrees/agent-*` (harness-managed).
 DONE WHEN: every branch pushed, prunable worktrees pruned, occupied/dirty ones left alone and listed.
 
-### A-4 · doc-drift · autonomous, small
+### A-4 · doc-drift · autonomous, small — ✅ **DONE (witness) 2026-09-02** — all three items closed
 Three stale sections found 2026-09-02, each contradicted by shipped code:
 1. ~~`CPE_4D_PERF_MEM_STUDY.md` §RESUME R10/R11 "NEITHER confirmed"~~ ✅ **DONE** — struck by the
    perf agent in §R13.6, which also re-confirmed both from the frame series (`§PHOTO_PREWARM
    ms=7,965` n=6; `taa=8 ao=12` on all 2,028 folds).
-2. `PHOTOREAL_STILL_RENDER.md` §PHOTO_REALISM_RETUNE says "SPEC ONLY, not built" — #1575 shipped part
-   of it (`PHOTO_ENVMAP_BOOST 3.0→2.0`).
-3. `4D_MODEL_INTEGRITY.md` §I row for "where inside its task?" says `layerOf`'s 4th arg is on an
-   unmerged branch — that branch is merged. ⚠ CONFLICTS with Fable lane; do this one after it reports.
+2. ~~`PHOTOREAL_STILL_RENDER.md` §PHOTO_REALISM_RETUNE says "SPEC ONLY, not built" — #1575 shipped part
+   of it (`PHOTO_ENVMAP_BOOST 3.0→2.0`).~~ ✅ **DONE** — heading replaced with a per-item table
+   verified against `origin/main` @ `c8a6df61` IN THE CODE. **Item 2 shipped (#1575,
+   `PHOTO_ENVMAP_BOOST = 2.0` at `effects.js:2643`) AND SO DID ITEM 3** — `CAM_LIGHT_COLOR =
+   0xffdca8` at `effects.js:332`, shipped by **#1579 `§TRIPLANAR_NORMAL`**, whose own commit message
+   names "§PHOTO_REALISM_RETUNE item 3". Only **item 1** (staged-brightness re-measure vs the
+   post-§TRINORM_LINEAR baseline) is still open — `A._nightPLScaleStill = 0.5` unchanged at
+   `tools.js:1100`, no re-measurement recorded. Scope note added so item 2 is not overstated: #1575
+   changed the CONSTANT + added a witness; there was no separate room-probe code fix.
+3. ~~`4D_MODEL_INTEGRITY.md` §I row for "where inside its task?" says `layerOf`'s 4th arg is on an
+   unmerged branch — that branch is merged.~~ ✅ **DONE** — the "unmerged" wording had already been
+   corrected 2026-08-27; the row now states MERGED in its own words, re-confirmed against
+   `origin/main` @ `c8a6df61`, and says the stale wording must not be reintroduced. **Made consistent
+   with the PLAYED-layer row #1605 added beneath it**: both rows describe the SAME verb
+   (`remapSolveToTasks`) called from TWO sites with different arguments (`layerOf` vs `null`, authored
+   solve vs CPM display), and each now names the other — measured, they disagree on the start instant
+   of **99.6%** of Hospital's 63,182 elements. The cross-file instructions in
+   `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 and `4D_SCHEDULE_ARCHITECTURE_REDESIGN.md` §L1 are marked
+   discharged. ⚠ §L1's SECOND half — re-checking §I's other line numbers against `6b12783` — was NOT
+   done and is left open there.
 
 ### A-5 · clinic-tm-slab · autonomous
 **§Z.3** — Clinic TM ground-floor slab appears late, then persists on scrub-back. The baked schedule
@@ -84,7 +100,7 @@ contract only if the user lifts the bake restriction — see U-6.
 
 ## WAVE B — dispatch after the TM/Fable agent reports and releases the schedule files.
 
-### B-1 · day0-bisect · autonomous — ⚠ REFRAMED 2026-09-02, DO NOT DISPATCH AS ORIGINALLY WRITTEN
+### B-1 · day0-bisect · ⛔ **PREMISE RETIRED 2026-09-02 (A-9) — REWRITE BEFORE DISPATCHING**
 **`witness_day0_integrity.js` (§W_D0) reproduces `claims=13 PASS=4 FAIL=5 INCONCLUSIVE=4` on
 unmodified `origin/main`.** But the TM lane established that **§W_D0 judges `displaySchedule`, a map
 the movie and scrubber never play** — `time_machine.js` has ZERO readers of it. On the layer that
@@ -92,6 +108,17 @@ IS played, day 0 is pure (`§TM_REVEAL_DAY0 Hospital onScreenDay0=93 impure=0`).
 **So the first question is no longer "what regressed" — it is "is this witness judging a dead
 layer".** Settle A-9 first, or do it as part of this item. Bisecting the old table without that
 would chase a defect in a map nobody plays.
+
+⛔ **REFRAMED AGAIN 2026-09-02 by A-9 — THE PREMISE OF THIS ITEM IS GONE. Do NOT dispatch it as
+"bisect 13 → something".** With all four buildings cached on the current code, `§W_D0` scores
+**`claims=16 PASS=5 FAIL=8 INCONCLUSIVE=3`** on the PLAYED layer (and the same 5/8/3 pattern, with
+different populations, on `display`). The old `claims=13` was read off a cache covering only THREE
+buildings — the fourth contributed a single INCONCLUSIVE instead of four claims. **That is cache
+coverage, not a regression signature; there is nothing to bisect there.** What IS still open and
+unowned: C2/C3/C4's FAILs are genuine on the layer that plays — Duplex C2 `bad=3` (IfcWallStandardCase/
+IfcSlab/IfcMember on day 0), Duplex C4 `bad=83` MEP inside 3 days, HHS C3 `bad=3` hanging IfcSlab,
+Terminal C2 `bad=9` IfcBeam + C4 `bad=4` IfcFlowTerminal — and nobody has attributed any of them to
+a commit. Rewrite this item around THOSE five specific failures before dispatching it.
 
 ### B-2 · future7-stage4-5 · autonomous, plan-first
 `4D_GANTT_TM_REFACTOR.md` §FUTURE item 7. **Stage 4:** `verifyGanttIntegrity()` ANDs two
@@ -147,6 +174,14 @@ plus two source-level red arms. Written up as **`CPE_4D_PERF_MEM_STUDY.md` §R14
   would have **dropped** 2,027 repeats to emit 1 line. Both recorded in §R14.4.
 - `sw.js` v1122 → **v1123**.
 
+### A-7b · §PERF_TRAVERSE dead throttle · autonomous, one line
+Handed on by A-7 (2026-09-02), deliberately not fixed there. **`§PERF_TRAVERSE` carries the same
+dead `_gspRoll % 10` throttle that `§GROUP_SPARK_TICK` had — it fired 2,027 times where ~203 were
+intended.** A-7 left it because unlike the others it is a REAL per-frame measurement that
+`CPE_4D_PERF_MEM_STUDY.md` §R13.12 quotes; changing its cadence changes a number another section
+depends on. Fix the throttle deliberately, and re-state §R13.12's figure against the corrected
+cadence in the same PR — do not fix one without the other.
+
 ### A-8 · heap-instrument-fix · autonomous, rides free
 **`§CLI_BAKE_HEAP`'s 229-477 MB range is an aliased sawtooth, not a memory profile.** The same
 instrument read **2,388.8 MB then 224.0 MB fourteen seconds later**, and the page witness read
@@ -156,7 +191,7 @@ whatever bake happens next. **Needs no dedicated run**, so it does not violate t
 ⚠ Until this lands, do NOT quote the 229-477 MB figure anywhere. §R12_HOSPITAL_MEM's 1,546-1,577 MB
 is UNAFFECTED and still stands.
 
-### A-0 · VOID-NUMBER SWEEP · autonomous, do this alongside A-9
+### A-0 · VOID-NUMBER SWEEP · ✅ **DONE (witness) 2026-09-02** — bim-ootb PR #1609 + doc strikes
 **Numbers now VOID because they measured the unplayed `displaySchedule`** — they must be struck
 where they appear, not left standing: `§TPL_REVEAL_SPREAD`'s aggregate deciles `[12.8,9.7,…]` and
 `§TPL_REVEAL_SPREAD_WORST`'s MEP-Final skew; `§TPL_MOVIE_BINDS_BARS`'s "every element now plays
@@ -168,7 +203,27 @@ clustering that was named as the real lever. `§W_D0` C2/C3/C4 likewise.
 schedule, true of both maps), the **NO-GO on day-batching**, the task-overlap density lever
 (windows unchanged), `§W_D0`'s C1 band-model claim, and everything about task windows and dates.
 
-### A-9 · point-the-judges-at-the-played-layer · autonomous — HIGH VALUE
+✅ **DONE 2026-09-02. Struck, each with its played-layer replacement inline, not just a warning:**
+`4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 (the `[12.8,9.7,…]` bullet + the 42.7%/38.8% MEP-Final
+bullet, both `~~struck~~`, replaced by §CACHE_PLAYED_LAYER §K's four-building table) ·
+`GANTT_ACCURACY.md` §BUILDUP_DAY_BATCH_FEASIBILITY (gap p50, the per-day CVs, the worst-frame
+paragraph, the pulse prediction — all struck with re-measured played-layer values) ·
+`4D_MODEL_INTEGRITY.md` §J.1 (C2/C3/C4 struck, C1 kept, re-baselined table added) and its "State,
+honestly" `claims=13` line · the SHIPPED log string itself (`schedule_author.js`
+§TPL_MOVIE_BINDS_BARS no longer says "plays") and `witness_4d_movie_binds_bars.js`'s title.
+**RE-MEASURED, not merely struck** (`scripts/probe_daybatch_played.js`, new, in-repo): Hospital
+worst frame `94 @f1250 = 4.6x` → **`142 @f1504 = 7.0x`**; gap p50 10.5 min → **11.52 min**; CVs
+0.21-0.31 → **0.28-0.40**; burst width 45 s vs 632 s → **77 s vs 691 s**; pulse prediction
+19.7x/299 days → **26.1x/235 days**.
+⚠ **ONE ITEM WAS NOT STRUCK, ON EVIDENCE:** the short-element-run clustering lever. Re-measured on
+the played layer it is REAL and worse than before (115/142 of the worst frame from ONE task, burst
+width p50 77 s against that task's 691 s). Its MAGNITUDES were void; the LEVER stands. Striking it
+would have removed a still-valid conclusion.
+⚠ **A SECOND cause of voidness, found while doing this:** the cache also ran WITHOUT
+`opts.displayRemap`, so those numbers came from a configuration the browser never runs at all — not
+merely the wrong layer of the right run. See A-9.
+
+### A-9 · point-the-judges-at-the-played-layer · ✅ **DONE (witness) 2026-09-02** — bim-ootb PR #1607
 **`cache_4d_run.js` still persists the unplayed `displaySchedule`.** So `§W_D0`,
 `§TPL_REVEAL_SPREAD`, and every probe reading the cache still judge a map the movie does not play.
 This is the root of a whole class of wasted measurement — it produced "roughly uniform" reveal
@@ -178,6 +233,26 @@ Extend the cache to persist the PLAYED layer (`injectGantt` → `_tmTilePlayWith
 `displaySchedule`, then re-point the judges. DONE WHEN: a cached run carries both layers and each
 witness names which one it judges.
 CONFLICTS: none now. **Do this before B-1.**
+
+✅ **DONE — bim-ootb PR #1607 `fix/cache-played-layer`.** Spec written first:
+`4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 **§CACHE_PLAYED_LAYER** (§G-§K). New
+`scripts/lib/tm_played_layer.js` is the ONE owner of "the played layer in node" — the slicing +
+injectGantt mirror LIFTED from `probe_tm_reveal_shipped.js` (#1605), with that probe refactored onto
+it so no second copy exists. `cache_4d_run.js` persists `play` beside `sched`; `layerOf()` is the
+single accessor (throws on an unknown id, reports MISSING rather than substituting). All 5 cache
+readers re-pointed and self-describing. **Witness W-CLA
+(`viewer/tests/witness_cache_layer_attribution.js`): `claims=5 PASS=5 FAIL=0 INCONCLUSIVE=0 GREEN`,
+C3 judged 119,568 element-task pairs, C4 discovers readers by grep so a new un-repointed one FAILS.**
+⚠ **A SECOND divergence found and fixed:** the cache called `materializeZones` WITHOUT
+`opts.displayRemap`, so the cached run never ran the CPM display pass at all — no
+`§ZONE_DISPLAY_AUTHORING`, no `§CELL_GATE`, no `§CPM_DISPLAY` in its 29 log lines. It was a third
+configuration nobody runs. Now wired, and `§CELL_GATE` matches the live probe exactly on all four
+buildings (97.34/85.21/99.42/99.56%).
+**B-1 IS ANSWERED, NOT JUST UNBLOCKED:** re-baselined, `§W_D0` is `claims=16 PASS=5 FAIL=8
+INCONCLUSIVE=3` on the played layer. The `claims=13` that B-1 was going to bisect came from a cache
+covering only three buildings — it is not a regression signature. **Do not dispatch B-1 to bisect
+13→16.** The real open question is unchanged: C2/C3/C4's FAILs are genuine on the played layer and
+nobody has attributed them to a commit.
 
 ---
 
