@@ -1736,3 +1736,19 @@ the data actually names: the short-duration runs inside `remapSolveToTasks`' dur
 tiling (a presentation-neutral cap/spread on same-band SHORT-element density would address f1250's
 82-element run directly) and task-overlap density (d35-39 plateau) — both schedule-shape facts,
 neither needs a day concept. No code changed for this measurement.
+
+**2026-09-02 CORRECTION to §0 above (and to every "cache pipeline" number in this section): the
+premise was stale the OTHER way.** `remapSolveToTasks`' tiling was NOT the played mechanism — the
+kernel_ops timestamps the film and the scrubber read were written by `injectGantt`'s per-task
+AFFINE (`_tmRescaleToTaskWindow`, `time_machine.js`), and `displaySchedule` (what `cache_4d_run.js`
+persists and `§DAYBATCH_*` measured) has no reader in `time_machine.js`. So `§DAYBATCH_FRAMES
+worst=94 at f1250 = 4.6x mean` describes a map nobody played; on the played (affine) map the pile-up
+is far worse — Hospital `TASK_Finishes_Level_5` has 77% of its 113 elements starting inside ONE
+1%-of-bar bin, and 63% of every Hospital bar is dead air (nothing in progress). Full measurement,
+fix and witness: `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 "2026-09-02 — §TM_REVEAL_SHIPPED"
+(bim-ootb `§TM_REVEAL_TILED`: injectGantt now CALLS `remapSolveToTasks` in CPM order, dead air 0.0%
+on 4 buildings, order preserved). After that lands, the played layer IS a duration-weighted tiling
+and this section's residual levers (short-element runs, task overlap) apply to it as written.
+`cache_4d_run.js` still persists `displaySchedule`, not the played map — a probe of the movie must
+run `scripts/probe_tm_reveal_shipped.js` (sliced live functions, ~10 s on Hospital) or extend the
+cache to persist the played map (not done, named here).

@@ -5923,6 +5923,156 @@ investigated or fixed yet, don't assume any of these are closed by today's other
    (c) the still-unchecked real-quantity-basis pass for the remaining Finishes/MEP-Final/
    Architecture-Closeup classes (`IfcCovering` already clean at 62.4m² avg) — this is the only
    part of step 2 that survives step 1's result, and it was NOT started.
+   **2026-09-02 — §TM_REVEAL_SHIPPED: THE MOVIE NEVER PLAYED `remapSolveToTasks`. Root cause of
+   "substructure and floor slabs appear all one shot" found on the SHIPPED path, measured on 4
+   buildings, narrowest fix specced below (bim-ootb `fix/tm-buildup-reveal`).**
+   User caution governing this item: *"do not impact what is already working without deeper impact
+   awareness"* — this is a SMALL fix; nothing about bars, dates, crews, cost or the film cursor moves.
+
+   **A. The layer every prior number in this item measured is not the layer the movie plays.**
+   `materializeZones` returns `displaySchedule` (= `remapSolveToTasks`, `schedule_author.js:965`)
+   and `cache_4d_run.js` persists it — but `time_machine.js` has ZERO readers of `displaySchedule`
+   (grep: the only reference repo-wide is its own return statement, `schedule_author.js:1476`). The
+   kernel_ops timestamps the Time Machine scrubber and the film read (`op.start_ts <= cursor`,
+   `time_machine.js:169-170, 2576`) are written by `injectGantt` from
+   `_displayTimeline(_twItems)` (CpmSchedule.run, `~4838`) → **`_tmRescaleToTaskWindow`** (`~4880`,
+   §TM_ELEMENT_WINDOW_RESCALE 2026-08-25): a per-task AFFINE map of the CPM group's raw
+   `[min,max]` onto the template window. So `§TPL_REVEAL_SPREAD`'s "roughly uniform", the
+   `§TPL_LAYER_ORDER` bands, `§FUTURE`-item-2's duration tiling, `§TPL_MOVIE_BINDS_BARS`'s "every
+   element now plays inside the bar that claims it", and `witness_day0_integrity.js`'s C2/C3 all
+   describe a map nobody plays. `_tmDisplayRemap`'s Tukey clamp (the brief's mechanism 1) is also
+   inert on the template path: it clamps only the WINDOW-authoring map, which the template then
+   ignores (windows are priced from installSecs), and the affine reads the UNclamped CPM times.
+
+   **B. Measured on the shipped chain, replicated in node by slicing the live functions out of
+   `time_machine.js` (no browser, no bake): `bim-ootb scripts/probe_tm_reveal_shipped.js`, logs
+   `scratchpad/reveal_ab_{Duplex,HHS_Office_Federated,Hospital,Terminal}.log`.** The CELL gate
+   fires exactly as live (Hospital `§CELL_GATE repr=99.42% path=CELL`, Terminal 99.56% CELL, HHS
+   85.21% GRAPH, Duplex 97.34% CELL).
+   - The affine is outlier-sensitive by construction: CPM's GLOBAL per-resource crew pools give a
+     task's members a raw span of up to **434 d for a 35-day bar** (`TASK_MEP_Rough_in_Level_1
+     cpmRawSpan=434.27d coreSpan=56.14d`), so the Tukey-core mass lands in `coreFracOfWindow` =
+     13% of the bar and the rest is dead air. `§TM_REVEAL_SHIPPED_TASK` Hospital:
+     `TASK_MEP_Final_Level_5 n=564 days=3 PLAY.deciles=[3.5,0,0,0,0,0,0,0,0,96.5]`,
+     `TASK_MEP_Rough_in_Level_2 n=5286 days=34 [0.4,4.2,94.2,0.9,0,0,0,0,0.2,0]`,
+     `TASK_Substructure_Level_1 n=555 days=11 [18.4,17.8,17.8,18.4,17.5,8.8,1.1,0,0,0.2]` (90% of
+     the footings in the first half of the bar, days 6-11 empty; 553 footings on only **200 distinct
+     start instants**). Aggregate `§TM_REVEAL_SHIPPED_AGG Hospital PLAY.decilePct=
+     [12.1,16.2,19.3,9.2,8,7.7,4.5,3.7,6.6,12.6]` vs the cache's `displaySchedule
+     [9.8,10.1,10,9.7,10.5,10.2,9.5,10.2,9.9,10]` — same building, same run, the played map is
+     the skewed one.
+   - **`§TM_REVEAL_DEADAIR`** (share of a bar during which NO member is in progress, i.e. the bar
+     is lit but nothing appears or glows): mean **44.1% Duplex / 63.2% HHS / 63.3% Hospital / 70.7%
+     Terminal**, worst 98.2 / 99.7 / 99.5 / 99.9%. Pile-up (max share of a task n≥20 whose starts
+     fall inside ONE 1%-of-bar bin): 13.8 / 48.0 / **77.0** / 62.5%.
+   - **The user's acceptance shape — "a whole floor slab should not appear all at once" — reproduces
+     on every building with multi-element floors** (`§TM_REVEAL_GROUP`, per (task,class)): HHS
+     `TASK_Superstructure_Level_1 IfcSlab n=27 taskDays=11 maxDecile=100% max1pctBin=66.7%
+     distinctStarts=15`; Hospital `TASK_Superstructure_Level_3 IfcSlab n=22 taskDays=9
+     maxDecile=100% distinctStarts=8 groupSpan=0.07d = 0.03 s of a 135 s film`; Terminal
+     `TASK_Superstructure_02_FIRST_FLOOR_LEVEL IfcSlab n=72 maxDecile=100%`, `_04_THIRD_FLOOR n=53
+     maxDecile=100% groupSpan=0.08d`. Groups (n≥5) with one decile holding >50% of the group:
+     Duplex 9/23, HHS 19/42, **Hospital 99/126, Terminal 86/128**.
+   - **Cardinality (coordinator boundary question, answered from the cache, `§SLAB_CARDINALITY`):**
+     Hospital Levels 2, 3, 4, 5, 6 each have exactly ONE IfcSlab of 7.6-9.2k m² (100% of the level's
+     slab area) — on those levels "the whole floor slab" IS one element and progressive reveal would
+     need sub-element geometry splitting = a new mechanism = invention. **Not built, not proposed.**
+     Duplex (10 slabs/level, max 25% area share), HHS (37/27/12 per level), Terminal (420 ground-floor
+     slabs, max 2%) and Hospital Level 3 TOS (21 deck slabs) are N-element floors — in lane.
+   - Mechanism 2 (DAY-0 pile-up, `§W_D0 FAIL=5`) is NOT this bug: that witness judges
+     `displaySchedule`; on the played layer DAY 0 is pure by window construction
+     (`§TM_REVEAL_DAY0 Hospital SHIPPED onScreenDay0=93 impure=0 phases={Substructure:93}`).
+   - Mechanism 3 (film budget) — REPORT ONLY, axis B is out of this lane by coordinator scope
+     correction 2026-09-02: `§TM_REVEAL_ONSET_REPORT Hospital` substructure (11 d = 4.7 s of a 135 s
+     film calendar-linear) completes at **1.7 s under §CPE_BUILDUP_ONSET_BLEND** (k-th-completion
+     element pacing: 555 footings = 0.9% of elements = 0.9% of the film), peak **55 footings placed
+     in one frame**. The blend is the dominant compressor of the substructure IN THE FILM (3.5x);
+     the Time Machine scrubber does not have it. Named for the owner of that lane, not touched.
+
+   **C. Owner and axis.** Axis A. The played "where inside its bar" owner is `injectGantt`'s
+   `_tmRescaleToTaskWindow` (`time_machine.js`), which must CALL the verb the codebase already owns
+   for this question — `ScheduleAuthor.remapSolveToTasks` (`4D_MODEL_INTEGRITY.md` §I "where inside
+   its task?") — instead of re-deriving a layout with an affine. `§I` gets a row for the PLAYED
+   layer (this section is its origin).
+
+   **D. THE FIX (SPEC — written before code).** New module-level `_tmTilePlayWithinTasks(disp, cap,
+   displayAuthored)` in `time_machine.js`, called once in `injectGantt` after `_winGroups` is
+   built; `_tmRescaleToTaskWindow(guid, s)` returns the tiled interval when one exists and falls
+   through to the affine otherwise (byte-identical prior behaviour for every element/schedule the
+   tiling does not cover). The tiling = `ScheduleAuthor.remapSolveToTasks(_disp, tasksFromCap,
+   isoOf(_cap.base), null)`: one band per task, members ordered by their CPM display start (ties on
+   guid), each element's width = its own CPM duration share, tiled edge-to-edge across the task's
+   real window. Gated on `schedules.display_authored=1` (the same flag `§CAP_RESCALE_SKIP` /
+   `§OG_SWEEP_SKIP` key on — our own authored windows); imported/captured/baselined schedules keep
+   the affine untouched. `_GANTT_CACHE_VERSION` 37→38 so an existing user's IDB-cached kernel_ops
+   regenerate (the §GANTT_CACHE_HIT self-heal); `sw.js` CACHE_VERSION bump (time_machine.js is
+   precached). New `§TM_REVEAL_TILED tasks= mapped= skipped=` line; `§TM_ELEMENT_WINDOW_BIND` gains
+   `tiled=N` (nothing removed).
+   - What it changes: WHEN each element appears inside its already-correct bar, on generated
+     schedules, on every building (Hospital 63,182 elements move within their bars).
+   - What it keeps, by construction and measured: every task window, date, crew, cost, and the
+     film cursor untouched; CPM ORDER inside every bar preserved — a monotone map, the exact
+     property the affine was chosen for (`§TM_REVEAL_ORDER violations=0/1099 Duplex, 0/6819 HHS,
+     0/63140 Hospital, 0/48351 Terminal`); the §S50 cell order stays the live precedence carrier.
+   - Measured A/B (candidate computed by calling the shipped verb, before any code change):
+     `§TM_REVEAL_DEADAIR` mean 44.1/63.2/63.3/70.7% → **0.0% on all four**; pile-up 13.8/48.0/
+     77.0/62.5% → 9.9/4.0/5.6/8.3%; groups >50%-in-one-decile 9/19/99/86 → 5/7/34/21; Hospital
+     footings 200 → **553 distinct starts, deciles [10.1,9.9,10.1,9.9,9.9,10.1,9.9,10.1,9.9,9.8]**
+     across the full 11 days (was 200 instants in the first 5.5 d); day-0 on-screen 93 → 51
+     (= 555/11). Judges (same three injectGantt runs, `§TM_REVEAL_JUDGE`): auditFloating
+     20→17 / 315→304 / 424→416 / 367→365; midair 25→27 / 183→218 / 482→498 / 1611→1400;
+     cjpFloating 2→2 / 53→49 / 70→70 / 175→181 — small, both directions (cross-task pairs inside
+     overlapping windows re-order either way under ANY within-window remap; the affine's early
+     pile-ups happened to put some supports first). Reported, not gated: no threshold exists that
+     is not invented.
+   - **What it does NOT do, stated plainly (the residual is NOT this item's and lands on rulings):**
+     a SUPERSTRUCTURE level's slab SET stays compact because (i) `_installSecs` prices every IfcSlab
+     at a flat **823 s** regardless of area (`§LABOUR_SHARE Hospital TASK_Superstructure_Level_3
+     IfcSlab n=22 secs=18106 = 0.8%` of the task's 2,258,870 s; a 9,192 m² floor plate gets 14 min)
+     — the rate table's calibration, law-5 territory, not touched; (ii) CPM's §S50 cell order lays a
+     level out trade-by-trade (all columns, all beams, then all slabs), so the slab block is
+     contiguous at the bar's tail — a user ruling, not touched; (iii) the film's 135 s / 318 d budget
+     makes 0.8% of a 9-day bar sub-frame regardless. Candidate widens the sets (HHS L1 27 slabs
+     0.63 → 1.36 d, 15 → 27 distinct instants; Terminal 04 53 slabs 0.08 → 0.16 d, 18 → 53) but
+     cannot make them "progressive" in film time. **Decision for the user:** if a floor's slabs must
+     read as sequential effort, the lever is (i) or (ii) — both rulings — or the film's own
+     dwell (axis B). None is small.
+
+   **E. WITNESS CLAIM (before code): `viewer/tests/witness_tm_reveal_within_bar.js`, W-RWB.**
+   Runs the shipped chain in node (sliced live functions, real DBs: Duplex, HHS, Hospital), reports
+   the population of every claim, prints INCONCLUSIVE on an empty population:
+   - W-RWB-R redControl: the affine-only map (tiling disabled) shows the defect on this input —
+     mean dead air > 0 and ≥1 (task,class) group with >50% in one decile. Proves the fix is not vacuous.
+   - W-RWB-1 no dead air: with the SHIPPED `_tmTilePlayWithinTasks` slice, every task (n≥2) has
+     dead-air share 0 (≤1 ms rounding per element).
+   - W-RWB-2 inside window: every tiled element satisfies wS ≤ start < end ≤ wE.
+   - W-RWB-3 order preserved: within each task, starts are non-decreasing in CPM-start order.
+   - W-RWB-4 contiguous tiles: first start == wS, last end == wE, each start == previous end.
+   - W-RWB-5 acceptance shape: every (task,class) group (n≥5) has distinctStarts == n; the count of
+     groups >50%-in-one-decile is ≤ the affine's (reported both).
+   - W-RWB-6 fallback: an unmapped guid returns the affine result; `displayAuthored=false` returns
+     null and logs `§TM_REVEAL_TILED skip`.
+   - W-RWB-7 wiring (source text): injectGantt calls `_tmTilePlayWithinTasks(` before the write
+     loop; `_tmRescaleToTaskWindow` consults `_tiledPlay` before the affine; `_GANTT_CACHE_VERSION` ≥ 38.
+   Tripwire re-runs: `witness_tm_element_window_bind` (6/6), `witness_gantt_props_epoch` (W-PE-8
+   regexes must still match — the affine line is kept verbatim), `witness_crosstask_judge_parity`,
+   `witness_midair_zero` (baselines are on the CPM display map, must not move), `witness_day0_integrity`
+   (reads the cache — unchanged by this), `witness_4d_movie_binds_bars`, `witness_bake_plays_schedule`.
+   `witness_cpe_ghost_ground.js` is puppeteer-driven (a browser, not a bake) — run only if the
+   cursor path is touched; it is not.
+
+   **F. MEASURED after the code (same day, `bim-ootb fix/tm-buildup-reveal` = PR #1605, log
+   `scratchpad/witness_rwb.log`): `§W_RWB_SUMMARY pass=22 fail=0 inconclusive=0` on Duplex + HHS +
+   Hospital, through the SHIPPED `_tmTilePlayWithinTasks` slice.** Red control green on all three
+   (`W-RWB-R Duplex meanDeadAir=44.1% groups>50%=9/23`, HHS `63.2% 19/42`, Hospital `63.3% 99/126`);
+   `W-RWB-1 tiled meanDeadAir=0.000%` with `tiledElements=1119/1119, 6839/6839, 63182/63182`;
+   W-RWB-2/3/4 judged 63182 / 63140 / 63224 on Hospital, bad=0; `W-RWB-5 Hospital groups>50%InOneDecile
+   99 -> 34, Substructure_Level_1 IfcFooting n=553 maxDecile=10% distinct=553` (was 200 distinct);
+   `§TM_REVEAL_TILED tasks=42 mapped=63182 skipped=0 degenerate=0`. Judges as predicted in §D.
+   Residual named in §D ("does NOT do") confirmed on the shipped function: `Superstructure_Level_3
+   IfcSlab n=22 maxDecile=100% distinct=22` — 22 distinct instants, but the set's width is its 0.8%
+   labour share (flat 823 s/slab) placed as one CPM trade block — user decision, not code.
+
 4. **Editor full-cycle review.** Whether the standalone Schedule Editor (`schedule_editor_ui.js`)
    actually supports a complete edit cycle end-to-end is *already* named as unverified above, in this
    same file (persist-fix section, "Deliberately NOT touched" — split-mode task-data loading was never
