@@ -22,6 +22,13 @@
 
 ---
 
+## ▶ WHOLE-LANE SWEEP 2026-09-02 — read `prompts/AGENT_QUEUE.md` §WAVE E first
+A fresh sweep of the entire ERP third of the trilogy (code-checked, not doc-derived) found **15 gaps**,
+now tabled with evidence + a dispatch order in `prompts/AGENT_QUEUE.md` §E.GAPS / §E.ORDER. This card's
+own still-open items are E-1 (454-proc corpus), E-2 (§RULE-EDIT grail — and it surfaced a CONTRADICTION
+with `project_rule_edit_gesture.md`, which claims the loop is closed and LIVE), E-3 (Form renderer) and
+E-9 (DisplayLogic, ⛔user). Do not re-derive the open list from this file alone.
+
 ## WHERE THIS PICKS UP (state as of 2026-08-23, all merged to main)
 
 **Shipped this session — 3 PRs, all merged, all CI-green (past the known pre-existing base-branch red):**

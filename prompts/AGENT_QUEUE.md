@@ -1,0 +1,256 @@
+<!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
+# AGENT QUEUE — dispatchable work, ordered, with conflict rules
+
+```
+# ⚠ DO NOT REMOVE
+SCOPE: a standing queue of agent-dispatchable tasks for this project, so a session that starts
+after a usage reset can launch work WITHOUT the user re-explaining anything. Written 2026-09-02.
+RULES: (1) never dispatch an item whose CONFLICTS column names a file another live agent owns —
+check §LIVE first; (2) items marked ⛔USER are decisions, not work — do not let an agent "decide"
+them; (3) every dispatched agent inherits CLAUDE.md: PRIME RULE, PRIMAL LAW (witness replaces
+every human visual check), Log Mandate, Spec-First; (4) NO BAKES — user directive 2026-09-02, the
+cli_silent_bake harness is proven and is not a routine measurement tool; (5) work each item to
+zero, mark it ✅ DONE (witness) or ⛔ BLOCKED: <one question> here, then take the next.
+```
+
+## §LIVE — agents running as of 2026-09-02 (update this block when they report)
+| lane | owns these files — DO NOT dispatch conflicting work | status |
+|---|---|---|
+| ~~TM 4D buildup sequence (Fable 5.1)~~ | released — worktree pruned | ✅ **REPORTED 2026-09-02.** `§TM_REVEAL_TILED` — PR #1605 squash-merged `c8a6df61`, verified on `origin/main`. **W-RWB 22/22, red control green.** Dead air **44-71% → 0.0%** on all four buildings; Hospital pile-up **77.0% → 5.6%**. Surfaced A-9, U-8, U-9. **⚠ PARTIAL on the slab half — see U-8.** Substructure fixed outright (Hospital 553 footings, 200→553 distinct starts, dead air 63%→0%); several slab SETS still land 100% in one decile. |
+| ~~Film review continuity~~ | released — files free | ✅ **REPORTED 2026-09-02.** PR #1604 (`§MEP_DISC_PALETTE`, W-MEP-DISC-PALETTE 24/24) + PR #1603 (`§CPE_PIE_HOLD` contradiction settled) both merged. Left 2 ⛔USER questions → U-2, U-6. **Wave C and A-6 are now unblocked.** |
+| ~~Perf/mem desk analysis~~ | released — files free | ✅ **REPORTED 2026-09-02.** Appended `§R13_BAKE_FRAME_MINING` (331 lines) to `CPE_4D_PERF_MEM_STUDY.md`. Nothing run, no product code touched. Surfaced U-7 and A-7/A-8 below; **de-prioritised R9**; struck the stale ▶RESUME lines (closes A-4 item 1). |
+
+---
+
+## WAVE A — zero conflict with §LIVE. Dispatch any of these at the next reset.
+
+### A-1 · repo-hygiene · autonomous
+Release train is stalled: PR **#1600 `release 1.58.0` BLOCKED**, empty `statusCheckRollup`, 6 merged
+PRs unreleased since 1.57.1. Also: **#1596** security-bot PR (dbQuery timeout on `probe_billboard.js:18`)
+unreviewed. Also: **115 MB untracked binaries** in the shared ootb checkout — `Hospital_meta.db.bak`
+22M, `Terminal_meta.db.bak` 19M, `_backup_ltu_june_2026-08-10/` 74M. Verify each is reproducible or
+already on OCI **before** proposing removal; do not delete blind.
+FILES: none in viewer. CONFLICTS: none. DONE WHEN: release unblocked or the blocker named; #1596
+reviewed; the 115 MB either removed with justification or documented as needed.
+
+### A-2 · pr-backlog-triage · autonomous
+**21 open PRs, 19 older than 3 weeks.** At least two are known-dead: **#1543** (`§BAR_LIVE`) wires
+`bar_model.js`, ruled dead code + hook-blocked; **#1551** (`§STOREY_DATUM`) looks superseded by merged
+#1552. Close, rebase or document each. Do not merge anything touching §LIVE files.
+CONFLICTS: check each PR's diff against §LIVE before acting on it. DONE WHEN: every open PR has a
+disposition recorded.
+
+### A-3 · worktree-debt · autonomous, careful
+`/tmp/wt-bar-is-task` has **1 unpushed commit**; `feat/storey-injection` in `/tmp/wt-storey-inject`
+has **no remote at all**; `/tmp/wt-zda-bisect` is detached with **14 dirty files**. Violates the
+standing "leave no committed-but-unpushed branch" rule. **Before removing any worktree**, scan
+`for p in /proc/[0-9]*; do readlink -f "$p/cwd"; done | grep '^/tmp/wt-'` and skip any that is
+occupied — 8 were occupied at last check. Never touch `.claude/worktrees/agent-*` (harness-managed).
+DONE WHEN: every branch pushed, prunable worktrees pruned, occupied/dirty ones left alone and listed.
+
+### A-4 · doc-drift · autonomous, small
+Three stale sections found 2026-09-02, each contradicted by shipped code:
+1. ~~`CPE_4D_PERF_MEM_STUDY.md` §RESUME R10/R11 "NEITHER confirmed"~~ ✅ **DONE** — struck by the
+   perf agent in §R13.6, which also re-confirmed both from the frame series (`§PHOTO_PREWARM
+   ms=7,965` n=6; `taa=8 ao=12` on all 2,028 folds).
+2. `PHOTOREAL_STILL_RENDER.md` §PHOTO_REALISM_RETUNE says "SPEC ONLY, not built" — #1575 shipped part
+   of it (`PHOTO_ENVMAP_BOOST 3.0→2.0`).
+3. `4D_MODEL_INTEGRITY.md` §I row for "where inside its task?" says `layerOf`'s 4th arg is on an
+   unmerged branch — that branch is merged. ⚠ CONFLICTS with Fable lane; do this one after it reports.
+
+### A-5 · clinic-tm-slab · autonomous
+**§Z.3** — Clinic TM ground-floor slab appears late, then persists on scrub-back. The baked schedule
+CONTRADICTS the symptom: the 4 `Slab on Grade` elements are in `TASK_Substructure_TOF_Footing`, the
+FIRST task, data clean (0 orphans/nulls/unmapped). Two named unverified hypotheses with the
+measurement that falsifies each — read `LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §Z.
+⚠ RELATED to the Fable lane's question but a DIFFERENT building and a different symptom (late-then-
+persists, not one-shot). Dispatch only after Fable reports, then cross-check the two findings.
+
+### A-6 · film-overlays · autonomous
+`INFORMATIVE_FILM_OVERLAYS.md`, written 2026-09-01, zero code. Its own build order:
+**§FILM_UNSUPPORTED first** (detection already exists, no camera coupling, no flicker risk, best
+value/effort) → §CLASH_QUALIFY → §FILM_CLASH_IN_FRAME.
+⛔ **§FILM_CRITICAL_PATH is scope-blocked**: `cpm_schedule.js` computes **no float and no critical
+flag**; those exist only in `foreign_schedule.js` for imported P6/MSP. Build scope (a) imported-only,
+which needs zero new maths. **Do NOT bolt a float calculation into the film layer.**
+CONFLICTS: film agent has REPORTED — files are free.
+⚠ **UPDATED 2026-09-02 by the film agent: §FILM_UNSUPPORTED was deliberately NOT started.** Its
+witness contract requires asserting marks across a WHOLE film, which the no-bake directive rules
+out. It named a cheaper re-scope: **assert against `§SUPPORT_UNCHECKED_SUMMARY` on a short
+`--frames` run** instead of a full bake. Dispatch it with that re-scope, or with the whole-film
+contract only if the user lifts the bake restriction — see U-6.
+
+---
+
+## WAVE B — dispatch after the TM/Fable agent reports and releases the schedule files.
+
+### B-1 · day0-bisect · autonomous — ⚠ REFRAMED 2026-09-02, DO NOT DISPATCH AS ORIGINALLY WRITTEN
+**`witness_day0_integrity.js` (§W_D0) reproduces `claims=13 PASS=4 FAIL=5 INCONCLUSIVE=4` on
+unmodified `origin/main`.** But the TM lane established that **§W_D0 judges `displaySchedule`, a map
+the movie and scrubber never play** — `time_machine.js` has ZERO readers of it. On the layer that
+IS played, day 0 is pure (`§TM_REVEAL_DAY0 Hospital onScreenDay0=93 impure=0`).
+**So the first question is no longer "what regressed" — it is "is this witness judging a dead
+layer".** Settle A-9 first, or do it as part of this item. Bisecting the old table without that
+would chase a defect in a map nobody plays.
+
+### B-2 · future7-stage4-5 · autonomous, plan-first
+`4D_GANTT_TM_REFACTOR.md` §FUTURE item 7. **Stage 4:** `verifyGanttIntegrity()` ANDs two
+known-disagreeing "does S support T" implementations, one lacking the false-positive fix — edit
+legality is decided by the wrong copy. Investigate and RECOMMEND, do not silently pick one.
+**Stage 5:** floating judged by 4 disagreeing implementations; 3 rival storey-suffix rules; the
+untagged 3rd task-grid producer (`materializeDefault`). The section's own MANDATORY STEP 0 requires
+posting a written plan before code — honour it: write the plan into the file, then proceed.
+
+### B-3 · 4d-policy-to-json · autonomous
+Three related items, `4D_GANTT_TM_REFACTOR.md` §FUTURE-5A (inventory written 2026-08-27, nothing applied):
+- **11 hardcoded 5D cost/rate/shift constants.** ⚠ TRAP, documented: `28800` is the rate table's own
+  productivity basis, **not** `calendar.hours_per_shift=24`. Collapsing them is the 3x conflation bug.
+- **`viewer/rates/4D_policy.json` self-describes as "the ONLY authored input to 4D scheduling" and has
+  ZERO production readers.** `days_per_week` is stored twice across two JSONs, read never. Delete or
+  mark it — a future session will otherwise "fix" scheduling by editing a file nothing loads.
+- **§FUTURE item 6:** `§GANTT_EDIT_CLAMP` fires with no on-screen feedback — surface
+  `blockedBy=TASK_X(FS)` as a `_tmSay` toast. Low risk, independent of everything else.
+
+---
+
+## WAVE C — dispatch after the film agent reports.
+
+### C-1 · cpe-preview-restore · autonomous
+**§CPE_PREVIEW_ARG**: the hidden `#cpe-preview` button hands its click MouseEvent into `_previewFly`'s
+`povOnly` arg. The one-line fix was deliberately NOT shipped because it exposes a second, real bug —
+**the full preview path never restores the main camera to the editing pose.** Fix the restore FIRST,
+prove it with `witness_cpe_stick_after_preview.js`, only then wrap the listener.
+Then **§CPE_BUILDUP_ACTIVATE_POPS_PANEL**: Alt+C's bake calls `tmActivateForBake()` → `activate()`,
+which bundles the schedule data load with `_panel.style.display='flex'`, so a pure camera action pops
+the TM editing UI open. Named fix already written (split a data-only entry point), with its acceptance
+witness — build it as specced.
+Then **§CPE_PANEL_PERF**'s three measured stalls, if the perf agent's report has not superseded them.
+
+### A-7 · vacuous-tag-audit · autonomous
+The perf agent found **nine per-frame `§` tags that are vacuous or unguarded** — they fire every
+frame while judging nothing. Worst named case: **`§SHADOW_FRONTIER_AT_CAPTURE`, 286 firings, every
+one with `singleMesh_matched=0`**. That is a **CLAUDE.md rule-4 violation** — a witness that cannot
+report its own failure. Audit the nine, make each print `VACUOUS`/`INCONCLUSIVE` rather than a bare
+line, per the witness contract. Full list in `CPE_4D_PERF_MEM_STUDY.md` §R13.
+CONFLICTS: none (logging only). DONE WHEN: each of the nine either guards itself or is removed.
+
+### A-8 · heap-instrument-fix · autonomous, rides free
+**`§CLI_BAKE_HEAP`'s 229-477 MB range is an aliased sawtooth, not a memory profile.** The same
+instrument read **2,388.8 MB then 224.0 MB fourteen seconds later**, and the page witness read
+5,223.0 and 2,328.5 MB at the same pipeline point across two runs of identical code. Fix:
+**dual-instrument heap sampling in `cli_silent_bake.js`** — a harness edit that then rides free on
+whatever bake happens next. **Needs no dedicated run**, so it does not violate the no-bake directive.
+⚠ Until this lands, do NOT quote the 229-477 MB figure anywhere. §R12_HOSPITAL_MEM's 1,546-1,577 MB
+is UNAFFECTED and still stands.
+
+### A-0 · VOID-NUMBER SWEEP · autonomous, do this alongside A-9
+**Numbers now VOID because they measured the unplayed `displaySchedule`** — they must be struck
+where they appear, not left standing: `§TPL_REVEAL_SPREAD`'s aggregate deciles `[12.8,9.7,…]` and
+`§TPL_REVEAL_SPREAD_WORST`'s MEP-Final skew; `§TPL_MOVIE_BINDS_BARS`'s "every element now plays
+inside the bar that claims it" (never true on the played layer); and
+**`§BUILDUP_DAY_BATCH_FEASIBILITY`'s WITHIN-TASK numbers** — `§DAYBATCH_FRAMES worst=94 = 4.6x
+mean`, the flat per-day rates (CV 0.21-0.31), the "10.5-min drip", and the short-element-run
+clustering that was named as the real lever. `§W_D0` C2/C3/C4 likewise.
+**Still STANDING, do not strike:** that no real day-buckets exist (a property of the continuous
+schedule, true of both maps), the **NO-GO on day-batching**, the task-overlap density lever
+(windows unchanged), `§W_D0`'s C1 band-model claim, and everything about task windows and dates.
+
+### A-9 · point-the-judges-at-the-played-layer · autonomous — HIGH VALUE
+**`cache_4d_run.js` still persists the unplayed `displaySchedule`.** So `§W_D0`,
+`§TPL_REVEAL_SPREAD`, and every probe reading the cache still judge a map the movie does not play.
+This is the root of a whole class of wasted measurement — it produced "roughly uniform" reveal
+numbers while the played layer was `[18.4,17.8,17.8,18.4,17.5,8.8,1.1,0,0,0.2]` on the same task in
+the same run. Named in `4D_GANTT_TM_REFACTOR.md` §TM_REVEAL_SHIPPED, deliberately not changed there.
+Extend the cache to persist the PLAYED layer (`injectGantt` → `_tmTilePlayWithinTasks`) alongside
+`displaySchedule`, then re-point the judges. DONE WHEN: a cached run carries both layers and each
+witness names which one it judges.
+CONFLICTS: none now. **Do this before B-1.**
+
+---
+
+## ⛔ USER DECISIONS — never dispatch these as agent work
+| # | the decision | the number that forces it |
+|---|---|---|
+| U-1 | **Bar-width calibration.** Fixing "squashed bars" means recalibrating `_installSecs` 28800→86400 — measured to be the SAME lever as the 24h→8h revert already rejected (`tasksDiffering=0/42`). | Hospital totalDays **318 → 940**, HHS **50 → 137** |
+| U-2 | **Retire `§CPE_AIM_DEPTH`?** The real lever behind "camera leaves the path". **Spec written 2026-09-02, loss quantified from the shipped formula, not asserted:** `clearM = 8.0 m`, `w = 1 − smoothstep(fwdClear/8)` — so **half the rule's authority is already spent at 4 m clearance**. It is a "something within 8 m" rule, not the dead-end rescue it was described as. **A second cost was found that the handoff missed:** `§CPE_STICK_HOLD` loses its aim half (`_holdBoostAt` exists only to feed `_aimDepthApply`), so a held beat becomes a slow-down with a frozen gaze. Pins, correction windows, dive-in and closing orbit all provably survive. Nothing shipped. | firing **28/91 probes**, gaze **83.45°**; authority half-spent at **4 m** |
+| U-3 | **LFS: pay or rewrite.** Growth stopped (#1593, HEAD 1.79 GB→0); the historical 8.53 GB is stranded. Recommendation on record: **(a) $5/mo data pack**, because (b) is a force-push of all refs across a repo with many live worktrees. | **8.53 GB** |
+| U-4 | **Is the OCI sandbox viewer still a supported front?** It is a far older build — `effects.js` absent, `scene.js` **7 KB vs 191 KB** — with no patch self-heal, so it cannot receive fixes. **Measured 2026-09-02:** deployed `sw.js` is **v387 (live) / v505 (dev)** against **v1120** local, and `HospitalAjaibPath.db` is **404 on OCI**. `Hospital_meta.db` differs by exactly **735 `IfcOpeningElement`** rows with all **63,415 shared rows byte-identical** — so the divergence is the DEPLOYED BUILD, not the data. | sw **v387/v505 vs v1120** |
+| U-8 | **The slab half of the complaint is only PARTLY relieved — decide whether to go further.** Per (task, IfcSlab) group, share in the densest decile, before → after: Hospital Superstructure L3 (22) **100% → 100%** (but 8 → 22 distinct instants, width 0.07 → 0.09 d) · HHS L1 (27) 100% → 96% · HHS L2 (37) 78% → **81%** · HHS L3 (12) 92% → 92% · HHS Roof (7) 86% → **14%** · Terminal 02 FIRST FLOOR (72) 100% → 68% · Terminal 04 THIRD FLOOR (53) **100% → 100%** · Terminal foundation (449) 52.6% → 20.9% · Duplex mild throughout. Cause of the residual: `_installSecs` prices every `IfcSlab` at a flat **823 s** (0.8% of Hospital L3's labour) and §S50 lays a level out trade-by-trade, so the slab block sits contiguous at the bar's tail. **Both are rulings, not bugs.** Note before spending on it: 0.09 d of 318 days in a 135 s film is **sub-frame either way** — the residual is invisible in the FILM, and would only show on the TM scrubber. | slab sets still **100%** in one decile |
+| U-9 | **Hospital Levels 2-6 floor plates are ONE `IfcSlab` each** (7.6-9.2k m², 100% of the level's slab area). Progressive reveal of a single element requires sub-element geometry splitting — a new mechanism, and invention under the PRIME RULE. Not built, not proposed. Do you want it explored? | **1 element = a whole floor** |
+| U-7 | **Trim `§R10`'s AO margin?** `ao=12` was shipped on an assumed 18.75 ms/render; measured it is **27.26 ms** (and TAA is 49.06 ms, not the assumed 75.0). The margin costs **109.0 ms/frame = 221 s (3m41s) per Hospital bake**. Trimming it is a quality-vs-time trade only the user can price. | **3m41s/bake** |
+| U-6 | **Lift the no-bake restriction for witnesses that structurally need a whole film?** `§FILM_UNSUPPORTED` is the first item to hit this. A cheaper re-scope exists (short `--frames` run against `§SUPPORT_UNCHECKED_SUMMARY`) — the question is whether that is accepted as sufficient, or whether whole-film witnesses get a sanctioned bake budget. | — |
+| U-5 | **B's own `THREE.WebGLRenderer`.** Last structural cause of POV framing being off, and it BLOCKS §CPE_WALK_AUTHORING (spec fully settled with the user, not built). Real architecture work — needs an explicit go. | — |
+
+---
+
+## §HOW A FRESH SESSION USES THIS FILE
+1. Read §LIVE. If a lane is still running, its files are off-limits.
+2. Take the topmost undispatched item whose CONFLICTS are clear.
+3. Dispatch it with CLAUDE.md's laws in the prompt, plus: no bakes, cache-first
+   (`~/.cache/bim4d`, 119,568 elements in 0.43 s), numeric `§` evidence only, worktree not the
+   shared checkout, stop-and-report if scope exceeds the item.
+4. Mark the item ✅ DONE (witness) or ⛔ BLOCKED: <the one question> here. Then take the next.
+
+---
+
+# WAVE E — ERP LANE (swept 2026-09-02, independent of the Viewer/4D waves above)
+
+```
+SCOPE: the ERP third of the trilogy (bim-ootb `erp/` 91 js files / 48 MB · bim-compiler
+`scripts/poc_*.js` 244 witnesses · `build/erp/`). Swept fresh this session against CODE, not against
+the lane docs' own claims — every ⚑VERIFIED line below was re-checked in the tree today.
+ZERO CONFLICT with §LIVE and with waves A/B/C: no ERP file is touched by any 4D/viewer lane.
+STANDING INTENT (user, 2026-08-24, `feedback_erp_close_all_gaps.md`): close ANY named ERP gap —
+these are queued work, not a menu to ask permission on. Rank by leverage/cost, do not hold back.
+```
+
+## §E.STATE — where the lane actually is
+- **Code-dark since 2026-07-18** apart from 6 commits: last ERP commits are `#1509` (TM P6 fold),
+  `#1499` (record gate), `#1496` (seed bake), `#1495` (ad_access), `#1487` (crud_core split).
+- **T-0 truth-maintenance: 5 of 6 items ✅ DONE** (items 1/2/4/6/8) — `RESUME_ERP_T0_TRUTH_MAINTENANCE.md`.
+  Only item 3 (§RULE-EDIT grail) and the 454-proc corpus were left open there.
+- Coverage headline stands at **6✅ / 33🟡 / 3⛔ of 42** surfaces (`docs/internal/ERP_COVERAGE_MATRIX.md`).
+- Equivalence ledger: **46/46 tally witnesses re-run PASS** (`docs/internal/ERP_EQUIVALENCE_LEDGER.md`).
+
+## §E.GAPS — dispatch table
+
+| # | gap | evidence (checked today unless noted) | shape |
+|---|---|---|---|
+| **E-1** | **454 of 476 AD_Process, ~200 beforeSave overrides, 139 callout atoms named-deferred.** The dominant remaining functional-parity distance; nothing scheduled closes it. | `ERP_COVERAGE_MATRIX.md:188-194`; dispatch spines exist (`ad_process.js:dispatch` 22/476, `ad_callout.js:dispatch` 6 atoms/18 cols) — the corpus does not | campaign · **plan first** → Fable 5.1 |
+| **E-2** | **§RULE-EDIT grail: two lanes contradict each other and neither has been reconciled.** `project_rule_edit_gesture.md` says the loop is CLOSED + LIVE (`rule_fold.js`, PR #171, erp sw v593, `§GATED-COMPLETE-POC` PASS). T-0 item 3 says the grail witness "still doesn't exist." Both may be right: rule_fold gates ONE hardcoded T-threshold rule, the grail claim is *edit any AD validation row → K records re-fold*. | ⚑VERIFIED: **zero** `RULE-EDIT`/`RULE_EDIT` witness scripts in `scripts/` | reconcile + build the general witness → Fable 5.1 |
+| **E-3** | **AD_Form data shipped, no Form renderer exists.** 49 AD_Form rows baked (#1496); real iDempiere Forms are bespoke screens (Bank Statement match, Payment Allocation, GL Journal). | T-0 item 5/queue 6 | bounded IF scoped to ONE form end-to-end → Fable 5.1 |
+| **E-4** | **O2C Stage 4 stock effect is structurally absent** — a real signed shipment still cannot move stock. | ⚑VERIFIED: `grep -rln m_storageonhand erp/*.js` → **0 hits across all 91 files** | plan-first, then build |
+| **E-5** | **P2P Fix 5 (M_MatchInv) — blocker named, fix specced, not built.** `C_InvoiceLine.M_InOutLine_ID`/`C_OrderLine_ID` are hard `IsReadOnly='Y'` (AD_Tab 291), matching real iDempiere. Fix = generalize PR #956's `seedVals` to a PEER FK, triggered from the existing `AD_Process 200143`. | `ERP_P2P_INVOICE_MATCH.md` §Fix 2026-07-23 | **bounded, spec-complete — highest ready-to-build value** |
+| **E-6** | **5 stale open ERP PRs, all from June, none triaged.** bim-ootb **#429** (2026-06-19), **#300** (06-13), **#253** (06-13), **#203** (06-08 — disposable-host persistence; memory already had to correct a false "shipped" claim about it); bim-compiler **#8** (06-03, op-group atomicity). | ⚑VERIFIED via `gh pr list` today | autonomous triage |
+| **E-7** | **The whole equivalence evidence base is gitignored.** 378 logs live in `build/erp/*.log`; `.gitignore:85` excludes them. The ledger's 46 PASSes are re-verifiable only from local disk — one `git clean -x` from prose-only. | ⚑VERIFIED: 378 files, `.gitignore:84-85` | autonomous — decide a retention mechanism |
+| **E-8** | **CI runs 1 of the 46 ledger witnesses.** `ci.yml:8` — "one ERP witness". Most need docker-PG / an iDempiere checkout / bim-ootb Playwright. | ⚑VERIFIED: no `poc_`/`run_bundle` reference in any bim-compiler workflow | autonomous, needs a runner design |
+| **E-9** | ⛔**USER** — **AD_Field·DisplayLogic hiding is architecturally dead for every CRUD-enabled table.** The inline editor's curated 8-field set (`_inlineOptsFor`) contains zero DisplayLogic-bearing columns, so `withLogic=0` every time. Re-scored honestly ✅→🟡 rather than fixed. Widening the field set is a product-UX call with blast radius across every CRUD table. | `idempiere.html:2882` fork; T-0 item 8 | **decision, not agent work** |
+| **E-10** | **The read-write-vs-read-only half of the access gate has never gated anything on live data.** Implemented + headless-proven, but the seed carries no read-only grants at all. | ⚑VERIFIED: `isreadwrite='N'` = **0 rows** of 4,448 window + 1,170 process + 120 form grants in `erp/ad_seed.db` | autonomous — bake a read-only grant additively, then witness the RW distinction |
+| **E-11** | ⛔**USER** — **GrisLab field-service vertical: 600-line spec, zero code.** Real prospect (SEI Asia/Wilson, meeting 2026-08-14, proposal 08-17), §8.4 already names what to pick off. Also §10.2's own pre-pilot security gaps: relay `/push` is unauthenticated (`ACAO:*`, no token → floodable) and plain `http.createServer`. | ⚑VERIFIED: **no `grislab` hit anywhere** in `erp/`, `scripts/`, `build/erp/` | **priority/commercial call.** The relay-auth sub-item is a bounded agent task if the vertical is greenlit |
+| **E-12** | **Ninja mode: 3 gaps left unpicked since 2026-06-14.** (1) reverse-export `extractModel(db,AD_Window_ID)→model` = literal PackOut, witness roundtrip==orig; (2) auto-wire `AD_Column.Callout` from the sheet grammar (today wired by hand); (3) the structural-only caveat. | `NINJA_MODE_LANE.md` §NEXT | autonomous, bounded |
+| **E-13** | **`shard_loader` is the one real remaining substrate wire — and it is a DESIGN task, not a wire.** `idempiere.html` already has a live `installShard()`/`?shard=` that fetches whole-TENANT shards; shard_loader's warm/cold ATTACH/DETACH model is different and its artifacts are not served. | `project_substrate_hardening.md` | design session → Fable 5.1 |
+| **E-14** | **The trilogy stale-audit's ERP findings were never actioned.** Named orphans: `erp_panel.js`/`role_band.js`/`menu_seed.js` (precache-only, no html loads them), `migrate_showme.js` (superseded byte-for-byte by `overlay_kit.js`), the `chat_lens.*`/`feed_fold.js` trio (parked), `ad_table_map.js` (dormant-by-design), `erp_key_epochs.js` (precached + witnessed, no page loads it), a duplicated `migrate_agent.js`, plus tracked binaries `idempiere_agent.zip` (9.7 KB, duplicates `erp/idempiere_agent/`), `spike_writepath_browser.log`, and `preview_demo.db` (a DB-policy violation). | `TRILOGY_STALE_CODE_AUDIT.md:174-195`; ⚑VERIFIED the branch `origin/fable/trilogy-stale-audit` exists and was **never merged** | autonomous, careful — verify each before removal |
+| **E-15** | **Ledger headline says 52 surfaces, mechanical count is 53.** Source pinned: a `41` baseline (`HARDEN_MATRIX.md:93`) that itself counts to 42. Not inflation — a precisely located off-by-one. | T-0 item 1 | trivial doc fix, ride it on any other ERP PR |
+
+## §E.ORDER — recommended dispatch sequence
+1. **E-5** (P2P Fix 5) — the only gap that is spec-complete AND product-visible. Ship first.
+2. **E-6 + E-15 + E-14** — one hygiene agent: triage the 5 stale PRs, fix the 52/53 headline, action the
+   stale-code list (verify-then-remove, never blind).
+3. **E-10 + E-7 + E-8** — one truth-infrastructure agent: make the RW gate demonstrable, stop the evidence
+   base being one `git clean` from gone, propose the CI runner.
+4. **E-4** then **E-12** — feature work with a written plan first.
+5. **Fable 5.1**, one each: **E-2** (grail reconcile — highest conceptual value, it is the project's stated
+   differentiator), **E-1** (454-proc triage-by-usage PLAN, not code), **E-3** (one Form end-to-end),
+   **E-13** (shard_loader design).
+6. ⛔ Hold **E-9** and **E-11** for the user.
+
+## §E.DISPATCH RULES (on top of §HOW A FRESH SESSION USES THIS FILE)
+- The engine + witnesses live in **bim-compiler `scripts/`+`build/erp/`**; bim-ootb only hosts the deployed
+  app. When a witness "doesn't exist," check bim-compiler before concluding it was never committed (T-0
+  item 6 was a retracted claim caused by exactly this).
+- **Never full-regenerate `erp/ad_seed.db`** — always bake additively (`bake_forms_valrules_seed.js`'s
+  pattern). A full re-export against the docker PG silently wipes production rows (verified: ad_client 6→1,
+  C_BPartner 113→18).
+- Oracle-diffing needs `docker start postgres` first (it stops between sessions); creds in
+  `RESUME_ERP_T0_TRUTH_MAINTENANCE.md`'s header.
+- `erp/sw.js` CACHE_VERSION bump is mandatory in the same PR as any shipped erp/ change.
