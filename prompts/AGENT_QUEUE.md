@@ -506,6 +506,24 @@ would convert a free path into a metered one.
 ⚠ This does NOT resolve **U-3** (reclaiming the stranded historical 8.53 GB) — that is separate and
 still open.
 
+## ⚠ RE-CLASSIFIED 2026-09-02 — these were parked as "user decisions" and should NOT have been
+**User: "Why are those waiting on me? I given direction, u can help manage."** Correct. Direction
+was already given on each of these; parking them was invented gating, which CLAUDE.md's Anti-Drift
+rule names as drift in itself. They move to ACTIONABLE with a measure-first mandate and a hard stop
+condition — the same pattern §FUTURE item 7 Step 1 used successfully twice.
+
+| was | now | mandate |
+|---|---|---|
+| U-2 retire `§CPE_AIM_DEPTH` | **ACTIONABLE** | Direction on record: *"its best to leave alone its pointing along its path as more intuitive… stay simple and predictable."* Spec written, loss quantified (28/91 Hospital, **65/65 HHS**, authority half-spent at 4 m). Ship it. Known cost — `§CPE_STICK_HOLD` loses its aim half — is a consequence to handle, not a blocker. |
+| U-6 bake for `§FILM_UNSUPPORTED` | **ACTIONABLE** | Take the cheap re-scope (short `--frames` run asserting `§SUPPORT_UNCHECKED_SUMMARY`). A whole-film assertion mostly proves the harness. |
+| U-8 slab pricing | **ACTIONABLE, measure-first** | User said twice the slabs are one-shot. Area-weight `IfcSlab` via the EXISTING `§LABOR_QUANTITY_WEIGHT` machinery. **MEASURE the date impact first**; if proportionate, ship; if it moves totals like the calibration lever did (318→940), STOP and report. |
+| U-10 groundwork beam trade | **ACTIONABLE, measure-first** | Same rule. 21 `IfcBeam` priced STEEL_ERECTOR against the code's own CONCRETE_GANG comment. Measure the date delta; ship if small, stop and report if not. |
+| U-4b OCI landing | **SPLIT** | The **DB repoint** (`SYSNOVA/index.html` Clinic → `Clinic.db`) is correcting a demonstrable error — do it. The **viewer resync** is a production deploy with real blast radius — do it carefully through `deploy/OCI_UPLOAD.md` §RULES with fetch-back verification. Only "retire the page entirely" is a genuine choice. |
+
+**STILL genuinely the user's** (money, or a fleet-wide product change, or invention):
+**U-1** calibration lever (318→940 days) · **U-3** LFS pay-vs-rewrite (8.53 GB, real money or a
+force-push of every ref) · **U-9** sub-element slab splitting (invention under the PRIME RULE).
+
 ## ⛔ USER DECISIONS — never dispatch these as agent work
 | # | the decision | the number that forces it |
 |---|---|---|
