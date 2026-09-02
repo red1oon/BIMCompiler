@@ -19,6 +19,7 @@ zero, mark it ✅ DONE (witness) or ⛔ BLOCKED: <one question> here, then take 
 | ~~TM 4D buildup sequence (Fable 5.1)~~ | released — worktree pruned | ✅ **REPORTED 2026-09-02.** `§TM_REVEAL_TILED` — PR #1605 squash-merged `c8a6df61`, verified on `origin/main`. **W-RWB 22/22, red control green.** Dead air **44-71% → 0.0%** on all four buildings; Hospital pile-up **77.0% → 5.6%**. Surfaced A-9, U-8, U-9. **⚠ PARTIAL on the slab half — see U-8.** Substructure fixed outright (Hospital 553 footings, 200→553 distinct starts, dead air 63%→0%); several slab SETS still land 100% in one decile. |
 | ~~Film review continuity~~ | released — files free | ✅ **REPORTED 2026-09-02.** PR #1604 (`§MEP_DISC_PALETTE`, W-MEP-DISC-PALETTE 24/24) + PR #1603 (`§CPE_PIE_HOLD` contradiction settled) both merged. Left 2 ⛔USER questions → U-2, U-6. **Wave C and A-6 are now unblocked.** |
 | **ERP parity §P2→§P1 (Fable 5.1)** | `erp/crud_overlay.js` · `erp/crud_core.js` · `erp/crud_ops.json` · `erp/idempiere.html` | 🔵 **RUNNING** 2026-09-02 — AD_Ref_List/Yes-No editors then retire the curated-5 field list. **§P3 (ValRule picker wiring) is BLOCKED on this** — same file (`crud_overlay.js:535,545`). |
+| **§CPE_AIM_DEPTH retirement (U-2)** | `viewer/effects.js` (cinema/aim section ONLY — NOT effects/lighting) · `viewer/sw.js` · `viewer/viewer.html` · `witness_cpe_{aim_retire,stick_hold,hose,corr_brush}.js` | ✅ **REPORTED 2026-09-02.** `fix/retire-aim-depth`, witness 7/7 depth-OFF + failing red control. ⚠ Shares `viewer/effects.js` and `viewer/sw.js` with the D-1 lighting lane — the aim change touches neither lighting nor the glow lens; `sw.js CACHE_VERSION` is v1126, take the HIGHER on conflict and KEEP BOTH notes. |
 | **ERP doctype re-score §P4** | `docs/internal/ERP_COVERAGE_MATRIX.md` (docs only, read-only on erp/) | 🔵 **RUNNING** 2026-09-02 — audit-and-re-score, forbidden from writing FSM code. No conflict. |
 | ~~Perf/mem desk analysis~~ | released — files free | ✅ **REPORTED 2026-09-02.** Appended `§R13_BAKE_FRAME_MINING` (331 lines) to `CPE_4D_PERF_MEM_STUDY.md`. Nothing run, no product code touched. Surfaced U-7 and A-7/A-8 below; **de-prioritised R9**; struck the stale ▶RESUME lines (closes A-4 item 1). |
 
@@ -281,15 +282,41 @@ legality is decided by the wrong copy. Investigate and RECOMMEND, do not silentl
 untagged 3rd task-grid producer (`materializeDefault`). The section's own MANDATORY STEP 0 requires
 posting a written plan before code — honour it: write the plan into the file, then proceed.
 
-### B-3 · 4d-policy-to-json · autonomous
-Three related items, `4D_GANTT_TM_REFACTOR.md` §FUTURE-5A (inventory written 2026-08-27, nothing applied):
-- **11 hardcoded 5D cost/rate/shift constants.** ⚠ TRAP, documented: `28800` is the rate table's own
-  productivity basis, **not** `calendar.hours_per_shift=24`. Collapsing them is the 3x conflation bug.
-- **`viewer/rates/4D_policy.json` self-describes as "the ONLY authored input to 4D scheduling" and has
-  ZERO production readers.** `days_per_week` is stored twice across two JSONs, read never. Delete or
-  mark it — a future session will otherwise "fix" scheduling by editing a file nothing loads.
-- **§FUTURE item 6:** `§GANTT_EDIT_CLAMP` fires with no on-screen feedback — surface
-  `blockedBy=TASK_X(FS)` as a `_tmSay` toast. Low risk, independent of everything else.
+### B-3 · 4d-policy-to-json · ✅ **DONE (witness) 2026-09-02** — bim-ootb PRs **#1616, #1617, #1618**, all CI green
+Three related items, `4D_GANTT_TM_REFACTOR.md` §FUTURE-5A (inventory written 2026-08-27) — implemented
+against it, nothing re-derived.
+- **PR #1616 — 7 of 11 constants moved to JSON** (A1 `28800` basis, B2 project-start, B3 `120` floor,
+  B4 author-side crew-cap fallback, B5 `95`→now points at the existing `LABOR_RATES.LABORER`, B6
+  `LEVEL_SCAN_MAX`), mirrored into `rates.js` (the object `window.LABOR_RATES` ACTUALLY resolves to on
+  every real viewer load — sequence_rules.json alone would have been invisible, the exact Part-2
+  anti-pattern one level down). **4 of 11 (A5/A6/A7/B1) deliberately left as documented literals**:
+  A5 is the audit's own "NOT safe to move blind"; A7 and B1 were each tried as a shared constant/helper
+  and **reverted same-day** after concretely breaking `bar_needs.js` / `witness_gantt_native_generate.js`
+  — this repo has a large family of witnesses that slice one function out of a file as raw text and
+  eval it standalone, so a shared symbol declared elsewhere in the file is undefined in that sandbox;
+  B7 verified dead (no caller passes `opts.template` to the two legacy-path functions that read it).
+  **Invariance proof** (`scripts/cache_4d_run.js`, node-only, no bake/browser): Hospital/HHS/Duplex
+  totalDays 318/50/13 → 318/50/13, byte-identical guid→task membership hash on all three. **Canary
+  proof** the wiring is genuinely live (not coincidental): doubling `_productivity_basis_secs`
+  28800→57600 moved Duplex totalDays 13→22. Full witness suite run clean (only pre-existing reds:
+  `witness_bar_needs.js` schema drift, `witness_day0_integrity.js` `claims=16 PASS=5 FAIL=8
+  INCONCLUSIVE=3` — matches this file's own already-recorded re-baseline exactly — and the other
+  already-`known` entries); **two real regressions this refactor itself introduced were found and
+  fixed before landing** (materializeZones' own second `_defMaxCrews` scope; the A7 helper revert).
+- **PR #1617 — `viewer/rates/4D_policy.json` DELETED**, not marked (a loud warning already failed
+  once on `sequence_rules.json` for the same mistake class — deletion is what actually stops drift).
+  Its only 2 readers (`witness_bar_schedule.js`/`witness_bar_composite.js`, both `bar_model.js`
+  fixtures — dead code, untouched per rule) fixed in the same PR: the JSON's values now live as each
+  witness's own local fixture object. 13/13 and 12/12 pass, isolated worktree.
+- **PR #1618 — §FUTURE item 6 toast.** Re-derived from the live clamp logic first: `commitGanttDrag`
+  (mouse drag) and `openGanttProps` Apply (typed edit) ALREADY surface `blockedBy`/`clampedTo` via the
+  shared `tm-gantt-tip`/`_tmSay` mechanism, since 2026-08-04/08-24 respectively — both predate the
+  2026-08-27 report, so that gap is stale, not open. The one real, verified gap: `linkGanttBars`'s
+  re-apply-after-link call to `moveTaskCascade` never checked `res.clamped` at all. Fixed with a
+  `_tmSay` call carrying `res.blockedBy` (extracted, not invented). All 8 witnesses referencing
+  `linkGanttBars` pass.
+- All three: `eslint viewer modeller` exits 0. Not stacked (all three independent branches off
+  `origin/main`) — safe to merge in any order.
 
 ---
 
@@ -469,7 +496,64 @@ orders a level trade-by-trade so the slabs sit contiguous. **Candidate: area-wei
 the machinery already exists** (`§LABOR_QUANTITY_WEIGHT` does exactly this for fragmented classes,
 using `analysis_sidecar.js`'s dominant-face formula). This changes dates, so it is U-8's ruling.
 
-### A-11 · ⚠ LAND PR #1551 — it is now load-bearing for two other items
+### A-11 · ✅ DONE (witness) 2026-09-02 — PR #1551 LANDED, squash `59736505` on `origin/main`
+Merged after a 64-commit sync (`fast-checks` + `e2e-tests` both green; `mergeStateStatus` DIRTY →
+CLEAN). Four conflicts, all resolved keeping both sides; the two that vanished from the final diff
+were **already subsumed by main** — `buildings/patches/Duplex_extracted.db.sql` (#1557 carries
+#1551's four storey rows verbatim and corrected its `CREATE TABLE IF NOT EXISTS` to DROP+CREATE)
+and `witness_day0_integrity.js` (#1615's C2 `okPhase` line IS #1551's, and #1615 names #1551's raw
+contact walk as its own defect **W2** against §I). Final diff = 5 files, purely #1551's payload.
+
+**IT DOES WHAT IT CLAIMS — proven element-by-element, not by verdict letter.** `§PR1551_APPLIED`:
+`foundation_wall_substructure` Duplex **7/7** + Hospital **28/28** → Substructure/seq1;
+`stair_member_architecture` Duplex **4/4** → Architecture Envelope/seq6; `finish_floor_finishes`
+Duplex **14/14** → Finishes/seq11; **0 hits elsewhere** — exactly the scoping this item recorded.
+Fleet collateral check: Duplex **25** elements changed (phase,seq) = 7+4+14 and *nothing else*;
+Hospital **28**; HHS **0**; Terminal **0**. Zero unintended reclassification.
+
+**`§W_D0` layer=played: `PASS=5 FAIL=8` → `PASS=8 FAIL=5` (claims=16, INCONCLUSIVE=3).**
+Duplex C2 `bad=3 → 2` and the three named intruders are GONE (`IfcWallStandardCase`/`IfcMember`/
+`IfcSlab`seq4 → `IfcBeam`/`IfcFlowFitting`); it does **not** reach 0 because the reshaped programme
+pulls two *different* elements into day 0. Terminal C1 FAIL→**PASS** (22 bands→6, excess 16→0,
+datumCollisions 5→0) and Terminal C4 FAIL→**PASS** (firstMEP +2.0d→+15.0d); HHS C1 FAIL→**PASS**.
+Duplex C4 worsened 83→173 *within an unchanged FAIL* — fully attributed and **not** a scheduling
+defect: `foundation_wall_substructure` correctly empties `Architecture Envelope @ T/FDN`, so MEP
+Rough-in moves day 2→1 and its 171 elements fall inside C4's **fixed** 3-day window, which is 25%
+of Duplex's 12-day programme (exactly what `§W_D0A` A6 already says).
+
+**⚠ ONE GENUINE NEW RED, not pre-existing — `viewer/tests/witness_bar_schedule.js`
+`band-monotonic-holds` (Terminal `bandInversions` 0 → 91 against a `<= 20` gate).** NOT in CI (that
+is why CI is green); it is a local-discipline witness. The gate's own comment says the 20 is *"locked
+to the measured fleet baseline"* — i.e. calibrated against Terminal's **22-band phantom model that
+#1551 replaces**, and the same witness's other Terminal measures improve by an order of magnitude in
+the same run: midair **521→30**, byRawLabel inversions **6462→91**, forcePlaced **5772→759**, bars
+79→34. So the 91 is very likely the first *honest* reading rather than new disorder — but that is a
+hypothesis, not a measurement. **Do not just raise the threshold** (author-then-gate); re-derive what
+the baseline should be under a declared-datum band model, and attribute the 91.
+
+**⚠ `§W_D0A` went `PASS=6 GREEN` → `PASS=3 FAIL=3 RED`, BY DESIGN — this is not a regression.**
+That file's own header: *"the day a cause stops being true — **a rates.js override lands** … the
+attribution in §J.6 goes red instead of quietly becoming fiction"*, and A2 exists to say *"the defect
+#1551 targets is still live" **while #1551 is unmerged***. Its fleet-reach lock still passes
+unchanged. **A4 is a real witness defect though:** Terminal's early-MEP set is now **empty** because
+#1551 fixed it, and A4 tests `names.length !== 1`, so it prints **FAIL over an empty population** —
+the vacuous case CLAUDE.md PRIMAL LAW clause 4 requires to print INCONCLUSIVE. Deliberately NOT
+fixed here (changing a witness's gate to make one's own merge look greener is the antipattern).
+**Follow-up: re-baseline §W_D0A onto the post-#1551 world, and fix A4's vacuous branch.**
+
+**NOW UNBLOCKED:** widening `stair_member_architecture` to `IfcSlab` (C3 HHS, `IfcSlab ^Stair`
+HHS 4/83) — it appends to the same array, which is now on `main`.
+Also landed alongside: `scripts/knob_sweep.js` ported to `CACHE.layerOf()` (it was the one cache
+reader that could not name its layer — caught by `§W_CLA C4_READERS_NAME_IT` going GREEN→RED on the
+merge commit; restored to `claims=5 PASS=5 GREEN`, C4 judged 7→8).
+Pre-existing reds confirmed unchanged on unmodified `origin/main`: `witness_4d_band_monotonic`,
+`witness_4d_template_instantiation`, `witness_4d_template_reached`, `witness_tm_element_window_bind`.
+⚠ #1551 also carried an **undeclared revert of `§TPL_LAYER_ORDER` (#1549)**, absent from its PR body;
+it was rejected in the merge (main has since built on it in #1567 §I.5c) — `TPL_LAYER_ORDER` is back
+to main's original 7 occurrences on `origin/main`.
+
+<details><summary>original item (kept for provenance)</summary>
+
 **Twice confirmed today that #1551 is NOT superseded** (this file's original premise was wrong):
 (a) the PR triage verified #1552 only fixed a sub-bug #1551 itself flagged; (b) B-1 measured that
 **C2 Duplex's 3 DAY-0 failures ARE exactly #1551's three overrides** — `IfcWallStandardCase`
@@ -479,6 +563,7 @@ Tile" (13 mm). Scoping re-measured: `IfcWall* /foundation/` Duplex 7 / Hospital 
 **It also BLOCKS a named fix:** widening `stair_member_architecture` to `IfcSlab` closes C3 HHS
 (`IfcSlab ^Stair` = HHS 4/83, 0 elsewhere) but appends to the same array #1551 appends to and moves
 `IfcSlab` out of `supportPool`. **Land #1551 first, then that.**
+</details>
 
 ### A-12 · §I ownership-table row is FALSE, correct it · autonomous, small
 B-1 measured against the shipped bytes: `deriveStoreyMergeMap` is recorded in
@@ -514,7 +599,7 @@ condition — the same pattern §FUTURE item 7 Step 1 used successfully twice.
 
 | was | now | mandate |
 |---|---|---|
-| U-2 retire `§CPE_AIM_DEPTH` | **ACTIONABLE** | Direction on record: *"its best to leave alone its pointing along its path as more intuitive… stay simple and predictable."* Spec written, loss quantified (28/91 Hospital, **65/65 HHS**, authority half-spent at 4 m). Ship it. Known cost — `§CPE_STICK_HOLD` loses its aim half — is a consequence to handle, not a blocker. |
+| U-2 retire `§CPE_AIM_DEPTH` | **✅ DONE (witness) 2026-09-02** | Shipped on `fix/retire-aim-depth` (bim-ootb), witness `witness_cpe_aim_retire.js` **7/7** on the depth-OFF arm, depth-ON run as a FAILING red control. Gaze vs the look-ahead chord **150.075° → 0.000°** (HHS_Office) and **163.114° → 0.000°** (Duplex) over 451 judged samples each. Pins 0.000° aim error / 1.9e-6° bleed; correction window 33.3% reach vs authored 34%, outside it 0.0448°; dive + closing orbit **0.00 m / 1.7e-6°** arm-to-arm. `§CPE_STICK_HOLD`'s aim half REMOVED, not orphaned — a held beat is a pure rate dip and `§CPE_AIM_PIN` is the authored replacement (G-SH-5 re-scoped to assert the frozen gaze). Details: `RESUME_2026-09-02_FILM_REVIEW.md` §AIM_RETIRED_DONE. |
 | U-6 bake for `§FILM_UNSUPPORTED` | **ACTIONABLE** | Take the cheap re-scope (short `--frames` run asserting `§SUPPORT_UNCHECKED_SUMMARY`). A whole-film assertion mostly proves the harness. |
 | U-8 slab pricing | **ACTIONABLE, measure-first** | User said twice the slabs are one-shot. Area-weight `IfcSlab` via the EXISTING `§LABOR_QUANTITY_WEIGHT` machinery. **MEASURE the date impact first**; if proportionate, ship; if it moves totals like the calibration lever did (318→940), STOP and report. |
 | U-10 groundwork beam trade | **ACTIONABLE, measure-first** | Same rule. 21 `IfcBeam` priced STEEL_ERECTOR against the code's own CONCRETE_GANG comment. Measure the date delta; ship if small, stop and report if not. |
@@ -528,7 +613,7 @@ force-push of every ref) · **U-9** sub-element slab splitting (invention under 
 | # | the decision | the number that forces it |
 |---|---|---|
 | U-1 | **Bar-width calibration.** Fixing "squashed bars" means recalibrating `_installSecs` 28800→86400 — measured to be the SAME lever as the 24h→8h revert already rejected (`tasksDiffering=0/42`). | Hospital totalDays **318 → 940**, HHS **50 → 137** |
-| U-2 | **Retire `§CPE_AIM_DEPTH`?** The real lever behind "camera leaves the path". **Spec written 2026-09-02, loss quantified from the shipped formula, not asserted:** `clearM = 8.0 m`, `w = 1 − smoothstep(fwdClear/8)` — so **half the rule's authority is already spent at 4 m clearance**. It is a "something within 8 m" rule, not the dead-end rescue it was described as. **A second cost was found that the handoff missed:** `§CPE_STICK_HOLD` loses its aim half (`_holdBoostAt` exists only to feed `_aimDepthApply`), so a held beat becomes a slow-down with a frozen gaze. Pins, correction windows, dive-in and closing orbit all provably survive. Nothing shipped. | firing **28/91 probes**, gaze **83.45°**; authority half-spent at **4 m** |
+| U-2 | **✅ ANSWERED AND SHIPPED 2026-09-02 — do not re-open.** Retired in full; see the WAVE-U row above and `RESUME_2026-09-02_FILM_REVIEW.md` §AIM_RETIRED_DONE. The two named costs were handled, not merely accepted: the dead-end rescue is gone (and the rule's own formula shows that tail was the small part — `clearM = 8.0 m`, half its authority spent at 4 m), and `§CPE_STICK_HOLD`'s aim half is removed with `§CPE_AIM_PIN` named as the authored replacement rather than left as a dead path. | witness `witness_cpe_aim_retire.js` **7/7 depth-OFF**, red control fails A-1; chord **150.075° → 0.000°** |
 | U-3 | **LFS: pay or rewrite.** Growth stopped (#1593, HEAD 1.79 GB→0); the historical 8.53 GB is stranded. Recommendation on record: **(a) $5/mo data pack**, because (b) is a force-push of all refs across a repo with many live worktrees. | **8.53 GB** |
 | U-4b | **⚠ SHARPENED 2026-09-02 — it is not a "sandbox", it is documented as PRODUCTION, and it is 3.5 months stale.** `deploy/OCI_UPLOAD.md` calls `…/b/bim-ootb-live/o/index.html` **"PRODUCTION — users see this"**. It is a SEPARATE landing page (sourced from `bim-compiler/SYSNOVA/index.html`, last touched 2026-07-28) serving a THIRD independent code tree (`sandbox/*.js` from `deploy/dev`/`deploy/live`). Measured live: it maps Clinic to **`Clinic_extracted.db`** (md5 `b57a2866…`, 130,224,128 bytes, **16,912 elements**, missing `calendars`/`kernel_ops`/`scene_state`) while GH Pages maps it to the correct `Clinic.db` (md5 `636c8ef1…`, 226,349,056 bytes, 16,071 elements — byte-identical to the user's own file). Its `tools.js`/`streaming.js` are **May 18/19 2026**; `effects.js` 404s. **This is why Clinic "does not load like local" — the DB and the whole 4D/CPE stack are stale on that surface, not broken.** Decide: repoint + resync, or retire the page. | **16,912 vs 16,071 elements; viewer 3.5 months stale** |
 | U-4 | ~~Is the OCI sandbox viewer still a supported front?~~ superseded by U-4b — It is a far older build — `effects.js` absent, `scene.js` **7 KB vs 191 KB** — with no patch self-heal, so it cannot receive fixes. **Measured 2026-09-02:** deployed `sw.js` is **v387 (live) / v505 (dev)** against **v1120** local, and `HospitalAjaibPath.db` is **404 on OCI**. `Hospital_meta.db` differs by exactly **735 `IfcOpeningElement`** rows with all **63,415 shared rows byte-identical** — so the divergence is the DEPLOYED BUILD, not the data. | sw **v387/v505 vs v1120** |
