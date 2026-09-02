@@ -449,11 +449,11 @@ needs `--content-type`; DBs are gzip + `content-encoding`). Do not run it unprom
 
 ### D-1 · §SUN_FILL_RATIO — the wall away from the sun · ✅ **DONE (witness) 2026-09-02** — bim-ootb **PR #1622**
 **FOUND AND FIXED. The away-facing wall was measured BRIGHTER than the sun-facing one on Clinic
-(1.0429) and within 8% of it on Hospital (0.9170).** Cause is NOT shadows, NOT AO, and NOT the
+(1.0453) and within 8% of it on Hospital (0.9170).** Cause is NOT shadows, NOT AO, and NOT the
 sun/fill ratio: Alt+S staging swaps `A._envMap` to a photographed HDRI
 (`belfast_sunset_puresky_1k`) and `_reassertPhotoEnvMap` pushed it onto EVERY material, matte
 concrete included. IBL is non-directional and is NOT shadow-map-occluded in three.js, so it was
-**81% (Clinic) / 83% (Hospital) of all the light on the away-facing wall**. `§WALL_SIDE_AND_LIGHT_FLOOR`
+**85% (Clinic) / 83% (Hospital) of all the light on the away-facing wall**. `§WALL_SIDE_AND_LIGHT_FLOOR`
 (#1601) had fixed plain navigation the day before and none of it survived into the photoreal path.
 Fix: matte materials keep the plain-nav sky env map; glossy/mirror keep the HDRI (42/42 and 70/70
 asserted still on it), so the reflection feature is untouched. **No new constant** — the matte term
@@ -461,16 +461,16 @@ is restored to the value plain navigation already ships.
 
 | away ÷ sun, scene-linear | Clinic | Hospital |
 |---|---|---|
-| plain nav | 0.2408 | 0.2372 |
-| **RED** (Alt+S before) | **1.0429** | **0.9170** |
-| **GREEN** (Alt+S after) | **0.2381** | **0.2347** |
+| plain nav | 0.2414 | 0.2371 |
+| **RED** (Alt+S before) | **1.0453** | **0.9170** |
+| **GREEN** (Alt+S after) | **0.2388** | **0.2347** |
 | RED CONTROL drift | 0.00051 | 0.00001 |
 
 Nothing got brighter, per pose (GREEN÷RED): ext-sun 0.835/0.832, ext-away 0.191/0.213, interiors
-0.325–0.649 / 0.293–0.535. Witness `viewer/tests/witness_sun_fill_ratio.js`; full record in
-`PHOTOREAL_STILL_RENDER.md` §SUN_FILL_RATIO. **Two knobs the brief warned about were measured and
-cleared as NOT the cause: `_nightPLScaleStill` (pl = 0.00000 on the facade) and `CAM_LIGHT`
-(camlight = 0.00000 at 12 m — `CAM_LIGHT_DISTANCE` is 4). No light was added anywhere.**
+0.334–0.651 / 0.293–0.535. Hospital's final witness run: `PASS-WITH-DECLARED-CONFLICT judged=20 fails=0`. Witness `viewer/tests/witness_sun_fill_ratio.js`; full record in
+`PHOTOREAL_STILL_RENDER.md` §SUN_FILL_RATIO. **Both knobs the brief warned about were measured and cleared as NOT
+the CAUSE: `_nightPLScaleStill` (`pl = 0.00000` on the away facade in every run) and `CAM_LIGHT`
+(`camlight = 0.00000` at 12 m — `CAM_LIGHT_DISTANCE` is 4). No light was added anywhere.**
 ⛔ **Leaves ONE user decision → U-11 below (Alt+S interiors get darker; the price of both options is
 measured).**
 
@@ -789,7 +789,7 @@ force-push of every ref) · **U-9** sub-element slab splitting (invention under 
 | U-8 | **The slab half of the complaint is only PARTLY relieved — decide whether to go further.** Per (task, IfcSlab) group, share in the densest decile, before → after: Hospital Superstructure L3 (22) **100% → 100%** (but 8 → 22 distinct instants, width 0.07 → 0.09 d) · HHS L1 (27) 100% → 96% · HHS L2 (37) 78% → **81%** · HHS L3 (12) 92% → 92% · HHS Roof (7) 86% → **14%** · Terminal 02 FIRST FLOOR (72) 100% → 68% · Terminal 04 THIRD FLOOR (53) **100% → 100%** · Terminal foundation (449) 52.6% → 20.9% · Duplex mild throughout. Cause of the residual: `_installSecs` prices every `IfcSlab` at a flat **823 s** (0.8% of Hospital L3's labour) and §S50 lays a level out trade-by-trade, so the slab block sits contiguous at the bar's tail. **Both are rulings, not bugs.** Note before spending on it: 0.09 d of 318 days in a 135 s film is **sub-frame either way** — the residual is invisible in the FILM, and would only show on the TM scrubber. | slab sets still **100%** in one decile |
 | U-9 | **Hospital Levels 2-6 floor plates are ONE `IfcSlab` each** (7.6-9.2k m², 100% of the level's slab area). Progressive reveal of a single element requires sub-element geometry splitting — a new mechanism, and invention under the PRIME RULE. Not built, not proposed. Do you want it explored? | **1 element = a whole floor** |
 | U-10 | **§GROUNDWORK_SLAB prices 21 promoted `IfcBeam` as STEEL_ERECTOR** (Terminal 20 + Hospital 1) — its own comment's claim "CONCRETE_GANG already" is false for beams. Correcting the trade changes durations and therefore dates, so it is a U-1/U-8-class ruling, not a bug fix. Measured by B-1, not shipped. | **21 beams on the wrong trade** |
-| U-11 | **Alt+S interiors get darker — accept, or clamp and give up most of the away-wall read?** D-1's fix removes an unshadowed skylight that was standing in for ALL interior daylight (staging turns `castShadow` ON). Interior retention measured **mean 0.499 / p25 0.437** (Clinic), **0.412 / 0.487** (Hospital) against §WALL_SIDE_AND_LIGHT_FLOOR's 0.70/0.55 floors. Keeping fraction **m = 0.401** of the HDRI matte fill holds those floors — but the wall separation goes 0.2381 → **0.5956** (the away wall back to 60% of the sun wall). Shipped state is the FULL fix; `m` is the one number to move. A third option — restoring interiors through the staged fixture lights instead — is measured to cost the facade nothing (`pl = 0.00000`) but its sweep is not yet run to a conclusion. | separation **0.2381 vs 0.5956** |
+| U-11 | **Alt+S interiors get darker — accept, or clamp and give up most of the away-wall read?** D-1's fix removes an unshadowed skylight that was standing in for ALL interior daylight (staging turns `castShadow` ON). Interior retention measured **mean 0.510 / p25 0.421** (Clinic), **0.411 / 0.487** (Hospital) against §WALL_SIDE_AND_LIGHT_FLOOR's 0.70/0.55 floors. Keeping fraction **m = 0.388** (Clinic) / **0.491** (Hospital) of the HDRI matte fill holds those floors — but the wall separation goes 0.2388 → **0.5863** / 0.2347 → **0.6011** (the away wall back to ~60% of the sun wall). Shipped state is the FULL fix; `m` is the one number to move. A third option — restoring interiors through the staged fixture lights — costs the facade nothing (`pl = 0.00000`) but is **UNANSWERED**: the sweep printed INCONCLUSIVE by its own gate because that fixture pool is camera-proximity driven and reads 0 once the accumulation loop is stopped for measurement. | separation **0.2388 vs 0.5863** |
 | U-7 | **Trim `§R10`'s AO margin?** `ao=12` was shipped on an assumed 18.75 ms/render; measured it is **27.26 ms** (and TAA is 49.06 ms, not the assumed 75.0). The margin costs **109.0 ms/frame = 221 s (3m41s) per Hospital bake**. Trimming it is a quality-vs-time trade only the user can price. | **3m41s/bake** |
 | U-6 | **Lift the no-bake restriction for witnesses that structurally need a whole film?** `§FILM_UNSUPPORTED` is the first item to hit this. A cheaper re-scope exists (short `--frames` run against `§SUPPORT_UNCHECKED_SUMMARY`) — the question is whether that is accepted as sufficient, or whether whole-film witnesses get a sanctioned bake budget. | — |
 | U-10 | **§GROUNDWORK_SLAB prices 21 promoted `IfcBeam` as steel erection — fix it, or leave it?** Its own comment says *"seq/resource unchanged (CONCRETE_GANG already)"*; that is true for `IfcSlab` (seq 4, CONCRETE_GANG) and **false for `IfcBeam`** (seq 3, STEEL_ERECTOR). Measured 2026-09-02 (B-1, §J.6.4): Terminal 20 + Hospital 1 = **21** elements the pipeline itself calls Substructure groundwork are priced and crewed as steel. Correcting it changes `_installSecs` and crew allocation, therefore **dates** — the same class of lever as U-1/U-8, not an agent's call. | **21** elements · Terminal's promotion set is 233 (213 `IfcSlab` + 20 `IfcBeam`) |

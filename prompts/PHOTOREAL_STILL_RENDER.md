@@ -2566,6 +2566,11 @@ Owner: `A._mepDiscAlbedo` (`viewer/streaming.js`). Kill switch for the red contr
 
 ### MEASURED — RED and GREEN, two buildings, real renders (2026-09-02)
 
+Numbers below are the FINAL runs on the shipped tree (branch merged with `origin/main` through
+**#1621**, `sw v1128`). Earlier runs on the pre-merge tree agreed to within 0.003 on every headline
+figure — the reruns were done rather than assuming #1619/#1621 could not reach this measurement.
+Logs: `ship2_clinic.log`, `ship2_hospital.log` (session scratchpad).
+
 Wall pair per building: same `ifc_class`, same `material_rgba`, 12 m standoff, coverage **1.00** on
 both sides (every measured pixel is the target element), live sun `[0.000, 0.707, −0.707]`.
 Clinic `IfcWallStandardCase | 0.502,0.502,0.502` at N·L ±0.707; Hospital `IfcWall |
@@ -2573,24 +2578,23 @@ Clinic `IfcWallStandardCase | 0.502,0.502,0.502` at N·L ±0.707; Hospital `IfcW
 
 | away-facing ÷ sun-facing | Clinic | Hospital |
 |---|---|---|
-| plain navigation (what #1601 ships) | **0.2408** | **0.2372** |
-| **RED** — Alt+S before this change | **1.0429** | **0.9170** |
-| **GREEN** — Alt+S after this change | **0.2381** | **0.2347** |
-| derived prediction (no fitted constant) | 0.2381 | 0.2346 |
-| RED CONTROL — untouched condition re-measured | drift **0.00051** | drift **0.00001** |
+| plain navigation (what #1601 ships) | **0.2414** | **0.2371** |
+| **RED** — Alt+S before this change | **1.0453** | **0.9170** |
+| **GREEN** — Alt+S after this change | **0.2388** | **0.2347** |
+| derived prediction (no fitted constant) | 0.2388 | 0.2346 |
+| RED CONTROL — untouched condition re-measured | drift 0.00051 | drift 0.00001 |
+| verdict | `FAIL judged=20 fails=1` (the 1 is the interior-diagnostic closure below, not a shipped claim) | **`PASS-WITH-DECLARED-CONFLICT judged=20 fails=0`** |
 
 **The RED number IS the user's complaint.** On Clinic the wall facing AWAY from the sun measured
-**brighter than the wall facing it** (1.0429); on Hospital it was within 8% of it. There was no
+**brighter than the wall facing it** (1.0453); on Hospital it was within 8% of it. There was no
 sun/shade read in the photoreal path at all. GREEN restores plain navigation's own separation to
 within 0.003 on both buildings and lands on the derived prediction to four decimal places — the
 change does exactly and only what the decomposition says it does.
 
 **Per-group decomposition, away-facing wall, Alt+S GREEN (Clinic):**
-`sun=0.00000 ambient=0.06168 hemi=0.06023 env=0.03355 pl=0.00000 camlight=0.00000`, closure 1.000.
-RED's away wall was 0.81332, of which **0.65786 (81%) was the HDRI env term**; Hospital's was
-0.70141 of which **0.58503 (83%)**. Nothing else was ever a candidate — `pl` (the 193–216 staged
-fixture lights, `plIntensitySum 263.0`) measured **0.00000** on the away facade and `camlight`
-**0.00000**.
+`sun=0.00000 ambient=0.06168 hemi=0.06023 env=0.03355 pl=0.00000 camlight=0.00000 emissive=0.00000`,
+closure 1.000. RED's away wall was 0.81332, of which **0.69137 (85%) was the HDRI env term**;
+Hospital's was 0.70141 of which **0.58503 (83%)**.
 
 **Nothing got brighter — asserted per pose, not claimed** (GREEN ÷ RED, scene-linear):
 
@@ -2598,52 +2602,59 @@ fixture lights, `plIntensitySum 263.0`) measured **0.00000** on the away facade 
 |---|---|---|
 | exterior, sun side | 0.835 | 0.832 |
 | exterior, away side | **0.191** | **0.213** |
-| interior standpoints (3 real `IfcSpace` centres each) | 0.325 / 0.515 / 0.649 | 0.535 / 0.293 / 0.502 |
+| interior standpoints (3 real `IfcSpace` centres each) | 0.334 / 0.542 / 0.651 | 0.535 / 0.293 / 0.498 |
 
 Every pose on both buildings is darker. The separation was bought by REMOVING light: sun, ambient,
 hemi, `PHOTO_ENVMAP_BOOST`, `_nightPLScaleStill` and `CAM_LIGHT` are all untouched.
 
-**The HDRI reflection feature is provably untouched:** 42/42 (Clinic) and 70/70 (Hospital) glossy
-materials still read the HDRI or the room probe; only the matte set moved (11 of 53 / 26 of 96).
+**The HDRI reflection feature is provably untouched:** 43/43 (Clinic) and 70/70 (Hospital) glossy
+materials still read the HDRI or the room probe; only the matte set moved (11 of 54 / 26 of 97).
 
-**Instrument controls, all green:**
+**Instrument controls:**
 - **FREEZE CONTROL** — frozen shadow map vs a freshly rendered one at the same pose, taken at the END
   of the run when the scene has long settled: `frozen=0.15546 liveShadowMap=0.15546 relDrift=0.00000`
-  (Clinic), `0.14929 / 0.14929 / 0.00000` (Hospital). An earlier placement of this control read
+  (Clinic), `0.14927 / 0.14927 / 0.00000` (Hospital). An earlier placement of this control read
   `relDrift=0.0627` because it sampled BEFORE the staged scene finished converging — that reading was
   **discarded and the control moved**, not explained away.
-- **RED CONTROL** — 0.00051 / 0.00001 drift against effect sizes of 0.80 and 0.68.
-- **Closure** — the light groups sum to the measured total within 1.000 ± 0.010 on every wall pose, so
-  the additivity the whole derivation rests on is verified rather than assumed.
-- **Teardown** — `§SUN_FILL_RATIO teardown envMap restored on 31 material(s), stale _photoBoosted
-  cleared on 11`; census after exit `stale=0 leftBoosted=0 leftOrigEnv=0 castShadow=false`.
+- **RED CONTROL** — 0.00051 / 0.00001 drift against effect sizes of 0.81 and 0.68.
+- **Closure** — the light groups sum to the measured total within 1.000 ± 0.010 on every wall pose.
+- **Teardown** — `§SUN_FILL_RATIO teardown envMap restored on 32 material(s), stale _photoBoosted
+  cleared on 11`; census after exit `stale=0 leftBoosted=0 leftOrigEnv=0 castShadow=false` on both.
 
-### ⛔ DECLARED CONFLICT — the interior cost, and the trade the user has to price
+### ⛔ DECLARED CONFLICT — the interior cost, and the trade the user has to price (→ AGENT_QUEUE U-11)
 Removing the unshadowed fill costs Alt+S interiors, because staging turns the sun's shadow ON
 (`castShadow=true`) and the HDRI had been standing in for all interior daylight:
 
 | interior retention, GREEN ÷ RED | Clinic | Hospital | floor (§WALL_SIDE_AND_LIGHT_FLOOR T3) |
 |---|---|---|---|
-| mean | 0.499 | 0.412 | ≥ 0.70 |
-| p25 | 0.437 | 0.487 | ≥ 0.55 |
+| mean | 0.510 | 0.411 | ≥ 0.70 |
+| p25 | 0.421 | 0.487 | ≥ 0.55 |
 
-**The single-knob clamp is priced, not hand-waved:** `§SFR_CLAMP` — keeping fraction **m = 0.401** of
-the HDRI matte fill would hold both floors (m_mean 0.401, m_p25 0.200), but the wall separation would
-then be **0.5956** instead of 0.2381. The away wall would read 60% of the sun wall: better than RED's
-104%, and not what the user asked for. **Both numbers are on record rather than silently favouring
-either half.** Shipped state = the full fix; if the user finds Alt+S interiors too dark, m is the one
-number to move.
+**The clamp is priced, not hand-waved** (`§SFR_CLAMP`): keeping fraction **m = 0.388** (Clinic) /
+**0.491** (Hospital) of the HDRI matte fill would hold both floors, but the wall separation would then
+be **0.5863 / 0.6011** instead of 0.2388 / 0.2347 — the away wall back to ~60% of the sun wall, better
+than RED's 105% and not what the user asked for. **Both numbers are on record rather than silently
+favouring either half.** Shipped state = the full fix; `m` is the one number to move.
 
-**Two candidate remedies were tested and one was REFUTED BY THE WITNESS, which is the point of having
-one.** The §STAGED_PL_CUT sweep (tripling every staged fixture light) is the obvious interior knob
-and its facade contribution is measured at 0.00000, so it looked ideal. The first sweep reported a
-clean `0.00000` interior change — "the fixtures do not light interiors". **That was a FALSE finding
-manufactured by the instrument:** `tools.js`'s pooled fixture update (`§STAGED_PL_CUT`,
-`tools.js:1787/1821`) recomputes every light's intensity from `A._nightPLScale` on camera moves, so a
-per-light write is overwritten before the next render. The sweep now moves that scalar and reads the
-intensity total back, printing INCONCLUSIVE if it did not actually move. **The corrected sweep has not
-yet been run to a conclusion — treat the PL remedy as OPEN, not as refuted.**
-Separately, the interior decomposition first closed at only **0.441** — the witness saying it could
-not account for 56% of the interior's light. The missing contributor is night-mode fixture/window
-glow, which is emissive GEOMETRY, not a light, and therefore invisible to a light-only
-decomposition; an `emissive` group was added.
+**What actually lights an Alt+S interior after the fix** (`§SFR_INTERIOR_DECOMP`, Hospital, closure
+**0.997**): `ambient=0.09682 hemi=0.09422 env=0.05027` of a 0.24252 total — and `pl=0.00000`,
+`camlight=0.00000`, `emissive=0.00055`. So the room is left on the non-directional fill alone. The
+same probe on Clinic closed at only **0.447**, i.e. the witness reporting that it could NOT account
+for 55% of that frame; the standpoint's max pixel is 2.46–3.22 (brighter than any lit wall), which
+points at sky geometry visible through a window — unchanged between RED and GREEN, so it DILUTES the
+retention figure toward 1.0 and the true interior-surface darkening is stronger than the frame-level
+number above. Named, not chased.
+
+**⚠ The `§STAGED_PL_CUT` remedy is OPEN, not refuted — and the first answer was a false one.** The
+staged fixture lights are the obvious interior knob. A first sweep reported a clean `0.00000` interior
+change, i.e. "the fixtures do not light interiors" — **a FALSE finding manufactured by the
+instrument**: `tools.js`'s pooled fixture update (`§STAGED_PL_CUT`, `tools.js:1787/1821`) recomputes
+every light's intensity from `A._nightPLScale` on camera moves, so a per-light write is overwritten
+before the next render. The sweep now moves that scalar and reads the intensity total back — and on
+the corrected run it printed **`INCONCLUSIVE — the sweep never actually changed the staged fixture
+light total (0 → 0 → 0)`**, because that pool is CAMERA-PROXIMITY driven (`_fade = min(1, dist/15)`,
+lights outside the needed set are set to 0) and is empty once the accumulation loop is stopped for
+measurement. **So: `pl` measured 0.00000 on the away facade in every run — it is certainly not the
+CAUSE — but whether raising `_nightPLScaleStill` could restore Alt+S interiors is NOT yet answered.
+Answering it needs a measurement that keeps the fixture pool live, which the current freeze forbids.**
+That is the next thing to build if U-11 goes that way.
