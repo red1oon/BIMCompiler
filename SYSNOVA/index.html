@@ -373,7 +373,7 @@ const BUILDINGS = {
   'Hospital': { db: 'hospital.db' },
   'Hospital_3': { db: 'Hospital_3_extracted.db' },
   'Terminal': { db: 'Terminal_extracted.db' },
-  'Clinic': { db: 'Clinic_extracted.db' },
+  'Clinic': { db: 'Clinic.db' },
   'Ifc4_Revit': { db: 'Ifc4_Revit_extracted.db' },
   'WBDG_Office': { db: 'WBDG_Office_extracted.db' },
   'HHS_Office_Federated': { db: 'HHS_Office_Federated_extracted.db' },
@@ -396,7 +396,7 @@ function saveViewed() {
 }
 
 // DB files served from production bucket — dev only overrides viewer/JS
-const _prodBase = 'https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/';
+const _prodBase = 'https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/';   // §CLINIC_LANDING_REPOINT 2026-09-02: data bucket is `bim-ootb` (live object already had this; the repo copy was stale)
 
 // Implementing prompts/Viewer/BLANK_VIEWER_LANDING_CARD.md §3 — Witness: witness_blank_viewer_card.js
 function openBlankViewer() {
