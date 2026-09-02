@@ -866,6 +866,33 @@ make the class list a hint rather than the actual decision — D-3's own refinem
 not class, and is the model to follow. ⚠ Changing it changes which elements get smoothed: measure
 the population delta per building before and after.
 
+### A-21 · ⚠ LTU FLY-TOUR SLOWDOWN — user-reported 2026-09-03, measured from their §-log
+**FPS collapses 330 idle -> 52 mean / 103 max (n=39) during the fly tour**, and the cause is visible:
+the DLOD budget controller is OSCILLATING, not converging.
+- `§DLOD_NAV_BUDGET boost=` sawtooths **0 -> 60 -> 0** repeatedly through the whole tour.
+- At the worst point `§DLOD_NAV active=0 boxed=122330` — **every element demoted to a box** — then
+  `started=21638` re-promotions in one tick.
+- `§DLOD_TICK flips_mean` spikes to **5429, 4482, 1911, 1047** (steady state is 0-250).
+This is `§CPE_PANEL_PERF`'s named "DLOD scrub-jump flip storm", but INTERACTIVE. §R13 measured it as
+**not** a bake-time cost (high-flip frames ran faster than mean) — that finding stands for the bake and
+does NOT transfer here; do not reuse it to dismiss this.
+**Not the cause, ruled out:** `§ROOM_OCCL_INDEX_ERR no such column: r.center_x` (`room_walker.js:1307`)
+fires ~5x early then self-heals — `§ROOM_OCCL_INDEX rects=356 floors=4 stamped=26309 ms=102` succeeds.
+It should print the existing "rooms not compiled yet — will retry" message instead of an ERR. Cosmetic.
+**Also in the frame, quantify before blaming:** `§DUCT_SILHOUETTE` (#1631, merged today) added
+**387,243 verts / 129,081 tris** to LTU (refined=309 of 15,205 considered). One-time costs, not
+per-frame: `§MEP_SMOOTH_NORMALS ms=2590.9`, `§BVH_DEFERRED ms=20068`, `§OCCL_STRUCT warm_ms=9958`.
+**Fix the controller, not the symptom.** A budget loop that swings full-scale every few seconds is the
+defect; the flips are its output.
+
+### A-22 · the two "cleanup" items are NOT safe as written — corrected 2026-09-03
+- **Deleting OCI `sandbox/` would break the landing.** After the `_VIEWER` repoint it STILL loads 8
+  objects from there: `import_worker.js`, `mesh_import_worker.js`, `ifc_export_worker.js`,
+  `import_db_builder.js`, `locale_loader.js`, `share.js`, `erp.html`, `YT.png`. Only the viewer entry
+  moved to GH. Retiring the fork means porting or repointing those 8 first.
+- **Dropping OCI `Clinic.db` would break GH Pages**, which still maps `Clinic` to it. Rename GH's entry
+  to `Clinic_extracted.db` first, then drop.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
