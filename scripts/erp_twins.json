@@ -1,0 +1,89 @@
+{
+  "__doc": "Declared relationship between each bim-compiler build/erp/*.js module and the file that SHIPS at bim-ootb erp/*.js. Written 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md \u00a7IMPL-RESULT-F7) after a witness was found judging a drifted copy: W-MORDER-SAVE reported 4 FAILs that were purely the copy lacking hooks the shipped file has. Values: 'identical' = must stay byte-identical, drift is a FAIL. 'divergent' = the copy is deliberately a different shape (node/UMD harness vs browser); needs a stated reason, and check_erp_twins.js reports it every run so it can never be forgotten. 'unreviewed' = drifted today, nobody has yet decided which of the two it is \u2014 reported LOUDLY, does not fail the gate until classified. Never move a pair to 'divergent' to silence the gate; that is the one way this check can be defeated.",
+  "twins": {
+    "ad_access": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "ad_callout": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "ad_docfsm": {
+      "rel": "identical",
+      "why": "PR #1611 established and re-proved the md5-identity contract"
+    },
+    "ad_evaluator": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "ad_modelval": {
+      "rel": "unreviewed",
+      "why": "11 witnesses. PROVEN load-bearing 2026-09-02: the copy lacked P1.5's hooks and produced 4 false FAILs."
+    },
+    "ad_process": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "crud_overlay": {
+      "rel": "unreviewed",
+      "why": "9 witnesses. Part of this gap is expected \u2014 \u00a7S60 split crud_core.js out of the shipped file; the copy predates that split."
+    },
+    "erp_engine": {
+      "rel": "unreviewed",
+      "why": "drifted from what ships when the gate was written 2026-09-02; not yet classified"
+    },
+    "erp_key_epochs": {
+      "rel": "unreviewed",
+      "why": "drifted from what ships when the gate was written 2026-09-02; not yet classified"
+    },
+    "erp_period_close": {
+      "rel": "unreviewed",
+      "why": "5 witnesses"
+    },
+    "erp_snapshot_sign": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "erp_sync_fsm": {
+      "rel": "unreviewed",
+      "why": "drifted from what ships when the gate was written 2026-09-02; not yet classified"
+    },
+    "genesis": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "kernel_ops": {
+      "rel": "unreviewed",
+      "why": "16 witnesses judge the copy; the signed write path. Highest-value pair to classify."
+    },
+    "ninja_excel": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_rule": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "op_upcaster": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "plugin_registry": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "report_overlay": {
+      "rel": "unreviewed",
+      "why": "2 witnesses"
+    },
+    "system_monitor": {
+      "rel": "unreviewed",
+      "why": "drifted from what ships when the gate was written 2026-09-02; not yet classified"
+    },
+    "vfs_detect": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    }
+  }
+}
