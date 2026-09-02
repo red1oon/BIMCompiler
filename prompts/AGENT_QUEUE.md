@@ -591,6 +591,31 @@ would convert a free path into a metered one.
 ⚠ This does NOT resolve **U-3** (reclaiming the stranded historical 8.53 GB) — that is separate and
 still open.
 
+### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
+Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
+`witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
+`<=20` gate. **It is NOT in CI**, which is why CI stayed green — so nothing will catch this but a
+person reading this entry.
+**The likely story, stated as a hypothesis and NOT acted on:** that gate's own comment says the 20
+was *"locked to the measured fleet baseline"* — on the **22-band model #1551 replaces**. The same
+run improves Terminal midair **521→30**, byRawLabel **6462→91**, forcePlaced **5772→759**. So this
+is plausibly the first honest reading of a better model against a stale threshold.
+**Do not simply raise the threshold to make it green** — that is how a baseline becomes fiction.
+Re-derive the gate against the new band model and show the working. Consider wiring this witness
+into CI once it is trustworthy, since its invisibility is half the defect.
+
+### A-14 · §W_D0A A4 prints FAIL over an EMPTY population · PRIMAL LAW clause 4 violation
+`witness_day0_attribution.js` went GREEN→RED after #1551, **by design** — its header states the
+attribution should go red the day a cause stops being true. Correct behaviour. **But claim A4 is a
+real defect:** Terminal's early-MEP set is now empty *because #1551 fixed it*, and A4 prints **FAIL
+over an empty population**. That is exactly the vacuous case CLAUDE.md's witness contract requires
+to print **INCONCLUSIVE**, never a bare verdict. Small, self-contained fix.
+
+### A-15 · `IfcSlab ^Stair` widening — NOW UNBLOCKED by #1551
+Closes the HHS C3 DAY-0 failure. Measured scope: `IfcSlab ^Stair` = **HHS 4/83, 0 elsewhere**. It
+appends to the same `stair_member_architecture` array #1551 appends to and moves `IfcSlab` out of
+`supportPool` — which is why it had to wait. #1551 has landed, so it can go.
+
 ## ⚠ RE-CLASSIFIED 2026-09-02 — these were parked as "user decisions" and should NOT have been
 **User: "Why are those waiting on me? I given direction, u can help manage."** Correct. Direction
 was already given on each of these; parking them was invented gating, which CLAUDE.md's Anti-Drift
