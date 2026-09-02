@@ -79,3 +79,86 @@ worktree off FRESH `origin/main` (never the shared tree — hook-blocked); let a
 github-actions bot squash-merges in seconds — a late push orphans commits; start follow-ups off fresh origin/main).
 
 ## Done = §B-1 committed+green; §B-2 decided (and witnessed if taken); §B-3/§B-4 noted/held. # DONE ledger per item.
+
+---
+
+## §MULTIHOST_WITNESS 2026-09-03 — the standing multi-way sync proof (W-MULTIHOST-SYNC)
+
+**User directive, quoted (2026-09-03):** *"we have a multi-user relay mechanism plan to overcome the
+absence of an app server, written down, tested, and should come into play a black box WITNESS log to
+proof our system can synch multi way between this machine and GH with OCI in diff roles. Such test was
+done before, and should be upgraded to run whenever network ability is touched in the core."*
+
+The question this lane exists to answer, in the user's words: **"Is this real? Will this hold and
+scale? Are there any show stoppers to an enterprise user eventually?"** A witness that runs once and
+is quoted for three months cannot answer that. This one runs on a trigger.
+
+### §MH.0 — measured 2026-09-03, before writing a line of it. The prior proof has DECAYED.
+The 3-host convergence claim on record (`project_erp_sync_fsm`, W-REPLICA: *"LIVE on dev … all 3 up,
+identical tip, 0 errors"*) is **no longer true as stated**. Probed directly today:
+
+| host | URL | today |
+|---|---|---|
+| GH raw | `raw.githubusercontent.com/red1oon/BIMCompiler/mock/relay-snapshot/relay_snapshot.json` | **200**, 1,750 B, 5 ops, carries `tip`/`sig`/`alg`/`signed_by` (the W-SIGN shape) |
+| OCI dev | `…/b/bim-ootb-dev/o/sandbox/erp/relay_snapshot.json` | **404** |
+| OCI dev (the POC page itself) | `…/o/sandbox/erp/replica_poc.html` | **404** |
+| OCI live | `…/b/bim-ootb-live/o/sandbox/erp/relay_snapshot.json` | **404** |
+
+**So the three-origin proof is a two-origin proof today** (GH + local), and nothing detected the loss.
+This is the same decay class as the whole `W-ERP-TWIN` finding — an instrument that stopped covering
+its subject while continuing to be cited. Consistent with §U-4 in `prompts/AGENT_QUEUE.md` (the OCI
+sandbox generally 3.5 months stale). **Do not re-state the 3-host claim until this witness re-earns it.**
+
+### §MH.1 — what is architecturally settled, and must NOT be re-litigated
+Static hosts **STORE + SERVE**; readers **replay deterministically**; only **multi-writer sequencing**
+needs the one compute relay. "Writing" to a static host = the owner replaces the snapshot blob (OCI
+authenticated `put` / `git push`). Recompute-tip catches corruption; only the **signature** catches a
+forger who self-consistifies the tip. That is the doctrine — the witness proves it holds, it does not
+redesign it.
+
+### §MH.2 — the claim (W-MULTIHOST-SYNC). Black-box, over the real network, roles rotated.
+Six arms, each asserting a number, each with a falsifier:
+1. **PUBLISH** — this machine generates and signs a snapshot, publishes it to GH and to the OCI **dev**
+   bucket. Assert both fetch back byte-identical to what was published.
+2. **CONVERGE** — a zero-state reader fetching from each host *independently* recomputes the same tip,
+   and it equals the signed tip. Assert `tip` equality across hosts and `len`, not "no error".
+3. **ROLE ROTATION** — the ask's "diff roles": each host takes a turn as the SOLE reachable source with
+   the others blocked. Assert convergence in all three rotations, so no host is secretly load-bearing.
+4. **FAILOVER** — with one host returning 404 (today's real condition, so this arm is not synthetic),
+   the client still resolves and converges from the survivors.
+5. **TAMPER** — a mutated snapshot served by one host is REJECTED under the **pinned** controller pubkey
+   (pinned out-of-band in the module, never read from the snapshot), and the reader falls back to a good
+   host rather than adopting the forgery. Assert both halves.
+6. **FRESHNESS** — a host serving an OLDER tip is detected as stale, not silently preferred. This is the
+   arm the old POC never had, and it is the one that would have caught §MH.0.
+
+**Vacuity guard:** an arm whose population was empty prints `VACUOUS`; a run where a host was
+unreachable for reasons outside arm 4 prints `INCONCLUSIVE`, never PASS. A green log with `hosts=1` is
+a §CRISIS-class defect, not a pass.
+
+### §MH.3 — the trigger. This is the half that makes it standing rather than a one-off.
+A gate, modelled on `scripts/check_erp_twins.js` (which already proved this shape works): declare the
+**network core** — the modules whose change can alter sync behaviour — and fail when any of them has
+changed since the last recorded W-MULTIHOST-SYNC run. Starting set, to be confirmed from the tree, not
+assumed: `erp_relay_client.js`, `erp_relay_server.js`, `erp_replica_client.js`, `erp_sync_fsm.js`,
+`erp_sync_relay.js`, `erp_snapshot_sign.js`, `erp_persist_ui.js`, `kernel_ops.js`, plus the snapshot
+generator `scripts/gen_replica_snapshot.js`. Record the run as `{content-hash of each core file, tip,
+utc}` so the gate is content-keyed and a stale pass is impossible — the same reason `cache_4d_run.js`
+keys on file content.
+
+### §MH.4 — the showstopper register, kept honest and re-measured, not asserted once
+Re-verified in the shipped source 2026-09-03 (`build/erp/erp_relay_server.js`): `_accept()` dedupes by
+`op_uuid` and appends durably, and **that is all it does** — grepping the server for
+`authorization|bearer|token|verify|sig` returns **nothing**. So, stated plainly for the enterprise
+question:
+- **S-1 · the relay is unauthenticated and undeployed.** `POST /push` accepts from anyone who reaches
+  the URL, with `Access-Control-Allow-Origin: *`. A forged op still cannot pass client-side
+  verification — but the endpoint can be flooded. No relay runs on real compute anywhere today, so the
+  live product is effectively **single-writer-per-device + signed snapshot exchange**, not multi-writer.
+- **S-2 · plain HTTP.** `http.createServer`, so TLS must be terminated by the host; an https page
+  talking to an http relay is mixed-content blocked outright.
+- **S-3 · key custody sits on end-user devices.** The doctrine's own honest admission applies: a
+  key-holder's lie must be told consistently across all books → caught at the count, not by crypto.
+- **S-4 · browser storage is not encrypted at the app layer** — it relies on OS-level disk encryption.
+These are the four an enterprise buyer will ask about. Each needs a measured status line here every
+time this witness runs, not a one-time paragraph.
