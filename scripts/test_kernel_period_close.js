@@ -49,7 +49,7 @@ function c(cents) { return (cents < 0 ? '-' : '') + Math.abs(cents / 100).toFixe
 // flag only auto-creates the table for the first db) — the sync_poc.html dodge.
 var SCHEMA = 'CREATE TABLE IF NOT EXISTS kernel_ops (id INTEGER PRIMARY KEY, op_uuid TEXT, timestamp INTEGER NOT NULL,'
   + ' op_type TEXT NOT NULL, parameters TEXT NOT NULL, input_guids TEXT, output_guid TEXT, undone INTEGER DEFAULT 0,'
-  + ' prev_hash TEXT, op_hash TEXT, sig TEXT, gid TEXT, user_tag TEXT DEFAULT "local")';
+  + ' prev_hash TEXT, op_hash TEXT, sig TEXT, gid TEXT, branch_id TEXT, user_tag TEXT DEFAULT "local")';   // branch_id: kernel v13 TABLE_SQL (S7 #930) — _snapshotLog reads it (§TWIN-CLASSIFIED-WITNESS-FIXES 2)
 function freshDb(SQL) { var db = new SQL.Database(); db.run(SCHEMA); return db; }
 
 // ── deterministic fixtures (mirror poc_showstopper's scenario in the REAL kernel op shape) ──────────
@@ -75,7 +75,11 @@ function stampDeterministic(db) { db.run('UPDATE kernel_ops SET timestamp = id')
   var dbLive = freshDb(SQL);
   seedP1(K, dbLive); stampDeterministic(dbLive);
   var P1_OPS = 15;   // fixture truth: 3×gComplete(3 ops) + 2×gPay(3 ops) = 15 ops in period 1
-  var ck = await PC.closePeriod(dbLive, K, CONTROLLER, { period: 1, ts: 1700000000 });
+  // T3 (bim-ootb #640, §TWIN-CLASSIFIED-WITNESS-FIXES 2): compaction fires ONLY after a CONFIRMED archive of the
+  // pre-close log — the sink below records what it was handed so the verdict can assert archive-FIRST.
+  var sinkRows = null;
+  var ck = await PC.closePeriod(dbLive, K, CONTROLLER, { period: 1, ts: 1700000000,
+    archiveSink: async function (rows) { sinkRows = rows.length; return { ok: true, ref: 'witness-archive-p1' }; } });
   var sigOk = await SIGN.verifyTip(ck.tip, ck.sig);
   var balanced = PC.balSum(ck.closing_balances) === 0;
   var expectClose = { AR: 7500, Revenue: -42500, Cash: 35000 };
@@ -85,8 +89,8 @@ function stampDeterministic(db) { db.run('UPDATE kernel_ops SET timestamp = id')
 
   var liveAfter = await K.verifyChain(dbLive);
   console.log('   archived(pre)=' + ck.archived + ' liveLen(post)=' + ck.liveLen + ' verifyLiveToCkpt=' + (liveAfter.ok ? 'ok' : 'FAIL'));
-  verdict(liveAfter.ok && ck.liveLen === 1 && ck.archived === P1_OPS && ck.archived > ck.liveLen,
-    'compaction: pre-checkpoint ops dropped (live=' + ck.liveLen + ' ≪ archived=' + ck.archived + '); live chain verifies off the checkpoint', 'live=' + ck.liveLen + ' arch=' + ck.archived);
+  verdict(liveAfter.ok && ck.liveLen === 1 && ck.archived === P1_OPS && ck.archived > ck.liveLen && ck.compacted === true && sinkRows === P1_OPS,
+    'compaction (T3 archive-first): the sink received ALL ' + P1_OPS + ' pre-close ops BEFORE the delete, then pre-checkpoint ops dropped (live=' + ck.liveLen + ' ≪ archived=' + ck.archived + '); live chain verifies off the checkpoint', 'live=' + ck.liveLen + ' arch=' + ck.archived + ' sinkRows=' + sinkRows + ' compacted=' + ck.compacted);
 
   // ════ §PCLOSE-BF — P2 opens FROM the checkpoint balances (balance brought forward) ════
   console.log('\n§PCLOSE-BF — period 2 folds from the checkpoint, never re-reading P1');

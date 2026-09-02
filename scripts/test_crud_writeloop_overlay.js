@@ -15,7 +15,7 @@ global.indexedDB = { open: function () { var r = {}; setTimeout(function () { r.
 
 var path = require('path'), fs = require('fs');
 var initSqlJs = require('sql.js');
-require(path.join(process.env.HOME, 'bim-ootb', 'viewer', 'kernel_ops.js'));   // REAL kernel → window.KernelOps
+require(path.join(__dirname, '..', 'build', 'erp', 'kernel_ops.js')   /* the ERP kernel the FSM/CORE ship with (v13, branch_id) — NOT viewer/kernel_ops.js (§TWIN-CLASSIFIED-WITNESS-FIXES 1) */);   // REAL kernel → window.KernelOps
 var K = global.window.KernelOps;
 var CORE = require('../build/erp/crud_overlay.js');
 var STORE = require('../build/erp/crud_ops.json');

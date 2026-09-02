@@ -29,7 +29,7 @@ global.indexedDB = { open: function () { var r = {}; setTimeout(function () { r.
 
 var path = require('path');
 var initSqlJs = require('sql.js');
-var KERNEL = path.join(process.env.HOME, 'bim-ootb', 'viewer', 'kernel_ops.js');
+var KERNEL = path.join(__dirname, '..', 'build', 'erp', 'kernel_ops.js')   /* the ERP kernel the FSM/CORE ship with (v13, branch_id) — NOT viewer/kernel_ops.js (§TWIN-CLASSIFIED-WITNESS-FIXES 1) */;
 function freshK() { delete require.cache[require.resolve(KERNEL)]; require(KERNEL); return global.window.KernelOps; }
 var FSM = require(path.join(__dirname, '..', 'build', 'erp', 'erp_sync_fsm.js'));
 var SEQ = require(path.join(__dirname, '..', 'build', 'erp', 'erp_sequencer.js'));

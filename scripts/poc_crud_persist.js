@@ -79,7 +79,7 @@ async function commitUpdate(db, op, baseTs) {
   var why = CORE.validateField({}, dateField, seeded, seeded);
   verdict(why === null, 'validateField PASSES on the seeded date (no false "required")', 'why=' + why);
   // prove the bug WOULD bite without the fix: the raw timestamp blanks the widget → gatherVals reads '' → required.
-  var whyBlank = CORE.validateField({}, dateField, '', '');
+  var whyBlank = CORE.validateField({}, dateField, '', seeded);   // val='' (blanked widget) vs orig=<stored> — CHANGED, so validated (bim-ootb #353 skips an unchanged field)
   verdict(whyBlank === 'required', 'control: a BLANK widget (the pre-fix symptom) is correctly REJECTed required', 'why=' + whyBlank);
 
   // ══════════════════════════════════════════════════════════════════════════════════════════════

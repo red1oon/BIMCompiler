@@ -105,10 +105,39 @@
         }
         return null;
       }],
+      ['MOrder.bpLocationDefault', function (ctx, info) {    // :1269-1270 ∘ setBPartner :752-774 — location 0 → the BP's own
+        // §P1 P1.5 (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §IMPL — W-PARITY-FIELDSET / W-MORDER-SAVE).
+        // Java: `if (getC_BPartner_Location_ID() == 0) setBPartner(new MBPartner(...))` (:1269-1270) — it also runs
+        // right after :1239-1252 cleared a foreign location. setBPartner: BP SalesRep_ID if non-zero (:752-753);
+        // loop over the BP's locations — isShipTo → C_BPartner_Location_ID, isBillTo → Bill_Location_ID, each
+        // iteration overwriting (:756-763, so the LAST match wins); still 0 → the first location (:766-769);
+        // no location at all → BPartnerNoShipToAddressException (:772-774). ONLY this slice is ported here — the
+        // payment-term / price-list parts of setBPartner ride the existing :1282/:1315 hooks below.
+        var r = info.record, dd = d(info);
+        var locNow = (dd.c_bpartner_location_id !== undefined) ? dd.c_bpartner_location_id : r.c_bpartner_location_id;
+        if (Number(locNow) > 0 || !(Number(r.c_bpartner_id) > 0)) return null;
+        var bp = null;   // a slimmed bundle without c_bpartner.salesrep_id (bim-compiler's glassbowl_data.db fixture) → no BP sales rep: conservative, never invented
+        try { bp = db.prepare('SELECT salesrep_id FROM c_bpartner WHERE c_bpartner_id=?').get(Number(r.c_bpartner_id)); } catch (eGap) { bp = null; }
+        if (bp && Number(bp.salesrep_id) > 0 && !(Number(r.salesrep_id) > 0)) dd.salesrep_id = Number(bp.salesrep_id);
+        var locs = db.prepare("SELECT c_bpartner_location_id, isshipto, isbillto FROM c_bpartner_location WHERE c_bpartner_id=? AND isactive='Y' ORDER BY c_bpartner_location_id").all(Number(r.c_bpartner_id)) || [];
+        if (!locs.length) return 'BPartnerNoShipToAddress';
+        var ship = null, bill = null;
+        locs.forEach(function (l) {
+          if (String(l.isshipto) === 'Y') ship = Number(l.c_bpartner_location_id);
+          if (String(l.isbillto) === 'Y') bill = Number(l.c_bpartner_location_id);
+        });
+        dd.c_bpartner_location_id = ship != null ? ship : Number(locs[0].c_bpartner_location_id);
+        if (bill != null) dd.bill_location_id = bill;
+        else if (!(Number(r.bill_location_id) > 0)) dd.bill_location_id = Number(locs[0].c_bpartner_location_id);
+        return null;
+      }],
       ['MOrder.billDefaults', function (ctx, info) {         // :1272-1279  Bill_* default to the BP/location
-        var r = info.record;
-        if (!Number(r.bill_bpartner_id)) { d(info).bill_bpartner_id = Number(r.c_bpartner_id); d(info).bill_location_id = Number(r.c_bpartner_location_id); }
-        else if (!Number(r.bill_location_id)) d(info).bill_location_id = Number(r.c_bpartner_location_id);
+        var r = info.record, dd = d(info);
+        // §P1: read the EFFECTIVE location — Java's :1269 setBPartner already set it before :1272 reads it.
+        var loc = (dd.c_bpartner_location_id !== undefined && dd.c_bpartner_location_id !== null) ? dd.c_bpartner_location_id : r.c_bpartner_location_id;
+        var billLoc = (dd.bill_location_id !== undefined && dd.bill_location_id !== null) ? dd.bill_location_id : r.bill_location_id;
+        if (!Number(r.bill_bpartner_id)) { dd.bill_bpartner_id = Number(r.c_bpartner_id); dd.bill_location_id = Number(loc); }
+        else if (!Number(billLoc)) dd.bill_location_id = Number(loc);
         return null;
       }],
       ['MOrder.priceListDefault', function (ctx, info) {     // :1282-1290  IsSOPriceList=IsSOTrx ORDER BY IsDefault DESC
@@ -128,12 +157,51 @@
         }
         return null;
       }],
+      ['MOrder.salesRepFromCtx', function (ctx, info) {      // :1302-1307  SalesRep 0 → Env.SALESREP_ID (the login user); ctx fallback only
+        // §P1 P1.5 — the MOrder twin of MInvoice.salesRepFromCtx (:1183-1188) below; the host feeds ctx.salesrep_id
+        // from window.APP.actor (crud_overlay.js _docCtx). Never overrides a set value (Java defaults ONLY a zero column).
+        var r = info.record, dd = d(info);
+        var srNow = (dd.salesrep_id !== undefined && dd.salesrep_id !== null) ? dd.salesrep_id : r.salesrep_id;
+        if (!(Number(srNow) > 0) && ctx && Number(ctx.salesrep_id) > 0) dd.salesrep_id = Number(ctx.salesrep_id);
+        return null;
+      }],
       ['MOrder.docTypeTargetDefault', function (ctx, info) { // :1311-1312  default = the Standard SO doctype ('SO')
+        // §DOCTYPE-PER-WINDOW (ERP_BUSINESS_CYCLE_E2E.md §Fix 2026-07-21) — real iDempiere lets the WINDOW
+        // (via its AD_Window/tab context) override this default to the Purchase side; this port previously
+        // always fell back to the client's Standard SALES doctype regardless of which window authored the
+        // record, so a "Purchase Order" created here got a Sales doctype (and thus a wrong/absent IsSOTrx)
+        // underneath. ctx.issotrx (threaded from the AD_Tab's own WhereClause, e.g. window 181's
+        // "C_Order.IsSOTrx='N'") picks the matching side; absent/ambiguous ctx keeps the original
+        // Standard-Sales fallback (never a behavior change for a caller that supplies no hint).
         var r = info.record;
         if (!Number(r.c_doctypetarget_id)) {
-          var dt = db.prepare("SELECT c_doctype_id FROM c_doctype WHERE docbasetype='SOO' AND docsubtypeso='SO' AND isactive='Y' ORDER BY c_doctype_id").get();
-          if (dt) d(info).c_doctypetarget_id = dt.c_doctype_id;
+          var dt = (ctx && ctx.issotrx === 'N')
+            ? db.prepare("SELECT c_doctype_id, issotrx FROM c_doctype WHERE docbasetype='POO' AND docsubtypeso IS NULL AND isactive='Y' ORDER BY c_doctype_id").get()
+            : db.prepare("SELECT c_doctype_id, issotrx FROM c_doctype WHERE docbasetype='SOO' AND docsubtypeso='SO' AND isactive='Y' ORDER BY c_doctype_id").get();
+          if (dt) {
+            d(info).c_doctypetarget_id = dt.c_doctype_id;
+            // IsSOTrx has no form field anywhere in this UI (crud_ops.json's c_order entry never declares it) —
+            // this beforeSave slice is the ONLY place it can ever be derived in this engine. Real iDempiere sets
+            // it from the chosen DocType at record construction; ported here since that seam doesn't exist yet.
+            if (!r.issotrx) d(info).issotrx = dt.issotrx;
+          }
         }
+        return null;
+      }],
+      ['MOrder.deliveryInvoiceRuleDefault', function (ctx, info) {
+        // §DR-IR-LAST-MILE (ERP_BUSINESS_CYCLE_E2E.md §Fix 2026-07-21, "DeliveryRule/InvoiceRule undeclared") —
+        // NOT a beforeSave line in real MOrder.java: DeliveryRule/InvoiceRule are AD_Column DefaultValue
+        // fields, applied at NEW-record time by the window layer, not by the model's beforeSave. This engine
+        // has no such "apply AD_Column default at NEW" seam yet, and c_order's crud_ops.json entry (like
+        // M_Warehouse_ID/IsSOTrx above) declares no visible field for either — genShipmentLines/
+        // genInvoiceLines (ad_process.js) silently treat an undefined rule as "named-deferred", so every
+        // freshly-created order produced zero shippable/invoiceable lines regardless of DocStatus/IsSOTrx/
+        // Warehouse all being correct. Values are the REAL AD_Column.DefaultValue rows for C_Order in the
+        // seed (queried live: DeliveryRule='F' Force, InvoiceRule='I' Immediate — confirmed, not assumed;
+        // Availability was the initial guess and would have been WRONG).
+        var r = info.record;
+        if (!r.deliveryrule) d(info).deliveryrule = 'F';
+        if (!r.invoicerule) d(info).invoicerule = 'I';
         return null;
       }],
       ['MOrder.paymentTermDefault', function (ctx, info) {   // :1315-1327  IsDefault='Y' payment term
@@ -170,6 +238,20 @@
     function w(info) { return (info.warnings = info.warnings || []); }
     function chg(info, col) { return !!(info.recordOld && info.record && String(info.recordOld[col]) !== String(info.record[col])); }
     var H = [
+      ['MInOut.movementTypeFromWindow', function (ctx, info) {
+        // Implementing ERP_P2P_INVOICE_MATCH.md §Fix 2 — Witness: W-RECEIPT-MOVEMENTTYPE. Mirrors
+        // MOrder.docTypeTargetDefault's ctx.issotrx thread (ad_modelval.js ~line 131): crud_ops.json's
+        // m_inout entry declares no C_DocType_ID field, so movementTypeDerive below (which reads an
+        // already-set C_DocType_ID) can never fire for a manually-created record — this is the ONLY seam
+        // where the per-window signal (ctx.movementtype, threaded from the AD_Tab's own WhereClause, e.g.
+        // Material Receipt tab 296's "MovementType IN ('V+')") can reach the new row at all.
+        var r = info.record;
+        if (!r.movementtype && /^[A-Z][+-]$/.test((ctx && ctx.movementtype) || '')) {
+          d(info).movementtype = ctx.movementtype;
+          if (!r.issotrx) d(info).issotrx = ctx.movementtype.charAt(0) === 'C' ? 'Y' : 'N';
+        }
+        return null;
+      }],
       ['MInOut.movementTypeDerive', function (ctx, info) {   // :1306-1308 ∘ getMovementType:1275-1287
         var r = info.record;
         if (info.recordOld && !chg(info, 'c_doctype_id')) return null;   // fires on new record or doctype change
@@ -217,10 +299,26 @@
     function chg(info, col) { return !!(info.recordOld && info.record && String(info.recordOld[col]) !== String(info.record[col])); }
     function pick(r, info, col) { var dv = info.derived && info.derived[col]; return dv != null ? dv : r[col]; }
     var H = [
+      ['MInvoice.issotrxFromWindow', function (ctx, info) {
+        // Implementing ERP_P2P_INVOICE_MATCH.md §Fix 4 — Witness: W-INVOICE-ISSOTRX. c_invoice's real
+        // AD_Tab family (263 "IsSOTrx='Y'", 290/470 "IsSOTrx='N'") already matches the EXISTING
+        // window.APP._createIsSOTrx regex (ERP_BUSINESS_CYCLE_E2E.md §Fix 2026-07-21) — but crud_ops.json's
+        // c_invoice entry declares no IsSOTrx field, so nothing ever wrote ctx.issotrx onto the new record
+        // itself (MOrder's docTypeTargetDefault derives BOTH doctype AND issotrx together; MInvoice's own
+        // docTypeTargetDefault below only READS r.issotrx, assuming something upstream already set it — for
+        // an auto-generated invoice that's DOC_SPECS.createInvoice's header(); for a MANUAL create (only
+        // possible via the Create-Lines-From-PO/Receipt picker, §Fix 4) this hook is that missing seam.
+        var r = info.record;
+        if (!r.issotrx && (ctx && (ctx.issotrx === 'Y' || ctx.issotrx === 'N'))) d(info).issotrx = ctx.issotrx;
+        return null;
+      }],
       ['MInvoice.bpDefaults', function (ctx, info) {         // :1147-1149 ∘ setBPartner:631-673 — location + term/pricelist/rule from the BP
         var r = info.record;
         if (Number(r.c_bpartner_location_id) > 0) return null;
-        var so = r.issotrx === 'Y';
+        // Implementing ERP_P2P_INVOICE_MATCH.md §Fix 4 — pick() (not bare r.issotrx) sees issotrxFromWindow's
+        // derived value too, same-pass (hooks share one `info`, only `info.record` itself stays the static
+        // pre-hook snapshot — this is the existing derived-fallback convention priceListDefault already uses).
+        var so = pick(r, info, 'issotrx') === 'Y';
         var bp = db.prepare('SELECT paymentrule,c_paymentterm_id,po_paymentterm_id,m_pricelist_id,po_pricelist_id FROM c_bpartner WHERE c_bpartner_id=?').get(Number(r.c_bpartner_id));
         if (!bp) return null;
         var pt = so ? bp.c_paymentterm_id : bp.po_paymentterm_id;      // :638-644
@@ -263,7 +361,10 @@
       ['MInvoice.docTypeTargetDefault', function (ctx, info) {  // :1190-1194 ∘ setC_DocTypeTarget_ID:804-822 — ARI/API by SO flag
         var r = info.record;
         if (Number(r.c_doctypetarget_id) > 0) return null;
-        var dt = db.prepare("SELECT c_doctype_id FROM c_doctype WHERE docbasetype=? AND ad_org_id IN (0,?) AND isactive='Y' ORDER BY isdefault DESC, ad_org_id DESC, c_doctype_id").get(r.issotrx === 'Y' ? 'ARI' : 'API', Number(r.ad_org_id));
+        // Implementing ERP_P2P_INVOICE_MATCH.md §Fix 4 — pick() sees issotrxFromWindow's derived value (same
+        // convention as bpDefaults above); without it a manually-created Purchase invoice always fell through
+        // to the bare r.issotrx (undefined) branch, which is truthy-false too but for the WRONG reason.
+        var dt = db.prepare("SELECT c_doctype_id FROM c_doctype WHERE docbasetype=? AND ad_org_id IN (0,?) AND isactive='Y' ORDER BY isdefault DESC, ad_org_id DESC, c_doctype_id").get(pick(r, info, 'issotrx') === 'Y' ? 'ARI' : 'API', Number(r.ad_org_id));
         if (dt) d(info).c_doctypetarget_id = dt.c_doctype_id;
         return null;
       }],

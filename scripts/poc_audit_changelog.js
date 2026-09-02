@@ -44,17 +44,18 @@ var mockSide = {
 var res = CORE.listTip(mockSide, 'c_bpartner', 'c_bpartner_id', []);
 var r1 = res.rows.filter(function(r) { return r.c_bpartner_id === -5; })[0] || {};
 var r2 = res.rows.filter(function(r) { return r.c_bpartner_id === -6; })[0] || {};
-ok('CREATE with stdDefaults: CreatedBy=7',   r1.CreatedBy === 7);
-ok('CREATE with stdDefaults: AD_Client_ID=11', r1.AD_Client_ID === 11);
-ok('CREATE with stdDefaults: IsActive=Y',    r1.IsActive === 'Y');
-ok('CREATE with stdDefaults: Processed=N',   r1.Processed === 'N');
-ok('CREATE with stdDefaults: Created=iDempiere-string', typeof r1.Created === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(r1.Created));
-ok('UPDATE stamps Updated=iDempiere-string', typeof r1.Updated === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(r1.Updated) && r1.Updated >= r1.Created);
-ok('UPDATE stamps UpdatedBy=actor',          r1.UpdatedBy === 7);
-ok('UPDATE does NOT touch CreatedBy',        r1.CreatedBy === 7);
-ok('Migrated row (no stdDefaults) has no fabricated CreatedBy', r2.CreatedBy === undefined);
-console.log('§STD-DEFAULTS create table=c_bpartner client=' + r1.AD_Client_ID + ' org=' + r1.AD_Org_ID + ' by=' + r1.CreatedBy + ' active=' + r1.IsActive);
-console.log('§STD-DEFAULTS update by=' + r1.UpdatedBy + ' updated>' + 1700000001 + '=' + (r1.Updated > 1700000001));
+// keys are LOWERCASE since bim-ootb #968 (listTip stdDefaults fold writes lowercase columns — fixes AD_Org_ID=NaN); §TWIN-CLASSIFIED-WITNESS-FIXES 4
+ok('CREATE with stdDefaults: createdby=7',   r1.createdby === 7);
+ok('CREATE with stdDefaults: AD_Client_ID=11', r1.ad_client_id === 11);
+ok('CREATE with stdDefaults: IsActive=Y',    r1.isactive === 'Y');
+ok('CREATE with stdDefaults: Processed=N',   r1.processed === 'N');
+ok('CREATE with stdDefaults: Created=iDempiere-string', typeof r1.created === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(r1.created));
+ok('UPDATE stamps Updated=iDempiere-string', typeof r1.updated === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(r1.updated) && r1.updated >= r1.created);
+ok('UPDATE stamps updatedby=actor',          r1.updatedby === 7);
+ok('UPDATE does NOT touch CreatedBy',        r1.createdby === 7);
+ok('Migrated row (no stdDefaults) has no fabricated CreatedBy', r2.createdby === undefined);
+console.log('§STD-DEFAULTS create table=c_bpartner client=' + r1.ad_client_id + ' org=' + r1.ad_org_id + ' by=' + r1.createdby + ' active=' + r1.isactive);
+console.log('§STD-DEFAULTS update by=' + r1.updatedby + ' updated>' + 1700000001 + '=' + (r1.updated > 1700000001));
 delete globalThis.__idmpDb;
 
 // ── W-CHANGELOG (Task 2): changeLog respects IsAllowLogging ────────────────
@@ -155,10 +156,10 @@ var sideTs = { exec: function () { return [{ columns:['id','op_type','parameters
   [3,'CRUD_CREATE', JSON.stringify({table:'c_order',fields:{name:'O1'},stdDefaults:{actor:103,clientId:11,orgId:0}}), 1700000000000]
 ]}];}};
 var rT = CORE2.listTip(sideTs, 'c_order', 'c_order_id', []).rows.filter(function(r){return r.c_order_id===-3;})[0];
-console.log('  materialised Created =', rT && rT.Created);
-ok('listTip materialises Created as iDempiere string (not integer)', rT && /^\d{4}-\d{2}-\d{2} /.test(String(rT.Created)));
+console.log('  materialised Created =', rT && rT.created);
+ok('listTip materialises Created as iDempiere string (not integer)', rT && /^\d{4}-\d{2}-\d{2} /.test(String(rT.created)));
 delete globalThis.__idmpDb;
-console.log('§STD-DEFAULTS-FMT created=' + (rT && rT.Created) + ' (iDempiere yyyy-MM-dd HH:mm:ss)');
+console.log('§STD-DEFAULTS-FMT created=' + (rT && rT.created) + ' (iDempiere yyyy-MM-dd HH:mm:ss)');
 
 console.log('\n' + (fail === 0 ? '✅' : '❌') + ' W-AUDIT-CHANGELOG (incl. convention): ' + pass + '/' + (pass+fail) + ' PASS (' + fail + ' FAIL)');
 process.exit(fail > 0 ? 1 : 0);

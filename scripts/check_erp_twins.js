@@ -38,11 +38,13 @@ function shipped(base) {
 
 // Which modules does a witness actually judge? Derived from the tree, never hand-listed — a new witness
 // requiring a new module must show up here on its own.
+// test_*.js are witnesses too (W-PCLOSE, W-SYNC-FSM, W-REBASE, W-RELAY, W-PERSIST-SLICE…) — scanning only poc_/witness_
+// hid 4 judged twins incl. a DRIFTED help_overlay (found 2026-09-02, §TWIN-CLASSIFIED — the third scope gap this gate has had).
 var judged = {};
 ['scripts'].forEach(function (d) {
-  fs.readdirSync(path.join(HERE, d)).filter(function (f) { return /^(poc_|witness_).*\.js$/.test(f); }).forEach(function (f) {
+  fs.readdirSync(path.join(HERE, d)).filter(function (f) { return /^(poc_|witness_|test_).*\.js$/.test(f); }).forEach(function (f) {
     var src = fs.readFileSync(path.join(HERE, d, f), 'utf8'), m, hits = [];
-    // TWO require idioms, both real in this tree — matching only the first is how this gate would acquire the
+    // THREE require idioms, all real in this tree (the third — transitive sibling require — is resolved below) — matching only the first is how this gate would acquire the
     // very scope-blindness it exists to catch (found 2026-09-02: poc_valrule.js uses the path.join form and was
     // invisible to the literal-string scan). (a) a literal 'build/erp/<mod>'; (b) path.join(…,'build','erp','<mod>.js').
     var reLit = /build\/erp\/([a-z_0-9]+)/g;
@@ -56,6 +58,28 @@ var judged = {};
     });
   });
 });
+
+// (c) TRANSITIVE — a judged module that itself require('./<sib>.js')s a sibling in build/erp: the sibling is what
+// the witness really executes. §S60 made crud_overlay.js a shim over crud_core.js — judging the shim alone would leave
+// the 18 crud witnesses' real target unjudged (the scope-blind class §TWIN-WIDENED already fixed once for the
+// path.join idiom). One hop per pass, iterated to a fixpoint; the sibling inherits the requiring module's witnesses.
+(function () {
+  var reSib = /require\(\s*['"]\.\/([a-z_0-9]+)\.js['"]\s*\)/g, changed = true, hops = [];
+  while (changed) {
+    changed = false;
+    Object.keys(judged).forEach(function (b) {
+      var src; try { src = fs.readFileSync(path.join(HERE, 'build/erp', b + '.js'), 'utf8'); } catch (e) { return; }
+      var m; while ((m = reSib.exec(src))) {
+        var sib = m[1];
+        if (sib === b || !fs.existsSync(path.join(HERE, 'build/erp', sib + '.js'))) continue;
+        judged[sib] = judged[sib] || {};
+        Object.keys(judged[b]).forEach(function (f) { if (!judged[sib][f]) { judged[sib][f] = 1; changed = true; } });
+        if (hops.indexOf(b + '->' + sib) < 0) hops.push(b + '->' + sib);
+      }
+    });
+  }
+  hops.forEach(function (h) { console.log('§TWIN_TRANSITIVE ' + h + '  (sibling inherits the requiring module\'s witnesses)'); });
+})();
 
 var rows = [], fail = 0, unreviewed = 0, identical = 0;
 Object.keys(judged).sort().forEach(function (b) {

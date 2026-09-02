@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT
      New-Paradigm System Monitor host — 4 field-health widgets folding REAL signals.
-     Spec: prompts/SYSTEM_MONITOR_WIDGETS.md · Module: system_monitor.js · Risk: ProductionRisks.md §H -->
+     Spec: prompts/SYSTEM_MONITOR_WIDGETS.md · Module: field_health.js (== bim-ootb erp/field_health.js, W-ERP-TWIN) · Risk: ProductionRisks.md §H -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -45,10 +45,10 @@
 <script src="lib/sql-wasm.js" onerror="this.onerror=null;this.src='sqljs/sql-wasm.js'"></script>
 <script src="vfs_detect.js?v=1"></script>
 <script src="offline_queue.js?v=1"></script>
-<script src="system_monitor.js?v=1"></script>
+<script src="field_health.js?v=1"></script>
 <script>
 'use strict';
-var SM = (window.ERP && window.ERP.SystemMonitor);
+var SM = (window.ERP && window.ERP.FieldHealth);
 var Q = null, DB = null, VFSRES = null, view = 'angelic';
 var PERSISTED = null, EST = null;
 
@@ -92,7 +92,7 @@ function signals() {
 function refresh() {
   var el = document.getElementById('panel');
   if (view === 'classic') { renderClassic(el); return; }
-  if (!SM) { el.textContent = 'system_monitor.js not loaded'; return; }
+  if (!SM) { el.textContent = 'field_health.js not loaded'; return; }
   SM.render(SM.fold(signals()), el);                    // fold REAL signals → paint
 }
 

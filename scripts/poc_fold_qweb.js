@@ -11,7 +11,7 @@ var initSqlJs = require('sql.js');
 
 var EXTRAS = path.join(__dirname, '..', 'build', 'erp', 'odoo_extras.db');
 var SHARD  = path.join(__dirname, '..', 'build', 'erp', '12-odoo.db');
-var OVERLAY = path.join(__dirname, '..', 'build', 'erp', 'report_overlay.js');
+var QWEB = path.join(__dirname, '..', 'build', 'erp', 'report_qweb.js');   // foldQWeb lives here now — extracted VERBATIM from report_overlay.js (ERP_IDEMPIERE_UX_PARITY.md §TWIN-CLASSIFIED), a copy-only research module
 
 function rowsOf(db, sql, params) {
   var r = db.exec(sql, params || []); if (!r.length) return [];
@@ -55,7 +55,7 @@ function rowsOf(db, sql, params) {
   });
 
   // load CORE
-  var CORE = require(OVERLAY);
+  var CORE = require(QWEB);
   var manifest = CORE.foldQWeb('account.report_invoice', viewIndex, mappedLines);
   if (!manifest) { L('§W-ODOO-QWEB FAIL foldQWeb returned null (body not found)'); process.exit(1); }
 

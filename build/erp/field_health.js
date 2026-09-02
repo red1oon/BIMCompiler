@@ -28,7 +28,7 @@
 
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
-  else { root.ERP = root.ERP || {}; root.ERP.SystemMonitor = factory(); }
+  else { root.ERP = root.ERP || {}; root.ERP.FieldHealth = factory(); }
 }(typeof self !== 'undefined' ? self : this, function () {
 
   var DB_WARN_MB = 100, DB_ALERT_MB = 200;        // §6 db_file_size_mb: >100 compact, >200 OOM ceiling
@@ -133,6 +133,6 @@
     return readout;
   }
 
-  console.log('§SYSMON_LOADED v1 (4 widgets: field_errors/durability_ladder/db_size_gauge/environment)');
+  console.log('§FIELDHEALTH_LOADED v1 (4 widgets: field_errors/durability_ladder/db_size_gauge/environment)');
   return { fold: fold, render: render };
 }));

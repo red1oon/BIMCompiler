@@ -738,3 +738,109 @@ references** currently attest a copy nobody has confirmed is the shipped code. R
 out of the shipped file after the copy was taken), `ninja_model` **6**, `erp_period_close` 5, then the tail.
 Each is either a deliberate node-harness shape (→ `divergent`, with the reason recorded) or a stale copy
 (→ reconcile, then `identical`). **Never move a pair to `divergent` to silence the gate.**
+
+## §TWIN-CLASSIFIED 2026-09-02 — the 11 UNREVIEWED pairs, classified from diffs + witness logs (SPEC first, results below)
+Scope: empty the `unreviewed` column of `scripts/erp_twins.json` honestly. Rule held throughout: a pair moves to
+`divergent` ONLY when every differing line is harness/shape (kind a); a pair moves to `identical` ONLY after the
+copy is byte-equal to `origin/main:erp/<mod>.js` AND every witness that judges the copy has been re-run and its log
+read. **Never `divergent` to quiet the gate.** Shipped bytes = `git show origin/main:erp/<mod>.js` (bim-ootb at
+`bc470d71`); the local bim-ootb checkout was 22 behind, irrelevant because the gate reads origin/main blobs.
+
+### Method (what was measured before any edit)
+1. `diff <shipped> <copy>` for all 11, saved; line counts + md5s recorded in the gate log (`build/erp/check_erp_twins.log`).
+2. BASELINE: every `scripts/{poc_,witness_,test_}*.js` that requires any of the 11 copies (80 scripts, both require
+   idioms) run through `run_witness.sh` BEFORE any edit — logs kept. Result **73/80 PASS**; the 7 non-PASS are all
+   pre-existing on the untouched copies: `poc_morder_save` (the §IMPL-RESULT-F7 artefact — the copy lacks P1.5's
+   hooks), `poc_rate_input` (stale `require('../site/bigdecimal.js')` — module lives at `build/erp/bigdecimal.js`),
+   `test_crud_writeloop_overlay` (see results), and 3 marker-regex misses (`poc_genesis_minimal`, `poc_ninja_model`,
+   `poc_ninja_stage`, `poc_scale_forecast` print `N PASS / 0 FAIL` without the `run_witness.sh` marker shapes).
+3. Per pair, the diff was split into (a) harness/shape vs (b) content. **Finding: NONE of the 11 has a single (a)
+   line — the UMD wrappers are already shared. So `divergent` is not an honest verdict for any of them.** Every pair
+   is either the copy simply OLDER than what ships (8 of 11), the copy AHEAD of what ships (2), or a mis-pairing (1).
+
+### Classification (planned verdict · evidence · the action that earns it)
+| pair | direction | evidence | action |
+|---|---|---|---|
+| `kernel_ops` (39 scripts) | shipped ⊃ copy (v13 vs v9) | every copy-only line is the OLDER form of a line shipped replaced: T6 persist guard, T2 content-sign, T7 incremental verify, F1/F2/F10 op-store rows, S7 emitter, S8 kid. No copy-richer content (the §INTEG-COLLAPSE bidirectional case does NOT recur) | copy ← shipped bytes; run all 80; lock `identical` |
+| `ad_modelval` (12) | shipped ⊃ copy | P1.5 hooks (`bpLocationDefault`, `salesRepFromCtx`), §DOCTYPE-PER-WINDOW, `deliveryInvoiceRuleDefault`, §Fix 2 `movementTypeFromWindow`, §Fix 4 `issotrxFromWindow` + `pick()` — all shipped-only | copy ← shipped; expect `poc_morder_save` to flip GREEN (that is the §F7 proof) |
+| `crud_overlay` (18) | shipped ⊃ copy, reshaped by §S60 | node witnesses only ever see CORE (`module.exports = CORE; return;` at copy:619 precedes all DOM code). Copy-CORE vs shipped `crud_core.js`: 89 function bodies identical, 32 copy-only lines = older forms (`cleanVals` 2→3 args, CamelCase→lowercase audit keys, `+updated`) + the header comment; 539 shipped-only lines = §P1/§P2/§P3/T-0 additions | copy ← shipped `crud_overlay.js` (the shim) + NEW `build/erp/crud_core.js` ← shipped; gate widened to follow `require('./x.js')` inside a judged module (idiom c — otherwise the 18 witnesses' real target is unjudged: the exact scope-blind class §TWIN-WIDENED fixed once already); both locked `identical` |
+| `erp_period_close` (8) | shipped ⊃ copy | T3 archive-first gate + §PCLOSE-RACE pin (#640). CONTRACT CHANGE: compaction now fires only with a confirmed `archiveSink` — bim-ootb's own `erp/tests/witness_pclose_archive.js §T3-NO-SINK` proves "no sink → history retained" | copy ← shipped; `test_kernel_period_close.js` froze the pre-T3 contract (asserts `liveLen===1` with no sink) → expected RED; fix = supply a confirming sink at the compaction-asserting calls (witness moves to the shipped contract, not the reverse); `poc_bootstrap_path` S-FLAT reads postOps by id so may survive — read the log |
+| `erp_key_epochs` (1) | shipped ⊃ copy (v3 vs v1) | shipped header says verbatim "PORTED from bim-compiler build/erp/erp_key_epochs.js … two upgrades" (roster, `verifyEpochSigsOps`, `verifyMultiDeviceOps`, content-aware `_sigMessage`); `_kernel()` absent in node → falls back to op_hash = v1 semantics | copy ← shipped; `poc_rotate` |
+| `erp_sync_fsm` (1) | shipped ⊃ copy | S7 `gid/branch_id/sig` survive `rebase()` (#930); needs kernel_ops schema ≥ v13 → ported AFTER kernel_ops | copy ← shipped; `poc_blackout_resume` + `test_kernel_{sync,rebase,relay}` |
+| `erp_engine` (2) | shipped ⊃ copy | `completeReceipt` (§Fix 3, W-FOLD-MATCHPO) shipped-only | copy ← shipped |
+| `img_store` (2) | shipped ⊃ copy | `digestOf` content-address check (#277); `resolveImage` became async — both witnesses already `await` it | copy ← shipped |
+| `ninja_model` (6) | **copy AHEAD** | copy carries the `@callout` grammar (bim-compiler `82320be69`, 2026-06-14, touched ninja_model+ninja_stage). bim-ootb #309 shipped the ninja_stage half (`col.callout` consumed at shipped `ninja_stage.js:146-153`, locked identical) but never the model half → the feature is HALF-SHIPPED in production. No bim-ootb PR ever carried it (searched) | forward = bim-ootb branch: `erp/ninja_model.js` ← copy (byte-equal), sw `CACHE_VERSION` bump, `?v=` bump. Stays `unreviewed` until merged (gate reads origin/main) — parent opens the PR |
+| `report_overlay` (4) | **bidirectional** | shipped-only: `lc()` CamelCase aliasing for the browser bundle + comments (kind b, browser need). copy-only: `foldQWeb` (81 lines, W-ODOO-QWEB, judged by `poc_fold_qweb`) — NO consumer anywhere in bim-ootb `erp/` | port `lc()` forward into the copy; EXTRACT `foldQWeb` to `build/erp/report_qweb.js` (a copy-only research module — the tree already holds 24 such NO-SHIP modules; shipping 81 dead lines to the browser is the "add" that feedback_strip_not_add forbids). `poc_fold_qweb` re-pointed, must stay GREEN; then `identical`. REVERSIBLE — if shipping is preferred it is a 1-hunk bim-ootb PR |
+| `system_monitor` (1) | **mis-paired** | copy == shipped `erp/field_health.js` except 2 lines (export `ERP.SystemMonitor`→`ERP.FieldHealth`, load tag). bim-ootb #513 shipped the copy UNDER A NEW NAME; shipped `erp/system_monitor.js` is an unrelated modal (`open/close/_rebuildSeed/resolveRelease`) | rename copy → `build/erp/field_health.js` taking the 2 shipped lines; repoint `poc_system_monitor.js`, `build/erp/system_monitor.html`, `smoke_system_monitor.js`; manifest row `system_monitor` removed (no witness judges it), `field_health` locked `identical`. `deploy/dev/system_monitor.{html,js}` is a deployed sandbox snapshot — NOT edited here (OCI flow), named as a third copy |
+
+Witness protocol per port: run the module's judging set (kernel_ops → all 80), read `build/erp/<w>.log`, diff verdicts
+against the baseline. A witness that goes RED is investigated before anything else moves; a reconcile is never forced
+through a red.
+
+### §TWIN-CLASSIFIED-WITNESS-FIXES — the reds the ports produced, each traced to a stale WITNESS contract (spec before edit)
+Every red below was investigated against the bim-ootb commit that changed the behaviour; none is a product break,
+each is a bim-compiler witness that froze a pre-change contract. Fix = move the witness to the shipped contract,
+keeping its claim; never weaken the claim, never touch the ported module.
+1. `test_kernel_rebase.js` / `test_kernel_relay.js` (+ `test_kernel_sync.js`, `test_crud_writeloop_overlay.js`): FATAL
+   `no such column: branch_id` at `erp_sync_fsm.js:179`. They load `~/bim-ootb/viewer/kernel_ops.js` (the VIEWER
+   kernel, v8) — but `erp_sync_fsm.js`/`crud_core.js` ship with `erp/kernel_ops.js` (v13, `branch_id` column, S7
+   #930). Harness mis-pairing: point `KERNEL` at `build/erp/kernel_ops.js` (now byte-equal to what ships).
+2. `test_kernel_period_close.js:78` §PCLOSE-COMPACT: the T3 archive-first gate (#640) compacts ONLY after a confirmed
+   `archiveSink`. Supply a confirming sink at the compaction-asserting call and ADD to the same verdict that the sink
+   received exactly the `archived` rows BEFORE the delete (archive-first is the new claim; the other 4 closes assert
+   nothing about compaction and stay sink-free — they double as the §T3-NO-SINK proof: `§PCLOSE-NOARCHIVE` ×4 in the log).
+3. `poc_crud_persist.js:82` control: `validateField(…, '', '')` — bim-ootb #353 (in-place edit) made an UNCHANGED
+   field (`val===orig`) skip validation (GridField parity). The control's real symptom is "stored date blanked by the
+   widget" = `val=''`, `orig=<stored>`; pass `orig=seeded` — 'required' under BOTH contracts, and now models the bug.
+4. `poc_audit_changelog.js:47-57`: W-STD-DEFAULTS reads `r1.CreatedBy/AD_Client_ID/IsActive/Processed/Created/Updated`;
+   bim-ootb #968 (2026-07-22) made the stdDefaults fold write LOWERCASE keys ("fixes AD_Org_ID=NaN"). Read lowercase.
+5. **NOT a witness fix — a SHIPPED DEFECT the twin discipline surfaced.** `poc_audit_changelog` ("UPDATE stamps
+   UpdatedBy=actor") and `poc_recinfo` ("tip.UpdatedBy == recordInfo.updated.actor") stay red on the byte-identical
+   copy because shipped `crud_core.js:461` still writes `ex['UpdatedBy'] = p.actor` (CamelCase) on CRUD_UPDATE while
+   bim-ootb #968 (2026-07-22) lowercased every other stamp and stated the rule ("every OTHER key on nr is lowercase …
+   nothing anywhere in erp/ reads the mixed-case form"). A created-then-updated row therefore carries BOTH
+   `updatedby`=creator (from :427) and `UpdatedBy`=updater (from :461); any lowercase reader sees the CREATOR as the
+   last updater. Fix = `ex['updatedby']` at :461 — applied to the copy AND pushed on the bim-ootb branch; `crud_core`
+   stays `unreviewed` (copy is 1 line AHEAD of origin/main) until that merges, same treatment as `ninja_model`.
+   Evidence = these two witnesses going GREEN on the fixed bytes and RED on the shipped bytes (falsifier held).
+
+### §TWIN-CLASSIFIED-RESULT 2026-09-02 — 9 of 11 locked `identical`, 2 forward-ports pushed to bim-ootb, 0 `divergent`, 1 shipped defect found
+**Gate (`build/erp/check_erp_twins.log`):** `§TWIN_SUMMARY pairs=64 identical=36 unreviewed=3 undeclared_or_broken=0
+witnesses_judging_an_unreviewed_copy=31` — was `57 · 22 · 11 · 0 · 94` at the start of the session. **Not one pair
+became `divergent`**: none of the 11 had a single harness/shape line to justify it (§Method 3).
+
+| pair | verdict | evidence (copy md5 = shipped md5 unless stated) | witnesses re-run, logs read |
+|---|---|---|---|
+| `kernel_ops` | **identical** `3f5f6215` | v9→v13, every diff line the older form of T6/T2/T7/F1-F10/S7/S8 | ALL 80 scripts (baseline 73/80 → 74/80): 0 regressions; `poc_rate_input` newly runs+passes (stale `site/` require fixed); 39 logs print `§KERNEL_OPS_LOADED v13`, 0 print v9 |
+| `ad_modelval` | **identical** `7e6a3fda` | P1.5/§Fix2/§Fix4 hooks shipped-only | 12: `poc_morder_save` **FAIL→PASS** (§IMPL-RESULT-F7 closed), the other 11 unchanged PASS |
+| `crud_overlay` | **identical** `23c6cc56` | §S60 shim; copy-CORE vs `crud_core.js`: 89 bodies equal, 32 older lines | 18 + `test_crud_*`: all PASS after the 3 witness-contract moves below; `test_crud_writeloop_overlay` baseline-red **→ PASS** (was on the viewer kernel) |
+| `crud_core` (new, via idiom c) | **unreviewed — copy 1 line AHEAD** `5ef113a1` vs `fe46de53` | shipped `:461 ex['UpdatedBy']` violates #968's own lowercase rule → created-then-updated row carries both keys | `poc_recinfo` RED on shipped bytes / GREEN on the fix (falsifier held); `poc_audit_changelog` 25/25. Fix on bim-ootb `fix/erp-twin-forward-ports` `51234b55` |
+| `erp_period_close` | **identical** `75c64b9d` | T3 archive-first + §PCLOSE-RACE shipped-only | 8 + `test_kernel_period_close` (now asserts archive-first: `sinkRows=15 compacted=true`; 4 sink-free closes log `§PCLOSE-NOARCHIVE compacted=false` = the §T3-NO-SINK proof), `test_integ_postings_reconcile`, `test_persist_slice`: PASS |
+| `erp_key_epochs` | **identical** `35d95d06` | shipped header: "PORTED from bim-compiler … two upgrades" | `poc_rotate` PASS |
+| `erp_sync_fsm` | **identical** `788b3e77` | S7 rebase survival shipped-only | `poc_blackout_resume` PASS; `test_kernel_{sync,rebase,relay}` PASS once paired with the ERP kernel |
+| `erp_engine` | **identical** `9a28979b` | `completeReceipt` shipped-only | `poc_blue_future` PASS, `poc_genesis_minimal` 16/16 (marker-miss only) |
+| `img_store` | **identical** `cac4a07a` | `digestOf` shipped-only; async `resolveImage` already awaited | `poc_img_sync`, `poc_img_folder` PASS |
+| `report_overlay` | **identical** `512368bd` | `lc()` ported in; `foldQWeb` extracted VERBATIM to `build/erp/report_qweb.js` (copy-only, gate rows it NO-SHIP) | `poc_fold_qweb` W-ODOO-QWEB `maxDiff=0.00c §FALSIFIER=LOAD-BEARING` on the extracted module; `poc_pa_report`, `poc_money_fold`, `poc_proc` PASS |
+| `ninja_model` | **unreviewed — copy AHEAD** `d1d7a45a` vs `68e75e4d` | `@callout` grammar half-shipped (#309 shipped the stage half only) | 6 witnesses judge the same bytes now on bim-ootb `fix/erp-twin-forward-ports` `355ac9bb` (+ sw v776, `?v=2`); `poc_ninja_callout/bundle/export/extract` PASS, `model/stage` substantive PASS lines (marker-miss) |
+| `system_monitor` → `field_health` | **identical** `b314de93` (renamed) | copy == `erp/field_health.js` bar the 2 lines #513 changed when it shipped renamed; shipped `system_monitor.js` is an unrelated modal | `poc_system_monitor` PASS (`§FIELDHEALTH_LOADED v1`, `§MON-WITNESS OVERALL=PASS`); `smoke_system_monitor.js` + `build/erp/system_monitor.html` repointed; `deploy/dev/system_monitor.{html,js}` NOT touched (OCI sandbox snapshot — a third copy, named) |
+
+**Final full run (80 scripts): 76/80 PASS.** Baseline→final flips: `poc_morder_save`, `poc_rate_input`, `test_crud_writeloop_overlay`
+FAIL→PASS; zero PASS→FAIL. The 4 non-PASS are pre-existing `run_witness.sh` marker-regex misses with substantive pass lines
+in their logs (`poc_genesis_minimal` "16 PASS / 0 FAIL", `poc_ninja_model` `vsOracle=MATCH`, `poc_ninja_stage` `render=PASS
+rollback=PASS`, `poc_scale_forecast` DONE) — outside twin scope, named here, not touched.
+
+**Gate widened twice more (each with its own falsifier in the log):** (c) transitive `require('./x.js')` inside a judged module
+— surfaced `genesis_seed` (undeclared, byte-equal → locked) and is what lets `crud_core` be judged at all; the baseline log
+of the same tree had neither row. (d) `test_*.js` are witnesses — surfaced `erp_relay_client`, `erp_replica_client`,
+`help_idmp` (byte-equal → locked) and **`help_overlay` DRIFTED** (shipped 408L vs copy 357L, 137 diff lines, copy last
+touched 2026-06-01 vs shipped 2026-06-09; judged by `test_help_nextgate/coach`, `test_tour_idempiere`) → declared
+`unreviewed` with those facts, NOT classified — outside the 11.
+
+**bim-ootb side (parent opens the PR — standing rule):** branch `fix/erp-twin-forward-ports`, 2 commits off `bc470d71`:
+`355ac9bb` ninja_model `@callout` + sw v775→v776 + `idempiere.html ninja_model.js?v=2`; `51234b55` crud_core `:461`
+lowercase `updatedby`. On merge: flip `crud_core` + `ninja_model` to `identical` in `scripts/erp_twins.json` and re-run
+the gate — that is the whole remaining step for those two. `help_overlay` is the next pair to classify.
+
+**No ⛔ BLOCKED items.** One reversible judgment call: `foldQWeb` extracted rather than shipped (no bim-ootb consumer;
+24 copy-only research modules already follow that pattern) — if shipping is preferred it is a 1-hunk bim-ootb PR and
+`report_qweb.js` goes away.
