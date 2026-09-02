@@ -1,5 +1,17 @@
 # PROGRESS — Current Development State
 
+## Current State — 2026-09-02b ("Clinic still doesn't load like local" — root-caused, no deploy)
+**Lane file: `prompts/LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §AD.** Not a DB bug, not GH Pages, not
+the OCI **object-storage bucket** (`bim-ootb`, DB files only — confirmed byte-identical to
+`~/Downloads/Clinic.db`, md5 `636c8ef1…` both sides). The complaint reproduces on a **second,
+independent OCI-hosted landing page** — `bim-ootb-live/o/index.html`, sourced from
+`bim-compiler/SYSNOVA/index.html` (last touched 2026-07-28) with its own `deploy/dev`-sourced
+`sandbox/*.js` viewer (May 2026) — which the Aug 27–31 Clinic fix PRs (#1565/#1585/#1589, all merged
+into the separate `bim-ootb` GitHub repo / GH Pages) never reached. That page still maps
+`Clinic` → `Clinic_extracted.db` (md5 `b57a2866…`, 16,912 elements, missing `calendars`/`kernel_ops`/
+`scene_state`) instead of `Clinic.db` (md5 `636c8ef1…`, 16,071 elements — the fixed file). Deploying
+the fix is explicitly out of scope for this pass (not attempted) — the recipe is in §AD.3.
+
 ## Current State — 2026-09-02 (film-review handoff worked to zero; 2 PRs merged, 2 explicit blocks)
 **Lane file: `prompts/RESUME_2026-09-02_FILM_REVIEW.md` — read §SESSION_2026-09-02B first (the
 per-item status table).** Merged: **#1603** `§PIE_HOLD_PREDICATE` (e15da67c) · **#1604**

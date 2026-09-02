@@ -1877,3 +1877,77 @@ longer cosmetic — it is what makes `deriveStoreyMergeMap` fail on Clinic
 (`§S18_STOREY_MERGE_FAIL no such table: spatial_structure`), which is why a 4-floor building
 authors **7 level bands** with `Level 1` and `First Floor` as separate storeys (§AA.1). That is the
 concrete cost of the gap, and the argument for prioritising (b) over (a).
+
+## §AD "Clinic.db still doesn't load like local" — ROOT-CAUSED, 2026-09-02. Two independent landing
+pages exist; the fix (§Z/PR #1589) only ever reached one of them.
+
+**User complaint (verbatim intent):** *"Clinic.db still does not load the way `~/Downloads/Clinic.db`
+does — even though a previous session reported this fixed."* Per `feedback_verify_the_end_of_the_
+chain.md`, treated the "fixed" claim as unverified and measured the actual two paths end to end
+instead of re-asserting it. **Reproduced, quantified, and localised to ONE specific surface — not
+the DB, not GH Pages, not the OCI object storage bucket the user was told not to worry about.**
+
+### §AD.1 The reference file and the "good" path are BOTH confirmed clean (do not re-chase these)
+- `~/Downloads/Clinic.db`: 226,349,056 bytes, md5 `636c8ef1ab5497cc650170f5290a69f1`, untouched (not
+  modified by this session).
+- **GH Pages landing (`https://red1oon.github.io/bim-ootb/index.html`, last-modified 2026-09-02
+  01:52:38Z) is fully current** — `'Clinic':{db:'Clinic.db'}`, `_prodBase` → OCI `bim-ootb` bucket.
+  Its target object, `.../b/bim-ootb/o/buildings/Clinic.db`, fetched with `--compressed` (i.e.
+  exactly what a browser does with `Content-Encoding: gzip`), is **byte-identical**: same 226,349,056
+  bytes, same md5 `636c8ef1…`. `Clinic_meta.db`/`Clinic_geo.db` on that bucket both **404** (§Z.1's
+  guard against `streaming.js:2495`'s split-detect still holds — `_splitMode` requires BOTH halves
+  to HEAD-200, so a lone stale meta or geo can never hijack the single-file load).
+- So: **local drop and the GH Pages landing page load the identical byte stream.** No defect on
+  either of those two, and the OCI *object storage bucket* (`bim-ootb`, DB files only) is exactly as
+  clean as the user's own framing assumed — confirmed, not re-asserted.
+
+### §AD.2 THE ACTUAL SURFACE — a SECOND, independent, OCI-hosted landing page nobody re-touched
+`deploy/OCI_UPLOAD.md` (binding per `CLAUDE.md`) documents this explicitly and its own table calls
+it **"PRODUCTION — users see this"**:
+```
+https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/index.html
+```
+This is a **completely separate HTML file from GH Pages' `index.html`** — sourced from
+`bim-compiler/SYSNOVA/index.html` in THIS repo (`OCI_UPLOAD.md` rule 4/5: "Landing =
+`SYSNOVA/index.html`"), uploaded to the `bim-ootb-live` bucket **as-is**. Its own viewer is not
+GH Pages' `viewer/viewer.html` either — it opens `sandbox/index.html` + `sandbox/*.js`, uploaded
+from `bim-compiler/deploy/dev/`/`deploy/live/` (same repo, different directory), a **third**
+independent code tree from the one the Aug 27–31 Clinic session ever touched (that session's PRs —
+#1565, #1585, #1589 — all merged into the **`bim-ootb`** GitHub repo, which is GH Pages' source only).
+
+**Measured live, 2026-09-02:**
+| | GH Pages (fixed) | OCI `bim-ootb-live` landing (untouched) |
+|---|---|---|
+| landing `index.html` last-modified | 2026-09-02 | **2026-05-17** (`SYSNOVA/index.html`'s own last commit: `40e333efd`, 2026-07-28 — never touched by the Clinic session) |
+| `Clinic` maps to | `Clinic.db` | **`Clinic_extracted.db`** |
+| DB md5 | `636c8ef1…` (= local reference) | **`b57a2866…`** — different file |
+| DB byte size (decompressed) | 226,349,056 | **130,224,128** |
+| element count (`elements_meta`) | 16,071 | **16,912** |
+| tables present | …`calendars`, `kernel_ops`, `scene_state`… | **missing all three**; has `spatial_structure`/`rel_aggregates` instead (older server-extraction schema) |
+| viewer `tools.js` / `streaming.js` last-modified | current (2026-08-30 fixes live) | **2026-05-18 / 2026-05-19** |
+| `effects.js` | present | **404** (confirms §AB, re-measured, still true today) |
+
+The `Clinic_extracted.db` md5 (`b57a2866…`) is exactly the **"restored to pre-session bytes"** value
+§Z.1 already recorded — this is the ORIGINAL file the Aug 27 session found and left alone
+deliberately (only `Clinic.db`, a different filename, was the one repointed by PR #1589). Nobody
+ever re-pointed `SYSNOVA/index.html`'s `Clinic` entry from `Clinic_extracted.db` to `Clinic.db`,
+because PR #1589 only edited `bim-ootb`'s `index.html` — a different repo, a different file, on a
+GitHub-Pages-only deploy.
+
+### §AD.3 Verdict
+**Not a DB defect, not a GH Pages defect, not an OCI object-storage defect.** It is a **second landing
+page + a second, ~3.5-month-stale viewer code tree** that the Clinic fix work never reached, because
+it lives in a different repository (`bim-compiler/SYSNOVA/` + `deploy/dev|live/`) than the one the
+fix PRs were merged into (`bim-ootb`). Opening `~/Downloads/Clinic.db` locally, or via the GH Pages
+link, reaches the fixed file and the fixed code. Opening it via `bim-ootb-live`'s OCI-hosted landing
+page reaches a different, smaller, older-schema DB through a viewer bundle from mid-May, missing
+the entire 4D/CPE stack (§AB) and the Aug 27–30 glass/split/patch fixes — this is why it "does not
+load the way local does": literally different bytes, different code, on that one surface only.
+
+**Deployment is out of scope for this task (explicit instruction) — not attempted.** The fix, when
+someone is authorized to run it, is mechanical and already spelled out by `OCI_UPLOAD.md`'s own
+upload recipe (rule 4/5 + the `bim-ootb-live` command block): update `SYSNOVA/index.html`'s
+`'Clinic'` entry to `Clinic.db`, and re-sync `deploy/dev/*.js` (or retire this landing page — §AB
+already raised that option and it was left to the user, unchanged by this finding). Until one of
+those happens, this surface will keep reproducing the complaint on every future "fixed" claim that
+only verifies GH Pages.
