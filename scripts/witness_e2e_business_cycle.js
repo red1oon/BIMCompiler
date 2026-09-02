@@ -93,10 +93,16 @@ function mkWaiter(page, tag) {
 }
 function waitForCrudPersist(waiter, table, timeoutMs) {
   var rxPersist = new RegExp('§CRUD-PERSIST key=' + table + ' '), rxReject = new RegExp('§CRUD-GATE key=' + table + '.*REJECT'),
-    rxSkip = new RegExp('§(CRUD-HOSTCREATE|INPLACE-NEW) table=' + table + ' skipped');
-  return waiter.wait([rxPersist, rxReject, rxSkip], timeoutMs).then(function (r) {
+    rxSkip = new RegExp('§(CRUD-HOSTCREATE|INPLACE-NEW) table=' + table + ' skipped'),
+    // 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md §P5): a field-validation REJECT (e.g. `required` on an AD-mandatory column
+    // the form now shows) is a real, named outcome — report it as such instead of a silent timeout.
+    rxValidate = new RegExp('§CRUD validate key=' + table + ' verb=create REJECT'),
+    rxHook = new RegExp('§AD-MODELVAL-LIVE table=' + table + ' verb=create hook=.*REJECT');
+  return waiter.wait([rxPersist, rxReject, rxSkip, rxValidate, rxHook], timeoutMs).then(function (r) {
     if (r.which === 0) return { committed: true, line: r.line };
     if (r.which === 1) return { committed: false, reason: 'owner-gate REJECT', line: r.line };
+    if (r.which === 3) return { committed: false, reason: 'validation REJECT: ' + r.line.slice(r.line.indexOf('errors=')), line: r.line };
+    if (r.which === 4) return { committed: false, reason: 'beforeSave hook REJECT: ' + r.line.slice(r.line.indexOf('hook=')), line: r.line };
     return { committed: false, reason: 'create not permitted', line: r.line };
   }).catch(function (e) { return { committed: false, reason: 'timeout: ' + e.message }; });
 }
@@ -175,10 +181,18 @@ async function rowIdByText(page, text) {
 //   for window 181's Purchase Order tab — same table, same code, no Sales-Order-specific defect. Click the
 //   POReference cell explicitly (present in both windows, deterministically non-crud-editable) so every
 //   caller reliably reaches the full form + DocAction bar, matching what a real user opening the record sees.
+//   2026-09-02 (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §P1, W-PARITY-FIELDSET): POReference stopped being
+//   "deterministically non-crud-editable" the moment the curated-5 hand list was retired — the record's editor (and
+//   therefore _editGridCell) now carries the FULL AD field set, and POReference is AD-updateable, so that click opened
+//   a cell editor instead of the form (found by this witness, stage 1 `§INPLACE-CELL-OPEN … col=poreference`). The
+//   host's own gesture for "open the record" is the DocStatus chip cell (renderGrid: the status <td> has NO
+//   stopPropagation, so it reaches the row's click → form view) or the ▤ Form toolbar toggle — click the chip.
 async function clickRowOpen(row, opts) {
+  var stCell = await row.$('td[data-ad-col="DocStatus"]');
+  if (stCell) { await stCell.click(opts); return; }
   var poCell = await row.$('td[data-ad-col="POReference"]');
   if (poCell) { await poCell.click(opts); return; }
-  await row.click(opts);   // defensive fallback if that column isn't rendered on some other table/window
+  await row.click(opts);   // defensive fallback if neither column is rendered on some other table/window
 }
 function deepUrl(port, params) {
   var q = Object.keys(params).map(function (k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');

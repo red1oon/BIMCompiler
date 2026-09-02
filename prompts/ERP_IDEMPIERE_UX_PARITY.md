@@ -363,3 +363,144 @@ DOM, real clicks, not a synthetic call).
 was correctness of the truth instrument. `ad_seed.db` untouched; none of the four Fable-owned files touched.
 
 **§P4-OPEN item 6 → ✅ DONE (witness).** Items 1,2,3,4,5,7,8 and the ⛔ period question remain as written.
+
+## §IMPL-2026-09-02 — build spec for §P2 then §P1 (written BEFORE code; this session, Fable 5.1)
+Worktrees: work `/tmp/wt-erp-parity` (branch `feat/erp-parity-p2p1`), control `/tmp/wt-erp-control`, both at
+bim-ootb `cecbbed0` (= origin/main). Seed numbers re-measured from `erp/ad_seed.db` this session and they match
+§MEASURED exactly: displayed non-key fields 60/59/51/81/13; List(17)+YesNo(20) per tab 6+5 / 9+4 / 2+7 / 6+10 / 0+0 = 49.
+
+### Findings that shape the design (measured, not assumed)
+- **F1 — the host never folds a curated table.** `idempiere.html:3078 _withFoldedEntry` folds only when
+  `!_curatedHas(tn)`, so for the five document tables `FOLDED[key]` is never registered; changing `entryFor()` alone
+  would change nothing. Both seams move.
+- **F2 — `ad_parser.getFields` (ad_parser.js:279) does not select `AD_Reference_Value_ID`, `ReadOnlyLogic`,
+  `MandatoryLogic`, nor the field-level `AD_Reference_ID` override.** Without `AD_Reference_Value_ID` a List column
+  cannot find its `AD_Ref_List` set. `resolveReference` (:335) already reads `AD_Ref_List` (active only) but always
+  `ORDER BY Name`; iDempiere orders by Value when `AD_Reference.IsOrderByValue='Y'`, else Name
+  (`MLookupFactory.getLookup_List:301,332,334`). `AD_Ref_List` in this seed carries NO SeqNo column — the §P2 claim's
+  "SeqNo order" is therefore read as iDempiere's real rule (Value/Name per `IsOrderByValue`).
+- **F3 — the AD contradicts the O2C contract on two pinned columns.** AD marks `GrandTotal` `IsUpdateable=N` +
+  `AD_Field.IsReadOnly=Y` on tabs 186/263 and `DocumentNo` `IsUpdateable=N` on 186/257/263, while the curated
+  `docAction.requires` needs `grandtotal` typed and `witness_e2e_business_cycle.js:223` types it (totals are not
+  engine-derived from lines yet). A fold that let AD attributes override the pinned 8 would make stage 1
+  un-completable. ⇒ **pinned columns keep their curated spec; only the AD logic strings are layered onto them.**
+- **F4 — the AD field set brings AD-mandatory columns the curated form never showed, and `saveForm` validates
+  BEFORE the save-hooks that derive them.** Mandatory + editable + visible + no resolvable default + not curated,
+  per tab: 186 `C_DocTypeTarget_ID, C_BPartner_Location_ID, SalesRep_ID, C_PaymentTerm_ID` (+`IsDiscountPrinted`
+  yes-no); 257 `C_DocType_ID, C_BPartner_Location_ID` (+`IsInDispute`); 263 `C_DocTypeTarget_ID,
+  C_BPartner_Location_ID, C_PaymentTerm_ID` (+`IsDiscountPrinted`); 330 `C_DocType_ID, C_Currency_ID`
+  (+`IsOnline`); PO tab 294 adds `M_Warehouse_ID`. `FreightAmt` is hidden by DisplayLogic (`@OrderType@…`) so it
+  is not validated. Of these the faithful `beforeSave` ports already derive `c_doctypetarget_id`, `c_paymentterm_id`,
+  `m_warehouse_id`, `c_currency_id` (MOrder/MInvoice), `c_doctype_id` (MPayment). **Not derived by any hook today:
+  `MOrder` `c_bpartner_location_id` (the port only clears an inconsistent one) and `salesrep_id`** — both are
+  filled by `MOrder.beforeSave` itself in Java (`:1269-1270` → `setBPartner:752-770`; `:1302-1307` from
+  `Env.SALESREP_ID`). iDempiere's mandatory check (`GridTable.dataSave:1647-1650` → `getMandatory:1973-2001`) runs
+  over a row that defaults/callouts already filled — our equivalents of those fills are the beforeSave ports, so the
+  check must run AFTER them. The validator itself is NOT weakened (§P5).
+- **F5 — an AD-folded FK picker silently picks the first row.** `populateRefs` (crud_overlay.js:546) fills a
+  `<select>` with `LIMIT 200` rows and no blank option; an empty value lands on row 1 and `cleanVals` writes it on
+  CREATE. Harmless on the curated 8 (the witness fills them); catastrophic at 81 fields (a payment would be created
+  against the first invoice, charge, project, campaign…). iDempiere lookups always offer an empty choice.
+- **F6 — `IsSOTrx` is not a displayed field on any of the five tabs**, so the Yes-No editor cannot clobber the
+  Sales/Purchase derivation (`MOrder.docTypeTargetDefault`). A read-only Yes-No with no value (e.g. `IsReceipt`,
+  derived by `MPayment`) must stay unset, never force-written as N.
+- **F7 — copy drift.** bim-compiler `build/erp/ad_modelval.js` is a Jun-11 copy of the live file (md5 differs);
+  W-MORDER-SAVE runs on the copy. This session runs it against the LIVE file; the copy is not the deliverable.
+
+### §P2 spec — LEG-1 retired (W-PARITY-REFLIST)
+- P2.1 `ad_parser.getFields`: also select `COALESCE(f.AD_Reference_ID, c.AD_Reference_ID)` (field override; on
+  the five tabs it changes exactly one field, 257 `C_DocType_ID` 18→19, both fk), `COALESCE(f.AD_Reference_Value_ID,
+  c.AD_Reference_Value_ID)` → `referenceValueId`, `COALESCE(f.ReadOnlyLogic, c.ReadOnlyLogic)` → `readOnlyLogic`,
+  `COALESCE(f.MandatoryLogic, c.MandatoryLogic)` → `mandatoryLogic`. Guard: if the extended SELECT throws (a seed
+  without those columns) fall back to the legacy SELECT and log `§AD_PARSER getFields legacy-shape`.
+- P2.2 `ad_parser.resolveReference`: `ORDER BY Value` when `IsOrderByValue='Y'` else `ORDER BY Name`; log `orderBy=`.
+- P2.3 `crud_core.mapRefDisplayType`: 17→`list`, 20→`yesno` (no longer `string`); `mapRefType` likewise.
+- P2.4 `foldCrudSpec`: list → `refListId`; with `opts.refList(id)` → `optionList=[{value,name}]` (ordered) +
+  `options={value:name}`; carries `readonlylogic`/`mandatorylogic`/`seq`. Yes-No default = AD literal only.
+- P2.5 `validateField`: list options from `f.options` else `__meta[f.ref]` → `list:not-an-option`; yesno ∉{Y,N} →
+  `yesno:not-Y/N`. `listOptions` accepts the ordered array (a map re-orders numeric-like values, e.g. PriorityRule).
+- P2.6 editors (`crud_overlay`): yesno → `<input type=checkbox class="cfi cfyn">`; reads through `_getVal`: checked
+  →Y, unchecked editable →N (`GridField.getDefault:1033`), unchecked DISABLED with no value → '' (F6); writes through
+  `_setVal`. FK pickers get a leading blank option selected when the value is empty (F5). `§REFLIST col= refId=
+  options=N orderBy= cur=` and `§YESNO col= cur= editable=` logged per field.
+- P2.7 host `_foldCrudSpecForTab` passes `refList` = `ADParser.resolveReference(db,id).options`.
+- Witness: `erp/tests/poc_parity_reflist_live.js` — window 195 New: `select[data-col=tendertype]` options ==
+  `AD_Ref_List` rows for ref 214 read from `window.__idmpDb` (count 6, same values, same order);
+  `creditcardtype` = 6; falsifier `validateField(f,'ZZ')` = `list:not-an-option`; `input[type=checkbox]
+  [data-col=isonline]` present and `formValues()` reads exactly Y/N across a toggle; `validateField(f,'X')` =
+  `yesno:not-Y/N`; 0 pageerrors. Headless `poc_ad_folded_crud.js` updated (its two "yesno/list → string"
+  assertions were the LEG-1 pin; they now assert the retirement).
+
+### §P1 spec — curated-5 retired by MERGE (W-PARITY-FIELDSET)
+- P1.1 `crud_core.mergeCuratedWithFold(curated, folded)` PURE: entry keys from the curated (verbs, docAction,
+  ownerGated, cas, title…); `fields` = pinned curated fields in curated order, each layered with the AD sibling's
+  `displaylogic/readonlylogic/mandatorylogic/seq` when the curated has none, followed by every folded field not in
+  the curated set, in AD SeqNo order. Curated `type/required/readonly/default/validation/ref` untouched (F3).
+  Marks `merged:true, pinned, appended`.
+- P1.2 `entryFor(key)`: STORE ∧ FOLDED → merged (re-merged when the host re-registers the fold, i.e. per verb);
+  STORE only → curated (glassbowl.html registers no fold — unchanged there); FOLDED only → folded. Logs
+  `§PARITY-FIELDSET key= curated= ad= merged= pinned= appended= withLogic=`.
+- P1.3 host `_withFoldedEntry` always folds (drops the `!_curatedHas` gate); `_foldableTab`/`_crudHas` unchanged.
+- P1.4 `saveForm` order: `fireBeforeSaveHooks → merge derived → validate → buildOp` (F4). Logs
+  `§PARITY-MANDATORY key= verb= required=[…] derived=[…] typed=[…] missing=[…]` so the §P5 consequence is
+  witnessed, not eyeballed.
+- P1.5 `ad_modelval.installMOrderSaveHooks`: + `MOrder.bpLocationDefault` (`:1269-1270` ∘ `setBPartner:752-770` —
+  BP `SalesRep_ID` if non-zero; ship-to → `C_BPartner_Location_ID`, bill-to → `Bill_Location_ID`, else first
+  location; none → reject `BPartnerNoShipToAddress`), inserted before `billDefaults`, which now reads the effective
+  (derived-else-record) location; + `MOrder.salesRepFromCtx` (`:1302-1307`). `crud_overlay._docCtx` feeds
+  `ctx.salesrep_id = APP.actor` (`Env.SALESREP_ID`, the login user). W-MORDER-SAVE run on the live file: stored
+  orders still ACCEPT with zero contradictions; strip location → the stored location re-derives; strip salesrep with
+  ctx → ctx value; a foreign location is cleared (`:1239-1252`) THEN re-derived (`:1269`) — the earlier witness
+  expectation (`null`) stopped one Java line short.
+- P1.6 `erp/sw.js` CACHE_VERSION bump, same PR.
+- Witness: `erp/tests/poc_parity_fieldset_live.js` — 143/169/195 New, 167 Edit (create not permitted), 205 child
+  tab Edit: `.cfrow` per table = 60/59/51/81/13; first-N `data-col` order == curated order; `withLogic` ≥ the
+  DisplayLogic count (28/30/23/58/0); then the §P5 arm on 143: fill ONLY the curated 8 → Save → `§CRUD-PERSIST`
+  (mandatory satisfied by derivation, listed in `§PARITY-MANDATORY`); falsifier: clear `c_bpartner_id` → Save →
+  REJECT `required` (validator intact). 0 pageerrors.
+- Regression (mandatory before PR): `witness_e2e_business_cycle.js` with `WITNESS_ROOT=` control then work —
+  stages 1/2/3/5/6 PASS on both; the bim-ootb `erp/tests/*_live.js` CRUD set on both trees, verdict-diffed.
+
+### Out of scope, named (not built here)
+`@OrderType@` context (hides DeliveryRule/PriorityRule/InvoiceRule/FreightCostRule on 186 under the fold — §P3's
+`@token@` feed); `@$Element_*@` client-info context; AD_Ref_Table/Search target resolution (an FK whose table is
+not `<col minus _id>`, e.g. `salesrep_id`, `bill_bpartner_id`, degrades to the raw value — same convention as
+before); `DocStatus` shown as an editable curated list where AD says read-only (W-CRUD-DOCSTATUS territory, §P4);
+Payment New still needs a hand-picked `C_Currency_ID` (no MPayment currency derivation; in iDempiere it comes from
+the bank account callout).
+
+## §IMPL-RESULT 2026-09-02 — §P2 + §P1 SHIPPED to PR, witnesses run and logs read
+The Fable lane wrote the code and the two witnesses, then hit its session limit before opening the PR.
+The parent session finished the chain (merge / bump / run / PR / commit); nothing was re-derived.
+
+**bim-ootb PR #1613** (`feat/erp-parity-p2p1`), 9 files +676/−57 plus the merge and the version bump.
+- **W-PARITY-REFLIST 14/14 PASS, 0 FAIL.** `tendertype` 6 options == `AD_Ref_List(214)` by count, values AND
+  order; AD default `K` selected with no blank offered on a mandatory defaulted list; `creditcardtype` 6 ==
+  ref 149; `isonline` a checkbox the engine reads `N,Y,N` across a toggle. Falsifiers both fire:
+  `list:not-an-option` and `yesno:not-Y/N`. 20 `§YESNO` + 10 `§REFLIST` lines on tab 330. 0 pageerrors.
+- **W-PARITY-FIELDSET 30/30 PASS, 0 FAIL, 1 OPEN.** Rendered rows == the seed's own renderable AD count per
+  tab, read through `window.__idmpDb` at run time: c_order **8→56** (withLogic 28), m_inout **7→53** (28),
+  c_invoice **7→47** (21), c_payment **4→78** (61), c_allocationline **4→13** (0, reported honestly rather
+  than as a vacuous PASS). Curated columns verified pinned first in curated order on all five.
+- **§P5 proven both ways:** a Sales Order New filled with ONLY the curated 8 persists (`§CRUD-PERSIST`,
+  `missing=[]`) because the beforeSave ports derive `c_doctypetarget_id`/`c_bpartner_location_id`/
+  `m_warehouse_id`/`salesrep_id`; and `validateField(c_bpartner_id,'')` on a NEW row still returns `required`.
+- **⛔ OPEN (named, not a pass) — `§PARITY-MANDATORY-CREATE`:** inline create validates against its
+  post-render baseline, so an UNTOUCHED empty mandatory field is never required-checked. Pre-existing and
+  independent of the merge; the fix needs New-time defaults/callouts, which is O2C stages 1/6/7 territory.
+- **O2C regression CLEAN** (`WITNESS_ROOT=/tmp/wt-erp-parity`): stages **1/2/3/5/6 PASS** — the contract held —
+  and **stage 7 PASS** as well. Stage 4 FAIL / stage 8 ABSENT are the known structural gaps (no
+  `m_storageonhand` fold exists anywhere; no vendor-invoice path), pre-existing and untouched. `run_witness.sh`
+  prints `VERDICT=FAIL` on this one because a DISCOVERY witness carries no pass marker by design — the
+  per-stage `§CYCLE` lines are the verdict, per the file's own header. Not a regression.
+- **W-MORDER-SAVE PASS**, 8 fixtures `diff=0`, on the SHIPPED file.
+
+### §IMPL-RESULT-F7 — the drifted `ad_modelval` copy, now seam-covered, still not reconciled
+Running W-MORDER-SAVE straight gave **🔴 FAIL (4)** — every failure one of P1.5's new assertions at `ok=0`.
+Root cause is §IMPL F7, not the change: `scripts/poc_morder_save.js:32` required `../build/erp/ad_modelval`,
+a **separate drifted copy** (md5 `8d788d5d…`) of the shipped `erp/ad_modelval.js` (`7e6a3fda…`), which does not
+carry the two new hooks. **11 witnesses run against that copy.** Added a `MODELVAL` env seam — default
+unchanged so the other 10 witnesses and CI are untouched — and re-ran against the live file: **PASS**.
+**Reconciling the copy itself is NOT done and is the real item here** — a three-way drift now exists
+(`build/erp` copy · the shipped `erp/` file · whatever a stale checkout holds). Queue it before the next
+`ad_modelval` change, or the next session's witness will judge code that is not what ships.
