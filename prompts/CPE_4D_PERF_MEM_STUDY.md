@@ -806,14 +806,24 @@ back to back, on a quiet machine.** Until then, treat §R13's absolute ms as hea
 and its ratios/shares as the transferable part.
 
 ### §R13.12 — handed to the TM/4D schedule lane (buildup pacing, not bake time)
-From `daybatch_Hospital.log` / `daybatch_burst.log`, already measured, unmined until now:
-- `§DAYBATCH_FRAMES frames=3118 mean=20.3/frame worst=94 at f1250 = 4.6x mean`
-- `§DAYBATCH_PULSE_PREDICTION framesPerDay=9.81` — a 1-frame daily pulse would put **399 elements on
-  one frame (19.7× mean)**, and `daysWhoseFullCountExceedsCurrentWorstFrame=299/319`
-- `§DAYBATCH_BURST_TASKFRAMES TASK_MEP_Rough_in_Level_3 aloneOccupies 629 frames: perFrame p50=14
+⛔ **EVERY MAGNITUDE IN THIS SUB-SECTION IS VOID — STRUCK 2026-09-02 (queue item A-0).** The
+`daybatch_*` logs measured the cache's `displaySchedule`, which `viewer/time_machine.js` has ZERO
+readers of, on a cached run that additionally never ran the CPM display pass at all. Re-measured on
+the PLAYED layer by `bim-ootb scripts/probe_daybatch_played.js` (in-repo, names its layer on every
+line) — full record in `GANTT_ACCURACY.md` §BUILDUP_DAY_BATCH_FEASIBILITY. **The MECHANISM this
+sub-section handed over survives; only its numbers were wrong.**
+~~From `daybatch_Hospital.log` / `daybatch_burst.log`, already measured, unmined until now:~~
+- ~~`§DAYBATCH_FRAMES frames=3118 mean=20.3/frame worst=94 at f1250 = 4.6x mean`~~
+  → played: **`worst=142 at f1504 = 7.0x mean`** (day 153.4)
+- ~~`§DAYBATCH_PULSE_PREDICTION framesPerDay=9.81` — a 1-frame daily pulse would put **399 elements on
+  one frame (19.7× mean)**, and `daysWhoseFullCountExceedsCurrentWorstFrame=299/319`~~
+  → played: **528 elements = 26.1× mean**, `daysWhoseFullCountExceedsCurrentWorstFrame=235/319`
+- ~~`§DAYBATCH_BURST_TASKFRAMES TASK_MEP_Rough_in_Level_3 aloneOccupies 629 frames: perFrame p50=14
   p90=23 max=82 mean=15.1` — a **5.4× sub-day swing inside ONE task** whose per-DAY rate is near-flat
-  (`CV=0.23`), because tiling is duration-weighted, not calendar-weighted
-- `§DAYBATCH_BURST_INSTALLSECS burstRun installSecs p50=114 vs task p50=1920` — the grouping key that
+  (`CV=0.23`)~~ → played: that task supplies **115 of the worst frame's 142** elements and its per-day
+  CV is **0.35** — same shape, bigger swing, because tiling is duration-weighted, not calendar-weighted
+- ~~`§DAYBATCH_BURST_INSTALLSECS burstRun installSecs p50=114 vs task p50=1920`~~ → played:
+  **`installSecs p50 burst=214 vs task=1920`** — the finding is unchanged: the grouping key that
   exists in the data is per-element crew DURATION, not calendar day
 
 Also from the bake: **the TM buildup is the bake's peak-memory phase** (§R13.4 relative series) and
