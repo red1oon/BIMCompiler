@@ -682,6 +682,21 @@ records the browser pid OUTSIDE the progress channel (the red-control arm has no
 verifies the reap with `kill(pid,0)`.
 Spec written first: `WITNESS_INTERFACE_FRAMEWORK.md` §W_PROGRESS.
 
+### A-17 · the 4D cache invalidates on COMMENT-ONLY edits · autonomous, cheap
+`~/.cache/bim4d` is keyed on the **full content** of 11 viewer inputs. Measured 2026-09-02: PR
+#1619's **comment-only** edit to `time_machine.js` invalidated the entire four-building cache,
+forcing two full rebuilds in one session. The key is doing its job (a stale cache must be
+impossible) but it is far too sensitive — a comment cannot change a schedule. Normalise the hashed
+input (strip comments/whitespace before hashing, or hash the parsed AST of the scheduling exports
+only). **Keep the guarantee: a real behaviour change must still invalidate.** Prove it both ways —
+a comment edit must NOT invalidate, a one-constant edit MUST.
+
+### A-18 · `§TPL_LAYER_SELFCHECK stillInverted 107 → 109` on HHS · verify the inference
+A-15 (#1625) moved this by 2 and named a cause **as an inference, not a proof**: the stair treads
+were cross-task from their flights before and are in one task after, so those pairs enter a check
+that could not previously see them. Confirm or refute by measurement. If confirmed it is scope
+widening, not a regression — but it is currently an untested story attached to a number that moved.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
