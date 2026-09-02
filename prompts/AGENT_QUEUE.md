@@ -14,6 +14,36 @@ zero, mark it ✅ DONE (witness) or ⛔ BLOCKED: <one question> here, then take 
 ```
 
 
+
+## §RESUME_PROTOCOL — what to do when an agent dies on a rate limit (MANDATORY, not optional)
+**User directive 2026-09-03: "resume agents after session resets" + "retain that capability."**
+**Written because the capability was NEVER automatic** — every resume on 2026-09-02/03 followed a
+user prompt. One agent sat dead from ~23:00 to 06:19 purely because nobody woke the session. The
+user reasonably read the resumes as self-starting; they were not. This section removes the judgement
+call, because a judgement call is exactly what drifts between sessions.
+
+**The hook that makes it possible:** a 429 TERMINATES the agent but still fires a task-notification
+to the live session, and **the error text carries the reset time** — e.g. `You've hit your session
+limit · resets 2:50am (Asia/Kuala_Lumpur)`. So at the moment of death you already know both that it
+died and exactly when to return. Nothing else is needed.
+
+**On ANY agent failure whose error type is `rate_limit`, do all four, in order, immediately:**
+1. **Parse the reset time** out of the error text.
+2. **Append the agent to §MID-FLIGHT** above — its lane, its last reported finding verbatim, and the
+   resume checklist for that lane. This is the part that survives the session ending.
+3. **Schedule a wakeup for just after that reset** and resume by `SendMessage` to the agent id on
+   waking. A rate-limited agent is terminated, but its transcript survives, so a message resumes it
+   with full context. Do NOT re-dispatch a fresh agent — that discards what it had already found.
+4. **Tell the user the agent died, when it will resume, and what it had found** — do not silently
+   absorb it.
+
+**If the SESSION itself ends, the agent id dies with it.** That is the one thing that cannot carry
+over. §MID-FLIGHT exists so a fresh session can re-dispatch from the written brief instead of from
+nothing — worse than a resume, far better than a loss.
+
+**Do not promise to write this up "after the current agent finishes."** That was tried on
+2026-09-03 and is how the rule would have been lost. Record first, work second.
+
 ## §MID-FLIGHT — agents stopped by a rate limit, and what they had found
 **Standing instruction (user, 2026-09-03): resume agents after session resets.** A rate-limited
 agent is TERMINATED, not paused — but its transcript survives, so a live session can resume it by
