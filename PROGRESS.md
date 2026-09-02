@@ -10,15 +10,14 @@ identity 6/6 exact vs `A.DISC_COLORS`; RED CONTROL 0/6).
   *task* active; the panel's predicate is no *staffed element op*. Hospital has real idle days
   (`§CPE_RESOURCE_HOLD first hold at day=137 holding day=133`, `withResource=63415/63417`).
 - **§Z.2 CORROBORATED with numbers:** deployed viewer `sw.js` is **v387 (live) / v505 (dev)** vs
-  **v1120 local**. The local-vs-OCI DB report is NOT a DB problem — `HospitalAjaibPath.db` is 404 on
-  OCI, and `Hospital_meta.db` differs by exactly 735 `IfcOpeningElement` rows with all 63,415 shared
-  rows byte-identical. Appearance differences on OCI are the stale viewer.
+  **v1120 local** — that, not the DB, is the local-vs-OCI difference (`HospitalAjaibPath.db` is 404
+  on OCI; `Hospital_meta.db` differs by exactly 735 `IfcOpeningElement` rows, all 63,415 shared rows
+  byte-identical).
 - **⛔ `§CPE_AIM_DEPTH` retirement — SPECCED + loss QUANTIFIED, awaiting ONE user go/no-go.** From
-  the shipped formula: `clearM=8.0 m` on Hospital, so half the rule's authority is spent at 4 m
-  clearance — it is a "something within 8 m" rule, not a dead-end rescue. Second cost found:
-  `§CPE_STICK_HOLD` loses its aim half (`_holdBoostAt` only feeds `_aimDepthApply`).
-- **⛔ `§FILM_UNSUPPORTED` not started** — its acceptance gate is a full bake; re-scope to a
-  `--frames` run instead.
+  the shipped formula `clearM=8.0 m` on Hospital, half the rule's authority is spent at 4 m clearance
+  — a "something within 8 m" rule, not a dead-end rescue. Second cost found: `§CPE_STICK_HOLD` loses
+  its aim half (`_holdBoostAt` only feeds `_aimDepthApply`).
+- **⛔ `§FILM_UNSUPPORTED` not started** — acceptance gate is a full bake; re-scope to `--frames`.
 - **⚠ NEW STANDING CONSTRAINT (user, 2026-09-02): bakes are a proven, expensive facility, NOT a
   measurement tool.** Do not launch a film to settle a number; ask first. Keep every `§` line on the
   bake path intact and observable — preserving the instrumentation is the ask.
