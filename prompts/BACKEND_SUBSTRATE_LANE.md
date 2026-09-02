@@ -162,3 +162,78 @@ question:
 - **S-4 · browser storage is not encrypted at the app layer** — it relies on OS-level disk encryption.
 These are the four an enterprise buyer will ask about. Each needs a measured status line here every
 time this witness runs, not a one-time paragraph.
+
+---
+
+## §RELAY_AUTH 2026-09-03 — close S-1. Roster-verified `/push`, no new crypto, no new secret.
+
+**User directive (2026-09-03):** *"build the relay auth so S-1 stops being a showstopper."*
+
+### §RA.0 — state S-1 precisely, because the wrong fix follows from the wrong statement
+S-1 is **not** a forgery hole. A forged op already cannot pass client-side verification — the reducer
+verifies on replay, and that property is what makes the relay safely untrusted. S-1 is an
+**availability** hole: `_accept()` (`build/erp/erp_relay_server.js`) dedupes by `op_uuid` and appends,
+and nothing else — grep of the server for `authorization|bearer|token|verify|sig` returns **nothing**,
+with `Access-Control-Allow-Origin: *`. So **anyone who reaches the URL can fill the log**: storage
+exhaustion, and a snapshot every honest reader must then download and replay past.
+**Therefore the fix is an admission gate, and it must not be mistaken for making the relay trusted.**
+The relay stays a dumb facilitator. Clients keep verifying. Nothing about §MH.1 changes.
+
+### §RA.1 — the mechanism is already in the tree. Do not design a new one.
+Every piece exists and is witnessed; this is assembly:
+- Ops already carry `op_hash` + `sig` (W-SIGN, ECDSA P-256, `kernel_ops.js:22-23`) and a `signed_by` kid.
+  A **v2** row's sig attests the CONTENT hash (`KernelOps._contentHash`), so it survives a merge/renumber;
+  a v1 row's sig attests `op_hash`.
+- `erp_key_epochs.js` is **already the T1 trust root** and already answers "who may write": a signed
+  `{devices: {device_id → pubJwk}, genesisKid}` roster, **HQ-signed under a PINNED key** (the
+  `erp_snapshot_sign.PINNED_PUBKEY` pattern — the verifier trusts the pinned key out-of-band and NEVER a
+  key carried inside the payload). It models ROTATE (counter-signed by the outgoing key) and REVOKE
+  (future ops dead, past ops stay valid — they really were authored). Witnessed: W-ROSTER-VERIFY,
+  W-ROTATE, `scripts/poc_rotate.js` (`§ROTATE-OP/§HISTORY-VALID/§FUTURE-GATED/§REVOKE`).
+- `erp_snapshot_sign.verifyTip(tipHex, sigHex, pubJwk)` is the P-256 verify primitive.
+
+**So: `/push` admits an op iff its `signed_by` kid is ACTIVE at that point in the roster, not revoked,
+and its signature verifies.** No shared secret to distribute, no bearer token to leak, no second trust
+root to keep in sync — a shared secret would have been a NEW invented mechanism sitting beside the
+roster that already exists, and it would not survive key rotation.
+
+### §RA.2 — ordering matters, or auth just trades one DoS for another
+ECDSA verification is CPU-expensive; an attacker flooding well-formed-but-invalid signatures would
+simply move the exhaustion from disk to CPU. The gate is therefore **layered, cheapest first**, and each
+layer must reject before the next runs:
+1. **Body cap** — reject oversized bodies and requests over a max ops-per-push, before parsing.
+2. **Shape check** — `op_uuid`, `signed_by`, `sig` present and well-formed; reject on absence.
+3. **Roster membership** — `signed_by` present in the verified roster and active/not-revoked. A map
+   lookup, no crypto.
+4. **Dedup by `op_uuid`** — already implemented; keep it BEFORE verification, since a replayed op is
+   the cheapest possible rejection.
+5. **Signature verification** — last, only for ops that survived 1-4.
+Verification results are cacheable by `op_uuid`; an op already verified is never re-verified.
+
+### §RA.3 — the claim (W-RELAY-AUTH). Every arm needs a falsifier that actually fires.
+1. **ADMIT** — an op signed by a roster-active kid is accepted and appears in `/snapshot`. Assert the
+   accepted count and that the op is readable back, not "no error".
+2. **REJECT-UNSIGNED** — an op with no `sig`/`signed_by` is refused; assert the log length is
+   **unchanged**, not merely that a 4xx came back.
+3. **REJECT-UNKNOWN-KID** — a validly self-signed op under a key absent from the roster is refused.
+   This is the arm that closes S-1: it is exactly the anonymous flooder.
+4. **REJECT-REVOKED** — an op signed by a REVOKED kid is refused for FUTURE ops, while that kid's PAST
+   ops still verify (the burn-not-reattribute model — do not break it).
+5. **REJECT-TAMPERED** — a valid op whose parameters are mutated after signing fails verification.
+6. **ORDERING** — prove §RA.2 empirically: an unknown-kid flood is rejected **without** reaching the
+   ECDSA path (assert a verification-attempt counter stays flat), else the CPU DoS is still open.
+7. **IDEMPOTENCE PRESERVED** — the existing `op_uuid` dedup and durable-append-with-replay-on-boot
+   behaviour is unchanged; `test_kernel_relay.js` (W-RELAY: convergence, idempotency,
+   durability-across-restart) must still pass **unmodified**.
+
+**Vacuity guard:** a run where the roster was empty prints `VACUOUS`, never PASS — an empty roster
+rejects everything and would otherwise look like a perfect gate.
+
+### §RA.4 — what this does NOT fix. State it, so the register stays honest.
+- **S-2 stands.** Still `http.createServer`; TLS is the host's job, and no relay runs on real compute
+  anywhere, so this closes S-1 *in the code*, not *in production*. S-1 only truly dies when an
+  authenticated relay is actually deployed and reachable over https.
+- **S-3 stands** — roster membership proves a key signed, never that a human held it.
+- **S-4 stands** — unrelated.
+- The relay remains **untrusted by design**. This gate protects the relay's availability; it does not
+  and must not become a source of truth clients rely on.
