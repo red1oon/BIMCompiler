@@ -806,6 +806,19 @@ global path is dead. Sibling gotcha from the same lane: several witnesses **text
 into a bare sandbox** (`witness_og_guard_bearing_bound.js` evals `_ogSupportSweep` with a stub
 `ScheduleGate: { CELL: 4 }`), so a module-level constant read there NaNs the sweep silently.
 
+### A-20 · the shipped curve-smoothing SHAPE GATE is wrong in both directions · autonomous
+Found by D-3 (#1631), recorded in `PHOTOREAL_STILL_RENDER.md` §D3.10. The existing
+`§MEP_SMOOTH_NORMALS` gate does not do what its name implies:
+- **A 12-gon round duct has ~14 distinct face normals and FAILS `CURVE_MIN_DISTINCT = 16`.** It gets
+  smoothed only because `IfcDuctSegment` is on the class list — the shape test would have rejected it.
+- **Conversely the class gate lets BOXES through** — rectangular diffusers, `distinct = 6`.
+So the class list is silently carrying the shape gate, and the shape gate is silently rejecting real
+curves. **Any future work assuming that gate covers round ducts is wrong.** Re-derive
+`CURVE_MIN_DISTINCT` from measured face-normal counts of real round sections across the fleet, and
+make the class list a hint rather than the actual decision — D-3's own refinement gate reads SHAPE,
+not class, and is the model to follow. ⚠ Changing it changes which elements get smoothed: measure
+the population delta per building before and after.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
