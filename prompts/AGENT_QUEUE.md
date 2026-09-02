@@ -882,3 +882,46 @@ behaviour** is the named focus.
   `crud_overlay.js`, which the Fable lane owns. Dispatch it the moment Fable reports.
 - Re-ranked by the directive: **E-5** (P2P Fix 5) and **E-4** (stock effect) are the next two
   operational-integrity items after the parity lane; E-6/E-7/E-8/E-14/E-15 stay hygiene.
+
+## §E.UPDATE 2026-09-02c — parity lane shipped; two standing rules added from what went wrong
+**SHIPPED:** bim-ootb **#1613 MERGED** (both checks green) — the curated-5 field list retired by MERGE, and
+LEG-1 retired. c_order **8→56** fields, m_inout 7→53, c_invoice 7→47, c_payment **4→78**, c_allocationline
+4→13; DisplayLogic live at 28/28/21/61/0 where it was **0 everywhere**. W-PARITY-FIELDSET 30/30,
+W-PARITY-REFLIST 14/14, O2C stages 1/2/3/5/6/7 PASS unchanged. **E-9 is CLOSED.** Also merged earlier:
+**#1611** (FSM oracle blind spot). sw at **v774**.
+**RUNNING:** §P3 (wire `AD_Val_Rule` into the live FK picker, 61 fields) — dispatched off fresh main.
+
+### The find that outranks the feature work — `W-ERP-TWIN`, new gate, `scripts/check_erp_twins.js`
+`poc_morder_save.js` reported **4 FAILs that were artefacts of a stale copy**, not the product: it required
+`build/erp/ad_modelval.js`, which had drifted from the `erp/ad_modelval.js` that actually ships. Generalised
+PR #1611's md5-identity discipline into a gate that derives the judged-module list FROM THE TREE (never a
+hand-list) and compares each against **origin/main's bytes, not the working tree** — a 7-commit-behind
+checkout produced a false drift reading earlier the same day. Measured: **43 judged pairs — 11 locked
+identical, 9 UNREVIEWED, 0 undeclared, and 47 witness references currently judging an unclassified copy**
+(worst: `kernel_ops` n=16 — the signed write path — and `ad_modelval` n=11). Falsifier proven: one appended
+line to a locked copy → BROKEN + exit 1.
+**⬜ NEXT on this thread (not done):** classify the 9 UNREVIEWED pairs. Each is either a deliberate
+node-harness shape (→ `divergent`, with the reason) or a stale copy (→ reconcile, then `identical`). Do NOT
+move a pair to `divergent` to silence the gate — that is the one way this check can be defeated.
+
+### ⛔→ ANSWERED: the `C_Period`-on-Complete decision (U-item from §P4, resolved by measurement + advice)
+**Recommendation given and accepted 2026-09-02: DEFER the period test; do not ship it standalone.** Reasons,
+all measured: the seed's open periods are **2001–2006 only** (GardenWorld's own demo years); today's period
+Sep-26 carries **all 32 `c_periodcontrol` rows at `'N'` (never opened)**, as does every year from 2007 on —
+so the gate would fire on **100% of newly created documents** and break the O2C flow that 9 merged PRs hold
+up. And our *option list* is already faithful (`DocumentEngine.getValidActions` does not gate CO by period
+either — §P4 proved this from source). Shipping it properly means also building **Open/Close Period**, which
+is what a real iDempiere admin does on day one. **So: bundle the period test WITH the Open/Close Period
+process when the Forms/process work happens (E-3 / the 454-corpus lane). Not dropped — sequenced.**
+
+### Two standing dispatch rules, written from what actually failed today
+1. **The last mile does not belong to the expensive agent.** The Fable lane produced excellent work
+   (F1–F7 findings, the F5 auto-selected-FK catch, both witnesses) then **burned its whole session budget and
+   died before opening the PR** — code committed and pushed, no PR, spec uncommitted. Dispatch agents to stop
+   at **"branch pushed + report"**; the parent session opens the PR, commits the spec, and prunes. Cheaper,
+   and it survives an agent hitting a limit.
+2. **A doc claim ships with the query or `file:line` that proves it, or it is treated as unverified.** Today
+   the scoreboard was wrong in BOTH directions — the DocType row undersold a whole shipped module
+   (`ad_docfsm.js`), while T-0's field-set citation (`_inlineOptsFor`) and this file's own §P4 "seam" line
+   (`legalDocActions`, zero callers) overstated. **The rows that survived the audit were the ones carrying a
+   cite; the prose ones did not.** Cheapest available quality rule — apply it when writing, not when auditing.
