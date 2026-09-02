@@ -6,7 +6,7 @@
 # VERDICT = LOG CONTENT, not exit code alone (Log Mandate — a witness that silently no-ops and
 # exits 0 must FAIL here). PASS requires BOTH: node exit 0 AND a printed pass marker in the log.
 # Marker conventions (surveyed across scripts/poc_*.js final-verdict lines, 2026-08-23):
-#   pass: "🟢 W-XXX PASS" · "✅ ... PASS" · "ALL PASS" · "OVERALL=PASS" · "§XXX PASS"
+#   pass: "🟢 W-XXX PASS" · "✅ ... PASS" · "ALL PASS" · "OVERALL=PASS" · "§XXX PASS" · "N PASS / 0 FAIL" (N>=1, 2026-09-03)
 #   fail: "🔴 ... FAIL" · "❌ ... FAIL"  (a fail marker forces FAIL even on exit 0)
 # The "§RUN_WITNESS <base> VERDICT=..." line printed below is the marker upstream gates grep for
 # (scripts/system_is_real.sh regime (c) does) — keep its format stable, the two must agree.
@@ -18,7 +18,7 @@ node "$SCRIPT" > "$LOG" 2>&1
 EXIT=$?
 echo "── $BASE (exit $EXIT) ──"
 tail -5 "$LOG"
-PASS_RE='🟢.*PASS|✅.*PASS|ALL PASS|OVERALL=PASS|§[A-Z0-9_-]+ PASS'
+PASS_RE='🟢.*PASS|✅.*PASS|ALL PASS|OVERALL=PASS|§[A-Z0-9_-]+ PASS|[1-9][0-9]* PASS / 0 FAIL'   # last: count summary, N>=1 (0/0 = vacuous, still FAIL)
 FAIL_RE='🔴.*FAIL|❌.*FAIL'
 if [ "$EXIT" -ne 0 ]; then
   echo "§RUN_WITNESS $BASE VERDICT=FAIL exit=$EXIT (read $LOG)"

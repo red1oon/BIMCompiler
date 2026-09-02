@@ -844,3 +844,67 @@ the gate — that is the whole remaining step for those two. `help_overlay` is t
 **No ⛔ BLOCKED items.** One reversible judgment call: `foldQWeb` extracted rather than shipped (no bim-ootb consumer;
 24 copy-only research modules already follow that pattern) — if shipping is preferred it is a 1-hunk bim-ootb PR and
 `report_qweb.js` goes away.
+
+### §TWIN-CLASSIFIED-MARKERS 2026-09-03 — the 4 witnesses `run_witness.sh` reported non-PASS while passing (spec before edit)
+A verdict instrument that cannot recognise its subject's pass line is the same defect class as a witness judging a
+stale copy. Fix where honesty lives: (1) HARNESS — add the count-summary convention `N PASS / 0 FAIL` with N ≥ 1 to
+`PASS_RE` (`poc_genesis_minimal` prints `16 PASS / 0 FAIL`; a `0 PASS / 0 FAIL` vacuous run must still FAIL, and the
+fail-marker check still runs first). The `§RUN_WITNESS <base> VERDICT=` line format is untouched (`system_is_real.sh:92`
+greps it). (2) WITNESS — `poc_ninja_model` / `poc_ninja_stage` compute a real verdict (`vsOracle`, `render&&rollback`)
+but print no marker: add `🟢 W-NINJA-MODEL PASS` / `🔴 … FAIL` (and make the model witness's falsifier load-bearing on
+exit — today a failed falsifier printed FAIL and exited 0). (3) `poc_scale_forecast` has NO assertion — an unconditional
+`exit(0)` after a prose VERDICT box. A marker alone would be a lie; instead the three claims the box already prints
+(batch speedup > 1 · large-tier util < 100% · checkpoint boot flat vs the genesis cliff) become checks over the same
+measured values, with `🟢 W-SCALE-FORECAST PASS` / `🔴 … FAIL` + exit code. Nothing new is measured.
+GUARD PROOF (the point of the marker rule): synthetic probes through `run_witness.sh` — silent exit 0 → FAIL;
+`0 PASS / 0 FAIL` → FAIL; `3 PASS / 1 FAIL` → FAIL; bare `PASS` → FAIL; `5 PASS / 0 FAIL` + a `🔴 FAIL` line → FAIL;
+`🟢 X PASS` with exit 1 → FAIL; `5 PASS / 0 FAIL` → PASS. Probe logs read, listed in the result.
+
+### §TWIN-CLASSIFIED-2 2026-09-03 — help_overlay (spec before edit)
+Diff (shipped 408L vs copy 357L, 137 lines): EVERY differing line sits in the DOM half BELOW the node early-return
+(`module.exports = COACH; return;` at :64, identical in both) — shipped carries the 2026-06-03/06-09 host-adapter lift
+(`init/NAV/gbLocate/setOps`, `#417d9c60`/`#53c615c2`), the copy the older glassbowl-globals form. No copy-richer
+content, no harness/shape line → kind (b), shipped-forward: copy ← shipped bytes (`05e00670`). Witnesses:
+`test_help_coach` PASS before+after, `test_help_nextgate` PASS before+after (both see only COACH), `test_tour_idempiere`
+— the ONLY witness that loads the DOM half (vm shim, asserts `__help.init`/`adapter()`) — FAILED before AND after on
+`ENOENT docs/HelpO2C.md`: the fixture moved to `docs/internal/HelpO2C.md` in `87bc56b47` (2026-06-30) and the witness
+never followed. Fix the path (a stale fixture, same class as §WITNESS-FIXES 1) and let it judge the port; lock
+`identical` only if it is GREEN on the shipped bytes.
+
+### §TWIN-CLASSIFIED-2-RESULT 2026-09-03 — the thread finished: `unreviewed` = 0
+**Gate:** `§TWIN_SUMMARY pairs=64 identical=39 unreviewed=0 undeclared_or_broken=0 witnesses_judging_an_unreviewed_copy=0`
+(session start: `57 · 22 · 11 · 0 · 94`). Log `build/erp/check_erp_twins.log`.
+
+1. **`crud_core` + `ninja_model` → identical.** bim-ootb #1632 MERGED `8b50598d` (2026-09-02T15:37Z) with three commits:
+   `355ac9bb` ninja_model `@callout`, `51234b55` crud_core `:461`, and the coordinator's sibling `94cea2bc` for `:460
+   ex['Updated']` — the same defect one line up, which I missed. **Lesson recorded: a casing/convention fix is checked
+   against its immediate siblings in the same stamp block before it is called one line.** Shipped md5s re-derived from
+   `origin/main`, not reused: `crud_core` `8e289713` (copy ← those bytes), `ninja_model` `d1d7a45a` (= copy). The 26
+   crud/report/monitor witnesses re-run on the sibling-fixed bytes: **26/26** (W-AUDIT-CHANGELOG 25/25, W-RECINFO PASS).
+2. **`help_overlay` → identical** (§TWIN-CLASSIFIED-2): all 137 diff lines below the node early-return; copy ← shipped
+   `05e00670`; `test_help_coach`/`test_help_nextgate` PASS before+after; `test_tour_idempiere` had been dead since
+   `87bc56b47` moved its fixture (`docs/HelpO2C.md` → `docs/internal/`) — path re-pointed, **24/24 PASS** on the shipped
+   bytes (`§TOUR overlay=help_overlay host=idempiere forked=0 mounts=2 keysMatched=Y`).
+3. **Marker misses → fixed with the guard proven** (§TWIN-CLASSIFIED-MARKERS): harness gains `N PASS / 0 FAIL` (N≥1);
+   `poc_ninja_model`/`poc_ninja_stage` print explicit `🟢 W-… PASS`/`🔴 … FAIL` lines (model's falsifier now also
+   load-bearing on exit); `poc_scale_forecast` asserts the three claims its VERDICT box already printed
+   (`🟢 W-SCALE-FORECAST PASS — 3 measured claims hold`). Probes through `run_witness.sh`: silent → FAIL · `0 PASS / 0
+   FAIL` → FAIL · `3 PASS / 1 FAIL` → FAIL · bare `PASS` → FAIL · `5 PASS / 0 FAIL` + `🔴 … FAIL` → FAIL (fail marker
+   wins) · `🟢 X PASS` exit 1 → FAIL · `5 PASS / 0 FAIL` → PASS. `§RUN_WITNESS <base> VERDICT=` format unchanged.
+4. **`deploy/dev/system_monitor.{html,js}` = a DEAD LOCAL SNAPSHOT, never uploaded.** `OCI_UPLOAD.md §RULES` rule 5 maps
+   `deploy/dev/` → bucket `sandbox/`; HEAD/GET of `sandbox/system_monitor.html`, `sandbox/system_monitor.js` (and
+   `sandbox/field_health.js`) return **404 on BOTH `bim-ootb-dev` and `bim-ootb-live`**. Nothing under `deploy/`
+   references them. Created `e8d38b7de` (2026-06-24) for `SYSTEM_MONITOR_WIDGETS.md §DELIVERABLES` "deploy-stage to
+   deploy/dev/ so it is reachable" — overtaken the same day by bim-ootb #513, which shipped the widget inside
+   idempiere.html's System Monitor as `field_health.js` (live on GH Pages, precached). Right action: `git rm` the two
+   local files (rule 2 satisfied — no references; no OCI object exists to delete; nothing to repoint). NOT done here —
+   reported, as asked. The copy-side truth is `build/erp/field_health.js` + `build/erp/system_monitor.html`.
+
+Deploy confirmation: closed by the coordinator (live `sw.js` is v776 in its MINIFIED form `CACHE_VERSION="v776"`; my
+own fetch agrees: `age: 223 x-cache: HIT`, `version.json` `{build:v776, sha:8b50598d, pr:1632}`, `deploy-pages.yml:47-50`
+minifies via `scripts/minify_pages.js` — so a source-shaped grep or a byte-md5 against the repo is the wrong instrument
+for a live asset; match the minified shape).
+
+**No ⛔ BLOCKED items.** Next for this gate, if anything: nothing in `unreviewed`; the manifest is the contract, the
+gate fails on drift, `test_*.js` and transitive requires are in scope. The one standing recommendation is the
+`deploy/dev` deletion above.

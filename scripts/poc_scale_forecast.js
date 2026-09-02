@@ -319,9 +319,20 @@ function tag(measured) { return measured ? '(measured)' : '(forecast)'; }
     speedup.toFixed(1) + '× throughput; prune caps the ' + mb(large.dbBytes) + ' bloat.');
   console.log('└────────────────────────────────────────────────────────────────────────────────────────');
 
+  // W-SCALE-FORECAST verdict (§TWIN-CLASSIFIED-MARKERS): the three claims the VERDICT box states in prose, asserted over
+  // the SAME measured values it prints — a script whose only terminal line is DONE cannot report its own failure.
+  var claims = [
+    ['batch beats naive per-op commit (speedup > 1)',                         speedup > 1],
+    ['throughput never binds at the large tier (util < 100%)',                large.utilPct < 100],
+    ['checkpoint bootstrap is flat vs the genesis cliff (ckMs < genesis@100M)', large.ckMs < bfit.at(1e8)]
+  ];
+  var bad = claims.filter(function (c) { return !c[1]; });
+  claims.forEach(function (c) { console.log('   ' + (c[1] ? '🟢' : '🔴') + ' ' + c[0]); });
+  console.log(bad.length ? '🔴 W-SCALE-FORECAST FAIL (' + bad.length + ' of ' + claims.length + ' measured claims broke)'
+                         : '🟢 W-SCALE-FORECAST PASS — ' + claims.length + ' measured claims hold');
   gb.close(); ad.close();
   console.log('\n═══ PROD SCALE FORECAST DONE — see scale_forecast.md / §SCALE-* / VERDICT ═══');
-  process.exit(0);
+  process.exit(bad.length ? 1 : 0);
 })().catch(function (e) { console.error('FATAL', e && e.stack || e); process.exit(2); });
 
 function buildMd(R, naive, batch, speedup) {

@@ -34,8 +34,8 @@
       "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
     },
     "crud_core": {
-      "rel": "unreviewed",
-      "why": "copy is 1 LINE AHEAD of origin/main: :461 ex[updatedby] lowercase (#968 convention) — the shipped ex[UpdatedBy] made a created-then-updated row carry BOTH keys (W-RECINFO red on shipped bytes, green on fix). On bim-ootb branch fix/erp-twin-forward-ports; lock identical when merged (§TWIN-CLASSIFIED-WITNESS-FIXES 5)"
+      "rel": "identical",
+      "why": "locked 2026-09-03 after bim-ootb #1632 merged (8b50598d): the :461 updatedby fix + the coordinator’s sibling :460 updated fix (94cea2bc) now SHIP; copy <- origin/main bytes re-derived (8e289713). Judged via crud_overlay’s transitive require (idiom c)"
     },
     "crud_overlay": {
       "rel": "identical",
@@ -86,8 +86,8 @@
       "why": "matched what ships when the scan first included test_*.js witnesses 2026-09-02 (§TWIN-CLASSIFIED); locked so a later drift fails loudly"
     },
     "help_overlay": {
-      "rel": "unreviewed",
-      "why": "DRIFTED when the scan first included test_*.js witnesses 2026-09-02 (§TWIN-CLASSIFIED): shipped 408L vs copy 357L, 137 diff lines; outside the 11 pairs classified that day — diff it, classify it, never divergent to quiet the gate"
+      "rel": "identical",
+      "why": "reconciled 2026-09-03 (§TWIN-CLASSIFIED-2): shipped-only host-adapter lift (init/NAV/setOps) all below the node early-return; copy <- shipped (05e00670); test_help_coach/nextgate PASS, test_tour_idempiere PASS once its moved fixture (docs/internal/HelpO2C.md) was re-pointed. Locked"
     },
     "img_store": {
       "rel": "identical",
@@ -122,8 +122,8 @@
       "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
     },
     "ninja_model": {
-      "rel": "unreviewed",
-      "why": "copy is AHEAD of origin/main: the @callout grammar (bim-compiler 82320be69) whose ninja_stage half #309 shipped but the model half never did — HALF-SHIPPED in production. On bim-ootb branch fix/erp-twin-forward-ports (byte-equal); lock identical when merged (§TWIN-CLASSIFIED)"
+      "rel": "identical",
+      "why": "locked 2026-09-03 after bim-ootb #1632 merged (8b50598d): the @callout grammar half now SHIPS (355ac9bb); copy == origin/main (d1d7a45a)"
     },
     "ninja_rule": {
       "rel": "identical",
