@@ -206,6 +206,51 @@ All three proven non-unique; the destructive-ops rule held them for approval:
 
 ## WAVE B — dispatch after the TM/Fable agent reports and releases the schedule files.
 
+### B-1 · day0-attribution · ✅ **DONE (witness) 2026-09-02** — bim-ootb PR **#1615** `fix/day0-attribution`
+**All eight played-layer FAILs attributed. NOT a regression — nothing to bisect, as A-9 said.**
+Spec first: `4D_MODEL_INTEGRITY.md` **§J.6** (table, the three witness defects, the §I correction,
+and the two measured-but-deliberately-unshipped items). Cache rebuilt on `origin/main` @ `99e260e8`,
+4 buildings / **119,568 elements**, no bake, no browser.
+**Roll-up: 3 witness defects · 3 modelling facts · 1 real defect (fix on unmerged #1551) · 1 scope
+limit. Hospital contributes ZERO FAILs on the played layer.**
+- **C1 HHS** excess=1 = the `Roof Level` band (n=45); HHS's `spatial_structure` is **3 rows, 3/3
+  `object_type='COMPILED'`** (`compile_rooms.py`, `STC_*` guids) — **witness defect W3**.
+- **C1 Terminal** excess=16 = **22 storey strings across three parallel naming systems** (Malay /
+  English / `Ceiling Level *`) against **6/6 COMPILED** rows — **modelling fact**.
+- **C2 Duplex** bad=3 = exactly PR **#1551**'s three unmerged name overrides (`IfcWall* /foundation/`
+  Duplex 7 · `IfcMember ^Stair` 4/4 · `IfcSlab /finish floor/` 14) — **real defect, fix unmerged**.
+- **C2 Terminal** bad=9 = `IfcBeam "M_Concrete-Foundation Beam"` with `phase='Substructure'` in the
+  FIRST task; day-0 phase purity is **245/245**. §GROUNDWORK_SLAB promotes phase and leaves `seq`
+  (236 elements fleet-wide) — **witness defect W1**.
+- **C3 Duplex** bad=1 = the same stair stringer; its **only 3 bearing candidates are waste/cold-water
+  `IfcFlowSegment`** at bz −0.47/−0.63 (§S26.2's own example) — **witness defect W2** + #1551.
+- **C3 HHS** bad=3 = HHS **models zero seq-1 elements**, so `T.seq !== 1` can never fire; the 65×53 m
+  ground slab has **3 bearing contacts of 6,193** (2 seq-6 `IfcStairFlight` @+264 h, 1 pipe @+816 h)
+  and `grounded=0` because **one single pipe** at bz −4.700 sits in its footprint — **modelling fact**
+  + §F's cross-task later-phase support, outside §TPL_LAYER_ORDER's within-task scope (§H.3).
+- **C4 Duplex** bad=83 = under-slab plumbing, **all 83 on `T/FDN`**, 39 below grade, day 2.00 of a
+  **13.00-day** programme; the fixed 3-day window is **23.1 %** of Duplex vs **0.9 %** of Hospital —
+  **witness scope**, no schedule defect found.
+- **C4 Terminal** bad=4 = the 4 `IfcFlowTerminal` **are the whole `00 Aras Asas` band**, 3 of them at
+  bz ≈ 0.2 m against model **p01 = 14.43 m**; `Substructure` is `scope: building` so it instantiates
+  on that phantom lowest level — **modelling fact**.
+
+**NOTHING WAS WEAKENED: `§W_D0_VERDICT` is `claims=16 PASS=5 FAIL=8 INCONCLUSIVE=3 RED` before and
+after, on BOTH layers.** All three witness fixes are additive; every FAIL is now self-attributing in
+its own log line. New **`witness_day0_attribution.js` (§W_D0A) claims=6 PASS=6 GREEN, red control
+`W_D0A_RED=1` goes RED bad=2**, so the attribution is machine-checked, not prose.
+⛔ **Correction landed in §I**: `deriveStoreyMergeMap` was recorded as "✅ RUNS as of 2026-08-27
+(Terminal 23 names → 15 bands)". Measured against the shipped bytes it **runs on nothing in the
+fleet** — `§S18_STOREY_MERGE_FAIL no such column: elevation` on Terminal AND HHS, `no such table` on
+Duplex and Hospital. `compile_rooms.py` writes `center_z` and no `elevation`.
+▶ **Two measured items handed on, deliberately not shipped (§J.6.4):** (1) §GROUNDWORK_SLAB prices
+**21 promoted `IfcBeam` as STEEL_ERECTOR** (Terminal 20 + Hospital 1) — changes dates, so it is a
+**U-8-class ruling**, see U-10 below; (2) widening `stair_member_architecture` to `IfcSlab` closes
+C3 HHS (`IfcSlab ^Stair` = HHS **4/83**, 0 elsewhere) but appends to the same array **#1551** appends
+to and moves `IfcSlab` out of `supportPool` — **land #1551 first**, then take it as one A/B.
+
+<details><summary>ORIGINAL ITEM — kept for the trail only, both premises retired</summary>
+
 ### B-1 · day0-bisect · ⛔ **PREMISE RETIRED 2026-09-02 (A-9) — REWRITE BEFORE DISPATCHING**
 **`witness_day0_integrity.js` (§W_D0) reproduces `claims=13 PASS=4 FAIL=5 INCONCLUSIVE=4` on
 unmodified `origin/main`.** But the TM lane established that **§W_D0 judges `displaySchedule`, a map
@@ -225,6 +270,8 @@ unowned: C2/C3/C4's FAILs are genuine on the layer that plays — Duplex C2 `bad
 IfcSlab/IfcMember on day 0), Duplex C4 `bad=83` MEP inside 3 days, HHS C3 `bad=3` hanging IfcSlab,
 Terminal C2 `bad=9` IfcBeam + C4 `bad=4` IfcFlowTerminal — and nobody has attributed any of them to
 a commit. Rewrite this item around THOSE five specific failures before dispatching it.
+
+</details>
 
 ### B-2 · future7-stage4-5 · autonomous, plan-first
 `4D_GANTT_TM_REFACTOR.md` §FUTURE item 7. **Stage 4:** `verifyGanttIntegrity()` ANDs two
@@ -434,6 +481,7 @@ using `analysis_sidecar.js`'s dominant-face formula). This changes dates, so it 
 | U-9 | **Hospital Levels 2-6 floor plates are ONE `IfcSlab` each** (7.6-9.2k m², 100% of the level's slab area). Progressive reveal of a single element requires sub-element geometry splitting — a new mechanism, and invention under the PRIME RULE. Not built, not proposed. Do you want it explored? | **1 element = a whole floor** |
 | U-7 | **Trim `§R10`'s AO margin?** `ao=12` was shipped on an assumed 18.75 ms/render; measured it is **27.26 ms** (and TAA is 49.06 ms, not the assumed 75.0). The margin costs **109.0 ms/frame = 221 s (3m41s) per Hospital bake**. Trimming it is a quality-vs-time trade only the user can price. | **3m41s/bake** |
 | U-6 | **Lift the no-bake restriction for witnesses that structurally need a whole film?** `§FILM_UNSUPPORTED` is the first item to hit this. A cheaper re-scope exists (short `--frames` run against `§SUPPORT_UNCHECKED_SUMMARY`) — the question is whether that is accepted as sufficient, or whether whole-film witnesses get a sanctioned bake budget. | — |
+| U-10 | **§GROUNDWORK_SLAB prices 21 promoted `IfcBeam` as steel erection — fix it, or leave it?** Its own comment says *"seq/resource unchanged (CONCRETE_GANG already)"*; that is true for `IfcSlab` (seq 4, CONCRETE_GANG) and **false for `IfcBeam`** (seq 3, STEEL_ERECTOR). Measured 2026-09-02 (B-1, §J.6.4): Terminal 20 + Hospital 1 = **21** elements the pipeline itself calls Substructure groundwork are priced and crewed as steel. Correcting it changes `_installSecs` and crew allocation, therefore **dates** — the same class of lever as U-1/U-8, not an agent's call. | **21** elements · Terminal's promotion set is 233 (213 `IfcSlab` + 20 `IfcBeam`) |
 | U-5 | **B's own `THREE.WebGLRenderer`.** Last structural cause of POV framing being off, and it BLOCKS §CPE_WALK_AUTHORING (spec fully settled with the user, not built). Real architecture work — needs an explicit go. | — |
 
 ---
