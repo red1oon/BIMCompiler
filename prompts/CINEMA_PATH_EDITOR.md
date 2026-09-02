@@ -63,8 +63,13 @@ stat cards. **A stale tab serves stale JS: reload before baking.**
 - `§PHOTO_PREWARM ms=… did=[mepSmooth,hdri,groundTex]` a few seconds after streaming → §R11 landed
 - first Alt+S ~27 s → ~7-9 s → §R11's saving is real on Hospital
 - `§CPE_STATS_TAIL reveal round entered at frame …` → the dead tail is reclaimed
-- `§CPE_PIE_HOLD heldFrames=N/framesDone` → the hold fired (it will NOT fire on Hospital: Finisher
-  ops run to the last day, so the pie is never empty — that is correct, not a bug)
+- `§CPE_PIE_HOLD heldFrames=N/framesDone` → the hold fired. **CORRECTED 2026-09-02: it DOES fire on
+  Hospital — measured `heldFrames=283/2027 (14%)` on the stage-5 film and `§CPE_RESOURCE_HOLD first
+  hold at day=137 holding day=133 (4 days back)` on the 2026-09-02 headful run.** The old "it will
+  NOT fire on Hospital: Finisher ops run to the last day, so the pie is never empty" was wrong on its
+  predicate, not on its arithmetic — see §PIE_HOLD_PREDICATE in the §CPE_PIE_HOLD section: the panel
+  needs a staffed *element* op, not an active *task*, and Hospital has idle days inside its task
+  windows. Firing mid-programme is the designed behaviour meeting a real gap.
 - bake wall clock ~3 h → ~2 h 10-15 m → §R10's saving is real
 
 **Measured this session, do not re-derive:** the day counter pins at u≈0.45 and the pie sits on one
@@ -3931,12 +3936,31 @@ Read from the persisted `~/.cache/bim4d/*/run.json` task windows (§5 RUN ONCE, 
 | HHS_Office_Federated | 20 | 50 | **0** |
 | Duplex | 20 | 13 | **0** |
 
-**So the silence is NOT a mid-programme gap — every programme is gap-free.** The silence the user saw
-is the one §CPE_BIG_STATS already names: after §CPE_BUILDUP_TOPOUT (`topoutU=0.524` on their own
-Hospital bake) no trade is active for the whole second half, `resourcePanelAt` correctly returns
-`null`, and the pie — the panel's whole left column — DISAPPEARS while a full-width stat card takes
-the slot. That pop is what the instruction is about: *"the pie **part**"* is a part of the panel, and
-it should stay put.
+> **⚠ CORRECTED 2026-09-02 (§PIE_HOLD_PREDICATE) — the table above measures the WRONG PREDICATE, and
+> the sentence that followed it ("the silence is NOT a mid-programme gap") is FALSE on Hospital.**
+> The table counts **days with no TASK active** (42 task windows). The panel does not read tasks: it
+> reads the per-element op array, and `resourcePanelAt` (`viewer/cpe_resource_panel.js:56`) skips
+> every op without a trade — `if (!o.r) continue;`. So the panel's real predicate is **"no STAFFED
+> ELEMENT op is active on this day"**, and element ops are short sub-windows *inside* a task window
+> (`§TM_ELEMENT_WINDOW_BIND total=63415 clamped=63182`). A task window can therefore be continuously
+> "active" while the days inside it have no element being placed. MEASURED LIVE, headful Hospital
+> bake 2026-09-02 (`scratchpad/bake/post.log`, stored path, buildup+label+reveal):
+> `§CPE_RESOURCE_PANEL on ops=63417 rates=true` → `§CPE_RESOURCE_PANEL INCONCLUSIVE ops=63417
+> withResource=63415 day=[2026-09-06] opsSpan=[2026-07-31..2027-09-07] rates=true — no trade is
+> active on this day` and `§CPE_RESOURCE_HOLD first hold at day=137 holding day=133 (4 days back)
+> heads=4 trades=1`. **63,415 of 63,417 ops DO carry a resource**, so the null is not a missing-trade
+> defect — Hospital's derived build order genuinely contains idle days, the earliest at ≈day 37
+> (2026-09-06) and a 4-day stretch at days 134-137. `§CPE_PIE_HOLD` firing mid-programme is the
+> DESIGNED behaviour meeting a real gap, not a bug. (Whether the 4D generator *should* leave idle
+> days inside a task window is a schedule-lane question, not a HUD one — it does not belong here.)
+
+~~**So the silence is NOT a mid-programme gap — every programme is gap-free.**~~ **← RETRACTED, see
+the corrected block above.** The silence the user saw is ALSO the one §CPE_BIG_STATS already names:
+after §CPE_BUILDUP_TOPOUT (`topoutU=0.428` measured 2026-09-02, `0.524` on their earlier bake) no
+trade is active for the whole second half, `resourcePanelAt` correctly returns `null`, and the pie —
+the panel's whole left column — DISAPPEARS while a full-width stat card takes the slot. That pop is
+what the instruction is about: *"the pie **part**"* is a part of the panel, and it should stay put.
+**But it is not the ONLY silence: mid-programme idle days exist too, and the hold serves both.**
 
 ### The rule
 **ONE panel, ONE fixed geometry, in both modes: `[ cylinder pie + progress ring ] | [ content ]`.**

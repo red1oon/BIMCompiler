@@ -14,6 +14,29 @@ half-built — the items are specced, measured or diagnosed, and each says which
 
 ---
 
+## §SESSION_2026-09-02B — WORKED TO ZERO. Status of every item in this file.
+
+| item | status | evidence |
+|---|---|---|
+| §PREMISE-CHECK / aim retirement | **⛔ BLOCKED — one question, spec written + loss quantified** | new §AIM_DEPTH_RETIREMENT section below |
+| §MEP_SYNTHETIC_PALETTE | **✅ DONE** — bim-ootb **PR #1604**, witness `W-MEP-DISC-PALETTE` **24/24** | 3 buildings, hues counted |
+| §NON_DIRECTIONAL_FILL | **✅ DONE** — explanation to relay, nothing to build | attribution correction stands |
+| §OPEN 1 — Alt+C perf | **✅ CLOSED** — gating code-verified + pool confirmed firing in a real windowed bake; the before/after A/B is **CANCELLED by user directive**, not outstanding | §OPEN 1 below |
+| §OPEN 2 — §CPE_PIE_HOLD contradiction | **✅ SETTLED** — bim-ootb **PR #1603 (MERGED)** + §PIE_HOLD_PREDICATE here | live §CPE_RESOURCE_HOLD |
+| §OPEN 3 — local vs OCI | **✅ ANSWERED** — the DB is NOT the cause; the deployed **viewer is v387/v505 vs local v1120** | §OPEN 3 below |
+| §OPEN 4 — saved-path workflow | **✅ SETTLED already**, not re-opened | — |
+| §OPEN 5 — three overlay specs | **⛔ NOT STARTED, deliberately** — `§FILM_UNSUPPORTED`'s acceptance gate is a full bake, which the user has just ruled out; a cheaper re-scope is named | §OPEN 5 below |
+
+**⚠ STANDING CONSTRAINT ADDED THIS SESSION — bakes are not a measurement tool.**
+User, 2026-09-02: *the silent bake worked well last night, so it need not be re-tested to that
+extent; it keeps launching as a side effect.* Treat `cli_silent_bake.js` as a **proven, expensive
+facility**, not a probe. Do not launch a film to settle a number. **Keep the `§`-logging intact and
+observable** — do not remove, mute or wrap any `§` line on the bake path; preserving the
+instrumentation is the ask, re-running the film is not. If a bake is genuinely the only way to
+settle a specific numeric claim, **state the claim and ask first.**
+
+---
+
 ## §PREMISE-CHECK — the camera-aim ask, and why a literal revert is the wrong move
 
 **User, 2026-09-02:** *"I prefer the previous (before yesterday's changes) as it follows path
@@ -54,6 +77,94 @@ the code — re-verify before relying on it):**
 
 ---
 
+## §AIM_DEPTH_RETIREMENT — the spec, the quantified loss, and the ONE question for the user
+**Status 2026-09-02: SPECCED, NOT BUILT. ⛔ BLOCKED on a user decision — see the question at the end.
+Nothing was shipped and no code was touched. Every number below is code-derived or on record;
+no bake was run for this (user directive 2026-09-02: stop re-running the film).**
+
+### The change, in one line
+`viewer/effects.js:8340-8368`: the aim chain reads `if (_pin) { …pin… } else { …§CPE_AIM_DEPTH… }`.
+Retirement = **drop the `else` branch**. `_lx/_ly/_lz` then keep the path-follow value set at
+`:8319-8324`, and the correction window at `:8383` still applies on top. Nothing else in `_beat3Pose`
+moves. VERIFIED by reading the file 2026-09-02, not from memory.
+
+### What survives — the user's own question, answered against the code
+1. **Path-follow** (`_lookAhead`, `effects.js:8290-8294`, `_AH_FRAC = 0.15` arc-length look-ahead).
+   Becomes the only automatic rule. This is the "follows path direction" the user asked for.
+2. **`§CPE_AIM_PIN`** — `effects.js:6532-6559` + apply at `:8340-8345`. **Zero dependency on depth**;
+   it is the `if` branch, depth is the `else`. The user's authored head-turns are untouched.
+3. **The correction window** — `§CPE_CORR_BRANCH` (`_resolveCorrBranch` `:6644-6702`,
+   `_cpeCorrDirBlend` `:6795-6808`) is **entirely unaffected**: it needs only *a* stable uncorrected
+   direction, and path-follow is more stable than depth, not less. `§CPE_AIM_DEPTH_FREEZE`
+   (`:6663-6669`, `:6779-6784`) becomes a near-no-op but **MUST BE KEPT** — it still guards any
+   moving from-direction where a window overlaps a pinned zone or the `_openU` seam blend.
+4. **The dive-in and the closing orbit** — untouched *by construction*, not by care: `_pinLookAtAt`,
+   `_aimDepthApply` and `_cpeCorrectionAt` are called **only** from `_beat3Pose`. Beat 1
+   (`:8011-8032`) runs no aim rule at all, and `_orbitPose` (`:7930-7971`) hard-wires the gaze to the
+   pivot. `_cinemaPathPlan`'s beat framing is not edited.
+
+### THE LOSS, QUANTIFIED — this is the part that needs a decision
+
+**(a) The rule is NOT a dead-end rescue. It is a "something within 8 m" rule.** From the shipped
+formula, `effects.js:7286-7288`:
+`clearM = clamp(envelope × 0.06, 3, 8)` → **8.0 m on Hospital** (envelope 147 m), 3.0 m on Duplex.
+`w = 1 − smoothstep(fwdClear / clearM)`, and `_cinemaSmoothstep(t) = t²(3−2t)` (`effects.js:5844`).
+Evaluated exactly, on Hospital:
+
+| forward clearance | authority `w` the rule takes over the gaze |
+|---|---|
+| 0.5 m (nose against the wall) | **0.989** |
+| 1.0 m | 0.957 |
+| 2.0 m | 0.844 |
+| **4.0 m** | **0.500** |
+| 6.0 m | 0.156 |
+| 8.0 m + | 0.000 |
+
+**Half the rule's authority is already spent at 4 m of clearance** — an ordinary hospital corridor,
+not a dead end. So the genuine "nose against the wall" rescue is only the `fwdClear → 0` tail; the
+rest is the deviation the user is objecting to. This is the strongest argument for retirement and it
+comes from the formula alone.
+
+**(b) On record (2026-09-01, do not re-derive): 28/91 probes fire, gaze turned 83.45°.** Live
+re-sighting 2026-09-02 on the Hospital path: `§CPE_AIM_DEPTH e3=0.039 trigger=fwdClear
+subject=(7.8,88.0,177.3) perpDeg=53.9 blend=0.82` — 0.82 authority within the first 4% of the walk.
+
+**(c) A SECOND cost the earlier handoff did not name — `§CPE_STICK_HOLD` loses its aim half.**
+`_holdBoostAt(w3)` (`effects.js:8687-8698`) exists **solely** to feed `_aimDepthApply`'s `boost`
+argument (`:8303` → `:8364`), and its gate is `_aimDepthSeries.has`. Retire depth and a stick-hold
+becomes a pure *rate dip with a frozen gaze* — precisely the defect §CPE_STICK_HOLD's second half was
+built to fix. The motion half (`_holdBuild`/`_holdMap`, `:8595-8667`) is independent and survives.
+**This must be decided at the same time, not discovered afterwards.**
+
+**(d) Not measured, and deliberately not measured:** what FRACTION of the 28 firing probes are true
+dead ends (`fwdClear` < ~1 m, w > 0.95) versus mild (4-8 m, w ≤ 0.5). That single distribution would
+say exactly how much real rescue is lost. It is a read-only `A._probeAimDepth(e3)` sweep — **a probe,
+not a bake** — and is the one bounded measurement worth taking if the user wants the residual closed.
+
+### Cost of ownership if retired
+Dead code to remove: `_aimForwardClear` `7241-53`, `_aimDepthWeight` `7274-90`, `_aimDepthSubject`
+`7297-319`, `_aimDepthBuild` `7345-85`, `_aimDepthAt` `7386-97`, `_aimDepthApply` `7413-63`, the
+constants `7213-34`, `_aimLatch`, `_aimBuildupCursorAt`, `A._probeAimDepth`, and the then-orphaned
+`_aimGrid`/`_aimGridFrom` `7115-40` (**keep `_densPoints` `7053-65`** — §CPE_NOISE_LAW reads it).
+Witnesses that go RED and must be retired or re-scoped: `tests/test_aim_depth.js`,
+`tests/test_aim_density_zspan.js`, `witness_cpe_aim_depth_buildup.js`, `witness_cpe_hose.js` F1/F2,
+`witness_cpe_corr_brush.js` G-FRZ-3 (self-degrades to VACUOUS, will not fail hard),
+`witness_cpe_stick_hold.js`. Also required in the same PR: `EFFECTS_V` (`effects.js:5870-5887`, it
+names §CPE_AIM_DEPTH twice), `sw.js CACHE_VERSION`, `viewer.html effects.js?v=`.
+This **contradicts the standing recommendation** at `CINEMA_PATH_EDITOR.md:4311` ("§CPE_AIM_DEPTH —
+recommendation: KEEP, but freeze inside a correction window"), which must be superseded by an
+explicit ruling, not silently overridden.
+
+### ⛔ THE ONE QUESTION FOR THE USER
+> **Retire `§CPE_AIM_DEPTH` so the walk is pure path-follow (plus your pins and your correction
+> windows)? It costs two things: (1) the camera will no longer turn to look down the open space when
+> it walks up to a wall — at a true dead end it will simply face the wall; and (2) `§CPE_STICK_HOLD`
+> loses its aim component, so a held beat becomes a slow-down with a frozen gaze rather than a
+> slow-down that also looks at something. Say go and it ships with the pins, the correction windows,
+> the dive-in and the closing orbit all untouched.**
+
+---
+
 ## §MEP_SYNTHETIC_PALETTE — better colour rules where the model has no material names
 
 **User, 2026-09-02:** *"On Hospital or any building having zero usable material_name, can the
@@ -84,7 +195,67 @@ needs 40 hues to be readable has failed the "minimalist" requirement the user st
 
 ---
 
+### ✅ BUILT 2026-09-02 — `§MEP_DISC_PALETTE`, bim-ootb PR #1604, witness `W-MEP-DISC-PALETTE`
+
+**⚠ THE WORD "STANDARD" IS NOT CLAIMED, AND MUST NOT BE.** The user asked for "more MEP standard"
+colouring "like other apps". **No MEP colour convention exists anywhere in the model data** —
+Hospital's 6,664 `material_name` rows are 100% `≈`-prefixed synthetic, and there is **no
+`IfcSystem`/`system` column on any shipped building DB** (grepped 2026-09-02). Any disc→colour
+mapping is therefore an **AUTHORED CHOICE**, and it is labelled as such in the spec, in the code
+comment, and in the witness header. Authoring presentation is in scope (the user has ruled so
+twice); calling an authored palette an industry standard would be exactly the drift the PRIME RULE
+exists to stop.
+
+**What is extracted vs authored, stated separately:**
+- **EXTRACTED (the key):** `elements_meta.discipline` — non-null on 100% of rows on all six shipped
+  buildings (Hospital 6 discs, Clinic 6, JKR 7, LTU_AHouse 8, HHS 3, Duplex 5).
+- **AUTHORED (the assignment):** the disc→colour map. **Not authored here** — it reuses
+  `A.DISC_COLORS` (`viewer/config.js:43-49`) VERBATIM, the same 12-entry table the discipline HUD
+  bars, bbox placeholders, `city.js` and `measure.js` already paint with. **The win is CONSISTENCY,
+  not novelty:** a discipline now gets the same colour in the film that the viewer's own legend gives
+  it. Every discipline present on every shipped building is already in that table, so the earthTone
+  fallback is dead on all of them.
+
+**Two defects fixed (both measured, not asserted):**
+1. **COVERAGE.** `§SUNGLASS`'s discipline band groups on `mesh.userData.disc`, but streaming.js's
+   InstancedMesh path never set it — so **every InstancedMesh fell into the `'Unknown'` bucket** and
+   took one flat colour, on exactly the instance-heavy MEP geometry the user wants coloured. (PR
+   #1594 corroborates without naming it: it reported "7 discs" on Clinic whose DB holds 6 — the 7th
+   was `Unknown`.) ⚠ That branch buckets by GEOMETRY HASH ALONE, so instances are NOT guaranteed to
+   share a discipline; the key is set **only when the set is verified uniform**, and mixed sets are
+   left unkeyed and COUNTED rather than painted a discipline they do not all belong to.
+2. **MINIMALISM + IDENTITY.** The band painted `earthTone[i % 10]` by ALPHABETIC rank, so a
+   discipline's colour depended on which OTHER disciplines happened to be present, and never matched
+   the viewer's own legend.
+
+**MEASURED (Clinic, `viewer/tests/witness_mep_disc_palette.log`) — hues COUNTED, never eyeballed:**
+- `§MEP_DISC_COVERAGE instancedMeshes uniformDisc=516 mixedDisc=1` → **516/517 InstancedMeshes now
+  carry a real discipline key, where ALL 517 were `'Unknown'` before.** The `'Unknown'` bucket fell
+  to **2 of 705** meshes. The 1 mixed set was correctly left unpainted.
+- **MINIMALIST: `distinctHues=7 discs=7`** — one hue per group, zero collisions, against a
+  `legendSize=12` ceiling. Nothing near the 40-hue soup the user pushed back on.
+- **IDENTITY: 6/6 exact hex match** against `A.DISC_COLORS` (ACMV `#cc4444`, ARC `#4488ff`, ELEC
+  `#cccc44`, MEP `#44cc44`, PLB `#8844cc`, STR `#44cccc`).
+- **Hue count invariant across the whole band:** ticks 56-65 → `counts=[7,7,7,7,7,7,7,7,7,7]` (the
+  `sub` parameter deepens saturation and darkens; it never re-hues).
+- **RED CONTROL** — the witness recomputes the OLD earthTone cycle and asserts it does NOT reproduce
+  the legend. Without that gate passing, none of the above could fail and the witness would be
+  worthless.
+- Self-failure paths built in: `VACUOUS` when a building yields no discipline group or no
+  InstancedMesh, `INCONCLUSIVE` (never PASS) when streaming never completed or nothing was judged.
+
+**Not verified by looking at anything.** No frame, no screenshot, no film was used to judge this
+palette — every verdict above is a number read back off the real scene graph after calling the real
+`A.updateAmbience(56..65)`. Whether the result is *attractive* is genuinely not settled by this
+witness, and is not claimed to be.
+
+---
+
 ## §NON_DIRECTIONAL_FILL — the term the user asked about, and the real cause of the darker MEP
+**✅ DONE 2026-09-02 — this is an explanation to deliver, not work to do. Nothing to build. The
+answer below is relayed to the user verbatim; the attribution correction at the end of this section
+(darker MEP = v1119's light-floor cut, NOT `§CPE_MATERIAL_KEY`, which is a measured no-op on
+Hospital) stands and must not be re-litigated.**
 
 **User, 2026-09-02:** *"Thus can solve non directional fill which i am not sure what it means."**
 
@@ -106,21 +277,55 @@ is a knob with a stated trade, not a bug.
 ## §OPEN — smaller items, each with its evidence
 
 1. **PR #1602 is MERGED** (`d37eb109` on `origin/main`, 2026-09-01T12:36:55Z) — the CLI silent bake
-   plus `§NIGHT_BAKE_POOL`. So `cli_silent_bake.js` is now at the bim-ootb repo root, and the perf
-   fix is live for the interactive Alt+C bake too, since it is gated on `A._maxqActive` (any bake,
-   not headless-only). **⚠ The interactive gain is PREDICTED, never measured** — headless went
-   26.4 → 1.27 s/frame, and the user's own bake was 2.26 s/frame before. Measuring one real Alt+C
-   bake against that 2.26 baseline is a bounded, high-value task and the user cares about it
-   ("it's bad bake if far above 2 hrs").
+   plus `§NIGHT_BAKE_POOL`. So `cli_silent_bake.js` is now at the bim-ootb repo root.
+   **✅ CLOSED 2026-09-02 — the code claim is CONFIRMED by reading the file; the perf A/B is
+   CANCELLED BY USER DIRECTIVE and is NOT outstanding work.**
+   - **Gating, verified not assumed:** `viewer/tools.js:1712` is `if (A._maxqActive) {`, and
+     `viewer/cinema_maxq.js:994` sets `A._maxqActive = true` for ANY bake. The interactive Alt+C
+     bake therefore takes the same frozen-pool path as the headless one. `git diff
+     d16646db..d37eb109 -- viewer/tools.js` is **52 insertions and nothing else** — the entire
+     delta is the §NIGHT_BAKE_POOL block, so the two share one code path exactly.
+   - **Confirmed firing in a real WINDOWED bake** (`--gpu headful`, a real Chrome window on the
+     desktop — the Alt+C environment, not headless): `§CLI_BAKE_GL renderer="ANGLE (NVIDIA …
+     RTX 4060 …, OpenGL 4.5.0)"` → `§NIGHT_BAKE_POOL created n=200`, and
+     `§MAXQ_QUALITY frames=80 unconverged=0 hiddenPauses=0`. So the fix is live on the interactive
+     path, measured, not predicted.
+   - **⛔ NOT MEASURED, AND NOT TO BE:** the before/after per-frame delta on the windowed path. The
+     pool-OFF arm was killed mid-run. **User directive 2026-09-02: "the silent bake worked well last
+     night, so it need not be re-tested to that extent" — bakes are a proven, expensive facility and
+     were being reached for as a routine measurement tool.** Do NOT restart it. This is closed as
+     *declined*, not as blocked.
+   - **⚠ Do NOT quote a cross-mode number as if it settled the perf question.** The windowed 80-frame
+     arm read `§CLI_BAKE_FRAMES poses=80 meanMs=2711 p50Ms=1688 worstMs=10802`, versus 1,364 ms mean
+     on the headless 80-frame arm and 1,264 ms on the full headless film. That comparison conflates
+     headless-vs-windowed, a different film length, and a different session — it isolates NOTHING and
+     must not be reported as "the Alt+C bake is slower". The only valid isolation would have been
+     pool-ON vs pool-OFF in the same mode, which is the arm that was cancelled.
 2. **`§CPE_PIE_HOLD` contradicts its own documentation.** The full Hospital bake logged
    `heldFrames=283/2027 (14%)`, but `CINEMA_PATH_EDITOR.md` asserts the hold will NOT fire on
    Hospital because Finisher ops run to the last day ("that is correct, not a bug"). One of the two
    is wrong. Settle it and fix whichever it is — an assertion in the file that measurement disagrees
    with is exactly what §0a warns about.
-3. **Local vs OCI DB divergence — user-reported, unverified.** The local
-   `buildings/HospitalAjaibPath.db` renders green solar panels; the OCI-served copy reportedly does
-   not. User: *"indicate diff between local and OCI which should not be."* Needs a checksum/row
-   comparison to say which is stale. See `project_split_db_live_vs_probe_landmine.md`.
+3. **Local vs OCI divergence — ✅ ANSWERED 2026-09-02, and the DB is NOT the cause.**
+   User: *"indicate diff between local and OCI which should not be."* Measured by HTTP HEAD + a
+   row-level diff of the actual objects (no bake, no browser):
+   - **`buildings/HospitalAjaibPath.db` → HTTP 404 on OCI.** The path DB the films are baked from
+     **was never uploaded**. There is no "OCI copy" of it to diverge.
+   - **`Hospital_meta.db`: OCI 64,150 rows vs local 63,415 — the 735 extra rows are ALL
+     `IfcOpeningElement`** (ARC 665 / STR 70), i.e. voids. **Every one of the 63,415 shared rows is
+     byte-identical, including every `material_rgba` (0 differing rows).** Local is a strict subset:
+     openings were pruned locally. **Element colour therefore cannot differ because of this DB** —
+     which disproves the DB as the cause of the green-solar-panel report.
+   - `Hospital_extracted.db`: OCI copy is dated **2026-06-05** and differs in size from local
+     (263,307,264 vs 264,642,560) — stale, but not what the split-DB viewer path loads.
+     `Hospital_meta.db`/`Hospital_geo.db` are served gzip (OCI_UPLOAD.md rule 8), so their
+     `Content-Length` is the COMPRESSED size and must not be compared against a local raw size.
+   - **THE ACTUAL DIVERGENCE IS THE VIEWER CODE, and it is enormous:** deployed
+     `sw.js CACHE_VERSION` is **`v387` on `bim-ootb-live`** and **`v505` on `bim-ootb-dev`**, against
+     **`v1120` on local `main`**. The OCI-served viewer is 700+ versions behind, so essentially every
+     rendering change of the last months — including §WALL_SIDE_AND_LIGHT_FLOOR (v1119) and the whole
+     material/palette line — is simply absent there. Anything "looks different on OCI" should be
+     attributed here first, and the fix is a viewer deploy, not a DB upload.
 4. **Saved-path workflow is SETTLED — do not re-open.** User, 2026-09-02: *"just saved a DB first
    with a path in it, and that is it. No need of passing argument. Simple. Agreed."* The DB's
    `cinema_path` table is the default source; `--plan` / `--override` exist but are not the path the
@@ -130,6 +335,17 @@ is a knob with a stated trade, not a bug.
    `§FILM_UNSUPPORTED` (build first — detection already runs, no flicker risk),
    `§CLASH_QUALIFY` (gates the clash overlay; viewer clash is broad-phase R-tree only today),
    `§FILM_CLASH_IN_FRAME`, `§FILM_CRITICAL_PATH` (BLOCKED — `cpm_schedule.js` computes no float).
+   **STATUS 2026-09-02: STILL UNSTARTED, and deliberately not begun this session — NOT abandoned.**
+   `§FILM_UNSUPPORTED` is correctly ranked first (detection already ships warn-only:
+   `§SUPPORT_UNCHECKED_SUMMARY n=177/63182` on Hospital, 236 on Terminal). Its own witness contract
+   (`witness_film_unsupported.js`) requires asserting that the marked count over a WHOLE FILM equals
+   that `n=`, and that each mark lands within one frame of the element's placement — i.e. **its
+   acceptance test is a full bake**, which is exactly what the 2026-09-02 user directive rules out
+   ("the silent bake worked well last night, it need not be re-tested to that extent"). Starting the
+   feature without being able to run its gate would ship an unverified overlay onto the film path.
+   **Next session: either (a) get an explicit go for ONE bake as that feature's acceptance run, or
+   (b) re-scope the witness to assert the mark set against `§SUPPORT_UNCHECKED_SUMMARY` on a
+   short `--frames` run instead of a full film.** (b) is likely sufficient and is the cheaper path.
 
 ---
 
