@@ -611,7 +611,7 @@ still open.
 **The "never measured" claim was WRONG and is withdrawn.** The run had completed; a polling loop
 read a 0-byte log while a second attempt truncated the file, and the absence was reported instead of
 re-checked. Hospital `HospitalAjaibPath.db` (`storedPath=true bands=3(db:cinema_path)`, 70.68 m walk,
-82 s, 63,182 elements, both arms under `GPU_REAL=1`) is measured and is the headline for U-2:
+82 s, 63,182 elements) is measured and is the headline for U-2:
 gaze-vs-chord **max 90.657 / mean 86.207 → max 0.000 / mean 0.000**; tangent **max 95.753 / mean
 85.127 → max 51.936 / mean 6.930** — mean falls **12x**. `§CPE_AIM_DEPTH_SERIES active=65/65
 maxBlend=0.94` on the ON arm: the rule governed essentially the whole Hospital walk.
