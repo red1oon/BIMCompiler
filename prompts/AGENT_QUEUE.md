@@ -488,6 +488,24 @@ nothing in the fleet** — `§S18_STOREY_MERGE_FAIL no such column: elevation` o
 so a false row there is expensive. Correct it, and decide whether the merge map should be repaired
 or retired (it is the storey-banding owner — this is not cosmetic).
 
+## ✅ SETTLED 2026-09-02 — DB HOSTING. Do not re-litigate.
+**User ruling: "Github need not be repo for the DBs. Remain with OCI."**
+This confirms the architecture already in place and measured today: **GH Pages serves the APP, OCI
+serves the DATA.** `red1oon.github.io/bim-ootb/` carries `objectstorage…/b/bim-ootb/o/` as its data
+base, and a direct probe of `red1oon.github.io/bim-ootb/buildings/Clinic.db` returns **404** —
+GitHub never hosts a DB.
+Three measured reasons it must stay this way, so no future session re-opens it:
+1. **GitHub hard-rejects any single file >100 MB without LFS.** Every major DB exceeds it —
+   `Hospital_extracted` 252 MB, `HospitalAjaibPath` 250 MB, `Terminal_geo` 249 MB, `Hospital_geo`
+   229 MB, `JKR_extracted` 194 MB, `LTU_AHouse_geo` 161 MB.
+2. **Using LFS to get around that reopens what #1593 closed** (HEAD 1.79 GB of LFS content → 0).
+3. **GH Pages sites cap ~1 GB**; `buildings/` is 2.2 GB.
+Economics run counter to intuition: **end users never cost LFS bandwidth** — they hit the static
+site and never clone. The whole quota drain was dev/agent worktree churn. Moving data to GitHub
+would convert a free path into a metered one.
+⚠ This does NOT resolve **U-3** (reclaiming the stranded historical 8.53 GB) — that is separate and
+still open.
+
 ## ⛔ USER DECISIONS — never dispatch these as agent work
 | # | the decision | the number that forces it |
 |---|---|---|
