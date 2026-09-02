@@ -13,6 +13,23 @@ cli_silent_bake harness is proven and is not a routine measurement tool; (5) wor
 zero, mark it ✅ DONE (witness) or ⛔ BLOCKED: <one question> here, then take the next.
 ```
 
+
+## §MID-FLIGHT — agents stopped by a rate limit, and what they had found
+**Standing instruction (user, 2026-09-03): resume agents after session resets.** A rate-limited
+agent is TERMINATED, not paused — but its transcript survives, so a live session can resume it by
+message. What does NOT survive is a session ending: agent ids are session-local. **So record any
+mid-flight agent here the moment it dies**, with its last finding, so any later session can re-dispatch
+from the brief rather than from nothing.
+
+| lane | died at | last finding — resume from this |
+|---|---|---|
+| Interior lighting / liveliness (U-11 re-scoped) | 2026-09-02 ~23:xx, limit reset 02:50 | *"Found the actual defect. The still's near-field boost never fires — adding a probe for it."* Resumed 2026-09-03 06:19. **If that boost never firing IS the cause, it supersedes both the fixture route and the `m` lever** — it fits the measured signature (drained BRIGHT register, not dark shadows). |
+
+**Resume checklist for this lane, if it dies again:** liveliness = variance (CV / p90-p10 / chroma
+spread), NOT mean brightness · CV already rose 0.344→0.430 from #1622 alone, so measure the delta
+against CURRENT shipped state · two-sided gate: lifting YAVG toward ~90 by flattening spread back to
+~43 must FAIL · no per-building constants · no bakes · no screenshots.
+
 ## §LIVE — agents running as of 2026-09-02 (update this block when they report)
 | lane | owns these files — DO NOT dispatch conflicting work | status |
 |---|---|---|
