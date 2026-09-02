@@ -1,5 +1,28 @@
 # PROGRESS — Current Development State
 
+## Current State — 2026-09-02 (film-review handoff worked to zero; 2 PRs merged, 2 explicit blocks)
+**Lane file: `prompts/RESUME_2026-09-02_FILM_REVIEW.md` — read §SESSION_2026-09-02B first (the
+per-item status table).** Merged: **#1603** `§PIE_HOLD_PREDICATE` (e15da67c) · **#1604**
+`§MEP_DISC_PALETTE` (318b4dd3, witness `W-MEP-DISC-PALETTE` **24/24** on 3 buildings — 516/517
+InstancedMeshes went from `'Unknown'` to a real discipline key; `distinctHues=7 discs=7`;
+identity 6/6 exact vs `A.DISC_COLORS`; RED CONTROL 0/6).
+- **§CPE_PIE_HOLD contradiction SETTLED** — the "never fires on Hospital" claim counted days with no
+  *task* active; the panel's predicate is no *staffed element op*. Hospital has real idle days
+  (`§CPE_RESOURCE_HOLD first hold at day=137 holding day=133`, `withResource=63415/63417`).
+- **§Z.2 CORROBORATED with numbers:** deployed viewer `sw.js` is **v387 (live) / v505 (dev)** vs
+  **v1120 local**. The local-vs-OCI DB report is NOT a DB problem — `HospitalAjaibPath.db` is 404 on
+  OCI, and `Hospital_meta.db` differs by exactly 735 `IfcOpeningElement` rows with all 63,415 shared
+  rows byte-identical. Appearance differences on OCI are the stale viewer.
+- **⛔ `§CPE_AIM_DEPTH` retirement — SPECCED + loss QUANTIFIED, awaiting ONE user go/no-go.** From
+  the shipped formula: `clearM=8.0 m` on Hospital, so half the rule's authority is spent at 4 m
+  clearance — it is a "something within 8 m" rule, not a dead-end rescue. Second cost found:
+  `§CPE_STICK_HOLD` loses its aim half (`_holdBoostAt` only feeds `_aimDepthApply`).
+- **⛔ `§FILM_UNSUPPORTED` not started** — its acceptance gate is a full bake; re-scope to a
+  `--frames` run instead.
+- **⚠ NEW STANDING CONSTRAINT (user, 2026-09-02): bakes are a proven, expensive facility, NOT a
+  measurement tool.** Do not launch a film to settle a number; ask first. Keep every `§` line on the
+  bake path intact and observable — preserving the instrumentation is the ask.
+
 ## Current State — 2026-09-01 (LTU + Clinic shipped to OCI; Clinic glass root-caused; one new TM bug open)
 **Lane file for all of it: `prompts/LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` — read §Z first
 (resume handoff: live state, open items, next measurements).**
