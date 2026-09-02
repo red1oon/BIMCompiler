@@ -2658,3 +2658,188 @@ measurement. **So: `pl` measured 0.00000 on the away facade in every run — it 
 CAUSE — but whether raising `_nightPLScaleStill` could restore Alt+S interiors is NOT yet answered.
 Answering it needs a measurement that keeps the fixture pool live, which the current freeze forbids.**
 That is the next thing to build if U-11 goes that way.
+
+## §DUCT_SILHOUETTE — 2026-09-02 (queue D-3) — ✅ DONE (witness), bim-ootb PR pending at time of writing
+
+> **USER:** *"The roundness to jagged curves seems to work on lamps but certain large duct piping
+> seems lacking. Is the formula easy? Detecting an element to possess curved surface but having
+> jagged and thus candidate to apply."*
+
+**Answer to the user's actual question, first: YES, the formula is easy — it is two lines — and the
+detector they are imagining already exists. The split they are seeing is NOT a detection failure at
+all. It is SIZE, and it is ~50x wide.**
+
+### §D3.1 — why the existing pass cannot be the fix (do not re-litigate)
+`§MEP_SMOOTH_NORMALS geoms=160 ranges=1662 vertsSmoothed=2,074,656 vertsKeptHard=691,414
+creaseDeg=55` rewrites **normals** at a 55° crease. It changes **shading**. A faceted cylinder
+shades smoothly and its **silhouette stays a polygon**, because the silhouette *is* the geometry.
+`streaming.js` already says this in its own header: *"IfcFlowSegment is 10.3 over 26 triangles: a
+genuine 10-sided prism, so its SHADING improves here but its silhouette cannot."*
+
+⛔ **Widening `creaseDeg` is NOT the remedy** — it addresses shading, which is not the defect, and it
+would round genuine hard edges. `CREASE_DEG` stays 55, and this new pass deliberately reuses the
+*same* 55°/2° edge classification so shading and silhouette always describe one surface.
+
+### §D3.2 — THE FORMULA (measured, validated, no fit, no class list, no building name)
+For any edge shared by two faces whose dihedral θ is small enough that the shipped smoothing pass
+welds across it — i.e. the two facets are *meant* to read as one curved surface — project both faces
+perpendicular to that edge. The edge collapses to a point `E`; the two opposite vertices give `A`
+and `B`; all three lie on the swept cross-section. Therefore:
+
+```
+R      = |EA|·|AB|·|BE| / (4·area(EAB))      circumradius of three points — EXACT
+s      = R · (1 − cos(θ/2))                  chord deviation, metres — "the jaggedness"
+D_1px  = s · k,   k = (H/2)/tan(fov/2)       = 935.3 px/rad at 1080p, fov 60 (scene.js:139)
+```
+
+`s` is how far the flat facet sags inside the ideal arc. **`D_1px` is the distance out to which that
+sag still covers a whole screen pixel** — i.e. how far away the element still looks jagged.
+
+**VALIDATED, not asserted.** On Hospital the estimator lands on **R = 525.0 mm and 550.0 mm** — real
+1050/1100 mm manufacturing duct sizes — and its segment count agrees **exactly (11 vs 11)** with a
+completely independent PCA ring fit. A first, cheaper centroid-based estimator was biased by a
+constant 0.653 on triangulated quads and was **discarded**, not corrected by a fudge factor.
+
+### §D3.3 — THE LAMP-vs-DUCT SPLIT, quantified (this is the user's observation, in numbers)
+| Hospital class | curve-detected? | mean N | mean s | worst D_1px |
+|---|---|---|---|---|
+| `IfcLightFixture` | yes | 13.3 | — | **falls out of the offender list at every gate tried** |
+| `IfcDuctSegment` | yes | 12.8 | 4.17 mm | **20.8 m** |
+| `IfcPipeSegment` | yes | 11.0 | 0.75 mm | 5.2 m |
+| `IfcRailing` | yes | 22.7 | 63.98 mm | 154.6 m |
+| `IfcBeam` (curved sweeps) | yes | 11.8 | 21.50 mm | 685.5 m |
+
+**Both classes are detected. Both carry the same tessellation quality (N ≈ 11–13). The error is
+linear in radius**, so a lamp is sub-pixel past arm's length while an 1100 mm duct is a whole pixel
+at **twenty metres**. Detection was never the problem — size was. ⚠ Note the worst offenders on
+Hospital are **not ducts at all** but large-radius *curved sweeps* (railings, curved beams); the
+user only named ducts because that is what they were looking at.
+
+### §D3.4 — BOTH REMEDIES, COSTED. Recommendation: re-tessellation.
+**Remedy B — a silhouette treatment that adds no geometry. VERDICT: no credible option exists, and
+that is a finding, not a cop-out.** Priced honestly:
+1. **Anti-aliasing** — already shipped (`taa=8`). Softens the edge *pixel*; the polygon outline is
+   unchanged. A 3 px sagitta stays 3 px. Cost 0, benefit 0. **Not a remedy.**
+2. **Radial rescale onto the mid-radius polygon** — genuinely halves max deviation for free, but it
+   **moves real geometry outward by ~s/2** on a model that carries clash detection, measure and QTO.
+   Silently inflating every duct by up to 11 mm is falsifying the model. **Rejected on PRIME RULE
+   grounds**, and it only buys 2x anyway.
+3. **Parallax/POM silhouette** — cannot extend a surface outward past itself, and there is no height
+   map. **Not credible.**
+4. **Hardware tessellation** — WebGL2 has no tessellation shader. **Not available** (and §S276
+   WebGPU is deferred).
+5. **Re-extract at a finer IfcOpenShell chord tolerance** — the *correct* fix at the source, but it
+   re-tessellates the **whole fleet** instead of the measured tail, requires re-extracting and
+   re-uploading every building DB (Hospital alone is 252 MB, fleet 2.2 GB on OCI), and costs **more**
+   memory, not less. **Rejected as untargeted.**
+
+**Remedy A — one level of uniform Phong (PN-triangle) subdivision on the qualifying tail. CHOSEN.**
+θ halves, so the residual sag drops ~4x. Measured cost, Hospital, through the shipped module:
+
+| gate | refined geoms | instances | +MB per-geometry | +MB per-instance | mean sagitta |
+|---|---|---|---|---|---|
+| D_1px ≥ 2 m | 3,589 | 8,372 | +107.0 | **+307.0** | 12.324 → 2.457 mm (5.02x) |
+| D_1px ≥ 3 m | 2,607 | 6,649 | +85.4 | +241.8 | 14.773 → 2.783 mm (5.31x) |
+| **D_1px ≥ 5 m** | **1,419** | **4,019** | **+59.3** | **+159.3** | **21.331 → 3.383 mm (6.31x)** |
+| D_1px ≥ 10 m | 860 | 2,898 | +43.5 | +126.1 | 26.991 → 3.646 mm (7.40x) |
+
+The two bounds are real and both are quoted because the answer lies between them: JS-heap cost is
+**per geometry** (`A.meshCache` is keyed by geometry hash, so each is refined once), while GPU
+buffer cost is **per instance** for anything on the `BatchedMesh` path and **per geometry** for
+anything instanced (Hospital `§CONTRACT_CHECK batch=38169 instanced=25013`).
+
+**Gate = 5 m, chosen on the cost curve, not on taste.** Tightening 5 → 3 m costs **+82 MB** for
+1,188 more geometries that are mostly small fittings; loosening 5 → 10 m saves only **33 MB** while
+dropping 559. And `§R12_HOSPITAL_MEM` already puts Hospital's heap at ~1,577 MB, so the brief's
+warning applies directly: **the 2 m gate's +307 MB is the "hundreds of MB is not a win" case and is
+rejected.** 5 m is +3.8% to +10.1%.
+
+### §D3.5 — fleet population and result at the shipped gate (through the shipped module)
+| building | geoms | curve-detected | refined | instances | +MB perGeom / perInst | mean sagitta mm |
+|---|---|---|---|---|---|---|
+| Hospital | 20,609 | 15,428 | 1,419 | 4,019 | +59.3 / +159.3 | 21.331 → 3.383 (**6.31x**) |
+| Terminal | 9,394 | 7,424 | 28 | 28 | +30.6 / +30.6 | 42.924 → 5.238 (**8.20x**) |
+| JKR | 6,877 | 5,342 | 74 | 74 | +10.7 / +10.7 | 47.440 → 4.495 (**10.55x**) |
+| Clinic | 9,230 | 4,366 | 59 | 934 | +6.1 / +94.2 | 30.012 → 5.508 (**5.45x**) |
+| HHS_Office_Federated | 4,710 | 2,314 | 117 | 388 | +3.9 / +6.9 | 14.591 → 2.848 (**5.12x**) |
+| Duplex | 835 | 503 | 6 | 6 | +1.4 / +1.4 | 42.804 → 10.968 (**3.90x**) |
+
+Hospital's refined set is **9.2% of its curve-detected geometry**. The realised improvement beats
+the 4x the theory predicts, because the gate selects the worst offenders and those improve most.
+
+### §D3.6 — the shape factor is DERIVED, not tuned
+The plain linear midpoint leaves the sag untouched; the *fully* projected Phong midpoint OVERSHOOTS
+(a 12-gon goes from −3.4% inside to +3.1% outside — no gain). The damped midpoint
+`m' = m − (α/2)·[((m−p_i)·n_i)n_i + ((m−p_j)·n_j)n_j]` is exact on a cylinder at
+`α = (sec(θ/2) − 1)/sin²(θ/2)`, whose limit as θ→0 is **exactly 1/2** (`sec x − 1 ~ x²/2`,
+`sin²x ~ x²`). It barely moves over the range that matters: **0.527 at N=12, 0.539 at N=10, 0.619 at
+N=6.** So `ALPHA = 0.5` is the second-order-exact value, not a knob turned until it looked right.
+
+### §D3.7 — safety, met by construction (the user's standing constraint, without a class list)
+*"It must not impact non curve intending surfaces."*
+- A midpoint on a **HARD** edge is **never projected**. The midpoint of a straight edge lies **on**
+  that edge, so a planar facet keeps the same plane, outline and area.
+- Midpoint positions are computed once per **welded representative** pair and shared by both
+  neighbouring faces, so a crack is impossible and the result cannot depend on triangle visit order.
+- The per-face vertex split of the source data is preserved — nothing is welded or renumbered, so
+  picking, per-element hide, the BVH and `§TRIPLANAR`'s `vTriWorldNormal` all still see their layout.
+- **No building name, no IFC class list, no material name anywhere in the file.** A round column, a
+  curved railing, a dome and a duct are judged by the same two lines of arithmetic (user, 2026-09-02:
+  *"No custom code to any particular building has been our rule."*).
+
+### §D3.8 — TWO THINGS THE WITNESS CAUGHT AND THE CODE CHANGED FOR
+Recorded because both were plausible on paper and wrong in measurement:
+1. **Curved-shell-only refinement + green T-junction closure — MEASURED WRONG, abandoned.** Refining
+   only triangles touching a smooth edge and closing the frontier with 1→2 / 1→3 green splits is
+   ~2.6x instead of 4x, and it is the obvious optimisation. On real Hospital geometry it drove
+   **non-manifold edges 24 → 211** and opened **875 T-junctions**, because a real IFC mesh is not the
+   clean two-manifold that argument assumes — it carries edges shared by 3+ faces, and a
+   refined/unrefined frontier through one of those cannot be closed by a green split. **Uniform 1→4
+   removes the frontier itself**, so a crack is impossible by construction. The extra cost is the
+   4x column above and it is paid deliberately.
+2. **Midpoints built from whichever per-face copy the loop reached first.** Copies that weld together
+   can still differ by up to the 0.1 mm quantum, making the output depend on triangle visit order.
+   Now built from the **welded representative**.
+
+### §D3.9 — WITNESS: `viewer/tests/witness_duct_silhouette.js` — **W-DUCT-SIL 10/10, 37 refined
+elements across 8 building DBs, red control caught, exit 0**
+No browser, no bake, no screenshot anywhere in the chain — it reads real geometry blobs out of the
+shipped DBs and calls the shipped module (CLAUDE.md PRIMAL LAW + FUNDAMENTAL LAW).
+- **C2 (load-bearing)** — non-curve surfaces unmoved: 0 original vertices lost, every hard-edge
+  midpoint within **4 float32 ULP** of its own edge. Stated in ULPs because that is the measurement
+  floor: positions live in a `Float32Array` whose ULP at a 35 m coordinate is 4.2 µm, while a real
+  displacement would be the sagitta — **millimetres, ~1000x above it**. The red control sets 120 ULP
+  and is caught.
+- **C3 / C3b** — sagitta improves ≥3.5x fleet-wide and **no element regressed**, re-measured on the
+  **output** mesh, not predicted from the formula that motivated the change.
+- **C4a** — the uniform-refinement identity `V'=V+E`, `E'=2E+3T`, `T'=4T` holds **exactly** on every
+  weld-injective element, with boundary and non-manifold structure exactly doubled.
+- **C4b** — direct point-on-edge crack scan, **scoped and declared**: 8 clean-input elements judged
+  of 37; the 29 that entered with coincidences and the 2 over the scan cap are named, not passed
+  over. Prints `INCONCLUSIVE` rather than PASS if the judged population is empty.
+- **C5** — `§SIL_NOOP gateM=1e9 judged=400 refined=0 geometryChanged=0` — the pass declines and says
+  **NO-OP**, exercised for real against the same population.
+- **C6** — triangle growth is exactly 4x per element, never more.
+- Per-building `§SIL_BUILDING` lines print **NO-OP** where nothing qualified (JKR at the 800-geometry
+  sample), never a green zero.
+
+### §D3.10 — three measurement traps recorded, so the next session does not pay for them again
+1. **A 12-gon round duct has ~14 distinct face normals and therefore FAILS the shipped shape gate
+   `CURVE_MIN_DISTINCT = 16`.** It is smoothed only because `IfcDuctSegment` is on
+   `MEP_CURVE_CLASSES`. Any future work that assumes the shape gate alone covers round ducts is wrong.
+2. **The class gate lets boxes through.** Hospital/HHS `IfcFlowTerminal` includes 12-triangle,
+   `distinct=6` tapered boxes (rectangular diffusers) that bypass the shape test entirely via the
+   class list. Harmless for shading; it would be a disaster for re-tessellation, which is why this
+   pass gates on **shape only** and never reads a class.
+3. **A nearly-coplanar triangle pair fits an arbitrarily large circumradius** and reported a
+   **4,290.9 mm** bulge on a flat `IfcWallStandardCase`. Two physical guards, not tuned thresholds:
+   `s ≤ 0.25 × bbox diagonal`, and **≥ 6 smooth edges** (a real tessellated curve has many facets at
+   a consistent step). With the guards on, `IfcLightFixture` drops out of the offender list — which
+   independently reproduces the user's own "it works on lamps".
+
+**Files:** `viewer/silhouette_refine.js` (new) · `viewer/scene.js` (`A.blobToGeometry` — the single
+geometry choke point, and the only place refinement can happen: both batch paths size their
+`BatchedMesh` from `item.geo` at flush time, so an already-refined geometry is reserved for
+correctly with no batch change) · `viewer/streaming.js` (reports next to `§MEP_SMOOTH_NORMALS`, so
+the shading half and the outline half are read together) · `viewer/sw.js` `CACHE_VERSION v1128→v1129`
++ precache entry · `viewer.html` `scene.js?v=58→59`, `streaming.js?v=68→69`, all in the same commit.

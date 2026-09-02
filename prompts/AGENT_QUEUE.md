@@ -565,7 +565,43 @@ MEP with a non-MEP class (up to 3,714 elements) and take `items[0]`'s class — 
 carries an MEP-hue bit; the geometry-hash-keyed InstancedMesh branch suppresses the hue on a
 non-uniform set instead (Hospital 0/20,609 and Clinic 0/8,459 mixed hashes, LTU 108/51,393).
 
-### D-3 · §DUCT_SILHOUETTE — jagged large ducts · autonomous, spec first
+### D-3 · §DUCT_SILHOUETTE — jagged large ducts · ✅ **DONE (witness) 2026-09-02** — bim-ootb **PR #1631**
+**The formula IS easy, and the split the user saw is NOT a detection failure — it is SIZE, ~50x wide.**
+Full spec, both remedies costed, every measurement: `prompts/PHOTOREAL_STILL_RENDER.md` §DUCT_SILHOUETTE.
+Witness `viewer/tests/witness_duct_silhouette.js` — **W-DUCT-SIL 10/10, 37 refined elements across 8
+building DBs, red control caught.** No browser, no bake, no screenshot in the chain.
+
+For an edge the smoothing pass already welds across, project both faces perpendicular to it; the edge
+collapses to a point and the two opposite vertices complete a circle:
+`R = |EA||AB||BE| / (4·area)` · `s = R(1−cos(θ/2))` · `D_1px = s·k`, `k = 935.3 px/rad` at 1080p/fov 60.
+**VALIDATED:** on Hospital it lands on **R = 525.0 / 550.0 mm** — real 1050/1100 mm duct sizes — and
+agrees exactly (11 vs 11) with an independent PCA ring fit.
+**`IfcLightFixture` drops out of the offender list at every gate; `IfcDuctSegment` worst D_1px = 20.8 m.**
+Both are detected, both are N≈11–13 — the error is linear in RADIUS. ⚠ Hospital's worst offenders are
+**not ducts** but large-radius curved sweeps (`IfcRailing` 154.6 m, curved `IfcBeam` 685.5 m).
+
+**No zero-geometry remedy is credible and that is a finding, not a cop-out** — AA leaves the same N-gon;
+radial rescale MOVES real geometry on a clash/measure/QTO model (rejected on PRIME RULE); WebGL2 has no
+tessellation shader; re-extraction re-tessellates the whole fleet and costs MORE memory. Chosen: one
+level of uniform Phong subdivision, gate `D_1px ≥ 5 m`, **α = 0.5 derived** (θ→0 limit of
+`(sec(θ/2)−1)/sin²(θ/2)`), no class list and no building name anywhere in the file.
+**Gate picked on the measured cost curve:** 2 m would cost **+307 MB** on Hospital — exactly the
+"hundreds of MB is not a win" case, rejected — while 5 m is +59.3 MB (per-geometry) to +159.3 MB
+(per-instance) for **21.331 → 3.383 mm mean sagitta (6.31x)**. Fleet 3.90x–10.55x on six buildings.
+
+**⚠ TWO THINGS THE WITNESS CAUGHT, recorded so they are not retried:** (1) the cheaper
+curved-shell-only refinement with green T-junction closure is **measured wrong** — non-manifold edges
+**24 → 211** and **875 open T-junctions** on real Hospital geometry, because real IFC meshes carry edges
+shared by 3+ faces that green closure cannot fix; uniform 1→4 removes the frontier itself. (2) midpoints
+must come from the **welded representative**, not whichever per-face copy the loop reaches first.
+**⚠ THREE MEASUREMENT TRAPS** (see §D3.10): a 12-gon round duct has only ~14 distinct normals and
+**fails** the shipped `CURVE_MIN_DISTINCT=16` shape gate; the class gate lets **boxes** through
+(`IfcFlowTerminal` rectangular diffusers, `distinct=6`); and a nearly-coplanar pair fits an unbounded
+circumradius (a flat wall reported a **4,290.9 mm** bulge until two physical guards were added).
+
+<details><summary>original item (kept for the trail)</summary>
+
+**§DUCT_SILHOUETTE — jagged large ducts · autonomous, spec first**
 **User: roundness works on lamps, large duct piping still jagged.** Diagnosed:
 `§MEP_SMOOTH_NORMALS geoms=160 vertsSmoothed=2,074,656 vertsKeptHard=691,414 creaseDeg=55` smooths
 **normals** at a 55-degree crease — it changes SHADING, not geometry. A faceted lamp shades smooth
@@ -573,6 +609,7 @@ and its silhouette is too small to read; a large duct's silhouette is still a vi
 **Detection is already solved** by the existing crease test — the remedy is what differs: re-tessellation
 of large-radius curved elements, or a silhouette treatment. Spec both, cost both, recommend one.
 Do not "fix" it by widening `creaseDeg` — that addresses shading, which is not the defect.
+</details>
 
 ### D-4 · §SLAB_AREA_PRICING — the remaining one-shot floors · BLOCKED ON U-8
 Measured on the user's own HHS bake (buildup covers 37.3 s of film for a 50-day axis, 11.2
