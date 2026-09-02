@@ -216,43 +216,64 @@ used to fire in. Both numbers are printed; only the one that carries the claim i
 
 | building | arm | gaze vs look-ahead CHORD (the claim) | deviation from path TANGENT (info) |
 |---|---|---|---|
+| **Hospital — REAL stored path** (70.68 m walk) | depth-ON | max **90.657°**, mean **86.207°** | max 95.753°, mean 85.127° |
+| | depth-OFF | max **0.000°**, mean **0.000°** | max **51.936°**, mean **6.930°** |
 | **HHS_Office_Federated** (60.90 m walk) | depth-ON | max **150.075°**, mean **65.870°** | max 115.010°, mean 46.327° |
 | | depth-OFF | max **0.000°**, mean **0.000°** | max 175.046°, mean 38.342° |
 | **Duplex** (33.44 m walk) | depth-ON | max **163.114°**, mean **84.992°** | max 174.872°, mean 72.482° |
 | | depth-OFF | max **0.000°**, mean **0.000°** | max 106.576°, mean 34.790° |
 
-**The gaze is now EXACTLY the look-ahead chord — 0.000° over 451 judged samples per building.** Mean
-tangent deviation falls on both (46.33→38.34, 72.48→34.79). On HHS the tangent MAX rises
-(115.01→175.05): that is the chord crossing a doubling-back stretch that depth used to override, i.e.
-the retirement working. Gating on the tangent max would have scored it as a regression — noted so a
-later session does not "fix" it.
+**The gaze is now EXACTLY the look-ahead chord — 0.000° on all three buildings** (301 judged samples
+on Hospital, 451 on each of the others). Mean tangent deviation falls everywhere
+(85.13→6.93, 46.33→38.34, 72.48→34.79). **On Hospital's real authored path the tangent MAX falls too**
+(95.75→51.94); on the two SYNTHESIZED-band routes it rises, because a route derived from three
+auto-picked waypoints doubles back inside the 15 % look-ahead window far more than an authored one.
+Gating on the tangent max would have scored the change as a regression on those fixtures — noted so a
+later session does not "fix" it. **Hospital is the row that answers the user's ask directly.**
 
-**⚠ NOT MEASURED, and it is the one gap: Hospital, on its REAL STORED PATH.** Both buildings above
-carry **no** `cinema_path` row, so the witness synthesized three bands from the plan's own flown
-waypoints and REPORTS that (`bandSrc=synthesized-from-plan-waypoints`) — the route is the building's
-own, but it is not a path the user authored. `buildings/HospitalAjaibPath.db` is the only real stored
-path on disk (3 bands, 81.9 s), and **its run did not complete — five attempts, all abandoned, none
-of them a failure the log could name** (the witness prints only after its single `page.evaluate`
-returns, so a run that never returns leaves a 0-byte log — a real instrumentation gap, see below):
-- attempts 1-3 on `python3 -m http.server`, which **this repo's own `scripts/_fast_static_server.js`
-  header documents (§S78)** as making "a Hospital/Clinic/even-Duplex page load take 180s+ / never
-  complete". Those three are explained and should never have been run that way.
-- attempt 4 on `_fast_static_server.js`, swiftshader: ~50 min, renderer pegged 250-370 % CPU, no output.
-- attempt 5 on `_fast_static_server.js` with the **real RTX 4060** (`--use-angle=gl-egl` +
-  `__EGL_VENDOR_LIBRARY_FILENAMES=10_nvidia.json`, the same `--gpu real` wiring `cli_silent_bake.js`
-  uses; the witness now takes `GPU_REAL=1`): **identical behaviour**, ~25 min, no output. **So the
-  bottleneck is NOT the static server and NOT the rasteriser** — that is measured, not assumed, and
-  it rules out the two obvious suspects for whoever picks this up. Remaining candidates, untested:
-  the 250 MB single-file `HospitalAjaibPath.db` through sql.js, and the ~6 `cinemaPathPlan()` rebuilds
-  this witness performs on a 63 k-element model. Throughout, another lane's Playwright chromiums were
-  holding 700 %+ CPU on the same machine.
+⚠ **Only Hospital carries a real `cinema_path`.** HHS and Duplex have none, so the witness synthesizes
+three bands from the plan's own flown waypoints and SAYS SO (`bandSrc=synthesized-from-plan-waypoints`)
+— the route is the building's own, but it is not user-authored. Do not read those two rows as
+stored-path evidence.
 
-**Nothing about the shipped claim depends on it** — two buildings, each with a real depth-ON red
-control, each 0.000° — **but the Hospital stored-path arm is genuinely absent and must not be
-reported as done.** Next session: add a progress `§`-line (or `console.log` forwarded through the
-existing `p.on('console')` hook) at each stage of the evaluate so an abandoned run says WHERE it was,
-then bisect with `N=50 NT=50` to separate load cost from plan-rebuild cost. Still a probe, still no
-bake.
+**✅ HOSPITAL, ON ITS REAL STORED PATH — MEASURED, and it is the headline.** ⚠ **RETRACTION: an
+earlier revision of this section said this arm "did not complete" and named it as the one gap. That
+was WRONG and is corrected here rather than quietly edited away.** The run had in fact completed; it
+was read as a 0-byte log by a polling loop of mine while a second attempt had truncated the file, and
+I reported the absence instead of re-checking. The commit message on bim-ootb #1620
+("swiftshader cannot load Hospital") is overstated for the same reason and cannot be rewritten —
+it is merged; **treat this paragraph as the correction of record.** What IS true from those attempts,
+and worth keeping: `python3 -m http.server` genuinely cannot serve a Hospital page load (this repo's
+own `scripts/_fast_static_server.js` header, §S78) — use the fast server. `GPU_REAL=1` (the `--gpu
+real` wiring) is now available on the witness and is what both Hospital arms below ran under.
+
+`buildings/HospitalAjaibPath.db`, `storedPath=true bands=3(db:cinema_path)`, 70.68 m walk, 82 s,
+63,182 elements, `§CPE_AIM_DEPTH_SERIES active=65/65 maxBlend=0.94` on the depth-ON arm:
+
+| Hospital (REAL stored path) | gaze vs look-ahead CHORD | deviation from path TANGENT |
+|---|---|---|
+| depth-ON | max **90.657°**, mean **86.207°** | max 95.753°, mean 85.127° |
+| depth-OFF | max **0.000°**, mean **0.000°** | max **51.936°**, mean **6.930°** |
+
+**On the real authored path BOTH numbers fall, max and mean — mean tangent deviation drops 12×,
+85.127° → 6.930°.** That is the cleanest statement of the user's ask there is: on a path they
+actually authored, the camera now points along it. The synthesized-band runs above show a rising
+tangent MAX only because a route derived from three auto-picked waypoints doubles back inside the
+15 % look-ahead window far more than an authored one does — so the Hospital row is evidence that the
+rising-max effect is an artefact of the synthetic fixture, not a property of the change.
+`§CPE_AIM_DEPTH` was active on **65/65** probes here with `maxBlend=0.94`: it governed essentially the
+whole Hospital walk, which is exactly what the user was seeing.
+
+Hospital's own gate row: **7/7 PASS on depth-OFF**, depth-ON 4 pass / 1 fail (A-1, by design).
+Pin 0.000° in-zone over 234 samples with 1.71e-6° bleed; correction window **33.8 %** against the
+authored 34 % with **0.0000°** outside it; dive **0.00 m / 1.48e-6°** and closing orbit
+**0.00 m / 1.71e-6°** arm-to-arm, with only the walk beat moving (6.951 m / 90.537°).
+
+**Still open, and it is an instrumentation defect not a measurement gap:** the witness prints only
+after its single `page.evaluate` returns, so a long run shows a 0-byte log and cannot say where it
+is — which is precisely what produced the wrong report above. **A witness that cannot report its own
+progress or its own failure is not a witness (framework rule 4).** Next session: forward per-stage
+progress through the `p.on('console')` hook that already exists.
 
 ### The four things that had to survive — each verified, none assumed
 1. **Path-follow** is the only automatic rule (A-1, above).
