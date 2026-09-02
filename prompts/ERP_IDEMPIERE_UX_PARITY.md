@@ -124,5 +124,115 @@ weakening the validator.
 | §P3 | autonomous agent | bounded: wire an already-witnessed engine, one seam, clear falsifier |
 | §P4 | autonomous agent | read-and-re-score audit; explicitly forbidden from writing new FSM code |
 
+## §P4 FINDINGS — 2026-09-02 · DocType/DocAction re-score (AUDIT ONLY — no FSM code written)
+
+**The matrix row is FIXED.** `docs/internal/ERP_COVERAGE_MATRIX.md` §A "DocAction lifecycle": the cell
+that read *"folds **only CO** (DR→CO/IP via a field-presence `requires` check); `action` is pass-through
+metadata, no dispatch table"* is replaced. It was stale by the whole of `ad_docfsm.js`. **The row STAYS
+🟡 — but on a different, real reason**, stated in the row and itemized under §P4-OPEN below.
+
+### §P4-EVIDENCE — what was re-run, and what the logs say (Log Mandate: logs read, not exit codes)
+- **Engine identity settles the "is the witnessed engine the SHIPPED engine?" question:**
+  `~/bim-ootb/erp/ad_docfsm.js` and `bim-compiler/build/erp/ad_docfsm.js` are **byte-identical**,
+  md5 `461e339c0acbe17c3b725eb541f19b67`. Every W-*-FSM witness therefore attests the shipped file.
+- **12/12 FSM witnesses re-run green this session**, `1,387 per-table fixtures diff=0` against a RUNTIME
+  parse of `DocumentEngine.getValidActions` + each `M*.java` (non-tautological — the oracle is parsed from
+  `~/idempiere-dev-setup/idempiere` at run time, not hand-authored):
+  MOrder 43 · MInOut 154 · MInvoice 153 · MPayment 103 · Inventory-family 161 · GL-Journal 207 ·
+  Alloc 100 · Cash 34 · BankStmt 99 · generic-tail 333. Every one carries a load-bearing §FALSIFIER.
+  Plus `poc_docfsm` → `§DOCTYPE_FSM_COVERAGE doctypes=52 actions=14 statuses=12 reachableAsTarget=11`.
+- **W-AD-DOCFSM-LIVE re-run PASS** — real DOM, real clicks, not a synthetic call.
+- **Scale of the dispatch table:** `DOC_FAMILY` = **22** tables + C_Order via `legalActionsOrder` = **23**
+  walked document tables. An unwalked table **throws** (`legalActionsFor:216`) rather than silently
+  inheriting the generic union. Vocabulary verified against the seed: AD_Reference 135 = 14 DocAction
+  values (13 dispatchable + `--`/None), AD_Reference 131 = 12 DocStatus values.
+
+### §P4-CANDIDATES — the four things §P4 said to CHECK, not assume
+| candidate | verdict | proof |
+|---|---|---|
+| **`C_Period` open/closed honoured on Complete** | **ABSENT on Complete** (implemented only as a reversal-family gate) — **and the OPTION-LIST half is correct parity** | *iDempiere side (read from source this session):* `DocumentEngine.getValidActions` does **NOT** gate Complete by period — `ACTION_Complete` is pushed unconditionally at `:1039` and `:1046`, and the `periodOpen` parameter is documented at `:983` as existing *"to avoid including Void and ReverseCorrect options"*; all 8 of its uses guard only RC/RE/VO. **So our bar omitting a period test from the CO option list is FAITHFUL.** The real enforcement is one level down: **`prepareIt()` in 20 M\* classes**, reached transitively from Complete (`DocumentEngine:320-327` prepares when drafted/invalid; `MInvoice.completeIt:1965-1977` re-runs `prepareIt`). Two idioms with **different** outcomes — `MPeriod.isOpen` → `return DocAction.STATUS_Invalid` with `@PeriodClosed@`, persisted as **DocStatus=IN** (`MOrder:1545-1549`, `MInOut:1453`, `MPayment:1918`, `MJournalBatch:322`, `MMovement:299`, `MCash:388`, `MTimeExpense:322`); `MPeriod.testPeriodOpen` (`MPeriod.java:917`) → throws unchecked `PeriodClosedException` → rollback, **status unchanged** (`MInvoice:1723`, `MAllocationHdr:420`, `MBankStatement:330`, …). A third, separate gate lives at posting (`acct/Doc.java:818-820`). *Our side:* the only open/closed logic in the live app is `idempiere.html:2141 _periodOpen` (MPeriod.isOpen port — standard period containing DateAcct + `c_periodcontrol.periodstatus='O'` for the doc's docbasetype). It is called **exactly once**, `idempiere.html:2172`, inside `_fsmCtx`, to populate `rec.periodOpen` — which `legalActionsFor` consults **only inside the `s==='CO'` branch** to gate RC/RE/RA/VO. Nothing tests the period on Complete: `grep -i period erp/crud_overlay.js` → 1 hit, a comment (`:273`); the `BEFORE_COMPLETE` hooks in `ad_modelval.js` are `MOrder.hasLines` (`:59`) + `MOrder.totalNonNegative` (`:64`), no period test. `ad_modelval.js:483 periodOf` finds a period but **never reads `periodstatus`** — a PeriodNotFound check, registered `BEFORE_SAVE` for GL_Journal only (`:552`). |
+| **`IsDocNoControlled` respected** | **IMPLEMENTED and FAITHFUL — but UNWITNESSED** (one sub-behaviour absent, data-gated) | *Parity confirmed against source:* `MSequence.getDocumentNo:683-686` returns **null** when the doctype is not DocNo-controlled, and the caller falls back to the table-level sequence `DocumentNo_<TableName>` (`PO.java:3579-3581`, `DB.java:1958-1961`) — `'N'` means *"table sequence instead of doc-type sequence"*, **not** "no number". Our implementation does exactly that. `erp/crud_overlay.js:1467 _docTypeSeqId` reads `isdocnocontrolled, docnosequence_id` off the record's `C_DocType_ID`/`C_DocTypeTarget_ID` and returns the doctype sequence **only** when `='Y'`, else null → falls back to the table sequence `DocumentNo_<table>`. Both the preview (`:1478 _previewDocNo`) and the commit-time allocation (`:1490 _allocDocNo`, called `:1585`) branch on it; `:1508` logs `docNoControlled=Y/N`. Non-vacuous in the seed: **34** doctypes `='Y'`, **all 34** carrying a `docnosequence_id` resolving to an ACTIVE `ad_sequence`; **18** `='N'`, none carrying one. **The gap is the witness**: the only DocNo witness, W-DOCNO (`scripts/poc_audit_changelog.js:102-130`, re-run green) asserts ONLY the table-level path — `§DOCNO table=c_order seq=DocumentNo_c_order docno=SO-1000`. Nothing asserts the doctype-controlled branch. **Absent sub-behaviour (data-gated, not a code bug):** iDempiere also allocates a *definite* DocumentNo at Complete via `setDefiniteDocumentNo()` (called from `completeIt` in 12 classes, e.g. `MInvoice:2381`, `MOrder:2413`) using `C_DocType.DefiniteSequence_ID` when `IsOverwriteSeqOnComplete='Y'` (`MSequence.java:690,702`). We never do — but the seed **cannot** express it: `isoverwriteseqoncomplete`, `definitesequence_id` and `isoverwritedateoncomplete` are all **absent columns** on `c_doctype` in `ad_seed.db`. Seed-width item, not an implementation gap. |
+| **GL category** | **PARTIAL — defaulting only, absent from posting** | Single use in the shipped tree: `erp/ad_modelval.js:522-528 MJournal.glCategoryDefault` (port of `MJournal.beforeSave:340-342`) defaults `GL_Category_ID` from the doctype when the journal carries none; registered `BEFORE_SAVE`, **GL_Journal only** (`:552`). It is **not** used in the posting fold: `grep -c gl_category scripts/post_resolver.js` = **0**. Seed: 38 of 52 doctypes carry a `gl_category_id`; only GL_Journal consumes it. *Confirmed against source that this IS a gap, not a non-goal:* in iDempiere `GL_Category_ID` is **both** a save-time default **and** a posting input — `acct/Doc.java:991-1009 setDocumentType()` reads `DocBaseType, GL_Category_ID` straight off `C_DocType` (with fallbacks by DocBaseType `:1030-1046` then client default `:1058-1073`, and a SEVERE log if none `:1085`), and `acct/FactLine.java:404 setGL_Category_ID(m_doc.getGL_Category_ID())` stamps it on **every `Fact_Acct` row**; it is also a fact-line merge key (`Doc_AllocationHdr.java:645`). Our derived postings carry no such column. |
+| **`iscanbereactivated` gates ReActivate in the LIVE bar as in the module** | **IMPLEMENTED — same seam, proven live with a Y/N contrast** | There is no second implementation: `ad_docfsm.js:219-220` reads the REAL `c_doctype.iscanbereactivated` inside `legalActionsFor`'s CO branch and the invoice/payment/journal/bankstmt arms push `RE` only when `='Y'` (`legalActionsOrder:104` does the same for C_Order, `DocumentEngine:1082-1083 canReactivateThisDocType`); the live bar consumes exactly that call (`idempiere.html:2178`). **Discriminating live pair** (W-AD-DOCFSM-LIVE, re-run PASS — both blocks HAVE an RE arm, so the flag is the only difference): `C_Payment` 100 / doctype **119 ARR react=Y** → `§AD-DOCFSM-LIVE … legal=[CL,RC,RE,RA]` (RE rendered) **vs** `C_Invoice` 100 / doctype **117 ARI react=N** → `legal=[CL,RC,RA]` (RE absent). Also `C_Order` 100 / 135 react=Y → `[CL,VO,RE]`; `GL_Journal` 100 / 115 react=Y → `[CL,RC,RE,RA]`. Headless falsifiers confirm it is load-bearing (W-MPAYMENT-FSM / W-MBANKSTMT-FSM §FALSIFIER-B: inject RE into a react=N set → set-diff fires). Seed: 17 react=Y / 35 react=N. *Source cross-check:* `DocumentEngine.canReactivateThisDocType:1523-1525`; the gate is applied in exactly 5 blocks (MOrder-Completed `:1082`, MInvoice `:1114`, MPayment `:1134`, MJournal/Batch `:1150`, MBankStatement `:1191`) — our arms match those five, and the MOrder **Waiting-Payment** branch offers RE **ungated** (`:1087`), which `legalActionsOrder:105` also does. **One residual we do NOT have:** iDempiere re-checks the same predicate a second time *inside* `reActivateIt()` in 5 classes (`MOrder:3057`, `MInvoice:2876`, `MPayment:2911`, `MJournal:943`, `MBankStatement:680`), so hiding the button is not its only defence; our `dispatchFor` gates on the option list alone. |
+
+### §P4-VACUITY — the one place the evidence is honestly one-sided
+The period gate's DATA is not vacuous (seed `c_periodcontrol` = **1473 `O` / 133 `C` / 8857 `N` / 1 `P`**
+over 360 `c_period` rows), **but every one of the 43 seeded `docstatus='CO'` documents resolves to an
+OPEN period** — so all six live witness cases log `periodOpen=true`, and the closed-period NARROWING is
+never exercised on screen. The negative arm is proven headless only (§FALSIFIER-B "inject RC into the
+period-closed CO set → set-diff fires", on InOut/Invoice/Alloc/Journal/Production). Stated, not papered over.
+
+### §P4-DEFECT — a REAL divergence the green witness could not see (PRIMAL LAW §4: scope-blind)
+**Found by diffing the shipped engine against the Java directly instead of trusting W-GENERIC-TAIL-FSM's
+`diff=0`.** `scripts/docfsm_oracle.js:39-50` enumerates the per-table block anchors of
+`DocumentEngine.getValidActions` and terminates its parse window at
+`_end = 'else if (AD_Table_ID == I_PP_Cost_Collector.Table_ID)'` — **line 1248**. Five per-table blocks
+live AFTER that line and are therefore invisible to the oracle:
+`I_DD_Order :1266` · `I_HR_Process :1284` · **`MRMA :1302`** · **`MBankTransfer :1313`** · **`MDepositBatch :1323`**.
+The last three ARE in our `DOC_FAMILY` (661 / 200246 / 200056) carrying **no `block`**, so `legalActionsFor`
+treats them as generic fall-through. Measured, both sides:
+
+| table | our engine @CO | real iDempiere @CO | source |
+|---|---|---|---|
+| `M_RMA` (661) | `[CL]` | **`[CL, VO]`** | `:1302-1309` (IDEMPIERE-98, "Implement void for completed RMAs") |
+| `C_BankTransfer` (200246) | `[CL]` | **`[CL, VO]`** | `:1313-1320` |
+| `C_DepositBatch` (200056) | `[CL]` | **`[CL, VO, RE]`** | `:1323-1330` |
+
+W-GENERIC-TAIL-FSM reports `fixtures=333 diff=0` because **the oracle shares the engine's blind spot** —
+both say "generic fall-through". Worse, its `§FALSIFIER-A` actively encodes the wrong behaviour as correct:
+*"VO@CO on RMA rejected (implemented in the class yet NEVER offered)"* — iDempiere **does** offer it.
+This is the failure mode CLAUDE.md PRIMAL LAW §4 names: a witness that passes because the defect is outside
+the pairs it inspects. **Live blast radius today = ZERO** (measured, not assumed): the seed's only `m_rma`
+row is `IP`, and `c_banktransfer` / `c_depositbatch` **are not tables in `ad_seed.db`** — so no completed
+document of any affected table exists and no user can currently see a wrong bar. The defect is **latent**;
+it becomes visible the moment those tables carry a completed doc. Note the transitions are already right
+(`DOC_FAMILY[661].vo.CO='VO'`) — **only the legal SET is short**, so the fix is a `block`, not new transition logic.
+
+### §P4-OPEN — what is genuinely still open (named, NOT built — §P4 forbids new FSM code)
+1. **Action BODIES, not status.** The FSM decides legality + resulting DocStatus; it does not run the Java
+   `completeIt`/`voidIt` bodies. `crud_overlay.js:1210 completeFanout` has consequence bodies for **3** of
+   the 23 walked tables (`c_order`/`m_inout`/`c_invoice`); the other 20 fall to `cb(null)` — status
+   advances, no document consequence. *Code needed:* a `completeFanout<X>` per remaining table.
+2. **Period-on-Complete.** Note the correct SHAPE, now that the source has been read: it does **not** belong
+   in the option list (iDempiere's `getValidActions` deliberately has no period test on CO) — it belongs at
+   **prepare** time, the step Complete runs through. *Code needed:* a `BEFORE_PREPARE`/`BEFORE_COMPLETE`
+   model-validator hook that calls the existing `_periodOpen` probe (do NOT write a second period reader —
+   `idempiere.html:2141` is the owner) and lands the doc at **DocStatus=IN with `@PeriodClosed@`**, the
+   `MPeriod.isOpen` idiom used by `MOrder:1545-1549`/`MInOut:1453`/`MPayment:1918`. See ⛔ below first.
+3. **⚠ `crud_core.js:200 legalDocActions` is DEAD, and wiring it as-is would REGRESS the bar.** §P4 named
+   it "the one seam" — it is not. It has **zero callers** in the shipped `erp/` tree (the only other hits
+   are stale copies under `.claude/worktrees/`); the live seam is `idempiere.html:2166 _fsmCtx`. And it
+   delegates to `fsm.legalActions` = the GENERIC `STATUS_ACTIONS` union, which is **wider** than the
+   per-table narrowing — wiring it would offer e.g. RC/RA on a completed Order, exactly what W-MORDER-FSM
+   §FALSIFIER-B rejects. *Action:* delete it, or repoint it at `legalActionsFor`. Do not wire it as-is.
+4. **The docstatus-CELL edit path is not FSM-gated.** `crud_core.js:626 splitStatusChange` builds a
+   `DOC_ACTION` op using the target status as the action code and calls `docActionOutcome(entry, values)`
+   with **no fsm argument** → the legacy CO-only `requires` gate; `legalActionsFor` never runs there.
+5. **`IsDocNoControlled` needs a witness, not code** — assert the doctype branch (`='Y'` → `DocNoSequence_ID`)
+   against one of the 34 real doctypes, plus an `='N'` falsifier falling back to `DocumentNo_<table>`.
+6. **§P4-DEFECT above — FIX THE ORACLE FIRST, then the engine.** Extend `scripts/docfsm_oracle.js:50`'s parse
+   window past `I_PP_Cost_Collector` so `MRMA`/`MBankTransfer`/`MDepositBatch` are parsed, re-run
+   W-GENERIC-TAIL-FSM and let it go **RED** (that failure is the proof the blind spot was real), then add the
+   three `block` arms to `DOC_FAMILY` and correct the RMA §FALSIFIER-A, which currently asserts the wrong
+   behaviour. Doing the engine first would just re-hide it. *Not built here — §P4 forbids FSM code.*
+7. **`GL_Category_ID` on derived postings** — `post_resolver.js` never stamps it; iDempiere puts it on every
+   `Fact_Acct` row (`FactLine.java:404`) and uses it as a merge key. Bounded: one resolved column, doctype →
+   DocBaseType → client-default fallback chain already spelled out in `Doc.java:991-1073`.
+8. **Second-layer ReActivate check** — iDempiere re-tests `canReactivateThisDocType` *inside* `reActivateIt()`
+   (5 classes); our `dispatchFor` trusts the option list alone, so an API/deep-link path that skips the bar
+   is ungated. Cheap defence-in-depth, mirrors `MInvoice:2874-2880`.
+
+- ⛔ **BLOCKED: should Complete HARD-REJECT a document whose `DateAcct` falls in a closed/never-opened
+  period (iDempiere's `MPeriod.testPeriodOpen` behaviour), or log-and-allow?** Enforcing it is correct
+  parity, but it is a live behaviour change across the O2C flow that 9 merged PRs (#928…#968) depend on.
+  Not guessed — item 2 above stays unbuilt until this is answered. Every other item is named work, not a
+  question.
+
 ## §STATUS
 - 2026-09-02 — file written, all §MEASURED numbers verified in-tree this session. Nothing built yet.
+- 2026-09-02 — **§P4 DONE (audit).** Matrix §A DocAction row corrected + re-scored 🟡 on a new honest
+  reason; 12 FSM witnesses + W-DOCNO re-run green (1,387 fixtures diff=0, engine md5-identical to the
+  shipped file); four candidates scored with proof against BOTH our tree and the iDempiere source
+  (§P4-CANDIDATES); **one real latent defect found that the green witness could not see** (§P4-DEFECT —
+  3 tables' Completed legal-set short by VO/RE because the oracle's parse window stops at line 1248);
+  8 open items named, 1 ⛔ question raised. **No FSM code written**, as §P4 requires.
