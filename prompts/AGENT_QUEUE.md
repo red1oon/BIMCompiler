@@ -362,6 +362,58 @@ nobody has attributed them to a commit.
 
 ---
 
+
+## WAVE D — from the user's 2026-09-02 film review (measured, not speculative)
+
+### D-1 · §SUN_FILL_RATIO — the wall away from the sun · autonomous, cheap · USER ASKED FOR THIS
+**User: "Wall away from Sun shadow?"** Measured position: shadows ARE on and correct in Alt+S —
+`§PHOTO_SHADOW enabled casters=382 texelPerM=11.4`, and `§EXTERIOR_FLAT_SHADOW` measured
+`outsideFrustum=0` on two buildings, so nothing is clipped. **The gap is not shadows.** N8AO is
+contact/crease-only by design: `STILL_AO_RADIUS = 32` is in SCREEN PIXELS (`screenSpaceRadius`
+mode), so a broad flat wall far from any corner legitimately reads AO≈1.0. That verdict is on
+record and is correct — do not re-open it as a shadow bug.
+**The build:** an orientation-based read — raise the sun-vs-fill ratio so N·L falloff separates a
+sun-facing wall from a shaded one — or a distance-based ambient pass. Both were NAMED as possible
+future work in §EXTERIOR_FLAT_SHADOW and never built.
+**⚠ Couples to an OPEN item — do not tune blind.** `PHOTOREAL_STILL_RENDER.md`
+§PHOTO_REALISM_RETUNE item 1 is still open: `§TRINORM_LINEAR` brightened every triplanar surface
+and was **never re-measured against `§STAGED_PL_CUT`'s 0.5x night-fixture cut** (`_nightPLScaleStill`
+still 0.5). The user's standing complaint is "too bright, shiny reflection, it be shadow effects for
+realism". Raising contrast by adding light would fight that. Measure the current ratio first.
+**Witness:** numeric per-pixel luminance separation between a sun-facing and an away-facing wall on
+the same building, before and after — not a screenshot, not "looks better".
+
+### D-2 · §MEP_COLOR_SURVIVES_PHOTOREAL · autonomous
+**User: standard MEP colours (yellow/blue/green/red per device) during Alt+S and the movie.**
+Half-shipped. `§MEP_DISC_PALETTE` (PR #1604) works — HHS bake shows `§MEP_DISC_COVERAGE
+uniformDisc=283 mixedDisc=0 (100% now keyed)`. **But the photoreal path paints over it:** the same
+log carries `§TRIPLANAR_INIT class=IfcFlowSegment tex=metal_color_1k.jpg`, same for
+`IfcFlowFitting` and `IfcFlowTerminal` — a metal texture keyed on `ifc_class` wins over the
+discipline colour. The user's fire-red valve survives only because it is a REAL IFC material.
+**The job:** let the discipline colour survive the triplanar material path (tint the albedo rather
+than replace it, most likely), so MEP reads by system in a photoreal frame.
+**⚠ The palette is AUTHORED, not a published standard** — that boundary was set when #1604 shipped;
+keep saying so. Witness counts distinct hues, does not look at a frame.
+
+### D-3 · §DUCT_SILHOUETTE — jagged large ducts · autonomous, spec first
+**User: roundness works on lamps, large duct piping still jagged.** Diagnosed:
+`§MEP_SMOOTH_NORMALS geoms=160 vertsSmoothed=2,074,656 vertsKeptHard=691,414 creaseDeg=55` smooths
+**normals** at a 55-degree crease — it changes SHADING, not geometry. A faceted lamp shades smooth
+and its silhouette is too small to read; a large duct's silhouette is still a visible polygon.
+**Detection is already solved** by the existing crease test — the remedy is what differs: re-tessellation
+of large-radius curved elements, or a silhouette treatment. Spec both, cost both, recommend one.
+Do not "fix" it by widening `creaseDeg` — that addresses shading, which is not the defect.
+
+### D-4 · §SLAB_AREA_PRICING — the remaining one-shot floors · BLOCKED ON U-8
+Measured on the user's own HHS bake (buildup covers 37.3 s of film for a 50-day axis, 11.2
+frames/day): Superstructure L1 27 slabs / 123 frames · L2 37 / 91 · **L3 12 / 22 frames (1.5 s)** ·
+**Roof 7 / 10 frames (0.64 s)**. L1 and L2 genuinely spread; L3 and Roof still read as one shot, and
+the user confirms it. §TM_REVEAL_TILED spread elements WITHIN the block; it did not lengthen the
+block. Cause: `_installSecs` prices every `IfcSlab` at a flat **823 s** regardless of area, and §S50
+orders a level trade-by-trade so the slabs sit contiguous. **Candidate: area-weighted slab pricing —
+the machinery already exists** (`§LABOR_QUANTITY_WEIGHT` does exactly this for fragmented classes,
+using `analysis_sidecar.js`'s dominant-face formula). This changes dates, so it is U-8's ruling.
+
 ## ⛔ USER DECISIONS — never dispatch these as agent work
 | # | the decision | the number that forces it |
 |---|---|---|
