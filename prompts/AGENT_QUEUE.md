@@ -168,6 +168,40 @@ contract only if the user lifts the bake restriction — see U-6.
 
 ---
 
+
+## §SESSION 2026-09-02 — WAVE A OUTCOMES (all four agents reported)
+| item | outcome |
+|---|---|
+| A-9 | ✅ **PR #1607 MERGED.** Cache carries BOTH layers; every judge prints `layer=`. `layerOf` THROWS on unknown, reports MISSING on a pre-change cache. Witness **W-CLA 5/5**, C3 judged 119,568 element-task pairs. |
+| A-0 | ✅ **PR #1610 MERGED** (replaced #1609 — see squash note below). Void numbers struck; NO-GO, day-buckets, overlap lever, §W_D0 C1 left standing. |
+| A-4 | ✅ Done. PHOTOREAL heading was **doubly** wrong — items 2 AND 3 shipped (#1575, #1579); only item 1 (`_nightPLScaleStill` 0.5) is open. §I rows now consistent. |
+| A-7 | ✅ **PR #1608 MERGED** (`bf600d4a`). 7 GUARD · 2 GUARD+FIX · 0 REMOVE. Log volume 2,028→10, 3,502→48, lossless (replayed through shipped `_vacLog`). Handed on A-7b. |
+| A-1 | ✅ Release train was **never broken** — `GITHUB_TOKEN` pushes don't trigger Actions (recursion guard), so release-please's branch has 0 checks and reads BLOCKED. `auto-publish-release.yml` is the designed sweep. **Triggered 2026-09-02 01:51 → #1600 merged, v1.58.0 published.** |
+| A-2 | ✅ All 21 PRs dispositioned. #1596 closed as a **false positive** (`A.dbQuery` is synchronous in-browser sql.js, no adversarial surface; the diff only shortened a witness timeout 180s→60s). #990 was a fork PR this repo's push-only CI can never check — re-pushed as #1606, merged. |
+
+**⚠ CORRECTION to this file's own earlier premise: #1551 is NOT superseded by #1552.** Verified
+against the diffs — #1552 fixed only a sub-bug that #1551 itself flagged; **#1551's real payload is
+unshipped and still needed.** Do not close it.
+
+**⚠ SQUASH-COLLISION, worked example for the next session.** #1609 was stacked on #1607's branch.
+After #1607 squash-merged, #1609 still carried the pre-squash commit `4f9eb028` and would have gone
+DIRTY. Fix was NOT a force-push: a new branch off fresh `origin/main`, the payload cherry-picked
+unchanged (`750b825b`→`a7e878cc`), new PR #1610, old PR closed with a pointer. This is CLAUDE.md's
+own rule, executed.
+
+**⚠ TOOLCHAIN TRAP, cost ~15 min.** A fresh worktree has no `node_modules`, so `npx eslint`
+resolves a different `globals` and reports **3 phantom `VideoEncoder`/`VideoFrame` errors** in
+`cinema_maxq.js` that exist neither on main nor in CI. Always lint via the repo's own install
+(`ln -sfn /home/red1/bim-ootb/node_modules node_modules`), and read eslint's OWN exit code — a
+`| tail` pipe returns tail's, which reads as green.
+
+### ⛔ AWAITING USER GO — 115 MB removal (A-1 evidence complete, nothing deleted)
+All three proven non-unique; the destructive-ops rule held them for approval:
+- `Hospital_meta.db.bak` / `Terminal_meta.db.bak` — pre-§S21-patch snapshots (`spatial_structure`
+  149/49 rows vs live 212/150, matching the patch commit's own math). Migration already applied live.
+- `_backup_ltu_june_2026-08-10/` (74M) — OCI serves a strictly newer 2026-08-29 build of all four
+  files, and the source IFCs remain in `bim-compiler/internal/UNMERGED/` for full re-extraction.
+
 ## WAVE B — dispatch after the TM/Fable agent reports and releases the schedule files.
 
 ### B-1 · day0-bisect · ⛔ **PREMISE RETIRED 2026-09-02 (A-9) — REWRITE BEFORE DISPATCHING**
