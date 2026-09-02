@@ -18,7 +18,7 @@ half-built — the items are specced, measured or diagnosed, and each says which
 
 | item | status | evidence |
 |---|---|---|
-| §PREMISE-CHECK / aim retirement | **⛔ BLOCKED — one question, spec written + loss quantified** | new §AIM_DEPTH_RETIREMENT section below |
+| §PREMISE-CHECK / aim retirement | **✅ DONE (witness) 2026-09-02** — `§CPE_AIM_DEPTH` RETIRED, branch `fix/retire-aim-depth`, `witness_cpe_aim_retire.js` 7/7 depth-OFF with the depth-ON arm as a failing red control | §AIM_RETIRED_DONE below: gaze vs look-ahead chord **150.075° → 0.000°** (HHS), **163.114° → 0.000°** (Duplex) |
 | §MEP_SYNTHETIC_PALETTE | **✅ DONE** — bim-ootb **PR #1604**, witness `W-MEP-DISC-PALETTE` **24/24** | 3 buildings, hues counted |
 | §NON_DIRECTIONAL_FILL | **✅ DONE** — explanation to relay, nothing to build | attribution correction stands |
 | §OPEN 1 — Alt+C perf | **✅ CLOSED** — gating code-verified + pool confirmed firing in a real windowed bake; the before/after A/B is **CANCELLED by user directive**, not outstanding | §OPEN 1 below |
@@ -78,9 +78,14 @@ the code — re-verify before relying on it):**
 ---
 
 ## §AIM_DEPTH_RETIREMENT — the spec, the quantified loss, and the ONE question for the user
-**Status 2026-09-02: SPECCED, NOT BUILT. ⛔ BLOCKED on a user decision — see the question at the end.
-Nothing was shipped and no code was touched. Every number below is code-derived or on record;
-no bake was run for this (user directive 2026-09-02: stop re-running the film).**
+**Status 2026-09-02: ✅ BUILT AND WITNESSED. The result, the measured before/after and the
+`§CPE_STICK_HOLD` decision are in §AIM_RETIRED_DONE immediately after this section — read that for
+what SHIPPED. Everything below is the SPEC as it was written before the build, kept verbatim because
+its line references and its quantified loss are what the build was checked against; the two
+corrections the build found are: `§CPE_AIM_DEPTH_FREEZE` did NOT become a near-no-op (it is a
+correction-window guard and is kept as-is), and item (d)'s "not measured" distribution was NOT
+needed — the chord-identity measurement settles the question directly. No bake was run for any of
+it (user directive 2026-09-02).**
 
 ### The change, in one line
 `viewer/effects.js:8340-8368`: the aim chain reads `if (_pin) { …pin… } else { …§CPE_AIM_DEPTH… }`.
@@ -155,13 +160,104 @@ This **contradicts the standing recommendation** at `CINEMA_PATH_EDITOR.md:4311`
 recommendation: KEEP, but freeze inside a correction window"), which must be superseded by an
 explicit ruling, not silently overridden.
 
-### ⛔ THE ONE QUESTION FOR THE USER
-> **Retire `§CPE_AIM_DEPTH` so the walk is pure path-follow (plus your pins and your correction
-> windows)? It costs two things: (1) the camera will no longer turn to look down the open space when
-> it walks up to a wall — at a true dead end it will simply face the wall; and (2) `§CPE_STICK_HOLD`
-> loses its aim component, so a held beat becomes a slow-down with a frozen gaze rather than a
-> slow-down that also looks at something. Say go and it ships with the pins, the correction windows,
-> the dive-in and the closing orbit all untouched.**
+### ~~⛔ THE ONE QUESTION FOR THE USER~~ — ANSWERED, and the item is BUILT. See §AIM_RETIRED_DONE.
+> ~~Retire `§CPE_AIM_DEPTH` so the walk is pure path-follow (plus your pins and your correction
+> windows)?~~ **The direction was already on record twice** (*"its best to leave alone its pointing
+> along its path as more intuitive when pathing and user change of head at intended better angles is
+> all needed, to stay simple and predictable"* / *"I prefer the previous… as it follows path
+> direction"*), so parking this on a question was invented gating — see `AGENT_QUEUE.md`'s own
+> re-classification note. Both named costs were handled, not merely accepted: (1) the dead-end
+> rescue is gone, and the rule's own arithmetic shows that tail was the SMALL part of what it did;
+> (2) `§CPE_STICK_HOLD`'s aim half is REMOVED with a stated replacement, not left dead — see below.
+
+---
+
+## §AIM_RETIRED_DONE — ✅ BUILT AND WITNESSED 2026-09-02. `§CPE_AIM_DEPTH` is retired.
+
+**Branch `fix/retire-aim-depth`, bim-ootb. Witness `witness_cpe_aim_retire.js` — 7/7 on the
+depth-OFF arm on every building measured, with the depth-ON arm run as the red control and FAILING
+A-1 as designed. sw `CACHE_VERSION` v1125→v1126, `viewer.html effects.js?v=29→30`, eslint clean
+(`./node_modules/.bin/eslint viewer modeller` exit 0). NO BAKE was run — every number below comes
+from the product's own read-only pose hooks (`A._cpeBeat3GazeDebug` IS `_beat3Pose`), in headless
+Chrome, with no frame rendered and no screenshot taken.**
+
+### What shipped
+`viewer/effects.js`: 450 lines removed, 114 added. `_beat3Pose`'s aim chain was
+`if (_pin) {…} else {…§CPE_AIM_DEPTH…}` — the `else` is gone, so an unpinned stretch of the walk is
+now plain path-follow. Removed outright (not flag-disabled): `_aimCells`/`_aimGridFrom`/`_aimGrid`
+(§CPE_AIM_GRID), `_bkGuidEnds`/`_aimGuidEnds`/`_aimPlacedPoints`/`_aimBuildupCursorAt`
+(§CPE_AIM_DEPTH_BUILDUP), the `_AIM_DEPTH_*` constants, `_aimForwardClear`, `_aimDepthWeight`,
+`_aimDepthSubject`, `_aimLatch`, `_aimDepthSeries`/`_aimDepthBuild`/`_aimDepthAt`,
+`A._probeAimDepth`, `_aimDepthApply`. `_densPoints`/`_densityAt`/`_noiseRadius` STAY — §CPE_NOISE_LAW
+owns them. **KEPT deliberately: §CPE_AIM_DEPTH_FREEZE (#1598) and §CPE_CORR_BRANCH (#1597)** — both
+REDUCE camera movement and neither is an aim rule; this was NOT done as a revert of 2026-09-01.
+
+### ⚠ THE `§CPE_STICK_HOLD` DECISION, stated plainly — a held beat is now a PURE RATE DIP
+`_holdBoostAt` existed **only** to feed `_aimDepthApply`'s `boost`, gated on `_aimDepthSeries.has`.
+It is **removed, not left orphaned**, and **not replaced by a new rule**. Every candidate replacement
+is a new automatic gaze rule needing new invented constants (how far to swing, toward what, over how
+long) — which is exactly the class of thing being retired and what the PRIME RULE forbids. The
+motion half (`_holdBuild`/`_holdMap`) is untouched and still integrates to exactly the authored
+seconds. **The consequence, measured not asserted: across the plateau the gaze is CONSTANT**, because
+every surviving gaze rule is indexed by `e3` (travel) and a hold stops travel. **The replacement is
+`§CPE_AIM_PIN`** — pin the held band and the parked camera holds the authored angle for the authored
+seconds; that is the "user change of head at intended better angles" the directive itself names.
+`witness_cpe_stick_hold.js` G-SH-5 was **re-scoped to assert the frozen gaze** rather than quietly
+passing a weaker test, and G-SH-6 was turned into the retirement's red control.
+
+### MEASURED — deviation from the path, before and after, two arms per building
+**The gated claim is the CHORD identity, not the tangent, and the distinction is measured, not
+stylistic.** "Follows path direction" means the gaze IS the walk's own arc-length look-ahead
+(`_lookAhead`, `_AH_FRAC = 0.15`, `_ahN = 240` — reconstructed exactly from those product constants).
+Deviation from the *instantaneous* tangent is a different quantity and is **not** expected to fall
+everywhere: where the walk doubles back inside the 15 % look-ahead window the chord legitimately
+points across the turn, and those are precisely the short-forward-clearance pockets §CPE_AIM_DEPTH
+used to fire in. Both numbers are printed; only the one that carries the claim is gated.
+
+| building | arm | gaze vs look-ahead CHORD (the claim) | deviation from path TANGENT (info) |
+|---|---|---|---|
+| **HHS_Office_Federated** (60.90 m walk) | depth-ON | max **150.075°**, mean **65.870°** | max 115.010°, mean 46.327° |
+| | depth-OFF | max **0.000°**, mean **0.000°** | max 175.046°, mean 38.342° |
+| **Duplex** (33.44 m walk) | depth-ON | max **163.114°**, mean **84.992°** | max 174.872°, mean 72.482° |
+| | depth-OFF | max **0.000°**, mean **0.000°** | max 106.576°, mean 34.790° |
+
+**The gaze is now EXACTLY the look-ahead chord — 0.000° over 451 judged samples per building.** Mean
+tangent deviation falls on both (46.33→38.34, 72.48→34.79). On HHS the tangent MAX rises
+(115.01→175.05): that is the chord crossing a doubling-back stretch that depth used to override, i.e.
+the retirement working. Gating on the tangent max would have scored it as a regression — noted so a
+later session does not "fix" it.
+
+### The four things that had to survive — each verified, none assumed
+1. **Path-follow** is the only automatic rule (A-1, above).
+2. **`§CPE_AIM_PIN`** (A-3): a pin on band 1 aims the gaze at its target to **0.000°** inside the
+   band's Voronoi zone (268 HHS / 354 Duplex in-zone samples), and outside the zone the gaze is
+   unchanged from the unpinned run to **1.7–1.9 × 10⁻⁶ deg** — no bleed.
+3. **The authored correction window** (A-4): reach **33.3 %** (HHS) / **32.6 %** (Duplex) of the walk
+   against an authored 34 % (ramp 4 / hold 12 / decay 18); peak authored deviation 41.6° / 76.8°;
+   outside the window **0.0448° / 0.0000°** over 600+ samples. A-4b runs #1597's own witness-only
+   `A._cpeCorrBranchOff` A/B in the same run — VACUOUS (the near-antipodal wrap is not exercised on
+   these plans) with non-regression judged and **stated as scope-blind**, never passed off as proof.
+4. **Dive-in and closing orbit** (A-5): sampled through the plan's own `poseAt` over the whole film
+   and diffed arm-to-arm by the plan's own beat boundaries — **dive max position delta 0.00 m and
+   gaze delta 1.5–1.7 × 10⁻⁶ deg; closing orbit identical to the same figures.** The WALK is the only
+   beat that moved (1.6–1.9 m / 152–172°), which is what a non-NO-OP looks like.
+   `_cinemaPathPlan`'s beat framing was not edited — confirmed by `git diff` hunk ranges as well.
+
+### Housekeeping done in the same commit
+- **DELETED** (they would have gone on PASSING against a rule that no longer exists — a green witness
+  judging nothing is §CRISIS-class): `tests/test_aim_depth.js`, `tests/test_aim_density_zspan.js`
+  (both pure-math replicas of the removed functions), `witness_cpe_aim_depth_buildup.js`.
+- **RE-SCOPED, with the withdrawal PRINTED rather than silently skipped:** `witness_cpe_hose.js`
+  F1/F2 (now: the gaze follows the path + the rule leaves no trace), `witness_cpe_corr_brush.js`
+  G-FRZ-3 (prints `§CPE_AIM_FREEZE_DEADEND RETIRED`; G-FRZ-1/2/4 unaffected — the freeze is kept),
+  `witness_cpe_stick_hold.js` G-SH-5/G-SH-6.
+- **`§CPE_AIM_LATCH` renamed to `§CPE_BEAT3_END_DIR`** where it tags the surviving Beat 3→4 hand-off.
+  The tag named the retired weight running-max; leaving it on an unrelated live mechanism would tell
+  the next session the latch survived. The line is not suppressed — same measurement, accurate name.
+- Stale comments corrected in `viewer/cinema_path_editor.js` and `viewer/time_machine.js`
+  (`tmGuidEndTs` STAYS — `effects.js:4479`'s glow-lens gate is a live independent consumer, checked).
+- `prompts/CINEMA_PATH_EDITOR.md` §CPE_AIM_DEPTH's standing "KEEP" recommendation is explicitly
+  SUPERSEDED there, not silently overridden.
 
 ---
 

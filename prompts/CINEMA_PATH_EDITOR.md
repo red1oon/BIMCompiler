@@ -4308,13 +4308,28 @@ ordinal groupings (storey) want a RAMP, categorical (class/disc) want distinct h
 the same cycling list keyed on `palette[i % len]` by group SIZE rank, which is arbitrary and throws
 away storey ordering.
 
-### §CPE_AIM_DEPTH — recommendation: KEEP, but freeze inside a correction window
-§CPE_AIM_DENSITY is already RETIRED (2026-08-13). Only DEPTH remains; its trigger is a forward
-raycast firing when clearance ahead is under 3-8 m, though its subject search still weights n*d.
-Order is path-follow → depth → **correction last** (`effects.js:8143-8152`), so at full strength an
-edit already overrides depth. The wobble window is the ramp/decay, where depth keeps MOVING the
-direction being blended from. Freezing depth at window entry makes it a fixed-to-fixed crossfade.
-Removing depth outright would regress the dead-end "nose against the wall" case it was built for.
+### ~~§CPE_AIM_DEPTH — recommendation: KEEP, but freeze inside a correction window~~
+### ⛔ SUPERSEDED 2026-09-02 — §CPE_AIM_DEPTH IS RETIRED. Do not act on the recommendation below.
+**Ruling:** user directive, given twice — *"its best to leave alone its pointing along its path as
+more intuitive when pathing and user change of head at intended better angles is all needed, to stay
+simple and predictable"* and *"I prefer the previous… as it follows path direction."* Removed in
+full; spec, quantified loss and witness result are in
+`prompts/RESUME_2026-09-02_FILM_REVIEW.md` §AIM_DEPTH_RETIREMENT.
+**The last sentence below — "removing depth outright would regress the dead-end case" — is the part
+that was wrong, and it was wrong on the rule's OWN arithmetic, not on taste:** `clearM =
+clamp(envelope × 0.06, 3, 8)` = 8.0 m on Hospital and `w = 1 − smoothstep(fwdClear/clearM)`, so half
+its authority was already spent at **4 m** of forward clearance. It was a "something within 8 m"
+rule, and indoors almost everything is within 8 m (HHS: 65/65 probes active). The dead-end rescue is
+only the `fwdClear → 0` tail; the rest was the deviation from path direction the user objected to.
+The freeze (§CPE_AIM_DEPTH_FREEZE, #1598) is KEPT — it is a correction-window guard, not an aim rule.
+
+> *(original text, kept for the record)*
+> §CPE_AIM_DENSITY is already RETIRED (2026-08-13). Only DEPTH remains; its trigger is a forward
+> raycast firing when clearance ahead is under 3-8 m, though its subject search still weights n*d.
+> Order is path-follow → depth → **correction last** (`effects.js:8143-8152`), so at full strength an
+> edit already overrides depth. The wobble window is the ramp/decay, where depth keeps MOVING the
+> direction being blended from. Freezing depth at window entry makes it a fixed-to-fixed crossfade.
+> Removing depth outright would regress the dead-end "nose against the wall" case it was built for.
 
 ---
 
