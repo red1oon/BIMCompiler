@@ -18,6 +18,8 @@ zero, mark it ✅ DONE (witness) or ⛔ BLOCKED: <one question> here, then take 
 |---|---|---|
 | ~~TM 4D buildup sequence (Fable 5.1)~~ | released — worktree pruned | ✅ **REPORTED 2026-09-02.** `§TM_REVEAL_TILED` — PR #1605 squash-merged `c8a6df61`, verified on `origin/main`. **W-RWB 22/22, red control green.** Dead air **44-71% → 0.0%** on all four buildings; Hospital pile-up **77.0% → 5.6%**. Surfaced A-9, U-8, U-9. **⚠ PARTIAL on the slab half — see U-8.** Substructure fixed outright (Hospital 553 footings, 200→553 distinct starts, dead air 63%→0%); several slab SETS still land 100% in one decile. |
 | ~~Film review continuity~~ | released — files free | ✅ **REPORTED 2026-09-02.** PR #1604 (`§MEP_DISC_PALETTE`, W-MEP-DISC-PALETTE 24/24) + PR #1603 (`§CPE_PIE_HOLD` contradiction settled) both merged. Left 2 ⛔USER questions → U-2, U-6. **Wave C and A-6 are now unblocked.** |
+| **ERP parity §P2→§P1 (Fable 5.1)** | `erp/crud_overlay.js` · `erp/crud_core.js` · `erp/crud_ops.json` · `erp/idempiere.html` | 🔵 **RUNNING** 2026-09-02 — AD_Ref_List/Yes-No editors then retire the curated-5 field list. **§P3 (ValRule picker wiring) is BLOCKED on this** — same file (`crud_overlay.js:535,545`). |
+| **ERP doctype re-score §P4** | `docs/internal/ERP_COVERAGE_MATRIX.md` (docs only, read-only on erp/) | 🔵 **RUNNING** 2026-09-02 — audit-and-re-score, forbidden from writing FSM code. No conflict. |
 | ~~Perf/mem desk analysis~~ | released — files free | ✅ **REPORTED 2026-09-02.** Appended `§R13_BAKE_FRAME_MINING` (331 lines) to `CPE_4D_PERF_MEM_STUDY.md`. Nothing run, no product code touched. Surfaced U-7 and A-7/A-8 below; **de-prioritised R9**; struck the stale ▶RESUME lines (closes A-4 item 1). |
 
 ---
@@ -446,3 +448,17 @@ these are queued work, not a menu to ask permission on. Rank by leverage/cost, d
 - Oracle-diffing needs `docker start postgres` first (it stops between sessions); creds in
   `RESUME_ERP_T0_TRUTH_MAINTENANCE.md`'s header.
 - `erp/sw.js` CACHE_VERSION bump is mandatory in the same PR as any shipped erp/ change.
+
+
+## §E.UPDATE 2026-09-02b — the user set the ERP priority
+User directive: *"Our ERP must give exactly the user experience in iDempiere, improved where we added
+in the pills such as the graphs page and red pill back to Viewer... Priority is that an iDempiere user
+can say ERP OOTB works as well or better than thought."* Operational integrity in **DocType + AD UI
+behaviour** is the named focus.
+- **E-9 is GREENLIT** — it was tabled ⛔USER as a product-UX call; the user has now made that call.
+  It is the headline of the new lane `prompts/ERP_IDEMPIERE_UX_PARITY.md` §P1.
+- New lane written + dispatched: **§P2→§P1 to Fable 5.1**, **§P4 (doctype re-score) to an agent**.
+- **§P3 (wire AD_Val_Rule into the live FK picker, 61 fields) is QUEUED, not dispatched** — it edits
+  `crud_overlay.js`, which the Fable lane owns. Dispatch it the moment Fable reports.
+- Re-ranked by the directive: **E-5** (P2P Fix 5) and **E-4** (stock effect) are the next two
+  operational-integrity items after the parity lane; E-6/E-7/E-8/E-14/E-15 stay hygiene.
