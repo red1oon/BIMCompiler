@@ -591,6 +591,19 @@ would convert a free path into a metered one.
 ⚠ This does NOT resolve **U-3** (reclaiming the stranded historical 8.53 GB) — that is separate and
 still open.
 
+### A-16 · Hospital's real stored path was NEVER measured — and the harness cannot say why
+Landing the `§CPE_AIM_DEPTH` retirement, **`HospitalAjaibPath.db` — the only authored `cinema_path`
+on disk — could not be measured. Five attempts, none completed.** The shipped claim does not depend
+on it (HHS + Duplex carried the proof), but it is absent and was not counted.
+**Ruled OUT by measurement:** the static server (`python3 -m http.server`; this repo's own script
+already documents it never completing a Hospital load) and the rasteriser (a real RTX 4060 behaved
+identically to swiftshader). **Untested candidates, named:** the 250 MB single-file DB through
+sql.js, and ~6 `cinemaPathPlan()` rebuilds over 63k elements.
+**⚠ It also exposed a REAL harness gap worth fixing on its own:** the witness prints only after its
+single `page.evaluate` returns, so an abandoned run leaves a **0-byte log and cannot say where it
+got to**. That is a witness that cannot report its own failure — CLAUDE.md clause 4. Stream
+progress out incrementally so a hung run still names its last completed stage.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
