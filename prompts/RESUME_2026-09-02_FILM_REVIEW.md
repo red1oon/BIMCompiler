@@ -227,6 +227,33 @@ tangent deviation falls on both (46.33→38.34, 72.48→34.79). On HHS the tange
 the retirement working. Gating on the tangent max would have scored it as a regression — noted so a
 later session does not "fix" it.
 
+**⚠ NOT MEASURED, and it is the one gap: Hospital, on its REAL STORED PATH.** Both buildings above
+carry **no** `cinema_path` row, so the witness synthesized three bands from the plan's own flown
+waypoints and REPORTS that (`bandSrc=synthesized-from-plan-waypoints`) — the route is the building's
+own, but it is not a path the user authored. `buildings/HospitalAjaibPath.db` is the only real stored
+path on disk (3 bands, 81.9 s), and **its run did not complete — five attempts, all abandoned, none
+of them a failure the log could name** (the witness prints only after its single `page.evaluate`
+returns, so a run that never returns leaves a 0-byte log — a real instrumentation gap, see below):
+- attempts 1-3 on `python3 -m http.server`, which **this repo's own `scripts/_fast_static_server.js`
+  header documents (§S78)** as making "a Hospital/Clinic/even-Duplex page load take 180s+ / never
+  complete". Those three are explained and should never have been run that way.
+- attempt 4 on `_fast_static_server.js`, swiftshader: ~50 min, renderer pegged 250-370 % CPU, no output.
+- attempt 5 on `_fast_static_server.js` with the **real RTX 4060** (`--use-angle=gl-egl` +
+  `__EGL_VENDOR_LIBRARY_FILENAMES=10_nvidia.json`, the same `--gpu real` wiring `cli_silent_bake.js`
+  uses; the witness now takes `GPU_REAL=1`): **identical behaviour**, ~25 min, no output. **So the
+  bottleneck is NOT the static server and NOT the rasteriser** — that is measured, not assumed, and
+  it rules out the two obvious suspects for whoever picks this up. Remaining candidates, untested:
+  the 250 MB single-file `HospitalAjaibPath.db` through sql.js, and the ~6 `cinemaPathPlan()` rebuilds
+  this witness performs on a 63 k-element model. Throughout, another lane's Playwright chromiums were
+  holding 700 %+ CPU on the same machine.
+
+**Nothing about the shipped claim depends on it** — two buildings, each with a real depth-ON red
+control, each 0.000° — **but the Hospital stored-path arm is genuinely absent and must not be
+reported as done.** Next session: add a progress `§`-line (or `console.log` forwarded through the
+existing `p.on('console')` hook) at each stage of the evaluate so an abandoned run says WHERE it was,
+then bisect with `N=50 NT=50` to separate load cost from plan-rebuild cost. Still a probe, still no
+bake.
+
 ### The four things that had to survive — each verified, none assumed
 1. **Path-follow** is the only automatic rule (A-1, above).
 2. **`§CPE_AIM_PIN`** (A-3): a pin on band 1 aims the gaze at its target to **0.000°** inside the
