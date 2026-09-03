@@ -1309,3 +1309,46 @@ from this brief alone if the agent ids die with the session.
 three times in one window):** an agent's uncommitted work is invisible to everyone and dies with it.
 Dispatch briefs must say **commit and push early and often**, not only at the end — "stop at branch
 pushed + report" is not enough if the agent never reaches its own end.
+
+---
+
+# §ERP-SESSION-CLOSE 2026-09-02/03 — full restart state for the ERP lane
+Read this block + `prompts/ERP_IDEMPIERE_UX_PARITY.md` + `prompts/BACKEND_SUBSTRATE_LANE.md` §MH/§RA.
+Everything below is merged and LIVE unless marked otherwise. Both repos: **0 local-only commits**.
+
+## What shipped — 5 bim-ootb PRs, all merged, live at **sw v777**
+| PR | what |
+|---|---|
+| **#1611** | FSM oracle parse window ended early — `M_RMA`/`C_BankTransfer`/`C_DepositBatch` were offering the wrong legal action set, and the witness read `diff=0` because oracle and engine shared the blind spot |
+| **#1613** | **The curated-5 field list retired.** `entryFor()` ranked a hand-written list above the AD fold, and those five were the document tables. c_order **8→56** fields, m_inout 7→53, c_invoice 7→47, c_payment **4→78**, c_allocationline 4→13; DisplayLogic live **28/28/21/61/0, was 0 everywhere**. Same PR retired LEG-1: 49 List/Yes-No fields were free-text, now `<select>` of the column's own `AD_Ref_List` + Y/N controls |
+| **#1626** | **`AD_Val_Rule` reaches the live FK pickers.** `c_doctype_id` 52→3, `c_bpartner_id` 113→42, `c_order_id` 44→2. Found the evaluator's token feed was broken for **25 of 332** Type-S rules — auto-quoting emitted `''Y''`, a syntax error, so those filters could not run at all |
+| **#1632** | Two forward-ports the twin audit surfaced: `ninja_model` `@callout` grammar half-shipped since #309, and `crud_core` breaking #968's own audit-column casing rule (**two** adjacent lines, the second found by the parent on review) |
+| **#1636** | Whole-row mandatory check (18/18) · `AD_Ref_Table`/Search targets (12/12) · GL_Category on every fact line (7/7, **50/50 docs match the seed's own `fact_acct`**) · DocNo both branches (10/10). Plus **a shipped defect**: `ad_evaluator` matched record keys case-sensitively while every record is lowercase, so **every AD logic expression naming a CamelCase column silently evaluated against `""`** |
+
+## The instruments, which mattered more than the features
+- **`W-ERP-TWIN`** (`scripts/check_erp_twins.js` + `scripts/erp_twins.json`) — NEW. **94 witness references were judging `build/erp` copies that are not what ships.** Now **64 pairs / 39 identical / 0 unreviewed / 0 broken**. Derives the judged set FROM THE TREE, compares against **`origin/main` bytes** (not the working tree), falsifier-proven. **It fires on merge** — see §P8-TWIN-HANDOVER; when a PR changes a shipped file with a locked twin, re-derive the copy after merge and re-run the 13 judging witnesses (done once already: 13/13 PASS).
+- **`W-MULTIHOST-SYNC` + `W-MULTIHOST-GATE`** — NEW, the user's directive. 6 arms (PUBLISH/CONVERGE/ROLE-ROTATION/FAILOVER/TAMPER/FRESHNESS) over **3 real hosts**, plus a content-keyed trigger over 16 network-core files. **It has already fired once in production**: the roster gate changed `erp_relay_server.js` → gate RED naming that file → re-ran → PASS, epoch 7, tip `65f3884732e8`, hosts 3/3 → GREEN.
+- **`W-RELAY-AUTH`** — NEW, 32/32, 11 arms. Roster-gated `/push` closes **S-1 in the code**.
+- Fixed instruments: `poc_scale_forecast` had **no assertions at all** (printed prose, exited 0) — first run after it gained them caught a live regression; the DocNo arm was **tautological** (mocked db, oracle written beside the assertion); `test_tour_idempiere` had been dead since a file move; 4 marker-regex misses fixed with the no-op guard proven by 7 synthetic probes.
+
+## ⛔ USER DECISIONS — do not let an agent decide these
+| # | decision | the fact that forces it |
+|---|---|---|
+| **U-E1** | **Roster gate default-ON or opt-in?** OPEN mode still exists and logs `S-1 OPEN`; a deployment that forgets a roster gains nothing. Making it default means touching W-RELAY. | S-1 is closed in code, not in production |
+| **U-E2** | **REVOKE authority scope** in an N-writer relay — who may revoke whom. | — |
+| **U-E3** | **Adopt `resolveFreshest()`?** The frozen `resolve()` is first-reachable-wins and in the naive controls adopted **both the forger and the stale host**. The witness's own `judge()` is the candidate; the module is frozen/NO-SHIP. | tamper + freshness both rely on the caller |
+| **U-E4** | **Period-on-Complete** — still unanswered, still unbuilt. Recommendation on record: ship the test **with** Open/Close Period, never alone. | open periods are **2001-2006 only**; today's Sep-26 is `'N'`, so the gate would fire on **100% of new documents** |
+| **U-E5** | **Widen the working set / prune policy?** | **520 B/op → 3,720 MB** projected at the large tier vs a ~2 GB browser wall |
+
+## ⬜ NEXT, ranked — nothing here is blocked
+1. **`W-SCALE-FORECAST` fails 1 of 3**: `batch beats naive per-op commit` measures **0.8×** — batching is now SLOWER. Its own verdict box still prints "MITIGATIONS EARN THEIR KEEP … batch = 0.8×", self-contradicting. **Chase this first** — it is a live perf regression, freshly detectable.
+2. **`W-AD-DISPLAYLOGIC-LIVE` fails** (`shown=1 hiddenByLogic=0`), re-run 3× incl. after the case fix, on current code. AD logic IS proven live by W-PARITY-FIELDSET, so this is either a stale selector or a real残 gap — **unattributed, and the coverage matrix has NOT been re-scored on it**.
+3. **S-2** — the relay is still `http.createServer` with nothing deployed. This, not S-1, is what stands between us and multi-writer in production.
+4. **The rebase push omits `user_tag`**, so non-default actors would fail relay verification (`erp_sync_fsm.js` ships → bim-ootb PR).
+5. The four structural gaps, unchanged: **no `m_storageonhand` fold anywhere** (a completed shipment cannot move stock) · no vendor-invoice path (three-way match cannot populate) · no Form renderer for the 49 `AD_Form` rows · **454 of 476 `AD_Process`** + ~200 beforeSave + 139 callouts named-deferred.
+
+## Standing rules earned this session — apply them, they each cost us something
+1. **The last mile is the parent's, not the agent's.** Three agents died in one rate-limit window; only pushed work survived without hunting. Dispatch briefs say **commit and push EARLY and OFTEN** — "stop at branch pushed" is useless if the agent never reaches its own end.
+2. **A doc claim ships with the query or `file:line` that proves it.** The rows that survived every audit carried a cite; the prose ones did not.
+3. **Check the instrument before believing the defect.** Four times this session a wrong instrument reported a defect in its subject: a 28-commit-stale `~/bim-ootb` checkout, a source-form grep against a **minified** deployed `sw.js`, a witness requiring a drifted copy, and **a wrong OCI namespace/region** (`axol6nvzzobs`/`ap-singapore-1` instead of `ax3cp6tzwuy2`/`ap-kulai-2`) that produced an ordinary 404 and got written into a spec as fact. Take OCI namespace+region from `deploy/OCI_UPLOAD.md` or a shipped constant, never from memory.
+4. **Fix a convention defect's siblings in the same block**, or you ship half of it (`crud_core` `UpdatedBy`/`Updated`).

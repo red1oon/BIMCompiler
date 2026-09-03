@@ -15,32 +15,40 @@ It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisio
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
 ## Current State — 2026-09-03
-**23 bim-ootb PRs merged 2026-09-02/03; release v1.58.0 published.** Headlines:
-- **§TM_REVEAL_TILED (#1605 `c8a6df61`)** — the movie **never played `remapSolveToTasks`**; it played
-  an outlier-sensitive affine in `_tmRescaleToTaskWindow`. Dead air 44-71% → **0.0%** on four
-  buildings; Hospital pile-up 77.0% → 5.6%. **Every reveal-spread number predating this measured a
-  map nobody plays** — struck by #1610.
-- **§CACHE_PLAYED_LAYER (#1607)** — the cache now carries BOTH layers and every judge prints `layer=`.
-- **DAY-0: `PASS=5 FAIL=8` → `PASS=8 FAIL=5`** (#1551 `59736505` + #1615 + #1625). All 8 originals
-  attributed: 3 witness defects, 3 modelling facts, 1 scope, 1 real. The old "regression" premise was
-  retired — `claims=13` was a 3-building cache artefact, never a regression signature.
-- **§SUN_FILL_RATIO (#1622 `85fd0732`)** — Alt+S pushed a photographed HDRI onto matte concrete; IBL
-  is non-directional and **not shadow-occluded in three.js**, so it lit away-facing walls as hard as
-  sun-facing (85%/83% of all light on the away wall). Away÷sun **1.0453 → 0.2388** (Clinic).
-- **§MEP_COLOR_SURVIVES_PHOTOREAL (#1621 `8d8320ee`)** — Hospital 3→8 distinct hues, 40,634
-  colourless MEP → 0. Fire-red valve preserved 1300/1300. **Confirmed live by the user in a real bake.**
-- **§CPE_AIM_DEPTH RETIRED (#1619 `dfe5a58e`)** — on Hospital's real stored path, gaze-vs-chord
-  90.657° → **0.000°**, tangent mean 85.127° → **6.930°** (12× closer to the path).
-- **§DUCT_SILHOUETTE (#1631 `da0521c4`)** — sagitta 21.3 → 3.4 mm (6.3×) on Hospital's 1,419
-  qualifying elements. The lamps-vs-ducts split is **size, ~50× wide**, not detection.
-- **Clinic landing FIXED and deployed** — the live OCI page mapped `Clinic` → `Clinic_extracted.db`.
-  Repointed to `Clinic.db`, uploaded, fetched back byte-identical (78,872 B, `text/html`).
-  ⚠ The earlier §AD diagnosis was partly wrong: the live object **already** used bucket `bim-ootb`;
-  the stale `bim-ootb-live` base was in the **repo copy**. Local/live still diverge 105 lines both
-  ways — do NOT upload `SYSNOVA/index.html` wholesale.
-- Also: 5D constants → JSON (#1616), dead `4D_policy.json` deleted (#1617), CPM-clamp toast (#1618),
-  nine vacuous `§` tags guarded (#1608), witness progress logging (#1623), B-2 support consolidation
-  (#1627-#1630 — **keep the AND**, measured: giving copy 1 the §S64 bound flips 0/32 lock verdicts).
+
+### ERP lane — 5 PRs merged 2026-09-02/03, live at sw v777 (full detail: `prompts/AGENT_QUEUE.md` §ERP-SESSION-CLOSE)
+The five document windows now render their own AD tab, not a hand-written list: **c_order 8→56 fields,
+c_payment 4→78**, DisplayLogic live **28/28/21/61/0 (was 0 everywhere)**; List/Yes-No are real controls;
+`AD_Val_Rule` filters the FK pickers (`c_bpartner_id` 113→42). #1611/#1613/#1626/#1632/#1636.
+**Three shipped defects found by the new instruments, not by inspection:** `ad_evaluator` matched record
+keys case-sensitively so every AD logic expression naming a CamelCase column evaluated against `""`;
+the val-rule token feed emitted `''Y''` for 25 of 332 rules, so those filters never ran; `crud_core`
+broke #968's own audit-column casing on two adjacent lines.
+**New standing instruments:** `W-ERP-TWIN` (94 witness refs were judging copies that are not what ships →
+now 64 pairs / 0 unreviewed, and it fires on merge); `W-MULTIHOST-SYNC` + its content-keyed gate (6 arms,
+3 real hosts — already fired once in production and was re-earned, epoch 7); `W-RELAY-AUTH` 32/32.
+**⛔ Next:** `W-SCALE-FORECAST` fails 1 of 3 — batch commit is **0.8×**, i.e. slower than per-op.
+`W-AD-DISPLAYLOGIC-LIVE` fails, unattributed, matrix NOT re-scored on it. **S-2** (relay still
+`http.createServer`, nothing deployed) is the real barrier to multi-writer, not S-1.
+5 user decisions parked in §ERP-SESSION-CLOSE.
+
+### 4D / viewer lane — 23 PRs merged 2026-09-02/03, release v1.58.0 (detail: the spec docs below)
+- **§TM_REVEAL_TILED** #1605 — the movie never played `remapSolveToTasks`; dead air 44-71% → **0.0%**,
+  Hospital pile-up 77.0% → 5.6%. Every reveal-spread number predating it measured a map nobody plays
+  (struck by #1610). · **§CACHE_PLAYED_LAYER** #1607 — cache carries both layers, judges print `layer=`.
+  → `prompts/4D_GANTT_TM_REFACTOR.md`, `prompts/4D_MODEL_INTEGRITY.md`
+- **DAY-0 `PASS=5 FAIL=8` → `PASS=8 FAIL=5`** (#1551/#1615/#1625) — all 8 attributed (3 witness defects,
+  3 modelling facts, 1 scope, 1 real); the "regression" premise was retired. → `4D_MODEL_INTEGRITY.md`
+- **§SUN_FILL_RATIO** #1622 (away÷sun 1.0453 → **0.2388**) · **§MEP_COLOR_SURVIVES_PHOTOREAL** #1621
+  (3→8 hues, 40,634 colourless MEP → 0) · **§DUCT_SILHOUETTE** #1631 (sagitta 21.3 → 3.4 mm)
+  → `prompts/PHOTOREAL_STILL_RENDER.md`, `prompts/CINEMA_DISCIPLINE_REVEAL.md`
+- **§CPE_AIM_DEPTH RETIRED** #1619 — gaze-vs-chord 90.657° → **0.000°**. → `prompts/CINEMA_PATH_EDITOR.md`
+- **Clinic landing fixed + deployed.** ⚠ The earlier §AD diagnosis was partly wrong — the stale
+  `bim-ootb-live` base was in the REPO copy, not the live object. Local/live still diverge 105 lines
+  both ways: **do NOT upload `SYSNOVA/index.html` wholesale.**
+- Also: 5D constants → JSON #1616 · dead `4D_policy.json` deleted #1617 · CPM-clamp toast #1618 ·
+  nine vacuous `§` tags guarded #1608 · witness progress logging #1623 · B-2 support consolidation
+  #1627-#1630 (**keep the AND** — giving copy 1 the §S64 bound flips 0/32 lock verdicts).
 
 ## ⛔ OPEN
 - **Interior lighting / liveliness** — running. **"Lively" is variance, not brightness** (user: *"it
