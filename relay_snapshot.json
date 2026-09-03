@@ -1,12 +1,12 @@
 {
   "schema": "erp-replica/v1",
-  "len": 6,
-  "tip": "55a01c1a7fd4182d7567be8f3133f5f5b87f6d57c504ab929f28cf623e7ac387",
-  "sig": "68c9eb6265641895039e5b2585c8404fccdcd0f9b03c4ad94c4f965e054729154b8a69b8f7cfde9673e154f7d03b893d7dff3dbb7fb193ce1a49ea8591b77f51",
+  "len": 7,
+  "tip": "65f3884732e897277d17396120b6dec7c0219fc07551f7bf94606b1ef311d69b",
+  "sig": "5f7ed59cfc57d27559bceaf10974a61101c302b2cc07914cbdf4f653d88a1ad8ce6a2709197eae63dd3a78643b41eac7165ef64cdd99650c4bb3d5af5587b168",
   "alg": "ES256",
   "signed_by": "controller",
-  "epoch": 6,
-  "published_utc": "2026-09-03T03:34:11.523Z",
+  "epoch": 7,
+  "published_utc": "2026-09-03T03:45:55.336Z",
   "ops": [
     {
       "seq": 1,
@@ -59,6 +59,15 @@
       "timestamp": 1788406451523,
       "op_type": "POST",
       "parameters": "{\"table\":\"C_Invoice\",\"id\":9006,\"witness\":\"W-MULTIHOST-SYNC\",\"epoch\":6,\"lines\":[{\"account_id\":\"101\",\"role\":\"AR\",\"amtacctdr\":1200,\"amtacctcr\":0},{\"account_id\":\"400\",\"role\":\"Revenue\",\"amtacctdr\":0,\"amtacctcr\":1200}]}",
+      "input_guids": null,
+      "output_guid": null
+    },
+    {
+      "seq": 7,
+      "op_uuid": "b9e10e85-eb2f-4ddf-9227-01a5bcbcd79b",
+      "timestamp": 1788407155336,
+      "op_type": "POST",
+      "parameters": "{\"table\":\"C_Invoice\",\"id\":9007,\"witness\":\"W-MULTIHOST-SYNC\",\"epoch\":7,\"lines\":[{\"account_id\":\"101\",\"role\":\"AR\",\"amtacctdr\":1200,\"amtacctcr\":0},{\"account_id\":\"400\",\"role\":\"Revenue\",\"amtacctdr\":0,\"amtacctcr\":1200}]}",
       "input_guids": null,
       "output_guid": null
     }
