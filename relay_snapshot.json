@@ -1,10 +1,12 @@
 {
   "schema": "erp-replica/v1",
-  "len": 5,
-  "tip": "9f7f42200db468ae83c0999d9f89e54ff7ce784bcb7f6e12bfbe2e76d6bc508c",
-  "sig": "6811168e76529bea5102aef0714f4bedc044c9bb149fea2fe3c3601e532cc073bccb1c30c74449061189dbe3323e351090c8458dc50e9b1e426d7862030f6bae",
+  "len": 6,
+  "tip": "55a01c1a7fd4182d7567be8f3133f5f5b87f6d57c504ab929f28cf623e7ac387",
+  "sig": "68c9eb6265641895039e5b2585c8404fccdcd0f9b03c4ad94c4f965e054729154b8a69b8f7cfde9673e154f7d03b893d7dff3dbb7fb193ce1a49ea8591b77f51",
   "alg": "ES256",
   "signed_by": "controller",
+  "epoch": 6,
+  "published_utc": "2026-09-03T03:34:11.523Z",
   "ops": [
     {
       "seq": 1,
@@ -48,6 +50,15 @@
       "timestamp": 1780798203635,
       "op_type": "PAY",
       "parameters": "{\"actor\":\"A\",\"target\":\"INV-1001\",\"amount\":1200}",
+      "input_guids": null,
+      "output_guid": null
+    },
+    {
+      "seq": 6,
+      "op_uuid": "8ece91cb-4f7b-4426-9d4d-bd7f53006785",
+      "timestamp": 1788406451523,
+      "op_type": "POST",
+      "parameters": "{\"table\":\"C_Invoice\",\"id\":9006,\"witness\":\"W-MULTIHOST-SYNC\",\"epoch\":6,\"lines\":[{\"account_id\":\"101\",\"role\":\"AR\",\"amtacctdr\":1200,\"amtacctcr\":0},{\"account_id\":\"400\",\"role\":\"Revenue\",\"amtacctdr\":0,\"amtacctcr\":1200}]}",
       "input_guids": null,
       "output_guid": null
     }
