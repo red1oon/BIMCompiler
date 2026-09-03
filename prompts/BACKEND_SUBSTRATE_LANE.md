@@ -544,3 +544,21 @@ self-signed certs"*.
 4. **SCHEME IS HONEST** — `srv.url` starts with `https:` exactly when TLS is armed. A deployment reads
    this; it must not be able to lie.
 5. If `openssl` is unavailable the arm prints **INCONCLUSIVE** and is excluded from the count — never PASS.
+
+### §S2-RESULT 2026-09-03/04 — S-2(a) CLOSED. `W-RELAY-TLS` 4/4. S-2(b) still ⛔USER.
+```
+§RELAY_TLS scheme=https keyBytes=1704 certBytes=1115 (TLS terminated HERE)
+§RELAY-TLS scheme=https url=https://localhost:8155 httpsHead=0 plaintextOnTlsPort="ERR:ECONNRESET"
+🟢 HTTPS SERVES · 🟢 PLAINTEXT REFUSED ON THE TLS PORT · 🟢 SCHEME IS HONEST · 🟢 HTTP UNCHANGED
+test_kernel_relay ALL PASS (every pre-existing W-RELAY arm unchanged)
+```
+`ERR:ECONNRESET` is the load-bearing line: the TLS listener drops a plaintext request instead of
+answering it, so arm 2 could not have passed against a still-http server.
+Regression: **W-RELAY-AUTH 32/32, 11 arms** — including its own §RA-7 pin, which re-baselined itself
+against the newly committed `test_kernel_relay.js` exactly as designed (it compares the working tree to
+`git show HEAD:`, so the pin must be re-earned by a commit, never edited).
+
+**⛔USER — S-2(b), unchanged and unchangeable by an agent:** no relay URL ships and nothing runs on real
+compute. Until a relay is deployed and reachable over https, the live product is signed-snapshot
+exchange, **single writer per device**. The code no longer blocks that; a hosting decision does. This
+also gates `U-E1` (roster gate default-ON) — a gate that nothing runs is not yet a production question.
