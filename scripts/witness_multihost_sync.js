@@ -232,6 +232,121 @@ function serveLocal() {
 
   await converge('(after PUBLISH)');
 
-  console.log('\n🟡 W-MULTIHOST-SYNC INCONCLUSIVE — arms 3-6 not implemented yet in this commit');
+  // ── ARM 3 · ROLE ROTATION — each host in turn is the SOLE reachable source; the other two are blocked at the
+  //    fetch layer. Negative control: all blocked → the frozen resolve() must throw, so a guard that fails to block
+  //    cannot pass this arm ──
+  console.log('\n§ROTATION — each host as the sole reachable source');
+  var rot = 0;
+  for (var r1 = 0; r1 < HOSTS.length; r1++) {
+    var sole = HOSTS[r1]; BLOCKED = HOSTS.filter(function (h) { return h !== sole; }).map(function (h) { return h.base; });
+    try {
+      var picked = await CLIENT.resolve(); var rv = await replay(picked.snapshot);
+      var good = picked.host === sole.name && rv.ok && rv.computedTip === published.tip && rv.len === published.len;
+      if (good) rot++;
+      console.log('§ROTATION sole=' + sole.name + ' blocked=[' + HOSTS.filter(function (h) { return h !== sole; }).map(function (h) { return h.name; }).join(',') + '] resolved=' + picked.host + ' tip_eq=' + (rv.computedTip === published.tip) + ' len=' + rv.len + ' sigValid=' + rv.sigValid);
+    } catch (e) { console.log('§ROTATION sole=' + sole.name + ' UNREACHABLE ' + e.message); inconclusive('ROTATION: ' + sole.name + ' unreachable as sole source'); }
+  }
+  BLOCKED = HOSTS.map(function (h) { return h.base; }); var ctl = null;
+  try { await CLIENT.resolve(); ctl = 'resolved (guard did NOT block)'; } catch (e) { ctl = e.message; }
+  BLOCKED = [];
+  check(ctl === 'all hosts unreachable', 'negative control: all three blocked → resolve() throws', ctl);
+  check(rot === HOSTS.length, 'convergence in every rotation — no host is secretly load-bearing', rot + '/' + HOSTS.length);
+  arm('ROTATION', rot === HOSTS.length && ctl === 'all hosts unreachable' ? 'PASS' : 'FAIL', { rotations_converged: rot, hosts: HOSTS.length, control: ctl === 'all hosts unreachable' ? 'blocked' : 'NOT-blocked' });
+
+  // ── ARM 4 · FAILOVER — against REALITY: OCI-live has never been published to and returns 404 today. The client must
+  //    record the 404 and resolve from a survivor, whichever survivor is next in line ──
+  console.log('\n§FAILOVER — dead host = ' + H_DEAD.name + ' (real 404, never written; deploy/live untouchable)');
+  var dead = await probe(H_DEAD.base + '/relay_snapshot.json'), deadHost = H_DEAD, synthetic = false;
+  if (dead.status !== 404) { deadHost = { name: 'closed-port', base: 'http://127.0.0.1:1' }; synthetic = true; console.log('§FAILOVER ' + H_DEAD.name + ' is NOT 404 today (http=' + dead.status + ') — falling back to a synthetic dead host, this arm is then NOT the real condition'); }
+  var fo = 0, orders = [[H_HERE, H_GH, H_OCI], [H_GH, H_OCI, H_HERE], [H_OCI, H_HERE, H_GH]];
+  for (var f1 = 0; f1 < orders.length; f1++) {
+    var list = [deadHost].concat(orders[f1]), c4 = RC.createReplicaClient(list);
+    var all = await c4.fetchAll(), deadEntry = all[0];
+    try {
+      var pk = await c4.resolve(); var fv = await replay(pk.snapshot);
+      var good4 = !deadEntry.ok && pk.host === orders[f1][0].name && fv.ok && fv.computedTip === published.tip;
+      if (good4) fo++;
+      console.log('§FAILOVER order=[' + list.map(function (h) { return h.name; }).join(',') + '] dead_err="' + deadEntry.err + '" survivors_up=' + all.filter(function (e) { return e.ok; }).length + '/' + orders[f1].length + ' resolved=' + pk.host + ' tip_eq=' + (fv.computedTip === published.tip));
+    } catch (e) { console.log('§FAILOVER order ' + f1 + ' ' + e.message); inconclusive('FAILOVER: no survivor reachable'); }
+  }
+  check(dead.status === 404 && !synthetic, 'dead host is the REAL condition (HTTP 404 from ' + H_DEAD.name + ')', 'http=' + dead.status);
+  check(fo === orders.length, 'every ordering resolves from the first survivor and converges', fo + '/' + orders.length);
+  arm('FAILOVER', fo === orders.length && !synthetic ? 'PASS' : (synthetic ? 'INCONCLUSIVE' : 'FAIL'), { dead_host: deadHost.name, dead_http: dead.status, orderings_converged: fo, orderings: orders.length, real_condition: !synthetic });
+
+  // ── ARM 5 · TAMPER — a self-consistified forgery (op mutated, tip recomputed with the SAME kernel, re-signed by a
+  //    forger key whose pubkey is EMBEDDED in the snapshot) is rejected under the PINNED key, and the reader falls back ──
+  console.log('\n§TAMPER — forgery served by `here` (/tamper); good hosts = GH, OCI');
+  var forged = JSON.parse(JSON.stringify(published)); var lastIx = forged.ops.length - 1;
+  forged.ops[lastIx].parameters = forged.ops[lastIx].parameters.replace('"amtacctdr":1200', '"amtacctdr":999999');
+  var fk = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+  var fPriv = await crypto.subtle.exportKey('jwk', fk.privateKey), fPub = await crypto.subtle.exportKey('jwk', fk.publicKey);
+  var fRep = await replay(forged);                                        // forger recomputes the tip his mutated ops seal to
+  forged.tip = fRep.computedTip; forged.sig = await SIGN.signTip(fPriv, forged.tip); forged.pubkey = { kty: fPub.kty, crv: fPub.crv, x: fPub.x, y: fPub.y };
+  SERVED.tamper = JSON.stringify(forged);
+  var embeddedAccepts = await SIGN.verifyTip(forged.tip, forged.sig, forged.pubkey);
+  var tv = await replay(JSON.parse(SERVED.tamper));
+  check(forged.ops[lastIx].parameters !== published.ops[lastIx].parameters && forged.tip !== published.tip, 'forgery mutates a posting and self-consistifies the tip', 'amount 1200→999999 tip=' + short(forged.tip));
+  check(embeddedAccepts === true, 'an embedded-key reader WOULD accept it (the mistake the pinned design forbids)', 'verifyTip(under embedded key)=' + embeddedAccepts);
+  check(tv.matchesAdvertised === true && tv.sigValid === false && tv.ok === false, 'pinned reader REJECTS it: recompute matches (naive check fooled) but sig invalid under the pinned key', 'match=' + tv.matchesAdvertised + ' sigValid=' + tv.sigValid + ' ok=' + tv.ok);
+  var rcSrc = fs.readFileSync(path.join(HERE, 'build', 'erp', 'erp_replica_client.js'), 'utf8');
+  check(/verifyTip\(v\.tip,\s*snapshot\.sig\)/.test(rcSrc) && !/snapshot\.(pubkey|pub|key)/.test(rcSrc), 'structural: the client calls verifyTip(tip, sig) with NO key from the snapshot', 'pinned=' + SIGN.PINNED_PUBKEY.x.slice(0, 8) + '…');
+  var c5 = RC.createReplicaClient([{ name: 'here/tamper', base: H_HERE.base + '/tamper' }, H_GH, H_OCI]);
+  var all5 = await c5.fetchAll(), adopted5 = null;
+  for (var k5 = 0; k5 < all5.length; k5++) { if (!all5[k5].ok) continue; var v5 = await replay(all5[k5].snapshot); all5[k5].cls = v5.ok ? 'VALID' : 'TAMPERED'; if (v5.ok && !adopted5) adopted5 = { host: all5[k5].host, tip: v5.computedTip }; }
+  console.log('§TAMPER hosts=' + all5.map(function (e) { return e.host + ':' + (e.ok ? e.cls : 'DOWN'); }).join(' ') + ' adopted=' + (adopted5 ? adopted5.host : 'none') + ' tip_eq=' + (adopted5 && adopted5.tip === published.tip));
+  var naive5 = await c5.resolve();
+  check(all5[0].cls === 'TAMPERED' && adopted5 && adopted5.host === 'GH' && adopted5.tip === published.tip, 'reader falls back to the first GOOD host (GH) rather than adopting the forgery');
+  console.log('§TAMPER_CAVEAT naive resolve() (first-reachable-wins) returned host=' + naive5.host + ' — the frozen client only rejects at replayAndVerify; the fallback is the reader loop above');
+  arm('TAMPER', all5[0].cls === 'TAMPERED' && adopted5 && adopted5.host === 'GH' && adopted5.tip === published.tip && embeddedAccepts && !tv.ok ? 'PASS' : 'FAIL', { rejected_under_pinned: !tv.ok, embedded_key_would_accept: embeddedAccepts, adopted_from: adopted5 ? adopted5.host : 'none' });
+
+  // ── ARM 6 · FRESHNESS — a host serving an OLDER (valid, controller-signed) tip is classified STALE, not silently
+  //    preferred. The judge: longest verified chain wins; a shorter valid chain must be an op_uuid PREFIX of it (else
+  //    DIVERGENT); a fork at the head adopts only a strict majority. This is the arm §MH.0 lacked ──
+  console.log('\n§FRESH — stale = previous epoch (len ' + stale.len + ') served by here/stale and OCI stale/; fork control = same len, different valid tip');
+  function isPrefix(a, b) { if (a.length > b.length) return false; for (var i = 0; i < a.length; i++) if (a[i].op_uuid !== b[i].op_uuid) return false; return true; }
+  async function judge(hosts) {
+    var cj = RC.createReplicaClient(hosts), es = await cj.fetchAll();
+    for (var i = 0; i < es.length; i++) { if (es[i].ok) { var v = await replay(es[i].snapshot); es[i].v = v; } }
+    var valid = es.filter(function (e) { return e.ok && e.v.ok; });
+    var maxLen = valid.reduce(function (m, e) { return Math.max(m, e.v.len); }, 0);
+    var heads = valid.filter(function (e) { return e.v.len === maxLen; }), byTip = {};
+    heads.forEach(function (e) { (byTip[e.v.computedTip] = byTip[e.v.computedTip] || []).push(e); });
+    var tips = Object.keys(byTip).sort(function (a, b) { return byTip[b].length - byTip[a].length; }), adoptedTip = null, mode = 'NONE';
+    if (tips.length === 1) { adoptedTip = tips[0]; mode = 'UNANIMOUS'; }
+    else if (tips.length > 1) { if (byTip[tips[0]].length * 2 > valid.length) { adoptedTip = tips[0]; mode = 'QUORUM'; } else mode = 'FORK-UNRESOLVED'; }
+    var headOps = adoptedTip ? byTip[adoptedTip][0].snapshot.ops : (heads[0] ? heads[0].snapshot.ops : []);
+    es.forEach(function (e) {
+      if (!e.ok) e.cls = 'UNREACHABLE'; else if (!e.v.ok) e.cls = 'TAMPERED';
+      else if (e.v.len < maxLen) e.cls = isPrefix(e.snapshot.ops, headOps) ? 'STALE' : 'DIVERGENT';
+      else e.cls = (e.v.computedTip === adoptedTip) ? 'CURRENT' : 'DIVERGENT';
+    });
+    var from = valid.filter(function (e) { return e.v.computedTip === adoptedTip; })[0];
+    console.log('§FRESH judge hosts=' + es.map(function (e) { return e.host + ':' + e.cls + (e.v ? '(len ' + e.v.len + ')' : ''); }).join(' ') + ' maxLen=' + maxLen + ' mode=' + mode + ' adopted=' + (from ? from.host : 'none') + ' tip=' + short(adoptedTip));
+    return { es: es, adoptedTip: adoptedTip, from: from, mode: mode, maxLen: maxLen };
+  }
+  var staleHosts = [{ name: 'here/stale', base: H_HERE.base + '/stale' }, { name: 'OCI/stale', base: H_OCI.base + '/stale' }, H_GH, H_OCI];
+  var naive6 = null; try { naive6 = await RC.createReplicaClient(staleHosts).resolve(); } catch (e) { naive6 = { host: 'none' }; }
+  var nv = naive6.snapshot ? await replay(naive6.snapshot) : { ok: false, len: 0 };
+  console.log('§FRESH_CAVEAT naive resolve() adopted host=' + naive6.host + ' len=' + nv.len + ' sigValid=' + nv.sigValid + ' — a VALID but OLDER snapshot is silently preferred by the frozen first-reachable-wins resolve(); freshness is the judge\'s job');
+  var j6 = await judge(staleHosts);
+  var staleN = j6.es.filter(function (e) { return e.cls === 'STALE'; }).length, staleOk = j6.es.filter(function (e) { return e.cls === 'STALE' && e.v.len === stale.len; }).length;
+  check(staleN >= 1 && staleN === staleOk, 'older valid snapshot(s) classified STALE (len ' + stale.len + ' < ' + published.len + ', op_uuid prefix)', 'stale_hosts=' + staleN);
+  check(j6.adoptedTip === published.tip && j6.from && /^(GH|OCI)$/.test(j6.from.host), 'reader adopts the CURRENT epoch from a non-stale host', 'from=' + (j6.from ? j6.from.host : 'none'));
+  // fork control — the falsifier of the classifier: same len, different VALID (controller-signed) tip must read DIVERGENT, never STALE
+  var fork = null;
+  if (priv) {
+    var fb = await replay(stale); fb.K.commitOp(fb.db, 'POST', { table: 'C_Invoice', id: 9000 + epoch, witness: 'W-MULTIHOST-SYNC-FORK', epoch: epoch,
+      lines: [{ account_id: '101', role: 'AR', amtacctdr: 1, amtacctcr: 0 }, { account_id: '400', role: 'Revenue', amtacctdr: 0, amtacctcr: 1 }] }, null, null, null, runUtcMs);
+    await fb.K.sealChain(fb.db); var fv6 = await fb.K.verifyChain(fb.db);
+    var frows = fb.db.exec('SELECT id, op_uuid, timestamp, op_type, parameters, input_guids, output_guid FROM kernel_ops ORDER BY id')[0].values.map(function (r) { return { seq: r[0], op_uuid: r[1], timestamp: r[2], op_type: r[3], parameters: r[4], input_guids: r[5], output_guid: r[6] }; });
+    fork = { schema: 'erp-replica/v1', len: fv6.len, tip: fv6.tip, sig: await SIGN.signTip(priv, fv6.tip), alg: 'ES256', signed_by: 'controller', ops: frows };
+    SERVED.fork = JSON.stringify(fork);
+    var j6b = await judge([{ name: 'here/fork', base: H_HERE.base + '/fork' }, H_GH, H_OCI]);
+    var forkE = j6b.es[0];
+    check(forkE.cls === 'DIVERGENT' && j6b.mode === 'QUORUM' && j6b.adoptedTip === published.tip, 'fork control: same-len different valid tip reads DIVERGENT (not STALE); quorum 2/3 adopts the published tip', 'cls=' + forkE.cls + ' mode=' + j6b.mode);
+  } else inconclusive('FRESH fork control needs the controller key');
+  arm('FRESH', staleN >= 1 && staleN === staleOk && j6.adoptedTip === published.tip && (!fork || j6.es.length) ? 'PASS' : 'FAIL', { stale_detected: staleN, stale_len: stale.len, current_len: published.len, adopted_from: j6.from ? j6.from.host : 'none', naive_resolve_adopted: naive6.host, fork_control: fork ? 'DIVERGENT+QUORUM' : 'skipped' });
+
+  console.log('\n🟡 W-MULTIHOST-SYNC INCONCLUSIVE — §MH4 + verdict + record not implemented yet in this commit');
   srv.close(); process.exit(2);
 })().catch(function (e) { console.error('FATAL', e); process.exit(1); });
