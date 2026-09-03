@@ -285,3 +285,105 @@ order line (the price-list engine), and `invoice.updateFrom(order)`'s payment-sc
 (`MOrderPaySchedule`). **⬜ Still UI-side:** nothing yet drives this process from a screen — the handler is
 registered and dispatchable, but the Info-Window selection UI that real iDempiere's CreateFrom dialog
 provides is not built. Stage 8's engine is closed; its dialog is a separate, bounded item.
+
+---
+
+## §Fix — 2026-09-04b, **the CreateFrom ENTRY POINT**: the last piece of the UI three-way match
+
+`AGENT_QUEUE.md §ERP-SESSION 2026-09-04c` ⬜ NEXT, and §Fix5.5's own named residual: *"nothing yet drives
+this process from a screen — the handler is registered and dispatchable, but the Info-Window selection UI
+that real iDempiere's CreateFrom dialog provides is not built."* Spec written BEFORE the code.
+
+### §CF.1 WHY THIS IS THE ONLY PIECE LEFT — measured, not asserted
+`witness_p2p_invoice_match.js` on `origin/main` today: stages **1/2/3 PASS**, **4a PASS**
+(`M_MatchPO count=1`), **4b FAIL** (`M_MatchInv count=0`). The reason is one line:
+```
+§P2P-FILL m_inoutline_id value=-5 result=locked
+§INVOICE-FANOUT invoice=-9 issotrx=N lines=1 matchInvOps=0
+```
+`AD_Field` locks `C_InvoiceLine.M_InOutLine_ID` `IsReadOnly='Y'` on tab 291 — **faithfully**: in real
+iDempiere only `CreateFromInvoice` ever sets it (§Fix5.1's extract). `erp_engine.completeInvoice` emits a
+match for every invoice line that HAS one, so the whole chain is already built and proven headless
+(`W-CREATEFROM-INVOICE` 16/16). What is missing is the screen that runs the process.
+
+### §CF.2 WHAT REAL iDempiere DOES, and what we build
+`CreateFromInvoice.doIt` refuses unless `getAD_InfoWindow_ID() > 0` — **the Info Window IS the selection**.
+The user opens a drafted vendor invoice, hits *Create From*, picks receipt lines, and the process inserts
+them. We build the same shape with the pieces this app already has:
+- **`renderCreateFromPicker(proc)`** — the same bespoke-pane pattern `renderOrderPicker` /
+  `renderProjectPicker` already use off `openProcess`'s classname branch.
+  1. **Invoice** — a `<select>` of **drafted vendor invoices** (`issotrx='N'`, DocStatus `DR`/`IP`),
+     folded through `CORE.listTip` + `CORE.readTip` exactly as `renderOrderPicker` folds orders, so an
+     invoice created in this session is offered. (Not doing so would repeat the very gap
+     `ERP_FK_PICKER_SIDECAR.md` just closed.)
+  2. **Lines** — on invoice pick, the candidate receipt lines: `M_InOutLine` whose header is
+     `issotrx='N'`, DocStatus `CO`/`CL`, and **the same `C_BPartner_ID` as the invoice** — again folded.
+     One row per line with a checkbox and a **Qty** input defaulted to the line's own `qtyentered`,
+     which is precisely the Info Window's Qty column that `createLines()` reads.
+  3. **Run** → `runProcess(proc, { C_Invoice_ID: id, selection: [{m_inoutline_id, qty}] }, id)`. The
+     handler already accepts exactly this (`info.params.selection`, §Fix5.3) — **no handler change**.
+- **`_procCtx` gains four accessors**, all sidecar-folded: `fetchInvoice`, `fetchReceiptLines`,
+  `fetchOrderLine`, `fetchProduct`. These are the seams §Fix5.3 already specified.
+- **`renderProcResult` gains one branch**: a result whose ops are all `C_InvoiceLine` `CREATE_LINE` and
+  which has no `r.header` (this process ADDS to an existing document, it does not build one) renders the
+  preview table + the SAME `§GENPROCESS-CONFIRM` *Confirm & Post* button, committing through the same
+  `window.__crud.applyOpGroup`. Preview-then-confirm, like the other generators.
+
+**Not built, and named:** a real Info Window (this is a purpose-built pane, as every other process in this
+app is), multi-invoice selection, and the RMA/order-only selection sources — `createLines()` accepts
+`C_Order_ID` and `M_RMA_ID` selections too; we offer the **receipt** source, which is the P2P mainline and
+the only one `M_MatchInv` needs.
+
+### §CF.3 THE PROOF — the lane's own end-to-end witness, not a new one
+`witness_p2p_invoice_match.js` Stage 3 stops typing the invoice line by hand (it cannot — the column is
+locked) and instead drives **the real screen**: open the process, pick the invoice, tick the receipt line,
+Run, Confirm & Post, then Complete the invoice. **Stage 4b/4c go green or the entry point does not work.**
+That is a stronger claim than any unit arm: `M_MatchPO` and `M_MatchInv` must end up sharing the same
+`M_InOutLine_ID`, which is the three-way-match invariant this whole lane exists to prove.
+
+### §CF.4 ACCEPTANCE
+- `§P2P stage=4 ThreeWayMatch` reports **4a, 4b and 4c all 🟢**, with a non-empty
+  `sharedInOutLineId`.
+- `W-CREATEFROM-INVOICE` 16/16 unchanged (the handler is untouched).
+- `W-PARITY-VALRULE` 23/23 and `W-PARITY-FIELDSET` 30/30 unchanged (`idempiere.html` is theirs too).
+
+### §CF.5 RESULT 2026-09-04 — **the three-way match closes through the real UI. `§P2P stage=4 … PASS`.**
+```
+§P2P stage=1 PurchaseOrder   PASS   §P2P stage=2 MaterialReceipt PASS
+§P2P stage=3 VendorInvoice   PASS   §P2P stage=4 ThreeWayMatch   PASS
+   🟢 4a M_MatchPO count=1 · 🟢 4b M_MatchInv count=1 · 🟢 4c shared M_InOutLine_ID — shared=true
+```
+The path, entirely through the screen:
+```
+§CREATEFROM-LIVE invoices offered=1 ids=[-9]
+§CREATEFROM-LIVE candidates invoice=-9 bpartner=120 lines=11 ids=[107,…,116,-5]
+§P2P-CREATEFROM ticked m_inoutline_id=-5 of 11 offered
+§CREATEFROM-LIVE run proc=200143 Record_ID(C_Invoice_ID)=-9 selection=[{"m_inoutline_id":-5,"qty":2}]
+§CREATEFROM-LIVE fetchReceiptLines selected=1 resolved=1 unresolved=0
+§CREATEFROM-INVOICE invoice=-9 selected=1 linesCreated=1 withInOutLine=1 withOrderLine=1
+§CREATEFROM-COMMIT translating 1 CREATE_LINE → CRUD_CREATE for c_invoiceline
+§GENPROCESS-CONFIRM table=C_InvoiceLine committed=Y gid=af825c97… ops=1 verifyOk=true
+§INVOICE-FANOUT invoice=-9 issotrx=N lines=1 matchInvOps=1        ← was lines=1 matchInvOps=0
+```
+Both the fresh sidecar invoice (`-9`) and the fresh receipt line (`-5`) are offered — the pane folds
+through `listTip`/`readTip`, so it does not re-open the gap `ERP_FK_PICKER_SIDECAR.md` closed.
+
+**A real defect the first run exposed, worth the §-line it cost.** The engine proposes in ENGINE
+vocabulary (`CREATE_LINE`); `crud_core.listTip` folds **only** `CRUD_CREATE/UPDATE/DELETE`. So the first
+attempt committed perfectly — `§GENPROCESS-CONFIRM committed=Y ops=11 verifyOk=true` — and the very next
+Complete still read `§INVOICE-FANOUT invoice=-9 lines=0 matchInvOps=0`: **eleven signed, verified,
+unreadable rows.** A committed invoice line is a RECORD the CRUD layer owns (the grid reads it, the user
+can edit it, the fan-out folds it), so the commit seam now translates to exactly the shape
+`crud_core.buildOp('create')` produces — same op_type, same fields, `stdDefaults` from the same
+`window.APP.*` that `sessionActor()` reads. Every value is the engine op's own; nothing is invented.
+**⬜ The same mismatch applies to every KIND-2 generator** (`InvoiceGenerate`, `InOutGenerate`,
+`ProjectGenOrder` all Confirm & Post raw `CREATE_LINE`/`CREATE_DOCUMENT`) — named here, not fixed, because
+each needs its own witness run to prove what it currently is and is not readable by.
+
+**Also corrected in the pane before shipping:** candidates default **unchecked**. The first run
+pre-ticked all 11 and invoiced the vendor's entire completed history on one click.
+
+**Regression:** `W-PARITY-VALRULE` 23/23 · `W-PARITY-FIELDSET` 30/30 (run from inside the worktree) ·
+`poc_ad_process_live`, `poc_ad_displaylogic_live`, `poc_genpo_live`, `poc_minout_live`,
+`poc_payment_live`, `poc_ad_menu_prf_live` all 🟢 against the branch · `W-CREATEFROM-INVOICE` 16/16
+unchanged (the handler was not touched).

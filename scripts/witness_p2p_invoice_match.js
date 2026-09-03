@@ -376,39 +376,48 @@ function deepUrl(port, params) {
       newInvId = found3.id;
       log('§P2P-STATE new c_invoice_id=' + newInvId);
 
-      await clickRowOpen(found3.handle, { timeout: 8000 });
-      await page.waitForTimeout(400);
-      await page.click('#idmp-tabstrip >> text=Invoice Line', { timeout: 8000 }).catch(function () { return page.click('#idmp-tabstrip >> text=Line'); });
-      await page.waitForSelector('#idmp-toolbar button[title^="New record"]', { timeout: 10000 });
-      await clickToolbarBtn(page, 'New record');
-      await page.waitForSelector('#idmp-inline-mount [data-col="m_product_id"]', { timeout: 10000 });
-      var lineFields3 = await page.$$eval('#idmp-inline-mount [data-col]', function (els) { return Array.from(new Set(els.map(function (e) { return e.getAttribute('data-col'); }))); });
-      log('§P2P-FORM c_invoiceline fields shown: ' + lineFields3.join(','));
-      // Resolve the fresh Receipt line's real synthetic pk the same way — this is the linkage M_MatchInv
-      // needs (erp_engine.js completeInvoice() only emits a match when l.m_inoutline_id is truthy).
-      var rcptLines = await foldedRowsFor(page, 'm_inoutline', 'm_inoutline_id');
-      var rcptLine = (rcptLines.rows || []).filter(function (r) { return String(r.m_inout_id) === String(newRcptId); })[0];
-      log('§P2P-STATE Receipt lines folded=' + JSON.stringify(rcptLines.rows) + ' matched=' + JSON.stringify(rcptLine));
-      if (!rcptLine) throw new Error('could not resolve the fresh Receipt line via listTip fold — m_inoutline_id linkage cannot be set');
-      var fillRes = await fillField(page, 'm_inoutline_id', String(rcptLine.m_inoutline_id));
-      log('§P2P-FILL m_inoutline_id value=' + rcptLine.m_inoutline_id + ' result=' + fillRes);
-      await fillField(page, 'c_invoice_id', String(newInvId));
-      await fillField(page, 'm_product_id', '130');
-      await fillField(page, 'qtyinvoiced', '5');
-      await fillField(page, 'qtyentered', '5');
-      await fillField(page, 'priceentered', '9.00');
-      await fillField(page, 'priceactual', '9.00');
-      await fillField(page, 'pricelist', '9.00');
-      await fillField(page, 'line', '10');
-      // STALE-WITNESS FIX 2026-09-04 (§E4.7) — the invoice line's own #1636 gap:
-      //   §PARITY-MANDATORY key=c_invoiceline verb=create required=[ad_org_id,line,qtyentered,
-      //     priceentered,pricelist,c_tax_id] missing=[c_tax_id]
-      // c_tax_id 104 is the tax Stage 1's PO line carries, so the invoice line matches its own order line.
-      await fillField(page, 'c_tax_id', '104');
-      await clickToolbarBtn(page, 'Save');
-      var p3b = await waitForCrudPersist(w, 'c_invoiceline', 15000);
-      log('§P2P-SAVE table=c_invoiceline committed=' + p3b.committed + (p3b.reason ? ' reason=' + p3b.reason : ''));
-      if (!p3b.committed) throw new Error('c_invoiceline create did not persist: ' + p3b.reason);
+      // ══ THE INVOICE LINE IS MADE BY THE PROCESS, NOT BY TYPING ═════════════════════════════════════
+      // Implementing prompts/ERP_P2P_INVOICE_MATCH.md §Fix 2026-09-04b (§CF.3).
+      // This used to open the Invoice Line tab and fill m_inoutline_id by hand. It CANNOT: AD_Field locks
+      // C_InvoiceLine.M_InOutLine_ID IsReadOnly='Y' on tab 291, faithfully to real iDempiere where only
+      // CreateFromInvoice ever sets it. Measured on the last run: §P2P-FILL m_inoutline_id value=-5
+      // result=locked → §INVOICE-FANOUT ... matchInvOps=0. So drive the REAL SCREEN instead: the
+      // CreateFrom pane (AD_Process 200143) → tick the received line → Create Lines → Confirm & Post.
+      await page.goto(deepUrl(port, { login: 'GardenAdmin', process: 200143 }), { waitUntil: 'load' });
+      await page.waitForSelector('[data-createfrom-invoice]', { timeout: 20000 });
+      var cfInvOpts = await page.$$eval('[data-createfrom-invoice] option',
+        function (os) { return os.map(function (o) { return { v: o.value, t: o.textContent }; }); });
+      log('§P2P-CREATEFROM invoices offered=' + JSON.stringify(cfInvOpts));
+      var wantInv = cfInvOpts.filter(function (o) { return String(o.v) === String(newInvId); })[0];
+      if (!wantInv) throw new Error('the CreateFrom pane did not offer the fresh invoice ' + newInvId + ' — offered ' + JSON.stringify(cfInvOpts));
+      await page.selectOption('[data-createfrom-invoice]', String(newInvId));
+      await page.waitForTimeout(600);
+      var cfLines = await page.$$eval('[data-createfrom-lines] input[data-cf-line]',
+        function (cs) { return cs.map(function (c) { return c.getAttribute('data-cf-line'); }); });
+      log('§P2P-CREATEFROM receipt lines offered=' + JSON.stringify(cfLines));
+      if (!cfLines.length) throw new Error('the CreateFrom pane offered no received lines for this vendor');
+      // Candidates default UNCHECKED (every completed received line for this vendor is offered, seed rows
+      // included). Tick exactly THIS lane's fresh receipt line — the one whose M_InOutLine_ID must end up
+      // shared with the M_MatchPO from Stage 2, which is Stage 4c's invariant.
+      var freshLines = await foldedRowsFor(page, 'm_inoutline', 'm_inoutline_id');
+      var freshLine = ((freshLines && freshLines.rows) || []).filter(function (r) { return String(r.m_inout_id) === String(newRcptId); })[0];
+      if (!freshLine) throw new Error('could not resolve the fresh Receipt line to tick in the CreateFrom pane');
+      var tickSel = '[data-createfrom-lines] input[data-cf-line="' + freshLine.m_inoutline_id + '"]';
+      if (!(await page.$(tickSel))) throw new Error('the CreateFrom pane did not offer the fresh receipt line ' + freshLine.m_inoutline_id + ' — offered ' + JSON.stringify(cfLines));
+      await page.check(tickSel);
+      log('§P2P-CREATEFROM ticked m_inoutline_id=' + freshLine.m_inoutline_id + ' of ' + cfLines.length + ' offered');
+      await page.click('button[data-proc-run]');
+      await w.wait([/§CREATEFROM-INVOICE invoice=/], 10000);
+      await page.waitForSelector('button[data-genprocess-confirm]', { timeout: 10000 });
+      await page.click('button[data-genprocess-confirm]');
+      var posted = await w.wait([/§GENPROCESS-CONFIRM table=C_InvoiceLine committed=[YN]/], 15000);
+      log('§P2P-SAVE table=c_invoiceline viaProcess=CreateFromInvoice ' + posted.line.replace(/^.*§/, '§'));
+      if (!/committed=Y/.test(posted.line)) throw new Error('CreateFromInvoice lines did not post: ' + posted.line);
+
+      // back to the invoice window to Complete it
+      await page.goto(deepUrl(port, { login: 'GardenAdmin', window: 183 }), { waitUntil: 'load' });
+      await page.waitForSelector('#idmp-toolbar', { timeout: 20000 });
+      await page.waitForTimeout(600);
 
       await page.click('#idmp-tabstrip >> text=Invoice', { timeout: 8000 }).catch(function () {});
       await page.waitForTimeout(500);
