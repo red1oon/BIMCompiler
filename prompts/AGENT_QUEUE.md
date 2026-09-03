@@ -913,6 +913,30 @@ do not re-derive:
 **Do the measurement before the fix**, and make the witness able to say NO-OP — a memory "fix" that
 frees nothing while heap noise moves ±200 MB is the obvious failure mode here.
 
+### A-24 · ⚠ Clinic has NO CURTAIN WALLS — the glass walls are missing from the DATA, not the render
+**User 2026-09-03: "Clinic_extracted.db ... still appearing in canvas without its glass walls ... or
+not LOD400 to be exact."** Their instinct was right. Measured on their own `~/Downloads/Clinic.db`
+(the file now served, md5 `636c8ef1…`, verified byte-identical to the OCI object):
+- **`IfcCurtainWall` count = 0.** The OLD extraction had **31**.
+- **The 43 §NOGEO_COMPOSE ghost parents: 0 of them present.** Not one guid matches.
+- Element count **16,071 vs the old 16,912 — a gap of 841**, which is where the curtain-wall
+  assemblies and their children went.
+- Some glazing survives: **172 `IfcPlate` with alpha < 1**. So it is the ASSEMBLIES that are absent,
+  not all transparent geometry.
+**Nothing to fix in the viewer.** §CLINIC_GLASS (#1585) and the X-ray opacity restore (#1565) both
+still stand — they fixed transparent materials being given an opaque METAL preset. That defect is
+gone; this is a different, upstream one.
+**The lead: this looks like §T.4 client-side import schema gaps.** web-ifc was measured a strict
+SUPERSET on elements (0 missed on both files tested) but MISSING `spatial_structure`, openings and
+material-layer names. **Curtain-wall aggregates are plausibly the same class of gap** — a parent with
+no own Representation whose geometry lives on children, i.e. exactly what `rel_aggregates` carries.
+Verify against `internal/UNMERGED/Clinic_Architectural_IFC2x3.ifc` (the patch's own source, 726 pairs)
+whether the importer drops aggregate parents, then fix the importer — not the DB.
+**⚠ CLEANUP I OWE:** renaming the content under `Clinic_extracted.db` re-attached
+`buildings/patches/Clinic_extracted.db.sql` (200), a patch extracted against the OLD `Clinic_meta.db`.
+It is harmless today (`INSERT OR IGNORE`, and §NOGEO_COMPOSE finds no ghosts to compose) but it is
+stale against the content now under that name. Retire or regenerate it.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
