@@ -1470,3 +1470,34 @@ Everything below is merged and LIVE unless marked otherwise. Both repos: **0 loc
 2. **A doc claim ships with the query or `file:line` that proves it.** The rows that survived every audit carried a cite; the prose ones did not.
 3. **Check the instrument before believing the defect.** Four times this session a wrong instrument reported a defect in its subject: a 28-commit-stale `~/bim-ootb` checkout, a source-form grep against a **minified** deployed `sw.js`, a witness requiring a drifted copy, and **a wrong OCI namespace/region** (`axol6nvzzobs`/`ap-singapore-1` instead of `ax3cp6tzwuy2`/`ap-kulai-2`) that produced an ordinary 404 and got written into a spec as fact. Take OCI namespace+region from `deploy/OCI_UPLOAD.md` or a shipped constant, never from memory.
 4. **Fix a convention defect's siblings in the same block**, or you ship half of it (`crud_core` `UpdatedBy`/`Updated`).
+
+---
+
+# §ERP-SESSION 2026-09-03/04 — the ranked NEXT list, worked to zero
+Read with `§ERP-SESSION-CLOSE` above; this supersedes its **⬜ NEXT** block item by item.
+
+| # | item | outcome |
+|---|---|---|
+| **1** | `W-SCALE-FORECAST` fails 1 of 3 (batch = 0.8×) | ✅ **DONE (witness).** Two causes. **Engine:** `commitGroup` re-hashed every op it had already staged (`sealFrom(db, tipRow)` selects the group's own rows) — **4040 → 2040 digests** per 2,000 ops; each digest is an `await`, which is why batch lost under contention. **Instrument:** the claim was one un-repeated wall clock; now 3 interleaved reps on the **median**, plus `§SCALE-THRU-WORK` (digests + rows, contention-immune) and a `verifyChain` guard. **0.82× → 3.53× median** (worst rep 3.44×), claims 3 → 5. bim-ootb **#1638 MERGED**, sw v778. `prompts/PROD_SCALE_FORECAST.md` §10. |
+| **2** | `W-AD-DISPLAYLOGIC-LIVE` fails, unattributed; matrix not re-scored | ✅ **DONE (witness).** **Attributed: stale instrument, not a product gap.** It counted `.idmp-fld` + CamelCase `data-ad-column` from `_appendReadonlyFields` — *"the FALLBACK when a table has no crud spec"* (`idempiere.html:2946`) — which no document table has taken since **#1613**. Measured on the shipped path: c_order/100 `rows=56 hiddenByLogic=25`, `chargeamt` HIDDEN / `documentno` VISIBLE; fact_acct/1e6 `rows=46 hiddenByLogic=20`. Witness rewritten to judge the **DOM** over **2 tables**, falsifiers proven by swapping the named columns → **10 PASS / 0 FAIL**. Coverage matrix re-scored ✅, **6✅/33🟡 → 7✅/32🟡 of 42**. `ERP_IDEMPIERE_UX_PARITY.md` §P11. |
+| **3** | S-2 — relay is `http.createServer`, nothing deployed | ✅ **CODE HALF DONE**, ⛔**USER on the rest.** S-2 was two facts. `opts.tls` now arms `https.createServer` (absent ⇒ byte-identical http); `url`/`scheme`/`§RELAY_TLS` report the live transport so a deployment cannot believe it is on TLS while serving plaintext. `W-RELAY-TLS` **4/4** — the load-bearing line is `plaintextOnTlsPort=ERR:ECONNRESET`. W-RELAY-AUTH still **32/32**. **⛔ The other half is unchanged and not an agent's to close: no relay URL ships and nothing runs on real compute, so the live product is still single-writer-per-device.** `BACKEND_SUBSTRATE_LANE.md` §S2. |
+| **4** | the rebase push omits `user_tag` | ✅ **DONE (witness).** `rebase()` reapplied nine columns and `user_tag` was not one; it `DEFAULT 'local'`s, and `_canonicalV2` **signs** `actor: user_tag` — so after one sync a `user:bob` row read `local` and **its own signature stopped verifying** (`verifyChain true → false, why=signature`). `W-REBASE-USERTAG` 4 arms; on the pre-fix engine exactly 3 go red and DEFAULT UNCHANGED correctly stays green. bim-ootb **#1640 MERGED**, sw v779. `BACKEND_SUBSTRATE_LANE.md` §RB. |
+| **5a** | structural gap: **no vendor-invoice path** (three-way match cannot populate) | ✅ **CLOSED = E-5 / P2P Fix 5.** `CreateFromInvoice` (AD_Process 200143) ported as an AD_Process handler — **not** the form-seed hack the 2026-07-23 entry scoped, because the Java inserts finished lines and the user never types those columns. **`§INVOICE-FANOUT … matchInvOps 0 → 10`.** `W-CREATEFROM-INVOICE` **16/16**; it caught a real defect on its first run (`x \|\| null` collapsing a legitimate 0). bim-ootb **PR #1643** (auto-merge armed), sw v780. `ERP_P2P_INVOICE_MATCH.md` §Fix5. |
+| **5b–d** | `m_storageonhand` · Form renderer · 454 procs | ⬜ open, unchanged. **E-4 is the next operational-integrity item** (§E.UPDATE's ranking). |
+
+**Also fixed in passing, because they were instruments in the family being touched:**
+`poc_kernel`, `test_kernel_owner`, `test_kernel_sign` had been **dead since bim-ootb #88** moved
+`viewer/{manifest.json,erp_replay.js,erp_signer.js}` → `erp/` (`MODULE_NOT_FOUND`, same class as
+`test_tour_idempiere`). Repointed; all three PASS. Kernel-family standing FAILs **7 → 4** (the rest need a
+served app). `W-MULTIHOST-GATE` went RED naming the three network-core files this session changed — by
+design — and was **re-earned**: `W-MULTIHOST-SYNC PASS hosts=3/3 arms=6/6 epoch=9 tip=2cd9f87e4a22`.
+`W-ERP-TWIN` GREEN (64 pairs / 39 identical / 0 unreviewed / 0 broken).
+
+**⛔ USER, still open and untouched:** U-E1 (roster gate default-ON — *now clearly downstream of S-2(b): a
+gate that nothing runs is not yet a production question*), U-E2 (REVOKE authority), U-E3
+(`resolveFreshest()`), U-E4 (Period-on-Complete — recommendation on record: ship it **with** Open/Close
+Period), U-E5 (working-set/prune policy).
+
+**⬜ Found this session, named not buried:** `docs/internal/` is `.gitignore`d, so the coverage matrix —
+the project's headline scoreboard — survives only because it happens to be already-tracked. That is E-7's
+class (the evidence base one `git clean -x` from prose-only) and it now includes the scoreboard itself.
