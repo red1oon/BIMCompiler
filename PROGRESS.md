@@ -55,26 +55,26 @@ now 64 pairs / 0 unreviewed, and it fires on merge); `W-MULTIHOST-SYNC` + its co
   should be lively, so far it has never been though lighting has been bright"*). Measured on two real
   bakes bracketing #1622: CV **0.344 → 0.430**, spread 42.9 → 59.1 — but the **bright register
   drained** (brightest fifth 140.7 → 79.2). Lead: *the still's near-field boost never fires.*
-- **§Z.3 Clinic ground-slab appears late, then persists on scrub-back** — untouched. Two named
-  hypotheses in `LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §Z.
+- **§Z.3 Clinic ground-slab appears late, then persists on scrub-back** — untouched; two named hypotheses in `LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §Z.
+- **A-28 §CPE_REVEAL_ARCH_HOLD overshoot (TOP of the queue, user-set 2026-09-03)** — #1633 shipped, user
+  sees the ARCH strip at the LAST stick of round 2, not the first. **Suspect 1 (two reveal clocks) is
+  DISPROVEN by code read:** `beats.flyback` IS `tF` (`effects.js:8656`/`:7624`) and both callers pass the
+  same film fraction (`cinema_maxq.js:1511`, `cinema_path_editor.js:2532`). Next: `_flyBackPose` direction,
+  then whether `cpeRevealApplyVisual`'s write survives the per-frame staging rebuild. Detail in `AGENT_QUEUE.md` A-28.
 - **§FILM_UNSUPPORTED** — not started; take the short `--frames` re-scope, not a full bake.
 - **§LIGHT_SHAFT (D-5)** — specced, queued behind the lighting lane (shares `effects.js`).
-- ⛔USER decisions (12 open) live in `AGENT_QUEUE.md`: calibration lever (Hospital 318→940 d), LFS
-  8.53 GB pay-vs-rewrite, sub-element slab splitting, Terminal's 673 `Ceiling Level NN` elements.
+- ⛔USER decisions (12 open) in `AGENT_QUEUE.md`: calibration lever (Hospital 318→940 d), LFS 8.53 GB pay-vs-rewrite, sub-element slab splitting, Terminal's 673 `Ceiling Level NN` elements.
 
 ## Standing constraints added 2026-09-02/03
-- **Bakes are a proven, expensive facility, NOT a measurement tool.** Do not launch a film to settle a
-  number — ask first. Keep every `§` line on the bake path intact.
-- **4D generation is building-independent.** No per-building constants, no branching on a building
-  name. Audited clean: every building name in the scheduling files sits in a comment; the only
-  non-comment hits are the IFC classes `IfcFlowTerminal`/`IfcAirTerminal`/`IfcFireSuppressionTerminal`.
-- **DBs stay on OCI, GH Pages serves the app.** Settled with measurements — GitHub hard-rejects any
-  file >100 MB and every major DB exceeds it.
-- **Beware checks that cannot fail.** Four hit in one day: `eslint | tail` returning tail's exit code,
-  a witness reading its own comment block, a 0-byte log from a buffered `page.evaluate`, and a
-  `(none above = clean)` line printed unconditionally.
+- **Bakes are a proven, expensive facility, NOT a measurement tool.** Never launch a film to settle a number — ask first. Keep every `§` line on the bake path intact.
+- **4D generation is building-independent.** No per-building constants or name-branching. Audited clean:
+  every building name in the scheduling files sits in a comment; the only non-comment hits are the IFC
+  classes `IfcFlowTerminal`/`IfcAirTerminal`/`IfcFireSuppressionTerminal`.
+- **DBs stay on OCI, GH Pages serves the app.** Settled: GitHub hard-rejects any file >100 MB; every major DB exceeds it.
+- **Beware checks that cannot fail.** Five now: `eslint | tail` returning tail's exit code, a witness
+  reading its own comment block, a 0-byte log from a buffered `page.evaluate`, a `(none above = clean)`
+  line printed unconditionally — and A-28's 6/6-green witness that never judged a caller.
 
 ## Older session log
-Archived to `prompts/archive/PROGRESS_sessions_archived_2026-09-01.md` (2026-08-29 → 2026-08-14).
-The 2026-09-01/02 entries this file used to carry are superseded by the state above; per-lane detail
-lives in each lane's own `prompts/*.md`.
+Archived to `prompts/archive/PROGRESS_sessions_archived_2026-09-01.md` (2026-08-29 → 2026-08-14); the
+2026-09-01/02 entries are superseded above. Per-lane detail lives in each lane's own `prompts/*.md`.

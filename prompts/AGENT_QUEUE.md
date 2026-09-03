@@ -1092,7 +1092,40 @@ A 6/6 green witness that missed a user-visible defect is the lesson here, not an
 the four "checks that cannot fail" already recorded in PROGRESS.md.
 
 **Acceptance:** the ARCH strip begins when the camera is back at the FIRST stick (start of round 2),
-with the fully-lit retrace preserved before it. User's reason, unchanged: the lit return leg must
+with the fully-lit retrace preserved before it.
+
+**⚠ 2026-09-03 (later, same day) — SUSPECT 1 IS DISPROVEN BY CODE READ. Do not spend the next
+session on it.** Read directly in `~/bim-ootb` at `origin/main` `ba584dbc` (checkout fast-forwarded
+34 commits first — it was stale at #1608):
+- `effects.js:8656` builds the plan as `beats: { … pullout: tP, flyback: tF, reveal: tV, rise: tR }`
+  — `beats.flyback` **IS** the same `tF` the camera uses, `tF = tP + _useSec.flyback / _shapeTotal`
+  (`effects.js:7624`). One value, not two. The beats object and `poseAt` cannot disagree.
+- `poseAt`'s own branch order is unambiguous (`effects.js:7862-7874`): `[tP,tF]` = `_flyBackPose`,
+  documented *"fast eased retrace back onto the first stick"*; `[tF,tV]` = `_revealPose`, round 2
+  forward *"the fly-back above already put the camera on the first stick"*. So `tF` **is** the first
+  stick, and #1633's gate (`if (tNorm <= tF) return null`, `effects.js:5586-5587`) is gating on the
+  right instant by construction.
+- **Both callers pass the same normalization the beats live in** — bake `_tn = i / (nFrames - 1)`
+  (`cinema_maxq.js:1511` → `:1561`), preview `tn` (`cinema_path_editor.js:2532`, the same `tn` fed to
+  `roomTitleLiveTick`). No renormalization on either side.
+- `cinema_maxq.js:1403` `_revealU = _top.u` (topoutU 0.284) is the **BUILDUP/HUD** boundary, a
+  different question (when construction tops out), and `cpeRevealVisualAt`'s own comment already says
+  HUD highlights are driven from it, not from the ghost gate. It is not in the ghost's path.
+
+**So the ghost gate fires at the first stick. What the user SEES does not match that — which means
+the defect is downstream of the boundary, not in it.** The three unexamined candidates, in order:
+1. **`_flyBackPose`'s direction** — verify `f:1→0` actually ends ON stick 1 and not back at the last
+   stick (the retrace is authored backward; if its `f` is not inverted the retrace is a no-op and the
+   camera never leaves the last stick, which would match the report EXACTLY).
+2. **`cpeRevealApplyVisual`** (`effects.js:5651`) — the gate returns `phase:'ghost'` correctly but the
+   material/visibility write may not land until something else re-runs (staging is torn down and
+   rebuilt every frame — see the §SUN_ARC_STOMP_FIX comment at `cinema_maxq.js:1563` for the same
+   class of bug on the sun arc).
+3. **The preview the user actually watched** — was it a preview (`cinema_path_editor`) or a bake?
+   Only the bake was reasoned about above.
+
+**Unchanged and still the real lesson:** the witness must drive a REAL plan through a caller. A
+pure-function witness cannot see any of the three candidates above. User's reason, unchanged: the lit return leg must
 contrast against the gloomy first pass, when lighting legitimately was not installed.
 
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
