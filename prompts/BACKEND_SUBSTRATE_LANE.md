@@ -165,6 +165,48 @@ time this witness runs, not a one-time paragraph.
 
 ---
 
+### §MH.5 — instrument design, written before the code (2026-09-03)
+Roles, per run (`scripts/witness_multihost_sync.js`, log `build/erp/witness_multihost_sync.log`):
+
+| host | base | role(s) it plays |
+|---|---|---|
+| `here` | a real `http://127.0.0.1:<port>` origin serving `build/erp/` | publisher · sole source (arm 3) · **forger** (`/tamper`) · **stale** (`/stale`) · fork control (`/fork`) |
+| `GH` | `raw.githubusercontent.com/red1oon/BIMCompiler/mock/relay-snapshot` | replica · sole source · survivor |
+| `OCI` | `…/b/bim-ootb-dev/o/sandbox/erp` | replica · sole source · survivor · **stale** (`stale/relay_snapshot.json`, a second real stale host) |
+| `OCI-live` | `…/b/bim-ootb-live/o/sandbox/erp` | arm 4's dead host — a **real 404** (never published there; `deploy/live` untouchable), not a closed port |
+
+- **Epoch model.** A run does not regenerate a fresh chain (that would make "older" undecidable — two
+  unrelated 5-op chains have equal `len`). It EXTENDS the last published chain by ONE real double-entry
+  `POST` op (AR dr 1200.00 / Revenue cr 1200.00, `ts` = the run's recorded utc — no `Date.now()` in the
+  fold path), re-seals under the canonical `build/erp/kernel_ops.js`, signs the tip with the controller key.
+  The previous epoch is therefore a strict op_uuid PREFIX of the new one, so arm 6's "older" is decidable
+  by `len` + prefix — exactly what the old POC could not express. One op per run; a run happens only when
+  the gate demands it. Books are asserted too (`erp_period_close.foldBalances`, cents), not only the tip.
+- **Publish mechanics.** GH = Contents API PUT on the branch (the owner's `git push`); byte identity is
+  asserted at the immutable commit URL at once and at the branch URL after CDN propagation (measured
+  `cache-control: max-age=300`) — the propagation seconds are a reported number. OCI = GET+diff the target
+  first (OCI_UPLOAD.md rules 1/3), `oci os object put --content-type application/json` (rule 7), fetch-back md5.
+- **Reader** for arms 2-6 = the frozen `erp_replica_client` (`fetchSnapshot/fetchAll/resolve/replayAndVerify`)
+  plus a pure JUDGE in the witness that classifies each `fetchAll` entry CURRENT / STALE / DIVERGENT /
+  TAMPERED / UNREACHABLE: the longest verified chain wins, a shorter valid chain must be a prefix of it
+  (else DIVERGENT), a fork at the head is adopted only with a strict majority of valid hosts. The judge is
+  the instrument; the shipped `resolve()` is first-reachable-wins and has no freshness logic — that fact
+  is measured and reported in §MH-RESULT, not papered over.
+- **Blocking** for arm 3 = a fetch interceptor installed BEFORE the client binds `fetch` (it captures it at
+  require time); negative control asserts "all blocked → `all hosts unreachable`", so a guard that failed to
+  block cannot pass the arm.
+- **Tamper** = a self-consistified forgery (op mutated, tip recomputed with the same kernel) signed by a
+  forger key whose pubkey is EMBEDDED in the snapshot. Two halves asserted: an embedded-key reader WOULD
+  accept it (`verifyTip` under the embedded key = true), the pinned reader rejects it and adopts the next
+  good host; plus a structural check that the client calls `verifyTip(tip, sig)` with no key argument.
+- **Verdict structure.** The PASS marker is printed only inside `hosts_up === 3 && every arm PASS`.
+  Anything else is FAIL (exit 1) or INCONCLUSIVE (exit 2, a host unreachable outside arm 4, a publish that
+  could not be authenticated, propagation past the cap). VACUOUS if the population is empty. The run
+  record `scripts/multihost_run.json` is written on PASS only, so a failing run can never refresh the gate.
+- **Gate** = `scripts/check_multihost_gate.js` over `scripts/multihost_core.json` (bim-compiler paths hashed
+  from the working tree, bim-ootb paths from the `origin/main` blob as `check_erp_twins.js` does, plus the
+  instrument itself). Exit 0 same / 1 changed-or-missing-or-never-run / 2 vacuous manifest.
+
 ## §RELAY_AUTH 2026-09-03 — close S-1. Roster-verified `/push`, no new crypto, no new secret.
 
 **User directive (2026-09-03):** *"build the relay auth so S-1 stops being a showstopper."*
