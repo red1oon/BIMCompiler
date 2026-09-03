@@ -93,7 +93,10 @@ The question this lane exists to answer, in the user's words: **"Is this real? W
 scale? Are there any show stoppers to an enterprise user eventually?"** A witness that runs once and
 is quoted for three months cannot answer that. This one runs on a trigger.
 
-### §MH.0 — measured 2026-09-03, before writing a line of it. The prior proof has DECAYED.
+### §MH.0 — ⚠ THE TABLE BELOW IS WRONG. Read the CORRECTION under it before quoting anything here.
+*(Heading rewritten 2026-09-03 after the witness disproved the section. Original heading: "measured
+2026-09-03, before writing a line of it. The prior proof has DECAYED." Kept, not deleted, because the
+mistake is more instructive than the conclusion was.)*
 The 3-host convergence claim on record (`project_erp_sync_fsm`, W-REPLICA: *"LIVE on dev … all 3 up,
 identical tip, 0 errors"*) is **no longer true as stated**. Probed directly today:
 
@@ -116,6 +119,18 @@ sandbox generally 3.5 months stale). **Do not re-state the 3-host claim until th
 > `project_erp_sync_fsm`). So the decay was not "a host lost the object" but "nothing re-measured for 3 months" —
 > which is exactly what §MH.3's gate now closes. The two-host statement is withdrawn; three hosts were serving
 > identical bytes, and until this witness nobody could prove it.
+>
+> **ROOT CAUSE of the wrong rows — the coordinator probed the wrong OCI tenancy.** The 404s came from
+> namespace `axol6nvzzobs` in region `ap-singapore-1`; the project's real bucket is namespace
+> **`ax3cp6tzwuy2`** in region **`ap-kulai-2`** (`witness_multihost_sync.js:48-49`). A wrong-tenancy URL
+> returns a perfectly ordinary 404, indistinguishable from a deleted object, and it was then written into
+> a spec and briefed to an agent as fact. Re-verified by the coordinator after the run: all four
+> `axol6nvzzobs`/`ap-singapore-1` paths 404, while `ax3cp6tzwuy2`/`ap-kulai-2` `sandbox/erp/relay_snapshot.json`
+> is **200 / 2,284 B** and its `stale/` sibling **200 / 1,789 B**. **Always take the OCI namespace and region
+> from `deploy/OCI_UPLOAD.md` or a shipped constant — never assemble an object URL from memory.**
+> This is the third instance today of the same failure shape: a check whose *instrument* was wrong reported
+> a defect in its *subject* (cf. the 28-commit-stale `~/bim-ootb` checkout, and grepping the minified
+> deployed `sw.js` with a source-form pattern).
 
 
 ### §MH.1 — what is architecturally settled, and must NOT be re-litigated
