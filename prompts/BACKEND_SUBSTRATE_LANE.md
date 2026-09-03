@@ -237,3 +237,65 @@ rejects everything and would otherwise look like a perfect gate.
 - **S-4 stands** — unrelated.
 - The relay remains **untrusted by design**. This gate protects the relay's availability; it does not
   and must not become a source of truth clients rely on.
+
+### §RA-RESULT 2026-09-03 — W-RELAY-AUTH 🟢 32/32 checks, 11 arms. S-1 closed IN THE CODE, still open IN PRODUCTION.
+Commits (bim-compiler `fable/meshdb-livewire`): `95617ba6c` (server, WIP — committed by the coordinator mid-rate-limit),
+`16ef0d98a` (server finding-fix + witness, VERIFIED). Files: `build/erp/erp_relay_server.js` (copy-only, no shipped
+twin), `scripts/test_kernel_relay_auth.js`. Modules composed on and NOT modified: `erp_key_epochs.js` (verifyRoster),
+`erp_snapshot_sign.js` (verifyTip), `kernel_ops.js` (_contentHash/_isV2) — W-ERP-TWIN still 🟢 0 unreviewed / 0 broken.
+Run: `bash build/erp/run_witness.sh scripts/test_kernel_relay_auth.js` → `build/erp/test_kernel_relay_auth.log` (gitignored).
+
+| arm | measured (from the log) | falsifier that fired |
+|---|---|---|
+| §RA-PIN | roster signed by a rogue HQ key → `listen()` throws `roster refused — roster signature invalid`; relay never starts | a non-pinned HQ |
+| §RA-VACUITY | empty roster: valid member op → 403 `unknown_kid`, head=0; guard prints `VACUOUS` (devices=0), not PASS | an empty roster looks perfect |
+| 1 ADMIT | A syncs via the REAL `FSM.rebase` → head=2, /snapshot=2, both rows verify under A.pub over the content hash, `signed_by`=A, A's chain still verifies; signed op = **521 B** | — |
+| 2 REJECT-UNSIGNED | v1/unsigned row → 403 `not_content_signed`; signed_by-but-sig-stripped → 403 `shape`; **head 2→2, snapshot 2→2** | — |
+| 3 REJECT-UNKNOWN-KID | X's 5 ops verify under X's own key (`selfVerify=true`) yet 403 `unknown_kid`×5; **head 2→2** — the anonymous flooder | X is validly self-signed |
+| 4 REJECT-REVOKED | C op admitted (seq 3), A's REVOKE(C) admitted (head 4); C's next op 403 `revoked_kid`, **head 4→4**; C's past op still at seq 3 and verifies under C.pub | burn-not-reattribute kept |
+| 4b ROTATE | B→B2 ROTATE admitted; B then 403 `superseded_kid`; B2 admitted (head 6) | outgoing key retired |
+| 5 REJECT-TAMPERED | amount 100→100000 after signing → 403 `bad_sig`, verify_attempts 6→7 (reached ECDSA exactly once); identical re-push → attempts flat (failure cache); **head 6→6** | — |
+| 5b V1-REPLAY | a v1 `(op_hash,sig)` copied onto a fresh op_uuid **DOES verify** (`verifyTip(op_hash)=true`) → refused at SHAPE, no ECDSA, head 6→6 | why v1 is refused, not verified |
+| 6 ORDERING | 200-op unknown-kid flood → 403 `unknown_kid`×200, **verify_attempts 7→7 FLAT**; 501 ops → 413 `too_many_ops`; 1.2 MiB body → 413 `body_too_large` before parsing; whole-log re-push → skipped=6, attempts flat; head 6→6 throughout | CPU DoS would show as attempts rising |
+| 6 residual | known-kid + garbage sig (kid is public in every snapshot): 50 ops → attempts +50, **~740 µs/op** (37 ms/50), head unchanged | stated, not hidden |
+| 7 IDEMPOTENCE | `scripts/test_kernel_relay.js` md5 == committed blob (last touched `223894a83`/2026-09-02), child run exit 0 + `🟢 ALL PASS` (9 green) in **OPEN** mode; gated restart from JSONL replays head=6 + 2 control ops (revoked=1 superseded=1): C still refused, B still refused, B2 admitted | editing W-RELAY would have been a finding — it was not needed |
+
+**As shipped.** `createRelayServer({roster, hqPub?, maxBody?, maxOps?})`: roster ABSENT → **OPEN** (pre-gate `_accept`,
+byte-identical, logged `§RELAY_AUTH mode=OPEN — S-1 OPEN`); roster PRESENT → verified under the pinned HQ key at
+`listen()` (unverifiable roster = refuse to start). Layers: cap (1 MiB / 500 ops ≈ 254 KB at 521 B/op; OPEN keeps the
+old 50 MB guard) → shape (`_sigv:2`, `signed_by`, 128-hex sig) → op_uuid dedup → roster (unknown / revoked /
+superseded) → ECDSA over `sha256('cs2|'+_canonicalV2)` LAST, bounded 10k `(op_uuid|sig)` failure cache. Admissible =
+in roster ∧ not revoked ∧ not superseded (the N-writer `verifyMultiDeviceOps` model + erp_key_epochs' burn model);
+REVOKE/ROTATE only ever REMOVE admissibility and are re-derived from the JSONL on boot against the CURRENT roster.
+Response: `{accepted, skipped, rejected, reasons, head}`; 403 only when nothing in the push was admissible; `/health`
+carries `auth:{mode, devices, verify_attempts, verify_ms, rejected_total, reasons}`.
+
+**Findings (each changed the code or is recorded because it did not).**
+1. **§RA.2's roster-before-dedup order is wrong by one slot and W-RELAY-AUTH caught it:** the literal order returned
+   `skipped=4 rejected=2 {revoked_kid, superseded_kid}` for a re-push of the canonical log — ops already IN the log
+   counted as refused. Every device's `rebase()` re-pushes its whole log, so after any REVOKE that inverts W-RELAY's
+   idempotency contract, and a push of only canonical rows would 403 → `erp_relay_client._json` throws. Shipped
+   dedup-before-roster (both O(1) lookups; verify still last, arm 6 unchanged).
+2. **v1 rows are refused, not verified (§RA-5b):** a v1 sig attests a client-asserted `op_hash` the relay cannot recompute
+   and that is not bound to `op_uuid`; a copied pair "verifies" and would re-open S-1. Only `_sigv:2` content-signed ops
+   (the shipped `idempiere.html:861 setContentSigning(true)` path) are admissible.
+3. **`user_tag` is not transmitted by the rebase push** (`erp_sync_fsm.js:179` SELECT omits it, so does
+   `erp_sync_relay.pushRows`), so the relay hashes `actor:'local'`. Every witnessed op has the default tag; an op
+   committed with a non-default `user_tag` would fail verification at the relay until the client sends it. Not fixed here
+   (`erp_sync_fsm.js` SHIPS — a twin change belongs to a bim-ootb PR), recorded so the first real-app push finds it here.
+4. **The default is still OPEN.** Flipping it would break W-RELAY (which pushes unsigned ops with no roster) — the very
+   regression contract arm 7 protects. A deployment closes S-1 by passing a roster; the OPEN log line is the tell.
+5. **Residual CPU cost is bounded per request, not per source:** ~740 µs per known-kid garbage sig, ≤500 per push.
+   Per-source rate limiting is the reverse-proxy/host layer's job (S-2 territory), not invented here.
+
+**§RA.4 restated — what this did NOT do.** No relay runs on real compute over https anywhere today, so **S-1 is closed
+in the code only**; it dies in production when a gated relay is deployed and reachable over https (S-2 stands —
+still `http.createServer`). S-3 stands (a roster proves a key signed, never that a human held it). S-4 stands. The
+relay stays **untrusted by design**: clients verify on replay exactly as before; the gate is an availability control,
+nothing about it is a source of truth (§MH.1 unchanged). The 3-host claim in §MH.0 is not touched by this work.
+
+**Open decisions (not blocking delivery; each is a one-line change once decided):**
+- ⛔ BLOCKED: should the relay's DEFAULT become gated (refuse to start without a roster)? That requires W-RELAY to be
+  given a roster + signed ops, i.e. editing the regression contract — a user call, not this lane's.
+- ⛔ BLOCKED: who may REVOKE whom in the N-writer relay? Shipped = any admissible roster kid (the flat generalisation of
+  `erp_key_epochs.js:116` "signed by the active key"); the tighter alternative is self-revoke or `genesisKid` only.
