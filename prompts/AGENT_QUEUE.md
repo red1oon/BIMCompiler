@@ -1063,6 +1063,38 @@ Modeller's git-resident ARC reference DBs and the rules DBs (`str_walker_outline
 **Update `CLAUDE.md`'s DB section in the same pass** — leaving the old doctrine standing is how this
 comes back.
 
+### A-28 · ⚠ §CPE_REVEAL_ARCH_HOLD OVERSHOT — strip lands on the LAST stick, not the first
+**User previewed #1633 (`11733141`) 2026-09-03: "not starting at first stick but LAST stick in 2nd
+round."** So the strip moved in the RIGHT DIRECTION but went too far. Do not revert #1633 — diagnose
+the clock, then land the correct boundary.
+
+**What #1633 did:** `A.cpeRevealVisualAt` (`effects.js:5586`) now gates the ghost on
+`b.flyback` instead of `b.pullout`. Its witness `witness_reveal_arch_hold.js` is **6/6 GREEN with a
+working red control** — but it tests the PURE FUNCTION in isolation against a synthetic beats object.
+**It never judged the caller.** That is the gap this defect lives in.
+
+**PRIME SUSPECT — there are TWO independent reveal boundaries, on different clocks:**
+1. `plan.beats.flyback` (`effects.js`, normalized film fraction) — what #1633 gates on. Built as
+   `tF = tP + _useSec.flyback / _shapeTotal` (`effects.js:7888`).
+2. **`cinema_maxq.js:1403` `_revealU = _top.u` — "where the Reveal 2nd round starts", sourced from
+   `§CPE_BUILDUP_TOPOUT topoutU`.** A real HHS bake shows `§CPE_STATS_TAIL reveal round entered at
+   frame 558/1969 u=0.284 boundary=topoutU 0.284`.
+**If `b.flyback` and `topoutU` are not the same instant, the ghost lands somewhere the beats say but
+the film does not.** Check whether `_tn` passed to `cpeRevealApplyVisual(plan, _tn)`
+(`cinema_maxq.js:1561`) is expressed in the SAME normalization the beats are.
+
+**Callers to check — the file claims "one pure function, two callers" so they must not diverge:**
+`cinema_maxq.js:1561` (bake) · `cinema_path_editor.js:2532` (preview) · restore calls at
+`cinema_maxq.js:1815/1884` and `cinema_path_editor.js:2589`.
+
+**The fix must extend the witness to judge a REAL plan through a caller**, not only the pure function.
+A 6/6 green witness that missed a user-visible defect is the lesson here, not an aside — same class as
+the four "checks that cannot fail" already recorded in PROGRESS.md.
+
+**Acceptance:** the ARCH strip begins when the camera is back at the FIRST stick (start of round 2),
+with the fully-lit retrace preserved before it. User's reason, unchanged: the lit return leg must
+contrast against the gloomy first pass, when lighting legitimately was not installed.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
