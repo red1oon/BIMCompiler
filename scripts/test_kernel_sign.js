@@ -65,7 +65,7 @@ var KERNEL = path.join(process.env.HOME, 'bim-ootb', 'viewer', 'kernel_ops.js');
 // multi-DB witness, take a fresh instance per fresh DB so ensureTable runs — same dodge as
 // test_kernel_identity.js. (_signer is module-scoped, so each instance gets its own setSigner.)
 function freshK() { delete require.cache[require.resolve(KERNEL)]; require(KERNEL); return global.window.KernelOps; }
-require(path.join(process.env.HOME, 'bim-ootb', 'viewer', 'erp_signer.js'));   // browser-pure → attaches window.ErpSigner
+require(path.join(process.env.HOME, 'bim-ootb', 'erp', 'erp_signer.js'));   // browser-pure → attaches window.ErpSigner
 var S = global.window.ErpSigner;
 
 var fails = 0;

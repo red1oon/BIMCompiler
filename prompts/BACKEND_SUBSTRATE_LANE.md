@@ -435,3 +435,57 @@ nothing about it is a source of truth (§MH.1 unchanged). The 3-host claim in §
   given a roster + signed ops, i.e. editing the regression contract — a user call, not this lane's.
 - ⛔ BLOCKED: who may REVOKE whom in the N-writer relay? Shipped = any admissible roster kid (the flat generalisation of
   `erp_key_epochs.js:116` "signed by the active key"); the tighter alternative is self-revoke or `genesisKid` only.
+
+---
+
+## §RB 2026-09-03 — `rebase()` drops `user_tag`, so a non-default actor's signature dies on every sync
+
+`AGENT_QUEUE.md §ERP-SESSION-CLOSE` NEXT item 4. Specced here BEFORE the code (Spec-First).
+
+### §RB.1 THE DEFECT — verified by code read, `file:line` cited
+`erp/erp_sync_fsm.js:179` selects, and `:186` re-inserts, exactly nine columns:
+`op_uuid, timestamp, op_type, parameters, input_guids, output_guid, gid, branch_id, sig`.
+**`user_tag` is not among them.** `kernel_ops.js:42` declares the column
+`TEXT DEFAULT 'local'`, so every rebased row is silently rewritten to `'local'`.
+
+That matters because `kernel_ops.js:_canonicalV2` (:240-249) signs `actor: op.user_tag` — a **v2
+content-signed** row's signature attests its `user_tag`. `_sigBase` (:259) hands that content hash to
+the verifier, and `sealChain`'s `if (_signer && !sig)` guard deliberately does NOT re-sign a row that
+arrives with a sig intact. So after one rebase, a row committed by `user:bob` carries **bob's signature
+over `actor:"user:bob"`** while the stored row now says `actor:"local"` → the content hash no longer
+matches → **verification fails for every non-default actor**. Rows from the default `'local'` actor are
+unaffected, which is exactly why this has never shown up: every witness to date commits as `'local'`.
+
+This is the same class as the S7 fix the function's own docblock describes (`gid`/`branch_id`/`sig` were
+being blanked by the rewind+reapply). `user_tag` was the one column that fix missed.
+
+### §RB.2 THE FIX
+Carry `user_tag` through the rewind+reapply, exactly as `gid`/`branch_id`/`sig` are — SELECT it, push it,
+re-INSERT it, `COALESCE` to `'local'` only when the source row genuinely has none (so a pre-`user_tag`
+log still rebases to the same bytes it does today). No kernel change: `sealChain` already reads
+`user_tag` (:311) and hashes it, so the correct value simply has to be there when it looks.
+
+### §RB.3 THE WITNESS — `W-REBASE-USERTAG`, arms that can each fail
+Added to `scripts/test_kernel_rebase.js` (the function's existing witness), driving the REAL kernel +
+the real sequencer stub, with a real ECDSA signer:
+1. **PRESERVE** — a row committed with `user_tag='user:bob'` still reads `'user:bob'` after rebase.
+   (Pre-fix this reads `'local'` — the falsifier is the defect itself.)
+2. **SIG SURVIVES** — that row is v2 content-signed; `verifyChain` returns `ok` after the rebase.
+   This is the arm that fails today.
+3. **DEFAULT UNCHANGED** — a `'local'` row still rebases to `'local'` and still verifies, so the fix
+   cannot be a no-op that merely stops asserting.
+4. **NOT VACUOUS** — the test asserts the population it judged was non-empty and that at least one row
+   carried a non-default actor; otherwise it prints INCONCLUSIVE, never PASS.
+
+### §RB.0 (found while specing §RB) — three kernel witnesses had been dead since bim-ootb #88
+`poc_kernel`, `test_kernel_owner`, `test_kernel_sign` all exited `MODULE_NOT_FOUND`: they required
+`bim-ootb/viewer/{manifest.json,erp_replay.js,erp_signer.js}`, which **bim-ootb #88 (`9862d935`,
+"ERP app gets its own /erp/ folder home — structural move") moved to `erp/`**. Same failure class as
+`test_tour_idempiere`, fixed in the previous session. Repointed to `erp/`; all three now PASS:
+```
+§KERNEL PASS — apply+commit rich ops, violation BLOCKED, replay exact, frozen effects hold
+§OWNER  PASS — merge is clash-free + holder-irrelevant; owner-gate and CAS reject the loser
+§SIGN   PASS — wrong key fails, holder cannot forge, chain stays stable, custody reused across reloads
+```
+That drops the kernel-family's standing FAILs from **7 to 4**; the remaining four
+(`poc_kds_live`, `poc_pos_live`, `poc_replenish_live`, `poc_wh_cache`) need a served app, not a path fix.
