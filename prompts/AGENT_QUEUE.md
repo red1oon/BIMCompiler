@@ -866,7 +866,16 @@ make the class list a hint rather than the actual decision — D-3's own refinem
 not class, and is the model to follow. ⚠ Changing it changes which elements get smoothed: measure
 the population delta per building before and after.
 
-### A-21 · ✅ **DONE (witness) 2026-09-03 — bim-ootb PR #1635** · §R15 DLOD budget controller: the loop integrated on stale, saturated feedback
+### A-21 · ⛔ **BLOCKED ON ONE DECISION 2026-09-03 — #1635 MERGED then DISARMED by #1637; witness verdict FAIL** · §R15 DLOD budget controller: diagnosis DONE + reproducible, fix does what it was designed to do but does NOT yet make the tour faster overall
+**⚠ WHAT IS ACTUALLY LIVE ON `main` RIGHT NOW — read this before touching the lane.** #1635
+**auto-merged (`4362b0f9`) before the second witness run returned**; CI was green
+(fast-checks + e2e both SUCCESS), so the bot took it. Once run 3 came back FAIL, **#1637 disarmed
+the behaviour change**: `budgetFreshGate` / `budgetAntiWindup` now default **false**, which is the
+pre-§R15 integrator byte-for-byte (the witness's own LEGACY arm proves that equivalence).
+**So the controller on `main` behaves exactly as it did before this item.** What DID stay live, and
+is pure gain: the §R15 counters (`passSeq` / `budgetTicks` / `budgetStaleTicks` /
+`budgetWindupTicks`), the richer `§DLOD_NAV_BUDGET` line (`elig=` `upBlocked=` `pass=`), and the
+`§ROOM_OCCL_INDEX_ERR` noise fix. Re-arming is a two-flag flip, nothing to re-implement.
 **Diagnosis MEASURED, not inferred** (`witness/probe_r15_tour.js`, real RTX 4060, 7,446 samples —
 full writeup `prompts/CPE_4D_PERF_MEM_STUDY.md` §R15):
 - `§R15_C1 budgetTicks=2038 staleTicks=1120 stalePct=55.0 passes=930` — the controller's clock is a
@@ -894,6 +903,22 @@ Both live-flippable, so both-off restores the pre-§R15 integrator byte-for-byte
 `§FPS_MODE mean` **32.7->30.2 ms**, calls **313->187**. The dive-back-in phase — the user's
 `started=21638` burst, reproduced — goes **56.9 -> 24.4 ms (-57.1%)** with 12,610 active elements
 becoming 919; deepest-inside **79.2 -> 57.3 ms (-27.7%)**.
+
+**⛔ THE ONE QUESTION — this is the decision, and it is not mine to make:** the fix trades a **better
+worst case for a flat-to-worse typical case**. Re-arm the two levers now (worst-case win: re-entry
+56.9->24.4 ms, p95 down, windup gone; typical-case cost: whole-cycle mean flat-to-+1.1%, three phases
+15-45% slower on run 3), or leave them off and re-arm together with A-27 (the demote-side fade burst
+that IS the regression)? **Nothing is being lost while they sit off — the diagnosis, the counters and
+the witness are all on `main` already.**
+
+**⚠ RUN 2 vs RUN 3 — the frame-time claim does NOT reproduce (§R15.5).** The MECHANISM result
+reproduces exactly (boostSpan 60->4, boost changes 174->12, windupTicks ->0, best phase gain
+-57.1%/-59.3%). The FRAME-TIME result does not: whole-cycle `dt_mean` was -0.5% on run 2 and
+**+1.1% on run 3** — the sign flips, so run-to-run variance is the same size as the effect and there
+is NO measured mean win to claim in either direction. Run 3 also has **3** phases worse by >10%
+(bin 0 **52.4->60.6 ms**, bin 1 21->25 ms, bin 2 17.4->25.2 ms) against 1 on run 2. Every regressed
+phase has the FIXED build drawing FEWER draw calls, so the added ms is demote-side fade work, not
+rendering. `§R15_CONVERGE ... verdict=FAIL` both times; **the gate was left exactly as written.**
 
 **⚠ NOT claimed, read this before citing the fix:** whole-cycle `dt_mean` is **FLAT (22.06->21.96 ms)** —
 the big gains at re-entry/inside are offset by small losses in the aerial phases where both arms already

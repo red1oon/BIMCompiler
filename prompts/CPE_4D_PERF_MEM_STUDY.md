@@ -1292,3 +1292,77 @@ faster; the measured split is 2 of 4 (both big wins, both small losses), so `g3=
 been left exactly as written rather than relaxed to match the data — see A-13's own rule about not
 making a baseline green by moving it. Read the verdict as: **the mechanism defect is fixed and
 measured; the end-to-end frame-time claim is not carried by this sweep.**
+
+### §R15.5 SECOND RUN — the frame-time claim does NOT reproduce, and the fix is therefore NOT shippable as-is
+
+W-BUDGET-CONVERGE was run twice, identically (`witness/w_budget_converge.run2.log`, and the third
+run kept as `witness/w_budget_converge.log`). **The mechanism result reproduces exactly. The
+frame-time result does not.**
+
+| | run 2 | run 3 | reproduces? |
+|---|---|---|---|
+| `boostSpan` LEGACY→FIXED | 60 → 4 | 60 → 4 | ✅ exact |
+| boost changes | 174 → 12 | 174 → 12 | ✅ exact |
+| `windupTicks` | 314 → 0 | 328 → 0 | ✅ |
+| best phase gain (dive-back-in) | −57.1% | **−59.3%** | ✅ |
+| `dt_p95` | 56.6 → 51.8 (−8.5%) | 57.2 → 54.5 (−4.7%) | ✅ direction |
+| **`dt_mean` whole cycle** | 22.06 → 21.96 (**−0.5%**) | 22.12 → **22.36 (+1.1%)** | ❌ **sign flips** |
+| **phases worse by >10%** | **1** (bin 2, +41.8%) | **3** — bin 0 +15.6% (52.4→60.6 ms), bin 1 +19% (21→25 ms), bin 2 +44.8% (17.4→25.2 ms) | ❌ **worse** |
+| `flips_mean` | +66.6% | **+83.6%** | ❌ direction holds, magnitude grows |
+| `§DLOD_TICK ms_mean` | 2.72 → 2.35 (−13.6%) | 2.51 → 2.47 (−1.6%) | ⚠ the tick saving is noise-level |
+
+```
+§R15_CONVERGE g1_actuator_stops_swinging=true g2_windup_gone=true
+              g3_loaded_phases_faster=false noop=false redControlReproduced=true verdict=FAIL
+```
+
+**The witness said FAIL both times and the gate has not been touched.** Whole-cycle `dt_mean` moves
+by ±1%, i.e. **the run-to-run variance is the same size as the effect**, so there is no measured
+frame-time win to claim in either direction. What run 3 adds is worse news than run 2: **three**
+phases regress by 15-45%, including bin 0 at **52.4 → 60.6 ms** — that one is *not* a cheap phase.
+
+**Diagnosis of the regression, from the same numbers:** every regressed phase has FIXED drawing
+**fewer** draw calls than LEGACY, so the added milliseconds are not rendering. They are demote-side
+`_startFade` transition work and the full `instanceMatrix` re-upload each flip forces — the same
+mechanism as the `flips_mean` rise. Holding the boost near 0 keeps more elements boxed
+(124,322 vs 122,990), and the cost of *getting* them boxed, on a moving camera, is now the dominant
+transition cost. That is A-27.
+
+**Conclusion, stated plainly rather than shaded:**
+- The **diagnosis is complete and reproducible** — §R15.2's `stalePct=55.0` / `windupTicks` /
+  full-scale sawtooth, and the attribution of the cost to draw calls rather than to flips.
+- The **controller fix does what it was designed to do**, reproducibly: no more full-scale excursion,
+  no more windup, 93% fewer forced re-partitions, and the re-entry spike more than halved.
+- It **does not yet make the tour faster overall**, and on the second run it made three phases
+  measurably slower. **PR #1635 is therefore NOT ready to merge on this evidence**, and A-21 is
+  recorded as blocked on one decision rather than closed green. Shipping it as-is would trade a
+  better worst case for a worse typical case, and that is a call to make deliberately, not by
+  default.
+
+### §R15.6 WHAT ACTUALLY LANDED — #1635 auto-merged before the second run; #1637 disarmed it
+
+**Recorded because the sequence matters and would otherwise be invisible to the next session.**
+PR #1635 was opened with the intent of marking it not-ready. CI went green (fast-checks + e2e both
+SUCCESS) and the repo's auto-merge bot took it — squash `4362b0f9` — **before run 3 returned the
+FAIL that §R15.5 records.** The attempt to convert it to draft then reported "Pull request #1635 is
+closed", which is how the merge was discovered.
+
+The correction is **#1637**, not a revert: `budgetFreshGate` and `budgetAntiWindup` default
+**false**, which the witness's own LEGACY arm proves is the pre-§R15 integrator byte-for-byte. So
+**the controller's shipped behaviour on `main` is exactly what it was before this item**, and the
+two rules are one flag-flip from being re-armed once A-27 lands.
+
+**Everything else from #1635 stayed live, and all of it is pure gain:**
+- the controller-health counters `passSeq` / `budgetTicks` / `budgetStaleTicks` / `budgetWindupTicks`
+  — the instruments that produced `stalePct=55.0` in the first place, now permanently available;
+- `§DLOD_NAV_BUDGET` carrying `elig=`, `upBlocked=` and `pass=`, so the loop's state is readable off
+  the shipped log rather than re-derived (PRIMAL LAW 3);
+- the `§ROOM_OCCL_INDEX_ERR no such column: r.center_x` noise fix;
+- `witness/probe_r15_tour.js` and `witness/w_budget_converge.js` themselves, both tracked
+  (`git add -f` — `witness/` is gitignored, which is why the existing `w_budget_*.js` are all
+  force-added too).
+
+**Lesson worth carrying, stated plainly:** on this repo a green CI is enough for the bot to merge,
+so **"I will mark it not-ready after the next run" is not a plan** — a PR whose evidence is still
+in flight should be opened as a **draft**, or not opened until the evidence is in. The cost here was
+recoverable in one follow-up PR; it would not always be.
