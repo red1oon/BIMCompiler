@@ -2843,3 +2843,282 @@ geometry choke point, and the only place refinement can happen: both batch paths
 correctly with no batch change) · `viewer/streaming.js` (reports next to `§MEP_SMOOTH_NORMALS`, so
 the shading half and the outline half are read together) · `viewer/sw.js` `CACHE_VERSION v1128→v1129`
 + precache entry · `viewer.html` `scene.js?v=58→59`, `streaming.js?v=68→69`, all in the same commit.
+
+---
+
+## §SFR_FIXTURE_FIRST — U-11 re-scoped: *"Will room lighting be better if it has no Sun?"* + *"it should be LIVELY"* (2026-09-02/03)
+
+> **User:** *"Will room lighting be better if it has no Sun?"* — light a room from its OWN fixtures
+> rather than from sun/environment fill.
+> **User, same session:** *"About room lighting, it should be LIVELY. So far it has never been,
+> though lighting has been BRIGHT."*
+
+**⛔ NOT DONE. Nothing shipped from this section. Read §SFR_NEXT at the bottom for the one blocking
+item.** What IS settled below is settled with numbers; what is not is named as not.
+
+### 0. THE HEADLINE CORRECTION — `pl = 0.00000` WAS AN INSTRUMENT ARTEFACT, AND TWO PUBLISHED CLAIMS ABOVE ARE WRONG
+
+`§SUN_FILL_RATIO`'s own record states, twice, that the staged fixture point lights contribute
+nothing: *"`pl` measured 0.00000 on the away facade in every run"* and `§SFR_INTERIOR_DECOMP`'s
+*"`pl=0.00000` … So the room is left on the non-directional fill alone."* **Both are false.** They
+came from one line in `viewer/tests/witness_sun_fill_ratio.js`'s light-group isolator:
+
+```js
+if (!W._plI) W._plI = new Map(ls.map(l => [l.uuid, l.intensity]));
+ls.forEach(l => { const v = W._plI.get(l.uuid);
+                  l.intensity = on ? (v === undefined ? l.intensity : v) : 0; });
+```
+
+First use is the **plainNav** decomposition, where night mode is off and there are **zero** point
+lights — so the restore map was captured EMPTY and never rebuilt. At Alt+S the ~216 staged fixture
+lights are all absent from it, so `off` set every one to 0 and `on` restored
+`l.intensity = l.intensity` = **0**. From the first `pl` toggle onward the fixture pool was dark for
+the rest of the run. The closure check could not catch it, because the all-on reference render for
+the *second* wall side was itself taken after the lights were already zeroed (0 − 0 = 0, closure
+1.000). The same bug shape sat in the `env` and `emissive` groups — and the emissive one explains the
+other published oddity, `emissive=0.00055` and the Clinic interior decomposition that *"could not
+account for 55% of that frame"*: `A._applyNightGlowToMatCache()` CREATES the luminaire/window glow
+during staging, so a set captured at plainNav does not contain the materials the group exists to
+measure.
+
+**Corrected, both buildings, real renders, fixture pool live and re-selected at every pose**
+(`§SFR_INTERIOR_DECOMP`, GREEN/shipped state):
+
+| interior standpoint | total | ambient | hemi | env | **pl (fixtures)** | emissive | closure |
+|---|---|---|---|---|---|---|---|
+| Hospital `≈ Level 1 R18` | 0.33102 | 0.09045 | 0.08146 | 0.04469 | **0.09724 (29.4 %)** | 0.00387 | 0.960 |
+| Clinic `≈ First Floor R62` | 0.32692 | 0.06048 | 0.05472 | 0.03378 | **0.07111 (21.8 %)** | 0.00816 | 0.699 |
+
+**The room is NOT "left on the non-directional fill alone." The fixtures are already its single
+largest directional term.** Clinic's 0.699 closure is the sky-through-a-window term this file
+already named — unchanged and still not chased.
+
+Away-facade `pl`, corrected: Clinic **0.00753 of 0.16429 (4.6 %)**, Hospital **0.00029 of 0.13786
+(0.2 %)**. Still small — so the *conclusion* PR #1622 shipped on (the HDRI matte fill was the cause)
+is unaffected — but "certainly not the cause" was being asserted from a number that was not measured.
+
+**Re-proved endpoints with the corrected instrument** (`§SFR_REDGREEN`, `§SFR_CONTROL` drift
+0.00000 on Clinic): plainNav **0.2414 / 0.2371**, RED **1.0434 / 1.0608**, GREEN **0.2526 / 0.2839**.
+The shipped separation is **0.2526 (Clinic) / 0.2839 (Hospital)**, not the 0.2388 / 0.2347 recorded
+above — that pair was measured with the fixture lights artificially at zero. **Use these numbers.**
+
+### 1. THE SECOND DEFECT — THE STILL'S NEAR-FIELD BOOST NEVER FIRES ON AN INTERACTIVE Alt+S
+
+`tools.js` defines two constants *for the frozen still specifically*:
+`A._nightNearFadeFloorStill = 1.0` (*"still: no proximity penalty at all"*, `tools.js:1089`) and
+`A._nightMaxLightsStill = 50` (`tools.js:1087`). `effects.js`'s §NIGHT_STILL_LIGHTS block applies
+them — but it is guarded:
+
+```js
+// effects.js:4918
+if (A._nightStillBoost &&
+    A._nightLights && A._nightLights.length && typeof A._nightUpdateLights === 'function') {
+  A._nightMaxLights      = A._nightMaxLightsStill;
+  A._nightNearFadeFloor  = A._nightNearFadeFloorStill;   // §NIGHT_NEAR_FADE
+```
+
+…and `_applyPhotoStaging()` — the call that turns Night Mode on and **builds those very lights** —
+does not run until **`effects.js:4945`**. On the normal path (Alt+S from a session not already in
+Night Mode) `A._nightLights` is empty at :4918, the guard is false, and the block is skipped.
+
+**MEASURED LIVE, both buildings, inside a real `A.startStillRefine()`** (`§SFR_POOL` census):
+`"maxLights":30, "nearFadeFloor":0.3` at **every one of the five poses on both buildings** — the
+NAVIGATION values. §NIGHT_NEAR_FADE's own comment on that floor: *"exactly backwards for the
+complaint now being made: standing under a fixture gives the WEAKEST light in the scene… lifted to
+full strength for the frozen still."* It is not lifted. Scale of the miss: `intensity = 2.0 ×
+(floor + (1−floor)·min(1, d/15)) × plScale`, so at 3 m a fixture gives 0.44 instead of 1.0 (**2.3×**)
+and at 1.5 m 0.37 instead of 1.0 (**2.7×**); at ≥15 m the two are identical, so a facade 12 m out is
+untouched. Clinic has **240 luminaires within 15 m** of interior0 and Hospital 114 within 15 m of
+its interior1 — i.e. essentially every fixture that lights a room is inside the penalty window.
+
+**⚠ SCOPE, and it matters — this is NOT the film explanation.** `startStillRefine()` runs once per
+FOLD, so in a bake frame 1 skips the block (night mode still off) and **frames 2…N do fire it**
+(that is the 2,026 firings the §VAC comment at `effects.js:4923` already records from
+`s5_hospital.log`, *"raised to 200 lights, near-fade floor 1"*), with `_teardownStillRefine`
+(`effects.js:4291-4295`) handing the floor back to 0.3 between frames. So: **a FILM already gets the
+still floor from frame 2 onward; an interactive Alt+S never does, and neither does a film's first
+frame.** Do not sell this as the cause of the drained bright register in the exported films.
+This is a real defect in the Alt+S still path and a 2-line fix (move the block below
+`_applyPhotoStaging()`), but its measured EFFECT is not yet trustworthy — see §2c.
+
+### 2. WHAT THE LEVERS MEASURE — two-sided gate, both buildings, `m = 0`
+
+Instrument: `viewer/tests/witness_sun_fill_ratio.js`, real viewer, real split DBs, real
+`A.startStillRefine()` staging, scene-linear `FloatType` render-target reads, **no bake, no
+screenshot, no film**. Logs: `sfr_clinic6.log`, `sfr_hospital6.log` (session scratchpad).
+
+**Liveliness is measured as SHAPE, not level** (`§SFR_LIVELY`), all from the same single render:
+`cv = std/mean`; `p90/p10`; `topShare` (share of frame luminance in the brightest decile — 0.10 is
+perfectly flat); `tileCV` (cv of 8×6 tile means = the spatial falloff gradient); `wcStd`
+(luminance-weighted stddev of the warm/cool axis `(r−b)/(r+b)` = chromatic separation).
+**Every figure is a ratio against the CURRENT shipped state (m = 0, post-#1622)** — #1622's own CV
+gain is already in the baseline and is not re-claimed.
+**The gate is two-sided:** clear the T3 floors (mean ≥ 0.70, p25 ≥ 0.55, §WALL_SIDE_AND_LIGHT_FLOOR)
+**AND** keep `cv` and `tileCV` at ≥ 0.98× the shipped value. A lever that buys the mean by flattening
+the field would undo #1622 and is scored **REJECT**, not PASS.
+
+| lever | Clinic retMean / retP90 | Clinic cv · tileCV | Clinic verdict | Hospital retMean / retP90 | Hospital cv · tileCV | Hospital verdict | facade separation |
+|---|---|---|---|---|---|---|---|
+| shipped `m=0` | 0.743 / 0.892 | 1.00 · 1.00 | baseline | 0.598 / 0.545 | 1.00 · 1.00 | baseline | 0.2503 / 0.2723 |
+| **fixtures ×2** (`_nightPLScaleStill` 0.5→**1.0**) | **1.284 / 1.731** | ×0.92 · ×1.10 | REJECT (cv) | **0.814 / 0.844** | **×1.58 · ×1.75** | **WIN** | 0.2591 / 0.2717 |
+| **fixtures ×4** (scale 2.0) | **2.130 / 3.118** | ×1.02 · ×1.27 | **WIN** | **1.222 / 1.417** | **×2.22 · ×2.57** | **WIN** | 0.2767 / 0.2704 |
+| `m` = HDRI fill 0.25 | 0.914 / 1.118 | ×0.83 · ×0.96 | **REJECT** | 0.683 / 0.649 | ×1.05 · ×1.12 | floors missed | 0.4568 / 0.4318 |
+| `m` = HDRI fill 0.50 | 1.040 / 1.290 | ×0.75 · ×0.90 | **REJECT** | 0.837 / 0.810 | ×0.92 · ×1.01 | **REJECT** | 0.6737 / 0.5830 |
+| `m` = HDRI fill 1.00 (= RED) | 1.293 / 1.599 | ×0.66 · ×0.83 | **REJECT** | 1.146 / 1.133 | ×0.76 · ×0.89 | **REJECT** | 1.0397 / 0.7997 |
+
+**a. The `m` lever is REJECTED, on both buildings, at every sampled fraction.** It is the textbook
+failure the two-sided gate exists to catch: it lifts the mean (0.743 → 1.293 on Clinic) while
+driving `cv` **down** (×0.66) and `topShare` down (×0.83), i.e. it buys brightness by flattening the
+field — and it costs the facade the whole of #1622 (separation 0.2503 → 1.0397). **U-11's `m` option
+should be closed, not tuned.** The one HDRI row that is not an outright REJECT (Hospital s0.25,
+"shape kept") does not clear the floors.
+
+**b. The fixture route is the only one that raises the field.** At the shippable ceiling
+(`_nightPLScaleStill = 1.0` — `A._nightPLScale`'s own nav-tuned default and the value §STAGED_PL_CUT
+cut FROM, so no constant is invented) Hospital is a clean **WIN**: floors cleared, `cv` ×1.58,
+`tileCV` ×1.75, `topShare` ×1.37, and the **upper register restored 0.545 → 0.844** — the exact
+register the real-bake A/B says drained. **The facade is free**: Hospital's separation moves
+0.2723 → 0.2717 across the whole ×1…×4 sweep, Clinic's 0.2503 → 0.2767. Clinic at ×2 clears the
+floors and raises `tileCV` (×1.10) and `p90/p10` (×1.39) but dips `cv` to ×0.92, so the gate scores
+it REJECT; both buildings are a WIN at ×4, which is `_nightPLScaleStill = 2.0` — **an invented
+constant, so it is not proposable.**
+
+**c. OPT_F (the near-field floor), OPT_B (decay 2.0) and OPT_D (emissive ×3) are INCONCLUSIVE, not
+measured.** OPT_F reports a **darker** frame (retMean 0.563 Clinic / 0.435 Hospital) while the
+shipped pool total it produced **rose** (Clinic 147.936 → 171.04 at extSun, live lights 99 → 122).
+That is physically impossible for purely additive light — `floor + (1−floor)·fade` is monotone
+non-decreasing in `floor` — so the reading is an instrument fault, not a property of the lever.
+See §3.
+
+**d. The colour levers (A and C) are CLOSED without a render** — see §SFR_LIVELY option A + C below.
+
+### 3. THE THIRD INSTRUMENT DEFECT — PROBE CROSS-CONTAMINATION, and how it was isolated
+
+This lane has now hit three instrument faults in a row, and they cost more than the measurement did.
+Recorded so the next session recognises the shape:
+
+1. **`tools.js`'s pooled fixture update overwrote a per-light sweep** (already on record above) — a
+   per-light intensity write is recomputed from `A._nightPLScale` on the next update, so the sweep
+   measured nothing and reported a clean 0.
+2. **The light-group restore map captured empty** (§0) — manufactured `pl = 0.00000` and two
+   published claims.
+3. **Probe cross-contamination (new).** In the first clean run the option probes ran in sequence
+   within one pose, each restoring what it changed. Two did not restore:
+   - `W.setPLDecay` cached ONE scalar base off `ls[0]` — which is a **city-prop** point light with
+     `decay = 2`, not a fixture light with `decay = 1` (visible in the `§SFR_POOL` colour census as
+     `"decay":"1..2"`). "Restoring" therefore set **every fixture light to decay 2 permanently**,
+     dimming the whole far field for the rest of the pose.
+   - `W.setNearFadeFloor` let a non-finite value through `f < 0` into `A._nightNearFadeFloor`, where
+     `floor + (1−floor)·fade` turns it into 0-or-NaN, and then **rebuilt the pool from it**.
+
+   **How it was isolated — the signature, not a guess:** on both buildings the four option rows
+   downstream of the first bad probe reported **byte-identical** `retP25 / retP90 / retP10`
+   (Hospital: 0.473 / 0.365 / 0.511 on all four; Clinic interior2: `nearFadeStill` and `decay2` both
+   exactly 0.15612). Four different levers cannot produce identical percentiles; a dead pool can.
+   Fixes now in the witness: per-light decay base (a Map, not a scalar), a hard range guard on the
+   floor, the fallback `m` sweep moved BEFORE any option probe so it can never sit downstream of
+   one, and — the general remedy — **every sample now records the pool it was taken against**
+   (`pool[live=… sum=… floor=… scale=… decay=…]`) and any row with `poolLive = 0` prints
+   `INCONCLUSIVE` instead of a verdict.
+4. **A fourth, still open.** Even after those fixes, the baseline sample's own pool disagrees with
+   the pose census taken moments earlier (Clinic interior0: `pl_x1` reads `pool[live=46 sum=88.036]`
+   against a census of `sum=103.084`; the missing ~16 lights are the city props). Consequence:
+   **the interior baseline is not reproducible run to run** — Clinic's baseline `cv` read 1.0825 in
+   one run and 0.5207 in the next, a 2× swing in the headline metric, far outside the RED CONTROL's
+   own drift (0.00000 Clinic / 0.01278 Hospital). **Until that is closed, no lever's ranking is
+   safe and nothing here should ship.**
+
+**Instrument changes that DID gate clean and are worth keeping:**
+- **§SFR_FROZEN_POOL.** Refreshing the pool per pose is mandatory (the shipped still branch selects
+  by camera frustum, so the pool is pose-dependent) — but on the shipped churn path every pose change
+  moves the scene's point-light COUNT, a shader DEFINE, and two full runs sat **>20 min inside a
+  single wall pose** recompiling. The witness now runs the SHIPPED `§NIGHT_BAKE_POOL` path
+  (`A._maxqActive`), which freezes the slot count and updates position/colour/intensity as uniforms.
+  **POOL-MODE CONTROL passes on both buildings: `relDrift = 0.00000`** (same pose, camera untouched).
+  Its first version FAILED at 0.179 because it read before the churn-path refresh and so compared a
+  stale pool against a fresh one — a confounded control, corrected by reordering, not explained away.
+- **FREEZE CONTROL** Clinic 0.00000 / **Hospital 0.00515 (FAIL, gate 0.005)** — Hospital's shadow
+  freeze is marginal and its RED CONTROL also failed at **0.01278**. Hospital's run therefore carries
+  ~1.3 % instrument drift; the effect sizes above (×1.58, ×1.75) are well clear of it, the `m` rows'
+  shape deltas mostly are not.
+
+### 4. WHAT THIS MEANS FOR THE COMPOSITION (sun shafts through windows) — noted, not built
+
+A fixture-lit interior at `_nightPLScaleStill = 1.0` raises the interior's own `topShare` (Hospital
+×1.37) and `tileCV` (×1.75) while leaving the facade separation flat (0.2723 → 0.2717). A shaft is a
+high-`topShare`, high-`tileCV` feature in the same frame, so the two ADD rather than compete: the
+room's ambient floor does not rise (ambient/hemi/env are untouched), only the fixture-lit patches do,
+which preserves the contrast a shaft needs to read. The `m` lever would do the opposite — it raises
+the whole non-directional floor, which is precisely what washes a shaft out. **Not built, not
+measured; recorded as the prediction to test if shafts are ever specced.**
+
+### 5. §SFR_NEXT — the exact next step, and the one blocking question
+
+1. **Close instrument fault #4 first** (§3.4). The baseline sample must reproduce the pose census
+   (`pl_x1.pool.sum == census.sum`) before any ranking is trusted. Likely cause to check first: the
+   city-prop point lights (`effects.js:660-723`) are in `W.pointLights()` but are NOT rebuilt by
+   `A._nightUpdateLights()`, so `W._plBase` and the group-restore maps can disagree about them.
+   Add an assertion that the two agree and re-run both buildings. **Everything else waits on this.**
+2. Then re-measure OPT_F/B/D with the hardened probes and settle §1's fix.
+3. `§NIGHT_STILL_LIGHTS` ordering fix (`effects.js` — move the :4918 block below the
+   `_applyPhotoStaging()` call at :4945) is a real, independently-proven defect and is a 2-line
+   change; hold it until step 1 lets its effect be measured, so it does not ship unmeasured.
+
+⛔ **THE ONE USER QUESTION (→ AGENT_QUEUE U-11):** the only lever that passes the two-sided gate on
+BOTH buildings is `_nightPLScaleStill = 2.0` (fixtures ×4), which is an invented constant. The
+largest *repo-native* value, `_nightPLScaleStill = 1.0` (fixtures ×2), passes cleanly on Hospital and
+fails Clinic on `cv` alone (×0.92) — and it **partially reverses §STAGED_PL_CUT, a standing user
+directive** (*"too bright … reduce PLs or intensity. As it also wipe out the ground slab shadow play
+during alt-c movie baking"*). Measured, that directive's stated harm is small at the wall poses
+(separation moves ≤ 0.026 across the whole sweep) but **the ground slab was never in the measured
+set.** So: *do you accept undoing half of §STAGED_PL_CUT (staged fixture scale 0.5 → 1.0) to get the
+interior's own fixtures back, given the away-wall read is measured to cost ≤ 0.026 and the ground
+slab is unmeasured?*
+
+### §SFR_LIVELY option A + C — the colour lever is ALREADY at its ceiling, closed WITHOUT a render (2026-09-02, `nlc_spread.log`, `colour_spread_probe.js`)
+
+Candidate A was *"fixture colour temperature (~2700–3000 K warm against a cooler sky)"* and C was
+*"per-fixture variation derived from the model's own fixture type/class — not random, not
+per-building."* **Both already ship, and what ships is the best of the three the repo can express.**
+`A.nightLightColor(name, key)` (`tools.js:1151`) is called from exactly one place
+(`A._nightFixtureWorldPositions`, `tools.js:1631`) and ALWAYS with a `key`, so the 20/20/60 hash mix
+(`NIGHT_MIX_BLUE 0xa8c8ff` / `NIGHT_MIX_AMBER 0xffb45c` / `NIGHT_MIX_WHITE 0xffffff`) always wins —
+the mix the user asked for by name.
+
+Measured on `wc = (r−b)/(r+b)`, the same scale-invariant chromatic axis §SFR_LIVELY scores, over the
+real luminaire population selected by tools.js's own §NIGHT_FIXTURE_VOCAB `WHERE` clause:
+
+| building | luminaires | SHIPPED hash mix `wcStd` | option C (white bucket tinted by the model's own name) | the type rule alone |
+|---|---|---|---|---|
+| Clinic | 884 (47 exit) | **0.2179** | 0.2201 (**+1.0 %**) | 0.1249 (**−42.7 %**) |
+| Hospital | 1,272 (57 exit) | **0.2182** | 0.2181 (**−0.1 %**) | 0.0581 (**−73.4 %**) |
+| Terminal | 814 (38 exit) | **0.2256** | 0.2286 (**+1.3 %**) | 0.1019 (**−54.8 %**) |
+
+- **Option C as framed — "derive it from the fixture type, not random" — is measurably WORSE, by
+  43–73 %.** The type vocabulary collapses a building onto two or three temperatures: Hospital has
+  **0** troffer/batten/T8 names and only **64** downlight/sconce/pendant of 1,272, so 1,151 fixtures
+  fall to a single `NIGHT_AMBER` fallback. The hash is not "random" in the sense that matters — it is
+  FNV-1a over `name|x,y,z`, deterministic across sessions and machines, and it is the only rule that
+  keeps three temperatures on a model whose names state nothing.
+- **A real doc-vs-code defect, but NOT a liveliness lever:** `NIGHT_WHITE_COOL 0xf2f6ff` and
+  `NIGHT_WHITE_WARM 0xfff4e4` (`tools.js:1137/1138`) are **declared and referenced nowhere in
+  `viewer/`**, while the §NIGHT_MIX_WHITE comment three lines above states as fact that *"the white
+  bucket is neutral by default and tinted a few points when the model says which it is."* It is not.
+  Wiring them in moves `wcStd` by **+1.0 % / −0.1 % / +1.3 %**. Fix the comment or wire the
+  constants — but do not spend a render on it and do not sell it as liveliness.
+- **0 of the 2,970 luminaires on Clinic/Hospital state `cw`/`ww`** (Terminal states 368), so the
+  "stated temperature outranks the type default" path is, on the two buildings under test, a
+  population of zero. Recorded so no future session re-derives it.
+
+### §SFR_LIVELY option E — exposure/tone cannot add liveliness, BY IDENTITY (no run spent)
+
+`toneMappingExposure` multiplies the linear colour **before** the ACES curve — verified in this
+repo's own bundled three.js, not from memory: `viewer/lib/three.module.min.js` contains
+`color *= toneMappingExposure / 0.6;` as the first line of `ACESFilmicToneMapping`, ahead of
+`ACESInputMat`/`RRTAndODTFit`. A scalar multiply leaves **every** §SFR_LIVELY metric exactly
+invariant (`cv`, `p90/p10`, `topShare`, `tileCV`, `wcStd` are all ratios or scale-invariant moments).
+So exposure cannot manufacture shape; only the curve can, and it ends in `saturate(color)`, which
+compresses the highlights — the register that is already drained. **Ranked last, and closed.**
+(Also verified in the same bundle: `toneMapping` is forced to `NoToneMapping` whenever the render
+target is not the canvas — `r.toneMapped && (null !== F && !0 !== F.isXRRenderTarget || (Le = e.toneMapping))`
+— which is what makes every render-target read in this witness scene-linear.)
