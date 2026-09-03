@@ -893,6 +893,26 @@ defect; the flips are its output.
 - **Dropping OCI `Clinic.db` would break GH Pages**, which still maps `Clinic` to it. Rename GH's entry
   to `Clinic_extracted.db` first, then drop.
 
+### A-23 · ⚠ Alt+S MEMORY HOG — user-flagged 2026-09-03, next session
+**User: "tackle also the mem hogging during alt-s effect."** Evidence already in hand — start here,
+do not re-derive:
+- **LTU_AHouse night mode: `§NIGHT_MEM_WITNESS heapMB=2311.5 matCacheKeys=198 glowMatKeys=198
+  nightLights=19`.** That is HIGHER than Hospital's measured baseline, on a building with fewer
+  elements-per-MB. `matCacheKeys` and `glowMatKeys` being **equal at 198** is worth checking first —
+  it suggests the glow path is cloning the whole material cache rather than the lit subset.
+- **`§R12_HOSPITAL_MEM` already has the Hospital breakdown TAKEN** (heap 1,577 MB reproduced
+  headless, full table, levers ranked with measured bytes). **Nothing was shipped off it — the stated
+  next step was the user picking a lever. That is now overtaken: the ask is to fix it.**
+- **⚠ The bake heap instrument is UNRELIABLE — see A-8.** `§CLI_BAKE_HEAP`'s 229-477 MB is an aliased
+  sawtooth: the same instrument read 2,388.8 MB then 224.0 MB fourteen seconds later. **Do not use it
+  as the before/after metric until A-8's dual-instrument sampling lands.** `§NIGHT_MEM_WITNESS` and
+  `performance.memory` sampled at known pipeline points are the trustworthy readings.
+- Related and unresolved: `§R11 §PHOTO_PREWARM` moved 8.9 s of work off the first Alt+S but that was
+  a LATENCY fix, not a memory one — prewarming may in fact hold more resident earlier. Check whether
+  it trades time for bytes.
+**Do the measurement before the fix**, and make the witness able to say NO-OP — a memory "fix" that
+frees nothing while heap noise moves ±200 MB is the obvious failure mode here.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
