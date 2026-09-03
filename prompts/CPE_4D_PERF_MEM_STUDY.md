@@ -1041,3 +1041,254 @@ the `§IDLE_GATE park` prefix, unchanged. `sw.js` `CACHE_VERSION` v1122 → **v1
 - **`unmatched=` will attribute the 235-guid gap** between `§SHADOW_FRONTIER_IDX groupGuids=63182`
   (streamed) and `§CPE_BUILDUP placed=63417` (TM). Nothing on disk can answer that today. **It rides
   free on the next bake anyone runs** — no dedicated run needed, same as §A-8's heap fix.
+
+---
+
+## §R15 — LTU FLY-TOUR SLOWDOWN: the DLOD budget controller integrates on stale, saturated feedback (2026-09-03, A-21)
+
+### §R15.0 SPEC (written before any code or probe — CLAUDE.md Spec-First)
+
+**The complaint, as measured by the user:** `§FPS_MODE mean=52 max=103.5 n=39` during the LTU_AHouse
+fly tour, against 150-250 steady state and ~330 idle. In the same log `§DLOD_NAV_BUDGET boost=`
+sawtooths **0 → 60 → 0** for the whole tour; at the worst point `§DLOD_NAV active=0 boxed=122330`
+is followed by `started=21638` in one tick; `§DLOD_TICK flips_mean` spikes to 5429/4482/1911/1047
+against a 0-250 steady state.
+
+**Read of the code before measuring** (`viewer/dlod_nav.js`, cited, not recalled):
+- `_budgetControl()` (`:301-311`) is a **pure integrator with no proportional term**: `activeElig <
+  BUDGET_LOW(6000)` ⇒ `boost += BUDGET_STEP(2)`; `> BUDGET_HIGH(12000)` ⇒ `boost -= 2`; the dead band
+  between is the only hysteresis. Full-scale travel 0→`MAX_BOOST(60)` therefore takes **30 ticks**.
+- Its clock is a fixed **150 ms** periodic tick in `_tick()` (`:1866-1880`), gated only on
+  `(active + boxed) > 0`. **There is no gate on the feedback being fresh.**
+- Its input `_stats.activeElig` is published **only at scan-pass completion** (`_evalChunk`,
+  `:1729`). A pass is `122330 / EVAL_CHUNK(16384)` = **8 chunk-ticks**, one per rAF frame.
+
+**Hypothesis H1 — sample-rate inversion.** Feedback period = 8 frames. At 330 fps that is 24 ms,
+comfortably inside the 150 ms control period, so the loop is properly closed and W-BUDGET-STABLE
+(frozen camera, §20.4) converges. At 52 fps it is **154 ms > 150 ms**: the controller integrates at
+least once per tick on a measurement that has not been refreshed since the last step. That is an
+open-loop step, and it is self-reinforcing — more flips ⇒ slower frames ⇒ staler feedback ⇒ larger
+excursion.
+
+**Hypothesis H2 — integrator windup at the aerial end.** A fly tour begins and ends outside the
+building. When every element is genuinely beyond `DEMOTE_DIST`, `activeElig` is legitimately 0 and
+stays 0 no matter how far the boost widens the threshold. The integrator has **no anti-windup**, so
+it charges to `MAX_BOOST` and saturates. The instant the tour dives inside, promote is 38+60 = 98 m
+and the whole model becomes eligible at once — the measured `started=21638` in a single tick — after
+which the integrator must unwind 30 ticks (4.5 s) at 2 m/tick, re-partitioning all 122,330 elements
+every frame for that whole window (`_scanPending = (_passBoostVal !== _effBoost())`, `:1740`, is
+true on every pass while the ramp is moving).
+
+**H1 and H2 are the same defect seen from two ends:** the loop's actuator range (60 m) takes 4.5 s
+to traverse while the camera traverses the building faster than that. The controller was tuned and
+witnessed against a *stationary* camera (`witness/w_budget_stability.js` sets one frozen aerial pose)
+and has never been measured against a moving one.
+
+**Explicitly NOT assumed:** `§DLOD_TICK` is emitted by `viewer/dlod.js`, a *different* module — the
+always-on per-instance frustum culler over LTU's 11,843 InstancedMesh instances, whose flips are
+driven by the camera frustum, not by the boost. Whether the boost swing drives those flips is a
+question to MEASURE, not to assert. §R13 measured this same flip storm as *not* a bake cost; that
+finding is about a 1.26 s/frame offline render and does not transfer to a realtime tour.
+
+### §R15.1 WITNESS CLAIMS (must be able to say NO-OP, VACUOUS, WRONG)
+
+| id | claim | falsifiable as |
+|---|---|---|
+| C1 | The controller integrates on stale feedback: over a moving-camera tour, count ticks where `_budgetControl` ran with **no scan pass completed since the previous step**. | VACUOUS if the tour never moved the boost at all; WRONG if staleTicks = 0 while the sawtooth is still present (⇒ H1 is not the mechanism, look elsewhere). |
+| C2 | The integrator winds up: count ticks spent at `boost === MAX_BOOST` while `activeElig === 0`, i.e. steps that bought nothing. | VACUOUS if MAX_BOOST is never reached. |
+| C3 | Per-frame cost split during the collapse — `evalMs` (dlod_nav chunk), `§DLOD_TICK ms`, drawCalls, triangles — attributed to the frames where boost is moving vs. steady. | VACUOUS if no frame in the sample has a moving boost. |
+| C4 | `§DUCT_SILHOUETTE`'s contribution: tris/verts/drawCalls and frame_ms with the silhouette geometry present vs. removed from the scene, same pose set. | VACUOUS if `refined=0` on the run. |
+| C5 | After the fix: same tour, `§FPS_MODE mean` and `§DLOD_TICK flips_mean` both improve, or the trade is named. **NO-OP if `flips_mean` moves by <5%.** | — |
+
+**Constraint:** no per-building constants and no branching on a building name (user rule). Any new
+threshold is derived from a measured quantity (element count, frame time, pass length), never keyed
+to LTU.
+
+### §R15.2 MEASURED — the probe (`witness/probe_r15_tour.js`, real RTX 4060, hardware GL)
+
+`§HARNESS_GL renderer=ANGLE (NVIDIA GeForce RTX 4060 Laptop GPU, OpenGL 4.5.0)` ·
+`§HARNESS_LOAD total=122330` · 7,446 per-frame samples over ~360 s · full log
+`witness/probe_r15_tour.log`, raw series `witness/probe_r15_tour.json`.
+
+**C1 — H1 CONFIRMED, and the inversion is directly measurable, not inferred:**
+
+```
+§R15_C1 budgetTicks=2038 staleTicks=1120 stalePct=55.0 passes=930 verdict=STALE-CONFIRMED
+```
+
+**55.0% of control periods integrated a number the loop had not re-measured since its previous
+step.** The two periods are both in that line: 2,038 control ticks in ~360 s = one per **150 ms**
+(the coded cadence, confirmed), against 930 completed scan passes = one measurement per **387 ms**.
+The controller runs at **2.6× the rate of its own feedback**. Nothing about that is a tuning
+question — a loop sampled slower than it acts is open-loop for the difference.
+
+**C2 — H2 CONFIRMED:**
+
+```
+§R15_C2 windupTicks=53 verdict=WINDUP-CONFIRMED
+§R15_SAWTOOTH boostMin=0 boostMax=60 reversals=19 samples=7446
+```
+
+53 control periods spent saturated at `MAX_BOOST` with the measurement still below `BUDGET_LOW` —
+steps that bought nothing and had to be unwound at 2 m each afterwards. The excursion is
+**full-scale (0→60, the entire actuator range) and reverses 19 times.**
+
+**C3 — the per-frame cost split, and it is NOT where the report assumed:**
+
+```
+§R15_C3 movingN=308 steadyN=7137
+  dt_mean   mov=77.23  sty=48.93      dt_p95  mov=123.5   sty=80.3
+  evalMs    mov=7.30   sty=6.62
+  calls     mov=2158   sty=1298       tris    mov=4,955,701  sty=3,281,866
+```
+
+Frames on which the boost is moving cost **77.2 ms against 48.9 ms (+58%)**, p95 **123.5 vs 80.3 ms**.
+But the DLOD-nav scan is not the cost — `evalMs` moves only **6.62 → 7.30 ms (+0.68 ms)**. Neither
+are the flips: in the same window `§DLOD_TICK n=6 ms_mean=1.73 ms_max=1.70 flips_mean=183.7`.
+
+**§R13's finding survives intact: the flips are cheap.** The cost is the thing the controller
+*actuates* — **draw calls +66% (1,298 → 2,158) and rendered triangles +51% (3.28M → 4.96M)**. That
+is definitionally what `boost` does: it widens promote/demote by up to 60 m, so box proxies become
+real meshes. A budget controller that swings full-scale is a **draw-call excursion**, and the flips
+are just its bookkeeping. This is the answer to "if the flips are cheap the cost is elsewhere":
+it is elsewhere, it is one layer down, and it is the controller's own output.
+
+**C4 — `§DUCT_SILHOUETTE` is NOT material here, and this is the number, not an assumption.** The
+same load reports:
+
+```
+§DUCT_SILHOUETTE considered=27448 measured=22245 refined=321 addedVerts=322992 addedTris=107664 gateM=5
+```
+
+**107,664 added triangles against 3,281,866 rendered per steady frame = 3.3%** — and that is an
+upper bound, since it credits every refined element as on-screen every frame. The controller's own
+excursion moves the same counter by **+1,673,834 triangles (+51%)**, i.e. **15.5× the entire
+silhouette addition**, every frame it swings. The silhouette is a fixed one-time cost on 321
+geometries; the controller is a recurring per-frame one. Not the defect. `gateM=5` stays.
+
+**HONEST LIMITATION on the probe, stated because it changes what the probe can and cannot claim.**
+`§R15_PROBE_TOUR_START verdict=NEVER_STARTED` — the fly tour never produced targets on this DB
+(`§ROOM_OCCL_INDEX_ERR no such column: r.center_x`, `§HELPERS_QUERY_ERR no such table:
+storey_walkable_raster` — LTU_AHouse has no compiled rooms, so `A._prepareGraphTour` had nothing to
+route through and `A.flyTargets` stayed empty for the full 240 s wait). So C1/C2 are measured
+**without a tour running at all** — which strengthens them (the controller oscillates full-scale
+even without the camera motion the report blamed) but means the probe's own `mov`/`sty` split is
+confounded with progressive streaming and the deferred BVH build (`§BVH_DEFERRED built=50082
+ms=10201 (incremental)`). Per-boost-value slicing of the same series shows the confound plainly:
+`boost=0` frames average 54.0 ms with `active=13,091`, `boost=60` frames average 20.6 ms with
+`active=545` — the boost tracked where the camera happened to be, so this run **cannot** attribute
+frame cost to the controller by itself. That attribution is what W-BUDGET-CONVERGE below is for: it
+holds the camera trajectory identical and varies **only** the controller.
+
+### §R15.3 THE FIX — two control rules, both conditions, zero new tuned constants
+
+`viewer/dlod_nav.js`. Neither rule introduces a number; both are derived from quantities the loop
+already measures about itself, so both scale with the building for free and neither can be keyed to
+a building name.
+
+**Rule 1 — FRESHNESS: act once per MEASUREMENT, not once per 150 ms.**
+`_passSeq` counts completed scan passes; `_ctlSeq` records the one the controller last acted on. A
+control period that finds them equal counts itself in `budgetStaleTicks` and **does nothing**. This
+is exactly the Nyquist condition and it self-adjusts: the pass length is `ceil(n / EVAL_CHUNK)`
+frames, so a bigger building or a slower frame automatically lengthens the control period with it.
+It cannot deadlock — a boost change re-arms a scan whose completion supplies the next measurement,
+and a converged boost stops producing passes, which is the loop correctly idling (§20.1's own
+stated design goal, now actually enforced).
+
+**Rule 2 — CONDITIONAL INTEGRATION (anti-windup): never integrate in a direction the last step
+proved ineffective.** `_eligBoost` records the boost the published `activeElig` was *actually
+measured under* (the completing pass's frozen `_passBoostVal`), so the controller compares a
+correctly-paired `(boost, elig)` against the previous pair. If the boost went **up** and eligibility
+did **not**, the actuator is not authoritative in this regime — `_ctlUpBlocked` latches and the
+integrator stops charging. It releases the moment `activeElig` reaches `BUDGET_LOW` again, so a
+genuinely useful ramp is delayed by at most one pass and never prevented. Down-steps are never
+blocked: unwinding toward `boost=0` returns the system to the shipped `PROMOTE_DIST`/`DEMOTE_DIST`
+default, which is always the safe direction.
+
+**Both rules are independently live-flippable** (`window.__dlodNav.budgetFreshGate` /
+`.budgetAntiWindup`, default `true`). Setting both `false` restores the pre-§R15 integrator
+byte-for-byte — which is how `witness/w_budget_converge.js` gets a before/after **and its red
+control out of one page load, one GPU and one camera trajectory**, instead of comparing two runs.
+
+`§DLOD_NAV_BUDGET` now also carries `elig=`, `upBlocked=` and `pass=`, so the next session can read
+the loop's state straight off the shipped log rather than re-deriving it (CLAUDE.md PRIMAL LAW 3).
+
+**Also fixed in the same file, one line, cosmetic:** `_roomIdxEnsure`'s catch printed
+`§ROOM_OCCL_INDEX_ERR no such column: r.center_x` ~5× per load. `writeRooms()` ALTERs `center_x`/
+`size_x` in when it first stamps rooms, so a query issued *before* that stamp raises a schema error
+rather than returning zero rows — the same benign pre-stamp state as the empty-index case, on the
+same retry path. It now takes the existing `rects=0 (rooms not compiled yet — will retry)` branch.
+Any other exception still reports as `§ROOM_OCCL_INDEX_ERR`; this narrows noise, it does not swallow
+failures.
+
+### §R15.4 BEFORE / AFTER — W-BUDGET-CONVERGE, one page load, one GPU, one camera trajectory
+
+**Instrument:** `witness/w_budget_converge.js`. The reported trigger is the fly tour, but a tour
+route is **not reproducible between arms** on this building — LTU_AHouse has no compiled rooms
+(`§ROOM_OCCL_INDEX_ERR`, `§HELPERS_QUERY_ERR no such table: storey_walkable_raster`) and
+`A.flyTargets` stayed empty through a 240 s wait, so `§R15_PROBE_TOUR_START verdict=NEVER_STARTED`.
+What the controller actually *sees* from a tour is a camera repeatedly moving from outside the
+building to inside and back — that is the input that charges and discharges the integrator — so the
+witness drives exactly that: a 30 s outside→inside→outside sweep, **parameterised by wall time** so
+both arms fly the identical trajectory despite different frame rates, with the radius and height
+taken from the DB envelope (no per-building constant). 90 s per arm, **FIXED first** so every
+warm-cache advantage accrues to LEGACY.
+
+**Arm totals** (`§R15_ARM`, real RTX 4060):
+
+| | LEGACY (pre-§R15) | FIXED (§R15) | |
+|---|---|---|---|
+| `boostSpan` (actuator excursion) | **60** (full scale) | **4** | ✅ |
+| `boostChanges` (§DLOD_NAV_BUDGET emissions) | **174** | **12** | ✅ −93% |
+| `windupTicks` | **314** | **0** | ✅ gone |
+| `dt_p95` | 56.6 ms | **51.8 ms** | ✅ −8.5% |
+| `dt_mean` (whole cycle) | 22.06 ms | 21.96 ms | ➖ **flat** |
+| `§FPS_MODE mean` | 32.7 ms | **30.2 ms** | ✅ −7.6% |
+| `calls_mean` | 313 | **187** | ✅ −40% |
+| `§DLOD_TICK ms_mean` | 2.72 ms | **2.35 ms** | ✅ −13.6% |
+| `§DLOD_TICK flips_mean` | 905.9 | **1509.1** | ⚠ **+66.6% — the named trade** |
+
+**Arm means understate the result and must not be read alone.** They are frame-weighted, and the
+slower arm contributes *fewer* samples to exactly the phases where it is slow. The phase-aligned
+comparison (`§R15_PHASE`, both arms binned by `t % 30 s`, like camera pose against like) is the real
+answer:
+
+| phase | boost F/L | active F/L | calls F/L | dt_ms F/L | |
+|---|---|---|---|---|---|
+| 0-3 s (inside, wrap) | 0 / 1.6 | 11,756 / 16,809 | 1545 / 1408 | 55.4 / 52.5 | +5.5% |
+| 3-6 s (leaving) | 3.5 / 14.5 | 1053 / 755 | 218 / 547 | 22.7 / 21.2 | +7.1% |
+| 6-9 s (aerial) | 4 / 48 | 0 / 0.7 | 34 / 186 | 24.1 / 17.0 | **+41.8%** |
+| 9-24 s (aerial ×5) | 4 / **60** | **0 / 0** | ~31 / ~29 | ~17.0 / ~16.8 | +1 to +2% |
+| **24-27 s (the dive back in)** | 4 / 57.4 | 919 / **12,610** | 256 / **3,035** | **24.4 / 56.9** | **−57.1%** |
+| **27-30 s (deepest inside)** | 0.2 / 26.7 | 14,697 / **42,646** | 1581 / 1228 | **57.3 / 79.2** | **−27.7%** |
+
+**This is the windup, caught in the act.** For **18 of every 30 s** LEGACY holds the actuator at
+`boost=60` while `active=0` in both arms — full scale, for provably zero benefit, since there is
+nothing within reach to promote. Then at 24-27 s the camera comes back and that stored charge cashes
+out: **12,610 active against 919, 3,035 draw calls against 256, 56.9 ms against 24.4 ms.** That is
+the user's `started=21638` burst, reproduced and attributed to its cause.
+
+**What is proven, and what is not — stated separately.**
+- ✅ **Proven:** the excursion is gone (60→4, 174→12 boost changes), windup is gone (314→0), the
+  re-entry spike is more than halved (**56.9 → 24.4 ms**), the interior is 27.7% cheaper
+  (79.2 → 57.3 ms), p95 is down 8.5% and `§FPS_MODE mean` down 7.6%.
+- ➖ **NOT proven:** a whole-cycle mean frame-time win. `dt_mean` is **flat (22.06 → 21.96 ms)**,
+  because the large gains at re-entry and inside are offset by small losses in the aerial phases
+  where both arms are already at ~17 ms. On this sweep 60% of the time is aerial; a real tour spends
+  far more of its time inside, where the fix wins — but that is a reasoned expectation, **not
+  something this run measured**, and it is not claimed as one.
+- ⚠ **The named trade, and its cause:** `flips_mean` **rises 66.6%**. Keeping the boost near 0 leaves
+  more elements boxed (124,322 vs 122,990), which gives `dlod.js`'s per-instance culler more to flip.
+  **§R13's finding holds and is re-measured here: the flips are cheap** — the tick they cost went
+  *down*, 2.72 → 2.35 ms. The fix trades ~600 extra cheap flips for ~2,800 fewer draw calls at
+  re-entry. `§DLOD_TICK ms_max` never exceeded 4 ms in either arm.
+- ⚠ **One phase regresses beyond noise:** 6-9 s, **17.0 → 24.1 ms (+41.8%)**, with `active=0` in both
+  arms and FIXED drawing *fewer* calls (34 vs 186). So the extra ~7 ms is not rendering — it is
+  demote-side fade/transition work, the same mechanism as the flips rise. It lands in the cheapest
+  phase of the cycle, but it is real and it is the obvious next thing to look at.
+
+**The witness can fail, and did.** Its `g3` gate demands that a *majority* of loaded phases be
+faster; the measured split is 2 of 4 (both big wins, both small losses), so `g3=false`. The gate has
+been left exactly as written rather than relaxed to match the data — see A-13's own rule about not
+making a baseline green by moving it. Read the verdict as: **the mechanism defect is fixed and
+measured; the end-to-end frame-time claim is not carried by this sweep.**

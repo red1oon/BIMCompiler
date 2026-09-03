@@ -1333,3 +1333,18 @@ pre-existing structural gaps, untouched.
   drift; and the **undeclared `post_resolver` / `doc_poster` twin pairs** §P9-RESULT names.
 - ⛔ **BLOCKED, unchanged and NOT guessed:** should Complete HARD-REJECT a document whose `DateAcct` falls in
   a closed period (`MPeriod.testPeriodOpen`), or log-and-allow? §P4-OPEN item 2 stays unbuilt until answered.
+
+### §P8-TWIN-HANDOVER — a MANDATORY post-merge step, green now only because the branch is unmerged
+`check_erp_twins.js` compares each `build/erp/<mod>.js` against **`git show origin/main:erp/<mod>.js`** — by
+design (`:33-35`). This session changed three SHIPPED files that are locked `identical`:
+**`crud_core.js` (n=21 witnesses)**, **`crud_overlay.js` (n=21)** and **`ad_evaluator.js` (n=3)**.
+The gate reads PASS today *only because the copies still match origin/main and this branch has not merged*.
+**Mirroring the changes into `build/erp` now would make the gate FAIL** (`declared identical but DRIFTED`), and
+`scripts/erp_twins.json` is owned by another agent this session, so the pair could not be re-declared
+`unreviewed` either — the same situation §TWIN-CLASSIFIED-RESULT handled for `crud_core`/`ninja_model`.
+**On merge of `feat/erp-parity-mandatory`, the gate WILL go red until the three copies are re-derived from the
+new origin/main bytes** (`copy ← shipped`), after which the 45 bim-compiler witnesses that judge them must be
+re-run and their logs read. Until that is done those 45 witnesses attest code that is **no longer what ships** —
+`ad_evaluator` most sharply, since its case-blind lookup is exactly what §P8-RESULT-DEFECT fixed.
+Also still undeclared and unwatched by any gate: **`post_resolver`** (shipped `erp/` copy already drifted by
+9 tokens) and **`doc_poster`** (`erp/` 125 lines vs `scripts/` 574) — §P9-RESULT names them.

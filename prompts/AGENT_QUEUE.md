@@ -866,7 +866,61 @@ make the class list a hint rather than the actual decision — D-3's own refinem
 not class, and is the model to follow. ⚠ Changing it changes which elements get smoothed: measure
 the population delta per building before and after.
 
-### A-21 · ⚠ LTU FLY-TOUR SLOWDOWN — user-reported 2026-09-03, measured from their §-log
+### A-21 · ✅ **DONE (witness) 2026-09-03 — bim-ootb PR #1635** · §R15 DLOD budget controller: the loop integrated on stale, saturated feedback
+**Diagnosis MEASURED, not inferred** (`witness/probe_r15_tour.js`, real RTX 4060, 7,446 samples —
+full writeup `prompts/CPE_4D_PERF_MEM_STUDY.md` §R15):
+- `§R15_C1 budgetTicks=2038 staleTicks=1120 stalePct=55.0 passes=930` — the controller's clock is a
+  fixed 150 ms tick but its input arrives once per completed scan pass, **measured at one per 387 ms**.
+  It ran at **2.6x the rate of its own feedback** and integrated an unrefreshed number **55.0%** of the time.
+- `§R15_C2 windupTicks=53` — no anti-windup, so it charged to MAX_BOOST against an aerial view where
+  widening the distance provably buys nothing, then had to unwind 30 steps at 2 m each.
+- **The flips are NOT the cost — §R13 survives** (`§DLOD_TICK ms_mean 2.72->2.35 ms`, ms_max <=4 ms).
+  The cost is what the controller ACTUATES: draw calls and triangles. Boost moving vs steady measured
+  **+66% calls (1298->2158) and +51% tris (3.28M->4.96M)**.
+- **`§DUCT_SILHOUETTE` (#1631) is not material** — `addedTris=107664` vs **3,281,866 rendered per steady
+  frame = 3.3%**, an upper bound; the controller's own excursion moves the same counter **+51%**, i.e.
+  15.5x the whole silhouette addition, per frame. `gateM=5` stays.
+
+**FIX (PR #1635):** two rules, both conditions derived from what the loop already measures about itself,
+zero new tuned constants, nothing keyed to a building — (1) FRESHNESS: act once per MEASUREMENT
+(`_passSeq` vs `_ctlSeq`), the Nyquist condition, and the pass length `ceil(n/EVAL_CHUNK)` makes the
+control period scale with the building for free; (2) CONDITIONAL INTEGRATION: pair `activeElig` with the
+boost it was actually measured under and stop charging in a direction the last step proved ineffective.
+Both live-flippable, so both-off restores the pre-§R15 integrator byte-for-byte — that is how
+`witness/w_budget_converge.js` gets before/after AND its red control from ONE page load.
+
+**BEFORE/AFTER (W-BUDGET-CONVERGE, one GPU, one camera trajectory, phase-aligned):** boostSpan
+**60->4**, boost changes **174->12 (-93%)**, windupTicks **314->0**, dt_p95 **56.6->51.8 ms**,
+`§FPS_MODE mean` **32.7->30.2 ms**, calls **313->187**. The dive-back-in phase — the user's
+`started=21638` burst, reproduced — goes **56.9 -> 24.4 ms (-57.1%)** with 12,610 active elements
+becoming 919; deepest-inside **79.2 -> 57.3 ms (-27.7%)**.
+
+**⚠ NOT claimed, read this before citing the fix:** whole-cycle `dt_mean` is **FLAT (22.06->21.96 ms)** —
+the big gains at re-entry/inside are offset by small losses in the aerial phases where both arms already
+sit at ~17 ms, and this sweep is 60% aerial. `flips_mean` **RISES 66.6%** (more elements stay boxed, so
+dlod.js's culler has more to flip) — a named trade, paid for by the tick getting *cheaper*. One phase
+regresses beyond noise: 6-9 s, **17.0 -> 24.1 ms (+41.8%)**, `active=0` in both arms and FIXED drawing
+FEWER calls, so it is demote-side fade work, not rendering. The witness's own `g3` gate (majority of
+loaded phases faster) reports **FAIL** at 2-of-4 and has been left as written rather than relaxed to
+match the data. **The mechanism defect is fixed and measured; the end-to-end frame-time claim is not
+carried by this sweep.**
+
+**Also fixed, one line:** `§ROOM_OCCL_INDEX_ERR no such column: r.center_x` now takes the existing
+"rooms not compiled yet — will retry" branch (writeRooms ALTERs the column in at first stamp, so a
+pre-stamp query raises a schema error rather than returning zero rows — same benign state, same retry
+path). Any other exception still reports as ERR.
+
+### A-27 · the demote-side fade burst is now the dominant remaining transition cost (opened by A-21)
+§R15 left one phase measurably worse — 6-9 s of the W-BUDGET-CONVERGE sweep, **17.0 -> 24.1 ms**, with
+`active=0` in BOTH arms and the fixed build drawing FEWER draw calls (34 vs 186). So the ~7 ms is not
+rendering: it is `_startFade` transition work plus the full `instanceMatrix` re-upload each flip forces
+(`dlod.js`'s own comment at the `addUpdateRange` block explains why partial ranges were explored and
+NOT applied — helpers.js/navigate_find.js/time_machine.js all write the same buffers without ranges).
+`flips_mean` rose 66.6% for the same reason. **This is the DLOD-consolidation item that comment already
+names**, now with a measured cost attached. Do not re-walk the partial-upload idea without reading that
+comment first — it is a documented dead end unless every setMatrixAt caller adopts the convention together.
+
+### A-21-ORIGINAL-BRIEF (kept for provenance) · ⚠ LTU FLY-TOUR SLOWDOWN — user-reported 2026-09-03, measured from their §-log
 **FPS collapses 330 idle -> 52 mean / 103 max (n=39) during the fly tour**, and the cause is visible:
 the DLOD budget controller is OSCILLATING, not converging.
 - `§DLOD_NAV_BUDGET boost=` sawtooths **0 -> 60 -> 0** repeatedly through the whole tour.
