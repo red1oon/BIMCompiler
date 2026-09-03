@@ -1,10 +1,11 @@
-── poc_fold_bank_statement (exit 0) ──
-§BANKSTMT-FALSIFIER: bend stmtAmt line 100 by +100 (override first line stmtamt to 198)
-§BANKSTMT-FALSIFIER bentStmtAmt: engine vs oracle maxDiff=10000c (must be > 0)
-  ✓ §FALSIFIER fires: stmtAmt +100 → DR {Bank.Asset} diverges from oracle (engine is load-bearing, not tautological) — maxDiff=10000c
+=== §BANKSTMT witness (W-FOLD-BANKSTMT) — C_BankStatement GL fold vs fact_acct(392) ===
+    Engine: report_bank_statement.foldBankStatement · tokens: post_resolver {Bank.*}/{Charge.Expense}/{AcctSchema.CurrencyBalance}
+    Oracle: live iDempiere Postgres (postgres/idempiere_test) · c_bankstatement_id=100 (CO)
 
-🟢 W-FOLD-BANKSTMT PASS — Doc_BankStatement GL folded oracle-equivalent across 2 schemas (9 oracle groups, maxDiff=0c); §FALSIFIER fires (stmtAmt +100 → maxDiff=10000c > 0)
- · line20(stmt=50,trx=50,chg=0,int=0)
+§BANKSTMT-ORACLE live iDempiere Postgres reachable (postgres/idempiere_test)
+
+§BANKSTMT-STMT c_bankstatement_id=100 c_bankaccount_id=100 bankCcy=100
+§BANKSTMT-LINES count=2: line10(stmt=98,trx=98.5,chg=-0.25,int=-0.25) · line20(stmt=50,trx=50,chg=0,int=0)
 §BANKSTMT-SCHEMAS count=2: 101(ccy=100,stdPrec=2,currBal=Y), 200000(ccy=102,stdPrec=2,currBal=Y)
 
 §BANKSTMT-ORACLE fact_acct(392) record=100 groups=9
