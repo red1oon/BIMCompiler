@@ -19,6 +19,16 @@ var initSqlJs = require('sql.js');
 // load the engine the BROWSER loads (UMD → window globals), via a window shim — same as spike_writepath.js.
 global.window = global.window || {};
 global.crypto = global.crypto || require('crypto').webcrypto;
+// harness meter (§10.3 F2) — count the ENGINE's own SHA-256 calls without touching the engine. Each
+// digest is an `await`, so this is the contention-immune half of the throughput claim: it counts WORK,
+// not wall clock, and a machine under load cannot move it.
+var _subtle = global.crypto.subtle, _digest = _subtle.digest.bind(_subtle), _NDIG = 0;
+Object.defineProperty(global.crypto, 'subtle', { configurable: true, value: new Proxy(_subtle, {
+  get: function (t, pr) {
+    if (pr === 'digest') return function () { _NDIG++; return _digest.apply(null, arguments); };
+    var v = t[pr]; return typeof v === 'function' ? v.bind(t) : v;
+  } }) });
+function DIGESTS() { return _NDIG; }
 require('./erp_kernel');          // window.ERPKernel
 require('./erp_seam');            // window.ERPSeam
 require(path.join(__dirname, '..', 'build', 'erp', 'kernel_ops.js'));      // window.KernelOps
@@ -201,35 +211,64 @@ function tag(measured) { return measured ? '(measured)' : '(forecast)'; }
   // ════════════════════════════════════════════════════════════════════════════════════════════════
   // §4  W-SCALE-THRU — sustained write throughput: naive (commitOp+sealChain) vs batch (commitGroup). §SCALE-THRU
   // ════════════════════════════════════════════════════════════════════════════════════════════════
-  console.log('\n── W-SCALE-THRU — naive vs batch commitGroup throughput ──');
-  var TN = 2000;
-  var ndb = newDb(); KO.ensureTable(ndb);
+  // Implementing prompts/PROD_SCALE_FORECAST.md §10.3 F2 — Witness: W-SCALE-THRU.
+  // A single un-repeated wall-clock pair flipped this claim to 0.82× on a loaded machine (§10.1) while
+  // the engine had not changed. So: measure both arms REPS times, INTERLEAVED, so each pair meets the
+  // same contention; assert on the MEDIAN; print min/max so a flip is visible instead of silent. And
+  // emit §SCALE-THRU-WORK — digests + committed rows per arm — which no machine load can move.
+  console.log('\n── W-SCALE-THRU — naive vs batch commitGroup throughput (' + 3 + ' interleaved reps, median) ──');
+  var TN = 2000, REPS = 3, GS = 50;   // GS = group size — amortise seal across the group (the deployed write path)
   var _log = console.log;
-  var nt0 = now();
-  for (var nj = 0; nj < TN; nj++) {
-    console.log = function () {};
-    KO.commitOp(ndb, 'SET_STATUS', { table: 'C_Invoice', id: 'N' + nj, doc_status: 'CO' }, null, 'DOC:N' + nj, 'op-' + nj);
-    console.log = _log;
+  function rowCount(db) { var r = db.exec('SELECT COUNT(*) FROM kernel_ops'); return r.length ? Number(r[0].values[0][0]) : 0; }
+  async function armNaive() {                         // naive = per-op commitOp, then ONE sealChain
+    var db = newDb(); KO.ensureTable(db);
+    var d0 = DIGESTS(), t0 = now();
+    for (var nj = 0; nj < TN; nj++) {
+      console.log = function () {};
+      KO.commitOp(db, 'SET_STATUS', { table: 'C_Invoice', id: 'N' + nj, doc_status: 'CO' }, null, 'DOC:N' + nj, 'op-' + nj);
+      console.log = _log;
+    }
+    await KO.sealChain(db);
+    var ms = now() - t0, work = { digests: DIGESTS() - d0, rows: rowCount(db) };
+    db.close();
+    return { thru: TN / (ms / 1000), work: work };
   }
-  await KO.sealChain(ndb);
-  var naiveMs = now() - nt0, naiveThru = TN / (naiveMs / 1000);
-  ndb.close();
-  var bdb = newDb(); KO.ensureTable(bdb);
-  var bt0 = now();
-  var GS = 50;            // group size — amortise seal across the group (the deployed write path)
-  for (var bj = 0; bj < TN; bj += GS) {
-    var grp = [];
-    for (var gk = 0; gk < GS && bj + gk < TN; gk++) grp.push({ op_type: 'SET_STATUS', op_uuid: 'gop-' + (bj + gk), params: { table: 'C_Invoice', id: 'B' + (bj + gk), doc_status: 'CO' } });
-    console.log = function () {};
+  async function armBatch() {                         // batch = commitGroup(GS ops), sealed once per group
+    var db = newDb(); KO.ensureTable(db);
+    var d0 = DIGESTS(), t0 = now();
+    for (var bj = 0; bj < TN; bj += GS) {
+      var grp = [];
+      for (var gk = 0; gk < GS && bj + gk < TN; gk++) grp.push({ op_type: 'SET_STATUS', op_uuid: 'gop-' + (bj + gk), params: { table: 'C_Invoice', id: 'B' + (bj + gk), doc_status: 'CO' } });
+      console.log = function () {};
+      /* eslint-disable no-await-in-loop */
+      await KO.commitGroup(db, grp, { gid: 'grp-' + bj, baseTs: 1000 + bj });
+      console.log = _log;
+    }
+    var ms = now() - t0, work = { digests: DIGESTS() - d0, rows: rowCount(db) };
+    var chain = await KO.verifyChain(db);             // VACUITY/CORRECTNESS guard: a fast arm that
+    db.close();                                       // committed a broken chain is not a faster arm.
+    return { thru: TN / (ms / 1000), work: work, chainOk: chain.ok, chainLen: chain.len };
+  }
+  var nThru = [], bThru = [], perRep = [], workN = null, workB = null, batchChain = null;
+  for (var rep = 0; rep < REPS; rep++) {
     /* eslint-disable no-await-in-loop */
-    await KO.commitGroup(bdb, grp, { gid: 'grp-' + bj, baseTs: 1000 + bj });
-    console.log = _log;
+    var rn = await armNaive(), rb = await armBatch();
+    nThru.push(rn.thru); bThru.push(rb.thru); perRep.push(rb.thru / rn.thru);
+    workN = rn.work; workB = rb.work; batchChain = rb;
   }
-  var batchMs = now() - bt0, batchThru = TN / (batchMs / 1000);
-  bdb.close();
-  var speedup = batchThru / naiveThru;
-  RESULT.thru = { naiveThru: naiveThru, batchThru: batchThru, speedup: speedup };
-  console.log('§SCALE-THRU naive=' + naiveThru.toFixed(0) + 'op/s batch=' + batchThru.toFixed(0) + 'op/s speedup=' + speedup.toFixed(2) + '×');
+  function median(a) { var x = a.slice().sort(function (p, q) { return p - q; }); return x[Math.floor(x.length / 2)]; }
+  var naiveThru = median(nThru), batchThru = median(bThru), speedup = median(perRep);
+  var workRatio = workN.digests ? workB.digests / workN.digests : Infinity;
+  RESULT.thru = { naiveThru: naiveThru, batchThru: batchThru, speedup: speedup, reps: REPS,
+                  speedupMin: Math.min.apply(null, perRep), speedupMax: Math.max.apply(null, perRep),
+                  work: { naive: workN, batch: workB, ratio: workRatio },
+                  chainOk: batchChain.chainOk, chainLen: batchChain.chainLen };
+  console.log('§SCALE-THRU naive=' + naiveThru.toFixed(0) + 'op/s batch=' + batchThru.toFixed(0) + 'op/s speedup=' + speedup.toFixed(2) +
+    '× (median of ' + REPS + ' interleaved reps; per-rep ' + perRep.map(function (x) { return x.toFixed(2) + '×'; }).join(' ') + ')');
+  console.log('§SCALE-THRU-WORK naive digests=' + workN.digests + ' rows=' + workN.rows +
+    ' · batch digests=' + workB.digests + ' rows=' + workB.rows +
+    ' · batch/naive hashing=' + workRatio.toFixed(2) + '× (contention-immune — counts WORK, not wall clock)' +
+    ' · batch chain ok=' + batchChain.chainOk + ' len=' + batchChain.chainLen);
 
   // ════════════════════════════════════════════════════════════════════════════════════════════════
   // §6  FORECAST — docs/day + ERP-department size per tier, WITH/WITHOUT each mitigation. §SCALE-FORECAST
@@ -322,7 +361,9 @@ function tag(measured) { return measured ? '(measured)' : '(forecast)'; }
   // W-SCALE-FORECAST verdict (§TWIN-CLASSIFIED-MARKERS): the three claims the VERDICT box states in prose, asserted over
   // the SAME measured values it prints — a script whose only terminal line is DONE cannot report its own failure.
   var claims = [
-    ['batch beats naive per-op commit (speedup > 1)',                         speedup > 1],
+    ['batch beats naive per-op commit (MEDIAN speedup > 1 over ' + REPS + ' interleaved reps)', speedup > 1],
+    ['batch does no more hashing per op than naive (work ratio <= 1.10, contention-immune)', workRatio <= 1.10],
+    ['the batch arm committed a VERIFIABLE chain (a fast arm with a broken chain is not faster)', batchChain.chainOk === true && batchChain.chainLen === TN],
     ['throughput never binds at the large tier (util < 100%)',                large.utilPct < 100],
     ['checkpoint bootstrap is flat vs the genesis cliff (ckMs < genesis@100M)', large.ckMs < bfit.at(1e8)]
   ];

@@ -10,16 +10,16 @@
 |---|---|---|
 | ops/doc (full lifecycle) | **3** rows | §SCALE-OPSDOC |
 | GL lines per posted doc | 7.1 | §SCALE-MIX (oracle) |
-| per-write fit | `0.35 + 2.52e-2·D` ms (R²=0.998) | S-WRITE |
-| write crosses 100ms @ D | 3,954 live docs | S-WRITE |
-| genesis-boot fit | `9.55 + 3.95e-4·N` ms (R²=0.999) | S-BOOT |
-| checkpoint-boot | **~1ms FLAT** (folds 1000-op open period) | S-BOOT |
+| per-write fit | `0.28 + 1.07e-2·D` ms (R²=1.000) | S-WRITE |
+| write crosses 100ms @ D | 9,301 live docs | S-WRITE |
+| genesis-boot fit | `1.00 + 2.43e-4·N` ms (R²=1.000) | S-BOOT |
+| checkpoint-boot | **~0ms FLAT** (folds 1000-op open period) | S-BOOT |
 | projection bloat | 520 B/op | S-STORE (I-3) |
-| throughput | naive 1228 → batch **1001 op/s** (0.8× ) | S-THRU |
+| throughput | naive 6688 → batch **24954 op/s** (4.0× ) | S-THRU |
 
 ## Capacity forecast — docs/day & ERP department
 
-**Engine throughput ceiling: ~9,607,298 docs/day** (batch path, flat-out) — orders of
+**Engine throughput ceiling: ~239,558,314 docs/day** (batch path, flat-out) — orders of
 magnitude above any human department, so **aggregate throughput never binds**. Dept size below is derived
 from each tier's *actual* annual volume (the department that generates it), not from this ceiling.
 
@@ -27,20 +27,20 @@ Assumptions: 8h working window, 250 working days/yr, clerk band 50–200 posted 
 
 | Tier | docs/yr | docs/day | **ERP dept** | live-doc D | write/save (desktop) | write/save (mobile ×4) | total-op N | boot genesis (desktop / mobile) | boot ckpt | DB size | throughput used | **binds** |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| small | 5,000 | 20 | **~1–1 clerks** | 500 | 13ms (measured) | 52ms (est) | 0.01M | 0.0s / 0.1s (measured) | 1ms | 7.4MB | 0.000% | none — headroom (0.000% throughput used) |
-| mid | 50,000 | 200 | **~1–4 clerks** | 5,000 | 126ms (measured) | 505ms (est) | 0.45M | 0.2s / 0.7s (forecast) | 1ms | 223.2MB | 0.002% | S-WRITE (126ms/save @ 5,000 live docs) |
-| large | 500,000 | 2,000 | **~10–40 clerks** | 50,000 | 1260ms (forecast) | 5042ms (est) | 7.50M | 3.0s / 11.9s (forecast) | 1ms | 3720.7MB | 0.021% | S-WRITE (1260ms/save @ 50,000 live docs) |
+| small | 5,000 | 20 | **~1–1 clerks** | 500 | 6ms (measured) | 23ms (est) | 0.01M | 0.0s / 0.0s (measured) | 0ms | 7.4MB | 0.000% | none — headroom (0.000% throughput used) |
+| mid | 50,000 | 200 | **~1–4 clerks** | 5,000 | 54ms (measured) | 216ms (est) | 0.45M | 0.1s / 0.4s (forecast) | 0ms | 223.2MB | 0.000% | none — headroom (0.000% throughput used) |
+| large | 500,000 | 2,000 | **~10–40 clerks** | 50,000 | 536ms (forecast) | 2145ms (est) | 7.50M | 1.8s / 7.3s (forecast) | 0ms | 3720.7MB | 0.001% | S-WRITE (536ms/save @ 50,000 live docs) |
 
 **Reading it:** throughput utilisation stays a fraction of a percent at every tier — the engine is never
 throughput-bound. The only surface that crosses budget is **interactive Save latency** (O(live docs)), which
-hits 100ms at ~3,954 live docs desktop / ~978 live docs mobile (×4 est) — a working-set limit, managed by scoping/period-close, not a hardware wall.
+hits 100ms at ~9,301 live docs desktop / ~2,306 live docs mobile (×4 est) — a working-set limit, managed by scoping/period-close, not a hardware wall.
 
 ### Mitigation deltas (what each deployed strategy buys)
 
 | Strategy | OFF | ON | Effect |
 |---|---|---|---|
-| Checkpoint bootstrap | genesis O(N): 40s @100M ops (mobile cliff) | ~1ms flat | removes the cold-start freeze |
-| Batch commitGroup | naive 1228 op/s | 1001 op/s | 0.8× docs/day |
+| Checkpoint bootstrap | genesis O(N): 24s @100M ops (mobile cliff) | ~0ms flat | removes the cold-start freeze |
+| Batch commitGroup | naive 6688 op/s | 24954 op/s | 4.0× docs/day |
 | Projection prune | 520 B/op unbounded | bounded to ops-since-checkpoint | caps DB/RAM growth |
 
 *All forecast numbers trace to the §SCALE-* log lines in `build/erp/poc_scale_forecast.log`.*
