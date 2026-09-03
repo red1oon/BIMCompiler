@@ -1,8 +1,8 @@
 §REPLICA_CLIENT_LOADED v1
 §SNAP_SIGN_LOADED v1 (ECDSA P-256, pinned controller key)
 §PCLOSE_LOADED v1 (period-close fold = signed checkpoint = balance b/f)
-═══ W-MULTIHOST-SYNC 2026-09-03T03:26:19.144Z — 3 declared hosts + 1 real dead host (arm 4) ═══
-§HOST here base=http://127.0.0.1:46351
+═══ W-MULTIHOST-SYNC 2026-09-03T03:34:11.523Z — 3 declared hosts + 1 real dead host (arm 4) ═══
+§HOST here base=http://127.0.0.1:37409
 §HOST GH base=https://raw.githubusercontent.com/red1oon/BIMCompiler/mock/relay-snapshot
 §HOST OCI base=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-dev/o/sandbox/erp
 §HOST OCI-live base=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/sandbox/erp
@@ -14,29 +14,227 @@
 §PRE_STATE host=OCI-live http=404 md5=- len=- tip=- last-modified=- vs_controller=DOWN
 §PRE_STATE hosts_up=3/3 dead_host=OCI-live http=404
 
-§CONVERGE (stage=converge: controller copy, no network write) — expected tip=9f7f42200db4 len=5
+§PUBLISH — extend epoch 5 → 6, sign, publish, fetch back
 §KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
 §KRN_CHAIN sealed=5 tip=9f7f42200db4…
 §KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
 §REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
 §KERNEL_OP replay type=ALL count=5
-§CONVERGE host=here len=5 tip=9f7f42200db4 tip_eq=true sigValid=true books={} ms=41
-§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
-§KRN_CHAIN sealed=5 tip=9f7f42200db4…
-§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
-§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
-§KERNEL_OP replay type=ALL count=5
-§CONVERGE host=GH len=5 tip=9f7f42200db4 tip_eq=true sigValid=true books={} ms=28
-§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
-§KRN_CHAIN sealed=5 tip=9f7f42200db4…
-§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
-§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
-§KERNEL_OP replay type=ALL count=5
-§CONVERGE host=OCI len=5 tip=9f7f42200db4 tip_eq=true sigValid=true books={} ms=68
-   🟢 every host replays to the signed tip with len=5 and sigValid=true — 3/3
-   🟢 all reachable hosts agree on one tip (host is disposable) — 3 hosts
-   🟢 books fold identically on every host and equal the hand-computed oracle — cross-host maxDiff=0c vs-oracle maxDiff=0c (no POST op yet → books VACUOUS, tip-only)
-§ARM CONVERGE status=PASS hosts_converged=3 hosts=3 len=5 tip=9f7f42200db4 books_maxdiff_c=0
+§KERNEL_OP committed id=6 uuid=8ece91cb type=POST params={"table":"C_Invoice","id":9006,"witness":"W-MULTIHOST-SYNC","epoch":6,"lines":[{"account_id":"101","role":"AR","amtacctdr":1200,"amtacctcr":0},{"account_id":"400","role":"Revenue","amtacctdr":0,"amtacctcr":1200}]}
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+   🟢 new epoch sealed (len 5→6) and its tip verifies under the PINNED key — tip=55a01c1a7fd4 prefix_of_previous=true
+   🟢 here serves the published bytes — md5=5a8573eb
+§PUBLISH GH commit=6464b89f78 prev_blob=08087437 new_blob=ed96cfa6 put_ms=1738 commit_url http=200 md5_match=true
+   🟢 GH stored the published bytes (immutable commit URL byte-identical)
+§PUBLISH GH branch_url poll t=0s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=10s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=20s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=30s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=40s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=50s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=60s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=70s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=80s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=90s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=100s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=110s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=120s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=130s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=141s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=151s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=161s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=171s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=181s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=191s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=201s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=211s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=221s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=231s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=241s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=251s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=261s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=271s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=281s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url poll t=291s http=200 md5=bd1e92ba (CDN max-age=300)
+§PUBLISH GH branch_url converged=true propagation_s=301
+   🟢 GH branch URL serves the published bytes — after 301s
+§PUBLISH OCI before http=200 md5=bd1e92ba last-modified=Sun, 07 Jun 2026 02:10:38 GMT diff_vs_new=true
+Uploading object
+§PUBLISH OCI after http=200 md5_match=true content-type=application/json etag=c9420d8a-9fcf-4133-8f6a-f6cb693a9405 last-modified=Thu, 03 Sep 2026 03:39:16 GMT put_ms=1430
+   🟢 OCI dev serves the published bytes with content-type application/json
+Uploading object
+§PUBLISH OCI stale-role object http=200 md5_match=true (previous epoch 5, for arm 6)
+§ARM PUBLISH status=PASS hosts_published=3 hosts=3 epoch=6 len=6 tip=55a01c1a7fd4 gh_propagation_s=301
 
-§STAGE converge only — no record written, no publish; arms 1,3-6 NOT run
-🟢 W-MULTIHOST-SYNC-STAGE PASS hosts=3/3 ms=1217
+§CONVERGE (after PUBLISH) — expected tip=55a01c1a7fd4 len=6
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§CONVERGE host=here len=6 tip=55a01c1a7fd4 tip_eq=true sigValid=true books={"101":120000,"400":-120000} ms=31
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§CONVERGE host=GH len=6 tip=55a01c1a7fd4 tip_eq=true sigValid=true books={"101":120000,"400":-120000} ms=30
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§CONVERGE host=OCI len=6 tip=55a01c1a7fd4 tip_eq=true sigValid=true books={"101":120000,"400":-120000} ms=83
+   🟢 every host replays to the signed tip with len=6 and sigValid=true — 3/3
+   🟢 all reachable hosts agree on one tip (host is disposable) — 3 hosts
+   🟢 books fold identically on every host and equal the hand-computed oracle — cross-host maxDiff=0c vs-oracle maxDiff=0c
+§ARM CONVERGE status=PASS hosts_converged=3 hosts=3 len=6 tip=55a01c1a7fd4 books_maxdiff_c=0
+
+§ROTATION — each host as the sole reachable source
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§ROTATION sole=here blocked=[GH,OCI] resolved=here tip_eq=true len=6 sigValid=true
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§ROTATION sole=GH blocked=[here,OCI] resolved=GH tip_eq=true len=6 sigValid=true
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§ROTATION sole=OCI blocked=[here,GH] resolved=OCI tip_eq=true len=6 sigValid=true
+   🟢 negative control: all three blocked → resolve() throws — all hosts unreachable
+   🟢 convergence in every rotation — no host is secretly load-bearing — 3/3
+§ARM ROTATION status=PASS rotations_converged=3 hosts=3 control=blocked
+
+§FAILOVER — dead host = OCI-live (real 404, never written; deploy/live untouchable)
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§FAILOVER order=[OCI-live,here,GH,OCI] dead_err="HTTP 404" survivors_up=3/3 resolved=here tip_eq=true
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§FAILOVER order=[OCI-live,GH,OCI,here] dead_err="HTTP 404" survivors_up=3/3 resolved=GH tip_eq=true
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§FAILOVER order=[OCI-live,OCI,here,GH] dead_err="HTTP 404" survivors_up=3/3 resolved=OCI tip_eq=true
+   🟢 dead host is the REAL condition (HTTP 404 from OCI-live) — http=404
+   🟢 every ordering resolves from the first survivor and converges — 3/3
+§ARM FAILOVER status=PASS dead_host=OCI-live dead_http=404 orderings_converged=3 orderings=3 real_condition=true
+
+§TAMPER — forgery served by `here` (/tamper); good hosts = GH, OCI
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=49fdcd8707e9…
+§KRN_CHAIN verify OK len=6 tip=49fdcd8707e9…
+§REPLICA replay len=6 computedTip=49fdcd8707e9 match=false sigValid=false
+§KERNEL_OP replay type=ALL count=6
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=49fdcd8707e9…
+§KRN_CHAIN verify OK len=6 tip=49fdcd8707e9…
+§REPLICA replay len=6 computedTip=49fdcd8707e9 match=true sigValid=false
+§KERNEL_OP replay type=ALL count=6
+   🟢 forgery mutates a posting and self-consistifies the tip — amount 1200→999999 tip=49fdcd8707e9
+   🟢 an embedded-key reader WOULD accept it (the mistake the pinned design forbids) — verifyTip(under embedded key)=true
+   🟢 pinned reader REJECTS it: recompute matches (naive check fooled) but sig invalid under the pinned key — match=true sigValid=false ok=false
+   🟢 structural: the client calls verifyTip(tip, sig) with NO key from the snapshot — pinned=fPaLtHSA…
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=49fdcd8707e9…
+§KRN_CHAIN verify OK len=6 tip=49fdcd8707e9…
+§REPLICA replay len=6 computedTip=49fdcd8707e9 match=true sigValid=false
+§KERNEL_OP replay type=ALL count=6
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§TAMPER hosts=here/tamper:TAMPERED GH:VALID OCI:VALID adopted=GH tip_eq=true
+   🟢 reader falls back to the first GOOD host (GH) rather than adopting the forgery
+§TAMPER_CAVEAT naive resolve() (first-reachable-wins) returned host=here/tamper — the frozen client only rejects at replayAndVerify; the fallback is the reader loop above
+§ARM TAMPER status=PASS rejected_under_pinned=true embedded_key_would_accept=true adopted_from=GH
+
+§FRESH — stale = previous epoch (len 5) served by here/stale and OCI stale/; fork control = same len, different valid tip
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=5 tip=9f7f42200db4…
+§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
+§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=5
+§FRESH_CAVEAT naive resolve() adopted host=here/stale len=5 sigValid=true — a VALID but OLDER snapshot is silently preferred by the frozen first-reachable-wins resolve(); freshness is the judge's job
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=5 tip=9f7f42200db4…
+§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
+§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=5
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=5 tip=9f7f42200db4…
+§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
+§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=5
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§FRESH judge hosts=here/stale:STALE(len 5) OCI/stale:STALE(len 5) GH:CURRENT(len 6) OCI:CURRENT(len 6) maxLen=6 mode=UNANIMOUS adopted=GH tip=55a01c1a7fd4
+   🟢 older valid snapshot(s) classified STALE (len 5 < 6, op_uuid prefix) — stale_hosts=2
+   🟢 reader adopts the CURRENT epoch from a non-stale host — from=GH
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=5 tip=9f7f42200db4…
+§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
+§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=5
+§KERNEL_OP committed id=6 uuid=27798340 type=POST params={"table":"C_Invoice","id":9006,"witness":"W-MULTIHOST-SYNC-FORK","epoch":6,"lines":[{"account_id":"101","role":"AR","amtacctdr":1,"amtacctcr":0},{"account_id":"400","role":"Revenue","amtacctdr":0,"amtacctcr":1}]}
+§KRN_CHAIN sealed=6 tip=0405f9a1f48c…
+§KRN_CHAIN verify OK len=6 tip=0405f9a1f48c…
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=0405f9a1f48c…
+§KRN_CHAIN verify OK len=6 tip=0405f9a1f48c…
+§REPLICA replay len=6 computedTip=0405f9a1f48c match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=6 tip=55a01c1a7fd4…
+§KRN_CHAIN verify OK len=6 tip=55a01c1a7fd4…
+§REPLICA replay len=6 computedTip=55a01c1a7fd4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=6
+§FRESH judge hosts=here/fork:DIVERGENT(len 6) GH:CURRENT(len 6) OCI:CURRENT(len 6) maxLen=6 mode=QUORUM adopted=GH tip=55a01c1a7fd4
+   🟢 fork control: same-len different valid tip reads DIVERGENT (not STALE); quorum 2/3 adopts the published tip — cls=DIVERGENT mode=QUORUM
+§ARM FRESH status=PASS stale_detected=2 stale_len=5 current_len=6 adopted_from=GH naive_resolve_adopted=here/stale fork_control=DIVERGENT+QUORUM
+
+§MH4 — showstopper register, measured
+§MH4 S-1 POINTER — relay admission (unauthenticated /push, build/erp/erp_relay_server.js) is being closed under §RELAY_AUTH; see §RA-RESULT for its measured status. Not measured by this witness.
+§MH4 S-2 relay: http.createServer@L66 https/tls_requires=0 · shipped erp_sync_relay.js: default_url_null=true https_scheme_refs=0 shipped_files_with_a_relay_url=0 → the relay is plain HTTP (TLS must be terminated by the host; an https page → http relay is mixed-content blocked) and no relay URL ships: the live product is signed-snapshot exchange, not multi-writer
+§MH4 S-3 edge key: custody=idb-nonextractable extractable_false=true · controller private key on THIS device=206B gitignored=true · verifier pins pubkey fPaLtHSA… in-module · roster erp_key_epochs.js ROTATE=true REVOKE=true → keys never leave the device; a key-holder's consistent lie is caught at the count, not by crypto
+§MH4 S-4 shipped erp/*.js opening IndexedDB=7 [crud_overlay.js,erp_signer.js,kanban_host.js,kernel_ops.js,plugin_overlay.js,system_monitor.js,tests/poc_client12_resident.js] · app-layer cipher refs (AES-GCM|SQLCipher|subtle.encrypt)=0 → op-log and keys rest in IndexedDB with no app-layer encryption; relies on OS disk encryption
+
+§SUMMARY hosts_up=3/3 PUBLISH:PASS CONVERGE:PASS ROTATION:PASS FAILOVER:PASS TAMPER:PASS FRESH:PASS checks_failed=0 inconclusive=0 epoch=6 len=6 tip=55a01c1a7fd4 ms=307948
+§RECORD wrote scripts/multihost_run.json core_files=16 — the gate keys on these hashes
+🟢 W-MULTIHOST-SYNC PASS hosts=3/3 arms=6/6 epoch=6 len=6 tip=55a01c1a7fd4

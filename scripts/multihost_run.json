@@ -1,0 +1,115 @@
+{
+  "witness": "W-MULTIHOST-SYNC",
+  "utc": "2026-09-03T03:34:11.523Z",
+  "verdict": "PASS",
+  "hosts_up": 3,
+  "hosts": [
+    {
+      "name": "here",
+      "base": "http://127.0.0.1:<ephemeral>"
+    },
+    {
+      "name": "GH",
+      "base": "https://raw.githubusercontent.com/red1oon/BIMCompiler/mock/relay-snapshot"
+    },
+    {
+      "name": "OCI",
+      "base": "https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-dev/o/sandbox/erp"
+    }
+  ],
+  "dead_host": {
+    "name": "OCI-live",
+    "http": 404
+  },
+  "epoch": 6,
+  "len": 6,
+  "tip": "55a01c1a7fd4182d7567be8f3133f5f5b87f6d57c504ab929f28cf623e7ac387",
+  "gh_commit": "6464b89f78a2c5d5c355a963feb79fb91148134e",
+  "oci_etag": "c9420d8a-9fcf-4133-8f6a-f6cb693a9405",
+  "gh_propagation_s": 301,
+  "ms": 307948,
+  "arms": {
+    "PUBLISH": {
+      "status": "PASS",
+      "n": {
+        "hosts_published": 3,
+        "hosts": 3,
+        "epoch": 6,
+        "len": 6,
+        "tip": "55a01c1a7fd4",
+        "gh_propagation_s": 301
+      }
+    },
+    "CONVERGE": {
+      "status": "PASS",
+      "n": {
+        "hosts_converged": 3,
+        "hosts": 3,
+        "len": 6,
+        "tip": "55a01c1a7fd4",
+        "books_maxdiff_c": 0
+      }
+    },
+    "ROTATION": {
+      "status": "PASS",
+      "n": {
+        "rotations_converged": 3,
+        "hosts": 3,
+        "control": "blocked"
+      }
+    },
+    "FAILOVER": {
+      "status": "PASS",
+      "n": {
+        "dead_host": "OCI-live",
+        "dead_http": 404,
+        "orderings_converged": 3,
+        "orderings": 3,
+        "real_condition": true
+      }
+    },
+    "TAMPER": {
+      "status": "PASS",
+      "n": {
+        "rejected_under_pinned": true,
+        "embedded_key_would_accept": true,
+        "adopted_from": "GH"
+      }
+    },
+    "FRESH": {
+      "status": "PASS",
+      "n": {
+        "stale_detected": 2,
+        "stale_len": 5,
+        "current_len": 6,
+        "adopted_from": "GH",
+        "naive_resolve_adopted": "here/stale",
+        "fork_control": "DIVERGENT+QUORUM"
+      }
+    }
+  },
+  "showstoppers": {
+    "S-1": "POINTER — relay admission (unauthenticated /push, build/erp/erp_relay_server.js) is being closed under §RELAY_AUTH; see §RA-RESULT for its measured status. Not measured by this witness.",
+    "S-2": "relay: http.createServer@L66 https/tls_requires=0 · shipped erp_sync_relay.js: default_url_null=true https_scheme_refs=0 shipped_files_with_a_relay_url=0 → the relay is plain HTTP (TLS must be terminated by the host; an https page → http relay is mixed-content blocked) and no relay URL ships: the live product is signed-snapshot exchange, not multi-writer",
+    "S-3": "edge key: custody=idb-nonextractable extractable_false=true · controller private key on THIS device=206B gitignored=true · verifier pins pubkey fPaLtHSA… in-module · roster erp_key_epochs.js ROTATE=true REVOKE=true → keys never leave the device; a key-holder's consistent lie is caught at the count, not by crypto",
+    "S-4": "shipped erp/*.js opening IndexedDB=7 [crud_overlay.js,erp_signer.js,kanban_host.js,kernel_ops.js,plugin_overlay.js,system_monitor.js,tests/poc_client12_resident.js] · app-layer cipher refs (AES-GCM|SQLCipher|subtle.encrypt)=0 → op-log and keys rest in IndexedDB with no app-layer encryption; relies on OS disk encryption"
+  },
+  "core": {
+    "bim-compiler:build/erp/kernel_ops.js": "1e000bbbb004ded4dc44150d51e56de85cf8569e53d6c5f1dcd22f9506d8df92",
+    "bim-compiler:build/erp/erp_replica_client.js": "097cd582379fbf41c4f471b535fbcb5e6dbf16c7686cc5a6234926ffee0a0430",
+    "bim-compiler:build/erp/erp_snapshot_sign.js": "b7b525d18a04eee8eb73e3f5ebda828299569f090cc53a6cfa09afae5aebda70",
+    "bim-compiler:build/erp/erp_relay_client.js": "8e8bf4dec27fea29944eb64adeac4374eaca092837505cfc573a4e18ba301022",
+    "bim-compiler:build/erp/erp_relay_server.js": "0d3d94cbcbc4cfa54746f6ec05b6a48268120adc2308e3302368d8bd1af1ae11",
+    "bim-compiler:build/erp/erp_sync_fsm.js": "e647fb392c16e38fd2155350079150029285d2c2b1570c1e56a60b9ad4d10ee8",
+    "bim-compiler:build/erp/erp_sequencer.js": "6421edadf036d3bca742c4cc1b8a20900c77f3f7a44820dc9202607602551622",
+    "bim-compiler:build/erp/erp_key_epochs.js": "2f149c7f233f8cc8d10d00dc1839339cf5577d64851d92d4f0a9d691425afcc5",
+    "bim-compiler:build/erp/erp_period_close.js": "2ede3898011ef366cb46d0977975533e8519ab1f9c31ce57cda0773b52f1305a",
+    "bim-compiler:scripts/gen_replica_snapshot.js": "047e87984017bb87365d99b955410806772bccd70f544c609768a8a04fc67fa6",
+    "bim-compiler:scripts/witness_multihost_sync.js": "23069720e529be1a5c40dbd9112ea49bb8f8a3d10f4d5b9374fdd3cf237893de",
+    "bim-compiler:scripts/multihost_core.js": "caf0919c1d8e775289308b0a8a108546c38f839a5c4349202f692e32705ebc79",
+    "bim-compiler:scripts/multihost_core.json": "d7e9ecb3fc15a9138dcffd73516028b496c89fa4c9316e96890f03c337583803",
+    "bim-ootb@origin/main:erp/erp_sync_relay.js": "369f66a527586806dd110f4a633f46939cb26caec1cd93bf61b581f8afee43fa",
+    "bim-ootb@origin/main:erp/erp_persist.js": "4a9f282e57e80144d41de6b5f11fc8d0b3fe0264e688de69f67923a1142345c0",
+    "bim-ootb@origin/main:erp/erp_signer.js": "0fbbb762fced14e1456a4f4acedcbf90e40c3d47242efc310304029f47f6128e"
+  }
+}
