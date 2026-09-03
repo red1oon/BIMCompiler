@@ -104,6 +104,50 @@ function projectInvariant(canon) {
   verdict(Object.keys(proj.owner).length === 1, 'exactly ONE owner of INV-9 (no double-allocation)', 'owners=' + Object.keys(proj.owner).length);
   verdict(proj.rejected.length === 1, 'exactly one ALLOCATE rejected (the loser)', 'rejected=' + proj.rejected.length);
 
+  // ── §REBASE-USERTAG (W-REBASE-USERTAG) — prompts/BACKEND_SUBSTRATE_LANE.md §RB.3 ──
+  // rebase() rewinds and reapplies the log. kernel_ops.js:_canonicalV2 signs `actor: op.user_tag`, so a
+  // v2 content-signed row's SIGNATURE attests its user_tag; the column DEFAULTs to 'local'
+  // (kernel_ops.js:42). Before the fix, rebase selected nine columns and user_tag was not one of them —
+  // so every non-default actor's row came back 'local' and its own signature stopped verifying. Every
+  // witness to date commits as 'local', which is exactly why this never surfaced.
+  console.log('\n§REBASE-USERTAG — a non-default actor survives the rewind+reapply, signature intact');
+  var KU = freshK(); var dbU = new SQL.Database();
+  var kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+  var pubHex = Buffer.from(await crypto.subtle.exportKey('raw', kp.publicKey)).toString('hex');
+  KU.setSigner({
+    sign: async function (msg) { return Buffer.from(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, kp.privateKey, new TextEncoder().encode(msg))).toString('hex'); },
+    verify: async function (msg, sig) { return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, kp.publicKey, Buffer.from(sig, 'hex'), new TextEncoder().encode(msg)); },
+    pubKeyHex: pubHex
+  }, pubHex);
+  KU.setContentSigning(true);                                  // v2 → the sig attests the CONTENT, incl. actor
+  KU.ensureTable(dbU);
+  var _qlog = console.log; console.log = function () {};
+  await KU.commitGroup(dbU, [{ op_type: 'SET_STATUS', op_uuid: 'bob-1', params: { table: 'C_Order', id: 1, doc_status: 'CO' } }], { gid: 'g-bob', baseTs: 1000 });
+  await KU.commitGroup(dbU, [{ op_type: 'SET_STATUS', op_uuid: 'loc-1', params: { table: 'C_Order', id: 2, doc_status: 'CO' } }], { gid: 'g-loc', baseTs: 2000 });
+  console.log = _qlog;
+  // stamp the non-default actor on ONE row and re-seal, so its signature genuinely attests 'user:bob'
+  dbU.run("UPDATE kernel_ops SET user_tag='user:bob', op_hash=NULL, sig=NULL WHERE op_uuid='bob-1'");
+  console.log = function () {}; await KU.sealChain(dbU); console.log = _qlog;
+  function tagOf(db, uuid) { var q = db.exec("SELECT user_tag FROM kernel_ops WHERE op_uuid='" + uuid + "'"); return q.length ? q[0].values[0][0] : '(absent)'; }
+  var preTag = tagOf(dbU, 'bob-1'), preVerify = await KU.verifyChain(dbU);
+  var nonDefault = dbU.exec("SELECT COUNT(*) FROM kernel_ops WHERE user_tag IS NOT NULL AND user_tag<>'local'")[0].values[0][0];
+  console.log('   §REBASE-USERTAG pre  actor=' + preTag + ' verifyChain=' + preVerify.ok + ' nonDefaultRows=' + nonDefault);
+  if (!(preVerify.ok && Number(nonDefault) === 1)) {
+    // law 4: judging nothing must never read PASS
+    verdict(false, 'INCONCLUSIVE — the pre-rebase fixture is not what this arm judges (need 1 non-default actor on a verifying chain)',
+            'verify=' + preVerify.ok + ' nonDefault=' + nonDefault);
+  } else {
+    var seqU = SEQ.createSequencer();
+    console.log = function () {}; await FSM.rebase(dbU, KU, seqU); console.log = _qlog;
+    var postTag = tagOf(dbU, 'bob-1'), postLoc = tagOf(dbU, 'loc-1'), postVerify = await KU.verifyChain(dbU);
+    console.log('   §REBASE-USERTAG post actor=' + postTag + ' localRow=' + postLoc + ' verifyChain=' + postVerify.ok +
+                (postVerify.ok ? '' : ' brokeAt=' + postVerify.brokeAt + ' why=' + postVerify.why));
+    verdict(postTag === 'user:bob', 'PRESERVE — a non-default user_tag survives rebase (was silently reset to the DEFAULT)', 'actor=' + postTag);
+    verdict(postVerify.ok === true, 'SIG SURVIVES — the v2 content signature still verifies after rebase', 'verifyChain=' + postVerify.ok);
+    verdict(postLoc === 'local', "DEFAULT UNCHANGED — a 'local' row still rebases to 'local' (the fix is not a no-op)", 'localRow=' + postLoc);
+    verdict(postVerify.len === 2, 'NOT VACUOUS — both rows were actually judged', 'len=' + postVerify.len);
+  }
+
   // ── §PERF — indicative node throughput (real numbers come from the browser POC) ──
   console.log('\n§PERF — indicative node throughput (sql.js / SQLite-WASM)');
   var N = 2000;

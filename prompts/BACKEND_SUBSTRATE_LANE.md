@@ -489,3 +489,18 @@ the real sequencer stub, with a real ECDSA signer:
 ```
 That drops the kernel-family's standing FAILs from **7 to 4**; the remaining four
 (`poc_kds_live`, `poc_pos_live`, `poc_replenish_live`, `poc_wh_cache`) need a served app, not a path fix.
+
+### §RB.4 RESULT 2026-09-03 — CLOSED. `W-REBASE-USERTAG` 4/4, falsifier-proven
+```
+§REBASE-USERTAG pre  actor=user:bob verifyChain=true nonDefaultRows=1
+§REBASE-USERTAG post actor=user:bob localRow=local  verifyChain=true
+🟢 PRESERVE · 🟢 SIG SURVIVES · 🟢 DEFAULT UNCHANGED · 🟢 NOT VACUOUS  → test_kernel_rebase ALL PASS
+```
+**On the pre-fix engine, 3 of the 4 go red and DEFAULT UNCHANGED correctly stays green:**
+```
+§REBASE-USERTAG post actor=local localRow=local verifyChain=false brokeAt=1 why=signature
+🔴 PRESERVE (actor=local) · 🔴 SIG SURVIVES (verifyChain=false) · 🔴 NOT VACUOUS (len=undefined)
+```
+Regression: all 6 `erp_sync_fsm`-judging witnesses PASS (`poc_blackout_resume`, `poc_schema_version`,
+`test_kernel_{sync,relay,rebase,relay_auth}`).
+**Shipped:** bim-ootb **PR #1640** (`erp/erp_sync_fsm.js` + `erp/sw.js` v778→**v779**).
