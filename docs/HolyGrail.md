@@ -106,30 +106,32 @@ campaign, in flight (O2C/P2P done; GL still dataless; the DocAction corpus being
 Free of *running* it; finishing the extraction of what it taught the models is the campaign, not a
 new idea.
 
-## Why it is a grail others cannot reach
+## Why it is a grail — first to *assemble*, not first to *invent*
 
-Three conditions have to hold **at the same time**. Almost no system has all three —
-which is exactly why this remained a quest rather than a checkbox:
+**Stated precisely, because the loose version is not true and this project does not need it.**
+None of the three ingredients below is novel on its own. This project's own prior-art review says so
+outright — `docs/LocalFirstPriorArt.md:69`: SQLSync is our nearest neighbour on the determinism lever,
+LiveStore on the data layer, and *"together they show we hold **no technique novelty** on either."*
+The same review records what we lack that SQLSync has: **a multi-writer total order** (`:101`).
 
-1. **The engine is data.** A rule is a *row you read*, not Java you recompile.
-2. **The host language is the rule language.** Browser JavaScript *is* the runtime, so
-   editing a rule is editing the running system — no JSR-223, no Drools workbench, no
-   scripting bridge (ERP.md §0.9).
-3. **The op-log makes editing safe.** Change-as-op, replay, dry-run, undo — *the safety
-   Drools never had* (ERP.md §0.4). You can edit a rule and **not corrupt
-   history**, because effects are frozen and replayable (ERP.md §0.18).
+The claim that survives contact with an engineer is narrower and stronger: **nobody has assembled these
+three, at once, under a real ERP dictionary.** Three conditions have to hold *simultaneously*:
 
-iDempiere has condition (1) only half-done and lacks (2) and (3): its rules are
-half-data, half-welded into `M*` Java side effects, so they can never be made *fully*
-editable-at-runtime without the JVM / OSGi / workbench that constitute the bloat. Drools
-has a rule engine but no op-log safety and no engine-as-data. For them this is a *stuck*
-problem; here it is a **structural property**. The bloat that prevents them is precisely
-the bloat this project removed.
+1. **The engine is data.** A rule is a row you read, not Java you recompile.
+2. **The host language is the rule language.** Browser JavaScript *is* the runtime, so editing a rule
+   edits the running system — no JSR-223, no Drools workbench, no scripting bridge (ERP.md §0.9).
+3. **The op-log makes editing safe.** Change-as-op, replay, dry-run, undo — effects are frozen and
+   replayable, so a rule edit cannot corrupt history (ERP.md §0.4, §0.18).
 
-> **How *every* ERP's logic enters** (the generalize / decision-data / caged-plugin question, and why a
-> Drools-*like* affordance is kept but the Drools *engine* is not) → the six-layer **logic-admission model** in
-> IDEMPIERE_2.md. The grail is
-> that model's L1/L2/L5 made *live*.
+iDempiere has (1) half-done and lacks (2) and (3): its rules are half-data, half-welded into `M*` Java
+side effects, so they cannot be made fully editable-at-runtime without the JVM/OSGi/workbench that
+constitute the weight. Drools has a rule engine but no op-log safety and no engine-as-data. Local-first
+engines (SQLSync, PowerSync, ElectricSQL, cr-sqlite) have (3) and sometimes (1), but none carries an
+ERP dictionary — no `AD_Field`, no `C_DocType` FSM, no `Doc_*` posting fold.
+
+**One thing here is genuinely ours, not assembled:** tamper-evidence. The prior-art review notes it is
+*nobody's* default; the hash-chained, signed op-log (W-CHAIN/W-SIGN) is the distinctive add, and SQLSync
+in particular has none.
 
 ## External check — has the field caught up? (2026-08-05)
 
@@ -143,78 +145,103 @@ into WASM linear memory, no paging; measured ≈440 MB resident on a 122k-elemen
 a gap here — both confirm the underlying bet, no server and browser-resident truth, is now
 mainstream-recognized rather than still fringe.
 
-## The honest status — half-claimed, one mile left
+## The honest status — the gesture is real on two rules, not yet on the dictionary
 
-I will not overclaim my own grail. It is **half-reached, and witnessed that far:**
+Corrected 2026-09-03, because the previous text said the live edit loop was still "remaining" and that
+is no longer accurate — and the correction cuts **both** ways.
 
-- **Reached:** the rules are extracted to data — `erp_rules.db`, **746 records**,
-  **diff-verified** against the GardenWorld oracle (ERP.md §0.10, §0.17).
-  The engine renders *itself* from that data (Glassbowl), read-only.
-- **Remaining:** the **live edit loop** — *edit the rule → records reflow on the map* —
-  is the write-loop, gated behind T3 (`push=live`, explicit go). The read-only History
-  undo-preview and the greyed CRUD ring are the honest *seam* to it, not the step.
+**Reached, and shipping:** `erp/rule_fold.js` is on `origin/main` and live. It is the gesture, end to
+end: edit one rule → K records re-fold → signed on the W-CHAIN/W-SIGN op-log → reversible, scoped to the
+logged-in tenant (read from `window.__idmpClient`, never hardcoded). It carries **two** rules through one
+registry:
+- **L2 `premium`** — a *classification* guard: a product is premium iff `PriceStd ≥ T`.
+- **L1 `maycomplete`** — a *lifecycle* guard on the `Complete (CO)` transition: an order may complete
+  without approval iff `GrandTotal ≤ T`. Editing `T` is lifecycle-as-data — the most valuable kind of
+  rule a user edits, and the one iDempiere welds into `M*` Java.
 
-And the seam is now being built. The CRUD / Validation overlay (the "ring-of-fire" edit
-layer, governed by the UI-overlay model) carries the
-`AD_Val_Rule` model as a keyed, editable layer. Make that validation layer *editable and
-re-folding* instead of static, and the grail is demonstrable in one gesture. The single
-witness that closes it:
+**Not reached, stated plainly:** the gesture is proven on **two hand-authored rules, not on the AD
+dictionary generally**. The general witness — *edit any `AD_Val_Rule` / `AD_Field` row → K records
+re-fold* — **does not exist**: a search of `scripts/` for a `RULE-EDIT` witness returns zero files
+(verified 2026-09-03). Two earlier notes disagreed about this, one claiming the loop closed and one
+claiming it absent. Both were half-right, and the line above is the reconciliation.
 
-```
-§RULE-EDIT key=c_invoice rule=non_negative_amt edit=min:0→min:100
-           affected=K records re-fold verify=ok reversible=Y
-```
+**Also reached since the previous text was written:** the write path is no longer dry-run. `commitCrud`
+is the single signed chokepoint every CRUD_CREATE/UPDATE/DELETE funnels through, with the record-level
+access gate wired into it (bim-ootb #1499).
 
-Change one validation row; watch *K* records change which side of the rule they fall on,
-live; op-logged, signed, reversible. That witness is the whole paradigm shift made
-visible in a single gesture — and the architecture it needs (engine-as-data + a
-JavaScript host + the signed op-log) is **already standing under it.**
+## Roadmap check — the write-seam, as of 2026-09-03
 
-## Roadmap check — the write-seam, as of 2026-06-13
+The grail is the last rung of the write-loop, not a separate project. Update this table each time a
+rung is climbed; the date above is the date it was last re-measured, not the date it was written.
 
-The grail is the *last rung of the write-loop*, not a separate project. Here is the
-ladder from today's read-only surface to the live rule-edit, and where each rung stands —
-this section is meant to be updated as a checkpoint each time a rung is climbed.
-
-| Rung | What it is | State |
+| Rung | What it is | State (2026-09-03) |
 |---|---|---|
-| **R0** | Rules extracted to data, diff-verified (`erp_rules.db`, 746 records) | **done — witnessed** |
+| **R0** | Rules extracted to data (`build/erp/erp_rules.db`, `rules` table = **746 rows**, verified) | **done — witnessed** |
 | **R1** | The engine renders itself from that data, read-only (Glassbowl) | **done — live** |
-| **E2** | The write *seam* — CRUD ring + the document state machine (**Process / DocAction**) modelled as keyed data, **dry-run** | **done — witnessed (this checkpoint)** |
-| **E3** | The seam goes live — `apply` → `commitOp`/`sealChain`, `verifyChain` after each; projection re-folds; acceptance oracle (rebuilt #80001 == traced #80001) | next |
-| **E4** | Owner-gate + CAS invoked on the write path (the Phase-A guards surfaced) | pending |
-| **§RULE-EDIT** | **The grail** — edit a *rule* row; watch *K* records re-fold live, signed + reversible | the last rung |
+| **E2** | The write *seam* — CRUD ring + DocAction state machine as keyed data | **done — no longer dry-run** |
+| **E3** | The seam live — `commitOp`/`sealChain`, `verifyChain` after each, projection re-folds | **done** — `commitCrud` is the one signed chokepoint |
+| **E4** | Owner-gate + CAS + record-level org/client scope on the write path | **done** — bim-ootb #1499 |
+| **§RULE-EDIT (specific)** | Edit a rule row → K records re-fold, signed, reversible — on **two** registered rules | **done — live** (`erp/rule_fold.js`) |
+| **§RULE-EDIT (general)** | The same gesture over any **AD dictionary** row | **the last rung — not built** |
 
-**What just landed, and why it matters to the grail.** The CRUD + **Process (DocAction)**
-overlay (E2) is now mounted in tandem with the Help guide as an independent peer layer —
-witnessed `§CRUD-PROC pass=27 fail=0`, plus the earlier CRUD validation/dry-run witnesses,
-all still dry-run. The **Process** piece is the part that matters here: it models the
-document's *state machine* — `completeIt()`, the legality of `DR→CO`, the IP-on-unmet
-outcome — as **data** (`docAction` descriptors naming the real `M*.completeIt()` oracles),
-not code. That widens the grail's surface from *field-validation rules* to *lifecycle
-rules*: the most valuable rule a user edits is usually "**when may this complete, and what
-does completion do**" — and that is now keyed data the same edit loop can reach. The grail
-is no longer only "edit a minimum amount"; it is "edit when an invoice may post."
+**What the last rung actually requires**, now that everything under it stands: the AD-driven surfaces
+are already interpreted live — `AD_Val_Rule` filters the real FK pickers, `AD_Field` display/readonly/
+mandatory logic evaluates on the real forms, the `C_DocType` FSM decides legality. What is missing is
+the *edit-and-refold* path over those rows, which is the same loop `rule_fold.js` already runs over its
+own two. That is a generalisation, not a new mechanism.
 
-**The honest gap is unchanged.** E2 is still **dry-run** — it logs the op it *would* run.
-The load-bearing step is **E3**: the signed write plus the acceptance oracle that proves a
-re-built document matches the traced one. Until E3 is green, the seam is a faithful *model*
-of the engine, not the live engine; and the grail rung (`§RULE-EDIT`) sits one step past
-E3/E4. So the checkpoint verdict, stated plainly: **the seam to the grail is now built and
-witnessed as data; the current is not yet flowing through it.** A rung climbed, honestly
-logged — which is the difference between building and day-dreaming.
+## Measure it yourself — every claim above, and the command that checks it
 
-**2026-06-13 checkpoint — R0 extended to phrase authoring.** The POS deliver-later variant
-(W-POS-DELIVERLATER) and the NinjaExcel reporting engine (W-NINJA, W-NINJA-RULE) have landed.
-The grail-relevant piece is **W-NINJA-RULE**: a phrase-to-SQL compiler that resolves human
-phrases ("COUNT of Invoices, completed, is Sales Transaction, from …") to SQL candidates using
-*only* vocabulary extracted from the AD dictionary — `ad_table` / `ad_column` / `ad_ref_list`
-— zero LLM, zero hardcoded strings. The browser pill (W-NINJA-RULE-UI) runs the same
-compile → sample-falsify → human-picks-tie loop live. This extends **R0** from "rules
-extracted to data and diff-verified" into "rules authorable from human phrases in the browser,
-using the AD as vocabulary" — the write side of the same foundation the grail requires. The
-gap to E3/§RULE-EDIT is unchanged; the authoring story for the rules you will eventually
-edit is now demonstrated.
+Written for the iDempiere team. Nothing here asks you to take a number on trust. Engine and witnesses
+live in `bim-compiler`; the deployed app is `bim-ootb`. All figures re-measured **2026-09-03**.
+
+| Claim | How you check it | What it printed for us |
+|---|---|---|
+| Rules are data, 746 of them | `sqlite3 build/erp/erp_rules.db "select count(*) from rules"` | `746` |
+| The equivalence ledger is real and re-runnable | `bash build/erp/run_bundle.sh` | **46/46 PASS, 0 FAIL** |
+| `C_DocType` FSM is a real dispatch table, not a CO-only stub | `bash build/erp/run_witness.sh scripts/poc_docfsm.js` | `§DOCTYPE_FSM_COVERAGE doctypes=52 actions=14 statuses=12`; reaches the reversal family, rejects Complete-from-Closed |
+| …and it agrees with the real Java, per table | the 10 per-model witnesses: `poc_morder_fsm.js`, `poc_minout_fsm.js`, `poc_minvoice_fsm.js`, `poc_mpayment_fsm.js`, `poc_minventory_family_fsm.js`, `poc_mjournal_fsm.js`, `poc_mallochdr_fsm.js`, `poc_mcash_fsm.js`, `poc_mbankstatement_fsm.js`, `poc_generic_tail_fsm.js` | **1,387 fixtures `diff=0`** in total, against a **runtime parse** of your own `DocumentEngine.getValidActions` + each `M*.java` (`scripts/docfsm_oracle.js`) — not a hand-authored expectation table |
+| `AD_Field` logic evaluates on the real form | from `bim-ootb/erp`: `node tests/poc_parity_fieldset_live.js` | 30/30 PASS; live `withLogic` = 28 / 28 / 21 / 61 / 0 on tabs 186/257/263/330/349 |
+| The form shows the AD tab, not a curated subset | same witness | c_order **8→56** fields, m_inout 7→53, c_invoice 7→47, c_payment **4→78**, c_allocationline 4→13 |
+| `AD_Val_Rule` filters the real pickers | from `bim-ootb/erp`: `node tests/poc_parity_valrule_live.js` | 23/23 PASS; `c_doctype_id` **52→3**, `c_bpartner_id` **113→42**, `c_order_id` **44→2** |
+| Every witness judges the code that ships | `bash build/erp/run_witness.sh scripts/check_erp_twins.js` | 64 pairs, 39 identical, **0 unreviewed** |
+| Peer merge cost | `bash build/erp/run_witness.sh scripts/poc_bench_peer_sync.js` | 10 peers, 500 ops: merge **156 ms**, verifyChain **15 ms** |
+| The scale ceiling | `bash build/erp/run_witness.sh scripts/poc_scale_forecast.js` | see below — **and it currently fails one claim** |
+
+### The scale numbers, and where they actually bind
+
+Measured, not modelled from a spec sheet: **3 ops/doc**, **1,001 op/s**, engine ceiling ~**9.6M docs/day**.
+
+- **Throughput never binds.** A 500,000-docs/yr tier (2,000/day, a 10–40 clerk department) uses **0.021%**
+  of write throughput.
+- **Interactive latency binds first.** Save is O(live docs) and crosses a 100 ms budget at **~3,954 live
+  docs** desktop, **~978** on a 4×-throttled mobile. Manage the open working set with scoping/period-close.
+- **Cold boot is a cliff, and checkpointing is mandatory, not an optimisation.** Genesis replay at 100M
+  ops = **40 s** desktop / **158 s** mobile; checkpoint bootstrap ≈ **1 ms**, flat.
+- **Storage is the hard wall.** **520 B/op** → ~**3,720 MB** projected at the large tier, against a ~2 GB
+  browser ceiling. Pruning is required.
+
+### What will FAIL if you run it today — stated so you find nothing we hid
+
+- **`W-SCALE-FORECAST` fails 1 of 3 claims.** `batch beats naive per-op commit` measures **0.8×** — batch
+  commit is currently *slower* than per-op. Being chased. (This witness had **no assertions at all** until
+  2026-09-02 — it printed prose and exited 0. The first run after it gained assertions caught this.)
+- **`W-AD-DISPLAYLOGIC-LIVE` fails** (`shown=1 hiddenByLogic=0`), on current code, re-run twice. AD logic
+  *is* proven live by `W-PARITY-FIELDSET` above; whether this older witness fails from a stale selector or
+  a real remaining gap is **not yet established**, so the coverage matrix has **not** been re-scored on it.
+- **O2C stage 4 FAILs and stage 8 is ABSENT** (`scripts/witness_e2e_business_cycle.js`). A completed
+  shipment does not move stock — there is no `m_storageonhand` fold anywhere in `erp/*.js` — and no
+  vendor-invoice path exists, so three-way match cannot populate. Stages 1/2/3/5/6/7 PASS.
+
+### The counts we will not round in our favour
+
+- Coverage: **6✅ / 33🟡 / 3⛔ of 42** surfaces (`docs/internal/ERP_COVERAGE_MATRIX.md`).
+- **454 of 476 `AD_Process`**, ~200 `beforeSave` overrides and 139 callout atoms remain **named-deferred**.
+  The dispatch *spines* exist and are witnessed; the corpus does not. This is the dominant remaining
+  distance to functional parity, and nothing currently scheduled closes it.
+- The ledger headline says **52** oracle-equivalent surfaces; mechanical arithmetic over the table gives
+  **53**. The one-row gap is traced to a `41` baseline that itself recounts to 42. Not inflation — a
+  located off-by-one, left visible rather than quietly corrected.
 
 ## Abstracting the DocAction corpus — and why it is the migration solvent
 
