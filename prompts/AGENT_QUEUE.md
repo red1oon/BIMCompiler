@@ -1124,3 +1124,18 @@ process when the Forms/process work happens (E-3 / the 454-corpus lane). Not dro
    (`ad_docfsm.js`), while T-0's field-set citation (`_inlineOptsFor`) and this file's own §P4 "seam" line
    (`legalDocActions`, zero callers) overstated. **The rows that survived the audit were the ones carrying a
    cite; the prose ones did not.** Cheapest available quality rule — apply it when writing, not when auditing.
+
+## §MID-FLIGHT 2026-09-03 — three agents killed by one rate-limit window (reset 11:10 MYT, PASSED)
+Per §RESUME_PROTOCOL. State captured by the parent BEFORE resuming, so a fresh session can re-dispatch
+from this brief alone if the agent ids die with the session.
+
+| agent | id | got done | state on disk | what remains |
+|---|---|---|---|---|
+| **AD-UI parity** | `acca8723a46a707dd` | **§PARITY-MANDATORY-CREATE built** (263-line witness) · **§P9 GL_Category** W-POST-GLCATEGORY **7/7 PASS, 50/50 docs match seed `fact_acct`** · §P10 DocNo scope-honesty | bim-ootb `feat/erp-parity-mandatory` **pushed** (`cf6dd2e6` + a WIP commit); bim-compiler `9b6e6c5c4` **verified by parent** (W-POST-DERIVE / W-FOLD-BANKSTMT / pa_report / money_fold all PASS) | item 2 (**18** val-ruled `AD_Ref_Table`/`Search` fields + `trxtype`); RUN `poc_parity_docno_live.js` (never run); full regression; then the parent opens the PR |
+| **Multi-host sync** | `aa12fac06c74c5935` | nothing committed — claimed "spec, manifest, helper in" but **no artefact exists in the tree**; treat as not started | only the parent-written spec `7cc7f8137` (§MULTIHOST_WITNESS) | the whole build: 6 arms + the content-keyed trigger gate. **Arm 4 (FAILOVER) is provable against reality** — OCI is genuinely 404 |
+| **Relay auth** | `a2d106386189d4111` | `erp_relay_server.js` **+199/−13** — gated mode, `{rejected,reasons}`, 403/413, `/health` counters | committed by parent as WIP `95617ba6c`, **UNVERIFIED — not one arm run** | write + run W-RELAY-AUTH's 7 arms. **Arm 6** (unknown-kid flood must not reach ECDSA) and **arm 7** (`test_kernel_relay.js` passes UNMODIFIED) are the load-bearing ones |
+
+**Standing lesson this cost us (already in §E.UPDATE as a dispatch rule, restated because it fired
+three times in one window):** an agent's uncommitted work is invisible to everyone and dies with it.
+Dispatch briefs must say **commit and push early and often**, not only at the end — "stop at branch
+pushed + report" is not enough if the agent never reaches its own end.
