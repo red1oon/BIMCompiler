@@ -1555,3 +1555,38 @@ handler already accepts as `info.params.selection`.
 **Also worth knowing:** `poc_parity_valrule_live.js` / `poc_parity_fieldset_live.js` derive `ROOT` from
 `__dirname` and **silently ignore `ERP_ROOT`** — run them from inside the worktree under test, or they
 will judge `~/bim-ootb` and report a green that means nothing.
+
+## §ERP-SESSION 2026-09-04d — the CreateFrom entry point. **The three-way match is CLOSED through the UI.**
+```
+§P2P stage=1 PurchaseOrder PASS · stage=2 MaterialReceipt PASS · stage=3 VendorInvoice PASS
+§P2P stage=4 ThreeWayMatch PASS — 🟢 4a M_MatchPO=1 · 🟢 4b M_MatchInv=1 · 🟢 4c shared=true
+```
+bim-ootb **PR #1654** (auto-merge armed), sw **v783**. `ERP_P2P_INVOICE_MATCH.md` §CF.
+`renderCreateFromPicker` — a drafted vendor invoice + its vendor's completed receipt lines, both folded
+through `listTip`/`readTip`, dispatching `{C_Invoice_ID, selection}` — the shape #1643's handler already
+accepted, so **no handler change**. E-4's stock effect rides the same run:
+`§RECEIPT-FANOUT … docBaseType="MMR" stockOps=1 movementtype=V+`.
+
+### ⚑ The finding, and it is bigger than this lane
+**The engine's write vocabulary and the app's read vocabulary disagree.** `erp_engine`/`ad_process`
+propose `CREATE_LINE`/`CREATE_DOCUMENT`; `crud_core.listTip` — which every reader uses — folds **only**
+`CRUD_CREATE/UPDATE/DELETE`. The first run committed flawlessly and was still invisible:
+```
+§GENPROCESS-CONFIRM table=C_InvoiceLine committed=Y ops=11 verifyOk=true
+§INVOICE-FANOUT invoice=-9 issotrx=N lines=0 matchInvOps=0     ← 11 signed, verified, UNREADABLE rows
+```
+Fixed here by translating at the commit seam into exactly `crud_core.buildOp('create')`'s shape.
+**⬜ NEXT, and it is the highest-value open item: every other KIND-2 generator Confirm & Posts the RAW
+shape** — `InvoiceGenerate`, `InOutGenerate`, `ProjectGenOrder`. Each may be committing documents no
+reader can see. Do not fix blind: run each one's live witness first and record what is actually readable
+today, then translate. `renderProcResult`'s existing `r.ops && r.header` branch is the shared seam.
+
+**Standing lesson: "committed, signed, verifyOk" is not "visible".** A green commit line proves the op
+log took it, nothing more. The read path is a separate claim and needs its own §-line — which is exactly
+how this was caught (`lines=0` right after `ops=11 verifyOk=true`).
+
+**Also:** `ad_odoo.db` (13 MB) is **untracked, unreferenced and never fetched** — a local build artifact
+of `gen_ad_odoo.js`; it wrongly inflated an earlier size report. **No `.db` is precached at all** (114
+precache entries, zero databases), so every dataset is demand-loaded. The one non-core eager load is
+`odoo_descriptor.js` (10.8 KB of `idempiere.html`'s 79 script tags) — ⬜ defer it behind the tenant
+picker; kernel-purity, not perf.
