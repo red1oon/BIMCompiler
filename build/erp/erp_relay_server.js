@@ -28,9 +28,13 @@
 // (kernel_ops.js T2/S8: sig attests sha256('cs2|'+_canonicalV2), params carry `_sigv:2` + `signed_by`=kid).
 // Layered CHEAPEST FIRST (§RA.2) — verifying first would only trade a disk DoS for a CPU one:
 //   L1 body cap (Content-Length / streamed bytes / ops-per-push) → L2 shape (op_uuid, _sigv:2, signed_by,
-//   128-hex sig) → L3 roster membership (map lookup; REVOKED / superseded kids refused) → L4 op_uuid dedup
-//   (unchanged; a replay is the cheapest rejection) → L5 ECDSA verify LAST (erp_snapshot_sign.verifyTip),
-//   with a bounded (op_uuid|sig)-keyed failure cache so an identical bad op is never re-verified.
+//   128-hex sig) → L3 op_uuid dedup (unchanged; a replay is the cheapest rejection) → L4 roster membership (map
+//   lookup; REVOKED / superseded kids refused) → L5 ECDSA verify LAST (erp_snapshot_sign.verifyTip), with a
+//   bounded (op_uuid|sig)-keyed failure cache so an identical bad op is never re-verified.
+//   §RA.2 lists roster before dedup; they are shipped the other way round (both O(1) lookups, cost order unchanged)
+//   because W-RELAY-AUTH §RA-6 caught the literal order counting a canonical op re-pushed by a since-revoked/rotated
+//   kid as REJECTED rather than SKIPPED — every device's rebase() re-pushes its whole log, so after any REVOKE that
+//   would invert W-RELAY's idempotency contract (and a push of only canonical rows would 403 → client throws).
 // Mode: opts.roster ABSENT → OPEN (the pre-gate behaviour, byte-identical `_accept`, logged loudly as S-1 OPEN —
 //   W-RELAY runs this mode unmodified); opts.roster PRESENT → ROSTER (gated). An EMPTY roster is logged VACUOUS.
 // Control ops at the relay (the N-writer form of erp_key_epochs' burn-not-reattribute model — every roster key
@@ -180,10 +184,10 @@ function createRelayServer(opts) {
     for (var i = 0; i < ops.length; i++) {
       var op = ops[i];
       var s = _shape(op); if (s) { rej(s); continue; }                       // L2
-      var p = _params(op);
-      var r = _roster(p); if (r) { rej(r); continue; }                       // L3
-      if (seen[op.op_uuid]) { skipped++; continue; }                         // L4 — idempotent, before any crypto
-      if (!(await _verify(op, p))) { rej('bad_sig'); continue; }             // L5
+      if (seen[op.op_uuid]) { skipped++; continue; }                         // L3 — idempotent: an op already canonical is a
+      var p = _params(op);                                                   //      NO-OP, never a rejection (W-RELAY-AUTH §RA-6)
+      var r = _roster(p); if (r) { rej(r); continue; }                       // L4
+      if (!(await _verify(op, p))) { rej('bad_sig'); continue; }             // L5 — ECDSA last
       seen[op.op_uuid] = true;
       var rec = JSON.parse(JSON.stringify(op)); rec.seq = log.length + 1;
       log.push(rec); appended.push(rec); accepted++;
@@ -219,8 +223,8 @@ function createRelayServer(opts) {
         if (done) return; done = true;
         stats.rejected_requests++; _reject(what);
         console.log('§RELAY push REFUSED ' + what + ' (cap) head=' + log.length);
+        res.once('finish', function () { req.destroy(); });   // let the 413 flush, THEN drop the connection
         _send(res, 413, { error: what, head: log.length });
-        req.destroy();
       }
       if (gated) {
         var cl = Number(req.headers['content-length']);
