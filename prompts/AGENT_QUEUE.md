@@ -937,6 +937,53 @@ whether the importer drops aggregate parents, then fix the importer — not the 
 It is harmless today (`INSERT OR IGNORE`, and §NOGEO_COMPOSE finds no ghosts to compose) but it is
 stale against the content now under that name. Retire or regenerate it.
 
+### A-25 · SHIP `_nightPLScaleStill = 1.0` — DECIDED, not a user question
+**Administered 2026-09-03. The user had already given the direction ("no Sun" / fixtures light the
+room, "you administer it"); kicking the constant back to them was the drift, not the caution.**
+U-11 measured two candidates. **PRIME RULE settles it:**
+- `2.0` passes both buildings but is an **INVENTED** constant. Rejected on that alone.
+- **`1.0` is repo-native** (the largest value already in the repo). Hospital: clears both floors
+  (retMean 0.814 / retP25 0.779), `cv ×1.58`, `tileCV ×1.75`, **upper register 0.545 → 0.844** —
+  the exact register the real-bake A/B showed draining. Facade free (0.2723 → 0.2717).
+  Clinic: fails `cv` alone at **×0.92** — a near-miss on one metric, not a reversal.
+- It partially reverses `§STAGED_PL_CUT`; **measured** cost to the away wall **≤ 0.026** against a
+  0.2526 separation. Negligible.
+**ACCEPTANCE CHECK, not a blocker:** §STAGED_PL_CUT was cut to protect the GROUND SLAB shadow play,
+and the slab was never in the measured set. Measure it, and if the slab read degrades materially,
+report with the number — do not silently keep or silently drop.
+**Also fix while in there (found by U-11, held unshipped):** `effects.js:4918` guards
+`§NIGHT_STILL_LIGHTS` on `A._nightLights.length`, but `_applyPhotoStaging()` builds those lights at
+`:4945` — so an interactive Alt+S never receives `_nightNearFadeFloorStill`/`_nightMaxLightsStill`
+(measured live: `nearFadeFloor: 0.3` at all five poses, both buildings). A FILM gets them from frame 2,
+so this is **not** the film explanation — it is an interactive-only defect. 2 lines.
+And `NIGHT_WHITE_COOL`/`NIGHT_WHITE_WARM` are declared, never referenced, while the comment above
+them documents them as live — delete or wire.
+⚠ **A fourth instrument fault is open and blocks RANKING the levers** (baseline pool disagrees with
+the pose census by 16 city-prop lights; Clinic baseline `cv` swung 1.0825 → 0.5207 between runs).
+`PHOTOREAL_STILL_RENDER.md` §SFR_NEXT step 1 names the fix. Shipping 1.0 does not depend on it.
+
+### A-26 · REFACTOR: retire patches for OCI-served DBs · user-directed 2026-09-03
+**User: "refactor Viewer / DB without patches ... they are unnecessary in our simple setup."**
+Correct, and measured — **4 of 9 patches are wrong right now**: `Terminal_extracted` repo 222,429 vs
+OCI 161,670 · `Terminal_meta` repo 4,566,799 vs OCI 4,302,971 · `JKR_extracted` and `LTU_AHouse_meta`
+exist in the repo and are **404 on OCI**. The last is visible failing live in the user's own log:
+`§PATCH_NONE LTU_AHouse_meta.db (404)` — a fix that never reached a user.
+**Why the doctrine expired.** `CLAUDE.md`'s DB section justifies patches as permanent because "we
+would do this even with unlimited LFS bandwidth — it reaches a live user without a binary ever
+moving." That was written when binaries could not move. **They can now: OCI is unmetered, which is
+the user's own reason for putting DBs there.** Three concrete failures of the mechanism:
+1. **Not smaller.** `Terminal_meta.db.sql` is **4.5 MB of SQL** to avoid re-uploading a ~19 MB object.
+2. **Two artifacts to keep in sync** — and they have already drifted, above.
+3. **Keyed on FILENAME with no content check.** Renaming Clinic's content to `Clinic_extracted.db`
+   on 2026-09-03 silently re-attached a patch built for a different extraction (31 curtain-wall
+   parents absent from the new file). Silent. Inherent to the design, not a slip.
+**The refactor:** for anything OCI serves, a correction is a **re-uploaded DB** — one artifact, one
+truth. Retire `A._applyPendingPatch` on that path and delete the served `.sql` objects once their
+content is folded into the DBs. **KEEP patches only where a binary genuinely cannot move:** the
+Modeller's git-resident ARC reference DBs and the rules DBs (`str_walker_outliner.js`'s loader).
+**Update `CLAUDE.md`'s DB section in the same pass** — leaving the old doctrine standing is how this
+comes back.
+
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
 Landing #1551 (squash `59736505`) produced **one genuine new red, verified not pre-existing**:
 `witness_bar_schedule` gate `band-monotonic-holds` — Terminal `bandInversions` **0 → 91** against a
