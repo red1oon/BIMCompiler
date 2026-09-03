@@ -1501,3 +1501,29 @@ Period), U-E5 (working-set/prune policy).
 **⬜ Found this session, named not buried:** `docs/internal/` is `.gitignore`d, so the coverage matrix —
 the project's headline scoreboard — survives only because it happens to be already-tracked. That is E-7's
 class (the evidence base one `git clean -x` from prose-only) and it now includes the scoreboard itself.
+
+## §ERP-SESSION 2026-09-04b — the two structural gaps that were ready to build
+| # | item | outcome |
+|---|---|---|
+| **E-5** | vendor-invoice path / three-way match cannot populate | ✅ **DONE (witness).** bim-ootb **#1643 MERGED**, sw v780. See §ERP-SESSION 2026-09-03/04 row 5a. |
+| **E-4** | no `m_storageonhand` fold anywhere — a completed shipment cannot move stock | ✅ **DONE (witness).** New lane `prompts/ERP_STOCK_EFFECT.md`. The sign spine already existed and was witnessed (`movementSign`/`qtyOnHand`); what was missing was the **emit** (`stockMoves` → one signed `M_Transaction` per stockable line, from `MInOut.getMovementType:1275` + `completeIt:1688/1939`) and the **read** (`_sidecarStockDelta`: on-hand = the seed's baseline + the committed signed transactions). `W-STOCK-MOVE` **15/15**; arm 1's oracle is the seed's **own** `m_inout.movementtype` over 9 real documents, mismatches=0. Falsifier: flipping `MMS` to `C+` reddens exactly 2 arms and the oracle names the 4 documents. `§STOCK-ONHAND-FOLD p136@l101 40→80`. bim-ootb **PR #1644** (auto-merge armed), sw v781. |
+
+### ⚑ The finding that came out of verifying them — `witness_p2p_invoice_match.js` is RED on `origin/main`
+Not a regression: the **same run against unmodified main fails identically**, stage for stage. Diagnosed
+per stage in `ERP_STOCK_EFFECT.md` §E4.7 — **it is a stale witness, not a product dead-end**:
+- **Stage 1** CREATES the PO fine (`§CRUD validate … ok`, `§KRN_GROUP committed … sealed=1`) and fails only
+  on the witness's post-create id resolution (`id=-1 chip=null`).
+- **Stage 2** rejects on exactly `c_doctype_id` + `c_bpartner_location_id`. The seed says both are
+  `IsMandatory='Y'`, `IsDisplayed='Y'`, and **neither has any DefaultValue** — a real user picks them.
+  The witness fills six other fields and **predates #1636's whole-row mandatory check**.
+- Stages 3/4 are pure cascade.
+
+**⬜ NEXT (bounded, 3 steps, no rediscovery needed):** fill those two fields in Stage 2 · resolve the
+created PO's id via `listTip` in Stage 1 (the witness already uses it elsewhere) · re-run. The engines
+behind stages 3/4 are already proven headless. **Related for E-1:** `M_InOut.C_BPartner_ID` carries
+`CalloutInOut.bpartner` and `C_DocType_ID` carries `CalloutInOut.docType` — neither is in the 6-atom
+registry. Porting `bpartner` would default the location the way real iDempiere does, and `docType`'s body
+sets `MovementType` via **the very rule E-4 just ported as `movementTypeOf`** — that atom is half-built.
+
+**Still open from §E.GAPS, untouched this session:** E-1 (454 procs / 139 callouts — campaign),
+E-3 (Form renderer), E-6/E-7/E-8/E-14/E-15 (hygiene), E-11 ⛔USER, E-12, E-13.
