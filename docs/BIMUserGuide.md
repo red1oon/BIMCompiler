@@ -566,7 +566,8 @@ produced, measured and re-run from a terminal, so what used to be a wait becomes
 ```
 node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
   [--plan NAME | --override file.json]          path source (default: the DB's cinema_path table)
-  [--buildup] [--label] [--reveal] [--day tr|tl|br|bl|off]
+  [--buildup] [--label] [--reveal] [--day tr|tl|br|bl|off]     turn a setting ON for this run
+  [--no-buildup] [--no-label] [--no-reveal]                    turn a SAVED setting off for this run
   [--frames N | --seconds S] [--fps N]          length (default: the plan's own pacing)
   [--gpu sw|real|headful]
   [--width W --height H] [--port P] [--log FILE] [--profile DIR]
@@ -574,27 +575,66 @@ node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
   [--timeout-min N]                             hard wall-clock cap
 ```
 
+**With no flags at all, the saved path decides.** That is the normal way to use this — save the film
+you want in the viewer, then bake it from the terminal with nothing but `--db` and `--out`.
+
 **It bakes your saved path, not a fresh derived one.** When you press **Save this path**, the plan is
 written to two places: a browsable copy in the browser's own storage, and a portable copy in the
 building DB's `cinema_path` table that travels with the file. The command line reads the second one by
 default, so a path saved in the viewer bakes from the terminal with no export step. `--plan NAME` picks
 a named plan instead; `--override file.json` takes one directly.
 
-**The saved path carries its settings with it**, not just its shape — the buildup, room titles, Reveal
-and day-counter corner you had ticked are all restored. The run announces what it resolved, so there is
-no guessing whether a flag survived:
+**The saved path carries its settings with it**, not just its shape — the buildup, the room titles, the
+Reveal round and the day-counter corner you had ticked are all restored. The run announces what it
+resolved, so there is no guessing whether a setting survived:
 
 ```
-§CLI_BAKE_RESOLVED source=db:cinema_path bands=3 total=81.9s buildup=1 roomTitle=1 reveal=1 dayCounter=tr
+§CINEMA_PATH_RESTORE bands=4 total=278.8s holdCol=true flagCol=true buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+§CLI_BAKE_RESOLVED source=db:cinema_path bands=4 total=278.8s buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+```
+
+The corner is worth calling out on its own, because it moves more than the day counter: the HUD is one
+stacked column, so `dayCounter=tl` puts the day counter, the path-overview box and the panel beneath
+them all on the left. One preference, one column.
+
+**⚠ A file saved before 2026-09-04 carries no settings.** Until that date the portable table stored the
+path's shape and its beat seconds and nothing else, so a bake of an older `.db` resolves every setting
+OFF no matter what you had ticked when you saved it — the file was not wrong about the path, it simply
+never carried the answer. `§CINEMA_PATH_RESTORE` says which kind of file you have: `flagCol=false` is the
+old shape. **Re-save the path once from a current build and it travels properly from then on.** In the
+meantime the flags above still work, which is what they are for.
+
+**Arguments override the saved settings, in both directions.** A flag you do not pass leaves the saved
+value alone — that is why a bare `--db`/`--out` run reproduces exactly what you authored. Passing
+`--buildup` turns it on over a saved off; passing `--no-buildup` turns it off over a saved on. So one
+saved path can be baked several ways without re-saving it, which is how you compare two cuts of the same
+film:
+
+```
+node cli_silent_bake.js --db Hospital_silent --out /tmp/full.mp4      # exactly as authored
+node cli_silent_bake.js --db Hospital_silent --out /tmp/nobuild.mp4 --no-buildup   # same path, no 4D build-up
 ```
 
 **Use `--gpu real`.** Headless Chrome defaults to software rendering, which is far too slow to finish a
 film. `--gpu real` reaches the machine's actual GPU with no display attached, and the run prints which
 renderer it got so the choice is never assumed. `--gpu sw` is kept only for comparison.
 
-**Measured on this machine (RTX 4060, headless, 2026-09-01):** **1.37 s/frame** with zero frame
-timeouts. For scale, Hospital's saved 81.9 s path becomes a **135.1 s** film once the Reveal round's
-53.1 s is added — the second act is derived, so a saved path is shorter than the film it produces.
+**Measured on this machine (RTX 4060 laptop, headless).** A saved path is always shorter than the film
+it produces, because the Reveal round's second act is derived rather than authored:
+
+| building | elements | frames | film | wall clock | per frame |
+|---|---|---|---|---|---|
+| HHS Office (federated) | 6,880 | 1,901 | 126.7 s | **15 min 21 s** | 0.485 s |
+| Hospital | 63,415 | 2,937 | 195.8 s | **~30–45 min** | 0.6–0.9 s |
+
+Hospital carries **9x** the elements for under **2x** the per-frame cost — the frame cost scales far
+better than the model does, and most of the difference in wall clock is simply that its film is longer
+(its walk is 278.8 s to HHS's 61 s, and its Reveal round adds 87.4 s of its own across four
+disciplines instead of one). Three shipped mechanisms are what make that rate possible, and each names
+itself in the log so a regression is visible rather than guessed: `§MAXQ_FRAME_BUDGET` (a baked frame
+costs 20 composer renders, not 40), `§NIGHT_BAKE_POOL` (the point-light count is frozen for the bake —
+a changed count recompiles every shader in the scene, measured at 13–53 s for such a frame against
+0.8–1.3 s when it holds), and `§GLOW_BUILDUP_EARLY_OUT`.
 
 **What this is honestly not.** It is not a faster renderer — it bakes the same frames at the same
 quality settings as the window does, and it will not make a film cheaper than the frame budget allows.
