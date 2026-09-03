@@ -481,6 +481,7 @@ Paths are `~/bim-ootb/viewer/` unless stated. Line numbers are `origin/main` @ `
 | **where inside its task?** (`displaySchedule`, the AUTHORED map — **not the one that plays**, see the next row) | `schedule_author.js:924` `remapSolveToTasks(solve, tasks, startISO, layerOf)`. The `layerOf` 4th arg is **MERGED** (`§TPL_LAYER_ORDER`, 2026-08-26, on `origin/main`) — corrected 2026-08-27, and re-confirmed 2026-09-02 against `origin/main` @ `c8a6df61`; the old "exists only on unmerged `fix/tpl-layer-order`" wording is dead and must not be reintroduced. ⚠ **This verb has TWO call sites with DIFFERENT arguments**: here with the support-layer `layerOf`, and from `time_machine.js` with `layerOf = null` over the CPM display times (next row). They are different maps — measured 2026-09-02, they disagree on the START INSTANT of **99.6%** of Hospital's 63,182 elements (§CACHE_PLAYED_LAYER §K) | assume elements inside a task are in solve order — they're laid out in SUPPORT order via `layerOf` now. And do not assume this row answers "when does it appear on screen": it does not, the next row does |
 | **where inside its bar does it PLAY?** (the kernel_ops timestamp the scrubber + film read) | `time_machine.js` `_tmTilePlayWithinTasks(disp, cap, displayAuthored)` → **calls** `ScheduleAuthor.remapSolveToTasks(cpmDisplay, tasksFromCap, base, null)` — same verb as the row above, **different solve input and `layerOf = null`**; `injectGantt`'s `_tmRescaleToTaskWindow` returns its interval, affine only as the fallback (§TM_REVEAL_TILED, 2026-09-02, `4D_GANTT_TM_REFACTOR.md` §FUTURE item 2 §TM_REVEAL_SHIPPED). ⚠ `displaySchedule` (the row above) has NO reader in `time_machine.js`. **Since 2026-09-02 the persisted cache carries BOTH maps and every judge PRINTS which one it read** — `CACHE.layerOf(run)`, default `played` (§CACHE_PLAYED_LAYER, bim-ootb PR #1607); `§W_D0`, `§TPL_REVEAL_SPREAD`, `§TPL_PARALLEL_REVEAL`, `§STAIR_POOL` and `§DAYBATCH_*` all judge `played` now | measure the reveal distribution on `displaySchedule` and call it the movie's (this lane did, for a week — every number so produced is struck in §J.1 and `GANTT_ACCURACY.md`); re-derive a within-bar layout in `time_machine.js` (the affine did — 44-71% of every bar dead); read a cached schedule without saying which layer it is (`layerOf` throws on an unknown id and reports MISSING rather than substituting, W-CLA C5) |
 | **what level is it on?** | **OWNER: `viewer/lib/level_deriver.js` `LevelDeriver.derive/levelFor`** (T1 containment → T2 declared name → T3 geometry grid → T4 counted). Two callers: `location_axis.js` (display) and, **flag-gated**, the task grid — `schedule_author.js` `_deriverLevelAxis()` behind `opts.levelSource === 'deriver'`, **default OFF**, see §I.3a | re-derive it from `e.storey`. The OLD path (`schedule_gate.js:404` `collapsePhase` → `:338` `deriveBandRanks`) is still what runs by default and is **broken — see §I.3**; do not build new work on it |
+| **which declared storey ladder bands the elements — and is it in the geometry's VERTICAL FRAME?** | `schedule_author.js` `_storeyDatumCandidates(db)` → `_chooseStoreyDatum(cands, baseZs)` (exported, pure; its report is the `§STOREY_DATUM` / `§STOREY_DATUM_FRAME` / `§STOREY_DATUM_FRAME_REJECT` lines). Witness: `viewer/tests/witness_storey_datum_frame.js`. **Added 2026-09-03, §I.6** | pick the column by which one is non-empty (#1551 did — Hospital collapsed to ONE band on the DB the viewer loads); merge the `elevation` and `center_z` families into one ladder (Hospital's are 166 m apart); judge it on `*_extracted.db` only |
 | **are two storey names one floor?** | `schedule_gate.js:382` `deriveStoreyMergeMap(spatialStructure)` | ⛔ **CORRECTED 2026-09-02 (§J.6.3): it runs on NOTHING in the fleet.** Measured against the shipped bytes every cache/probe/witness reads — `§S18_STOREY_MERGE_FAIL no such column: elevation` on **Terminal AND HHS**, `no such table: spatial_structure` on Duplex and Hospital. `buildings/*_extracted.db` carry a `spatial_structure` written by `compile_rooms.py` (100% `object_type='COMPILED'`, `STC_*` guids) whose schema has `center_z` and **no `elevation` column at all**. The earlier wording — *"✅ RUNS as of 2026-08-27 (Terminal 23 names → 15 bands) … ⚠ still throws for HHS"* — is dead and must not be reintroduced; §I.3 §CLOSED addressed the OCI upload, which is a different thing from this column existing |
 | **is this slab ground-bearing?** | `schedule_gate.js:201` `groundworkSlabs(els)`, one shared definition | reclassify slabs inline in a recipe |
 | **is anything floating?** | `support_sweep.js:500` `_midairAudit(items)` · `schedule_gate.js:1147` `auditFloating(...)` | ⚠ **FOUR judges, not two — §I.5e**, and **the layer is the CALLER's**, not the judge's: neither takes a layer argument, so the same function judges PLAYED at `time_machine.js:4431`/`:4419` and RAW SOLVE / CPM-DISPLAY at `:5109`/`:4058`. Copy 3 (`census`/`floatingCensus`) has **five** sites, copy 4 (`witness_midair_zero.js:308`) is a deliberately INDEPENDENT judge and must not be deleted. Do not call two of them "disagreeing" before checking they judged the same layer |
@@ -1393,6 +1394,119 @@ its own `contactGraph`/`designatedSupport` (verified byte-identical above), and 
 (`time_machine.js`, §CPM_DISPLAY) is a third timeline producer feeding the movie.
 
 **"what did the run actually say?"** WAS reached — see §I.5j. It is the worst row in the table.
+
+## §I.6 ✅ THE DECLARED DATUM LADDER MUST BE IN THE GEOMETRY'S VERTICAL FRAME (2026-09-03, bim-ootb PR #1641)
+
+**1 band.** That is how many storeys Hospital had on the DB the viewer actually loads, from the moment
+PR #1551 (§STOREY_DATUM) merged (2026-09-02 18:14 +0800) until this fix: all 63,182 elements in
+"Level 7", 7 tasks, 509 days. The film is 207.867 s / 3,118 frames either way, so calendar-per-second
+went **+60 %** — the user's report was *"the bake is too fast paced."* The user's own local
+`~/Downloads/Hospital_silent.db`: same, 1 band, 7 tasks, 515 days, relabelled 53,844/63,415.
+
+### The cause — a choice by EMPTINESS, on data that ships in two frames
+`schedule_author.js` `_buildScheduleElements` read the declared storeys as
+`elevation IS NOT NULL` rows, falling back to `center_z IS NOT NULL` **only if the first query
+returned nothing**. `Hospital_meta.db` (and the served bytes + `buildings/patches/Hospital_meta.db.sql`,
+which DROP+CREATEs the same 63 rows) carries **63** `IfcBuildingStorey` rows in **two vertical frames**:
+
+| family | rows | column | range | frame |
+|---|---|---|---|---|
+| federated source storeys (`Level 1 … Level 7`, `… TOS`, `… Ceiling`) | 56 | `elevation` | **0.0 … 34.0 m** | LOCAL per-file |
+| COMPILED `STC_Level_*` (room walker) | 7 | `center_z` (elevation NULL) | **168.7 … 201.4 m** | WORLD (the geometry's) |
+
+Every element base-Z is **156.6 … 202.8 m** (p05 168.5, median 181.3, p95 191.4). The 56 local rows
+won by emptiness, every element sat above the top datum 34.0, and `_bandOf` put all of them in the
+last band. Terminal (elevation −17.03 … 29.08 vs base-Z median 19.7), Clinic (no `elevation` column;
+center_z 0.80 … 6.61 vs median 2.99), Duplex-patched (elevation −1.25 … 6.0 vs median 2.70) and
+HHS (center_z 1.69 … 8.75 vs median 6.02) are all one frame. **Hospital is the only building where
+the two families disagree**, so a correct fix is a NO-OP everywhere else — and that was proven per
+building, not assumed (table below).
+
+**Why #1551's own verification missed it — the `project_split_db_live_vs_probe_landmine` again.**
+It asserted *"Hospital: no declared storeys ⇒ byte-identical, relabelled 0/63182."* True of
+`Hospital_extracted.db`, which has no `spatial_structure` table at all. The viewer runs the
+meta+geo split pair via `streaming.js §DB_SPLIT_DETECT`, and `Hospital_meta.db` has the table. The
+witness below therefore judges the meta, patched-meta, silent AND extracted DBs, and carries an
+`extracted-is-vacuous` invariant that asserts the extracted row is `INFERRED reason=NO_DECLARED_STOREYS`
+— i.e. the row #1551 judged could never have seen the defect.
+
+### The rule now — `_chooseStoreyDatum` (owner), exported, pure
+Both families are read as separate CANDIDATE sets (`_storeyDatumCandidates(db)` — a missing column or
+table is an EMPTY candidate, never a throw). Each candidate's ladder (sorted, same-datum duplicates
+dropped, exactly #1551's dedupe) is tested against the element base-Z distribution (noGeo excluded,
+the recipe's own filter): **the ladder span `[d_0, d_last]` must contain the element base-Z MEDIAN.**
+The first in-frame candidate wins, `elevation` before `center_z`, so the IFC's own declaration keeps
+priority and every building where both are in frame is **byte-identical to #1551**. If no candidate is
+in frame the declared path is REFUSED and the old label inference runs — DEGRADE, DON'T DISABLE —
+with `reason=NO_CANDIDATE_IN_FRAME` on the §-line.
+
+Why the median and not min/max interval overlap (which is what a first draft would write): it is the
+one location statistic that needs no tolerance constant **and that a stray element cannot fake** — an
+interval-overlap test is defeated by ONE outlier at 20 m in a 63,000-element building. Why not "the
+ladder with the most bands": that would flip Terminal from elevation (44 rungs) to center_z (6) and
+change a building #1551 got right. `rungsUsed` (populated ladder rungs, distinct datums) and
+`bandsUsed` (distinct NAMES) are deliberately different numbers and the code says so: Terminal's 44
+rungs carry 22 names because one name sits on two rungs 1e-6 apart.
+
+### The §-lines (primary evidence, PRIMAL LAW clause 3) — Hospital_meta.db, after
+```
+§STOREY_DATUM mode=DECLARED source=center_z declaredStoreys=7 labelsInDB=8 bandsUsed=7 relabelled=14153/63182 ladder=7[168.735..201.429] elementBaseZ=63182[156.606..202.826 median=181.309] rejected=elevation:24[0.000..34.000] vs#1551=CHANGED(elevation→center_z) — a level is [datum_i, datum_i+1) and the element sits in the band containing its BASE
+§STOREY_DATUM_FRAME candidates: elevation:24[0.000..34.000]=OUT_OF_FRAME(rungsUsed=1 below=0 above=63182) center_z:7[168.735..201.429]=IN_FRAME(rungsUsed=7 below=4449 above=2) — test: the ladder span must contain the element base-Z median (…); first IN_FRAME wins, elevation before center_z
+§STOREY_DATUM_FRAME_REJECT source=elevation ladder=24[0.000..34.000] vs elementBaseZ median=181.309 [156.606..202.826] below=0 above=63182 rungsUsed=1 — not this geometry's vertical frame; banding on center_z instead
+```
+`vs#1551=same` on every other building is the per-building NO-OP proof; a DECLARED ladder that puts
+everything in one band prints `verdict=NO-OP` (clause 4). `_GANTT_CACHE_VERSION` 38→39 so a persisted
+v38 grid (authored on the collapsed ladder) regenerates; `sw.js` v1133.
+
+### Measured — `scripts/probe_tm_reveal_shipped.js`, FRAMES=3118 FPS=15, same engine before/after
+| DB the viewer loads | bands | tasks | totalDays | days/frame | Substructure on screen |
+|---|---|---|---|---|---|
+| Hospital (`Hospital_meta.db`) | **1 → 7** | **7 → 36** | **509 → 334** | **0.163 → 0.107** | 67 f = 4.5 s → **103 f = 6.9 s** |
+| Hospital, user's `Hospital_silent.db` | **1 → 8** | **7 → 41** | **515 → 329** | **0.165 → 0.106** | 67 f = 4.5 s → **104 f = 6.9 s** |
+| Terminal (`Terminal_meta.db`) | 22 → 22 | 70 → 70 | 101 → 101 | 0.032 → 0.032 | 62 f = 4.1 s, same |
+| Clinic (`Clinic_meta.db`) | 3 → 3 | 18 → 18 | 136 → 136 | 0.044 → 0.044 | 69 f = 4.6 s, same |
+| pre-#1551 reference (coordinator, same probe) | 8 | 42 | 318 | 0.102 | 108 f = 7.2 s |
+
+Terminal and Clinic are byte-for-byte the same lines before and after. The witness adds LTU_AHouse
+(INFERRED, no storey rows, `vs#1551=same`), Duplex + Duplex-patched (INFERRED / DECLARED elevation
+4 rungs, `same`), HHS + HHS-patched (DECLARED center_z 3 / 4 rungs, `same`) — 14 rows, 10/10 PASS,
+red control detected: `node viewer/tests/witness_storey_datum_frame.js`.
+
+Days/frame lands within **5 %** of the pre-#1551 pace (0.107 vs 0.102); the remaining +16 d
+(334 vs 318) is on a grid that now carries #1551's `§TPL_LADDER_BRIDGE gatedByBridge=16/36`
+(the pre-#1551 engine had no bridge). That attribution is by the log line, not decomposed further here.
+
+### ⛔ The residual between the user's DB and the OCI one — MEASURED and NAMED, not closed
+User: *"The local saved DB is supposedly similar to the OCI one. Thus its 4D schedule should be the
+same."* After the fix both choose `DECLARED / center_z`, the elevation set is rejected on both, and
+`silent-matches-meta` (same mode, same source, meta's level names ⊆ silent's) PASSES. They are still
+**7 vs 8 bands, 36 vs 41 tasks, 334 vs 329 days**, for three named reasons:
+
+| # | residual | meta (OCI + patch) | silent (user) | cause |
+|---|---|---|---|---|
+| 1 | `STC_Level_*` rows | **7**, datum = mean wall **CENTRE**-z (Level 1 = 168.735) | **8** incl. **Level 7A**, datum = mean wall **BASE**-z (Level 1 = 166.088) | meta's rows are the **pre-#1552** walker, baked into `buildings/patches/Hospital_meta.db.sql` lines 9510-9516; silent's are the post-#1552 walker (§K.4/§L item 1, "shipped DBs/baked patches still hold the old datum" — still true). The probe's own `§STOREY_DATUM_FLOOR` lines on meta compute the floor datums at runtime (Level 1 meanBaseZ=166.063 … Level 7A 196.470) but nothing writes them back |
+| 2 | schedulable elements | 63,182 | 63,415 (+233) | 233 `IfcCurtainWall`/`IfcStair`/`IfcRoof` (178/31/24) have NO `element_transforms` row in meta (→ `§4D_NOGEO`, dropped) and DO in silent (base-Z 164.7 … 202.8) — silent was saved after `composeGhostsFromAggregates` ran client-side |
+| 3 | `elements_meta.storey` labels | 9 (`Level 1…7`, `7A`, `Unknown`) | 21 (adds `… Ceiling`, `… TOS`) | irrelevant in DECLARED mode (labels are advisory) — it is why the two would have DIVERGED under INFERRED, and why the datum path is the right one |
+
+Silent also carries 735 extra `IfcOpeningElement` rows (excluded by the recipe) and a `schedules` row
+at `gen_version=37` (discarded on load, `_GANTT_CACHE_VERSION` now 39).
+
+**Closing residual 1 = regenerating the 7 STC INSERT lines of `buildings/patches/Hospital_meta.db.sql`
+from the current walker (8 rows, floor datum) and shipping through `scripts/oci_patch_gate.js --upload`.**
+That is a production-bucket write (§L item 1's carried-forward item) and was NOT done in this lane —
+⛔ user decision. Once done, meta and silent ladders agree to ~2–4 cm (the 233-element wall-set
+difference moves Level 1 by 0.025 m) and the task grids should match to the element-count residual.
+
+### ⚠ Lead, not verified — #1551's "Terminal 22 → 6"
+Today's shipped line on `Terminal_meta.db` reads `declaredStoreys=44 … bandsUsed=22` before AND after
+this fix. #1551's PR text claims Terminal went 22 → 6. `Terminal_extracted.db` has 6 `center_z` rows
+and no `elevation` column; `Terminal_meta.db` has 67 `elevation` rows → 44 rungs. The "6" looks like
+the same extracted-vs-meta landmine measured on the other building. Not chased here.
+
+### Ownership — added to §I
+| the question | OWNER — call this | never |
+|---|---|---|
+| **which declared storey ladder bands the elements — and is it in the geometry's vertical frame?** | `schedule_author.js` `_storeyDatumCandidates(db)` → `_chooseStoreyDatum(cands, baseZs)` (exported; the §STOREY_DATUM / §STOREY_DATUM_FRAME / §STOREY_DATUM_FRAME_REJECT lines are its report). Witness: `viewer/tests/witness_storey_datum_frame.js` | pick a column by which one is non-empty (#1551); merge the two families into one ladder (they can be 166 m apart); judge it on `*_extracted.db` only |
 
 ---
 
