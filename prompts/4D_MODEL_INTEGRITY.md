@@ -2069,3 +2069,222 @@ only difference from `origin/main` across those 11 files was a **comment-only** 
 3. The remaining five are a **modelling fact ×3**, a **witness-scope constant**, and the
    §GROUNDWORK_SLAB relation now reported rather than conflated. **None of them is fixed by a
    scheduler change**, and inventing one to move the number is §J.2's failure mode.
+
+---
+
+# §M REVIEW 2026-09-04 — FOUR QUESTIONS ON THE POST-#1641 BANDING (REPORT ONLY — nothing fixed, no PR)
+
+User brief: *"Make report, not fix yet."* Hard constraint: no visual tools, witness-log maths only.
+Every number below is **MEASURED-BY-ME** (command given) or **CITED** (file:line). `origin/main` @
+`4fe49fac` (bim-ootb, ff-only-merged before anything ran). Scratch logs:
+`/tmp/claude-1000/-home-red1-bim-compiler/505327fd-24a8-4342-8b49-f55dd2b505b8/scratchpad/{q1,q3,q4,analyze_cache.log,midair_*.log}`.
+
+## §M.0 THE INSTRUMENTS FIRST — three things about the cache you must know before quoting it
+
+1. **Which cache dir is current.** `codeKey()` over the 11 INPUTS at `4fe49fac` = **`0d51dcdc5f12`**
+   (MEASURED-BY-ME: the `codeKey()` body of `scripts/cache_4d_run.js` run inline). The `4bdc7970b881_*`
+   dirs built 3 min later (Sep 4 00:00) are ANOTHER checkout's code — their Hospital log has no
+   `§STOREY_DATUM_FRAME` line at all. Read `0d51dcdc5f12_*`, nothing else.
+2. **⛔ The cache is keyed on `<bld>_extracted.db`** (CITED `scripts/cache_4d_run.js:95` `dirFor`, `:113`).
+   For Hospital that is the DB with **no `spatial_structure`** — so the persisted Hospital run is
+   `§STOREY_DATUM mode=INFERRED … bandsUsed=20`, `§4D_BAND_MONOTONIC ranks=8`, 42 tasks, 317 d. **It is
+   NOT the post-#1641 7-band / 36-task / 334 d grid the viewer loads** (§I.6). This is the
+   `project_split_db_live_vs_probe_landmine` inside clause 5's own instrument. To answer on the
+   CURRENT banding I persisted a `Hospital_meta.db` run with the same script, no code change:
+   `BLD_DIR=<scratch dir holding Hospital_extracted.db -> ~/bim-ootb/buildings/Hospital_meta.db symlink>
+   CACHE_4D_DIR=~/.cache/bim4d_meta node scripts/cache_4d_run.js Hospital` →
+   **`~/.cache/bim4d_meta/Hospital/0d51dcdc5f12_c13c87addcea/{witness.log,run.json}`** — read it, do not
+   re-run. Its log is line-for-line the §I.6 lines (`mode=DECLARED source=center_z … bandsUsed=7`,
+   `§AUTHOR_TPL tasks=36 totalDays=334`, `§CPM_DISPLAY midair=583`). Below, "Hospital META" = that
+   run; "Hospital extracted" = the `~/.cache/bim4d` one.
+3. **Probe landmine.** `buildings/Duplex_meta.db` is a **0-byte file** (Aug 25) and
+   `scripts/probe_tm_reveal_shipped.js:66` prefers `_meta.db` whenever it exists → sql.js throws on
+   Duplex and the run exits 2 (MEASURED: `q4/probe_tm_reveal_others_meta.log` tail). Workaround
+   `DB_KIND=extracted`. Nothing fixed.
+
+## §M.1 Q1 — IS THE GENERATE/EDIT PATH INTACT? — **INTACT: yes. PROVEN END-TO-END ON THE CANONICAL MODEL: no.**
+
+All five named instruments run green (MEASURED-BY-ME: `node viewer/tests/<w>.js > q1/<w>.log`), plus
+the DEBUG-MAP step owners and the split-DB round-trip probe. What each actually judged:
+
+| witness | verdict | EDITS A BAR? | population / model it judged | NO-OP · VACUOUS · WRONG |
+|---|---|---|---|---|
+| `witness_gantt_edit_coherence` | 11/0 | **YES** — shipped `commitGanttDrag` move +20 d and resizeR −1 d (`§W-COH_AUDIT`) | Duplex, `§TPL_MODEL model=template` (G-COH-10). BUT: `laborRates: {}` (CITED `:207`) → every element at the 120 s floor; run without SupportSweep — its own log says `§TPL_LAYER_ORDER_FAIL SupportSweep not loaded`, `§TPL_LAYER_SELFCHECK applied=0` — a configuration the browser never runs; DEBUG-MAP steps 4/5/6 stubbed to no-ops (CITED `:294-295`); kernel_ops seeded by the witness with an even spread, not the played layer | WRONG: only collapse/inversion (`collapsed60s`, `inverted`). **Never asserts the bar or its elements moved by +20 d** → cannot tell NO-OP from a correct move. VACUOUS guard G-COH-9 exists (outliers exercised = 0 on the move, 9 on the resize) |
+| `witness_gantt_lock_integrity` | 20/0 | an OP, not a bar: `op.timestamp = 0` written directly, then `verifyGanttIntegrity` re-scores | Duplex via **legacy `ScheduleGate.computeSchedule(geoEls,0,1)` with `installSecs = 120`** (CITED `:194-195`), no `materializeZones`, no template. Its baseline is `§GANTT_LOCK_BASELINE floating=62 midair=167`; the canonical run on the same DB has `§CPM_DISPLAY midair=0` (cache). Off-model population | WRONG: yes (`midair 167→168 +1`, offender named). NO-OP: delta-gated. VACUOUS: no guard that the baseline is the viewer's; G-LI-4 (`§LI_COST … floating=0`) is a cost probe on bim-compiler's June-5 Hospital DB at 120 s durations |
+| `witness_tm_edit_exception` | 23/0 | **NO** — by design the engine verb throws | wiring: 7 pipelines carry the catch; recovery re-derivers run | judges recovery only; says nothing about a successful edit |
+| `witness_undo_dot_spawn` | 8/0 (puppeteer) | **NO — not a Gantt witness.** History-bar dots on `GRID_MOVE` kernel ops | `histbar_viewer_harness.html`; no task row, no bar | n/a to this chain |
+| `witness_whatif_authored_sync` | 9/9 | **NO — not a Gantt witness.** ERP `C_ProjectPhase` fold | synthetic sql.js seed | n/a to this chain |
+| `witness_gantt_edit_undo` (DEBUG-MAP owner) | 9/0 | **YES, with the delta read back**: `§GANTT_DRAG_COMMIT … deltaDays=20 start=2026-01-21`, `§GANTT_RETIME tasks=6 rows=187`, `§GANTT_EDIT_UNDO tasksRestored=21 opsRestored=187` | Duplex — **`§TPL_MODEL model=legacy-deriveZones`** (the model §A ruled DEAD on 2026-08-27) | the only gesture witness that asserts stored rows changed and were restored — on the dead model |
+| `witness_gantt_cpm_annotate` (DEBUG-MAP owner) | 27/0 | no (annotate after retime) | 8 fleet buildings, **all `legacy-deriveZones`** | off-model |
+| `witness_gantt_gesture_wiring` / `retime_resync_wiring` / `edit_persist` | 16/0 · 6/0 · 18/0/0 | no (source gates) | brace-matched source | routing only, by their own headers |
+| `scripts/probe_splitmode_persist_direct.js Hospital` | 8/0 | writes a task date via `persistDb`, reloads in a real second browser | `_dbPersistUrl=/buildings/Hospital_meta.db`, `§SCHED_PERSIST size=55892KB`, reload `§CACHE_HIT Hospital_meta.db size=54.6MB`, **D6 `expected=2026-12-25 got=2026-12-25`** | the round trip that was RED on 2026-08-27 day-2 (§5b) is GREEN today on the split DB |
+
+**Deciding line:** every link of the chain is proven somewhere, **no link is proven on the canonical
+model end-to-end**: the one witness that reads the stored delta back (`edit_undo`) judges the dead
+model; the one canonical-model gesture witness (`edit_coherence`) stubs resync/annotate/persist, runs
+without SupportSweep and with empty rates, and never asserts the delta. **§CRISIS-class per PRIMAL LAW
+clause 2:** three of the five instruments CLAUDE.md names as "that chain" are green without ever
+editing a bar (two are not Gantt witnesses at all). Fix shape (not done): give `edit_undo` and
+`cpm_annotate` the same `template:` + G-COH-10 guard `edit_coherence` got on 2026-08-27, and give
+`edit_coherence` the SupportSweep global + real `LABOR_RATES` and one assertion that
+`schedule_start` moved by exactly `deltaDays`. Correct the CLAUDE.md chain list to name
+`edit_undo`/`edit_persist`/`cpm_annotate` instead of `undo_dot_spawn`/`whatif_authored_sync`.
+
+## §M.2 Q2 — IS THE DISPLAY DISTORTION GONE? — **The AXIS stretch is gone (0.0 d on all 5). The distortion moved INSIDE the bars: ×9.8 on Hospital.**
+
+`§GANTT_AXIS` is a browser-only line (CITED `time_machine.js:160`, owner `GanttModel.computeDays`
+`gantt_model.js:218`) — it is not in any cache log. I called the OWNER over the persisted PLAYED layer
+with the persisted task windows (MEASURED-BY-ME: `node scratchpad/analyze_cache.js`, `§RPT_GANTT_AXIS`):
+
+| building / DB | axisDays / trueDays / qualifiedAway | task grid | physics DAG makespan (`§CELL_RUN`/`§CPM_RUN`) | `§CREW_DAY spanD` | `§ZONE_WINDOW_DAGWINS_CLIP clamped` | Σ bar-days vs Σ members' CPM raw span (`§TM_REVEAL_SHIPPED_TASK`, probe) · tasks with raw > 2× bar · worst |
+|---|---|---|---|---|---|---|
+| **Hospital META** | **334.0 / 334.0 / 0.0** | 334 d | **447.0 d** | 360.3 | 5018 (7.9 %) | **532 vs 5200.7 d (×9.8)** · 24/36 · `TASK_Finishes_Level_4` bar **2 d**, members' CPM span **209.6 d (×105)** |
+| Hospital extracted | 317.0 / 317.0 / 0.0 | 317 | 434.6 | 353.7 | 3855 (6.1 %) | (cache only) |
+| Terminal (META probe / extracted cache) | 103.0 / 103.0 / 0.0 (without task windows the Tukey axis would be 62.6, qualifiedAway 40.4 d) | 103 | 100.9 | 116.7 | 624 (1.3 %) · META 1074 | 188 vs 1731.9 (×9.2) · 48/70 · Arch_Env_05 1 d vs 80.6 d |
+| Clinic | 113.0 / 113.0 / 0.0 | 113 | 121.9 | 139.5 | 467 (2.9 %) | 187 vs 790.3 (×4.2) · 12/18 · Finishes_2F 1 d vs 47.9 d |
+| HHS | 54.0 / 54.0 / 0.0 | 54 | 35.4 | 53.7 | 289 (4.2 %) | 81 vs 308.4 (×3.8) · 14/16 · Arch_Env_L3 1 d vs 20.2 d |
+| Duplex | 12.0 / 12.0 / 0.0 | 12 | 7.6 | 10.8 | 34 (3.0 %) | 24 vs 56.1 (×2.3) · 8/19 · 1 d vs 5.7 d |
+
+Why the axis number is now exact: `§TM_PLAYED_LAYER clamped=N/N uncovered=0` on every building — the
+tiling (#1605) puts 100 % of elements inside their task window and `§GANTT_AXIS_COVERS_TASKS` widens
+the axis to every window, so `axisEnd == projectEnd` by construction. The 294 vs 49.9 figure this
+review was asked about cannot recur on this layer. **What the user sees is now exactly the authored
+grid — and the authored grid is 75 % of the physics DAG's own length on Hospital (334 vs 447 d), with
+individual bars up to 105× shorter than the physics span of the elements they claim.** Whether that is
+"misrepresentation" is a §I question §I does not answer: three different numbers each print as the
+programme length (`§CELL_RUN makespanDays`, `§CREW_DAY spanD`, `§AUTHOR_TPL totalDays`) and no row says
+which one IS the programme — row added in §M.6.
+
+## §M.3 Q3 — MIDAIR GOVERNANCE — **539 on Hospital META (played), of which ~22 (4 %) are ceiling-hung terminals; 302 (56 %) are the judge electing a non-structural neighbour; 237 are structural and indefensible.**
+
+Owner called, not re-derived: `SupportSweep.midairAudit` + its own `designatedSupport` election over the
+persisted PLAYED items (CITED `support_sweep.js:500`, `:432`; `schedule_gate.js:1375 supportPool`).
+MEASURED-BY-ME: `analyze_cache.js` `§RPT_MIDAIR*`, `midair_worst.js`, `midair_detail.js`. Read §S14 first:
+this judge's single election is itself suspect (it elects a slab 3 m overhead) — the numbers are the
+owner's, with that caveat, and the pool split below is exactly that caveat measured.
+
+**Hospital META, played layer: midair = 539** (`§CPM_DISPLAY`/`§TM_PLAYED_LAYER` print 583 — see §M.5 item 2).
+
+| cut | numbers |
+|---|---|
+| by discipline (phase) | STR 240 · MEP 188 · ARCH 111 |
+| by IFC class | IfcBeam **123** · IfcColumn **80** · IfcPipeFitting 73 · IfcMember 61 · IfcPipeSegment 48 · IfcBuildingElementProxy 34 · IfcDuctFitting 31 · IfcDuctSegment 30 · IfcFooting 21 · IfcWallStandardCase 15 · IfcPlate 9 · IfcFireSuppressionTerminal 6 · IfcWall 4 · IfcSlab 2 · IfcRailing 2 |
+| relation of the ELECTED support | bearing-below 329 · embedded 144 · carrier-above 66 |
+| elected support IN `supportPool` (structural) | **237** |
+| elected support NOT in pool | **302** — IfcCovering 60, IfcPipeSegment 58, IfcPlate 55, IfcDuctSegment 46, IfcPipeFitting 29, IfcMember 15, IfcLightFixture 13, DuctFitting 9, Wall 5, Valve 4, … |
+| days before its support | ≤1 d 130 · 1–7 d 184 · 7–30 d 119 · 30–90 d 53 · **>90 d 53** (median 4.9, p90 89.7, max 201.4) |
+| cross-task vs same-task | 123 / 416 |
+| by task (top) | MEP_Rough_in_L5 116 · Superstructure_L1 90 · Arch_Envelope_L5 68 · Superstructure_L4 39 · Substructure_L1 36 |
+
+**Against the user's rule** (*only ARCH genuinely hung from a ceiling may be midair*):
+- **Legitimately ceiling-hung: ~22 (4.1 %)** — IfcBuildingElementProxy HEPA supply diffusers 8, exhaust
+  grilles 4, return diffusers 2, balancing dampers 2, + IfcFireSuppressionTerminal 6. (The other proxies
+  are solar panels 7, roof drains 3, sinks 3, shower heads 2, hot-water coils 3 — not ceiling-hung.)
+- **The 11 worst offenders (159–201 d early) are all those diffusers/dampers** waiting on a 5 cm
+  `IfcCovering` ceiling tile 1–4 cm below them (Finishes, day ~230) or on the `IfcLightFixture` beside
+  them (MEP Final). The diffuser is banded into "Architecture Envelope" (day ~30). That is §E row 1
+  ("a pipe bears a wall") — the election, not the schedule, is the defect; §E's ruling *"anything that
+  hangs within a well formed room is no issue"* already covers them.
+- **Indefensible structural, the real population: 237.** Named: **IfcColumn on IfcSlab 68** — a column
+  appears 0.5–14.2 d (median 4.3 d) **before the slab it stands on**; **IfcBeam 123** (embedded
+  beam←beam 47, bearing beam←beam 45, carrier-above beam←slab 29 = §S2's overhead-slab election);
+  IfcFooting←IfcFooting embedded 11; IfcWallStandardCase 15; **IfcSlab 2** — two roof slabs 144 d
+  before the blockwork walls under them; IfcMember←IfcPlate 54 (mullions before their glazing).
+- Same-task offenders (416) are the CELL solve's own representability gap — `§CELL_GATE … REFUSED=1296`
+  on META (349 on extracted), "arrows-as-exception surface, NOT enforced — §S26.11 leg 4".
+
+Other buildings (played layer, owner): Terminal 493 (IfcPlate←IfcPlate embedded 215 — the metal-deck
+fragments), Clinic 644 (IfcBeam 388, 159 of them carrier-above←slab), Duplex **257**, HHS **152** —
+the last two against `§CPM_DISPLAY midair=0`, see §M.5 item 2.
+
+## §M.4 Q4 — BUILDUP: IS ANYTHING STILL ONE-SHOT? — **Yes, floor slabs. And #1605's "Levels 2-6 are single-element plates" is false on the current banding for L2 (22 slabs) and L6 (2).**
+
+Hospital META, played layer, per Superstructure task (MEASURED-BY-ME: `analyze_cache.js` `§RPT_SLABS`;
+cross-checked by the shipped probe `FRAMES=3118 FPS=15 node scripts/probe_tm_reveal_shipped.js Hospital`
+`§TM_REVEAL_GROUP … CANDIDATE-tiled`, identical n / deciles):
+
+| task | IfcSlab n | bbox XY m² (max / Σ) | (a) distinct start instants | (b) share in ONE decile · in ONE 1 %-bin | group start span | played duration each | `installSecs` |
+|---|---|---|---|---|---|---|---|
+| Substructure_L1 | 1 | 332 | 1 | 100 % · 100 % | 0 | 287 s | 823 |
+| Superstructure_L1 | 5 | 8 963 / 18 386 | 5 | 60 % · 60 % | 8.28 d | 291 s | 823 |
+| **Superstructure_L2** | **22** | 9 192 / 17 625 | 22 | **90.9 % · 90.9 %** (20 of 22 inside 0.09 d = 2.2 h of a 9-d bar, last decile) | 8.83 d | 280 s | 823 |
+| Superstructure_L3 | 1 | 8 270 | 1 | 100 % · 100 % | 0 | 289 s | 823 |
+| Superstructure_L4 | 1 | 8 343 | 1 | 100 % · 100 % | 0 | 280 s | 823 |
+| Superstructure_L5 | 1 | 7 585 | 1 | 100 % · 100 % | 0 | 280 s | 823 |
+| Superstructure_L6 | 2 | 2 092 / 2 669 | 2 | 50 % · 50 % | 2.05 d | 392 s | 823 |
+| Superstructure_L7 | 2 | 42 / 66 | 2 | 50 % · 50 % | 0.50 d | 43 200 s | 823 |
+
+(a) Every slab gets its own tile, so "distinct instants" is nominally n — but a 9 000 m² plate plays
+for **280 s of a 4–9 day bar (0.03–0.08 % of the window)** and reveals at ONE instant. (b) L2: 90.9 %
+of the set inside one decile AND one 1 %-bin = one shot; L3/L4/L5 100 % trivially. (c) The
+single-element claim holds for **L3, L4, L5 only**; on the extracted/INFERRED banding the 22-slab set
+sits in L3 instead — the banding moved the set, the shape did not change. Terminal is the same shape
+(`Superstructure_Aras_Tanah` 100 slabs, 100 % in the last decile; `Aras_02` 59 slabs, 100 %); HHS
+`Superstructure_Level_3` 7 slabs 100 %; Clinic `Second_Floor` 6 slabs 100 % (probe lines, all logs in q4/).
+
+(d) **A non-inventing route exists for the QUANTITY, not for the geometry.** `_installSecs` (CITED
+`schedule_author.js:100`) already takes `realQty` (`:115`) but it is only ever supplied for classes
+`_classFragmentation` flags as fragmented (avg bbox area < 1 m², `:173`, `:556`) — IfcSlab at 7 585–
+9 192 m² per plate never qualifies, so every slab is priced at the flat 28800/35 = 823 s
+(`rates.js:143` CONCRETE_GANG `IfcSlab:35`). The bbox area (the exact `_AREA_EXPR` the recipe already
+runs) is real, extracted data; feeding it as `realQty` is not invention. What it would need is a
+RULING on the shipped 35 m²/day constant (a 9 192 m² plate at that rate = 87.5 crew-days) — the open
+§FUTURE item 2 calibration question, ⛔ user decision. It would lengthen the plate's played DURATION
+(and its frontier glow, CITED `time_machine.js:166-170`: `frontier = start_ts <= cursor < end_ts`) but a
+single mesh still REVEALS at one `start_ts`; a progressive fill of one mesh is a presentation-layer
+treatment of a real duration (Prime Rule scope = data, not presentation), not sub-element geometry.
+The 22-slab case on L2 needs neither: it is 22 real elements packed into the last 1 % of their bar by
+CPM order + 823 s tiles — a real duration per slab would spread them by itself. #1605's "= invention"
+ruling therefore holds only for L3/L4/L5's single plates, and only for the REVEAL instant, not the duration.
+
+## §M.5 RANKED FINDINGS (nothing fixed — what a fix would take)
+
+1. **🔴 §CRISIS — the Gantt edit chain's only delta-reading witnesses judge the DEAD model.**
+   `witness_gantt_edit_undo` and `witness_gantt_cpm_annotate` print `§TPL_MODEL model=legacy-deriveZones`
+   on every run (edit_undo: Duplex; cpm_annotate: all 8 fleet buildings) — the exact defect
+   G-COH-10 closed for `edit_coherence` on 2026-08-27 was never applied to its two siblings.
+   `edit_coherence` itself runs a configuration the browser never runs (`SupportSweep not loaded`,
+   `laborRates: {}`) and asserts no delta. Fix: pass `template:` + the G-COH-10 guard into both; add the
+   SupportSweep global, real rates and a `schedule_start` delta assertion to `edit_coherence`; replace
+   `undo_dot_spawn`/`whatif_authored_sync` in CLAUDE.md's chain list. ~1 PR, witness-only.
+2. **🔴 `§TM_PLAYED_LAYER … midair=N` reports the WRONG LAYER's number** — clause-4 defect in the
+   instrument this lane reads first. CITED `scripts/lib/tm_played_layer.js:171` `midair: dt && dt.midair`
+   — the CPM-DISPLAY judge's count, printed on the line that says *"these are the instants kernel_ops
+   carries"*. Owner re-judged on those instants: Hospital META **539** (line says 583), extracted 495
+   (431), Terminal 493 (418), Clinic 644 (600), **Duplex 257 (line says 0)**, **HHS 152 (line says 0)**.
+   The probe's own `§TM_REVEAL_JUDGE … CANDIDATE-tiled` prints the same corrected numbers. So the tiled
+   remap still MANUFACTURES midair across task boundaries (Duplex 0→257, HHS 0→152, Terminal META
+   911→3133) — §S8b's finding about the affine, re-measured on its replacement; vs the affine it is
+   mixed (Hospital 613→539 better, HHS 87→152 and Terminal 3061→3133 worse). Fix: one line — judge
+   `midair` on `r.map`, print both; then a ruling on whether cross-task tiling may reorder a support
+   pair at all (§I "where inside its bar does it PLAY?" row).
+3. **🟠 The cache does not represent the DB the viewer loads for Hospital** (§M.0 item 2) — every
+   Hospital cache number since #1641 is on the 20-label INFERRED grid. Fix: `cache_4d_run.js` resolves
+   `_meta.db` first (the `resolveDbFile` rule the probe already has, minus the 0-byte trap) and prints
+   `dbFile=` on `§CACHE_BUILT`; until then read `~/.cache/bim4d_meta/`.
+4. **🟠 Midair governance: 237 structural offenders are real** (68 columns before their slab, 123
+   beams, 2 roof slabs 144 d early), and **302 verdicts are the election's §E proxy failure** (a
+   ceiling tile / pipe / plate elected as support). Fix is the lane's D1 (§S14/§S9): judge on the
+   contact SET with §E containment, not on one elected box — no scheduling change moves the 237 until
+   `§CELL_GATE REFUSED=1296` E1 edges are representable (§S26.11 leg 4).
+5. **🟡 Display: the panel shows 334 d for a 447 d DAG and bars up to 105× shorter than their members'
+   physics span** (§M.2). Not a bug in the axis; a missing RULING on which layer is the programme —
+   §M.6 row. Fix after ruling: either the windows carry the DAG span (drop `§TPL_CAPACITY_LEVEL`
+   pushes? no — that is declared logic) or the panel prints the DAG makespan beside the grid.
+6. **🟡 One-shot slabs** (§M.4): 22-slab L2 set in one 1 %-bin; single plates at 280 s. Fix needs the
+   35 m²/day ruling (⛔ user) before `realQty` can be wired for IfcSlab; the L2 packing then resolves
+   without invention.
+7. **🟢 Probe trap:** 0-byte `buildings/Duplex_meta.db` crashes `probe_tm_reveal_shipped.js` (§M.0 item 3).
+   Fix: `resolveDbFile` skips a 0-byte meta; or delete the empty file.
+
+BLOCKED (user decisions, not measurements): (a) the productivity constant for IfcSlab (item 6);
+(b) whether cross-task re-timing of a support pair is ever permitted by the played layer (item 2);
+(c) which of the three programme lengths the panel is contractually showing (item 5).
+
+## §M.6 OWNERSHIP — rows §I lacked, surfaced by this review
+
+| the question | OWNER — call this | never |
+|---|---|---|
+| **how long is the programme?** | ⛔ **NO OWNER.** Three lines each print a length from one run — `§CELL_RUN makespanDays` (the DAG solve, Hospital META 447.0), `§CREW_DAY spanD` (360.3), `§AUTHOR_TPL totalDays` (the authored grid the panel and film show, 334) — and nothing says which is the contract. Add the row when ruled | quote one of the three as "the schedule length" without naming the line |
+| **does the persisted run represent the DB the viewer loads?** | `run.json.dbFile` (`cache_4d_run.js` writes it) — READ IT. Today it is `_extracted.db` by construction (`:95`,`:113`); the viewer loads `_meta.db` for Hospital/Clinic (§I.6, `streaming.js §DB_SPLIT_DETECT`) | assume `~/.cache/bim4d/Hospital` is the viewer's Hospital; it is not since #1641 |
+| **midair ON THE PLAYED INSTANTS?** | `SupportSweep.midairAudit(items with s/e = play map)` — as `probe_tm_reveal_shipped.js` `judge()` does (`§TM_REVEAL_JUDGE … map=CANDIDATE-tiled`) | read `§TM_PLAYED_LAYER midair=` for it — that field is `dt.midair`, the CPM-display count (`tm_played_layer.js:171`) |
