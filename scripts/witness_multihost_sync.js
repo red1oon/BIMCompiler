@@ -347,6 +347,39 @@ function serveLocal() {
   } else inconclusive('FRESH fork control needs the controller key');
   arm('FRESH', staleN >= 1 && staleN === staleOk && j6.adoptedTip === published.tip && (!fork || j6.es.length) ? 'PASS' : 'FAIL', { stale_detected: staleN, stale_len: stale.len, current_len: published.len, adopted_from: j6.from ? j6.from.host : 'none', naive_resolve_adopted: naive6.host, fork_control: fork ? 'DIVERGENT+QUORUM' : 'skipped' });
 
-  console.log('\n🟡 W-MULTIHOST-SYNC INCONCLUSIVE — §MH4 + verdict + record not implemented yet in this commit');
-  srv.close(); process.exit(2);
+  // ── §MH4 — the showstopper register, MEASURED on every run (S-1 is a pointer: owned by §RELAY_AUTH, not measured here) ──
+  console.log('\n§MH4 — showstopper register, measured');
+  var MH4 = {};
+  function gitShow(p) { try { return cp.execFileSync('git', ['-C', MC.OOTB, 'show', 'origin/main:' + p], { encoding: 'utf8' }); } catch (e) { return ''; } }
+  function gitGrepFiles(re) { try { return cp.execFileSync('git', ['-C', MC.OOTB, 'grep', '-lE', re, 'origin/main', '--', 'erp/*.js'], { encoding: 'utf8' }).trim().split('\n').filter(Boolean).map(function (f) { return f.split(':').pop().replace(/^erp\//, ''); }); } catch (e) { return []; } }
+  MH4['S-1'] = 'POINTER — relay admission (unauthenticated /push, ' + 'build/erp/erp_relay_server.js) is being closed under §RELAY_AUTH; see §RA-RESULT for its measured status. Not measured by this witness.';
+  var rs = fs.readFileSync(path.join(HERE, 'build', 'erp', 'erp_relay_server.js'), 'utf8').split('\n');
+  var createL = rs.findIndex(function (l) { return /http\.createServer/.test(l); }) + 1, httpsReq = rs.filter(function (l) { return /require\(['"](https|tls)['"]\)/.test(l); }).length;
+  var sr = gitShow('erp/erp_sync_relay.js'), relayUrlFiles = gitGrepFiles('relay=https?://');
+  MH4['S-2'] = 'relay: http.createServer@L' + createL + ' https/tls_requires=' + httpsReq + ' · shipped erp_sync_relay.js: default_url_null=' + /_url\s*=\s*null/.test(sr) + ' https_scheme_refs=' + (sr.match(/https:/g) || []).length + ' shipped_files_with_a_relay_url=' + relayUrlFiles.length + ' → the relay is plain HTTP (TLS must be terminated by the host; an https page → http relay is mixed-content blocked) and no relay URL ships: the live product is signed-snapshot exchange, not multi-writer';
+  var sg = gitShow('erp/erp_signer.js'), keyB = fs.existsSync(KEYF) ? fs.statSync(KEYF).size : 0, keyIgn = false;
+  try { cp.execFileSync('git', ['-C', HERE, 'check-ignore', '-q', 'build/erp/.demo_controller_key.json']); keyIgn = true; } catch (e) {}
+  var ke = fs.readFileSync(path.join(HERE, 'build', 'erp', 'erp_key_epochs.js'), 'utf8');
+  MH4['S-3'] = 'edge key: custody=' + (/idb-nonextractable/.test(sg) ? 'idb-nonextractable' : 'UNKNOWN') + ' extractable_false=' + /extractable\s*=\s*false|false,\s*\[\s*['"]sign['"]/.test(sg) + ' · controller private key on THIS device=' + keyB + 'B gitignored=' + keyIgn + ' · verifier pins pubkey ' + SIGN.PINNED_PUBKEY.x.slice(0, 8) + '… in-module · roster erp_key_epochs.js ROTATE=' + /ROTATE/.test(ke) + ' REVOKE=' + /REVOKE/.test(ke) + ' → keys never leave the device; a key-holder\'s consistent lie is caught at the count, not by crypto';
+  var idbF = gitGrepFiles('indexedDB\\.open'), ciphF = gitGrepFiles('AES-GCM|SQLCipher|subtle\\.encrypt');
+  MH4['S-4'] = 'shipped erp/*.js opening IndexedDB=' + idbF.length + ' [' + idbF.join(',') + '] · app-layer cipher refs (AES-GCM|SQLCipher|subtle.encrypt)=' + ciphF.length + (ciphF.length ? ' [' + ciphF.join(',') + ']' : '') + ' → op-log and keys rest in IndexedDB with no app-layer encryption; relies on OS disk encryption';
+  Object.keys(MH4).forEach(function (k) { console.log('§MH4 ' + k + ' ' + MH4[k]); });
+
+  // ── VERDICT — STRUCTURAL: hosts_up is counted from the post-publish CONVERGE arm and the PASS marker exists only
+  //    inside the `hosts_up === HOSTS.length` branch, so a green log with hosts<3 cannot be produced by this file ──
+  var hostsUp = ARMS.CONVERGE ? ARMS.CONVERGE.n.hosts_converged : 0, armNames = ['PUBLISH', 'CONVERGE', 'ROTATION', 'FAILOVER', 'TAMPER', 'FRESH'];
+  var allPass = armNames.every(function (a) { return ARMS[a] && ARMS[a].status === 'PASS'; }), failedArms = armNames.filter(function (a) { return ARMS[a] && ARMS[a].status === 'FAIL'; });
+  srv.close(); var ms = Date.now() - T0;
+  console.log('\n§SUMMARY hosts_up=' + hostsUp + '/' + HOSTS.length + ' ' + armNames.map(function (a) { return a + ':' + (ARMS[a] ? ARMS[a].status : 'NOT-RUN'); }).join(' ') + ' checks_failed=' + fails + ' inconclusive=' + INCONCLUSIVE.length + ' epoch=' + published.epoch + ' len=' + published.len + ' tip=' + short(published.tip) + ' ms=' + ms);
+  if (hostsUp === HOSTS.length && HOSTS.length >= 3 && allPass && fails === 0 && INCONCLUSIVE.length === 0) {
+    var rec = { witness: 'W-MULTIHOST-SYNC', utc: runUtc, verdict: 'PASS', hosts_up: hostsUp, hosts: HOSTS.map(function (h) { return { name: h.name, base: h.name === 'here' ? 'http://127.0.0.1:<ephemeral>' : h.base }; }),
+      dead_host: { name: H_DEAD.name, http: dead.status }, epoch: published.epoch, len: published.len, tip: published.tip, gh_commit: ghCommit, oci_etag: ociEtag, gh_propagation_s: ghPropS, ms: ms, arms: ARMS, showstoppers: MH4, core: MC.hashCore() };
+    fs.writeFileSync(RECORD, JSON.stringify(rec, null, 2) + '\n');
+    console.log('§RECORD wrote ' + path.relative(HERE, RECORD) + ' core_files=' + Object.keys(rec.core).length + ' — the gate keys on these hashes');
+    console.log('🟢 W-MULTIHOST-SYNC PASS hosts=' + hostsUp + '/' + HOSTS.length + ' arms=6/6 epoch=' + published.epoch + ' len=' + published.len + ' tip=' + short(published.tip));
+    process.exit(0);
+  }
+  if (failedArms.length || fails) { console.log('🔴 W-MULTIHOST-SYNC FAIL hosts=' + hostsUp + '/' + HOSTS.length + ' failed_arms=[' + failedArms.join(',') + '] checks_failed=' + fails + (INCONCLUSIVE.length ? ' inconclusive=' + INCONCLUSIVE.length : '') + ' — no record written'); process.exit(1); }
+  console.log('🟡 W-MULTIHOST-SYNC INCONCLUSIVE hosts=' + hostsUp + '/' + HOSTS.length + ' reasons=' + JSON.stringify(INCONCLUSIVE) + ' — no record written, the gate stays red');
+  process.exit(2);
 })().catch(function (e) { console.error('FATAL', e); process.exit(1); });
