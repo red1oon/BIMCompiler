@@ -1063,7 +1063,7 @@ Modeller's git-resident ARC reference DBs and the rules DBs (`str_walker_outline
 **Update `CLAUDE.md`'s DB section in the same pass** — leaving the old doctrine standing is how this
 comes back.
 
-### A-28 · ⚠ §CPE_REVEAL_ARCH_HOLD OVERSHOT — strip lands on the LAST stick, not the first
+### A-28 · ✅ **RESOLVED 2026-09-03 — #1633 IS CORRECT; the overshoot report came from a broken Chrome, not from the code.** Witness extension still owed (see §A-28.WITNESS at the end)
 **User previewed #1633 (`11733141`) 2026-09-03: "not starting at first stick but LAST stick in 2nd
 round."** So the strip moved in the RIGHT DIRECTION but went too far. Do not revert #1633 — diagnose
 the clock, then land the correct boundary.
@@ -1154,7 +1154,31 @@ and the camera position `_outPos` fraction at that instant. If that fraction is 
 right and the defect is in what reached the user's tab (stale SW/JS — the standing bug class); if it
 is ~1.0 the boundary is genuinely wrong and the numbers will say which term is off.
 **Remaining unchecked, and now the leading suspect precisely BECAUSE the pure path is clean: whether
-the preview/bake the user watched was running the v1132 `effects.js` at all.** User's reason, unchanged: the lit return leg must
+the preview/bake the user watched was running the v1132 `effects.js` at all.**
+
+### §A-28.RESOLUTION — 2026-09-03, user on Firefox
+**User: the reveal round's no-ARCH strip BEGINS AT THE FIRST STICK, working, observed in Firefox.**
+That closes the disagreement in favour of the code read above: `#1633` (`11733141`) does what it was
+asked to do, and the "last stick" report came from a **Chrome that could not create a WebGL context
+at all** (`THREE.WebGLRenderer: … BindToCurrentSequence failed` → `[S205] §INIT_VIEWER_ERROR`, a
+machine-level regression introduced by that day's reboot, tracked separately — Firefox on the same
+machine, same build, renders fine). **Do NOT "fix" the boundary. There is nothing wrong with it.**
+
+**The lesson that DOES survive, and it is the expensive one:** two full sessions were spent
+diagnosing a product defect that was an INSTRUMENT failure — the fourth time this exact trap has been
+recorded (standing rule 3, *"check the instrument before believing the defect"*). The tell was
+present in the very first console dump the user pasted and was read past: the viewer never
+initialised, so nothing the user saw could have been the shipped reveal logic. **When a defect report
+arrives with a console log, verify the app STARTED before analysing what it did.**
+
+### §A-28.WITNESS — the one piece of real work this item still owes · autonomous, small
+The defect was imaginary; the witness gap was not. `witness_reveal_arch_hold.js` is **6/6 green with a
+working red control** while testing `A.cpeRevealVisualAt` against a **synthetic** beats object — it
+never drives a REAL plan through either caller, so it could not have adjudicated this report either
+way. Extend it: build a real plan via `_cinemaPathPlan` on a stored path (e.g. `HospitalAjaibPath.db`),
+then assert as `§` lines the first `tNorm` at which `cpeRevealVisualAt` returns `phase:'ghost'`
+**together with the camera's own `_outPos` fraction at that instant** — the acceptance is that the
+fraction is ~0.0 (first stick), which is the claim no current test makes. User's reason, unchanged: the lit return leg must
 contrast against the gloomy first pass, when lighting legitimately was not installed.
 
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
