@@ -1,12 +1,12 @@
 {
   "schema": "erp-replica/v1",
-  "len": 7,
-  "tip": "65f3884732e897277d17396120b6dec7c0219fc07551f7bf94606b1ef311d69b",
-  "sig": "5f7ed59cfc57d27559bceaf10974a61101c302b2cc07914cbdf4f653d88a1ad8ce6a2709197eae63dd3a78643b41eac7165ef64cdd99650c4bb3d5af5587b168",
+  "len": 9,
+  "tip": "2cd9f87e4a226aba3184d30899590a1e1b1325d0f4f58dd905ac35ccf5f9953e",
+  "sig": "a49ea99c96bc49fe5f91bf4657cc6e8160913db2aa9ff3d44f623c4bcc8a25364bf449ec950c507863f4d706b690302c4ac828076527ffeb06476841aa2ddf47",
   "alg": "ES256",
   "signed_by": "controller",
-  "epoch": 7,
-  "published_utc": "2026-09-03T03:45:55.336Z",
+  "epoch": 9,
+  "published_utc": "2026-09-03T16:04:53.283Z",
   "ops": [
     {
       "seq": 1,
@@ -68,6 +68,24 @@
       "timestamp": 1788407155336,
       "op_type": "POST",
       "parameters": "{\"table\":\"C_Invoice\",\"id\":9007,\"witness\":\"W-MULTIHOST-SYNC\",\"epoch\":7,\"lines\":[{\"account_id\":\"101\",\"role\":\"AR\",\"amtacctdr\":1200,\"amtacctcr\":0},{\"account_id\":\"400\",\"role\":\"Revenue\",\"amtacctdr\":0,\"amtacctcr\":1200}]}",
+      "input_guids": null,
+      "output_guid": null
+    },
+    {
+      "seq": 8,
+      "op_uuid": "8a4792dc-1e3d-44cb-a4e2-35796b65ee81",
+      "timestamp": 1788451072550,
+      "op_type": "POST",
+      "parameters": "{\"table\":\"C_Invoice\",\"id\":9008,\"witness\":\"W-MULTIHOST-SYNC\",\"epoch\":8,\"lines\":[{\"account_id\":\"101\",\"role\":\"AR\",\"amtacctdr\":1200,\"amtacctcr\":0},{\"account_id\":\"400\",\"role\":\"Revenue\",\"amtacctdr\":0,\"amtacctcr\":1200}]}",
+      "input_guids": null,
+      "output_guid": null
+    },
+    {
+      "seq": 9,
+      "op_uuid": "c4b9012a-2589-4a6c-a1bd-bca172836d73",
+      "timestamp": 1788451493283,
+      "op_type": "POST",
+      "parameters": "{\"table\":\"C_Invoice\",\"id\":9009,\"witness\":\"W-MULTIHOST-SYNC\",\"epoch\":9,\"lines\":[{\"account_id\":\"101\",\"role\":\"AR\",\"amtacctdr\":1200,\"amtacctcr\":0},{\"account_id\":\"400\",\"role\":\"Revenue\",\"amtacctdr\":0,\"amtacctcr\":1200}]}",
       "input_guids": null,
       "output_guid": null
     }
