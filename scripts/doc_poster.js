@@ -543,16 +543,25 @@ function glCategoryFor(db, table, id) {
   var t = String(table || '').toLowerCase(), pk = t + '_id', out = { id: 0, stage: 'none' };
   if (!t || !isFinite(Number(id))) return out;
   var hdr = null;
-  try { hdr = getRow(db, 'SELECT * FROM ' + t + ' WHERE ' + pk + '=?', num(id)); } catch (e) { return out; }
+  try { hdr = getRow(db, 'SELECT * FROM ' + t + ' WHERE ' + pk + '=?', num(id)); } catch (e) { return { id: 0, stage: 'no-doc-table' }; }
   if (!hdr) return out;
   // 0 — the document's own column (Doc.getGL_Category_ID:1787-1793)
   if (_hasCol(db, t, 'gl_category_id') && Number(hdr.gl_category_id) > 0) return { id: Number(hdr.gl_category_id), stage: 'own-column' };
   var clientId = Number(hdr.ad_client_id);
   var dtId = Number(hdr.c_doctype_id) > 0 ? Number(hdr.c_doctype_id)
            : (Number(hdr.c_doctypetarget_id) > 0 ? Number(hdr.c_doctypetarget_id) : 0);
+  // a — by C_DocType_ID. EVERY read below is guarded: this resolver runs against NARROW seeds too (the B-3 and
+  //   W-POST-TAIL fixtures build a minimal db with no c_doctype at all, and some carry c_doctype without
+  //   docbasetype). iDempiere's own behaviour when it cannot resolve a category is to log and POST ANYWAY with
+  //   the 0 sentinel (Doc.java:1085-1086) — never to fail the posting — so a schema gap DEGRADES and is NAMED in
+  //   `stage`, exactly the "our interpreter's limits, said out loud" convention §P3-SPEC P3.4 already uses.
+  //   (Found by the regression run: an unguarded read threw `no such table: c_doctype` and took four witnesses
+  //   down with it — a posting must not break because a fixture is narrow.)
   var docBaseType = null;
   if (dtId > 0) {
-    var dt = getRow(db, 'SELECT docbasetype, gl_category_id FROM c_doctype WHERE c_doctype_id=?', dtId);
+    var dt = null;
+    try { dt = getRow(db, 'SELECT docbasetype, gl_category_id FROM c_doctype WHERE c_doctype_id=?', dtId); }
+    catch (e) { return { id: 0, stage: 'no-doctype-table', doctype: dtId }; }
     if (dt) {
       docBaseType = dt.docbasetype;
       if (Number(dt.gl_category_id) > 0) return { id: Number(dt.gl_category_id), stage: 'doctype', docBaseType: docBaseType, doctype: dtId };
@@ -560,8 +569,9 @@ function glCategoryFor(db, table, id) {
   }
   // b — by (client, DocBaseType)
   if (docBaseType) {
-    var byBase = getRow(db, 'SELECT gl_category_id FROM c_doctype WHERE ad_client_id=? AND docbasetype=? AND gl_category_id>0 ORDER BY c_doctype_id LIMIT 1',
-                        [clientId, docBaseType]);
+    var byBase = null;
+    try { byBase = getRow(db, 'SELECT gl_category_id FROM c_doctype WHERE ad_client_id=? AND docbasetype=? AND gl_category_id>0 ORDER BY c_doctype_id LIMIT 1',
+                          [clientId, docBaseType]); } catch (e) { byBase = null; }
     if (byBase && Number(byBase.gl_category_id) > 0) return { id: Number(byBase.gl_category_id), stage: 'docbasetype', docBaseType: docBaseType };
   }
   // c — the client's default GL_Category
