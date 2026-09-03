@@ -3122,3 +3122,118 @@ compresses the highlights — the register that is already drained. **Ranked las
 (Also verified in the same bundle: `toneMapping` is forced to `NoToneMapping` whenever the render
 target is not the canvas — `r.toneMapped && (null !== F && !0 !== F.isXRRenderTarget || (Le = e.toneMapping))`
 — which is what makes every render-target read in this witness scene-linear.)
+
+## §BAKE_INTERIOR_TOPUP — 2026-09-04 — ✅ SHIPPED (witness), bim-ootb PR #1642
+
+> **USER, 2026-09-04, mid Hospital Alt+C bake:** *"i can visually see that the indoor is gloomy and
+> not lively. Discuss. if it is color, or surface, or lighting effects?"* and, minutes later, the
+> sentence that decided it: *"I noted that outside the scene of the building is very lively, thus
+> indoors can also be."* Later still, on the second bake: *"On indoors, it is still ok, but been
+> livelier while maintaining realism be good."*
+
+### §BIT.0 — the three-way answer, with the number that decides each
+
+**It is LIGHTING. Colour and surface are exonerated by measurement, not by argument.**
+
+| candidate | verdict | the number |
+|---|---|---|
+| colour | **improved**, not regressed | #1621 §MEP_COLOR_SURVIVES_PHOTOREAL + #1604 §MEP_DISC_PALETTE gave MEP its trade colour back instead of uniform grey metal |
+| surface | **improved**, not regressed | roughness/metalness are CLASS-keyed (`streaming.js:1219/1233`), untouched this window; #1631 §DUCT_SILHOUETTE added outlines |
+| lighting | **the cause** | see §BIT.1 |
+
+A lead that had to be RETRACTED, recorded so it is not re-chased: `~/Downloads/Hospital_silent.db`
+carries `material_name` NULL on all 64,150 rows while the served `Hospital_meta.db` has 17 distinct
+names, which looked like it would collapse the glossy set and strip the HDRI from everything. **It
+does not.** `material_name` never reaches roughness/metalness — the rule is class-keyed — and the
+glossy census is IDENTICAL across the two DBs: 56/82 material keys by the parsed `STD_MAT` rule,
+59,890/63,182 elements (94.8%); browser-confirmed 97 materials / 71 glossy / 59,924 of 63,316
+(94.6%), so #1622's "70/70 Hospital glossy still on the HDRI" holds. The user's local DB is not
+handicapped.
+
+### §BIT.1 — the defect: a bake pose can select ZERO fixture lights, and scaling zero is zero
+
+`tools.js _nightUpdateLights`'s still/bake branch (§NIGHT_STILL_FRUSTUM, 2026-08-07) selected
+fixture point lights by **frustum-CENTRE containment only, with no floor**. An interior pose is
+precisely the case that test answers wrong: the troffers lighting the room you stand in sit
+overhead or behind the eye, so the set comes back short — or empty.
+
+Since §NIGHT_BAKE_POOL (2026-09-01) froze the pool size for the whole bake, an empty set no longer
+disposes the lights; it leaves **every pooled slot at intensity 0**. The room is then lit by flat
+ambient + hemi fill alone. Two consequences worth stating plainly:
+
+- **This is why the exterior stayed lively while the interior did not.** Photo staging turns the
+  sun's shadow casting on, so an interior surface is shadow-occluded from the sun and depends on the
+  fixtures for everything that is not flat fill; an exterior surface keeps the sun and loses almost
+  nothing. One mechanism, both halves of the user's report — and it also explains the older
+  "Fly/handsfree is well lit, the bake is dark" split, since navigation never takes the frustum
+  branch (§NIGHT_STILL_BOOST_GATE_FIX).
+- **It supersedes the U-11 fixture-scale question for the FILM case.** `_nightPLScaleStill` (0.5,
+  §STAGED_PL_CUT) *scales this set*. Scaling zero is zero, so no value of that constant could ever
+  have reached a pose whose selection was empty. U-11's `m`-lever remains closed and its fixture
+  lever remains a live user decision for Alt+S, but neither is the film explanation.
+
+Also live and fixed here: **§BAKE_FRUSTUM_STALE** — the frustum was built from
+`camera.matrixWorldInverse` with no `updateMatrixWorld()`, while `cinema_maxq.js` sets the pose and
+calls `startStillRefine()` *before* any render of it. The cull was running against the previous
+frame's view.
+
+### §BIT.2 — the fix, and what was deliberately NOT taken
+
+Reuse, not reinvention: the in-frustum set is **topped up** to the still budget using the SAME
+nearest-to-aim + §NIGHT_SPREAD rule navigation already uses, extracted VERBATIM as
+`_nightPickNearest` (§NIGHT_PICK_NEAREST) so nav and bake cannot drift into two selection rules.
+Nav calls it with an empty `already` set and is behaviourally identical. The in-frustum set is
+**never truncated** — the top-up only fills the remainder. No new constant, no fitted value.
+
+This is the `tools.js` half of the **parked PR #1327 §BAKE_INTERIOR_LIGHTS** (2026-08-12), which
+measured the same defect on a headless Duplex bake: 18 fixture lights at frame 0, **0 from frame 1
+for the rest of the film**, scene point-light intensity sum 127.39 → 82.39 = exactly
+18 × NIGHT_LIGHT_INTENSITY(2.5). That PR sat 312 commits behind main; its own triage note
+(2026-09-02) records `viewer/effects.js` as a **non-mechanical** conflict against §NIGHT_BAKE_POOL /
+§STAGED_PL_CUT and rules it unsafe to blind-merge. Taking only the `tools.js` half avoids that
+conflict entirely.
+
+**NOT taken, on purpose:**
+1. #1327's `effects.js` re-arm-gate fix (the gates read `A._nightLights.length`, the OUTPUT of the
+   selector). §NIGHT_BAKE_POOL keeps that array full for the whole bake, so the self-latching zero
+   is already masked *for films*. It is still live for interactive Alt+S — see U-11's measurement of
+   `nearFadeFloor: 0.3, maxLights: 30` at five live poses — and remains open there.
+2. #1327's **§BAKE_LIGHT_BUILDUP_GATE**, which would gate the illumination on Time Machine
+   placement so a light cannot shine from an un-installed fitting. It is correct in principle and
+   the glow sprite already does it (`§PHOTO_GLOW_SPRITE_GATE 0/18 fixtures placed yet` while 18
+   point lights shone from those same fittings), but it **REMOVES** interior light during round 1
+   of a 4D film, which runs against the user's live ask. It needs its own decision, not a silent
+   ride-along.
+
+### §BIT.3 — witness
+
+`viewer/tests/witness_bake_interior_topup.js` — **W-BAKE-TOPUP 8/8, RED control detected.** Whitebox,
+no browser: slices `_nightPickNearest` and `_nightUpdateLights` out of the shipped `tools.js` by
+brace matching and reads `NIGHT_SPREAD_MIN_M` from the file rather than hardcoding it, so it cannot
+pass against a copy that is not what ships. The verdict line prints NO-OP (the top-up never changed
+a selection), VACUOUS (no scenario judged) or INCONCLUSIVE (the slice failed) instead of PASS.
+
+```
+§BAKE_INTERIOR_TOPUP_ROW bake-interior-frustum-empty fixtures=40 budget=50 inFrustum=0  lit=40
+§BAKE_INTERIOR_TOPUP_ROW bake-interior-frustum-short fixtures=40 budget=50 inFrustum=3  lit=40
+§BAKE_INTERIOR_TOPUP_ROW bake-wide-frustum-full      fixtures=80 budget=50 inFrustum=60 lit=60
+§BAKE_INTERIOR_TOPUP_ROW alt-s-frustum-short         fixtures=40 budget=50 inFrustum=2  lit=40
+§BAKE_INTERIOR_TOPUP_ROW nav-no-still                fixtures=40 budget=24 inFrustum=0  lit=24
+```
+
+The shipped runtime line to look for in the next bake log is
+`§BAKE_INTERIOR_TOPUP inFrustum=N toppedUpTo=M budget=B fixtures=F`, run-length guarded (it would
+otherwise fire once per baked frame). An `inFrustum=0` row names itself: *"frustum found NO fixture
+centre at this pose; without the top-up this frame had zero fixture light"*.
+
+### §BIT.4 — what is still open
+
+- The **⛔ U-11 fixture-scale decision** (staged `_nightPLScaleStill` 0.5 → 1.0, partially reversing
+  §STAGED_PL_CUT) is unchanged and still the user's. It now applies to a set that is actually
+  populated, so its measured effect should be RE-TAKEN after #1642 rather than read off the
+  pre-#1642 sweep.
+- **NOT MEASURED:** how many poses of a real Hospital film actually had `inFrustum=0`. The defect is
+  proven structurally and by #1327's Duplex run; the Hospital-specific frequency needs the shipped
+  `§BAKE_INTERIOR_TOPUP` line from the user's next bake log. Do not quote a number for it until then.
+- #1327 should be closed as superseded-in-part once #1642 lands, with its two untaken halves carried
+  forward rather than lost.
