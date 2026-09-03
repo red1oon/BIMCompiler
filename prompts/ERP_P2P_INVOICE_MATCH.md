@@ -176,3 +176,112 @@ implemented yet.
 
 **Status:** Fix 1/2/3 done, witnessed, real. Fix 5 (M_MatchInv) has its exact remaining blocker named with
 file:line-level precision — no rediscovery needed for whoever picks it up next.
+
+---
+
+## §Fix — 2026-09-04, **Fix 5 BUILT**: `CreateFromInvoice` is the missing line-maker, not a seed hack
+
+`AGENT_QUEUE.md §E.ORDER` item 1 / `§E.GAPS` **E-5**. Spec written BEFORE the code (Spec-First).
+
+### §Fix5.1 CORRECTION to the 2026-07-23 scoping — the shape was one step off
+The 2026-07-23 entry proposed *"a small, targeted seed mechanism … that pre-fills
+`m_inoutline_id`/`c_orderline_id`/copied-price into the c_invoiceline New form's value BEFORE it
+renders."* **Re-reading the Java says the form is not involved at all.** In real iDempiere
+`CreateFromInvoice` **inserts finished lines**; the user never sees, and never types into, those
+columns — which is exactly why `AD_Field` locks them `IsReadOnly='Y'`. EXTRACTED:
+
+- `org.compiere.process.CreateFromInvoice.createLines()` (`org.adempiere.base.process`) reads a
+  **selection** of receipt/order/RMA lines and, per row, calls
+  `invoice.createLineFrom(C_OrderLine_ID, M_InOutLine_ID, M_RMALine_ID, M_Product_ID, C_UOM_ID, QtyEntered)`.
+- `MInvoice.createLineFrom` (`MInvoice.java:3262`) builds an `MInvoiceLine`, sets Qty/QtyInvoiced, resolves
+  the receipt line, and calls **`invoiceLine.setShipLine(inoutLine)`** — *"overwrites"* in its own comment.
+- `MInvoiceLine.setShipLine` is the whole field-copy rule, and it is what we port verbatim:
+  `M_InOutLine_ID`, `C_OrderLine_ID`, `M_RMALine_ID`, `Line`, `IsDescription`, `Description`,
+  `M_Product_ID`, `C_UOM_ID`, `M_AttributeSetInstance_ID`, `C_Charge_ID` (only when there is no product);
+  then **only when `C_OrderLine_ID != 0`** — `PriceEntered` (`oLine.PriceEntered` when
+  `sLine.sameOrderLineUOM()`, else `oLine.PriceActual`), `PriceActual`, `PriceLimit`, `PriceList`,
+  `C_Tax_ID`, `LineNetAmt`, `C_Project_ID`.
+- `MInOutLine.sameOrderLineUOM()` = `C_OrderLine_ID > 0 && oLine.C_UOM_ID == sLine.C_UOM_ID`.
+
+So Fix 5 is **an AD_Process handler**, the same KIND-2 shape `InvoiceGenerate` / `InOutGenerate` already
+use in `ad_process.js` — not a UI seed, and not a relaxation of the readonly lock (which would invent a
+screen real iDempiere does not have). The 2026-07-23 read of the blocker was right; only the remedy moves.
+
+### §Fix5.2 WHY THIS IS THE LAST PIECE — the rest of the chain already exists and is witnessed
+`erp_engine.completeInvoice` (`erp_engine.js:266`) already emits one `M_MatchInv` per invoice line that
+carries `m_inoutline_id`, and `crud_overlay.completeFanoutInvoice` (`:1592`) already runs it on the live
+Complete. The measured `§INVOICE-FANOUT invoice=-8 issotrx=N lines=1 matchInvOps=0` was **not** a fanout
+bug: it was `lines=1` where that one line had no `m_inoutline_id`, because nothing could create such a
+line. Fix 5 supplies the line-maker; the fanout then fires on its own.
+
+### §Fix5.3 THE PORT — `registerCreateFromInvoice(engine)` in `ad_process.js`
+Handler key `org.compiere.process.CreateFromInvoice` (`AD_Process 200143`,
+`value='C_Invoice_CreateFromProcess'`, mandatory para `C_Invoice_ID` — all four verified in `ad_seed.db`).
+`ctx` seams, mirroring the existing handlers: `fetchInvoice(info)`, `fetchReceiptLines(info)`,
+`fetchOrderLine(id)`, `fetchProduct(id)` (optional).
+- **GATE** (each returns a reason, never a fabricated line): no invoice → `@NotFound@ @C_Invoice_ID@`
+  (the Java's own message); invoice already `Processed='Y'` or not `DR`/`IP` → refused, because real
+  iDempiere reaches CreateFrom only from a drafted invoice's toolbar; empty selection → the Java's
+  `@NotSupported@` branch (`getAD_InfoWindow_ID() > 0` is its selection precondition).
+- **PER SELECTED RECEIPT LINE** → one `CREATE_LINE` op on `C_InvoiceLine` carrying exactly the
+  `setShipLine` field set above, `qtyentered`/`qtyinvoiced` = the selection's qty (default: the receipt
+  line's own `qtyentered`), and the price block only when the receipt line has a `c_orderline_id`.
+- **NAMED-DEFERRED, never silent** — flagged in the result, the same law `InOutGenerate` follows for its
+  non-F/A DeliveryRules: (1) `M_RMALine_ID` selections (the RMA corpus); (2) the cross-UOM branch, which
+  needs `MUOMConversion`; (3) `setPrice()`/`setTax()` when there is no order line, which needs the
+  price-list engine; (4) `invoice.updateFrom(order)`'s payment-schedule copy.
+
+### §Fix5.4 THE WITNESS — `W-CREATEFROM-INVOICE`, arms that can each fail
+`scripts/poc_createfrom_invoice.js`, over the REAL `ad_process.js` + `erp_engine.js`, fixtures read from
+the real receipt/order rows the P2P lane already builds — no authored prices, no authored qtys:
+1. **LINES CREATED** — N selected receipt lines → N `C_InvoiceLine` `CREATE_LINE` ops.
+2. **SHIPLINE COPY IS EXACT** — every column `setShipLine` sets is present and equals the source row's
+   value (product, uom, line, description, ASI) — compared field-by-field against the fixture, not spot-checked.
+3. **PRICE FROM THE ORDER LINE** — `priceentered/priceactual/pricelimit/pricelist/c_tax_id/linenetamt`
+   equal the linked `C_OrderLine`'s, and `priceentered` follows the `sameOrderLineUOM` branch.
+4. **THE CHAIN CLOSES** — feeding those lines to `erp_engine.completeInvoice` on an `issotrx='N'` invoice
+   emits **`matchInvOps === N`**, each `M_MatchInv` pointing at the right `m_inoutline_id` and qty. This
+   is the arm that turns the lane's measured `matchInvOps=0` into a pass.
+5. **GATES REFUSE** — no invoice / completed invoice / empty selection each return `ok:false` with the
+   named reason and **zero** ops. A handler that cannot refuse is not a gate.
+6. **DEFERRALS ARE DECLARED** — an RMA-line selection and a no-order-line selection both come back
+   flagged in `result.deferred`, not silently dropped.
+
+### §Fix5.5 RESULT 2026-09-04 — **Fix 5 CLOSED.** `W-CREATEFROM-INVOICE` 16/16, `matchInvOps 0 → 10`
+```
+§CREATEFROM-AD proc=200143 value=C_Invoice_CreateFromProcess classname=org.compiere.process.CreateFromInvoice isreport=N para=["C_Invoice_ID(Y)"]
+§CREATEFROM-FIXTURE receipt=105 issotrx=N docstatus=CO lines=10 allLinked=true invoice=105 issotrx=N docstatus=DR bpartnerMatch=true
+§CREATEFROM-INVOICE invoice=105 selected=10 linesCreated=10 withInOutLine=10 withOrderLine=10 deferred=["updateFrom(order)-payment-schedule(MOrderPaySchedule)"]
+§CREATEFROM-COPY  fields=m_inoutline_id,c_orderline_id,line,isdescription,description,m_product_id,c_uom_id,m_attributesetinstance_id +qtyentered/qtyinvoiced  rows=10 mismatches=0
+§CREATEFROM-PRICE cols=priceactual,pricelimit,pricelist,c_tax_id,linenetamt rows=10 mismatches=0 priceEnteredBranchMismatches=0
+§INVOICE-FANOUT invoice=105 issotrx=N lines=10 matchInvOps=10 linkMismatches=0     ← the lane measured 0
+§CREATEFROM-GATES noInvoice="@NotFound@ @C_Invoice_ID@" completed="not drafted…" emptySelection="@NotSupported@…"
+🟢 W-CREATEFROM-INVOICE PASS — 16 PASS / 0 FAIL
+```
+Fixtures are REAL rows: purchase receipt **M_InOut 105** (`issotrx='N'`, CO, 10 lines all linked to real
+`C_OrderLine`s) from `glassbowl_data.db`, and the real `C_Invoice 105` header put back into the DR/`Processed=N`
+state a user's freshly created vendor invoice is in. No authored qty, no authored price.
+
+**The witness earned its keep on the first run — it caught a real defect in the port.** `shipLineFields`
+initially wrote `sLine.m_attributesetinstance_id || null`, which collapses a legitimate **0 to NULL**;
+`setShipLine` calls the plain setters and does not translate. It failed on **all 10** rows
+(`m_attributesetinstance_id op=null src=0`) and is fixed — the copy is verbatim, and only the BRANCH tests
+use the Java's own `== 0` semantics. Two of the three first-run failures were the witness's own bugs
+(column case from `SELECT *`, and a seed path with no `ad_process` table); the third was the product.
+
+**Live-registered, end of chain verified by the app's own log** — not asserted:
+`§AD-PROC-LIVE handlers=[… org.compiere.process.InvoiceGenerate,org.compiere.process.CreateFromInvoice]`
+(`poc_ad_process_live` against the branch, still 🟢 PASS).
+
+Regression: 20 `ad_process`-judging witnesses run before and after — **18 PASS / 2 FAIL, identical set,
+0 regressions** (`poc_access_harden`, `poc_proc_picker` fail on the pre-change file too).
+
+**Shipped:** bim-ootb `feat/erp-createfrom-invoice` — `erp/ad_process.js` + `erp/idempiere.html` wiring +
+`erp/sw.js` v779→**v780**.
+
+**⬜ Named-deferred, declared in `result.deferred`, not silently dropped:** the RMA-line corpus
+(`setRMALine`), the cross-UOM branch (`MUOMConversion`), `setPrice()`/`setTax()` when a receipt line has no
+order line (the price-list engine), and `invoice.updateFrom(order)`'s payment-schedule copy
+(`MOrderPaySchedule`). **⬜ Still UI-side:** nothing yet drives this process from a screen — the handler is
+registered and dispatchable, but the Info-Window selection UI that real iDempiere's CreateFrom dialog
+provides is not built. Stage 8's engine is closed; its dialog is a separate, bounded item.
