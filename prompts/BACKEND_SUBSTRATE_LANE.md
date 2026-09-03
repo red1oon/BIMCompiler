@@ -108,6 +108,15 @@ identical tip, 0 errors"*) is **no longer true as stated**. Probed directly toda
 This is the same decay class as the whole `W-ERP-TWIN` finding — an instrument that stopped covering
 its subject while continuing to be cited. Consistent with §U-4 in `prompts/AGENT_QUEUE.md` (the OCI
 sandbox generally 3.5 months stale). **Do not re-state the 3-host claim until this witness re-earns it.**
+> **⚠ CORRECTION 2026-09-03T03:21Z (measured by `witness_multihost_sync.js` §PRE_STATE, and again inside the
+> 03:34Z run):** the OCI-dev 404 rows above do NOT reproduce. `…/b/bim-ootb-dev/o/sandbox/erp/relay_snapshot.json`
+> answers **200**, 1,750 B, `last-modified 2026-06-07T02:10:38Z`, md5 `bd1e92ba` — byte-identical to GH raw and to
+> the controller copy; `replica_poc.html` is 200 too, and the whole June-7 `sandbox/erp/` set (12 objects) is intact
+> in the bucket listing. Only **OCI-live** is 404, and it always was (the POC was published dev-only —
+> `project_erp_sync_fsm`). So the decay was not "a host lost the object" but "nothing re-measured for 3 months" —
+> which is exactly what §MH.3's gate now closes. The two-host statement is withdrawn; three hosts were serving
+> identical bytes, and until this witness nobody could prove it.
+
 
 ### §MH.1 — what is architecturally settled, and must NOT be re-litigated
 Static hosts **STORE + SERVE**; readers **replay deterministically**; only **multi-writer sequencing**
@@ -162,8 +171,120 @@ question:
 - **S-4 · browser storage is not encrypted at the app layer** — it relies on OS-level disk encryption.
 These are the four an enterprise buyer will ask about. Each needs a measured status line here every
 time this witness runs, not a one-time paragraph.
+**Measured status lines, 2026-09-03T03:34Z — re-measured by every W-MULTIHOST-SYNC run (`§MH4` lines in
+`build/erp/witness_multihost_sync.log`), never restated by hand:**
+- **S-1 · POINTER.** Owned by §RELAY_AUTH (another agent, `build/erp/erp_relay_server.js`); its measured status is
+  §RA-RESULT. This witness does not measure it. Note: that file is in the network core, so the moment the
+  §RELAY_AUTH change lands the gate goes red until one witness run re-earns it — by design.
+- **S-2 · plain HTTP, and no relay ships.** `http.createServer` at `erp_relay_server.js:66`, `https`/`tls` requires
+  = 0; shipped `erp_sync_relay.js` default URL = null, `https:` scheme refs = 0, shipped `erp/*.js` files carrying a
+  relay URL = 0. → TLS must be terminated by the host; an https page → http relay is mixed-content blocked; and
+  since no relay URL ships, the live product today is **signed-snapshot exchange, single writer per device**, not
+  multi-writer.
+- **S-3 · key custody at the edge.** Shipped `erp_signer.js`: custody `idb-nonextractable`, `extractable=false`;
+  the controller private key on this device = 206 B, gitignored; the verifier pins the controller pubkey
+  `fPaLtHSA…` in-module (never from the snapshot — arm 5 proves an embedded key is ignored); roster
+  `erp_key_epochs.js` has ROTATE and REVOKE. → keys never leave a device; a key-holder's consistent lie is caught
+  at the count, not by crypto (the doctrine's own admission stands).
+- **S-4 · no app-layer encryption at rest.** Shipped `erp/*.js` opening IndexedDB = 7
+  (`crud_overlay, erp_signer, kanban_host, kernel_ops, plugin_overlay, system_monitor, tests/poc_client12_resident`);
+  app-layer cipher refs (`AES-GCM|SQLCipher|subtle.encrypt`) = 0. → op-log and keys rest in IndexedDB relying on
+  OS disk encryption.
+
 
 ---
+
+### §MH.5 — instrument design, written before the code (2026-09-03)
+Roles, per run (`scripts/witness_multihost_sync.js`, log `build/erp/witness_multihost_sync.log`):
+
+| host | base | role(s) it plays |
+|---|---|---|
+| `here` | a real `http://127.0.0.1:<port>` origin serving `build/erp/` | publisher · sole source (arm 3) · **forger** (`/tamper`) · **stale** (`/stale`) · fork control (`/fork`) |
+| `GH` | `raw.githubusercontent.com/red1oon/BIMCompiler/mock/relay-snapshot` | replica · sole source · survivor |
+| `OCI` | `…/b/bim-ootb-dev/o/sandbox/erp` | replica · sole source · survivor · **stale** (`stale/relay_snapshot.json`, a second real stale host) |
+| `OCI-live` | `…/b/bim-ootb-live/o/sandbox/erp` | arm 4's dead host — a **real 404** (never published there; `deploy/live` untouchable), not a closed port |
+
+- **Epoch model.** A run does not regenerate a fresh chain (that would make "older" undecidable — two
+  unrelated 5-op chains have equal `len`). It EXTENDS the last published chain by ONE real double-entry
+  `POST` op (AR dr 1200.00 / Revenue cr 1200.00, `ts` = the run's recorded utc — no `Date.now()` in the
+  fold path), re-seals under the canonical `build/erp/kernel_ops.js`, signs the tip with the controller key.
+  The previous epoch is therefore a strict op_uuid PREFIX of the new one, so arm 6's "older" is decidable
+  by `len` + prefix — exactly what the old POC could not express. One op per run; a run happens only when
+  the gate demands it. Books are asserted too (`erp_period_close.foldBalances`, cents), not only the tip.
+- **Publish mechanics.** GH = Contents API PUT on the branch (the owner's `git push`); byte identity is
+  asserted at the immutable commit URL at once and at the branch URL after CDN propagation (measured
+  `cache-control: max-age=300`) — the propagation seconds are a reported number. OCI = GET+diff the target
+  first (OCI_UPLOAD.md rules 1/3), `oci os object put --content-type application/json` (rule 7), fetch-back md5.
+- **Reader** for arms 2-6 = the frozen `erp_replica_client` (`fetchSnapshot/fetchAll/resolve/replayAndVerify`)
+  plus a pure JUDGE in the witness that classifies each `fetchAll` entry CURRENT / STALE / DIVERGENT /
+  TAMPERED / UNREACHABLE: the longest verified chain wins, a shorter valid chain must be a prefix of it
+  (else DIVERGENT), a fork at the head is adopted only with a strict majority of valid hosts. The judge is
+  the instrument; the shipped `resolve()` is first-reachable-wins and has no freshness logic — that fact
+  is measured and reported in §MH-RESULT, not papered over.
+- **Blocking** for arm 3 = a fetch interceptor installed BEFORE the client binds `fetch` (it captures it at
+  require time); negative control asserts "all blocked → `all hosts unreachable`", so a guard that failed to
+  block cannot pass the arm.
+- **Tamper** = a self-consistified forgery (op mutated, tip recomputed with the same kernel) signed by a
+  forger key whose pubkey is EMBEDDED in the snapshot. Two halves asserted: an embedded-key reader WOULD
+  accept it (`verifyTip` under the embedded key = true), the pinned reader rejects it and adopts the next
+  good host; plus a structural check that the client calls `verifyTip(tip, sig)` with no key argument.
+- **Verdict structure.** The PASS marker is printed only inside `hosts_up === 3 && every arm PASS`.
+  Anything else is FAIL (exit 1) or INCONCLUSIVE (exit 2, a host unreachable outside arm 4, a publish that
+  could not be authenticated, propagation past the cap). VACUOUS if the population is empty. The run
+  record `scripts/multihost_run.json` is written on PASS only, so a failing run can never refresh the gate.
+- **Gate** = `scripts/check_multihost_gate.js` over `scripts/multihost_core.json` (bim-compiler paths hashed
+  from the working tree, bim-ootb paths from the `origin/main` blob as `check_erp_twins.js` does, plus the
+  instrument itself). Exit 0 same / 1 changed-or-missing-or-never-run / 2 vacuous manifest.
+
+## §MH-RESULT 2026-09-03 — W-MULTIHOST-SYNC first PASS (6/6 arms, hosts 3/3) and the gate proven by falsifier
+
+**Branch `feat/multihost-witness` (bim-compiler), commits `4ab0eb42a` → `0b567457e` + this doc commit; no PR (parent's call).**
+Files: `scripts/witness_multihost_sync.js` (the witness) · `scripts/check_multihost_gate.js` (the trigger) ·
+`scripts/multihost_core.json` + `scripts/multihost_core.js` (the declared network core, 13 files + 3 instrument files,
+one shared hasher) · `scripts/multihost_run.json` (the content-keyed record, written on PASS only) · logs
+`build/erp/witness_multihost_sync.log`, `build/erp/check_multihost_gate.log` (both committed as evidence) ·
+`build/erp/relay_snapshot.json` (the controller copy, now epoch 6). Run: `bash build/erp/run_witness.sh scripts/witness_multihost_sync.js`
+(≈5 min, of which 301 s is GitHub's CDN) · gate: `bash build/erp/run_witness.sh scripts/check_multihost_gate.js` (<3 s).
+
+**The run, 2026-09-03T03:34:11Z (`§SUMMARY hosts_up=3/3 … checks_failed=0 inconclusive=0 ms=307948`):**
+
+| arm | status | the numbers (from the log, not restated) |
+|---|---|---|
+| 1 PUBLISH | PASS | epoch 5→**6**, len 6, tip `55a01c1a7fd4`, one real POST op (AR dr / Revenue cr 1200.00, `ts` = run utc). **GH** Contents-API put 1,738 ms → commit `6464b89f78`; commit-URL byte-identical at once; branch-URL **propagation 301 s** (CDN `max-age=300`). **OCI dev** GET-before md5 `bd1e92ba` (Jun-7) → put 1,430 ms → after: md5 match, `content-type: application/json`, etag `c9420d8a…`, last-modified 2026-09-03 03:39:16 GMT; stale-role object `stale/relay_snapshot.json` put + fetched back. hosts_published **3/3** |
+| 2 CONVERGE | PASS | 3/3 zero-state readers → tip `55a01c1a7fd4`, len 6, sigValid true; **books** `{101:+120000c, 400:−120000c}` on here/GH/OCI, cross-host maxDiff **0c**, vs independent oracle **0c**; replay 31 / 30 / 83 ms |
+| 3 ROTATION | PASS | 3/3 sole-source rotations (`here`, GH, OCI each with the other two blocked) resolved to the intended host and converged; negative control all-blocked → `all hosts unreachable` (the guard really blocks) |
+| 4 FAILOVER | PASS | dead host = **OCI-live, real HTTP 404** (never published there); 3/3 orderings resolved to the first survivor (here, GH, OCI in turn), survivors 3/3, tip equal |
+| 5 TAMPER | PASS | forgery: posting 1200→999999, tip self-consistified with the same kernel, re-signed by a forger key **embedded** as `pubkey`. Embedded-key verify = **true** (an embedded-key reader would be fooled); pinned reader: recompute match = true (naive check fooled), sigValid **false**, ok **false**; reader adopted **GH**; structural: the client calls `verifyTip(tip, sig)` with no key from the snapshot |
+| 6 FRESHNESS | PASS | epoch-5 snapshot served by `here/stale` **and** `OCI stale/`: both classified **STALE** (len 5 < 6, op_uuid prefix); adopted GH len 6; fork control (same len, different controller-signed tip) → **DIVERGENT**, QUORUM 2/3 adopted the published tip |
+
+Structural guards held: hosts_up is counted from the post-publish CONVERGE arm; the PASS marker exists only inside the
+`hosts_up === 3` branch; a run that is INCONCLUSIVE (exit 2) or FAIL (exit 1) writes no record, so it cannot green the gate.
+
+**Gate falsifier (`W-MULTIHOST-GATE`):** A — before any recorded run → **FAIL** (`core=16 unrecorded=16 record=none`).
+B — after the PASS → **PASS** (`same=16`). C — append one comment line to `scripts/gen_replica_snapshot.js` →
+**FAIL** naming it (`CHANGED bim-compiler:scripts/gen_replica_snapshot.js 047e8798 → 2ad9b38c`); `git checkout` it back
+→ **PASS**. Content-keyed: mtime is irrelevant, bim-ootb files are hashed from the `origin/main` blob.
+
+**For the enterprise question, in the user's three parts:** *Is it real* — yes, measured: one signed snapshot from this
+machine, read back over the real network from GitHub and OCI in every role, converges byte-, tip- and book-identical on
+a zero-state device. *Will it hold* — the gate: any edit to the 13 network-core modules turns it red until a fresh run
+re-earns it; it cannot be quoted stale. *Show stoppers* — §MH.4's measured lines: S-1 → §RA-RESULT; S-2 means the
+shipped product is single-writer-per-device + signed exchange (multi-writer needs a TLS relay on real compute, none
+ships); S-3/S-4 are custody/at-rest facts an enterprise buyer must accept or fund.
+
+**Findings and open items (none blocking):**
+1. **Frozen `erp_replica_client.resolve()` is first-reachable-wins.** Measured in the naive controls: it adopted the
+   forgery host (`§TAMPER_CAVEAT`) and the stale host (`§FRESH_CAVEAT`); rejection happens only at `replayAndVerify`,
+   freshness only in the witness's judge. The judge (~25 lines, `judge()` in the witness) is the candidate
+   `resolveFreshest()` — not added, the module is frozen and NO-SHIP (bim-ootb has no `erp_replica_client.js`; PR #203
+   never merged). Parent's call.
+2. **The gate goes red the moment §RELAY_AUTH lands** (`erp_relay_server.js` is core). Re-earn = one run, one op.
+3. **Twins gate stays at `unreviewed=0`**, but reports 3 **BROKEN** pairs — `ad_evaluator`, `crud_core`,
+   `crud_overlay` — shipped side moved at bim-ootb `7168054e` (2026-09-03 11:39 +0800), the copies on this branch are
+   unchanged since base and none is referenced by this lane's files. That is the AD-UI lane's forward-port.
+4. Each run appends one POST op to the mock chain (GH + OCI dev are now len 6); the shared checkout's
+   `build/erp/relay_snapshot.json` stays at epoch 5 until this branch merges (the judge would read it STALE — harmless).
+5. OCI `sandbox/erp/replica_poc.html` (200) still loads the June-7 module copies; out of scope (the leg = the snapshot).
 
 ## §RELAY_AUTH 2026-09-03 — close S-1. Roster-verified `/push`, no new crypto, no new secret.
 
