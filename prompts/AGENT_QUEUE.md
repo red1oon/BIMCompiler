@@ -1125,7 +1125,36 @@ the defect is downstream of the boundary, not in it.** The three unexamined cand
    Only the bake was reasoned about above.
 
 **Unchanged and still the real lesson:** the witness must drive a REAL plan through a caller. A
-pure-function witness cannot see any of the three candidates above. User's reason, unchanged: the lit return leg must
+pure-function witness cannot see any of the three candidates above.
+
+**⚠ 2026-09-03 (third pass, user asked for the fix) — CANDIDATES 1 AND 2 ARE ALSO DISPROVEN. NO FIX
+WAS SHIPPED, DELIBERATELY. Every line of the ghost path reads CORRECT:**
+- `_flyBackPose(w)` retraces `onPath = _outPos(1 - e)` (`effects.js:7989`), so at `w=1` it is
+  `_outPos(0)`; `_outPos(0)` returns `flowWp[0]` (`effects.js:6633-6636`) = **the first stick**.
+  Candidate 1 (retrace direction) is dead.
+- `cpeRevealApplyVisual` (`effects.js:5675-5696`) calls `A.filterDiscs(shown)` the moment the phase
+  key changes to `ghost:…`, keyed on `visDiscs`, no dependency on the per-frame staging rebuild.
+  Candidate 2 is dead.
+- **There is exactly ONE producer of `plan.beats` in the whole viewer** (`grep 'beats\s*:' viewer/*.js`
+  → `effects.js:8656` only), and it always sets `flyback: tF`. So the DEGRADE fallback
+  (`b.flyback == null → tP`, which WOULD land the strip at the last stick) **can never fire**.
+- #1633 bumped `sw.js` v1131→v1132 and `effects.js?v=31→32` in the same commit, so the deploy
+  discipline was followed.
+
+**Therefore the shipped gate strips ARC/STR beginning at the first stick of round 2, by construction.
+The user's observation and the code disagree, and reading cannot close that gap. Ship NOTHING until a
+runtime measurement says which is wrong** — guessing an edit into Alt+C/cinema code is barred twice
+over (PRIME RULE, and `feedback_cpe_protect_canvas_altc_from_drift.md`).
+
+**THE ONE THING THAT SETTLES IT — do this first next session, it is also A-28's original mandate:**
+extend `witness_reveal_arch_hold.js` to build a **REAL** plan through `_cinemaPathPlan` on a stored
+path (e.g. `HospitalAjaibPath.db`) and print, as `§` lines, the actual `tD/tS/tO/tP/tF/tV/tR` from
+`§CINEMA_BEATS` **alongside the first `tNorm` at which `cpeRevealVisualAt` returns `phase:'ghost'`**,
+and the camera position `_outPos` fraction at that instant. If that fraction is ~0.0 the code is
+right and the defect is in what reached the user's tab (stale SW/JS — the standing bug class); if it
+is ~1.0 the boundary is genuinely wrong and the numbers will say which term is off.
+**Remaining unchecked, and now the leading suspect precisely BECAUSE the pure path is clean: whether
+the preview/bake the user watched was running the v1132 `effects.js` at all.** User's reason, unchanged: the lit return leg must
 contrast against the gloomy first pass, when lighting legitimately was not installed.
 
 ### A-13 · §BAND_MONOTONIC_BASELINE — a NEW red that CI cannot see · investigate, do not just raise it
