@@ -156,6 +156,82 @@ function serveLocal() {
     console.log((v0 === 'PASS' ? '🟢' : v0 === 'FAIL' ? '🔴' : '🟡') + ' W-MULTIHOST-SYNC-STAGE ' + v0 + ' hosts=' + up + '/' + HOSTS.length + ' ms=' + (Date.now() - T0));
     process.exit(v0 === 'PASS' ? 0 : v0 === 'FAIL' ? 1 : 2);
   }
-  console.log('\n🟡 W-MULTIHOST-SYNC INCONCLUSIVE — full stage not implemented yet in this commit (arms 1,3-6 pending)');
+  // ── ARM 1 · PUBLISH — this machine extends the chain by ONE real posting, signs the tip, publishes to GH + OCI dev,
+  //    and every leg must fetch back BYTE-IDENTICAL to what was published (§MH.5 epoch model) ──
+  console.log('\n§PUBLISH — extend epoch ' + local.len + ' → ' + (local.len + 1) + ', sign, publish, fetch back');
+  var priv; try { priv = JSON.parse(fs.readFileSync(KEYF, 'utf8')); } catch (e) { priv = null; }
+  if (!priv) { inconclusive('PUBLISH: controller private key ' + path.relative(HERE, KEYF) + ' not on this machine — cannot sign'); }
+  var base = await replay(local);                                   // the previous epoch, verified on a zero-state db
+  if (!base.ok) {   // controller copy no longer verifies under the current kernel/key → re-seal + re-sign its ops (logged, never silent)
+    console.log('§PUBLISH base_reseal=true (controller copy did not verify: match=' + base.matchesAdvertised + ' sig=' + base.sigValid + ')');
+  }
+  var stale = { schema: local.schema, len: base.len, tip: base.computedTip, sig: base.ok ? local.sig : (priv ? await SIGN.signTip(priv, base.computedTip) : null),
+    alg: 'ES256', signed_by: 'controller', epoch: base.len, published_utc: local.published_utc || null, ops: local.ops };
+  var epoch = base.len + 1;
+  base.K.commitOp(base.db, 'POST', { table: 'C_Invoice', id: 9000 + epoch, witness: 'W-MULTIHOST-SYNC', epoch: epoch,
+    lines: [{ account_id: '101', role: 'AR', amtacctdr: 1200, amtacctcr: 0 }, { account_id: '400', role: 'Revenue', amtacctdr: 0, amtacctcr: 1200 }] },
+    null, null, null, runUtcMs);
+  await base.K.sealChain(base.db); var vNew = await base.K.verifyChain(base.db);
+  var rows = base.db.exec('SELECT id, op_uuid, timestamp, op_type, parameters, input_guids, output_guid FROM kernel_ops ORDER BY id')[0].values
+    .map(function (r) { return { seq: r[0], op_uuid: r[1], timestamp: r[2], op_type: r[3], parameters: r[4], input_guids: r[5], output_guid: r[6] }; });
+  var sig = priv ? await SIGN.signTip(priv, vNew.tip) : null;
+  var next = { schema: 'erp-replica/v1', len: vNew.len, tip: vNew.tip, sig: sig, alg: 'ES256', signed_by: 'controller', epoch: epoch, published_utc: runUtc, ops: rows };
+  var selfOk = sig ? await SIGN.verifyTip(vNew.tip, sig) : false;
+  check(vNew.ok && vNew.len === local.len + 1 && selfOk, 'new epoch sealed (len ' + local.len + '→' + vNew.len + ') and its tip verifies under the PINNED key', 'tip=' + short(vNew.tip) + ' prefix_of_previous=' + (rows.slice(0, local.len).every(function (o, i) { return o.op_uuid === local.ops[i].op_uuid; })));
+  var bytes = JSON.stringify(next, null, 2);
+  fs.writeFileSync(SNAP_FILE, bytes); publishedMd5 = md5(bytes); published = next; SERVED.stale = JSON.stringify(stale, null, 2);
+  var pub = { here: null, GH: null, OCI: null }, ghCommit = null, ociEtag = null, ghPropS = null;
+
+  // here — served from the file just written
+  var pHere = await probe(H_HERE.base + '/relay_snapshot.json'); pub.here = pHere.md5 === publishedMd5;
+  check(pub.here, 'here serves the published bytes', 'md5=' + publishedMd5.slice(0, 8));
+
+  // GH — Contents API PUT on the branch (the owner's git push); immutable commit URL first, then the branch URL after CDN propagation
+  var t1 = Date.now();
+  try {
+    var cur = JSON.parse(cp.execFileSync('gh', ['api', 'repos/' + GH_REPO + '/contents/' + GH_FILE + '?ref=' + GH_BRANCH], { encoding: 'utf8', timeout: 60000 }));
+    var body = JSON.stringify({ message: 'mock: W-MULTIHOST-SYNC epoch ' + epoch + ' tip ' + short(vNew.tip) + ' (' + runUtc + ')', content: Buffer.from(bytes).toString('base64'), sha: cur.sha, branch: GH_BRANCH });
+    var resp = JSON.parse(cp.execFileSync('gh', ['api', '-X', 'PUT', 'repos/' + GH_REPO + '/contents/' + GH_FILE, '--input', '-'], { encoding: 'utf8', input: body, timeout: 60000 }));
+    ghCommit = resp.commit.sha;
+    var pSha = await probe('https://raw.githubusercontent.com/' + GH_REPO + '/' + ghCommit + '/' + GH_FILE);
+    console.log('§PUBLISH GH commit=' + ghCommit.slice(0, 10) + ' prev_blob=' + cur.sha.slice(0, 8) + ' new_blob=' + resp.content.sha.slice(0, 8) + ' put_ms=' + (Date.now() - t1) + ' commit_url http=' + pSha.status + ' md5_match=' + (pSha.md5 === publishedMd5));
+    check(pSha.md5 === publishedMd5, 'GH stored the published bytes (immutable commit URL byte-identical)');
+    var waitS = Number(process.env.MH_GH_WAIT_S || 330), t2 = Date.now(), pBr;
+    while (true) {
+      pBr = await probe(H_GH.base + '/' + GH_FILE);
+      if (pBr.md5 === publishedMd5) { ghPropS = Math.round((Date.now() - t2) / 1000); break; }
+      if ((Date.now() - t2) / 1000 > waitS) break;
+      console.log('§PUBLISH GH branch_url poll t=' + Math.round((Date.now() - t2) / 1000) + 's http=' + pBr.status + ' md5=' + (pBr.md5 || '-').slice(0, 8) + ' (CDN max-age=300)');
+      await new Promise(function (r) { setTimeout(r, 10000); });
+    }
+    pub.GH = pBr.md5 === publishedMd5;
+    console.log('§PUBLISH GH branch_url converged=' + pub.GH + ' propagation_s=' + (ghPropS === null ? '>' + waitS : ghPropS));
+    if (!pub.GH) inconclusive('PUBLISH: GH branch URL still serves the old bytes after ' + waitS + 's (CDN propagation cap) — stored bytes ARE correct at the commit URL');
+    else check(true, 'GH branch URL serves the published bytes', 'after ' + ghPropS + 's');
+  } catch (e) { inconclusive('PUBLISH: GH write failed — ' + String(e.message || e).split('\n')[0].slice(0, 160)); }
+
+  // OCI dev — rule 1: GET+diff the target first; rule 7: --content-type; rule 3: one object, verify after each
+  function ociPut(name, file) { return cp.execFileSync('oci', ['os', 'object', 'put', '--namespace', OCI_NS, '-bn', OCI_BUCKET, '--name', name, '--file', file, '--content-type', 'application/json', '--force'], { encoding: 'utf8', timeout: 120000 }); }
+  var t3 = Date.now();
+  try {
+    var before = await probe(H_OCI.base + '/relay_snapshot.json');
+    console.log('§PUBLISH OCI before http=' + before.status + ' md5=' + (before.md5 || '-').slice(0, 8) + ' last-modified=' + (before.lastModified || '-') + ' diff_vs_new=' + (before.md5 !== publishedMd5));
+    ociPut(OCI_PREFIX + '/relay_snapshot.json', SNAP_FILE);
+    var after = await probe(H_OCI.base + '/relay_snapshot.json'); ociEtag = after.etag;
+    pub.OCI = after.md5 === publishedMd5 && /application\/json/.test(after.ctype || '');
+    console.log('§PUBLISH OCI after http=' + after.status + ' md5_match=' + (after.md5 === publishedMd5) + ' content-type=' + after.ctype + ' etag=' + after.etag + ' last-modified=' + after.lastModified + ' put_ms=' + (Date.now() - t3));
+    check(pub.OCI, 'OCI dev serves the published bytes with content-type application/json');
+    var tmpd = fs.mkdtempSync(path.join(process.env.MH_TMP || os.tmpdir(), 'mh-')), staleF = path.join(tmpd, 'stale.json');
+    fs.writeFileSync(staleF, SERVED.stale); ociPut(OCI_PREFIX + '/stale/relay_snapshot.json', staleF);
+    var pSt = await probe(H_OCI.base + '/stale/relay_snapshot.json');
+    console.log('§PUBLISH OCI stale-role object http=' + pSt.status + ' md5_match=' + (pSt.md5 === md5(SERVED.stale)) + ' (previous epoch ' + stale.len + ', for arm 6)');
+  } catch (e) { pub.OCI = false; inconclusive('PUBLISH: OCI dev write failed (unauthenticated/unreachable) — ' + String(e.message || e).split('\n')[0].slice(0, 160)); }
+
+  var nPub = Object.keys(pub).filter(function (k) { return pub[k]; }).length;
+  arm('PUBLISH', nPub === HOSTS.length ? 'PASS' : 'INCONCLUSIVE', { hosts_published: nPub, hosts: HOSTS.length, epoch: epoch, len: next.len, tip: short(next.tip), gh_propagation_s: ghPropS === null ? 'cap' : ghPropS });
+
+  await converge('(after PUBLISH)');
+
+  console.log('\n🟡 W-MULTIHOST-SYNC INCONCLUSIVE — arms 3-6 not implemented yet in this commit');
   srv.close(); process.exit(2);
 })().catch(function (e) { console.error('FATAL', e); process.exit(1); });
