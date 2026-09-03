@@ -1527,3 +1527,31 @@ sets `MovementType` via **the very rule E-4 just ported as `movementTypeOf`** �
 
 **Still open from §E.GAPS, untouched this session:** E-1 (454 procs / 139 callouts — campaign),
 E-3 (Form renderer), E-6/E-7/E-8/E-14/E-15 (hygiene), E-11 ⛔USER, E-12, E-13.
+
+## §ERP-SESSION 2026-09-04c — the P2P end-to-end witness, and the product gap it exposed
+`§ERP-SESSION 2026-09-04b`'s ⬜ NEXT worked to zero. **P2P end-to-end went 0 of 4 stages → stages 1/2/3
+PASS + Stage 4a.**
+
+| what | outcome |
+|---|---|
+| the 3 named witness steps (§E4.7) | ✅ all three, plus two more the run surfaced. Stage 1's `chip=null` was `clickRowOpen` clicking a **data cell**, which opens an in-place cell editor (`§INPLACE-CELL-OPEN … col=poreference`) instead of bubbling to the row — it now clicks the DocStatus cell. Stages 2/3 needed the AD-mandatory columns #1636 correctly enforces (`c_doctype_id`, `c_bpartner_location_id`, `c_uom_id`, `c_tax_id`), all read from the seed. |
+| **NEW product gap, found and fixed** | **The FK picker could not offer a row you just created.** `§VALRULE col=c_orderline_id … before=117 after=0 offered=0 ctx={"C_Order_ID":-1}` — the rule is right, the candidate query was raw-bundle-only, so a PO created seconds earlier was invisible and the receipt line could not be linked **at all**. New lane `prompts/ERP_FK_PICKER_SIDECAR.md`; bim-ootb **PR #1650** (auto-merge armed), sw v782. `offered 0 → 1`. |
+| §E4's stock effect, live | ✅ proven through the real UI, not just headless: `§RECEIPT-FANOUT receipt=-4 issotrx=N lines=1 matchPoOps=1 docBaseType="MMR" stockOps=1 movementtype=V+ netQty=1`. |
+
+**The cause took three wrong guesses, and the third is a trap worth remembering:** `cols` are the
+bundle's **CamelCase** names; a `listTip`-created row's keys are the op's **lowercase** ones. `r[c]` bound
+NULL for every column of every folded row, and it hid perfectly — `inserted=118 tableCount=118` — until
+the stored row was printed (`[null,"null",null,"null"]`). **Counts agreeing is not evidence the values
+arrived.**
+
+**⛔ Stage 4b stays RED, correctly, and must not be loosened.**
+`§P2P-FILL m_inoutline_id value=-5 result=locked` — `AD_Field` locks `C_InvoiceLine.M_InOutLine_ID`
+faithfully to real iDempiere, where only `CreateFromInvoice` sets it. E-5 shipped that handler (#1643) and
+it is registered live, but **nothing drives it from a screen**. **⬜ NEXT, and it is now the single item
+between here and a UI-complete three-way match: build the CreateFrom entry point** — a selection of
+completed receipt lines for the invoice's vendor, dispatched through `AD_Process 200143`, which the
+handler already accepts as `info.params.selection`.
+
+**Also worth knowing:** `poc_parity_valrule_live.js` / `poc_parity_fieldset_live.js` derive `ROOT` from
+`__dirname` and **silently ignore `ERP_ROOT`** — run them from inside the worktree under test, or they
+will judge `~/bim-ootb` and report a green that means nothing.
