@@ -3237,3 +3237,83 @@ centre at this pose; without the top-up this frame had zero fixture light"*.
   `§BAKE_INTERIOR_TOPUP` line from the user's next bake log. Do not quote a number for it until then.
 - #1327 should be closed as superseded-in-part once #1642 lands, with its two untaken halves carried
   forward rather than lost.
+
+## §BAKE_MISSING_ELEMENTS — 2026-09-04 — 🔴 OPEN, UNSOLVED. START HERE FOR THE MISSING-GEOMETRY CHASE
+
+> **USER, on the landed Hospital silent bake** (`~/Downloads/Hospital_silent_bake_2026-09-04.mp4`,
+> 2,937 frames, 195.8 s, sw v1138):
+> *"some window glass panels not landed completely, leaving omissions. This maybe with other elements
+> too thruout. This seems an anomaly as all this while they land evenly and completely."*
+> … *"comparing to previous bake at seconds 47-55"* … *"they are selective not thru out"*
+> … *"Even at 1min22sec u can see some chairs but not full table sets. This is erroneus behaviour
+> introduced."* … *"before this is was not an issue."*
+
+**THE DEFECT IS REAL AND IT IS NOT SOLVED.** Everything below is measured; the cause is still open.
+
+### §BME.1 — what is CONFIRMED (do not re-derive)
+- **Visually confirmed at full build.** Frame at **78 s** (fly-back) reads `Day 310 / 310` — the
+  buildup is COMPLETE — and the left elevation still shows bays open to the interior with only a
+  couple of infill panels. **So it is NOT schedule pacing.** (The user's own invariant, and it is
+  correct: *"In the return to start, the whole buildup is supposed to be fully completed."*)
+- Previous bake for contrast: `BIM_MaxQ_Hospital_1788397252225.mp4` (2026-09-03 09:00, 3,118 frames,
+  207.9 s) at the same second reads `Day 273 / 507` with the ribbon glazing solid. Different film
+  lengths, so timecodes do NOT align frame-for-frame — the Day 310/310 frame is the load-bearing one.
+- **It spans classes**: glass panels at 0:47–0:55, and *"some chairs but not full table sets"* at
+  1:22. Partial sets of an assembly, across unrelated classes. Not a discipline, not one material.
+
+### §BME.2 — what is RULED OUT, with the number that rules it out
+| candidate | verdict | evidence |
+|---|---|---|
+| schedule / buildup omission | **OUT** | `§CPE_BUILDUP frame=2936/2937 t=1.000 placed=63415/63415`; `kernel_ops` holds exactly 63,415 `ELEMENT_PLACE` ops |
+| missing geometry in the DB | **OUT** | every `IfcPlate` 2211, `IfcMember` 7127, `IfcWindow` 131 has an `element_instances` row AND its `geometry_hash` resolves in `component_geometries` — 0 missing |
+| placement timing | **OUT** | on the played layer: `IfcWindow` all by 8.7 s, `IfcCurtainWall` 43.4 s, `IfcPlate` 44.6 s, `IfcMember` 44.7 s (buildup spans 0→70.7 s) |
+| discipline tagging / selective ARC strip | **OUT** | `IfcPlate` 2211/2211 ARC, `IfcCurtainWall` 178/178 ARC, `IfcWindow` 131/131 ARC (only oddity: `IfcMember` 7122 ARC + **5 STR**) |
+| the Reveal ghost | **OUT** | ghost starts at frame 1357 (**1:30**), after the 0:47–0:55 report; and `§DVS_REVEAL_ALL drawn=63182/63182 after filterDiscs(null)` |
+| Reveal slot leakage | **OUT** | `§DVS_REVEAL_SLOT` PLB 9121/9121, FP 14357/14357, ELEC 2798/2798, MEP 19670/19670, `leakOtherDiscs=0` |
+| non-determinism | **OUT** | the bake seeds `Math.random` with an LCG per frame and restores it (`cinema_maxq.js:686-690`); its only callers are city skyline and staffage props, never a BIM element |
+
+### §BME.3 — TWO RETRACTIONS. Do not resurrect either.
+1. **"All 178 IfcCurtainWall are absent, that's the missing glass" — WRONG.** They have **zero**
+   `element_instances` (178/178), as do 24 `IfcRoof` and 31 `IfcStair` — the `absent=233` set. They
+   are pure aggregate containers whose glazing IS their `IfcPlate`/`IfcMember` children. They were
+   never drawable **in any bake, including the ones that looked right**, so they cannot be what
+   changed. Still a real schedule-hygiene defect (they inflate `placed=63415` and occupy programme
+   time for something that can never appear) — but a DIFFERENT one, and not this.
+2. **"§SUN_FILL_RATIO's map swap causes recompile churn" — WRONG, disproven by its own witness.**
+   Under a regenerating sky the two-target version recompiles FEWER times (10 vs 16 over 3 regens),
+   because the matte set is pinned to a stable reference. The hazard it really carried was the
+   STALE REFERENCE, closed by §SFR_UNIFORM_NOT_DEFINE (#1659).
+
+### §BME.4 — THE OPEN LEAD, and the instrument's own blind spot
+`viewer/tests/witness_tm_drawn_vs_scheduled.js` (PR #1658, **ships RED on purpose**) compares
+SCHEDULED against DRAWN per class per cursor. Two live failures on `Hospital_silent_local`:
+
+- **`other` = missing, but neither §XRAY-staged nor absent — and it persists to `t=1.0`.** This is
+  the residue and the best lead: `IfcColumn` maxMissing 109 (**57 not staged**), `IfcBeam` 37 (**23**),
+  `IfcSlab` 12 (**10**), `IfcWall` 1 (1). `missWindow_t=0.01..1` — the WHOLE film.
+- **`§XRAY_EDGES … staged=544/63415`** — "elements whose last support carrier finishes after their
+  own reveal". Every early-film miss is one of these (`t=0.020 sched=716 drawn=603 missing=113
+  staged=113`). Same root as §M Q3's 237 indefensible structural midair.
+
+⚠ **THE INSTRUMENT DOES NOT REPRODUCE THE USER'S SYMPTOM YET, AND THAT IS ITS OWN DEFECT.** It loads
+the model fully, scrubs the TM cursor, and counts scene-graph visibility. The bake draws each frame
+through **photoreal staging**. `IfcPlate 2211/2211 drawn` means "visible objects at that cursor", NOT
+"rendered in that frame". Selective loss *inside a staged frame* is invisible to it. **Next session's
+first job: census what a STAGED frame actually draws** — hook `onBeforeRender` on the meshes and
+count how many fire during one real staged render at the bake's own pose (`plan.poseAt`) at Day
+310/310, and extend the class list beyond the glass set to `IfcFurniture` (the 1:22 table report).
+
+### §BME.5 — what shipped this session that touches the render path (suspect list, in landing order)
+`#1604 §MEP_DISC_PALETTE` (InstancedMesh discipline resolution — the tag drives BOTH colour and the
+`filterDiscs` visibility filter) · `#1622 §SUN_FILL_RATIO` · `#1631 §DUCT_SILHOUETTE` (rewrites
+vertex data) · `#1633 §CPE_REVEAL_ARCH_HOLD` · `#1642 §BAKE_INTERIOR_TOPUP` · `#1649
+§CPE_TAIL_LIGHTS_ALL_ONLY` · `#1659 §SFR_UNIFORM_NOT_DEFINE`. The user's marker is *"before this it
+was not an issue"* and the last clean bake is **2026-09-03 09:00**, so anything merged AFTER
+2026-09-03 01:00 UTC is in scope and anything before it is not.
+
+### §BME.6 — reproduction, ready to run
+```
+cd ~/bim-ootb && node viewer/tests/witness_tm_drawn_vs_scheduled.js      # BLD defaults to Hospital_silent_local
+ffmpeg -ss 78 -i ~/Downloads/Hospital_silent_bake_2026-09-04.mp4 -frames:v 1 out.png   # Day 310/310, bays open
+```
+The user's DB is `~/Downloads/Hospital_silent.db`, symlinked into `buildings/Hospital_silent_local.db`.
