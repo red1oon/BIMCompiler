@@ -1143,3 +1143,121 @@ and 18 `='N'` with none** — is never judged. **Claim (W-DOCNO, extended):** fo
 allocator returns that doctype's OWN sequence, and for a real `='N'` doctype it falls back to
 `DocumentNo_<TableName>` — both read from the seed at run time, plus a falsifier that fires if the branch is
 inverted. Fix is a WITNESS fix; no shipped code changes.
+
+## §P7-RESULT 2026-09-03 — §PARITY-MANDATORY-CREATE **CLOSED**. W-PARITY-MANDATORY-CREATE 18/18 PASS
+bim-ootb branch `feat/erp-parity-mandatory` (`cf6dd2e6`, base `8b50598d` = origin/main with #1613/#1626/#1632
+in), `erp/sw.js` **v776 → v777**. Logs read, not exit codes.
+
+**The one ⛔ OPEN item §IMPL-RESULT left is closed, and closed by FAITHFUL PORTS, not by weakening anything.**
+The prior session's verdict — "the fix needs New-time defaults/callouts, which is O2C stages 1/6/7 territory" —
+was a good starting point and **half wrong**: two of its four named blockers were never blockers at all.
+`GridField.isMandatory(boolean):377-385` hard-exempts **`DocumentNo`** and **`M_AttributeSetInstance_ID`** in a
+window, whatever `AD_Column.IsMandatory` says. Porting that one `if` removed them.
+
+| what shipped | source | effect, measured through the app's own fold on `ad_seed.db` |
+|---|---|---|
+| **P7.1** window mandatory-exemptions | `GridField.isMandatory:377-385` | `DocumentNo` / `Value` / `M_AttributeSetInstance_ID` / `Created*` / `Updated*` / key `*_ID` fold `required:false` |
+| **P7.2** data-type defaults | `GridField.defaultFromDatatype:1022-1051` | YesNo→`N`, numeric→`0`, `*_ID`→null **in the Java's order**; `'0'`/`'N'` are not empty at `GridTable:1985` |
+| **P7.3** DisplayType 37 is numeric | `DisplayType.java:329-333`, `SystemIDs.java:132` | `C_OrderLine` `PriceEntered/PriceActual/PriceList` stop rendering as un-defaulted text |
+| **P7.7** `@token@` DefaultValue | `GridField.defaultFromExpression:875-913` | a DETAIL tab resolves from the **PARENT row** — 6 resolved on `c_orderline` incl. `c_bpartner_location_id`, `dateordered`, `ad_client_id/ad_org_id` |
+| **P7.8** window ctx feeds the val rules | `Env.getContext` "WindowNo\|TabNo\|Col"→"WindowNo\|Col" | AD_Val_Rule 167 on a line went `offered=0` → `after=1 offered=1 ctx={"C_BPartner_ID":…}` |
+| **P7.4** the switch | `validateField` create contract (`crud_core.js:126`) | an inline CREATE validates the WHOLE new row |
+
+**c_orderline's editable un-defaultable mandatory blockers: 6 → 3**, and all three are typed by the O2C witness.
+
+### §P7-RESULT-FINDINGS — three things the change surfaced that were NOT in the spec
+1. **A hook-derived value was being lookup-validated as if the user typed it.** With `orig=null` the update
+   path's derived-column baseline fold vanished, and `MOrder.billDefaults`' own `Bill_Location_ID` came back
+   `valrule:not-admitted`. Correct behaviour is the update path's: the MODEL layer writes it
+   (`MOrder.setBPartner` → `set_Value`), never the grid, and `GridField.validateValueNoDirect:1141-1229` never
+   re-inspects what `beforeSave` wrote. Only a NON-EMPTY derivation is folded in, so a hook that derived
+   nothing still lets `required` fire.
+2. **The unattended deep-link login could not author any document.** `orgsForRole` sorts `ORDER BY AD_Org_ID`,
+   so `*` (org 0) always won — and the dictionary itself says `*` is never a document Organization
+   (`AD_Val_Rule 130` = `AD_Org.AD_Org_ID <> 0 AND IsSummary='N'`, bound to `AD_Org_ID` on all five tabs), while
+   `GridField.validateValueNoDirect:1225` NULLS a default the lookup rejects → `getMandatory` then reports
+   FillMandatory. Verified from source that iDempiere's own `Login.getOrgs` DOES offer `*` (`Login.java:222-234`,
+   `ORDER BY o.Name`) — so our reject was faithful and the bug was the id-ordering. The auto-login now prefers
+   the first org the dictionary would accept; **the interactive picker still offers `*`**, unchanged.
+3. **`§P7-NOT-BUILT` item 1 turned out NOT to be optional.** On a child tab `C_BPartner_ID` is `IsReadOnly='Y'`
+   with an `@SQL=` default we do not run, so without the window-context stage a PO Line's
+   `C_BPartner_Location_ID` picker offered **0 rows** and the AD-mandatory column was unfillable. Built.
+
+### §P7-RESULT-WITNESS-FIXES — three witnesses had frozen an INCORRECT contract (never the validator)
+- **`witness_e2e_business_cycle.js` stage 7** authored a Material Receipt with **neither a vendor nor a
+  warehouse**, three lines after asserting in its own verdict that both are *"mandatory on a real M_InOut"* —
+  internally contradictory, and it only passed because the create path never checked. It now types
+  `c_doctype_id 122` / `c_bpartner_id 120` / `c_bpartner_location_id 114` / `m_warehouse_id 103`, **every value
+  read from the dictionary's own val rule for window 184 / tab 296** (52054 admits {122,147}; 167 admits exactly
+  114 for BP 120). **Stage 6's PO line** likewise omitted `c_bpartner_location_id` that stage 1's SO line types.
+- **`fillField` now BLURS a text input.** A real user leaves the box before the next field and it is that blur
+  that fires `change`, which is what the dependent-lookup refresh is bound to; Playwright's `fill()` emits
+  `input` only. Measured: without it `C_BPartner_Location_ID` stayed `unresolved-tokens offered=0`; with it
+  `after=1 offered=1`. **The app was correct** — harness fidelity, not a product change.
+- **`poc_ad_folded_crud.js`** asserted `value … required===true`, which froze the pre-port contract (`Value` is
+  on the Java's exempt list). It now judges BOTH arms — `name` (mandatory, not exempt) is the control — so it
+  cannot pass by the port firing too widely. **29/29.**
+
+### §P7-EVIDENCE — every witness re-run this session, logs read
+- **W-PARITY-MANDATORY-CREATE 18/18 PASS, 0 FAIL, 0 INCONCLUSIVE** (`erp/tests/poc_parity_mandatory_live.js`,
+  real DOM). Falsifiers fire BOTH ways: the port is **not wider** than the Java (`C_BPartner_ID`/`M_Warehouse_ID`
+  come back not-exempt) and **re-marking the exempt field mandatory rejects the same empty value** while as
+  shipped it does not. Arm E asserts a PO Line pre-fills from its parent order's own column read from the seed
+  (`C_Order_ID=104 → 109`, rendered 109).
+- **W-PARITY-FIELDSET 30/30 PASS, 0 FAIL — and `0 OPEN`**, its `§PARITY-MANDATORY-CREATE` arm now printing
+  **CLOSED** (`missing=[c_bpartner_id,ad_org_id,c_bpartner_location_id]` pre-fix; the curated-8 save still
+  persists). That arm was the file's one OPEN item.
+- **W-PARITY-REFLIST 14/14** · **W-PARITY-VALRULE 23/23** · **W-AD-FOLDED-CRUD 29/29** · **W-ERP-TWIN PASS**
+  (`pairs=64 identical=39 unreviewed=0 undeclared_or_broken=0`).
+- **O2C `WITNESS_ROOT=/tmp/wt-erp-mand`: stages 1/2/3/5/6/7 PASS.** Stage 4 FAIL / stage 8 ABSENT are the known
+  pre-existing structural gaps, untouched.
+
+### §P7-RESULT-NOT-BUILT — still named, still measured
+`@SQL=` defaults (stage 2 — `C_OrderLine.Line`, `C_BPartner_ID`); the user/system **preference** stages
+(`GridField.defaultFromPreference:987-1016` — `ad_preference` is in the seed, nothing reads it; it is the one
+thing that would close `m_inoutline.c_uom_id`'s `@#C_UOM_ID@`); `GridTab.dataNew:1179-1181`'s New-time callout
+fan (would let `CalloutOrder.product` fill `C_UOM_ID`/`C_Tax_ID`/ASI as `CalloutOrder.java:757-762,795-802,846`
+does — our `productHandler` derives prices only); and **read-only mandatory columns**, which iDempiere DOES
+require and we skip (`validateField:127-130`) — ours is the NARROWER check, so it can never false-reject.
+
+## §P9-RESULT 2026-09-03 — GL_Category on every derived fact line. W-POST-GLCATEGORY 7/7 PASS
+bim-compiler `9b6e6c5c4` + `82b0f0e2c`. §P4-OPEN item 7 → ✅ DONE (witness).
+**The oracle is the seed's OWN postings, not this lane's arithmetic:** `glCategoryFor` is compared against
+`fact_acct.gl_category_id` document by document — **50/50 agree**, and all three stages of `Doc.setDocumentType`'s
+chain actually fire (`§GLCAT-STAGES {own-column:2, doctype:30, client-default:18}`), so no stage passes
+vacuously. `derivePostings` stamps it on **every** line as `FactLine.java:404` does (a document-level constant,
+never per-line) — verified end-to-end on a real invoice, and the seed's own rows are confirmed single-valued per
+document (50 documents), which is that invariant read back from the data.
+- **Deviation, named not hidden:** the Java's `(AD_Client_ID, DocBaseType)` lookup (`Doc.java:1030-1045`) has
+  **no ORDER BY** and takes whatever row the DB returns first; the port takes the **lowest `c_doctype_id`** so it
+  is deterministic.
+- **Falsifiers:** the oracle is discriminating (5 distinct categories across 600 fact rows); two invoices whose
+  doctypes carry different categories resolve differently; an unknown document returns the **0 sentinel**
+  (`Doc.java:411`) and never fabricates.
+- **A regression of my own, found and fixed before it left the tree** (`82b0f0e2c`): the chain read `c_doctype`
+  unguarded, so a NARROW fixture db threw `SqliteError` and took `poc_post_b3`, `poc_post_tail`,
+  `poc_idmp_frame_fit`, `poc_migrate_postcfg_idmp` down with it. iDempiere logs SEVERE and **posts anyway** with
+  0 — it never fails the posting — so every read now degrades with the reason NAMED in `stage`
+  (`no-doc-table` / `no-doctype-table`). All four re-run PASS; W-POST-GLCATEGORY unmoved.
+- **NOT done, named:** `erp/post_resolver.js` (shipped) and `scripts/post_resolver.js` have ALREADY drifted
+  (9 tokens), and `erp/doc_poster.js` is 125 lines vs `scripts/doc_poster.js` 574 — **neither pair is declared in
+  `scripts/erp_twins.json`**, so no gate watches them. Declaring them is the twin lane's call, not this item's.
+
+## §P10-RESULT 2026-09-03 — the DocNo witness now judges BOTH branches. W-DOCNO-BRANCH 10/10 PASS
+§P4-OPEN item 5 → ✅ DONE (witness). `erp/tests/poc_parity_docno_live.js`, run against the committed bytes.
+**The old arm was worse than scope-blind — it was TAUTOLOGICAL.** `scripts/poc_audit_changelog.js:102-130` fed a
+**mocked** `__idmpDb` whose expected `SO-1000` was written a few lines below the assertion, so it judged neither
+the real seed nor the shipped code. The new witness drives the **SHIPPED** `_docTypeSeqId`/`_previewDocNo`
+through a read-only seam (`window.__crud.docNoSeam`; the sequence-CONSUMING `_allocDocNo` is deliberately not
+exposed) against the real seed:
+- **all 34** doctypes `IsDocNoControlled='Y'` resolve to their own `DocNoSequence_ID`, **all 34** of those
+  sequences being real and ACTIVE — and the same holds through `C_DocTypeTarget_ID`, the column MOrder/MInvoice
+  actually carry.
+- **all 18** `='N'` resolve to `null`, so the caller falls back to `DocumentNo_<TableName>` — `MSequence.getDocumentNo:683-686`'s
+  real meaning ("table sequence instead of doc-type sequence", NOT "no number").
+- **The branches are distinguishable, which is what makes either arm mean anything:**
+  `§DOCNO-BRANCH doctype=148 seq=doctype#378 docno=500000 docNoControlled=true | table seq=DocumentNo_c_order docno=10000000 docNoControlled=false`.
+- **Falsifier:** an in-seed `='N'` doctype takes the identical call shape and returns null (the FLAG decides, not
+  the presence of a doctype); an unknown id and an absent doctype both fall back rather than fabricate.
+- The old arm is left in place but **annotated with its real scope** and pointed at this witness, so a green
+  there can no longer be read as "IsDocNoControlled is witnessed".
