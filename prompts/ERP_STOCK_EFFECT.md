@@ -120,4 +120,44 @@ So this is **not a regression from §E4 or from §Fix5** — but it IS a live fi
 of the three-way match is currently broken at its first stage on main**, and the cascade means stages 2–4
 prove nothing right now. The *engines* are proven headless (`W-CREATEFROM-INVOICE` 16/16,
 `W-STOCK-MOVE` 15/15); the *UI path that stitches them* is not, and no claim here says otherwise.
-**⬜ NEXT, its own item:** find why Stage 1's PO never reaches CO (`chip=null`, id stays `-1`) on main.
+### §E4.7 DIAGNOSED (2026-09-04) — it is a STALE WITNESS, not a product dead-end. Evidence, per stage.
+Read the log rather than re-running: `build/erp/` sibling `p2p_base.log` was the origin/main run.
+
+**Stage 1 — the PO is created fine; the witness cannot then act on it.**
+```
+§CRUD validate key=c_order verb=create ok
+§KRN_GROUP committed gid=5dd0c0ab… ops=1 tip=92f910b3097d… sealed=1 (WHOLE — all-or-none)
+§CRUD-OPLOG-ROW key=c_order id=-1 loaded=40 source=listTip
+🔴 Stage1: PO reaches CO — chip=null        §P2P stage=1 … detail=PO id=-1 chip=null
+```
+So creation SUCCEEDS and seals. The row lives sidecar-only with the new-row id **`-1`**, and the witness's
+chip/DocAction lookup expects a resolved id. **The defect is in the witness's post-create resolution, not
+in the write path** — the write path's own §-lines say it committed.
+
+**Stage 2 — the reject names exactly two columns, and the AD says a user supplies both.**
+```
+§CRUD validate key=m_inout verb=create REJECT errors=[{"col":"c_doctype_id","why":"required"},
+                                                      {"col":"c_bpartner_location_id","why":"required"}]
+```
+Queried the seed: on `M_InOut`, **both are `IsMandatory='Y'`, both `IsDisplayed='Y'` on the main tabs
+(257/296), and NEITHER has an `AD_Column.DefaultValue` or `AD_Field.DefaultValue`** — a real iDempiere user
+picks the DocType and the location on the form. The witness fills only
+`documentno,movementdate,m_warehouse_id,c_bpartner_id,c_order_id,description`.
+
+**So the product got MORE faithful and the witness did not follow.** bim-ootb **#1636**'s whole-row
+`§PARITY-MANDATORY` check now enforces the AD's own mandatory set on create; before it, an incomplete row
+slipped through. The witness predates it. Stages 3 and 4 are pure cascade from Stage 2.
+
+**⬜ NEXT, its own bounded item — fix the WITNESS, in this order:**
+1. Stage 2: fill `c_doctype_id` and `c_bpartner_location_id` on the m_inout create (both are on the form).
+2. Stage 1: resolve the created PO's id instead of reading `-1` — the row is in the sidecar under
+   `listTip`, which the witness already uses elsewhere (`§CRUD-OPLOG-ROW … source=listTip`).
+3. Re-run; stages 3/4 should follow without further change, since the engines behind them are proven
+   headless (`W-CREATEFROM-INVOICE` 16/16, `W-STOCK-MOVE` 15/15).
+
+**Worth noting for the callout corpus (E-1):** `M_InOut.C_BPartner_ID` carries
+`org.compiere.model.CalloutInOut.bpartner` and `C_DocType_ID` carries `CalloutInOut.docType` — neither is
+in our 6-atom registry (139 named-deferred). Porting `bpartner` would DEFAULT the location from the vendor
+the way real iDempiere does, making step 1 above unnecessary for a human user. `CalloutInOut.docType`'s
+own body sets `MovementType` via `MInOut.getMovementType` — **the same rule §E4 just ported as
+`movementTypeOf`**, so that atom is already half-built.
