@@ -1,0 +1,42 @@
+§REPLICA_CLIENT_LOADED v1
+§SNAP_SIGN_LOADED v1 (ECDSA P-256, pinned controller key)
+§PCLOSE_LOADED v1 (period-close fold = signed checkpoint = balance b/f)
+═══ W-MULTIHOST-SYNC 2026-09-03T03:26:19.144Z — 3 declared hosts + 1 real dead host (arm 4) ═══
+§HOST here base=http://127.0.0.1:46351
+§HOST GH base=https://raw.githubusercontent.com/red1oon/BIMCompiler/mock/relay-snapshot
+§HOST OCI base=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-dev/o/sandbox/erp
+§HOST OCI-live base=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/sandbox/erp
+
+§PRE_STATE — each host vs the controller copy (build/erp/relay_snapshot.json)
+§PRE_STATE host=here http=200 md5=bd1e92ba len=5 tip=9f7f42200db4 last-modified=- vs_controller=SAME
+§PRE_STATE host=GH http=200 md5=bd1e92ba len=5 tip=9f7f42200db4 last-modified=- vs_controller=SAME
+§PRE_STATE host=OCI http=200 md5=bd1e92ba len=5 tip=9f7f42200db4 last-modified=Sun, 07 Jun 2026 02:10:38 GMT vs_controller=SAME
+§PRE_STATE host=OCI-live http=404 md5=- len=- tip=- last-modified=- vs_controller=DOWN
+§PRE_STATE hosts_up=3/3 dead_host=OCI-live http=404
+
+§CONVERGE (stage=converge: controller copy, no network write) — expected tip=9f7f42200db4 len=5
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=5 tip=9f7f42200db4…
+§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
+§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=5
+§CONVERGE host=here len=5 tip=9f7f42200db4 tip_eq=true sigValid=true books={} ms=41
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=5 tip=9f7f42200db4…
+§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
+§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=5
+§CONVERGE host=GH len=5 tip=9f7f42200db4 tip_eq=true sigValid=true books={} ms=28
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+§KRN_CHAIN sealed=5 tip=9f7f42200db4…
+§KRN_CHAIN verify OK len=5 tip=9f7f42200db4…
+§REPLICA replay len=5 computedTip=9f7f42200db4 match=true sigValid=true
+§KERNEL_OP replay type=ALL count=5
+§CONVERGE host=OCI len=5 tip=9f7f42200db4 tip_eq=true sigValid=true books={} ms=68
+   🟢 every host replays to the signed tip with len=5 and sigValid=true — 3/3
+   🟢 all reachable hosts agree on one tip (host is disposable) — 3 hosts
+   🟢 books fold identically on every host and equal the hand-computed oracle — cross-host maxDiff=0c vs-oracle maxDiff=0c (no POST op yet → books VACUOUS, tip-only)
+§ARM CONVERGE status=PASS hosts_converged=3 hosts=3 len=5 tip=9f7f42200db4 books_maxdiff_c=0
+
+§STAGE converge only — no record written, no publish; arms 1,3-6 NOT run
+🟢 W-MULTIHOST-SYNC-STAGE PASS hosts=3/3 ms=1217
