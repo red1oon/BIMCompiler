@@ -1261,3 +1261,75 @@ exposed) against the real seed:
   the presence of a doctype); an unknown id and an absent doctype both fall back rather than fabricate.
 - The old arm is left in place but **annotated with its real scope** and pointed at this witness, so a green
   there can no longer be read as "IsDocNoControlled is witnessed".
+
+## §P8-RESULT 2026-09-03 — the two §P3-RESULT follow-ons CLOSED. W-PARITY-REFTABLE 12/12 PASS
+bim-ootb `feat/erp-parity-mandatory` (`09d92132` + `7f34e3ac`). §P3-RESULT "Still open" items **1 and 2 →
+✅ DONE (witness)**.
+
+**`<column minus _id>` is iDempiere's TableDIR rule and it was being applied to every FK.** For DisplayType
+**18 (Table)** and **30 (Search)** the target table, key column, WhereClause and OrderByClause are DECLARED in
+`AD_Ref_Table` (`MLookupFactory.getLookup_Table`). The witness reproduces the population independently of
+§P3-LIMITS: of **115** FK field-instances on the five document tabs, **61** resolve under the convention,
+**34 are fixable from `AD_Ref_Table`** (**18 distinct columns**) and **20 have no target at all** (8 distinct
+columns — `C_Activity_ID`, `C_CashPlanLine_ID`, `C_ConversionType_ID`, `C_CostCenter_ID`, `C_Department_ID`,
+`C_OrderSource_ID`, `C_POSTenderType_ID`, `C_PaymentProcessor_ID` — **listed as NOT RESOLVED, never counted as
+passes**). The 18: `SalesRep_ID`/`Bill_User_ID`/`DropShip_User_ID`/`ReturnUser_ID`→`ad_user` ·
+`Bill_BPartner_ID`/`DropShip_BPartner_ID`/`ReturnBPartner_ID`/`C_Employee_ID`→`c_bpartner` ·
+`Bill_Location_ID`/`DropShip_Location_ID`/`ReturnLocation_ID`→`c_bpartner_location` ·
+`C_DocTypeTarget_ID`→`c_doctype` · `Link_Order_ID`/`QuotationOrder_ID`→`c_order` ·
+`RelatedInvoice_ID`→`c_invoice` · `User1_ID`/`User2_ID`→`c_elementvalue` · `AD_OrgTrx_ID`→`ad_org`.
+
+**A second narrowing nobody had noticed:** `AD_Ref_Table.WhereClause` is appended to the lookup query
+*independently of `AD_Val_Rule`*. Measured live — `c_bpartner` **113 → 20** under ref 252
+`C_BPartner.IsEmployee='Y'` (a column with **no** val rule at all, so it isolates this path); 12 of 24 live
+`§REFTABLE` lines report `refWhere=applied`. Substituted through the SAME engine as the val rule
+(`AdValRule.substitute` — one owner, no second substituter), and the `admitted` set is built from the SAME
+combined clause, so offered == accepted by construction.
+
+**The val-ruled List (`trxtype`, 330, ref 17, rule 200012):** **6 active `AD_Ref_List` options → 4**, `A`/`F`
+gone. The witness's oracle applies the rule's clause to `AD_Ref_List` **directly**, not through the engine
+under test. `validateField` reads the same filtered map (`'A'` → `list:not-an-option`).
+
+### §P8-RESULT-DEFECT — a shipped bug the witness caught, which looked exactly like a test bug
+**`ad_evaluator.resolveVar` matched record keys EXACTLY**, so `@TenderType@` was looked up as
+`record['TenderType']` — but **every record this stack builds is lower-cased** (`gatherVals` keys rows by
+`f.col`, which `foldCrudSpec` lower-cases). So **a DisplayLogic / ReadOnlyLogic / MandatoryLogic naming any
+CamelCase column silently evaluated against `""`, whatever the user had typed.** Measured on the shipped tree:
+`C_Payment.TrxType`'s `@TenderType@=C` stayed false for every value of TenderType — the field could never
+appear. `effectiveFlags(f,{tendertype:'C'}) → visible:false` vs `{TenderType:'C'} → visible:true`.
+**The fix is this lane's own already-written convention**, not a new one: §P3-SPEC P3.5 states *"AD tokens are
+CamelCase and our records are lowercase, so that case mapping is OURS — it lives in the wiring"*; the val-rule
+`@token@` feed has resolved case-insensitively since #1626 and the AD logic evaluator was the one place still
+contradicting it. Exact match still wins first, so a record carrying the AD casing is unaffected.
+*This is the PRIMAL LAW §4 pattern in reverse — the arm that went red was the truth, and the temptation was to
+"fix the test".* The witness now asserts BOTH directions: the field is validated in the state its own
+DisplayLogic (read from the seed) makes visible, and is skipped while that logic hides it.
+
+### §P8-RESULT-LIMITS — named, not papered over
+- **`bill_bpartner_id` and `m_pricelist_id` still render as raw number boxes on `c_order`.** Their target IS
+  now resolved (`refsource`/`refkey`/`refwhere` are all layered onto the spec by P8.3) but the CURATED entry
+  pins `"type": "number"`, and `type` is one of the attributes §IMPL F3 pins deliberately — the O2C witness
+  types them as numbers. Changing it is a crud_ops.json + O2C-contract decision, not a lookup fix.
+- **The 8 columns with no `AD_Ref_Table` row** stay unresolved and are reported as such every run.
+- `AD_Ref_Table.OrderByClause` is carried on the spec (`reforder`) but the picker still orders by pk.
+
+### §P8-EVIDENCE — the full regression on this tree, logs read
+**Six live parity witnesses, 107 assertions, 0 FAIL, 0 INCONCLUSIVE:** W-PARITY-REFTABLE **12/12** ·
+W-PARITY-FIELDSET **30/30** (0 OPEN) · W-PARITY-REFLIST **14/14** · W-PARITY-VALRULE **23/23** ·
+W-PARITY-MANDATORY-CREATE **18/18** · W-DOCNO-BRANCH **10/10**.
+Headless: W-AD-FOLDED-CRUD **29/29**, W-AD-DISPLAYLOGIC-LIVE PASS.
+**W-ERP-TWIN PASS** — `pairs=64 identical=39 unreviewed=0 undeclared_or_broken=0`, unchanged.
+**O2C `WITNESS_ROOT=/tmp/wt-erp-mand`: stages 1/2/3/5/6/7 PASS**; stage 4 FAIL / stage 8 ABSENT are the known
+pre-existing structural gaps, untouched.
+
+### §STATUS-2026-09-03
+- **§P7 §PARITY-MANDATORY-CREATE → ✅ DONE (witness)** — the file's only ⛔ OPEN item, closed by four faithful
+  GridField ports. **§P4-OPEN items 5 and 7 → ✅ DONE (witness)** (§P10, §P9). **§P3-RESULT open items 1 and 2
+  → ✅ DONE (witness)** (§P8).
+- **Still open, unchanged and untouched by this session:** §P4-OPEN 1 (action BODIES for 20 of 23 tables),
+  2 (period-on-Complete, behind the ⛔ question below), 3 (`legalDocActions` is dead — delete or repoint),
+  4 (the docstatus-CELL edit path is not FSM-gated), 8 (second-layer ReActivate check); §P3-RESULT 3
+  (`AD_Val_Rule_Lookup_ID`) and 4 (the 5 uninterpretable rules); §IMPL-RESULT-F7's `ad_modelval` three-way
+  drift; and the **undeclared `post_resolver` / `doc_poster` twin pairs** §P9-RESULT names.
+- ⛔ **BLOCKED, unchanged and NOT guessed:** should Complete HARD-REJECT a document whose `DateAcct` falls in
+  a closed period (`MPeriod.testPeriodOpen`), or log-and-allow? §P4-OPEN item 2 stays unbuilt until answered.
