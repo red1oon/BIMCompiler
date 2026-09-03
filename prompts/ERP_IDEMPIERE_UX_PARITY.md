@@ -908,3 +908,238 @@ for a live asset; match the minified shape).
 **No ⛔ BLOCKED items.** Next for this gate, if anything: nothing in `unreviewed`; the manifest is the contract, the
 gate fails on drift, `test_*.js` and transitive requires are in scope. The one standing recommendation is the
 `deploy/dev` deletion above.
+
+## §P7 — SPEC: close `§PARITY-MANDATORY-CREATE` (written 2026-09-03, BEFORE code)
+Parent: §IMPL-RESULT's one ⛔ OPEN item — *"inline create validates against its post-render baseline, so an
+UNTOUCHED empty mandatory field is never required-checked."* Worktree `/tmp/wt-erp-mand`, branch
+`feat/erp-parity-mandatory`, base bim-ootb `8b50598d` (= origin/main, #1613/#1626/#1632 all in). Every number
+below was measured from `erp/ad_seed.db` through the app's own fold THIS session; every Java cite was read from
+`/home/red1/idempiere-dev-setup/idempiere` @ `87968daa` this session.
+
+### §P7-EXTRACT — what actually fills an iDempiere New row before the mandatory check, read from source
+- **E1 · `GridTab.dataNew` fires the callout for EVERY field, unconditionally** — `GridTab.java:1179-1181`
+  (`for (int i=0; i<getFieldCount(); i++) processCallout(getField(i));`). `processCallout` has **no**
+  null/empty-value guard (`GridTab.java:2988-3010`); individual callouts self-guard.
+- **E2 · every column's New value comes from `GridField.getDefault()`** — `GridTable.java:2129-2143`
+  (`Object value = field.getDefault(); field.setValue(...); field.validateValueNoDirect(); rowData[i]=field.getValue();`).
+  Priority order `"123457"` (`GridField.java:98`): special-case → `@SQL=` → DefaultValue expression →
+  user preference → system preference → **data-type default**.
+- **E3 · the data-type stage, `GridField.defaultFromDatatype():1022-1051`, and its ORDER is load-bearing:**
+  Button non-`_ID` → `"N"` (`:1027-1030`) · **YesNo → `"N"`** (`:1033-1036`) · **`_ID` → `null`**
+  (`:1038-1041`) · **numeric → `"0"`** (`:1044-1047`). The `_ID` test precedes the numeric test, so **no
+  `*_ID` column ever gets 0 from this stage** — including `M_AttributeSetInstance_ID`.
+- **E4 · `DisplayType.isNumeric` = {11 Integer, 12 Amount, 22 Number, 29 Quantity, **37 CostPrice**}** —
+  `DisplayType.java:329-333`, `SystemIDs.java:132 REFERENCE_DATATYPE_COSTPRICE = 37`.
+- **E5 · THE ONE THAT UNBLOCKS THIS ITEM — `GridField.isMandatory(true):377-385` hard-exempts five column
+  shapes, in a window, regardless of `IsMandatory='Y'`:**
+  ```java
+  if (m_gridTab != null && ( (m_vo.IsKey && ColumnName.endsWith("_ID"))
+     || ColumnName.startsWith("Created") || ColumnName.startsWith("Updated")
+     || ColumnName.equals("Value") || ColumnName.equals("DocumentNo")
+     || ColumnName.equals("M_AttributeSetInstance_ID")   //  0 is valid
+     )) return false;
+  ```
+  **`DocumentNo` and `M_AttributeSetInstance_ID` are never mandatory on a window** — two of the four blockers
+  the prior session hit are removed by a FAITHFUL PORT, not by weakening anything. `isMandatory` also
+  consults MandatoryLogic FIRST (`:355-369`, one-way override), skips virtual columns (`:372`), and ends at
+  `isDisplayed(checkContext)` (`:388`) — a hidden field is never mandatory.
+- **E6 · `GridTable.getMandatory():1973-2001` skips NOTHING of its own** — no read-only filter exists
+  (`grep isColumnReadOnly` in `GridTable.java`/`GridTab.java` = 0 hits). Emptiness is `rowData[i]==null ||
+  toString().length()==0` (`:1985`), so an `Integer 0` PASSES. *Our validator is stricter-in-our-favour here:
+  `validateField` returns early on `eff.readonly`, so a read-only mandatory empty is not reported. That is a
+  NARROWER check than iDempiere's — it can never produce a false reject — and it is named, not fixed here.*
+
+### §P7-MEASURED — the real blocker population, folded through the app's own `foldCrudSpec`
+`node` over `erp/ad_seed.db` + `crud_overlay.js`, `forVerb='create'`, counting fields where
+`effectiveFlags(visible && required)` and the New-time value is empty:
+
+| tab | table | folded | visible+mandatory | exempt (E5) | filled by AD default | filled by data-type default (E3) | **REMAINING, editable** |
+|---|---|---|---|---|---|---|---|
+| 186 | `c_order` | 56 | 29 | 1 | 15 | 5 | **7** |
+| 257 | `m_inout` | 53 | 18 | 1 | 10 | 2 | **4** |
+| 263 | `c_invoice` | 47 | 22 | 1 | 9 | 6 | **5** |
+| 330 | `c_payment` | 78 | 22 | 1 | 12 | 6 | **3** |
+| 349 | `c_allocationline` | 13 | 6 | 0 | 0 | 3 | **0** |
+| 187 | `c_orderline` | 38 | 22 | 1 | 2 | 8 (+3 once E4 lands) | **6 → 3** |
+| 258 | `m_inoutline` | 28 | 8 | 1 | 2 | 1 | **1** |
+
+The remaining editable blockers, named in full (this is the whole surface the change turns ON):
+- `c_order` — `c_doctypetarget_id, c_bpartner_id, c_bpartner_location_id, m_warehouse_id, m_pricelist_id, salesrep_id, c_paymentterm_id`. All but `c_bpartner_id` are derived by the faithful `MOrder.beforeSave` ports (§IMPL P1.5); `c_bpartner_id` is the USER's field and MUST reject — that is the falsifier.
+- `m_inout` — `c_doctype_id, c_bpartner_id, c_bpartner_location_id, m_warehouse_id`. **No hook derives any of them** (`installMInOutSaveHooks` ports `MInOut.beforeSave:1304-1370` = movementType/deliveryRule/salesRep only). In iDempiere a manual Material Receipt with none of them is `SAVE_MANDATORY`. See §P7-WITNESS-FIX.
+- `c_invoice` — `c_doctypetarget_id, c_bpartner_id, c_bpartner_location_id, m_pricelist_id, c_paymentterm_id`.
+- `c_payment` — `c_doctype_id, c_bpartner_id, c_currency_id`.
+- `c_orderline` — `c_bpartner_location_id, c_uom_id, priceentered, priceactual, pricelist, c_tax_id`; **`priceentered/priceactual/pricelist` are DisplayType 37 and become `0` once E4 lands**, leaving 3, and the O2C witness types all three.
+- `m_inoutline` — `c_uom_id` (AD default `@#C_UOM_ID@`, a system preference — §P7-NOT-BUILT item 2).
+
+### §P7-SPEC — four faithful ports, then the switch
+- **P7.1 · `foldCrudSpec`: port `GridField.isMandatory():377-385`'s exemptions.** A folded field whose
+  `columnName` is `DocumentNo` / `Value` / `M_AttributeSetInstance_ID` / starts with `Created` / starts with
+  `Updated`, or is a key `*_ID`, folds `required:false` regardless of `IsMandatory='Y'`. PURE. Logged once per
+  fold as `§GRIDFIELD-EXEMPT`. **Curated pins keep their curated `required`** (§IMPL F3 — `documentno` is the
+  only overlap, and `_seedDocNoPreview` fills it on New anyway, so the O2C contract is untouched).
+- **P7.2 · `foldCrudSpec`: port `GridField.defaultFromDatatype():1022-1051`,** in its source order, as the
+  LAST default stage — only when no AD default resolved. PURE, no db.
+- **P7.3 · `mapRefDisplayType`: DisplayType 37 (CostPrice) → `'number'`** (E4). It falls through to `string`
+  today, which is why three mandatory price columns on a line read as un-defaulted text.
+- **P7.4 · `renderInline`: a CREATE validates the WHOLE new row.** `saveForm(verb, e, verb==='create' ? null :
+  (_inlineBaseline || orig), id)` — `validateField`'s own documented create contract (`crud_core.js:126`,
+  `orig===undefined` → every field checked). The modal `openForm` path ALREADY passes `null` on create; this
+  makes the inline path agree. **§IMPL P1.4's ordering is NOT touched** — `saveForm` still runs
+  `fireBeforeSaveHooks → merge derived → validate → buildOp`, because iDempiere's own check runs over a row
+  defaults+callouts already filled (E1/E2). **The validator is NOT weakened anywhere** (§P5).
+
+### §P7-WITNESS — W-PARITY-MANDATORY-CREATE (claim + falsifiers), `erp/tests/poc_parity_mandatory_live.js`
+Real DOM, real clicks, modelled on `poc_parity_fieldset_live.js`. Every expected column set is read from
+`window.__idmpDb` at run time — none typed into the test.
+- **A · the defect is GONE.** Tab 143 (c_order) New, type ONLY `documentno` → Save → **REJECT**, and
+  `§PARITY-MANDATORY … missing=[…]` names `c_bpartner_id`. Pre-fix the same click SAVED.
+- **B · the §IMPL-RESULT falsifier still holds** — the curated 8 typed → `§CRUD-PERSIST`, `missing=[]`.
+- **C · exemption arm (E5).** On tab 187 (c_orderline) New, `m_attributesetinstance_id` folds `required=false`
+  while `AD_Column.IsMandatory='Y'` read from the seed at run time — asserted as that exact contrast, so the
+  arm cannot pass vacuously.
+- **D · data-type arm (E3/E4).** `freightamt` (12) and `pricelist` (37) render `0`, not empty, on a New form;
+  `isdiscountprinted` (20) reads `N`. Counts read from the seed.
+- **FALSIFIER-1** an AD-mandatory column with no default and no derivation (`c_bpartner_id`) is REJECTED
+  `required` — the validator is intact.
+- **FALSIFIER-2** the *exemption* is load-bearing in the other direction: re-marking `documentno` mandatory in
+  the fold makes the same untouched New reject — asserted through the pure engine, so it fires if P7.1 is ever
+  widened to a column iDempiere does NOT exempt.
+- **VACUITY** any arm whose judged population is empty prints `INCONCLUSIVE`, never PASS.
+
+### §P7-WITNESS-FIX — `witness_e2e_business_cycle.js` stage 7 froze an INCORRECT contract
+Stage 7 authors a Material Receipt with **only** `documentno` + `movementdate` and calls it PASS — while its
+own verdict line asserts *"Stage7: Material Receipt New form exposes warehouse + vendor (**both mandatory on a
+real M_InOut**)"*. It is internally contradictory: it asserts the columns are mandatory, then saves without
+them, and only passes because the create path never checked. Under §P7 that save is `SAVE_MANDATORY`, exactly
+as iDempiere's `GridTable.dataSave:1647-1653` would. **Fix = move the witness to the correct contract** (fill
+`c_doctype_id`, `c_bpartner_id`, `c_bpartner_location_id`, `m_warehouse_id` — what a real user must type),
+never weaken the validator. Same class as §TWIN-CLASSIFIED-WITNESS-FIXES 1-4. Stage 7 stays PASS, on a
+contract that is now true.
+
+### §P7-NOT-BUILT — measured, named, deliberately out of this change
+1. **`GridField.defaultFromExpression():875-913`** — the `@token@`/`@SysDate@` DefaultValue stage, `,;`-tokenized,
+   resolved against the WINDOW context (parent row + Env globals), unresolved token → skip to the next. It is what
+   fills `c_orderline.c_bpartner_location_id` (`@C_BPartner_Location_ID@`), `dateordered` (`@DateOrdered@`),
+   `m_warehouse_id` (`@M_Warehouse_ID@`), `c_currency_id` (`@C_Currency_ID@`) from the parent. `foldCrudSpec:743-749`
+   today resolves exactly three hard-coded `@#…@` tokens and DROPS every other expression. **Not needed for §P7**
+   (the O2C witness types those columns), so it is not built here — but it is the next real parity step.
+2. **`@#C_UOM_ID@`/`P|` preference stages (`GridField.defaultFromPreference():987-1016`)** — `ad_preference` is in
+   the seed; nothing reads it. `m_inoutline.c_uom_id` is the one blocker this would close.
+3. **`GridTab.dataNew:1179-1181`'s New-time callout fan** — we fire a callout only on `change`
+   (`crud_overlay.js:439-443`, `:864`), never once per field at New. Adding it would let `CalloutOrder.product`
+   fill `C_UOM_ID`/`C_Tax_ID`/ASI as the Java does (`CalloutOrder.java:757-762,795-802,846`); our
+   `productHandler` (`ad_callout.js:64-76`) currently derives prices only. Bounded, named, not built.
+4. **read-only mandatory columns** — E6: iDempiere DOES require them; we skip them (`validateField:127-130`).
+   Ours is the narrower check, so it cannot false-reject. Named.
+
+## §P8 — SPEC: AD_Ref_Table / Search target resolution + the val-ruled List (§P3-RESULT follow-ons 1 & 2)
+**Claim (W-PARITY-REFTABLE):** an FK whose target table is NOT `<column minus _id>` resolves its table, key
+column and AD where-clause from `AD_Ref_Table` — as `MLookupFactory.getLookup_Table` does — instead of
+degrading to the raw value; and a val-ruled **List** column filters its `AD_Ref_List` options by the rule,
+as `MLookupFactory.getLookup_List` does.
+
+### §P8-MEASURED (from `erp/ad_seed.db`, this session — independent of §P3-LIMITS' count)
+`AD_Field ⋈ AD_Column` over tabs 186/257/263/330/349, `IsActive='Y' AND IsDisplayed='Y'`: **264 displayed
+fields, 115 of them FK (DisplayType 18/19/30).** Of those 115 field-instances: **61 resolve today** under the
+`<col minus _id>` convention, **34 are fixable from `ad_ref_table`**, **20 are not** (no `AD_Ref_Table` row and
+the conventional table is absent from this seed). 34 fixable instances = **18 DISTINCT columns**:
+
+| column | → real target | column | → real target |
+|---|---|---|---|
+| `AD_OrgTrx_ID` | `ad_org` | `DropShip_User_ID` | `ad_user` |
+| `Bill_BPartner_ID` | `c_bpartner` | `Link_Order_ID` | `c_order` |
+| `Bill_Location_ID` | `c_bpartner_location` | `QuotationOrder_ID` | `c_order` |
+| `Bill_User_ID` | `ad_user` | `RelatedInvoice_ID` | `c_invoice` |
+| `C_DocTypeTarget_ID` | `c_doctype` | `ReturnBPartner_ID` | `c_bpartner` |
+| `C_Employee_ID` | `c_bpartner` | `ReturnLocation_ID` | `c_bpartner_location` |
+| `DropShip_BPartner_ID` | `c_bpartner` | `ReturnUser_ID` | `ad_user` |
+| `DropShip_Location_ID` | `c_bpartner_location` | `SalesRep_ID` | `ad_user` |
+| | | `User1_ID` / `User2_ID` | `c_elementvalue` |
+
+**13 of the 61 val-ruled field-instances become resolvable** (186 `Bill_BPartner_ID`/`Bill_Location_ID`/
+`Bill_User_ID`/`C_DocTypeTarget_ID`/`DropShip_*`/`SalesRep_ID`; 257 `DropShip_Location_ID`/`DropShip_User_ID`/
+`ReturnLocation_ID`/`ReturnUser_ID`; 263 `C_DocTypeTarget_ID`) — their val rules have been dead all along
+because the picker never queried a real table. **4 stay unresolvable** (`C_Activity_ID`, `C_CashPlanLine_ID`
+× 2 tabs) and **8 distinct columns** have no `AD_Ref_Table` row at all (`C_Activity_ID`, `C_CashPlanLine_ID`,
+`C_ConversionType_ID`, `C_CostCenter_ID`, `C_Department_ID`, `C_OrderSource_ID`, `C_POSTenderType_ID`,
+`C_PaymentProcessor_ID`) — reported, never counted as a pass.
+
+**`AD_Ref_Table` also carries a WhereClause iDempiere ANDs into the lookup** — measured on this seed, e.g.
+ref 190 (`SalesRep_ID` on 263) `EXISTS (SELECT * FROM C_BPartner bp WHERE AD_User.C_BPartner_ID=bp.C_BPartner_ID
+AND bp.IsSalesRep='Y')`; ref 138 `C_BPartner.IsSummary='N' AND C_BPartner.IsActive='Y'`; ref 130
+`AD_Org.IsSummary='N' AND AD_Org_ID <> 0`; ref 252 `C_BPartner.IsEmployee='Y'`; refs 134/137 carry `@AD_Client_ID@`.
+That clause is a SECOND narrowing, independent of `AD_Val_Rule`.
+
+**`trxtype` (330, ref 17, rule 200012 `AD_Ref_List.Value NOT IN ('A','F')`)** — the one val-ruled List on the
+five tabs. `AD_Ref_List(215)` has **6** active rows; the rule admits **4**. It BITES.
+
+### §P8-SPEC
+- **P8.1** `ad_parser.resolveRefTable(db, refValueId)` — new, mirroring `MLookupFactory.getLookup_Table`:
+  `ad_ref_table ⋈ AD_Table ⋈ AD_Column(ad_key) ⋈ AD_Column(ad_display)` → `{tableName, keyCol, displayCol,
+  isValueDisplayed, whereClause, orderByClause}`; null when there is no row. Logged `§AD_PARSER resolveRefTable`.
+- **P8.2** `foldCrudSpec`: when `type==='fk'` and `opts.refTable(referenceValueId)` returns a target, use its
+  `tableName`/`keyCol` for `spec.ref`/`spec.refkey` and carry `spec.refwhere`/`spec.reforder`; otherwise KEEP
+  the `<col minus _id>` convention verbatim (that IS iDempiere's TableDir rule, `getLookup_TableDir`). The fold
+  stays PURE — the host injects the resolver, exactly as §P2.7 did for `refList`.
+- **P8.3** `mergeCuratedWithFold`: `ref`/`refkey`/`refwhere`/`reforder` join the LAYERED key list — **but only
+  when the curated field carries no `ref` of its own** for `ref` itself, so §IMPL F3's pinned attributes are
+  respected; `refkey`/`refwhere`/`reforder` are additive (no curated field has ever carried one). This is the
+  §P3-RESULT-DEFECT-2 lesson applied in advance: `bill_bpartner_id` IS a curated pin on `c_order` AND one of
+  the 18, so without this the fix would miss the very column §MEASURED lists.
+- **P8.4** `crud_overlay.populateRefs`: use `f.refkey || f.ref+'_id'` as the pk, and AND `f.refwhere`
+  (substituted through the SAME `AdValRule.substitute` — one owner, no second substituter) with the val-rule
+  clause. An unresolved token in the AD where-clause follows §P3-EXTRACT E2/E3 (clause empties → no rows);
+  a clause that throws degrades to unfiltered and says so. `§REFTABLE col= refval= table= key= where= rows=`.
+- **P8.5** the val-ruled List: `populateRefs`' list arm filters `f.optionList` by the rule when
+  `f.valruleid` is set and the clause is a plain `AD_Ref_List.<col> <op> …` the engine can evaluate against the
+  option rows. Same engine (`ad_valrule.js`), no second evaluator; a clause it cannot apply degrades and logs.
+- **P8.6** `validateField` list arm reads the FILTERED map, so offered == accepted by construction (the §P3.6
+  invariant, extended to lists).
+
+### §P8-WITNESS — W-PARITY-REFTABLE, `erp/tests/poc_parity_reftable_live.js`
+- **A** tab 186 `salesrep_id` (ref 18 → 110 `AD_User`): the picker's option count == `ad_user` rows admitted by
+  rule 200025 ∩ the `AD_Ref_Table` clause, read from the seed at run time; pre-fix it offered **0** real rows.
+- **B** tab 263 `salesrep_id` (ref 30 → 190): the `AD_Ref_Table.WhereClause` narrows `ad_user` to `IsSalesRep='Y'`
+  partners — asserted `before > after` with both numbers read from the seed.
+- **C** tab 186 `bill_bpartner_id` — the CURATED pin, proving P8.3 (this is the §P3-RESULT-DEFECT-2 class).
+- **D** tab 330 `trxtype`: **6 → 4** options, `A`/`F` absent, `validateField(f,'A')` → `list:not-an-option`.
+- **VACUITY** the 8 columns with no `AD_Ref_Table` row are listed as NOT-RESOLVED, never as passes.
+
+## §P9 — SPEC: `GL_Category_ID` on derived postings (§P4-OPEN item 7)
+**Claim (W-POST-GLCATEGORY):** every derived posting line carries the `GL_Category_ID` iDempiere would stamp,
+matched against the seed's OWN `fact_acct.gl_category_id` for the same document — an oracle, not a re-assertion.
+
+### §P9-EXTRACT (source, read this session)
+- `Doc.setDocumentType()` `Doc.java:991-1090` resolves it in three stages: **(a)** by `C_DocType_ID`
+  (`:996-1009`, `SELECT DocBaseType, GL_Category_ID FROM C_DocType WHERE C_DocType_ID=?`) → **(b)** if still 0,
+  by `(AD_Client_ID, DocBaseType)` (`:1030-1045`, no ORDER BY) → **(c)** if still 0, `SELECT GL_Category_ID FROM
+  GL_Category WHERE AD_Client_ID=? ORDER BY IsDefault DESC` (`:1060-1071`).
+- **`Doc.getGL_Category_ID():1785-1795` prefers the document's OWN `GL_Category_ID` column** when it has one
+  (the GL_Journal case) and only then falls back to the resolved value.
+- `FactLine.setDocumentInfo():364-404` — `setGL_Category_ID(m_doc.getGL_Category_ID())` at `:404`: a
+  **document-level constant stamped on every fact line**, never per-line.
+- **No category → `0`, a SEVERE log, and the posting still writes** (`Doc.java:411` `int m_GL_Category_ID = 0`,
+  `:1085-1086`). It is a 0-sentinel, never NULL. Seed confirms: 52 `c_doctype` rows, **14 of them `0`**.
+- It is a fact-line **suppression** key, not a merge key — `Doc_AllocationHdr.java:645` inside
+  `equalFactLineIDs`, used by the `IsPostIfClearingEqual` block (`:525-548`) to decide whether to DELETE.
+### §P9-SPEC
+- **P9.1** `scripts/doc_poster.js`: `glCategoryFor(db, tableName, recordId)` — the three-stage chain above plus
+  the own-column preference, `>0` guard (the 0-sentinel), returning `{id, stage}`. One new read; `post_resolver.js`
+  is untouched (it is per-token and has no document context — verified).
+- **P9.2** `finish()` (`doc_poster.js:527-530`) stamps `gl_category_id` on every emitted line — additive key, the
+  existing `{account_id, value, name, amtacctdr, amtacctcr}` shape and every cents assertion unchanged.
+- **P9.3** ~28 existing witnesses consume `derivePostings`; the key is additive, so all must stay green — proof
+  by re-run, not by assertion.
+- **NOTE the third copy:** `erp/post_resolver.js` (shipped) and `scripts/post_resolver.js` have ALREADY drifted
+  (9 tokens), and `erp/doc_poster.js` is 125 lines vs `scripts/doc_poster.js` 574 — neither pair is declared in
+  `scripts/erp_twins.json`. Named here; declaring them is the twin lane's call, not this item's.
+
+## §P10 — SPEC: the `IsDocNoControlled` witness is scope-blind (§P4-OPEN item 5)
+§P4-CANDIDATES scored the implementation **faithful** (`crud_overlay.js:1467 _docTypeSeqId` ≡
+`MSequence.getDocumentNo:683-686`) but the only witness, W-DOCNO (`scripts/poc_audit_changelog.js:102-130`),
+asserts **only** the table-level path (`§DOCNO table=c_order seq=DocumentNo_c_order`). The doctype-controlled
+branch — **34 seeded doctypes `='Y'`, all 34 with a `docnosequence_id` resolving to an ACTIVE `ad_sequence`,
+and 18 `='N'` with none** — is never judged. **Claim (W-DOCNO, extended):** for a real `='Y'` doctype the
+allocator returns that doctype's OWN sequence, and for a real `='N'` doctype it falls back to
+`DocumentNo_<TableName>` — both read from the seed at run time, plus a falsifier that fires if the branch is
+inverted. Fix is a WITNESS fix; no shipped code changes.

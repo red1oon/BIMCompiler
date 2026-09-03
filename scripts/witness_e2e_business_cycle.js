@@ -146,7 +146,18 @@ async function fillField(page, col, value, kind) {
   if (!visible) return 'hidden';   // real AD DisplayLogic (§AD-LOGIC-LIVE) hid this field given current values
   var tag = await el.evaluate(function (e) { return e.tagName; });
   if (tag === 'SELECT') await page.selectOption(sel, String(value));
-  else await page.fill(sel, String(value));
+  else {
+    await page.fill(sel, String(value));
+    // §P7 (ERP_IDEMPIERE_UX_PARITY.md §P7-WITNESS-FIX) — a real user leaves the box before touching the next
+    //   field, and it is that BLUR that fires `change`; Playwright's fill() alone emits `input` only, and the
+    //   inline editor's dependent-lookup refresh (crud_overlay renderInline's `change` listener →
+    //   populateRefs{valRuleOnly}) is bound to `change`, exactly as iDempiere refreshes a dependent lookup from
+    //   GridField.setValue → updateContext. Without the blur a text-input FK (e.g. the CURATED m_inout
+    //   C_BPartner_ID, which folds to an INPUT not a SELECT) never re-narrows its @C_BPartner_ID@ dependents:
+    //   measured live, C_BPartner_Location_ID stayed `verdict=unresolved-tokens offered=0`, and with the blur it
+    //   is `after=1 offered=1 ctx={"C_BPartner_ID":"120"}`. Harness fidelity, not a product change.
+    await page.locator(sel).first().blur().catch(function () {});
+  }
   return true;
 }
 async function clickToolbarBtn(page, titlePrefix) {
@@ -492,6 +503,12 @@ function deepUrl(port, params) {
       await page.waitForSelector('#idmp-inline-mount [data-col="m_product_id"]', { timeout: 10000 });
       await fillField(page, 'c_order_id', String(newPoId));
       await fillField(page, 'c_bpartner_id', '120');
+      // §P7 (ERP_IDEMPIERE_UX_PARITY.md §P7-WITNESS-FIX): C_BPartner_Location_ID is AD-mandatory on a line and
+      //   is what Stage 1's SO line already types — this PO line silently omitted it and only saved because the
+      //   inline CREATE path never mandatory-checked an untouched field. iDempiere rejects that with
+      //   FillMandatory (GridTable.dataSave:1647-1653 → getMandatory:1973-2001). 114 = 'Small Village', the ONE
+      //   active IsShipTo location of vendor 120, i.e. exactly what AD_Val_Rule 167 admits once the BP is set.
+      await fillField(page, 'c_bpartner_location_id', '114');
       await fillField(page, 'dateordered', today);
       await fillField(page, 'line', '10');
       await fillField(page, 'm_warehouse_id', '103');
@@ -549,6 +566,24 @@ function deepUrl(port, params) {
         'fields=' + rcptFields.join(',') + ' (m_warehouse_id present=' + hasWarehouse + ', c_bpartner_id present=' + hasPartner + ')');
       await fillField(page, 'documentno', uniqRcptDoc);
       await fillField(page, 'movementdate', today);
+      // §P7 (ERP_IDEMPIERE_UX_PARITY.md §P7-WITNESS-FIX) — this stage USED to save a Material Receipt carrying
+      //   neither a vendor nor a warehouse, three lines after asserting in its own verdict that both are
+      //   "mandatory on a real M_InOut". It only passed because the inline CREATE path validated against its
+      //   post-render baseline, so an untouched empty mandatory field was never required-checked; iDempiere
+      //   answers that save with FillMandatory. The stage now types what a real user must, and every value is
+      //   what the dictionary's OWN val rule admits on window 184 / tab 296 (read from ad_seed.db):
+      //     c_doctype_id 122 'MM Receipt'  — AD_Val_Rule 52054 `DocBaseType IN ('MMR') AND IsSOTrx='N' AND
+      //                                       AD_Client_ID=@#AD_Client_ID@` admits {122, 147}
+      //     c_bpartner_id 120 'Seed Farm Inc.' — the same vendor Stage 6's PO uses (AD_Val_Rule 230)
+      //     c_bpartner_location_id 114 'Small Village' — AD_Val_Rule 167 `C_BPartner_ID=@C_BPartner_ID@ AND
+      //                                       IsShipTo='Y' AND IsActive='Y'`; BP 120 has exactly this one
+      //     m_warehouse_id 103 'HQ Warehouse' — the warehouse Stages 1/6 already use
+      //   Order matters: the BP must be set before the location, because 167 is a DEPENDENT lookup (@C_BPartner_ID@)
+      //   and the picker re-narrows on the BP's change event (§P3-EXTRACT E3).
+      await fillField(page, 'c_doctype_id', '122');
+      await fillField(page, 'c_bpartner_id', '120');
+      await fillField(page, 'c_bpartner_location_id', '114');
+      await fillField(page, 'm_warehouse_id', '103');
       await clickToolbarBtn(page, 'Save');
       var p7 = await waitForCrudPersist(w, 'm_inout', 15000);
       log('§E2E-SAVE table=m_inout committed=' + p7.committed + (p7.reason ? ' reason=' + p7.reason : ''));
@@ -561,9 +596,11 @@ function deepUrl(port, params) {
 
       var stage7Result = (!hasWarehouse || !hasPartner) ? 'ABSENT' : 'PASS';
       cycleLine(7, 'MaterialReceipt', 'UI', stage7Result,
-        'M_InOut id=' + newRcptId + ' created but header New form omits ' +
-        (!hasWarehouse ? 'M_Warehouse_ID ' : '') + (!hasPartner ? 'C_BPartner_ID ' : '') +
-        '(fields shown: ' + rcptFields.join(',') + '); no InOutGenerate-equivalent process exists for PO receipts ' +
+        'M_InOut id=' + newRcptId + ' created with doctype 122 / vendor 120 / location 114 / warehouse 103 — ' +
+        'every one AD-mandatory and every one admitted by that column\'s OWN val rule (§P7-WITNESS-FIX: this ' +
+        'stage previously saved a receipt with none of them, which iDempiere answers with FillMandatory) ' +
+        (!hasWarehouse ? 'M_Warehouse_ID-ABSENT ' : '') + (!hasPartner ? 'C_BPartner_ID-ABSENT ' : '') +
+        '(fields shown: ' + rcptFields.length + '); no InOutGenerate-equivalent process exists for PO receipts ' +
         '(inoutGenGate hard-requires IsSOTrx=\'Y\', confirmed by source read) so this manual path is the ONLY route to a Material Receipt at all');
     } catch (e) {
       log('🔴 Stage7 threw: ' + e.message);

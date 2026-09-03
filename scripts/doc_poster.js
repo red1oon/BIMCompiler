@@ -522,15 +522,69 @@ function deriveInventory(db, id, schema) {
   return d;
 }
 
-function finish(d, basis) {
+// ── §P9 (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §P4-OPEN item 7 — Witness: W-POST-GLCATEGORY) ──
+// glCategoryFor — a faithful port of how iDempiere decides a document's GL_Category_ID, which FactLine.java:404
+// (`setGL_Category_ID(m_doc.getGL_Category_ID())`, inside setDocumentInfo:364) then stamps on EVERY fact line of
+// that document — a document-level constant, never per-line. Chain, in Doc.java's order:
+//   0. the DOCUMENT'S OWN GL_Category_ID column wins when the table has one (Doc.getGL_Category_ID:1785-1793 —
+//      this is the GL_Journal case, where the doc-level resolution is bypassed entirely);
+//   a. by C_DocType_ID  — `SELECT DocBaseType, GL_Category_ID FROM C_DocType WHERE C_DocType_ID=?` (:996-1009);
+//   b. still 0 → by (AD_Client_ID, DocBaseType) (:1030-1045). The Java has NO ORDER BY and takes whatever row
+//      the DB hands back first; we take the LOWEST c_doctype_id so the port is DETERMINISTIC — stated, not hidden;
+//   c. still 0 → `SELECT GL_Category_ID FROM GL_Category WHERE AD_Client_ID=? ORDER BY IsDefault DESC` (:1060-1071);
+//   d. still 0 → iDempiere logs SEVERE "No default GL_Category" (:1085-1086) and POSTS ANYWAY with 0.
+// GL_Category_ID is a 0-SENTINEL, never NULL (Doc.java:411 `int m_GL_Category_ID = 0`); the seed agrees — 14 of
+// its 52 c_doctype rows carry 0. So every guard below tests `> 0`, the same idiom ad_modelval.js:561 already uses.
+function _hasCol(db, table, col) {
+  try { return (db.prepare('PRAGMA table_info(' + table + ')').all() || []).some(function (r) { return String(r.name).toLowerCase() === col; }); }
+  catch (e) { return false; }
+}
+function glCategoryFor(db, table, id) {
+  var t = String(table || '').toLowerCase(), pk = t + '_id', out = { id: 0, stage: 'none' };
+  if (!t || !isFinite(Number(id))) return out;
+  var hdr = null;
+  try { hdr = getRow(db, 'SELECT * FROM ' + t + ' WHERE ' + pk + '=?', num(id)); } catch (e) { return out; }
+  if (!hdr) return out;
+  // 0 — the document's own column (Doc.getGL_Category_ID:1787-1793)
+  if (_hasCol(db, t, 'gl_category_id') && Number(hdr.gl_category_id) > 0) return { id: Number(hdr.gl_category_id), stage: 'own-column' };
+  var clientId = Number(hdr.ad_client_id);
+  var dtId = Number(hdr.c_doctype_id) > 0 ? Number(hdr.c_doctype_id)
+           : (Number(hdr.c_doctypetarget_id) > 0 ? Number(hdr.c_doctypetarget_id) : 0);
+  var docBaseType = null;
+  if (dtId > 0) {
+    var dt = getRow(db, 'SELECT docbasetype, gl_category_id FROM c_doctype WHERE c_doctype_id=?', dtId);
+    if (dt) {
+      docBaseType = dt.docbasetype;
+      if (Number(dt.gl_category_id) > 0) return { id: Number(dt.gl_category_id), stage: 'doctype', docBaseType: docBaseType, doctype: dtId };
+    }
+  }
+  // b — by (client, DocBaseType)
+  if (docBaseType) {
+    var byBase = getRow(db, 'SELECT gl_category_id FROM c_doctype WHERE ad_client_id=? AND docbasetype=? AND gl_category_id>0 ORDER BY c_doctype_id LIMIT 1',
+                        [clientId, docBaseType]);
+    if (byBase && Number(byBase.gl_category_id) > 0) return { id: Number(byBase.gl_category_id), stage: 'docbasetype', docBaseType: docBaseType };
+  }
+  // c — the client's default GL_Category
+  try {
+    var def = getRow(db, 'SELECT gl_category_id FROM gl_category WHERE ad_client_id=? ORDER BY isdefault DESC, gl_category_id LIMIT 1', clientId);
+    if (def && Number(def.gl_category_id) > 0) return { id: Number(def.gl_category_id), stage: 'client-default', docBaseType: docBaseType };
+  } catch (e) { /* a seed without gl_category — fall through to the 0 sentinel, as the Java does */ }
+  return { id: 0, stage: 'none-severe', docBaseType: docBaseType };   // Doc.java:1085-1086 — log and post with 0
+}
+
+function finish(d, basis, glCat) {
   if (!d) return { lines: [], balanced: false, sumDr: 0, sumCr: 0, absent: [], basis: 'none' };
+  var gl = glCat || { id: 0, stage: 'none' };
   var lines = Object.keys(d.by).map(function (k) {
     var a = d.by[k];
-    return { account_id: a.account_id, value: a.value, name: a.name, amtacctdr: a.dr / 100, amtacctcr: a.cr / 100 };
+    // §P9 — FactLine.java:404: the SAME document-level category on every line, never per-line.
+    return { account_id: a.account_id, value: a.value, name: a.name, amtacctdr: a.dr / 100, amtacctcr: a.cr / 100,
+             gl_category_id: gl.id };
   });
   var sumDr = 0, sumCr = 0;
   Object.keys(d.by).forEach(function (k) { sumDr += d.by[k].dr; sumCr += d.by[k].cr; });
-  return { lines: lines, balanced: lines.length > 0 && sumDr === sumCr, sumDr: sumDr, sumCr: sumCr, absent: d.absent, basis: basis };
+  return { lines: lines, balanced: lines.length > 0 && sumDr === sumCr, sumDr: sumDr, sumCr: sumCr, absent: d.absent, basis: basis,
+           gl_category_id: gl.id, gl_category_stage: gl.stage };
 }
 
 /**
@@ -544,31 +598,35 @@ function derivePostings(db, recordRef, schema, R) {
   if (!R) throw new Error('doc_poster: post_resolver (R) unavailable');
   var table = recordRef.table || recordRef.doc_type;
   var id = num(recordRef.id != null ? recordRef.id : recordRef.record_id);
-  if (table === 'C_Invoice') return finish(deriveInvoice(db, R, id, schema), 'invoice');
+  // §P9 — the GL_Category is resolved from the document ACTUALLY POSTED, so an order that folds through its
+  //   generated invoice takes the INVOICE's doctype (that is the Doc iDempiere builds), not the order's.
+  var glOf = function (t, i) { return glCategoryFor(db, t, i); };
+  if (table === 'C_Invoice') return finish(deriveInvoice(db, R, id, schema), 'invoice', glOf('c_invoice', id));
   if (table === 'C_Order') {
     var invId = invoiceForOrder(db, id);
-    if (invId != null) return finish(deriveInvoice(db, R, invId, schema), 'invoice');
-    return finish(deriveOrder(db, R, id, schema), 'order');           // draft projection — no oracle
+    if (invId != null) return finish(deriveInvoice(db, R, invId, schema), 'invoice', glOf('c_invoice', invId));
+    return finish(deriveOrder(db, R, id, schema), 'order', glOf('c_order', id));   // draft projection — no oracle
   }
   // B-3 0-seed classes (W-POST-B3 §W-3) — these read per-asset/project acct config, not R tokens
-  if (table === 'A_Asset_Addition') return finish(deriveAssetAddition(db, id, schema), 'fa-addition');
-  if (table === 'A_Depreciation_Entry') return finish(deriveDepreciationEntry(db, id, schema), 'fa-depreciation');
-  if (table === 'A_Asset_Reval') return finish(deriveAssetReval(db, id, schema), 'fa-reval');
-  if (table === 'A_Asset_Transfer') return finish(deriveAssetTransfer(db, id, schema, recordRef.primarySchema), 'fa-transfer');
-  if (table === 'A_Asset_Disposed') return finish(deriveAssetDisposed(db, id, schema), 'fa-disposal');
-  if (table === 'C_ProjectIssue') return finish(deriveProjectIssue(db, id, schema), 'project-issue');
+  if (table === 'A_Asset_Addition') return finish(deriveAssetAddition(db, id, schema), 'fa-addition', glOf('a_asset_addition', id));
+  if (table === 'A_Depreciation_Entry') return finish(deriveDepreciationEntry(db, id, schema), 'fa-depreciation', glOf('a_depreciation_entry', id));
+  if (table === 'A_Asset_Reval') return finish(deriveAssetReval(db, id, schema), 'fa-reval', glOf('a_asset_reval', id));
+  if (table === 'A_Asset_Transfer') return finish(deriveAssetTransfer(db, id, schema, recordRef.primarySchema), 'fa-transfer', glOf('a_asset_transfer', id));
+  if (table === 'A_Asset_Disposed') return finish(deriveAssetDisposed(db, id, schema), 'fa-disposal', glOf('a_asset_disposed', id));
+  if (table === 'C_ProjectIssue') return finish(deriveProjectIssue(db, id, schema), 'project-issue', glOf('c_projectissue', id));
   // W-POST-TAIL classes (HARDEN_MATRIX.md §W-POST-TAIL)
-  if (table === 'C_BankStatement') return finish(deriveBankStatement(db, id, schema), 'bank-statement');
-  if (table === 'M_MatchPO') return finish(deriveMatchPO(db, id, schema), 'matchpo');
-  if (table === 'M_Requisition') return finish(deriveRequisition(db, id, schema), 'requisition');
-  if (table === 'C_Cash') return finish(deriveCash(db, id, schema), 'cash');
-  if (table === 'M_Inventory') return finish(deriveInventory(db, id, schema), 'inventory');
+  if (table === 'C_BankStatement') return finish(deriveBankStatement(db, id, schema), 'bank-statement', glOf('c_bankstatement', id));
+  if (table === 'M_MatchPO') return finish(deriveMatchPO(db, id, schema), 'matchpo', glOf('m_matchpo', id));
+  if (table === 'M_Requisition') return finish(deriveRequisition(db, id, schema), 'requisition', glOf('m_requisition', id));
+  if (table === 'C_Cash') return finish(deriveCash(db, id, schema), 'cash', glOf('c_cash', id));
+  if (table === 'M_Inventory') return finish(deriveInventory(db, id, schema), 'inventory', glOf('m_inventory', id));
   return { lines: [], balanced: false, sumDr: 0, sumCr: 0, absent: [], basis: 'none' };
 }
 
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
-var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder };
+var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
+             glCategoryFor: glCategoryFor };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }
 if (typeof window !== 'undefined') { window.DocPoster = _api; }

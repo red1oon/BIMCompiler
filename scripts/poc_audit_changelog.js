@@ -101,7 +101,15 @@ console.log('§DELETE-TRAIL client=11 actor=7 stdDefaults.clientId=' + (dt.stdDe
 delete globalThis.APP;
 
 // ── W-DOCNO (Task 4): DocumentNo allocation from AD_Sequence ───────────────
-console.log('\nW-DOCNO — Task 4: DocumentNo from AD_Sequence');
+// ⚠ SCOPE, stated honestly (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §P10, 2026-09-03): this arm judges
+//   ONLY the TABLE-level path, and it does so against a MOCKED __idmpDb whose expected 'SO-1000' is written a
+//   few lines below the assertion — so it is a shape smoke, NOT an oracle, and it says nothing at all about
+//   C_DocType.IsDocNoControlled. That branch (34 seeded doctypes ='Y', all 34 with a DocNoSequence_ID
+//   resolving to an ACTIVE ad_sequence; 18 ='N', none carrying one) is judged against the REAL seed through
+//   the SHIPPED functions by bim-ootb `erp/tests/poc_parity_docno_live.js` — W-DOCNO-BRANCH, 10/10 PASS.
+//   Do not read a green here as "IsDocNoControlled is witnessed"; read W-DOCNO-BRANCH for that.
+console.log('\nW-DOCNO — Task 4: DocumentNo from AD_Sequence (TABLE-level path only; the IsDocNoControlled');
+console.log('          branch is judged on the real seed by bim-ootb erp/tests/poc_parity_docno_live.js)');
 var bumped = null;
 globalThis.__idmpDb = {
   exec: function(sql) {
