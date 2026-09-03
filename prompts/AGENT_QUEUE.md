@@ -1306,6 +1306,8 @@ these are queued work, not a menu to ask permission on. Rank by leverage/cost, d
 ```
 
 ## §E.STATE — where the lane actually is
+> ⚠ **STALE as of 2026-09-04** (it describes the 2026-09-02 sweep). The live state is `§ERP-SESSION-CLOSE`
+> at the END of this file; the gap rows below carry per-row ✅ markers where they have since closed.
 - **Code-dark since 2026-07-18** apart from 6 commits: last ERP commits are `#1509` (TM P6 fold),
   `#1499` (record gate), `#1496` (seed bake), `#1495` (ad_access), `#1487` (crud_core split).
 - **T-0 truth-maintenance: 5 of 6 items ✅ DONE** (items 1/2/4/6/8) — `RESUME_ERP_T0_TRUTH_MAINTENANCE.md`.
@@ -1320,8 +1322,8 @@ these are queued work, not a menu to ask permission on. Rank by leverage/cost, d
 | **E-1** | **454 of 476 AD_Process, ~200 beforeSave overrides, 139 callout atoms named-deferred.** The dominant remaining functional-parity distance; nothing scheduled closes it. | `ERP_COVERAGE_MATRIX.md:188-194`; dispatch spines exist (`ad_process.js:dispatch` 22/476, `ad_callout.js:dispatch` 6 atoms/18 cols) — the corpus does not | campaign · **plan first** → Fable 5.1 |
 | **E-2** | **§RULE-EDIT grail: two lanes contradict each other and neither has been reconciled.** `project_rule_edit_gesture.md` says the loop is CLOSED + LIVE (`rule_fold.js`, PR #171, erp sw v593, `§GATED-COMPLETE-POC` PASS). T-0 item 3 says the grail witness "still doesn't exist." Both may be right: rule_fold gates ONE hardcoded T-threshold rule, the grail claim is *edit any AD validation row → K records re-fold*. | ⚑VERIFIED: **zero** `RULE-EDIT`/`RULE_EDIT` witness scripts in `scripts/` | reconcile + build the general witness → Fable 5.1 |
 | **E-3** | **AD_Form data shipped, no Form renderer exists.** 49 AD_Form rows baked (#1496); real iDempiere Forms are bespoke screens (Bank Statement match, Payment Allocation, GL Journal). | T-0 item 5/queue 6 | bounded IF scoped to ONE form end-to-end → Fable 5.1 |
-| **E-4** | **O2C Stage 4 stock effect is structurally absent** — a real signed shipment still cannot move stock. | ⚑VERIFIED: `grep -rln m_storageonhand erp/*.js` → **0 hits across all 91 files** | plan-first, then build |
-| **E-5** | **P2P Fix 5 (M_MatchInv) — blocker named, fix specced, not built.** `C_InvoiceLine.M_InOutLine_ID`/`C_OrderLine_ID` are hard `IsReadOnly='Y'` (AD_Tab 291), matching real iDempiere. Fix = generalize PR #956's `seedVals` to a PEER FK, triggered from the existing `AD_Process 200143`. | `ERP_P2P_INVOICE_MATCH.md` §Fix 2026-07-23 | **bounded, spec-complete — highest ready-to-build value** |
+| **E-4** ✅CLOSED 2026-09-04 (#1644, `ERP_STOCK_EFFECT.md`) | **O2C Stage 4 stock effect is structurally absent** — a real signed shipment still cannot move stock. | ⚑VERIFIED: `grep -rln m_storageonhand erp/*.js` → **0 hits across all 91 files** | plan-first, then build |
+| **E-5** ✅CLOSED 2026-09-04 (#1643 + #1654, `ERP_P2P_INVOICE_MATCH.md` §Fix5/§CF) | **P2P Fix 5 (M_MatchInv) — blocker named, fix specced, not built.** `C_InvoiceLine.M_InOutLine_ID`/`C_OrderLine_ID` are hard `IsReadOnly='Y'` (AD_Tab 291), matching real iDempiere. Fix = generalize PR #956's `seedVals` to a PEER FK, triggered from the existing `AD_Process 200143`. | `ERP_P2P_INVOICE_MATCH.md` §Fix 2026-07-23 | **bounded, spec-complete — highest ready-to-build value** |
 | **E-6** | **5 stale open ERP PRs, all from June, none triaged.** bim-ootb **#429** (2026-06-19), **#300** (06-13), **#253** (06-13), **#203** (06-08 — disposable-host persistence; memory already had to correct a false "shipped" claim about it); bim-compiler **#8** (06-03, op-group atomicity). | ⚑VERIFIED via `gh pr list` today | autonomous triage |
 | **E-7** | **The whole equivalence evidence base is gitignored.** 378 logs live in `build/erp/*.log`; `.gitignore:85` excludes them. The ledger's 46 PASSes are re-verifiable only from local disk — one `git clean -x` from prose-only. | ⚑VERIFIED: 378 files, `.gitignore:84-85` | autonomous — decide a retention mechanism |
 | **E-8** | **CI runs 1 of the 46 ledger witnesses.** `ci.yml:8` — "one ERP witness". Most need docker-PG / an iDempiere checkout / bim-ootb Playwright. | ⚑VERIFIED: no `poc_`/`run_bundle` reference in any bim-compiler workflow | autonomous, needs a runner design |
@@ -1430,7 +1432,8 @@ pushed + report" is not enough if the agent never reaches its own end.
 
 ---
 
-# §ERP-SESSION-CLOSE 2026-09-02/03 — full restart state for the ERP lane
+# §ERP-CLOSE-ARCHIVE 2026-09-02/03 — SUPERSEDED. **Read `§ERP-SESSION-CLOSE` at the END of this file.**
+Kept for its measured evidence; its ⬜ NEXT list is fully worked (see §ERP-LOG below). Do not plan from it.
 Read this block + `prompts/ERP_IDEMPIERE_UX_PARITY.md` + `prompts/BACKEND_SUBSTRATE_LANE.md` §MH/§RA.
 Everything below is merged and LIVE unless marked otherwise. Both repos: **0 local-only commits**.
 
@@ -1473,7 +1476,7 @@ Everything below is merged and LIVE unless marked otherwise. Both repos: **0 loc
 
 ---
 
-# §ERP-SESSION 2026-09-03/04 — the ranked NEXT list, worked to zero
+## §ERP-LOG 2026-09-03/04 — the ranked NEXT list, worked to zero (detail; the close block summarises it)
 Read with `§ERP-SESSION-CLOSE` above; this supersedes its **⬜ NEXT** block item by item.
 
 | # | item | outcome |
@@ -1502,7 +1505,7 @@ Period), U-E5 (working-set/prune policy).
 the project's headline scoreboard — survives only because it happens to be already-tracked. That is E-7's
 class (the evidence base one `git clean -x` from prose-only) and it now includes the scoreboard itself.
 
-## §ERP-SESSION 2026-09-04b — the two structural gaps that were ready to build
+## §ERP-LOG 2026-09-04b — the two structural gaps that were ready to build
 | # | item | outcome |
 |---|---|---|
 | **E-5** | vendor-invoice path / three-way match cannot populate | ✅ **DONE (witness).** bim-ootb **#1643 MERGED**, sw v780. See §ERP-SESSION 2026-09-03/04 row 5a. |
@@ -1528,7 +1531,7 @@ sets `MovementType` via **the very rule E-4 just ported as `movementTypeOf`** �
 **Still open from §E.GAPS, untouched this session:** E-1 (454 procs / 139 callouts — campaign),
 E-3 (Form renderer), E-6/E-7/E-8/E-14/E-15 (hygiene), E-11 ⛔USER, E-12, E-13.
 
-## §ERP-SESSION 2026-09-04c — the P2P end-to-end witness, and the product gap it exposed
+## §ERP-LOG 2026-09-04c — the P2P end-to-end witness, and the product gap it exposed
 `§ERP-SESSION 2026-09-04b`'s ⬜ NEXT worked to zero. **P2P end-to-end went 0 of 4 stages → stages 1/2/3
 PASS + Stage 4a.**
 
@@ -1556,7 +1559,7 @@ handler already accepts as `info.params.selection`.
 `__dirname` and **silently ignore `ERP_ROOT`** — run them from inside the worktree under test, or they
 will judge `~/bim-ootb` and report a green that means nothing.
 
-## §ERP-SESSION 2026-09-04d — the CreateFrom entry point. **The three-way match is CLOSED through the UI.**
+## §ERP-LOG 2026-09-04d — the CreateFrom entry point. **The three-way match is CLOSED through the UI.**
 ```
 §P2P stage=1 PurchaseOrder PASS · stage=2 MaterialReceipt PASS · stage=3 VendorInvoice PASS
 §P2P stage=4 ThreeWayMatch PASS — 🟢 4a M_MatchPO=1 · 🟢 4b M_MatchInv=1 · 🟢 4c shared=true
@@ -1590,3 +1593,105 @@ of `gen_ad_odoo.js`; it wrongly inflated an earlier size report. **No `.db` is p
 precache entries, zero databases), so every dataset is demand-loaded. The one non-core eager load is
 `odoo_descriptor.js` (10.8 KB of `idempiere.html`'s 79 script tags) — ⬜ defer it behind the tenant
 picker; kernel-purity, not perf.
+
+---
+---
+
+# §ERP-SESSION-CLOSE 2026-09-04 — **START HERE when the user says "continue on ERP".**
+This block supersedes `§ERP-CLOSE-ARCHIVE` and summarises the `§ERP-LOG` entries above (which keep the
+measured evidence). **Read this, then `§NEXT` below. Nothing else is required to start.**
+Both repos: **0 local-only commits.** Live at **sw v783**.
+
+## §CLOSE.1 WHERE THE LANE IS, in one paragraph
+The P2P chain is **closed end to end through the real UI**: a user creates a Purchase Order, receives
+against it, creates a vendor invoice, pulls the received lines in via **Create From**, completes, and both
+junctions land sharing one `M_InOutLine_ID`. A completed receipt now also **moves stock**. The lane's own
+end-to-end witness went from **0 of 4 stages to 4 of 4** in this session. What remains is breadth
+(the 454-process corpus, the Form renderer, the callout corpus), one **read-path correctness question**
+that is now the highest-value item, and five decisions that are yours.
+
+## §CLOSE.2 VERIFY THE LANE IS HEALTHY — four commands, ~3 minutes
+```
+node scripts/check_erp_twins.js                     # W-ERP-TWIN — the shipped/copy pairs (expect 🟢 64 pairs)
+node scripts/check_multihost_gate.js                # W-MULTIHOST-GATE — the 16-file network core (expect 🟢)
+bash build/erp/run_witness.sh scripts/poc_scale_forecast.js        # the perf ceiling (expect 5 claims)
+WITNESS_ROOT=/home/red1/bim-ootb node scripts/witness_p2p_invoice_match.js   # expect stages 1-4 all PASS
+```
+All four were run against plain `origin/main` at close (2026-09-04): 🟢 / 🟢 / 5 claims PASS /
+`stage=1 PASS · stage=2 PASS · stage=3 PASS · stage=4 PASS`. **If any of them is red on a fresh
+checkout, that is a regression since this block was written — chase it before starting new work.**
+⚠ **`poc_parity_valrule_live.js` / `poc_parity_fieldset_live.js` derive `ROOT` from `__dirname` and
+silently ignore `ERP_ROOT`** — run them from *inside* the tree under test or their green means nothing.
+
+## §CLOSE.3 WHAT SHIPPED — 7 bim-ootb PRs, all merged
+| PR | sw | what |
+|---|---|---|
+| **#1638** | v778 | `commitGroup` re-hashed every op it had already staged — **4040→2040 digests**/2,000 ops. Batch was measuring **0.8×** (slower than per-op) under contention; now **3.53× median**. W-SCALE-THRU also stopped asserting on one un-repeated wall clock. |
+| **#1640** | v779 | `rebase()` dropped `user_tag`, which `_canonicalV2` **signs** — after one sync a `user:bob` row read `local` and **its own signature stopped verifying**. |
+| **#1643** | v780 | **E-5.** `CreateFromInvoice` ported as an AD_Process handler (not the form-seed hack scoped in July — the Java inserts finished lines). `matchInvOps 0 → 10` headless. |
+| **#1644** | v781 | **E-4.** A completed `M_InOut` now moves stock: `stockMoves` emits a signed `M_Transaction` per line, `_sidecarStockDelta` makes on-hand see it. Oracle = the seed's own `movementtype`, 9 documents, 0 mismatches. |
+| **#1650** | v782 | **The FK picker could not offer a row you just created.** `offered=0` because the candidate query was raw-bundle-only while the val rule correctly filtered to the just-created parent. `offered 0 → 1`. |
+| **#1654** | v783 | **The CreateFrom entry point.** The three-way match closes through the screen: `§P2P stage=4 PASS — 4a=1 · 4b=1 · 4c shared=true`. |
+| *(bim-compiler only)* | — | **S-2(a)**: the relay can serve TLS (`W-RELAY-TLS` 4/4). Three kernel witnesses dead since bim-ootb #88 repointed and passing. |
+
+## §CLOSE.4 ⬜ NEXT, ranked — nothing here is blocked
+1. **The engine's WRITE vocabulary and the app's READ vocabulary disagree. Highest value, and it is a
+   correctness question, not a feature.** `erp_engine`/`ad_process` propose `CREATE_LINE`/`CREATE_DOCUMENT`;
+   `crud_core.listTip` — which every reader uses — folds **only** `CRUD_CREATE/UPDATE/DELETE`. Caught in
+   #1654: the group committed flawlessly and was still invisible —
+   `§GENPROCESS-CONFIRM committed=Y ops=11 verifyOk=true` then `§INVOICE-FANOUT lines=0 matchInvOps=0`,
+   i.e. **11 signed, verified, unreadable rows**. Fixed at that one commit seam.
+   **`InvoiceGenerate`, `InOutGenerate` and `ProjectGenOrder` all still Confirm & Post the raw shape.**
+   **Do not fix blind** — run each one's live witness first, record what is actually readable today, then
+   translate. `renderProcResult`'s `r.ops && r.header` branch is the shared seam.
+2. **`odoo_descriptor.js` is eagerly loaded** (10.8 KB of `idempiere.html`'s 79 script tags) — a second
+   dictionary's renderer in the core boot path. Defer behind the tenant picker. **User's own rule
+   (2026-09-04): nothing non-core is fetched unless asked for.** Kernel purity, not perf.
+3. **E-1** — 454 of 476 `AD_Process`, ~200 beforeSave, 139 callout atoms named-deferred. A campaign;
+   **plan by usage first**. Two atoms are half-built and forced: `CalloutInOut.bpartner` (would default
+   `C_BPartner_Location_ID` the way real iDempiere does — a receipt-create currently needs it typed) and
+   `CalloutInOut.docType` (its body sets `MovementType` via **the very rule E-4 already ported** as
+   `movementTypeOf`).
+4. **E-3** — 49 `AD_Form` rows baked, no Form renderer. Scope ONE form end to end.
+5. **E-6/E-7/E-8/E-14/E-15** — hygiene: 5 stale June PRs untriaged · the 378-log evidence base is
+   gitignored (and so, in effect, is `docs/internal/ERP_COVERAGE_MATRIX.md`, the headline scoreboard —
+   it survives only because it is already tracked) · CI runs 1 of 46 ledger witnesses · the stale-code
+   audit branch never merged · a 52/53 headline off-by-one.
+
+## §CLOSE.5 ⛔ USER DECISIONS — do not let an agent decide these
+| # | decision | the fact that forces it |
+|---|---|---|
+| **U-E1** | Roster gate default-ON or opt-in? | **Now clearly downstream of U-E2**: a gate that nothing runs is not yet a production question. |
+| **U-E2** | **Deploy a relay at all?** S-2's code half is closed (TLS works); no relay URL ships and nothing runs on real compute, so the product is **single-writer-per-device**. | This, not S-1, is what stands between us and multi-writer. |
+| **U-E3** | Adopt `resolveFreshest()`? The frozen `resolve()` is first-reachable-wins and in the naive controls adopted **both the forger and the stale host**. | tamper + freshness both rely on the caller |
+| **U-E4** | Period-on-Complete. Recommendation on record: ship it **with** Open/Close Period, never alone. | open periods are **2001-2006 only**; today's is `'N'`, so the gate would fire on 100% of new documents |
+| **U-E5** | Working-set / prune policy. | **`write_ms(D)=0.279+1.072e-2·D` (R²=0.9999) crosses the 100 ms budget at 9,301 live docs**, and 520 B/op projects to **3,720 MB** against a ~2 GB browser wall |
+
+## §CLOSE.6 SIZE AND PERFORMANCE — measured 2026-09-04, so nobody re-derives it
+- **Shipped browser ERP:** 94 JS / 33,992 lines / 2.4 MB, plus 10 HTML / 8,633 lines.
+  **Cold-start code payload 3.05 MB raw → 894 KB gzipped.** `ad_seed.db` 26 MB → **7.1 MB gzipped**.
+- **Engine + witnesses (bim-compiler):** `build/erp/` 77 JS / 19,348 lines; **360 witness scripts /
+  51,620 lines** — roughly 1 line of witness per line of product.
+- **No `.db` is precached** (114 precache entries, zero databases) — every dataset is demand-loaded.
+  `ad_odoo.db` (13 MB) is **untracked, unreferenced, never fetched**: a local artifact of `gen_ad_odoo.js`.
+- **Closing the remaining gaps adds dispatch entries, not per-op work.** From `W-SCALE-FORECAST`:
+  throughput never binds (**239.5M docs/day**); boot is **flat with checkpoint** (0.3 ms) against a
+  24 s desktop / 97 s mobile genesis cliff at 100M ops. **The binding constraints are the two U-E5
+  numbers above** — and the thing that moves them is **ops per document**, so measure that per feature
+  (E-4 added ~1 op per receipt line).
+
+## §CLOSE.7 STANDING RULES EARNED — each cost something this session
+1. **"Committed, signed, verifyOk" is NOT "visible."** A green commit line proves only that the op log
+   took it. The read path is a separate claim and needs its own `§`-line — which is exactly how the
+   vocabulary gap in §CLOSE.4 item 1 was caught.
+2. **Counts agreeing is not evidence the values arrived.** The FK fold read
+   `attempted=118 inserted=118 failed=0 tableCount=118` while binding **NULL into every column of every
+   folded row** — the bundle's column names are CamelCase, a `listTip` row's keys are lowercase. Print a
+   stored row, not a count.
+3. **Check the instrument before believing the defect.** Twice more this session: two "product failures"
+   were a stale witness (`W-AD-DISPLAYLOGIC-LIVE` judging a DOM retired at #1613) and a witness whose
+   `ERP_ROOT` is silently ignored.
+4. **When a witness fails, baseline it on unmodified `origin/main` before attributing the failure.**
+   That one step separated "my change broke it" from "this has been red for weeks" three times.
+5. **A named-deferred branch is declared in `result.deferred`, never silently absent** — the convention
+   `stockMoves` and `CreateFromInvoice` both follow.
