@@ -50,6 +50,7 @@
 //   would "verify" and re-open S-1 (witnessed §RA-5b).
 'use strict';
 var http = require('http');
+var https = require('https');   // §S2 — TLS transport, opt-in via opts.tls
 var fs = require('fs');
 
 var SIG_HEX = /^[0-9a-f]{128}$/;          // raw r||s, 64 bytes — what erp_signer/erp_snapshot_sign emit
@@ -207,7 +208,25 @@ function createRelayServer(opts) {
   function _auth() { return { mode: stats.mode, devices: stats.devices, verify_attempts: stats.verify_attempts,
     verify_ms: stats.verify_ms, rejected_total: stats.rejected_total, rejected_requests: stats.rejected_requests, reasons: stats.reasons }; }
 
-  var server = http.createServer(function (req, res) {
+  // ── TRANSPORT — Implementing prompts/BACKEND_SUBSTRATE_LANE.md §S2.2 — Witness: W-RELAY-TLS ──
+  // S-2(a): the relay was http-only, so an https page could never reach it (mixed content) and TLS had
+  // to be terminated by a host that may not exist. opts.tls = {keyPath,certPath} | {key,cert} arms an
+  // https listener; absent, this is byte-identical to the previous http.createServer path — same
+  // handler, same admission gate, same responses. Only the socket differs.
+  // NOTE (§S2.1): this closes S-2's CODE half only. No relay URL ships and nothing runs on real
+  // compute — that half is a hosting decision, and it is what still keeps the product single-writer.
+  var tlsOpts = null;
+  if (opts.tls) {
+    tlsOpts = { key: opts.tls.key || (opts.tls.keyPath ? fs.readFileSync(opts.tls.keyPath) : null),
+                cert: opts.tls.cert || (opts.tls.certPath ? fs.readFileSync(opts.tls.certPath) : null) };
+    if (!tlsOpts.key || !tlsOpts.cert) throw new Error('erp_relay_server: opts.tls needs {key,cert} or {keyPath,certPath}');
+  }
+  var scheme = tlsOpts ? 'https' : 'http';
+  console.log('§RELAY_TLS scheme=' + scheme + (tlsOpts
+    ? ' keyBytes=' + tlsOpts.key.length + ' certBytes=' + tlsOpts.cert.length + ' (TLS terminated HERE)'
+    : ' (plaintext — TLS is the host job; an https page cannot reach this directly)'));
+
+  var _handler = function (req, res) {
     var u = new URL(req.url, 'http://localhost');
     if (req.method === 'OPTIONS') { _cors(res); res.statusCode = 204; return res.end(); }
 
@@ -255,7 +274,8 @@ function createRelayServer(opts) {
       return;
     }
     _send(res, 404, { error: 'not found' });
-  });
+  };
+  var server = tlsOpts ? https.createServer(tlsOpts, _handler) : http.createServer(_handler);
 
   // listen — in ROSTER mode the roster is verified under the PINNED HQ key FIRST; an unverifiable roster is not a
   // gate, so the relay refuses to start rather than run open by accident.
@@ -275,13 +295,14 @@ function createRelayServer(opts) {
   return {
     listen: function () {
       return _arm().then(function () {
-        return new Promise(function (r) { server.listen(port, function () { console.log('§RELAY listening :' + port + (persistPath ? ' persist=' + persistPath : ' (in-memory)')); r(); }); });
+        return new Promise(function (r) { server.listen(port, function () { console.log('§RELAY listening ' + scheme + '://localhost:' + port + (persistPath ? ' persist=' + persistPath : ' (in-memory)')); r(); }); });
       });
     },
     close:  function () { return new Promise(function (r) { server.close(function () { r(); }); }); },
     head:   function () { return log.length; },
     stats:  function () { return JSON.parse(JSON.stringify(_auth())); },   // W-RELAY-AUTH reads the counters in-process
-    url:    'http://localhost:' + port
+    url:    scheme + '://localhost:' + port,
+    scheme: scheme                                  // W-RELAY-TLS: a deployment reads this; it must not be able to lie
   };
 }
 

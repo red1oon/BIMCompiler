@@ -504,3 +504,43 @@ That drops the kernel-family's standing FAILs from **7 to 4**; the remaining fou
 Regression: all 6 `erp_sync_fsm`-judging witnesses PASS (`poc_blackout_resume`, `poc_schema_version`,
 `test_kernel_{sync,relay,rebase,relay_auth}`).
 **Shipped:** bim-ootb **PR #1640** (`erp/erp_sync_fsm.js` + `erp/sw.js` v778→**v779**).
+
+---
+
+## §S2 2026-09-03 — close S-2's CODE half: the relay can serve TLS. The deploy half stays ⛔USER.
+
+`AGENT_QUEUE.md §ERP-SESSION-CLOSE` NEXT item 3: *"S-2 — the relay is still `http.createServer` with
+nothing deployed. This, not S-1, is what stands between us and multi-writer in production."*
+
+### §S2.1 SPLIT THE ITEM, because only one half is agent work
+§MH.4's measured S-2 line is two separate facts:
+- **(a) `http.createServer` at `erp_relay_server.js:210`, `https`/`tls` requires = 0.** An https page
+  cannot talk to an http relay (mixed content), so today the relay is only reachable from an http page
+  or behind a TLS-terminating host. **This is code, and it is closed here.**
+- **(b) no relay URL ships** (`erp_sync_relay.js` default URL = `null`, shipped `erp/*.js` carrying a
+  relay URL = 0), and nothing runs on real compute. **This is a hosting/cost decision — ⛔USER**, and it
+  is the half that actually keeps the product single-writer-per-device. Closing (a) does NOT close S-2.
+
+### §S2.2 THE FIX — one option, no new dependency
+`createRelayServer(opts)` accepts `opts.tls`: `{ keyPath, certPath }` (read at construction) or
+`{ key, cert }` buffers. Present ⇒ `https.createServer(tlsOpts, handler)`; absent ⇒ `http.createServer`,
+byte-identical to today. `url` and the `§RELAY listening` line become scheme-aware, and a
+`§RELAY_TLS` line states which transport is live — so a deployment cannot *believe* it is on TLS while
+serving plaintext. Nothing else in the request path changes: same handler, same admission gate.
+`erp_relay_server.js` is **bim-compiler-only** (no `erp/erp_relay_server.js` on bim-ootb `origin/main`),
+so this ships without a bim-ootb PR or an `sw.js` bump.
+
+### §S2.3 THE WITNESS — `W-RELAY-TLS`, arms that can each fail
+Added to `scripts/test_kernel_relay.js`. The cert is generated at run time into a temp dir by `openssl`
+(never committed, never reused), and the arm speaks raw `https.request` with `rejectUnauthorized:false`
+rather than loosening the shipped client — the claim is *"the relay serves TLS"*, not *"the client trusts
+self-signed certs"*.
+1. **HTTPS SERVES** — `GET /head` over TLS returns the relay's real head. A plain-http server would
+   refuse the TLS handshake, so this cannot pass by accident.
+2. **PLAINTEXT REFUSED ON THE TLS PORT** — an `http://` request to the TLS listener does NOT return a
+   relay JSON body. This is the arm that proves the transport actually switched.
+3. **HTTP UNCHANGED** — with no `opts.tls`, the URL scheme is `http:` and every existing W-RELAY arm
+   still passes, so the default path is provably untouched.
+4. **SCHEME IS HONEST** — `srv.url` starts with `https:` exactly when TLS is armed. A deployment reads
+   this; it must not be able to lie.
+5. If `openssl` is unavailable the arm prints **INCONCLUSIVE** and is excluded from the count — never PASS.

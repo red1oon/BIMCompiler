@@ -92,6 +92,60 @@ var PORT = 8140 + (process.pid % 200);
   await srv2.close();
   try { fs.unlinkSync(PERSIST); } catch (e) {}
 
+  // ── §RELAY-TLS (W-RELAY-TLS) — prompts/BACKEND_SUBSTRATE_LANE.md §S2.3 ──
+  // S-2(a): the relay was http-only (http.createServer), so an https page could never reach it
+  // (mixed content) and TLS had to be terminated by a host. opts.tls arms an https listener.
+  // The cert is generated HERE, at run time, into a temp dir — never committed, never reused. The arm
+  // speaks raw https.request with rejectUnauthorized:false rather than loosening the shipped client:
+  // the claim is "the relay serves TLS", not "the client trusts self-signed certs".
+  // §S2.1: this closes S-2's CODE half only. No relay URL ships and nothing runs on real compute —
+  // that half is a hosting decision and is what still keeps the product single-writer-per-device.
+  console.log('\n§RELAY-TLS — the relay serves over TLS when opts.tls is armed');
+  var os = require('os'), cp = require('child_process'), https = require('https');
+  var certDir = fs.mkdtempSync(path.join(os.tmpdir(), 'relay-tls-'));
+  var keyPath = path.join(certDir, 'k.pem'), certPath = path.join(certDir, 'c.pem'), haveSsl = true;
+  try {
+    cp.execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', keyPath,
+      '-out', certPath, '-days', '1', '-subj', '/CN=localhost'], { stdio: 'ignore' });
+  } catch (e) { haveSsl = false; }
+  if (!haveSsl) {
+    console.log('   ⚪ INCONCLUSIVE — openssl unavailable, no cert could be generated; this arm judged NOTHING');
+  } else {
+    var srvT = RELAY.createRelayServer({ port: 8155, tls: { keyPath: keyPath, certPath: certPath } });
+    await srvT.listen();
+    function tlsGet(p) {                                  // raw TLS client — proves the SERVER speaks TLS
+      return new Promise(function (resolve, reject) {
+        var rq = https.request({ host: 'localhost', port: 8155, path: p, method: 'GET', rejectUnauthorized: false },
+          function (res) { var b = ''; res.on('data', function (c) { b += c; }); res.on('end', function () { resolve(b); }); });
+        rq.on('error', reject); rq.end();
+      });
+    }
+    function plainGet(p) {                                // plaintext against the TLS port — must NOT answer
+      return new Promise(function (resolve) {
+        var rq = require('http').request({ host: 'localhost', port: 8155, path: p, method: 'GET', timeout: 3000 },
+          function (res) { var b = ''; res.on('data', function (c) { b += c; }); res.on('end', function () { resolve(b); }); });
+        rq.on('error', function (e) { resolve('ERR:' + e.code); });
+        rq.on('timeout', function () { rq.destroy(); resolve('ERR:TIMEOUT'); });
+        rq.end();
+      });
+    }
+    var tlsBody = await tlsGet('/head');
+    var plainBody = await plainGet('/head');
+    var tlsHead = null; try { tlsHead = JSON.parse(tlsBody).head; } catch (e) {}
+    var plainIsJson = false; try { plainIsJson = typeof JSON.parse(plainBody).head === 'number'; } catch (e) {}
+    console.log('   §RELAY-TLS scheme=' + srvT.scheme + ' url=' + srvT.url + ' httpsHead=' + tlsHead +
+                ' plaintextOnTlsPort=' + JSON.stringify(String(plainBody).slice(0, 40)));
+    verdict(tlsHead === 0, 'HTTPS SERVES — GET /head over TLS returns the relay head (a plain-http server refuses the handshake)', 'head=' + tlsHead);
+    verdict(plainIsJson === false, 'PLAINTEXT REFUSED ON THE TLS PORT — an http:// request gets no relay JSON (the transport really switched)', 'body=' + String(plainBody).slice(0, 24));
+    verdict(srvT.scheme === 'https' && srvT.url.indexOf('https:') === 0, 'SCHEME IS HONEST — url/scheme report https exactly when TLS is armed', 'url=' + srvT.url);
+    await srvT.close();
+    var srvP = RELAY.createRelayServer({ port: 8156 });
+    await srvP.listen();
+    verdict(srvP.scheme === 'http' && srvP.url.indexOf('http://') === 0, 'HTTP UNCHANGED — with no opts.tls the default path is still plain http', 'url=' + srvP.url);
+    await srvP.close();
+  }
+  try { fs.rmSync(certDir, { recursive: true, force: true }); } catch (e) {}
+
   console.log('\n═══ ' + (fails ? '🔴 ' + fails + ' FAILED' : '🟢 ALL PASS') + ' ═══');
   process.exit(fails ? 1 : 0);
 })().catch(function (e) { console.error('FATAL', e); process.exit(1); });
