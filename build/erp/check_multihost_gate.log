@@ -1,11 +1,11 @@
-§MHGATE_BASE ootb=/home/red1/bim-ootb behind_origin_main=31  (bim-ootb core hashed from origin/main blobs, never the checkout; bim-compiler core from the working tree)
-§MHGATE_RECORD utc=2026-09-03T03:34:11.523Z verdict=PASS hosts_up=3 epoch=6 len=6 tip=55a01c1a7fd4 gh_commit=6464b89f78 core_recorded=16
+§MHGATE_BASE ootb=/home/red1/bim-ootb behind_origin_main=33  (bim-ootb core hashed from origin/main blobs, never the checkout; bim-compiler core from the working tree)
+§MHGATE_RECORD utc=2026-09-03T03:45:55.336Z verdict=PASS hosts_up=3 epoch=7 len=7 tip=65f3884732e8 gh_commit=011afb0420 core_recorded=16
 
 §MHGATE_TABLE  verdict · core file · recorded sha256 · current sha256
   SAME       bim-compiler:build/erp/erp_key_epochs.js  2f149c7f23 → 2f149c7f23
   SAME       bim-compiler:build/erp/erp_period_close.js  2ede389801 → 2ede389801
   SAME       bim-compiler:build/erp/erp_relay_client.js  8e8bf4dec2 → 8e8bf4dec2
-  SAME       bim-compiler:build/erp/erp_relay_server.js  0d3d94cbcb → 0d3d94cbcb
+  SAME       bim-compiler:build/erp/erp_relay_server.js  da4e24f4e7 → da4e24f4e7
   SAME       bim-compiler:build/erp/erp_replica_client.js  097cd58237 → 097cd58237
   SAME       bim-compiler:build/erp/erp_sequencer.js  6421edadf0 → 6421edadf0
   SAME       bim-compiler:build/erp/erp_snapshot_sign.js  b7b525d18a → b7b525d18a
@@ -20,4 +20,4 @@
   SAME       bim-ootb@origin/main:erp/erp_sync_relay.js  369f66a527 → 369f66a527
 
 §MHGATE_SUMMARY core=16 same=16 changed=0 missing=0 unrecorded=0 dropped=0 record=PASS/hosts_up=3
-🟢 W-MULTIHOST-GATE PASS — all 16 core files match the PASS recorded 2026-09-03T03:34:11.523Z (epoch 6, tip 55a01c1a7fd4, hosts_up 3); nothing in the network core has changed since it was proven
+🟢 W-MULTIHOST-GATE PASS — all 16 core files match the PASS recorded 2026-09-03T03:45:55.336Z (epoch 7, tip 65f3884732e8, hosts_up 3); nothing in the network core has changed since it was proven
