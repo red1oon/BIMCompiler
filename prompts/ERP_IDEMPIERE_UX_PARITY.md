@@ -1348,3 +1348,83 @@ re-run and their logs read. Until that is done those 45 witnesses attest code th
 `ad_evaluator` most sharply, since its case-blind lookup is exactly what §P8-RESULT-DEFECT fixed.
 Also still undeclared and unwatched by any gate: **`post_resolver`** (shipped `erp/` copy already drifted by
 9 tokens) and **`doc_poster`** (`erp/` 125 lines vs `scripts/` 574) — §P9-RESULT names them.
+
+---
+
+## §P11 — SPEC then RESULT, 2026-09-03: `W-AD-DISPLAYLOGIC-LIVE` was judging a path that no longer renders
+
+`AGENT_QUEUE.md §ERP-SESSION-CLOSE` NEXT item 2: *"`W-AD-DISPLAYLOGIC-LIVE` fails (`shown=1
+hiddenByLogic=0`), re-run 3× incl. after the case fix, on current code. AD logic IS proven live by
+W-PARITY-FIELDSET, so this is either a stale selector or a real gap — **unattributed**."*
+
+### §P11.1 ATTRIBUTED — stale selector. The product is correct; the instrument was not.
+`scripts/poc_ad_displaylogic_live.js` counted `#idmp-form .idmp-fld` and looked for **CamelCase**
+`[data-ad-column="ChargeAmt"]` / `"DocumentNo"`. Those belong to `idempiere.html:_appendReadonlyFields`
+— which its own comment calls *"the classic read-only field render (**the fallback** when a table has no
+crud spec)"* (`idempiere.html:2946`). Since **#1613** every document table takes the inline path instead
+(`canInline`, `idempiere.html:2928` → `window.__crud.editInline`), which renders `.cfrow` rows with
+**lowercase** `data-ad-column` and applies AD logic through `crud_overlay.js:applyAdLogic` (:504).
+
+MEASURED on current `origin/main` (`8564295e`), Sales Order 100, window 143:
+```
+§AD-LOGIC-LIVE key=c_order fields=56 withLogic=28 visibilityFlips=25 applied=DOM
+DOM: .cfrow total=56  hiddenByStyle=25  → datepromised,deliveryrule,priorityrule,dropship_*,
+     m_shipper_id,freightcostrule,freightamt,invoicerule,c_charge_id,CHARGEAMT,c_paymentterm_id,…
+     documentno rendered and VISIBLE
+old selectors: .idmp-fld = 1   [data-ad-column="ChargeAmt"] = 0   [data-ad-column="DocumentNo"] = 0
+```
+`chargeamt` — the witness's own falsifier target — **is hidden, correctly**. The DisplayLogic feature was
+never broken; the witness was looking at the wrong DOM. This is the same class as the four instrument
+defects §ERP-SESSION-CLOSE rule 3 records.
+
+### §P11.2 MEASURED — the `.idmp-fld` fallback did not fire for EITHER table tried
+Fact_Acct (window 162, a tab the seed marks `AD_Tab.IsReadOnly='Y'`, 22 DisplayLogic-bearing displayed
+fields) was tried precisely to exercise the fallback. It also went inline:
+```
+§AD-LOGIC-LIVE key=fact_acct fields=46 withLogic=20 visibilityFlips=20 applied=DOM
+DOM: .cfrow total=46  hiddenByStyle=20   ·  .idmp-fld = 0
+```
+So `_appendReadonlyFields` is reachable in code (`_crudHas` false ⇒ views / no displayed non-key field)
+but did not render for either real record table probed. **The witness reports this instead of asserting
+it** — a `§AD-DISPLAYLOGIC-FALLBACK` line, never a PASS, so the day it starts rendering again is visible.
+
+### §P11.3 THE REWRITE — what the witness now judges
+Two tables (curated `c_order` **and** AD-folded `fact_acct`, so it is not a single-case witness), each:
+1. `§AD-LOGIC-LIVE` emitted with `withLogic > 0` — else **VACUOUS**, not PASS (the AD carries no logic
+   for this record, so a 0 would mean nothing).
+2. **DOM, not the log:** `.cfrow` rows with `display:none` > 0. The log line is emitted by the same
+   function that does the hiding, so asserting on it alone would be tautological — the DOM state is the
+   independent oracle.
+3. Falsifier A — a named **false-logic** column is present in the DOM but hidden (`c_order`→`chargeamt`,
+   `fact_acct`→`c_project_id`). If the evaluator regressed to "show everything", this fails.
+4. Falsifier B — a named **no-logic** column renders AND is visible (`c_order`→`documentno`,
+   `fact_acct`→`dateacct`). If it regressed to "hide everything", this fails.
+5. `§AD-DISPLAYLOGIC-FALLBACK` reports the `.idmp-fld` count for both tables — reported, never asserted.
+
+Every named column above is EXTRACTED from the measured runs quoted in §P11.1/§P11.2, not chosen.
+
+### §P11.4 RESULT — 🟢 W-AD-DISPLAYLOGIC-LIVE 10/10 PASS (see §P11.5 for the log)
+Coverage-matrix consequence: the row this witness backs was RED on an instrument defect, not a product
+gap. It is now green on the path that actually ships, over two tables.
+
+### §P11.5 RESULT LOG — `build/erp/poc_ad_displaylogic_live.log`, run against `origin/main` `8564295e`
+```
+§AD-LOGIC-LIVE key=c_order   fields=56 withLogic=28 visibilityFlips=25 applied=DOM
+§AD-DISPLAYLOGIC-LIVE key=c_order   rows=56 hiddenByLogic=25 withLogic=28 flips=25 chargeamt=hidden documentno=visible
+§AD-DISPLAYLOGIC-FALLBACK key=c_order   idmp-fld=1   (REPORTED, not asserted)
+§AD-LOGIC-LIVE key=fact_acct fields=46 withLogic=20 visibilityFlips=20 applied=DOM
+§AD-DISPLAYLOGIC-LIVE key=fact_acct rows=46 hiddenByLogic=20 withLogic=20 flips=20 c_project_id=hidden dateacct=visible
+§AD-DISPLAYLOGIC-FALLBACK key=fact_acct idmp-fld=0   (REPORTED, not asserted)
+🟢 W-AD-DISPLAYLOGIC-LIVE PASS — 10 PASS / 0 FAIL — over 2 tables, judged on the DOM
+```
+**FALSIFIER PROVEN, not claimed.** Swapping the two named columns (falsifier A pointed at `documentno`,
+B at `chargeamt`) turns exactly those two claims RED and nothing else:
+```
+🔴 c_order: falsifier A — false-logic documentno is present but HIDDEN  ·  documentno=visible
+🔴 c_order: falsifier B — no-logic chargeamt renders and is VISIBLE     ·  chargeamt=hidden
+🔴 W-AD-DISPLAYLOGIC-LIVE FAIL — 8 PASS / 2 FAIL
+```
+**⬜ Left open, named not buried:** `_appendReadonlyFields` (`.idmp-fld`) is still reachable in code —
+`_crudHas` false ⇒ a view, or a tab with no displayed non-key field — but rendered for neither table
+probed, so it currently has **no** witness. `§AD-DISPLAYLOGIC-FALLBACK` makes its return visible. Giving
+it a real arm needs a window that actually lands on it; that is a separate, bounded item.
