@@ -125,9 +125,21 @@ async function rowIdByText(page, text) {
   }
   return null;
 }
+// clickRowOpen — open the RECORD, not a cell editor.
+// STALE-WITNESS FIX 2026-09-04 (prompts/ERP_STOCK_EFFECT.md §E4.7): this used to click the POReference
+// cell, which was then a plain read-only cell whose click bubbled to the row. Since the in-place grid
+// editor landed, EVERY data cell carries its own listener that calls stopPropagation() and opens an
+// inline WEditor (idempiere.html:1977 → crud_overlay.js:1127 §INPLACE-CELL-OPEN), so that click now edits
+// a cell and the record never opens — the measured Stage-1 failure was `chip=null` right after
+// `§INPLACE-CELL-OPEN table=c_order id=-1 col=poreference`.
+// The row itself still opens the form (idempiere.html:1982). The cells that reach it are the ones with NO
+// per-cell listener: the DocStatus cell (rendered as a chip, no editor) and the leading checkbox cell
+// (only its <input> stops propagation, not the <td>). Try those, in that order, then the row.
 async function clickRowOpen(row, opts) {
-  var poCell = await row.$('td[data-ad-col="POReference"]');
-  if (poCell) { await poCell.click(opts); return; }
+  var statusCell = await row.$('td[data-ad-col="DocStatus"]');
+  if (statusCell) { await statusCell.click(opts); return; }
+  var cbCell = await row.$('td.idmp-cbcol');
+  if (cbCell) { await cbCell.click(Object.assign({ position: { x: 2, y: 2 } }, opts || {})); return; }
   await row.click(opts);
 }
 function deepUrl(port, params) {
@@ -240,6 +252,18 @@ function deepUrl(port, params) {
       await fillField(page, 'm_warehouse_id', '103');
       await fillField(page, 'c_bpartner_id', '120');
       await fillField(page, 'c_order_id', String(newPoId));
+      // STALE-WITNESS FIX 2026-09-04 (§E4.7): bim-ootb #1636's whole-row §PARITY-MANDATORY check now
+      // enforces the AD's OWN mandatory set on create, and this save was rejected on exactly two columns:
+      //   §CRUD validate key=m_inout verb=create REJECT errors=[c_doctype_id required, c_bpartner_location_id required]
+      // Queried the seed: on M_InOut both are IsMandatory='Y', IsDisplayed='Y' (tabs 257/296) and NEITHER
+      // carries an AD_Column or AD_Field DefaultValue — a real iDempiere user picks both on the form, and
+      // real iDempiere additionally defaults the location via CalloutInOut.bpartner (not yet in our 6-atom
+      // callout registry; one of the 139 named-deferred). Values EXTRACTED from the seed, not chosen:
+      //   c_doctype_id 122 = "MM Receipt" (DocBaseType MMR, IsSOTrx N) — the same doctype the seed's own
+      //     purchase receipt M_InOut 105 carries.
+      //   c_bpartner_location_id 114 = bpartner 120's only C_BPartner_Location ("Small Village").
+      await fillField(page, 'c_doctype_id', '122');
+      await fillField(page, 'c_bpartner_location_id', '114');
       await clickToolbarBtn(page, 'Save');
       var p2 = await waitForCrudPersist(w, 'm_inout', 15000);
       log('§P2P-SAVE table=m_inout committed=' + p2.committed + (p2.reason ? ' reason=' + p2.reason : ''));
@@ -260,25 +284,33 @@ function deepUrl(port, params) {
       await page.waitForSelector('#idmp-inline-mount [data-col="m_product_id"]', { timeout: 10000 });
       var lineFields2 = await page.$$eval('#idmp-inline-mount [data-col]', function (els) { return Array.from(new Set(els.map(function (e) { return e.getAttribute('data-col'); }))); });
       log('§P2P-FORM m_inoutline fields shown: ' + lineFields2.join(','));
-      // FINDING (separate, pre-existing, OUT of this lane's scope — the generic FK dropdown populator
-      // (idempiere.html populateRefs) reads the RAW bundle only, same "fresh rows are sidecar-only,
-      // invisible to a raw-bundle-driven read" class of gap ERP_BUSINESS_CYCLE_E2E.md §Fix 2026-07-21
-      // already found+fixed for renderOrderPicker's <select> — just never hit before for a generic
-      // AD-tab FK <select> because the O2C lane never manually linked one fresh child row to another via
-      // a picked dropdown value (buildDoc's auto-fold always supplied the FK programmatically, not via a
-      // rendered <option>). Confirmed live: page.selectOption() times out — "did not find some options" —
-      // for a real, freshly-resolved c_orderline_id value. Named, not silently worked around: this witness
-      // sidesteps it by sourcing the match-chain from a REAL SEED Purchase Order line (id=108, order 104,
-      // product 123) instead of the freshly-created PO from Stage 1 — a real, positive id IS listed in the
-      // dropdown (populateRefs' raw-bundle read finds it), so the actual subject of THIS fix (does
-      // completeReceipt/completeInvoice emit M_MatchPO/M_MatchInv correctly once the FK is set) is still
-      // exercised for real, just anchored on a stable seed line rather than Stage 1's fresh one.
-      var seedPoLineId = 108, seedPoOrderId = 104, seedPoProduct = 123;
-      await fillField(page, 'c_orderline_id', String(seedPoLineId));
+      // The FINDING this block used to carry — "populateRefs reads the RAW bundle only, so a freshly
+      // created parent can never be offered" — is FIXED (prompts/ERP_FK_PICKER_SIDECAR.md §FKFOLD): the
+      // picker now queries the tip-folded row set. Measured on this very run:
+      //   §VALRULE col=c_orderline_id vr=203 "C_OrderLine of Order" before=117 after=1 offered=1
+      //            verdict=applied ctx={"C_Order_ID":-1}          (it was offered=0)
+      // So the old sidestep — anchoring on SEED PO line 108 of order 104 — is now not merely unnecessary,
+      // it is WRONG: AD_Val_Rule 203 correctly restricts the picker to lines of the order being received
+      // against, and line 108 belongs to a different order. Take whatever the picker OFFERS instead of a
+      // hardcoded id — that is what a user can actually pick, and it keeps the chain on Stage 1's own PO.
+      var offered = await page.$$eval('#idmp-inline-mount select[data-col="c_orderline_id"] option',
+        function (os) { return os.map(function (o) { return o.value; }).filter(function (v) { return v !== ''; }); });
+      log('§P2P-PICKER c_orderline_id offered=' + JSON.stringify(offered));
+      if (!offered.length) throw new Error('c_orderline_id picker offered NOTHING for the fresh PO — the §FKFOLD fold did not reach it');
+      var poLineId = offered[0];
+      await fillField(page, 'c_orderline_id', String(poLineId));
       await fillField(page, 'm_inout_id', String(newRcptId));
-      await fillField(page, 'm_product_id', String(seedPoProduct));
+      await fillField(page, 'm_product_id', '130');            // the product Stage 1 put on that PO line
       await fillField(page, 'movementqty', '2');
       await fillField(page, 'line', '10');
+      // STALE-WITNESS FIX 2026-09-04 (§E4.7): #1636's whole-row check reports the line's own gap —
+      //   §PARITY-MANDATORY key=m_inoutline verb=create required=[line,qtyentered,c_uom_id] missing=[c_uom_id]
+      // c_uom_id 100 is the UOM every seeded receipt line carries. qtyentered mirrors movementqty.
+      // m_locator_id 103's only locator is 101; a line with no locator is skipped by erp_engine.stockMoves
+      // (prompts/ERP_STOCK_EFFECT.md §E4.3), so without it Stage 4 could never observe the stock effect.
+      await fillField(page, 'c_uom_id', '100');
+      await fillField(page, 'qtyentered', '2');
+      await fillField(page, 'm_locator_id', '101');
       await clickToolbarBtn(page, 'Save');
       var p2b = await waitForCrudPersist(w, 'm_inoutline', 15000);
       log('§P2P-SAVE table=m_inoutline committed=' + p2b.committed + (p2b.reason ? ' reason=' + p2b.reason : ''));
@@ -323,6 +355,15 @@ function deepUrl(port, params) {
       await fillField(page, 'dateinvoiced', today);
       await fillField(page, 'c_bpartner_id', '120');
       await fillField(page, 'c_order_id', String(newPoId));
+      // STALE-WITNESS FIX 2026-09-04 (§E4.7) — the same #1636 whole-row mandatory check as Stage 2.
+      // c_invoice's own required set (measured: §PARITY-MANDATORY key=c_invoice verb=create) includes
+      // c_doctypetarget_id, c_bpartner_location_id and m_pricelist_id, none of which carry a default.
+      // Values EXTRACTED from the seed's OWN vendor invoice for this very vendor (C_Invoice 105,
+      // C_BPartner 120): c_doctypetarget_id=123, c_bpartner_location_id=114, m_pricelist_id=102.
+      // fillField returns 'absent' harmlessly if a column is not on the form, so these are additive.
+      await fillField(page, 'c_doctypetarget_id', '123');
+      await fillField(page, 'c_bpartner_location_id', '114');
+      await fillField(page, 'm_pricelist_id', '102');
       await clickToolbarBtn(page, 'Save');
       var p3 = await waitForCrudPersist(w, 'c_invoice', 15000);
       log('§P2P-SAVE table=c_invoice committed=' + p3.committed + (p3.reason ? ' reason=' + p3.reason : ''));
@@ -352,11 +393,18 @@ function deepUrl(port, params) {
       var fillRes = await fillField(page, 'm_inoutline_id', String(rcptLine.m_inoutline_id));
       log('§P2P-FILL m_inoutline_id value=' + rcptLine.m_inoutline_id + ' result=' + fillRes);
       await fillField(page, 'c_invoice_id', String(newInvId));
-      await fillField(page, 'm_product_id', String(seedPoProduct));
+      await fillField(page, 'm_product_id', '130');
       await fillField(page, 'qtyinvoiced', '5');
+      await fillField(page, 'qtyentered', '5');
       await fillField(page, 'priceentered', '9.00');
       await fillField(page, 'priceactual', '9.00');
+      await fillField(page, 'pricelist', '9.00');
       await fillField(page, 'line', '10');
+      // STALE-WITNESS FIX 2026-09-04 (§E4.7) — the invoice line's own #1636 gap:
+      //   §PARITY-MANDATORY key=c_invoiceline verb=create required=[ad_org_id,line,qtyentered,
+      //     priceentered,pricelist,c_tax_id] missing=[c_tax_id]
+      // c_tax_id 104 is the tax Stage 1's PO line carries, so the invoice line matches its own order line.
+      await fillField(page, 'c_tax_id', '104');
       await clickToolbarBtn(page, 'Save');
       var p3b = await waitForCrudPersist(w, 'c_invoiceline', 15000);
       log('§P2P-SAVE table=c_invoiceline committed=' + p3b.committed + (p3b.reason ? ' reason=' + p3b.reason : ''));

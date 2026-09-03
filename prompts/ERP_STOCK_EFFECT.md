@@ -161,3 +161,35 @@ in our 6-atom registry (139 named-deferred). Porting `bpartner` would DEFAULT th
 the way real iDempiere does, making step 1 above unnecessary for a human user. `CalloutInOut.docType`'s
 own body sets `MovementType` via `MInOut.getMovementType` — **the same rule §E4 just ported as
 `movementTypeOf`**, so that atom is already half-built.
+
+
+## §E4.8 RESULT 2026-09-04 — the P2P end-to-end witness: **0 of 4 stages → 3 PASS + Stage 4a**
+Working §E4.7's three steps to zero, plus the product gap they uncovered
+(`prompts/ERP_FK_PICKER_SIDECAR.md`):
+```
+§P2P stage=1 PurchaseOrder   PASS  chip=Completed · CO
+§P2P stage=2 MaterialReceipt PASS  chip=Completed · CO
+   §RECEIPT-FANOUT receipt=-4 issotrx=N lines=1 matchPoOps=1 docBaseType="MMR" stockOps=1 movementtype=V+ netQty=1
+§P2P stage=3 VendorInvoice   PASS  chip=Completed · CO
+§P2P stage=4 ThreeWayMatch   PARTIAL  🟢 4a M_MatchPO count=1   🔴 4b M_MatchInv count=0
+```
+**§E4's stock effect is now proven through the real UI, not just headless:** a receipt completed by
+clicking the DocAction bar emits `stockOps=1 movementtype=V+`, the movement type derived from the real
+doctype (`docBaseType="MMR"`, `issotrx=N`). And Stage 4a carries a real junction:
+`{table:"M_MatchPO", c_orderline_id:-2, m_inoutline_id:-5, m_product_id:130}`.
+
+**What the witness fixes were, each forced by a measured line:**
+| stage | was | cause | fix |
+|---|---|---|---|
+| 1 | `chip=null` | `clickRowOpen` clicked the POReference **data cell**, which since the in-place grid editor landed opens a cell editor (`§INPLACE-CELL-OPEN … col=poreference`) instead of bubbling to the row | click the DocStatus cell (no per-cell listener), then the checkbox `<td>`, then the row |
+| 2 hdr | `REJECT [c_doctype_id, c_bpartner_location_id]` | #1636's whole-row mandatory check; both are `IsMandatory='Y'`, `IsDisplayed='Y'`, **no DefaultValue** | fill 122 / 114, both read from the seed |
+| 2 line | `selectOption` timeout | `c_orderline_id` picker offered **0** — the val rule filters to the fresh PO, which the raw-bundle query cannot see | the §FKFOLD product fix, then take the picker's own offered value instead of the obsolete seed-line sidestep |
+| 2 line | `missing=[c_uom_id]` | same #1636 check | fill `c_uom_id` + `m_locator_id` (without a locator `stockMoves` skips the line, so Stage 4 could never see the stock effect) |
+| 3 line | `missing=[c_tax_id]` | same | fill `c_tax_id` 104, the tax Stage 1's PO line carries |
+
+**⛔ Stage 4b is NOT a witness defect and must not be "fixed" by loosening it.** Measured:
+`§P2P-FILL m_inoutline_id value=-5 result=locked` — `AD_Field` locks `C_InvoiceLine.M_InOutLine_ID`
+`IsReadOnly='Y'` (tab 291), faithfully to real iDempiere, where **only `CreateFromInvoice` ever sets it**.
+E-5 ported that handler and it is registered live, but **nothing drives it from a screen** — the
+Info-Window selection dialog is not built. That is the one remaining piece between here and a
+UI-complete three-way match, and it is already named in `ERP_P2P_INVOICE_MATCH.md` §Fix5.5.
