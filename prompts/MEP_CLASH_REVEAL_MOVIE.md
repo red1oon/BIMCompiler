@@ -424,8 +424,29 @@ opacity = BASE + AMP * (0.5 + 0.5 * sin(2π * filmSeconds / PERIOD))
 ```
 `filmSeconds` from the bake's own normalized `t`, **never `performance.now()`** — so the same film
 pulses identically at 15 fps and at 24 fps, and a re-bake is reproducible. `PERIOD` is slow by
-intent (the user's word: *"pulsing slowly"*). One material colour per side, so the pulse costs a
-uniform write per frame, not a buffer upload.
+intent (the user's word: *"pulsing slowly"*).
+
+#### 4b. TWO STATES PER PAIR, AND THE PULSE IS PER-INSTANCE — this constrains phase 1, not just phase 2
+> **USER, 2026-09-04:** *"only those 1, 2 that are near and labelled remain solid colored pair non
+> pulsing until they fade off from labelling contention"*
+
+So a pair is in one of two visual states, and it moves between them by a **fade**, never a switch:
+
+| state | who | look |
+|---|---|---|
+| **ambient** | every true pair | pulsing shine-through, `opacity = BASE + AMP·(0.5+0.5·sin(2π·filmSeconds/PERIOD))` |
+| **selected** | the 1–2 near-and-facing pairs holding a label | **solid colour, pulse OFF** — it stops breathing while it is the subject |
+| transition | a pair entering or leaving contention | `fade` in [0,1] blends the two; a pair that loses contention fades back into the pulse rather than snapping |
+
+**The design consequence lands in PHASE 1, so build for it now:** the pulse cannot be one material
+uniform per side, because individual pairs have to be lifted out of it while the rest keep breathing.
+Carry the intensity **per instance** — `InstancedMesh.instanceColor` with
+`colour = baseColour × mix(pulse(t), 1.0, fade)` — one `instanceColor` upload per frame (~7,900 × 3
+floats ≈ 95 KB, or only the changed instances). Phase 1 ships with every `fade = 0`, i.e. everything
+ambient; phase 2 then only has to write `fade` for the selected pairs and nothing else changes.
+
+Getting this wrong is a rewrite, not a tweak — a single-uniform pulse cannot express "all of these
+breathe except those two".
 
 ### 5. Witness claims — `witness_clash_film_markers.js`, and each can come back NO
 - **W1 the markers ARE the mesh-true set, not the broad set.** `markers === 2 × trueClash`, and
@@ -437,6 +458,10 @@ uniform write per frame, not a buffer upload.
 - **W3 the pulse is a pure function of film time.** Opacity sampled at the same normalized `t` in a
   15 fps and a 24 fps bake must agree. **NO-OP guard:** amplitude must be non-zero — a "pulse" that
   never changes opacity is a no-op dressed as a feature.
+- **W5 the per-instance channel is real, tested in phase 1 before phase 2 needs it.** Force `fade=1`
+  on two instances and assert those two hold solid colour while every other instance still varies
+  with `t`. Without this the "all breathe except those two" requirement is untested until the
+  selector lands, and by then it is a rewrite.
 - **W4 the flag controls it.** `--no-clash` yields exactly zero markers; `--clash` yields `2 × trueClash`.
 - **VACUOUS:** `trueClash === 0` prints `INCONCLUSIVE`, never PASS — a building with no clashes proves
   nothing about a clash renderer.
