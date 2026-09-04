@@ -2111,9 +2111,9 @@ Six new witnesses, every one RED on plain `origin/main` before its fix and GREEN
    P2P witness still types; `CalloutEngine.dateAcct` (4) is one trivial rule reused on four documents.
    **One trap named there:** `CalloutOrder.docType` would become a SECOND writer to `IsSOTrx`, which is
    exactly the coupling defect 4 above cost a regression to find.~~
-2. **E-3, form #2 of 49.** The spine is done and the honest card names the gap by classname and count;
-   a new form is one `_registerForm(classname, fn)` call. `Match.createMatchRecord` (creating a match by
-   hand) is deliberately NOT ported — see `§AF.5`.
+2. ✅ **DONE (witness) 2026-09-04 — see `§ADFORM-TRXMATERIAL` at the end of this file.** AD_Form 103
+   `VTrxMaterial`, the read face of the `M_Transaction` ledger `stockMoves` writes. 2 of 49 forms now
+   implemented. `W-ADFORM-TRXMATERIAL` 19/0, INCONCLUSIVE 1/2-of-3 on plain main. bim-ootb PR #1672.
 3. **Three STALE LIVE WITNESSES, red on plain `main`, found while regression-testing** — none is a
    product defect, each is an instrument judging a retired DOM: `poc_odoo_descriptor.js` (times out on
    `#idmp-login-ok`), `poc_wh_pos_pick_live.js`, `poc_wh_walk_live.js`, `poc_pos_live.js`. They cost
@@ -2266,3 +2266,81 @@ port is checked against the SQL rather than against itself.
 - **The four `navigate*` atoms are not derives at all** — they move the CURSOR between tabs. They will
   never belong in a module whose whole contract is "return `derived:{col:value}`"; they should be
   struck off the denominator, not ported. Named here so the next session does not try.
+
+---
+
+# §ADFORM-TRXMATERIAL 2026-09-04 — form #2 of 49
+**Owns `§ERP-SESSION-CLOSE-2 §C2.3` item 2 (E-3, "form #2 of 49").** The spine is `§ADFORM-VMATCH`;
+this is the second `_registerForm(classname, fn)` call it was built to make cheap.
+
+## §TM.1 WHY THIS FORM
+**AD_Form 103 "Material Transactions" (`org.compiere.apps.form.VTrxMaterial`)**, menu leaf 229.
+Same test `§AF.2` applied to VMatch: *the read face of something this lane already writes*.
+`erp_engine.stockMoves` (`erp_engine.js:315-343`) emits every `M_Transaction` row this app has, as a
+`CREATE_LINE` op — so nothing has to be invented to fill the form, and a receipt completed in THIS
+session exists **only in the signed op log**. Reading the bundle and not the log is precisely the
+"committed but invisible" defect `§AF.3` already names.
+
+It is also **read-only**, which is the deliberate contrast with `§AF.5`'s refusal to port
+`Match.createMatchRecord`: there is no second writer to argue about.
+
+## §TM.2 THE CLAIM UNDER TEST
+> **A.** The menu leaf reaches AD_Form 103 and dispatches on its own Classname — the "Not available"
+> card count drops 48 → 47, by classname, in the shipped `§AD-FORM-LIVE` log line.
+> **B.** The grid shows `M_Transaction` from **both** sources — the bundle AND the op log — and each
+> of the six `TrxMaterial.refresh()` restrictions filters the population the way the Java's `MQuery`
+> does: `AD_Org_ID` · `M_Locator_ID` · `M_Product_ID` · `MovementType` (all EQUAL) and
+> `TRUNC(MovementDate)` `>=` / `<=`.
+> **C.** Each row resolves its SOURCE document by `TrxMaterial.zoom()`'s precedence, verbatim:
+> `M_InOutLine → M_InventoryLine → M_MovementLine → M_ProductionLine → C_ProjectIssue`, first
+> non-zero wins; none → the Java's own `"Not found zoom table"`. In `ad_seed.db` this is not a
+> one-branch test: 26 rows resolve to `M_InOutLine` and 2 to `M_MovementLine`.
+
+## §TM.3 EXTRACTED, NOT DESIGNED
+`TrxMaterial.java` is only 163 lines and every one of them is ported or named:
+| Java | here |
+|---|---|
+| `dynInit:57-71` — `m_staticQuery` restricts `AD_Client_ID` | the same client restriction, applied first |
+| `refresh:84-118` — six optional `MQuery` restrictions, AND-ed | six filter controls, each skipped when blank, exactly as `if (x != null && length > 0)` does |
+| `refresh:106-110` — `TRUNC(MovementDate)` | compared on the DATE part only, never the timestamp |
+| `zoom:130-162` — the five-FK precedence + `log.warning("Not found zoom table")` | `_trxZoom()`, same order, same fallback |
+| `dynInit:66` — `AD_Window_ID = WINDOW_MATERIALTRANSACTIONS_INDIRECTUSER` (hardcoded) | the column set comes from that window's own tab, not from a list invented here |
+
+**NAMED, NOT DONE:** `zoom()` in the Java only computes the `(AD_Table_ID, Record_ID)` pair; the
+NAVIGATION is the ZK caller's job, not the form's. The pair is resolved and DISPLAYED; opening the
+target window from this grid is declared here, not silently missing.
+
+## §TM.4 MEASURED — W-ADFORM-TRXMATERIAL, 19 claims
+| | plain `origin/main` | after |
+|---|---|---|
+| verdict | 🔴 **INCONCLUSIVE — 1 PASS / 2 FAIL of 3 reached** | 🟢 **19 PASS / 0 FAIL** |
+| AD_Form 103 | `handled=N` → the "Not available" card | `handled=Y`, `registered=[VMatch,VTrxMaterial]` |
+| forms implemented | 1 of 49 | **2 of 49** |
+| grid, unfiltered | (no pane) | 28 rows, log AND DOM |
+| `MovementType='V+'` | — | 28 → **21** |
+| `+ M_Product_ID=130` | — | 21 → **6** |
+| `MovementDate >= 2002-02-23` | — | 28 → **25** |
+| zoom precedence | — | **26** `M_InOutLine` · **2** `M_MovementLine` |
+
+**The RED run is INCONCLUSIVE, and that is the correct verdict, not a weaker one.** The A claims are
+judged BEFORE the pane is required — on plain `main` the leaf really does reach AD_Form 103 and log
+`handled=N`, so the baseline reports two JUDGED failures — and then the run says plainly that B and C
+could not be judged because the pane does not exist there. A witness that printed PASS or FAIL over
+claims it never reached is the exact defect `§AF.5` records against its own first draft.
+
+**Three claims exist only to keep the filter claims honest** (`B4b`, `B5b`, `B7b`): each asserts the
+filter actually NARROWS the population, because a restriction that did nothing would satisfy
+"grid == oracle" just as well. `C3` does the same for the zoom precedence: it asserts TWO different
+branches are exercised, since a one-branch test proves no order at all.
+
+**One thing this run does NOT prove, stated rather than glossed:** `oplog=0` on a cold session, so
+only the ARITHMETIC of the two-source merge is judged here (`B1b`). The non-zero side of the same
+shared reader is witnessed by `W-P2P-INVOICE-MATCH`, whose `§AD-FORM-APPENDONLY` line for the match
+junctions carries `oplog>0` — one reader, `_appendOnlyRowsFor`, not two.
+
+**Regression from the rename:** `W-ADFORM-VMATCH` 16 PASS / 0 FAIL. `sw.js` v791 → **v792**.
+
+## §TM.5 ⬜ WHAT IS DECLARED, NOT DONE
+- **The zoom NAVIGATION.** `TrxMaterial.zoom()` computes `(AD_Table_ID, Record_ID)`; opening that
+  window is the ZK caller's job in the Java too. The pair is resolved and shown; following it is not.
+- **47 of 49 forms still have no renderer**, and the card still says so by classname and count.
