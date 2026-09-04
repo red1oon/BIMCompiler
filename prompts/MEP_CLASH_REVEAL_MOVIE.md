@@ -671,3 +671,72 @@ screen-space contention keeps pulsing until a panel frees up — the literal rea
 **Not in this phase, plainly:** no HUD-column avoidance beyond draw order (a label can sit under the
 day counter's corner and be covered by it); no facing test (ruled out: proximity only). The 15-minute
 DB-404 hang named under P1 is still open.
+
+---
+
+# ⚠ RESUME HERE — 2026-09-05 session close
+
+## State: phase 1 and phase 2 both BUILT and WITNESSED. Three PRs open, stacked, none auto-merging.
+```
+#1676  feat/clash-mesh-narrowphase  → main                        §MESH_NARROWPHASE (mesh-true pairs)
+#1678  feat/clash-film-p1           → feat/clash-mesh-narrowphase §CLASH_FILM_P1 (markers + pulse + flag)
+#1679  feat/clash-film-p2           → feat/clash-film-p1          §CLASH_FILM_P2 (the label)
+```
+Merge order is bottom-up: 1676, then 1678, then 1679. **The user reviews these** — do not arm
+auto-merge. Working worktree for #1676/#1678 is `/tmp/wt-clash-mesh` (branch `feat/clash-film-p1`,
+pushed, clean). sw is at **v1145**.
+
+## THE ONE OPEN DEFECT — the additive markers wash the sky. MEASURED, NOT FIXED.
+> **USER:** *"IT seems to leak into outside sky etc that floor slab turning light blue"* … and, after
+> the second clip: *"is the sky bug fixed?"* — **the honest answer is still no.**
+
+Measured by diffing a `--clash` clip against a `--no-clash` control bake of the SAME window
+(`Hospital_clash_clip2_2026-09-05.mp4` vs `Hospital_noclash_clip_2026-09-05.mp4`, clip 0.28:0.32,
+117 frames each — this is the right instrument; raw pixel classification on one film is not, because
+a dusk sky reads as "red marker" and a blue sky as "blue marker", which cost one wrong measurement):
+- **peak marker coverage 9.8 % of frame, max 15.3 %** (frame 64 alone: 116,453 blue pixels)
+- **sky band, top 180 rows: up to 73,619 changed pixels**
+- for contrast, the parts that ARE right: `corr(envelope, on-screen intensity) = 0.906`, and
+  dark-phase frames sit at the codec noise floor (mean Δ 10) — the pulse genuinely reaches off.
+
+**Two causes, both in `viewer/clash_film.js`:**
+1. markers are WORLD-sized, so one near the lens balloons;
+2. additive blending in front of sky brightens the sky (structure behind a marker gets the intended
+   shine-through; empty sky just gets brighter and bluer).
+
+**Fix specified, not landed:** clamp each marker to a constant small SCREEN size (scale by camera
+distance, the same idea the label already uses for its panel) so proximity cannot balloon it, and
+drop `PEAK` from 0.55 so any residual sky contribution is faint. Then re-run the SAME control diff
+and require sky-band changed pixels to fall by an order of magnitude with
+`corr(envelope, intensity)` unchanged.
+
+## Second open question, raised by the user and NOT yet measured
+> *"during fly indoors, it seems it is not as bright as when we do a static alt-s"*
+
+**Ruled out already, by code read:** `A._nightPLScaleStill = 0.5` (§STAGED_PL_CUT, tools.js:1100) is
+applied by BOTH paths — `effects.js:3623` (Alt+S still) and `effects.js:5035` (bake). Same cut either
+way, so it is not the difference. **Do not re-derive this.**
+
+Two candidates left, which need opposite fixes, so measure before spending:
+1. **the light budget is spread by the camera, not by the room.** `_nightUpdateLights` picks ≤200
+   fixtures by frustum + nearest-to-aim. Parked for a still, all 200 serve your room; flying, they
+   are re-picked per pose and spread along the path. The clip log shows
+   `§NIGHT_STILL_LIGHTS raised to 200 lights` and `§BAKE_INTERIOR_TOPUP` never firing — the frustum
+   already filled the budget, so the existing top-up cannot help this case.
+2. **the bake renders half the still's fold** — `§MAXQ_FRAME_BUDGET taa=8 ao=12 renders/frame=20`
+   against the still's 16+24=40 (§R10's deliberate 2× cut). Fewer samples read dimmer indoors.
+
+**The measurement that settles it:** bake a few frames at a FIXED indoor pose, take an Alt+S still at
+the SAME pose, and compare summed point-light intensity and mean luma. That separates "fewer lights
+reached the room" from "fewer samples converged".
+
+## Also settled this session, so it is not re-opened
+- Clash pairs are the **mesh-true** set. Terminal bbox false rate **33.7 %**, Hospital_silent **79.0 %**
+  — report separately, never averaged.
+- The markers are a **forecast**: present from frame 0 over empty ground, never gated by the Time
+  Machine (`_tmIsVisible` calls = 0, spied not assumed).
+- Labels: within **4 m**, occluded or not, any number, limited only by screen-space non-overlap;
+  one HUD-style panel, red name above / blue below, constant screen size; **no camera slowdown**.
+- Alt+C now carries the **Clash pairs** checkbox and a **Silent-bake size** select that
+  `cli_silent_bake.js` honours when `--width/--height` are absent.
+- An unloadable DB now aborts the bake in **2.8 s**, not 900.
