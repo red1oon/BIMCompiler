@@ -30,11 +30,20 @@ bim-ootb **#1669 · #1672 · #1673 · #1675**, every one CI-green. Three new wit
   `odoo_agent/extract_model.js`**. → §PREVIEW-DEMO-FROM-SQL · §AGENT-ZIPS-BUILT
 - **`§AZ.3` answered** #1677 — `idempiere_agent.zip` nests. Not cosmetic: `about_diy.js:199` had always
   printed `cd idempiere_agent && …` while the zip put the files at the ROOT, so the command the app
-  prints could not run. New claim `E1` checks the offer's `cd <name>` against the zip's top level;
-  `W-AGENT-ZIP-SYNC` 11 → **13/0**.
+  prints could not run. New claim `E1` checks the offer's `cd <name>` against the zip's top level.
+- 🔴 **`§PAGES-SERVES-THE-BRANCH`** #1680 — **READ IT FIRST NEXT SESSION.** Pages here is
+  `build_type: legacy`, source `{branch: main, path: /}`: it serves the **tracked files on `main`**, and
+  the artifact `deploy-pages.yml` uploads is **published by nothing**. Untracking the zips in #1675
+  404'd both live downloads; `erp/version.json` has been 404 since it was introduced; the minify step
+  (claimed **−36.9% gz**) has never reached a user. Zips re-tracked, `W-AGENT-ZIP-SYNC` **15/0** with a
+  new `A0a` (*the zip is PRESENT*). **Verified by `curl`, not inferred:** both `200`, both extract to
+  their own folder, `diff -r` clean. **Standing rule: a deploy is not verified by a green workflow —
+  fetch the URL.**
 **⛔ Next** (nothing on `§C2.3` remains): the 12-witness stale-root class (`§SW.2`) · the 27 callout
 bindings still undispatched (`§CC.7`; four are `navigate*` atoms that should leave the denominator,
-not be ported) · 47 of 49 forms with no renderer.
+not be ported) · 47 of 49 forms with no renderer · **⛔USER `§PZ.3`: switch Pages to
+`build_type: workflow`?** (it would make version.json + minification live for the first time, and make
+the site stop updating whenever the workflow fails). Full restart brief: `AGENT_QUEUE.md` §RESTART.
 
 ## Previous State — 2026-09-04 (earlier) — ARCHIVED to its spec section
 
