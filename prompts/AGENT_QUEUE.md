@@ -2452,10 +2452,27 @@ stale=[odoo_agent/extract_model.js(missing)]"*. `A0` prints **SKIPPED, not passe
 no zip is stored — the drift it guards cannot exist when nothing is stored, and saying so beats a
 green tick over an empty check.
 
-## §AZ.3 ⛔ USER — one decision, not work
-**The two bundles have different SHAPES and the builder deliberately preserves both:**
-`idempiere_agent.zip` is FLAT (`migrate_agent.js` at the root, so extracting litters the current
-directory); `odoo_agent.zip` nests everything under `odoo_agent/`. That is a real user-visible
-difference and making them consistent changes what an existing download does, so it is not something
-to tidy silently. **The question: should `idempiere_agent.zip` become nested too?** One line in
-`BUNDLES` either way.
+## §AZ.3 ✅ ANSWERED 2026-09-04 — YES, nest it. And it was never only cosmetic.
+The question put to the owner was whether `idempiere_agent.zip`, which was FLAT, should nest under
+`idempiere_agent/` like `odoo_agent.zip` does. **Answered yes.** Acting on it exposed the reason it
+was not a cosmetic question at all:
+
+> **The instruction the app has always printed was not runnable on the file the app served.**
+> `common/about_diy.js:199` tells the user, verbatim:
+> `cd idempiere_agent && npm install && node migrate_agent.js --masters`
+> — while the zip put `migrate_agent.js` at the ROOT. There was no `idempiere_agent` directory to
+> `cd` into, and the three files landed loose in whatever directory the user happened to be in.
+> `odoo_agent.zip`'s `cd odoo_agent` was correct, which is why only one of the pair was broken.
+
+**A download and the sentence printed next to it are ONE contract.** `W-AGENT-ZIP-SYNC` checked only
+half of it — that the file exists and matches its source — so it was green over a command that could
+not run. New claim **E1** closes that: it parses the `cd <name>` out of the offer in
+`common/about_diy.js` and asserts `<name>/` is the zip's single top-level entry.
+
+**MEASURED:** `E1` on the FLAT shape → 🔴 `instruction=cd idempiere_agent zipTopLevel=[(root)]`.
+Nested → 🟢 for both bundles; **W-AGENT-ZIP-SYNC 13 PASS / 0 FAIL**. Verified by extracting both zips
+into one empty directory: it now contains exactly `idempiere_agent/` and `odoo_agent/`, nothing loose,
+and each folder's contents `diff -r` clean against its source directory.
+
+**`prefix` stays per-bundle data** rather than becoming a hardcoded rule in the writer — the shape of
+a shipped artefact should be stated, not assumed.

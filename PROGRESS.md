@@ -28,9 +28,13 @@ bim-ootb **#1669 · #1672 · #1673 · #1675**, every one CI-green. Three new wit
 - **The last two tracked binaries** #1675 — `preview_demo.db` built from its own `.dump`; both
   `*_agent.zip` built by `deploy-pages.yml`. Found a live defect: **`odoo_agent.zip` shipped without
   `odoo_agent/extract_model.js`**. → §PREVIEW-DEMO-FROM-SQL · §AGENT-ZIPS-BUILT
+- **`§AZ.3` answered** #1677 — `idempiere_agent.zip` nests. Not cosmetic: `about_diy.js:199` had always
+  printed `cd idempiere_agent && …` while the zip put the files at the ROOT, so the command the app
+  prints could not run. New claim `E1` checks the offer's `cd <name>` against the zip's top level;
+  `W-AGENT-ZIP-SYNC` 11 → **13/0**.
 **⛔ Next** (nothing on `§C2.3` remains): the 12-witness stale-root class (`§SW.2`) · the 27 callout
 bindings still undispatched (`§CC.7`; four are `navigate*` atoms that should leave the denominator,
-not be ported) · 47 of 49 forms with no renderer · one ⛔USER decision in `§AZ.3`.
+not be ported) · 47 of 49 forms with no renderer.
 
 ## Previous State — 2026-09-04 (earlier) — ARCHIVED to its spec section
 
@@ -75,9 +79,6 @@ upload wholesale.
   then whether `cpeRevealApplyVisual`'s write survives the per-frame staging rebuild. Detail in `AGENT_QUEUE.md` A-28.
 - **§FILM_UNSUPPORTED** — not started; take the short `--frames` re-scope, not a full bake.
 - **§LIGHT_SHAFT (D-5)** — specced, queued behind the lighting lane (shares `effects.js`).
-- **⛔USER (new 2026-09-04, `§AZ.3`)** — the two shipped agent zips have DIFFERENT shapes
-  (`idempiere_agent.zip` flat, `odoo_agent.zip` nested); the builder preserves both. Should they match?
-  One line in `BUNDLES` either way — it changes what an existing download does, so it is not a tidy-up.
 - ⛔USER decisions (12 open) in `AGENT_QUEUE.md`: calibration lever (Hospital 318→940 d), LFS 8.53 GB pay-vs-rewrite, sub-element slab splitting, Terminal's 673 `Ceiling Level NN` elements.
 
 ## Standing constraints added 2026-09-02/03
