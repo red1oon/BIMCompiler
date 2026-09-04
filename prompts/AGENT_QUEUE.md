@@ -1904,3 +1904,68 @@ to be wrong. Scope: tables the app actually renders (a tab reachable from an act
 - **`CalloutOrder.docType` is the one to be careful with** — it is the sibling of the seam
   `MOrder.issotrxFromWindow` (§K2RB.5) now covers at beforeSave. Two writers to `IsSOTrx` is exactly
   the defect §IC.2 item 3 already cost a regression to find.
+
+---
+
+# §ADFORM-VMATCH 2026-09-04 — the Form spine, and one form end to end
+**Owns `§ERP-SESSION-CLOSE §CLOSE.4 item 4` (E-3). CLOSED — bim-ootb #1664, sw v787.**
+
+## §AF.1 THE CLAIM UNDER TEST
+> A. an `'X'` menu leaf reaches its `AD_Form` row and dispatches on the row's **own Classname** — and a
+> classname with no renderer shows the HONEST *"Not available"* card, never a blank pane.
+> B. `AD_Form 108` "Matching PO-Receipt-Invoice" (`org.compiere.apps.form.VMatch`) renders, and the rows
+> it shows are the rows the Java's own SQL would show: same population, same `HAVING`, both modes.
+
+Before: an `'X'` leaf fell through to `status('… action X (window opening only in I1)')`. **49 AD_Form
+rows, 0 renderers.** Now: `openAdForm()` — the sibling of the W-PROC spine, honesty rule included.
+
+## §AF.2 WHY VMATCH IS THE ONE
+It is the **read face of the three-way match this lane closed at #1654/#1661**. The
+`M_MatchPO`/`M_MatchInv` junctions already exist, so nothing has to be invented to fill the form —
+which is the whole difference between "a form renders" and "a form is true".
+
+## §AF.3 EXTRACTED, NOT DESIGNED
+`Match.java:301-361` picks a SQL pair per direction; the SQL lives on the models as constants:
+`MInvoice.MATCH_TO_RECEIPT_SQL:85-98` + `:101-110` · `MInOut.BASE_MATCHING_SQL:87-102` + `:116-141` ·
+`MOrder.BASE_MATCHING_SQL:81-97` + `:107-124`. The `HAVING` is the semantics: **NOT MATCHED =
+`qty <> SUM(matched)`, MATCHED = `0 <> SUM(matched)`.** `Match.getMatchToOptions:80-96` fixes the legal
+pairs; `Order→Invoice` exists in the constants but the Java says *"only matchToType == MATCH_SHIPMENT
+is implemented in UI"* (:328), so it is not offered here either. Every `CASE` is carried, not
+approximated (APC negates `QtyInvoiced`; MMS negates `MovementQty` and only counts at `IsSOTrx='N'`;
+`M_MatchPO` only counts a junction row carrying the other side's key), and the `INNER JOIN M_Product`
+is applied as the filter it is.
+
+**Two things the substrate forced, both honest:** `sql.js` has no `FULL JOIN`, so the fold is JS over
+the same inputs — which is the better shape anyway, because `_matchRowsFor` must read **both** the
+bundle's junction rows **and the signed op log** (`completeInvoice`/`completeReceipt` emit each
+junction as a `CREATE_LINE` op, so a match made in THIS session exists only there). Reading one source
+and not the other is exactly how this lane's "committed but invisible" defects happen. `_foldTable` is
+**hoisted** from `renderCreateFromPicker`'s inner `foldRows`, not copied.
+
+## §AF.4 MEASURED
+| | before (plain `origin/main`) | after |
+|---|---|---|
+| verdict | 🔴 1 PASS / 2 FAIL, then the harness threw (no form pane exists) | 🟢 **16 PASS / 0 FAIL** |
+| `dir=I>S notmatched` | — | rows=18, oracle 18 |
+| `dir=I>S matched` | — | rows=18, oracle 18 |
+| `dir=S>O notmatched` | — | rows=0, oracle 0 |
+| `dir=S>O matched` | — | rows=21, oracle 21 |
+| unregistered form | — | `form=104 …VAllocation handled=N` → "Not available" card |
+
+The oracle is `sqlite3` running the transcribed Java SQL against `ad_seed.db`, not the script's
+opinion. The witness also asserts the two modes are DIFFERENT populations (a renderer that ignored
+the mode would otherwise pass both), that counted rows are actually IN the table, that the run is not
+vacuous — and it **refuses to print PASS when the harness threw** before every claim was judged (the
+first run did exactly that, and said PASS; fixed).
+
+## §AF.5 ⬜ WHAT IS DECLARED, NOT DONE
+- **`Match.createMatchRecord:396-468` — creating a match by hand — is NOT ported.** `erp_engine`'s
+  `completeInvoice`/`completeReceipt` already emit every junction this app has, and a second writer to
+  one junction is precisely the defect class `§INOUT-CALLOUTS` paid a regression to find this same
+  session. Declared here, not silently missing.
+- **48 of 49 forms still have no renderer**, and the card says so, by classname and by count. The
+  spine is the reusable part: a new form is one `_registerForm(classname, fn)` call.
+- **Two instrument faults this witness found in itself** and records so the next one does not repay
+  them: the menu tree keeps every node in the DOM and hides it behind the parent's `.open` class, so a
+  leaf locator RESOLVES and then times out un-clickable; and a witness that prints `PASS` after its
+  harness threw is worse than one that fails.
