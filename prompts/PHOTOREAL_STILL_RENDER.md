@@ -3238,7 +3238,7 @@ centre at this pose; without the top-up this frame had zero fixture light"*.
 - #1327 should be closed as superseded-in-part once #1642 lands, with its two untaken halves carried
   forward rather than lost.
 
-## §BAKE_MISSING_ELEMENTS — 2026-09-04 — 🟠 ROOT CAUSE MEASURED (§BME.8), FIX ON bim-ootb PR #1660 (NOT merged). READ §BME.9 RESUME FIRST — §BME.1–§BME.6 below are the pre-solution record
+## §BAKE_MISSING_ELEMENTS — 2026-09-04 — 🟠 ROOT CAUSE MEASURED (§BME.8), FIX RED/GREEN-PROVEN (§BME.10), bim-ootb PR #1660. READ §BME.10 (newest, at the END of this file) THEN §BME.9 — §BME.1–§BME.6 are the pre-solution record
 
 > **USER, on the landed Hospital silent bake** (`~/Downloads/Hospital_silent_bake_2026-09-04.mp4`,
 > 2,937 frames, 195.8 s, sw v1138):
@@ -3422,3 +3422,37 @@ hidden at the end cursor (`§DVS_END_DELTA_VS_FULL delta: missing=53 (B=41 I=12)
 IfcColumn/IfcBeam/IfcSlab) — real, separate, unowned; (b) `§CPE_STATS_TAIL` uses the clip-local `_tn`
 as u (log says "u=0.364" in a 0.394–0.402 clip) — cosmetic in clip mode only; (c) the 178
 IfcCurtainWall / 24 IfcRoof / 31 IfcStair with no geometry still occupy programme time (§BME.3).
+
+### §BME.10 — 2026-09-04 (later) — ITEM 1 CLOSED: the ownership witness is RED on main and GREEN on the fix
+**§BME.9 item 1 is done.** `viewer/tests/witness_dlod_tm_ownership.js` now judges. It could not
+before, and the reason was TWO instrument defects, not one — the second is worth keeping because it
+is the defect's own signature and would be re-derived otherwise:
+
+1. **The culler never ran.** main.js's animate loop self-parks when idle (§IDLE_GATE) and
+   `markDirty()` alone did not wake it headless. `flyTo()` now drives it directly after every camera
+   set, the way `tour.js:1636` (`_scrubAfterJump`) does: `A._dlodFrame = -1; A.dlodTick();`.
+2. **The near pose looked away from where the refs actually are.** `_buildRefs()` (dlod.js:54)
+   reads each instance's world position out of the matrix it finds — and at TM day 0 every unplaced
+   instance carries `makeScale(0,0,0)` (time_machine.js:628), translation **(0,0,0)**. So the whole
+   ref set collapses onto the **WORLD ORIGIN** with a metadata radius, and the restore-to-zero fires
+   only when the origin re-enters the frustum. The film's frame-1170 pose (`[-25,6.32,-3.02] →
+   [-44.61,2.67,-1.56]`) has the origin *behind* the camera — that is the entire reason the first
+   RED attempt read 25013/25013 non-zero and looked like a passing tree. `poseA` is now
+   `[120,80,120] → (0,0,0)`; `poseFar` `[900,600,900] → [1200,0,1200]` keeps the origin behind.
+
+**MEASURED — the pair (§-log, primary evidence):**
+
+| run | tree | §DTO_TM_DAY0 | §DTO_PASS out→back | worst classes lost | §DLOD_DISABLE(tm) | verdict |
+|---|---|---|---|---|---|---|
+| RED | `ROOT=/home/red1/bim-ootb` @ `2ac311ac` (unfixed main) | `nonZero=0/25013 tmOn=true dlodDisableLines=0` | `0/25013 → 0/25013` | IfcMember 5242 · IfcPlate 1130 · IfcFurniture 179 · IfcWindow 46 (**22 classes, 25,013 instances**) | 0 | `§WITNESS_DLOD_TM_OWNERSHIP pass=3 fail=1 ran=22` |
+| GREEN | `/tmp/wt-dlod-tm` @ `9eb1f120` (§DLOD_TM_OWNERSHIP) | `dlodEnabled=false dlodDisableLines=1` | `25013/25013 → 25013/25013` | every class `lost=0` | 1 | `§WITNESS_DLOD_TM_OWNERSHIP pass=4 fail=0 ran=22` |
+
+Red control passed in both runs — the witness can fail. On the RED run the precondition line fires
+verbatim as it did in the film: `§DLOD_REFS built instanced=2872 imInstances=25013` **after** TM
+zeroed them. On the GREEN run those refs are never built at all under TM (only the mid-stream
+`imInstances=2753` set, captured before TM existed).
+Logs: `/tmp/dto_red2.log`, `/tmp/dto_green.log`. Commit `9eb1f120` on `test/staged-draw-census`.
+
+**PR #1660 was `DIRTY`/`CONFLICTING` on arrival** — synced, not redone (`git merge origin/main`;
+the only conflict was `sw.js`'s version-comment block, resolved by keeping BOTH sides' notes and
+taking `CACHE_VERSION = 'v1141'` above main's v1140). Merge commit `74f41526`.
