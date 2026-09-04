@@ -2118,12 +2118,13 @@ Six new witnesses, every one RED on plain `origin/main` before its fix and GREEN
    `W-ODOO-DESCRIPTOR` 7/7 · `W-POS-LIVE` · `W-WH-POS-PICK-LIVE` · `W-WH-LIVE`. None was a product
    defect and in three of four the error message named the wrong thing. It also surfaced a CLASS:
    12 more witnesses default to a `/tmp/wt-*` worktree that is measured GONE — listed in full there.
-4. **`preview_demo.db` (397 KB) is a tracked binary DB** and simultaneously the live fixture of
-   `erp/tests/poc_preview_demo.js`. The remediation is the project's own doctrine — regenerate it from
-   SQL — not deletion. Named in `§HYGIENE-E14`, not actioned.
-5. **`idempiere_agent.zip` duplicates `erp/idempiere_agent/`** but is a SHIPPED DOWNLOAD
-   (`common/about_diy.js:198`). Building it at deploy time would remove the duplication without
-   removing the feature.
+4. ✅ **DONE (witness) 2026-09-04 — `§PREVIEW-DEMO-FROM-SQL` at the end of this file.** The 397 KB
+   binary is gone; `erp/tests/fixtures/preview_demo.sql` is tracked and the witness builds the `.db`
+   itself when absent. Its `.dump` round-trips byte-identically. bim-ootb PR #1675.
+5. ✅ **DONE (witness) 2026-09-04 — `§AGENT-ZIPS-BUILT`, same PR.** Both zips are built from their
+   source directories by `deploy-pages.yml` and left untracked. It found a LIVE defect on the way:
+   `odoo_agent.zip` shipped WITHOUT `odoo_agent/extract_model.js`. `W-AGENT-ZIP-SYNC` 11/0, RED 1 FAIL
+   on plain main, wired into CI. **⛔USER decision in `§AZ.3`:** should the two bundles' shapes match?
 
 ## §C2.4 THE ONE THING THAT WOULD HAVE SAVED THE MOST TIME
 Every stale premise this session hit — three of five hygiene items, three green-but-scope-blind
@@ -2394,3 +2395,67 @@ node or a business gate, and in all three the real cause was the harness's own s
 own step order. **Read what the PAGE logged, not what the harness concluded** — `poc_pos_live` was
 handed `§IDMP-PILLS PillBuilder missing — not mounted` on every run and reported "the pos-station
 gate should be TRUE".
+
+---
+
+# §PREVIEW-DEMO-FROM-SQL + §AGENT-ZIPS-BUILT 2026-09-04 — the last two tracked binaries
+**Owns `§ERP-SESSION-CLOSE-2 §C2.3` items 4 and 5.** Both are the same shape: a binary tracked in git
+that DUPLICATES something the repo already holds. `CLAUDE.md`'s DB rule bans binary `.db` commits
+"unconditionally, regardless of LFS quota"; the same reasoning applies to any generated artefact.
+
+## §PD.1 `preview_demo.db` — 397 KB of binary, now built from its own `.dump`
+It was in git **only because `.gitignore` carried an explicit `!erp/preview_demo.db` un-ignore** —
+someone forced it past the rule rather than being exempted by it. Two measured facts made the fix easy:
+- **It is a NODE test fixture, not a shipped asset.** One consumer: `erp/tests/poc_preview_demo.js`,
+  which reads it with `fs`. It is not fetched by any page, and it is not in `sw.js`'s precache
+  (`idempiere.html:3970` only names it in a comment).
+- **The `.dump` round-trips exactly.** 518 KB of text (44 KB gzipped, and a real git delta instead of a
+  fresh blob per change); the rebuilt database's `.dump` is **byte-identical** to the original's, and
+  every one of its 50 tables carries the same row count.
+
+`erp/tests/fixtures/preview_demo.sql` is now what git tracks;
+`erp/tests/fixtures/build_preview_demo.js` materialises the `.db` from it, and the witness calls that
+itself when the file is absent — self-healing, the same pattern as the app's own patch loaders, so no
+workflow changes and no run needs a manual step. **MEASURED:** from a tree with no `.db` at all,
+`poc_preview_demo.js` builds it (`§PREVIEW-FIXTURE built=true tables=50 bytes=397312`) and PASSES with
+the same claims and the same numbers.
+
+## §AZ.1 `*_agent.zip` — and the live defect the duplication was already hiding
+`erp/idempiere_agent.zip` and `erp/odoo_agent.zip` are SHIPPED DOWNLOADS
+(`common/about_diy.js:196-198`, `erp/erp_picker.js:318`) duplicating `erp/idempiere_agent/` and
+`erp/odoo_agent/`. `§C2.3` item 5 proposed building them at deploy time. Measuring first found the
+thing the proposal only suspected:
+
+> **`odoo_agent.zip` shipped WITHOUT `odoo_agent/extract_model.js`.** That is the file the Odoo
+> extraction step needs — `poc_odoo_descriptor` names it as the artifact's own producer
+> (*"via odoo_agent/extract_model.js"*) and `erp_picker.js` advertises the bundle as *self-sufficient*.
+> A user downloading it could not run that step. `idempiere_agent.zip` was in sync.
+
+**⚠ A correction worth recording, because it is this session's own recurring trap.** The first
+measurement said *all six* odoo files differed. That was wrong: the entries are named
+`odoo_agent/<file>`, so `unzip -p odoo_agent.zip agent.js` extracted **nothing** and the comparison
+hashed empty input. Checking the instrument turned "six stale files" into "one missing file plus a
+shape difference". `§C2.4`, again, and this time against my own probe.
+
+## §AZ.2 WHAT SHIPPED
+`erp/tools/build_agent_zips.js` writes both bundles from their source directories, with **no
+dependency** — node's own `zlib` plus the ZIP container, because neither a `zip` nor a `python3`
+binary can be assumed on a runner. Fixed timestamps and sorted entries make it **deterministic**, so
+"did this drift" is a hash comparison rather than a judgement. `deploy-pages.yml` builds them into the
+artifact beside the `version.json` stamp it mirrors — generated into the ephemeral checkout, never
+committed — and both zips leave git.
+
+**`W-AGENT-ZIP-SYNC` (`erp/tests/poc_agent_zip_sync.js`, wired into CI): 🔴 1 FAIL on plain
+`origin/main` → 🟢 11 PASS / 0 FAIL.** The failing claim on main is `A0`, judged before anything is
+rebuilt: *"odoo_agent.zip — the STORED zip matches the directory it duplicates —
+stale=[odoo_agent/extract_model.js(missing)]"*. `A0` prints **SKIPPED, not passed**, in a tree where
+no zip is stored — the drift it guards cannot exist when nothing is stored, and saying so beats a
+green tick over an empty check.
+
+## §AZ.3 ⛔ USER — one decision, not work
+**The two bundles have different SHAPES and the builder deliberately preserves both:**
+`idempiere_agent.zip` is FLAT (`migrate_agent.js` at the root, so extracting litters the current
+directory); `odoo_agent.zip` nests everything under `odoo_agent/`. That is a real user-visible
+difference and making them consistent changes what an existing download does, so it is not something
+to tidy silently. **The question: should `idempiere_agent.zip` become nested too?** One line in
+`BUNDLES` either way.
