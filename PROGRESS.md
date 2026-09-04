@@ -14,23 +14,38 @@ kind of rule until "after the current agent finishes"** — that is how it gets 
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-03
+## Current State — 2026-09-04
 
-### ERP lane — 5 PRs merged 2026-09-02/03, live at sw v777 (full detail: `prompts/AGENT_QUEUE.md` §ERP-SESSION-CLOSE)
-The five document windows now render their own AD tab, not a hand-written list: **c_order 8→56 fields,
-c_payment 4→78**, DisplayLogic live **28/28/21/61/0 (was 0 everywhere)**; List/Yes-No are real controls;
-`AD_Val_Rule` filters the FK pickers (`c_bpartner_id` 113→42). #1611/#1613/#1626/#1632/#1636.
-**Three shipped defects found by the new instruments, not by inspection:** `ad_evaluator` matched record
-keys case-sensitively so every AD logic expression naming a CamelCase column evaluated against `""`;
-the val-rule token feed emitted `''Y''` for 25 of 332 rules, so those filters never ran; `crud_core`
-broke #968's own audit-column casing on two adjacent lines.
-**New standing instruments:** `W-ERP-TWIN` (94 witness refs were judging copies that are not what ships →
-now 64 pairs / 0 unreviewed, and it fires on merge); `W-MULTIHOST-SYNC` + its content-keyed gate (6 arms,
-3 real hosts — already fired once in production and was re-earned, epoch 7); `W-RELAY-AUTH` 32/32.
-**⛔ Next:** `W-SCALE-FORECAST` fails 1 of 3 — batch commit is **0.8×**, i.e. slower than per-op.
-`W-AD-DISPLAYLOGIC-LIVE` fails, unattributed, matrix NOT re-scored on it. **S-2** (relay still
-`http.createServer`, nothing deployed) is the real barrier to multi-writer, not S-1.
-5 user decisions parked in §ERP-SESSION-CLOSE.
+### ERP lane — §CLOSE.4's five open items are CLOSED; 6 PRs merged, live at sw v789 (full detail: `prompts/AGENT_QUEUE.md` §ERP-SESSION-CLOSE-2)
+bim-ootb **#1661-#1666**. Six new witnesses, every one RED on plain `origin/main` before its fix and
+GREEN after: `W-KIND2-READBACK` · `W-DICT-LAZY` 10/10 · `W-INOUT-CALLOUT-ATOMS` 9/9 ·
+`W-ADFORM-VMATCH` 16/16 · `§DIGEST`/`§DIGEST-CHECK` 46 rows.
+- **A KIND-2 generator's committed document is finally READABLE** — `readableDocs 0 → 1` with the line
+  linked; 11-signed-verified-unreadable-rows was the whole defect class (#1661).
+- **A second dictionary's renderer left the boot path** — `odoo_descriptor.js` fetches 1 → 0 on the
+  default boot (#1662).
+- **The two named `CalloutInOut` atoms** ship, and E-1's campaign is now PLANNED by measured usage:
+  78 callout bindings on the nine document tables the app drives, 28 dispatch = **36%** (#1663).
+- **The AD_Form spine + AD_Form 108 (VMatch) end to end**, rows oracle-checked against the Java's own
+  SQL (#1664). 48 of 49 forms still have no renderer, and the honest card says so.
+- **Hygiene E-6/E-7/E-8/E-14/E-15 all closed** (#1665, #1666 + bim-compiler): CI now runs **39 of the 46**
+  ledger witnesses, not 1; the gitignored evidence base has a tracked digest; the 52/53 headline is
+  resolved and the extra row named (`#26 W-FOLD-INOUTGL`).
+**Five defects nobody had asked for**, all found by measuring rather than reading — see §C2.2. The
+sharpest: filling a mandatory field on the Sales Order form disabled the only seam that set `IsSOTrx`,
+so both KIND-2 generators refused the order.
+**⛔ Next:** §C2.3 — the E-1 campaign (the 37-binding gap is listed in full), form #2 of 49, and **four
+stale live witnesses that are RED on plain `main`** (`poc_odoo_descriptor`, `poc_wh_pos_pick_live`,
+`poc_wh_walk_live`, `poc_pos_live`) — instruments judging retired DOMs, not product defects.
+
+## Previous State — 2026-09-03
+
+### ERP lane, 2026-09-02/03 — 5 PRs, sw v777 (superseded above; full detail `prompts/AGENT_QUEUE.md` §ERP-SESSION-CLOSE)
+The five document windows render their own AD tab (c_order 8→56 fields, c_payment 4→78, DisplayLogic
+0→28/61, val-rule-filtered FK pickers); three shipped defects found by the new instruments; `W-ERP-TWIN`,
+`W-MULTIHOST-SYNC` and `W-RELAY-AUTH` became standing gates. Its ⛔ list is settled: `W-SCALE-FORECAST`'s
+0.8× batch was fixed at #1638 (3.53× median) and `W-AD-DISPLAYLOGIC-LIVE` was a stale witness, not a
+product failure. **S-2 (no relay deployed) is still the real barrier to multi-writer, not S-1.**
 
 ### 4D / viewer lane — 23 PRs merged 2026-09-02/03, release v1.58.0 (detail: the spec docs below)
 - **§TM_REVEAL_TILED** #1605 — the movie never played `remapSolveToTasks`; dead air 44-71% → **0.0%**,
