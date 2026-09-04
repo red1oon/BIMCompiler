@@ -88,7 +88,28 @@ def normalize_storey(name):
     return s if s else "Unknown"
 
 
-def get_storey_for_element(element):
+# §STOREY_AGGREGATE_INHERIT (2026-09-04) — user, on the HHS ground-floor front wall reading as
+# missing: "we broke something in translating that element". Half right, and this is the half.
+# The GEOMETRY translated fine (it draws in every bake, which applies no storey filter). What was
+# lost is the STOREY TAG, and it was lost for a schema reason, not a per-building one:
+#
+#   IFC does not contain an aggregated part in the spatial structure. IfcRelContainedInSpatialStructure
+#   points at the WHOLE; the parts hang off it by IfcRelAggregates and INHERIT its containment.
+#
+# Reading only ContainedInStructure therefore returns "Unknown" for every part of a decomposed
+# element. MEASURED before this fix, and it is fleet-wide, not an HHS quirk — 100% in both:
+#   Hospital  178 IfcCurtainWall + 31 IfcStair + 24 IfcRoof  ->  9,457 children, 9,457 Unknown
+#   HHS        33 IfcCurtainWall +  8 IfcStair               ->  2,120 children, 2,120 Unknown
+# Downstream that is invisible until something filters by storey: viewer/panels.js:700
+# _storeyVisible is an EXACT match, so "show Level 1" drops every curtain-wall panel while the
+# correctly-tagged IfcWallStandardCase stay — the ground floor keeps its solid walls and loses its
+# glazed front. Full trace: bim-ootb buildings/HHS_Office_Federated_ANALYSIS.md.
+#
+# The remedy is the schema's own rule and nothing else: walk up IfcRelAggregates when containment
+# is silent. No class list, no storey name, no tuned constant — a part takes its whole's storey.
+# scripts/compile_rooms.py's §STOREY-Z (nearest per-storey wall-z anchor) stays as the GEOMETRIC
+# fallback for elements that have neither containment nor an aggregate parent; it is not replaced.
+def get_storey_for_element(element, _depth=0):
     """Walk IFC containment to find spatial segment name.
 
     Supports both building and infrastructure IFCs:
@@ -96,9 +117,15 @@ def get_storey_for_element(element):
     - IfcFacilityPart (IFC4X3) — returns facility part name
       (IfcRoadPart, IfcBridgePart, IfcRailwayPart)
 
+    §STOREY_AGGREGATE_INHERIT: when the element itself is not contained (it is a PART of a
+    decomposed element — a curtain-wall panel, a stair flight, a roof slab), inherit the storey of
+    the whole it belongs to, recursively. Depth-capped so a malformed cyclic aggregate cannot spin.
+
     See docs/InfrastructureAnalysis.md for the pipeline impact chain.
     """
     SPATIAL_CONTAINERS = ("IfcBuildingStorey", "IfcFacilityPart")
+    SPATIAL_ANY = ("IfcBuildingStorey", "IfcFacilityPart", "IfcBuilding", "IfcSite",
+                   "IfcSpace", "IfcFacility", "IfcProject")
     try:
         for rel in element.ContainedInStructure:
             container = rel.RelatingStructure
@@ -110,6 +137,22 @@ def get_storey_for_element(element):
                         return normalize_storey(dec.RelatingObject.Name)
     except (AttributeError, TypeError):
         pass
+    # §STOREY_AGGREGATE_INHERIT — containment was silent; take the whole's storey.
+    if _depth < 8:
+        try:
+            for dec in element.Decomposes:
+                parent = getattr(dec, "RelatingObject", None)
+                if parent is None:
+                    continue
+                if any(parent.is_a(t) for t in SPATIAL_CONTAINERS):
+                    return normalize_storey(parent.Name)   # aggregated straight into a storey
+                if any(parent.is_a(t) for t in SPATIAL_ANY):
+                    continue                                # a spatial parent that names no storey
+                storey = get_storey_for_element(parent, _depth + 1)
+                if storey != "Unknown":
+                    return storey
+        except (AttributeError, TypeError):
+            pass
     return "Unknown"
 
 
