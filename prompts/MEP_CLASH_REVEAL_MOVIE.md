@@ -470,3 +470,37 @@ breathe except those two".
 ### 6. Explicitly NOT in this phase
 No near-and-facing selector, no labels, no leader lines, no camera behaviour change, no new panel.
 The camera meeting a pair stays incidental — nothing here steers it.
+
+### §CLASH_FILM_P1 — MEASURED 2026-09-05 (bim-ootb PR #1678, stacked on #1676)
+**Built, witnessed, and seen in a real bake.** `§WITNESS_CLASH_FILM_MARKERS pass=4 fail=0 ran=9`,
+red control detected; all nine claims OK — mesh-true set (`pairs=271 notCLASH=0`), two markers per
+pair, `contact`/`pairId` present on all 271, markers unchanged across the TM cursor
+(542 at start / day 0 / end), **`_tmIsVisible` calls = 0** (spied, not assumed), pulse pure in film
+time, swing 0.220→0.520, and the per-instance fade holding two pairs solid while an ambient one moved.
+
+`§CLASH_FILM_BUILD discPairs=12 pairsBroad=1478 trueClash=271 markers=542 bothPlaced=271
+incomplete=0 falsePositivesExcluded=1207 ms=3961` — reproduced identically in the witness and inside
+the bake. **Hospital_silent's bbox list is 79.0 % false; Terminal's is 33.7 %.** Report them
+separately — the buildings differ by more than an average can carry. 185 pairs come back
+`unknown=aggregateParent` (composed parents with no geometry of their own) and are excluded rather
+than guessed at.
+
+**Clip proof:** `~/Downloads/Hospital_clash_clip_2026-09-05.mp4` — `--clash --clip 0.28:0.32`,
+117 frames / 7.8 s / 2.7 MB, whole run **2 m 45 s**, `§MAXQ_QUALITY unconverged=0`, and
+`§CLASH_FILM_DISPOSE markers released` after the loop so nothing survives into the scene.
+
+**TWO DEFECTS FOUND ON THE WAY — both real, neither a test problem:**
+1. **The clash R-tree is built lazily in the browser and is not in the DB.** With nothing opening the
+   clash panel, every discipline pair returned `§CLASH_QUERY_RTREE … hits=0` and the build reported
+   VACUOUS, because `_queryClashesPairRtree`'s per-element `catch (e) { continue; }` turns a missing
+   `elements_rtree` into "no candidates" — indistinguishable from a building with no clashes. **A bake
+   never opens that panel.** `clashFilm.build()` now calls `_ensureClashIndexes()`, waits for
+   `_clashRtreeReady`, and refuses with the real reason. ⚠ Any earlier attempt to clash-check from a
+   bake would have silently reported zero.
+2. **A 404 on the building DB does not abort the bake.** `cli_silent_bake.js` sits on its 900 s
+   load predicate, which can never become true, and only then crashes with a bare `TimeoutError` —
+   15 minutes to learn a URL was wrong (`§INIT_ERROR … 404` was in the log at 2.7 s). It should fail
+   fast on `§INIT_ERROR`/`§DB_404_OCI_FAIL` and name the URL. **Open, not fixed.**
+
+**Two taste calls left with the user, both one-line constants:** `BASE 0.22 / AMP 0.30` against a
+half-built model, and `PERIOD_S 4.0` for "slowly".
