@@ -1695,3 +1695,67 @@ silently ignore `ERP_ROOT`** — run them from *inside* the tree under test or t
    That one step separated "my change broke it" from "this has been red for weeks" three times.
 5. **A named-deferred branch is declared in `result.deferred`, never silently absent** — the convention
    `stockMoves` and `CreateFromInvoice` both follow.
+
+# §KIND2-READBACK 2026-09-04 — the engine-WRITE vs app-READ vocabulary gap, measured then closed
+**Owns `§ERP-SESSION-CLOSE §CLOSE.4 item 1.** Read `§CLOSE.4` first; this is its spec + evidence.
+
+## §K2RB.1 THE CLAIM UNDER TEST
+> After a KIND-2 generator (`InvoiceGenerate` 119 · `InOutGenerate` 118 · `ProjectGenOrder` 164)
+> Confirm & Post, the generated document **and its lines are readable through `crud_core.listTip`** —
+> the one primitive every grid, every picker (`renderOrderPicker`, `renderCreateFromPicker`) and every
+> `crud_overlay.completeFanout*` uses.
+
+`#1654` proved the claim FALSE for `CreateFromInvoice` and fixed it at that one commit seam
+(`§CREATEFROM-COMMIT`, 11 signed-verified-unreadable rows). The other three still Confirm & Post the
+raw engine shape. §CLOSE.4's own instruction: **do not fix blind — measure first.**
+
+## §K2RB.2 WHAT THE THREE EXISTING LIVE WITNESSES ACTUALLY SAY (run 2026-09-04, plain `origin/main`)
+| witness | verdict | `rows=` | ops committed | judges readback? |
+|---|---|---|---|---|
+| `poc_genpo_live.js` (164) | 🟢 PASS | 0 | none — honest gate rejection ("Project has no Price List") | **NO** |
+| `poc_geninv_live.js` (119) | 🟢 PASS | 0 | none — "@Created@ = 0", served CO orders fully invoiced | **NO** |
+| `poc_genship_live.js` (118) | 🟢 PASS | 0 | none — "@Created@ = 0", served CO orders fully delivered | **NO** |
+
+**All three are SCOPE-BLIND to this defect** (PRIMAL LAW §4): each is green because its generate is
+EMPTY on the served seed, so no op group is ever built, no Confirm & Post is ever clicked, and no
+read-back is ever attempted. "What is readable today" is therefore **not 0 — it is UNMEASURED.**
+Their green is honest about what they judge (dispatch + honest-empty) and says nothing about this.
+
+## §K2RB.3 THE INSTRUMENT — `scripts/witness_kind2_readback.js`
+A NON-EMPTY generate is reachable on the served seed without inventing data: `C_Order`'s own
+`AD_Column.DefaultValue` is `DeliveryRule='F'` (Force — no on-hand dependency) and `InvoiceRule='I'`
+(Immediate — the direct order-line fold), and `renderOrderPicker` already folds freshly-created orders
+through `listTip`/`readTip` (that was `§Fix 2026-07-21`). So a Sales Order authored through the real
+UI and Completed is a legitimate candidate for BOTH 118 and 119, with one undelivered/uninvoiced line.
+
+REAL USER PATH ONLY, same discipline as `witness_p2p_invoice_match.js` (its helpers are reused
+verbatim): every mutation is a `click`/`fill`/`selectOption` on the real toolbar / inline form /
+DocAction bar / process pane. The only `page.evaluate` calls are READ-ONLY observation through the
+app's own published accessors (`window.__crud.core.listTip`, `window.__crud.kernelDb`,
+`window.KernelOps.replayOps`).
+
+Stages, each emitting `§K2RB stage=N name=… committedOps=X rawDocs=Y rawLines=Z readableDocs=P readableLines=Q result=…`:
+1. **SalesOrder** — author `C_Order` (window 143) + one `C_OrderLine`, Complete to `CO`.
+2. **GenerateShipment** — proc 118 on that order → non-empty preview → Confirm & Post → read back
+   `m_inout` / `m_inoutline` through `listTip` with `baseRows=[]`.
+3. **GenerateInvoice** — proc 119 on that order → same, for `c_invoice` / `c_invoiceline`.
+
+**Failure vocabulary (PRIMAL LAW §4).** A stage prints `INCONCLUSIVE`, never `PASS`, when the generate
+came back empty (`committedOps=0` → nothing was judged). `rawDocs`/`rawLines` (folded from the signed
+op log by `replayOps`) are printed beside the readable counts precisely so "committed" and "visible"
+can never be confused again (`§CLOSE.7` rule 1).
+
+## §K2RB.4 THE FIX (only after §K2RB.3 is RED) — translate at the commit seam
+`renderProcResult`'s `r.ops && r.header` branch, the same seam and the same shape `#1654` used for
+`§CREATEFROM-COMMIT`, with ONE extra problem `CreateFromInvoice` did not have: **the parent document
+does not exist yet.** A `listTip`-created row's pk is the SYNTHETIC `-opId`, so the lines' parent FK
+(`m_inout_id` / `c_invoice_id` / `c_order_id`) is unknown until the header op has an id.
+
+`kernel_ops.commitGroup` already states the id law it relies on itself (`erp/kernel_ops.js:526-530`):
+*"The staged ops will receive ids = max(id)+1..+N on insert … They are contiguous because INTEGER
+PRIMARY KEY auto-increments monotonically and this group is a single transaction."* So the resolution
+is EXTRACTED, not invented: inside `applyOpGroup`'s own `_withFreshSide` window — the same handle
+`commitGroup` is about to stage against — `nextId = MAX(id)+1` gives op *i* the id `nextId+i`, hence
+the synthetic pk `-(nextId+i)`. One atomic group, `commitGroup`'s all-or-none guarantee intact.
+
+Deliverable = the translation AND the witness green, in the same change.
