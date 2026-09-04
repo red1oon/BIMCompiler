@@ -3456,3 +3456,36 @@ Logs: `/tmp/dto_red2.log`, `/tmp/dto_green.log`. Commit `9eb1f120` on `test/stag
 **PR #1660 was `DIRTY`/`CONFLICTING` on arrival** — synced, not redone (`git merge origin/main`;
 the only conflict was `sw.js`'s version-comment block, resolved by keeping BOTH sides' notes and
 taking `CACHE_VERSION = 'v1141'` above main's v1140). Merge commit `74f41526`.
+
+### §BME.11 — 2026-09-04 — ITEM 2 CLOSED: the re-bake is complete at Day 310/310. §BAKE_MISSING_ELEMENTS IS SOLVED
+`~/Downloads/Hospital_silent_bake_2026-09-05.mp4` (67.3 MB, 2,937 frames, 48m45s wall, commit
+`9eb1f120`, sw v1141, fresh `--profile`, `--tap tap_staged_draw_census.js`). Log
+`~/Downloads/Hospital_silent_bake_2026-09-05.log`, tap `..._tap.json` (76,714 rows, 2,937 frames).
+
+**The four classes the user reported are now WHOLE at the last frame** — batched half + instanced
+half adds up to the DB's own count, exactly, for all four:
+
+| class | batched visible @2936 | instanced `imPlaced` @2936 | sum | DB total | the defective film |
+|---|---|---|---|---|---|
+| IfcPlate | 1081 | **1130** | **2211** | 2211 ✓ | 1081 + **0** |
+| IfcMember | 1885 | **5242** | **7127** | 7127 ✓ | 1885 + **0** |
+| IfcFurniture | 22 | **179** | **201** | 201 ✓ | 22 + **0** |
+| IfcWindow | 85 | **46** | **131** | 131 ✓ | 85 + **0** |
+
+`imPlaced` reaches its maximum at frames 607–669 and **holds it to frame 2936** — no collapse at
+712–718, which is where 24,992 instances died last time. Render side: `notDrawnTotal=2` over 2,937
+frames (the same two IfcRailing slots on the frustum edge, unchanged) and `countShortTotal=0`.
+
+**The ownership hand-off is visible at both ends of the film, and that is the mechanism proof:**
+- line 335 `[DLOD] §DLOD_DISABLE reason=time-machine` — *before* frame 0, so `_buildRefs()` never runs
+  on TM's zero matrices. Between line 335 and line 38844 there is **not one `§DLOD_TICK` and not one
+  `§DLOD_REFS`** in a 38,000-line log.
+- line 38844 `§TIME_MACHINE OFF — restored` → 38850 `§DLOD_REFS built instanced=2872
+  imInstances=25013` → 38851 `§DLOD_TICK … imHid=0 imVis=25013`. dlod.js takes the matrices back
+  only once they are real, and its first tick hides **nothing**. Compare the defective run's
+  `imHid=21 imVis=24992` — 24,992 "restored" to zero.
+
+**PR #1660 is MERGED and LIVE** — main `fcd4720c` (2026-09-04 16:41, squash), and the deployed
+`viewer/sw.js` at red1oon.github.io returns `CACHE_VERSION = 'v1141'`. §BME.9 items 1, 2 and 3 are
+all closed. The `§CLI_BAKE_LOG_TS` follow-up (every bake-log line timestamped, user ask) went out
+separately on `chore/bake-log-timestamps` off fresh `origin/main`, since #1660 was already squashed.
