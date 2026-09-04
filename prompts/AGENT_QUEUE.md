@@ -1842,3 +1842,65 @@ fetch is logged and the chrome falls through to AD — never a blank screen. Ren
   (a retired login DOM, the same class as `W-AD-DISPLAYLOGIC-LIVE` at #1613). Its first three claims
   (`activeName==='odoo'`, `list()===[ad,odoo]`, facets present) DO pass on the lazy path. Reported, not
   fixed — it is a pre-existing instrument defect, not this item.
+
+---
+
+# §INOUT-CALLOUTS 2026-09-04 — the two named atoms, and the plan E-1 asked for
+**Owns the concrete half of `§ERP-SESSION-CLOSE §CLOSE.4 item 3`. Atoms CLOSED — bim-ootb #1663, sw v786.
+The E-1 CAMPAIGN stays OPEN, now with the usage ranking §CLOSE.4 said to produce first.**
+
+## §IC.1 THE TWO ATOMS (CLOSED)
+Both are **AD data, not a choice** — `ad_column.callout` declares them (queried from `ad_seed.db`):
+
+| atom | Java home | what it fills |
+|---|---|---|
+| `CalloutInOut.bpartner` | `CalloutInOut.java:264-333` | receipt-side `C_BPartner_Location_ID` (max active location, :274,:294-298) + `AD_User_ID` (ShipTo else max active, :275-276,:300-307). The whole body is inside `if (!IsSOTrx)`. The SO branch (:311-320) is a **CreditLimitOver status event**, not a field → named-deferred. |
+| `CalloutInOut.docType` | `CalloutInOut.java:191-262` | `MovementType` via `erp_engine.movementTypeOf(DocBaseType, IsSOTrx)` — `MInOut.getMovementType` **already ported verbatim for E-4**. This atom CALLS it. `DocumentNo` re-preview (:231-258) named-deferred: `_seedDocNoPreview` already owns that field. |
+
+`W-INOUT-CALLOUT-ATOMS` (`scripts/witness_inout_callout_atoms.js`, oracle = `ad_seed.db` read at run
+time): **🔴 1 PASS / 8 FAIL before → 🟢 9 PASS / 0 FAIL after.**
+
+## §IC.2 THREE DEFECTS THE MEASUREMENT FORCED — each worth more than the atoms
+1. **`AdCallout.dispatch` DROPPED every handler's `result.deferred`** — the exact thing the standing
+   rule forbids. Now carried through, tagged with the declaring handler, printed by `§CRUD-CALLOUT`.
+2. **A READ-ONLY field is still WRITTEN by a callout.** iDempiere callouts set the MODEL
+   (`mTab.setValue`), not the widget: `IsReadOnly='Y'` stops the USER typing, not the engine filling.
+   Measured: `MovementType` was derived `'V+'` and dropped, because `M_InOut.MovementType` is
+   `IsReadOnly='Y'` on AD_Tab 296 — **the very column that tab is keyed on**. Same class for
+   `C_OrderLine.QtyOrdered` (`IsReadOnly='Y'` on tab 187), which is what `CalloutOrder.qty` exists to
+   fill. `gatherVals()` reads every field element regardless of `disabled`, so the value reaches the
+   saved record; the `§`-log marks such a write `(ro)`.
+3. **A regression this change caused, and the same PR fixes.** `MInOut.movementTypeFromWindow` nested
+   IsSOTrx inside *"MovementType was empty"*, so the moment the new callout filled MovementType the
+   branch stopped running and the receipt persisted with **no IsSOTrx**:
+   `§RECEIPT-FANOUT receipt=-4 issotrx=undefined matchPoOps=0` → `§P2P stage=3 FAIL` (*"the CreateFrom
+   pane did not offer the fresh receipt line -5"* — `renderCreateFromPicker` keeps
+   `String(h.issotrx)==='N'`), stage 4 PARTIAL. The two facts are independent in the Java as well
+   (:214-227 IsSOTrx, :229 MovementType — two separate `setValue` calls), so IsSOTrx now follows
+   whatever MovementType the record ends up with, whoever set it. After: `issotrx=N … matchPoOps=1`,
+   stages 3 and 4 PASS. **This is the "fixed mechanism A ≠ symptom solved" trap, caught by a
+   regression run rather than by reasoning.**
+
+## §IC.3 ⬜ THE E-1 CAMPAIGN PLAN — "plan by usage first", measured 2026-09-04
+Counting `ad_column.callout` bindings, not classes, because a class bound to 12 columns is 12 chances
+to be wrong. Scope: tables the app actually renders (a tab reachable from an active `ad_menu` leaf).
+
+- **247 callout bindings on rendered tables, 123 distinct classes. 28 dispatch today = 11%.**
+- **Restricted to the nine O2C/P2P document tables the app actually DRIVES** (`c_order(line)`,
+  `c_invoice(line)`, `m_inout(line)`, `c_payment`, `c_allocationhdr/line`):
+  **78 bindings, 28 dispatch = 36%.** That 36% is the number to move; the other 169 bindings are on
+  fixed-asset / depreciation / GL-journal tables nothing in this lane opens.
+- **The 37-binding gap on those nine tables, in full** (this list IS the backlog — no rediscovery):
+  `CalloutOrder.docType · .organization(×2) · .priceList(×2) · .priceListReadOnly(×2) · .warehouse ·
+  .bPartnerBill · .charge · .tax · .navigateOrderLine` ·
+  `CalloutInvoice.bPartner · .docType · .charge · .navigateInvoiceLine` ·
+  `CalloutInOut.warehouse · .order · .orderLine · .product · .qty · .asi · .rma · .rmaLine ·
+  .navigateInOutLine` · `CalloutPayment.amounts · .docType · .invoice · .order · .charge` ·
+  `CalloutEngine.dateAcct (×4: C_Order, C_Invoice, C_InvoiceLine's parent, M_InOut, C_Payment)` ·
+  `CalloutAssignment.product (×2)` · `CalloutFillLocator.fillLocator`.
+- **Rank inside that list by document, not by class:** `CalloutPayment.*` (5 bindings, 1 table) buys
+  the payment screen; `CalloutInOut.qty/product/orderLine` (3) buys the receipt LINE the P2P witness
+  still types; `CalloutEngine.dateAcct` (4) is one trivial rule reused on four documents.
+- **`CalloutOrder.docType` is the one to be careful with** — it is the sibling of the seam
+  `MOrder.issotrxFromWindow` (§K2RB.5) now covers at beforeSave. Two writers to `IsSOTrx` is exactly
+  the defect §IC.2 item 3 already cost a regression to find.
