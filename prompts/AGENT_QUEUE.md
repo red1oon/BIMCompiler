@@ -1881,7 +1881,8 @@ time): **🔴 1 PASS / 8 FAIL before → 🟢 9 PASS / 0 FAIL after.**
    stages 3 and 4 PASS. **This is the "fixed mechanism A ≠ symptom solved" trap, caught by a
    regression run rather than by reasoning.**
 
-## §IC.3 ⬜ THE E-1 CAMPAIGN PLAN — "plan by usage first", measured 2026-09-04
+## §IC.3 ✅ THE E-1 CAMPAIGN PLAN — WORKED 2026-09-04, see §CALLOUT-CAMPAIGN. Its 37-binding gap and its 36% baseline are BOTH wrong; the corrected numbers are there.
+## §IC.3 (as written) — "plan by usage first", measured 2026-09-04
 Counting `ad_column.callout` bindings, not classes, because a class bound to 12 columns is 12 chances
 to be wrong. Scope: tables the app actually renders (a tab reachable from an active `ad_menu` leaf).
 
@@ -2100,13 +2101,16 @@ Six new witnesses, every one RED on plain `origin/main` before its fix and GREEN
    for months; `ERP_COVERAGE_MATRIX.md` survives only because it predates the rule.
 
 ## §C2.3 ⬜ NEXT, ranked — nothing here is blocked
-1. **E-1, the campaign, now with its plan measured** (`§IC.3`): of the **78** `ad_column.callout`
+1. ✅ **DONE (witness) 2026-09-04 — see `§CALLOUT-CAMPAIGN` at the end of this file.** 51 of 78
+   bindings dispatch (65%); live dispatch was 3, not the 28 this entry claims — nothing had ever called
+   `AdCallout.installDefaultHandlers()`. `W-CALLOUT-CAMPAIGN` 29/0, RED 9/20 on plain main.
+   ~~**E-1, the campaign, now with its plan measured** (`§IC.3`): of the **78** `ad_column.callout`
    bindings on the nine O2C/P2P document tables the app actually drives, **28 dispatch = 36%**. The
    37-binding gap is listed **in full** there, ranked by document — `CalloutPayment.*` (5 bindings, one
    table) buys the payment screen; `CalloutInOut.qty/product/orderLine` (3) buys the receipt LINE the
    P2P witness still types; `CalloutEngine.dateAcct` (4) is one trivial rule reused on four documents.
    **One trap named there:** `CalloutOrder.docType` would become a SECOND writer to `IsSOTrx`, which is
-   exactly the coupling defect 4 above cost a regression to find.
+   exactly the coupling defect 4 above cost a regression to find.~~
 2. **E-3, form #2 of 49.** The spine is done and the honest card names the gap by classname and count;
    a new form is one `_registerForm(classname, fn)` call. `Match.createMatchRecord` (creating a match by
    hand) is deliberately NOT ported — see `§AF.5`.
@@ -2126,3 +2130,139 @@ Every stale premise this session hit — three of five hygiene items, three gree
 witnesses, four red-before-I-arrived instruments — was found the same way: **run it, then read the log.**
 Not one was visible from the text that described it. `§CLOSE.7` rule 3 already says this; this session
 paid for it five more times.
+
+---
+
+# §CALLOUT-CAMPAIGN 2026-09-04 (later still) — E-1 worked, not planned
+**Owns `§ERP-SESSION-CLOSE-2 §C2.3 item 1`.** `§IC.3` measured the gap and ranked it; this section
+IMPLEMENTS the top of that ranking. Read `§IC.3` first — it is the backlog this drains from.
+
+## §CC.1 THE PREMISE §IC.3 GOT WRONG, corrected by re-measuring before writing a line
+`§IC.3` says *"the 37-binding gap on those nine tables, in full"*. **The gap is 50 bindings, not 37**,
+across 30 distinct `class.method` names. The list itself was right about WHICH classes; its `(×2)`
+annotations undercounted, because a class is bound per TABLE as well as per column:
+
+| §IC.3 said | actually | why |
+|---|---|---|
+| `CalloutPayment.*` — "5 bindings, one table" | **14** | `.amounts` alone is bound to 10 columns of `c_payment` |
+| `CalloutOrder.priceList (×2)` | **4** | `c_order.dateordered` + `.m_pricelist_id` AND the same pair on `c_invoice` |
+| `CalloutInOut.qty` — 1 in the ranking line | **3** | `c_uom_id` + `movementqty` + `qtyentered` |
+
+Same lesson as `§C2.4`: the numbers were re-derived from `ad_seed.db` in this session, not trusted
+from the text. **The corrected gap table is in the witness output, not here** — `W-CALLOUT-CAMPAIGN`
+prints it every run, so it can never go stale again.
+
+**And the 36% headline did NOT survive either — it was 4%.** `§IC.3` counted the registry ON PAPER:
+`ad_callout.js` defines six line-callout atoms, `crud_overlay.js` registers three more, 9 names → 28
+bindings. Running the coverage claim IN THE PAGE measured **3**. The cause, confirmed by grep:
+
+> **NOTHING in the app has ever called `AdCallout.installDefaultHandlers()`.** `idempiere.html:2319`
+> installs `AdProcess`'s handlers; `AdCallout`'s equivalent is never called from anywhere. So
+> `CalloutOrder.amt/qty/product` and `CalloutInvoice.amt/qty/product` — **25 of the 78 bindings** —
+> had never fired in a browser. `crud_overlay.js:350`'s own comment ("the line handlers (amt/qty/
+> product) are the ENGINE's") assumed they were live. They were not.
+
+**LIVE dispatch was 3 of 78 = 4%.** The fix is one line in `_ensureHostCallouts()`, and it is the
+single largest coverage move in this campaign. It also made `ctx.productPrice` load-bearing for the
+first time — its body took `LIMIT 1` of ANY price-list version carrying the product, which is a WRONG
+price the moment `CalloutOrder.product` actually fires, so it is now scoped through the parent
+document's own `M_PriceList_ID` (the join `W-CALLOUT`/`poc_callout.js` already proves) and returns
+null rather than guessing when there is no parent.
+
+## §CC.2 THE CLAIM UNDER TEST
+> **A.** On the real Material Receipt **line** form, picking the PO line FIRES
+> `CalloutInOut.orderLine` and FILLS `M_Product_ID` · `C_UOM_ID` · `MovementQty` · `QtyEntered` —
+> the four fields `witness_p2p_invoice_match` still types by hand — with the SEED's own values
+> (`QtyOrdered − QtyDelivered − Σ running`), and picking the product FIRES `CalloutInOut.product`
+> and FILLS `M_Locator_ID`, the fifth.
+> **B.** On the real Payment form, picking an invoice FIRES `CalloutPayment.invoice` and FILLS
+> `C_BPartner_ID` · `C_Currency_ID` · `PayAmt` · `DiscountAmt`, where `PayAmt = invoiceOpen − discount`
+> computed by the ported `invoiceopen`/`invoicediscount`/`paymenttermdiscount` — the same three
+> PL/pgSQL functions iDempiere's own SQL calls — and typing a `PayAmt` FIRES `CalloutPayment.amounts`
+> and FILLS `WriteOffAmt = Open − Pay − Discount − OverUnder`.
+> **C.** Changing a document's date FIRES `CalloutEngine.dateAcct` and FILLS `DateAcct` on all four
+> documents that bind it.
+> **D.** Dispatch on the nine document tables moves **28 → 51 of 78 bindings (36% → 65%)**, measured
+> from `ad_column.callout` against the live registry, not asserted.
+
+## §CC.3 EXTRACTED, NOT DESIGNED — every port's Java/SQL home
+| handler | Java / SQL home | what it derives |
+|---|---|---|
+| `CalloutInOut.orderLine` | `CalloutInOut.java:412-461` | product/ASI **or** charge, `C_UOM_ID`, `MovementQty = QtyOrdered−QtyDelivered−Σ(running MovementQty on this receipt)` (IDEMPIERE-1140), `QtyEntered` pro-rated by `QtyEntered/QtyOrdered`, + 10 accounting dimensions |
+| `CalloutInOut.product` | `CalloutInOut.java:522-568` | `C_UOM_ID` from the product, `MovementQty = QtyEntered`, `M_Locator_ID` from `M_Product.M_Locator_ID` **only when its warehouse matches the header's**; the whole body is `if (!IsSOTrx)` |
+| `CalloutInOut.qty` | `CalloutInOut.java:582-680` | the five-branch `QtyEntered ↔ MovementQty` tree, each branch scaled to the UOM's `StdPrecision` |
+| `CalloutPayment.invoice` | `CalloutPayment.java:57-127` | `C_BPartner_ID`, `C_Currency_ID`, `PayAmt = invoiceOpen − invoiceDiscount`, `DiscountAmt`; clears `C_Order_ID`/`C_Charge_ID`, then TAIL-CALLS `docType` |
+| `CalloutPayment.order` | `CalloutPayment.java:141-198` | `COALESCE(Bill_BPartner_ID, C_BPartner_ID)`, `C_Currency_ID`, `PayAmt = GrandTotal`, `IsPrepayment='Y'`; tail-calls `docType` |
+| `CalloutPayment.charge` | `CalloutPayment.java:212-228` | the reset-only atom: clears invoice/order, zeroes the four amounts |
+| `CalloutPayment.docType` | `CalloutPayment.java:241-285` | `IsReceipt = C_DocType.IsSOTrx`. Its `PaymentDocTypeInvoiceInconsistent` return is a VALIDATION, not a derive — **named-deferred**, per the `ad_valrule` seam |
+| `CalloutPayment.amounts` | `CalloutPayment.java:296-618` | the whole branch tree: `OverUnderAmt` zeroing, the `CurrencyRate`/`ConvertedAmt` pair, cross-currency conversion of all four amounts, and `WriteOffAmt`/`OverUnderAmt`/`PayAmt` against `InvoiceOpenAmt` |
+| `CalloutEngine.dateAcct` | `CalloutEngine.java:237-245` | `DateAcct = value`. `checkPeriodOpen (:256-288)` is a validation — **named-deferred** |
+| `invoiceopen` | `db/postgresql/functions/C_Invoice_Open.sql` | `GrandTotal×Multiplier − Σ (Amount+Discount+WriteOff)×MultiplierAP`, rounded to `C_Currency.StdPrecision`, sub-`1/10^precision` treated as 0 |
+| `invoicediscount` / `paymenttermdiscount` | `C_Invoice_Discount.sql` · `C_PaymentTerm_Discount.sql` | discount base (`IsDiscountLineAmt`) → `Discount%` when `DocDate+DiscountDays+GraceDays >= PayDate`, else `Discount2%` |
+| `Multiplier` / `MultiplierAP` | `C_Invoice_v` (migration `iD12/.../202404301200`) | `charat(DocBaseType,3)='C' → −1` (credit memo) · `charat(DocBaseType,2)='P' → −1` (AP) |
+
+**The substrate's one honest divergence:** `m_uom_conversion` **does not exist in `ad_seed.db`**
+(verified — `no such table`). iDempiere's `MUOMConversion.convertProductFrom` returns `null` when it
+finds no conversion and every caller then falls back to `MovementQty = QtyEntered`. The port takes
+that same documented null path; it does not invent a conversion factor. If the table ever ships, the
+accessor reads it and the branch becomes live with no handler change.
+
+## §CC.4 WHERE EACH HANDLER LIVES, and why
+`ad_callout.js`'s `installDefaultHandlers` stays **PINNED at 6** — `W-CALLOUT` asserts that count, and
+every new handler here needs the immutable bundle (a real join), which the engine deliberately cannot
+reach. So all nine register in `crud_overlay.js` `_ensureHostCallouts()`, beside the three already
+there, with their accessors added to `fireCreateCallout`'s `ctx` — the same shape `bpShipDefaults`
+and `docTypeInfo` already have. **`CalloutEngine.dateAcct` is the exception and it is deliberate:**
+it needs no bundle at all (it copies a value), so it goes in the ENGINE — which moves that pin 6 → 7,
+and `W-CALLOUT`'s assertion moves with it, stated here so the change is not a silent drift.
+
+## §CC.5 THE TRAP §IC.3 NAMED, and how it is avoided
+> *"`CalloutOrder.docType` would become a SECOND writer to `IsSOTrx`."*
+
+`CalloutOrder.docType` is **NOT in this batch** — deliberately, for exactly that reason. Nothing here
+writes `IsSOTrx`: `CalloutPayment.docType` writes `IsReceipt` (a different column, and `c_payment` has
+no `MOrder.issotrxFromWindow` seam), and `CalloutInOut.orderLine/product/qty` write only line
+quantities. The one field with two potential writers in this batch is `MovementQty` — `orderLine`
+seeds it and `qty` recomputes it — which is the Java's own arrangement, on the same column, in the
+same order, fired by different field changes.
+
+## §CC.6 MEASURED — W-CALLOUT-CAMPAIGN, 29 claims, RED on plain `origin/main` first
+| | before (plain `origin/main`) | after |
+|---|---|---|
+| verdict | 🔴 **9 PASS / 20 FAIL** | 🟢 **29 PASS / 0 FAIL** |
+| live dispatch, nine tables | 3 of 78 (**4%**) | **51 of 78 (65%)** |
+| registered handlers, in page | 3 | 18 |
+| receipt line: `MovementQty` | (empty — nothing fired) | **−15** = 15 ordered − 15 delivered − 15 already received on THIS receipt |
+| receipt line: product/uom/locator | (empty) | 128 / 100 / **101**, warehouse-matched |
+| payment: `PayAmt` on invoice 106 | 0 | **3584.35** = open 3657.5 − discount 73.15 |
+| payment: `PayAmt` on invoice 101 | 0 | **0** — fully allocated, so open ≠ GrandTotal 100.7 |
+| payment: `OverUnderAmt` after PayAmt 1000 | 0 | **2657.5**, and `DiscountAmt` cancelled 73.15 → 0 |
+| payment: `WriteOffAmt` when over/under is off | 0 | **2657.5** |
+| `DateAcct` follows `DateTrx` | (form default, today) | **2003-01-25** |
+
+**Every oracle is `sqlite3` over `ad_seed.db`, computed in the witness** — `invoiceopen`,
+`invoicediscount` and `paymenttermdiscount` are each transcribed as one SQL statement there, so the
+port is checked against the SQL rather than against itself.
+
+**Three ways the run refuses to be vacuous, each its own claim:**
+- **A6** — the fixture's running-quantity term is asserted NON-ZERO, so `MovementQty = −15` cannot be
+  reached by a handler that ignored the IDEMPIERE-1140 subtraction.
+- **B9** — the two invoices are asserted to DIFFER (open 0 vs GrandTotal 100.7), so "pays the open
+  amount" cannot pass on a port that returned GrandTotal.
+- **B5b / C3** — the discount is asserted non-zero and the accounting date asserted ≠ today, because
+  the first draft of both claims passed on plain `main` purely on the form's own defaults.
+
+**Regressions run, all green, because installing the engine handlers CHANGES live form behaviour:**
+`W-P2P-INVOICE-MATCH` 4/4 stages · `W-SO-COMPLETE-UI` all pass · `W-INOUT-CALLOUT-ATOMS` 9/0 ·
+`W-CALLOUT` pass at the new pin of 7. `build/erp/ad_callout.js` is a COPY of the shipped file and
+`poc_callout.js` reads the copy — it was re-synced, which is the same instrument trap `§C2.4` names.
+
+## §CC.7 ⬜ WHAT IS LEFT ON THE NINE TABLES — 27 bindings, and the honest reason for each
+`CalloutOrder.priceList` (4) · `CalloutOrder.organization` (2) · `.priceListReadOnly` (2) ·
+`CalloutAssignment.product` (2) · and 17 singletons: `CalloutOrder.docType/.bPartnerBill/.charge/.tax/
+.warehouse/.navigateOrderLine` · `CalloutInvoice.bPartner/.docType/.charge/.navigateInvoiceLine` ·
+`CalloutInOut.warehouse/.order/.asi/.rma/.rmaLine/.navigateInOutLine` · `CalloutFillLocator.fillLocator`.
+- **`CalloutOrder.docType` stays out** — `§CC.5`: a second writer to `IsSOTrx`.
+- **The four `navigate*` atoms are not derives at all** — they move the CURSOR between tabs. They will
+  never belong in a module whose whole contract is "return `derived:{col:value}`"; they should be
+  struck off the denominator, not ported. Named here so the next session does not try.
