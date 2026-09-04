@@ -3238,7 +3238,7 @@ centre at this pose; without the top-up this frame had zero fixture light"*.
 - #1327 should be closed as superseded-in-part once #1642 lands, with its two untaken halves carried
   forward rather than lost.
 
-## §BAKE_MISSING_ELEMENTS — 2026-09-04 — 🔴 OPEN, UNSOLVED. START HERE FOR THE MISSING-GEOMETRY CHASE
+## §BAKE_MISSING_ELEMENTS — 2026-09-04 — 🟠 ROOT CAUSE MEASURED (§BME.8), FIX ON bim-ootb PR #1660 (NOT merged). READ §BME.9 RESUME FIRST — §BME.1–§BME.6 below are the pre-solution record
 
 > **USER, on the landed Hospital silent bake** (`~/Downloads/Hospital_silent_bake_2026-09-04.mp4`,
 > 2,937 frames, 195.8 s, sw v1138):
@@ -3317,3 +3317,108 @@ cd ~/bim-ootb && node viewer/tests/witness_tm_drawn_vs_scheduled.js      # BLD d
 ffmpeg -ss 78 -i ~/Downloads/Hospital_silent_bake_2026-09-04.mp4 -frames:v 1 out.png   # Day 310/310, bays open
 ```
 The user's DB is `~/Downloads/Hospital_silent.db`, symlinked into `buildings/Hospital_silent_local.db`.
+
+### §BME.7 — 2026-09-04 — SPEC: the STAGED-FRAME CENSUS (the instrument §BME.4 asked for)
+**Claim under test (W-SDC):** in a frame rendered THROUGH photoreal staging by the real `__maxqBake`
+loop (clipped to the film window around 78 s, `--clip in:out`), every element the scene graph says is
+visible AND whose bounding sphere lies inside the capture camera's frustum is submitted to the GPU in
+the last colour pass before `_captureFrame` reads the canvas. If it is not, the census names the
+class, the representation and sample guids — that is the "selective loss inside a staged frame"
+§BME.4 said the plain-scene instrument cannot see.
+**Instrument:** `cli_silent_bake.js --clip in:out --tap viewer/tests/tap_staged_draw_census.js`
+(dev-only, same family as `__maxqPoseTap`). The tap wraps: `renderer.render` (pass tagging —
+colour = main scene, no `overrideMaterial`); `BatchedMesh.prototype.onBeforeRender` (reads
+`_indirectTexture.image.data[0.._multiDrawCount)`, the exact instance ids three r185 submits —
+extracted from `three.core.min.js` `class Eo`, not assumed); `Object3D.prototype.onBeforeRender`
+(InstancedMesh: whole-object draw, per-instance = non-zero matrix, `count` vs meta length). Capture
+moment = `CanvasRenderingContext2D.drawImage(renderer.domElement)`, `_captureFrame`'s own read.
+**§-lines (in the bake log, `§CLI_BAKE_TAP` block, and `<out>_tap.json`):**
+- `§SDC_FRAME i= film_t= passes= colorPasses= bmObjs= imObjs= drawnBm= drawnIm=`
+- `§SDC_CLASS i= cls= visible= inFrustum= drawn= notDrawn= sample=<guids>` — notDrawn = visible ∧
+  strictly-in-frustum (0.05 m margin, so TAA jitter cannot count) ∧ not in the last colour pass.
+- `§SDC_INSTANCED i= cls= objs= drawnObjs= countShort=` — `count` < meta length = instances the GPU never sees.
+- `§SDC_MAT i= uuid= type= <field>:<old>→<new>` — a drawn material whose visible/opacity/transparent/
+  transmission/envMap/depthWrite/program-diagnostic changed between frames.
+- `§SDC_BOUNDS_STALE bm= geoms= stale=` — once: `_geometryInfo` sphere vs one recomputed from the batched positions.
+**Verdict:** `witness_staged_draw_census.js` reads `<out>_tap.json` through `witness_kit/contract.js`:
+PASS = notDrawn=0 and countShort=0 in every frame; INCONCLUSIVE = no frame captured or no colour pass
+seen; RED CONTROL = one row mutated to notDrawn=1 must fail.
+**Pixel reproduction (separate, numeric):** the clip frame whose film_t is nearest 78 s vs the film's
+own 78 s frame (ffmpeg): mean |Δluma| whole-frame and over the left-elevation crop. Reproduces if
+both are within 10× the §MAXQ_FRAME_BUDGET noise floor (RMS 0.21). If it does NOT reproduce, the
+symptom depends on bake history or environment and the clip must start before topout.
+
+### §BME.8 — 2026-09-04 — ROOT CAUSE FOUND AND MEASURED: dlod.js "restored" 24,992 instances to ZERO matrices it had captured after the Time Machine zeroed them
+**Instrument that found it:** the full-film §SDC census (`cli_silent_bake.js --tap`, 2,937 frames, the
+film's own DB and path). Per-frame, per-class: `visible` (scene graph) · `inFrustum` · `drawn` (GPU
+draw list). Verdict on the render: `notDrawnTotal=2` over 2,937 frames (two IfcRailing slots on the
+frustum edge) — **the renderer draws everything the scene graph shows.** The loss is upstream:
+- `IfcPlate` visible 2050 → **1081 at frame 718 and never again higher, to frame 2936 (Day 310/310)**;
+  `IfcMember` 6206 → 1885; `IfcFurniture` 201 → 22; `IfcWindow` 131 → 85. The lost ones are exactly
+  the **InstancedMesh** representation (`imPlaced` 969 → 0 for plates, 4321 → 0 members, 179 → 0
+  furniture, frames 712–718 = film 47.5–47.9 s — the user's "0:47–0:55"). BatchedMesh slots untouched.
+  **"Selective within a set" = same class, two representations; only the instanced half died.**
+- The §-line that fired there: `§DLOD_TICK … imHid=3337 imVis=21676` (frame 714) → `imHid=21 imVis=24992`
+  (frame 718): dlod.js's per-instance frustum culler "restored" 24,992 instances into view.
+- What it restored: `m._origMatrix`, captured by `_buildRefs()` — which ran at **`§DLOD_REFS built
+  instanced=2872 imInstances=25013` at log line 658, AFTER `§MAXQ_FRAME i=0`** and after
+  `tmActivateForBake` had zero-scaled every unplaced instance (cursor at day 0). So `_origMatrix` = a
+  zero-scale matrix for essentially every instance; every later "restore" wrote zero. Instances that
+  never left the frustum after TM placed them survived; every one that left and came back is gone.
+- Why the refs were late: `dlodEnable()` (streaming end) marks refs dirty and calls `dlodTick()`, but
+  the tick returns BEFORE `_buildRefs()` when the camera is idle. A CLI page never moves the camera
+  until the bake's own frame 0 — by then TM owns the matrices. **An interactive bake (every
+  `BIM_MaxQ_Hospital_*.mp4` before this) had navigated first, so its refs held real matrices.** That
+  is the whole of "before this it was not an issue": the defective film is the first CLI silent bake
+  of Hospital. Nothing in #1604–#1659 caused it; dlod.js last changed 2026-08-05.
+- The fight is two-way (S258 landmine, `project_dlod_geometry_swap_landmine.md`): TM's own lazy save
+  (`_savedInstanceMatrices`, time_machine.js ~1601) reads CURRENT matrices, so an instance dlod.js had
+  zeroed before TM's first pass would be saved as zero by TM too.
+**FIX (§DLOD_TM_OWNERSHIP): one owner of instance matrices at a time.** TM activation
+(`_finishActivate`, the single point both the pill and `tmActivateForBake` reach) calls
+`A.dlodDisable('time-machine')` first — dlod.js restores its own hides while `_origMatrix` is still
+real, then stands down; `dlodEnable()` refuses while `app._tmOn` (`§DLOD_SKIP_TM`); `dlodTick()` is
+gated on `!app._tmOn`; TM `deactivate()` re-enables after `restoreVisibility(true)`.
+**Witness:** `viewer/tests/witness_dlod_tm_ownership.js` — the CLI's exact ordering (idle camera →
+TM on at day 0 → first camera move → cursor to end → camera out of and back into view); asserts every
+placed instance holds a non-zero matrix at the end and the `§DLOD_DISABLE reason=time-machine` line
+was emitted. RED before the fix, GREEN after; red control via witness_kit.
+**Retractions from this session (do not resurrect):** (1) `§SDC_BOUNDS_STALE stale=14138 worstM=62`
+(first tap run) was the tap scanning the VERTEX range, which includes vertices the index never
+references; the index-range recomputation three actually uses (`witness_bm_bounds_cull.js`) measured
+**stale=0, wronglyCulled=0** at all seven recorded poses. (2) The first two clipped runs (`--clip
+0.394:0.402`) showed a Reveal slot at u=0.40 for two unrelated reasons: the bake loop fed the Reveal
+its clip-local `_tn` (fixed, §CPE_CLIP_REVEAL_FILM_T), and run B reused run A's Chromium profile, whose
+service worker served the pre-fix `cinema_maxq.js` (a fresh `--profile` per run from now on).
+
+### §BME.9 — 2026-09-04 SESSION CLOSE — RESUME HERE
+**State:** root cause measured and named (§BME.8: dlod.js ↔ Time Machine matrix ownership, CLI-bake
+ordering). Fix + instruments on **bim-ootb PR #1660** (`test/staged-draw-census`, commit 7eafe999,
+sw v1139). **Deliberately NOT armed for auto-merge.** Worktree pruned; re-create from the branch.
+**What is proven (§-log, primary evidence):** full-film census `scratchpad/full_census.log` of this
+session (not persisted — re-run if needed, ~52 min): `§DLOD_REFS built … imInstances=25013` at log
+line 658 AFTER `§MAXQ_FRAME i=0`; `§DLOD_TICK … imHid=21 imVis=24992` at frame 718; `§SDC_CLASS`
+`IfcPlate imPlaced 969→0`, `IfcMember 4321→0`, `IfcFurniture 179→0` frames 712–718, still 0 at
+frame 2936; `notDrawnTotal=2/2937 frames` on the render side. GREEN run of the ownership witness on
+the fixed tree: `§DLOD_DISABLE(time-machine)=1`, refs never rebuilt under TM.
+**What is NOT yet proven — do these, in order, before merging #1660:**
+1. Make `viewer/tests/witness_dlod_tm_ownership.js` go RED on unfixed main. Its far/near pass did
+   not evaluate the culler (main.js animate loop self-parks, §IDLE_GATE; `markDirty()` alone did not
+   wake it headless). Drive it the way `tour.js:1636` does after each camera set:
+   `A._dlodFrame = -1; A.dlodTick();` — then `ROOT=~/bim-ootb LOG=/tmp/dto_red.log node viewer/tests/witness_dlod_tm_ownership.js`
+   must print `lost>0` for IfcPlate/IfcMember/IfcFurniture, and the worktree run `lost=0`.
+2. The user's ask, verbatim: *"after it is solved, do a silent bake of Hospital_silent.db"*. From the
+   PR worktree, FRESH `--profile` (a reused Chromium profile's service worker served stale JS this
+   session):
+   `node cli_silent_bake.js --db Hospital_silent_local --gpu real --tap viewer/tests/tap_staged_draw_census.js --out ~/Downloads/Hospital_silent_bake_2026-09-05.mp4 --log ~/Downloads/Hospital_silent_bake_2026-09-05.log --profile /tmp/silent-bake-profile-fresh-$$`
+   (`buildings/Hospital_silent_local.db` → symlink to `~/Downloads/Hospital_silent.db` in the worktree).
+   Pass = `§SDC_CLASS i=2936 cls=IfcPlate … imPlaced=` **≥ 969** (the pre-loss value) and
+   `§DLOD_SKIP_TM`/`§DLOD_DISABLE reason=time-machine` present; no `§DLOD_TICK` line after
+   `§MAXQ_FRAME i=0`. Then `python3 scratchpad/tap_analyze.py <out>_tap.json` (script lost with the
+   scratchpad — 40 lines, re-derive from §BME.7's row schema) or just grep the lines above.
+3. Merge #1660 (`gh pr merge 1660 --auto --squash`), then deploy per `feedback_deployment.md`.
+**Open threads found on the way (not blocking):** (a) the 53 batched slots the TM delta path leaves
+hidden at the end cursor (`§DVS_END_DELTA_VS_FULL delta: missing=53 (B=41 I=12) | full: 0`,
+IfcColumn/IfcBeam/IfcSlab) — real, separate, unowned; (b) `§CPE_STATS_TAIL` uses the clip-local `_tn`
+as u (log says "u=0.364" in a 0.394–0.402 clip) — cosmetic in clip mode only; (c) the 178
+IfcCurtainWall / 24 IfcRoof / 31 IfcStair with no geometry still occupy programme time (§BME.3).
