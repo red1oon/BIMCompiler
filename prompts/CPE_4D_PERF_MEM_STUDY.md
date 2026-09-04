@@ -1366,3 +1366,52 @@ two rules are one flag-flip from being re-armed once A-27 lands.
 so **"I will mark it not-ready after the next run" is not a plan** — a PR whose evidence is still
 in flight should be opened as a **draft**, or not opened until the evidence is in. The cost here was
 recoverable in one follow-up PR; it would not always be.
+
+## §R16_ALTS_MEM — what ONE Alt+S press actually costs, MEASURED 2026-09-04 (measurement only, nothing shipped)
+> **USER, 2026-09-04:** *"i equally giving full attention, to pick out minute details to improve one
+> of which is the alt-s perf, seems to hog memory. Of course it is doing alot of good imagery,
+> surface treatment and some 10 sec lag is needed. But let's see if we can find room to improve."*
+
+`§R12_HOSPITAL_MEM` measured the **load** baseline. The **press delta** had never been measured.
+Probe: bim-ootb `viewer/tests/probe_r16_alts_mem.js`, Hospital split pair, real GPU (RTX 4060),
+headless, `streamed=63182` asserted before anything is reported. Log `/tmp/r16b.log`.
+
+| sample | heap MB | geometries | textures | programs |
+|---|---|---|---|---|
+| **S0** pre-press (20 s after `§PHOTO_PREWARM`) | **1,782.3** | 2,967 | 3,080 | **20** |
+| S1a press 1, `§STILL_REFINE done` | 1,794.6 | 3,020 | 3,103 | **75** |
+| S1b press 1, `§PHOTO_AO done` | 1,795.0 | 3,020 | 3,103 | 75 |
+| S1c toggled off, +30 s idle | 1,689.3 | 2,982 | **3,103** | **69** |
+| S2a press 2, `§STILL_REFINE done` | 1,696.3 | 3,020 | 3,103 | 75 |
+| S2c toggled off, +30 s idle | 1,699.7 | 2,982 | 3,103 | 69 |
+
+**Timing:** press 1 `elapsedMs=7739` (probe wall 7,993 ms), press 2 `elapsedMs=3377` (3,483 ms),
+`restarts=0` on both. That is the user's "10 sec lag", and §R11's prewarm is doing its job — the
+27 s first press of the v1111 session is gone.
+
+### The three claims, answered
+- **C1 — does a press give the heap back? YES.** `retainedAfterPress1MB = -93.0`. The press peaks at
+  **+12.3 MB** and the tab ends up *below* where it started once GC runs. **Alt+S does not leak JS heap.**
+- **C2 — does press 2 cost more than press 1? NO.** `press2ExtraMB = +10.4` against press 1's +12.3,
+  `texturesPress2 = 0` — the second press reuses everything. No per-press growth.
+- **C3 — is everything released? NO, and this is the one real finding.** Across the press,
+  **+23 GPU textures and +49 compiled shader programs are never released** (3,080→3,103 and
+  20→69, unchanged through teardown and 30 s idle). Geometries return to +15.
+
+### Therefore
+**"Alt+S hogs memory" is not the press — it is the 1,782 MB the tab already holds before the press.**
+The lever list is `§R12_HOSPITAL_MEM`'s, unchanged and not re-derived: meshCache batch-only
+duplicates **324.8 MB**, quantized normals **≈246 MB**. The press itself is ~12 MB and gives it back.
+The press's own defensible target is the **+49 retained programs** (shader compilation is also what
+makes press 1 twice press 2) and the **+23 textures**.
+
+### Instrument limits — recorded so they are not re-derived
+1. `BLD` is `Hospital`, **not** `Hospital_meta` — the viewer appends `_meta`/`_geo` itself. The wrong
+   name loads an EMPTY scene and the first run duly reported `heap=400 MB` with `streamed=0`. The
+   probe now prints `§R16_VERDICT INCONCLUSIVE` instead of a number when `streamed=0`.
+2. **Render-target bytes are still unmeasured (`rtSeen=0`).** Patching `THREE.WebGLRenderTarget` on
+   the global catches nothing — the post-processing stack is an ESM whose `new WebGLRenderTarget`
+   binds inside the module. Patching `THREE.WebGLRenderer.prototype.setRenderTarget` *also* caught
+   nothing, for a second reason worth knowing: **two three builds coexist** — `§UPGRADE_THREE_DONE
+   r=185` for the classes, `§S277b_RENDERER WebGLRenderer r184` for the renderer — so the prototype
+   patched is not the class in use. Next revision patches the live `APP.renderer` instance.
