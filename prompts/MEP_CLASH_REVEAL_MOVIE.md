@@ -504,3 +504,75 @@ than guessed at.
 
 **Two taste calls left with the user, both one-line constants:** `BASE 0.22 / AMP 0.30` against a
 half-built model, and `PERIOD_S 4.0` for "slowly".
+
+## §CLASH_FILM_P2 — 2026-09-05 — SPEC: the in-scene label. All three open questions ANSWERED by the user.
+Phase 1 (§CLASH_FILM_P1) shipped the flag, the persistent mesh-true pairs and the per-instance
+`fade` channel. Phase 2 is the label. **The user answered the three design questions outright — none
+of these is open, do not re-litigate them.**
+
+### The user's rulings, verbatim
+> **1.** *"if it is close by where it is clear enough i would say within 4 meters, it will then hold
+> its shine thru and bear labels even though behind close doors/walls/obstruction. And it is only
+> selective well spaced out, not overlapping, can be up to any number thus."*
+> **2.** *"A single label similar to the HUD, with same half see thru panel just to bear both items:
+> above in red, below in the blue, users will know right away which is which. Just its semantic name
+> ie Sprinkler / Wall. They fly together but its size remain constant to avoid overlaying pov."*
+> **3.** *"No slowing down"* — the camera stays strictly incidental. Nothing in phase 2 steers it.
+
+### §P2.1 — selection is PROXIMITY, not ranking. This replaces phase 1's "top 1–2".
+- **Eligible = the pair's `contact` is within 4.0 m of the camera.** Not a top-N. Any number qualifies.
+- **Occlusion is IRRELEVANT** — a pair behind a door, a wall or any obstruction still qualifies and
+  still shines through. Do NOT raycast for visibility; the user ruled it out explicitly.
+- **What limits the count is SCREEN SPACE, not a cap.** Walk the eligible set nearest-first and place
+  each label only if its panel rectangle does not overlap one already placed this frame. Skipped
+  pairs keep their marker; they simply carry no panel.
+- **Hysteresis, or it strobes:** a pair enters at 4.0 m and is released at 4.6 m. A pair drifting on
+  the boundary must not flicker between labelled and unlabelled every few frames.
+- A labelled pair's `fade` → 1 (solid, pulse off) via the existing `A.clashFilm.setFade`; a released
+  one returns to 0. **Phase 2 must not reimplement the marker or the pulse** — that API is the seam.
+
+### §P2.2 — the label is 2D, composited onto the capture canvas. NOT 3D text, NOT DOM.
+`_captureFrame` (cinema_maxq.js:767) draws the WebGL canvas into a 2D context and then composites the
+HUD onto it (`A.dayCounterCompositeOntoCanvas`). Labels use that same pass, for three measured reasons:
+- **a DOM overlay is never captured** — it would be invisible in the film;
+- 3D text has to be re-oriented and re-scaled every frame and z-fights against structure;
+- the 2D pass is already proven by the day counter and stays crisp at 1080p at no extra cost.
+**Constant screen size** (the user's "size remain constant to avoid overlaying pov") falls out of this
+for free — a 2D panel does not scale with distance.
+
+### §P2.3 — the panel, and where the names come from
+One panel per pair, styled like the day counter's half-transparent HUD box, two rows:
+**the A-side name in red on top, the B-side name in blue below.** Nothing else — no guids, no
+coordinates, no severity. The user: *"users will know right away which is which"*.
+
+**The semantic name is EXTRACTED, not invented.** `viewer/rates.js` already carries 57
+`Ifc<Class>: { desc: '…' }` entries and **every class in the measured clash set resolves**:
+`IfcFireSuppressionTerminal → "Fire Sprinkler Head"` · `IfcWallStandardCase → "Standard Wall"` ·
+`IfcPipeSegment → "Pipe Segment"` · `IfcCableCarrierSegment → "Cable Tray Segment"` ·
+`IfcDuctFitting → "Duct Fittings (elbows, tees)"` · `IfcSlab → "RC Slab 250mm"`.
+Trim for a label — drop a parenthetical and a trailing size/spec token ("RC Slab 250mm" → "Slab",
+"Duct Fittings (elbows, tees)" → "Duct Fitting") by a stated deterministic rule, and **fall back to
+the raw ifc_class** when a class is not in the map rather than inventing a name.
+
+### §P2.4 — the leader line
+Drawn in the same 2D pass: project the pair's `contact` with `vector.project(camera)` to screen x,y
+and stroke from the panel edge to that point. Always correct on screen, never intersecting geometry
+the way a 3D line would. Skip the line (keep the panel) when the projection lands behind the camera.
+
+### §P2.5 — witness claims, each able to answer NO
+- **P1 the 4 m rule holds:** every labelled pair is within 4.0 m; no pair beyond 4.6 m is labelled.
+- **P2 occlusion is not consulted:** no raycast/visibility call in the selection path, and a
+  synthetic pair placed behind a wall IS labelled. (The user ruled this in; a "fix" that hides it is
+  a regression.)
+- **P3 no overlap:** across a run of frames, no two placed panel rectangles intersect.
+- **P4 no strobe:** over a camera pass that crosses the boundary, no pair changes labelled-state more
+  than once per hysteresis crossing.
+- **P5 constant size:** a panel's pixel dimensions are identical at 1 m and at 4 m.
+- **P6 the fade seam:** a labelled pair reads `fade=1` and its marker stops pulsing; released → 0.
+- **VACUOUS:** no pair ever came within 4 m during the sampled frames → INCONCLUSIVE, never PASS.
+- Red control via `witness_kit/contract.js`.
+
+### §P2.6 — scope fence
+No camera change (ruling 3). No new panel in the viewer UI. No edits to `clash_film.js` beyond using
+`setFade` — its marker geometry and pulse envelope are being corrected concurrently under
+§CLASH_FILM_P1 and must not be forked.
