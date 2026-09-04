@@ -3539,3 +3539,47 @@ so the next instrument has to judge the *specific* view. The viewer already emit
 share hash (`§HASH_PARSE keys=bld,cx,cy,cz,tx,ty,tz`, `quickShare` / `buildShareUrl`) — **the share
 URL of the view with the missing wall** is a coordinate, and a per-GUID drawn census at that exact
 pose then decides it without anyone judging a picture. That is the one open question.
+
+### §BME.13 — 2026-09-04 — HHS: #1631 §DUCT_SILHOUETTE CLEARED by A/B; extraction is complete; two broken geometries found (not walls)
+User asked which recent change caused it, to weigh dropping it. Answer: **no recent change is
+implicated, and there is nothing to drop.**
+
+**#1631 §DUCT_SILHOUETTE (2026-09-02) — CLEARED.** It was the only recent change that rewrites
+vertex data, and it runs at `scene.js:1934` on every streamed geometry with no class gate (HHS:
+`considered=3269 refined=113 addedVerts=103158`). A/B on the same load, refinement forced off via
+`evaluateOnNewDocument` — **identical integrity numbers both ways**:
+`geometries=3369 NaN=0 zeroTri=0 badIndex=4 badSphere=0`. Do not revert it; the cost (faceted duct
+silhouettes return) buys nothing.
+
+**Extraction is complete — the source IFCs prove it.** `internal/UNMERGED/opensourceBIM_HHS_Office_*`
+(architect + construction, the federated pair) against `HHS_Office_Federated_extracted.db`:
+
+| class | architect | construction | source total | in DB |
+|---|---|---|---|---|
+| IfcWallStandardCase | 112 | 36 | 148 | **148** ✓ |
+| IfcWall | 0 | 12 | 12 | **12** ✓ |
+| IfcSlab | 75 | 8 | 83 | **83** ✓ |
+| IfcCurtainWall | 33 | 0 | 33 | **33** ✓ |
+
+Not one wall or slab was lost between the IFC and the DB.
+
+**Two genuinely broken geometries, found on the way — real, and NOT walls.** Their index buffer
+references vertices that do not exist, so those elements cannot draw correctly. Present with
+refinement off too, so this is a DB/extraction defect, not code:
+- `771efc5271499502` — pos.count **474**, idx.count 2748, **max index 29804**. Used by **6
+  `IfcBuildingElementProxy` "CCTV Camera (Paxton10 Mini Bullet, CORE series)"**, Levels 1/2/3, MEP.
+- `8be27af97ecbf86e` — pos.count **24**, idx.count 120, **max index 26000**. Used by **1
+  `IfcEnergyConversionDevice` "Photovoltaic Module (NBS generic)"**, Roof Level, MEP.
+
+That is 7 elements, all MEP fixtures. Worth its own fix; it is not the user's wall.
+
+**Standing conclusion: the HHS report is not reproduced and not attributed.** Every pose-independent
+invariant passes (§BME.12), the data is complete, and the only recent geometry-touching change is
+cleared. The open question is unchanged and is a coordinate, not a look: **the share URL of the view
+with the missing wall** (`§HASH_PARSE keys=bld,cx,cy,cz,tx,ty,tz`).
+
+**USER, 2026-09-04 (session close on this lane):** *"the issue with Hospital is now solved, and i am
+truly happy with the bake result, and we shall use that as the baseline to proceed"* ·
+*"Clinic in OCI is now solved.. no more boxed non glass panels"* · the HHS right-side ground-floor
+wall stays open. **Baseline for every later comparison = `Hospital_silent_bake_2026-09-05.mp4`
+(§BME.11), not the 09-04 film.**
