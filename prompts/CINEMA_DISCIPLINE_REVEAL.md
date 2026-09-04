@@ -1189,3 +1189,52 @@ discipline present) but not by a real multi-discipline bake. Follow-on, not bloc
 `witness_cpe_reveal_pullout.js` against `Hospital_extracted.db` (or any OCI-fetched multi-discipline
 building) once one is available in a worktree, to get the `§CPE_REVEAL_DISC_ORDER` log line and the
 2-discipline `visDiscs` overlap exercised against real data instead of a single-discipline fixture.
+
+## §CPE_REVEAL_LENS_QUAD_OFF — 2026-09-04 — SPEC: the lens quads stay lit through the one-discipline slots
+> **USER, 2026-09-04:** *"On the reveal exit pull away path, i raised about the 'lights quads' always
+> visible obscuring the respective DISCipline display. U did mention before to turn off ie zero the
+> color so they go invisible. THis will be the next to improve the Reveal runs."*
+
+### The defect, located exactly (code read, not inferred)
+`§CPE_TAIL_LIGHTS_ALL_ONLY` (#1649) already turns the lamps off for a one-discipline slot, and
+`A._cpeRevealLightsOff` is the flag that says so (`cinema_maxq.js:1568`). It is honoured in **two**
+places only:
+- `effects.js:4575` — `_glowOn()`, the ROUND glow sprite, returns early.
+- `effects.js:4991` — `A._nightPLScale = 0`, the real point lights.
+
+**The `§GLOW_LENS_QUAD` path has no such guard.** `_glowLensOn()` (`effects.js:~4764-4910`) stages
+its rect/round quads from fixture world data with no reference to `_cpeRevealLightsOff` at all — so
+through every one-discipline slot the quads keep drawing additively over the trade being revealed.
+That is the "always visible, obscuring the respective DISCipline display" the user is describing.
+
+It persists rather than flickering because of `§R10`'s stage-keep guard (`effects.js:4328`): a bake
+frame calls `_teardownStillRefine(reason, keepStaging=true)`, and when the TM-visible fixture count
+is unchanged the quads are deliberately NOT disposed. Correct for performance, and it is why the
+quads survive from frame to frame.
+
+### The fix — zero the colour, do NOT tear down
+The quad is a `MeshBasicMaterial` with `blending: THREE.AdditiveBlending`, `color: 0xffffff`,
+`toneMapped: false` (`effects.js:~4830`). An additive surface at `color = 0` contributes **exactly
+zero** to the frame — invisible, with no dispose and no rebuild, so `§R10`'s stage-keep guard stays
+intact and `_glowLensStagedCount` keeps its meaning. Tearing the quads down per slot would fight
+that guard and pay a dispose+rebuild on every transition.
+
+So: one guard, same flag, same shape as the round sprite's, applied to the quad's material rather
+than its lifetime — `_cpeRevealLightsOff ? 0 : 1` as a colour scalar, set where the slot flag is
+already evaluated per frame. No new constant, no new flag, no class list.
+
+### Witness claims (must be able to say NO-OP, VACUOUS, WRONG)
+- `§CPE_REVEAL_LENS_QUAD_OFF slot=<disc> quads=<n> colorScalar=0` on every one-discipline slot, and
+  `colorScalar=1` on the all-together slot. **VACUOUS** if `quads=0` (nothing staged — the verdict
+  must say INCONCLUSIVE, not PASS; `§GLOW_LENS_QUAD_GATE 0 fixtures placed yet` is that case).
+- **NO-OP guard:** the quads must still be *staged* (`_glowLensStagedCount` unchanged across the
+  slot) — a fix that accidentally tears them down is a different behaviour, not this one.
+- **WRONG:** any frame in a one-discipline slot whose drawn quad count > 0 with a non-zero colour.
+- Numeric proof, not a look: per-slot mean luma of the fixture-quad pixels, from the staged-frame
+  census the bake tap already provides — it must drop to the floor on one-discipline slots and
+  return on the all-together slot.
+
+### Status
+SPEC ONLY — not implemented. Next item for the Reveal lane. Baseline film for any before/after is
+`~/Downloads/Hospital_silent_bake_2026-09-05.mp4` (`PHOTOREAL_STILL_RENDER.md` §BME.11, the user's
+own words: *"we shall use that as the baseline to proceed"*).
