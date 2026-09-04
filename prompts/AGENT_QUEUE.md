@@ -2064,3 +2064,65 @@ witness dates on or before 2026-06-13 (checked by a `--diff-filter=A` sweep over
 should read **42**, and 42+1+1+6+3 = **53**. `ERP_EQUIVALENCE_LEDGER.md` now carries the resolution and
 the headline reads 53. This *confirms* `ERP_PROJECT_REVIEW.md` §2 finding #3 — bookkeeping fragility, not
 inflation, and the fragility ran one row **under**, never over.
+
+---
+
+# §ERP-SESSION-CLOSE-2 2026-09-04 (later) — **START HERE when the user says "continue on ERP".**
+**This supersedes `§ERP-SESSION-CLOSE` above.** That block's `§CLOSE.4` ranked five open items;
+**all five are now closed.** `§CLOSE.2` (the health commands), `§CLOSE.5` (the ⛔USER decisions),
+`§CLOSE.6` (size/perf) and `§CLOSE.7` (the standing rules) are still current — read them there, they
+are not repeated here.
+
+## §C2.1 WHAT CLOSED, and where the evidence lives
+| §CLOSE.4 item | closed by | the section that owns it |
+|---|---|---|
+| 1 · engine WRITE vs app READ vocabulary | bim-ootb **#1661**, sw v784 | `§KIND2-READBACK` + `§K2RB.5` |
+| 2 · `odoo_descriptor.js` eagerly loaded | bim-ootb **#1662**, sw v785 | `§DICT-LAZY` |
+| 3 · E-1's two named callout atoms (+ the campaign PLAN) | bim-ootb **#1663**, sw v786 | `§INOUT-CALLOUTS` (plan in `§IC.3`) |
+| 4 · E-3, a Form renderer, one form end to end | bim-ootb **#1664**, sw v787 | `§ADFORM-VMATCH` |
+| 5 · E-6/E-7/E-8/E-14/E-15 hygiene | bim-ootb **#1665**, **#1666** + bim-compiler | `§HYGIENE` |
+
+Six new witnesses, every one RED on plain `origin/main` before its fix and GREEN after:
+`W-KIND2-READBACK` (3 stages) · `W-DICT-LAZY` (10) · `W-INOUT-CALLOUT-ATOMS` (9) ·
+`W-ADFORM-VMATCH` (16) · `§DIGEST` / `§DIGEST-CHECK` (46 rows).
+
+## §C2.2 THE FIVE DEFECTS NOBODY HAD ASKED FOR — each found by measuring, not by reading
+1. **A Sales Order authored in window 143 was refused by both KIND-2 generators** ("Order is not a
+   Sales Order"). `C_Order`'s only `IsSOTrx` seam fired *only* when `C_DocTypeTarget_ID` was blank —
+   and that column is displayed+mandatory, so filling the form correctly disabled it.
+2. **`AdCallout.dispatch` dropped every handler's `result.deferred`** — the exact thing the standing
+   named-deferral rule forbids.
+3. **A read-only field was never written by a callout.** iDempiere callouts set the MODEL, not the
+   widget. `M_InOut.MovementType` — the column AD_Tab 296 is *keyed on* — was derived and thrown away.
+4. **Fixing (3) broke the P2P chain**, because `IsSOTrx` was nested inside "MovementType was empty".
+   Caught by a regression run, not by reasoning. This is the "fixed mechanism A ≠ symptom solved" trap.
+5. **`docs/internal/` is gitignored**, so every new document written there has been silently untracked
+   for months; `ERP_COVERAGE_MATRIX.md` survives only because it predates the rule.
+
+## §C2.3 ⬜ NEXT, ranked — nothing here is blocked
+1. **E-1, the campaign, now with its plan measured** (`§IC.3`): of the **78** `ad_column.callout`
+   bindings on the nine O2C/P2P document tables the app actually drives, **28 dispatch = 36%**. The
+   37-binding gap is listed **in full** there, ranked by document — `CalloutPayment.*` (5 bindings, one
+   table) buys the payment screen; `CalloutInOut.qty/product/orderLine` (3) buys the receipt LINE the
+   P2P witness still types; `CalloutEngine.dateAcct` (4) is one trivial rule reused on four documents.
+   **One trap named there:** `CalloutOrder.docType` would become a SECOND writer to `IsSOTrx`, which is
+   exactly the coupling defect 4 above cost a regression to find.
+2. **E-3, form #2 of 49.** The spine is done and the honest card names the gap by classname and count;
+   a new form is one `_registerForm(classname, fn)` call. `Match.createMatchRecord` (creating a match by
+   hand) is deliberately NOT ported — see `§AF.5`.
+3. **Three STALE LIVE WITNESSES, red on plain `main`, found while regression-testing** — none is a
+   product defect, each is an instrument judging a retired DOM: `poc_odoo_descriptor.js` (times out on
+   `#idmp-login-ok`), `poc_wh_pos_pick_live.js`, `poc_wh_walk_live.js`, `poc_pos_live.js`. They cost
+   real time to baseline this session; fixing them is cheap and pays every future session.
+4. **`preview_demo.db` (397 KB) is a tracked binary DB** and simultaneously the live fixture of
+   `erp/tests/poc_preview_demo.js`. The remediation is the project's own doctrine — regenerate it from
+   SQL — not deletion. Named in `§HYGIENE-E14`, not actioned.
+5. **`idempiere_agent.zip` duplicates `erp/idempiere_agent/`** but is a SHIPPED DOWNLOAD
+   (`common/about_diy.js:198`). Building it at deploy time would remove the duplication without
+   removing the feature.
+
+## §C2.4 THE ONE THING THAT WOULD HAVE SAVED THE MOST TIME
+Every stale premise this session hit — three of five hygiene items, three green-but-scope-blind
+witnesses, four red-before-I-arrived instruments — was found the same way: **run it, then read the log.**
+Not one was visible from the text that described it. `§CLOSE.7` rule 3 already says this; this session
+paid for it five more times.
