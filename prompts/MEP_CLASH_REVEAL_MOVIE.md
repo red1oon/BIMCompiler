@@ -576,3 +576,98 @@ the way a 3D line would. Skip the line (keep the panel) when the projection land
 No camera change (ruling 3). No new panel in the viewer UI. No edits to `clash_film.js` beyond using
 `setFade` — its marker geometry and pulse envelope are being corrected concurrently under
 §CLASH_FILM_P1 and must not be forked.
+
+### §CLASH_FILM_P2 — MEASURED 2026-09-05 (bim-ootb branch `feat/clash-film-p2`, stacked on `feat/clash-film-p1`)
+**Built as specified: `viewer/clash_labels.js` (new) + the three hooks in `cinema_maxq.js` (reset after
+`clashFilm.build`, `clashLabels.update` before `clashFilm.update` each frame, the 2D composite first in
+`_captureFrame` so the corner HUD always paints over a label). Only contact with `clash_film.js`:
+`pairs()`, `setFade()`, `stats()` — its file is untouched.** Witness
+`viewer/tests/witness_clash_film_labels.js`, 12 claims, logs `~/Downloads/cll/witness_cll_*.log`.
+
+**RED → GREEN, three runs:**
+- *Before* (P1 tree, module absent): `§CLL verdict=INCONCLUSIVE reason=clash_labels.js not wired` →
+  `§WITNESS_CLASH_FILM_LABELS pass=0 fail=0 ran=0 INCONCLUSIVE` (exit 2). Not green.
+- *Sabotage* (`SABOTAGE=occlude` wraps the selector with the visibility filter the user ruled OUT):
+  `P2a … calls made by the selector: 1 (must be 0) FAIL`, `P2b … hidden=true; labelled=false FAIL`,
+  and P1a/P1b/P3/P4/P5/P7 fall with it → `pass=3 fail=1 ran=12`, exit 1. **The claims can fail, and the
+  regression the ruling forbids is the one they catch.** Also measured on the way: with that filter
+  even the isolated pair at 3.5 m with NO synthetic occluder goes unlabelled (`P1a … labelled=false`) —
+  the real building already hides it from that approach, so "occlusion is irrelevant" is not a corner
+  case, it is the common case.
+- *After* (this branch): `§WITNESS_CLASH_FILM_LABELS pass=4 fail=0 ran=12`, red control detected, all 12 OK:
+  - **P1** `P1a d=3.5 labelled=true` · `P1b d=4.3 after entering: labelled=true` · `P1c d=4.7: labelled=false
+    released=…@4.70` · `P1d d=4.3 after release: labelled=false entered=-`.
+  - **P4** one straight pass 6 m→2 m→6 m in 0.02 m steps: `flips=2 enterAt=3.98m releaseAt=4.62m` — no strobe.
+  - **P5** `at 1.0 m 205x51 px; at 3.9 m 205x51 px (frame 1280x720)` — constant size.
+  - **P2** `raycast/BVH calls made by the selector: 0` (spies on `Raycaster.intersectObject(s)` and every
+    `MeshBVH` cast); a 30 m plane inserted halfway, the witness's OWN raycast proving `occluder hit at 1.75 m,
+    contact at 3.5 m → hidden=true`, and the pair `labelled=true` anyway.
+  - **P3** densest cluster (`neighboursWithin3.5m=10`), camera 2 m off: `eligible=10 labelled=7
+    skippedOverlap=3`, seven rectangles pairwise disjoint — screen space, not a cap, limits the count.
+  - **P6** labelled: `fade=1 marker T/4=1 3T/4=1 (equal=solid) ambient 0.52→0.22`; released: `fade=0 marker
+    0.52→0.22 (moves=pulsing)` — read off the marker's `instanceColor`, i.e. the effect, not the variable.
+  - **P7** the STORED Hospital path sampled at 1500 points (`durationSec=195.8`, the bake's own
+    `§CPE_APPLIED total=195.8s`): `eligible on 72/1500 samples` (4.8 % of the film), `maxEligible=1`,
+    `nearestM=2.25`, `overlapping panel pairs=0`, `visibility calls=0`, `enters=5 releases=5`. Windows:
+    `t=0.0667→0.07 · 0.0761→0.0814 · 0.2995→0.3135 · 0.3756→0.3809 · 0.6938→0.7105`.
+
+**TWO SPEC CORRECTIONS, measured, not worked around:**
+1. **§P2.3's "every class in the measured clash set resolves" is WRONG on Hospital_silent: 11 of 13.**
+   `IfcCableCarrierFitting` and `IfcDistributionControlElement` have no `rates.js` entry and show their raw
+   `ifc_class` (`§CLL_NAME IfcCableCarrierFitting → "IfcCableCarrierFitting" source=ifc_class`). That is the
+   fallback the spec asked for, not a guess — but the sentence above was a claim about the data and the
+   data says otherwise. Adding those two `desc` rows to the rate tables is a one-line data change, left
+   for the rates owner.
+2. **The live `window.RATES` is the LOCALE's table, not `rates.js`'s hardcoded block.** In the bake page
+   `IfcWall.desc` reads `"CMU Wall 150mm"` (`viewer/locales/en_US.js:50`), where `rates.js:44` says
+   `"Blockwork Wall 150mm"`. The label reads the live object — the same table the 5D panel shows — so the
+   name follows the locale/rate pack, which is the correct source; the spec's citation of `rates.js` as
+   the table should read "the live `RATES` table (rates.js fallback, replaced by the locale/rate pack)".
+   Trim rule as shipped (stated in `semanticName()`): drop parentheticals → drop digit-bearing tokens →
+   drop a leading ≤3-letter all-caps prefix (RC / LED / PVC/HDPE) → singularise a trailing plain plural.
+   Measured table: `RC Slab 250mm → Slab · Duct Fittings (elbows, tees) → Duct Fitting · LED Light Fixture
+   → Light Fixture · CMU Wall 150mm → Wall · Pipe Fittings → Pipe Fitting`; 8 others pass through unchanged.
+
+**One witness defect found and fixed before it could mislead:** the path profile first reported
+`nearest 1.11 m` at `t≈0.02–0.06`, and a bake of that clip came back `§CLASH_LABELS_SUMMARY VACUOUS
+frames=117 eligibleFrames=0 nearest=10.58m` (`~/Downloads/cll/Hospital_clash_labels_VACUOUS_clip0.02-0.06_2026-09-05.log`).
+Cause: `cinemaPathPlan` reads the LIVE camera basis (§CPE_PREVIEW_DIVERGENCE) and the witness had moved
+the camera for P1–P6 before building the plan. The witness now restores the load-time pose first; the
+corrected profile's `durationSec=195.8` matches the bake's `§CPE_APPLIED` exactly, and the vacuous bake
+stands as proof that the VACUOUS guard fires in a real bake rather than reporting PASS on nothing.
+
+**THE REAL BAKE — `~/Downloads/cll/Hospital_clash_labels_clip0.69-0.73_2026-09-05.mp4`** (`--clash --clip
+0.69:0.73`, the corrected profile's longest ≤4 m window; 117 frames / 7.8 s / 2.69 MB, `§CLI_BAKE_WALL
+totalSec=100`, `§MAXQ_QUALITY unconverged=0`, fresh `--profile` per the rule):
+- `§CLASH_LABELS_SUMMARY frames=117/117 eligibleFrames=50 labelFrames=50 maxEligible=1 maxLabelled=1
+  enters=1 releases=1 skippedOverlap=0 panelsDrawn=50 nearest=2.25m` — **the bake's nearest approach
+  equals the witness's profile `nearestM=2.25` to the centimetre**, so the profile IS the bake's path.
+- One pair, `03qaNJULP1cvoRu8cCb_Ts|0e8pm26Tv5vPrj6zU55MQt`: `§CLASH_LABELS frame=10 … enter=[…@3.96]
+  panels=[90@1059,111,167x51:0.13]` (fading in, alpha 0.13 on its first frame) → `frame=20 … @1093,68 …:1.00`
+  → `frame=30 nearest=2.27m` → `frame=40 … 167x51B` (the contact passed BEHIND the camera at 2.55 m: the panel
+  clamps to the frame edge, no leader — §P2.4's rule) → `frame=60 … release=[…@4.63]`. 50 labelled frames,
+  one enter, one release, no strobe.
+- The panel sits at x=1088–1093 on 1280 wide: `w − margin − bw = 1280 − 20 − 167 = 1093` — the contact
+  projects at or beyond the right edge for most of the pass. **The film flies PAST this clash, it never
+  looks at it** — exactly the "incidental" case the rule wants, and why the leader/edge-clamp path matters.
+- **End of the chain — the label is in the exported bytes, measured, not eyeballed:**
+  `viewer/tests/probe_clash_label_pixels.js` pulls the logged frames out of the mp4 with ffmpeg as raw RGB
+  and looks inside each logged rectangle for the label's signature (red text concentrated in the top row
+  band, blue in the bottom band — a marker glowing behind the plate would put red across both):
+  `§CLL_PIXELS frame=30 pair=90 rect=1093,20,167x51 redTop=962 redBot=0 bluTop=0 bluBot=308 LABEL-IN-BYTES`
+  and the same at frames 20/40/50 → `§CLL_PIXELS_SUMMARY panelsChecked=4 found=4 notFound=0 PASS`
+  (`~/Downloads/cll/probe_pixels_clip0.69-0.73.log`).
+
+**Stated choices (constants and rules the spec left to the implementation — each one line to change):**
+`FADE_S 0.5` film-seconds for the marker to go solid / back to the pulse (§4b "a fade, never a switch");
+panel font `0.022·h` (16 px at 720), plate `rgba(0,0,0,0.45)` and corner radius from the day counter; the
+panel goes up-right of the projected contact, up-left when that would leave the frame, below when the top
+would, then clamps to a 0.028·h margin; the leader runs from the panel's nearest edge point to the contact
+with a dot on it; the panel's alpha follows the marker's fade so both arrive together; labels are drawn
+FIRST in the 2D pass so the day counter / path box / pie always paint over them (the HUD column is fixed
+furniture; a label wanders). The fade target is "holds a panel", so a pair that is within 4 m but lost the
+screen-space contention keeps pulsing until a panel frees up — the literal reading of §P2.1.
+
+**Not in this phase, plainly:** no HUD-column avoidance beyond draw order (a label can sit under the
+day counter's corner and be covered by it); no facing test (ruled out: proximity only). The 15-minute
+DB-404 hang named under P1 is still open.
