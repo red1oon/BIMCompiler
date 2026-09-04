@@ -33,7 +33,11 @@ var path = require('path');
 var puppeteer = require('puppeteer');
 
 var BIMC = path.join(__dirname, '..');
-var ROOT = process.env.WT_ROOT || '/tmp/wt-poswalk';
+// STALE-INSTRUMENT FIX 2026-09-04 (prompts/AGENT_QUEUE.md §STALE-WITNESSES): the default ROOT was a
+// DEV WORKTREE PATH ('/tmp/wt-poswalk') that no longer exists, so every asset 404'd and the run died on a
+// selector timeout that named the DOM instead of the missing tree. Default to the real checkout;
+// WT_ROOT still overrides for a worktree run, which is what it was there for.
+var ROOT = process.env.WT_ROOT || (process.env.HOME + '/bim-ootb');
 var PORT = 8141;
 var MIME = { '.html': 'text/html', '.js': 'application/javascript', '.mjs': 'application/javascript',
   '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm',
@@ -80,9 +84,16 @@ function sleep(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); 
   var erpErrs = []; erp.on('pageerror', function (e) { erpErrs.push(String(e.message).slice(0, 160)); });
   await erp.goto('http://127.0.0.1:' + PORT + '/erp/idempiere.html?login=GardenAdmin', { waitUntil: 'domcontentloaded', timeout: 40000 });
   await erp.waitForSelector('#idmp-tree .idmp-row.leaf', { timeout: 30000 });
+  // STALE-INSTRUMENT FIX 2026-09-04 (prompts/AGENT_QUEUE.md §STALE-WITNESSES): the rail trigger and the
+  // pill click were in ONE evaluate with nothing in between, so #pill-pos was still null when the second
+  // line ran — the rail renders its buttons after the trigger, not synchronously with it. Split, and wait
+  // for the pill instead of assuming it. Same order W-POS-CLOSE-LEAK (9/9) uses.
   await erp.evaluate(function () {
-    var dock = document.getElementById('idmp-pill'), trig = document.querySelector('#idmp-pill-trigger,[data-pill-trigger]');
-    if (dock && trig && getComputedStyle(dock).display === 'none') trig.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+    var trig = document.querySelector('#idmp-pill-trigger,[data-pill-trigger]');
+    if (trig) trig.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+  });
+  await erp.waitForSelector('#pill-pos', { timeout: 15000 });
+  await erp.evaluate(function () {
     document.getElementById('pill-pos').dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
   });
   await erp.waitForSelector('.pos-card', { timeout: 20000 });

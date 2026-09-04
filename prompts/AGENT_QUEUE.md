@@ -2114,10 +2114,10 @@ Six new witnesses, every one RED on plain `origin/main` before its fix and GREEN
 2. ✅ **DONE (witness) 2026-09-04 — see `§ADFORM-TRXMATERIAL` at the end of this file.** AD_Form 103
    `VTrxMaterial`, the read face of the `M_Transaction` ledger `stockMoves` writes. 2 of 49 forms now
    implemented. `W-ADFORM-TRXMATERIAL` 19/0, INCONCLUSIVE 1/2-of-3 on plain main. bim-ootb PR #1672.
-3. **Three STALE LIVE WITNESSES, red on plain `main`, found while regression-testing** — none is a
-   product defect, each is an instrument judging a retired DOM: `poc_odoo_descriptor.js` (times out on
-   `#idmp-login-ok`), `poc_wh_pos_pick_live.js`, `poc_wh_walk_live.js`, `poc_pos_live.js`. They cost
-   real time to baseline this session; fixing them is cheap and pays every future session.
+3. ✅ **DONE (witness) 2026-09-04 — see `§STALE-WITNESSES` at the end of this file.** All four GREEN:
+   `W-ODOO-DESCRIPTOR` 7/7 · `W-POS-LIVE` · `W-WH-POS-PICK-LIVE` · `W-WH-LIVE`. None was a product
+   defect and in three of four the error message named the wrong thing. It also surfaced a CLASS:
+   12 more witnesses default to a `/tmp/wt-*` worktree that is measured GONE — listed in full there.
 4. **`preview_demo.db` (397 KB) is a tracked binary DB** and simultaneously the live fixture of
    `erp/tests/poc_preview_demo.js`. The remediation is the project's own doctrine — regenerate it from
    SQL — not deletion. Named in `§HYGIENE-E14`, not actioned.
@@ -2344,3 +2344,53 @@ junctions carries `oplog>0` — one reader, `_appendOnlyRowsFor`, not two.
 - **The zoom NAVIGATION.** `TrxMaterial.zoom()` computes `(AD_Table_ID, Record_ID)`; opening that
   window is the ZK caller's job in the Java too. The pair is resolved and shown; following it is not.
 - **47 of 49 forms still have no renderer**, and the card still says so by classname and count.
+
+---
+
+# §STALE-WITNESSES 2026-09-04 — the four red instruments, and the class behind two of them
+**Owns `§ERP-SESSION-CLOSE-2 §C2.3` item 3.** All four are GREEN. **Not one was a product defect** —
+every failure was the instrument, exactly as `§C2.3` predicted, and in three of the four the error
+message named the wrong thing.
+
+## §SW.1 THE FOUR, root cause each
+| witness | it said | it actually was | fix |
+|---|---|---|---|
+| `poc_odoo_descriptor.js` (bim-ootb) | click timeout on `#idmp-login-ok` | the login card now **opens at step 0**, the tenant switcher (`§IDEMPIERE login-step0 tenants=1 demos=5`, NEW_CLIENT_MGMT P3). Step 1 was `display:none`, its user list EMPTY, so the click hit nothing and `#idmp-login-ok` sat inside a hidden step 2 | a `loginWalk()` that walks **whichever step is visible**, in order. Step 0's rows share `.idmp-login-user` with step 1's, so the resident tenant is the one **without** `.idmp-login-demo` |
+| `poc_pos_live.js` | "POS pill `#pill-pos` not on the bar (pos-station gate should be TRUE)" | **the gate was fine.** The witness served `bim-ootb/erp` as `/`, so every SHARED module 404'd — `/common/pill_builder.js`, `/common/about_diy.js`, `/common/history_tap.js`, `/common/whole_history.js`, `/viewer/sfx.js`, `/viewer/connect_scene.js` — and the page said so: **`§IDMP-PILLS PillBuilder missing — not mounted`**. NO pill of any kind existed | serve the **repo root**, open `/erp/idempiere.html` (what the green `W-POS-CLOSE-LEAK` always did); also poll `IdmpPillPosGate()` and open the rail before asserting the pill |
+| `poc_wh_pos_pick_live.js` | `waitForSelector('#idmp-tree .idmp-row.leaf')` timeout | its default `ROOT` was **`/tmp/wt-poswalk`, a dev worktree that no longer exists** — every asset 404'd | default to the real checkout; `WT_ROOT` still overrides. Also split the rail trigger and the pill click, which were in ONE `evaluate` with nothing between them |
+| `poc_wh_walk_live.js` | `#wh-route-toggle` null | default `ROOT` **`/tmp/wt-spatial`**, same class | same |
+
+**MEASURED after the fixes:** `W-ODOO-DESCRIPTOR` **7/7** · `W-POS-LIVE` **PASS** ·
+`W-WH-POS-PICK-LIVE` **PASS** · `W-WH-LIVE` **PASS**. Control that proved the POS DOM was never
+broken: `W-POS-CLOSE-LEAK` **9/9** on the same page throughout.
+
+## §SW.2 ⬜ THE CLASS — 12 MORE witnesses default to a dev worktree that is GONE
+Two of the four failed for one reason: a **hardcoded `/tmp/wt-*` default root**. Sweeping for it
+found the same pattern in twelve more, and **every one of those directories is measured GONE**:
+
+| file | dead default |
+|---|---|
+| `scripts/drive_r3_pos.js` | `/tmp/wt-r3-pos/erp` |
+| `scripts/poc_wh_walkmode.js` | `/tmp/wt-walkmode` |
+| `scripts/poc_pwa_resume.js` | `/tmp/wt-posfix` |
+| `scripts/poc_wh_cache.js` | `/tmp/wt-whcache` |
+| `scripts/witness_routewalker_wall_snap.js` | `/tmp/wt-wallsnap/viewer` |
+| `scripts/witness_routewalker_fixtures_colour.js` | `/tmp/wt-mep-colour/viewer` |
+| `scripts/witness_modeller_gh_residents.js` | `/tmp/wt-modeller-gh` |
+| `scripts/witness_p2p_invoice_match.js` | `/tmp/wt-p2p-invoice-match` |
+| `scripts/witness_so_child_bind.js` | `/tmp/wt-so-bind` |
+| `bim-ootb `·` viewer/tests/morpheus_plate_live.js` | `/tmp/wt-mplate` (not even overridable) |
+| `scripts/witness_e2e_n_converge.js` | `/tmp/wt-oplog-append` — **declares the pin deliberate** ("the FIXED worktree … NOT live bim-ootb") |
+| `scripts/witness_e2e_rebase_attrib.js` · `witness_oplog_migrate.js` | `/tmp/wt-rebase-sig` · `/tmp/wt-oplog-append` — same declared pin |
+
+**NOT fixed here, deliberately.** Nine of them would take the same one-line default, but a default is
+only correct if the witness still PASSES against the live checkout, and that is one run each — this
+section names them so that is a bounded job, not a rediscovery. **The last three are different: their
+comments say the pin is intentional**, pointing at a branch whose fix has probably long since merged.
+Changing those is a judgement about whether the pin is still meaningful, not a typo fix.
+
+**The standing lesson, which is `§C2.4` again:** three of these four printed an error naming a DOM
+node or a business gate, and in all three the real cause was the harness's own static server or its
+own step order. **Read what the PAGE logged, not what the harness concluded** — `poc_pos_live` was
+handed `§IDMP-PILLS PillBuilder missing — not mounted` on every run and reported "the pos-station
+gate should be TRUE".

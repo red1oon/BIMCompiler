@@ -23,10 +23,20 @@
 // Run: ERP_ROOT=/tmp/wt-poslens/erp node scripts/poc_pos_live.js  (default ROOT=~/bim-ootb/erp)
 const { chromium } = require(process.env.HOME + '/bim-ootb/tests/node_modules/playwright');
 const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = process.env.ERP_ROOT || path.join(process.env.HOME, 'bim-ootb', 'erp');
-const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.db': 'application/octet-stream', '.wasm': 'application/wasm', '.css': 'text/css' };
+// STALE-INSTRUMENT FIX 2026-09-04 (prompts/AGENT_QUEUE.md §STALE-WITNESSES) — THE ROOT CAUSE of this
+// witness's failure, and it was never the POS gate the error message blamed. This served ERP_ROOT
+// (bim-ootb/erp) as `/`, so idempiere.html's SHARED modules — which live in SIBLING directories —
+// 404'd: /common/pill_builder.js, /common/about_diy.js, /common/history_tap.js, /common/whole_history.js,
+// /viewer/sfx.js, /viewer/connect_scene.js. The page then logged, correctly:
+//     §IDMP-PILLS PillBuilder missing — not mounted
+// so NO pill of any kind existed and #pill-pos could never be found, whatever the gate said. Serve the
+// REPO ROOT and open /erp/idempiere.html, which is what the green W-POS-CLOSE-LEAK has always done.
+// ERP_ROOT is still honoured — it names the erp/ directory, and the repo root is its parent.
+const ERP_DIR = process.env.ERP_ROOT || path.join(process.env.HOME, 'bim-ootb', 'erp');
+const ROOT = path.dirname(ERP_DIR);
+const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.db': 'application/octet-stream', '.wasm': 'application/wasm', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.mjs': 'text/javascript', '.bin': 'application/octet-stream' };
 const server = http.createServer((q, r) => {
-  let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/idempiere.html';
+  let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/erp/idempiere.html';
   fs.readFile(path.join(ROOT, p), (e, b) => {
     if (e) { r.writeHead(404); r.end('404'); return; }
     r.writeHead(200, { 'Content-Type': MIME[path.extname(p)] || 'application/octet-stream' }); r.end(b);
@@ -43,15 +53,31 @@ const server = http.createServer((q, r) => {
 
   // ── 1+2. login → pill gated ON → open the lens ──
   console.log('— 1. GardenAdmin login: POS pill on the bar (pos-station gate) → open');
-  await pg.goto(`http://localhost:${port}/idempiere.html?login=GardenAdmin`, { waitUntil: 'networkidle' });
+  await pg.goto(`http://localhost:${port}/erp/idempiere.html?login=GardenAdmin`, { waitUntil: 'networkidle' });
   await pg.waitForSelector('#idmp-tree .idmp-row.leaf', { state: 'attached', timeout: 25000 });
   if (!logs.find(t => t.startsWith('§POS-LENS loaded'))) fail('pos_lens.js not loaded');
-  const pill = await pg.$('#pill-pos');
-  if (!pill) fail('POS pill #pill-pos not on the bar (pos-station gate should be TRUE on ad_seed.db)');
-  // registry pills fire on pointerup (PR #170 §A chrome — the poc_rule_client_scope pattern); open the dock if collapsed
+  // STALE-INSTRUMENT FIX 2026-09-04 (prompts/AGENT_QUEUE.md §STALE-WITNESSES): this looked for #pill-pos
+  // BEFORE opening the pill rail, and before the pos-station GATE had even resolved. Two faults, one
+  // symptom: the rail is COLLAPSED on load and renders its buttons only after #idmp-pill-trigger fires,
+  // and #pill-pos is mounted only once window.IdmpPillPosGate() answers true — which needs the seed DB
+  // loaded, later than the '#idmp-tree .idmp-row.leaf' this run waited on. The failure read "POS pill
+  // #pill-pos not on the bar (pos-station gate should be TRUE)", blaming the GATE for a DOM the
+  // instrument had not waited for. The gate is fine: W-POS-CLOSE-LEAK is 9/9 on the same page, and the
+  // order below is its order — poll the gate, fire the trigger, THEN assert the pill.
+  let posGate = false;
+  for (let i = 0; i < 60 && !posGate; i++) {
+    posGate = await pg.evaluate(() => typeof window.IdmpPillPosGate === 'function' && window.IdmpPillPosGate()).catch(() => false);
+    if (!posGate) await new Promise(r => setTimeout(r, 500));
+  }
+  if (!posGate) fail('IdmpPillPosGate() never answered true (ad_seed.db should carry c_pos 100)');
   await pg.evaluate(() => {
-    const dock = document.getElementById('idmp-pill'), trig = document.querySelector('#idmp-pill-trigger,[data-pill-trigger]');
-    if (dock && trig && getComputedStyle(dock).display === 'none') trig.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+    const trig = document.querySelector('#idmp-pill-trigger,[data-pill-trigger]');
+    if (trig) trig.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+  });
+  const pill = await pg.waitForSelector('#pill-pos', { timeout: 10000 }).catch(() => null);
+  if (!pill) fail('POS pill #pill-pos not on the bar after opening the rail (pos-station gate should be TRUE on ad_seed.db)');
+  // registry pills fire on pointerup (PR #170 §A chrome — the poc_rule_client_scope pattern)
+  await pg.evaluate(() => {
     document.getElementById('pill-pos').dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
   });
   // U-1 (POS_KILLER_DEMO §LAYOUT.1): tiles are now image CARDS (.pos-card), not .pos-tile buttons.
