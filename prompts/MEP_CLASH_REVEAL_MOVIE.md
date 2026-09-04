@@ -321,3 +321,41 @@ not a generic placeholder string).
    `_buildOverride` round-trip every other CPE authored edit uses), or is it always ephemeral/re-derived
    live? Bears on whether this is authored data (like a cone correction) or a pure runtime effect (like
    room titles).
+
+## §CLASH_IN_FILM_RULE — 2026-09-04 — the user's stated display rule, and the gate in front of it
+> **USER, 2026-09-04:** *"If we add in the clash analysis (still pending to do mesh to mesh clash
+> rather than bboxes only) where they appear as is thruout the film whether cam pov do come across
+> or not is incidental, but when do flying past one, it be impressive to see that red/blue pair. And
+> with labels flying together stating what each item is with a arrow line point to it all in 3D
+> space."* … and, on the clutter risk: *"I agree with the needed rule - only near and facing, 1 or 2
+> at a time. Those others can just be colored shine thrus pulsing slowly manner."*
+
+**THE DISPLAY RULE, settled — do not re-litigate it.**
+- Clash pairs are **persistent world content**, present for the whole film. The camera meeting one is
+  **incidental**, never staged. A staged clash tour reads as a demo; an incidental one reads as truth.
+- **Labels: only the pair that is NEAR and FACING the camera, one or two at a time.** A label carries
+  what each item is, with a leader line to it in 3D. Everything else stays unlabelled.
+- **Every other pair: a coloured shine-through, pulsing slowly.** Present, readable, not shouting.
+
+**THE GATE IN FRONT OF IT — mesh-to-mesh first, film second. This ordering is forced, not preferred.**
+Clash today is **bounding-box only**. A bbox pair can overlap while the meshes never touch, so the
+current set contains false positives by construction. A film is a permanent, shareable artefact: a
+false clash in it asserts to a client that a clash exists where none does — worse than showing no
+clashes at all. So nothing from this section gets built until the narrow phase reports a measured
+false-positive rate. That work is `CLASH_GATE_OBB_NARROWPHASE.md` (AABB broad → OBB/SAT mid →
+triangle-exact via the already-loaded three-mesh-bvh `MeshBVH.intersectsGeometry`), dispatched
+2026-09-04.
+
+**What this section needs the clash output to carry**, per pair, so none of it is re-derived here:
+both guids · both `ifc_class` and discipline · the **contact point/centroid in world space** (the
+camera approaches it and the leader line points at it) · an **extent/severity** measure (which pairs
+earn a label, which stay a pulse) · a **stable pair id** so a film addresses the same clash across
+frames.
+
+**Honest read on "will this be a killer?" (2026-09-04):** the persistent-clash half is the strong
+half — it changes what the film IS, from decoration to evidence, and no competitor's marketing
+animation does it because their clashes live in a report and the animation is a separate deliverable.
+The labels are the risky half: mechanically easy (the billboard/nameplate machinery and the Reveal's
+captions already exist) but clutter and leader lines crossing geometry can read as errors, which is
+exactly what the near-and-facing rule above exists to prevent. Build the pulse first, the labels
+second, behind that rule.
