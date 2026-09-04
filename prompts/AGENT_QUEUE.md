@@ -1759,3 +1759,86 @@ is EXTRACTED, not invented: inside `applyOpGroup`'s own `_withFreshSide` window 
 the synthetic pk `-(nextId+i)`. One atomic group, `commitGroup`'s all-or-none guarantee intact.
 
 Deliverable = the translation AND the witness green, in the same change.
+
+## §K2RB.5 RESULT — CLOSED 2026-09-04 (bim-ootb **#1661**, sw v784)
+| | stage 2 `InOutGenerate` | stage 3 `InvoiceGenerate` |
+|---|---|---|
+| **before** (plain `origin/main`) | `committedOps=2 rawDocs=1 rawLines=1 readableDocs=0 readableLines=0` FAIL | same, FAIL |
+| **after** | `readableDocs=1 readableLines=1 linesLinkedToADoc=1` PASS | same, PASS |
+
+And the row, not the count (`§CLOSE.7` rule 2):
+```
+§K2RB-ROW m_inout     = {issotrx:Y, movementtype:C-, c_bpartner_id:118, c_bpartner_location_id:113,
+                         m_warehouse_id:103, c_order_id:-1, …, m_inout_id:-4}
+§K2RB-ROW m_inoutline = {c_orderline_id:-2, m_product_id:128, movementqty:1, line:10, m_inout_id:-4, …}
+```
+`docPayloadCols`/`linePayloadCols` count the columns that are neither pk nor audit stamp, so a
+**readable-but-hollow** row fails the witness too — that is the 118/118/0-with-NULLs failure mode,
+made un-passable rather than merely remembered.
+
+**A second defect the measurement exposed on the way, fixed in the same PR:** a Sales Order authored
+through window 143 and Completed was REFUSED by both generators (*"Order is not a Sales Order"*).
+`C_Order`'s only `IsSOTrx` seam was `MOrder.docTypeTargetDefault`'s `if (!Number(r.c_doctypetarget_id))`
+branch — and that column is `IsDisplayed='Y' IsMandatory='Y'` on tab 186, so a user filling the form
+the normal way SETS it, the branch never runs, and the order persists with no `IsSOTrx` at all.
+`MOrder.issotrxFromWindow` is the missing sibling of `MInvoice.issotrxFromWindow` (§Fix 4) and
+`MInOut.movementTypeFromWindow` (§Fix 2). `ctx.issotrx` was already threaded by `crud_overlay._docCtx`;
+nothing read it onto the record.
+
+**`ProjectGenOrder` (164) rides the same seam and the same `crudMap`, but is NOT witnessed live** —
+no served tenant carries a gate-passing project (`poc_genpo_live`: *"Project has no Price List"*), so
+its live outcome stays the honest gate rejection. Its translation is proven by construction (identical
+`r.ops && r.header` branch, `GENORDER_SPEC.parentId/lineParentId`), not by a green stage. Named, not
+claimed.
+
+**Regression, all green:** `witness_p2p_invoice_match` 4/4 · `poc_genship_live` · `poc_geninv_live` ·
+`poc_genpo_live` · `poc_ad_process_live` · `poc_minout_live` · `poc_payment_live` ·
+`poc_ad_displaylogic_live` · `poc_ad_menu_prf_live` · W-PARITY-VALRULE 23/23 · W-PARITY-FIELDSET 30/30 ·
+W-PARITY-MANDATORY-CREATE 18/18 · W-DOCNO-BRANCH 10/10 · W-ERP-TWIN 🟢 (the three shipped modules
+re-mirrored into `build/erp/` after the merge) · W-MODELVAL · W-MORDER-SAVE · W-PROC · W-PROC-SHIP ·
+W-PROC-INV · W-PROC-GENPO.
+
+---
+
+# §DICT-LAZY 2026-09-04 — a second dictionary's renderer leaves the core boot path
+**Owns `§ERP-SESSION-CLOSE §CLOSE.4 item 2`. CLOSED — bim-ootb #1662, sw v785.**
+
+## §DL.1 THE CLAIM UNDER TEST
+> The user's rule (2026-09-04): **nothing non-core is fetched unless asked for.**
+> A. the DEFAULT boot never fetches `odoo_descriptor.js` at all, and the chrome still boots on AD;
+> B. `?erp=odoo` fetches it exactly once, registers the second dictionary, and makes it active.
+
+`odoo_descriptor.js` (10.4 KB) was one of `idempiere.html`'s 84 eager `<script>` tags — a SECOND
+dictionary's renderer, fetched + parsed + registered on every boot for every user. **Kernel purity,
+not perf** (§CLOSE.4's own framing).
+
+## §DL.2 THE INSTRUMENT — `scripts/witness_dict_lazy.js`
+Judges the **NETWORK**, not the `§`-log: every request the page issues is counted by URL. A `§`-line
+could not prove claim A — *"not registered"* and *"not fetched"* are different facts, and the item is
+about the fetch. 0 pageerrors is asserted on both runs, because the lazy path `eval`s the module.
+
+| | `fetches` | `registered` | `active` | verdict |
+|---|---|---|---|---|
+| **before**, default boot | 1 | `[ad,odoo]` | ad | 🔴 7 PASS / 3 FAIL |
+| **after**, default boot | **0** | `[ad]` | ad | 🟢 |
+| **after**, `?erp=odoo` | **1** | `[ad,odoo]` | odoo | 🟢 10 PASS / 0 FAIL |
+
+## §DL.3 THE FIX
+`_ensureDictionary()` in the boot IIFE, driven by a `LAZY_DICTS` registry, fetches the named
+dictionary at the moment `?erp=<name>` names it and BEFORE `ErpDescriptor.use()` runs — registration
+must already have happened by then, which is why it is a **synchronous XHR + indirect `eval`** and not
+a `<script>` append. `odoo_descriptor.js` already loads its own two JSON artifacts the same
+synchronous way, for the same reason (`structure.init(db)` is called un-awaited at boot). A failed
+fetch is logged and the chrome falls through to AD — never a blank screen. Renderer #3 is one line in
+`LAZY_DICTS`, not one more boot-path script tag.
+
+## §DL.4 DELIBERATELY NOT CHANGED, and one stale witness found
+- **`erp/sw.js` still precaches** `odoo_descriptor.js` + `odoo_model.json` + `odoo_chain.json`. That is
+  what makes `?erp=odoo` work OFFLINE, and precaching **stores** a file — it does not execute it, parse
+  it, or register a second dictionary. Dropping it would remove working functionality to satisfy a rule
+  about the boot path. Raised here rather than decided silently.
+- **`erp/tests/poc_odoo_descriptor.js` is STALE and RED on plain `origin/main`** — byte-identical output
+  before and after this change: it times out clicking `#idmp-login-ok`, which is not visible any more
+  (a retired login DOM, the same class as `W-AD-DISPLAYLOGIC-LIVE` at #1613). Its first three claims
+  (`activeName==='odoo'`, `list()===[ad,odoo]`, facets present) DO pass on the lazy path. Reported, not
+  fixed — it is a pre-existing instrument defect, not this item.
