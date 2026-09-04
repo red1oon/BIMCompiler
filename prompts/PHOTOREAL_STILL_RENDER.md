@@ -3489,3 +3489,53 @@ frames (the same two IfcRailing slots on the frustum edge, unchanged) and `count
 `viewer/sw.js` at red1oon.github.io returns `CACHE_VERSION = 'v1141'`. §BME.9 items 1, 2 and 3 are
 all closed. The `§CLI_BAKE_LOG_TS` follow-up (every bake-log line timestamped, user ask) went out
 separately on `chore/bake-log-timestamps` off fresh `origin/main`, since #1660 was already squashed.
+
+### §BME.12 — 2026-09-04 — HHS Office "missing wall slab": NOT the §BME.8 defect, and NOT reproduced. One real but too-small defect found on the way
+> **USER, 2026-09-04:** *"Even in HHS Office, it is missing a wall slab on its right side, ground floor."*
+> They supplied their live console log (red1oon.github.io, `HHS_Office_Federated_extracted.db`,
+> `§BUILD_VERSION v1141`) — a plain load, no bake.
+
+**RULED OUT FIRST, from their own log — this is not what #1660 fixed.** Their session ran **no Time
+Machine** (no `§TIME_MACHINE`, no `§DLOD_DISABLE reason=time-machine`), and §DLOD_TM_OWNERSHIP only
+bites when TM owns the matrices. Their build already contains the fix (v1141 = main `fcd4720c`).
+Their log also rules out a streaming loss outright: `§CONTRACT_CHECK batch=3677 instanced=3162
+merged=0 guidMap=6839 streamed=6839 orphans=0` — every element IS in the scene.
+
+**MEASURED on HHS this session (new witness + the existing batched owner), all on `fcd4720c`:**
+
+| question | instrument | result |
+|---|---|---|
+| is any element absent from the scene? | their `§CONTRACT_CHECK` | 6,839/6,839, orphans=0 |
+| is any batched slot left invisible at load? | `witness_dlod_cull_soundness.js` (new, §DCS_BM) | **3,704 slots, invisibleAtLoad=0** |
+| are the batched bounds stale (three's per-slot cull)? | `witness_bm_bounds_cull.js`, 36-pose ring | `§BM_BOUNDS_STALE bm=97 geoms=3704 **stale=0** worstM=0` |
+| does the batched cull drop anything that is really in view? | same, 36 poses | `WRONGLY_CULLED` **0–2 per pose** (frustum-edge slivers), `wronglyDrawn=0` |
+| does dlod's own sphere contain what it culls on? | `witness_dlod_cull_soundness.js` (new) | **RED: 357 / 3,135 instances outside** — see below |
+| do the walls/slabs even have geometry? | DB | every `IfcWallStandardCase` 148 / `IfcSlab` 83 / `IfcWall` 12 / `IfcCovering` 43 resolves; 0 unresolved hashes |
+| any degenerate or misplaced wall/slab? | DB | none (no zero extent, nothing >200 m off); Level 1 holds 75 of them, z −0.1…3.6 |
+| is the runtime DB patch implicated? | `buildings/patches/HHS_Office_Federated_extracted.db.sql` | it writes only `spatial_structure` (109), `rel_aggregates` (2,120), `storey_walkable_raster` (4) — **no geometry, no transforms** |
+
+**The one real defect found — §DCS, undersized cull spheres.** `dlod.js:75-81` culls an instance on
+`centre = the instance matrix translation`, `radius = sqrt(bx²+by²+bz²)*0.5` from
+`element_transforms.bbox_*`. On HHS that sphere does **not contain** the geometry actually drawn at
+**357 of 3,135** instances, because the transform centre is not the geometry's centre — measured
+centre offsets up to **0.56 m**:
+
+| class | instances | outside sphere | worst overrun |
+|---|---|---|---|
+| IfcDoor | 91 | **87** | 0.31 m |
+| IfcPlate | 396 | 210 | 0.13 m |
+| IfcFlowFitting | 564 | 26 | 0.09 m |
+| IfcBuildingElementProxy | 500 | 14 | **0.55 m** (sphere 1.09 m vs 1.64 m needed) |
+| IfcWallStandardCase | 9 | 9 | 0.22 m |
+| IfcMember | 1177 | 11 | 0.08 m |
+
+`§WITNESS_DLOD_CULL_SOUNDNESS pass=4 fail=1 ran=27`, red control passed. **This is real — it can clip
+an element at the frustum edge — but at ≤0.55 m it cannot delete a wall**, and only **9** of HHS's
+148 `IfcWallStandardCase` are instanced at all (the rest are batched, which dlod never touches).
+Do not close the user's report with it.
+
+**⛔ BLOCKED on one datum, and it is a NUMBER, not a look.** Every pose-independent invariant passes,
+so the next instrument has to judge the *specific* view. The viewer already emits the camera in its
+share hash (`§HASH_PARSE keys=bld,cx,cy,cz,tx,ty,tz`, `quickShare` / `buildShareUrl`) — **the share
+URL of the view with the missing wall** is a coordinate, and a per-GUID drawn census at that exact
+pose then decides it without anyone judging a picture. That is the one open question.
