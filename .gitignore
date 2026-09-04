@@ -115,6 +115,17 @@ schedules/
 
 # local-only measurements/notes (never commit)
 internal/
+# E-7 (prompts/AGENT_QUEUE.md §HYGIENE-E7) — `internal/` above matches docs/internal/ too, so every NEW
+# document written there since the rule landed has been SILENTLY UNTRACKED. The 84 that are tracked
+# survive only because they were added before it (git keeps tracking a file it already knows), and
+# docs/internal/ERP_COVERAGE_MATRIX.md — the headline scoreboard — is one of those: one accident away
+# from being local-only. Markdown under docs/internal IS documentation, not a local measurement, so
+# un-ignore it by name. The directory must be un-ignored first (git cannot re-include a file whose
+# parent directory is excluded), then its contents re-excluded, then the .md re-included — so
+# docs/internal/guidepics/ (≈5 MB of PNGs) and anything else non-markdown stays ignored exactly as now.
+!docs/internal/
+docs/internal/*
+!docs/internal/*.md
 build/erp/.demo_controller_key.json
 /build/erp/shard_poc/
 /build/erp/shards/*.db

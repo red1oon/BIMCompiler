@@ -5,7 +5,7 @@ name: CI — system-is-real smoke gate
 # scripts/system_is_real.sh that survives a runner with no GPU / no OCI / no IFC build.
 #
 # NO SILENT CAPS — the job echoes exactly which regimes it GATES and which it DEFERS:
-#   GATED   : browser local gate (test_all.js) · one ERP witness · Red Pill G8-GOVERNANCE (best-effort)
+#   GATED   : browser local gate (test_all.js) · the 39-witness ERP no-oracle tier · Red Pill G8-GOVERNANCE (best-effort)
 #   WARN    : anti-drift audit (audit_specs.js) — surfaced, not gated (pre-existing skip-guard debt)
 #   DEFERRED: compiler RosettaStone G1-G6 (no Java build in fast CI — local-only via run_RosettaStones.sh;
 #             a cached-build CI step is the documented next increment, §CI)
@@ -49,13 +49,29 @@ jobs:
           BIMOOTB: ${{ github.workspace }}/.bim-ootb
         run: bash scripts/system_is_real.sh
 
+      # E-8 (prompts/AGENT_QUEUE.md §HYGIENE-E8) — "CI runs 1 of the 46 ledger witnesses" was true, but the
+      # reason given for it ("most need docker-PG / an iDempiere checkout / bim-ootb Playwright") was NOT.
+      # MEASURED 2026-09-04 by running all 46 on a host with no Postgres: 39/46 PASS on node + this repo
+      # alone; the 7 that fail all fail for exactly one reason — the live iDempiere Postgres oracle is
+      # absent — and they fail ON PURPOSE (`§HARDEN-SKIP … honest ⬜, not ✅`). So 39 of the 46 have been
+      # runnable in CI all along. run_bundle.sh --no-oracle runs those 39 and NAMES the 7 it defers.
+      - name: ERP equivalence bundle — no-oracle tier (39 of 46 ledger witnesses)
+        run: bash build/erp/run_bundle.sh --no-oracle
+
+      # The tracked digest (E-7) must agree with the logs the run above just produced. This is what makes
+      # the gitignored evidence base auditable from the repo alone: if a witness's verdict or its log's
+      # hash moved, the committed digest no longer matches and this step fails.
+      - name: ERP equivalence digest is current (E-7 retention)
+        run: node scripts/gen_equivalence_digest.js --check
+
       - name: Coverage summary (no silent caps)
         if: always()
         run: |
           echo "── CI regime coverage ──"
-          echo "GATED    : browser local gate (test_all.js) · ERP witness · Red Pill (if bim-ootb checked out)"
+          echo "GATED    : browser local gate (test_all.js) · ERP no-oracle tier (39/46 ledger witnesses) · ERP digest check · Red Pill (if bim-ootb checked out)"
           echo "WARN     : audit_specs.js (anti-drift) — surfaced, pre-existing debt, not gated here"
           echo "DEFERRED : compiler RosettaStone G1-G6 (no Java build in fast CI — run locally via scripts/run_RosettaStones.sh)"
+          echo "DEFERRED : 7 ERP oracle-tier witnesses (need the live iDempiere Postgres; named by run_bundle.sh --no-oracle, never silently skipped)"
           echo "Full combined log: build/system_is_real.log"
 
       - name: Upload combined log
@@ -64,4 +80,16 @@ jobs:
         with:
           name: system_is_real-log
           path: build/system_is_real.log
+          if-no-files-found: ignore
+
+      # The per-witness logs are gitignored by design (E-7); uploading them as an artifact makes the run's
+      # own evidence readable from the CI page, alongside the tracked digest that summarises it.
+      - name: Upload ERP bundle logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: erp-bundle-logs
+          path: |
+            build/erp/run_bundle.log
+            build/erp/*.log
           if-no-files-found: ignore

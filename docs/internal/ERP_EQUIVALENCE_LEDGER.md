@@ -1,4 +1,5 @@
-# ERP Equivalence Ledger — the enumerable 52-oracle-equivalent list
+# ERP Equivalence Ledger — the enumerable 53-oracle-equivalent list
+<!-- headline corrected 52 -> 53 on 2026-09-04 (E-15): see "Reconciliation" below — the extra row is #26 W-FOLD-INOUTGL, whose witness post-dates the "41" baseline by one day. -->
 
 **Why this file exists:** `docs/ERP_PROJECT_REVIEW.md` §2 finding #3 (2026-08-12) flagged that the
 "52 oracle-equivalent" headline in `docs/internal/ERP_COVERAGE_MATRIX.md`'s "Second axis — EQUIVALENCE"
@@ -101,18 +102,32 @@ evidence-only rows were not included in that run (they're skipped by default —
 - **Single-surface tally rows:** 46 − 2 (the two bundled rows) = 44, each contributing 1.
 - **Surfaces claimed, summed mechanically:** 44 (singles) + 6 (row 48) + 3 (row 49) = **53**.
 
-**This does not reconcile to the headline 52 — it comes out to 53, one over.** The source docs' own
-`ledger N→M` annotations chain to 52 (`41` baseline before B-1 → `+1` W-LOGIC-HARDEN → `+1` W-WF-HARDEN
-("42→43") → `+6` W-POST-B3 ("43→49") → `+3` W-POST-TAIL ("49→52") = 52), but that "41" baseline is asserted
-in `prompts/HARDEN_MATRIX.md:93`, not independently recounted from the rows that predate it — and
-mechanically counting the 42 raw single-surface rows that sit in that pre-B1 span of the table (rows #1,
-#5-#45 here, excluding the 3 evidence rows) gives **42** rows, not 41. That is the exact 1-row source of the
-53-vs-52 gap: either one of those 42 rows was double-counted when "41" was first declared, or one was added
-to the table after the "41" milestone was written without a matching `ledger N→M` note. **Not resolved
-further here** — per `docs/ERP_PROJECT_REVIEW.md` §2 finding #3, this was already known to be "bookkeeping
-fragility, not inflation" (nothing here suggests a fabricated ✅); this ledger just makes the exact size of
-the discrepancy (53 mechanical vs 52 asserted, off by 1) checkable instead of "cannot be recounted." Tracking
-down which single row is the extra one is a small follow-up, not done in this pass.
+**The mechanical 53 is right and the headline 52 is one short. RESOLVED 2026-09-04 (E-15), and the
+extra row is named.** The source docs' own `ledger N→M` annotations chain to 52 (`41` baseline before B-1 →
+`+1` W-LOGIC-HARDEN → `+1` W-WF-HARDEN ("42→43") → `+6` W-POST-B3 ("43→49") → `+3` W-POST-TAIL ("49→52")),
+but that "41" baseline is *asserted* in `prompts/HARDEN_MATRIX.md:93`, not recounted — and the pre-B1 span
+of this table (rows #1, #5-#45, excluding the 3 evidence rows #2-#4) mechanically holds **42** single-surface
+rows, not 41.
+
+**The extra row is #26, `W-FOLD-INOUTGL` (`scripts/poc_fold_inout_gl.js`, "Cost-valued inventory GL as an
+engine verb", Y-tally, 1 surface).** It is not a double count and nothing is inflated — it is a row that
+**did not exist yet** when the baseline was written:
+
+| fact | value | how it was checked |
+|---|---|---|
+| the "41 oracle-equivalent" baseline was written | **2026-06-13**, commit `b8db32887` | `git log -S'41 oracle-equivalent' -- prompts/HARDEN_MATRIX.md` |
+| `scripts/poc_fold_inout_gl.js` first appears | **2026-06-14**, commit `6bbde05bc` | `git log --diff-filter=A -- scripts/poc_fold_inout_gl.js` |
+| every other pre-B1 tally row's witness | on or before 2026-06-13 | the same `--diff-filter=A` sweep over all 42 rows |
+
+So the surface W-FOLD-INOUTGL proves **could not** have been inside "41" — it was added to the table one day
+later, with no matching `ledger N→M` note. The baseline should read **42**, and
+42 + 1 + 1 + 6 + 3 = **53**, which is exactly the mechanical count above.
+
+**Consequence:** the headline is **53 oracle-equivalent surfaces**, not 52. This confirms rather than
+weakens `docs/ERP_PROJECT_REVIEW.md` §2 finding #3 — it was "bookkeeping fragility, not inflation", and the
+fragility ran one row *under*, never over. The one row is the only surface in this table whose witness
+post-dates the milestone that was supposed to contain it, so the count is now recomputable from the table
+alone and cannot drift again the same way.
 
 ## `build/erp/run_bundle.sh`
 

@@ -6,8 +6,9 @@
 #   convention (full output -> build/erp/<name>.log, only the tail is echoed here) so nothing here re-invents
 #   that contract. READ THE LOGS after every run (exit code alone is not evidence) — this script's own
 #   summary line is a POINTER to the logs, not a substitute for reading them.
-# Usage: bash build/erp/run_bundle.sh          (46 tally-row scripts)
-#        bash build/erp/run_bundle.sh --all    (+ the 3 evidence-only rows, 49 total)
+# Usage: bash build/erp/run_bundle.sh              (46 tally-row scripts)
+#        bash build/erp/run_bundle.sh --all        (+ the 3 evidence-only rows, 49 total)
+#        bash build/erp/run_bundle.sh --no-oracle  (the 39 that need no Postgres oracle — the CI tier)
 set -uo pipefail
 cd "$(dirname "$0")/../.."   # repo root
 
@@ -70,17 +71,46 @@ build/erp/gen_ad_odoo.js
 scripts/poc_p4_buyside_live.js
 "
 
+# ── E-8 (prompts/AGENT_QUEUE.md §HYGIENE-E8) — the ORACLE tier, MEASURED not assumed ────────────────
+# The 7 tally witnesses that need the live iDempiere Postgres oracle (docker `postgres` / `idempiere`
+# / `idempiere_test`). On a host without it they print `§HARDEN-SKIP … honest ⬜, not ✅` (or
+# `§BLOCKED … No oracle, no verdict`) and exit non-zero — CORRECTLY, because an un-oracled harden
+# witness must never read as a pass. The other 39 need nothing but node + this repo.
+# MEASURED 2026-09-04 by running all 46 on a host with no Postgres: 39/46 PASS, 7 FAIL, all 7 for
+# exactly this reason and no other. This list is that measurement, not a guess — re-measure by
+# running the full bundle on an oracle-less host, not by grepping for 'pg'.
+ORACLE_SCRIPTS="
+scripts/poc_valrule_harden.js
+scripts/poc_reference_harden.js
+scripts/poc_access_harden.js
+scripts/poc_callout_harden.js
+scripts/poc_factacct_doc.js
+scripts/poc_logic_harden.js
+scripts/poc_wf_harden.js
+"
+
 SCRIPTS="$TALLY_SCRIPTS"
 MODE="tally-only (46 scripts)"
 if [ "${1:-}" = "--all" ]; then
   SCRIPTS="$TALLY_SCRIPTS $EVIDENCE_SCRIPTS"
   MODE="all (49 scripts, incl. 3 evidence rows)"
+elif [ "${1:-}" = "--no-oracle" ]; then
+  # the CI tier: everything that does NOT need the Postgres oracle. NEVER a silent cap — the skipped
+  # 7 are echoed by name in the summary, so "39/39 PASS" can never be mistaken for "46/46 PASS".
+  SCRIPTS=""
+  for _s in $TALLY_SCRIPTS; do
+    case " $(echo $ORACLE_SCRIPTS) " in *" $_s "*) continue;; esac
+    SCRIPTS="$SCRIPTS $_s"
+  done
+  MODE="no-oracle tier (39 scripts; 7 oracle-dependent DEFERRED, named below)"
 fi
 
 BUNDLE_LOG="build/erp/run_bundle.log"
 : > "$BUNDLE_LOG"
 PASS=0; FAIL=0; MISSING=0
-TOTAL=$(echo "$SCRIPTS" | grep -c '\.js$')
+# count SCRIPTS as WORDS, not lines — --no-oracle builds its list on a single line, and the old
+# line-count made a clean 39-of-39 run print "39/1 PASS".
+TOTAL=$(echo $SCRIPTS | tr ' ' '\n' | grep -c '\.js$')
 
 for s in $SCRIPTS; do
   if [ ! -f "$s" ]; then
@@ -104,5 +134,9 @@ done
 echo "──────────────────────────────────────────" | tee -a "$BUNDLE_LOG"
 echo "RUN_BUNDLE summary ($MODE): ${PASS}/${TOTAL} PASS, ${FAIL} FAIL, ${MISSING} MISSING" | tee -a "$BUNDLE_LOG"
 echo "Full combined output: $BUNDLE_LOG (per-script logs: build/erp/<name>.log)" | tee -a "$BUNDLE_LOG"
+if [ "${1:-}" = "--no-oracle" ]; then
+  echo "DEFERRED (need the live iDempiere Postgres oracle, NOT run here — this is a named cap, not a silent one):" | tee -a "$BUNDLE_LOG"
+  for _s in $ORACLE_SCRIPTS; do echo "  ⬜ $_s" | tee -a "$BUNDLE_LOG"; done
+fi
 
 [ "$FAIL" -eq 0 ] && [ "$MISSING" -eq 0 ]

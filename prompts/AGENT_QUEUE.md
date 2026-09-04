@@ -1969,3 +1969,98 @@ first run did exactly that, and said PASS; fixed).
   them: the menu tree keeps every node in the DOM and hides it behind the parent's `.open` class, so a
   leaf locator RESOLVES and then times out un-clickable; and a witness that prints `PASS` after its
   harness threw is worse than one that fails.
+
+---
+
+# §HYGIENE 2026-09-04 — E-6 / E-7 / E-8 / E-14 / E-15, worked to the end
+**Owns `§ERP-SESSION-CLOSE §CLOSE.4 item 5`. All five CLOSED.**
+**Standing lesson from this block: three of the five items' PREMISES did not survive verification.**
+Every one had been "⚑VERIFIED" when written; every one had decayed. Check the instrument before
+believing the defect — including a backlog entry (`§CLOSE.7` rule 3).
+
+## §HYGIENE-E6 — 5 stale June PRs, triaged
+| PR | state found | disposition |
+|---|---|---|
+| bim-ootb **#429** | **already MERGED** (2026-06-19) | nothing to triage |
+| bim-ootb **#253** | **already CLOSED** | nothing to triage |
+| bim-ootb **#203** | **already MERGED** | nothing to triage |
+| bim-compiler **#8** | OPEN, CLEAN, +4201/−87 over 33 files | **CLOSED as superseded**, verified file by file |
+| bim-ootb **#300** | OPEN, DIRTY, the ONLY genuinely unshipped one | **REVIVED → #1665**, #300 closed as superseded |
+
+**#8 — how "superseded" was checked, not assumed:** `kernel_ops.js` on main is **v13 / 61 KB** against
+the PR's 37 KB and already carries the PR's two headline features (`W-OPGROUP`, `assertRateAsInput`);
+`poc_opgroup.js` and `poc_crud_group.js` are **byte-identical** on main; `poc_rate_input.js` on main is
+the later revision; the `poc_checkpoint.js` leg shipped **larger** as `build/erp/erp_period_close.js` +
+`period_close_poc.html` + `drive_period_close.js` (W-PCLOSE), with `W-SCALE-BOOT` measuring the
+checkpoint bootstrap. Merging it would be a regression.
+
+**#300 — the clipboard op-log relay, revived (bim-ootb #1665).** `grep` on main: the feature is genuinely
+absent. Only the two `sw.js` files conflicted (the known magnet) — resolved by the standing rule, keep
+both notes and the higher version. **One real three-month drift found by checking every identifier the
+revived hunks call:** `icons.js` moved from `ICONS.<name> = '<svg>'` to `{ svg: '<svg>' }`, so §CL-1's
+button would have rendered `[object Object]`. Re-witnessed: W-OPLOG-CLIPBOARD PASS (§CL-SERIAL /
+§CL-UUID / §CL-DELTA `sender_ops=7 rx_ops=7`), W-POS-DELIVERLATER PASS, W-WH-LIVE PASS.
+⚠ **Three live witnesses on that page family — `poc_wh_pos_pick_live`, `poc_wh_walk_live`,
+`poc_pos_live` — are RED BYTE-IDENTICALLY on plain `origin/main`** (baselined before and after). They
+are pre-existing stale instruments; reported, not fixed.
+
+## §HYGIENE-E7 — the evidence base is no longer one `git clean -x` from prose
+**Two halves, both real.** (a) 378 logs in `build/erp/*.log` are gitignored; (b) **`docs/internal/`
+itself is gitignored** (`.gitignore`'s `internal/`), so every NEW document written there since that rule
+landed has been SILENTLY UNTRACKED — the 84 that are tracked survive only because they predate it, and
+`ERP_COVERAGE_MATRIX.md` is one of them.
+
+- **(a) `scripts/gen_equivalence_digest.js` → `docs/internal/ERP_EQUIVALENCE_DIGEST.md`.** Not the logs
+  — a small tracked TEXT record of *what each log said and what it hashed to*: verdict, the verdict line
+  itself, sha256, bytes, mtime, per ledger witness. Uses the **same marker regexes**
+  `run_witness.sh` gates on, so it cannot disagree with the gate. A witness with no log is recorded as
+  `(no log on disk)` — never as a pass, never omitted. **Measured: 46 rows → 39 PASS · 7 SKIP (oracle
+  absent) · 0 FAIL · 0 no-verdict.**
+  **`--check` gates on the VERDICT PER WITNESS, deliberately not on bytes** — a log's sha and mtime move
+  on every run, so a byte comparison would be red on every green run, and a gate that always fires is
+  not a gate. sha/size/mtime are provenance; the verdict set is the claim.
+- **(b) `.gitignore` narrowed:** `!docs/internal/` → `docs/internal/*` → `!docs/internal/*.md`. The
+  directory has to be un-ignored first (git cannot re-include a file whose parent directory is
+  excluded). `docs/internal/guidepics/` (≈5 MB of PNGs) stays ignored. **Three documents the rule had
+  been silently swallowing are now tracked** (`BIM_OOTB_ASSESSMENT_2026-08-06.md`,
+  `JavaEra_FOSSIL_README.md`, `ProjectIssues.md`), which is the fix actually taking effect rather than
+  being theoretical.
+
+## §HYGIENE-E8 — CI runs 39 of the 46, not 1
+**E-8's fact was right and its reason was wrong.** It said "most need docker-PG / an iDempiere checkout
+/ bim-ootb Playwright". **MEASURED by running all 46 on this host, which has no Postgres: 39/46 PASS on
+node + this repo alone.** All 7 failures have exactly one cause — the live iDempiere Postgres oracle is
+absent — and they fail **on purpose** (`§HARDEN-SKIP … honest ⬜, not ✅`, `§BLOCKED … No oracle, no
+verdict`), because an un-oracled harden witness must never read as a pass. So 39 of the 46 have been
+CI-runnable all along.
+
+- `run_bundle.sh --no-oracle` runs those 39 and **names the 7 it defers** — a named cap, never a silent
+  one. The oracle list is the measurement, not a grep: a static `grep -E "pg|psql"` sweep got it wrong
+  (41/5 instead of 39/7). Re-measure by running the bundle on an oracle-less host.
+- `.github/workflows/ci.yml` gains two steps: the no-oracle tier, and `gen_equivalence_digest.js
+  --check` so the tracked digest must agree with the logs that run just produced. Per-witness logs are
+  uploaded as an artifact. The coverage echo names the 7 deferred witnesses.
+- **A real bug fixed on the way:** `run_bundle.sh` counted `$SCRIPTS` by LINES, so a clean 39-of-39 run
+  printed `39/1 PASS`. Now counted by words. Verified: `39/39 PASS, 0 FAIL, 0 MISSING`.
+
+## §HYGIENE-E14 — the stale-code audit, verified item by item (almost all of it had already happened)
+| named item | verified state | action |
+|---|---|---|
+| `erp_panel.js` · `role_band.js` · `menu_seed.js` · `migrate_showme.js` · duplicate `migrate_agent.js` | **already gone** from the tree | none needed |
+| `feed_fold.js` | **NOT an orphan** — required by `erp/chat_lens.js`, witnessed by `erp/tests/poc_feed.js` | keep |
+| `chat_lens.*` | **NOT an orphan** — `erp/chat_lens.html` loads it | keep |
+| `erp_key_epochs.js` | referenced by `erp_signer.js`, `teams/erp/erp_sync.js`, `witness_roster_verify.js`; no page loads it | keep — this is **U-E1's** unwired roster gate, a pending USER decision, not dead code |
+| `ad_table_map.js` | genuinely precache-only: the PB bridge module `ADData.useBridge(map)` takes, bridge default OFF, **no script tag anywhere** | **removed from `PRECACHE_ASSETS`** (bim-ootb #1666). The FILE stays — dormant-by-design. Whoever turns the bridge on adds a script tag and puts the line back in the same PR. |
+| `idempiere_agent.zip` | byte-identical to `erp/idempiere_agent/` — **but it is a SHIPPED DOWNLOAD**, offered by `common/about_diy.js:198` | **do NOT delete.** E-14's premise is wrong; deleting it breaks a live download. Building it at deploy time instead is a separate, larger change. |
+| `preview_demo.db` (397 KB) | a real DB-policy violation — **and the live fixture of `erp/tests/poc_preview_demo.js`** | **do NOT delete.** Named, not actioned: the remediation is to regenerate it from SQL (the migration+self-heal doctrine), not to remove a witness's fixture. |
+| `spike_writepath_browser.log` | **not tracked at all** (only `erp/spike_writepath.html` is) | none needed |
+
+## §HYGIENE-E15 — the 52/53 headline, resolved and named
+**The mechanical 53 is right; the 52 headline was one short, and the extra row is `#26 W-FOLD-INOUTGL`.**
+Not a double count and nothing inflated — it is a row that **did not exist yet** when the baseline was
+written: the "41 oracle-equivalent" line landed **2026-06-13** (`b8db32887`), and
+`scripts/poc_fold_inout_gl.js` first appears **2026-06-14** (`6bbde05bc`). Every other pre-B1 tally row's
+witness dates on or before 2026-06-13 (checked by a `--diff-filter=A` sweep over all 42). So the baseline
+should read **42**, and 42+1+1+6+3 = **53**. `ERP_EQUIVALENCE_LEDGER.md` now carries the resolution and
+the headline reads 53. This *confirms* `ERP_PROJECT_REVIEW.md` §2 finding #3 — bookkeeping fragility, not
+inflation, and the fragility ran one row **under**, never over.
