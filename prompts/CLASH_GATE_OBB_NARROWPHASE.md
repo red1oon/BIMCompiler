@@ -212,6 +212,21 @@ Elements are drawn as BatchedMesh slots or InstancedMesh instances, but the narr
       only runs on CLASH pairs.
    e. Geometry unavailable (no meshCache entry, no DB blob, no BVH possible) ⇒ `verdict=UNKNOWN
       reason=NO_GEOMETRY` — kept in the output, never dropped, counted as `unknown`.
+   f. **TOUCH POLICY (added 2026-09-04 after the Hospital measurement, `probe_clash_pair_truth.js`):** a clash
+      requires INTERPENETRATION; a measure-zero contact is the normal state of a building (a column standing on
+      a wall's underside: vertex-box y-gap exactly 0, `aabbOverlapM=-6.8e-8`, four "intersecting" triangle
+      pairs all with `len: 0`, `closestDist=0`). three-mesh-bvh's `intersectsGeometry` counts that closed-set
+      contact as a hit — and asymmetrically (`igAB=true igBA=false`) under float rounding. So `TOUCH_EPS = 1 mm`
+      (below every `clash_rules.json` tolerance, 25–75 mm): the OBB stage rejects when the oriented boxes overlap
+      by `< TOUCH_EPS` on any of the 15 axes, and the mesh stage is CLASH only if at least one pair intersection
+      SEGMENT is longer than `TOUCH_EPS` (else `CLEAR reason=MESH_TOUCH_ONLY`, unless contained). The witness
+      oracle applies the same 1 mm rule, written independently. Synthetic S7/S7b/S8 lock it (below).
+   g. **Aggregate parents (added 2026-09-04, Hospital):** `scene.js` `composeGhostsFromAggregates`
+      (`§NOGEO_COMPOSE composed=233`) gives IfcStair/IfcCurtainWall/IfcRoof parents with no Representation a
+      union-of-children bbox (`transform_source='composed_aggregate'`) so 4D can park them. That box enters the
+      clash broad phase; the parent has no triangles; its children are judged as their own rows. Such a pair is
+      `verdict=UNKNOWN reason=AGGREGATE_PARENT_NO_GEOMETRY` — never CLASH, never dropped, and the film lane can
+      exclude it deterministically. Terminal has none (`§NOGEO_COMPOSE_SKIP no ghosts`).
 
 ### §M.3 — Output schema (per pair; the film lane's contract — designed for it, not drawn here)
 Attached as `row[9]` on every `_currentClashes` row it judged (indices 0–8 untouched) and collected in
@@ -220,11 +235,12 @@ Attached as `row[9]` on every `_currentClashes` row it judged (indices 0–8 unt
 { pairId,                  // sorted 'guidLo|guidHi' — stable across frames/sessions (NOT _clashPairKey, which is row-ordered)
   guidA, guidB, classA, classB, discA, discB,
   stage: 'BROAD'|'OBB'|'MESH', verdict: 'CLASH'|'CLEAR'|'UNKNOWN',
-  reason: 'OBB_SEPARATING_AXIS'|'MESH_TRIANGLES_INTERSECT'|'MESH_CONTAINED'|'MESH_NO_TRIANGLE_INTERSECTION'|'NO_GEOMETRY',
+  reason: 'OBB_SEPARATING_AXIS'|'MESH_TRIANGLES_INTERSECT'|'MESH_CONTAINED'|'MESH_NO_TRIANGLE_INTERSECTION'
+        |'MESH_TOUCH_ONLY'|'NO_GEOMETRY'|'AGGREGATE_PARENT_NO_GEOMETRY',   // the last three added 2026-09-04 (§M.2 f/g)
   aabbOverlapM,            // the broad phase's c[8] (legacy severity proxy)
   obbDepthM,               // SAT minimum-translation depth of the two ORIENTED LOCAL boxes (proxy, labelled)
   severityM,               // = obbDepthM for CLASH — a bbox-class PROXY, not true mesh penetration (BENCHMARK lane §3 stays open)
-  triPairs, truncated,     // intersecting triangle pairs enumerated (0 for CONTAINED/CLEAR)
+  triPairs, touchPairs, truncated,   // library-intersecting pairs / of which touch-only (<1 mm) / enumeration capped at 4096
   contact: {x,y,z},        // three.js world (session-relative: A.modelOffset) — for the camera / leader line
   contactIfc: {ix,iy,iz},  // IFC space via A.three2ifc — the persist-safe form (scene.js:503 rule)
   extentM,                 // size of the contact region — the "1 or 2 near and facing" ranking key
@@ -252,7 +268,10 @@ oracle — that is the RED-before.
   S3 unit cubes offset 0.9 on X ⇒ CLASH, `obbDepthM=0.1` (AABB=OBB=mesh agree), contact inside the
   0.1 m slab of overlap. S4 0.2 m cube fully inside a 2 m cube ⇒ no surface intersection, CLASH
   reason=MESH_CONTAINED. S5 unit cube vs 45°-yawed cube at (1.5,1.5,0) ⇒ CLASH, `obbDepthM=0.2929`
-  (this file's W7; AABB would say 0.9142).
+  (this file's W7; AABB would say 0.9142). S6 far pair ⇒ CLEAR. **Touch policy (added after Hospital):**
+  S7 unit cubes exactly face-to-face (offset 1.0) ⇒ CLEAR@OBB; S7b same with the OBB stage off ⇒ CLEAR
+  at MESH (`MESH_TOUCH_ONLY` or no intersection — the mesh stage must agree); S8 offset 0.9995 (0.5 mm
+  interpenetration, a modelling artefact) ⇒ CLEAR, offset 0.995 (5 mm) ⇒ CLASH `obbDepthM=0.005`.
 - **RED CONTROL** — a CLASH record's oracle flag flipped → I1 fails.
 - **INCONCLUSIVE** when `window._bvhReady=false`, streaming did not finish, the BVH chain did not drain,
   or broad=0 — prints `INCONCLUSIVE`, never `PASS`. `§CLASH_OBB` prints `VACUOUS` when no judged pair
@@ -283,5 +302,65 @@ No film, camera mode, labels, leader lines, or new panels. No true mesh penetrat
 §3 — `severityM` stays a labelled proxy). No change to `deploy/live/`, no `.db` commits, no schedule/TM/
 dlod changes. The modeller gate's own OBB branch is not merged or modified by this lane.
 
-### §M.8 — RESULTS (filled from the logs after the runs; TBD until then)
-TBD (measured below).
+### §M.8 — RESULTS (2026-09-04, every number read out of a saved log, none from memory)
+Logs (session scratchpad, copied lines below): `cmn_RED_main_Terminal.log` (ROOT=`~/bim-ootb` @ 9c8ab9d6, no
+module), `cmn_GREEN2_branch_Terminal.log`, `cmn_GREEN2_branch_Hospital.log` (ROOT=`/tmp/wt-clash-mesh`,
+branch `feat/clash-mesh-narrowphase`). Headless Chrome, real GPU, split DBs served from `~/bim-ootb/buildings/`
+(`§DB_SPLIT_DETECT meta=/buildings/Terminal_meta.db geo=/buildings/Terminal_geo.db found=true`).
+
+**RED before (origin/main, Terminal, legacy bbox-only list judged by the witness's own oracle):**
+`§CLASH_BBOX_FP pair=TOTAL building=Terminal broad=5961 meshClear=2010 meshTrue=3951 unknown=0 fpRate=33.7%`
+→ `FAIL I1 every reported CLASH has intersecting or contained triangles` · `FAIL I5` (no module) ·
+`§WITNESS_CLASH_MESH_NARROWPHASE pass=7 fail=2 ran=5961`. **One in three rows the old list calls a clash has no
+intersecting triangles.**
+
+**GREEN after (branch, Terminal) — the headline:**
+`§CLASH_NARROWPHASE pair=TOTAL building=Terminal broad=5961 obbSurvivors=5323 meshTrue=3951 contained=15 unknown=0
+falsePositiveRate=33.7% ms=2024 msPerPair=0.340` · `§WITNESS_CLASH_MESH_NARROWPHASE pass=9 fail=0 ran=5961`.
+
+| Terminal pair (`§CLASH_NARROWPHASE`) | broad | OBB-rejected | mesh-true | contained | bbox FP rate | ms/pair |
+|---|---|---|---|---|---|---|
+| ARC\|STR | 5329 | 555 | 3534 | 2 | 33.7 % | 0.226 |
+| MEP\|STR | 60 | 1 | 45 | 1 | 25.0 % | 1.728 |
+| MEP\|ARC | 298 | 44 | 190 | 9 | 36.2 % | 1.182 |
+| ELEC\|ARC | 64 | 9 | 31 | 0 | 51.6 % | 2.942 |
+| ELEC\|STR | 6 | 2 | 4 | 1 | 33.3 % | 0.900 |
+| FP\|ARC | 47 | 3 | 30 | 1 | 36.2 % | 1.991 |
+| FP\|STR | 2 | 1 | 1 | 0 | 50.0 % | 0.900 |
+| ACMV\|ARC | 115 | 18 | 84 | 1 | 27.0 % | 0.314 |
+| ACMV\|STR | 40 | 5 | 32 | 0 | 20.0 % | 0.920 |
+| ELEC\|MEP, FP\|MEP, ACMV\|MEP | 0 | — | — | — | VACUOUS | — |
+| **TOTAL** | **5961** | **638** | **3951** | **15** | **33.7 %** | **0.340** |
+
+- The witness's independent oracle agrees to the row: `§CLASH_BBOX_FP pair=TOTAL … meshClear=2010 meshTrue=3951`
+  = the module's `meshTrue=3951`; I1 and I3 both PASS, so no CLASH lacks triangles and no CLEAR has them.
+- **OBB stage on a rotation-0 building is NOT idle**: `§CLASH_OBB pair=TOTAL rotatedSides=0 rejected=638
+  VACUOUS(rotation)` — 638 pairs (10.7 % of broad) are rejected because the element's REAL local mesh box is
+  tighter than the stored `bbox_x/y/z`; every one of them is confirmed clear by the oracle (I3 PASS). The
+  ROTATION branch of the SAT is proven only by S1/S5 (below) — stated, not hidden.
+- **Containment matters**: 15 Terminal pairs (`contained=15`) have NO surface intersection yet one element sits
+  wholly inside the other (`MESH_CONTAINED`) — a triangle-only test would have called them clear.
+- **Synthetic oracle (I5), all through the same `testPair`:** `§CLASH_NARROW_SELFTEST summary pass=7 fail=0` —
+  S1 `CLEAR@OBB aabb=0.2142` · S1b `CLEAR@MESH` · S2 `CLASH@MESH tri=100 contact=(0.000,0.000,-0.000)
+  extent=0.490` (hand: (0,0,0), √0.24 = 0.490) · S3 `CLASH obbDepth=0.1000 contact.x=0.450 coplanar=12` ·
+  S4 `CLASH reason=MESH_CONTAINED odd=3` · S5 `CLASH obbDepth=0.2929 aabb=0.9142` · S6 `CLEAR`.
+  **Retraction recorded:** the first GREEN run FAILED S2/S3 (`contact=(0,0,0) extent=1.038`, `contact.x=0.128`)
+  because the contact was the mean of intersecting-triangle CENTROIDS — a 3 m cylinder side triangle's centroid
+  is 0.5 m from where it pierces the beam. Fixed to the mean of the pair INTERSECTION SEGMENTS
+  (`ExtendedTriangle.intersectsTriangle(other, Line3, true)`; coplanar pairs zero the target and are counted,
+  not accumulated). The verdicts never changed; only the film-lane contact/extent did — which is exactly why
+  the synthetic oracle exists.
+- **Representation answer proven live (I4):** `§CMN_PARITY sampled=200 maxDiff=9.25e-7 missing=0` — the
+  DB-derived matrix equals `getMatrixAt` on 200 judged elements (BatchedMesh slots and InstancedMesh instances).
+- **Memory / first load (the user's stated concern):** `§CLASH_MEM pair=TOTAL heapBeforeMB=1501.8
+  heapPeakMB=1577.3 heapAfterMB=1572.9 bvhReusedEntries=10646 bvhBuiltNew=0 geomPinnedPeak=0
+  cacheWithBvhBefore=9394 cacheWithBvhAfter=9394 firstLoadCost=none`. **bvhBuiltNew=0**: every one of the
+  10,646 BVH lookups (5,323 mesh-stage pairs × 2) reused a tree `§BVH_DEFERRED built=9394 ms=2500` had already
+  built after streaming; `geomPinnedPeak=0`: no geometry was fetched or pinned. Per discipline pair the heap
+  moves by single-digit MB (`ARC|STR heapBeforeMB=1528.3 heapPeakMB=1531.6` over 5,329 pairs). The TOTAL
+  peak (+75 MB across the whole run) includes the witness's own R-tree build (`§CLASH_RTREE ready 48428 rows`)
+  and its 5,961-record oracle pass, not just the module. **Nothing runs at first load:** the module's only
+  load-time action is `§CLASH_NARROW_INIT wired (no allocation until qualifyRows)`; the first-load heap of
+  1,515 MB (`§CMN_SCOPE … heapMB=1515.3`) is the pre-existing §R12-class baseline with the module loaded.
+
+**Hospital (branch) — see the rows appended below once the instrumented rerun's log is read.**
