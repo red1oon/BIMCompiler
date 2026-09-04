@@ -359,3 +359,69 @@ The labels are the risky half: mechanically easy (the billboard/nameplate machin
 captions already exist) but clutter and leader lines crossing geometry can read as errors, which is
 exactly what the near-and-facing rule above exists to prevent. Build the pulse first, the labels
 second, behind that rule.
+
+## §CLASH_FILM_P1 — 2026-09-04 — SPEC (written before code): the flag, the persistent pairs, the pulse
+> **USER, 2026-09-04:** *"go ahead, spec then build 1-3 first"* — items 1–3 of the six named under
+> §CLASH_IN_FILM_RULE. **Items 4–6 (near-and-facing selector, labels, leader lines) are NOT in this
+> phase.** The point of stopping at 3 is that the pulse is the cheap half and carries most of the
+> effect; the labels only earn their place once the pulse is on screen.
+
+### Precondition, already met
+`bim-ootb#1676` (`§MESH_NARROWPHASE`, `viewer/clash_narrow.js`) gives the triangle-exact pair set.
+Terminal: `broad=5961 → meshTrue=3951`, so **33.7 % of the bbox list is false**. Without that, a film
+would assert 2,010 clashes that do not exist. Every record already carries what this phase needs:
+`pairId · guidA/guidB · classA/classB · discA/discB · verdict · contact{x,y,z} · extentM · severityM`.
+
+### 1. The flag
+`FLAGS.clash`, a peer of `buildup` / `roomTitle` / `reveal` / `dayCounter` — same three-way shape the
+others have: absent = the stored Alt+C path decides, `--clash` forces on, `--no-clash` forces off
+(`cli_silent_bake.js` `§CLI_BAKE_FLAG_OVERRIDE`). Logged in `§CLI_BAKE_RESOLVED` beside the others.
+
+### 2. The pair set — built ONCE at staging, never per frame
+Walk `rules.clash_rules`' discipline pairs → `A._queryClashesPairRtree(null, rules, discA, discB, 0, w)`
+(the production broad phase, whole-building, not per-storey) → `A.clashNarrow.qualifyRows(rows, {label})`
+→ keep only `verdict === CLASH`. One `§CLASH_FILM_BUILD pairsBroad= trueClash= discPairs= ms=` line.
+A film that rebuilt this per frame would pay the 2 s narrow phase 4,699 times; it is static content.
+
+### 3. The world content — two instanced box shells, red and blue
+One `InstancedMesh` of a unit box per side: **red for every A-side element, blue for every B-side**,
+placed and sized by `A.clashNarrow.worldMatrix(transform, m4)` — the SAME matrix the verdict was
+computed from, so a marker can never disagree with the judgement that produced it. Two draw calls
+total for up to ~7,900 markers.
+
+**Why boxes and not the elements' own geometry:** drawing the real meshes needs per-element geometry
+resident, which is exactly the memory `§CLASH_MEM geomPinnedPeak=0` was careful not to hold — and a
+box shell round a clashing element is the convention every coordination tool already uses, so it
+reads correctly rather than pretending to be the element.
+
+`transparent: true`, `blending: AdditiveBlending`, `depthTest: true`, `depthWrite: false`,
+`toneMapped: false` — a shine-through that reads through structure without hiding it. Built at
+staging, alive to the last frame; nothing is added or removed while the film runs.
+
+### 4. The pulse — a function of FILM time, not wall time
+```
+opacity = BASE + AMP * (0.5 + 0.5 * sin(2π * filmSeconds / PERIOD))
+```
+`filmSeconds` from the bake's own normalized `t`, **never `performance.now()`** — so the same film
+pulses identically at 15 fps and at 24 fps, and a re-bake is reproducible. `PERIOD` is slow by
+intent (the user's word: *"pulsing slowly"*). One material colour per side, so the pulse costs a
+uniform write per frame, not a buffer upload.
+
+### 5. Witness claims — `witness_clash_film_markers.js`, and each can come back NO
+- **W1 the markers ARE the mesh-true set, not the broad set.** `markers === 2 × trueClash`, and
+  every marker guid appears in a record whose `verdict === CLASH`. This is the claim that stops the
+  film asserting the 33.7 % that are false — it is the reason the phase exists.
+- **W2 persistence.** Marker count at the first frame equals the count at the last. The user's rule
+  is that the pairs are *world content* and meeting one is incidental; a marker set that changes
+  with the camera has broken that.
+- **W3 the pulse is a pure function of film time.** Opacity sampled at the same normalized `t` in a
+  15 fps and a 24 fps bake must agree. **NO-OP guard:** amplitude must be non-zero — a "pulse" that
+  never changes opacity is a no-op dressed as a feature.
+- **W4 the flag controls it.** `--no-clash` yields exactly zero markers; `--clash` yields `2 × trueClash`.
+- **VACUOUS:** `trueClash === 0` prints `INCONCLUSIVE`, never PASS — a building with no clashes proves
+  nothing about a clash renderer.
+- Red control via `witness_kit/contract.js`.
+
+### 6. Explicitly NOT in this phase
+No near-and-facing selector, no labels, no leader lines, no camera behaviour change, no new panel.
+The camera meeting a pair stays incidental — nothing here steers it.
