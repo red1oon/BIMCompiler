@@ -398,6 +398,26 @@ reads correctly rather than pretending to be the element.
 `toneMapped: false` — a shine-through that reads through structure without hiding it. Built at
 staging, alive to the last frame; nothing is added or removed while the film runs.
 
+#### 3b. THE MARKERS ARE NOT GATED BY THE TIME MACHINE — they are a FORECAST, not a state readout
+> **USER, 2026-09-04:** *"so the pulsing pairs will shine thru and off, even though the buildUp has
+> not shown them on canvas, so user can note where the clashes are in general and can value its
+> occurence prior"*
+
+**Settled, and it is the opposite of the instinct.** The obvious implementation would hide a marker
+until the Time Machine has placed its elements — matching what is on screen. **Do not do that.** The
+markers are present from frame 0, over empty ground, while the building is still rising around them.
+
+That is the whole value: the viewer sees **where the trouble is going to be, before it is built**,
+and can weigh how much of it there is and where it clusters while the buildup is still running. A
+marker that only appears once its elements are placed says nothing the finished model does not
+already say. This also makes W2 (persistence) a hard count: the marker set is **independent of the
+TM cursor**, so it must not call `A._tmIsVisible` or any placement predicate — if it does, the
+forecast has been turned back into a state readout.
+
+Consequence for the pulse: it must be visible against BOTH an empty site early in the film and a
+fully built model at the end, so the base opacity is chosen against the built case (the busier
+background) and checked against the empty one.
+
 ### 4. The pulse — a function of FILM time, not wall time
 ```
 opacity = BASE + AMP * (0.5 + 0.5 * sin(2π * filmSeconds / PERIOD))
