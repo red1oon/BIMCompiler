@@ -10,6 +10,37 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
+## Current State — 2026-09-06 — ⚠ RESUME HERE, session closed waiting on GPU driver
+
+**Blocker, not code:** this machine's nvidia driver isn't loaded at all — blocked on Secure Boot MOK
+enrollment (NOT the 590/595 "conflict" theory from earlier tonight, that was cruft, ruled out by a
+separate session). User is doing MOK enroll + reboot themselves; a separate session runs the 590
+package cleanup after. Until that lands, no real-GPU bake/witness is possible here — confirmed by
+two independent agents tonight hitting `NO_GL`/`nvidia-smi` failure. Full trace: `prompts/
+CPE_4D_PERF_MEM_STUDY.md` §R17 + its 2026-09-06 correction; GPU/Chrome signature catalogued as a
+NEW 4th cause in the `project_machine_chrome_firefox_gpu_launchers` memory file.
+
+**Shipped tonight, all open PRs on `bim-ootb`, none merged — user reviews:**
+- `#1683` — Alt+S GPU memory leak (128 MB sun shadow map never released after teardown), draft.
+  Also disproved the original dispatch theory (retained textures/programs are NOT a compounding leak).
+- `#1682` — dead man-days/cost HUD cards fixed (`_hrCost` now populates on the schedule cache-hit path).
+- `#1681` — **already merged** — sun-arc indoor-brightness fix (pins fill to Alt+S baseline for the
+  whole bake arc), shipped before this session even dispatched for it.
+- `#1684` — buildup light gate (no light before construction), disclosed type-based intensity
+  heuristic (real wattage data confirmed absent from every shipped DB), clash-marker occlusion
+  shine-through fix. All witnessed GREEN. Stacked on `#1678`→`#1679`.
+
+**Next when GPU is back:** run the saved, validated verification bake command (documented in
+`MEP_CLASH_REVEAL_MOVIE.md`, `--clip 0.1021:0.1532` = seconds 20-30 of the REAL 195.8s film, not the
+stale 278.8s DB value) — confirms markers shine through + label selection, produces the demo clip
+for the user to watch. Then: review/merge the PR chain above in order, and pick up the still-open
+`§CLASH_FILM_P3` backlog (mesh-true CSG intersection volume, mm overlap on label, discipline
+walkthrough beat, the clash-matrix HUD grid itself — cost cards are done, the matrix isn't).
+
+**To come back to this exact conversation** (not just this file): `claude --resume` (or
+`--continue` for the latest) in the same terminal — that restores the live thread itself; this
+PROGRESS.md entry + memory are the fallback for a genuinely fresh session instead.
+
 ## Current State — 2026-09-04 (later)
 
 ### ERP lane — `§C2.3` DRAINED TO ZERO: all five ranked items closed, 4 PRs merged, sw v792

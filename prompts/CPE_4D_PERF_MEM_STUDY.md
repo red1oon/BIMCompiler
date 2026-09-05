@@ -1650,3 +1650,18 @@ preceded it was in **GPU-mappable memory**, which is the class §R17.4 reduces, 
 user can: whether to reconcile the 590/595 driver pair and reload the module.** Until that happens
 no §R17 or §R13 measurement on this machine can use the real GPU, and every timing taken here is a
 software-rasteriser figure.
+
+**CORRECTION 2026-09-06, from a separate session dispatched specifically on this** (not
+independently re-verified here — reported as-received): point 2 above is **wrong as a causal
+claim**. Only one NVIDIA kernel module is actually built (595.84, for both kernels) — `590`'s DKMS
+package never built because `nvidia-kernel-source-590` was already removed, so there is no second
+`.ko` to conflict with. GL/EGL symlinks and the GLVND ICD both correctly resolve to 595.84, and
+`apt-get check` finds no broken dependencies. **The 16 `590` packages are safe-to-autoremove cruft
+from a driver-family switch (590 installed 2026-05-26, 595 installed alongside 2026-07-25 without
+purging 590), not an active conflict.** `nvidia-smi` fails because the module simply isn't
+loaded — **blocked on MOK enrollment** (the DKMS-signed module needs its key enrolled through
+Secure Boot's MOK Manager, a one-time interactive step at boot that no session can automate). So
+the crash is attributed to the **Secure Boot key rejection**, not the 590/595 duplication — that
+duplication is real mess, just not what stopped the driver loading. Cleanup of the 590 packages is
+queued in that other session, gated on the user completing MOK enroll + reboot first (so packages
+aren't stripped while nvidia is still in a broken load state).
