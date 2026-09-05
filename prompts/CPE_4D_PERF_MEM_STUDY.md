@@ -1415,3 +1415,238 @@ makes press 1 twice press 2) and the **+23 textures**.
    nothing, for a second reason worth knowing: **two three builds coexist** — `§UPGRADE_THREE_DONE
    r=185` for the classes, `§S277b_RENDERER WebGLRenderer r184` for the renderer — so the prototype
    patched is not the class in use. Next revision patches the live `APP.renderer` instance.
+
+---
+
+## §R17_STAGING_CYCLE_LEAK — is §R16's "+23 textures / +49 programs" a COMPOUNDING leak or a one-time cache? (2026-09-05)
+
+```
+# ⚠ DO NOT REMOVE
+SCOPE: the ONE question §R16 left open and the crash theory rests on — whether the Alt+S / Alt+C
+staging cycle retains GPU-side resources WITHOUT BOUND across many cycles, or retains a fixed
+one-time cache. §R16 measured TWO presses; a long polishing session is dozens, and an Alt+C bake
+tears staging down and rebuilds it EVERY FRAME (2,027 times on the measured Hospital film).
+NOTHING may be disposed on the strength of §R16's two-press delta alone — read §R17.1 first.
+READ THE LOG AFTER EVERY RUN. Honour this block until §R17 is DONE.
+```
+
+**Context this was dispatched under (recorded so the evidence bar is not misread later):** the
+machine crashed and rebooted during an Alt+C clash-effects + UI-polishing session. **Root cause is
+UNCONFIRMED and is not claimed here** — no coredump tool, `journalctl` showed boot markers with no
+OOM-killer line, and the reboot wiped `/tmp` ~2 h before the work started. This item therefore does
+NOT claim to find the crash. It reduces a *measured* memory risk in the path the user was in, and it
+states plainly at the end whether the size of what it found could plausibly matter.
+
+### §R17.0 — why §R16's headline is NOT yet a shippable defect (read before proposing a dispose)
+
+§R16 reports `texturesDelta=+23` and `programsDelta=+49` retained across a press cycle and names them
+"the one real finding". Two facts in §R16's own table stop that becoming a fix on its own:
+
+1. **§R16's own C2 says it does not compound.** `texturesPress2 = 0` — press 2 allocated **zero**
+   further textures and the program count went 75 → 69 → 75 → 69, i.e. it *cycles*, it does not
+   climb. On the evidence actually in §R16, the +23/+49 is a **one-time cache**, not a per-press leak.
+2. **The cache is load-bearing for the latency the user complained about.** `_ensureStillAO()`
+   (`effects.js:4300`) latches the N8AO build in `_stillAOPromise` **on purpose**, and `_stopStillAOPhase`
+   (`:4304`) only sets `adapter.enabled = false` — it deliberately does not dispose. That latch is a
+   large part of why press 1 is `elapsedMs=7739` and press 2 is `3377`. **Disposing the retained
+   programs/targets on every Alt+S exit would make every press pay press-1 cost.** That is a
+   regression sold as a memory fix, and this file's §0a square-peg warning covers exactly it.
+
+**So the deciding measurement is not "what is retained after two presses" — it is "does the retained
+set GROW without bound over many cycles".** That has never been measured. §R16 stopped at two.
+
+### §R17.1 CLAIMS — each must be able to say NO-OP, VACUOUS or WRONG
+
+| id | claim | how it reports failure |
+|---|---|---|
+| **C1** | Over **N ≥ 8** complete press→teardown→idle cycles on Hospital, the per-cycle slope of `renderer.info.memory.textures`, `.geometries` and `info.programs.length` is **zero**. | **VACUOUS** if `streamed=0` or fewer than 3 cycles complete a `§STILL_REFINE done` — nothing was judged. **WRONG/COMPOUNDING** if any slope > 0.5/cycle: then §R16's +23/+49 is a real leak and C2 names it. **NO-OP** if slope is 0 — then there is nothing to dispose and this item closes with a negative result, which is a result. |
+| **C2** | Every texture allocated after the pre-press baseline is **attributed to its allocation site**, and every retained compiled program is named. | **VACUOUS** if the tap records `allocs=0` (the instrument caught nothing — do not read the zeros as "no allocations"). |
+| **C3** | Render-target bytes are actually measured (§R16 instrument-limit 2: `rtSeen=0`). | **VACUOUS** if `rtSeen=0` again — report it as an instrument failure, never as "no render targets". |
+| **C4** | *(only if C1 comes back COMPOUNDING)* after the fix, the per-cycle slope is 0 **and** press-2 `elapsedMs` does not regress. | **WRONG** if the slope falls but press latency rises — that is the anti-fix §R17.0 names. |
+
+### §R17.2 INSTRUMENT — extend `viewer/tests/probe_r16_alts_mem.js`, do not invent a new mechanism
+
+Three deltas, all page-side monkey-patches on the **live `APP.renderer` instance** (repo untouched —
+the §MEM_PROBE idiom), plus one harness change:
+
+- **`PRESSES` env (default 2)** — the existing two-press §R16 behaviour is the default, so this file
+  stays the instrument that produced §R16 and its numbers remain reproducible. `PRESSES=8` runs the
+  new cycle arm.
+- **Texture-allocation tap.** `renderer.info.memory.textures` is a plain number three.js `++`s on
+  upload and `--`s in `onTextureDispose`. Redefining it as a getter/setter on the live `info.memory`
+  object captures **every allocation with its creation stack** and every free. This is
+  build-agnostic, which matters here: §R16 instrument-limit 2 established that **two three builds
+  coexist** (`§UPGRADE_THREE_DONE r=185` for the classes, `§S277b_RENDERER WebGLRenderer r184` for
+  the renderer), so any patch on a *class* is patching the wrong object. Patching the live instance
+  cannot miss for that reason.
+- **Render-target tap moved to the instance** — `A.renderer.setRenderTarget` as an own property, the
+  fix §R16 instrument-limit 2 already named ("next revision patches the live `APP.renderer` instance").
+- **Program census** — `renderer.info.programs` is the live enumerable array; each entry carries
+  `.name` and `.usedTimes`, so retained programs can be named rather than counted.
+- **Forced GC via CDP `HeapProfiler.collectGarbage`**, not `window.gc`. §R12's probe already recorded
+  that headless-new does not expose a callable `window.gc` **and** that the viewer defines a
+  non-function `window.gc` (DOM id collision). CDP has neither problem. Note GPU-side counts do not
+  need GC at all — three.js only decrements them on an explicit `dispose()` — so C1's texture and
+  program slopes are deterministic and GC-independent; GC only cleans the heap column.
+
+**Explicitly NOT in scope for this pass** (named so the next session does not think they were
+missed): §R12_HOSPITAL_MEM levers 1-4 — meshCache batch-only duplicates (324.8 MB), quantized
+normals (~246 MB), one-BatchedMesh-per-bucket (~234 MB, and it touches the §S280d "sacred"
+`_batchMeta`/`_registerBatchSlot` contract), freeing the geo.db WASM image (228.6 MB). Those are the
+big levers and they remain the big levers; none is minimal or reversible in one pass.
+
+### §R17.3 MEASURED — C1 is NO-OP, and the real retained block is somewhere §R16 never looked
+
+**Instrument:** `bim-ootb viewer/tests/probe_r16_alts_mem.js`, extended per §R17.2 (all four deltas
+landed; `rtSeen=0` is fixed). **Building: HHS_Office_Federated (6,839 elements), not Hospital, and
+the software rasteriser, not the RTX 4060 — because THE GPU DRIVER IS NOT LOADED ON THIS MACHINE**
+(see §R17.5). Logs: scratchpad `r17_cycles.log` (8 cycles), `r17_before.log`, `r17_after.log`.
+
+#### C1 — NO-OP. The §R16 retained set is a one-time cache, over 8 cycles, not 2.
+
+| cycle (post-teardown, post-GC) | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|
+| `textures` | 231 | 231 | 231 | 231 | 231 | 231 | 231 | 231 |
+| `programs` | 54 | 54 | 54 | 54 | 54 | 54 | 54 | 54 |
+| `geometries` | 390 | 390 | 390 | 390 | 390 | 390 | 390 | 390 |
+| `heapMB` | 265.7 | 266.0 | 266.2 | 266.3 | 266.4 | 266.4 | 266.6 | 266.7 |
+
+```
+§R17_C1 texturesPerCycle=0.000 programsPerCycle=0.000 geometriesPerCycle=0.000 heapMBPerCycle=0.13
+§R17_C1_SPAN textures=0 programs=0 geometries=0 heapMB=1.0 overCycles=8
+§R17_C1 verdict=NO-OP — the §R16 retained set is a ONE-TIME CACHE, not a compounding leak
+```
+
+`§R17_C2 texAllocsSincePrePress=23` on press 1 and **0 on presses 2-8** — the +23 reproduces exactly
+on a different building and then never repeats. **§R17.0's reading is confirmed and the dispatching
+theory is falsified: repeated Alt+S/Alt+C toggling does NOT compound. Nothing should be disposed on
+account of §R16's +23/+49, and disposing the programs would only have cost press-2 latency.**
+
+#### C3 — render-target bytes, measured for the first time (§R16 limit 2 closed)
+
+`rtSeen=0` was an instrument failure, and the instrument-limit note named the cause correctly. With
+the tap on the live instance:
+
+```
+§R17_C3_PRESS_DELTA allocatedByPresses=13 allocatedMB=123.3 stillLiveAfterTeardown=13 stillLiveMB=123.3
+§R17_C3 rtEverSeen=17 rtEverMB=147.3 rtLive=17 rtLiveMB=147.3 rtFreed=0 rtFreedMB=0
+§R16_RT_BYSIZE 1280x720@8=7 768x1024@8=4 384x512@8=2 1280x720=2 128x128=1 4096x4096=1
+```
+
+**One Alt+S allocates 13 render targets, 123.3 MB, and releases ZERO of them — `rtFreed=0`.** Note
+the second instrument lesson, added because §R16's `rtSeen` could not have shown this: the seen-set
+is monotonic by construction, so a flat `rtSeen` proves only that no NEW target appeared. Liveness
+now comes from each target's own `dispose` event, which is also what `setSize()` fires.
+
+#### C4 — the single biggest item, and it is a plain unrestored borrow
+
+```
+§R17_SHADOWMAP S0_pre_press     mapSize=512  realMap=0x0       mapMB=0   castShadow=false
+§R17_SHADOWMAP S1a_still_done   mapSize=4096 realMap=4096x4096 mapMB=128 castShadow=true
+§R17_SHADOWMAP S1c_after_idle6s mapSize=4096 realMap=4096x4096 mapMB=128 castShadow=false
+§R17_SHADOWMAP S2c_after_idle6s mapSize=4096 realMap=4096x4096 mapMB=128 castShadow=false
+§R17_C4 raisedForStill=true sizeRestored=false mapReleased=false verdict=RETAINED
+```
+
+`_enablePhotoShadows` (`effects.js:3134`) raises `A.sun.shadow.mapSize` to **4096** for the still and
+**nothing anywhere restores it**. 128 MiB — the 4096² colour plane plus its paired depth texture —
+stays resident for the life of the tab after ONE Alt+S, with `castShadow=false`, i.e. nothing is
+even drawing into it. Its own comment says the raise is safe because *"this path only ever runs
+during a deliberate Alt+S/MaxQ capture, never during normal nav, so the same cost concern does not
+apply here"*. **Both halves of that were false as shipped:** the memory is never handed back, and
+every navigation frame with shadows on after the first Alt+S paid the 4× texel cost it rules out.
+
+**The mechanism, read out of the vendored build rather than recalled (CLAUDE.md: verify a
+code claim before it is load-bearing).** three.js reallocates `light.shadow.map` **only on a shadow
+TYPE change** — `WebGLShadowMap` does `if (null === c.map || true === f) { … }` where
+`f = A !== this.type`. There is no `mapSize` term in that condition. Two consequences:
+1. writing `shadow.mapSize` back frees **nothing**;
+2. it is also **wrong on its own** — the renderer sizes the shadow viewport from `mapSize` while the
+   framebuffer keeps its old dimensions, so a mapSize-only restore corrupts the shadow.
+The probe asserts exactly this failure mode (`§R17_C4 WRONG — mapSize was written back but the map
+was NOT disposed`), so a half-fix cannot pass as a green.
+
+### §R17.4 SHIPPED — bim-ootb PR #1683 (`perf/r16-shader-texture-release`), DRAFT, sw v1143
+
+`_releaseSunShadowMap(why)` disposes + nulls `A.sun.shadow.map` and its `depthTexture` — the same
+dispose+null idiom `tools.js:1587/1884` already uses for night-light shadows — and is called from
+two places: at raise time (so the raise actually takes effect; a map already allocated at the
+smaller nav size would otherwise not be reallocated, and the still would render a 4096 viewport into
+a 2048 framebuffer — a latent sibling bug this closes), and from `_disablePhotoShadows` after
+restoring the dimensions **captured at raise time**. Captured, not assumed: `S0_pre_press mapSize=512`
+is measured, so a hardcoded 2048 restore would have quadrupled the nav map on the common path.
+
+| at rest — after teardown + idle + forced GC | BEFORE | AFTER | |
+|---|---|---|---|
+| `rtLive` | 17 | **16** | |
+| `rtLiveMB` | 147.3 | **83.3** | ✅ **−64.0 MB, −43.4%** |
+| `rtFreedMB` cumulative | 0 | **64 per cycle** (64→128→192) | ✅ |
+| sun shadow map | 4096×4096, 128 MiB | **released, mapSize back to 512** | ✅ |
+| `§R17_C4` | `RETAINED` | **`RELEASED freedMB=128.0`** | ✅ |
+| `programs` — the §R17.0 anti-fix guard | 54 | **54** | ✅ unchanged |
+| `textures` | 231 | **229** | ✅ |
+| `§STILL_REFINE done` press 2 | 73,521 ms | 74,903 ms | ⚠ |
+
+Released on **all 3** cycles of the after-arm, and the resting figure is **flat at 83.3 MB** — each
+press re-allocates a fresh 4096 map and each exit gives it back, so it does not re-accumulate. The
+**peak is deliberately unchanged** at 147.3 MB: the still needs the map while it is on. Zero page
+errors both arms; `§PHOTO_SHADOW_FRUSTUM_COVERAGE inFrustum=384 outsideFrustum=0` identical.
+
+**Scope, and what is deliberately untouched.** The restore is guarded by `_photoShadowSelfEnabled`,
+which is exactly "we were the ones who raised it" — with the user's own Shadow mode on,
+`_enablePhotoShadows` returns before the raise and `_disablePhotoShadows` never runs, so a
+user-owned map is never touched. A bake-frame cancel passes `keepStaging=true` and never reaches
+`_teardownPhotoStaging`, so **a MaxQ bake keeps its 4096 map for the whole film**, as it must.
+
+**Honest limits.** (a) The **+1.9% on press 2** is inside the control run's own 8-cycle spread
+(72.3-73.5 s, ±1.7%) and is a software-rasteriser figure; the re-allocation is a 4096² allocate a
+real GPU does in microseconds, so if anything this over-states it — **not measured on real
+hardware.** (b) `programs=54` in both arms is the load-bearing guard: this frees VRAM **without**
+dropping the shader-compile cache that makes press 2 half of press 1.
+
+**Opened as a DRAFT deliberately** — §R15.6's lesson is that a green CI is enough for this repo's
+auto-merge bot to take a PR, and this one has no real-GPU arm.
+
+**Named follow-up, NOT done here:** the other ~56 MB of press-allocated targets is the N8AO/composer
+stack (`1280x720@8=7`, `768x1024@8=4` PMREM cubeUV, `384x512@8=2`).
+`A._stillAOAdapter.setSize(1,1)` on a real exit would release it through the pass's own
+already-exercised resize path (`effects.js:4215`), but it touches N8AO's internal accumulate state
+and wants its own spec + witness.
+
+### §R17.5 ⚠ THE MACHINE'S GPU DRIVER IS DOWN, AND THE CRASH SIGNATURE IS NOT AN OOM
+
+Found while trying to run the real-GPU arm. **This is evidence, not a theory, and it is the single
+most useful thing this item turned up.** Every line below is from `journalctl`, which survived the
+reboot (`/tmp` did not).
+
+1. **`nvidia-smi` fails — "couldn't communicate with the NVIDIA driver" — and `/dev/nvidia*` does
+   not exist.** `lsmod | grep nvidia` returns nothing. The DKMS modules ARE built for the running
+   kernel (`/lib/modules/7.0.0-30-generic/updates/dkms/nvidia*.ko` all present); nothing has loaded
+   them. `nvidia-settings-autostart.desktop[…]: ERROR: NVIDIA driver is not loaded` on **each of the
+   last three boots**, including the current one. **The user has been running on software GL,
+   probably without knowing.**
+2. **Two driver versions are installed side by side** — `nvidia-driver-590` (590.48.01) and
+   `nvidia-driver-595` (595.84); the module that last loaded was 595.84. That is a known-broken
+   configuration and the most likely reason nothing loads now.
+3. **There is no OOM anywhere today.** `journalctl --since "2026-09-05 00:00" | grep -iE
+   "out of memory|oom-kill|oom_reaper"` returns **zero** lines. The kernel does not support an
+   out-of-memory theory of the crash.
+4. **What the kernel DID log, 37 seconds before the long session's boot ended:**
+   ```
+   Sep 05 16:19:40 kernel: [drm:__nv_drm_nvkms_gem_obj_init [nvidia_drm]] *ERROR* [GPU ID 0x00000100]
+                           Failed to get memory pages for NvKmsKapiMemory 0x00000000b7bd36ce
+   Sep 05 16:19:42 kernel: … Failed to get memory pages for NvKmsKapiMemory 0x00000000e01a273b
+   ```
+   (boot `-4` ran 2026-09-03 22:50 → 2026-09-05 16:20:19.) It recurred at 16:21:23/24 on the very
+   next boot, immediately after `NVRM: loading NVIDIA UNIX x86_64 Kernel Module 595.84`; that boot
+   lasted 9 minutes. **This is a GPU/KMS memory-pinning failure, not a kernel OOM kill.**
+5. Boot `-1` (17:42→17:43) ended in a **clean** `systemd-poweroff` — so at least one of tonight's
+   reboots was deliberate, and boot markers alone cannot tell the reboots apart.
+
+**What this does and does not license.** It does NOT identify the crash cause — a driver in this
+state can be cause or symptom, and no coredump exists. It DOES say the failure that immediately
+preceded it was in **GPU-mappable memory**, which is the class §R17.4 reduces, and it removes
+"the JS heap filled up" from the table of candidates. **The one thing a probe cannot decide and the
+user can: whether to reconcile the 590/595 driver pair and reload the module.** Until that happens
+no §R17 or §R13 measurement on this machine can use the real GPU, and every timing taken here is a
+software-rasteriser figure.
