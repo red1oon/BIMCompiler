@@ -520,13 +520,22 @@ of these is open, do not re-litigate them.**
 > **3.** *"No slowing down"* — the camera stays strictly incidental. Nothing in phase 2 steers it.
 
 ### §P2.1 — selection is PROXIMITY, not ranking. This replaces phase 1's "top 1–2".
-- **Eligible = the pair's `contact` is within 4.0 m of the camera.** Not a top-N. Any number qualifies.
+> **AMENDED 2026-09-05 — 4.0 m / 4.6 m → 10.0 m / 10.6 m.** The user watched the 20–25 s clip
+> (`Hospital_clash_FINAL_clip0.102-0.128`): pulses visible, nothing ever close enough to label —
+> `§CLASH_LABELS_SUMMARY VACUOUS nearest=7.98m`; across the whole 195.8 s film the 4 m rule fired on
+> 72/1500 path samples (4.8 %). Their words: *"10 meters or half of scene space"*. 10 m is the number
+> implemented (`clash_labels.js` `ENTER_M = 10.0, RELEASE_M = 10.6`, the same 0.6 m hysteresis gap scaled
+> up) so labels appear in normal flythrough footage, not only on extreme close approaches. No
+> scene-relative ("half of scene space") formula was built — flag it if a building's scale makes 10 m
+> clearly wrong (a small residential model, where 10 m reaches most of a floor and only the screen-space
+> non-overlap limits the count) rather than inventing one. Every "4 m / 4.6 m" below reads 10 m / 10.6 m.
+- **Eligible = the pair's `contact` is within 10.0 m (was 4.0 m) of the camera.** Not a top-N. Any number qualifies.
 - **Occlusion is IRRELEVANT** — a pair behind a door, a wall or any obstruction still qualifies and
   still shines through. Do NOT raycast for visibility; the user ruled it out explicitly.
 - **What limits the count is SCREEN SPACE, not a cap.** Walk the eligible set nearest-first and place
   each label only if its panel rectangle does not overlap one already placed this frame. Skipped
   pairs keep their marker; they simply carry no panel.
-- **Hysteresis, or it strobes:** a pair enters at 4.0 m and is released at 4.6 m. A pair drifting on
+- **Hysteresis, or it strobes:** a pair enters at 10.0 m and is released at 10.6 m (was 4.0 / 4.6). A pair drifting on
   the boundary must not flicker between labelled and unlabelled every few frames.
 - A labelled pair's `fade` → 1 (solid, pulse off) via the existing `A.clashFilm.setFade`; a released
   one returns to 0. **Phase 2 must not reimplement the marker or the pulse** — that API is the seam.
@@ -560,16 +569,18 @@ and stroke from the panel edge to that point. Always correct on screen, never in
 the way a 3D line would. Skip the line (keep the panel) when the projection lands behind the camera.
 
 ### §P2.5 — witness claims, each able to answer NO
-- **P1 the 4 m rule holds:** every labelled pair is within 4.0 m; no pair beyond 4.6 m is labelled.
+- **P1 the enter rule holds:** every labelled pair is within the enter distance (10.0 m, amended); no pair
+  beyond the release distance (10.6 m) is labelled. The witness reads both from `clashLabels.stats()` and
+  derives every probe distance from them — nothing in the test is pinned to a number.
 - **P2 occlusion is not consulted:** no raycast/visibility call in the selection path, and a
   synthetic pair placed behind a wall IS labelled. (The user ruled this in; a "fix" that hides it is
   a regression.)
 - **P3 no overlap:** across a run of frames, no two placed panel rectangles intersect.
 - **P4 no strobe:** over a camera pass that crosses the boundary, no pair changes labelled-state more
   than once per hysteresis crossing.
-- **P5 constant size:** a panel's pixel dimensions are identical at 1 m and at 4 m.
+- **P5 constant size:** a panel's pixel dimensions are identical at 1 m and just inside the enter distance.
 - **P6 the fade seam:** a labelled pair reads `fade=1` and its marker stops pulsing; released → 0.
-- **VACUOUS:** no pair ever came within 4 m during the sampled frames → INCONCLUSIVE, never PASS.
+- **VACUOUS:** no pair ever came within the enter distance during the sampled frames → INCONCLUSIVE, never PASS.
 - Red control via `witness_kit/contract.js`.
 
 ### §P2.6 — scope fence
@@ -864,7 +875,7 @@ measurably brighter/more clipped-toward-white than the control region. That is t
   — report separately, never averaged.
 - The markers are a **forecast**: present from frame 0 over empty ground, never gated by the Time
   Machine (`_tmIsVisible` calls = 0, spied not assumed).
-- Labels: within **4 m**, occluded or not, any number, limited only by screen-space non-overlap;
+- Labels: within **10 m** (amended 2026-09-05 from 4 m, see §P2.1), occluded or not, any number, limited only by screen-space non-overlap;
   one HUD-style panel, red name above / blue below, constant screen size; **no camera slowdown**.
 - Alt+C now carries the **Clash pairs** checkbox and a **Silent-bake size** select that
   `cli_silent_bake.js` honours when `--width/--height` are absent.
