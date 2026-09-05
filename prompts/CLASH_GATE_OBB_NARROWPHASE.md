@@ -364,3 +364,28 @@ falsePositiveRate=33.7% ms=2024 msPerPair=0.340` · `§WITNESS_CLASH_MESH_NARROW
   1,515 MB (`§CMN_SCOPE … heapMB=1515.3`) is the pre-existing §R12-class baseline with the module loaded.
 
 **Hospital (branch) — see the rows appended below once the instrumented rerun's log is read.**
+
+## ⛔ QUEUED (not started) — persist `qualifyRows()` verdicts per building, user proposal 2026-09-05
+> **USER:** *"Can the clash analysis be one time and cached in the IndexedDB of that building? Then
+> when saved to local DB, it retains. So with other pre-work. This can save time on reruns."*
+
+Currently `A.clashNarrow.qualifyRows()` (`viewer/clash_narrow.js`) runs fresh every time `clash_film.js`
+stages the film (every Alt+C open with clash on, every bake) — nothing about the verdict set survives a
+page reload. No total wall-clock for a full run is logged yet in this doc (only per-pair `ms=` and the
+memory delta above, `+75 MB transient, bvhBuiltNew=0`), so the per-run cost is currently cheap ONLY
+because the BVH is already resident from streaming — the win from caching is real but not yet sized;
+measure `§CLASH_NARROWPHASE` total elapsed before/without cache as part of this item, don't assume it's
+large.
+
+**Fits an existing pattern, not a new mechanism:** `viewer/clash_snag.js` already writes to IndexedDB in
+this codebase (S246, saved snags/annotations) — same storage, different collection. `A._clashDiscCache`/
+`A._clashEnvelopes` (`clash_matrix.js`/`clash_report.js`) are the in-memory precedent for exactly this
+kind of reuse, just session-local instead of persisted.
+
+**Cache-key discipline (PRIMAL LAW §5's "a stale cache is impossible" rule, same as `cache_4d_run.js`):**
+key on building identity (geo/meta DB content hash or version, not just name) **+** `clash_rules.json`
+content (tolerances change verdicts) **+** `clash_narrow.js`'s own content hash (algorithm version) — any
+of the three changing must invalidate automatically, never serve a stale verdict silently.
+Needs its own spec pass (what exactly gets stored — the full per-pair verdict rows, or just
+`meshTrue`/`obbSurvivors`/`contained` counts plus the row list — and the invalidation check) before
+implementation. Not started.

@@ -815,6 +815,60 @@ tolerance of the dusk-baseline (`tNorm=1`, unchanged) luma. Separately confirm `
 the shadow map are byte-for-byte the same series as before the fix (a before/after diff on those two
 alone) — proof the shafts/shadows were not touched.
 
+### §SUN_ARC_FILL_ALREADY_SHIPPED — 2026-09-05, dayT-boost dispatch found stale before any code was written
+
+Dispatched to implement the "Fix, specified not yet landed" dayT-boost above (scale ambient/hemi/
+`_nightPLScale` by a factor rising with `dayT` above the dusk baseline). **Did not implement it —
+git archaeology in `bim-ootb` showed the interior-fill-vs-Alt+S problem this section describes was
+already fixed, witnessed, and MERGED to `origin/main` by a DIFFERENT, superseding mechanism, minutes
+BEFORE the "THIRD CAUSE, CONFIRMED BY CODE READ" / "USER'S RULING ON THE FIX" text above was
+committed to this file.** Exact timeline (all 2026-09-05, KL time UTC+8):
+- 07:10 `bim-ootb` `07456a03` — the dayT-boost curve WAS built once already (branch
+  `fix/sun-arc-fill-compensation`), shipped **INERT (k=0)**: witnessed at a Hospital_silent Level-1
+  storefront pose and found the defect **not exhibited** — OFF-fix noon luma (65.6-69.8) read
+  BRIGHTER than dusk (62.4), the opposite of the theorized dim-noon problem. This is the same
+  "noon read brighter than dusk" finding recorded independently in `§CLASH_FILM_P3` item 7 below and
+  in `MEMORY.md`'s `project_sun_arc_fill_indoor_brightness.md` — NOT superseded by the THIRD CAUSE
+  section as this task's dispatch prompt assumed; it is the immediately-preceding measurement on the
+  same branch.
+- 10:26 memory `project_sun_arc_fill_indoor_brightness.md` records the user's own pivot, verbatim
+  intent: *"make the bake each frame retain exactly the alt-s effect look, without disturbing present
+  light from Sun casting shadows... alt-s as it is, is well lit"* — stop modeling a boost curve,
+  PIN fill to the exact Alt+S values every frame instead.
+- 10:41 `bim-ootb` `19018e59` implements the pin (`effects.js A._sunArcFillPin`, called from
+  `cinema_maxq.js` right after `_sunArcStep`, gated on `A._maxqActive`), explicitly replacing the
+  dayT-boost curve, commit message quoting the user directly: *"I know shadowed outside walls are
+  darker but indoors we reverse it, letting alt-s normal, and sunlite is brighter... do it."* Witnessed
+  (`witness_sun_arc_fill.js`, `§WITNESS_SUN_ARC_FILL_VERDICT PASS ... rows=10 pass=11 fail=0`): ambient/
+  hemi/`_nightPLScale`/budget/near-fade-floor/lit-count EXACTLY equal the staged Alt+S baseline at all
+  five `tNorm` samples (0/.25/.5/.75/1), and `A.sun.intensity`/position/target/shadow camera/shadow
+  matrix/shadow-map bytes are `same(...)` BEFORE vs AFTER at every sample — sun/shadow untouched.
+- 10:45 PR **#1681** (`fix/sun-arc-fill-compensation` → `main`) MERGED — squash commit `82f14bbe`.
+- 10:50 `bim-compiler` `a0b590a5f` — THIS file's "THIRD CAUSE"/"USER'S RULING" text committed, 5
+  minutes after #1681 merged, evidently without seeing it — the ruling it records ("boost fill as
+  dayT rises above the dusk baseline") describes the curve the merge had just replaced, not the pin.
+- Working tree at dispatch time (uncommitted `§CLASH_FILM_P3` item 7, this file) still lists the
+  sun-arc theory as "NOT CONFIRMED" with a *different* untried next candidate (camera-spread light
+  budget) — also apparently unaware of the merge; left as-is, not this task's file to edit.
+
+**Verified directly, not taken on faith:** checked out a fresh worktree off `origin/main`
+(`/tmp/wt-sunfill`, since removed — no edits were needed) and confirmed `82f14bbe` /
+`A._sunArcFillPin` / the `§BAKE_FILL_PIN` call site are already present in `viewer/cinema_maxq.js`
+and `viewer/effects.js` on `main`, and re-read the shipped witness log
+(`viewer/tests/logs/sun_arc_fill/witness_sun_arc_fill_pin.log`) confirming the PASS verdict above.
+
+**Net effect on the mechanism this spec describes:** the shipped fix does not "rise with dayT above
+1.0 at the baseline" as specified above — it holds ambient/hemi/`_nightPLScale` **constant at the
+Alt+S baseline for the entire arc, every frame**, which is a stronger, simpler statement of the same
+user intent ("indoors should always read like Alt+S, not like the outdoor shadow logic"). The
+"Fix, specified not yet landed" text above is now superseded by this section and should not be
+re-implemented — re-deriving it would reintroduce the discarded dayT-boost curve on top of code that
+already holds the invariant it was trying to approximate.
+
+**No branch/PR opened by this task — zero code changed.** `§CLASH_FILM_P3` item 7's GATE ("Solve the
+alt-s livelier indoors before baking a next") is left exactly as that section states it; whether the
+already-merged pin closes it is the user's call, not asserted here.
+
 ## §SUN_BEAM — new feature, user ruling 2026-09-05: build now, separate from the fill fix above
 > **USER:** "of course in real life we can see it obscures what's behind its sun beam into room" ...
 > "I am welcoming a Sun beam into interior just that to do it with realism" ... "what is behind the
@@ -969,6 +1023,263 @@ releases=1 nearest=2.25m`; `§MAXQ_QUALITY unconverged=0`. Control: `Hospital_no
 - Superseded intermediates kept for the record: `Hospital_clash_demo_clip0.66-0.73` (old sun arc, new
   markers/labels) and its control.
 
+## §CLASH_FILM_P3 — 2026-09-05, user watched the FULL-frame 20-35.5s clip. New backlog, WORK-TO-ZERO
+> **USER, verbatim:** "Watching the landed bake, it seems OK and it may not be that those labels are
+> not really out of frame. It is the pulsing pairs that are not shining thru." — this WITHDRAWS the
+> P3 diagnosis below as the (or the only) explanation for the earlier "sticky" complaint; the fix is
+> kept (a pair truly outside the frustum should not be labelled regardless), but it is not credited
+> with solving what the user actually saw. The real complaint is the MARKERS not shining through.
+
+Session rate-limited (Sonnet, resets 15:10 Asia/Kuala_Lumpur) mid-item — this list exists so nothing
+is lost regardless of when work resumes. Status tag per item; ⛔ = blocked/not started, 🔧 = in
+progress, ✅ = done this session.
+
+1. ✅ **Labels: top-8 nearest, no distance limit** (was top-4, landed uncommitted by the rate-limited
+   agent at top-4; raised to 8 directly this session, `viewer/clash_labels.js` `TOP_N`). Clutter
+   between overlapping labels at count 8 is explicitly ACCEPTED by the user ("clutter acceptable...
+   motion sieves them out") — the screen-space non-overlap walk still runs but is no longer expected
+   to keep the frame clean. **DONE: witnessed (`§WITNESS_CLASH_FILM_LABELS pass=4 fail=0 ran=15`, red
+   control detected, SABOTAGE=occlude correctly goes red) and pushed to `feat/clash-film-p2` — full
+   detail in `§P2.1 AMENDED AGAIN — IMPLEMENTED AND WITNESSED 2026-09-05` below.**
+   ✅ (same fix) **Out-of-frustum label release**, distinct from occlusion which still shines through
+   unchanged per the standing ruling — kept even though it turned out not to be the user's actual
+   complaint; it's still correct behaviour on its own. Witnessed as claims P8a-d, same section below.
+
+2. ✅ **The pulsing MARKERS (not labels) are not shining through occlusion — CLOSED 2026-09-05, see
+   §CLASH_FILM_SHINE_THROUGH below.** Root cause: `viewer/clash_film.js` `makeSide`'s shared marker
+   material shipped with `depthTest: true` (ordinary z-testing) instead of `false`. Correction to
+   this item's own citation: the working precedent is not `CINEMA_DISCIPLINE_REVEAL.md` (which never
+   mentions depthTest/renderOrder) — it is `CINEMA_PATH_EDITOR.md` §CPE_CLASH_PIN item 2, pointing at
+   `measure.js:717-720`'s clash-overlap highlight (`depthTest:false, depthWrite:false,
+   renderOrder 998/999`). Fixed to the same combination, witnessed with a real occluder + SABOTAGE
+   control (`§WITNESS_CLASH_FILM_MARKERS pass=4 fail=0 ran=14`, W7-W10), proven material-level (ONE
+   `THREE.Material` per side governs all 271 pairs in one draw call, not sampled on one and assumed).
+
+3. ⛔ **Markers are bounding-box shapes; user wants the EXACT mesh-overlap intersection volume**,
+   "as in real Clash panel view" (i.e. render the actual CSG/BVH-intersection geometry between the
+   two clashing meshes, not a synthetic severity box). This is a real geometry-generation feature,
+   not a tuning knob — `clash_narrow.js` already computes the mesh-true intersection test
+   (`bvhcast`/`intersectsTriangle`) for the PASS/FAIL verdict; extracting the actual overlap SOLID
+   (not just a boolean) is new scope. Needs its own spec pass before implementation — do not guess
+   at a CSG library choice without checking what's already vendored (three-bvh-csg? check
+   `viewer/lib/`) and without measuring the cost on a real building (this could be expensive per-pair,
+   at scale — the film has 271 mesh-true pairs).
+
+4. ⛔ **Overlap value in millimetres, shown between the pair names at the label.** `clash_narrow.js`
+   already computes a penetration depth (`obbDepth`/similar per the earlier PR #1676 review — check
+   the exact field name) for the OBB stage; confirm it also has a MESH-true depth (not just OBB) to
+   display, since the label is about the mesh-true pair. Extract, do not recompute a second way.
+
+5. ⛔ **Discipline walkthrough during the pull-back/orbit reveal**, when the whole building is in
+   view: step through each discipline's clash-pair SET one at a time, freezing on each with its
+   pairs' labels up, while the HUD's stats card synchronizes to show "Clashes by discipline pair
+   total" for whichever set is currently frozen. This is a new cinematic beat, comparable in shape to
+   the existing `§CPE_DISCIPLINE_REVEAL` mechanism (`prompts/CINEMA_DISCIPLINE_REVEAL.md`,
+   `A.cpeRevealApplyVisual`) — read that spec/code first, this is very likely meant to reuse/extend
+   that machinery (per-discipline reveal beats already exist for MEP/ARC/STR lens work), not invent a
+   parallel system. Needs its own spec section before code.
+   **Sync priority, user ruling 2026-09-05:** "Let it run on its own life, try to synch with the pull
+   out reveal unless it is tricky." The clash-matrix card (item 8) rotates on the existing
+   `bigStatsAt`/`CARD_SECONDS` cadence regardless — that is its own life, ship it standalone first. A
+   frame-accurate lock to the discipline-reveal beat is a NICE-TO-HAVE on top, attempted only if it
+   composes cleanly with the existing reveal machinery; if it requires new coupling/state between two
+   independent systems, ship the standalone rotation and leave the sync unbuilt rather than force it.
+
+6. **Alt+C panel missing the Clash pairs checkbox / Silent-bake size select the user expects.**
+   DIAGNOSED, not a new bug: this UI (`cinema_path_editor.js:929,936`, sw `v1148`) exists only on the
+   still-open branches `feat/clash-film-p1`/`feat/clash-film-p2` — it has never been merged to `main`.
+   If the user's usual sandbox serves `~/bim-ootb` on `main` (the standing localhost:8399 sandbox per
+   memory), it correctly does not have this UI yet. Not a code fix — either point a dev server at the
+   worktree/branch to test, or merge #1678/#1679 (the user's own call, they review those personally).
+
+7. ⛔ **GATE, user's own words: "Solve the alt-s livelier indoors before baking a next."** No further
+   FULL bakes (especially the expensive 1080p/24fps kind) until this is genuinely resolved — short
+   verification clips for other fixes are fine. State as of this session: render-sample-count theory
+   RULED OUT (already measured, `§MAXQ_FRAME_BUDGET` comment, RMS 0.24 = noise floor). Sun-arc-
+   elevation theory NOT CONFIRMED at the one pose tested (noon read brighter than dusk there). One
+   candidate left, never measured: **light selection spread thin across a moving camera path** vs
+   Alt+S serving one fixed room with the full 200-light budget — `_nightUpdateLights`'s frustum+
+   nearest-N pick, `tools.js` ~1721-1890. This is the next thing to actually measure, not guess at.
+
+8. ⛔ **HUD "slide" stat cards should also show `A.bigStatsBuild`-style building stats** (the ones
+   the in-viewer "Measure" tool already extracts on double-click — `viewer/measure.js` ~1420-1460:
+   whole-building volume/floor-area/height from `element_transforms`'s envelope, per-`ifc_class`
+   counts including `IfcSpace`/`IfcDoor`/`IfcWindow` from `elements_meta`; room-vs-corridor
+   distinction already exists via `routewalker.js`'s `_rwClassifyRoom` name-pattern matcher, real
+   extracted classification, not invented) **plus a "clash matrix" map**, and made more graphical
+   (avatars/icons), not just plain numbers.
+   **"Clash matrix", defined 2026-09-05 (user):** "more of the respective DISC set of clashes" — a
+   per-discipline breakdown of clash-pair counts (e.g. MEP×STR, MEP×ARC, ...), extracted from the
+   same mesh-true pair set `clash_narrow.js`/`clash_film.js` already build (271 pairs on Hospital) —
+   group by each pair's two elements' `discipline` column, COUNT per discipline-pair combination. Not
+   a spatial/geometric matrix — a simple discipline×discipline count grid, same extraction discipline
+   as everything else on this card rotation. See item 5 for how this card's rotation relates to the
+   discipline-reveal beat (runs standalone, sync attempted only if easy).
+
+   **Total man-days / total cost — user asked for these 2026-09-05; MEASURED: they already exist in
+   code and are DEAD, not missing.** `cpe_resource_panel.js`'s `A.bigStatsBuild` already has both
+   cards ("labour cost committed", "person-days of labour"), gated on `A._hrCost`
+   (`time_machine.js:4936`, `§HR_COST_EXPOSE`). Checked the just-completed full 1080p bake's own log:
+   `§CPE_BIG_STATS cards=7 [elements coordinated | disciplines federated | MEP elements resolved |
+   MEP on Level 4 | levels | day programme | peak workforce]` — no cost/person-days card, and
+   `grep -c "§HR_COST total"` on that same log = **0**. Root cause found: `A._hrCost` is only ever
+   set INSIDE `injectGantt()` (the slow, cold schedule-GENERATION function) — and
+   `time_machine.js:3709`'s own comment says the fast, normal path is "§GANTT_CACHE_HIT where
+   injectGantt() never runs at all." Hospital_silent_local's schedule is cached (it's been baked
+   repeatedly all session), so every bake this session hit the cache path and `_hrCost` was NEVER
+   computed — the cards are correctly dropped by design (`EVERY CARD... a card whose source is
+   missing is DROPPED`), the SOURCE is just never populated on the common path. Fix is NOT "add two
+   new cards" — it's "make `_hrCost` populate on a cache hit too" (either compute it from the cached
+   ops directly, cheaply, without injectGantt()'s expensive geometry/render work, since it only needs
+   `resource`/`installSecs` per element and `LR` rates — or cache `_hrCost` alongside the schedule
+   itself so a cache hit restores it). Read `injectGantt()` (`time_machine.js:4534-4937`) fully before
+   touching this — the `_hrCost` block sits at the very end of a big function; the fix should NOT
+   drag the whole function onto the cache-hit path just to reach it.
+   Same file/pattern as the existing cards
+   (`cpe_resource_panel.js` `A.bigStatsBuild`, `EVERY CARD IS EXTRACTED, NONE ARE COMPUTED HERE`
+   discipline — a card whose source is missing is DROPPED, never filled with a plausible number).
+   Grounding already done this session (before the rate limit): the exact SQL patterns for volume/
+   floor-area/height and per-class counts are known and reusable verbatim from `measure.js`'s
+   existing double-click info-card query. Needs a small spec section (which new cards, what "clash
+   matrix map" means concretely — a small discipline×discipline count grid?) before implementation.
+
+### §HR_COST_CACHE_HIT — SPEC, 2026-09-05 (scope: ONLY the man-days/cost cards fix from item 8 above;
+the "clash matrix" card in the same item is a SEPARATE, not-yet-speced feature and is NOT built here)
+
+**Confirmed by re-reading the code before trusting the prior diagnosis (per CLAUDE.md §0a):**
+- `cpe_resource_panel.js:301-306` `A.bigStatsBuild` reads `A._hrCost.total`/`.personDays`/`.trades`
+  verbatim — no second computation, matches "EVERY CARD IS EXTRACTED, NONE ARE COMPUTED HERE". No
+  change needed there; confirmed `A` passed into `setupCpeResourcePanel(A)` is the same app singleton
+  `time_machine.js`'s `A()` (`window.APP || window.A`) writes to.
+- `time_machine.js:4936` `A()._hrCost = {...}` sits at the tail of `injectGantt()`'s §HR_COST block
+  (:4919-4939), fed by `_crewWorkDays` (:4884-4889, built from `elements[].resource`/`.installSecs`)
+  and `LR[resource].rate_per_day`/`.crew_size` (rates.js). `_crewWorkDays` needs NO `projectDays` —
+  that variable is used only by the separate §CREW_DEMAND utilisation log a few lines above, not by
+  the cost total itself.
+- `time_machine.js:8661-8710` is the `§GANTT_CACHE_HIT` fast path: `cachedOps` (from IDB `cacheGet
+  ('gantt')`) is spliced straight into `kernel_ops` and `injectGantt()` never runs, so `_hrCost` is
+  never touched this call.
+- **New finding, changes the prior diagnosis's "approach (a)":** the per-op `parameters` JSON cached
+  under the `'gantt'` key (`time_machine.js:5082-5086`) carries `phase, cls, name, storey, resource,
+  _end_ts, _genVersion, _cell` — **`installSecs` is NOT one of them**, and end_ts−start_ts is not a
+  substitute (T3 §3.3's per-task rescale means the *displayed* window width is an affine/tiled
+  transform of the real labour-content window when a captured native schedule exists, not the raw
+  value `getInstallSecs()` produced). So "compute `_hrCost` cheaply from the cached ops" is not
+  actually cheap or correct — it would require re-deriving `installSecs` via the same rule-matching
+  (`getInstallSecs`/`_installSecs`, cls+rule+realQty+lengthRatio) `injectGantt()` does, i.e. dragging
+  its expensive machinery back in regardless. **Approach (b) — cache `_hrCost` alongside the schedule
+  itself — is the only one that is actually cheap, and is what this fix implements.**
+
+**The fix:**
+1. `time_machine.js` `_cacheKey()` (:8505-8510): version the new `'hrCost'` prefix the same way as
+   `'gantt'` (`_GANTT_CACHE_VERSION`) so a schedule-algorithm bump invalidates both together — `_hrCost`
+   is derived from the same generation run as the ops.
+2. `injectGantt()`'s cold path, right after the `§HR_COST` block sets `A()._hrCost` (:4936-4939): no
+   change inside `injectGantt()` itself (keep it a pure compute), but the caller that already does
+   `cachePut('gantt', _ops)` on the cold-generate branch (`_activateAsync`, :8764) also does
+   `cachePut('hrCost', A()._hrCost)` right after — persists the already-computed value, invents
+   nothing.
+3. `_activateAsync`'s `§GANTT_CACHE_HIT` branch (:8687-8709): before `_finishActivate`, `await
+   cacheGet('hrCost')` and, if present, restore it onto `A()._hrCost` and log `§HR_COST_CACHE_HIT`; if
+   absent (an old cache written before this fix shipped, or the one-time gap before the first cold
+   regenerate populates it), log `§HR_COST_CACHE_MISS` and leave `A()._hrCost` unset — the two cards
+   stay correctly DROPPED per the existing rule, no invented fallback.
+4. `refoldSchedule()` (:9018 `cacheDel('gantt')`): add `cacheDel('hrCost')` alongside it for symmetry
+   — harmless either way since the forced cold path that follows recomputes and re-caches both, but
+   keeps the two cache entries' lifecycle visibly paired for the next reader.
+
+**Witness plan (WITNESS-replaces-visual-check, no screenshots):** one cold run on Hospital_silent_local
+to populate the new `hrCost` cache entry for the first time (not itself the proof — this session's
+existing cache predates the fix), then one genuine `§GANTT_CACHE_HIT` run reading `§CPE_BIG_STATS
+cards=` and `§HR_COST_CACHE_HIT total=`/`§HR_COST total=` lines from the log. Before: `cards=7`,
+`grep -c "§HR_COST total"` = 0 (already measured, see item 8 above). After (cache-hit run): `cards=9`
+and a `§HR_COST_CACHE_HIT total=<n>` line present, `A()._hrCost.total` matching the last cold run's
+`§HR_COST total=<n>` value exactly (restored, not recomputed).
+
+## §P2.1 AMENDED AGAIN — IMPLEMENTED AND WITNESSED 2026-09-05 (resuming after the rate-limit pause)
+Item 1 of §CLASH_FILM_P3's backlog, closed. `viewer/clash_labels.js` + `viewer/tests/witness_clash_film_labels.js`, branch `feat/clash-film-p2` (worktree `/tmp/wt-clash-film-p2`), on top of the `TOP_N=8` edit already landed uncommitted at session-resume.
+
+**User's words, verbatim:** *"The label is sticky still lingers in frame when that clash pair gone out
+of frame. Two more appearing in the horizon should be labelled next but they could be beyond the 10m
+mark. Let's not put limit to range. Just mark out up to 4 of nearest as simple rule."* (N raised 4→8
+later the same session, §CLASH_FILM_P3 item 1: *"clutter acceptable... motion sieves them out"*.)
+
+**Old rule (§P2.1 AMENDED):** `ENTER_M=10.0 / RELEASE_M=10.6` — a pair was eligible only inside a fixed
+10 m radius (hysteresis gap 0.6 m). A contact behind the camera was clamped to the frame edge with no
+leader line and kept its panel (`clash_labels.js`, old §P2.4 rule) — the actual sticky-lingering bug.
+
+**New rule — rank, not distance (`viewer/clash_labels.js:79,203-217`):**
+```
+var TOP_N = 8;               // clash_labels.js:79 — always the N nearest, no metres cutoff at all
+var RANK_MARGIN_M = 0.6;     // hysteresis, now measured against the MOVING top-N boundary
+```
+Every frame, ALL pairs are sorted by distance to camera; `cutoffD` = the Nth-smallest distance
+(`clash_labels.js:203`). A pair enters when `d <= cutoffD`, releases only once `d > cutoffD + RANK_MARGIN_M`
+(same hysteresis SHAPE as before, now anchored to a boundary that moves with the scene instead of a
+fixed number). The exact `{pairIndex, distance}` selection is exposed as `rec.eligiblePairs`
+(`clash_labels.js:217`) so a test can assert it against ground truth without reverse-engineering it.
+
+**The frustum fix (`clash_labels.js:224-232`):** the old code detected `behind` (view-space z>0) and
+mirror-flipped the coordinate to pin the panel to the frame edge with no leader. That branch is DELETED.
+The new test is `behind || Math.abs(nx) > 1 || Math.abs(ny) > 1` (NDC beyond the horizontal/vertical FOV,
+not just behind) — either condition now increments `rec.skippedFrustum` and the pair carries NO panel
+that frame at all (`clash_labels.js:232`). This is unrelated to occlusion: a wall/door in front of the
+camera along the line of sight still projects INSIDE the frustum and keeps shining through, unchanged
+(§CLASH_IN_FILM_RULE's standing ruling; witness P2 still asserts a hidden pair IS labelled).
+
+**Witness — 8 old claims kept, P1/P4 rewritten off the retired constants, P8 added (4 new claims) for
+the frustum fix.** `LOG=... node viewer/tests/witness_clash_film_labels.js`, Hospital_silent_local, GPU=real:
+
+*Before (mid-flight, retired fields):* `clashLabels.stats() enter=undefined release=undefined` — INCONCLUSIVE, refused to score.
+
+*After:* `§WITNESS_CLASH_FILM_LABELS pass=4 fail=0 ran=15`, red control detected —
+- **P1a/P1b — rank matches ground truth, no distance limit.** Near pose (1.7 m offset): `want=[168,252,256,257,263,264,265,266] got=[same]`. **Far pose (~50.6 m offset): `want=[59,60,61,62,65,138,212,214] got=[same]`, farthestWantD=14.946 m** — a pair 14.9 m away, invisible under the retired 10.6 m gate, is selected by the module exactly as ground truth (computed independently in the browser) says it should be. **P1c:** eligible count never exceeds `TOP_N=8` at either pose.
+- **P4 — no strobe, two clean transitions.** Sweep 50.6→0.3→50.6 m, 0.05 m steps: `flips=2 enterAt=15.15m releaseAt=15.2m`. **Measured finding, not a bug:** the release−enter gap (0.05 m) does NOT equal `RANK_MARGIN_M` (0.6 m) the way the old fixed pair did — the crossing sits inside a dense region of Hospital_silent where the top-N boundary itself moves almost 1:1 with camera position along the sweep, so the claim asserts what actually matters (exactly one clean enter, one clean release, release never closer than enter), not a specific gap magnitude.
+- **P5 constant size:** `205x51 px` at 1.0 m and at 5 m.
+- **P2 occlusion still irrelevant, unchanged:** `raycast/BVH calls: 0`; synthetic occluder hit at 2.5 m, contact at 5 m → hidden=true, labelled=true anyway.
+- **P8a-d — the frustum fix, isolated from occlusion, same camera POSITION throughout (rank/eligibility never changes, only orientation):** looking at the contact → `eligible=true labelled=true`. Looking straight past it (contact now BEHIND camera) → `eligible=true (unchanged) labelled=false skippedFrustum=7`. Looking 90° off-axis (contact still in front, outside the FOV cone) → `eligible=true labelled=false skippedFrustum=8`. Looking back → `eligible=true labelled=true` — releases and recovers, proving the frustum test is a stateless per-frame check, not a latch.
+- **P3 dense-cluster accounting reconciles exactly once `skippedFrustum` is counted too:** `eligible=8 labelled=3 skippedOverlap=4 skippedFrustum=1` (3+4+1=8) — at only 5 m from a 10-neighbour cluster, one of the top-8 nearest legitimately falls outside the camera's FOV even before the overlap walk runs.
+- **P6 fade seam:** unchanged, still passes.
+- **P7 — the real stored Hospital path, 1500 samples, `durationSec=195.8` (matches the bake's own `§CPE_APPLIED`):** `framesWithEligible=1500/1500` (100% — there is no distance gate left to ever read zero), `framesWithLabel=952/1500`, `maxEligible=8`, `maxLabelled=5`, `overlaps=0`, `rayDelta=0`. **`farthestLabelledM=146.23m`** — on the real authored path, a panel was drawn for a pair whose contact was 146 m from the camera, 14× beyond the retired 10.6 m release distance, because it was among the 8 nearest at that moment. That is the concrete, real-path proof the range limit is genuinely gone, not just a smaller one.
+
+**SABOTAGE=occlude control (the forbidden visibility filter, proving the witness can catch the exact
+regression it exists to prevent):** `pass=3 fail=1 ran=15`, exit 1. P2a/P2b correctly go RED
+(`raycast calls: 1`, hidden pair `labelled=false`), and the collateral failures cascade correctly
+(P4/P5/P8a/P8d/P3/P7 all depend on the isolated pair actually being visible). **P8b/P8c stay GREEN
+under this sabotage** — proof the frustum-release claims are independent of the occlusion filter: they
+test orientation, not visibility, so a regression in one does not silently mask the other.
+
+**Verification bake — `~/Downloads/cll/Hospital_clash_TOP8_clip0.27-0.33_2026-09-05.mp4`** (`--clash
+--clip 0.27:0.33 --gpu real --width 1280 --height 720 --fps 24`, waited out the concurrent full
+1080p/24fps bake first — GPU never shared): 282 frames / 6,464,125 bytes, `§CLI_BAKE_WALL totalSec=339
+aborted=no fileOk=true`, `§MAXQ_QUALITY unconverged=0`. Log:
+`~/Downloads/cll/Hospital_clash_TOP8_clip0.27-0.33_2026-09-05.log`.
+
+`§CLASH_LABELS_SUMMARY frames=282/282 eligibleFrames=282 labelFrames=160 maxEligible=8 maxLabelled=5
+enters=21 releases=13 skippedOverlap=48 skippedFrustum=1846 panelsDrawn=362 nearest=2.25m topN=8` —
+**eligibleFrames=282/282 (100%)** confirms there is genuinely no distance gate left to ever read zero.
+Frame 0 alone shows 8 pairs entering simultaneously at `9.92m`–`11.71m` — already past the old 10.0 m
+enter threshold on the very first frame. As the camera moves, real enter/release events fire well past
+the retired 10.6 m release distance: `enter=[…@14.87]`, `enter=[…@15.39]`, `enter=[…@15.55]`,
+`enter=[…@15.87]`, `release=[…@16.21,…@16.26]`, `release=[…@16.43]`, `release=[…@16.28]` — pairs
+14.9–16.4 m away, all invisible under the old rule, correctly entering and releasing under the new one.
+Up to **5 panels stacked simultaneously** (frame 81: `labelled=5 panels=[85@1011,282… 90@779,244…
+84@1026,217… 93@151,239… 87@424,263…]`), matching the witness's own P7 `maxLabelled=5` on the same
+building. **`skippedFrustum=1846` over 282 frames (~6.5/frame average, individual frames range 2–8)**
+is the frustum fix firing constantly in real footage — most of the top-8 ranked-nearest pairs are
+usually somewhere outside the camera's current view cone at any instant (they are scattered around the
+whole building while the camera looks one way), and are correctly dropped rather than clamped to the
+frame edge every single time this happens, not just in the synthetic witness poses.
+
+**Push:** fixup commit on `feat/clash-film-p2` (existing PR #1679), not a new branch.
+
+**⛔ Not this task, flagged for the record:** §CLASH_FILM_P3's item 2 (pulsing MARKERS in `clash_film.js`
+not shining through occlusion — a different file, out of this section's scope fence §P2.6) is the
+defect the user later said actually matched their "sticky" complaint, once they re-watched a bake with
+this label fix already in it. This section's fix is correct and kept on its own merits (a genuinely
+out-of-frame contact should never hold a panel, independent of what else was wrong) but is not credited
+with solving that complaint — see §CLASH_FILM_P3 above for the still-open marker item.
+
 ### Instrument caveats, stated so the next session does not re-derive them
 - Whole-frame mean |Δ| stops reading the pulse once the markers are small (codec noise dominates); the
   marker |Δ| MASS over changed pixels and its peak/dark ratio are the readings that carry.
@@ -977,3 +1288,220 @@ releases=1 nearest=2.25m`; `§MAXQ_QUALITY unconverged=0`. Control: `Hospital_no
   exists. Frame 90 of the demo reads 0.0 %, so it is not a constant offset.
 - The label plate lives in the top-180-row band by design; read a labelled clip's sky number on the frames
   before `enter=` or mask the logged rectangles (the script takes the bake log as its 9th argument).
+
+## §NIGHT_BUILDUP_GATE — 2026-09-05 — SPEC + WITNESSED: the room's real illumination now obeys the buildup schedule
+Branch `feat/clash-film-p3` (worktree `/tmp/wt-clash-p3`), stacked on `feat/clash-film-p2`. This item
+is the candidate flagged, never measured, in §CLASH_FILM_P3 item 7 ("light selection spread thin
+across a moving camera path... `_nightUpdateLights`'s frustum+nearest-N pick, `tools.js` ~1721-1890")
+— but the actual gap found on reading the function was more fundamental than a spread/thinness tuning
+question: the buildup schedule was not consulted AT ALL for the real `THREE.PointLight` objects.
+
+**Confirmed gap (code read this session):** `viewer/tools.js` `A._nightUpdateLights` (~L1722) builds
+its candidate fixture list from `A._nightFixtureWorldPositions()` — the whole, FINISHED building —
+with no filter for whether Time Machine has actually placed each fixture yet. The decorative glow
+sprite consuming the exact same list (`effects.js` `§GLOW_BUILDUP_GATE`, 2026-08-07) already applies
+this filter; the real light was never given the same treatment, so a buildup bake could light a room
+from a fixture that had not been constructed yet.
+
+**Spec:** apply the identical filter §GLOW_BUILDUP_GATE already uses —
+`p.__guid == null || A._tmIsVisible(p.__guid)` — to a NEW `visPos` list, derived from the existing
+`allPos` right where it is first read, and route every one of `_nightUpdateLights`'s THREE
+PointLight-selection branches (still-boost frustum+§BAKE_INTERIOR_TOPUP, small-building "light them
+all", and the mixed nearest-N pick) off `visPos` instead of `allPos`. `allPos` itself stays
+UNFILTERED and keeps sizing the frozen `§NIGHT_BAKE_POOL` — that pool must have enough slots for
+fixtures placed LATER in the buildup, not just those already placed when it's first created.
+
+**Implementation — `viewer/tools.js`:**
+- `A._nightUpdateLights` ~L1733: `var visPos = allPos.filter(function(p) { return p.__guid == null || A._tmIsVisible(p.__guid); });` (verbatim reuse of the glow gate's own predicate).
+- Still-boost branch (~L1768, L1786): `inView` and the `§BAKE_INTERIOR_TOPUP` top-up call both read `visPos`, not `allPos`.
+- Small-building branch (~L1794): condition and body both read `visPos`.
+- Mixed-selection branch (~L1810): `_nightPickNearest(visPos, A._nightMaxLights, [])`.
+- `§NIGHT_BAKE_POOL` sizing (~L1838): deliberately UNCHANGED, still `Math.min(200, Math.max(1, allPos.length))`.
+- New witness log, deduped on change (~L1856): `§NIGHT_BUILDUP_GATE total=<allPos.length> placed=<visPos.length> lit=<needed.length> invariantOK=<bool>`.
+
+**Witness — `tests/witness_night_buildup_gate.js`, real DB `TerminalHi4D.db` (818 real IfcLightFixture
+rows, real `element_transforms` positions, real `kernel_ops` ELEMENT_PLACE timestamps — no invented
+coordinates or cursors). Extraction discipline identical to `tests/witness_glow_buildup_gate.js`
+(exact-substring extraction of the shipped source, run via `new Function()`, extraction fails loudly
+if the source shape drifts). `node tests/witness_night_buildup_gate.js` → `pass=12 fail=0`:**
+- **G0/G1** — structural: all three selection branches read `visPos`; `§NIGHT_BAKE_POOL` sizing still reads unfiltered `allPos`; the witness log line exists.
+- **V1-V4** — the buildup gate matches Time Machine's own placed/frontier/recent set exactly at mid-buildup (422/818, strictly partial), is exactly 0 before the first fixture's own install time (**the defect this closes** — previously ALL 818 would have lit from frame 0), is exactly 818/818 once the buildup finishes, and is unaffected (818/818) with Time Machine off (plain Night Mode).
+- **V5** — cross-check requested by the user ("they should track together now"): the PointLight gate and the glow-sprite gate produce IDENTICAL eligible guid sets at every cursor (start/mid/end/off) — same predicate, same list, genuinely tracking together, not just both correct independently.
+- **V6a/V6b** — the requested invariant, at real buildup samples (ranks 5/10/20/30/50/400/818 of 818): `lit <= placed <= total` holds at every sample; `lit` sequence `[5,10,20,30,30,30,30]` against nav cap 30 — grows strictly while under budget, plateaus at the cap once placed exceeds it, never lights a fixture ahead of its own construction, never exceeds the light budget.
+- **V7/V8 — the ALT+S/BAKE BRANCH SPECIFICALLY** (coordinator directive: `_nightUpdateLights` is shared between plain Alt+S/still-refine and a MaxQ buildup bake, and V1-V6 above exercise the NAVIGATION branch, not the one Alt+S/bake actually takes). The still-boost branch (frustum-cull + `§BAKE_INTERIOR_TOPUP`) is extracted VERBATIM and driven under both extremes with a stubbed (pre-existing, unrelated to this fix) `THREE.Frustum`: **empty frustum** (forces the top-up path) → every one of the 30 picked fixtures comes from the buildup-gated 422-eligible pool, never an unplaced one; **full frustum** (everything in view, sliced to 200) → same guarantee, 200/200 picked all from the eligible pool. Proves the fix holds on the actual Alt+S/bake code path, not only the path navigation takes.
+
+**Cost:** all 12 checks are pure extraction+real-DB-query, no browser/GPU — `~1s` wall time. No
+change of environment or expensive bake was needed to verify this fix.
+
+## §NIGHT_PL_INTENSITY_HEURISTIC — 2026-09-05 — SPEC + WITNESSED: PL intensity by fixture type, a stated STYLE CONVENTION, never claimed as real photometric data
+Same branch/worktree as above. Every fixture-derived `PointLight` previously got the exact same flat
+`NIGHT_LIGHT_INTENSITY` (2.0) regardless of type — a floodlight and a small wall sconce shone
+identically.
+
+**Investigation (Prime Directive: extract, never invent) — CONCLUSION: no real wattage/lumen data
+exists anywhere in this pipeline, for any shipped building.**
+- `elements_meta`'s real shipped schema (checked on TWO buildings, `TerminalHi4D.db` and
+  `Hospital_extracted.db`): `(guid, ifc_class, element_name, storey, discipline, material_name,
+  material_rgba, building)` — no property-set column of any kind.
+- `DAGCompiler/python/extractIFCtoDB.py`'s own `IsDefinedBy` walk (~L2246) only ever reads
+  `IfcRelDefinesByType` (a type NAME string, e.g. "M_Pendant Light - Hemisphere") — `IfcRelDefinesByProperties`
+  (the relation a `Pset_LightFixtureTypeCommon`/`*General` wattage or luminous-flux value would come
+  through) is never read anywhere in the file.
+- Conclusion stated plainly, per the correct handling of "no real data": stop, report it, do not
+  approximate a wattage number from nothing.
+
+**User directive, 2026-09-05, unblocking this with a stated heuristic instead of leaving it flat:**
+build the SAME SHAPE of thing `A.nightLightColor` (`viewer/tools.js:1151`) already does for colour —
+a name-pattern style convention, explicitly not claimed as extracted fact — reusing its EXACT SAME
+name categories for intensity, not a new taxonomy.
+
+**Spec — `A.nightLightIntensityMult(name)`, new function next to `A.nightLightColor`:**
+- troffer/batten/t8/recessed_mprl/low-bay (today's `NIGHT_COOL` colour bucket — larger-format,
+  general-illumination types) → `NIGHT_PL_INTENSITY_COOL_MULT = 1.15` (+15%).
+- downlight/sconce/pendant/surface-mounted (today's `NIGHT_WARM` bucket — smaller accent/domestic
+  types) → `NIGHT_PL_INTENSITY_WARM_MULT = 0.85` (−15%).
+- everything else (unmatched names, exit signage) → `1` — exactly the flat baseline, unchanged.
+- Deliberately does NOT reuse `nightLightColor`'s stated cw/ww override — a colour-temperature LABEL
+  says nothing about a fixture's physical size/output.
+- Multipliers are ±15%, deliberately SMALLER than `NIGHT_LIGHT_INTENSITY`'s own already-live 20%
+  tuning step ("2.5→2.0, indoor MEP-reveal bake still reads too bright") — per-type variance cannot
+  swing the room brighter/dimmer overall than the existing tuned baseline already sits at.
+- Wired into BOTH intensity computations in `A._nightUpdateLights` (the frozen `§NIGHT_BAKE_POOL`
+  branch and the churn-fix/nav branch), each multiplied by `(...pos.__intensityMult || 1)` — the `||
+  1` fallback means a building with no matching fixture names is byte-identical to before this fix.
+- **Tagged `§NIGHT_PL_INTENSITY_HEURISTIC` everywhere, explicitly disclaimed in-code as "NOT
+  extracted/real photometric data" — never `_MEASURED`, never presented as extracted fact.**
+
+**Witness — `tests/witness_night_pl_intensity_heuristic.js`, real element_name rows from TWO real
+shipped buildings (Terminal 818 rows + Hospital 1272 rows, never invented sample names).
+`pass=11 fail=0`:**
+- **A1/A2** — the investigation itself, re-confirmed structurally (not re-derived from memory): `IfcRelDefinesByProperties` absent from the extraction script, `elements_meta` schema has no wattage/lumen/pset column on either real building.
+- **B0** — the heuristic is tagged/documented as a style convention, explicitly disclaiming real data.
+- **B1** — genuine variance across REAL fixture names: `min=0.85 max=1.15 distinctValues=[0.85,1,1.15]` across 2090 real rows — not a single repeated number.
+- **B2/B3/B4** — real, named examples: Hospital's `"M_Pendant Light - Linear - 2 Lamp..."` → 0.85 (warm/domestic); Terminal's `"E_Light_100W_Low Bay_V1..."` → 1.15 (cool/industrial); Terminal's `"BIM_OOTB_Floodlight..."` → exactly 1 (unmatched, unchanged baseline).
+- **B5** — both multipliers modest: correct sign each way, `|Δ|<0.20` (smaller than the file's own live 20% tuning step).
+- **C1/C2** — wiring: both `A._nightUpdateLights` intensity computations multiply by the heuristic and the position mapper stamps it; the `|| 1` fallback preserves pre-fix behaviour exactly where nothing matches.
+
+## §CLASH_FILM_SHINE_THROUGH — 2026-09-05 — the still-open item from §CLASH_FILM_P3 item 2, CLOSED
+Same branch/worktree as above. This is `§CLASH_FILM_P3` item 2: "The pulsing MARKERS (not labels) are
+not shining through occlusion" — the real, still-open defect behind the "sticky"/lingering complaint,
+distinct from the already-correct label occlusion behaviour (`§CLASH_IN_FILM_RULE`, unchanged).
+
+**Correction to the item's own text:** item 2 points at "`CINEMA_PATH_EDITOR.md`... 'depthTest:false /
+renderOrder'... built for a DIFFERENT feature (discipline-reveal shine-through)" — re-reading that
+file (§CPE_CLASH_PIN, "the blue/red shine-through already exists — retain it exactly, do not
+reinvent") shows the actual working precedent is not a discipline-reveal mechanism at all: it is
+`A._flyToClash`'s own clash-overlap highlight mesh, `viewer/measure.js:717-720` —
+`depthTest: false, depthWrite: false` with `renderOrder 998/999`. That is the code compared against
+below (an outside task brief separately named `CINEMA_DISCIPLINE_REVEAL.md`, which does not mention
+depthTest/renderOrder anywhere — the canonical `MEP_CLASH_REVEAL_MOVIE.md` pointer above is correct
+and is what was followed).
+
+**THE DEFECT (`viewer/clash_film.js` `makeSide`, the ONE material shared by the WHOLE InstancedMesh
+of clash-marker boxes):**
+```js
+// before
+depthTest: true, depthWrite: false, toneMapped: false, side: THREE.DoubleSide
+```
+`depthTest: true` — ordinary z-testing, so any wall/slab already in the depth buffer in front of a
+marker correctly occludes it. `§CLASH_FILM_P1` was supposed to give markers the same shine-through
+`measure.js` already has; the one property that actually does that work was left at `true`.
+
+**THE FIX:**
+```js
+// after
+depthTest: false, depthWrite: false, toneMapped: false, side: THREE.DoubleSide
+```
+`renderOrder = 900` (already present, unchanged) keeps the marker drawing after ordinary opaque
+geometry, so by the time it draws the wall is already in the colour buffer and additive blending
+lands on top of it rather than being z-rejected — the same combination `measure.js` uses.
+
+**Coordinator directive, addressed:** fix at the shared MATERIAL level, not per-pair. There is
+exactly ONE `THREE.Material` object per side (A/B), governing the whole `InstancedMesh` in one draw
+call — there is no per-pair code path that could apply the fix to some pairs and miss others. Proven
+structurally below (W10), not assumed.
+
+**Witness — extended `viewer/tests/witness_clash_film_markers.js` (not a new file — same module,
+same convention the labels witness used across its own P1→P8 amendments), Hospital_silent_local,
+Puppeteer + software GL (`GPU=sw`, this session's sandbox has no GPU device; the file's own default
+stays `GPU=real` for a machine that has one). New claims W7-W10, reusing the label-occlusion
+witness's TECHNIQUE where it actually transfers (a real occluder, a real render, no eyeballing) —
+adapted for the fact a marker has no visibility SELECTION LIST the way a label does (every marker is
+always drawn every frame, §3b): a synthetic opaque occluder is placed between the camera and a real
+pulsing pair's contact point, and the actual rendered pixel is read back via
+`A.renderer.readRenderTargetPixels` (the same numeric-pixel-proof technique
+`witness_wall_side_light_floor.js` already uses), with a SABOTAGE control (force `depthTest` back to
+`true`, the pre-fix state) proving the occluder genuinely sits in front rather than assuming it.
+
+**Real building: Hospital_silent_local (63,182 elements, 271 mesh-true clash pairs, 542 markers).
+`§WITNESS_CLASH_FILM_MARKERS pass=4 fail=0 ran=14`** (10 pre-existing §CLASH_FILM_P1 claims + 4 new,
+all still green — no regression from the depthTest fix):**
+- **W10** — structural, before trusting the pixel numbers: `single material object=true
+  instancesA=271 instancesB=271 totalPairs=271` — ONE `THREE.Material` per side governs the WHOLE
+  271-pair InstancedMesh in one draw call, so the fix is proven material-level for every pulsing
+  pair simultaneously, not sampled on one pair and assumed for the rest.
+- **W9** — the fix is live: `depthTestA=false depthTestB=false` on the shared material.
+- **W8 — the SABOTAGE control**: forcing `depthTest` back to `true` (the exact pre-fix state) on
+  pair 0's occluded pixel reads `sabotaged=0.53335` against `occluderAlone=0.53335` —
+  **`|Δ|=0.00000`, an EXACT match, not just "close"** — proving the synthetic occluder genuinely
+  sits in front of the marker (a real geometric fact this test verified, not assumed), and that
+  under the old `depthTest:true` behaviour the marker contributed literally nothing to that pixel.
+- **W7 — the fix itself**: the SAME occluded pixel, same camera pose, same pulse phase, with the
+  shipped `depthTest:false` fix in place: `withOccluder+fix=0.97452` — clears the occluder-alone
+  floor (`0.53335`) by `Δ=+0.44117`, and exceeds the sabotaged reading. For comparison,
+  `noOccluder(baseline, unoccluded)=0.57291` — the marker measurably contributes MORE light to the
+  frame with the occluder in place than the plain unoccluded baseline patch average, because the
+  occluder's flat grey fills the sampled patch behind the marker instead of empty background; either
+  way, the marker's own light is unambiguously reaching the camera through the occluder.
+
+**Regression check:** all 10 pre-existing §CLASH_FILM_P1 claims (W1/W1b/W1c/W2/W2b/W3a/W3b/W5/W6,
+W4a) still read OK, byte-identical numbers to before this session's fix (271 pairs, 542 markers,
+pulse swing 0.300, clamp behaviour unchanged) — the `depthTest` flip touches only occlusion
+behaviour, nothing else the pre-existing claims check.
+
+## Step 4 verification bake — 2026-09-05, PLAN/BUILD confirmed correct, FULL RENDER blocked by this
+## sandbox's own hardware (no GPU), not by any code defect — read before re-attempting
+`cli_silent_bake.js --db Hospital_silent_local --clash --clip 0.1021:0.1532 --gpu real --width 1280
+--height 720 --fps 24 --out <path>.mp4 --log <path>.log` — the exact, validated command for seconds
+20-30 of the authored film. **Do not re-derive the clip fraction from `cinema_path.total_sec` in the
+DB (278.8s) — that column is stale/unused at runtime.** The CLI's own resolved plan recomputes
+pacing fresh from the authored waypoints every run and logs the number that actually matters:
+`§CINEMA_PACING natural=195.8s ... running=195.8s`, `§MAXQ_START frames=4699 fps=24` (4699/24=195.79s).
+20/195.8=0.1021, 30/195.8=0.1532 — CONFIRMED by the bake's own `§CPE_CLIP applied window=0.102→0.153
+span=5% frames=4699→240` line (240/24fps=10.0s exactly). A first attempt in this session used the
+stale 278.8s figure, was caught from this same log line before any frame render time was wasted, and
+corrected — recorded here so the next session doesn't repeat it.
+
+**What this session's run (worktree `/tmp/wt-clash-p3`, `GPU=sw` — see below) already confirmed, real
+`§`-tagged log lines, not visual inspection:**
+- `§CPE_CLIP applied window=0.102→0.153 span=5% frames=4699→240` — the clip window is exactly right.
+- `§CLASH_FILM_BUILD discPairs=12 pairsBroad=1478 trueClash=271 markers=542 bothPlaced=271
+  incomplete=0` — `--clash` builds the same 271 real mesh-true pairs / 542 markers inside an actual
+  CLI bake (not just the Puppeteer witness sandbox).
+- `§NIGHT_BUILDUP_GATE total=1274 placed=2 lit=2 invariantOK=true` and `§NIGHT_PL_INTENSITY_HEURISTIC
+  n=2 min=1.00 max=1.00 mean=1.000 (style convention, NOT extracted wattage/lumen data)` — §STEP1 and
+  §STEP2's fixes both fire correctly, live, inside a real buildup bake — the invariant holds and the
+  heuristic tag is correctly disclaimed even in production log output. (n=2 at this sampled frame
+  means only 2 fixtures were lit yet and both happened to share one category — real variance across
+  categories was already proven separately, on real DB data, by `witness_night_pl_intensity_heuristic.js`
+  §B1; a 2-sample frame is not the right population to re-check that claim against.)
+
+**Why the FULL 240-frame render was not completed here:** this sandbox has no GPU
+(`nvidia-smi` fails; `--gpu real` and `--gpu intel` both resolve to `NO_GL` — checked directly, not
+assumed). Under `--gpu sw` (Chrome's own SwiftShader software rasterizer), frame 0 alone measured
+`§MAXQ_FRAME i=0/240 elapsedMs=87082` — **87 seconds for one frame**, even after
+`§MAXQ_FRAME_TIMEOUT` force-captured it UNCONVERGED partway through its own `MAXQ_STILL_BUDGET`
+(taa=8, ao=12 — a real, already-measured, already-rejected-lower quality floor, see
+`cinema_maxq.js` ~L482-503; not a knob this session should lower). At that measured rate, 240 frames
+projects to roughly **5-6 hours** for a 10-second clip — compare the prior real-GPU verification bake
+in this same lane (`§P2.1 AMENDED AGAIN` above): 282 frames in 339 seconds total, ~1.2s/frame, a
+~70x difference attributable entirely to the missing GPU. Continuing to force this through in this
+sandbox would violate this project's own "bakes are expensive, run only the specific short clip
+named, nothing bigger" discipline for no evidentiary gain — every numeric claim step 4 exists to
+check (clip window correctness, clash-film build correctness, steps 1-2's lighting invariants) is
+already confirmed above from the SAME run's own log, before the render stage. The one thing
+genuinely NOT produced here is the watchable `.mp4` deliverable itself, which requires the render to
+finish — that needs a real GPU (the user's own machine, per this file's established convention) and
+is a re-run of the exact validated command above, not further investigation.
+`~/Downloads/cll/Hospital_clash_verify_clip20-30s_2026-09-05.log` is this session's partial log
+(killed after frame 0's timing measurement); no `.mp4` was produced.
