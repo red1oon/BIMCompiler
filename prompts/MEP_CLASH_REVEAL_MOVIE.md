@@ -687,6 +687,10 @@ auto-merge. Working worktree for #1676/#1678 is `/tmp/wt-clash-mesh` (branch `fe
 pushed, clean). sw is at **v1145**.
 
 ## THE ONE OPEN DEFECT — the additive markers wash the sky. MEASURED, NOT FIXED.
+> **STATUS 2026-09-05 (later session): FIXED AND RE-MEASURED — see `§CLASH_FILM_SKY_WASH — MEASURED` at
+> the end of this file. Sky-band changed pixels 80,161 → 4,886 on the same window (16.4× down). The three
+> user items below (sky, earlier clip start, label styling) are all landed: bim-ootb `feat/clash-film-p1`
+> @ `4d2fcf93`, `feat/clash-film-p2` @ `35bd6982`, PRs #1678/#1679 still open for the user's review.**
 > **USER:** *"IT seems to leak into outside sky etc that floor slab turning light blue"* … and, after
 > the second clip: *"is the sky bug fixed?"* — **the honest answer is still no.**
 
@@ -710,6 +714,23 @@ drop `PEAK` from 0.55 so any residual sky contribution is faint. Then re-run the
 and require sky-band changed pixels to fall by an order of magnitude with
 `corr(envelope, intensity)` unchanged.
 
+**User's review of the clip 2026-09-05, three items, dispatched together:**
+1. Sky wash confirmed STILL PRESENT on watching the actual clip ("still white (light bluish) washing
+   unrelated portions") — the fix above is now landed, not just specified.
+2. Clip should start several seconds EARLIER — the 0.69:0.73 window only shows the labelled moment,
+   not the pulsing pairs building up to it. Extend the start so the pulse is visible before the label
+   triggers.
+3. Label styling isn't visually consistent with the rest of the HUD. Read `viewer/clash_labels.js`
+   (branch `feat/clash-film-p2`): the plate colour and font FAMILY already deliberately match the day
+   counter (`PLATE='rgba(0,0,0,0.45)'`, same `-apple-system,...` stack) — but the name text is pure
+   saturated `rgb(255,33,26)`/`rgb(41,112,255)` (matched to the marker colours on purpose, so a viewer
+   ties name to marker), which reads as a neon foreign element against the day counter's muted white/
+   `rgba(255,255,255,0.62)` grey text, and the font WEIGHT is `600` where the day counter uses `700`/
+   `500`. Also the PR #1679 review already flagged the leader line as fixed near-white regardless of
+   background (low contrast) — fold that fix in at the same time, same file, same visual pass. Keep the
+   red=A/blue=B colour-coding (it's load-bearing, not decoration) — tune shade/weight/contrast so it
+   reads as the same HUD family, not remove the colour identity.
+
 ## Second open question, raised by the user and NOT yet measured
 > *"during fly indoors, it seems it is not as bright as when we do a static alt-s"*
 
@@ -717,18 +738,126 @@ and require sky-band changed pixels to fall by an order of magnitude with
 applied by BOTH paths — `effects.js:3623` (Alt+S still) and `effects.js:5035` (bake). Same cut either
 way, so it is not the difference. **Do not re-derive this.**
 
-Two candidates left, which need opposite fixes, so measure before spending:
-1. **the light budget is spread by the camera, not by the room.** `_nightUpdateLights` picks ≤200
-   fixtures by frustum + nearest-to-aim. Parked for a still, all 200 serve your room; flying, they
-   are re-picked per pose and spread along the path. The clip log shows
-   `§NIGHT_STILL_LIGHTS raised to 200 lights` and `§BAKE_INTERIOR_TOPUP` never firing — the frustum
-   already filled the budget, so the existing top-up cannot help this case.
-2. **the bake renders half the still's fold** — `§MAXQ_FRAME_BUDGET taa=8 ao=12 renders/frame=20`
-   against the still's 16+24=40 (§R10's deliberate 2× cut). Fewer samples read dimmer indoors.
+Two candidates were parked (never measured — a third, confirmed by code read, now explains it and
+supersedes them for this session; keep the two below written down in case the fix below doesn't fully
+close the gap):
+1. the light budget is spread by the camera, not the room (`_nightUpdateLights` frustum+nearest-N pick).
+2. the bake renders half the still's fold (`§MAXQ_FRAME_BUDGET` 20 renders/frame vs the still's 40).
 
-**The measurement that settles it:** bake a few frames at a FIXED indoor pose, take an Alt+S still at
-the SAME pose, and compare summed point-light intensity and mean luma. That separates "fewer lights
-reached the room" from "fewer samples converged".
+**THIRD CAUSE, CONFIRMED BY CODE READ 2026-09-05, user recalled it independently mid-session
+("the outside Sun shines into building... make indoors darker... we talked about this before"):**
+`cinema_maxq.js:1611` calls `A._sunArcStep(_tn)` **unconditionally, every baked frame** — not gated
+by `_clash`/`_buildup`/night mode. `effects.js:2621-2626` (`§SUN_ARC`, user ask 2026-08-11 "high noon
+at the start, low angle by the end"): `_sunElevationAt(tNorm) = 55 + (6-55)·tNorm` — the sun sweeps
+from **55° (high noon)** at frame 0 down to **6°**, the SAME dusk angle Alt+S's dusk-mood uses, only
+at the LAST frame. A plain Alt+S taken mid-session sits at whatever elevation was last live (never
+this arc) — so every comparison the user has made is baseline-mismatched: the movie's early/mid
+frames render under a much higher sun than any Alt+S they compared against.
+- Confirmed this is a genuine interior-fill problem, not just perception: `A.ambient.intensity` /
+  `A.hemi.intensity` / `A._nightPLScale` (the fill: warm point lights + hemi/ambient) are set **ONCE**
+  at photo-staging entry (`effects.js:3623,3628-3629`) and never touched again per frame — the fill is
+  numerically IDENTICAL at noon and at dusk. Only the sun's own elevation/shadow-angle and the sky/fog
+  dayT blend (`scene.js:334`, `(elevation+10)/55`) move. A high, near-overhead sun throws little
+  horizontal light through vertical windows (the opposite of a low grazing dusk sun, which floods deep
+  into a room) — so with a frame-invariant fill, the interior genuinely reads dimmer/flatter while the
+  sun is high, and only catches up to the "bright and lively" dusk look near the end of the arc.
+- Ruled out as a factor: TM's OWN day/night sun-cycle (`time_machine.js` `applySunCycle`, called
+  unconditionally from `renderAtTime` — which the bake's `tmSetCursor` does hit every frame) is
+  gated on module-local `_sunCycle`, which defaults `false` and is only set `true` by the separate,
+  unrelated "Cine Director" autoplay beats (`opening`/`establishing`/`panoramic`) — never engaged by
+  the CPE/MaxQ hand-authored bake path this project uses. `applySunCycle` no-ops every frame here;
+  confirmed by code read, not re-derive.
+
+**USER'S RULING ON THE FIX (2026-09-05, do not re-derive):** do NOT touch the sun arc, its shadows, or
+the god-ray/shaft effect — keep all of that exactly as-is, sun rays and shadows on interior objects
+must keep working. Compensate on the FILL side instead: as the arc's elevation/dayT rises, boost
+interior ambient+hemi+point-light fill so the room holds the same "bright and lively" read Alt+S's
+dusk baseline already has, for the WHOLE arc, not just its last frame. The sun's own highlights/shafts
+are allowed to read relatively dimmer by comparison as a side effect of that fill rising around them —
+explicitly acceptable ("may be dimmer as a result but it's OK when noticeable").
+
+**Correction, same session:** first read of the user's follow-up ("beam has not really noticeable")
+was mis-parsed as "no beam wanted" — WRONG, user corrected it directly. They DO want a visible sunbeam
+into the interior, done with realism: where the beam lands, what's behind/under it reads greyed/blown
+out, same as a real camera. See `§SUN_BEAM` below — a separate feature from the fill-compensation fix
+in this section, dispatched separately, build-now per user ruling.
+
+**Fix, specified not yet landed:** in `cinema_maxq.js`'s per-frame loop, after `A._sunArcStep(_tn)`
+(currently line 1611) runs and moves the sun, compute `dayT = clamp((elevation+10)/55, 0, 1)` (reuse
+scene.js's own formula so the baseline lines up with the existing dusk-tuned look at dayT≈0.29, i.e.
+elevation=6°, unchanged). Scale `A.ambient.intensity` / `A.hemi.intensity` (off their photo-staged
+BASE, `A._nightSaved.ambI`/`hemiI` × their existing `PHOTO_*_INTENSITY_SCALE`, not compounding
+frame-over-frame) and `A._nightPLScale` by a fill-boost factor that is 1.0 at the dusk baseline and
+rises with `dayT` above it; call `A._nightUpdateLights()` again right after so the frozen bake light
+pool (`§NIGHT_BAKE_POOL`) picks up the new scale before this frame's capture. Sun position/intensity/
+shadow-map calls are untouched — this only ever writes ambient/hemi/`_nightPLScale`. Gate the whole
+block on `A._maxqActive` (bake-only) so plain nav and manual Alt+S are unaffected.
+
+**The measurement that settles the tuning constant, and doubles as the witness (PRIMAL LAW — no
+eyeballing):** bake a FIXED indoor pose at a spread of `tNorm` samples (e.g. 0, 0.25, 0.5, 0.75, 1.0 —
+noon through dusk), log a `§SUN_ARC_FILL` line per sample with `elevation`, `dayT`,
+`ambient.intensity`, `hemi.intensity`, `_nightPLScale`, and mean interior luma read back from the
+exported frame (ffmpeg raw RGB, masked to the room — exclude window/sky pixels the same way
+`probe_clash_label_pixels.js` already isolates a rectangle, so a bright window doesn't skew the
+room's own reading). Tune the boost constant until the noon-sampled (`tNorm=0`) luma is within a small
+tolerance of the dusk-baseline (`tNorm=1`, unchanged) luma. Separately confirm `A.sun.intensity` and
+the shadow map are byte-for-byte the same series as before the fix (a before/after diff on those two
+alone) — proof the shafts/shadows were not touched.
+
+## §SUN_BEAM — new feature, user ruling 2026-09-05: build now, separate from the fill fix above
+> **USER:** "of course in real life we can see it obscures what's behind its sun beam into room" ...
+> "I am welcoming a Sun beam into interior just that to do it with realism" ... "what is behind the
+> beam is of course greyed as in real life."
+
+**Want:** a visible sunbeam/light-shaft where the sun's direct light passes through a window/glazing
+opening into the room, tracking the live sun direction (so it's long and grazing at dusk, short and
+steep near noon — the same `_sunArcStep` arc the fill fix reads, for free). Where the beam crosses or
+lands on a surface, that surface should read greyed/blown-out — obscuring detail there, the way a real
+camera clips highlights in a sunbeam. **Not asked for:** correcting this away — it was a misread this
+session, corrected by the user directly; do not re-litigate "should the beam even exist."
+
+**Extract, don't invent — the building blocks already exist in this codebase, use them:**
+- Glazing elements to beam FROM are already a named class list: `A._nightWindowGlowClasses =
+  ['IfcWindow','IfcCurtainWall']` (`tools.js:1507`; note the HHS caveat there — some buildings pattern
+  glass as `IfcPlate` mullion+plate instead of `IfcWindow`/`IfcCurtainWall`, check per-building) and
+  `CINEMA_GLAZING_CLASSES` (`effects.js:6191`, adds `IfcPlate`/`IfcMember`). Reuse one of these lists,
+  don't invent a third.
+- "Does the sun reach this surface" is already answered elsewhere with a plain dot-product test —
+  `scene.js:276-291`'s lensflare visibility (`_sunAbove = sunPos.y > 50`, `_sunDot = sunDir·camDir`).
+  A window facing the sun is the same shape of test against the window's outward normal instead of the
+  camera direction — reuse the pattern, not a raycast (§GLOW_SPRITE's own rejected-on-cost note next
+  to it: raycasting against batched meshes for ~1000+ elements is a tens-of-seconds stall at
+  still-start — don't reintroduce that here for beam placement).
+- Bloom is ALREADY WIRED and ALREADY the mechanism this project uses for "this surface should read
+  blown out" — `A._bloomPass` (`effects.js:33,82-92`), still/bake-only, threshold 1.0, `toneMapped:
+  false` pushes a material above 1.0 in linear space so bloom finds it (`effects.js:4472`, the exact
+  §GLOW_SPRITE/§GLOW_EXIT_SOFT pattern at `effects.js:4517-4545` — `GLOW_GAIN=3.0` blooms,
+  `GLOW_EXIT_GAIN=0.9` stays below threshold and glows softly instead). **The beam should be built the
+  same way: real geometry (a soft-edged, radially-faded additive shaft/frustum mesh, same family as the
+  glow sprite/quad already in this file), not a new screen-space god-ray shader.** Its core write value
+  decides whether it blooms (crosses 1.0) — tune it the same way `GLOW_GAIN` was tuned, don't guess a
+  fresh constant from nothing.
+- No volumetric/god-ray shader or screen-space pass exists in this codebase today (checked: no
+  `UnrealBloomPass`/godray/volumetric hits anywhere but `BloomPass` itself) — do not add a new
+  EffectComposer pass for this; the geometry+bloom route above is the house style and is cheaper.
+
+**Constraints, from the ruling:** photo-staging-only (Alt+S/Alt+C — never plain nav, same discipline as
+Bloom/Ember/§PHOTO_BLOOM's own "still-only, 7 extra full-screen draws" note). Must track the LIVE
+`A.sun` position every bake frame (after `_sunArcStep`), not a fixed direction — realism means the beam
+visibly swings/lengthens as the arc moves. Must not require per-pixel raytracing against real geometry
+to decide exactly where the beam's far end lands (too costly, see above) — a plausible geometric
+placement (shaft from the window opening along the sun direction, sized/clipped to a reasonable room
+depth) is the right fidelity level for this codebase, not a physically-exact caustic.
+
+**Witness required (PRIMAL LAW, no eyeballing):** log a `§SUN_BEAM` line per sampled frame across a
+`tNorm` sweep (reuse the same 0/0.25/0.5/0.75/1.0 samples as the fill-fix witness) with: which
+window(s) qualified (sun-facing test result), the beam direction vector, and its angle vs `A.sun`'s
+actual direction that frame (must track, not drift — assert a tight tolerance). Then a pixel-level
+proof, same technique as `probe_clash_label_pixels.js` (ffmpeg raw RGB readback of the exported frame):
+mean luma inside the beam's landing footprint vs. a masked control region on the same surface just
+outside it, at a `tNorm` where the beam is known to be active — assert the beam-footprint region reads
+measurably brighter/more clipped-toward-white than the control region. That is the numeric form of
+"greyed out, obscuring what's behind it."
 
 ## Also settled this session, so it is not re-opened
 - Clash pairs are the **mesh-true** set. Terminal bbox false rate **33.7 %**, Hospital_silent **79.0 %**
@@ -740,3 +869,100 @@ reached the room" from "fewer samples converged".
 - Alt+C now carries the **Clash pairs** checkbox and a **Silent-bake size** select that
   `cli_silent_bake.js` honours when `--width/--height` are absent.
 - An unloadable DB now aborts the bake in **2.8 s**, not 900.
+
+---
+
+## §CLASH_FILM_SKY_WASH — MEASURED 2026-09-05 (later session): the sky wash is fixed, the clip starts earlier, the label is the HUD's family
+Branches (fixup commits on the EXISTING PR branches, nothing merged — the user reviews): `feat/clash-film-p1`
+`07b6631c → 4d2fcf93` (#1678, body regenerated from this code via the REST API — `gh pr edit` fails on the
+Projects-classic GraphQL deprecation), `feat/clash-film-p2` `120ca1f0 → 35bd6982` (#1679, now merges p1
+cleanly — it was CONFLICTING at session start). sw **v1146** (p1) / **v1147** (p2). Every file named below is
+in `~/Downloads/cll/`; the instrument is `clash_control_diff.py` there (the prior session's diff script did
+not survive, so it was rebuilt to the spec's own description and re-baselined on the prior clips).
+
+### 1. The fix, in `viewer/clash_film.js` (§CLASH_FILM_SCREEN_CLAMP)
+Each marker is clamped **per frame** to a constant small SCREEN size: `MARKER_MAX_PX = 0.06` of frame height
+(43 px at 720p); its world box is `min(severity box, MARKER_MAX_PX·2·d·tan(fov/2))` from that frame's camera
+distance `d`, so a marker near the lens stops growing and a far one is untouched. `PEAK 0.55 → 0.30`. The
+clamp logs `§CLASH_FILM_SCREEN_CLAMP update=N clamped=K/271 nearest=…m box=[min..max]m capPx=43@720` on the
+first update and every 60th. Witness **W6** (`witness_clash_film_markers.js`, now 10 claims): at 0.8 m the
+0.4 m severity box would be **311.8 px → placed 0.0554 m = 43.2 px** (cap 43); at 30 m placed = severity.
+`§WITNESS_CLASH_FILM_MARKERS pass=4 fail=0 ran=10`, red control detected.
+
+### 2. Control diff, same window as the prior measurement (`0.28:0.32`, 117 frames, 1280×720, |Δ|>24, sky = top 180 rows)
+| | before (prior session's clip2 vs its control) | after (`Hospital_{clash,noclash}_skyfix_clip0.28-0.32`) |
+|---|---|---|
+| sky band changed px, max / mean | **80,161** / 8,970 | **4,886** / 283 — **16.4× down** |
+| marker coverage, max / on peak frames | 15.9 % / 10.9 % | 0.6 % / 0.4 % |
+| marker \|Δ\| mass, peak frames vs dark frames | 11,894k vs 0.5k | 267k vs 0.5k → **525× on/off** |
+| corr(envelope, marker mass) | 0.757 | 0.672 |
+| **outside markers+labels** changed px, max / mean per 921,600-px frame | — | **45 / 10** (maxΔ 82) |
+The spec's remembered `corr = 0.906` was a different (lost) instrument; on THIS instrument the before reads
+0.757. The after's 0.672 is geometric, not a weaker pulse: the marker no longer fills the frame, so the pair
+leaves the frame during this window's fall phase (frames 68–108 read 0 % either way). Dark-phase frames sit
+at the codec floor before and after (mean Δ 0.81 / 0.87) — at envelope 0 the marker's instanceColor is
+exactly (0,0,0), so an additive marker cannot touch a pixel: **that is the "`--clash` disturbs nothing else"
+proof for this window — sky, materials, bloom identical to 45 px per frame.** Reports:
+`diff_skyfix_{BEFORE,AFTER}_clip0.28-0.32_2026-09-05.log`.
+
+### 3. §CPE_CLIP_SUN_ARC_FILM_T — found in the demo clip's own log, fixed on p1 (`cinema_maxq.js`)
+`A._sunArcStep(_tn)` fed the CLIP-LOCAL fraction: the first demo clip logged `§SUN_ARC_STEP tNorm=0.000
+elevation=55.0 … tNorm=1.000 elevation=6.0` inside 206 frames at film 0.66–0.73 — the same bug class
+§CPE_CLIP_REVEAL_FILM_T already fixed for the Reveal beside it. Now `_sunArcStep(_tnFilm)`. The FINAL clip
+logs `tNorm=0.660 → 22.7°`, `0.695 → 20.9°`, `0.730 → 19.2°`; the hand formula `55 + (6−55)·t` gives
+22.66 / 20.9 / 19.23, and the real full unclipped bake (`~/Downloads/Hospital_1080p24_2026-09-05.log`,
+4,699 frames) logs 22.6–22.7 / 20.9–21.0 / 19.2 at those film positions. A full bake is unchanged. Both sides
+of every control diff above share the same arc, so it cancels there.
+
+### 4. §CLASH_LABEL_HUD_FAMILY — `viewer/clash_labels.js` (p2)
+> **USER:** the label styling *"seems to be not nicely setup to be consistent as the HUD color scheme."*
+
+| | old | new |
+|---|---|---|
+| A / B row colour | `rgb(255,33,26)` / `rgb(41,112,255)` (the marker colours, saturated) | the same colours **tinted 0.45 toward white**: `rgb(255,133,129)` / `rgb(137,176,255)` |
+| weight | 600 | **700** (the day counter's) |
+| corner radius | `fontPx·0.5` | `boxH·0.22` (the day counter's rule) |
+| leader line + dot | one `rgba(255,255,255,0.85)` stroke | white core over a **`rgba(0,0,0,0.55)` halo** (line and dot) |
+Red = A / blue = B is kept (load-bearing). Plate, font family and size unchanged. `A.clashLabels.style()`
+exposes the values; `§CLASH_LABELS_INIT` logs them. One look at an exported frame (the allowed visual
+judgment): the plate now reads as the day counter's sibling; at frame 100 of the demo the haloed leader/dot
+is legible over a lit green wall where the plain white line vanished. `§WITNESS_CLASH_FILM_LABELS pass=4
+fail=0 ran=12` unchanged (P5 still 205×51 at 1 m and 3.9 m). The label-pixel probe encoded the OLD
+constants (`r>170&&g<120`) and read PARTIAL on a clip whose label is plainly in the bytes → now hue
+dominance set under the measured worst case (red text over sky, chroma-bled: r−g pct10 43, r−b pct10 24):
+FINAL clip `§CLL_PIXELS_SUMMARY panelsChecked=4 found=4 PASS`, the prior old-tint clip still `found=4 PASS`.
+
+### 5. THE FINAL DEMO CLIP — `~/Downloads/cll/Hospital_clash_FINAL_clip0.66-0.73_2026-09-05.mp4`
+`--clash --clip 0.66:0.73`, 206 frames / 13.7 s, `§CPE_APPLIED total=195.8s` (confirmed from the bake, not
+assumed), commit `36feba78` on p2 (sky-wash + sun-arc + restyled labels). Start is 6.5 s before the label:
+`§CLASH_LABELS frame=98 enter=[…@3.96 Ductwork Segment/Slab]`, panel at full alpha 110–140, edge-clamped
+(contact behind the camera) 120–140, `release @4.70` at frame 149; `§CLASH_LABELS_SUMMARY … enters=1
+releases=1 nearest=2.25m`; `§MAXQ_QUALITY unconverged=0`. Control: `Hospital_noclash_FINAL_clip0.66-0.73`.
+- **Pre-label frames 0–97** (no plate in the band): sky band changed px **max 241 / mean 57**,
+  corr(envelope, marker mass) **0.973**; whole clip corr 0.947, on/off 31.6×.
+- The same window from the OLD code (`07b6631c`, baked in a temporary detached worktree, removed after):
+  sky band **51,967** at the near pass (frame 113) vs a flat ≈8.5k after — which is the 167×51 plate itself
+  (8,517 px), drawn in that band by design; the marker's own leak there is ≤ ~200 px. Coverage at the pass
+  8.7 % → 1.6–1.9 % (0.9 % of it the plate). Report: `diff_skyfix_BEFORE07b6631c_clip0.66-0.73_2026-09-05.log`.
+- **"`--clash` disturbs nothing else", measured against a second `--no-clash` control of the same window
+  (control-vs-control = the bake-to-bake floor):** changed pixels OUTSIDE the dilated marker mask and the
+  logged label plates — clash-vs-control **max 1,208 / mean 513 px per 921,600-px frame** (maxΔ 147)
+  against the floor's **max 3,094 / mean 545** (`Hospital_noclash_FINAL2` vs `_FINAL`, maxΔ 170). At or
+  below the floor: `--clash` changes nothing outside the markers and labels beyond what two identical
+  `--no-clash` bakes already differ by. On the 0.28 window the same metric reads 45 / 10 px. Reports:
+  `diff_control_vs_control_FINAL_clip0.66-0.73_2026-09-05.log`, `diff_skyfix_FINAL_clip0.66-0.73_2026-09-05.log`.
+- **Open observation, NOT chased (bake lane, not this one):** the two identical `--no-clash` bakes of
+  `0.66:0.73` differ by **5.0 % of the frame at frame 7** (28,858 red-dominant px; sky band 29,804 px at
+  frame 1), settling to ≤0.2 % from frame ~25 — a start-of-clip instability (staging/TAA warm-up when a clip
+  opens mid-film?) that a bake's `§MAXQ_QUALITY unconverged=0` does not see. Both bakes read unconverged=0.
+- Superseded intermediates kept for the record: `Hospital_clash_demo_clip0.66-0.73` (old sun arc, new
+  markers/labels) and its control.
+
+### Instrument caveats, stated so the next session does not re-derive them
+- Whole-frame mean |Δ| stops reading the pulse once the markers are small (codec noise dominates); the
+  marker |Δ| MASS over changed pixels and its peak/dark ratio are the readings that carry.
+- This outdoor window has bake-to-bake nondeterminism the 0.28 window does not (≈0.4–0.7 % of pixels,
+  red≈blue, in envelope-0 frames where a marker cannot contribute); it is the reason the second control
+  exists. Frame 90 of the demo reads 0.0 %, so it is not a constant offset.
+- The label plate lives in the top-180-row band by design; read a labelled clip's sky number on the frames
+  before `enter=` or mask the logged rectangles (the script takes the bake log as its 9th argument).
