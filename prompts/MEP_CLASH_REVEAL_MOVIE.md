@@ -1834,7 +1834,7 @@ with NO topoutU → 0.5 (the preview/legacy path untouched); staged 0 → 0 at e
 |---|---|---|---|
 | §CLASH_FILM_FLAT_FILTER (Option 3) | bim-ootb **#1689** | **MERGED** 03:02Z | labels **P9c** `meshTrue=271 film pairs=270 flat dropped=1 flat still in film=0`; H1 card `"270 mesh-true clashes flagged — 1,478 bbox candidates · 81.7% false at mesh level · 1 flat touch dropped"`; `§WITNESS_CLASH_FILM_LABELS pass=4 fail=0 ran=20` |
 | §CLASH_MARKER_OVERLAP_BOX | bim-ootb **#1689** | **MERGED** | markers **W11** `pairs judged=270 skipped(no overlap box)=0 mismatched=0` — every pair's two halves decomposed and matched against the record + `worldMatrix`; W6 clamp `placed 0.0554 m = 43.2 px (cap 43)`; W7 shine-through re-aimed at `centerOf`, `Δ=+0.44`; `§WITNESS_CLASH_FILM_MARKERS pass=4 fail=0 ran=15`. `§CLASH_FILM_BUILD trueClash=270 … flatExcluded=1 legacyBox=0`. sw v1153 |
-| §PL_TOPOUT_UNPIN | bim-ootb **#1690** | **OPEN, not auto-merged — ⛔USER take/leave** | `witness_pl_topout_unpin.js` (real Hospital, real photo staging via `A.startStillRefine`): `pass=4 fail=0 ran=8` — t=0.30 → 0.5 · t=0.40 → 0.74375 on the sun's ease curve · t≥0.45 → 1.0 · `poolSum 200→400, poolLit 200→200` · no-topout call → 0.5 · staged 0 → 0 · ambient/hemi 0.386/0.617 on every sample. sw v1154 |
+| §PL_TOPOUT_UNPIN | bim-ootb **#1690** | **MERGED** 03:3xZ as `5daec9e0` (after the user ruled it the indoor path; synced onto the #1691 revert, both witnesses re-run green on the merged tree, sw v1155) | `witness_pl_topout_unpin.js` (real Hospital, real photo staging via `A.startStillRefine`): `pass=4 fail=0 ran=8` — t=0.30 → 0.5 · t=0.40 → 0.74375 on the sun's ease curve · t≥0.45 → 1.0 · `poolSum 200→400, poolLit 200→200` · no-topout call → 0.5 · staged 0 → 0 · ambient/hemi 0.386/0.617 on every sample. sw v1154 |
 
 **Marker design as built (one sentence for the next reader):** oriented box of the real overlap solid
 (`overlapCenter`, `overlapA`, A's rotation), per-axis clamped to the cube's old 0.30/1.20 m rule, split
@@ -1856,3 +1856,14 @@ falls back to a cached eslint 10 that crashes on Node 18 (`util.styleText`), and
 on `273e1c59`, which predates #1689/#1690):** with #1689 the 270 markers are the overlap boxes; with
 #1690 the post-topout interior gets the fixtures at 1.0. A clip of 82–92 s on `main` after #1690 is the
 one that shows all of it.
+
+### Session-3 close (2026-09-06) — sun REVERTED (#1691), indoor candidate MERGED (#1690), clash lane CLOSED
+User ruling, after correcting the other session's starting spec: (1) the sun-arc snap was never wanted —
+hand-reverted, `#1691` merged `6363a714`, `witness_sun_arc_linear.js` 4/4 (34.47° at u=0.419); (2) the clash-film
+lane (`#1686/#1688/#1689`) is DONE and closed — any further clash work (mesh-shape refinement,
+§TOUCH_BY_THICKNESS) goes to a separate session; (3) indoor liveliness is the real ask — `#1690` (fixtures
+0.5 → 1.0 post-topout) pushed through as the cheapest built candidate, merged `5daec9e0`, sw v1155.
+The `tools.js` `(A._nightPLScale || 1)` finding is not relevant to liveliness (only a 0 scale) — left alone.
+**Next:** a fresh-profile 82–92 s clip on `main` (≥ `5daec9e0`) is the first bake that shows the linear sun,
+the overlap-box markers, the 3-row label, the clash card and the post-topout fixtures together. Not baked
+here — bakes are the user's call.

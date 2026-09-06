@@ -10,7 +10,20 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-06 (session 3, latest) — ⚠ RESUME HERE: sun snap REVERTED, clash lane CLOSED, #1690 = the indoor candidate
+## Current State — 2026-09-06 (session 3, close) — ⚠ RESUME HERE: sun REVERTED (#1691), #1690 MERGED, clash lane CLOSED
+
+bim-ootb `main` = `5daec9e0`, sw **v1155**. Today's chain, all merged: `#1686` label 3-row + clash card ·
+`#1688` mesh-true overlap depth · `#1689` overlap-box marker + flat filter · `#1691` **revert** of the sun
+snap (`#1685`, wrong starting spec — the linear 55°→6° crawl was always right) · `#1690` post-topout
+fixtures 0.5 → 1.0 (the indoor-liveliness candidate, user: "use your own judgment" → pushed through).
+Witnesses on the merged tree: sun-linear 4/4, PL-topout 8/8. Worktrees pruned, nothing unpushed.
+- **Clash-film lane CLOSED** — further clash work (mesh-shape refinement, §TOUCH_BY_THICKNESS ⛔USER)
+  goes to a separate session; do not re-open it from sun/indoor work.
+- **Next bake** (user's call, fresh `--profile`): 82–92 s on `main` ≥ `5daec9e0` shows everything together.
+- Pre-existing, untouched: `tools.js` `(A._nightPLScale || 1)` cannot express a 0 scale; narrowphase
+  witness S7b/I1/I3 red on main.
+
+## Current State — 2026-09-06 (session 3, latest) — mid-session (superseded above)
 
 **User correction (relayed to and scolded at the other session):** the sun-arc "topout snap" (#1685) was a
 wrong starting spec — the linear 55°→6° crawl was always correct. **Reverted by hand** on bim-ootb
