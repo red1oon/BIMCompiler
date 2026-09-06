@@ -1900,3 +1900,34 @@ fresh profile, `5daec9e0`) was also launched — result not in this file yet, ch
    are bare numbers (25/50/75 mm by discipline pair) with no documented origin. Whether they match an
    industry convention is a knowledge claim, not something this repo can currently prove. User's own plan:
    later expose these in a JSON config the Clash panel can edit — not started.
+
+**Perf review of tonight's code — explicitly CLOSED, not a task.** No measured performance problem exists
+to point at (narrowphase build ~4.5s one-time per bake, negligible; the 8/12-sample per-frame budget is a
+deliberate, already-understood tradeoff). Do not open a speculative "find savings" investigation — same
+shape as the ambient-dimming dead end and the earlier 288K-token inconclusive lane, both closed by finding
+there was no sourced target, not by more searching.
+
+## §STOREY_HIGHLIGHT_REVEAL — SPEC (2026-09-06, user idea, not started)
+**User:** the closing orbit has an uneventful ~5s slowdown; fill it with each storey shining through in
+sequence (blue → green → yellow → orange → blue) while the HUD shows per-storey stats (area, room count,
+door count — "anything that delights a BIM user"), storey label on screen during the beat.
+
+**Before building — measure and check, do not assume:**
+1. **Confirm the dead window is real and get its actual duration** from real pose/pacing data for the plan
+   in question — do not build against the user's impression of "~5s" without measuring it first.
+2. **Habitable-room area/count is NOT reliably available.** Checked `Hospital_silent_local.db`: **zero
+   `IfcSpace` elements**. `rooms_meta` carries only a building-wide `room_count=7`, no per-storey rows found.
+   Do not invent room stats for storeys that have none — same "real data or the card is dropped" rule
+   `bigStatsBuild` already holds every other HUD card to.
+3. **Door counts per storey ARE real and queryable** — `elements_meta.ifc_class='IfcDoor'` grouped by
+   `storey` (measured: Hospital Level 1 = 114, Level 2 = 56, Level 3 = 96, Level 4 = 88, Level 5 = 73).
+4. **Floor area per storey is only a slab-bbox footprint proxy** (`element_transforms` bbox_x×bbox_y on
+   `IfcSlab`, e.g. Level 1 ≈ 98.6×90.3 m) — not true room area. If shown, label it a footprint estimate,
+   never silently presented as "floor area."
+5. Reuse whatever per-storey color-tint and on-screen-caption mechanism already exists (discipline palette
+   ticks, room-title captions) rather than building a new subsystem — very likely a recombination of
+   existing infrastructure, not new code from scratch.
+
+Assessment: good instinct, turns dead time into real content instead of padding, consistent with the
+film's existing "real numbers or nothing" discipline. Main risk is inventing room-area figures this
+building's data doesn't have — scope to what's genuinely queryable per storey.
