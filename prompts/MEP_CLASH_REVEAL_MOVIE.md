@@ -553,33 +553,141 @@ yet, fill one in here when the bake runs (GPU was occupied this session by the s
 `/tmp/wt-clash-pending` 720p resolution-timing bench; waited rather than running concurrently, per this
 lane's own GPU-contention rule).
 
-## CURRENT STATE — hardened summary, read this first (2026-09-06, end of session)
-Three lanes are in flight, all dispatched off the same set of user requests this session, all real
-work in real worktrees, none merged yet. This section is the one place to check status — read it
-before re-walking the archaeology above.
+## §ENDING_CHOREOGRAPHY — the closing beats, settled with the user (2026-09-06, session 5)
+The three lanes below are ONE continuous shot. Real seconds are from `§CINEMA_PACING natural=195.8s`;
+fractions from `§CINEMA_BEATS` on the shipped Hospital path. **The user watched a 720p bake of this and
+ruled on each beat — do not re-open these without a new ask.**
 
-| Lane | Worktree / branch | Request it answers | Status |
-|---|---|---|---|
-| §PENDING.2/.3/.4 | `/tmp/wt-clash-pending` · `fix/clash-pending-items` | Clash-list depth display, cross-caller narrowphase cache, tolerance sourcing + JSON editor reachability | Code + live real-GPU verification DONE (see §PENDING.2/.3/.4 CLOSED above). Item 1 (bake-time-estimate UI): 1080p (5,476s) and 720p (3,095s, confirmed clean this session — `fileOk=true`) both measured; UI display in `cinema_path_editor.js` not yet built. 1440p measurement bake user has EXPLICITLY HELD — **do not launch without a go-ahead**. Branch not pushed yet — holding for one combined PR. |
-| §STOREY_HIGHLIGHT_REVEAL | `/tmp/wt-storey-reveal` · `feat/storey-highlight-reveal` | Final 5 real seconds before `orbit` begins: per-storey blue→green→yellow→orange tint + HUD card + caption, reusing the Find panel's landed storey semantic — confirmed NO Find-panel UI is ever opened (grep, zero hits) | Code + window correction + offline logic test (33/33) DONE. Waiting for GPU to run its own real-bake verification (self-polling `pgrep -af cli_silent_bake`) — not yet run, not yet pushed. |
-| §PENDING.5b | `/tmp/wt-hud-stats` · `fix/hud-clash-measure-stats` | Fix the Clash HUD card; per-discipline-pair clash count cards; pullback-window highlight-by-discipline-pair synced to its own HUD card (same clock, never independent); "Measure tool saved measurements" HUD card | **DONE — PR [#1693](https://github.com/red1oon/bim-ootb/pull/1693), open and mergeable.** Real-GPU `--clip` verification, both bakes clean (`fileOk=true`). Root cause of the missing clash card: `bigStatsBuild()` ran BEFORE `clashFilm.build()` on every fresh bake, so `built:false` always dropped the card — reordered, fixed. `§CLASH_HUD_PAIR_CARDS pairs=7 [FP\|MEP=81 ARC\|STR=66 MEP\|STR=38 FP\|STR=38 ARC\|ELEC=29 ELEC\|MEP=14 ELEC\|STR=4]` sums exactly to `trueClash=270`. `§CLASH_HUD_HIGHLIGHT` fires 5 correct sync transitions. Measure card confirmed correctly absent (empty `A.measureLabels` on a fresh headless profile) — real, correctly-gated, narrow (see D's caveat in the body). Found-not-fixed: this plan's actual `riseSec=30.8s` (a seconds-override run), not the natural-duration `17.6s` quoted elsewhere in this file — the FRACTIONAL logic is duration-independent so this doesn't change any conclusion, just the absolute-seconds examples; also found `_inReveal`'s clip-local-vs-full-film fraction compare delays Reveal-round start on `--clip` runs — pre-existing, unrelated, flagged not fixed. |
+| Window | Beat | What plays |
+|---|---|---|
+| 160.2–170.2s | `tail` | disc parade; each trade lights ONLY the clashes it brings (§CLASH_DISC_ARRIVAL) |
+| 170.2–182.8s | `pullback` | the 7 disc-PAIR sets walked one at a time, starting with the backdrop pair |
+| 182.8s | hand-off | markers HIDDEN (not ambient — §STOREY_REVEAL_MARKERS_OFF), building whole |
+| 182.8–187.8s | last 5s of `pullback` | storey flash-through under X-RAY, bottom 5 storeys, ~1.0s each |
+| 187.8–195.8s | `orbit` | Measure totals, 4 cards, 2.0s each — the WHOLE orbit, no clash cards |
 
-**Boundary all three lanes now agree on, independently derived, cross-checked (not just asserted):**
-`pullback` beat runs the discipline-pair clash highlight + its HUD cards; the last 5 real seconds of
-`pullback` (ending exactly at `orbit`'s start, i.e. `beats.rise`) belongs to the storey reveal; `orbit`
-itself is untouched by either feature (existing closing shot, no HUD override during it).
+**§CLASH_DISC_ARRIVAL — the assignment rule (the load-bearing idea).** A clash cannot be attributed to a
+trade that was already on site: it belongs to whichever of its two disciplines arrived LATER. Every pair
+lands in exactly one parade slot; pairs whose BOTH disciplines are backdrop (ARC/STR — `effects.js`'s
+`bump()` excludes the shell from the parade by design) go to a `backdrop` bucket fired when the shell
+returns solid. MEASURED, Hospital: `PLB=0 FP=38 ELEC=33 MEP=133 backdrop=66 total=270 sumCheck=OK`,
+running 0→38→71→204→270. **The naive alternative ("light every pair containing D") double-counts FP|MEP
+and ELEC|MEP and orphans ARC|STR entirely — 66 of 270, 24%.** The offline test carries a control
+asserting the naive rule really does differ (299 vs 270), so it cannot pass vacuously.
+`§CLASH_DISC_ARRIVAL_LOGIC_TEST pass=11 fail=0`.
 
-**The narrative hand-off, stated explicitly (user, confirming end-to-end coherence): the disc-by-disc
-cycling ends by showing the FULL building back — every discipline's clash markers restored to plain
-ambient (`highlightDiscPair(null)`, already wired as the transition-out call, "so no stale highlight
-survives into the orbit/storey-reveal window") — and it is exactly THAT moment, full building visible
-with nothing new happening, that is the 5-second lull the storey-by-storey reveal fills.** The three
-lanes are one continuous shot, not three independent effects sharing a clock by coincidence: disc
-clashes cycle → clash highlight releases to the whole building → storey colors cycle through that same
-whole building → orbit. Each lane's own code already implements its half of this (confirmed above, not
-re-derived here) — recorded together in one place because the individual specs were written separately
-and this end-to-end read only became obvious once assembled.
+**USER RULINGS, verbatim, that shaped this — treat as settled:**
+- *"HUD cards for the last part is at best effort. Been too fast is fine. Need not add more secs to it.
+  We can forego top floors if the time frame does not allow. Qualitative above quantitative."* → the 5s
+  window is FIXED and never widened; the storey list TRUNCATES to keep ≥1.0s each (§STOREY_REVEAL_FIT,
+  Hospital 8→5, top floors dropped).
+- *"0 need not be shown as the idea with HUD is to be best effort and it is abstract, align to what is
+  been shown."* → PLB brings no clash, so its slot shows NO card and clears the highlight.
+- *"HUD cards has its role which is overall. The clash pair and now these measures are incidental during
+  scene fly thru."* → **the standing split.** Overall stats = HUD cards. Anything measuring a specific
+  thing the camera is passing = anchored marker. This resolves the earlier "all stats in cards only"
+  reading: it governs OVERALL stats, and never applied to the `[tol/clash mm]` marker labels.
 
-**Sequencing note (user, mid-session): the 1440p resolution-timing bake is explicitly ON HOLD pending a
-go-ahead.** Everything else (both agents' code, the 720p bench) may proceed/finish on its own schedule;
-only that one specific bake needs the user's word before it launches.
+### §ENDING_DEFECTS — four found by the user watching the bake, all fixed (2026-09-06)
+1. **Pullback opened on the wrong card.** `bigStatsAt` indexes off ABSOLUTE film seconds, so a bounded
+   window opens wherever the global rotation happens to be: measured `ELEC|STR` for 0.6s before reaching
+   the intended `ARC|STR`, and 7 cards × `CARD_SECONDS`=4.5s (31.5s) overran the 25.9s window, cutting
+   the tail and repeating the first. New `A.bigStatsAtSpan(cards, u)` maps a window onto exactly ONE
+   pass. VERIFIED live: `ARC|STR` at frame 287 then even 89-frame spacing through all 7.
+2. **§STOREY_REVEAL_TINT_SHARED_MATERIAL — the storey glow painted the whole building, and persisted.**
+   ROOT CAUSE, and the reason the user's own pointer ("Did u find the logic from Find Panel > Storey?")
+   was right: `A.filterStorey` (`panels.js:711`) partitions by PER-OBJECT visibility — `obj.visible`,
+   `filterInstancedMesh`, `filterBatchedMesh`. The tint copied that partition but wrote
+   `o.material.emissive`, and **materials in this viewer are SHARED and cached** (`A._matCache`, the same
+   cache `A.toggleXray` walks), so one storey's meshes repainted every other mesh using those materials.
+   The same sharing made the restore a NO-OP: the second mesh sharing a material saved the ALREADY-TINTED
+   value as its "original", so restore wrote the tint back. **Fix: clone once per DISTINCT material (not
+   per mesh — that would be thousands), assign to that storey's meshes only, dispose on restore, put the
+   original material object back.** LESSON, general: emissive/material writes are NOT a per-object
+   channel in this codebase; only visibility and per-instance `setColorAt` are.
+3. **Markers did not cease.** `highlightDiscPair(null)` only drops to ambient PULSING — still on screen.
+   New `A.clashFilm.setVisible(v)` hides the meshes wholesale, from the storey window to end of film,
+   restored on the forced-restore exit path so it cannot leak into the next bake.
+4. **The closing orbit replayed clash cards.** The Measure card took only the last 3s, so the normal
+   all-card rotation owned the rest of the orbit. Window is now the whole `[beats.rise, 1]`.
+
+**§STOREY_REVEAL_XRAY — user asked: "should the whole building go 'O'cclusion or bbx frame or x-ray?"**
+Answer taken: **X-RAY**, scoped to the beat and self-restoring. All three modes already exist as the
+landed Alt+Z cycle (`A.cycleXrayBboxMode`) — reuse, not new code. Bbox discards the model (too abstract
+for a beat whose point is "info-rich BIM model"); isolating the storey contradicts "shine through". The
+lit storey's cloned material is forced `opacity=1` while the rest of the building sits at X-Ray's 0.3 —
+that contrast is what makes an interior storey read from orbit distance. ⚠ `cinema_maxq`'s own
+`§CINEMA_XRAY_RESET` clears x-ray at bake start, so this MUST stay a scoped beat, never a global toggle;
+`_xrayByUs` guarantees only an x-ray WE engaged is ever undone.
+**§STOREY_REVEAL_PULSE** — *"it should be shine thru and then cease, not persist"*: each storey glows for
+the first `LIT_FRAC=0.72` of its slot and the tint comes down for the rest, so the sequence reads as
+separate pulses. Card and caption keep running through the dark part.
+
+### §FLYTHRU_DIMENSIONS — SPEC (2026-09-06, user idea, NOT started)
+**User:** *"while fly thru to give some dimensions markers ie length, steps, width of spaces it passes by
+at selective opportunity"* — then, correcting this session's first answer: *"When u say, there is a lack
+of measures, it is not correct as the Measure blue dots are able to extract lengths. We can pinpoint
+such too."*
+
+**THE CORRECTION IS THE KEY INSIGHT — record it so the wrong answer is not repeated.** This session first
+answered "no `IfcSpace`, so no space widths", which CONFLATED a missing semantic entity with a missing
+measurement. The blue dots raycast onto **mesh**, not onto `IfcSpace`: `measure.js:1268-1315` is
+`raycaster.intersectObjects` → two hit points → `p1.distanceTo(p2)`. **The geometry is there regardless
+of whether the model names the space.** What the model lacks is a space to NAME, not a width to measure.
+
+**Measured availability (queried, not assumed — `Hospital_silent_local.db`):**
+| Source | State |
+|---|---|
+| `IfcSpace` | **ZERO extracted rows.** Only 8 compiled `RM_*` rooms (room-injector). Cannot label a space. |
+| `IfcStair` / `IfcStairFlight` | 61 / **1** — no riser/tread/going data. **"Steps" is NOT derivable.** |
+| `IfcDoor` | 440. Width via `max(bbox_x,bbox_y)` = 0.86 / 1.20 / 3.02 m. |
+| `IfcBeam` / `IfcColumn` | 1,970 / 604 — real bbox extents. |
+| Floor-to-floor | ⛔ **HOLD.** Two derivations DISAGREE on storey order: mean element Z gives Level 1→7 ascending; `MIN(center_z - bbox_z/2)` gives 1,2,5,6,3,4,7A,7. One is wrong, not yet known which. Do NOT put a floor-to-floor number on screen until a real slab-top derivation settles it. |
+
+⚠ **TRAP — axis-aligned bbox is not a width.** Naive `bbox_x` for door width returns a 0.18 m minimum:
+that is a ROTATED door whose width sits in `bbox_y` and whose x is the leaf thickness. Rotation-safe
+`max(bbox_x,bbox_y)` gives the sane 0.86 m floor. Any dimension marker built off bbox needs this guard
+or it will confidently print wrong numbers on screen.
+
+**Design — reuse, three casts, no new visual language:**
+- **Clearance / headroom** (the one to build first, user: *"Your idea of clearance is good"*): ray straight
+  UP from the floor beneath the camera; first hit is duct/beam/ceiling. It earns its place in THIS film
+  because it is the same story the clash markers tell, one beat earlier.
+- **Corridor width**: two rays perpendicular to travel, left and right, wall-face to wall-face. No
+  `IfcSpace` needed — this is exactly the correction above.
+- **Door clear opening**: real, with the rotation guard.
+- Visuals: reuse `A.measureGroup`'s own 0.15 m blue sphere (`0x4fc3f7`) + `LineDashedMaterial` — these are
+  scene objects and DO bake.
+- ⚠ **The label does NOT bake.** `measure.js:1300` draws the number as a DOM `<div>`; the film captures the
+  CANVAS. The number must go through the canvas label pass `clash_labels.js` already owns — which also
+  keeps it in the same visual family as the `[tol/clash mm]` labels instead of a second style.
+- **Firing rule (user: "at selective opportunity")**: at most ONE marker at a time, only when the cast
+  returns two confident hits inside a plausible band, and never a running commentary. The `walk` beat is
+  75.0s of 195.8s and ALREADY carries room-title captions, the day counter and the resource panel.
+
+## CURRENT STATE — corrected 2026-09-06 session 5 (supersedes the table that was here)
+**The previous table said PR #1693 was "open and mergeable" — it MERGED at 08:24Z; `main` is `7ff4384e`.
+It also predated everything in §ENDING_CHOREOGRAPHY above. Read that section first.**
+
+| Lane | Branch | Status |
+|---|---|---|
+| §PENDING.2/.3/.4 | `fix/clash-pending-items` @ `59d6872d` | **PR [#1694](https://github.com/red1oon/bim-ootb/pull/1694) open, auto-merge armed.** Clash-list `[mm/mm]` depth, cross-caller narrowphase cache (24× warm, verdicts byte-identical cold vs warm), `clash_rules` gear. Live-verified real GPU: `§CP23_VERDICT verdict=PASS`; regression identical on this branch and pristine main (`pass=8 fail=2 ran=68526`). ⚠ Was UNCOMMITTED in the worktree for a full session — committed and pushed this session. |
+| §PENDING.5b | `fix/hud-clash-measure-stats` | **MERGED — PR #1693.** Clash HUD build-order fix, per-disc-pair cards, pullback highlight sync. |
+| §STOREY_HIGHLIGHT_REVEAL + §CLASH_DISC_ARRIVAL + §MEASURE_BUILDING_CARD | `feat/storey-highlight-reveal` @ `3875091d` | Merged onto main `7ff4384e` (sw conflict resolved: both changelogs kept, `CACHE_VERSION` → **v1158**). Carries the whole §ENDING_CHOREOGRAPHY above plus the four §ENDING_DEFECTS fixes. ⚠ Was also UNCOMMITTED for a session — now committed + pushed. **Not yet PR'd.** |
+
+**Bake evidence, 720p `--clip 0.74:1.0`, real GPU, `Hospital_silent_local` (2 runs, `out/ending2.log`,
+`out/ending3.log` in `/tmp/wt-storey-reveal`):**
+- `§CLASH_DISC_ARRIVAL … PLB=0 FP=38 ELEC=33 MEP=133 backdrop=66 total=270 sumCheck=OK`
+- parade slots fire in order: `PARADE:FP`(38) → `PARADE:ELEC`(33) → `PARADE:MEP`(133) → `PARADE:ALL`(204)
+- pullback after the fix: `ARC|STR` FIRST at frame 287, then even 89-frame spacing through all 7 pairs
+- `§STOREY_REVEAL_FIT windowSec=5.02 storeysAvailable=8 shown=5 slotSec=1.00 TRUNCATED dropped=[Level 6,Level 7A,Level 7]`
+- `§MEASURE_BUILDING_CARD window=[0.9590,1] cards=4 (the whole closing orbit, 8.0s, 2.0s per card)`;
+  census `doors=440 windows=131 walls=1468`; envelope `897,404 m³`, `115.8 × 164.8 × 47.0 m`
+- ⚠ `labour=0` on a silent bake (`A._hrCost` is interactive-only) — the cost card now says "material cost
+  estimate", NOT "total estimated cost", so a materials-only figure is never passed off as a total.
+
+**⛔ USER: no further bakes without a new go-ahead** (2026-09-06: *"Need not bake again"*; the 1440p
+resolution bench remains separately HELD from an earlier session). §STOREY_REVEAL_XRAY / _MARKERS_OFF /
+_PULSE (defects 2 and 3) are CODE-COMPLETE but their on-screen proof lands in the last ~300 frames of the
+final bake — if that run did not reach them, they are UNVERIFIED, and must be labelled so, not assumed.
+
