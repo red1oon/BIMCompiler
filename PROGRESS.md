@@ -10,9 +10,59 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-06 — ⚠ RESUME HERE, session closed waiting on GPU driver
+## Current State — 2026-09-06 (later) — ⚠ RESUME HERE, GPU back, 5 PRs merged, one fix mid-verify
 
-**Blocker, not code:** this machine's nvidia driver isn't loaded at all — blocked on Secure Boot MOK
+**GPU driver fixed** (Secure Boot MOK enrolled, `nvidia-smi` confirms RTX 4060 live) — the blocker
+below is CLOSED, kept for history only.
+
+**5 PRs merged to `bim-ootb` main tonight** (`fa71f162` tip): `#1676` mesh-true narrowphase,
+`#1678` clash pulses, `#1679` clash labels, `#1684` PL buildup gate + intensity heuristic, `#1683`
+Alt+S shadow-map leak fix. Real defect found+fixed along the way: `eslint.globals.json` never listed
+3 new cross-file globals, red-flagging all 4 chain PRs' CI though the code ran correctly — fixed with
+one JSON entry each. `sw.js` version collision (`#1676`/`#1683` both bumped v1142→v1143) resolved
+per house rule, final v1149. **Revert point: tag `pre-clash-pl-merge-2026-09-06` on `04e3dee2`.**
+Full detail: `prompts/MEP_CLASH_REVEAL_MOVIE.md` "Step 4 — CLOSED 2026-09-06".
+
+**Two small features speced+built this session, both correct, neither merged yet:**
+- `#1685` (`feat/clash-film-p4`, open PR, NOT merged) — `§SUN_ARC_TOPOUT_SNAP`: past the plan's
+  topout, the sun arc eases to the dramatic 6° Alt+S angle instead of crawling there at the film's
+  last frame. Pre-topout branch is untouched code (zero regression to outdoor shadow-sun correlation,
+  by construction). **NOT YET VERIFIED ON A REAL BAKE** — see the trap below.
+- `§P2.4` (clash-label tolerance/mm row) and `§CLASH_HUD_CARD` (reveal-round clash count) — SPECCED
+  in `MEP_CLASH_REVEAL_MOVIE.md`, plumbing fully traced (both are small, data already exists), but
+  **NOT IMPLEMENTED** — paused mid-investigation of the mesh-overlap-depth question (see below)
+  before coding started. `git status` clean, nothing half-written on disk.
+
+**⛔ REAL TRAP FOUND, next session must know this before baking anything:** `cli_silent_bake.js`
+reuses a PERSISTENT Chrome profile dir keyed only by port (`/tmp/silent-bake-profile-8544` by
+default, `cli_silent_bake.js:42`) across every separate invocation. The `§CLI_BAKE_ENV sw=vNNNN` log
+line is **not proof of what's actually served** — it's read straight off the `sw.js` FILE ON DISK via
+regex (`cli_silent_bake.js:125`), not from the browser's active service worker. After many bakes
+tonight on the same port, a verification bake of the `§SUN_ARC_TOPOUT_SNAP` fix (commit `e56d1520`,
+clip 1:22–1:32/u=0.4188–0.4699) came back showing the OLD un-snapped elevation values
+(`elevation=34.5` at tNorm=0.419, exactly the pre-fix linear formula) — confirmed NOT a code bug by a
+3-frame debug bake with an inline `console.log` that never fired at all, meaning the browser was
+running stale cached JS the whole time, most likely an already-ACTIVE older service worker from an
+earlier bake in the same profile dir that hadn't been superseded (a new SW registers but doesn't
+necessarily take control mid-session). **Fix for next session: pass `--profile
+/tmp/silent-bake-fresh-$(date +%s)` (or any not-yet-used path) on the verification bake so a truly
+fresh profile with no prior SW registration is used** — do not trust `sw=` in the env log as proof of
+what's actually loaded. Re-verify `#1685` this way before trusting or merging it.
+
+**Also flagged, not yet resolved, needs a user decision not more investigation:** PL "real play"
+(user requirement) is a SEPARATE lever from the sun-timing fix — `§BAKE_FILL_PIN` keeps
+ambient/hemi/PL scale pinned to the Alt+S baseline regardless of sun elevation, so snapping the sun
+alone does not guarantee the point-lights read as dominant indoors. Not attempted this session;
+flagged in `§SUN_ARC_TOPOUT_SNAP`'s spec as open.
+
+**Mesh-overlap real depth (not the OBB/SAT proxy `severityM` — user's own catch, correct and
+important):** confirmed by code read that `severityM` is 100% the pre-mesh-stage OBB box depth,
+untouched by real triangle geometry even on a verified mesh-true CLASH. A true depth needs a new
+pass over the already-computed-then-discarded intersection segments in `clash_narrow.js`'s
+`enumerateContact` (segments exist, just aren't kept) — user agreed: do depth first, park full CSG
+solid shape. Scoped, not started.
+
+## Previous State — 2026-09-06 (earlier) — GPU driver blocker, now resolved (see above)
 enrollment (NOT the 590/595 "conflict" theory from earlier tonight, that was cruft, ruled out by a
 separate session). User is doing MOK enroll + reboot themselves; a separate session runs the 590
 package cleanup after. Until that lands, no real-GPU bake/witness is possible here — confirmed by

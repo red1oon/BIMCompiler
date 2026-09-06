@@ -1505,3 +1505,111 @@ finish — that needs a real GPU (the user's own machine, per this file's establ
 is a re-run of the exact validated command above, not further investigation.
 `~/Downloads/cll/Hospital_clash_verify_clip20-30s_2026-09-05.log` is this session's partial log
 (killed after frame 0's timing measurement); no `.mp4` was produced.
+
+## Step 4 — CLOSED 2026-09-06: real-GPU render confirmed, all 5 stacked PRs merged to main
+GPU driver came back (Secure Boot MOK enrollment resolved — see `bim-ootb` machine notes, not a code
+issue). Ran the exact validated command from above twice on real hardware (RTX 4060): once on
+`feat/clash-film-p3` pre-merge, once on `origin/main` post-merge — **both 240/240 frames converged,
+`fileOk=true`, ~225s wall, byte-identical MD5 output** (same deterministic pipeline, same code —
+confirms the merge chain introduced zero drift, not that the fix does nothing). `§CLASH_FILM_BUILD`
+271 mesh-true pairs / 542 markers confirmed live; `§NIGHT_BUILDUP_GATE` fired correctly across the
+buildup (2→1274 placed); `§NIGHT_PL_INTENSITY_HEURISTIC` mean=1.00 at low-population sample points
+(too few concurrent fixture types at those frames to show the ±15% split — not a defect, a sampling
+artefact of this specific clip).
+
+Merged, in order, `main` ← `#1676`(mesh-narrowphase) ← `#1678`(clash pulses) ← `#1679`(clash labels)
+← `#1684`(PL buildup gate + intensity heuristic + shine-through) ← `#1683`(Alt+S shadow-map release,
+independent). Real defect found and fixed along the way: `eslint.globals.json` never listed
+`setupClashNarrow`/`setupClashFilm`/`setupClashLabels` — CI's `no-undef` gate red-flagged all 4
+chain PRs even though the functions load and run correctly (cross-file `<script>` globals, not
+missing code). One JSON entry each fixed it. `sw.js` `CACHE_VERSION` collision between `#1676` and
+`#1683` (both independently bumped v1142→v1143) resolved per house rule: kept both comment blocks,
+final number v1149. Revert point tagged `pre-clash-pl-merge-2026-09-06` on `origin/main`'s pre-merge
+SHA `04e3dee2`, pushed, in case any of this needs rolling back.
+
+**Separately measured (not a defect in the buildup gate):** ceiling PL turning on has **no discernible
+impact on the floor** in a daytime portion of the arc. `§SUN_ARC_FILL_PIN` numbers from a real bake at
+this same clip: `ambient=0.386 hemi=0.617 sun=4.4` — all pinned constant for the WHOLE film per
+`§BAKE_FILL_PIN`'s own design (2026-09-05 ruling: fill tracks the Alt+S baseline regardless of the sun
+arc). Point-light pool contributes `poolSum` 2.0→45.5 across 2→50 lit fixtures, each ~0.9-1.0
+intensity with `decay=1` — roughly 0.3 landing on the floor from one ceiling fixture ~3 m up. That is
+small next to a scene already lit by sun 4.4 + hemi 0.617 + ambient 0.386. **Not scoped to this clip**
+— since the fill is pinned the same way everywhere, a ceiling PL will only read as real contrast in a
+genuinely dim/dusk portion of the arc (elevation near 6°, not the 47-50° sampled here). No code change
+made — this is a measured interaction between two already-shipped, independently-correct fixes
+(`§BAKE_FILL_PIN` and `§NIGHT_BUILDUP_GATE`), not a bug in either.
+
+## §P2.4 — SPEC: clash label gains a 3rd row, tolerance vs measured clash (2026-09-06, user request)
+**User:** *"the clash highlight pop up i did asked for a clearance and mesh overlap ie [Tolerance
+mm/Clash mm] below the clash pair in the label."*
+
+**Data already available, zero new computation:** `clash_film.js`'s build loop already iterates
+`rules.clash_rules.forEach(function(r) {...})` — each rule `r` already carries `r.tolerance_m`
+(`clash_rules.json`, per discipline pair, e.g. ARC vs STR = 0.025). Each resulting pair record already
+carries `severityM` (the measured penetration, already used to size the marker box). Neither exists on
+the pair record as a millimetre figure today — this spec just stamps `tolMm` onto the pair at build
+time (inside the existing per-rule loop, no new lookup) and reads `severityM` at draw time.
+
+**Implementation (2 files):**
+- `clash_film.js`: inside the existing `rules.clash_rules.forEach` loop, attach
+  `tolMm: Math.round(r.tolerance_m * 1000)` to every pair record built under that rule.
+- `clash_labels.js`: `metrics()`'s `bh` grows from 2 lines to 3
+  (`padY*2 + fontPx*3 + rowGap*2`); the label-selection step (`update()`) copies `tolMm`/`severityM`
+  from the source pair onto its `placed` record (same pattern nameA/nameB already follow); the draw
+  loop (`clashLabelsCompositeOntoCanvas`) adds a 3rd `ctx.fillText` row:
+  `'[' + tolMm + 'mm / ' + Math.round(severityM*1000) + 'mm]'`, styled neutral (not red/blue — it is
+  a fact about the pair, not per-side).
+
+**Witness:** extend `witness_clash_film_markers.js` or add a small check asserting: for a synthetic
+pair with a known `r.tolerance_m` and `severityM`, the composited 3rd row's computed mm values match
+exactly (`tolMm === Math.round(r.tolerance_m*1000)`, clash mm === `Math.round(severityM*1000)`).
+
+## §CLASH_HUD_CARD — SPEC: reveal-round HUD gains a clash-count card (2026-09-06, user request)
+**User:** *"the HUD info be in"* — confirmed by code read that `bigStatsBuild()` (`cpe_resource_panel.js`,
+the roster+card set shown during the Reveal round) carries NO clash information today — only element/
+discipline/MEP/level/programme/workforce/cost cards. `A.clashFilm.stats()` already returns `pairs`
+(the mesh-true count) — this is one more `out.push(...)` in the same `{big, label, sub, src}` pattern
+every other card already follows: `{big: String(stats.pairs), label: 'mesh-true clashes flagged',
+sub: '271 pairs, 79.0% of the bbox-only list was false' (dynamic), src: 'clash_film.js'}`. Card is
+omitted (not blank) when `A.clashFilm` never built (same convention every other card already follows
+— absent data means the card is dropped, never a zero/estimate).
+
+**Not done this pass (correctly deferred, per user's own sequencing):** the mesh-shaped clash
+highlight (real intersection solid, not a box) — scoped separately above, comparable effort to
+§MESH_NARROWPHASE itself (~1 session). The cheap tier (sphere/capsule sized from `severityM`) is a
+much smaller follow-on, not attempted here since the user asked to confirm PL first.
+
+## §SUN_ARC_TOPOUT_SNAP — SPEC 2026-09-06: dramatic dusk angle only AFTER topout, pre-topout untouched
+**User constraints, verbatim:** *"I do not want any regress. The good outside building shadow
+corelation to Sun angle must not be touched."* / *"The internal will be livelier with PLs real play
+seen."* — confirmed the request is the fixed 6° Alt+S angle applied ONLY to the finished-building
+portion (post-topout), not the whole film, and confirmed the PL/floor-impact interaction (measured
+separately below) is not solved by sun timing alone — this pass only does the sun-timing half.
+
+**Root cause, from `effects.js`:** `_sunElevationAt(tNorm) = 55 + (6 − 55)·tNorm` — linear, whole
+film. At `topoutU` (`plan.beats.pullout`, exposed as `_revealU` in `cinema_maxq.js`, e.g. 0.361 on
+the Hospital plan used throughout this file) the arc is only at **~37°** — the entire 64%-of-film
+Reveal round spends most of its time well above the dramatic 6° angle, only reaching it at the very
+last frame (`tNorm=1.0`) by construction (`PHOTO_SUN_ELEVATION_END === PHOTO_SUN_ELEVATION`, same
+constant Alt+S uses).
+
+**Fix — zero regression to the pre-topout portion, by construction, not by testing alone:**
+`_sunElevationAt(tNorm, topoutU)` returns the EXACT existing formula, unchanged, for every
+`tNorm <= topoutU` — the pre-topout branch is untouched code, so every frame during active
+construction computes byte-identical to before. Only `tNorm > topoutU` takes a new branch: ease from
+the elevation-at-topout down to 6° over a short window (`TOPOUT_SNAP_EASE_U`, a fraction of the film,
+tunable), then hold at exactly 6° for the remainder. `topoutU` is optional — omitted (the live Cinema
+Orbit preview call in `effects.js:9466` passes none) falls back to the original whole-film formula,
+so the preview path is untouched too; only the MaxQ bake (`cinema_maxq.js`) passes `_revealU`.
+
+**What this does NOT touch, deliberately:** `A._sunArcFillPin`/`§BAKE_FILL_PIN` (ambient/hemi/PL
+scale) — still pinned to the Alt+S baseline for the whole film, same as before. The shadow map still
+gets `needsUpdate=true` every step regardless of which branch computed the elevation, so outdoor
+shadow-to-sun-angle correlation is the SAME mechanism throughout, just fed a different number after
+topout. PL "real play" (requirement 2) is a SEPARATE, unresolved lever — see the
+`§SUN_ARC_FILL_PIN` measurement above (ambient=0.386/hemi=0.617/sun=4.4 pinned regardless of arc);
+snapping the sun's own elevation does not by itself change that pin. This pass verifies the sun-angle
+half only; the PL-contrast question is left to the verification clip's own numbers.
+
+**Verification clip:** 1:22–1:32 (82–92s of the 195.8s film, `u=0.4189→0.4699`) — chosen by the user
+as the fly-back-in beat, past `topoutU=0.361` (68.9s), squarely in the finished-building Reveal round.
