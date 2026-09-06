@@ -1710,7 +1710,7 @@ same parity rule `containedIn` uses). Measured per run as `depthMs` in `§CLASH_
 - Labels witness P9a/P9b re-run: the third row now composites the mesh figure; the witness reads the
   same field and states its source.
 
-### §MESH_OVERLAP_DEPTH — MEASURED 2026-09-06 (bim-ootb PR #1688 `feat/mesh-overlap-depth`, auto-merge armed; #1686 merged 01:50Z)
+### §MESH_OVERLAP_DEPTH — MEASURED 2026-09-06 (bim-ootb PR #1688 MERGED 02:27Z as `273e1c59`; #1686 merged 01:50Z)
 Built as specced. Two additions the spec did not foresee, both forced by real geometry:
 1. **`insideMesh` = parity AND nearest-face winding (half-eps margin).** Ray parity alone read wall
    vertices as "inside" a Terminal `IfcColumn` whose shells overlap, inflating that pair's overlap box

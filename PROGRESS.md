@@ -18,11 +18,11 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
   stale-SW trap exactly as suspected. `#1685` was already merged. Clip `~/Downloads/cll/Hospital_topout_snap_verify_clip82-92s_2026-09-06.mp4`.
 - **`#1686` MERGED** — `§P2.4` label 3rd row `[tol mm / clash mm]` + `§CLASH_HUD_CARD` "271 mesh-true clashes
   flagged · 1,478 bbox candidates · 81.7% false". Labels witness 15 → 19 claims (P9a/P9b/H0/H1). sw v1151.
-- **`#1688` OPEN, auto-merge armed** — `§MESH_OVERLAP_DEPTH`: the exact box of the overlap solid on every
+- **`#1688` MERGED (`273e1c59`, both checks green)** — `§MESH_OVERLAP_DEPTH`: the exact box of the overlap solid on every
   mesh-true pair (`depthMeshM`, `overlapMaxM`, `overlapA/B`, `overlapCenter`, `overlapExact`, `overlapFlat`);
   the label now reads the mesh figure — the shown pair is `[50mm / 50mm]`, the OBB proxy said 344 mm. Hospital:
   SAT overstated by a median 2.78×, ≥3× on 3,185 of 6,749 pairs, worst 600×. Verdicts UNCHANGED. New I6 green
-  on both buildings, red on main. sw v1152. **Verify it landed** (`gh pr view 1688`) before building on it.
+  on both buildings, red on main. sw v1152.
 
 **⛔USER `§TOUCH_BY_THICKNESS`** (spec, end of the MEASURED section): make a flat overlap (< 1 mm thick) a
 touch instead of a clash? Fixes S7b (RED on main today) and drops 752 Terminal / 37 Hospital / 1 film pairs —
