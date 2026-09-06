@@ -649,10 +649,53 @@ that is a ROTATED door whose width sits in `bbox_y` and whose x is the leaf thic
 `max(bbox_x,bbox_y)` gives the sane 0.86 m floor. Any dimension marker built off bbox needs this guard
 or it will confidently print wrong numbers on screen.
 
-**Design — reuse, three casts, no new visual language:**
-- **Clearance / headroom** (the one to build first, user: *"Your idea of clearance is good"*): ray straight
-  UP from the floor beneath the camera; first hit is duct/beam/ceiling. It earns its place in THIS film
-  because it is the same story the clash markers tell, one beat earlier.
+### §FLYTHRU_SELECTION — REFINED 2026-09-06 (user, second pass). READ THIS BEFORE THE DESIGN BELOW.
+**User:** *"not showing the classic measures but again demonstrative of capability - we look for good
+opportunity ie distance between the two wing blocks as the cam swing them into view, the height of a
+floor, height of a part of the stairs to the floor. In short any measure that stands out in the scene.
+Any that is not visible or confusing to note need not be it."*
+
+**THE SELECTION CRITERION IS SCREEN-SPACE LEGIBILITY, NOT SEMANTIC IMPORTANCE.** This supersedes this
+session's first instinct (rank candidates by how much a coordinator cares — clearance under MEP, door
+widths). The purpose is to DEMONSTRATE that the model is measurable, so the only thing that matters is
+whether the viewer can read the span in that shot. A technically valuable measure that reads as a dot is
+worse than a plain one that reads as a big clean line.
+
+**ONE MECHANISM COVERS EVERY EXAMPLE THE USER GAVE — "gap casts".** `raycaster.intersectObjects` already
+returns EVERY hit along a ray, sorted by distance (`measure.js:1272` uses `hits[0]` only, but the whole
+list is there). Walk consecutive hits; any large empty interval between two of them is a real measured
+void with two real endpoints:
+| User's example | The cast |
+|---|---|
+| distance between the two wing blocks | horizontal ray exits wing A, crosses void, enters wing B — the VOID is the gap |
+| height of a floor | vertical ray: slab top → underside of the slab above |
+| height of part of the stairs to the floor | vertical ray from a tread point |
+| corridor width / clearance under MEP | same cast, different direction |
+
+**This also RESCUES floor-to-floor, which the table above put on HOLD.** A raycast measures the real
+slab-to-slab distance and never touches the mean-Z vs min-Z disagreement that made the schema-derived
+version untrustworthy — the hold applies to deriving it from `element_transforms` columns, not to
+measuring it off the mesh. Same lesson as the user's own correction: the MESH is the measurable thing.
+
+**THE GATE — a candidate fires only if all four pass. These are computable, not judgement calls:**
+1. **On screen** — both endpoints project inside the frame with margin. No half-off-screen spans.
+2. **Long enough to read** — the drawn line spans more than ~15% of frame width. A 30 m gap seen end-on
+   is 4 px and worthless.
+3. **Not occluded** — cast camera→endpoint; if the first hit is nearer than the endpoint, the dot is
+   behind a wall. That is precisely the "confusing to note" case the user is excluding.
+4. **Not foreshortened** — the span's angle to the view direction must be well away from parallel. A span
+   pointing at the camera reads as a dot. THIS is the one that kills most bad candidates.
+**Fire at most one at a time, take the highest-scoring candidate in the shot, and stay SILENT when
+nothing clears the bar** — the silence is what makes the ones that do fire feel deliberate rather than a
+running commentary.
+
+**The wing-to-wing gap is the showpiece** and is the one worth timing to the camera: it needs both wings
+in frame with the span across the view, which is the pull-back / fly-back, not the interior walk.
+
+**Design — reuse, no new visual language:**
+- **Clearance / headroom** (user: *"Your idea of clearance is good"*) — still wanted, but it is an
+  INTERIOR-walk candidate and must clear the same legibility gate as everything else; it is no longer
+  "first" on importance grounds (see §FLYTHRU_SELECTION — the gate decides, not the topic).
 - **Corridor width**: two rays perpendicular to travel, left and right, wall-face to wall-face. No
   `IfcSpace` needed — this is exactly the correction above.
 - **Door clear opening**: real, with the rotation guard.
