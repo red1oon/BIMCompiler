@@ -10,6 +10,30 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
+## Current State — 2026-09-06 (session 3, final close) — ⚠ RESUME HERE: full bake confirmed, §PENDING.5 open, parallel session active
+
+**Full 195.8s film bake CONFIRMED** (`Hospital_FULL_allsystems_2026-09-06.mp4`, ~/Downloads, 231 MB):
+4,699/4,699 frames, 93.8 min wall clock, `fileOk=true` — every feature below shipped together in one real
+run. Two shorter verification bakes (fresh profile, 20-30s and 82-92s clips) ran first and matched
+prediction exactly: pre-topout elevation 50.0°→47.5° (original linear, unchanged), post-topout elevation
+34.5°→32.0° (also original linear — revert holds throughout), `plScale` 0.8629→1.0000, `poolSum`
+260.08→400.0 (genuinely double the old fixed-0.5 baseline, same fixture count). `docs/BIMUserGuide.md`
+updated: documented the (pre-existing, previously undocumented) Clash pairs checkbox + Silent-bake size
+selector, added `--clash` to the CLI table, added today's real full-bake timing.
+
+**New, untouched — `§PENDING.5` in `prompts/MEP_CLASH_REVEAL_MOVIE.md`:** user watched the full film,
+reports the HUD rotation left out Measure and Clash stats. Clash card exists in code and should have
+fired (`--clash` was on, 270 pairs built) — next session checks `§CPE_BIG_STATS` in this bake's own log
+to settle built-vs-shown before touching anything. No "Measure" HUD card exists at all — ask the user what
+they mean before building one.
+
+**A parallel Sonnet session is independently working `§PENDING` items 1-4** in `/tmp/wt-clash-pending`
+(items 2/3/4: clash-list depth display, cross-caller pair cache, tolerance-editor gear icon — coded,
+read-verified real by this session, not yet PR'd) and `/tmp/wt-storey-reveal` (`§STOREY_HIGHLIGHT_REVEAL`,
+status unknown to this session). Item 1 (bake-time estimates for 720p/1440p) was blocked on GPU
+availability while this session's full bake ran — GPU is free now. **Next session: check that session's
+current status first**, both worktrees are real and not this session's to touch.
+
 ## Current State — 2026-09-06 (session 3, close) — ⚠ RESUME HERE: sun REVERTED (#1691), #1690 MERGED, clash lane CLOSED
 
 bim-ootb `main` = `5daec9e0`, sw **v1155**. Today's chain, all merged: `#1686` label 3-row + clash card ·
