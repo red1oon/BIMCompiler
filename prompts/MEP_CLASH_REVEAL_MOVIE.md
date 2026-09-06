@@ -693,9 +693,10 @@ running commentary.
 in frame with the span across the view, which is the pull-back / fly-back, not the interior walk.
 
 **Design — reuse, no new visual language:**
-- **Clearance / headroom** (user: *"Your idea of clearance is good"*) — still wanted, but it is an
-  INTERIOR-walk candidate and must clear the same legibility gate as everything else; it is no longer
-  "first" on importance grounds (see §FLYTHRU_SELECTION — the gate decides, not the topic).
+- **Clearance / headroom — CONFIRMED IN by the user** (*"That so called head clearance u raise, if there
+  is opportunity to catch that, do put it in."*): it is a first-class candidate, not a maybe. It is an
+  INTERIOR-walk shot and it clears the same legibility gate as everything else — "if there is
+  opportunity" is exactly the gate. The gate decides WHEN, the user has decided IF.
 - **Corridor width**: two rays perpendicular to travel, left and right, wall-face to wall-face. No
   `IfcSpace` needed — this is exactly the correction above.
 - **Door clear opening**: real, with the rotation guard.
