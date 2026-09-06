@@ -692,6 +692,62 @@ running commentary.
 **The wing-to-wing gap is the showpiece** and is the one worth timing to the camera: it needs both wings
 in frame with the span across the view, which is the pull-back / fly-back, not the interior walk.
 
+### §FLYTHRU_SEMANTIC_RETHINK — 2026-09-07, SUPERSEDES the geometry-only candidate source
+**User: "Let's stop and rethink a different semantics. Ie building envelope, room, hall, openings,
+ducts, confined spaces.. giving see thru shine complete dimensions with the semantics as such"**, and
+**"this be more powerful because it also demonstrate right away the other unknown strengths of our BIM
+project"**.
+
+**WHY THE RETHINK — the geometry-only pass produced TRUE NUMBERS WITH FALSE NOUNS.** A full build pass
+(47,221 candidates → 4,036 held ≥2s → 1,692 passed the gate → 505 unique → 41 scheduled, 2.9s total)
+looked healthy until read as a film: **31 of 41 cues were "heights"**, and most were impossible.
+MEASURED against `element_transforms` (the real per-element extents):
+| Class | REAL max height | The schedule claimed |
+|---|---|---|
+| IfcCovering | **0.20 m** | `Covering height 22,898 mm` — 114x the real maximum |
+| IfcBeam | **0.84 m** | `Beam height 25,762 mm` |
+| IfcWallStandardCase | 26.0 m | `Wall height 25,762 mm` — the only plausible family |
+**ROOT CAUSE: `A._instanceMeta`/`A._batchMeta` carry the BATCH GROUP's bx/by/bz, not the element's.**
+Walking those maps measures the bounding box of a COLLECTION and labels it as one thing. The fix is a
+data source, not new logic: candidates must come from `elements_meta JOIN element_transforms` — one SQL
+query, true per-element extents, cheaper than walking the scene graph.
+
+**NOT A CONTRADICTION OF §FLYTHRU_GEOMETRY_ONLY, a synthesis.** Geometry-only was right that a class
+ALLOWLIST must not gate discovery (that omitted slabs and made elevators unreachable). It was wrong to
+measure ARBITRARY boxes. The rule now: measure things that ARE meaningfully boxes — a space, an
+opening, a service — where L x W x H is a fact about a real object rather than an accident of grouping.
+
+**MEASURED availability (real per-element, `element_transforms`):**
+| Semantic class | Count | Real dimensions | Verdict |
+|---|---|---|---|
+| Building envelope | 1 | 115.8 x 164.8 x 47.0 m, perimeter 562 m | IN — the opener |
+| Doors | 440 | avg 1.20 x 2.17 m (max 3.71) | IN |
+| Windows | 131 | avg 2.28 x 3.59 m | IN |
+| Openings | 735 | avg 2.48 x 2.23 m | IN |
+| Ducts | 4,816 | avg 1.33 m section, runs to 69 m | IN — ties to the clash story |
+| Pipes | 14,452 | avg 0.86 m, runs to 33.75 m | IN |
+| Cable trays | 84 | runs to 42.6 m | IN |
+| Rooms (compiled) | **8** | — | ⚠ THIN — see caution |
+| Halls / confined spaces | none in IFC | void casts only | IN — the differentiator |
+| Beams, coverings, members | — | — | **OUT** — not spatial, and the batch problem in disguise |
+
+**⚠ ROOMS ADVERTISE A WEAKNESS, NOT A STRENGTH.** Hospital has ZERO extracted `IfcSpace`; the 8 rooms
+are compiled (§ROOM_INJECTOR_NEEDLE). Any BIM audience knows a hospital has hundreds, so a room cue
+implies coverage the model does not have. Leave rooms out, or show only where genuinely compiled and
+never in a way implying completeness.
+
+**THE STRONGEST CUE IS THE DERIVED ONE.** Because this building has no `IfcSpace` at all, a HALL
+measured from geometry (breadth wall-to-wall, length into the POV, headroom under a tray) states a
+spatial fact the IFC does not contain. That is the unobvious capability — not "we can read the model"
+but "we derive what the model omitted". Ranked by how unobvious the claim is: hall/clearance > duct
+section+run > openings > envelope.
+
+**⛔ STATUS: candidate quality is NOT proven.** Selection, cost (2.9s, inside clash_film's 4.5s budget)
+and scheduling ARE. Do not wire anything into a bake until candidates come from element_transforms —
+a schedule of 31 wrong heights would look worse than no cues at all. Also NOT yet run: the envelope
+never fired in the last pass (`§FLYTHRU_ENVELOPE` logged 0 times — the edit was lost in a relaunch),
+so the opener is unverified.
+
 ### §FLYTHRU_RULES — 2026-09-07 user session. THESE SUPERSEDE THE DESIGN NOTES BELOW.
 **Governing rule, user's own words: "The idea is to show capability not quantity."** One or two cues
 that LAND, never a stream — a running commentary turns into wallpaper. Cap at one on screen at a time
