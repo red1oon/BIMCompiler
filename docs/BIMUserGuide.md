@@ -479,6 +479,9 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
   select doesn't resize anything here — it's just remembered on the saved path. There is currently no
   time estimate shown next to it; picking 1440p over 720p costs real extra bake minutes with no on-screen
   warning yet.
+
+![The Cinema path panel with Clash pairs ticked and Silent-bake size set to "this window (interactive)" — the Whole path block showing reach 15%, clip "whole film", build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below](img/viewer/filmmaker-clash-and-bake-size.png)
+
 - **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
   **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
   the clip window and when it was saved.
