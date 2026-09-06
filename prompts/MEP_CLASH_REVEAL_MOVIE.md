@@ -623,230 +623,141 @@ that contrast is what makes an interior storey read from orbit distance. ⚠ `ci
 the first `LIT_FRAC=0.72` of its slot and the tint comes down for the rest, so the sequence reads as
 separate pulses. Card and caption keep running through the dark part.
 
-### §FLYTHRU_DIMENSIONS — SPEC (2026-09-06, user idea, NOT started)
-**User:** *"while fly thru to give some dimensions markers ie length, steps, width of spaces it passes by
-at selective opportunity"* — then, correcting this session's first answer: *"When u say, there is a lack
-of measures, it is not correct as the Measure blue dots are able to extract lengths. We can pinpoint
-such too."*
+## §FLYTHRU_DIMENSIONS — CONSOLIDATED 2026-09-07. Everything before this in the FLYTHRU band was
+## replaced; this section is the whole current spec. NOTHING IS WIRED INTO A BAKE YET.
 
-**THE CORRECTION IS THE KEY INSIGHT — record it so the wrong answer is not repeated.** This session first
-answered "no `IfcSpace`, so no space widths", which CONFLATED a missing semantic entity with a missing
-measurement. The blue dots raycast onto **mesh**, not onto `IfcSpace`: `measure.js:1268-1315` is
-`raycaster.intersectObjects` → two hit points → `p1.distanceTo(p2)`. **The geometry is there regardless
-of whether the model names the space.** What the model lacks is a space to NAME, not a width to measure.
+**What it is.** During the fly-through, the film measures the building and draws the measurement on
+screen: standard architectural dimension cues (extension lines, inward arrow heads, value in mm), plus
+a shine-through outline of the box being measured. Purpose, in the user's words: *"show capability not
+quantity"* and *"demonstrate right away the other unknown strengths of our BIM project"*.
 
-**Measured availability (queried, not assumed — `Hospital_silent_local.db`):**
-| Source | State |
-|---|---|
-| `IfcSpace` | **ZERO extracted rows.** Only 8 compiled `RM_*` rooms (room-injector). Cannot label a space. |
-| `IfcStair` / `IfcStairFlight` | 61 / **1** — no riser/tread/going data. **"Steps" is NOT derivable.** |
-| `IfcDoor` | 440. Width via `max(bbox_x,bbox_y)` = 0.86 / 1.20 / 3.02 m. |
-| `IfcBeam` / `IfcColumn` | 1,970 / 604 — real bbox extents. |
-| Floor-to-floor | ⛔ **HOLD.** Two derivations DISAGREE on storey order: mean element Z gives Level 1→7 ascending; `MIN(center_z - bbox_z/2)` gives 1,2,5,6,3,4,7A,7. One is wrong, not yet known which. Do NOT put a floor-to-floor number on screen until a real slab-top derivation settles it. |
+### 1. THE RULE THAT SHAPES EVERYTHING — one cue per capability
+**User: "Again, we need not take on all ie storeys. Just pick one, outline it, shine thru, gives the
+labels."** One storey demonstrates that the model understands storeys; eight demonstrate an inventory.
+So the film wants ~8 cues total, one per capability: envelope · storey · clear space · hall length ·
+duct section · opening · atrium height · room. `A.flythruBestPerClass(cands, classOf)`.
+**This retires machinery built earlier the same day** — gap-tuning to hit 30-50 cues, dedupe across
+hundreds of repeats, and tier WEIGHTS (tiers are now an order of appearance, not a scoring thumb). It
+also rescues a thin model: one-per-class still yields a complete film where a 30-cue target fails.
 
-⚠ **TRAP — axis-aligned bbox is not a width.** Naive `bbox_x` for door width returns a 0.18 m minimum:
-that is a ROTATED door whose width sits in `bbox_y` and whose x is the leaf thickness. Rotation-safe
-`max(bbox_x,bbox_y)` gives the sane 0.86 m floor. Any dimension marker built off bbox needs this guard
-or it will confidently print wrong numbers on screen.
+### 2. CANDIDATE SOURCE — `elements_meta JOIN element_transforms`, never the scene metadata
+⚠ **`A._instanceMeta`/`A._batchMeta` carry the BATCH GROUP's `bx/by/bz`, not the element's.** Walking
+them measures the bounding box of a COLLECTION and labels it as one thing. MEASURED consequence: a
+build pass scheduled `Covering height 22,898 mm` when IfcCovering's real maximum height is **0.20 m**
+(114x), and 31 of 41 cues were impossible "heights". One SQL query gives true extents, and is cheaper.
+⚠ `A.guidMap` is meshId→guid (the REVERSE of a lookup); `A.zoomToGuid` matches `userData.guid` on PLAIN
+meshes only. Neither resolves an instanced/batched element. Three probe runs were lost to this.
+⚠ `element_transforms` is in the DB's own Z-up datum, ~169 m off the scene's Y. Use
+`A.flythruFrameMap(dbEnv, sceneBox)` — it DERIVES the axis swap and offset by matching extents, and
+degrades to identity rather than inventing one.
 
-### §FLYTHRU_SELECTION — REFINED 2026-09-06 (user, second pass). READ THIS BEFORE THE DESIGN BELOW.
-**User:** *"not showing the classic measures but again demonstrative of capability - we look for good
-opportunity ie distance between the two wing blocks as the cam swing them into view, the height of a
-floor, height of a part of the stairs to the floor. In short any measure that stands out in the scene.
-Any that is not visible or confusing to note need not be it."*
-
-**THE SELECTION CRITERION IS SCREEN-SPACE LEGIBILITY, NOT SEMANTIC IMPORTANCE.** This supersedes this
-session's first instinct (rank candidates by how much a coordinator cares — clearance under MEP, door
-widths). The purpose is to DEMONSTRATE that the model is measurable, so the only thing that matters is
-whether the viewer can read the span in that shot. A technically valuable measure that reads as a dot is
-worse than a plain one that reads as a big clean line.
-
-**ONE MECHANISM COVERS EVERY EXAMPLE THE USER GAVE — "gap casts".** `raycaster.intersectObjects` already
-returns EVERY hit along a ray, sorted by distance (`measure.js:1272` uses `hits[0]` only, but the whole
-list is there). Walk consecutive hits; any large empty interval between two of them is a real measured
-void with two real endpoints:
-| User's example | The cast |
-|---|---|
-| distance between the two wing blocks | horizontal ray exits wing A, crosses void, enters wing B — the VOID is the gap |
-| height of a floor | vertical ray: slab top → underside of the slab above |
-| height of part of the stairs to the floor | vertical ray from a tread point |
-| corridor width / clearance under MEP | same cast, different direction |
-
-**This also RESCUES floor-to-floor, which the table above put on HOLD.** A raycast measures the real
-slab-to-slab distance and never touches the mean-Z vs min-Z disagreement that made the schema-derived
-version untrustworthy — the hold applies to deriving it from `element_transforms` columns, not to
-measuring it off the mesh. Same lesson as the user's own correction: the MESH is the measurable thing.
-
-**THE GATE — a candidate fires only if all four pass. These are computable, not judgement calls:**
-1. **On screen** — both endpoints project inside the frame with margin. No half-off-screen spans.
-2. **Long enough to read** — the drawn line spans more than ~15% of frame width. A 30 m gap seen end-on
-   is 4 px and worthless.
-3. **Not occluded** — cast camera→endpoint; if the first hit is nearer than the endpoint, the dot is
-   behind a wall. That is precisely the "confusing to note" case the user is excluding.
-4. **Not foreshortened** — the span's angle to the view direction must be well away from parallel. A span
-   pointing at the camera reads as a dot. THIS is the one that kills most bad candidates.
-**Fire at most one at a time, take the highest-scoring candidate in the shot, and stay SILENT when
-nothing clears the bar** — the silence is what makes the ones that do fire feel deliberate rather than a
-running commentary.
-
-**The wing-to-wing gap is the showpiece** and is the one worth timing to the camera: it needs both wings
-in frame with the span across the view, which is the pull-back / fly-back, not the interior walk.
-
-### §FLYTHRU_SEMANTIC_RETHINK — 2026-09-07, SUPERSEDES the geometry-only candidate source
-**User: "Let's stop and rethink a different semantics. Ie building envelope, room, hall, openings,
-ducts, confined spaces.. giving see thru shine complete dimensions with the semantics as such"**, and
-**"this be more powerful because it also demonstrate right away the other unknown strengths of our BIM
-project"**.
-
-**WHY THE RETHINK — the geometry-only pass produced TRUE NUMBERS WITH FALSE NOUNS.** A full build pass
-(47,221 candidates → 4,036 held ≥2s → 1,692 passed the gate → 505 unique → 41 scheduled, 2.9s total)
-looked healthy until read as a film: **31 of 41 cues were "heights"**, and most were impossible.
-MEASURED against `element_transforms` (the real per-element extents):
-| Class | REAL max height | The schedule claimed |
-|---|---|---|
-| IfcCovering | **0.20 m** | `Covering height 22,898 mm` — 114x the real maximum |
-| IfcBeam | **0.84 m** | `Beam height 25,762 mm` |
-| IfcWallStandardCase | 26.0 m | `Wall height 25,762 mm` — the only plausible family |
-**ROOT CAUSE: `A._instanceMeta`/`A._batchMeta` carry the BATCH GROUP's bx/by/bz, not the element's.**
-Walking those maps measures the bounding box of a COLLECTION and labels it as one thing. The fix is a
-data source, not new logic: candidates must come from `elements_meta JOIN element_transforms` — one SQL
-query, true per-element extents, cheaper than walking the scene graph.
-
-**NOT A CONTRADICTION OF §FLYTHRU_GEOMETRY_ONLY, a synthesis.** Geometry-only was right that a class
-ALLOWLIST must not gate discovery (that omitted slabs and made elevators unreachable). It was wrong to
-measure ARBITRARY boxes. The rule now: measure things that ARE meaningfully boxes — a space, an
-opening, a service — where L x W x H is a fact about a real object rather than an accident of grouping.
-
-**MEASURED availability (real per-element, `element_transforms`):**
-| Semantic class | Count | Real dimensions | Verdict |
+### 3. MEASURED AVAILABILITY (real per-element, verified 2026-09-07)
+| Class | Count | Real dimensions | In? |
 |---|---|---|---|
-| Building envelope | 1 | 115.8 x 164.8 x 47.0 m, perimeter 562 m | IN — the opener |
-| Doors | 440 | avg 1.20 x 2.17 m (max 3.71) | IN |
-| Windows | 131 | avg 2.28 x 3.59 m | IN |
-| Openings | 735 | avg 2.48 x 2.23 m | IN |
-| Ducts | 4,816 | avg 1.33 m section, runs to 69 m | IN — ties to the clash story |
-| Pipes | 14,452 | avg 0.86 m, runs to 33.75 m | IN |
-| Cable trays | 84 | runs to 42.6 m | IN |
-| Rooms (compiled) | **8** | — | ⚠ THIN — see caution |
-| Halls / confined spaces | none in IFC | void casts only | IN — the differentiator |
-| Beams, coverings, members | — | — | **OUT** — not spatial, and the batch problem in disguise |
+| Building envelope | 1 | 115.8 x 164.8 x 47.0 m, perimeter 562 m, vol 897,404 m³ | IN — the opener |
+| Storey footprint | 8 | e.g. Level 1 112.5 x 133.9 m = **15,072 m²** | IN — area only |
+| Rooms | 8 compiled | REAL rects via `_allRoomVolumes()` | IN — see §5 |
+| Doors / Windows / Openings | 440 / 131 / 735 | 1.20x2.17 / 2.28x3.59 / 2.48x2.23 m | IN |
+| Ducts / Pipes / Cable trays | 4,816 / 14,452 / 84 | sections 1.33 / 0.86 m, runs to 69 m | IN |
+| Halls, clear space, atrium | none in IFC | cast-derived | IN — the differentiator |
+| Beams, coverings, members, walls | — | honest now, but not spatial | **OUT** — 1,970 beams would flood |
+⛔ **Storey VOLUME is not derivable**: the per-storey height column is contaminated by risers/facade
+spanning storeys (Level 1 reads 43.9 m). Area is sound; volume would be wrong by several times.
 
-**⚠ ROOMS ADVERTISE A WEAKNESS, NOT A STRENGTH.** Hospital has ZERO extracted `IfcSpace`; the 8 rooms
-are compiled (§ROOM_INJECTOR_NEEDLE). Any BIM audience knows a hospital has hundreds, so a room cue
-implies coverage the model does not have. Leave rooms out, or show only where genuinely compiled and
-never in a way implying completeness.
+### 4. THE STRONGEST CUE IS THE DERIVED ONE
+This building has **ZERO extracted `IfcSpace`**. A hall measured from geometry — breadth wall-to-wall,
+length into the POV, headroom under a tray — states a spatial fact the IFC does not contain. Ranked by
+how unobvious the claim is: hall/clear-space > duct section+run > openings > envelope.
+**Three casts from the camera give the space you are in**: left-right = breadth, forward = length, up
+= height → floor area and volume, with no `IfcSpace`. ⚠ It is the FREE SPACE around the camera, not the
+architectural room (a column shrinks it) — label it "clear space", never "room".
+**One vertical cast yields TWO cues** (user: *"total height across central hallway right to the highest
+ceiling point"*): the first hit is CLEAR HEIGHT (headroom, what you would hit); the first hit whose
+surface is large and horizontal is TOTAL HEIGHT (the ceiling proper). A light fixture or hanging duct
+must not be mistaken for a ceiling. If they differ dramatically the difference is itself informative.
 
-**THE STRONGEST CUE IS THE DERIVED ONE.** Because this building has no `IfcSpace` at all, a HALL
-measured from geometry (breadth wall-to-wall, length into the POV, headroom under a tray) states a
-spatial fact the IFC does not contain. That is the unobvious capability — not "we can read the model"
-but "we derive what the model omitted". Ranked by how unobvious the claim is: hall/clearance > duct
-section+run > openings > envelope.
+### 5. ROOMS — real geometry, and the honesty convention already in the codebase
+`_allRoomVolumes()` (`navigate_find.js`) returns per-sub-rect boxes `{cx,cy,cz,sx,sy,sz}`; a logical
+room is the UNION of its rects, so area = Σ sx·sz and volume = Σ sx·sy·sz. (Querying
+`element_transforms` for a room guid returns NULL — wrong table; that is why rooms first looked
+unmeasurable.) ⚠ **It is PRIVATE to navigate_find.js — not on `A`. Exposing it is a prerequisite.**
+**§SYNTHETIC-HONESTY (WalkerDoctrine §14) already solves the "8 rooms advertises a weakness" worry:** a
+compiled room (`RM_` guid or `≈`-prefixed name) is drawn FAINTER than an extracted IfcSpace, so the
+wash signals provenance. Do not omit compiled rooms — mark them.
 
-**⛔ STATUS: candidate quality is NOT proven.** Selection, cost (2.9s, inside clash_film's 4.5s budget)
-and scheduling ARE. Do not wire anything into a bake until candidates come from element_transforms —
-a schedule of 31 wrong heights would look worse than no cues at all. Also NOT yet run: the envelope
-never fired in the last pass (`§FLYTHRU_ENVELOPE` logged 0 times — the edit was lost in a relaunch),
-so the opener is unverified.
+### 6. SELECTION RULES (all witnessed, `viewer/tests/witness_flythru_gate.js`, 24 groups / 178 asserts)
+- **HOLD ≥ 2.0 s, not proximity** (`flythruHoldWindow`). Distance never measured readability; hold
+  does, and "near enough" falls out of apparent size. Kills flicker structurally.
+- **Apparent size ≥ 15% of frame width** to introduce; **≥ 33% to RETURN** (`flythruShouldShow`).
+- **One end may leave frame** — a wing span is best when too big to fit. Both ends off is rejected; the
+  MIDPOINT must stay well inside, since that is where the value sits.
+- **Angle is NOT a veto** — projected length = length × sin(angle), so an end-on span already collapses
+  to a tiny screenFrac and is caught by the size test. The veto was redundant and cost real cues.
+- **Backdrop is three-state**: clear (one surface or sky) / mixed (tolerated — head clearance under a
+  tray lives here) / **mosaic → REJECTED**. Adaptive ink fixes darkness, NOT busy-ness.
+- **Occlusion is not a veto** — shine-through draws anyway. Both ends hidden is still rejected.
+- **Dedupe** (`flythruDedupe`) — 440 doors at 1,083 mm are ONE measure. Survivor is the best-framed.
+- **Ease** (`flythruEaseScore`) — prefer windows where the camera slows; relative to the film's own
+  fastest motion, so it is abstract across buildings.
+- **Statement cues do not persist**: anything ≥ half the building diagonal is said once (the envelope
+  would otherwise shine through every later frame — `dMax` ≈ 950 m).
 
-### §FLYTHRU_RULES — 2026-09-07 user session. THESE SUPERSEDE THE DESIGN NOTES BELOW.
-**Governing rule, user's own words: "The idea is to show capability not quantity."** One or two cues
-that LAND, never a stream — a running commentary turns into wallpaper. Cap at one on screen at a time
-with silence between; the silence is what makes a cue read as deliberate.
+### 7. RENDERING
+- **Standard dimension cue**: extension lines, inward arrow heads, value in **mm** — not blue dots.
+- **Ink**: **yellow `#ffd600` on dark**, black on light (Rec.709, flips at 0.45). Interiors are dark and
+  pure white reads as a blown highlight. Opposite-colour outline so a cue crossing a boundary survives.
+- **No label box** — a filled plate blots out the detail the cue exists to highlight. Outline the glyphs.
+- **Label floats free** on a leader, offset to the calmer side, and **avoids other labels** — clash
+  `[tol/clash mm]` boxes are live during the walk (they stop at `beats.reveal`). If every position
+  collides it DECLINES to draw; overlapping two numbers is worse than showing one.
+- **Box cue** (`flythruBoxCorners`, `flythruPerimeterLoop`): draw the box being measured. This is how a
+  perimeter stays honest without a roundness test — a bbox cannot tell a round duct from a square one
+  (π·d vs 4d is a 21% error), but if the box is DRAWN the viewer sees what was measured.
+- **Whole cue shines through** (`FLYTHRU_DRAW_CONTRACT`). Screen-space 2D pass = automatic; any 3D part
+  needs `depthTest:false, depthWrite:false, renderOrder ≥ 900` (as `measure.js:717`/`clash_film.js`).
+  It also fixes a case the gate CANNOT see: ends visible but the MIDDLE behind a column. No mid-span
+  sampling needed.
+- **Buildup 0.5 s**, drawn across, value withheld until the line completes. In FILM SECONDS — that is
+  7.5 frames at 15 fps and 12 at 24 fps, both true, as `clash_film`'s pulse already does.
+- **Persist** (`flythruDrawStateAt(..., {persist:true})`): introduced once, then kept for the film, so a
+  re-sighting in the reveal round is recognition. Re-entry needs the higher 33% bar (§6).
 
-**Selection: HOLD, not proximity.** *"Rather than distance, we should use a criteria of 2 sec hold. If
-a blue-dots measure can be on frame for at least 2 seconds then it can be marked, drawn."* plus *"near
-enough to be seen"*. Implemented as `A.flythruHoldWindow(samples, passed)` — a span must survive the
-gate across ≥ `MIN_HOLD_SEC = 2.0` of consecutive film seconds. "Near enough" needs NO distance rule:
-`screenFrac` already measures apparent size, which is what readability actually depends on.
-This also kills flicker STRUCTURALLY — a span is chosen once for a window it is known to survive,
-instead of being re-judged every frame at a threshold it may be sitting on.
+### 8. SEMANTICS — a SECOND pass, after selection
+`flythruSemantics`. Selection stays geometric; naming happens on the handful that survive, so a naming
+failure costs a word, not a measure. **Horizontal → "length", vertical → "height"** (user's rule; the
+word describes what is DRAWN — a viewer cannot see which extent is longest). No allowlist: an unseen
+class labels from its own name. No class → the number alone, never a fabricated noun.
 
-**Buildup: 0.5s, drawn across.** *"I wonder if it can take a half secound ie 7-12 frames of buildup, so
-user will notice a length or breadth been drawn across."* `A.flythruDrawStateAt` returns `lineFrac`
-rising 0→1 over `BUILDUP_SEC = 0.5`, then a short fade. **Defined in FILM SECONDS, never frames** —
-0.5s IS 7.5 frames at 15fps and 12 at 24fps, so the user's "7-12" is satisfied at BOTH rates this
-project bakes at, the same rule `clash_film.js`'s pulse envelope already follows. The VALUE stays
-hidden until the line finishes drawing, so the cue reads as a measurement being taken, not a caption.
+### 9. COST — MEASURED, and the route decided on measurement
+- Build pass **2.2-2.9 s** total, inside `clash_film`'s 4.5 s budget.
+- `flythruPathWindows` over 64,150 elements × 300 samples = **194 ms**. Two dot products per sample,
+  no projection, no rays. `dMax = 5.77 × span` (at 15% floor, 60° fov).
+- **R-TREE LOSES — do not use it.** Measured on 64,150 elements, 200 queries, identical hit counts:
+  candidate pick **943 ms SQL vs 92 ms in-memory (10.3×)**; obscurity **161 ms vs 74 ms (2.2×)**; plus
+  **1,971 ms to build the index**. `dbQuery` round-trips into SQLite-wasm cost more than a linear pass
+  over a resident `Float64Array`.
+- Order stages cheapest-first: path windows → projection → (rays only if ever needed).
+- **Element measures need ZERO raycasts.** Only genuine void discovery (hall, clearance) casts, a few
+  rays at a sparse rate.
+- ⚠ At walk speed (~0.66 m/s) distance is almost never the binding constraint — frustum, backdrop and
+  hold are. The film's SLOW walk is what makes this feasible; a fast fly-through would reject nearly all.
 
-**Ink: white on dark, black on light.** *"where the background is dark, simply reverse the coloring ie
-white on dark."* `A.flythruCueInk(lum)` — Rec.709 luminance of the sampled backdrop, flipping at 0.45
-(mid-grey takes black better than white). Each ink carries the OPPOSITE colour as a thin outline so a
-cue straddling a light/dark boundary survives on both halves. **This demoted contrast from an
-admission test to a rendering decision**: the backdrop must be UNIFORM (not busy), not light.
+### 10. ⛔ OPEN — what a new session must do first
+1. **Build pass v2 regressed and is UNDIAGNOSED**: 16,576 candidates → only **12 passed the gate**, 1
+   scheduled (v1 gave 505 unique). The lone survivor is the envelope, whose `dMax` passes from
+   anywhere — consistent with the DB→scene transform MISPLACING elements. Verify `flythruFrameMap`
+   against a known mesh's real scene position before trusting any output. Probe:
+   `/tmp/wt-storey-reveal/probe_buildpass_v2.js`.
+2. **`_allRoomVolumes()` is private** — expose it, or rooms stay at 0.
+3. **The envelope opener is unverified** — `§FLYTHRU_ENVELOPE` logged 0 times in the last pass (an edit
+   lost in a relaunch), so second-0 has never actually been produced.
+4. **Nothing is wired into `cinema_maxq`.** No bake has ever drawn one of these cues. The only images
+   produced are STAGED stills (camera pointed at a door by hand) — they prove the cue graphic reads,
+   nothing about the film.
+5. Then: wire the schedule into the bake and run a short `--clip` to see it move.
 
-### §FLYTHRU_MY_RULES_THE_USER_CORRECTED — three vetoes that were costing real cues
-Each was measured, not argued. Recorded so they are not reintroduced.
-1. **"Both endpoints on screen" — WRONG.** User: *"the distance between block wings, even though one
-   side will go out of frame but the length can remain floating in stride."* MEASURED: this rule
-   rejected **92 of 93** candidates on the first clean runtime sweep (`off-screen 47`,
-   `behind-camera 45`) — by far the dominant filter, and it discarded precisely the showpiece, since a
-   wing span is at its most impressive when too big to fit. Now: one end may leave frame (flagged
-   `oneEndOff`, clamped to the edge); both ends off is still rejected; the MIDPOINT must stay well
-   inside because that is where the value sits.
-2. **"Reject foreshortened spans" — REDUNDANT.** User: *"Even if a door is at an angle, as long that
-   holds."* Projected length = true length × sin(angle to view), so a genuinely end-on span ALREADY
-   collapses to a tiny `screenFrac` and is caught by the size test — a measurement, not a threshold on
-   angle. The veto only ever cost angled-but-readable cues. Now a score preference only.
-3. **Proximity as the criterion — WRONG.** Distance never measured whether a viewer can READ the
-   number. Hold duration does, and apparent size covers "near enough".
-
-### §FLYTHRU_ARCHITECTURE — build-time schedule, not live casting (MEASURED)
-**Live per-frame casting is NOT viable**: each candidate costs a cross-cast plus two occlusion casts
-plus six background probes against 4,285 meshes; the 25-pose sweep takes minutes. The walk is 75s =
-1,125 frames at 15fps — hours added to a 55-minute bake.
-**But it does not need to be.** THE ENABLING PROPERTY: `plan.poseAt(tn)` is a PURE FUNCTION, so the
-film's camera is fully known before a single frame renders — unlike an interactive viewer, nothing is
-discovered at runtime. So the build pass produces a SCHEDULE, not a search: *"at t=12.3s, a 2,410mm
-window height between these two world points, hold 2.5s"* — the same shape `clash_film`'s pair list
-already has, and the same build-once/project-per-frame split (`§CLASH_FILM_BUILD` spends ~4.5s once,
-then per frame only pulses and projects).
-- **Element measures need NO casting to measure** — `bx/by/bz` are already on the metadata. Anchoring
-  them is a frustum test plus ONE occlusion ray. Cheap, dense, and the most reliable supply.
-- **Void measures** (hall breadth, clearance, wing span) need casts, but sample SPARSELY (~1Hz) — a
-  corridor's breadth does not change between adjacent frames — then hold across the window.
-- Persistence testing is cheap: a span's world points are FIXED once cast, so testing it across later
-  samples is project + occlude, never a re-cast.
-- ⚠ Use `elements_rtree` (`measure.js:164`) to pre-filter candidates in SQL before casting, rather
-  than brute-forcing every mesh.
-- ⛔ OPEN: build-pass cost not yet measured against `§CLASH_FILM_BUILD`'s 4.5s budget. Measure before
-  trusting it in a bake. Also unverified: whether DLOD swaps geometry between build and render.
-
-### §FLYTHRU_SUPPLY — the catalogue, and the lookup gap that hid most of it
-First catalogue at 25 real walk poses (`§CAT_TABLE`): `Head clearance 10/48 (max 5.15m)`,
-`Floor to floor 1/325 (max 4.85m)`, and **ZERO** for Door width/height (0/236), Hall breadth (0/983),
-Wing span (0/40), Window width/height (0/37).
-**ROOT CAUSE of the zeros was NOT the gate — it was a lookup gap.** `§CAT_ELEMENTS windows=18 doors=15
-stairs=0` against a real census of 131/440/61: `A._instanceGuids` covers INSTANCED elements only, and
-most of this model is BATCHED (`A._batchMeta`). ~96% of doors and every stair were never offered to
-the gate at all. Fix: walk `A._instanceMeta` AND `A._batchMeta` directly — every entry already carries
-`{ guid, ifcClass, bx, by, bz }`, so no guid lookup is needed in either direction.
-**⚠ `A.guidMap` is meshId→guid, the REVERSE of a lookup** (`streaming.js:2032/2109`), and
-`A.zoomToGuid` matches `userData.guid` on PLAIN meshes only — neither resolves an instanced/batched
-element. This cost three failed probe runs; use the meta maps.
-
-**§FLYTHRU_STAIR_FAMILY (user, 2026-09-07):** *"The winding stairs ie between its 'storeyed' height. Or
-one flight at its railing to another or floor or even ceiling. Ie those that can be coming in the face
-of the camera to avoid been obscured."* A stairwell is a void by construction, so a cue drawn in it is
-not fighting geometry — the best-odds family. All four variants are anchored gap casts (cast from a
-REAL element, never a blind sweep): stair rise storey-to-storey, railing→floor, railing→flight above,
-railing→ceiling. Census confirms the anchors exist: **93 `IfcRailing`**, 61 `IfcStair`.
-
-**Design — reuse, no new visual language:**
-- **Clearance / headroom — CONFIRMED IN by the user** (*"That so called head clearance u raise, if there
-  is opportunity to catch that, do put it in."*): it is a first-class candidate, not a maybe. It is an
-  INTERIOR-walk shot and it clears the same legibility gate as everything else — "if there is
-  opportunity" is exactly the gate. The gate decides WHEN, the user has decided IF.
-- **Corridor width**: two rays perpendicular to travel, left and right, wall-face to wall-face. No
-  `IfcSpace` needed — this is exactly the correction above.
-- **Door clear opening**: real, with the rotation guard.
-- Visuals: reuse `A.measureGroup`'s own 0.15 m blue sphere (`0x4fc3f7`) + `LineDashedMaterial` — these are
-  scene objects and DO bake.
-- ⚠ **The label does NOT bake.** `measure.js:1300` draws the number as a DOM `<div>`; the film captures the
-  CANVAS. The number must go through the canvas label pass `clash_labels.js` already owns — which also
-  keeps it in the same visual family as the `[tol/clash mm]` labels instead of a second style.
-- **Firing rule (user: "at selective opportunity")**: at most ONE marker at a time, only when the cast
-  returns two confident hits inside a plausible band, and never a running commentary. The `walk` beat is
-  75.0s of 195.8s and ALREADY carries room-title captions, the day counter and the resource panel.
+**Code**: `viewer/cpe_flythru_dims.js` (all pure functions, registered in `main.js`/`viewer.html`/
+`sw.js`), witness `viewer/tests/witness_flythru_gate.js` (runs standalone, no GPU, no DB).
 
 ## CURRENT STATE — corrected 2026-09-06 session 5 (supersedes the table that was here)
 **The previous table said PR #1693 was "open and mergeable" — it MERGED at 08:24Z; `main` is `7ff4384e`.
