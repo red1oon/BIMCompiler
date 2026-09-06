@@ -1580,6 +1580,15 @@ highlight (real intersection solid, not a box) — scoped separately above, comp
 much smaller follow-on, not attempted here since the user asked to confirm PL first.
 
 ## §SUN_ARC_TOPOUT_SNAP — SPEC 2026-09-06: dramatic dusk angle only AFTER topout, pre-topout untouched
+> **⛔ REVERTED 2026-09-06 (session 3, later) — do not read this section as live.** User: the original
+> linear 55°→6° crawl, including how it reads through the pullout as it reaches dusk, was already correct
+> and was never to be touched; the "snap" came from a wrong starting spec relayed by another session.
+> Hand-reverted against current main in bim-ootb `revert/sun-arc-topout-snap` (`_sunElevationAt(tNorm)` is
+> the single linear line again, `_sunArcStep(tNorm)` one argument, `cinema_maxq.js` calls it with
+> `_tnFilm` only). Kept on purpose: `TOPOUT_SNAP_EASE_U` (the post-topout ease window §PL_TOPOUT_UNPIN's
+> fixtures reuse) and the `_revealU` wiring (the Reveal round and the fill pin use it). Witness
+> `viewer/tests/witness_sun_arc_linear.js` L1–L4. The VERIFIED section below records what the snap did
+> while it was live; it is history.
 **User constraints, verbatim:** *"I do not want any regress. The good outside building shadow
 corelation to Sun angle must not be touched."* / *"The internal will be livelier with PLs real play
 seen."* — confirmed the request is the fixed 6° Alt+S angle applied ONLY to the finished-building

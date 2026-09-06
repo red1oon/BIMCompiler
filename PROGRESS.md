@@ -10,7 +10,21 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-06 (session 3, later) — ⚠ RESUME HERE: 4 PRs merged today, #1690 awaits the user
+## Current State — 2026-09-06 (session 3, latest) — ⚠ RESUME HERE: sun snap REVERTED, clash lane CLOSED, #1690 = the indoor candidate
+
+**User correction (relayed to and scolded at the other session):** the sun-arc "topout snap" (#1685) was a
+wrong starting spec — the linear 55°→6° crawl was always correct. **Reverted by hand** on bim-ootb
+`revert/sun-arc-topout-snap` (PR opened with auto-merge; witness `witness_sun_arc_linear.js` 4/4: 34.47° at
+u=0.419, one-argument call site). `TOPOUT_SNAP_EASE_U` + `_revealU` kept (the Reveal round and #1690 use
+them). Spec §SUN_ARC_TOPOUT_SNAP carries a ⛔ REVERTED line — history, not live.
+**Clash-film lane (#1686/#1688/#1689) is CLOSED — do not re-open or re-verify it from the sun/indoor task;**
+hand any further clash work (mesh-shape refinement, §TOUCH_BY_THICKNESS) to a separate session.
+**Indoor liveliness = the real ask.** #1690 (§PL_TOPOUT_UNPIN, fixtures 0.5 → 1.0 post-topout, witnessed 8/8)
+is the built candidate and does not depend on the sun code; being synced onto the reverted main and pushed
+through as the cheapest path. The `tools.js` `(A._nightPLScale || 1)` finding is NOT relevant to liveliness
+(it only affects a 0 scale) — left alone.
+
+## Current State — 2026-09-06 (session 3, later) — earlier: 4 PRs merged, #1690 opened
 
 **User relayed a Sonnet review with advice on the three open items; taken as the go for 1 and 3, 2 built
 as a separate non-auto-merged PR** (its "dim the fill" advice named no sourced value; the sourced lever
