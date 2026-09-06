@@ -692,6 +692,89 @@ running commentary.
 **The wing-to-wing gap is the showpiece** and is the one worth timing to the camera: it needs both wings
 in frame with the span across the view, which is the pull-back / fly-back, not the interior walk.
 
+### §FLYTHRU_RULES — 2026-09-07 user session. THESE SUPERSEDE THE DESIGN NOTES BELOW.
+**Governing rule, user's own words: "The idea is to show capability not quantity."** One or two cues
+that LAND, never a stream — a running commentary turns into wallpaper. Cap at one on screen at a time
+with silence between; the silence is what makes a cue read as deliberate.
+
+**Selection: HOLD, not proximity.** *"Rather than distance, we should use a criteria of 2 sec hold. If
+a blue-dots measure can be on frame for at least 2 seconds then it can be marked, drawn."* plus *"near
+enough to be seen"*. Implemented as `A.flythruHoldWindow(samples, passed)` — a span must survive the
+gate across ≥ `MIN_HOLD_SEC = 2.0` of consecutive film seconds. "Near enough" needs NO distance rule:
+`screenFrac` already measures apparent size, which is what readability actually depends on.
+This also kills flicker STRUCTURALLY — a span is chosen once for a window it is known to survive,
+instead of being re-judged every frame at a threshold it may be sitting on.
+
+**Buildup: 0.5s, drawn across.** *"I wonder if it can take a half secound ie 7-12 frames of buildup, so
+user will notice a length or breadth been drawn across."* `A.flythruDrawStateAt` returns `lineFrac`
+rising 0→1 over `BUILDUP_SEC = 0.5`, then a short fade. **Defined in FILM SECONDS, never frames** —
+0.5s IS 7.5 frames at 15fps and 12 at 24fps, so the user's "7-12" is satisfied at BOTH rates this
+project bakes at, the same rule `clash_film.js`'s pulse envelope already follows. The VALUE stays
+hidden until the line finishes drawing, so the cue reads as a measurement being taken, not a caption.
+
+**Ink: white on dark, black on light.** *"where the background is dark, simply reverse the coloring ie
+white on dark."* `A.flythruCueInk(lum)` — Rec.709 luminance of the sampled backdrop, flipping at 0.45
+(mid-grey takes black better than white). Each ink carries the OPPOSITE colour as a thin outline so a
+cue straddling a light/dark boundary survives on both halves. **This demoted contrast from an
+admission test to a rendering decision**: the backdrop must be UNIFORM (not busy), not light.
+
+### §FLYTHRU_MY_RULES_THE_USER_CORRECTED — three vetoes that were costing real cues
+Each was measured, not argued. Recorded so they are not reintroduced.
+1. **"Both endpoints on screen" — WRONG.** User: *"the distance between block wings, even though one
+   side will go out of frame but the length can remain floating in stride."* MEASURED: this rule
+   rejected **92 of 93** candidates on the first clean runtime sweep (`off-screen 47`,
+   `behind-camera 45`) — by far the dominant filter, and it discarded precisely the showpiece, since a
+   wing span is at its most impressive when too big to fit. Now: one end may leave frame (flagged
+   `oneEndOff`, clamped to the edge); both ends off is still rejected; the MIDPOINT must stay well
+   inside because that is where the value sits.
+2. **"Reject foreshortened spans" — REDUNDANT.** User: *"Even if a door is at an angle, as long that
+   holds."* Projected length = true length × sin(angle to view), so a genuinely end-on span ALREADY
+   collapses to a tiny `screenFrac` and is caught by the size test — a measurement, not a threshold on
+   angle. The veto only ever cost angled-but-readable cues. Now a score preference only.
+3. **Proximity as the criterion — WRONG.** Distance never measured whether a viewer can READ the
+   number. Hold duration does, and apparent size covers "near enough".
+
+### §FLYTHRU_ARCHITECTURE — build-time schedule, not live casting (MEASURED)
+**Live per-frame casting is NOT viable**: each candidate costs a cross-cast plus two occlusion casts
+plus six background probes against 4,285 meshes; the 25-pose sweep takes minutes. The walk is 75s =
+1,125 frames at 15fps — hours added to a 55-minute bake.
+**But it does not need to be.** THE ENABLING PROPERTY: `plan.poseAt(tn)` is a PURE FUNCTION, so the
+film's camera is fully known before a single frame renders — unlike an interactive viewer, nothing is
+discovered at runtime. So the build pass produces a SCHEDULE, not a search: *"at t=12.3s, a 2,410mm
+window height between these two world points, hold 2.5s"* — the same shape `clash_film`'s pair list
+already has, and the same build-once/project-per-frame split (`§CLASH_FILM_BUILD` spends ~4.5s once,
+then per frame only pulses and projects).
+- **Element measures need NO casting to measure** — `bx/by/bz` are already on the metadata. Anchoring
+  them is a frustum test plus ONE occlusion ray. Cheap, dense, and the most reliable supply.
+- **Void measures** (hall breadth, clearance, wing span) need casts, but sample SPARSELY (~1Hz) — a
+  corridor's breadth does not change between adjacent frames — then hold across the window.
+- Persistence testing is cheap: a span's world points are FIXED once cast, so testing it across later
+  samples is project + occlude, never a re-cast.
+- ⚠ Use `elements_rtree` (`measure.js:164`) to pre-filter candidates in SQL before casting, rather
+  than brute-forcing every mesh.
+- ⛔ OPEN: build-pass cost not yet measured against `§CLASH_FILM_BUILD`'s 4.5s budget. Measure before
+  trusting it in a bake. Also unverified: whether DLOD swaps geometry between build and render.
+
+### §FLYTHRU_SUPPLY — the catalogue, and the lookup gap that hid most of it
+First catalogue at 25 real walk poses (`§CAT_TABLE`): `Head clearance 10/48 (max 5.15m)`,
+`Floor to floor 1/325 (max 4.85m)`, and **ZERO** for Door width/height (0/236), Hall breadth (0/983),
+Wing span (0/40), Window width/height (0/37).
+**ROOT CAUSE of the zeros was NOT the gate — it was a lookup gap.** `§CAT_ELEMENTS windows=18 doors=15
+stairs=0` against a real census of 131/440/61: `A._instanceGuids` covers INSTANCED elements only, and
+most of this model is BATCHED (`A._batchMeta`). ~96% of doors and every stair were never offered to
+the gate at all. Fix: walk `A._instanceMeta` AND `A._batchMeta` directly — every entry already carries
+`{ guid, ifcClass, bx, by, bz }`, so no guid lookup is needed in either direction.
+**⚠ `A.guidMap` is meshId→guid, the REVERSE of a lookup** (`streaming.js:2032/2109`), and
+`A.zoomToGuid` matches `userData.guid` on PLAIN meshes only — neither resolves an instanced/batched
+element. This cost three failed probe runs; use the meta maps.
+
+**§FLYTHRU_STAIR_FAMILY (user, 2026-09-07):** *"The winding stairs ie between its 'storeyed' height. Or
+one flight at its railing to another or floor or even ceiling. Ie those that can be coming in the face
+of the camera to avoid been obscured."* A stairwell is a void by construction, so a cue drawn in it is
+not fighting geometry — the best-odds family. All four variants are anchored gap casts (cast from a
+REAL element, never a blind sweep): stair rise storey-to-storey, railing→floor, railing→flight above,
+railing→ceiling. Census confirms the anchors exist: **93 `IfcRailing`**, 61 `IfcStair`.
+
 **Design — reuse, no new visual language:**
 - **Clearance / headroom — CONFIRMED IN by the user** (*"That so called head clearance u raise, if there
   is opportunity to catch that, do put it in."*): it is a first-class candidate, not a maybe. It is an
