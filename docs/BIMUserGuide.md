@@ -468,6 +468,17 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
 - **room titles** — a name card appears as the camera enters each room, sourced from the room's own
   friendly name, never invented.
 - **Reveal** — cycles every discipline in the model past the camera in turn. See below.
+- **Clash pairs** — the model's mesh-true clash pairs (not the bounding-box list, part of which is false)
+  appear as red/blue pulsing markers from frame 0, so you see where the trouble is before it's built. A
+  pair that comes near the camera gets an on-screen label naming both sides, plus a `[tolerance mm /
+  clash mm]` line beneath them — the tolerance from that discipline pair's own rule, the clash figure
+  from the real mesh overlap depth, not a bounding-box estimate. The Reveal round's rotating stat
+  cards also gain a "N mesh-true clashes flagged" card while this is on.
+- **Silent-bake size** — a resolution/fps preset (720p, 1080p, or 1440p) for a *silent* bake only (see
+  below); an interactive Alt+C recording always uses the size of the window it's pressed in, so this
+  select doesn't resize anything here — it's just remembered on the saved path. There is currently no
+  time estimate shown next to it; picking 1440p over 720p costs real extra bake minutes with no on-screen
+  warning yet.
 - **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
   **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
   the clip window and when it was saved.
@@ -566,8 +577,8 @@ produced, measured and re-run from a terminal, so what used to be a wait becomes
 ```
 node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
   [--plan NAME | --override file.json]          path source (default: the DB's cinema_path table)
-  [--buildup] [--label] [--reveal] [--day tr|tl|br|bl|off]     turn a setting ON for this run
-  [--no-buildup] [--no-label] [--no-reveal]                    turn a SAVED setting off for this run
+  [--buildup] [--label] [--reveal] [--clash] [--day tr|tl|br|bl|off]     turn a setting ON for this run
+  [--no-buildup] [--no-label] [--no-reveal] [--no-clash]                 turn a SAVED setting off for this run
   [--frames N | --seconds S] [--fps N]          length (default: the plan's own pacing)
   [--gpu sw|real|headful]
   [--width W --height H] [--port P] [--log FILE] [--profile DIR]
@@ -626,6 +637,13 @@ it produces, because the Reveal round's second act is derived rather than author
 |---|---|---|---|---|---|
 | HHS Office (federated) | 6,880 | 1,901 | 126.7 s | **15 min 21 s** | 0.485 s |
 | Hospital | 63,415 | 2,937 | 195.8 s | **~30–45 min** | 0.6–0.9 s |
+
+**A later, separately-measured Hospital run** (2026-09-05/06, same building, `--clash` on, 1920×1080@24,
+same RTX 4060) came back **4,699 frames** for the same 195.8 s film — a different frame count for the same
+duration than the row above, most likely a later change to the film's own fps/pacing rather than this
+guide's row being wrong; not reconciled here. At that frame count: **5,476 s (~91 min)** wall clock full
+run, **~83 min** on a repeat run the same night — call it **80–90 minutes** at 1080p with clash markers on.
+1280p/1440p have not been measured.
 
 Hospital carries **9x** the elements for under **2x** the per-frame cost — the frame cost scales far
 better than the model does, and most of the difference in wall clock is simply that its film is longer
