@@ -1867,3 +1867,36 @@ The `tools.js` `(A._nightPLScale || 1)` finding is not relevant to liveliness (o
 **Next:** a fresh-profile 82–92 s clip on `main` (≥ `5daec9e0`) is the first bake that shows the linear sun,
 the overlap-box markers, the 3-row label, the clash card and the post-topout fixtures together. Not baked
 here — bakes are the user's call.
+
+**CLOSED 2026-09-06 (later still):** the above bake WAS run (fresh profile, both 20–30s and 82–92s clips,
+`5daec9e0`) — every number matched prediction exactly: 20–30s elevation 50.0°→47.5° (original linear,
+unchanged), `trueClash=270` (271 minus 1 flat touch); 82–92s elevation 34.5°→32.0° (also original linear —
+the revert holds post-topout too), `plScale` 0.8629→1.0000, `poolSum` 260.08→400.0 (same 154→200 fixtures,
+genuinely double the old fixed-0.5 baseline). A full 195.8s film bake (`--clash`, 1920×1080@24, real GPU,
+fresh profile, `5daec9e0`) was also launched — result not in this file yet, check
+`~/Downloads` or the session log for `Hospital_FULL_allsystems_2026-09-06.mp4`.
+
+## §PENDING — for the next session, not started (2026-09-06)
+1. **Silent-bake size selector has no time estimate.** Checked: `cinema_path_editor.js` ~L936 already has
+   a real resolution chooser (`this window`, `1280x720@15`, `1920x1080@24`, `2560x1440@24` — HiRes already
+   exists, nothing to build there) but shows no estimated bake duration next to it. One real data point
+   exists to build the estimate from: the full 195.8s/4699-frame film at 1920×1080@24 with `--clash` took
+   **5,476s** measured wall-clock (`Hospital_clash_FULL_1080p24_2026-09-05.log`, real GPU, RTX 4060) — no
+   equivalent measurement exists yet for 1280x720@15 or 2560x1440@24, so do not invent a scaling factor;
+   measure each resolution once, real GPU, before showing a number for it.
+2. **Clash panel LIST does not show the mesh-true depth figure.** Confirmed by code read: `measure.js`'s
+   list renderer never touches `depthMeshM`/`overlapMaxM`, only `verdict`/`reason` from row `c[9]`. The data
+   is already there — `A._qualifyClashRows` calls the exact same `A.clashNarrow.qualifyRows()` the film uses,
+   so every list row's `c[9]` already carries `depthMeshM` — this is a display-only addition, zero new
+   computation, same `[tol/clash mm]` formatting `clash_labels.js` already has.
+3. **No cross-caller cache for the narrowphase judgment.** Confirmed by code read: `_boxRun` is reset fresh
+   on every `qualifyRows()` call and `A.clashNarrow.lastRun`/`.runs` only LOG past results, never consulted
+   to skip recomputation. So if the film builds its 271/270-pair judgment during a bake and the user then
+   opens the clash LIST panel in the same session, the list's own `_qualifyClashRows` call re-derives
+   everything from scratch — no reuse either direction. A persistent, disk-backed cache (the user's own
+   "one time cache" ask, `~/.cache/bim4d/`-style) remains unbuilt.
+4. **Tolerance values in `clash_rules.json` have no sourcing.** Checked: no comment, no citation, no
+   reference anywhere near the file to an industry standard (Navisworks/Solibri/ISO 19650 or similar) — they
+   are bare numbers (25/50/75 mm by discipline pair) with no documented origin. Whether they match an
+   industry convention is a knowledge claim, not something this repo can currently prove. User's own plan:
+   later expose these in a JSON config the Clash panel can edit — not started.
