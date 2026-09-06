@@ -1770,3 +1770,80 @@ now on every record, so an oriented box of the real overlap solid (the "as in re
 tier below full CSG, §CLASH_FILM_P3 item 3) is a `clash_film.js`-only change: place the instanced box
 at `overlapCenter` with A's rotation and `overlapA` as its size, instead of the severity cube. Not
 started — it changes the film's look, so it waits for the user's go.
+
+## 2026-09-06 (session 3, later) — three follow-ons from the user's relayed review, SPEC before code
+User relayed a Sonnet review with recommendations on the three open items. Taken as the go for 1 and 3.
+On 2 the recommendation ("ease the fill to a dimmer baseline") names no sourced value, and the pinned fill
+IS the Alt+S state at 6°; the sourced lever is `plScale` (see §PL_TOPOUT_UNPIN) — built as a separate PR,
+NOT auto-merged, so the user can take or leave it.
+
+### §CLASH_FILM_FLAT_FILTER — SPEC (Option 3 of §TOUCH_BY_THICKNESS: film only)
+`clash_film.js` drops pairs whose `overlapFlat === true` from the film's set AFTER the narrowphase verdict
+(which stays as it is, the ⛔USER item above is untouched). `stats()` gains `meshTrue` (the verdict count)
+and `flat` (dropped); `pairs = meshTrue − flat`. `§CLASH_FILM_BUILD … flatExcluded=N`. The HUD card's
+"% false at mesh level" keeps using `broad − meshTrue` (a flat touch is not a bbox false positive); the sub
+appends "· N flat touch dropped" when N > 0. Witness: labels P9c — no film pair is flat and
+`stats.flat === stats.meshTrue − stats.pairs`; H1 recomputed on `meshTrue`. Hospital: 271 → 270.
+
+### §CLASH_MARKER_OVERLAP_BOX — SPEC (§CLASH_FILM_P3 item 3, the tier below CSG)
+The marker becomes the ORIENTED BOX OF THE REAL OVERLAP SOLID, from the fields `#1688` put on every record:
+`overlapCenter` (world), `overlapA` (extents in A's frame), and A's rotation (`clashNarrow.worldMatrix`
+of A's transform — the same matrix the narrowphase used, never re-derived). The red/blue pair reading
+stays: the box is split into two halves along the A-frame axis most aligned with the A→B centroid
+direction; the red half sits on A's side, the blue on B's. Per-axis size = `clamp(extent, MARKER_MIN_M,
+MARKER_MAX_M)` — the same 0.30/1.20 m rule the cube had, now per axis, so a 25 mm-thick overlap is drawn
+0.30 m thick (visible) and a 5 m through-run is capped at 1.20 m (the user's "marker is the clash, not the
+element" ruling). The per-frame screen clamp (§CLASH_FILM_SKY_WASH) scales the box UNIFORMLY by
+`min(1, cap / maxExtent)` — `boxOf(i).naturalM` is the largest clamped extent, `placedM` the current one,
+so W6 keeps its meaning. A record without `overlapA` (none on Hospital: `depthMesh=271/271`) falls back
+to the old severity cube through the same placement, counted `legacyBox=N` in the build log.
+Witness (markers): **W11** — for every pair, decompose the two instance matrices and check against the
+record: both halves carry A's rotation; both have the same size = the per-axis clamped `overlapA` with the
+split axis halved, times `placedM/naturalM`; their midpoint is `overlapCenter`; their separation is half
+the split extent along that axis, oriented so the blue half is on B's side. Every number from the record
+and `worldMatrix`, none from the module's placement code.
+
+### §PL_TOPOUT_UNPIN — SPEC (item 2, separate PR, not auto-merged)
+**Root cause restated with the log's own numbers** (`§SUN_ARC_FILL_PIN tNorm=0.470 elevation=6.00
+ambient=0.3860 hemi=0.6170 plScale=0.5000 poolLit=200 poolSum=200.000 sun=4.4000`): once the sun is at
+6° the fill is exactly the Alt+S state — the pin is doing what it was told. What never happens is the
+fixtures reading as the dominant indoor source: `plScale` is `A._nightPLScaleStill` = 0.5, the
+§STAGED_PL_CUT ("staging-only intensity cut", `effects.js` ~5211), while nav Night Mode runs the same
+fixtures at **1.0** ("full tuned intensity", `effects.js` ~4498). That 1.0 is the one sourced value.
+**Change:** `_bakeFillPin(tNorm, topoutU)` — `cinema_maxq.js` passes `_revealU` exactly as it does to
+`_sunArcStep`. Pre-topout (or `topoutU == null`): byte-identical to today. Post-topout: `plScale` eases
+from the staged value to `PL_TOPOUT_TARGET = 1.0` over `TOPOUT_SNAP_EASE_U` (the same window the sun
+uses, so the fixtures come up as the sun goes down), then holds. A staged 0 (lights-off film state)
+stays 0. ambient/hemi/budget/floor untouched. The log line gains `plTopout=<want>`.
+Witness `witness_pl_topout_unpin.js`: on a real Hospital load with photo staging applied, call
+`A._sunArcFillPin(t, 0.361)` synthetically: t=0.30 → plScale 0.5 and `poolSum` = the staged value;
+t=0.40 → strictly between; t=0.45 and t=0.9 → 1.0 and `poolSum` doubled; then `A._sunArcFillPin(0.45)`
+with NO topoutU → 0.5 (the preview/legacy path untouched); staged 0 → 0 at every t.
+
+### The three follow-ons — MEASURED 2026-09-06 (session 3, later)
+| item | PR | state | witness |
+|---|---|---|---|
+| §CLASH_FILM_FLAT_FILTER (Option 3) | bim-ootb **#1689** | **MERGED** 03:02Z | labels **P9c** `meshTrue=271 film pairs=270 flat dropped=1 flat still in film=0`; H1 card `"270 mesh-true clashes flagged — 1,478 bbox candidates · 81.7% false at mesh level · 1 flat touch dropped"`; `§WITNESS_CLASH_FILM_LABELS pass=4 fail=0 ran=20` |
+| §CLASH_MARKER_OVERLAP_BOX | bim-ootb **#1689** | **MERGED** | markers **W11** `pairs judged=270 skipped(no overlap box)=0 mismatched=0` — every pair's two halves decomposed and matched against the record + `worldMatrix`; W6 clamp `placed 0.0554 m = 43.2 px (cap 43)`; W7 shine-through re-aimed at `centerOf`, `Δ=+0.44`; `§WITNESS_CLASH_FILM_MARKERS pass=4 fail=0 ran=15`. `§CLASH_FILM_BUILD trueClash=270 … flatExcluded=1 legacyBox=0`. sw v1153 |
+| §PL_TOPOUT_UNPIN | bim-ootb **#1690** | **OPEN, not auto-merged — ⛔USER take/leave** | `witness_pl_topout_unpin.js` (real Hospital, real photo staging via `A.startStillRefine`): `pass=4 fail=0 ran=8` — t=0.30 → 0.5 · t=0.40 → 0.74375 on the sun's ease curve · t≥0.45 → 1.0 · `poolSum 200→400, poolLit 200→200` · no-topout call → 0.5 · staged 0 → 0 · ambient/hemi 0.386/0.617 on every sample. sw v1154 |
+
+**Marker design as built (one sentence for the next reader):** oriented box of the real overlap solid
+(`overlapCenter`, `overlapA`, A's rotation), per-axis clamped to the cube's old 0.30/1.20 m rule, split
+red/blue along the A-frame axis most aligned with A→B, uniformly shrunk by the screen clamp. A record
+without the box would fall back to the severity cube (`legacyBox`), none did.
+
+**Finding, pre-existing, not changed:** `tools.js` reads `(A._nightPLScale || 1)` in both pool
+branches (~1917/1952), so a scale of 0 lights the pool at FULL — the witness measured `poolSum=400 at
+plScale=0`. The lights-off film slot (§CPE_TAIL_LIGHTS_ALL_ONLY, `_cpeRevealLightsOff`) is enforced by
+effects.js's own `_glowLensRevealGate`/`_glowOn` path, so this has not shown on screen; it is still a
+multiplier that cannot express 0. Whoever next touches the pool should make it `(scale == null ? 1 : scale)`.
+
+**Instrument note:** `eslint` from a `/tmp/wt-*` worktree — the worktree has no `node_modules`, so `npx`
+falls back to a cached eslint 10 that crashes on Node 18 (`util.styleText`), and `~/bim-ootb/node_modules/
+.bin/eslint <worktree file>` lints it OUTSIDE the project root with no config (false `no-undef` on
+`VideoEncoder`). CI's `fast-checks` is the real lint gate for a worktree PR; both PRs passed it.
+
+**What the next bake should show (not baked here — the user's Sonnet session was already baking 82–92 s
+on `273e1c59`, which predates #1689/#1690):** with #1689 the 270 markers are the overlap boxes; with
+#1690 the post-topout interior gets the fixtures at 1.0. A clip of 82–92 s on `main` after #1690 is the
+one that shows all of it.

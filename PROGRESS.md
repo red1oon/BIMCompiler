@@ -10,7 +10,21 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-06 (session 3) — ⚠ RESUME HERE: clash film P2.4/HUD merged, mesh depth PR open, one ⛔USER
+## Current State — 2026-09-06 (session 3, later) — ⚠ RESUME HERE: 4 PRs merged today, #1690 awaits the user
+
+**User relayed a Sonnet review with advice on the three open items; taken as the go for 1 and 3, 2 built
+as a separate non-auto-merged PR** (its "dim the fill" advice named no sourced value; the sourced lever
+is `plScale` 0.5 → 1.0). Detail: `prompts/MEP_CLASH_REVEAL_MOVIE.md` "The three follow-ons — MEASURED".
+- **`#1689` MERGED** (sw v1153) — `§CLASH_MARKER_OVERLAP_BOX`: each marker is the oriented box of the
+  real overlap solid, red/blue halves; markers W11 270/270 matched. `§CLASH_FILM_FLAT_FILTER` (Option 3):
+  the film drops flat overlaps, 271 → 270, card says "1 flat touch dropped". Verdicts untouched.
+- **`#1690` OPEN, NOT auto-merged — ⛔USER take/leave** (sw v1154) — `§PL_TOPOUT_UNPIN`: past topout the
+  bake's fixtures ease 0.5 → 1.0 (nav Night Mode's tuned value) over the sun's own window; pre-topout
+  byte-identical. Witness 8/8 on real staging (poolSum 200 → 400). If taken: merge, then a fresh-profile
+  82–92 s clip on `main` shows all four of today's features together.
+- Pre-existing finding: `tools.js` `(A._nightPLScale || 1)` cannot express a 0 scale (poolSum 400 at 0).
+
+## Current State — 2026-09-06 (session 3) — earlier today (#1685 verified, #1686 + #1688 merged, ⛔USER §TOUCH_BY_THICKNESS)
 
 **Done this session, all witnessed, detail in `prompts/MEP_CLASH_REVEAL_MOVIE.md` (three new dated sections at the end):**
 - **`§SUN_ARC_TOPOUT_SNAP` VERIFIED** on a fresh Chrome profile (`--profile /tmp/silent-bake-fresh-<epoch>`) —
