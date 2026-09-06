@@ -1613,3 +1613,160 @@ half only; the PL-contrast question is left to the verification clip's own numbe
 
 **Verification clip:** 1:22–1:32 (82–92s of the 195.8s film, `u=0.4189→0.4699`) — chosen by the user
 as the fly-back-in beat, past `topoutU=0.361` (68.9s), squarely in the finished-building Reveal round.
+
+## §SUN_ARC_TOPOUT_SNAP — VERIFIED 2026-09-06 on a FRESH Chrome profile (the stale-SW trap closed)
+`#1685` had already been merged to `main` (`ae7b49ea`) by the time this session started — PROGRESS
+said "not merged"; `gh pr view` says MERGED. Re-verified on `main` with the exact validated command
+plus `--profile /tmp/silent-bake-fresh-<epoch>` (never-used dir, no prior service-worker
+registration): `--clip 0.4189:0.4699` (1:22–1:32 of the 195.8 s film), 1280×720 @ 24 fps, real GPU.
+`§CLI_BAKE_ENV commit=ae7b49ea sw=v1150`, `§CLI_BAKE_WALL totalSec=243 aborted=no fileOk=true`,
+240/240 frames. The `§SUN_ARC_STEP` series (240 lines, read from the log, not the clip):
+
+| tNorm | elevation | note |
+|---|---|---|
+| 0.419 (first frame) | **14.5°** | old whole-film formula would print 34.5° here |
+| 0.441 | **6.0°** | `topoutU=0.361 + TOPOUT_SNAP_EASE_U=0.08` — the ease ends exactly where the spec says |
+| 0.441 → 0.470 (last) | 6.0° held | 0 frames past 0.441 off 6.0 |
+
+Formula check at the first frame: `elAtTopout = 55 − 49·0.361 = 37.31`, `u = (0.419−0.361)/0.08 =
+0.725`, `37.31 + (6 − 37.31)·0.725 = 14.6` ✓ (the log's 14.5 is the same number at the frame's exact
+tNorm). Last night's "still 34.5" reading was the stale-profile SW serving old JS, exactly as
+PROGRESS suspected — not a code defect. Clip: `~/Downloads/cll/Hospital_topout_snap_verify_clip82-92s_2026-09-06.mp4` (5.5 MB).
+
+**PL "real play" — still the separate open lever, numbers from this same bake:** `§SUN_ARC_FILL_PIN
+tNorm=0.470 elevation=6.00 ambient=0.3860 hemi=0.6170 plScale=0.5000 sun=4.4000` — the fill is
+pinned exactly as `§BAKE_FILL_PIN` designed it, so at 6° the sun (4.4) + hemi (0.617) still dwarf the
+PL pool (`poolSum=200` over 200 fixtures ≈ 1.0 each at decay=1). `§NIGHT_BUILDUP_GATE total=1274
+placed=1274 lit=30`. Whether PLs should read dominant post-topout is a design call (unpin the fill
+after topout? raise plScale post-topout?) — ⛔USER, not more measurement.
+
+## §P2.4 + §CLASH_HUD_CARD — MEASURED 2026-09-06 (bim-ootb PR #1686, `feat/clash-film-p5`, auto-merge armed)
+Built exactly as specced above, one deviation stated: the tolerance is recorded per DISCIPLINE PAIR
+inside the existing `rules.clash_rules.forEach` loop (`tolByPair[k]`, first rule wins — the same
+first-wins `seenPair` already applies) and stamped onto the pair records AFTER `qualifyRows`, keyed on
+the record's own `discA|discB` — the rows themselves are positional SQL arrays 8 files index into, so
+nothing is hung off them. `§CLASH_FILM_BUILD … tolStamped=271/271`. `stats()` now also exposes
+`broad` + `falseExcluded` for the card.
+
+`viewer/tests/witness_clash_film_labels.js` — `§WITNESS_CLASH_FILM_LABELS pass=4 fail=0 ran=19`
+(was 15; red control still flips claim 0), all on real Hospital_silent_local, GPU real:
+- **P9a** every one of the 271 pairs carries `tolMm` equal to `viewer/clash_rules.json` read FROM
+  DISK by the witness (12 rules: ARC|STR=25 MEP|STR=50 ARC|MEP=25 ARC|ELEC=25 ELEC|STR=50
+  ELEC|MEP=25 ARC|FP=25 FP|STR=50 FP|MEP=50 ACMV|ARC=50 ACMV|STR=75 ACMV|MEP=50) and `clashMm > 0`. bad=0.
+- **P9b** `ctx.fillText` spied on a real 2D context during `clashLabelsCompositeOntoCanvas`: the
+  isolated pair's panel writes `"Pipe Segment"@y278 "Structural Steel Column"@y299 "[50mm / 344mm]"@y320`
+  — the third string equals the rule/severityM truth and sits below row 2; panel h = 72 px (3-row)
+  not 51 (the old 2-row), so the plate grew, not just the text.
+- **H0** roster BEFORE the film is built: 5 cards, none clash — dropped, not zero.
+- **H1** roster AFTER: `"271 mesh-true clashes flagged — 1,478 bbox candidates · 81.7% false at
+  mesh level" src=clash_film.js §CLASH_FILM_BUILD`, big == the film's own `pairs`, sub carries
+  `broad` and the pct recomputed independently (1207/1478).
+- Regression: `witness_clash_film_markers.js` 14/14, `witness_reveal_roster_not_highlight.js` 72/72,
+  eslint clean. `sw.js` v1151; `viewer.html` cache busters `clash_film.js?v=4 clash_labels.js?v=4
+  cpe_resource_panel.js?v=3`.
+
+**Caveat carried forward, on purpose:** the "344mm" on that label IS `severityM` — the OBB/SAT proxy
+(§CLASH_FILM_P3 item 4, user's own catch). The label reads whatever the pair record carries, so it
+becomes mesh-true the moment `§MESH_OVERLAP_DEPTH` below lands; nothing in the label changes then.
+
+## §MESH_OVERLAP_DEPTH — SPEC 2026-09-06 (written before code): the mesh-true overlap, replacing the OBB proxy on the label
+**Origin:** §CLASH_FILM_P3 item 4 + the user's own catch (PROGRESS 2026-09-06): `severityM` is 100 % the
+pre-mesh-stage OBB/SAT depth, untouched by triangle geometry even on a verified mesh-true CLASH. User
+ruling: *depth first, park the full CSG solid.*
+
+**Definition (stated, so nobody re-derives it):** the overlap SOLID `A∩B`, bounded EXACTLY. For
+triangle meshes every extreme point of `A∩B` along any axis is one of three kinds — an intersection-
+segment endpoint (the curve where the two surfaces cross, which `enumerateContact` already enumerates
+and then discards), a vertex of A strictly inside B, or a vertex of B strictly inside A. A planar face
+piece or a straight edge piece has no interior extreme; its extremes sit on its boundary, and that
+boundary is made of exactly those three kinds of point. So the AABB of that point set, taken in A's
+local frame and again in B's local frame, is the exact bounding box of the overlap solid in each frame.
+- `depthMeshM` = the THINNEST of the six extents. Poke-in → the penetration. Pass-through → the full
+  cross dimension of the thinner element. Contained → the inner element's thinnest side.
+- `overlapMaxM` = the longest extent (a pass-through's through-length). `overlapA`/`overlapB` = the
+  three extents per frame. `overlapCenter` = the A-frame box centre, world coords (for a later marker).
+- `overlapExact` = false when `TRI_PAIR_CAP` truncated the curve or `VERT_CAP` (4096 candidates per
+  side) truncated the inside-vertex pass — the number is still reported, flagged, never guessed.
+- **It is NOT the MTV.** `severityM` (SAT) answers "how far must one move to separate" — for a nested
+  interval that is `hA+hB−|d|` (S2's Ø0.2 m pipe centred in a 0.6 m beam: 0.4). The overlap solid there
+  is 0.2 thick. Both stay on the record; the LABEL reads `depthMeshM` (falls back to `severityM` only
+  when the mesh figure is absent, and says which). The marker's size is NOT changed in this pass.
+
+**Cost:** two extra matrix transforms per intersection segment (already inside the one `bvhcast`),
+one box-prefilter loop over each geometry's vertices, and 3 BVH rays per surviving candidate (the
+same parity rule `containedIn` uses). Measured per run as `depthMs` in `§CLASH_DEPTH_PROXY`.
+
+**Witness claims (each can say NO):**
+- `selfTest` D1 poke-in (unit cubes at 0.97): `depthMesh=0.030 max=1.000 exact`, SAT agrees.
+- D2 pass-through (S2's pipe/beam): `depthMesh=0.200 max=0.400`, while `sat=0.400` — **the proxy
+  overstates a pass-through 2×; this is the number the label used to print.** `vertsA=vertsB=0`.
+- D3 contained (S4): `depthMesh=0.200 max=0.200 exact` from the inner element alone.
+- D4 rotated (S5, 45° cube corner): `depthMesh=0.2929` (equals SAT — convex, expected), `max=2.0`,
+  inside-vertex pass finds A's corner edge (`vertsA ≥ 2`).
+- I5's bar rises 10 → 14 synthetic cases. New I6 on real Hospital pairs: every MESH-stage CLASH
+  carries a finite `depthMeshM ≥ 0` with `overlapMaxM ≥ depthMeshM`; `§CLASH_DEPTH_PROXY` reports
+  the SAT/mesh ratio distribution (median, max, count ≥1.5×, count below 1) — a MEASUREMENT of how
+  wrong the proxy was on this building, logged not gated.
+- Labels witness P9a/P9b re-run: the third row now composites the mesh figure; the witness reads the
+  same field and states its source.
+
+### §MESH_OVERLAP_DEPTH — MEASURED 2026-09-06 (bim-ootb PR #1688 `feat/mesh-overlap-depth`, auto-merge armed; #1686 merged 01:50Z)
+Built as specced. Two additions the spec did not foresee, both forced by real geometry:
+1. **`insideMesh` = parity AND nearest-face winding (half-eps margin).** Ray parity alone read wall
+   vertices as "inside" a Terminal `IfcColumn` whose shells overlap, inflating that pair's overlap box
+   to the wall's full 5.2 m length. A vertex ON the other's face (flush) is a boundary point and is
+   excluded by the margin — D4's corner-edge vertices sit on B's faces and now count 0; the curve
+   endpoints already carry those extremes, and the extents are unchanged (0.2929 / 2.0).
+2. **`overlapFlat`** — thinnest extent < `TOUCH_EPS`. Annotation only; see the ⛔USER item below.
+
+**Numbers, real GPU, read from the logs (`§CLASH_DEPTH_PROXY pair=TOTAL`):**
+
+| building | mesh-true pairs | overlapFlat | inexact | SAT/mesh median | ≥1.5× | ≥3× | worst | depth cost |
+|---|---|---|---|---|---|---|---|---|
+| Hospital_silent_local | 6,749 | 37 | 4 | **2.78×** | 4,989 | 3,185 | 600× (`IfcWallStandardCase\|IfcSlab` sat=11,200 mm mesh=19 mm max=213 mm) | 4.5 s / 0.67 ms per pair |
+| Terminal | 3,703 | 752 | 27 | 1.11× | 854 | 305 | 329× (`IfcSlab\|IfcColumn` sat=8,230 mm mesh=25 mm max=750 mm) | 2.2 s / 0.60 ms per pair |
+
+Verdict counts are IDENTICAL to main (Terminal meshTrue 3,703; film `§CLASH_FILM_BUILD trueClash=271
+… depthMesh=271/271 depthInexact=4 overlapFlat=1`). The film label's isolated pair (`Pipe Segment ×
+Structural Steel Column`) reads **`[50mm / 50mm]`** — the OBB proxy said 344 mm (`P9b … src=mesh
+obbWouldSay=344mm`). `witness_clash_film_labels.js` 19/19, `witness_clash_film_markers.js` 14/14.
+`witness_clash_mesh_narrowphase.js`: **I6 GREEN on both buildings, RED on main's module** (the field
+does not exist there); selfTest D1–D6 all PASS (D1 0.0300/1.0000; D2 0.2000/0.4000 with sat=0.4000;
+D3 0.2000/0.2000 from the inner element's 24 vertices; D4 0.2929/2.0000; D5 flat, max 0.4000; D6
+0.0200/0.4000). I5 bar raised 10 → 16.
+
+**Pre-existing RED on `origin/main`, measured with this same witness against main's module (not
+caused here, recorded so nobody re-derives it):** `S7b_touch_mesh_agrees` — two unit cubes face to
+face, OBB stage off, come back `CLASH@MESH tri=64 touch=56` (main's own `pass=9 fail=1`; the spec's
+§M.8 "pass=9 fail=0" no longer holds); I3 n=223 Terminal / 326 Hospital, all `OBB_SEPARATING_AXIS`
+rejects with obbDepth ~1e-7 that the oracle's segment-length rule calls hits; I1 n=2 Terminal
+`MESH_CONTAINED`. All three are the same hole: **a coplanar-edge contact yields intersection segments
+as long as the edge, so "segment > 1 mm" is not "interpenetration".**
+
+**⛔USER — `§TOUCH_BY_THICKNESS`: make `overlapFlat` the verdict?** (CLASH requires the overlap
+solid ≥ 1 mm thick.) Built and measured this session, then REVERTED to annotation-only before the PR:
+- It fixes S7b (16/16 synthetic), and reclassifies **752 Terminal / 37 Hospital / 1 film** pairs
+  from CLASH to `MESH_TOUCH_ONLY` (Terminal meshTrue 3,703 → 2,953). The film's label would show
+  `[25mm / 0mm]` on those today, which is the visible evidence.
+- The witness ORACLE could not follow it. Three independent formulations were tried — (a) a surface
+  probe half an eps beside the segment inside the crossing triangle's own plane, (b) the same with a
+  surface-distance margin, (c) a wedge probe 1 mm inside both solids via each triangle's normal, with
+  ray parity and then nearest-face winding — and each disagreed with the module on 190–240 pairs per
+  building, all multi-shell IFC geometry (walls with internal layer faces at z=0.008 in a 300 mm wall;
+  `IfcColumn`s of 1,614–4,170 vertices). The geometry itself says the module is right there: e.g.
+  pair `0GS8EptVTDJB592og1ikvL|0U3mIabljAR9M$KywVdUNF` has **90 column vertices strictly inside the
+  wall's box** and the column's z-range in the wall's frame is `[-0.142, 0.008]` inside a wall spanning
+  `[-0.142, 0.158]` — a 150 mm real overlap, which the oracle called "touch" because every crossing
+  sits on an internal or coincident face. Parity and nearest-face winding both break on such meshes.
+- So the choice is: (1) switch the policy on and accept a red I1 until an oracle that handles multi-
+  shell solids exists (generalized winding number is the known-robust test; not vendored), or (2) keep
+  annotation-only (current), or (3) switch it on for the FILM only (`clash_film.js` filters
+  `overlapFlat` out of its 271 — 1 pair on Hospital — leaving the narrowphase verdict alone). This is a
+  policy decision on what a "clash" is; not more measurement. Logs: session scratchpad
+  `cmn_T_p6e/f/g.*`, `cmn_H_p6e/f/g.*`, `labels_p6g.*`, `markers_p6g.*`.
+
+**Next after the decision:** the marker's shape — `overlapCenter` + `overlapA` (A-frame extents) are
+now on every record, so an oriented box of the real overlap solid (the "as in real Clash panel view"
+tier below full CSG, §CLASH_FILM_P3 item 3) is a `clash_film.js`-only change: place the instanced box
+at `overlapCenter` with A's rotation and `overlapA` as its size, instead of the severity cube. Not
+started — it changes the film's look, so it waits for the user's go.

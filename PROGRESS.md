@@ -10,86 +10,42 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-06 (later) — ⚠ RESUME HERE, GPU back, 5 PRs merged, one fix mid-verify
+## Current State — 2026-09-06 (session 3) — ⚠ RESUME HERE: clash film P2.4/HUD merged, mesh depth PR open, one ⛔USER
 
-**GPU driver fixed** (Secure Boot MOK enrolled, `nvidia-smi` confirms RTX 4060 live) — the blocker
-below is CLOSED, kept for history only.
+**Done this session, all witnessed, detail in `prompts/MEP_CLASH_REVEAL_MOVIE.md` (three new dated sections at the end):**
+- **`§SUN_ARC_TOPOUT_SNAP` VERIFIED** on a fresh Chrome profile (`--profile /tmp/silent-bake-fresh-<epoch>`) —
+  elevation 14.5° at u=0.419, 6.0° from u=0.441, held to the clip end; last night's "still 34.5" was the
+  stale-SW trap exactly as suspected. `#1685` was already merged. Clip `~/Downloads/cll/Hospital_topout_snap_verify_clip82-92s_2026-09-06.mp4`.
+- **`#1686` MERGED** — `§P2.4` label 3rd row `[tol mm / clash mm]` + `§CLASH_HUD_CARD` "271 mesh-true clashes
+  flagged · 1,478 bbox candidates · 81.7% false". Labels witness 15 → 19 claims (P9a/P9b/H0/H1). sw v1151.
+- **`#1688` OPEN, auto-merge armed** — `§MESH_OVERLAP_DEPTH`: the exact box of the overlap solid on every
+  mesh-true pair (`depthMeshM`, `overlapMaxM`, `overlapA/B`, `overlapCenter`, `overlapExact`, `overlapFlat`);
+  the label now reads the mesh figure — the shown pair is `[50mm / 50mm]`, the OBB proxy said 344 mm. Hospital:
+  SAT overstated by a median 2.78×, ≥3× on 3,185 of 6,749 pairs, worst 600×. Verdicts UNCHANGED. New I6 green
+  on both buildings, red on main. sw v1152. **Verify it landed** (`gh pr view 1688`) before building on it.
 
-**5 PRs merged to `bim-ootb` main tonight** (`fa71f162` tip): `#1676` mesh-true narrowphase,
-`#1678` clash pulses, `#1679` clash labels, `#1684` PL buildup gate + intensity heuristic, `#1683`
-Alt+S shadow-map leak fix. Real defect found+fixed along the way: `eslint.globals.json` never listed
-3 new cross-file globals, red-flagging all 4 chain PRs' CI though the code ran correctly — fixed with
-one JSON entry each. `sw.js` version collision (`#1676`/`#1683` both bumped v1142→v1143) resolved
-per house rule, final v1149. **Revert point: tag `pre-clash-pl-merge-2026-09-06` on `04e3dee2`.**
-Full detail: `prompts/MEP_CLASH_REVEAL_MOVIE.md` "Step 4 — CLOSED 2026-09-06".
+**⛔USER `§TOUCH_BY_THICKNESS`** (spec, end of the MEASURED section): make a flat overlap (< 1 mm thick) a
+touch instead of a clash? Fixes S7b (RED on main today) and drops 752 Terminal / 37 Hospital / 1 film pairs —
+but the witness oracle cannot judge multi-shell IFC meshes (3 formulations tried, each disagreed on ~200
+pairs where the geometry shows real overlap). Options 1/2/3 listed there. Built, measured, reverted to
+annotation-only pending the call.
 
-**Two small features speced+built this session, both correct, neither merged yet:**
-- `#1685` (`feat/clash-film-p4`, open PR, NOT merged) — `§SUN_ARC_TOPOUT_SNAP`: past the plan's
-  topout, the sun arc eases to the dramatic 6° Alt+S angle instead of crawling there at the film's
-  last frame. Pre-topout branch is untouched code (zero regression to outdoor shadow-sun correlation,
-  by construction). **NOT YET VERIFIED ON A REAL BAKE** — see the trap below.
-- `§P2.4` (clash-label tolerance/mm row) and `§CLASH_HUD_CARD` (reveal-round clash count) — SPECCED
-  in `MEP_CLASH_REVEAL_MOVIE.md`, plumbing fully traced (both are small, data already exists), but
-  **NOT IMPLEMENTED** — paused mid-investigation of the mesh-overlap-depth question (see below)
-  before coding started. `git status` clean, nothing half-written on disk.
+**Pre-existing RED on main, now recorded (not from this session's code):** narrowphase witness S7b
+(face-to-face cubes → CLASH), I3 n=223 Terminal / 326 Hospital, I1 n=2 Terminal — one hole: a coplanar-edge
+contact yields edge-length intersection segments, so "segment > 1 mm" ≠ interpenetration.
 
-**⛔ REAL TRAP FOUND, next session must know this before baking anything:** `cli_silent_bake.js`
-reuses a PERSISTENT Chrome profile dir keyed only by port (`/tmp/silent-bake-profile-8544` by
-default, `cli_silent_bake.js:42`) across every separate invocation. The `§CLI_BAKE_ENV sw=vNNNN` log
-line is **not proof of what's actually served** — it's read straight off the `sw.js` FILE ON DISK via
-regex (`cli_silent_bake.js:125`), not from the browser's active service worker. After many bakes
-tonight on the same port, a verification bake of the `§SUN_ARC_TOPOUT_SNAP` fix (commit `e56d1520`,
-clip 1:22–1:32/u=0.4188–0.4699) came back showing the OLD un-snapped elevation values
-(`elevation=34.5` at tNorm=0.419, exactly the pre-fix linear formula) — confirmed NOT a code bug by a
-3-frame debug bake with an inline `console.log` that never fired at all, meaning the browser was
-running stale cached JS the whole time, most likely an already-ACTIVE older service worker from an
-earlier bake in the same profile dir that hadn't been superseded (a new SW registers but doesn't
-necessarily take control mid-session). **Fix for next session: pass `--profile
-/tmp/silent-bake-fresh-$(date +%s)` (or any not-yet-used path) on the verification bake so a truly
-fresh profile with no prior SW registration is used** — do not trust `sw=` in the env log as proof of
-what's actually loaded. Re-verify `#1685` this way before trusting or merging it.
+**Still open from before:** PL "real play" post-topout is a design lever (`§BAKE_FILL_PIN` pins ambient/hemi/
+PL regardless of sun elevation; at 6° the sun 4.4 + hemi 0.617 still dwarf a 200-fixture pool ≈ 1.0 each) — ⛔USER,
+not more measurement. The real-overlap MARKER shape (oriented box from `overlapCenter`+`overlapA`) is a
+`clash_film.js`-only change now that the data exists — waits for a go since it changes the film's look.
 
-**Also flagged, not yet resolved, needs a user decision not more investigation:** PL "real play"
-(user requirement) is a SEPARATE lever from the sun-timing fix — `§BAKE_FILL_PIN` keeps
-ambient/hemi/PL scale pinned to the Alt+S baseline regardless of sun elevation, so snapping the sun
-alone does not guarantee the point-lights read as dominant indoors. Not attempted this session;
-flagged in `§SUN_ARC_TOPOUT_SNAP`'s spec as open.
+**Trap, still live:** `cli_silent_bake.js` reuses `/tmp/silent-bake-profile-<port>` across runs and its
+`sw=` env line is read off the file on disk, not the active service worker — pass a fresh `--profile` on any
+verification bake.
 
-**Mesh-overlap real depth (not the OBB/SAT proxy `severityM` — user's own catch, correct and
-important):** confirmed by code read that `severityM` is 100% the pre-mesh-stage OBB box depth,
-untouched by real triangle geometry even on a verified mesh-true CLASH. A true depth needs a new
-pass over the already-computed-then-discarded intersection segments in `clash_narrow.js`'s
-`enumerateContact` (segments exist, just aren't kept) — user agreed: do depth first, park full CSG
-solid shape. Scoped, not started.
-
-## Previous State — 2026-09-06 (earlier) — GPU driver blocker, now resolved (see above)
-enrollment (NOT the 590/595 "conflict" theory from earlier tonight, that was cruft, ruled out by a
-separate session). User is doing MOK enroll + reboot themselves; a separate session runs the 590
-package cleanup after. Until that lands, no real-GPU bake/witness is possible here — confirmed by
-two independent agents tonight hitting `NO_GL`/`nvidia-smi` failure. Full trace: `prompts/
-CPE_4D_PERF_MEM_STUDY.md` §R17 + its 2026-09-06 correction; GPU/Chrome signature catalogued as a
-NEW 4th cause in the `project_machine_chrome_firefox_gpu_launchers` memory file.
-
-**Shipped tonight, all open PRs on `bim-ootb`, none merged — user reviews:**
-- `#1683` — Alt+S GPU memory leak (128 MB sun shadow map never released after teardown), draft.
-  Also disproved the original dispatch theory (retained textures/programs are NOT a compounding leak).
-- `#1682` — dead man-days/cost HUD cards fixed (`_hrCost` now populates on the schedule cache-hit path).
-- `#1681` — **already merged** — sun-arc indoor-brightness fix (pins fill to Alt+S baseline for the
-  whole bake arc), shipped before this session even dispatched for it.
-- `#1684` — buildup light gate (no light before construction), disclosed type-based intensity
-  heuristic (real wattage data confirmed absent from every shipped DB), clash-marker occlusion
-  shine-through fix. All witnessed GREEN. Stacked on `#1678`→`#1679`.
-
-**Next when GPU is back:** run the saved, validated verification bake command (documented in
-`MEP_CLASH_REVEAL_MOVIE.md`, `--clip 0.1021:0.1532` = seconds 20-30 of the REAL 195.8s film, not the
-stale 278.8s DB value) — confirms markers shine through + label selection, produces the demo clip
-for the user to watch. Then: review/merge the PR chain above in order, and pick up the still-open
-`§CLASH_FILM_P3` backlog (mesh-true CSG intersection volume, mm overlap on label, discipline
-walkthrough beat, the clash-matrix HUD grid itself — cost cards are done, the matrix isn't).
-
-**To come back to this exact conversation** (not just this file): `claude --resume` (or
-`--continue` for the latest) in the same terminal — that restores the live thread itself; this
-PROGRESS.md entry + memory are the fallback for a genuinely fresh session instead.
+## Previous 2026-09-06 sessions — ARCHIVED into `prompts/MEP_CLASH_REVEAL_MOVIE.md` "Step 4 — CLOSED 2026-09-06"
+GPU driver fixed (Secure Boot MOK); 5 PRs merged (`#1676/#1678/#1679/#1684/#1683`), revert tag
+`pre-clash-pl-merge-2026-09-06` on `04e3dee2`; `#1681/#1682` merged earlier; eslint.globals.json fix.
 
 ## Current State — 2026-09-04 (later)
 
