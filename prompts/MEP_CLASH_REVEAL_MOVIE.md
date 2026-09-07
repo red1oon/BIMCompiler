@@ -1483,3 +1483,63 @@ under ~24 px, or either end behind the camera, is skipped **and the reason logge
 ⇒ The marking pass now prints `§FLYTHRU_DIM_DRAW NOTHING … diag=[…]` with a per-span reason instead of
 returning 0 in silence (PRIMAL LAW §4). A pass that draws nothing and says nothing is indistinguishable
 from one that worked — that is precisely what happened here.
+
+### 22. §MEASURE_CHARTING — how to use the snapper to work the abstraction list (handover, 2026-09-07)
+**The point of the tool is not screenshots. It is that a question about the film costs ~2 minutes
+instead of ~113.** Use it to CHART the Measure feature shot by shot, not to admire frames.
+
+**22.1 THE LOOP, per item on the §20/checklist.** Three questions, all answerable from one stream:
+1. **Is there a candidate on this building?** → `§FLYTHRU_CUE_PLACE` / `§FLYTHRU_CUE_DROP` name it, with
+   candidate count and window count. A DROP line tells you it is absent, not that the code is broken.
+2. **Is it on screen long enough?** → the placement line's window, and `§SNAP_FRAME visibleMeshes`.
+3. **Does its marking read?** → `§FLYTHRU_DIM_DRAW key=… marks=N spans=[…] panelRows=N`, then the PNG.
+⚠ **Snap INSIDE the hold, never at its edge.** Read the window off `§FLYTHRU_CUE_PLACE` first. MEASURED
+traps: `t=13.00` missed the corridor (window 13.05–15.25), and `t=0.00` draws NOTHING because the
+envelope's window opens at 0.0 but its fade-in leaves opacity 0 at that instant
+(`§FLYTHRU_DIM_DRAW INACTIVE … windows=[envelope:0.0-2.2 …]`). Use 0.7 s to see the opening cue.
+
+**22.2 THE ABSTRACTION LIST — the eight shots (user, 2026-09-07), and what each still needs.**
+| # | Shot | State | Next question for the snapper |
+|---|---|---|---|
+| 1 | Ground plane + **ONE** vertical plane | spec only (§17) | does the enclosure read at 0.7 s? |
+| 2 | Storey floor plate + area | **draws** (marks=3) | is the plate the one on screen at that second? |
+| 3 | Hall or room | rooms draw; **halls not derived** | does a hall exist once §20.7 clustering lands? |
+| 4 | Highest point in a hall | not built | — |
+| 5 | Corridor length | **draws** (marks=1) | is 13.05 s the best window? |
+| 6 | One opening, door or window | not built | ⚠ HHS has **no** `IfcWindow` — accept either |
+| 7 | One MEP set, if any | not built | — |
+| 8 | Opportune extras | not built | — |
+⇒ **2 of 8 shots draw today.** 1 and 3 are the next two, and both are blocked on the same clustering.
+
+**22.3 ⛔ THE DEFECT THAT OUTRANKS THE LIST.** Every number describes the FINISHED building while the
+film shows it being built. `§FLYTHRU_CUE_ON key=storey filmSec=2.75 "Level 1 — Floor 11,678 m²"` fires
+at **3.9 % of construction**. Existence-at-time (§21) must gate a cue before any more shots are added,
+or eight shots will each state a completed figure over a half-built subject.
+
+**22.4 MEASURED TODAY, feeding the list — two settled, two NOT earned.**
+✅ **Envelope: drop rogue boxes FIRST, then cluster.** Order is load-bearing — clustering alone returns
+ONE component covering everything, because a rogue 48 × 131 m `IfcStair` box physically BRIDGES the
+building to the outliers. After dropping: Hospital 164.78 → **126.5 m** on Y, separating a 62 m² island
+of railings genuinely sited 29 m out; HHS 82.35 × 59.89 → **67.50 × 58.50 m**, one 2 m² island.
+✅ **Grid lines from WELL-SPACED COLUMNS beat the shipped detector.** Cluster column centres at a 6 m
+minimum separation: Hospital **15 × 14** lines, median bay 6.44 m; HHS **9 × 8**, median 6.5–7.2 m. Both
+coherent — where `GridDims` returns Hospital's incoherent `1417 | 99155 | …` ladder (§18). No rules DB,
+no vote weights.
+⚠ **NOT EARNED — the 6× class-median rogue threshold.** It also discards 43 `IfcWallStandardCase`
+(Hospital) and 4 `IfcCurtainWall` (HHS), which are legitimately long. Hospital's cleaned Y of 126.5 m is
+**7.4 m SHORTER than the structural envelope**, so it is cutting real building. Mechanism proven,
+constant not.
+⚠ **NOT EARNED — the 6 m column separation.** Chosen as a sensible structural minimum, not derived.
+Under §12 it must come from the column-spacing distribution itself.
+**Storeys for the elevation lines:** HHS clean (3 levels). Hospital stores 23 rows including
+`Level 1 Ceiling` / `Level 2 TOS` — **fold the pseudo-levels out** (→ ~8) or lines appear where no floor
+is. ⚠ Schema differs: Hospital has `elevation`, HHS has only `center_z`. Needs a fallback, not one query.
+
+**22.5 USER RULINGS this session that change earlier sections.**
+- **ONE vertical plane, not two** — the ground carries length and breadth, one plane carries height, the
+  second only repeats it. Also removes §17.2's per-frame two-plane back-face test.
+- **All dimensions in, and ONLY in, the label box** — L/W/B + area + volume together. This SUPERSEDES
+  §20.11's "single number → arrowed line" for these cues.
+- **The label box sits OUTSIDE the envelope**, clear of the buildup. Today it anchors at the box centre
+  and offsets 26 px, so it lands ON the building by construction.
+- **The envelope must hug the ground structure** — see 22.4.
