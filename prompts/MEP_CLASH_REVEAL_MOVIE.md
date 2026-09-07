@@ -1620,3 +1620,52 @@ closes. It does mean the opening frame shows a sparse chain plus both overalls.
 **⛔ NEXT SESSION — the snap formula.** Second zero is settled; the open question is which second to
 snap next and why. Everything else in §22.2 still stands: 2 of 8 shots draw, and §22.3's defect — every
 number describing the FINISHED building while the film shows it being built — outranks adding more.
+
+### 24. §DATUM_LABELLING — the redo brief (user, 2026-09-07). START A NEW SESSION HERE.
+> *"update prompt to do labelling well. Due to cramming of space, u can always align in parallel to the
+> line. Avoid diff coloring as outright well laid out lines bubbles will point to the right picture.
+> Font been bold is like shouting and noise. Organise that u need not label every small inner lengths
+> simply not smart. Selective, good design."*
+
+**The current annotation is SLOPPY and is not to be patched further — it is to be redone.** What shipped
+works arithmetically (the chain adds up on both buildings) and looks wrong, which is the worse failure.
+
+**24.1 THE FOUR RULINGS.**
+1. **TEXT RUNS PARALLEL TO ITS LINE.** Rotate the value to the dimension line's own angle. Horizontal
+   text on an angled string is what forces the value out into space and causes the cramming.
+2. **ONE INK. NO COLOUR CODING.** Bays were near-white and overalls yellow; that was me signalling
+   hierarchy with colour. *"outright well laid out lines bubbles will point to the right picture"* —
+   position and structure carry the hierarchy, not hue. (§7's yellow stays for MEASUREMENT CUES, which
+   are a different layer; the datum is drafting furniture and should read as one quiet system.)
+3. **NO BOLD.** *"like shouting and noise"* — regular weight throughout, and rely on the halo for
+   legibility over the model.
+4. **SELECTIVE, NOT EXHAUSTIVE.** *"u need not label every small inner lengths simply not smart"* — a
+   good drawing dimensions what a reader needs, not everything it can. Label the overall always, and a
+   sparse, regular sample of the chain. Labelling all 27 Hospital bays was never the goal.
+
+**24.2 NO BOXES ON VALUES — already fixed, keep it that way.** A dimension figure sits in the BREAK in
+its own line; a level datum sits on its line with a tick. The earlier "outlined box, not filled" ruling
+was about the PANEL (a container for a SET of numbers) and I wrongly applied it to every individual
+figure, putting a yellow rectangle round every number. That is what made it ugly.
+
+**24.3 THE STRUCTURAL FAULT UNDERNEATH — there is no layout pass.** Bubbles, bay chain, overalls and
+level tags are four independent loops, each deciding alone whether to draw, with nothing coordinating
+them. MEASURED consequences: Hospital drew **11 of 27** bays — a chain with 16 random gaps, which reads
+as broken rather than thinned; HHS clamped **10 of 17** bubbles onto the frame edge, a row of debris.
+**The redo needs ONE pass that:**
+- measures the plan's on-screen size FIRST, and scales every offset from it (fixed pixel offsets crowd
+  a small plan and scatter a large one);
+- picks ONE thinning stride for the chain — `0 → N → 2N → last`, which still spans the full extent so
+  the chain sums to the overall exactly;
+- treats bubbles as ALL-OR-NONE per axis (a stranded row is worse than none);
+- guarantees the overalls, which are the headline figures;
+- places every label against a shared occupancy register so nothing lands on anything else.
+⚠ A partial version of this landed 2026-09-07 (stride, all-or-none, proportional offsets) but was NOT
+verified against a frame. Treat it as untested scaffolding for the redo, not as working.
+
+**24.4 WHAT IS SETTLED AND MUST NOT BE RE-LITIGATED** — §23 measured all of it:
+ground grid from real column centres (Hospital 15 × 14 @ 6.48 m, HHS 9 × 8 @ 6.54 m) · bubbles numerals
+on X / letters on Y skipping I and O · two-tier bay + overall with the overall spanning bubble-to-bubble
+carrying its grid refs · upright = LEVEL LINES ONLY with name + LOCAL elevation · annotation on the near
+edges chosen per frame (bottom by lowest projection, left by leftmost — different tests) · the plane on
+the FAR side, depth-tested so the build occludes it · **view-space depth for clipping, never NDC z**.
