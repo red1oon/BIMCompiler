@@ -1593,6 +1593,30 @@ corners in frame, one 40% past the edge). Frame 98,289 bytes against 49,333 blan
 `max(6, filmSec × 0.094)` plus a 2 s fade. **On HHS it is GONE by 8 s**, so a snap at 8 s or 20 s draws
 nothing and logs nothing — that is not a failure. Hospital's window is ~18.4 s and spans all three cues.
 
+**23.1 FINISHED 2026-09-07 — both buildings, and three fixes worth carrying.**
+| | Hospital | HHS |
+|---|---|---|
+| marks at t=0 | **50** | 33 |
+| grid | 15 × 14, bay 6.48 m, 604 columns | 9 × 8, bay 6.54 m, 257 columns |
+| level tags | **8** (from **56** raw rows) | 3 |
+| datum offset | **+156.61 m** applied | none needed |
+| bays drawn | 11/27 | 13/15 |
+| overalls | **2/2** | 1/2 |
+| chain | X 95.915 = 95.915, Y 88.227 = 88.227 | X 54.744 = 54.744, Y 52.491 = 52.491 |
+| bytes vs blank | 169,412 vs 17,840 | 98,289 vs 49,333 |
+
+⛔ **THE CLIP TEST WAS WRONG AND IT AFFECTED EVERYTHING.** Points were rejected on NDC `z >= 1`, which
+means **beyond the FAR plane — not behind the camera**; such a point still projects to valid screen
+coordinates. MEASURED: an overall declined with `z=0.99,1.23` purely because its far end sat past the
+far plane. Bubbles and level tags were dropped on the same test. **Test VIEW-SPACE depth, never NDC z.**
+⚠ **HHS's 1/2 overall is CORRECT, not a defect** — one end of that axis is genuinely behind the camera,
+which a straight dimension cannot reach. A drawing picks a viewpoint where both ends are visible; a
+film camera does not. The overall carries its own lower floor (12 px vs the bay's 26 px) so it does not
+vanish merely from foreshortening, and logs its reason when it still declines.
+⚠ **Hospital draws only 11 of 27 bays at t=0** — a 6.5 m bay on a 116 m building seen from 100 m is a
+few pixels wide, so the readability floor drops them. Not a fault; the inner tier fills in as the camera
+closes. It does mean the opening frame shows a sparse chain plus both overalls.
+
 **⛔ NEXT SESSION — the snap formula.** Second zero is settled; the open question is which second to
 snap next and why. Everything else in §22.2 still stands: 2 of 8 shots draw, and §22.3's defect — every
 number describing the FINISHED building while the film shows it being built — outranks adding more.
