@@ -1622,6 +1622,14 @@ snap next and why. Everything else in §22.2 still stands: 2 of 8 shots draw, an
 number describing the FINISHED building while the film shows it being built — outranks adding more.
 
 ### 24. §DATUM_LABELLING — the redo brief (user, 2026-09-07). START A NEW SESSION HERE.
+> ⛔ **GATE — SOLVE THIS FIRST, AND GET THE USER'S AGREEMENT BEFORE MOVING ON** (user, 2026-09-07:
+> *"Tell prompt to solve that first, let user agree before moving to the next"*).
+> **Nothing else in this lane proceeds until the labelling is right and the user has said so.** Not the
+> snap formula (§22), not the remaining six shots of the abstraction list (§22.2), not the
+> existence-at-time defect (§22.3) — however tempting, since that one outranks the shot list on merit.
+> **The user's agreement is the gate, not the log lines.** A green `§FLYTHRU_DATUM_MARKS` and an exact
+> chain were BOTH true while the annotation looked wrong — that is precisely how this lane got here.
+> Iterate on the labelling with the snapper (seconds are cheap now, §21), show the frame, and WAIT.
 > *"update prompt to do labelling well. Due to cramming of space, u can always align in parallel to the
 > line. Avoid diff coloring as outright well laid out lines bubbles will point to the right picture.
 > Font been bold is like shouting and noise. Organise that u need not label every small inner lengths
