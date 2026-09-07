@@ -2575,3 +2575,21 @@ film `~/Downloads/Hospital_12s_clash_measure_slab_2026-09-08.mp4`, 288 f = 12.00
 `§LINEAR_BEAT` next, reading §28.2's HHS clock (76.0 s film after §30, dive 0.054) and §26.9's real
 Hospital pool; (c) the cues module's storey window moved 5.8 → 2.7 s between the 3 s and 12 s Hospital
 bakes (its own placement, not touched here) — worth a `§FLYTHRU_CUE_PLACE` line naming why.
+
+**26.12 THE MP4 ITSELF — what has and has not been proven (2026-09-08, user: *"Have you checked the mp4 for
+proof the Measure is working well?"*).** Honest state: the §-log proves the layers were COMPOSITED (drawn
+counts, tint touched, label on/off, 0 failures) and ffprobe proves 288 frames / 12.000 s. The PIXELS were
+then measured, not eyeballed (`out/frames_h12/`, `out/frames_h12q/`, numpy):
+- Hue-band counts move the right way at the pop (amber 8 → 627 → 684 px over 0.8 → 1.5 → 2.2 s; yellow up
+  when the label appears) but the bands are CONFOUNDED by the sunset arc and the storey cue — not proof.
+- Whole-frame mean V falls 0.86 → 0.54 between 0.75 and 1.5 s and stays ~0.5; dark fraction (V<0.12)
+  never exceeds 0.05 — so the plate popping darkens the frame (concrete over bright ground), and the
+  tint's instance-colour path did NOT black out sibling instances. Not a defect.
+- The datum's exact-ink count (#c9d3df ±14) collapses 3,487 → 29 px at 1.5 s while `drawn` stays 54–58:
+  the 2D marks are drawn with `globalAlpha=op` over a changing background, so an exact-colour proxy is
+  meaningless once the plate is under them. Not a defect; a bad proxy.
+- The label's world rectangle projected through each frame's recorded pose (fov 60): inside-box saturated
+  fraction 0.107 vs 0.006 control at 2.2 s (the yellow text/border), but ~0 at 1.5 and 3.0 s → INCONCLUSIVE.
+**The one measurement that would be proof: an A/B bake** — the same 12 s clip with `--no-measure`, then a
+per-frame |on − off| pixel mask: its count must be 0 where no Measure element exists, and its footprint
+must sit on the datum planes, the plate's X and the label box. One 3-minute GPU run, user's go.
