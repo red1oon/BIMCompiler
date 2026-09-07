@@ -2424,3 +2424,116 @@ through, so it holds while they are in it.
 4. **The premise that "most bakes land in the hall first" is a claim about the PATH GENERATOR, not the
    building.** Hospital's path is authored; HHS's and Terminal's are derived. Check it with
    `plan.poseAt` in the same probe §26/§27 already owe — do not assume it across buildings.
+
+### 29. §ENVELOPE_BOX_DEPRECATED — the opening envelope tint goes; the 2D dims and the panel stay (user, 2026-09-08)
+> **USER:** *"Remove the whole starting envelope tint as it is not needed. The whole envelope box
+> supposed to be deprecated. Just the 2Ds and the box label is good enough. But make the box label
+> persist 2 more secs."* (said after watching `Hospital_3s_clash_measure_2026-09-08.mp4`, whose first
+> 2.2 s carry the B1 envelope cue: a 3D fill+outline box round the building PLUS the 2D arrowed
+> X/Y/Z dimension lines and the Ground m² / Envelope m³ panel.)
+
+**Ruling → code (`viewer/cpe_flythru_cues.js`):** (a) `flythruCuesApplyVisual` never shows the 3D
+group for `key === 'envelope'` — no fill, no outline — and says so once (`§FLYTHRU_ENVELOPE_BOX
+deprecated`). The other cues (storey/room/corridor) are untouched by this ruling. (b) the 2D arrowed
+dimension lines keep the §14 slot (0.0–2.2 s). (c) the PANEL ("box label") persists **2.0 s** past the
+slot: full for 1.4 s, then the same 0.6 s fade — `§FLYTHRU_DIM_DRAW key=envelope panel-hold`. Storey's
+window opens at 5.8 s on Hospital, so nothing overlaps. Witness: `witness_flythru_gate.js` (§6) plus
+the next bake's `§FLYTHRU_DIM_DRAW` lines.
+
+### 30. §CLI_BAKE_HOME — a bake opens from the viewer's Home frame, like the snapper (user, 2026-09-08)
+> **USER:** *"The HHS opening frame has to be some distance away to let the dive in catch the 2D Z
+> plane. Trust your surgical judgement in the code and WITNESS log debugging."*
+
+**Measured cause (§28.2):** the plan's opening station is the LIVE camera (`§CINEMA_PIVOT`), and a
+headless page is left wherever the load put it — HHS opened at **8.7 m up, 49.8 m out** and dived
+underground by 3.1 s; Hospital's load camera happened to equal its Home frame, which is why its frame 0
+matched the snapper. `scripts/snap_timeline.js` already presses the viewer's own Home key before
+planning (default on; MEASURED there on HHS: 70.0 m above base, 98 m out, whole building in frame).
+**Ruling → code (`cli_silent_bake.js`):** press Home (the real key, dispatched on document + window,
+exactly the snapper's mechanism — not a copy of `_homeFillFrame`'s formula) after `§CLI_BAKE_LOADED`
+and BEFORE any `cinemaPathPlan` call; log `§CLI_BAKE_HOME camera=… (was …, moved=0|1)`. `--nohome`
+opts out. Expected: Hospital `moved=0` (film byte-identical), HHS `moved=1`. Not a path edit — the
+stored waypoints are untouched; only the opening station moves.
+
+### 26.8 §SLAB_BEAT — IMPLEMENTATION (2026-09-08, branch `feat/flythru-cues`, bake HELD by the user)
+> **USER:** *"Hold on the bake until u done present dive in slab catch. Then we can have 12 seconds."*
+
+- **`viewer/cpe_slab_beat.js`** (new, wired in `viewer.html` / `main.js` / `cinema_maxq.js` beside the
+  datum; `sw.js` v1162→**v1163**). Rides the Alt-C **Measure** checkbox. Build once, per-frame apply,
+  dispose, `A.slabBeatReport()` for the witness. Never-kills-a-bake try/catch at all three call sites.
+- **The clock is the owner's, not the PoC's.** §26.6.3 is answered: the pop second is found by
+  bisection over `A.buildupTAt` + `A.buildupCursorAt` (with the bake's own `nFrames/fps`), and a plate
+  POPS when its op's `end_ts <= cursor` (`renderAtTime`). `§SLAB_BEAT_CLOCK` prints filmSec, diveSec,
+  topoutU and a monotonicity check (INCONCLUSIVE if the clock is not monotone). §26.5's **10.31 s** was
+  the linear day map — the witness below records the owner's number.
+- **Frustum (§26.6.1)** is `plan.poseAt` at the plate's OWN second, a cloned perspective camera, the
+  crossing must be in front and inside NDC; `§SLAB_BEAT_FRUSTUM` prints corners in front/inside, the
+  projected diagonal in px and camera distance. Ranking is longest hold first; the first in-frame,
+  floor-plate pick wins; the rest are reported as not taken.
+- **Semantic withdrawal (§26.6.2)** is geometric, not a constant: walkable ⊆ plate ⊆ bbox, so a pick
+  whose bbox area is smaller than its storey's `storey_walkable_raster` area cannot be that storey's
+  floor plate → `§SLAB_BEAT_SEMANTIC … NOT-A-FLOOR-PLATE`, beat withdraws. No raster → INCONCLUSIVE, drawn.
+- **Layers (§26.2):** tint by GUID (clone-per-material emissive, instanced/batched `setColorAt`, exact
+  restore — the `cpe_storey_reveal.js:249` pattern); X = `LineSegments` on the top face, depth-tested;
+  label = a textured plane **in the plate's plane** (§25.1), `depthTest:false renderOrder 900`, width a
+  third of the shorter side, reading direction chosen ONCE from the pose at the pop. Envelope
+  0.6/1.0/0.6 (2.2 s, = §14's slot); label persists while its crossing is in frame. Tint that touches
+  0 meshes says `NO-MESH` and retries quietly on later frames (the pop can land a frame after the
+  bisected second); it reports how many frames late.
+- **Witness `viewer/tests/witness_slab_beat.js`** — real page, real stored path, Time Machine primed the
+  way the bake primes it, cursor driven by the same two owners; population = the build's event rows;
+  asserts §26.7's list; red control breaks the label/box agreement. Log → `out/witness_slab_beat.log`.
+
+**26.9 MEASURED — the witness's first runs (2026-09-08, `out/witness_slab_beat_nostream2.log`,
+`out/witness_slab_beat_hhs_nostream2.log`; 16/16 PASS each, no-stream, so the tint invariant is
+INCONCLUSIVE there and says so).**
+
+| | Hospital (`--dur 195.8`) | HHS (`--dur 72.3`, Home-framed) |
+|---|---|---|
+| pool under the BAKE's clock | L1 **1.06 s** · L2 3.84 · L3 5.92 · L4 7.07 · L5 8.43 · L6 9.34 … | L1 **0.00 s** (already placed at frame 0) · L2 12.31 · L3 23.16 · Roof 27.23 |
+| dive | 18.28 s (0.093) | 3.88 s (0.054) |
+| pick | **Level 1 @ 1.06 s, hold 4.86 s**, 8,899 m², `Concrete-150 mm slab on 300mm base`, ratio 1.37 FLOOR-PLATE, frustum 3/4 corners in, 125 m | **Level 1 @ 0.00 s, hold 12.31 s**, 3,518 m² `STB 30.0` (+ `FB 15.0 - Fliesen 50 x 50` stacked, in vertical contact), ratio 1.68, frustum **4/4**, 94 m |
+| rejected | L3 (L2 @3.84 and L4 @7.07 within 2.2 s, dz ±5.00 — not in contact), L5 (L6 @9.34) | none in the dive; L2/L3/Roof after it |
+| label | `98.57 × 90.29 m = 8,899 m² (est.)` 30.1 × 7.5 m in-plane, yaw 90° | `65.84 × 53.44 m = 3,518 m² (est.)` 17.8 × 4.5 m |
+
+**Three findings, each a correction to something written above.**
+1. **§26.5's 10.31 s was the PoC's linear day map; the bake's clock lays Hospital's Level 1 at
+   1.06 s** and a floor every 1–3 s after it (§CPE_BUILDUP_ONSET_BLEND pulls the early schedule
+   forward). The "9th-second plate" the user read in the full film was therefore NOT Level 1 popping —
+   at 9 s five plates are already down. §26.5's placement table is superseded by the witness's
+   `§SLAB_BEAT_POOL` line; the selection rules themselves (hold ≥ 2 s, no uncontacted co-arrival within
+   the envelope, one per film) stand and now pick Level 1 at 1.06 s.
+2. **§26.4.5's stacked-layer test needed vertical contact.** Plan overlap alone merged Level 2 into
+   Level 3 (100 % overlap, 5.00 m apart) as "one floor in two layers". Now a stacked layer must also
+   touch (|Δz| ≤ half-thicknesses + 0.05 m); HHS's structural+finish pair still merges, Hospital's
+   storeys no longer do — they become the fragmenting co-arrivals that reject L3 and L5.
+3. **§CPE_CLIP_BUILDUP_FILM_T — a clip laid the building on a different clock from the film.** The
+   loop passed `nFrames/fps` (the CLIP's length) as the onset-blend's film total: `onsetU = min(0.5,
+   10/3.0)` on the 3 s bake vs `10/195.8` on the film. The 3 s bake showed `placed=2620` at 3.0 s; the
+   full film's clock (witness cursor line) says **1,881**. Third instance of the class
+   (§CPE_CLIP_REVEAL_FILM_T, §CPE_CLIP_SUN_ARC_FILM_T); fixed to `_filmSecFull` for the cursor and the
+   ghost-ground fade. **Prediction for the 12 s bake: `§CPE_BUILDUP placed≈1881` at 3.0 s and ≈7488
+   at 8.5 s.** If it prints otherwise, the clocks still differ.
+
+**§30 correction.** The Home key must be dispatched ONCE, on `document`. The snapper's double dispatch
+(document + window) fired `§ROOM_HOME` twice and left the plan opening from the load camera
+(41.4, 8.7, −27.7); a single dispatch opened HHS at (48, 64, 48) with the plate 4/4 in frame at 94 m.
+`cli_silent_bake.js` does the single dispatch and prints `moved=`.
+
+**§30 CORRECTED (same day) — the opening is the SAVED VIEW, and the DATUM is the gate, not Home.**
+MEASURED: both silent DBs carry a `scene_state` row and `main.js §SCENE_STATE_RESTORE` sets the camera
+from it at load. So a bake opens from the user's own saved view: Hospital's (85.5, 70.0, 58.9) — where
+the datum draws 37/37 bubbles + 3/3 overalls — and HHS's (41.4, 8.7, −27.7), 4/8 envelope corners in
+frame, 47 m from the centre, where it draws 37 of 40. Pressing Home unconditionally would have MOVED
+Hospital: with the model streamed, Home frames from `A.buildingCentres` → (90.5, 120.7, 90.5), not the
+film the user knows. **Rule shipped in `cli_silent_bake.js` as `§CLI_BAKE_OPENING`:** the film opens
+from the saved view; if Measure is on and the datum's own layout pass at filmSec 0 reports the drawing
+NOT wholly in frame (`bubbles < total` or `overalls < 3`, read off `A._flythruDatumLast`), Home is
+pressed once and the datum re-judged. No distance threshold anywhere: the owner of "is my drawing in
+frame" decides (§17: the datum must be up at second 0). Measure off → the saved view stands, and the
+log says the gate did not apply. `--nohome` skips the gate; `--opening-only` judges and exits (no GPU).
+
+**§28.2 addendum — item 2 now closes on HHS too.** Under §30's gate (`--opening-only`, 2026-09-08)
+HHS's bake opening is Home (48, 64, 48) and the datum reports **drawn=40, 20/20 bubbles, 3/3
+overalls** — the snapper's recorded number. The two consumers agree on both buildings once the bake
+opens where the snapper opened. Hospital is untouched (saved view kept, drawn=74).
