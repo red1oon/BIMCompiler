@@ -1191,8 +1191,10 @@ witness on this stack** — its behaviour above is from this study, not from a s
 3. **A per-storey plan beat is available whenever wanted** via `detectGridsAtPlane` + `DimChains` at a
    storey's cut level, on any building whose ladder is coherent. Recorded as available; not scheduled.
 
-### 17. ⚠ A PER-FRAME `markDirty()` STALLS A BAKE DEAD (measured 2026-09-07 — read this before adding ANY per-frame film hook)
-**Applies to the concurrent 2D/3D grid work too, and to every future film module.**
+### 19. ⚠ A PER-FRAME `markDirty()` STALLS A BAKE DEAD (measured 2026-09-07 — read this before adding ANY per-frame film hook)
+**Applies to §17's datum planes and every future film module.** (Renumbered 17→19: the datum-plane
+session took 17/18 concurrently. Their §17.2 does a per-frame back-face test and their planes draw
+every frame — this section is exactly the trap that work can fall into.)
 
 `viewer/cpe_flythru_cues.js` called `A.markDirty()` each frame while a cue was on screen. The bake
 stopped at **frame 12 of 294 and never advanced** — no error, no abort, just a frame counter that stops
