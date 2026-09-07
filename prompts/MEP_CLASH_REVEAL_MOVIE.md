@@ -651,26 +651,78 @@ meshes only. Neither resolves an instanced/batched element. Three probe runs wer
 `A.flythruFrameMap(dbEnv, sceneBox)` — it DERIVES the axis swap and offset by matching extents, and
 degrades to identity rather than inventing one.
 
-### 3. MEASURED AVAILABILITY (real per-element, verified 2026-09-07)
-| Class | Count | Real dimensions | In? |
-|---|---|---|---|
-| Building envelope | 1 | 115.8 x 164.8 x 47.0 m, perimeter 562 m, vol 897,404 m³ | IN — the opener |
-| Storey footprint | 8 | e.g. Level 1 112.5 x 133.9 m = **15,072 m²** | IN — area only |
-| Rooms | 8 compiled | REAL rects via `_allRoomVolumes()` | IN — see §5 |
-| Doors / Windows / Openings | 440 / 131 / 735 | 1.20x2.17 / 2.28x3.59 / 2.48x2.23 m | IN |
-| Ducts / Pipes / Cable trays | 4,816 / 14,452 / 84 | sections 1.33 / 0.86 m, runs to 69 m | IN |
-| Halls, clear space, atrium | none in IFC | cast-derived | IN — the differentiator |
-| Beams, coverings, members, walls | — | honest now, but not spatial | **OUT** — 1,970 beams would flood |
-⛔ **Storey VOLUME is not derivable**: the per-storey height column is contaminated by risers/facade
-spanning storeys (Level 1 reads 43.9 m). Area is sound; volume would be wrong by several times.
+### 3. THE MEASUREMENT MODEL — two primitives, any building (REWRITTEN 2026-09-07 from the user's storyboard; replaces the class-organized availability table, which was an inventory shrunk to one each)
+**The generalization is smaller than it looks.** Every beat the user storyboarded is one of TWO
+measurements. Nothing below is class-specific, so a building with unseen classes still measures.
 
-### 4. THE STRONGEST CUE IS THE DERIVED ONE
-This building has **ZERO extracted `IfcSpace`**. A hall measured from geometry — breadth wall-to-wall,
-length into the POV, headroom under a tray — states a spatial fact the IFC does not contain. Ranked by
-how unobvious the claim is: hall/clear-space > duct section+run > openings > envelope.
-**Three casts from the camera give the space you are in**: left-right = breadth, forward = length, up
-= height → floor area and volume, with no `IfcSpace`. ⚠ It is the FREE SPACE around the camera, not the
-architectural room (a column shrinks it) — label it "clear space", never "room".
+**3.1 Primitive A — the material chord.** `flythruChord(origin, dir, stop) → {dist, p0, p1}`. A segment
+from an origin along a direction, ended by a stop predicate. Only the predicate changes:
+`solid` (any material) · `surface:horizontal-large` (a ceiling/floor, not a light fitting) ·
+`element:self` (one element's own extent) · `system:same` (a run). **Every linear number is this.**
+
+**3.2 Primitive B — the occupancy raster.** `flythruRaster(elements, plane, cell=0.5m) → {area, perimeter,
+loop}`. Rasterize element XY extents, count cells for area, trace the boundary for perimeter. Needed
+because **a chord cannot give area on a concave plan**, and a bbox product silently lies about one.
+
+**3.3 Why the raster is not optional — the bbox states a WRONG number on most buildings.**
+Second-0 wants *Volume* and *Ground area*. Both are bbox products today: envelope
+`115.8 x 164.8 x 47.0 m` → `897,404 m³`, ground `19,084 m²`; Level 1 `112.5 x 133.9` = `15,072 m²`.
+This Hospital is a near-rectangular mass, so those are roughly honest **here**. On an L-shape or a
+courtyard the bbox counts the empty arm as floor. The ask is "works for any building" — so bbox area is
+a **generalization failure, not an approximation**.
+⚠ Envelope volume from a bbox is AIR, not building. Label it **"envelope volume"**, never "building volume".
+
+**3.4 Three anchors, and there are only three.** `model` (envelope) · `storey base plane` (floor space,
+slab width) · `camera` (corridor, height, room). Every beat picks exactly one.
+
+**3.5 THE SEVEN BEATS** — the user's storyboard, resolved to primitives. `t` = narrative intent; the
+actual second is ASSIGNED from precomputed path windows (§6/§9), since the camera path is known before
+the bake. This is an assignment problem, not a live gate.
+| # | Beat | t | Number shown | Primitive | Origin · direction | Stop | Anchor |
+|---|---|---|---|---|---|---|---|
+| B1 | Building envelope | 0 s | X/Y/Z, envelope volume, ground area | chord x3 + raster | model centre · world X,Y,Z | outermost material | model |
+| B2 | Storey floor space | after B1 | area (+perimeter) | raster | that storey's slabs · XY | — | storey base |
+| B3 | Room, traversing corridor | on traverse | rect, area, volume | injected rect (a precomputed chord pair) | camera XY inside union | room rect | camera |
+| B4 | Slab width across | 8 s | width | chord | camera · perpendicular to forward, in slab plane | slab edge | storey base |
+| B5 | Corridor length across | 22 s | length | chord | camera · forward | any solid | camera |
+| B6 | Ground → highest ceiling | before the stair | clear height AND total height | chord (two stops) | ground · up | first hit = CLEAR · first large horizontal = CEILING | camera |
+| B7 | HVAC duct system | during Reveal | section, run length | chord x2 | duct centre · across, then along | `element:self` · `system:same` | camera |
+
+**3.6 What carries over from the old table** (counts still verified 2026-09-07): storeys 8 · rooms 8
+compiled · doors 440 · windows 131 · openings 735 · ducts 4,816 · pipes 14,452 · cable trays 84 ·
+duct/pipe sections 1.33 / 0.86 m, runs to 69 m. **Beams, coverings, members, walls stay OUT** — honest
+but not spatial; 1,970 beams would flood the film.
+⛔ **Storey VOLUME is still not derivable**: the per-storey height column is contaminated by risers and
+facade spanning storeys (Level 1 reads 43.9 m). Area is sound — but now via the raster (3.2), not a bbox.
+
+**3.7 Honest degradations — no fabricated nouns.**
+- *"before the staircase"* → anchor to the path sample nearest an `IfcStair`. **No stair in the model** →
+  fall back to the longest vertical chord and say nothing about stairs.
+- *"storey 3"* → never hardcoded. Pick the storey the camera passes through, else the largest by raster area.
+- **No room injection ran** → B3 is skipped, not faked. Injection provenance is drawn per §5.
+
+**3.8 RUDIMENT FIRST — the first attempt is B1-B3 only** (user, 2026-09-07: *"This is a first attempt of
+the latest leg, let's see something rudiment first. We then iterate from there."* and *"balance complexity
+with practicality"*).
+**B1, B2, B3 need ZERO raycasts and introduce ZERO stop predicates** — they are pure reads of data already
+resident (model bbox, storey slabs, injected room rects) plus the raster. Ship those three, look at them
+moving in a real frame, THEN add B4-B7, which is where the chord's directional cases begin.
+Do NOT build the chord's predicate family before B1-B3 have drawn once. A cue graphic that has never
+survived a real frame is the defect this lane already has (§10.4).
+
+**3.9 Prerequisite, unchanged and blocking.** The DB→scene transform (`flythruFrameMap`) must be verified
+against a known mesh first — §10.1. A wrong transform breaks the chord and the raster IDENTICALLY, so no
+output from either is trustworthy until that number is in hand.
+
+### 4. THE STRONGEST CUES ARE THE ONES THE IFC DOES NOT CONTAIN
+This building has **ZERO extracted `IfcSpace`** — and BIM-OOTB already closes that hole itself: the
+compiler INJECTS rooms and the Find Panel consumes them (`navigate_find.js:783-797` needle, `:2171`
+`_allRoomVolumes()`; see §5). So "the IFC has no spaces" is not a gap the casts heroically fill — it is a
+capability the film should SHOW (§1). Ranked by how unobvious the claim is: **injected rooms >**
+hall/clear-space > duct section+run > openings > envelope.
+**Three casts from the camera still earn their place** — left-right = breadth, forward = length, up =
+height — but for the FREE SPACE around the camera, which no room record describes. ⚠ A column shrinks
+it, so it is not the architectural room — label it "clear space", never "room".
 **One vertical cast yields TWO cues** (user: *"total height across central hallway right to the highest
 ceiling point"*): the first hit is CLEAR HEIGHT (headroom, what you would hit); the first hit whose
 surface is large and horizontal is TOTAL HEIGHT (the ceiling proper). A light fixture or hanging duct
@@ -706,7 +758,7 @@ wash signals provenance. Do not omit compiled rooms — mark them.
 - **Standard dimension cue**: extension lines, inward arrow heads, value in **mm** — not blue dots.
 - **Ink**: **yellow `#ffd600` on dark**, black on light (Rec.709, flips at 0.45). Interiors are dark and
   pure white reads as a blown highlight. Opposite-colour outline so a cue crossing a boundary survives.
-- **No label box** — a filled plate blots out the detail the cue exists to highlight. Outline the glyphs.
+- **Label is an OUTLINED box on a leader** (user, 2026-09-07: *"outlined box, not filled"*) — the same pointer shape as the clash pair label, so the film reads as one language. **NEVER a filled plate**: it blots out the detail the cue exists to highlight. Outline the box AND the glyphs.
 - **Label floats free** on a leader, offset to the calmer side, and **avoids other labels** — clash
   `[tol/clash mm]` boxes are live during the walk (they stop at `beats.reveal`). If every position
   collides it DECLINES to draw; overlapping two numbers is worse than showing one.
