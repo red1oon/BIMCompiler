@@ -10,30 +10,29 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-08 — ⚠ RESUME HERE: §MEASURE landed on 3 buildings; FIRST TASK = a 3s test bake
-**Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` §24–§28. Branch `feat/flythru-cues` (bim-ootb), pushed,
-zero local-only. `sw.js` **v1162**.
+## Current State — 2026-09-08 (session 2, close) — ⚠ RESUME HERE: §28 ✅ bakes done, §26 §SLAB_BEAT ✅ built+witnessed+baked, §27 next
+**Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` §26–§30. Branch `feat/flythru-cues` (bim-ootb) @ HEAD pushed,
+zero local-only; `sw.js` **v1163**. No PR yet for this branch (11+ commits ahead of main).
 
-**DONE — the datum annotation was rebuilt and generalised.** Labels moved OUT of screen space and INTO
-the model's own planes (771 → 397 lines: the occupancy register, bubble ranks, strides, clamping,
-all-or-none and the edge scores all deleted — they existed only to defend screen-space readability).
-Proven on **three** buildings with one code path and no per-building handling:
-| second zero | bubbles | figures | overalls | radius | chains |
-|---|---|---|---|---|---|
-| HHS | 20/20 | 17 | 3/3 | 0.52 IDENTICAL | 54.744 · 52.491 · 7.210 exact |
-| Hospital | 37/37 | 34 | 3/3 | IDENTICAL | 95.915 · 88.227 · 34.000 exact |
-| Terminal | 25/25 | 17 | 3/3 | IDENTICAL | 54.508 · 39.481 · 46.110 exact |
-Bubbles are sized by the widest ref on the drawing, one radius throughout. A `Measure` checkbox now
-sits beside `Clash` in the Alt-C panel.
+**DONE this session (all §-witnessed, logs in `/tmp/wt-storey-reveal/out/`, films in `~/Downloads/*_2026-09-08.mp4`):**
+- **§28** 3 s Clash+Measure bakes, both buildings: datum built from a real bake, chains add up, IDENTICAL, 0
+  failures, clash in the same frames. Hospital drawn=74 = snapper (same camera). HHS differed because its bake
+  opened from a saved close view — fixed by §30. CLI gained `--measure/--no-measure` (§28.1).
+- **§26 §SLAB_BEAT** `viewer/cpe_slab_beat.js` + `viewer/tests/witness_slab_beat.js` (16/16 streamed Hospital,
+  16/16 HHS). The pop second comes from the bake's own clock (owners `buildupTAt`+`buildupCursorAt`, bisected):
+  Hospital Level 1 pops at **1.07 s** (PoC's linear map said 10.31 s); verified against the 12 s bake's placed
+  counts within 7 elements. Stacked-layer test now needs vertical contact. In the 12 s Hospital bake: tint
+  touched the plate, label on at 1.09 s, envelope released 3.30 s, 0 failures.
+- **§29** envelope 3D box deprecated; 2D dims + panel kept, panel holds +2 s or until the next cue.
+- **§30** `§CLI_BAKE_OPENING`: film opens from the saved view unless the datum is not wholly legible there →
+  Home. Hospital kept (37/37, 3/3); HHS moved (18/20 → 20/20, drawn 37 → 40 = snapper).
+- **§CPE_CLIP_BUILDUP_FILM_T**: a clip's buildup read the clip length as the film total (3rd of that class).
 
-**⛔ NEXT, IN THIS ORDER — see §28.** (1) **A 3-second test bake on Hospital and HHS with Clash AND
-Measure ON.** The Measure layer has **never executed inside a bake** — every number above is a
-*snapper* number, and both datum call sites sit inside never-kills-a-bake try/catch, so a scope error
-would leave the film finishing with the datum simply absent. Two runtime scope errors have already
-slipped past `node --check` in this file. (2) then §26 `§SLAB_BEAT`, (3) then §27 `§LINEAR_BEAT`,
-both written by a parallel session and both designing on top of Measure.
+**⛔ NEXT:** (1) HHS 12 s bake with `--buildup` (HHS's stored path has buildup OFF, so §SLAB_BEAT declined
+INCONCLUSIVE there) — user's go. (2) §27 `§LINEAR_BEAT` on the real clock (§26.9 pool, HHS 76.0 s film).
+(3) HHS path still dives underground at 3.96 s — a path injection (§27g), user's. (4) PR for `feat/flythru-cues`.
 
-**Witness count:** `§FLYTHRU_DATUM_*` gained CONSISTENCY, LEVELSPLIT, LEVELTHIN, AXIS/BAY VACUOUS.
+**Witness count:** +1 file (`witness_slab_beat.js`, 16 asserts + red control); `witness_flythru_gate.js` 0 FAIL after §29.
 
 ## Current State — 2026-09-06 (session 3, final close) — ⚠ RESUME HERE: full bake confirmed, §PENDING.5 open, parallel session active
 

@@ -2537,3 +2537,41 @@ log says the gate did not apply. `--nohome` skips the gate; `--opening-only` jud
 HHS's bake opening is Home (48, 64, 48) and the datum reports **drawn=40, 20/20 bubbles, 3/3
 overalls** — the snapper's recorded number. The two consumers agree on both buildings once the bake
 opens where the snapper opened. Hospital is untouched (saved view kept, drawn=74).
+
+**26.10 ✅ THE SLAB BEAT IN A REAL BAKE — Hospital 12 s, real GPU, 2026-09-08 (`out/Hospital_12s_cm.log`,
+film `~/Downloads/Hospital_12s_clash_measure_slab_2026-09-08.mp4`, 288 f = 12.000 s, wall 176 s, 0 failures).**
+- `§CLI_BAKE_OPENING kept=saved-view (85.5, 70.0, 58.9) 37/37 3/3 drawn=74 FULL` — Hospital's film opens
+  exactly where it always has.
+- `§SLAB_BEAT_PICK sec=1.07 hold=4.88 Level 1` → `§SLAB_BEAT_TINT meshesTouched=1` (an instanced mesh, colour
+  path) → `§SLAB_BEAT_LABEL on filmSec=1.09 ndc=(-0.08,-0.20)` → `§SLAB_BEAT_ENVELOPE done filmSec=3.30`,
+  label kept. Label text `98.57 × 90.29 m = 8,899 m² (est.) — Concrete-150 mm slab on 300mm base`.
+- **§26.6.3 CLOSED — the clock is the bake's.** The bake logs `§CPE_BUILDUP placed=` every 120 frames; the
+  witness's owner-clock at the same seconds: 5.00 s **3149 vs 3148**, 10.00 s **9678 vs 9671**, 11.96 s
+  **12079 vs 12072**. Frame-quantisation apart, identical. §CPE_CLIP_BUILDUP_FILM_T is in force.
+- `§FLYTHRU_ENVELOPE_BOX deprecated` printed once; `§FLYTHRU_DIM_DRAW key=envelope` at 0.04/0.50/1.51 s,
+  `panel-hold` at 2.51 s, then `key=storey` from 2.72 s. **The panel hold yields to the next cue**: the
+  compositor draws the hold only while no cue is active, so §14's one-cue rule still holds; on this bake the
+  storey cue opened at 2.7 s (its window was 5.8 s on the 3 s bake — the cues module's own placement, not
+  touched here) and the panel got 0.5 s of its 2.0 s. Clash: `trueClash=270 markers=540`, same frames.
+- Datum on the dive: `drawn` 58 → 54 as the camera descends and marks leave frame; chain adds up, 0 failures.
+
+**26.11 HHS 12 s bake (same session; `out/HHS_12s_cm.log`, film `~/Downloads/HHS_12s_clash_measure_2026-09-08.mp4`,
+303 f = 12.6 s of a 76.0 s film — the Home opening lengthened the plan from 72.3 s; wall 151 s; 0 failures).**
+- `§CLI_BAKE_OPENING moved=Home load[(41.4, 8.7, −27.7) 18/20 2/3 drawn=37 PARTIAL] → home[(48, 64, 48) 20/20
+  3/3 drawn=40 FULL]` — §30 did what the user asked: the film now opens at distance with the whole datum,
+  the Z plane included; `drawn=40` on the first 51 frames, then 22/16/18 as the dive proceeds, never 0
+  while the layer is live (221 frames to its fade).
+- **`§SLAB_BEAT INCONCLUSIVE — buildup off — nothing is laid, so there is no pop to mark`.** HHS's stored
+  `cinema_path` predates the buildup column, so `§CLI_BAKE_BUILDUP_RESOLVED on=0 source=stored-path`: the
+  HHS film shows the finished building throughout and a "plate as it is laid" cannot exist in it. The beat
+  declined by name (PRIMAL LAW §4), it did not draw a finished plate. **To see the HHS slab catch: bake with
+  `--buildup` (the CLI flag composes it onto the stored path) or re-save the HHS path with Buildup on.**
+- **The HHS path still goes underground.** Even from the Home opening the camera's Y crosses 0 at 3.96 s (frame 95) and
+  bottoms at −1.82 m; the datum's projected semi-axes explode there as before. §27g's ruling stands: this is
+  the stored PATH (its dive target), not the opening and not the datum. A longer/higher HHS path is the
+  user's injection.
+
+**⛔ OPEN after this session:** (a) HHS 12 s bake with `--buildup` — one GPU run, user's go; (b) §27
+`§LINEAR_BEAT` next, reading §28.2's HHS clock (76.0 s film after §30, dive 0.054) and §26.9's real
+Hospital pool; (c) the cues module's storey window moved 5.8 → 2.7 s between the 3 s and 12 s Hospital
+bakes (its own placement, not touched here) — worth a `§FLYTHRU_CUE_PLACE` line naming why.
