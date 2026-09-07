@@ -10,6 +10,31 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
+## Current State — 2026-09-08 — ⚠ RESUME HERE: §MEASURE landed on 3 buildings; FIRST TASK = a 3s test bake
+**Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` §24–§28. Branch `feat/flythru-cues` (bim-ootb), pushed,
+zero local-only. `sw.js` **v1162**.
+
+**DONE — the datum annotation was rebuilt and generalised.** Labels moved OUT of screen space and INTO
+the model's own planes (771 → 397 lines: the occupancy register, bubble ranks, strides, clamping,
+all-or-none and the edge scores all deleted — they existed only to defend screen-space readability).
+Proven on **three** buildings with one code path and no per-building handling:
+| second zero | bubbles | figures | overalls | radius | chains |
+|---|---|---|---|---|---|
+| HHS | 20/20 | 17 | 3/3 | 0.52 IDENTICAL | 54.744 · 52.491 · 7.210 exact |
+| Hospital | 37/37 | 34 | 3/3 | IDENTICAL | 95.915 · 88.227 · 34.000 exact |
+| Terminal | 25/25 | 17 | 3/3 | IDENTICAL | 54.508 · 39.481 · 46.110 exact |
+Bubbles are sized by the widest ref on the drawing, one radius throughout. A `Measure` checkbox now
+sits beside `Clash` in the Alt-C panel.
+
+**⛔ NEXT, IN THIS ORDER — see §28.** (1) **A 3-second test bake on Hospital and HHS with Clash AND
+Measure ON.** The Measure layer has **never executed inside a bake** — every number above is a
+*snapper* number, and both datum call sites sit inside never-kills-a-bake try/catch, so a scope error
+would leave the film finishing with the datum simply absent. Two runtime scope errors have already
+slipped past `node --check` in this file. (2) then §26 `§SLAB_BEAT`, (3) then §27 `§LINEAR_BEAT`,
+both written by a parallel session and both designing on top of Measure.
+
+**Witness count:** `§FLYTHRU_DATUM_*` gained CONSISTENCY, LEVELSPLIT, LEVELTHIN, AXIS/BAY VACUOUS.
+
 ## Current State — 2026-09-06 (session 3, final close) — ⚠ RESUME HERE: full bake confirmed, §PENDING.5 open, parallel session active
 
 **Full 195.8s film bake CONFIRMED** (`Hospital_FULL_allsystems_2026-09-06.mp4`, ~/Downloads, 231 MB):
