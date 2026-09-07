@@ -1216,5 +1216,12 @@ times.** (Interactive-only lenses still may — `navigate_find.js`'s Room Lens d
 the §S286 idle gate parks the loop when nothing is happening. The distinction is bake vs interactive,
 not "is it drawing".)
 
-**How to spot it in 5 seconds:** `grep -c "cancelled (interaction)" <bakelog>` — anything above a handful
-during a bake means a per-frame invalidation is fighting the convergence loop.
+**⚠ CORRECTED 2026-09-07, same session, before this misled anyone.** `cancelled (interaction)` is NOT
+the tell. MEASURED: the HEALTHY 1,222-frame ending bake (`out/ending3.log`) contains **2,446** of them —
+one pair per frame — because the camera moves every frame and that legitimately restarts the refine
+pass. The stalled run had only **50**. Counting that line diagnoses nothing.
+**The real tell is a REPEATING IDENTICAL `frame=N/M` in `§CLI_BAKE_PROGRESS`** while the rate/ETA fields
+stay frozen at their last good values (`frame=12/294 … rate=0.430s/frame … elapsed=7s` printed three
+times, 30 s apart). The bake looks slow, not stuck. Watch the frame counter, not the cancel line.
+The fix above stands — removing the per-frame `markDirty` unstalled it, and the cues then drew
+(`§FLYTHRU_CUE_ON key=envelope at=0.00s filmSec=0.07`, 30 s preview, 720p).
