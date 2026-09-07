@@ -1378,3 +1378,55 @@ register is not a new subsystem — it is that routine's own per-frame state.
 once, so two panels can be up together. **Their leaders must not CROSS**, or the viewer cannot tell which
 panel belongs to which room. `clash_labels` solves non-OVERLAP, not non-CROSSING. Assert it in the
 witness rather than discover it in a bake.
+
+### 21. §FLYTHRU_SNAP — judge a moment without baking, and the BUILDUP facts that invalidate §20's numbers
+**Tool:** `scripts/snap_timeline.js` (branch `feat/flythru-cues`). Streams the model ONCE, then writes a
+PNG at each second asked for.
+```
+node scripts/snap_timeline.js --db Hospital_silent_local --dur 195.8 --at 0,5,9
+node scripts/snap_timeline.js --db HHS_silent --dur 61.04 --from 0 --to 20 --step 2
+```
+**Cost:** a 10 s clip bake was **93 s** and 150 encoded frames; the whole film is ~113 min. The snapper
+pays the stream once and each frame after is a fraction of a second.
+**It is a REAL frame**: it drives the same camera (`cinemaPathPlan(dur).poseAt(u)`) and the same buildup
+cursor the bake drives. ⚠ It does NOT run the photoreal passes (`§STILL_REFINE`, `§PHOTO_AO`, staging) —
+use it to judge WHAT IS IN FRAME, never final image quality.
+
+**⚠ TWO OPERATIONAL TRAPS, both cost a run each.**
+1. **`tmActivateForBake()` MUST be awaited before `tmFollowTimeline()`.** Called cold it returns
+   VACUOUS (`reject reason=no-ops`) and the tool wrote two IDENTICAL frames of the FINISHED building at
+   0 s and 9 s. They looked perfectly plausible; only the identical mesh count exposed it. The tool now
+   prints `§SNAP_WARN` on every unarmed run — keep that guard.
+2. **Run it DETACHED (`nohup`).** Streaming Hospital's 64,150 elements spikes hard enough to trip the
+   task memory watchdog: **killed three times** as a tracked background task, survived first time
+   detached. The bake was never killed because it was already launched detached.
+
+**MEASURED — the buildup, and it CORRECTS §20.**
+| | Hospital (dur 195.8 s) | HHS_silent (dur 61.04 s) |
+|---|---|---|
+| t=0 | cursor 2026-09-10, 2 meshes, cam 70 m up | cursor 2026-09-02, 3 meshes |
+| t=5 / t=9 | 437 meshes / 994 meshes, cam 17 m at 9 s | 108 meshes at 9 s |
+| t=20 | — | 253 meshes |
+
+⛔ **THE BUILDUP DOES NOT FOLLOW THE `tasks` TABLE.** Its cursor starts **2026-09-10**; the `tasks` rows
+span 2026-01-01…11-26. And it is paced by **ELEMENT COUNT, not days** (`§CPE_BUILDUP_WORK_PACED`,
+`cinema_maxq.js:1659`), topping out at **`topoutU=0.361`** — all construction inside the first ~70 s of
+195.8 s. Any day-linear mapping from `tasks` is wrong on BOTH the calendar and the pacing.
+⇒ **§20's probe rankings are INVALID as they stand.** `probe_flythru_subjects.js` scored every slab as
+if the building were complete at every frame. At t=9 s only ~a fifth of the model exists, so its top
+candidates (Level 5/4/3/6 slabs) are floors **not yet cast**. Existence-at-time must be applied before
+any of those numbers drive a cue. The defect is recorded in that probe's own commit message too.
+⚠ Live consequence already visible in the shipped bake: `§FLYTHRU_CUE_ON key=storey … filmSec=2.75
+"Level 1 — Floor 11,678 m²"` fires at **3.9 % of construction** — a finished floor area stated over a
+slab the viewer is watching being poured.
+
+**§20.8 ANSWERED for Hospital — the enclosure DOES establish** (`probe_t0_frame.js`, log `out/t0_frame.log`).
+At second 0 the camera is at `(85.5, 70.0, 58.9)`; the structural envelope runs `(-65.2,-24.6,-71.0)` to
+`(50.5, 22.4, 62.9)`. **Camera is OUTSIDE it**, 0 corners behind, **7 of 8 corners in frame** — the stray
+one ~40 % past the edge. `modelOffset = (46.2, 93.0, 181.2)`, confirming §2's ~169 m datum warning.
+⇒ **A strict "all 8 corners" test would delete the whole opening over ONE clipped corner.** So
+"fully in frame" (§20.4) belongs to MEASURED SUBJECTS, whose boundary must be whole to be tinted — NOT
+to the enclosure, which is a backdrop and may run off the frame as any drawing sheet does. The
+enclosure test is: camera outside, nothing behind camera, the great majority in view.
+⚠ An earlier answer here said the camera was INSIDE the envelope at t=0. That was read off the stored
+`cinema_path` waypoint, not the rendered pose. **The bake starts at t=0 — read `plan.poseAt(0)`.**
