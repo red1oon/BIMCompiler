@@ -774,6 +774,40 @@ wash signals provenance. Do not omit compiled rooms — mark them.
 - **Persist** (`flythruDrawStateAt(..., {persist:true})`): introduced once, then kept for the film, so a
   re-sighting in the reveal round is recognition. Re-entry needs the higher 33% bar (§6).
 
+**§FLYTHRU_MESH_TINT — THE SUBJECT LAYER (added 2026-09-07, user).** The yellow tint fills the
+**MESH, not the bbox** — *"so that its shape is clearly made out"*. The naming case, in the user's words:
+the camera travels a corridor and **a hidden room on the side is made out**; and *"similar to MEP reveal,
+a HVAC mesh yellow shine thru for some 2 secs fade in/out"*.
+- **Two layers, two jobs. Do not merge them.** Mesh tint = **WHAT and WHERE** (shape, existence, that it
+  is hidden behind a wall). Outline box + extension lines + label = **HOW BIG** (the numbers). A bbox
+  alone on a hidden room is a floating rectangle that says nothing about what is in there.
+- **Envelope ≈ 2 s, fade in / hold / fade out — NOT a 0.3 s flash.** A flash is acquisition; this is a
+  REVEAL, and a shape needs dwell to be read. Inside the ≥ 2 s hold (§6): fade in ~0.6 s → hold ~1.0 s
+  (the 0.5 s dimension buildup runs here and the value lands) → fade out ~0.6 s.
+- **The tint fades OUT; the dimension cue PERSISTS.** The subject is revealed once, the measurement stays
+  for the film. Fires only on a cue that PASSED the hold gate, never on a candidate; once per subject, on
+  first introduction, never on re-sighting (§7 persist makes re-entry recognition).
+- ⚠ **MESH where a mesh exists, BOX UNION where it does not.** B2 storey and B7 HVAC have real meshes →
+  true mesh tint. **A compiled room has NO mesh** — `_allRoomVolumes()` returns per-sub-rect boxes
+  (§5), so B3's "shape" is the UNION of its rects (an L-shaped room reads as an L, which is why the union
+  and not a single bbox). B1 envelope has no mesh at all. Do not send a session hunting for a room mesh.
+- **FOUNDATION — REUSE `cpe_storey_reveal.js`, do not invent.** It already solved every landmine here:
+  - `:249-253` **CLONE the material before setting `emissive`.** Writing `o.material.emissive` in place
+    repaints every mesh sharing that cached material — the viewer's material cache is shared.
+  - `:211` **Instanced/BatchedMesh needs `setColorAt`/`getColorAt`** for diffuse; the emissive
+    save/restore path is for PLAIN meshes only.
+  - `:294-323` **X-ray must be a SCOPED beat that restores itself** (`_xrayByUs` guard). `cinema_maxq`'s
+    `§CINEMA_XRAY_RESET` turns x-ray OFF at bake start, so a global toggle left on is a defect.
+  - `clash_film.js:344,374-387` — per-instance `colour = base × mix(pulse(t), 1.0, fade)` is the existing
+    envelope shape to copy for the fade in/out.
+- **Emissive tint, not an opacity wash**, so the mesh's own shading survives and it reads as the object
+  rather than a silhouette. Yellow `#ffd600`, adaptive flip per §7.
+- **No collision with the clash language:** the clash pulse is a slow REPEATING heartbeat
+  (`clash_film.js:46-48` — on over 2 s, hold 1 s, off longer, cycling). The mesh tint is a ONE-SHOT 2 s
+  fade that never repeats. Different temporal signature, so both can be live in the same frames.
+- ⛔ **The x-ray path is UNPROVEN**: §STOREY_REVEAL_XRAY / _MARKERS_OFF / _PULSE are code-complete but
+  their on-screen proof lands in the last ~300 frames of the final bake. Label it unverified, never assume.
+
 ### 8. SEMANTICS — a SECOND pass, after selection
 `flythruSemantics`. Selection stays geometric; naming happens on the handful that survive, so a naming
 failure costs a word, not a measure. **Horizontal → "length", vertical → "height"** (user's rule; the
