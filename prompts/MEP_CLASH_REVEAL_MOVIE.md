@@ -955,3 +955,23 @@ gap** before the next cue may start. ≈ **2.7 s per cue**, so the four-cue base
   no earlier than the previous one's slot end. The order is fixed (§11); only the seconds are assigned.
 - **A cue that cannot find a legal window is DROPPED, not squeezed.** Least effort (§12) means the film
   quietly shows three instead of four rather than overlapping two.
+
+### 15. §FLYTHRU_VIEWER_SUPPLIES_THE_NOUN (user, 2026-09-07)
+> *"yes even a light well, the user will intuitively know what it is if it is in frame, higlited
+> momentarily"*
+
+**The cue does not have to identify what it measured.** A highlighted volume in frame plus a number is
+complete on its own — the viewer reads the noun off the screen far more reliably than any classifier
+reads it off the schema. This is the constructive form of §8's "no fabricated nouns": not merely
+*don't guess a name*, but *the name is not needed*.
+
+Consequences:
+- A gap cast that finds a **light well** instead of the wing separation is a WIN, not a misfire. Both
+  are real voids, both are legible, and the viewer names whichever one is on screen. So gap-finding
+  needs no roundness test, no courtyard/well discriminator, and no "is this the right void" veto.
+- It removes the main risk from every DERIVED cue (§4), which is the class that cannot be named from
+  the schema by construction — that was the reason to be cautious about them, and it is now gone.
+- The label may therefore be the **bare measurement** wherever naming is uncertain. §8's ladder stands:
+  a confident class name if one exists, otherwise the number alone. Never an invented noun.
+- ⚠ It does NOT license drawing something illegible. The cue must still be in frame and hold (§6/§14) —
+  "in frame, highlighted momentarily" is the precondition the user attached, not a waiver of it.
