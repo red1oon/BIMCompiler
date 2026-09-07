@@ -667,8 +667,9 @@ because **a chord cannot give area on a concave plan**, and a bbox product silen
 **3.3 Why the raster is not optional — the bbox states a WRONG number on most buildings.**
 Second-0 wants *Volume* and *Ground area*. Both are bbox products today: envelope
 `115.8 x 164.8 x 47.0 m` → `897,404 m³`, ground `19,084 m²`; Level 1 `112.5 x 133.9` = `15,072 m²`.
-This Hospital is a near-rectangular mass, so those are roughly honest **here**. On an L-shape or a
-courtyard the bbox counts the empty arm as floor. The ask is "works for any building" — so bbox area is
+MEASURED 2026-09-07 (§11): the bbox over-states this Hospital's ground area by **1.18x**, Level 1's
+floor by **1.29x**, and Level 7A's by **7.28x**. It is wrong HERE, on a near-rectangular mass — not
+only on the L-shape it was feared for. The ask is "works for any building" — so bbox area is
 a **generalization failure, not an approximation**.
 ⚠ Envelope volume from a bbox is AIR, not building. Label it **"envelope volume"**, never "building volume".
 
@@ -871,3 +872,63 @@ resolution bench remains separately HELD from an earlier session). §STOREY_REVE
 _PULSE (defects 2 and 3) are CODE-COMPLETE but their on-screen proof lands in the last ~300 frames of the
 final bake — if that run did not reach them, they are UNVERIFIED, and must be labelled so, not assumed.
 
+
+### 11. MEASURED CANDIDATES — Hospital, run 2026-09-07 (`probe_flythru_maths.js`, log `out/ft_maths.log`)
+Primitives shipped in `viewer/cpe_flythru_maths.js` (self-check: a 10x10 box → area 100.00 m², perimeter
+40.00 m, exact). **No GPU, no browser, no scene** — B1-B3 are pure DB reads, so §3.9's unverified
+DB→scene transform CANNOT corrupt these numbers. That is precisely why this leg went first.
+64,150 elements, whole pass **47 ms**, raster at RES 0.25 (the walkable builder's own constant — the
+film introduces NO new tunable).
+
+**B1 ENVELOPE — filmable, and the strongest opener.**
+`X 115.75 x Y 164.78 x Z 47.05 m` · ground area **16,170 m²** (raster) vs 19,074 m² (bbox, **1.18x**) ·
+perimeter **562 m** · envelope volume 897,404 m³ (AIR — say "envelope volume") vs prism 760,781 m³.
+
+**B2 STOREY — filmable, 8 candidates, and it PROVES why the raster is mandatory.**
+| Storey | n | gross raster | bbox | bbox error | walkable (real mesh) |
+|---|---|---|---|---|---|
+| Level 1 | 8,564 | 11,678 m² | 15,072 m² | **1.29x** | 6,481 m² |
+| Level 2 | 8,115 | 9,757 m² | 10,407 m² | 1.07x | 6,224 m² |
+| Level 3 | 12,916 | 13,793 m² | 15,246 m² | 1.11x | 6,097 m² |
+| Level 4 | 11,827 | 13,087 m² | 14,318 m² | 1.09x | 3,566 m² |
+| Level 5 | 9,885 | 12,637 m² | 14,559 m² | 1.15x | 3,418 m² |
+| Level 6 | 2,240 | 8,301 m² | 9,905 m² | 1.19x | 3,367 m² |
+| Level 7 | 193 | 2,524 m² | 3,912 m² | 1.55x | 1,402 m² |
+| Level 7A | 218 | 617 m² | 4,495 m² | **7.28x** | none |
+⚠ **Level 7A is the headline**: a bbox floor area on a partial top storey is not an approximation, it is
+a fabrication — 4,495 m² claimed for 617 m² of real floor. The old §3 table's "Level 1 = 15,072 m²" was
+that same bbox error, 29% high.
+**THREE honest numbers exist per storey** — gross footprint (raster), WALKABLE (precomputed from the
+building's own triangulated mesh by `scripts/build_storey_walkable_raster.js`, 7 rows present), and bbox
+(**never show it**). Walkable is the better capability claim: it is derived from mesh and appears nowhere
+in the IFC.
+
+**B3 ROOMS — ⛔ NOT filmable on this building. HOLD the beat.**
+7 logical rooms / 8 sub-rects, every one compiled (`RM_` guid, `⚠`/`≈` name). Largest is 23.25 m² but its
+span is **15.50 x 1.43 m** — a corridor slice, not a room. `RM_Level_2_3` is 0.53 x 14.62 m; `RM_Level_2_1`
+is **0.75 m²**, a broom closet. Only 3 of 7 reach 9 m².
+Drawing these would advertise a weakness — the exact inverse of "capability not quantity" (§1). The §5
+faintness convention marks provenance honestly, but it cannot make a 0.53 m sliver read as a room.
+**Baseline B1+B2. B3 returns when a building has real rooms, or when injection is re-run to yield them.**
+
+**⇒ BASELINE = B1 + B2.** Both are real, both are cheap, neither needs a raycast or the scene transform.
+
+### 12. §FLYTHRU_LEAST_EFFORT — the paramount objective (user, 2026-09-07)
+> *"The paramount objective is a cinematic experience with least effort on the part of the user."*
+
+Binding on every default here. Nothing in this feature may ask the user to pick a number, choose a cue,
+or tune a threshold. Every constant is either derived from the data or inherited from a constant that
+already ships (RES 0.25 = the walkable builder's). Where data is thin the film DEGRADES — it drops the
+beat and says nothing — it never asks and never fabricates. A knob added to this lane is a defect.
+
+### 13. §FLYTHRU_ROUTE_AMBITION — where this is going (user, 2026-09-07)
+> *"Eventually we look for free application of 'steps up from ground to first level room', 'escape route
+> steps from ..' this is the ultimate sophistication of capability of BIM. But for now, the basics has to
+> be baselined."*
+
+Recorded as the destination, NOT as current scope. Worth knowing before anyone builds a parallel path
+engine: **the foundation already ships.** `storey_walkable_raster` (7 Hospital storeys, mesh-derived,
+measured above) exists precisely so `common/room_graph.js` can test chord legality as an O(1) bitset
+lookup — that is `prompts/Modeller/DISC_Walker/PATH_LEGAL_SEGMENTS.md` §G3-REVISED. A route measure is a
+walk over legal chords on that raster, which is the SAME Primitive A with a `walkable` stop predicate.
+So the ultimate capability is an extension of the two primitives, not a new subsystem. Baseline first.
