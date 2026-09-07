@@ -2136,3 +2136,100 @@ already exercises the 1-of-2 path). Asserts: the label's `X × Y` equals the dra
 the diagonals terminate on that box's corners; `dive beats ≤ 2`; every picked plate's hold `≥ 2.0 s`;
 the tint material is depth-tested and the label's is not; and the semantic name is byte-identical to
 the substring extracted from `element_name` — never composed.
+
+### 27. §LINEAR_BEAT — a beam and a column, measured as they go up (user, 2026-09-08)
+> *"While beams and columns are going up, can we catch any and show their length with arrow line
+> cues?"* · *"We work it out for only HHS and Hospital as both has silent.dbs. So specs it along this
+> dive in stretch to catch also a good beam and column without overlapping with good label boxes
+> [IFCtype semantic, measure mm with arrow line cues]."* · *"But we are after beam/col only."*
+
+**SCOPE: the beam and the column. The floor plate is §26 and is not re-opened here** — it appears
+below only as an OCCUPIED SLOT the linear cues must not overlap. Buildings: **Hospital and HHS only**,
+the two carrying a stored `cinema_path` in a `*_silent*.db`, so the dive window is READ, never assumed.
+**PoC: `scripts/poc_dive_beats.js`, log `out/dive_beats_poc.log`.** Selection only — no GPU, no
+browser, no scene: DB extents + the persisted 4D run + the stored path.
+
+**27.1 THE CUE.** A single dimension along the element's own axis — Primitive A with the
+`element:self` stop (§3.1), so **zero raycasts and one DB read**. Graphic is §7's existing standard
+cue: extension lines, **inward arrow heads**, value in **mm**. Label carries the **IFC type semantic
+and the measure**, one line. Column → vertical, so the word is *height*; beam → horizontal, *length*
+(§8's rule: the word describes what is DRAWN).
+
+**27.2 MEASURED — Hospital, and it fits comfortably.**
+`dive_sec = 18.29` ÷ a 2.5 s slot (§14: 2.0 s envelope + 0.5 s clear) = **7 non-overlapping slots**;
+three are used and four stay empty.
+| allocated | cue | value | IFC semantic |
+|---|---|---|---|
+| **6.95 – 8.95 s** | **column** | **26,020 mm** | `475 x 610mm` |
+| 10.31 – 12.31 s | *(floor plate — §26, not this section)* | 8,899 m² | `Concrete-150 mm slab on 300mm base` |
+| **12.89 – 14.89 s** | **beam** | **15,700 mm** | `457x152x52UB` |
+
+Population: **1,970 beams** (1,967 horizontal, 582 inside the dive, modal type **9,700 mm ×309**) and
+**604 columns** (571 vertical, 427 inside the dive, modal type 4,800 mm ×151). Availability is never
+the constraint; the slot budget is.
+
+**27.3 ⚠ THE TRICKY PARTS. This is the section to read — the arithmetic is trivial and every one of
+these was found by measuring, not by reasoning.**
+
+**a. THE ORDER IS COLUMN → PLATE → BEAM, not plate first.** The best column stands at **6.95 s**,
+before §26's plate at 10.31 s. Intuition puts the floor first; the schedule does not.
+
+**b. PLACEMENT CHANGES THE SUBJECT, so the label must be regenerated after allocation, never cached
+from the ranking pass.** The best beam in the dive is **18,972 mm `610x229x125UB` at 11.65 s** — which
+lands INSIDE the plate's 10.31–12.31 s envelope. Moving to the next free slot does not move that beam;
+it selects a **different** one: **15,700 mm `457x152x52UB` at 12.89 s**. A cue whose value was computed
+before its slot was known would print 18,972 mm over a 15,700 mm beam.
+
+**c. THE DATUM-RESTATEMENT GUARD BITES HARD, AND IT MUST.** A column's height IS a storey height, and
+the datum (§24.7) already draws the storey chain and the overall. MEASURED on Hospital: the datum's own
+figures are `6.11 · 5.00 · 4.87 · 5.00 · 5.00 · 5.00 · 3.00 · 34.15 m`, and **181 of 427 in-dive
+columns fall within 2 % of one of them** — including the 34,020 mm full-stack column, which restates
+the 34.15 m overall to 0.4 %. Worse, the **modal** column type (4,800 mm ×151) is within 2 % of the
+4.87 m storey height: **the commonest column in the building is precisely the one that says nothing
+new.** Reject on this test and the surviving best is 26,020 mm, which no datum figure states.
+⚠ This is why §1 is satisfied by a beam and a column but would NOT be by two columns.
+
+**d. DO NOT RE-DERIVE THE PLATE'S SLOT.** The first allocator picked Level 2 (8,963 m²) over §26's
+Level 1 (8,899 m²) because it ranked by area where §26 ranks by hold — a 74 m² difference silently
+overriding a settled rule. **Call §26, do not re-solve it** (CLAUDE.md §0, the ownership table).
+
+**e. THE SEMANTIC QUALITY IS UNEVEN AND ONLY THE BEAM IS RELIABLY GOOD.** Beams carry real section
+designations — `610x229x125UB`, `457x152x52UB`, `C310X30.8`, `HSS152.4X152.4X7.9`. Columns carry
+`475 x 610mm`, which is a **cross-section restated as a name** and sits oddly beside a length cue;
+HHS's carry `STB d=30:STB d=30`, a duplicated token. **§15 governs**: a confident class name if one
+exists, otherwise the measure alone. Never compose a noun to fill the gap, and never let the label
+repeat the number the cue already draws.
+
+**f. THE CLOCK IS PER BUILDING AND ONLY HOSPITAL'S IS VERIFIED.** Hospital's `dive_sec 18.29` is
+exactly `0.094 × 195.8`, matching both `§CINEMA_BEATS dive=0.094` and the measured bake (4,699 frames
+@ 24 fps), so it is in BAKE seconds. **HHS's `dive_sec 1.85` against `total_sec 61.04` is 0.030, which
+matches no beat fraction** — so HHS's film clock is UNVERIFIED and every HHS second must be labelled
+so until a bake measures it. Do not assume one film's clock for another.
+
+**g. HHS CANNOT HOLD A CUE IN ITS DIVE AS THE PATH STANDS — and that is a PATH property, not the
+building's** (user, 2026-09-08: *"HHS does has room once injected"*). `dive 1.85 s < one 2.5 s slot` →
+`§DIVE_BEATS_NOFIT`, nothing squeezed. Its 80 in-dive columns are real and waiting; **once a longer
+path is injected for HHS the budget opens and the same code allocates.** Do not read the NOFIT as a
+defect in the selection, and do not shrink the slot to make it fit.
+
+**h. HHS HAS ZERO `IfcBeam`, AND THAT SURVIVES ANY PATH CHANGE.** `§DIVE_BEATS_IfcBeam VACUOUS`. So
+HHS yields a column cue and never a beam cue, however long its dive becomes. State it; do not
+substitute `IfcMember` (7,127 of them, median 1,658 mm — mullions and framing, which §3.6 already
+rules out).
+
+**i. THE DEEPEST ONE — APPEARANCE IS NOT VISIBILITY, and it is unsolved here.** §26's plate is a
+98.57 × 90.29 m single element that fills the frame; a beam is **one stick among 582 arriving in the
+same window**, and a 9.7 m member on a 116 m building seen from ~100 m is a few pixels. §24.12's
+`ofNominal` lesson applies exactly: something counted as drawn while being invisible is the silent
+failure this lane keeps repeating. **The PoC ranks by TRUE length because it has no camera** — it
+reports a 4-waypoint bound and nothing more. A projected-length floor and the in-frame test are
+`plan.poseAt` in the viewer (§16, `probe_flythru_place.js`), and they must run before anything draws.
+This is the one open item that can invalidate the allocation above.
+
+**27.4 WITNESS — `witness_linear_beat.js`, able to fail** (PRIMAL LAW §4). `VACUOUS` when the class is
+absent (HHS beams already exercise it); `§DIVE_BEATS_NOFIT` when the dive cannot hold a slot (HHS
+already exercises it); `INCONCLUSIVE` when no camera pose was available to judge framing. Asserts: no
+two allocated envelopes overlap; the drawn value equals the placed instance's own extent (defect **b**);
+no column within 2 % of a datum figure is drawn (defect **c**); the plate's slot came from §26 and was
+not recomputed (defect **d**); the label never repeats the cue's own number (defect **e**); and each
+building's clock is reported with its verification state (defect **f**).
