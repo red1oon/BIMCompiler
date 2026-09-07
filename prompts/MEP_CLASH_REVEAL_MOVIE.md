@@ -1668,8 +1668,11 @@ as broken rather than thinned; HHS clamped **10 of 17** bubbles onto the frame e
 - treats bubbles as ALL-OR-NONE per axis (a stranded row is worse than none);
 - guarantees the overalls, which are the headline figures;
 - places every label against a shared occupancy register so nothing lands on anything else.
-⚠ A partial version of this landed 2026-09-07 (stride, all-or-none, proportional offsets) but was NOT
-verified against a frame. Treat it as untested scaffolding for the redo, not as working.
+⚠ A partial version of this landed 2026-09-07 (stride, all-or-none, proportional offsets). Its LOG
+improved — Hospital t=0 went from `bays=11/27, clamped=2` to `bays=13 stride=2/2 bubbleSets=XY
+scale=0.82 overalls=2/2 clamped=1 levelTags=8`, chain still exact — but **the frame was never judged**.
+Treat it as scaffolding for the redo, not as working. The whole point of §24 is that a better log is
+not a better drawing.
 
 **24.4 WHAT IS SETTLED AND MUST NOT BE RE-LITIGATED** — §23 measured all of it:
 ground grid from real column centres (Hospital 15 × 14 @ 6.48 m, HHS 9 × 8 @ 6.54 m) · bubbles numerals
