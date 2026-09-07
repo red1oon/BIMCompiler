@@ -1456,3 +1456,30 @@ of a pair must be built, so the buildup starves them at the start. Not a bug; a 
 existence rule, and worth remembering before anyone "fixes" a frame with no labels in it.
 ⚠ **Snap INSIDE a cue's hold, not at its start.** A snap at t=13.00 s missed the corridor cue entirely —
 its window is 13.05–15.25 s. Read the placement from `§FLYTHRU_CUE_PLACE` first, then pick the middle.
+
+**20.11a ✅ BUILT 2026-09-07 — the marking ships. Do NOT port it again.**
+`viewer/cpe_flythru_cues.js` → `A.flythruCuesCompositeOntoCanvas(ctx, w, h, filmSec)`, composited by
+BOTH consumers: `cinema_maxq.js` `_captureFrame` and `scripts/snap_timeline.js`. Branch
+`feat/flythru-cues`. The geometry came from `probe_flythru_dims_still.js:197-222`, where it had been
+stranded since an earlier session — **that stranding is why the first preview was "a bad job"**.
+**MEASURED** (`out/snap_see.log`, Hospital, real path + buildup):
+| t | cue | marks | form |
+|---|---|---|---|
+| 1.0 s | envelope | **4** | 3 arrowed spans `[x,z,y]` + 2-row panel (ground area, volume) |
+| 3.5 s | storey | **3** | 2 arrowed spans `[x,z]` + 2-row panel (floor, walkable) |
+| 14.0 s | corridor | **1** | 1 arrowed span `[x]`, **no panel** — one number, one line |
+Spans are taken on the box edges NEAREST the camera so the triad reads as an orthogonal corner rather
+than crossing the model. Pixel constants scale by `h/720`. It DECLINES rather than scribbles: a span
+under ~24 px, or either end behind the camera, is skipped **and the reason logged**.
+
+⚠ **TWO SELF-INFLICTED FAULTS, recorded because both are cheap to repeat.**
+1. **`§FLYTHRU_DIM_DRAW` was working from the first attempt.** Three runs were spent diagnosing a
+   non-existent failure because `scripts/snap_timeline.js`'s console filter matched only `§SNAP_` and
+   discarded every `§FLYTHRU_` line. **If a probe forwards browser logs, widen the filter BEFORE
+   concluding a feature is dead.**
+2. **A stale-service-worker theory was asserted, acted on, and was wrong** — the check returned
+   `unregistered=0`: there was no worker. The SW-bypass added to the snapper is worth keeping on its
+   own merits, but it fixed nothing here. Verify the mechanism before changing code on a theory.
+⇒ The marking pass now prints `§FLYTHRU_DIM_DRAW NOTHING … diag=[…]` with a per-span reason instead of
+returning 0 in silence (PRIMAL LAW §4). A pass that draws nothing and says nothing is indistinguishable
+from one that worked — that is precisely what happened here.
