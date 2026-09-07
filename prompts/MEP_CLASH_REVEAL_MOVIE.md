@@ -1746,3 +1746,65 @@ such a frame. Drop the flag the moment the question is about the buildup.
 ⚠ And, for the third time in this lane: the snapper's console filter was hiding the evidence —
 `§CINEMA_PATH_RESTORE` and `§CINEMA_PIVOT` were both being discarded while `--nostream` was judged on
 its camera. **Widen the filter before concluding anything.** It now passes `§CINEMA_`/`§CPE_` too.
+
+**24.7 THE Z PLANE JOINS THE SAME LADDER, AND THE EDGE IS SCORED (user, 2026-09-07:
+*"need consistency - the Z plane has to have same style bubbles and proper. Be pro, no slop."* and
+*"the axis bubbles why not use the open space in the foreground?"*). Branch `feat/flythru-cues` @
+`63f9606f`. ⛔ THE §24 GATE STILL STANDS — submitted, not closed.**
+- **Z was a special case and is not any more.** It was free text tags reading `Level 4   +16.000`,
+  staggered into two columns, with their own dry-run side-picker, their own leader, their own tick
+  and their own font — **four bespoke mechanisms for one axis, none of them the ones the ground
+  uses**. `mkAxis` is now defined by two closures (where a value sits on the annotated edge, where
+  the same value sits on the opposite one), so nothing in it knows about X, Y or Z. The storey rules
+  carry **bubbles, a tier-1 chain of floor-to-floor heights and a tier-2 overall height spanning
+  bubble to bubble** — same offsets, same ink, same weight, same code. MEASURED at t=0: `L1 L3 L5 L7`
+  · storey height `11,000` · overall `L1 – L7   34,000`.
+- **The Z bubble ref is EXTRACTED**, never invented: the trailing `7A` of the storey's own name, with
+  the initial of its leading word as prefix (`Level 4` → `L4`, `Storey 4` → `S4`) so it cannot be
+  misread as gridline 4 — the X axis already owns bare numerals.
+- **§24.4's "bottom by lowest projection, left by leftmost" is SUPERSEDED.** Each test read ONE
+  coordinate of ONE midpoint, which is how Hospital's letter row ended up laid across the building
+  with the whole foreground empty. Both candidate edges of every axis are now scored by where their
+  OUTERMOST rung actually lands: **fraction inside the frame (weighted ×2 — an off-frame row is
+  worthless) plus a clamped 0–1 depth term** as the tie-break.
+
+**24.8 ⛔ THE INSTRUMENT WAS BROKEN AND IT NEARLY DECIDED THE DESIGN — read this before trusting a
+`--nostream` frame.** `--nostream` (§24.6) makes a frame in 16 s instead of ~7 min, but **its camera
+cannot be made reproducible.** Three fixes were tried and all three are recorded because each looked
+right: (a) park `controls.target` far so the planner takes its arc-bbox-centre branch — with the
+controls LIVE, OrbitControls repositions the camera to keep its offset and HHS flew to
+`(88452,88455,88452)`; (b) imitate `scene.js` `_homeFillFrame` from the DB — **it cannot be
+imitated**, it centres on `A.buildingCentres`, which only streaming populates, and the substitute
+camera changed the PLAN (`§CINEMA_PIVOT` reads `A.camera.position`), so `poseAt(0)` drifted to
+`(83.2,121.0,106.9)` and **THREE IDENTICAL RUNS PRODUCED TWO DIFFERENT FRAMES**; (c) disable the
+controls and park — the drawn frame stabilised, but only because the app's own loop overrides the
+script. ⇒ `--nostream` now only disables the controls and **STATES the divergence**: `§SNAP_POSE`
+prints `poseAt`, the camera actually used, and `AGREE` / `⚠ DISAGREE`. **Iterate with it; confirm on
+a streamed run.** A streamed run reports `delta=0.0m AGREE` at every second.
+
+**24.9 WHAT THE FIRST REAL STREAMED SEQUENCE FOUND (Hospital, t=0,3,6,9,12,16,18 — the datum's whole
+18.4 s life; `out/real_hosp3.log`).** Two defects that no single t=0 frame could have shown:
+1. **Both edge scorers were unbounded** — the depth term is a mean screen y over frame height and
+   perspective throws points far outside the frame, so it logged **19.10, 8.93, 7.76**. Clamped.
+2. **The ground kept drawing after it stopped meaning anything** — at t=9/16/18, camera INSIDE the
+   building, it painted **22–24 bay dimension lines with ZERO bubbles and 1 of 3 overalls**. An axis
+   that cannot carry its refs no longer draws its chain, and the withdrawal is named (`axes=XY-`).
+
+| t | axes | bubbles | zBubbles | overalls | baySegs |
+|---|---|---|---|---|---|
+| 0 | XYZ | 15 | 4 | 3/3 | 16/16 |
+| 3 | XYZ | 15 | 4 | 3/3 | 16/16 |
+| 6 | XY- | 15 | 0 | 2/3 | 13/13 |
+| 9 | X-- | 8 | 0 | 1/3 | 7/7 |
+| 12 | X-- | 15 | 0 | 1/3 | 14/14 |
+| 16 | --- | 0 | 0 | 0/3 | `NOTHING drawn=0`, and it says so |
+| 18 | --- | 0 | 0 | 0/3 | `NOTHING drawn=0`, and it says so |
+Chains exact at every second: X 95.915 = 95.915 · Y 88.227 = 88.227 · Z 34.000 = 34.000.
+
+⛔ **THE ONE OPEN DESIGN QUESTION, for the user — not changed unilaterally because §23 settled the
+lifetime.** The datum holds to `max(6, filmSec × 0.094)` = **18.4 s on Hospital**, but the camera is
+**INSIDE the envelope from ~6 s** (`poseAt` 48.9 → 24.9 → 8.4 → 0.3 m). So for roughly twelve seconds
+a setting-out drawing is being drawn from inside the building: at t=9 the surviving X chain and its
+bubbles lie across interior beams and slabs. A setting-out drawing is an exterior/aerial statement.
+**Proposal: end the datum when the camera enters the structural envelope, not at a fixed fraction of
+the film.** That is a behaviour change to a settled §23 decision, so it waits for the user's word.
