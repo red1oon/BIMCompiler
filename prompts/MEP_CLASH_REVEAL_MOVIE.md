@@ -2233,3 +2233,43 @@ two allocated envelopes overlap; the drawn value equals the placed instance's ow
 no column within 2 % of a datum figure is drawn (defect **c**); the plate's slot came from §26 and was
 not recomputed (defect **d**); the label never repeats the cue's own number (defect **e**); and each
 building's clock is reported with its verification state (defect **f**).
+
+### 28. ⛔ FIRST TASK NEXT SESSION — A 3-SECOND TEST BAKE, CLASH **AND** MEASURE ON (user, 2026-09-08)
+> **USER:** *"note that a test bake for first 3 secs be done for Hospital and HHS with full Clash and
+> Measure ON. The other session has updated for next stretch as ensuing task thereafter."*
+
+**This runs BEFORE §26 and §27.** Both of those design on top of a Measure layer that **has never
+executed inside a bake** — see §25's opening warning. Until the bake is observed, every number in
+§23–§25 is a *snapper* number, and §26/§27 would be built on an unverified floor.
+
+**WHAT TO RUN.** A real Alt-C bake, first **3 seconds only**, on **Hospital** and **HHS**, with both
+`Clash pairs` and `Measure` ticked in the panel. The Measure checkbox and its three bake call sites
+shipped in `bad6a319`; `sw.js` is at **v1162** — ⚠ if the tab has been open since before that, reload
+first or the worker serves the old `cpe_flythru_datum.js` and Measure silently does nothing.
+
+**WHAT IT MUST PROVE — the bake is a different consumer from the snapper, and only these lines can
+tell them apart.**
+1. `§FLYTHRU_DATUM_BUILT` appears at all — the build call is reached from `cinema_maxq.js`, not just
+   from `scripts/snap_timeline.js`.
+2. `§FLYTHRU_DATUM_MARKS drawn=N` on the baked frames, with `N` and the chain matching the recorded
+   second-zero run for that building (HHS `drawn=40`, Hospital `drawn=74`; chains X 54.744 / 95.915,
+   Y 52.491 / 88.227, Z 7.210 / 34.000, all `CHAIN ADDS UP`). **A different N means the bake's camera
+   or its buildup is not the snapper's**, which is the single assumption this whole lane rests on.
+3. `§FLYTHRU_DATUM_CONSISTENCY … IDENTICAL` — one radius across all three axes.
+4. **No `§FLYTHRU_DATUM_DRAW failed` / `§FLYTHRU_DATUM_AT failed`.** ⚠ Both are wrapped in the
+   never-kills-a-bake try/catch, so a scope error would let the film finish with the datum simply
+   ABSENT and only a `console.warn` to show for it. **TWO runtime scope errors have already slipped
+   past `node --check` in this file** (`R_BUB`/`TXT`, then `R_FIT`); this is exactly how a third
+   would hide.
+5. Clash and Measure both present in the same frame without fighting for the canvas — they are
+   separate compositors and have never been composited together (§25.5 item 1).
+
+**AND THE ONE THING A STILL CANNOT ANSWER:** 3 seconds is ~45 frames, so it is the first chance to
+see the datum **move** — whether the marks hold steady as the camera descends, or whether anything
+still re-decides per frame. §24.10 named per-frame re-deciding as the whole reason three axes were
+hard to label; the in-plane rewrite should have ended it, but that has only ever been checked on
+single stills. **Watch for popping between consecutive frames**, not just for a good frame.
+
+⇒ **Order of work next session: (1) this bake, (2) then §26 `§SLAB_BEAT`, (3) then §27
+`§LINEAR_BEAT`.** If the bake contradicts the recorded numbers, stop and fix that first — §26 and
+§27 both allocate slots inside a dive whose Measure layer must already be trustworthy.
