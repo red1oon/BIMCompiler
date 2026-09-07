@@ -2593,3 +2593,23 @@ then measured, not eyeballed (`out/frames_h12/`, `out/frames_h12q/`, numpy):
 **The one measurement that would be proof: an A/B bake** — the same 12 s clip with `--no-measure`, then a
 per-frame |on − off| pixel mask: its count must be 0 where no Measure element exists, and its footprint
 must sit on the datum planes, the plate's X and the label box. One 3-minute GPU run, user's go.
+
+### 26.14 §SLAB_BURIAL — a later plate directly above inherits the event (user, 2026-09-08: *"Hospital 9th second clear slab didn't get caught? … Yes fix that"*)
+**Measured cause (`out/Hospital_12s_cm.log`):** L5 pops 8.47 s, L6 9.38 s, 0.91 s later, dz +5.00 m, full
+plan overlap. §26.4.5 knew two cases — same place in contact (merge, HHS structure+finish) and elsewhere
+(fragments, reject) — so L6 was folded into L5's event as "the larger takes it" and thrown away with it.
+L6 is the plate that stays clear for the rest of the dive; the event is the UPPER plate's, not the larger's.
+**Rule:** within the envelope, a plate overlapping the host ≥ 50 % in plan, NOT in vertical contact and
+ABOVE it is a BURIAL: it becomes the event at its own pop second, the host is recorded as buried, and the
+chain's `claimSec` stays the FIRST pop of the chain (that is when the previous plate's mark was covered).
+Hold of the previous event = next event's `claimSec` − its own pop. Under it, Hospital: L1 hold 2.78 s (to
+L2 @3.85), chain L2→L3→L4→L5→L6 survives as **L6 @9.38 s, hold ∞ inside the dive** → longest hold wins →
+the 9th-second plate. A later plate hidden UNDERNEATH the host (overlap ≥ 50 %, below) is recorded as
+`under`, neither buries nor fragments. HHS's contact case is unchanged. Witness gains: a buried plate is
+never the pick; every event's `claimSec ≤ sec`.
+**MEASURED after the fix (`out/wsb_h_burial.log`, `out/wsb_hhs_burial.log`, 17/17 each):** Hospital events
+are now L1 @1.06 s hold 2.77 s and **L6 @9.34 s hold ∞, buried=[L2@3.84, L3@5.92, L4@7.07, L5@8.43],
+claimSec 3.83** → L6 is the beat: `87.56 × 86.62 m = 7,585 m² (est.) — 150mm Concrete With 75mm Metal
+Deck`, ratio 2.25 FLOOR-PLATE, crossing in frame at 62.8 m (2/4 corners in — the plate is larger than the
+frame by then, the label carries it). HHS unchanged: L1 @0.00 s with its finish layer merged. Not yet
+seen in a bake; the 12 s Hospital film in Downloads predates this fix.
