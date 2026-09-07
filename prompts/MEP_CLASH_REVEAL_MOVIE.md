@@ -1430,3 +1430,29 @@ to the enclosure, which is a backdrop and may run off the frame as any drawing s
 enclosure test is: camera outside, nothing behind camera, the great majority in view.
 ⚠ An earlier answer here said the camera was INSIDE the envelope at t=0. That was read off the stored
 `cinema_path` waypoint, not the rendered pose. **The bake starts at t=0 — read `plan.poseAt(0)`.**
+
+**21.1 LAYERS — `--clash` and `--cues` (added 2026-09-07).**
+```
+node scripts/snap_timeline.js --db Hospital_silent_local --at 9,14,22 --clash --cues
+```
+⚠ **THE FILM DRAWS IN TWO PLACES, and this is the trap.** The 3D scene (clash markers, storey tints,
+cue boxes) is in the WebGL canvas. The **labels, captions and day counter are NOT** — `_captureFrame`
+(`cinema_maxq.js:767`) draws the WebGL canvas onto a 2D context and THEN composites them
+(`clashLabelsCompositeOntoCanvas`, `roomTitleCompositeOntoCanvas`, `dayCounterCompositeOntoCanvas`, …).
+**A page screenshot silently omits every label.** So with any layer on, the snapper renders explicitly,
+draws the canvas, composites the same layers in the same order, and saves THAT — not a screenshot.
+Reachable API, all already exposed: `A.clashFilm.build()` / `.update(filmSec, camera)` ·
+`A.clashLabels.update(camera, filmSec, w, h, frameIdx)` → `.placed` · `A.flythruCuesBuild/ApplyVisual/CueCaptionAt`.
+
+**MEASURED, Hospital, clash+cues on** (`out/snap_layers.log`):
+| t | visible meshes | clash labels |
+|---|---|---|
+| 9 s | 997 | 4 |
+| 13 s | 1,438 | 0 |
+| 14 s | 1,551 | 0 |
+| 22 s | 2,207 | 1 |
+**Clash labels thin out early in the film** — they select the nearest pairs per frame and BOTH elements
+of a pair must be built, so the buildup starves them at the start. Not a bug; a consequence of §21's
+existence rule, and worth remembering before anyone "fixes" a frame with no labels in it.
+⚠ **Snap INSIDE a cue's hold, not at its start.** A snap at t=13.00 s missed the corridor cue entirely —
+its window is 13.05–15.25 s. Read the placement from `§FLYTHRU_CUE_PLACE` first, then pick the middle.
