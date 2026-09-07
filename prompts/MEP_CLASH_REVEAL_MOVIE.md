@@ -932,3 +932,26 @@ measured above) exists precisely so `common/room_graph.js` can test chord legali
 lookup — that is `prompts/Modeller/DISC_Walker/PATH_LEGAL_SEGMENTS.md` §G3-REVISED. A route measure is a
 walk over legal chords on that raster, which is the SAME Primitive A with a `walkable` stop predicate.
 So the ultimate capability is an extension of the two primitives, not a new subsystem. Baseline first.
+
+### 14. §FLYTHRU_SEQUENCE — ONE CUE ON SCREEN AT A TIME (user, 2026-09-07)
+> *"they are to play in sequence so as not overlapping the optics"*
+
+**Hard constraint, and it overrides §7's `persist:true` for the baseline.** Two cues alive at once means
+two labels, two boxes and two tints competing in the same frame — the optics collide and neither number
+reads. So the film runs a SINGLE SLOT: a cue fades in, states its number, clears, and only then may the
+next one begin.
+
+**Slot budget** (film seconds, per §7's buildup convention): mesh tint fade in **0.6 s** → hold **1.0 s**
+(the 0.5 s dimension buildup runs inside this and the value lands) → fade out **0.6 s** → **0.5 s clear
+gap** before the next cue may start. ≈ **2.7 s per cue**, so the four-cue baseline occupies ~11 s of a
+195.8 s film.
+
+**Consequences, all simplifications:**
+- **No persistence, no re-sighting, no re-entry bar.** §7's persist + the 33% return threshold are for a
+  film where cues accumulate. They do not apply here. A cue is said ONCE.
+- **No label-collision avoidance needed between cues** (§7's "avoids other labels" still applies against
+  the live clash `[tol/clash mm]` boxes, which are a different layer).
+- **Scheduling is a sequence assignment, not a gate**: cues are placed in narrative order, each starting
+  no earlier than the previous one's slot end. The order is fixed (§11); only the seconds are assigned.
+- **A cue that cannot find a legal window is DROPPED, not squeezed.** Least effort (§12) means the film
+  quietly shows three instead of four rather than overlapping two.
