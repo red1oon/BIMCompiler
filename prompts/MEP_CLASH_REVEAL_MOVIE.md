@@ -2102,6 +2102,14 @@ a clean run-up and the film's first measurement of a built thing is the plate it
 Terminal and one on Clinic, and §1 takes one. A guard the data does not reach is a guard in the right
 place; keep it, because a building with a fragmented schedule could still produce a crowd.
 
+**26.5a A BROADER NET WAS CONSIDERED AND DROPPED — recorded so it is not re-derived.** The idea of
+tinting *any* floor area at an arbitrary early second (rather than a named plate) was measured and
+retired by the user the same day (*"forget that, as the last HUD does address total storey"*). The
+measurement supports it: Hospital's first ten seconds are **footings only** — 168 at t=2, **335 at
+t=4** — giving a scattered pad footprint of 118 m² / **227 m²** and **zero planar floor area**. The
+first real footprint, 6,220 m², arrives at t=6 with the first walls. There is nothing to tint at
+second 4, and the storey total is already carried by the HUD. The beat stays a NAMED PLATE.
+
 **26.6 ⛔ OPEN — what the next session must do, in order.**
 1. **THE FRUSTUM TEST IS NOT DONE.** The PoC reports a BOUND from the stored path's 4 waypoints
    (Hospital Level 1: **in front of 1 of 4**, subtending up to **156°** when it is), and prints
