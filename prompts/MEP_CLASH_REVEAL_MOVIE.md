@@ -1926,3 +1926,62 @@ to the data including its fault; **(b)** WITHDRAW the upright whenever `LEVELSPL
 that the storey table carries two datums so no level datum can be drawn, and show the ground axes
 only. (b) is the recommendation, since an invisible ref is precisely the silent failure this lane
 keeps repeating, but it costs Terminal its level annotation entirely — so it waits for the user.
+
+### 25. 🏁 §MEASURE MILESTONE — the datum is a shipped feature, not a lane experiment (2026-09-08)
+> **USER:** *"This will be the first Measure milestone for any building. Put that Measure checkbox in
+> Alt-C panel too for user to trigger such overlay besides the Clash."* · *"Good to wrap up the
+> prompts/#."*
+
+**⚠ READ THIS FIRST, IT INVALIDATES AN ASSUMPTION THE WHOLE LANE RAN ON.** Until `bad6a319`,
+`cinema_maxq.js` referenced `flythruDatumBuild` / `flythruDatumAt` /
+`flythruDatumCompositeOntoCanvas` **nowhere**. The datum existed only inside
+`scripts/snap_timeline.js` — **no Alt-C film has ever carried it**, and every frame judged in §23/§24
+came from the snapper, not from a bake. Three call sites now exist (build once from the DB; per-frame
+`flythruDatumAt` so the 3D rules fade and depth-test; composite in `_captureFrame` beside the cues),
+each on the same never-kills-a-bake try/catch contract as its neighbours, all gated by **Measure**.
+⚠ `_captureFrame` is its OWN function, not a closure over the bake body — which is why the adjacent
+`_fcFilmSec` is read off `window.APP`. Declaring the flag as a bake-body local **compiles clean and
+throws at run time**; it crosses via `A._flythruDatumOn` / `A._flythruFilmSecFull`.
+⚠ `sw.js` `CACHE_VERSION` v1161 → **v1162** in the same commit — `viewer.html` loads
+`cpe_flythru_datum.js` at a fixed `?v=1`, so without the bump a returning user's worker serves the old
+copy and the checkbox does nothing.
+
+**25.1 THE FINAL SHAPE, and the one sentence each rule reduces to.**
+| | the rule | why it is not a tuned constant |
+|---|---|---|
+| where the ink lives | **in the model's own planes** | a mark placed by origin + two in-plane directions; the projected basis drives the canvas. Circles become the right ellipses, text foreshortens. Nothing faces the viewer. |
+| size | **`0.153 × medianBay`**, capped at **`0.40 ×` that axis's own smallest gap** | the ratio is read back off the frame the user accepted; the cap guarantees diameter ≤ 0.8 of the gap |
+| which edge | **near side decides outright**, far side only as a declared fallback | a stated requirement is a CONSTRAINT, never a term in a score (§24.11) |
+| the upright | hangs off the **back** corner, on whichever vertical face is **most face-on** | measured per frame by a dot product, so it follows the dive |
+| level density | **a level closer than the bubble this drawing uses is not a storey differentiator** | threshold is `2R` + a quarter for air — the drawing's own bubble |
+| figures | **stay in the model, small at distance** | *"They maybe small but at least in real 3Dspace we can make it out legibly at some point in the dive in."* A figure small at 98 m is FAR, not unreadable. |
+
+**25.2 THE THREE-BUILDING RECORD — same code, no per-building handling.**
+| second zero, `delta=0.0m AGREE` | bubbles | figures | overalls | model R X/Y/Z | chains |
+|---|---|---|---|---|---|
+| HHS | 20/20 | 17 | 3/3 | 1.001 IDENTICAL | 54.744 · 52.491 · 7.210 exact |
+| Hospital | 37/37 | 34 | 3/3 | 0.99 IDENTICAL | 95.915 · 88.227 · 34.000 exact |
+| Terminal | 25/25 | 17 | 3/3 | 1.212 IDENTICAL | 54.508 · 39.481 · 46.110 exact |
+
+**25.3 CONSISTENCY IS ASSERTED, NOT EYEBALLED** (user: *"Consistent has to be on paper ie in the maths
+not relying merely on visual to judge"*). `§FLYTHRU_DATUM_CONSISTENCY` prints the model radii AND the
+projected semi-axes, because they are two different claims: same size in the DRAWING, different size
+on SCREEN. MEASURED, Terminal: `1.212/1.212/1.212m → IDENTICAL | px X 5.0x6.8, Y 8.4x9.6, Z 3.4x3.9`.
+⚠ **A retraction this witness forced:** the Z bubbles were called edge-on from looking at the frame.
+They are not — aspect 0.87, nowhere near flat. They read smaller because that stack is **further from
+the camera**. The face-picking code is right in principle and was not the cause.
+
+**25.4 WHAT THE DRAWING FOUND IN THE MODELS — the part a BIM audience leans in at.**
+- Hospital printed **`Level 7` twice**, at 31 m and 34 m, and **3 of 8** elevations took the single
+  outlier of their cluster (`+10.973` over six rows at 11.000). Fixed by a modal vote.
+- Terminal carries **two datums in one storey table**: `Aras 02/03/04` each duplicated a constant
+  **3.00 m** apart, `00 Aras Asas` and `08 UPPER DOME` ~15 m apart. `§FLYTHRU_DATUM_LEVELSPLIT` names
+  it; **resolving it would be invention**, so the drawing states the fault instead.
+
+**25.5 ⛔ OPEN FOR THE NEXT SESSION.**
+1. **The datum has never been seen in an actual bake.** Every frame in §23–§25 is a snapper frame.
+   The first Alt-C run with Measure ticked is the real test.
+2. **Second zero reads as capability, not as a deliverable** — the figures are barely legible at ~100 m
+   and the layer lasts ~18 s. The dive is where it should land; that sequence is unexamined.
+3. **§22.3 still outranks the shot list**: every cue states a FINISHED figure over a half-built model.
+4. The abstraction list (§22.2) still stands at 2 of 8 shots.
