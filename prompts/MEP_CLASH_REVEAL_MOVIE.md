@@ -1811,3 +1811,66 @@ viewer the grid is BEHIND the building and not painted on the lens). **Second ze
 the opening frame states, in one look, that this is a real BIM model with real setting-out data.
 So the later-second frames are a REGRESSION CHECK, never the subject. Do not re-open the lifetime,
 do not propose ending it on envelope entry, and do not judge the labelling on a t=9 frame.
+
+**24.10 ✅ THE ANNOTATION MOVED INTO THE MODEL — `feat/flythru-cues` @ `aea1f2a4` (2026-09-07).
+This supersedes §24.1's mechanics, §24.3's layout pass and §24.7's scored edges.**
+> USER: *"it is in 3D space, do not force it to be readable. Keep it static true to its 2D plane"* ·
+> *"Optics will impress."*
+
+**WHY IT WAS HARD, stated once so it is not re-derived.** Every label was a SCREEN-SPACE object —
+11 px radii, 13 px fonts, pixel offsets — hung on a WORLD-SPACE anchor. The gridlines are
+`THREE.LineSegments` in the model: drawn identically every frame, never re-decided, never flickering.
+The labels had a fixed pixel size on an anchor that moves, rotates and rescales, so **every layout
+decision had to be re-solved per frame** — and solving each frame independently is what produced the
+popping (MEASURED across the streamed sequence: `zEnd` flipping `x@96.8 → x@-19.0 → x@96.8 → x@-19.0`
+at 0/3/6/9 s, numerals changing edge between 0 and 3 s, `scale` 0.82 → 1.80, stride 2 → 1). **None of
+that was the lines. All of it was the labels.** So the labels join the lines.
+
+**THE PRIMITIVE.** A mark is placed by its plane: origin `O` and two in-plane unit directions, all in
+model space. Projecting `O`, `O+U`, `O+V` gives the affine basis that maps model metres to screen
+pixels; canvas draws through it. A circle becomes the correct ellipse; text foreshortens, skews and
+rotates with the surface it is written on. **Nothing is corrected to face the viewer.**
+
+**WHAT THIS DELETED** — all of it existed only to defend screen-space readability: the shared
+occupancy register, the bubble ranks, every stride on the bubbles, the frame clamping, the
+all-or-none gate, the edge SCORES, the two-column level stagger. **771 lines → 397.** What survives
+is what the user ruled: near side for the ground axes, the level stack at the back, one ink, regular
+weight, no boxes.
+
+**THE PLOT SCALE IS DERIVED, AND THE TWO WRONG ANSWERS ARE RECORDED BECAUSE BOTH LOOKED PRINCIPLED.**
+1. **A fraction of the measured bay** — `0.20 × B` gave a 1.31 m radius on a 6.54 m bay, a bubble
+   **40 % of a bay wide**, with 8.8 m rungs that pushed the numerals off frame.
+2. **A flat 1:100 read of the convention** — right in kind, but a few pixels across on a 102 m plan.
+3. ✅ **What a draughtsman actually does:** pick the smallest STANDARD scale on which the plan still
+   fits the sheet (A1's usable 800 mm), then every size is a fixed number of millimetres AT that
+   scale — bubble 10 mm, text 3.5 mm (ISO 3098), first dimension line 10 mm off the outline with
+   equal steps per chain. MEASURED, HHS: `planDiag 102 m → 1:200 → bubbleR 1.00 m, textH 0.70 m,
+   rungs 2/4/6 m`. Self-adjusting to any building; **no tuned constant left in the layer.**
+
+**MEASURED, HHS second zero, streamed, `delta=0.0m AGREE`:**
+`drawn=40 · bubbles=20/20 · figures=17 · overalls=3/3 · figStride=1/1/1` ·
+X 54.744 = 54.744 · Y 52.491 = 52.491 · Z 7.210 = 7.210 → CHAIN ADDS UP.
+**Every ref on all three axes draws; nothing thinned, nothing dropped** — at 10 mm on the sheet a
+bubble cannot reach its neighbour by construction.
+
+**24.11 THE OPENING MUST BE THE BAKE'S OPENING (user: *"Opening has to be set at a distance where
+whole building will be as the silent baked mp4. If that can happen, i see why not your snap can't do
+same"*).** `§CINEMA_PIVOT` reads `A.camera.position` and `A.controls.target`, so **the framing the
+page is left at is part of the plan.** The snapper now presses the viewer's OWN `Home` key
+(`scene.js` `_homeResetAndFrame`) — ⚠ `_homeFillFrame` CANNOT be imitated from the DB, it centres on
+`A.buildingCentres` which only streaming populates, and imitating it made the plan camera-dependent
+and non-reproducible (THREE IDENTICAL RUNS, TWO DIFFERENT FRAMES). MEASURED, HHS second zero:
+**14.7 m above base / 48 m out → 70.0 m / 98 m** on a 102 m plan, and the near-side rule then holds on
+all three axes by itself. Default on for a streamed run; `--nohome` opts out.
+
+⚠ **A RULING MUST BE A CONSTRAINT, NEVER A TERM IN A SCORE (user: *"I asked that they be in the
+forefront, but u placed them in the back. This stumps me"*).** §23 implemented the near-side ruling as
+an explicit test; §24 replaced it with `edgeScore()`, and a score is free to trade a ruling away — it
+did, because "inside the frame" was weighted ×2 while the near edge's band runs TOWARD the camera and
+therefore off the bottom of the frame. **Near side now decides the side outright** (smaller measured
+camera distance), with a declared fallback to the far side only when the near one carries nothing —
+as an absolute it made HHS second zero draw NOTHING at all.
+
+⚠ **STILL OPEN.** Hospital's stored `cinema_path` total is **278.8 s** and every earlier timeline snap
+passed `--dur 195.8`, which rescales the film — **those Hospital seconds are invalid.** Re-snap
+against 278.8 before citing any Hospital second.
