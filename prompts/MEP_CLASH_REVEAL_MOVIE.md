@@ -2425,7 +2425,7 @@ through, so it holds while they are in it.
    building.** Hospital's path is authored; HHS's and Terminal's are derived. Check it with
    `plan.poseAt` in the same probe §26/§27 already owe — do not assume it across buildings.
 
-### 29. §ENVELOPE_BOX_DEPRECATED — the opening envelope tint goes; the 2D dims and the panel stay (user, 2026-09-08)
+### 32. §ENVELOPE_BOX_DEPRECATED (renumbered from 29 — the other session's §29 §INDOOR_BEATS was inserted first) — the opening envelope tint goes; the 2D dims and the panel stay (user, 2026-09-08)
 > **USER:** *"Remove the whole starting envelope tint as it is not needed. The whole envelope box
 > supposed to be deprecated. Just the 2Ds and the box label is good enough. But make the box label
 > persist 2 more secs."* (said after watching `Hospital_3s_clash_measure_2026-09-08.mp4`, whose first
@@ -2440,7 +2440,7 @@ slot: full for 1.4 s, then the same 0.6 s fade — `§FLYTHRU_DIM_DRAW key=envel
 window opens at 5.8 s on Hospital, so nothing overlaps. Witness: `witness_flythru_gate.js` (§6) plus
 the next bake's `§FLYTHRU_DIM_DRAW` lines.
 
-### 30. §CLI_BAKE_HOME — a bake opens from the viewer's Home frame, like the snapper (user, 2026-09-08)
+### 33. §CLI_BAKE_HOME (renumbered from 30) — a bake opens from the viewer's Home frame, like the snapper (user, 2026-09-08)
 > **USER:** *"The HHS opening frame has to be some distance away to let the dive in catch the 2D Z
 > plane. Trust your surgical judgement in the code and WITNESS log debugging."*
 
@@ -2515,12 +2515,12 @@ INCONCLUSIVE there and says so).**
    ghost-ground fade. **Prediction for the 12 s bake: `§CPE_BUILDUP placed≈1881` at 3.0 s and ≈7488
    at 8.5 s.** If it prints otherwise, the clocks still differ.
 
-**§30 correction.** The Home key must be dispatched ONCE, on `document`. The snapper's double dispatch
+**§33 correction.** The Home key must be dispatched ONCE, on `document`. The snapper's double dispatch
 (document + window) fired `§ROOM_HOME` twice and left the plan opening from the load camera
 (41.4, 8.7, −27.7); a single dispatch opened HHS at (48, 64, 48) with the plate 4/4 in frame at 94 m.
 `cli_silent_bake.js` does the single dispatch and prints `moved=`.
 
-**§30 CORRECTED (same day) — the opening is the SAVED VIEW, and the DATUM is the gate, not Home.**
+**§33 CORRECTED (same day) — the opening is the SAVED VIEW, and the DATUM is the gate, not Home.**
 MEASURED: both silent DBs carry a `scene_state` row and `main.js §SCENE_STATE_RESTORE` sets the camera
 from it at load. So a bake opens from the user's own saved view: Hospital's (85.5, 70.0, 58.9) — where
 the datum draws 37/37 bubbles + 3/3 overalls — and HHS's (41.4, 8.7, −27.7), 4/8 envelope corners in
@@ -2533,7 +2533,7 @@ pressed once and the datum re-judged. No distance threshold anywhere: the owner 
 frame" decides (§17: the datum must be up at second 0). Measure off → the saved view stands, and the
 log says the gate did not apply. `--nohome` skips the gate; `--opening-only` judges and exits (no GPU).
 
-**§28.2 addendum — item 2 now closes on HHS too.** Under §30's gate (`--opening-only`, 2026-09-08)
+**§28.2 addendum — item 2 now closes on HHS too.** Under §33's gate (`--opening-only`, 2026-09-08)
 HHS's bake opening is Home (48, 64, 48) and the datum reports **drawn=40, 20/20 bubbles, 3/3
 overalls** — the snapper's recorded number. The two consumers agree on both buildings once the bake
 opens where the snapper opened. Hospital is untouched (saved view kept, drawn=74).
@@ -2558,7 +2558,7 @@ film `~/Downloads/Hospital_12s_clash_measure_slab_2026-09-08.mp4`, 288 f = 12.00
 **26.11 HHS 12 s bake (same session; `out/HHS_12s_cm.log`, film `~/Downloads/HHS_12s_clash_measure_2026-09-08.mp4`,
 303 f = 12.6 s of a 76.0 s film — the Home opening lengthened the plan from 72.3 s; wall 151 s; 0 failures).**
 - `§CLI_BAKE_OPENING moved=Home load[(41.4, 8.7, −27.7) 18/20 2/3 drawn=37 PARTIAL] → home[(48, 64, 48) 20/20
-  3/3 drawn=40 FULL]` — §30 did what the user asked: the film now opens at distance with the whole datum,
+  3/3 drawn=40 FULL]` — §33 did what the user asked: the film now opens at distance with the whole datum,
   the Z plane included; `drawn=40` on the first 51 frames, then 22/16/18 as the dive proceeds, never 0
   while the layer is live (221 frames to its fade).
 - **`§SLAB_BEAT INCONCLUSIVE — buildup off — nothing is laid, so there is no pop to mark`.** HHS's stored
@@ -2572,7 +2572,7 @@ film `~/Downloads/Hospital_12s_clash_measure_slab_2026-09-08.mp4`, 288 f = 12.00
   user's injection.
 
 **⛔ OPEN after this session:** (a) HHS 12 s bake with `--buildup` — one GPU run, user's go; (b) §27
-`§LINEAR_BEAT` next, reading §28.2's HHS clock (76.0 s film after §30, dive 0.054) and §26.9's real
+`§LINEAR_BEAT` next, reading §28.2's HHS clock (76.0 s film after §33, dive 0.054) and §26.9's real
 Hospital pool; (c) the cues module's storey window moved 5.8 → 2.7 s between the 3 s and 12 s Hospital
 bakes (its own placement, not touched here) — worth a `§FLYTHRU_CUE_PLACE` line naming why.
 
@@ -2613,3 +2613,66 @@ claimSec 3.83** → L6 is the beat: `87.56 × 86.62 m = 7,585 m² (est.) — 150
 Deck`, ratio 2.25 FLOOR-PLATE, crossing in frame at 62.8 m (2/4 corners in — the plate is larger than the
 frame by then, the label carries it). HHS unchanged: L1 @0.00 s with its finish layer merged. Not yet
 seen in a bake; the 12 s Hospital film in Downloads predates this fix.
+
+### 34. 🏁 RESUME HERE — session close 2026-09-08 (Fable). Read this, then §26.14, §32, §33, §29 §INDOOR_BEATS.
+**State.** bim-ootb branch `feat/flythru-cues` @ `90241bd2` (+ a comment-only renumber commit), pushed, no PR,
+~14 commits ahead of `main`; `sw.js` v1163. Spec branch `fable/meshdb-livewire`, pushed. Worktree
+`/tmp/wt-storey-reveal` holds every log cited here under `out/`. Films in `~/Downloads/*_2026-09-08.mp4`.
+Shipped and witnessed this session: §28 bakes · §26 slab beat (+§26.14 burial) · §32 envelope box · §33 opening
+gate · §CPE_CLIP_BUILDUP_FILM_T · CLI `--measure`. **Nothing here is merged to main.**
+
+**USER, on the 12 s Hospital film (2026-09-08 close): *"I am satisfied the visual graphics treatment."* Then
+three corrections — these are the FIRST tasks, in this order, each one small:**
+1. **"The whole envelope tint is still there."** §32 skipped the 3D box only for `key === 'envelope'`; the
+   STOREY cue (window 2.7–4.9 s on the 12 s bake) draws the same 0.13-opacity fill + outline around the
+   storey's extents, which reads as the building tint. Evidence: amber-band pixels 1,689 @3.0 s and 5,389
+   @4.5 s vs 274 @8.0 s (`out/frames_h12/`), `§FLYTHRU_DIM_DRAW key=storey` 2.72–4.52 s. **Ruling extends to
+   ALL cues: no 3D box for any cue; 2D dims + panel only.** Fix = `flythruCuesApplyVisual` never shows
+   `ensureGroup()`'s fill/outline (one branch, `viewer/cpe_flythru_cues.js` ~line 345); log
+   `§FLYTHRU_CUE_BOX deprecated`; `witness_flythru_gate.js` must stay 0 FAIL. Confirm in the next bake's log.
+2. **"The outer perimeter still does not ignore rogue elements (a single hanging staircase off the main
+   building) — asked to be a rule in any building — and it may influence the total/walkable areas."** The
+   rule already exists: **§20.9** (envelope = `BOMExtract.extract(A).envelope`, structural classes only,
+   *"outliers stretch AABB"*) and **§20.7** (the clustering primitive for outlier rejection). Neither was
+   adopted: `cpe_flythru_cues.js dbMeasures()` builds `ext` and `ground` from ALL `element_transforms`
+   (`FM.ftExtents(all)`, `ftRasterizeBoxes(all)`), and `cpe_flythru_datum.js` derives its grid from columns
+   (robust) but its ground/upright plane extents from the same all-element box. Task: envelope dims,
+   Ground m², Envelope m³ and the datum plane extents take the §20.9 structural envelope; a stair
+   (`IfcStair`, not in `ENV_CLASSES`) is then outside by construction. Print BOTH numbers once
+   (`§FLYTHRU_ENVELOPE all=… structural=… dropped=[class:count]`) so the correction is witnessed, not assumed.
+   `storey_walkable_raster` (walkable m², §29.2) is mesh-derived per storey — check whether the stair's
+   footprint is in it before claiming it is unaffected.
+3. **"Make the grid lines more pts thicker."** The datum's 3D ground grid and storey rules are
+   `LineBasicMaterial` (`cpe_flythru_datum.js:160`) — WebGL draws them 1 px whatever `linewidth` says, and
+   the bundle has no `LineSegments2`/`LineMaterial` (grep: 0 hits in `viewer/lib/three*.min.js`). §17.5
+   requires these lines to DEPTH-TEST and be occluded, so they cannot move to the 2D canvas. Options, pick
+   by measurement: thin ribbon quads (world width derived from the bubble radius, e.g. 0.06 × R — state
+   the ratio) or a `MeshLine`-style strip; the 2D annotation strokes (`ctx.lineWidth = 1.1 * (h/720)`,
+   line 416; bubbles `r * 0.10`, line 401) can simply scale. Witness: `§FLYTHRU_DATUM_LINES widthM=… px@100m=…`.
+
+**§27 §LINEAR_BEAT — corrections before anyone allocates a slot (all measured this session):**
+- Its PoC `scripts/poc_dive_beats.js` still maps day→second LINEARLY (lines 89–93). §26 replaced that with the
+  owner clock (`A.buildupTAt` + `A.buildupCursorAt`, bisected — `cpe_slab_beat.js makeClock`); §27 must do the
+  same or its seconds are fiction. Hospital's real early pops: L1 1.07 · L2 3.85 · L3 5.94 · L4 7.09 · L5
+  8.47 · L6 9.38 (§26.9), and the buildup runs ~1,200 elements/s after 10 s.
+- **The plate's slot is now 9.34–11.54 s (Level 6, §26.14), not 10.31–12.31.** §27.2's column/beam
+  allocations were computed around the old slot on the linear clock — recompute; §27.3d's "call §26" now
+  means `A.slabBeatReport().beat.sec`.
+- HHS: film **76.1 s** after §33 moved its opening (72.3 s before), dive 0.054 → **4.1 s** (one 2.5 s slot),
+  camera underground from **3.96 s** (frame 95), stored path has **buildup OFF** (`§CLI_BAKE_RESOLVED
+  buildup=0 reveal=0`) — pass `--buildup --reveal --label` or re-save the path, or nothing pops. §27f/g and
+  §29.7 item 3 carry the older numbers.
+
+**Bakes.** GPU bakes are user-gated, one at a time. Standing offers not yet taken: (a) HHS 12 s with
+`--buildup --reveal --label`; (b) Hospital 12 s to see §26.14's Level 6 beat; (c) an A/B `--no-measure`
+diff bake as the pixel-level proof of Measure (§26.12). `--opening-only` judges the opening with no GPU.
+
+**Commands.** `node cli_silent_bake.js --db Hospital_silent_local --clash --measure --gpu real --clip
+0:0.06129 --fps 24 --width 1280 --height 720 --port 8561 --out out/X.mp4 --log out/X.log` (12 s);
+`node viewer/tests/witness_slab_beat.js --db Hospital_silent_local --dur 195.79 [--nostream]` (streamed run
+≈ 8 min under swiftshader, no-stream ≈ 1 min; `--nostream` marks the tint invariant INCONCLUSIVE);
+`node viewer/tests/witness_flythru_gate.js`. Read the log after every run.
+
+**Do not redo.** §26.5's placement table (linear clock) — superseded by §26.9/§26.14. §28's item 2 on HHS —
+closed by §33. The PoC numbers in §26.4/§27.2 — the owner clock replaces them. The 2D-vs-3D question for
+the datum lines — §17.5 settles it (3D, occluded).

@@ -18,7 +18,7 @@ zero local-only; `sw.js` **v1163**. No PR yet for this branch (11+ commits ahead
 - **§28** 3 s Clash+Measure bakes, both buildings: datum built from a real bake, chains add up, IDENTICAL, 0
   failures, clash in the same frames. Hospital drawn=74 = snapper (same camera). HHS differed because its bake
   opened from a saved close view — fixed by §30. CLI gained `--measure/--no-measure` (§28.1).
-- **§26 §SLAB_BEAT** `viewer/cpe_slab_beat.js` + `viewer/tests/witness_slab_beat.js` (16/16 streamed Hospital,
+- **§26 §SLAB_BEAT** (+§26.14 burial: Hospital's beat is now Level 6 @ 9.34 s) `viewer/cpe_slab_beat.js` + `viewer/tests/witness_slab_beat.js` (16/16 streamed Hospital,
   16/16 HHS). The pop second comes from the bake's own clock (owners `buildupTAt`+`buildupCursorAt`, bisected):
   Hospital Level 1 pops at **1.07 s** (PoC's linear map said 10.31 s); verified against the 12 s bake's placed
   counts within 7 elements. Stacked-layer test now needs vertical contact. In the 12 s Hospital bake: tint
@@ -28,9 +28,11 @@ zero local-only; `sw.js` **v1163**. No PR yet for this branch (11+ commits ahead
   Home. Hospital kept (37/37, 3/3); HHS moved (18/20 → 20/20, drawn 37 → 40 = snapper).
 - **§CPE_CLIP_BUILDUP_FILM_T**: a clip's buildup read the clip length as the film total (3rd of that class).
 
-**⛔ NEXT:** (1) HHS 12 s bake with `--buildup` (HHS's stored path has buildup OFF, so §SLAB_BEAT declined
-INCONCLUSIVE there) — user's go. (2) §27 `§LINEAR_BEAT` on the real clock (§26.9 pool, HHS 76.0 s film).
-(3) HHS path still dives underground at 3.96 s — a path injection (§27g), user's. (4) PR for `feat/flythru-cues`.
+**⛔ NEXT — read `prompts/MEP_CLASH_REVEAL_MOVIE.md` §34 first (the handoff).** User's three corrections on the
+12 s film come first: (1) no 3D box for ANY cue (the storey cue still tints); (2) envelope/areas must use the
+§20.9 structural envelope so a hanging stair cannot inflate them; (3) thicker datum grid lines (3D ribbons —
+§17.5 forbids moving them to 2D). Then §27 on the owner clock with the plate slot at 9.34 s (§26.14), then
+§29 §INDOOR_BEATS. Bakes are user-gated: HHS 12 s needs `--buildup --reveal --label`. No PR yet.
 
 **Witness count:** +1 file (`witness_slab_beat.js`, 16 asserts + red control); `witness_flythru_gate.js` 0 FAIL after §29.
 
