@@ -122,3 +122,65 @@ not the spec. Next real work, in the priority order already set by the demo-read
 hardware in hand, (2) comfort-locomotion decision, (3) build `CPE_WALK_WEBXR_FINDPANEL.md`'s clash
 slice (serves Pillar 1 AND 2 at once), (4) spec Pillar 3's WebXR compatibility question, (5) define
 "reconstruct" precisely for Pillar 1.
+
+---
+
+## §MEASURE_OVERLAY_VS_DEMO — where the fly-through measurement lane fits (2026-09-07)
+Written from a reflection session while a concurrent session builds
+`prompts/MEP_CLASH_REVEAL_MOVIE.md` §FLYTHRU_DIMENSIONS (§1-§15, consolidated 2026-09-07). That file
+owns the spec; this section owns only the question **does it serve the killer demo, and which part of
+it does.** Numbers below are that file's own measured ones (§11, `out/ft_maths.log`, 2026-09-07) — none
+are re-derived here.
+
+**1. It lands in Pillar 2, and it is the piece Pillar 2 was missing.** Pillar 2 ("find space, walk-thru
+path") is the most mature pillar — walk mode shipped (PR #1251), WebXR lifecycle shipped (PR #1253) —
+but a walk with no number on screen is a game engine. A walk that measures as it goes is BIM. The
+overlay is Pillar 2's evidence layer, not a fourth pillar.
+
+**2. The killer number is WALKABLE AREA, not envelope volume.** §11 measured three numbers for the same
+Hospital storey: bbox **15,072 m²**, gross raster **11,678 m²**, walkable-from-mesh **6,481 m²**
+(Level 1). Every competing viewer can print the first. The third is derived from the building's own
+triangulated mesh (`scripts/build_storey_walkable_raster.js`, 7 storeys present) and **appears nowhere
+in the IFC** — that is the differentiating claim. §FLYTHRU_DIMENSIONS §11 already reaches this
+conclusion ("Walkable is the better capability claim") but the stated baseline leads with B1 envelope,
+which is the one number that proves nothing to a BIM audience. Order the beats: envelope as the
+opener (scale-setting), walkable as the point.
+
+**3. Level 7A is the demo's own proof-shot, already measured.** Bbox **4,495 m²** vs raster **617 m²** =
+**7.28x**. That is not an approximation argument, it is "the number your current tool shows you is 7x
+wrong, here is the real one, on screen, in the same second." It sells the raster (§3.2/§3.3) without
+a slide.
+
+**4. SCOPE RISK — the film scheduler is MP4-only; the primitives are not.** §14's sequential slot budget
+(2.7 s per cue, cues assigned to precomputed path windows) exists because a baked film's camera path is
+known in advance. **In VR the viewer owns the camera, so nothing can be scheduled** — a cue must be
+selected live from where the head is looking. The two primitives (§3.1 chord, §3.2 raster) are
+camera-agnostic and serve both vehicles; the scheduler and the window assignment serve only the bake.
+Build the primitives as viewer API surface (`A.*`), keep the scheduling in `cinema_maxq`/film code.
+If the primitives land inside film-only code, Pillar 2 and the exhibition demo get nothing from this
+lane, and it will have to be written twice.
+
+**5. DELIVERY RISK — the lane is converting session time into spec, not into demo.**
+`MEP_CLASH_REVEAL_MOVIE.md` is 977 lines; §FLYTHRU_DIMENSIONS §1-§15 were all written on 2026-09-07,
+and its own §10.4 states **no bake has ever drawn one of these cues** (only staged stills with the
+camera pointed by hand). Bakes are held pending a user go-ahead. The objective in this file's title is
+to LAND a demo — so one `--clip` with B1+B2 actually drawn outranks §16 onward. Treat "a cue has
+survived a real frame" as the lane's next gate, not more sections.
+
+**6. THE ESCALATION that makes it killer rather than nice — geometry → money.** Every cue in
+§FLYTHRU_DIMENSIONS stops at a dimension. The film's only beat that crosses into commercial value is
+`§MEASURE_BUILDING_CARD` at the close (census `doors=440 windows=131 walls=1468`, envelope volume, and
+a **material cost estimate** — correctly not labelled a total, since `labour=0` on a silent bake).
+The chain past that already ships: BIM→ERP fold + Variation Order round-trip (`proj_fold.js`/
+`vo_fold.js`, live 2026-06-15, [[project_bim_to_project]]). **A single cue that runs measured area →
+quantity → BOQ line → PO is worth more to the demo than eight geometry cues**, because clash detection
+and dimensioning are table stakes for Navisworks/Solibri and the fold is not. Not proposed as scope for
+the current lane — recorded as the direction the baseline should be built to extend into, so the cue
+graphic is not designed in a way that forecloses it.
+
+**7. CALENDAR — which meeting this asset is for.** The venue for this demo is the **2026-09-26
+conference** (Track 2, property developers with real IFCs — [[project_sysnova_kazifarms_bim_scoping]]).
+The **2026-09-08 Kazi Farms meeting is NOT it**: that client has no IFC (a 2D site-plan PDF), and their
+own dashboard shows the real pain as 65% of 468 active projects missing schedule data. The asset for
+that meeting is the 4D/BOQ data feed, not the measurement overlay. Do not spend the overlay lane's
+remaining time against the 09-08 date.
