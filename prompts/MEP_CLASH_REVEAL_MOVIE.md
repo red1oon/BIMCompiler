@@ -1021,12 +1021,20 @@ a relation `A.ifc2three` (scene.js:499) already OWNS — degrading to identity w
 misplaces every element while leaving the envelope (dMax passes from anywhere) the lone survivor. That is
 the ownership-table defect CLAUDE.md §0 warns about. **Use `A.ifc2three`; do not repair `flythruFrameMap`.**
 
-### 16. §FLYTHRU_DATUM_PLANES — the opening setting-out enclosure (user, 2026-09-07)
+### 17. §FLYTHRU_DATUM_PLANES — the opening setting-out enclosure (user, 2026-09-07)
 > *"This can be the abstract opening overlay for any building — a 2D × 3 grid. The back and side
 > (Z[X/Y]−) away from camera POV and ground earth [XY], as the buildup covers the gridlines, then when
 > goes out of frame can go off."*
 
-**16.1 Definition.** Three orthographic datum planes are established about the model's section box and
+⚠ **NUMBERING / COORDINATION.** This section and §18 were written concurrently with the placement
+session's **§16 MEASURED PLACEMENT** (line ~979) and renumbered to 17/18 after the merge. Read §16
+first — it settles the relationship between the two layers, in the user's own words: *"it is just
+adding a simple non intrusive idea.. have the whole 2D grids matrix appearance from onset"*. The datum
+planes are a **backdrop present from the onset**, not a cue competing for a slot. They compose with
+§16's measured placements (envelope 0.00–2.20 s, storey 2.70–4.90 s, corridor 13.05–15.25 s); neither
+side moves and neither side's hook may be deleted to resolve a conflict.
+
+**17.1 Definition.** Three orthographic datum planes are established about the model's section box and
 carry a setting-out grid at a derived module:
 - **The site datum plane** — horizontal, at the project base level (`env.zMin`), coincident with the
   ground on which the building is set out.
@@ -1039,7 +1047,7 @@ reading an architect takes from a plan set at ±0.000 with two elevations behind
 not a measurement: the grid states the module the building is set out on, and the building's own
 dimension strings (§3, §17) state the measurements.
 
-**16.2 Plane selection is a per-frame back-face test, not an authored choice.** Of the four vertical
+**17.2 Plane selection is a per-frame back-face test, not an authored choice.** Of the four vertical
 section-box faces (X−, X+, Y−, Y+), a plane is ACTIVE when `dot(outwardNormal, cameraForward) > 0`.
 Exactly two satisfy this for any general camera azimuth; at a 45° face-on azimuth three may qualify, in
 which case the two with the largest `|dot|` are taken, so **never more than two vertical planes are
@@ -1048,7 +1056,7 @@ zero — that is, **after** it has left frame, which is the user's "when goes ou
 No cross-fade is required and none should be added: a swap executed off-screen is invisible by
 construction. The site datum plane is always active while the model's footprint is in frame.
 
-**16.3 The module is derived from the envelope — no knob (binding under §12).**
+**17.3 The module is derived from the envelope — no knob (binding under §12).**
 Take the longest horizontal envelope side and choose the 1-2-5 decade step that yields **10 to 30
 gridlines** across it. Hospital: 164.78 m → a **10 m** module → 16 lines on the long axis, 12 on the
 short. Duplex: 17.54 m → **1 m** → 18 lines. The rule is scale-free and returns a round, drawable
@@ -1059,8 +1067,8 @@ a correct read of that model's structure but is not a drawable field. Conflating
 opening overlay hostage to detection quality on an unseen building. **The datum planes state the
 module; the dimension chains state the structure. Two layers, two claims, never merged.**
 
-**16.4 Annotation carried by the planes.** All of it is drafting furniture that already exists in the
-codebase (§16.8) — nothing new is authored:
+**17.4 Annotation carried by the planes.** All of it is drafting furniture that already exists in the
+codebase (§17.8) — nothing new is authored:
 - **Grid bubbles** — numerals on one axis, letters on the other, per `grid_dims.js`'s existing sequence
   `A,B,C,D,E,F,G,H,J,…`, which correctly omits **I**. ⚠ It retains **O**; standard practice omits both
   I and O against confusion with 1 and 0. A one-character fix, worth taking while this layer is built.
@@ -1074,7 +1082,7 @@ codebase (§16.8) — nothing new is authored:
   enclosure's own annotation, which is where a dimension string belongs on a drawing. This is a
   simplification of §3.5 B1, not an addition to it.
 
-**16.5 DEPTH BEHAVIOUR — this layer INVERTS the draw contract, and that inversion is the effect.**
+**17.5 DEPTH BEHAVIOUR — this layer INVERTS the draw contract, and that inversion is the effect.**
 Every measurement cue in §7 draws with `depthTest:false` so it shines through. **The datum planes must
 depth-test NORMALLY and be occluded by the building.** The user's "as the buildup covers the gridlines"
 IS the occlusion: as the model rises in the opening, it progressively hides its own setting-out grid,
@@ -1083,17 +1091,26 @@ shine-through datum plane would destroy the reading entirely.
 ⚠ Record this explicitly in `FLYTHRU_DRAW_CONTRACT` as the one exempt layer, or a later session will
 "fix" it to match the cues.
 
-**16.6 Lifetime.** The enclosure belongs to the opening. It is established at second 0, holds through
-the dive (`§CINEMA_BEATS dive=0.094`, i.e. the first ~18.4 s of 195.8 s), and fades out as the dive
-resolves into the walk. Individual planes extinguish earlier under §16.2 when they leave frame. It does
-not return; a re-established datum mid-film would compete with the measurement cues for the same ink.
+**17.5a INK — the datum planes must not lighten the opening ground (§16's warning, honoured here).**
+§7 flips cue ink yellow→black on a Rec.709 luminance of 0.45. §16 records that a light grid ground in
+the opening seconds would correctly flip the envelope cue to black. The datum planes are therefore
+drawn as **faint light-on-dark rules over the existing ground, never as a filled light plane** — they
+add lines, not luminance. The layer must be measured against the flip threshold before it ships: if the
+sampled opening frames cross 0.45, the planes are too heavy, not the ink rule wrong.
 
-**16.7 Cost.** Three planes at 10-30 lines each ≈ 90 line segments, drawn as one `LineSegments` per
+**17.6 Lifetime — present from the onset (user, corrected against §16).** The enclosure is established
+at second 0 and is **already in appearance when the film opens**, not introduced as a beat. It holds
+through the dive (`§CINEMA_BEATS dive=0.094`, the first ~18.4 s of 195.8 s), covering §16's measured
+envelope, storey and corridor placements, and fades out as the dive resolves into the walk. Individual
+planes extinguish earlier under §17.2 when they leave frame. It does not return: a re-established datum
+mid-film would compete with the measurement cues for the same ink.
+
+**17.7 Cost.** Three planes at 10-30 lines each ≈ 90 line segments, drawn as one `LineSegments` per
 plane — **3 draw calls**, against Hospital's measured 1,657 (still climbing when that measurement was
 stopped, `EXHIBITION_VR_KILLER_DEMO.md`). Bubbles and level tags are sprites on the existing label
 path. The module calculation is arithmetic on the envelope. Nothing here queries the DB per frame.
 
-**16.8 REUSE — build nothing that exists.** All paths `~/bim-ootb`, `main` @ `5daec9e0`:
+**17.8 REUSE — build nothing that exists.** All paths `~/bim-ootb`, `main` @ `5daec9e0`:
 | Need | Existing | Note |
 |---|---|---|
 | Dimension line + extension + tick + bubble in 3D | `grid_dim_chains.js:59` `addDimSegment` | already mm-labelled, `(dist*1000).toFixed(0)` |
@@ -1102,30 +1119,38 @@ path. The module calculation is arithmetic on the envelope. Nothing here queries
 | North point, scale bar | `print_sheet.js:255`, `:226` | title-block data already via `corporate.json` |
 | Structural grid + bay/overall dimension strings | `grid_dims.js:768` `GridDims.*` | §17 — a SEPARATE layer, see 16.3 |
 | Ground-plane placement convention | `grid_dim_chains.js:113` `groundY = env.zMin − 0.05` | chains already sit on the datum |
+| DB → scene transform | `A.ifc2three` (`scene.js:499`) | **the owner** — see note below |
 
-**16.9 WITNESS — `witness_flythru_datum_planes.js`, and it must be able to fail.** Per
+⚠ **TRANSFORM OWNERSHIP — settled by §16, and this layer already complies.** `A.flythruFrameMap` is
+retired: it re-derived by extent-matching a relation `A.ifc2three` already owns, and degraded to
+identity on a failed match, which is what collapsed the earlier build pass (§10.1, now answered).
+`DimChains.build` calls `APP.ifc2three(...)` for every dimension endpoint (`grid_dim_chains.js:118-127`),
+so the shipped 2D stack is **already on the owned transform** — inheriting it costs nothing and
+introduces no second datum. Do not add one.
+
+**17.9 WITNESS — `witness_flythru_datum_planes.js`, and it must be able to fail.** Per
 `WITNESS_INTERFACE_FRAMEWORK.md` and PRIMAL LAW §4, it asserts over sampled camera frames of the real
 opening path, and prints `INCONCLUSIVE` — never `PASS` — when the sampled population is empty:
 1. **Back-face invariant** — for every sampled frame, every ACTIVE vertical plane satisfies
    `dot(n, camFwd) > 0`. A single violation is a fail: it means a datum plane stood between camera and
    building.
-2. **At most two vertical planes active** in any frame (§16.2).
+2. **At most two vertical planes active** in any frame (§17.2).
 3. **Module legality** — the derived step yields 10 ≤ lines ≤ 30 on the long axis, on all four fleet
    buildings, and is a 1-2-5 decade value.
 4. **Occlusion is real** — the plane material reports `depthTest === true` and `renderOrder` below the
-   cue layer's 900 (§16.5). This is the assertion that catches a later "consistency" regression.
+   cue layer's 900 (§17.5). This is the assertion that catches a later "consistency" regression.
 5. **Extinction** — no datum geometry remains in the scene after the dive window closes; a plane that
    left frame is disposed, not merely hidden (`NO-OP` reported if nothing was removed).
 6. **Annotation provenance** — level-datum count equals `detectStoreys(db).length`, so a fabricated
    level can never be drawn.
 
-**16.10 What this layer does NOT claim.** It is a setting-out reference, not a survey. The module is
+**17.10 What this layer does NOT claim.** It is a setting-out reference, not a survey. The module is
 chosen for legibility, so a gridline is not asserted to coincide with any structural centreline — that
 assertion belongs to `GridDims` and is witnessed separately (`witness_grid_numeric.js`). Nothing in
 this section may be described as a drawing, a sheet, or an extract; it is drafting furniture
 establishing the frame in which the film's measurements are then read.
 
-### 17. §FLYTHRU_2D_INHERITANCE — the shipped 2D dimensioning stack, and what it does on this fleet
+### 18. §FLYTHRU_2D_INHERITANCE — the shipped 2D dimensioning stack, and what it does on this fleet
 **Study run 2026-09-07 to establish what the 2D lane already provides before any of §16 is built.**
 `viewer/grid_dims.js` · `grid_dim_chains.js` · `grid_overlay.js` · `grid_scissors.js` · `elevation.js` ·
 `section_cut.js` are a complete, shipped structural-grid and dimensioning stack:
@@ -1140,7 +1165,7 @@ establishing the frame in which the film's measurements are then read.
   strings at an arbitrary cut plane** — the per-storey plan case is built, not pending.
 - `cinema_maxq.js` references the grid stack **zero times**. None of it has ever been driven by a bake.
 
-**MEASURED, shipped `GridDims`, no GPU** (`probe_plan_grid.js`, log `scratchpad/plan_grid.log`):
+**MEASURED, shipped `GridDims`, no GPU** (`scripts/probe_plan_grid.js`, log `out/plan_grid.log`):
 | Building | gridlines X × Y | bay dims | median bay | detect ms |
 |---|---|---|---|---|
 | **Hospital** | 3 × 5 | 6 | 1,781 mm | 130 |
@@ -1156,11 +1181,11 @@ structure and **cannot describe the site boundary**.
 ⚠ `witness_grid_numeric.js` covers Duplex, SampleHouse and SampleCastle only. **Hospital is not under
 witness on this stack** — its behaviour above is from this study, not from a standing assertion.
 
-**Consequences for the film, and they are what §16 was written to resolve:**
+**Consequences for the film, and they are what §17 was written to resolve:**
 1. **The site perimeter is not a GridDims product.** It is the traced boundary from `flythruRaster`
    (§3.2) — Hospital 562 m, already measured — drawn on the site datum plane. This is the "outer
    perimeter drawn up as the camera flies in" and it needs no detection work.
-2. **The opening must not depend on structural-grid quality.** §16.3's derived module is why the
+2. **The opening must not depend on structural-grid quality.** §17.3's derived module is why the
    enclosure generalises to any dropped model; where a coherent structural grid does exist, the
    `DimChains` strings are laid over the same datum as a second, richer layer.
 3. **A per-storey plan beat is available whenever wanted** via `detectGridsAtPlane` + `DimChains` at a
