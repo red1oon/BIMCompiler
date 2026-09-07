@@ -1985,3 +1985,130 @@ the camera**. The face-picking code is right in principle and was not the cause.
    and the layer lasts ~18 s. The dive is where it should land; that sequence is unexamined.
 3. **§22.3 still outranks the shot list**: every cue states a FINISHED figure over a half-built model.
 4. The abstraction list (§22.2) still stands at 2 of 8 shots.
+
+### 26. §SLAB_BEAT — mark the floor plate AS IT IS LAID. NEXT SPECS, BEFORE INDOORS (user, 2026-09-08)
+> *"In Hospital a 3rd level or above slab is one that stays in the movie longer to mark out as a wing
+> slab and thus show a tint and an X marking out both diagonals with the middle a label box 'X by Y =
+> Area (estimate for [Ifc semantic name])'. … This is for the user to note that this BIM picks out
+> arbitrarily rather accurately without AI in the loop."* ·
+> *"have a priority to just do 2 at max during fly in and pick the longest visual potential. Without
+> such guards, we gonna have a mess to handle."* · *"Put in as 'next specs before indoors'."*
+
+⚠ **NUMBERING.** §25 was taken by the Measure-milestone session while this was being measured. This is
+§26 and it is the NEXT work item after §25, before any indoor/hallway beat.
+
+**26.0 WHY THIS BEAT AND NOT ANOTHER — it closes two of §25.5's four open items.**
+§25.5.3 records the lane's highest-merit defect: *every cue states a FINISHED figure over a half-built
+model*. A plate marked **at the instant it is laid** states the building at the time shown, so the
+defect does not arise. §25.5.2 records that the datum reads as capability rather than deliverable and
+that *"the dive is where it should land; that sequence is unexamined."* This beat is that sequence.
+
+**26.1 THE USER'S TWO CRITERIA, and both are met before any code draws.**
+1. **The IFC semantic must make sense.** `elements_meta.element_name` carries a Revit type string
+   `Family:Type:id`; dropping the family and the element id leaves the construction:
+   `Concrete-150 mm slab on 300mm base` · `150mm Concrete With 75mm Metal Deck` · `STB 30.0` ·
+   `150mm Slab on Grade`. Extracted, never composed. A typo in the source (Terminal's `Procelain`) is
+   printed as recorded.
+2. **It must be caught as ONE coherent area.** Hospital's floors are **one element each** — 35 planar
+   `IfcSlab` over 10 storeys, the Level 1 plate a single 98.57 × 90.29 m element. Not tiles.
+
+**26.2 THE MARK — three layers, and the occlusion split is the whole point.**
+| layer | states | depth |
+|---|---|---|
+| **amber tint on the plate's own mesh** | WHAT and WHERE | **depth-tested** — the construction laid on top progressively buries it |
+| **X across both diagonals of the measured box** | WHAT WAS MEASURED | depth-tested, with the tint |
+| **label box at the diagonal crossing** | HOW BIG | **`depthTest:false`, `renderOrder ≥ 900`** — shines through and stays readable |
+
+This is §FLYTHRU_MESH_TINT's existing two-layer rule, not a new mechanism: tint = what/where, dimension
+= how big. **Nothing moves outside the plate.** The label keeps its association with the crossing, and
+the tint being buried by the very construction the film is showing is the same proof second zero makes
+with the datum (§17.5) — better here, because the thing occluding it is the subject.
+**Envelope 2.0 s** — 0.6 s fade in / 1.0 s hold (the value lands) / 0.6 s out. MEASURED: every slab in
+every cached run has `play.s === play.e` to 2 dp, so a plate **pops**; there is no laying animation to
+track and the envelope fires on the pop.
+**Label lifetime** (user, 2026-09-08): the shine-through label persists until the next beat's label
+claims the slot or it leaves frame. The `> 2 s` hold is therefore both the selection rule and the
+label's minimum life, which is why intermediate floors drop out without a separate thinning pass.
+
+**26.3 THE LABEL, filled with real data.** `100.83 × 91.16 m = 9,192 m² (est.) — 150mm Concrete With
+75mm Metal Deck`.
+⚠ **"(est.)" is REQUIRED and it is what makes the X honest.** 9,192 m² is the **bbox product**; the
+plate is not rectangular (Level 3's storey walkable is 6,097 m²), so it is an upper bound. §3.3 rules
+that a bbox area is a generalisation failure when stated bare — **drawing the two diagonals of the box
+that produced the number is what discharges that**, because the viewer sees the rectangle measured.
+The diagonals are not decoration; they are the honesty device, and they cross where the label goes.
+
+**26.4 THE SUBROUTINE — `scripts/poc_slab_beat.js`, built and run 2026-09-08, log `out/slab_beat_poc.log`.**
+Selection only. It draws nothing, needs **no GPU, no browser and no scene** — DB extents + the
+persisted 4D run (`~/.cache/bim4d/<bld>/*/run.json`, PRIMAL LAW §5) + the stored `cinema_path`.
+Seven stages, each with the measurement that forced it:
+1. **Candidates** — `IfcSlab`/`IfcSlabStandardCase` from `elements_meta ⋈ element_transforms`, kept
+   when `bbox_z < 0.5 × min(bbox_x, bbox_y)` (planar relative to its OWN footprint, so no thickness
+   constant). Hospital 35, HHS 81, Terminal 469, Clinic 16.
+2. **Semantic name** — §26.1.
+3. **Film second** — `play.s` normalised over the run's own span. ⚠ **Declared linear and printed as an
+   assumption.** Corroborated once: the user read the Hospital plate at ~9 s watching
+   `Hospital_FULL_allsystems_2026-09-06.mp4`; the map computes **10.31 s**.
+4. **Pool** — a plate is a candidate at **≥ 25 % of that building's largest plate**. Relative, so it
+   scales from Clinic's 2,939 m² to Hospital's 9,192 m².
+5. **Co-arrival collapse — and the ONE test that decides it is PLAN OVERLAP, not area.**
+   ⚠ **MEASURED, and the first version got this wrong: with an area-only test HHS rejected every
+   candidate and the beat drew nothing on that building.** HHS lays `STB 30.0` (structural) and
+   `FB 15.0 - Fliesen 50 x 50` (tile finish) **0.09 s apart on the same 65.84 × 53.44 m plan** — that
+   is one floor in two layers, invisible as a conflict. Hospital's Level 3 is the opposite: **25 grass
+   and paver roofs land within 0.06 s at DIFFERENT places**, which genuinely fragments the frame.
+   So: a co-arrival overlapping the host by **≥ 50 % of the smaller footprint** is a STACKED LAYER
+   (merged, reported); one below that which is **≥ 10 % of the host's area** is a FRAGMENTING
+   co-arrival and rejects the event. Within a cluster the **LARGEST plate takes the event, never the
+   last** — by arrival order HHS would have picked the tile finish over the structural plate by 0.09 s,
+   which is the wrong noun for criterion 1.
+6. **Hold** — seconds to the next event. `< 2.0 s` rejects (user's rule).
+7. **The guard** — **at most 2 beats inside the dive, longest hold first.** The dive window is read
+   from the stored path: Hospital `dive_sec = 18.286`, which is `0.094 × 195.8` — i.e. **bake seconds
+   of the 195.8 s film** (4,699 frames @ 24 fps, `§MAXQ_START`), not the path's own `total_sec 278.78`.
+   Buildings with no stored path fall back to the `0.094` beat fraction and say so.
+
+**26.5 MEASURED — all four buildings, same code, no per-building handling.**
+| | dive beats | picked | rejected, and why |
+|---|---|---|---|
+| **Hospital** | **2/2** | **10.31 s Level 1 · 8,899 m² · `Concrete-150 mm slab on 300mm base` · hold 5.59 s**<br>15.91 s Level 2 · 8,963 m² · hold 4.69 s | L3/L4/L5/L6 qualify but fall after the 18.29 s dive |
+| HHS | 2/2 | 0.22 s Level 1 · 3,518 m² · `STB 30.0` (+1 stacked: `FB 15.0 - Fliesen 50 x 50`)<br>8.33 s Level 2 · 3,529 m² · **hold 61.80 s** | — |
+| Terminal | 2/2 | 13.15 s `Aras 01` · 1,245 m² · `A_Floor_CementRender_V1`<br>17.03 s `Aras 02` · 1,149 m² | 3.69 s `Aras Tanah` — a fragmenting co-arrival |
+| Clinic | **1/2** | 5.10 s First Floor · 2,939 m² · `150mm Slab on Grade` · hold 18.29 s | nothing else inside the dive — **and it says so** |
+
+⇒ **THE 9TH-SECOND PLATE IS CAUGHT, AND IT IS THE PRIZE.** Hospital's Level 1 plate at **10.31 s**
+takes the first dive beat on the longest hold of any plate inside the dive (**5.59 s**), landing on the
+quietest frame in the film: seconds 0–10 run **42–97 elements/s, all Level 1**, and **second 11 is the
+inflection — 97 → 288 elements/s, and it never drops back.** The 2 s envelope therefore runs
+10.31 → 12.31 s: ~0.7 s of clear frame, then the viewer watches the plate begin to be buried while the
+number still reads. That is the demonstration, not a compromise.
+**The 2-beat cap costs nothing on any building measured** — the dive window contains exactly two
+qualifying plates on Hospital, HHS and Terminal, and one on Clinic. The guard is a ceiling the data
+does not currently reach, which is the right place for a guard to sit.
+
+**26.6 ⛔ OPEN — what the next session must do, in order.**
+1. **THE FRUSTUM TEST IS NOT DONE.** The PoC reports a BOUND from the stored path's 4 waypoints
+   (Hospital Level 1: **in front of 1 of 4**, subtending up to **156°** when it is), and prints
+   `INCONCLUSIVE` for the three buildings with no stored path. **A waypoint is not a camera pose.**
+   The real test is `plan.poseAt` in the viewer — §16's method, `probe_flythru_place.js`. Run it before
+   anything is drawn; a plate behind the camera at its own second is the one way this beat fails.
+2. **Terminal's semantics are weak and must be reported, not hidden.** Its picks are
+   `A_Floor_CementRender_V1` — a render, not a structural plate — because Terminal models floor
+   FINISHES as slabs (469 planar, largest 1,245 m²). Criterion 1 is not met there. Report the ratio
+   (plate area ÷ that storey's raster area) and let the beat withdraw when the pick is not a floor
+   plate, the same shape as §24.12's `LEVELSPLIT` and `ofNominal` rulings. Do not mark a finish patch
+   and call it a floor.
+3. **The linear day→second map is an assumption with one corroboration.** Verify against the bake's own
+   day cursor before citing a second as fact.
+4. **Then, and only then, the hallway** (user: *"After this we probably reuse such for a hallway"*).
+   §16 already placed a corridor cue at 13.05–15.25 s (`15.50 m long · 1.43 m wide`), so the slot
+   exists. The X degrades gracefully on a sliver — it is still the box's true diagonals — but a centre
+   label box has nowhere to sit on a 1.43 m width. That is the one thing to solve there, not here.
+
+**26.7 WITNESS — `witness_slab_beat.js`, and it must be able to fail** (PRIMAL LAW §4).
+`VACUOUS` when a building has no planar `IfcSlab`; `INCONCLUSIVE` when no camera pose was available to
+judge framing; `NOTHING drawn=0` stated out loud when no plate qualifies inside the dive (Clinic
+already exercises the 1-of-2 path). Asserts: the label's `X × Y` equals the drawn box's own extents;
+the diagonals terminate on that box's corners; `dive beats ≤ 2`; every picked plate's hold `≥ 2.0 s`;
+the tint material is depth-tested and the label's is not; and the semantic name is byte-identical to
+the substring extracted from `element_name` — never composed.
