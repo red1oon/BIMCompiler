@@ -1333,3 +1333,48 @@ resolution bench remains separately HELD from an earlier session). §STOREY_REVE
 _PULSE (defects 2 and 3) are CODE-COMPLETE but their on-screen proof lands in the last ~300 frames of the
 final bake — if that run did not reach them, they are UNVERIFIED, and must be labelled so, not assumed.
 
+
+**20.11 LABELLING — share Clash's routine; PANEL for a set of numbers, LINE for a single one (user, 2026-09-07).**
+> *"The labelling routine can share the same done by Clash.. should we have that so they are all
+> consistent and professional looking?"* … *"where the XYZ / Area/ Vol/ etc is in a panel box rather
+> than lining more spaces may look cluttered"*
+
+**Two forms, chosen by how many numbers there are — not by taste:**
+- **A SET of numbers → ONE PANEL.** A space carries X, Y, Z, area and volume. Five dimension strings
+  around one room is clutter. This also fixes a hole: **a scalar has no edge to sit on**, so area and
+  volume could never be arrowed strings. A panel takes all five.
+- **A SINGLE number → ONE arrowed dimension line.** A slab width, an opening height, an edge-to-edge
+  gap. One value, and the line points at exactly what it measured.
+⇒ **§20.1's "filled grid measuring their XYZ" means: highlight + filled grid + ONE PANEL**, not three
+dimension strings.
+
+**This also assigns the two visual languages, which were drifting:**
+- **Drafting language** — extension lines, arrow heads, bubbles, strings on edges — belongs to the
+  OPENING ENCLOSURE, where §17.4 already relocated the envelope's dimensions. That layer *is* a drawing.
+- **Panel + leader + highlight** belongs to IN-FILM SUBJECTS. That layer is a camera picking things out.
+Two languages, assigned by context, instead of one fighting the other.
+
+**REUSE `viewer/clash_labels.js` — it is further along than it looks (verified 2026-09-07):**
+| Need | Existing | Line |
+|---|---|---|
+| Draw into the BAKE's 2D canvas | `A.clashLabelsCompositeOntoCanvas(ctx, w, h, placed)` | `:309` |
+| Style already a published contract | `A.clashLabels.style()` → `colA, colB, tint, weight, plate, leader, leaderHalo` | `:374` |
+| Placement already split from drawing | `update()` computes `placed`, compositor consumes it | — |
+| Non-overlap, constant screen size, leader + halo, frustum release, rank hysteresis | shipped | — |
+| Witness | W-CLASH-LABELS, `witness_clash_film_labels.js`, claims P0–P8 | — |
+
+⚠ **SHARE THE PLACEMENT AND DRAW LAYER, NEVER THE SELECTION LAYER.** Clash selects by RANK — top-N
+nearest pairs, no distance cutoff. Measurement cues select by PROMINENCE + ≥2 s hold. A later
+"unification" that makes cues rank by distance would reinstate exactly the criterion §6 retired.
+
+⚠ **Style diverges, and `style()` already anticipates it.** Clash uses a half-see-through PLATE. §7 ruled
+the measurement label an OUTLINED box. Resolution: **parameterise style, do not fork the module** —
+outline for the type-B line label, plate for the type-A panel, since five rows of numbers over a busy
+interior need the plate to stay readable where a single `1,083 mm` does not.
+
+✅ **THIS CLOSES GAP 20.10.2 for free.** If one routine places every label, the cross-layer occupancy
+register is not a new subsystem — it is that routine's own per-frame state.
+⚠ **But it raises a STRONGER constraint the module does not yet meet.** §20.2 allows two spaces live at
+once, so two panels can be up together. **Their leaders must not CROSS**, or the viewer cannot tell which
+panel belongs to which room. `clash_labels` solves non-OVERLAP, not non-CROSSING. Assert it in the
+witness rather than discover it in a bake.
