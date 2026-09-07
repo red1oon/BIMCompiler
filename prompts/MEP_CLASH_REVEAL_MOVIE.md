@@ -1190,3 +1190,29 @@ witness on this stack** — its behaviour above is from this study, not from a s
    `DimChains` strings are laid over the same datum as a second, richer layer.
 3. **A per-storey plan beat is available whenever wanted** via `detectGridsAtPlane` + `DimChains` at a
    storey's cut level, on any building whose ladder is coherent. Recorded as available; not scheduled.
+
+### 17. ⚠ A PER-FRAME `markDirty()` STALLS A BAKE DEAD (measured 2026-09-07 — read this before adding ANY per-frame film hook)
+**Applies to the concurrent 2D/3D grid work too, and to every future film module.**
+
+`viewer/cpe_flythru_cues.js` called `A.markDirty()` each frame while a cue was on screen. The bake
+stopped at **frame 12 of 294 and never advanced** — no error, no abort, just a frame counter that stops
+moving while the process looks healthy. `out/flythru_clip.log` names the mechanism outright:
+```
+§STILL_REFINE cancelled (interaction) elapsedMs=462 (staging kept)
+§PHOTO_AO off (cancelled (interaction)) — pass disabled, zero cost during normal nav
+§STILL_REFINE start samples=8 …            ← restarts, and is cancelled again next frame
+```
+`markDirty` is read as **USER INTERACTION** (`effects.js:5327`), which tears down the `§STILL_REFINE` /
+`§PHOTO_AO` convergence passes the bake is waiting on. They restart, the next frame cancels them again,
+and the frame never converges. **Progress lines keep printing the last good rate**, so it reads as a slow
+bake rather than a stalled one — the tell is a repeating identical `frame=N/M`.
+
+**Rule: a module that draws during a bake NEVER calls `markDirty`.** `cinema_maxq` drives rendering
+itself, so the call buys nothing there. The convention was already unanimous and could have been read
+off the neighbours before writing a line: **`cpe_storey_reveal.js` and `clash_film.js` call it ZERO
+times.** (Interactive-only lenses still may — `navigate_find.js`'s Room Lens does, correctly, because
+the §S286 idle gate parks the loop when nothing is happening. The distinction is bake vs interactive,
+not "is it drawing".)
+
+**How to spot it in 5 seconds:** `grep -c "cancelled (interaction)" <bakelog>` — anything above a handful
+during a bake means a per-frame invalidation is fighting the convergence loop.
