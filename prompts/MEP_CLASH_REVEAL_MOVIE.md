@@ -829,7 +829,11 @@ class labels from its own name. No class → the number alone, never a fabricate
 - ⚠ At walk speed (~0.66 m/s) distance is almost never the binding constraint — frustum, backdrop and
   hold are. The film's SLOW walk is what makes this feasible; a fast fly-through would reject nearly all.
 
-### 10. ⛔ OPEN — what a new session must do first
+### 10. ✅ CLOSED 2026-09-07 — all five items answered; kept for the trail, see §16 and §19
+⚠ Do NOT re-walk this list. 1 (frame map) → §16, root cause was `flythruFrameMap` re-deriving `A.ifc2three`.
+2 (`_allRoomVolumes` private) → exposed, and a `spatial_structure` fallback added because `navigate_find.js`
+is lazy-loaded. 3 (envelope opener unverified) → fired in a real bake, `§FLYTHRU_CUE_ON key=envelope`.
+4/5 (nothing wired, run a clip) → wired, 30 s 720p clip delivered, 3 cues drew. ORIGINAL TEXT:
 1. **Build pass v2 regressed and is UNDIAGNOSED**: 16,576 candidates → only **12 passed the gate**, 1
    scheduled (v1 gave 505 unique). The lone survivor is the envelope, whose `dMax` passes from
    anywhere — consistent with the DB→scene transform MISPLACING elements. Verify `flythruFrameMap`
@@ -845,33 +849,6 @@ class labels from its own name. No class → the number alone, never a fabricate
 
 **Code**: `viewer/cpe_flythru_dims.js` (all pure functions, registered in `main.js`/`viewer.html`/
 `sw.js`), witness `viewer/tests/witness_flythru_gate.js` (runs standalone, no GPU, no DB).
-
-## CURRENT STATE — corrected 2026-09-06 session 5 (supersedes the table that was here)
-**The previous table said PR #1693 was "open and mergeable" — it MERGED at 08:24Z; `main` is `7ff4384e`.
-It also predated everything in §ENDING_CHOREOGRAPHY above. Read that section first.**
-
-| Lane | Branch | Status |
-|---|---|---|
-| §PENDING.2/.3/.4 | `fix/clash-pending-items` @ `59d6872d` | **PR [#1694](https://github.com/red1oon/bim-ootb/pull/1694) open, auto-merge armed.** Clash-list `[mm/mm]` depth, cross-caller narrowphase cache (24× warm, verdicts byte-identical cold vs warm), `clash_rules` gear. Live-verified real GPU: `§CP23_VERDICT verdict=PASS`; regression identical on this branch and pristine main (`pass=8 fail=2 ran=68526`). ⚠ Was UNCOMMITTED in the worktree for a full session — committed and pushed this session. |
-| §PENDING.5b | `fix/hud-clash-measure-stats` | **MERGED — PR #1693.** Clash HUD build-order fix, per-disc-pair cards, pullback highlight sync. |
-| §STOREY_HIGHLIGHT_REVEAL + §CLASH_DISC_ARRIVAL + §MEASURE_BUILDING_CARD | `feat/storey-highlight-reveal` @ `3875091d` | Merged onto main `7ff4384e` (sw conflict resolved: both changelogs kept, `CACHE_VERSION` → **v1158**). Carries the whole §ENDING_CHOREOGRAPHY above plus the four §ENDING_DEFECTS fixes. ⚠ Was also UNCOMMITTED for a session — now committed + pushed. **Not yet PR'd.** |
-
-**Bake evidence, 720p `--clip 0.74:1.0`, real GPU, `Hospital_silent_local` (2 runs, `out/ending2.log`,
-`out/ending3.log` in `/tmp/wt-storey-reveal`):**
-- `§CLASH_DISC_ARRIVAL … PLB=0 FP=38 ELEC=33 MEP=133 backdrop=66 total=270 sumCheck=OK`
-- parade slots fire in order: `PARADE:FP`(38) → `PARADE:ELEC`(33) → `PARADE:MEP`(133) → `PARADE:ALL`(204)
-- pullback after the fix: `ARC|STR` FIRST at frame 287, then even 89-frame spacing through all 7 pairs
-- `§STOREY_REVEAL_FIT windowSec=5.02 storeysAvailable=8 shown=5 slotSec=1.00 TRUNCATED dropped=[Level 6,Level 7A,Level 7]`
-- `§MEASURE_BUILDING_CARD window=[0.9590,1] cards=4 (the whole closing orbit, 8.0s, 2.0s per card)`;
-  census `doors=440 windows=131 walls=1468`; envelope `897,404 m³`, `115.8 × 164.8 × 47.0 m`
-- ⚠ `labour=0` on a silent bake (`A._hrCost` is interactive-only) — the cost card now says "material cost
-  estimate", NOT "total estimated cost", so a materials-only figure is never passed off as a total.
-
-**⛔ USER: no further bakes without a new go-ahead** (2026-09-06: *"Need not bake again"*; the 1440p
-resolution bench remains separately HELD from an earlier session). §STOREY_REVEAL_XRAY / _MARKERS_OFF /
-_PULSE (defects 2 and 3) are CODE-COMPLETE but their on-screen proof lands in the last ~300 frames of the
-final bake — if that run did not reach them, they are UNVERIFIED, and must be labelled so, not assumed.
-
 
 ### 11. MEASURED CANDIDATES — Hospital, run 2026-09-07 (`probe_flythru_maths.js`, log `out/ft_maths.log`)
 Primitives shipped in `viewer/cpe_flythru_maths.js` (self-check: a 10x10 box → area 100.00 m², perimeter
@@ -934,6 +911,9 @@ walk over legal chords on that raster, which is the SAME Primitive A with a `wal
 So the ultimate capability is an extension of the two primitives, not a new subsystem. Baseline first.
 
 ### 14. §FLYTHRU_SEQUENCE — ONE CUE ON SCREEN AT A TIME (user, 2026-09-07)
+⚠ **AMENDED BY §20.2 — this rule now governs TYPE B only.** Prominent SPACES persist for their whole
+time in frame (a "set overlay"), so two can be live at once and non-overlap becomes a SCREEN-SPACE
+problem, not a timing one. Read §20.2 before applying anything below.
 > *"they are to play in sequence so as not overlapping the optics"*
 
 **Hard constraint, and it overrides §7's `persist:true` for the baseline.** Two cues alive at once means
@@ -1225,3 +1205,131 @@ stay frozen at their last good values (`frame=12/294 … rate=0.430s/frame … e
 times, 30 s apart). The bake looks slow, not stuck. Watch the frame counter, not the cancel line.
 The fix above stands — removing the per-frame `markDirty` unstalled it, and the cues then drew
 (`§FLYTHRU_CUE_ON key=envelope at=0.00s filmSec=0.07`, 30 s preview, 720p).
+
+### 20. §FLYTHRU_SUBJECT_MODEL — the simplification that settles what gets cued (user, 2026-09-07)
+**This narrows §3.5's beat list, amends §14 for spaces, and RETIRES a scoring scheme proposed earlier
+the same day. Read it before §6.**
+
+**20.1 Two subject types — and the TYPE LIST is the noise filter.**
+- **A · PROMINENT SPACES** — halls, rooms. *"They be yellow highlighted and filled grid measuring their
+  XYZ."*
+- **B · LESSER MEASURES** — flat slabs, openings, ceiling heights, walls, and the small gap between an
+  opening edge and a wall edge.
+⛔ **A clarity score of `area × scale-separation × arrival` was proposed and is RETIRED. Do not rebuild
+it.** Its separation term existed solely to stop 4,816 duct segments dominating, by noticing that a
+duct's siblings define its own denominator. That work is done for free once the candidates are a short
+list of named types — a duct is never a candidate in the first place. **Restricting the type list is the
+noise rejection.** Keep `flythruDedupe` for repeats within a type (440 doors at 1,083 mm are one measure).
+
+**20.2 Type A persists while in frame — a SET OVERLAY, not a slot.**
+> *"It remains thruout their apperance in frame till out of frame. It is as if it is a set overlay."*
+
+**This amends §14.** The 2.2 s single slot still governs **type B**. **Type A lives its own visibility
+window** — it appears as the space enters frame and goes when the space leaves.
+⇒ **Two spaces can be live at once, so non-overlap moves from TIME to SCREEN SPACE.** §14's timing rule
+is no longer sufficient on its own; the label register (20.10.2) is what enforces it. That is the
+load-bearing consequence of this whole section.
+
+**20.3 The admission rule, complete.** A subject is cued when ALL hold:
+1. **Prominent** — projected screen area ≥ the floor (20.4).
+2. **In frame ≥ 2 s** — `flythruPathWindows(..., {minHoldSec})`. ⚠ That test measures range and facing
+   ONLY; occlusion is deliberately absent, which is why a shine-through cue keeps its window.
+3. **Its label collides with no other live label** — including layers this module does not own.
+> *"For a room that is behind a wall but is passed by prominently, then it is a target too."*
+Occlusion is not a veto (§6), and the viewer names it on sight (§15).
+
+**20.4 PROMINENCE — two-tier, and the one-line proxy MUST NOT be the gate.**
+- **Tier 1, shortlist:** `Ã = (r/d)²`, r = half-diagonal, d = distance. It OVER-estimates flat plates,
+  and over-inclusion at this stage is safe.
+- **Tier 2, decision:** project the 8 box corners, clip at the near plane, convex-hull them, area ÷ (W·H).
+- ⛔ **NEVER gate on `d > r`.** A floor slab of 100 × 130 × 0.3 m has `r ≈ 82 m`, so a camera 20 m above
+  it fails `d > r` and **the slab is discarded — the exact subject this section exists to catch.** A
+  solid-angle proxy assumes a roughly spherical object; a plate is the opposite. The guard is instead
+  **"is the camera inside the box on all three axes"**, which a 0.3 m plate essentially never is.
+- **Floor inherits §6, no new knob:** 15% of frame width ⇒ a square subject at 2.25% of frame area, so
+  `Ã_target = 0.0225`.
+
+**20.5 PLACEMENT lands ON the moment, not at the window's start.** For type B, the earliest legal start
+is NOT where the subject reads best. Place so the HOLD phase covers the peak: `at = t_peak − 0.6 − 0.5`,
+clamped into the legal window. (Type A has no slot — it runs the visibility window itself.)
+
+**20.6 MEP in the Reveal — SETS, not systems (user).**
+> *"it is for sets of MEP likewise that are prominently seen, not the whole HVAC system for example.
+> That can be relegated to HUD stats level. This is to show capability of movie cam to pick out items"*
+- A **cluster is just another subject** — box, prominence, window, label. **No new selection maths.**
+- **Cluster cheaply.** Bucket boxes into a coarse spatial grid, union-find within and between adjacent
+  cells. ⛔ Never pairwise: 4,816 ducts + 4,740 fittings is 23 M pairs.
+- **The proximity threshold is DERIVED, not chosen** (§12): the median bbox diagonal of that class, so
+  ducts cluster at duct scale and trays at tray scale, on a building we have never seen.
+- **The cue states the set's own extents and section — NEVER a count.** A count is inventory and belongs
+  to the HUD. That is the user's split, and it keeps §15 intact.
+
+**20.7 ONE CLUSTERING PRIMITIVE, THREE USES — build it once.** Enclosure outlier rejection · hall
+derivation · MEP sets. **The technique already ships**: `viewer/lib/room_walker.js` rasterizes footprints
+into a plan grid, flood-fills the exterior from the border, and treats each connected pocket the exterior
+cannot reach as a room. Point it at `storey_walkable_raster` and **the large pockets ARE the halls** —
+which matters because §3 measured that this IFC contains no hall as an entity.
+
+**20.8 The opening enclosure is CONDITIONAL.**
+> *"If a building envelope so happens is not clear at start, then it misses that first 3x2 overlay."*
+
+Test at second 0: camera outside the envelope AND its projected area clears the floor. If not, §17's
+enclosure never establishes. ⚠ **Log it — `§FLYTHRU_ENCLOSURE_SKIP` — never a silent absence**, or a thin
+opening on some other building is unexplainable afterwards.
+
+**20.9 ENVELOPE SOURCE — settled, and it is NOT the grid lane's.**
+✅ **`BOMExtract.extract(A).envelope`** (`bom_extract.js:46`, exported `:400`). Structural-only AABB via
+`ENV_CLASSES` (column/pile/wall/slab/beam/footing/curtainwall/roof, `:72-75`), with an all-elements
+fallback. Its own comment: *"outliers (proxy, site, furniture) stretch AABB."* Certified by
+`CONSTRUCTION_GRID_BOM_DUAL_MODEL.md` §SHELL + witness **W-SHELL-ENVELOPE**. Logs `§BOM_ENVELOPE`.
+⛔ **NEVER `getBuildingEnvelopeIFC`** (`grid_overlay.js:133`) — VERIFIED 2026-09-07, two independent
+faults: `MIN(center_x), MAX(center_x)…` is **CENTRES ONLY, element size ignored**, and there is **no
+`WHERE` clause at all**. It is simultaneously too small and outlier-inflated. Duplicated verbatim at
+`section_cut.js:378` and `print_sheet.js:115`.
+⛔ **`GridDims.renderGridEntities` is DEAD CODE** (`grid_dims.js:635`) — its only reference anywhere is
+the export at `:773`. Nothing constructs the `bbox` it takes. Do not point a spec at it.
+⇒ **§17.8's reuse table names no envelope source. This is that gap**: the datum module (§17.3) and plane
+placement (§17.1) must both take `BOMExtract`, or the enclosure sits wrong on any building with site
+furniture.
+
+**20.10 THE GAPS — everything else already exists.**
+1. **The clustering primitive** (halls + MEP sets). Technique in `room_walker.js`, never applied here.
+2. **A cross-layer LABEL REGISTER.** §7 states the rule — avoid other labels, DECLINE to draw if every
+   position collides — but no shared screen-occupancy map exists. Cue labels, clash `[tol/clash mm]`
+   boxes and captions are drawn by different modules. `grid_dim_chains.js:218` `clampScales` + `minGap`
+   solves it WITHIN one layer only. **This is what 20.2 now depends on, and it bites hardest in the
+   Reveal**, where MEP sets and the disc parade want the same screen.
+3. **Ceiling height.** §4 has the rule (first hit = clear height, first LARGE HORIZONTAL = the ceiling).
+   Unbuilt, and the only listed candidate needing a cast or a height field.
+4. **Opening → host wall**, for the edge-to-edge gap. The DB has `rel_aggregates` and
+   `rel_contained_in_space` but **no `rel_voids`/`rel_fills`**, so the host must be inferred
+   geometrically (nearest wall whose box abuts the opening). ⚠ That is a **DATA question, not a maths
+   one** — an inference, not an extraction. Say so before building it.
+
+
+## CURRENT STATE — 2026-09-06 session 5. ⚠ STALE, MOVED HERE 2026-09-07: it was sitting between §10 and §11 and splitting the numbered spec band. Superseded by §16 (measured placement) and the note that PR #1696 MERGED to main as `ed09eab6`. Kept for the branch/bake trail only.
+**The previous table said PR #1693 was "open and mergeable" — it MERGED at 08:24Z; `main` is `7ff4384e`.
+It also predated everything in §ENDING_CHOREOGRAPHY above. Read that section first.**
+
+| Lane | Branch | Status |
+|---|---|---|
+| §PENDING.2/.3/.4 | `fix/clash-pending-items` @ `59d6872d` | **PR [#1694](https://github.com/red1oon/bim-ootb/pull/1694) open, auto-merge armed.** Clash-list `[mm/mm]` depth, cross-caller narrowphase cache (24× warm, verdicts byte-identical cold vs warm), `clash_rules` gear. Live-verified real GPU: `§CP23_VERDICT verdict=PASS`; regression identical on this branch and pristine main (`pass=8 fail=2 ran=68526`). ⚠ Was UNCOMMITTED in the worktree for a full session — committed and pushed this session. |
+| §PENDING.5b | `fix/hud-clash-measure-stats` | **MERGED — PR #1693.** Clash HUD build-order fix, per-disc-pair cards, pullback highlight sync. |
+| §STOREY_HIGHLIGHT_REVEAL + §CLASH_DISC_ARRIVAL + §MEASURE_BUILDING_CARD | `feat/storey-highlight-reveal` @ `3875091d` | Merged onto main `7ff4384e` (sw conflict resolved: both changelogs kept, `CACHE_VERSION` → **v1158**). Carries the whole §ENDING_CHOREOGRAPHY above plus the four §ENDING_DEFECTS fixes. ⚠ Was also UNCOMMITTED for a session — now committed + pushed. **Not yet PR'd.** |
+
+**Bake evidence, 720p `--clip 0.74:1.0`, real GPU, `Hospital_silent_local` (2 runs, `out/ending2.log`,
+`out/ending3.log` in `/tmp/wt-storey-reveal`):**
+- `§CLASH_DISC_ARRIVAL … PLB=0 FP=38 ELEC=33 MEP=133 backdrop=66 total=270 sumCheck=OK`
+- parade slots fire in order: `PARADE:FP`(38) → `PARADE:ELEC`(33) → `PARADE:MEP`(133) → `PARADE:ALL`(204)
+- pullback after the fix: `ARC|STR` FIRST at frame 287, then even 89-frame spacing through all 7 pairs
+- `§STOREY_REVEAL_FIT windowSec=5.02 storeysAvailable=8 shown=5 slotSec=1.00 TRUNCATED dropped=[Level 6,Level 7A,Level 7]`
+- `§MEASURE_BUILDING_CARD window=[0.9590,1] cards=4 (the whole closing orbit, 8.0s, 2.0s per card)`;
+  census `doors=440 windows=131 walls=1468`; envelope `897,404 m³`, `115.8 × 164.8 × 47.0 m`
+- ⚠ `labour=0` on a silent bake (`A._hrCost` is interactive-only) — the cost card now says "material cost
+  estimate", NOT "total estimated cost", so a materials-only figure is never passed off as a total.
+
+**⛔ USER: no further bakes without a new go-ahead** (2026-09-06: *"Need not bake again"*; the 1440p
+resolution bench remains separately HELD from an earlier session). §STOREY_REVEAL_XRAY / _MARKERS_OFF /
+_PULSE (defects 2 and 3) are CODE-COMPLETE but their on-screen proof lands in the last ~300 frames of the
+final bake — if that run did not reach them, they are UNVERIFIED, and must be labelled so, not assumed.
+
