@@ -975,3 +975,47 @@ Consequences:
   a confident class name if one exists, otherwise the number alone. Never an invented noun.
 - ⚠ It does NOT license drawing something illegible. The cue must still be in frame and hold (§6/§14) —
   "in frame, highlighted momentarily" is the precondition the user attached, not a waiver of it.
+
+### 16. MEASURED PLACEMENT — Hospital, 195.8 s path, 2026-09-07 (`probe_flythru_place.js`, `out/ft_place4.log`)
+Built and placed against the REAL camera path in the live viewer (streamed scene, `plan.poseAt` × 300,
+`flythruPathWindows`). Build cost **195–216 ms**. Code: `viewer/cpe_flythru_cues.js`,
+`common/flythru_maths.js`, sw **v1160**, branch `feat/storey-highlight-reveal`.
+
+| Cue | Placed | Occupies | Candidates | Windows | Label |
+|---|---|---|---|---|---|
+| envelope | **0.00 s** | 0.00–2.20 s | 1 | 7 | `Building Envelope — 115.75 × 164.78 × 47.05 m · Ground 16,170 m²` |
+| storey | **2.70 s** | 2.70–4.90 s | 1 | 8 | `Level 1 — Floor 11,678 m² · Walkable 6,481 m²` |
+| room | ⛔ DROPPED | — | 2 | **0 and 0** | both genuine rooms (4.8 m, 3.4 m spans) have ZERO in-range-and-facing windows anywhere in the film |
+| corridor | **13.05 s** | 13.05–15.25 s | 2 | 3 | `Corridor — 15.50 m long · 1.43 m wide` |
+
+**⚠ COORDINATION — ANOTHER SESSION IS ADDING A 2D/3D GRID IN THE STARTING SECONDS (user, 2026-09-07).**
+The envelope cue occupies **0.00–2.20 s** and the storey cue **2.70–4.90 s** — the same opening window.
+§14 forbids two measurement cues overlapping; it says nothing about a grid, but the same optics argument
+applies: a yellow dimension box, its label, AND a grid in the same frames is exactly the collision §14
+exists to prevent. Whoever lands second should decide ONE of:
+  (a) the grid owns 0–5 s and the cue set starts after it (the placement pass will simply take the next
+      legal window — pass a start floor, do not hardcode a second), or
+  (b) the grid is the envelope cue's own backdrop and they are designed as one beat, or
+  (c) they alternate — grid, then envelope, then storey.
+**Do NOT resolve it by deleting the other's hook.** Both are additive and guarded.
+⚠ `sw.js` is the standing conflict magnet: this lane took **v1160** and precached `cpe_flythru_cues.js`,
+`../common/flythru_maths.js`, `../common/storey_raster.js`. On conflict KEEP BOTH precache additions and
+take the HIGHER `CACHE_VERSION` (CLAUDE.md §Concurrent branches).
+
+**Three defects the probe caught that a bake would have shown only as a plausible frame** — recorded
+because each is a general trap, not a one-off:
+1. **Envelope understated 115.75 → 102.03 m.** The box was a mesh union filtered on `userData.storey`,
+   which silently drops the **10,192** elements whose storey is `'Unknown'`. Geometry now comes from DB
+   extents through `A.ifc2three`, so box and label agree by construction.
+2. **Rooms always empty.** `navigate_find.js` is LAZY-LOADED (`main.js:137`) — in a headless bake its
+   `init()` never runs, so `A.allRoomVolumes` is never assigned. Any bake-time consumer of a
+   Find-panel export needs its own fallback; this one re-queries `spatial_structure` through the same
+   owner transform.
+3. **Placement picked the biggest subject, not the visible one.** The largest room had zero windows.
+   Every candidate of a class is now tested and the first with a legal window wins (user: *"the
+   algorithm hunts for clear sighted opportunities that is cheapest"*).
+
+⇒ **§10.1 IS ANSWERED.** The build-pass collapse was `A.flythruFrameMap` re-deriving, by extent-matching,
+a relation `A.ifc2three` (scene.js:499) already OWNS — degrading to identity when the match fails, which
+misplaces every element while leaving the envelope (dMax passes from anywhere) the lone survivor. That is
+the ownership-table defect CLAUDE.md §0 warns about. **Use `A.ifc2three`; do not repair `flythruFrameMap`.**
