@@ -2234,7 +2234,7 @@ no column within 2 % of a datum figure is drawn (defect **c**); the plate's slot
 not recomputed (defect **d**); the label never repeats the cue's own number (defect **e**); and each
 building's clock is reported with its verification state (defect **f**).
 
-### 28. ⛔ FIRST TASK NEXT SESSION — A 3-SECOND TEST BAKE, CLASH **AND** MEASURE ON (user, 2026-09-08)
+### 28. ✅ DONE 2026-09-08 — A 3-SECOND TEST BAKE, CLASH **AND** MEASURE ON (user, 2026-09-08). Result in §28.2
 > **USER:** *"note that a test bake for first 3 secs be done for Hospital and HHS with full Clash and
 > Measure ON. The other session has updated for next stretch as ensuing task thereafter."*
 
@@ -2273,3 +2273,53 @@ single stills. **Watch for popping between consecutive frames**, not just for a 
 ⇒ **Order of work next session: (1) this bake, (2) then §26 `§SLAB_BEAT`, (3) then §27
 `§LINEAR_BEAT`.** If the bake contradicts the recorded numbers, stop and fix that first — §26 and
 §27 both allocate slots inside a dive whose Measure layer must already be trustworthy.
+
+**28.1 SPEC — the CLI could not switch Measure on (found 2026-09-08, before the bake).** Two gaps, both
+on `feat/flythru-cues`, neither visible from the panel: (a) `cli_silent_bake.js` composed
+`--clash`/`--storey-reveal` tri-states into `FLAGS` but had no `--measure`/`--no-measure`; (b)
+`cinema_maxq.js`'s flag whitelist (`['buildup','roomTitle','reveal','dayCounter','clash','storeyReveal']`,
+the line that merges CLI flags into the override) did not carry `measure`, so even a passed flag would
+have been dropped and the bake would run silently without the datum — exactly the failure mode §28.4
+warns of. Fix: `--measure`/`--no-measure` tri-state mirroring `--clash`, and `'measure'` added to the
+whitelist. The panel path (`_ov.measure` from the saved state) is unchanged. Bake command shape:
+`node cli_silent_bake.js --db <silent-db> --clash --measure --gpu real --clip 0:<3s/filmSec> --fps 24
+--width 1280 --height 720 --out out/<bld>_3s_cm.mp4 --log out/<bld>_3s_cm.log`. The CLI's fresh
+`--profile` makes the sw.js v1162 caveat moot for this run (no worker, no stale copy). Results → §28.2.
+
+**28.2 ✅ RESULT — both bakes ran, real GPU, 2026-09-08 (worktree `/tmp/wt-storey-reveal` @ `49892d0a`
++ §28.1). Logs `out/Hospital_3s_cm.log`, `out/HHS_3s_cm.log`; films `out/*_3s_cm.mp4` (1.66 / 1.95 MB).**
+> **USER, mid-run:** *"This test 3s is to confirm the 2D layouts appear. That is all. No need for frame
+> adjustment."* — so the camera findings below are RECORDED, not acted on.
+
+| | Hospital | HHS |
+|---|---|---|
+| clip → frames | `0:0.01532` → **72 f = 3.000 s** @24 of 195.8 s (4,699 f) | `0:0.04915` → **85 f = 3.54 s** @24 of **72.3 s** (1,736 f) |
+| `§FLYTHRU_DATUM_BUILT` (from `cinema_maxq.js`) | columns=604 grid=15×14 medianBay=6.48 storeyRules=8 | columns=257 grid=9×8 medianBay=6.54 storeyRules=3 |
+| `§FLYTHRU_DATUM_CHAIN` | X 95.915 · Y 88.227 · Z 34.000, delta 0.0000, ADDS UP | X 54.744 · Y 52.491 · Z 7.210, delta 0.0000, ADDS UP |
+| `§FLYTHRU_DATUM_MARKS` | **drawn=74 on 72/72 frames** (= the snapper's 74) | drawn=37 @ f0, falling to 8 @ 3.33 s, **23 @ 3.37 s**; >0 on 85/85 |
+| `§FLYTHRU_DATUM_CONSISTENCY` | 0.737/0.737/0.737 m IDENTICAL ×72 | 0.524/0.524/0.524 m IDENTICAL ×85 |
+| `_DRAW failed` / `_AT failed` / `_BUILD failed` | **0** | **0** |
+| Clash in the same frame | `§CLASH_FILM_BUILD trueClash=270 markers=540`; `§CLASH_LABELS labelled=1` at f0/10/20/30 | `trueClash=233 markers=466`; `labelled=3` @ f0, `2` @ f80 |
+| frame-to-frame (projected semi-axes) | max step **0.2 px** over 72 frames — no popping | steps up to 10⁵ px — plane through the camera |
+| frame-0 camera vs the snapper's recorded one | **(85.5, 70.0, 58.9) = (85.5, 70, 58.9)** — like-for-like | (41.4, 8.7, −27.7) vs (48, 64, 48) — DIFFERENT |
+| wall | 51 s | 50 s |
+
+**Verdict against §28's five items.** 1, 3, 4, 5 PASS on both buildings. **2 PASSES on Hospital** and
+the agreement is a camera agreement, not luck: the bake's frame-0 pose is byte-equal to the snapper's.
+**2 FAILS on HHS for the reason §28 predicted — the bake's camera is not the snapper's.** The snapper
+plans from the viewer's Home frame (`--home` is default-on, `snap_timeline.js`: *"70.0 m above base and
+98 m out"*), whereas the bake flies the STORED `cinema_path` — HHS's is a 49.8 m-radius, 8.7 m-high
+path whose camera **crosses ground level at frame 75 (3.1 s) and ends at −1.09 m**, so the 8→23 pop at
+3.37 s happens with the camera underground. That is §27g's path property (*"once a longer path is
+injected for HHS"*), not a Measure-layer defect; the layer itself built, chained, stayed IDENTICAL and
+never threw on HHS. The §25.2 radii (0.99 / 1.001) predate `49892d0a`'s one-radius rule; 0.737 / 0.524
+are that rule's output and are not a regression.
+
+**Two measurements §27 must re-read before it allocates HHS slots** (it is the next-but-one task):
+- **HHS's film clock is now MEASURED: 72.3 s** (`§CPE_APPLIED total=72.3s frames=1736` @24), not the
+  path's `total_sec 61.04`. §27f's UNVERIFIED label is lifted.
+- **HHS's dive in bake seconds is `0.054 × 72.3 = 3.90 s`** (`§CINEMA_BEATS dive=0.054`), not §27g's
+  `1.85 s` (that was the path's own `dive_sec`, a different clock). 3.90 s holds ONE 2.5 s slot, so
+  §27g's `§DIVE_BEATS_NOFIT` is a stale verdict — but the camera under that dive is the underground one
+  above, so a slot that fits in time may still have nothing legible in frame. Hospital's clock is
+  unchanged: `0.094 × 195.8 = 18.4 s`.
