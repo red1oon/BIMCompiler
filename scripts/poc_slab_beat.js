@@ -20,7 +20,10 @@ var TINT_SEC = 2.0;      // §FLYTHRU_MESH_TINT envelope: 0.6 fade in / 1.0 hold
 var MIN_HOLD = 2.0;      // user, 2026-09-08: a candidate must hold > this before the next one
 var CO_FRAC  = 0.10;     // a co-arrival counts when it is >= this fraction of the plate's area
 var CAND_FRAC= 0.25;     // a plate is a candidate at >= this fraction of the building's largest
-var MAX_DIVE = 2;        // user, 2026-09-08: "just do 2 at max during fly in"
+var MAX_DIVE = 2;        // user, 2026-09-08: "just do 2 at max during fly in" — a CEILING, not a target
+var TAKE     = 1;        // §1 one cue per capability. user, 2026-09-08: "If the 9th second is the first
+                         // beat, then nothing else needs to follow as the cutoff sequences are too short."
+                         // A second floor plate is the SAME capability said twice — an inventory (§1).
 
 function log(s) { console.log(s); }
 
@@ -132,10 +135,16 @@ function pickBeats(events, diveSec) {
   });
   var dive = qual.filter(function (e) { return e.sec < diveSec; })
                  .sort(function (a, b) { return b.hold - a.hold; });
-  var kept = dive.slice(0, MAX_DIVE);
-  dive.slice(MAX_DIVE).forEach(function (e) { e.reject = 'over the ' + MAX_DIVE + '-beat dive cap'; });
+  var take = Math.min(TAKE, MAX_DIVE);
+  var kept = dive.slice(0, take);
+  dive.slice(take).forEach(function (e) {
+    e.reject = 'not taken — §1 one cue per capability (hold ' + e.hold.toFixed(2) + 's, rank ' +
+               (dive.indexOf(e) + 1) + ' of ' + dive.length + ')';
+  });
+  var after = qual.filter(function (e) { return e.sec >= diveSec; });
+  after.forEach(function (e) { e.reject = 'not taken — after the dive, and §1 takes one'; });
   kept.sort(function (a, b) { return a.sec - b.sec; });
-  return { dive: kept, afterDive: qual.filter(function (e) { return e.sec >= diveSec; }) };
+  return { dive: kept, afterDive: after, diveQualified: dive.length };
 }
 
 function run(SQL, bld, dbFile, runFile) {
@@ -198,10 +207,11 @@ function run(SQL, bld, dbFile, runFile) {
         (e.stacked && e.stacked.length ? '  [+' + e.stacked.length + ' stacked layer(s): ' +
           e.stacked.map(function (x) { return x.name; }).join(', ') + ']' : ''));
   });
-  log('  §SLAB_BEAT_PICK dive=' + pick.dive.length + '/' + MAX_DIVE +
+  log('  §SLAB_BEAT_PICK take=' + pick.dive.length + '/' + TAKE + ' (cap ' + MAX_DIVE +
+      ', qualified in dive=' + pick.diveQualified + ')' +
       (pick.dive.length ? ' [' + pick.dive.map(function (e) { return e.sec.toFixed(2) + 's ' + e.storey; }).join(' | ') + ']'
                         : ' NOTHING — no plate qualifies inside the dive, and it says so') +
-      ' afterDive=' + pick.afterDive.length);
+      ' afterDiveQualified=' + pick.afterDive.length + ' (none taken, §1)');
   if (!wps.length) log('  §SLAB_BEAT_VIS INCONCLUSIVE — no stored path; frustum must be judged by plan.poseAt in the viewer');
   db.close();
 }

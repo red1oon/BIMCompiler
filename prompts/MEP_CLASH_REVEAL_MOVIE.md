@@ -2063,28 +2063,44 @@ Seven stages, each with the measurement that forced it:
    last** — by arrival order HHS would have picked the tile finish over the structural plate by 0.09 s,
    which is the wrong noun for criterion 1.
 6. **Hold** — seconds to the next event. `< 2.0 s` rejects (user's rule).
-7. **The guard** — **at most 2 beats inside the dive, longest hold first.** The dive window is read
+7. **The guard, and what it actually takes.** The user's *"2 at max during fly in"* is a **CEILING**;
+   the number taken is **ONE** (user, 2026-09-08: *"If the 9th second is the first beat, then nothing
+   else needs to follow as the cutoff sequences are too short."*). **§1 is what decides it, not
+   pacing** — a second floor plate is the same capability said twice, which is an inventory. The
+   remaining Hospital holds are 4.69 / 4.10 / 3.71 / 2.47 s, and a mark repeated 3.6 s later reads as
+   a list, not as a capability. So: **longest hold inside the dive wins, one beat per film**; everything
+   else qualifies and is reported as not taken. The dive window is read
    from the stored path: Hospital `dive_sec = 18.286`, which is `0.094 × 195.8` — i.e. **bake seconds
    of the 195.8 s film** (4,699 frames @ 24 fps, `§MAXQ_START`), not the path's own `total_sec 278.78`.
    Buildings with no stored path fall back to the `0.094` beat fraction and say so.
 
-**26.5 MEASURED — all four buildings, same code, no per-building handling.**
-| | dive beats | picked | rejected, and why |
+**26.5 MEASURED — all four buildings, same code, no per-building handling. ONE beat each.**
+| | the beat taken | hold | qualified but not taken |
 |---|---|---|---|
-| **Hospital** | **2/2** | **10.31 s Level 1 · 8,899 m² · `Concrete-150 mm slab on 300mm base` · hold 5.59 s**<br>15.91 s Level 2 · 8,963 m² · hold 4.69 s | L3/L4/L5/L6 qualify but fall after the 18.29 s dive |
-| HHS | 2/2 | 0.22 s Level 1 · 3,518 m² · `STB 30.0` (+1 stacked: `FB 15.0 - Fliesen 50 x 50`)<br>8.33 s Level 2 · 3,529 m² · **hold 61.80 s** | — |
-| Terminal | 2/2 | 13.15 s `Aras 01` · 1,245 m² · `A_Floor_CementRender_V1`<br>17.03 s `Aras 02` · 1,149 m² | 3.69 s `Aras Tanah` — a fragmenting co-arrival |
-| Clinic | **1/2** | 5.10 s First Floor · 2,939 m² · `150mm Slab on Grade` · hold 18.29 s | nothing else inside the dive — **and it says so** |
+| **Hospital** | **10.31 s · Level 1 · 8,899 m² · `Concrete-150 mm slab on 300mm base`** | **5.59 s** | 15.91 s L2 (dive) + L3/L4/L5/L6 after it |
+| HHS | 8.33 s · Level 2 · 3,529 m² · `STB 30.0` (+1 stacked: `FB 15.0 - Fliesen 50 x 50`) | **61.80 s** | 0.22 s L1 (dive) + 2 after it |
+| Terminal | 17.03 s · `Aras 02` · 1,149 m² · `A_Floor_CementRender_V1` | 11.45 s | 13.15 s `Aras 01` + 1 after it |
+| Clinic | 5.10 s · First Floor · 2,939 m² · `150mm Slab on Grade` | 18.29 s | 3 after the dive |
+
+⚠ **Longest-hold-first is what makes the single pick the right one, and it is not the earliest.**
+HHS's earliest candidate is at **0.22 s** — frame one, colliding with the datum's own opening — while
+the pick at 8.33 s holds **61.80 s** and lands just after HHS's datum clears at ~8 s. Terminal likewise
+moves from 13.15 s to 17.03 s. **Only Hospital's pick is also its earliest**, which is why the 9th
+second reads as obviously right there and would not have on the others.
 
 ⇒ **THE 9TH-SECOND PLATE IS CAUGHT, AND IT IS THE PRIZE.** Hospital's Level 1 plate at **10.31 s**
-takes the first dive beat on the longest hold of any plate inside the dive (**5.59 s**), landing on the
+takes the film's ONE beat on the longest hold inside the dive (**5.59 s**), landing on the
 quietest frame in the film: seconds 0–10 run **42–97 elements/s, all Level 1**, and **second 11 is the
 inflection — 97 → 288 elements/s, and it never drops back.** The 2 s envelope therefore runs
 10.31 → 12.31 s: ~0.7 s of clear frame, then the viewer watches the plate begin to be buried while the
 number still reads. That is the demonstration, not a compromise.
-**The 2-beat cap costs nothing on any building measured** — the dive window contains exactly two
-qualifying plates on Hospital, HHS and Terminal, and one on Clinic. The guard is a ceiling the data
-does not currently reach, which is the right place for a guard to sit.
+⚠ **NOTHING BEFORE IT, AND THAT IS MEASURED TOO.** Hospital's only earlier slab is the substructure
+plate at **6.52 s, 332 m²** — 3.6 % of the largest, below the 25 % pool floor. At second 4 there is no
+slab event at all; seconds 0–10 are Level 1 walls and foundations at 42–97 elements/s. So the beat has
+a clean run-up and the film's first measurement of a built thing is the plate itself.
+**The 2-beat ceiling is never reached** — the dive holds two qualifying plates on Hospital, HHS and
+Terminal and one on Clinic, and §1 takes one. A guard the data does not reach is a guard in the right
+place; keep it, because a building with a fragmented schedule could still produce a crowd.
 
 **26.6 ⛔ OPEN — what the next session must do, in order.**
 1. **THE FRUSTUM TEST IS NOT DONE.** The PoC reports a BOUND from the stored path's 4 waypoints
