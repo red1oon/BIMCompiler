@@ -1874,3 +1874,55 @@ as an absolute it made HHS second zero draw NOTHING at all.
 ⚠ **STILL OPEN.** Hospital's stored `cinema_path` total is **278.8 s** and every earlier timeline snap
 passed `--dur 195.8`, which rescales the film — **those Hospital seconds are invalid.** Re-snap
 against 278.8 before citing any Hospital second.
+
+**24.12 ✅ PROVEN ON A THIRD, UNTUNED BUILDING — Terminal (2026-09-07, `443369ec`).**
+Terminal (48,428 elements) exercises four paths HHS and Hospital never did: **no `cinema_path`**
+(derived film), **158 columns** against Hospital's 604, **non-English storey names** (`Aras Tanah`,
+`Aras 01` … `Aras Bumbung`), and a **federated storey table**. Same code, no per-building tuning.
+
+| second zero, streamed, `delta=0.0m AGREE` | bubbles | figures | overalls | R X/Y/Z | chains |
+|---|---|---|---|---|---|
+| HHS | 20/20 | 17 | 3/3 | 1.00/1.00/1.00 | X 54.744 · Y 52.491 · Z 7.210 — all exact |
+| Hospital | 37/37 | 34 | 3/3 | 0.99/0.99/0.99 | X 95.915 · Y 88.227 · Z 34.000 — all exact |
+| Terminal | 37/37 | 23 | 3/3 | 1.21/1.21/**0.16** | X 54.508 · Y 39.481 · Z 46.110 — all exact |
+
+**SIZING HAD TO BECOME PER AXIS.** Each axis is spaced by a different thing — the ground axes by
+their bays, the upright by its storey heights — and a coarser building does not make its floors
+further apart. MEASURED on Terminal: tightest storey gap **0.40 m** against a **2.42 m** bubble,
+**560 % occupancy**, the level column drawn as one solid overlapping stack. Radius is now
+`min(0.153 × medianBay, 0.40 × that axis's own minGap)`. ⚠ **Checked across all three buildings
+BEFORE shipping** that the cap binds on exactly one axis (Terminal's Z) and leaves both accepted
+buildings byte-identical — HHS re-ran at `1.00/1.00/1.00`, unchanged in every field.
+
+**FOUR STABILITY DEFECTS, all general:**
+1. **A single-value axis produced `NaN`** — `vals[1]` undefined → stride `NaN` → `j += NaN` exits on
+   the first test, so the axis drew nothing AND said nothing. Guarded and reported.
+2. **The figure stride measured the FIRST gap, not the smallest** — figures collide wherever an
+   irregular grid tightens further along.
+3. **The 6 m median-bay fallback was silent** — a building with no usable column grid would be drawn
+   at a made-up module with nothing saying so.
+4. **The pseudo-level filter was end-anchored** `/\s+(Ceiling|TOS)$/`: it stripped Hospital's
+   `Level 2 Ceiling` and caught **0 of 5** of Terminal's `Ceiling Level 01`, where the word leads.
+   Matching the word anywhere: **27 rules → 23**.
+Also deleted the dead pixel ladder (`BUB_R 11`, `OFF1/2/B 32/80/120`, `MAX_FIG 4`) left behind by the
+screen-space layer, which would have silently shadowed the real sizes.
+
+**NEW WITNESS `§FLYTHRU_DATUM_LEVELSPLIT` — NAME THE FEDERATION FAULT, NEVER RESOLVE IT.** When one
+storey NAME survives at two or more elevations the table carries two datums and no drawing can be
+right. MEASURED on Terminal, **7 names**: `Aras 02` at 12.15 **and** 15.15, `Aras 03` at 16.15 and
+19.15, `Aras 04` at 20.15 and 23.15 — a constant **3.00 m** — plus `00 Aras Asas` and
+`08 UPPER DOME LEVEL` about **15 m** apart. **That is why a 6-storey terminal yields 23 level rules.**
+Choosing between the datums would be invention, so the levels are drawn as recorded and the condition
+is reported by name.
+
+⚠ **`§FLYTHRU_DATUM_MARKS` now reports `ofNominal` per axis** (Terminal: `100%/100%/13%`). A bubble
+capped far below nominal still counted as "drawn" while being invisible — the vacuous witness §4
+forbids. A small ratio points upstream, at refs packed tighter than the grid they belong to.
+
+⛔ **OPEN, for the user — Terminal's upright is drawn but unreadable.** Its 23 Z refs sit at 0.16 m,
+13 % of nominal: present in the count, invisible on screen. Two honest paths, differing in what they
+claim: **(a)** draw the upright as recorded — every rule shown, refs unreadable, the drawing faithful
+to the data including its fault; **(b)** WITHDRAW the upright whenever `LEVELSPLIT` fires — state
+that the storey table carries two datums so no level datum can be drawn, and show the ground axes
+only. (b) is the recommendation, since an invisible ref is precisely the silent failure this lane
+keeps repeating, but it costs Terminal its level annotation entirely — so it waits for the user.
