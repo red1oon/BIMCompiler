@@ -1543,3 +1543,56 @@ is. ⚠ Schema differs: Hospital has `elevation`, HHS has only `center_z`. Needs
 - **The label box sits OUTSIDE the envelope**, clear of the buildup. Today it anchors at the box centre
   and offsets 26 px, so it lands ON the building by construction.
 - **The envelope must hug the ground structure** — see 22.4.
+
+### 23. ✅ SECOND ZERO IS BUILT — `viewer/cpe_flythru_datum.js` (2026-09-07, branch `feat/flythru-cues`)
+§17 was spec only. It is now code, and second zero stands a complete setting-out drawing.
+**Built from the DB, so it is up at frame one regardless of what is constructed** (user: *"Grids must
+be up at zero second no matter what the buildup as the data is at hand"*).
+
+**WHAT IT DRAWS**
+- **Ground grid** from REAL column centres, thinned to a 6 m minimum separation. Hospital 604 columns
+  → **15 × 14**, median bay 6.48 m; HHS 257 → **9 × 8**, 6.54 m. ⚠ This BEATS the shipped `GridDims`,
+  whose opportunity-vote returns Hospital's incoherent `1417 | 99155 | …` ladder (§18).
+- **Bubbles** — numerals on X, letters on Y, skipping **both I and O** (`grid_dims.js`'s own sequence
+  keeps O).
+- **Two-tier strings** (user: *"length between inner lines, then outer"*): tier 1 bay
+  gridline-to-gridline nearest the building, tier 2 overall stepped out, its witness lines starting at
+  the **bubble edge** so it visibly spans bubble-to-bubble, labelled with the refs — `1 – 9   54,744`.
+- **Upright = LEVEL LINES ONLY** (user: *"The upright is simply level lines. That is it"*). Vertical
+  gridlines were added here and removed — the ground already states the grid. Each rule carries its
+  name and elevation from the DB.
+
+**NEAR-SIDE ANNOTATION, per frame** (user: *"make the ground 2D markings on the near sides of course
+unless u dont want anyone to read well"*). The PLANE goes AWAY from the camera (occluded by the build);
+the ANNOTATION comes TOWARD it. Same vector, opposite sign.
+⚠ **Bottom and left need DIFFERENT tests** — bottom = projects lowest (largest screen y), left =
+projects leftmost (smallest screen x). Using the y-test for both put the letter bubbles on whichever
+long edge sat lower.
+
+**FIVE DATA FAULTS FOUND AND FIXED — all measured, all would have shipped**
+1. **DATUM MISMATCH.** Hospital records storey `elevation` 0..34 m while its elements sit at
+   156.61..203.62 — **0 of 56 rules** would land inside the building. Detected and offset; HHS already
+   agrees (0.22..7.43 vs −0.21..10.90) and is left alone. `§FLYTHRU_DATUM_ZDATUM` says which.
+2. **LABEL vs GEOMETRY datum.** The tag prints the LOCAL figure (`Level 2 +6.000`); only the geometry
+   takes the offset. Printing the offset would read `+156-something` on every level.
+3. **DUPLICATE LEVELS.** Hospital records `Level 2` at BOTH 6.00 and 6.10 — one floor, 100 mm apart.
+   Exact dedupe kept both and drew a doubled rule (12 for ~8 floors). Merged within 300 mm.
+4. **BACK FACE hardcoded** to max-Y, which puts the plane between camera and building from one side.
+   Both faces built; the far one shows.
+5. **NO SPACE.** A sheet is fixed; a moving camera is not. A bubble whose position leaves the frame now
+   **slides along its own gridline** to the boundary, keeping the association, and drops only when the
+   line is gone. Both counted — silence would look identical to the feature having stopped.
+
+**MEASURED, HHS t=0:** 33 marks · 3 level tags · **10 of 17 bubbles CLAMPED, 1 dropped** — so the plan
+does NOT fit the frame even at its widest moment. Consistent with the Hospital envelope check (7 of 8
+corners in frame, one 40% past the edge). Frame 98,289 bytes against 49,333 blank.
+**CHAIN ASSERTED, not assumed** — the check a drawing is verified by:
+`§FLYTHRU_DATUM_CHAIN X bays=54.744m overall=54.744m delta=0.0000 | Y 52.491m = 52.491m → CHAIN ADDS UP`.
+
+⚠ **LIFETIME — read before testing any later second.** The datum holds through the dive then fades:
+`max(6, filmSec × 0.094)` plus a 2 s fade. **On HHS it is GONE by 8 s**, so a snap at 8 s or 20 s draws
+nothing and logs nothing — that is not a failure. Hospital's window is ~18.4 s and spans all three cues.
+
+**⛔ NEXT SESSION — the snap formula.** Second zero is settled; the open question is which second to
+snap next and why. Everything else in §22.2 still stands: 2 of 8 shots draw, and §22.3's defect — every
+number describing the FINISHED building while the film shows it being built — outranks adding more.
