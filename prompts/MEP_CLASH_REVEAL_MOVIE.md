@@ -2323,3 +2323,104 @@ are that rule's output and are not a regression.
   §27g's `§DIVE_BEATS_NOFIT` is a stale verdict — but the camera under that dive is the underground one
   above, so a slot that fits in time may still have nothing legible in frame. Hospital's clock is
   unchanged: `0.094 × 195.8 = 18.4 s`.
+
+### 29. §INDOOR_BEATS — the hall, the stair, the opening, the clear height (user, 2026-09-08)
+> *"Once indoors i reckoned we pursue the hall area which most bakes will land first also due to its
+> default path."* · *"So it label 'Hall-Corridor, Walkable area: #m²'. The tint remains until frame
+> out. Remove tint. On the return flight during Reveal, it would have faded off."* · *"It wont take
+> 75s as the movie leaves the floor at the end of the run probably 10s the most. Along the way we can
+> catch the stairs as the next prize. This is only for buildings with stairs. Otherwise catch a door
+> or window gives its XY and area dims. A tallest point height in middle of hallway will be also a
+> killer."*
+
+**Runs AFTER §26 and §27.** Buildings: **Hospital and HHS**, both carrying a stored `cinema_path` in a
+`*_silent*.db`. **PoC: `scripts/poc_indoor_beats.js`, log `out/indoor_beats_poc.log`** — selection
+only, no GPU, no browser, no ray.
+
+**29.1 THE BUDGET IS EXACTLY FOUR SLOTS, AND THERE ARE EXACTLY FOUR CAPABILITIES.** The indoor run is
+**~10 s**, not the walk's 75 s — the film leaves the floor at the end of the run. At §14's 2.5 s slot
+(2.0 s envelope + 0.5 s clear) that is **4 non-overlapping slots**: hall area · stair going · opening
+type · clear height. §1 is satisfied because no two repeat each other. **There is no room for a fifth**
+— a useful ceiling to know before the list grows.
+
+**29.2 THE HALL — `Hall-Corridor, Walkable area: N m²`.**
+Source is the **`storey_walkable_raster` table, and it is already in the bake's own DB** — MEASURED:
+`Hospital_silent_local.db` carries **7 storeys** and `HHS_Office_Federated_silent.db` **4**, all at
+**res 0.25 m** with origin + packed bitset (Hospital Level 1 is 403 × 372 cells). Mesh-derived, and it
+appears nowhere in the IFC — that is the capability claim. No new extraction.
+- **m², never m³.** A walkable VOLUME is not honestly derivable: §3.6 already ruled the per-storey
+  height column out (contaminated by risers and facade spanning storeys — Hospital's Level 1 reads
+  43.9 m). A volume would need a ceiling chord per cell. Say area, and mean it.
+- **Do NOT source it from the compiled rooms.** §11 measured them: Hospital's largest is 23.25 m² but
+  spans **15.50 × 1.43 m**, a corridor slice; `RM_Level_2_3` is 0.53 × 14.62 m. §16 dropped the room
+  beat outright — both genuine rooms had **zero** in-range-and-facing windows anywhere in the film.
+- **No X diagonals.** A hall is concave, and §3.3 rules a bbox area on a concave plan a fabrication.
+  Tint the region, label the area. The X belongs to §26's rectangular plate and nowhere else.
+
+**⚠ 29.2a THE ONE DESIGN DECISION THIS BEAT NEEDS — an unbounded flood fill returns the FLOOR, not the
+hall.** Level 1's walkable is **6,481 m²** as ONE connected component, because doorways link
+everything. A camera standing in a 1.43 m corridor would be labelled `Hall-Corridor, 6,481 m²`, which
+reads as a mistake and destroys the effect it exists to create. Something must bound the fill. **The
+mechanism already ships:** `common/room_graph.js` has `isRoomDoor()` and `buildGraph()`; cutting the
+fill at door thresholds is what turns "the floor" into "the hall you are standing in". Settle this
+before writing the beat — everything else in §29.2 follows from it.
+
+**29.3 THE STAIR — cue the GOING, never the rise. Both buildings have stairs, so the fallback never
+fires.**
+| | `IfcStair` | rise median | going median |
+|---|---|---|---|
+| Hospital | 30 (+1 flight) | **5,050 mm ⛔** | **6,049 mm** |
+| HHS | 4 (+8 flights) | 3,856 mm | **4,241 mm** |
+| HHS `IfcStairFlight` | 8 | **3,620 mm ⛔** | 7,062 mm |
+
+⚠ **A stair's rise IS the storey height by construction**, so §27.3c's datum-restatement guard applies
+unchanged. MEASURED: Hospital's stair rise 5,050 mm against the datum figure **5.00 m**; HHS's
+stair-flight rise 3,620 mm against **3.60 m**. The guard fires on a DIFFERENT class in each building —
+which is why it must be a test, not a per-building exception. The **going** is stated by no datum, no
+storey table and no schedule, and it is the dimension a stair is actually criticised for.
+
+**29.4 THE OPENING — the door is the portable one; the window is not.**
+| | `IfcDoor` | dominant type | `IfcWindow` |
+|---|---|---|---|
+| Hospital | 440 | **2,108 × 1,078 mm ×198** (45 %) | 131, 4,100 × 2,000 mm ×33 |
+| HHS | 133 | **2,134 × 934 mm ×81** (61 %) | **VACUOUS — none** |
+
+**HHS has zero `IfcWindow`**, so a window cue cannot generalise across the two buildings; the door can.
+§6's dedupe governs: 440 doors at one leaf size are **ONE** measure, and "2,108 × 1,078 mm — 198 of
+them" is an honest statement standing for the population. State height × width and say which is which;
+leaf AREA (2.27 m²) is the weaker number and should not lead.
+
+**29.5 THE CLEAR HEIGHT — the killer, and the only raycast in the whole indoor set.**
+§3.5's B6 and §4 already carry the mechanism: **one vertical cast, two stops** — first hit is CLEAR
+HEIGHT (headroom, what you would walk into), first *large horizontal* surface is TOTAL HEIGHT (the
+ceiling proper), so a light fitting or a hanging duct is never mistaken for a ceiling.
+⚠ **Cue the CLEAR height only. TOTAL height restates a datum figure by construction** — it is the
+storey height, which §24.7's Z chain already draws; that would be the third restatement in this lane
+(§27.3c column, §29.3 stair rise, this). **Clear height under a tray or a duct is in no datum, no
+schedule and no drawing** — it is the number that gets discovered on site. Where the two differ
+sharply, the gap is itself the finding (§4 already says so).
+⚠ **This is the one beat the PoC cannot resolve** — it prints `INCONCLUSIVE` because it casts no ray.
+
+**29.6 TINT LIFETIMES ARE NOW THREE, AND THAT IS DELIBERATE.** Recorded so a later session does not
+"unify" them on consistency grounds and break this one:
+| layer | lifetime |
+|---|---|
+| datum planes (§17.5) | occluded by the rising build, then fades |
+| floor plate (§26.2) | a 2.0 s envelope on the pop |
+| **hall (§29.2)** | **persists until frame-out, then removed; gone by the Reveal return flight** |
+
+The hall's persistence is a considered exception to §14's no-persist baseline, and §7's `persist:true`
+already exists to carry it. The user set it deliberately: the hall is the space the viewer is moving
+through, so it holds while they are in it.
+
+**29.7 ⛔ OPEN.**
+1. **Bound the flood fill (§29.2a).** Nothing else can be written until this is settled.
+2. **The clear-height cast is unimplemented** and is the only ray in the set.
+3. **HHS's indoor stretch is in doubt for a camera reason, not a data one.** §28.2 measured HHS's baked
+   path crossing ground level at frame 75 (3.1 s) and ending at **−1.09 m** — underground. Its film
+   clock is now MEASURED at **72.3 s** with a **3.90 s** dive (§28.2 lifts §27f's UNVERIFIED label and
+   supersedes §27g's `NOFIT`), but a slot that fits in TIME may still have nothing legible in frame.
+   Verify the indoor camera before allocating HHS slots.
+4. **The premise that "most bakes land in the hall first" is a claim about the PATH GENERATOR, not the
+   building.** Hospital's path is authored; HHS's and Terminal's are derived. Check it with
+   `plan.poseAt` in the same probe §26/§27 already owe — do not assume it across buildings.
