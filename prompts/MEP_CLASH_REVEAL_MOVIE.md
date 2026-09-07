@@ -1680,3 +1680,69 @@ on X / letters on Y skipping I and O · two-tier bay + overall with the overall 
 carrying its grid refs · upright = LEVEL LINES ONLY with name + LOCAL elevation · annotation on the near
 edges chosen per frame (bottom by lowest projection, left by leftmost — different tests) · the plane on
 the FAR side, depth-tested so the build occludes it · **view-space depth for clipping, never NDC z**.
+
+**24.5 ✅ THE REDO IS BUILT — `viewer/cpe_flythru_datum.js`, branch `feat/flythru-cues` @ `401e8519`
+(2026-09-07). ⛔ THE GATE STILL STANDS: this is submitted for the user's agreement, not closed.**
+The four rulings are each one decision in a single layout pass, and the pass replaces the four
+independent loops §24.3 named:
+- **measure once** — the plan's on-screen size sets every offset (`scale` clamped 0.6–1.8);
+- **ladder outward** — plan edge → tier 1 bay → tier 2 overall → bubbles, each rung stepped along
+  that gridline's OWN projected direction, so a bubble sits on the extension of the line it names and
+  the overall's witness lines physically reach it. ⚠ The old code put bubbles ON the plan edge and
+  offset the strings along an UNSIGNED perpendicular, which dropped the figures INSIDE the plan half
+  the time — **that was the cramming**, not the font;
+- **one index list** shared by the chain ticks and the bubbles, with a stub shorter than the stride
+  absorbed into the bay before it (it was making Hospital's N/P bubbles one gridline apart while
+  every other pair was two);
+- **a shared occupancy register** — every label claims the AABB of its *rotated* box; what will not
+  fit is dropped AND COUNTED (`collisionsDropped=`);
+- **level tags on ONE end**, the end picked by a scored dry run against a scratch register.
+
+| | Hospital | HHS |
+|---|---|---|
+| overalls | **2/2** | **2/2** |
+| bay segments drawn | 13/13 | 11/11 |
+| bay FIGURES (cap 4/axis) | 4 | 4 |
+| bubbles | 15, 2 clamped, 0 dropped | 13, 1 clamped, 0 dropped |
+| level tags | **5/8**, far end (scored 3/5) | **2/3**, far end (scored 1/2) |
+| chain | X 95.915 = 95.915, Y 88.227 = 88.227 | X 54.744 = 54.744, Y 52.491 = 52.491 |
+
+**A DATA FAULT THE OLD LABELLING WAS PRINTING.** `storeyLevels()` merged near-duplicate storey rows
+then kept the **FIRST** row of the cluster. MEASURED on Hospital: **5 of 8 clusters disagree
+internally**, and 3 printed the single outlier elevation — `Level 3 +10.973` over six rows at 11.000,
+`Level 4 +15.850` over six at 16.000, `Level 5 +20.726` over five at 21.000. Worse, the 31.0 m cluster
+printed `Level 7` from one row while **two** rows say `Level 7A`, so the drawing carried **Level 7
+twice**, at 31 and at 34. Now the cluster's **MODAL** name and **MODAL** elevation win;
+`§FLYTHRU_DATUM_LEVELVOTE clusters=8 needingAVote=5` says how often it mattered.
+
+⚠ **STILL OPEN, stated rather than hidden.** `bayFigures=4` of 8 wanted on each building
+(`collisionsDropped` 11 / 6) · Hospital's level sample drops 3, 5 and 7A · Hospital's X-axis string
+runs across the top edge of the envelope — harmless at t=0 (the film has 3 meshes then) but
+**untested at 8–18 s while the datum still holds and the building is rising**.
+
+**24.6 §SNAP_NOSTREAM — the snapper was the bottleneck, and it is repaired (user, 2026-09-07:
+*"snap takes too long. Maybe it needs repair?"*).**
+A ONE-frame Hospital run cost **~7 minutes**, essentially all of it streaming 64,150 elements and
+waiting for the count to settle. The datum is built from **DB queries and the camera pose alone** — it
+reads no mesh — so `--nostream` skips the stream: **~7 min → 16 s.** Two traps found on the way, both
+recorded because both are cheap to repeat:
+1. **Skipping the stream is NOT skipping the DB.** `window.APP.cinemaPathPlan` exists before the
+   SQLite handle is usable, and the first run logged `§FLYTHRU_DATUM VACUOUS — no structural extent`.
+   A VACUOUS datum reads exactly like a broken one. It now waits for a real row.
+2. **The camera is not free either.** With nothing streamed, `A.controls.target` is still at the
+   ORIGIN and **PASSES** `§CINEMA_PIVOT`'s plausibility test (`offCentre 19.7 < boundingR/2 = 45.7`),
+   so the whole path orbits (0,0,0): Hospital t=0 came out at `(135.8,181.0,135.8)` against the
+   streamed `(85.5,70.0,58.9)`. ⚠ **Parking the target far away is NOT the fix** — it appeared to work
+   on Hospital only because Hospital has an AUTHORED `cinema_path` (`bands=4`, absolute coordinates);
+   HHS's path is DERIVED and followed the parked target out to `(88452,88455,88452)`. The fix is to
+   give the viewer the **same home framing it computes for itself after a stream** —
+   `scene.js` `_homeFillFrame`'s formula, from the DB: whole-building `element_transforms` bbox,
+   `dist = max(80, envelope)`, camera at `ctr + dist·(0.6, 0.8, 0.6)`, target at `ctr`. **Hospital's
+   datum numbers under `--nostream` are then byte-identical to the streamed run.**
+⚠ **WHAT `--nostream` IS NOT.** MEASURED 504 visible meshes — the viewer still draws wireframe
+placeholders, and the film's own buildup is 3 meshes at t=0. **The camera and every DB-derived layer
+are exact; the SCENE is not the film's**, so occlusion, mesh counts and the day cursor are VACUOUS in
+such a frame. Drop the flag the moment the question is about the buildup.
+⚠ And, for the third time in this lane: the snapper's console filter was hiding the evidence —
+`§CINEMA_PATH_RESTORE` and `§CINEMA_PIVOT` were both being discarded while `--nostream` was judged on
+its camera. **Widen the filter before concluding anything.** It now passes `§CINEMA_`/`§CPE_` too.
