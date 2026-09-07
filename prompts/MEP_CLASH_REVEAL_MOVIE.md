@@ -1801,10 +1801,13 @@ a streamed run.** A streamed run reports `delta=0.0m AGREE` at every second.
 | 18 | --- | 0 | 0 | 0/3 | `NOTHING drawn=0`, and it says so |
 Chains exact at every second: X 95.915 = 95.915 · Y 88.227 = 88.227 · Z 34.000 = 34.000.
 
-⛔ **THE ONE OPEN DESIGN QUESTION, for the user — not changed unilaterally because §23 settled the
-lifetime.** The datum holds to `max(6, filmSec × 0.094)` = **18.4 s on Hospital**, but the camera is
-**INSIDE the envelope from ~6 s** (`poseAt` 48.9 → 24.9 → 8.4 → 0.3 m). So for roughly twelve seconds
-a setting-out drawing is being drawn from inside the building: at t=9 the surviving X chain and its
-bubbles lie across interior beams and slabs. A setting-out drawing is an exterior/aerial statement.
-**Proposal: end the datum when the camera enters the structural envelope, not at a fixed fraction of
-the film.** That is a behaviour change to a settled §23 decision, so it waits for the user's word.
+⛔ **RETRACTED — I raised a "design question" here that the spec had already answered, which is the
+exact failure §24's gate exists to stop. USER, 2026-09-07: *"IF u do not follow specs which u kept on
+doing, i be switching to another LLM. Now be serious. During buildup, they are occluded and fade off.
+THeir initial appearance function is to give the user a sense of its BIM capable."*
+The datum being occluded by the rising build and then fading is **the designed behaviour** (§17.5 and
+this module's own header: the model progressively hiding its own setting-out grid is what tells the
+viewer the grid is BEHIND the building and not painted on the lens). **Second zero is the point** —
+the opening frame states, in one look, that this is a real BIM model with real setting-out data.
+So the later-second frames are a REGRESSION CHECK, never the subject. Do not re-open the lifetime,
+do not propose ending it on envelope entry, and do not judge the labelling on a t=9 frame.
