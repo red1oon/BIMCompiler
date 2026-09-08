@@ -3321,3 +3321,26 @@ bake.** Do not claim it works until `probe_film_flicker.py` on a fresh Hospital 
 at 0. **Also retracted here:** §40.0's reading that the 9 s plate flicker and this are one phenomenon — the
 dive's churn is the buildup and is present in every film including the pre-Measure one; §40.0's refutation of
 §38.1's z-fight/`setColorAt`/status suspects still stands, and no polygonOffset or colour change was made.
+
+**42.5 THE PROPER CONTROL — the user's own clue (*"check 3 days ago MP4 has no such"*), and it found a SECOND
+effect.** `~/Downloads/Hospital_1080p24_2026-09-05.mp4` is the same path, the same **4,699 frames / 195.79 s**,
+and its log carries **ZERO** `FLYTHRU_DATUM|SLAB_BEAT|INDOOR_BEAT|LINEAR_BEAT` lines — a true pre-Measure twin
+of the film the user watched, far better than §42.1's 09-07 film. Same probe, same windows:
+| window | **09-05 pre-Measure** | 09-07 (storey reveal, no Measure) | **09-08 with Measure** |
+|---|---|---|---|
+| buildup + dive | 88 jumps, max 99.2 | 84 | 108, max 99.8 |
+| cruise | 1, max 28.1 | 1 | 1, max 32.2 |
+| **reveal round** | **0, max 10.1** | **0, max 10.2** | **42, max 59.6** |
+| **storey reveal** | 0, max **0.3** *(no storey reveal existed yet — the window is empty, not clean)* | 0, max **0.6** | 0, max **5.3** |
+| orbit | 0, max 1.9 | 0 | 0, max 2.0 |
+**Two findings, not one:**
+1. **The reveal-round flicker = LIFE2** (§42.1–42.4). The 09-05 twin nails it: identical path and frame count,
+   0 jumps and max |ΔY| 10.1 where the Measure film has 42 and 59.6.
+2. ⚠ **A SECOND, SMALLER EFFECT IN THE CLOSING SECONDS, which is what the user saw there.** Comparing like
+   with like — the storey reveal exists in BOTH the 09-07 and 09-08 bakes — its window's max |ΔY| goes
+   **0.6 → 5.3, a 9× rise**, on a mean-64 frame (≈ 8 % of the picture's brightness, one frame). It is BELOW
+   the probe's 15 threshold, so `§FILM_FLICKER_WIN` reports `jumps=0` and only the `max|dY|` column shows it —
+   **the verdict line alone would have hidden this; read the max column.** The datum is already off by then
+   (LIFE2 ends 169.10 s), so it is NOT LIFE2. The one Measure change reaching that window is §37.1's storey
+   cards querying `storey_walkable_raster` per card. **NOT diagnosed — recorded, with its number.** Next step
+   is the same discipline: instrument, do not guess.
