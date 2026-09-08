@@ -3177,3 +3177,24 @@ one subject per 2.7 s slot, longest-legible-first, legibility HELD over (t, t+1.
 - Witness `viewer/tests/witness_flyout_beats.js`: wing lengths equal the component extents; the sill height
   equals the placed window's bbox bottom; no slot overlaps any other layer's window; every cue composites
   inside its own envelope.
+
+**40.4 ✅ ALL THREE BUILT + WITNESSED (2026-09-08, worktree `/tmp/wt-storey-reveal`, branch
+`feat/measure-boxes` off `origin/main` @ `f1ac7ce1`, commit `62223ff9`, pushed, no PR yet; sw v1169).**
+| what | evidence |
+|---|---|
+| §40.1 three boxes | `viewer/cpe_film_boxes.js`. `witness_film_boxes.js` **12/12** at 1280×720, 1920×1080 and corners `tr`/`bl`/`tl` (`out/witness_film_boxes.log`). At 720p: `§HUD_BOX 1001,20 259x374` · `§STATUS_BOX 1001,403 259x106` · `§MEASURE_BOX 20,572 245x128`, identical on all 392 sampled frames, pairwise disjoint, 0 unattributed text draws. |
+| the anti-scope-blind guard | the witness also READS `_captureFrame` and classifies all **13** composite calls against a registry; an unregistered one FAILS. It also asserts `roomTitleCompositeOntoCanvas` survives only in the module-missing `else` branch. |
+| §40.2 the plate's area | `witness_slab_beat.js` **18/18** (Hospital, `--nostream`, `out/wsb_boxes_nostream.log`). `§SLAB_BEAT_AREA src=raster m2=3,367 … bboxM2=7,585` and the panel says *"Floor area ≥ 3,367 m² (walkable raster, lower bound)"* — the honest answer with no mesh in the scene. `§SLAB_BEAT_DIAG shape=outline segments=4`; the label plane is gone from the live scene. |
+| §40.3 PoC | `scripts/poc_flyout_beats.js` (`out/poc_flyout_beats.log`). Hospital's largest plate is **Level 3, 100.83 × 91.16 m**; its raster decomposes to wings **22.25×72.25 · 23.50×59.75 · 18.00×18.50 · 9.25×29.50 · 20.25×10.50 m**, with a **4.75 m-wide, 42.5 m-long run REJECTED as a corridor**. Sills: roof top 203.62 m, highest Level-2 sill 172.37 → **31.25 m** (N/E/W), **30.59 m** (S). |
+| §40.3 module | `viewer/cpe_flyout_beats.js`. `witness_flyout_beats.js` **12/12** Hospital, window **68.84–146.97 s**, 305 samples, 9 subjects, **4 cued: wing1@72.09 s (840 px held) · wing3@74.84 s · wing4@105.84 s · sillE@131.34 s**, 18 rejections each named. **HHS: VACUOUS** — its fly-out window is 0.00 s (§37 measured `out=pullout=flyback=reveal=0.688`), and the witness says so instead of passing. |
+**Two mistakes this build made and corrected, recorded so the next session does not repeat them:**
+1. **The PoC's first legibility cut accepted ONE endpoint in frame** and scored a 72 m wing at **2,200 px on a
+   1,280 px frame** — an arrow running off both sides, which reads as nothing. Both ends must be in frame.
+2. **`plan.beats` has NO `round2` field.** `round2` is only the `§CINEMA_BEATS` LOG's label for `beats.reveal`
+   (`viewer/effects.js:9055` is the object). Reading `b.round2` fell through to `b.rise` and opened the fly-out
+   window to **187.8 s**, putting a wing cue at 168.6 s in the middle of the discipline parade. The window is
+   `out → reveal`.
+**Still open, and NOT done here:** (a) the §40.0 luma-dip instrumentation (`§MAXQ_FRAME_LUMA` in `_captureFrame`)
+— the shipped log still cannot tell a dipped frame from a good one; (b) the streamed `witness_slab_beat.js` run
+that would exercise the `src=mesh` footprint path (the `--nostream` run proves the raster fallback only);
+(c) any bake. Bakes remain user-gated.
