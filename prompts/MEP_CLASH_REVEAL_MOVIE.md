@@ -2961,3 +2961,90 @@ Nothing else writes text to the frame outside those three boxes except the in-mo
 constant across the whole film (assert per frame from their own `§`-lines), pairwise non-overlapping, and every 2D text draw in
 `_captureFrame` is attributable to one of them (`§HUD_BOX`, `§STATUS_BOX`, `§MEASURE_BOX` lines carry x/y/w/h). This precedes
 38.1's flicker measurement: move the furniture first, then measure the plate again.
+
+### 39. TWO FINDINGS FROM THE TERMINAL + HOSPITAL FULL BAKES (2026-09-08, evening — recorded, not fixed)
+Both found by reading the shipped `§`-log of two full all-systems bakes the user asked for as a baseline:
+`Terminal_FULL_allsystems_2026-09-08.{mp4,log}` (52.8 s, 1,266 f, commit `5ad96d6a`, sw v1166) and
+`Hospital_FULL_measure_2026-09-08.log`. Films and logs are in `~/Downloads/`.
+
+**39.0 What the Terminal baseline confirmed, so it is not re-checked.** `§36 W1`'s flicker fix HOLDS on a
+third, untuned building: max frame-to-frame `|Δdrawn|` = **3**, and only **13 of 80** frames change at all,
+against HHS's pre-fix swing of **16 in ten frames** (40→6→22). Chain exact — X 54.508 · Y 39.481 ·
+Z 19.300, all `delta=0.0000`. `ofNominal` **77%/77%/77%** (HHS was 52%). Zero
+`DATUM_DRAW/AT/BUILD failed`. Clash data is RICHER than Hospital's: `trueClash=505 markers=1010
+discPairs=12 falsePositivesExcluded=264` against Hospital's 270.
+
+**39.1 ⛔ THE STOREY-REVEAL STATS QUERY THE WRONG STOREYS — `doors=0`, and it is not a counting bug.**
+> **USER:** *"it does flash out the main 4 floors just that the cam pov was too near but there was zero
+> doors that is what i saw rather."* · *"Perhaps the Room injection was not complete?"*
+> **Room injection is NOT the cause** — `rooms_meta` reads `room_count=47`, built `2026-09-08T01:00:10Z`
+> (walker v3), with `rel_contained_in_space=1429`. The rooms exist.
+
+MEASURED on Terminal. Every `IfcDoor` in the model sits on a storey the reveal never asked about:
+| storey carrying doors | doors | in the reveal's shown set? |
+|---|---|---|
+| `Aras Tanah` | 63 | **dropped** |
+| `Aras 01` | 29 | **dropped** |
+| `Aras 02` | 27 | **dropped** |
+| `Aras 03` | 9 | **dropped** |
+| `Aras 04` | 7 | **dropped** |
+| **total** | **135** | **0 shown** |
+
+The five the card cycled were `00 Aras Asas`, `GROUND FLOOR LEVEL`, `Aras Kedai`, `Ground Lev`,
+`Level Kedai` — **zero intersection with the door-bearing set**. So `§STOREY_REVEAL_STATS … doors=0
+rooms=0 footprint=n/a` is arithmetically CORRECT for the storeys it was handed; it was handed the wrong
+five.
+
+**Root cause is §24.12's `§LEVELSPLIT` federation fault, reaching a second consumer.**
+`§STOREY_REVEAL_LIST n=22` on a ~6-storey building — the storey table carries duplicate and
+alias names across two languages. `§STOREY_REVEAL_FIT windowSec=5.31 storeysAvailable=22 shown=5
+slotSec=1.06 TRUNCATED` takes the first five by elevation, which on this table is five ground-level
+aliases before it ever reaches `Aras Tanah`. **The datum layer already handles this fault by NAMING it
+and refusing to invent a datum (§24.12). The storey reveal has no equivalent — it takes what the table
+gives.** That asymmetry is the defect, not the reveal's arithmetic.
+
+⚠ **AND THE TINT AND THE STATS DISAGREE, which is the sharper half.** The same five names produced
+`§STOREY_REVEAL_TINT … meshesTouched=` **6 / 1335 / 83 / 14 / 225** — real geometry, and the user
+confirms the main floors visibly tinted — while `§STOREY_REVEAL_STATS` returned `footprint=n/a` for four
+of the five. **One of the two resolvers is right and they are not the same resolver.** Find which, before
+touching either. (A first reading of the low `meshesTouched` values as "the reveal drew nothing" was
+wrong and is corrected here: the tint worked; the stats query did not.)
+
+**What a fix must NOT do:** choose between duplicate storey names. §24.12 ruled that resolving a
+two-datum storey table is invention. The honest options are to (a) select storeys by the elevation
+CLUSTER rather than the raw row, the way `§FLYTHRU_DATUM_LEVELVOTE` already does (modal name, modal
+elevation — `clusters=8 needingAVote=5` on Hospital), or (b) rank candidates by their own content
+(`meshesTouched`, doors, raster area) so an empty alias cannot win a slot, and say so when one is
+skipped. Either way the selector must report what it dropped and why — `TRUNCATED dropped=[…]` names
+them but does not say they were empty.
+
+**39.2 ⚠ THE 2D DATUM RE-APPEARS LATE IN THE FILM — `§FLYTHRU_DATUM_LIFE2`, and it should be settled by
+the user before it ships.**
+> **USER:** *"what u think of the 2D grid still persisting at the end of the movie?"*
+
+It is **not** persistence and not a leak. It is a second scheduled showing, MEASURED in
+`Hospital_FULL_measure_2026-09-08.log`:
+`§FLYTHRU_DATUM_LIFE2 search=90.53-182.74s (flyback → storey-reveal)` →
+`start filmSec=148.70 end=169.10s (hold 18.4s + 2s fade)`, last `drawn=74` at 169.08 s.
+
+**The recorded position, and why this needs a ruling rather than a patch — two settled instructions
+pull opposite ways here:**
+- **§24.9 (user, 2026-09-07, marked ⛔ RETRACTED against re-opening):** *"During buildup, they are
+  occluded and fade off. Their initial appearance function is to give the user a sense of its BIM
+  capable."* — **"Second zero is the point"**, and the section explicitly says *do not re-open the
+  lifetime*.
+- **§37 §MEASURE_TO_THE_END (user, 2026-09-08):** *"extend the Measure coverage all till the end."*
+
+`LIFE2` satisfies the second by repeating the first, and that is the part worth questioning. **The
+datum's meaning is structural, not decorative: §17.5 makes the rising build OCCLUDE the setting-out grid,
+and that occlusion is what tells the viewer the grid is BEHIND the building rather than painted on the
+lens.** At second zero the model is 3 meshes and the reading works. At 148.70 s the building is complete
+and nothing is left to reveal it — the grid sits over a finished model, which is precisely the
+"painted on the lens" reading the original design was built to avoid.
+**So: extending MEASURE to the end is right; re-showing the DATUM is the wrong instrument for it.** The
+end of the film wants measurements OF THE FINISHED THING — which §38.2 already specifies in detail (wing
+spans, roof-edge-to-sill facade heights, on the clean fly-out canvas the user asked for). Those are new
+statements; `LIFE2` is the opening statement said twice.
+⛔ **Recorded for the user's call, not acted on.** If `LIFE2` stays, it needs a reason that survives
+§24.9 — and the honest one would be that the closing orbit reads as a DIFFERENT beat (a drawing recalled
+over the finished building) rather than a repeat, which is a claim about the cut, not about the data.
