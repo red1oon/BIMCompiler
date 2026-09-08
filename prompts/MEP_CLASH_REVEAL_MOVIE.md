@@ -3071,3 +3071,109 @@ purpose — a drawing recalled to be READ must be legible, so LIFE2 (and only LI
 (`depthTest:false`, §7's cue contract), while LIFE1 keeps the occlusion that gives second zero its
 meaning. Two lives, two draw contracts, both deliberate — record it in `FLYTHRU_DRAW_CONTRACT` beside
 §17.5's existing exemption so a later session does not "unify" them.
+
+### 40. §38 IN ORDER — the furniture, the plate's area, the fly-out. Spec + measurements (2026-09-08, session 7)
+Branch `feat/measure-boxes` off `origin/main` @ `f1ac7ce1` (PRs #1697 + #1699 merged; sw v1168), worktree
+`/tmp/wt-storey-reveal`. §38's order is kept: **40.0 measure the flicker → 40.1 the three boxes → 40.2 the
+plate's area → 40.3 the fly-out beats.**
+
+**40.0 ✅ THE FLICKER IS MEASURED, AND IT IS NEITHER OF §38.1's TWO SUSPECTS — nor §38.1a's.**
+Measured on the film the user watched (`out/Hospital_FULL_measure_2026-09-08.mp4`, 4,699 f, 720p24) with
+the §26.12 pixel method, no GPU and no new bake: `scripts/probe_plate_flicker.py` (frames → numpy) plus one
+whole-film `ffmpeg signalstats` luma pass (`out/yavg.txt`, `out/plate_flicker.log`). The plate polygon is
+the film's OWN `§SLAB_BEAT_DIAG corners=(-37.05,10.60,31.49) …`, projected through each frame's recorded
+pose (`*_poses.json`, fov 60) with a near-plane clip — the camera flies OVER the plate, so an unclipped
+probe calls every dive frame "behind camera" and reads VACUOUS (the first cut of this probe did exactly
+that; it is in the file so the next session does not repeat it).
+| what was measured | value | reading |
+|---|---|---|
+| amber fraction INSIDE the plate, over the envelope hold (env = 1.000, 10.04–10.96 s) | 0.806 0.808 **0.718 0.526 0.073** 0.800 0.805 **0.720 0.687** 0.807 0.804 **0.479** 0.802 … | with the envelope FLAT, the tint signal collapses to 9 % of its held value for ONE frame and is back the next |
+| the same amber fraction OUTSIDE the plate polygon (control) | 0.323 0.320 **0.117 0.081 0.0014** 0.306 … | it moves in LOCKSTEP — so the event is not the plate's |
+| envelope fit `amberIn = a·env + b` | `0.849·env − 0.117`, residStd **0.149**, residMaxAbs **0.659**, residStd/range **0.185** | 18.5 % of the signal's whole range is NOT explained by the envelope |
+| frame-to-frame step | mean │Δ│ **0.0954** vs expected ramp step **0.0312** (excess 0.0642), max │Δ│ **0.727** | the churn is 3× the ramp it should be riding |
+| the X diagonals' own 2 px band | mean 0.583 std 0.315 min **0.000** max 0.899 cv **0.540** max │Δ│ 0.844 | the X vanishes completely on those same frames |
+| whole-film luma (`signalstats` YAVG, all 4,699 f) | **34 single-frame dips** (darker than BOTH neighbours by > 8 luma) = 0.72 % of the film; mean depth 21.2, max **70.8** | |
+| where those 34 dips sit | **15 in 8.96–17.75 s** (the dive), 7 in 80.75–83.25 s (pull-out), 10 in 151.58–159.96 s (reveal round / LIFE2), 2 isolated (39.46, 73.67) | the 9 s mark the user named carries the densest cluster in the film — 10 dips in 9–15 s against 1.0 expected if they were uniform |
+| is a dip a global exposure scale? | f231→f232 channel ratios **0.572 / 0.572 / 0.582** (achromatic, 43 % of the light gone) but per-pixel ratio p10 0.171 / p50 0.478 / p90 1.467 | uniformly dimmer in colour, NOT uniform per pixel — some pixels brighten |
+**Verdict — the three hypotheses on record are all REFUTED by this, and the ruling changes:**
+- **§38.1(a) z-fight of the X diagonals** — refuted: a depth fight on 0.03 m lines cannot move `amberOut`,
+  which is measured OUTSIDE the plate and moves identically. **Do not add `polygonOffset`.**
+- **§38.1(b) the tint's per-frame `setColorAt` lerp** — refuted for the same reason, and by the envelope fit:
+  on the flat hold the lerp writes the SAME colour every frame, yet the signal collapses.
+- **§38.1a "the neighbouring status churns"** — refuted as the cause of THIS event: a 2D overlay redraw is
+  confined to its own rectangle, and the measured darkening covers 55 % of ALL pixels spread evenly over a
+  4×4 grid of the frame. (The status box is still worth building — §38.1b asked for it in its own right and
+  §40.1 builds it — but it is not what made the plate flicker.)
+- **What it actually is: single-frame WHOLE-FRAME render dips, ~0.7 % of frames, clustered where the scene
+  is changing fastest.** The shipped log cannot tell a dipped frame from a good one — frames 231 (good) and
+  232 (dipped 45.6 luma) carry the identical `§SHADOW_FRONTIER_AT_CAPTURE frontierGuids=3 …` line and nothing
+  else, and `§MAXQ_QUALITY frames=4699 unconverged=0` calls the whole bake clean. **That is a §-log gap of
+  the §4 "cannot report its own failure" class**, and it is the next thing to instrument: `_captureFrame`
+  should record its own frame's mean luma beside the fold state it captured (`§MAXQ_FRAME_LUMA i= Y= foldMs=
+  taa= ao=`), so the NEXT bake names its dipped frames instead of leaving them to a post-hoc ffmpeg pass.
+  Root-causing the dip itself (the fold's explicit `A._composer.render()` in `_captureFrame` vs the
+  accumulated still, or a shadow/env update landing inside the capture task) needs that instrumentation
+  first — it is NOT guessed here.
+
+**40.1 THE THREE FIXED BOXES — SPEC (implements §38.1b, and §38.1a's dedicated Measure panel).**
+One owner, `viewer/cpe_film_boxes.js`, which decides all three rectangles from `(w, h, corner, armed)` and
+NOTHING else — no text, no content, no per-frame input — so a rectangle cannot move when what it says changes.
+- **`§HUD_BOX`** — the column that already exists (day counter → path overview → big-stats/clash card,
+  `§CPE_HUD_ORDER`), unchanged in look and position. The box is the column's RESERVED slot: `w = 0.36·h`
+  (the widest member, `cpe_resource_panel.js _box`), `x` at the chosen corner's margin `0.028·h`, `h` = the
+  sum of the ARMED members' heights + gaps. Armed is decided ONCE per bake, not per frame — a film whose
+  day counter drops out for a stretch must not move the boxes under it.
+- **`§STATUS_BOX`** — the next slot in the SAME column, i.e. directly below the HUD for a top corner (and
+  correspondingly further from the corner for a bottom one; the actual rect is logged either way). Same `x`
+  and `w` as `§HUD_BOX`. FOUR fixed rows, fixed order, fixed height — a row is BLANK, never removed:
+  1. `Storey` ← `A.storeyRevealCaptionAt` 2. `Room` ← `A.roomTitleOpacityAt`
+  3. `Build-up` ← the Time-Machine frontier phase (`A.tmFrontierPhase`, today smuggled into the caption as
+     `[phase]` by `roomTitleFinalText` — which is exactly what made the caption plate resize mid-shot)
+  4. `Reveal` ← `A.cpeRevealCaptionAt` (the discipline parade). This is §38.1b's "…"; it is the one
+     remaining caption source in the code, not an invented row.
+  This RETIRES the centred lower-third caption plate as the film's status surface. `A.roomTitleCompositeOntoCanvas`
+  stays exactly as it is (the live editor preview and six witnesses drive it); only the bake's `_captureFrame`
+  stops calling it.
+- **`§MEASURE_BOX`** — Measure figures ONLY, its own fixed rectangle in the corner diagonally opposite the
+  HUD column (HUD `tr` → Measure bottom-left). `w = 0.34·h`, height fixed for a title + 4 rows. Every
+  Measure module keeps calling `A.flythruDrawPanel(...)` unchanged; that function becomes a per-frame QUEUE
+  and `_captureFrame` draws the queue into this one box. **The leader line dies with the roaming panel** —
+  a leader from a fixed corner box to a subject 800 px away is a distraction, not a pointer; the in-model
+  marks (dimension arrows, tint, outline) are unchanged and still say WHERE. `A.flythruCueCaptionAt`'s
+  number stops going through the room-title caption and posts here, where it belongs.
+  The box is NOT DRAWN AT ALL when no Measure beat is live (§38.1a), and says so: `§MEASURE_BOX … rows=0 idle`.
+- **`§CLASH_LABELS` panels are the one exception, and it is stated rather than assumed:** they are anchored
+  to a 3D contact with a leader and a dot, i.e. in-model marks that happen to carry two element names — the
+  same family as the dimension arrows §38.1a explicitly leaves in place. They keep their own `panels=[i@x,y,wxh]`
+  log line, which already reports their rectangles.
+- **Witness `viewer/tests/witness_film_boxes.js`:** (a) each of the three rectangles is IDENTICAL across every
+  frame of a whole film (driven over the real film's second range, not one frame); (b) the three are pairwise
+  non-overlapping; (c) every 2D text draw in `_captureFrame` is attributable to one of the three or to the
+  clash-label exception — asserted by driving `_captureFrame`'s draw chain through a recording 2D context stub
+  and checking every `fillText` lands inside one of the four rectangles; (d) a status row with nothing to say
+  is BLANK and the box's height does not change; (e) with no Measure beat live the Measure box draws nothing.
+  It must be able to say INCONCLUSIVE — a run in which no frame had any text at all proves nothing.
+
+**40.2 THE PLATE'S AREA — SPEC (implements §38.1's info box).** The slab beat's in-plane textured plane is
+replaced by a `§MEASURE_BOX` posting, and its number becomes the plate's **mesh footprint area**, sourced in
+§38.1's own order of honesty: (1) the slab's own mesh triangles projected to XY, summing only UP-FACING
+triangles (world normal `ny > 0`) — summing all of them double-counts a closed solid's top and bottom;
+(2) failing that, the storey's `storey_walkable_raster` area as a stated LOWER bound; (3) failing that, the
+bbox product, and only ever written `(est., bbox)`. `§SLAB_BEAT_AREA src=mesh|raster|bbox up=… down=…
+tris=… m2=… bboxM2=… ratio=…` prints all of it so the source is never guessed. The X diagonals go with the
+bbox statement (§38.1: with a true area there is nothing for them to discharge) — the plate keeps its tint
+and gains an OUTLINE. `witness_slab_beat.js` gains: the posted area equals the mesh footprint within 1 %;
+the panel is on screen at the pop; the source is named.
+
+**40.3 THE FLY-OUT BEATS — SPEC (implements §38.2), PoC BEFORE the module.** Window 69–148 s (Hospital),
+`plan.poseAt` sampled at 0.25 s exactly as the indoor beats do; §14 slotting across every other layer;
+one subject per 2.7 s slot, longest-legible-first, legibility HELD over (t, t+1.1, t+2.1).
+- **Wing spans** — the wings are the rectangular components of the largest plate's footprint. The PoC
+  (`scripts/poc_flyout_beats.js`, selection only, NO GPU) finds them by run-length decomposition of the
+  storey raster the walkable table already holds, reports each component's extent, and states which ones
+  clear the legibility bar in the window. Nothing is cued until the PoC's numbers are in this file.
+- **Roof edge to window sill** — roof slab top edge down to the nearest `IfcWindow` bbox bottom on the
+  facade in view, both straight from the DB, one per facade.
+- Witness `viewer/tests/witness_flyout_beats.js`: wing lengths equal the component extents; the sill height
+  equals the placed window's bbox bottom; no slot overlaps any other layer's window; every cue composites
+  inside its own envelope.
