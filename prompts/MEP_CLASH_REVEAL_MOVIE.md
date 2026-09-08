@@ -3267,3 +3267,57 @@ Read the log after every run.
 `out/` bake evidence cited by §PENDING.2–.4 and §PENDING.5 — **left in place deliberately**, not overlooked.
 `git push` to bim-ootb needed `git config lfs.<url>/info/lfs.locksverify false` after one
 `lfs.github.com … i/o timeout`; that is the known intermittent LFS pre-push behaviour, not a quota block.
+
+### 42. ⛔→✅ THE FLICKER IS FOUND: `§FLYTHRU_DATUM_LIFE2`, and the cause is `depthWrite` (2026-09-08)
+> **USER:** *"It also appeared during closing seconds of a baked movie thus that should give a good clue."*
+> · *"The flickers come about again at 2.28 min/sec"* · *"was never happening before, thus it must have been
+> an impact during 2D or measure steps"* · *"chase it till zero"*
+**The user was right on all three counts and the measurement now says so exactly.** §40.0's verdict — "whole-frame
+render dips, ~0.7 % of frames, cause unknown" — was measuring the WRONG QUANTITY: a single-frame *dip* (darker
+than both neighbours) is dominated by the buildup, which legitimately changes the picture. The quantity that
+isolates the defect is the frame-to-frame **jump** `|ΔY| > 15` measured **per film window**.
+
+**42.1 THE MEASUREMENT (`scripts/probe_film_flicker.py`, four films, no GPU, no re-bake).**
+| film | has `LIFE2` datum? | reveal-round jumps `|ΔY|>15` | max `|ΔY|` |
+|---|---|---|---|
+| `Hospital_FULL_720p_2026-09-07` (pre-Measure) | **no** | **0** / 539 f | 10.2 |
+| `Hospital_FULL_measure_2026-09-08` (the film the user watched) | **YES** | **42** / 862 f | **59.6** |
+| `Terminal_FULL_allsystems_2026-09-08` | no | **0** / 232 f | 10.8 |
+| `HHS_FULL_allsystems_2026-09-08` | no | 2 / 574 f | 24.9 |
+**And within the Measure film the boundaries are the datum's OWN logged seconds, to the frame:**
+| window | jumps | rate |
+|---|---|---|
+| cruise 90.00–146.80 s | **1** | 0.018/s |
+| reveal round opens, before LIFE2 146.80–148.70 s | **0** | — |
+| **`§FLYTHRU_DATUM_LIFE2` DRAWN 148.70–169.10 s** | **42** | **2.06/s** |
+| after LIFE2, SAME reveal round 169.10–183.00 s | **0** | — |
+| storey reveal + orbit 183.00–195.79 s | **0** | — |
+Zero on both sides, 42 in the middle. **2:28 = 148.7 s = the datum's second life switching on.** One frame
+(155.27 s) swings **35.5 % of the picture** from RGB 29/32/28 to 185/189/197 — building to sky — in a clean
+diagonal band, and back again.
+
+**42.2 THE CAUSE, in one line of code.** `cpe_flythru_datum.js:245` built the ribbons as
+`MeshBasicMaterial({ color, transparent: true, opacity: 0.5, side: DoubleSide })` — and **THREE's
+`depthWrite` defaults to `true`**. A transparent double-sided ribbon that WRITES depth occludes whatever is
+drawn after it in the transparent queue; that queue is re-sorted by camera distance every frame, so the
+occlusion flips frame to frame. At second zero (LIFE1) the building is 3 meshes and there is almost nothing
+to fight, which is why the opening never showed it. At 148.70 s the building is COMPLETE — this is exactly
+the depth risk **§39.2 wrote down and asked to be measured before it shipped**, arriving as predicted.
+**FIX: `depthWrite: false` on both ribbon materials.** `depthTest` stays **TRUE** — §17.5's "the rising build
+occludes the grid" reading is the whole point of the opening, and only the WRITE was ever wrong. §39.2's
+open question (should LIFE2 also drop `depthTest`?) is NOT answered here and stays open on its own evidence.
+
+**42.3 THE INSTRUMENT, so this cannot come back silently.** `scripts/probe_film_flicker.py FILM.mp4` reads a
+baked mp4's own pixels and prints `§FILM_FLICKER_WIN` per beat window + a `§FILM_FLICKER_VERDICT`. It says
+INCONCLUSIVE for a window under 24 frames and **excludes the buildup window from the verdict** — elements
+really do appear there, and all four films jump 37–151 times in it with no defect. Baseline recorded
+(`out/film_flicker_baseline.log`), non-buildup jumps: **pre-Measure 1 · Measure 43 · Terminal 3 · HHS 27**.
+⚠ **HHS's 27 (max |ΔY| 109.7) is NOT explained and is not LIFE2** — HHS has no datum. Open, named, not hidden.
+
+**42.4 WHAT IS AND IS NOT PROVEN.** The LOCATION is proven (42/42 inside LIFE2, 0 outside, replicated against
+three datum-free films). The CAUSE is a code fact — a transparent material writing depth — matching the
+measured signature (large-area, bidirectional, order-dependent). **The FIX is not yet proven: that needs one
+bake.** Do not claim it works until `probe_film_flicker.py` on a fresh Hospital bake shows the reveal round
+at 0. **Also retracted here:** §40.0's reading that the 9 s plate flicker and this are one phenomenon — the
+dive's churn is the buildup and is present in every film including the pre-Measure one; §40.0's refutation of
+§38.1's z-fight/`setColorAt`/status suspects still stands, and no polygonOffset or colour change was made.
