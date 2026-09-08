@@ -3390,3 +3390,48 @@ re-writes `instanceColor` EVERY frame of its 2.2 s envelope (`cpe_slab_beat.js`)
 suspect; set it once at fade-in and once at fade-out and re-bake the same 30 s clip; (b) log which
 sibling slots share the touched buffer (`§SLAB_BEAT_TINT sharedSlots=`) so the blast radius is a number,
 not a theory; (c) LIFE2's 42 jumps are still unexplained and cannot be tested by a 0–30 s clip.
+
+### 46. ✅ THE FLICKER'S ROOT CAUSE — the DATUM'S GEOMETRY IS IN THE SSAO DEPTH PREPASS (2026-09-09)
+**Full 1080p all-systems bake (user's go): `Hospital_FULL_1080p_notint_2026-09-08.mp4`, 4,699 f, 242 MB,
+1920×1080, 5,979 s wall, 0 unconverged.** Both earlier fixes changed NOTHING:
+| window | pre-Measure | tint + depthWrite bug | **no tint + depthWrite fixed** |
+|---|---|---|---|
+| LIFE1 0–11.34 s | 1 | 18 | **19** |
+| LIFE2 148.70–169.10 s | — | 42 (max 59.6) | **42 (max 59.6)** |
+LIFE2 is **bit-for-bit the same count, the same max, the same seconds — at a DIFFERENT RESOLUTION.**
+Deterministic and resolution-independent, so it is not the tint, not the depth write, not sampling noise.
+The camera is smooth throughout (0.10 m/frame, identical to the 0-jump window after it).
+
+**46.1 THE A/B THAT SETTLED IT (`out/L2_nomeasure_2026-09-09.mp4`, clip 0.75–0.87 = 146.8–170.3 s,
+everything on EXCEPT `--no-measure`, 564 f):** `§FILM_FLICKER_VERDICT PASS jumps>15=0 max|dY|=9.2`,
+against **42 / 59.6** with Measure on. Log confirms Measure was truly off (0 datum lines). **Measure is
+the cause, and in that window the ONLY Measure layer alive is `§FLYTHRU_DATUM_LIFE2`.**
+
+**46.2 WHAT IT IS DOING — measured frame-by-frame against the Measure-off twin at the SAME film second:**
+```
+MEASURE OFF lumas 155.0-155.5s: 56 56 56 56 56 56 56 56 56 56 56 56 56 56   ← perfectly flat
+MEASURE ON  lumas 155.0-155.5s: 39 59 55 73 44 53 65 104 57 82 56 57 58 58  ← swings BOTH ways
+```
+Averaged over the frames, Measure-on is darker on **1.3 %** of pixels and brighter on **10.3 %** — i.e. it
+adds no persistent object; it makes individual frames come out WRONG IN BOTH DIRECTIONS around the correct
+value. That is a GLOBAL per-frame render error, not geometry.
+
+**46.3 ROOT CAUSE, in code.** `viewer/effects.js:49` — `new SSAOPass(scene, camera, …)`. **three.js's
+SSAOPass renders its own depth + normal prepass with an OVERRIDE MATERIAL, which ignores each object's
+`depthWrite`.** The datum's ribbons are large, `DoubleSide`, and cover the ground plane and an upright
+plane; the AO prepass therefore writes them in as SOLID surfaces and computes occlusion against a screen
+covering false geometry, which lands as a whole-frame brightness error that oscillates as the 12-frame AO
+budget folds. **This is exactly why §45's `depthWrite:false` could not help — the override material never
+reads it** (and it is why dropping the tint did nothing either: the tint was never the LIFE2 mechanism).
+**THE FIX IS EXCLUSION, NOT A MATERIAL FLAG:** the datum group must not be visible to the SSAO prepass —
+a dedicated layer the AO camera does not render, or hiding `_grp` for the duration of that pass. SSAOPass
+has no per-object opt-out, so this needs a small, deliberate change at the pass, not a one-flag edit.
+**Not implemented — specified. Do not claim it fixed until `probe_film_flicker.py` on a fresh bake shows
+the LIFE2 window at 0.** The same mechanism predicts LIFE1's 19 (the datum draws there too); §44's reading
+that LIFE1 is the plate beat is **superseded** — the jumps cluster at 8.88–11.00 s because that is where
+the camera is closest to the datum's ground ribbons, not because of the tint (which no longer exists and
+did not change the count: 18 → 19).
+**Standing correction:** §42 said "the flicker is FOUND" and named `depthWrite`; §44 retracted that and
+named the plate beat; **both were wrong on mechanism.** The measurements in each still stand — it is the
+causal reading that kept outrunning them. The A/B in §46.1 is the first test that isolated a single
+variable, and it should have been the FIRST thing run after §42's correlation, not the fifth.
