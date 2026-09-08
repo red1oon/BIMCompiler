@@ -3210,3 +3210,60 @@ the old **7,585 m² bbox product**, which was 2.26× too big: that is the §38.1
 **Still open, and NOT done here:** (a) the §40.0 luma-dip instrumentation (`§MAXQ_FRAME_LUMA` in
 `_captureFrame`) — the shipped log still cannot tell a dipped frame from a good one; (b) any bake. Bakes
 remain user-gated.
+
+### 41. 🏁 RESUME HERE — session close 2026-09-08 (Opus, the §38 session). Read §38 → §40 in order, then this.
+**STATE.** bim-ootb branch **`feat/measure-boxes`** @ **`c345979f`** (2 commits off `origin/main` `f1ac7ce1`,
+i.e. PRs #1697+#1699 already in), **pushed, NO PR yet**, `sw.js` **v1169**. Spec branch `fable/meshdb-livewire`,
+pushed. Worktree **`/tmp/wt-storey-reveal`** holds every log cited below under `out/` — do NOT prune it.
+14 files, +1,647/−81. **Nothing is merged to main. No bake was run this session.**
+
+**WHAT SHIPPED (all of §38, in §40's order, each claim one §-witness):**
+| § | file(s) | witness | result |
+|---|---|---|---|
+| 40.1 three fixed boxes | **new** `viewer/cpe_film_boxes.js`; `cinema_maxq.js`, `cpe_flythru_cues.js` rerouted; registered in `main.js`/`viewer.html`/`sw.js` | **new** `viewer/tests/witness_film_boxes.js` | **12/12** ×4 configs (`out/witness_film_boxes.log`) |
+| 40.2 plate = surface area | `viewer/cpe_slab_beat.js` | `witness_slab_beat.js` (rewritten asserts) | **18/18** nostream + **18/18 streamed** (`out/wsb_boxes_nostream.log`, `out/wsb_boxes_streamed2.log`) |
+| 40.3 fly-out beats | **new** `viewer/cpe_flyout_beats.js`, **new** `scripts/poc_flyout_beats.js` | **new** `viewer/tests/witness_flyout_beats.js` | **12/12** Hospital, **VACUOUS** HHS (`out/witness_flyout_beats*.log`, `out/poc_flyout_beats.log`) |
+| 40.0 the flicker | **new** `scripts/probe_plate_flicker.py` (+ one ffmpeg `signalstats` pass) | — (a measurement, not a witness) | `out/plate_flicker.log`, `out/yavg.txt` |
+
+**THE ONE HEADLINE, because it changes what the next session should do:** the 9 s flicker is **not** the
+plate. It is **34 whole-frame single-frame luma dips across the film, 15 of them inside 8.96–17.75 s**
+(§40.0). §38.1's z-fight and per-frame-`setColorAt` suspects and §38.1a's status-churn suspect are all
+refuted by measurement — the same collapse happens OUTSIDE the plate polygon, in lockstep. Nothing was
+changed on that basis; the three boxes were built because §38.1b asked for them in their own right.
+
+**⛔ NEXT SESSION, FIRST TASK — `§MAXQ_FRAME_LUMA`, and it is small.** Frames **231 (good)** and
+**232 (45.6 luma down)** of the shipped Hospital film carry the **identical** `§SHADOW_FRONTIER_AT_CAPTURE
+frontierGuids=3 …` line and nothing else, and `§MAXQ_QUALITY frames=4699 unconverged=0` calls the whole bake
+clean. **The shipped log cannot tell a dipped frame from a good one** — a §4 "cannot report its own failure"
+defect. Add to `cinema_maxq.js` `_captureFrame`, after the 2D pass and before `toBlob`: read the composited
+canvas's own mean luma and print `§MAXQ_FRAME_LUMA i= Y= dY= foldMs= taa= ao=` (and a `§MAXQ_LUMA_DIP` line
+when a frame is >8 luma below its predecessor). Only THEN root-cause the dip — the two live suspects are
+`_captureFrame`'s own explicit `A._composer.render()` versus the accumulated still fold, and a shadow/env
+update landing inside the capture task. **Do not guess between them without that instrumentation.**
+
+**THEN, in order:** (a) open the PR for `feat/measure-boxes`; (b) a 12 s Hospital bake to SEE the three boxes
+and the plate's area panel in real bytes — the boxes have never been in a film; (c) the full 720p re-bake
+§38 was written against. **All bakes are user-gated.**
+
+**DO NOT REDO / DO NOT RE-LITIGATE:**
+- The flicker hypotheses in §38.1 and §38.1a — measured and refuted (§40.0). No `polygonOffset`, no colour change.
+- `plan.beats` has **no `round2`** — that name exists only in the `§CINEMA_BEATS` LOG. The object is
+  `{dive,spin,out,pullout,flyback,reveal,rise}` (`viewer/effects.js:9055`). The fly-out window is `out → reveal`.
+- A dimension cue needs **BOTH** endpoints in frame. One-endpoint legibility scored a 72 m wing at 2,200 px
+  on a 1,280 px frame.
+- Hospital's floor plate is a **BatchedMesh slot**, not an InstancedMesh instance; per-slot triangles come from
+  `getGeometryIdAt` → `getGeometryRangeAt` (§40.5). Without the range a walk sums the whole building.
+- `A.roomTitleCompositeOntoCanvas` is deliberately UNCHANGED and still serves the live editor preview and six
+  witnesses; only the BAKE stopped calling it. Do not "clean it up".
+
+**COMMANDS.** `node viewer/tests/witness_film_boxes.js [--w --h --pos]` (no browser, ~1 s) ·
+`node viewer/tests/witness_flyout_beats.js --db Hospital_silent_local --dur 195.79 --nostream --port 8577` ·
+`node viewer/tests/witness_slab_beat.js --db Hospital_silent_local --dur 195.79 [--nostream] --port 8579`
+(streamed ≈ 10 min under swiftshader and is the ONLY run that proves `src=mesh`) ·
+`node scripts/poc_flyout_beats.js` · `python3 scripts/probe_plate_flicker.py <poses.json> <framesDir> <f0> <f1>`.
+Read the log after every run.
+
+**HOUSEKEEPING.** `/tmp/wt-clash-pending` and `/tmp/wt-hud-stats` are both `ahead=0` but carry untracked
+`out/` bake evidence cited by §PENDING.2–.4 and §PENDING.5 — **left in place deliberately**, not overlooked.
+`git push` to bim-ootb needed `git config lfs.<url>/info/lfs.locksverify false` after one
+`lfs.github.com … i/o timeout`; that is the known intermittent LFS pre-push behaviour, not a quota block.
