@@ -22,8 +22,7 @@ indoor beats — hall bounded at doors, stair going, door type, clear height (`w
 anchor fix (Hospital storey rules were 9.2 m low)** · W6 storey cards carry walkable m² + the datum's second life over the finished
 building (`witness_storey_walkable_card.js` 6/6 ×2, `--life2` 8/8 ×2).
 
-**⛔ NEXT:** (1) merge `feat/measure-indoor` (open PR, auto-merge). (2) W7 bakes, user's go only: Hospital 12 s (§26.14 L6 plate,
-W1–W6), Hospital full (life 2 at 148.6 s, cards), HHS 12 s with `--buildup --reveal --label`. (3) User rulings pending: Hospital
+**⛔ NEXT — read `prompts/MEP_CLASH_REVEAL_MOVIE.md` §38 FIRST (user's two observations on the full film: plate-tint flicker + missing area info box at 9 s; the fly-out canvas unmeasured — wing spans, roof-edge-to-sill).** Then: (1) PR #1699 MERGED (W5+W6 live, sw v1168) — nothing to merge. (2) W7 remaining bakes, user's go only: Hospital full 720p ✅ done (§37.5, film in Downloads); HHS full with `--buildup --reveal --label`; Hospital 1080p. (3) User rulings pending: Hospital
 opening datum now ends at 10.75 s (roof line) — keep or add "one storey below the roof"; HHS path skims the floor at 0.04 m and
 has a 7 s dive (path injection, §27g). (4) The 90–148 s pull-back is Measure-silent on Hospital, stated in §37.4.
 

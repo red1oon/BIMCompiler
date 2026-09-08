@@ -2895,3 +2895,46 @@ Branch `feat/measure-indoor` @ `e4d16a24` (W1–W6). What the log says, layer by
 | clash | `trueClash=270 markers=540` in the same frames |
 | buildup clock | `placed=3142 @5.00 s, 9627 @10.00 s` vs the witness's 3149 / 9678 (≤0.5 %) |
 Not pixel-measured (§26.12 still stands); this is the §-log of the shipped compositors. HHS full bake and 1080p await the user's go.
+
+### 38. ⛔ NEXT SESSION FIRST — two things the user saw in the full 720p film (2026-09-08, `Hospital_FULL_measure_720p_2026-09-08.mp4`)
+> **USER:** *"It is good, works well mostly. Still slight flicker in that 9th onwards sec mark when the whole floor slab gets tinted
+> but no info box giving its surface area (it is 2+3 wing shape thus no other dims looks feasible). Also during the fly out the wing
+> spans should have been marked, even the edge of roof to window sill etc as the canvas was clean for that."*
+
+**38.1 The plate beat at 9.38 s: the tint flickers, and the label was not seen.**
+What the log says (`out/Hospital_FULL_measure_2026-09-08.log`): `§SLAB_BEAT_PICK Level 6 @9.38`, `§SLAB_BEAT_TINT meshesTouched=1
+(instance colour)`, `§SLAB_BEAT_LABEL on 9.42 ndc=(0.37,0.06)`, `off 14.84 (crossing left the frame)`, envelope done 11.59. So the
+label WAS composited — as a textured plane lying IN the plate's plane (§26.2/§25.1) — and the user did not perceive it: from a
+camera 63 m off and only just above the roof line it is a foreshortened sliver. Two defects, two hypotheses to MEASURE, not guess:
+- **Flicker.** (a) the X diagonals are `LineSegments` 0.03 m above the top face of a 98 m plate, depth-tested — classic z-fight
+  at that depth range (use `polygonOffset` or raise to ≥ 0.15 m and re-measure); (b) the tint is an InstancedMesh colour re-lerped
+  EVERY frame through the envelope (`setColorAt` + `instanceColor.needsUpdate`) — set once at fade-in and once at fade-out instead.
+  Measure first: per-frame pixel variance inside the plate's projected polygon over 9.4–11.6 s in the film (the §26.12 method),
+  before and after each change. The datum's own entry latch fires at 10.75 s inside this window — check it is not the datum's fade
+  being read as flicker (the §-log says the datum went 74→58 marks smoothly, 0 rises).
+- **The info box.** Replace the in-plane textured plane with the SAME 2D panel the indoor hall uses (`A.flythruDrawPanel` at the
+  projected crossing, clamped on-screen) — it is what the user calls an "info box" and it is what they saw work for the hall.
+  **Its number is the plate's SURFACE AREA, not X × Y**: the plate is a 2+3 wing shape, so the bbox rectangle (and therefore the
+  X across it, §26.3's honesty device) is the wrong statement here. Sources, in order of honesty: (1) the slab's own mesh, projected
+  to XY — triangle areas summed (the mesh is in the scene during a bake; `A.collectMeshes` by guid / instance id); (2) the storey's
+  `storey_walkable_raster` area as a stated LOWER bound; (3) the bbox product only with "(est., bbox)" — never bare. The X diagonals
+  go with the bbox: with a true area there is nothing for them to discharge; draw the plate's OUTLINE instead if an edge is wanted.
+  Witness: `witness_slab_beat.js` gains "label area = mesh footprint area within 1 %", "panel on-screen at the pop", and the
+  flicker metric above as a numeric threshold (state it after measuring the clean film's own variance).
+
+**38.2 The fly-out is a clean canvas and nothing was measured on it.** §37.4 measured the camera INSIDE the building box for the
+pull-out/pull-back (69–148.6 s) and so drew nothing; the user saw the WINGS from there — above the roofs, looking down the blocks. The
+box test (column-grid plan below the top storey) was right for the 2D setting-out sheet and wrong as a gate for exterior dimensioning.
+New beat family, §14-slotted into 69–148 s: **wing spans and facade heights.**
+- **Wings**: the plate's plan is 2+3 wings; find them as the connected/rectangular components of the largest plate's footprint
+  (the slab mesh projected to XY, or the storey raster's row/column runs) — each wing = a rectangle with a real length and width.
+  Cue each wing ONCE with an arrowed length along its own axis (§7's standard cue), one wing per slot, longest-legible-first, the
+  same held-legibility rule as §29.8 (t, t+1.1, t+2.1 in frame).
+- **Roof edge to window sill**: a vertical dimension on the facade in view — from the roof slab's top edge down to the nearest
+  `IfcWindow` sill (bbox bottom) on that facade, both from the DB; one per facade, guarded against the datum's storey figures.
+- Placement uses `plan.poseAt` over 69–148 s at 0.25 s like the indoor beats; a subject is cued where it is largest AND held.
+- Witness: `witness_flyout_beats.js` — wing lengths equal the component extents, the sill height equals the placed window's
+  bbox bottom, no slot overlaps any other layer, each cue composites inside its envelope. PoC first (selection, no GPU), then the
+  module, then one 720p bake on the user's go.
+
+**Order:** 38.1 (flicker measured → fixed; area panel), then 38.2. Both ride Measure. Bakes stay user-gated.
