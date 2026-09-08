@@ -2938,3 +2938,14 @@ New beat family, §14-slotted into 69–148 s: **wing spans and facade heights.*
   module, then one 720p bake on the user's go.
 
 **Order:** 38.1 (flicker measured → fixed; area panel), then 38.2. Both ride Measure. Bakes stay user-gated.
+
+**38.1a USER'S DIAGNOSIS (2026-09-08, after §38.1 was written): *"I think it is because it is messed up by the status that flickers
+around. Thus it should be its own info panel."*** Ruling: the Measure figures get a DEDICATED info panel — one fixed screen region
+owned by Measure alone — not the shared status/caption area that the per-frame HUD (`§CPE_BIG_STATS` card rotation, clash pair
+cards, room title, day counter) redraws and repositions every frame. The plate's area, the hall's walkable, the stair going, the door
+type, the clear height, the wing spans all post to that one panel while their beat is live; the in-model marks (tint, X/outline,
+arrows) stay where they are. Witness: the panel's rectangle is constant for a whole beat (assert its x/y/w/h across the beat's
+frames), it never overlaps the clash-card or big-stats rectangles (`§CLASH_LABELS panels=` and the stats panel already log theirs),
+and it is empty (not drawn) when no Measure beat is live. Measure the flicker again AFTER this move — the user's reading is that the
+churn comes from the neighbouring status, not from the tint itself; the z-fight and per-frame colour suspects in §38.1 are then the
+fallback, not the first cut.
