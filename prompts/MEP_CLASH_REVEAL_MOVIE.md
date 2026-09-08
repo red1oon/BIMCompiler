@@ -2949,3 +2949,15 @@ frames), it never overlaps the clash-card or big-stats rectangles (`§CLASH_LABE
 and it is empty (not drawn) when no Measure beat is live. Measure the flicker again AFTER this move — the user's reading is that the
 churn comes from the neighbouring status, not from the tint itself; the z-fight and per-frame colour suspects in §38.1 are then the
 fallback, not the first cut.
+
+**38.1b USER (same minute): *"Status should also be deprecated and appear as below the HUD in its own box like that organises
+Storey / Room / BuildUp action etc."*** Ruling on the film's screen furniture, three fixed boxes, none of them roaming:
+1. **HUD** — the existing big-stats / clash-card panel, where it is.
+2. **Status box, directly BELOW the HUD** — replaces today's free-floating status/caption text (room title, storey caption, buildup
+   day/action, disc-parade caption). One box, fixed rectangle, rows in a fixed order: `Storey · Room · Build-up action · …`; a row
+   is blank, never removed, when it has nothing to say, so the box never changes size or position.
+3. **Measure info panel** (§38.1a) — its own box, elsewhere on screen, fixed rectangle, Measure figures only.
+Nothing else writes text to the frame outside those three boxes except the in-model marks. Witness: the three rectangles are
+constant across the whole film (assert per frame from their own `§`-lines), pairwise non-overlapping, and every 2D text draw in
+`_captureFrame` is attributable to one of them (`§HUD_BOX`, `§STATUS_BOX`, `§MEASURE_BOX` lines carry x/y/w/h). This precedes
+38.1's flicker measurement: move the furniture first, then measure the plate again.
