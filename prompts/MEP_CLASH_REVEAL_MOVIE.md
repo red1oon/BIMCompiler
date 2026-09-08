@@ -2735,7 +2735,7 @@ GPU bakes stay user-gated; everything below is proven on the page harness and th
 | W3 ✅ | **Ribbon width / gate order.** §35 derives the ribbon width from the camera at BUILD; the §33 gate builds the datum at the saved view and THEN presses Home, so HHS's ribbons (0.19 m at 48 m) render 1.2 px from the 94 m opening. Fix = gate disposes + rebuilds the datum after Home; log `widthM` after. | `cli_silent_bake.js` | `--opening-only` log |
 | W4 ✅ | **§27 §LINEAR_BEAT** on the owner clock (column + beam during the dive, slots clear of the plate's 9.34–11.54 s), §27.3c datum-restatement guard, §27.3i projected-length floor via `plan.poseAt`. | new `cpe_linear_beat.js` | new `witness_linear_beat.js` |
 | W5 ✅ | **§29 §INDOOR_BEATS**: hall walkable m² bounded at door thresholds (§29.2a), stair going, door type, clear height cast. | new `cpe_indoor_beats.js` | new `witness_indoor_beats.js` |
-| W6 | **Measure to the end.** After the indoor run nothing measures until the film ends (HHS: last cue window closes 15.7 s of 130 s). Extend: per-storey walkable m² on the §STOREY_HIGHLIGHT_REVEAL cards, and the datum re-established over the FINISHED building on the pull-back (the setting-out drawing vs the built form — §25.5.3 is satisfied there because the model is complete). Spec first, then build. | `cpe_storey_reveal.js`, `cpe_flythru_datum.js` | extend existing |
+| W6 ✅ | **Measure to the end.** After the indoor run nothing measures until the film ends (HHS: last cue window closes 15.7 s of 130 s). Extend: per-storey walkable m² on the §STOREY_HIGHLIGHT_REVEAL cards, and the datum re-established over the FINISHED building on the pull-back (the setting-out drawing vs the built form — §25.5.3 is satisfied there because the model is complete). Spec first, then build. | `cpe_storey_reveal.js`, `cpe_flythru_datum.js` | extend existing |
 | W7 | Bakes, user's go: Hospital 12 s (§26.14 + W1–W3), HHS 12 s, A/B `--no-measure` diff. | — | logs |
 
 **W2 ✅ RESOLVED BY MEASUREMENT, no code (`scripts/probe_envelope_cluster.js`, `out/envelope_cluster_probe.log`).**
@@ -2841,3 +2841,41 @@ anchored the local elevations (0–34 m) to the LOWEST element (a footing at 156
 165.81 m (9/9 storeys, spread 0.08 m). Now anchored to the slabs. The Z chain (relative) was right all along; the
 absolute placement of L1…L7 on the upright was not. HHS was already in the element datum. This is in the merged build
 (PR #1697) and ships with W5's PR.
+
+### 37. §MEASURE_TO_THE_END — W6 spec (2026-09-08). What measures after the indoor run, and what deliberately does not.
+**Measured film structure, Hospital 195.8 s** (`§CINEMA_BEATS dive=0.094 out=0.353 pullout=0.361 flyback=0.462 round2=0.750
+rise=0.959`, `§STOREY_REVEAL_WINDOW 0.9334–0.959`): datum + 2D cues + plate/beam 0–20 s · indoor beats 18–69 s (hall persists
+to 32 s) · **pull-out/flyback 69–90 s: nothing** · cruise + discipline reveal 90–183 s: clash pair cards 157–183 s, no Measure ·
+storey reveal 183–188 s: cards say doors/footprint · orbit 188–196 s. HHS (130.4 s): `out=pullout=flyback=round2=0.688`, so it has
+NO pull-out stretch; its storey reveal runs 0.74–0.767.
+**37.1 Storey cards carry the walkable area.** `A.storeyRevealStatsFor` adds `walk` = `storey_walkable_raster` area for the storey
+(the same table §29.2 uses — mesh-derived, absent from the IFC); the card's first sub-clause becomes `walkable N m²`, the footprint
+estimate follows. `§STOREY_REVEAL_STATS … walkable=N m²`. Witness: for every raster storey the card's figure equals the raster's own
+`ftRasterArea`; a storey without a raster says so and omits the clause (never 0).
+**37.2 The datum's second life — the setting-out sheet over the FINISHED building.** Window `[out, flyback]` in film seconds
+(Hospital 69.1–90.5 s), only while the camera is OUTSIDE the structural envelope (§20.8, the same test as the entry latch, inverted).
+Ramps in over 1 s, holds, fades over the last 2 s of the window. Sides/upright/plane are decided ONCE for THIS life at its first frame
+(the camera is elsewhere now); the drop ledger and stability rules apply unchanged. §25.5.3 is satisfied here by construction — the
+model is complete, so every figure states a finished thing. A zero-length window (HHS) prints `§FLYTHRU_DATUM_LIFE2 VACUOUS`.
+**37.3 Deliberately NOT measured:** the discipline-reveal round (its subject is the MEP colour parade), the closing orbit (the
+envelope figures were said at second 0 — again is inventory, §1), and the 90–147 s cruise (nothing is in frame long enough; a
+future slot allocator may use it). After W6 the Measure-silent stretch on Hospital is 90–183 s, stated.
+
+**37.4 ✅ W6 BUILT + WITNESSED (2026-09-08; branch `feat/measure-indoor` = squashed main + W5 + W6; sw v1168).**
+- **Storey cards** (`witness_storey_walkable_card.js` 6/6 ×2): Hospital `doors · Level 1 | walkable 6,481 m² · 98.6×90.3 m footprint
+  (estimate) · 4 rooms compiled`, L2 6,224, L3 6,097, L4 3,566; HHS L3 2,188; `Roof Level` omits the clause (no raster). Every
+  figure equals the raster's own `ftRasterArea`.
+- **The datum's second life** (`witness_datum_stability.js --life2` 8/8 ×2). MEASURED FIRST, and it moved the design: Hospital's
+  camera is inside the building's plan (below the roof) for the entire pull-out and pull-back, 69 → 148.6 s; the first exterior
+  frame is **148.6 s**, at the start of the reveal round. §37.2's "out→flyback" window holds no exterior frame at all. The life is
+  therefore defined by measurement: it starts at the first exterior frame after flyback, holds as long as the opening did, fades 2 s,
+  stops before the storey-reveal window. **Hospital 148.59–168.99 s** (over the reveal round — §37.3's exclusion is withdrawn by the
+  measurement; the sheet is quiet drafting furniture around a colour parade), **HHS 89.72–100.07 s**. During the orbit marks come back
+  in front of the camera: all 29 (Hospital) / 14 (HHS) rises are paid by the behind-camera ledger, one side decision per life.
+- **⚠ ONE building box for both lives, and a behaviour change to rule on.** "Inside the building" is now the COLUMN GRID's plan
+  below the top storey rule for the entry latch AND the second life (the structural box reaches 30 m past the grid on Hospital).
+  Consequence: the opening datum on Hospital ends at **10.75 s** (camera reaches the roof line inside the plan) instead of the
+  20.4 s hold the accepted 12 s film showed. HHS unchanged (6.58 s). If the user prefers the sheet to stay through the dive on
+  Hospital, the entry test can add "below the top storey by one storey" — one line, witnessed by the same file.
+**Measure-silent stretches after W6 (Hospital):** 12–18 s (dive after the datum ends; beam 6.5–9.2, plate 9.3–12.0 before it),
+32–68 s except the indoor beats' 2.7 s slots, 90–148 s (pull-back), 169–183 s. Stated, not hidden.

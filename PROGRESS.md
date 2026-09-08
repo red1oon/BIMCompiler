@@ -10,31 +10,24 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## Current State — 2026-09-08 (session 2, close) — ⚠ RESUME HERE: §28 ✅ bakes done, §26 §SLAB_BEAT ✅ built+witnessed+baked, §27 next
-**Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` §26–§30. Branch `feat/flythru-cues` (bim-ootb) @ HEAD pushed,
-zero local-only; `sw.js` **v1163**. No PR yet for this branch (11+ commits ahead of main).
+## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
+**Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.
+bim-ootb: `main` carries PR #1697 (Measure checkbox + datum + slab/linear beats + opening gate, sw v1166, LIVE);
+branch `feat/measure-indoor` (= squashed main + W5 + W6, sw v1168) pushed, PR to open/merge next. Spec branch `fable/meshdb-livewire`.
 
-**DONE this session (all §-witnessed, logs in `/tmp/wt-storey-reveal/out/`, films in `~/Downloads/*_2026-09-08.mp4`):**
-- **§28** 3 s Clash+Measure bakes, both buildings: datum built from a real bake, chains add up, IDENTICAL, 0
-  failures, clash in the same frames. Hospital drawn=74 = snapper (same camera). HHS differed because its bake
-  opened from a saved close view — fixed by §30. CLI gained `--measure/--no-measure` (§28.1).
-- **§26 §SLAB_BEAT** (+§26.14 burial: Hospital's beat is now Level 6 @ 9.34 s) `viewer/cpe_slab_beat.js` + `viewer/tests/witness_slab_beat.js` (16/16 streamed Hospital,
-  16/16 HHS). The pop second comes from the bake's own clock (owners `buildupTAt`+`buildupCursorAt`, bisected):
-  Hospital Level 1 pops at **1.07 s** (PoC's linear map said 10.31 s); verified against the 12 s bake's placed
-  counts within 7 elements. Stacked-layer test now needs vertical contact. In the 12 s Hospital bake: tint
-  touched the plate, label on at 1.09 s, envelope released 3.30 s, 0 failures.
-- **§29** envelope 3D box deprecated; 2D dims + panel kept, panel holds +2 s or until the next cue.
-- **§30** `§CLI_BAKE_OPENING`: film opens from the saved view unless the datum is not wholly legible there →
-  Home. Hospital kept (37/37, 3/3); HHS moved (18/20 → 20/20, drawn 37 → 40 = snapper).
-- **§CPE_CLIP_BUILDUP_FILM_T**: a clip's buildup read the clip length as the film total (3rd of that class).
+**DONE this session (each with its §-witness, logs `/tmp/wt-storey-reveal/out/`):** W1 datum decide-once + §20.8 entry latch + drop
+ledger + cue span lock (`witness_datum_stability.js` 8/8 ×2) · W2 envelope = one connected structural component, measured, no
+code · W3 gate rebuilds the datum after Home · W4 §27 linear beat (`witness_linear_beat.js` 12/12 ×2; §14 across layers) · W5 §29
+indoor beats — hall bounded at doors, stair going, door type, clear height (`witness_indoor_beats.js` 11/11 ×2) + **the datum's Z
+anchor fix (Hospital storey rules were 9.2 m low)** · W6 storey cards carry walkable m² + the datum's second life over the finished
+building (`witness_storey_walkable_card.js` 6/6 ×2, `--life2` 8/8 ×2).
 
-**⛔ NEXT — read `prompts/MEP_CLASH_REVEAL_MOVIE.md` §34 first (the handoff).** User's three corrections on the
-12 s film come first: (1) no 3D box for ANY cue (the storey cue still tints); (2) envelope/areas must use the
-§20.9 structural envelope so a hanging stair cannot inflate them; (3) thicker datum grid lines (3D ribbons —
-§17.5 forbids moving them to 2D). Then §27 on the owner clock with the plate slot at 9.34 s (§26.14), then
-§29 §INDOOR_BEATS. Bakes are user-gated: HHS 12 s needs `--buildup --reveal --label`. No PR yet.
+**⛔ NEXT:** (1) merge `feat/measure-indoor` (open PR, auto-merge). (2) W7 bakes, user's go only: Hospital 12 s (§26.14 L6 plate,
+W1–W6), Hospital full (life 2 at 148.6 s, cards), HHS 12 s with `--buildup --reveal --label`. (3) User rulings pending: Hospital
+opening datum now ends at 10.75 s (roof line) — keep or add "one storey below the roof"; HHS path skims the floor at 0.04 m and
+has a 7 s dive (path injection, §27g). (4) The 90–148 s pull-back is Measure-silent on Hospital, stated in §37.4.
 
-**Witness count:** +1 file (`witness_slab_beat.js`, 16 asserts + red control); `witness_flythru_gate.js` 0 FAIL after §29.
+**Witness count:** +5 files this session (slab, linear, indoor, datum stability, storey walkable card); gate witness 0 FAIL.
 
 ## Current State — 2026-09-06 (session 3, final close) — ⚠ RESUME HERE: full bake confirmed, §PENDING.5 open, parallel session active
 
