@@ -2736,7 +2736,7 @@ GPU bakes stay user-gated; everything below is proven on the page harness and th
 | W4 ✅ | **§27 §LINEAR_BEAT** on the owner clock (column + beam during the dive, slots clear of the plate's 9.34–11.54 s), §27.3c datum-restatement guard, §27.3i projected-length floor via `plan.poseAt`. | new `cpe_linear_beat.js` | new `witness_linear_beat.js` |
 | W5 ✅ | **§29 §INDOOR_BEATS**: hall walkable m² bounded at door thresholds (§29.2a), stair going, door type, clear height cast. | new `cpe_indoor_beats.js` | new `witness_indoor_beats.js` |
 | W6 ✅ | **Measure to the end.** After the indoor run nothing measures until the film ends (HHS: last cue window closes 15.7 s of 130 s). Extend: per-storey walkable m² on the §STOREY_HIGHLIGHT_REVEAL cards, and the datum re-established over the FINISHED building on the pull-back (the setting-out drawing vs the built form — §25.5.3 is satisfied there because the model is complete). Spec first, then build. | `cpe_storey_reveal.js`, `cpe_flythru_datum.js` | extend existing |
-| W7 | Bakes, user's go: Hospital 12 s (§26.14 + W1–W3), HHS 12 s, A/B `--no-measure` diff. | — | logs |
+| W7 ◐ | Bakes, user's go (Hospital full 720p ✅ §37.5; HHS + 1080p pending): Hospital 12 s (§26.14 + W1–W3), HHS 12 s, A/B `--no-measure` diff. | — | logs |
 
 **W2 ✅ RESOLVED BY MEASUREMENT, no code (`scripts/probe_envelope_cluster.js`, `out/envelope_cluster_probe.log`).**
 The §20.7 rule was run offline: structural footprint (ENV_CLASSES) rasterised at 0.5 m, connected components.
@@ -2879,3 +2879,19 @@ future slot allocator may use it). After W6 the Measure-silent stretch on Hospit
   Hospital, the entry test can add "below the top storey by one storey" — one line, witnessed by the same file.
 **Measure-silent stretches after W6 (Hospital):** 12–18 s (dive after the datum ends; beam 6.5–9.2, plate 9.3–12.0 before it),
 32–68 s except the indoor beats' 2.7 s slots, 90–148 s (pull-back), 169–183 s. Stated, not hidden.
+
+**37.5 ✅ THE FULL HOSPITAL BAKE — all five boxes on, real GPU, 720p, 2026-09-08 (`out/Hospital_FULL_measure_2026-09-08.log`, film
+`~/Downloads/Hospital_FULL_measure_720p_2026-09-08.mp4`, 4,699 f = 195.79 s, 107.7 MB, wall 5,122 s ≈ 85 min, 0 failures).**
+Branch `feat/measure-indoor` @ `e4d16a24` (W1–W6). What the log says, layer by layer:
+| layer | evidence |
+|---|---|
+| datum, opening | `§CLI_BAKE_OPENING kept=saved-view … 37/37 3/3 drawn=74`; `§FLYTHRU_DATUM_ZDATUM offset=165.81m (anchored to slabs, spread 0.00m)`; life 1 = 274 frames 0–11.34 s, drawn 74→58, **0 rises, one decision**; `§FLYTHRU_DATUM_ENTRY filmSec=10.75` |
+| datum, second life | `§FLYTHRU_DATUM_LIFE2 start=148.70 end=169.10`; 489 frames, drawn 40→74, 31 rises **all paid by the behind-camera ledger (0 unpaid)**, one decision |
+| slab beat | Level 6 @9.38 s, `meshesTouched=1`, label on 9.42 s, envelope done 11.59 s, label off 14.84 s (crossing left the frame) |
+| linear beat | beam `9,605 mm 406x178x60UB` drawn 6.54–9.2 s; column NOFIT (stated) |
+| indoor beats | hall tint 1,020 quads on Level 1 18.38–32.17 s (13.8 s, frame-out); clear height from 21.63 s; stair 30.38 s; door 62.89 s — all composited |
+| 2D cues | `§FLYTHRU_CUE_BOX deprecated` for all; envelope/storey/corridor windows + `lockedAxes` printed; structural envelope 115.75 × 133.94 m |
+| storey cards | `walkable=6481/6224/6097/3566/3418 m²` for L1–L5 in the reveal window |
+| clash | `trueClash=270 markers=540` in the same frames |
+| buildup clock | `placed=3142 @5.00 s, 9627 @10.00 s` vs the witness's 3149 / 9678 (≤0.5 %) |
+Not pixel-measured (§26.12 still stands); this is the §-log of the shipped compositors. HHS full bake and 1080p await the user's go.
