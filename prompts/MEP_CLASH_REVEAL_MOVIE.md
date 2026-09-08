@@ -2730,10 +2730,10 @@ Worked top to bottom to zero (CLAUDE.md WORK-TO-ZERO). Each item flips to ✅ (w
 GPU bakes stay user-gated; everything below is proven on the page harness and the persisted logs first.
 | # | item | owner file(s) | witness |
 |---|---|---|---|
-| W1 | **Opening flicker** (HHS full bake, `§FLYTHRU_DATUM_MARKS` 40→6→22 in 1 s; reviewer's drop-ledger ask). Cause read from the code: the compositor re-decides near sides / upright plane / face EVERY frame (`nearY/nearX/zNearX/_zPlane`, lines 376–398) and `flythruDatumAt` re-picks `camFar`; when the dive crosses a mid-plane the drawing jumps to the other edge. Fix = decide ONCE per datum life (first composite), cache, reset on dispose; add `dropped=[behind:N]`, `dDrawn=`, `sidesChanged=` to the MARKS line; cues lock their drawn span set per cue window (`drawDim` declined per frame → 1→2→1); clash labels log `leave=`. Witness: `witness_datum_stability.js` — drives 0–15 s at 24 fps, asserts `sidesChanged=0`, `dDrawn ≤ 0` after frame 0, per-cue span set constant; HHS and Hospital. | `cpe_flythru_datum.js`, `cpe_flythru_cues.js`, `clash_labels.js` | new |
-| W2 | **Envelope still stretched** after §35: Hospital structural Y = 133.94 m vs column grid 88.2 m / plate 90.3 m. MEASURED: `IfcWallStandardCase` spans y 30.1–164.0 (a foundation wall at cy 69.3, by 78.5), `IfcSlab` 37.5–163.3 — structural classes, far outside the main mass. Class filtering cannot decide this; **§20.7's clustering can**: rasterize the structural footprint, take the LARGEST CONNECTED COMPONENT, its bbox is the envelope, its cells the ground area. Measure offline first (`scripts/probe_envelope_cluster.js`), then adopt in `dbMeasures()`; `§FLYTHRU_ENVELOPE … cluster=WxD dropped=[…]`. | `common/flythru_maths.js`, `cpe_flythru_cues.js` | `witness_flythru_gate.js` + new asserts |
-| W3 | **Ribbon width / gate order.** §35 derives the ribbon width from the camera at BUILD; the §33 gate builds the datum at the saved view and THEN presses Home, so HHS's ribbons (0.19 m at 48 m) render 1.2 px from the 94 m opening. Fix = gate disposes + rebuilds the datum after Home; log `widthM` after. | `cli_silent_bake.js` | `--opening-only` log |
-| W4 | **§27 §LINEAR_BEAT** on the owner clock (column + beam during the dive, slots clear of the plate's 9.34–11.54 s), §27.3c datum-restatement guard, §27.3i projected-length floor via `plan.poseAt`. | new `cpe_linear_beat.js` | new `witness_linear_beat.js` |
+| W1 ✅ | **Opening flicker** (HHS full bake, `§FLYTHRU_DATUM_MARKS` 40→6→22 in 1 s; reviewer's drop-ledger ask). Cause read from the code: the compositor re-decides near sides / upright plane / face EVERY frame (`nearY/nearX/zNearX/_zPlane`, lines 376–398) and `flythruDatumAt` re-picks `camFar`; when the dive crosses a mid-plane the drawing jumps to the other edge. Fix = decide ONCE per datum life (first composite), cache, reset on dispose; add `dropped=[behind:N]`, `dDrawn=`, `sidesChanged=` to the MARKS line; cues lock their drawn span set per cue window (`drawDim` declined per frame → 1→2→1); clash labels log `leave=`. Witness: `witness_datum_stability.js` — drives 0–15 s at 24 fps, asserts `sidesChanged=0`, `dDrawn ≤ 0` after frame 0, per-cue span set constant; HHS and Hospital. | `cpe_flythru_datum.js`, `cpe_flythru_cues.js`, `clash_labels.js` | new |
+| W2 ✅ (no code) | **Envelope still stretched** after §35: Hospital structural Y = 133.94 m vs column grid 88.2 m / plate 90.3 m. MEASURED: `IfcWallStandardCase` spans y 30.1–164.0 (a foundation wall at cy 69.3, by 78.5), `IfcSlab` 37.5–163.3 — structural classes, far outside the main mass. Class filtering cannot decide this; **§20.7's clustering can**: rasterize the structural footprint, take the LARGEST CONNECTED COMPONENT, its bbox is the envelope, its cells the ground area. Measure offline first (`scripts/probe_envelope_cluster.js`), then adopt in `dbMeasures()`; `§FLYTHRU_ENVELOPE … cluster=WxD dropped=[…]`. | `common/flythru_maths.js`, `cpe_flythru_cues.js` | `witness_flythru_gate.js` + new asserts |
+| W3 ✅ | **Ribbon width / gate order.** §35 derives the ribbon width from the camera at BUILD; the §33 gate builds the datum at the saved view and THEN presses Home, so HHS's ribbons (0.19 m at 48 m) render 1.2 px from the 94 m opening. Fix = gate disposes + rebuilds the datum after Home; log `widthM` after. | `cli_silent_bake.js` | `--opening-only` log |
+| W4 ✅ | **§27 §LINEAR_BEAT** on the owner clock (column + beam during the dive, slots clear of the plate's 9.34–11.54 s), §27.3c datum-restatement guard, §27.3i projected-length floor via `plan.poseAt`. | new `cpe_linear_beat.js` | new `witness_linear_beat.js` |
 | W5 | **§29 §INDOOR_BEATS**: hall walkable m² bounded at door thresholds (§29.2a), stair going, door type, clear height cast. | new `cpe_indoor_beats.js` | new `witness_indoor_beats.js` |
 | W6 | **Measure to the end.** After the indoor run nothing measures until the film ends (HHS: last cue window closes 15.7 s of 130 s). Extend: per-storey walkable m² on the §STOREY_HIGHLIGHT_REVEAL cards, and the datum re-established over the FINISHED building on the pull-back (the setting-out drawing vs the built form — §25.5.3 is satisfied there because the model is complete). Spec first, then build. | `cpe_storey_reveal.js`, `cpe_flythru_datum.js` | extend existing |
 | W7 | Bakes, user's go: Hospital 12 s (§26.14 + W1–W3), HHS 12 s, A/B `--no-measure` diff. | — | logs |
@@ -2762,3 +2762,34 @@ cue's first frame and locked for its window (`§FLYTHRU_DIM_DRAW … window= loc
 rebuilds the datum after Home, so §35's ribbon width and the side decisions read the real opening. Measured on the
 witness: rises(dDrawn>0)=0 on both, usedSideDecisions=1, cue drawn sets ⊆ locked sets. `clash_labels.js` already logs
 `release=[…]` per change (the reviewer's grep looked for "leave"); no change there.
+
+**27.5 IMPLEMENTATION DECISIONS (2026-09-08, before code — deviations from the PoC, each measured or ruled):**
+1. **Clock = the owner's** (§26.8): `A.slabBeatClock` (exported `makeClock`), pop = `end_ts`. The PoC's linear map is retired.
+2. **Rank by PROJECTED length at the element's own pop second** (`plan.poseAt`, both ends in front and inside the
+   frame), not by true length — that is §27.3i's floor made the ranking itself, and it is the user's "longest visual
+   potential". The label prints the TRUE length in mm of the placed instance (§27.3b: label regenerated after placement).
+3. **Datum-restatement guard covers BOTH classes**: columns against the storey heights + overall (§27.3c); beams against
+   the datum's BAY figures (the bay chain prints every bay — a 6,480 mm beam restates it). Figures come from the datum's
+   own build (`A.flythruDatumFigures()`), never re-derived from slabs.
+4. **Linear test**: an element is a stick when its long bbox side ≥ 4× the other two; diagonal beams (bbox aspect < 4)
+   are skipped — a bbox axis is not their axis.
+5. **Slots** (§14): 2.5 s each; the plate's slot is READ from `A.slabBeatReport().beat.sec` (§27.3d); a cue must complete
+   inside the dive (`sec + 2.2 ≤ diveSec`); the best candidate across both classes claims first, then the other class.
+6. **Graphic**: 2D only — the cues' own `drawDim` (extension lines, inward arrows, mm value) along the element's axis,
+   with a small plate naming the IFC semantic (§27.3e: dropped when it repeats the cue's number); envelope 0.6/1.0/0.6;
+   the span is decided at allocation and force-drawn for its window (W1's lock rule).
+7. Rides Measure. Composited in `_captureFrame` after the cues; no per-frame 3D work, no raycast.
+
+**27.6 ✅ W4 BUILT + WITNESSED (2026-09-08; `viewer/cpe_linear_beat.js`, `witness_linear_beat.js` Hospital 12/12, HHS 12/12;
+logs `out/wlb_hosp4.log`, `out/wlb_hhs4.log`; sw v1166).** Measured on the owner clock with §14 enforced ACROSS layers
+(the 2D cues publish their windows via `A.flythruCuesWindows`; both beats treat them as taken):
+| | Hospital (195.8 s, dive 18.28 s) | HHS (130.4 s, dive 7.00 s) |
+|---|---|---|
+| taken before the beats | envelope 0–4.2 · storey 2.7–4.9 · corridor 13.05–15.25 | envelope 0–4.2 · storey 2.7–4.9 · room 12.6 · corridor 15.3 |
+| plate (§26) | **L6 @9.34–12.04 s** (L1 @1.06 now rejected: under the envelope cue) | **NOTHING** — L1 pops at 0.00 s under the envelope cue |
+| beam | **9,605 mm `406x178x60UB` @6.51–9.21 s**, 136 px at 52.8 m (best-px beam 9,749 mm @8.87 s collided with the plate) | VACUOUS (no IfcBeam) |
+| column | **NOFIT** — 358 legible in frame, none pops in a free slot | NOFIT — 2 legible (3,406 mm @3.26 s, 33 px) collide with the storey cue |
+| guard | 31 columns + 210 beams rejected as datum restatements | 36 columns |
+§27.2's "7 slots, three used" was the linear clock without the cue layer; the real dive is packed. The allocator tries both
+class orders and keeps the assignment with more picks. **HHS's dive carries datum + 2D cues only** — its short dive and
+its opening plate are path facts (§27g); the beats say so by name rather than squeezing.
