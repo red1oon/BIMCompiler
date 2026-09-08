@@ -3194,7 +3194,19 @@ one subject per 2.7 s slot, longest-legible-first, legibility HELD over (t, t+1.
    (`viewer/effects.js:9055` is the object). Reading `b.round2` fell through to `b.rise` and opened the fly-out
    window to **187.8 s**, putting a wing cue at 168.6 s in the middle of the discipline parade. The window is
    `out → reveal`.
-**Still open, and NOT done here:** (a) the §40.0 luma-dip instrumentation (`§MAXQ_FRAME_LUMA` in `_captureFrame`)
-— the shipped log still cannot tell a dipped frame from a good one; (b) the streamed `witness_slab_beat.js` run
-that would exercise the `src=mesh` footprint path (the `--nostream` run proves the raster fallback only);
-(c) any bake. Bakes remain user-gated.
+**40.5 ✅ THE MESH FOOTPRINT PATH — MEASURED STREAMED, AND IT NEEDED A FIX FIRST (commit `c345979f`).**
+The first streamed run said `§SLAB_BEAT_AREA src=raster … 1 batched slot(s) not addressable`: **Hospital's
+picked plate is a BatchedMesh SLOT, not an InstancedMesh instance**, and the first cut of the footprint walker
+could not address one — so the mesh path never fired on the very building §38.1 was written about, and the
+figure silently fell back to the raster. THREE does expose the per-slot span (`getGeometryIdAt(instanceId)` →
+`getGeometryRangeAt(geometryId)` → `{indexStart,indexCount,vertexStart,vertexCount}`, plus
+`getMatrixAt(instanceId)`); without that range a walk over a BatchedMesh sums the whole shared buffer, i.e.
+the entire building. A THREE build lacking the accessors is still counted and named, never guessed at.
+**MEASURED after the fix (`out/wsb_boxes_streamed2.log`, `witness_slab_beat.js` streamed **18/18**, 0 fail):**
+`§SLAB_BEAT_AREA src=mesh m2=3,361 up=3,361 down=3,361 tris=1216 meshes=1 bboxM2=7,585 fill=0.443`.
+**Up and down agree to the metre** — a closed solid measured from both sides — and the INDEPENDENT walkable
+raster says **3,367 m², 0.2 % away**. The panel now reads *"Floor area 3,361 m² (mesh footprint)"* in place of
+the old **7,585 m² bbox product**, which was 2.26× too big: that is the §38.1 correction, measured.
+**Still open, and NOT done here:** (a) the §40.0 luma-dip instrumentation (`§MAXQ_FRAME_LUMA` in
+`_captureFrame`) — the shipped log still cannot tell a dipped frame from a good one; (b) any bake. Bakes
+remain user-gated.
