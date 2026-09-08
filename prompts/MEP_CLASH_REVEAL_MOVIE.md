@@ -3045,6 +3045,29 @@ and nothing is left to reveal it — the grid sits over a finished model, which 
 end of the film wants measurements OF THE FINISHED THING — which §38.2 already specifies in detail (wing
 spans, roof-edge-to-sill facade heights, on the clean fly-out canvas the user asked for). Those are new
 statements; `LIFE2` is the opening statement said twice.
-⛔ **Recorded for the user's call, not acted on.** If `LIFE2` stays, it needs a reason that survives
-§24.9 — and the honest one would be that the closing orbit reads as a DIFFERENT beat (a drawing recalled
-over the finished building) rather than a repeat, which is a claim about the cut, not about the data.
+**✅ RULED BY THE USER, SAME DAY — `LIFE2` STAYS. The concern above is withdrawn, and the reason is
+recorded because it is the right one.**
+> **USER, 2026-09-08:** *"Since it is just to show a while, i think it serves engineering minds a
+> purpose, to view again this time in full built up its markings."*
+
+That is exactly the reason `LIFE2` needed, and it defeats the objection rather than overruling it: **an
+engineer reads a setting-out drawing AGAINST the built thing** — gridline A-1 checked against the column
+that actually stands on it. At second zero there is nothing to check the drawing against; at 148.70 s
+there is. So the two showings make DIFFERENT statements — *this is the setting-out* and *this is what got
+built on it* — and §24.9's ⛔ (which forbids re-opening the LIFETIME of the opening beat) is not engaged.
+Do not re-litigate this.
+
+⚠ **THE ONE THING THAT FOLLOWS, AND IT IS A REAL RISK — depth behaviour cannot be the same in both
+lives.** §17.5 makes the datum depth-test NORMALLY so the rising build occludes it; that occlusion is the
+whole reading at second zero. **At 148.70 s the building is COMPLETE, so a depth-tested grid is occluded
+by everything** — and `§FLYTHRU_DATUM_MARKS drawn=74` counts marks COMPOSITED, not marks VISIBLE. A
+LIFE2 that logs a healthy 74 while showing almost nothing is precisely §24.12's `ofNominal` failure mode
+(*"a bubble capped far below nominal still counted as drawn while being invisible"*), and the log as it
+stands cannot tell the two apart.
+**Measure before assuming it reads:** either sample per-frame visible-pixel coverage of the datum layer
+inside LIFE2's window and compare it against LIFE1's, or have LIFE2 report an occlusion ratio of its own
+(`§FLYTHRU_DATUM_LIFE2 visibleFrac=`). If it is being buried, the honest fix follows from the user's own
+purpose — a drawing recalled to be READ must be legible, so LIFE2 (and only LIFE2) draws shine-through
+(`depthTest:false`, §7's cue contract), while LIFE1 keeps the occlusion that gives second zero its
+meaning. Two lives, two draw contracts, both deliberate — record it in `FLYTHRU_DRAW_CONTRACT` beside
+§17.5's existing exemption so a later session does not "unify" them.
