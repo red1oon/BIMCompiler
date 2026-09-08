@@ -3344,3 +3344,49 @@ of the film the user watched, far better than §42.1's 09-07 film. Same probe, s
    (LIFE2 ends 169.10 s), so it is NOT LIFE2. The one Measure change reaching that window is §37.1's storey
    cards querying `storey_walkable_raster` per card. **NOT diagnosed — recorded, with its number.** Next step
    is the same discipline: instrument, do not guess.
+
+### 43. §CLI_BAKE_SW_PURGE — the silent bake ran STALE JS, and it cost a GPU run (2026-09-08)
+The first 0–30 s test bake printed the PREVIOUS build's `§SLAB_BEAT_INIT … depth-tested tint + X,
+shine-through label` and emitted **no** `§HUD_BOX` / `§STATUS_BOX` / `§MEASURE_BOX` / `§SLAB_BEAT_AREA`
+at all: 8 minutes of GPU spent on code that was not in the film, and its numbers read as a REGRESSION
+of a fix that was simply absent. **Cause:** `viewer/sw.js` precaches `viewer.html` and every module at
+a FIXED `?v=` query, so a browser profile that has ever loaded the viewer keeps serving the OLD
+`viewer.html` — a `<script>` tag added this session is then not there at all. Every `witness_*.js`
+unregisters the SW and clears caches before judging; **`cli_silent_bake.js`, which makes the
+deliverable, never did.** Fixed (commit `4ef5b2a6`): unregister + `caches.delete` + reload right after
+the first `goto`, logging `§CLI_BAKE_SW_PURGE unregistered= cachesDeleted=`. Verified on the re-bake:
+`box OUTLINE`, `§FILM_BOXES_INIT`, `§FLYOUT_BEATS_INIT`, and
+`§SLAB_BEAT_LABEL rows=[Floor area 3,361 m² (mesh footprint) …]` all present.
+**Rule: a bake whose log does not show this session's own new §-strings is not evidence — check one
+before trusting any bake.**
+
+### 44. ⛔ §42's FIX IS WRONG — MEASURED ON A REAL BAKE, and the LIFE1 culprit is the PLATE BEAT
+**Test bake (user's go): Hospital 0–30 s, all layers on, real GPU, 720 f / 30.00 s, `depthWrite:false`
+in the build (`out/Hospital_0-30s_fix_2026-09-08.mp4`, copied to
+`~/Downloads/Hospital_0-30s_measure_boxes_2026-09-08.mp4`).**
+| LIFE1 window 0–11.34 s | jumps `|ΔY|>15` | max |
+|---|---|---|
+| `Hospital_1080p24_2026-09-05` (pre-Measure) | **1** | 15.4 |
+| `Hospital_FULL_measure_2026-09-08` (bug) | 18 | 63.6 |
+| **this bake (depthWrite FIXED)** | **23** | 61.1 |
+The control window (11.34–30 s, no datum drawn) is comparable across all three — **33 / 31 / 27** — so
+the clip IS comparable and **the fix genuinely did not help.**
+**AND THE JUMP SECONDS NAME THE REAL CULPRIT.** All 23 land in **8.88–11.00 s**:
+`8.88 8.96 9.08 9.17 9.42 9.46 9.50 9.58 9.62 9.67 9.79 9.88 9.92 9.96 10.08 10.12 10.17 10.21 10.29
+10.38 10.79 10.96 11.00`. **The datum draws CONTINUOUSLY over 0–11.34 s** — a datum cause would spread
+across that whole window. It does not. It sits on `§SLAB_BEAT_PICK sec=9.38` plus its 2.2 s envelope:
+**the PLATE BEAT**, which is exactly what the user reported first ("that 9th second mark when the whole
+floor slab gets tinted").
+**WHAT I GOT WRONG, and why the earlier control failed.** §40.0 refuted §38.1(b)'s `setColorAt`
+hypothesis because the amber collapse showed OUTSIDE the plate polygon too. That reasoning assumed a
+plate-local cause stays plate-local — **but the tint writes `setColorAt` into a SHARED InstancedMesh /
+BatchedMesh colour buffer, so touching one slot can change siblings anywhere in the frame.** The
+control did not discriminate, so §38.1(b) was never actually refuted. §42's headline ("the flicker is
+FOUND: LIFE2 / depthWrite") is **RETRACTED as a causal claim**; its CORRELATION measurements stand
+(42/42 jumps inside LIFE2's window, 0 outside, three datum-free films at 0–2) and still need explaining.
+`depthWrite:false` is kept — a transparent material must not write depth — but it is **not this bug**.
+**NEXT, and measure before changing anything:** (a) the plate beat's per-frame `setTintIntensity` lerp
+re-writes `instanceColor` EVERY frame of its 2.2 s envelope (`cpe_slab_beat.js`) — §38.1(b)'s original
+suspect; set it once at fade-in and once at fade-out and re-bake the same 30 s clip; (b) log which
+sibling slots share the touched buffer (`§SLAB_BEAT_TINT sharedSlots=`) so the blast radius is a number,
+not a theory; (c) LIFE2's 42 jumps are still unexplained and cannot be tested by a 0–30 s clip.
