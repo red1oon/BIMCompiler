@@ -474,6 +474,22 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
   clash mm]` line beneath them — the tolerance from that discipline pair's own rule, the clash figure
   from the real mesh overlap depth, not a bounding-box estimate. The Reveal round's rotating stat
   cards also gain a "N mesh-true clashes flagged" card while this is on.
+- **Measure** — the setting-out drawing, from the real column grid: numbered and lettered bubbles, bay
+  chains that sum to the overall, and storey rules. It is **up at frame 0** — built from the database, so
+  it does not wait for the model to load — and it is drawn **in the model's own planes**, which means the
+  building progressively **occludes** it as the buildup rises. That occlusion is the point: it is how you
+  see the grid is behind the building rather than painted on the lens. The chains are checked rather than
+  claimed — on Hospital, HHS and Terminal the bay chain sums to the overall exactly on all three axes
+  (`X 95.915 = 95.915`, and so on), with no per-building tuning.
+  ⚠ Where a federated model records the same storey at two elevations, the drawing **states the fault
+  and draws the levels as recorded** rather than choosing between them — resolving it would be inventing
+  a datum the file does not contain.
+- **Storey highlight** — each storey glows blue / green / yellow / orange in turn over the last 5 s
+  before the closing orbit, with a door-count and footprint HUD card for each.
+  ⚠ The card's counts are read per storey **name**. On a federated model whose storey table carries alias
+  or duplicate names (one Terminal file lists 22 names for six real floors), the highlight can land on
+  alias rows and the card then reads `doors 0` — the doors are real, they are attributed to the storey
+  names the highlight did not pick.
 - **Silent-bake size** — a resolution/fps preset (720p, 1080p, or 1440p) for a *silent* bake only (see
   below); an interactive Alt+C recording always uses the size of the window it's pressed in, so this
   select doesn't resize anything here — it's just remembered on the saved path. There is currently no
@@ -481,6 +497,8 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
   warning yet.
 
 ![The Cinema path panel with Clash pairs ticked and Silent-bake size set to "this window (interactive)" — the Whole path block showing reach 15%, clip "whole film", build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below](img/viewer/filmmaker-clash-and-bake-size.png)
+
+![The Cinema path panel with the full option set — the three derived bands (settle, exit door, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip "whole film", "build the model as the film plays" ticked, and the unticked room titles, Reveal, Clash pairs, Measure and Storey highlight boxes each carrying its own one-line explanation, above Silent-bake size "this window (interactive)" with its copy-bake-command link, Day # counter "top right", and a saved plan](img/viewer/filmmaker-measure-storey-panel.png)
 
 - **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
   **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
