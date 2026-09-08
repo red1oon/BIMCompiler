@@ -2734,7 +2734,7 @@ GPU bakes stay user-gated; everything below is proven on the page harness and th
 | W2 ✅ (no code) | **Envelope still stretched** after §35: Hospital structural Y = 133.94 m vs column grid 88.2 m / plate 90.3 m. MEASURED: `IfcWallStandardCase` spans y 30.1–164.0 (a foundation wall at cy 69.3, by 78.5), `IfcSlab` 37.5–163.3 — structural classes, far outside the main mass. Class filtering cannot decide this; **§20.7's clustering can**: rasterize the structural footprint, take the LARGEST CONNECTED COMPONENT, its bbox is the envelope, its cells the ground area. Measure offline first (`scripts/probe_envelope_cluster.js`), then adopt in `dbMeasures()`; `§FLYTHRU_ENVELOPE … cluster=WxD dropped=[…]`. | `common/flythru_maths.js`, `cpe_flythru_cues.js` | `witness_flythru_gate.js` + new asserts |
 | W3 ✅ | **Ribbon width / gate order.** §35 derives the ribbon width from the camera at BUILD; the §33 gate builds the datum at the saved view and THEN presses Home, so HHS's ribbons (0.19 m at 48 m) render 1.2 px from the 94 m opening. Fix = gate disposes + rebuilds the datum after Home; log `widthM` after. | `cli_silent_bake.js` | `--opening-only` log |
 | W4 ✅ | **§27 §LINEAR_BEAT** on the owner clock (column + beam during the dive, slots clear of the plate's 9.34–11.54 s), §27.3c datum-restatement guard, §27.3i projected-length floor via `plan.poseAt`. | new `cpe_linear_beat.js` | new `witness_linear_beat.js` |
-| W5 | **§29 §INDOOR_BEATS**: hall walkable m² bounded at door thresholds (§29.2a), stair going, door type, clear height cast. | new `cpe_indoor_beats.js` | new `witness_indoor_beats.js` |
+| W5 ✅ | **§29 §INDOOR_BEATS**: hall walkable m² bounded at door thresholds (§29.2a), stair going, door type, clear height cast. | new `cpe_indoor_beats.js` | new `witness_indoor_beats.js` |
 | W6 | **Measure to the end.** After the indoor run nothing measures until the film ends (HHS: last cue window closes 15.7 s of 130 s). Extend: per-storey walkable m² on the §STOREY_HIGHLIGHT_REVEAL cards, and the datum re-established over the FINISHED building on the pull-back (the setting-out drawing vs the built form — §25.5.3 is satisfied there because the model is complete). Spec first, then build. | `cpe_storey_reveal.js`, `cpe_flythru_datum.js` | extend existing |
 | W7 | Bakes, user's go: Hospital 12 s (§26.14 + W1–W3), HHS 12 s, A/B `--no-measure` diff. | — | logs |
 
@@ -2793,3 +2793,51 @@ logs `out/wlb_hosp4.log`, `out/wlb_hhs4.log`; sw v1166).** Measured on the owner
 §27.2's "7 slots, three used" was the linear clock without the cue layer; the real dive is packed. The allocator tries both
 class orders and keeps the assignment with more picks. **HHS's dive carries datum + 2D cues only** — its short dive and
 its opening plate are path facts (§27g); the beats say so by name rather than squeezing.
+
+### 29.8 §INDOOR_BEATS — IMPLEMENTATION DECISIONS (2026-09-08, W5, before code; resolves §29.7's three open items)
+1. **The indoor window is READ, not assumed** (§29.7 item 4): `[plan.beats.dive, plan.beats.out] × filmSecFull`, sampled
+   every 0.25 s through `plan.poseAt`. The camera's storey per sample = the highest datum level rule at or below its IFC
+   z (`A.three2ifc`, `A.flythruDatumFigures().levels/levelNames`). Hospital 18.3–69.1 s; HHS 7.0–89.7 s.
+2. **§29.2a bound = door thresholds, on the raster itself.** Take the storey's `storey_walkable_raster`, BLOCK every cell
+   under an `IfcDoor` footprint on that storey (bbox grown by one cell), then flood-fill 4-neighbour from the camera's
+   cell (or the nearest walkable cell within 2 m). The component is the hall; area = cells × 0.0625 m². Room_graph is not
+   needed for this — the raster + the doors are the two real things. Label `Hall-Corridor · Walkable area: N m²`; tint =
+   the component's cells as ONE merged, depth-tested floor mesh (row-run quads); label + tint persist until the hall's
+   projected bbox leaves the frame or the camera changes storey (§29.6), then removed.
+3. **§29.7 item 3 (HHS underground)**: at every sample the camera's IFC z is compared with its storey floor; a sample more
+   than 1.0 m BELOW the floor is `§INDOOR_BEAT_CAMERA_BELOW_FLOOR` and cannot host any beat (you cannot stand in a hall
+   from under it). Reported per building; the hall beat takes the first sample that is on walkable floor.
+4. **Stair (§29.3)**: `IfcStairFlight` preferred, else `IfcStair` with rise > 1 m; cue = the GOING (long horizontal bbox
+   side) as a dimension line at the stair's base z; the rise is never cued; the going runs the §27.3c guard against the
+   datum's BAY figures too (Hospital: an 8.66 m going against an 8.69 m bay restates it — reported).
+5. **Opening (§29.4)**: the modal `IfcDoor` leaf at 10 mm buckets (w = long horizontal side, h = bbox_z); cue = ONE placed
+   instance of that type, two dimension lines (width across the leaf at mid-height, height), panel
+   `IfcDoor · w × h mm · N of this type`. Windows are not cued (HHS has none — cannot generalise).
+6. **Clear height (§29.5)**: the only cast, done on the DB (numbers from the DB, §2): at a point 2–10 m ahead of the camera
+   along its heading INSIDE the hall component, the first element bottom above floor + 0.5 m among elements whose XY bbox
+   contains the point = CLEAR height (its class reported); the first `IfcSlab/IfcCovering/IfcRoof` bottom = TOTAL height,
+   logged, never cued (restates the storey datum). If clear == total (nothing hangs there) the point is skipped; if no
+   point in reach has something hanging, the beat WITHDRAWS by name.
+7. **Slots (§29.1 = 4, §14 across layers)**: hall first (first standing sample), then stair, door, clear height — each takes
+   the (instance, sample) with the largest projected size (px ≥ 24, in frame) whose 2.7 s slot is free of every other
+   layer's window (cues, plate, column, beam, hall). No fifth.
+8. Rides Measure; 2D via the cues' exported drawers; never-kills-a-bake at every call site.
+
+**29.9 ✅ W5 BUILT + WITNESSED (2026-09-08; `viewer/cpe_indoor_beats.js`, `witness_indoor_beats.js` Hospital 11/11, HHS 11/11;
+logs `out/wib_hosp3.log`, `out/wib_hhs3.log`; sw v1167).** All four beats on both buildings, every slot free of every other
+layer (§14 across layers), scored by legibility HELD over the envelope (indoors the camera walks past things):
+| | Hospital (window 18.28–68.84 s) | HHS (window 7.00–89.68 s) |
+|---|---|---|
+| hall (§29.2/29.2a) | **18.28 s · Level 1 · 6,239 m²** of 6,481 storey walkable, **3,870 door cells blocked**, camera 1.75 m above floor; persisted 14.0 s, off at frame-out | **7.00 s · Level 2 · 2,100 m²** of 2,173, 1,044 door cells blocked, camera **0.04 m** above floor (the path skims the floor); persisted 59 s |
+| clear height (§29.5) | **21.53 s · 5,498 mm under IfcBeam** (ceiling 5,850 mm logged, not cued), 9 m ahead | **40.99 s · 2,802 mm under IfcFlowTerminal** (ceiling 3,060) |
+| stair going (§29.3) | **30.78 s · 9,723 mm** (rise 9,241, not cued) `180mm max riser 280mm going` | **9.74 s · 10,285 mm** (rise 5,334) `Massiv - Stufen Naturstein` |
+| door (§29.4) | **62.78 s · 1,080 × 2,110 mm, 121 of this type** (instance 1,076 × 2,108) | **76.50 s · 930 × 2,130 mm, 81 of this type** |
+| below-floor samples (§29.7.3) | 0 of 203 | 0 of 331 |
+**Rules the runs forced (each measured first):** a stair's run ≤ 3× its rise or it is not a flight (Hospital offered a
+99,896 mm "going" from a multi-storey stair group's box); the cast ignores railings/stairs/mullions/walls/openings
+(the first hit was a balustrade box at 3,848 mm); a cue is scored by its minimum legibility over (t, t+1.1, t+2.1).
+**⚠ §25 ADDENDUM — the datum's storey rules were 9.2 m too low on Hospital until this fix.** `§FLYTHRU_DATUM_ZDATUM`
+anchored the local elevations (0–34 m) to the LOWEST element (a footing at 156.61 m); every storey's largest slab says
+165.81 m (9/9 storeys, spread 0.08 m). Now anchored to the slabs. The Z chain (relative) was right all along; the
+absolute placement of L1…L7 on the upright was not. HHS was already in the element datum. This is in the merged build
+(PR #1697) and ships with W5's PR.
