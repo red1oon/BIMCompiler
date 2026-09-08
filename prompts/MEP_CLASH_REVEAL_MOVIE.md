@@ -2737,3 +2737,28 @@ GPU bakes stay user-gated; everything below is proven on the page harness and th
 | W5 | **§29 §INDOOR_BEATS**: hall walkable m² bounded at door thresholds (§29.2a), stair going, door type, clear height cast. | new `cpe_indoor_beats.js` | new `witness_indoor_beats.js` |
 | W6 | **Measure to the end.** After the indoor run nothing measures until the film ends (HHS: last cue window closes 15.7 s of 130 s). Extend: per-storey walkable m² on the §STOREY_HIGHLIGHT_REVEAL cards, and the datum re-established over the FINISHED building on the pull-back (the setting-out drawing vs the built form — §25.5.3 is satisfied there because the model is complete). Spec first, then build. | `cpe_storey_reveal.js`, `cpe_flythru_datum.js` | extend existing |
 | W7 | Bakes, user's go: Hospital 12 s (§26.14 + W1–W3), HHS 12 s, A/B `--no-measure` diff. | — | logs |
+
+**W2 ✅ RESOLVED BY MEASUREMENT, no code (`scripts/probe_envelope_cluster.js`, `out/envelope_cluster_probe.log`).**
+The §20.7 rule was run offline: structural footprint (ENV_CLASSES) rasterised at 0.5 m, connected components.
+| | AABB all | AABB structural (§35) | largest connected component | components |
+|---|---|---|---|---|
+| Hospital | 115.75 × 164.78 | 115.75 × 133.94 | **116.0 × 134.0 m, 100 % of the structural raster** | 1 |
+| HHS | 82.35 × 59.89 | 82.24 × 59.89 | 82.0 × 60.0, 100 % | 1 |
+| Terminal | 73.67 × 59.12 | 73.67 × 56.12 | 69.5 × 56.0 (one `IfcWall` outside) | 1 |
+So the residual Hospital Y of 134 m is not a rogue: it is `IfcWallStandardCase` "Basic Wall:Foundation - 375mm
+Concrete w_step" (y 30.0–108.6) and the Level 1 base slab, joined to the main mass. §35's stair removal was the
+whole correction the user asked for; the column grid's 88.2 m and the plate's 90.3 m are different, also true,
+statements. Clustering stays available for a building whose structure IS detached; none of the three is.
+
+**W1 ✅ / W3 ✅ (bim-ootb `feat/flythru-cues`, sw v1165; `viewer/tests/witness_datum_stability.js` HHS 8/8, Hospital 8/8;
+logs `out/wds_hhs4.log`, `out/wds_hosp4.log`).** Cause confirmed by the witness's own field `distinctSidesIfPerFrame=2`
+on both buildings: the per-frame near-side/plane rule WOULD have flipped once during each dive. Fixes: (1) sides,
+upright plane and far-upright decided ONCE per datum life (first composite), reported per frame, reset on dispose;
+(2) drop ledger `dropped=[behindCam …] dDrawn= sidesChanged= decidedAt=` on `§FLYTHRU_DATUM_MARKS`; (3) **§20.8 entry
+latch** — one lifetime rule for the 3D planes and the 2D marks: gone 0.6 s after the camera enters the plan footprint
+BELOW the top storey rule the drawing itself marks (`§FLYTHRU_DATUM_ENTRY`). MEASURED: HHS enters at **6.58 s**; Hospital
+never enters inside its 20.4 s hold, so the accepted Hospital opening is unchanged; (4) cue span sets decided on the
+cue's first frame and locked for its window (`§FLYTHRU_DIM_DRAW … window= lockedAxes=`); (5) the §33 gate disposes and
+rebuilds the datum after Home, so §35's ribbon width and the side decisions read the real opening. Measured on the
+witness: rises(dDrawn>0)=0 on both, usedSideDecisions=1, cue drawn sets ⊆ locked sets. `clash_labels.js` already logs
+`release=[…]` per change (the reviewer's grep looked for "leave"); no change there.
