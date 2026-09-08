@@ -2676,3 +2676,51 @@ diff bake as the pixel-level proof of Measure (§26.12). `--opening-only` judges
 **Do not redo.** §26.5's placement table (linear clock) — superseded by §26.9/§26.14. §28's item 2 on HHS —
 closed by §33. The PoC numbers in §26.4/§27.2 — the owner clock replaces them. The 2D-vs-3D question for
 the datum lines — §17.5 settles it (3D, occluded).
+
+### 35. ✅ §34's three corrections — DONE (2026-09-08, worktree `/tmp/wt-storey-reveal`, branch `feat/flythru-cues`)
+All three of §34's items done in order, each witnessed; no bake run (none was asked for this pass).
+
+**1. No 3D box for ANY cue.** `flythruCuesApplyVisual` (`viewer/cpe_flythru_cues.js`) no longer branches on
+`key === 'envelope'` — it hides `ensureGroup()`'s fill/outline unconditionally and returns
+`box:'deprecated'` for every cue. Logs `§FLYTHRU_CUE_BOX deprecated` once (was `§FLYTHRU_ENVELOPE_BOX`).
+`witness_flythru_gate.js` unaffected (pure logic simulation, never touches this function) — reran, still
+17/17-per-section, 0 FAIL total.
+
+**2. §20.9 structural envelope adopted, not re-derived.** `bom_extract.js`'s `ENV_CLASSES` was a
+function-local object; hoisted to module scope and exported as `window.BOMExtract.ENV_CLASSES` so
+`cpe_flythru_cues.js` references the ONE definition instead of keeping a second, driftable copy.
+`dbMeasures()` now builds `struct` (ENV_CLASSES-filtered) alongside `all`, and the building-level
+`out.ext`/`out.ground` (envelope dims, Ground m², Envelope m³) take `struct`, falling back to `all` if
+no structural class is found. Logs once: `§FLYTHRU_ENVELOPE all=… structural=… dropped=[class:count,…]`.
+MEASURED (real page, `Hospital_silent_local`): `all=115.75x164.78x47.05 structural=115.75x133.94x47.02
+dropped=[…IfcStair:61,IfcStairFlight:1…]` — the Y-axis alone shrank **30.84 m** once the stair (and every
+other non-structural class) stopped stretching the AABB, confirming the user's "rogue hanging staircase"
+complaint by name. HHS: `19.77m → 11.11m` on Z (height) for the same reason.
+⚠ `cpe_flythru_datum.js`'s ground/upright plane extents were checked and are **already** ENV_CLASSES-only
+(`git blame`: written 2026-09-07, unrelated to this session) — §34's claim that this file used the
+all-element box was stale; no change made there for this item.
+`storey_walkable_raster` was also checked (not just assumed): `scripts/build_storey_walkable_raster.js`
+builds it from `IfcSlab%` mesh triangles only — a hanging stair contributes nothing to it, so the
+walkable-area figures are genuinely unaffected, not unaffected by luck.
+
+**3. Datum lines are now depth-tested ribbon quads, not 1px `LineBasicMaterial`.** `cpe_flythru_datum.js`'s
+ground grid and level rules are built as flat `MeshBasicMaterial` quads (one merged `BufferGeometry` per
+group — still 3 draw calls, §17.7 unchanged), each quad lying IN the plane its segment already occupies
+(`along × planeNormal` gives the in-plane widen direction — ground widens in X/Z, the elevation plane
+widens vertically — so nothing pokes out of the face). depthTest left at its default TRUE (§17.5 unchanged:
+occluded by the building). ⚠ **The spec's own example ratio (0.06 × R_BUB, R_BUB = grid bubble radius) was
+tried first and MEASURED to fail**: Hospital's opening camera is ~287 m from the grid centre, and
+0.06×R_BUB gave a 0.059 m wide line — 0.37 px on screen, thinner than the 1px hairline it was meant to
+fix. Replaced with a width derived from THIS BUILD'S OWN opening-camera distance to hit a stated pixel
+target (2.5 px), degrading to the bubble ratio only when no camera/viewport exists yet. Witness:
+`§FLYTHRU_DATUM_LINES widthM=… src=[camera d=…m fov=… h=…px] px@…m=2.50`. MEASURED: Hospital
+`widthM=1.1505 d=286.9m → 2.50px`; HHS `widthM=0.1927 d=48.1m → 2.50px` — same on-screen thickness, correct
+absolute size on both buildings.
+
+**Verification (no bake — a headless page exercising the real functions directly, same class of proof as
+`snap_timeline.js`; not a GPU bake, no mp4, no cost gated by the bake permission):** loaded
+`Hospital_silent_local` and `HHS_silent` for real, called `A.flythruDatumBuild()` / `A.flythruCuesBuild()`
+/ `A.flythruCuesApplyVisual()` directly, captured console + `pageerror` — **zero errors on either
+building**, all three `§FLYTHRU_*` witness lines fired as expected. Then reran the two named witnesses:
+`witness_flythru_gate.js` (0 FAIL) and `witness_slab_beat.js --nostream` on both DBs (`pass=17 fail=0`
+each). `sw.js` bumped v1163→**v1164**.
