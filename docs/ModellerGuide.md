@@ -444,9 +444,9 @@ byte-exact. Witnessed end-to-end: `modeller/tests/witness_e2e_gridmove_roof.js`,
 
 1. Select the feature — its children (hosted fillings) come along.
 2. Tap **Delete** (or press `Del`).
-3. The feature hides from the model — the signed payload is never rewritten, so the chain stays valid. **Redo** (`Ctrl+Y`) brings it back exactly.
+3. The feature hides from the model — the signed payload is never rewritten, so the chain stays valid. Delete is now a real node in the history tree, so **Undo** (`Ctrl+Z`) — not Redo — brings it back exactly; `Ctrl+Y` right after a delete is a no-op (there's nothing ahead of it to redo), and a further `Ctrl+Y` after undoing re-applies the delete.
 
-![Delete — the selected feature removed; Redo restores it](img/modeller/delete-gone.png)
+![Delete — the selected feature removed; Undo restores it](img/modeller/delete-gone.png)
 
 ### Room Move
 *Commits `GEOM_ROOM_MOVE {spaceGuid,dx,dy,members[]}`.*
