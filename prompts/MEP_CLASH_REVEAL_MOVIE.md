@@ -3435,3 +3435,93 @@ did not change the count: 18 → 19).
 named the plate beat; **both were wrong on mechanism.** The measurements in each still stand — it is the
 causal reading that kept outrunning them. The A/B in §46.1 is the first test that isolated a single
 variable, and it should have been the FIRST thing run after §42's correlation, not the fifth.
+
+### 47. ⛔ HANDOFF — THE FLICKER IS STILL OPEN. Read this WHOLE section before touching anything.
+**Three hypotheses have been implemented, baked and DISPROVED. Do not re-try them.** The defect is
+narrow, perfectly reproducible, and has one clean one-variable A/B behind it. What is missing is the
+mechanism, not more measurement of the symptom.
+
+**47.1 THE DEFECT, in numbers (all from `scripts/probe_film_flicker.py`, jumps = frames with `|ΔY|>15`).**
+| film | window | jumps | max |ΔY| |
+|---|---|---|---|
+| `Hospital_1080p24_2026-09-05` (pre-Measure twin: same path, same 4,699 f, ZERO Measure lines) | LIFE1 0–11.34 s | **1** | 15.4 |
+| | reveal round | **0** | 10.1 |
+| `Hospital_FULL_measure_2026-09-08` (720p, Measure) | LIFE1 | 18 | 63.6 |
+| | **LIFE2 148.70–169.10 s** | **42** | **59.6** |
+| `Hospital_FULL_1080p_notint_2026-09-08` (1080p, no tint, depthWrite fixed) | LIFE1 | 19 | 63.6 |
+| | **LIFE2** | **42** | **59.6** |
+| `L2_nomeasure_2026-09-09` (clip 0.75–0.87, everything on but `--no-measure`) | same window | **0** | **9.2** |
+**LIFE2 is bit-identical across a 720p and a 1080p bake — same count, same max, same seconds
+(150.83, 150.96, 151.00, 151.29, 151.92, 152.88 …).** Deterministic, resolution-independent.
+**The camera is smooth throughout** (0.10 m/frame, identical to the 0-jump window right after it).
+**Frame-for-frame against the Measure-off twin at the same film second:**
+```
+MEASURE OFF 155.0-155.5s: 56 56 56 56 56 56 56 56 56 56   (flat)
+MEASURE ON  155.0-155.5s: 39 59 55 73 44 53 65 104 57 82  (swings BOTH ways around 56)
+```
+Averaged over those frames Measure-on is darker on **1.3 %** of pixels and brighter on **10.3 %** — it
+adds no persistent object; it makes whole frames come out **wrong in both directions**. At the peak,
+**35 % of the picture** flips from RGB 28/31/27 to 182/189/198 (building → sky) in a clean diagonal band,
+and back. `§MAXQ_QUALITY unconverged=0` calls every one of those frames converged.
+
+**47.2 RULED OUT — DO NOT RE-TRY (each was implemented, baked, and measured):**
+1. **§38.1(a) z-fight of the plate's X diagonals** — the X is gone entirely (§40.2) and nothing moved.
+2. **§38.1(b) / §44 the plate tint's per-frame `setColorAt`** — the tint is gone entirely (§45,
+   `witness_slab_beat.js` asserts no frame touches a mesh) and LIFE1 went **18 → 19**.
+3. **§42 `depthWrite:true` on the datum's transparent ribbons** — set to false (commit `611f3f8f`);
+   LIFE2 stayed at exactly 42. (Keep the flag: a transparent material must not write depth. It is
+   simply not this bug.)
+4. **§38.1a the status caption churning** — a 2D overlay redraw cannot darken 55 % of the frame's pixels
+   spread evenly over a 4×4 grid, which is what was measured.
+5. **The camera path** — measured smooth, see above.
+6. **The buildup** — present at the same rate in every film including the pre-Measure twin.
+
+**47.3 THE ONE HYPOTHESIS STILL LIVE, AND IT IS UNTESTED — `§AO_EXCLUDE` (commits `abf61061` +
+`9fc1cc00`).** An AO pass renders its own depth/normal prepass and ignores per-object material flags,
+so Measure's annotation geometry could be written into the AO buffer as solid surface, which would
+produce exactly a whole-frame error in both directions. `viewer/effects.js` now hides anything marked
+`userData.excludeFromAO` for that pass only (`A._aoExcludeWrap`); `cpe_flythru_datum`, `cpe_slab_beat`
+and `cpe_indoor_beats` set the flag. **⚠ IT HAS NEVER BEEN TESTED ON THE WINDOW THAT FAILS.** The only
+bake since is HHS, and **HHS cannot test it: HHS has NO LIFE2 at all** (`out=pullout=flyback=reveal=0.688`,
+the window is 0.00 s). HHS before/after is 27 → 30 non-buildup jumps, i.e. unchanged, and its jumps sit
+in the cruise (74–76 s) and buildup where no datum draws — that measures nothing about this defect.
+**FIRST TASK: bake `--clip 0.75:0.87` on Hospital with everything on and score that window.** If it is
+0, the AO exclusion is the fix. If it is still 42, the AO theory dies and the field is open again.
+```
+node cli_silent_bake.js --db Hospital_silent_local --buildup --label --reveal --clash --measure \
+  --storey-reveal --gpu real --clip 0.75:0.87 --fps 24 --width 1280 --height 720 --port 8568 \
+  --out out/L2_aofix.mp4 --log out/L2_aofix.log          # ~10 min
+python3 scripts/probe_film_flicker.py out/L2_aofix.mp4 --win "clip:0:23"
+```
+Compare against the two runs that already exist: **Measure ON = 42 / 59.6** (in the full films) and
+**Measure OFF = 0 / 9.2** (`out/L2_nomeasure_2026-09-09.mp4`).
+
+**47.4 IF THE AO THEORY DIES, the next candidates in order, each testable by ONE clip bake:**
+(a) bisect Measure itself — the datum is the only Measure layer alive at 148.7–169.1 s, so add a
+`--no-datum`-style switch or temporarily return early from `flythruDatumAt` and re-bake that clip;
+(b) if the datum is confirmed, bisect the datum — the 3D group vs the 2D composite
+(`flythruDatumCompositeOntoCanvas`), by skipping one at a time;
+(c) instrument rather than guess: §41's `§MAXQ_FRAME_LUMA i= Y= dY=` in `_captureFrame` — the shipped
+log still cannot tell a bad frame from a good one, which is why every diagnosis so far has been
+post-hoc ffmpeg archaeology.
+
+**47.5 FOUR TRAPS THAT COST THIS SESSION REAL TIME:**
+1. **A bake can run STALE JS.** `cli_silent_bake.js` now purges the service worker (§43) — but always
+   confirm this session's own new `§`-strings are in the log before trusting a bake. One 8-minute GPU
+   run tested code that was not in the film and read as a regression.
+2. **The bake's AO is `N8AOPass` (`§PHOTO_AO`), NOT `SSAOPass`** — `_ssaoPass.enabled = false` ships
+   off. The first `§AO_EXCLUDE` wrap went on the wrong pass and would have been a silent no-op that
+   looked like a failed fix. Both are wrapped now and each logs its own pass name.
+3. **`§FILM_FLICKER_VERDICT` alone hides things — read the `max|dY|` column.** The storey-reveal window
+   went 0.6 → 5.3 (9×) with 0 jumps either way (§42.5).
+4. **Phase-match, never wall-clock-match, when comparing films of different lengths**, and check a
+   control window the change cannot touch before believing a difference (that check is what exposed
+   the stale-JS bake).
+
+**47.6 STATE.** bim-ootb `feat/measure-boxes` @ `9fc1cc00`, 7 commits off `origin/main`, pushed, **no PR**,
+sw **v1172**. Worktree `/tmp/wt-storey-reveal`. Films: `~/Downloads/Hospital_FULL_1080p_notint_2026-09-08.mp4`
+(the user's reference, 242 MB), `~/Downloads/HHS_FULL_480p_aofix_2026-09-09.mp4`,
+`out/L2_nomeasure_2026-09-09.mp4` (the Measure-off control — **keep it, it is the baseline**).
+**Everything else in §40 is DONE and witnessed** — three fixed boxes 12/12, plate area 18/18, fly-out
+beats 12/12 — and the user has accepted Measure on screen ("very good, gives proper labels… a powerful
+statement"). **The flicker is the only thing outstanding.**
