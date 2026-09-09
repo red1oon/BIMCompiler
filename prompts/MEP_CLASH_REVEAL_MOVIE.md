@@ -3633,3 +3633,28 @@ took ten minutes to establish (Measure ON 42, Measure OFF 0). **Bisect to the LA
 about the MECHANISM.** A correlation window is not a cause; a plausible code path is not a cause; only a
 one-variable A/B is. And check the test is not VACUOUS before reading it — the HHS run "validated" the
 AO fix on a building whose LIFE2 window is 0.00 s long.
+
+### 50. ✅ BISECT STEP 1 — THE LAYER IS PINNED: IT IS THE DATUM'S DRAWING, NOTHING ELSE (2026-09-09)
+`out/L2_datumoff_2026-09-09.mp4` — Hospital `--clip 0.75:0.87`, everything on, `--tap out/tap_datum_off.js`
+stubbing ONLY `A.flythruDatumAt` + `A.flythruDatumCompositeOntoCanvas` (build left intact, §49.1):
+| run | jumps `|ΔY|>15` | max |
+|---|---|---|
+| Measure ON, datum drawing | 42 | 59.6 |
+| Measure ON, AO exclusion (§48) | 36 | 52.7 |
+| **Measure ON, datum draws NOTHING** | **0** | **8.5** |
+| Measure OFF entirely | 0 | 9.2 |
+**Stubbing the datum's two draw calls is INDISTINGUISHABLE from turning Measure off** (0/8.5 vs 0/9.2).
+Every other Measure layer — cues, slab beat, linear beat, indoor beats, fly-out beats, the three boxes —
+is innocent. `§BISECT_DATUM_OFF` is in the log and `§FLYTHRU_DATUM_LIFE2` still resolved its window, so
+the run is not vacuous. **Ten minutes of GPU. This is what §42–§48's two hours should have started with.**
+
+**50.1 NEXT — BISECT STEP 2, the datum's 3D group vs its 2D compositor.** Two taps, one bake each:
+```js
+// A — 3D off, 2D on:  A.flythruDatumAt = function () { return 0; };          // group stays hidden
+// B — 2D off, 3D on:  A.flythruDatumCompositeOntoCanvas = function () { return 0; };
+```
+A reads 0 → the 3D ribbons; B reads 0 → the 2D marks. **The 2D pass has never been suspected**, and it is
+the half nobody has looked at: it draws with `globalAlpha` over the finished frame, so if it is guilty
+the mechanism is compositing, not rendering, and none of §42–§48's render theories were ever relevant.
+**Only after that** is a mechanism worth theorising about — and §49.4(2)'s TAA × transparency lead
+applies to branch A only.
