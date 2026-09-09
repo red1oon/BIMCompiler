@@ -3863,3 +3863,77 @@ aren't guilty — that would just add a second pipeline with no diagnostic or sh
 **NEXT: build the decoupled pass for the LIFE2 clip only (`--clip 0.75:0.87`, the same 23 s window
 used throughout §42–§52) and score it — one bake-free-ish run (only the extraction/re-encode needs
 `ffmpeg`, the projection pass itself needs no GPU) answers 53.3's either/or.**
+
+### 54. ✅✅ THE FLICKER IS FIXED — root cause and fix, both measured (2026-09-09, bim-ootb `2a2d32ec`)
+**Session start note:** `/tmp/wt-storey-reveal` had been wiped (tmp cleared between sessions) — the
+worktree, `out/L2_datumoff`/`L2_nomeasure`, `tap_datum_off.js`, cached burn-in PNGs, all gone. The
+`feat/measure-boxes` branch @ `067d8dd4` was intact and pushed, so nothing was lost — the worktree was
+recreated (`git worktree prune` then `git worktree add`), the Hospital DB copied back in from
+`bim-ootb/buildings/`, and `tap_datum_off.js` retyped verbatim from §49.1's own listing. Rebuilt clean
+plate (`out/L2_datumoff_2026-09-09.mp4`) scored **0 jumps, max|dY|=8.5** — bit-identical to the original
+§50 result, confirming the rebuild is faithful before spending it as the burn-in's input.
+
+**54.1 §53.3's BISECT RAN — REPRODUCED.** The decoupled burn-in pass (datum composited onto the clean
+plate, GPU fold entirely skipped) scored **47 jumps, max|dY|=62.9**, at the same film seconds as the
+live-loop baseline (§48's 150.55/150.96/151.01/151.34/151.92…, within one frame). Per §53.3: reproduction
+means the bug is in `flythruDatumCompositeOntoCanvas`'s own math/state, not a live-GPU-loop timing
+interaction — **the decoupled architecture, while worth keeping for cheap iteration, was never going to
+be the fix.**
+
+**54.2 ROOT CAUSE.** Instrumented `plane()` (`viewer/cpe_flythru_datum.js:518`) to log the max
+`|affine basis|` across every `plane()` call in a frame (`maxPlaneScale=`, appended to the existing
+`§FLYTHRU_DATUM_MARKS` line), re-ran the same decoupled bake, and correlated per-frame against
+`probe_film_flicker.py`'s luma jumps (`out/L2_diag_2026-09-09.log`):
+```
+frame  dY     maxPlaneScale
+  88   21.3   127561
+  89   30.2    91854
+ 108   24.0   280710
+ 152   55.7   182079
+ 153   62.9   104096
+ 195   16.8   152537
+```
+**All 47/47 jump frames carried a maxPlaneScale of 14,000–385,750 on a 1280×720 canvas** — 10×–300× the
+canvas width. `pr()`'s only guard (`vs.z < -0.1`, camera-space depth) tests whether a point is in FRONT
+of the camera; it does not bound lateral screen extent. A datum anchor point close to the camera but
+off to the side passes that guard while its NDC projection is enormous, and `plane()` builds
+`ctx.setTransform`'s basis straight from `U-O`/`V-O` with no magnitude check — one glyph or bubble draw
+gets scaled up into a giant colour blob for that single frame (matches §50.2's "35–40% of the frame,
+plane-shaped, both directions" measurement exactly: an oversized dark `HALO` stroke swallowing bright
+sky pixels, or an oversized `INK` fill, depending which mark went degenerate). §52's own code-read had
+already ruled out a *naive, unguarded* near-plane blow-up — this is the guarded-but-insufficient version:
+the guard exists, it just only checks depth, not extent.
+
+**54.3 THE FIX.** `plane()` now rejects (returns `null` — same as its existing behind-camera path,
+`withPlane()` already treats `null` as skip-draw) any transform whose basis exceeds
+`Math.max(w, h) * 4`. A legitimate mark never needs a basis vector anywhere near canvas size, so any
+larger multiple is degenerate by construction, not a real large draw. Counted (`degenerate=`, same log
+line): **284/489 frames (58%) in the LIFE2 window had at least one mark rejected, 648 rejections total**
+— this was firing on more than half the frames, not a rare edge case.
+
+**54.4 VERIFIED, both paths:**
+| run | jumps `|ΔY|>15` | max |ΔY| |
+|---|---|---|
+| baseline (guilty, pre-fix, live loop, §47) | 42 | 59.6 |
+| decoupled burn-in, pre-fix (§54.1) | 47 | 62.9 |
+| **decoupled burn-in, WITH FIX** (`out/L2_fixed_2026-09-09.mp4`) | **0** | **9.0** |
+| **live production GPU path, WITH FIX, no decoupling, no stubs** (`out/L2_livefix_2026-09-09.mp4`) | **0** | **9.3** |
+| datum-off / Measure-off zero-flicker controls | 0 | 8.5 / 9.2 |
+Post-fix `maxPlaneScale` never exceeds the guard threshold (max observed 5,119 vs cap 5,120 — bounded by
+construction). The live-GPU run is the real production path (full fold, AO, TAA, `--gpu real`, no
+`--tap`, no `--burnin-datum-src`) — **the fix is not a diagnostic-path artifact, it holds in the actual
+shipped pipeline.**
+
+**54.5 STANDING CORRECTION.** §46 named the SSAO/N8AO depth prepass; §48 disproved it (36≠0). §50/§52's
+bisect correctly pinned the 2D compositor but stopped at "which draw call" without a mechanism. This is
+the mechanism, and it required per-frame numeric instrumentation (`maxPlaneScale`) rather than another
+round of mechanism-guessing — consistent with §49.5's process rule: bisect to the LAYER, then instrument,
+don't theorise from a correlation window.
+
+**54.6 STATE.** bim-ootb `feat/measure-boxes` @ `2a2d32ec` (7 prior commits + this fix), worktree
+`/tmp/wt-storey-reveal`, **not pushed — commit locally, ask before push per session norms.** Diagnostic
+films kept in `out/`: `L2_datumoff_2026-09-09.mp4` (clean plate, 0/8.5), `L2_diag_2026-09-09.mp4`
+(pre-fix decoupled + maxPlaneScale log, 47/62.9), `L2_fixed_2026-09-09.mp4` (post-fix decoupled, 0/9.0),
+`L2_livefix_2026-09-09.mp4` (post-fix live production path, 0/9.3). **§40's work was already DONE and
+user-accepted (§51.5); this section closes the one item §51.5 left outstanding — the flicker.** Nothing
+else is currently open on this file.
