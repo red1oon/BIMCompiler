@@ -3658,3 +3658,20 @@ the half nobody has looked at: it draws with `globalAlpha` over the finished fra
 the mechanism is compositing, not rendering, and none of §42–§48's render theories were ever relevant.
 **Only after that** is a mechanism worth theorising about — and §49.4(2)'s TAA × transparency lead
 applies to branch A only.
+
+**50.2 A FREE MEASUREMENT THAT PRE-ANSWERS STEP 2 — and it points at the 3D half (2026-09-09, no GPU).**
+Now that a datum-OFF film exists, the datum's exact contribution can be differenced without a bake.
+At film 150.90–151.20 s, both scaled to 480×270:
+```
+datum OFF: 70 70 70 70 70 70 70      (perfectly flat)
+datum ON:  72 69 99 56 58 60 63 68   (swings ±30 around the same 70)
+```
+On the worst frame the datum changes **40.3 % of the picture**, and the changed region's horizontal runs
+are **median 59 px, max 144 px** — large contiguous areas, i.e. **PLANE-shaped, not line-shaped**. Thin
+2D strokes and grid bubbles would give median runs of 1–3 px. The changed pixels go **165/171/180
+(bright, sky) → 69/64/63 (dark)**.
+**Reading: branch A (the 3D group) is the favourite, not branch B.** `§FLYTHRU_DATUM_BUILT` reports
+`upright=1(plane)` alongside the ground grid — a large planar surface is exactly what a 59-px median run
+looks like. ⚠ This is an INFERENCE FROM SHAPE, not a bisect: run both branches anyway. It is recorded
+because it predicts the answer, so if branch B comes back 0 instead, the shape argument is wrong and that
+itself is worth knowing.
