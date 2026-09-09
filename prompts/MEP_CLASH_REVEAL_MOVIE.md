@@ -3675,3 +3675,57 @@ are **median 59 px, max 144 px** — large contiguous areas, i.e. **PLANE-shaped
 looks like. ⚠ This is an INFERENCE FROM SHAPE, not a bisect: run both branches anyway. It is recorded
 because it predicts the answer, so if branch B comes back 0 instead, the shape argument is wrong and that
 itself is worth knowing.
+
+### 51. 🏁 RESUME HERE — session close 2026-09-09. This SUPERSEDES §47.3's framing. Read §50 → §49 → this.
+**⚠ §47 was written when the AO exclusion was the live hypothesis. §48 killed it and §50 pinned the layer.
+Do not start from §47.3.**
+
+**51.1 THE FACT, and it is now narrow.** Hospital `--clip 0.75:0.87` (film 146.8–170.3 s, the LIFE2 window),
+everything on, one variable changed each time:
+| run | jumps `|ΔY|>15` | max |
+|---|---|---|
+| baseline (datum drawing) | **42** | 59.6 |
+| AO exclusion (§48) | 36 | 52.7 |
+| **datum draws NOTHING** (`--tap out/tap_datum_off.js`) | **0** | **8.5** |
+| Measure off entirely | 0 | 9.2 |
+**The datum's DRAWING is the whole cause.** Cues, slab beat, linear beat, indoor beats, fly-out beats and
+the three boxes are all innocent — they were on in the 0/8.5 run.
+
+**51.2 NEXT — TWO BAKES, ~10 MIN EACH, AND THE QUESTION IS ANSWERED.** Same clip, one tap each
+(pattern and traps in §49.1; the tap that already works is `out/tap_datum_off.js`):
+```js
+// BRANCH A — 3D off, 2D on
+A.flythruDatumAt = function () { return 0; };
+// BRANCH B — 2D off, 3D on
+A.flythruDatumCompositeOntoCanvas = function () { return 0; };
+```
+```
+node cli_silent_bake.js --db Hospital_silent_local --buildup --label --reveal --clash --measure \
+  --storey-reveal --gpu real --clip 0.75:0.87 --fps 24 --width 1280 --height 720 --port 857X \
+  --tap out/tap_datum_3d_off.js --out out/L2_bA.mp4 --log out/L2_bA.log
+python3 scripts/probe_film_flicker.py out/L2_bA.mp4 --win "clip:0:23"
+```
+Score against **42 (guilty) / 0 (innocent)**. §50.2's free pixel diff predicts **branch A** — the changed
+region is plane-shaped (median run 59 px, 40 % of the frame), not the 1–3 px runs thin 2D strokes make.
+**Run B anyway**: if B is the guilty one the shape argument is wrong, the mechanism is COMPOSITING rather
+than rendering, and every theory in §42–§48 was in the wrong half of the code.
+
+**51.3 ONLY THEN pick a mechanism.** For branch A the untested lead is §49.4(2) **TAA × transparency** —
+the ribbons are `transparent:true, side:DoubleSide` and `TAARenderPass` accumulates jittered samples, so
+order-dependent blending need not resolve to the same image twice. Cheap tap test: `transparent:false`,
+or `FrontSide`. Build §41's `§MAXQ_FRAME_LUMA` first so the bake names its own bad frames.
+
+**51.4 DEAD — implemented, baked, disproved. Do not re-try:** the plate's X diagonals · the plate tint ·
+`depthWrite:false` on the ribbons · AO exclusion · the status caption · the camera path · the buildup ·
+"something mutates the scene after the fold converges" (killed by code reading, §49.3).
+
+**51.5 STATE.** bim-ootb **`feat/measure-boxes` @ `9fc1cc00`**, 7 commits off `origin/main`, pushed, **no PR**,
+sw **v1172**. Worktree `/tmp/wt-storey-reveal` — **keep it**, it holds every film and log cited here.
+Films: `~/Downloads/Hospital_FULL_1080p_notint_2026-09-08.mp4` (the user's reference, all layers, 242 MB) ·
+`~/Downloads/HHS_FULL_480p_aofix_2026-09-09.mp4` · `out/L2_nomeasure_2026-09-09.mp4` and
+`out/L2_datumoff_2026-09-09.mp4` (**the two zero-flicker controls — keep both, they are the baseline**).
+**§40's work is DONE, witnessed and accepted by the user** — three fixed boxes 12/12, plate mesh-footprint
+area 18/18, fly-out wing/sill beats 12/12, `§AO_EXCLUDE` and the bake's service-worker purge shipped.
+USER, 2026-09-09: *"The Measures is very good, as it gives proper labels to it, viewer shall easily
+understand and to know this is all on the fly it be a powerful statement."* **The flicker is the only
+thing outstanding, and it is now one bisect step from its mechanism.**
