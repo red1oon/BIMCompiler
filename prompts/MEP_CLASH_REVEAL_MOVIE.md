@@ -3542,3 +3542,35 @@ untested** — §47.3's clip bake is unchanged as the first task.
 ⚠ **A reviewer summarising this file has already mis-stated it once** as "SSAOPass's override material" —
 that is trap §47.5(2) folded back into the diagnosis. The live pass is **N8AOPass**. If a fix is wired to
 SSAOPass it is a silent no-op; check for `§AO_EXCLUDE pass=N8AOPass` in the log before believing any bake.
+
+### 48. ⛔ §47.3's TEST IS RUN — THE AO THEORY IS DEAD (2026-09-09, `out/L2_aofix_2026-09-09.mp4`)
+Hospital `--clip 0.75:0.87`, everything on, `§AO_EXCLUDE` live on `N8AOPass`, 564 f, ~10 min:
+| run | jumps `|ΔY|>15` | max |
+|---|---|---|
+| Measure ON, no exclusion (the full films) | 42 | 59.6 |
+| **Measure ON, AO exclusion (this bake)** | **36** | **52.7** |
+| Measure OFF (`L2_nomeasure_2026-09-09.mp4`) | **0** | **9.2** |
+**NOT VACUOUS — checked before reading it** (the HHS lesson): `§FLYTHRU_DATUM_LIFE2 start filmSec=148.75`
+fired inside the clip, and the jump seconds map back to **150.55 · 150.96 · 151.01 · 151.34 · 151.92**,
+the same seconds as the original 42. The defect was present and the exclusion did not remove it.
+**42 → 36 is not a fix.** The AO buffer may be a minor contributor; it is not the mechanism.
+**§46 is hereby RETRACTED as the cause** — its code reading stands (§47.7: N8AO really does set
+`scene.overrideMaterial`, so `depthWrite` really is ignored), but the prediction it made is falsified.
+Keep `A._aoExcludeWrap` — annotation geometry has no business in an AO buffer — and stop treating it as
+the answer. **That is FOUR mechanisms implemented, baked and disproved** (X diagonals, plate tint,
+`depthWrite`, AO exclusion) against ONE solid fact: **Measure ON = 42, Measure OFF = 0, same window.**
+
+**48.1 NEXT — BISECT, DO NOT THEORISE.** No more mechanism guesses until the layer is pinned. The datum
+is believed to be the only Measure layer alive at 148.7–169.1 s (cues/slab/linear end in the dive,
+indoor 18–69 s, fly-out 68.8–147.0 s, storey cards 183 s+) — **verify that from the log rather than
+assuming it**, then bisect with one clip bake each, same window, changing ONE thing:
+1. **datum off, rest of Measure on** — return early from `A.flythruDatumAt` (or add `--no-datum`). If
+   this reads 0, it is the datum and nothing else. If it still reads ~36, the datum is innocent and the
+   §47.3 chain of reasoning was wrong from the start.
+2. **if the datum is guilty, bisect the datum**: its 3D group vs its 2D compositor
+   (`flythruDatumCompositeOntoCanvas`) — skip one at a time. LIFE2 has 74 marks and a ground grid;
+   the 2D pass has never been suspected and has never been tested.
+3. **only then** look for a mechanism, with §41's `§MAXQ_FRAME_LUMA i= Y= dY=` in `_captureFrame` in
+   place so the bake NAMES its bad frames instead of needing an ffmpeg post-mortem every time.
+**Cost discipline:** each bisect step is one ~10-minute clip bake and answers a yes/no. Four mechanism
+guesses have cost roughly two hours of GPU between them; two bisect steps would have cost twenty minutes.
