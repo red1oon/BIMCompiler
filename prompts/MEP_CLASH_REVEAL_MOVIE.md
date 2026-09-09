@@ -3574,3 +3574,62 @@ assuming it**, then bisect with one clip bake each, same window, changing ONE th
    place so the bake NAMES its bad frames instead of needing an ffmpeg post-mortem every time.
 **Cost discipline:** each bisect step is one ~10-minute clip bake and answers a yes/no. Four mechanism
 guesses have cost roughly two hours of GPU between them; two bisect steps would have cost twenty minutes.
+
+### 49. WHAT ELSE TO PURSUE — leads, instruments and free tests for the session that takes this on
+Written 2026-09-09 while §48.1's bisect step 1 is baking. Everything here is either MEASURED or a
+concrete check with a stated cost. Order is by cost, cheapest first.
+
+**49.1 ⭐ THE `--tap` STUB IS THE INSTRUMENT YOU WANT — no code change, no rebuild, no branch.**
+`cli_silent_bake.js --tap file.js` installs a page script at document start. That is enough to switch
+ANY layer off for one bake and put the bisect on the command line instead of in the source:
+```js
+// out/tap_datum_off.js — the datum DRAWS nothing; every other Measure layer is untouched
+(function () { var iv = setInterval(function () { var A = window.APP;
+  if (!A || typeof A.flythruDatumAt !== 'function') return; clearInterval(iv);
+  A.flythruDatumAt = function () { return 0; };
+  A.flythruDatumCompositeOntoCanvas = function () { return 0; };
+  console.log('§BISECT_DATUM_OFF stubbed'); }, 50); })();
+```
+⚠ Stub the DRAW entry points, not `…Build` — other layers read `A.flythruDatumFigures()` (levels,
+envelope), so stubbing the build changes a SECOND variable and the test stops being a bisect.
+Always print a `§BISECT_*` line from the tap and check it in the log before reading the result.
+
+**49.2 THE DATUM'S OWN MARK CHURN — MEASURED, PARTIAL (free, from the existing 1080p log).**
+`§FLYTHRU_DATUM_MARKS drawn=` changes **30 times** inside LIFE2's 489 frames. **12 of the 29 luma jumps
+fall within 0.1 s of one of those changes** — about **2.8× chance** (expected ~4.3 if independent).
+So the datum's mark count is *involved* but **17 jumps have no mark change at all**. Do not read this as
+proof either way; read it as: whatever it is, it is not ONLY the mark ledger.
+
+**49.3 RULED OUT BY CODE READING (free — do not spend a bake on these):**
+- **"a Measure layer mutates the scene after the fold converged, so `_captureFrame`'s extra
+  `A._composer.render()` captures something different".** Checked: between `_waitFoldDone`
+  (cinema_maxq.js:1917) and `_captureFrame` (:2229) the ONLY `A.*` calls are pure lookups —
+  `cpeRevealCaptionAt`, `storeyRevealStatCardAt`, `roomTitleOpacityAt`, `tailPanelAt`,
+  `resourcePanelHoldAt`, `flythruCueCaptionAt`, `bigStatsCompositeOntoCanvas`. **`A.flythruDatumAt`
+  runs at :1821, BEFORE `startStillRefine()` at :1888** — the datum's state is settled before the fold
+  begins, so the fold converges *with* it. That theory is dead without a bake.
+
+**49.4 STILL LIVE, IN THE ORDER I WOULD TRY THEM:**
+1. **Finish the bisect (§48.1).** Datum off → if 0, it is the datum; if ~36, the datum is innocent and
+   four sections of reasoning were aimed at the wrong layer. THEN bisect the datum's 3D group vs its
+   2D compositor — **the 2D pass has never been suspected or tested.**
+2. **TAA × transparency.** `TAARenderPass` accumulates N jittered samples. The datum's ribbons are
+   `transparent: true, side: DoubleSide`; order-dependent blending can resolve differently per jittered
+   sample, so the accumulated image need not equal any single sample. This is a DIFFERENT mechanism
+   from the AO one that §48 killed, and it has never been tested. Cheap test: make the ribbons opaque
+   (`transparent:false`) for one bake via a tap, or drop `DoubleSide` to `FrontSide`.
+3. **A free pixel diff you can run today with no GPU:** both films already exist —
+   `Hospital_FULL_1080p_notint_2026-09-08.mp4` (Measure ON) and `L2_nomeasure_2026-09-09.mp4`
+   (Measure OFF, clip starting at film 146.84 s). At a jump second, diff the two frames and check
+   whether the changed region is bounded by the datum's projected ribbon geometry or is unrelated to
+   it. That single image answers "is the datum even where the pixels move?".
+4. **`§MAXQ_FRAME_LUMA` (§41).** Still not built. Every diagnosis in §42–§48 needed an ffmpeg
+   post-mortem because the bake cannot name its own bad frames. Build it before the next mechanism hunt,
+   not after.
+
+**49.5 THE PROCESS RULE THIS WHOLE BAND EARNED.** Four mechanisms were implemented, baked and disproved
+(X diagonals, plate tint, `depthWrite`, AO exclusion) — roughly two hours of GPU — against ONE fact that
+took ten minutes to establish (Measure ON 42, Measure OFF 0). **Bisect to the LAYER before theorising
+about the MECHANISM.** A correlation window is not a cause; a plausible code path is not a cause; only a
+one-variable A/B is. And check the test is not VACUOUS before reading it — the HHS run "validated" the
+AO fix on a building whose LIFE2 window is 0.00 s long.
