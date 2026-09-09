@@ -3729,3 +3729,137 @@ area 18/18, fly-out wing/sill beats 12/12, `§AO_EXCLUDE` and the bake's service
 USER, 2026-09-09: *"The Measures is very good, as it gives proper labels to it, viewer shall easily
 understand and to know this is all on the fly it be a powerful statement."* **The flicker is the only
 thing outstanding, and it is now one bisect step from its mechanism.**
+
+### 52. ✅ BISECT STEP 2 — THE MECHANISM IS 2D COMPOSITING, NOT THE 3D GROUP (2026-09-09)
+`§50.2`'s pixel-shape prediction was WRONG. Two clip bakes, `--tap` stubbing one draw entry point each
+(pattern: §49.1), Hospital `--clip 0.75:0.87`, everything on:
+| run | jumps `|ΔY|>15` | max |
+|---|---|---|
+| baseline (both halves on) | 42 | 59.6 |
+| **branch A** — `flythruDatumAt=0` (3D off, 2D on) — `out/L2_bA_2026-09-09.mp4` | **36** | 53.1 |
+| **branch B** — `flythruDatumCompositeOntoCanvas=0` (2D off, 3D on) — `out/L2_bB_2026-09-09.mp4` | **0** | **8.8** |
+| datum fully off / Measure off (§50/§48) | 0 | 8.5 / 9.2 |
+Both bakes confirmed not vacuous (`§BISECT_DATUM_3D_OFF`/`§BISECT_DATUM_2D_OFF` fired, `§FLYTHRU_DATUM_LIFE2`
+resolved in-window both times). **The 3D ribbon group is innocent** (36 ≈ the failed AO-exclusion's 36 in
+§48 — a minor contributor at most, same order of magnitude as noise). **The 2D canvas compositor
+(`A.flythruDatumCompositeOntoCanvas`, `viewer/cpe_flythru_datum.js:422`) is the whole cause.**
+**§50.2's shape argument is retracted as a predictor** (it called this backwards) but the observation stands
+as a fact still needing explanation: the changed region really is large/plane-shaped, which now means the
+2D canvas draw itself — not a 3D mesh — is putting down a large filled/stroked region wrongly on some frames.
+**§49.4(2) TAA × transparency is now DEAD too** — it was a branch-A-only theory (3D material blending); branch
+A is innocent, so it cannot be the mechanism.
+**CODE READ (no bake spent):** `ctx.save()`/`ctx.restore()` in the function are balanced (line 571/703,
+one nested pair at 673/676) — not a compositeOperation or globalAlpha leak into later draws. Every projected
+point used for a line/quad IS guarded against behind-camera projection (`.front` checked at lines 520, 565,
+returns null/skips the draw) — rules out a naive near-plane perspective-divide blowup on an unguarded path.
+**NOT YET FOUND: which of the function's several draw calls (grid bubbles / dimension chains / numeral
+text / the upright plane's 2D projection) is the one producing the large region, and on what condition.**
+**NEXT — bisect INSIDE the 2D compositor, same discipline, don't theorize:** add a `--tap` or temporary
+early-return that disables one drawing block at a time inside `flythruDatumCompositeOntoCanvas` (bubbles,
+then dimension chains, then text) and re-run the same 23-frame clip against the same 42/0 scorecard. Cheaper
+still: build §41's `§MAXQ_FRAME_LUMA` first so the log names the exact bad frame's second, then read that
+one frame's `_lines`/`sidesNow` state directly instead of bisecting blind a third time.
+**DEAD, add to §51.4's list:** TAA × transparency (branch-A-only, now moot); the 3D ribbon group as the
+primary cause (branch A only reduced 42→36, not to 0).
+
+### 53. §DATUM_DECOUPLE, a second pass that burns the 2D datum layer in AFTER the GPU fold (2026-09-09, user directive: "decoupling separate pass sounds more better design")
+**BUILT this session, scoped exactly to §53.4 — testing now.** `viewer/cinema_maxq.js` `_captureFrame`
+gained an `A._burninDatumDir` branch (async, guarded — the normal path is byte-for-byte unchanged when
+the flag is unset): loads a pre-extracted clean PNG for the frame instead of rendering, runs ONLY
+`flythruDatumCompositeOntoCanvas` on top, skips every other overlay (already baked into the clean
+source). `cli_silent_bake.js` gained `--burnin-datum-src clean.mp4`, which ffmpeg-extracts that video's
+own frames once (cached in `out/<stem>_burninframes/`, reused on a re-run) and threads the URL dir
+through `bakeOpts.burninDatumDir`. A frame-count mismatch fails loudly (`§DATUM_DECOUPLE_ERR`, an
+unhandled rejection that reaches `__bakeResult.ok=false`), not silently. `node --check` clean on both
+files. **KNOWN LIMITATION, not yet fixed:** this first cut does NOT skip the outer loop's still-refine
+fold wait (`_waitFoldDone` etc. live outside `_captureFrame`, untouched) — so this run is not yet the
+"cheap, no-GPU" version §53.2 describes, only the "no other overlay, no GPU render inside the capture
+itself" isolation. Speed is a follow-up if this becomes the permanent architecture; correctness is
+what's being tested right now.
+
+**53.6 TWO BUGS FOUND AND FIXED BEFORE THE FIRST CLEAN RUN, both in the harness, not `cpe_flythru_datum.js`:**
+1. **Hung entirely, 0 frames/580s+.** `A.startStillRefine()`+`_waitFoldDone()` (the per-frame outer-loop
+   fold) never converges without real rendering — MEASURED, first attempt stalled behind `§IDLE_GATE`
+   self-parking. Fixed: both calls skip when `A._burninDatumDir` is set (`cinema_maxq.js` ~line 1915-1944).
+2. **`burninDatumDir` was silently dropped.** `window.__maxqBake` (the actual entry point
+   `cli_silent_bake.js` calls) rebuilds its own literal for `start()` — `{editor, preview, override,
+   overrideSource, frames, fps, forceWebm}` — and never forwarded the new field, so `A._burninDatumDir`
+   was never set on the FIRST fixed attempt either, silently running the full normal path. Fixed:
+   added `burninDatumDir: o.burninDatumDir` to that literal (`cinema_maxq.js` ~line 2545-2547).
+3. **~3s dead gap per frame, found AFTER both fixes, on the run that finally worked correctly.**
+   `_raf2()` (line 552) waits for two real `requestAnimationFrame` ticks, falling back to a 1500ms
+   timeout each if none fire. With no `_composer.render()` to composite, Chromium never schedules a
+   real rAF for the page, so both calls (`frame X settle` + `frame X capture`) hit their fallback every
+   frame — MEASURED directly in the log: zero lines between `§FLYTHRU_DATUM_MARKS` (end of frame N) and
+   `§PERF_TRAVERSE` (start of frame N+1), gap 2.9-3.3s, repeated every frame. Fixed: both `_raf2` calls
+   skip when `A._burninDatumDir` is set (lines ~1769, ~1949).
+**State when this session paused (user stepping away, machine may be busy elsewhere — bake killed
+cleanly, not suspended mid-run per §CLI_BAKE_SIGINT discipline):** all three fixes applied, `node --check`
+clean, not yet re-run with all three in place. `out/L2_datumoff_2026-09-09_burninframes/` (564 PNGs)
+stays cached — a re-run reuses it, no re-extraction. **NEXT: re-run the same command (§53's
+`--burnin-datum-src out/L2_datumoff_2026-09-09.mp4`, clip 0.75:0.87) and score with
+`probe_film_flicker.py` against 42 (guilty) / 0 (innocent) per §53.3.** Should now run close to a normal
+bake's pace (~1s/frame → ~10 min), not the ~50-75 min the un-fixed harness projected.
+
+**53.0 HOUSEKEEPING, same session, before building.** `/tmp/wt-storey-reveal/out/` had grown to 1.2 GB /
+369 files across the whole §24–§52 investigation. Cross-checked every filename against this prompts file
+(cited-by-name = kept); removed ~400 MB of uncited ad-hoc frame-dump dirs (`f_blk/f_ctrl/f_tail/f_l2*
+/f_pre*/f_sr`, `frames_plate`, `cmpA/cmpB/dA/dB`, all `snaps_*`), profiler temp dirs, and a handful of
+stale/discarded logs (`Hospital_0-30s_boxes_2026-09-08.*` — the stale-JS discard §43 describes,
+`HHS_FULL_480p_aoexclude_2026-09-09.log`, build/catalogue logs). 792 MB / 284 files remain — every large
+file left is a film or log this section or an earlier one names by hand. Nothing cited anywhere in this
+file was removed.
+
+**53.1 WHY.** §52 pinned the cause to `flythruDatumCompositeOntoCanvas` (`viewer/cpe_flythru_datum.js:422`),
+called once per frame inside `_captureFrame` (`cinema_maxq.js:791-793`) — AFTER `A._composer.render()`
+has already finished the whole GPU fold (AO/TAA), onto a fresh 2D canvas snapshot of that finished
+image. So it is already temporally last relative to 3D; nothing in the render pipeline can be
+reordered to fix this. What CAN change is where the compositor is *invoked* — decoupled from the
+GPU bake loop entirely, as a second, cheap pass over already-baked frames.
+
+**53.2 THE DESIGN.**
+1. Bake the film with the datum layer suppressed at the source (already possible: `--tap
+   out/tap_datum_off.js`, or a proper `--no-datum` flag) — this is the expensive GPU pass, and it
+   ships clean (measured: `L2_datumoff` = 0 jumps, max 8.5).
+2. Extract that clean bake's frames with `ffmpeg -i clean.mp4 frame_%05d.png` (cheap, no GPU).
+3. In the SAME browser page/scene (still needed — the compositor calls `A.ifc2three`, `A.camera`,
+   and reads `_lines` built by `flythruDatumBuild`), loop the frame list: load each PNG onto a
+   canvas (`drawImage`, no `_composer.render()`, no GPU fold at all), reconstruct `A.camera`'s pose
+   for that frame from the bake's own `poses.json` (already produced, already used by
+   `probe_plate_flicker.py`/`probe_film_flicker.py`'s siblings), call
+   `flythruDatumCompositeOntoCanvas(ctx, w, h, filmSec, filmSecFull)` unmodified, `canvas.toBlob`.
+4. Re-mux the resulting frame sequence to mp4 with ffmpeg.
+**No change to `cpe_flythru_datum.js` itself for this step** — the same function, same inputs,
+different caller and timing. That is the point: it isolates WHEN it's wrong.
+
+**53.3 WHAT THIS BISECTS, and it is a real bisect, not just a workaround.**
+- If the decoupled pass **reproduces** the 42/59.6-style jumps on the same film seconds: the bug is
+  in the function's own math/state (candidate already read, §52: `_sides` is latched once via
+  `if (!_sides) { _sides = sidesNow; }` and never recomputed — worth logging `_sides.key` per frame
+  across the LIFE1→LIFE2 relaunch to see if it's reused stale). Fix it there, and the decoupled
+  architecture is worth KEEPING anyway (cheaper iteration: no GPU needed to test annotation changes).
+- If it does **not** reproduce: the defect depends on being invoked inside the live GPU bake loop —
+  e.g. WebGL context / 2D canvas state interaction on the same page, or a timing issue with
+  `A._composer.render()` and the 2D read happening in the same tight per-frame loop. That would be a
+  DIFFERENT and more surprising finding, and the decoupled pass becomes the permanent fix regardless
+  of whether the mechanism is ever fully named.
+**Either outcome moves the investigation forward and either outcome ships a clean film** — the
+decoupled pass produces the final annotated video either way once it's built.
+
+**53.4 SCOPE, DELIBERATELY NARROW.** Only `flythruDatumCompositeOntoCanvas` moves to the second pass
+for this spec. `flythruCuesCompositeOntoCanvas`, `linearBeatCompositeOntoCanvas`, `slabBeatCompositeOntoCanvas`,
+`indoorBeatsCompositeOntoCanvas`, `flyoutBeatsCompositeOntoCanvas` and the clash/HUD layers are all
+proven innocent (§48, §50, §52) and STAY in the live per-frame pass. Do not decouple layers that
+aren't guilty — that would just add a second pipeline with no diagnostic or shipping value.
+
+**53.5 OPEN QUESTIONS FOR WHOEVER BUILDS THIS (answer before coding, not while coding):**
+- New script (`scripts/burn_in_datum.js`?) vs. a `cli_silent_bake.js --burn-in-datum <clean.mp4>` mode
+  reusing its existing puppeteer/page setup and `poses.json` reader.
+- ffmpeg round-trip (extract → PNG → re-encode) vs. keeping frames in memory if the frame count is
+  small enough for a single clip (564 frames at 720p is not large).
+- Does the live EDITOR preview (not the bake) also need this split, or is the flicker bake-only
+  (the fold's TAA accumulation timing may not exist at all in live preview — unconfirmed, check before
+  assuming the live path has the same bug).
+**NEXT: build the decoupled pass for the LIFE2 clip only (`--clip 0.75:0.87`, the same 23 s window
+used throughout §42–§52) and score it — one bake-free-ish run (only the extraction/re-encode needs
+`ffmpeg`, the projection pass itself needs no GPU) answers 53.3's either/or.**
