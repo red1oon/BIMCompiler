@@ -3525,3 +3525,20 @@ sw **v1172**. Worktree `/tmp/wt-storey-reveal`. Films: `~/Downloads/Hospital_FUL
 **Everything else in §40 is DONE and witnessed** — three fixed boxes 12/12, plate area 18/18, fly-out
 beats 12/12 — and the user has accepted Measure on screen ("very good, gives proper labels… a powerful
 statement"). **The flicker is the only thing outstanding.**
+
+**47.7 ✅ THE ONE ASSUMPTION UNDER §47.3 IS NOW VERIFIED IN CODE (2026-09-09, no bake needed).**
+§46 asserted that the AO pass "ignores per-object material flags" but only checked SSAOPass — which is
+NOT the pass that runs. Read the live one instead, `viewer/lib/postprocessing-n8ao.bundle.js`:
+```js
+let a = t.overrideMaterial; t.overrideMaterial = this.material; e.render(t, r); t.overrideMaterial = a;
+```
+**N8AO DOES set `scene.overrideMaterial` for its depth/normal render.** An override material replaces
+every object's material, so a per-object `depthWrite:false` is never consulted — **§42's fix could not
+have worked, and now that is a fact rather than an inference.** The same line also shows the pass goes
+through `renderer.render(scene, target)`, which HONOURS `object.visible` — so hiding a group for the
+duration of that pass is a mechanically valid exclusion, and `A._aoExcludeWrap` wrapping
+`N8AOPass.render` covers this internal render. **Mechanism: confirmed. Fix shape: valid. Outcome: still
+untested** — §47.3's clip bake is unchanged as the first task.
+⚠ **A reviewer summarising this file has already mis-stated it once** as "SSAOPass's override material" —
+that is trap §47.5(2) folded back into the diagnosis. The live pass is **N8AOPass**. If a fix is wired to
+SSAOPass it is a silent no-op; check for `§AO_EXCLUDE pass=N8AOPass` in the log before believing any bake.
