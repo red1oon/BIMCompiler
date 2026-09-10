@@ -3864,6 +3864,48 @@ aren't guilty — that would just add a second pipeline with no diagnostic or sh
 used throughout §42–§52) and score it — one bake-free-ish run (only the extraction/re-encode needs
 `ffmpeg`, the projection pass itself needs no GPU) answers 53.3's either/or.**
 
+### 56. ⛔ TWO NEW ITEMS for the next session, straight from the user, documentation only — no code
+touched for either this session, both below are specs to pick up, not fixes already tried.
+
+**56.1 Prolong the Measure info box past its marker's own on-screen life.** User: "the marker line on
+canvas may disappear out of frame but the info box should linger on as the next marker has not shown
+up yet, so that user can eyeball what just went past." MECHANISM, already traced (no guessing needed
+next session): `A.filmBoxesDrawMeasure` (`cpe_film_boxes.js:208`) reads and **drains the WHOLE queue
+every single frame** — `var q = _queue; _queue = []` — so the box shows content ONLY on frames where
+something actually posted that frame, and goes blank the very next frame nothing does. THREE
+independent beats post into this ONE shared queue, each gated by its own "is my marker currently
+on-screen" condition, with no linger of their own:
+- `cpe_slab_beat.js:517-518` — `if (!_beat || !_labelOn || !A.filmBoxesMeasurePost) return 0;`
+- `cpe_flythru_cues.js:449` and `:507`
+- `cpe_flyout_beats.js:243`
+A per-beat fix would mean touching all three call sites identically (repetition, easy to drift out of
+sync). The cleaner fix is almost certainly CENTRALISED, at the shared queue/draw layer itself
+(`cpe_film_boxes.js`): when `filmBoxesDrawMeasure` is called on a frame where nothing posted, and the
+LAST successfully-posted entry is still within some linger duration, redraw THAT last entry instead
+of going blank — clearing it only once the linger expires OR a genuinely new entry posts (whichever
+comes first, so a fast-arriving next marker still cuts over immediately rather than queueing behind
+a stale one). Use **FILM SECONDS for the linger timer, never wall-clock** — this codebase's own
+established pattern everywhere pacing matters (`clash_film.js`'s pulse envelope is the explicit
+model: "never performance.now(), so a 15fps and 24fps bake pulse identically and a re-bake is
+reproducible"). No linger DURATION has been chosen or measured yet — start by measuring how long a
+marker beat's own posting window actually runs today (log evidence, not a guessed number) before
+picking one.
+
+**56.2 Storey-level highlight is "hardly recognizable" — CONFIRMED STILL OPEN, this is the SAME
+complaint as §55.6 item 1, now reinforced by the user a second time** ("was tried few times without
+success"). Facade-only tint (§FACADE_ONLY_TINT, shipped `7e4fa316`) is mechanically correct and
+verified on two buildings (§55.2, §55.5) but touches only 3-16 wall elements per storey — visually
+too subtle to read clearly on screen, exactly as §55.6 already flagged. §55.6's own next steps still
+apply unchanged: do not guess a fix (brighter colour vs a facade outline/edge-glow vs widening which
+IFC classes count as facade — currently only `IfcWall`/`IfcWallStandardCase`/`IfcCurtainWall`, not
+`IfcWindow`/`IfcDoor`/curtain-wall sub-elements) — extract a witness first (actual on-screen pixel
+coverage of the tinted facade vs the rest of the frame, or total facade surface area vs total storey
+surface area) before picking a direction. **Two mechanisms (x-ray, darken-above) were already tried
+and abandoned before facade-only shipped (§55.1) — this recognisability problem is NOT a reason to
+revisit either of those; it is a problem with facade-only's own visual weight, to be solved within
+that mechanism** (bigger/brighter/outlined facade tint), not by reverting to a mechanism already
+proven to have worse problems (uneven lighting, per-pixel cost, or both).
+
 ### 54. ✅✅ THE FLICKER IS FIXED — root cause and fix, both measured (2026-09-09, bim-ootb `2a2d32ec`)
 **Session start note:** `/tmp/wt-storey-reveal` had been wiped (tmp cleared between sessions) — the
 worktree, `out/L2_datumoff`/`L2_nomeasure`, `tap_datum_off.js`, cached burn-in PNGs, all gone. The
