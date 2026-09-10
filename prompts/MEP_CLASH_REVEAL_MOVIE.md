@@ -4,6 +4,8 @@ every closed item below lives in `prompts/archive/MEP_CLASH_REVEAL_MOVIE_archive
 file keeps only a compact recap of what shipped plus everything still ACTIVE. Read the archive only
 when you need the original derivation/measurement behind a bullet below.
 
+**New session: skip straight to §56 (end of file) — two open items with the mechanism already traced, nothing to rediscover.**
+
 ## Shipped, closed, merged to main — compact recap (full detail in the archive above)
 Started 2026-08-07 as a triage against a competitor MEP-coordination movie capture: the finding was
 this needed a new CAMERA MODE + VISIBILITY MODE over data already real (clash detection, navigate-to-
