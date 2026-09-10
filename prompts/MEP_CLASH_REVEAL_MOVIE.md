@@ -4078,3 +4078,19 @@ re-watching — §55.1 already tells you why each was dropped.
        would show a measurable, localized difference; natural night lighting would not, since it
        would look the same before and during the window. Do not add code changes for this until
        that comparison exists.
+
+**55.7 ⛔ NEW, UNINVESTIGATED — a real flicker burst on HHS, NOT the same bug as §46-§54.** Both
+buildings' full 1080p/24fps all-on bakes ran clean end to end (`unconverged=0`, no errors) and both
+passed `probe_film_flicker.py` on reveal round / storey reveal / orbit (0-1 jumps each — §46-§54's
+fix and today's facade-only tint are confirmed NOT regressed). But HHS's own run
+(`out/HHS_FULL_1080p_2026-09-10.mp4`, also copied to `~/Downloads/HHS_FULL_1080p_2026-09-10.mp4`)
+measured **25 jumps tightly clustered at filmSec 74.38-76.38s in the "cruise" beat, max|dY|=111.1**
+— higher than the ORIGINAL §42-§54 bug's own worst measurement (59.6-63.6) ever was. Hospital's
+equivalent full bake shows nothing like this (one isolated 31.4 jump at a beat boundary, not a
+cluster). **Not investigated at all yet** — no hypothesis, no bisect, nothing ruled out. This is a
+DIFFERENT defect from the datum-ribbon flicker §46-§54 solved (that fix demonstrably holds on both
+buildings) — treat it as a fresh investigation, starting the same way §46-§54 eventually succeeded:
+bisect the LAYER first (which Measure/cinema layer, if any, is even active in that window — check
+the log for what's actually drawing at 74-76s on HHS) before theorising about a mechanism. First
+command to run: `python3 scripts/probe_film_flicker.py out/HHS_FULL_1080p_2026-09-10.mp4 --win
+"cruise:70:80"` for a closer look, then read the raw log around filmSec 74-76 for whatever is live.
