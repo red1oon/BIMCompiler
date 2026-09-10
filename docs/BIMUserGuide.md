@@ -476,16 +476,22 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
   cards also gain a "N mesh-true clashes flagged" card while this is on.
 - **Measure** — the setting-out drawing, from the real column grid: numbered and lettered bubbles, bay
   chains that sum to the overall, and storey rules. It is **up at frame 0** — built from the database, so
-  it does not wait for the model to load — and it is drawn **in the model's own planes**, which means the
-  building progressively **occludes** it as the buildup rises. That occlusion is the point: it is how you
-  see the grid is behind the building rather than painted on the lens. The chains are checked rather than
+  it does not wait for the model to load — and it is drawn **in the model's own planes**. The upright
+  storey rules occlude normally as the buildup rises — that occlusion is how you see them sitting
+  behind the building rather than painted on the lens. The ground plan lines shine through the
+  building instead: a live check found them fully hidden behind the building's own walls from every
+  camera angle otherwise, including the opening shot, so occluding them would mean they were never
+  actually seen. The chains are checked rather than
   claimed — on Hospital, HHS and Terminal the bay chain sums to the overall exactly on all three axes
   (`X 95.915 = 95.915`, and so on), with no per-building tuning.
   ⚠ Where a federated model records the same storey at two elevations, the drawing **states the fault
   and draws the levels as recorded** rather than choosing between them — resolving it would be inventing
   a datum the file does not contain.
-- **Storey highlight** — each storey glows blue / green / yellow / orange in turn over the last 5 s
-  before the closing orbit, with a door-count and footprint HUD card for each.
+- **Storey highlight** — each storey's facade (its exterior walls only, not the whole floor) glows
+  blue / green / yellow / orange in turn over the last 10 s before the closing orbit, with a
+  door-count and footprint HUD card for each shown in the same corner panel every other measure
+  uses. An exterior wall is already visible from the closing orbit shot on its own, so nothing else
+  in the building is touched, dimmed, or made transparent for this.
   ⚠ The card's counts are read per storey **name**. On a federated model whose storey table carries alias
   or duplicate names (one Terminal file lists 22 names for six real floors), the highlight can land on
   alias rows and the card then reads `doors 0` — the doors are real, they are attributed to the storey
