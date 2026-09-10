@@ -4,7 +4,7 @@ every closed item below lives in `prompts/archive/MEP_CLASH_REVEAL_MOVIE_archive
 file keeps only a compact recap of what shipped plus everything still ACTIVE. Read the archive only
 when you need the original derivation/measurement behind a bullet below.
 
-**New session: skip straight to §56 (end of file) — two open items with the mechanism already traced, nothing to rediscover.**
+**New session: skip straight to §58 (end of file) — §57.1 is DONE and verified; §57.3 has a real partial mitigation shipped plus the actual dominant mechanism now identified (not yet fixed); §57.2 has a verified live reproduction narrowing the search a lot (not yet fixed). §57.4/§57.5 are still documentation-only, unchanged.**
 
 ## Shipped, closed, merged to main — compact recap (full detail in the archive above)
 Started 2026-08-07 as a triage against a competitor MEP-coordination movie capture: the finding was
@@ -4138,3 +4138,239 @@ bisect the LAYER first (which Measure/cinema layer, if any, is even active in th
 the log for what's actually drawing at 74-76s on HHS) before theorising about a mechanism. First
 command to run: `python3 scripts/probe_film_flicker.py out/HHS_FULL_1080p_2026-09-10.mp4 --win
 "cruise:70:80"` for a closer look, then read the raw log around filmSec 74-76 for whatever is live.
+
+### 57. ⛔ RESUME HERE (2026-09-11) — user watched `HHS_lowres_storeyreveal_2026-09-10.mp4` (854×480@15fps,
+worktree `/tmp/wt-storey-reveal`, branch `feat/measure-boxes`) and reported §56.1/§56.2 UNCHANGED, plus
+3 new items. **User's own words: "DO not fix, just update the prompts/# firsts to review as this has
+been tricky for first two."** Nothing below is implemented — every item is spec/evidence only, same as
+§56 was. Do not re-derive what's already measured here; extend it.
+
+**57.1 §56.1's combine fix was INCOMPLETE — it only combined height into hall's box, not stair or door.**
+User: *"Seconds 17th there is a length been measured but does not appear below the present Measure in
+the info box together."* MEASURED on this exact session's own HHS bake (`out/HHS_lowres_storeyreveal_
+2026-09-10.log`) — hall and stair draw the SAME frames, exactly the collision §56.1 was supposed to
+close:
+```
+§INDOOR_BEAT_DRAW key=hall  filmSec=17.01 op=1.00 area=2,100m2
+§INDOOR_BEAT_DRAW key=stair filmSec=17.01 op=1.00 going 8,944 mm
+```
+(`§INDOOR_BEAT_PLAN beats=3/4 [hall@9.46 stair@16.21 door@28.46]` — hall's own §29.6 persistence runs
+9.46→25.28s, far longer than its own 2.7s §14 reservation, so ANY later beat scheduled just outside
+that reservation — stair, door, or height — still lands inside hall's real on-screen life. This is
+structural, not a fluke: whichever of stair/door/height fires next while hall is still up will hit
+the same collision height did.)
+**The fix shipped in `cpe_indoor_beats.js`'s `indoorBeatsCompositeOntoCanvas` only special-cased
+`b.key==='height'`** (`heightCombinedByHall` flag, hall's own branch appends `heightBeat.label` when
+`envAt(filmSec-heightBeat.sec)>0`). **Generalize it**: loop `_beats` for ALL non-hall beats concurrently
+live (`envAt(filmSec-b.sec)>0`), append EACH's own row to hall's post (title stays `'Hall-Corridor'`),
+cap at `MEASURE_ROWS=4` total rows (hall's own 2 + up to 2 more — stair/door/height are mutually
+exclusive in practice since §14 rarely schedules two of them inside the same instant, but code
+defensively for >2 anyway: take the earliest-scheduled extras that fit, name the rest the same way
+the box's own "ALSO_POSTED" convention already does for a genuine same-frame collision). Suppress each
+combined beat's own solo post the same way (`combinedByHall[b.key]=true`, checked before the generic
+branch's own `A.flythruDrawPanel` call) — keep the existing FALLBACK (solo post) for whichever
+beat(s) hall does NOT cover (hall already off, or `_beats` order edge cases). Re-run `witness_indoor_
+beats.js` after — its own invariants only check the `drawn` COUNT (never row content), so this should
+stay green untouched, but run it for real proof, not by this same reasoning alone.
+
+**57.2 Facade highlight "still disturbs ie darken black some other storey wall" — THIRD report of the
+same symptom** (§55.6 item 2 → §56.2's own restatement → now this). Two SEPARATE, both-real issues are
+in play here, do not conflate them:
+- **Weak/small highlight** (§56.2's own measurement, unchanged, still true): facade tint covers only
+  1.8-8.4% of a Hospital main floor's own total wall area (bbox-edge classifier under-selects on a
+  non-rectangular/tapering footprint) — a legibility problem with WHICH walls get selected, separate
+  from the point below.
+- **Something ACTIVELY going dark** — this is the part re-reported three times now, and code review
+  (§55.6(c), and re-confirmed this session) still finds NO code path that writes a dark/negative tint
+  anywhere in `cpe_storey_reveal.js`: `storeyRevealApplyVisual` only ever calls `_applyTint(vis.storey,
+  vis.color)` (never a "darken" call) and `vis.dark` (the §STOREY_REVEAL_PULSE cease-phase) means
+  "don't tint this instant" — `_restoreTint()` puts the ORIGINAL material/colour back, it never paints
+  black. **RULED OUT this session, verified from source, don't re-propose**: a plausible-looking
+  candidate was that `InstancedMesh.setColorAt`/`BatchedMesh.setColorAt`'s FIRST-EVER call on a mesh
+  lazily allocates its colour buffer and could default every untouched instance in that shared mesh
+  (i.e. every OTHER storey sharing the same batched geometry) to black. Checked directly against this
+  project's own vendored build, `viewer/lib/three.core.min.js`:
+  ```
+  setColorAt(t,e){return null===this.instanceColor&&(this.instanceColor=new $a(new
+    Float32Array(3*this.instanceMatrix.count).fill(1),3)), ...}          // InstancedMesh
+  _initColorsTexture(){... new Float32Array(t*t*4).fill(1) ...}          // BatchedMesh
+  ```
+  Both lazy-init to **`.fill(1)` — white**, not zero. This theory is dead; do not spend time on it again.
+  **STILL NOT DONE, three reports in a row now — this is the actual next step, not another theory**:
+  §55.6(c)'s own diagnostic was never run. Extract real frame luma/colour samples from an UN-highlighted
+  storey's walls at the exact timestamp the user is watching, and compare against the SAME storeys'
+  appearance BEFORE the reveal window opens in the SAME film (`probe_film_flicker.py`'s own luma-sampling
+  approach is the right shape of instrument, adapted to sample specific screen regions rather than
+  whole-frame mean). A real code-caused blackening shows a measurable, localized, TIME-CORRELATED
+  darkening; natural night-scene base lighting would look the same before and during the window. Do not
+  add another code theory before this measurement exists.
+  **One genuinely new, UNVERIFIED lead worth checking if the luma test confirms a real localized
+  darkening**: whether `A._instanceMeta[mesh.id]`/`A._batchMeta[mesh.id]`'s per-index `{storey, guid}`
+  metadata can ever be stale or mis-mapped relative to the actual instance/slot index `_applyTint`
+  writes to — i.e. tinting (or later mis-restoring) the WRONG instance because the index-to-storey
+  table disagrees with the mesh's real instance order. Not traced this session (would need to read
+  wherever `_instanceMeta`/`_batchMeta` gets built, likely scene.js) — named here so it isn't
+  rediscovered from zero, not because it's confirmed.
+
+**57.3 Flicker still present (user, 2026-09-11): "There is still slight flicker as reported before but
+it has to be solved."** This is §55.7, still fully unresolved (no hypothesis, no bisect, as of that
+entry) — REINFORCED this session with a second, independent measurement. Ran `probe_film_flicker.py`
+on this session's own fresh HHS bake (854×480@15fps — note the probe defaults to `--fps 24`; re-run
+with `--fps 15` for this file or every printed timestamp is wrong):
+```
+python3 scripts/probe_film_flicker.py out/HHS_lowres_storeyreveal_2026-09-10.mp4 --fps 15
+§FILM_FLICKER_WIN cruise  60.01- 97.85s jumps>15=25 (0.66/s) max|dY|=125.0  74.27 74.33 74.40 74.53 74.60 74.67 74.80 76.27
+```
+**25 jumps clustered at filmSec 74.27-76.27s** — essentially the SAME count and the SAME absolute
+film-second window §55.7 already measured on a completely different HHS bake (1080p/24fps, full-length
+run: **25 jumps at 74.38-76.38s**). Same building, but different resolution/fps/duration/settings —
+the cluster's absolute timing barely moved. That is strong evidence this is deterministic and tied to
+the CRUISE BEAT'S OWN internal structure (a sub-beat boundary, a fixed-timed effect inside cruise) more
+than to frame rate, resolution, or anything render-load-dependent — a real lead for the bisect §55.7
+already prescribes and nobody has started: check the log for what layer is actually drawing/active at
+74-76s in the cruise beat on either bake, before theorising about a mechanism.
+
+**57.4 NEW — user wants a 2s FADE, not a cut, when a Reveal round drops a discipline (their example:
+ARCH).** User: *"When going to Reveal without ARCH, the ARCH elements should fade off rather than cut
+off. Give me a 2 sec fade be good to give impression it is not arupt or a new cut in the movie."*
+MECHANISM, traced this session: `A.cpeRevealVisualAt` (`effects.js:5919`) is what puts a discipline
+into its 'ghost' phase (ARC/STR drop out once round 2 reaches `b.flyback`, per §CPE_REVEAL_ARCH_HOLD);
+the actual show/hide happens in `A._applyDiscVisibility` / `A.filterInstancedMesh` / `A.filterBatchedMesh`
+(`panels.js:816+`), which is a **pure boolean `.visible` toggle** across regular/Instanced/BatchedMesh
+alike — there is no opacity ramp anywhere in that path today. This is a KNOWN, already-documented
+architectural limit, not an oversight: effects.js's own comment right above `CPE_REVEAL_FADE_SEC`
+(~line 5653, §CPE_DISCIPLINE_REVEAL_FADE, 2026-08-16) says it outright — *"no per-element opacity
+channel exists in this pipeline (Instanced/BatchedMesh share ONE material per batch, so animating
+opacity would fade the WHOLE batch, not just the disc entering/leaving). This is the closest honest
+approximation to a fade with that real constraint."* The existing MEP-to-MEP parade transitions already
+hit this exact wall and settled for `CPE_REVEAL_FADE_SEC=0.4` — both disciplines visible together for
+0.4s at a slot boundary, explicitly documented as NOT a literal dissolve. A true 2s alpha fade needs
+NEW plumbing this pipeline doesn't have yet, and the right approach likely differs by mesh
+representation: a REGULAR (non-instanced) mesh can get a real per-object opacity animation today
+(Three.js supports it natively, nothing stops it); an Instanced/BatchedMesh cannot the same way —
+`instanceColor` is RGB only, no alpha channel, so a per-instance fade would need either a shader change
+or the same "dual-visible overlap" approximation already in use. **Before implementing: measure what
+fraction of ARCH's own elements are regular vs Instanced/BatchedMesh** (same kind of count this session
+already ran for facade walls, §56.2/§57.2 — reuse that method) — that number decides whether a real
+2s fade is fully achievable, partially achievable (real fade on regular meshes, 0.4s-style overlap on
+the rest, which will look inconsistent between element types on the SAME discipline), or needs a
+different technique (e.g. a 2D compositor-side cross-fade between two captured states, if that's even
+feasible inside `_captureFrame`'s single-pass-per-frame design — not checked this session).
+
+**57.5 NEW — a camera-path jump/stick somewhere in some bakes.** User: *"Some part of the movies at a
+stick in the path, there seems to be a jump or cut. Make in between frames to be smoother perhaps few
+frames between camera jumps."* No specific timestamp or building given — get one if possible, it
+narrows the search enormously. The RIGHT instrument already exists and matches this project's own
+hardened law (camera motion is judged by real position/tilt/rate numbers, never by eye — CLAUDE.md
+"FUNDAMENTAL LAW", 2026-07-21): every bake already writes a `<out>_poses.json` sidecar, one row per
+frame `[frame, x, y, z, tx, ty, tz, wallMs]`. **Tried this session, and it's the wrong shape of test —
+say so plainly so it isn't re-tried the same way**: a naive global "frame-to-frame step size vs the
+whole film's median" pass on this session's own HHS poses.json flagged 208 "outliers," ALL of them in
+the dive beat — a false-positive class, not a finding, because dive is *supposed* to move fast (~2m at
+15fps by design) and a flat global threshold cannot tell "this beat is just fast" from "this frame
+actually jumped." **The real test needs a PER-BEAT baseline** — compare each frame's step (or better,
+heading/acceleration) against THAT BEAT's own local expected rate, the same class of check
+`witness_cpe_even_turn.js`'s jerk-cap (`1.5 * PACE_SWING`) already does for turn rate elsewhere in this
+exact pipeline (§CPE_PACE_SWING_SOFTEN, above) — adapt that math, or extend `probe_film_flicker.py`'s
+own per-window approach, rather than a flat global-threshold pass on raw position deltas. `poseAt`
+(`effects.js:8197`) is a heavily hand-tuned analytic function per beat (dive/spin/walk/orbit each have
+their own easing, plus `_cinemaGazeBlend`'s slerp-like look-at blend at beat handoffs) — if there IS a
+real kink, it is most likely at a BEAT BOUNDARY handoff (where one analytic segment hands off to the
+next), not mid-beat, so a per-beat-relative jerk/heading-rate check at those specific seams is the
+highest-value place to look first once a candidate timestamp exists.
+
+### 58. RESUME HERE (2026-09-11, later same session) — user said "solve as many listed here." Worktree
+`/tmp/wt-storey-reveal`, branch `feat/measure-boxes`, uncommitted. One item shipped and verified, two
+got real progress with an honest verified-negative on the first attempted fix for one of them — read
+§58.2 before touching the flicker again, it saves re-discovering a dead end.
+
+**58.1 ✅ DONE, VERIFIED — §57.1's combine generalized to any concurrent beat.** `cpe_indoor_beats.js`'s
+`indoorBeatsCompositeOntoCanvas`: hall's branch now loops all of `_beats` for whichever of
+stair/door/height is concurrently live (`envAt(filmSec-bb.sec)>0`) and appends each's row, capped at
+`A.filmBoxesMeasureRowCap` (new export, `cpe_film_boxes.js`, = `MEASURE_ROWS`). Each combined beat's own
+solo post is skipped (`combinedByHall[key]`); falls back to solo when hall isn't concurrently active
+(off, or not yet started) — same robustness §56.1's height-only version had, just generalized.
+**Verified**: `witness_indoor_beats.js` 11/11 PASS on HHS (real puppeteer run, real DB) — no regression.
+`witness_slab_beat.js` 18/18, `witness_flyout_beats.js` 12/12 — also clean (these exercise
+`filmBoxesMeasurePost`/queue behaviour §57.1 touches indirectly). `witness_film_boxes.js` extended
+with 2 new invariants proving §56.1's own linger claim (holds up to `LINGER_S`=2.2s past a marker's own
+post, clears after) — 14/14 PASS.
+
+**58.2 ⚠ FLICKER (§55.7/§57.3) — REAL MECHANISM FOUND, first fix attempt VERIFIED INSUFFICIENT, do not
+re-try the same one.** Traced via the real HHS bake's own log (`out/HHS_lowres_storeyreveal_
+2026-09-10.log`): `§NIGHT_BUILDUP_GATE ... lit=30` immediately followed by `lit=50` at the SAME logged
+instant, repeating every frame. Root mechanism, confirmed by reading the actual source (not guessed):
+`A._nightUpdateLights()` (`tools.js`) is called from **at least three** places inside one baked frame's
+own cycle — `_teardownStillRefine` (`effects.js` ~L4551, NAV light budget, right before
+`A.controls.update()` moves the camera for the next pose) → `A.startStillRefine` (`effects.js` ~L5273,
+STILL/bake budget, once refine restarts for the new pose) → `_bakeFillPin`'s own deliberate per-frame
+call (`effects.js` ~L2750, gated on `A._maxqActive`, this one already instruments its own before/after
+`poolLit` drift). The first two are BY DESIGN (stop with the nav budget, restart with the bake budget)
+— not a leak — which is exactly why a narrow fix is hard: this is architecture, not a stray call.
+**Also found and independently patched**: `tools.js`'s `A._nightControlsListener` (a NAV-only reactive
+`A.controls` 'change' listener, 5m-movement debounced) ALSO fires during a bake, since
+`A.controls.update()` runs every baked frame — guarded it behind `if (A._maxqActive) return;` (same
+anti-pattern class as §19's markDirty rule). **MEASURED, re-baked HHS at identical settings
+(`out/HHS_lowres_v2_2026-09-11.mp4`/`.log`) to check it, and the honest result is a PARTIAL, not full,
+fix**: same-frame `lit=X` disagreements dropped 1079→935 (real, ~13%, this listener WAS contributing
+something) but `probe_film_flicker.py --fps 15` on the cruise beat is UNCHANGED — 24-25 jumps, same
+~74-76s cluster, before and after. **Kept the guard** (real measured improvement, zero regression,
+matches established doctrine) but do NOT report it as "the fix" — it isn't. The ~935 remaining
+disagreements are the `_teardownStillRefine`/`startStillRefine` round-trip itself. **Next step, not yet
+done**: trace exactly when `_captureFrame` grabs the canvas relative to those two calls — does the
+captured frame consistently land on the SETTLED (post-restart, topped-up) state, or does it sometimes
+catch the torn-down NAV-budget one? That timing relationship, not another guess at a third caller, is
+what decides whether this is fixable by re-ordering vs. needs the capture itself to wait for settle.
+
+**58.3 ⚠ STOREY DARKENING (§55.6/§56.2/§57.2) — REPRODUCED LIVE for the first time, with an important
+caveat on the rendering backend.** User: "There should be no darken at all, just highlight the facade of
+each." §57.2's own mandated diagnostic (frame luma vs. real timing, never eyeballing alone) finally ran:
+extracted real frames from `out/HHS_lowres_storeyreveal_2026-09-10.mp4` around the ACTUAL storey-reveal
+window (found via the real `§STOREY_REVEAL_TIMING`/`§STOREY_REVEAL_WINDOW` log lines — **not** the
+generic beat-fraction windows `probe_film_flicker.py` prints, which do NOT match this plan's own real
+`plan.beats` and gave a badly wrong window estimate at first — a real methodology trap, noted so it
+isn't repeated: always derive the window from THIS run's own §-tagged values, never from the probe's
+generic labels). Frame-diffing two consecutive frames (t=115.267→115.333, 66ms apart) at the real
+storey-transition instant shows an actual facade panel — light gray/beige — turn **solid black** in one
+frame, dead centre between the two glazed sections (`§57.2`'s hotspot-grid method located it; the
+before/after pair is saved for the record). This is a REAL, code-caused, timing-coincident defect, not
+a stale-film misread and not natural night lighting (§55.6 possibilities a/b both ruled out by this
+measurement) — three user reports were right.
+Built a live, no-full-bake reproduction (`A.cinemaPathPlan`/`plan.poseAt`/`A.storeyRevealApplyVisual`
+called directly in a puppeteer page, same trick `witness_indoor_beats.js` uses) to raycast the exact
+dark spot and read its live material — took real iteration to get right, both traps worth recording so
+they aren't re-hit: (1) `A.cinemaPathPlan` must be primed with a THROWAWAY call before reading
+`A._getCinemaPathEdit()` (`cinema_maxq.js`'s own `__maxqBake` 'db:cinema_path' branch does this —
+skipping it silently builds the plan from an empty/default override, nowhere near the real authored
+path); (2) build the plan EXACTLY ONCE and never again after the camera has moved — a second
+`cinemaPathPlan()` call re-derives pivot/orbit radius from the CURRENT (already-relocated) camera and
+each call then disagrees with the last, never converging. With both fixed, the reconstruction's
+`plan.beats.rise`/`plan.storeyReveal.windowFrac` matched the real bake's own settled log values exactly
+(0.9099/0.0309) — proof the reconstruction is faithful pose-for-pose.
+**Found**: at tn≈0.8883 (right at the Level 1→Level 2 transition), the darkest on-screen cell —
+darker than the night sky itself — is a **`BatchedMesh` belonging to Level 3** (`MeshStandardMaterial,
+emissive=000000, color=808080`, a plain unlit gray), NOT the storey currently being tinted (Level 2) and
+NOT one of `_facadeGuidsFor`'s own touched GUIDs. The dip is momentary — the same screen cell is normal
+(not in the top-3 darkest) one sample before and one sample after. This is consistent with — but does
+NOT prove — a DIFFERENT storey's BatchedMesh being transiently disturbed by the tint transition.
+**⚠ HONEST CAVEAT, read before trusting this as gospel**: this live reproduction necessarily runs on
+`--use-gl=angle --use-angle=swiftshader` (software rendering — the only option available to a headless
+puppeteer probe here), while the REAL bake that produced the visually-confirmed black patch ran
+`--gpu real` (hardware). The TIMING/existence of SOME defect is proven from the real bake's own frames;
+the SPECIFIC mesh identified by the live probe is a strong, plausible, well-corroborated LEAD, not a
+confirmed root cause — software and hardware GPU paths can differ in exactly the kind of texture-upload/
+timing edge case this smells like (§AO_EXCLUDE/§DATUM_DECOUPLE's whole saga was this same class of
+discrepancy). **Already ruled out this session** (checked directly against the vendored
+`viewer/lib/three.core.min.js` source, not assumed): `InstancedMesh.setColorAt`'s and
+`BatchedMesh._initColorsTexture`'s lazy buffer-init both `.fill(1)` (white) — a "defaults to black"
+theory is dead, don't re-propose it. **Next step, not yet done**: reproduce the SAME live-probe method
+with `--gpu real` if this environment can run headed/real-GPU puppeteer at all (check first — may not be
+possible headless), or, failing that, extract the actual real-bake frame's mesh under the black patch by
+a different route (e.g. a `--tap` script per `cli_silent_bake.js`'s own `--tap file.js` mechanism,
+installed into a REAL `--gpu real` bake, that raycasts and logs the hit at the known frame/pose — this
+runs on the real rendering path the user actually watches, closing the caveat above). No fix attempted
+yet — do not patch `_applyTint`'s BatchedMesh branch speculatively; this codebase has a documented
+history (§44) of a confident-but-wrong flicker fix that cost a full bake to discover was wrong.
+
+**58.4 — §57.4 (ARCH fade) and §57.5 (camera jump) are UNCHANGED this session** — still spec/evidence
+only, nothing implemented. Read §57.4/§57.5 directly, nothing new to add here.
