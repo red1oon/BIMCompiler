@@ -3937,3 +3937,144 @@ films kept in `out/`: `L2_datumoff_2026-09-09.mp4` (clean plate, 0/8.5), `L2_dia
 `L2_livefix_2026-09-09.mp4` (post-fix live production path, 0/9.3). **§40's work was already DONE and
 user-accepted (§51.5); this section closes the one item §51.5 left outstanding — the flicker.** Nothing
 else is currently open on this file.
+
+### 55. 🏁 RESUME HERE — session close 2026-09-10. Storey-reveal reworked THREE times, ground shine-thru
+added, datum shadow bug fixed, dimension labels fixed. TWO ITEMS STILL OPEN, read §55.6 first.
+bim-ootb `feat/measure-boxes` @ **`7e4fa316`**, pushed, no PR. Worktree `/tmp/wt-storey-reveal`.
+
+**55.1 STOREY-REVEAL'S THREE MECHANISMS, IN ORDER, TWO ABANDONED — do not re-try either.**
+1. **x-ray** (original, shipped before this session) — whole building at `opacity=0.3` while a storey
+   glows. Visually correct but expensive: DoubleSide+transparency during the ~10s window MEASURED at
+   ~3.7-4.0s/frame vs a ~1.3-1.7s/frame baseline (clean isolated A/B, same clip, only x-ray toggled).
+   Also went dark at the very end (last storey's own tint ceased before the window closed) — that
+   ONE fix (§STOREY_REVEAL_LAST_STAYS_LIT, still live) is independent of which mechanism lights the
+   storey and should NOT be reverted regardless of what happens to x-ray/facade.
+2. **darken-above** (tried as a cheaper x-ray substitute — true per-storey x-ray is infeasible:
+   `A._matCache`'s cache key has no storey component, so instanced/batched materials are shared
+   across every storey using them) — colour-only darken/lite-transparency on storeys above the
+   current highlight. **ABANDONED after two tuning passes** (0.12/0x14171c "too dark", then
+   0.45/0x4a5162 "still very dark, not restoring, only near-camera side evident"). Root cause found
+   by reasoning, not a third guess: instanced/batched tint is a per-instance ALBEDO colour via
+   `setColorAt`, not emissive — still subject to normal diffuse lighting, so a face turned from the
+   sun stays dark almost regardless of tint colour. **Structural limitation, not a tuning knob** —
+   do not revisit darken-above without a per-instance emissive channel this codebase does not have.
+3. **facade-only tint** (§FACADE_ONLY_TINT, SHIPPED) — the user's actual original ask, confirmed
+   explicitly ("Yes. My original request prior"): tint only the storey's exterior-wall elements,
+   touch nothing else. No x-ray, no darkening, no transparency, no per-pixel cost — an orbiting
+   exterior camera already sees a facade directly, nothing needs to become see-through for that.
+   Verified: 0 `§STOREY_REVEAL_XRAY` lines, speed back to baseline (~1.26-1.3s/frame) on both
+   Hospital and HHS.
+
+**55.2 FACADE MEMBERSHIP — a live geometric test, two real bugs found and fixed by MEASURING, not
+guessing** (`_facadeGuidsFor` in `cpe_storey_reveal.js`). No `IsExternal` IFC property exists in
+either building's DB (checked: 0 hits anywhere in the viewer) — facade is "does a wall's bbox touch
+its own storey's wall-only footprint edge within 0.5m":
+- **Bug 1**: footprint was pooled across the WHOLE BUILDING. Hospital has real setbacks (Level 1
+  X-span 112.5m vs Level 7's 23.8m — a tapering hospital tower, MEASURED via direct SQL, confirmed
+  real geometry not a data artifact) — only Level 1 ever touched that global edge; Level 2-5 read
+  `facadeWalls=0 VACUOUS`. Fixed: footprint now computed from elements on THAT STOREY ONLY.
+- **Bug 2**: even per-storey, the footprint still pooled columns/slabs/beams, whose overhangs sit
+  past where walls actually are — Level 3's closest wall measured 1.67m off that footprint, Level
+  7's (a small penthouse) 4.54m off. Fixed: footprint now derived from **WALLS ONLY** — by
+  construction the outermost walls then sit at exactly 0.0m (VERIFIED by direct SQL on every one of
+  Hospital's 8 storeys AND HHS's 3 real storeys before ever baking it).
+- Final state, both buildings, all real storeys have `facadeWalls > 0`; the one correct `VACUOUS`
+  left is HHS's Roof Level (0 walls — a roof genuinely has no walls, that is the right answer).
+- **Abstractness checked explicitly** (this session's own ask): grepped every touched file for
+  hardcoded building/storey names — every hit is a COMMENT citing a past measurement ("MEASURED on
+  Hospital..."), zero hits in actual code paths. The query uses only generic IFC classes
+  (`IfcWall`/`IfcWallStandardCase`/`IfcCurtainWall`) and a `?`-parameterised storey name. Cross-
+  building validation ran on Hospital (8 storeys) and HHS (3 storeys + a vacuous roof) — see §55.5
+  for the exact films.
+
+**55.3 OTHER FIXES THIS SESSION (unrelated to the x-ray/facade question, all still live):**
+- **§DATUM_NO_SHADOW** (`effects.js` + `cpe_flythru_datum.js`) — the datum's ground/upright ribbons
+  had NO exclusion from either of effects.js's two shadow-forcing sweeps
+  (`_reassertPhotoShadowCoverage`'s per-tick reassert, and the one-time `_shadowList` sweep), unlike
+  the AO pass which already has `userData.excludeFromAO`. They were casting real shadows onto the
+  building — a plausible mechanism for "dark grid lines"/"rogue" sightings. Both ribbons now carry
+  `userData.excludeFromShadow`, respected by both sweeps. MEASURED: `visMeshes` count dropped ~2-3
+  (the ground+2 upright meshes) after the fix, same clip, before/after.
+- **§GROUND_SHINE_THRU** — the ground ribbon's `depthTest` was left `true` (deliberate, §17.5 —
+  "occlusion reading is the point of the opening"), but a raycast witness
+  (`out/tap_ground_raycast.js`, 142 checks across filmSec 0.0-179.6s, camera position varying wildly)
+  measured it **100% occluded by the building's own walls from every exterior angle tested**,
+  including the OPENING's own saved view previously logged as "FULL — legible from the saved view"
+  (that log only ever checked "behind camera", never real occlusion by other scene geometry — a
+  genuine blind spot, now known). User's call, since it fades within seconds anyway: `depthTest:
+  false` on the ground ribbon ONLY (upright plane keeps `true` — never measured as a problem there),
+  same "shine through walls" technique `clash_film.js` already uses for its markers.
+  ⚠ **A 2x width boost was tried first, then FULLY REVERTED** once shine-thru made the ORIGINAL
+  width actually visible for the first time and the user judged it correct as-is ("it was OK before,
+  need no fix"). The "thin" complaint the whole investigation started from was never actually about
+  width — it was about the ribbon being invisible. Do not re-apply a width multiplier without new
+  evidence.
+- **Z-plane near/far** (`cpe_flythru_datum.js`) — `zNearX`/`zNearY` used `>` (picking FAR) despite
+  the "near" name. Fixing `zNearX` alone (the within-plane X-extreme axis, which end of the ribbon
+  labels cluster toward) is safe. **A first attempt also flipped `_camNear` and `zNearY`, which
+  relocated the WHOLE visible upright ribbon plane to the other side of the building** ("moved the
+  whole Z plane to the left front, hard to view") — reverted; only `zNearX` stays changed. Added
+  **`§Z_PLANE_WITNESS`** — a `MATCH`/`MISMATCH` log line comparing the 3D ribbon's actual visible
+  Y-face (from `_camNear`, decided in `flythruDatumAt`) against the 2D label's target Y (decided
+  independently in the compositor) — these are two separate calculations that happen to need to
+  agree, and silently disagreeing is exactly the bug class that shipped once already. Check this
+  witness before ever touching either near/far decision again.
+- **Dimension labels** — figures were a bare number with no unit and no way to tell an X bay from a
+  Y bay from a storey height ("gridlines? then why not just label as such"). Now read
+  `"<axis> <value>mm"` e.g. `"X 9,144mm"` (`axisKind` parameter threaded through `axis()`, spacing
+  budget widened `digits` 6→9 to keep the existing collision-avoidance math honest against the wider
+  text).
+- **Clash pulse** (`clash_film.js`) — visible portion (rise+hold+fall) halved 6.0s→3.0s, same 2:1:3
+  shape ratio, `REST_S` deliberately UNCHANGED per "same pause, shorter appearance". Duty cycle was
+  75% visible/25% dark, now 60%/40%. User chose this over dropping clash pulsing entirely — it is
+  the one thing on screen that visually says "these are the flagged clashes" in a clash-reveal film.
+
+**55.4 A REAL METHODOLOGY LESSON FROM THIS SESSION, worth keeping**: a naive full-frame pixel diff
+between TWO SEPARATE bake processes is NOT reliable evidence for a subtle single-element question —
+MEASURED 12-25% of the frame differing between two bakes that should have been identical except for
+one tiny ribbon's visibility, because AO/TAA rendering is not perfectly deterministic run-to-run.
+Geometric tests (raycasting from the live camera to known world points, run inside ONE page/process)
+are the reliable tool for "is X actually visible/occluded" — they are unaffected by render noise.
+Reach for a raycast witness before a cross-process pixel diff for this class of question.
+
+**55.5 STATE — films, all in `/tmp/wt-storey-reveal/out/` and copied to `~/Downloads/`:**
+`Hospital_last20s_facade_2026-09-10.mp4` (facade-only tint, all 8 storeys, wall-only footprint fix —
+the CURRENT shipped mechanism), `Hospital_opening20s_2026-09-10.mp4` (ground shine-thru + new
+dimension labels + shorter clash pulse, real first 20s via `--clip`, not `--seconds` — that flag
+re-paces the WHOLE plan rather than clipping the real timeline, confirmed by mismatched datum
+life-cycle timing when tried once), `HHS_storeyreveal_facade_2026-09-10.mp4` (cross-building
+validation, clean). Older films from the abandoned x-ray/darken-above attempts are NOT worth
+re-watching — §55.1 already tells you why each was dropped.
+
+**55.6 ⛔ TWO ITEMS STILL OPEN, straight from the user after watching the CURRENT (facade-only) films
+— resume here:**
+1. **"The storey reveal is still not highlighting much to be seen."** Facade-only tint touches only
+   3-16 wall elements per storey (MEASURED, §55.2's counts) — a much smaller lit area than the old
+   whole-storey tint by design, and apparently too subtle to read clearly on screen. NOT YET
+   INVESTIGATED: whether this needs a stronger/brighter colour, a thicker apparent highlight (e.g.
+   an outline or edge-glow on the facade elements rather than a flat tint), or genuinely more
+   surface area (curtain wall mullions/panels, window frames — currently only
+   `IfcWall`/`IfcWallStandardCase`/`IfcCurtainWall` are queried, `IfcWindow`/`IfcDoor`/curtain-wall
+   sub-elements are NOT included and may be worth adding). Do not guess a fix — extract a witness
+   first (e.g. count total facade surface area vs total storey surface area, or sample actual
+   on-screen pixel coverage of the tint) before picking a direction.
+2. **"The others get blackened that confuses."** ⚠ Per code review, THIS SHOULD NOT BE HAPPENING —
+   facade-only tint (§FACADE_ONLY_TINT / `_applyTint` as shipped) touches ONLY the current storey's
+   facade GUIDs; nothing else in the scene is modified, no darkening, no dimming, no x-ray call
+   exists anywhere in `cpe_storey_reveal.js` as of `7e4fa316` (grepped clean, see §55.2). Three
+   possibilities, UNRESOLVED, in the order to check first:
+   (a) the user was looking at a STALE/wrong film (an x-ray or darken-above era film, several of
+       which are still sitting in Downloads from earlier this session — see §55.5's "not worth
+       re-watching" list);
+   (b) this is the building's own NATURAL night-time base lighting (weak pool-light ambient,
+       `poolLit=200`, MEASURED as genuinely dark even in fully untouched pre-Measure bakes earlier
+       this session) being misread as something the storey-reveal code did — if so the fix is a
+       lighting/exposure question for that beat, NOT a storey-reveal code question at all;
+   (c) a genuine bug not yet found. **FIRST TASK for the next session:** confirm the user is viewing
+       `Hospital_last20s_facade_2026-09-10.mp4` specifically (re-send if any doubt), then if the
+       "blackening" is still visible THERE, extract actual frame luma/colour samples from OTHER
+       (non-highlighted) storeys at that exact timestamp and compare against the SAME storeys'
+       appearance BEFORE the reveal window starts in the SAME film — a real code-caused blackening
+       would show a measurable, localized difference; natural night lighting would not, since it
+       would look the same before and during the window. Do not add code changes for this until
+       that comparison exists.
