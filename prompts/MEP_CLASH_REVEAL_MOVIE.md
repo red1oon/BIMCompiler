@@ -4513,3 +4513,45 @@ existing witness exercises this change; the real-bake pose comparison above is t
 **Not fully eliminated, by design** — a genuinely fast real turn (§CPE_TURN_DPS-paced) still shows as a
 fast turn, now smoothed across a handful of frames instead of erased into one; this is the honest,
 correct outcome for "add in-between frames," not a claim that every fast turn now reads as slow.
+
+**58.5 ✅ DONE, VERIFIED (2026-09-11, same session) — §56.2/§57.2 weak-highlight fix: facade
+classification now uses the storey's own walkable-raster boundary, not a bounding-box edge test.**
+User chose this over the darkening lead ("weak highlight, recommended") after being told the two were
+separate problems. `_facadeGuidsFor` (`cpe_storey_reveal.js`) is REFACTORED, not replaced:
+`_facadeAabbEdgeGuids` is the ORIGINAL AABB-edge query extracted verbatim (kept as the fallback and as
+one half of a union, never removed); NEW `_facadeRasterGuids` reuses `storey_walkable_raster` (§29's
+own hall raster — EXTRACT, don't invent a second geometry pass) via `window.StoreyRaster.getBit`:
+flood-fills the raster's non-walkable cells from the GRID'S OWN BORDER (standard "outside vs. enclosed
+hole" technique, distinguishing genuine exterior void from interior voids/wall cores) — a wall is
+facade if a small neighbourhood (`FACADE_RASTER_MARGIN=2` cells, ~0.5m) around its centre touches BOTH
+a walkable cell and a border-reached "outside" cell. **The two methods are UNIONED, never one replacing
+the other** — this can only ADD coverage the AABB test misses, never lose coverage it already had,
+which matters because of what MEASURING the new method alone turned up: on Hospital's tiny Level 7
+penthouse the raster-only result REGRESSED (78.3%→19.7% by area) — that storey's raster reads ~60%
+"walkable" over a grid far larger than the room itself, a data quality quirk in that one storey's
+`storey_walkable_raster` row, not a bug in this algorithm — and the union absorbs it for free (Level 7's
+union total stays at the AABB method's own 6, no loss). No raster for a storey (or `window.StoreyRaster`
+not loaded) falls back to the AABB method alone, byte-identical to before (DEGRADE, DON'T DISABLE).
+**Offline-measured before shipping** (Python replay of the exact same algorithm against the raw DB, no
+browser): Level 1 facade-wall AREA coverage 1.8%→18.7% (3→27 raster-found walls), Level 3 8.4%→7.7%
+(same order, MORE of the true perimeter across more/smaller real segments — the tapering footprint's
+actual shape, not a bounding-box artifact), Level 6 34.2%→78.1%.
+**Verified on a real bake** (`out/Hospital_facaderaster_clip_2026-09-11.mp4`/`.log`, `--clip 0.88:1.0`
+for a fast ~9-minute closing-orbit-only run rather than the full ~50-minute Hospital bake — the storey-
+reveal window only exists there anyway): zero JS errors, and every storey's reported `aabb=` count
+EXACTLY matches the pre-refactor baseline (3,5,10,11,9,6,6,2), confirming the extraction changed
+nothing about the original method's own behaviour. Union counts, all real, all measured:
+
+| Storey | old (aabb only) | new aabb | new raster | **new union** |
+|---|---|---|---|---|
+| Level 1 | 3 | 3 | 27 | **28** |
+| Level 2 | 5 | 5 | 20 | **20** |
+| Level 3 | 10 | 10 | 23 | **29** |
+| Level 4 | 11 | 11 | 85 | **88** |
+| Level 5 | 9 | 9 | 72 | **76** |
+| Level 6 | 6 | 6 | 29 | **31** |
+| Level 7 | 6 | 6 | 1 (raster's own known quirk) | **6** (union masks it — zero loss) |
+| Level 7A | 2 | 2 | 0 (no raster row) | **2** (clean fallback) |
+
+4-9x more facade wall elements light up on every main floor, with the two known edge cases (Level 7's
+raster quirk, Level 7A's missing raster) provably costing nothing thanks to the union design.
