@@ -4,13 +4,16 @@ every closed item below lives in `prompts/archive/MEP_CLASH_REVEAL_MOVIE_archive
 file keeps only a compact recap of what shipped plus everything still ACTIVE. Read the archive only
 when you need the original derivation/measurement behind a bullet below.
 
-**New session: skip straight to §58 (end of file). DONE + shipped: §57.1 (combine), §57.4 (ARCH fade),
-§57.5 (camera-jump smoothing) — all verified on real bakes. §57.3 (HHS cruise-beat flicker, ~74-76s) is
-STILL OPEN after TWO independently-verified-insufficient fix attempts (§58.2/§58.2b) — read §58.2b
-FIRST, it rules out the entire interior point-light system as the cause (identical flagged frame
-timestamps across 3 different code versions = deterministic, not a lighting race) and names what to
-check next. §57.2 (storey darkening) has a verified live reproduction narrowing the search a lot, still
-not fixed.**
+**New session: skip straight to §58 (end of file). DONE + shipped, all verified on real bakes: §57.1
+(combine), §57.4/§58.4/§58.4b/§58.4c (ARCH fade — real opacity ramp for regular meshes, delayed cut
+timed to the fade's own midpoint for the rest), §57.5 (camera-jump gaze smoothing), §58.5 (facade
+highlight — raster-boundary classifier, 4-9x more coverage per floor). TWO ITEMS STILL OPEN:
+§57.3 (HHS cruise-beat flicker, ~74-76s) after TWO independently-verified-insufficient fix attempts
+(§58.2/§58.2b) — read §58.2b FIRST, it rules out the entire interior point-light system as the cause
+(identical flagged frame timestamps across 3 different code versions = deterministic, not a lighting
+race) and names what to check next. §58.3 (storey darkening) has a verified live reproduction
+narrowing the search a lot, but the live probe runs on software rendering — next step is verifying
+against the real hardware-GPU bake path before trusting any fix.**
 
 ## Shipped, closed, merged to main — compact recap (full detail in the archive above)
 Started 2026-08-07 as a triage against a competitor MEP-coordination movie capture: the finding was
