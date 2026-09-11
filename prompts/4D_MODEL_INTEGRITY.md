@@ -2288,3 +2288,142 @@ BLOCKED (user decisions, not measurements): (a) the productivity constant for If
 | **how long is the programme?** | ⛔ **NO OWNER.** Three lines each print a length from one run — `§CELL_RUN makespanDays` (the DAG solve, Hospital META 447.0), `§CREW_DAY spanD` (360.3), `§AUTHOR_TPL totalDays` (the authored grid the panel and film show, 334) — and nothing says which is the contract. Add the row when ruled | quote one of the three as "the schedule length" without naming the line |
 | **does the persisted run represent the DB the viewer loads?** | `run.json.dbFile` (`cache_4d_run.js` writes it) — READ IT. Today it is `_extracted.db` by construction (`:95`,`:113`); the viewer loads `_meta.db` for Hospital/Clinic (§I.6, `streaming.js §DB_SPLIT_DETECT`) | assume `~/.cache/bim4d/Hospital` is the viewer's Hospital; it is not since #1641 |
 | **midair ON THE PLAYED INSTANTS?** | `SupportSweep.midairAudit(items with s/e = play map)` — as `probe_tm_reveal_shipped.js` `judge()` does (`§TM_REVEAL_JUDGE … map=CANDIDATE-tiled`) | read `§TM_PLAYED_LAYER midair=` for it — that field is `dt.midair`, the CPM-display count (`tm_played_layer.js:171`) |
+
+---
+
+# §N `_contactGraph`'S OWN ORPHAN COUNT REUSES `grounded[i]` FOR THE EXEMPTION §I.2 ALREADY RULED WRONG (found 2026-09-11)
+
+**⛔ SPEC ONLY — NOTHING IMPLEMENTED. This section exists to be handed to a fresh session (real
+engine change in `bim-ootb/viewer/support_sweep.js`) — it does not touch that file.** Detection
+(read-only) shipped separately: `bim-ootb` PR #1712, `viewer/tests/witness_true_orphan_floating.js`
+— an independent, engine-blind cross-check that never calls `_contactGraph`, so it is unaffected by
+whatever fix lands here and stays useful as a second opinion afterward.
+
+## THE DEFECT THIS PROVES OR DISPROVES
+
+User, live, watching an HHS MaxQ buildup bake, 2026-09-11: a teal (default `IfcBuildingElementProxy`
+material) element disconnected from the building, isolated near the skyline, nothing built under it,
+around Day 3-4 of the sequence. Traced to three real elements in `HHS_Office_Federated_extracted.db`
+— `element_name = "Stahlbalkon:Stahlbalkon:Stahlbalkon:<id>"` (German: *steel balcony*), each
+0.09m × 1.0m × **7.07m tall**, `discipline=ARC`, raw IFC storey `"Level 2"`, positioned ~0.75m
+outward (in Y) from the building's curtain-wall mullion line at that bay — i.e. a real, correctly
+modelled cantilevered facade element, offset from the flush wall plane the way a balcony bracket
+actually is.
+
+## MEASURED — via the REAL shipped owner, not a re-derivation
+
+Called `SupportSweep.contactGraph` (`support_sweep.js:384`, exported, the same function
+`witness_midair_zero.js` W-MZ-4 gates as `baselines/midair.json.orphans`) directly against
+`HHS_Office_Federated_extracted.db`:
+```
+contactGraph ok=true orphans=36 groundedN=700 total=6839          — matches the locked baseline exactly
+3XrBtx9eX7mQE6EqWHPf0l IfcBuildingElementProxy grounded=1 contacts=0
+3XrBtx9eX7mQE6EqWHPe$q IfcBuildingElementProxy grounded=1 contacts=0
+3XrBtx9eX7mQE6EqWHPezS IfcBuildingElementProxy grounded=1 contacts=0
+```
+All three balconies have **zero contacts** under all three relations (bearing-below, carrier-above,
+embedded — §I row "does S support T?") — correctly detected as physically touching nothing. But
+`grounded[i]=1` for all three, and `support_sweep.js:419` is `if (grounded[i]) groundedN++; else if
+(!list) orphans++;` — **`grounded[i]` being true SKIPS the orphan count entirely.** These three
+7m-tall, mid-building elements are silently absorbed into `groundedN=700`, never counted among the
+36 orphans, never logged, never visible anywhere §SUPPORT_ORPHAN/§MIDAIR-family logging reads.
+
+**This is not a new relation missing (no 4th "lateral/embedded" case needs inventing) — it is `§I.2`,
+already written in this file, not being honoured at its one live call site:**
+
+> `support_sweep.js:417` — `grounded[i] = (lowest < T.bz - GAP) ? 0 : 1`, where `lowest` is the min
+> `bz` of everything overlapping T in XY. It means **"nothing is beneath me in my own column."**
+> - ✅ Correct for: *is this element resting directly on soil in its footprint?*
+> - ❌ Wrong for: *is this element allowed to be unsupported?* — that is `seq === 1`.
+
+`_contactGraph:419` uses `grounded[i]` for exactly the ❌ question §I.2 already named — "may this be
+skipped as legitimately unsupported" — when the file's own documented rule says that question's
+answer is `seq === 1` (Substructure/footing/pile), not `grounded[i]`. **Two distinct ways this fires,
+same root line:**
+- **(a) Genuinely zero XY-overlapping neighbours at all.** `lowest` starts at `Infinity` (`:401`) and
+  is only lowered when a neighbour is actually found — a truly isolated element defaults, by the
+  absence of any comparison, into the same branch as "correctly resting on soil."
+- **(b) Bottom of a stack that is itself disconnected from real ground.** The three HHS balconies:
+  their thin (0.09×1.0m) footprint XY-overlaps only *other* same-family "Stahlbalkon" segments
+  stacked at higher floors (confirmed by direct query: 11-23 sibling `IfcBuildingElementProxy`
+  instances found within 5m of each, spanning `bz` 0.46-7.76m) — never a footing, slab-on-grade, or
+  anything actually connected to real ground. Whichever segment happens to be locally lowest in that
+  disconnected stack reads `lowest >= T.bz - GAP` and gets `grounded=1` anyway. This is the exact
+  failure shape §E already catalogued for a different element (a duct elbow 7.09m up, all 8 contacts
+  above it, judged "ground") — `grounded` is **footprint-local**, and a footprint-local test cannot
+  tell "I sit on real ground" from "I am the bottom of a stack that never reaches ground."
+
+**Fleet-wide blast radius, case (a) only (case (b) needs a connected-component walk to quantify, not
+done here — see §FIX):**
+```
+Clinic    total=16071  engine-orphans=27   zeroNeighbour-but-grounded=0
+Duplex    total=1119   engine-orphans=1    zeroNeighbour-but-grounded=0
+HHS       total=6839   engine-orphans=36   zeroNeighbour-but-grounded=0    ← the 3 balconies are case (b), not (a)
+Hospital  total=63182  engine-orphans=35   zeroNeighbour-but-grounded=0
+JKR       total=8985   engine-orphans=1    zeroNeighbour-but-grounded=1    (>2m above ground: 1)
+LTU_AHouse total=122330 engine-orphans=51  zeroNeighbour-but-grounded=137  (>2m above ground: 124 — IfcFlowTerminal, h≈2.7m each)
+TermRooms/Terminal total=48428 engine-orphans=7  zeroNeighbour-but-grounded=1
+```
+LTU_AHouse alone has **124 additional mis-exempted elements** (case a) beyond its reported 51
+orphans — a 2.4× undercount on that building from case (a) alone, before case (b) is even measured.
+
+## THE MECHANISM'S CONSEQUENCE FOR THE 4D BAKE
+
+Because `_contactGraph`'s own `orphans` output is what `midairAudit`/the `§MIDAIR`-family logging
+reads, and because nothing downstream ever sees these elements flagged, the scheduler has no signal
+to gate their reveal date on anything. A generic-classified (`IfcBuildingElementProxy`) element with
+no detected support gets whatever the default Architecture-phase sequence computes — unconstrained by
+its real (lateral, embedded-in-the-wall-edge) anchor — which is consistent with why it revealed alone,
+early, before its actual context existed.
+
+## §FIX — proposed direction, NOT implemented, for whoever picks this up
+
+1. **Stop using `grounded[i]` as the orphan exemption at `support_sweep.js:419`.** Per §I.2 the
+   correct exemption is the classification-based one (`seq === 1` / `groundworkSlabs`), which
+   `_contactGraph` does not currently receive — its own header says items need bbox only (`:381`).
+   Either (a) have `_contactGraph` accept an optional per-item exemption flag/predicate and apply
+   *that* instead of `grounded[i]` at line 419, or (b) leave `orphans`/`groundedN` as `_contactGraph`
+   raw output (already correct data — `contacts[i]===null` is the true "touches nothing" signal) and
+   move the exemption to callers, who already have `seq` available.
+2. **Case (b) — footprint-local ground is not building-connected ground.** Per §E's own prescription
+   ("compute the actual thing — containment, occlusion, reachability, not a tolerance-band proxy"):
+   the real question is graph reachability — is this element, via the touching-contact graph
+   `_contactGraph` already builds, transitively connected to a `seq===1` (or otherwise real-ground)
+   member? A connected-component walk over `contacts[]`, seeded from the true-ground population,
+   answers this without inventing new geometry — `_contactGraph` already has the graph, it just never
+   asks this question of it. **Do not just relabel `grounded[i]`** — a real balcony bracket embedded
+   sideways into a wall it also doesn't vertically-touch would still need that (separate, currently
+   entirely absent) lateral/embedded-at-the-side relation to be correctly connected at all; if that
+   relation genuinely does not exist anywhere in the touching graph, the connected-component walk will
+   correctly still call it an orphan — which is the honest answer for a case this codebase's own
+   support relations cannot yet see, not a new failure.
+3. **Two copies, not one.** `support_sweep.js:384` and its byte-identical twin `cpm_schedule.js:54`
+   (verified parity, §I.5's "CLEAN" table, `§CPM_PARITY`) — whatever fixes this must land in both, or
+   `§CPM_PARITY_SUPPORT`/`§CPM_PARITY` (`probe_cpm_schedule.js:131`/`:145`) will (correctly) go red.
+
+## WITNESS CLAIMS (for whoever implements §FIX)
+
+- **G-1** RED on unmodified main: the 3 HHS `Stahlbalkon` GUIDs above are NOT in `orphans` (verified
+  case). GREEN after: they ARE — `contactGraph`'s reported `orphans` count for HHS rises from 36 by
+  at least 3, and the three GUIDs appear by name in whatever log line reports them (cite the exact
+  `§`-tag once one exists — none currently names individual orphan GUIDs, only the aggregate count).
+- **G-2** the exemption is DERIVED, not geometric-default: an element with `seq===1` and literally
+  zero neighbours (a lone footing) still reads exempt; an element with `seq!==1` and zero neighbours
+  (case a) does NOT.
+- **G-3** no regression: `§CPM_PARITY`/`§CPM_PARITY_SUPPORT` stay green (both copies patched
+  identically); `baselines/midair.json` `orphans` counts move only for buildings actually carrying
+  this defect class, and the new counts are re-locked per the file's own "placeholder, read the FAIL
+  lines, re-run to PASS" discipline — never hand-typed.
+- **G-4** case (b) connected-component check: a synthetic disconnected stack (N elements touching only
+  each other, none touching a `seq===1` member) is NOT exempted regardless of which member is locally
+  lowest — the redControl this fix's witness needs, mirroring `bim-ootb witness_true_orphan_floating.js`'s
+  own planted-orphan self-check.
+
+## CROSS-REFERENCE
+
+- Detector (shipped, read-only, unaffected by this fix): `bim-ootb` PR #1712.
+- §SUPPORT_ORPHAN, `GANTT_ACCURACY.md` — the earlier, parked `audit_orphan_support.js` measured a
+  related but methodologically different population (`none-below-at-all`, a fixed-tolerance geometric
+  test, never read `grounded[i]` at all) — not the same defect, do not conflate the two write-ups.
+- §I.2 (this file, line 510) — the rule this defect violates was already on record; it just never
+  reached `_contactGraph`'s own internal use of `grounded[i]`.
