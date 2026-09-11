@@ -4456,12 +4456,34 @@ measurement, confirming the mechanism touches precisely the regular-mesh populat
 nothing else. Bake ran clean (`unconverged=0`, `fileOk=true`, zero JS errors).
 `witness_reveal_arch_hold.js` 6/6 and `witness_tail_lights_all_discs.js` 8/8 still pass (the ghost-phase
 ENTRY boundary itself is untouched by either version of this fix).
-**Honest residual**: the other 93.5% of ARC/STR (Instanced/BatchedMesh) still cuts, just delayed by 2s —
-unchanged from the first (insufficient) attempt. A full fix for that population needs either a shader-
-level alpha channel added to the instanced/batched material path (a real, non-trivial addition — not
-attempted) or a different technique entirely (e.g. a screen-space cross-fade at the compositor, not
-checked for feasibility against `_captureFrame`'s single-pass-per-frame design). Named as the next step,
-not solved here.
+**Honest residual**: the other 93.5% of ARC/STR (Instanced/BatchedMesh) still cuts — no shader-level fix
+attempted here (a real alpha channel for instanced/batched geometry, or a screen-space compositor
+cross-fade, are the two real options, neither checked for feasibility). A full technical fix for that
+population is still the next step, not solved here.
+
+**58.4c ✅ DONE, VERIFIED (2026-09-11, same session) — timing refinement, per user direction.** User,
+after watching the real-fade bake and being told plainly that the 93.5% majority's "delayed cut" gives
+NO visual impression of anything happening for the whole 2s (fully solid, then instant vanish — no
+better than the original bug, arguably worse since the pop no longer lines up with any on-screen cue):
+*"That is a good idea, or even 1 sec as it can be expensive. Make it go from 70% to 30% so the cutover
+gives impression of carry over fade, same as before unbatching."* Two changes:
+1. `ARCH_DROP_FADE_SEC` 2.0 → **1.0s** (cheaper — shorter window of transparent-material rendering for
+   the regular-mesh fade).
+2. New `ARCH_BULK_CUT_FRAC = 0.5` — the Instanced/BatchedMesh boolean cut (via `visDiscs` narrowing in
+   `A.cpeRevealVisualAt`'s ghost branch) now fires at the **midpoint** of the window (opacity ≈50%,
+   inside the user's named 70%-30% band) instead of at its end. `A.cpeArchFadeApplyVisual`'s own
+   regular-mesh opacity ramp is UNCHANGED in shape — it still runs 1.0→0.0 across the FULL window — so
+   the visible dissolve is already half-done when the bulk pops, and keeps visibly running for the
+   second half of the window AFTER the pop, carrying the transition forward instead of the cut standing
+   alone as its own event.
+**Verified**: standalone replay of the real function against a synthetic plan — bulk narrows from
+`[MEP,ARC,STR]` to `[MEP]` at exactly the window's own midpoint (40.50s of a 40.0-41.0s window), not
+early, not late. **Re-baked HHS for real** (`out/HHS_archfade2_2026-09-11.mp4`/`.log`): `§CPE_ARCH_FADE
+start meshesTouched=239 clonedMaterials=13` — identical scope to the previous version, confirming only
+the TIMING changed, not which meshes are touched. The `§DISC_FILTER [MEP,ARC,STR]`→`[MEP]` gap measured
+4.7 wall-clock seconds here vs. 13.3s on the previous (full-window, 2.0s) bake — proportionally about
+HALF, consistent with a 1.0s window cut at its own midpoint rather than its end. Bake ran clean
+(`unconverged=0`, `fileOk=true`, zero JS errors).
 
 **58.5 ✅ DONE, VERIFIED — §57.5 camera-jump smoothing, implemented as gaze-direction blending, NOT a
 duration floor.** Root cause (confirmed by reading `poseAt`'s actual source): Beat 1 (dive)'s end-of-
