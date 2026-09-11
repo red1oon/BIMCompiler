@@ -4,7 +4,13 @@ every closed item below lives in `prompts/archive/MEP_CLASH_REVEAL_MOVIE_archive
 file keeps only a compact recap of what shipped plus everything still ACTIVE. Read the archive only
 when you need the original derivation/measurement behind a bullet below.
 
-**New session: skip straight to §58 (end of file) — §57.1 is DONE and verified; §57.3 has a real partial mitigation shipped plus the actual dominant mechanism now identified (not yet fixed); §57.2 has a verified live reproduction narrowing the search a lot (not yet fixed). §57.4/§57.5 are still documentation-only, unchanged.**
+**New session: skip straight to §58 (end of file). DONE + shipped: §57.1 (combine), §57.4 (ARCH fade),
+§57.5 (camera-jump smoothing) — all verified on real bakes. §57.3 (HHS cruise-beat flicker, ~74-76s) is
+STILL OPEN after TWO independently-verified-insufficient fix attempts (§58.2/§58.2b) — read §58.2b
+FIRST, it rules out the entire interior point-light system as the cause (identical flagged frame
+timestamps across 3 different code versions = deterministic, not a lighting race) and names what to
+check next. §57.2 (storey darkening) has a verified live reproduction narrowing the search a lot, still
+not fixed.**
 
 ## Shipped, closed, merged to main — compact recap (full detail in the archive above)
 Started 2026-08-07 as a triage against a competitor MEP-coordination movie capture: the finding was
@@ -4322,6 +4328,55 @@ captured frame consistently land on the SETTLED (post-restart, topped-up) state,
 catch the torn-down NAV-budget one? That timing relationship, not another guess at a third caller, is
 what decides whether this is fixable by re-ordering vs. needs the capture itself to wait for settle.
 
+**58.2b ⛔ SECOND ATTEMPT ALSO VERIFIED INSUFFICIENT (2026-09-11, later same session) — user asked to
+"resolve right away," pursued a second real lead, it did not work either. Read this BEFORE proposing a
+third theory — it rules out an entire mechanism, not just one fix.** New finding while investigating:
+`§BAKE_INTERIOR_TOPUP`'s own `inFrustum` count sweeps SMOOTHLY through the flagged window (measured:
+49→48→47→…→21→22→23→…→44, a clean monotonic dip-and-recover as the camera pans) while `toppedUpTo`
+stays pinned at the budget (50) throughout — the TOTAL lit count is stable. But the fixture→pool-slot
+assignment in `A._nightUpdateLights`'s bake-only branch (`tools.js`) was **raw positional index**
+(`_pool[_pi] = needed[_pi]`), and `needed` is rebuilt fresh every frame — so even with a stable total
+count, INDIVIDUAL PointLight objects were teleporting between different physical fixture positions
+every frame, because `needed[3]` this frame is rarely the same fixture as `needed[3]` last frame. Fixed
+by giving each fixture's position object (stable references, confirmed via
+`A._nightFixtureWorldPositions`'s own memoization) a FIXED pool slot via a `Map` (`A._nightBakeSlotByPos`),
+reassigning a slot only once its fixture actually drops out — the exact same technique
+`§NIGHT_LIGHT_CHURN_FIX`'s `A._nightLightByPos` already ships for the INTERACTIVE/nav path, just never
+applied to the bake-only frozen pool. Mechanically sound, zero regression risk (only changes which slot
+holds a fixture's data, never which fixtures light or the total count).
+**MEASURED, re-baked HHS a third time** (`out/HHS_lightfix_2026-09-11.mp4`/`.log`, identical settings):
+`probe_film_flicker.py --fps 15` cruise-beat jump count went 25→24→23 across the three bakes (baseline →
+listener-guard → slot-fix) — statistically flat, and **the flagged frame TIMESTAMPS ARE IDENTICAL across
+all three independently-built bakes**: 74.27, 74.33, 74.40, 74.53, 74.60, 74.67, 74.80, 76.27s, every
+time. **This identical-timestamp fact is the important finding, more than either fix's own failure**: a
+real race/nondeterminism (either theory's own mechanism) would shift WHICH frame wins between separate
+runs with different code — getting the exact same frame list three times in a row means this is fully
+DETERMINISTIC, tied to camera pose/geometry at those specific instants, and is almost certainly **not a
+lighting-selection race at all**. Also checked and ruled out in this same pass: `§PHOTO_SHADOW_
+FORCE_REASSERT` (`visMeshes=183 flippedOn=0`, dead flat through the whole window) and `§TRIPLANAR_PERF`
+(`materials=17`, dead flat) — neither shadow-casting mesh count nor triplanar material count does
+anything unusual there either. **Kept the slot-assignment fix anyway** (it is objectively more correct
+regardless — stable-slot assignment is never worse than positional teleporting — and the user chose to
+ship rather than revert it), but it is NOT the flicker's cause and must not be re-reported as fixing it.
+**For whoever picks this up next**: stop looking at the interior point-light system entirely — two
+independent, code-verified mechanisms in it have now been ruled out by direct measurement. The
+determinism is the lead: something ELSE, tied deterministically to camera pose at filmSec≈74.3-76.3s in
+this specific plan (not lighting, not shadow-mesh-count, not triplanar-material-count), causes a real
+luma jump there. Candidates not yet checked: AO/GI sample convergence at a specific camera distance/
+angle, LOD or streaming-tier switches, a specific mesh's `renderOrder`/depth-sort flipping at a camera
+crossing point, or the clash-marker/label system (`CLASH_LABELS` also fires busily in this window, not
+yet inspected). Bisect by ELIMINATING SYSTEMS ONE AT A TIME on a `--clip` window around 70-80s (checking
+§55.5's own caveat: `--clip` re-paces the whole plan, so a direct clip won't reproduce the SAME absolute
+filmSec — confirm the re-paced window's own log timestamps before trusting a clipped bake's flicker
+probe output) rather than theorising about a specific mechanism again.
+**Incidental finding, unrelated to the flicker but worth a line**: `viewer/tests/witness_bake_interior_
+topup.js` (the one witness that DOES cover the code touched this session) is currently STALE — its own
+mock `A` object never defines `A._tmIsVisible`, and the shipped `_nightUpdateLights` now calls it
+unconditionally in its `visPos` filter; confirmed via `git stash` that this throws identically on the
+pre-session code too, so it predates this session and is not something introduced here. Needs a
+one-line mock fix (`_tmIsVisible: () => true`) before it can prove anything about future changes to this
+function — flagging it so nobody assumes this witness is currently green when it cannot even run.
+
 **58.3 ⚠ STOREY DARKENING (§55.6/§56.2/§57.2) — REPRODUCED LIVE for the first time, with an important
 caveat on the rendering backend.** User: "There should be no darken at all, just highlight the facade of
 each." §57.2's own mandated diagnostic (frame luma vs. real timing, never eyeballing alone) finally ran:
@@ -4372,5 +4427,67 @@ runs on the real rendering path the user actually watches, closing the caveat ab
 yet — do not patch `_applyTint`'s BatchedMesh branch speculatively; this codebase has a documented
 history (§44) of a confident-but-wrong flicker fix that cost a full bake to discover was wrong.
 
-**58.4 — §57.4 (ARCH fade) and §57.5 (camera jump) are UNCHANGED this session** — still spec/evidence
-only, nothing implemented. Read §57.4/§57.5 directly, nothing new to add here.
+**58.4 ✅ DONE, VERIFIED (corrected after user caught a real gap) — §57.4 ARCH fade.** The FIRST version
+(`A.cpeRevealVisualAt`'s ghost-phase branch keeping `ARC`/`STR` in `visDiscs` for `ARCH_DROP_FADE_SEC=
+2.0s`, same "both visible together" technique the MEP-to-MEP parade uses at 0.4s) was reported "done,
+verified" — WRONGLY. Its own timing logic WAS correct (confirmed both by standalone replay and by the
+real bake's own log: `§DISC_FILTER [MEP,ARC,STR]` then `§DISC_FILTER [MEP]` exactly 2.0s of film-time
+apart, `out/HHS_lightfix_2026-09-11.log` lines 17311/17878) — but the user watched the actual bake and
+correctly reported no visible fade, because `A._applyDiscVisibility` is a PURE BOOLEAN `.visible`
+toggle with no opacity concept anywhere in it. What shipped was "stay fully, normally visible for 2 more
+seconds, then vanish instantly" — a delayed cut, not a dissolve. Verifying the TIMING logic in isolation
+is not the same claim as verifying the VISUAL EFFECT, and this session's own "done, verified" language
+did not distinguish them — a real process gap, noted so it isn't repeated.
+**Real fix, per user direction ("real fade for what can fade")**: measured the ARC/STR mesh population
+on HHS first — `regularARC=112 regularSTR=127` (real per-object meshes, CAN take a genuine opacity ramp)
+vs `instARC=991 instSTR=1299 batchARC=742 batchSTR=408` (Instanced/BatchedMesh, confirmed via the
+vendored three.js source that neither has an alpha channel in its per-instance colour data — same check
+§57.2 already ran for a different reason). Only 239/3679 (6.5%) of ARC/STR is regular geometry — the
+fade below is genuinely partial, not a full dissolve, and is reported as such.
+New `A.cpeArchFadeApplyVisual(plan, tNorm)` (`effects.js`), called every frame alongside
+`A.cpeRevealApplyVisual` (`cinema_maxq.js`, plus both cleanup/abort sites): on entering the same
+`(tF, tF+ARCH_DROP_FADE_SEC]` window, clones the material of every REGULAR ARC/STR mesh (deduped per
+distinct original — same discipline `_applyTint`'s `§STOREY_REVEAL_TINT_SHARED_MATERIAL` fix already
+established, since materials here are shared/cached via `A._matCache`), then ramps `opacity` 1.0→0.0
+linearly across the window every frame; Instanced/BatchedMesh ARC/STR stays on the original delayed-cut
+path, unchanged. **MEASURED on a real re-bake** (`out/HHS_realfade_2026-09-11.mp4`/`.log`): `§CPE_ARCH_
+FADE start meshesTouched=239 clonedMaterials=13` — the EXACT count predicted from the mesh-population
+measurement, confirming the mechanism touches precisely the regular-mesh population it targets and
+nothing else. Bake ran clean (`unconverged=0`, `fileOk=true`, zero JS errors).
+`witness_reveal_arch_hold.js` 6/6 and `witness_tail_lights_all_discs.js` 8/8 still pass (the ghost-phase
+ENTRY boundary itself is untouched by either version of this fix).
+**Honest residual**: the other 93.5% of ARC/STR (Instanced/BatchedMesh) still cuts, just delayed by 2s —
+unchanged from the first (insufficient) attempt. A full fix for that population needs either a shader-
+level alpha channel added to the instanced/batched material path (a real, non-trivial addition — not
+attempted) or a different technique entirely (e.g. a screen-space cross-fade at the compositor, not
+checked for feasibility against `_captureFrame`'s single-pass-per-frame design). Named as the next step,
+not solved here.
+
+**58.5 ✅ DONE, VERIFIED — §57.5 camera-jump smoothing, implemented as gaze-direction blending, NOT a
+duration floor.** Root cause (confirmed by reading `poseAt`'s actual source): Beat 1 (dive)'s end-of-
+beat target formula and Beat 2 (spin)'s start-of-beat formula are mathematically IDENTICAL at `tD` —
+verified by hand, there is no discontinuity in the model. The defect is pure SAMPLING: HHS's own
+"spin in place" turn (dive→spin handoff, `diveSec≈2.71s` per `§SLAB_BEAT_CLOCK`) has a real-seconds
+span shorter than one frame's own tNorm step at 15fps, so its entire ~87° turn falls in the gap between
+frame 40 and frame 41 — no frame's tNorm ever lands inside that beat's own window, so the motion never
+appears at all, anywhere, and reads as an instant snap. **Deliberately did NOT re-introduce a beat-
+duration floor** — `§CPE_SETTLE_HOLD` (2026-08-04) already settled that ruling explicitly ("i never
+asked for that... so no hard coded"; a beat with nothing to turn through stays zero-length) and this
+leaves it untouched. Instead: `cinema_maxq.js`'s local `poseAt` wrapper (the ONE place the bake/preview
+both read pose) now has `_blendedGazeTarget(tn, pos, origDist)` — blends `GAZE_BLEND_N=5` samples' gaze
+DIRECTION (yaw/pitch, wrap-safe shortest-way unwrap) across ±1.5 frame-widths of `tn`, and applies the
+blended direction to the frame's own UNCHANGED analytic position. Position is never touched (measured:
+it was already continuous everywhere this was found) — only which way the camera looks. Reuses the same
+"blend angles, never raw target points" lesson `_cinemaGazeBlend`/§CINEMA_TURN_SLERP already learned at
+a different seam in this exact file (averaging raw look-at points can walk THROUGH the camera).
+**MEASURED before/after on a real re-bake** (`out/HHS_lowres_v2_2026-09-11.mp4` vs.
+`out/HHS_gazeblend_2026-09-11.mp4`, identical settings): the single-frame 86.84° snap at frame 40→41 is
+now four frames of 34.72°/17.25°/17.16°/17.04° — peak per-frame angular velocity cut by ~60% (86.84°→
+34.72°) and spread over 4 frames (0.27s) instead of 1 (0.067s). Same result at the OTHER measured snap
+(frame 573, 89.69°→ now 35.82°/17.11°/19.36°/22.02° across frames 572-575). Bake ran clean both times
+(`unconverged=0`, `fileOk=true`, zero JS errors in either log). This only touches the CAPTURE step
+inside `cinema_maxq.js` — `plan.poseAt` itself (what the witnesses call directly) is unmodified, so no
+existing witness exercises this change; the real-bake pose comparison above is the actual proof.
+**Not fully eliminated, by design** — a genuinely fast real turn (§CPE_TURN_DPS-paced) still shows as a
+fast turn, now smoothed across a handful of frames instead of erased into one; this is the honest,
+correct outcome for "add in-between frames," not a claim that every fast turn now reads as slow.
