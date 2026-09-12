@@ -2427,3 +2427,89 @@ early, before its actual context existed.
   test, never read `grounded[i]` at all) — not the same defect, do not conflate the two write-ups.
 - §I.2 (this file, line 510) — the rule this defect violates was already on record; it just never
   reached `_contactGraph`'s own internal use of `grounded[i]`.
+
+# §O §N's ENGINE FIX SHIPPED (`bim-ootb` PR #1717) — TWO FOLLOW-UP DEFECTS FOUND IN ITS OWN RE-LOCK, NEITHER FIXED YET (found 2026-09-12)
+
+```
+⛔ SPEC ONLY — NOTHING FIXED HERE. §N's engine change (directed reachability from classification
+seeds, replacing grounded[i] as the orphan exemption) is CORRECT and MERGED — do not re-litigate it.
+This section is a NARROWER follow-up: the re-lock the PR shipped is measurably wrong for LTU_AHouse,
+for two SEPARATE reasons. Hand to a fresh session; a live user session diagnosed but did not fix
+either (a deliberate stop, not a punt — the second defect needs a decision this doc can't make alone).
+```
+
+**Defect (a) — stale local fixture data, not an engine bug.** `bim-ootb/buildings/LTU_AHouse_meta.db`
+on the dev machine is the PRE-PATCH, corrupted file: 3,105 rows at `element_transforms.center_z = 0`,
+the exact signature `verify_ltu_meta_transform_repair.js` names ("half the top structural floor lying
+on the ground plane"). That repair (`buildings/patches/LTU_AHouse_meta.db.sql`) was generated,
+verified, and uploaded to the SERVED bytes on 2026-08-16 — but never applied back to this local file.
+`witness_midair_zero.js`'s `BLD_DIR` defaults to this same stale local directory, so the PR's own
+fleet re-measurement ran on corrupted data:
+
+| | orphans (locked in PR #1717) | orphans (patch applied, re-measured 2026-09-12) |
+|---|---|---|
+| LTU_AHouse_meta | **3288** | **1749** (verified: apply `buildings/patches/LTU_AHouse_meta.db.sql` to a copy, re-run `BLD_DIR=<that copy> ONLY=LTU_AHouse node tests/witness_midair_zero.js`, read the `§MIDAIR_BEFORE`/W-MZ-4 lines) |
+| Terminal_meta (checked for the same class of bug — it has its OWN separate known corruption/patch, `verify_terminal_meta_transform_repair.js`) | 2740 | 2733 — within noise, NOT a real finding, leave as-is |
+
+The locked 3288 is real data, but it's the WRONG data — 88% inflated by a corruption this codebase
+already root-caused and already fixed in production, just not on this dev machine's copy of the file.
+No live behavior is affected (`§GROUND_CONNECTED`/orphans are "reported, never gated" — per W-MZ-4's
+own assertion string) and `witness_midair_zero.js` is not in CI (`.github/workflows/*.yml` has no
+reference to it), which is why nothing caught this before merge.
+
+**Defect (b) — found while checking (a), unrelated to it.** `witness_midair_zero.js` W-MZ-8
+(the `float_after_cpm`/"TRADE" baseline for LTU_AHouse) was ALREADY FAILING on `main` immediately
+after PR #1717 merged, against the SAME (uncorrected) local data the PR itself measured everything
+else against: locked `4998`, measured `4622` — and against the corruption-patched file it measures
+`6737` instead. **Neither number is 4998** — this baseline was stale or wrong before defect (a) even
+enters the picture, and PR #1717's `§GROUND_CONNECTED RE-LOCK` comment only re-locked `orphans`, not
+`float_after_cpm`. Unknown yet: whether this predates PR #1717 entirely (check `git blame` on
+`baselines/midair.json`'s `float_after_cpm.LTU_AHouse` key and re-run this witness against the commit
+BEFORE #1717 to isolate it), or whether some OTHER recently-merged bim-ootb PR moved `auditFloating`'s
+measure for this building without re-running this witness (it isn't in CI, so nothing would have
+caught it either way).
+
+## §FIX — proposed direction, NOT implemented
+
+1. **Defect (a), immediate**: apply `buildings/patches/LTU_AHouse_meta.db.sql` to the local dev copy
+   of `buildings/LTU_AHouse_meta.db` (matches what's already served in production — this is not a new
+   correction, just syncing local to already-shipped truth), re-run `witness_midair_zero.js` for
+   LTU_AHouse, and re-lock `orphans.LTU_AHouse_meta` to the measured value (1749 as of this write-up —
+   RE-MEASURE, do not hand-copy that number; the file's own DB may have moved since).
+2. **Defect (a), systemic**: nothing currently checks a local fixture DB against its known patch
+   before a fleet witness runs — `oci_patch_gate.js --verify` proves the SERVED bytes are patched, but
+   `BLD_DIR`-pointed local witnesses (`witness_midair_zero.js` and anything else defaulting to
+   `~/bim-ootb/buildings`) have no equivalent check. Consider: a `witness_midair_zero.js` (or a shared
+   helper) pre-flight that applies every `buildings/patches/*.sql` whose target table exists in the
+   opened DB before measuring, OR at minimum a loud warning when a local DB's row-level signature
+   (e.g. `COUNT(*) WHERE center_z=0`, if that pattern recurs) doesn't match the patch's own
+   `.manifest.json` `verification.tail` expectations. Don't invent a new check per building — find the
+   ONE general shape (a local file vs. its own `buildings/patches/<name>.db.sql`, if one exists) and
+   share it across every `BLD_DIR`-style witness/probe, not just this one.
+3. **Defect (b)**: first isolate WHEN `float_after_cpm.LTU_AHouse` went stale (bisect against
+   `baselines/midair.json` git history + this witness, per the note above) before touching the code —
+   this could be a real engine regression in a DIFFERENT recent PR, not a re-lock oversight, and
+   deserves its own root-cause before anyone just types a new number into the baseline.
+4. Whoever picks this up: re-run `witness_midair_zero.js` for ALL 7 buildings against
+   patch-corrected local data (not just LTU_AHouse) before re-locking anything — defect (a)'s
+   category (stale local fixture vs. known patch) was found by suspicion on ONE building; it has not
+   been fleet-swept.
+
+## WITNESS CLAIMS (for whoever implements §FIX)
+
+- **H-1** the local `LTU_AHouse_meta.db`, patched, measures `orphans=1749` (not 3288) via
+  `witness_midair_zero.js` — reproduce the exact command above, paste the `§MIDAIR_BEFORE` line.
+- **H-2** `baselines/midair.json`'s `orphans.LTU_AHouse_meta` is re-locked to that measured value and
+  `witness_midair_zero.js ONLY=LTU_AHouse` passes W-MZ-4/W-MZ-4b clean.
+- **H-3** defect (b) is root-caused (which commit/PR moved `auditFloating` for LTU_AHouse) before
+  `float_after_cpm.LTU_AHouse` is re-locked — a re-lock without a cause is exactly the "hand-typed
+  placeholder" anti-pattern this file's own baselines already warn against elsewhere.
+- **H-4** the fleet sweep (§FIX item 4) names every OTHER building, if any, whose local `_meta.db`/
+  `_extracted.db` diverges from its own `buildings/patches/*.sql` (if one exists for it) — even a
+  clean "checked, none diverge" result is a real, citable finding, not a null result to omit.
+
+**Why:** `bim-ootb` PR #1717's own numbers are the first thing anyone reads to trust `§GROUND_CONNECTED` —
+a wrong locked baseline sitting next to a correct engine change is worse than an honest gap, because it
+looks verified when it is not.
+**How to apply:** a fresh session with real time for DB surgery + a `git bisect`-style hunt on defect
+(b) — this is NOT a five-minute fix, per the user's own suspicion when this was raised.
