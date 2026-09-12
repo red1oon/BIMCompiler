@@ -26,6 +26,10 @@ STATUS: BUILDING. P0 ✅ + P1 ✅ (#383) + P2 ✅ (#384). NEXT = fold ERP into P
      authored chain) needs the authored→ERP bridge / real BIM-pushed project — do NOT fabricate.
   ↪ REBRAND (user decree): modeller 'Bonsai' → 'DAGeVu' (visible strings only — title/banner/toast;
      window.Bonsai API + bonsai_*.js + W-BONSAI-* ids unchanged, developer-facing).
+  ↪ 2026-09-13: `prompts/RATES_SOURCE_OF_TRUTH.md` names **P3 as the dependency** for a specific real use
+     case (edit a wall in the Modeller → switch to the Viewer → see the 4D/5D/cost consequence already
+     reflected) — the recommended alternative to ever teaching the Modeller its own scheduling-rates
+     machinery. Raises P3's priority; doesn't change its scope.
 LOG MANDATE: after ANY witness run, read the log before conclusions.
 ```
 
