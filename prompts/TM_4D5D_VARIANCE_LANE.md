@@ -26,6 +26,10 @@ missing 4D, then deepen to manufacturing-grade cost — each layer a peer linked
    documented deterministic generator, carrying a 'generated' marker, byte-identical across runs.
 
 ## §STATE
+- S7 ⬜ SPEC'D 2026-09-13, NOT BUILT — "when + what it costs on the thing itself": the persisted 4D window
+  (`tasks`⋈`task_elements`, read via `schedule_read_4d.js`) beside S2's cost block in `#info-panel`, plus one
+  extra line on the existing `hover_name.js` label and a data-gated pill toggle. Grain decided up front (date =
+  element, cost = IFC class) — see S7 §S7-GRAIN. No pop-up-on-hover panel, by decision.
 - S6 ✅ DONE/LIVE 2026-06-22 — ENGINE (PR #474 `feat/tm-whatif-s6`, viewer sw v694; W-WHATIF 13/13 whitebox on REAL
   990000): `viewer/whatif.js` schedule what-if = blue branch op on C_ProjectPhase, F-S ripple (SeqNo chain + preserved
   lag), commit/discard/accept reuse Blue Future. `erp/tests/whatif_witness.js`. + UI (PR #475 `feat/tm-whatif-ui`,
@@ -224,6 +228,290 @@ folded project the › ERP push uses (OPFS push-store first, else bundled erp/ad
 window.WhatIf. Playwright-verified (slip Super +21d→6 downstream re-fold, 2029-05-28→06-18, PV 64.7M→61.1M, accept
 re-baselines, 0 errors); wow-shot `docs/figs/whatif_ripple.png`. proj_control.js UNTOUCHED. §-log gated, not visual.
 
+## S7 — WHEN IT GETS BUILT, ON THE THING ITSELF  (hover + `#info-panel` 4D block)   ⬜ SPEC ONLY
+GOAL: answer "when does this get built, and what does it cost" **on the element the user is already
+looking at** — no Gantt, no Find panel, no ERP tab, no Time Machine activation. S2 put the COST on the
+selection; this stage puts the DATE beside it and makes both reachable by hover as well as click.
+Idea + go-ahead: user, 2026-09-13 ("an icon in the pill where a panel pops up during hover any item in
+the model, to show when they are likely to build and cost").
+
+### §S7-GROUND (verified in bim-ootb `main` @ `fc7e4ac6`, 2026-09-13 — every surface already exists)
+- **Hover surface: `viewer/hover_name.js`.** `pointermove` → rAF-throttled raycast → guid → `elements_meta`
+  → one-line `#hover-name-label` (`pointer-events:none`). Armed by the Find-panel "hover name" checkbox /
+  `'`. Its header records the budget trap it ALREADY solved: "raycast per pointermove is not free at 63k
+  elements" — an earlier draft re-raycast on a perpetual rAF loop and was replaced. `_lastGuid` early-return
+  means work happens once per TARGET CHANGE, not per frame.
+- **Click surface: `#info-panel`** (`viewer/viewer.html:515`) — Class/Name/GUID/Building/Storey/Discipline/
+  Material rows, then `#info-cost` (hidden, own top border), then `#snag-btn-row`.
+- **Cost already lands there (S2).** `find_erp_push.js _showClassCost` → `_foldClassTwin(ifcClass)` reads
+  `C_Project`/`C_ProjectLine`/`C_ProjectPhase` off `../erp/ad_seed.db`. It is NOT Zoom-Across-only:
+  `navigate_find.js:4865` already calls `_showClassCost(ifcClass, 1, guid)` on a plain pinpoint pick
+  (`:5188` on a scope). So the panel S7 extends is already wired to an ordinary click.
+- **The date exists in TWO places; only one is right for a panel:**
+  - `time_machine.js:9106 window.tmJumpToElement(guid)` (§360-IDENTITY) scans `_ops` for
+    `output_guid === guid` and uses `op.end_ts`. It needs TM **active** with `_ops` loaded, and it *jumps*
+    — it does not *read*. **NOT the source for S7.**
+  - The **persisted schedule**: `tasks(task_id, name, schedule_start, schedule_finish, resource,
+    total_float, is_critical, schedule_id, is_summary)` ⋈ `task_elements(task_id, guid)`, active schedule
+    via `ScheduleAuthor.activeSchedule(db)`. Already read by `viewer/schedule_read_4d.js` (pure, DOM-free,
+    node-testable, "computes NOTHING about when work happens"). **This is the source.**
+- DOCTRINE FIT: §3 *read the twin, don't recompute* — the date is READ from the record `schedule_author.js`
+  wrote. §4 *honest labels* — see §S7-GRAIN, which is the whole reason this stage has a grain section.
+
+### §S7-GRAIN — DECIDED FIRST, BEFORE ANY CODE (user agreed 2026-09-13: ship at IFC-class grain)
+The two halves of this panel do **not** share a grain, and that is the one thing that can make it lie.
+- **Date = TASK grain. ⚠ CORRECTED 2026-09-13 BY MEASUREMENT — it is NOT element grain.** The first
+  draft of this section claimed "this door is built 2027-04-12" is true of that door. It is not.
+  `task_elements` maps a guid to a TASK, and the element inherits that task's window — so the answer is
+  only ever as fine as the task grid, and the task grid is coarse:
+
+  | producer | leaf tasks | what a task IS | Hospital reality |
+  |---|---|---|---|
+  | `materializeDefault` | **7-8** | one per PHASE | 63,415 elements over 7 windows; MEP Rough-in alone is **275 days** |
+  | `materializeZones` + `opts.template` | **42** | phase × storey | 41 distinct windows; biggest task "MEP Rough-in — Level 3" holds **9,545 elements** |
+
+  (Measured on `Hospital_extracted.db` 64,150 elements and the authored `Hospital_silent.db` respectively.)
+  So the honest sentence is **"this door is in *MEP Rough-in — Level 3*, 2026-03-20 → 2026-04-28"**, never
+  "this door is built on the 12th". Say the task's NAME beside its window — the name is what makes the
+  coarseness legible instead of misleading.
+- **⇒ INJECTION MUST USE THE ZONE/TEMPLATE PATH, not `materializeDefault`.** 7 phase windows would answer
+  "when is this built?" with "sometime inside this 275-day phase", which is not worth a panel. This is a
+  correction to §S7-INJECT's mechanism, not a new requirement — see the note there.
+- **Cost = IFC-CLASS grain, NOT element.** `_foldClassTwin` joins `M_Product.Value = ifcClass` →
+  `C_ProjectLine.PlannedAmt` is the whole class's line, and per §DATA the line `CommittedAmt` is NULL by
+  design so the committed side folds from the PHASE. Hovering one door shows what **all 254 IfcDoor** cost.
+- **RULE (load-bearing, not cosmetic):** the cost row must NAME its grain inline — the class and its match
+  count — and must never render a bare money string next to the element's own name, where it reads as this
+  element's price. Reuse S2's existing "from records" honesty label; add the count.
+- **Per-element cost is explicitly OUT of S7.** It needs guid-grain pricing (`navigate_find` `selectionPriced`)
+  plus the per-line precision already logged as a follow-up in `FIND_OPENLINK_EXISTING_ORDERLINE.md`
+  ("Slice-1 grain = project-level"). Do not sneak it in; it is a separate, larger stage.
+
+### §S7-DATA-REALITY — MEASURED 2026-09-13, BEFORE ANY CODE. Read this before promising a demo.
+**No PUBLISHED building carries a persisted schedule.** Counted directly over `~/bim-ootb/buildings/*.db`:
+
+| DB | `schedules` | `tasks` | `task_elements` |
+|---|---|---|---|
+| `Hospital_silent.db` | 1 | 42 | 63,415 |
+| `HHS_Office_Federated_silent.db` | 1 | 21 | 6,880 |
+| every `*_extracted.db` / `*_meta.db` / `*_geo.db` | **0** | 0 | 0 |
+| `Terminal*`, `LTU_AHouse*`, `warehouse_gardenworld` | — | *no 4D tables at all* | — |
+
+Both DBs that DO have one are symlinks into `~/Downloads` and per [[bim-ootb-clone-readiness-oci]] the
+`_silent` DBs are **not published**. The only runtime writer of a `schedules`/`tasks` row is the ✎ Author
+wizard (`schedule_author_ui.js` → `ScheduleAuthor.materializeDefault` → `persistDb`) — a deliberate user
+action. `Duplex_meta.db` is 0 bytes in the shared checkout (known data problem, not a code defect).
+
+**CONSEQUENCE, stated plainly so no one demos into it:** on a freshly loaded published building, hovering
+or clicking an element yields **nothing** from S7 until a schedule exists. S7 is not a
+load-the-page-and-wow feature on today's published data; it is a wow the moment a schedule exists.
+↳ **RESOLVED by user decision the same day — see §S7-INJECT**: materialize one, once, on the fly, instead
+of requiring the user to find ✎ Author. The gate messaging below still stands for the cases injection
+refuses (a captured or baselined schedule) and for the window before injection completes.
+
+**WHAT THIS CHANGES IN THE DESIGN — one thing, and it is not the data source.** Do NOT switch the source to
+the Time Machine's runtime `_ops` to paper over this: that needs TM activated, which defeats the entire
+point of putting the answer on the element. Instead the GATE MUST SAY WHY IT IS EMPTY. `§S7-DO` item 4's
+data-gate hides the pill when there is no schedule; the panel block, when the pill IS on and the lookup
+misses, states the reason — "no schedule authored yet — ✎ Author" — rather than rendering blank. An empty
+row that looks broken is worse than an absent one; a row that names its own precondition is neither.
+
+**THE REAL FOLLOW-UP (out of S7's scope, do not fold it in):** decide whether the published building DBs
+should ship WITH a baked default schedule. That is a publishing/bake decision with its own size and its own
+lane — it is not a UI stage, and S7 must not grow into it. §S7-INJECT makes it OPTIONAL rather than
+required (every client materializes its own on first use); baking it at publish time would still save every
+user that one pass, which is why this stays on the list.
+
+### §S7-INJECT — USER DECISION 2026-09-13: materialize the schedule ONCE, on the fly
+User: *"Persisting schedule can be injected one time on the fly for the user convenience."* This resolves
+§S7-DATA-REALITY's consequence — the user does not have to know what ✎ Author is before S7 works.
+
+**MECHANISM — not new machinery.** It is the SAME call the ✎ Author wizard already makes
+(`schedule_author_ui.js:293`): `ScheduleAuthor.materializeDefault(db, rules, { start: '2026-01-01',
+laborRates, blank: false })` then `persistDb(db, DB_URL, opts)`, which writes back to the shared
+IndexedDB/OPFS building cache (§SE-6), so "one time" genuinely survives a reload.
+
+**NEVER OVERWRITE — the guard is already written.** Inject ONLY when `ScheduleAuthor.activeSchedule(db)`
+returns `null`. That function already reports `captured` / `hasBaseline` / `safeToRegen`, and its header
+states the rule this must honour: a captured (imported) schedule "must not be auto-touched, full stop",
+and once the user has set a baseline the schedule "is their edited product and must not be silently
+discarded". An auto-injection that ignores any of those is a data-loss bug, not a convenience.
+
+**DETERMINISM.** Keep `start: '2026-01-01'` as a literal. Never `Date.now()` — the same run must produce
+byte-identical dates (Prime Directive; the lane's PRIME RULE on the one generated layer).
+
+**HONESTY — and the marker is NOT where you would first reach for it.** Checked 2026-09-13:
+- All three writers (`schedule_author.js:1118/1645/1943`) name the row `'Authored Schedule…'` under
+  `schedule_id = 'SCH_AUTHORED'` — confirmed in both `_silent` DBs. So today an auto-injected schedule
+  would be **indistinguishable** from one the user authored by hand.
+- `schedules.display_authored` is **NOT** a provenance flag — it gates `materializeZones`' display-remap
+  spacing (`time_machine.js:5402`, §TM_REVEAL_TILED / §CAP_RESCALE_SKIP). Do not repurpose it.
+- `schedules.gen_version` is a regeneration epoch (§GANTT_SCHEDULE_STALE), not provenance either.
+- The `schedule_id` **must stay `'SCH_AUTHORED'`**: `activeSchedule` defines `authored` as exactly that
+  string, so any other id reads as `captured` — the one state the code must never auto-touch.
+⇒ **Provenance goes in `schedules.name`**: `'Default Programme (auto-generated)'` against the wizard's
+`'Authored Schedule (4D template)'`. `#info-4d` labels from that name, so a generated default never reads
+as the project's committed programme. This is §DOCTRINE 4 (honest labels) and the PRIME RULE's
+"'generated' marker", satisfied with one string and no schema change.
+
+**⚠ WHICH PRODUCER — CORRECTED, see §S7-GRAIN.** Inject via `materializeZones(db, rules, {template, …})`
+(the `_writeTemplateSchedule` path, `schedule_author.js:1575`), **not** `materializeDefault`.
+`materializeDefault` emits 7-8 PHASE-grain leaf tasks, which answers "when is this built?" with "somewhere
+in this 275-day phase". The template path emits 42 phase×storey tasks on the same building — still coarse,
+but legible. The template itself is already live-fetched on the viewer path (`time_machine.js:4177`
+`_load4DTemplate`, §TPL_WIRED), so nothing new has to be loaded to do this.
+
+**THE OWED MEASUREMENT — PART 1 DONE 2026-09-13** (`scratchpad/probe_inject_cost.js`, real fleet DBs, the
+rates.js EXECUTED table, sql.js in node; DB loaded from a buffer, nothing written to disk):
+
+| DB | size | elements | `materializeDefault` | `db.export()` |
+|---|---|---|---|---|
+| `Hospital_extracted.db` | 252MB | 64,150 | **581ms** | 91ms → 259MB |
+| `Clinic_extracted.db` | 124MB | 17,322 | 170ms | 50ms → 125MB |
+| `JKR_extracted.db` | 194MB | 9,410 | 131ms | 95ms → 195MB |
+| `Duplex_extracted.db` | 9MB | 1,193 | 13ms | 5ms → 9MB |
+
+**Verdict on the trigger: lazy injection on first need is viable** — 581ms worst case on the biggest
+building in the fleet, not the multi-second freeze §SE-7c's history warned about. Show a status cue anyway.
+
+**⚠ TWO LEGS OF THIS ARE STILL UNMEASURED — do not treat 581ms as the whole cost:**
+1. **The template path was not timed**, only `materializeDefault`. It does strictly more work (42 tasks vs
+   7, plus `deriveBandRanks`). Time it before wiring; the verdict above may not survive it.
+2. **`persistDb`'s real write is not the 91ms `export()`.** That is serialisation to a buffer in node. The
+   browser then writes **259MB** into IndexedDB/OPFS — an entirely different cost on a real device, and the
+   one most likely to bite. Measure it in the browser, read the log, before promising "one time, instant".
+
+### §S7-INJECT-WITNESS
+- **W-S7-INJECT** — on a building with `schedules=0`, injection creates exactly ONE schedule, `#info-4d`
+  then resolves for a guid that has a task, and a RELOAD still resolves it (it persisted). Re-running
+  injection is a no-op. *Proves the "one time" claim, including across reload.*
+- **W-S7-INJECT-GUARD** — injection REFUSES when `activeSchedule` returns a captured schedule, or one with
+  a baseline; the existing rows are byte-identical afterwards. *Proves convenience cannot eat a user's
+  own schedule — the data-loss case this feature would otherwise introduce.*
+- **W-S7-INJECT-HONEST** — the injected row's `name` marks it generated, and `#info-4d` renders that
+  distinction. *Proves a generated default never presents as the committed programme.*
+- **W-S7-INJECT-COST** — ⬛ PART 1 DONE (table above: 581ms worst-case materialize on Hospital's 64,150
+  elements). STILL OWED: the template path's own wall time, and `persistDb`'s real browser write of a
+  259MB DB into IndexedDB/OPFS. *Proves which trigger design is honest; a design chosen without the
+  remaining two numbers is still a guess.*
+- **W-S7-TASK-GRAIN** — for a real building, the number of DISTINCT `(schedule_start, schedule_finish)`
+  windows is the task count, not the element count (Hospital: 41 windows over 63,415 elements), and
+  `#info-4d` renders the task's NAME beside the window. *Proves the panel cannot be read as a per-element
+  date — the exact misreading §S7-GRAIN was corrected to prevent.*
+
+### §S7-DO
+1. **`viewer/schedule_read_4d.js` gains `windowForGuid(db, guid, opts)`** — pure, one query, reusing the
+   module's own `activeSchedule`/`execRows`. Returns `{taskId, name, startDate, finishDate, resource,
+   totalFloat, isCritical}` or `null` (guid in no task / no active schedule / undated task). NO new module,
+   NO recompute, NO second copy of the reader — the same reason this file exists instead of living inside
+   `boq_charts.html`.
+2. **`#info-panel` gains `<div id="info-4d">`** — same position/pattern as `#info-cost` (hidden by default,
+   own top border), filled on pick from `windowForGuid`. Rows: task/phase · `start → finish` · trade ·
+   float, with a critical marker when `is_critical`. This is the answer to "what does *add a 4D window to
+   #info-panel* mean": one more sibling block in the panel that already opens on click, not a new panel.
+3. **Hover label gains ONE line**, not a panel: `<name> · <phase> <startDate>`, only when `windowForGuid`
+   hits. `#hover-name-label` stays `pointer-events:none` and one-line; the existing `_lastGuid` early-return
+   already bounds this to one query per target change.
+4. **Pill toggle** registered through `panels.js` PillBuilder (`:1303`, the declarative icon+panel wiring),
+   **data-gated** in the shipped convention — icon appears only when `ScheduleAuthor.activeSchedule(db)`
+   resolves (same rule as `hba_lens.js:1096` "no data → no icon, no clutter" and S2's own `§TM_VAR_GATE`).
+   Per §S7-DATA-REALITY this means the icon is ABSENT on every published building until ✎ Author runs —
+   that is correct, not a bug; and when the pill IS on but a given element misses, `#info-4d` states the
+   reason instead of rendering an empty block.
+
+### §S7-OPEN — the one thing legs 2-4 could not close, VERIFIED 2026-09-13 (needs a user decision)
+**`#info-4d` does not fire on a plain 3D-canvas click.** Both it and S2's `#info-cost` are wired only to the
+Find-panel-driven pick (`navigate_find.js:4870`). `viewer/picking.js` — the raw canvas click path — populates
+the Class/Name/GUID/Building/Storey/Discipline/Material rows and calls NEITHER block (grep-verified: no
+`showClassCost`/`show4DWindow`/`info-cost`/`info-4d` reference anywhere in that file).
+
+This is **pre-existing, not introduced by S7**: `#info-cost` has had the same coverage since S2 shipped, and
+§S7-DO item 2 explicitly said to follow that call site rather than invent a new one, so the leg was built
+correctly. But the headline interaction of leg 2 is "click an element and see when it is built", and the most
+common way a user clicks an element is the canvas — so today the feature is reachable only after the Find
+panel has loaded once.
+
+**The fix is small and the decision is not.** `picking.js:626` already has the guid (`g`) in scope on the exact
+line block that fills the info rows, so wiring `_show4DWindow(g)` there is ~2 lines. The real question is
+whether `_showClassCost` gets wired symmetrically at the same time — that would CHANGE EXISTING S2 BEHAVIOUR
+(cost would start appearing on picks where it never has), which is a product call, not a refactor. Options:
+1. wire 4D only — S7 works on a canvas click, S2's cost stays Find-only (asymmetric, but changes nothing shipped);
+2. wire both — consistent, but S2's surface silently widens;
+3. leave as-is — S7 stays Find-gated, matching S2 exactly.
+⛔ NOT ACTIONED — awaiting the user's pick.
+
+### §S7-NOT-DOING (recorded so it isn't re-proposed)
+**A pop-up panel on hover.** It must chase the cursor, re-render on every target change, and stay
+`pointer-events:none` or it eats the very hover that opened it — and it duplicates `#info-panel`, which
+already opens on click and already carries the cost block. Two grains of detail, ONE panel: hover = one
+line, click = the block.
+
+### §S7-WITNESS (each NAMES the issue it proves or disproves)
+- **W-S7-WINDOW** — `windowForGuid` returns the SAME `schedule_start`/`schedule_finish` the persisted
+  `tasks` row holds for a guid present in `task_elements`; `null` for a guid in no task; `null` with no
+  active schedule. *Proves the date is READ from the record, not re-derived — the §3 doctrine breach this
+  stage would otherwise be.*
+- **W-S7-GRAIN** — the rendered cost row names its IFC class and match count; no element-grain money string
+  is ever emitted next to the element name. *Proves a class figure cannot be misread as this element's cost.*
+- **W-S7-GATE** — on a building with no `schedules` row, `#info-4d` stays `display:none` AND the pill icon
+  is absent. *Proves no empty panel and no dead icon — the clutter the data-gate convention exists to stop.*
+- **W-S7-HOVER-BUDGET** — hovering N distinct elements issues N `windowForGuid` calls, not N-per-frame;
+  the `_lastGuid` early-return still holds with the extra lookup attached. *Proves S7 does not re-open the
+  raycast/query budget `HOVER_NAME.md` already had to fix once.*
+
+### §S7-LOG
+`§4D_ON_ELEMENT guid= task= start= finish= resource= critical=` on a hit ·
+`§4D_ON_ELEMENT_GATE reason=no_active_schedule|guid_not_in_task|undated` on a miss (never silent — the
+same "REPORTS, never silently drops" rule `4D_template.json` states for itself).
+
+### §S7-STATUS
+⬜ **SPEC ONLY here.** Blocked on nothing; §S7-GRAIN and §S7-DATA-REALITY are both decided/measured. Do
+§S7-DO 1 + its witness (W-S7-WINDOW) FIRST — it is the only leg with a new engine surface, and legs 2-4 all
+consume its return shape, so building them in parallel would mean inventing that shape. 2-4 are wiring onto
+surfaces that already ship and overlap on `panels.js`/`navigate_find.js` (a worktree isolates the branch,
+NOT line-level conflicts on shared files).
+- ✅ **§S7-DO 2/3/4 DONE 2026-09-13 — bim-ootb PR #1733** (`feat/s7-panel-hover-pill`, off fresh origin/main
+  833f8f25). `#info-4d` block + `_show4DWindow`, one extra `hover_name.js` label line, data-gated `sched4d`
+  pill, and the cost row's match count now RENDERED (not just logged). Witnesses, all on real fleet DBs, all
+  re-run independently: **W-S7-TASK-GRAIN 12/12** (Hospital_silent 41 tasks / 63,415 elements / 9,545-element
+  biggest task — matches §S7-GRAIN exactly; every render carries the task name) · **W-S7-GRAIN 10/10** (class
+  name + real match count 1,970 IfcBeam render together) · **W-S7-GATE 22/22** (engine layer AND real DOM) ·
+  **W-S7-HOVER-BUDGET 9/9** (call counts [1..10] across 60 raw mousemoves = one call per TARGET, never per
+  frame). Leg 1's W-S7-WINDOW still 13/13 against the new tree.
+  - UI text, hit: hover `MEP Rough-in — Level 3 · 2026-03-20 → 2026-04-28`; panel "Construction window / Task:
+    … / Window: … → … / Trade / Float". Miss with a schedule present: `Not yet assigned to a dated task in
+    "<schedule>"`. No schedule at all: block hidden, pill absent. The spec's literal `<name> · <phase>
+    <startDate>` was not used — the task's own name already encodes phase+storey, and a bare start date is
+    exactly what §S7-GRAIN forbids. Correct call.
+  - Disclosed and verified: `schedule_read_4d.js` was never loaded by `viewer.html` before this PR (only
+    `boq_charts.html` had it) — a hard prerequisite, added. `windowForGuid` needed `{scheduleAuthor: SA}`
+    passed explicitly (the lazy global self-resolves only in a browser) — uses the already-documented override
+    seam, no browser behaviour change. The `sched4d` pill's gate poll is one-shot, mirroring
+    `wh_walk.js`/`hba_lens.js`'s same limitation: a mid-session building switch won't re-probe it, though
+    hover/click resolution stays live.
+- ✅ **§S7-DO 1 DONE 2026-09-13 — bim-ootb PR #1732** (`feat/s7-window-for-guid`). `windowForGuid` added to
+  `viewer/schedule_read_4d.js`; witness `viewer/tests/witness_s7_window.js`. **W-S7-WINDOW 13/13, fail=0**,
+  re-run independently. 61 `§4D_ON_ELEMENT` hits — one guid per member-bearing task across all 41
+  `Hospital_silent.db` leaf tasks + all 20 HHS tasks — each matched against an INDEPENDENT direct-SQL read,
+  not against the function's own output. Both negative gates fired (`reason=guid_not_in_task`,
+  `reason=no_active_schedule`). Scope held: exactly the two named files, +282/-1.
+  - **Multi-task-per-guid:** `task_elements`' PK is `(task_id, guid)`, so the schema permits it; MEASURED
+    max 1 in both real DBs, i.e. it never happens today. Made deterministic anyway
+    (`ORDER BY t.schedule_start ASC, t.task_id ASC` = the first real work the element is part of) and logs
+    `§4D_ON_ELEMENT_MULTI`. **Known gap, recorded not hidden:** that branch has no witness case, because
+    covering it would mean inserting a synthetic `task_elements` row — non-invent says no. Revisit only if
+    a real DB ever produces one.
+  - **Spec inaccuracy this leg found, verified here:** `Hospital_extracted.db`'s `tasks` table is an OLDER
+    COLUMN VINTAGE (`start_date`/`finish_date`/`duration_days`, no `schedule_start`, no `is_summary`) AND
+    has 0 rows. So `activeSchedule` returns null via a CAUGHT SQL ERROR on the missing column, not via an
+    honest "no dated rows" path. Same correct observable (null), different cause — and worth knowing,
+    because on a hypothetical old-vintage DB that DID hold task rows they would be silently invisible.
+  - **⇒ Why §S7-INJECT still works on published DBs:** `schedule_author.js` carries guarded ALTERs
+    (`:228/:238/:270/:280`) and MEASURED `§AUTHOR_MIGRATE tasks→widened legacyRows=0` fired on every
+    old-vintage DB in the cost probe, after which `materializeDefault` wrote its tasks successfully
+    (Hospital_extracted → `tasks=8`). The migration is what makes injection viable on shipped buildings —
+    do not remove it, and do not assume a published DB's `tasks` table is the current shape.
+
 # ═════════════════════════ PHASE 2 — THE WEDGE (from twin to commercial cockpit) ═════════════════════════
 ## §WEDGE-STRATEGY (decided 2026-06-22 after the "is it a killer?" analysis)
 VERDICT of the analysis: the one-op-log BIM↔ERP twin is a killer *architecture* + killer *demo*; it is NOT yet a
@@ -305,8 +593,39 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
   geometry/BOM/work-order/cost are the SAME folded data; (3) link structurally can't rot (single substrate, not a bridge).
 - ALREADY-SHIPPING (don't claim novel): 5D quantities→live-linked cost; 5D+EVM co-located; work-orders generated from model.
 - COVERAGE CAVEAT: CostX + RIB primary-sourced; ITcon Pishdad 2024 now primary-VERIFIED (above). STILL unverified:
-  Synchro / Navisworks TimeLiner / Vico / Procore / P6+EVM not individually primary-confirmed; Nature s41598-025-27546-0
+  Vico / Procore / P6+EVM not individually primary-confirmed; Nature s41598-025-27546-0
   "AC entered as aggregate, no audit trail to atomic rows" UNVERIFIED (source behind auth wall, couldn't re-fetch).
+  Navisworks TimeLiner + Synchro: PARTIALLY CLOSED 2026-09-13, see §OBJECT-TO-SCHEDULE below.
+
+### §OBJECT-TO-SCHEDULE — the S7 direction, checked 2026-09-13 (partially closed; ONE claim, narrow)
+Triggered by the user's question "so no other BIM player out there has such feature?" about S7 (select/hover an
+element → see when it is built). Checked ONLY the direction of the object↔task linkage, nothing else.
+
+- **Navisworks TimeLiner — PRIMARY-SOURCED, the linkage is TASK → OBJECTS ONLY.** The Tasks Tab documentation
+  describes `Attach Current Selection` — "attaches the currently selected items in the scene to the selected
+  tasks" — i.e. select objects, then attach them TO a task. **No documented method goes the other way**: there
+  is no way in that documentation to select a model object and discover which tasks are attached to it. The
+  TimeLiner Options' `Auto Select Attached Items` also runs task→items ("select any attached items in the Scene
+  View as you select each task"). [primary]
+  https://help.autodesk.com/cloudhelp/2024/ENU/Navisworks-Timeliner/files/GUID-91B08CFD-0B6B-4A2B-A853-BC8E173BA78C.htm
+  · Corroborating but NOT primary: an Autodesk forum thread describes bolting a Task ID onto objects via a linked
+    MS Access table + TimeLiner rules — a workaround that only makes sense if there is no native reverse lookup.
+  · ⚠ UNRESOLVED, do not paper over: that same thread also says "the TimeLiner properties tab displays only task
+    name, dates and laps info", which could mean a per-OBJECT TimeLiner properties tab exists. It more likely
+    refers to the per-TASK properties view, but this was NOT settled. **Absence of documentation is not absence
+    of feature** — treat Navisworks as "no documented reverse lookup", never as "cannot do it".
+- **Synchro 4D — ABSTAINED, not confirmed either way.** Every documented flow found runs the same direction
+  (e.g. the Bentley wiki "How can I select all the 3D Objects that are assigned to a selected Resource?"). The
+  KB article that would settle the reverse now 301s into a dynamic service-now page that could not be read.
+  **Do not claim anything about Synchro on this axis.**
+
+**WHAT THIS DOES AND DOES NOT LICENCE.** It does NOT make S7 novel — 4D object/task linkage is decades old and
+stays on the ALREADY-SHIPPING list. The narrow, and only, claim it supports is about DIRECTION: the incumbent
+tools are authored task-first, so "here is a task, which objects does it move" is native, while "here is this
+object, when does it get built" is not the documented flow. S7 answers the second question. That is a UX
+direction claim, not an architecture claim, and it is currently one-vendor-deep.
+And note §S7-GRAIN cuts the other way: S7 answers at phase×storey (Hospital: 41 windows over 63,415 elements),
+which is COARSER than a scheduler-authored task grid. Do not pitch S7 as finer-grained than the incumbents.
 
 ## §STARTUP READS
 - this lane (act from here) · viewer/time_machine.js (renderAtTime, drawVariance, drawDashboard, injectGantt,
@@ -317,5 +636,8 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
 
 ## §WITNESS INDEX (in stage order)
 S1 W-PC-TWIN-SOURCE · W-PC-DRAWER  |  S2 W-PC-PANEL · W-PC-JUNCTURE · W-PC-HONEST  |  S3 W-4DGEN  |
-S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13
+S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13  |
+S7 W-S7-WINDOW ✅13/13 · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET · W-S7-INJECT · W-S7-INJECT-GUARD ·
+W-S7-INJECT-HONEST · W-S7-INJECT-COST ⬛part1 | S7 legs 2-4 ✅ W-S7-TASK-GRAIN 12/12 ·
+W-S7-GRAIN 10/10 · W-S7-GATE 22/22 · W-S7-HOVER-BUDGET 9/9
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP

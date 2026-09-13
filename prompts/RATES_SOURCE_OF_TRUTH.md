@@ -36,12 +36,14 @@ open question. The file's own header (as of this session) says:
 > is NOT what Time Machine `injectGantt` runs on. `viewer.html` never calls `loadSequenceRules()` — only
 > `mep_report.html` and `boq_...` [truncated in this session's view — re-read the full note before citing]."
 
-But `schedule_author.js:685` DOES read one live constant from it —
-`sequence_rules.json LABOR_RATES._default_max_crews_author`. So the file is **partially** live: at least
-one value flows into the real bake; the file's own comment says the FULL `loadSequenceRules()` load path
-does not run for the live Time Machine bake. This is an internal Viewer inconsistency, found by accident
-while checking whether the Modeller should ever point at this file — **not yet audited**, not this
-session's job to fix without a dedicated pass.
+~~But `schedule_author.js:685` DOES read one live constant from it —
+`sequence_rules.json LABOR_RATES._default_max_crews_author`. So the file is **partially** live.~~
+
+⚠ **CORRECTED by the §2 audit, 2026-09-13 — that sentence was wrong in MECHANISM, and the correction
+makes the answer cleaner, not murkier.** `schedule_author.js:688` reads
+`laborRates._default_max_crews_author` from its own **parameter**, not from the file. On the live path
+that parameter is `time_machine.js:4601 var LR = window.LABOR_RATES`, i.e. the `rates.js` literal. The
+file is not *partially* live for the viewer — it is **not live at all**. See §2-RESULT.
 
 ## §2 §AUDIT — not run yet, spec only
 
@@ -59,6 +61,55 @@ Before anyone (Modeller or a future Viewer refactor) treats `sequence_rules.json
 **Witness claim (A-1):** for every key reported "live-read-from-file," changing that key's value in the
 JSON and re-running the relevant bake/report changes the output by a traceable amount. A key that doesn't
 move the output when changed is not actually live, regardless of what a grep hit suggested.
+
+## §2-RESULT — AUDIT RUN 2026-09-13 (static trace; bim-ootb `main` @ `fc7e4ac6`)
+
+**Verdict: `sequence_rules.json` is a MIRROR IN FULL on the viewer.html path. Zero of its keys reach the
+live 4D bake.** It IS the live source on exactly two other pages.
+
+| key | `viewer.html` (the live 4D bake) | `mep_report.html` / `boq_charts.html` |
+|---|---|---|
+| `meta` (3) | **dead** — no code reads it on any page | dead |
+| `SEQUENCE_RULES` (58) | hand-copied → the `rates.js` literal | **live-read-from-file** |
+| `SEQUENCE_DEFAULT` (3) | hand-copied | **live-read-from-file** |
+| `LABOR_RATES` (10 trades + 3 constants) | hand-copied | **live-read-from-file** |
+| `NAME_OVERRIDES` (7) | hand-copied | **live-read-from-file** |
+
+**The load-path proof** (this is why no key can be live for the viewer, key by key): `loadSequenceRules()`
+has exactly ONE caller, `rates.js:746 initRateTemplate()`; `initRateTemplate` has exactly TWO callers,
+`boq_charts.html:974` and `mep_report.html:174`. `viewer.html:911` loads `rates.js` and calls neither.
+
+**Witness A-1, answered without running a bake.** Change any key in the JSON and re-run: the viewer.html
+programme moves by **zero** for every key (nothing reads the file), and the two report pages move for
+every key. A-1 as written would have "failed" the whole file — correctly, and for the load-path reason
+above rather than per-key drift.
+
+**THE REAL FINDING — not what this audit went looking for.** `viewer/tests/witness_sequence_template_lock.js`
+gates mirror↔literal equality and was **RED from 2026-09-02 to 2026-09-13**, on **prose, not values**: six
+documentation keys exist only in the JSON (`LABOR_RATES._{productivity_basis_secs,zero_minute_floor_secs,
+default_max_crews_author}_why` from #1616; `NAME_OVERRIDES[foundation_wall_substructure |
+stair_member_architecture | finish_floor_finishes]._why` from #1551), while its `strip` only deleted
+`reason`. It is not in `run_witness_suite.js`'s `KNOWN_RED`, so the suite counted it as an unexpected red
+for 11 days. This is the exact failure its own `canon()` comment warns about — *"a gate that fires on it
+teaches people to ignore it."* **Fixed: bim-ootb PR #1731** (exclusion by prose NAME — `reason`, `_why`,
+`<key>_why` — at every depth; NOT by leading underscore, which would gut the gate since the three
+functional `_`-prefixed constants must stay compared). Proven with controls: unmodified 7/7 · a real value
+change `LABORER.rate_per_day` 95→96 still FAILS · a new `_why` key stays green.
+
+**With the six prose keys excluded, all four functional keys are byte-identical — zero value drift.** So
+the mirror is honest today; what had lapsed was the thing keeping it honest.
+
+**§2 step 4 — the siblings, and `sequence_rules.json` is the odd one out, not the pattern:**
+- `4D_template.json` — **genuinely live-fetched** at runtime on viewer.html (`time_machine.js:4177
+  _load4DTemplate`, §TPL_WIRED, via `loadJsonWithOverrides`). No mirror, no second copy. Nothing to fix.
+- `structural_rules.json` / `egress_rules.json` — **JSON is primary**, fetched via `RuleReport.loadRules`;
+  the JS object (`structural_sanity.js` / `egress_sanity.js` `FALLBACK_RULES`) is only the offline
+  fallback — the INVERSE of `sequence_rules.json`. Equality IS gated and IS green: `tests/test_rule_report.js`
+  R13, run 2026-09-13, **85 passed / 0 failed**.
+
+**Nothing in either data file was changed by this audit**, and no runtime module was touched — so no
+schedule, duration or phase order moved. Per [[observe-document-dont-fix]], the one fix applied (#1731) is
+to a test file and was authorised by the user in the same session.
 
 ## §3 The design question this audit was for
 
@@ -91,9 +142,19 @@ discussed earlier this session (edit → see schedule/cost consequence) rather t
 
 ## §4 Status
 
-- [ ] §2 AUDIT — trace every `sequence_rules.json` (and siblings) key to live/dead, table + witness A-1
-- [ ] Fix whatever §2 finds (delete dead keys, or wire them live) — separate follow-up, scope after the audit
-- [ ] Decide (user) whether §3's recommendation stands, or the Modeller should get its own scoped 4D/5D
-      surface after all — this doc takes no further action without that decision
-- [ ] If §3 stands: prioritize `CONNECT_SCENE_SPEC.md` P3 (identity/commit channel) as the dependency for
-      the cross-surface "killer" handoff — not scoped here, cross-reference only
+- [x] §2 AUDIT — DONE 2026-09-13, see §2-RESULT. Table complete for all 5 keys + the 3 siblings; A-1
+      answered from the load path (no key is readable by the live viewer, so none can move its output).
+- [x] Fix whatever §2 finds — the finding was NOT a dead key, it was a lapsed GATE: **bim-ootb PR #1731**
+      restores `witness_sequence_template_lock.js`'s mirror invariant (red 11 days on prose). Zero value
+      drift was found, so no data file was edited.
+- [ ] OPEN, low priority: `meta` is genuinely dead-in-viewer (no code reads it). It is not misleading —
+      it is the §RULES_TABLE_SOURCE warning note itself, which is worth keeping — so "delete it" is the
+      WRONG call here. Listed only so the next pass doesn't re-discover it as a defect.
+- [x] Decide (user) whether §3's recommendation stands — **STANDS, user 2026-09-13**: route through the
+      Viewer, "if this is better organised reuse, now by Modeller". The Modeller gets no rates machinery.
+- [ ] §3 dependency: `CONNECT_SCENE_SPEC.md` **P3** (identity/commit channel, `W-CONNECT-COMMIT`) is now
+      the named blocker for the cross-surface handoff. P0/P1/P2 shipped (#383, #384); P3 unbuilt.
+      Not scoped here, cross-reference only.
+- [ ] Related, spec'd the same day out of the same conversation: `TM_4D5D_VARIANCE_LANE.md` **S7** — the
+      per-element 4D window + class-grain cost on `#info-panel` and the hover label. Uses the Viewer's own
+      persisted schedule, so it is a Viewer stage, NOT a reason to teach the Modeller rates.

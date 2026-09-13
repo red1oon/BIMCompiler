@@ -30,6 +30,12 @@ STATUS: BUILDING. P0 ✅ + P1 ✅ (#383) + P2 ✅ (#384). NEXT = fold ERP into P
      case (edit a wall in the Modeller → switch to the Viewer → see the 4D/5D/cost consequence already
      reflected) — the recommended alternative to ever teaching the Modeller its own scheduling-rates
      machinery. Raises P3's priority; doesn't change its scope.
+     ↳ **USER DECIDED same day: that route STANDS** ("I am for it, if this is better organised reuse, now
+     by Modeller"). So P3 is no longer a recommended dependency, it is the AGREED one — the Modeller will
+     never carry rates/scheduling machinery, and this channel is how it sees 4D/5D consequence. Scope
+     unchanged: `W-CONNECT-COMMIT` as already written below. The §2 audit behind that decision also found
+     the Viewer's own `sequence_rules.json` is a MIRROR, not live for the 4D bake (§2-RESULT there) —
+     which is the concrete reason NOT to point a second surface at it.
 LOG MANDATE: after ANY witness run, read the log before conclusions.
 ```
 
