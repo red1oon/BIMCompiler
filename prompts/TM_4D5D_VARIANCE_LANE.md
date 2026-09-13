@@ -288,8 +288,11 @@ wizard (`schedule_author_ui.js` → `ScheduleAuthor.materializeDefault` → `per
 action. `Duplex_meta.db` is 0 bytes in the shared checkout (known data problem, not a code defect).
 
 **CONSEQUENCE, stated plainly so no one demos into it:** on a freshly loaded published building, hovering
-or clicking an element yields **nothing** from S7 until the user runs ✎ Author. S7 is not a
+or clicking an element yields **nothing** from S7 until a schedule exists. S7 is not a
 load-the-page-and-wow feature on today's published data; it is a wow the moment a schedule exists.
+↳ **RESOLVED by user decision the same day — see §S7-INJECT**: materialize one, once, on the fly, instead
+of requiring the user to find ✎ Author. The gate messaging below still stands for the cases injection
+refuses (a captured or baselined schedule) and for the window before injection completes.
 
 **WHAT THIS CHANGES IN THE DESIGN — one thing, and it is not the data source.** Do NOT switch the source to
 the Time Machine's runtime `_ops` to paper over this: that needs TM activated, which defeats the entire
@@ -300,7 +303,64 @@ row that looks broken is worse than an absent one; a row that names its own prec
 
 **THE REAL FOLLOW-UP (out of S7's scope, do not fold it in):** decide whether the published building DBs
 should ship WITH a baked default schedule. That is a publishing/bake decision with its own size and its own
-lane — it is not a UI stage, and S7 must not grow into it. Raised here only so S7 isn't blamed for it later.
+lane — it is not a UI stage, and S7 must not grow into it. §S7-INJECT makes it OPTIONAL rather than
+required (every client materializes its own on first use); baking it at publish time would still save every
+user that one pass, which is why this stays on the list.
+
+### §S7-INJECT — USER DECISION 2026-09-13: materialize the schedule ONCE, on the fly
+User: *"Persisting schedule can be injected one time on the fly for the user convenience."* This resolves
+§S7-DATA-REALITY's consequence — the user does not have to know what ✎ Author is before S7 works.
+
+**MECHANISM — not new machinery.** It is the SAME call the ✎ Author wizard already makes
+(`schedule_author_ui.js:293`): `ScheduleAuthor.materializeDefault(db, rules, { start: '2026-01-01',
+laborRates, blank: false })` then `persistDb(db, DB_URL, opts)`, which writes back to the shared
+IndexedDB/OPFS building cache (§SE-6), so "one time" genuinely survives a reload.
+
+**NEVER OVERWRITE — the guard is already written.** Inject ONLY when `ScheduleAuthor.activeSchedule(db)`
+returns `null`. That function already reports `captured` / `hasBaseline` / `safeToRegen`, and its header
+states the rule this must honour: a captured (imported) schedule "must not be auto-touched, full stop",
+and once the user has set a baseline the schedule "is their edited product and must not be silently
+discarded". An auto-injection that ignores any of those is a data-loss bug, not a convenience.
+
+**DETERMINISM.** Keep `start: '2026-01-01'` as a literal. Never `Date.now()` — the same run must produce
+byte-identical dates (Prime Directive; the lane's PRIME RULE on the one generated layer).
+
+**HONESTY — and the marker is NOT where you would first reach for it.** Checked 2026-09-13:
+- All three writers (`schedule_author.js:1118/1645/1943`) name the row `'Authored Schedule…'` under
+  `schedule_id = 'SCH_AUTHORED'` — confirmed in both `_silent` DBs. So today an auto-injected schedule
+  would be **indistinguishable** from one the user authored by hand.
+- `schedules.display_authored` is **NOT** a provenance flag — it gates `materializeZones`' display-remap
+  spacing (`time_machine.js:5402`, §TM_REVEAL_TILED / §CAP_RESCALE_SKIP). Do not repurpose it.
+- `schedules.gen_version` is a regeneration epoch (§GANTT_SCHEDULE_STALE), not provenance either.
+- The `schedule_id` **must stay `'SCH_AUTHORED'`**: `activeSchedule` defines `authored` as exactly that
+  string, so any other id reads as `captured` — the one state the code must never auto-touch.
+⇒ **Provenance goes in `schedules.name`**: `'Default Programme (auto-generated)'` against the wizard's
+`'Authored Schedule (4D template)'`. `#info-4d` labels from that name, so a generated default never reads
+as the project's committed programme. This is §DOCTRINE 4 (honest labels) and the PRIME RULE's
+"'generated' marker", satisfied with one string and no schema change.
+
+**⚠ THE OWED MEASUREMENT — do this BEFORE wiring the trigger, not after.** `materializeDefault` is a
+whole-model pass; Hospital is 63,415 `task_elements` over 42 tasks. This class of pass has a real history
+here: `FUSED_4D5D_WEDGE_LANE.md` §SE-7c records `injectGantt` at **34,000-123,000ms** before the
+`idx_kernel_ops_guid` fix and **1,273ms** after. So the cost is NOT assumed to be small.
+- If it is fast (≲1s on Hospital): inject lazily on first need, with a status cue.
+- If it is not: it CANNOT sit on a hover or first-pick path. It becomes the pill's explicit one-time
+  action ("Generate programme"), with the existing status/progress surface — still one click, still one
+  time, but never a silent multi-second freeze on a mouse-move.
+Decide by MEASURING on the real Hospital DB and reading the log, not by picking one now.
+
+### §S7-INJECT-WITNESS
+- **W-S7-INJECT** — on a building with `schedules=0`, injection creates exactly ONE schedule, `#info-4d`
+  then resolves for a guid that has a task, and a RELOAD still resolves it (it persisted). Re-running
+  injection is a no-op. *Proves the "one time" claim, including across reload.*
+- **W-S7-INJECT-GUARD** — injection REFUSES when `activeSchedule` returns a captured schedule, or one with
+  a baseline; the existing rows are byte-identical afterwards. *Proves convenience cannot eat a user's
+  own schedule — the data-loss case this feature would otherwise introduce.*
+- **W-S7-INJECT-HONEST** — the injected row's `name` marks it generated, and `#info-4d` renders that
+  distinction. *Proves a generated default never presents as the committed programme.*
+- **W-S7-INJECT-COST** — the measured wall time of `materializeDefault`+`persistDb` on the real Hospital
+  DB, logged as a number. *Proves which of the two trigger designs above is the honest one; a design
+  chosen without this number is a guess.*
 
 ### §S7-DO
 1. **`viewer/schedule_read_4d.js` gains `windowForGuid(db, guid, opts)`** — pure, one query, reusing the
@@ -451,5 +511,6 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
 ## §WITNESS INDEX (in stage order)
 S1 W-PC-TWIN-SOURCE · W-PC-DRAWER  |  S2 W-PC-PANEL · W-PC-JUNCTURE · W-PC-HONEST  |  S3 W-4DGEN  |
 S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13  |
-S7 W-S7-WINDOW · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET ⬜spec
+S7 W-S7-WINDOW · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET · W-S7-INJECT · W-S7-INJECT-GUARD ·
+W-S7-INJECT-HONEST · W-S7-INJECT-COST ⬜spec
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP
