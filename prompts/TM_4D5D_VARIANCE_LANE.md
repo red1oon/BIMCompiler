@@ -260,8 +260,23 @@ the model, to show when they are likely to build and cost").
 
 ### §S7-GRAIN — DECIDED FIRST, BEFORE ANY CODE (user agreed 2026-09-13: ship at IFC-class grain)
 The two halves of this panel do **not** share a grain, and that is the one thing that can make it lie.
-- **Date = ELEMENT grain, honest.** `task_elements.guid` is per-element; "this door is built 2027-04-12"
-  is true of that door.
+- **Date = TASK grain. ⚠ CORRECTED 2026-09-13 BY MEASUREMENT — it is NOT element grain.** The first
+  draft of this section claimed "this door is built 2027-04-12" is true of that door. It is not.
+  `task_elements` maps a guid to a TASK, and the element inherits that task's window — so the answer is
+  only ever as fine as the task grid, and the task grid is coarse:
+
+  | producer | leaf tasks | what a task IS | Hospital reality |
+  |---|---|---|---|
+  | `materializeDefault` | **7-8** | one per PHASE | 63,415 elements over 7 windows; MEP Rough-in alone is **275 days** |
+  | `materializeZones` + `opts.template` | **42** | phase × storey | 41 distinct windows; biggest task "MEP Rough-in — Level 3" holds **9,545 elements** |
+
+  (Measured on `Hospital_extracted.db` 64,150 elements and the authored `Hospital_silent.db` respectively.)
+  So the honest sentence is **"this door is in *MEP Rough-in — Level 3*, 2026-03-20 → 2026-04-28"**, never
+  "this door is built on the 12th". Say the task's NAME beside its window — the name is what makes the
+  coarseness legible instead of misleading.
+- **⇒ INJECTION MUST USE THE ZONE/TEMPLATE PATH, not `materializeDefault`.** 7 phase windows would answer
+  "when is this built?" with "sometime inside this 275-day phase", which is not worth a panel. This is a
+  correction to §S7-INJECT's mechanism, not a new requirement — see the note there.
 - **Cost = IFC-CLASS grain, NOT element.** `_foldClassTwin` joins `M_Product.Value = ifcClass` →
   `C_ProjectLine.PlannedAmt` is the whole class's line, and per §DATA the line `CommittedAmt` is NULL by
   design so the committed side folds from the PHASE. Hovering one door shows what **all 254 IfcDoor** cost.
@@ -339,15 +354,32 @@ byte-identical dates (Prime Directive; the lane's PRIME RULE on the one generate
 as the project's committed programme. This is §DOCTRINE 4 (honest labels) and the PRIME RULE's
 "'generated' marker", satisfied with one string and no schema change.
 
-**⚠ THE OWED MEASUREMENT — do this BEFORE wiring the trigger, not after.** `materializeDefault` is a
-whole-model pass; Hospital is 63,415 `task_elements` over 42 tasks. This class of pass has a real history
-here: `FUSED_4D5D_WEDGE_LANE.md` §SE-7c records `injectGantt` at **34,000-123,000ms** before the
-`idx_kernel_ops_guid` fix and **1,273ms** after. So the cost is NOT assumed to be small.
-- If it is fast (≲1s on Hospital): inject lazily on first need, with a status cue.
-- If it is not: it CANNOT sit on a hover or first-pick path. It becomes the pill's explicit one-time
-  action ("Generate programme"), with the existing status/progress surface — still one click, still one
-  time, but never a silent multi-second freeze on a mouse-move.
-Decide by MEASURING on the real Hospital DB and reading the log, not by picking one now.
+**⚠ WHICH PRODUCER — CORRECTED, see §S7-GRAIN.** Inject via `materializeZones(db, rules, {template, …})`
+(the `_writeTemplateSchedule` path, `schedule_author.js:1575`), **not** `materializeDefault`.
+`materializeDefault` emits 7-8 PHASE-grain leaf tasks, which answers "when is this built?" with "somewhere
+in this 275-day phase". The template path emits 42 phase×storey tasks on the same building — still coarse,
+but legible. The template itself is already live-fetched on the viewer path (`time_machine.js:4177`
+`_load4DTemplate`, §TPL_WIRED), so nothing new has to be loaded to do this.
+
+**THE OWED MEASUREMENT — PART 1 DONE 2026-09-13** (`scratchpad/probe_inject_cost.js`, real fleet DBs, the
+rates.js EXECUTED table, sql.js in node; DB loaded from a buffer, nothing written to disk):
+
+| DB | size | elements | `materializeDefault` | `db.export()` |
+|---|---|---|---|---|
+| `Hospital_extracted.db` | 252MB | 64,150 | **581ms** | 91ms → 259MB |
+| `Clinic_extracted.db` | 124MB | 17,322 | 170ms | 50ms → 125MB |
+| `JKR_extracted.db` | 194MB | 9,410 | 131ms | 95ms → 195MB |
+| `Duplex_extracted.db` | 9MB | 1,193 | 13ms | 5ms → 9MB |
+
+**Verdict on the trigger: lazy injection on first need is viable** — 581ms worst case on the biggest
+building in the fleet, not the multi-second freeze §SE-7c's history warned about. Show a status cue anyway.
+
+**⚠ TWO LEGS OF THIS ARE STILL UNMEASURED — do not treat 581ms as the whole cost:**
+1. **The template path was not timed**, only `materializeDefault`. It does strictly more work (42 tasks vs
+   7, plus `deriveBandRanks`). Time it before wiring; the verdict above may not survive it.
+2. **`persistDb`'s real write is not the 91ms `export()`.** That is serialisation to a buffer in node. The
+   browser then writes **259MB** into IndexedDB/OPFS — an entirely different cost on a real device, and the
+   one most likely to bite. Measure it in the browser, read the log, before promising "one time, instant".
 
 ### §S7-INJECT-WITNESS
 - **W-S7-INJECT** — on a building with `schedules=0`, injection creates exactly ONE schedule, `#info-4d`
@@ -358,9 +390,14 @@ Decide by MEASURING on the real Hospital DB and reading the log, not by picking 
   own schedule — the data-loss case this feature would otherwise introduce.*
 - **W-S7-INJECT-HONEST** — the injected row's `name` marks it generated, and `#info-4d` renders that
   distinction. *Proves a generated default never presents as the committed programme.*
-- **W-S7-INJECT-COST** — the measured wall time of `materializeDefault`+`persistDb` on the real Hospital
-  DB, logged as a number. *Proves which of the two trigger designs above is the honest one; a design
-  chosen without this number is a guess.*
+- **W-S7-INJECT-COST** — ⬛ PART 1 DONE (table above: 581ms worst-case materialize on Hospital's 64,150
+  elements). STILL OWED: the template path's own wall time, and `persistDb`'s real browser write of a
+  259MB DB into IndexedDB/OPFS. *Proves which trigger design is honest; a design chosen without the
+  remaining two numbers is still a guess.*
+- **W-S7-TASK-GRAIN** — for a real building, the number of DISTINCT `(schedule_start, schedule_finish)`
+  windows is the task count, not the element count (Hospital: 41 windows over 63,415 elements), and
+  `#info-4d` renders the task's NAME beside the window. *Proves the panel cannot be read as a per-element
+  date — the exact misreading §S7-GRAIN was corrected to prevent.*
 
 ### §S7-DO
 1. **`viewer/schedule_read_4d.js` gains `windowForGuid(db, guid, opts)`** — pure, one query, reusing the
@@ -512,5 +549,5 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
 S1 W-PC-TWIN-SOURCE · W-PC-DRAWER  |  S2 W-PC-PANEL · W-PC-JUNCTURE · W-PC-HONEST  |  S3 W-4DGEN  |
 S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13  |
 S7 W-S7-WINDOW · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET · W-S7-INJECT · W-S7-INJECT-GUARD ·
-W-S7-INJECT-HONEST · W-S7-INJECT-COST ⬜spec
+W-S7-INJECT-HONEST · W-S7-INJECT-COST ⬛part1 · W-S7-TASK-GRAIN ⬜spec
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP
