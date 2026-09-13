@@ -272,6 +272,36 @@ The two halves of this panel do **not** share a grain, and that is the one thing
   plus the per-line precision already logged as a follow-up in `FIND_OPENLINK_EXISTING_ORDERLINE.md`
   ("Slice-1 grain = project-level"). Do not sneak it in; it is a separate, larger stage.
 
+### §S7-DATA-REALITY — MEASURED 2026-09-13, BEFORE ANY CODE. Read this before promising a demo.
+**No PUBLISHED building carries a persisted schedule.** Counted directly over `~/bim-ootb/buildings/*.db`:
+
+| DB | `schedules` | `tasks` | `task_elements` |
+|---|---|---|---|
+| `Hospital_silent.db` | 1 | 42 | 63,415 |
+| `HHS_Office_Federated_silent.db` | 1 | 21 | 6,880 |
+| every `*_extracted.db` / `*_meta.db` / `*_geo.db` | **0** | 0 | 0 |
+| `Terminal*`, `LTU_AHouse*`, `warehouse_gardenworld` | — | *no 4D tables at all* | — |
+
+Both DBs that DO have one are symlinks into `~/Downloads` and per [[bim-ootb-clone-readiness-oci]] the
+`_silent` DBs are **not published**. The only runtime writer of a `schedules`/`tasks` row is the ✎ Author
+wizard (`schedule_author_ui.js` → `ScheduleAuthor.materializeDefault` → `persistDb`) — a deliberate user
+action. `Duplex_meta.db` is 0 bytes in the shared checkout (known data problem, not a code defect).
+
+**CONSEQUENCE, stated plainly so no one demos into it:** on a freshly loaded published building, hovering
+or clicking an element yields **nothing** from S7 until the user runs ✎ Author. S7 is not a
+load-the-page-and-wow feature on today's published data; it is a wow the moment a schedule exists.
+
+**WHAT THIS CHANGES IN THE DESIGN — one thing, and it is not the data source.** Do NOT switch the source to
+the Time Machine's runtime `_ops` to paper over this: that needs TM activated, which defeats the entire
+point of putting the answer on the element. Instead the GATE MUST SAY WHY IT IS EMPTY. `§S7-DO` item 4's
+data-gate hides the pill when there is no schedule; the panel block, when the pill IS on and the lookup
+misses, states the reason — "no schedule authored yet — ✎ Author" — rather than rendering blank. An empty
+row that looks broken is worse than an absent one; a row that names its own precondition is neither.
+
+**THE REAL FOLLOW-UP (out of S7's scope, do not fold it in):** decide whether the published building DBs
+should ship WITH a baked default schedule. That is a publishing/bake decision with its own size and its own
+lane — it is not a UI stage, and S7 must not grow into it. Raised here only so S7 isn't blamed for it later.
+
 ### §S7-DO
 1. **`viewer/schedule_read_4d.js` gains `windowForGuid(db, guid, opts)`** — pure, one query, reusing the
    module's own `activeSchedule`/`execRows`. Returns `{taskId, name, startDate, finishDate, resource,
@@ -288,6 +318,9 @@ The two halves of this panel do **not** share a grain, and that is the one thing
 4. **Pill toggle** registered through `panels.js` PillBuilder (`:1303`, the declarative icon+panel wiring),
    **data-gated** in the shipped convention — icon appears only when `ScheduleAuthor.activeSchedule(db)`
    resolves (same rule as `hba_lens.js:1096` "no data → no icon, no clutter" and S2's own `§TM_VAR_GATE`).
+   Per §S7-DATA-REALITY this means the icon is ABSENT on every published building until ✎ Author runs —
+   that is correct, not a bug; and when the pill IS on but a given element misses, `#info-4d` states the
+   reason instead of rendering an empty block.
 
 ### §S7-NOT-DOING (recorded so it isn't re-proposed)
 **A pop-up panel on hover.** It must chase the cursor, re-render on every target change, and stay
@@ -314,9 +347,15 @@ line, click = the block.
 same "REPORTS, never silently drops" rule `4D_template.json` states for itself).
 
 ### §S7-STATUS
-⬜ **SPEC ONLY — nothing implemented.** Blocked on nothing; §S7-GRAIN is already decided. Do §S7-DO 1 + its
-witness (W-S7-WINDOW) FIRST and stop there for review — it is the only leg with a new engine surface; 2-4
-are wiring onto surfaces that already ship.
+⬜ **SPEC ONLY here.** Blocked on nothing; §S7-GRAIN and §S7-DATA-REALITY are both decided/measured. Do
+§S7-DO 1 + its witness (W-S7-WINDOW) FIRST — it is the only leg with a new engine surface, and legs 2-4 all
+consume its return shape, so building them in parallel would mean inventing that shape. 2-4 are wiring onto
+surfaces that already ship and overlap on `panels.js`/`navigate_find.js` (a worktree isolates the branch,
+NOT line-level conflicts on shared files).
+- **IN FLIGHT 2026-09-13: §S7-DO 1** — `windowForGuid` + W-S7-WINDOW, bim-ootb branch
+  `feat/s7-window-for-guid`. Witnessed against the only two DBs that have a persisted schedule
+  (`Hospital_silent.db` 42 tasks/63,415 elements, `HHS_Office_Federated_silent.db` 21/6,880) plus a real
+  `schedules=0` building for the negative cases.
 
 # ═════════════════════════ PHASE 2 — THE WEDGE (from twin to commercial cockpit) ═════════════════════════
 ## §WEDGE-STRATEGY (decided 2026-06-22 after the "is it a killer?" analysis)
