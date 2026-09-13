@@ -553,8 +553,39 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
   geometry/BOM/work-order/cost are the SAME folded data; (3) link structurally can't rot (single substrate, not a bridge).
 - ALREADY-SHIPPING (don't claim novel): 5D quantities→live-linked cost; 5D+EVM co-located; work-orders generated from model.
 - COVERAGE CAVEAT: CostX + RIB primary-sourced; ITcon Pishdad 2024 now primary-VERIFIED (above). STILL unverified:
-  Synchro / Navisworks TimeLiner / Vico / Procore / P6+EVM not individually primary-confirmed; Nature s41598-025-27546-0
+  Vico / Procore / P6+EVM not individually primary-confirmed; Nature s41598-025-27546-0
   "AC entered as aggregate, no audit trail to atomic rows" UNVERIFIED (source behind auth wall, couldn't re-fetch).
+  Navisworks TimeLiner + Synchro: PARTIALLY CLOSED 2026-09-13, see §OBJECT-TO-SCHEDULE below.
+
+### §OBJECT-TO-SCHEDULE — the S7 direction, checked 2026-09-13 (partially closed; ONE claim, narrow)
+Triggered by the user's question "so no other BIM player out there has such feature?" about S7 (select/hover an
+element → see when it is built). Checked ONLY the direction of the object↔task linkage, nothing else.
+
+- **Navisworks TimeLiner — PRIMARY-SOURCED, the linkage is TASK → OBJECTS ONLY.** The Tasks Tab documentation
+  describes `Attach Current Selection` — "attaches the currently selected items in the scene to the selected
+  tasks" — i.e. select objects, then attach them TO a task. **No documented method goes the other way**: there
+  is no way in that documentation to select a model object and discover which tasks are attached to it. The
+  TimeLiner Options' `Auto Select Attached Items` also runs task→items ("select any attached items in the Scene
+  View as you select each task"). [primary]
+  https://help.autodesk.com/cloudhelp/2024/ENU/Navisworks-Timeliner/files/GUID-91B08CFD-0B6B-4A2B-A853-BC8E173BA78C.htm
+  · Corroborating but NOT primary: an Autodesk forum thread describes bolting a Task ID onto objects via a linked
+    MS Access table + TimeLiner rules — a workaround that only makes sense if there is no native reverse lookup.
+  · ⚠ UNRESOLVED, do not paper over: that same thread also says "the TimeLiner properties tab displays only task
+    name, dates and laps info", which could mean a per-OBJECT TimeLiner properties tab exists. It more likely
+    refers to the per-TASK properties view, but this was NOT settled. **Absence of documentation is not absence
+    of feature** — treat Navisworks as "no documented reverse lookup", never as "cannot do it".
+- **Synchro 4D — ABSTAINED, not confirmed either way.** Every documented flow found runs the same direction
+  (e.g. the Bentley wiki "How can I select all the 3D Objects that are assigned to a selected Resource?"). The
+  KB article that would settle the reverse now 301s into a dynamic service-now page that could not be read.
+  **Do not claim anything about Synchro on this axis.**
+
+**WHAT THIS DOES AND DOES NOT LICENCE.** It does NOT make S7 novel — 4D object/task linkage is decades old and
+stays on the ALREADY-SHIPPING list. The narrow, and only, claim it supports is about DIRECTION: the incumbent
+tools are authored task-first, so "here is a task, which objects does it move" is native, while "here is this
+object, when does it get built" is not the documented flow. S7 answers the second question. That is a UX
+direction claim, not an architecture claim, and it is currently one-vendor-deep.
+And note §S7-GRAIN cuts the other way: S7 answers at phase×storey (Hospital: 41 windows over 63,415 elements),
+which is COARSER than a scheduler-authored task grid. Do not pitch S7 as finer-grained than the incumbents.
 
 ## §STARTUP READS
 - this lane (act from here) · viewer/time_machine.js (renderAtTime, drawVariance, drawDashboard, injectGantt,
