@@ -419,6 +419,27 @@ building in the fleet, not the multi-second freeze §SE-7c's history warned abou
    that is correct, not a bug; and when the pill IS on but a given element misses, `#info-4d` states the
    reason instead of rendering an empty block.
 
+### §S7-OPEN — the one thing legs 2-4 could not close, VERIFIED 2026-09-13 (needs a user decision)
+**`#info-4d` does not fire on a plain 3D-canvas click.** Both it and S2's `#info-cost` are wired only to the
+Find-panel-driven pick (`navigate_find.js:4870`). `viewer/picking.js` — the raw canvas click path — populates
+the Class/Name/GUID/Building/Storey/Discipline/Material rows and calls NEITHER block (grep-verified: no
+`showClassCost`/`show4DWindow`/`info-cost`/`info-4d` reference anywhere in that file).
+
+This is **pre-existing, not introduced by S7**: `#info-cost` has had the same coverage since S2 shipped, and
+§S7-DO item 2 explicitly said to follow that call site rather than invent a new one, so the leg was built
+correctly. But the headline interaction of leg 2 is "click an element and see when it is built", and the most
+common way a user clicks an element is the canvas — so today the feature is reachable only after the Find
+panel has loaded once.
+
+**The fix is small and the decision is not.** `picking.js:626` already has the guid (`g`) in scope on the exact
+line block that fills the info rows, so wiring `_show4DWindow(g)` there is ~2 lines. The real question is
+whether `_showClassCost` gets wired symmetrically at the same time — that would CHANGE EXISTING S2 BEHAVIOUR
+(cost would start appearing on picks where it never has), which is a product call, not a refactor. Options:
+1. wire 4D only — S7 works on a canvas click, S2's cost stays Find-only (asymmetric, but changes nothing shipped);
+2. wire both — consistent, but S2's surface silently widens;
+3. leave as-is — S7 stays Find-gated, matching S2 exactly.
+⛔ NOT ACTIONED — awaiting the user's pick.
+
 ### §S7-NOT-DOING (recorded so it isn't re-proposed)
 **A pop-up panel on hover.** It must chase the cursor, re-render on every target change, and stay
 `pointer-events:none` or it eats the very hover that opened it — and it duplicates `#info-panel`, which
@@ -449,6 +470,25 @@ same "REPORTS, never silently drops" rule `4D_template.json` states for itself).
 consume its return shape, so building them in parallel would mean inventing that shape. 2-4 are wiring onto
 surfaces that already ship and overlap on `panels.js`/`navigate_find.js` (a worktree isolates the branch,
 NOT line-level conflicts on shared files).
+- ✅ **§S7-DO 2/3/4 DONE 2026-09-13 — bim-ootb PR #1733** (`feat/s7-panel-hover-pill`, off fresh origin/main
+  833f8f25). `#info-4d` block + `_show4DWindow`, one extra `hover_name.js` label line, data-gated `sched4d`
+  pill, and the cost row's match count now RENDERED (not just logged). Witnesses, all on real fleet DBs, all
+  re-run independently: **W-S7-TASK-GRAIN 12/12** (Hospital_silent 41 tasks / 63,415 elements / 9,545-element
+  biggest task — matches §S7-GRAIN exactly; every render carries the task name) · **W-S7-GRAIN 10/10** (class
+  name + real match count 1,970 IfcBeam render together) · **W-S7-GATE 22/22** (engine layer AND real DOM) ·
+  **W-S7-HOVER-BUDGET 9/9** (call counts [1..10] across 60 raw mousemoves = one call per TARGET, never per
+  frame). Leg 1's W-S7-WINDOW still 13/13 against the new tree.
+  - UI text, hit: hover `MEP Rough-in — Level 3 · 2026-03-20 → 2026-04-28`; panel "Construction window / Task:
+    … / Window: … → … / Trade / Float". Miss with a schedule present: `Not yet assigned to a dated task in
+    "<schedule>"`. No schedule at all: block hidden, pill absent. The spec's literal `<name> · <phase>
+    <startDate>` was not used — the task's own name already encodes phase+storey, and a bare start date is
+    exactly what §S7-GRAIN forbids. Correct call.
+  - Disclosed and verified: `schedule_read_4d.js` was never loaded by `viewer.html` before this PR (only
+    `boq_charts.html` had it) — a hard prerequisite, added. `windowForGuid` needed `{scheduleAuthor: SA}`
+    passed explicitly (the lazy global self-resolves only in a browser) — uses the already-documented override
+    seam, no browser behaviour change. The `sched4d` pill's gate poll is one-shot, mirroring
+    `wh_walk.js`/`hba_lens.js`'s same limitation: a mid-session building switch won't re-probe it, though
+    hover/click resolution stays live.
 - ✅ **§S7-DO 1 DONE 2026-09-13 — bim-ootb PR #1732** (`feat/s7-window-for-guid`). `windowForGuid` added to
   `viewer/schedule_read_4d.js`; witness `viewer/tests/witness_s7_window.js`. **W-S7-WINDOW 13/13, fail=0**,
   re-run independently. 61 `§4D_ON_ELEMENT` hits — one guid per member-bearing task across all 41
@@ -598,5 +638,6 @@ which is COARSER than a scheduler-authored task grid. Do not pitch S7 as finer-g
 S1 W-PC-TWIN-SOURCE · W-PC-DRAWER  |  S2 W-PC-PANEL · W-PC-JUNCTURE · W-PC-HONEST  |  S3 W-4DGEN  |
 S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13  |
 S7 W-S7-WINDOW ✅13/13 · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET · W-S7-INJECT · W-S7-INJECT-GUARD ·
-W-S7-INJECT-HONEST · W-S7-INJECT-COST ⬛part1 · W-S7-TASK-GRAIN ⬜spec
+W-S7-INJECT-HONEST · W-S7-INJECT-COST ⬛part1 | S7 legs 2-4 ✅ W-S7-TASK-GRAIN 12/12 ·
+W-S7-GRAIN 10/10 · W-S7-GATE 22/22 · W-S7-HOVER-BUDGET 9/9
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP
