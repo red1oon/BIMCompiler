@@ -26,6 +26,10 @@ missing 4D, then deepen to manufacturing-grade cost — each layer a peer linked
    documented deterministic generator, carrying a 'generated' marker, byte-identical across runs.
 
 ## §STATE
+- S7 ⬜ SPEC'D 2026-09-13, NOT BUILT — "when + what it costs on the thing itself": the persisted 4D window
+  (`tasks`⋈`task_elements`, read via `schedule_read_4d.js`) beside S2's cost block in `#info-panel`, plus one
+  extra line on the existing `hover_name.js` label and a data-gated pill toggle. Grain decided up front (date =
+  element, cost = IFC class) — see S7 §S7-GRAIN. No pop-up-on-hover panel, by decision.
 - S6 ✅ DONE/LIVE 2026-06-22 — ENGINE (PR #474 `feat/tm-whatif-s6`, viewer sw v694; W-WHATIF 13/13 whitebox on REAL
   990000): `viewer/whatif.js` schedule what-if = blue branch op on C_ProjectPhase, F-S ripple (SeqNo chain + preserved
   lag), commit/discard/accept reuse Blue Future. `erp/tests/whatif_witness.js`. + UI (PR #475 `feat/tm-whatif-ui`,
@@ -224,6 +228,96 @@ folded project the › ERP push uses (OPFS push-store first, else bundled erp/ad
 window.WhatIf. Playwright-verified (slip Super +21d→6 downstream re-fold, 2029-05-28→06-18, PV 64.7M→61.1M, accept
 re-baselines, 0 errors); wow-shot `docs/figs/whatif_ripple.png`. proj_control.js UNTOUCHED. §-log gated, not visual.
 
+## S7 — WHEN IT GETS BUILT, ON THE THING ITSELF  (hover + `#info-panel` 4D block)   ⬜ SPEC ONLY
+GOAL: answer "when does this get built, and what does it cost" **on the element the user is already
+looking at** — no Gantt, no Find panel, no ERP tab, no Time Machine activation. S2 put the COST on the
+selection; this stage puts the DATE beside it and makes both reachable by hover as well as click.
+Idea + go-ahead: user, 2026-09-13 ("an icon in the pill where a panel pops up during hover any item in
+the model, to show when they are likely to build and cost").
+
+### §S7-GROUND (verified in bim-ootb `main` @ `fc7e4ac6`, 2026-09-13 — every surface already exists)
+- **Hover surface: `viewer/hover_name.js`.** `pointermove` → rAF-throttled raycast → guid → `elements_meta`
+  → one-line `#hover-name-label` (`pointer-events:none`). Armed by the Find-panel "hover name" checkbox /
+  `'`. Its header records the budget trap it ALREADY solved: "raycast per pointermove is not free at 63k
+  elements" — an earlier draft re-raycast on a perpetual rAF loop and was replaced. `_lastGuid` early-return
+  means work happens once per TARGET CHANGE, not per frame.
+- **Click surface: `#info-panel`** (`viewer/viewer.html:515`) — Class/Name/GUID/Building/Storey/Discipline/
+  Material rows, then `#info-cost` (hidden, own top border), then `#snag-btn-row`.
+- **Cost already lands there (S2).** `find_erp_push.js _showClassCost` → `_foldClassTwin(ifcClass)` reads
+  `C_Project`/`C_ProjectLine`/`C_ProjectPhase` off `../erp/ad_seed.db`. It is NOT Zoom-Across-only:
+  `navigate_find.js:4865` already calls `_showClassCost(ifcClass, 1, guid)` on a plain pinpoint pick
+  (`:5188` on a scope). So the panel S7 extends is already wired to an ordinary click.
+- **The date exists in TWO places; only one is right for a panel:**
+  - `time_machine.js:9106 window.tmJumpToElement(guid)` (§360-IDENTITY) scans `_ops` for
+    `output_guid === guid` and uses `op.end_ts`. It needs TM **active** with `_ops` loaded, and it *jumps*
+    — it does not *read*. **NOT the source for S7.**
+  - The **persisted schedule**: `tasks(task_id, name, schedule_start, schedule_finish, resource,
+    total_float, is_critical, schedule_id, is_summary)` ⋈ `task_elements(task_id, guid)`, active schedule
+    via `ScheduleAuthor.activeSchedule(db)`. Already read by `viewer/schedule_read_4d.js` (pure, DOM-free,
+    node-testable, "computes NOTHING about when work happens"). **This is the source.**
+- DOCTRINE FIT: §3 *read the twin, don't recompute* — the date is READ from the record `schedule_author.js`
+  wrote. §4 *honest labels* — see §S7-GRAIN, which is the whole reason this stage has a grain section.
+
+### §S7-GRAIN — DECIDED FIRST, BEFORE ANY CODE (user agreed 2026-09-13: ship at IFC-class grain)
+The two halves of this panel do **not** share a grain, and that is the one thing that can make it lie.
+- **Date = ELEMENT grain, honest.** `task_elements.guid` is per-element; "this door is built 2027-04-12"
+  is true of that door.
+- **Cost = IFC-CLASS grain, NOT element.** `_foldClassTwin` joins `M_Product.Value = ifcClass` →
+  `C_ProjectLine.PlannedAmt` is the whole class's line, and per §DATA the line `CommittedAmt` is NULL by
+  design so the committed side folds from the PHASE. Hovering one door shows what **all 254 IfcDoor** cost.
+- **RULE (load-bearing, not cosmetic):** the cost row must NAME its grain inline — the class and its match
+  count — and must never render a bare money string next to the element's own name, where it reads as this
+  element's price. Reuse S2's existing "from records" honesty label; add the count.
+- **Per-element cost is explicitly OUT of S7.** It needs guid-grain pricing (`navigate_find` `selectionPriced`)
+  plus the per-line precision already logged as a follow-up in `FIND_OPENLINK_EXISTING_ORDERLINE.md`
+  ("Slice-1 grain = project-level"). Do not sneak it in; it is a separate, larger stage.
+
+### §S7-DO
+1. **`viewer/schedule_read_4d.js` gains `windowForGuid(db, guid, opts)`** — pure, one query, reusing the
+   module's own `activeSchedule`/`execRows`. Returns `{taskId, name, startDate, finishDate, resource,
+   totalFloat, isCritical}` or `null` (guid in no task / no active schedule / undated task). NO new module,
+   NO recompute, NO second copy of the reader — the same reason this file exists instead of living inside
+   `boq_charts.html`.
+2. **`#info-panel` gains `<div id="info-4d">`** — same position/pattern as `#info-cost` (hidden by default,
+   own top border), filled on pick from `windowForGuid`. Rows: task/phase · `start → finish` · trade ·
+   float, with a critical marker when `is_critical`. This is the answer to "what does *add a 4D window to
+   #info-panel* mean": one more sibling block in the panel that already opens on click, not a new panel.
+3. **Hover label gains ONE line**, not a panel: `<name> · <phase> <startDate>`, only when `windowForGuid`
+   hits. `#hover-name-label` stays `pointer-events:none` and one-line; the existing `_lastGuid` early-return
+   already bounds this to one query per target change.
+4. **Pill toggle** registered through `panels.js` PillBuilder (`:1303`, the declarative icon+panel wiring),
+   **data-gated** in the shipped convention — icon appears only when `ScheduleAuthor.activeSchedule(db)`
+   resolves (same rule as `hba_lens.js:1096` "no data → no icon, no clutter" and S2's own `§TM_VAR_GATE`).
+
+### §S7-NOT-DOING (recorded so it isn't re-proposed)
+**A pop-up panel on hover.** It must chase the cursor, re-render on every target change, and stay
+`pointer-events:none` or it eats the very hover that opened it — and it duplicates `#info-panel`, which
+already opens on click and already carries the cost block. Two grains of detail, ONE panel: hover = one
+line, click = the block.
+
+### §S7-WITNESS (each NAMES the issue it proves or disproves)
+- **W-S7-WINDOW** — `windowForGuid` returns the SAME `schedule_start`/`schedule_finish` the persisted
+  `tasks` row holds for a guid present in `task_elements`; `null` for a guid in no task; `null` with no
+  active schedule. *Proves the date is READ from the record, not re-derived — the §3 doctrine breach this
+  stage would otherwise be.*
+- **W-S7-GRAIN** — the rendered cost row names its IFC class and match count; no element-grain money string
+  is ever emitted next to the element name. *Proves a class figure cannot be misread as this element's cost.*
+- **W-S7-GATE** — on a building with no `schedules` row, `#info-4d` stays `display:none` AND the pill icon
+  is absent. *Proves no empty panel and no dead icon — the clutter the data-gate convention exists to stop.*
+- **W-S7-HOVER-BUDGET** — hovering N distinct elements issues N `windowForGuid` calls, not N-per-frame;
+  the `_lastGuid` early-return still holds with the extra lookup attached. *Proves S7 does not re-open the
+  raycast/query budget `HOVER_NAME.md` already had to fix once.*
+
+### §S7-LOG
+`§4D_ON_ELEMENT guid= task= start= finish= resource= critical=` on a hit ·
+`§4D_ON_ELEMENT_GATE reason=no_active_schedule|guid_not_in_task|undated` on a miss (never silent — the
+same "REPORTS, never silently drops" rule `4D_template.json` states for itself).
+
+### §S7-STATUS
+⬜ **SPEC ONLY — nothing implemented.** Blocked on nothing; §S7-GRAIN is already decided. Do §S7-DO 1 + its
+witness (W-S7-WINDOW) FIRST and stop there for review — it is the only leg with a new engine surface; 2-4
+are wiring onto surfaces that already ship.
+
 # ═════════════════════════ PHASE 2 — THE WEDGE (from twin to commercial cockpit) ═════════════════════════
 ## §WEDGE-STRATEGY (decided 2026-06-22 after the "is it a killer?" analysis)
 VERDICT of the analysis: the one-op-log BIM↔ERP twin is a killer *architecture* + killer *demo*; it is NOT yet a
@@ -317,5 +411,6 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
 
 ## §WITNESS INDEX (in stage order)
 S1 W-PC-TWIN-SOURCE · W-PC-DRAWER  |  S2 W-PC-PANEL · W-PC-JUNCTURE · W-PC-HONEST  |  S3 W-4DGEN  |
-S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13
+S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13  |
+S7 W-S7-WINDOW · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET ⬜spec
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP
