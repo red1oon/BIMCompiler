@@ -449,10 +449,28 @@ same "REPORTS, never silently drops" rule `4D_template.json` states for itself).
 consume its return shape, so building them in parallel would mean inventing that shape. 2-4 are wiring onto
 surfaces that already ship and overlap on `panels.js`/`navigate_find.js` (a worktree isolates the branch,
 NOT line-level conflicts on shared files).
-- **IN FLIGHT 2026-09-13: §S7-DO 1** — `windowForGuid` + W-S7-WINDOW, bim-ootb branch
-  `feat/s7-window-for-guid`. Witnessed against the only two DBs that have a persisted schedule
-  (`Hospital_silent.db` 42 tasks/63,415 elements, `HHS_Office_Federated_silent.db` 21/6,880) plus a real
-  `schedules=0` building for the negative cases.
+- ✅ **§S7-DO 1 DONE 2026-09-13 — bim-ootb PR #1732** (`feat/s7-window-for-guid`). `windowForGuid` added to
+  `viewer/schedule_read_4d.js`; witness `viewer/tests/witness_s7_window.js`. **W-S7-WINDOW 13/13, fail=0**,
+  re-run independently. 61 `§4D_ON_ELEMENT` hits — one guid per member-bearing task across all 41
+  `Hospital_silent.db` leaf tasks + all 20 HHS tasks — each matched against an INDEPENDENT direct-SQL read,
+  not against the function's own output. Both negative gates fired (`reason=guid_not_in_task`,
+  `reason=no_active_schedule`). Scope held: exactly the two named files, +282/-1.
+  - **Multi-task-per-guid:** `task_elements`' PK is `(task_id, guid)`, so the schema permits it; MEASURED
+    max 1 in both real DBs, i.e. it never happens today. Made deterministic anyway
+    (`ORDER BY t.schedule_start ASC, t.task_id ASC` = the first real work the element is part of) and logs
+    `§4D_ON_ELEMENT_MULTI`. **Known gap, recorded not hidden:** that branch has no witness case, because
+    covering it would mean inserting a synthetic `task_elements` row — non-invent says no. Revisit only if
+    a real DB ever produces one.
+  - **Spec inaccuracy this leg found, verified here:** `Hospital_extracted.db`'s `tasks` table is an OLDER
+    COLUMN VINTAGE (`start_date`/`finish_date`/`duration_days`, no `schedule_start`, no `is_summary`) AND
+    has 0 rows. So `activeSchedule` returns null via a CAUGHT SQL ERROR on the missing column, not via an
+    honest "no dated rows" path. Same correct observable (null), different cause — and worth knowing,
+    because on a hypothetical old-vintage DB that DID hold task rows they would be silently invisible.
+  - **⇒ Why §S7-INJECT still works on published DBs:** `schedule_author.js` carries guarded ALTERs
+    (`:228/:238/:270/:280`) and MEASURED `§AUTHOR_MIGRATE tasks→widened legacyRows=0` fired on every
+    old-vintage DB in the cost probe, after which `materializeDefault` wrote its tasks successfully
+    (Hospital_extracted → `tasks=8`). The migration is what makes injection viable on shipped buildings —
+    do not remove it, and do not assume a published DB's `tasks` table is the current shape.
 
 # ═════════════════════════ PHASE 2 — THE WEDGE (from twin to commercial cockpit) ═════════════════════════
 ## §WEDGE-STRATEGY (decided 2026-06-22 after the "is it a killer?" analysis)
@@ -548,6 +566,6 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
 ## §WITNESS INDEX (in stage order)
 S1 W-PC-TWIN-SOURCE · W-PC-DRAWER  |  S2 W-PC-PANEL · W-PC-JUNCTURE · W-PC-HONEST  |  S3 W-4DGEN  |
 S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13  |
-S7 W-S7-WINDOW · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET · W-S7-INJECT · W-S7-INJECT-GUARD ·
+S7 W-S7-WINDOW ✅13/13 · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET · W-S7-INJECT · W-S7-INJECT-GUARD ·
 W-S7-INJECT-HONEST · W-S7-INJECT-COST ⬛part1 · W-S7-TASK-GRAIN ⬜spec
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP
