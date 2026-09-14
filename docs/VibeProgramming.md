@@ -2,6 +2,7 @@
 
 > **Foundation:** [The Drift](LAST_MILE_PROBLEM.md) · [TestArchitecture](TestArchitecture.md) · [MANIFESTO](MANIFESTO.md)
 > **By the numbers:** [Project Chronology](PROJECT_CHRONOLOGY.md) — dated milestones + commit/fix ledger, Federation → Compiler → Browser.
+> **Deep dive:** [The 4D Generator](4DGenerator.md) — a full technical case study of the 2026-08-27 turnaround referenced in the Capability Snapshot below: the failure catalogue, the AI-agent process fix, and what's still open.
 
 <div class="bim-banner" markdown>
 <b>One human. Zero traditional coding.</b> This compiler was built by a Java-literate ERP architect using AI as a force multiplier — domain expertise steers, AI types at the speed of thought. Current metrics in [PROGRESS.md](https://github.com/red1oon/BIMCompiler/blob/master/PROGRESS.md).
@@ -131,11 +132,22 @@ This project uses [Claude Code](https://claude.ai/), Anthropic's CLI agent, as t
 
 | Tool | Role |
 |------|------|
-| **Agent** (parallel subprocesses) | 4 research threads simultaneously — codebase search, spec verification, test runs in parallel |
+| **Agent** (parallel subprocesses) | 4 research threads simultaneously — codebase search, spec verification, test runs in parallel. As of 2026-08-23: also dispatches fully autonomous dev-agent sessions in parallel (write code, prove via witness, commit, push, open PR) — see [Capability Snapshot](#capability-snapshot-dated-baseline) below |
 | **Bash** (unrestricted shell) | `mvn compile`, `git`, `sqlite3`, pipeline scripts — the AI runs the full build chain |
 | **Grep + Glob** (ripgrep-speed search) | Pattern matching across 400+ Java files in milliseconds |
 | **Edit** (surgical diff) | One exact string replacement — not whole-file rewrites |
 | **Read** (multimodal file access) | Code, images, PDFs, screenshots — the AI reads the same artefacts the architect reads |
+
+### Capability Snapshot — Dated Baseline
+
+A living comparison point, not a one-time claim. **Each revisit adds a new row below — never edit or delete a prior one.** The model roster is pulled from this repo's own commit history (`git log --format="%H" --grep="Claude <name>"`, oldest/newest `%ai`), not from memory — this project's own no-invent rule applies to its own documentation.
+
+| Date | Model roster active in this repo | What was demonstrated | Evidence |
+|------|-----------------------------------|------------------------|----------|
+| 2026-08-23 | Sonnet 5 (active since 2026-07-02) · Opus 5 (since 2026-07-25) · Fable 5 (since 2026-06-11) — all three were *already* active before this doc's prior 2026-08-09 update. No new model generation shipped in that 2-week window, per this repo's own git history. | 6 parallel, fully autonomous dev-agent sessions (not read-only research threads) — each independently wrote code, ran before/after witness proof, committed, pushed, and opened a PR, across 2 repos. 3 of the 6 hit a mid-task session limit and resumed cleanly with zero rework once it reset. One caught a real bug on its own (a `sql.js` instance-aliasing trap in a memory-leak fix) that the original spec's naive fix would have shipped. A separate review pass caught an ESLint regression in one PR before merge. | bim-ootb PRs #1487, #1488, #1489 · bim-compiler PRs #87, #88, #89, #90 — all reviewed, CI-checked, and squash-merged in the same session |
+| 2026-08-27 | Same roster as 2026-08-23 (Sonnet 5, Opus 5, Fable 5) — no new model generation. What changed was the **working pattern**, not the model. | A 4D-scheduling lane had produced three retractions of the same finding in one session the day before, entirely from an unforced habit: a long-running session re-deriving answers its own spec already contained, with no external checkpoint. The fix was not a smarter prompt — it was making the *coordinator* (this session) hold the plan and verify, while every actual code change went to a fresh, single-purpose Opus dispatch with an explicit stop-and-report condition, required to prove its result as a numeric before/after diff of real persisted state, never a screenshot. Six such dispatches ran end-to-end in one sitting: a wrong storey-elevation datum fixed and measured fleet-wide; a safety check proven to have gone stale by reverting the real bug and watching the *old* check stay green on it while the *extended* one correctly failed; a genuine silent-data-loss bug traced to an unrelated cache-eviction module racing against a save (not the save path itself, which is why two earlier sessions searching inside the save path never found it); a broken level-relation swapped for an already-correct one that had been running unused two files away — shipped behind a flag, and correctly left off when its own precondition data was found missing; and a closing audit that caught the coordinator's own blind spot — none of the day's new checks were actually wired into CI, so "green" had been an unrelated smoke suite the whole time. Two of the six also caught the coordinator being wrong: a proposed reuse of an existing UI module's storey logic was refuted with cited evidence before any code was written on it, and a wrong file citation in a dispatch brief was corrected by the agent that received it. A `PreToolUse` hook was also added mid-session to mechanically block edits to the retired code path fleet-wide — proven live with a real blocked `Edit` call, not just documented. Machine/checkout-local only, not portable — the hook lives in `.claude/settings.local.json`, which is gitignored, so it protects every session rooted at this checkout but neither a fresh clone nor a session rooted elsewhere. | bim-ootb PRs #1552, #1554, #1555, #1556, #1557 · bim-compiler `prompts/4D_MODEL_INTEGRITY.md` §A/§I/§L · [4D Generator](4DGenerator.md) · hook at `bim-compiler/.claude/hooks/block_bar_model.sh` |
+
+**How to compare next time:** re-run the model-roster query per name; note whether a new model name appears in the git history since the last row. Describe the largest capability jump as an *actual demonstrated task* from that session's own work — not a benchmark figure pulled from memory, which this doc has no way to verify. **2026-08-27 adds a second axis worth tracking even when the roster doesn't change: did the *working pattern* — bounded dispatch, numeric proof, an audited coordinator — get better, worse, or stay the same?**
 
 The workflow:
 

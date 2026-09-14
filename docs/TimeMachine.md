@@ -2,6 +2,8 @@
 
 > **See also:** [4D/5D Analysis](4D5DAnalysis.md) (the cost/analytics dashboard) ·
 > [Kernel-ERP User Guide](ERPUserGuide.md) · [BIM Viewer Guide](BIMUserGuide.md)
+> **How the schedule behind this page gets generated:** [The 4D Generator](4DGenerator.md) — the failure
+> catalogue and AI-agent process findings behind the generator that produces the timelines you see here.
 
 The **Time Machine** (the clock pill in the viewer, or press **`t`**) is where a building's
 construction schedule lives — playback, authoring, editing, and the link back into the ERP's
@@ -187,6 +189,8 @@ gap to close. Like every other edit here, it is gated by the same edit lock, und
 **This is not the same kind of action as the row above it.** Drag / resize / marquee-group-move
 are all "**you** choose what moves and how far." Pull Back is "the tool computes what's **allowed**
 to move, and moves all of it" — no selection needed.
+
+![The Time Machine mid-construction on a real steel-framed structure, Gantt drawer and dashboard both open at once — left: the **locked** Gantt (padlock icon), per-level rows across phases, critical path in red (3 critical), float in teal (39 with float), **Undo edit / Set Baseline / Pull Back** on the transport row; right: the dashboard reading **Day 33 | Hr 10, $63K / 39% spent**, **Phase Progress** (Substructure 100%, Superstructure 58%, MEP Rough-in 6%, Architecture 67%, MEP Final 0%, Finishes 0%), **Site Resources** (Steel Erector, HVAC Tech, Pipefitter, one Mobile Crane 20 Tonne — 7 workers / 1 machine), and the **S-Curve**, footer *Day 33/313 — 12% complete*; the 3D view shows the steel frame mid-build with green MEP rough-in ducting/piping threaded through it and a **"Now building · 7 items · MEP Rough-in"** callout. **Known residual, shown plainly, not cropped out:** a few diagonal/vertical steel members near the top-right of the frame read as disconnected — floating above the slab/frame below them instead of visibly landing on it. This is the support-relation edge case tracked in `4D_MODEL_INTEGRITY.md` (a handful of elements whose true physical support isn't yet detected by the sequencing pass) — a known, minor, already-named limitation still being tracked, not a rendering bug and not hidden here.](figs/time_machine_steel_playback.png)
 
 ## Schedule Editor — the advanced Gantt, on its own surface *(LIVE)*
 

@@ -10,7 +10,7 @@ DB = model. Template = view. Browser = runtime. Three concerns, never merged.
 
 Built in 33 days (April 20 – May 23). 552 commits. 92 JS modules. 30 test suites.
 
-The BIM Intent Compiler project began October 2025 (concept) → January 2026 (Java compiler) → April 2026 (browser OOTB). The browser viewer outgrew the backend in one month. For the dated milestone table and commit/fix ledger, see **[Project Chronology](PROJECT_CHRONOLOGY.md)**.
+The BIM Intent Compiler project began October 2025 (concept) → January 2026 (Java compiler) → April 2026 (browser OOTB). The browser viewer outgrew the backend in one month. For the dated milestone table and commit/fix ledger, see **[Project Chronology](../PROJECT_CHRONOLOGY.md)**.
 
 ### Core Viewer (S200–S209)
 - Three.js r160 ESM, BatchedMesh, distance-based LOD

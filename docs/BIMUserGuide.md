@@ -468,6 +468,44 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
 - **room titles** — a name card appears as the camera enters each room, sourced from the room's own
   friendly name, never invented.
 - **Reveal** — cycles every discipline in the model past the camera in turn. See below.
+- **Clash pairs** — the model's mesh-true clash pairs (not the bounding-box list, part of which is false)
+  appear as red/blue pulsing markers from frame 0, so you see where the trouble is before it's built. A
+  pair that comes near the camera gets an on-screen label naming both sides, plus a `[tolerance mm /
+  clash mm]` line beneath them — the tolerance from that discipline pair's own rule, the clash figure
+  from the real mesh overlap depth, not a bounding-box estimate. The Reveal round's rotating stat
+  cards also gain a "N mesh-true clashes flagged" card while this is on.
+- **Measure** — the setting-out drawing, from the real column grid: numbered and lettered bubbles, bay
+  chains that sum to the overall, and storey rules. It is **up at frame 0** — built from the database, so
+  it does not wait for the model to load — and it is drawn **in the model's own planes**. The upright
+  storey rules occlude normally as the buildup rises — that occlusion is how you see them sitting
+  behind the building rather than painted on the lens. The ground plan lines shine through the
+  building instead: a live check found them fully hidden behind the building's own walls from every
+  camera angle otherwise, including the opening shot, so occluding them would mean they were never
+  actually seen. The chains are checked rather than
+  claimed — on Hospital, HHS and Terminal the bay chain sums to the overall exactly on all three axes
+  (`X 95.915 = 95.915`, and so on), with no per-building tuning.
+  ⚠ Where a federated model records the same storey at two elevations, the drawing **states the fault
+  and draws the levels as recorded** rather than choosing between them — resolving it would be inventing
+  a datum the file does not contain.
+- **Storey highlight** — each storey's facade (its exterior walls only, not the whole floor) glows
+  blue / green / yellow / orange in turn over the last 10 s before the closing orbit, with a
+  door-count and footprint HUD card for each shown in the same corner panel every other measure
+  uses. An exterior wall is already visible from the closing orbit shot on its own, so nothing else
+  in the building is touched, dimmed, or made transparent for this.
+  ⚠ The card's counts are read per storey **name**. On a federated model whose storey table carries alias
+  or duplicate names (one Terminal file lists 22 names for six real floors), the highlight can land on
+  alias rows and the card then reads `doors 0` — the doors are real, they are attributed to the storey
+  names the highlight did not pick.
+- **Silent-bake size** — a resolution/fps preset (720p, 1080p, or 1440p) for a *silent* bake only (see
+  below); an interactive Alt+C recording always uses the size of the window it's pressed in, so this
+  select doesn't resize anything here — it's just remembered on the saved path. There is currently no
+  time estimate shown next to it; picking 1440p over 720p costs real extra bake minutes with no on-screen
+  warning yet.
+
+![The Cinema path panel with Clash pairs ticked and Silent-bake size set to "this window (interactive)" — the Whole path block showing reach 15%, clip "whole film", build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below](img/viewer/filmmaker-clash-and-bake-size.png)
+
+![The Cinema path panel with the full option set — the three derived bands (settle, exit door, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip "whole film", "build the model as the film plays" ticked, and the unticked room titles, Reveal, Clash pairs, Measure and Storey highlight boxes each carrying its own one-line explanation, above Silent-bake size "this window (interactive)" with its copy-bake-command link, Day # counter "top right", and a saved plan](img/viewer/filmmaker-measure-storey-panel.png)
+
 - **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
   **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
   the clip window and when it was saved.
@@ -551,6 +589,104 @@ clear-sky one and has no cloud geometry at all. And it does not claim to be indi
 photograph: the geometry is idealised IFC with no real-world wear, materials are assigned by class rather
 than hand-tuned per surface, and nothing is colour-graded per shot. What it does target is the good-archviz
 tier — and, unlike a still-render tool, it does it *while the building assembles itself to the programme*.
+
+#### Baking without the browser — the silent bake (developers)
+
+Everything above records the film from the viewer window: press **Alt+C**, edit, press **OK**, and watch
+it bake. There is also a **command-line path that bakes the same film with no window and nobody
+watching**, added 2026-09-01. It is a development tool — it is gated behind an internal flag that a
+normal viewer session never sets, and there is no button for it.
+
+It exists because a film is expensive to check. A bake takes tens of minutes, so a defect in the HUD or
+the pacing used to be found only after sitting through the result. The silent bake lets the same film be
+produced, measured and re-run from a terminal, so what used to be a wait becomes a test.
+
+```
+node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
+  [--plan NAME | --override file.json]          path source (default: the DB's cinema_path table)
+  [--buildup] [--label] [--reveal] [--clash] [--day tr|tl|br|bl|off]     turn a setting ON for this run
+  [--no-buildup] [--no-label] [--no-reveal] [--no-clash]                 turn a SAVED setting off for this run
+  [--frames N | --seconds S] [--fps N]          length (default: the plan's own pacing)
+  [--gpu sw|real|headful]
+  [--width W --height H] [--port P] [--log FILE] [--profile DIR]
+  [--stall-min N] [--max-frame-ms N]            health watchdog — aborts early, not at the end
+  [--timeout-min N]                             hard wall-clock cap
+```
+
+**With no flags at all, the saved path decides.** That is the normal way to use this — save the film
+you want in the viewer, then bake it from the terminal with nothing but `--db` and `--out`.
+
+**It bakes your saved path, not a fresh derived one.** When you press **Save this path**, the plan is
+written to two places: a browsable copy in the browser's own storage, and a portable copy in the
+building DB's `cinema_path` table that travels with the file. The command line reads the second one by
+default, so a path saved in the viewer bakes from the terminal with no export step. `--plan NAME` picks
+a named plan instead; `--override file.json` takes one directly.
+
+**The saved path carries its settings with it**, not just its shape — the buildup, the room titles, the
+Reveal round and the day-counter corner you had ticked are all restored. The run announces what it
+resolved, so there is no guessing whether a setting survived:
+
+```
+§CINEMA_PATH_RESTORE bands=4 total=278.8s holdCol=true flagCol=true buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+§CLI_BAKE_RESOLVED source=db:cinema_path bands=4 total=278.8s buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+```
+
+The corner is worth calling out on its own, because it moves more than the day counter: the HUD is one
+stacked column, so `dayCounter=tl` puts the day counter, the path-overview box and the panel beneath
+them all on the left. One preference, one column.
+
+**⚠ A file saved before 2026-09-04 carries no settings.** Until that date the portable table stored the
+path's shape and its beat seconds and nothing else, so a bake of an older `.db` resolves every setting
+OFF no matter what you had ticked when you saved it — the file was not wrong about the path, it simply
+never carried the answer. `§CINEMA_PATH_RESTORE` says which kind of file you have: `flagCol=false` is the
+old shape. **Re-save the path once from a current build and it travels properly from then on.** In the
+meantime the flags above still work, which is what they are for.
+
+**Arguments override the saved settings, in both directions.** A flag you do not pass leaves the saved
+value alone — that is why a bare `--db`/`--out` run reproduces exactly what you authored. Passing
+`--buildup` turns it on over a saved off; passing `--no-buildup` turns it off over a saved on. So one
+saved path can be baked several ways without re-saving it, which is how you compare two cuts of the same
+film:
+
+```
+node cli_silent_bake.js --db Hospital_silent --out /tmp/full.mp4      # exactly as authored
+node cli_silent_bake.js --db Hospital_silent --out /tmp/nobuild.mp4 --no-buildup   # same path, no 4D build-up
+```
+
+**Use `--gpu real`.** Headless Chrome defaults to software rendering, which is far too slow to finish a
+film. `--gpu real` reaches the machine's actual GPU with no display attached, and the run prints which
+renderer it got so the choice is never assumed. `--gpu sw` is kept only for comparison.
+
+**Measured on this machine (RTX 4060 laptop, headless).** A saved path is always shorter than the film
+it produces, because the Reveal round's second act is derived rather than authored:
+
+| building | elements | frames | film | wall clock | per frame |
+|---|---|---|---|---|---|
+| HHS Office (federated) | 6,880 | 1,901 | 126.7 s | **15 min 21 s** | 0.485 s |
+| Hospital | 63,415 | 2,937 | 195.8 s | **~30–45 min** | 0.6–0.9 s |
+
+**A later, separately-measured Hospital run** (2026-09-05/06, same building, `--clash` on, 1920×1080@24,
+same RTX 4060) came back **4,699 frames** for the same 195.8 s film — a different frame count for the same
+duration than the row above, most likely a later change to the film's own fps/pacing rather than this
+guide's row being wrong; not reconciled here. At that frame count: **5,476 s (~91 min)** wall clock full
+run, **~83 min** on a repeat run the same night — call it **80–90 minutes** at 1080p with clash markers on.
+1280p/1440p have not been measured.
+
+Hospital carries **9x** the elements for under **2x** the per-frame cost — the frame cost scales far
+better than the model does, and most of the difference in wall clock is simply that its film is longer
+(its walk is 278.8 s to HHS's 61 s, and its Reveal round adds 87.4 s of its own across four
+disciplines instead of one). Three shipped mechanisms are what make that rate possible, and each names
+itself in the log so a regression is visible rather than guessed: `§MAXQ_FRAME_BUDGET` (a baked frame
+costs 20 composer renders, not 40), `§NIGHT_BAKE_POOL` (the point-light count is frozen for the bake —
+a changed count recompiles every shader in the scene, measured at 13–53 s for such a frame against
+0.8–1.3 s when it holds), and `§GLOW_BUILDUP_EARLY_OUT`.
+
+**What this is honestly not.** It is not a faster renderer — it bakes the same frames at the same
+quality settings as the window does, and it will not make a film cheaper than the frame budget allows.
+It is not a user feature, and it does not replace watching the result; what it replaces is *guessing*.
+Its real value is that the film's own `§`-tagged log can be read afterwards and asserted against — which
+is how several shipped-but-unverified behaviours were finally confirmed to fire in a real bake rather
+than only in theory.
 
 ### Display options — Palette, Night, Shadow + Ground, Background, Sound FX
 

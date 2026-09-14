@@ -117,12 +117,14 @@ nav:
       - "Geometry as a Signed-Log Fold": ModellerKernelFold.md
 
   - Papers & Positioning:
+      - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
       - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
       - "Strategic Positioning": StrategicIndustryPositioning.md
       - "Local-First Prior Art": LocalFirstPriorArt.md
       - "Enabling-Tech Timeline": EnablingTechTimeline.md
       - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
+      - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md
       - "The Last Mile — drift tracking": LAST_MILE_PROBLEM.md
       - "Project Chronology": PROJECT_CHRONOLOGY.md
       - "Beyond Buildings": ShipYard.md
