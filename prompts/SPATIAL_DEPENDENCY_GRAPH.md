@@ -69,6 +69,7 @@ affected when something moves*. **Backprop runs on the cross-edges.**
 | `instanced-by n` | **M_AttributeSetInstance / qty** | typical-storey × n + Z-span (derived) | extent = f(n) (riser len = n×h; flights = n−1) | n changed → re-issue extent → **ORANGE** |
 | `abuts` | *(new — no classic analogue)* | face-touch within tol (derived) | neighbor realigns to shared face | neighbor pulled away → gap → **ORANGE** |
 | `anchored-to` | routing to a work-center | nearest gridline / storey-plane snap (derived) | element follows its datum | datum moved → re-anchor |
+| `port-connects` (proposed, see §PORT-CONNECTS-RECOVERY below) | MRP routing (operation sequence, directed) | `IfcRelConnectsPorts` — **schema exists (`port_elements`/`port_connections`), never populated** | flow continues along the connected chain, topology-preserving | downstream port disconnected/flow-mismatched → orphaned segment → **ORANGE** |
 
 Each edge has **both directions built in** — a forward fold (explosion) and a backward signal (pegging). The fold
 rule is the **ASI attribute transform** (how the instance attribute recomputes). Every edge stamps provenance
@@ -155,6 +156,47 @@ actual 843 disagreeing pairs this session.
 **Status: proposed, not designed, not built.** No code written, no schema change made. Next step if
 picked up: pull the 843 SampleCastle disagreement pairs' `componenttype` values and check whether a
 type-incompatibility pattern explains a meaningful share of them, before building anything on top.
+
+## §PORT-CONNECTS-RECOVERY — real MEP topology IFC already carries, currently discarded (proposed 2026-09-18)
+red1: *"I reckoned we already have some DAG capability and this will enrich it further by pasting what
+IFC inherited during its birth in an Autodesk project?"* — checked directly against
+`DAGCompiler/python/extractIFCtoDB.py` rather than assumed.
+
+**`port_elements`/`port_connections` are declared in the schema and never populated.** Lines 198-209:
+both tables exist (`port_guid`/`element_guid`/`flow_direction`/`local_x,y,z` for the first,
+`port_a_guid`/`port_b_guid` for the second) — grepped the whole file for `INSERT INTO port_`: zero
+matches. `IfcDistributionPort` is correctly recognised as non-geometric (line 340, "logical connection
+points, no mesh") — the schema was clearly designed with intent — but the actual `IfcRelConnectsPorts`
+relationship read + INSERT was never finished. This is IFC's *native* mechanism for "this fitting really
+connects to that pipe," authored at the point of origin (Revit or whatever tool modelled the MEP run) —
+recovered, not invented, same category as Path B's `rel_fills_host` above, just unfinished.
+
+**Same finding, different shape, for semantic richness:** arbitrary IFC property sets (`Pset_*` —
+manufacturer data, fire ratings, Uniclass/Omniclass classification) have **no table at all** — not
+unfinished, never started. `componenttype` (`hr_bim_asset/ad_bom.js`) is caller-supplied, not
+IFC-derived.
+
+**Why this matters beyond "one more table":** `disc_walker.js`'s own header already names a "Router —
+rule_routing → from_kind→to_kind chains" concept, but today it builds those chains by NEAREST-NEIGHBOUR
+distance heuristic over a fresh building (`_rwPairSegments`), because no real connectivity source
+exists to read instead. A populated `port_connections` table, read from a SOURCE building that was
+already MEP-routed in its authoring tool, would let the Router (and `cross_edges.js`'s `abuts`/
+`port-connects`) use REAL authored topology instead of re-inferring it — strictly better evidence,
+already sitting in every IFC export, currently thrown away at the door.
+
+**Explicitly not what this is:** synthetic inference (guessing `componenttype`/connectivity from
+`ifc_class` + geometry when a source file genuinely has no Psets) is the WRONG move, by this project's
+own standard, demonstrated repeatedly tonight — the door-orientation name-guess, the hardcoded pipe
+cross-section, `real_placement_resolver.js`'s `WalkerGapError` all exist specifically to kill that
+shortcut. Where real IFC data is genuinely absent, refuse-and-flag, per doctrine — never fabricate a
+constraint (ML lesson #2, GIGO is in the loss).
+
+**Status: proposed, not designed, not built.** Next step if picked up: (1) find/write the
+`IfcRelConnectsPorts` read in `extractIFCtoDB.py`, populate `port_elements`/`port_connections` on a
+real building that has MEP routing authored (Hospital/Terminal are the known-rich candidates), (2) check
+row counts are non-zero and spot-check a handful against the source IFC by hand before trusting them,
+(3) only then wire a consumer (`cross_edges.js` new `port-connects` edge, or `disc_walker.js`'s Router)
+— extraction and consumption are separate steps, don't build the consumer against an unverified source.
 
 ## TWO PROPAGATION ENGINES — continuous vs discrete (ML lesson #5)
 Backprop needs local gradients → it is for **continuous** edits. Discrete choices are non-differentiable.
@@ -709,5 +751,10 @@ it is built once and serves both. Then materialize the remaining derived edges +
      `ifc_class` as a componenttype proxy and found NOT discriminating (`IfcCovering↔IfcWall` is both
      the #1 disagreeing pair and the #2 agreeing pair). Do not build this against the current 843 —
      re-evaluate only after item 4 lands and G4 is re-run on real geometry.
+  6. **§PORT-CONNECTS-RECOVERY** (proposed 2026-09-18, see above) — `port_elements`/`port_connections`
+     are schema-declared, never populated; `IfcRelConnectsPorts` real MEP topology is sitting in every
+     IFC export, currently discarded at extraction. Would give `cross_edges.js`/`disc_walker.js`'s
+     Router real authored connectivity instead of nearest-neighbour inference. Not started — extract
+     + verify first, wire a consumer only after row counts are confirmed non-zero and spot-checked.
 **Separate, already-decided lane:** the orientation abstraction (kill `hasFront`/`_inheritHostRotation`) — doctrinally
 one with this (measure-don't-whitelist); its Path B half is shared with Phase 1 here.
