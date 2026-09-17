@@ -741,16 +741,29 @@ it is built once and serves both. Then materialize the remaining derived edges +
   2. **`instanced-by n`** — the last Phase-1 edge (typical-storey × n, extent=f(n)); now safe to build against the
      proven fold-rule contract (ties [[CONSTRUCTION_GRID_BOM_DUAL_MODEL]] §SHELL-N-ZSPAN).
   3. **Phase 3 backprop** (W-SDG-BACKPROP) — reverse edges → RED/ORANGE exceptions, cyclic `abuts` realign, gated.
-  4. **§GEODB-WIRING-BUG** (found 2026-09-18, superseded item 4's own premise — see the box above):
-     `str_walker_outliner.js:179` calls `CrossEdges.deriveAll(db)` with no `geoDb` — the §REAL-AABB
-     fix never executes in production; every abuts edge silently uses the coarse anchor-centred box
-     (median 78mm off-centre on 798/934 elements). Pass `geoDb` through at that call site, re-run
-     `witness_cross_edges_real_aabb.js` G4, expect most of the 843 SampleCastle disagreements to
-     disappear. Not started.
+  4. **§GEODB-WIRING-BUG — SHIPPED 2026-09-18** (bim-ootb #1744, spec written first as BIMCompiler
+     #108): the real cause was an ORDERING bug, not a missing arg as first diagnosed — `buildGeometryIndex`
+     resolved 0/3,225 elements before the fix, 1,924/3,225 after. Independently re-run this session,
+     confirmed exact: `witness_cross_edges_real_aabb.js` 7/2 → **10/1**; SampleCastle G4 disagreement
+     843 → **11** (all 11 left honestly red, not relaxed to pass — new G6 GEO-WIRED asserts the
+     re-derive actually fired, proven by commenting out the call and watching G4 return to precisely
+     843). Regression sweep against unmodified `origin/main` caught two real breaks this fix exposed:
+     `witness_e2e_gridmove_real` (a 0.5m grid drag was moving the wall 0.0m — grid recompose, the
+     Modeller's primary handle, silently broken on real geometry) and `witness_e2e_save` (a fixture
+     satisfiable only because the graph was wrong; fixed by tightening its own exclusion, not by
+     relaxing the assertion). Header's own `center_k=(minK+maxK)/2`/"100% resolves"/"rotation_x=
+     rotation_y=0 always" claims were also measured false and corrected in the same PR.
+     **Flagged, unverified, worth checking before touching §OPEN row 7 (the grid-lock/0.104m
+     emergent-grid residual):** datum count moved 802→657 post-fix — suspected (not confirmed)
+     anchor-displaced faces were manufacturing false alignment clusters pre-fix, and that grid is
+     built from these datums.
   5. **§ABUTS-ATTRIBUTE-PRIOR** (proposed 2026-09-18, SUPERSEDED — see the box above): tested via
      `ifc_class` as a componenttype proxy and found NOT discriminating (`IfcCovering↔IfcWall` is both
-     the #1 disagreeing pair and the #2 agreeing pair). Do not build this against the current 843 —
-     re-evaluate only after item 4 lands and G4 is re-run on real geometry.
+     the #1 disagreeing pair and the #2 agreeing pair) — against the OLD 843. Item 4 has now landed;
+     the real residual is 11 pairs, unexamined. Still not worth building against 11 single-digit
+     ov_mm outliers without looking at them first — may just be more §ARC-3AXIS-guard cases (the
+     rotation_y guard's own header note above says it's a suspect and is now itself witnessed
+     230/0, so lifting it is a cheaper next check than an attribute prior).
   6. **§PORT-CONNECTS-RECOVERY** (proposed 2026-09-18, see above) — `port_elements`/`port_connections`
      are schema-declared, never populated; `IfcRelConnectsPorts` real MEP topology is sitting in every
      IFC export, currently discarded at extraction. Would give `cross_edges.js`/`disc_walker.js`'s
