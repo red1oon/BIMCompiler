@@ -14,7 +14,7 @@ Usage:
   compile_rooms.py <db>            # DRY: print detected rooms per storey, write nothing
   compile_rooms.py <db> --write    # inject spatial_structure + rel_contained_in_space
 """
-import sqlite3, sys, math, itertools
+import sqlite3, sys, math, itertools, re
 
 RES = 0.20          # grid cell size (m)
 MIN_AREA = 4.0      # m^2 — drop slivers / wall cavities
@@ -238,6 +238,22 @@ def storey_z_anchors(c):
     for st, cz in rows:
         acc.setdefault(st, []).append(cz)
     return {st: sum(v) / len(v) for st, v in acc.items()}
+
+
+# §CONTAINMENT-ALIAS (CONTAINMENT_LTU_STOREY_ALIAS.md): each discipline's source IFC spells the
+# same physical floor differently (ARC "VÅNING N", STR "VÅN N", MEP "Plan N"/"Storey N" — measured
+# via Z-band clustering, LTU_AHouse: all four spellings' center_z bands match for the same N).
+# Rooms are detected ARC-only, so the containment join must canonicalize BOTH sides onto one key
+# or every non-ARC element is silently excluded (LTU: 83.7% of elements are MEP, zero of them
+# matched before this). Returns None for anything that isn't a known numbered-floor form (Unknown/
+# TAKPLAN/Ref./etc.) — never guessed here, resolved by Z-band in the containment block instead.
+_FLOOR_ALIAS_RE = re.compile(r'^(?:V[ÅA]NING|V[ÅA]N|PLAN|STOREY)\s*0*([0-9]+)$', re.IGNORECASE)
+
+def _canonical_floor(storey):
+    if not storey:
+        return None
+    m = _FLOOR_ALIAS_RE.match(str(storey).strip())
+    return ('F' + m.group(1)) if m else None
 
 def _assign_by_z(st, cz, anchors, anchor_names):
     if st and st != "Unknown":
@@ -1293,17 +1309,43 @@ def main():
     if not c.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='rel_contained_in_space'").fetchall():
         c.execute("CREATE TABLE rel_contained_in_space (space_guid TEXT, element_guid TEXT)")
     c.execute("DELETE FROM rel_contained_in_space WHERE space_guid LIKE 'RM_%'")
-    els = c.execute("SELECT m.guid, m.storey, t.center_x, t.center_y FROM elements_meta m "
+    els = c.execute("SELECT m.guid, m.storey, t.center_x, t.center_y, t.center_z FROM elements_meta m "
                     "JOIN element_transforms t ON t.guid=m.guid WHERE t.center_x IS NOT NULL").fetchall()
     rel = 0
     byst = {}
+    # §CONTAINMENT-ALIAS: per-canonical-floor Z anchor, built from the (ARC-only) rooms' own cz —
+    # lets a non-numbered storey label (Unknown/TAKPLAN/Ref.) be Z-band resolved to its nearest
+    # real floor, same nearest-anchor technique as _assign_by_z above, keyed on canonical floors
+    # rather than raw ARC storey strings (those don't exist yet for the other disciplines).
+    floor_anchors = {}
+    for r in allrooms:
+        if r.get("suspect"): continue
+        cf = _canonical_floor(r["storey"])
+        if cf is not None:
+            floor_anchors.setdefault(cf, []).append(r["cz"])
+    floor_anchors = {k: sum(v) / len(v) for k, v in floor_anchors.items()}
+    floor_anchor_names = sorted(floor_anchors)
+
+    def _join_key(storey, cz):
+        cf = _canonical_floor(storey)
+        if cf is not None:
+            return cf
+        if cz is None or not floor_anchor_names:
+            return storey  # unresolvable — falls back to the raw string, no regression vs before
+        best, bd = None, float("inf")
+        for a in floor_anchor_names:
+            d = abs(cz - floor_anchors[a])
+            if d < bd:
+                bd = d; best = a
+        return best
+
     # §ROOM-FORM: SUSPECT rooms get no element containment — an unreviewed corridor/void must not
     # capture elements away from real rooms.
     for r in allrooms:
         if r.get("suspect"): continue
-        byst.setdefault(r["storey"], []).append(r)
-    for g, st, ex, ey in els:
-        for r in byst.get(st, []):
+        byst.setdefault(_join_key(r["storey"], r["cz"]), []).append(r)
+    for g, st, ex, ey, ez in els:
+        for r in byst.get(_join_key(st, ez), []):
             # §MULTI-RECT: contained iff inside ANY of the room's rects; the rel row keys the
             # LOGICAL room guid so downstream still sees one room, not N.
             hit = False
