@@ -127,6 +127,66 @@ guessed constraint = a GIGO loss (ML lesson #2).
 > would be true geometric ambiguity rather than a missing geoDb — but that is now unverified and
 > should not be assumed either way until the wiring fix actually lands and G4 is re-run.
 
+## §XEDGE-GEOWIRE — the fix for the above, SPEC (2026-09-18). Spec-first: written before any code.
+
+The supersession box above names the right defect but the wrong remedy. It says "pass `geoDb` through at
+the `str_walker_outliner.js:179` call site". **You cannot.** Measured on a real open, with `deriveAll`
+instrumented, console order is:
+
+```
+§XEDGE-ALL abuts=10612 anchored=18948 spans=9141 ...      ← derivation runs HERE
+§STRWALK-MO editable instance mo_SampleCastle active ops=0
+§STRWALK-OPEN SampleCastle geoDb cache-MISS → fetch ...   ← geometry is only REQUESTED now
+§GEO-SERVED SampleCastle real geometry substrate 5.02MB verified SQLite
+```
+
+At `deriveAll` time: `__dwGeoBuf = null`, `opts = undefined`. The derivation is in the SYNCHRONOUS open
+path and `db.close()` runs immediately after it; the geometry arrives later, in `_forkEditable`'s
+`_fetchGeoDb(res).then(...)`. **This is an ORDERING bug, not a missing argument** — there is no variable
+to pass at line 179 because the data does not exist yet.
+
+### What to build
+Re-derive the cross-edge set inside the geo-fetch continuation, beside `_seedArcEditable(O, res.key,
+geoBuf)` — the existing §LIVEWIRE convention that already threads `__dwGeoBuf` into `dwWalk` as
+`opts.geoDb`. Not a new mechanism; the same one, applied to the consumer that was missed.
+
+### Binding constraints — both measured, not assumed
+1. **Re-open from `__dwBuf`.** `db` is closed right after §XEDGE-ALL. `__dwBuf` keeps the raw bytes by
+   design (the file's own comment says so).
+2. **Re-apply the §ANCHOR-BLIND.** The synchronous path does
+   `DELETE FROM element_transforms WHERE transform_source='void_anchor'` before deriving. A re-derive
+   that skips it leaks all **65** SampleCastle anchors into the edge set and breaks the user's binding
+   condition that anchors are excluded from EVERY count. Measured: skipping the blind reports 13,331
+   abuts and 65 G4 disagreements; applying it correctly reports **12,983 and 11**. The first run of this
+   measurement made exactly that mistake — the corrected figure is the one below.
+3. **`swXEdges` now changes value mid-session.** Today it is set once, synchronously, at open. After this
+   it is set once and then REPLACED when geometry lands. Every reader must tolerate that or be re-driven:
+   `sdg_gate`, the bom-graph adjacency lens, `bonsai_roommove`, `bonsai_itemdrag`, `dagevu_engine`.
+
+### The expected result — measured in advance, so the witness has a number to hit
+SampleCastle, shipped `SampleCastle_ARC.db` + live `SampleCastle_geo.db` (5.02MB):
+
+| | `buildGeometryIndex` | abuts | W-XEDGE-REAL-AABB G4 |
+|---|---|---|---|
+| today, `deriveAll(db)` | **0 resolved** | 10,612 | 9,817 checked, **843 disagree (8.6%)** |
+| fixed, `deriveAll(db,{geoDb})` | `component_geometries`, 3,225 byGuid / 1,924 resolved | 12,983 | 12,983 checked, **11 disagree (0.1%)** |
+
+The +2,371 abuts edges are real adjacency the anchor-centred coarse box could not see — the same class of
+gain the original §REAL-AABB fix claimed in G3 and never actually delivered in production.
+
+### Honest residual — do NOT report this fix as "G4 green"
+**11 disagreements remain** and this spec does not fix them. Two known contributors, neither measured
+apart yet: (a) `_readBoxes`' `rx/ry` guard still sends genuinely 3-axis-rotated elements to the coarse
+box — and that guard's stated reason ("every building measured so far has `rotation_x=rotation_y=0`") is
+the SAME false claim corrected in bim-ootb #1738, which measured 293 such rows in SampleCastle alone, so
+the guard is probably liftable; (b) only 1,924 of 3,225 elements resolve a real blob, so 1,301 still fall
+back. G4's assertion should be tightened to the measured residual, not relaxed to pass.
+
+### Why this was invisible for ~7 weeks
+`cross_edges.js` contains **zero** `console.*` statements, and `_buildRealVerts` has three silent
+`return null` paths. A fix that stopped running left no trace. Any implementation of this spec adds a
+`§XEDGE-GEO` log line naming resolved-vs-total, so the next regression is loud.
+
 ## §ABUTS-ATTRIBUTE-PRIOR (original text below, superseded above) — a semantic co-signal for `abuts`, proposed not built (2026-09-18)
 red1, cross-checking whether the Viewer's `room_graph.js` and the Modeller's `cross_edges.js` have any
 ERP analogue: *"I wonder if Product Attribute or a common child in a Product BOM be the connector... to
