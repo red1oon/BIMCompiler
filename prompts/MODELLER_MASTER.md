@@ -34,18 +34,18 @@ it** — but two of its by-products are yours to know:
   prunable. No one is mid-edit.
 
 **⚠ THE §OPEN LIST BELOW WAS HARVESTED 2026-07-30 AND IS ~6 WEEKS STALE.** Its 34 rows predate the entire
-DAGeVu engine arc. **Your first job is a re-verify sweep, by this file's own rule** ("a file claiming
-something is open may be stale — check the shipped code first; that mistake has already been made here").
-Re-mark every row `verified-open` or `stale-claim` against `origin/main` by grep/sqlite BEFORE picking
-work off it. Do not trust row ordering as priority; do not trust "NEXT SESSION START HERE" on row 34
-without checking it first — see immediately below.
+DAGeVu engine arc. **That sweep has now been DONE — see §SWEEP 2026-09-15 immediately below this block.**
+All 34 rows were re-marked against `origin/main` @ `3e8c6be2`; 8 moved, 2 new rows were found, and 4
+witnesses were actually run. **Read §SWEEP's verdict column, not the 2026-07-30 status column** — where
+they disagree, §SWEEP is the measurement and the old column is prose. Do not trust row ordering as
+priority. Row 34's "NEXT SESSION START HERE" is spent: it is answered in §SWEEP (and it split in two).
 
-**Row 34 ("anchor export/save leak"), spot-checked 2026-09-15: STILL LOOKS OPEN, but confirm it.** The
-question is whether the 65 phantom anchor ops leave in an IFC export (`bonsai_ifc.js`) or a Save snapshot
-(`sdg_save.js`/`saveModelDb`). `W-ANCHOR-SWEEP` (`witness_residents_anchor_sweep.js`) proves the RENDER and
-MATHS side only — its own header says so. Grep found no witness asserting export/save element-identity
-with anchors present. That is a grep, not a proof: read the two code paths before you either fix it or
-close it.
+**Row 34 ("anchor export/save leak") — ANSWERED 2026-09-15, both code paths read. Full verdict in
+§SWEEP.** Short form: the IFC path cannot leak an anchor because it never handles `GEOM_INSERT` at all —
+but that also means it exports NONE of the ARC seed (now row 36, the bigger finding). The Save / Native
+`.db` path DOES carry the anchors, because `exportDb` is a raw byte dump of the whole signed op-log with
+zero filtering; whether that is a leak or correct behaviour is a call, and it is unwitnessed either way.
+`saveModelDb` named in the row does not exist — the real path is `runSave() → Bonsai.exportDb()`.
 
 **HYGIENE — swept 2026-09-15, partly done, and the remainder is NOT yours to prune.** The sweep ran over
 all 22 outstanding `/tmp/wt-*` worktrees: **14 pruned** (the 5 this session created, plus 9 verified
@@ -70,6 +70,48 @@ If you add worktrees, prune YOUR OWN at close (`ahead=0` AND `dirty=0`), and lea
   `*_silent.db` are different files with different completeness (Hospital: 64,150 transforms vs 63,917).
   Never diff across two building DBs and attribute the difference to code.
 - **Prove a fix FIRES, not just that it shipped** — grep a real log line, never "code changed".
+
+## ▶ §SWEEP 2026-09-15 — the re-verify sweep §RESUME ordered, DONE. All 34 rows re-marked against
+## bim-ootb `origin/main` @ `3e8c6be2` by grep/sqlite, plus 4 witnesses actually RUN. **Rows 24 and 28 were
+## then CLOSED the same day by bim-ootb #1738 — see their rows.** Read this table,
+## not the 2026-07-30 status column below it — where they disagree, this one is the measurement.
+
+**Method, so the next session can falsify any line here:** every verdict below names either a file:line on
+`origin/main`, a `sqlite3` count off the SHIPPED resident DB, a live `curl` + content-hash, or a witness
+run with its own PASS/FAIL line. No verdict rests on a code comment (two comments turned out to be wrong —
+rows 28 and 35). Witnesses run through `modeller/tests/e2e_harness.js`, which resolves puppeteer 24.42.0
+out of `~/bim-compiler/node_modules` — no install needed, and **"needs a browser" was not a reason to skip
+any of this.**
+
+### CHANGED ROWS — the 8 that moved. Everything not listed here is unchanged from 2026-07-30.
+
+| # | 2026-07-30 | 2026-09-15 verdict | the evidence |
+|---|---|---|---|
+| 19 | verified-open | ✅ **CLOSED** | `move-gizmo.png` was recaptured in bim-compiler **#73** (2026-08-07). Verified where the user sees it, not on master: `GET https://red1oon.github.io/BIMCompiler/img/modeller/move-gizmo.png` → HTTP 200, **423,928 B**, content sha1 **`22a794f4df215ec50231aa642b904303f72d4006`** == the `origin/master` blob. A 200 alone would not have been evidence (§PRIME LESSON) — the hash is. |
+| 32 | verified-open (RED on main) | ✅ **CLOSED** | **#1704** (2026-09-10) routed soft-delete through `modeller_history.js`'s tree. RAN it: `W-E2E-DELETE: 8 PASS / 0 FAIL`, **D4 green** (`len 195→195 meshFid175=0`). The witness's own D4 header now records the supersession. |
+| 23 | verified-open (D3 drift) | ✅ **the named defect is FIXED — RE-POINT the row** | RAN `witness_disc_density.js`: `§DW-DENSITY-TE: 8 PASS / 0 FAIL`, **D3 ENVELOPE = 100% on all four** (PLB 26/26, ELEC 1754/1754, FP 996/996, ACMV 1444/1444) against the row's 94.3 / 92.0 / 94.8. **But the witness prints a DIFFERENT live finding it does not fail on:** `⚠ FINDING ELEC over-count 1754 vs real 833 = 2.11× — density-transfer drift (ARC footprint ≠ disc coverage area)`. That is the open item now; the D3 wording is dead. |
+| 24 | verified-open (flag only) | ✅ **ROOT-CAUSED AND FIXED** — bim-ootb **#1738** | Reproduced exactly: `smoke_arc_only.js` prints Duplex (`meshCount=196`, 2 PASS / 0 FAIL) and **exits 0** with the SampleCastle iteration never running. Cause: **`modeller/tests/e2e_harness.js:349`** — `runE2E` ends with `process.exit(fail ? 1 : 0)`, so the first `await runE2E(...)` never returns. Nothing is wrong with SampleCastle. **Generalised trap: ANY witness file that calls `runE2E` more than once is silently single-run and still exits 0.** `smoke_arc_only.js` is the only such caller today. **FIXED in #1738 (§MULTIRUN):** additive `opts.noExit` makes `runE2E` resolve with `{name, pass, fail}`; the exit stays the default so every single-run witness is byte-unchanged (regression-checked: green still exits 0, red still exits 1). `smoke_arc_only.js` now tallies both runs and refuses with exit 1 if one was skipped — `§SMOKE-ALL runs=2/2 4 PASS / 0 FAIL`. **SampleCastle was never broken**: `meshCount=3290`, 2/0. |
+| 34 | verified-open ("NEXT SESSION START HERE") | ⛔ **ANSWERED — and it splits in two, one of them bigger than the question** | **(a) IFC export CANNOT leak an anchor.** `bonsai_ifc.js` `build()` handles exactly three op types — `GEOM_EXTRUDE_POLY` (:112), `GEOM_CUT` (:123), `GEOM_ARRAY` (:142). Anchors are `GEOM_INSERT` (`arc_editable.js:227`) → never reached. **(b) …but so is EVERY ARC-seeded element** (`arc_editable.js:342` is also `GEOM_INSERT`), so an IFC export of an opened resident exports **none of the seed**. That is a far larger finding than the anchor question and it is now row 36. **(c) Save / Native .db DOES carry anchors, by construction.** `modeller.html:3068` — `exportDb` = `await O.db.export()`, a raw byte dump of the whole signed op-log DB, zero filtering; `runSave()` calls that same writer (`modeller.html:2908`). Grep for `anchor` across `sdg_save.js` + `save_catalog.js` + the save path: **zero hits**. `saveModelDb` named in the row **does not exist** — the path is `runSave() → Bonsai.exportDb()`. Whether (c) is a leak is a real call, not a bug report: the anchors are signed ops tagged `anchorOnly:true` / `provenance:'void_anchor'` and re-open as invisible anchors, so a "full-fidelity" dump arguably SHOULD carry them. **Either way it is unwitnessed.** |
+| 28 | verified-open (contradiction) | ✅ **DOES NOT REPRODUCE — CLOSED with a guard** (bim-ootb **#1738**) | New witness `witness_arc_3axis_rotation.js` (W-ARC-3AXIS), run on the FULL population of the shipped `SampleCastle_ARC.db`: `§ARC3AXIS-TILTED {n:293, real:293, seeded:293, pre:63, applied:230, dropped:0, other:0}` against a control of `§ARC3AXIS-FLAT {n:2405, real:2354, seeded:0, pre:2354, dropped:0}`. All 293 carry `placement.rotX/rotY` in their `GEOM_INSERT`; **230 genuinely need the rotation and get it** (their pre-placement mesh extent differs from their authored world AABB); 63 are already world-aligned; **0 dropped**. The 2026-07-10 finding predates **§GEO-SERVED (#1090)** — before that the Modeller drew bounding boxes, and a box has no orientation to lose. RED-first: neutering `place()`'s `pl.rotX \|\| pl.rotY` branch flips exactly 230 to dropped and takes R4+R5 RED (exit 1), control untouched. ⚠ **A WRONG TEST WAS TRIED FIRST AND LOOKED CONCLUSIVE** — comparing the rendered world AABB against `element_transforms.bbox_*` proves nothing, because `extractIFCtoDB.py:181` defines those columns AS the world AABB; the discriminating quantity is the PRE-PLACEMENT mesh bbox. That near-miss is written into the witness header so it is not repeated. `arc_editable.js`'s false comment ("0 non-zero rotation_x/rotation_y rows") corrected in the same PR: it is 293, all `rotation_y = ±π/2` exactly, across IfcCovering 125 · IfcWindow 80 · IfcWall 32 · IfcDoor 28 · IfcWallStandardCase 21 · IfcRailing 7. |
+| 12 | verified-open | verified-open — **and its blast radius grew** | `rel_fills_host` ships as a SQL patch, never in the binary (so sqlite on `*_ARC.db` says "no table" for all 8 — that is the wrong instrument). Real census of `modeller/patches/*_ARC.db.sql`: **Duplex 54 · SampleCastle 83 · SampleHouse 11 mentions; Clinic, Garage, HHS, Hospital, Terminal = 0.** Exactly the five the row named. **New consequence the row predates:** `dagevu_engine.js:62` builds every `HostFillEdge` from a REAL `rel_fills_host` row, so **#1706's anchor-by-default engine — the headline of the whole DAGeVu arc — is inert on 5 of the 8 residents.** |
+| 10 | re-measure | **RE-MEASURED (local only)** | RAN `witness_e2e_terminal_open.js`: `7 PASS / 0 FAIL`, **`§OPEN openMs=20592`**, 35,552 ARC elements seeded exactly, `verifyChain ok len=35552` in 1,176 ms. Signing is still a visible phase — 3 of the 8 distinct status lines are `signing 3000/13500/25500 of 35552`. ⚠ **This is headless-swiftshader on localhost. Do NOT set it against the old 14 s profile and call it a regression — different rig, and that is exactly the "hold every variable but one" trap §RESUME warns about. The LIVE number is still unmeasured**, and §RESUME's own rule says the live URL is where this has to be proven. |
+
+### NEW ROWS found by the sweep
+
+| # | obj | item | proof required | status |
+|---|---|---|---|---|
+| 35 | O13 | **The LIVE guide contradicts shipped behaviour — and the fix is NOT a plain deploy.** The published ModellerGuide says *"Hosted doors and windows **ride**, never distort"* (1 hit live; **0** hits of "ANCHORED by default") — but **#1706** (2026-09-11) made openings **anchor by default with ride opt-in**, the exact reverse. Master fixed the text in `2c232661c`. ⚠ **DO NOT just run `mkdocs gh-deploy` from master — it would take live pages OFFLINE.** Measured 2026-09-15: the site was deployed from **`fable/meshdb-livewire` @ `58e7f344a`**, NOT from master, and `58e7f344a` is **not an ancestor of master** — they are two partly-overlapping doc trees, not old-vs-new. Deploying master would delete **11** published files, including two public pages that are live and in the fable branch's `mkdocs.yml` nav today (both HTTP 200): `docs/SpatialCompilationPaper.md` (the academic paper, 735 lines) and `docs/4DGenerator.md` — neither has ever existed on master. Master would add 4 files (`internal/LAST_MILE_PROBLEM.md`, `internal/PROJECT_CHRONOLOGY.md`, `internal/VibeProgramming.md`, `glassbowl_data.db`). This is the same two-production-paths shape `LFS_QUOTA_AUDIT §6.1` already recorded | **a decision first — which branch owns the published site** — then reconcile the two doc trees onto it, deploy, and re-curl: assert "ANCHORED by default" present, "ride, never distort" gone, and `SpatialCompilationPaper`/`4DGenerator` still HTTP 200 | ⛔ **BLOCKED: the user's call.** The stale text is real and is the only row actively misleading a user today, but every one-branch remedy costs the other branch's pages |
+| 36 | O1/O8 | **IFC export ignores `GEOM_INSERT` entirely**, so exporting an opened resident emits nothing from the ARC seed (see row 34b). `bonsai_ifc.js` `build()` covers `GEOM_EXTRUDE_POLY`/`GEOM_CUT`/`GEOM_ARRAY` only; every seeded element is `GEOM_INSERT` (`arc_editable.js:342`) | open Duplex → Export ▸ IFC → count products in the emitted file vs the 196 seeded meshes; RED-first against current main | verified-open — found by the row-34 read, never previously stated |
+
+### ROWS RE-CONFIRMED UNCHANGED (spot-checked, no movement)
+
+- **✅ still shipped:** row 2 (`docs/ModellerGuide.md:164` "What a wall is made of" — **and live**: HTTP 200, 128,351 B, 3 hits) · rows 3 + 33 (Duplex `geoV: 6`, `str_walker_outliner.js:52`) · row 4 (§ANCHOR, 7 hits in `arc_editable.js`) · row 16 (`bonsai:refold`/`_paintSel`, 11 hits) · row 17 (`__ALL__`, 5 hits) · row 18 (`modeller.html:4095/4146/4150`).
+- **verified-open, unmoved:** row 5 (one §ONE-DISC-TAB hit at `modeller.html:4811`; no unification slice built) · row 6 (`Terminal_ARC.db` still served — 35,552 elements across 13 classes, **0** Pipe/Duct/Cable/Flow rows) · row 7 (`witness_str_into_arc.js:5` still cites RMSE 0.104 m) · row 8 (#1245's `witness_e2e_gridmove_roof.js` is roof grid RECOMPOSE — not the per-element plate walk this row asks for) · row 9 (`sdg_gate.js:106` still calls apply "a future accept-gated op") · row 11 (`arc_editable.js:27-31` — colour stays the cosmetic PALETTE, only alpha recovered) · row 13 (`modeller.html:424` and `:1036` still name the un-vendored EffectComposer) · row 25 (no BCF import, no PBR texture code).
+- **row 15** — the figures check out: `library/component_library.db` is **220 MB** with `component_definitions` = `component_geometries` = **23,888** rows, and there is still no `createDbWorker` anywhere in `modeller/`. ⛔ still the user's hosting call (GH vs OCI).
+- **row 22 splits three ways:** one-click revert of a RED — not found, open. UBBL named checks — **partially shipped**, `sdg_gate.js:139-154` implements By-Law 42 (area ≥ 6.5 m², headroom ≥ 2.5 m) but the file itself marks it `STATIC, not part of evaluate()'s delta contract`. rtree prune — `cross_edges.js:38` replaced the Python rtree query, but `disc_walker.js:929` still records that Terminal has no `elements_rtree` and falls back to the raw unverified centre; open.
+- **row 30** — still dead code (`bonsai_gridmove.js:166` hardcodes `ifcClass: 'IfcWall'`, so `isRoof` is always false). ⚠ **but it is now a one-liner**: `classByFid` is computed and used as a filter nine lines earlier (`:157`) — the real class is in hand at the emit site and thrown away. Still needs its own design pass; noting only that the blocker named in `GRID_ROTATION_GUARD.md §8` has dissolved.
+- **⛔ still blocked on the user, nothing built:** rows 21, 26, 27, 29, 31. Greps for `siblingCluster` / external-IFC import / `DUAL_MODEL` return zero hits in `modeller/`.
+- **row 14** — the item is real (no axis-permutation bake in `scripts/extract_dagevu_catalog.py`) but ⚠ **its cited example no longer reproduces**: Dining_Chair (hash `5e4c8c071b267e91`) measures **0.443 / 0.427 / 1.227 m** in `viewer/dagevu_geometries.json` — tallest axis IS z, upright. The row's "z=0.14, lying on its side" is stale. Re-source the example from a part that still fails before writing the `tallest-axis == h` witness, or the witness will be green on arrival and prove nothing.
 
 ## ⚖ THE USER IS NOT REVIEWING. YOU ARE THE ONLY CHECK.
 The user has explicitly said they have no time to inspect this work. That REMOVES the safety net; it
