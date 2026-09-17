@@ -92,6 +92,36 @@ rule is the **ASI attribute transform** (how the instance attribute recomputes).
 Red = "you can't"; Orange = "you may want to, here's how." Constraints are measured (real door, real AD table) — a
 guessed constraint = a GIGO loss (ML lesson #2).
 
+## §ABUTS-ATTRIBUTE-PRIOR — a semantic co-signal for `abuts`, proposed not built (2026-09-18)
+red1, cross-checking whether the Viewer's `room_graph.js` and the Modeller's `cross_edges.js` have any
+ERP analogue: *"I wonder if Product Attribute or a common child in a Product BOM be the connector... to
+give it more spatial semantics."*
+
+**Why a BOM-line connector doesn't fit `abuts` specifically — this doc already says why, above:**
+"Adjacency is cyclic: room A abuts B abuts C abuts A — un-topological-sortable." A BOM line is a
+directed parent→child edge (`contains`'s own analogue); two products can't be mutually "child of" each
+other, so a cyclic lateral relation cannot be expressed as a BOM-tree edge. That is WHY the table marks
+`abuts` `(new — no classic analogue)` — a real structural mismatch, not an oversight.
+
+**Why a Product ATTRIBUTE is a different, better fit:** an attribute is a property ON one product
+(`M_AttributeSetInstance`, already this doc's own named analogue for `instanced-by n`), not a relation
+BETWEEN two — no cyclic-relation problem. Real data already exists to hang it on: `pp_product_bomline.
+componenttype` (bim-ootb `hr_bim_asset/ad_bom.js`) and `conn_points` (extracted in bim-ootb `modeller/
+real_placement_resolver.js` from `library/component_library.db`). A "componenttype X expects to abut
+componenttype Y" prior would CROSS-CHECK the geometric face-touch test, not replace it, and not store
+the pairwise edge itself (that would just reinvent `rel_adjacency` by hand) — stays inside this doc's
+own DOCTRINE line above: derive from a measured property, never the class name.
+
+**Why this isn't just architecturally tidy — it's pointed at a real open gap:** bim-ootb's own witness
+(`modeller/tests/witness_cross_edges_real_aabb.js`, gate G4 LIVE-AGREEMENT), re-run live 2026-09-18:
+**843/9,817 (8.6%) of SampleCastle's derived `abuts` edges disagree with the live-rendered mesh.** A
+type-compatibility co-signal MIGHT explain some share of those — a hypothesis, not tested against the
+actual 843 disagreeing pairs this session.
+
+**Status: proposed, not designed, not built.** No code written, no schema change made. Next step if
+picked up: pull the 843 SampleCastle disagreement pairs' `componenttype` values and check whether a
+type-incompatibility pattern explains a meaningful share of them, before building anything on top.
+
 ## TWO PROPAGATION ENGINES — continuous vs discrete (ML lesson #5)
 Backprop needs local gradients → it is for **continuous** edits. Discrete choices are non-differentiable.
 - **Continuous (move / stretch / change-n):** a measured Δ flows through the graph — true backprop. ✅
@@ -635,5 +665,8 @@ it is built once and serves both. Then materialize the remaining derived edges +
   2. **`instanced-by n`** — the last Phase-1 edge (typical-storey × n, extent=f(n)); now safe to build against the
      proven fold-rule contract (ties [[CONSTRUCTION_GRID_BOM_DUAL_MODEL]] §SHELL-N-ZSPAN).
   3. **Phase 3 backprop** (W-SDG-BACKPROP) — reverse edges → RED/ORANGE exceptions, cyclic `abuts` realign, gated.
+  4. **§ABUTS-ATTRIBUTE-PRIOR** (proposed 2026-09-18, see above) — test whether `componenttype`/
+     `conn_points` can supplement face-touch geometry for `abuts`, informed by the live 8.6%
+     disagreement measured in `witness_cross_edges_real_aabb.js`. Not started.
 **Separate, already-decided lane:** the orientation abstraction (kill `hasFront`/`_inheritHostRotation`) — doctrinally
 one with this (measure-don't-whitelist); its Path B half is shared with Phase 1 here.
