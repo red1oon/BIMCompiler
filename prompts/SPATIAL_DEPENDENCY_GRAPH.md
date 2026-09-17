@@ -92,7 +92,41 @@ rule is the **ASI attribute transform** (how the instance attribute recomputes).
 Red = "you can't"; Orange = "you may want to, here's how." Constraints are measured (real door, real AD table) — a
 guessed constraint = a GIGO loss (ML lesson #2).
 
-## §ABUTS-ATTRIBUTE-PRIOR — a semantic co-signal for `abuts`, proposed not built (2026-09-18)
+## §ABUTS-ATTRIBUTE-PRIOR — SUPERSEDED: the real cause was a wiring bug, not ambiguity (2026-09-18)
+> **Update, same day, from a separate Modeller session's scrutiny — reproduced and verified before
+> writing this.** The proposal below is kept for the record but its premise turned out wrong. Read
+> this box first.
+>
+> **The real cause of G4's 843/9,817 disagreement: the §REAL-AABB fix never executes in production.**
+> `modeller/str_walker_outliner.js:179` calls `CrossEdges.deriveAll(db)` — one argument, no `geoDb`,
+> no `opts` (verified directly, this file). Since `§GEO-SERVED` (#1090) moved geometry into separate
+> `*_geo.db` files, `deriveAdjacency`'s `opts.geoDb` is always `undefined` in production, so
+> `_buildRealVerts` → `RealGeometry.buildGeometryIndex(db, undefined)` resolves 0 elements, and
+> **every element silently takes the coarse `[center_xyz ± bbox/2]` fallback** — `cross_edges.js` has
+> zero log statements anywhere, so this has never been visible. That box is centred on the placement
+> anchor, not the volumetric centre: measured, size matches authored `bbox_*` on 934/934 elements, but
+> the CENTRE is wrong on 798/934, median 78mm off — a pure translation error, exactly the
+> recenter/anchorOffset correction this file's own header (§REAL-AABB above) dismissed as "same final
+> numbers, fewer steps." It is not the same numbers; it never ran.
+>
+> **The attribute-prior idea below was tested, not just reasoned about, and it does not work — for a
+> good reason.** `SampleCastle_ARC.db` has no `componenttype` column, so the check ran on `ifc_class`
+> instead (the nearest available attribute): ifc_class mismatch correlates only weakly (75.7%
+> disagreeing vs 58.0% agreeing — not a clean split), and decisively, **`IfcCovering↔IfcWall` is BOTH
+> the #1 disagreeing pair (139) AND the #2 agreeing pair (1,094)** — the same class pair on both sides
+> means a type prior cannot separate them. This makes sense in hindsight: an attribute prior can only
+> ever filter/flag geometrically-wrong edges, it cannot fix wrong geometry — and wrong geometry
+> (wiring, not ambiguity) is what's actually happening here.
+>
+> **So the idea's "proposed, not built" status was lucky timing, not foresight.** Building it on top of
+> mis-wired geometry would have shipped a mechanism to paper over a bug that should just be fixed —
+> pass `geoDb` through at the `str_walker_outliner.js:179` call site, re-run G4, and the 843 may
+> largely disappear on their own. **The attribute-prior idea itself isn't dead** — it may still have
+> genuine value on whatever real disagreement remains AFTER the wiring fix, where the disagreement
+> would be true geometric ambiguity rather than a missing geoDb — but that is now unverified and
+> should not be assumed either way until the wiring fix actually lands and G4 is re-run.
+
+## §ABUTS-ATTRIBUTE-PRIOR (original text below, superseded above) — a semantic co-signal for `abuts`, proposed not built (2026-09-18)
 red1, cross-checking whether the Viewer's `room_graph.js` and the Modeller's `cross_edges.js` have any
 ERP analogue: *"I wonder if Product Attribute or a common child in a Product BOM be the connector... to
 give it more spatial semantics."*
@@ -665,8 +699,15 @@ it is built once and serves both. Then materialize the remaining derived edges +
   2. **`instanced-by n`** — the last Phase-1 edge (typical-storey × n, extent=f(n)); now safe to build against the
      proven fold-rule contract (ties [[CONSTRUCTION_GRID_BOM_DUAL_MODEL]] §SHELL-N-ZSPAN).
   3. **Phase 3 backprop** (W-SDG-BACKPROP) — reverse edges → RED/ORANGE exceptions, cyclic `abuts` realign, gated.
-  4. **§ABUTS-ATTRIBUTE-PRIOR** (proposed 2026-09-18, see above) — test whether `componenttype`/
-     `conn_points` can supplement face-touch geometry for `abuts`, informed by the live 8.6%
-     disagreement measured in `witness_cross_edges_real_aabb.js`. Not started.
+  4. **§GEODB-WIRING-BUG** (found 2026-09-18, superseded item 4's own premise — see the box above):
+     `str_walker_outliner.js:179` calls `CrossEdges.deriveAll(db)` with no `geoDb` — the §REAL-AABB
+     fix never executes in production; every abuts edge silently uses the coarse anchor-centred box
+     (median 78mm off-centre on 798/934 elements). Pass `geoDb` through at that call site, re-run
+     `witness_cross_edges_real_aabb.js` G4, expect most of the 843 SampleCastle disagreements to
+     disappear. Not started.
+  5. **§ABUTS-ATTRIBUTE-PRIOR** (proposed 2026-09-18, SUPERSEDED — see the box above): tested via
+     `ifc_class` as a componenttype proxy and found NOT discriminating (`IfcCovering↔IfcWall` is both
+     the #1 disagreeing pair and the #2 agreeing pair). Do not build this against the current 843 —
+     re-evaluate only after item 4 lands and G4 is re-run on real geometry.
 **Separate, already-decided lane:** the orientation abstraction (kill `hasFront`/`_inheritHostRotation`) — doctrinally
 one with this (measure-don't-whitelist); its Path B half is shared with Phase 1 here.
