@@ -233,7 +233,7 @@ The solved polygon is swept to depth and committed as one signed operation.
 
 #### Type an exact dimension (rect / square)
 
-Cycle **Constrain** to **Rect** or **Square** before or during your 4 clicks — once the profile closes,
+Cycle **Axis** to **Rect** or **Square** before or during your 4 clicks — once the profile closes,
 **W / H / ∠** fields appear showing the sketch's current width, height, and corner angle. Type a new
 number into any of them and press **Enter**: the WHOLE profile re-solves from that one value, not just
 the one edge — a rectangle at 90°, or a true parallelogram at any other typed angle.
@@ -251,7 +251,7 @@ useful for closing a hand-drawn polygon precisely back onto its own start.
 ### Circle → Extrude — draw a cylinder
 *Commits `GEOM_EXTRUDE_POLY` with a `circle` profile (a real occt cylinder, not a tessellated polygon).*
 
-1. Cycle **Constrain** to **Circle**.
+1. Cycle **Axis** to **Circle**.
 2. Click a **centre** point, then click a second point to set the **radius** — or type an exact radius
    into the field that appears.
 3. Set the **depth**, then tap **Extrude**.
@@ -382,21 +382,29 @@ to disarm. `R` is reserved for Insert, so it doesn't arm anything here.
 
 1. Tap **Move Grid**.
 2. Drag a **gridline**.
-3. Release to commit. Walls attached to that line **recompose** — a span stretches, an attached wall translates — as one signed operation. A hosted door or window **rides** its wall rather than stretching or divorcing from it, same as Move.
+3. Release to commit. Walls attached to that line **recompose** — a span stretches, an attached wall translates — as one signed operation. A hosted door or window **holds its position** by default rather than stretching or divorcing from it, same as Move.
 
 What that recompose actually does, in plain terms:
 
 1. **Walls fill the gap, never leave one.** Every wall on the dragged gridline is classified against it first — a wall that only touches the gridline **translates** with it, a wall that **spans** across to another gridline **stretches**, with its far end staying anchored on that other gridline. Either way the wall keeps meeting the gridline; it can't detach or overshoot.
 2. **Only the grabbed bay moves.** The edit is scoped to the walls actually connected to the dragged gridline — a wall elsewhere in the building that happens to sit at the same coordinate, but belongs to an unrelated room, is left alone.
-3. **Hosted doors and windows ride, never distort.** A filling keeps its own size; it moves by its own share of the stretch (see below), it never scales and never divorces from its host.
+3. **Hosted doors and windows are ANCHORED by default, never distort.** A filling keeps its own size and its own world position while its host stretches around it — zero induced move. Ctrl+click an opening before dragging to opt it into **Ride** instead, where it keeps its *proportional* position along the host and moves by its own share of the stretch. Either mode, it never scales and never divorces from its host.
 4. **Furniture and fixtures stay put.** They aren't part of the grid at all — a couch sitting in a room doesn't drag when the room's wall stretches.
 
-The ride is not a guess about what looks hosted. It follows the **authored** host↔opening↔filling chain
-recovered verbatim from the building's own IFC, so a door rides the wall its designer actually put it in —
-and where a building's author never declared that relationship, the modeller says so rather than inventing
-one. In practice that means the ride is exact on *SampleHouse* (all 7 hosted openings) and *Duplex* (36 of
-its 38), and partial on *SampleCastle*, whose window-frame walls are consumed by their own openings and so
-aren't separate things to ride.
+Anchor vs. Ride is not a guess about what looks hosted. It follows the **authored** host↔opening↔filling
+chain recovered verbatim from the building's own IFC, so a door is only ever held or ridden against the
+wall its designer actually put it in — and where a building's author never declared that relationship, the
+modeller says so rather than inventing one. In practice that means the relationship is exact on
+*SampleHouse* (all 7 hosted openings) and *Duplex* (36 of its 38), and partial on *SampleCastle*, whose
+window-frame walls are consumed by their own openings and so aren't separate things to hold or ride.
+
+**A carved hole comes along too.** If the held or ridden opening has a real cut-through void (a door or
+window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
+itself is kept in sync with it — its centre never drifts off the door under a stretch, its width is held
+exactly (not silently widened by the stretch's own scale factor), and it survives the host wall being
+rotated a multiple of 90° after the cut. The status line names it directly: `N hole(s) held`, with a
+`(Δw ±x.xxm)` suffix only on the rare axis this can't correct (the wall's own thickness direction, where
+holding the width could stop the cut from reaching all the way through).
 
 ![Before — a wall spanning two gridlines](img/modeller/gridstretch-before.png)
 ![After — dragging the gridline stretched the attached wall by exactly the drag distance](img/modeller/gridstretch-after.png)
@@ -408,28 +416,31 @@ identically against a real, fully-loaded building — no separate mode, nothing 
 Duplex's own ground floor, near the stair: a column grid aligned to a real wall's own measured edge, then that
 gridline dragged for real.
 
-Witnessed end-to-end (`modeller/tests/witness_e2e_gridmove_real.js`, 8/8 §-tagged assertions green, real
+Witnessed end-to-end (`modeller/tests/witness_e2e_gridmove_real.js`, 8/8 assertions green, real
 `pg.mouse` down→move→up, no synthetic shortcuts):
 
-- A real mouse drag on gridline "2" landed at **delta = 0.5000 m**. The governed wall's own *rendered*
-  Y-extent grew from **2.920 m → 3.420 m** — exactly the committed op's delta, read back off the live mesh,
-  not assumed from the drag alone.
-- Its hosted door — a real `rel_fills_host` edge recovered from the IFC, not a proximity guess — **rode
-  0.273 m**, not the wall's full 0.500 m: §STRETCH-RIDE keeps a filling's *proportional* position along its
-  host, so it moves by its own anchored share of the stretch, never scales, never divorces.
-- The gesture landed as **one** signed `GEOM_GRID_MOVE` plus **9** induced rider `GEOM_MOVE`s (other walls the
-  same gridline governs, several carrying their own hosted doors) — one Ctrl+Z undoes the whole group,
-  verified: cursor and wall extent both restored byte-exact.
+- A real mouse drag on gridline "2" landed at **delta = 0.5000 m**, folded into **16** real recompose
+  commands. The governed wall's own *rendered* Y-extent grew from **2.920 m → 3.420 m** — exactly the
+  committed op's delta, read back off the live mesh, not assumed from the drag alone.
+- Its hosted door — a real `rel_fills_host` edge recovered from the IFC, not a proximity guess — **held its
+  position exactly** (its centre measured identical before and after): **zero** induced rider rows, the
+  default **Anchor** behaviour above, not the older always-proportional-ride this section used to describe.
+  Ctrl+click the door first and repeat the same drag to see it **Ride** instead.
+- The gesture landed as **one** signed `GEOM_GRID_MOVE`; a real console line names it exactly —
+  `§GESTURE gid=<id> riders=<N> cutRiders=<N> verify=true tris=<N>` — where `riders` counts any hosted
+  fillings opted into Ride and `cutRiders` counts any carved holes riding along with them (see "A carved
+  hole comes along too" above). One Ctrl+Z undoes the whole group, verified: cursor and wall extent both
+  restored byte-exact.
 - `verifyChain` held throughout. The drag-session cache (§SCALE_CHECK_FIX) is built once per gesture and reused
   every pointermove frame, not rebuilt per frame, cited from its own log line rather than re-profiled.
 
 The conformity gate runs on every drag, real building included — it doesn't get a pass because the input is a
-big, dense floor plan. This particular 0.5 m test drag pushed the wall into real clashes against neighbouring
-structure; the app's own status line reports the count instantly (`recomposed=16 §STRETCH-RIDE riders=9
-verify=true 23 RED`) rather than silently accepting a bad edit — visible in the "after" frame below.
+big, dense floor plan. If a stretch pushes an element into a real clash against neighbouring structure, the
+status line reports it live and by name — `⛔ N RED` for a hard violation, `⚠ N ORANGE` for something softly
+disturbed — rather than silently accepting a bad edit.
 
 ![Before — Duplex's real ground floor near the stair, the authoring grid aligned to a real wall's own measured edge](img/modeller/grid-editor-before.png)
-![After — gridline "2" dragged 0.5 m for real: 16 elements recomposed, 9 hosted doors rode, the conformity gate flags the resulting clashes live in the status line](img/modeller/grid-editor-after.png)
+![After — gridline "2" dragged 0.5 m for real: 16 recompose commands, hosted doors held per the Anchor default, the conformity gate flags any resulting clashes live in the status line](img/modeller/grid-editor-after.png)
 
 Roofs recompose the same way. *SampleHouse*'s barrel-vault roof spans the two gridlines bracketing the
 building; dragging the far one **0.5000 m** grows the roof's own rendered X-extent from **14.8410 m → 15.3410
@@ -714,6 +725,34 @@ doors, up risers between storeys.
 
 ---
 
+## Save
+
+*Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED.*
+
+Every edit lives in the signed op-log the moment you commit it, but the op-log isn't a physical-DB
+snapshot on its own. **Save** is the gate between the two: it re-verifies the WHOLE building's conformity,
+tries to heal what it safely can, and only then writes.
+
+1. Tap **Save**.
+2. If the building is clean (or every finding is soft **ORANGE**), it auto-heals what it can, re-verifies,
+   and writes a real physical-DB snapshot — the same one **Open** reads back.
+3. If a hard **RED** clash survives healing, Save refuses the write outright rather than persisting a
+   broken state — go fix the flagged clash (the status line names it, same as any other tool's gate) and
+   try again.
+
+**Auto-heal is real, but narrow.** An ORANGE finding it recognises as a safe abuts-realign (two elements
+that drifted apart but were clearly meant to still touch) gets one corrective `GEOM_MOVE`, re-verified as
+gap-closed before the snapshot writes. If that heal itself nudges a *third*, previously-fine element into
+a new soft finding, Save reports that new ORANGE by name rather than chasing it with a second heal pass —
+one heal, never an unbounded cascade.
+
+Witnessed end-to-end (`modeller/tests/witness_e2e_save.js`, 11/11): a real hard clash blocks the physical
+write outright (no snapshot written); a real auto-healable pair heals, re-verifies clean, and a real
+snapshot lands; a heal engineered to disturb a third element reports that one new finding by name without
+touching it further.
+
+---
+
 ## Share an issue — BCF export
 
 Tap the **BCF** pill to export your current view as a **BCF 2.1** file (`.bcfzip`) — the open
@@ -733,16 +772,17 @@ The toolbar is a **⋯ pill rail** at the right edge: tap **⋯** to fan the pil
 | Icon | Does |
 |------|------|
 | **⋯ Toolbar** | Fan the pills open / closed |
-| **? Help** | Toolbar & shortcuts — the live pill registry |
 | **Home** | Back to the Matrix landing |
+| **📂 Open** | Load a resident building, a local `.db`, or your own `.ifc` — filtered to ARC, walked + BOM-graphed |
 | **Fit** | Zoom to fit — the selection, or the whole scene (`F`) |
 | **Iso** | Cycle the view: Iso ⇄ Top |
 | **Grid** | Show / add a construction grid |
-| **Move Grid** | Drag a gridline — attached walls recompose (`GEOM_GRID_MOVE`) |
+| **Move Grid** | Drag a gridline — attached walls recompose (`GEOM_GRID_MOVE`); hosted openings hold or ride (see [Grid-Stretch](#grid-stretch)) |
 | **Move** | Transform gizmo — move / scale / rotate the selection (`M`) |
+| **Drag Item** | Free single-item drag for a fixture/fitting, gated by real product data and a real drop surface (see [Item Drag](#item-drag)) |
 | **Sketch** | Start a 2D sketch |
 | **Extrude** | Push a sketch profile into a solid (`GEOM_EXTRUDE_POLY`) |
-| **Axis** | Set the constraint intent the solver enforces on the sketch |
+| **Axis** | Set the constraint intent the solver enforces on the sketch (Rect / Square / Circle) |
 | **Cut** | Cut an opening in the selected wall (`GEOM_CUT`) |
 | **Route** | Lay a spine to sweep a profile along (e.g. an MEP run) |
 | **Sweep Run** | Sweep the profile along the route (`GEOM_SWEEP`) |
@@ -751,11 +791,16 @@ The toolbar is a **⋯ pill rail** at the right edge: tap **⋯** to fan the pil
 | **Insert** | Insert a library component — assemble, don't draw (`GEOM_INSERT`) |
 | **LOD 200** | Refine the last-placed component's level of detail (same signed row) — appears once you enter **Insert**, not on the resting rail |
 | **IFC** | Export the authored model as IFC4 |
-| **Undo / Redo** | Undo (`Ctrl+Z`) · Redo (`Ctrl+Y`) |
+| **Save** | Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED (see [Save](#save)) |
+| **History** | World History — the cross-page timeline shared with the Viewer, iDempiere, and Gravity |
+| **? Help** | Toolbar & shortcuts — the live pill registry |
 | **Delete** | Delete the selection (`Del`) |
 | **Clear** | Empty the scene |
 | **Sound** | Toggle authoring sound feedback |
 | **Connect** | Connect Scene — share selection / timeline with the Viewer & ERP (opt-in) |
+| **Teams** | Mount the Teams presence overlay — design branches, a spatial merge gate, who-dots (see [Collaborate](#collaborate-on-the-design-the-teams-overlay)) |
+| **X-ray** | Reveal — structure goes glass so routed MEP glows through in its discipline colours (`X`) |
+| **Undo / Redo** | Undo (`Ctrl+Z`) · Redo (`Ctrl+Y`) |
 
 ---
 

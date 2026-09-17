@@ -11,6 +11,66 @@ study deeply how to make the Modeller work", and "all the objectives of the Mode
 i have no time to sight, i rely on a good vibe coder to do so."
 ```
 
+## ▶ §RESUME 2026-09-15 — START HERE. Written at session close by the session that did NOT touch the
+## Modeller, so you inherit facts, not a handover story.
+
+**WHAT THE LAST SESSION DID, AND WHY IT MATTERS TO YOU: nothing in `modeller/`.** It ran the Viewer 4D/5D
+lane (`TM_4D5D_VARIANCE_LANE.md` §S7 — the construction window on an element). Merged to bim-ootb `main`:
+#1731 #1732 #1733 #1735 #1736 #1737; to bim-compiler `master`: #101 #102. Touched `viewer/*` and
+`tests/audit_sw_precache.js` only. **No `modeller/` file was edited, so nothing below is stale because of
+it** — but two of its by-products are yours to know:
+- `viewer/sw.js` is at **`CACHE_VERSION` v1177**. Bump from there, never from a remembered number.
+- `tests/audit_sw_precache.js` was hardened (#1737): it now strips comments before pairing quotes, so an
+  apostrophe or a `]` in a `PRECACHE_ASSETS` comment no longer silently drops every later entry. Before
+  that fix it reported files unchanged for months as "unlisted" and said nothing about the real cause. If
+  you add a modeller asset to a precache list, that gate is trustworthy again.
+
+**VERIFIED NOW, not carried forward from prose (2026-09-15):**
+- `modeller/tests/` holds **216 witnesses**. Last `modeller/*` work landed **2026-09-11**: the §DAGEVU
+  relationship-edge engine and the cut-move arc (`#171x` series — GEOM_CUT_MOVE, GEOM_CUT_RESIZE, cut
+  frame under a 90°-multiple GEOM_ROTATE, §DAGEVU-SLIDE).
+- **Nothing is in flight.** Both modeller worktrees (`/tmp/wt-dagevu-engine` `feat/dagevu-slide`,
+  `/tmp/wt-dagevu-resume-doc` `docs/resume-dagevu-engine`) are `ahead=0 dirty=0` — fully pushed, clean,
+  prunable. No one is mid-edit.
+
+**⚠ THE §OPEN LIST BELOW WAS HARVESTED 2026-07-30 AND IS ~6 WEEKS STALE.** Its 34 rows predate the entire
+DAGeVu engine arc. **Your first job is a re-verify sweep, by this file's own rule** ("a file claiming
+something is open may be stale — check the shipped code first; that mistake has already been made here").
+Re-mark every row `verified-open` or `stale-claim` against `origin/main` by grep/sqlite BEFORE picking
+work off it. Do not trust row ordering as priority; do not trust "NEXT SESSION START HERE" on row 34
+without checking it first — see immediately below.
+
+**Row 34 ("anchor export/save leak"), spot-checked 2026-09-15: STILL LOOKS OPEN, but confirm it.** The
+question is whether the 65 phantom anchor ops leave in an IFC export (`bonsai_ifc.js`) or a Save snapshot
+(`sdg_save.js`/`saveModelDb`). `W-ANCHOR-SWEEP` (`witness_residents_anchor_sweep.js`) proves the RENDER and
+MATHS side only — its own header says so. Grep found no witness asserting export/save element-identity
+with anchors present. That is a grep, not a proof: read the two code paths before you either fix it or
+close it.
+
+**HYGIENE — swept 2026-09-15, partly done, and the remainder is NOT yours to prune.** The sweep ran over
+all 22 outstanding `/tmp/wt-*` worktrees: **14 pruned** (the 5 this session created, plus 9 verified
+`ahead=0 dirty=0` — including both dagevu ones). **13 remain, and every one of them holds real work:**
+
+| state | worktrees | why it stays |
+|---|---|---|
+| unpushed commits (`no-remote` branch) | `wt-bake-perf` · `wt-batch-class-paint` · `wt-idb-cache-timeout` · `wt-krn-persist-race` · `wt-rule-findings-film` · `wt-storey-cut` · `wt-storey-reveal-list` | the branch was never pushed — pruning DESTROYS the commits |
+| merged but dirty | `wt-bake-schedguard` (3) · `wt-buildup-placed` (27) · `wt-scrapbook` (1) | uncommitted changes on top of a merged branch |
+| ahead and dirty | `wt-88-ab` (56 ahead, 4 dirty) · `wt-v87` (2 ahead, 17 dirty) · `wt-storey-reveal` (73 dirty) | someone's live in-progress work |
+
+**Do not prune any of the 13 without the owner's word.** `wt-storey-cut` alone carries 359 dirty files.
+If you add worktrees, prune YOUR OWN at close (`ahead=0` AND `dirty=0`), and leave these alone.
+
+**METHOD RULES THIS LANE EARNED THE HARD WAY LAST SESSION — they apply here unchanged:**
+- **A number that decides scope gets measured before it decides anything.** Three times in one session a
+  plausible figure stood in for a measurement: a timing taken from the wrong function, a code comment's
+  cap turned into a prediction, and a cross-file diff read as code drift. All three were wrong, all three
+  were caught only because something forced a re-check.
+- **A diff that decides scope must hold every variable but one.** The third of those varied two — the file
+  AND the code version — then blamed the code. In THIS lane that trap is live: `*_extracted.db` and
+  `*_silent.db` are different files with different completeness (Hospital: 64,150 transforms vs 63,917).
+  Never diff across two building DBs and attribute the difference to code.
+- **Prove a fix FIRES, not just that it shipped** — grep a real log line, never "code changed".
+
 ## ⚖ THE USER IS NOT REVIEWING. YOU ARE THE ONLY CHECK.
 The user has explicitly said they have no time to inspect this work. That REMOVES the safety net; it
 does not lower the bar. Therefore, in this lane:

@@ -490,7 +490,28 @@ Paths are `~/bim-ootb/viewer/` unless stated. Line numbers are `origin/main` @ `
 | **WHICH MODEL produced this schedule?** | `schedule_author.js:715` — the `§TPL_MODEL` line. `model=template` = CANONICAL, `model=legacy-deriveZones` = the dead model (PR #1553) | assume the canonical model ran because the code *can* pass `template:`. 24 of 35 witnesses pass none, and the fork was SILENT until 2026-08-27 |
 | **what did the run actually say?** | the persisted `witness.log` — `bim-ootb scripts/cache_4d_run.js` | re-run `materializeZones`, and **never** wrap it to silence `console.log` (PRIMAL LAW clause 3) |
 
-## §I.1 ⛔ "S supports T" HAS THREE IMPLEMENTATIONS AND THEY DISAGREE
+## §I.1 ✅ CLOSED (re-verified 2026-09-15) — "S supports T" no longer disagrees, by parity witness, not by consolidation
+**Was:** three implementations, two silently missing the upper bound below (32.0% of Hospital's
+bearing contacts wrong). **Now:** `support_sweep.js`'s `_contactGraph` and `cpm_schedule.js`'s
+`contactGraph` carry the byte-identical formula (diffed directly, only names/wrapper differ) and
+`scripts/probe_cpm_schedule.js`'s `§CPM_PARITY` re-verifies zero mismatch on every run — re-run
+2026-09-15 against the real fleet: `elementMismatch=0` on Terminal (48,428 elements) and
+LTU_AHouse (122,330 elements), `§CPM_FLOATING midair=0 structural=0` on every building. **Read this
+before assuming it's still open — it isn't.**
+
+**Not fully closed, worth knowing:** the fix chosen was NOT the "correct shape" this section itself
+names below (`bar_model.js`'s consumer-takes-graph-as-parameter pattern) — it's two copies kept in
+sync by a diff witness instead of one owner the other consumes. That's a real, live maintainability
+debt: touch the formula, remember to touch both files, or the parity witness starts failing later.
+Left as-is, not re-litigated here — a genuine future cleanup, not an active bug.
+
+**The fleet is still not clean** — `§CPM_FLEET_VERDICT buildings=7 fails=6 FAIL` as of 2026-09-15 —
+but every failure is now `storeyViolations` (construction-sequence ordering across floors), a
+different defect class entirely, untouched by this section's fix. See §I.3+ for that.
+
+---
+<details><summary>Original write-up (2026-08-27), for history — the defect it describes is fixed, above</summary>
+
 Verified 2026-08-27, not inferred — all three carry the same comment text, so they were copied:
 
 | # | where | upper bound on the support |
@@ -506,6 +527,8 @@ embedded metres below its crown" — 73 fleet-wide false verdicts. Copies 1 and 
 solve runs on, so this is not academic.
 `bar_model.js:345` `attachContacts(leaves, contacts, grounded)` is **not** a fourth copy — it is a
 consumer, it takes the graph as a parameter. That is the correct shape; the other two should be it.
+
+</details>
 
 ## §I.2 `grounded[i]` AND `seq === 1` ARE DIFFERENT QUESTIONS
 `support_sweep.js:417` — `grounded[i] = (lowest < T.bz - GAP) ? 0 : 1`, where `lowest` is the min
