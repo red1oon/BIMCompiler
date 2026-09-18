@@ -211,22 +211,27 @@ decision before building:**
    real authored zero," which is exactly the ambiguity that let the original stub survive unnoticed.
    §4's "unknown location" default implemented as an EMPTY value + `site_latlong_source='unknown'`,
    never a bare `0/0` — matches this spec's own warning against a silent Gulf-of-Guinea default.
-3. **T3** — Port/vendor the sun-position formula (§5) — not yet started as its own witnessed step
-   (distinct from T8's end-to-end measurement below — T3 is the formula's own correctness in
-   isolation).
-4. **T4** — Wire §6's date hookup to the 4D timeline — not yet started.
-5. 🔄 **T5 — IN PROGRESS 2026-09-18** (bim-ootb worktree `/tmp/wt-georef-ootb`, branch
-   `feat/georef-sunpath-compass`) — ground compass + day-of-year render. Design confirmed
-   world-space, ground-anchored (a THREE group added to `A.scene`, rotated by the real
-   `true_north_angle`, depth-tested normally so the building occludes it — same contract as
-   `cpe_flythru_datum.js`'s ground grid). Day-of-year/sun-az-el text is a projected 2D annotation
-   from the 3D anchor (`v.clone().project(cam)`), NOT a DOM badge — `cinema_maxq.js`'s
-   `_captureFrame` only grabs the renderer canvas, so a DOM element would preview correctly and be
-   absent from every exported frame; same split `cpe_flythru_datum.js` already uses.
-6. 🔄 **T6 — IN PROGRESS, same session/branch as T5.** Sun angle-of-attack (§8) — a separate,
-   always-visible readout, not attached to the compass rose.
-7. **T7 (separate PR, optional)** — Temperature via Open-Meteo (§9), only after T1-T6 are live and
-   reviewed.
+3. ✅ **T3 — DONE 2026-09-18.** `§SUN_PATH_WITNESS PASS checks=59 wrong=0` +
+   `§SUN_ORACLE PASS samples=2968 gates=4 exceeded=0` — the oracle check is exactly this task's
+   "against an independent real reference" bar, not the formula agreeing with itself.
+4. ✅ **T4 — DONE**, folded into the same PRs as T5/T6 below (the compass/readout witnesses below
+   exercise the real timeline hookup, not a synthetic date).
+5. ✅ **T5 — DONE 2026-09-18.** bim-ootb PR #1751. World-space, ground-anchored THREE group,
+   depth-tested (building occludes it), placed on the site's equator-facing side (derived from real
+   latitude — true south in the northern hemisphere, true north in the southern — not picked).
+   Day-of-year/"N" text is 2D-projected from the 3D anchor (`v.clone().project(cam)`), not a DOM
+   badge, because `cinema_maxq.js`'s `_captureFrame` only grabs the renderer canvas — a DOM element
+   would preview fine and be silently absent from every exported frame. `§SUN_COMPASS_WITNESS
+   PASS checks=38 wrong=0`.
+6. ✅ **T6 — DONE, same PR as T5.** Sun angle-of-attack — fixed bottom-left readout, not attached to
+   the rose. **§8's premise checked, found wrong on 4/5 fleet buildings:** `rotation_z` (this spec
+   assumed it was "already extracted") is populated on Terminal only (82 distinct values) — Hospital,
+   Clinic, Duplex, HHS are all-zero (Hospital: 1 distinct value across 63,182 rows). The readout
+   falls back to wall bbox aspect and logs which source it used per-reading; the underlying
+   `rotation_z` extraction gap itself is out of this feature's scope (belongs to whichever lane owns
+   general element-transform extraction).
+7. **T7 (separate PR, optional)** — Temperature via Open-Meteo (§9), untouched as recommended —
+   still open.
 8. **T8 — MEASURE (added 2026-09-18, user: "I foresee 'Measure'").** A distinct verification gate,
    separate from each piece's own unit-level witness above — end-to-end, on a real building, numeric
    only, never a screenshot (this project's own FUNDAMENTAL LAW, `bim-compiler` CLAUDE.md). Three
@@ -251,11 +256,42 @@ decision before building:**
    predicate into a witness or a `§`-tagged log line instead). This task blocks calling T1-T6 "done"
    as a feature, even once each is individually witnessed.
 
-## STATUS — 2026-09-18: T1-T2 done (Python side), T5-T6 in progress, T3/T4/T7/T8 open
+## §11 — Two findings beyond this spec's original scope, worth keeping visible
 
-§1's finding (`true_north_angle` wired-but-inert since the extractor shipped) is confirmed real and
-now fixed on the Python/CLI writer, witnessed, with real non-zero fleet values found (Hospital +5°,
-Penang +52°). Two parallel sessions are building this now — bim-compiler `/tmp/wt-georef` (T1/T2,
-done) and bim-ootb `/tmp/wt-georef-ootb` (T5/T6, in progress) — coordinating live via cross-session
-message rather than diverging. T8 (end-to-end numeric measurement, not per-piece unit witnesses) is
-new since the first version of this doc and gates calling the whole feature done.
+- **Malformed source data, both extractors now refuse it:** four fleet files carry a
+  non-conformant `IFCDIRECTION` for `TrueNorth` — `Clinic_Electrical #11050`, `Clinic_HVAC #76172`,
+  `Ifc2x3_Duplex_Plumbing #40`, `LTU_AHouse_STR #66` — all write `(2.0, 6.12303176911189E-17, 1.0)`
+  (3 components where 2 are expected, z=1.0, XY length 2; naively reading its first two ratios gives
+  exactly -90°, a wrong and misleadingly clean-looking number). Both writers now detect and refuse
+  this shape, recording `malformed_truenorth_ignored` rather than silently ingesting garbage.
+- **§8's premise corrected by measurement, not assumption:** see T6 above — `rotation_z` is real
+  data on only 1 of 5 fleet buildings tested. Don't trust this spec's original "no new extraction
+  needed" claim for §8 without re-checking per building.
+
+Full derivation/evidence for both, plus the corrected §2 sign formula, is in bim-ootb PR #1751 and
+bim-compiler PR #117 (branches `feat/georef-sunpath-compass` / `feat/georef-sunpath`) — not
+duplicated here to avoid two sessions maintaining the same paragraph.
+
+## §12 — BLOCKED, needs red1's ruling, not either session's
+
+**Hospital's 14 discipline source files disagree on the building's own site coordinates by up to
+~500km:** ARC says `42.3584, -71.0598` (Boston area); STR+MEP say `42.2130, -71.0330` (~16km from
+ARC, still Boston area); MECH says `43.1221, -77.6302` — Rochester, NY. Self-heal patches were
+written for SampleHouse/SampleCastle/HHS/Clinic/Duplex; **deliberately none for Hospital** — nobody
+picked a winner. This needs a human ruling: which file is authoritative (if any), or is this a
+source-data defect that should keep Hospital's geo-ref at `'unknown'` until the discipline files are
+reconciled at the source. Do not resolve this automatically (majority vote, "closest to the others")
+without red1's explicit sign-off — three real, differently-wrong numbers, not a tie-break Claude
+should call.
+
+## STATUS — 2026-09-18: T1-T7 built + witnessed (T7/temperature untouched by design); T8 open; one item BLOCKED on red1
+
+§1's finding (`true_north_angle` wired-but-inert since the extractor shipped) is fixed, witnessed,
+and live on two open PRs — bim-compiler #117 (extraction) and bim-ootb #1751 (viewer: compass,
+day-of-year, sun angle-of-attack). Five witnesses reported passing at close: `§GEOREF_WITNESS`,
+`§SUN_PATH_WITNESS`, `§SUN_ORACLE`, `§SUN_COMPASS_WITNESS`, `§GEOREF_PATCH_WITNESS`. T8 (the
+end-to-end numeric measurement this doc added per user request — formula-vs-independent-reference,
+extraction-to-render agreement, internal cross-consistency) has real coverage via `§SUN_ORACLE` +
+`§SUN_COMPASS_WITNESS` but was not run down item-by-item against T8's own checklist — worth a pass
+before calling the feature fully closed. Neither PR is merged. §12's Hospital site-coordinate
+conflict is the one open item that is not a coding task — it needs red1's decision.
