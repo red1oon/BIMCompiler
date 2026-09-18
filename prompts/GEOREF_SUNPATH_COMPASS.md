@@ -180,6 +180,20 @@ the Alt+C bake pipeline) and its existing per-frame ground-overlay convention �
 MEMORY, prompts §77-§85) is the nearest precedent for how this project already does bake-time ground
 overlays; follow that convention rather than inventing a new overlay mechanism.
 
+**Panel toggle — SINGLE entry, not one per sub-part (user directive, 2026-09-18: "on the user baking
+panel, it should be a single box or icon showing a compass").** Checked the real convention:
+`viewer/panels.js`'s toolbar/panel registry is a flat list of `{ id, name, icon, fn }` entries, one
+per feature — `sanity`, `egress`, `clash`, `fly`, `night`, `shadow`, etc. (lines ~1319-1531). This
+feature gets exactly ONE entry the same way — one `id` (e.g. `'compass'`), one icon, one `fn`
+toggling the whole overlay bundle (ground compass + day-of-year label + sun-angle-of-attack readout)
+together as a unit. Do not expose compass/day-of-year/sun-angle as three separate panel toggles —
+they are one feature with three visual parts, matching how `sanity`/`egress` already bundle their
+own multi-rule internals behind a single panel entry. **Icon note:** the icon set already has a
+`draftingCompass.svg` (`I.draftingCompass`, currently used for the unrelated `'inspect'` entry,
+panels.js ~line 1529) — that is a drafting compass (the drawing tool), not a magnetic/N-S-E-W
+compass rose, and is very likely the wrong shape for this feature. Confirm before reusing; a new
+icon is probably needed.
+
 ## §8 — Sun angle of attack
 
 Once sun azimuth/elevation (§5) gives a real 3D sun direction vector, the angle of incidence on any
