@@ -195,30 +195,67 @@ decision before building:**
 
 ## §10 — Task list, dependency order
 
-1. **T1** — Fix `true_north_angle`'s writer (both Python + browser import paths, §3.1-3.2):
-   real `TrueNorth` extraction, replacing the hardcoded `"0"`. Witness against a real building with
-   a known non-zero `TrueNorth` if one exists in the fleet (check first — may need a synthetic test
-   fixture if none does).
-2. **T2** — Add `site_latitude`/`site_longitude`/`site_elevation_m`/`site_latlong_source`
-   extraction (§3, §4), same two writers, plus the self-heal patch (§3.3) for already-shipped
-   buildings.
-3. **T3** — Port/vendor the sun-position formula (§5), witness it against a few known
-   date/location/expected-azimuth-elevation triples (there are published reference values for this —
-   verify against a real published test case, don't just trust the port compiles).
-4. **T4** — Wire §6's date hookup to the 4D timeline — find the real owner function first (Ownership
-   Table discipline), don't add a second date-reading path.
-5. **T5** — Ground compass + day-of-year render in the movie bake (§7) — follow the existing
-   cinema/Sanity-film overlay convention, confirm the exact hook point in `cinema_maxq.js`/
-   `effects.js` before writing render code.
-6. **T6** — Sun angle-of-attack (§8) — small, reuses existing facade-orientation data, no new
-   extraction.
+1. ✅ **T1 — DONE 2026-09-18** (bim-compiler worktree `/tmp/wt-georef`, branch `feat/georef-sunpath`)
+   — Python CLI extraction side fixed + witnessed: `§GEOREF_WITNESS PASS files=5/5 arithmetic=6
+   defaults=5 wrong=0` (`scripts/witness_georef_extract.py`). Real non-zero fixtures confirmed live:
+   Hospital +5.000000°, `merged_federation` +52.040036° (Penang, lat 5.96277289/lon 100.63712571).
+   **§2's sign formula was found wrong during this work** (spec said `atan2(x,y)`, both live
+   consumers actually need `atan2(-x,y)` — derivation from `sitecam.js:81`/`walk.js:275`, not a
+   textbook) — being corrected in §2 directly by the session that found it, do not also edit that
+   paragraph. ⚠ **Browser import path (`import_db_builder.js`/`import_worker.js`) status not yet
+   confirmed** — the witness above covers the Python/CLI writer only; check before assuming both
+   writers are done.
+2. ✅ **T2 — DONE, same PR as T1.** `site_latitude`/`site_longitude`/`site_elevation_m` extraction,
+   PLUS an addition beyond this spec's original 4 keys: **`true_north_source`**
+   (`'ifc_truenorth'` | `'default_zero'`) — distinguishes "no TrueNorth in the source IFC" from "a
+   real authored zero," which is exactly the ambiguity that let the original stub survive unnoticed.
+   §4's "unknown location" default implemented as an EMPTY value + `site_latlong_source='unknown'`,
+   never a bare `0/0` — matches this spec's own warning against a silent Gulf-of-Guinea default.
+3. **T3** — Port/vendor the sun-position formula (§5) — not yet started as its own witnessed step
+   (distinct from T8's end-to-end measurement below — T3 is the formula's own correctness in
+   isolation).
+4. **T4** — Wire §6's date hookup to the 4D timeline — not yet started.
+5. 🔄 **T5 — IN PROGRESS 2026-09-18** (bim-ootb worktree `/tmp/wt-georef-ootb`, branch
+   `feat/georef-sunpath-compass`) — ground compass + day-of-year render. Design confirmed
+   world-space, ground-anchored (a THREE group added to `A.scene`, rotated by the real
+   `true_north_angle`, depth-tested normally so the building occludes it — same contract as
+   `cpe_flythru_datum.js`'s ground grid). Day-of-year/sun-az-el text is a projected 2D annotation
+   from the 3D anchor (`v.clone().project(cam)`), NOT a DOM badge — `cinema_maxq.js`'s
+   `_captureFrame` only grabs the renderer canvas, so a DOM element would preview correctly and be
+   absent from every exported frame; same split `cpe_flythru_datum.js` already uses.
+6. 🔄 **T6 — IN PROGRESS, same session/branch as T5.** Sun angle-of-attack (§8) — a separate,
+   always-visible readout, not attached to the compass rose.
 7. **T7 (separate PR, optional)** — Temperature via Open-Meteo (§9), only after T1-T6 are live and
    reviewed.
+8. **T8 — MEASURE (added 2026-09-18, user: "I foresee 'Measure'").** A distinct verification gate,
+   separate from each piece's own unit-level witness above — end-to-end, on a real building, numeric
+   only, never a screenshot (this project's own FUNDAMENTAL LAW, `bim-compiler` CLAUDE.md). Three
+   things T1-T6's individual witnesses do NOT, by themselves, prove:
+   - **Formula-vs-independent-reference:** T3's own witness checks the ported sun-position formula
+     against published date/location/azimuth/elevation triples — good, but pick at least one of
+     THIS fleet's real buildings (Hospital, real lat/long from T2) + a real calendar date, and
+     cross-check the computed azimuth/elevation against an independent trusted source (e.g. NOAA's
+     own solar calculator for that exact input) — not a second run of the same ported formula
+     agreeing with itself.
+   - **Extraction-to-render agreement:** read the ACTUAL rendered compass group's real rotation
+     state (`compassGroup.rotation.y` or its quaternion, whichever axis convention T5 lands on) in a
+     witness/probe and assert it numerically equals Hospital's extracted `true_north_angle` (+5°,
+     correctly signed per T1's corrected formula) — proves the render layer actually consumed the
+     right number and applied it on the right axis, not just that T1's extraction and T5's renderer
+     were each separately plausible.
+   - **Internal cross-consistency:** the day-of-year text, the sun-angle-of-attack readout, and the
+     compass rose's own rotation should all trace back to the SAME single date+lat/long read for
+     that frame — assert this by reading each of their real backing values in one witness pass, not
+     by eyeballing that they "look consistent" in a rendered frame.
+   No pixel/frame/screenshot comparison for any of this (`bim-ootb-no-pixel-evidence` — slice the
+   predicate into a witness or a `§`-tagged log line instead). This task blocks calling T1-T6 "done"
+   as a feature, even once each is individually witnessed.
 
-## STATUS — spec only, nothing built
+## STATUS — 2026-09-18: T1-T2 done (Python side), T5-T6 in progress, T3/T4/T7/T8 open
 
-§1's finding (`true_north_angle` wired-but-inert since the extractor shipped) is real and verified
-directly against the extraction script and both live consumers — worth fixing on its own merits even
-independent of the rest of this feature. Everything else here is new, additive, deterministic math
-with no invented data (§9 excepted and deliberately isolated). No code written, no migration/patch
-files created yet.
+§1's finding (`true_north_angle` wired-but-inert since the extractor shipped) is confirmed real and
+now fixed on the Python/CLI writer, witnessed, with real non-zero fleet values found (Hospital +5°,
+Penang +52°). Two parallel sessions are building this now — bim-compiler `/tmp/wt-georef` (T1/T2,
+done) and bim-ootb `/tmp/wt-georef-ootb` (T5/T6, in progress) — coordinating live via cross-session
+message rather than diverging. T8 (end-to-end numeric measurement, not per-piece unit witnesses) is
+new since the first version of this doc and gates calling the whole feature done.
