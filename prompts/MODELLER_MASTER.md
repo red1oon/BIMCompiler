@@ -96,6 +96,25 @@ any of this.**
 | 12 | verified-open | verified-open — **and its blast radius grew** | `rel_fills_host` ships as a SQL patch, never in the binary (so sqlite on `*_ARC.db` says "no table" for all 8 — that is the wrong instrument). Real census of `modeller/patches/*_ARC.db.sql`: **Duplex 54 · SampleCastle 83 · SampleHouse 11 mentions; Clinic, Garage, HHS, Hospital, Terminal = 0.** Exactly the five the row named. **New consequence the row predates:** `dagevu_engine.js:62` builds every `HostFillEdge` from a REAL `rel_fills_host` row, so **#1706's anchor-by-default engine — the headline of the whole DAGeVu arc — is inert on 5 of the 8 residents.** |
 | 10 | re-measure | **RE-MEASURED (local only)** | RAN `witness_e2e_terminal_open.js`: `7 PASS / 0 FAIL`, **`§OPEN openMs=20592`**, 35,552 ARC elements seeded exactly, `verifyChain ok len=35552` in 1,176 ms. Signing is still a visible phase — 3 of the 8 distinct status lines are `signing 3000/13500/25500 of 35552`. ⚠ **This is headless-swiftshader on localhost. Do NOT set it against the old 14 s profile and call it a regression — different rig, and that is exactly the "hold every variable but one" trap §RESUME warns about. The LIVE number is still unmeasured**, and §RESUME's own rule says the live URL is where this has to be proven. |
 
+
+### §ROW-12 FOLLOW-THROUGH — two things worth carrying forward (2026-09-18)
+
+**Garage's source was ambiguous and the ambiguity was RESOLVED BY MEASUREMENT, not by picking.** Its
+recorded `source_file` (`HospitalGarage_ARC.ifc`) is not on disk. Two candidates matched 5/5 GUIDs —
+`HospitalGarage_IFC4.ifc` and `HospitalGarage_IFC2x3.ifc` — and they produce DIFFERENT `opening_guid`s, so
+picking one blind would have been a coin flip presented as a fact. The 36 FILLED `host|filling` pairs, the
+only ones the engine rides, are byte-identical across both schemas, so the choice is immaterial *for the
+ride*. If anything ever needs `opening_guid` itself, this is unresolved and must be settled first.
+
+**The witness raced, and it took two wrong conditions to get right — worth knowing before writing the next
+multi-building witness.** `__dwName` flips at the START of an open, but `__arcFidByGuid` is rebuilt LATER,
+in the geo-fetch continuation. So "the name matches and the bridge stopped changing" is satisfied by the
+PREVIOUS building's untouched bridge, silently: the first re-run against merged main reported Hospital
+`rideable=0` against an expected 506, with `bridge=1950` — Clinic's size. The data was correct the whole
+time. The fix is to NULL `__arcFidByGuid`/`swXEdges` before opening and wait for repopulation, so a
+non-empty bridge is necessarily this building's (bim-ootb #1750). **Any witness that opens more than one
+resident needs this; a fixed sleep will pass locally and lie later.**
+
 ### §SWEEP FOLLOW-THROUGH 2026-09-18 — what is actually left, ranked
 
 Rows 19, 23, 24, 28, 32 and 35 are now marked closed IN THE TABLE ITSELF, not just here — a row that
@@ -321,7 +340,7 @@ Format, one row per item, ranked most-blocking first:
 | 9 | O10 | backprop APPLY: accept-gated hop-by-hop application of ORANGE suggestions (flagging shipped #647; applying not built) | `RESUME_GRAPH_MODELLER_INTEGRATION.md` §USEFUL-DIFF 2 + `sdg_gate.js:106` | one accepted ORANGE fires one signed op, one hop, witnessed | verified-open (partially shipped) |
 | 10 | O11 | Terminal open speed: staged pre-sealed rows + incremental `sealFrom` HAVE shipped since the 14 s profile — re-measure on the LIVE URL, then decide if Candidate C (batch-sign bulk classes) is still needed | `RESUME_MODELLER_TERMINAL_LOAD_LOD400.md` ⛔ signing | live `§STAT-TRACE` numbers on the real URL | re-measure — `kernel_ops.js:210/404` supersedes the old profile |
 | 11 | O5 | full colour-parity: Modeller still paints the cosmetic PALETTE; real `material_rgba` RGB unused (only alpha recovered) | `MODELLER_RENDER_MATERIAL_PARITY.md` §Still-open | real per-element colour, before/after on Duplex + HHS glazing, witness | verified-open — `arc_editable.js:30-31` says so in its own comment |
-| 12 | O1 | `rel_fills_host` missing on ALL five new residents (Clinic/Hospital/HHS/Garage/Terminal); the fresh `Clinic_extracted.db` ALSO lacks the table | LOD400 §START HERE OPEN 2 | `gen_rel_fills_host_patch.py` per building once its source IFC is locatable; guide Grid-Stretch sentence extended | verified-open — sqlite3 confirms no table; sources not in this checkout |
+| 12 | O1 | `rel_fills_host` missing on ALL five new residents (Clinic/Hospital/HHS/Garage/Terminal); the fresh `Clinic_extracted.db` ALSO lacks the table | LOD400 §START HERE OPEN 2 | `gen_rel_fills_host_patch.py` per building once its source IFC is locatable; guide Grid-Stretch sentence extended | ✅ **DONE 2026-09-18 — bim-ootb #1749 + #1750.** All five sources WERE locatable, each identified by the DB's own `project_metadata.source_file` rather than a filename guess. Recovered verbatim via the existing `gen_rel_fills_host_patch.py`: **HHS 218 edges / 99 rideable · Clinic 403 / 302 · Hospital 665 / 506 · Garage 220 / 36** — 943 new rideable host↔filling edges, every one matching its generator-predicted reach EXACTLY on the live scene (Duplex, for scale, is 36/38). **Terminal is deliberately NOT patched:** its source `TerminalMerged.ifc` (567 MB, identified by 5/5 GUID match) declares ZERO `IfcRelVoidsElement`/`IfcRelFillsElement` — the author never authored a void/fill chain, so the generator refused to write a file rather than invent one. That is a SOURCE DATA GAP, asserted in W-RFH-RESIDENTS F4 so nobody 'fixes' it by fabricating edges. So §DAGEVU's anchor/ride now works on **7 of 8 residents**, with the 8th explained by its own data. Witness W-RFH-RESIDENTS 15/15, RED-first |
 | 13 | O14 | SSAO + OutlinePass selection — blocked on vendoring EffectComposer (own slice) | `RESUME_MODELLER_COMPETITIVE_POLISH.md` §NEEDS-DESIGN 6/7 | vendored composer + witness | verified-open — `modeller.html:411/1022` name the gap |
 | 14 | O7 | per-mesh furniture orientation normalize-at-extraction (metadata lies: Dining_Chair z=0.14, FURN_DESK z=2.0) | `MODELLER_BOM_CATALOG_SPEC.md` §ALSO QUEUED | bake axis-permutation into vertices; witness tallest-axis==h | verified-open — no bake code in `extract_dagevu_catalog.py` |
 | 15 | O7 | full 23,888-part library via httpvfs range-load — ⛔ BLOCKED: **where does the 220 MB `component_library.db` live (GH vs OCI)? user's call** | same §BUILD LEGS L1–L3 + §OPEN | W-LIBDB-RANGE: bytes-read ≪ 220 MB | verified-open — no `createDbWorker` anywhere in `modeller/` |
