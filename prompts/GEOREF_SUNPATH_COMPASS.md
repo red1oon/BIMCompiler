@@ -556,6 +556,15 @@ comment says radians, it is a different table, and nothing reads it alongside
 does not "unify" two columns that mean different things, and because its `atan2(x, y)` has the same
 sign convention this spec's §2 got wrong.
 
+**§12.7 A bundled icon was a licence problem, not an attribution problem.** A compass traced from
+`clipart4585220.png` was inlined into `cinema_path_editor.js` on 2026-09-19 believed to be
+Flaticon free-tier (attribution required). The real source is **realclipart.com, "Personal Use"** —
+a use restriction, so no credit line makes it shippable in a publicly-deployed MIT repo. Inlined
+and removed the same day; a `NOTICE.md` written for the wrong site was removed with it. Replaced by
+Lucide's `compass` (ISC, the set this repo already integrates). ⚠ A "clean-room redraw from the
+trace's own colours and vertices" is NOT a fix — copying the original's geometry produces a
+derivative of it. Two witness guards now assert the artwork's colours and viewBox stay absent.
+
 ## §13 — WHAT IS STILL OPEN
 
 1. **§9 / T7 — temperature.** Not built, by design. It is the only network dependency anywhere in
@@ -568,7 +577,59 @@ sign convention this spec's §2 got wrong.
    first three; the last two have no local `*_extracted.db` to check against at all. Not a refusal,
    just an absence of evidence: pair each with its real source and the patch is a one-liner.
 
-## STATUS — 2026-09-18
+## §14 — NOTED 2026-09-19, NOT BUILT (red1: "Don't fix now, just note in the prompts/#")
+
+**§14.1 There are no Flaticon icons on the Alt+C panel, and there will not be any from that
+route.** red1 looked for them and did not find them — correct, and the reason is upstream of the
+panel. The compass artwork sourced for it (`clipart4585220.png`) turned out to be from
+realclipart.com under a **"Personal Use"** licence, not Flaticon's free tier: a use restriction, not
+an attribution gap, so no credit line makes it shippable in a public MIT repo (§12.7). It was
+inlined and removed the same day. What ships instead is **Lucide's own `compass`**, ISC, from the
+icon set this repo already integrates (`viewer/icons/lucide/README.md`) — plus three honest reuses
+from that same set: `ruler` (Measure), `triangle` (Clash, already the Clash Matrix's icon),
+`disciplines` (Reveal).
+**Three of the seven toggles are still caption-only:** Buildup, Room titles, Storey highlight. No
+placeholder art was invented for them and a witness asserts none was. Lucide almost certainly
+covers all three (it has building/layers/type icons) and would close this with no licensing
+question at all — that is the cheap path, and it is one table entry each in
+`cinema_path_editor.js`'s §CPE_TOGGLE_ICONS table.
+
+**§14.2 HUD overlap — checked, mostly safe, two real collisions left.**
+The day-counter corner is ONE ordered column and every box advances a shared offset:
+`day counter → sun clock → path box → resource pie / stats card`. The clock returns its own drawn
+height and the caller adds it, so nothing below can land on it. The sun readout (date / sun angles
+/ facade) is bottom-left, clear of `cpe_room_title.js`'s centred lower-band caption. Two cases are
+NOT handled and neither is new:
+- **The day counter can be set to `bl` or `br`.** Then the whole column grows out of the same
+  corner the sun readout occupies and they overlap. Default is `tr`, so it does not bite today.
+- **The path box can be given its own corner** (`_ovPos = _ov.pathOverview || _dayPos`) while the
+  shared offset is still advanced by the counter AND now the clock. If the corners differ, the path
+  box is pushed down in its own corner for no reason. Pre-existing — the counter already did this —
+  but the clock makes it one box worse.
+The honest fix for both is one offset per corner instead of one global `_stackY`. Small, and it
+touches every overlay in that column, so it wants its own change rather than riding this one.
+
+**§14.3 A settable exact date — asked for, not built.** Today the film's dates come from the 4D
+schedule's own project span; there is no way to say "show me 21 June". Worth having: the sun is a
+pure function of (lat, lon, instant), so a date override changes nothing else in the pipeline. The
+natural shape is a date field beside the Sun compass checkbox writing `_ov.sunDate`, consumed where
+`_sunCompassMs` is set in `cinema_maxq.js` — the schedule's day still drives the BUILD, only the
+sun's date is overridden. ⚠ If it is built, the day-of-year label must then say which date it is
+showing, or the readout and the day counter would silently describe different days.
+
+**§14.4 The time is NOT a 2 pm default — it sweeps, and that was deliberate.** red1 saw `14:43
+solar` on a frame and asked. The solar hour runs **9:00 → 17:00 across the film** (§SUN_ONE film
+clock); `14:43` is simply where frame 6 of 8 landed. A single fixed hour was built first and
+rejected on sight: with a held hour the sun only drifts seasonally, and the film loses the
+sunrise-to-sunset reading red1 asked for ("a perception of a single half day"). The mid-point,
+13:00, is only used when a caller passes no film fraction at all.
+**Advice if this is revisited:** keep the sweep, and if anything make the window a touch narrower
+(say 9:30 → 16:30) rather than fixing it — the current end lands the last frame near or just below
+the horizon on a winter date, which reads as a dusk finish and matches what the old scripted arc
+did on purpose, but it is luck rather than design. Both hours are two constants in
+`cpe_sun_compass.js` and nothing else reads them.
+
+## STATUS — 2026-09-19
 
 **T1-T6 built and witnessed** (§11), five witnesses green; **T8 closed** (§10.8); **T7 not started,
 by design** (§13.1). Two PRs open, neither merged — bim-compiler #117 (extraction) and bim-ootb
