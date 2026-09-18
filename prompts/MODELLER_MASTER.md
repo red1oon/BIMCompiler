@@ -348,3 +348,66 @@ Rules that produced this list (keep for the next harvest):
 - **Never edit the shared `~/bim-ootb` checkout** — a PreToolUse hook blocks it. Work in a `/tmp/wt-*`
   worktree, and reuse an existing one (`git worktree list`) before creating another.
 - **DB changes ship as a SQL patch + self-heal loader, never a committed binary** (`CLAUDE.md`).
+
+## ▶ §IFC-EXPORT-SEED — SPEC for row 36 (2026-09-18). Written before any code.
+
+**MEASURED DEFECT, not inferred.** Open Duplex — 196 elements on screen — then call `Bonsai.ifc.build()`:
+
+```
+§OPLOG      {"GEOM_INSERT":196}  total=196
+§ON-SCREEN  meshes=196
+§EXPORTED   {"walls":0,"openings":0,"rels":0,"arrays":0,"bytes":592}
+```
+
+**592 bytes. Zero products.** A user who opens a resident and picks Export ▸ IFC gets an empty IFC4 file
+with a header and nothing else. `bonsai_ifc.js build()` branches on exactly three op types —
+`GEOM_EXTRUDE_POLY` (:112), `GEOM_CUT` (:123), `GEOM_ARRAY` (:142) — and **every ARC-seeded element is a
+`GEOM_INSERT`** (`arc_editable.js:342`). The three handled types match zero ops in a real resident.
+
+### What to build
+Handle `GEOM_INSERT` in `build()`. Per element, emit one IFC product typed from `params.ifc_class`.
+
+**Geometry: reuse the RENDERER'S OWN vertices — do not re-derive the transform.** This is the direct
+lesson of §XEDGE-GEOWIRE, learned today at the cost of 843 wrong edges: `cross_edges.js` re-implemented
+"world = centre + R·vert", called it "the same final numbers, fewer steps", and was wrong for 798 of 934
+elements. The folded scene meshes already carry **world-space positions baked into the geometry** —
+measured: every mesh's `matrixWorld` is identity and `geometry.boundingBox` equals
+`Box3.setFromObject`, max delta `0.000e+0` over 3,290 meshes. So the export reads
+`mesh.geometry.attributes.position` for the fid and emits those coordinates verbatim. Byte-parity with
+what the user sees is then structural, not something a witness has to chase.
+
+**Encoding:** `IfcTriangulatedFaceSet` over an `IfcCartesianPointList3D` — both confirmed present in the
+vendored web-ifc build, along with every class below. This is IFC4's native triangle-mesh form; no
+tessellation, no approximation.
+
+**Class map** (`params.ifc_class` → entity), extracted from the resident, never invented. Duplex's real
+census: `IfcWallStandardCase` 56 · `IfcFurnishingElement` 61 · `IfcSlab` 21 · `IfcWindow` 24 · `IfcDoor`
+14 · `IfcCovering` 13 · `IfcRailing` 4 · `IfcStairFlight` 2 · `IfcWall` 1. An unmapped class falls to
+`IfcBuildingElementProxy` — the honest IFC answer for "a real product whose specific type this exporter
+does not model", and it is COUNTED and `§`-logged, never silent.
+
+### Binding constraints
+1. **Anchors are excluded.** `params.anchorOnly` elements are invisible ride anchors; the user's binding
+   condition is that they stay out of EVERY count, pick, audit — and an export is an audit. Duplex has 0,
+   SampleCastle has 65, so this is not theoretical. Skipped and counted separately.
+2. **No silent substitution.** An element whose mesh cannot be resolved is NOT quietly emitted as a
+   bounding box. It is counted and named in the `§IFC-SEED` line. A box standing in for authored geometry
+   is the §PRIME LESSON fault this file opens with.
+3. **The three existing op types keep working byte-identically.** `GEOM_EXTRUDE_POLY`/`GEOM_CUT`/
+   `GEOM_ARRAY` and their witness (`W-IFC-ROUNDTRIP` via `reimport()`) are untouched.
+
+### The witness — W-IFC-EXPORT-SEED
+Claims, each naming the issue it proves:
+- **E1 NOT-EMPTY** — exporting Duplex yields > 0 products. RED today at exactly 0/592 bytes.
+- **E2 COUNT-EXACT** — products == non-anchor `GEOM_INSERT` ops. Not "> 0": the exact number, so a
+  partial export cannot pass.
+- **E3 REAL-GEOMETRY** — re-import the emitted bytes and assert the triangle count of a named element
+  matches the scene mesh's. Proves shapes, not just product rows.
+- **E4 ANCHORS-EXCLUDED** — on SampleCastle (65 anchors), products == ops − 65.
+- **E5 NO-BOX-SUBSTITUTION** — the `§IFC-SEED` line's fallback count is 0 on Duplex (196/196 resolve), and
+  any non-zero value is reported, never hidden.
+
+### Out of scope, stated so it is not mistaken for done
+Materials/colours, property sets, spatial hierarchy (`IfcRelContainedInSpatialStructure`), and re-cutting
+openings as `IfcOpeningElement` against seeded hosts. This slice makes the export carry the building's
+real shape; it does not make it a fully-furnished IFC. Row 36 stays open until that is stated in the row.
