@@ -140,33 +140,100 @@ aggregate stats alone — coincidental cancellation is real, confirmed live on D
    See §2b. Real effect confirmed on Duplex (8/14 doors, E9 layer specifically); none on SampleHouse
    (too small a building); SampleCastle untestable (no `spatial_structure` in any available copy).
 2. ⚠ **PARTIALLY DONE — measure on more than one building.** Duplex + SampleHouse done (§2b).
-   Hospital, HHS, Clinic, Terminal — the buildings `room_graph.js`'s own header cites for its
-   existing edge-kind regressions — still untested. Given Duplex's real effect was concentrated in
-   mirrored/symmetric layouts, buildings with more organic room adjacency (Hospital, Clinic) may
-   behave differently — don't assume the Duplex rate or pattern generalises.
-3. **Add `geoDb`/real-position resolution as an ADDITIVE, gracefully-degrading path** — same shape
-   as `cross_edges.js`'s own fix: resolve when possible, fall back to today's coarse `center_x/y`
-   when geometry is absent (module missing, no `geometry_hash`, unresolvable blob) — never a hard
-   failure, never worse than today's behaviour when data is short. Thread the new parameter through
-   all 3 call sites named above. **Per §2b, the E9 ambiguous-residual layer is where this needs to
-   be provably correct — a fix that only checks the primary E1 match is unverified.**
-4. **Baseline-diff against unmodified `origin/main`, on every building tested, before merging** —
-   the exact discipline that caught `witness_e2e_gridmove_real` and `witness_e2e_save` regressing in
-   #1744's own sweep, and that §2b just proved matters here too (identical `stats`, real edge
-   changes underneath). **Diff actual edges, never trust aggregate counts alone** — confirmed live,
-   not a hypothetical caution.
-5. **Re-run the Find Panel's own path witnesses** (`witness_room_graph_path.js`,
-   `witness_room_path_raster_polyline.js`, `witness_room_path_ui.js` — bim-ootb, found via the
-   existing test suite) specifically, since `navigate_find.js:1231` is the sensitive live surface
-   the user named.
+   **Hospital + HHS now measured too (2026-09-18, post-fix, using `buildings/Hospital_silent.db` /
+   `buildings/HHS_Office_Federated_silent.db` — the bake-pipeline output DBs; the `_ARC.db` copies of
+   these buildings have no `spatial_structure`/geometry at all and cannot run this test, same class of
+   gap as SampleCastle).** Confirms the doc's own caution below — the Duplex rate does NOT generalise:
+   - **HHS** (100 rooms, 133 doors, all resolved): **8/135 door edges changed** — real churn, same
+     order of magnitude as Duplex. 65/100 `circulation_distance` rows shifted (some closer, some
+     farther — mixed direction, consistent with §2b's mechanism). **The displayed "Longest path to
+     exit" stat itself moved: 150 → 151 steps.** This is the first confirmation the fix changes a
+     number the user actually sees on screen, not just an internal graph edge.
+   - **Hospital** (only 8 `IfcSpace` rooms — the known slab-coverage gap, see MEMORY `bim-ootb-t10-
+     hospital-slab-coverage`; most measured distance is via synthetic `CORRIDOR_ROOM::` circulation
+     nodes, not real rooms): **0/429 door edges changed**, all 13 `circulation_distance` row shifts
+     sub-centimetre noise, **steps stat unchanged: 143 → 143**. On this building the fix fires (440/440
+     doors resolved) but has no measurable effect — a real, building-specific null result, not a bug.
+   - Clinic, Terminal: still untested — no `_silent.db` (or any DB with both `spatial_structure` and
+     geometry) found in this session for either building; `Terminal_silent.db` is confirmed gone from
+     the repo (`STRUCTURAL_SANITY.md` §933: only an external `~/Downloads` symlink target remains).
+     Same open gap as item 6's SampleCastle case — needs a session with access to those fixtures.
+3. ✅ **DONE 2026-09-18 (PR pending, bim-ootb `feat/room-graph-real-aabb`) — added real-position
+   resolution as an ADDITIVE, gracefully-degrading path.** Same shape as `cross_edges.js`'s own fix,
+   but NOT `opts.geoDb` on `buildGraph()` itself — that file's own contract is "DB/file I/O-free...
+   runs identically in the browser and in a node witness" (its header, verbatim), and
+   `RealGeometry.buildGeometryIndex` needs a live `db.exec()`-capable handle, which would have broken
+   that contract. Instead: a NEW sibling module, `common/door_real_position.js`
+   (`resolveDoorRealXY(db, geoDb)`), ports `cross_edges.js`'s private `_realAabb`/`_buildRealVerts`
+   (neither is exported there) and is called by each of the 3 live call sites BEFORE `buildGraph()`,
+   which now takes the result as `opts.doorRealXY = { doorGuid: [x,y] }` — a plain lookup map,
+   keeping `room_graph.js` itself untouched w.r.t. DB access. Wired into all 3 call sites named above
+   (`navigate_find.js` `_roomGraphFor()`, `egress_sanity.js` `evaluate()` passthrough, `rule_checklist.js`
+   `showEgressSanity` — the latter resolves ONCE and reuses it for both of its own `buildGraph()`
+   calls, since its own comment already asserts they must observe the same graph). The Viewer never
+   loaded `real_geometry.js` before this (modeller-only until now) — added to `main.js`
+   `loadNavigate()`'s lazy-load list alongside the new module, zero static-boot cost. **Coordinate
+   caution resolved, not just assumed:** `real_geometry.js`'s own header notes the Modeller is
+   Z-up-direct while the Viewer's render path needs a Y↔Z swap (`scene.js` `A.blobToGeometry`) — but
+   that swap is feeding `THREE.BufferGeometry` for rendering only; `element_transforms`/
+   `spatial_structure`'s raw DB frame (what `_realAabb`'s rotate-by-`rotation_z`/translate-by-
+   `center_xyz` formula operates in) needs no swap in either app, which is also why this file could
+   already compare room and door coarse positions directly with no swap before this fix existed.
+   **Per §2b, the E9 ambiguous-residual layer is where this needs to be provably correct** — verified
+   directly, not assumed: see item 4.
+4. ✅ **DONE — measured + witnessed, not just baseline-diffed.** New witness
+   `witness_room_graph_real_aabb.js` (bim-ootb repo root), 13/13 checks green
+   (`w_room_graph_real_aabb.log`). Diffs the LITERAL per-door edge set (never aggregate `stats`, per
+   the trap §2b already caught): on `modeller/Duplex_extracted.db` (21 rooms/14 doors, same ground
+   truth `witness_room_graph_path.js` uses), **14/14 doors' real positions resolved, 8/14 changed
+   matched edges — reproduces §2b's own number exactly** — and independently confirms, per door, that
+   every one of those 8 changes is confined to the E9 layer (0 doors had their E1 primary match move).
+   `stats.edges`/`stats.ambiguousResidualRescued` are byte-identical coarse vs real despite the real
+   churn underneath — §2b's "a summary-count diff alone would report no effect" trap, reproduced
+   live. On `modeller/SampleHouse_extracted.db`: 3/3 resolved, 0/3 changed — reproduces §2b's measured
+   null result exactly. **Graceful-degrade proven, not assumed:** `opts.doorRealXY` omitted vs an
+   empty `{}` map produce a byte-identical graph; a real building with rooms/doors but NO geometry
+   table (`modeller/Duplex_ARC.db`) produces a byte-identical graph whether or not the (empty)
+   resolved map is passed; `resolveDoorRealXY(null, null)` never throws. This IS the baseline-diff
+   this item asked for — a direct behavioural-equivalence proof (every path with no real geometry is
+   provably a no-op by construction: `common/room_graph.js`'s door loop only overrides `dx,dy` when
+   `opts.doorRealXY[guid]` exists), stronger than a textual `git diff` against `origin/main`.
+5. ✅ **DONE — re-ran the Find Panel's own path witnesses, zero NEW regression (one PRE-EXISTING
+   failure confirmed unrelated, not swept under the rug).** `witness_room_graph_path.js` 15/15.
+   `witness_room_path_raster_polyline.js` came back pass=5 fail=2 (G3 interactive-timing and G4
+   no-raster-legality both fail, root cause `Hospital storeys=0 rooms=0` — a fixture this worktree
+   can't load, unrelated to this fix). **Verified, not assumed:** `git stash`'d every change in this
+   fix and re-ran the same witness against clean `origin/main` in this same worktree — byte-identical
+   pass=5/fail=2 with the SAME two failing checks and the SAME `Hospital storeys=0 rooms=0` line, so
+   this is a pre-existing environment gap, not a regression this fix introduced. `witness_room_path_ui.js`
+   SKIPs (its own message: `buildings/Duplex_extracted.db not present locally, OCI-only`) — a separate
+   pre-existing fixture gap, same class of issue. None of the three witnesses pass `opts.doorRealXY`,
+   so they all exercise the pre-fix coarse code path unchanged — consistent with the byte-identical
+   result. New focused witness added: `witness_room_graph_real_aabb.js` (bim-ootb repo root), see item 4.
 6. **Before trusting SampleCastle for anything room-graph-related:** find or generate a copy with a
    real `spatial_structure` table, or drop it from the regression set for this specific fix.
 
-## STATUS — found, measured, real effect confirmed (§2b); not designed, not built
+## STATUS — 2026-09-18: FIX BUILT + WITNESSED (§4 items 1-5 done); PR open, not yet merged
 
-No code written. No schema/API change made. Two decisions this doc makes on its own authority:
-(1) **do not attempt a room-shape fix** (§1) — closed by a structural fact (no room geometry
-exists), not a judgement call; (2) **this is not a non-issue** (§2b) — real edge-decision changes
-are confirmed on real building data, specifically in the E9 ambiguous-residual layer, so a picking-up
-session should treat §4 item 3 (the fix) as worth doing, not as contingent on first proving impact —
-that step is done.
+`common/room_graph.js` gains an optional `opts.doorRealXY` (a door's real world-AABB centre,
+resolved by a new sibling module `common/door_real_position.js`, never touching `room_graph.js`'s
+own DB/file-I/O-free contract) — additive, gracefully-degrading, wired into all 3 live call sites.
+13/13 checks green in the new `witness_room_graph_real_aabb.js`, reproducing §2b's own Duplex (8/14
+doors changed, 0 E1-primary drift) and SampleHouse (0/3 changed) numbers exactly, plus 4 explicit
+graceful-degrade checks. The 3 pre-existing Find Panel path witnesses re-run clean, with one
+pre-existing (not caused by this fix — verified via a stash/baseline comparison in the same
+worktree) fixture-availability failure left exactly as it was. bim-ootb branch
+`feat/room-graph-real-aabb`, PR opened — **merge is the user's call**, per this doc's own header
+("the most real-world-regression-hardened file in this codebase").
+
+Two decisions this doc made on its own authority, still standing: (1) **do not attempt a room-shape
+fix** (§1) — closed by a structural fact (no room geometry exists), not a judgement call;
+(2) **this is not a non-issue** (§2b) — real edge-decision changes are confirmed on real building
+data, specifically in the E9 ambiguous-residual layer, and now fixed + witnessed (§4 items 3-5).
+**Item 2 update, 2026-09-18 (post-fix building sweep):** Hospital + HHS now measured (`buildings/
+*_silent.db`) — HHS shows real churn (8/135 door edges, **the on-screen "Longest path to exit" stat
+itself moves 150→151 steps**, `rule_checklist.js`'s own headline number); Hospital shows the fix
+fires (440/440 doors resolved) but produces no measurable change (0/429 edges, steps unchanged
+143→143) — a real building-specific null, and further proof the Duplex rate does not generalise.
+Still open: Clinic/Terminal (no testable DB found this session) and item 6 (SampleCastle has no
+accessible `spatial_structure` copy) — both the same class of missing-fixture gap.
