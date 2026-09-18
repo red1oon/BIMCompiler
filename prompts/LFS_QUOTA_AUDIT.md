@@ -307,3 +307,44 @@ holding the line. **The guard is not an obstacle to route around — here it was
 removal, and this removal is not intentional — five published files fetch that DB at runtime. Blessing it
 would publish a knowingly-broken Glass Bowl demo through the seatbelt designed to stop exactly that.
 The routes remain the two recorded above (OCI preferred), or the gh-pages-restore stopgap.
+
+## §GH-DEPLOY-DELETES-GLASSBOWL — CORRECTED, and the deploy is DONE (2026-09-18, later same day)
+
+**I over-stated this. The site deployed cleanly and nothing went offline.** Correcting my own two
+sections above rather than leaving a scarier finding on record than the facts support.
+
+**What I missed: mkdocs copies from DISK, not from git.** `docs/glassbowl_data.db` is gitignored, but it
+is present on disk in the primary checkout (`/home/red1/bim-compiler/docs/`, 94,208 B, dated Jun 1). So a
+deploy run from the primary checkout — which is how deploys have always been run here — picks it up and
+publishes it normally. That is why it has never broken, and the explanation is simpler than "it survives
+only because nobody has deployed."
+
+**Why my test said otherwise:** I ran the guard from a FRESH `/tmp/wt-*` worktree. A new worktree contains
+no gitignored files, so the asset was genuinely absent from that build, and the guard correctly aborted.
+The abort was real; my generalisation from it was not.
+
+**Deploy completed** from a worktree with the asset copied in, via `scripts/safe_gh_deploy.sh`:
+
+```
+§STEP4 GUARD: live=290 files, new=292 files, tol=5%
+§GUARD result=PASS — new build is a superset (within tolerance). Safe to publish.
+§STEP6 all canaries 200
+§DEPLOY-DONE published + canaries checked
+```
+
+Verified live afterwards: ModellerGuide now reads "ANCHORED by default" (1 hit) and no longer "ride, never
+distort" (0 hits) — the #1706 behaviour change has finally reached users. `SpatialCompilationPaper` and
+`4DGenerator` still 200. All five Glass Bowl files still 200, and `glassbowl_data.db` is byte-identical
+(sha1 `e1fb334d`, 94,208 B).
+
+### The real residual risk — smaller, but worth naming
+
+Not "the next deploy breaks the demo." It is: **this asset exists in exactly two places — one developer's
+disk and `gh-pages` — and in no source tree, no bucket, and no build script.** Consequences:
+
+- A deploy from a **fresh clone, a fresh worktree, or CI** does not have it, and the guard will ABORT.
+  That is the seatbelt doing its job, not a failure — but it will read as a mystery to whoever hits it.
+- If that one disk is lost, the only remaining copy is whatever `gh-pages` last published.
+
+So the OCI route recorded above is still worth doing, but as **durability and reproducibility**, not as an
+emergency. Lower urgency than I first wrote, and not a blocker on any deploy run from the primary checkout.
