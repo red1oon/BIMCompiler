@@ -629,6 +629,43 @@ the horizon on a winter date, which reads as a dusk finish and matches what the 
 did on purpose, but it is luck rather than design. Both hours are two constants in
 `cpe_sun_compass.js` and nothing else reads them.
 
+## §15 — BUILT 2026-09-19 after §11: one sun, a settable day, a clock, and the freeze
+
+Everything here is on **bim-ootb #1752** (18 commits stranded off main by #1751's squash merge —
+that is why there are two PRs, not because the work was split).
+
+- **§SUN_ONE.** There were TWO suns in a frame: the scripted §SUN_ARC lit the building while the
+  compass drew the real one. Measured 77.7° apart in azimuth, 24.6° in elevation on one Hospital
+  frame. The real sun now drives `updateSky` when the compass is on. ⚠ The two use different
+  azimuth frames: `θ = 180 − (trueAz − trueNorthAngle)`, pinned against `PHOTO_SUN_AZIMUTH`.
+- **The film clock.** A real sun over a 390-day programme in 80 seconds STROBES — measured
+  `30.4, −33.7 (night), 18.2, 43.8` across four frames. The date advances with the film and the
+  hour sweeps **9:00→17:00 solar**, so the sun rises, peaks and sets once. Solar time, so only the
+  longitude is needed — no timezone table, no DST.
+- **§SUN_DAY (§14.3, now built).** Date field beside the checkbox, hover "enable geo-ref truth".
+  Pin a day and the whole film is lit on it — one clean arc (21 Jun Boston:
+  `48 59 67 71 67 59 48 37 26`). The BUILD still follows the 4D timeline. `--sun-date` on the CLI.
+- **§SUN_CLOCK.** Analogue face for the solar hour, in the day-counter column.
+- **§SUN_ONE_ALL_DARK.** A film dark end to end is the truth inside the polar circle and a mistake
+  everywhere else; judged over the whole run and it says which.
+- **§129.1 FREEZE.** The load-path freeze clears this overlay, and the clock is HELD rather than
+  hidden — the film's fraction advances under a frozen frame, so the hands would tick invisibly
+  and jump on return.
+
+### What real frames caught that no witness did
+- **The overlay never drew without the buildup.** The per-frame call sat inside
+  `if (_buildup && _bkState)`. The build logged, every witness passed, the frames were empty.
+- **The readout drew underneath another lane's panel** once both lanes' work was in one frame.
+- **A stale preview bake renders OLD code, and bumping `CACHE_VERSION` does not fix it** —
+  `cli_silent_bake.js` reuses `/tmp/silent-bake-profile-<port>`, which holds the service worker and
+  its Cache Storage; a new worker waits while the old one controls the page.
+  `rm -rf /tmp/silent-bake-profile-*` before any visual check.
+- **`--gpu sw` is 107 s/frame; `--gpu real` is 0.86.** There is a real GPU on this box.
+
+### §12.7 resolved
+The icon licence question is closed: Lucide's own `compass`, ISC, from the set this repo already
+integrates. No attribution file, nothing pending. §14.1's three caption-only toggles are unchanged.
+
 ## STATUS — 2026-09-19
 
 **T1-T6 built and witnessed** (§11), five witnesses green; **T8 closed** (§10.8); **T7 not started,
