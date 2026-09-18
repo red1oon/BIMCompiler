@@ -357,8 +357,8 @@ from the site's own latitude rather than picked.
 §GEOREF_WITNESS       PASS files=5/5 arithmetic=6 defaults=7 wrong=0
 §SUN_PATH_WITNESS     PASS checks=59 wrong=0   (no DB, no network, no browser — cannot be VACUOUS)
 §SUN_ORACLE           PASS samples=2968 gates=4 exceeded=0
-§SUN_COMPASS_WITNESS  PASS checks=38 wrong=0   db=Hospital_extracted.db
-§GEOREF_PATCH_WITNESS PASS dbs=5/5 checks=75 wrong=0
+§SUN_COMPASS_WITNESS  PASS checks=45 wrong=0   db=Hospital_extracted.db
+§GEOREF_PATCH_WITNESS PASS dbs=6/6 checks=90 wrong=0
 ```
 §5's accuracy is **measured**, not asserted: cross-checked against `pysolar` (an independent
 implementation of NREL's SPA — a different, higher-precision algorithm, not a second copy of ours),
@@ -399,7 +399,7 @@ has no location"* (key present, empty, `site_latlong_source='unknown'`). `cpe_su
 **draws nothing at all** in that case and logs `§SUN_COMPASS INCONCLUSIVE` with the reason — a rose
 drawn from a defaulted coordinate would be a confident lie at 24 frames a second.
 
-### §3.3 self-heal patches — 5 written, 1 deliberately NOT
+### §3.3 self-heal patches — 6 written (5 extracted, 1 on a human ruling)
 Provenance was verified by **GUID match** (sampling `elements_meta.guid` from the shipped DB and
 finding it in the candidate IFC), never by filename.
 
@@ -410,7 +410,7 @@ finding it in the candidate IFC), never by filename.
 | `HHS_Office_Federated_extracted.db` | ✅ prepended | all **6** discipline files agree exactly |
 | `Clinic_extracted.db` | ✅ prepended | 4 of 5 files agree; HVAC dissents (see below) |
 | `Duplex_extracted.db` | ✅ prepended | 3 of 4 files agree; Mechanical dissents |
-| `Hospital_extracted.db` | ⛔ **NOT written** | its disciplines disagree materially — see §12 |
+| `Hospital_extracted.db` | ✅ prepended **on a ruling, not an extraction** | its 14 files give 3 answers; ARC named authoritative 2026-09-18 — see §12.1 |
 
 **PREPENDED, not appended, and that matters:** `viewer/scene.js` `A._applyPendingPatch` batches
 ~500 statements per `sql.js` `db.run()`, and a `db.run()` that throws stops at the failing
@@ -420,7 +420,9 @@ after that point would have silently never landed. First in the file, they canno
 
 ## §12 — FINDINGS (reported, not fixed; several are not this lane's to settle)
 
-**§12.1 ⛔ Hospital's discipline files disagree about where the building is — needs a ruling.**
+**§12.1 ✅ RULED 2026-09-18 — Hospital's discipline files disagree; ARC named authoritative.**
+The conflict below is left on record in full, because a ruling is only checkable against the thing
+it overrode.
 14 source files, three different answers, and no honest way to pick one from here:
 
 | files | lat, long | true north |
@@ -431,13 +433,33 @@ after that point would have silently never landed. First in the file, they canno
 | `Hospital_IFC{2x3,4}_MECH.ifc` | 43.12213135, −77.63016510 — **Rochester NY, ≈500 km away** | +5° |
 
 `import_worker.js`'s own `§SITE_IDENTITY` doctrine says a sibling disagreement is a source-file
-authoring defect to be corrected from the siblings' agreed value. Here there is no agreed value:
+authoring defect to be corrected from the siblings' agreed value. Here there was no agreed value:
 a 10-of-14 majority picks the STR/MEP coordinate, while the architectural master — the usual
-authority, and the file that carries the non-zero TrueNorth — picks a different one. **No patch
-was written. This is red1's call, not a coin-flip to be shipped as fact.**
-**Do not resolve it automatically** — not by majority vote, not by "closest to the others". Either
-a human names the authoritative file, or Hospital's geo-ref stays `unknown` until the discipline
-files are reconciled at source. Three real, differently-wrong numbers are not a tie-break.
+authority, and the file that carries the non-zero TrueNorth — picks a different one. So no patch
+was written and the question was escalated rather than tie-broken: not by majority vote, not by
+"closest to the others".
+
+**THE RULING (2026-09-18): use ARC's coordinate. The architectural discipline is the authoritative
+source of record; STR, MEP and MECH are the errors.** Attributed to red1 and **relayed to this
+session by a second Claude session working the same spec — this session did not hear it
+first-hand.** That provenance is recorded deliberately rather than smoothed over: if the relay was
+wrong, `buildings/patches/Hospital_extracted.db.sql` is the single place it shows, and reverting it
+is one commit. Nothing automatic was applied.
+
+`Hospital_IFC2x3_ARC.ifc` and `Hospital_IFC4_ARC.ifc` were checked against each other first and
+report byte-identical values — a ruling naming a file whose two exports disagreed would not
+actually have named a value. Result: `true_north_angle = 5.000000` (`ifc_truenorth`),
+`42.35842896 / -71.05977631`, `165.8112 m`.
+
+**⚠ This makes Hospital the FIRST building in the fleet to ship a non-zero `true_north_angle`.**
+`sitecam.js:81` and `walk.js:275` have applied a real rotation formula to a permanently-zero input
+since they shipped; on Hospital they now rotate by 5°. That is the intended fix, and it is also the
+first place a sign error would become visible — so the site camera and walk mode will LOOK
+different here, and should be checked against that number rather than against memory.
+
+**⚠ The extractor will NOT reproduce this on its own.** It reads whichever single IFC it is pointed
+at. Re-extracting Hospital from a non-ARC discipline file, or from a merge, silently discards the
+ruling. The patch header says so; this is the durable copy.
 
 **§12.2 Clinic and Duplex have single-discipline dissenters; resolved and documented in-file.**
 `Clinic_HVAC_IFC2x3.ifc` says 42.2130/−71.0330 against four siblings agreeing on
@@ -488,12 +510,10 @@ sign convention this spec's §2 got wrong.
 
 1. **§9 / T7 — temperature.** Not built, by design. It is the only network dependency anywhere in
    the bake pipeline and the only non-deterministic input; it gets its own PR and its own review.
-2. **§12.1 — Hospital's georef.** Blocked on one decision only red1 can make: which discipline
-   file is authoritative for a federation whose members disagree by up to 500 km.
-3. **Re-extraction.** The patches carry the rows to a live user today; the permanent fix is to
+2. **Re-extraction.** The patches carry the rows to a live user today; the permanent fix is to
    re-run the fixed extractor and re-upload each `*_extracted.db` via OCI. Refresh or delete the
    `§GEOREF` block in each patch when that happens, or it will re-stamp values from an older source.
-4. **Buildings with no verifiable provenance on this machine** — `Terminal`, `LTU_AHouse`,
+3. **Buildings with no verifiable provenance on this machine** — `Terminal`, `LTU_AHouse`,
    `Schependomlaan`, `JKR`, `KUL_*` — got no patch. 0/25 sampled guids matched any local IFC for the
    first three; the last two have no local `*_extracted.db` to check against at all. Not a refusal,
    just an absence of evidence: pair each with its real source and the patch is a one-liner.
@@ -502,7 +522,8 @@ sign convention this spec's §2 got wrong.
 
 **T1-T6 built and witnessed** (§11), five witnesses green; **T8 closed** (§10.8); **T7 not started,
 by design** (§13.1). Two PRs open, neither merged — bim-compiler #117 (extraction) and bim-ootb
-#1751 (viewer: compass, day-of-year, angle of attack). **One item is not a coding task and is
-blocked on red1: §12.1 — Hospital's 14 discipline files give three different site coordinates, one
-of them 500 km away.** §1's original finding, `true_north_angle` wired-but-inert since the extractor
+#1751 (viewer: compass, day-of-year, angle of attack). **§12.1's Hospital conflict is RULED**
+(ARC authoritative, 2026-09-18) and its self-heal patch is written and witnessed — six buildings
+now, not five, and Hospital is the first in the fleet to carry a non-zero `true_north_angle`.
+Nothing is blocked. §1's original finding, `true_north_angle` wired-but-inert since the extractor
 shipped, is fixed at both writers and proved by witness rather than by inspection.
