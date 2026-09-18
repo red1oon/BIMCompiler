@@ -194,6 +194,42 @@ panels.js ~line 1529) — that is a drafting compass (the drawing tool), not a m
 compass rose, and is very likely the wrong shape for this feature. Confirm before reusing; a new
 icon is probably needed.
 
+**⚠ BUILT 2026-09-18 — but somewhere else, because "the bake panel" and `panels.js` are two
+different panels and the direction named the first one.**
+- **What was built: ONE checkbox in the Alt+C BAKE panel** (`viewer/cinema_path_editor.js`),
+  `id="cpe-sun-compass"`, labelled "Sun compass", sitting with every other bake-overlay toggle —
+  Buildup, Room title, Reveal, Clash pairs, Measure, Storey highlight. One box for the whole bundle
+  (rose + day-of-year + angle-of-attack), OFF by default so every saved path re-bakes
+  byte-identically. It feeds the `_ov.sunCompass` flag `cinema_maxq.js` already reads.
+  Witness **W-SUN-COMPASS-WIRING** (`viewer/tests/witness_sun_compass_wiring.js`):
+  `§SUN_COMPASS_WIRING PASS checks=28 wrong=0`. It asserts there is EXACTLY ONE box and that no
+  `cpe-sun-day` / `cpe-sun-angle` was added, so splitting the bundle later has to be a decision
+  rather than drift. It runs `measure` and `storeyReveal` through the same rules as controls —
+  which immediately earned its keep: the first cut of one rule only accepted `!!_ov.<flag>` and
+  failed `storeyReveal`, a real shipped feature the planner folds into `plan.storeyReveal` instead.
+  The rule was widened to the codebase's two real shapes rather than the control being loosened.
+- **NOT built: the `panels.js` toolbar pill this section describes.** That is a LIVE-viewer toggle,
+  not a bake setting, and it is a genuinely different piece of work with two concrete blockers,
+  neither of which is a guess:
+  1. **The 2D text has nowhere to go outside a bake.** The day-of-year and the sun-angle readout
+     are composited onto `cinema_maxq.js`'s `_captureFrame` 2D context. Live, they need an overlay
+     canvas over the WebGL canvas — the pattern `cpe_room_title.js`'s own header describes
+     ("either the bake's captured frame, or a live overlay canvas … through the SAME draw
+     routine"), but no such general canvas exists yet to reuse. The 3D rose itself needs nothing.
+  2. **There is no date outside a bake, and §6 forbids inventing one.** `time_machine.js` keeps the
+     cursor in a module-private `_cursor` and exposes `window.tmSetCursor` with **no getter**. The
+     Ownership-Table-correct fix is to add `window.tmGetCursor` beside the setter — one owner, one
+     read accessor — not a second date source. What a live compass should show when the timeline
+     has no span is then a real product question: the real current instant is an honest answer and
+     a useful one for the site camera, but it is not the project's date and must be labelled as
+     such rather than shown as "Day N".
+  **Both are small. Neither was started, because a live always-available overlay changes viewer
+  behaviour that nobody asked to change — that is red1's call, not a default to slip in.**
+- **Icon:** not needed for a checkbox, so none was added. Your `draftingCompass` note is CONFIRMED
+  by inspection — `panels.js:50` is `{ svg: '<path d="m12.99 6.74 1.93 3.44" /> … <circle cx="12"
+  cy="5" r="2" />', desc: 'Inspect' }`, a pair of legs and a pivot: the drawing instrument, not a
+  rose. If the pill is ever built it needs a new icon. No unused icon was added in the meantime.
+
 ## §8 — Sun angle of attack
 
 Once sun azimuth/elevation (§5) gives a real 3D sun direction vector, the angle of incidence on any
