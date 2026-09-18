@@ -147,9 +147,24 @@ def merge_part_dbs(dbs, out, scope=None):
         c.execute("ALTER TABLE elements_meta ADD COLUMN building TEXT")
     c.execute("UPDATE elements_meta SET building=? WHERE building IS NULL", (bld,))
     c.execute("CREATE TABLE IF NOT EXISTS project_metadata (key TEXT PRIMARY KEY, value TEXT)")
-    for k, v in (('building_name', bld), ('true_north_angle', '0')):
-        c.execute("INSERT OR REPLACE INTO project_metadata (key,value) VALUES (?,?)", (k, v))
+    c.execute("INSERT OR REPLACE INTO project_metadata (key,value) VALUES (?,?)",
+              ('building_name', bld))
+    # Implementing GEOREF_SUNPATH_COMPASS.md §3.1 — Witness: W-GEOREF-EXTRACT.
+    # ⚠ OR IGNORE, NOT OR REPLACE, and that difference is the whole point. This merge has no IFC
+    # file to read — the georef came from the PART DBs, whose own extraction (extractIFCtoDB.py
+    # `extract_georef`) already wrote the real values, and the merge loop above carried them in
+    # with its own INSERT OR IGNORE. An OR REPLACE here would stamp the real true north back to
+    # "0" — which is exactly the defect this whole change exists to remove, re-introduced one
+    # function later. These rows are a BACKFILL for a part set that carried nothing, nothing more.
+    for k, v in (('true_north_angle', '0'), ('true_north_source', 'default_zero'),
+                 ('site_latitude', ''), ('site_longitude', ''),
+                 ('site_elevation_m', ''), ('site_latlong_source', 'unknown')):
+        c.execute("INSERT OR IGNORE INTO project_metadata (key,value) VALUES (?,?)", (k, v))
     c.commit()
+    _tn = c.execute("SELECT value FROM project_metadata WHERE key='true_north_angle'").fetchone()
+    _ts = c.execute("SELECT value FROM project_metadata WHERE key='true_north_source'").fetchone()
+    warn.append('§GEOREF merged true_north=%s src=%s (carried from the part DBs; this merge never '
+                'overwrites a real value with 0)' % (_tn and _tn[0], _ts and _ts[0]))
     warn.append('§KUL001 applied: elements_meta.building=%s + project_metadata '
                 '(without these the viewer loads the DB and renders NOTHING, silently)' % bld)
 

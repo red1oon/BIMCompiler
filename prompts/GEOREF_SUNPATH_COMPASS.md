@@ -3,7 +3,11 @@
 
 ```
 # ⚠ DO NOT REMOVE — SCOPE
-This is a FOUND-NOT-BUILT spec, not approved code. User directive, 2026-09-18: "Geo-referencing
+STATUS 2026-09-18: §1-§8 BUILT AND WITNESSED (see §11). §9 deliberately NOT built (see §13).
+READ THE LOG AFTER EVERY RUN — an exit code is not evidence here; every claim in §11 is a
+§-tagged witness line, and the one that matters most (`§SUN_COMPASS INCONCLUSIVE`) is printed by a
+run that SUCCEEDS and draws nothing. Honour this file until §13 is empty.
+User directive, 2026-09-18: "Geo-referencing
 where the building orientation and the Sun path is calculated to be really aligned... a compass
 marker will be on the ground during the movie build with a Day of the year (set by 4D timeline)...
 Further wow be giving a angle of attack by the Sun, and temperature expected at that geo-ref."
@@ -65,10 +69,33 @@ this is not a green-field feature, it is completing a pipe that has been broken 
   a decimal degree — must be converted: `deg + min/60 + sec/3600 + frac/3600000000`), `RefElevation`
   (a plain length in metres).
 - **True north:** `IfcGeometricRepresentationContext.TrueNorth` — an `IfcDirection`, a 2D vector
-  `(x, y)` in the project's ground plane pointing at true north. Angle from model-grid-north =
-  `atan2(TrueNorth.x, TrueNorth.y)` (NOT `atan2(y,x)` — that formula measures bearing from north,
-  matching `sitecam.js`'s existing `(heading - trueNorthAngle)` convention, confirm sign against a
-  real building with a known non-zero `TrueNorth` before trusting it blind).
+  `(x, y)` in the project's ground plane pointing at true north.
+  **⚠ CORRECTED 2026-09-18 — this paragraph first said `atan2(x, y)`, and that is BACKWARDS.**
+  The correct value for both live consumers is **`atan2(-x, y)`, in degrees**. This section told
+  the implementer to confirm the sign against a real building before trusting it; that was done,
+  and the check failed, so here is the derivation and the evidence rather than another assertion:
+  - `TrueNorth` is expressed **in model coordinates**, so true north sits at model-bearing
+    `atan2(tx, ty)`. Neither consumer wants that. Both want **B = the bearing of MODEL north
+    measured from TRUE north** — `sitecam.js:81` does `modelAzimuth = heading - trueNorthAngle`
+    on a device heading, which is a *true* bearing; `walk.js:275` rotates an east/north
+    displacement into model X/Y by `R(angle)`. B is the negation of the first angle.
+  - **Checked on real fleet data:** `internal/UNMERGED/Hospital_IFC2x3_ARC.ifc` carries
+    `TrueNorth = (-0.0871557427476695, 0.996194698091745)`. `atan2(-x, y)` gives **+5.000000°**
+    (model north is 5° east of true north). `atan2(x, y)` would have shipped **−5°** and rotated
+    every site-camera snapshot and every walk-mode GPS fix the wrong way — a defect that looks
+    exactly like working code, because it only shows on the two buildings with a real TrueNorth.
+- **⚠ A NON-CONFORMANT `TrueNorth` IS IN THIS FLEET, AND READING IT NAIVELY GIVES −90°.**
+  Found 2026-09-18 while writing the extractor, not predicted by this spec.
+  `Clinic_Electrical_IFC2x3.ifc` (`#11050`), `Clinic_HVAC_IFC2x3.ifc` (`#76172`),
+  `Ifc2x3_Duplex_Plumbing.ifc` (`#40`) and `LTU_AHouse_STR.ifc` (`#66`) each write
+  `TrueNorth = IFCDIRECTION((2.0, 6.12303176911189E-17, 1.0))` — a **three**-component direction
+  with `z = 1.0` and an XY part of length 2. IFC defines `TrueNorth` in a 3D context as a
+  *two*-dimensional direction in the ground plane, so this is malformed. Taking its first two
+  ratios yields `atan2(-2, 0)` = exactly **−90.000000°**: precise, confident, and a quarter turn
+  wrong. **The rule implemented: accept a direction only when it lies in the ground plane
+  (`|z| < 1e-6`); otherwise record `true_north_source = 'malformed_truenorth_ignored'` and fall
+  back to the disclosed default.** Refusing a non-conformant value is extraction; guessing what it
+  meant is invention.
 - **IFC4 alternative (check for, prefer if present):** `IfcMapConversion` (via
   `IfcCoordinateReferenceSystem`) can carry `Eastings/Northings` + its own rotation directly in
   projected-CRS terms — more precise than `RefLatitude/RefLongitude` when a real survey CRS is
@@ -167,6 +194,42 @@ panels.js ~line 1529) — that is a drafting compass (the drawing tool), not a m
 compass rose, and is very likely the wrong shape for this feature. Confirm before reusing; a new
 icon is probably needed.
 
+**⚠ BUILT 2026-09-18 — but somewhere else, because "the bake panel" and `panels.js` are two
+different panels and the direction named the first one.**
+- **What was built: ONE checkbox in the Alt+C BAKE panel** (`viewer/cinema_path_editor.js`),
+  `id="cpe-sun-compass"`, labelled "Sun compass", sitting with every other bake-overlay toggle —
+  Buildup, Room title, Reveal, Clash pairs, Measure, Storey highlight. One box for the whole bundle
+  (rose + day-of-year + angle-of-attack), OFF by default so every saved path re-bakes
+  byte-identically. It feeds the `_ov.sunCompass` flag `cinema_maxq.js` already reads.
+  Witness **W-SUN-COMPASS-WIRING** (`viewer/tests/witness_sun_compass_wiring.js`):
+  `§SUN_COMPASS_WIRING PASS checks=28 wrong=0`. It asserts there is EXACTLY ONE box and that no
+  `cpe-sun-day` / `cpe-sun-angle` was added, so splitting the bundle later has to be a decision
+  rather than drift. It runs `measure` and `storeyReveal` through the same rules as controls —
+  which immediately earned its keep: the first cut of one rule only accepted `!!_ov.<flag>` and
+  failed `storeyReveal`, a real shipped feature the planner folds into `plan.storeyReveal` instead.
+  The rule was widened to the codebase's two real shapes rather than the control being loosened.
+- **NOT built: the `panels.js` toolbar pill this section describes.** That is a LIVE-viewer toggle,
+  not a bake setting, and it is a genuinely different piece of work with two concrete blockers,
+  neither of which is a guess:
+  1. **The 2D text has nowhere to go outside a bake.** The day-of-year and the sun-angle readout
+     are composited onto `cinema_maxq.js`'s `_captureFrame` 2D context. Live, they need an overlay
+     canvas over the WebGL canvas — the pattern `cpe_room_title.js`'s own header describes
+     ("either the bake's captured frame, or a live overlay canvas … through the SAME draw
+     routine"), but no such general canvas exists yet to reuse. The 3D rose itself needs nothing.
+  2. **There is no date outside a bake, and §6 forbids inventing one.** `time_machine.js` keeps the
+     cursor in a module-private `_cursor` and exposes `window.tmSetCursor` with **no getter**. The
+     Ownership-Table-correct fix is to add `window.tmGetCursor` beside the setter — one owner, one
+     read accessor — not a second date source. What a live compass should show when the timeline
+     has no span is then a real product question: the real current instant is an honest answer and
+     a useful one for the site camera, but it is not the project's date and must be labelled as
+     such rather than shown as "Day N".
+  **Both are small. Neither was started, because a live always-available overlay changes viewer
+  behaviour that nobody asked to change — that is red1's call, not a default to slip in.**
+- **Icon:** not needed for a checkbox, so none was added. Your `draftingCompass` note is CONFIRMED
+  by inspection — `panels.js:50` is `{ svg: '<path d="m12.99 6.74 1.93 3.44" /> … <circle cx="12"
+  cy="5" r="2" />', desc: 'Inspect' }`, a pair of legs and a pivot: the drawing instrument, not a
+  rose. If the pill is ever built it needs a new icon. No unused icon was added in the meantime.
+
 ## §8 — Sun angle of attack
 
 Once sun azimuth/elevation (§5) gives a real 3D sun direction vector, the angle of incidence on any
@@ -244,8 +307,11 @@ decision before building:**
    falls back to wall bbox aspect and logs which source it used per-reading; the underlying
    `rotation_z` extraction gap itself is out of this feature's scope (belongs to whichever lane owns
    general element-transform extraction).
-7. **T7 (separate PR, optional)** — Temperature via Open-Meteo (§9), untouched as recommended —
-   still open.
+7. ⛔ **T7 — NOT STARTED, deliberately.** Temperature via Open-Meteo (§9). It is the only network
+   dependency the bake pipeline would have and the only non-deterministic input; separate PR,
+   separate review. **It is NOT built and must not be summarised as built** — a STATUS headline on
+   this file briefly read "T1-T7 built + witnessed" while this very line said untouched, and a
+   headline outlives the paragraph that corrects it.
 8. **T8 — MEASURE (added 2026-09-18, user: "I foresee 'Measure'").** A distinct verification gate,
    separate from each piece's own unit-level witness above — end-to-end, on a real building, numeric
    only, never a screenshot (this project's own FUNDAMENTAL LAW, `bim-compiler` CLAUDE.md). Three
@@ -270,42 +336,342 @@ decision before building:**
    predicate into a witness or a `§`-tagged log line instead). This task blocks calling T1-T6 "done"
    as a feature, even once each is individually witnessed.
 
-## §11 — Two findings beyond this spec's original scope, worth keeping visible
+   ✅ **T8 CLOSED 2026-09-18** — all three bullets, numerically, no pixels:
+   - **T8.1 — already covered by `§SUN_ORACLE`, and it is a genuinely independent reference.** The
+     cross-check runs against `pysolar`, which implements NREL's **SPA — a different algorithm**,
+     not a second run of the same port agreeing with itself. 2,968 samples over 7 real fleet
+     locations (Hospital's own extracted lat/long among them) × a year × 8 times of day. Sun above
+     5°: max |Δelevation| **0.019°**, max |Δazimuth| **0.034°**.
+     `viewer/tests/witness_sun_path_oracle.py`; it prints INCONCLUSIVE, never PASS, without pysolar.
+   - **T8.2 extraction-to-render — the gap was real, now closed.** The prior checks proved the
+     needle moved by the right DIFFERENCE between two twins; none asserted its ABSOLUTE bearing. A
+     renderer with a constant offset baked in would have passed every one of them. Now asserted
+     against Hospital's own extracted `+5°`: needle model bearing = **−5.000000°** (true north sits
+     at `−true_north_angle` in model space).
+     ⚠ **This bullet asks for `compassGroup.rotation.y`. There is no such property.** The rose is
+     built from world-space points, so the bearing lives in the vertex positions, not on a group
+     transform — reading `rotation.y` would have found `undefined` and "passed" while asserting
+     nothing. The check reads the needle tip's bearing relative to the anchor instead, and a second
+     assertion pins that the group carries no rotation, so nobody re-adds the useless read later.
+   - **T8.3 internal cross-consistency — the gap was real, now closed.** One witness pass asserts
+     that the day-of-year label, the rose's sun bearing and the angle-of-attack readout all reduce
+     to the same single `(date, lat, lon)`; the incidence is recomputed from first principles off
+     the same facade the build resolved, rather than read back off the object that produced it; and
+     a different cursor is asserted to move the day AND the sun together.
+   `§SUN_COMPASS_WITNESS PASS checks=45 wrong=0` (was 38). T1-T6 stand as done as a feature.
 
-- **Malformed source data, both extractors now refuse it:** four fleet files carry a
-  non-conformant `IFCDIRECTION` for `TrueNorth` — `Clinic_Electrical #11050`, `Clinic_HVAC #76172`,
-  `Ifc2x3_Duplex_Plumbing #40`, `LTU_AHouse_STR #66` — all write `(2.0, 6.12303176911189E-17, 1.0)`
-  (3 components where 2 are expected, z=1.0, XY length 2; naively reading its first two ratios gives
-  exactly -90°, a wrong and misleadingly clean-looking number). Both writers now detect and refuse
-  this shape, recording `malformed_truenorth_ignored` rather than silently ingesting garbage.
-- **§8's premise corrected by measurement, not assumption:** see T6 above — `rotation_z` is real
-  data on only 1 of 5 fleet buildings tested. Don't trust this spec's original "no new extraction
-  needed" claim for §8 without re-checking per building.
+## §11 — BUILT 2026-09-18 (T1-T6). §9/T7 deliberately not built.
 
-Full derivation/evidence for both, plus the corrected §2 sign formula, is in bim-ootb PR #1751 and
-bim-compiler PR #117 (branches `feat/georef-sunpath-compass` / `feat/georef-sunpath`) — not
-duplicated here to avoid two sessions maintaining the same paragraph.
+User directive, this session: *"Proceed to build prompts/GEOREF_SUNPATH_COMPASS.md"*. §1-§8 are
+implemented across two repos and witnessed; §9 (temperature) is untouched, per this spec's own
+recommendation that the one network dependency in the bake pipeline gets its own review.
 
-## §12 — BLOCKED, needs red1's ruling, not either session's
+### What shipped
 
-**Hospital's 14 discipline source files disagree on the building's own site coordinates by up to
-~500km:** ARC says `42.3584, -71.0598` (Boston area); STR+MEP say `42.2130, -71.0330` (~16km from
-ARC, still Boston area); MECH says `43.1221, -77.6302` — Rochester, NY. Self-heal patches were
-written for SampleHouse/SampleCastle/HHS/Clinic/Duplex; **deliberately none for Hospital** — nobody
-picked a winner. This needs a human ruling: which file is authoritative (if any), or is this a
-source-data defect that should keep Hospital's geo-ref at `'unknown'` until the discipline files are
-reconciled at the source. Do not resolve this automatically (majority vote, "closest to the others")
-without red1's explicit sign-off — three real, differently-wrong numbers, not a tie-break Claude
-should call.
+**bim-compiler** (branch `feat/georef-sunpath`, off `fable/meshdb-livewire`):
+| file | change |
+|---|---|
+| `DAGCompiler/python/extractIFCtoDB.py` | `_compound_angle_to_degrees()` + `extract_georef()`; the hardcoded `("true_north_angle","0")` is gone. Writes 6 keys. |
+| `DAGCompiler/python/prepare_large_ifc.py` | its own `true_north_angle "0"` was `INSERT OR REPLACE` — it would have **re-stamped 0 over a real value** carried in from the part DBs one function after the fix landed. Now `OR IGNORE`, i.e. a backfill, never an overwrite. |
+| `scripts/witness_georef_extract.py` | **W-GEOREF-EXTRACT** |
 
-## STATUS — 2026-09-18: T1-T7 built + witnessed (T7/temperature untouched by design); T8 open; one item BLOCKED on red1
+**bim-ootb** (branch `feat/georef-sunpath-compass`, off `main`):
+| file | change |
+|---|---|
+| `viewer/import_worker.js` | reads `IfcSite.RefLatitude/RefLongitude/RefElevation` + `IfcGeometricRepresentationContext.TrueNorth`, same formula and same malformed-direction guard as the Python side |
+| `viewer/import_db_builder.js` | writes the 6 keys. **This path wrote no georef at all before** — not a stub, no row. |
+| `viewer/streaming.js` | loads lat/long/elevation onto `window` beside `_trueNorthAngle`; the `§TRUE_NORTH` log line no longer claims "from grid Y" on every building, and now prints the *source* |
+| `viewer/sun_path.js` | **NEW.** NOAA low-precision solar position + §8 angle of attack. Pure arithmetic, no network. |
+| `viewer/cpe_sun_compass.js` | **NEW.** §6/§7 — the world-space true-north rose. |
+| `viewer/cinema_maxq.js` | `sunCompass` flag: build at arm time, `A.sunCompassAt(_bkMs)` per frame, composite in `_captureFrame`. **OFF unless asked for** — an overlay that appeared in every existing plan's re-bake would silently change films already signed off. |
+| `cli_silent_bake.js` | `--sun-compass` / `--no-sun-compass` |
+| `viewer/viewer.html`, `viewer/main.js`, `viewer/sw.js` | registration + precache, `CACHE_VERSION` v1177 → v1178 |
+| `viewer/buildings/patches/*.sql` | §3.3 self-heal rows for 5 buildings (below) |
+| `viewer/tests/witness_sun_path.js`, `witness_sun_path_oracle.py`, `witness_sun_compass.js`, `witness_georef_patches.js` | **W-SUN-PATH**, **W-SUN-PATH-ORACLE**, **W-SUN-COMPASS**, **W-GEOREF-PATCH** |
 
-§1's finding (`true_north_angle` wired-but-inert since the extractor shipped) is fixed, witnessed,
-and live on two open PRs — bim-compiler #117 (extraction) and bim-ootb #1751 (viewer: compass,
-day-of-year, sun angle-of-attack). Five witnesses reported passing at close: `§GEOREF_WITNESS`,
-`§SUN_PATH_WITNESS`, `§SUN_ORACLE`, `§SUN_COMPASS_WITNESS`, `§GEOREF_PATCH_WITNESS`. T8 (the
-end-to-end numeric measurement this doc added per user request — formula-vs-independent-reference,
-extraction-to-render agreement, internal cross-consistency) has real coverage via `§SUN_ORACLE` +
-`§SUN_COMPASS_WITNESS` but was not run down item-by-item against T8's own checklist — worth a pass
-before calling the feature fully closed. Neither PR is merged. §12's Hospital site-coordinate
-conflict is the one open item that is not a coding task — it needs red1's decision.
+### §7 resolved: WORLD-SPACE, ground-anchored
+This spec left "ground-plane compass marker" ambiguous between a world-space object and a
+screen-fixed badge. Resolved in favour of **world-space** (user's own call, relayed by a peer
+session mid-build): a screen-fixed badge would look identical whether the true-north wiring worked
+or not, whereas a rose on the ground is *visibly provable* as the camera orbits. Implementation
+follows `cpe_flythru_datum.js`'s split exactly — 3D lines in the scene, depth-tested so the
+building occludes them; text as a 2D composite projected from the rose's anchor, because
+`cinema_maxq.js`'s `_captureFrame` grabs the renderer canvas only and a DOM badge would be absent
+from every exported byte. The **sun angle of attack is a small fixed readout**, not attached to the
+rose, also per that call. The rose is placed on the **equator-facing side** (true south in the
+northern hemisphere, true north in the southern) at `envelope_diagonal/2 + 1.6 × radius` — derived
+from the site's own latitude rather than picked.
+
+### Witness results (all re-run at close; logs are the evidence, not the exit codes)
+```
+§GEOREF_WITNESS       PASS files=5/5 arithmetic=6 defaults=7 wrong=0
+§SUN_PATH_WITNESS     PASS checks=59 wrong=0   (no DB, no network, no browser — cannot be VACUOUS)
+§SUN_ORACLE           PASS samples=2968 gates=4 exceeded=0
+§SUN_COMPASS_WITNESS  PASS checks=45 wrong=0   db=Hospital_extracted.db
+§GEOREF_PATCH_WITNESS PASS dbs=6/6 checks=90 wrong=0
+```
+§5's accuracy is **measured**, not asserted: cross-checked against `pysolar` (an independent
+implementation of NREL's SPA — a different, higher-precision algorithm, not a second copy of ours),
+2,968 samples over 7 real fleet locations × a year × 8 times of day. With the sun above 5°:
+**max |Δelevation| 0.019°, max |Δazimuth| 0.034°**. Across all samples including the horizon, where
+the two refraction models legitimately differ: 0.382° / 0.052°. Reproduce with
+`viewer/tests/witness_sun_path_oracle.py` (it prints INCONCLUSIVE, never PASS, without pysolar).
+
+### Real values now extracted — the fleet was never "north is north"
+| source IFC | true north | lat, long | elevation |
+|---|---|---|---|
+| `Hospital_IFC2x3_ARC.ifc` | **+5.000000°** (authored) | 42.35842896, −71.05977631 | 165.8112 m |
+| `merged_federation.ifc` | **+52.040036°** (authored) | 5.96277289, 100.63712571 (Penang) | 0.0030 m |
+| `Ifc4_SampleHouse.ifc` | 0.000000° (authored — a REAL zero) | 51.50015259, −0.12623620 | 0 m |
+| `Ifc2x3_SampleCastle.ifc` | 0.000000° (authored) | 52.15, 5.38333333 | 20.0 m |
+| `Ifc2x3_Duplex_Architecture.ifc` | 0 (**no** TrueNorth — defaulted) | 41.8744, −87.6394 | 0 m |
+| `Clinic_Architectural_IFC2x3.ifc` | 0 (**no** TrueNorth — defaulted) | 42.35842896, −71.05977631 | 0 m |
+
+`merged_federation.ifc`'s 0.0030 m elevation is what the file says (3.0351219 in a
+millimetre-unit file). It is physically odd and it is **stored as-is** — a source-data defect is a
+finding to report, not a number to correct in the reader. Witnessed deliberately at that value.
+
+### §3/§4 as built — the key set is SIX, not four
+`true_north_angle`, **`true_north_source`**, `site_latitude`, `site_longitude`, `site_elevation_m`,
+`site_latlong_source`.
+
+`true_north_source` is beyond this spec's four keys and is the direct lesson of §1: **a missing
+TrueNorth and a real authored zero are different facts, and conflating them is exactly how the
+original stub survived unnoticed.** Values: `ifc_truenorth` | `default_zero` |
+`malformed_truenorth_ignored` | (reader-side) `absent` for a DB predating this change.
+
+**§4 decision, made rather than deferred** (this spec flagged it as a product decision; blocking on
+it would have stalled everything else, and `site_latlong_source` makes it cheap to revisit):
+an absent lat/long is written as an **empty value**, never 0/0. 0,0 is a real place in the Gulf of
+Guinea; writing it converts "we do not know" into "we know, and it is there". The key is still
+present, so a reader can tell *"this DB predates the feature"* (key missing) from *"the source IFC
+has no location"* (key present, empty, `site_latlong_source='unknown'`). `cpe_sun_compass.js`
+**draws nothing at all** in that case and logs `§SUN_COMPASS INCONCLUSIVE` with the reason — a rose
+drawn from a defaulted coordinate would be a confident lie at 24 frames a second.
+
+### §3.3 self-heal patches — 6 written (5 extracted, 1 on a human ruling)
+Provenance was verified by **GUID match** (sampling `elements_meta.guid` from the shipped DB and
+finding it in the candidate IFC), never by filename.
+
+| building | written? | basis |
+|---|---|---|
+| `SampleHouse_extracted.db` | ✅ new file | 30/30 guids, single-file model |
+| `SampleCastle_extracted.db` | ✅ new file | 30/30 guids, single-file model |
+| `HHS_Office_Federated_extracted.db` | ✅ prepended | all **6** discipline files agree exactly |
+| `Clinic_extracted.db` | ✅ prepended | 4 of 5 files agree; HVAC dissents (see below) |
+| `Duplex_extracted.db` | ✅ prepended | 3 of 4 files agree; Mechanical dissents |
+| `Hospital_extracted.db` | ✅ prepended **on a ruling, not an extraction** | its 14 files give 3 answers; ARC named authoritative 2026-09-18 — see §12.1 |
+
+**PREPENDED, not appended, and that matters:** `viewer/scene.js` `A._applyPendingPatch` batches
+~500 statements per `sql.js` `db.run()`, and a `db.run()` that throws stops at the failing
+statement — everything after it in that call never applies. Measured this session: the
+pre-existing `HHS_Office_Federated_extracted.db.sql` already fails partway (§12.5). Rows appended
+after that point would have silently never landed. First in the file, they cannot be stranded.
+
+## §12 — FINDINGS (reported, not fixed; several are not this lane's to settle)
+
+**§12.1 ✅ RULED 2026-09-18 — Hospital's discipline files disagree; ARC named authoritative.**
+The conflict below is left on record in full, because a ruling is only checkable against the thing
+it overrode.
+14 source files, three different answers, and no honest way to pick one from here:
+
+| files | lat, long | true north |
+|---|---|---|
+| `Hospital_IFC{2x3,4}_ARC.ifc` | 42.35842896, −71.05977631 | +5° |
+| `Hospital_IFC{2x3,4}_STR.ifc` | 42.21300125, −71.03299713 (**≈16 km away**) | +5° |
+| `Hospital_IFC{2x3,4}_{ELE,FIRE,PLB,SPR}.ifc` | 42.213, −71.033 | **0°** (authored zero) |
+| `Hospital_IFC{2x3,4}_MECH.ifc` | 43.12213135, −77.63016510 — **Rochester NY, ≈500 km away** | +5° |
+
+`import_worker.js`'s own `§SITE_IDENTITY` doctrine says a sibling disagreement is a source-file
+authoring defect to be corrected from the siblings' agreed value. Here there was no agreed value:
+a 10-of-14 majority picks the STR/MEP coordinate, while the architectural master — the usual
+authority, and the file that carries the non-zero TrueNorth — picks a different one. So no patch
+was written and the question was escalated rather than tie-broken: not by majority vote, not by
+"closest to the others".
+
+**THE RULING (2026-09-18): use ARC's coordinate. The architectural discipline is the authoritative
+source of record; STR, MEP and MECH are the errors.** Attributed to red1 and **relayed to this
+session by a second Claude session working the same spec — this session did not hear it
+first-hand.** That provenance is recorded deliberately rather than smoothed over: if the relay was
+wrong, `buildings/patches/Hospital_extracted.db.sql` is the single place it shows, and reverting it
+is one commit. Nothing automatic was applied.
+
+`Hospital_IFC2x3_ARC.ifc` and `Hospital_IFC4_ARC.ifc` were checked against each other first and
+report byte-identical values — a ruling naming a file whose two exports disagreed would not
+actually have named a value. Result: `true_north_angle = 5.000000` (`ifc_truenorth`),
+`42.35842896 / -71.05977631`, `165.8112 m`.
+
+**⚠ This makes Hospital the FIRST building in the fleet to ship a non-zero `true_north_angle`.**
+`sitecam.js:81` and `walk.js:275` have applied a real rotation formula to a permanently-zero input
+since they shipped; on Hospital they now rotate by 5°. That is the intended fix, and it is also the
+first place a sign error would become visible — so the site camera and walk mode will LOOK
+different here, and should be checked against that number rather than against memory.
+
+**⚠ The extractor will NOT reproduce this on its own.** It reads whichever single IFC it is pointed
+at. Re-extracting Hospital from a non-ARC discipline file, or from a merge, silently discards the
+ruling. The patch header says so; this is the durable copy.
+
+**§12.2 Clinic and Duplex have single-discipline dissenters; resolved and documented in-file.**
+`Clinic_HVAC_IFC2x3.ifc` says 42.2130/−71.0330 against four siblings agreeing on
+42.35842896/−71.05977631 (≈16 km). `Ifc2x3_Duplex_Mechanical.ifc` says 41.87811279/−87.62979889
+against three siblings agreeing on 41.8744/−87.6394 (≈1 km). Both resolved the way §SITE_IDENTITY
+prescribes — the siblings' agreed value, taken from the architectural master, which is also the
+GUID-confirmed provenance. Each patch header states the dissent explicitly so nobody has to
+rediscover it.
+
+**§12.3 §8's premise is only true on 1 of 5 fleet DBs.** This spec says facade normals are "already
+derivable from `element_transforms.rotation_z`". Measured 2026-09-18:
+
+| DB | distinct `rotation_z` |
+|---|---|
+| Terminal | **82**, range ±π — real |
+| Hospital | 1 (`0.0`) across 63,182 rows — not populated |
+| Clinic | 1 | Duplex | 1 | HHS | 1 |
+
+So the angle-of-attack readout would have reported "every facade faces north" on four of five
+buildings. `cpe_sun_compass.js` uses `rotation_z` when it carries information (>1 distinct value)
+and otherwise falls back to the wall's **bbox aspect** — a wall longer in X runs east-west and
+therefore faces ±Y. Coarse (axis-aligned families only) and *real*, which the `rotation_z` answer
+on those four is not. The source used is in the return value and in `§SUN_COMPASS_FACADE`.
+**The underlying gap — the extractor not populating `rotation_z` — is untouched here.** It belongs
+to the extraction lane, not this one.
+
+**§12.4 The shipped DBs are worse off than §1 assumed.** §1 says the CLI extractor wrote a stubbed
+key. Checked directly: `Hospital_extracted.db`'s entire `project_metadata` is `building_name` and
+`import_date` — **there is no `true_north_angle` row at all**. `streaming.js`'s read has been
+falling through to its `0` default, not even reading a stub.
+
+**§12.5 Pre-existing, NOT introduced here:** `HHS_Office_Federated_extracted.db.sql` fails
+**109 of its 2,244 statements** against a local copy of its own DB — its
+`CREATE TABLE IF NOT EXISTS spatial_structure` declares 12 columns while the DB on disk has 13, so
+`IF NOT EXISTS` no-ops and every 12-value `INSERT` is rejected. Either the local binary is ahead of
+the shipped OCI bytes, or that patch is broken live. `witness_georef_patches.js` prints it as a
+`§GP note` on every run. Not diagnosed further and not fixed — a separate lane, and it needs the
+live OCI bytes to settle.
+
+**§12.6 `tools/federation_preprocessor.py` stores `true_north_angle` in RADIANS**
+(`site_context` table, line ~339 — `math.atan2(ratios[0], ratios[1])`, unconverted). Its own schema
+comment says radians, it is a different table, and nothing reads it alongside
+`project_metadata.true_north_angle` (degrees). **Left untouched** — noted only so a future session
+does not "unify" two columns that mean different things, and because its `atan2(x, y)` has the same
+sign convention this spec's §2 got wrong.
+
+**§12.7 A bundled icon was a licence problem, not an attribution problem.** A compass traced from
+`clipart4585220.png` was inlined into `cinema_path_editor.js` on 2026-09-19 believed to be
+Flaticon free-tier (attribution required). The real source is **realclipart.com, "Personal Use"** —
+a use restriction, so no credit line makes it shippable in a publicly-deployed MIT repo. Inlined
+and removed the same day; a `NOTICE.md` written for the wrong site was removed with it. Replaced by
+Lucide's `compass` (ISC, the set this repo already integrates). ⚠ A "clean-room redraw from the
+trace's own colours and vertices" is NOT a fix — copying the original's geometry produces a
+derivative of it. Two witness guards now assert the artwork's colours and viewBox stay absent.
+
+## §13 — WHAT IS STILL OPEN
+
+1. **§9 / T7 — temperature.** Not built, by design. It is the only network dependency anywhere in
+   the bake pipeline and the only non-deterministic input; it gets its own PR and its own review.
+2. **Re-extraction.** The patches carry the rows to a live user today; the permanent fix is to
+   re-run the fixed extractor and re-upload each `*_extracted.db` via OCI. Refresh or delete the
+   `§GEOREF` block in each patch when that happens, or it will re-stamp values from an older source.
+3. **Buildings with no verifiable provenance on this machine** — `Terminal`, `LTU_AHouse`,
+   `Schependomlaan`, `JKR`, `KUL_*` — got no patch. 0/25 sampled guids matched any local IFC for the
+   first three; the last two have no local `*_extracted.db` to check against at all. Not a refusal,
+   just an absence of evidence: pair each with its real source and the patch is a one-liner.
+
+## §14 — NOTED 2026-09-19, NOT BUILT (red1: "Don't fix now, just note in the prompts/#")
+
+**§14.1 There are no Flaticon icons on the Alt+C panel, and there will not be any from that
+route.** red1 looked for them and did not find them — correct, and the reason is upstream of the
+panel. The compass artwork sourced for it (`clipart4585220.png`) turned out to be from
+realclipart.com under a **"Personal Use"** licence, not Flaticon's free tier: a use restriction, not
+an attribution gap, so no credit line makes it shippable in a public MIT repo (§12.7). It was
+inlined and removed the same day. What ships instead is **Lucide's own `compass`**, ISC, from the
+icon set this repo already integrates (`viewer/icons/lucide/README.md`) — plus three honest reuses
+from that same set: `ruler` (Measure), `triangle` (Clash, already the Clash Matrix's icon),
+`disciplines` (Reveal).
+**Three of the seven toggles are still caption-only:** Buildup, Room titles, Storey highlight. No
+placeholder art was invented for them and a witness asserts none was. Lucide almost certainly
+covers all three (it has building/layers/type icons) and would close this with no licensing
+question at all — that is the cheap path, and it is one table entry each in
+`cinema_path_editor.js`'s §CPE_TOGGLE_ICONS table.
+
+**§14.2 HUD overlap — checked, mostly safe, two real collisions left.**
+The day-counter corner is ONE ordered column and every box advances a shared offset:
+`day counter → sun clock → path box → resource pie / stats card`. The clock returns its own drawn
+height and the caller adds it, so nothing below can land on it. The sun readout (date / sun angles
+/ facade) is bottom-left, clear of `cpe_room_title.js`'s centred lower-band caption. Two cases are
+NOT handled and neither is new:
+- **The day counter can be set to `bl` or `br`.** Then the whole column grows out of the same
+  corner the sun readout occupies and they overlap. Default is `tr`, so it does not bite today.
+- **The path box can be given its own corner** (`_ovPos = _ov.pathOverview || _dayPos`) while the
+  shared offset is still advanced by the counter AND now the clock. If the corners differ, the path
+  box is pushed down in its own corner for no reason. Pre-existing — the counter already did this —
+  but the clock makes it one box worse.
+The honest fix for both is one offset per corner instead of one global `_stackY`. Small, and it
+touches every overlay in that column, so it wants its own change rather than riding this one.
+
+**§14.3 A settable exact date — asked for, not built.** Today the film's dates come from the 4D
+schedule's own project span; there is no way to say "show me 21 June". Worth having: the sun is a
+pure function of (lat, lon, instant), so a date override changes nothing else in the pipeline. The
+natural shape is a date field beside the Sun compass checkbox writing `_ov.sunDate`, consumed where
+`_sunCompassMs` is set in `cinema_maxq.js` — the schedule's day still drives the BUILD, only the
+sun's date is overridden. ⚠ If it is built, the day-of-year label must then say which date it is
+showing, or the readout and the day counter would silently describe different days.
+
+**§14.4 The time is NOT a 2 pm default — it sweeps, and that was deliberate.** red1 saw `14:43
+solar` on a frame and asked. The solar hour runs **9:00 → 17:00 across the film** (§SUN_ONE film
+clock); `14:43` is simply where frame 6 of 8 landed. A single fixed hour was built first and
+rejected on sight: with a held hour the sun only drifts seasonally, and the film loses the
+sunrise-to-sunset reading red1 asked for ("a perception of a single half day"). The mid-point,
+13:00, is only used when a caller passes no film fraction at all.
+**Advice if this is revisited:** keep the sweep, and if anything make the window a touch narrower
+(say 9:30 → 16:30) rather than fixing it — the current end lands the last frame near or just below
+the horizon on a winter date, which reads as a dusk finish and matches what the old scripted arc
+did on purpose, but it is luck rather than design. Both hours are two constants in
+`cpe_sun_compass.js` and nothing else reads them.
+
+## §15 — BUILT 2026-09-19 after §11: one sun, a settable day, a clock, and the freeze
+
+Everything here is on **bim-ootb #1752** (18 commits stranded off main by #1751's squash merge —
+that is why there are two PRs, not because the work was split).
+
+- **§SUN_ONE.** There were TWO suns in a frame: the scripted §SUN_ARC lit the building while the
+  compass drew the real one. Measured 77.7° apart in azimuth, 24.6° in elevation on one Hospital
+  frame. The real sun now drives `updateSky` when the compass is on. ⚠ The two use different
+  azimuth frames: `θ = 180 − (trueAz − trueNorthAngle)`, pinned against `PHOTO_SUN_AZIMUTH`.
+- **The film clock.** A real sun over a 390-day programme in 80 seconds STROBES — measured
+  `30.4, −33.7 (night), 18.2, 43.8` across four frames. The date advances with the film and the
+  hour sweeps **9:00→17:00 solar**, so the sun rises, peaks and sets once. Solar time, so only the
+  longitude is needed — no timezone table, no DST.
+- **§SUN_DAY (§14.3, now built).** Date field beside the checkbox, hover "enable geo-ref truth".
+  Pin a day and the whole film is lit on it — one clean arc (21 Jun Boston:
+  `48 59 67 71 67 59 48 37 26`). The BUILD still follows the 4D timeline. `--sun-date` on the CLI.
+- **§SUN_CLOCK.** Analogue face for the solar hour, in the day-counter column.
+- **§SUN_ONE_ALL_DARK.** A film dark end to end is the truth inside the polar circle and a mistake
+  everywhere else; judged over the whole run and it says which.
+- **§129.1 FREEZE.** The load-path freeze clears this overlay, and the clock is HELD rather than
+  hidden — the film's fraction advances under a frozen frame, so the hands would tick invisibly
+  and jump on return.
+
+### What real frames caught that no witness did
+- **The overlay never drew without the buildup.** The per-frame call sat inside
+  `if (_buildup && _bkState)`. The build logged, every witness passed, the frames were empty.
+- **The readout drew underneath another lane's panel** once both lanes' work was in one frame.
+- **A stale preview bake renders OLD code, and bumping `CACHE_VERSION` does not fix it** —
+  `cli_silent_bake.js` reuses `/tmp/silent-bake-profile-<port>`, which holds the service worker and
+  its Cache Storage; a new worker waits while the old one controls the page.
+  `rm -rf /tmp/silent-bake-profile-*` before any visual check.
+- **`--gpu sw` is 107 s/frame; `--gpu real` is 0.86.** There is a real GPU on this box.
+
+### §12.7 resolved
+The icon licence question is closed: Lucide's own `compass`, ISC, from the set this repo already
+integrates. No attribution file, nothing pending. §14.1's three caption-only toggles are unchanged.
+
+## STATUS — 2026-09-19
+
+**T1-T6 built and witnessed** (§11), five witnesses green; **T8 closed** (§10.8); **T7 not started,
+by design** (§13.1). Two PRs open, neither merged — bim-compiler #117 (extraction) and bim-ootb
+#1751 (viewer: compass, day-of-year, angle of attack). **§12.1's Hospital conflict is RULED**
+(ARC authoritative, 2026-09-18) and its self-heal patch is written and witnessed — six buildings
+now, not five, and Hospital is the first in the fleet to carry a non-zero `true_north_angle`.
+Nothing is blocked. §1's original finding, `true_north_angle` wired-but-inert since the extractor
+shipped, is fixed at both writers and proved by witness rather than by inspection.
