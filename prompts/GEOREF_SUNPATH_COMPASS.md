@@ -222,40 +222,93 @@ decision before building:**
 
 ## §10 — Task list, dependency order
 
-1. **T1** — Fix `true_north_angle`'s writer (both Python + browser import paths, §3.1-3.2):
-   real `TrueNorth` extraction, replacing the hardcoded `"0"`. Witness against a real building with
-   a known non-zero `TrueNorth` if one exists in the fleet (check first — may need a synthetic test
-   fixture if none does).
-2. **T2** — Add `site_latitude`/`site_longitude`/`site_elevation_m`/`site_latlong_source`
-   extraction (§3, §4), same two writers, plus the self-heal patch (§3.3) for already-shipped
-   buildings.
-3. **T3** — Port/vendor the sun-position formula (§5), witness it against a few known
-   date/location/expected-azimuth-elevation triples (there are published reference values for this —
-   verify against a real published test case, don't just trust the port compiles).
-4. **T4** — Wire §6's date hookup to the 4D timeline — find the real owner function first (Ownership
-   Table discipline), don't add a second date-reading path.
-5. **T5** — Ground compass + day-of-year render in the movie bake (§7) — follow the existing
-   cinema/Sanity-film overlay convention, confirm the exact hook point in `cinema_maxq.js`/
-   `effects.js` before writing render code.
-6. **T6** — Sun angle-of-attack (§8) — small, reuses existing facade-orientation data, no new
-   extraction.
-7. **T7 (separate PR, optional)** — Temperature via Open-Meteo (§9), only after T1-T6 are live and
-   reviewed.
+1. ✅ **T1 — DONE 2026-09-18** (bim-compiler worktree `/tmp/wt-georef`, branch `feat/georef-sunpath`)
+   — Python CLI extraction side fixed + witnessed: `§GEOREF_WITNESS PASS files=5/5 arithmetic=6
+   defaults=5 wrong=0` (`scripts/witness_georef_extract.py`). Real non-zero fixtures confirmed live:
+   Hospital +5.000000°, `merged_federation` +52.040036° (Penang, lat 5.96277289/lon 100.63712571).
+   **§2's sign formula was found wrong during this work** (spec said `atan2(x,y)`, both live
+   consumers actually need `atan2(-x,y)` — derivation from `sitecam.js:81`/`walk.js:275`, not a
+   textbook) — being corrected in §2 directly by the session that found it, do not also edit that
+   paragraph. ⚠ **Browser import path (`import_db_builder.js`/`import_worker.js`) status not yet
+   confirmed** — the witness above covers the Python/CLI writer only; check before assuming both
+   writers are done.
+2. ✅ **T2 — DONE, same PR as T1.** `site_latitude`/`site_longitude`/`site_elevation_m` extraction,
+   PLUS an addition beyond this spec's original 4 keys: **`true_north_source`**
+   (`'ifc_truenorth'` | `'default_zero'`) — distinguishes "no TrueNorth in the source IFC" from "a
+   real authored zero," which is exactly the ambiguity that let the original stub survive unnoticed.
+   §4's "unknown location" default implemented as an EMPTY value + `site_latlong_source='unknown'`,
+   never a bare `0/0` — matches this spec's own warning against a silent Gulf-of-Guinea default.
+3. ✅ **T3 — DONE 2026-09-18.** `§SUN_PATH_WITNESS PASS checks=59 wrong=0` +
+   `§SUN_ORACLE PASS samples=2968 gates=4 exceeded=0` — the oracle check is exactly this task's
+   "against an independent real reference" bar, not the formula agreeing with itself.
+4. ✅ **T4 — DONE**, folded into the same PRs as T5/T6 below (the compass/readout witnesses below
+   exercise the real timeline hookup, not a synthetic date).
+5. ✅ **T5 — DONE 2026-09-18.** bim-ootb PR #1751. World-space, ground-anchored THREE group,
+   depth-tested (building occludes it), placed on the site's equator-facing side (derived from real
+   latitude — true south in the northern hemisphere, true north in the southern — not picked).
+   Day-of-year/"N" text is 2D-projected from the 3D anchor (`v.clone().project(cam)`), not a DOM
+   badge, because `cinema_maxq.js`'s `_captureFrame` only grabs the renderer canvas — a DOM element
+   would preview fine and be silently absent from every exported frame. `§SUN_COMPASS_WITNESS
+   PASS checks=38 wrong=0`.
+6. ✅ **T6 — DONE, same PR as T5.** Sun angle-of-attack — fixed bottom-left readout, not attached to
+   the rose. **§8's premise checked, found wrong on 4/5 fleet buildings:** `rotation_z` (this spec
+   assumed it was "already extracted") is populated on Terminal only (82 distinct values) — Hospital,
+   Clinic, Duplex, HHS are all-zero (Hospital: 1 distinct value across 63,182 rows). The readout
+   falls back to wall bbox aspect and logs which source it used per-reading; the underlying
+   `rotation_z` extraction gap itself is out of this feature's scope (belongs to whichever lane owns
+   general element-transform extraction).
+7. ⛔ **T7 — NOT STARTED, deliberately.** Temperature via Open-Meteo (§9). It is the only network
+   dependency the bake pipeline would have and the only non-deterministic input; separate PR,
+   separate review. **It is NOT built and must not be summarised as built** — a STATUS headline on
+   this file briefly read "T1-T7 built + witnessed" while this very line said untouched, and a
+   headline outlives the paragraph that corrects it.
+8. **T8 — MEASURE (added 2026-09-18, user: "I foresee 'Measure'").** A distinct verification gate,
+   separate from each piece's own unit-level witness above — end-to-end, on a real building, numeric
+   only, never a screenshot (this project's own FUNDAMENTAL LAW, `bim-compiler` CLAUDE.md). Three
+   things T1-T6's individual witnesses do NOT, by themselves, prove:
+   - **Formula-vs-independent-reference:** T3's own witness checks the ported sun-position formula
+     against published date/location/azimuth/elevation triples — good, but pick at least one of
+     THIS fleet's real buildings (Hospital, real lat/long from T2) + a real calendar date, and
+     cross-check the computed azimuth/elevation against an independent trusted source (e.g. NOAA's
+     own solar calculator for that exact input) — not a second run of the same ported formula
+     agreeing with itself.
+   - **Extraction-to-render agreement:** read the ACTUAL rendered compass group's real rotation
+     state (`compassGroup.rotation.y` or its quaternion, whichever axis convention T5 lands on) in a
+     witness/probe and assert it numerically equals Hospital's extracted `true_north_angle` (+5°,
+     correctly signed per T1's corrected formula) — proves the render layer actually consumed the
+     right number and applied it on the right axis, not just that T1's extraction and T5's renderer
+     were each separately plausible.
+   - **Internal cross-consistency:** the day-of-year text, the sun-angle-of-attack readout, and the
+     compass rose's own rotation should all trace back to the SAME single date+lat/long read for
+     that frame — assert this by reading each of their real backing values in one witness pass, not
+     by eyeballing that they "look consistent" in a rendered frame.
+   No pixel/frame/screenshot comparison for any of this (`bim-ootb-no-pixel-evidence` — slice the
+   predicate into a witness or a `§`-tagged log line instead). This task blocks calling T1-T6 "done"
+   as a feature, even once each is individually witnessed.
 
-**STATUS 2026-09-18 — worked top-to-bottom, see §11 for the detail and §12 for what was found:**
-- T1 ✅ DONE (W-GEOREF-EXTRACT) — real `TrueNorth`, both writers. The sign this spec gave was wrong
-  and was corrected against `Hospital_IFC2x3_ARC.ifc` (+5.000000°) before anything depended on it.
-  Two real non-zero fixtures exist in the fleet, so this was witnessable without a synthetic file.
-- T2 ✅ DONE (W-GEOREF-EXTRACT, W-GEOREF-PATCH) — 4 new keys plus `true_north_source`; 5 self-heal
-  patches written, Hospital's ⛔ BLOCKED on §12.1.
-- T3 ✅ DONE (W-SUN-PATH, W-SUN-PATH-ORACLE) — ported, and measured against an independent
-  implementation rather than trusted because it compiled.
-- T4 ✅ DONE — no new date source: `cinema_maxq.js`'s existing `_bkMs` is handed in, the same
-  cursor `cpe_day_counter.js` already reads.
-- T5 ✅ DONE (W-SUN-COMPASS) — world-space rose, per §11's §7 resolution.
-- T6 ✅ DONE (W-SUN-PATH §11) — `A.sunIncidenceDeg` + `A.wallFaceNormalsThree`, kept as reusable
-  primitives. ⚠ This spec's "no new extraction needed" is only true on 1 of 5 fleet DBs — §12.3.
-- T7 ⛔ NOT STARTED, deliberately (§13.1).
+   ✅ **T8 CLOSED 2026-09-18** — all three bullets, numerically, no pixels:
+   - **T8.1 — already covered by `§SUN_ORACLE`, and it is a genuinely independent reference.** The
+     cross-check runs against `pysolar`, which implements NREL's **SPA — a different algorithm**,
+     not a second run of the same port agreeing with itself. 2,968 samples over 7 real fleet
+     locations (Hospital's own extracted lat/long among them) × a year × 8 times of day. Sun above
+     5°: max |Δelevation| **0.019°**, max |Δazimuth| **0.034°**.
+     `viewer/tests/witness_sun_path_oracle.py`; it prints INCONCLUSIVE, never PASS, without pysolar.
+   - **T8.2 extraction-to-render — the gap was real, now closed.** The prior checks proved the
+     needle moved by the right DIFFERENCE between two twins; none asserted its ABSOLUTE bearing. A
+     renderer with a constant offset baked in would have passed every one of them. Now asserted
+     against Hospital's own extracted `+5°`: needle model bearing = **−5.000000°** (true north sits
+     at `−true_north_angle` in model space).
+     ⚠ **This bullet asks for `compassGroup.rotation.y`. There is no such property.** The rose is
+     built from world-space points, so the bearing lives in the vertex positions, not on a group
+     transform — reading `rotation.y` would have found `undefined` and "passed" while asserting
+     nothing. The check reads the needle tip's bearing relative to the anchor instead, and a second
+     assertion pins that the group carries no rotation, so nobody re-adds the useless read later.
+   - **T8.3 internal cross-consistency — the gap was real, now closed.** One witness pass asserts
+     that the day-of-year label, the rose's sun bearing and the angle-of-attack readout all reduce
+     to the same single `(date, lat, lon)`; the incidence is recomputed from first principles off
+     the same facade the build resolved, rather than read back off the object that produced it; and
+     a different cursor is asserted to move the day AND the sun together.
+   `§SUN_COMPASS_WITNESS PASS checks=45 wrong=0` (was 38). T1-T6 stand as done as a feature.
 
 ## §11 — BUILT 2026-09-18 (T1-T6). §9/T7 deliberately not built.
 
@@ -382,6 +435,9 @@ authoring defect to be corrected from the siblings' agreed value. Here there is 
 a 10-of-14 majority picks the STR/MEP coordinate, while the architectural master — the usual
 authority, and the file that carries the non-zero TrueNorth — picks a different one. **No patch
 was written. This is red1's call, not a coin-flip to be shipped as fact.**
+**Do not resolve it automatically** — not by majority vote, not by "closest to the others". Either
+a human names the authoritative file, or Hospital's geo-ref stays `unknown` until the discipline
+files are reconciled at source. Three real, differently-wrong numbers are not a tie-break.
 
 **§12.2 Clinic and Duplex have single-discipline dissenters; resolved and documented in-file.**
 `Clinic_HVAC_IFC2x3.ifc` says 42.2130/−71.0330 against four siblings agreeing on
@@ -441,3 +497,12 @@ sign convention this spec's §2 got wrong.
    `Schependomlaan`, `JKR`, `KUL_*` — got no patch. 0/25 sampled guids matched any local IFC for the
    first three; the last two have no local `*_extracted.db` to check against at all. Not a refusal,
    just an absence of evidence: pair each with its real source and the patch is a one-liner.
+
+## STATUS — 2026-09-18
+
+**T1-T6 built and witnessed** (§11), five witnesses green; **T8 closed** (§10.8); **T7 not started,
+by design** (§13.1). Two PRs open, neither merged — bim-compiler #117 (extraction) and bim-ootb
+#1751 (viewer: compass, day-of-year, angle of attack). **One item is not a coding task and is
+blocked on red1: §12.1 — Hospital's 14 discipline files give three different site coordinates, one
+of them 500 km away.** §1's original finding, `true_north_angle` wired-but-inert since the extractor
+shipped, is fixed at both writers and proved by witness rather than by inspection.
