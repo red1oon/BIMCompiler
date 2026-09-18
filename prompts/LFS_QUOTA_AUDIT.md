@@ -348,3 +348,40 @@ disk and `gh-pages` — and in no source tree, no bucket, and no build script.**
 
 So the OCI route recorded above is still worth doing, but as **durability and reproducibility**, not as an
 emergency. Lower urgency than I first wrote, and not a blocker on any deploy run from the primary checkout.
+
+## §GLASSBOWL-OCI — the durability gap is CLOSED (2026-09-18)
+
+The residual risk named above ("exists only on one disk and on `gh-pages`") is done. `glassbowl_data.db`
+now has a third, durable copy on object storage, uploaded per `deploy/OCI_UPLOAD.md` §RULES:
+
+```
+https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/docs/glassbowl_data.db
+```
+
+- **94,208 B raw → 17,420 B stored** (rule 8: `gzip -9`, `--content-encoding gzip`, `--content-type
+  application/octet-stream`). 5.4x smaller on the wire.
+- **Verified the rule-8 way, not assumed:** `curl -s --compressed <url> | md5sum` = `24d51d7d668873ad…`,
+  equal to the md5 of the raw local file; the decompressed bytes start `SQLite format 3`.
+- Target was checked empty first (rule 1) — no `docs/` prefix and no `glassbowl` object existed.
+
+**To restore it** to a machine that lacks it (a fresh clone, a new dev box, CI):
+
+```
+curl -s --compressed -o docs/glassbowl_data.db \
+  https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/docs/glassbowl_data.db
+```
+
+Then `safe_gh_deploy.sh` passes instead of aborting. That is the whole fix for the "guard aborts from a
+fresh worktree" mystery recorded above — it is a missing local asset, not a broken build.
+
+### Deliberately NOT done: re-pointing the live pages at OCI
+
+The five consumers (`glassbowl.html`, `glassbowl_gravity.html`, `crud_overlay.js`, `report_overlay.js`,
+`sw.js`) still fetch the file **same-origin from the published site**, unchanged, and they work.
+
+It would be viable — CORS was checked, not guessed: the object returns `access-control-allow-origin: *`,
+identical to the Modeller's `modeller/*_geo.db` objects that already stream cross-origin in production.
+But swapping a working same-origin fetch for a cross-origin one trades a local read for a live network
+dependency on bucket availability, and buys the user nothing: durability was the goal, and a backup copy
+achieves it on its own. `sw.js` also precaches this path, so a re-point is a service-worker change with a
+`CACHE_VERSION` bump, not a URL edit. If anyone does want it later, the URL and the CORS answer are above.
