@@ -93,6 +93,39 @@ rule is the **ASI attribute transform** (how the instance attribute recomputes).
 Red = "you can't"; Orange = "you may want to, here's how." Constraints are measured (real door, real AD table) — a
 guessed constraint = a GIGO loss (ML lesson #2).
 
+## §ANCHOR-SUBSTRATE-SIBLINGS — cross_edges.js was not the only consumer (2026-09-18)
+
+§XEDGE-GEOWIRE fixed the Modeller's cross-edge derivation. The underlying defect is in the SUBSTRATE, not
+in that one file: `element_transforms.center_xyz` is the IFC local-placement ANCHOR, not the volumetric
+centre, so any consumer that treats `[center ± bbox/2]` as a world box is displaced by the anchor offset.
+Measured on SampleCastle: size correct 934/934, **centre wrong on 798/934, median 78mm, up to ~425mm**.
+
+**Second consumer found: `scripts/compile_rooms.py` (Viewer room injection — the Find-Panel Room lens,
+Fly Tour, Cinema and DLOD-nav all reach it through the one shared `A.ensureRooms({})` core).** Verified by
+reading the file, not inherited from a report: it selects `center_x/y/z` and `bbox_x/y/z` straight off
+`element_transforms`, with **no `rotation_z` applied and no vertex-blob resolution via `real_geometry.js`**
+— the same coarse substrate, applied to walls and doors instead of rooms.
+
+**But the exposure is NOT uniform, and that distinction is the useful part** — the measurement says size is
+safe and position is not, so each call site inherits only what it reads:
+
+| call site | reads | exposed? |
+|---|---|---|
+| `door_dims` (~L220) | `bbox_x/y/z` ONLY | **NO** — extents measured correct 934/934; door width/height medians are sound |
+| `storey_z_anchors` (~L229) | `center_z` | yes — though it takes a per-storey MEAN, so a non-directional offset partly averages out |
+| stair/ramp footprints (~L286) | `center_x/y` + `bbox_x/y` | yes, in position |
+| `storey_doors` (~L296) | `center_x/y/z` + `bbox_x/y` | yes, in position — this is the §DOOR-RESCUE clue that decides genuine small rooms |
+
+**Not redundant with §XEDGE-GEOWIRE, and not a reason to defer it.** Room injection solves *presence* (a
+building with zero/thin `IfcSpace` rows gets a computed room shape); the anchor defect is about *position
+accuracy*. They are siblings drinking from the same well, not two fixes for one problem.
+
+⚠ **UNMEASURED: whether this changes room output at all.** A 78mm median door-centre shift may be well
+inside `storey_doors`' own adjacency tolerance (it self-scales to each door's real footprint, by design) —
+or may flip borderline §DOOR-RESCUE decisions. Nobody has run it both ways. **Do not "fix" compile_rooms.py
+off this note**; measure first, exactly as §XEDGE-GEOWIRE was measured before a line was changed. The fix
+would also be harder here: it is a Python extraction script with no `real_geometry.js` equivalent in reach.
+
 ## §ABUTS-ATTRIBUTE-PRIOR — SUPERSEDED: the real cause was a wiring bug, not ambiguity (2026-09-18)
 > **Update, same day, from a separate Modeller session's scrutiny — reproduced and verified before
 > writing this.** The proposal below is kept for the record but its premise turned out wrong. Read
