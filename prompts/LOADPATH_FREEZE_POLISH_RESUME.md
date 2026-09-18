@@ -102,10 +102,36 @@ CACHE_VERSION/PRECACHE_ASSETS magnet, resolve per this file's own CLAUDE.md rule
 precache additions, take the higher version), everything else auto-merges clean including
 `cinema_maxq.js` despite both branches touching it. red1-8e owns that merge, not this lane.
 
-**NEXT STEP, for whichever session picks this up:** once red1-8e's merge (georef-sunpath-compass +
-loadpath-ledger) lands on their side, run a FRESH combined bake test across both features together
-(sun-path compass + load-path freeze) on at least one building, full log read, before calling the
-merge itself done — this session only verified loadpath-ledger in isolation.
+**§129.35 CLOSE-OUT (2026-09-19, git admin pass) — the georef merge HAS landed, and the freeze
+bridge is now published.** State verified directly, not relayed:
+- **bim-ootb#1751 AND #1752 are both MERGED to main** (`05ce4059`, `4284ee9f`). #1751 was squash-
+  merged mid-flight, which is why the 18 later commits looked stranded — #1752 carried them and also
+  landed. `git diff origin/main origin/feat/georef-sunpath-compass` is now EMPTY: nothing is off main.
+- **The one line that lane asked for is shipped:** `window.__drawUnlessHold = _drawUnlessHold;` beside
+  its own definition, `viewer/cinema_maxq.js:1177` on `feat/loadpath-ledger`, commit `5125f0da`,
+  pushed. main's own `_hudHold` (cinema_maxq.js:778) reads it off `window` and falls back to `fn(1)`
+  when absent, so the compass rose / sun clock draw normally on main today and start honouring the
+  load-path freeze the moment this branch merges — no edit needed on their side. Witnessed, not just
+  shipped: loading the file under a stubbed `window` leaves `window.__drawUnlessHold` a callable
+  function handing `alpha=1` to its drawer (`§EXPORT_WITNESS PASS`). `node --check` and eslint clean.
+- **`feat/loadpath-ledger` is 70 ahead / 22 behind `origin/main`, and has NO PR open.** Those two
+  facts are the whole remaining git state of this lane. The merge direction is now the reverse of
+  what §129.18-34 above assumed: georef is IN main, loadpath is the branch that has to come to it.
+- **Three cross-lane lessons from the georef session, worth obeying here:** (1) a stale preview bake
+  renders OLD code and bumping `CACHE_VERSION` does NOT fix it — the bake reuses
+  `/tmp/silent-bake-profile-<port>`, which holds the service worker; `rm -rf` it before trusting any
+  visual check. (2) `--gpu sw` is ~107 s/frame, `--gpu real` ~0.86 s/frame — there is an RTX 4060 on
+  this box; never bake `sw`. (3) a witness calling a draw function proves NOTHING about whether the
+  bake's own CALL SITE runs — their overlay never drew on a buildup-off bake while every witness
+  passed. Distrust any "the witness proves it renders" claim, including the ones above this line.
+
+**NEXT STEP, for whichever session picks this up:** merge `origin/main` into `feat/loadpath-ledger`
+(22 commits behind, including both sun PRs), then run a FRESH combined bake across both features
+together (sun-path compass + load-path freeze) on at least one building, full log read, before
+opening the PR — this lane has only ever been verified with loadpath-ledger in isolation, and the
+freeze/compass interlock above has never been exercised in a real bake, only witnessed statically.
+Expect the documented `main.js`/`viewer.html`/`sw.js` conflicts (both lanes append at the same spot;
+for `sw.js` keep BOTH precache additions and take the higher `CACHE_VERSION`).
 
 ## §129.14 BLACK-PATCH FIXED AND VERIFIED (2026-09-18) — root cause found, fixed, witnessed, and
 confirmed visually against the actually-delivered mp4 (§129.11's own discipline). Do not re-open.
