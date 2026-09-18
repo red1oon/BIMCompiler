@@ -3357,6 +3357,43 @@ in canvas right beside it. One keypress, one stick, position and aim both set:</
 <li><strong>room titles</strong> — a name card appears as the camera enters each room, sourced from the room's own
   friendly name, never invented.</li>
 <li><strong>Reveal</strong> — cycles every discipline in the model past the camera in turn. See below.</li>
+<li><strong>Clash pairs</strong> — the model's mesh-true clash pairs (not the bounding-box list, part of which is false)
+  appear as red/blue pulsing markers from frame 0, so you see where the trouble is before it's built. A
+  pair that comes near the camera gets an on-screen label naming both sides, plus a <code>[tolerance mm /
+  clash mm]</code> line beneath them — the tolerance from that discipline pair's own rule, the clash figure
+  from the real mesh overlap depth, not a bounding-box estimate. The Reveal round's rotating stat
+  cards also gain a "N mesh-true clashes flagged" card while this is on.</li>
+<li><strong>Measure</strong> — the setting-out drawing, from the real column grid: numbered and lettered bubbles, bay
+  chains that sum to the overall, and storey rules. It is <strong>up at frame 0</strong> — built from the database, so
+  it does not wait for the model to load — and it is drawn <strong>in the model's own planes</strong>. The upright
+  storey rules occlude normally as the buildup rises — that occlusion is how you see them sitting
+  behind the building rather than painted on the lens. The ground plan lines shine through the
+  building instead: a live check found them fully hidden behind the building's own walls from every
+  camera angle otherwise, including the opening shot, so occluding them would mean they were never
+  actually seen. The chains are checked rather than
+  claimed — on Hospital, HHS and Terminal the bay chain sums to the overall exactly on all three axes
+  (<code>X 95.915 = 95.915</code>, and so on), with no per-building tuning.
+  ⚠ Where a federated model records the same storey at two elevations, the drawing <strong>states the fault
+  and draws the levels as recorded</strong> rather than choosing between them — resolving it would be inventing
+  a datum the file does not contain.</li>
+<li><strong>Storey highlight</strong> — each storey's facade (its exterior walls only, not the whole floor) glows
+  blue / green / yellow / orange in turn over the last 10 s before the closing orbit, with a
+  door-count and footprint HUD card for each shown in the same corner panel every other measure
+  uses. An exterior wall is already visible from the closing orbit shot on its own, so nothing else
+  in the building is touched, dimmed, or made transparent for this.
+  ⚠ The card's counts are read per storey <strong>name</strong>. On a federated model whose storey table carries alias
+  or duplicate names (one Terminal file lists 22 names for six real floors), the highlight can land on
+  alias rows and the card then reads <code>doors 0</code> — the doors are real, they are attributed to the storey
+  names the highlight did not pick.</li>
+<li><strong>Silent-bake size</strong> — a resolution/fps preset (720p, 1080p, or 1440p) for a <em>silent</em> bake only (see
+  below); an interactive Alt+C recording always uses the size of the window it's pressed in, so this
+  select doesn't resize anything here — it's just remembered on the saved path. There is currently no
+  time estimate shown next to it; picking 1440p over 720p costs real extra bake minutes with no on-screen
+  warning yet.</li>
+</ul>
+<p><img alt="The Cinema path panel with Clash pairs ticked and Silent-bake size set to &quot;this window (interactive)&quot; — the Whole path block showing reach 15%, clip &quot;whole film&quot;, build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below" src="../img/viewer/filmmaker-clash-and-bake-size.png" /></p>
+<p><img alt="The Cinema path panel with the full option set — the three derived bands (settle, exit door, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip &quot;whole film&quot;, &quot;build the model as the film plays&quot; ticked, and the unticked room titles, Reveal, Clash pairs, Measure and Storey highlight boxes each carrying its own one-line explanation, above Silent-bake size &quot;this window (interactive)&quot; with its copy-bake-command link, Day # counter &quot;top right&quot;, and a saved plan" src="../img/viewer/filmmaker-measure-storey-panel.png" /></p>
+<ul>
 <li><strong>saved</strong> — plans you stored for this building, with <strong>open</strong> and <strong>delete</strong>. Choosing one and pressing
   <strong>open</strong> replaces the path you are editing; the line under it says how many bands, how many hose pulls,
   the clip window and when it was saved.</li>
@@ -3478,8 +3515,8 @@ the pacing used to be found only after sitting through the result. The silent ba
 produced, measured and re-run from a terminal, so what used to be a wait becomes a test.</p>
 <div class="highlight"><pre><span></span><code>node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
   [--plan NAME | --override file.json]          path source (default: the DB&#39;s cinema_path table)
-  [--buildup] [--label] [--reveal] [--day tr|tl|br|bl|off]     turn a setting ON for this run
-  [--no-buildup] [--no-label] [--no-reveal]                    turn a SAVED setting off for this run
+  [--buildup] [--label] [--reveal] [--clash] [--day tr|tl|br|bl|off]     turn a setting ON for this run
+  [--no-buildup] [--no-label] [--no-reveal] [--no-clash]                 turn a SAVED setting off for this run
   [--frames N | --seconds S] [--fps N]          length (default: the plan&#39;s own pacing)
   [--gpu sw|real|headful]
   [--width W --height H] [--port P] [--log FILE] [--profile DIR]
@@ -3551,6 +3588,12 @@ it produces, because the Reveal round's second act is derived rather than author
 </tr>
 </tbody>
 </table>
+<p><strong>A later, separately-measured Hospital run</strong> (2026-09-05/06, same building, <code>--clash</code> on, 1920×1080@24,
+same RTX 4060) came back <strong>4,699 frames</strong> for the same 195.8 s film — a different frame count for the same
+duration than the row above, most likely a later change to the film's own fps/pacing rather than this
+guide's row being wrong; not reconciled here. At that frame count: <strong>5,476 s (~91 min)</strong> wall clock full
+run, <strong>~83 min</strong> on a repeat run the same night — call it <strong>80–90 minutes</strong> at 1080p with clash markers on.
+1280p/1440p have not been measured.</p>
 <p>Hospital carries <strong>9x</strong> the elements for under <strong>2x</strong> the per-frame cost — the frame cost scales far
 better than the model does, and most of the difference in wall clock is simply that its film is longer
 (its walk is 278.8 s to HHS's 61 s, and its Reveal round adds 87.4 s of its own across four

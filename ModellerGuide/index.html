@@ -1409,6 +1409,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#share-an-issue-bcf-export" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3039,6 +3050,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#share-an-issue-bcf-export" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3297,7 +3319,7 @@ facing automatically. Undo removes it exactly.</p>
 <p>The solved polygon is swept to depth and committed as one signed operation.</p>
 <p><img alt="Extrude — the profile pushed into a B-rep wall solid" src="../img/modeller/sketch-wall.png" /></p>
 <h4 id="type-an-exact-dimension-rect-square">Type an exact dimension (rect / square)<a class="headerlink" href="#type-an-exact-dimension-rect-square" title="Permanent link">&para;</a></h4>
-<p>Cycle <strong>Constrain</strong> to <strong>Rect</strong> or <strong>Square</strong> before or during your 4 clicks — once the profile closes,
+<p>Cycle <strong>Axis</strong> to <strong>Rect</strong> or <strong>Square</strong> before or during your 4 clicks — once the profile closes,
 <strong>W / H / ∠</strong> fields appear showing the sketch's current width, height, and corner angle. Type a new
 number into any of them and press <strong>Enter</strong>: the WHOLE profile re-solves from that one value, not just
 the one edge — a rectangle at 90°, or a true parallelogram at any other typed angle.</p>
@@ -3310,7 +3332,7 @@ useful for closing a hand-drawn polygon precisely back onto its own start.</p>
 <h3 id="circle-extrude-draw-a-cylinder">Circle → Extrude — draw a cylinder<a class="headerlink" href="#circle-extrude-draw-a-cylinder" title="Permanent link">&para;</a></h3>
 <p><em>Commits <code>GEOM_EXTRUDE_POLY</code> with a <code>circle</code> profile (a real occt cylinder, not a tessellated polygon).</em></p>
 <ol>
-<li>Cycle <strong>Constrain</strong> to <strong>Circle</strong>.</li>
+<li>Cycle <strong>Axis</strong> to <strong>Circle</strong>.</li>
 <li>Click a <strong>centre</strong> point, then click a second point to set the <strong>radius</strong> — or type an exact radius
    into the field that appears.</li>
 <li>Set the <strong>depth</strong>, then tap <strong>Extrude</strong>.</li>
@@ -3412,21 +3434,28 @@ to disarm. <code>R</code> is reserved for Insert, so it doesn't arm anything her
 <ol>
 <li>Tap <strong>Move Grid</strong>.</li>
 <li>Drag a <strong>gridline</strong>.</li>
-<li>Release to commit. Walls attached to that line <strong>recompose</strong> — a span stretches, an attached wall translates — as one signed operation. A hosted door or window <strong>rides</strong> its wall rather than stretching or divorcing from it, same as Move.</li>
+<li>Release to commit. Walls attached to that line <strong>recompose</strong> — a span stretches, an attached wall translates — as one signed operation. A hosted door or window <strong>holds its position</strong> by default rather than stretching or divorcing from it, same as Move.</li>
 </ol>
 <p>What that recompose actually does, in plain terms:</p>
 <ol>
 <li><strong>Walls fill the gap, never leave one.</strong> Every wall on the dragged gridline is classified against it first — a wall that only touches the gridline <strong>translates</strong> with it, a wall that <strong>spans</strong> across to another gridline <strong>stretches</strong>, with its far end staying anchored on that other gridline. Either way the wall keeps meeting the gridline; it can't detach or overshoot.</li>
 <li><strong>Only the grabbed bay moves.</strong> The edit is scoped to the walls actually connected to the dragged gridline — a wall elsewhere in the building that happens to sit at the same coordinate, but belongs to an unrelated room, is left alone.</li>
-<li><strong>Hosted doors and windows ride, never distort.</strong> A filling keeps its own size; it moves by its own share of the stretch (see below), it never scales and never divorces from its host.</li>
+<li><strong>Hosted doors and windows are ANCHORED by default, never distort.</strong> A filling keeps its own size and its own world position while its host stretches around it — zero induced move. Ctrl+click an opening before dragging to opt it into <strong>Ride</strong> instead, where it keeps its <em>proportional</em> position along the host and moves by its own share of the stretch. Either mode, it never scales and never divorces from its host.</li>
 <li><strong>Furniture and fixtures stay put.</strong> They aren't part of the grid at all — a couch sitting in a room doesn't drag when the room's wall stretches.</li>
 </ol>
-<p>The ride is not a guess about what looks hosted. It follows the <strong>authored</strong> host↔opening↔filling chain
-recovered verbatim from the building's own IFC, so a door rides the wall its designer actually put it in —
-and where a building's author never declared that relationship, the modeller says so rather than inventing
-one. In practice that means the ride is exact on <em>SampleHouse</em> (all 7 hosted openings) and <em>Duplex</em> (36 of
-its 38), and partial on <em>SampleCastle</em>, whose window-frame walls are consumed by their own openings and so
-aren't separate things to ride.</p>
+<p>Anchor vs. Ride is not a guess about what looks hosted. It follows the <strong>authored</strong> host↔opening↔filling
+chain recovered verbatim from the building's own IFC, so a door is only ever held or ridden against the
+wall its designer actually put it in — and where a building's author never declared that relationship, the
+modeller says so rather than inventing one. In practice that means the relationship is exact on
+<em>SampleHouse</em> (all 7 hosted openings) and <em>Duplex</em> (36 of its 38), and partial on <em>SampleCastle</em>, whose
+window-frame walls are consumed by their own openings and so aren't separate things to hold or ride.</p>
+<p><strong>A carved hole comes along too.</strong> If the held or ridden opening has a real cut-through void (a door or
+window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
+itself is kept in sync with it — its centre never drifts off the door under a stretch, its width is held
+exactly (not silently widened by the stretch's own scale factor), and it survives the host wall being
+rotated a multiple of 90° after the cut. The status line names it directly: <code>N hole(s) held</code>, with a
+<code>(Δw ±x.xxm)</code> suffix only on the rare axis this can't correct (the wall's own thickness direction, where
+holding the width could stop the cut from reaching all the way through).</p>
 <p><img alt="Before — a wall spanning two gridlines" src="../img/modeller/gridstretch-before.png" />
 <img alt="After — dragging the gridline stretched the attached wall by exactly the drag distance" src="../img/modeller/gridstretch-after.png" /></p>
 <h4 id="on-a-real-building-not-a-diagram">On a real building, not a diagram<a class="headerlink" href="#on-a-real-building-not-a-diagram" title="Permanent link">&para;</a></h4>
@@ -3434,27 +3463,30 @@ aren't separate things to ride.</p>
 identically against a real, fully-loaded building — no separate mode, nothing cleared first. Here it is on
 Duplex's own ground floor, near the stair: a column grid aligned to a real wall's own measured edge, then that
 gridline dragged for real.</p>
-<p>Witnessed end-to-end (<code>modeller/tests/witness_e2e_gridmove_real.js</code>, 8/8 §-tagged assertions green, real
+<p>Witnessed end-to-end (<code>modeller/tests/witness_e2e_gridmove_real.js</code>, 8/8 assertions green, real
 <code>pg.mouse</code> down→move→up, no synthetic shortcuts):</p>
 <ul>
-<li>A real mouse drag on gridline "2" landed at <strong>delta = 0.5000 m</strong>. The governed wall's own <em>rendered</em>
-  Y-extent grew from <strong>2.920 m → 3.420 m</strong> — exactly the committed op's delta, read back off the live mesh,
-  not assumed from the drag alone.</li>
-<li>Its hosted door — a real <code>rel_fills_host</code> edge recovered from the IFC, not a proximity guess — <strong>rode
-  0.273 m</strong>, not the wall's full 0.500 m: §STRETCH-RIDE keeps a filling's <em>proportional</em> position along its
-  host, so it moves by its own anchored share of the stretch, never scales, never divorces.</li>
-<li>The gesture landed as <strong>one</strong> signed <code>GEOM_GRID_MOVE</code> plus <strong>9</strong> induced rider <code>GEOM_MOVE</code>s (other walls the
-  same gridline governs, several carrying their own hosted doors) — one Ctrl+Z undoes the whole group,
-  verified: cursor and wall extent both restored byte-exact.</li>
+<li>A real mouse drag on gridline "2" landed at <strong>delta = 0.5000 m</strong>, folded into <strong>16</strong> real recompose
+  commands. The governed wall's own <em>rendered</em> Y-extent grew from <strong>2.920 m → 3.420 m</strong> — exactly the
+  committed op's delta, read back off the live mesh, not assumed from the drag alone.</li>
+<li>Its hosted door — a real <code>rel_fills_host</code> edge recovered from the IFC, not a proximity guess — <strong>held its
+  position exactly</strong> (its centre measured identical before and after): <strong>zero</strong> induced rider rows, the
+  default <strong>Anchor</strong> behaviour above, not the older always-proportional-ride this section used to describe.
+  Ctrl+click the door first and repeat the same drag to see it <strong>Ride</strong> instead.</li>
+<li>The gesture landed as <strong>one</strong> signed <code>GEOM_GRID_MOVE</code>; a real console line names it exactly —
+  <code>§GESTURE gid=&lt;id&gt; riders=&lt;N&gt; cutRiders=&lt;N&gt; verify=true tris=&lt;N&gt;</code> — where <code>riders</code> counts any hosted
+  fillings opted into Ride and <code>cutRiders</code> counts any carved holes riding along with them (see "A carved
+  hole comes along too" above). One Ctrl+Z undoes the whole group, verified: cursor and wall extent both
+  restored byte-exact.</li>
 <li><code>verifyChain</code> held throughout. The drag-session cache (§SCALE_CHECK_FIX) is built once per gesture and reused
   every pointermove frame, not rebuilt per frame, cited from its own log line rather than re-profiled.</li>
 </ul>
 <p>The conformity gate runs on every drag, real building included — it doesn't get a pass because the input is a
-big, dense floor plan. This particular 0.5 m test drag pushed the wall into real clashes against neighbouring
-structure; the app's own status line reports the count instantly (<code>recomposed=16 §STRETCH-RIDE riders=9
-verify=true 23 RED</code>) rather than silently accepting a bad edit — visible in the "after" frame below.</p>
+big, dense floor plan. If a stretch pushes an element into a real clash against neighbouring structure, the
+status line reports it live and by name — <code>⛔ N RED</code> for a hard violation, <code>⚠ N ORANGE</code> for something softly
+disturbed — rather than silently accepting a bad edit.</p>
 <p><img alt="Before — Duplex's real ground floor near the stair, the authoring grid aligned to a real wall's own measured edge" src="../img/modeller/grid-editor-before.png" />
-<img alt="After — gridline &quot;2&quot; dragged 0.5 m for real: 16 elements recomposed, 9 hosted doors rode, the conformity gate flags the resulting clashes live in the status line" src="../img/modeller/grid-editor-after.png" /></p>
+<img alt="After — gridline &quot;2&quot; dragged 0.5 m for real: 16 recompose commands, hosted doors held per the Anchor default, the conformity gate flags any resulting clashes live in the status line" src="../img/modeller/grid-editor-after.png" /></p>
 <p>Roofs recompose the same way. <em>SampleHouse</em>'s barrel-vault roof spans the two gridlines bracketing the
 building; dragging the far one <strong>0.5000 m</strong> grows the roof's own rendered X-extent from <strong>14.8410 m → 15.3410
 m</strong> — exactly the drag, with the near edge held fixed at the other gridline — while the wall it sits on rides
@@ -3885,6 +3917,29 @@ cards <code>prompts/RESUME_DX_MEP_RESIDENTIAL_STANDARD.md</code>, <code>RESUME_T
   to drift out of sync.</li>
 </ul>
 <hr />
+<h2 id="save">Save<a class="headerlink" href="#save" title="Permanent link">&para;</a></h2>
+<p><em>Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED.</em></p>
+<p>Every edit lives in the signed op-log the moment you commit it, but the op-log isn't a physical-DB
+snapshot on its own. <strong>Save</strong> is the gate between the two: it re-verifies the WHOLE building's conformity,
+tries to heal what it safely can, and only then writes.</p>
+<ol>
+<li>Tap <strong>Save</strong>.</li>
+<li>If the building is clean (or every finding is soft <strong>ORANGE</strong>), it auto-heals what it can, re-verifies,
+   and writes a real physical-DB snapshot — the same one <strong>Open</strong> reads back.</li>
+<li>If a hard <strong>RED</strong> clash survives healing, Save refuses the write outright rather than persisting a
+   broken state — go fix the flagged clash (the status line names it, same as any other tool's gate) and
+   try again.</li>
+</ol>
+<p><strong>Auto-heal is real, but narrow.</strong> An ORANGE finding it recognises as a safe abuts-realign (two elements
+that drifted apart but were clearly meant to still touch) gets one corrective <code>GEOM_MOVE</code>, re-verified as
+gap-closed before the snapshot writes. If that heal itself nudges a <em>third</em>, previously-fine element into
+a new soft finding, Save reports that new ORANGE by name rather than chasing it with a second heal pass —
+one heal, never an unbounded cascade.</p>
+<p>Witnessed end-to-end (<code>modeller/tests/witness_e2e_save.js</code>, 11/11): a real hard clash blocks the physical
+write outright (no snapshot written); a real auto-healable pair heals, re-verifies clean, and a real
+snapshot lands; a heal engineered to disturb a third element reports that one new finding by name without
+touching it further.</p>
+<hr />
 <h2 id="share-an-issue-bcf-export">Share an issue — BCF export<a class="headerlink" href="#share-an-issue-bcf-export" title="Permanent link">&para;</a></h2>
 <p>Tap the <strong>BCF</strong> pill to export your current view as a <strong>BCF 2.1</strong> file (<code>.bcfzip</code>) — the open
 buildingSMART format for exchanging issues between BIM tools. The export carries your live camera
@@ -3909,12 +3964,12 @@ whole batch of detected clashes as one topic set.</p>
 <td>Fan the pills open / closed</td>
 </tr>
 <tr>
-<td><strong>? Help</strong></td>
-<td>Toolbar &amp; shortcuts — the live pill registry</td>
-</tr>
-<tr>
 <td><strong>Home</strong></td>
 <td>Back to the Matrix landing</td>
+</tr>
+<tr>
+<td><strong>📂 Open</strong></td>
+<td>Load a resident building, a local <code>.db</code>, or your own <code>.ifc</code> — filtered to ARC, walked + BOM-graphed</td>
 </tr>
 <tr>
 <td><strong>Fit</strong></td>
@@ -3930,11 +3985,15 @@ whole batch of detected clashes as one topic set.</p>
 </tr>
 <tr>
 <td><strong>Move Grid</strong></td>
-<td>Drag a gridline — attached walls recompose (<code>GEOM_GRID_MOVE</code>)</td>
+<td>Drag a gridline — attached walls recompose (<code>GEOM_GRID_MOVE</code>); hosted openings hold or ride (see <a href="#grid-stretch">Grid-Stretch</a>)</td>
 </tr>
 <tr>
 <td><strong>Move</strong></td>
 <td>Transform gizmo — move / scale / rotate the selection (<code>M</code>)</td>
+</tr>
+<tr>
+<td><strong>Drag Item</strong></td>
+<td>Free single-item drag for a fixture/fitting, gated by real product data and a real drop surface (see <a href="#item-drag">Item Drag</a>)</td>
 </tr>
 <tr>
 <td><strong>Sketch</strong></td>
@@ -3946,7 +4005,7 @@ whole batch of detected clashes as one topic set.</p>
 </tr>
 <tr>
 <td><strong>Axis</strong></td>
-<td>Set the constraint intent the solver enforces on the sketch</td>
+<td>Set the constraint intent the solver enforces on the sketch (Rect / Square / Circle)</td>
 </tr>
 <tr>
 <td><strong>Cut</strong></td>
@@ -3981,8 +4040,16 @@ whole batch of detected clashes as one topic set.</p>
 <td>Export the authored model as IFC4</td>
 </tr>
 <tr>
-<td><strong>Undo / Redo</strong></td>
-<td>Undo (<code>Ctrl+Z</code>) · Redo (<code>Ctrl+Y</code>)</td>
+<td><strong>Save</strong></td>
+<td>Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED (see <a href="#save">Save</a>)</td>
+</tr>
+<tr>
+<td><strong>History</strong></td>
+<td>World History — the cross-page timeline shared with the Viewer, iDempiere, and Gravity</td>
+</tr>
+<tr>
+<td><strong>? Help</strong></td>
+<td>Toolbar &amp; shortcuts — the live pill registry</td>
 </tr>
 <tr>
 <td><strong>Delete</strong></td>
@@ -3999,6 +4066,18 @@ whole batch of detected clashes as one topic set.</p>
 <tr>
 <td><strong>Connect</strong></td>
 <td>Connect Scene — share selection / timeline with the Viewer &amp; ERP (opt-in)</td>
+</tr>
+<tr>
+<td><strong>Teams</strong></td>
+<td>Mount the Teams presence overlay — design branches, a spatial merge gate, who-dots (see <a href="#collaborate-on-the-design-the-teams-overlay">Collaborate</a>)</td>
+</tr>
+<tr>
+<td><strong>X-ray</strong></td>
+<td>Reveal — structure goes glass so routed MEP glows through in its discipline colours (<code>X</code>)</td>
+</tr>
+<tr>
+<td><strong>Undo / Redo</strong></td>
+<td>Undo (<code>Ctrl+Z</code>) · Redo (<code>Ctrl+Y</code>)</td>
 </tr>
 </tbody>
 </table>
