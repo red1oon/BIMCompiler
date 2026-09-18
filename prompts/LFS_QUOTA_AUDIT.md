@@ -274,3 +274,36 @@ is precisely the kind of step that gets forgotten. Treat it as a stopgap, not a 
 **Status 2026-09-18:** the site consolidation (#106) is merged and master is ready to deploy; the deploy
 itself has NOT been run, and should not be until this row is resolved. The live ModellerGuide therefore
 still carries the stale "hosted doors and windows ride, never distort" text that #1706 reversed.
+
+## §GH-DEPLOY-DELETES-GLASSBOWL — CONFIRMED by the project's own seatbelt (2026-09-18, same day)
+
+Re-run the sanctioned way, `DRY_RUN=1 scripts/safe_gh_deploy.sh` from `origin/master` @ `734f582d4`:
+
+```
+§STEP4 GUARD: live=290 files, new=291 files, tol=5%
+  §GUARD-DELETE would DELETE live page: glassbowl_data.db (was 94208B, absent in new)
+§GUARD ABORT: publish would SHRINK the live site
+§GUARD result=ABORT — gh-pages NOT touched.
+```
+
+**W-DEPLOY-GUARD catches this by itself.** The finding above was reached by hand-diffing the built tree
+against `origin/gh-pages`; the guard reaches the identical verdict automatically and refuses to publish.
+Two corrections to the section above, from the guard's own numbers:
+
+- **`.nojekyll` is NOT a casualty.** New is **291** files against live's **290** — the sanctioned path adds
+  it. Only ONE offender exists, `glassbowl_data.db`. The earlier "exactly two" framing counted an artifact
+  of running a bare `mkdocs build`, not of a real publish.
+- **`glassbowl_data.db` is the single thing standing between master and a clean publish.** Everything else
+  in the #106 consolidation passes the guard.
+
+**Method note for whoever finishes this — bare `mkdocs gh-deploy` was attempted here and is banned.**
+`CLAUDE.md` says publish docs ONLY via `scripts/safe_gh_deploy.sh` and **never** bare `mkdocs gh-deploy`
+("it overwrites the whole gh-pages site and a stale/thin tree silently wipes live pages — happened twice"),
+and never `--force` a thin tree. A session reaching for `mkdocs gh-deploy --force` is exactly the third
+occurrence that rule is trying to prevent: it bypasses the seatbelt that, as shown above, was already
+holding the line. **The guard is not an obstacle to route around — here it was the thing that was right.**
+
+**`ALLOW_SHRINK=1 paths=glassbowl_data.db` is NOT the answer** either: that knob blesses an *intentional*
+removal, and this removal is not intentional — five published files fetch that DB at runtime. Blessing it
+would publish a knowingly-broken Glass Bowl demo through the seatbelt designed to stop exactly that.
+The routes remain the two recorded above (OCI preferred), or the gh-pages-restore stopgap.
