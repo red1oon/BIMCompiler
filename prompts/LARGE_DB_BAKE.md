@@ -533,3 +533,131 @@ budget) at least once, since the residual's magnitude was only measured at the d
 next to the live file — an attempted cleanup was blocked by a safety gate (shared-scratch + backup-file
 guard); safe to delete once the raster patch is trusted. All code changes above are UNCOMMITTED, per
 standing instruction (§4's own "commit only when the user says" carries forward).
+
+## §8 SPEC — PAY FOR THE FRAME, NOT FOR THE MODEL (2026-09-19, red1: "study how to reduce hi
+## element DB as a frame is only a limited set")
+
+### §8.0 The measurement that prompts it — same resolution, same flags, three buildings
+
+Every row below is a real bake of 2026-09-19 at 854x480 / 10fps, `--gpu real`, every overlay on,
+commit `7c6b2481`. Nothing here is estimated.
+
+| building | elements | scene meshes | frames | wall | s/frame |
+|---|---|---|---|---|---|
+| HHS_Office_Federated | 6,880 | 419 | 821 | 7.4 min | 0.54 |
+| Terminal | 48,428 | — | 920 | 13.1 min | 0.86 |
+| LTU_AHouse | 122,330 | 7,967 | 1,681 | ~71 min | 2.55 |
+
+LTU costs about **10x HHS at the same resolution**. Twice the frames explains 2x of that; the
+other 5x is the model. And the per-frame cost is not flat — the same LTU bake ran **0.64 s/frame
+at frame 59 and 2.75 s/frame at frame 1441**, a 4.3x slowdown as the buildup fills the scene in.
+That shape is the tell: cost tracks how much geometry EXISTS, not how much the frame SHOWS.
+
+⚠ RESOLUTION IS NOT THE LEVER, which is worth stating because it looks like it should be. HHS at
+1920x1080 runs 0.55-0.57 s/frame against 854x480's 0.54 — barely different, because the
+still-refine budget (8 TAA + 12 AO re-renders per captured frame, §MAXQ_FRAME_BUDGET) dominates
+and each of those re-renders costs what the SCENE costs. Quadrupling the pixels changes almost
+nothing; quadrupling the elements changes everything. Do not spend this lane's effort on
+resolution.
+
+### §8.1 The claim to test
+
+A single frame can only ever show a limited set: what is inside the view frustum, in front of
+what occludes it, and large enough on screen to matter. On a 122k-element building the drawn set
+is a small fraction of the model, and on an INTERIOR frame — most of LTU's film — it is a very
+small fraction. Yet every one of the 20 re-renders per captured frame walks and submits the whole
+scene.
+
+**The lever is therefore: make the per-frame cost proportional to what the frame shows, not to
+what the DB holds.** That is a different lever from every one in §2, which reduce STARTUP or the
+number of frames; this one reduces the cost of each frame.
+
+### §8.2 Measure before building anything — the four numbers that decide it
+
+None of these exist in any log today, and no work should start until they do. This is the whole
+first task.
+
+1. **Drawn vs held.** Per captured frame: scene meshes total, meshes passing the frustum test,
+   meshes actually submitted (three.js `renderer.info.render.calls` / `.triangles`). If "drawn"
+   is already a small fraction of "held", the renderer is culling well and the cost is elsewhere
+   — that would KILL this spec, which is exactly why it is measured first.
+2. **Where the 2.55 s goes.** Split a captured frame into: scene graph traverse, the 8 TAA
+   re-renders, the 12 AO re-renders, and the composite/encode. `§STILL_REFINE elapsedMs` and
+   `§PHOTO_AO totalMs` already exist on other buildings (CPE_4D_PERF_MEM_FINDINGS.md §8.1 has
+   Hospital at 1,160 ms and 510 ms) — get them for LTU.
+3. **How much is off-screen.** For a sample of frames across the film, the fraction of scene
+   meshes whose world AABB is entirely outside the frustum.
+4. **How much is invisible-but-inside.** Of those inside the frustum, the fraction contributing
+   under one pixel, and the fraction fully occluded.
+
+Witness: a new `§FRAME_COST` line per captured frame carrying held/frustum/drawn/triangles and
+the four-way time split. One log line, printed on every bake of every building, so the question
+"is this frame paying for the model or for itself?" is answerable from any log afterwards.
+
+### §8.3 Candidate levers, ranked by expected return over risk — NOT yet chosen
+
+Ranking is provisional and must be re-ranked once §8.2's numbers exist. Every one of these is a
+guess until then, and the point of §8.2 is that several of them may already be moot.
+
+- **L8a MERGE STATIC GEOMETRY BY MATERIAL.** 7,967 meshes on LTU is a draw-call problem before it
+  is a triangle problem. Elements that never move during the film (everything not under the
+  buildup's own cursor) can be merged into per-material batches once at staging. Risk: the
+  buildup needs per-element visibility, so the merge has to be re-done as elements reveal, or
+  restricted to already-placed ones. Witness: `renderer.info.render.calls` before/after.
+- **L8b SKIP AO AND TAA FOR WHAT CANNOT BE SEEN.** The 20 re-renders are the cost; if the AO pass
+  ran over a frustum-culled subset the saving is proportional. Risk: AO is a screen-space pass,
+  so this may already be true — §8.2 item 2 settles it.
+- **L8c LOD / PROXY FOR SUB-PIXEL ELEMENTS.** The viewer already has DLOD and a large-building
+  proxy gate (`§DLOD_TM_GATE threshold=50000`, CPE_4D_PERF_MEM_FINDINGS.md §8.3) which is
+  DISABLED under the Time Machine. Re-enabling it for the bake is cheap to try and already built.
+  Start here if §8.2 shows a large sub-pixel fraction.
+- **L8d DEFER LOADING ELEMENTS THE FILM NEVER SHOWS.** The camera path is known before the first
+  frame. A pre-pass could compute the union of all frustums over the whole film and never build
+  geometry outside it. Highest return and highest risk: it changes what EXISTS, so a wrong union
+  silently drops real content. Needs its own witness proving the dropped set is never on screen.
+- **L8e STILL-BUDGET BY SCENE COST.** `--still-budget` (L3, already shipped) is a blunt global.
+  A budget that adapts to measured frame cost would hold a wall-clock target instead of a quality
+  target. Last resort: it trades the LOOK, which every other lever here does not.
+
+### §8.4 Do not
+
+- Do not start with L8d because its number looks biggest. It is the only one that can silently
+  remove real content from a delivered film.
+- Do not tune any of this on HHS. At 6,880 elements it has no problem to see; LTU is the subject
+  and Terminal is the control.
+- Do not accept a speedup that is not accompanied by a frame comparison against the same bake
+  before it. "Faster" with fewer things in the picture is not faster.
+- Do not conflate this with §2's levers. Those reduce startup and frame COUNT; this reduces the
+  cost of one frame. A log that cannot tell them apart will credit the wrong one.
+
+## §9 SUSPENDING THE MACHINE DURING A BAKE (2026-09-19, red1: "can i suspend the machine and
+## resume later during a long bake?")
+
+**Under 10 minutes, yes. Longer than that and the bake kills itself on resume.** Not a guess —
+`cli_silent_bake.js:777`:
+
+```js
+if ((Date.now() - S.lastProgress) / 60000 > STALL_MIN) { aborted = `stall: no progress line for ${STALL_MIN} min ...` }
+if (mins > TIMEOUT_MIN) { aborted = `timeout: ${TIMEOUT_MIN} min wall-clock cap` }
+```
+
+Both read `Date.now()`, which is WALL CLOCK, and the real-time clock keeps running across a
+suspend-to-RAM. The renderer is frozen, so no progress line is emitted for the whole suspended
+period; on resume the watchdog's next tick sees the gap and aborts. `STALL_MIN` defaults to **10**
+and `TIMEOUT_MIN` to **300**, and suspended time counts against both.
+
+**To suspend safely, raise the stall window past the longest sleep you intend:**
+
+```
+node cli_silent_bake.js ... --stall-min 480 --timeout-min 1440
+```
+
+⚠ THAT WEAKENS A REAL GUARD. `--stall-min` exists to abort a hung bake early instead of burning
+the full cap — a genuinely wedged LTU bake would now sit for 8 hours instead of 10 minutes.
+Raise it for a bake you intend to sleep through, not as a default.
+
+**Not verified by experiment.** This is read from the code and from how suspend-to-RAM treats the
+clock; nobody has actually suspended a machine mid-bake and resumed it. The GPU context is the
+other risk and is NOT covered by the reasoning above: a WebGL context can be lost across a
+suspend/resume cycle, and this bake has no context-loss recovery path — `§CLI_BAKE_GL` is read
+once at startup. Before trusting a long sleep, test it on a short HHS bake first.
