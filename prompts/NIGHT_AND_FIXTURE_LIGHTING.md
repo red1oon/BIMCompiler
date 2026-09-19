@@ -966,10 +966,15 @@ see GEOREF_SUNPATH_COMPASS.md §4):
 1. `toggleShadow`'s turn-on path (`tools.js` ~975) — call `A.sunPositionAt` for the CURRENT
    real-world date/time (there is no film in the live interactive viewer) and derive `A.sun.position`
    from that real azimuth/elevation instead of the `_env*0.8/2/0.6` ratios.
-2. The Alt+C bake path (`cinema_maxq.js`, wherever shadows are armed for a bake — not yet located
-   precisely, needs its own grep pass) — same derivation, but keyed to the FILM's date (the same
-   `_sunCompassMs`/`litDate` logic `cpe_sun_compass.js` already computes for the rose), so the
-   shadow and the compass finally agree in the same frame.
+2. The Alt+C bake path — **located precisely (2026-09-19): `viewer/effects.js` `_enablePhotoShadows()`
+   (~line 3064), called from `_applyPhotoStaging()` (~line 3613). CONFIRMED to be its own separate
+   implementation, not a call into `A.toggleShadow()`** — it self-enables shadows only when the
+   user's own interactive Shadow mode isn't already on (`if (A._shadowOn) { ...; return; }`, line
+   3065), and it deliberately does NOT reposition `A.sun` the way `toggleShadow` does (line 3200:
+   "it must NOT reposition the sun — `A.sun.position` is what `updateSky`, the Sky shader and the
+   lensflare all read"). Same derivation as item 1 once real geo-ref exists, but keyed to the FILM's
+   date (the same `_sunCompassMs`/`litDate` logic `cpe_sun_compass.js` already computes for the
+   rose), so the shadow and the compass finally agree in the same frame.
 Fall back to exactly today's fixed-ratio placement when geo-ref is absent or defaulted, or when
 there's no 4D cursor (same §SUN_COMPASS_NO_CURSOR case the rose already handles) — never worse than
 current behaviour, never an invented location. Needs its own witness for each call site (does the
@@ -989,14 +994,50 @@ treat the symptom description below as the finding, not the diagnosis:** shadows
 bake appear cut off / truncated near the ground — "each column or edge where shadow appears, there
 is a cut off," rather than the shadow running naturally to its full length at the base.
 
-**Candidate causes, grounded in the real shadow setup code, none confirmed:** `A.toggleShadow`
-(`viewer/tools.js` lines 975-981) sets an orthographic shadow-camera frustum sized to the building's
-envelope (`camera.left/right/top/bottom = ±_env`, `near = _sunDist*0.05`, `far = _sunDist*4`,
-`bias = -0.0005`) and a ground plane (`A.ground`, positioned by `A._calcGroundY()`) as the shadow
-receiver. Plausible mechanisms for a base-level cutoff, in rough order of likelihood, ALL UNVERIFIED:
-1. **Bake-time envelope sizing vs. live-time.** `_env` is derived from `Object.values(A.buildingCentres)[0].envelope` at the moment shadows turn on. If the Alt+C bake pipeline enables shadows before the full building has streamed in (this codebase streams geometry progressively on large buildings — see `LARGE_DB_BAKE.md`), `_env` could be computed from a partial scene, undersizing the frustum for geometry that arrives afterward — edges/columns near or past that undersized boundary would have their shadows clipped by the frustum's own edge, which would look exactly like a cutoff "at the base" for elements near the frustum's outer bound.
-2. **Ground-plane extent/position vs. shadow bias interaction.** `A._calcGroundY()`'s ground-plane placement combined with `bias = -0.0005` is tuned generically, not per-building; a ground plane sitting slightly wrong relative to a column's true base (self-shadowing/acne territory) can eat the shadow right at the contact point rather than showing it — this is a different, narrower failure mode than #1, worth distinguishing before assuming one cause.
-3. **Shadow-map resolution vs. scene scale.** `mapSize` is fixed at 2048×2048 (§S288 comment, same function) regardless of building size; on a very large envelope, texel density drops, and a shadow that's supposed to reach a column's base can simply run out of resolution before it gets there — would present similarly to a "cutoff," but is a precision problem, not a clipping one.
+**CORRECTED 2026-09-19 — the Alt+C bake does NOT go through `A.toggleShadow` at all.** Investigated
+before handing this off, specifically so a session already deep in the bake pipeline doesn't have to
+re-derive the same ground (user's own instruction: conduct this here first, to avoid two sessions
+splitting/conflicting on it). The real bake-time shadow arming is `viewer/effects.js`
+`_enablePhotoShadows()` (~line 3064) — see §SHADOW_REAL_SUN item 2 above for its exact location and
+how it differs from the interactive toggle.
+
+**This function already has a deep, cited history of shadow bugs found AND fixed — read this before
+suspecting anything new:**
+- **§PHOTO_SHADOW_TARGET_CENTRE** (2026-08-11, effects.js ~3077-3100): shadow frustum was aimed at
+  wherever the VIEW camera happened to be looking (drifts far from the building during an
+  establishing dive), not the building itself — fixed, now aimed at the real building bbox centre.
+- **§PHOTO_SKYLINE_SHADOW_FRUSTUM** (effects.js ~3107-3124): the skyline prop ring (radius =
+  envelope × a multiplier) sat outside the shadow frustum's own bounds — confirmed via real numbers
+  (HHS: envelope 68.17m, frustum half-width 69m, skyline ring ~150m, all 36 skyline boxes clipped) —
+  fixed, frustum now sized from the same real bbox the skyline ring itself uses.
+- **§PHOTO_SUN_SHADOW_REACH** (2026-08-11, effects.js ~3125-3148): at low sun elevation (the film's
+  own dusk end, 6°), a building's shadow can throw ~9.5× its own height — the footprint-only frustum
+  didn't account for this, clipping the shadow's own far tip at dusk. Measured on a real 52-frame
+  bake (`scratchpad/analyze_hhs_shadow_frames.py`) — fixed, frustum now widens to fit the worst-case
+  shadow reach.
+- **§PHOTO_SHADOW_RESOLUTION** (effects.js ~3154-3165): the widened frustum above spreads a fixed
+  texel budget more thinly — small rooftop fixtures end up under-resolved and wash out even though
+  they're geometrically inside the frustum. Addressed: bake-only resolution doubled to 4096² (never
+  applied to the interactive toggle's own 2048², a different cost/benefit — that path runs every
+  frame of continuous navigation, this one only during a deliberate capture).
+- **§PHOTO_SHADOW_BIAS** (2026-08-11/12, effects.js ~3195-3227): the bias constant copied from
+  `toggleShadow` meant something very different on this path's much longer near/far range (a
+  world-space bias of 9.87m vs. `toggleShadow`'s proven 0.305m) — erased every caster shorter than
+  ~8.1m at the film's 55° opening, confirmed by a real paired A/B render (`scratchpad/
+  witness_shadow_bias_ab.js`: same scene, only this line changed, 1,665px darkened at 55°/12,095px
+  at dusk, 0px ever brightened). Fixed: bias now held in real world-space units, scaled to clear the
+  worst grazing angle the film's arc reaches.
+- **§R17_SHADOWMAP_RELEASE** (effects.js ~3166+): a raised 4096² shadow map was found surviving
+  teardown across repeated Alt+S presses — a persistence/memory finding, not a geometry one.
+
+**None of these, as documented, match red1's new symptom.** Every one above is about the shadow's
+FAR tip (dusk reach), rooftop/small-object resolution, or blanket erasure at grazing angles — not a
+cutoff specifically "at the base" of columns/edges. Two honest possibilities, not resolved here:
+(a) a genuinely new, not-yet-investigated mechanism, or (b) a partial regression/residual of one of
+the fixed bugs above presenting differently than its original report did. **Before fixing anything:**
+re-run `scratchpad/witness_shadow_bias_ab.js` (already exists, already proven this exact class of
+bug once) against the specific building/date in the bake red1 saw, and read the real
+`§PHOTO_SHADOW_*` log lines from that run — don't re-diagnose from the video.
 
 **Before fixing anything:** this needs a real, non-visual check — e.g. read back the actual shadow-map
 depth texture or the frustum bounds at bake time vs. live-toggle time and compare against the
