@@ -772,3 +772,48 @@ against an existing `*.launch.txt` in `/tmp/wt-loadpath/out/` before trusting th
   the ones merely reported as done.
 - One bake at a time. Never commit without red1's explicit word, and only after they've sighted the
   result themselves.
+
+## §129.46 NOTED, NOT FIXED (2026-09-19, red1 on the delivered LTU film): "the shadows are not
+## corelating to the clock on the wall"
+
+red1's own words, and explicitly parked: "Just take note, don't fix yet." This section is the note.
+Nothing below is a diagnosis — it is what the LTU bake's log says, gathered while it was fresh.
+
+**The sun genuinely moves on that film.** §SUN_ONE, first and last frame of the 1681:
+
+    tNorm=0.000  elevation=24.2   skyAzimuth=50.7
+    tNorm=1.000  elevation=-11.7  skyAzimuth=294.1
+
+A 243-degree azimuth swing, and the sun ends up 11.7 degrees BELOW THE HORIZON. So the light the
+compass and clock are drawn from is sweeping properly; whatever the shadows are doing, they are not
+being starved of a moving sun.
+
+**But the bake's own shadow path never armed on this building.** Counted over the whole LTU log:
+
+    §PHOTO_SHADOW enabled   0        (HHS's 1080p bake: 1)
+    §PHOTO_AO               0
+    §TM_SHADOW_INHERIT      0
+    §SHADOW_FRONTIER        0
+    §SUN_ONE_LIGHT          0
+    §PHOTO_PREWARM          2
+
+`_enablePhotoShadows()` returns early on three conditions — the user's own Shadow mode already on,
+or a missing `A.sun`/`A.renderer`/`A.scene` — and it is called from one place, inside
+`_applyPhotoStaging`. `§PHOTO_AO` at 0 says the still-refine AO pass did not run either, which
+points at the staging pass as a whole rather than at the shadow arming specifically. A bake with no
+photo staging would still produce a film; it would just carry whatever lighting the scene already
+had, which is a very good way for shadows to stop tracking a clock that IS advancing.
+
+**Two things this note deliberately does NOT claim.** That the above is the cause of what red1 saw
+— no frame has been compared, and a shadow can look wrong for reasons that have nothing to do with
+which code path armed it. And that it is the same fault as §129.45 (the bias that detached shadows
+from column bases on HHS): that one is about shadows that ARE being cast, this is about a path that
+appears not to have run at all. They may be unrelated, and merging them would repeat exactly the
+mistake §129.45's own commit records — conflating two faults because both involve shadows.
+
+**The elevation ending at -11.7 degrees is worth its own look** whenever this is picked up. A sun
+below the horizon is legitimate at 59.3N in late autumn, and §SUN_ONE_ALL_DARK exists to judge
+that over a whole run — but it printed nothing here, so the all-dark tally did not report either.
+
+**Where to start when it is unparked:** whether `_applyPhotoStaging` ran at all on LTU, before
+anything about shadows. Everything above is one missing call away from being explained.
