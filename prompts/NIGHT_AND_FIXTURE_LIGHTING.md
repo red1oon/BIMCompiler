@@ -1016,33 +1016,50 @@ suspecting anything new:**
 - **§R17_SHADOWMAP_RELEASE** (effects.js ~3166+): a raised 4096² shadow map was found surviving
   teardown across repeated Alt+S presses — a persistence/memory finding, not a geometry one.
 
-**A THIRD candidate, MEASURED 2026-09-19 (feat/loadpath-ledger session, from a real 1969-frame 1080p
-HHS bake, compass ON) — this is now the strongest of the three, not just plausible.** Real sun
-elevation across that film ran **1.4° to 42.4°**. `effects.js:2660` — `PHOTO_SUN_ELEVATION = 6` —
-is the old scripted arc's deliberately-chosen floor, its own comment naming WHY: "still above
-Preetham's near-black cutoff (TM's own dawn/dusk boost kicks in <10°)". The real sun's low end
-(1.4°) sits well under that floor — inside the near-black region the floor existed to avoid, and
-past the <10° threshold where a separate dawn/dusk behaviour change kicks in. Shadow length runs
-`cot(elevation)`: 6° → ~9.5× object height (the range `§PHOTO_SUN_SHADOW_REACH`'s frustum sizing was
-proven safe for); 1.4° → ~41×. Anything sized for the first is cut by the second. This also predicts
-the REPORTED SHAPE, not just a plausible mechanism: a base/edge cutoff that worsens toward the END of
-the film (where elevation is lowest) — a cheap thing to check against the actual video before
-re-running any witness. **Caveats from the session that measured this, kept intact:** no shadow
-frame was actually looked at, and the frustum/bias code itself wasn't re-read for this — it's the
-elevation range plus that one `effects.js` comment, nothing more. The upper end moved too (42.4° vs.
-the scripted arc's 55° start) — a narrower AND lower range, not simply a lower one.
+**Candidate 7, MEASURED 2026-09-19 (feat/loadpath-ledger session, from a real 1969-frame 1080p HHS
+bake, compass ON) — real sun elevation exceeds the old tuned range, causing FAR-TIP clipping.** Real
+sun elevation across that film ran **1.4° to 42.4°**. `effects.js:2660` — `PHOTO_SUN_ELEVATION = 6`
+— is the old scripted arc's deliberately-chosen floor. Shadow length runs `cot(elevation)`: 6° →
+~9.5× object height (the range `§PHOTO_SUN_SHADOW_REACH`'s frustum sizing was proven safe for); 1.4°
+→ ~41×. **This is a distinct fault from candidate 8 below — do not pay for one with the other's
+fix** (the session that measured this corrected itself on exactly this point: its first framing
+conflated the two). Candidate 7 predicts the shadow's far end vanishing; it does not by itself
+explain a cutoff specifically at a column's own base.
 
-**None of these, as documented, is CONFIRMED as red1's cause — but #7 is now evidence-backed, not
-just a hypothesis.** The first six are about the shadow's FAR tip (dusk reach), rooftop/small-object
-resolution, or blanket erasure at grazing angles — not a cutoff specifically "at the base" of
-columns/edges; #7 (real sun exceeding the tuned 6° floor) has real measured numbers behind it and
-correctly predicts where the defect should be worst. **Before fixing anything:** check whether the
-bake in question had `--sun-compass` on and whether its LAST frames are visibly worse than its first
-(candidate 7's own prediction) — if yes to both, that's the lead to chase first. Either way, re-run
-`scratchpad/witness_shadow_bias_ab.js` (already exists, already proven this exact class of bug once)
-against the specific building/date/compass-state in the bake red1 saw, and read the real
-`§PHOTO_SHADOW_*` /
-`§SUN_ONE` log lines from that run — don't re-diagnose from the video.
+**Candidate 8, MEASURED 2026-09-19 (same session, this time from real code, not just the elevation
+range) — the actual base-cutoff mechanism, and the strongest candidate on record.**
+`§PHOTO_SHADOW_BIAS_SCALE` freezes ONE depth bias at staging time:
+`_worldBias = max(0.305, texelWorld / tan(PHOTO_SUN_ELEVATION_END))`, using the SCRIPTED arc's 6°
+floor — a number that no longer bounds anything once §SUN_ONE's real sun (42.4° → 1.4°) replaces
+that arc. A depth bias is a push ALONG THE LIGHT RAY; on the ground it separates a shadow from its
+own caster by `worldBias / tan(elevation)`. Measured on HHS (env 180, map 4096, texelWorld 0.0879m,
+frozen bias 0.836m): **42.4° → 0.9m gap · 9° → 5.3m · 3° → 16m · 1.4° → 34m.** Every column's shadow
+detaches from its own base — small at the film's start, tens of metres by the end — which is
+precisely "cut off at the base of each column," and precisely predicts the worsening-toward-the-end
+shape. **Widening the shadow frustum (the obvious-looking fix) makes this WORSE, not better** —
+`texelWorld = 2×env/mapSize`, so a bigger frustum means a bigger gap; this rules out candidate 7's
+own fix as a cure for candidate 8. Proposed fix (not yet verified visually): move the grazing-angle
+term to `shadow.normalBias` (offset along the surface normal — what acne actually needs) and restore
+the depth bias to `toggleShadow`'s already-proven 0.305m. Projected: gap at 1.4° drops 34m → 12.5m,
+at 42° drops 0.9m → 0.33m. Control flag: `window.__noNormalBias`.
+
+**On a competing "noise/AO touch-up" reading:** none exists on record from this doc or this session
+— checked directly, no such diagnosis appears anywhere here. If one surfaces elsewhere, treat it as
+a genuinely separate, unconfirmed candidate (a dark AO band at a column base and a shadow physically
+detached from one would look similar at low resolution) rather than assuming either explanation
+wins without frames or numbers behind it.
+
+**None of these, as documented, is CONFIRMED as red1's exact cause — but candidate 8 is now the
+strongest, with a real formula and real numbers, not a hypothesis.** The first six historical bugs
+are about the shadow's far tip, rooftop/small-object resolution, or blanket erasure at grazing
+angles specifically at the arc's OLD bounded range — none were tested against an unbounded real sun.
+**Before fixing anything:** verify candidate 8's predicted numbers against an actual frame (does the
+gap at a known column, at a known frame's elevation, match `worldBias/tan(elevation)`?), then try
+the `normalBias` fix behind `__noNormalBias` and re-measure — don't fix on the strength of the math
+alone, the same discipline as every other shadow/render finding in this codebase. Re-run
+`scratchpad/witness_shadow_bias_ab.js` (already exists, already proven this general bug class once)
+once the fix lands, and read the real `§PHOTO_SHADOW_*`/`§SUN_ONE` log lines — don't re-diagnose
+from the video.
 
 ## §116 / §129.41 — Interior fixtures relight for the closing orbit — DONE, WITNESSED (2026-09-19,
 `feat/loadpath-ledger`, not yet merged to main)
