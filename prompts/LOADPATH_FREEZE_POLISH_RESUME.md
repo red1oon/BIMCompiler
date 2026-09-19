@@ -1088,3 +1088,39 @@ uncovered, honestly, rather than being papered over.
 
 ### NOT MERGED, NOT AUTHORISED TO MERGE
 Same standing rule as the rest of this branch: `feat/loadpath-ledger` is HELD at red1's word.
+
+### §129.55 DONE (2026-09-20) — implemented exactly as spec'd above, bim-ootb `3b9f41fa`
+`viewer/cinema_maxq.js` + `viewer/cpe_resource_panel.js` + `viewer/cpe_film_boxes.js`, witness
+`viewer/tests/witness_hud_layout_coverage.js` (W-HUD-LAYOUT-COVERAGE, 285 lines, node, no browser).
+
+```
+after : §HUD_COVERAGE PASS fails=0  inconclusive=0  wiredLayers=6 exempt=hud.pie,roster
+before: §HUD_COVERAGE FAIL fails=15 inconclusive=1
+```
+The control's Part C is the no-op proof: on the pre-fix tree it reads **INCONCLUSIVE — "the card
+publishes nothing, so this leg cannot fire"**, so the §129.52 check cannot go green by accident on
+code that registers no card rect.
+
+Two traps this hit, both worth keeping:
+- `_hudHold` is a one-line alias for `_drawUnlessHold` and **drops extra arguments**. Adding the
+  third param to the wrapper alone left `suncompass.clock`/`suncompass.readout` silently unwired.
+- A `vm` sandbox with `has: () => true` hands the module a STUB for `Math`, so every
+  `Math.round(h * 0.36)` in the real geometry returns 0 and every published rect reads `0,0,0,0`.
+  Real built-ins first, stub only for what is genuinely absent. (`witness_card_font.js` has the
+  same sandbox shape — it happens not to exercise a path that needs `Math`, but it is one edit away
+  from the same silent zero.)
+
+**Still uncovered, on purpose and stated honestly:** `clash.labels` and the per-beat `measure.*`
+cue overlays. They paint many small marks, not one plate; a single rect for them would be an
+invented number.
+
+### §129.54 CLOSED — the flags reach node, read from the running bake's own log
+`Hospital_silent_hires_2026-09-20_0531`, commit `c7db9260`:
+```
+§CLI_BAKE_DLOD_PROXY requested — distant already-built elements render as instanced boxes
+§CLI_BAKE_RESOLVED source=db:cinema_path bands=4 total=278.8s buildup=1 roomTitle=1 reveal=1
+  dayCounter=tr clash=1 storeyReveal=1 measure=1 loadPath=1 ledger=1 cost=1 sunCompass=1 sunDate=-
+```
+4,963 frames at ~0.79 s/frame. ⚠ That census line is in the **firehose** beside the mp4
+(`/tmp/bake_<db>_<stamp>.log`), NOT in `out/<name>.log` — the §129.53 "read the RIGHT log" rule
+applies to this line specifically.
