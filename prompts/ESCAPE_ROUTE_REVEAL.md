@@ -238,6 +238,91 @@ document. Not chosen here.
   `RoomHabitability.spaceHabitable`). The line and both labels still draw; the build log says
   `roomBoxes=0` and why.
 
+## §10 — X-RAY IS NOT WORTH IT, MEASURED AND RULED (2026-09-20)
+
+**red1's ruling, verbatim:** *"x-ray even be bad to judge 3D space from experience. So i go for no
+x-ray since it save time, and the info is already clear and intuitive enough — user would get the
+idea right away."* Then, after watching the A/B clips: *"u can see x-ray has no effect."*
+
+**The measurement.** Two 88-frame 854x480 bakes back to back, same box, same clip, same DB, only
+the x-ray differing (via a temporary `window.__escNoXray` dev tap, since removed):
+
+| | wall | per frame |
+|---|---|---|
+| with x-ray | 334 s | 4.24 s |
+| without | 146 s | **1.40 s** |
+
+**2.3x the wall clock, 3.0x per frame — essentially the entire cost of the reveal window.**
+
+**Why it was buying nothing.** `tools.js` `A.toggleXray()` sets `opacity 0.3, transparent, DoubleSide`
+on every cached material. 0.3 is **per surface**, not through a building: the eye receives `0.7^n`
+of the interior after n surfaces, and `DoubleSide` makes every wall two of them.
+
+| surfaces | 3 | 5 | 8 | 10 | 15 |
+|---|---|---|---|---|---|
+| interior reaching the eye | 34% | 17% | 6% | **3%** | 0.5% |
+
+Through a hospital that is milk, not glass — which is exactly what red1 read off the first bake
+("the whole building looks very solid"). A strength parameter was briefly added to `A.toggleXray`
+so the beat could push to 0.12/FrontSide; red1's ruling landed first and it was reverted. **Alt+Z
+is byte-identical to shipped.**
+
+**Nothing is lost.** The route line is composited in 2D onto the capture canvas and the room glow
+is `depthTest:false`, so both read through the building on their own. The x-ray only ever added
+interior CONTEXT around them. The beat now touches no scene material at all.
+
+Landed on bim-ootb `feat/escape-route-reveal` @ `0f191c15`. W-ESC-11a-e assert: no `toggleXray`
+call, no material-cache access, Alt+Z unchanged, the glow still shines through, and
+`cpe_storey_reveal.js` keeps its own — the ruling was NOT applied to another lane.
+
+### §10.1 — the storey reveal's x-ray: ALREADY SOLVED ELSEWHERE, do not re-spec it
+
+The same waste is live in `cpe_storey_reveal.js` on `origin/main`: `_enterWindow()` calls
+`A.toggleXray()` with no arguments (0.3/DoubleSide) for the whole 5 s storey beat, tinting
+6,601-10,769 meshes per storey. MEASURED in the 2026-09-20 all-toggles bake: ~4.1 s/frame through
+that window at 1080p.
+
+**But it is not this lane's to fix, and it does not need fixing here.** This doc's own parent lane
+already abandoned that mechanism: `MEP_CLASH_REVEAL_MOVIE.md` records "§STOREY_HIGHLIGHT_REVEAL's
+tint era (§57-§93) — abandoned, measured, replaced by the section cut" (§92 design, §94 spec). The
+replacement lives on bim-ootb `feat/storey-section-cut` (`e26336d0`, **69 commits ahead of
+origin/main, unmerged**) and **already engages no x-ray at all** — `toggleXray` survives there only
+inside one comment. So the fix is a MERGE, not a new spec. Checked 2026-09-20.
+
+## §11 — PROPOSED, NOT BUILT: the `o` box-proxy look instead of a wash
+
+red1, seeing the Find-panel Path view as wireframe boxes: *"I wonder if converting to bboxes or full
+DLOD frame (which looks cool)"*, and *"at end, it restores back which can be cool too if apply the
+gradual restore as experienced when user comes close effect. This also showcase our DLOD feature."*
+
+**Name the right module.** Three things are called DLOD and only one is the look:
+- `viewer/dlod.js` — per-slot/instance **frustum culling**. Invisible by construction; it only
+  removes what is already outside the view cone. Nothing to showcase.
+- `viewer/dlod_nav.js` — **this is the `o` shortcut** (`panels.js:1486`, `{ id: 'dlodnav', key: 'o' }`,
+  comment "key 'o' (bOx; 'b' is Background)"). Its own drawer text: "Boxes far/off-screen elements
+  while you fly/orbit · Real mesh within 50 m + in view · **Off during Time Machine, Find isolate,
+  Cinema**".
+- the Alt+X merged bbox ghost (`navigate_find.js` `toggleMergedGhost`) — the same look, a different
+  owner.
+
+**The gradual restore already exists and is already tuned.** `dlod_nav.js:64,67`:
+`PROMOTE_DIST = 38 m`, `DEMOTE_DIST = 60 m`, `FADE_FRAMES = 10` — "§8 FINDINGS #4: N=10 sufficed;
+5 and 20 both worse". A 10-frame overlay-hoist cross-fade, measured, shipped.
+
+**Why no bake has ever shown it:** `dlod_nav.js:400` returns `'cinema'` on `_maxqActive` and fully
+disengages. Letting it run in a bake is the whole change.
+
+**The one thing that does NOT transfer for free.** The closing orbit flies at **radius 102 m**
+(measured, this bake's own `§MAXQ_START`), well past `DEMOTE_DIST = 60`, so the entire building
+would stay boxed for the whole beat — which IS the look red1 wants. But "restore as you come close"
+never fires, because a closing orbit pulls AWAY. The fade back to solid would have to be driven by
+the beat's own clock, not by camera distance: the same `FADE_FRAMES = 10` envelope, a different
+trigger. That is the only new mechanism this needs.
+
+**Open question for whoever picks it up:** the Cinema exclusion is deliberate (FLY_TOUR_DLOD_SCALE
+§3) and the reason is not recorded in `dlod_nav.js` itself. Find it before overriding it — a bake
+rendering box proxies instead of real geometry may be exactly what that gate exists to prevent.
+
 ## STATUS — BUILT and witnessed; one finding open for red1
 
 Scene fully worked out with red1 across several turns (trigger, timing, camera behaviour, visual
