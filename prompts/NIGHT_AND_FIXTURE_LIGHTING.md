@@ -943,26 +943,39 @@ _env*2, _ctr.z + _env*0.6)`. Ratios chosen for a plausible-looking angle, not de
 date, time, or geography. This predates and is unrelated to `bim-ootb` PR #1752's geo-ref/sun-path
 work (`bim-compiler prompts/GEOREF_SUNPATH_COMPASS.md`).
 
-**Why it's now inconsistent, not just approximate:** that same PR replaced the movie-bake's OWN old
-scripted lighting arc (a fixed 55°→6° sweep, same category of fake as this toggle's fixed ratios)
-with the real computed sun position (`A.sunPositionAt`, driven by extracted `site_latitude`/
-`site_longitude`/`true_north_angle` + the film's date) — see `cinema_maxq.js`'s own comment: "the
-sun arcs over the building the way the old scripted 55°→6° did — except real." So today, the SAME
-building can show two different lighting systems depending on context: real sun direction during a
-baked film, fake fixed-ratio direction in the live interactive Shadow+Ground toggle. One building,
-two suns.
+**CONFIRMED 2026-09-19 (user asked to quantify the gap against a real bake in Downloads/ — checked
+by code, not by watching the video, per this file's own no-pixel-evidence discipline): there is no
+small numeric gap to report, because the shadow-casting light and the compass are two fully
+disconnected systems, not two measurements of the same thing.** `A.sunCompassAt()`
+(`viewer/cpe_sun_compass.js`) is real and independently verified (§SUN_ORACLE, ~0.02-0.03° against
+pysolar) — but it only drives the compass rose's own decorative scene objects (`_grp`, `_sunRay`,
+`_sunLift`, `_sunDrop`). Grepped both `cpe_sun_compass.js` and `cinema_maxq.js` for any reference to
+`A.sun.position` or `A.sun.castShadow` (the actual directional light that casts the shadows a viewer
+sees): **zero hits in either file.** The "sun arcs over the building... except real" comment in
+`cinema_maxq.js` refers to the compass/readout arc, NOT the shadow-casting light — worth correcting
+here since an earlier pass of this doc read that comment as covering the shadow direction too and it
+does not. So: the interactive Shadow+Ground toggle and the Alt+C bake use the exact SAME fake
+fixed-ratio shadow direction — there was never a second, "already real" system to compare against.
+A bake can show an accurate compass right next to a shadow that has nothing to do with it, and
+LOOK fine, because the fixed ratio was tuned to produce a generically plausible daylight angle —
+it just isn't that building's real sun for that real date.
 
-**The fix, if picked up — additive, same discipline as everything else in the geo-ref lane:** when
-real geo-ref data is present (`site_latlong_source !== 'unknown'`, see GEOREF_SUNPATH_COMPASS.md
-§4), have `toggleShadow`'s turn-on path call `A.sunPositionAt` (or whatever it's named once that PR
-lands) for the CURRENT real-world date/time (not a film date — there is no film in the live
-interactive viewer) and derive `A.sun.position` from that real azimuth/elevation instead of the
-`_env*0.8/2/0.6` ratios. Fall back to exactly today's fixed-ratio placement when geo-ref is absent
-or defaulted — never worse than current behaviour, never an invented location. Needs its own
-witness (does the shadow direction visibly/numerically match `sunPositionAt`'s output for the
-building's real coordinates at the moment the toggle fires), not just reuse of the film-lighting
-witnesses, since this is a different call site with a different (wall-clock, not film-date) time
-input.
+**The fix, if picked up — additive, same discipline as everything else in the geo-ref lane, and now
+TWO call sites, not one:** when real geo-ref data is present (`site_latlong_source !== 'unknown'`,
+see GEOREF_SUNPATH_COMPASS.md §4):
+1. `toggleShadow`'s turn-on path (`tools.js` ~975) — call `A.sunPositionAt` for the CURRENT
+   real-world date/time (there is no film in the live interactive viewer) and derive `A.sun.position`
+   from that real azimuth/elevation instead of the `_env*0.8/2/0.6` ratios.
+2. The Alt+C bake path (`cinema_maxq.js`, wherever shadows are armed for a bake — not yet located
+   precisely, needs its own grep pass) — same derivation, but keyed to the FILM's date (the same
+   `_sunCompassMs`/`litDate` logic `cpe_sun_compass.js` already computes for the rose), so the
+   shadow and the compass finally agree in the same frame.
+Fall back to exactly today's fixed-ratio placement when geo-ref is absent or defaulted, or when
+there's no 4D cursor (same §SUN_COMPASS_NO_CURSOR case the rose already handles) — never worse than
+current behaviour, never an invented location. Needs its own witness for each call site (does the
+shadow direction visibly/numerically match `sunPositionAt`'s output for the building's real
+coordinates), not just reuse of the compass's own witnesses — those only prove the rose is right,
+never checked whether the shadow agrees with it.
 
 **Not scheduled.** Depends on `bim-ootb` PR #1752 actually merging first (real geo-ref data has to
 exist for this to have anything to key off). Filed here, the canonical lighting/`A.sun` doc, rather
