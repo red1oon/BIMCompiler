@@ -254,6 +254,12 @@ the x-ray differing (via a temporary `window.__escNoXray` dev tap, since removed
 
 **2.3x the wall clock, 3.0x per frame — essentially the entire cost of the reveal window.**
 
+⚠ These figures were taken WITHOUT the loadpath lane's §129.57 frame-reuse (which cuts ~22.9 min
+off a Hospital 1080p bake by reusing 199 of 265 byte-identical freeze frames at ~6,892 ms each —
+red1-1c, 2026-09-20). They are therefore an UPPER BOUND on the x-ray's share of a bake once that
+lands. The x-ray's own per-frame multiplier is unaffected: it was measured as a paired A/B on the
+same frames.
+
 **Why it was buying nothing.** `tools.js` `A.toggleXray()` sets `opacity 0.3, transparent, DoubleSide`
 on every cached material. 0.3 is **per surface**, not through a building: the eye receives `0.7^n`
 of the interior after n surfaces, and `DoubleSide` makes every wall two of them.
@@ -275,19 +281,33 @@ Landed on bim-ootb `feat/escape-route-reveal` @ `0f191c15`. W-ESC-11a-e assert: 
 call, no material-cache access, Alt+Z unchanged, the glow still shines through, and
 `cpe_storey_reveal.js` keeps its own — the ruling was NOT applied to another lane.
 
-### §10.1 — the storey reveal's x-ray: ALREADY SOLVED ELSEWHERE, do not re-spec it
+### §10.1 — the storey reveal's x-ray: ALREADY GONE ON THE LIVE BRANCH
 
-The same waste is live in `cpe_storey_reveal.js` on `origin/main`: `_enterWindow()` calls
-`A.toggleXray()` with no arguments (0.3/DoubleSide) for the whole 5 s storey beat, tinting
-6,601-10,769 meshes per storey. MEASURED in the 2026-09-20 all-toggles bake: ~4.1 s/frame through
-that window at 1080p.
+**CORRECTED 2026-09-20, same day, by red1.** The first version of this section said the fix was to
+merge `feat/storey-section-cut`. That is WRONG and is left here as a correction rather than quietly
+rewritten: **that branch is RETIRED** (red1's word). Do not merge it, do not chase its 69 unpushed
+commits.
 
-**But it is not this lane's to fix, and it does not need fixing here.** This doc's own parent lane
-already abandoned that mechanism: `MEP_CLASH_REVEAL_MOVIE.md` records "§STOREY_HIGHLIGHT_REVEAL's
-tint era (§57-§93) — abandoned, measured, replaced by the section cut" (§92 design, §94 spec). The
-replacement lives on bim-ootb `feat/storey-section-cut` (`e26336d0`, **69 commits ahead of
-origin/main, unmerged**) and **already engages no x-ray at all** — `toggleXray` survives there only
-inside one comment. So the fix is a MERGE, not a new spec. Checked 2026-09-20.
+The live branch is **`feat/loadpath-ledger`** (`c131bd4f`, 101 ahead of `origin/main`). Verified
+read-only, 2026-09-20: its `cpe_storey_reveal.js` contains **zero `A.toggleXray()` calls** and still
+carries `storeyRevealStatCardAt`. So on the branch that matters, the x-ray is already gone AND the
+per-storey info panel is real — red1: *"The storey reveal info panel do give fresh level by level
+info."*
+
+What remains true is only the measurement of the OLD beat as it still stands on `origin/main`,
+which is what every bake off main still gets: `_enterWindow()` calls `A.toggleXray()` with no
+arguments for the whole 5 s window, tinting 6,601-10,769 meshes per storey, at **4.13 s/frame**
+against **1.57 s/frame** for the un-x-rayed orbit in the same 1080p bake — 2.6x, independently
+matching the 3.0x from the dedicated A/B. That cost disappears when `origin/main` catches up with
+`feat/loadpath-ledger`.
+
+**The open design question, red1's steer to the loadpath session (2026-09-20):** *"consider the
+older storey reveal tinting."* Worth stating why it is not just nostalgia. The old tint beat's
+payload was never the glow — it was the per-storey card; the glow was a pointer. Its real defect was
+needing an x-ray to see the tint THROUGH the building, and that is now measured as useless. **A
+SOLID tint with no x-ray has never been tried.** A storey's own facade is on the building's exterior
+and reads directly from an orbit, so the tint may carry perfectly well at a third of the cost. That
+is the cheap experiment, not a rewrite. NOT BUILT, NOT THIS LANE'S — recorded for whoever picks it up.
 
 ## §11 — PROPOSED, NOT BUILT: the `o` box-proxy look instead of a wash
 
