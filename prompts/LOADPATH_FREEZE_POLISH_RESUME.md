@@ -1124,3 +1124,60 @@ invented number.
 4,963 frames at ~0.79 s/frame. ⚠ That census line is in the **firehose** beside the mp4
 (`/tmp/bake_<db>_<stamp>.log`), NOT in `out/<name>.log` — the §129.53 "read the RIGHT log" rule
 applies to this line specifically.
+
+## §129.56 SPEC — THE DLOD PROXY HAS NO PER-FRAME CENSUS (2026-09-20, red1 asked "isn't DLOD
+## engaged in this hi res bake?" and the log could not answer it)
+
+### The issue this must prove or disprove
+**Issue:** `§DLOD_TM active=… boxed=… mode=on` looks like a measurement and is not one. It prints
+ONLY on an engage/disengage EDGE — `time_machine.js:846`, `if (forceFull) console.log(…)`, where
+`forceFull = (_lastProxyEngaged !== engaged)`. On the Hospital hi-res bake it therefore fired
+exactly once, at the moment the proxy switched on, at frame 0 before the buildup had placed
+anything: `§DLOD_TM active=1 boxed=0 mode=on`. A reader sees `boxed=0` and cannot tell "the proxy
+is doing nothing" from "the proxy had nothing to do yet". Same blind-witness class as §HUD_LAYOUT
+(§129.55): a tag shaped like a number that only ever reports one instant.
+
+### What is already there and costs nothing
+`boxed` is ALREADY computed correctly on every pass, forceFull or not — the loop's early-continue
+branch still counts it (`if (!forceFull && b.visible === wantVisible) { if (wantVisible) boxed++;
+continue; }`). Only the PRINT is gated. So this is a logging change, not a measurement change: no
+new traversal, no new state, nothing added to the per-frame cost the §129.53 hand-off is already
+watching (478 ms -> ~864 ms on HHS).
+
+### The change
+`§DLOD_TM_CENSUS`, emitted from the SAME place, wall-clock throttled (red1: "in timer to avoid
+spam"), default one line every 2,000 ms:
+
+```
+§DLOD_TM_CENSUS boxed=<n>/<indexed> candidates=<c> frontier=<f> passes=<p> since=<ms>ms mode=on|off
+```
+
+- `boxed`      — proxy boxes VISIBLE this pass, i.e. real meshes standing down. The existing count.
+- `indexed`    — size of `_dlodBoxIndex`, counted in the loop already running (never `Object.keys`).
+- `candidates` — placed AND not frontier AND not recent: what the proxy was ALLOWED to box this
+                 pass. `boxed < candidates` means the frustum/distance test kept them real, which is
+                 a different fact from "nothing was eligible", and today neither is visible.
+- `frontier`   — the frontier size the edge line already prints, kept for continuity.
+- `passes`/`since` — how many TM passes the throttle swallowed and over how long, so the real
+                 per-frame rate is recoverable from a throttled line. A census that hid its own
+                 sampling rate would be the same lie in a smaller font.
+
+The edge line stays exactly as it is. This is added beside it, never in place of it.
+
+### Test — and what would make it a lie
+A logging-only change cannot be proven by a unit test of the logger; the thing that must be proven
+is that the line FIRES IN A REAL BAKE with a number that moves (bim-ootb rule: prove a fix fires,
+not just that it shipped). So:
+- **PASS** = a bake log contains ≥2 `§DLOD_TM_CENSUS` lines, at least one with `boxed>0`, and
+  `passes` summing to roughly the frame count of the span it covers.
+- **FAIL/blind** = `boxed=0` on every line for a Hospital-sized building, which would mean the
+  proxy really is inert and §129.50/51c never engaged — the exact question that could not be
+  answered today.
+- ⚠ **NOT YET WITNESSED when written.** The 05:31 Hospital hi-res bake was already running and its
+  page loaded the OLD `time_machine.js`; this line cannot appear in it. Status is SHIPPED, NOT
+  PROVEN until a bake started after this commit is read.
+
+### Why it is safe to land while a bake is running
+`viewer.html:1019` loads `time_machine.js` as a plain `<script src=…?v=79>`, fetched once at page
+load. The only dynamic `import()`s in the viewer are the three.js / postprocessing bundles under
+`lib/`. An edit on disk cannot reach a page that has already loaded.

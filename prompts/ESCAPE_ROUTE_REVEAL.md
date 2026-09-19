@@ -3,9 +3,12 @@
 
 ```
 # ⚠ DO NOT REMOVE — SCOPE
-FOUND-NOT-BUILT spec, worked out scene-by-scene with red1, 2026-09-19/20. Nothing built yet. Every
-visual choice below reuses an existing, already-proven technique from this codebase — this doc's
-own job is to name exactly which one, not to invent new render/animation mechanics. Read `bim-ootb
+BUILT 2026-09-20 on bim-ootb `feat/escape-route-reveal` — §7 records every hook point this doc left
+open, §8 records a finding that CONTRADICTS §3 below, §9 records what is still not built. §0-§6 are
+kept as written (the spec as agreed with red1), NOT retro-edited to match the code. Where §3 and §8
+disagree, §8 is what shipped and says why. Every visual choice below reuses an existing,
+already-proven technique from this codebase — this doc's own job is to name exactly which one, not
+to invent new render/animation mechanics. Read `bim-ootb
 common/room_graph.js`'s own header before touching escapeRoute()/escapeRouteViaProtectedStair() —
 same caution `prompts/Viewer/FindRooms/ROOM_GRAPH_REAL_AABB.md` already gives, this doc only READS
 that function's output, never changes it.
@@ -146,10 +149,99 @@ tiers:
 7. Witness pass per §5, all items.
 8. Bake and review — first real visual check, only after the numeric witnesses above already pass.
 
-## STATUS — spec only, nothing built
+## §7 — BUILT (2026-09-20, bim-ootb `feat/escape-route-reveal`)
+
+Every hook point §4/§6.1 left open is now confirmed against real code on bim-ootb `origin/main`
+(104ee009), not asserted. New file `viewer/cpe_escape_route.js` (~500 lines) owns the feature; the
+edits elsewhere are wiring only.
+
+| §4 item | CONFIRMED as |
+|---|---|
+| the path | `common/room_graph.js` `escapeRoute()` — READ-ONLY, untouched |
+| the drawn line's geometry | `shortestPath(room, escapeRoute().exitGuid).polyline` (§RASTER-ASTAR, floor-hugging). `escapeRoute()` returns no polyline — checked. The two distances are asserted equal before the polyline is used, and a disagreement falls back to the route's own anchors |
+| which room | argmax of `escapeRoute().distance` over `graph.nodes` — the INVERSE of `_rcLongestExitSteps`, not a second selection rule. A threshold filter cannot remove a maximum, so `max over rows == max over all rooms` whenever a row exists. W-ESC-1 asserts the identity against the real evaluator (Hospital: both 253.013209, both ~337 steps) |
+| shine-through | `cpe_storey_reveal.js:249`'s scoped-x-ray pattern (`A.toggleXray` + `_xrayByUs`), applied to the room's `A.allRoomVolumes()` box rather than to storey meshes — a ROOM has no per-mesh membership in this schema |
+| leader lines + labels | `clash_labels.js`'s plate/leader/halo language, same colours and metrics |
+| info panel chrome | `cpe_resource_panel.js` `bigStatsCompositeOntoCanvas`, through the existing `{card,idx,n,opacity}` shape — no new panel drawing exists |
+| "other overlays suppressed" | `cinema_maxq.js` `_hudGate()`, a sibling of `_hudHold` with its own trigger `A._escRouteHudSuppress`. The spec guessed the name `_drawUnlessHold`; that is the loadpath lane's, reached through `_hudHold`, and is NOT used |
+| the toggle | `cinema_path_editor.js`'s TOGGLES table, one row `cpe-escape-route`, icon `I.route` (already this UI's route icon, panels.js Pick Walk) |
+| the camera ease | see below |
+
+**The camera ease, §2 item 3.** `poseAt(tNorm)` was split into `poseAtFilm(tFilm)` plus
+`poseAt(tn) = poseAtFilm(_tFilm(tn))` — no path changed. The bake loop hands `poseAtFilm` an EASED
+film fraction; `_tnFilm` itself is assigned once per frame and never rewritten, so the day counter,
+the sun arc, the sun compass and the buildup cursor all still read the real one. The warp is
+
+    warp(w) = w + (A/16π)·(2·sin2πw − sin4πw),  A = 1.2, identity outside the window
+
+with `warp(0)=0`, `warp(1)=1`, `warp'(0)=warp'(1)=1` and `warp' = 1 + (A/4)(cos2πw − cos4πw)` —
+0.40× at mid-reveal, 1.34× peak, monotone. **A first cut used 16π's place for 8π; the real
+derivative was then `1 + (A/2)(…)`, minimum −0.2, and the camera ran backwards mid-reveal.** It is
+invisible in a picture and W-ESC-4c is what caught it.
+
+**Window.** `[rise + 0.15·L, rise + 0.70·L]` where `L = 1 − beats.rise` — inside the closing orbit,
+strictly after the storey reveal (which ends AT `beats.rise`), leaving the orbit's last 30% to the
+§MEASURE_BUILDING_CARD roll. On Hospital: 4.0 s in, 8.9 s long, 4.9 s of tail.
+
+**Witness** — `bim-ootb/witness_escape_route_reveal.js`, 36 checks, all passing on real
+`Hospital_meta.db`, no pixel-derived evidence anywhere (W-ESC-7 asserts that about its own bytes).
+`viewer/tests/witness_sun_compass_wiring.js` gained `escapeRoute` as a subject: 79 checks, all pass.
+
+## §8 — FINDINGS: `escapeRoute().distance` IS NOT A DISTANCE
+
+**This contradicts §3's premise and changes what the film prints. Found while building, measured,
+not guessed.**
+
+`escapeRoute().distance` is a penalty-weighted Dijkstra **cost**. `common/room_graph.js`'s own
+§UTILITY-ROUTING-PENALTY multiplies any edge touching a utility-tagged room by
+`UTILITY_EDGE_PENALTY = 8` so the search prefers corridors — correct as a routing preference, but it
+leaves the returned figure in cost units, not metres.
+
+Measured 2026-09-20 on real DBs:
+
+| DB | rooms | utility nodes | worst-case cost vs its drawn route | median ratio | inflated >5% |
+|---|---|---|---|---|---|
+| `Hospital_meta.db` | 156 | 23 | **253.0 vs 48.8 m — ratio 5.19** | 0.50 | 19 / 149 |
+| `Terminal_meta.db` | 43 | 0 | 96.2 vs 106.1 m — ratio 0.91 | 0.89 | 3 / 40 |
+
+A median of 0.50 on Hospital means that for most rooms the cost is *half* the drawn walk (the
+A*-refined floor-hugging polyline is longer than the straight-chord edge weights it was summed
+from). So the figure is wrong in both directions, not merely conservative.
+
+**What the film does.** The two counters read the **drawn route's own measured 3D length**
+(`walkM`) — the thing the picture actually shows. Hospital's worst room reads ~65 steps / 0:41 over
+48.8 m, not the ~337 steps / 3:33 the cost would give. The card also prints the metres, so neither
+derived number stands alone. Every build logs
+`§ESCAPE_ROUTE_COST_IS_NOT_A_DISTANCE … graphCost=… vs drawnWalk=… ratio=…`, on every building,
+whether or not it looks bad. W-ESC-1e/1f assert the split.
+
+**What the film does NOT do.** Which room is still chosen by the **cost**, deliberately, so the
+reveal stays pointed at the room the Egress panel's headline is about.
+
+**NOT FIXED — needs red1's call.** `viewer/rule_checklist.js` `_rcLongestExitSteps()` and
+`viewer/egress_sanity.js`'s `circulation_distance` rows both divide that same cost by 0.75 m and
+present the result as a travel distance. On Hospital that makes the shipped headline
+"Longest path to exit — ~337 steps" a penalty-inflated number for a 48.8 m walk. This predates the
+feature and changing a figure the Egress report already shows is not this lane's decision. The
+options, for the record: (a) have `escapeRoute()` return raw metres alongside the cost and have the
+rule read that; (b) leave the rule and relabel its headline as a routing cost; (c) leave both and
+document. Not chosen here.
+
+## §9 — ALSO NOT BUILT, stated rather than left to be discovered
+
+- **The preview shows the room glow only** — not the dotted line, not the card, not the camera ease.
+  The line and the card are composited onto the CAPTURE canvas (`_captureFrame`), which the preview
+  has no equivalent of; the clash labels and the day counter have never appeared in a preview
+  either. The ease is deliberately kept out of `_applyCameraPose` because that function also serves
+  the SCRUB drag, where a pose not matching the playhead under the user's finger would be a bug.
+- **No room glow where `A.allRoomVolumes()` excludes the room** (non-habitable by
+  `RoomHabitability.spaceHabitable`). The line and both labels still draw; the build log says
+  `roomBoxes=0` and why.
+
+## STATUS — BUILT and witnessed; one finding open for red1
 
 Scene fully worked out with red1 across several turns (trigger, timing, camera behaviour, visual
-language, panel content, the two counters and their honesty asymmetry). No code written. Two real
-gaps flagged rather than guessed: the exact shine-through/leader-line/panel-chrome component names,
-and the camera-ease parameter's own implementation shape — both left for whoever picks this up to
-confirm against current code, not asserted here.
+language, panel content, the two counters and their honesty asymmetry). Implemented 2026-09-20 on
+bim-ootb `feat/escape-route-reveal`; 36/36 feature witness checks and 79/79 panel-wiring checks pass
+on real data. §8's finding — the Egress report's own "Longest path to exit" headline is derived from
+a penalty-weighted cost, not a distance — is observed and documented, NOT fixed.
