@@ -867,3 +867,34 @@ Two pointers, both from red1-29's `prompts/NIGHT_AND_FIXTURE_LIGHTING.md` — no
   landed from it today; its §116 boundary text needed updating as a result.
 
 **Everything in this section is PARKED at red1's instruction — note, do not fix.**
+
+## §129.48-PROVISIONAL — red1: "the recent buggy fix is more like the last 24 hrs not 5 days, so
+## take note it may be trash" (2026-09-19)
+
+**Recorded so it can be reverted cleanly, not defended.**
+
+The DATE trace is right and it is not the whole story. `git log -L` on the block:
+- the `origE`/`origEI` snapshot is `0ba039fe`, **2026-05-25**, on main — it has always meant
+  "the material BEFORE night glow", four months unchanged;
+- the §118 relight that READS it is `f87e1a28`, **2026-09-14**, this lane only, never on main.
+
+But what made it matter is **24 hours old and mine**: §129.41/§129.47 gave the film a mid-film
+relight for the first time. Before that the fixtures were off from the last stick to the end, so
+that `_want === 1` branch essentially never ran during a film. A five-day-old mistake that nothing
+executed is not the same as a defect; my change is what turned it into one.
+
+**Why §129.48 may be trash, stated by me rather than discovered later.** It caches `glowE`/`glowEI`
+at apply time and restores that snapshot. But the values already have exactly one owner — the night
+glow applier, which sets `0xffe4b5 @ 0.3` for lights and `0xfff8ec @ 0.55` for windows and logs
+§NIGHT_GLOW_REASSERT. Caching them is a SECOND copy of state that the applier can change without
+this copy knowing, which is the drift this project keeps writing witnesses about. The smaller fix is
+probably to let the reassert run at relight instead of restoring anything — that keeps one owner.
+The larger question is whether a "relight" should be restoring a snapshot at all.
+
+**Do not treat §129.48 as settled.** It is unverified in any bake at the time of writing. If the
+Hospital bake shows the windows lit, it works but may still be the wrong shape; if it shows them
+dark, revert `d56e3962` and try the reassert route rather than patching the snapshot further.
+
+**What is NOT in question:** §129.49's witness change. The old bar ("something is emitting") passed
+while `emissiveMatsLit` was 0/4 and 0/8, and that is a defect in the test regardless of which fix
+turns out to be right.
