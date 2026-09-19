@@ -931,6 +931,11 @@ all triplanar surfaces brighter, which is likely why "too bright" resurfaced now
 ## §SHADOW_REAL_SUN — PARKED, not scheduled (found 2026-09-19, user: "Should we make the shadow
 feature follow suit" — not actioned, filed here so it isn't lost, no urgency assigned)
 
+**In plain terms (user, 2026-09-19: "it is not exact"): correct — the shadow you see today is not
+the real sun for that building.** It's a plausible-looking fixed angle, the same for every building,
+every time of day, regardless of the building's real location. See below for exactly why and what a
+real fix looks like.
+
 **The gap:** `A.toggleShadow` (`viewer/tools.js` ~line 930-979) positions `A.sun` — the ONE light in
 this codebase that ever casts a shadow (see this file's own §RAM note above, "only A.sun does,
 tools.js:710") — at a fixed, arbitrary placement: `A.sun.position.set(_ctr.x + _env*0.8, _ctr.y +
@@ -962,3 +967,27 @@ input.
 **Not scheduled.** Depends on `bim-ootb` PR #1752 actually merging first (real geo-ref data has to
 exist for this to have anything to key off). Filed here, the canonical lighting/`A.sun` doc, rather
 than as a new file, per this project's own anti-drift rule.
+
+## §SHADOW_BAKE_TRUNCATION — FOUND, NOT VERIFIED, NOT FIXED (2026-09-19)
+
+**Reported by red1, visual observation from an Alt+C bake, not yet confirmed by a witness or a
+programmatic check — this project's own FUNDAMENTAL LAW says a screenshot/visual is not proof, so
+treat the symptom description below as the finding, not the diagnosis:** shadows during an Alt+C
+bake appear cut off / truncated near the ground — "each column or edge where shadow appears, there
+is a cut off," rather than the shadow running naturally to its full length at the base.
+
+**Candidate causes, grounded in the real shadow setup code, none confirmed:** `A.toggleShadow`
+(`viewer/tools.js` lines 975-981) sets an orthographic shadow-camera frustum sized to the building's
+envelope (`camera.left/right/top/bottom = ±_env`, `near = _sunDist*0.05`, `far = _sunDist*4`,
+`bias = -0.0005`) and a ground plane (`A.ground`, positioned by `A._calcGroundY()`) as the shadow
+receiver. Plausible mechanisms for a base-level cutoff, in rough order of likelihood, ALL UNVERIFIED:
+1. **Bake-time envelope sizing vs. live-time.** `_env` is derived from `Object.values(A.buildingCentres)[0].envelope` at the moment shadows turn on. If the Alt+C bake pipeline enables shadows before the full building has streamed in (this codebase streams geometry progressively on large buildings — see `LARGE_DB_BAKE.md`), `_env` could be computed from a partial scene, undersizing the frustum for geometry that arrives afterward — edges/columns near or past that undersized boundary would have their shadows clipped by the frustum's own edge, which would look exactly like a cutoff "at the base" for elements near the frustum's outer bound.
+2. **Ground-plane extent/position vs. shadow bias interaction.** `A._calcGroundY()`'s ground-plane placement combined with `bias = -0.0005` is tuned generically, not per-building; a ground plane sitting slightly wrong relative to a column's true base (self-shadowing/acne territory) can eat the shadow right at the contact point rather than showing it — this is a different, narrower failure mode than #1, worth distinguishing before assuming one cause.
+3. **Shadow-map resolution vs. scene scale.** `mapSize` is fixed at 2048×2048 (§S288 comment, same function) regardless of building size; on a very large envelope, texel density drops, and a shadow that's supposed to reach a column's base can simply run out of resolution before it gets there — would present similarly to a "cutoff," but is a precision problem, not a clipping one.
+
+**Before fixing anything:** this needs a real, non-visual check — e.g. read back the actual shadow-map
+depth texture or the frustum bounds at bake time vs. live-toggle time and compare against the
+building's real envelope, or instrument `§SHADOW_FRUSTUM`'s own existing log line (tools.js:983)
+across a bake to see if `_env`/`near`/`far` differ from a fully-streamed live session's values. Do
+not fix on the strength of "it looks more truncated after change X" — same discipline as every other
+shadow/render finding in this codebase.
