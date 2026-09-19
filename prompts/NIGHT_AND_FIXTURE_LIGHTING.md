@@ -927,3 +927,38 @@ hooks must sit in `_removePhotoStaging`/`stopStillRefine`, and witnesses must ex
 intensity sum exactly halved (400→200, photo-prop lights untouched), exit restores plScale=1.0,
 nav budget 30 intact. Related same-day context: §TRINORM_LINEAR (PHOTOREAL_STILL_RENDER.md) made
 all triplanar surfaces brighter, which is likely why "too bright" resurfaced now.
+
+## §SHADOW_REAL_SUN — PARKED, not scheduled (found 2026-09-19, user: "Should we make the shadow
+feature follow suit" — not actioned, filed here so it isn't lost, no urgency assigned)
+
+**The gap:** `A.toggleShadow` (`viewer/tools.js` ~line 930-979) positions `A.sun` — the ONE light in
+this codebase that ever casts a shadow (see this file's own §RAM note above, "only A.sun does,
+tools.js:710") — at a fixed, arbitrary placement: `A.sun.position.set(_ctr.x + _env*0.8, _ctr.y +
+_env*2, _ctr.z + _env*0.6)`. Ratios chosen for a plausible-looking angle, not derived from any real
+date, time, or geography. This predates and is unrelated to `bim-ootb` PR #1752's geo-ref/sun-path
+work (`bim-compiler prompts/GEOREF_SUNPATH_COMPASS.md`).
+
+**Why it's now inconsistent, not just approximate:** that same PR replaced the movie-bake's OWN old
+scripted lighting arc (a fixed 55°→6° sweep, same category of fake as this toggle's fixed ratios)
+with the real computed sun position (`A.sunPositionAt`, driven by extracted `site_latitude`/
+`site_longitude`/`true_north_angle` + the film's date) — see `cinema_maxq.js`'s own comment: "the
+sun arcs over the building the way the old scripted 55°→6° did — except real." So today, the SAME
+building can show two different lighting systems depending on context: real sun direction during a
+baked film, fake fixed-ratio direction in the live interactive Shadow+Ground toggle. One building,
+two suns.
+
+**The fix, if picked up — additive, same discipline as everything else in the geo-ref lane:** when
+real geo-ref data is present (`site_latlong_source !== 'unknown'`, see GEOREF_SUNPATH_COMPASS.md
+§4), have `toggleShadow`'s turn-on path call `A.sunPositionAt` (or whatever it's named once that PR
+lands) for the CURRENT real-world date/time (not a film date — there is no film in the live
+interactive viewer) and derive `A.sun.position` from that real azimuth/elevation instead of the
+`_env*0.8/2/0.6` ratios. Fall back to exactly today's fixed-ratio placement when geo-ref is absent
+or defaulted — never worse than current behaviour, never an invented location. Needs its own
+witness (does the shadow direction visibly/numerically match `sunPositionAt`'s output for the
+building's real coordinates at the moment the toggle fires), not just reuse of the film-lighting
+witnesses, since this is a different call site with a different (wall-clock, not film-date) time
+input.
+
+**Not scheduled.** Depends on `bim-ootb` PR #1752 actually merging first (real geo-ref data has to
+exist for this to have anything to key off). Filed here, the canonical lighting/`A.sun` doc, rather
+than as a new file, per this project's own anti-drift rule.
