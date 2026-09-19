@@ -928,63 +928,49 @@ intensity sum exactly halved (400→200, photo-prop lights untouched), exit rest
 nav budget 30 intact. Related same-day context: §TRINORM_LINEAR (PHOTOREAL_STILL_RENDER.md) made
 all triplanar surfaces brighter, which is likely why "too bright" resurfaced now.
 
-## §SHADOW_REAL_SUN — PARKED, not scheduled (found 2026-09-19, user: "Should we make the shadow
-feature follow suit" — not actioned, filed here so it isn't lost, no urgency assigned)
+## §SHADOW_REAL_SUN — LARGELY DONE for the bake, per §SUN_ONE (#1752, MERGED 2026-09-18 23:51,
+4284ee9f). Corrected 2026-09-19 by the session on Alt+C bake work (feat/loadpath-ledger) — my
+earlier "no gap, two disconnected systems" claim below was WRONG for one real case, verified
+independently before accepting the correction, not just relayed.
 
-**In plain terms (user, 2026-09-19: "it is not exact"): correct — the shadow you see today is not
-the real sun for that building.** It's a plausible-looking fixed angle, the same for every building,
-every time of day, regardless of the building's real location. See below for exactly why and what a
-real fix looks like.
+**Where I was wrong:** I grepped `cpe_sun_compass.js` and `cinema_maxq.js` for `A.sun.position`/
+`castShadow` and found nothing, so I concluded the bake shadow was never connected to the real sun
+math. The actual wiring is in a THIRD file, `viewer/effects.js`, which I hadn't searched for this —
+`_realSunForRender()` / `_sunArcStep()` (now on `origin/main`, checked directly):
 
-**The gap:** `A.toggleShadow` (`viewer/tools.js` ~line 930-979) positions `A.sun` — the ONE light in
-this codebase that ever casts a shadow (see this file's own §RAM note above, "only A.sun does,
-tools.js:710") — at a fixed, arbitrary placement: `A.sun.position.set(_ctr.x + _env*0.8, _ctr.y +
-_env*2, _ctr.z + _env*0.6)`. Ratios chosen for a plausible-looking angle, not derived from any real
-date, time, or geography. This predates and is unrelated to `bim-ootb` PR #1752's geo-ref/sun-path
-work (`bim-compiler prompts/GEOREF_SUNPATH_COMPASS.md`).
+```
+function _sunArcStep(tNorm) {
+  var _real = _realSunForRender();          // real az/el from the compass, IF A._sunCompassOn
+  if (_real) {
+    A.updateSky(_real.el, _real.az);         // repositions the REAL A.sun DirectionalLight
+    A.renderer.shadowMap.needsUpdate = true; // re-aims the shadow right after
+    ...
+  }
+  ... // else: the OLD scripted 55°→6° arc at fixed azimuth 200, untouched
+}
+```
 
-**CONFIRMED 2026-09-19 (user asked to quantify the gap against a real bake in Downloads/ — checked
-by code, not by watching the video, per this file's own no-pixel-evidence discipline): there is no
-small numeric gap to report, because the shadow-casting light and the compass are two fully
-disconnected systems, not two measurements of the same thing.** `A.sunCompassAt()`
-(`viewer/cpe_sun_compass.js`) is real and independently verified (§SUN_ORACLE, ~0.02-0.03° against
-pysolar) — but it only drives the compass rose's own decorative scene objects (`_grp`, `_sunRay`,
-`_sunLift`, `_sunDrop`). Grepped both `cpe_sun_compass.js` and `cinema_maxq.js` for any reference to
-`A.sun.position` or `A.sun.castShadow` (the actual directional light that casts the shadows a viewer
-sees): **zero hits in either file.** The "sun arcs over the building... except real" comment in
-`cinema_maxq.js` refers to the compass/readout arc, NOT the shadow-casting light — worth correcting
-here since an earlier pass of this doc read that comment as covering the shadow direction too and it
-does not. So: the interactive Shadow+Ground toggle and the Alt+C bake use the exact SAME fake
-fixed-ratio shadow direction — there was never a second, "already real" system to compare against.
-A bake can show an accurate compass right next to a shadow that has nothing to do with it, and
-LOOK fine, because the fixed ratio was tuned to produce a generically plausible daylight angle —
-it just isn't that building's real sun for that real date.
+**So, precisely — three cases, not one blanket "fake everywhere":**
+1. **Alt+C bake, `--sun-compass` ON:** the REAL sun drives `A.sun` directly. The code's own comment
+   cites the exact measured divergence that motivated this — one real Hospital frame rendered at
+   345° az / 55.0° elev under the old scripted arc, vs. the real sun at 267.3° / 30.4° elev, 77.7°/
+   24.6° apart. Live bakes print `§SUN_ONE ... the REAL sun is lighting the scene, so the shadows
+   and the compass rose agree` on every frame. **This is genuinely fixed, not parked.**
+2. **Alt+C bake WITHOUT `--sun-compass` (the default):** still the old scripted 55°→6° arc at fixed
+   azimuth 200 — deliberately, an explicit opt-in gate, so a film nobody asked for the compass on
+   doesn't change. Still fake, by design, not a bug.
+3. **Interactive Shadow+Ground toggle (live viewer, not a bake)** — `A.toggleShadow`
+   (`viewer/tools.js` ~975-981) — still the original finding, unchanged and still accurate: fixed
+   `_env*0.8/2/0.6` placement, no connection to real geography or date at all. This is the one
+   remaining gap.
 
-**The fix, if picked up — additive, same discipline as everything else in the geo-ref lane, and now
-TWO call sites, not one:** when real geo-ref data is present (`site_latlong_source !== 'unknown'`,
-see GEOREF_SUNPATH_COMPASS.md §4):
-1. `toggleShadow`'s turn-on path (`tools.js` ~975) — call `A.sunPositionAt` for the CURRENT
-   real-world date/time (there is no film in the live interactive viewer) and derive `A.sun.position`
-   from that real azimuth/elevation instead of the `_env*0.8/2/0.6` ratios.
-2. The Alt+C bake path — **located precisely (2026-09-19): `viewer/effects.js` `_enablePhotoShadows()`
-   (~line 3064), called from `_applyPhotoStaging()` (~line 3613). CONFIRMED to be its own separate
-   implementation, not a call into `A.toggleShadow()`** — it self-enables shadows only when the
-   user's own interactive Shadow mode isn't already on (`if (A._shadowOn) { ...; return; }`, line
-   3065), and it deliberately does NOT reposition `A.sun` the way `toggleShadow` does (line 3200:
-   "it must NOT reposition the sun — `A.sun.position` is what `updateSky`, the Sky shader and the
-   lensflare all read"). Same derivation as item 1 once real geo-ref exists, but keyed to the FILM's
-   date (the same `_sunCompassMs`/`litDate` logic `cpe_sun_compass.js` already computes for the
-   rose), so the shadow and the compass finally agree in the same frame.
-Fall back to exactly today's fixed-ratio placement when geo-ref is absent or defaulted, or when
-there's no 4D cursor (same §SUN_COMPASS_NO_CURSOR case the rose already handles) — never worse than
-current behaviour, never an invented location. Needs its own witness for each call site (does the
-shadow direction visibly/numerically match `sunPositionAt`'s output for the building's real
-coordinates), not just reuse of the compass's own witnesses — those only prove the rose is right,
-never checked whether the shadow agrees with it.
-
-**Not scheduled.** Depends on `bim-ootb` PR #1752 actually merging first (real geo-ref data has to
-exist for this to have anything to key off). Filed here, the canonical lighting/`A.sun` doc, rather
-than as a new file, per this project's own anti-drift rule.
+**What's actually left to fix, if picked up — ONE call site now, not two:** `toggleShadow`'s turn-on
+path (`tools.js` ~975) could call the same real-sun derivation `_realSunForRender()`/`updateSky`
+already prove out for the bake, keyed to the CURRENT real-world date/time instead of a film date
+(there is no film in the live interactive viewer). Fall back to exactly today's fixed-ratio
+placement when geo-ref is absent/defaulted — same discipline as everything else in this lane. Not
+scheduled, no urgency assigned, but no longer blocked on anything — #1752 is merged. Filed here, the
+canonical lighting/`A.sun` doc, rather than as a new file, per this project's own anti-drift rule.
 
 ## §SHADOW_BAKE_TRUNCATION — FOUND, NOT VERIFIED, NOT FIXED (2026-09-19)
 
@@ -1030,18 +1016,22 @@ suspecting anything new:**
 - **§R17_SHADOWMAP_RELEASE** (effects.js ~3166+): a raised 4096² shadow map was found surviving
   teardown across repeated Alt+S presses — a persistence/memory finding, not a geometry one.
 
-**None of these, as documented, match red1's new symptom.** Every one above is about the shadow's
-FAR tip (dusk reach), rooftop/small-object resolution, or blanket erasure at grazing angles — not a
-cutoff specifically "at the base" of columns/edges. Two honest possibilities, not resolved here:
-(a) a genuinely new, not-yet-investigated mechanism, or (b) a partial regression/residual of one of
-the fixed bugs above presenting differently than its original report did. **Before fixing anything:**
-re-run `scratchpad/witness_shadow_bias_ab.js` (already exists, already proven this exact class of
-bug once) against the specific building/date in the bake red1 saw, and read the real
-`§PHOTO_SHADOW_*` log lines from that run — don't re-diagnose from the video.
+**A THIRD candidate, added 2026-09-19 after §SHADOW_REAL_SUN's correction above — the real sun can
+now go somewhere the frustum/bias math was never tuned for.** `_enablePhotoShadows()`'s frustum
+sizing (`§PHOTO_SUN_SHADOW_REACH`) and bias calibration (`§PHOTO_SHADOW_BIAS`) were both derived
+from the OLD scripted arc's known, bounded elevation range (`PHOTO_SUN_ELEVATION_START=55` down to
+`PHOTO_SUN_ELEVATION_END`, a fixed worst case). Per §SUN_ONE above, a bake with `--sun-compass` on
+now drives the ACTUAL real sun elevation instead — which is not bounded to that range at all (it can
+sit lower, or the film's date/hour combination can put it at an elevation the old worst-case tuning
+never accounted for). If red1's truncated bake had the compass on, this is the most likely of the
+three candidates: not a regression of an old bug, but a real sun angle exceeding assumptions that
+were only ever proven safe for the scripted arc's fixed range.
 
-**Before fixing anything:** this needs a real, non-visual check — e.g. read back the actual shadow-map
-depth texture or the frustum bounds at bake time vs. live-toggle time and compare against the
-building's real envelope, or instrument `§SHADOW_FRUSTUM`'s own existing log line (tools.js:983)
-across a bake to see if `_env`/`near`/`far` differ from a fully-streamed live session's values. Do
-not fix on the strength of "it looks more truncated after change X" — same discipline as every other
-shadow/render finding in this codebase.
+**None of these, as documented, is CONFIRMED as red1's cause.** The first six are about the shadow's
+FAR tip (dusk reach), rooftop/small-object resolution, or blanket erasure at grazing angles — not a
+cutoff specifically "at the base" of columns/edges; the seventh (real sun exceeding tuned bounds) is
+plausible but unverified. **Before fixing anything:** check whether the bake in question had
+`--sun-compass` on (if yes, candidate 7 first); either way, re-run `scratchpad/
+witness_shadow_bias_ab.js` (already exists, already proven this exact class of bug once) against the
+specific building/date/compass-state in the bake red1 saw, and read the real `§PHOTO_SHADOW_*` /
+`§SUN_ONE` log lines from that run — don't re-diagnose from the video.
