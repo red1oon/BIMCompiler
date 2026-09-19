@@ -1043,3 +1043,42 @@ bake in question had `--sun-compass` on and whether its LAST frames are visibly 
 against the specific building/date/compass-state in the bake red1 saw, and read the real
 `§PHOTO_SHADOW_*` /
 `§SUN_ONE` log lines from that run — don't re-diagnose from the video.
+
+## §116 / §129.41 — Interior fixtures relight for the closing orbit — DONE, WITNESSED (2026-09-19,
+`feat/loadpath-ledger`, not yet merged to main)
+
+**Original rule (§116, predates this section):** from the last construction stick (`plan.beats.out`)
+to the end of the film, every interior fixture — PointLights AND the separate glow-sprite/emissive-
+material family (§116's own note: "a separate object family from the PointLights, which is why
+capping the lights alone still left fixture glow on screen") — is OFF. Reason at the time: by then
+the camera is outside and climbing away, so interior glow only reads as clutter in rooms nobody's
+looking into.
+
+**Narrowed, not undone, by §129.41 (`cinema_maxq.js` ~3128-3156, red1: "restore back night lighting
+only after storey build so when dusk or dark its windows are lighted"):** the reason for §116 stops
+holding once the building tops out — from there the film is a closing orbit around a *finished*
+building, and (now that §SUN_ONE drives a real sun, see §SHADOW_REAL_SUN above) that orbit can be
+genuinely at dusk. A dark building at real dusk isn't restraint, it's an unlit model. So the
+off-window is now `[beats.out, topoutU)` instead of `[beats.out, end]` — `topoutU` is not a new
+number, it's the same fraction `_buildupTopoutU()`/`§CPE_BUILDUP_TOPOUT` already uses elsewhere.
+Nothing before the last stick changes.
+
+**Two falsifiability controls, deliberately kept separate from the gate itself (§118):**
+`window.__ilForceOn` defeats the whole gate; `window.__ilNoRelight` restores the ORIGINAL §116
+behaviour (off to the end), specifically so the relight can be proven to be what lit the windows,
+rather than assumed from a frame looking right.
+
+**Witnessed, real tag `§INTERIOR_LIGHTS_WITNESS`** (`cinema_maxq.js` ~3696) — reports
+`poolLit`/`navLit`/`glowSpritesStaged`/`lensQuadLive`/`emissiveMatsLit` and its own PASS/FAIL rule
+was updated in the same change: under §116 the bar was "nothing interior emits after the last
+stick," full stop; past topout under §129.41 the CORRECT answer is now the opposite (interior
+should be lit), so the verdict logic had to change with the rule or it would fail on the exact
+behaviour red1 asked for. Measured on a real HHS bake: real sun elevation (§SUN_ONE) ran 34.7° at
+`tNorm=0` down to 1.4° at `tNorm=1` — genuinely setting, which is what makes "lit windows at dusk"
+a real, not staged, visual claim.
+
+**Status: done and witnessed on this branch, not yet on main.** No open question here — filed for
+the record (this is the canonical interior-fixture-lighting doc) and because it shares the same
+sun-elevation data (`1.4°` low end) as §SHADOW_BAKE_TRUNCATION's candidate 7 above — worth knowing
+both findings come from the same real bake conditions, not a coincidence of two separate low-sun
+numbers.
