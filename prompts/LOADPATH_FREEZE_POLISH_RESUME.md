@@ -1181,3 +1181,91 @@ not just that it shipped). So:
 `viewer.html:1019` loads `time_machine.js` as a plain `<script src=…?v=79>`, fetched once at page
 load. The only dynamic `import()`s in the viewer are the three.js / postprocessing bundles under
 `lib/`. An edit on disk cannot reach a page that has already loaded.
+
+## §129.57 SPEC — THE FREEZE RE-RENDERS 199 FRAMES THAT ARE ALREADY BYTE-IDENTICAL (2026-09-20,
+## red1: "almost black, minimal elements on canvas. Can cut down bake time?" — yes, 22.9 min)
+
+### The issue this must prove or disprove
+**Issue, MEASURED not assumed.** The bake already hashes every encoded frame (`§FRAME_HASH i=<n>
+sha=<...>`). Over the 3,381 frames of the killed 2026-09-20 Hospital hi-res bake:
+
+```
+byte-identical to the frame before  :  199 / 3381
+  inside the load-path freeze       :  199
+  everywhere else in the film       :    0
+```
+
+All 199 are in the freeze, and each cost **6,892 ms** to produce. **199 x 6.892 s = 22.9 min of GPU
+time spent re-deriving bytes that already existed.**
+
+### The shape of the freeze, read off the hashes
+```
+frames 1923-1947 (25)   HUD fade-in        every frame distinct
+frames 1948-2163        9 hop reveals      2 distinct frames per hop, then 23 IDENTICAL
+frames 2164-2187 (24)   HUD fade-out       every frame distinct
+                        -> 66 distinct, 199 duplicates
+```
+
+Why nothing moves for 23 frames at a time, from the code and the log together:
+- **Camera** pinned at `armPose` for the whole hold (`§LOADPATH_ARM armPose=[-23.55,-0.07,-9.29]`).
+- **Sun** frozen: `§SUN_ONE elevation=26.5` on all 264 in-window samples, first to last.
+- **Scene** frozen: `held=73892` constant, `visible` moves 68,979 -> 68,987 across the whole window
+  — 8 objects, the hop clones.
+- **The reveal step is idempotent and early-returns.** `_revealStackStep` (`cpe_load_path.js`)
+  computes `revealed = floor(stackElapsed) + 1` and then `if (revealed === stack.revealedHops)
+  return;`. So it mutates exactly once per second of hold. ⚠ This is also why the "landing glow"
+  (`GLOW_SEC = 1.0`, a lerp over `1 - age/GLOW_SEC`) shows for ONE frame instead of fading over a
+  second — the lerp is only ever evaluated on the step frame. That is a separate LOOK question,
+  noted here and not fixed by this spec.
+
+### The change
+Inside the hold ONLY, when nothing that drives the picture has changed since the last frame, hand
+the encoder the **previous encoded blob** instead of calling `_captureFrame` at all. That skips the
+base render, the 20-render still fold (`taa=8 ao=12`) and the HUD draw together — the whole
+6,892 ms, not a part of it.
+
+**A. `A._loadPathVisualRev` — a mutation counter, not a predicted list of drivers.**
+Every load-path function that ACTUALLY changes what is drawn bumps it: `_revealStackStep` past its
+own early-return, arm, release, and any content change in the card/info panel. The bake reads the
+counter; it never tries to guess what the load path might animate.
+
+This is the part that makes the change safe against future edits. If the landing glow is ever fixed
+to animate over its full `GLOW_SEC`, `_revealStackStep` will mutate every frame, bump the counter
+every frame, and frame reuse will switch itself off — with no edit to the bake loop and no stale
+picture. A hand-written list of "things that change" would have silently frozen that animation.
+
+**B. The frame key**, built in `cinema_maxq.js`'s own bake loop from values it already has:
+`inHold` · `A._loadPathHudAlpha` · `A._loadPathVisualRev` · camera pose · sun tNorm · day cursor.
+`hudAlpha` is what correctly forces a real render through the 49 fade frames at either edge.
+
+**C. Gated to the hold.** Outside `_lpHoldCtl.inHold`, never reuse — matching the measurement
+exactly (0 duplicates anywhere else). `window.__noFrameReuse = 1` disables it entirely, which is
+the control the witness below needs.
+
+**D. Census.** `§FRAME_REUSE` per reuse run and one end-of-bake total, so a bake states how many
+frames it skipped and which frames they were. A saving that cannot be read back out of the log is
+not a saving anybody can check.
+
+### Expected effect
+```
+freeze window   30.4 min  ->  ~7.5 min
+whole bake      ~2h50     ->  ~2h27
+picture quality unchanged — the frames are already identical
+```
+
+### Test — and the one that can actually fail
+1. **W-FRAME-REUSE (node, no browser)** — drives the key/reuse logic over a synthetic hold that
+   reproduces the measured shape (25 fade-in frames, 9 hops x (2 distinct + 23 held), 24 fade-out)
+   and asserts exactly 66 renders and 199 reuses. Control: with `__noFrameReuse` it must do 265
+   renders and 0 reuses. Also asserts that bumping the rev counter EVERY frame (the "glow was
+   fixed" case) collapses reuse to 0 — the self-correcting property is the whole safety argument,
+   so it is tested, not asserted in prose.
+2. **BYTE-EXACT GATE (needs a bake)** — re-bake and diff the `§FRAME_HASH` sequence against the
+   2026-09-20 run frame-for-frame. Identical = the reuse never froze anything real. A single
+   differing hash = the key is too coarse. This is the real proof and it is NOT run yet:
+   ⚠ **red1 has paused baking** while another session lands the Escape Route ending
+   (`feat/escape-route-reveal`, worktree `/tmp/wt-escape-route`) so the two ship in one film.
+   §129.57 is SHIPPED, NOT PROVEN until that combined bake's hash sequence is compared.
+   The reference hashes are in `/tmp/bake_Hospital_silent_2026-09-20_0531.log` — ⚠ that file is in
+   `/tmp` and will not survive a reboot. Copy it before the next bake or the gate loses its
+   baseline.
