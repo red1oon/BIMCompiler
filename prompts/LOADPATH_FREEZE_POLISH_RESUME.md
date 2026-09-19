@@ -954,3 +954,137 @@ in the tree; the last hi-res was killed to free context before it finished.
   at the window differs. It made a fix look worse, then made a broken fix look right.
 - **A green witness can be covering an unmeasured area.** `emissiveMats 0/8` sat inside a PASS for a
   whole day; `overlaps=0` still covers only 5 of ~12 overlays.
+
+## §129.54 THE HI-RES BAKE SCRIPT WAS RUNNING ON HALF ITS FLAGS (2026-09-20, found on picking this
+## prompt back up — this is why "the one thing to do first" had to be fixed before it could be done)
+
+`scripts/bake_hires_offline.sh` put its explanatory `#` comment lines BETWEEN the `\`-continued
+lines of the `node cli_silent_bake.js` command. **A comment inside a `\`-continued command ends the
+command.** Bash ran the args above the comment as the command, then tried to run the args below it
+as a command of their own.
+
+Measured with a `node` shim on the real script (not reasoned about):
+
+| | args reaching node |
+|---|---|
+| before | **14** — `--db --out --gpu real --width 1920 --height 1080 --fps 24`, then `--dlod-proxy: command not found`, exit 127 |
+| after  | **26** — the full list, `--dlod-proxy --reveal --buildup --label --measure --clash --load-path --ledger --cost --storey-reveal --sun-compass --day tr` |
+
+**It never failed loudly.** `cinema_maxq.js` falls back to the DB's stored `cinema_path` for any
+flag the CLI does not set (`§CLI_BAKE_RESOLVED source=db:cinema_path`), so a film still came out —
+just not the film the command line asked for. And `--dlod-proxy` has **no stored equivalent at
+all**: it is a CLI-level flag (`cli_silent_bake.js:137`, `page.evaluateOnNewDocument('window.
+__dlodProxyBake = 1')`), so the whole point of §129.50/51c was simply never switched on in any
+hi-res bake.
+
+Window: this file's own 2026-09-19 20:12 edit (the one that added the `--dlod-proxy --reveal` line
+and its comment block) through 2026-09-20 05:24. Every hi-res bake in that window is suspect. The
+HHS 09-19 11:08 delivery predates the break and is fine (`§CLI_BAKE_RESOLVED source=db:cinema_path
+… buildup=1 … loadPath=1 ledger=1 cost=1 sunCompass=1` in its own log).
+
+Fixed in `c7db9260` — comments kept, moved ABOVE the command, with a ⚠ line saying why they must
+stay there. Proof the fix took, from the very next run's own log:
+
+```
+before (05:24):  §CLI_BAKE_BUILDUP_RESOLVED on=1 source=stored-path
+after  (05:31):  §CLI_BAKE_BUILDUP_RESOLVED on=1 source=cli
+before (05:24):  §CLI_BAKE_OPENING kept=load-camera (Measure off — the datum gate does not apply)
+after  (05:31):  §CLI_BAKE_OPENING kept=saved-view … bubbles=37/37 overalls=3/3 drawn=71 FULL
+```
+
+**The rule this earns:** `bash -n` says nothing about this — the script is syntactically valid, it
+just means something else. A flag list is only proven by a run that ECHOES IT BACK, either from a
+`node` shim or from the bake's own `§CLI_BAKE_RESOLVED` census. Read that census line on every
+bake before believing the film is the film you asked for.
+
+## §129.55 SPEC — CLOSE THE §HUD_LAYOUT BLIND SPOTS (written 2026-09-20, spec BEFORE code per
+## CLAUDE.md Spec-First; the §129.53 hand-off names this "the highest-value test work")
+
+### The issue this must prove or disprove
+**Issue:** `§HUD_LAYOUT overlaps=0` is not evidence that the HUD does not overlap, because most of
+the HUD never registers a rect. §129.52 (the big-stats card drawn on top of the pie panel) sat
+under a green `overlaps=0` and was found BY EYE. The test to write is the one that would have
+turned §129.52 red.
+
+### What registers today (read from the code, 2026-09-20)
+Real rects — `A._hudLayoutRegister(name, x, y, w, h, parent?, truncated?)`:
+
+- `cpe_resource_panel.js:1084` `resource-panel` (outer plate)
+- `cpe_resource_panel.js:858` `pie.band` (parent `'resource-panel'`, hardcoded)
+- `cpe_resource_panel.js:1076` `pie.list` (parent `'resource-panel'`)
+- `cpe_resource_panel.js:324` each list row, e.g. `pie.cost`/`pie.ledger` (parent `'resource-panel'`)
+- `cpe_load_path.js:3974/4081/4268` `loadpath.infopanel.*`, `loadpath.label.*`, `loadpath.card`
+
+Everything else registers only `_drawUnlessHold`'s **0,0,1,1 placeholder** (`cinema_maxq.js:1167`),
+which the witness explicitly skips (`if ((a.w <= 1 && a.h <= 1) || …) continue;` at line 849). So
+these layers are in the registry by NAME only and contribute nothing to `overlaps`/`overflow`:
+`hud.status`, `roomtitle.fallback`, `hud.pathmap`, `daycounter`, `suncompass.clock`,
+`suncompass.readout`, `hud.pie`, `roster` (the stat/storey card), `measure.box`, `measure.*`,
+`clash.labels`.
+
+### The one thing that makes this cheap
+Four of them **already publish their real rect** and nobody reads it into the registry —
+`_rowAdvance` consumes it for layout and drops it:
+
+- `cpe_path_overview.js:183` `A.pathOverviewLastBox`
+- `cpe_day_counter.js:109` `A.dayCounterLastBox`
+- `cpe_sun_compass.js:692/753/754` `A.sunClockLastBox`
+- `cpe_sun_compass.js:628` `A.sunReadoutLastBox`
+- (`cpe_resource_panel.js:1092` `A.resourcePanelLastBox` — already registered as `resource-panel`)
+
+### The change
+**A. `_drawUnlessHold(name, fn, boxFn)`** — NEW optional third arg, a function returning this
+frame's real rect for that layer. When it returns a box with `w > 1 && h > 1`, register THAT under
+`name` instead of the 0,0,1,1 marker. No `boxFn`, or a box that is absent/degenerate → the existing
+placeholder, unchanged. The existing `alpha > 0` guard ("a drawer that painted nothing must not
+register a rect") is kept as-is and now gates the real rect too.
+
+**B. Wire the four that already publish** — `hud.pathmap`, `daycounter`, `suncompass.clock`,
+`suncompass.readout`, at their `_drawUnlessHold` call sites in `cinema_maxq.js`.
+
+**C. Two that must start publishing:**
+- `A.filmBoxesDrawStatus` (`cpe_film_boxes.js:190`) → `A.filmBoxesStatusLastBox` from its own
+  `L.status`, set only when it actually draws. Wire `hud.status`.
+- `A.filmBoxesDrawMeasure` (`cpe_film_boxes.js:309`) → `A.filmBoxesMeasureLastBox` from `L.measure`,
+  set only on a frame that draws an entry, cleared on the idle/linger-expired return. Wire
+  `measure.box`.
+
+**D. `hud.pie` stays a placeholder ON PURPOSE.** `resourcePanelCompositeOntoCanvas` already
+registers the identical geometry as `resource-panel`; registering it a second time under a second
+name would be a rect overlapping itself — a permanent false FAIL. Written down so the next reader
+does not "fix" the gap.
+
+**E. `roster` (the stat card / storey card) needs an owner rect, and this is the §129.52 catch.**
+`bigStatsCompositeOntoCanvas` (`cpe_resource_panel.js:880`) draws its own plate from the same
+`_box()` (`B.x/B.y/B.bw/B.bh`) and publishes nothing. It gets `A.bigStatsLastBox` and registers as
+`stats-panel`.
+  - `_pie` and `_drawList` hardcode `parent = 'resource-panel'`. They are SHARED by both panels, and
+    both panels can draw in the same frame, so a card-owned `pie.band` currently claims a parent that
+    may not exist or, worse, belong to the other panel. Both take an **owner name** instead, passed
+    down from whichever composite is drawing. No new geometry, no new numbers.
+  - With `resource-panel` and `stats-panel` both real and unrelated, §129.52's defect — the card
+    handed the same `_stackY` as the pie panel — is two unrelated rects at the same origin, which
+    is exactly what `_hudRectsOverlap` counts. **That is the issue this change proves.**
+
+### Test — and it must fail before it passes
+`witness_hud_layout_coverage.js`, node-runnable, no browser (the overlap rule is pure arithmetic
+and the coverage fact is in the log text — bim-ootb rule: slice the predicate, do not claim "needs
+a browser"):
+
+1. **COVERAGE** — parse `§HUD_LAYOUT` / `§HUD_LAYOUT_ARM` `items=[name:x,y,w,h …]` out of a bake
+   log. For every layer that drew this frame, assert it registered a rect with `w > 1 && h > 1`.
+   Exempt, by name and with the reason above: `hud.pie`, and any layer whose drawer legitimately
+   published nothing.
+   - **Control:** the same parser over a PRE-fix log must report the blind layers as blind. A run
+     that cannot show the "before" as red is not evidence.
+2. **§129.52 REGRESSION** — the pure rect arithmetic, straight from `_hudRectsOverlap`'s own rule:
+   `resource-panel` and `stats-panel` at the same `_stackY` ⇒ `overlaps >= 1`; stacked with the
+   `_stackY += resourcePanelLastBox.h + _gapY` advance ⇒ `overlaps == 0`.
+
+### Out of scope, deliberately
+`clash.labels` and the per-beat `measure.*` cue overlays paint many small marks, not one plate;
+giving them a single rect would be an invented number. They stay placeholders and stay listed as
+uncovered, honestly, rather than being papered over.
+
+### NOT MERGED, NOT AUTHORISED TO MERGE
+Same standing rule as the rest of this branch: `feat/loadpath-ledger` is HELD at red1's word.
