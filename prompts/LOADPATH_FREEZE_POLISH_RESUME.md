@@ -773,7 +773,8 @@ against an existing `*.launch.txt` in `/tmp/wt-loadpath/out/` before trusting th
 - One bake at a time. Never commit without red1's explicit word, and only after they've sighted the
   result themselves.
 
-## §129.46 NOTED, NOT FIXED (2026-09-19, red1 on the delivered LTU film): "the shadows are not
+## §129.46 CORRECTED — ITS FIRST VERSION WAS WRONG. READ THE CORRECTION AT THE END OF THIS SECTION
+## BEFORE THE BODY. (2026-09-19, red1 on the delivered LTU film): "the shadows are not
 ## corelating to the clock on the wall"
 
 red1's own words, and explicitly parked: "Just take note, don't fix yet." This section is the note.
@@ -817,3 +818,52 @@ that over a whole run — but it printed nothing here, so the all-dark tally did
 
 **Where to start when it is unparked:** whether `_applyPhotoStaging` ran at all on LTU, before
 anything about shadows. Everything above is one missing call away from being explained.
+
+
+### §129.46b THE CORRECTION — I READ THE WRONG LOG, AND RED1'S EYES CAUGHT IT
+
+Everything in §129.46 above that says the shadow path "never armed" IS WRONG. Kept, not deleted,
+because the way it went wrong is the lesson.
+
+red1, on being told the path never ran: **"No, i see the shadows running well and long.."** They
+were right and the log I quoted was the wrong file. `out/ltu_lowres.log` is the SHELL REDIRECT —
+stdout only, which carries just the claim-filtered summary. The real 6.3 MB firehose is written by
+`cli_silent_bake.js` itself to `<out>.log`, beside the mp4. Shadow tags are not in CLAIM_RX, so
+they never appear in the filtered file, and counting them there returns 0 for something that ran
+thousands of times. From the REAL log:
+
+    §PHOTO_SHADOW enabled casters=7967 sunDist=5000 env=967 texelPerM=2.1     (x2)
+    §PHOTO_SHADOW_BIAS worldBias=4.492m bias=-2.275e-4 range=19750m texel=0.472m grazeElev=6
+    §PHOTO_AO ... (5,047 lines)
+    §SUN_ONE_LIGHT frames=1562 lit=1191 dark=371
+
+CLAUDE.md's Log Mandate says read the log after every run. It does not say WHICH log, and that is
+the gap this fell into: a filtered view of a log looks exactly like a log. **Check the file size
+before trusting a zero** — 6.3 MB against 40 KB would have said it immediately.
+
+### §129.46c WHAT THE REAL NUMBERS SAY — §129.45 IS THE LEAD, AND LTU IS ITS BEST TEST
+
+LTU's shadow frustum is `env=967` against HHS's 180, because the building is far bigger. That makes
+each shadow texel 0.472 m instead of 0.0879 m, and the frozen bias that §129.45 diagnoses comes out
+at **4.492 m** instead of HHS's 0.836 m. A depth bias separates a shadow from its caster by
+bias/tan(elevation), so on LTU, whose sun runs 24.2 -> -11.7 deg:
+
+    24.2 deg -> 10 m      10 deg -> 25 m      5 deg -> 51 m      2 deg -> 129 m
+
+Which is exactly red1's report: shadows "running well and long", but tens of metres away from what
+is casting them, so they do not agree with the clock. HHS's 0.9 m at its film start was the mild
+case of the same fault. **LTU is now the better verification target for §129.45 than HHS**, because
+the effect is about five times larger.
+
+### §129.46d ALSO TO FIX LATER (red1: "the other session said earlier there is a more correct Sun
+### path, the night lighting")
+
+Two pointers, both from red1-29's `prompts/NIGHT_AND_FIXTURE_LIGHTING.md` — not re-derived here:
+- **§SHADOW_REAL_SUN.** The Alt+C bake's shadows DO follow the real sun when `--sun-compass` is on
+  (via §SUN_ONE driving `A.updateSky`, effects.js ~2690-2733). The INTERACTIVE Shadow+Ground toggle
+  (`tools.js A.toggleShadow`) does NOT — it is a separate call site that was never wired to real
+  sun position. That gap is still open.
+- **The night/fixture lighting lane** is that same document. §129.41 (windows relight at topout)
+  landed from it today; its §116 boundary text needed updating as a result.
+
+**Everything in this section is PARKED at red1's instruction — note, do not fix.**
