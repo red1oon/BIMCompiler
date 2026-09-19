@@ -1269,3 +1269,68 @@ picture quality unchanged — the frames are already identical
    The reference hashes are in `/tmp/bake_Hospital_silent_2026-09-20_0531.log` — ⚠ that file is in
    `/tmp` and will not survive a reboot. Copy it before the next bake or the gate loses its
    baseline.
+
+### §129.57 DONE (2026-09-20) — bim-ootb `0eebc4dc`
+`§FRAME_REUSE_W PASS` — 0 unsafe reuses, 198 of 199 real duplicates captured, 22.7 min saved.
+Control on the pre-fix tree: `INCONCLUSIVE — no §129.57 reuse branch; nothing judged`.
+
+The witness earned its keep on its first run: keying on `visualRev` alone reused at frames 1948,
+1972, 1996, 2020 … each exactly ONE FRAME AFTER a hop step, and the real bake's hashes say every
+one of those differed from its predecessor. **A load-path mutation lands in the picture one frame
+late** — the same off-by-one §129.50 hit with the DLOD proxy. The key now carries the previous
+frame's rev as well as the current one.
+
+The reference hash sequence is committed at
+`viewer/tests/fixtures/framehash_Hospital_2026-09-20_0531.txt` (3,384 rows, 72 KB) — the 3.6 MB
+source log lived only in `/tmp` and would not have survived a reboot.
+
+## §129.58 SPEC + DONE — ONE THEME FOR THE FREEZE HUD (2026-09-20, bim-ootb `c131bd4f`)
+red1: *"streamline the Freeze info panel box to be same theme (only reversed as it is on black) as
+the rest HUDs for consistency. The standard HUD font title, body sizing is more professional."*
+
+### The issue
+MEASURED at h=1080. The panel was the only overlay in the film carrying its own three numbers, and
+the two boxes inside the SAME frozen frame disagreed with each other as well as with everything else.
+
+| box | family | body | title | rowH | plate |
+|---|---|---|---|---|---|
+| resource panel row | `-apple-system,…,Roboto` | 22 px | x1.15 | x1.55 | dark glass ← **standard** |
+| sun-compass readout | " | 22 px (k 0.020) | — | — | dark glass |
+| day counter | " | 28 px (k 0.026) | — | — | dark glass |
+| freeze info CARD | `Segoe UI, system-ui` | 28 px | — | x1.55 | opaque white slab |
+| freeze info PANEL | `Segoe UI, system-ui` | **16 px** | **x1.35** | **x2.00** | dark glass ← **outlier** |
+
+### The change
+Body 16 → 22 px, title x1.35 → x1.15, rows x2.00 → x1.55 — every value read off
+`cpe_resource_panel.js`'s own list through the one §HUD_SCALE law, none invented. One font family
+(`FREEZE_F`). **One plate, `_freezePlateDraw`, shared by the card and the panel: the standard plate
+REVERSED**, because `A.cpePanelPlate`'s dark glass has no presence against this beat's black
+backdrop — which is exactly why the card was already carrying a white slab of its own. Five shared
+ink constants, the §HUD_LEGIBLE ladder mirrored dark-on-light. §61 applied at last: the totals line
+was `rgba(255,215,0,0.95)` gold, the one place in the freeze still breaking red1's own
+*"Replace yellow with blue is better contrast"* ruling — now `#0277bd`.
+
+### Deliberately NOT changed
+The ladder labels' `13 * k` size is still outside the §HUD_SCALE law. They got the shared family
+only. Rewriting their sizing was not asked for and is a separate LOOK ruling — **flagged, open**.
+
+### Test
+`viewer/tests/witness_freeze_hud_theme.js` (W-FREEZE-HUD-THEME) — `PASS fails=0`, control on the
+pre-change file `FAIL fails=18`. Every number is read LIVE out of `cpe_resource_panel.js` and
+`cinema_maxq.js`, so "make them equal" cannot be satisfied by pinning a literal in the test.
+
+Three defects it caught before any bake, all mine:
+1. **`_stackInfoPanelMaxH` carries the same sizing block as the drawer.** I had restyled the drawer
+   only. The reserver feeds the panel's bottom anchor, so the two drifting apart moves the panel
+   mid-hold. Check 6 now asserts the two copies are byte-identical.
+2. **The new plate strokes a border**, which `witness_card_font.js`'s stub canvas had no `stroke`
+   for — that witness went INCONCLUSIVE, i.e. it stopped testing rather than failing. Stub extended.
+3. **My own first assertion was wrong**, demanding the freeze body match a resource-panel row at
+   EVERY resolution. §HUD_SCALE deliberately shrinks the fraction below 1080 and grows it above
+   (red1's *"too big in low res and too small in hi res"*), and `cpe_resource_panel.js` is the
+   module still on a flat fraction. Equal at 1080, on the law elsewhere.
+
+### Lane state
+Green: `§FREEZE_THEME` · `§CARD_FONT` · `§FRAME_REUSE_W` · `§HUD_COVERAGE` · `§DLOD_CENSUS` ·
+`§LOADPATH_SPAN_WITNESS`. ⚠ None of §129.55-58 has been seen in a bake — baking is paused while
+`feat/escape-route-reveal` lands its ending so the two ship in one film.
