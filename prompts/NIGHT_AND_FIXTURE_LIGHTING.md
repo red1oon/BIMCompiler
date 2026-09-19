@@ -1016,22 +1016,30 @@ suspecting anything new:**
 - **§R17_SHADOWMAP_RELEASE** (effects.js ~3166+): a raised 4096² shadow map was found surviving
   teardown across repeated Alt+S presses — a persistence/memory finding, not a geometry one.
 
-**A THIRD candidate, added 2026-09-19 after §SHADOW_REAL_SUN's correction above — the real sun can
-now go somewhere the frustum/bias math was never tuned for.** `_enablePhotoShadows()`'s frustum
-sizing (`§PHOTO_SUN_SHADOW_REACH`) and bias calibration (`§PHOTO_SHADOW_BIAS`) were both derived
-from the OLD scripted arc's known, bounded elevation range (`PHOTO_SUN_ELEVATION_START=55` down to
-`PHOTO_SUN_ELEVATION_END`, a fixed worst case). Per §SUN_ONE above, a bake with `--sun-compass` on
-now drives the ACTUAL real sun elevation instead — which is not bounded to that range at all (it can
-sit lower, or the film's date/hour combination can put it at an elevation the old worst-case tuning
-never accounted for). If red1's truncated bake had the compass on, this is the most likely of the
-three candidates: not a regression of an old bug, but a real sun angle exceeding assumptions that
-were only ever proven safe for the scripted arc's fixed range.
+**A THIRD candidate, MEASURED 2026-09-19 (feat/loadpath-ledger session, from a real 1969-frame 1080p
+HHS bake, compass ON) — this is now the strongest of the three, not just plausible.** Real sun
+elevation across that film ran **1.4° to 42.4°**. `effects.js:2660` — `PHOTO_SUN_ELEVATION = 6` —
+is the old scripted arc's deliberately-chosen floor, its own comment naming WHY: "still above
+Preetham's near-black cutoff (TM's own dawn/dusk boost kicks in <10°)". The real sun's low end
+(1.4°) sits well under that floor — inside the near-black region the floor existed to avoid, and
+past the <10° threshold where a separate dawn/dusk behaviour change kicks in. Shadow length runs
+`cot(elevation)`: 6° → ~9.5× object height (the range `§PHOTO_SUN_SHADOW_REACH`'s frustum sizing was
+proven safe for); 1.4° → ~41×. Anything sized for the first is cut by the second. This also predicts
+the REPORTED SHAPE, not just a plausible mechanism: a base/edge cutoff that worsens toward the END of
+the film (where elevation is lowest) — a cheap thing to check against the actual video before
+re-running any witness. **Caveats from the session that measured this, kept intact:** no shadow
+frame was actually looked at, and the frustum/bias code itself wasn't re-read for this — it's the
+elevation range plus that one `effects.js` comment, nothing more. The upper end moved too (42.4° vs.
+the scripted arc's 55° start) — a narrower AND lower range, not simply a lower one.
 
-**None of these, as documented, is CONFIRMED as red1's cause.** The first six are about the shadow's
-FAR tip (dusk reach), rooftop/small-object resolution, or blanket erasure at grazing angles — not a
-cutoff specifically "at the base" of columns/edges; the seventh (real sun exceeding tuned bounds) is
-plausible but unverified. **Before fixing anything:** check whether the bake in question had
-`--sun-compass` on (if yes, candidate 7 first); either way, re-run `scratchpad/
-witness_shadow_bias_ab.js` (already exists, already proven this exact class of bug once) against the
-specific building/date/compass-state in the bake red1 saw, and read the real `§PHOTO_SHADOW_*` /
+**None of these, as documented, is CONFIRMED as red1's cause — but #7 is now evidence-backed, not
+just a hypothesis.** The first six are about the shadow's FAR tip (dusk reach), rooftop/small-object
+resolution, or blanket erasure at grazing angles — not a cutoff specifically "at the base" of
+columns/edges; #7 (real sun exceeding the tuned 6° floor) has real measured numbers behind it and
+correctly predicts where the defect should be worst. **Before fixing anything:** check whether the
+bake in question had `--sun-compass` on and whether its LAST frames are visibly worse than its first
+(candidate 7's own prediction) — if yes to both, that's the lead to chase first. Either way, re-run
+`scratchpad/witness_shadow_bias_ab.js` (already exists, already proven this exact class of bug once)
+against the specific building/date/compass-state in the bake red1 saw, and read the real
+`§PHOTO_SHADOW_*` /
 `§SUN_ONE` log lines from that run — don't re-diagnose from the video.
