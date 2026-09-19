@@ -898,3 +898,59 @@ dark, revert `d56e3962` and try the reassert route rather than patching the snap
 **What is NOT in question:** §129.49's witness change. The old bar ("something is emitting") passed
 while `emissiveMatsLit` was 0/4 and 0/8, and that is a defect in the test regardless of which fix
 turns out to be right.
+
+## §129.53 SESSION HANDOFF (2026-09-20) — READ THIS FIRST
+
+Branch `feat/loadpath-ledger` in `/tmp/wt-loadpath`, pushed, clean. 90+ commits ahead of main.
+red1-29 is HOLDING a merge to main at red1's word — check with red1 before landing anything.
+
+### The one thing to do first
+Run a FULL hi-res Hospital and read the log: `cd /tmp/wt-loadpath && ./scripts/bake_hires_offline.sh
+Hospital_silent` (~1h20, self-delivers to ~/Downloads, three delivery checks). Every fix below is
+in the tree; the last hi-res was killed to free context before it finished.
+
+### Fixed AND proven in a bake
+- §129.39 freeze card drew at 10px (ctx.font never set). Witness `witness_card_font.js`, control fails.
+- §129.40 load-path chains must BEAR (contact + plan overlap), §129.42 storey span leads the ranking.
+  Witness `witness_loadpath_bearing.js`. Terminal picks a 4-storey chain now.
+- §129.44 compass rose anchored to `A.groundIfcZ` (was 30.7 m underground on Terminal).
+- §129.47 lights relight at the ORBIT START, not topout. Off-window was 0.77% of the film.
+- §129.48 relight restored PRE-GLOW dark values; now restores the glow. `emissiveMats 0/8 -> 8/8`.
+- §129.49 lights witness fails per FAMILY — one lit family no longer covers a dark one.
+- §129.50 DLOD proxy stands down for the discipline reveal (ARC was coming back one frame later).
+- §129.51c a proxy engage/disengage edge forces one full TM pass. WITHOUT THIS §129.51/51b WERE
+  INERT: standing the proxy down stopped it hiding more but never un-hid what it had hidden.
+  Proven: `§STOREY_ARM_BASELINE armedObjsOff=0/4899 zeroScaleRows=0/25013` (was 457 / 4544).
+- Georef migrations for all four film DBs (§GEOREF_PATCH_WITNESS PASS dbs=10/10 checks=150).
+
+### Fixed, NOT yet seen in a bake
+- §129.45 shadow contact: the grazing term moved to `normalBias`, depth bias back to 0.305 m.
+  Predicted base gap 34 m -> 12.5 m at the film's end. NOT visually verified.
+- §129.52 the big-stats card was handed the SAME `_stackY` as the pie panel and drew on top of it.
+
+### Open, with evidence
+- `§STOREY_CUT_RESTORE_WITNESS membersLeftOff=1689/63182` — down from 2981, NOT zero. The arm is
+  now clean, so these are switched off DURING the storey reveal and not put back. Different, smaller
+  fault from the proxy one. Read it from a FULL bake; a clip distorts this number badly.
+- §HUD_LAYOUT IS NEARLY BLIND. Only 5 things register a rect: loadpath.card, loadpath.infopanel,
+  loadpath.label, pie.band, pie.list. The stat card, storey card, room title, day counter, clock,
+  sun readout and path map register NONE — so every `overlaps=0` today was silent about most of the
+  screen. §129.52 was found by eye, not by the witness. Closing this is the highest-value test work.
+- Per-frame cost grew 478 ms (09-15) -> ~864 ms (today) on HHS full 480p. The RENDERER is unchanged
+  (still-refine 382->393 ms, AO 170->171 ms across four days) — the growth is overlay compositing,
+  ~300 ms/frame. Clean test: bake HHS with the 09-15 flag set and compare.
+- LARGE_DB_BAKE.md §8: `frustumPct` is 98-99% normally, so frustum culling is dead — EXCEPT inside
+  the load-path freeze, where the unpack takes LTU to held=134,037 visible=126,065 and frustumPct
+  falls to 34.8% at 9.4 s/frame. That window is the one place culling would pay.
+- §129.46 LTU shadows do not track the solar clock. Parked by red1.
+
+### Rules this session earned the hard way
+- **"If the bug is older than a day, it is not it."** red1's rule killed three of my theories, each
+  time pointing at innocent month-old code. The real cause was always something changed that day.
+- **Read the RIGHT log.** `out/<name>.log` is the claim-filtered stdout; the 6 MB firehose is written
+  beside the mp4. Counting tags in the wrong one returns 0 for things that ran thousands of times.
+  Check the file size before trusting a zero.
+- **A clip is not a film.** `--frame-range` never renders the earlier frames, so proxy/buildup state
+  at the window differs. It made a fix look worse, then made a broken fix look right.
+- **A green witness can be covering an unmeasured area.** `emissiveMats 0/8` sat inside a PASS for a
+  whole day; `overlaps=0` still covers only 5 of ~12 overlays.
