@@ -1412,8 +1412,8 @@ Test seams published for it: `A.storeyRevealTintFor` / `A.storeyRevealTintRestor
 `feat/escape-route-reveal`'s latest lands, then wants ONE clip, storey reveal through to the end,
 carrying both beats.
 
-## §129.60 FINDING (not fixed, reported) — two storey witnesses are DEAD in node, and were before
-## this session touched the file
+## §129.60 FIXED (bim-ootb `16af8d37` + `§129.60b`) — two storey witnesses were DEAD in node, and
+## had been long before this session touched the file. Kept below as the finding; the fix follows it.
 
 ```
 witness_storey_reveal_list.js -> ReferenceError: window is not defined
@@ -1430,9 +1430,18 @@ file and both witnesses crash identically, so this is not §129.59's doing.
 Cost: the storey lane's two oldest witnesses have been passing nothing. A green run was never
 possible; they abort before their first assertion. One `typeof` guard restores both.
 
-NOT FIXED — standing rule, findings are reported and red1 authorises the fix.
+**FIXED 2026-09-20 on red1's word** ("Yes fix ... extract clean"): one shadowing `var window =`
+as the first statement of `setupCpeStoreyReveal` — browser binds the real window, Node binds `{}` —
+plus `witness_storey_cut.js`'s `require()`, which pointed at **`/tmp/wt-storey-cut/`, another
+session's worktree**, made relative. Both witnesses now run. Three assertions then failed and were
+all STALE TESTS, not defects (`§129.60b`): S7's `n===3` predates §106's ground-slab slot, S7b's
+`window/n` predates the same slot taking the minimum, and S8's guard prefix-matched
+`'§STOREY_REVEAL_WINDOW_FIT` so it never reached the real line. 13 passed, 0 failed; no product
+code changed by that commit.
 
-## §129.61 OPEN — the escape-route merge is BACKED OUT, deliberately, and must be redone
+## §129.61 DONE (bim-ootb `d63c59d6`) — the escape-route merge, backed out once on purpose and
+## then completed. The resolution notes below are kept because they are what made the second pass
+## survivable; the four hazards it actually hit are in §129.62.
 `git merge origin/feat/escape-route-reveal` was taken to conflict resolution and then
 `git merge --abort`ed, because red1 said the beat is "still ongoing, with more wows" — merging a
 moving branch twice is worse than merging it once at the end.
@@ -1458,3 +1467,96 @@ Resolutions worth not re-deriving:
   `_drawUnlessHold` to `(name, fn, boxFn)`. red1-87 confirms their overlay does NOT go through
   `_drawUnlessHold`, so it needs no `boxFn` — but it publishes its plates via
   `A.escapeRouteFrameAt().labels[]` with real rects, which §HUD_LAYOUT should register.
+
+---
+
+# §129.62 SESSION HANDOFF (2026-09-20) — READ THIS FIRST. SUPERSEDES §129.53.
+Everything above §129.54 is history. §129.53's own hand-off is spent: its "one thing to do first"
+was done, and the branch it describes has moved 114 commits.
+
+## State in one line
+`feat/loadpath-ledger` in `/tmp/wt-loadpath`, pushed, clean, **114 ahead of origin/main, 0 behind**,
+carrying the load-path freeze, the storey tint, and the escape-route beat **merged together**.
+**NOTHING IS BAKED.** ⚠ `origin/main` auto-publishes to GitHub Pages (`deploy-pages.yml`), so a
+merge to main is a live deploy of all 114.
+
+## THE ONE THING TO DO FIRST
+**One clip: storey reveal through to the end, 1080p24, carrying BOTH new beats.** red1's own words:
+*"Want a clip from storey reveal till end to include latest Escape route."* He paused baking for
+`feat/escape-route-reveal` to settle; it has now landed here, so the gate is his word, not the code.
+
+```
+cd /tmp/wt-loadpath && ./scripts/bake_hires_offline.sh Hospital_silent
+```
+
+Three things to read out of that bake, in order:
+1. `§CLI_BAKE_RESOLVED` — the flag census. Never trust the command line (§129.54).
+2. `§FRAME_REUSE_TOTAL reused=N/frames` — **zero on a film with a load-path hold is a FAIL**, and
+   the line says so itself. Then diff `§FRAME_HASH` against
+   `viewer/tests/fixtures/framehash_Hospital_2026-09-20_0531.txt` frame-for-frame: inside the freeze
+   window (1923-2187 in that run) the sequence must be IDENTICAL. That is §129.57's real proof and
+   it has never been run. Expect the non-freeze frames to differ — the escape beat is new.
+3. `§DLOD_TM_CENSUS` and `§STOREY_REVEAL_TINT scope=storey meshesTouched=` — both shipped, neither
+   ever seen in a bake.
+
+⚠ **NO BACKGROUND MONITOR WHILE A BAKE RUNS.** A Monitor task died with exit 144 at the exact
+second a 1h38m Hospital bake took SIGTERM and lost everything (`§CLI_BAKE_SINK` count 0 — the mp4
+is muxed only at the end, so an interrupted bake yields ZERO bytes, not a partial film). Not proven
+causal; the correlation is one second wide. Poll with one-shot Bash calls.
+
+## Done this session, all pushed, none baked
+| § | what | witness |
+|---|---|---|
+| 129.54 | `bake_hires_offline.sh` ran on **14 of 26 args** — comments inside a `\`-continued command end it. Every hi-res bake 09-19 20:12 → 09-20 05:24 is suspect. | flag census in the log |
+| 129.55 | §HUD_LAYOUT was blind to 7 of ~12 overlays (0,0,1,1 placeholders). That is how §129.52 shipped green. | `witness_hud_layout_coverage.js` |
+| 129.56 | `§DLOD_TM` printed only on an engage EDGE, so `boxed=0` was unreadable. Added a throttled census. | `witness_dlod_census.js` |
+| 129.57 | **199 of 265 freeze frames were byte-identical and cost 6,892 ms each — 22.9 min.** Reuse the previous encoded blob. | `witness_frame_reuse.js` |
+| 129.58 | One theme for the freeze HUD: body 16→22 px, title ×1.35→×1.15, rows ×2.0→×1.55, one plate, §61 applied (gold → `#0277bd`). | `witness_freeze_hud_theme.js` |
+| 129.59 | **Storey tint restored, whole-storey scope, x-ray OFF.** §93.4's facade-only subset was the defect, not the flag. | `witness_storey_tint_scope.js` 18/18 |
+| 129.60 | Two storey witnesses had NEVER run (bare `window.` in Node; one `require`d another session's worktree). Three failures they then showed were stale tests. | both now run, 13/0 |
+| 129.61 | Merged `feat/escape-route-reveal`. | see below |
+
+## Rules this session earned
+- **A keep-both merge resolution eats closing braces, and the parser lies about where.** Three lost
+  this merge; `node --check` reported two of them at the FILE'S LAST LINE. The only thing that
+  localises them is diffing brace depth against HEAD line-by-line at every unique line. Do that
+  before believing a large merge.
+- **Duplicate declarations are worse than conflicts.** A kept-both `function _captureFrame` silently
+  WINS and removes the whole HUD pipeline from the film. No error. Grep for duplicate `function`
+  and duplicate draw calls after any merge of two branches that both touch a render chain.
+- **Check what a peer measured, not just what they concluded.** The "x-ray has no effect" A/B was
+  the ESCAPE ROUTE beat, not the storey reveal — red1 confirmed. It proved x-ray is dead weight in
+  the orbit; it did NOT prove the tint reads without it. The tint's real defect was scope.
+- **`ls` is not recursive.** The DLOD Cinema-exclusion ruling was in `prompts/Viewer/`, and I
+  reported it non-existent. `grep -r` the whole tree before saying a spec is missing.
+- **A peer relaying "red1 handed you X" is not red1.** Two experiments were declined on that basis
+  and red1 confirmed both times.
+
+## Open, with evidence
+- **§129.59 is unproven by eye.** The witness proves the tint REACHES the geometry (Level 7A 2→40
+  meshes, Level 7 6→55). Whether it READS better than the section cut is red1's call on the clip.
+  `STOREY_REVEAL_MODE = 'cut'` restores the old beat in one word; every §98/§102/§110 constant is
+  intact.
+- **`witness_escape_route_reveal.js` is INCONCLUSIVE in this worktree** — it wants
+  `buildings/Hospital_meta.db`, which is not here (we have `Hospital_silent.db`). red1-87 reports
+  62/62 on their machine. If that DB is local-only, the beat's only proof runs in one place.
+- **The abort-and-land path is 3-for-3 broken** — `§CLI_BAKE_LAND_FAIL Attempted to use detached
+  Frame`, `cli_silent_bake.js:847`, at frames 48, 1041 and 3381. SIGTERM hits the whole `setsid`
+  group so Chrome dies with node and `page.evaluate` then talks to a dead page. Signalling node
+  alone is untested. Until fixed, an interrupted bake is a total loss.
+- **The freeze is the heaviest scene in the film**, not the lightest. `§LOADPATH_BATCH_UNPACK
+  containers=4899 elements=63182` — the whiten cannot recolour a `BatchedMesh`, so batching is
+  dissolved and `visible` goes 3,820 → 68,979, rendered 20× per frame at `frustumPct=27.5%`.
+  §129.57 skips 75% of those frames; it does not make the remaining 25% cheaper. Whether the whiten
+  needs every touched container split is unexamined and is the bigger lead.
+- **§129.46 LTU shadows do not track the solar clock.** Parked by red1, still parked.
+
+## Not ours, declined, on the record
+The `o` box-proxy-in-a-bake experiment (ESCAPE_ROUTE_REVEAL.md §11.1) is forbidden by red1's own
+2026-07-21 ruling in `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must
+never appear in a movie frame"*, with *"Cinema pays full render cost on LTU-scale buildings … that
+is this decision working as intended, not a bug"* recorded as the accepted tradeoff. It needs red1
+to reverse himself IN THAT FILE. Two traps if he ever does: the lever must cover
+`dlod_nav.js:400` **and** `:401` (consecutive gates — a lever on 400 alone falls through to the
+photoreal gate and reads as "did nothing"), and `NAV_MIN_ELEMENTS = 50000` means it can never meet
+red1's "any building will give same effects" requirement.
