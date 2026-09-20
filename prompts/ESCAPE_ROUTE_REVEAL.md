@@ -3,10 +3,15 @@
 
 ```
 # ⚠ DO NOT REMOVE — SCOPE
-BUILT 2026-09-20 on bim-ootb `feat/escape-route-reveal` — §7 records every hook point this doc left
-open, §8 records a finding that CONTRADICTS §3 below, §9 records what is still not built. §0-§6 are
-kept as written (the spec as agreed with red1), NOT retro-edited to match the code. Where §3 and §8
-disagree, §8 is what shipped and says why. Every visual choice below reuses an existing,
+**THIS IS A DESIGN RECORD, NOT A SESSION PROMPT.** The one live hand-off is
+`LOADPATH_FREEZE_POLISH_RESUME.md` §130/§130.1 — start there. This file exists for the beat's
+reasoning, its citations and its measurements.
+BUILT 2026-09-20, now on bim-ootb `feat/loadpath-ledger` (the escape lane merged in) — §7 records
+every hook point this doc left open, §8 records a finding that CONTRADICTS §3 below, §9 records the
+two things deliberately not built. §0-§6 are kept as written (the spec as agreed with red1), NOT
+retro-edited to match the code. Where §3 and §8 disagree, §8 is what shipped and says why.
+⚠ §13.5's drop order is SUPERSEDED by §14.1: the cited limit is shed before the row's descriptor,
+because red1 asked for every colour to be explained in words. Every visual choice below reuses an existing,
 already-proven technique from this codebase — this doc's own job is to name exactly which one, not
 to invent new render/animation mechanics. Read `bim-ootb
 common/room_graph.js`'s own header before touching escapeRoute()/escapeRouteViaProtectedStair() —
@@ -227,7 +232,7 @@ options, for the record: (a) have `escapeRoute()` return raw metres alongside th
 rule read that; (b) leave the rule and relabel its headline as a routing cost; (c) leave both and
 document. Not chosen here.
 
-## §9 — ALSO NOT BUILT, stated rather than left to be discovered
+## §9 — DELIBERATELY NOT BUILT, stated rather than left to be discovered
 
 - **The preview shows the room glow only** — not the dotted line, not the card, not the camera ease.
   The line and the card are composited onto the CAPTURE canvas (`_captureFrame`), which the preview
@@ -309,92 +314,12 @@ SOLID tint with no x-ray has never been tried.** A storey's own facade is on the
 and reads directly from an orbit, so the tint may carry perfectly well at a third of the cost. That
 is the cheap experiment, not a rewrite. NOT BUILT, NOT THIS LANE'S — recorded for whoever picks it up.
 
-## §11 — PROPOSED, NOT BUILT: the `o` box-proxy look instead of a wash
-
-red1, seeing the Find-panel Path view as wireframe boxes: *"I wonder if converting to bboxes or full
-DLOD frame (which looks cool)"*, and *"at end, it restores back which can be cool too if apply the
-gradual restore as experienced when user comes close effect. This also showcase our DLOD feature."*
-
-**Name the right module.** Three things are called DLOD and only one is the look:
-- `viewer/dlod.js` — per-slot/instance **frustum culling**. Invisible by construction; it only
-  removes what is already outside the view cone. Nothing to showcase.
-- `viewer/dlod_nav.js` — **this is the `o` shortcut** (`panels.js:1486`, `{ id: 'dlodnav', key: 'o' }`,
-  comment "key 'o' (bOx; 'b' is Background)"). Its own drawer text: "Boxes far/off-screen elements
-  while you fly/orbit · Real mesh within 50 m + in view · **Off during Time Machine, Find isolate,
-  Cinema**".
-- the Alt+X merged bbox ghost (`navigate_find.js` `toggleMergedGhost`) — the same look, a different
-  owner.
-
-**The gradual restore already exists and is already tuned.** `dlod_nav.js:64,67`:
-`PROMOTE_DIST = 38 m`, `DEMOTE_DIST = 60 m`, `FADE_FRAMES = 10` — "§8 FINDINGS #4: N=10 sufficed;
-5 and 20 both worse". A 10-frame overlay-hoist cross-fade, measured, shipped.
-
-**Why no bake has ever shown it:** `dlod_nav.js:400` returns `'cinema'` on `_maxqActive` and fully
-disengages. Letting it run in a bake is the whole change.
-
-**The one thing that does NOT transfer for free.** The closing orbit flies at **radius 102 m**
-(measured, this bake's own `§MAXQ_START`), well past `DEMOTE_DIST = 60`, so the entire building
-would stay boxed for the whole beat — which IS the look red1 wants. But "restore as you come close"
-never fires, because a closing orbit pulls AWAY. The fade back to solid would have to be driven by
-the beat's own clock, not by camera distance: the same `FADE_FRAMES = 10` envelope, a different
-trigger. That is the only new mechanism this needs.
-
-**⚠ NOT AN OPEN QUESTION — FOUND, AND IT IS RED1'S OWN RULING. See §11.2. This paragraph
-previously said the reason "is not recorded"; that was wrong, and so was a peer session's
-independent search. It is in `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185`.**
-
-### §11.1 — HANDOFF: exactly what to change, and what to check first
-
-red1, 2026-09-20, chose to hand this to the bake lane rather than land it here: the change can only
-be judged by a bake, and this lane no longer owns baking. Everything needed is below so it is not
-re-derived.
-
-**The change is one condition.** `viewer/dlod_nav.js:400`, inside `_gateBlockReason(app)`:
-
-    if (app._cinemaOrbitActive || app._maxqActive) return 'cinema';   // §3: Alt+C excluded
-
-A lever (`window.__dlodNav.allowCinema`, default FALSE, matching how `roomOcclEnabled`/
-`pvsEnabled`/`occlBvhEnabled` are already levered in that file) is the whole edit. Default false
-keeps every existing bake byte-identical, which is what makes it safe to land before it is proven.
-
-**THREE THINGS TO CHECK BEFORE TRUSTING IT — in this order:**
-
-1. **The next line may block it anyway.** `dlod_nav.js:401` also excludes `_stillRefineActive`
-   (Alt+P photoreal), and a bake runs photoreal staging. UNVERIFIED whether that flag is set during
-   capture — `cinema_maxq.js` calls `stopStillRefine` per frame under §MAXQ_STAGE_KEEP, so it may
-   be false at the moment the gate is read. Check before concluding the lever "did nothing".
-2. **>50k elements, so it is NOT universal.** `NAV_MIN_ELEMENTS = 50000`. Hospital's 63k qualifies;
-   Clinic, Duplex and Terminal do not. red1's own standing requirement is that "any building will
-   give same effects" — this mechanism cannot meet it, and that is a property of the module, not a
-   bug to fix here. Say so on the toggle's hint if it ever gets one.
-3. **Find §3's reason first.** It is not in `dlod_nav.js`. A bake exists to render final geometry;
-   a gate that stops it substituting box proxies may be exactly right, and the lever would then be
-   for a DELIBERATE stylistic beat only, never a default.
-
-**The distances do not suit the closing orbit, and this is the real design work.** `PROMOTE_DIST =
-38 m`, `DEMOTE_DIST = 60 m`, `FADE_FRAMES = 10` ("§8 FINDINGS #4: N=10 sufficed; 5 and 20 both
-worse"). MEASURED: the closing orbit flies at **radius 102 m**, past `DEMOTE_DIST`, so the whole
-building stays boxed for the entire beat — which IS the look red1 wants — but the
-restore-as-you-approach never fires, because a closing orbit pulls AWAY. **The fade back to solid
-has to be driven by the beat's clock, not by camera distance.** Same `FADE_FRAMES = 10` envelope,
-a different trigger. That is the only genuinely new mechanism this needs.
-
-**How to settle it in one sitting:** bake the same clip twice at 854x480, lever off then on, and
-compare per-frame cost and the look. That is the same paired-A/B shape §10 used for the x-ray
-(334 s vs 146 s over 88 identical frames), and it is the only evidence that will actually decide it.
-**But read §11.2 first — the experiment may not be red1's to want.**
-
-**CORRECTION to check 1 above, from red1-1c, verified here 2026-09-20 — the lever as described is
-UNDECIDABLE, not merely unverified.** The gate is two consecutive lines:
-
-    400:  if (app._cinemaOrbitActive || app._maxqActive) return 'cinema';
-    401:  if (app._stillRefineActive)                     return 'photoreal';
-
-so a lever on 400 alone FALLS THROUGH to 401. And the bake really does set that flag
-(`effects.js:5184` and `:9428` set it true; `cinema_maxq.js:1118`/`:1511` call `stopStillRefine`),
-while dlod_nav's own tick is not synchronised to the bake's frame — so which side of the fold each
-tick lands on is a coin toss. **A correctly-wired lever would therefore read as "did nothing".**
-The lever must cover BOTH lines, or the A/B must log the gate reason per tick. Credit: red1-1c.
+## §11 — THE `o` BOX-PROXY LOOK: PROPOSED, THEN DECLINED. See §11.2 for the ruling.
+The proposal and its implementation hand-off (§11.1 — which levers to pull, the `dlod_nav.js:400`
+AND `:401` consecutive-gate trap, and `NAV_MIN_ELEMENTS = 50000` meaning it can never meet red1's
+"any building will give same effects" requirement) are **removed as stale**: §11.2 below is red1's
+own standing ruling against it, and a hand-off for work that needs him to reverse himself first is
+not a hand-off. Full text in git — `git log -p prompts/ESCAPE_ROUTE_REVEAL.md`, commit `fdd79c024`.
 
 ## §11.2 — ⚠ RED1 ALREADY RULED THIS OUT, BY NAME, IN 2026-07-21
 
@@ -432,7 +357,7 @@ The conditions it was granted under:
 - The §11.1 distance work (orbit at 102 m vs `DEMOTE_DIST` 60 m, fade driven by the beat's clock)
   is unchanged either way.
 
-## §12 — SPEC: THE TWO RULES THE FIRE DEPARTMENT ACTUALLY ASKS ABOUT (not built)
+## §12 — THE TWO RULES THE FIRE DEPARTMENT ACTUALLY ASKS ABOUT — BUILT 2026-09-20
 
 red1, 2026-09-20: *"spec the common path and remoteness rules."* Both verified by WebSearch the
 same day; sources at the foot of this section.
@@ -506,7 +431,7 @@ currently ASSUMES sprinklered can state it as EVIDENCE — and, just as importan
 is still unextractable** (`project_metadata` carries only building name and import date), so that
 half of every citation stays an assumption. Say which half is which on every row.
 
-## §13 — SPEC: THE VISUAL LANGUAGE (not built)
+## §13 — THE VISUAL LANGUAGE — BUILT 2026-09-20 (spec kept: it is the design record)
 
 red1, 2026-09-20: *"if we not only map the longest common route, but also alternatives in blue
 colour perhaps. Also since u mentioned sprinklered, it be good if the route has a grey tube casing
@@ -742,13 +667,23 @@ three fat distinct routes that the building does not have. Draw what diverges, w
 - Remoteness purpose, "independent means of egress" — https://www.sgh.com/insight/spark-notes-multiple-exits/
 - NFPA 13 light hazard 225 ft² / 15 ft spacing — https://blog.qrfs.com/214-maximum-and-minimum-sprinkler-distance-rules-part-1-standard-spray-fire-sprinklers/
 
-## STATUS — BUILT and witnessed; one finding open for red1
+## STATUS (2026-09-20, end of day) — BUILT, WITNESSED, DELIVERED IN A CLIP
+Scene worked out with red1 across many turns: trigger, timing, camera behaviour, visual language,
+panel content, the two counters and their honesty asymmetry, the colour key's own wording, and the
+finale. Now on bim-ootb `feat/loadpath-ledger` (the escape lane merged in), not on its own branch.
 
-Scene fully worked out with red1 across several turns (trigger, timing, camera behaviour, visual
-language, panel content, the two counters and their honesty asymmetry). Implemented 2026-09-20 on
-bim-ootb `feat/escape-route-reveal`; 36/36 feature witness checks and 79/79 panel-wiring checks pass
-on real data. §8's finding — the Egress report's own "Longest path to exit" headline is derived from
-a penalty-weighted cost, not a distance — is observed and documented, NOT fixed.
+Measured on `Hospital_silent`, the film's own building:
+- `§ESCAPE_ROUTE_ALTERNATES exitsReachable=8 divergence="Corridor — Level 1" commonPathRED=183.16m
+  primaryYELLOW=63.86m blueAlternates=7/7 divSnapM=0.00 shape=SNAKE`
+- `§ESCAPE_ROUTE_CASING heads=1354 radius=3.23m resampledAt=1m samples=249 casedM=177.0m of 247.0m`
+- `§ESCAPE_ROUTE_WINDOW film=[0.9651,0.9949] = 189.0s..194.8s of 195.8s` — ends 1 s before the film
+- `§ESCAPE_ROUTE_SUMMARY drawnFrames=140 maxProgress=1.000 easeRate=[0.400..1.594]x`
+
+Witnesses: `witness_escape_colours.js` 31/31 · `witness_escape_card_fit.js` 21/21 ·
+`witness_escape_route_reveal.js` 67/67 · `witness_egress_alternates.js`.
+
+**§8's finding stands and is NOT fixed:** the Egress report's own "Longest path to exit" headline is
+derived from a penalty-weighted COST, not a distance. Observed and documented, on the record.
 
 ---
 
