@@ -1613,3 +1613,49 @@ passing on Hospital or failing a synthetic fixture.
 ### Housekeeping
 `/tmp/wt-escape-route` is clean at `ba6f9df2`, its branch is on origin, and red1-87 reports nothing
 running. Prunable.
+
+## §129.57c CORRECTION — THE SAVING IS ~7.7 min, NOT 22.9. THE SPEC ABOVE OVERSTATED IT.
+**(2026-09-20, measured on the first bake that ever ran it. My error, not a regression.)**
+
+§129.57 FIRES exactly as designed — the 09-20 09:36 Hospital run logged
+`§FRAME_REUSE run ended at i=2067 reused=22 consecutive frame(s)`, and again at 2091 and 2115: the
+22-per-hop pattern the hash analysis predicted. But:
+
+```
+0531 (no reuse)  265 freeze frames, mean 7,235 ms
+0936 (reuse on)  209 freeze frames, mean 5,487 ms
+drop             1,748 ms/frame = 24%  ->  ~7.7 min over the window
+§129.57 claimed  22.9 min
+```
+
+**Cause: `A.startStillRefine()` is called at `cinema_maxq.js:3498`; the reuse branch is at 3942.**
+The 20-render TAA+AO fold therefore runs BEFORE the reuse test, and a reused frame pays it in full.
+That fold is ~5,340 ms of the ~6,892 ms freeze frame — **77% of the cost the reuse does not touch.**
+Confirmed in the same firehose: `§STILL_REFINE done` fired 2,134 times against 602 frames.
+
+§129.57's own sentence — *"That skips the base render, the 20-render still fold and the HUD draw
+together — the whole 6,892 ms, not a part of it"* — **is wrong.** I assumed the fold lived inside
+`_captureFrame` and never checked. It skips the composite and the encode only.
+
+### The rule this earns
+**A saving claimed from reading code is an estimate, not a measurement — say which one it is.**
+Everything else in §129.57 was measured from a real bake's own `§FRAME_HASH`: the 199 duplicate
+frames, the 6,892 ms, the 22-per-hop shape. All of that held exactly. The one number that came from
+*assuming where a call sat* was the one that was wrong, and it was wrong by 3x. The witness could
+not catch it either: `witness_frame_reuse.js` proves the DECISION logic and says so in its own
+scope line — it never claimed the saving.
+
+### Fixing it is not a one-line hoist
+The reuse key reads `A.camera.position` / `A.controls.target`, and the camera is only moved from
+`pose` AFTER the fold. Hoisting the test above `startStillRefine()` means building the key from
+`pose` / `_poseFilmT` directly. Two things must survive the move or the fix is worse than the bug:
+- The fold is what makes each hop's FIRST frame correct. The gate must be "reuse the blob AND skip
+  the fold", never "skip the fold but still render".
+- `§MAXQ_STAGE_KEEP` calls `stopStillRefine(true, true)` at the top of every frame. Skipping
+  `startStillRefine` without also skipping that teardown may restage the next rendered frame from
+  cold and cost more than it saves. **Measure it; do not assume.**
+
+**The gate is already written and byte-exact:** with the fold skipped on reused frames, the
+`§FRAME_HASH` sequence inside frames 1923-2187 must still be IDENTICAL to
+`viewer/tests/fixtures/framehash_Hospital_2026-09-20_0531.txt`. One differing hash means the fold
+was skipped on a frame that needed it.

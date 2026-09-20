@@ -640,6 +640,93 @@ and the sprinkler cover is real `IfcFireSuppressionTerminal` positions. Every li
 to a row in the dropped file. **If any future version needs a human to mark up the model first, it
 has lost the only thing that makes it worth showing.**
 
+### §13.7 — IMPLEMENTATION SPEC (2026-09-20, written BEFORE the code per CLAUDE.md Spec-First)
+
+§13.1-§13.6 are the approved design and are NOT re-litigated here. This section is only *how* it
+lands in `viewer/cpe_escape_route.js`, what each new number is derived from, and which issue each
+test proves or disproves.
+
+**Measured facts this spec is built on, read off the killed 2026-09-20 09:36 Hospital_silent bake
+and the DB itself — not assumed:**
+- `§ESCAPE_ROUTE_POPULATION roomNodes=30 corridorPseudoRoomsSkipped=23 realRoomsConsidered=7
+  reachAnExit=6 reachNOexit=1` and `scanMs=8`. The whole room scan costs 8 ms on this DB. The
+  spec's "~90 s over 149 rooms" warning is about scanning EVERY room; drawing one room's alternates
+  is a handful of `shortestPath` calls and is not in that régime. **The one-Dijkstra rule still
+  holds for route SELECTION** (`escapeRoutes`, already written) — it is the per-room loop that must
+  never grow a second search.
+- `IfcFireSuppressionTerminal` = **1,354 rows** in `Hospital_silent.db`, and all 1,354 have
+  `center_x/y/z` in `element_transforms`. §13.2 is buildable from the dropped file, with no
+  authoring step, which is §13.6's load-bearing claim.
+
+#### A. Build — new fields on `_rec`, all from ONE `escapeRoutes()` call
+`escapeRouteBuild()` already picks the worst room by measured walk. After that, and only for THAT
+room:
+1. `RG.escapeRoutes(graph, node.guid)` → every reachable exit ranked nearest-first. One Dijkstra.
+2. `RG.divergenceFrom(routes[0].path, routes[1].path)` → the choice point. `null` is a REAL state
+   (one route is a prefix of the other, or there is only one exit) and means **no divergence
+   exists** — the whole route is common path, which is §13.6's "red line with no heads" and the
+   worst reading available. It is drawn as such, never hidden.
+3. Per route, `RG.shortestPath(graph, node.guid, r.exitGuid).polyline` for the drawable geometry.
+   Route 0's polyline MUST be the one the selection already measured; the delta is logged, not
+   assumed.
+4. **The split point.** The divergence is a graph NODE; the drawn line is a §RASTER-ASTAR polyline
+   that does not carry node identity per vertex. So the split is made by projecting the divergence
+   node's own position onto the polyline and cutting at that cumulative distance. The projected
+   distance from the node to the line is logged (`divSnapM`) — a large snap means the cut is not
+   where the graph says it is, and that must be readable rather than silently drawn.
+5. `commonPathM` = the RED length = cumulative distance from the room to the split. **This is the
+   quantity §1006.2.1 caps**, and it is the number §12 already computes and puts nowhere on screen.
+
+#### B. Sprinkler cover (§13.2) — one query, not one per frame
+`A.dbQuery` for `ifc_class='IfcFireSuppressionTerminal'` joined to `element_transforms`, bucketed by
+storey. A polyline vertex is CASED when a head lies within **3.23 m horizontally on the same
+storey** (§13.2's derived NFPA 13 half-diagonal). Cased spans are computed ONCE at build and stored
+as metre ranges, never recomputed per frame. Heads=0 is a finding and prints as one: the casing is
+absent, which §13.2 says is the picture worth having.
+
+#### C. Draw — one more polyline per colour, same machinery
+`escapeRouteCompositeOntoCanvas` gains a per-segment stroke list. Draw order, back to front: grey
+tube (widest, translucent) → BLUE alternates (dimmer with rank) → RED common → YELLOW primary →
+head dot → plates. Same halo+core two-pass contrast, same dash. **No alternate is capped** (§13.6);
+if a future pass ever drops any, the legend must say "N of M shown".
+
+#### D. The card (§13.3/§13.5) — a content change inside the slot it already owns
+`escapeRouteStatCardAt` returns `card.legend[]` and `card.footnotes[]` alongside the existing
+`big/label/sub`. `bigStatsCompositeOntoCanvas` learns to draw them; a card without `legend` draws
+byte-identically to today. Legend rows take each segment's own colour, so the legend demonstrates
+itself. Markers: **numbered superscript = CITED, asterisk = UNCITED** (§13.5's rule). The footnote
+block is DROPPED below a height threshold and the markers kept (§13.5's own ruling for 854x480),
+never shrunk into decoration.
+
+#### E. The §3 defect this fixes on the way past
+`escapeRouteStatCardAt` currently drops the "0.75 m stride assumed" disclosure from the sub when the
+breach fires, so `~418 steps` shows with no mark that it is the uncited number. §13.5's asterisk
+carries it in both branches now, so the disclosure no longer depends on whether a flag happened to
+fire.
+
+#### F. Tests — each names the issue it proves or disproves
+`viewer/tests/witness_escape_colours.js`, Node, no browser, real `Hospital_silent.db` room graph:
+1. **W-13-1 the split is a split.** RED length + YELLOW length == route 0's total length to within
+   1e-6. *Proves or disproves:* that the common path and the primary are two parts of one measured
+   walk and not two independently derived numbers.
+2. **W-13-2 RED is the §1006.2.1 quantity.** `commonPathM` equals the distance from the room to the
+   divergence node along route 0, independently recomputed from the polyline. *Disproves:* the card
+   printing a "no choice" number that is really the whole walk.
+3. **W-13-3 no divergence is drawn, not hidden.** With a single-exit graph, `divergence===null`,
+   RED == the whole route, BLUE == [], and the legend says so. *Disproves:* §13.6's worst case
+   silently rendering as an ordinary yellow line.
+4. **W-13-4 alternates are not capped.** `blue.length === routes.length - 1` for the real graph.
+   *Disproves:* a tidy-up pass having quietly thinned the fan (§13.6's explicit warning).
+5. **W-13-5 the casing is proximity, and it is honest.** A synthetic head at 3.0 m cases a vertex; at
+   3.5 m it does not; a storey with no heads yields zero cased span and a stated reason.
+   *Disproves:* a grey tube drawn everywhere by default, which would read as "protected".
+6. **W-13-6 the stride keeps its mark in BOTH branches.** With and without a breach, the card's
+   rendered text carries the uncited marker for steps. *Proves:* §E above is actually fixed, not
+   just moved.
+7. **W-13-7 the footnote block drops, the markers stay.** At h=480 `footnotes` is empty and the
+   legend markers are still present; at h=1080 both are present. *Disproves:* footnotes shrinking
+   into unreadable decoration at clip resolution.
+
 ### §13.4 — what this does NOT become
 
 Not a Google-Maps route chooser. MEASURED on Hospital `Level 4 R1`: all 8 alternates fall between
