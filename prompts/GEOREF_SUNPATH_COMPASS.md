@@ -298,6 +298,97 @@ reconciled at the source. Do not resolve this automatically (majority vote, "clo
 without red1's explicit sign-off — three real, differently-wrong numbers, not a tie-break Claude
 should call.
 
+## §13 — OFFLINE PLACE, ELEVATION AND CLIMATE (red1, 2026-09-20). **SUPERSEDES §9's network answer.**
+**SPEC ONLY. Nothing below is built.** red1: *"Spec'd for a offline city table to demonstrate its
+usefulness. Can we also have the weather info such as temperature range, m above sea level?"*
+
+§9 answered the temperature question with Open-Meteo — one HTTPS GET, and by its own admission
+*"the only live network dependency anywhere in the movie-bake pipeline."* An offline table removes
+that. Everything below is a local read, exactly like `§SUN_PATH ready — NOAA low-precision solar
+position, offline, no network`. **§9 stays on the record as the rejected alternative; it is not
+deleted, it is superseded.**
+
+### §13.1 — THREE ANSWERS, THREE SOURCES, NEVER MERGED
+| what | source | on Hospital today |
+|---|---|---|
+| place name | vendored city table, nearest match | **must refuse** — see §13.5 |
+| m above sea level | THREE candidates that disagree | `ifc_site` says 165.81 m |
+| temperature range | climate dataset, vendored | nothing yet — see §13.4 |
+
+### §13.2 — THE CITY TABLE
+**GeoNames `cities15000.txt`** (CC BY 4.0, ~25k settlements over 15,000 people). Ship a trimmed
+projection of it — name, lat, lon, country, admin1, `dem`, timezone — sorted and gzipped, under
+`rates/` beside `egress_rules.json`, which is this project's existing home for vendored reference
+data that the film cites on screen. ⚠ The field list above must be checked against the downloaded
+file's own readme at vendoring time, not taken from this spec.
+
+**MATCHING IS NEAREST-WITH-A-BOUND, NEVER NEAREST.** Haversine to every row, take the minimum, and
+apply `PLACE_MATCH_MAX_KM = 25`. Beyond that the answer is `NO MATCH` and the line prints the raw
+coordinate instead. **The distance is printed every time, match or not** — a 24 km match and a 2 km
+match are not the same claim, and a reader must be able to see which they were given. A silent snap
+to the nearest city is how a rural site becomes a confident lie.
+
+### §13.3 — ELEVATION: THERE ARE THREE NUMBERS AND THEY DISAGREE
+1. `ifc_site` elevation — Hospital: **165.8112 m** (`§GEOREF_SITE`)
+2. the matched city's `dem` — terrain height at that point
+3. the bake's own datum — Hospital: `groundZ=165.36 bboxMinZ=156.61` (`§SUN_COMPASS`)
+
+On Hospital, 1 and 3 agree at ~165 m while Boston sits near sea level. **That disagreement is the
+finding, not noise:** it says the IFC "elevation" is a project datum, not height above sea level.
+So the line prints all three and names which one it used. It must never average them or pick
+quietly — the same discipline `§SUN_COMPASS` already applies when it prints `src=ifc_site`.
+
+### §13.4 — TEMPERATURE: WHAT CAN BE SAID HONESTLY
+There is **no free, compact, per-city normals table in this repo today** — I checked. So:
+
+- **(a) Köppen-Geiger climate zone** (Beck et al. 2018, CC BY 4.0). One small file, deterministic,
+  and it yields a *classification* — `Dfa`, "humid continental, hot summer" — not degrees. It cannot
+  be wrong by a degree because it states no degrees.
+- **(b) Monthly normals**, vendored as a generated subset covering only the cities the fleet actually
+  uses, produced by a re-runnable script checked in **beside the data with its source named**.
+
+⚠ **EVERY NUMBER MUST COME OUT OF THE VENDORED FILE.** No temperature may be written from anyone's
+recollection of a city's climate — that is exactly the invention the Prime Directive forbids, and a
+plausible-looking range is worse than no range because nothing on screen marks it as a guess.
+If (b) is not vendored, the film shows (a), or it shows nothing.
+
+**Recommendation: (a) first.** It is one small file and answers "what kind of place is this" without
+claiming precision the model never had. (b) only if red1 wants actual degrees on the card.
+
+### §13.5 — IT MUST REFUSE TO DRAW ON A CONTESTED COORDINATE
+**§12 is the reason this is not a free feature.** Hospital's 14 discipline files disagree by up to
+~500 km: ARC `42.3584,-71.0598` (Boston), STR+MEP `42.2130,-71.0330`, MECH `43.1221,-77.6302`
+(Rochester NY). The bake currently uses ARC's. A sun angle off by that much is a subtle error; a
+caption reading **"Boston"** is a source-data defect published as a fact.
+
+So the place line is **gated on the georef being uncontested**, and prints `NO PLACE` with the reason
+otherwise. §12 stays blocked on red1 and this spec does not resolve it.
+
+**Demonstrate on `merged_federation` instead** — Penang, `5.96277289 / 100.63712571`, a real surveyed
+site (§10 T1). That is where the feature shows its usefulness; Hospital is where it shows its
+restraint.
+
+### §13.6 — `§PLACE_WITNESS`
+ISSUE IT PROVES OR DISPROVES: does the place line ever state something the vendored data does not
+say? Claims:
+- fixtures at known coordinates resolve to the expected name, and the reported distance is correct
+- a coordinate 30 km from every row reports `NO MATCH` — the bound holds, no silent snap
+- **no network**: the module's own bytes contain no `fetch`, `XMLHttpRequest`, `import(`, or
+  `require('http`. The offline invariant is the whole point of choosing this over §9, so it is
+  asserted, not assumed
+- the three elevations are all reported and the used one is named; nothing is averaged
+- Hospital resolves to `NO PLACE` with §12 as the stated reason — the restraint is tested, not hoped for
+- every temperature shown traces to a row in the vendored file (assert the module holds no numeric
+  climate literals of its own)
+
+### §13.7 — TASKS, DEPENDENCY ORDER
+1. **T1** vendor the city table + a `PROVENANCE` file naming source, licence, version, download date
+2. **T2** the lookup module — pure, node + browser, no network, haversine + bound
+3. **T3** `§PLACE_WITNESS` (T2 is not done until this fails on a deliberately broken fixture)
+4. **T4** the HUD line, gated on an uncontested georef, printing distance and elevation source
+5. **T5** optional — Köppen zone
+6. **T6** optional, needs red1 — monthly normals, with its generating script
+
 ## STATUS — 2026-09-18: T1-T7 built + witnessed (T7/temperature untouched by design); T8 open; one item BLOCKED on red1
 
 §1's finding (`true_north_angle` wired-but-inert since the extractor shipped) is fixed, witnessed,

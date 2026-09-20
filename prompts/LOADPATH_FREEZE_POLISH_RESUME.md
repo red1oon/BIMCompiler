@@ -233,22 +233,37 @@ is opened; no constant is restated from the code. It **FAILS at 42.21° on the 1
 that cannot fail on the artefact that carries the defect is not a witness — and must pass on the next
 bake.
 
-# §131.2 — THE GLOW: TWO `§` LINES, SO ONE BAKE ANSWERS IT
-§131 said cheapest-first: get a `§` line rather than a frame. Both are instrumentation only — nothing
-they touch changes what is drawn.
+# §131.2 — THE GLOW: STOP THE CODE EMITTING. THE CEASE IS A PREDICATE NOW.
+red1, shown a census that would have NAMED what still shines through:
+*"why such measures? It is GIGO.. if u dont stop the code from emitting."*
 
-1. **`§STOREY_REVEAL_TINT_RESTORE`** in `cpe_storey_reveal.js` `_restoreTint()` — how many meshes,
-   instanced and batched entries it put back, how many clones it disposed, and at what `tNorm`.
-   If it never prints, or prints `restored=0`, the tint never came off and §130's yellow wash is that.
-2. **`§GLOW_CENSUS`** in `cinema_maxq.js`, immediately after `_cease3D()` — walks `scene.traverseVisible`
-   and counts **only what still reaches the frame with `depthTest:false`**, grouped by the outermost
-   named ancestor, plus `tintActive=` (the live length of `_restoreTint`'s own `_touched` list).
-   **IT DISCOVERS, IT DOES NOT LIST** (§130.1's rule): any module that shines through is named by the
-   census whether or not anyone thought of it. Sampled at most 10 times, one per 1% of the film, and
-   only once `_findingsHudSuppress` is up, so it costs nothing measurable against a 0.86 s frame.
-   `CEASE_3D_GROUPS` covers `flythruDatum`, `flythruCue`, `indoorBeats`, `slabBeat` — **`clash_film`'s
-   own markers are `depthTest:false, renderOrder 998/999` and are NOT in that set.** That is a lead,
-   not a finding: the census will say whether they are still visible.
+He is right, and the census was deleted the same hour it was written. Naming the fifth module only
+tells you what to add to the list; the list is the defect. `§FINDINGS_CEASE_3D` now has **two arms**:
+
+| arm | what it hides | why it exists |
+|---|---|---|
+| 1 — the NAMES (`CEASE_3D_GROUPS`, unchanged) | `flythruDatum`, `flythruCue`, `indoorBeats`, `slabBeat`, whole | a beat's group can hold parts that depth-test normally — `cpe_indoor_beats`' hall tint is painted ON the floor and shines through nothing, and it is still an overlay on the building |
+| 2 — the DRAW CONTRACT (new) | **every** object in the scene still drawing `depthTest:false`, found by `scene.traverseVisible` | shining through the building is what that flag MEANS here. A tenth module added next month is covered the day it lands, with no edit |
+
+Building geometry is never `depthTest:false`, so nothing the film is ABOUT is reachable by arm 2.
+
+⚠ **ONE EXEMPTION, and it is the beat that is actually on screen.** The escape route's room glow is
+`depthTest:false` BY DESIGN (§ESCAPE_ROUTE_NO_XRAY: *"the room glow is depthTest:false, so [it] still
+read[s] through the building"*), so a blind sweep would switch off the very thing the closing orbit
+exists to show. Its meshes are named `escapeRouteGlow` / `escapeRouteGlowEdges` and exempted by that
+name. **If red1 still sees a glow after this bake, that exemption is the first suspect** — it is the
+only shine-through left alive, and dropping it is one regex.
+
+Hidden, never disposed. One log line per CHANGE, naming the module **and which arm caught it**;
+steady state is silent, or a 193-frame run drowns in its own gate.
+`§FINDINGS_CEASE` 22/22, including: arm 2 exists and sweeps · it judges by the MATERIAL alone, with
+no module name in its test · exactly one exemption exists and it is the live beat's · that exemption
+is load-bearing.
+
+**`§STOREY_REVEAL_TINT_RESTORE` stays.** The storey tint is a material colour, not an overlay a sweep
+can reach, and §130's yellow-olive wash is still unexplained. The line says how many meshes, instanced
+and batched entries the restore put back and at what `tNorm` — `restored=0`, or no line at all, is the
+answer in one run.
 
 # §130 SINGLE-SESSION HANDOFF (2026-09-20, end of day) — READ THIS FIRST. SUPERSEDES §129.62.
 Two sessions ran this film today — the load-path/freeze lane and the escape-route lane. **They are
