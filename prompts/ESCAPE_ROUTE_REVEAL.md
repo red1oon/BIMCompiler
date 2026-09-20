@@ -343,6 +343,46 @@ trigger. That is the only new mechanism this needs.
 §3) and the reason is not recorded in `dlod_nav.js` itself. Find it before overriding it — a bake
 rendering box proxies instead of real geometry may be exactly what that gate exists to prevent.
 
+### §11.1 — HANDOFF: exactly what to change, and what to check first
+
+red1, 2026-09-20, chose to hand this to the bake lane rather than land it here: the change can only
+be judged by a bake, and this lane no longer owns baking. Everything needed is below so it is not
+re-derived.
+
+**The change is one condition.** `viewer/dlod_nav.js:400`, inside `_gateBlockReason(app)`:
+
+    if (app._cinemaOrbitActive || app._maxqActive) return 'cinema';   // §3: Alt+C excluded
+
+A lever (`window.__dlodNav.allowCinema`, default FALSE, matching how `roomOcclEnabled`/
+`pvsEnabled`/`occlBvhEnabled` are already levered in that file) is the whole edit. Default false
+keeps every existing bake byte-identical, which is what makes it safe to land before it is proven.
+
+**THREE THINGS TO CHECK BEFORE TRUSTING IT — in this order:**
+
+1. **The next line may block it anyway.** `dlod_nav.js:401` also excludes `_stillRefineActive`
+   (Alt+P photoreal), and a bake runs photoreal staging. UNVERIFIED whether that flag is set during
+   capture — `cinema_maxq.js` calls `stopStillRefine` per frame under §MAXQ_STAGE_KEEP, so it may
+   be false at the moment the gate is read. Check before concluding the lever "did nothing".
+2. **>50k elements, so it is NOT universal.** `NAV_MIN_ELEMENTS = 50000`. Hospital's 63k qualifies;
+   Clinic, Duplex and Terminal do not. red1's own standing requirement is that "any building will
+   give same effects" — this mechanism cannot meet it, and that is a property of the module, not a
+   bug to fix here. Say so on the toggle's hint if it ever gets one.
+3. **Find §3's reason first.** It is not in `dlod_nav.js`. A bake exists to render final geometry;
+   a gate that stops it substituting box proxies may be exactly right, and the lever would then be
+   for a DELIBERATE stylistic beat only, never a default.
+
+**The distances do not suit the closing orbit, and this is the real design work.** `PROMOTE_DIST =
+38 m`, `DEMOTE_DIST = 60 m`, `FADE_FRAMES = 10` ("§8 FINDINGS #4: N=10 sufficed; 5 and 20 both
+worse"). MEASURED: the closing orbit flies at **radius 102 m**, past `DEMOTE_DIST`, so the whole
+building stays boxed for the entire beat — which IS the look red1 wants — but the
+restore-as-you-approach never fires, because a closing orbit pulls AWAY. **The fade back to solid
+has to be driven by the beat's clock, not by camera distance.** Same `FADE_FRAMES = 10` envelope,
+a different trigger. That is the only genuinely new mechanism this needs.
+
+**How to settle it in one sitting:** bake the same clip twice at 854x480, lever off then on, and
+compare per-frame cost and the look. That is the same paired-A/B shape §10 used for the x-ray
+(334 s vs 146 s over 88 identical frames), and it is the only evidence that will actually decide it.
+
 ## §12 — SPEC: THE TWO RULES THE FIRE DEPARTMENT ACTUALLY ASKS ABOUT (not built)
 
 red1, 2026-09-20: *"spec the common path and remoteness rules."* Both verified by WebSearch the
