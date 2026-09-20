@@ -339,9 +339,9 @@ never fires, because a closing orbit pulls AWAY. The fade back to solid would ha
 the beat's own clock, not by camera distance: the same `FADE_FRAMES = 10` envelope, a different
 trigger. That is the only new mechanism this needs.
 
-**Open question for whoever picks it up:** the Cinema exclusion is deliberate (FLY_TOUR_DLOD_SCALE
-§3) and the reason is not recorded in `dlod_nav.js` itself. Find it before overriding it — a bake
-rendering box proxies instead of real geometry may be exactly what that gate exists to prevent.
+**⚠ NOT AN OPEN QUESTION — FOUND, AND IT IS RED1'S OWN RULING. See §11.2. This paragraph
+previously said the reason "is not recorded"; that was wrong, and so was a peer session's
+independent search. It is in `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185`.**
 
 ### §11.1 — HANDOFF: exactly what to change, and what to check first
 
@@ -382,6 +382,47 @@ a different trigger. That is the only genuinely new mechanism this needs.
 **How to settle it in one sitting:** bake the same clip twice at 854x480, lever off then on, and
 compare per-frame cost and the look. That is the same paired-A/B shape §10 used for the x-ray
 (334 s vs 146 s over 88 identical frames), and it is the only evidence that will actually decide it.
+**But read §11.2 first — the experiment may not be red1's to want.**
+
+**CORRECTION to check 1 above, from red1-1c, verified here 2026-09-20 — the lever as described is
+UNDECIDABLE, not merely unverified.** The gate is two consecutive lines:
+
+    400:  if (app._cinemaOrbitActive || app._maxqActive) return 'cinema';
+    401:  if (app._stillRefineActive)                     return 'photoreal';
+
+so a lever on 400 alone FALLS THROUGH to 401. And the bake really does set that flag
+(`effects.js:5184` and `:9428` set it true; `cinema_maxq.js:1118`/`:1511` call `stopStillRefine`),
+while dlod_nav's own tick is not synchronised to the bake's frame — so which side of the fold each
+tick lands on is a coin toss. **A correctly-wired lever would therefore read as "did nothing".**
+The lever must cover BOTH lines, or the A/B must log the gate reason per tick. Credit: red1-1c.
+
+## §11.2 — ⚠ RED1 ALREADY RULED THIS OUT, BY NAME, IN 2026-07-21
+
+`prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185`, under a heading that reads **"SCOPE DECISION —
+2026-07-21, USER-DICTATED (engage surfaces, settled — do not re-litigate)"**:
+
+> Excluded, per the user's explicit direction (*"But not Find Panel and Alt-C movie orbit"*):
+> - **Alt+C Cinema Orbit: excluded** — visual-quality mode; **a wireframe proxy box must never
+>   appear in a movie frame.** Same rationale extends to Alt+P photoreal stills…
+> - Accepted tradeoff, on record: Cinema pays full render cost on LTU-scale buildings — if a Cinema
+>   run is slow there, that is this decision working as intended, not a bug.
+
+**The thing now being asked for — the `o` wireframe box look, in a baked movie frame — is the exact
+thing that ruling forbids, in the ruling's own words.** It is also the answer to "why is the bake
+slow": that was accepted, on record, as the price of the decision.
+
+This does not make it wrong to want. Fourteen months of film work sit between that ruling and now,
+the beat being proposed is a DELIBERATE stylistic moment rather than an always-on culler, and red1
+is free to reverse his own call. But it must be reversed knowingly, not routed around:
+
+- Whoever implements this must have red1's explicit reversal of the 2026-07-21 scope decision,
+  quoted above, recorded in `FLY_TOUR_DLOD_SCALE.md` itself — that file says "do not re-litigate",
+  so a change made only in this doc would be a silent override of a settled, user-dictated ruling.
+- If reversed, the lever stays DEFAULT FALSE and beat-scoped. "A wireframe proxy box must never
+  appear in a movie frame" would become "…except in the beat that exists to show the proxy", which
+  is a narrow carve-out, not a repeal.
+- The §11.1 distance work (orbit at 102 m vs `DEMOTE_DIST` 60 m, fade driven by the beat's clock)
+  is unchanged either way.
 
 ## §12 — SPEC: THE TWO RULES THE FIRE DEPARTMENT ACTUALLY ASKS ABOUT (not built)
 
