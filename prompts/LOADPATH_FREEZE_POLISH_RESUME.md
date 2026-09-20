@@ -162,6 +162,94 @@ WHERE TO GO NEXT, cheapest first:
 three different explanations. The standing rule applies: slice the predicate out, or add `§`
 logging, and let a run answer it.
 
+# §131.1 — THE VEER IS A SPLIT CLOCK, NOT THE SIZE OF `EASE_K`. MEASURED, FROM THE BAKE'S OWN POSE TAP.
+**SPEC BEFORE CODE (CLAUDE.md). This section is the spec; the code below it was written to it.**
+
+## The measurement, and where it came from
+`--tap`/`__maxqPoseTap` already writes `<out>_poses.json` beside every mp4: one row per frame,
+`[i, camX, camY, camZ, targetX, targetY, targetZ, ms]`. **That is the bake saying what it rendered**,
+so it is admissible under NO-PIXEL-DERIVED-EVIDENCE — nothing here opens a frame.
+
+Read off `Hospital_storeyreveal_to_end_1920x1080_24fps_1311_poses.json` (846 frames, `81da0ca6`,
+`EASE_K = 0.60`, `--clip 0.82:1`), taking the orbit's own centre as the target the film holds at both
+ends of the window:
+
+| frame | tn | camera's face, off the building centre | look-at target, off centre |
+|---|---|---|---|
+| 653 | 0.9591 | 0.07° | 0.2 m |
+| 693 | 0.9676 | 10.66° | 22.3 m |
+| 733 | 0.9761 | 39.24° | 89.8 m |
+| **775** | **0.9851** | **42.21°** | **95.7 m** |
+| 813 | 0.9932 | 9.65° | 24.1 m |
+| 833 | 0.9974 | 0.01° | 0.0 m |
+
+Zero at both ends, 42° in the middle, and back to zero. **The building slides off the side of the
+frame and comes back.** That is the thing red1 saw: *"the scene path seems to veer a bit off during
+the EscRoute. Check the slowing down that time did not skew the cam face path."* He named the cam
+FACE path, and the face is exactly what moved.
+
+## The cause, read in the code
+`cinema_maxq.js` frame loop:
+
+    var _poseFilmT = (_escapeRoute && A.escapeRouteEaseFilmT) ? A.escapeRouteEaseFilmT(plan, _tnFilm) : _tnFilm;
+    var pose = poseAtFilm(_poseFilmT);          // BODY  — eased clock
+    var _gazeB = _blendedGazeTarget(_tn, pose, _gazeDist);   // FACE — raw clock
+    pose.tx = _gazeB.tx; pose.ty = _gazeB.ty; pose.tz = _gazeB.tz;
+
+`_blendedGazeTarget` takes the yaw/pitch of `poseAt(_tn)` — the **unwarped** time — and re-projects a
+target from the **warped** position at the same distance. So during the escape beat the camera stands
+where the eased clock puts it and faces where the raw clock was looking. The closing orbit sweeps a
+full **360°** across this window, so a lead of `k/4` of the window is a facing error of `k/4 × 360°`:
+0.150 → 54° predicted against 42° measured (the window tapers at both ends), 0.0625 → **~22° still
+left at `EASE_K = 0.25`**, which is the same ~22° the old symmetric curve carried.
+
+**So `764ca784` would have reduced the veer by 2.4x and left it there.** The lead budget W-ESC-4k
+bounds was never the defect; it only set how far the two clocks drift apart.
+
+## The fix (one expression), and what it costs
+Give the face the same clock as the body: invert `_tFilm` (affine, so the inverse is exact) and hand
+`_blendedGazeTarget` the eased time.
+
+    var _poseTn = _clip ? (_poseFilmT - _clip.in) / (_clip.out - _clip.in) : _poseFilmT;
+    var _gazeB = _blendedGazeTarget(_poseTn, pose, _gazeDist);
+
+With one clock the warp is a **pure reparametrisation**: the camera runs the same curve through space,
+faster then slower, and cannot leave it. The facing error goes to 0 at every `k`. Pacing is untouched.
+
+⚠ **THIS REVERSES `W-ESC-4h`**, which asserted *"`_poseFilmT` is handed to nothing but the pose"* —
+written to keep the eased value contained, and the thing that kept the two clocks apart. Its claim
+is now *"the pose AND the gaze that pose is rendered with, and nothing else"*: `_sunArcStep`,
+`_sunArcFillPin`, `sunCompassAt` and `_buildupTAt` still read the real film fraction, and `W-ESC-4i`
+still holds that from the other side. `EASE_K` stays at **0.25** — one change at a time.
+
+## The witness: `witness_cam_face_path.js`
+**ISSUE IT PROVES OR DISPROVES:** does the camera's face stay on the path its body is on, during the
+closing orbit, in the film that was actually rendered?
+
+It reads a `*_poses.json`, finds the closing orbit (the frames whose gaze distance is a pull-back, not
+a walk-through), takes the nominal target as the straight line between the target at the window's first
+and last frame, and asserts the rendered target never departs from it by more than **2.0°**. No frame
+is opened; no constant is restated from the code. It **FAILS at 42.21° on the 1311 file** — a witness
+that cannot fail on the artefact that carries the defect is not a witness — and must pass on the next
+bake.
+
+# §131.2 — THE GLOW: TWO `§` LINES, SO ONE BAKE ANSWERS IT
+§131 said cheapest-first: get a `§` line rather than a frame. Both are instrumentation only — nothing
+they touch changes what is drawn.
+
+1. **`§STOREY_REVEAL_TINT_RESTORE`** in `cpe_storey_reveal.js` `_restoreTint()` — how many meshes,
+   instanced and batched entries it put back, how many clones it disposed, and at what `tNorm`.
+   If it never prints, or prints `restored=0`, the tint never came off and §130's yellow wash is that.
+2. **`§GLOW_CENSUS`** in `cinema_maxq.js`, immediately after `_cease3D()` — walks `scene.traverseVisible`
+   and counts **only what still reaches the frame with `depthTest:false`**, grouped by the outermost
+   named ancestor, plus `tintActive=` (the live length of `_restoreTint`'s own `_touched` list).
+   **IT DISCOVERS, IT DOES NOT LIST** (§130.1's rule): any module that shines through is named by the
+   census whether or not anyone thought of it. Sampled at most 10 times, one per 1% of the film, and
+   only once `_findingsHudSuppress` is up, so it costs nothing measurable against a 0.86 s frame.
+   `CEASE_3D_GROUPS` covers `flythruDatum`, `flythruCue`, `indoorBeats`, `slabBeat` — **`clash_film`'s
+   own markers are `depthTest:false, renderOrder 998/999` and are NOT in that set.** That is a lead,
+   not a finding: the census will say whether they are still visible.
+
 # §130 SINGLE-SESSION HANDOFF (2026-09-20, end of day) — READ THIS FIRST. SUPERSEDES §129.62.
 Two sessions ran this film today — the load-path/freeze lane and the escape-route lane. **They are
 now one branch and one job.** Everything below is verified in the pushed code, not taken from
