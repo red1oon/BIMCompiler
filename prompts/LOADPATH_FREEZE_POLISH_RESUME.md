@@ -1739,3 +1739,94 @@ baseline to start from.
 **A saving claimed from reading code is an estimate; only a run is a measurement — say which one
 you have.** §129.57's numbers taken from a real `§FRAME_HASH` (199 duplicates, 6,892 ms, the
 22-per-hop shape) all held exactly. The one taken from assuming where a call sat was wrong by 3x.
+
+---
+
+# §130 SINGLE-SESSION HANDOFF (2026-09-20, end of day) — READ THIS FIRST. SUPERSEDES §129.62.
+Two sessions ran this film today — the load-path/freeze lane and the escape-route lane. **They are
+now one branch and one job.** Everything below is verified in the pushed code, not taken from
+either session's own summary.
+
+## State in one line
+`feat/loadpath-ledger` in `/tmp/wt-loadpath`, pushed, **126 ahead of origin/main, 0 behind**,
+`14226630`. 32 commits today. **Thirteen witnesses, all green.** The film delivers.
+⚠ `origin/main` auto-publishes to GitHub Pages, so a merge is a live deploy of all 126.
+
+## The only open item red1 has named
+**The building carries a yellow-olive wash during the escape beat**, after the storey reveal has
+ended at `beats.rise` 0.9590. Visible in frame 700 of
+`~/Downloads/Hospital_storeyreveal_to_end_854x480_24fps_1225.mp4`.
+`§STOREY_REVEAL_LAST_STAYS_LIT` did not print in that bake, so **the log cannot say** whether it is
+the last storey deliberately staying lit or a tint that never restored. red1 has asked for it to be
+cleared up. That is the next job and it is the last one he has named.
+
+## What the film does now, and where each rule lives
+| beat | rule | where |
+|---|---|---|
+| storey reveal | whole-storey tint, colour + emissive + `emissiveIntensity` 0.35, **no x-ray** | `cpe_storey_reveal.js` `_applyTint` |
+| storey reveal onset | **all nine** Measure/clash layers cease, `/^(measure\.\|clash\.)/` | `cinema_maxq.js:1182` |
+| reveal off | those layers get a 2 s tail, no more | `FINDINGS_OFF_TAIL_SEC` |
+| closing orbit | escape route, RED/YELLOW/BLUE/GREY, back-loaded ease 1.594x→0.400x | `cpe_escape_route.js` |
+| 189.0→194.8 s | the route draws; ends **1 s before the film** | `FINALE_SEC = 1` |
+| last 1 s | **finale — nothing on the building.** Verified by eye, frames 840/845 | teardown at beat exit |
+| to the last frame | the escape panel holds, full opacity, opposing corner | `_cardVisAt` returns `alpha:1` past the window |
+
+## Rules red1 set today, in his words
+- *"cease those overlays during ending orbit, as user has seen enough"* — **a hard rule.**
+- *"Its last second is like a finale. It should not have any overlay on the building."*
+- *"the info is rich and its too little time to let it sink in"* — hence the +1.4 s and the panel hold.
+- *"retain the same coloring. Just use that opposing HUD"* — relocate and size, never restyle.
+- *"Off as tint is shine thru"* — x-ray stays off.
+- *"This is practical, never my hard rules"* — his calls are working decisions. **Do not frame a
+  change as a reversal or reconcile it against precedent; just build the current one.**
+- *"WHEN I GIVEN CLUE, U WORK BETTER NOT ASK ME DUMB QUESTIONS - ITS IN THE CODE"* — when he points
+  at something, go and read the code. Do not ask him to narrow it down.
+- *"I don't want technicalities. My interest is only in cited WITNESS logging outcome in plain
+  English."* — report verdicts, cite the `§` line, use short everyday words.
+
+## The watchdog role, as he set it
+> *"Do not rigress like before is your watchdog role. Not having anything change has always been
+> happening. Get all requets done before baking. And WITNESS logging must be present for those big
+> request."*
+
+So: **hold a gate before every bake.** List every outstanding request, verify each one **in the
+pushed code yourself**, and only then say it is ready. It worked today — the gate caught that the
+cease set was 2 layers of 9, and that the one red1 had actually seen was outside it.
+
+## What today cost, and the five rules that came out of it
+1. **A saving claimed from READING code is an estimate; only a run is a measurement.** §129.57 was
+   claimed at 22.9 min and measured at 7.7. Every number taken from a real `§FRAME_HASH` held
+   exactly; the one taken from assuming where a call sat was wrong by 3x. See §129.57c/§129.63.
+2. **A keep-both merge resolution eats structure, and the parser lies about where.** Four defects
+   from one merge: three swallowed closing braces (reported at the file's last line), a duplicated
+   `bigStats` draw, a dropped `var _tnFilm = _tFilm(_tn)` that 40+ call sites read, and a duplicated
+   bottom caption bar. Diff brace depth against HEAD line-by-line; grep for duplicated draw calls.
+3. **A witness that goes INCONCLUSIVE is worse than one that fails**, because a sweep reads it as
+   "not red". `§FREEZE_THEME` stopped judging entirely when a line grew a term and nobody noticed.
+4. **Run the other lane's witnesses in YOUR tree before consolidating.** Theirs caught the dropped
+   `_tnFilm` that would have killed frame 0 of a 3-hour bake. `node --check` cannot see a deleted
+   assignment.
+5. **Check what a peer MEASURED, not just what they concluded.** The "x-ray has no effect" A/B was
+   the escape beat, not the storey reveal. It proved x-ray is dead weight in the orbit; it did not
+   prove the tint reads without it — the tint's real defect was scope.
+
+## Still open, with evidence
+- **The yellow wash above** — red1's named next job.
+- **`witness_film_boxes.js` §40.1 is 13/1**, pre-existing, verified failing at `2c487820` too:
+  loadPath / ledgerTicker / escapeRoute / sunClock / sunCompass composites are unregistered to a box.
+- **§129.63 — hoist the reuse test above the fold**, spec'd and unbuilt. Recovers the other ~15 min.
+  The two-run same-tree hash diff is the adopted proof; **the stored fixture is dead** (every frame
+  differs after this many overlay changes) — take both halves fresh.
+- **The abort-and-land path is 3-for-3 broken** (`cli_silent_bake.js:847`). An interrupted bake
+  yields ZERO bytes.
+- **No background Monitor during a bake.** One died with exit 144 at the exact second a 1h38m bake
+  took SIGTERM and lost everything. Poll with one-shot calls.
+- **§129.46 LTU shadows do not track the solar clock.** Parked by red1.
+
+## Not ours, declined, on the record
+The `o` box-proxy-in-a-bake experiment is forbidden by red1's own 2026-07-21 ruling in
+`prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must never appear in a
+movie frame"*. It needs him to reverse himself **in that file**. Related and checked today: the
+finale shows `§DLOD_TM_CENSUS boxed=0/64150` and no wireframe — but only because the camera has
+pulled back and nothing is outside the view. On a film ending closer in that could differ, so it is
+a census line to check, not a settled fact.
