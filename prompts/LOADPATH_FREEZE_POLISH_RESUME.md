@@ -1334,3 +1334,62 @@ Three defects it caught before any bake, all mine:
 Green: `§FREEZE_THEME` · `§CARD_FONT` · `§FRAME_REUSE_W` · `§HUD_COVERAGE` · `§DLOD_CENSUS` ·
 `§LOADPATH_SPAN_WITNESS`. ⚠ None of §129.55-58 has been seen in a bake — baking is paused while
 `feat/escape-route-reveal` lands its ending so the two ship in one film.
+
+## §129.59 SPEC — BRING BACK THE STOREY TINT, WITHOUT THE X-RAY AND WITHOUT §93.4's DEFECT
+## (2026-09-20, red1 on `~/Downloads/allon_storeyreveal_to_end_1080p24.mp4`: "Look at the more cool
+## impact" / "is it easy to adopt the older tinting for storey reveal?" / "Fix the tint ... first")
+
+### What red1 is pointing at, confirmed by looking
+The film's opening beat lights a whole storey blue/yellow, with a big `114 doors · Level 1` stat
+card and a colour-matched chip. It reads as an event. The section cut that replaced it does not.
+
+### Why it was turned off, and why that reason is NOT what it looks like
+Two separate things got retired together and they must not be conflated:
+
+1. **§93.4, MEASURED, and still true:** `_applyTint` only touches the **facade subset** —
+   `_facadeGuidsFor(storeyName)` gates all three branches (regular / Instanced / Batched). That set
+   is **2-51 meshes per storey**, and legibility tracks PROJECTED AREA, which nothing computes.
+   Level 4 (51) reads as broad bands, Level 5 (44) only as parapet lines, **Levels 1 / 7A / 7
+   (19 / 2 / 6) not at all.** A tint that is invisible on three of eight levels cannot carry a beat.
+2. **The x-ray**, which is what made the tint read as a whole glowing VOLUME in the old films — and
+   which costs **2.6x-3.0x** (red1-87's A/B: storey window 4.13 s/frame with it, orbit 1.57 without;
+   dedicated 88-frame A/B 4.24 vs 1.40). ⚠ Their "x-ray has no effect" A/B clips are the **ESCAPE
+   ROUTE beat**, not the storey reveal — red1 confirmed this ("Yes that Escape Route beat it is").
+   I compared those two clips frame-for-frame myself: identical. That proves x-ray is dead weight
+   *during the orbit*. It does NOT prove the tint reads without it, because the thing x-ray was
+   doing for the tint was showing the storey through the envelope.
+
+So "flip `STOREY_REVEAL_TINT = true`" alone gets §93.4's defect back: a facade-only tint, invisible
+on three levels, and no x-ray to rescue it.
+
+### The change — fix the CAUSE, not the symptom
+The tint was never wrong; its SCOPE was. Tint the **whole storey**, not the facade subset, and the
+level reads as a coloured mass from outside — floor plate edges, exposed structure and facade
+together — with **no x-ray at all**.
+
+- **`STOREY_REVEAL_MODE`** — `'tint'` or `'cut'`, ONE switch, replacing the pair of independent
+  flags. §108 recorded exactly what two independent flags cost: the tint "was still running
+  underneath the section cut", and because the ground-slab pass and Level 1's pass are two slots on
+  the SAME storey, that storey got painted twice — *"one cause, two symptoms"*. A single mode makes
+  that state unrepresentable rather than merely discouraged.
+- **`STOREY_REVEAL_TINT_SCOPE`** — `'storey'` (new default: every mesh on the level) or `'facade'`
+  (§93.4's original subset, kept so its measurements stay reproducible, as §108 intended).
+- `§STOREY_REVEAL_TINT` gains `scope=` and `facadeMeshes=` beside its existing `meshesTouched=`, so
+  one bake line states directly how much bigger the new scope is than the set §93.4 measured.
+- **X-ray stays off.** `A.toggleXray` survives in this file only in a comment and nothing is
+  restoring it. Its opacity-0.3-per-surface with DoubleSide gives ~0.7^n through n surfaces — about
+  3% through ten — which is why red1's own ruling on the A/B was "u can see x-ray has no effect".
+
+### The issue the test must prove or disprove
+**Issue:** a whole-storey tint is visible on the levels §93.4 measured as invisible. The witness
+asserts `meshesTouched` per storey under `scope='storey'` against the same storeys' facade counts,
+on a real building DB, and FAILS if any storey the tint claims to mark touches too few meshes to
+read. It cannot be satisfied by turning a flag on.
+
+⚠ **PIXELS ARE NOT EVIDENCE HERE** (bim-ootb standing rule). The witness proves the tint REACHES the
+geometry. Whether the result reads better than the cut is red1's eyes on a real clip — this spec
+does not claim it does, and no frame analysis will be offered as proof that it does.
+
+### NOT in scope
+The section cut is not deleted — it is one value of `STOREY_REVEAL_MODE` and every §98/§102/§110
+timing constant stays. Flipping back is one word.
