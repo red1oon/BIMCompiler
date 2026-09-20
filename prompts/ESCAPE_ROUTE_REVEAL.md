@@ -343,6 +343,145 @@ trigger. That is the only new mechanism this needs.
 §3) and the reason is not recorded in `dlod_nav.js` itself. Find it before overriding it — a bake
 rendering box proxies instead of real geometry may be exactly what that gate exists to prevent.
 
+## §12 — SPEC: THE TWO RULES THE FIRE DEPARTMENT ACTUALLY ASKS ABOUT (not built)
+
+red1, 2026-09-20: *"spec the common path and remoteness rules."* Both verified by WebSearch the
+same day; sources at the foot of this section.
+
+**The uncomfortable framing this section exists to fix.** `viewer/rates/egress_rules.json` carries
+five rules — `door_clear_width`, `circulation_distance`, `isolated_room`, plus §EGRESS_HARDENING's
+space-coverage and door-occupant-load. Grepped 2026-09-20: **nothing on exit count, nothing on
+common path, nothing on remoteness.** And what §0-§11 draws is the SINGLE SHORTEST route. Code
+barely regulates the shortest route; it regulates that a **second, independent one exists, is
+reachable soon enough, and is far enough away.** The built beat answers a question the fire
+department does not ask, while the three it does ask are unimplemented. That is the gap.
+
+### §12.1 — Rule: `common_path_of_egress_travel` (IBC 2021 §1006.2.1)
+
+The distance from the most remote point in a space to the point where an occupant **first gains a
+choice of two paths**. Two independent triggers in Table 1006.2.1 — occupant load, and this
+distance; exceeding either requires two ways out.
+
+    warning_m: (none — this is a hard limit, not a ramp)
+    critical_m: 30.5   # 100 ft, SPRINKLERED (Group B/F/S)   CITED
+    critical_m_unsprinklered: 22.9   # 75 ft                  CITED
+
+**How it is computed on our graph, and why the graph is the right structure.** For the subject
+room, route to EVERY exit node, not just the nearest (MEASURED: all 8 Hospital exits from one room
+in **605 ms**, so this is affordable once per bake). Rank by the measured 3D polyline length. The
+**divergence node** is the last node shared by the primary route and the best alternate. The
+common path is the measured length from the room to that node.
+
+⚠ **MEASURED FROM THE CENTROID, NOT THE MOST REMOTE POINT.** The code measures from the most remote
+point in the space; our graph node is a room centroid. This UNDERSTATES the regulated quantity by
+roughly half the room's own diagonal — it under-flags, the opposite bias to `circulation_distance`.
+State it on the row; do not silently present a centroid measurement as the code quantity.
+
+⚠ **A room whose routes never diverge has an INFINITE common path** — every exit is reached through
+one corridor. That is a real and serious finding, and it is not the same as `isolated_room`. Report
+it as its own severity, never as a large number.
+
+### §12.2 — Rule: `exit_remoteness` (IBC 2021 §1007.1.1)
+
+Where two exits are required they shall be placed **not less than one-half of the maximum overall
+diagonal dimension** of the building or area served apart, measured in a straight line between
+them; **one-third** where the building is sprinklered throughout per §903.3.1.1/§903.3.1.2. The
+code's own stated purpose: *"assists in providing independent means of egress"* — one fire must not
+be able to take both. This is red1's own "other routes may be blocked" instinct, written into code.
+
+    ratio_unsprinklered: 0.50   # of the max overall diagonal   CITED
+    ratio_sprinklered:   0.333  #                                CITED
+
+**Nearly free to compute.** We already have every exit node's real position (8 on Hospital, all on
+Level 1 — five `M_Single-Flush` at 1.12-1.14 m, two `M_Double-Flush` at 2.01 m, one
+`Overhead Door at Dock` at 3.03 m). The diagonal comes from `element_transforms` per storey. It is
+one subtraction and one comparison per exit pair, with no pathfinding at all. Measure to any point
+along the doorway width per the section's own measurement clause; door centre is the available
+approximation and must be labelled as such.
+
+### §12.3 — SPRINKLERED IS NO LONGER AN ASSUMPTION, AND THIS MATTERS EVERYWHERE
+
+Every threshold above forks on sprinklered/unsprinklered, and so does the SHIPPED
+`circulation_distance` rule — its `critical_m: 60.96` is the **sprinklered** I-2 figure and
+`egress_sanity.js`'s header already admits the occupancy is assumed. **We can now check the
+sprinkler half.** MEASURED 2026-09-20 on real DBs:
+
+| DB | `IfcFireSuppressionTerminal` | other FP |
+|---|---|---|
+| `Hospital_meta.db` | **1,354** | 6,228 pipe segments, 5,900 fittings, 861 controls, 8 valves |
+| `Terminal_meta.db` | **909** | 80 `IfcAlarm` |
+
+So `IfcFireSuppressionTerminal` is the extractable sprinkler head, with a real position. A rule that
+currently ASSUMES sprinklered can state it as EVIDENCE — and, just as importantly, can say
+"unsprinklered, so the stricter threshold applies" on a building that has none. **Occupancy class
+is still unextractable** (`project_metadata` carries only building name and import date), so that
+half of every citation stays an assumption. Say which half is which on every row.
+
+## §13 — SPEC: THE VISUAL LANGUAGE (not built)
+
+red1, 2026-09-20: *"if we not only map the longest common route, but also alternatives in blue
+colour perhaps. Also since u mentioned sprinklered, it be good if the route has a grey tube casing
+it and the HUD panel has a legend explaining what yellow, red, casing means."*
+
+### §13.1 — the colours ARE the rule
+
+⚠ **PROPOSED ASSIGNMENT — red1 named yellow, red, blue and casing but not which is which. This is
+the reading that makes each colour carry a code quantity rather than a decoration. His call.**
+
+| colour | segment | the rule it draws |
+|---|---|---|
+| **RED** | room → divergence node | the COMMON PATH. No choice exists here: one blockage takes everyone. Its length is exactly the quantity §1006.2.1 caps at 30.5 m / 22.9 m. Red because it is the dangerous stretch, and it goes red-ALARM when over. |
+| **YELLOW** | divergence → nearest exit | the primary route, once a choice exists. Reuses §PATH_ORANGE `0xff9100`, the Find panel's own route colour — red1 reads that as yellow and it is already the established "this is the walk" colour. |
+| **BLUE** | divergence → each other exit | the alternates, ranked by measured length, dimmer with rank. Blue because it is deliberately NOT the warning family — an alternate existing is the GOOD news. |
+| **GREY TUBE** | any segment with cover | sprinkler coverage along the route (§13.2). Its ABSENCE is the finding, not its presence. |
+
+Drawn with the existing 2D-composite machinery (`escapeRouteCompositeOntoCanvas`) — one more
+polyline per colour, same dash/halo treatment, no new render path.
+
+### §13.2 — the grey tube is evidence, with a cited radius
+
+A route segment is CASED where a `IfcFireSuppressionTerminal` lies within **3.23 m horizontally on
+the same storey**. That number is derived, not chosen: NFPA 13 light hazard (which covers hospitals)
+caps coverage at **225 ft² per sprinkler and 15 ft maximum spacing**; on a compliant 15x15 ft grid
+the furthest any point can be from a head is the half-diagonal, 15·√2/2 = 10.6 ft = **3.23 m**.
+
+⚠ This is a PROXIMITY test, not a hydraulic coverage calculation. It cannot see obstructions,
+ceiling height, head type or whether the system is even charged. It answers "is there a head near
+this walk", which is worth drawing, and it must not be captioned as "this route is protected".
+A gap in the casing along a long common path is the picture worth having.
+
+### §13.3 — the legend
+
+A legend is now REQUIRED, not optional: four visual channels carrying four different meanings is
+past what a viewer infers. Put it in the existing `bigStats` card slot — the Escape Route card
+already owns that slot for its window, so this is a layout change inside one card, not a new box
+(and §ESCAPE_ROUTE_HUD_RESERVE means the plates will keep clear of it automatically once
+`A._hudStackBottom` grows).
+
+    Escape Route — <room>
+    RED    28 m no choice      limit 30.5 m (IBC T1006.2.1, sprinklered)
+    YELLOW 41 m to nearest exit
+    BLUE   3 alternates, nearest +12 m
+    GREY   sprinkler cover, NFPA 13 light hazard 3.23 m
+
+Every row carries its own number and, where one exists, its cited limit. The walking speed
+disclosure (§3) stays — it is the card's own honesty rule and a legend does not displace it.
+
+### §13.4 — what this does NOT become
+
+Not a Google-Maps route chooser. MEASURED on Hospital `Level 4 R1`: all 8 alternates fall between
+311.8 m and 363.4 m — a 17% spread — because they funnel down the same stairs and only diverge on
+the ground floor. **On this building the alternates are one route with different doors at the end,
+and that IS the finding** (it is what a long common path looks like). A viewer must not be shown
+three fat distinct routes that the building does not have. Draw what diverges, where it diverges.
+
+**Sources (verified 2026-09-20, not to be re-derived):**
+- IBC 2021 §1007.1.1 exit separation, 1/2 and 1/3 diagonal — https://up.codes/s/two-exits-or-exit-access-doorways
+- IBC 2021 Chapter 10 Means of Egress — https://codes.iccsafe.org/content/IBC2021P1/chapter-10-means-of-egress
+- §1006.2.1 common path of egress travel, 75/100 ft — https://codes.iccsafe.org/s/IFC2021V2.0/chapter-10-means-of-egress/IFC2021V2.0-Pt03-Ch10-Sec1006.2.1
+- Remoteness purpose, "independent means of egress" — https://www.sgh.com/insight/spark-notes-multiple-exits/
+- NFPA 13 light hazard 225 ft² / 15 ft spacing — https://blog.qrfs.com/214-maximum-and-minimum-sprinkler-distance-rules-part-1-standard-spray-fire-sprinklers/
+
 ## STATUS — BUILT and witnessed; one finding open for red1
 
 Scene fully worked out with red1 across several turns (trigger, timing, camera behaviour, visual
