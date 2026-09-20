@@ -1659,3 +1659,83 @@ The reuse key reads `A.camera.position` / `A.controls.target`, and the camera is
 `§FRAME_HASH` sequence inside frames 1923-2187 must still be IDENTICAL to
 `viewer/tests/fixtures/framehash_Hospital_2026-09-20_0531.txt`. One differing hash means the fold
 was skipped on a frame that needed it.
+
+## §129.63 SPEC — MOVE THE REUSE TEST ABOVE THE FOLD, AND PROVE IT WITH A TWO-RUN DIFF
+## (2026-09-20, red1: "Spec on that - move it and prove with the two-run, to adopt from now on")
+
+### The issue this must prove or disprove
+§129.57 skips a frame's composite and encode but **not** the 20-render TAA+AO fold, which is ~77%
+of a freeze frame. Measured on the only two bakes that have run the same window:
+
+```
+without reuse   265 freeze frames, 7,235 ms each
+with reuse      209 freeze frames, 5,487 ms each   ->  1,748 ms saved, ~7.7 min
+```
+
+Moving the test above the fold should recover the rest: **~23 min instead of ~8** on a Hospital
+1080p film. The issue: *does skipping the fold on a reused frame change the delivered pixels?*
+
+### The ordering, read from the file (all line numbers `viewer/cinema_maxq.js`, at `a3c6adfe`)
+```
+3055  stopStillRefine(true, true)   per-frame teardown (§MAXQ_STAGE_KEEP)
+3151  var _tnFilm = _tFilm(_tn)
+3157  var _poseFilmT                the escape-route ease
+3158  var pose = poseAtFilm(...)
+3163  A.camera.position.set(pose…)  <- the camera only becomes the pose HERE
+3498  A.startStillRefine()          <- THE FOLD. ~5,340 ms of a 6,892 ms freeze frame
+4000  var _reuseKey = null          <- the reuse test, 500 lines too late
+4031  await _captureFrame(...)
+```
+
+### The change
+Build the key **before 3055** and gate three things on it: the teardown at 3055, the fold at 3498,
+and the capture at 4031.
+
+**The key cannot be moved as written.** It reads `A.camera.position` and `A.controls.target`, which
+do not hold this frame's pose until 3163. It must be built from `pose` / `_poseFilmT` instead —
+the same numbers, one step earlier in the chain. Everything else in the key (`_loadPathHudAlpha`,
+`_loadPathVisualRev` + `_prevVisualRev`, sun elevation, day counter) is already available.
+
+### Three things that must survive, or the fix is worse than the bug
+1. **Never "skip the fold but still render".** The fold is what makes each hop's FIRST frame
+   correct. The gate is one decision: reuse the blob AND skip the fold, or do both.
+2. **The teardown at 3055 must be skipped with it.** `stopStillRefine(true, true)` runs at the top
+   of every frame. Skipping `startStillRefine` while still tearing down leaves the next RENDERED
+   frame restaging from cold — §BAKE_FAST_PATH_COST measured that teardown→restage cycle at
+   ~660 ms/frame, so getting this half wrong can cost more than the whole saving.
+3. **`§FRAME_COST` and `§FRAME_HASH` must still fire on a reused frame.** They are how the next
+   session measures any of this. A reused frame that logs nothing makes the census lie.
+
+### The proof — THE TWO-RUN DIFF, ADOPTED AS THE STANDING METHOD FROM NOW ON
+⚠ **The old gate is dead.** `framehash_Hospital_2026-09-20_0531.txt` no longer matches ANYTHING —
+I ran it: all 209 comparable freeze frames differ, and so do all 1,923 frames outside the freeze.
+That is §129.58's HUD restyle, §129.59's tint and the escape beat, not a reuse fault. **Do not diff
+against that fixture again.**
+
+**The method, for this and for every future change that claims a frame can be skipped:**
+
+```
+same tree, same building, same window, twice
+  run A   --frame-range <freeze window>   window.__noFrameReuse=1     the control
+  run B   --frame-range <freeze window>   (reuse on)                  the candidate
+diff the §FRAME_HASH sequences frame-for-frame
+```
+
+- **PASS** = every hash identical. The film is unchanged; the saving is free.
+- **FAIL** = one differing hash. The reuse skipped something that mattered, and the frame number
+  says where.
+- Report the wall-clock of both runs beside the verdict; that is the saving, measured rather than
+  claimed.
+
+Why two runs rather than a stored fixture: a stored baseline goes stale the moment any overlay
+changes, which is exactly what killed the last one after four days. Two runs on the same tree
+cannot go stale. Both are clips, so both carry the same clip-state — the "a clip is not a film"
+objection applies to comparing a clip with a FILM, not to comparing two identical clips.
+
+Run A is also the fixture worth committing afterwards, dated, so the next change has a same-tree
+baseline to start from.
+
+### The rule this adopts
+**A saving claimed from reading code is an estimate; only a run is a measurement — say which one
+you have.** §129.57's numbers taken from a real `§FRAME_HASH` (199 duplicates, 6,892 ms, the
+22-per-hop shape) all held exactly. The one taken from assuming where a call sat was wrong by 3x.
