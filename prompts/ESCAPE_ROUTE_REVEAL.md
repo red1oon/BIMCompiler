@@ -425,8 +425,9 @@ it and the HUD panel has a legend explaining what yellow, red, casing means."*
 
 ### §13.1 — the colours ARE the rule
 
-⚠ **PROPOSED ASSIGNMENT — red1 named yellow, red, blue and casing but not which is which. This is
-the reading that makes each colour carry a code quantity rather than a decoration. His call.**
+✅ **APPROVED by red1, 2026-09-20** — *"Agree with your color code."* Proposed as the reading that
+makes each colour carry a code quantity rather than a decoration; ratified. Do not re-litigate the
+assignment; changing any one of these changes which rule the picture is drawing.
 
 | colour | segment | the rule it draws |
 |---|---|---|
@@ -516,6 +517,39 @@ route uses.
 
 ⚠ **Never abbreviate a citation to the point where it cannot be looked up.** `IBC 2021 T1006.2.1`
 is brief and findable. `IBC` alone is not a citation, it is a logo.
+
+### §13.6 — the hydra silhouette IS the verdict — do not tidy it away
+
+red1, on seeing the colour scheme described, 2026-09-20: *"it be amazing, though hydra like
+looking, but its giving a x-section of what an escape route plan that is thought out well and
+extracted from a dropped IFC on the fly is."*
+
+**The busyness is not a flaw to be cleaned up. It is the reading, available before any number is.**
+The silhouette encodes the verdict:
+
+| what it looks like | what it means |
+|---|---|
+| a HYDRA — short red stub, many blue heads fanning early | the divergence point is close to the room and the alternates are many. **Good egress.** |
+| a SNAKE — long red spine, heads only at the very end | a long common path; everyone funnels the same way and only gets a choice at the door. **Bad egress**, and §12.1's number will say so. |
+| a red line with NO heads at all | routes never diverge — the infinite common path of §12.1. **The worst case, and it is legible as a shape.** |
+
+Hospital `Level 4 R1` is a SNAKE: 8 alternates spanning 311.8-363.4 m, a 17% spread, all funnelling
+down the same stairs (§13.4). That building reads as a snake because it IS one.
+
+⚠ **A future "let's reduce the clutter" pass — capping the alternates drawn, merging near-identical
+heads, thinning the fan — would destroy this.** It would make a snake and a hydra look the same.
+If the frame is genuinely too busy, drop the FAINTEST heads by rank and SAY SO on the legend
+("3 of 8 shown"), never silently. This is the same ruling §CLASH_LABEL's own TOP_N carries — red1
+accepted clutter there too ("clutter acceptable… motion sieves them out").
+
+**And the "dropped IFC on the fly" part is the load-bearing claim, so keep it true.** There is no
+authoring step anywhere in this chain: no fire-engineering model, no tagged escape routes, no
+human-placed exit signs. The route is Dijkstra over door adjacency measured from real door
+footprints (`common/room_graph.js`, the buffered-distance match rule in its header), the exits are
+name-filtered real exterior doors with lifts excluded (`NON_ROOM_DOOR_NAMES`, room_graph.js:127),
+and the sprinkler cover is real `IfcFireSuppressionTerminal` positions. Every line on screen traces
+to a row in the dropped file. **If any future version needs a human to mark up the model first, it
+has lost the only thing that makes it worth showing.**
 
 ### §13.4 — what this does NOT become
 
