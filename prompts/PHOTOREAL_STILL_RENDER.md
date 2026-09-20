@@ -184,14 +184,18 @@ covers instanced/merged-tracked elements. A batched element's material never get
 attach to regardless of how the guid lookup is written (traced through `A.guidMap` →
 `_batchMeta`/`_instanceGuids`/`findMeshByGuid` — batched elements use a SEPARATE identity system).
 Fixing that needs a batched-mesh-aware boost path — a bigger, separate task, named here not built.
-**Also found: Terminal (48,428 elements) has ZERO `_matCache` entries at all**, before and after
-staging — almost certainly its DLOD (`A._useDlodPath`) rendering path bypasses the whole STD_MAT/
-`_matCache` material system universally, not just for batched outliers. Means Alt+S's entire
-material-boost/triplanar/envmap/room-probe layer may be a no-op on DLOD-path buildings — not
-chased further this session (Clinic, the building actually in question, is unaffected — its
-piping-equivalent classes, `IfcFlowSegment`/`IfcFlowFitting` under the IFC2x3 generic-MEP
-convention, ARE in `_matCache` normally), but worth a dedicated session if Alt+S quality on large
-buildings (Terminal/Hospital/LTU) is ever specifically checked.
+**RETRACTED 2026-09-21 — "Terminal has ZERO `_matCache` entries" was wrong, re-checked live.** A
+fresh headless probe (`probe_matcache_dlod.js`, puppeteer/swiftshader, full 48,428/48,428 elements
+streamed) found `_matCache` populated normally: 92 entries before AND after Alt+S, 14 materials get
+the envmap boost, `§MIRROR_ROOM_PROBE` builds, `§TRIPLANAR_PERF materials=60` fires. A Clinic control
+run (54 entries, populated) confirms the probe method itself was sound. The DLOD-bypass theory was
+never possible in the first place: `A._useDlodPath` is hardwired `false` at both stream-queue paths
+(`viewer/streaming.js:397,452`, §S262) since the 2026-05-23 initial-migration commit — i.e. already
+false when this paragraph was written on 2026-08-16. Why that day's probe read zero is not
+reconstructible from current code; treat it as a probe/timing artifact from that session, not a real
+defect. Alt+S's material-boost/triplanar/envmap/room-probe layer is confirmed live on large
+buildings — no dedicated session needed here. (The batched-mesh mirror gap two paragraphs up is
+unaffected by this retraction — still real, still unfixed.)
 **Real bug found+fixed in the same pass**: dispose+rebuild every Alt+S cycle leaked +1
 texture/cycle, compounding (measured C1/C2/C3 exit deltas: 25, 1, 1 — same bug CLASS as
 §ALTS_MEM_HOG above, found via the identical bisection discipline). A bare isolated
