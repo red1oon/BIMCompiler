@@ -753,6 +753,27 @@ a penalty-weighted cost, not a distance — is observed and documented, NOT fixe
 ---
 
 ## §14 CLOSED INTO ONE LANE (2026-09-20, end of day) — this file is no longer its own session.
+
+### §14.1 — two more landed after §14 was written (2026-09-20, evening)
+Both from red1 watching the 12:25 clip. The design record above (§1-§13) is unchanged; these are
+where the beat ACTUALLY ended up, and the live hand-off is `LOADPATH_FREEZE_POLISH_RESUME.md` §130.1.
+
+- **The legend now explains itself in words** (`81da0ca6`). red1: *"the HUD color ie red '..' and
+  grey need explanation such as 'sprinklered zone'"*. §13.3's mock had terse fragments; the rows now
+  read `common path — no alternative`, `onward to the nearest exit`, `other exits from that point`,
+  `sprinklered zone`, each with a SHORT form for the 211 px plate at 854x480 so the meaning survives
+  every size. **§13.5's drop order is superseded**: the cited limit is shed BEFORE the descriptor
+  now, because the limit is also in the disclosure row and footnote ¹ while the descriptor is
+  nowhere else on the card.
+- **The beats' shine-through geometry ceases with their chips** (`f79f6316`) — not this beat's
+  doing, but it is what was crowding this beat's frames. See §130.1.
+
+⚠ ONE THING §13.2's own wording should be read against: the GREY row now says **"sprinklered
+zone"**, which is shorter and plainer than "sprinkler cover" and is what red1 asked for — but
+§13.2's caveat is unchanged and still governs. It is a PROXIMITY test against real
+`IfcFireSuppressionTerminal` positions, not a hydraulic coverage calculation, and the card must
+never be read as "this route is protected". Footnote ³ carries that caveat at delivery height; at
+clip height the footnotes drop and the § log is where it lives.
 The escape-route work and the load-path/freeze work are **one branch and one job** from here.
 
 **The live hand-off is `prompts/LOADPATH_FREEZE_POLISH_RESUME.md` §130.** Read that first; this

@@ -1760,6 +1760,81 @@ ended at `beats.rise` 0.9590. Visible in frame 700 of
 the last storey deliberately staying lit or a tint that never restored. red1 has asked for it to be
 cleared up. That is the next job and it is the last one he has named.
 
+## §130.1 — WHAT LANDED AFTER §130 WAS WRITTEN (2026-09-20, same evening)
+§130's state line says `14226630`. Two more commits went in after it, both from red1 watching the
+12:25 clip, and the first of them ANSWERS most of what §130 lists as the open item.
+
+### `f79f6316` — the beats' SHINE-THROUGH geometry ceases too, not just their chips
+red1: *"Make the overlay shine thru of beams cease then. They are showing and disturbing the scene
+which now has other new stuff to do ie Storey Reveal and then EscRoute. Even if not, it can just go
+on for 2 secs and no more as user has seen enough and wana enjoy the finale of whole landed
+building."*
+
+**§FINDINGS_CEASE was half a gate and the log made it look whole.** It covered the 2D draw chain
+only. The bake printed `layer=measure.datum ceased` and meant it — while `flythruDatumAt` went on
+setting `_grp.visible` from its OWN life curve every frame, so the datum's `depthTest:false`
+uprights and storey bands kept shining through the building to the final frame. The chips ceasing
+made it WORSE: the geometry was left on screen with nothing to explain it.
+
+Four modules add a named group to `A.scene` and **not one was reachable from the HUD chain**:
+`flythruDatum`, `flythruCue`, `indoorBeats`, `slabBeat`. `_cease3D()` (cinema_maxq.js, beside the 2D
+gate) hides all four on the same `_findingsHudSuppress` signal — same onset, same 2 s tail. **Hidden,
+never disposed**, so each beat's own `.visible` returns the moment the gate lifts; the shape
+`clashFilm.setVisible` already used.
+Confirmed live: `§FINDINGS_CEASE_3D group="flythruDatum" hidden`, then `indoorBeats`, then
+`slabBeat`, relayed through CLAIM_RX so it reaches `out/<db>.log`.
+
+⚠ **THE WITNESS DISCOVERS, IT DOES NOT LIST.** `witness_findings_cease.js` scans every
+measure-family module for the group it adds to the scene and asserts each one found is in
+`CEASE_3D_GROUPS`. A fifth beat fails the witness the day it lands rather than the next time
+somebody watches a clip — the same reason the 2D half became a predicate instead of a list of two.
+**17/17.**
+
+### `81da0ca6` — every colour key says what it MEANS
+red1: *"the HUD color ie red '..' and grey need explanation such as 'sprinklered zone'"*.
+The rows were a colour, a number and a terse fragment; at 854x480 the ladder shed the words
+entirely and left `GREY  177 m`, which is a swatch, not a legend. Now:
+
+    RED     183 m         common path — no alternative      limit 30.5 m ¹
+    YELLOW   64 m         onward to the nearest exit
+    BLUE     7 alternates other exits from that point
+    GREY    177 m         sprinklered zone
+
+Each row carries a SHORT form as well, because the plate is 211 px at 854x480: `no alternative`,
+`to nearest exit`, `other exits`, `sprinklered`. **The meaning survives every size** — measured
+4/4 at 1920x1080, 1280x720 and 854x480.
+**The drop order is reversed and that is the substance, not a side effect:** the cited limit goes
+before the descriptor now, because the limit is on the card twice over (the disclosure row and
+footnote ¹) and the descriptor is nowhere else.
+
+### State
+`feat/loadpath-ledger`, pushed, `81da0ca6`, **128 ahead of origin/main, 0 behind**. Nothing merged.
+**Fourteen witnesses green**: §ESCAPE_COLOURS 31/31 · §CARDFIT 21/21 · §FINDINGS_CEASE 17/17 ·
+§ESCAPE_ROUTE_WITNESS 67/67 · §OVERLAY_LIFETIME 17/17 · §TINT_SCOPE 25/25 · §EGRESS_ALTERNATES ·
+witness_storey_cut · witness_storey_reveal_list 13/0 · §FRAME_REUSE_W · §HUD_COVERAGE ·
+§FREEZE_THEME. `witness_film_boxes` stays 13/1 on a §40.1 leg that fails identically at `2c487820`.
+
+### What is STILL open, narrowed
+§130 said the yellow-olive wash was one unknown. It was **two**, and only one is left:
+- **The shine-through half is CLOSED** — it was the `flythruDatum` group, and `f79f6316` ceases it.
+- **The storey TINT itself is still painted at the final frame**, after the reveal ends at
+  `beats.rise` 0.9590. That is a different mechanism from those four groups — `_applyTint`'s own
+  restore — and `§STOREY_REVEAL_LAST_STAYS_LIT` did not print in the 12:25 bake, so the log still
+  cannot say whether it is the last storey deliberately staying lit or a restore that never ran.
+  **Read `_restoreTint`'s trigger before assuming either.**
+
+### Evidence kept out of /tmp
+`prompts/evidence/firehose_Hospital_clip_2026-09-20_1225.log.gz` — the 18,596-line firehose of the
+first clip that carried every rule of the day. The 1080p run's own firehose lands beside it as
+`firehose_Hospital_clip1080_2026-09-20_<hhmm>.log.gz`.
+
+### In flight at close
+A **1920x1080 / 24 fps** clip of the same span (`--clip 0.82:1`, `--no-load-path`), commit
+`81da0ca6`, ~40 min. red1 asked for the hi-res bake to judge the legend wording at delivery size.
+⚠ A clip over this span MUST pass `--no-load-path`: the freeze arms at tn 0.409, outside
+`[0.82, 1]`, and clamps to frame 0 — the bake says so itself with
+`§LOADPATH_HOLD_INSERT ... armTnMatch=false ... => FAIL`.
+
 ## What the film does now, and where each rule lives
 | beat | rule | where |
 |---|---|---|
