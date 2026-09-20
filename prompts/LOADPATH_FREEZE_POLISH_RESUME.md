@@ -6,6 +6,10 @@ grep. Never judge from frames: every claim traces to a `§` line you read yourse
 description of one, and not to what red1 says they see. Their eyes are the final arbiter of a LOOK
 ruling, but that is a ruling on a fix's RESULT, never a substitute for tracing the cause first.
 
+**NEXT SESSION STARTS AT §131**, immediately below the archive. Two things are open and red1 has
+seen both: the camera veering during the escape beat, and the beams still glowing through the
+building. §130/§130.1 are the state; §131 is the job.
+
 ## CONSOLIDATED 2026-09-20 — what this file used to be
 It ran to 1,907 lines of session narrative from 09-17 to 09-20, §129.11 through §129.63, almost all
 of it superseded by the section below. red1: *"consolidate the prompts/# from stale info"*.
@@ -92,6 +96,71 @@ git — `git log -p prompts/LOADPATH_FREEZE_POLISH_RESUME.md`, or read it at com
 - **The `o` box-proxy-in-a-bake experiment is DECLINED** by red1's own 2026-07-21 ruling in
   `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must never appear in a
   movie frame"*. It needs him to reverse himself IN THAT FILE.
+
+# §131 — START HERE NEXT SESSION. TWO THINGS ARE OPEN, BOTH SEEN BY RED1, NEITHER CLOSED.
+
+**One line to continue:** *bake a clip at `764ca784` or later and judge two things by eye — does the
+camera still veer during the escape beat, and do the beams still glow through the building.*
+
+## 1. THE CAMERA VEERS DURING THE ESCAPE BEAT — fix pushed, NEVER SEEN IN A BAKE
+red1: *"the scene path seems to veer a bit off during the EscRoute. Check the slowing down that time
+did not skew the cam face path."* Then, after the fix was pushed: *"the path still veers"*.
+
+⚠ **HE HAS NOT SEEN THE FIX.** The only 1080p clip on disk,
+`~/Downloads/Hospital_storeyreveal_to_end_1920x1080_24fps_1311.mp4`, was baked at `81da0ca6` —
+`EASE_K = 0.60`, the value that causes the veer. `764ca784` lowered it to 0.25 and has never been
+baked. **The next clip is what decides whether this is fixed or only reduced.**
+
+WHAT WAS MEASURED, over 10,001 samples of both curves on this film's 5.8 s window:
+
+| curve | max camera lead off its nominal pose |
+|---|---|
+| old symmetric (shipped for weeks, no complaint) | 0.0620 of the window = **0.36 s** |
+| `EASE_K = 0.60` — what red1 saw | 0.1500 = **0.87 s**, peaking at w=0.50 |
+| `EASE_K = 0.25` — current, unbaked | 0.0625 = **0.36 s** |
+
+**THE TENSION IS INTRINSIC, so read this before reaching for the constant again.** `warp(0)=0` and
+`warp(1)=1`, so a rate that ENDS below 1 must have RUN ABOVE 1 earlier — the camera necessarily
+LEADS its nominal pose in between. For `warp = w + k·w(1−w)` the lead is exactly `k/4` of the window
+and the end rate is exactly `1−k`; they are **the same knob read from opposite ends**. You cannot
+slow the ending further without moving the camera further off its path. `W-ESC-4k` bounds the lead
+and `W-ESC-4d` asks for the slowest end that bound allows, so the two witnesses hold it from both
+sides — a future change that weakens one will fail the other.
+
+**IF IT STILL VEERS AT k=0.25**, the warp is the wrong instrument and the next move is NOT a smaller
+k (that just deletes the beat's pacing). It is to stop warping the POSE at all and get the settling
+from the beat's own structure instead — the last 30% is already a hold at full progress
+(`DRAW_FRAC = 0.70`), and lengthening that hold slows the *reading* without moving the camera one
+metre off its path. `escapeRouteEaseFilmT` returning `tFilm` unchanged is a one-line control that
+proves whether the warp is the cause at all. **Run that control before tuning anything.**
+
+## 2. THE BEAMS STILL GLOW THROUGH THE BUILDING — cause NOT identified
+red1: *"the glow thru beams still persists!"*, watching the 1311 clip — which already contains
+`f79f6316`, the 3D cease. So **the four groups that commit hides are not the cause.**
+
+What has been ruled OUT, by reading the code rather than by assuming:
+- **Not the four ceased groups.** `§FINDINGS_CEASE_3D` fired in that bake for `flythruDatum`,
+  `indoorBeats` and `slabBeat`, and the glow is still there.
+- **Not the load path.** The clip runs `--no-load-path`; the census says `loadPath=0`.
+- **Probably not the storey tint's restore.** `storeyRevealApplyVisual` is called UNCONDITIONALLY
+  every frame (`cinema_maxq.js:3472` — it is not key-gated, despite the neighbouring comment saying
+  the section cut is "NOT key-gated like ApplyVisual above"). When `vis` goes null the key becomes
+  null, differs from `_curIdx`, and `_restoreTint()` runs. This was read, not assumed — but it was
+  NOT proven with a log line, so treat it as a strong lead, not a closed door.
+
+WHERE TO GO NEXT, cheapest first:
+1. **Get a `§` line rather than a frame.** Nothing in the bake says "the tint came off". Add one to
+   `_restoreTint` naming how many meshes it restored and at what `tNorm`, then bake. If it prints
+   0 restored, or never prints, the answer is there in one run.
+2. **`STOREY_REVEAL_MODE = 'cut'`** turns the tint off in one word (`cpe_storey_reveal.js`). If the
+   glow survives that, it was never the tint — and that is one bake, not a search.
+3. Only then look wider: the night relight (§129.41 narrows the interior-lights off-window to
+   `[beats.out, topoutU)`, so fixtures come back ON for the whole closing orbit) and
+   `emissiveIntensity` left lifted on a shared material.
+
+⚠ **DO NOT CHASE THIS FROM FRAMES.** Two sessions today spent real time reading pixels and reached
+three different explanations. The standing rule applies: slice the predicate out, or add `§`
+logging, and let a run answer it.
 
 # §130 SINGLE-SESSION HANDOFF (2026-09-20, end of day) — READ THIS FIRST. SUPERSEDES §129.62.
 Two sessions ran this film today — the load-path/freeze lane and the escape-route lane. **They are

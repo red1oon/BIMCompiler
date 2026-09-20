@@ -689,6 +689,14 @@ derived from a penalty-weighted COST, not a distance. Observed and documented, o
 
 ## §14 CLOSED INTO ONE LANE (2026-09-20, end of day) — this file is no longer its own session.
 
+### §14.2 — THE EASE IS UNRESOLVED. See LOADPATH_FREEZE_POLISH_RESUME.md §131.
+red1 on the 1080p clip: *"the scene path seems to veer a bit off during the EscRoute"*, then *"the
+path still veers"*. `EASE_K` went 0.60 → 0.25 in `764ca784` and **has never been baked** — the only
+1080p clip on disk is at 0.60. §12/§13's numbers are unaffected; only the camera warp is in doubt.
+⚠ Before touching `EASE_K` again, read §131: the end rate is `1−k` and the camera's lead off its
+nominal pose is `k/4`, so they are one knob. If 0.25 still veers, the warp is the wrong instrument —
+get the settling from `DRAW_FRAC`'s hold instead, and run the identity control first.
+
 ### §14.1 — two more landed after §14 was written (2026-09-20, evening)
 Both from red1 watching the 12:25 clip. The design record above (§1-§13) is unchanged; these are
 where the beat ACTUALLY ended up, and the live hand-off is `LOADPATH_FREEZE_POLISH_RESUME.md` §130.1.
