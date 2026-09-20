@@ -184,6 +184,65 @@ user's explicit direction ("But not Find Panel and Alt-C movie orbit"):
   Accepted tradeoff, on record: Cinema pays full render cost on LTU-scale buildings — if a Cinema
   run is slow there, that is this decision working as intended, not a bug.
 
+#### §3.1 — CARVE-OUT, 2026-09-20, USER-DICTATED: the escape-route beat may box deliberately
+**The 2026-07-21 decision above STANDS. This is a named exception to it, not a reversal, and it is
+recorded here rather than in the requesting lane's own doc precisely because that decision says
+"do not re-litigate".** Requesting lane: `prompts/ESCAPE_ROUTE_REVEAL.md` §11/§11.1/§11.2.
+
+red1, 2026-09-20, on being shown the ruling he made above: *"no, this 'o' is only during the
+EscRoute for visual impact. Do understand exceptions."* and *"this is to showcase as much BIMViewer
+features."*
+
+**WHY THIS IS NOT THE THING §3 FORBIDS.** §3's concern is a quality ACCIDENT — a proxy box
+appearing in a movie frame where the viewer expected the building, because a culler no one asked
+for was running. The carve-out is the opposite: the box IS the subject. For one bounded beat the
+film is showing the viewer what `o` (Nav LOD, `panels.js:1486`) does, the way the same film already
+shows the sun compass, the clash markers and the storey reveal. A viewer who is being shown the
+wireframe has not been served a degraded frame; they have been served the feature.
+
+**SCOPE — all four conditions, or this carve-out does not apply:**
+1. **The escape-route beat only** — the window `A.escapeRouteWindow(plan)` returns, inside the
+   closing orbit. Never the dive, the walk, the reveal round or the pull-back.
+2. **Default OFF.** The lever (`window.__dlodNav.allowCinema` or equivalent) ships false, and the
+   Alt+C toggle that arms the beat is itself off by default like every other overlay in that panel.
+   A film nobody asked this of must re-bake byte-identically.
+3. **It restores.** The beat ends solid, faded, before the film does — see the trigger note below.
+4. **Never Alt+P.** §3's extension to photoreal stills is untouched: a still has no beat to scope
+   an exception to.
+
+**IMPLEMENTATION CONSTRAINTS — verified 2026-09-20, do not re-derive:**
+- **The lever must cover BOTH gate lines.** `dlod_nav.js:400` returns `'cinema'`, and **:401
+  immediately returns `'photoreal'`** for `_stillRefineActive`, which a bake really does set
+  (`effects.js:5184`/`:9428`; `cinema_maxq.js:1118`/`:1511` call `stopStillRefine`). dlod_nav's tick
+  is not synchronised to the bake frame, so a lever on :400 alone falls through and a
+  correctly-wired change reads as "did nothing". Found by red1-1c, confirmed here.
+- **`NAV_MIN_ELEMENTS = 50000` (`dlod_nav.js:59`, checked at :394 and :2003).** Hospital's 63k
+  qualifies; Clinic, Duplex and Terminal do not. **This carve-out therefore CANNOT satisfy red1's
+  standing "any building gives the same effects" requirement** — it is a property of the module.
+  A building under the gate must degrade to the beat without boxing, never to a broken beat.
+- **The distances do not suit the orbit, and this is the only new mechanism needed.**
+  `PROMOTE_DIST = 38`, `DEMOTE_DIST = 60`, `FADE_FRAMES = 10` (§8 FINDINGS #4: "N=10 sufficed; 5 and
+  20 both worse"). MEASURED: the closing orbit flies at **radius 102 m**, past `DEMOTE_DIST`, so the
+  whole building stays boxed for the beat — the wanted look — but restore-as-you-approach never
+  fires, because a closing orbit pulls AWAY. **The fade back to solid must be driven by the beat's
+  clock, not camera distance.** Same envelope, different trigger.
+- **Do NOT enable `occlBvhEnabled` with it** — a 312 ms BVH build (§17.2), default false, unrelated
+  to the look.
+
+**COST — measured, and it is the cheap end.** §20's own sweep (LTU_AHouse, RTX 4060, headless
+hardware-GL, real `frame_ms`, `witness/w_budget_perf.log`): the fully-boxed floor is
+**16.6–16.7 ms**, against 18.1 ms at 7,795 real meshes, 22.2 ms at 11,094 and 27.5 ms at 15,616.
+Fully boxed is the cheapest state the renderer has. ⚠ Those are INTERACTIVE frames: a 1080p bake
+frame measured ~1.57 s with the photoreal fold dominating, so expect a modest saving, not the 3x
+the escape beat's x-ray removal gave (334 s → 146 s over 88 identical frames,
+`ESCAPE_ROUTE_REVEAL.md` §10). The real per-frame cost here is the two TRANSITIONS — everything
+flipping at once is a full `instancedMatrix` re-upload, which this module's own header flags.
+
+**WITNESS BEFORE IT SHIPS:** the gate reason must be logged per tick during the beat (otherwise
+"did nothing" is indistinguishable from "blocked at :401"), and the paired A/B is the same shape
+§10 used: the same clip twice at 854x480, lever off then on, per-frame cost and gate reason both
+recorded. A bake that boxes outside the beat window is a §CRISIS-class defect against condition 1.
+
 ## 4. Witnesses (blocking; headless is blind to GPU per TM_DLOD_SCALE.md §6 — real numbers need the
 user's machine, `window.__tmTrav`-style stats or an equivalent nav-scope hook)
 - **W-DLOD-NAV-EQUIV:** toggle OFF → scene identical to today's Fly Tour / free-orbit rendering,

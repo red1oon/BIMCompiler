@@ -411,9 +411,17 @@ The lever must cover BOTH lines, or the A/B must log the gate reason per tick. C
 thing that ruling forbids, in the ruling's own words.** It is also the answer to "why is the bake
 slow": that was accepted, on record, as the price of the decision.
 
-This does not make it wrong to want. Fourteen months of film work sit between that ruling and now,
-the beat being proposed is a DELIBERATE stylistic moment rather than an always-on culler, and red1
-is free to reverse his own call. But it must be reversed knowingly, not routed around:
+✅ **RESOLVED 2026-09-20 — red1 granted a named CARVE-OUT, not a reversal.** His words: *"no, this
+'o' is only during the EscRoute for visual impact. Do understand exceptions."* and *"this is to
+showcase as much BIMViewer features."* The §3 ruling STANDS; the exception is recorded in
+`prompts/Viewer/FLY_TOUR_DLOD_SCALE.md` **§3.1**, in that file rather than this one, because §3
+says do-not-re-litigate. **Read §3.1 before implementing — it carries the four scope conditions,
+the verified implementation constraints and the measured cost.** The reasoning that made it a
+carve-out rather than a repeal: §3 forbids a proxy box appearing where the viewer expected the
+building, by accident; here the box IS the subject, for one bounded beat, the way the film already
+shows the sun compass and the clash markers.
+
+The conditions it was granted under:
 
 - Whoever implements this must have red1's explicit reversal of the 2026-07-21 scope decision,
   quoted above, recorded in `FLY_TOUR_DLOD_SCALE.md` itself — that file says "do not re-litigate",
