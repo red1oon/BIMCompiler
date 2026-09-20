@@ -744,3 +744,31 @@ back far enough that nothing is outside the view. A film ending closer in could 
 during the escape beat, after the storey reveal has ended. `§STOREY_REVEAL_LAST_STAYS_LIT` did not
 print in that bake, so the log cannot say whether it is the last storey deliberately staying lit or
 a tint that never restored.
+
+## §15 — WHY THE ROUTE CROSSES THE BUILDING: NOT THIS FILE'S DEFECT. See OCCUPANT_PATHFINDER.md §PATHING-DEFECTS-2026-09-20.
+red1, 2026-09-20, watching the closing beat: *"the escape route is rather long crossing whole wings
+which is rather unrealistic"*, then *"Check along that route to see if it's true"*, then *"is it a
+fault of the data?"*
+
+**It is not.** Probed vertex by vertex with this module's own `escapeRouteBuild()` on
+`Hospital_silent.db`: `spDelta=0.00e+0` (the drawn line IS the shortest path) and the descent lands
+`0.0 m` in plan from a real `IfcStair`. **This beat draws the right answer to the graph it is given.**
+
+The graph is the defect, and it is one line in `common/room_graph.js:141`: `stairBaseKey()` strips a
+trailing `:\d+`, which on this model is the Revit element ID rather than a flight index, so **62
+stair rows collapse to 11 keys — 26 of them into ONE group spanning x 2.9..81.0** — leaving
+`stairs=3 (skipped=2)`. The route therefore walks ~71 m east past stairs **10.1 m** from the start
+room to reach the only connected descent, then ~52 m back west to the exit: **~123 m of the 247 m
+is an out-and-back**.
+
+**Consequences for what this film may SAY.** "The longest walk out" is true of the model; it is not
+a survey of the building. Narration must not claim the route passes through anything by design — the
+selection is `argmax MEASURED WALK` and nothing else. Safe: *"the longest way out this model can
+trace"*, or the common-path figure alone (183.16 m with no alternative against a 30.5 m limit),
+which is the stronger finding anyway.
+
+Two more items recorded there rather than here, both touching this beat's numbers: **P2** the drawn
+polyline sawtooths ±1.7 m six times after the stair (~11.8 m of phantom climb in a 3D-measured
+walk), and **P4** `rule_checklist.js` divides the penalty-weighted COST by the stride for its
+"Longest path to exit" headline (~143 steps) while this film draws ~329 for the same room — the bake
+already prints `§ESCAPE_ROUTE_COST_IS_NOT_A_DISTANCE` about it. Nothing is fixed.
