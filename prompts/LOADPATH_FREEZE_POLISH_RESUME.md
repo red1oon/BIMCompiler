@@ -1393,3 +1393,68 @@ does not claim it does, and no frame analysis will be offered as proof that it d
 ### NOT in scope
 The section cut is not deleted — it is one value of `STOREY_REVEAL_MODE` and every §98/§102/§110
 timing constant stays. Flipping back is one word.
+
+### §129.59 DONE (2026-09-20) — bim-ootb `92a5166e`
+`§TINT_SCOPE PASS pass=18 fail=0`; control on the pre-change file `INCONCLUSIVE exit 2 — the tint
+is off entirely on this tree`. Reach, per storey, under the new scope:
+
+```
+Level 7A   2 facade meshes ->  40 whole-storey  (20.0x)   <- §93.4: "not at all"
+Level 7    6 facade meshes ->  55 whole-storey  ( 9.2x)   <- §93.4: "not at all"
+Level 4   51 facade meshes -> 120 whole-storey            <- §93.4: "broad bands"
+```
+
+Test seams published for it: `A.storeyRevealTintFor` / `A.storeyRevealTintRestore` /
+`A.storeyRevealMode`, read-only, nothing in the film calls them — same convention as
+`cpe_load_path.js`'s `A._loadPathStackWitness`.
+
+⚠ Reads better? **Unproven, and deliberately not claimed.** No bake yet: red1 paused baking until
+`feat/escape-route-reveal`'s latest lands, then wants ONE clip, storey reveal through to the end,
+carrying both beats.
+
+## §129.60 FINDING (not fixed, reported) — two storey witnesses are DEAD in node, and were before
+## this session touched the file
+
+```
+witness_storey_reveal_list.js -> ReferenceError: window is not defined
+witness_storey_cut.js         -> same
+    at _regroupByRung (viewer/cpe_storey_reveal.js:219)
+      if (window.__srForceLabelLadder) {
+```
+
+`cpe_storey_reveal.js` is dual-mode on purpose — it ends with a `module.exports` specifically so
+node witnesses can drive it — but line 219 reads `window` bare, where the rest of the file guards
+with `typeof window !== 'undefined'`. **Confirmed pre-existing:** checked out `HEAD`'s copy of the
+file and both witnesses crash identically, so this is not §129.59's doing.
+
+Cost: the storey lane's two oldest witnesses have been passing nothing. A green run was never
+possible; they abort before their first assertion. One `typeof` guard restores both.
+
+NOT FIXED — standing rule, findings are reported and red1 authorises the fix.
+
+## §129.61 OPEN — the escape-route merge is BACKED OUT, deliberately, and must be redone
+`git merge origin/feat/escape-route-reveal` was taken to conflict resolution and then
+`git merge --abort`ed, because red1 said the beat is "still ongoing, with more wows" — merging a
+moving branch twice is worse than merging it once at the end.
+
+Resolved-and-kept, ready to replay (saved outside the repo, in this session's scratchpad):
+`viewer/sw.js` · `eslint.globals.json` · `viewer/main.js` · `viewer/viewer.html` ·
+`viewer/cinema_path_editor.js`. Still unresolved when it was backed out: `viewer/cinema_maxq.js`
+(14 blocks) and `cli_silent_bake.js` (3).
+
+Resolutions worth not re-deriving:
+- **`sw.js`** — `CACHE_VERSION` v1205 vs v1189, take the HIGHER and add a merge line; precache is
+  the UNION (theirs adds `cpe_escape_route.js`; ours adds `cpe_load_path.js`, `cpe_ledger_ticker.js`,
+  `cpe_flyout_beats.js`, `cpe_film_boxes.js`).
+- **`main.js`** — ours is the superset; only `setupCpeEscapeRoute` is missing, insert after
+  `setupCpeStoreyReveal`. Do NOT take either side whole.
+- **`cinema_path_editor.js`** — 9 blocks, 7 are keep-both; blocks 2 and 3 are ONE object literal and
+  ONE array and must be MERGED, not concatenated. ⚠ The merge SWALLOWED the closing `});` of the
+  load-path checkbox handler — a keep-both resolution there is syntactically valid right up until
+  the file's last brace, and `node --check` reported the error 200 lines away. Check that handler
+  closes.
+- **`cinema_maxq.js`** — the two that matter: §129.57's reuse if/else owns the `_captureFrame` call
+  site (their extra trailing arg `_escInfo` goes on the call inside the `else`), and §129.55 changed
+  `_drawUnlessHold` to `(name, fn, boxFn)`. red1-87 confirms their overlay does NOT go through
+  `_drawUnlessHold`, so it needs no `boxFn` — but it publishes its plates via
+  `A.escapeRouteFrameAt().labels[]` with real rects, which §HUD_LAYOUT should register.
