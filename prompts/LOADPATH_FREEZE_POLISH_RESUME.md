@@ -1560,3 +1560,56 @@ to reverse himself IN THAT FILE. Two traps if he ever does: the lever must cover
 `dlod_nav.js:400` **and** `:401` (consecutive gates — a lever on 400 alone falls through to the
 photoreal gate and reads as "did nothing"), and `NAV_MIN_ELEMENTS = 50000` means it can never meet
 red1's "any building will give same effects" requirement.
+
+
+## LATE ADDITIONS to this hand-off (2026-09-20, after red1-87 closed)
+
+### §129.61b — the merge had silently dropped `_tnFilm`, and only a peer's witness saw it
+Pulled red1-87's two witness-only commits (`70e982f4`, `ba6f9df2`) and ran them HERE before
+consolidating. That immediately found a real defect in my own merge: **`var _tnFilm = _tFilm(_tn);`
+was gone.** 40+ call sites read it, so frame 0 of the next bake would have thrown ReferenceError
+and killed the run — and `node --check` passes on it, because an undeclared READ is valid syntax.
+Fixed in `a3c6adfe`. **The rule: run the other lane's witnesses in YOUR tree before you consolidate,
+not after.** A parser cannot see a deleted assignment; a witness that counts it can.
+
+`W-ESC-11e` was also rewritten: it asserted `cpe_storey_reveal.js` still contains `A.toggleXray()`,
+judging the escape lane by a fact about the STOREY lane that §129.59 changed on red1's word. It now
+checks the property it is named for — that `cpe_escape_route.js` does not reach into the storey lane.
+
+**Ten witnesses green on the merged tree:** `§ESCAPE_ROUTE_WITNESS` 64/64 · `§EGRESS_ALTERNATES`
+28/28 · `§TINT_SCOPE` 18/18 · `witness_storey_cut` · `witness_storey_reveal_list` 13/0 ·
+`§FRAME_REUSE_W` · `§HUD_COVERAGE` · `§FREEZE_THEME` · `§CARD_FONT` · `§DLOD_CENSUS`.
+
+### §13 IS UNOWNED — the next feature, and nobody is holding it
+red1-87 closed at red1's word with §13 unbuilt, after I handed it to them. **Do not let it fall in
+the gap.** Spec is complete and its colour code is APPROVED, not proposed:
+`bim-compiler prompts/ESCAPE_ROUTE_REVEAL.md §13.1-§13.6`.
+
+Seams that already exist — do NOT rebuild:
+- `A.escapeRouteStatCardAt(plan, tNorm)` — the card whose CONTENT §13.3's legend replaces. Same
+  slot, same shape, no new box.
+- `A.escapeRouteFrameAt(...)` — `rec.labels[]` already carry PLACED x/y/w/h + a `collisions` count,
+  `rec.screen[]` is the projected polyline. Blue alternates ride the same record and the same
+  non-overlap walk.
+- `A.escapeRouteCompositeOntoCanvas` — one more polyline per colour is all of §13.1 on the draw side.
+- The RED segment needs `RoomGraph.escapeRoutes` + `divergenceFrom`, both built and witnessed.
+  **605 ms for all 8 Hospital exits from ONE Dijkstra — do NOT call `shortestPath` per exit, that
+  measured ~90 s over 149 rooms.**
+- Geometry: the bigStats box is 389x259 px at h=1080; legend + footnotes come to ~145 px of it. At
+  854x480 it is 173x115 and the footnotes fall below legibility — the spec's ruling is DROP the
+  footnote block under a height threshold and keep the markers, never shrink it into decoration.
+
+**One defect red1-87 left behind, theirs, unfixed:** `escapeRouteStatCardAt` drops the
+"0.75 m stride assumed" disclosure from the sub when the breach fires, so "~418 steps" shows with
+no mark that it is the uncited number. §3 of the spec requires that mark. §13.5's
+superscript/asterisk scheme is the proper fix and it is one line of the card rewrite — take it on
+the way past rather than carry it forward.
+
+### A field hit worth knowing before any HHS bake
+`exit_remoteness` FLAGS on `HHS_Office_Federated_extracted`: *"Unknown: needs 35.5m of 71.1m
+diagonal"* and *"Level 2: only one exit on this storey"*. Until that run the rule had only been seen
+passing on Hospital or failing a synthetic fixture.
+
+### Housekeeping
+`/tmp/wt-escape-route` is clean at `ba6f9df2`, its branch is on origin, and red1-87 reports nothing
+running. Prunable.
