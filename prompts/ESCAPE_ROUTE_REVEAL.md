@@ -749,3 +749,34 @@ language, panel content, the two counters and their honesty asymmetry). Implemen
 bim-ootb `feat/escape-route-reveal`; 36/36 feature witness checks and 79/79 panel-wiring checks pass
 on real data. §8's finding — the Egress report's own "Longest path to exit" headline is derived from
 a penalty-weighted cost, not a distance — is observed and documented, NOT fixed.
+
+---
+
+## §14 CLOSED INTO ONE LANE (2026-09-20, end of day) — this file is no longer its own session.
+The escape-route work and the load-path/freeze work are **one branch and one job** from here.
+
+**The live hand-off is `prompts/LOADPATH_FREEZE_POLISH_RESUME.md` §130.** Read that first; this
+file stays as the beat's own design record (§1-§13) and its measurements, not as a session prompt.
+
+Where the beat ended up, verified in `feat/loadpath-ledger` @ `14226630`:
+- §13's colour language is built and witnessed — `§ESCAPE_COLOURS 31/31`, `§CARDFIT 18/18`,
+  `§ESCAPE_ROUTE_WITNESS 67/67`.
+- The card lives in the **opposing corner** as its own HUD, grown to fit, visually unchanged, and
+  **holds to the final frame at full opacity** (`_cardVisAt` returns `alpha:1` past the window).
+  It replaces the Measure box there; nothing reclaims the corner.
+- The route runs **189.0s → 194.8s**, ending one second before the film, with a **back-loaded**
+  ease `1.594x → 0.400x` so the slowest moment lands on the finished picture.
+- **The last second is a finale**: nothing drawn on the building. Verified by eye on frames
+  840/845 of `Hospital_storeyreveal_to_end_854x480_24fps_1225.mp4`.
+- The whole Measure/Sanity/clash family ceases at the storey reveal's onset — **a hard rule** —
+  witnessed by `§FINDINGS_CEASE 11/11`.
+
+**§11.1/§11.2, the `o` box-proxy experiment, stays declined** against red1's 2026-07-21 ruling in
+`prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185`. Checked today for real: the finale reports
+`§DLOD_TM_CENSUS boxed=0/64150` and shows no wireframe — but only because the camera has pulled
+back far enough that nothing is outside the view. A film ending closer in could differ.
+
+**The one open item red1 has named** is in §130: the building still carries a yellow-olive wash
+during the escape beat, after the storey reveal has ended. `§STOREY_REVEAL_LAST_STAYS_LIT` did not
+print in that bake, so the log cannot say whether it is the last storey deliberately staying lit or
+a tint that never restored.
