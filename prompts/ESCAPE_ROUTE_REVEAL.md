@@ -467,6 +467,56 @@ already owns that slot for its window, so this is a layout change inside one car
 Every row carries its own number and, where one exists, its cited limit. The walking speed
 disclosure (§3) stays — it is the card's own honesty rule and a legend does not displace it.
 
+### §13.5 — the citations as HUD footnotes
+
+red1, 2026-09-20: *"those citations can be footnotes in the HUD in brief, wow for users to nod at."*
+
+Right instinct, and it is the cheapest credibility this film can buy: the numbers are already
+cited in the code and in this doc, and putting the source on screen is what turns "some software
+said 28 m" into "IBC says 30.5 m and this is 28". The viewer nods because the claim is checkable.
+
+**THE TRAP, and it is the whole design problem.** A citation on screen IS a credibility claim. Half
+of every citation here is an assumption (§12.3: occupancy class is unextractable), and one number
+has no source at all (§3: the 0.75 m stride, "a standard adult-stride ergonomic convention from
+OUTSIDE this project"). A footnote block that prints `IBC 2021 T1006.2.1` next to a
+centroid-measured quantity, or that lets the stride sit in the same visual register as SFPE's
+1.19 m/s, **launders the weak numbers with the strong ones** — and it does it more effectively than
+having no footnotes at all, because the reader has now been told to trust the block. §3's rule
+("do not silently present them as equally solid") gets HARDER here, not easier.
+
+**The rule: a marker glyph carries the evidence tier, and the tier is visible before the source is
+read.** Numbered superscripts are CITED. An asterisk is UNCITED. A cited row whose MEASUREMENT is
+approximate says so in its own footnote, in the footnote's own words, not in a symbol.
+
+    Escape Route — ≈ Level 4 R1
+    RED     28 m  no choice            limit 30.5 m ¹
+    YELLOW  41 m  to nearest exit
+    BLUE    3 alternates, nearest +12 m
+    GREY    sprinkler cover ³
+    4:23 mins walk ²  ·  ~418 steps *
+    ────────────────────────────────────────────
+    ¹ IBC 2021 T1006.2.1 — I-2 sprinklered, both assumed; measured from room centre
+    ² SFPE 1.19 m/s      ³ NFPA 13 light hazard, 3.23 m
+    * 0.75 m stride — no source; this project's own convention
+
+**It fits, measured against the real card.** `cpe_resource_panel.js` `_box()` gives
+`bw = 0.36h, bh = 0.24h` — **389 x 259 px at h=1080**. Title ~20 px + four legend rows at ~20 px +
+a rule + three footnote lines at ~13 px comes to ~145 px of the 259 available, at the padding
+`_box` already applies. No taller card, no second box, no new panel — a content change inside the
+slot the Escape Route card already owns for its window. At 854x480 the same layout is 173 x 115 px
+and the footnotes fall below legibility: **drop the footnote block under a height threshold and
+keep the markers**, rather than shrinking it into decoration. The § log carries the full sources
+either way, which is where a reader who actually wants to check them should be sent.
+
+**Register**, reusing what the HUD already has rather than inventing: footnotes in the day
+counter's context colour `rgba(255,255,255,0.62)` at weight 500 — the same register
+`clash_labels.js` uses for its `[tol/clash]` fact row. The legend rows themselves take each
+segment's own colour, so the legend is self-demonstrating: the word RED is drawn in the red the
+route uses.
+
+⚠ **Never abbreviate a citation to the point where it cannot be looked up.** `IBC 2021 T1006.2.1`
+is brief and findable. `IBC` alone is not a citation, it is a logo.
+
 ### §13.4 — what this does NOT become
 
 Not a Google-Maps route chooser. MEASURED on Hospital `Level 4 R1`: all 8 alternates fall between
