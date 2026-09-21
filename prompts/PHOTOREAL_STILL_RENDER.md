@@ -9,7 +9,95 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
-## ▶ RESUME — START HERE (supersedes the §HOSPITAL_META_DB_STALE block below — read this first)
+## ▶ §WEBGPU_SSGI_SPIKE (2026-09-22) — native TSL bounce-light/AO investigated for Alt+S/Alt+C, weighed against §S277b — supersedes nothing below, read alongside RESUME
+
+### Why this was opened
+§RENDER_HONEST_SCORE (this file's own history, `COMPETITIVE_TWINMOTION_HORIZON.md`) rates interior
+5/10 vs exterior 8/10 — AO darkens creases but can't add bounced fill light, and the Alt+C film
+spends most of its runtime indoors. The prior bounce-light attempt (`§PHOTO_SSGI`,
+`effects_gi_poc.js`, third-party `realism-effects` library) was rejected 2026-07-17 by the user's
+own live verdict — "not accurate or crisp," plus ghosting/fragility — and defaulted off
+(`A._stillSSGIEnabled = false`, still true today). This session checked whether anything changed
+since, given a year+ of upstream three.js work.
+
+### What's confirmed, not guessed (isolated worktree `/tmp/wt-ssgi-webgpu-spike`, branch
+`spike/ssgi-webgpu`, `sandbox/spike_ssgi_webgpu/` only, nothing committed, 1.8GB of disposable
+artifacts, zero shipped files touched)
+- **The vendored `realism-effects` library (used by Alt-S/Alt-G's SSGI fold) is dead upstream** —
+  last commit 2024-02-03, its `poisson-recursive` branch 2023-09-21. No patch to pull. The "not
+  crisp" verdict from 07-17 has no upstream fix available.
+- **three.js's own first-party TSL node GI (`SSGINode`+`GTAONode`, `mrdoob/three.js` #31839→#31895,
+  Sept 2025→Jun 2026) runs correctly on this app's real geometry** — tested on Clinic (61
+  BatchedMesh/9,644 slots + 531 InstancedMesh), Duplex, Hospital: real bounce light (GI luminance
+  mean 0.15 in a previously pure-black corridor), 0 NaN, clean normals/velocity on BatchedMesh (the
+  exact class of geometry that broke the old library). Needs the r186 core specifically (already
+  vendored unused at `viewer/lib/three.webgpu.min.js`, dated Jun 27 — r185 throws a TSL build error
+  on these nodes). Per-frame GPU cost measured 1-4ms — cheap, vs. the old N8AO-in-bake estimate of
+  ~317ms/frame that ruled GI out of Alt+C entirely.
+- **Quality is real but scene-dependent, not a clean win.** A close, low-contrast interior corner
+  (Hospital, real cinema-path pose) converged clean — soft AO gradient, no visible grain. A
+  high-contrast corridor (Duplex, hard directional sun + dark void) stayed visibly grainy even at
+  1000-frame convergence, because `TRAANode`'s temporal blend is a fixed 5%-per-frame EMA
+  (~20-frame time constant) — more frames past that plateau, don't help, and one artifact got worse
+  at 1000 frames. Same class of finding as before: crispness is not free, contrast-dependent.
+- **Camera motion does NOT ghost/flicker — but the first two debugging passes chased a phantom.**
+  A 240-frame then 576-frame (full real HHS saved path, see below) moving-camera sequence appeared
+  to freeze solid after frame 0 across two sessions of tracing `PassNode`/`SSGINode`/`GTAONode`
+  internals. Actual cause, found on the third pass: the SPIKE's OWN camera-framing code computed an
+  infinite far-plane for HHS's Batched/InstancedMesh (a bounding-box check that silently no-ops on
+  that geometry type) — a one-line bug in our own test harness, not in three.js. Once fixed: the
+  real HHS saved path (61.04s, its own `cinema_path` DB table — see below) rendered end to end,
+  every beat (dive/walk-out/rise/exterior orbit/pullback) sampled for adjacent-frame ghosting —
+  none found. Lesson worth keeping: check your own harness before tracing vendor internals two
+  sessions deep.
+- **HHS has a real saved/authored cinema path**, `buildings/HHS_Office_Federated_silent.db`'s
+  `cinema_path` table (4 `seq` rows = 4 bands of ONE composite path, not alternatives — traced to
+  `effects.js:9203` `_cpeLoadFromDb`), total 61.04s — not the generic 24s this whole investigation
+  initially assumed from an old default-constant comment. `cinema_maxq.js`'s real bake path also
+  defaults to 15fps, not the 24fps used elsewhere in the app — two separate places this session's
+  early tests got the wrong constant from stale assumptions instead of reading the real per-building
+  data; corrected once found.
+
+### The constraint that actually matters — §S277b, found late, should have been checked first
+`docs/internal/CINEMATIC_RENDERING.md`/`ROADMAP.md` record that §S276 (2026-05-24) already tried
+WebGPU as the app's PRIMARY renderer and rolled it back to WebGL: compat-mode (WebGPU-on-WebGL2,
+transpiling TSL→GLSL) measured 9.2s for 44 materials on a weak iGPU; a software "swiftshader"
+adapter must be explicitly detected/rejected or it poisons the canvas and blocks the WebGL fallback;
+on this dev machine specifically, Chrome/Dawn's PRIME handling on Linux exposes ONLY swiftshader
+natively for native WebGPU — reaching the real NVIDIA adapter needs explicit launch flags or a
+system GPU-mode switch; mobile `compileAsync` hangs outright. **This spike never tested or
+contradicts any of that** — it only ever ran headless, flag-forced onto the real GPU
+(`--enable-unsafe-webgpu --enable-features=Vulkan`), matching `cli_silent_bake.js`'s own existing
+`--gpu real` convention for the OPERATOR-controlled bake path, never the live/any-user's-browser
+path §S277b is about. That's a materially different scenario, not a refutation — but it means this
+spike's clean results say nothing about whether WebGPU is safe for live navigation, only about an
+offline, flag-controlled bake process.
+
+### Dual-GPU-context risk — RESOLVED 2026-09-22, it works
+The one real architectural unknown above is no longer open. A standalone sandbox harness (not
+`cli_silent_bake.js`, no shipped file touched) booted a second, fully independent
+`WebGPURenderer`+`SSGINode`/`GTAONode`/`TRAANode` pipeline in the same page as the real app's live
+`WebGLRenderer`, on the real GPU (`adapter=nvidia/lovelace`, not SwiftShader). The app's own WebGL
+context stayed alive throughout (`contextLost=false`). Drove 4 real poses from HHS's actual saved
+path via `window.APP.cinemaPathPlan(61.04, ov).poseAt(t)` at t=0/10/30/61s — all rendered correctly
+(t=10s: real interior corridor; t=61s: real exterior aerial orbit). 32-62ms/frame after warmup.
+
+### Open, blocked on a permission gate, not a technical one
+The one-function opt-in patch to `cinema_maxq.js`'s `_captureFrame()` (draw from a parallel readback
+canvas when `window.__giWebgpuRenderFrame` exists, byte-identical when absent) is scoped but was
+refused by the permission system as a shared/production-file edit, even inside the disposable
+worktree — correctly requires explicit human sign-off, not an in-thread agent instruction. Separately
+found: `cli_silent_bake.js`'s real `--gpu real` launch is missing `--enable-unsafe-webgpu`/
+`--enable-features=Vulkan` (confirmed needed on this box) — a second small additive change needed
+there too before a real bake could use this path. Nothing in `viewer/` has been changed.
+
+### Verdict
+Alt+S (single cost-insensitive still) is the safer candidate — bounce light is real and confirmed,
+clean in low-contrast framing, same known noise-in-high-contrast tradeoff as every prior attempt.
+Alt+C integration is technically scoped and the motion/ghosting question is answered clean, but sits
+behind one untested architectural risk (dual GPU context) and needs to be squared with §S277b's
+existing, deliberate WebGPU-deferral reasoning before any shipped file is touched. Nothing in
+`viewer/` has been changed by this investigation.
 
 ### ✅ ALL 3 QUEUED FOLLOW-ONS CLOSED 2026-08-16+1 — PR bim-ootb#1409 MERGED+LIVE (CI green,
 fast-checks+e2e both SUCCESS, confirmed on `origin/main` @ 6a0f89a)
