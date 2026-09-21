@@ -385,6 +385,51 @@ extra 22 come from. Not touched — reported.
   route starts at `≈ Level 1 R25` and reaches a Level 2 door, so the stair bridge already carries
   Level 1 ↔ Level 2. ⚠ That last step is an INFERENCE from the existing route, not a measurement;
   it needs one probe to confirm before anyone commits to it.
+
+  **THE PROBE RAN (2026-09-22). THE ANSWER IS NO — THE DEDUPE DOES NOT OPEN A BLUE ALTERNATE, AND IT
+  MAKES THE EXIT COUNT WORSE. Nothing was changed; the dedupe was applied by WRAPPING `A.dbQuery` for
+  one graph build, with no shipped file edited.**
+
+  ⚠ **The first attempt at this probe was INVALID and its answer was thrown away** — §132's lesson 1
+  in a new costume. Driving `common/room_graph.js` from Node over a bare sqlite seam produced
+  `edges=0 circ=0 stairs=0 exits=2` against the film's `edges=33 circ=4 stairs=3 exits=3`: it had no
+  `window.DoorRealPosition`, so no door resolved to its §REAL-AABB centre, so no door fell inside a
+  room buffer and the graph had NO EDGES AT ALL. It still printed a confident "NO CHANGE". The rerun
+  goes through the real page and calls `APP.loadNavigate()` first (`window.RoomGraph` is lazy —
+  viewer.html:905 only comments that it exists), and its baseline reproduces the bake's own
+  `§ROOM_GRAPH` line **verbatim**: `nodes=75 doors=133 edges=33 deadend=64 orphan=36 orphanRescued=19
+  ambiguous=1 ambiguousResidualRescued=2 circ=4 stairs=3 (skipped=0) exits=3 e2=64`,
+  `doorRealXY resolved for 133 doors`. That match is the licence to believe the rest.
+
+  | | exits | exit guids | rooms | reaching ≥1 exit | **reaching ≥2 (BLUE possible)** |
+  |---|---|---|---|---|---|
+  | BASELINE | 3 | 2× `Unknown` + `1$Upv…` (Level 2) | 75 | 75 | **0** |
+  | DEDUPED (17 twins dropped) | **1** | `1$Upv…` (Level 2) only | 75 | 75 | **0** |
+
+  **Three things this settles:**
+  1. **No room in HHS has ever reached a second exit** — `reaching≥2 = 0` for all 75 rooms, in BOTH
+     builds. `1 of 3 exits reachable` was never "the chosen room is unlucky"; the other two are
+     unreachable from *every* room. Blue was never one repair away.
+  2. **The Level 1 twin `2y28eH4S1E5fnglVo814qi` does NOT pass the exit test.** Dropping the
+     `Unknown` copy at 10.97, 6.85 removes that exit entirely (3 → 1) rather than handing it to the
+     twin. So the dedupe LOSES a detected exit and gains nothing.
+  3. **Which makes the two `Unknown` exits look like detection artifacts, not stranded real exits.**
+     The only input that differs between a door's two copies is which storey raster/footprint the
+     exterior test samples. At 10.97, 6.85, z=1.59 — a z that maps to Level 1 (anchor 1.99) — the
+     test run against **Level 1's own raster says NOT an exit**, and only the phantom `Unknown`
+     raster says exit. The storey the door physically sits on is the trustworthy one.
+     (At 42.72, -2.07 the two copies AGREE it is an exit, which is consistent: that one is real.)
+
+  **So on current evidence HHS has ONE door that passes the exterior test, and BLUE cannot appear on
+  it at all — not from a graph repair, because there is no second exit to route to.**
+  ⚠ What this does NOT settle, and nobody should assume either way: whether the exit test
+  UNDER-detects on this building. `§EXIT-SAMPLE-CLEARANCE` was calibrated so HHS yields "3 of 133"
+  to match a cited figure — and two of those three are now suspect, so that calibration is resting on
+  a number this probe undermines. That is the next question if HHS's blue matters, and it is a
+  question about `EXIT_SAMPLE_CLEARANCE_M` / `common/storey_footprint.js`, not about room compilation
+  and not about the room graph.
+  The probe is kept at `scratchpad/probe_dedupe_browser.js` — it is a probe, not a witness (no red
+  control, no schema). It would need both before it could be trusted as one.
 - **The 1080p HHS encode failure is undiagnosed.** 3,275 frames rendered, every one converged, then
   `The source image could not be decoded` and **zero bytes**. Delegated investigation established it
   is a stored-frame decode rejection hit identically by both stitchers; it could not say whether the
