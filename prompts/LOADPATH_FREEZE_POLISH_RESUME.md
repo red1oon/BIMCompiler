@@ -117,8 +117,11 @@ session — the request was PENDING, not refused. **red1 has since given the go 
 ("I can't understand all this... U advice and do it"), which resumed its own already-running spike
 agent — but red1 then asked for a FRESH session to actually run this instead of continuing that
 (cost/context reasons), so red1-05 stopped its agent mid-flight and this note is the handoff.
-**A fresh session should just run the task below — the go has already been given, no need to ask
-again.**
+**A fresh session should pick up the task below and do the PREP work (verify the worktree, confirm
+the pose/duration logic still reads correctly, stage the render command) — but HOLD OFF on actually
+running the bake/render itself.** red1-05 is standing by as watchdog/reviewer on this lane and wants
+to review the staged plan before the render executes. Report back what's staged and wait — don't
+fire the render on your own judgment even though the underlying go was already given.
 
 Its ask, verbatim in substance — in `/tmp/wt-ssgi-webgpu-spike/sandbox/spike_ssgi_webgpu/`:
 > The real HHS saved cinema path (61.04 s, `cinema_path` table, 4 bands) has only ever been
