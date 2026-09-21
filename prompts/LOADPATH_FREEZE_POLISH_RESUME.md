@@ -215,6 +215,81 @@ wrap, because the limit is `_wrapText`'s 2-LINE CAP at `colW=139`, not vertical 
 of unused plate below it. So the rooms clause loses "compiled" and its count is cut at clip height on
 every storey card, and always has. Left open: findings are reported, fixes are red1's to authorise.
 
+## §132.3 — THE BLUE ALTERNATES ARE OURS, NOT THE IFC'S. MEASURED 2026-09-21.
+
+red1: *"Ensure the blue alternative is our auto injection to identify room door path better than the
+given IFC omission."* Traced in source first, then measured on the fleet, then filmed. **Confirmed:
+every blue head is our own geometry. The IFC supplies none of it.**
+
+**1. The omission is total, and it is a count, not an opinion.** No door in the fleet carries an IFC
+space relation — not one, in any of the four buildings, including LTU where that table holds 26,309
+rows of other things:
+
+| DB | `rel_contained_in_space` rows | `IfcDoor` | doors WITH an IFC space relation |
+|---|---|---|---|
+| Hospital_silent | 18 | 440 | **0** |
+| HHS_Office_Federated_silent | 1,522 | 133 | **0** |
+| LTU_AHouse_silent | 26,309 | 606 | **0** |
+| Terminal_silent | 1,429 | 135 | **0** |
+
+There is no exterior flag either: `elements_meta` has eight columns — `guid, ifc_class, element_name,
+storey, discipline, material_name, material_rgba, building` — and **zero** tables in the schema mention
+"external". So nothing in the data says which room a door serves, or which door leads out.
+
+**2. What we derive instead** — `common/room_graph.js`, whose own header states the position: *"no
+room-to-room adjacency graph exists anywhere in this pipeline before this file."* A door's rooms are a
+measured point-to-AABB distance from the door's own real centre to each room's rect-set, accepted
+within the door's own buffer (`max(bbox_x,bbox_y)/2 + 0.20 m` — the same constant
+`compile_rooms.py _door_adjacent()` already used), with the door's real guid carried on the edge as
+provenance. On top of that sit E2 (a door touching ONE room is that room's door onto un-compiled
+circulation), E3 (stair/ramp flights bridging storeys), E4 (exits) and the orphan/ambiguous rescues.
+
+**3. Hospital, from this bake's own `§ROOM_GRAPH` line:**
+`nodes=30 doors=440 nonRoomDoors=0 edges=7 deadend=148 orphan=285 orphanRescued=272 ambiguous=0
+circ=3 stairs=3 (skipped=2) exits=8 e2=148`
+
+**E1 — the only edge kind that needs a door to touch two compiled rooms — yields SEVEN edges over 440
+doors.** Everything that makes the building routable is injected: 148 E2 circulation rescues, 272
+rescued orphans, 3 circulation spines, 3 stair bridges, 8 exit nodes. Seven edges and no exit nodes
+is not a graph anything can escape through.
+
+**4. The exits in particular are a GEOMETRIC test, and the file records why.** `EXIT_SAMPLE_CLEARANCE_M
+= 1.0`: sample both sides of every door at `halfThickness + 1.0 m` and accept it only when one side is
+confirmed inside the storey's walkable raster and the other confirmed outside the flood-filled
+footprint. The previous NAME-based test (`isRoomDoor()`, a lift-name filter) produced 5 "exits" on
+Terminal that were **all elevator doors** — it would have routed an escape INTO a lift. It was reverted
+and `exits` sat at 0 fleet-wide as *"the HONEST state, not a regression"* until the measured test
+landed. The 1.0 m clearance was swept over 0.25/0.5/0.75/1.0/1.5 and chosen where HHS matched its
+cited 3-of-133 exactly while Hospital stayed stable at 7→8, all Level 1. Disclosed UNCITED.
+
+**5. The blue fan rides exactly those nodes.**
+`§ESCAPE_ROUTE_ALTERNATES exitsReachable=8 primaryExitAgreesWithSelection=true divergence="Corridor —
+Level 1" commonPathRED=120.96m primaryYELLOW=35.24m blueAlternates=7/7 drawn (NO CAP — §13.6)
+altSpanM=[171.3..204.3] divSnapM=0.00 shape=SNAKE`
+
+`exitsReachable=8` IS `exits=8`. Take the injection away and there is no eighth exit, no first exit,
+and no blue at all.
+
+**6. The clip.** `Hospital_silent`, 854x480, 24 fps, `--clip 0.958:1.0` (the beat's own
+`§ESCAPE_ROUTE_WINDOW film=[0.9651,0.9949] = 189.0s..194.8s of 195.8s`). 197 frames,
+`unconverged=0`, `§HUD_OVERLAP_WORST none => PASS`, `fileOk=true`, 336 s wall, 2,049,358 bytes.
+`§ESCAPE_ROUTE_DRAW frame=131/197 progress=1.0000 drawn=156.20m of 156.20m steps=~208 labels=2
+plateCollisions=0/0`. Delivered to `~/Downloads/Hospital_EscapeRoute_854x480_24fps_2026-09-21_1006.mp4`.
+The card reads `RED 121 m no alternative¹ / YELLOW 35 m to nearest exit / **BLUE 7 alternates other
+exits** / GREY 108 m sprinklered³`, and the frame shows the blue fan spreading from the divergence
+toward the other exits while the red spine runs back to `≈ Level 4 R1`.
+
+**⚠ OPEN, FOUND WHILE DOING THIS, CAUSE NOT ESTABLISHED — worth someone's eye.** `§ROOM_GRAPH` reports
+**`nodes=30`** room nodes on Hospital, but the shipped `Hospital_silent.db` holds **8** `IfcSpace` rows
+in `spatial_structure` (all of them `RM_*` guids with our own `⚠`/`≈` confidence prefixes), and the
+viewer's own `§ROOM_VOL_COUNT` agrees at `habitable=7 excluded=0 boxes=8`. Checked and ruled out: the
+self-heal patch `buildings/patches/Hospital_silent.db.sql` is georef-only (7 `project_metadata`
+INSERTs, no `IfcSpace`), and nothing in `viewer/` or `common/` writes `INSERT INTO spatial_structure`
+at runtime. `§ESCAPE_ROUTE_BUILD` selects over that same 30 (`6 reach an exit`), while the card's
+`⚠ 1 room NO exit` is consistent with the 7 habitable boxes instead. So the escape beat's room
+population and the building's room count disagree by a factor of ~4 and I could not find where the
+extra 22 come from. Not touched — reported.
+
 ## WHAT LANDED TODAY, EACH WITH THE MEASUREMENT THAT PROVED IT
 | § | what it fixed | the number |
 |---|---|---|
