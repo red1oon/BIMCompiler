@@ -100,19 +100,25 @@ git — `git log -p prompts/LOADPATH_FREEZE_POLISH_RESUME.md`, or read it at com
   `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must never appear in a
   movie frame"*. It needs him to reverse himself IN THAT FILE.
 
-# §133 — START HERE (2026-09-22). THE LANE IS MERGED. ONE REQUEST IS HELD, WAITING ON RED1.
+# §133 — START HERE (2026-09-22, updated). THE LANE IS MERGED. ONE REQUEST HAS RED1'S GO — NEXT
+# SESSION EXECUTES IT.
 
 **State:** `feat/loadpath-ledger` **MERGED to main** — PR #1754, squash commit `1f34fc85`, 154
 commits, 85 files. Verified content-identical on main (`viewer/cpe_storey_reveal.js`, `viewer/sw.js`,
 `witness_storey_card_ink.js` all `IDENTICAL on main`, `§STOREY_CARD_INK` present) — the squash did
 NOT strand anything. `/tmp/wt-loadpath` is now prunable. sw `CACHE_VERSION v1231`.
 
-## ▶ THE ONE LIVE ITEM — HELD BY RED1, DO NOT RUN IT WITHOUT HIS GO
+## ▶ THE ONE LIVE ITEM — RED1 GAVE THE GO (2026-09-22, to red1-05). DO IT IN A FRESH SESSION.
 red1-05 (the SSGI/WebGPU surface-polish session) **declined to merge its spike to main** — its own
 reasoning, and it is sound: reversing §S277b is a bigger decision than a git-mechanics delegation
 covers, and merging unlocks nothing while the `cli_silent_bake.js` wiring is absent either way. It
-asked THIS session to run its harness directly instead. **red1 then said "dont do the bake yet" and
-closed the session. The request is therefore PENDING, not refused.**
+asked red1-63 to run its harness directly instead; red1 said "dont do the bake yet" and closed that
+session — the request was PENDING, not refused. **red1 has since given the go directly to red1-05**
+("I can't understand all this... U advice and do it"), which resumed its own already-running spike
+agent — but red1 then asked for a FRESH session to actually run this instead of continuing that
+(cost/context reasons), so red1-05 stopped its agent mid-flight and this note is the handoff.
+**A fresh session should just run the task below — the go has already been given, no need to ask
+again.**
 
 Its ask, verbatim in substance — in `/tmp/wt-ssgi-webgpu-spike/sandbox/spike_ssgi_webgpu/`:
 > The real HHS saved cinema path (61.04 s, `cinema_path` table, 4 bands) has only ever been
