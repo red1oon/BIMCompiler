@@ -6,11 +6,12 @@ grep. Never judge from frames: every claim traces to a `§` line you read yourse
 description of one, and not to what red1 says they see. Their eyes are the final arbiter of a LOOK
 ruling, but that is a ruling on a fix's RESULT, never a substitute for tracing the cause first.
 
-**NEXT SESSION STARTS AT §132**, immediately below the archive. §131's two items — the camera veer
-and the overlay glow — are both DONE and measured (42.21° -> 0.04°; the Sanity hangover traced to
-`exitRuleModeTint` being called from nowhere). §132 carries today's 23 commits, the three lessons
-that cost real time, and the one task red1 has named but nobody has started: the storey-reveal HUD
-box colouring the room count instead of the storey.
+**NEXT SESSION STARTS AT §133**, immediately below the archive. §132's named task (the storey-reveal
+HUD box colouring the count instead of the storey) is DONE, and **the whole lane is MERGED TO MAIN**
+— PR #1754 squash-merged as `1f34fc85`, 154 commits. §132 is kept for its evidence and its three
+lessons, but it is no longer the start point. §133 carries the merge, the HHS escape-route
+investigation that closed as "no repair available", and the ONE live request waiting on a decision:
+a 1080p SSGI clip that red1 has told us to HOLD.
 
 ## CONSOLIDATED 2026-09-20 — what this file used to be
 It ran to 1,907 lines of session narrative from 09-17 to 09-20, §129.11 through §129.63, almost all
@@ -99,7 +100,72 @@ git — `git log -p prompts/LOADPATH_FREEZE_POLISH_RESUME.md`, or read it at com
   `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must never appear in a
   movie frame"*. It needs him to reverse himself IN THAT FILE.
 
-# §132 — START HERE (2026-09-21). THE NAMED NEXT TASK IS THE STOREY-REVEAL HUD BOX.
+# §133 — START HERE (2026-09-22). THE LANE IS MERGED. ONE REQUEST IS HELD, WAITING ON RED1.
+
+**State:** `feat/loadpath-ledger` **MERGED to main** — PR #1754, squash commit `1f34fc85`, 154
+commits, 85 files. Verified content-identical on main (`viewer/cpe_storey_reveal.js`, `viewer/sw.js`,
+`witness_storey_card_ink.js` all `IDENTICAL on main`, `§STOREY_CARD_INK` present) — the squash did
+NOT strand anything. `/tmp/wt-loadpath` is now prunable. sw `CACHE_VERSION v1231`.
+
+## ▶ THE ONE LIVE ITEM — HELD BY RED1, DO NOT RUN IT WITHOUT HIS GO
+red1-05 (the SSGI/WebGPU surface-polish session) **declined to merge its spike to main** — its own
+reasoning, and it is sound: reversing §S277b is a bigger decision than a git-mechanics delegation
+covers, and merging unlocks nothing while the `cli_silent_bake.js` wiring is absent either way. It
+asked THIS session to run its harness directly instead. **red1 then said "dont do the bake yet" and
+closed the session. The request is therefore PENDING, not refused.**
+
+Its ask, verbatim in substance — in `/tmp/wt-ssgi-webgpu-spike/sandbox/spike_ssgi_webgpu/`:
+> The real HHS saved cinema path (61.04 s, `cinema_path` table, 4 bands) has only ever been
+> spot-checked at 4 poses (t=0/10/30/61 s). The full clip that exists (`out/hhs_full_t0_24.mp4`) used
+> the generic 24 s formula, NOT the real saved path. That is the actual gap for "a closer look".
+> Extract real poses via `window.APP.cinemaPathPlan(61.04, ov).poseAt(t)` (build `ov` from the
+> `cinema_path` rows the way `effects.js:9203 _cpeLoadFromDb` does), 24 fps (~1465 frames) or 15 fps
+> (~916), 1920x1080, same GI+AO+TRAA pipeline, 60-frame convergence, the far-plane fix already in the
+> code. Output `out/hhs_realpath_full.mp4`. Worktree/branch only, no push, `viewer/` untouched,
+> `out/` never committed.
+
+⚠ **A CLAIM I MADE THAT WAS WRONG — correct it before repeating it.** I told red1 that a bake of the
+SSGI path was impossible because the spike's own header records headless Dawn failing the canvas
+swapchain import under both `gl-egl` and vulkan. That blocker is real for PRESENTED capture, but I
+over-read it into "no capture is possible". red1-05 corrected me and I VERIFIED the correction in its
+source rather than relaying it: `gi_webgpu_tap.js:221` sets `window.__GI_WEBGPU_CANVAS` and `:224`
+defines `window.__giWebgpuRenderFrame`, and `run_dual_gpu_test.js:98-101` drives exactly that pair
+and reads frames out with `toDataURL`. **A present-free readback capture path exists and is proven.**
+What is still missing is the wiring from that path into the film stitcher — not the ability to
+capture. Also dead: my suggested shortcut of GTAO-only on the shipped WebGLRenderer. red1-05: GTAONode
+and SSGINode are TSL nodes and need a `WebGPURenderer` instance even in compat mode, so it reopens
+§S277b regardless. There is no WebGL subset to land.
+
+## WHAT THIS SESSION CLOSED
+- **`§STOREY_CARD_INK`** — the storey-reveal card's tint moved off the door count onto the storey, and
+  the storey took the emphatic slot. `§WITNESS_STOREY_CARD_INK pass=8 fail=0 ran=111`, `§CARDFIT
+  22/22` unchanged, frames read at 854x480. Full spec + numbers in §132.1/§132.2.
+- **`§132.3`** — proved the escape beat's BLUE alternates are our own geometry, not the IFC's: ZERO of
+  1,314 fleet doors carry a `rel_contained_in_space` row, `elements_meta` has no property column, and
+  E1 yields 7 edges of 440 Hospital doors against e2=148 / orphanRescued=272 / exits=8 injected.
+- **HHS `1 of 3 exits` — CLOSED as "no repair available", not fixed.** Room compilation for the
+  `Unknown` bucket cannot work (compile_rooms.py §STOREY-Z already folds those elements into Levels
+  1-3; a DRY run emits no `Unknown` storey at all). The two extra "exits" are federated DUPLICATE
+  doors — 133 doors at 116 distinct positions, all 17 duplicates `Unknown` + a real storey. A probe
+  through the real page proved de-duplication takes exits 3 -> 1 and that **rooms reaching ≥2 exits is
+  0 either way**, so blue was never one repair away. Detail and the probe's own invalid first attempt
+  are in §132 under the HHS item.
+- **`fix(sw)`** — `place_lookup.js` and `rule_findings_film.js` were loaded by `viewer.html` and absent
+  from `PRECACHE_ASSETS`; CI's `fast-checks` was right to block the merge. Fixed, not bypassed with
+  `--admin`. `2 unlisted -> 0`, `CACHE_VERSION v1230 -> v1231`.
+
+## STILL OPEN — unchanged, all evidence in §132
+- **The HHS exit test may UNDER-detect.** `EXIT_SAMPLE_CLEARANCE_M = 1.0` was calibrated so HHS yields
+  "3 of 133" to match a cited figure — and this session showed two of those three are duplicates of
+  one real door, so that calibration rests on a number now undermined. This is the live question if
+  HHS's blue matters, and it belongs to `EXIT_SAMPLE_CLEARANCE_M` / `common/storey_footprint.js`.
+- The 1080p HHS encode failure (degrade path instrumented, UNVERIFIED).
+- `OCCUPANT_PATHFINDER.md §PATHING-DEFECTS` P3/P4/P5.
+- `GEOREF_SUNPATH_COMPASS.md §13.5`'s ungated place name.
+- The storey card's `sub` ellipses at 854x480 — pre-existing, measured identical before/after
+  §STOREY_CARD_INK, ~45 px of plate unused below it. red1 has not ruled on it.
+
+# §132 — 2026-09-21 (SUPERSEDED BY §133; its named task is DONE and MERGED). KEPT FOR ITS EVIDENCE AND ITS THREE LESSONS.
 
 **State:** `feat/loadpath-ledger` in `/tmp/wt-loadpath`, pushed, `568eba37`, **152 ahead of
 origin/main and 1 BEHIND** — someone pushed to main during this session, so rebase or merge before
