@@ -348,8 +348,43 @@ extra 22 come from. Not touched — reported.
      none of the others. Both its exits hang off that orphan spine.
   Full HHS graph for reference: `nodes=75 doors=133 edges=33 deadend=64 orphan=36 orphanRescued=19
   ambiguous=1 ambiguousResidualRescued=2 circ=4 stairs=3 (skipped=0) exits=3 e2=64`.
-  ⚠ NOT STARTED — awaiting red1's go, and awaiting which repair he wants (room compilation for the
-  Unknown bucket, or a measured circulation bridge now that the raster is known to be present).
+  ⚠ **2026-09-22 — red1 chose "compile rooms for the Unknown bucket". THAT REPAIR CANNOT WORK, and
+  the real cause is now measured. NOTHING WAS IMPLEMENTED — reported instead.** Two findings:
+
+  **(a) There is nothing on `Unknown` to compile, by design.** `scripts/compile_rooms.py` §STOREY-Z
+  (`storey_z_anchors` / `_assign_by_z`, lines 229-252) already reassigns EVERY `Unknown`-storey
+  wall-like element AND door to its z-nearest real storey anchor before the flood-fill runs — the
+  docstring names this exact building: *"HHS: all 716 vertical curtain children carry storey
+  'Unknown'; their z clusters match Level 1/2/3 exactly."* A DRY run confirms it end to end:
+  `storey 'Level 1': walls=238 doors=50 → rooms=25`, `'Level 2': walls=234 doors=46 → rooms=31`,
+  `'Level 3': walls=199 doors=37 → rooms=19`, `TOTAL compiled rooms = 75`. **The compiler never emits
+  an `Unknown` storey at all.** Pointing it at that bucket is a no-op: the enclosing geometry has
+  already been counted under Levels 1-3.
+
+  **(b) The two "unreachable exits" are DUPLICATE DOORS, not stranded ones.** HHS is a federated
+  model and it carries the same physical door twice — once under a real storey, once under
+  `Unknown` — same `element_name`, same `discipline='ARC'`, same coordinates to 2 dp, different guid.
+  Fleet query: **133 IfcDoor rows, 116 distinct positions — 17 duplicates, and every co-located pair
+  is `Unknown` + a real storey.** The two exits in question:
+
+  | position | `Unknown` copy | real-storey twin | status |
+  |---|---|---|---|
+  | 42.72, -2.07, 4.99 (`Türelement 1-flg`) | `3XrBtx9eX7mQE6EqWHPewN` | `1$UpvIQGr26fVMILiVqtc2` (Level 2) | the twin **is the exit the route already reaches** |
+  | 10.97, 6.85, 1.59 (`Türelement 2-flg`) | `3XrBtx9eX7mQE6EqWHPf1Q` | `2y28eH4S1E5fnglVo814qi` (Level 1) | only the `Unknown` copy passed the exit test |
+
+  So **`exitsReachable=1` of 3 is partly a counting artifact**: exits 1 and 3 are ONE physical door.
+  There are 2 distinct exit doors, not 3, and the route already uses one of them.
+  This also explains the earlier reverted attempt ("relabelling both doors changed nothing — 1 of 3
+  either way"): relabel the first and you get a second EXIT node at the SAME position as the one
+  already reached, whose blue tail is zero-length and is dropped by `cpe_escape_route.js`'s own
+  `if (tail.length < 2) continue` guard. No blue can ever appear from a duplicate.
+
+  **What the evidence points to instead** (NOT started, NOT agreed): de-duplicate co-located doors
+  and let the surviving exit be the REAL-STOREY twin, so the door at 10.97, 6.85 becomes a Level 1
+  exit on a connected spine rather than an `Unknown` orphan. Level 1 is known-connected — the drawn
+  route starts at `≈ Level 1 R25` and reaches a Level 2 door, so the stair bridge already carries
+  Level 1 ↔ Level 2. ⚠ That last step is an INFERENCE from the existing route, not a measurement;
+  it needs one probe to confirm before anyone commits to it.
 - **The 1080p HHS encode failure is undiagnosed.** 3,275 frames rendered, every one converged, then
   `The source image could not be decoded` and **zero bytes**. Delegated investigation established it
   is a stored-frame decode rejection hit identically by both stitchers; it could not say whether the
