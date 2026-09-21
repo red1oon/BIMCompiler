@@ -6,9 +6,11 @@ grep. Never judge from frames: every claim traces to a `§` line you read yourse
 description of one, and not to what red1 says they see. Their eyes are the final arbiter of a LOOK
 ruling, but that is a ruling on a fix's RESULT, never a substitute for tracing the cause first.
 
-**NEXT SESSION STARTS AT §131**, immediately below the archive. Two things are open and red1 has
-seen both: the camera veering during the escape beat, and the beams still glowing through the
-building. §130/§130.1 are the state; §131 is the job.
+**NEXT SESSION STARTS AT §132**, immediately below the archive. §131's two items — the camera veer
+and the overlay glow — are both DONE and measured (42.21° -> 0.04°; the Sanity hangover traced to
+`exitRuleModeTint` being called from nowhere). §132 carries today's 23 commits, the three lessons
+that cost real time, and the one task red1 has named but nobody has started: the storey-reveal HUD
+box colouring the room count instead of the storey.
 
 ## CONSOLIDATED 2026-09-20 — what this file used to be
 It ran to 1,907 lines of session narrative from 09-17 to 09-20, §129.11 through §129.63, almost all
@@ -97,7 +99,76 @@ git — `git log -p prompts/LOADPATH_FREEZE_POLISH_RESUME.md`, or read it at com
   `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must never appear in a
   movie frame"*. It needs him to reverse himself IN THAT FILE.
 
-# §131 — START HERE NEXT SESSION. TWO THINGS ARE OPEN, BOTH SEEN BY RED1, NEITHER CLOSED.
+# §132 — START HERE (2026-09-21). THE NAMED NEXT TASK IS THE STOREY-REVEAL HUD BOX.
+
+**State:** `feat/loadpath-ledger` in `/tmp/wt-loadpath`, pushed, `568eba37`, **152 ahead of
+origin/main and 1 BEHIND** — someone pushed to main during this session, so rebase or merge before
+any PR. 23 commits today. sw `CACHE_VERSION v1230`.
+
+## ▶ THE TASK RED1 NAMED, NOT YET STARTED
+> *"make the storey by storey reveal HUD box same coloring to fall on the 'Level 1' rather, or swap
+> places with number of rooms, which is not the highlight but the storey value."*
+
+The storey-reveal box colours the **room count** and leaves the storey name plain. That is backwards:
+the beat is about the storey, and the count is the supporting figure. Either (a) move the colour onto
+the storey value so it matches the tint on the building, or (b) swap the two so the storey name takes
+the emphatic slot. His words allow either; (a) is the smaller change and keeps the colour tied to what
+is lit in the scene, which is the whole point of the beat.
+⚠ Whatever you change, the colour must be the SAME one the storey is tinted with that slot
+(`COLORS[idx % COLORS.length]`, `cpe_storey_reveal.js`), or the card and the building disagree.
+Check `§CARDFIT`-style fit afterwards; the storey list already truncates room names at clip height.
+
+## WHAT LANDED TODAY, EACH WITH THE MEASUREMENT THAT PROVED IT
+| § | what it fixed | the number |
+|---|---|---|
+| `§CAM_FACE_CLOCK` | the camera's FACE rode the raw clock while its BODY rode the eased one | 42.21° off centre → **0.04°**, measured on the bake's own pose tap, 4 buildings |
+| `§FILM_LAYER` + predicate cease | a layer's 2D chip and its geometry had two unrelated switches | `unregistered=2` → `0` on LTU |
+| `§RULE_TINT_CEASE` | **the Sanity overlay hangover** — `exitRuleModeTint` was called from nowhere | `removed=2 left=0 stillHidden=0 => PASS` |
+| `§STAIR-SHAFT-SPLIT` | `stairBaseKey` merged 26 stairs spanning 78 m into one | Hospital route **247 m → 157 m**, 27 of 47 fleet DBs affected |
+| `§WALK-Z` | drawn route sawtoothed ±1.7 m; Levels 3/5 would have drawn at **z=0** | 11 steps / 28.98 m → none |
+| `§HR_COST_PERSISTED` | a SAVED programme was never costed | `generate=5124799 recompute=5124799 delta=0` on two buildings |
+| `§HUD_COLUMN_FLOOR` | the crew panel covered `hud.status` | 113 px → `§HUD_OVERLAP_WORST none` |
+| `§PLACE` | offline city table, 69,735 rows, 1.14 MB | LTU → `Kungsholmen, SE 0.68 km`; HHS → `Munich, DE 810 m` |
+| `§ESCAPE_NO_EXIT` / exits reachable | the findings the beat cannot DRAW | HHS `1 of 3 exits reachable` |
+| `§ESCAPE_PREROLL` / `_TITLE_BIG` / `_LABEL_SHORT` | panel 2 s early with a double pulse; larger title; door names capped | 2 troughs measured; `§CARDFIT 22/22` |
+| `§MAXQ_FRAME_DECODE` | one bad frame destroyed a 3,275-frame render | the webm fallback had **no try/catch at all** |
+
+## ⚠ THREE LESSONS THIS SESSION COST REAL TIME TO LEARN — READ BEFORE EDITING
+- **A green witness can mean unchanged pixels.** `§ESCAPE_TITLE_BIG` was raised in the plain-card
+  branch while the escape card takes the LEGEND branch (`cpe_resource_panel.js:973`), which computes
+  its own `titlePx`. Test passed, screen identical. Same class: `§ESCAPE_NO_EXIT` went only on `sub`
+  while clip height draws `subAlts`. **Find the branch that actually runs, then read the frame.**
+- **Bake lo-res first.** Both of the above were invisible at 1080p and obvious at 854x480, and each
+  would have cost a 40-minute run to discover otherwise. red1's instruction, and it was right twice.
+- **A fix that "works" can be the wrong fix.** `§HR_COST_PERSISTED` was written, withdrawn as unsound,
+  then re-established once `_classFragmentation`/`_linearWeighting` turned out to be public. The
+  withdrawal was right at the time and the re-establishment is right now — what makes it safe is
+  `§HR_COST_AGREE`, which compares both paths on a building that runs both.
+
+## OPEN, WITH EVIDENCE — nothing here is started
+- **HHS: `1 of 3 exits reachable`, cause identified, unfixed.** Both unreachable exits attach to
+  `circ:Circulation — Unknown`, and the `Unknown` storey holds **2,120 elements (31% of the model)
+  with ZERO compiled rooms** — all 75 rooms are on Levels 1-3. It is a circulation island. ⚠ I tried
+  z-nearest storey inference for the doors and **reverted it**: the guard tested storey AVERAGES
+  (which separate) while the EXTENTS overlap almost entirely (`Unknown 0.2..10.6`, `Level 3
+  -0.7..10.5`), and relabelling both doors changed nothing — 1 of 3 either way. The repair is room
+  compilation for that bucket, not a door relabel.
+  **red1's ruling on how to show a repair: reuse BLUE.** The legend already means "other way out", so
+  a fix that opens a second exit appears as blue alternates going from `none` to a count. No green,
+  no fifth colour — the change is about the building, not about us.
+- **The 1080p HHS encode failure is undiagnosed.** 3,275 frames rendered, every one converged, then
+  `The source image could not be decoded` and **zero bytes**. Delegated investigation established it
+  is a stored-frame decode rejection hit identically by both stitchers; it could not say whether the
+  bytes were bad at capture or went bad in the 38 minutes before the read. `§MAXQ_FRAME_DECODE_FAIL`
+  now names the frame, size and type, and `§FRAME_HASH` carries `bytes=` — **the degrade path is
+  UNVERIFIED**, it needs a run that actually hits a bad frame.
+- **`OCCUPANT_PATHFINDER.md §PATHING-DEFECTS` P3/P4/P5** — the near-edgeless graph, the two different
+  "longest path" numbers (`~143` steps vs `~329`), and selection-vs-ranking. P1 and P2 are now done.
+- **`GEOREF_SUNPATH_COMPASS.md §13.5`'s gate is not built.** `§PLACE_RESOLVED` prints a warning on
+  every run: nothing stops a caller drawing "Boston" on a building whose own files put it 543 km apart.
+- **`witness_film_boxes` 13/1** — pre-existing §40.1 leg, unrelated.
+
+# §131 — (2026-09-20) — SUPERSEDED BY §132; both items below are DONE. TWO THINGS ARE OPEN, BOTH SEEN BY RED1, NEITHER CLOSED.
 
 **One line to continue:** *bake a clip at `764ca784` or later and judge two things by eye — does the
 camera still veer during the escape beat, and do the beams still glow through the building.*
