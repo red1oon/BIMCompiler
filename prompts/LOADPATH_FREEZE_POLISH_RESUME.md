@@ -328,6 +328,28 @@ extra 22 come from. Not touched — reported.
   **red1's ruling on how to show a repair: reuse BLUE.** The legend already means "other way out", so
   a fix that opens a second exit appears as blue alternates going from `none` to a count. No green,
   no fifth colour — the change is about the building, not about us.
+  **STILL UNFIXED, re-confirmed live 2026-09-21** (HHS probe, `out/hhs_probe.log`) — red1 asked
+  whether the fix had been done and tested before spending a bake on it. It has not, and the state is
+  unchanged: `§ESCAPE_ROUTE_ALTERNATES exitsReachable=1 divergence=NONE commonPathRED=156.21m
+  primaryYELLOW=0.00m blueAlternates=0/0 drawn`. **No bake was made** — it would only have filmed a red
+  line with no heads.
+  **THREE THINGS THE PROBE ADDS to the diagnosis above, and they narrow the repair:**
+  1. **Exit DETECTION is not the problem — it already works.** `§ROOM_GRAPH ... exits=3` and three
+     `§EXIT_CANDIDATE` lines: two on `storey=Unknown`, one on `storey=Level 2`
+     (`1$UpvIQGr26fVMILiVqtc2`). That Level 2 one is exactly the exit the drawn route reaches. The
+     geometric test finds all three doors; only reachability fails.
+  2. **`Unknown` HAS a walkable raster.** `storey_walkable_raster` holds rows for Level 1, Level 2,
+     Level 3 AND Unknown, and `§PATH_LEGAL_RASTER storeys=Level 1,Level 2,Level 3,Unknown` confirms
+     the pathfinder sees it. That is why the two Unknown exits were detectable at all (the exit test
+     needs the raster). So the missing thing is rooms and a connection, NOT raster coverage.
+  3. **Nothing bridges `Unknown` to the rest.** `§STAIR_FOOTPRINT_WALKABLE rows=20 storeys=3` — the
+     stair bridges span three storeys only, and every `§ISLAND_BRIDGE circ-per-chain` line names
+     Level 2 or Level 3. `circ=4` spines exist (one per storey incl. Unknown); Unknown's is wired to
+     none of the others. Both its exits hang off that orphan spine.
+  Full HHS graph for reference: `nodes=75 doors=133 edges=33 deadend=64 orphan=36 orphanRescued=19
+  ambiguous=1 ambiguousResidualRescued=2 circ=4 stairs=3 (skipped=0) exits=3 e2=64`.
+  ⚠ NOT STARTED — awaiting red1's go, and awaiting which repair he wants (room compilation for the
+  Unknown bucket, or a measured circulation bridge now that the raster is known to be present).
 - **The 1080p HHS encode failure is undiagnosed.** 3,275 frames rendered, every one converged, then
   `The source image could not be decoded` and **zero bytes**. Delegated investigation established it
   is a stored-frame decode rejection hit identically by both stitchers; it could not say whether the
