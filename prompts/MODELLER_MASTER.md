@@ -11,8 +11,91 @@ study deeply how to make the Modeller work", and "all the objectives of the Mode
 i have no time to sight, i rely on a good vibe coder to do so."
 ```
 
-## ▶ §RESUME 2026-09-15 — START HERE. Written at session close by the session that did NOT touch the
-## Modeller, so you inherit facts, not a handover story.
+## ▶ §RESUME 2026-09-21 — START HERE. Supersedes the 2026-09-15 block below, which is kept for its
+## history but is NO LONGER the entry point. Written at session close; every number below was measured.
+
+**WHAT THIS SESSION DID.** The 2026-09-15 block ordered a re-verify sweep of the 34-row §OPEN LIST. That
+sweep ran, and then four of the rows it surfaced were actually fixed. Merged: bim-ootb **#1738 #1744
+#1747 #1749 #1750 #1753**; bim-compiler **#105-#118**.
+
+| row | was | now |
+|---|---|---|
+| 36 | IFC export emitted an **empty file** for every resident (592 bytes, 0 products) | ✅ #1747 — Duplex 196→196, SampleCastle 3,225→3,225, round-tripped through re-import |
+| 12 | `rel_fills_host` on 3 of 8 residents → **#1706's anchor/ride engine inert on 5** | ✅ #1749/#1750 — 943 new rideable edges; ride now works on **7 of 8** |
+| 35 | the LIVE guide contradicted shipped behaviour for a week | ✅ site consolidated onto master (#106) + published; verified live |
+| 28 | "293 tilted elements render with IDENTITY" | ✅ does NOT reproduce — 230 genuinely rotated, **0 dropped** (#1738) |
+| 24 | `smoke_arc_only.js` silently ran 1 of 2 buildings | ✅ root cause `e2e_harness.js:349` `process.exit()` (#1738) |
+| 19 · 23 · 32 | verified-open | ✅ closed / re-pointed — see §SWEEP |
+| 7 | "0.104 m residual, needs a heavy session" | **re-measured** (#1753) — baseline not stale, the shipped path under-reports it. See the row. |
+
+**THE ONE PATTERN WORTH INHERITING: `element_transforms.center_xyz` is the IFC placement ANCHOR, not the
+volumetric centre.** Any consumer treating `[center ± bbox/2]` as a world box is displaced — measured
+median 78 mm, up to 425 mm. **Three consumers found:**
+1. `cross_edges.js` — **FIXED** (#1744). 843 of 9,817 abuts edges were wrong; now 11.
+2. `str_walker_bridge.js:22/38/50` — row 7's grid. Re-measured, **not** fixed (see row 7).
+3. `scripts/compile_rooms.py` — Viewer room injection. **Recorded, unmeasured.** Its exposure is NOT
+   uniform: `door_dims` reads extents only and is safe (934/934 correct); the position readers are not.
+   `SPATIAL_DEPENDENCY_GRAPH.md` §ANCHOR-SUBSTRATE-SIBLINGS. **Measure before touching.**
+
+**WHAT TO CHASE NEXT, ranked.** Detail in §SWEEP FOLLOW-THROUGH and the rows themselves.
+1. **The residual 11** (#1744's honest RED). Two suspects, never measured apart: `_readBoxes`' `rx/ry`
+   guard — whose stated premise is the same false claim corrected in #1738, so it fires on real data and
+   the 3-axis path it distrusts is now itself witnessed, making it probably liftable — and the 1,301 of
+   3,225 elements with no resolvable blob. **Measure which, before changing either.**
+2. **Row 7's heavy session** — now has what it lacked: it must decide WHETHER it chases 0.0939 m (what
+   ships) or 0.1039 m (the honest number). Starting without that decision is how it stalls again.
+3. **Row 6** — Terminal serves 0 MEP on the real open path.
+4. **Datums 802 → 657** (SampleCastle, from #1744). Still unverified as a *correction* rather than a new
+   artifact. ⚠ It does NOT bear on row 7 — I claimed it did and that is retracted (#118).
+5. Rows 8 · 9 · 11 · 13 · 14 · 22 · 25. **Row 14's cited example does not reproduce** — re-source it or
+   its witness is green on arrival.
+6. Blocked on the user, nothing built: 15 · 21 · 26 · 27 · 29 · 31.
+
+**METHOD RULES THIS SESSION PAID FOR. Each one cost a wrong answer first.**
+- **Diff against a BASELINE before claiming — or clearing — a regression.** Running 11 witnesses on the
+  fix AND on unmodified `origin/main`, side by side, is what caught `witness_e2e_save` breaking (green →
+  3/2) *and* proved four other failures were pre-existing. Without the baseline both conclusions were
+  unavailable.
+- **Never re-derive a transform you can read.** `cross_edges.js` re-implemented "world = centre + R·vert"
+  and called it "the same final numbers, fewer steps". It was wrong for 798 of 934 elements. #1747's IFC
+  export instead reads the renderer's own baked world vertices, so parity is structural.
+- **Wait on a CONDITION, not a duration.** My own witness lied twice: a fixed sleep, then "name matches
+  and the bridge stopped changing" — which the PREVIOUS building's untouched bridge satisfies, because
+  `__dwName` flips at open START while `__arcFidByGuid` is rebuilt later. Null the globals, wait for
+  repopulation (#1750). **Any witness opening more than one resident needs this.**
+- **The instrument check comes FIRST, and it is not a formality.** Two probes measured the wrong quantity
+  and looked conclusive: comparing a rendered AABB to `element_transforms.bbox_*` proves nothing, because
+  `extractIFCtoDB.py:181` defines those columns AS the world AABB. Both W-ARC-3AXIS and
+  W-ROW7-GRID-BASELINE now open with a control that voids the run if the decode is wrong.
+- **Prove a fix FIRES on merged main, not that it shipped.** A sibling session had two commits stranded
+  by auto-merge in one night. Every fix here was re-run against `origin/main` after merging.
+- **Docs publish ONLY via `scripts/safe_gh_deploy.sh`.** CLAUDE.md bans bare `mkdocs gh-deploy`; I
+  reached for it twice before reading that, and was blocked both times — correctly. The guard caught a
+  real deletion (`glassbowl_data.db`) that I had also found by hand.
+
+**TRAPS — state of the world, so nobody re-discovers these.**
+- **CI `system-is-real` has NEVER been green — 198 of its last 200 runs failed, back to 2026-07-05.**
+  A red X on a bim-compiler PR is **no signal**; check whether the failure is new before believing it.
+  87% of it is unpassable by construction. Fully diagnosed in `LFS_QUOTA_AUDIT.md` (#107).
+- **`playwright` is NOT installed** — `witness_str_into_arc`, `witness_green_report`,
+  `witness_modeller_xedge_lens`, `witness_arc_editable_smoke`, `sdg_gate/cascade_smoke` crash on
+  `Cannot find module 'playwright'`. Pre-existing, unrelated to any change here. `puppeteer` IS available
+  (resolved from `~/bim-compiler/node_modules`), which is how every witness here ran headless.
+- **Gitignored local fixtures.** `modeller/Terminal_arcstr_proof.db` (.gitignore:49) and
+  `docs/glassbowl_data.db` exist on the primary checkout's DISK but not in git, so a fresh `/tmp/wt-*`
+  has a 0-byte placeholder. That is why W-ROW7-GRID-BASELINE prints INCONCLUSIVE rather than passing over
+  an empty population, and why a docs deploy from a fresh worktree aborts. Not a bug — know it.
+  `glassbowl_data.db` now also has a durable OCI copy (`§GLASSBOWL-OCI`).
+- **Terminal declares ZERO void/fill relations in its source IFC.** Its ride gap is a SOURCE DATA gap,
+  asserted in W-RFH-RESIDENTS F4. **Do not "fix" it by fabricating edges.**
+
+**HYGIENE.** This session created and pruned **21** worktrees; **0** of mine remain. 33 `/tmp/wt-*`
+survive from other sessions — not mine to prune, and several hold unpushed work (see the 2026-09-15
+block's table). `.claude/worktrees/agent-*` are harness-managed; never remove those by hand.
+
+## ▶ §RESUME 2026-09-15 — ⚠ SUPERSEDED by §RESUME 2026-09-21 above. Kept for its history (the worktree
+## table is still the current one); it is NOT the entry point. Written by the session that did NOT touch
+## the Modeller, so you inherit facts, not a handover story.
 
 **WHAT THE LAST SESSION DID, AND WHY IT MATTERS TO YOU: nothing in `modeller/`.** It ran the Viewer 4D/5D
 lane (`TM_4D5D_VARIANCE_LANE.md` §S7 — the construction window on an element). Merged to bim-ootb `main`:
