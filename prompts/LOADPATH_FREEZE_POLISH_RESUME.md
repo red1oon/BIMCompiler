@@ -105,7 +105,7 @@ git — `git log -p prompts/LOADPATH_FREEZE_POLISH_RESUME.md`, or read it at com
 origin/main and 1 BEHIND** — someone pushed to main during this session, so rebase or merge before
 any PR. 23 commits today. sw `CACHE_VERSION v1230`.
 
-## ▶ THE TASK RED1 NAMED, NOT YET STARTED
+## ▶ THE TASK RED1 NAMED — ✅ DONE 2026-09-21 (§132.1 spec, §132.2 evidence)
 > *"make the storey by storey reveal HUD box same coloring to fall on the 'Level 1' rather, or swap
 > places with number of rooms, which is not the highlight but the storey value."*
 
@@ -117,6 +117,103 @@ is lit in the scene, which is the whole point of the beat.
 ⚠ Whatever you change, the colour must be the SAME one the storey is tinted with that slot
 (`COLORS[idx % COLORS.length]`, `cpe_storey_reveal.js`), or the card and the building disagree.
 Check `§CARDFIT`-style fit afterwards; the storey list already truncates room names at clip height.
+
+## §132.1 — SPEC FOR THAT TASK (2026-09-21, written BEFORE the edit — CLAUDE.md Spec-First)
+
+**The decision: (b), the swap — and it satisfies (a) at the same time.** Read the drawing code before
+choosing. `c.ink` is not a general "colour this card" flag: in the plain-card branch
+(`cpe_resource_panel.js:1228`) it sets the fill for exactly ONE string, `c.big`, and the label below it
+is hard-coded `rgba(255,255,255,0.88)`. So "move the colour onto the storey value" with the storey
+still in `label` would need a NEW two-tone label path in a compositor four other cards share. Putting
+the storey value in `big` instead needs **no change to `cpe_resource_panel.js` at all** — the existing
+`ink` then lands on the storey by construction, and the storey takes the emphatic slot, which is red1's
+own stated reason (*"which is not the highlight but the storey value"*).
+
+**The card changes shape in `cpe_storey_reveal.js` `A.storeyRevealStatCardAt` only:**
+
+| slot | before | after |
+|---|---|---|
+| `big` (coloured by `ink`) | `String(st.doorCount)` — `"247"` | `vis.storey` — `"Level 1"` |
+| `label` (plain white) | `'doors · ' + vis.storey` | `st.doorCount + ' doors'` |
+| `sub` | walkable · footprint · rooms | unchanged |
+| ground-slab slot | `big` = `"45×30"`, `label` = `"m ground slab"` | `big` = `"Ground slab"`, `label` = `"45×30 m footprint"` |
+
+`ink` stays `COLORS[idx % COLORS.length]` read off the SAME `vis` record `_applyTint` is handed, so the
+⚠ above holds unchanged — card and building cannot disagree.
+
+**What this touches that a reader would miss** (found by grep, not by assuming):
+- `cinema_maxq.js:4111`'s §STOREY_INFO_NOT_IN_HUB comment states the card's `label` is the ONLY place
+  the storey name appears on screen — the STATUS_BOX row excludes it deliberately. The swap keeps it on
+  screen and makes it bigger; the comment's parenthetical `('doors · ' + vis.storey)` goes stale and is
+  corrected in the same commit.
+- `witness_storey_walkable_card.js:56` recovers the storey by **string-stripping** `label`
+  (`c.label.replace(/^doors · /, '')`). That parse dies silently on the new shape — it would key every
+  card under the same wrong name and still print a green line. It moves to reading `card.big`.
+
+**The claim, and the witness that proves or disproves it** (CLAUDE.md: a test names its issue):
+> `§STOREY_CARD_INK` — the string the storey card draws in the tint colour IS the storey value, and the
+> card still fits its own plate at 1920x1080, 1280x720 and 854x480.
+
+`witness_storey_card_ink.js` runs the REAL `bigStatsCompositeOntoCanvas` against a recording 2D context
+(the technique `witness_escape_card_fit.js` already uses on this same function) and asserts on what the
+compositor itself drew: the coloured fill is the storey text, no number is drawn in a tint colour, and
+every string lies inside the registered `stats-panel` rect. Red control: a card with `big` left as the
+count must FAIL it. ⚠ §132's lesson 1 applies directly — this witness must exercise the plain-card
+branch, which is the one a card with no `legend` takes; a witness built on a hand-made `legend` card
+would go green while the screen never changed.
+
+**Fit is a real risk here, so it is measured, not assumed.** The `big` slot shrinks by 2 px steps and
+STOPS at 14 px without ellipsis (`cpe_resource_panel.js:1224`), so a long storey name overflows rather
+than truncating. Real fleet names are short — `Level 1`, `VÅNING 1`, `Roof Level`, `Level 7A`, longest
+`Level 1 Ceiling` (15 chars) — and the witness drives the longest of them at the clip size.
+
+## §132.2 — WHAT IT MEASURED (2026-09-21). DONE, WITH THE NUMBERS.
+
+**`§WITNESS_STOREY_CARD_INK pass=8 fail=0 ran=111`** — 111 (building × slot × size) rows over all four
+fleet DBs, `redControl-detected` (a card with the count back in `big` fails it). Every row: exactly ONE
+string drawn in the tint colour, and it is the storey; `card.ink === vis.color`; the count still drawn
+in plain ink on the label; `overflow=0px` at 1920x1080, 1280x720 and 854x480.
+
+The whole fleet at clip size, from the witness's own `§STOREY_CARD_INK` lines — fit was the real worry
+and this is the answer to it (the `big` slot's floor is 14 px):
+
+| building | longest name it draws | px at 854x480 | overflow |
+|---|---|---|---|
+| LTU_AHouse | `VÅNING 1` / `Storey 1` (8) | 31 | 0 |
+| HHS_Office_Federated | `Level 1..3` (7) | 35 | 0 |
+| Hospital | `Level 1..6` (7) | 35 | 0 |
+| Terminal | `Aras Bumbung` (12) | **19** | 0 |
+| any (ground-slab slot) | `Ground slab` (11) | 21 | 0 |
+
+**`§WITNESS_STOREY_WALKABLE_CARD pass=6 fail=0 ran=20`** (Hospital, real browser) — the clause this card
+shares with §37.1 is intact: `Level 6 — 5 doors | walkable 3,367 m² · 87.6×86.6 m footprint`. Its own
+storey lookup was repaired in the same commit: it string-stripped `'doors · '` off the label, which the
+swap breaks SILENTLY (every sub keyed under the one string "N doors", still green) and which **already
+missed the ground-slab slot** before the swap — that slot displays "Ground slab" and never matched the
+prefix, so its walkable clause was judged against the wrong rule. It reads `vis.storey` now: the name
+`storeyRevealStatsFor` was actually handed, not a name parsed back out of a caption.
+
+**`§CARDFIT 22/22 pass`** — the escape card, which takes the LEGEND branch, is untouched.
+
+**Read the frame, lo-res, as §132's own lesson 2 says.** HHS clip bake `--clip 0.58:0.92` at 854x480,
+310 frames, `unconverged=0`, `§HUD_OVERLAP_WORST none`, `fileOk=true`, 146 s wall.
+`§STOREY_REVEAL_TIMING` puts Level 2 at `tNorm=0.6988 color=#ffd600` and Level 3 at `0.7439
+color=#ff6d00`; frames 120 and 160 show **"Level 2" in yellow over the yellow-lit band, "Level 3" in
+orange over the orange-lit band**, with "39 doors" / "34 doors" plain beneath. Card and building agree.
+
+**⚠ ONE THING SEEN AND DELIBERATELY NOT FIXED — it is NOT from this change.** At 854x480 the card's
+`sub` still ellipses: `walkable 2,173 m² · 65.7×53.7 m / footprint (estimate) · 38 room…`. Measured in
+BOTH shapes on the same card (HHS Level 2), so this is a measurement, not a reading:
+
+| | big px | sub starts at y | lines | ellipsed | plate bottom |
+|---|---|---|---|---|---|
+| before (count in `big`) | 55 | 439.3 | 2 | yes, at "38 room…" | 467.0 |
+| after (storey in `big`) | 35 | 422.1 | 2 | **yes, identically** | 467.0 |
+
+Same cut, same words lost. The swap moved the sub **17.2 px HIGHER** and changed nothing about the
+wrap, because the limit is `_wrapText`'s 2-LINE CAP at `colW=139`, not vertical room — there are ~45 px
+of unused plate below it. So the rooms clause loses "compiled" and its count is cut at clip height on
+every storey card, and always has. Left open: findings are reported, fixes are red1's to authorise.
 
 ## WHAT LANDED TODAY, EACH WITH THE MEASUREMENT THAT PROVED IT
 | § | what it fixed | the number |
