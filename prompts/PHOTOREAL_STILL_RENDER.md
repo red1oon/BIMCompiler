@@ -86,8 +86,127 @@ geometry pass drew. Everything the app draws survives by construction. Consequen
   renderer ignores the app's lights and every frame is black (measured: own lights 479 280 lit
   pixels, app's lights 0). That is what `vendor/*.appbound.js` exists for.
 
+### §GI_STILL_ORIENT_GEOM (2026-09-23) — SPEC: orientation by surface direction, not by colour
+**Defect, measured** (witness `witness_gi_orient_indoor.js`, HHS 1280x720, no edits): the colour
+`composite` score picks between the two colour-upright candidates by margins of 0.08-0.33 (red1's
+Terminal indoor press: 0.05), and picked the upside-down one at 3 of 4 poses (aerial, cinema
+frames 240, 300). Upside-down AO/GI/mask over upright colour = red1's "smearing".
+**Rule:** a front-facing surface's view normal n and the camera ray r through its pixel satisfy
+n·r <= 0. Render the packed view normal RAW (no OETF, no colour transform) once; count covered
+pixels with n·r > 0.05|r| with readback rows as-is and reversed. Fewer = flipOut. Measured
+separation 0.06-1.8% against 21-32%, all 4 poses. flipTex is then the one of the two whose colour
+`composite` score is lower at that flipOut. If both counts are within 2x of each other, log
+UNDECIDED and keep the colour decision.
+**Test (proves the defect gone):** the same witness at the same 4 poses must print RIGHT at all 4,
+and at a Terminal indoor pose; `run_gi_still_headless.js` must still pass (incl. injected flip).
+
+### §GI_SHARED_ATTR_WIDEN (2026-09-23) — SPEC: the second renderer must not rewrite the app's geometry
+**Defect, measured.** Film v2 vs a same-frame no-tap control: 355/614 frames lose slabs, walls,
+stairs (all BatchedMesh). Reproduced outside the bake (`witness_tap_before_after.js`, pose 460): one
+tap capture, then the app's OWN frame differs by 67.7 levels, 48% of pixels. State diff across one
+capture (`witness_batched_state.js`): 60/128 BatchedMesh index arrays Uint16Array -> Uint32Array,
+and the app's next multiDrawStarts double (216 -> 432). Cause, in source:
+`three.webgpu.min.js:84196-84214` (WebGPUAttributeUtils.createAttribute) widens non-normalized
+8/16-bit arrays and writes `bufferAttribute.array = array` onto the SHARED attribute; the app's
+WebGL buffer stays 16-bit (version unchanged, no re-upload) while BatchedMesh.onBeforeRender
+(`three.core.min.js:27803+`) now computes byte offsets at 4 bytes/index -> draws read garbage.
+Camera coordinateSystem was measured and RULED OUT (<=0.07 levels).
+WebGPU reads the index format from `index.array`'s type at draw time (`three.webgpu.min.js:89025`),
+so the fix is a swap, not a restore: before each second-renderer render, every 8/16-bit
+non-normalized attribute (index included) of the scene gets a 32-bit copy we own (0xffff -> 0xffffffff
+on a Uint16 index, as upstream does), rebuilt whenever the attribute's version moves; after the
+render the app's own array is put back and every BatchedMesh gets `_visibilityChanged = true` so its
+draw list is rebuilt at 2 bytes/index. Applies to `gi_bake_tap2.js` AND `gi_still.js`.
+**Tests (prove the defect gone):** `witness_batched_state.js` -> no idxType change, no mdStart
+change after tap+app; `witness_tap_before_after.js` -> tapVsBase ~0 at 460/150/60; film re-bake
+vs the control -> the >5%-pixels-off-by-60 count drops from 355/614 to ~0 (only bounce shading left).
+
+### §GI_TAP_SYNC_GRAB + §GI_TAP_GLASS_SKIP (2026-09-23) — SPEC: the two faults left after §GI_SHARED_ATTR_WIDEN
+After the widen fix the film still differed from the control on 129/614 frames, in two groups.
+1. **Frames 469-591, the load-path freeze, show the whole building instead of the blackout.**
+   Debug bake (dumps at hold frames): the app canvas copied at the hook's FIRST line is correct
+   (black + stack); the same canvas copied after `await ready` shows an older picture with the whole
+   building, with `renderer.info.render.frame` unchanged (0 WebGL renders in between). A WebGL
+   canvas does not keep its pixels past the task that drew them (the rule gi_still.js's
+   grabAppFrame already states). **Rule:** copy the app frame synchronously at hook entry, before
+   any await; that one copy is both the colour input and the underlay. Never read
+   `A.renderer.domElement` after an await.
+2. **Six single frames (350-413) go near-black.** Under scene.overrideMaterial the WebGPU renderer
+   copies `transparent` but not opacity from the source (`three.webgpu.min.js:65410-65414`), so a
+   fading/glass mesh is a solid occluder in the geometry pass. **Rule:** same as §GI_GLASS_SKIP on
+   Alt+S — hide transparent meshes below opacity 0.9, A._sky and raw-GLSL ShaderMaterials for the
+   geometry pass only, restore in `finally`.
+**Test:** re-bake with the verbatim command vs the no-tap control; frames with >5% of pixels off by
+>60 must fall from 129 to ~0, the blackout's dark share must match the control (~54%) at 480/520/600.
+**Result of that re-bake:** 129 -> 10. Blackout matches (52.3/54.3/50.6 vs 52.4/54.3/50.5). But 4 NEW
+single-frame dropouts (12, 49, 122, 604 — the app's own picture near-empty) appeared with the
+`.visible` flip, the only change that writes app state; app code runs during the awaited WebGPU work.
+**Amendment — skip by LAYER, never by `.visible`:** the geometry pass renders through its OWN camera
+(copied from A.camera every frame) that sees only layer 31; every object except glass/sky/raw-GLSL
+gets bit 31 each frame. The app never uses layers (grep: 0 calls) and its camera lacks bit 31, so
+nothing the app reads changes. Also stops WebGPU rewriting A.camera.coordinateSystem.
+The remaining 6 (350-413) are camera cuts where the tap film's 3D lags the HUD by one frame —
+identical in both tap runs, absent in the control; separate open item.
+
 ### Open
-- **The film needs one full re-bake on v2** to confirm the four features return. v2 is verified on a
+- **DONE 2026-09-23: v2 film re-baked and checked frame-by-frame against a same-frame no-tap control**
+  (`~/films/hhs_ssgi_2026-09-22/hhs_gi_v2_24fps.mp4`, `_small.mp4` 6.3 MB sent to red1; control
+  `hhs_control_notap_24fps.mp4`). Frames off by >60 on >5% of pixels: 355 -> 129 -> 10 -> **3**.
+  Blackout dark share 53.3/55.2/51.5% vs control 52.4/54.3/50.5%. PASS/FAIL tally identical (35/7).
+  Superseded films kept with suffixes _BROKEN_batched / _widenonly / _visibleskip.
+  **Still open:** frames 491, 592, 593 — at the freeze's layer-placed steps the new stack clone reaches
+  the tap picture one frame late (app logged §LOADPATH_STACK on the same frames in both runs, so it is
+  render-side). Tap film is darker overall (luma 90.9 vs 99.2): tap2 applies AO and bounce at FULL
+  strength, not Alt+S's __GI_STILL_AO 0.55 / __GI_STILL_GAIN 0.6 — red1's look call.
+- **§GI_TAP_DIALS (2026-09-23, red1: "proceed in tuning")** — SPEC: the film uses the SAME output
+  formula and dials as Alt+S (`ao = 1 - K + K*AO`, `rgb = C*ao + C*GI*gain`, K=__GI_STILL_AO default
+  0.55, gain=__GI_STILL_GAIN default 0.6) — the stills red1 approved for publishing. Test: film mean
+  luma moves toward the control (was 90.9 vs 99.2) while the per-frame compare stays at <=3 frames off.
+  Then the whole saved path (no --clip) at 854x480/24fps.
+- **§GI_READBACK_ROWPAD (2026-09-23, red1: "smearing across")** — DEFECT, measured: the whole-path
+  480p film (854 wide) came back with every row sheared sideways. `readRenderTargetPixelsAsync` at
+  854x480 returned 1,658,840 floats vs 1,639,680 expected = rows padded to 864 px (256-byte WebGPU
+  row alignment; RGBA float = 16 B/px, so any width not a multiple of 16), last row unpadded. 1920
+  and 1280 are multiples of 16 — every earlier test was blind to it. red1's Alt+S window (1666x864)
+  is NOT, so the live still was sheared too. **Rule:** after every readback, if length != w*h*4,
+  stride = (len/4 - w)/(h-1) px (must be an integer >= w), copy each row's first w px. Both
+  gi_bake_tap2.js and gi_still.js readRT. **Test:** tap at 854x480 and gi_still at 1666x864 headless
+  -> composite vs app frame meanAbs back to the ~7-10 level of aligned sizes, no streaks.
+- **§GI_TAP_EMPTY_GRAB (2026-09-23)** — whole-path 480p after the rowpad fix: 45/3275 frames off,
+  of which 13 are single-frame blanks in the tap film only (app picture empty, HUD drawn) at RANDOM
+  frames (161,166,239,1083… vs 153,160,1176… the run before) — ~0.4%. CORRECTION: the 4 blanks on the
+  1080p clip were NOT caused by the `.visible` flip; the layer switch coincided, it did not fix them.
+  SPEC: at hook entry, sample the synchronous grab; if it is empty (no alpha), log §GI_TAP_EMPTY_GRAB
+  with `renderer.info.render.frame` delta since the previous capture, re-render the app
+  synchronously (A._composer.render()) and grab again, log whether the second grab has pixels.
+  TEST: a ~300-frame 480p clip (random 0.4% → expect ~1-3 events): every event logged, 0 blank
+  frames in the output (self-referenced flash test, no control needed).
+  **RESULT — the grab is NOT empty, the app rendered an empty scene.** 301-frame clip, flash at film
+  frame 94 = capture 95: `GRAB_DROP lum=13.3 prevLum=91.2 rgb=8,8,24 alpha=255 clear=#080818
+  appRendersSinceLastCapture=185` — opaque clear colour only, and the app renders on its own between
+  captures (rAF/refine), i.e. also DURING the tap's awaited WebGPU render, while the shared scene
+  still carries `overrideMaterial = GI_BAKE_GEOM` (a NodeMaterial the WebGL renderer cannot draw) and
+  the widened index arrays. **Rule (§GI_TAP_NO_SHARED_ACROSS_AWAIT):** nothing shared stays mutated
+  across an await. The geometry pass renders SYNCHRONOUSLY (`pipeline.render()`), override + widen set
+  and restored around that one call; only the readback (touches nothing shared) is awaited.
+  TEST: same clip length, 0 flash frames, 0 GRAB_DROP at the flash signature.
+  **RESULT: the sync render did NOT remove it** (2 flashes, same signature) — kept anyway, it is the
+  right rule. Root cause still UNKNOWN: on random captures one app composer render comes back as the
+  flat clear colour (#080818); the per-frame count of 185 renders is normal (8 refine + 12 AO passes).
+  **Guard (§GI_TAP_BLANK_GRAB):** a flat clear-colour grab right after a normal frame -> re-render
+  synchronously, grab again, log `BLANK_GRAB ... lum now=`. 301-frame clip: 3 blanks, all 3 recovered
+  (114.9/129.8/121.8 vs the frames before), 0 flash frames in the output. Open: why that one render is
+  empty, and why never in a no-tap run (0 in 3275 control frames).
+  Amended: the brightness condition (prevLum > 20) is dropped — blanks inside the dark load-path
+  freeze (whole-path 935, 941) slipped past it; a genuinely empty frame re-renders to itself.
+- **DELIVERED 2026-09-23: whole saved path, 480p/24, 3275 frames** (`hhs_gi_fullpath_480p.mp4`,
+  `_small.mp4` 9.9 MB sent to red1). Vs `hhs_control_fullpath_480p.mp4`: meanAbs 5.2, luma 74.2 vs
+  77.4, PASS/PARTIAL/FAIL 46/8/4 in both, 16 blanks caught+recovered, freeze dark share within 3 pts,
+  escape route 156.21 m fully drawn. Only difference: a sun/lamp glow haze the APP draws on in one run
+  and off in the other over ~60 frames, at a different place each run (1990-2050, then 2495-2556),
+  plus 708-711 — app-side glow timing, not the bounce. Superseded films kept with suffixes
+  _SMEARED_rowpad / _BLANKS / _darkblank.
+- (superseded) **The film needs one full re-bake on v2** to confirm the four features return. v2 is verified on a
   120-frame test (orientation `same=10.5 flipped=130.4`, clear 12%), not yet on a full 614-frame run.
 - The bake's `exposure=1.8` in v1 is gone in v2 by design; if a v2 film reads dark, that is the first
   thing to check, not the last.
