@@ -206,6 +206,15 @@ identical in both tap runs, absent in the control; separate open item.
   and off in the other over ~60 frames, at a different place each run (1990-2050, then 2495-2556),
   plus 708-711 — app-side glow timing, not the bounce. Superseded films kept with suffixes
   _SMEARED_rowpad / _BLANKS / _darkblank.
+- **OPEN (pre-existing, NOT the bounce) — jagged sun-shadow edges on long roof edges (red1, 2026-09-24).**
+  Same sawtooth in the no-bounce control (hr_clip_ctl vs hr_clip_tap, frame 200). Cause in the log:
+  `§PHOTO_SHADOW texelPerM=5.7` / `texel=0.177m` on Hospital (env=362) vs 11.4 on HHS (env=180) — one
+  map stretched over twice the width; low sun (10 deg) stretches each step. Options by cost: 8192 map
+  (4x memory ~512 MB), camera-following or cascaded shadow maps (the proper fix, real work), softer
+  filtering (hides steps, blurs edges). red1: weigh benefit vs cost once the code settles.
+- Look dials with NO bake cost, not yet tried: film AO applied twice (tap's SSGI AO over the app's N8AO)
+  — drop the tap's; bounce gain above 0.6 (colour bleed barely visible at Hospital distances; 1.0
+  washed out Terminal's white hall). Judge on a 5 s clip at 2-3 settings.
 - **DONE 2026-09-24: Hospital FULL length 1080p/24 with bounce, all features** (red1: "full length as i
   got full machine up") — `~/films/hospital_ssgi_2026-09-23/hospital_gi_full_1080p.mp4` (245 MB, copy in
   ~/Downloads; `_small.mp4` 19.9 MB sent). 4963 frames, 9752 s wall = 2 h 43 min (1.96 s/frame; my
