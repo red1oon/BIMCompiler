@@ -206,6 +206,21 @@ identical in both tap runs, absent in the control; separate open item.
   and off in the other over ~60 frames, at a different place each run (1990-2050, then 2495-2556),
   plus 708-711 — app-side glow timing, not the bounce. Superseded films kept with suffixes
   _SMEARED_rowpad / _BLANKS / _darkblank.
+- **PAUSED 2026-09-23 by red1 ("kill the bake, will resume later"): Hospital 1080p ending, 1-hour
+  budget.** 5 s 1080p clip pair (frames 3600:3720) CLEAN vs control (0 off, 0 flash, 2.2 s/frame).
+  NOTE the 1080p film grid is 4699 frames, not 4963 (`§FRAME_RANGE_OOB b=4963 > full film
+  frames=4699` — first attempt refused). Resume verbatim:
+      rm -rf /tmp/silent-bake-profile-8613; cd /tmp/bake-r186-root && node cli_silent_bake.js \
+        --root /tmp/bake-r186-root --db Hospital_silent \
+        --out ~/films/hospital_ssgi_2026-09-23/hospital_gi_end_1080p.mp4 \
+        --log ~/films/hospital_ssgi_2026-09-23/hospital_gi_end_1080p.log --gpu real \
+        --chrome-args "--enable-unsafe-webgpu" --port 8613 --width 1920 --height 1080 --fps 24 \
+        --frame-range 3336:4699 --tap /tmp/wt-ssgi-webgpu-spike/sandbox/spike_ssgi_webgpu/gi_bake_tap2.js \
+        --buildup --label --4d5d --reveal --clash --measure --storey-reveal --load-path --ledger \
+        --cost --escape-route --sun-compass
+  Needs `/tmp/bake-r186-root` and `buildings/Hospital_silent.db -> ~/Downloads/Hospital_silent.db`
+  (both in /tmp — rebuild after a reboot). Check policy agreed with red1: no full-length control;
+  a 5 s control clip before each big bake + self-checks (flash/blank/errors/escape route).
 - (superseded) **The film needs one full re-bake on v2** to confirm the four features return. v2 is verified on a
   120-frame test (orientation `same=10.5 flipped=130.4`, clear 12%), not yet on a full 614-frame run.
 - The bake's `exposure=1.8` in v1 is gone in v2 by design; if a v2 film reads dark, that is the first
