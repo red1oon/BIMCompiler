@@ -6,7 +6,8 @@ grep. Never judge from frames: every claim traces to a `§` line you read yourse
 description of one, and not to what red1 says they see. Their eyes are the final arbiter of a LOOK
 ruling, but that is a ruling on a fix's RESULT, never a substitute for tracing the cause first.
 
-**NEXT SESSION STARTS AT §133**, immediately below the archive. §132's named task (the storey-reveal
+**NEXT SESSION STARTS AT §134**, immediately below the archive (§133's one live item was executed;
+it is history now). §132's named task (the storey-reveal
 HUD box colouring the count instead of the storey) is DONE, and **the whole lane is MERGED TO MAIN**
 — PR #1754 squash-merged as `1f34fc85`, 154 commits. §132 is kept for its evidence and its three
 lessons, but it is no longer the start point. §133 carries the merge, the HHS escape-route
@@ -99,6 +100,70 @@ git — `git log -p prompts/LOADPATH_FREEZE_POLISH_RESUME.md`, or read it at com
 - **The `o` box-proxy-in-a-bake experiment is DECLINED** by red1's own 2026-07-21 ruling in
   `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must never appear in a
   movie frame"*. It needs him to reverse himself IN THAT FILE.
+
+# §134 — START HERE (2026-09-23). THE BOUNCE LANDED ON BOTH Alt+S AND THE FILM. ONE RE-BAKE OWED.
+# §133 below is done — its one live item (the HHS real-path render) was executed and superseded.
+
+**Read `prompts/PHOTOREAL_STILL_RENDER.md` §GI_BUILT first** — it holds the architecture, the
+measured numbers, the dials and WHERE THINGS LIVE (all of it in `/tmp`, destroyed by a reboot).
+This section is only what the FILM lane owes.
+
+## What was delivered to red1 (all in ~/Downloads and ~/films/hhs_ssgi_2026-09-22/)
+- `hhs_realpath_overlay_full.mp4` — 61.04 s, the real saved HHS cinema path, 916 frames at 15 fps,
+  first render of that path ever (§133's item, closed). Captions/compass/path-box only.
+- `hhs_allfeatures_1080p.mp4` — 2 047 frames, all features, OLD lighting, current code.
+- `hhs_gi_sky_ok_24fps.mp4` — 614 frames, 24 fps, all 12 features + bounce, sky correct. **Made with
+  the v1 tap**, so it is missing the four things below.
+- Stills: `~/Downloads/bounce_still_*.png` (Hospital). red1: "these are the ones to publish."
+
+## THE ONE THING OWED: re-bake the film on `gi_bake_tap2.js`
+red1 found four faults in the v1 film, all one cause (v1 repainted the building with a render that
+has no bloom, no shadows, no post chain):
+1. window lights missing (they are bloom), 2. stack-freeze blackout not black, 3. discipline reveal
+behaving like a repeat buildup, 4. **sun shadows missing**.
+v2 fixes all four BY CONSTRUCTION — the app's finished frame is the colour input, the bounce only
+shades it. Verified on a 120-frame test, NOT on a full run. The command, verbatim:
+
+    rm -rf /tmp/silent-bake-profile-8613
+    cd /tmp/bake-r186-root && node cli_silent_bake.js --root /tmp/bake-r186-root \
+      --db HHS_Office_Federated_silent --out ~/films/hhs_ssgi_2026-09-22/hhs_gi_v2_24fps.mp4 \
+      --log ~/films/hhs_ssgi_2026-09-22/hhs_gi_v2_24fps.log --gpu real \
+      --chrome-args "--enable-unsafe-webgpu" --port 8613 --width 1920 --height 1080 --fps 24 \
+      --clip 0:0.15 --tap /tmp/wt-ssgi-webgpu-spike/sandbox/spike_ssgi_webgpu/gi_bake_tap2.js \
+      --buildup --label --4d5d --reveal --clash --measure --storey-reveal --load-path --ledger \
+      --cost --escape-route --sun-compass
+
+Then CHECK THE FOUR, against an app-only control at the SAME frame (`--fps 24 --clip 0:0.15`, no
+`--tap`) — marker counts are NOT enough, they were identical while the pixels were wrong.
+
+## A REAL DEFECT FOUND ON THE WAY, app-side, nothing to do with the bounce — needs red1's ruling
+red1: "shadows are now a wee too strong. Was very weak a week before, but we must have overdone its
+correction." Traced:
+- `§MOVIE_SHADOW_TM` (effects.js:2623, 2026-08-12) set its three scales to 1.0 so the bake uses
+  Time Machine's own balance, measured then as sun 4.4 / fill 2.042 = **ratio 2.155**, and its log
+  line still prints that number as the target.
+- **2026-09-01, PR #1601** (`§WALL_SIDE_AND_LIGHT_FLOOR`, about material.side and a derived light
+  floor) halved both fill lights in `scene.js`: ambient 0.785 -> **0.386**, hemi 1.257 -> **0.617**.
+  The sun was not touched.
+- So every bake since prints `sunFillRatio=4.387` against a target of 2.155 — **twice the contrast**,
+  as a side effect of a change about something else. The bake did not drift from TM; both moved.
+- The honest experiment is one bake with the fill restored (ambient 0.785 / hemi 1.257, runtime
+  override, no file edit) against one as-is, and red1 judges. NOT DONE — the GPU was busy.
+
+## Still open from §133, unchanged
+- The HUD overlap: `§HUD_LAYOUT_ARM ... overlaps=2 => FAIL` — the load-path info panel crosses the
+  path map above it and the stats panel below it, top right.
+- `§STOREY_REVEAL_TINT ... => PARTIAL`, 2 buckets per storey never take the tint (its own words).
+- The HHS exit test may UNDER-detect (`EXIT_SAMPLE_CLEARANCE_M`), the 1080p encode degrade path,
+  `OCCUPANT_PATHFINDER.md §PATHING-DEFECTS` P1-P5, `GEOREF_SUNPATH_COMPASS.md §13.5`.
+
+## Working rules this session earned
+- **Verify headlessly; never hand red1 an untested edit.** One log call referencing a function that
+  did not exist in that file killed every Alt+S with `ReferenceError: log is not defined`, and he
+  found it, not me. `run_gi_still_headless.js` exists precisely so that cannot happen again.
+- **Measure at the SAME frame against a control.** Comparing different moments of different runs
+  produced two wrong conclusions in one evening (an "upgrade breaks the sky" claim that was false,
+  and a "bounce is faster" claim that was an artefact).
 
 # §133 — START HERE (2026-09-22, updated). THE LANE IS MERGED. ONE REQUEST HAS RED1'S GO — NEXT
 # SESSION EXECUTES IT.

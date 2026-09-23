@@ -9,6 +9,93 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ▶ §GI_BUILT (2026-09-23) — THE BOUNCE IS RUNNING, ON Alt+S LIVE AND IN THE BAKE. READ THIS FIRST;
+## §WEBGPU_SSGI_SPIKE below is the investigation that preceded it and is now history, not the state.
+
+**Nothing is shipped. Nothing under `viewer/` is committed.** Everything below lives in the bim-ootb
+worktree `/tmp/wt-ssgi-webgpu-spike` and in `/tmp` roots that a reboot destroys — see WHERE THINGS
+LIVE. Merged to main is only the sandbox source itself (PR bim-ootb#1755, squash `4818b3f0`:
+28 files, all under `sandbox/spike_ssgi_webgpu/`, plus one `.gitignore` line; no shipped file).
+
+### What works today, measured, not claimed
+| | before | after |
+|---|---|---|
+| Alt+S first press (HHS, 664 objects) | **127 065 ms** one synchronous block | **3 003 ms** |
+| Alt+S whole shot | 128.2 s | **5.7-7.0 s**, 2.8-3.6 s on later presses |
+| Film, per frame, all 12 features, 1080p | 0.78 s (no bounce) | **0.95 s** (+22%) |
+
+- **Alt+S** — press it as always. The app's own still runs untouched to completion, THEN the bounce
+  is composited over the finished picture; a Save PNG / Esc bar appears. `Alt+Shift+S` releases the
+  renderer. red1's verdict on the stills: "these are the ones to publish".
+- **The film** — `gi_bake_tap2.js` through `cli_silent_bake.js --tap`, 614 frames at 24 fps.
+
+### The architecture, and why it is this and not the obvious one
+The obvious version (v1) re-rendered the whole scene with a second renderer and pasted the result in.
+It silently dropped everything the app draws that the second renderer does not — red1 found four in
+one viewing: the window lights (they are bloom, a post pass), the stack-freeze blackout, the
+discipline reveal, and the sun shadows. Marker counts proved the app's own logic ran correctly in
+every case (`§GLOW_LENS_QUAD` 68/68, `§PHOTO_GLOW_SPRITE_GATE` 615/615,
+`§CPE_REVEAL_LENS_QUAD_OFF` 42/42, `§LOADPATH_HOLD` 3/3 against the r185 baseline) — the pixels just
+never reached the frame.
+
+**v2 starts FROM the app's finished frame.** That frame is the colour input; the second renderer
+computes only depth and surface normals with ONE shared override material; the output is
+`colour x AO + colour x GI`, re-encoded with `sRGBTransferOETF`, and composited back where the
+geometry pass drew. Everything the app draws survives by construction. Consequences worth keeping:
+1. **One shared material is what killed the 127 s stall.** WebGPU builds one render pipeline per
+   render object, synchronously, on the main thread — `three.webgpu.js:85689-85720` only takes the
+   async branch when `compileAsync` passes it a promise array. 292 of them back-to-back was the hang.
+2. **No tone mapping and no exposure in this renderer.** The colour is already tone-mapped at the
+   app's exposure; sampling decodes sRGB and the output re-encodes it, so an untouched pixel comes
+   back unchanged (`mode 'coloronly'` measures compositeMean == appMean, meanAbsDiff 0).
+3. **Coverage comes from DEPTH, never from alpha or brightness.** Four attempts failed on this.
+   `SSGINode.updateBefore` wraps its quad render in `renderer.setClearColor(0xffffff, 1)`
+   (`vendor/SSGINode.js:391`) and `PassNode.updateBefore` never sets a clear colour of its own
+   (`three.webgpu.js:42967-43043`), so the frame comes back cleared WHITE at alpha 1 — there was
+   never an empty signal to read. `depth.r.lessThan(0.999999)` is the honest test.
+4. **The app's own frame must be drawn first.** The bake hook REPLACES cinema_maxq's
+   `ctx.drawImage(A.renderer.domElement)`, so a correct mask over nothing is still black. Draw the
+   app frame, then the bounce layer over it. Sky measured back at 173.0 against the app's own 170.5.
+5. **Orientation is decided by MATCHING, never assumed.** Score the bounce layer against the app's
+   frame both ways round (and, in the still, over all four combinations of texture-v and readback
+   row order), keep the better, log the margin. A brightness-based test was tried and flipped the
+   wrong way the moment red1 turned sky and ground on — it measured exactly what those settings change.
+6. **Transparent meshes are left OUT of the geometry pass** (§GI_GLASS_SKIP). One opaque material
+   records glass as a solid wall, and the hall fills with milky sheets; excluded, glass keeps the
+   app's own pixels. Terminal has 26 such meshes at opacity 0.25.
+
+### Dials (console, take effect on the next Alt+S)
+- `window.__GI_STILL_AO` — occlusion blend, default **0.55**. 1.0 was red1's "eerie bouncing" on an
+  aerial: at distance nearly every probe reads occluded and the whole building dims.
+- `window.__GI_STILL_GAIN` — bounce strength, default **0.6**. At 1.0 a white hall measured
+  compositeMean 163.68 against appMean 159.81 — it was adding light, not shaping it.
+- `window.__GI_SLICES` / `window.__GI_STEPS` — sample counts, default 3/16 (the node's "high").
+- `window.__GI_GLASS_OPACITY` — what counts as glass, default 0.9.
+
+### WHERE THINGS LIVE — all of it is in /tmp and dies on reboot
+- Worktree `/tmp/wt-ssgi-webgpu-spike` (branch `spike/ssgi-webgpu`), sandbox dir
+  `sandbox/spike_ssgi_webgpu/`: `gi_still.js` (live Alt+S), `serve_gi_live.js` (dev server, port
+  8600), `gi_bake_tap2.js` (film), `gi_bake_tap.js` (v1, superseded), `run_gi_still_headless.js`
+  (puppeteer verifier — USE IT, do not ask red1 to test), `vendor/*.appbound.js`.
+- **One uncommitted edit to a shipped file**: `viewer/cinema_maxq.js` §GI_CAPTURE_HOOK, 20 lines —
+  `if (typeof window.__giCaptureFrame === 'function') await it; else` the original drawImage line.
+  Inert without the hook.
+- `/tmp/bake-r186-root` — a symlink farm of the worktree with only `viewer/lib/three.webgpu.min.js`
+  and `three.core.min.js` replaced by r186. Rebuild it if it is gone; nothing tracked was touched.
+- **ONE three.js instance, always.** A private copy makes `light instanceof THREE.Light` false, the
+  renderer ignores the app's lights and every frame is black (measured: own lights 479 280 lit
+  pixels, app's lights 0). That is what `vendor/*.appbound.js` exists for.
+
+### Open
+- **The film needs one full re-bake on v2** to confirm the four features return. v2 is verified on a
+  120-frame test (orientation `same=10.5 flipped=130.4`, clear 12%), not yet on a full 614-frame run.
+- The bake's `exposure=1.8` in v1 is gone in v2 by design; if a v2 film reads dark, that is the first
+  thing to check, not the last.
+- Alt+S on Hospital still pays ~68 s on the first press (5 080 renderables). Inherent: ~13 ms per
+  render object, no async door. Later presses are seconds.
+- **§S277b is NOT resolved.** This runs on desktop with a real GPU, operator-controlled. red1 has
+  said Alt+S is desktop-only by design, which removes the mobile hazard but not the fleet re-test.
+
 ## ▶ §WEBGPU_SSGI_SPIKE (2026-09-22) — native TSL bounce-light/AO investigated for Alt+S/Alt+C, weighed against §S277b — supersedes nothing below, read alongside RESUME
 
 ### Why this was opened
