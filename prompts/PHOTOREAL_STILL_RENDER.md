@@ -9,6 +9,45 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ▶▶ §RESUME 2026-09-24 — START HERE. The bounce is LIVE on the real site; three items open.
+Everything in §GI_BUILT below is history + evidence; this block is the state.
+
+**LIVE on https://red1oon.github.io/bim-ootb/ (sw v1234):** Alt+S bounce still (desktop + WebGPU + three
+r186; phones/no-WebGPU log `§GI_STILL_OFF`). Merged: bim-ootb #1756 (bounce + film tap, sandbox),
+#1757 (viewer: r186 core/webgpu, viewer/gi_still.js, gate), #1758 (§GI_ORIENT_RATIO). Fleet check
+(7 buildings, r185 vs r186) identical. A browser still showing the OLD Alt+S = its service worker;
+reload twice / close all tabs (red1 hit this 2026-09-24).
+
+**On a branch, tested, NO PR yet** — bim-ootb `feat/shadow-size-by-envelope` (8a938d9c, de29cb96;
+worktree /tmp/wt-shadow, served on http://127.0.0.1:8600/index.html by
+`node <scratchpad>/serve_tree.js /tmp/wt-shadow 8600` — /tmp, gone after reboot):
+  1. §GI_ROW_PROBE — red1's desktop reads rows the OPPOSITE way to headless (flipOut=true, Clinic
+     20.93% vs 0.01%); the live #1758 fallback ("no flips") is therefore WRONG on his machine at an
+     undecided view. Probe witnessed 0/2048 vs 2048/0 (injected). **Ship this first** — it is a live
+     correctness fix. sw/effects version bumps already in the branch (v1235, effects.js?v=40).
+  2. §SHADOW_SIZE_BY_ENVELOPE — Hospital 8192 (0.088 m texel, 512 MB freed on exit), Clinic/HHS 4096.
+     BUT red1's 07:21 Hospital still (Downloads/bounce_still_1790205672390.png, taken on this build)
+     STILL shows the sawtooth under the parapet: resolution alone does not fix it. Hypothesis (NOT
+     measured): the grazing-sun PCF kernel widening (`§SUN_SHADOW_RESTORE kernelMaxScale=4`). Next:
+     one-variable A/B on Alt+S at that pose, kernel scale 4 vs 1, before any PR of the size change.
+
+**OPEN — film interiors gloomier than Alt+S stills (red1: "old issue, shadow ON can darken
+interiors").** NOT the lamps (red1 ruled it out: lamps are on early and it is still gloomy). Lead:
+LOADPATH_FREEZE_POLISH_RESUME.md §134 "A REAL DEFECT FOUND" — PR #1601 (2026-09-01) halved fill
+(ambient 0.785->0.386, hemi 1.257->0.617); bake prints sunFillRatio=4.387 vs TM's 2.155, so shadowed
+interiors get ~2x the contrast. The honest experiment there is still undone: one clip with fill
+restored (runtime override, no file edit) vs as-is, same frames, red1 judges.
+
+**Other open, lower:** app-side run-to-run glow haze (not the bounce; control has it; parked by red1);
+cause of the rare empty app render under the tap (guarded + logged `§GI_BAKE_TAP BLANK_GRAB`); Alt+S
+status message appears late = the app's own synchronous still staging (measured 70 s headless HHS,
+~5 s on red1's desktop), not the bounce; free look dials untried (drop the film's second AO layer;
+bounce gain > 0.6); the film tap is still sandbox-only (gi_bake_tap2.js via cli_silent_bake --tap).
+
+**Films delivered 2026-09-23/24** (~/films/, copies in ~/Downloads): HHS whole path 480p + 1080p
+(`hhs_gi_full_1080p.mp4`), Hospital whole path 480p + 1080p (`hospital_gi_full_1080p.mp4`, 2h43m).
+Check policy agreed with red1: no full-length control; 5 s control clip before a big bake + self-checks.
+
 ## ▶ §GI_BUILT (2026-09-23) — THE BOUNCE IS RUNNING, ON Alt+S LIVE AND IN THE BAKE. READ THIS FIRST;
 ## §WEBGPU_SSGI_SPIKE below is the investigation that preceded it and is now history, not the state.
 
@@ -212,6 +251,28 @@ identical in both tap runs, absent in the control; separate open item.
   map stretched over twice the width; low sun (10 deg) stretches each step. Options by cost: 8192 map
   (4x memory ~512 MB), camera-following or cascaded shadow maps (the proper fix, real work), softer
   filtering (hides steps, blurs edges). red1: weigh benefit vs cost once the code settles.
+- **§SHADOW_SIZE_BY_ENVELOPE (2026-09-24, red1: "Agree on the shadow 5 lines work") — SPEC.** The photo
+  sun-shadow map is a fixed 4096 (bim-ootb viewer/effects.js ~3268) spread over +-env; Hospital's env
+  (362) is twice HHS's (180), so its texels are twice as coarse (0.177 m vs 0.088 m, texelPerM 5.7 vs
+  11.4). Make the size follow env: size = 4096 * 2^ceil(log2(env/180)), clamped to [4096, 8192] and to
+  renderer.capabilities.maxTextureSize. HHS unchanged (4096); Hospital 8192. Bias already derives from
+  the texel (texelWorld = 2*env/mapSize), release on still-exit already frees whatever size was raised.
+  Cost: 8192 = 4x memory (~512 MB, stills/bakes only) + 4x shadow-pass pixels (bake time: measure).
+  TEST: Alt+S headless on the new tree — Hospital logs texelPerM ~11.3 and the still completes;
+  HHS still logs 11.4 at 4096 (no change); §SHADOWMAP_RELEASE frees the raised size on exit.
+- **§GI_ROW_PROBE + §SHADOW_SIZE threshold (2026-09-24, from red1's own desktop log, Clinic, v1235).**
+  (a) red1's desktop Chrome read `asRead=20.93% reversed=0.01% -> flipOut=true` — the OPPOSITE row
+  order to every headless run (flipOut=false). So §GI_ORIENT_RATIO's "measured platform answer (no
+  flips)" fallback is WRONG on his machine: at an undecided view it would shade upside down. SPEC:
+  when undecided and no decisive answer yet this session, render a PROBE — a horizontal plane below a
+  level camera, geometry material, same renderer, same readback path (incl. the test-injection hook) —
+  and read which half the drawn pixels land in: bottom half as read = flipOut=false, top = true.
+  Decisive by construction, per machine. flipTex stays false (every decisive reading, headless AND
+  red1's desktop). TEST: undecided live view -> "row-order probe" and flipOut=false headless; same view
+  with __GI_STILL_INJECT_READBACK_FLIP -> probe says flipOut=true; 4 HHS poses still RIGHT.
+  (b) §SHADOW_SIZE_BY_ENVELOPE doubled Clinic (env 198 -> 8192, 512 MB, texel 0.048 m) though 4096
+  already gives 0.097 m (~HHS's 0.088). SPEC: 8192 only when the 4096 texel exceeds 0.12 m (env > 245).
+  TEST: Clinic 4096, HHS 4096, Hospital 8192.
 - Look dials with NO bake cost, not yet tried: film AO applied twice (tap's SSGI AO over the app's N8AO)
   — drop the tap's; bounce gain above 0.6 (colour bleed barely visible at Hospital distances; 1.0
   washed out Terminal's white hall). Judge on a 5 s clip at 2-3 settings.

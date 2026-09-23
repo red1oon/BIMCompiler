@@ -101,6 +101,14 @@ git — `git log -p prompts/LOADPATH_FREEZE_POLISH_RESUME.md`, or read it at com
   `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md:174-185` — *"a wireframe proxy box must never appear in a
   movie frame"*. It needs him to reverse himself IN THAT FILE.
 
+# §135 — START HERE (2026-09-24). The owed re-bake is DONE (§134's item) and the bounce is LIVE.
+**Read `prompts/PHOTOREAL_STILL_RENDER.md` §RESUME 2026-09-24 first** — it holds the state, the one
+branch waiting to ship (§GI_ROW_PROBE — a live correctness fix for red1's desktop), and the open items.
+For THIS film lane the live item is §134's "REAL DEFECT FOUND" below: red1 now names it directly —
+"shadow ON can darken interiors", the film's interiors are gloomier than Alt+S stills. The fill-restore
+A/B clip described there is the next experiment. Rules unchanged: 5 s control clip before any big
+bake; never send a film before its check; nothing shared may stay mutated across an await.
+
 # §134 — START HERE (2026-09-23). THE BOUNCE LANDED ON BOTH Alt+S AND THE FILM. ONE RE-BAKE OWED.
 # §133 below is done — its one live item (the HHS real-path render) was executed and superseded.
 
