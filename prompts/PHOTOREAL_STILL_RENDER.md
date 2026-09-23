@@ -206,6 +206,11 @@ identical in both tap runs, absent in the control; separate open item.
   and off in the other over ~60 frames, at a different place each run (1990-2050, then 2495-2556),
   plus 708-711 — app-side glow timing, not the bounce. Superseded films kept with suffixes
   _SMEARED_rowpad / _BLANKS / _darkblank.
+- **DONE 2026-09-24: Hospital FULL length 1080p/24 with bounce, all features** (red1: "full length as i
+  got full machine up") — `~/films/hospital_ssgi_2026-09-23/hospital_gi_full_1080p.mp4` (245 MB, copy in
+  ~/Downloads; `_small.mp4` 19.9 MB sent). 4963 frames, 9752 s wall = 2 h 43 min (1.96 s/frame; my
+  concurrent live-site tests shared the GPU). Self-checks: 0 errors, 0 flash, 0 flat frames, 274 blank
+  grabs all recovered, verdicts 51/14/4 = the 480p run, escape route 156.20 m fully drawn.
 - **PAUSED 2026-09-23 by red1 ("kill the bake, will resume later"): Hospital 1080p ending, 1-hour
   budget.** 5 s 1080p clip pair (frames 3600:3720) CLEAN vs control (0 off, 0 flash, 2.2 s/frame).
   NOTE the 1080p film grid is 4699 frames, not 4963 (`§FRAME_RANGE_OOB b=4963 > full film
