@@ -221,6 +221,38 @@ identical in both tap runs, absent in the control; separate open item.
   Needs `/tmp/bake-r186-root` and `buildings/Hospital_silent.db -> ~/Downloads/Hospital_silent.db`
   (both in /tmp — rebuild after a reboot). Check policy agreed with red1: no full-length control;
   a 5 s control clip before each big bake + self-checks (flash/blank/errors/escape route).
+- **§GI_LIVE (2026-09-23, red1: "i mean the upgrade to Viewer") — SPEC: bounce on Alt+S in the LIVE viewer.**
+  bim-ootb#1756 merged + deployed (sw v1232) but the live viewer never loads gi_still.js and ships
+  three r185, so live Alt+S has no bounce. Change, one PR, off fresh origin/main:
+  1. `viewer/lib/three.core.min.js` + `three.webgpu.min.js` -> official three@0.186.0 minified builds
+     (416 KB + 821 KB; export names identical to the tested unminified r186, 635/447), webgpu's
+     `./three.core.js` import rewritten to `./three.core.min.js`. `three.module.min.js` (the WebGL
+     renderer the app draws with) UNCHANGED — the exact mix every bake and the dev server ran today.
+  2. `viewer/gi_still.js` + `viewer/lib/gi/{three.tsl.appbound.js,SSGINode.appbound.js}` — imports made
+     RELATIVE (the absolute `/viewer/...`, `/sandbox/...` paths break under Pages' `/bim-ootb/`).
+  3. Gate: registers its Alt+S hook ONLY on a desktop (no coarse pointer) with `navigator.gpu` and
+     THREE r186; otherwise logs `§GI_STILL_OFF reason=...` and Alt+S stays exactly as today.
+  4. viewer.html script tag; sw.js precache the 3 new files + CACHE_VERSION bump.
+  TESTS (before PR): (a) fleet — every buildings/ DB loads on OLD (origin/main) vs NEW tree, plain
+  static server, same `§CONTRACT_CHECK` counts, no new `§LOAD_FAIL`/pageerror/§UPGRADE_THREE_FAIL;
+  (b) Alt+S headless on the NEW tree served plainly (no in-memory swap) at 1666x864: §GI_STILL result
+  + ORIENT_GEOM right + app frame unchanged after; (c) gate: headless with WebGPU disabled ->
+  §GI_STILL_OFF and the app's own still completes; (d) CI fast checks.
+- **§GI_LIVE merged (bim-ootb#1757) + §GI_ORIENT_RATIO (2026-09-23).** Live-site witness (real
+  red1oon.github.io, HHS_Office_Federated_extracted from OCI, default view, 1666x864): r186 loaded,
+  rows unpadded, still completes — BUT `§GI_STILL_ORIENT_GEOM asRead=0.02% reversed=0.20%` ->
+  `colour (geometry UNDECIDED)` and colour picked flip/flip (margin 0.49) = upside-down shading.
+  Cause: the decision rule `hi >= 2*lo + 1` carries a 1-POINT absolute floor sized for the indoor poses
+  (21-32 vs 0.1-2); at a low-contrast view the signal is a 10x RATIO on ~90,000 samples but under 1
+  point. (My first witness also printed PASS on this — it matched /geometry/ inside "geometry
+  UNDECIDED"; regex anchored.) SPEC: decide by geometry when `hi >= 3*lo && hi - lo >= 0.1` points.
+  REVISED after measuring: the ratio alone is not enough — the same view read 0.02% vs 0.20% then
+  0.02% vs 0.09% (mostly camera-facing walls: flipping rows barely changes which surfaces face away).
+  FINAL RULE: decisive (`hi >= 3*lo && hi-lo >= 0.1`) -> geometry; undecided -> the last decisive
+  answer this session, else the MEASURED platform answer flipTex=false flipOut=false (every decisive
+  reading today: 13 runs, 9 poses, 3 servers). Never colour (wrong in every weak case measured).
+  RESULT: live view -> "measured platform answer (no flips)"; 4 HHS poses RIGHT; full Alt+S incl.
+  injected flip RIGHT (geometry decisive 30.5% vs 0.04%); app frame unchanged after (0.96).
 - (superseded) **The film needs one full re-bake on v2** to confirm the four features return. v2 is verified on a
   120-frame test (orientation `same=10.5 flipped=130.4`, clear 12%), not yet on a full 614-frame run.
 - The bake's `exposure=1.8` in v1 is gone in v2 by design; if a v2 film reads dark, that is the first
