@@ -9,6 +9,28 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ▶▶▶ §RESUME 2026-09-24 PM — START HERE (supersedes the block below for what is open)
+**Served on localhost:8600:** bim-ootb `feat/shadow-size-by-envelope` @ eb854d69, sw v1247, from /tmp/wt-shadow
+(`node <scratchpad>/serve_tree.js /tmp/wt-shadow 8600`, started with setsid). PUSHED as a branch for backup; **NO
+PR yet**, on purpose: the watcher ruled nothing merges that could make Alt+S worse, and the Hospital mid-wing
+shadow question below is unresolved; its suspects (8192 map, DLOD pause, surface rules) are all on this branch.
+**Live on main already:** #1759 row probe (sw v1235), #1760 film fill (sw v1240).
+**On the branch, witnessed:** §DLOD_STILL_OWNERSHIP, §SHADOW_SIZE_BY_ENVELOPE (8192 Hospital), §SUN_SHADOW_RESTORE_DEPTH
+(fix kept, pass OFF by default = PARKED), §STILL_STATUS_FIRST, §TRI_BIG_ONLY switch, §SURFACE_RULES R1-R9 DEFAULT ON
+(red1: "cleaner"), film fill merged in. Witnesses: viewer/tests/witness_{dlod_still_ownership,tri_big_only,
+still_status_first,surface_rules}.js.
+**OPEN, in the watcher's order (fable agents stopped by red1 to save tokens; nothing half-written in any tree):**
+1. Hospital mid-wing shadows (red1: "shadows may disappear ... mid in between wings") + the film-vs-Alt+S "wall
+   facing away from the sun" pair. Arms and required logs: see the watcher's brief (A1/A2 8600 before/after the bounce,
+   B live main, C1 ?surf=off, C2 4096, C3 DLOD; D1 film staging via A._maxqActive=true vs D2 Alt+S, logging the
+   sun, fill, env/envInt, bounce gain, and N·L of the off-sun wall). Only poses exist so far: scratchpad shadow_ab/pose_p1.json, pose_p2.json.
+2. Bounce composite shifted sideways on alternate shots after __giStillRelease (HHS, camera logged identical,
+   appMean 119.25 every shot). Evidence: scratchpad dials/run2/. Then the bounce-gain stills 0.6/1.0/1.4 for red1
+   (the bounce dials apply only at first build, §GI_DIALS_FIRST_BUILD).
+3. §SURFACE_R10 openings: spec + additions approved; /tmp/wt-r10 branch feat/surface-r10 created at eb854d69,
+   NO code yet. The measurement to port is in scratchpad r10/.
+4. Bounce as a proper Alt+C film option (today only the dev --tap).
+
 ## ▶▶ §RESUME 2026-09-24 — START HERE. The bounce is LIVE on the real site; three items open.
 Everything in §GI_BUILT below is history + evidence; this block is the state.
 
