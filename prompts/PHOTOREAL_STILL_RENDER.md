@@ -228,6 +228,34 @@ and the stair-step reads MORE clearly (sheet ~/Downloads/hospital_shadow_edge_be
 readbacks in the photoreal scratchpad shadow_ab/). The parapet saw-tooth is the native PCF edge, present with or
 without the pass. Nobody missed it (inert since 08-14). A later session may tune it; no tuning this session.
 
+**§SURFACE_R10 — SPEC (openings with a single style), from the read-only geometry measurement (2026-09-24,
+scratchpad r10/: spec.md, measure_windows.py, windows_all.log, doors_all.log).** Data = what the viewer renders
+(<B>_meta.db + <B>_geo.db when split, else _extracted.db; blobs decoded as scene.js blobToGeometry).
+Single-style window = IfcWindow with material alpha >= 1 (reproduces the IFC counts: Terminal 228, Hospital 118,
+JKR 83, LTU 976).
+**Window split rule (per MESH, counted per element; windows share meshes, e.g. Terminal 228 -> 31):**
+oriented frame from the mesh's own face normals (n = largest area-weighted normal cluster, >= 40% of area; u = the
+largest in-plane cluster; v = n x u). NOT the bbox thin axis: 40 of 118 Hospital windows are rotated ~10° in their
+local frame, and the bbox rule fails all of them. PANE triangle: |normal·n| >= 0.95, no vertex within 1 mm of the
+oriented box's in-plane edges; patches grouped by depth (0.5 mm) + shared position; a patch is PANE when area >= 2%
+of the elevation, min side >= 120 mm, solidity >= 0.85 (rejects hollow sash rings). CLEAN = best pane depth level
+covers >= 50% of the elevation, inset >= 10 mm on all four sides, and the frame remainder is a ring. Split per
+TRIANGLE, not per connected component: JKR and LTU weld the glass to the frame (a component split fails 54 + 466).
+**Measured:** Terminal 223/228 clean (97.8%; the 5 are DG glazed screens whose main sheet is flush to the edge);
+Hospital 118/118 (100%); JKR 54/83 at a 50% normal floor, 67/83 at 40%; the other 16 are LOUVRES, with no pane in life
+either; LTU 951/976 (97.4%; 25 divided-light windows whose muntins are welded coplanar). Fleet 1,346 / 1,405 (95.8%).
+**Look:** pane triangles -> the class-default glazing (IfcWindow STD_MAT, alpha + reflection); frame keeps the
+authored colour. Not clean -> the whole element stays as authored (NOT whole-element glass: a louvre or a muntin
+grid is not a pane), logged. Louvres stay slats.
+**Doors:** Terminal 130/134 single-style doors have separable hardware (4-6 small components, 0.5-1.3% of area): the
+handle keeps the authored (handle) colour, and the rest gets the class-default door finish, smooth (R7). Hospital doors are
+already brown with no handle geometry: untouched. LTU: hardware found on 578/606.
+**Implementation shape:** geometry groups on the shared mesh (one group per material: pane / frame, or hardware /
+leaf), a material array per mesh; decided once per mesh hash at stream time, so instances cost nothing extra.
+**Logs:** `§SURFACE_OPENING_SINGLE_STYLE bld= class= n=`, `§SURFACE_R10_SPLIT bld= windows clean=/fallback=
+(reasons) doors hardware=/leafOnly=`. **Test:** the counts above reproduce in the app's own log per building;
+default on with the surface rules; red1 judges the look.
+
 ## §DLOD_STILL_OWNERSHIP (2026-09-24) — SPEC: Alt+S must not let DLOD hide roof casters
 **Defect (red1, ~/Downloads/bounce_still_1790210272668.png, Terminal hall 08:37):** sky and sun shafts
 come through the roof. red1: "DLOD is removing the off frame roof where the Sun shines thru."
