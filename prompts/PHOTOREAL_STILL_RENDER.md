@@ -231,6 +231,21 @@ returns more than twice). Never send red1 a film before its clip check.
   Measure. Plan: no reuse while the last composite had a live Sanity box/wave.
 - Harness lessons: set the sun BEFORE staging an Alt+S comparison still; probe renders need TAA accumulate off.
 
+**§FILM_PARITY — state 2026-09-25 (feat/film-parity @b8def6de, sw v1309, pushed, NO PR; 8600 serves it):**
+- §GI_FILM_BLANK_GRAB: Hospital parity clips had 5-10/120 blank frames (app canvas empty at grab); guard re-renders +
+  re-grabs; re-bakes 0/120 blank (recovered 10/3). Every clip now blank-counted over all frames.
+- §LAMP_CAP_NEAREST + §LAMP_CAP_FADE: the uniform cap kept the first 132 in LIST order (Alt+S too) — now nearest, with a
+  6 m fade at the boundary; §LAMP_CAP_CHURN: no in-clip 0<->full step (only frame 0 / a prep reselection).
+- §FILM_FIT_PER_SHOT: box fixed per plan.beats shot from plan poses + shot sun; 0 size changes in a shot (was 16/120).
+  Film texel 0.06-0.07 m vs Alt+S ~0.02 m, by design.
+- §SKY_PORTAL_INSIDE: portal spots were 5 cm OUTSIDE their pane (lighting it: white discs by day, red1's 17:38 "lamps lit
+  from outside" puzzle); now 0.3 m inside, hotspots=0; changes Alt+S too.
+- Clips for red1 (~/Downloads/parity_*): Terminal facade trio, Hospital interior trio (lamps off by §116), Terminal refs
+  before/after (hall: nearest lamps brighter, 81.5->93.0; facade: no lamp change, skyline differs). Lit lamps are seen
+  from inside only in early build-up in the current Hospital/Terminal films (interiors fall in the §116 off window).
+- Open: film ground warmer/darker than Alt+S (cause not found); fill ruling (red1); hall lamp change (red1); separate
+  branch fix/frame-reuse-sanity @eac0b2c6 (W-FRAME-REUSE PART F) to land before any full film with load path + Measure.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
