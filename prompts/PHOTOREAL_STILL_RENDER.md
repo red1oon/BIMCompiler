@@ -124,6 +124,48 @@ bounce gain > 0.6); the film tap is still sandbox-only (gi_bake_tap2.js via cli_
 (`hhs_gi_full_1080p.mp4`), Hospital whole path 480p + 1080p (`hospital_gi_full_1080p.mp4`, 2h43m).
 Check policy agreed with red1: no full-length control; 5 s control clip before a big bake + self-checks.
 
+## §SURFACE_RULES (2026-09-24) — SPEC, sent to the watcher BEFORE any code. Supersedes §TRI_BIG_ONLY.
+**red1:** surfaces are too rough and materials hard to tell apart. "keep the metal deck rough; ... it is floor
+slabs and small beams that are given rough surfaces; not to do so, as that is not realistic in real life."
+"if floor slabs are marble like done is OK, just not rough." Rules must be general (no one-off names),
+balanced, and tied to how the real surface is finished.
+**Why it looks rough today (source, bim-ootb viewer/streaming.js):** only three textures exist (concrete,
+plaster, metal). Each is pushed hard: contrastBoost 1.6 / 1.5 / 1.9 plus a normal map. They are handed out
+by authored name, then class, and METAL covers beams, members, plates, railings and all MEP, so most of the
+model wears the same coarse metal grain. Materials that differ in life (painted steel, galvanised pipe, timber
+door) then read alike, because the texture swamps their base colours.
+**Signals the rules may use (all present in the data, no names):** (1) IFC class; (2) the SUBSTANCE of the
+authored material via a small lexicon (metal / concrete / plaster-gypsum / timber / glass / stone-tile),
+absent -> class default; (3) ROLE from geometry: FLAT = thinnest bbox axis vertical; ROOF LAYER = a flat
+element with no other flat element above it over its footprint (1 m grid of the building's own elements);
+UPRIGHT = thinnest axis horizontal. Not usable: exterior vs interior (no reliable field in any of the 3
+DBs) — stated, not guessed. One material is shared per batch, so a batch takes its members' MAJORITY
+outcome, not its first element's.
+**Measured, so the roof rule is geometric, not by height:** Terminal's 'Metal Deck' plates (33,324, all flat,
+0.11x0.15x0.5 m) sit 33-42 m, mostly NOT within 6 m of the top (2,522 are); HHS's 629 plates are UPRIGHT
+(facade panels); Hospital's 2,211 plates are mostly upright (127 flat).
+
+| # | Surface (role + substance) | Real-life finish (reason) | Texture | Look: base colour · roughness · texture scale/strength |
+|---|---|---|---|---|
+| R1 | ROOF LAYER, metal (deck, sheeting) | exposed, weathered profiled sheet | metal ON | IFC/class grey · 0.55 · tile 0.6 m, contrast 1.9 -> 1.2 |
+| R2 | ROOF LAYER, other (membrane, tile, concrete) | exposed to weather | its substance's map ON | class colour · 0.8 · contrast x0.7 |
+| R3 | Exposed structural concrete: IfcWall, IfcColumn, IfcFooting, IfcPile (substance concrete/absent) | board-marked / cast finish | concrete ON | warm grey · 0.85 · tile 2.5 m, contrast 1.6 -> 1.1 |
+| R4 | FLAT floor slab (IfcSlab not roof layer), stairs, ramps | finished floor: screed, tile, stone | OFF | class grey, slightly lighter · 0.35 (polished; marble-like sheen OK) · envInt 0.3 |
+| R5 | Finished walls/ceilings: IfcWallStandardCase, IfcCovering, substance plaster/gypsum | painted plaster / board | OFF | light warm white · 0.75 · none (reads as paint by colour) |
+| R6 | Steel sections: IfcBeam, IfcMember, IfcPlate NOT roof layer | painted / galvanised steel, fabricated | OFF | cool mid grey · 0.45 · none; metal kept |
+| R7 | Fabricated small parts: IfcDoor, IfcRailing, IfcWindow frame, IfcFurniture | factory finish | OFF | colour carries identity: door timber brown, railing dark steel, furniture wood · 0.5-0.65 |
+| R8 | MEP: pipes, ducts, fittings, terminals, valves | galvanised / painted, colour-coded | OFF | keep MEP hue coding · 0.4 · none |
+| R9 | Glass (alpha < 1) | glazing | OFF (unchanged) | unchanged |
+
+Distinctness comes from base colour + roughness first; texture is kept only where the real surface is
+visibly coarse at building scale (R1-R3). No row keys on one material string; 'Metal Deck' stays rough
+because it is a metal ROOF LAYER (R1), the same row that would catch any building's roof sheeting.
+**Delivery:** behind a localhost switch (`?surf=rules` / `APP._surfRules = true`), default = today's look, until
+red1 rules. **Log:** `§SURFACE_RULES_TALLY bld=... rowCounts R1..R9 (rows now textured -> textured under rules)`
+per building (Terminal, HHS, Hospital), plus `§SURFACE_ROOF_LAYER flat=.. roofLayer=..` so the geometry test
+is visible. **Test:** tallies print on all three; during Alt+S with the switch on, textured materials are
+exactly R1-R3 (`§SURFACE_RULES_ACTIVE`); red1 judges the look on localhost.
+
 ## §DLOD_STILL_OWNERSHIP (2026-09-24) — SPEC: Alt+S must not let DLOD hide roof casters
 **Defect (red1, ~/Downloads/bounce_still_1790210272668.png, Terminal hall 08:37):** sky and sun shafts
 come through the roof. red1: "DLOD is removing the off frame roof where the Sun shines thru."
