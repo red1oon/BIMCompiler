@@ -78,6 +78,18 @@ PCFShadowMap edge (0.088 m texels at 8192), not geometry. The kernel dial cannot
 direction (red1's call, NOT done): sample `map.depthTexture` (compareFunction null for this path)
 instead of `map.texture`. Evidence: scratchpad shadow_ab/ (sheets, debug readbacks, logs), spike
 edit uncommitted in /tmp/wt-shadow-kernel. Open, not chased: red1's 07:21 still is left-right mirrored.
+**§SUN_SHADOW_RESTORE_DEPTH — SPEC (red1 ruled FIX, 2026-09-24).** The pass reads the shadow map's
+DEPTH: `tShadowMap = A.sun.shadow.map.depthTexture`, declared `sampler2DShadow` and sampled
+`texture(tShadowMap, vec3(sc.xy, sc.z + bias))`. Reason: the app uses PCFShadowMap, and for that type
+three sets `depthTexture.compareFunction` (three.module.min.js: `this.type===PCFShadowMap ?
+compareFunction=...`), so a plain sampler2D read of it is undefined; a shadow sampler is how three's
+own PCF shader reads it. The lit test is unchanged (1 = lit, 0 = shadowed; hardware 2x2 compare
+filtering gives fractions at the boundary, which the edge detector already handles). No depthTexture
+-> the pass stands down and logs `§SUN_SHADOW_RESTORE_SRC none` (never reads the colour attachment
+again). Log once per still: `§SUN_SHADOW_RESTORE_SRC depthTexture compare=<fn>`.
+**Test (proves the defect gone):** same Hospital pose, sun 10°/228°, 8192 map: the pass's own shadow
+term must class a NON-ZERO number of shadowed and edge pixels (`§AB_KSCALE_READBACK`, was 0/0), and
+the k4 vs k1 crops must differ. Then red1 judges the parapet edge on localhost.
 **§TRI_BIG_ONLY — TRACED + SPEC (2026-09-24), a switch, NOT a change of the maps.** Source: bim-ootb
 `viewer/streaming.js` `A._triResolve` — authored material NAME first (`TRIPLANAR_BY_NAME`, e.g.
 'Metal Deck' 33,756, 'Silver' 4,263 — this is how IfcDoor gets metal), IFC CLASS second
