@@ -24,6 +24,15 @@ not releasing (APP._stillLockOn left true, main.js cancel paths returning early)
 (camera moves, §FPS_MODE orbit=1)". Hotfix PR, prove live. Also that still shows the far floor/room washed near-white again
 at an interior aerial pose: re-check against the §FLOOR_WASH pick (lamps 16 / 25 m).
 
+**§STILL_EXIT_NAV — SPEC (2026-09-24 late, fix/still-exit-stuck), CAUSE REPRODUCED:** witness_still_exit_nav.js on red1's
+URL (OCI Hospital + &ghost=1, v1294 = main f4109331): clicking the overlay's **"Close (Esc)" BUTTON** removes the picture
+only; §STILL_LOCK stays on, staging stays on, the still stays active, so every click/drag after is swallowed — camera did
+not move, no §FPS_MODE line (VERDICT=STUCK). The Esc KEY path works (lock off, ghost restored, drag moved the camera,
+§FPS_MODE orbit=1). Fix: ONE exit routine in effects.js (`A.stillExit(reason)`: remove overlay, lock off, tear the still
+down) used by the Esc key, the Close button and gi_still.js's own Esc listener (which also leaked one keydown listener per
+still). Log `§STILL_EXIT via=esc|close`. Witness: both arms NAV_OK (lock off, camMoved, orbit=1), 0 page errors.
+Floor wash at interior aerial (his still) is NOT this defect — checked separately against the §FLOOR_WASH pick.
+
 **RAISED by red1 (19:3x): the JAGGED SHADOW fix goes WITH §STILL_CULL, before §FILM_PARITY.** Evidence already on file
 (this doc, the shadow-edge diff): nav looks smooth only because its sun is fixed at 63° high; Alt+S uses the real sun, and at a
 grazing angle the 0.088 m texel stretches to ~0.5 m steps; PCF radius 1. Do it as ONE shadow-camera change with §STILL_CULL,
