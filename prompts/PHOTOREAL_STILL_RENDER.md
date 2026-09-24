@@ -9,6 +9,59 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ▶▶▶▶▶ §RESUME 2026-09-24 EVENING — START HERE: §FILM_PARITY (Alt+S look -> Alt+C films, verbatim)
+Supersedes every block below (they are history + evidence). Written by the watcher (red1-fe) at session close.
+
+**red1's objective:** "the Alt+S to Alt+C ad verbatim is the objective." The approved Alt+S look must come out of Alt+C
+films unchanged. red1 has given the watcher standing authority on technical picks; LOOK sign-off on films stays his.
+
+**State at close (verify before trusting — `git -C /tmp/wt-shadow log -1`, `curl -s 127.0.0.1:8600/viewer/sw.js`):**
+- bim-ootb `feat/shadow-size-by-envelope`, worktree /tmp/wt-shadow, served on http://127.0.0.1:8600 (restart recipe in the
+  13:10 block below). Last seen @6f1df03d sw v1292, **31 commits ahead of origin, NOT merged, NO PR**.
+- **BLOCKER before any merge:** red1's desktop console on v1292 (Hospital from the OCI URL + `&ghost=1`) printed
+  `effects.js:2934 Uncaught`, and §EFFECTS_INIT/§EFFECTS_LOADED never printed, so Alt+S did nothing. The served effects.js
+  passes `node --check` and line 2934 is `var _stillBaseSaved = null;` → suspect a stale/mismatched file after 6f1df03d
+  (merged origin/main, "kept our sw/viewer/effects sides") or a truncated uncaught promise. Reproduce on HIS URL on a
+  clean profile, real GPU, and show §EFFECTS_LOADED + a staged Alt+S. Add that URL shape to the fleet smoke.
+- red1 RULED: **remove §STILL_GUARD** ("let it load normally, it's a user learning curve"); keep §STILL_LOCK (Esc-only).
+- Then the end PR: fleet smoke (Hospital, Terminal, HHS, Clinic, JKR, LTU, Duplex; 0 PAGEERROR, nav fps vs main, one
+  Alt+S each, DLOD on split meshes) → one PR, CI auto-merge → `git merge-base --is-ancestor` → prove live
+  (red1oon.github.io/bim-ootb sw version + § markers). Hut-wall shading is pre-existing and does NOT gate the PR.
+
+**The approved Alt+S look = v1290 defaults** (sw v1290, 65c471b1): sky 2.0 (hemi), base 0 (flat ambient), lamps 16,
+reach 25 m, decay 1.5, bounce gain 1.0 / ao 0.55 / §GI_RECEIVER albedo-estimate on, sky portals (all planar glazing,
+nearest-first, cap 32), Fresnel glass on glazing-only clones, surface rules R1-R10, concrete tone 0.55/4 m, lamp colour by
+shape (round amber 0xffdca8, rect white), daylight: no window glow, lamps off only when the camera is outside.
+Colour fix `&srgbfix` stays OFF (it darkened exteriors ~40%; a future re-balance lane).
+**References (protect in every change, re-shoot side by side):** ref1 ~/Downloads/bounce_still_1790230280204.png
+(Hospital courtyard 13:51), ref2 ..._1790231488686 (Hospital aerial, bounce off the middle wing), ref3 ..._1790240550314
+(spiral stair close-up), ref4 ..._1790242559558 (Terminal hall, "this is the one"), ref5 ..._1790242929806 (Terminal
+facade face-on: "the see-through lit-up inside is surreal" — THE look to carry into films).
+
+**§FILM_PARITY — the lane (spec first, then build):**
+1. Bounce in Alt+C: a proper option, ON by default, checkbox off; the "copy bake command" carries it (today only the dev
+   `--tap` sandbox gi_bake_tap2.js via cli_silent_bake does). No WebGPU → stands down with a logged §GI_*_OFF.
+2. Every Alt+S-only gate in viewer/effects.js made film-capable, per frame over a MOVING sun (lines at close):
+   3969, 4020 (§STILL_GLOW daylight rule — evaluate per frame, films pass through dusk), 4053 (§STILL_BASE sky/base),
+   4078 (lamps: strength/reach/decay + §LIGHT_UNIFORM_BUDGET + §STILL_LIGHT_PAD), 4105 (§SKY_PORTAL), 4106
+   (§GLASS_FRESNEL), 5644; also the lamp shape colours. 4104 §SKY_OCCLUSION stays opt-in (rejected as a default).
+3. Hard rules for films: constant light count across ALL frames (a count change recompiles ~110 materials: 40-108 s);
+   portal shadow maps once per frame at most; the bounce renderer with lighting.enabled=false (§GI_PRESS_COST); nothing
+   shared stays changed across an await (§GI_SCENE_BORROWED holds the app frame).
+4. Proof: 5 s control clip + 5 s parity clip at target size before ANY full film; per-frame § lines show each feature
+   applied; one frame of the parity clip next to ref5/ref1 at the same pose. Never send red1 a film before its check.
+
+**Queue after parity:** atrium daylight (`&portalsort=area` exists, 1c85ae96 — measure the atrium), roof-deck moiré at
+distance (fade/coarsen the R1 texture), lamps-seen-lit-from-outside-by-day puzzle (red1's 17:38 Terminal still), real
+reflections (cube map at Alt+S time vs SSR; must NOT dim the see-through interiors), hi-res Alt+S (1080p/4K independent
+of the window), first-build compile (~62 s), view-fitted sun frustum (jagged edges; nav looks smooth only because its sun
+is fixed high), fake bounce lights, ceiling-only base, colour-correct re-balance, hut walls, probe grid.
+
+**Working rules:** serve on 8600 as you go; every recap "localhost:8600 serves <branch>@<real sha>, sw vNNNN"; bump sw +
+?v= on every served change; one push + PR + auto-merge at session END then prove live; § log evidence, never guesses;
+look at every frame before describing it; gate every capture on full load + THIS press's completion lines; keep GPU test
+runs short (red1 shares the GPU); never hand red1 a git/permission decision.
+
 ## ▶▶▶▶ §RESUME 2026-09-24 13:10 — START HERE (supersedes the PM block below; that block is history)
 
 **On localhost:8600 (red1 judges here):** bim-ootb `feat/shadow-size-by-envelope` @ **6750db1b**, sw **v1253**, tree
