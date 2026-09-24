@@ -111,6 +111,17 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   strength, never scaled by opacity; the reflected content's own brightness decides how strongly it shows (sunlit facade
   / sky opposite drowns the interior view; dark surround lets you see in). Source = sky env now, cube-map/SSR later. No
   strength dial, only on/off for comparison. Log `§GLASS_FRESNEL mats= f0=`.
+- **§STILL_LAG (red1 "getting laggy", measured 2026-09-24, witness_still_lag.js, Hospital L1, real GPU, headless):**
+  portal=0: refine 3.9 s / 2.2 s, bounce passes 1.6 s / 37.2 s (press 1 / 2). portal on (placed 32, 8 shadowed):
+  refine 11.6 s / 4.7 s, bounce passes 1.5 s / 34.9 s. First build, both arms: geometry-pass compile ~62 s, orientation
+  ~50-54 s (red1 desktop: 67.6 s / 12.7 s). Heap flat press 1->2 (~1.9 GB). READ: portals cost refine time (x3 on press
+  1, x2 on press 2): shadowed spots re-render + recompile. But the 10x bounce slowdown on press 2 happens WITH portals
+  off too, so it is NOT the portals: the kept WebGPU renderer's second shot is the suspect. The first-build compile is
+  also portal-independent. Headless runs share red1's GPU: no GPU runs while he is eyeballing.
+  Fix queue when resumed: (1) press-2 bounce slowdown (kept renderer), (2) portal shadows rendered once per still +
+  constant light count across presses, (3) first-build compile 62 s. Then view-fitted shadow frustum (watcher call),
+  then Fresnel glass. Ref 2 pose (watcher, from red1's paste): cam [-39.469,12.563,50.109] tgt [3,-4,3] fov 60.
+- PAUSED 2026-09-24 by red1 (reviewing 8600 himself). 8600 serves feat/shadow-size-by-envelope@<see git log>, sw v1266.
 - GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
   wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
   the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
