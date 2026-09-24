@@ -227,6 +227,8 @@ roughness also matters (a smooth floor reflects the grid's light differently fro
 Behind a switch (default off until red1 judges). Keep a base floor of about 25% of today's ambient + hemi, so deep
 rooms with no probe light never go black. Film sun arc: sky-only grid + real-time sun first; per-sun-position bakes
 only if red1 asks.
+**FIRST STEP when reached (watcher, accepted 2026-09-24):** ONE measured 4 m sky-only bake on Hospital (bake time,
+compressed size, fps on desktop, a phone estimate) BEFORE any wiring.
 
 ## §SURFACE_RULES (2026-09-24) — SPEC, sent to the watcher BEFORE any code. Supersedes §TRI_BIG_ONLY.
 **red1:** surfaces are too rough and materials hard to tell apart. "keep the metal deck rough; ... it is floor
