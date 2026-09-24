@@ -191,7 +191,7 @@ under a ceiling board, a floor slab or ducts. Roof-layer slabs: Terminal 5/469 f
 Coverings: 0 (Terminal), 2 (HHS), 0 (Hospital). The deck stays rough through R1, with no name involved.
 **(2) Precedence, first match wins:** R9 glass (alpha < 1) > R10 single-style opening > R8 MEP (by class:
 colour-coded services are never retextured) > R1/R2 ROOF LAYER (any envelope class: slab, plate, roof,
-covering) > SUBSTANCE (concrete -> R3, plaster/gypsum -> R5, metal -> R6, timber/stone-tile -> smooth, their
+covering) > FLOOR (a flat non-roof IfcSlab / stair / ramp -> R4, whatever it is cast from; accepted 2026-09-24) > SUBSTANCE (concrete -> R3, plaster/gypsum -> R5, metal -> R6, timber/stone-tile -> smooth, their
 class colour) > CLASS default (R3 walls/columns/footings, R4 flat slabs/stairs, R6 steel, R7 fabricated
 parts). Substance beats class, so the IfcWall vs IfcWallStandardCase split (an authoring artefact) no longer
 decides rough vs smooth: a plaster IfcWall is R5 and a concrete IfcWallStandardCase is R3. A roof-layer
