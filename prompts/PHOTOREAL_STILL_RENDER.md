@@ -141,6 +141,15 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   the saved WebGL frame was normal (mean 119): the canvas read during/after heavy WebGPU work; not chased yet.
   (c) Poses: "p2_courtyard_low" [-44,2,-6] is BELOW ground (Hospital ground y = -15.9) — do not use. Courtyard pose
   checked by eye: courtyard_a cam [-40,1.8,-4] tgt [-10,3,-4] (ref 1 stand-in).
+- **§STILL_GUARD + §STILL_LOCK spec (red1, 2026-09-24):** GUARD at the user entry (toggleStillRefineUI, i.e. Alt+S and
+  the pill): refuse to start when A._bboxPlaceholders.length > 0 (bbox not cleared), A.streaming (not complete), or
+  A.xrayOn (display mode). Ghost glass keeps its state private (not checked, logged n/a); DLOD has no bbox stand-ins
+  (it only zero-scales, and Alt+S already pauses it). Toast "Still loading — Alt+S when the model is solid" (or the
+  X-ray wording); log `§STILL_GUARD refused reason=` / `ok`. The bounce's own Alt+S handler stays silent on a refusal.
+  LOCK from a UI start until the still is released: a window capture-phase listener swallows pointer/touch/wheel/
+  contextmenu/dblclick everywhere except inside #gi-still-overlay (Save PNG / Close), and every key except Escape
+  (Alt+S included). Esc = the only exit: closes the bounce overlay and tears the still down ('cancelled (Esc)').
+  Log `§STILL_LOCK on` / `off blocked=<n>`. Programmatic starts (bake, witnesses) are not locked.
 - GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
   wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
   the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
