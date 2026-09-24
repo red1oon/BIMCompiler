@@ -200,6 +200,22 @@ constant, §STILL_SHADOW_FIT per frame). One parity frame next to ref5 at the ne
 clip too if the change can touch the load-path hold. Sanity clips per §131 (a building where a lone structural set
 returns more than twice). Never send red1 a film before its clip check.
 
+**§FILM_PARITY BUILD (2026-09-24 night, gate OPEN by watchdog; bim-ootb feat/film-parity /tmp/wt-parity, NOT pushed):**
+- 0ccfe322 sw v1302: A._filmParity (staging; --film-parity 0 = control), --film-fill restore, --bounce 0; Alt+S gates open to
+  films; A._filmParityStep per frame (daylight glow, lamps-outside flag, shadow fit quantised 8 m + texel-snapped centre,
+  portal re-aim from a once-classified pane cache); film bounce = gi_still.js GiFilm (the still's own build/dials, one pass
+  per frame, hooks cinema_maxq __giCaptureFrame); §131 dials; Bounce checkbox + bake command; fit adds skyline props only
+  when the camera is outside (the union blew an HHS interior box to 334 m).
+- **DEFECT ON MAIN, found + fixed on the branch: films bake with NO interior lamps.** Light dump at the captured frame (HHS,
+  parity on AND off): bake pool 200, lit 113, IN SCENE 0. A bake-prep staging toggles night mode off (removes A._nightLights
+  = the pool from the scene), the pool object survives, the create branch is skipped, never re-added. Fix
+  §NIGHT_BAKE_POOL_REATTACH (tools.js). After it, film vs Alt+S at the same pose/sun: 149/149 point lights, lamp sum
+  1753.6/1753.6, exposure 0.383 both; app mean 218 vs 213. Pool also capped to §LIGHT_UNIFORM_BUDGET under parity and given
+  the Alt+S reach/decay (was infinite / 1).
+- Bounce cost (HHS 720p): first build 8.0-8.5 s once per film, then 53-61 ms/frame. Portal cache 843-989 ms once.
+- Witness seams: cinema_maxq __maxqPreCaptureTap(i) (dev tap, like __maxqPoseTap); scratchpad film/lightdump.js.
+- Terminal clip frames chosen from a 2 fps scan of Terminal_silent (85.5 s film): facade face-on = film 0.75..0.8085 (5 s).
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
