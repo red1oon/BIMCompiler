@@ -40,6 +40,13 @@ films unchanged. red1 has given the watcher standing authority on technical pick
     177), Duplex 1.5. DLOD on split meshes: zeroed when looking away and restored on Hospital/Terminal/HHS/Clinic/JKR/LTU;
     Duplex (1 split mesh, 2 instances) never zeroed — DLOD likely inactive on a building that small (restore trivially 0).
   · Atrium portal priority: area x facing placed 639 m2 vs 540 m2 nearest-first, composite 93.24 vs 93.06 — no lift; default kept.
+  · KNOWN COST (watcher accepted): LTU nav median +13% (173.8 vs 153.8 ms, p90 equal) from the R10 glass draws red1 chose.
+  · **SHIPPED: bim-ootb PR #1763, squash merge 735c0dd3 (ancestor of origin/main confirmed), CI green (fast-checks needed
+    `/* global Buffer */` in 7 node witnesses for the no-undef gate, 203c65f6).** LIVE on red1oon.github.io/bim-ootb: sw.js
+    CACHE_VERSION="v1293"; markers present in the minified live files (§ is escaped as \xA7): SURFACE_RULES(_CLASS/_COLOUR/_TALLY)
+    + SURFACE_R10 in streaming.js, SKY_PORTAL + LIGHT_UNIFORM_BUDGET in sky_portal.js, GLASS_FRESNEL in glass_fresnel.js,
+    STILL_LOCK in effects.js, GI_APP_FRAME in gi_still.js, APP._stillLockOn in main.js; "STILL_GUARD refused" absent (removed).
+    Next session: §FILM_PARITY off fresh origin/main (feat/shadow-size-by-envelope is merged; do not reuse it).
 
 **The approved Alt+S look = v1290 defaults** (sw v1290, 65c471b1): sky 2.0 (hemi), base 0 (flat ambient), lamps 16,
 reach 25 m, decay 1.5, bounce gain 1.0 / ao 0.55 / §GI_RECEIVER albedo-estimate on, sky portals (all planar glazing,
