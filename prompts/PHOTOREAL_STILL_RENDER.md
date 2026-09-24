@@ -27,6 +27,19 @@ films unchanged. red1 has given the watcher standing authority on technical pick
 - Then the end PR: fleet smoke (Hospital, Terminal, HHS, Clinic, JKR, LTU, Duplex; 0 PAGEERROR, nav fps vs main, one
   Alt+S each, DLOD on split meshes) → one PR, CI auto-merge → `git merge-base --is-ancestor` → prove live
   (red1oon.github.io/bim-ootb sw version + § markers). Hut-wall shading is pre-existing and does NOT gate the PR.
+- **2026-09-24 evening, renewed session (dated lines):**
+  · BLOCKER CAUSE: while merging origin/main (6f1df03d), effects.js line 2934 held `<<<<<<< HEAD` for a few minutes; 8600 serves
+    the working tree live and sw had ALREADY been bumped to v1292, so red1's browser cached the conflicted effects.js under v1292.
+    Fixed by v1293 (5b81ef61). Lesson: never bump sw before every conflict is resolved; resolve conflicts off the served tree.
+  · §STILL_GUARD REMOVED (red1 ruling). §STILL_LOCK hole fixed: clicks inside the bounce overlay (picture, Save PNG) bubbled to
+    main.js's window pointerdown and cancelled the still; main.js cancel paths now return while APP._stillLockOn.
+  · witness_oci_ghost_url.js (red1's exact URL: OCI .../o/buildings/Hospital_extracted.db + &ghost=1, clean profile, real GPU):
+    §EFFECTS_LOADED, 0 page errors, Alt+S stages + bounce, overlay click + Save PNG keep the still, Esc exits.
+  · FLEET SMOKE on 5b81ef61 (witness_fleet_smoke.js, real GPU): 7/7 PASS, 0 errors, one Alt+S each completes + Esc exits.
+    Nav render median ms: Hospital 54.8, Terminal 19.1, HHS 4.6, Clinic 8.7, JKR 10.1, LTU 173.8 (main 153.8: +13%, p90 equal
+    177), Duplex 1.5. DLOD on split meshes: zeroed when looking away and restored on Hospital/Terminal/HHS/Clinic/JKR/LTU;
+    Duplex (1 split mesh, 2 instances) never zeroed — DLOD likely inactive on a building that small (restore trivially 0).
+  · Atrium portal priority: area x facing placed 639 m2 vs 540 m2 nearest-first, composite 93.24 vs 93.06 — no lift; default kept.
 
 **The approved Alt+S look = v1290 defaults** (sw v1290, 65c471b1): sky 2.0 (hemi), base 0 (flat ambient), lamps 16,
 reach 25 m, decay 1.5, bounce gain 1.0 / ao 0.55 / §GI_RECEIVER albedo-estimate on, sky portals (all planar glazing,
