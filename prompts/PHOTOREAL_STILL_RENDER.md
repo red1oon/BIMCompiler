@@ -9,6 +9,53 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ▶▶▶▶▶▶ §RESUME 2026-09-25 — START HERE (dev session hand-off; written by the watchdog red1-4b)
+Supersedes the EVENING block below (history + evidence). Roles: you are the DEV session; the watchdog is `red1-4b`
+(SendMessage) — send it recaps, it gates every spec/merge by reading pushed code + full § logs. LOOK sign-off is red1's.
+**red1 (2026-09-25): no proof stills/sheets for him — he tests live on localhost:8600 himself, for speed.** Keep § log witnesses.
+
+**LIVE on main (verified by the watchdog: ancestor of origin/main + live marker):** #1765 still-exit (v1295), #1766
+§STILL_SHADOW_FIT (v1298), #1767 §FRAME_REUSE_SANITY 247cb9ae (live sw v1303, `_ruleFilmLive` in live files).
+
+**HELD branches (do NOT merge until §SOURCED_LIGHT is gated):**
+- bim-ootb `feat/film-parity` @eb3a41c1 (sw v1310, worktree /tmp/wt-parity, pushed). Fleet smoke 7/7 PASS. Carries: film
+  bounce (viewer/gi_film.js + §GI_FILM_BLANK_GRAB), every `!A._maxqActive` gate per-frame, §NIGHT_BAKE_POOL_REATTACH (films
+  had 0 lamps in scene on main — real defect), §SKY_PORTAL_INSIDE (portal spots 0.3 m inside glass; the white discs were
+  spots 5 cm outside lighting their own pane), per-shot film shadow box, §LAMP_CAP_FADE/CHURN, §LAMP_CAP_NEAREST OFF by
+  default (list order kept = approved Terminal hall), §131 Sanity quiet dials, `--film-fill restore|alts` (default restore —
+  WILL FLIP under §SOURCED_LIGHT principle 1: no sourceless fill). Open item: film ground reads warmer/darker than Alt+S at
+  the same pose/sun (cause not found; all 85 ground uniforms equal).
+- bim-ootb `feat/still-res` @c8a624d8, /tmp/wt-stillres, LOCAL ONLY (not pushed), parked: &stillres=window|1080p|1440p|4k,
+  default window. 1440p PASS (Hospital p1 2776x1440, bounce 86 s); 4k FAIL (bounce cap 3998x2074, one-line fix). Cost
+  table (same pose at window/1440p/4k) still owed before any default change.
+
+**NEXT, in order:**
+1. **§SOURCED_LIGHT — SPEC ONLY, gate with red1-4b before any code. red1 CONFIRMED the principle (2026-09-25):**
+   "The paramount idea is bounce. If it is all washed, we cannot enjoy good bounce. With disparate sources, we can see
+   them." / "light cannot leak through walls in real life except through glass." / "It is a surface matter, not a knob
+   bumped up by the number of lights."
+   (1) Only real sources light surfaces: sky/sun only through glazing + openings (portals); lamps at fixtures. Indoors no
+   flat ambient and no hemi reaching deep interiors; outdoors unchanged. Films the same (fill default flips off restore).
+   (2) No light through walls/floors — only through glass/openings: lamps ROOM-BOUND (each lamp lights only its own room,
+   rooms/roomAt data; no per-lamp shadow maps); unshadowed portals bound to the room behind their pane too. Spec the
+   mechanism (light layers / per-room material masks / clipping) + per-frame cost; rooms with no rooms data.
+   (3) Rooms with no windows and no fixtures: a modern base light — soft cove along the ceiling edges, real sources per room.
+   (4) Bounce carries the rest; state what screen-space bounce cannot carry.
+   (5) NO exposure/brightness knob (exposure stays 0.383). The stillexp tone-down sheet and §LAMP_LUX_CAP are CANCELLED.
+   Witness: per-surface-sample § lines naming which sources reach it; 0 lamps reaching across a wall.
+2. **Mid-film lamps-off rule (red1):** lamps off ONLY for the load-path freeze, the discipline reveal, or when the full ARC
+   is hidden. Logs show far wider: Hospital §INTERIOR_LIGHTS_BOUNDARY off 0.353→0.959, Terminal 0.1609→0.9056 (src
+   plan.beats.rise). Fact-find which beats that window covers and which code sets it (§116 / §129.41 /
+   §CPE_TAIL_LIGHTS_ALL_ONLY); narrow it to red1's three cases inside §SOURCED_LIGHT.
+3. Then: parity PR (after the fill flip + §SOURCED_LIGHT), §STILL_RES cost table, the skyline-footprint union fix for the
+   #1766 exterior side effect (HHS outside app mean 91.5→98.4; target back to 2fe6360a values).
+
+**Facts established this session (don't re-derive):** Clinic/HHS washout was NOT a code regression (v1295 vs v1299 identical
+§ lines, bounce on) — the approved v1290 dials were only ever tuned on Hospital/Terminal; Alt+S lamps = 16 / reach 25 m /
+decay 1.5, lamp cap 132; floorShareBySource probe is invalid (ACES not additive) — never quote it.
+**Working rules:** spec before code; serve on 8600; one PR at the end with auto-merge, then `git merge-base --is-ancestor`
++ live sw + § marker; short GPU runs; § log evidence only; never hand red1 a git/permission decision.
+
 ## ▶▶▶▶▶ §RESUME 2026-09-24 EVENING — START HERE: §FILM_PARITY (Alt+S look -> Alt+C films, verbatim)
 Supersedes every block below (they are history + evidence). Written by the watcher (red1-fe) at session close.
 
