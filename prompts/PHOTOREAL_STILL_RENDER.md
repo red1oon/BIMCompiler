@@ -134,6 +134,45 @@ portals 31.2, lamps 0.7. Found in passing: EXTERIOR poses looking away from HHS 
 93.1->96.1): far ground outside the fitted box loses shadow — witness arm to add. Lesson: a probe render on a frozen still
 re-shows the TAA buffer; set _taaPass.accumulate=false for any one-source-off measurement.
 
+**§FILM_PARITY — SPEC v1 (2026-09-24 late, red1-78; gate: watchdog red1-4b). Alt+S look -> Alt+C films, verbatim.
+Branch feat/film-parity off fresh origin/main (21ffe710 or later). Line refs = origin/main 21ffe710.**
+**ONE DECISION FOR red1 BEFORE BUILD (the only conflict found):** films stage §FILM_FILL_RESTORE (effects.js:2932/4178,
+red1 on the HHS+Hospital A/B: "restored is better"): ambient 0.785, hemi 1.257. The approved Alt+S look (§STILL_BASE, sky 2 x
+0.617 / base 0) is hemi 1.234, ambient 0. The sky term is the same (1.257 vs 1.234); the ONLY difference is the flat ambient,
+0.785 in films vs 0 in Alt+S. "Verbatim" means films drop to ambient 0, which reverses his earlier film ruling. Default
+proposal: verbatim (ambient 0, hemi 1.234) behind `--film-fill restore` for his A/B; the 5 s clips show both.
+**1. Bounce in the film (today: sandbox/spike_ssgi_webgpu/gi_bake_tap2.js via `cli_silent_bake.js --tap`, dev only).**
+Promote it to viewer/gi_film.js (loaded like gi_still.js, same r186 one-THREE rule), installing cinema_maxq.js's existing
+`window.__giCaptureFrame` hook (cinema_maxq.js:1665) when the option is on. Option: CPE panel checkbox "Bounce", ON by
+default, stored on the path (like bakeRes, cinema_path_editor.js:753); the copy-bake-command line (cinema_path_editor.js
+:3955) carries `--bounce 0|1`; cli_silent_bake.js maps it to the page flag. No WebGPU / not r186 / touch -> §GI_FILM_OFF
+reason= and the film bakes without it. Bounce renderer: lighting off (§GI_PRESS_COST), built once per film, §GI_SCENE_BORROWED
+holds the app frame across its awaits. Log per frame §GI_FILM f= ms= compositeMean= appMean=.
+**2. Every Alt+S-only gate made film-capable (`!A._maxqActive` sites), evaluated per frame over the MOVING sun:**
+- §STILL_DIALS lamps 16 / reach 25 m / decay 1.5 + §LIGHT_UNIFORM_BUDGET + §STILL_LIGHT_PAD (effects.js ~4040): set once at
+  film start; constant light count for every frame (a count change recompiles ~110 materials, 40-108 s).
+- §LAMP_SHAPE_COLOUR: once at film start (fixture shapes don't change).
+- §STILL_GLOW (~4091): the daylight test per frame (films pass through dusk); glow/lamp emissive written as a UNIFORM only.
+  DROP its `mat.needsUpdate = true` (watchdog note: it forces a recompile; emissiveIntensity is a uniform).
+  Lamps-off-when-outside per frame from the camera's inside test; lamps as intensity 0, never removed.
+- §STILL_BASE (~4124): per the decision above.
+- §SKY_PORTAL (~4176): chosen within 40 m of the camera at stage() — in a film, a FIXED set of light objects (same count,
+  same pads, same shadowed count) re-aimed/re-weighted per frame from the camera's current nearest panes; portal shadow
+  maps render at most once per frame (autoUpdate off, needsUpdate only on re-aim).
+- §GLASS_FRESNEL (~4177): once at film start (glazing clones are camera-independent).
+- §STILL_SHADOW_FIT: per frame (camera and sun both move): refit left/right/top/bottom + normalBias each frame, no
+  reallocation; plus the skyline-footprint union fix (open) before it ships to films.
+- §SKY_OCCLUSION stays opt-in (rejected as a default). §ALBEDO_SRGB stays off.
+**3. §131 §RULE_FILM_QUIET folded in** (bim-compiler MEP_CLASH_REVEAL_MOVIE.md §131: floor 0, pause 8 s, peak 0.6, opacity
+0.14; dials), so the bounce reads under a quieter Sanity overlay.
+**4. Proof before ANY full film (red1 judges the look):** 1080p24 5 s CONTROL clip (today's film) + 5 s PARITY clip, same
+building and frames, identical except the parity switch. Building: Terminal (ref4/ref5 are Terminal); frames named in the
+witness before baking, chosen from the plan where the camera faces the facade (ref5 pose is not logged: nearest by eye,
+said so). Per-frame § lines show each feature applied (§GI_FILM, §STILL_GLOW per frame, §SKY_PORTAL re-aim, light count
+constant, §STILL_SHADOW_FIT per frame). One parity frame next to ref5 at the nearest pose; every frame looked at. A freeze
+clip too if the change can touch the load-path hold. Sanity clips per §131 (a building where a lone structural set
+returns more than twice). Never send red1 a film before its clip check.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
