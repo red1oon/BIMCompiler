@@ -96,6 +96,28 @@ v1295 (live gi_still.js carries stillExit(via), effects.js "STILL_EXIT via=").
 - One base frame came back blank (sky only) in one run and did not repeat on re-shoot; unexplained, recorded.
 - Sheet: ~/Downloads/still_shadow_fit_sheet.png (looked at, every frame).
 
+**§STILL_RES — SPEC (2026-09-24 late, red1: "The Alt-S, can we bump up its resolution?"; order by watchdog red1-4b:
+after #1766, before §FILM_PARITY; branch feat/still-res off fresh origin/main).**
+Facts (main 2fe6360a): the app still is the displayed canvas (drawing buffer = window CSS px × pixelRatio, pixelRatio =
+min(devicePixelRatio, 2), scene.js:113). gi_still.js shoot() sizes the bounce from window.innerWidth/innerHeight (cap
+2560x1440) then scales down to MAX_PIXELS 1600×900 (line 59), and reads the app frame from the displayed canvas
+(grabAppFrame). red1's saved stills are all 1666×864 = his window. SSGI radius is a world/view-space value (the log turns
+it into px as radius×(w/2)/16), so the pixel search already scales with width; confirm in the witness, don't rescale.
+1. **Size option** `&stillres=` / APP._stillRes: `window` | `1080p` | `1440p` | `4k` (height 1080/1440/2160; width = height ×
+   the window's aspect, even). **Default `1440p`** (red1 asked for more; 4k is opt-in until its cost is measured). Never
+   below the window: target = max(window drawing buffer, preset).
+2. **App side**: at still start (before staging, so TAA/AO/composer allocate once) set renderer + composer pixelRatio =
+   targetH / innerHeight (the canvas keeps its CSS size; the browser shows it downscaled). Restore the nav pixelRatio at
+   teardown (all exit paths — they all funnel through _teardownStillRefine). SSAO/TAA pass sizes follow setSize.
+3. **Bounce side**: size = the app drawing buffer; MAX_PIXELS raised to 3840×2160 (the renderer is rebuilt when the size
+   changes — already the rule). Saved PNG = that size.
+4. **Log** `§STILL_RES target=WxH preset= pixelRatio=a->b appMs=<refine ms> bounceMs= estGpuMB=` (estimate = sum of
+   render-target bytes the size change allocates; the 8192 sun map, 512 MB, is not size-dependent). No change to the
+   sun map or the fitted box; re-check shadow edges at 4k on the sheet.
+**Witness** (short GPU runs): Hospital pose_p1 + Terminal hall, presets window / 1440p / 4k: saved PNG dimensions ==
+target; refine + bounce ms and estGpuMB per preset; pixelRatio back to nav after Esc; one sheet: each hi-res still
+downscaled next to the window still at the same pose (must look the same, only sharper), every frame looked at.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
