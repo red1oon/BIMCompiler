@@ -118,6 +118,22 @@ it into px as radius×(w/2)/16), so the pixel search already scales with width; 
 target; refine + bounce ms and estGpuMB per preset; pixelRatio back to nav after Esc; one sheet: each hi-res still
 downscaled next to the window still at the same pose (must look the same, only sharper), every frame looked at.
 
+**§STILL_SHADOW_FIT SHIPPED: #1766 squash 21ffe710, ancestor of origin/main, LIVE sw v1298** (live effects.js carries
+STILL_SHADOW_FIT / RENDERS / RADIUS, no STILL_CULL; fleet 7/7 PASS; 6/6 frames non-blank).
+**§STILL_RES — PARKED at feat/still-res c8a624d8 (/tmp/wt-stillres), watchdog: default stays `window` until costed.**
+witness_still_res.js, Hospital p1: window 1666x864 PASS (bounce 119.5 s = first build); 1440p 2776x1440 PASS (refine 7.4 s,
+bounce 85.8 s — renderer rebuilt for the new size, est 244 MB, readback 61 MB/buffer); 4k 4165x2160 FAIL: bounce capped
+at 3998x2074 by MAX_PIXELS 3840x2160 (9.0 MP at red1's aspect) — cap by area of the preset, one line. pixelRatio back to
+1.000 after Esc in all arms. Open: cost per preset on a SECOND press (renderer kept), sheet.
+**§STILL_WASH_REGRESSION — INVESTIGATED (red1 via watchdog: "indoor too bright by this session"): no code regression.**
+v1295 tree (:8601) vs v1299 (:8600), Alt+S + bounce, default sun 45°: Hospital 3 interior poses composite 153.86/153.98,
+95.18/95.78, 130.02/131.93; Clinic corridor 110.85/110.87; HHS interior 107.51/107.51; all §STILL_BASE/§LIGHT_STACK/
+§SKY_PORTAL lines identical. red1's 19:40-19:54 stills (OK) are all Hospital; 20:14+ are Clinic (green roof, barrel vault)
+and HHS (brick L-block) — a change of building, not of code. HHS interior floor shares (fresh render, TAA off): sky 35.5,
+portals 31.2, lamps 0.7. Found in passing: EXTERIOR poses looking away from HHS are brighter with the fit (app 91.5->98.4,
+93.1->96.1): far ground outside the fitted box loses shadow — witness arm to add. Lesson: a probe render on a frozen still
+re-shows the TAA buffer; set _taaPass.accumulate=false for any one-source-off measurement.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
