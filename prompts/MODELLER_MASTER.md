@@ -119,8 +119,8 @@ bim-compiler `deploy/dev/walker_guards.js`, 0 hits in bim-ootb's `disc_walker.js
 measurement. Once L1-L5 hold, record per resident: fixtures + runs generated vs user edits needed to reach a network
 the gate accepts. Until then, do not state it as a result.
 
-**Dispatch.** L0, L4 and L6 are small (Sonnet/Opus). L1+L2 go together and need a Fable-class session: bisect-literate,
-routewalker internals. L3 is data plus a possible red1 question. L5 is Opus, after L1-L4. L7 is red1.
+**Dispatch (red1, 2026-09-24: "stick to Opus").** Every lane runs in Opus, in order L0 → L1+L2 → L4 → L6 → L5.
+L1+L2 go together. L3 is data plus a possible red1 question. L7 is red1.
 
 ### §MEP EVIDENCE — the real open path, Walk-ALL (2026-09-24, bim-ootb b8f844fb)
 Instrument control first: Duplex reproduced W-E2E-WALK-ALL (ACMV 19 / ELEC 102 / PLB 18 / FP 46 = 185) and W-E2E-WALK
