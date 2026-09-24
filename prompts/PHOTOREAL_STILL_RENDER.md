@@ -165,6 +165,33 @@ holds the app frame across its awaits. Log per frame §GI_FILM f= ms= compositeM
 - §SKY_OCCLUSION stays opt-in (rejected as a default). §ALBEDO_SRGB stays off.
 **3. §131 §RULE_FILM_QUIET folded in** (bim-compiler MEP_CLASH_REVEAL_MOVIE.md §131: floor 0, pause 8 s, peak 0.6, opacity
 0.14; dials), so the bounce reads under a quieter Sanity overlay.
+**v2 — watchdog gaps closed (source facts, origin/main 21ffe710):**
+(G1) FILL PIN. _bakeFillPin (effects.js:2780) re-writes ambient/hemi from A._photoFillBase and _nightPLScale from
+  _plTopoutWant(_nightPLScaleStaged) every frame. (a) Lamps-off does NOT go through _nightPLScale: tools.js:2152/2187
+  multiply each lamp by `A._stillLampsOff ? 0 : _nightPLScale`, so the per-frame §STILL_GLOW sets the FLAG and the pin
+  cannot write it back. The one site that also zeroes _nightPLScale for Alt+S (effects.js ~5737) is skipped under parity;
+  the pin logs `lampsOff=` per frame. (b) Topout: plScale eases 0.5 -> PL_TOPOUT_TARGET 1.0 (effects.js:2773) after
+  topout, x the lamp multiplier 16 = double the lamp output at dusk. Kept as intended (red1's §PL_TOPOUT_UNPIN "the
+  internal will be livelier"); logged per frame as `plScale= x lampMul=16 = effLamp=`; red1 sees it in the dusk end of the
+  clip. (c) Under parity §STILL_BASE runs for films and §FILM_FILL_RESTORE is skipped (unless --film-fill restore); both
+  sit before the _photoFillBase snapshot (effects.js:4191), so the pin holds the Alt+S values.
+(G2) STABLE FIT. Per SHOT (a cut or path segment), not per frame: the box size = the union of the fitted boxes over the
+  shot's frames (computed from the plan's camera path before recording) quantised up to 8 m; per frame only the centre
+  moves, snapped to whole texels in light space. The sun moves too, so the light basis turns; the snap uses the current
+  basis. Log per frame `§STILL_SHADOW_FIT shot= box=WxH texel= snapped=`. Witness: texel change inside a shot = 0.
+(G3) PORTALS. Pane collection + the 5-ray inside/outside test are camera-independent: run ONCE at film start for every
+  pane, cached. Per frame: filter by distance, re-rank, re-aim the fixed light set (same count/pads/shadowed count). Log
+  `§SKY_PORTAL_FRAME ms= reaimed= shadowRerender=`.
+(G4) BOUNCE COST. The film tap renders ONE bounce pass per frame (gi_bake_tap2.js:175 pipeline.render, no
+  accumulation); the still's 8 passes are Alt+S only. The 116 s on a Hospital still is the renderer's FIRST BUILD, paid
+  once per film, not per frame (second press 1.5-2.3 s). Measured so far: HHS 1080p 0.95 s/frame vs 0.78 without
+  (+22%). Terminal and Hospital are NOT measured: the 5 s clips log ms/frame and the witness prints a projected
+  full-film time (frames x ms + first build) for both BEFORE any full bake. If Hospital projects past ~8 h it is said up front.
+(G5) SCOPE. The bounce hooks cinema_maxq's _captureFrame (cinema_maxq.js:1599/1665), which is the recorder loop
+  (:4550) for the in-window Alt+C AND the CLI bake. So both get it wherever WebGPU + r186 exist (desktop Chrome); the
+  in-window path is proved by its own log in one short in-window run, not assumed.
+Proof adds one Hospital INTERIOR control/parity pair (the brightness question was all interiors).
+
 **4. Proof before ANY full film (red1 judges the look):** 1080p24 5 s CONTROL clip (today's film) + 5 s PARITY clip, same
 building and frames, identical except the parity switch. Building: Terminal (ref4/ref5 are Terminal); frames named in the
 witness before baking, chosen from the plan where the camera faces the facade (ref5 pose is not logged: nearest by eye,
