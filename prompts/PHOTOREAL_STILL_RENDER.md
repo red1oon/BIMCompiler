@@ -180,6 +180,36 @@ per building (Terminal, HHS, Hospital), plus `§SURFACE_ROOF_LAYER flat=.. roofL
 is visible. **Test:** tallies print on all three; during Alt+S with the switch on, textured materials are
 exactly R1-R3 (`§SURFACE_RULES_ACTIVE`); red1 judges the look on localhost.
 
+**§SURFACE_RULES — REVISION 1 (watcher review, 2026-09-24).**
+**(1) R1 measured BEFORE code** (read-only probe scratchpad roof_layer.py, extracted DBs, FLAT = thinnest bbox
+axis vertical, 1 m grid, a flat element is a ROOF LAYER when < 50% of its cells have another flat element whose
+bottom is at/above its top). First pass: only 16,297 / 33,324 Terminal deck pieces passed, because the sloped
+deck's OWN strips overlap inside a 1 m cell (171,813 cover hits were Metal Deck over Metal Deck). Rule
+refined, general: **pieces of the same surface (same class + material) above do not count as cover** (a sloped
+roof made of strips). Result: Terminal Metal Deck **33,225 / 33,324 (99.7%) roof layer**; the 99 others sit
+under a ceiling board, a floor slab or ducts. Roof-layer slabs: Terminal 5/469 flat, HHS 17/83, Hospital 8/35.
+Coverings: 0 (Terminal), 2 (HHS), 0 (Hospital). The deck stays rough through R1, with no name involved.
+**(2) Precedence, first match wins:** R9 glass (alpha < 1) > R10 single-style opening > R8 MEP (by class:
+colour-coded services are never retextured) > R1/R2 ROOF LAYER (any envelope class: slab, plate, roof,
+covering) > SUBSTANCE (concrete -> R3, plaster/gypsum -> R5, metal -> R6, timber/stone-tile -> smooth, their
+class colour) > CLASS default (R3 walls/columns/footings, R4 flat slabs/stairs, R6 steel, R7 fabricated
+parts). Substance beats class, so the IfcWall vs IfcWallStandardCase split (an authoring artefact) no longer
+decides rough vs smooth: a plaster IfcWall is R5 and a concrete IfcWallStandardCase is R3. A roof-layer
+IfcSlab is R2 (its substance's map, strength x0.7); a non-metal roof-layer plate is R2 too.
+**(3) No invented colours.** Rows change ROUGHNESS, TEXTURE on/off/strength and envInt only. Base colour
+stays what it is today: the authored IFC / surface_styles colour where one exists; STD_MAT's class default
+only where rgba is NULL (existing rule §S265c, unchanged). The table's colour words describe today's
+defaults, not new values. Log: `§SURFACE_RULES_COLOUR authored=n classDefault=n` per building.
+**(4) Majority flips:** a batch takes its members' majority row; `§SURFACE_RULES_TALLY` also prints
+`againstOwnRow=n` (elements whose own row differs from their batch's) per row.
+**R10 (from the watcher's trace): single-style opening.** IfcWindow / IfcDoor whose whole mesh carries ONE style
+(Terminal windows 228/236 black opaque, doors 110/135 one near-white handle style; Hospital 118/131, JKR 83/83,
+LTU 976/976 windows opaque). A data gap, never silent: `§SURFACE_OPENING_SINGLE_STYLE bld= class= n=`. Window:
+pane split from frame by geometry, pane -> class-default glazing, frame keeps the authored colour; if the split
+is not clean, the whole element gets class-default glazing, and the path taken is logged. Door: leaf -> smooth
+R7 finish. Multi-style / glass-styled openings untouched. **Split feasibility is being measured (geometry,
+read-only) before any R10 code.**
+
 ## §DLOD_STILL_OWNERSHIP (2026-09-24) — SPEC: Alt+S must not let DLOD hide roof casters
 **Defect (red1, ~/Downloads/bounce_still_1790210272668.png, Terminal hall 08:37):** sky and sun shafts
 come through the roof. red1: "DLOD is removing the off frame roof where the Sun shines thru."
