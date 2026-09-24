@@ -15,7 +15,16 @@ Supersedes every block below (they are history + evidence). Written by the watch
 **red1's objective:** "the Alt+S to Alt+C ad verbatim is the objective." The approved Alt+S look must come out of Alt+C
 films unchanged. red1 has given the watcher standing authority on technical picks; LOOK sign-off on films stays his.
 
-**⚠ HOTFIX FIRST, before §FILM_PARITY (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
+**⚠ OPEN DEFECT, FIRST (watcher, 2026-09-24 ~19:25, v1294 = live):** after an Alt+S still red1 "has to refresh the
+viewer as it is stuck to continue". The viewer doesn't come back after the still (his still
+~/Downloads/bounce_still_1790247910581.png, Hospital atrium stair, &ghost=1 URL). Suspects, all new today: §STILL_LOCK
+not releasing (APP._stillLockOn left true, main.js cancel paths returning early), §STILL_GHOST_OWNERSHIP restore / the held
+§SHELL_GHOST_AUTO build running on Esc, or the bounce overlay not closing. Get the log tail after Esc (§STILL_LOCK off,
+§STILL_GHOST_OWNERSHIP restored, §PHOTO_STAGING off, any error), reproduce on his URL, fix, witness "Esc -> nav works
+(camera moves, §FPS_MODE orbit=1)". Hotfix PR, prove live. Also that still shows the far floor/room washed near-white again
+at an interior aerial pose: re-check against the §FLOOR_WASH pick (lamps 16 / 25 m).
+
+**✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
 (deferred build)` → `§SHELL_GHOST_BBOX boxes=4518` → still staged with `§PHOTO_SHADOW_FRUSTUM_COVERAGE inFrustum=6`,
