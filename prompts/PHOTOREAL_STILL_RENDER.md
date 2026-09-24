@@ -62,6 +62,24 @@ Not traced yet: which rule assigns triplanar by class/name (search §TRIPLANAR_I
 direction for red1 to confirm: apply the rugged maps by SIZE or class (walls, slabs, columns, big
 coverings) and give small parts (doors, beams, members, fittings, railings) a smooth material. Queue
 after the three items above; red1 judges the look on localhost.
+**§TRI_BIG_ONLY — TRACED + SPEC (2026-09-24), a switch, NOT a change of the maps.** Source: bim-ootb
+`viewer/streaming.js` `A._triResolve` — authored material NAME first (`TRIPLANAR_BY_NAME`, e.g.
+'Metal Deck' 33,756, 'Silver' 4,263 — this is how IfcDoor gets metal), IFC CLASS second
+(`TRIPLANAR_MAT`: concrete for wall/slab/column/footing/stair, plaster for covering, METAL for beam,
+member, plate, railing and every MEP class). Size is never consulted. A per-element SIZE rule cannot
+be applied cleanly: one material is shared per batch and built from the batch's FIRST element
+(`_getMaterial(items[0]...)`). So the proposal is by CLASS. BIG = {IfcWall, IfcWallStandardCase,
+IfcSlab, IfcColumn, IfcFooting, IfcStair, IfcStairFlight, IfcCovering, IfcRoof}: those keep the rough
+maps. Every other class drops them during the still (flat colour, no grain). Measured sizes, Terminal,
+median 2nd-largest bbox dim: Wall 3.50 m, Slab 1.92, Covering 2.45 vs Door 0.95, Beam 0.75,
+Member 0.40, Plate 0.15, FlowTerminal 0.39.
+**Switch:** `?tri=big` on the viewer URL, or `APP._triBigOnly = true` in the console; takes effect on the
+next still frame (per-material `uTriActive`, re-asserted in onBeforeRender), no restream. Default OFF =
+byte-identical look. `TRIPLANAR_MAT` / `TRIPLANAR_BY_NAME` untouched until red1 rules.
+**Log:** `§TRI_BIG_ONLY_TALLY` per class, rows textured now vs rows textured under the switch (via the
+app's own `_triResolve`, not re-derived).
+**Test:** the tally prints, and with the switch on during Alt+S every non-BIG triplanar material
+reads uTriActive=0 while BIG ones read 1 (`§TRI_BIG_ONLY_ACTIVE`). red1 judges the look.
 
 **Other open, lower:** app-side run-to-run glow haze (not the bounce; control has it; parked by red1);
 cause of the rare empty app render under the tap (guarded + logged `§GI_BAKE_TAP BLANK_GRAB`); Alt+S
