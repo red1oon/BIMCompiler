@@ -425,6 +425,32 @@ at staging, defaults logged once per still: `&cove=` / A._stillCove, `&daylight=
 default 1 = the stated constant), `&sourced=0` / A._sourcedLight=false turns the whole patch off (today's look, for
 his A/B). Log `§SOURCED_LIGHT_DIALS cove= daylight= sourced= (defaults cove=1 daylight=1 sourced=1)`.
 
+**§SOURCED_LIGHT — BUILD LOG + SPEC CHANGE (2026-09-25, dev session, branch bim-ootb feat/sourced-light off
+feat/film-parity @eb3a41c1).**
+- BEFORE stack (witness_sourced_stack.js @0845900e, local DBs, full-count gate, sun 45/228, stand-in poses, blocker = first
+  wall/slab/roof/ceiling/door hit): share of the lamp sum at the floor point, clear / through wall / through slab —
+  café atrium_high 31.5/23.7/44.8 (sum 21.4), rail_L1 12.7/59.1/28.2, atrium_ground 0/0/100 (sum 1.2), Clinic corr_x
+  46/53/1 (sum 21.6). 54-87% leaked. Units: sun 4.4 at 45° = 3.11 horizontal; clear own-room lamps alone 6.7 (café) /
+  9.9 (Clinic) = 2.2-3.2x the sunlit ground; real 320-500 lx office vs 22.6k-70.7k lx horizontal sun at 45°
+  (Wikipedia "Lux", after Schlyter; CIBSE LG10-1999 DF 2%/5%) = 0.0045-0.022 → lamps 100-700x too strong.
+  Watchdog RULING (A): physical calibration + metered exposure indoors (cited partial-adaptation law), 0.383 outside.
+- COVERAGE (witness_sourced_coverage.js, after A.ensureRooms): Hospital 2 rects / 9 m2, Clinic 264 / 2262 m2, Terminal
+  57 / 716 m2, HHS 88 / 2214 m2, JKR 34 / 250 m2 (rects in a different frame from the fixtures: x≈271405), LTU 405 /
+  5653 m2, Duplex 5 / 316 m2; fixtures inside a room rect (roomAt) = 0 of 2275 on every building (the floor join has
+  no anchors except LTU). **Room rects cannot carry the light zones.**
+- **SPEC CHANGE (replaces the room-rect texture + union-find of (a)): LIGHT ZONES FROM THE GEOMETRY.** Voxelise the
+  building at staging (cached per building, not per still): grid over the building bbox + 1 cell, 0.5 m cells (log
+  cells/MB/ms; Hospital ~90x110x40 m ≈ 3.2 M cells). SOLID = cells touched by triangles of the room-boundary classes
+  IfcWall/IfcWallStandardCase, IfcSlab, IfcRoof, IfcCovering, IfcDoor (closed), IfcWindow, IfcCurtainWall, IfcPlate
+  (conservative: triangles sampled at ≤ cell/2). Flood fill the empty cells, 6-connected: the component touching the
+  grid edge = OUTSIDE (zone 0, unbound, hemi unchanged); every other component = one light zone. This gives (a) with
+  no room data: a doorless opening, an atrium or a stairwell is connected empty space, so it is one zone; a door or
+  glass is solid. A gap in the model (a wall short of the slab) joins zones (errs toward today's look), counted.
+  Lamp zone = first empty cell at/below the lamp within 1 m; portal zone = the cell 0.3 m inward of its pane; fragment
+  zone = texel at world pos + 0.2 m along the normal. Daylight (b)/(c) and the cove bind to the same zones. Witness:
+  `§LIGHT_ZONE cells= solid= zones= outsideCells= largestZoneM3= lampsBound=/ portalsBound=/ ms=` per building, and
+  the café floor sample names lamps from the upper storeys around the atrium as own-zone.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
