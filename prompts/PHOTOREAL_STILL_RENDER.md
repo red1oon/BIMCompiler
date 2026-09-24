@@ -38,6 +38,31 @@ LOADPATH_FREEZE_POLISH_RESUME.md §134 "A REAL DEFECT FOUND" — PR #1601 (2026-
 interiors get ~2x the contrast. The honest experiment there is still undone: one clip with fill
 restored (runtime override, no file edit) vs as-is, same frames, red1 judges.
 
+**WATCHER HANDOFF (2026-09-24, red1-20 -> fresh session).** The working session is `red1-ff`
+(local, find it with ListAgents). red1's arrangement: it sends its recaps to the watcher; the watcher
+answers routine calls on red1's behalf within the set direction and keeps it from veering; LOOK
+rulings and scope changes go to red1 himself. Rules it has been given: serve ALL work on
+http://127.0.0.1:8600/index.html as it goes (sw/?v bump when Alt+S changes; every recap states
+"localhost:8600 serves <branch>@<sha>, sw vNNNN"), ONE push + PR + CI auto-merge at session END,
+then prove on the live site; never hand red1 git decisions; § log evidence, never guesses.
+Its queue, in order (as of 08:40): (1) DLOD off during Alt+S — red1's 08:37 Terminal still
+(Downloads/bounce_still_1790210272668.png) shows sky/sun through the roof; only Time Machine pauses
+DLOD today (time_machine.js:9312); also confirm bakes (TM pause, §DLOD_BAKE_PROXY :9331);
+(2) fill-restore A/B clips for gloomy interiors (HHS film frames 168-288, --no-load-path; clip B valid
+only if EVERY per-frame §SUN_ARC_FILL_PIN reads ambient 0.7850 / hemi 1.2570) — result goes to red1
+for the look; (3) low-sun (~10 deg, 228 az) shadow re-run on Hospital at 8192: k4 / k1 / shadows OFF,
+each logging elevation + NdotL/kScale at the parapet (first A/B at 45 deg was INCONCLUSIVE: kScale
+only 1.41x). Also noted open, not chased: red1's 07:21 still is left-right mirrored vs headless.
+**NEW OBSERVATION (red1, 2026-09-24): rugged surfacing is overdone on SMALL parts.** Doors and some
+beams get the same rough triplanar texture as big walls and slabs — "not appropriate and overdone as
+big walls, slabs already have them". Evidence in red1's own logs: `§TRIPLANAR_INIT class=IfcDoor
+tex=textures/materials/metal_color_1k.jpg`, `class=IfcBeam`, `IfcMember`, `IfcFlowTerminal`,
+`IfcRailing` all receive a triplanar map (`§TRI_SRC_TALLY ... textured=46729` of 48428 on Terminal).
+Not traced yet: which rule assigns triplanar by class/name (search §TRIPLANAR_INIT in viewer/). Likely
+direction for red1 to confirm: apply the rugged maps by SIZE or class (walls, slabs, columns, big
+coverings) and give small parts (doors, beams, members, fittings, railings) a smooth material. Queue
+after the three items above; red1 judges the look on localhost.
+
 **Other open, lower:** app-side run-to-run glow haze (not the bounce; control has it; parked by red1);
 cause of the rare empty app render under the tap (guarded + logged `§GI_BAKE_TAP BLANK_GRAB`); Alt+S
 status message appears late = the app's own synchronous still staging (measured 70 s headless HHS,
@@ -47,6 +72,23 @@ bounce gain > 0.6); the film tap is still sandbox-only (gi_bake_tap2.js via cli_
 **Films delivered 2026-09-23/24** (~/films/, copies in ~/Downloads): HHS whole path 480p + 1080p
 (`hhs_gi_full_1080p.mp4`), Hospital whole path 480p + 1080p (`hospital_gi_full_1080p.mp4`, 2h43m).
 Check policy agreed with red1: no full-length control; 5 s control clip before a big bake + self-checks.
+
+## §DLOD_STILL_OWNERSHIP (2026-09-24) — SPEC: Alt+S must not let DLOD hide roof casters
+**Defect (red1, ~/Downloads/bounce_still_1790210272668.png, Terminal hall 08:37):** sky and sun shafts
+come through the roof. red1: "DLOD is removing the off frame roof where the Sun shines thru."
+**Source:** dlod.js zero-scales InstancedMesh slots outside the camera frustum (`§DLOD_ENABLE
+mode=per_slot_frustum`). A zero-scaled roof slot casts no shadow, so the sun reaches inside. Only the
+Time Machine pauses DLOD (time_machine.js §DLOD_TM_OWNERSHIP, `_dlodPausedByTm`); nothing on the
+Alt+S path does, so the still inherits the nav-mode culling.
+**Rule:** `_applyPhotoStaging` (shared by Alt+S and the cinema/bake path) pauses DLOD if it is on,
+and `_teardownPhotoStaging` re-enables it ONLY if staging paused it (a user's own DLOD-off is not
+ours to flip; a bake where TM already paused it is a no-op). While staging holds, `dlodEnable`
+(e.g. streaming.js after a stream completes) must not switch it back on; it records the request and
+teardown honours it. Logs: `§DLOD_STILL_OWNERSHIP paused=1|0 ...` at staging, `restored=1|0` at teardown.
+**Tests (prove the defect gone):** headless, Terminal, same hall pose, before/after the change:
+DLOD state + zero-scaled instance count during the still (expect 0 after), and the gi_still.js
+geometry pass sees the same unculled roof. Bake: an existing log must show DLOD already off for
+every frame (TM owns it); say whether `§DLOD_BAKE_PROXY` hides roof casters too.
 
 ## ▶ §GI_BUILT (2026-09-23) — THE BOUNCE IS RUNNING, ON Alt+S LIVE AND IN THE BAKE. READ THIS FIRST;
 ## §WEBGPU_SSGI_SPIKE below is the investigation that preceded it and is now history, not the state.
