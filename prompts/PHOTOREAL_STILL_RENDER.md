@@ -216,6 +216,21 @@ returns more than twice). Never send red1 a film before its clip check.
 - Witness seams: cinema_maxq __maxqPreCaptureTap(i) (dev tap, like __maxqPoseTap); scratchpad film/lightdump.js.
 - Terminal clip frames chosen from a 2 fps scan of Terminal_silent (85.5 s film): facade face-on = film 0.75..0.8085 (5 s).
 
+**§FILM_PARITY clips + findings (2026-09-25 early, watchdog red1-4b gated each step):**
+- Terminal clips delivered to red1 via the watchdog: ~/Downloads/parity_Terminal_{1_control_main,2_parity_altsfill,
+  3_parity_restorefill}.mp4 + _sheet (Terminal_silent film 0.75..0.8085, 1080p24). Pool 132/132 in scene.
+- Cost split (1080p Terminal, frame-hash deltas): control 0.93 s; parity no lamps 1.05; +132 lamps 1.80; +bounce 1.93.
+  First frame 111 s with lamps (shader compile, once) vs 14 s. Terminal full film ~66 min vs ~32.
+- Facade shadow in parity = §STILL_GLOW daylight glow off (control keeps 7 glow mats emissive by day).
+- Film vs Alt+S differences explained: skyline towers differ (films seed Math.random); my first "ground shadow gap" was
+  a harness error (sun moved after staging). OPEN: film ground reads warmer/darker than Alt+S (ground only; building,
+  lights, bounce dials match; 85 ground uniforms, 40 defines, textures, composer chain, camera + projection identical;
+  seed, encode, bounce, in-material tone mapping all excluded).
+- §FRAME_REUSE_SANITY (watchdog item, main defect): a Sanity wave live inside a load-path hold freezes on reused frames
+  (reuse key has no film time; Sanity draws inside _captureFrame). Must land before any full film with load path +
+  Measure. Plan: no reuse while the last composite had a live Sanity box/wave.
+- Harness lessons: set the sun BEFORE staging an Alt+S comparison still; probe renders need TAA accumulate off.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
