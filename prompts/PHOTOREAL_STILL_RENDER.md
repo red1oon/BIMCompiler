@@ -150,6 +150,13 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   contextmenu/dblclick everywhere except inside #gi-still-overlay (Save PNG / Close), and every key except Escape
   (Alt+S included). Esc = the only exit: closes the bounce overlay and tears the still down ('cancelled (Esc)').
   Log `§STILL_LOCK on` / `off blocked=<n>`. Programmatic starts (bake, witnesses) are not locked.
+- REFERENCE 3 (red1: "the bounce is very good on the slab by the stairs"): ~/Downloads/bounce_still_1790240550314.png,
+  spiral-stair close-up, v1287. Pose not logged; nearest stair close-up to be picked by eye. Atrium pose (checked by eye):
+  cam [-5.355,-13.58,9.984] tgt [-5.355,-11.28,-2.316].
+- §FLOOR_WASH findings (2026-09-24, dials default OFF, 9d790e5f): colour pipeline uses authored sRGB as linear (walls 0.92
+  where 0.828 is right); §LIGHT_STACK: 132 lamps all reach the atrium floor point, sum 74x the strongest. Finite reach at
+  lamp strength 2.0 is uniformly too dark (composite 88 vs 187 now); proposal: reach 20 m/decay 1.5 + per-lamp strength
+  raised (arms lamps 8 / 16), awaiting the watcher's pick. Sheets: ~/Downloads/atrium_wash_sheet.png, atrium_reach_sheet.png.
 - GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
   wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
   the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
