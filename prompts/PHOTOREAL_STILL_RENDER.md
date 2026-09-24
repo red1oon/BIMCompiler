@@ -103,6 +103,14 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   defaults (sky 2, base 0, lamps 2, lampdecay 0.8, bounce 1, ao 0.55, girecv 1). Its §STILL_POSE is not in our logs yet
   (it is red1's own press); closest logged pose = pose_p1 cam [-62,38,-4] tgt [-16,-2,-4]. Re-shoot after every
   glass/portal/ceiling change, side by side for red1.
+- REFERENCE 2 (red1: "really good; see the bounce on the wall from the middle wing"): ~/Downloads/bounce_still_1790231488686.png,
+  Hospital from above, sw v1265 defaults (sky 2, base 0, lamps 2, lampdecay 0.8, bounce 1, ao 0.55, girecv 1, concrete 0.55,
+  concretetile 4, portal 1, lampsout 0). These defaults are the BASELINE: do not move them without red1. Re-shoot refs 1+2
+  after every lighting/glass change.
+- §GLASS_FRESNEL spec (red1: "reflection has to follow the physics: a lit surface reflects well"): Schlick Fresnel at FULL
+  strength, never scaled by opacity; the reflected content's own brightness decides how strongly it shows (sunlit facade
+  / sky opposite drowns the interior view; dark surround lets you see in). Source = sky env now, cube-map/SSR later. No
+  strength dial, only on/off for comparison. Log `§GLASS_FRESNEL mats= f0=`.
 - GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
   wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
   the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
@@ -112,6 +120,18 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   .buildCameraRoomIndex: effects.js _stillCamInside, dlod_nav.js room leg) are likely blind on Hospital.
 - Off-frame bounce (a sunlit source outside the view) is beyond screen space: the PROBE GRID is the answer; it moves up
   after the sky portals.
+- **§SKY_PORTAL spec (built next):** Alt+S only. Panes = R10 split window meshes, pane box from the aPane=1 vertices
+  (local bbox -> world via instance/matrixWorld; thin axis = normal; the two long axes = pane size). Inward side = the
+  side whose up-ray (0.5 m off the pane) hits building geometry within 30 m; both/neither -> skipped, logged. Candidates:
+  panes within PORTAL_RANGE 40 m of the camera, nearest first, cap &portalcap= (default 32). One SpotLight per pane,
+  just outside the pane, aimed inward, half-angle 70 deg, penumbra 1, decay 2; the nearest &portalshadow= (default 8)
+  cast shadows at 512 (pane casts nothing since R10, frames cast = mullion shadows), the rest unshadowed (can leak
+  through walls — logged). RectAreaLight NOT used: RectAreaLightUniformsLib is not in viewer/lib (checked 2026-09-24).
+  Intensity: physical base I = H x A / pi (H = staged hemi intensity, A = pane area; a diffuse pane of radiance H/pi),
+  x PORTAL_EXPOSURE 10 (start value for red1's eye: the unoccluded hemi already lights interiors everywhere, so a
+  physical portal is drowned) x &portal= 0..3 (default 1). Colour = hemi sky colour x the pane's own colour HUE
+  (normalised to max 1; no alpha dimming, red1's glass ruling). Log `§SKY_PORTAL placed= shadowed= unshadowed=
+  capped= skipped= intensity= ms=`. Cost: render ms with/without, real GPU, HHS + Hospital. Teardown removes all.
 - Queue: sky portals (shadowed spots for the nearest 4-8 panes, RectAreaLights beyond, hue-only filter, &portal=),
   then the ceiling-only base (&ceil=), then the probe grid. Hut walls + R10 gaps still gate the end PR.
 
