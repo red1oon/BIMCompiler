@@ -57,6 +57,24 @@ hotfix PR off fresh origin/main, CI auto-merge, prove live.
     + SURFACE_R10 in streaming.js, SKY_PORTAL + LIGHT_UNIFORM_BUDGET in sky_portal.js, GLASS_FRESNEL in glass_fresnel.js,
     STILL_LOCK in effects.js, GI_APP_FRAME in gi_still.js, APP._stillLockOn in main.js; "STILL_GUARD refused" absent (removed).
     Next session: §FILM_PARITY off fresh origin/main (feat/shadow-size-by-envelope is merged; do not reuse it).
+  · **HOTFIX spec §STILL_GHOST_OWNERSHIP (live since #1763, red1 "Alt+S goes into bboxes"):** on `&ghost=1` URLs the
+    navigate_find auto-trigger (§SHELL_GHOST_AUTO, deferred merged-ghost build) was set off by §STILL_ROOMS' lazy navigate load
+    and built the ghost shell MID-still (visMeshes 41, disp=bbox). Fix: (1) the auto-trigger also waits while APP._stillLockOn
+    / _stillRefineActive / _photoStagingOn (same rule as §FLY-NO-AUTO-GHOST), re-checked when its idle callback fires;
+    (2) Alt+S staging owns the ghost view like §DLOD_STILL_OWNERSHIP: if ghostXrayOn(), toggle it off for the still, back on at
+    teardown; log `§STILL_GHOST_OWNERSHIP suspended= restored= autoBuildHeld=`. Branch fix/still-ghost-ownership off
+    origin/main. Witness: red1's URL, visMeshes ~ full during the still, §SHELL_GHOST_AUTO only after exit.
+  · **HOTFIX SHIPPED: PR #1764, squash f4109331 (ancestor of origin/main), LIVE sw v1294** (live navigate_find.js carries
+    "STILL_GHOST_OWNERSHIP autoBuildHeld", effects.js "STILL_GHOST_OWNERSHIP suspended", main.js navigate_find.js?v=60).
+    witness_still_ghost_ownership.js on red1's URL: visibleMeshes 4972 during the still (was 41), ghost build only after Esc,
+    ghost-on-before-press suspended/restored; red1: "it works". localhost:8600 serves /tmp/wt-ghost (fix/still-ghost-ownership,
+    = main).
+  · **QUEUE (before §FILM_PARITY; red1: "the non-DLOD flag may cost heavy; any way to reduce its load?") — §STILL_CULL, spec
+    next session:** (1) sun shadow map rendered ONCE per still (autoUpdate=false after the first staged frame; scene frozen),
+    refine ms before/after; (2) instead of un-culling all 63k at the DLOD pause, keep DLOD culling for anything neither in the
+    view frustum nor inside the view's sun-ward shadow volume (camera frustum swept toward the sun, clipped at the envelope), so
+    off-screen roof casters stay and parts behind the camera / away from the sun stay culled. Witness: roof-through-sky stays
+    fixed (Terminal hall pose), zero-scaled counts + refine ms before/after on Hospital. Speeds every film frame too.
 
 **The approved Alt+S look = v1290 defaults** (sw v1290, 65c471b1): sky 2.0 (hemi), base 0 (flat ambient), lamps 16,
 reach 25 m, decay 1.5, bounce gain 1.0 / ao 0.55 / §GI_RECEIVER albedo-estimate on, sky portals (all planar glazing,
