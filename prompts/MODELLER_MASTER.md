@@ -11,7 +11,152 @@ study deeply how to make the Modeller work", and "all the objectives of the Mode
 i have no time to sight, i rely on a good vibe coder to do so."
 ```
 
-## ▶ §RESUME 2026-09-21 — START HERE. Supersedes the 2026-09-15 block below, which is kept for its
+## ▶ §STRATEGY 2026-09-24 — START HERE. How the Modeller closes the gap: GENERATE, then EDIT MINIMALLY.
+## The §RESUME 2026-09-21 block below is still current for its method rules and traps, so read it second.
+## Every number here was measured on bim-ootb origin/main b8f844fb on the REAL user open path.
+
+**THE THESIS (user, 2026-09-24):** *"start with blank ARC and walk route, edit minimally, making this more
+productive than normal work."* We do not try to out-draw Revit or ArchiCAD by hand. The user opens an
+ARC-only building. The walkers GENERATE the structure and services from measured rules. The user corrects
+the result with a few handles (grid, seed, drag), and every step is a signed op. So **an ARC-only
+substrate is the INPUT, not a defect.** A gap matters only if it BREAKS THIS LOOP:
+
+```
+1 Open ARC → 2 Walk (place) → 3 Route → 4 Sign → 5 Review (gate) → 6 Edit minimally → 7 Re-walk / re-route → 8 Save / Export
+```
+
+### Where the loop stands (measured; the evidence is in "§MEP EVIDENCE" below)
+| step | state | evidence |
+|---|---|---|
+| 1 Open | ✅ all 8 residents | Terminal opens in 20.0 s, Hospital 17.8 s, the rest < 3 s; 0 pageerror |
+| 2 Walk / place | ✅ works, at scale | Terminal Walk-ALL 66 s → 4,342 MEP fixtures (774 host-bound); Duplex reproduces W-E2E-WALK-ALL exactly (185) |
+| 3 Route | 🔴 **BROKEN on 7 of 8** | chainSegs 0 on every resident except SampleCastle (32, and only via a fallback) |
+| 4 Sign | 🟧 fixtures yes, networks never | fixtures are signed GEOM_INSERTs, verifyChain true; SampleCastle's 32 runs are refused 32/32 (no real cross-section product, WalkerDoctrine §8) |
+| 5 Review | 🟧 partial | the gate runs before commit; no "accept this walk" step (it commits at once, `modeller.html:3805/3807`) |
+| 6 Edit minimally | 🟧 | move works and is signed; **undo removes ONE fixture, then the whole generated layer vanishes from the canvas** |
+| 7 Re-walk / re-route | 🔴 MEP none | a grid move moves generated fixtures like plain elements; no MEP re-route hook. STR does re-walk (W-E2E-STR-REWALK-COMMIT 9/9) |
+| 8 Save / Export | ✅ young | IFC export full-building since #1747; no materials, property sets, storeys or openings yet |
+
+**Read the table as the plan.** Steps 3, 4, 6 and 7 are where "more productive than normal work" is lost
+today. Everything else is either working or polish.
+
+### THE LANES — in order. Each one closes one break, and is proven on the real open path, not a fixture.
+Rule for every lane: spec first, run the baseline on unmodified main, wait on a condition, prove it FIRES on
+merged main (see the 09-21 method rules).
+
+**L0 — Land the instrument (small, do first).** Turn this session's open-path probe into a committed witness,
+`W-MEP-OPENPATH`: per resident × discipline, placed / host-bound / chainSegs (and their source) / tubes / signed
+GEOM_SWEEP. Instrument control built in: Duplex must reproduce W-E2E-WALK-ALL's 185. Without it, every lane
+below is judged by hand. *Done when:* it runs on 8 residents and prints today's table (below) as its baseline.
+
+**L1 — Route on the production path (the #1 break).** `_discWalkOne` always calls `dwWalk(…,{schedule:true})`
+(`modeller.html:3769`). The schedule branch and the measured-band branch return early
+(`disc_walker.js:~2185/~2195`), calling only `route`+`routeChains`, so the §CAMPAIGN M1 `routePattern` bridge
+(`:~2281`) is never reached. Smallest step: give both early returns the same bridge fallback, and log the
+empty-but-not-refused case (`§WALK-PATTERN EMPTY` — today it is silent). *Done when:* W-MEP-OPENPATH shows
+chainSegs > 0 for PLB on Duplex and Terminal, and W-ROUTE-PATTERN-BRIDGE is re-run.
+
+**L2 — Repair the bridge (decayed 55 → 0 on Duplex, July).** Bisect: #683 = 55 → #684 = 34 → 670bf0f3 (§LIVEWIRE,
+07-10) = 1 → #846 = 0. Cause measured: routewalker's OWN clash-skip (`routewalker.js:~539/~687 → _rwClashesWithArc
+~820`) drops ~95% of pairs (Duplex 141 with an empty envelope vs 6 with the ARC; SampleCastle 316 vs 32). It is the
+mis-oriented clash box that `disc_walker.js:1474-1487` already describes and fixes only in its post-filter.
+Smallest step: orient routewalker's clash box along the run axis, the same AABB `_envelopeClash` uses, then
+re-measure 141 → N. W-ROUTE-PATTERN-BRIDGE (6/4, red since ≤ #846) is the witness. **L1 without L2 routes almost nothing.**
+
+**L3 — Make a generated network signable.** `RW_REAL_CROSSSECTION` (`routewalker.js:54-60`) holds only
+FP_Drop_Pipe, so every CW/SP run is refused and never enters the op-log. `component_library.db` has 3,788 Pipe and
+555 Duct rows, but they are all per-instance Terminal dumps, not a reusable product. Smallest step (DATA): register
+ONE measured CW and ONE measured SP pipe product, sourced from a real IFC (non-invent; name the source row).
+⚠ If no clean source exists, stop and ask red1 which product to use. Do not synthesize one.
+*Done when:* a user walk writes ≥ 1 GEOM_SWEEP that verifies.
+
+**L4 — A walk is ONE gesture.** Today `Bonsai.oplog.undo()` pops one fixture ('dwwalk-<disc>-N' gids are not gesture
+gids), and `doUndo`/`doRedo` (`modeller.html:3554/3565`) never call `_redrawAllDiscWalks`, so after one Ctrl+Z the
+generated layer disappears (SampleCastle tubes 32 → 0, still 0 after redo). The comment at `modeller.html:586-588`
+claiming undo/redo re-applies it is STALE. Smallest step: redraw on undo/redo, and treat dwwalk/dwchain/dwfit gids
+as one gesture group in `_isGestureGid`. *Done when:* Walk → Ctrl+Z removes the whole walk, Ctrl+Y restores it,
+tubes visible both times. (W-E2E-WALK W6 stays green only because it uses scrubTo.)
+
+**L5 — Re-route after an edit (the O15/O16 end-state for services).** Mirror the STR wrapper around
+`gridmove.commit` (`str_walker_outliner.js:918-968`): after a grid move or GEOM_MOVE touches `_dw` fids, re-run the
+bridge for that discipline from the moved placements, and sign the result. Measured today: `gridmove.commit('gx0',
+0.3)` on Duplex moves 18 generated fixtures, `__dwWalks`/`__dwChains` go stale, no re-route. *Done when:* a
+gridline drag on Duplex moves a PLB run and its new route is in the op-log. This is also the first piece of O16's
+"drag in plan → services re-route". **O15 and O16 are one mechanism; L5 is its MEP leg.**
+
+**L6 — Host-binding holes.** PLB host-binds 0 on all 8 residents: `rule_shim` keys CW/SP, never PLB, in both rules
+DBs. Smallest step: resolve PLB → CW/SP shims through the same `_RW_PATTERN_DISC` mapping the bridge uses.
+Separately, schedule-path placements record no host guid (`disc_walker.js:553-563`), so Duplex's fixtures cannot be
+audited bound-vs-floating. Record it; fix it only if the audit is needed.
+
+**L7 — ⛔ NEEDS red1's OK: what "Walk-ALL" means on big buildings.** On the terminal_rules residents, Walk-ALL
+includes `roof` (IfcPlate, n_measured 33,324) and STR. HHS 42,960 plates, Hospital 47,526, so 46k–67k signed rows and
+90–160 s walks, mostly not MEP. Taking roof/STR out of the MEP roster CHANGES existing behaviour, so it is red1's
+call, not a lane to start alone.
+
+**Engine-ready but not wired (after L1-L5, not before):** space-scoped walk (pick a room → walk it;
+`_discWalkOne` passes only {schedule, geoDb, avoid}, `modeller.html:3769`) and the walker guards (they exist only in
+bim-compiler `deploy/dev/walker_guards.js`, 0 hits in bim-ootb's `disc_walker.js`).
+
+### The non-MEP gaps, placed on the same loop
+- **Step 6, grid residual (row 7).** Unchanged, still its own heavy session, and it must first pick 0.0939 or 0.1039 (see 09-21).
+- **Step 6, what touches what.** The residual 11 is FIXED on branch `fix/xedge-3axis` @ 511c1ca1 (bim-ootb, not
+  pushed yet): 11 → 0, it was the rx/ry guard 11 of 11, and the "1,301 no-blob" suspect was a hash-vs-guid unit
+  error. It merges at session end. Side effect: datums 657 → 643, which bears on next-list #4 and is not claimed as a correction.
+- **Step 6, Cut on a layered wall is NOT proven.** W-E2E-CUT-LAYERS is 4/1 at L3: the click selects nothing
+  (fid=null), twice. It could be the witness's aim or a real defect. Measure it before the guide ever claims it works.
+- **Step 8, export depth.** IFC carries shapes and classes only. The status line reads `walls=0` for an opened building
+  (`modeller.html:~3042`). Small, honest next items; they don't block the loop.
+- **2D drawings.** 2D/PDF sheets are a deliberate deferral (§2D-AND-PDF), not a gap. The 2D value is O16's round-trip,
+  which is L5 seen in plan.
+- **Hand solid-modelling (fillet, push/pull, exact booleans).** Deliberately NOT pursued. It is the "normal work" the
+  thesis replaces. The kernel stays `ops → mesh` (FeatureComparison.md).
+- **Test net.** CI is never green (09-21 trap). Retarget or retire W-ROUTER-NNCHAIN (3/5): it expects a real nn-network
+  from an MEP-bearing Terminal, which is the wrong test for an ARC-only strategy, and W-MEP-ROUTE-RENDER already covers
+  that render seam, 12/12.
+
+**The productivity claim needs its own number.** "More productive than normal work" is so far a thesis, not a
+measurement. Once L1-L5 hold, record per resident: fixtures + runs generated vs user edits needed to reach a network
+the gate accepts. Until then, do not state it as a result.
+
+**Dispatch.** L0, L4 and L6 are small (Sonnet/Opus). L1+L2 go together and need a Fable-class session: bisect-literate,
+routewalker internals. L3 is data plus a possible red1 question. L5 is Opus, after L1-L4. L7 is red1.
+
+### §MEP EVIDENCE — the real open path, Walk-ALL (2026-09-24, bim-ootb b8f844fb)
+Instrument control first: Duplex reproduced W-E2E-WALK-ALL (ACMV 19 / ELEC 102 / PLB 18 / FP 46 = 185) and W-E2E-WALK
+(ELEC 102). bim-compiler W-BORROW-FP 6/6 reproduced SampleCastle's 247 FP. The fleet ELEC counts in
+RESUME_DISC_WALKER_ENVELOPE_BOUND.md reproduce to the unit. Rules DBs match WalkerDoctrine §1/§2 on every resident.
+
+| resident (rules) | ACMV | ELEC | PLB | FP | chainSegs | tubes |
+|---|---|---|---|---|---|---|
+| SampleHouse (duplex) | 4 / 4 bound | 28 / 17 | 11 / 0 | 17 / 16 | 0 (bridge silently empty) | 0 |
+| Duplex (duplex, schedule path) | 19 | 102 | 18 | 46 / 29 | 0 (bridge never reached) | 0 |
+| SampleCastle (duplex) | 12 / 12 | 270 / 269 | 84 / 0 | 126 / 125 | **32** (routePattern, CW 10 + SP 22), refused 32/32 for signing | 32 |
+| HHS (terminal) | 1368 / 196 | 722 / 12 | 426 / 0 | 721 / 118 | 0 | 0 |
+| Clinic (terminal) | 938 / 771 | 406 / 140 | 605 / 0 | 751 / 236 | 0 | 0 |
+| HospitalGarage (terminal) | 4007 / 0 | 2756 / 49 | 3226 / 0 | 3310 / 143 | 0 | 0 |
+| Hospital (terminal) | 5126 / 1510 | 3190 / 192 | 4036 / 0 | 4428 / 662 | 0 | 0 |
+| Terminal (terminal) | 1375 / 407 | 896 / 110 | 969 / 0 | 1102 / 257 | 0 | 0 |
+
+(Cells are placed / host-bound. The complex residents also walk STR 264–2,252 and roof 10,584–47,526 — see L7.)
+Existing witnesses on origin/main: W-E2E-WALK 8/8 · W-E2E-WALK-ALL 13/13 · W-E2E-STR-REWALK-COMMIT 9/9 ·
+W-MODELLER-DISC-WALK 8/8 · W-MEP-ROUTE-RENDER 12/12 · W-DISC-DENSITY 8/8 (needs the gitignored
+`Terminal_arcstr_proof.db`; ELEC still 2.11× over, row 23) · W-ROUTE-PATTERN-BRIDGE **6/4** · W-ROUTER-NNCHAIN **3/5**.
+The probe scripts were session scratch, not committed. That is why L0 exists.
+
+### Corrections this evidence makes elsewhere (made here; the other files are left as-is, pointed to)
+- **Row 6 is re-framed.** It is not "Terminal serves 0 MEP": that 0 is the input. It is now "generated routing is
+  unreachable on the production walk path, and no generated network is ever signed" = lanes L1-L3. *Done when:* a real
+  user Walk on Terminal AND Duplex renders ≥ 1 routed PLB run that is also in the signed op-log.
+- **09-21 trap "playwright is NOT installed" is WRONG.** It is at `~/bim-ootb/tests/node_modules/playwright` (1.59.1).
+  Witnesses with a bare `require('playwright')` need `NODE_PATH=~/bim-ootb/tests/node_modules`.
+- **`prompts/Modeller/DISC_Walker/` (26 files) is now harvested.** Stale claims found: RESUME_MODELLER_WALK_SUBSTRATE
+  "Duplex 0→55, chainSegs unchanged after M2" (bisect: 55→34→0); RESUME_MEP_SAMPLECASTLE "SC 2372 ARC envelopes baked in
+  mep_rw.db" (it has 0; the 2,372 come from the building db); RESUME_TERMINAL_RULE_MINING's "124 rows / 47 avoidance"
+  (now 37 / 10) and its Terminal-rules-on-houses model (contradicted by WalkerDoctrine, and the doctrine wins);
+  SPEC_MESH_FIT_GRAFT / SPEC_SEAM_HEALING code lives only on unmerged feature branches.
+
+## ▶ §RESUME 2026-09-21 — read SECOND (after §STRATEGY 2026-09-24 above). Supersedes the 2026-09-15 block below, which is kept for its
 ## history but is NO LONGER the entry point. Written at session close; every number below was measured.
 
 **WHAT THIS SESSION DID.** The 2026-09-15 block ordered a re-verify sweep of the 34-row §OPEN LIST. That
@@ -38,7 +183,7 @@ median 78 mm, up to 425 mm. **Three consumers found:**
    `SPATIAL_DEPENDENCY_GRAPH.md` §ANCHOR-SUBSTRATE-SIBLINGS. **Measure before touching.**
 
 **WHAT TO CHASE NEXT, ranked.** Detail in §SWEEP FOLLOW-THROUGH and the rows themselves.
-1. **The residual 11** (#1744's honest RED). Two suspects, never measured apart: `_readBoxes`' `rx/ry`
+1. ✅ **DONE 2026-09-24 on branch `fix/xedge-3axis` (§STRATEGY, non-MEP gaps): the rx/ry guard, 11 of 11.** **The residual 11** (#1744's honest RED). Two suspects, never measured apart: `_readBoxes`' `rx/ry`
    guard — whose stated premise is the same false claim corrected in #1738, so it fires on real data and
    the 3-axis path it distrusts is now itself witnessed, making it probably liftable — and the 1,301 of
    3,225 elements with no resolvable blob. **Measure which, before changing either.**
@@ -77,7 +222,7 @@ median 78 mm, up to 425 mm. **Three consumers found:**
 - **CI `system-is-real` has NEVER been green — 198 of its last 200 runs failed, back to 2026-07-05.**
   A red X on a bim-compiler PR is **no signal**; check whether the failure is new before believing it.
   87% of it is unpassable by construction. Fully diagnosed in `LFS_QUOTA_AUDIT.md` (#107).
-- **`playwright` is NOT installed** — `witness_str_into_arc`, `witness_green_report`,
+- ~~**`playwright` is NOT installed**~~ ⚠ WRONG, corrected 2026-09-24: it is at `~/bim-ootb/tests/node_modules` (1.59.1); set `NODE_PATH` for bare requires (§STRATEGY). Original: `witness_str_into_arc`, `witness_green_report`,
   `witness_modeller_xedge_lens`, `witness_arc_editable_smoke`, `sdg_gate/cascade_smoke` crash on
   `Cannot find module 'playwright'`. Pre-existing, unrelated to any change here. `puppeteer` IS available
   (resolved from `~/bim-compiler/node_modules`), which is how every witness here ran headless.
@@ -420,7 +565,7 @@ Format, one row per item, ranked most-blocking first:
 | 3 | O2 | §LOD400-LAYERS-REAL: slice the authored envelope at authored layer thicknesses; ship layers+`surface_styles` to residents (patch + self-heal loader); then the Modeller half of the gate refuses envelopes | same, §THE FIX items 2–3 | `witness_lod400_envelope.py` gate GREEN; 7-layer wall `2O2Fr$t4X7Zf8NOew3FNbT` renders 7 slabs summing to authored total; falsified by removing one layer row | ✅ extractor half DONE 2026-07-30 (PR #57 merged; W-LOD400-ENVELOPE **12/12 exit 0 on Duplex, independently re-run by the orchestrator**, refusals: DX 0, SC 1 honest `sporenkap` pitched-roof → SC still exits 1 by design). ✅ **FULLY DONE 2026-07-30 — residents half shipped (bim-compiler PR #59 + bim-ootb PR #1096, both MERGED):** layer tables → `patches/Duplex_ARC.db.sql` self-heal; rebuilt `Duplex_geo.db` (layered buffers under the EXISTING hashes via per-guid measured change-of-basis — fresh hashes match 0/155 shipped, see the §LOD400-LAYERS-RESIDENTS record) uploaded to OCI + byte-verified live; `arc_editable.js` §LAYER-GATE refusal armed (schema-detected, Duplex only; SC untouched by design); geoV 3→4, sw v40→v41; W-E2E-LAYERS-RESIDENTS **8/8 against the LIVE geo URL** (party wall 124 tris / 7 rows Σ0.550 m / slabs 16-41-193-50-193 mm; falsification fires; unpatched residents byte-identical). Per-layer render COLOR deliberately not wired (needs face-group materials through the fold payload — own slice; data already ships). ⚠ **WATCHDOG CORRECTION 2026-07-30 (live-queried): the party wall renders 5 slabs, NOT 7** — layers 5-6 (Metal Stud 41mm, outer Plasterboard 16mm) have `face_count=0`, `face_start=124` = past the buffer end. 4 empty rows / 229 total, on 2 of 71 walls (both 7-layer, both opening-cut). The witness was BLIND BY CONSTRUCTION: thickness-sum (0.550) and face-count-sum (124) both reconcile while two layers are missing — a green computed over the wrong quantity, the same shape as §PRIME LESSON. → row 33 |
 | 4 | O1 | ⛔ ARCH CALL (c): should a VOID-CONSUMED host become a non-rendered logical anchor (SC `stretchRide` reach 9/74 because 65/71 hosts are void-consumed) | `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md §START HERE` OPEN 1 | doctrine analysis + recommendation recorded; **user's word before any build** | ✅ DONE (witness) 2026-07-30 — BOTH halves merged. Extractor: PR #58 (W-VOID-ANCHOR-EXTRACT 7/7, RED-falsified; SC patch independently verified: 65 anchors, instances unchanged 3225). bim-ootb: PR #1095 (W-E2E-VOID-ANCHOR 19/19, RED-first baseline committed; **reach 9/74 → 74/74**, rider dx == host delta exactly, filling mesh moved rigidly; guardrail proven surface-by-surface: visible 3225=3225, Outliner 3342/3418 identical, pick rays hit-for-hit identical through 8 anchor meshes, gmAudit/§SAVE_BASELINE/§XEDGE-ALL identical; one honest non-masked count: commitSeedGroup ops=3290, anchors named by §ANCHOR lines; CACHE_VERSION v39→v40) |
 | 5 | O3 | ⛔ ARCH CALL (b): the descoped 3-surface Outliner unification — ARC tree + STR Walker tab still separate on main | `RESUME_MODELLER_UX_OUTLINER_PILL.md` + LOD400 §NIGHT 3 | re-scope verdict recorded (still wanted? safe incremental path?) | ✅ CALL MADE 2026-07-30 — unify INCREMENTALLY, 6 slices via the proven §ONE-DISC-TAB wrap, recorded in `RESUME_MODELLER_UX_OUTLINER_PILL.md`; slices 1-2 buildable now, no user decision load-bearing |
-| 6 | O10 | §8E-3 substrate gap: the shipped "Open Terminal" resident (`Terminal_ARC.db`) is ARC-only, 0 MEP — a real user's walk renders no routed network; the witness sidesteps via `Terminal_meta.db` | `RESUME_GRAPH_MODELLER_INTEGRATION.md` §DONE 2026-07-11 finding 1 | routed tubes render on the REAL user open path (or the gap recorded as accepted) | verified-open — RESIDENTS still serve `Terminal_ARC.db` |
+| 6 | O10 | ⚠ RE-FRAMED 2026-09-24 → §STRATEGY L1-L3 (the 0 MEP is the INPUT; the gap is routing + signing). Original: §8E-3 substrate gap: the shipped "Open Terminal" resident (`Terminal_ARC.db`) is ARC-only, 0 MEP — a real user's walk renders no routed network; the witness sidesteps via `Terminal_meta.db` | `RESUME_GRAPH_MODELLER_INTEGRATION.md` §DONE 2026-07-11 finding 1 | routed tubes render on the REAL user open path (or the gap recorded as accepted) | verified-open — RESIDENTS still serve `Terminal_ARC.db` |
 | 7 | O10/O3 | grid-lock-to-ARC/STR crux — 0.104 m RMSE baseline residual on the emergent grid; prerequisite for RosettaStone-through-grid + clean fold | `RESUME_MODELLER_UX_OUTLINER_PILL.md` 🟥 | its own HEAVY investigation session, per-axis measured findings | **RE-MEASURED 2026-09-21 — bim-ootb #1753, W-ROW7-GRID-BASELINE 5/5.** The baseline is NOT stale, but the shipped measurement path UNDER-REPORTS it. On `Terminal_arcstr_proof.db` (158 columns, geometry 158/158, same metric as `witness_green_report.js:57-61`): **anchor centres → colRMS 0.0939 m; true mesh centres → 0.1039 m.** The recorded 0.104 matches the CORRECTED figure to 3 dp, not the shipped path's 0.0939 — correcting the substrate makes the residual **worse by 10.0 mm**, i.e. the anchor defect was FLATTERING it. Grid topology is unaffected (18×10 either way), so this is a residual story, not a grid-shape one. Cause: `str_walker_bridge.js:22/38/50` reads `center_x/y` = the placement ANCHOR; the offset VARIES per column (p50 19.7 mm, p90 148.1 mm, max 225.6 mm on 0.75 m columns), so it does not cancel even though the grid is derived from the same centres it measures. **Before the heavy session starts it must decide WHICH number it is chasing.** Still verified-open as a defect; the baseline question is closed |
 | 8 | O10 | roof plates walked PER-ELEMENT on the measured pattern (user accepted 1.3% count err; gate = positional) — also the cadence source that tightens #7 | same 🟧 | plate-centre spacing uniformity measured; per-element pass-bar RMS sub-metre | verified-open |
 | 9 | O10 | backprop APPLY: accept-gated hop-by-hop application of ORANGE suggestions (flagging shipped #647; applying not built) | `RESUME_GRAPH_MODELLER_INTEGRATION.md` §USEFUL-DIFF 2 + `sdg_gate.js:106` | one accepted ORANGE fires one signed op, one hop, witnessed | verified-open (partially shipped) |
