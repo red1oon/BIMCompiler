@@ -47,9 +47,9 @@ today. Everything else is either working or polish.
 | L1+L2 | ✅ `30f51c20` | PLB runs on the real walk: Duplex 0 → 18 · Terminal 0 → 2,893 · SampleCastle 32 → 18 (a pairing-order effect; both variants pass the correct box). Run length median 2.2–3 m, max 24.9 m. A "try next-nearest on clash" variant was MEASURED and REJECTED (Duplex 18 fixtures → 110 runs). W-MEP-OPENPATH 8/5 → 10/3 |
 | L4 | ✅ `54c7cf5a` | The real Ctrl+Z after a walk used to do NOTHING to the walk (not in the history tree). Now one node "Walk PLB (23)": Ctrl+Z → 0/23 rows, layer off; Ctrl+Y → all back. W-WALK-GESTURE 2/2 → 4/0 |
 | L5 | ✅ `b78f2b4c` | a 1 m move of a routed fixture re-routes 22 → 21 runs ending at its new spot; Ctrl+Z routes back (±1 mm). W-MEP-REROUTE 3/2 → 5/0. Re-routed runs unsigned (waits on L3); bend fittings not re-derived (follow-up) |
-| L3 | 🟡 **red1 2026-09-24: "Use measured Duplex pipes" — in progress** (see §RW-CW-SP-PRODUCT in routewalker.js) | Needs ONE named CW and ONE SP pipe product. The July audit in `routewalker.js` (RW_REAL_CROSSSECTION comment) found none clean; picking one extracted Duplex pipe as "the" cold-water pipe is a data call |
+| L3 | ✅ `2ec5f1b7` (red1: "Use measured Duplex pipes") | CW = Duplex "Pipe Types:Cold Water" 25.4 mm (mains size; ½" branches nearly as common — stated simplification), SP = "Pipe Types:Waste" 48.3 mm (41/43). Runs now SIGN: Duplex 18/18, SampleCastle 18/18, Terminal 60/2,915 (existing commit cap). W-MEP-OPENPATH 13/0 | Needs ONE named CW and ONE SP pipe product. The July audit in `routewalker.js` (RW_REAL_CROSSSECTION comment) found none clean; picking one extracted Duplex pipe as "the" cold-water pipe is a data call |
 | L6 | ✅ **CLOSED by red1 2026-09-24: keep PLB unattached.** | PLB → CW+SP shims agree on host (IfcWall, SIDE) but not height (CW 1000, SP 600). No change; bim-compiler W-DWWALK-HOSTBIND W4 (PLB stays unbound) remains the contract. Do not re-open without red1. |
-| L7 | 🟡 **red1 2026-09-24: "MEP only in Walk ALL" — in progress** | roof/STR leave Walk ALL (their own rows stay); the row reads "Walk ALL Services" |
+| L7 | ✅ `2ec5f1b7` (red1: "MEP only in Walk ALL") | Walk ALL skips STR/roof (own rows stay), row reads "Walk ALL Services"; Terminal Walk ALL 81 s → 61 s |
 Every lane was regression-swept against its own pre-change commit (12–15 witnesses each): no witness moved except the one the lane targets.
 Recorded, not fixed: `viewer/routewalker.js` has the same vertical-post clash box at 3 sites (Viewer scope).
 
@@ -106,6 +106,10 @@ audited bound-vs-floating. Record it; fix it only if the audit is needed.
 includes `roof` (IfcPlate, n_measured 33,324) and STR. HHS 42,960 plates, Hospital 47,526, so 46k–67k signed rows and
 90–160 s walks, mostly not MEP. Taking roof/STR out of the MEP roster CHANGES existing behaviour, so it is red1's
 call, not a lane to start alone.
+
+**NEXT after the lanes (2026-09-24):** the productivity number (generated vs edits needed), re-deriving bend fittings on a
+re-route, retarget/retire W-ROUTER-NNCHAIN N4/N6 (it expects guid-carrying nn runs), the Terminal chain commit cap
+(60 of 2,915 runs signed), and the Viewer copy of routewalker.js (same clash-box bug, 3 sites).
 
 **Engine-ready but not wired (after L1-L5, not before):** space-scoped walk (pick a room → walk it;
 `_discWalkOne` passes only {schedule, geoDb, avoid}, `modeller.html:3769`) and the walker guards (they exist only in
