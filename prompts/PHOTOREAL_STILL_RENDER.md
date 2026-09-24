@@ -33,6 +33,11 @@ still_status_first,surface_rules}.js.
    steps along the sun direction, while a sun-facing wall gets ~0.09 m. So the saw-tooth is area-per-map at grazing
    incidence, with a 1-texel PCF that does not hide it. To confirm per arm: the logged frustum bounds and whether the
    mid-wing point is inside it (a point OUTSIDE the frustum gets no shadow at all, which would explain missed walls).
+   LEVER TO TEST WHEN THE RUN RESUMES (watcher, not now): Alt+S is ONE still view, so fit the sun frustum to the
+   camera's VISIBLE receivers instead of the whole 362 m envelope. The texel shrinks many-fold where it matters. Test it
+   as one variable next to PCFSoft / radius. Caveat to log: casters OUTSIDE the view (a wing behind the camera) must
+   still land in the frustum: extend it toward the sun over the envelope's height, or shadows go missing (the
+   same symptom as the mid-wing report). Log the fitted bounds + texel per arm.
 2. Bounce composite shifted sideways on alternate shots after __giStillRelease (HHS, camera logged identical,
    appMean 119.25 every shot). Evidence: scratchpad dials/run2/. Then the bounce-gain stills 0.6/1.0/1.4 for red1
    (the bounce dials apply only at first build, §GI_DIALS_FIRST_BUILD).
