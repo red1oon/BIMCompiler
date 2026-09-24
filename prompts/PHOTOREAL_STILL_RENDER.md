@@ -121,7 +121,7 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   Fix queue when resumed: (1) press-2 bounce slowdown (kept renderer), (2) portal shadows rendered once per still +
   constant light count across presses, (3) first-build compile 62 s. Then view-fitted shadow frustum (watcher call),
   then Fresnel glass. Ref 2 pose (watcher, from red1's paste): cam [-39.469,12.563,50.109] tgt [3,-4,3] fov 60.
-- PAUSED 2026-09-24 by red1 (reviewing 8600 himself). 8600 serves feat/shadow-size-by-envelope@<see git log>, sw v1266.
+- PAUSED 2026-09-24 by red1 (reviewing 8600 himself). 8600 serves feat/shadow-size-by-envelope@84541b9f, sw v1266.
 - GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
   wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
   the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
