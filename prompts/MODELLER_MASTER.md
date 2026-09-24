@@ -40,6 +40,19 @@ substrate is the INPUT, not a defect.** A gap matters only if it BREAKS THIS LOO
 **Read the table as the plan.** Steps 3, 4, 6 and 7 are where "more productive than normal work" is lost
 today. Everything else is either working or polish.
 
+### ▶ LANE STATUS 2026-09-24 (executed the same day; bim-ootb branch `feat/mep-loop`, NOT pushed yet, merges at session end)
+| lane | state | evidence (baseline → fix, side by side on the same tree) |
+|---|---|---|
+| L0 | ✅ `2e52451d` | W-MEP-OPENPATH on main: 8/5, M0 control reproduces Walk-ALL 185 |
+| L1+L2 | ✅ `30f51c20` | PLB runs on the real walk: Duplex 0 → 18 · Terminal 0 → 2,893 · SampleCastle 32 → 18 (a pairing-order effect; both variants pass the correct box). Run length median 2.2–3 m, max 24.9 m. A "try next-nearest on clash" variant was MEASURED and REJECTED (Duplex 18 fixtures → 110 runs). W-MEP-OPENPATH 8/5 → 10/3 |
+| L4 | ✅ `54c7cf5a` | The real Ctrl+Z after a walk used to do NOTHING to the walk (not in the history tree). Now one node "Walk PLB (23)": Ctrl+Z → 0/23 rows, layer off; Ctrl+Y → all back. W-WALK-GESTURE 2/2 → 4/0 |
+| L5 | ✅ `b78f2b4c` | a 1 m move of a routed fixture re-routes 22 → 21 runs ending at its new spot; Ctrl+Z routes back (±1 mm). W-MEP-REROUTE 3/2 → 5/0. Re-routed runs unsigned (waits on L3); bend fittings not re-derived (follow-up) |
+| L3 | ⛔ **red1** | Needs ONE named CW and ONE SP pipe product. The July audit in `routewalker.js` (RW_REAL_CROSSSECTION comment) found none clean; picking one extracted Duplex pipe as "the" cold-water pipe is a data call |
+| L6 | ⛔ **red1** | PLB → CW+SP shims agree on host (IfcWall, SIDE, priority 0) but NOT height (CW 1000, SP 600; unit not stated in `seed_shim_attributes.py`). bim-compiler W-DWWALK-HOSTBIND W4 deliberately asserts PLB stays unbound. Which height, or keep unbound? |
+| L7 | ⛔ **red1** | unchanged: take roof/STR out of the MEP Walk-ALL roster on complex buildings? |
+Every lane was regression-swept against its own pre-change commit (12–15 witnesses each): no witness moved except the one the lane targets.
+Recorded, not fixed: `viewer/routewalker.js` has the same vertical-post clash box at 3 sites (Viewer scope).
+
 ### THE LANES — in order. Each one closes one break, and is proven on the real open path, not a fixture.
 Rule for every lane: spec first, run the baseline on unmodified main, wait on a condition, prove it FIRES on
 merged main (see the 09-21 method rules).
