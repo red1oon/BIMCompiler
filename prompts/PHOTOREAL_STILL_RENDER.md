@@ -121,7 +121,26 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   Fix queue when resumed: (1) press-2 bounce slowdown (kept renderer), (2) portal shadows rendered once per still +
   constant light count across presses, (3) first-build compile 62 s. Then view-fitted shadow frustum (watcher call),
   then Fresnel glass. Ref 2 pose (watcher, from red1's paste): cam [-39.469,12.563,50.109] tgt [3,-4,3] fov 60.
-- PAUSED 2026-09-24 by red1 (reviewing 8600 himself). 8600 serves feat/shadow-size-by-envelope@84541b9f, sw v1266.
+- **§SKY_OCCLUSION spec (red1: "indoor floor too bright, not taking in shadows"; resumed 2026-09-24):** Alt+S only.
+  At staging, render ONE top-down orthographic depth map (DepthTexture, 2048^2) over the building envelope; hidden in
+  that pass: transparent glazing (glass lets sky in), sprites/lines/points, sky, ground. Shader: THREE.ShaderChunk
+  patched ONCE at load (loader.js, right after three loads, before any material compiles): lights_pars_begin gets a
+  skyOccVis() (uniforms uSkyOcc/uSkyOccMap/uSkyOccMat/uSkyOccKeep/uSkyOccBias/uSkyOccTexel; STANDARD/LAMBERT/PHONG/TOON
+  only; uSkyOcc=0 returns 1 = nav and films unchanged); the hemi irradiance, the env irradiance and the env radiance
+  are multiplied by it. Lookup at world pos + 0.5 m along the world normal (a facade samples open air outside it, a
+  floor samples under its ceiling), 3x3 PCF, bias 0.3 m. vis = mix(1, keep, coveredFraction), keep = &skyocc= 0..1
+  (default 0.15). Uniform values are pushed into every scene material's program uniforms from scene.onBeforeRender
+  (a recompile re-clones them), so there is no recompile and no light-count change. Map rendered once per still, disposed
+  at teardown. Log `§SKY_OCCLUSION map= texel= coveredFrac= mats= ms=`. Proof: refs 1+2 (outdoor) show no change, L1
+  interior floor darker.
+- (was PAUSED 2026-09-24 at 84541b9f / v1266; RESUMED by red1, whole queue: sky occlusion -> lag -> Fresnel -> compile -> view-fitted shadow -> fake bounce -> SSR vs cube -> ceiling base.)
+- **OPEN (2026-09-24):** (a) the "missing building" frames — cause found: the bounce's first build hides app meshes
+  across awaits (~60 s progressive compile); app renders in that window showed a half-hidden building. Fixed by
+  §GI_SCENE_BORROWED (app holds its frame). The earlier unexplained frame is consistent with it. (b) The bounce read a
+  near-black app frame (appMean 13.3) on some presses (ref re-shoot press 2; Fresnel witness press 1 at pose_p1) while
+  the saved WebGL frame was normal (mean 119): the canvas read during/after heavy WebGPU work; not chased yet.
+  (c) Poses: "p2_courtyard_low" [-44,2,-6] is BELOW ground (Hospital ground y = -15.9) — do not use. Courtyard pose
+  checked by eye: courtyard_a cam [-40,1.8,-4] tgt [-10,3,-4] (ref 1 stand-in).
 - GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
   wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
   the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
