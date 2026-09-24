@@ -62,6 +62,22 @@ Not traced yet: which rule assigns triplanar by class/name (search §TRIPLANAR_I
 direction for red1 to confirm: apply the rugged maps by SIZE or class (walls, slabs, columns, big
 coverings) and give small parts (doors, beams, members, fittings, railings) a smooth material. Queue
 after the three items above; red1 judges the look on localhost.
+**§SUN_SHADOW_RESTORE IS INERT — MEASURED (2026-09-24, Hospital, 8192 map, sun 10° alt / 228° az).**
+Low-sun re-run, three arms (k4 / k1 / sun.castShadow off), same pose, real GPU. Each still printed its
+own `§SHADOW_SIZE_BY_ENVELOPE size=8192` and `§SHADOW_KERNEL_AB ... sunElev=10.0deg kScale(flatRoof
+NdotL=0.174)=4.00` (k1: 1.00). The widening WAS live per pixel (k4 crop meanK 3.29, max 4), but the
+pass's own shadow term classed **0 of 1,439,424 frame pixels as shadowed, and 0 as edge**, in both arms
+(`§AB_KSCALE_READBACK`). Cause: the shader does `step(sc.z, texture2D(tShadowMap, sc.xy).r)` with
+`tShadowMap = A.sun.shadow.map.texture` (effects.js ~4500). In this three build the WebGL shadow map
+writes depth to a separate `map.depthTexture`; `map.texture` is an RGBA8 colour attachment (readback
+.r ≈ 0.76 where sc.z ≈ 0.24), so the step never fires and the pass returns the AO colour untouched.
+**Not a r186 regression:** the WebGL shadow-map allocation in three.module.min.js is byte-identical
+before and after #1757, and §SUN_SHADOW_RESTORE landed 2026-08-14, after r185 (06-27), so it has
+likely never worked. With shadows OFF the parapet edge is clean, so the stair-step is the native
+PCFShadowMap edge (0.088 m texels at 8192), not geometry. The kernel dial cannot fix it. Fix
+direction (red1's call, NOT done): sample `map.depthTexture` (compareFunction null for this path)
+instead of `map.texture`. Evidence: scratchpad shadow_ab/ (sheets, debug readbacks, logs), spike
+edit uncommitted in /tmp/wt-shadow-kernel. Open, not chased: red1's 07:21 still is left-right mirrored.
 **§TRI_BIG_ONLY — TRACED + SPEC (2026-09-24), a switch, NOT a change of the maps.** Source: bim-ootb
 `viewer/streaming.js` `A._triResolve` — authored material NAME first (`TRIPLANAR_BY_NAME`, e.g.
 'Metal Deck' 33,756, 'Silver' 4,263 — this is how IfcDoor gets metal), IFC CLASS second
@@ -80,6 +96,11 @@ byte-identical look. `TRIPLANAR_MAT` / `TRIPLANAR_BY_NAME` untouched until red1 
 app's own `_triResolve`, not re-derived).
 **Test:** the tally prints, and with the switch on during Alt+S every non-BIG triplanar material
 reads uTriActive=0 while BIG ones read 1 (`§TRI_BIG_ONLY_ACTIVE`). red1 judges the look.
+**BUILT + WITNESSED (bim-ootb c1b2f08d, local; served on 8600):** `§TRI_BIG_ONLY_TALLY` Terminal
+texturedNow=46,729 -> texturedUnderSwitch=1,305 (Slab 700/700, Wall 333/333, Column 158/158, Covering
+82/82, StairFlight 32/32; Plate 33,324/0, Door 133/0, Beam 432/0, Member 442/0, Railing 34/0, all MEP 0).
+`§TRI_BIG_ONLY_ACTIVE` during Alt+S: on {big 15 on, small 46 off}; off {big 15 on, small 46 on}.
+Witness: viewer/tests/witness_tri_big_only.js.
 
 **Other open, lower:** app-side run-to-run glow haze (not the bounce; control has it; parked by red1);
 cause of the rare empty app render under the tap (guarded + logged `§GI_BAKE_TAP BLANK_GRAB`); Alt+S
