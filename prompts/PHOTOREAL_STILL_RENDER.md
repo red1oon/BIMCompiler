@@ -9,6 +9,57 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ▶▶▶▶ §RESUME 2026-09-24 13:10 — START HERE (supersedes the PM block below; that block is history)
+
+**On localhost:8600 (red1 judges here):** bim-ootb `feat/shadow-size-by-envelope` @ **6750db1b**, sw **v1253**, tree
+/tmp/wt-shadow, PUSHED (backup), **NO PR** (the open items below gate the one end-of-session PR).
+URLs: http://127.0.0.1:8600/viewer/viewer.html?db=/buildings/Hospital_extracted.db (also Terminal_extracted.db,
+HHS_Office_Federated_extracted.db). Dials: `&base=0.25` raises the Alt+S base light (0..1, default 0);
+`&surf=off` = old surfaces; console `APP._sunShadowRestoreEnabled=true` = parked restore pass; `&tri=big` (superseded).
+**Restart 8600 after a reboot** (/tmp dies): `git -C ~/bim-ootb worktree add /tmp/wt-shadow feat/shadow-size-by-envelope`
+(fetch first), symlink any missing DB into /tmp/wt-shadow/buildings (serve_tree falls back to ~/bim-ootb/buildings anyway),
+then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600.log 2>&1 < /dev/null &`.
+**Live on main already:** #1759 row probe (sw v1235), #1760 film fill (v1240).
+
+**red1 RULED today (all on the branch unless noted):**
+- Surfaces §SURFACE_RULES R1-R9 ON by default ("cleaner, no more drab surfacing"); floors before substance (R4).
+- R10 openings: split glass/frame + door handle/leaf (merged from feat/surface-r10 ac6c5524); glass alpha = building's own.
+- Film fill restored 0.785/1.257 (#1760 LIVE). Alt+S keeps #1601's fill, and now scaled by the base dial.
+- Daylight Alt+S (sun > 6°, dusk mood off): NO window glow; lamps OFF only when the camera is OUTSIDE (rooms roomAt, up-ray
+  fallback); films unchanged (§STILL_GLOW af75fb41).
+- Alt+S base light (ambient+hemi) = dial, default 0 = real sources only; deep interiors go dark by design (§STILL_BASE fac153dd).
+- Shadow restore pass: PARKED (off; depth fix kept behind the flag).
+- Alt+C bounce: ON by default with an off checkbox, the copy-bake-command line carries it, no WebGPU -> stands down + logs.
+- Probe-grid lighting: survey written (§PROBE_GRID_SURVEY); first step = one measured 4 m sky-only Hospital bake.
+- Also on the branch: DLOD paused during Alt+S, 8192 Hospital map, status-at-once, §STILL_POSE pose log.
+
+**OPEN, in order (all gate the end PR):**
+1. **Rooftop hut walls show no away-from-sun shading** (red1 disputes the glow explanation for opaque huts). Opus agent
+   STOPPED mid-run, no verdict. Evidence in scratchpad wallshadow/ (hut.js, log_hut_{base,sunonly,surfoff,trioff,
+   nopoints,noambhemi}.txt, sheet_hut_base_vs_sunonly.png, sheet_hut_variants.png). Two LEADS, unproven: (a) its last
+   line: "the triplanar chunk skips `batchingMatrix`", i.e. for BatchedMesh the triplanar world position/normal ignores
+   the per-instance transform; (b) §MEP_SMOOTH_NORMALS smoothed 15,591,853 verts in 1,166 geoms at staging, far beyond
+   MEP; check whether hut walls are in it (smoothed box normals light every face alike). Next: sun-only N·L per face
+   from the buffer normals + the shader normal, one variable at a time.
+2. **R10 gaps** (feat/surface-r10 @ 250b8546 = WIP witness with the full-count gate; agent stopped): (1) glass-shadow arm
+   re-run with the gate (a "before" of 0 vs 4,272 smelled of a short load); (2) force DLOD on split meshes, zero-scaled >0
+   then restored, both groups together; (3) Alt+S bounce with split meshes on the real GPU; (4) LTU fps before/after
+   (draws +17%, transparent 18->489).
+3. §STILL_GLOW / §STILL_BASE: one clean Alt+S witness run on this build (the latest arm's load was short; the stopped run
+   was the check of the new lines). Stills for red1: courtyard (no glow, no lamps), interior (lamps on), dusk (both).
+   Beam/railing check with the lamps off.
+4. Hospital mid-wing arms, if still needed after 1 (texel/frustum/filter known from source; the view-fitted frustum
+   is the lever to test).
+5. Bounce composite shifted sideways on alternate shots after __giStillRelease (scratchpad dials/run2/); then gain stills.
+6. Alt+C bounce option (spec'd above). 7. Probe grid first bake.
+**Awaiting red1's ruling (films, NOT changed):** tools.js lamp intensity uses `(A._nightPLScale || 1)`, so a scale of 0
+becomes 1. The film's §CPE_TAIL_LIGHTS_ALL_ONLY lights-off slot has therefore never switched lamps off. Alt+S now gates
+on its own flag (§STILL_GLOW). Fixing it globally would change films.
+**Flaky headless loads (open, not chased):** Terminal streamed 48,428 / 47,928 / 29,928 / 0; Hospital sometimes 8,682 or
+62,682 of 63,182. Every witness must gate on elements WITH transforms (elements_meta JOIN element_transforms per building;
+Hospital 63,182, not elements_meta's 63,415) and print VACUOUS otherwise.
+**Agents:** red1 rests Fable when tokens are low; Fable clears the hard unknowns, then Opus/Sonnet do the follow-on.
+
 ## ▶▶▶ §RESUME 2026-09-24 PM — START HERE (supersedes the block below for what is open)
 **Served on localhost:8600:** bim-ootb `feat/shadow-size-by-envelope` @ eb854d69, sw v1247, from /tmp/wt-shadow
 (`node <scratchpad>/serve_tree.js /tmp/wt-shadow 8600`, started with setsid). PUSHED as a branch for backup; **NO
