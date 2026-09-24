@@ -124,6 +124,20 @@ bounce gain > 0.6); the film tap is still sandbox-only (gi_bake_tap2.js via cli_
 (`hhs_gi_full_1080p.mp4`), Hospital whole path 480p + 1080p (`hospital_gi_full_1080p.mp4`, 2h43m).
 Check policy agreed with red1: no full-length control; 5 s control clip before a big bake + self-checks.
 
+## §STILL_STATUS_FIRST (2026-09-24) — SPEC: Alt+S says so AT ONCE
+**red1:** on Alt+S the status must appear immediately; today it shows only after the app's synchronous still
+staging (~5 s on his desktop, 70 s headless HHS), so nothing tells him the press registered. **Source:**
+scene.js:3228 (Alt+S) and panels.js:428 (button) call A.toggleStillRefine() -> startStillRefine() ->
+_applyPhotoStaging() synchronously inside the key event; gi_still.js's toast is set in a setTimeout that
+cannot paint until that returns. **Rule:** the two USER entry points call `A.toggleStillRefineUI()`: if a
+still is on it toggles off as before; otherwise it shows the status toast (same element/style as
+gi_still.js, `#gi-still-toast`), waits for one animation frame plus a macrotask (the frame is committed),
+THEN calls startStillRefine(). Programmatic callers (bake, witnesses) keep the synchronous
+toggleStillRefine/startStillRefine unchanged. A second press while pending is ignored. The toast hides when
+the still is ready (busy clears) unless gi_still has taken it over. **Log:** `§STILL_STATUS painted t=`,
+`frame t=`, `stagingStart t= gap=<ms since painted>`. **Test:** headless Alt+S keypress -> the three lines in
+that order, gap < ~100 ms, and the still still completes (and the bounce still runs where supported).
+
 ## §SURFACE_RULES (2026-09-24) — SPEC, sent to the watcher BEFORE any code. Supersedes §TRI_BIG_ONLY.
 **red1:** surfaces are too rough and materials hard to tell apart. "keep the metal deck rough; ... it is floor
 slabs and small beams that are given rough surfaces; not to do so, as that is not realistic in real life."
