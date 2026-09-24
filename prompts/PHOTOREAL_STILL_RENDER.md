@@ -246,6 +246,14 @@ returns more than twice). Never send red1 a film before its clip check.
 - Open: film ground warmer/darker than Alt+S (cause not found); fill ruling (red1); hall lamp change (red1); separate
   branch fix/frame-reuse-sanity @eac0b2c6 (W-FRAME-REUSE PART F) to land before any full film with load path + Measure.
 
+**§FILM_PARITY — READY, HELD (2026-09-25): feat/film-parity @eb3a41c1, sw v1310, pushed, fleet smoke 7/7 PASS, local CI
+checks pass. Watchdog decisions for red1: film fill default RESTORE (--film-fill alts = ambient 0); §LAMP_CAP_NEAREST OFF
+(list order = approved look; &lampcap=nearest); Clinic/HHS no per-building tuning; §LAMP_LUX_CAP dead; stillexp sheet
+cancelled. PR HELD by red1: "establish the principles of lighting first" — surfaces lit by their real sources (daylight
+through windows, fixtures, and for rooms with neither a modern base light, ceiling-cove style). The restore fill is a
+sourceless fill and may flip once the principle is agreed (effects.js _filmFillRestore, one line). Checks: portal-inside
+fix costs the hall +0.5 composite; list-order churn: no in-clip 0<->full lamp step.**
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
