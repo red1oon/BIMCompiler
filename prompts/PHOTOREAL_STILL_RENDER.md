@@ -24,6 +24,15 @@ still_status_first,surface_rules}.js.
    facing away from the sun" pair. Arms and required logs: see the watcher's brief (A1/A2 8600 before/after the bounce,
    B live main, C1 ?surf=off, C2 4096, C3 DLOD; D1 film staging via A._maxqActive=true vs D2 Alt+S, logging the
    sun, fill, env/envInt, bounce gain, and N·L of the off-sun wall). Only poses exist so far: scratchpad shadow_ab/pose_p1.json, pose_p2.json.
+   ADDED (red1 via watcher): is the jagged edge part of the same problem? Per arm, one line: shadow texel (m) at the
+   parapet and at the mid-wing wall, and the filter in use. KNOWN FROM SOURCE, before any run: the photo shadow is
+   PCFShadowMap (effects.js:3164; tools.js:942), shadow.radius never set (= three's default 1). The sun camera is
+   ORTHOGRAPHIC, so the texel is the SAME everywhere in the frustum: 2*env/size = 0.088 m at 8192 on this branch,
+   0.177 m at 4096 on main (Hospital env 362). What differs by place is the footprint on the surface: a texel
+   stretches to texel / sin(angle between surface and sun), e.g. a flat roof at a 10° sun gets 0.088/0.174 = 0.51 m
+   steps along the sun direction, while a sun-facing wall gets ~0.09 m. So the saw-tooth is area-per-map at grazing
+   incidence, with a 1-texel PCF that does not hide it. To confirm per arm: the logged frustum bounds and whether the
+   mid-wing point is inside it (a point OUTSIDE the frustum gets no shadow at all, which would explain missed walls).
 2. Bounce composite shifted sideways on alternate shots after __giStillRelease (HHS, camera logged identical,
    appMean 119.25 every shot). Evidence: scratchpad dials/run2/. Then the bounce-gain stills 0.6/1.0/1.4 for red1
    (the bounce dials apply only at first build, §GI_DIALS_FIRST_BUILD).
