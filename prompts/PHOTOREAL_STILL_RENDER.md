@@ -24,6 +24,14 @@ not releasing (APP._stillLockOn left true, main.js cancel paths returning early)
 (camera moves, §FPS_MODE orbit=1)". Hotfix PR, prove live. Also that still shows the far floor/room washed near-white again
 at an interior aerial pose: re-check against the §FLOOR_WASH pick (lamps 16 / 25 m).
 
+**RAISED by red1 (19:3x): the JAGGED SHADOW fix goes WITH §STILL_CULL, before §FILM_PARITY.** Evidence already on file
+(this doc, the shadow-edge diff): nav looks smooth only because its sun is fixed at 63° high; Alt+S uses the real sun, and at a
+grazing angle the 0.088 m texel stretches to ~0.5 m steps; PCF radius 1. Do it as ONE shadow-camera change with §STILL_CULL,
+since both fit the sun's frustum to the camera's view + its sun-ward shadow volume. (1) View-fitted sun frustum for the still
+(tighter texel where the camera looks, stable across the 16 refine frames); (2) second arm, a PCF radius 2-3 if steps remain;
+(3) the shadow map rendered once per still. Witness: texel + ground footprint logged before/after at pose_p1 and the Hospital
+parapet pose; the Terminal roof-through-sky stays fixed; one side-by-side sheet for red1's eye (look at every frame first).
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
