@@ -34,6 +34,17 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
 - Also on the branch: DLOD paused during Alt+S, 8192 Hospital map, status-at-once, §STILL_POSE pose log.
 
 **OPEN, in order (all gate the end PR):**
+0. **FIRST — red1's two rulings after eyeballing 8600 (dials to tune live on 8600):**
+   (a) "Alt+S is too dark. It seems not to take in enough sky ambient light." At base=0 the SKY (hemi) is scaled away
+   together with the flat ambient (§STILL_BASE scales both). Split the dial: `&sky=` scales hemi (the sky from above),
+   and `&base=` scales the flat ambient only. Sky default > 0, value picked by red1 by eye. Both read at every press.
+   (b) "Indoor lighting is not throwing enough, so it is a knob." Add `&lamps=<scale>` (and a range multiplier) for the
+   fixture point lights in Alt+S, read at every press. Mind the `(A._nightPLScale || 1)` trap in tools.js (~2052/2087):
+   0 must mean 0. Facts from source: the Alt+S lamp set is §NIGHT_STILL_FRUSTUM (tools.js ~1842): fixtures whose position
+   is inside the camera frustum, capped at 200 (a sanity ceiling, not a creative limit), plus the §BAKE_INTERIOR_TOPUP
+   branch; the nav budget is nearest-N to the camera (sorted by distance, ~1790). The Alt+S intensity is
+   NIGHT_LIGHT_INTENSITY 2.0 x fade x _nightPLScale (_nightPLScaleStill 0.5 in staging, §STAGED_PL_CUT); the range/decay
+   are NIGHT_LIGHT_RANGE / NIGHT_LIGHT_DECAY. Log per still: `§STILL_BASE sky= base= lamps= range= camInside=`.
 1. **Rooftop hut walls show no away-from-sun shading** (red1 disputes the glow explanation for opaque huts). Opus agent
    STOPPED mid-run, no verdict. Evidence in scratchpad wallshadow/ (hut.js, log_hut_{base,sunonly,surfoff,trioff,
    nopoints,noambhemi}.txt, sheet_hut_base_vs_sunonly.png, sheet_hut_variants.png). Two LEADS, unproven: (a) its last
