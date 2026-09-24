@@ -210,6 +210,24 @@ is not clean, the whole element gets class-default glazing, and the path taken i
 R7 finish. Multi-style / glass-styled openings untouched. **Split feasibility is being measured (geometry,
 read-only) before any R10 code.**
 
+**§SURFACE_RULES — BUILT (bim-ootb 4c8c8d4f, local, served on 8600; default OFF, `?surf=rules` at load).**
+One deviation from rev 1, recorded: a FLAT non-roof slab/stair is R4 BEFORE substance. Otherwise Terminal's 322
+'Concrete - Cast-in-Place' slabs would be R3 rough, against red1's "floor slabs smooth" (a floor is a finished
+surface whatever it is cast from). Substance still beats class for walls. Witness viewer/tests/witness_surface_rules.js:
+Terminal roofLayer 33,217, R1 32,826 (deck rough, 165 against own row), R4 733, textured 46,729 -> 32,921;
+HHS roofLayer 118, textured 5,600 -> 278; Hospital roofLayer 488, textured 51,516 -> 1,320; colours all
+authored or class default, unchanged. Only R1/R2/R3 materials carry a texture; switch off = today's 61
+textured materials on Terminal. Terminal note: walls/columns/railings resolve R5 (plaster) through the leaked
+'…BrickPlaster' type name (smooth, as a plastered brick wall reads). Doors/windows resolve R6 (metal names);
+R10 will own them. **Look: red1 on localhost.**
+**§SUN_SHADOW_RESTORE — PARKED (watcher ruling for red1, 2026-09-24).** Stays OFF by default (32fa52e8,
+`§SUN_SHADOW_RESTORE OFF (default)` witnessed on 8600). The depth-texture fix (62ef1985) stays behind
+`APP._sunShadowRestoreEnabled = true`. Evidence: with the fix it fires (low-sun Hospital crop shadowedPx 25,012,
+edgeBandPx 18,395 at k4 / 9,753 at k1, was 0/0), but it paints blocky halos: the edge band is 36% of the frame at k4,
+and the stair-step reads MORE clearly (sheet ~/Downloads/hospital_shadow_edge_before_after_fix.png; stills and
+readbacks in the photoreal scratchpad shadow_ab/). The parapet saw-tooth is the native PCF edge, present with or
+without the pass. Nobody missed it (inert since 08-14). A later session may tune it; no tuning this session.
+
 ## §DLOD_STILL_OWNERSHIP (2026-09-24) — SPEC: Alt+S must not let DLOD hide roof casters
 **Defect (red1, ~/Downloads/bounce_still_1790210272668.png, Terminal hall 08:37):** sky and sun shafts
 come through the roof. red1: "DLOD is removing the off frame roof where the Sun shines thru."
