@@ -686,18 +686,22 @@ score: of the joins the walker drew, how many land on a real pipe touch.
 | HHS_Office | office | out-of-domain | 1 380 | 0.620 | 0 |
 
 The model **degrades gracefully** and never collapses. On **every** building **0 joins were fabricated** and
-**0 exceeded the gap bound**. An ARC-only building with no pipes routes **0**, never a guess.
+**0 exceeded the gap bound**. That table scores the walker against a building's *own* pipes. On an ARC-only
+building there are none to join, so the walk **generates** plumbing instead — see *What a walk gives you now*
+below.
 
 ### Walk them all at once
 
 You don't have to pick the trades one at a time. Under **Not extracted — walk from …** in the Outliner,
-the first row is **▶▶ Walk ALL Disciplines**; its sub-label tells you how many trades the building is
-missing (e.g. *4 not extracted · x-ray reveal*).
+the first row is **▶▶ Walk ALL Services**; its sub-label tells you how many service trades the building is
+missing (e.g. *4 services not extracted · x-ray reveal*).
 
 1. Open a bare ARC building.
-2. Click **▶▶ Walk ALL Disciplines**.
+2. Click **▶▶ Walk ALL Services**.
 
-It walks every absent discipline in turn, through exactly the same production path a single click uses —
+It walks every absent **service** (ACMV, ELEC, PLB, FP) in turn. Structure and roof plates are *not* part of
+it: on a large building they are tens of thousands of elements (Terminal's roof alone is 10,584 plates), so
+they keep their own rows and you walk them only when you want them. It works through exactly the same production path a single click uses —
 same rules, same gating, same honest refusal when a trade has nothing to hang on. The difference is the
 presentation: X-ray brackets the whole run so you can watch it land, and each discipline's placements
 flash amber and settle into their own trade colour just before they're committed, so you can see *which*
@@ -706,6 +710,34 @@ trade just filled in rather than watching one undifferentiated wave.
 X-ray is restored afterwards even if a discipline refuses part-way. On a very large building the
 per-element flash is dropped in favour of one batched hold-and-settle — the geometry committed is
 identical either way, only the reveal animation is coarser.
+
+### What a walk gives you now — pipes, one-step undo, and pipes that follow
+
+**Plumbing is routed, not just placed.** Walking **PLB** on a bare building now also draws the pipe runs
+between the fixtures: cold water and waste. It works through the same path as any walk, measured on the real
+Open → Walk (`W-MEP-OPENPATH`):
+
+| Building | PLB fixtures | Pipe runs drawn | Runs signed into the log |
+|---|---:|---:|---:|
+| Duplex | 18 | 18 | 18 |
+| SampleCastle | 84 | 18 | 18 |
+| Terminal | 969 | 2,915 | 60 (a size cap; every run is drawn) |
+
+Typical run length is 2–3 m. The pipe sizes are real, measured from the Duplex plumbing model:
+- cold water 25.4 mm (1″, the mains size; the Duplex also has ½″ branches)
+- waste 48.3 mm (1½″)
+
+A pipe is never drawn at an invented size. Ducts (ACMV), cable (ELEC) and sprinklers (FP) are placed but not
+yet routed.
+
+**One Ctrl+Z takes the whole walk back.** A walk appears in the history as one step, e.g. *Walk PLB (45)*:
+the fixtures, the pipe runs and their bend fittings together. `Ctrl+Z` removes all of it from the model and
+the screen, and `Ctrl+Y` brings it all back (`W-WALK-GESTURE`).
+
+**Move a fixture and its pipes follow.** Moving a walked fixture, by dragging it or a gridline, re-routes
+that trade's pipes from the new positions (`W-MEP-REROUTE`: a 1 m move re-routes the Duplex network so a
+run ends at the fixture's new spot). Undo the move and the pipes route back. Two limits for now: the re-routed
+runs are shown but not signed, and the bend fittings from the original walk are not recalculated.
 
 ### Seed-Trunk — route a service trunk
 
