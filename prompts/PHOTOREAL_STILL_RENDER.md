@@ -45,6 +45,35 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
    branch; the nav budget is nearest-N to the camera (sorted by distance, ~1790). The Alt+S intensity is
    NIGHT_LIGHT_INTENSITY 2.0 x fade x _nightPLScale (_nightPLScaleStill 0.5 in staging, §STAGED_PL_CUT); the range/decay
    are NIGHT_LIGHT_RANGE / NIGHT_LIGHT_DECAY. Log per still: `§STILL_BASE sky= base= lamps= range= camInside=`.
+   **§STILL_DIALS spec (2026-09-24 PM, renewed session):** Alt+S only (`!A._maxqActive`); films and nav unchanged.
+   Read once per press, URL then console override (`APP._stillSky/_stillBaseScale/_stillLamps/_stillLampDecay`).
+   - `&sky=` 0..2, default **1** = hemi at #1601's Alt+S value (0.617), i.e. what Alt+S had before §STILL_BASE.
+     Default is a start point for red1's eye, not a ruling.
+   - `&base=` 0..2, default 0 = flat ambient off (unchanged meaning, now ambient ONLY).
+   - `&lamps=` 0..4, default 1 = today's lamp strength. A plain multiplier on each fixture light, checked with
+     `typeof === 'number'`, never `||`, so 0 gives intensity 0 (no `|| 1`). Films' `_nightPLScale || 1` untouched.
+   - Range, from source: NIGHT_LIGHT_RANGE = 0 = infinite reach already; a range MULTIPLIER on 0 does nothing.
+     The real reach lever is the fall-off: `&lampdecay=` 0..2, default NIGHT_LIGHT_DECAY 1.0; lower = throws further.
+     Set on every Alt+S lamp (new and reused); nav lamps get NIGHT_LIGHT_DECAY back at teardown.
+   - Log per press: `§STILL_BASE sky= base= lamps= decay= range=0(inf) hemi= ambient= camInside= lampsOn=`.
+   - Proof: one headless Alt+S press per dial arm on Hospital gated on 63,182 elements (VACUOUS otherwise), reading
+     the logged hemi/ambient and the sum of lamp intensities; lamps=0 must log sum 0.
+   - red1 (via watcher): `&sky=` default 1.0 (old Alt+S hemi), `&base=` default **0.25**. Tuned by eye on 8600.
+   - red1 LOOK ruling 13:3x ("I think we got it"; off-sun walls read dark): base default **0**; sky default **1.5**,
+     range 0..3; bounce MORE: **§GI_STILL_GAIN_DIAL** `&bounce=` 0..3 (APP._stillBounceGain, window.__GI_STILL_GAIN),
+     default 1.0 (was 0.6), read at EVERY press: gain and AO become TSL uniforms on the kept renderer (fixes
+     §GI_DIALS_FIRST_BUILD for gain/AO; slices/steps still first-build). Log `§GI_STILL gain= ao= applied`.
+     bim-ootb f42f1c37, sw v1256.
+   - Gate note: the page's JOIN says 63,415 for Hospital, Hospital_meta.db's own JOIN says 63,182 (the loaded set).
+     witness_still_glow.js takes `--want 63182` and logs both.
+   **§LAMP_SHAPE_COLOUR spec (red1 via watcher: "round lights soft amber, rectangular ones white; it gives good
+   reflective play on the surfaces"):** Alt+S only (films/nav keep §NIGHT_LIGHT_MIX). Shape from each fixture's OWN
+   mesh (A.meshCache[ghash], local X/Z = plan, local Y = up), never its name: fill = convex-hull plan area / plan
+   bbox area; aspect = long/short side. ROUND: fill 0.70-0.86 and aspect <= 1.25 (a disc is 0.785). RECT: fill >= 0.93.
+   Anything else, or no mesh loaded = AMBIGUOUS, keeps its §NIGHT_LIGHT_MIX colour. Exit signs keep their green.
+   Colours from the existing palette (tools.js): round = NIGHT_WARM 0xffdca8 (~2900K, "downlight/sconce/pendant";
+   softer than NIGHT_MIX_AMBER 0xffb45c), rect = NIGHT_MIX_WHITE 0xffffff. Light and glow sprite take the same colour.
+   Log once per press: `§LAMP_SHAPE_COLOUR bld= round= rect= ambiguous= noMesh= exit=`; run Hospital, Terminal, HHS.
 1. **Rooftop hut walls show no away-from-sun shading** (red1 disputes the glow explanation for opaque huts). Opus agent
    STOPPED mid-run, no verdict. Evidence in scratchpad wallshadow/ (hut.js, log_hut_{base,sunonly,surfoff,trioff,
    nopoints,noambhemi}.txt, sheet_hut_base_vs_sunonly.png, sheet_hut_variants.png). Two LEADS, unproven: (a) its last
