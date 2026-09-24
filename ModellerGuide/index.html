@@ -1382,6 +1382,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a walk gives you now — pipes, one-step undo, and pipes that follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#seed-trunk-route-a-service-trunk" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1420,13 +1431,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#share-an-issue-bcf-export" class="md-nav__link">
+  <a href="#export-db-ifc-or-a-bcf-issue" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Share an issue — BCF export
+        Export — .db, IFC, or a BCF issue
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Export — .db, IFC, or a BCF issue">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ifc-the-whole-building-you-opened" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IFC — the whole building you opened
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bcf-share-an-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BCF — share an issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3023,6 +3062,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a walk gives you now — pipes, one-step undo, and pipes that follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#seed-trunk-route-a-service-trunk" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3061,13 +3111,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#share-an-issue-bcf-export" class="md-nav__link">
+  <a href="#export-db-ifc-or-a-bcf-issue" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Share an issue — BCF export
+        Export — .db, IFC, or a BCF issue
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Export — .db, IFC, or a BCF issue">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ifc-the-whole-building-you-opened" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IFC — the whole building you opened
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bcf-share-an-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BCF — share an issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3265,35 +3343,28 @@ value the Viewer already used) and renders it faithfully: an element with real g
 transparent material at its true opacity, everything else is unaffected.</p>
 <p><img alt="A Duplex window rendered as real transparent glass, recessed into its wall opening — not an opaque panel" src="../img/modeller/glass-window-transparent.png" /></p>
 <h2 id="what-a-wall-is-made-of">What a wall is made of<a class="headerlink" href="#what-a-wall-is-made-of" title="Permanent link">&para;</a></h2>
-<p>A plain-looking wall box in the Modeller is real geometry, not a shortcut — the file itself only ever
-described the wall as one outer shape plus a list of layer thicknesses, never as separate layer shapes.</p>
-<p>Take a real one: the party wall between two Duplex units (<code>2O2Fr$t4X7Zf8NOew3FNbT</code>) is built from 7
-layers — plasterboard (16mm), metal stud (41mm), block (193mm), an air gap (50mm), block again (193mm),
-metal stud (41mm), plasterboard (16mm). That's real, measured construction. But the source file never
-draws those 7 slabs as 7 shapes — it draws <strong>one outer box</strong> the size of the whole stack, and records the
-7 thicknesses as a side list ("this box is made of, in order..."). The Modeller renders exactly what's
-there: one box — 14 triangles for this wall (a perfectly plain box tessellates to 12, two per face on
-six faces, and 35 of the Duplex's walls are exactly that; this one's outline carries two more). That's
-not a placeholder standing in for the real wall. It <em>is</em> the real wall, drawn at the detail the file
-actually authored.</p>
-<p>You can tell a real box from a broken one by whether it can be cut. A door or window cut through a wall
-only works if the wall has a real shape to cut — a stand-in box has nothing behind it to carve. In the
-Duplex, 18 walls carry a door or window hole and each ends up with 28–120 triangles once the cut is
-applied; that's proof the geometry underneath is real, not a fallback.</p>
+<p>A real wall is not one solid lump — it is a stack of layers. Take the party wall between two Duplex
+units (<code>2O2Fr$t4X7Zf8NOew3FKRH</code>): it is built from 7 layers — plasterboard (16mm), metal stud (41mm),
+block (193mm), an air gap (50mm), block again (193mm), metal stud (41mm), plasterboard (16mm), 550mm in
+all. The source file draws that wall as <strong>one outer shape</strong> and keeps the 7 thicknesses in a side list
+("this shape is made of, in order..."). The Modeller reads that list and draws the wall as <strong>7 real
+slabs</strong>, one per layer, each at its own measured thickness.</p>
+<p>Two of the Duplex party walls (<code>2O2Fr$t4X7Zf8NOew3FNbT</code> and its twin <code>2O2Fr$t4X7Zf8NOew3FKRi</code>) show
+<strong>5 slabs, not 7</strong> — and that is correct. The source file itself trims off the neighbour-side stud and
+plasterboard, because those belong to the wall on the other side. The Modeller draws the 5 layers that
+are really there (493mm) and makes up nothing for the 2 that aren't.</p>
+<p>On Duplex, 50 of its 57 walls draw as layer stacks this way. The other 7 are not authored with more than one
+layer, so they stay one plain box — which is exactly what their source says. Floor slabs and coverings carry layers
+too.</p>
+<p><strong>No layers, no stand-in.</strong> If an element is authored with several layers but its layer slabs can't be
+found, the Modeller does not draw a plain box in its place — it leaves that element out and reports it by
+name in the browser console.</p>
+<p><strong>Only Duplex, for now.</strong> Duplex is the only resident that ships its layer data today. The other
+residents still draw each wall as the one outer shape its file gives — real geometry at the detail the
+file authored, not a placeholder.</p>
 <p><strong>Why the Viewer looks richer on the same building.</strong> Open Duplex in the Viewer and you'll see far more
 going on — because the Viewer loads everything the Modeller deliberately doesn't: pipes, ducts, and other
-services (904 extra parts). The walls themselves are identical in both — same boxes, same 12 triangles
-each. The Modeller is scoped to architecture + structure by design; it isn't missing wall detail the
-Viewer somehow has.</p>
-<p><strong>Why a July fix looked dramatic on one building and invisible on another.</strong> An earlier pass removed
-<em>fake</em> placeholder boxes — geometry the pipeline invented when it couldn't resolve a real shape. On one
-test building (heavily irregular massing) that fix visibly cleaned up the model. On the Duplex it changed
-nothing you could see, because a plain wall's honestly-tessellated box and a fake placeholder box are both
-12 triangles — removing the fake ones simply left the real ones exactly as they were.</p>
-<p><strong>What changes next.</strong> The file-side link from a wall to its own layer list is now extracted
-(<code>rel_material_layer_set</code>), so the data needed to draw those 7 slabs individually — instead of one box —
-already exists. Once that slicing ships (§LOD400-LAYERS-REAL), this same party wall will render as 7
-stacked slabs whose thicknesses sum to the wall's true 550mm, not a single block.</p>
+services (904 extra parts). The Modeller is scoped to architecture + structure by design.</p>
 <hr />
 <h2 id="assemble-draw">Assemble &amp; draw<a class="headerlink" href="#assemble-draw" title="Permanent link">&para;</a></h2>
 <h3 id="insert-assemble-from-the-catalog">Insert — assemble from the catalog<a class="headerlink" href="#insert-assemble-from-the-catalog" title="Permanent link">&para;</a></h3>
@@ -3358,7 +3429,8 @@ signed-op path as a polygon extrude.</p>
 </ol>
 <p><img alt="Select the wall to open" src="../img/modeller/cut-select.png" /></p>
 <p>The opening shows immediately; undo closes it to the exact original frame. (Cutting a seeded ARC wall
-promotes its measured box to a B-rep just-in-time, so the subtraction is exact — never approximated.)</p>
+promotes it to a B-rep just-in-time — from its measured box, or, on a layered wall, from its real layer
+slabs — so it is never approximated. See <a href="#what-a-wall-is-made-of">What a wall is made of</a>.)</p>
 <p><img alt="Cut — a signed opening void subtracted from the wall" src="../img/modeller/cut-open.png" /></p>
 <h3 id="fillet-round-a-solids-edge">Fillet — round a solid's edge<a class="headerlink" href="#fillet-round-a-solids-edge" title="Permanent link">&para;</a></h3>
 <p><em>Commits <code>GEOM_FILLET</code>.</em></p>
@@ -3378,7 +3450,11 @@ the building's own recovered relationships before it settles: a hosted door ride
 than divorcing from it, and a delta-based conformity gate flags only what the edit actually broke (RED)
 or softly disturbed (ORANGE) — never a pre-existing condition the building already shipped with. That
 combination — open a <em>complete, real, production</em> IFC and safely edit <em>part</em> of it — is what a
-Bonsai/FreeCAD-style direct editor doesn't do. Full dated disclosure:
+Bonsai/FreeCAD-style direct editor doesn't do.</p>
+<p>Which elements touch which is worked out from each element's <strong>real shape, where it actually sits</strong> — not
+from a rough box around its insertion point, which could land up to about 0.4 m off. (Before this was
+fixed on 18 September 2026, a gridline drag on a real building could leave its walls where they were.)</p>
+<p>Full dated disclosure:
 <strong><a href="../ModellerKernelFold/">Event-Sourced Geometry &amp; the Graph-Cascade Conformity Layer</a></strong>.</p>
 <p>Select an element and tap <strong>Move</strong> to raise the <strong>transform gizmo</strong> — the shared handle for moving,
 scaling and rotating.</p>
@@ -3449,6 +3525,36 @@ wall its designer actually put it in — and where a building's author never dec
 modeller says so rather than inventing one. In practice that means the relationship is exact on
 <em>SampleHouse</em> (all 7 hosted openings) and <em>Duplex</em> (36 of its 38), and partial on <em>SampleCastle</em>, whose
 window-frame walls are consumed by their own openings and so aren't separate things to hold or ride.</p>
+<p>Since 18 September 2026 four more residents carry it too, so a door or window there holds or rides
+its wall the same way:</p>
+<table>
+<thead>
+<tr>
+<th>Resident</th>
+<th style="text-align: right;">Doors &amp; windows that hold or ride their wall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HHS Office</td>
+<td style="text-align: right;">99</td>
+</tr>
+<tr>
+<td>Clinic</td>
+<td style="text-align: right;">302</td>
+</tr>
+<tr>
+<td>Hospital</td>
+<td style="text-align: right;">506</td>
+</tr>
+<tr>
+<td>HospitalGarage</td>
+<td style="text-align: right;">36</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Terminal is the one exception.</strong> Its source file never says which door or window sits in which wall, so
+there is nothing real to hold or ride — the Modeller leaves it that way rather than guessing.</p>
 <p><strong>A carved hole comes along too.</strong> If the held or ridden opening has a real cut-through void (a door or
 window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
 itself is kept in sync with it — its centre never drifts off the door under a stretch, its width is held
@@ -3874,16 +3980,20 @@ score: of the joins the walker drew, how many land on a real pipe touch.</p>
 </tbody>
 </table>
 <p>The model <strong>degrades gracefully</strong> and never collapses. On <strong>every</strong> building <strong>0 joins were fabricated</strong> and
-<strong>0 exceeded the gap bound</strong>. An ARC-only building with no pipes routes <strong>0</strong>, never a guess.</p>
+<strong>0 exceeded the gap bound</strong>. That table scores the walker against a building's <em>own</em> pipes. On an ARC-only
+building there are none to join, so the walk <strong>generates</strong> plumbing instead — see <em>What a walk gives you now</em>
+below.</p>
 <h3 id="walk-them-all-at-once">Walk them all at once<a class="headerlink" href="#walk-them-all-at-once" title="Permanent link">&para;</a></h3>
 <p>You don't have to pick the trades one at a time. Under <strong>Not extracted — walk from …</strong> in the Outliner,
-the first row is <strong>▶▶ Walk ALL Disciplines</strong>; its sub-label tells you how many trades the building is
-missing (e.g. <em>4 not extracted · x-ray reveal</em>).</p>
+the first row is <strong>▶▶ Walk ALL Services</strong>; its sub-label tells you how many service trades the building is
+missing (e.g. <em>4 services not extracted · x-ray reveal</em>).</p>
 <ol>
 <li>Open a bare ARC building.</li>
-<li>Click <strong>▶▶ Walk ALL Disciplines</strong>.</li>
+<li>Click <strong>▶▶ Walk ALL Services</strong>.</li>
 </ol>
-<p>It walks every absent discipline in turn, through exactly the same production path a single click uses —
+<p>It walks every absent <strong>service</strong> (ACMV, ELEC, PLB, FP) in turn. Structure and roof plates are <em>not</em> part of
+it: on a large building they are tens of thousands of elements (Terminal's roof alone is 10,584 plates), so
+they keep their own rows and you walk them only when you want them. It works through exactly the same production path a single click uses —
 same rules, same gating, same honest refusal when a trade has nothing to hang on. The difference is the
 presentation: X-ray brackets the whole run so you can watch it land, and each discipline's placements
 flash amber and settle into their own trade colour just before they're committed, so you can see <em>which</em>
@@ -3891,6 +4001,52 @@ trade just filled in rather than watching one undifferentiated wave.</p>
 <p>X-ray is restored afterwards even if a discipline refuses part-way. On a very large building the
 per-element flash is dropped in favour of one batched hold-and-settle — the geometry committed is
 identical either way, only the reveal animation is coarser.</p>
+<h3 id="what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow">What a walk gives you now — pipes, one-step undo, and pipes that follow<a class="headerlink" href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" title="Permanent link">&para;</a></h3>
+<p><strong>Plumbing is routed, not just placed.</strong> Walking <strong>PLB</strong> on a bare building now also draws the pipe runs
+between the fixtures: cold water and waste. It works through the same path as any walk, measured on the real
+Open → Walk (<code>W-MEP-OPENPATH</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th style="text-align: right;">PLB fixtures</th>
+<th style="text-align: right;">Pipe runs drawn</th>
+<th style="text-align: right;">Runs signed into the log</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duplex</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>SampleCastle</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td style="text-align: right;">969</td>
+<td style="text-align: right;">2,915</td>
+<td style="text-align: right;">60 (a size cap; every run is drawn)</td>
+</tr>
+</tbody>
+</table>
+<p>Typical run length is 2–3 m. The pipe sizes are real, measured from the Duplex plumbing model:
+- cold water 25.4 mm (1″, the mains size; the Duplex also has ½″ branches)
+- waste 48.3 mm (1½″)</p>
+<p>A pipe is never drawn at an invented size. Ducts (ACMV), cable (ELEC) and sprinklers (FP) are placed but not
+yet routed.</p>
+<p><strong>One Ctrl+Z takes the whole walk back.</strong> A walk appears in the history as one step, e.g. <em>Walk PLB (45)</em>:
+the fixtures, the pipe runs and their bend fittings together. <code>Ctrl+Z</code> removes all of it from the model and
+the screen, and <code>Ctrl+Y</code> brings it all back (<code>W-WALK-GESTURE</code>).</p>
+<p><strong>Move a fixture and its pipes follow.</strong> Moving a walked fixture, by dragging it or a gridline, re-routes
+that trade's pipes from the new positions (<code>W-MEP-REROUTE</code>: a 1 m move re-routes the Duplex network so a
+run ends at the fixture's new spot). Undo the move and the pipes route back. Two limits for now: the re-routed
+runs are shown but not signed, and the bend fittings from the original walk are not recalculated.</p>
 <h3 id="seed-trunk-route-a-service-trunk">Seed-Trunk — route a service trunk<a class="headerlink" href="#seed-trunk-route-a-service-trunk" title="Permanent link">&para;</a></h3>
 <p>After walking a discipline, route its <strong>service trunk</strong> from a real entry.</p>
 <ol>
@@ -3940,8 +4096,38 @@ write outright (no snapshot written); a real auto-healable pair heals, re-verifi
 snapshot lands; a heal engineered to disturb a third element reports that one new finding by name without
 touching it further.</p>
 <hr />
-<h2 id="share-an-issue-bcf-export">Share an issue — BCF export<a class="headerlink" href="#share-an-issue-bcf-export" title="Permanent link">&para;</a></h2>
-<p>Tap the <strong>BCF</strong> pill to export your current view as a <strong>BCF 2.1</strong> file (<code>.bcfzip</code>) — the open
+<h2 id="export-db-ifc-or-a-bcf-issue">Export — .db, IFC, or a BCF issue<a class="headerlink" href="#export-db-ifc-or-a-bcf-issue" title="Permanent link">&para;</a></h2>
+<p>Tap the <strong>Export</strong> pill. A small menu offers three things:</p>
+<ul>
+<li><strong>Native .db</strong> — the full-fidelity signed op-log, every edit you made. Re-open it later with
+  <strong>📂 Open ▸ local .db</strong>.</li>
+<li><strong>IFC (IFC4)</strong> — the building as a standard IFC4 file other BIM tools can read.</li>
+<li><strong>BCF issue (.bcfzip)</strong> — your current view and selection, as an issue (see below).</li>
+</ul>
+<h3 id="ifc-the-whole-building-you-opened">IFC — the whole building you opened<a class="headerlink" href="#ifc-the-whole-building-you-opened" title="Permanent link">&para;</a></h3>
+<p>Export ▸ IFC downloads <code>bonsai_model.ifc</code>. It carries <strong>every element of the building you opened</strong>, plus
+the walls you drew with Sketch → Extrude and the openings you Cut:</p>
+<ul>
+<li>Each element keeps its <strong>real class</strong> — a door stays an <code>IfcDoor</code>, a slab an <code>IfcSlab</code>, a stair an
+  <code>IfcStair</code>. A class the exporter doesn't know becomes a generic <code>IfcBuildingElementProxy</code>, never
+  dropped.</li>
+<li>Each element's <strong>shape is the same triangles you see on screen</strong>, written as an IFC4 triangle mesh — not
+  re-computed, not simplified.</li>
+<li>An element whose shape can't be found is <strong>left out and counted</strong>, never swapped for a plain box.</li>
+<li>The invisible ride anchors some buildings carry (SampleCastle has 65) are left out — they aren't real
+  building parts.</li>
+</ul>
+<p>Checked by re-reading the exported file: Duplex's 196 elements come back as 196 products (about 4 MB);
+SampleCastle's 3,225 come back as 3,225 (about 26 MB).</p>
+<p><strong>Not in the file yet:</strong> materials and colours, property sets, the storey/space structure, and openings as
+separate cut objects. It carries the building's real shapes, not yet a fully furnished IFC.</p>
+<p>Until 18 September 2026 this export wrote an <strong>empty</strong> file for any opened building — only drawn
+geometry went in. If you have an old export of a resident, export it again.</p>
+<p>The status line after an IFC export counts <code>walls=</code> only for walls you drew with Sketch → Extrude, so on
+an opened building it can read <code>walls=0</code> even though the file is full — check the byte count it prints
+instead.</p>
+<h3 id="bcf-share-an-issue">BCF — share an issue<a class="headerlink" href="#bcf-share-an-issue" title="Permanent link">&para;</a></h3>
+<p>Pick <strong>Export ▸ BCF issue</strong> to export your current view as a <strong>BCF 2.1</strong> file (<code>.bcfzip</code>) — the open
 buildingSMART format for exchanging issues between BIM tools. The export carries your live camera
 viewpoint and the real <code>IfcGuid</code>s of whatever's selected, so the file opens correctly in Navisworks,
 Solibri, BIMcollab, Revit (via plugin), or Trimble Connect — never a synthetic ID that only means
@@ -4036,8 +4222,8 @@ whole batch of detected clashes as one topic set.</p>
 <td>Refine the last-placed component's level of detail (same signed row) — appears once you enter <strong>Insert</strong>, not on the resting rail</td>
 </tr>
 <tr>
-<td><strong>IFC</strong></td>
-<td>Export the authored model as IFC4</td>
+<td><strong>Export</strong></td>
+<td>Export menu — Native <code>.db</code> (the signed op-log), IFC4 (the whole opened building), or a BCF 2.1 issue (see <a href="#export-db-ifc-or-a-bcf-issue">Export</a>)</td>
 </tr>
 <tr>
 <td><strong>Save</strong></td>
@@ -4046,6 +4232,10 @@ whole batch of detected clashes as one topic set.</p>
 <tr>
 <td><strong>History</strong></td>
 <td>World History — the cross-page timeline shared with the Viewer, iDempiere, and Gravity</td>
+</tr>
+<tr>
+<td><strong>Guide</strong></td>
+<td>A short in-app user guide — how to Open, walk, edit &amp; export</td>
 </tr>
 <tr>
 <td><strong>? Help</strong></td>
@@ -4102,8 +4292,8 @@ always a safe retreat.</p>
 </tr>
 <tr>
 <td><strong>Cut / Scale seems to do nothing on a wall from an opened building</strong></td>
-<td>A seeded ARC wall is a <em>baked</em> box, not a B-rep. Cut promotes it to a B-rep just-in-time so the subtraction is exact; a rotated/non-box insert is refused up-front (logged) rather than approximated.</td>
-<td>Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is <em>refused</em>, it isn't box-like enough to cut exactly; sketch the void instead.</td>
+<td>A seeded ARC wall is a <em>baked</em> mesh, not a B-rep. Cut promotes it to a B-rep just-in-time — from its box, or on a layered wall from its real layer slabs; an insert that is neither a plain box nor layered is refused up-front (logged) rather than approximated.</td>
+<td>Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is <em>refused</em>, it can't be cut exactly; sketch the void instead.</td>
 </tr>
 <tr>
 <td><strong>A Walk seems to hang on a big building</strong></td>
