@@ -25,12 +25,27 @@ Supersedes the EVENING block below (history + evidence). Roles: you are the DEV 
   default (list order kept = approved Terminal hall), §131 Sanity quiet dials, `--film-fill restore|alts` (default restore —
   WILL FLIP under §SOURCED_LIGHT principle 1: no sourceless fill). Open item: film ground reads warmer/darker than Alt+S at
   the same pose/sun (cause not found; all 85 ground uniforms equal).
-- bim-ootb `feat/still-res` @c8a624d8, /tmp/wt-stillres, LOCAL ONLY (not pushed), parked: &stillres=window|1080p|1440p|4k,
+- bim-ootb `feat/still-res` @c8a624d8, /tmp/wt-stillres, pushed, parked: &stillres=window|1080p|1440p|4k,
   default window. 1440p PASS (Hospital p1 2776x1440, bounce 86 s); 4k FAIL (bounce cap 3998x2074, one-line fix). Cost
   table (same pose at window/1440p/4k) still owed before any default change.
 
 **NEXT, in order:**
-1. **§SOURCED_LIGHT — SPEC ONLY, gate with red1-4b before any code. red1 CONFIRMED the principle (2026-09-25):**
+1. **§SOURCED_LIGHT — spec WRITTEN (983309ad4, below the #1764 line). WATCHDOG GATE (red1-4b, 2026-09-25): OPEN once
+   these five are added to the spec (spec edit, then build):**
+   (a) OPENINGS: room-binding must not block light through real openings. Merge rooms joined by an opening with no
+   door/glazing, and multi-storey voids/atria, into one LIGHT ZONE (the texture stores zone id); treat doors as closed.
+   Otherwise the Hospital atrium floor loses the upper levels' lamps. Say which data gives the adjacency (room_graph /
+   IfcOpeningElement / voids).
+   (b) FAR WINDOWS: portals are capped (≤32, within 40 m of the camera). With hemi zeroed indoors, every glazed room
+   beyond that goes dark, including the interiors seen through glass in ref5 (red1's "see-through lit-up inside" look).
+   Add an analytic per-zone DAYLIGHT term (sky through that zone's own glazing: glazing area/orientation → a per-zone
+   sky factor in a texture channel, like the cove), so it's sourced from its windows with no light objects added.
+   Portals stay as the near, shadowed detail.
+   (c) SKYLIGHTS/roof glazing: state whether portals cover them; if not, (b) must.
+   (d) SUN THROUGH GLASS: verify glazing does not cast sun shadow (castShadow on glass would block the sun indoors). Log it.
+   (e) red1 tests LIVE on 8600 himself: drop the ref sheet. Keep the § witnesses (coverage, crossWall=0, ms/frame) and
+   expose the cove + daylight intensities as dials for his live testing, with the defaults logged.
+   Original text of the ask follows (red1 confirmed the principle): red1 CONFIRMED the principle (2026-09-25):**
    "The paramount idea is bounce. If it is all washed, we cannot enjoy good bounce. With disparate sources, we can see
    them." / "light cannot leak through walls in real life except through glass." / "It is a surface matter, not a knob
    bumped up by the number of lights."
