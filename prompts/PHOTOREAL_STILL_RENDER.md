@@ -50,6 +50,13 @@ still_status_first,surface_rules}.js.
    (the bounce dials apply only at first build, §GI_DIALS_FIRST_BUILD).
 3. §SURFACE_R10 openings: spec + additions approved; /tmp/wt-r10 branch feat/surface-r10 created at eb854d69,
    NO code yet. The measurement to port is in scratchpad r10/.
+3b. §SURFACE_R10 BUILT (Opus agent, /tmp/wt-r10 feat/surface-r10 @ ac6c5524, local): split counts match the
+   measurement exactly (Hospital 118/118, Terminal 223/228, LTU 951/976); paneCasters=0. Closing 4 gaps before red1
+   looks: glass-shadow arm with a full-load guard, DLOD forced on split meshes, the Alt+S bounce on the real GPU with
+   split meshes, LTU cost in fps. Then merge into the served branch after §STILL_GLOW.
+OPEN (record, not chased): headless page loads are FLAKY. Terminal streamed 48,428 / 47,928 / 29,928 / 0 in different
+   runs, and Hospital sometimes 8,682 or 60,682 of 63,182. It hits every witness: each must gate on the full element
+   count (elements_meta per building vs guidMap) and print VACUOUS otherwise.
 4. Bounce as a proper Alt+C film option (today only the dev --tap). red1 AGREED (2026-09-24, via watcher): ON by
    default, a checkbox to switch it off; covers the in-browser film AND the "copy bake command" line (it must carry
    the option, not the dev --tap); no WebGPU -> stands down with a logged §GI_*_OFF and the film still bakes. Spec
