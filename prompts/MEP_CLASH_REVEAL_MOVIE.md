@@ -4037,3 +4037,32 @@ got far enough to produce a real result) and was never re-run before this handof
 **Handing off to Fable (`red1-fc`) as the live reviewer/coordinator** — this session's own protocol
 (§129 session opener above) was bake-runner only, never code-fix. Both open items above are Fable's or
 a fresh bake-runner's to pick up next, per red1's own "close up, let Fable take over."
+
+## §131 §RULE_FILM_QUIET — SPEC (2026-09-24, red1 via watchdog red1-4b): the Sanity glow is "too loud"
+**red1:** "I want to get the Alt-C Structural Safety Sanity overlays to be lesser to avoid clutter ... throttle back so
+that it comes on lesser, to allow the film's expected new Alt-S bounce effect to be noticed more." Ruling: "The persists
+for later appearances was my rule but I wanna pull it a bit back. It need not be greedy for inclusion of all occurrences,
+but let a pause before firings. There may be misses but will not impair the perception where they are. As of now, they
+are too loud." NOT touched: the rules, the counts, the box/queue model (§77-§85), the closing card totals.
+**Source (bim-ootb origin/main 2fe6360a, read):** rule_findings_film.js:562 lights every visible member of the active set
+at `0.15 + 0.85*glow`, so a member sits at the 0.15 floor before the front reaches it and after its release, for the whole
+slot. rule_checklist.js ruleTintShowOnly maps k to brightness `0.45+0.55k` and scale `1+0.35k` (0.15 = 53% bright, 1.05x).
+The film tint is filled, opacity 0.22, depthTest off, toneMapped off (rule_checklist.js ruleTintMaterialOpts, shineThrough
++ filled). rule_findings_film.js:528 restarts a full 4.1 s pulse (PULSE_S) whenever a new member qualifies (DWELL_MIN_S 2 s)
+and the last pulse has ended; nothing else limits it.
+**Levers (films only; each a dial, URL then APP override, read once at film start, logged once):**
+(a) FLOOR — `&rulefloor=` / APP._ruleFilmFloor, default **0**: a member with glow 0 (before its front, after its
+    release) gets k = floor, i.e. its marker is OFF; lit members keep `floor + (1-floor)*glow`. 0.15 = today. The box
+    and its linger are untouched.
+(b) PAUSE — `&rulepause=` / APP._ruleFilmPause, default **8 s**: after a set's pulse ENDS, a re-pulse needs this long.
+    A qualifying member inside the pause is a MISS (accepted by red1): log `§RULE_FILM_REPULSE_SKIP set=<rule>
+    reason=cooldown t=<s> leftS=<s>` once per skipped trigger. The FIRST pulse of a set is never delayed. 0 = today.
+(c) PEAK — `&rulepeak=` / APP._ruleFilmPeak, default **0.6**: k is multiplied by it before brightness/scale (crest
+    0.78 bright, 1.21x instead of 1.0 / 1.35x); and `&ruleopacity=` / APP._ruleFilmOpacity, default **0.14** (was 0.22)
+    for the film's filled material only. Interactive Rule Mode unchanged (T5 contract: tests/test_rule_mode_tint.js).
+Log at film start: `§RULE_FILM_QUIET floor= pause= peak= opacity=`. The copy-bake-command line must carry the dials.
+**Proof (red1 judges, dials tuned from clips):** per-frame § lines show each lever firing (k at rest = 0, skip lines,
+peak value); a 5 s CONTROL clip (floor 0.15, pause 0, peak 1, opacity 0.22 = today) and a 5 s QUIET clip at the same
+frames and target size, on a building with a lone structural set re-appearing across the orbit; looked at first. No
+full film before red1 rules on the clips. Unit test extends tests/test_rule_mode_tint.js: base opts still equal Clash
+MODE's material; film opacity dial applies only with filled+shineThrough.
