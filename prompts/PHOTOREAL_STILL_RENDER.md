@@ -157,6 +157,16 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
   where 0.828 is right); §LIGHT_STACK: 132 lamps all reach the atrium floor point, sum 74x the strongest. Finite reach at
   lamp strength 2.0 is uniformly too dark (composite 88 vs 187 now); proposal: reach 20 m/decay 1.5 + per-lamp strength
   raised (arms lamps 8 / 16), awaiting the watcher's pick. Sheets: ~/Downloads/atrium_wash_sheet.png, atrium_reach_sheet.png.
+- **REFERENCE 4 + APPROVED LOOK (red1 17:35, "I think this is the one"):** ~/Downloads/bounce_still_1790242559558.png,
+  Terminal hall, sw v1290 (bim-ootb 65c471b1). The v1290 Alt+S defaults are LOCKED as the approved look: sky 2.0, base 0,
+  lamps 16, lamprange 25 m, lampdecay 1.5, srgbfix OFF, bounce 1.0, ao 0.55, girecv 1, concrete 0.55 / tile 4 m,
+  portal 1 (budget 19 incl. 8 shadowed, lamps 132 padded), Fresnel glass ON (glazing clones), lampsout 0, skyocc not
+  installed. §FILM_PARITY carries exactly these into Alt+C. Ref 4 pose: not logged (red1's press); nearest Terminal hall
+  pose not yet found (table cluster IFC x 103.6-109.6, y -38.3..-11.4, "Aras Tanah").
+- **FUTURE LANE — colour-correct re-balance (parked, watcher 2026-09-24):** authored sRGB colours are used as linear
+  (ColorManagement off + new THREE.Color(r,g,b) + sRGB output). &srgbfix=1 converts them in Alt+S, but on its own it
+  darkens every look red1 approved (aerial composite 92.5 -> 75.4, courtyard_a 73.2 -> 45.0; atrium 186.7 -> 173.3).
+  A fix needs a matching exposure/fill re-tune across refs 1-4; not now.
 - GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
   wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
   the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
