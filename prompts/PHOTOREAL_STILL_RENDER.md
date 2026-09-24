@@ -185,6 +185,49 @@ the still is ready (busy clears) unless gi_still has taken it over. **Log:** `§
 `frame t=`, `stagingStart t= gap=<ms since painted>`. **Test:** headless Alt+S keypress -> the three lines in
 that order, gap < ~100 ms, and the still still completes (and the bounce still runs where supported).
 
+## §PROBE_GRID_SURVEY (2026-09-24) — SURVEY ONLY, no code. Queued AFTER the wall-shadow fix and R10.
+**Goal (red1):** replace the even ambient + hemi base (a flat fill that lights a deep corridor as brightly as a
+window bay) with light that comes from real sources: sky and sun entering through the openings.
+**1. What fits our r186 setup — from the shipped library files, not from memory:**
+- **three's WebGL renderer ALREADY reads a probe grid natively.** three.module.min.js: a scene object with
+  `isLightProbeGrid` is collected in the render list (`pushLightProbeGrid`), defines `USE_LIGHT_PROBES_GRID`, and the
+  standard lighting chunk adds `getLightProbeGridIrradiance(worldPos, worldNormal)`: a trilinear lookup in a
+  `sampler3D probesSH` atlas (9-term L2 spherical harmonics, RGB = 27 floats packed as 7 RGBA texels per probe, z padded),
+  bounded by `probesMin/probesMax` at `probesResolution`, sampled half a cell along the normal (cheap leak damping).
+  The renderer reads `.texture`, `.boundingBox`, `.resolution` from the object. **The grid CLASS is not in our lib
+  files** (no LightProbeGrid constructor in three.core/module), so it is a three add-on to vendor, or a small object
+  we write with those three fields. The baker (cube capture per probe -> SH projection) is ours to write; three ships
+  `LightProbe` + `SphericalHarmonics3`, and the add-on `LightProbeGenerator.fromCubeRenderTarget` does the projection.
+- **WebGPU (the Alt+S bounce renderer) has no grid support** (three.webgpu.min.js: only LightProbeNode). That does not
+  matter: the bounce starts FROM the app's finished WebGL frame, so the grid's light is already in it.
+- **Baked lightmaps:** needs a second UV set on every mesh; our geometry is instanced/batched from hashed blobs with no
+  lightmap UVs, and one element instance per hash would need its own texels. Rejected for the whole-building case.
+- **three-gpu-pathtracer, stills only:** not installed (not in node_modules); ground truth for one still, minutes per
+  frame. Useful as the REFERENCE to judge the grid against, not as the runtime path.
+- **DDGI-style (live-updating probes with visibility):** the right shape long-term (moving sun during a film), but a
+  per-probe ray/depth pass per frame. Start with a static bake per sun state; the film's sun arc would need one bake
+  per sampled sun position, or a sky-only grid plus the existing real-time sun.
+**2. Placement from our rooms data, not a blind grid.** One grid object = one axis-aligned box at one spacing (what
+the shader reads). Rooms data decide which probes are VALID and how they may see: `spatial_structure` (Terminal 59
+rows, HHS 17, Hospital_silent 79; Hospital_extracted has none) and the app's room graph (navigate_find.js
+`_roomGraphFor`, rooms + doors + exits). Use: (a) invalidate probes inside solids, or outside any room/envelope, and
+fill them from their room's valid neighbours; this is the main leak cure, because a probe inside a wall sees black
+or outdoors. (b) Weight openings: a probe sees the sky only through IfcWindow panes and open doors. (c) Per-room
+brightness sanity: a probe must not be lit by a room it has no door or opening to.
+**3. Hospital numbers.** ARITHMETIC now, to be MEASURED before any decision. Structural extent 116 x 134 x 47 m.
+Probes/atlas (7 RGBA texels each): 4 m spacing 11,832 probes, 0.7 MB half-float; 2 m 93,264, 5.2 MB; 1 m 746,112,
+41.8 MB. Bake = 6 renders per probe (cube) of the whole building: 11,832 x 6 = 71k renders at 4 m. The wall time,
+the file size after compression, the runtime cost (one extra 3D-texture lookup x 7 per pixel), and the phone impact
+(sampler3D + half-float support; fallback = today's ambient) must each be MEASURED on Hospital, headless and on red1's
+desktop, before it ships. Distribution: a per-building file on OCI next to the DB (the DB rule), not git.
+**4. Dependencies:** R10 glass panes FIRST: today's black opaque windows would block the sky, and the grid would bake
+dark rooms. The wall-shadow fix FIRST, so walls receive the sun that the grid's bounce is built on. The §SURFACE_RULES
+roughness also matters (a smooth floor reflects the grid's light differently from a rough one).
+**5. Scope:** ONE grid per building feeds browsing, Alt+S and Alt+C films the same way (all are the WebGL frame).
+Behind a switch (default off until red1 judges). Keep a base floor of about 25% of today's ambient + hemi, so deep
+rooms with no probe light never go black. Film sun arc: sky-only grid + real-time sun first; per-sun-position bakes
+only if red1 asks.
+
 ## §SURFACE_RULES (2026-09-24) — SPEC, sent to the watcher BEFORE any code. Supersedes §TRI_BIG_ONLY.
 **red1:** surfaces are too rough and materials hard to tell apart. "keep the metal deck rough; ... it is floor
 slabs and small beams that are given rough surfaces; not to do so, as that is not realistic in real life."
