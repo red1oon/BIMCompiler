@@ -255,6 +255,21 @@ leaf), a material array per mesh; decided once per mesh hash at stream time, so 
 **Logs:** `§SURFACE_OPENING_SINGLE_STYLE bld= class= n=`, `§SURFACE_R10_SPLIT bld= windows clean=/fallback=
 (reasons) doors hardware=/leafOnly=`. **Test:** the counts above reproduce in the app's own log per building;
 default on with the surface rules; red1 judges the look.
+**R10 additions (watcher review):**
+(1) SHADOWS THROUGH GLASS. three.js casts shadows per MESH, not per group, so a split pane still blocks the sun
+unless handled. Rule: the pane group's material gets `alphaTest`-free transparency AND the mesh's shadow pass
+uses a customDepthMaterial that discards pane triangles (a per-vertex/per-group attribute `aPane`), so frames
+still cast and panes do not. Witness as a SEPARATE arm from the mid-wing question: sun on an interior floor
+behind a Hospital window, lit-pixel count on that floor patch from the pass's own shadow term (or the
+readback tool), before vs after; `§SURFACE_R10_SHADOW paneCasters=0 frameCasters=n`.
+(2) BATCHING. Per path, witness that the groups + material array survive: instanced (shared mesh hash), merged
+(bucket merge bakes per-element index ranges; the split must be applied before the merge or the merged buffer
+must carry the group), batched (BatchedMesh takes ONE material; a split element leaves the batch and goes
+instanced/single), DLOD (zero-scale per instance, unaffected). Also that the Alt+S bounce geometry pass (one
+override material ignores groups; fine, it only needs depth/normals) and the shadow depth pass (customDepthMaterial
+above) still draw split meshes. Log `§SURFACE_R10_PATHS instanced=n merged=n batchedMoved=n single=n` per building.
+(3) COST. Log draw calls (renderer.info.render.calls) and transparent-object count before/after on LTU (976
+windows) and Terminal, same pose: `§SURFACE_R10_COST drawCalls a->b transparent a->b`.
 
 ## §DLOD_STILL_OWNERSHIP (2026-09-24) — SPEC: Alt+S must not let DLOD hide roof casters
 **Defect (red1, ~/Downloads/bounce_still_1790210272668.png, Terminal hall 08:37):** sky and sun shafts
@@ -328,7 +343,8 @@ geometry pass drew. Everything the app draws survives by construction. Consequen
    records glass as a solid wall, and the hall fills with milky sheets; excluded, glass keeps the
    app's own pixels. Terminal has 26 such meshes at opacity 0.25.
 
-### Dials (console, take effect on the next Alt+S)
+### Dials (console; take effect only when the bounce renderer is BUILT — first Alt+S, or after Alt+Shift+S)
+- **§GI_DIALS_FIRST_BUILD (2026-09-24, measured):** the dials below are baked into the output shader when the bounce renderer is FIRST built, and it is reused, so they apply to the first Alt+S of a session only, or after Alt+Shift+S releases the renderer. (Four HHS shots with different dials came out identical, compositeMean 106.76, until __giStillRelease() ran between them.)
 - `window.__GI_STILL_AO` — occlusion blend, default **0.55**. 1.0 was red1's "eerie bouncing" on an
   aerial: at distance nearly every probe reads occluded and the whole building dims.
 - `window.__GI_STILL_GAIN` — bounce strength, default **0.6**. At 1.0 a white hall measured
