@@ -29,7 +29,11 @@ still_status_first,surface_rules}.js.
    (the bounce dials apply only at first build, §GI_DIALS_FIRST_BUILD).
 3. §SURFACE_R10 openings: spec + additions approved; /tmp/wt-r10 branch feat/surface-r10 created at eb854d69,
    NO code yet. The measurement to port is in scratchpad r10/.
-4. Bounce as a proper Alt+C film option (today only the dev --tap).
+4. Bounce as a proper Alt+C film option (today only the dev --tap). red1 AGREED (2026-09-24, via watcher): ON by
+   default, a checkbox to switch it off; covers the in-browser film AND the "copy bake command" line (it must carry
+   the option, not the dev --tap); no WebGPU -> stands down with a logged §GI_*_OFF and the film still bakes. Spec
+   first. Proof before any big bake: 5 s control clip + 5 s bounce clip, and a log showing the bounce ran per frame.
+   Order unchanged: mid-wing/off-sun-wall report, the shift, gain stills, R10 (Opus agent running in /tmp/wt-r10), then this.
 
 ## ▶▶ §RESUME 2026-09-24 — START HERE. The bounce is LIVE on the real site; three items open.
 Everything in §GI_BUILT below is history + evidence; this block is the state.
