@@ -38,6 +38,13 @@ still_status_first,surface_rules}.js.
    as one variable next to PCFSoft / radius. Caveat to log: casters OUTSIDE the view (a wing behind the camera) must
    still land in the frustum: extend it toward the sun over the envelope's height, or shadows go missing (the
    same symptom as the mid-wing report). Log the fitted bounds + texel per arm.
+   TEST POSE (red1, 11:43): ~/Downloads/bounce_still_1790221419718.png, Hospital, looking down into the courtyard
+   between two wings; roof items cast shadows (the helicopter's falls lower-left, so the sun is behind the right
+   wing), yet the courtyard floor and both inner facades carry no wing shadow, and the right wing's inner (off-sun)
+   facade is bright. Both of red1's points in one frame. The PNG has no pose, and no console line logs the camera at
+   Alt+S; red1 was asked (via the watcher) to paste: JSON.stringify({cam:APP.camera.position.toArray(),
+   tgt:APP.controls.target.toArray(),fov:APP.camera.fov,aspect:APP.camera.aspect,sun:APP.sun.position.toArray(),
+   sunTgt:APP.sun.target?APP.sun.target.position.toArray():null,sunI:APP.sun.intensity,db:location.search,w:innerWidth,h:innerHeight})
 2. Bounce composite shifted sideways on alternate shots after __giStillRelease (HHS, camera logged identical,
    appMean 119.25 every shot). Evidence: scratchpad dials/run2/. Then the bounce-gain stills 0.6/1.0/1.4 for red1
    (the bounce dials apply only at first build, §GI_DIALS_FIRST_BUILD).
