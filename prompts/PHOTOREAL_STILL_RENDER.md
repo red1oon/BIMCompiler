@@ -73,6 +73,29 @@ roof must still block the sky (no sun shafts). Atrium (watcher's ask, red1's 19:
 the floor point, report whether lamps 16 / 25 m stack there; no retune without the watcher. One side-by-side sheet, every
 frame looked at before sending.
 
+**§STILL_SHADOW_FIT — RESULT (2026-09-24 late, bim-ootb feat/still-shadow-fit, witness_still_shadow_fit.js, real GPU,
+full-count gate, 0 page errors).** §STILL_EXIT_NAV SHIPPED first: PR #1765 squash 2fe6360a, ancestor of origin/main, LIVE sw
+v1295 (live gi_still.js carries stillExit(via), effects.js "STILL_EXIT via=").
+- First fit (view frustum ∩ ±env) gained only 1.0-1.2x: aerial views see the horizon, so the box stayed ~724 m. Second fit
+  also intersects the BUILDING's light-space footprint (its ground shadow projects inside it): Hospital sun 10°/228°:
+  p1 box 184x77 m, texel 0.088 -> 0.022 m (3.94x); parapet 175x58 (4.15x); atrium 167x44 (4.35x); Terminal hall sun 40°
+  81x51, 0.089 -> 0.020 (4.49x). normalBias follows (0.177 -> 0.045 m). Given up by design: skyline-prop shadows outside
+  the footprint (0 dropped at every tested pose).
+- SAFETY: sun rays from 780-1200 visible points per pose hit a caster in FIT exactly when in BASE (mismatch 0, 5 poses);
+  no point the building shades falls outside the fitted box (lost 0). Terminal hall: roof still blocks the sky.
+- Look vs geometry (ray images, not pixel stats): at the 10° sun the plants' long courtyard shadows and the roof-deck
+  sawtooth are REAL (ray image shows both); AFTER draws them, BEFORE blurred them away. PCF-radius arm not needed
+  (dial `&shadowradius=` exists, default 1).
+- ONCE: §STILL_SHADOW_RENDERS n=1 per still in BOTH arms — main already renders the sun map once (autoUpdate off).
+- §STILL_CULL built and REMOVED: 0 culled of 25,040 (Hospital) / 35,510 (Terminal) instances at all 5 poses — the sun box
+  must hold the building wherever the view sees it, and portals keep 80 m. Refine ms base vs fit within noise
+  (6.4/5.8/4.5 s vs 5.1/5.6/4.7 s). red1's "non-DLOD cost" is not reducible this way; recorded, not chased.
+- Atrium (red1's 19:25 still, nearest pose by eye cam [-11.15,2.92,4.08] tgt [0.75,-13.08,-7.82]): §LIGHT_STACK at floor
+  (-2.9,-8.2,-4.2): lampsLit 132, 40 over 5% of peak, sum/strongest 6.4 — lamps 16/25 m DO stack there. The APP frame
+  is not washed white; this witness does not run the bounce, which his still includes. No retune.
+- One base frame came back blank (sky only) in one run and did not repeat on re-shoot; unexplained, recorded.
+- Sheet: ~/Downloads/still_shadow_fit_sheet.png (looked at, every frame).
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
