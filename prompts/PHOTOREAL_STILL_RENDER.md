@@ -92,6 +92,29 @@ then `setsid nohup node ~/bin/serve_tree.js /tmp/wt-shadow 8600 > /tmp/serve8600
    is the lever to test).
 5. Bounce composite shifted sideways on alternate shots after __giStillRelease (scratchpad dials/run2/); then gain stills.
 6. Alt+C bounce option (spec'd above). 7. Probe grid first bake.
+**Renewed session 2026-09-24 PM (bim-ootb feat/shadow-size-by-envelope, local commits, 8600 serves each):**
+- 4e18a35d..327f6a66: §STILL_DIALS (sky 2.0 / base 0 / lamps 2.0 / lampdecay 0.8), §LAMP_SHAPE_COLOUR + §LAMP_SHAPE_FACE
+  (HHS rect 260 round 150; Hospital rect 1260 round 12 noghash 14; Terminal rect 748 round 66 noghash 28; 0 ambiguous),
+  §GI_STILL_GAIN_DIAL (&bounce= &ao=, uniforms per press; witness_gi_gain_dial.js PASS), §STILL_CAMINSIDE_SPARSE
+  (room-index miss falls through to the up-ray), §GI_STILL_TERM modes, §GI_RECEIVER (bounce x albedo estimate, not the
+  lit colour: courtyard 0.8%->4.9%, L1 13%->32%; SSGI dials &girecv= &girad= &githick= &gisteps= &giint=),
+  §STILL_LAMPS_OUTSIDE (&lampsout=1, default 0 pending red1).
+- REFERENCE LOOK (red1: "quite good outside"): ~/Downloads/bounce_still_1790230280204.png, Hospital courtyard, sw v1262
+  defaults (sky 2, base 0, lamps 2, lampdecay 0.8, bounce 1, ao 0.55, girecv 1). Its §STILL_POSE is not in our logs yet
+  (it is red1's own press); closest logged pose = pose_p1 cam [-62,38,-4] tgt [-16,-2,-4]. Re-shoot after every
+  glass/portal/ceiling change, side by side for red1.
+- GLASS: frosting causes measured (all panes opacity 0.3 double-sided = ~0.51 effective, grey 737278 diffuse lit like a
+  wall, non-R10 glazing roughness 0.22-0.49). red1 then said (direct, 2026-09-24): glass "got the right effect thruout";
+  the problem is interiors seen THROUGH it are drab. Glass change PARKED; nothing changed on glass.
+- Drab interiors from outside: daylight + camera outside = lamps OFF (earlier ruling), so rooms get only the flat hemi.
+  &lampsout=1 is served for red1's eye; sky portals (queued) are the window-light source.
+- OPEN, not chased: Hospital's room index has 2 rects for the whole building; roomAt callers (RoomWalker
+  .buildCameraRoomIndex: effects.js _stillCamInside, dlod_nav.js room leg) are likely blind on Hospital.
+- Off-frame bounce (a sunlit source outside the view) is beyond screen space: the PROBE GRID is the answer; it moves up
+  after the sky portals.
+- Queue: sky portals (shadowed spots for the nearest 4-8 panes, RectAreaLights beyond, hue-only filter, &portal=),
+  then the ceiling-only base (&ceil=), then the probe grid. Hut walls + R10 gaps still gate the end PR.
+
 **Awaiting red1's ruling (films, NOT changed):** tools.js lamp intensity uses `(A._nightPLScale || 1)`, so a scale of 0
 becomes 1. The film's §CPE_TAIL_LIGHTS_ALL_ONLY lights-off slot has therefore never switched lamps off. Alt+S now gates
 on its own flag (§STILL_GLOW). Fixing it globally would change films.
