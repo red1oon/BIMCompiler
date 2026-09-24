@@ -41,6 +41,38 @@ since both fit the sun's frustum to the camera's view + its sun-ward shadow volu
 (3) the shadow map rendered once per still. Witness: texel + ground footprint logged before/after at pose_p1 and the Hospital
 parapet pose; the Terminal roof-through-sky stays fixed; one side-by-side sheet for red1's eye (look at every frame first).
 
+**§STILL_SHADOW_FIT + §STILL_CULL — SPEC (2026-09-24 late, one shadow-camera change, branch feat/still-shadow-fit off
+origin/main). Alt+S only (`!A._maxqActive`); films and nav unchanged (films get it under §FILM_PARITY).**
+Facts from source (r186 + effects.js on main 2fe6360a): the sun shadow camera is orthographic, aimed at the building bbox
+centre, square ±env (Hospital env 362 → 0.088 m texel at 8192); near/far along the sun ray already span sunDist×0.05..×4,
+so depth never clips a caster. r186 PCFShadowMap samples a Vogel disk scaled by `shadow.radius` (a uniform, default 1).
+`renderer.shadowMap.autoUpdate` is already false on this path; the map re-renders only when something sets needsUpdate
+(enable chunks, reassert flips). Staging pauses DLOD for the whole still (§DLOD_STILL_OWNERSHIP): every one of Hospital's
+instances is drawn, and cast into the 8192 map, for every refine frame and the bounce.
+1. **FIT (the jagged-edge fix).** At staging, after the ±env box is set, shrink the box's left/right/top/bottom to the
+   light-space footprint of what the camera sees: the 8 corners of the view frustum, far clipped at the farthest corner of
+   the ±env world box, projected into the sun camera's space; box = that footprint ∩ ±env, + a 2 m margin. Depth stays.
+   Why this keeps every caster: a caster that shades a visible point lies on the sun ray through that point, and an
+   ortho camera keeps the whole ray inside its x/y footprint, whatever its distance (behind the camera, off screen).
+   normalBias follows the new texel (2×texel, unchanged rule). Frozen for the still: computed once at staging.
+   Log `§STILL_SHADOW_FIT env= box=WxH m (was 2env) texelX= texelY= (was t) gain=× sunElev=`.
+   Arm 2 (only if steps remain on the sheet): `&shadowradius=` / APP._stillShadowRadius, default 1 = unchanged.
+2. **ONCE.** Count real sun shadow-map renders per still (WebGLShadowMap.render entered with needsUpdate); target 1 after
+   the casters are flagged. Log `§STILL_SHADOW_RENDERS n= refineMs=` at still done. If >1, find who sets needsUpdate.
+3. **CULL (red1: "the non-DLOD flag may cost heavy").** After staging is complete (after sky portals, whose side rays
+   must see the full model), zero-scale InstancedMesh instances outside ALL of: the view frustum, the fitted sun box
+   (full depth), and, when shadowed portal spots exist, a 2×PORTAL_RANGE (80 m) sphere round the camera (a portal is
+   within 40 m of the camera and shades up to 40 m from itself). BatchedMesh is left alone (three culls it per camera,
+   the shadow camera included). Separate flag per instance (`_stillHid`), all restored at teardown BEFORE the DLOD
+   re-enable. Skipped on mobile and below DLOD's 5,000-element floor. Log `§STILL_CULL kept= culled= of= (view= sun=
+   portal=) ms=` and `§STILL_CULL restored=`.
+**Witness** (Hospital local DB, real GPU, full-count gate 63,182 else VACUOUS; short runs, red1 shares the GPU):
+pose_p1 aerial [-62,38,-4]→[-16,-2,-4] and a parapet close-up (p1 dollied to 40%), sun 10°/228° (the grazing case), arms
+main vs branch: box, texel, culled count, shadow renders, refine ms; Terminal hall pose from witness_dlod_still_ownership.js:
+roof must still block the sky (no sun shafts). Atrium (watcher's ask, red1's 19:25 still): same pose, log §LIGHT_STACK at
+the floor point, report whether lamps 16 / 25 m stack there; no retune without the watcher. One side-by-side sheet, every
+frame looked at before sending.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
