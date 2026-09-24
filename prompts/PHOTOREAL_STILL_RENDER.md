@@ -30,7 +30,8 @@ Supersedes the EVENING block below (history + evidence). Roles: you are the DEV 
   table (same pose at window/1440p/4k) still owed before any default change.
 
 **NEXT, in order:**
-1. **§SOURCED_LIGHT — spec WRITTEN (983309ad4, below the #1764 line). WATCHDOG GATE (red1-4b, 2026-09-25): OPEN once
+1. **§SOURCED_LIGHT — spec WRITTEN (983309ad4, below the #1764 line); (a)-(e) ADDED 2026-09-25 (dev session, "GATE
+   ADDITIONS" block under the spec) — awaiting red1-4b's gate. WATCHDOG GATE (red1-4b, 2026-09-25): OPEN once
    these five are added to the spec (spec edit, then build):**
    (a) OPENINGS: room-binding must not block light through real openings. Merge rooms joined by an opening with no
    door/glazing, and multi-storey voids/atria, into one LIGHT ZONE (the texture stores zone id); treat doors as closed.
@@ -373,6 +374,56 @@ should hold where rooms are lit). Clinic 20:22 / HHS 20:43 interiors (the washou
 **Witness:** per surface sample (screen grid) `§SOURCED_LIGHT_SAMPLE room= lampsReaching= crossWall=0 portals= hemi=0|1
 cove=0|1`, with lamps reaching across a wall = 0 on every sample (a lamp whose room != the sample's room contributes 0);
 coverage lines per building; ms/frame; the ref sheet (ref1-5 + Clinic/HHS interiors) before/after, every frame looked at.
+
+**§SOURCED_LIGHT — GATE ADDITIONS (a)-(e) (2026-09-25, dev session; answers red1-4b's gate; sources read on
+feat/film-parity @eb3a41c1 + the fleet DBs in /tmp/wt-parity/buildings; still NO code).**
+Correction to the spec above: rooms are AXIS-ALIGNED RECTS, not polygons — spatial_structure IfcSpace rows carry
+center_x/y/z + size_x/y/z (viewer/lib/room_walker.js:5); a room may be N rects sharing room_guid (§MULTI-RECT,
+common/room_graph.js). The volume texture rasterises rects; the cove runs along each rect's outer edges.
+**(a) OPENINGS → LIGHT ZONES.** The texture stores a ZONE id, not a room id; lamps, portals and the daylight term bind to
+zones. What the data has (measured): no IfcRelVoids / IfcRelFills table in any fleet DB; no room-adjacency table.
+IfcOpeningElement rows: Hospital 735, JKR 425, LTU 3368, Duplex 50; Terminal / HHS / Clinic 0. Room-to-room edges come
+from common/room_graph.js buildGraph: E1 = a door touching 2 rooms, E2 = door onto circulation, E3 = stair/ramp flight
+across storeys, E5/E8 = corridor junctions (no door). Zone merge rules, a union-find over rooms, built once per load:
+  1. E1/E2 door edges: NOT merged (doors treated closed).
+  2. E5/E8 corridor junctions (doorGuid null, open by construction): merged.
+  3. Unfilled openings: an IfcOpeningElement whose bbox holds no IfcDoor / IfcWindow centre (geometric fill test —
+     there is no fills relation to read), touching 2 rooms by the same point-to-rect distance rule room_graph uses for
+     doors: merged. Buildings with 0 opening rows get no such merges (logged, not guessed).
+  4. Voids / atria, vertical: for each room rect, cast a grid of up-rays (1 m) from 0.2 m under its ceiling to the room
+     rect above; if ≥25% of the rays reach that rect with no slab / floor hit, the two rooms are one zone. E3 stairs
+     alone do NOT merge (a stair core has its own walls; the up-ray test catches an open stairwell anyway).
+  5. Cells with no room (zone 0) stay "outside/unknown": lights unbound there, hemi unchanged.
+Witness: `§LIGHT_ZONE rooms= zones= merged: corridor= opening= void= (openings tested= unfilled=) largestZone=m2` per
+building, plus on Hospital: the atrium floor sample names ≥1 lamp from an upper storey (lampsReaching lists storey).
+**(b) FAR WINDOWS → per-zone DAYLIGHT term (analytic, no light objects).** Portals stay: ≤32 spots, within PORTAL_RANGE
+40 m, 8 shadowed (sky_portal.js:8, :82-83). Everything else gets the zone term. At staging, reuse collectPanes (ALL
+glazing panes, not the ≤32) + the §SKY_PORTAL_SIDE inward test (films already classify every pane once —
+§SKY_PORTAL_FILM_CACHE); each pane's zone = texel at pane centre + 0.3 m inward. Per zone: the BRE average daylight
+factor form DF = T·Ag·θ / (A·(1−R²)) (Littlefair, BRE Digest 309/310; T glass transmittance from the pane opacity,
+Ag glazing m2, θ visible sky angle from the up/out side rays already cast, A total zone surface ≈ from rects, R 0.5
+area-weighted mean reflectance as a stated constant). Stored in a texture channel (like the cove). Not flat across the
+zone: a second channel holds each cell's distance to its zone's nearest glazed cell (BFS inside the zone at staging),
+shader term = hemi colour × DF × f(d), f(d) = 1/(1+(d/D)²), D = the zone's mean window head height above floor
+(logged). This is the "see-through lit-up inside" look for glazed rooms past 40 m. BatchedMesh glazing is not read by
+collectPanes (batchedGlassSkipped, logged) — counted per building in §SOURCED_LIGHT_COVERAGE, not silently lost.
+**(c) SKYLIGHTS / roof glass: portals do NOT cover them** — collectPanes drops every triangle with |normal.y| > 0.7
+(sky_portal.js:56). The daylight term (b) takes them: a roof pane counts into its zone's Ag with θ = its sky view
+(the up-ray), and its zone is the texel 0.3 m BELOW it. Log `skylightM2=` per building.
+**(d) SUN THROUGH GLASS — defect found in source, to be proven by log.** tools.js:996 and effects.js:2996
+(_reassertPhotoShadowCoverage) set castShadow=true on EVERY visible mesh, glass included; three's shadow pass has no
+transparency test, so glass casts a solid sun shadow. Only §SURFACE_R10 split window panes are exempt (depth-pass discard
+on aPane=1, streaming.js:1009 _r10DepthMat; §SURFACE_R10_SHADOW paneCasters). Unsplit glazing — IfcPlate (Terminal
+33,324 rows), IfcCurtainWall panels, R10 fallback windows — still blocks the sun indoors. Witness first:
+`§SUN_GLASS_CASTERS meshes= instances= glassM2= byClass={} r10Exempt=` (glassy material = the collectPanes test,
+castShadow true, no discard depth material). Fix (built with §SOURCED_LIGHT): glass material groups discard in the
+depth pass (the same _r10DepthMat idea, keyed on the glassy material group rather than aPane), mullions/frames still
+cast. After: glassM2 casting = 0, and a Terminal hall sample shows sun reaching the floor through the facade.
+**(e) Live testing, dials, no sheet.** The ref sheet is DROPPED (red1 tests live on 127.0.0.1:8600). Kept: every §
+witness above (coverage, crossWall=0, zone merges, glass casters, ms/frame before/after). Dials, URL + APP field, read
+at staging, defaults logged once per still: `&cove=` / A._stillCove, `&daylight=` / A._stillDaylight (both 0..3,
+default 1 = the stated constant), `&sourced=0` / A._sourcedLight=false turns the whole patch off (today's look, for
+his A/B). Log `§SOURCED_LIGHT_DIALS cove= daylight= sourced= (defaults cove=1 daylight=1 sourced=1)`.
 
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
