@@ -15,6 +15,16 @@ Supersedes every block below (they are history + evidence). Written by the watch
 **red1's objective:** "the Alt+S to Alt+C ad verbatim is the objective." The approved Alt+S look must come out of Alt+C
 films unchanged. red1 has given the watcher standing authority on technical picks; LOOK sign-off on films stays his.
 
+**⚠ HOTFIX FIRST, before §FILM_PARITY (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
+`&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
+§STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
+(deferred build)` → `§SHELL_GHOST_BBOX boxes=4518` → still staged with `§PHOTO_SHADOW_FRUSTUM_COVERAGE inFrustum=6`,
+`§PHOTO_SHADOW_FORCE_REASSERT visMeshes=41`, GI compile 41 renderables, `§FPS_MODE disp=bbox`. NOT memory (heap 1.9 GB,
+GPU 2.4/8 GB). Fix (spec first): Alt+S owns the display mode like §DLOD_STILL_OWNERSHIP owns DLOD: suspend ghost /
+shell-ghost (and hold its deferred build) at staging, restore at teardown, log `§STILL_GHOST_OWNERSHIP`; check §STILL_ROOMS
+triggers no other deferred build. Witness on red1's exact URL: visMeshes ≈ full count, disp=solid during the still. Small
+hotfix PR off fresh origin/main, CI auto-merge, prove live.
+
 **State at close (verify before trusting — `git -C /tmp/wt-shadow log -1`, `curl -s 127.0.0.1:8600/viewer/sw.js`):**
 - bim-ootb `feat/shadow-size-by-envelope`, worktree /tmp/wt-shadow, served on http://127.0.0.1:8600 (restart recipe in the
   13:10 block below). Last seen @6f1df03d sw v1292, **31 commits ahead of origin, NOT merged, NO PR**.
