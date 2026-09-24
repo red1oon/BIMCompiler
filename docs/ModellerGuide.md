@@ -163,40 +163,33 @@ transparent material at its true opacity, everything else is unaffected.
 
 ## What a wall is made of
 
-A plain-looking wall box in the Modeller is real geometry, not a shortcut — the file itself only ever
-described the wall as one outer shape plus a list of layer thicknesses, never as separate layer shapes.
+A real wall is not one solid lump — it is a stack of layers. Take the party wall between two Duplex
+units (`2O2Fr$t4X7Zf8NOew3FKRH`): it is built from 7 layers — plasterboard (16mm), metal stud (41mm),
+block (193mm), an air gap (50mm), block again (193mm), metal stud (41mm), plasterboard (16mm), 550mm in
+all. The source file draws that wall as **one outer shape** and keeps the 7 thicknesses in a side list
+("this shape is made of, in order..."). The Modeller reads that list and draws the wall as **7 real
+slabs**, one per layer, each at its own measured thickness.
 
-Take a real one: the party wall between two Duplex units (`2O2Fr$t4X7Zf8NOew3FNbT`) is built from 7
-layers — plasterboard (16mm), metal stud (41mm), block (193mm), an air gap (50mm), block again (193mm),
-metal stud (41mm), plasterboard (16mm). That's real, measured construction. But the source file never
-draws those 7 slabs as 7 shapes — it draws **one outer box** the size of the whole stack, and records the
-7 thicknesses as a side list ("this box is made of, in order..."). The Modeller renders exactly what's
-there: one box — 14 triangles for this wall (a perfectly plain box tessellates to 12, two per face on
-six faces, and 35 of the Duplex's walls are exactly that; this one's outline carries two more). That's
-not a placeholder standing in for the real wall. It *is* the real wall, drawn at the detail the file
-actually authored.
+Two of the Duplex party walls (`2O2Fr$t4X7Zf8NOew3FNbT` and its twin `2O2Fr$t4X7Zf8NOew3FKRi`) show
+**5 slabs, not 7** — and that is correct. The source file itself trims off the neighbour-side stud and
+plasterboard, because those belong to the wall on the other side. The Modeller draws the 5 layers that
+are really there (493mm) and makes up nothing for the 2 that aren't.
 
-You can tell a real box from a broken one by whether it can be cut. A door or window cut through a wall
-only works if the wall has a real shape to cut — a stand-in box has nothing behind it to carve. In the
-Duplex, 18 walls carry a door or window hole and each ends up with 28–120 triangles once the cut is
-applied; that's proof the geometry underneath is real, not a fallback.
+On Duplex, 50 of its 57 walls draw as layer stacks this way. The other 7 are not authored with more than one
+layer, so they stay one plain box — which is exactly what their source says. Floor slabs and coverings carry layers
+too.
+
+**No layers, no stand-in.** If an element is authored with several layers but its layer slabs can't be
+found, the Modeller does not draw a plain box in its place — it leaves that element out and reports it by
+name in the browser console.
+
+**Only Duplex, for now.** Duplex is the only resident that ships its layer data today. The other
+residents still draw each wall as the one outer shape its file gives — real geometry at the detail the
+file authored, not a placeholder.
 
 **Why the Viewer looks richer on the same building.** Open Duplex in the Viewer and you'll see far more
 going on — because the Viewer loads everything the Modeller deliberately doesn't: pipes, ducts, and other
-services (904 extra parts). The walls themselves are identical in both — same boxes, same 12 triangles
-each. The Modeller is scoped to architecture + structure by design; it isn't missing wall detail the
-Viewer somehow has.
-
-**Why a July fix looked dramatic on one building and invisible on another.** An earlier pass removed
-*fake* placeholder boxes — geometry the pipeline invented when it couldn't resolve a real shape. On one
-test building (heavily irregular massing) that fix visibly cleaned up the model. On the Duplex it changed
-nothing you could see, because a plain wall's honestly-tessellated box and a fake placeholder box are both
-12 triangles — removing the fake ones simply left the real ones exactly as they were.
-
-**What changes next.** The file-side link from a wall to its own layer list is now extracted
-(`rel_material_layer_set`), so the data needed to draw those 7 slabs individually — instead of one box —
-already exists. Once that slicing ships (§LOD400-LAYERS-REAL), this same party wall will render as 7
-stacked slabs whose thicknesses sum to the wall's true 550mm, not a single block.
+services (904 extra parts). The Modeller is scoped to architecture + structure by design.
 
 ---
 
@@ -284,7 +277,8 @@ The profile is swept along the spine (an occt pipe) as one signed op — the way
 ![Select the wall to open](img/modeller/cut-select.png)
 
 The opening shows immediately; undo closes it to the exact original frame. (Cutting a seeded ARC wall
-promotes its measured box to a B-rep just-in-time, so the subtraction is exact — never approximated.)
+promotes it to a B-rep just-in-time — from its measured box, or, on a layered wall, from its real layer
+slabs — so it is never approximated. See [What a wall is made of](#what-a-wall-is-made-of).)
 
 ![Cut — a signed opening void subtracted from the wall](img/modeller/cut-open.png)
 
@@ -311,7 +305,13 @@ the building's own recovered relationships before it settles: a hosted door ride
 than divorcing from it, and a delta-based conformity gate flags only what the edit actually broke (RED)
 or softly disturbed (ORANGE) — never a pre-existing condition the building already shipped with. That
 combination — open a *complete, real, production* IFC and safely edit *part* of it — is what a
-Bonsai/FreeCAD-style direct editor doesn't do. Full dated disclosure:
+Bonsai/FreeCAD-style direct editor doesn't do.
+
+Which elements touch which is worked out from each element's **real shape, where it actually sits** — not
+from a rough box around its insertion point, which could land up to about 0.4 m off. (Before this was
+fixed on 18 September 2026, a gridline drag on a real building could leave its walls where they were.)
+
+Full dated disclosure:
 **[Event-Sourced Geometry & the Graph-Cascade Conformity Layer](ModellerKernelFold.md)**.
 
 Select an element and tap **Move** to raise the **transform gizmo** — the shared handle for moving,
@@ -397,6 +397,19 @@ wall its designer actually put it in — and where a building's author never dec
 modeller says so rather than inventing one. In practice that means the relationship is exact on
 *SampleHouse* (all 7 hosted openings) and *Duplex* (36 of its 38), and partial on *SampleCastle*, whose
 window-frame walls are consumed by their own openings and so aren't separate things to hold or ride.
+
+Since 18 September 2026 four more residents carry it too, so a door or window there holds or rides
+its wall the same way:
+
+| Resident | Doors & windows that hold or ride their wall |
+|---|---:|
+| HHS Office | 99 |
+| Clinic | 302 |
+| Hospital | 506 |
+| HospitalGarage | 36 |
+
+**Terminal is the one exception.** Its source file never says which door or window sits in which wall, so
+there is nothing real to hold or ride — the Modeller leaves it that way rather than guessing.
 
 **A carved hole comes along too.** If the held or ridden opening has a real cut-through void (a door or
 window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
@@ -753,9 +766,45 @@ touching it further.
 
 ---
 
-## Share an issue — BCF export
+## Export — .db, IFC, or a BCF issue
 
-Tap the **BCF** pill to export your current view as a **BCF 2.1** file (`.bcfzip`) — the open
+Tap the **Export** pill. A small menu offers three things:
+
+- **Native .db** — the full-fidelity signed op-log, every edit you made. Re-open it later with
+  **📂 Open ▸ local .db**.
+- **IFC (IFC4)** — the building as a standard IFC4 file other BIM tools can read.
+- **BCF issue (.bcfzip)** — your current view and selection, as an issue (see below).
+
+### IFC — the whole building you opened
+
+Export ▸ IFC downloads `bonsai_model.ifc`. It carries **every element of the building you opened**, plus
+the walls you drew with Sketch → Extrude and the openings you Cut:
+
+- Each element keeps its **real class** — a door stays an `IfcDoor`, a slab an `IfcSlab`, a stair an
+  `IfcStair`. A class the exporter doesn't know becomes a generic `IfcBuildingElementProxy`, never
+  dropped.
+- Each element's **shape is the same triangles you see on screen**, written as an IFC4 triangle mesh — not
+  re-computed, not simplified.
+- An element whose shape can't be found is **left out and counted**, never swapped for a plain box.
+- The invisible ride anchors some buildings carry (SampleCastle has 65) are left out — they aren't real
+  building parts.
+
+Checked by re-reading the exported file: Duplex's 196 elements come back as 196 products (about 4 MB);
+SampleCastle's 3,225 come back as 3,225 (about 26 MB).
+
+**Not in the file yet:** materials and colours, property sets, the storey/space structure, and openings as
+separate cut objects. It carries the building's real shapes, not yet a fully furnished IFC.
+
+Until 18 September 2026 this export wrote an **empty** file for any opened building — only drawn
+geometry went in. If you have an old export of a resident, export it again.
+
+The status line after an IFC export counts `walls=` only for walls you drew with Sketch → Extrude, so on
+an opened building it can read `walls=0` even though the file is full — check the byte count it prints
+instead.
+
+### BCF — share an issue
+
+Pick **Export ▸ BCF issue** to export your current view as a **BCF 2.1** file (`.bcfzip`) — the open
 buildingSMART format for exchanging issues between BIM tools. The export carries your live camera
 viewpoint and the real `IfcGuid`s of whatever's selected, so the file opens correctly in Navisworks,
 Solibri, BIMcollab, Revit (via plugin), or Trimble Connect — never a synthetic ID that only means
@@ -790,9 +839,10 @@ The toolbar is a **⋯ pill rail** at the right edge: tap **⋯** to fan the pil
 | **Apply** | Commit the pending fillet / chamfer |
 | **Insert** | Insert a library component — assemble, don't draw (`GEOM_INSERT`) |
 | **LOD 200** | Refine the last-placed component's level of detail (same signed row) — appears once you enter **Insert**, not on the resting rail |
-| **IFC** | Export the authored model as IFC4 |
+| **Export** | Export menu — Native `.db` (the signed op-log), IFC4 (the whole opened building), or a BCF 2.1 issue (see [Export](#export-db-ifc-or-a-bcf-issue)) |
 | **Save** | Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED (see [Save](#save)) |
 | **History** | World History — the cross-page timeline shared with the Viewer, iDempiere, and Gravity |
+| **Guide** | A short in-app user guide — how to Open, walk, edit & export |
 | **? Help** | Toolbar & shortcuts — the live pill registry |
 | **Delete** | Delete the selection (`Del`) |
 | **Clear** | Empty the scene |
@@ -813,7 +863,7 @@ always a safe retreat.
 | Symptom | Why | What to do |
 |---|---|---|
 | **A pill looks stuck in the top-left corner** and won't click | A mode-revealed pill (Extrude, Sweep-Run, Apply) is shown only after you start its mode; the rail lays them out on reveal. | Start the mode first (e.g. finish the Sketch before reaching for **Extrude**). The rail re-positions the pill as it appears — if one still looks stranded, toggle the **⋯** rail closed and open. |
-| **Cut / Scale seems to do nothing on a wall from an opened building** | A seeded ARC wall is a *baked* box, not a B-rep. Cut promotes it to a B-rep just-in-time so the subtraction is exact; a rotated/non-box insert is refused up-front (logged) rather than approximated. | Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is *refused*, it isn't box-like enough to cut exactly; sketch the void instead. |
+| **Cut / Scale seems to do nothing on a wall from an opened building** | A seeded ARC wall is a *baked* mesh, not a B-rep. Cut promotes it to a B-rep just-in-time — from its box, or on a layered wall from its real layer slabs; an insert that is neither a plain box nor layered is refused up-front (logged) rather than approximated. | Nothing to do for a normal axis-aligned wall — the op commits and renders. If a specific insert is *refused*, it can't be cut exactly; sketch the void instead. |
 | **A Walk seems to hang on a big building** | A discipline walk places hundreds of fixtures; they commit as **one batched signed group**, so a large walk takes a couple of seconds, not a frozen minute. | Wait for the batch — the status line reports the result when it lands (e.g. `ELEC — 267 placed across 5 storeys · 0 routed`). Scrub the slider back to clear them. |
 | **I want to "make an opening" but there's no Opening tool** | Opening is not a separate authoring tool — the real "cut a window/door" is the **Cut** tool (`GEOM_CUT`). | Select the wall, tap **Cut**. `GEOM_OPENING` is only a legacy sample primitive, never a user action. |
 | **Fillet won't pick an edge** | Fillet needs a **B-rep solid**; a seeded ARC insert has no worker edges to round. | Author a solid first (Sketch → Extrude), select it, then **Fillet** — its edges become pickable markers. |
