@@ -254,6 +254,64 @@ through windows, fixtures, and for rooms with neither a modern base light, ceili
 sourceless fill and may flip once the principle is agreed (effects.js _filmFillRestore, one line). Checks: portal-inside
 fix costs the hall +0.5 composite; list-order churn: no in-clip 0<->full lamp step.**
 
+## §SOURCED_LIGHT — SPEC ONLY (2026-09-25; red1 confirmed the principle, watchdog red1-4b gates; NO code yet)
+red1: "The paramount idea is bounce. If it is all washed, we cannot enjoy good bounce. With disparate sources, we can see
+them." — "light cannot leak through walls in real life except through glass." Refs are on bim-ootb feat/film-parity
+@eb3a41c1 (sw v1310).
+**Principles (red1):** (1) only real sources light a surface; indoors no flat ambient, no hemi sky deep inside — the sky
+enters through glazing/openings (portals); outdoors unchanged; films then drop --film-fill restore as default (parity =
+sourced, as Alt+S). (2) no light through walls/floors — lamps and portals are ROOM-BOUND; no per-lamp shadow maps.
+(3) rooms with no window and no fixture get a modern base light: a soft ceiling-edge cove, per room, as a source.
+(4) bounce carries the rest. (5) no exposure/brightness knob — exposure stays 0.383.
+**Source facts (line refs):** ambient scene.js:197 (0.386), hemi scene.js:207 (0xb0c4de / 0x8b7355, 0.617); Alt+S
+§STILL_BASE effects.js:4186 (base 0 → ambient 0, sky 2.0 → hemi 1.234 everywhere, inside and out); films
+§FILM_FILL_RESTORE effects.js:3947 (ambient 0.785 / hemi 1.257); lamps = PointLights, intensity tools.js:2186 (bake pool)
+/ :2232 (Alt+S), reach 25 m decay 1.5, no shadows; portals = SpotLights sky_portal.js:135/:202 (8 shadowed, 11 not);
+camera room test effects.js:3894 (_stillCamInside: RoomWalker.buildCameraRoomIndex, up-ray fallback); rooms compile
+navigate_find.js:937 (A.ensureRooms). Room data per building (DB): Hospital 0 IfcSpace (rooms compiled at runtime; its
+camera index held 2 rects), Terminal 53, JKR 79, LTU 369, HHS 14 (0 IfcLightFixture — lamps from room fallback),
+Clinic 798 (elements_meta), Duplex 21. Coverage is therefore the first thing to MEASURE, not assume.
+**Mechanism — room id per fragment (one shader patch, installed once at load like §SKY_OCCLUSION's):**
+- A ROOM VOLUME TEXTURE per building, built at staging from the room polygons + storey heights: 3D texture (R16 room id,
+  0 = outside / unknown) over the envelope at 0.5 m cells (Hospital ~1.3 M cells at 1 m = 2.6 MB; 0.5 m = 8x — pick by
+  measured coverage vs memory, log it). Fragment room = texel at world pos + 0.2 m along the surface normal (a wall face
+  reads the room it faces; a floor reads the room above it).
+- Each lamp / portal spot carries a room id uniform (lamp: room at its position; portal: the room on its inward side).
+  The patched lights loop (lights_fragment_begin, point + spot loops) skips light i when lightRoom[i] != fragRoom and both
+  are known (!= 0). Unknown either side = unbound (lights as today) and COUNTED.
+- Hemi/ambient: fragRoom != 0 → hemi and ambient contribution 0 (indoors lit only by lamps, portals, sun through glass,
+  cove, bounce); fragRoom == 0 → unchanged (outdoors, and anything the rooms don't cover).
+- Cost: one 3D-texture fetch per lit fragment + one compare per light iteration; one recompile at install (not per
+  still/frame — ids are uniforms). Light count unchanged. Witness logs ms/frame before/after on Hospital.
+**Rooms with no rooms data:** lamps/portals unbound, hemi as today, logged per building (`§SOURCED_LIGHT_COVERAGE
+rooms= lampsBound=/lamps portalsBound=/portals floorAreaCovered=%`). A building below a stated coverage (e.g. <60% of
+lamps bound) is reported, not silently half-sourced.
+**Cove (principle 3):** per room with 0 portals and 0 lamps: an analytic ceiling-edge term in the same patch — irradiance
+from a line source along the room's ceiling perimeter (room polygon edges at ceiling height), falloff by distance, one
+per-room intensity uniform (texture channel), so no light objects are added. Intensity: one constant to be set against a
+cited typical ambient-cove output, or red1 picks from a sheet; not tuned per building.
+**Bounce (principle 4):** the Alt+S/film bounce is SCREEN-SPACE SSGI: it spreads light only from surfaces visible in the
+frame. A source off-screen (a lamp behind the camera lighting a wall in view) still lights directly; its second bounce
+from off-screen surfaces is not carried. State this on the sheet.
+**Mid-film lights-off rule (red1: off ONLY for the freeze, the discipline reveal, or when the full ARC is hidden).**
+Facts: today's window is cinema_maxq.js:3804-3850 (§116 → §129.41 → §129.47): off from plan.beats.out (last stick) to
+plan.beats.rise (orbit start). Hospital: out 0.3530, pullout/topout 0.3607, rise 0.9590 (60.6% of the film); Terminal:
+out 0.1609, topout 0.179, rise 0.9056 (74.5%). Inside it: the pull-out (out→pullout, <2%), the load-path freeze hold
+(armed at topout), the discipline-reveal round (ghost slots hide ARC+STR; tail-one slots show one discipline — already
+lamps-off via §CPE_TAIL_LIGHTS_ALL_ONLY / _cpeRevealLightsOff), and the storey reveal (ends at rise; ARC shown storey by
+storey, i.e. NOT fully hidden). DEFECT vs red1's rule: the pull-out span, the reveal slots where ARC is visible, and the
+whole storey reveal are dark. NARROWING (per frame, replaces the beats window): lightsOff = loadPath hold active
+(_lpHoldCtl.inHold) OR _cpeRevealLightsOff OR ARC hidden (A.hiddenDiscs has 'ARC'). Witness: per-frame reason counts
+over the Hospital/Terminal films; lamps on in the storey reveal.
+**Refs predicted (they WILL change; red1 judges one sheet):** ref4 Terminal hall + ref3 Hospital stair (interior): walls
+away from lamps/windows darker (hemi 1.234 gone indoors), lamp pools and window light read as distinct sources, bounce
+visible in shade; rooms behind walls no longer lit by the neighbour's lamps. ref1 courtyard / ref2 aerial / ref5 facade
+(exterior): unchanged outside; interiors seen through glass darker except where lamps/portals are (the see-through look
+should hold where rooms are lit). Clinic 20:22 / HHS 20:43 interiors (the washout): expected clearly less washed.
+**Witness:** per surface sample (screen grid) `§SOURCED_LIGHT_SAMPLE room= lampsReaching= crossWall=0 portals= hemi=0|1
+cove=0|1`, with lamps reaching across a wall = 0 on every sample (a lamp whose room != the sample's room contributes 0);
+coverage lines per building; ms/frame; the ref sheet (ref1-5 + Clinic/HHS interiors) before/after, every frame looked at.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
