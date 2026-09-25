@@ -1035,6 +1035,17 @@ GATE (condition 5): m2-weighted F distribution over all lit zones, enclosed room
 against the ADF cross-check); max F <= 1 asserted; exposure before/after per pose (> 2x drop FAILs unless explained per
 source); SKY_STEP = 0 on red1's Terminal canteen [-20.06,-16.13,-1.00] and waiting hall [0.45,-12.80,11.90] poses;
 §GLARE black counts unchanged; link <= +10%; first-press cost in §STILL_STAGE_MS (<= +3 s Hospital); GUARD 0/0/0.
+§LUX_CHECK (watchdog red1-c6 after red1 14:35 "too dark ... proper values": cited values, not knobs). Per zone at stage, in
+lux on the working plane (0.8 m above the zone floor): E_sky = F_zone(mean over working-plane cells) x the scene's
+horizontal sky illuminance (the same E the hemi represents, converted with the §SOURCED_LIGHT_CALIB scale, stated); E_lamps
+= the calibrated lamps (CALIB_LAMP_LUX path) at those cells; E_total. Compare with EN 12464-1 maintained illuminance for
+the zone's use, mapped from the IFC space Name/LongName where present (watchdog's list: corridor/circulation 100 lx,
+atrium/entrance hall 200, office 500, toilets 200, canteen 200 — each row to be QUOTED from a citable source of the
+standard's tables; unverifiable rows marked "unverified"), else "unknown". FAIL-to-explain: a zone with E_total < 50% of
+its EN value (says whether lamps are under-scaled — a calibration bug — or the sky share is missing). Logged for red1's
+poses (atrium stair [-10.95,-2.91,5.42], inner room [9.95,-7.70,0.10], toilet [8.34,-8.65,-3.58]) + café / Clinic corridor
+/ Terminal hall. Plus the METER: exposure picked and stops vs the outdoor base on every indoor press (a real camera indoors
+sits several stops above outdoors; if ours does not, that is a finding, not a knob). Red1 rule 5 stands: no exposure knob.
 
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
