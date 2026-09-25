@@ -49,6 +49,9 @@ cheap zone-aware indoor fill / nearest lamps as a look change for red1.
 before red1 sees them: each prints a FAIL count per known class (black_exterior, junction_zone_flip, covered_open_side_black,
 acne, gap outside EDGE), target 0, run FAILs if > 0. A glaring error that reaches red1 past a green witness = the witness
 is wrong: fix the witness first, then the code. Watchdog gates on those lines.
+**Efficiency (red1 2026-09-25: "no more time wasting outside WITNESS logging"):** loop = witness FAILs on the known
+v1337 defect AND reads 0 on a correct pose -> fix to 0 -> push -> § lines to watchdog -> gate -> red1 looks. Before arm run
+ONCE and kept; only the after arm reruns; Hospital/Clinic/Terminal only; <=15 min per run; no side studies, short recaps.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
