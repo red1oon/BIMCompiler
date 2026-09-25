@@ -1093,6 +1093,12 @@ V9 LUX: luxPerUnit = CALIB_SUN_LUX / calibSunI (the §SOURCED_LIGHT_CALIB scale:
 V3' (after the Hospital smoke on 901d75a5): "any opaque triangle wins" shrank every window opening by up to one cell per side
    (the fattened wall reveal / frame around a pane): §SKY_VIEW_ADF_CHECK median Fwp/ADF 0.044. Revised: a cell is GLASS when
    its glassy rasteriser samples (uniform barycentric, ~ area) are >= its opaque ones — the cell's majority surface decides.
+V5' outside fragments are filtered too (stencil accepts every non-solid cell): the open/covered nearest-cell flip on a surface
+   running under a roof edge was a step (out-zone pairs); a solid cell still separates (the stencil reaches half a cell past
+   the surface).
+V11 SKY_STEP witness: a step pair whose two points (0.25 m off the surface, eye side) straddle a SOLID grid cell (a partition or
+   glass line the readback does not draw — glass is hidden) is a physical boundary: reported as acrossSolid, not in SKY_STEP.
+   Each debug readback is rendered twice (a program built in the first draw gets its uniforms on the next).
 V10 SKY_STEP witness targets: the camera looks along the longest free horizontal ray at eye height (32 azimuths, the
    zone grid's first SOLID cell), target = camera + that ray x its free length ("along the room", rule not eye).
 
