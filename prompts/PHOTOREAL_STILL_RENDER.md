@@ -1223,6 +1223,12 @@ and a VISIBLE thin emissive strip mesh along the same line, so the source can be
    BUILD table), NO glazing pane or open aperture, and sky-view F = 0 everywhere. The "lit zone whose surfaces get ~0"
    case (Clinic ceiling gaps: the dark is the plenum void seen through the gaps, a non-room zone) does NOT get a cove; those
    points are counted GEOMETRY_DARK (bounce's job) — stated so, not hidden.
+WATCHDOG GATE (red1-c6): OPEN with one change, overriding 1 and 3: QUALIFY BY DARKNESS IN LUX (red1: "a dark PLACE gets the
+   glow"; as written the toilet, which has a lamp, could not qualify). A room zone qualifies when its existing working-plane E
+   (lamps + sky field, analytic, the §LUX_CHECK way) is below its EN 12464-1 row; the cove supplies only the DEFICIT
+   (EN - existing, >= 0), 0 where the room already meets EN. The source-less room is the case existing = 0. Log per zone:
+   existingE, enRow, coveE, qualified yes/no. The Clinic ceiling gaps stay GEOMETRY_DARK (plenum) and are named plainly in the
+   recap for red1 to judge by eye after the cove lands; no fix without their word.
 2. PLACEMENT (BUILD): ceiling-edge cells = zone cells with SOLID directly above AND SOLID on a horizontal side; emitters
    every 0.5 m (one cell) along that perimeter, per wall run. Logged per zone: perimeterM, emitters.
 3. LEVEL, cited: the emitters' total output is set so the zone's mean working-plane illuminance (0.8 m) equals the EN 12464-1
