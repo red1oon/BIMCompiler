@@ -545,6 +545,33 @@ through windows, fixtures, and for rooms with neither a modern base light, ceili
 sourceless fill and may flip once the principle is agreed (effects.js _filmFillRestore, one line). Checks: portal-inside
 fix costs the hall +0.5 composite; list-order churn: no in-clip 0<->full lamp step.**
 
+## §ALTC_FOUNDATION — PRIOR ART first (watchdog red1-c6, 2026-09-25; red1: "research the industry's best practice first, or else we become prior art")
+Problem (red1's hypothesis): Alt+S stages its light for ONE camera pose; a film moves the camera, the sun and the visible
+geometry every frame, so per-pose picks pop, recompile or flicker. Known answers, each cited, mapped to our case:
+1. FILM FRAME = A MINI-STILL (offline). Unreal Movie Render Queue renders cinematics OFFLINE: 8 spatial x 8 temporal
+   sub-samples per frame and 32+ warm-up frames so the temporal GI history settles ("Lumen needs >32 frames to stabilise
+   bounce"); flicker in dark areas is a known Lumen/MRQ issue. Our Alt+C is also offline (cli_silent_bake), and a film
+   bounce pass is 53-61 ms (HHS 720p, §FILM_PARITY BUILD), so several bounce passes per frame + warm-up at each cut are
+   affordable. The film does ONE pass today. (dev.epicgames.com MRQ docs + "Warmup and First Frame Issues" tutorial.)
+2. MANY LIGHTS WITHOUT A CAP OR RECOMPILES: clustered forward shading (Olsson, Billeter, Assarsson, HPG 2012): lights are
+   DATA in a 3D cluster grid; each fragment loops only its cluster's list; the program never changes with the light
+   count. three.js ships it as ClusteredLighting, but it's WebGPURenderer only, point lights only, no shadows (threejs.org
+   docs). Our main renderer is WebGL, so we take the principle, not the addon: our light-zone grid already IS a spatial
+   light binding (zone -> its lamps/portals), which replaces the per-camera "nearest 40 m portals" and the lamp cap order.
+3. SHADOWS THAT DON'T SHIMMER: stable cascaded shadow maps (Valient, ShaderX6, 2008): fixed projection size per
+   cascade (sphere-fit) + light-space snapping to whole texels; splits per PSSM (Zhang 2006). Our §FILM_FIT_PER_SHOT
+   already fixes the size per shot + snaps; add the cascades (shared with the Alt+S aerial fix).
+4. BOUNCE THAT DOESN'T DEPEND ON THE SCREEN: world-space irradiance probes, DDGI (Majercik et al., JCGT 2019): a probe
+   grid updated incrementally, camera-independent, sees off-screen light; screen-space bounce can't see what left the
+   frame, which is a flicker source in a moving shot. three.js side: three-rc (radiance cascades, three-mesh-bvh), a probe
+   volume proposal on discourse; nothing in core. Our zones give a natural probe layout (probes per zone, no leaks
+   across walls: DDGI's own leak fix is visibility per probe).
+5. EXPOSURE: engines adapt over time in f-stops/second (Unreal auto exposure, 64-bin histogram); for us red1 forbids
+   exposure knobs, so a film keeps 0.383 fixed, or the still's meter frozen per shot; never per-frame metering.
+Watchdog read: red1's hypothesis is right, and the industry answer is "bind light to the WORLD (clusters/zones, probes,
+stable cascades), render each film frame like a still (sub-samples + warm-up)". What looks new here: deriving the light
+binding from BIM room/zone geometry; not claimed as new until checked further.
+
 ## §SOURCED_LIGHT — SPEC ONLY (2026-09-25; red1 confirmed the principle, watchdog red1-4b gates; NO code yet)
 red1: "The paramount idea is bounce. If it is all washed, we cannot enjoy good bounce. With disparate sources, we can see
 them." — "light cannot leak through walls in real life except through glass." Refs are on bim-ootb feat/film-parity
