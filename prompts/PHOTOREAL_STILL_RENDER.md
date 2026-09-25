@@ -75,6 +75,16 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   sky-view fraction per cell (share of the rays that see sky), filtered between cells, scaling the hemi — no binary step.
   Witness: grid count of SKY_BIT on/off boundaries across visible wall/floor faces (m of edge), target 0 steps > one
   filter width. Minor: dark pockets under the Terminal's stepped roof edges; skyline towers show night-lit windows by day.
+**… Clinic, 14:15-14:17, 4 stills:** GOOD: upper balcony over the atrium (…958870, mean 66) and the corridor (…063429,
+  mean 69 ≈ approved ref 64: red1's corridor look holds). Small room (…988661) now LIT, not black, but pure-black bands and
+  gaps where the ceiling panels meet the wall/each other (the void above the panels has no source = same class as
+  BLACK_INTERIOR). Exterior (…938795): shaded facade grey (good), but a vertical white light shaft + round glow blobs show
+  through the glazed entrance and its canopies in daylight — a lamp glow/halo drawn through solid geometry or left on
+  outside by day. Skyline towers again show night windows by day.
+**Batch sent to the dev after red1's 3-building test (watchdog order):** A BLACK_INTERIOR (grid count of zones/m2 with no
+  source + red1 principle 3 cove base light) · B SKY_STEP (continuous filtered sky-view fraction instead of the binary
+  SKY_BIT) · C ENTRANCE_GLOW (count of glow/halo quads drawn by day or failing the depth test) · minor: skyline day windows,
+  Terminal roof-edge pockets.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
