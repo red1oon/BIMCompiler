@@ -866,6 +866,37 @@ PHYSICS" — 92% portal-lit at 1.3% of outdoor, and sky_portal.js drops |n.y|>0.
 - Log `§SOURCED_DAYLIGHT zones= glazedZones= panes= (skylights= portaled=) T= R= DFmedian= DFmax= topZones=[id:DF%:Ag:A]
   ms=`; witness: §WASH_SOURCES gains a `daylight` source; the café/atrium zone's DF and the re-measured medians.
 
+**§SOURCED_DAYLIGHT v2 — SPEC UPDATE (2026-09-25, dev red1-5a; after §ZONE_OPEN_SKY b4cb61c1 + cascades 0a9950a3; base
+feat/sourced-light-int 0a9950a3). Replaces the v1 block above where they differ. Alt+S only first (`!A._maxqActive`).**
+What changed underneath: zones are now COVERED space (open-to-sky column scan); glass/IfcWindow/IfcPlate/IfcCurtainWall are
+SOLID; covered cells that see sky through real openings carry SKY_BIT and already get the full hemi (slSkyKeep = 1). So the
+daylight term is only for covered, non-sky-lit cells (_slSky = 0), and a zone's sky reaches it through two kinds of hole:
+1. GLAZING (as v1): every pane from collectPanes INCLUDING |n.y| > 0.7 roof glass (a flag, the portal path still skips roof).
+   Pane zone: LightZones.surfaceInfo at pane centre +/- 0.3 m; the inward side = the side whose cell is a covered zone
+   (both covered / both open / solid = skipped, counted). T = 1 - opacity (per pane, logged). theta: vertical = 90 x sky
+   fraction of the 5 outward §SKY_PORTAL_SIDE rays; roof = 180 x sky fraction of the up rays (BRE: rooflight 180,
+   unobstructed vertical window 90).
+2. OPEN APERTURES (new): the zone's aperture faces to open-sky cells (zoneInfo[z].upM2 / sideM2, per-cell bits in
+   cache.aperture), T = 1; theta = 180 (up) / 90 x the sky fraction of the same 5 rays from <= 64 sampled side-face
+   centres per zone (logged).
+EXCLUDED: panes carrying a placed portal this still — EXCEPT a portal with §SKY_PORTAL_BLOCKED blockedFrac >= 0.5 (its
+light does not reach the room; the café #6 at 0.80), whose pane counts in the DF instead (logged `portaledKept=`).
+DF_z = sum(T.A.theta) / (A_z (1 - R^2)) % (BRE average daylight factor, Littlefair BRE Digest 309/310), R = 0.5 stated,
+A_z = zoneInfo[z].surfaceM2. Per cell: DF_z/100 x f(d)/mean_z(f), f(d) = 1/(1+(d/D_z)^2), d = BFS distance through zone
+cells to the nearest aperture/pane cell, D_z = area-weighted source-centre height above the zone floor below it.
+STORAGE: the zone texture becomes RG16UI (R = zone | SKY_BIT as now, G = round(daylight fraction x 10000), cap 65535);
+the fragment reads .g from the SAME texel slFragZone already picked (one lookup, no new sampler, no per-light code). G is
+rebuilt per still (portal exclusion is per still; the rest cached per building), re-uploaded (Hospital 2 x 20.7 MB, logged ms).
+SHADER: for a zone fragment with _slSky = 0: irradiance += (G/10000) x uSLSky.rgb, uSLSky = hemi sky colour x intensity x
+the daylight dial (&daylight= / A._stillDaylight, 0..3, default 1, logged in §SOURCED_LIGHT_DIALS). Nothing else changes.
+LOG per press: `§SOURCED_DAYLIGHT zones= litZones= panes= (roof= portaled= portaledKept= skipped=) apertures(up/side m2)=
+T= R= DFmedian= DFmax= bandsLG10(<2%/2-5%/>5% zones)= topZones=[id:DF%:srcM2:surfaceM2] buildMs= uploadMs=`.
+GATE (one press + the wash witness): the log line on Hospital café / Clinic corridor / Terminal hall_floor; §WASH_SOURCES gains
+a `daylight` source (G/10000 x hemi-up, analytic) and reports tone-mapped median/p95/wash + the sky-cool vs lamp-warm share of
+indoor irradiance (watchdog: carry colour). Target (zero list): café median 0.55-0.70; Clinic/Terminal wash <= Hospital's;
+GUARD 0/0/0; link time within +10% (probe_link_time.js). No per-building values, no hand tuning (R and the dial default are
+the only constants, both stated).
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
