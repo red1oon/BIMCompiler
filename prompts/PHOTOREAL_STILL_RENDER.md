@@ -1241,6 +1241,8 @@ RED1 AMENDMENT (2026-09-25, via red1-c6): "there are crevices where MEP goes thr
       "plant rooms, switch gear rooms" given as 150 lx (BS EN 12464-1:2002 summaries) or 200 lx (other summaries) — sources
       disagree. So: UNVERIFIED; proposal = the circulation row, 100 lx, for void/crevice/shaft; shown to red1 before it is
       used (the build ships the value as a logged constant behind that decision).
+      DECIDED (watchdog, red1 delegated): TRIM_LUX_VOID = 100 (EN 12464-1 circulation row, via emprics/luxmeterpro/techlumen
+      summaries; primary standard not consulted) — named in code + log, swappable if the primary text says otherwise.
    d. THIN ZONES: a zone under 2 cells (1.0 m) tall gets ONE emitter line along its long axis centred at mid-height (not two
       edges); a shaft gets emitter lines at the top perimeter only, as a room.
    GATE adds: red1's Clinic ceiling-gap pose [0.617,3.56,-19.198] reads BLACK_INTERIOR 0 (the gaps are no longer
