@@ -9,6 +9,51 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ▶▶▶▶▶▶▶ §RESUME 2026-09-25 LATE — START HERE (dev hand-off #2; written by the watchdog red1-4b)
+Supersedes the §RESUME 2026-09-25 block below (still valid as background). Roles: you are the DEV session; watchdog =
+`red1-4b` (SendMessage): recap to it, it gates every step from pushed code + full § logs. red1 does ALL visual judging live on
+localhost:8600 — you do NO visual checks (no sheets, no frame/pixel judging): code, console-captured witnesses, § numbers only.
+Use a Fable subagent (Agent tool, model "fable") for hard foundational pieces; review its diff + rerun its witness yourself.
+
+**Live on main (unchanged this lane):** #1765/#1766/#1767 (sw v1303). Nothing from §SOURCED_LIGHT is merged to main.
+**localhost:8600** = /tmp/wt-sourced-live @c0e44bc3 (feat/film-parity eb3a41c1 + sw bump, v1332, OLD lighting, known-good).
+Put the new lighting on 8600 ONLY after the matrix below passes, from a clean committed tree, with an sw bump.
+
+**Branch feat/sourced-light** (/tmp/wt-sourced; tip b35d5cf9 — check it is pushed): voxel light zones (light_zones.js),
+zone-bound lamps/portals + indoor hemi/ambient 0 (sourced_light.js, `&sourced=0` = old), zone-priority lamp cap, glass out
+of the sun shadow pass, physical lamp calibration + Stevens-0.33 incident-light meter (`&calib=0` off; `&metermode=avg`
+default, centre|zone kept), §WASH_SOURCES/§WASH_FRACTION witness (viewer/tests/witness_wash_sources.js, analytic, no bounce),
+shared console GUARD (FAIL on "Shader Error"/"Context Lost"/pageerror), and the §SOURCED_LIGHT_LINK fix (Fable agent,
+fix/sl-gl-link 75dd41e5): slFragZone once per fragment — the per-light inlined copy (181 per program) hung the GPU process
+(exit 133) → LINK-false storm → Context Lost = red1's red bar. Link total 129.8 s → 46.4 s (old shaders 28.9 s), max 1.7 s.
+
+**NEXT, in order:**
+1. GL-fix acceptance matrix on the merged branch: pose (default exterior + café) × db (local + OCI Hospital) × ANGLE
+   (gl-egl + vulkan): 0 Shader Error, 0 Context Lost, §SOURCED_LIGHT_GLERR clean, feature ON. Log §SOURCED_LIGHT_LINK
+   totalMs/maxMs. Then 8600 (sw bump) → message the watchdog (it tells red1 what to look at).
+2. §SOURCED_DAYLIGHT (spec 481d42c43): per-zone BRE daylight factor over ALL panes incl. ROOF glazing (sky_portal drops
+   |n.y|>0.7 today, so the atrium roof glass contributes nothing). Watchdog's read: the Hospital café is too dark
+   (tone-mapped median 0.358 vs reference 0.636, target band 0.55-0.70) because this daylight is MISSING — build it before
+   ANY balance/exponent change (no hand tuning; cited values only).
+3. COVERED = INDOOR zones (watchdog spec, see message log): a cell with solid above is indoor; open bands/unfilled openings
+   become daylight apertures of the zone. Terminal hall is zone 0 (outside) today via a ~174 m² open band at the roof edge.
+4. Re-measure §WASH_FRACTION: Hospital café reference (old lighting 0.636/0.834/0.7%), Clinic corridor, Terminal
+   hall_floor stand-in; acceptance: café 0.55-0.70, Clinic/Terminal WASH ≤ Hospital's, Terminal exterior through-glass
+   median < shaded facade median.
+5. Speed: §SOURCED_LIGHT_CAP 2.3 s/press → <200 ms (use the zone texture, no scene raycasts); §SOURCED_LIGHT_FRAME ms vs
+   &sourced=0; Alt+S same-session cache (§STILL_CACHE hit/miss/savedMs; honour §R17).
+6. Shadow base gap: depth bias from the FITTED texel (~1 texel), normalBias carries acne; target predictedBaseGap < 0.05 m
+   at 45°, acne count 0 (ray vs shadow-lookup witness).
+7. Later: parity PR (films follow the approved lighting; film-fill default revisits under sourced light), §STILL_RES cost
+   table (window/1440p/4k same pose; 4k cap one-line fix), 4-nearest-lamp shadows (stills only, zone casters) only if red1 asks.
+
+**red1's rulings this lane (don't re-litigate):** only real sources light surfaces; no light through walls/floors (only
+glass/openings); no exposure/brightness knob, no lamp-count caps, no per-building values; bounce is paramount; mid-film
+lamps OFF only for the freeze, discipline reveal, or full-ARC-hidden (§INTERIOR_LIGHTS_BOUNDARY today is far wider — narrow
+it inside this lane); Hospital interiors must keep the character of his baseline still (held by the watchdog, not you).
+**Working rules:** spec before code; one sw bump per served change; 8600 only from a clean committed tree; one PR at lane
+end + prove live; § evidence only; never hand red1 a git/permission decision.
+
 ## ▶▶▶▶▶▶ §RESUME 2026-09-25 — START HERE (dev session hand-off; written by the watchdog red1-4b)
 Supersedes the EVENING block below (history + evidence). Roles: you are the DEV session; the watchdog is `red1-4b`
 (SendMessage) — send it recaps, it gates every spec/merge by reading pushed code + full § logs. LOOK sign-off is red1's.
