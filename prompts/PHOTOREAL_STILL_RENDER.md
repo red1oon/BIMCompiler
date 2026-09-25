@@ -54,8 +54,8 @@ v1337 defect AND reads 0 on a correct pose -> fix to 0 -> push -> § lines to wa
 ONCE and kept; only the after arm reruns; Hospital/Clinic/Terminal only; <=15 min per run; no side studies, short recaps.
 **ALT+S TO ZERO FIRST (red1 2026-09-25: "let alt-s finish till zero"; watchdog has full authority to guide + answer).**
 Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count below at 0 / in band, from logged lines:
-  shadow gap45/20 < 0.05 m [PASS 3883eebe] · portal gap <= 0.025 m [PASS 2980872b] · outdoor thinCasterRisk < 0.05 m +
-  texel <= 0.03 m where seen (cascades) · black_exterior 0 · junction_zone_flip 0 · canopy (covered_open_side_black, fixed
+  shadow gap45/20 < 0.05 m [PASS 3883eebe] · portal gap <= 0.025 m [PASS 2980872b] · thinCasterRisk <= max(0.05 m, 1.5 px at the cascade's
+  near split) + texelPerPixel <= 2 (cascades; watchdog ruling 2026-09-25, pixel-based) · black_exterior 0 · junction_zone_flip 0 · canopy (covered_open_side_black, fixed
   predicate) 0 · §SKY_PORTAL_BLOCKED explained/0 · Terminal ceiling-fixture AO halo count 0 · café tone-mapped median
   0.55-0.70 after §SOURCED_DAYLIGHT · GUARD 0/0/0. Then red1's look on 8600 -> one PR -> live.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
