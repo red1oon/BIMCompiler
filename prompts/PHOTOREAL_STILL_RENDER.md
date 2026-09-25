@@ -1067,6 +1067,11 @@ FIX:
    camera-side sky and lamps reflect and rise at grazing angles, and what is behind shows at T. Nothing brightens the
    interior (watchdog add 2: from outside by day an interior at ~1/100 of outdoor light IS dark through glass; lit lamps
    and bright interior surfaces show through, the interior is not lifted to fake it).
+BLEND EQUATION (watchdog, gate OPEN): premultiplied output, blend ONE / ONE_MINUS_SRC_ALPHA (premultipliedAlpha true):
+   fragment rgb = the Fresnel reflection radiance (three's totalSpecular, already x F — NOT x alpha), alpha = 1 - t_s(1 - F);
+   so out = reflection + dst x t_s x (1 - F). NOT NormalBlending (src x alpha + dst x (1 - alpha) always paints the pane's
+   own colour). Logged in the witness line as `blend=ONE/ONE_MINUS_SRC_ALPHA out=refl+dst*t_s*(1-F)` next to Tnormal, so
+   T means what reaches the eye. Tint: a colour in T only where the model states one per material; else neutral (logged).
 WITNESS (material state + maths, one press at red1's pose + café + Terminal hall): per glazing material `§GLASS_VEIL
 mat= meshes= surfacesPerPane= T= t_s= bodyAlpha=0 f0= Tnormal= (= t_s^2 (1-F0)^2 per pane) veilNormal= (F0 x env
 luminance x exposure) cameraSide=in|out EinOverEout=` (E at the pane's interior cell from §LUX_CHECK / the meter's
