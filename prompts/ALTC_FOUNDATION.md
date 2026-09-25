@@ -191,6 +191,9 @@ any shot and lists the values at boundaries. Seconds.
 changes".** So the film criterion is CONTINUITY, not camera-independence: every light term per fixed surface point
 (§CAMDEP_SURFACE sample sets) may change with the camera, but by at most a stated per-frame step (fades over F frames,
 F1 hysteresis; exposure per F3). Witness: max per-frame change per term per point <= 1/F of its range; 0 one-frame jumps.
+red1 added: "as in cinematic film, lighting changes to give a balance to the scene to scene movement" = per-SHOT balance
+is intended (a cinematographer rebalances each setup): the meter (red1's chosen mode) sets each shot's balance, changes
+land at cuts or as smooth ramps inside a shot, never as jumps. Automatic from cited metering; still no hand dial (rule 5).
 For stills §CAMDEP_SURFACE stays a REPORT (which terms depend on the camera), not a FAIL.
 
 **Watchdog add (2026-09-25, red1: "during alt-c lighting may fluctuate while in scene"):** confirmed risk: today's
