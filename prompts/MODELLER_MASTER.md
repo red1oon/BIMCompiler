@@ -227,7 +227,7 @@ The probe scripts were session scratch, not committed. That is why L0 exists.
   (now 37 / 10) and its Terminal-rules-on-houses model (contradicted by WalkerDoctrine, and the doctrine wins);
   SPEC_MESH_FIT_GRAFT / SPEC_SEAM_HEALING code lives only on unmerged feature branches.
 
-## ▶ §RESUME 2026-09-21 — read SECOND (after §STRATEGY 2026-09-24 above). Supersedes the 2026-09-15 block below, which is kept for its
+## ▶ §RESUME 2026-09-21 — read THIRD (after §RESUME 2026-09-26 and §STRATEGY 2026-09-24 above). Supersedes the 2026-09-15 block below, which is kept for its
 ## history but is NO LONGER the entry point. Written at session close; every number below was measured.
 
 **WHAT THIS SESSION DID.** The 2026-09-15 block ordered a re-verify sweep of the 34-row §OPEN LIST. That
