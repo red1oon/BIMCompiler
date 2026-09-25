@@ -239,7 +239,17 @@ BEFORE Hospital FAIL 26800 / 5087 / 42305, Clinic FAIL 10438 / 2251 / 4761, Term
 AFTER Hospital PASS 0 / 0 / 0, Clinic PASS 0 / 0 / 0, Terminal PASS 0 / 0 / 0 (exteriorFaces 146293 / 60295 / 44228,
 junctionTested 193225 / 43616 / 63181, rayLitCoveredCells 240291 / 3905 / 466309). Zones 964 -> 1117 (Hospital),
 434 -> 456 (Clinic), 203 -> 156 (Terminal); apertureM2 6875 / 325 / 5185; build ms 2184 / 404 / 1462 (skyMs 1580 /
-283 / 784, auditMs 1469 / 272 / 659) vs 1536 / 324 / 1160 before. GUARD PASS. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
+283 / 784, auditMs 1469 / 272 / 659) vs 1536 / 324 / 1160 before. GUARD PASS.
+ONE-OFF SHADER CROSS-CHECK (witness_zone_open_sky.js on the after code, sw v1338): zone-debug readback vs the CPU mirror
+gpuAgreeZone 1200/1200 and gpuAgreeSky 1200/1200 on Hospital aerial + cafe_atrium_high and Clinic default + corridor
+(clinic_entrance 1092/1093); §SKY_LOSS openDenied Hospital aerial 79 -> 0, Clinic default 19 -> 0 / aerial 138 -> 0.
+Terminal §HALL_ZONE: the hall_floor camera reads zone 0 (outside) before, zone 1 after (1,107,080 cells, sideM2 5098.5,
+upM2 0: the roof-edge band is a SIDE aperture of the hall's topmost covered layer, folded into the interior's total).
+PORTAL BINDING (found by the Clinic corridor wash re-measure, median 0.537 -> 0.457, exposure 34.0 -> 25.8): 4 of 19
+portal spots sat in courtyard cells the old rule sealed as a zone (bound there, unable to reach the corridor); open under
+the new rule they were UNBOUND ("a portal outside the zones stays unbound") and lit the corridor through its walls, which
+the §METER read. Fix: a portal in an open or off-grid cell binds to OUTSIDE like a lamp (only a portal whose every lookup
+is solid stays unbound); sw v1339; corridor wash re-measured after it (see the build log). Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
 (tone-mapped median/p95/wash per pose) before/after. The off-grid = unknown bug in witness_wash_sources.js:77 and the
 crosswall witness's CPU column (a -1 raw value is OUTSIDE 65534, not unknown) is fixed in the same commit.
 **§PORTAL_SHADOW_BIAS — SPEC (2026-09-25, dev red1-5a; watchdog red1-c6 order (1) after 3883eebe PASS). Alt+S only
