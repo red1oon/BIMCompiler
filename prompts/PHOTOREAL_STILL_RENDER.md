@@ -587,6 +587,10 @@ geometry every frame, so per-pose picks pop, recompile or flicker. Known answers
 Watchdog read: red1's hypothesis is right, and the industry answer is "bind light to the WORLD (clusters/zones, probes,
 stable cascades), render each film frame like a still (sub-samples + warm-up)". What looks new here: deriving the light
 binding from BIM room/zone geometry; not claimed as new until checked further.
+**Full spec: prompts/ALTC_FOUNDATION.md** (Fable agent, watchdog-checked 2026-09-25: inventory of 35 Alt+S steps with
+file:line, verdict = hypothesis CONFIRMED, foundation F0-F8 + order). Watchdog spot-checked: the §SOURCED_LIGHT stage/prepare,
+§STILL_SHADOW_EDGE and shadow-radius gates are Alt+S only (no _filmParity path); lamp calib + portal exposure key on
+SourcedLight.installed(), true from page load (scene.js:46), so it must be checked with one clip's §SOURCED_LIGHT_CALIB line (F0).
 
 ## §SOURCED_LIGHT — SPEC ONLY (2026-09-25; red1 confirmed the principle, watchdog red1-4b gates; NO code yet)
 red1: "The paramount idea is bounce. If it is all washed, we cannot enjoy good bounce. With disparate sources, we can see
