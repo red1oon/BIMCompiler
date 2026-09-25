@@ -247,7 +247,8 @@ ALT+S TIME (Hospital first press, Intel headless): rooms 0.6 s, staging 16-19 s 
 shadowFit 1-5 + other), TAA 16 fr, AO 24 fr, GI: engine 2.6 s + COPY BUILDING 63 s (once per page, 4,888 renderables) +
 orientation 11 s (already cached in localStorage on red1's browser) + 8 passes 3 s.
 NEXT (red1's order, decide nothing twice):
-1. Zone grid + sky-view field cache in IndexedDB per building (red1 asked "cache the 1-time work"; ~6.5 s/first press). Not
+1. ✅ DONE 2026-09-26 de341c89 (sw v1433, on look/combined-0925 + fix/zone-idb-cache): §ZONE_IDB_CACHE — Hospital first
+   Alt+S after reload staging 12.2 s -> 3.7 s; hit arrays byte-identical; code edit -> stale-code rebuild. Was: Zone grid + sky-view field cache in IndexedDB per building (red1 asked "cache the 1-time work"; ~6.5 s/first press). Not
    into the .db file.
 2. Bounce-free FIRST press (preview): first Alt+S shows the still without the GI layer while the WebGPU copy runs in the
    background; next press adds bounce. Offered to red1, not yet approved — ask once, one line. Quiet copy after page load was
@@ -262,6 +263,9 @@ NEXT (red1's order, decide nothing twice):
    dark 2.9%) not caught by unlit.
 6. Then the old queue: §LAMP_UNCAPPED (b00ea663e; capDropNear=120 on a Hospital aerial), §COVE_LIGHT (TRIM_LUX_VOID 100),
    §GLASS_VEIL (Clinic windows opaque from outside: still …374222505), floor blotches.
+RED1 2026-09-26 PM on still …380099073 (aerial, outside, day): "windows very dark no light within". State: lamps 0/200 lit —
+§STILL_LAMPS_OUTSIDE (effects.js ~4338) turns all lamps off for a daylight still shot from outside; &lampsout=1 keeps them
+on; default 0 "until red1 picks". Asked red1 to pick the default (one line).
 LESSONS today: pkill -f / pgrep -f self-match killed my own shell twice (exit 144) — kill by pid. A memory "hog" report was a
 main-thread stall (shader compile), not RAM: measure the first staged frame (SOURCED_LIGHT_BIND -> GLERR firstFrame gap).
 red1 tests the latest always — never ask which version.
