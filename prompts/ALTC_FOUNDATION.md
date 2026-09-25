@@ -194,6 +194,11 @@ F1 hysteresis; exposure per F3). Witness: max per-frame change per term per poin
 red1 added: "as in cinematic film, lighting changes to give a balance to the scene to scene movement" = per-SHOT balance
 is intended (a cinematographer rebalances each setup): the meter (red1's chosen mode) sets each shot's balance, changes
 land at cuts or as smooth ramps inside a shot, never as jumps. Automatic from cited metering; still no hand dial (rule 5).
+**Crossing-shot test path (red1 2026-09-25, both poses approved):** outside looking in (…1790319885328, cam
+[-5.529,-0.544,-42.321]) -> entering the café (…1790320117679, cam [-7.990,-7.785,-24.269]), same target [4.014,-6.761,2.325].
+red1: "will it evolve smoothly frame to frame". Witness on that path (e.g. 120 frames): per-frame §FILM_EXPOSURE + the
+§CAMDEP_SURFACE terms at fixed points; PASS = no one-frame jump, exposure ramp within the cited rate, lamps/portals fading.
+Today it would FAIL: films hold 0.383 (outdoor) so the café stays at the outside look; per-frame picks jump.
 For stills §CAMDEP_SURFACE stays a REPORT (which terms depend on the camera), not a FAIL.
 
 **Watchdog add (2026-09-25, red1: "during alt-c lighting may fluctuate while in scene"):** confirmed risk: today's
