@@ -350,6 +350,15 @@ D8 NEVER COARSER THAN THE SINGLE MAP (first after-arm run, 2026-09-25): at 4 x 4
    the single map (sun map back to that size, the §STILL_SHADOW_EDGE fit re-applied), uCsm off, the cascade lights stay in
    the scene unrendered (program unchanged, C1), logged `mode=single(reason)` with the cascade numbers it declined.
    m = 4: m = 3 does not meet more poses (aerial cascade-0 texel 0.0328 vs 0.0207 at m = 4; café both meet).
+RESULT (2026-09-25, bim-ootb feat/still-shadow-cascade 6edfdf22 sw v1360; integrated feat/still-shadow-cascade-int = e61c116b +
+   this, sw v1380 — same numbers; witness_still_shadow_lines.js, one press per pose, GUARD 0/0/0). BEFORE (3edd28a8, one map):
+   texel default 0.0851 / aerial 0.0741 / café 0.0124 / Terminal 0.0158. AFTER cascade texels [c0..c3]: default = single
+   0.0862 (D8: cascades [0.108,0.144,0.140,0.135] declined, nearest surface 179 m, a pixel there 0.24 m); aerial
+   [0.0207,0.0371,0.0481,0.0606] (FAIL c0 > 0.0167, tpp <= 0.43); café [0.0037,0.0044,0.0058,0.0058] PASS (tpp 1.01 max);
+   Terminal hall [0.0004,0.0038,0.0020,0.0066] PASS. gap45 <= 0.0086, gap20 <= 0.0236 everywhere; memMB 512 (Terminal was
+   128 with its single 4096 map); dirShadows 4 on every press (C1: new program keys on presses 2/3 = 1 / 4, the base's
+   own numbers); C2 press wall time with Chrome + NVIDIA caches off, Hospital default: 55.8 s vs 55.6 s &shadowcascade=0.
+   UNMET: cascade-0 <= 0.0167 m on the two far exterior poses — not reachable at 4 x 4096 under C3 with lambda 0.5.
 GATE, from one Alt+S press per pose (witness_still_shadow_lines.js extended; no ray grid): `§STILL_SHADOW_CASCADE m= splits=
 [m] texel=[m per cascade] normalBias=[..] thinCasterRisk=[..] memMB= ms=` + the per-cascade §STILL_SHADOW_EDGE numbers,
 Hospital default exterior / aerial / café + Terminal hall_floor; FAIL if cascade-0 texel > 0.0167 m or any gap45/20 >= 0.05 m;
