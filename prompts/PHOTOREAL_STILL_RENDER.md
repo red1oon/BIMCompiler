@@ -89,6 +89,11 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   glass should allow light thru or/and reflect the cam point of lite if any". Seen: the whole view behind the glass is a
   flat lavender-grey veil (no contrast, no colour, no lamp highlights), though that atrium renders lit and colourful
   without glass between. The pane acts as a fog layer, neither transmitting nor reflecting. => item D GLASS_VEIL.
+**red1 14:35 (…317692247, Hospital atrium stair):** "too dark — light from outside and inside needs to be back in proper
+  value due to blocking of sky/sun thru the walls". Watchdog: agreed. On 8619 a covered non-SKY_BIT cell gets no sky
+  except via the 8 nearest portals; the sky-view field (OPEN, option a, portals retired) is the replacement. Added gate
+  §LUX_CHECK: per-zone working-plane lux (sky-through, lamps, total) vs EN 12464-1 maintained illuminance by space use;
+  < 50% FAIL-to-explain; meter exposure + stops vs outdoor logged. No exposure knob (rule 5).
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
