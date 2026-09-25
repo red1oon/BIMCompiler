@@ -965,6 +965,34 @@ FINDING run 1 (8618 = 0a9950a3 AND 8621): `§METER camera=inside VACUOUS no lit 
    Hospital carries NO roof glazing: up-facing glassy area = 15.3 m2 IfcPlate + 28.3 m2 in BatchedMesh (pane top edges),
    0 tiles >= 0.5 m2 (probe_roofglass.js) — the "atrium roof glass" premise does not hold for this model; café = zone 1.
 
+**§SKY_FRACTION — SPEC (2026-09-25, dev red1-5a; watchdog item B from red1's 8619 look). Alt+S only (`!A._maxqActive`).**
+DEFECT (red1, v1337 AND e61c116b): Terminal canteen cam [-20.06,-16.13,-1.00] walls split light/dark along a stair-stepped
+boundary with square notches; waiting hall cam [0.45,-12.80,11.90] a stair-stepped white wash patch. CAUSE (source):
+light_zones.js marks a covered cell sky-lit by ONE bit (SKY_BIT = any of the 24 lattice sweeps reaches open sky, then a
+6-neighbour dilation) and the shader takes the NEAREST cell: full hemi/IBL or none, so the 0.5 m grid is drawn on walls.
+FIX, cited:
+1. Per cell a continuous SKY-VIEW FRACTION instead of the bit: the cosine-weighted share of the lattice directions (the 24
+   + straight up) whose sweep reaches open sky — the sky view factor (Oke, "Canyon geometry and the nocturnal urban heat
+   island", J. Climatology 1981; the same quantity as ambient-occlusion visibility, Zhukov, Iones, Kronin, EGWR 1998),
+   weight per direction = cos(angle from zenith) = 1/sqrt(1 + dx^2 + dz^2), normalised. Open-to-sky cells = 1. No
+   dilation (it was the bit's patch). Computed per building in the same sweep (per-direction counts), cached.
+2. ONE field for all sky light: BRE's daylight factor is exactly this ratio (indoor / unobstructed horizontal sky
+   illuminance) and its sky component is the view factor, so the cell value F = max(skyView, DF_cell) (DF_cell from
+   §SOURCED_DAYLIGHT). Stored in the existing G channel (RG16UI, F x 10000): no texture growth, no new sampler.
+3. FILTERED like an irradiance volume (Greger, Shirley, Hubbard, Greenberg, "The Irradiance Volume", IEEE CG&A 1998:
+   trilinear interpolation between grid samples): once per fragment, 8 texelFetch around (world pos + 0.5 cell along the
+   eye-facing normal), weights = trilinear x (cell not SOLID and in the fragment's zone or open) renormalised — so no sky
+   leaks through a wall; all 8 rejected -> the picked cell's F. The §SOURCED_LIGHT_LINK rule holds: one filtered read per
+   fragment, no per-light code.
+4. SHADER: zone fragments' sky terms (hemi, ambient, IBL irradiance + radiance: today slSkyKeep = 1 or indoorSky) are
+   scaled by F_filtered; the separate §SOURCED_DAYLIGHT add (G x uSLSky) is removed (F carries it, now through the hemi's
+   own normal dependence). Outside fragments (zone 0 / off grid) keep 1. &daylight dial scales the DF part as today.
+COUNT (FAILs on red1's two poses before, target 0 after; numbers only): zone-debug mode w=6 writes F_filtered; one float
+readback per pose; SKY_STEP = screen-adjacent pixel pairs on the same surface (view depth within 1%, normals within 5 deg)
+with |dF| > 0.25, reported as count and metres of edge (pixel footprint); plus the grid-only raw count (face-adjacent
+same-zone cells with |dF| > 0.5). Poses: Terminal canteen + waiting hall (red1's PNG poses), Hospital café, Clinic corridor.
+Regressions: zone_glare, shadow_lines, wash (metered), link <= +10%, GUARD 0/0/0.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
