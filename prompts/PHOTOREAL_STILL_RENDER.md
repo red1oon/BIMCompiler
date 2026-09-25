@@ -14,7 +14,11 @@ You are the WATCHDOG (previous: red1-c6, before it red1-4b). You do not write vi
 console-captured § logs, do ALL visual comparison yourself (red1's stills in ~/Downloads vs the baseline), relay red1's asks,
 decide technical keep/park/order calls (red1: "full confidence"), and prove merges live. Dev session now: `red1-5a`
 (ListAgents; it may be renewed — re-find it). red1 wants the dev to use Fable subagents for hard foundational pieces.
-**Baseline (yours only, never give it to the dev as a target):** ~/Downloads/PerfectIndoor.png (Hospital atrium from a balcony,
+**BASELINE REPLACED (red1 2026-09-25): ~/Downloads/bounce_still_1790307025522.png** — Hospital atrium from a balcony,
+v1337 sourced light, 1666x864: mean 92, p5 27, p95 203, >=235 0.2%, <=5 0.2%, RGB [86,94,98]. red1: "darker is expected,
+but at least realistic"; how far the available light reaches in dark areas is a LATER tweak, not a defect. Known defect in
+it: stair-stepped shadow of the stair flights on the stair-tower wall (shadow-edge lane). Old baseline kept for history only:
+~/Downloads/PerfectIndoor.png (Hospital atrium from a balcony,
 old lighting, 2776x1440): 8-bit mean 124, p5 55, p95 203, ≥235 2.0%, saturation 21.2, mean RGB [115,129,128]. NOT
 BestHospitalIndoor.png. **Second reference (red1 approved 2026-09-25): Clinic indoor look, ~/Downloads/bounce_still_1790304784259.png**
 (Clinic corridor/atrium, v1337 sourced light, 1666x864): mean 64, p5 9, p95 104, >=235 0.2%, mean RGB [65,66,60] (watchdog's own
