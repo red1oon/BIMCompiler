@@ -1134,6 +1134,24 @@ dark but "acceptable, as in real life we cannot see from outside in such a well-
 exposure change." So: outside-camera exposure stays as is (no interior lift from outside); each of the three gates logs
 at this pose the camera side, the exposure and the metered band, before/after — any change is FAIL-to-explain.
 
+**§LAMP_ZONE_PICK — SPEC (2026-09-25, dev red1-5a; watchdog OPEN; zero-list item FLYIN_DARK). After §SKY_VIEW_FIELD lands
+(same staging code), before §GLASS_VEIL. Alt+S first; the film path gets the same rule under ALTC F1.**
+DEFECT (red1's 5-still Hospital fly-in on 8619, probe flyin.out): pose 5 (cam [-8.226,-11.841,13.38]) goes 39% black; the
+left wall (zone 1) has 22/24 points at 0 lamp light, zone-1 lamps kept 123 -> 20, exposure +1.77 stops. CAUSE (source): the
+zone priority runs only when the frustum holds more fixtures than the cap (tools.js:1987 `_zoneCap = inView.length > _capN`);
+otherwise the zone-blind top-up `_nightPickNearest` (tools.js:2012) fills the set with lamps of 23 small other zones that
+reach nothing in view. Films re-pick per frame the same way (cinema_maxq.js:4005 restages every frame; tools.js:1947-2012).
+RULE (one rule for cap and top-up): pick lamps by the ZONES THEY LIGHT, not by whether the fixture is in the frustum (a
+lamp behind the camera lights the wall in front). Candidates = every lamp bound to the camera zone, then lamps bound to the
+zones visible in frame (zone ids of the existing 12x7 §SOURCED_LIGHT_CAP readback: zone -> share of frame hits), ordered
+camera zone first, then by the zone's share of the frame, within a zone by distance to the camera. Cap = the uniform
+budget as today (until ALTC F1 makes lamps zone data with no cap). The frustum test and the zone-blind top-up are removed
+from the Alt+S path (nav keeps its own).
+LOG per press: `§LAMP_ZONE_PICK camZone= zoneLamps= kept= perZone=[z:kept/available] dropped= (= §LAMP_CAP_DROPPED)`.
+GATE (logged state, one run): red1's 5 fly-in poses in one session: zone-1 left-wall points at 0 lamp light = 0 at every
+pose; camera-zone lamps kept = min(cap, zone lamps) at every pose; exposure change pose 4 -> 5 reported (was +1.77 stops);
+no regression at the outside-looking-in reference pose; GUARD 0/0/0.
+
 **§METER_HIST — SPEC (2026-09-25, dev red1-5a; watchdog ruling after §STILL_CAMDEP). QUEUED after §SKY_VIEW_FIELD (it
 changes what every "metered" gate number means: land once, then re-baseline). Alt+S only.**
 FINDING (probe camdep.out, 8619, red1's poses, same zone 1, same 123 lamps): café corner exposure 18.235 (5.58 stops) vs
