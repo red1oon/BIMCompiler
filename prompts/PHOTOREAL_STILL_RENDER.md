@@ -34,6 +34,10 @@ thin-caster count reported.
 **Then:** §SOURCED_DAYLIGHT (spec 481d42c43) → §WASH_FRACTION re-measure (café tone-mapped median target 0.55-0.70, ref
 0.636; Clinic/Terminal WASH ≤ Hospital's; Terminal through-glass < shaded facade) → your comparison vs the baseline → speed
 (CAP 2.3 s→<200 ms, frame ms, Alt+S session cache) → parity/films → one PR at lane end, prove live.
+**Direction (red1 2026-09-25):** finish Alt+S, then apply it the best way to Alt+C (§FILM_PARITY). QUEUED AFTER, not now:
+nav viewer colour — materials are identical in nav and Alt+S (§ALBEDO_SRGB off by default; triplanar only multiplies);
+nav's flat fill (ambient 0.386 + hemi 0.617, scene.js) is the likely wash, UNPROVEN: side-by-side same pose first, then a
+cheap zone-aware indoor fill / nearest lamps as a look change for red1.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
