@@ -1089,6 +1089,9 @@ V9 LUX: luxPerUnit = CALIB_SUN_LUX / calibSunI (the §SOURCED_LIGHT_CALIB scale:
    6.3.1 Plant rooms, switch gear rooms 200. Atrium: no row -> "unverified". Space names: elements_meta IfcSpace +
    element_transforms (A.ifc2three) or spatial_structure; a zone takes the use of most of its mapped spaces; none ->
    "unknown". Hospital has no IfcSpace rows, Terminal's are "Aras NN RN" (unmappable): both "unknown".
+V3' (after the Hospital smoke on 901d75a5): "any opaque triangle wins" shrank every window opening by up to one cell per side
+   (the fattened wall reveal / frame around a pane): §SKY_VIEW_ADF_CHECK median Fwp/ADF 0.044. Revised: a cell is GLASS when
+   its glassy rasteriser samples (uniform barycentric, ~ area) are >= its opaque ones — the cell's majority surface decides.
 V10 SKY_STEP witness targets: the camera looks along the longest free horizontal ray at eye height (32 azimuths, the
    zone grid's first SOLID cell), target = camera + that ray x its free length ("along the room", rule not eye).
 
