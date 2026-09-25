@@ -1123,6 +1123,13 @@ luminance x exposure) cameraSide=in|out EinOverEout=` (E at the pane's interior 
 outdoor E). COUNT: glazing materials still stock (not cloned) = 0; any clone with a diffuse body > 0 = 0; Tnormal within
 1 % of T_pane(1-F0)^2. GUARD 0/0/0, link <= +10%.
 
+**RED1 APPROVED REFERENCE (2026-09-25, watchdog red1-c6): NO-REGRESSION POSE for §SKY_VIEW_FIELD, §GLASS_VEIL and §METER_HIST.**
+~/Downloads/bounce_still_1790319885328.png, Hospital, cam [-5.529,-0.544,-42.321] tgt [4.014,-6.761,2.325], 8619 tree
+(e61c116b): outside looking in through the curtain wall. Sun on the floors/stair inside "very good"; the deeper interior
+dark but "acceptable, as in real life we cannot see from outside in such a well-lit building. Only when entering does the
+exposure change." So: outside-camera exposure stays as is (no interior lift from outside); each of the three gates logs
+at this pose the camera side, the exposure and the metered band, before/after — any change is FAIL-to-explain.
+
 **§METER_HIST — SPEC (2026-09-25, dev red1-5a; watchdog ruling after §STILL_CAMDEP). QUEUED after §SKY_VIEW_FIELD (it
 changes what every "metered" gate number means: land once, then re-baseline). Alt+S only.**
 FINDING (probe camdep.out, 8619, red1's poses, same zone 1, same 123 lamps): café corner exposure 18.235 (5.58 stops) vs
