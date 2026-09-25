@@ -1284,6 +1284,25 @@ Alt+C (Alt+S-truth rule). Nav stages neither (§GLOW_SPRITE_NAV_OFF; A._glowStag
 GATE: §FIXTURE_EMISSIVE on Hospital/Clinic/Terminal + the item C count + GUARD 0/0/0; commit names the call site and
 "film path: same call site (startStillRefine per frame), no smoothing needed".
 
+**§IRC_MAX — SPEC (2026-09-26, dev red1-5a; watchdog FINAL ruling: IRC ON by default, no double count by a MAX rule). On the
+sky-field branch (feat/sourced-daylight 59e0b22d). Alt+S-truth: IRC is BUILD (per zone, camera-free); the max is DECIDE.**
+WHY: with IRC off, a real GI still left the Terminal hall black (345/564; hall_floor 279/573) and the tower wall lost the
+retired portals' light (wall mean 68 vs 115 with portals, §AO_VS_SUN). Ceilings under opaque roofs have F = 0 and screen-
+space GI has no lit neighbour there. IRC (the per-zone interreflected component, flux balance R 0.5, V12) is the analytic floor.
+RULE (watchdog): per fragment, indirect diffuse = max(IRC_zone, SSGI_indirect), never the sum. The GI still composites a
+bounce layer over the app frame (gi_still.js ~717; its own 'linear' encode mode exists, ~502). So:
+1. The app frame renders WITH the IRC term (the shader add, as on &irc=1).
+2. One extra small numeric pass renders the IRC term alone, in the same linear units as the bounce layer (a zone-debug mode
+   writing IRC irradiance x albedo x exposure, linear, before tone mapping), at the GI still's resolution.
+3. The composite adds only what the bounce layer carries ABOVE the IRC: bounce' = max(0, bounce - IRC_px), done in linear
+   light (the 'linear' encode path), so final = app_without_IRC + max(IRC, bounce). If the composite is not linear-exact
+   in some mode, the log says so and that mode is not used.
+LOG per press: `§IRC_MAX ircOn=1 pixelsIrcWins= pixelsSsgiWins= (shares %) meanIrc= meanBounce= blackDirectGI= ms=`.
+GATE (the sweep + these): Terminal hall + hall_floor blackDirectGI 0 with a real GI still (was 345 / 279); the tower wall
+(red1's pose) mean with the max rule reported next to the portals-on 115 reference (not forced); Hospital/Clinic references
+and the outside-looking-in pose unchanged within the sweep's tolerance; link <= +10%; GUARD 0/0/0. Films: the film GI path
+(gi_film.js) must use the same max composite — named in the commit ("film path: gi_film composite uses the same max").
+
 **§COVE_LIGHT — SPEC (2026-09-25, dev red1-5a; item A BLACK_INTERIOR; red1: "a dark place just gets a ceiling-perimeter back
 glow"). Builds on §SKY_VIEW_FIELD (same zone texture). Alt+S-truth: BUILD per building + DECIDE per frame; films inherit.**
 DEFECT (8619): Hospital inner room cam [9.947,-7.699,0.098] 98% black; toilet [8.344,-8.647,-3.579] 57% black; Clinic room
