@@ -14,6 +14,13 @@ continuity (fades/hysteresis on picks, per-shot exposure hold, stable shadow box
 `!A._maxqActive`; a film-only branch may exist only for smoothing, named as such. Gate: every Alt+S look commit lists
 the functions it adds/changes and confirms the film path calls them (or names the smoothing it still needs).
 
+**SHOW-STOPPER REVIEW of the Alt+S-truth rule vs the bake loop: prompts/ALTC_SHOWSTOPPERS.md** (Opus agent, 2026-09-25,
+read-only on /tmp/wt-daylight 5bae708a; watchdog spot-checked effects.js:4235 once-guard, cinema_maxq.js:3535, light_zones.js:129
+cache key without time). Stoppers S1-S5: no per-frame function (build+decide fused), look gated `!A._maxqActive`, 4D build-up
+vs a timeless zone cache, per-frame cascades unstable, zone lamp pick needs the 84-ray grid. All have remedies; none blocks the
+rule. RULE ADDENDUM: every Alt+S lighting function is written as BUILD (per building, cached) + DECIDE (per camera/frame, ray-free,
+ms-scale).
+
 ## 0. How to read this
 - "Alt+S" = one press of the still: `_applyPhotoStaging` (effects.js:3966-4411) runs ONCE, then the
   TAA/AO fold (16 + 24 composer renders, effects.js:4711-4712) and the 8-pass bounce (gi_still.js:58, 662-711).
