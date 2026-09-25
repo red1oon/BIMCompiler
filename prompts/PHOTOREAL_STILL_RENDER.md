@@ -1188,6 +1188,28 @@ GATE (logged state, one run): red1's 5 fly-in poses in one session: zone-1 left-
 pose; camera-zone lamps kept = min(cap, zone lamps) at every pose; exposure change pose 4 -> 5 reported (was +1.77 stops);
 no regression at the outside-looking-in reference pose; GUARD 0/0/0.
 
+**§GLOW_LAYERS_OFF — SPEC (2026-09-25, dev red1-5a; red1 decision, watchdog agreed; item C suspect). Branch feat/no-glow-layers
+off -int c56769bf, port 8623.**
+red1: remove the decorative glow layers from Alt+S — §GLOW_LENS_QUAD (emissive rect/round lens quads at fixture footprints,
+_glowLensOn) and §PHOTO_GLOW_SPRITE (bloom sprites, _glowOn; the still stages only the exit-sign subset). Not real sources,
+often misaligned, prime suspect for item C (Clinic entrance shaft/blobs by day). Fixture meshes stay emissive (§STILL_GLOW,
+§LAMP_SHAPE_COLOUR); real lamps stay.
+CALL SITES (source): both are staged at ONE place, startStillRefine (effects.js ~6117-6119: `_glowOff(); _glowOn(exit
+filter); _glowLensOn();`). Films call startStillRefine every baked frame (cinema_maxq.js:4005), so the same switch covers
+Alt+C (Alt+S-truth rule). Nav stages neither (§GLOW_SPRITE_NAV_OFF; A._glowStage has no caller outside effects.js).
+1. Default OFF there; &glowlens=1 / APP._stillGlowLens=true and &glowsprite=1 / APP._stillGlowSprite=true bring each back
+   for A/B. No code deleted until red1 has looked. Log `§GLOW_LAYERS lens=on|off sprite=on|off (A/B flags)` per press.
+2. COUNT FIRST: `§FIXTURE_EMISSIVE lamps=N withMesh=M withoutMesh=K byClass={}` per press — a lamp (fixture world
+   position, A._nightFixtureWorldPositions) "withMesh" when its element's own drawn mesh/instance (guid -> object via
+   A.guidMap) has a material with emissive > 0 at the staged still. K listed per building (Hospital/Clinic/Terminal). If
+   K > 0, a follow-up gives those a small emissive shape at the fixture's REAL position/footprint/yaw (bbox_x/bbox_y/
+   rotation_z, the data the quad used) — not in this commit.
+3. ITEM C in the same gate: at red1's Clinic exterior pose cam [43.873,7.747,-3.074] (tgt from the PNG tEXt) by day:
+   glow draws (sprites + lens quads) with the camera outside = 0; every emissive surface seen through the entrance glass
+   (grid rays through glass, first opaque hit with emissive > 0) named by class/material.
+GATE: §FIXTURE_EMISSIVE on Hospital/Clinic/Terminal + the item C count + GUARD 0/0/0; commit names the call site and
+"film path: same call site (startStillRefine per frame), no smoothing needed".
+
 **§METER_HIST — SPEC (2026-09-25, dev red1-5a; watchdog ruling after §STILL_CAMDEP). QUEUED after §SKY_VIEW_FIELD (it
 changes what every "metered" gate number means: land once, then re-baseline). Alt+S only.**
 FINDING (probe camdep.out, 8619, red1's poses, same zone 1, same 123 lamps): café corner exposure 18.235 (5.58 stops) vs
