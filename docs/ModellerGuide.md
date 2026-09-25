@@ -280,6 +280,12 @@ The opening shows immediately; undo closes it to the exact original frame. (Cutt
 promotes it to a B-rep just-in-time — from its measured box, or, on a layered wall, from its real layer
 slabs — so it is never approximated. See [What a wall is made of](#what-a-wall-is-made-of).)
 
+**This works on a layered wall.** It was checked with a real click on the Duplex (`W-E2E-CUT-LAYERS`, 10/10). A 5-layer
+wall is selected, one signed `GEOM_CUT` lands, the opening is visible, and undo closes it again. Two limits:
+- **Rounding an edge (Fillet) right after cutting a layered wall** is not reliable yet.
+- **A wall boxed in on every side by other walls** can't be clicked. On the Duplex that is the 7-layer party-wall core,
+  which touches its neighbours on four sides and is covered from above. Pick it from the Outliner instead.
+
 ![Cut — a signed opening void subtracted from the wall](img/modeller/cut-open.png)
 
 ### Fillet — round a solid's edge
