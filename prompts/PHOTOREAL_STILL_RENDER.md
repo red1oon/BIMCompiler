@@ -152,6 +152,33 @@ the functions it adds/changes and confirms the film path calls them (or names th
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
 floorShareBySource probe was invalid; never trust a dev claim without reading the diff/log.
 
+## ▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 (dev red1-5a; context low -> new session) — START HERE
+LOOP NOW (red1 via watchdog red1-c6): NO new witnesses/A-B/gate runs. Build a fix -> merge into ONE look tree /tmp/wt-look
+(branch look/combined-0925, base 9991dcee, serves :8624 — red1 tests there; never leave a broken intermediate: develop in a
+side worktree, fast-forward /tmp/wt-look only after a clean smoke) -> bump sw -> commit each fix separately -> 1-minute
+smoke (scratchpad smoke.js, also committed as viewer/tests/smoke_alts.js) -> tell the watchdog sha + one line. Agent models:
+Sonnet for simple work, Fable for tough pieces (red1 2026-09-26). Every fix pastes the §FAULT line before -> after at
+red1's pose for that defect (poses from the PNG tEXt chunk "bim-still-pose").
+IN FLIGHT:
+- Fable agent: RAINBOW VOXEL EDGE (sky-field zone-edge filter; red1 still …353472343, Hospital cam [-31.093,-2.567,4.481]
+  tgt [6.293,-9.591,13.424]) in /tmp/wt-edgefix, branch fix/field-zone-edge (off 9991dcee), :8626. It pushes its branch;
+  check `git ls-remote origin fix/field-zone-edge` and its log. Merge into the look tree when clean. PRIORITY 1.
+- §FAULT per-press self-check: /tmp/wt-dev branch dev/look-next f5ff2085 + smoke 8d1aab2f (:8625), WIP, NOT merged. To do:
+  (1) call StillFault.report at "§STILL_REFINE done" (not at staging end: the lamps go off later; it logged
+  extLightsDay=191 where the true after-press state is 31); (2) add fieldBad (F NaN/<0/>1, taps spanning >1 zone),
+  unlitCeil (down-facing unlit), blown/dark (from the meter's 160x90 render after exposure); irrBad is shader-side (n/a
+  unless a debug readback). Then merge first.
+FOUND (not yet fixed): the 31 lights on outside by day are the PHOTO PROPS (effects.js ~686-760 _buildPhotoProps: facade
+uplights 0xffaa55/0x8cc0ff, downlights, sconces 0xffcf9a range 6, _photoSparkles sprites, skyline lights) — fabricated
+staging lights, not real sources; likely red1's Clinic "warm orbs with star flares" (…353558771). Ask red1 via the watchdog:
+remove completely (like the glow layers) or off by day.
+QUEUE after the edge fix + §FAULT: §IRC_MAX (28ce40f5b; black ceilings), §LAMP_UNCAPPED (b00ea663e), §COVE_LIGHT (all
+compartments, deficit, TRIM_LUX_VOID 100; red1's Clinic corridor side-bay voids …353577428), §GLASS_VEIL (Clinic opaque
+glass …352178540), exterior lights by day (photo props above), then the floor blotches (…353323520, bounce/AO grain).
+Other pushed branches: feat/still-pose-host 814eb79d (host:port + sw in §STILL_POSE; syntax-checked only, merge + smoke);
+feat/lamp-zone-pick 3df3e1bf, feat/no-glow-layers 92b36bdb, feat/sourced-daylight 59e0b22d (all already inside 9991dcee
+except pose-host). Findings on record: tower blotch = lamp cap + retired-portal light loss (AO minor); lamp cap = CAP_LIMITED.
+
 ## ▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-25 EVENING (dev red1-5a; PAUSED for machine suspend) — START HERE
 Watchdog = red1-c6 (red1 delegated answers to it). Rules in force: Alt+S = source of truth, film inherits (every lighting
 function = BUILD per building + DECIDE per frame, ray-free, ms; film adds only continuity; commit lists BUILD/DECIDE +
