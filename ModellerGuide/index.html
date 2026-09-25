@@ -3431,6 +3431,11 @@ signed-op path as a polygon extrude.</p>
 <p>The opening shows immediately; undo closes it to the exact original frame. (Cutting a seeded ARC wall
 promotes it to a B-rep just-in-time — from its measured box, or, on a layered wall, from its real layer
 slabs — so it is never approximated. See <a href="#what-a-wall-is-made-of">What a wall is made of</a>.)</p>
+<p><strong>This works on a layered wall.</strong> It was checked with a real click on the Duplex (<code>W-E2E-CUT-LAYERS</code>, 10/10). A 5-layer
+wall is selected, one signed <code>GEOM_CUT</code> lands, the opening is visible, and undo closes it again. Two limits:
+- <strong>Rounding an edge (Fillet) right after cutting a layered wall</strong> is not reliable yet.
+- <strong>A wall boxed in on every side by other walls</strong> can't be clicked. On the Duplex that is the 7-layer party-wall core,
+  which touches its neighbours on four sides and is covered from above.</p>
 <p><img alt="Cut — a signed opening void subtracted from the wall" src="../img/modeller/cut-open.png" /></p>
 <h3 id="fillet-round-a-solids-edge">Fillet — round a solid's edge<a class="headerlink" href="#fillet-round-a-solids-edge" title="Permanent link">&para;</a></h3>
 <p><em>Commits <code>GEOM_FILLET</code>.</em></p>
