@@ -11,7 +11,53 @@ study deeply how to make the Modeller work", and "all the objectives of the Mode
 i have no time to sight, i rely on a good vibe coder to do so."
 ```
 
-## ▶ §STRATEGY 2026-09-24 — START HERE. How the Modeller closes the gap: GENERATE, then EDIT MINIMALLY.
+## ▶ §RESUME 2026-09-26 — START HERE. Then read §STRATEGY 2026-09-24 (the thesis + lanes) and §RESUME 2026-09-21
+## (method rules + traps). Written at session close; every number was measured on merged main.
+
+**WHERE IT STANDS.** The generate-then-edit loop runs end to end on the real Open path. A bare ARC building → "Walk ALL
+Services" places fixtures, routes plumbing, and SIGNS it at measured Duplex pipe sizes. One Ctrl+Z undoes the whole walk.
+Moving a fixture re-routes its pipes. Merged + live: bim-ootb **#1762** (§STRATEGY L0-L7 + §XEDGE-3AXIS) and **#1768**
+(§GATE-STOREY-FLOOR + §PRODUCTIVITY + cut-layers witness aim); BIMCompiler **#121 #122 #123**; docs site deployed.
+
+**MEASURED §PRODUCTIVITY** (one Walk ALL Services, generated / flagged for review): Duplex 206/29 · SampleCastle 514/9 ·
+Hospital 39,979/22 · Terminal 7,854/60 · HHS/Clinic/HospitalGarage/SampleHouse 0 flagged. This proves "little left to fix",
+NOT "X times faster" (there is no hand-modelling baseline).
+
+**CLOSED THIS STRETCH (don't re-open):** next-list #1 residual 11 (the rx/ry guard, 11 → 0) · #4 datums 802→657→643 =
+CORRECTIONS (138 → 0 not-real planes on the live render) · row 6 re-framed + routed · L6 PLB stays unattached (red1) ·
+Cut on a layered wall PROVEN (W-E2E-CUT-LAYERS 10/0; the old L3 red was the witness's aim, not the pick).
+
+**NEXT, ranked (my recommendation; red1 had not picked one at close):**
+1. **Row 7 — grid residual** (the "drag and the building follows" handle). ⚠ DECISION OUTSTANDING: chase **0.1039 m**
+   (true mesh centres, the honest number) or 0.0939 m (what ships, flattered by the anchor defect in
+   `str_walker_bridge.js:22/38/50`). Recommended: 0.1039. Confirm with red1, then run it as ONE Fable session (tough).
+2. Re-routed runs are unsigned and bend fittings are not re-derived after a move (§MEP-REROUTE scope note).
+3. Terminal signs 60 of 2,915 runs (DW_CHAIN_COMMIT_CAP, occt-bounded).
+4. Route ACMV / ELEC / FP. They are placed but not routed; the pattern bridge covers CW/SP only.
+5. Retarget W-ROUTER-NNCHAIN N4/N6 (it expects guid-carrying nn runs).
+6. `viewer/routewalker.js`: same vertical-post clash box at 3 sites. VIEWER scope, not the Modeller's; hand it over, don't take it.
+Then the older rows: 9 (apply ORANGE suggestions) · 22 (one-click revert, UBBL checks, rtree at scale) · 11 (real colours) ·
+8 (roof per-element) · 13/25 (SSAO/outline, PBR, BCF import) · 14 (re-source its example first).
+Blocked on red1: 15 (220 MB component_library.db: GH or OCI?) · 27 · 29 · 21/26/31 (never requested).
+
+**DISPATCH (red1):** Opus by default; Fable agents for genuinely tough items (red1, 2026-09-25). A Fable agent WILL hit the
+usage limit mid-run: resume it with its own context after the reset, never restart it.
+
+**NEW TRAPS / METHOD (each cost a wrong answer first):**
+- **An all-zero count is a claim, not a result.** "0 flagged" on 8 residents was the gate sinking fixtures underground.
+  Cross-check any all-green number against the app's own per-step log before reporting it.
+- **A same-line `// comment` can swallow object keys.** A scripted edit silently dropped 4 DiscWalker API exports and
+  `node --check` passed. After any scripted edit to an object literal, grep the diff for mid-line `//` and check exports with
+  `node -e "require(...)"`.
+- **Snapshot after the ASYNC re-fold, not at the row flip.** With signed GEOM_SWEEP rows, undo/redo finish later. Wait on
+  `ModellerHistory.pending()` + two macrotasks (W-WALK-GESTURE).
+- **Witnesses that read the op-log length early race the seed** (read 0) under load. W-E2E-WALK and W-E2E-WALK-IFCOPEN do
+  this. A base red with "oplog 0→N" is that race, not a regression.
+- **A walk also commits routed-network rows** (sweeps + bend fittings). Any "op-log grew by placed count" assertion must count
+  them from the op-log.
+- **Do not "improve" routewalker pairing to next-nearest.** Measured: Duplex 18 fixtures → 110 runs, reaching 50 m targets.
+
+## ▶ §STRATEGY 2026-09-24 — read SECOND (after §RESUME 2026-09-26). How the Modeller closes the gap: GENERATE, then EDIT MINIMALLY.
 ## The §RESUME 2026-09-21 block below is still current for its method rules and traps, so read it second.
 ## Every number here was measured on bim-ootb origin/main b8f844fb on the REAL user open path.
 
