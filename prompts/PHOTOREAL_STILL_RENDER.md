@@ -227,9 +227,17 @@ smoke (scratchpad smoke.js, also committed as viewer/tests/smoke_alts.js) -> tel
 Sonnet for simple work, Fable for tough pieces (red1 2026-09-26). Every fix pastes the §FAULT line before -> after at
 red1's pose for that defect (poses from the PNG tEXt chunk "bim-still-pose").
 IN FLIGHT:
-- Fable agent: RAINBOW VOXEL EDGE (sky-field zone-edge filter; red1 still …353472343, Hospital cam [-31.093,-2.567,4.481]
-  tgt [6.293,-9.591,13.424]) in /tmp/wt-edgefix, branch fix/field-zone-edge (off 9991dcee), :8626. It pushes its branch;
-  check `git ls-remote origin fix/field-zone-edge` and its log. Merge into the look tree when clean. PRIORITY 1.
+- RAINBOW VOXEL EDGE (red1 still …353472343, Hospital cam [-31.093,-2.567,4.481] tgt [6.293,-9.591,13.424]) — PRIORITY 1,
+  NOT FIXED. The Fable agent hit its session limit before any code change (worktree /tmp/wt-edgefix, branch
+  fix/field-zone-edge off 9991dcee, :8626: clean, nothing committed). Its probe data (scratchpad
+  /tmp/claude-1000/-home-red1/41023e8a-7672-4a6f-ba92-f40c1311eff5/scratchpad/probe_before_8624_session.json, probe_edge.js,
+  probe_body.js, band_body.js; 8624 = before): frame hdrNaN 0, hdrNeg 0, fNaN 0 -> suspect (c) NaN/negative hue shift RULED
+  OUT. Three screen lines across the bulkhead (y 30/90/150 px, x 300-1000): line y=150 has one step F 0.306 -> 0.006 at a zone
+  flip (605 -> 640) and 28 pixels whose trilinear taps span >1 zone AND were accepted (acceptedSpanPx 28) -> suspect (a), the
+  in-zone filter accepting other-zone taps, is the lead (not yet proven as the colour-band cause). Next: in sourced_light.js
+  make the filter weight ONLY same-zone taps (compare the tap's zone id, never interpolate ids or the SKY_BIT-packed value),
+  renormalise, fall back to the picked cell; re-run the agent's line probe at the pose (stepF 0, acceptedSpanPx 0), smoke,
+  merge. Fable for this if the budget allows (it resets 4:50am Asia/Kuala_Lumpur), else do it directly.
 - §FAULT per-press self-check: /tmp/wt-dev branch dev/look-next f5ff2085 + smoke 8d1aab2f (:8625), WIP, NOT merged. To do:
   (1) call StillFault.report at "§STILL_REFINE done" (not at staging end: the lamps go off later; it logged
   extLightsDay=191 where the true after-press state is 31); (2) add fieldBad (F NaN/<0/>1, taps spanning >1 zone),
