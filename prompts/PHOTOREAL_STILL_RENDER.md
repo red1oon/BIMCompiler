@@ -130,6 +130,40 @@ the functions it adds/changes and confirms the film path calls them (or names th
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
 floorShareBySource probe was invalid; never trust a dev claim without reading the diff/log.
 
+## ▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-25 EVENING (dev red1-5a; PAUSED for machine suspend) — START HERE
+Watchdog = red1-c6 (red1 delegated answers to it). Rules in force: Alt+S = source of truth, film inherits (every lighting
+function = BUILD per building + DECIDE per frame, ray-free, ms; film adds only continuity; commit lists BUILD/DECIDE +
+"film path"); spec first; § witnesses only, no visual/pixel judging; one GPU browser at a time; after resume RERUN any
+witness (nothing was left running).
+SERVED (unchanged, do not move without the watchdog): 8600 = /tmp/wt-sourced-live @b35d5cf9 v1337 · 8619 = /tmp/wt-int @e61c116b
+v1370 (red1's look tree; its branch feat/sourced-light-int is already c56769bf on origin — pull the worktree forward only when
+the watchdog moves 8619).
+GATED PASS (all pushed): §STILL_SHADOW_EDGE 51c93e87/3883eebe · §STILL_POSE_PNG 5c48105a · §PORTAL_SHADOW_BIAS 2980872b/3edd28a8 ·
+§ZONE_OPEN_SKY b4cb61c1 · -int e61c116b · §STILL_SHADOW_CASCADE 0a9950a3 + meter fix §STILL_SHADOW_CASCADE_MAPS_EXIST c56769bf
+(= origin/feat/sourced-light-int) · §STILL_STAGE_MS 88c90251 (feat/still-stage-ms; goes onto -int with the next 8619 move) ·
+FLYIN_DARK §LAMP_ZONE_PICK 996d2049 + CAP_LIMITED witness 3df3e1bf (feat/lamp-zone-pick, 8622; ff onto -int WITH the sky field).
+FAILED + replaced: §SOURCED_DAYLIGHT ADF (522b3eac: DF > 100%, exposure hidden) -> §SKY_VIEW_FIELD.
+OPEN, in order:
+1. §SKY_VIEW_FIELD feat/sourced-daylight 59e0b22d (8621, sw v1397; includes §LUX_CHECK + §STILL_STAGE_MS). Gate mostly good
+   (SKY_STEP 528->0 canteen, 384->0 waiting hall; maxF<=1; outside ref pose unchanged; regressions PASS; link -6%) BUT a
+   GLARING defect for the watchdog: with IRC off (its default) a real GI still leaves the Terminal hall black (345/564
+   samples; hall_floor 279/573; with &irc=1 75 and 13). Cause: F is the sky component only; ceilings under opaque roofs get
+   F=0, portals are retired, screen-space GI has no lit neighbour. Options to rule: IRC on / a real interreflection pass /
+   keep portals for opaque-roof zones. Also: §LUX_CHECK EN mapping empty — the served DBs have no named IfcSpace rows (data
+   finding). Logs scratchpad/day/.
+2. §GLOW_LAYERS_OFF feat/no-glow-layers 92b36bdb (8623): both layers DELETED (grep 0 refs), §FIXTURE_EMISSIVE K = Hospital 14,
+   Clinic 98, Terminal 28 (all synthetic no-guid lamps), ITEM_C at red1's Clinic pose: glowDraws 3 on 8619 -> 0 here,
+   emissiveBehindGlass [] (item C cause = the glow layers, confirmed). Two old witnesses test the deleted code
+   (witness_vacuous_tag_guards.js, witness_tail_lights_all_discs.js:41) — retire/update. Needs its gate request.
+3. §COVE_LIGHT spec OPEN (fb2b30263 + deficit rule 83e9c05f9 + all-compartments 7edc19490 + TRIM_LUX_VOID=100 3a2163a9c):
+   build on top of the sky field (B/A texture channels). Gate: red1's inner room / toilet / Clinic ceiling gaps + a Hospital
+   plenum-with-MEP pose.
+4. §GLASS_VEIL spec OPEN (b0f706126 + blend 780960d6a): after the sky field (same T).
+5. §METER_HIST spec (c6dd7807a, ruling 70/95 c281e6fd6): red1 A/B at café corner + stair, three modes; after the field.
+6. Later / logged: §CAMDEP_SURFACE witness (scratchpad/witness_camdep_surface.js, report; commit it to -int), film wiring of
+   §LAMP_ZONE_PICK DECIDE + fade, speed list (Terminal first press 144-164 s top; audit off at runtime; zoneCap; portal stage
+   gone with the field), ALTC F1 (lamps as zone data, no cap).
+
 ## ▶▶▶▶▶▶▶ §RESUME 2026-09-25 LATE — START HERE (dev hand-off #2; written by the watchdog red1-4b)
 Supersedes the §RESUME 2026-09-25 block below (still valid as background). Roles: you are the DEV session; watchdog =
 `red1-4b` (SendMessage): recap to it, it gates every step from pushed code + full § logs. red1 does ALL visual judging live on
