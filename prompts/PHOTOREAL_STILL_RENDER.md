@@ -304,6 +304,34 @@ C4 zMax CLAMP: the SDSM readback's zMax is clamped to the §STILL_SHADOW_EDGE de
 C5 texelPerPixel per cascade at its near split edge (texel / pixel footprint at that depth, from H and fov): <= 2 in
    every cascade; cascade-0 texel <= 0.0167 m stays the thin-caster target.
 Portal thinCasterRisk (0.34 m café / 0.56 m Terminal) is logged, not on the zero list.
+BUILD DECISIONS (cascade agent, 2026-09-25, written before the code; bim-ootb feat/still-shadow-cascade off 3edd28a8):
+D1 MEMORY UNIT: three r186 WebGLShadowMap allocates each PCF map as `new WebGLRenderTarget(w, h)` (RGBA8 colour plane) +
+   a DepthTexture (UnsignedIntType) = 8 B/texel, the unit §R17 already logs: 4096^2 = 128 MB, 8192^2 = 512 MB. So C3's
+   512 MB holds 4 x 4096 (= today's single 8192 map) and never a cascade 0 at 8192 beside m-1 >= 1 others; cascade 0 is
+   raised to 8192 only when its 4096 fit misses 0.0167 m AND the total stays <= 512 (i.e. not with m >= 2): logged
+   `c0at8192=no(budget)` and the texel is reported as is. Fallback order on a smaller maxTextureSize/budget: 4096 -> 2048
+   per cascade, then fewer used cascades; logged, never a throw.
+D2 SUN = CASCADE 0 (the nearest); cascade lights 1..m-1 are A.sun's shadow-only siblings (colour 0, intensity 0, same
+   position/target = same light basis). Shader identifies each by uniform index (uCsmIdx = its slot in three's
+   directional-shadow list, found from WebGLLights' order = castShadow first, scene order), never by list order.
+D3 IN-BOX FALLBACK: the fragment takes the first cascade >= its depth cascade whose map box contains its shadow coord
+   (4 compares per cascade, no texture) — the 160x90 readback can miss a thin surface, so a tight SDSM box must not leak
+   light. Beyond the last cascade's box: lit, as today outside the §STILL_SHADOW_FIT box. Blend = linear over the last
+   10% of a split, only when the next cascade also holds the fragment.
+D4 DEPTH READBACK: one 160x90 render (the §METER size) with MeshDepthMaterial (RGBADepthPacking) as override; sky, glass
+   (transparent, opacity < 0.95), basic/shader/sprite/line/points and sky portals hidden; cleared pixels skipped. zMin =
+   min view depth (>= camera near), zMax = min(readback max, the max VIEW depth of the §STILL_SHADOW_EDGE point set:
+   building corners + kept props + the slab corners) (C4). The shadow maps are not rendered by this pass.
+D5 PER-CASCADE BOX (one function, _cascadeFit(slice, film)): frustum slice rect [C_c - 10% blend, C_c+1] in light space
+   ∩ the §STILL_SHADOW_FIT union (building ∪ kept props) ∩ ±env, ∩ (SDSM) the rect of the readback's world points in the
+   slice padded by 2 readback-pixel footprints at the slice's far depth; + (R+1) texels; centre snapped to whole texels.
+   film=true is the §FILM_PARITY F2 entry (sphere fit per shot), not built now: it returns null and films stay unchanged.
+D6 m: fixed per session = 4 unless every gate pose meets C5 + the cascade-0 target with 3 (the per-press line logs the
+   cascade-0 texel m=2/3/4 would give from the same readback: `c0texelIf=[m2,m3,m4]`). Unused cascades (m_used < m):
+   box degenerate, needsUpdate false (no render), sampler bound to three's empty shadow texture.
+D7 C2 LINK TIME: the witness (LINK=1) sums wall ms of compileShader + linkProgram + getProgramParameter(LINK_STATUS) +
+   getShaderParameter over one Hospital default press with Chrome's program cache and the NVIDIA disk cache off,
+   &shadowcascade=0 vs on.
 GATE, from one Alt+S press per pose (witness_still_shadow_lines.js extended; no ray grid): `§STILL_SHADOW_CASCADE m= splits=
 [m] texel=[m per cascade] normalBias=[..] thinCasterRisk=[..] memMB= ms=` + the per-cascade §STILL_SHADOW_EDGE numbers,
 Hospital default exterior / aerial / café + Terminal hall_floor; FAIL if cascade-0 texel > 0.0167 m or any gap45/20 >= 0.05 m;
