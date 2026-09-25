@@ -1114,6 +1114,13 @@ V12 INTERREFLECTED COMPONENT (after the gate run on 5bae708a: §WASH §GLARE bla
    same stated constant), A_z = surfaceM2 + apertureM2 (D7). Added to every covered cell of the zone (clamped to F <= 1);
    a zone with no sky has F_ir = 0 (lamps only). Logged: `§SKY_VIEW_FIELD ... irc(zones/median/max)=`. The DIST and ADF
    cross-check report the final F (SC + ERC-by-ground + IRC).
+V12 RULING (watchdog via the coordinator, 2026-09-25): IRC OFF BY DEFAULT. The Alt+S still already carries interreflection
+   through the GI bounce pass (gi_still.js, 8 passes); V12 on top counts ceilings twice, and a uniform per-zone add is the
+   flat fill red1 rejected ("bounce is paramount"). V12 was motivated by the ANALYTIC witness, which runs no GI. &irc=1 /
+   APP._stillIrc = true keeps it for A/B (logged `irc=ON`). The witness gains a GI-aware check (§GI_AWARE, wash witness):
+   numeric readback of the finished composite + the app frame gi_still.js keeps (__giStillDebugCanvas) at each sample pixel:
+   blackFinal (direct samples pure black at 8-bit, max channel <= 1), indoor GI share (composite - app)/composite, and the
+   analytic IRC share of the sample's irradiance (0 unless &irc=1).
 V13 ARCHITECTURE (red1 via the coordinator: Alt+S is the source of truth, Alt+C inherits): the field is BUILD (LightZones.field,
    per building, camera-free, cached; the zone cache key has no film time: note for the 4D build-up item F5) + DECIDE (one
    filtered texel read per fragment in slFragZone; skyField is its CPU mirror). SourcedLight.fieldOn() carries no film gate;
