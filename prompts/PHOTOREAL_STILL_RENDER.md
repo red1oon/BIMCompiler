@@ -142,6 +142,9 @@ the functions it adds/changes and confirms the film path calls them (or names th
   all 76-94 mean, black ≤ 1.4%; the fly-in end pose (…330146959, cam [-9.26,-12.30,12.16], near the old dark pose 5) is lit
   (was mean 40 / 39% black) — FLYIN_DARK confirmed by eye. Stair-tower wall (…329927399) carries a soft blurred shadow of
   the flights/railings: plausible sun shadow, not a defect. Lower atrium levels dark (awaits the sky field).
+**red1 APPROVED (2026-09-26): Clinic corridor indoors "looks perfect" — ~/Downloads/bounce_still_1790352156838.png** (Clinic.db
+  OCI &ghost=1, cam [21.243,-0.606,-1.261]); no regression allowed. Same session: exterior …352178540 shows a warm spot-pool
+  disc + star glow behind the entrance glass by day (item: EXTERIOR_LIGHTS, target 0); side bays black → §COVE_LIGHT.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
