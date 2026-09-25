@@ -19,7 +19,10 @@ old lighting, 2776x1440): 8-bit mean 124, p5 55, p95 203, ≥235 2.0%, saturatio
 BestHospitalIndoor.png. **Second reference (red1 approved 2026-09-25): Clinic indoor look, ~/Downloads/bounce_still_1790304784259.png**
 (Clinic corridor/atrium, v1337 sourced light, 1666x864): mean 64, p5 9, p95 104, >=235 0.2%, mean RGB [65,66,60] (watchdog's own
 PIL method; same method gives PerfectIndoor mean 124, p5 54, p95 203, sat 15.5 — compare like with like). It is a LOOK reference
-(lamp-lit, neutral-warm, no black holes), not a brightness target. Latest v1337 indoor (bounce_still_1790304025519): mean 90, sat 13.3, RGB [84,91,95] = darker, flatter, colder.
+(lamp-lit, neutral-warm, no black holes), not a brightness target.
+**Baseline-to-be (red1 2026-09-25, "amazing"): Terminal indoor ~/Downloads/bounce_still_1790306684370.png** (v1337, 1666x864):
+mean 118, p5 58, p95 208, >=235 0.1%, <=5 0.1%, RGB [109,119,128]. Becomes THE baseline once its defects are gone: dark
+halos around ceiling diffusers/panels, stair-stepped dark band at the column top, a grey smear mid-ceiling (cause unknown). Latest v1337 indoor (bounce_still_1790304025519): mean 90, sat 13.3, RGB [84,91,95] = darker, flatter, colder.
 **localhost:8600** = /tmp/wt-sourced-live detached at b35d5cf9 (feat/sourced-light, v1337). Watchdog smoke: 0 Shader Error /
 0 Context Lost. KNOWN on it: (1) shaded EXTERIOR surfaces pure black (open-sky cells labelled indoor: 29,332 cells, zones 13/1);
 (2) interiors dark/cold (missing per-zone daylight + roof glazing); (3) jagged/blocky sun-shadow edges + base gap. red1's
