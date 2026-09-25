@@ -159,8 +159,43 @@ the functions it adds/changes and confirms the film path calls them (or names th
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
 floorShareBySource probe was invalid; never trust a dev claim without reading the diff/log.
 
+## ▶▶▶▶▶▶▶▶▶▶ §WORKING MODE from 2026-09-26 — NO WATCHDOG, FAST TURNAROUND (red1) — READ FIRST
+The dev session works directly with red1 now; there is no watchdog gate. Report to red1 in plain words.
+DEBUG CYCLE (red1's preferred loop):
+1. red1 tests on localhost and saves stills; every saved PNG carries its pose (tEXt "bim-still-pose": cam, tgt, db, url,
+   w/h; with feat/still-pose-host also host:port + sw). Read the pose from the PNG, never guess it.
+2. Find the cause from STATE at that exact pose (page state + § log lines, one Alt+S), not from pixels and not by eye.
+3. Fix in a side worktree on its own port; never edit the served look tree in place.
+4. 1-minute smoke (viewer/tests/smoke_alts.js: loads, one real Alt+S, 0 Shader Error / Context Lost / pageerror), plus the
+   §FAULT line at red1's pose for that defect, before -> after.
+5. Fast-forward the ONE look tree red1 tests (/tmp/wt-look, :8624), bump sw + the ?v= tags, ONE commit per fix (so any one
+   can be backed out), push. Tell red1: link + sha + one line of what changed.
+No test suites, no A/B arms, no gate runs unless red1 asks. The viewer's own per-press §FAULT line (still_fault.js) is the
+witness: its counters must cover every defect class red1 has found by eye; a defect red1 finds that §FAULT missed -> add the
+counter in the same commit.
+AGENTS: Sonnet for simple work (deletions, plumbing, reruns); Fable for genuinely tough pieces (unknown cause, new algorithm);
+say which and why. One GPU browser at a time. Each agent in its own worktree/port; you review the diff and smoke it.
+LESSONS LEARNED (2026-09-25/26):
+- Check the WHOLE distribution, not the camera zone: the ADF daylight "passed" on camera zones while lit zones sat at
+  14-33% DF and one at 125.6% (> 100% impossible); the meter hid it (exposure 2-3.5x down). Always log exposure next to any
+  lighting change.
+- A test harness can lie: a white override material broke spot shadows (every portal sample "dark"); MeshBasic skyline props
+  were skipped as casters (their shadows counted as acne); an off-grid -1 was read as "unknown". Before trusting a count,
+  check one sample by hand against the render path.
+- A fix can break a neighbour silently: the cascade lights added with needsUpdate=false left every indoor §METER VACUOUS
+  (maps did not exist before the fit). Grep the logs for VACUOUS / failed / NaN after every change, not just your own line.
+- Exposure confounds A/B: switching sun shadows off moved the meter 14.3 -> 3.4. Lock exposure when comparing arms.
+- Timing of a check matters: a report at staging end saw lamps that later switch off (191 vs 31 true).
+- Camera-dependent staging makes "mutating" pictures: the lamp cap (keeps the N nearest to the camera), the portal pick and
+  the meter change with the pose (café corner 2.2x brighter exposure than the stair; tower blotches = lamp cap + retired
+  portal light). Prefer camera-free BUILD data + a cheap DECIDE step.
+- red1's rules that bit: only REAL sources light surfaces (glow layers, synthetic room-fallback lamps and the photo props are
+  fabricated — remove or ask); no brightness/exposure knobs; no invented values (cite a source or ask red1); the Alt+S look
+  is the source of truth and films inherit it.
+- Keep specs short and write them before code, but for small fixes a one-paragraph note in the commit is enough now.
+
 ## ▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 (dev red1-5a; context low -> new session) — START HERE
-LOOP NOW (red1 via watchdog red1-c6): NO new witnesses/A-B/gate runs. Build a fix -> merge into ONE look tree /tmp/wt-look
+LOOP NOW: see §WORKING MODE above (no watchdog). NO new witnesses/A-B/gate runs. Build a fix -> merge into ONE look tree /tmp/wt-look
 (branch look/combined-0925, base 9991dcee, serves :8624 — red1 tests there; never leave a broken intermediate: develop in a
 side worktree, fast-forward /tmp/wt-look only after a clean smoke) -> bump sw -> commit each fix separately -> 1-minute
 smoke (scratchpad smoke.js, also committed as viewer/tests/smoke_alts.js) -> tell the watchdog sha + one line. Agent models:
