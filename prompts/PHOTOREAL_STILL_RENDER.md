@@ -1117,6 +1117,27 @@ luminance x exposure) cameraSide=in|out EinOverEout=` (E at the pane's interior 
 outdoor E). COUNT: glazing materials still stock (not cloned) = 0; any clone with a diffuse body > 0 = 0; Tnormal within
 1 % of T_pane(1-F0)^2. GUARD 0/0/0, link <= +10%.
 
+**§METER_HIST — SPEC (2026-09-25, dev red1-5a; watchdog ruling after §STILL_CAMDEP). QUEUED after §SKY_VIEW_FIELD (it
+changes what every "metered" gate number means: land once, then re-baseline). Alt+S only.**
+FINDING (probe camdep.out, 8619, red1's poses, same zone 1, same 123 lamps): café corner exposure 18.235 (5.58 stops) vs
+stair 8.205 (4.42 stops), 2.22x; meter input logAvgEin 1.266e-2 vs 4.169e-2. The log-average over ALL lit pixels (Reinhard
+2002 eq. 1, delta 1e-4) is dominated by near-zero pixels (under tables, gaps), so the darker-looking corner is lifted past
+the stair.
+METHOD (not a knob: a metering method, industry practice): `&metermode=hist` = the log-average of Ein over the pixels whose
+Ein lies between the LOW and HIGH percentiles of the frame's histogram; the Stevens 0.33 mapping is unchanged.
+Percentiles, QUOTED (Unreal Engine Python API, PostProcessSettings, dev.epicgames.com, application_version 5.4):
+auto_exposure_low_percent "The value is defined as having x percent below this brightness ... >0, <100, good values are in
+the range 70 .. 80"; auto_exposure_high_percent "... good values are in the range 80 .. 95". The page states RANGES, no
+default. (A search summary claims UE5 changed the defaults to 10 / 90; not verified from a primary page — 403 on the 5.0
+doc page — so NOT used.) Open for the watchdog: which values inside the quoted ranges (or the verified engine-source
+defaults if someone can cite Scene.h), stated once.
+GATE (logged state only): at red1's two poses both modes; log per press `§METER_HIST low%= high%= bandEin= bandPixels=
+allLogAvg= exposure= stops=`; the stops difference between the two poses must be explained by the two bands' own Ein
+(log both); plus exposure per pose (café / Clinic corridor / Terminal hall) in avg vs hist. Default flips only after red1
+looks at those two poses in both modes.
+Also logged from now (watchdog): `§LAMP_CAP_DROPPED inCamZone= kept= dropped=` per press (the uniform budget; the
+clustered/zone light set of ALTC_FOUNDATION F1 is the real fix, not now).
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
