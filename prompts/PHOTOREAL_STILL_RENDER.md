@@ -907,6 +907,27 @@ G2 DIRECTION: log `§SOURCED_DAYLIGHT_DIR` = area-weighted mean source direction
    direction is a follow-up item once a sourced k exists.
 G3 BLOCKED PORTAL: when a blocked portal's pane counts in the DF (portaledKept), its portal light is dropped (intensity 0,
    pad kept so the light count does not change) and logged `droppedBlockedPortals=`.
+BUILD DECISIONS (agent on feat/sourced-daylight, 2026-09-25; written before the code, deviations from the text above marked D):
+D1 THETA RAYS ON THE ZONE GRID: the 5 §SKY_PORTAL_SIDE directions (up, out, out+up, out+/-along) are marched through the
+   §LIGHT_ZONE voxel grid (step CELL/4, from 0.5 m off the pane / aperture face, 60 m = the portal's rc.far; a SOLID cell =
+   blocked, leaving the grid or reaching 60 m = sky), not raycast against the scene. Why: every pane incl. roof glass is
+   classified (hundreds per building) and item 5 of the lane asks for "the zone texture, no scene raycasts"; cached per
+   building. Known difference: non-boundary objects (columns, furniture, site props) do not block; the 0.5 m cells fatten
+   thin walls (err toward blocked). Logged: panes with theta 0.
+D2 PANE SIDES: surfaceInfo(c + s*0.3*n, s*n) for s = +/-1. covered|open (zone 0 or off grid) -> the covered side is inward.
+   covered|covered where exactly ONE side is sky-lit (SKY_BIT: a window under an eave / canopy) -> the non-sky-lit side is
+   inward (the eave's cells see sky; skipping them would drop every window under an overhang); other covered|covered, both
+   open, or a SOLID lookup = skipped. Counted separately (sidesOpen=, sidesEave=, skipped=).
+D3 PANE = the §SKY_PORTAL_SOURCES 6 m tile (the portal's own unit, so a placed portal maps to exactly one DF pane by its
+   plane+tile key); T = the tile's glass-area-weighted (1 - opacity).
+D4 f(d) mean over ALL the zone's cells (the zone average of the sourced term stays DF); G is written only to covered,
+   non-sky-lit cells. D_z source height = source centre y - the top of the first SOLID cell below the source's zone cell,
+   floored at CELL/2 (the grid cannot resolve a floor closer than half a cell). Weights: source m2.
+D5 A source with T*A*theta = 0 (theta 0) is not a BFS source. Side-aperture theta per zone = 90 x the mean sky fraction of
+   <= 64 side faces sampled at a fixed stride over the zone's aperture cells (deterministic).
+D6 DFmedian / DFmax / bands over the LIT zones (DF > 0); zones= counts all. Per press also `§SOURCED_DAYLIGHT_CAM` (the
+   camera zone: DF, source m2 by kind vertGlass/roofGlass/apUp/apSide, surfaceM2, D_z, band) and `over10=` / `glazedZero=`
+   lists (FAIL-to-explain, G1). Films (A._maxqActive): SourcedLight.stage does not run, so there is NO film path (G = 0).
 
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
