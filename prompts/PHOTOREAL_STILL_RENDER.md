@@ -1211,6 +1211,36 @@ Alt+C (Alt+S-truth rule). Nav stages neither (§GLOW_SPRITE_NAV_OFF; A._glowStag
 GATE: §FIXTURE_EMISSIVE on Hospital/Clinic/Terminal + the item C count + GUARD 0/0/0; commit names the call site and
 "film path: same call site (startStillRefine per frame), no smoothing needed".
 
+**§COVE_LIGHT — SPEC (2026-09-25, dev red1-5a; item A BLACK_INTERIOR; red1: "a dark place just gets a ceiling-perimeter back
+glow"). Builds on §SKY_VIEW_FIELD (same zone texture). Alt+S-truth: BUILD per building + DECIDE per frame; films inherit.**
+DEFECT (8619): Hospital inner room cam [9.947,-7.699,0.098] 98% black; toilet [8.344,-8.647,-3.579] 57% black; Clinic room
+[0.617,3.56,-19.198] black bands at ceiling-panel gaps.
+WHAT IT IS: a REAL, zone-bound source: a line of emitters along each wall-ceiling edge of a qualifying zone, 0.1 m below the
+ceiling and 0.15 m off the wall, emitting toward the ceiling (an indirect cove: washes the ceiling edge, then the walls);
+and a VISIBLE thin emissive strip mesh along the same line, so the source can be seen. Never an ambient or flat fill.
+1. QUALIFYING ZONES (BUILD): a ROOM zone (has walkable floor: floor cells with >= 2.0 m clear headroom — the stair
+   headroom of UK Approved Document K, cited; so ceiling plenums/voids never qualify) with NO lamp (the §LAMP_ZONE_PICK
+   BUILD table), NO glazing pane or open aperture, and sky-view F = 0 everywhere. The "lit zone whose surfaces get ~0"
+   case (Clinic ceiling gaps: the dark is the plenum void seen through the gaps, a non-room zone) does NOT get a cove; those
+   points are counted GEOMETRY_DARK (bounce's job) — stated so, not hidden.
+2. PLACEMENT (BUILD): ceiling-edge cells = zone cells with SOLID directly above AND SOLID on a horizontal side; emitters
+   every 0.5 m (one cell) along that perimeter, per wall run. Logged per zone: perimeterM, emitters.
+3. LEVEL, cited: the emitters' total output is set so the zone's mean working-plane illuminance (0.8 m) equals the EN 12464-1
+   maintained illuminance of its use (the §LUX_CHECK table and mapping; unknown use -> the circulation row, stated), from the
+   analytic line-source integral in BUILD. Colour = the viewer's existing lamp colour constant (0xffe4b5), stated.
+4. STORAGE + SHADER, no light objects: per cell the cove irradiance (sum over the zone's emitters of I cos / d^2, visibility
+   through zone cells only) in the zone texture's B channel (RG16UI -> RGBA16UI; E x 10000) and its dominant direction
+   (octahedral) in A; the fragment reads B/A from the same filtered read as F and adds E x max(0, N.dir) x the cove colour
+   (Lambert from a mostly one-sided source; no k constant). Zero new lights, zero new program keys per zone (one format change
+   for all), one vec4 uniform (colour). Memory: Hospital zone texture 41 -> 83 MB (logged; the retired portal shadow maps
+   free 8 x 512^2 x 8 B).
+5. DECIDE per frame: nothing camera-dependent (a texture read). Films: same read, no smoothing needed.
+GATE (logged state): at red1's three poses, BLACK_INTERIOR = camera-zone surface points with zero total light (sun, F, lamps,
+cove) that are not GEOMETRY_DARK -> 0 (inner room, toilet); Clinic gap points reported GEOMETRY_DARK with their zone type;
+NO FLAT FILL: per cove zone the cell-to-cell coefficient of variation of the cove term > 0 and the cove term = 0 outside
+cove zones (asserted); §LUX_CHECK per cove zone = its EN value within 10 %; §COVE line `zones= emitters= perimeterM= memMB=
+buildMs=`; regressions (zone glare, shadow lines, outside reference pose) + GUARD.
+
 **§METER_HIST — SPEC (2026-09-25, dev red1-5a; watchdog ruling after §STILL_CAMDEP). QUEUED after §SKY_VIEW_FIELD (it
 changes what every "metered" gate number means: land once, then re-baseline). Alt+S only.**
 FINDING (probe camdep.out, 8619, red1's poses, same zone 1, same 123 lamps): café corner exposure 18.235 (5.58 stops) vs
