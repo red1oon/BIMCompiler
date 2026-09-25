@@ -1047,6 +1047,32 @@ poses (atrium stair [-10.95,-2.91,5.42], inner room [9.95,-7.70,0.10], toilet [8
 / Terminal hall. Plus the METER: exposure picked and stops vs the outdoor base on every indoor press (a real camera indoors
 sits several stops above outdoors; if ours does not, that is a finding, not a knob). Red1 rule 5 stands: no exposure knob.
 
+**§GLASS_VEIL — SPEC (2026-09-25, dev red1-5a; watchdog item D; builds on §SKY_VIEW_FIELD's per-material T). Alt+S
+only (`!A._maxqActive`), films later (parity list).**
+DEFECT: red1 14:26, Hospital cam [-15.84,2.47,4.14] tgt [3.96,-3.12,0.20]: behind a glazed pane "a flat lavender-grey
+veil". red1: "the window glass should allow light thru or/and reflect the cam point of lite if any." CAUSE (probe
+glass_veil.out, one press): camera OUTSIDE (zone 0, exposure 0.383), 1.44 m from the pane; the centre ray crosses TWO
+glass faces 2 cm apart of a SHARED material that §GLASS_FRESNEL skips (skippedShared {"?":26, IfcMember:44}): stock
+MeshStandard, opacity 0.3, colour #737278, NormalBlending, depthWrite true = a sun/hemi-lit grey body at 30 %, twice.
+FIX:
+1. SCOPE: every mesh whose materials are ALL glassy (the §SUN_GLASS_CASTERS test: transparent, opacity < 0.95, no map, not
+   Basic) gets the glass clone, whatever its IFC class; the clone is made once per ORIGINAL material and assigned only to
+   those meshes, so a shared material also used by a mixed/frame mesh keeps its stock look there (mullion safety).
+2. ONE PANE, TWO SURFACES (watchdog add 1): the two faces 2 cm apart are the pane's own two surfaces (a thin solid), which
+   is how real glass transmits: T_pane (the material's one number, T = 1 - opacity, the SAME T §SKY_VIEW_FIELD uses) is
+   split per surface as t_s = sqrt(T_pane), so two faces give exactly T_pane. A pane seen as a single face (open mesh)
+   gets t_s = T_pane (counted: surfacesPerPane per material from a coplanar-pair test at build, logged).
+3. PHYSICS per surface (no lit diffuse body): premultiplied blend, dst x t_s x (1 - F(theta)), src = the reflected radiance
+   only (three's totalSpecular: env/IBL + sun + lamp highlights, Schlick F with f0 0.04 as §GLASS_FRESNEL), so the
+   camera-side sky and lamps reflect and rise at grazing angles, and what is behind shows at T. Nothing brightens the
+   interior (watchdog add 2: from outside by day an interior at ~1/100 of outdoor light IS dark through glass; lit lamps
+   and bright interior surfaces show through, the interior is not lifted to fake it).
+WITNESS (material state + maths, one press at red1's pose + café + Terminal hall): per glazing material `§GLASS_VEIL
+mat= meshes= surfacesPerPane= T= t_s= bodyAlpha=0 f0= Tnormal= (= t_s^2 (1-F0)^2 per pane) veilNormal= (F0 x env
+luminance x exposure) cameraSide=in|out EinOverEout=` (E at the pane's interior cell from §LUX_CHECK / the meter's
+outdoor E). COUNT: glazing materials still stock (not cloned) = 0; any clone with a diffuse body > 0 = 0; Tnormal within
+1 % of T_pane(1-F0)^2. GUARD 0/0/0, link <= +10%.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
