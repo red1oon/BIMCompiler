@@ -201,7 +201,23 @@ whose up ray is blocked, split skyLit / denied with the blocker's class; `§PORC
 building (the largest side-aperture zone with no up aperture whose lowest aperture cell is within 2 layers of the ground
 plane; camera 8 m outside its side-aperture centroid along the mean outward face normal, 1.6 m up) — coveredDirectSkyLit
 must not be 0 there; the before arm gets the identical pose by injecting the new builder as LightZonesNew. Zone counts +
-`§LIGHT_ZONE` ms (skyMs) per building, before (3395ae42) / after. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
+`§LIGHT_ZONE` ms (skyMs) per building, before (3395ae42) / after.
+§GLARE (watchdog red1-c6 rule, every run of every witness in the lane: a §GLARE line with counts, FAIL + exit 3 when any
+count > 0; "if a glaring error reaches red1 with a green witness, that witness is wrong"): witness_zone_open_sky.js prints
+black_exterior (open-sky samples in SUN SHADOW — a ray to the sun from point + 0.05 m x normal hits a drawn mesh, or the
+surface faces away — whose zone rule withholds sky: shader readback when available, else the CPU mirror), junction_zone_flip
+(§JUNCTION mismatches, shader when available) and covered_open_side_black (direct covered samples in sun shadow, denied
+sky, that SEE THE SKY SIDEWAYS: one of 16 world rays from point + 0.05 m x normal — 8 azimuths x elevations 26.6 / 45 deg,
+the lattice families of the sky-lit rule — escapes the drawn meshes). Watchdog review of the first cut (zos_before2): the
+zone-aperture form of covered_open_side_black flagged 1176/1200 on the Hospital café (an indoor atrium whose zone owns a
+doorless opening somewhere) — replaced by the ray form, which reads 0 in an atrium and fires under a canopy. The §PORCH
+pose selection by "largest sideM2" picked the whole interior (Hospital sideM2 4840 m2) — replaced by "more than half of
+the zone's cells sky-lit sideways" (a porch is open at its sides by definition; the interiors read 24% / 13%). Named pose
+clinic_entrance = 8 m outside the exterior double door M_Double-Flush 1830 x 2134mm Exterior:18 (IFC -37.0, -0.3, 1.1)
+on the Exterior Slab on Grade in front of it, for red1's Clinic canopy still. witness_sourced_crosswall.js prints
+crossWall=N (VACUOUS = FAIL); witness_wash_sources.js prints black_direct_samples=N (direct samples no source reaches at
+all). Default fleet list drops LTU_AHouse (its v1337 zone build returns null; on request) and runs the aerial pose on the
+three reference buildings only, to keep a full run near 15 min. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
 (tone-mapped median/p95/wash per pose) before/after. The off-grid = unknown bug in witness_wash_sources.js:77 and the
 crosswall witness's CPU column (a -1 raw value is OUTSIDE 65534, not unknown) is fixed in the same commit.
 **red1's rulings this lane (don't re-litigate):** only real sources light surfaces; no light through walls/floors (only
