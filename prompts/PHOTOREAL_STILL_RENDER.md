@@ -66,6 +66,15 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   => new zero-list item BLACK_INTERIOR: zones with NO source (no lamp, portal, daylight DF, sky) and lit zones whose
   surfaces get ~0 — count zones/m2 from the grid; red1 principle 3 (cove base light for rooms with no window/fixture) is
   the spec'd answer. Held until red1 finishes testing Clinic/Terminal.
+**… Terminal, 14:11-14:14, 4 stills:** GOOD: both exterior facades (…681554, …720592): shaded walls grey, canopy glass
+  fine. BAD (glaring, voxel-shaped): canteen hall (…780362) walls split into a light lower band / dark upper band along a
+  stair-stepped boundary with square notches; waiting hall (…842570) a stair-stepped WHITE wash region on the right wall and
+  over-bright white chairs beside normally lit ones. Watchdog read: the binary per-cell SKY_BIT (24-ray sweep, nearest-cell
+  lookup) — a cell either gets the FULL hemi or none, so the zone grid's cell edges draw on the walls and sky-lit cells
+  wash. The canteen's stepped dark bands were already in red1's v1337 still (…716026). Fix direction to spec: a continuous
+  sky-view fraction per cell (share of the rays that see sky), filtered between cells, scaling the hemi — no binary step.
+  Witness: grid count of SKY_BIT on/off boundaries across visible wall/floor faces (m of edge), target 0 steps > one
+  filter width. Minor: dark pockets under the Terminal's stepped roof edges; skyline towers show night-lit windows by day.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
