@@ -22,6 +22,16 @@ close with the glow deletion). red1 served tree for looks: 8619 = e61c116b (froz
 (b35d5cf9 v1337). References: see the baseline lines below + 'outside looking in' …319885328 + fly-in series.
 Alt+C: parked until the zero list; plan prompts/ALTC_FOUNDATION.md + ALTC_SHOWSTOPPERS.md; rules: Alt+S = lighting truth
 (BUILD cached + DECIDE per frame), films steady exposure by default, ramp opt-in last, continuity not identity.
+**ON RESUME, watchdog's first two rulings (dev paused, all pushed, §DEV RESUME 155e37363):**
+(1) SKY FIELD 59e0b22d (8621): gate good (SKY_STEP 528->0 / 384->0 on red1's Terminal poses, maxF <= 1, outside ref
+  unchanged, link -6%, no >2x exposure drop) BUT with IRC OFF (my ruling) a real GI still leaves the Terminal hall black
+  (345/564; hall_floor 279/573; &irc=1: 75 / 13). Screen-space GI has no lit neighbour under opaque roofs. Decide: IRC on
+  with a no-double-count rule, or a real interreflection pass, or keep portals for opaque-roof zones. Watchdog leaning: IRC
+  ON as the zone's diffuse bounce floor, and the screen GI adds only what exceeds it (no double count), logged per share.
+(2) GLOW REMOVAL 92b36bdb (8623): grep 0 refs; ITEM_C glowDraws 3 -> 0 at red1's Clinic pose, nothing emissive behind the
+  glass = item C cause confirmed. K lamps without an emissive mesh = 14/98/28, ALL synthetic no-guid lamps: check they are
+  fabricated staging lights (red1 rule: only real sources) — if so, remove them rather than give them shapes. Two old
+  witnesses test deleted code: retire them.
 
 You are the WATCHDOG (previous: red1-c6, before it red1-4b). You do not write viewer code. You gate every dev spec/step from pushed code + full
 console-captured § logs, do ALL visual comparison yourself (red1's stills in ~/Downloads vs the baseline), relay red1's asks,
