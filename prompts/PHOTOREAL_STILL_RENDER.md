@@ -112,6 +112,51 @@ depth d = d x 2 tan(fov/2) / H: at d = 5 m (fov 60, H 864) a pixel is 0.0067 m, 
    > 0.5; a point whose ray flips when moved (R+1) texels in light space is EDGE (penumbra), counted apart. Target: acne 0,
    gap 0 outside EDGE, predictedBaseGap45 < 0.05 m in the near cascade. Arms: before (v1337 values) / after.
 
+
+**§ZONE_OPEN_SKY — SPEC (2026-09-25, Fable agent; watchdog brief via the dev session; branch bim-ootb feat/zone-open-sky
+off feat/sourced-light 3395ae42, served on 127.0.0.1:8614). Replaces the connectivity + 4.5 m closing notion of OUTSIDE.**
+PROBLEM (measured on 3395ae42, Hospital local db, default pose after Alt+S): OUTSIDE = the empty component reaching the grid
+edge after the solids are grown 4 cells (CLOSE_R 4 = openings < 4.5 m shut); every other empty component is an indoor zone
+and its fragments get no hemi / ambient / IBL sky (uSLParams.z = 0). Courtyards, light wells and the gaps between wings
+seal as INDOOR: 29,332 zone cells have no solid anywhere above them (zone 13: 18,645; zone 1: 7,920; then 489/312/239), so
+every sun-shaded exterior surface there renders black (red1's v1337 still). The Terminal hall is zone 0 (outside) through
+a ~174 m2 open band at the roof edge. Both symptoms have one root: outside was a connectivity class, not a physical one.
+RULE (light_zones.js build()): a cell is OPEN-TO-SKY when no SOLID cell lies above it in its own column (one top-down
+column scan); every other empty cell is COVERED. Open cells carry value 0 (the shader's OUTSIDE, sky kept); light zones
+are the 6-connected components of the COVERED cells only (ids 1..; SOLID 65535 unchanged). No closing radius, no
+connectivity to the grid edge, no per-building value. EARTH: below the ground plane (A.ground.position.y) an uncovered
+cell is soil = SOLID (the viewer draws the ground plane there; the old edge-ring rule is subsumed); the bottom two layers
+below ground stay solid so a basement zone has a floor. The grid keeps 2 padding cells, so its top layer is always open.
+DAYLIGHT APERTURES: every face between a zone cell and an open cell is an aperture of that zone: apertureM2 = faces x
+CELL^2, split upM2 (open cell above, +y) and sideM2 (+-x/+-z; the open set is upward-closed, so no aperture faces down).
+surfaceM2 = faces to SOLID cells (A_z for §SOURCED_DAYLIGHT). Exposed on the LightZones cache: cache.zoneInfo[z-1] =
+{ cells, apertureM2, upM2, sideM2, surfaceM2, apertureCells (Int32Array of the zone cells that own an aperture face) }
+and cache.aperture (Uint8Array per cell, bit 1 = +y open, 2/4 = -x/+x, 8/16 = -z/+z). The daylight term itself is NOT
+built here. Log: `§LIGHT_ZONE ... openSkyCells= soilCells= zonesWithAperture= apertureM2= (up= side=) topApertureZones=
+[id:m2:up:side:cells]`.
+SHADER (sourced_light.js): slFragZone unchanged for the resolved cases (0 or off-grid -> OUTSIDE 65534, zone -> zone).
+UNKNOWN (every probe SOLID) gains a column fallback: walk up from the +0.2 m probe cell through its solid run to the first
+non-solid cell; open (0) -> OUTSIDE (sky kept, outdoor-bound lamps only), a covered cell or no empty cell above -> -1 as
+today (sky off, lamps as today: a wall foot / ceiling-panel strip under a solid is covered). One slFragZone per fragment
+kept (§SOURCED_LIGHT_LINK), R16UI kept, no new sampler. CPU mirror: LightZones.atSurface gets the same last fallback
+(returns 0 when the column above the probe opens, SOLID otherwise). Lamp/portal binding (atLamp, bindLights, the band
+functions, §SOURCED_LIGHT_CAP, the §METER zone mode) read the same raw values and are unchanged.
+EDGE CASES (decided, not tuned): a covered arcade / canopy / eave soffit is COVERED = indoor with a large sideM2 (its sky
+comes back through §SOURCED_DAYLIGHT's per-zone DF from these apertures; until then it is lamp-lit + sun only). Glass
+roofs: IfcPlate/IfcWindow/IfcCurtainWall are SOLID, so a glazed atrium is covered with apertureM2 0 — right, its daylight
+is the panes' Ag in the DF, not an aperture. An open stair shaft under a roof joins its storeys into one zone as before.
+A ground point under an overhang probes into a covered cell (indoor). A cell below ground with a solid above it (basement,
+or soil under a canopy) is a covered zone cell; soil under an open column is SOLID.
+WITNESS (viewer/tests/witness_zone_open_sky.js, real GPU, console GUARD, load gate = full element count or VACUOUS):
+per building (Hospital, Clinic, Terminal, HHS_Office_Federated, JKR, LTU_AHouse, Duplex) at the default pose and an
+aerial pose over the building centre: `§SKY_LOSS` on a 48x25 grid of visible surface points (glass/basic/shader/invisible
+materials, sky and portals skipped): open = a straight-up ray from point + 0.05 m x normal hits nothing; denied = the CPU
+mirror (atSurface, eye-facing normal, off-grid = outside) withholds sky; target open AND denied = 0; the same grid read
+back from the SHADER (SourcedLight.debugZones(1) colour = zone) gives gpuAgree/gpuDiffer and gpuOpenDenied. Terminal
+hall_floor stand-in: the hall zone id (must be != 0) with its apertureM2/up/side. Zone counts + `§LIGHT_ZONE` ms per
+building, before (3395ae42) / after. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
+(tone-mapped median/p95/wash per pose) before/after. The off-grid = unknown bug in witness_wash_sources.js:77 and the
+crosswall witness's CPU column (a -1 raw value is OUTSIDE 65534, not unknown) is fixed in the same commit.
 **red1's rulings this lane (don't re-litigate):** only real sources light surfaces; no light through walls/floors (only
 glass/openings); no exposure/brightness knob, no lamp-count caps, no per-building values; bounce is paramount; mid-film
 lamps OFF only for the freeze, discipline reveal, or full-ARC-hidden (§INTERIOR_LIGHTS_BOUNDARY today is far wider — narrow
