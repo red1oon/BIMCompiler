@@ -246,6 +246,40 @@ d_ref = its distance to the camera (clamped 1..40 m) and normalBias = (R + 1.5) 
 at d_ref. Log per still: `§PORTAL_SHADOW_BIAS shadowed= dRef[] texel[] normalBias[] gapAtDref[] (was bias -0.0005 = world
 gapAtDref[])`. Gate: that line + the café portal acne count from one press (witness_still_shadow_edge POSES=cafe SUNS=45).
 
+**§STILL_SHADOW_CASCADE — SPEC (2026-09-25, dev red1-5a; watchdog red1-c6 order (2); replaces §STILL_SHADOW_EDGE item 3's
+single 35 m near slice). Alt+S only first (`!A._maxqActive`); the film path (stabilised) is a separate §FILM_PARITY item.**
+WHY (measured, 3883eebe gate log): one 8192 map per still gives texel 0.075-0.086 m on the Hospital default exterior and
+aerial, so thinCasterRisk = normalBias = 3 texels = 0.23-0.26 m, and walls at 60-75 deg to the sun see projected texels of
+0.27-0.68 m (texel / N.L, witness ray grid) = red1's "blocky walls by the wings". Bias and radius cannot fix it; smaller
+texels where the eye looks can.
+TARGET (watchdog): texel <= 0.03 m on every surface the frame shows within the cascades' reach, and thinCasterRisk
+((R+1.5) x texel) < 0.05 m for the cascade holding the building's visible surfaces — i.e. texel <= 0.0167 m there.
+METHOD, cited:
+1. Split the VISIBLE depth range, not near..far: a still is one frame, so read the depth range the frame actually shows
+   (min/max view depth of drawn opaque pixels from one small depth readback, like §METER's 160x90 render) — Lauritzen,
+   Salvi, Lefohn, "Sample Distribution Shadow Maps", I3D 2011. Splits over [zMin, zMax] by the practical scheme
+   C_i = lambda C_log + (1 - lambda) C_uni, lambda = 0.5 (Zhang et al., "Parallel-Split Shadow Maps for Large-scale
+   Virtual Environments", VRCIA 2006; the value three's own CSM addon defaults to).
+2. Per cascade, fit the light-space x/y box to the frustum slice (and, SDSM-tight, to the readback's world points in that
+   slice), padded by the PCF reach (R+1 texels); z = the §STILL_SHADOW_EDGE depth fit (building + props + ground slab).
+   Per-cascade bias = range/65536, normalBias = (R+1.5) x that cascade's texel (the gated §STILL_SHADOW_EDGE rule).
+3. Cascade count m = the smallest of 2..4 whose cascade-0 texel meets the target; map size per cascade = the sun map's
+   size (8192 where maxTextureSize allows, else 4096). Memory logged (8192^2 x 4 B = 256 MB per cascade) and released at
+   teardown by §R17. Maps rendered once per still (autoUpdate false, like the portals).
+4. Shader: A.sun stays the ONE lit directional light (every consumer reads it: §METER, the witnesses, sky). Cascades 1..m-1
+   are shadow-only DirectionalLights (colour 0, same direction). One patch in lights_fragment_begin's directional-shadow
+   line, for the sun only (identified by a uniform index, never list order): shadow = the cascade covering this
+   fragment's view depth, blended linearly over the last 10% of each split (no seam). Must co-exist with the §SOURCED_LIGHT
+   patches (zone-once, slPass on point/spot) and add no per-light inlined code (§SOURCED_LIGHT_LINK lesson): the cascade
+   choice is computed once per fragment. Texture budget +(m-1) sampler2DShadow in §LIGHT_TEXTURE_BUDGET (logged; shadowed
+   portals drop only on a 16-unit backend).
+5. Stabilisation (films only, later): bounding-sphere cascade boxes + whole-texel snapping (Valient, "Stable Rendering of
+   Cascaded Shadow Maps", ShaderX6, 2008) so edges do not crawl between frames.
+GATE, from one Alt+S press per pose (witness_still_shadow_lines.js extended; no ray grid): `§STILL_SHADOW_CASCADE m= splits=
+[m] texel=[m per cascade] normalBias=[..] thinCasterRisk=[..] memMB= ms=` + the per-cascade §STILL_SHADOW_EDGE numbers,
+Hospital default exterior / aerial / café + Terminal hall_floor; FAIL if cascade-0 texel > 0.0167 m or any gap45/20 >= 0.05 m;
+GUARD 0/0/0. red1 judges the look on its port.
+
 **red1's rulings this lane (don't re-litigate):** only real sources light surfaces; no light through walls/floors (only
 glass/openings); no exposure/brightness knob, no lamp-count caps, no per-building values; bounce is paramount; mid-film
 lamps OFF only for the freeze, discipline reveal, or full-ARC-hidden (§INTERIOR_LIGHTS_BOUNDARY today is far wider — narrow
