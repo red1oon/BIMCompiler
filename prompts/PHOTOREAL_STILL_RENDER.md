@@ -58,7 +58,7 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   near split) + texelPerPixel <= 2 (cascades; watchdog ruling 2026-09-25, pixel-based) · black_exterior 0 · junction_zone_flip 0 · canopy (covered_open_side_black, fixed
   predicate) 0 · §SKY_PORTAL_BLOCKED explained/0 · Terminal ceiling-fixture AO halo count 0 · §SOURCED_DAYLIGHT per-zone DF in
   BRE-plausible bands (café median REPORTED vs old 0.636, not a fail band: baseline replaced, no hand tuning) · FLYIN_DARK 0 (lamp pick by the zones lamps light, not fixture-in-frustum; red1's 5-pose fly-in)
-  · GLOW_DECOR OFF (red1 2026-09-25: remove §GLOW_LENS_QUAD + §PHOTO_GLOW_SPRITE; fixtures glow themselves; &glowlens/&glowsprite A/B)
+  · GLOW_DECOR DELETED (red1 2026-09-25: "remove completely" §GLOW_LENS_QUAD + §PHOTO_GLOW_SPRITE, all paths, no flags; fixtures glow themselves)
   · SKY_STEP 0 · GLASS_VEIL · BLACK_INTERIOR · ENTRANCE_GLOW · GUARD 0/0/0. Then red1's look on 8600 -> one PR -> live.
 **red1's look test of 8619 (e61c116b), Hospital, 2026-09-25 14:01-14:05, 6 stills (pose in each PNG; watchdog notes):**
   GOOD: atrium stair from balcony (…099886, mean 94 ≈ baseline 92, stair-tower shadow now soft); ground-floor stair
