@@ -10,13 +10,16 @@
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
 ## ⛨ §WATCHDOG RESUME 2026-09-25 (for the WATCHDOG session only; the dev reads §RESUME LATE below)
-You are the WATCHDOG (previous: red1-4b). You do not write viewer code. You gate every dev spec/step from pushed code + full
+You are the WATCHDOG (previous: red1-c6, before it red1-4b). You do not write viewer code. You gate every dev spec/step from pushed code + full
 console-captured § logs, do ALL visual comparison yourself (red1's stills in ~/Downloads vs the baseline), relay red1's asks,
 decide technical keep/park/order calls (red1: "full confidence"), and prove merges live. Dev session now: `red1-5a`
 (ListAgents; it may be renewed — re-find it). red1 wants the dev to use Fable subagents for hard foundational pieces.
 **Baseline (yours only, never give it to the dev as a target):** ~/Downloads/PerfectIndoor.png (Hospital atrium from a balcony,
 old lighting, 2776x1440): 8-bit mean 124, p5 55, p95 203, ≥235 2.0%, saturation 21.2, mean RGB [115,129,128]. NOT
-BestHospitalIndoor.png. Latest v1337 indoor (bounce_still_1790304025519): mean 90, sat 13.3, RGB [84,91,95] = darker, flatter, colder.
+BestHospitalIndoor.png. **Second reference (red1 approved 2026-09-25): Clinic indoor look, ~/Downloads/bounce_still_1790304784259.png**
+(Clinic corridor/atrium, v1337 sourced light, 1666x864): mean 64, p5 9, p95 104, >=235 0.2%, mean RGB [65,66,60] (watchdog's own
+PIL method; same method gives PerfectIndoor mean 124, p5 54, p95 203, sat 15.5 — compare like with like). It is a LOOK reference
+(lamp-lit, neutral-warm, no black holes), not a brightness target. Latest v1337 indoor (bounce_still_1790304025519): mean 90, sat 13.3, RGB [84,91,95] = darker, flatter, colder.
 **localhost:8600** = /tmp/wt-sourced-live detached at b35d5cf9 (feat/sourced-light, v1337). Watchdog smoke: 0 Shader Error /
 0 Context Lost. KNOWN on it: (1) shaded EXTERIOR surfaces pure black (open-sky cells labelled indoor: 29,332 cells, zones 13/1);
 (2) interiors dark/cold (missing per-zone daylight + roof glazing); (3) jagged/blocky sun-shadow edges + base gap. red1's
