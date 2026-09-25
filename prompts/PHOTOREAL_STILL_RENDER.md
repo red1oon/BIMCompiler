@@ -137,27 +137,53 @@ surfaceM2 = faces to SOLID cells (A_z for §SOURCED_DAYLIGHT). Exposed on the Li
 and cache.aperture (Uint8Array per cell, bit 1 = +y open, 2/4 = -x/+x, 8/16 = -z/+z). The daylight term itself is NOT
 built here. Log: `§LIGHT_ZONE ... openSkyCells= soilCells= zonesWithAperture= apertureM2= (up= side=) topApertureZones=
 [id:m2:up:side:cells]`.
-SHADER (sourced_light.js): slFragZone unchanged for the resolved cases (0 or off-grid -> OUTSIDE 65534, zone -> zone).
-UNKNOWN (every probe SOLID) gains a column fallback: walk up from the +0.2 m probe cell through its solid run to the first
-non-solid cell; open (0) -> OUTSIDE (sky kept, outdoor-bound lamps only), a covered cell or no empty cell above -> -1 as
-today (sky off, lamps as today: a wall foot / ceiling-panel strip under a solid is covered). One slFragZone per fragment
-kept (§SOURCED_LIGHT_LINK), R16UI kept, no new sampler. CPU mirror: LightZones.atSurface gets the same last fallback
-(returns 0 when the column above the probe opens, SOLID otherwise). Lamp/portal binding (atLamp, bindLights, the band
-functions, §SOURCED_LIGHT_CAP, the §METER zone mode) read the same raw values and are unchanged.
-EDGE CASES (decided, not tuned): a covered arcade / canopy / eave soffit is COVERED = indoor with a large sideM2 (its sky
-comes back through §SOURCED_DAYLIGHT's per-zone DF from these apertures; until then it is lamp-lit + sun only). Glass
-roofs: IfcPlate/IfcWindow/IfcCurtainWall are SOLID, so a glazed atrium is covered with apertureM2 0 — right, its daylight
-is the panes' Ag in the DF, not an aperture. An open stair shaft under a roof joins its storeys into one zone as before.
-A ground point under an overhang probes into a covered cell (indoor). A cell below ground with a solid above it (basement,
-or soil under a canopy) is a covered zone cell; soil under an open column is SOLID.
+TWO MORE CASES (red1's v1337 stills via the watchdog, added 2026-09-25 before the after-arm run):
+(J) JUNCTION STRIP — a bright-white strip at every wall/floor junction and around column / partition bases (Hospital
+level-1 hall). Cause as read: a floor or wall-base fragment inside a wall's rasterised 0.5 m column found every +normal
+probe solid and fell back to the FAR side (-normal: the void under the slab, classed outside/unbound) -> full hemi.
+FIX (shader + CPU mirror, same order): C0 = the cell of p + 0.25 m along the eye-facing normal; the nearest non-solid
+cell CENTRE (from p) among C0's 27 cells whose centre lies on the eye side of the surface wins (the room cell beside the
+wall column is always nearer than any cell across the wall or under the slab); none -> walk up C0's column to the first
+non-solid cell; a fully solid column = unknown (-1: sky off, lamps as today). The far-side probe is gone.
+(C) CANOPY — the Clinic recessed entrance under its canopy rendered as black cut-outs; "covered = indoor" alone keeps
+every porch / arcade / deep overhang black until the DF exists. FOUNDATION RULE (meanwhile, no knob): a covered cell is
+SKY-LIT when it sees the sky along one of the grid's 24 upward lattice directions (dx, dz in -2..2, dy = +1: elevations
+45 / 35.3 / 26.6 / 19.5 deg; BRE's "no-sky line" sampled on the lattice) through non-solid cells only — each ray checks
+every cell its centre-to-centre segment crosses, so it cannot tunnel through a one-cell wall or a diagonal crack — plus
+one 6-neighbour dilation through empty cells (the grid's own resolution; the 8-direction set alone left a cell-parity
+checkerboard under a canopy and reached only one canopy height deep). A sky-lit cell keeps the hemi/ambient/IBL sky like
+an open one; its zone id still binds its lamps. Glazing is SOLID, so a room with windows has no sky-lit cells; a room with
+a doorless opening is sky-lit near the opening (real: it is bright there; the DF later scales it). ENCODING: the zone
+texture stays R16UI: a sky-lit covered cell carries SKY_BIT 0x4000 on its zone id (ids < 16384, warned at exhaustion);
+LightZones.at()/atLamp()/atSurface() strip it, skyAt()/surfaceInfo() read it, the shader reads texel & 0x3FFF and sets
+_slSky once with _slFZ; slSkyKeep = _slSky ? 1 : uSLParams.z. No new sampler, one slFragZone per fragment.
+Lamp/portal binding (atLamp, bindLights, the band functions, §SOURCED_LIGHT_CAP, the §METER zone mode) read masked ids
+and are unchanged. red1: Clinic INDOORS is right now — the corridor has no aperture, so its numbers must not move
+(witness_wash_sources Clinic before/after).
+EDGE CASES (decided, not tuned): a covered arcade / canopy / eave soffit is a COVERED zone with a large sideM2 whose
+cells are sky-lit where the lattice rays reach the open air (a canopy soffit's own top layer at the centre is not: only
+its lamps + sun until the DF); deeper than ~2 canopy heights it is indoor (lamp-lit) until §SOURCED_DAYLIGHT. Glass roofs:
+IfcPlate/IfcWindow/IfcCurtainWall are SOLID, so a glazed atrium is covered with apertureM2 0 — right, its daylight is the
+panes' Ag in the DF, not an aperture. An open stair shaft under a roof joins its storeys into one zone as before. A cell
+below ground with a solid above it (basement, or soil under a canopy) is a covered zone cell; soil under an open column is
+SOLID. Unit-tested offline on a synthetic room + open-sided canopy (scratchpad zone_unit.mjs): room zone 0 apertures /
+0 sky-lit, canopy zone 34.5 m2 side apertures, 331 of 336 cells sky-lit, wall base / floor-by-wall / wall-under-canopy /
+ground-under-canopy classed as expected.
 WITNESS (viewer/tests/witness_zone_open_sky.js, real GPU, console GUARD, load gate = full element count or VACUOUS):
 per building (Hospital, Clinic, Terminal, HHS_Office_Federated, JKR, LTU_AHouse, Duplex) at the default pose and an
 aerial pose over the building centre: `§SKY_LOSS` on a 48x25 grid of visible surface points (glass/basic/shader/invisible
 materials, sky and portals skipped): open = a straight-up ray from point + 0.05 m x normal hits nothing; denied = the CPU
 mirror (atSurface, eye-facing normal, off-grid = outside) withholds sky; target open AND denied = 0; the same grid read
 back from the SHADER (SourcedLight.debugZones(1) colour = zone) gives gpuAgree/gpuDiffer and gpuOpenDenied. Terminal
-hall_floor stand-in: the hall zone id (must be != 0) with its apertureM2/up/side. Zone counts + `§LIGHT_ZONE` ms per
-building, before (3395ae42) / after. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
+hall_floor stand-in: the hall zone id (must be != 0) with its apertureM2/up/side. `§JUNCTION`: a floor sample within
+0.6 m of a vertical hit (4 horizontal rays) or a wall sample within 0.6 m above a floor whose zone/sky class differs from
+the NEAREST room sample (floor, nothing vertical within 1 m, <= 3 m away): junctionMismatch 0, CPU and shader, at the
+interior stand-ins (Hospital cafe_atrium_high + rail_L1, Clinic corridor). `§CANOPY`: direct (not through glass) samples
+whose up ray is blocked, split skyLit / denied with the blocker's class; `§PORCH`: a geometry-derived canopy pose per
+building (the largest side-aperture zone with no up aperture whose lowest aperture cell is within 2 layers of the ground
+plane; camera 8 m outside its side-aperture centroid along the mean outward face normal, 1.6 m up) — coveredDirectSkyLit
+must not be 0 there; the before arm gets the identical pose by injecting the new builder as LightZonesNew. Zone counts +
+`§LIGHT_ZONE` ms (skyMs) per building, before (3395ae42) / after. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
 (tone-mapped median/p95/wash per pose) before/after. The off-grid = unknown bug in witness_wash_sources.js:77 and the
 crosswall witness's CPU column (a -1 raw value is OUTSIDE 65534, not unknown) is fixed in the same commit.
 **red1's rulings this lane (don't re-litigate):** only real sources light surfaces; no light through walls/floors (only
