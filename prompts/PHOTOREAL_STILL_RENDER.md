@@ -1303,6 +1303,33 @@ GATE (the sweep + these): Terminal hall + hall_floor blackDirectGI 0 with a real
 and the outside-looking-in pose unchanged within the sweep's tolerance; link <= +10%; GUARD 0/0/0. Films: the film GI path
 (gi_film.js) must use the same max composite — named in the commit ("film path: gi_film composite uses the same max").
 
+**§LAMP_UNCAPPED — SPEC (2026-09-26, dev red1-5a; watchdog: the lamp cap is now a GLARING Alt+S defect; ALTC F1 moves into
+the Alt+S zero list). After the sweep and §IRC_MAX.**
+DEFECT: the uniform budget caps point lights (120-160); a zone like Hospital zone 1 has 547 lamps, so far walls lose their
+nearby fixtures (tower wall: nearest zone fixture 1.9-4.8 m NOT kept, nearest kept 15-20 m; §BLOTCH_LIGHT) and the dark
+patches move with the camera (§CAMDEP_SURFACE: lamps differ at 94/95 points between two poses).
+METHOD: clustered forward shading over our own zone grid (Olsson, Billeter, Assarsson, "Clustered Deferred and Forward
+Shading", HPG 2012): lamps become DATA, not three.js lights.
+1. BUILD (per building, camera-free, cached): a lamp data texture (position, colour x intensity, range, zone) for EVERY
+   fixture; a cluster grid = the zone grid coarsened to 4x4x4 cells (2 m); per cluster the list of lamps of the cluster's
+   zone(s) whose influence sphere (the lamp's own distance cutoff, three's getDistanceAttenuation window, 25 m today)
+   reaches the cluster; stored as (offset, count) per cluster + one flat index texture. Log clusters, max/mean lamps per
+   cluster, MB, ms.
+2. SHADER (one patch, once per fragment — the §SOURCED_LIGHT_LINK rule): look up the fragment's cluster, loop its list
+   (dynamic loop, bounded by the BUILD max), accumulate three's own point-light term (getDistanceAttenuation, the same
+   BRDF path) with the zone binding intrinsic (lists are per zone). Program count CONSTANT (NUM_POINT_LIGHTS unchanged by
+   lamp count; the lamp point lights are removed from the scene when the data path is on). No uniform cap.
+3. DECIDE: nothing camera-dependent (the per-frame cost is the loop). Films inherit as-is: no pick, no fade, no churn.
+4. COST: per-fragment loop length logged (mean/max per frame over the frame's clusters) + ms per frame vs today at red1's
+   poses; if the max list is too long for a real-time nav budget, the path stays Alt+S/film-only (stills and bakes are not
+   60 fps) — stated with numbers.
+INTERIM (watchdog "if cheap"): ranking capped lamps by distance to the camera zone's VISIBLE SURFACE samples instead of the
+camera needs surface samples; the ray-free DECIDE has only zone boxes, the 64x36 depth readback costs 220-650 ms and the
+84-ray grid 2.3 s — so NOT cheap; not done (stated).
+GATE: at red1's tower pose + fly-in poses + the sweep: every lamp within range of a visible surface contributes (analytic:
+all-fixture irradiance vs the rendered set, max relative loss < 1% per point); §CAMDEP_SURFACE lamps term identical across
+poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame ms reported.
+
 **§COVE_LIGHT — SPEC (2026-09-25, dev red1-5a; item A BLACK_INTERIOR; red1: "a dark place just gets a ceiling-perimeter back
 glow"). Builds on §SKY_VIEW_FIELD (same zone texture). Alt+S-truth: BUILD per building + DECIDE per frame; films inherit.**
 DEFECT (8619): Hospital inner room cam [9.947,-7.699,0.098] 98% black; toilet [8.344,-8.647,-3.579] 57% black; Clinic room
