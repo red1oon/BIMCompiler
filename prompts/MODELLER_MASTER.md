@@ -28,12 +28,12 @@ i have no time to sight, i rely on a good vibe coder to do so."
 
 **Combined-branch witnesses:** W-ROW7-TRUE-CENTRE 6/0 · W-ROW7-GRID-BASELINE 5/0 (pinned to the mean fit it recorded) · W-E2E-ROW7-GEO-REINIT 6/0 · W-MEP-REROUTE 9/0 · W-WALK-GESTURE 4/0 · W-ROUTER-NNCHAIN 8/0 · W-MEP-OPENPATH 33/0 (M5-M7 per discipline, M8 all-signed). STR/grid: STR-REWALK-COMMIT 9/0 · GRIDMOVE-REAL 8/0 · STR-INTO-ARC 11/0 · STRWALK-SMOKE 9/0 (row 7 branch).
 
-**QUESTIONS FOR red1 (data calls, nothing blocked):**
-- Q1 FP METER on an ARC-only resident = the seed door (same proxy CW uses). OK, or name a better proxy?
-- Q2 ACMV product: keep the measured mode 150×150 (a branch size) or a mains size (300×200, 2nd most common)?
-- Q3 ACMV has no plant→main step (no AHU modelled in Terminal). Accept mains + drops only?
-- Q4 ELEC: no real source wires a branch to a fixture. Accept mains only, or authorise an AUTHORED JUNCTION→FIXTURE step?
-- Q5 Hospital signing cost (+54 s PLB walk, +19k solids): keep, or cap big buildings?
+**DATA CALLS — DECIDED (red1 2026-09-26: "keep things simple and workable and not worry about the finer points as long
+bigger issues are resolved ie visually and generally correct. The silent DBs are references u can work with").** All five
+stay at the shipped default: FP starts at the seed door (as CW) · ACMV one product 150×150 (the mode in Terminal 53/420 AND in
+the Hospital_silent reference, 437 of 4,816 IfcDuctSegment) · ACMV mains + drops, no plant step · ELEC mains only · Hospital
+signs every run. Rule going forward: take the simplest sourced option, check it against the `*_silent.db` references
+(Hospital_silent, HHS_Office_Federated_silent), ask red1 only when something is visibly or generally wrong.
 
 **NEXT, ranked:** 1. Retarget W-ROUTE-PATTERN-BRIDGE (6/4 red since #846; still asserts ELEC/ACMV refuse — they route now) · 2. Carry the 10 new pattern rows into bim-compiler `IFCtoERP.java seedMepPatterns` so a re-extract keeps them · 3. HospitalGarage grid (140 columns off-lattice: 15×102, colRMS 1.20 m — the 1D axis clustering doesn't describe it; its own row) · 4. Older undo edge: undo a whole walk, new edit, Ctrl+Z/Ctrl+Y can resurrect one walk row (predates this session) · 5. then the older rows from §RESUME 2026-09-26.
 
