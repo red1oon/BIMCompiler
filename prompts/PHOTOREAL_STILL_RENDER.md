@@ -219,6 +219,53 @@ LESSONS from the watchdog side: read the FULL log before believing a summary (th
   counter for each eye-found class; never hand red1 a tree without the 1-minute smoke; answer red1 in plain short English,
   lead with the verdict; a still's camera pose + host are in its PNG — use them, never guess.
 
+## ▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 PM ("resume bounce") — START HERE (dev red1-55; red1 rebooting for the NVIDIA driver)
+TRIGGER: when red1 says "resume bounce", read §WORKING MODE above, then this block, then continue the NEXT list. Supersedes the
+09-26 AM block below (kept for history).
+LOOK TREE: /tmp/wt-look (branch look/combined-0925) @ f5f16c44, sw v1431, serves :8624 (node ~/bin/serve_tree.js /tmp/wt-look
+8624 — /tmp is wiped by a reboot: recreate with `git worktree add /tmp/wt-look look/combined-0925` from ~/bim-ootb, restart the
+server; buildings fall back to ~/bim-ootb/buildings). Every commit below is on origin/look/combined-0925 + its own fix/ branch.
+SHIPPED today (one commit each, oldest first):
+- 285f7197 §GI_RECEIVER_QUANT — rainbow voxel edge FIXED: cause was gi_still.js receiver() reading the hue of 8-bit near-black
+  pixels (app [1,1,0] -> composite [95,94,0]); chroma shrunk by 1 sRGB code. Probe at red1's pose: invented-hue px 16,780 -> 337.
+  The sky-field zone-mixing lead was WRONG (the F step is a real zone boundary; cross-zone taps were open cells, by design).
+- a71e3022 §FAULT at §STILL_REFINE done + §FAULT_GI (hueNoise, blown %, dark %) — BOTH WRITTEN INTO THE SAVED PNG tEXt
+  (bim-still-pose .fault/.faultGi). Read any still: python3 of the tEXt chunk (see still_meta.py pattern: struct-walk chunks).
+  Counters: unlit, unlitCeil, fieldBad, glassOpaque, glassStock, lamps lit/loaded/cap (f5f16c44), capDropNear, extLightsDay,
+  glassLow, portalsRetired, expStep, guard.
+- dd2bae45 §STILL_POSE_HOST (host + sw in the PNG). 4f3a46f6 §NO_PHOTO_PROPS (fabricated staging lights removed: facade
+  up/down, roof spots, sconces, tree lights, skyline window points, sparkle orbs; skyline boxes kept).
+- ac46e4e0 §STILL_ESC_LEAK (5.8 MB canvas stranded per Alt+S->Esc). 6b92c252 §ZONE_TEX_CPU_DROP (41 MB) + §WIDE_RELEASE.
+- 5a6d4843 §STILL_STATUS_STEPS (status line names each step, says which are one-time). 96cab2e7 §GI_READBACK_CHURN
+  (~370 MB garbage/press gone).
+- 7ba2c4df §LAMP_LOOP — THE HANG: three.js unrolled 200 point lights into every program; first staged frame 157 s -> 7 s
+  (Hospital, headless Vulkan); §METER identical looped vs &lamploop=0. Hospital Alt+S works again (red1 confirmed).
+TEST RIG NOTE: NVIDIA module 595.84 vs lib 595.91 mismatch until reboot -> headless gl-egl fails; headless over Vulkan
+(--use-angle=vulkan --enable-features=Vulkan, no EGL env) works but lands on the Intel iGPU (~1.1 s/frame: TAA/AO times there
+are NOT red1's). After reboot re-check gl-egl on NVIDIA.
+ALT+S TIME (Hospital first press, Intel headless): rooms 0.6 s, staging 16-19 s (zone 3.7 + sky 1.5 + audit 1.5 + cap 1.2 +
+shadowFit 1-5 + other), TAA 16 fr, AO 24 fr, GI: engine 2.6 s + COPY BUILDING 63 s (once per page, 4,888 renderables) +
+orientation 11 s (already cached in localStorage on red1's browser) + 8 passes 3 s.
+NEXT (red1's order, decide nothing twice):
+1. Zone grid + sky-view field cache in IndexedDB per building (red1 asked "cache the 1-time work"; ~6.5 s/first press). Not
+   into the .db file.
+2. Bounce-free FIRST press (preview): first Alt+S shows the still without the GI layer while the WebGPU copy runs in the
+   background; next press adds bounce. Offered to red1, not yet approved — ask once, one line. Quiet copy after page load was
+   discussed: costs ~80 MB GPU + a second mesh copy + possible 2.9 s stutter slices; red1 asked if lamp count could gate it —
+   no (the bounce engine draws no lights; cost = renderable count).
+3. §FAULT gap: red1's Hospital still bounce_still_1790378763574 (cam [-8.88,-3.263,37.26]) shows blocky diagonal stair-step
+   shading on a tall teal wall; every counter clean -> add a blockiness counter, then find the cause (shadow texel 0.0868 m
+   single map vs the 0.5 m zone grid). red1: "jags in shadow still there, less pronounced".
+4. §IRC_MAX black ceilings (spec 28ce40f5b): LTU still …378339859 unlitCeil=12/121 (black ceiling blotches, bounce-only).
+5. §FAULT false-positive checks: glassOpaque (13 HHS / 90 Hospital — probably frame-only IfcWindow meshes), glassStock=440
+   on LTU (window looks clear), hueNoise counts real colour bleed (HHS green beams 1,315). Covered-outdoor black (LTU canopy
+   dark 2.9%) not caught by unlit.
+6. Then the old queue: §LAMP_UNCAPPED (b00ea663e; capDropNear=120 on a Hospital aerial), §COVE_LIGHT (TRIM_LUX_VOID 100),
+   §GLASS_VEIL (Clinic windows opaque from outside: still …374222505), floor blotches.
+LESSONS today: pkill -f / pgrep -f self-match killed my own shell twice (exit 144) — kill by pid. A memory "hog" report was a
+main-thread stall (shader compile), not RAM: measure the first staged frame (SOURCED_LIGHT_BIND -> GLERR firstFrame gap).
+red1 tests the latest always — never ask which version.
+
 ## ▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 (dev red1-5a; context low -> new session) — START HERE
 LOOP NOW: see §WORKING MODE above (no watchdog). NO new witnesses/A-B/gate runs. Build a fix -> merge into ONE look tree /tmp/wt-look
 (branch look/combined-0925, base 9991dcee, serves :8624 — red1 tests there; never leave a broken intermediate: develop in a
