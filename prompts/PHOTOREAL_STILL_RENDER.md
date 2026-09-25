@@ -249,7 +249,18 @@ PORTAL BINDING (found by the Clinic corridor wash re-measure, median 0.537 -> 0.
 portal spots sat in courtyard cells the old rule sealed as a zone (bound there, unable to reach the corridor); open under
 the new rule they were UNBOUND ("a portal outside the zones stays unbound") and lit the corridor through its walls, which
 the §METER read. Fix: a portal in an open or off-grid cell binds to OUTSIDE like a lamp (only a portal whose every lookup
-is solid stays unbound); sw v1339; corridor wash re-measured after it (see the build log). Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
+is solid stays unbound); sw v1339. Re-measured: the corridor median stayed 0.457 (portals were not the cause; kept as
+the correct binding, crossWall 0, portalsBound 19/19).
+CORRIDOR CAUSE (probe_corridor_meter.js on 8611 = 3395ae42 vs 8614 = after, the meter's own 160x90 white-Lambert frame
+joined per pixel with the shader's zone class): the corridor surfaces' light is unchanged (wash analytic levels identical:
+lamps 93.7% / portals 6.3%, 0.010 of sunlit ground; the camera-zone pixels' Ein 0.0411 -> 0.0438), but under the OLD
+lookup 1,478 of the 14,400 meter pixels (10.3%) of corridor surfaces were classed into OTHER zones — zone 15: 852 px at
+E = 0 (black), zone 2: 436 px, zone 94: 107 px at E = 0.0007, unknown 27 — the dark twin of red1's junction strips; the
+new lookup classes 14,247 px (98.9%) as the corridor zone (zone 15: 58 px). The log-average meter no longer sees 10% black
+pixels: logAvgEin 4.987e-3 -> 7.528e-3, exposure 34.04 -> 25.83, tone-mapped median 0.537 -> 0.457 (p95 0.737 -> 0.667,
+wash 0). red1's "Clinic indoors is right" look therefore included the exposure lift those black patches bought; the
+surfaces themselves are lit exactly as before. Decision on the corridor level is the watchdog's (a meter matter, not a
+zone one); nothing was tuned. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
 (tone-mapped median/p95/wash per pose) before/after. The off-grid = unknown bug in witness_wash_sources.js:77 and the
 crosswall witness's CPU column (a -1 raw value is OUTSIDE 65534, not unknown) is fixed in the same commit.
 **§PORTAL_SHADOW_BIAS — SPEC (2026-09-25, dev red1-5a; watchdog red1-c6 order (1) after 3883eebe PASS). Alt+S only
