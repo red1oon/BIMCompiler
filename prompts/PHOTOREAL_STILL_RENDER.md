@@ -94,6 +94,12 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   except via the 8 nearest portals; the sky-view field (OPEN, option a, portals retired) is the replacement. Added gate
   §LUX_CHECK: per-zone working-plane lux (sky-through, lamps, total) vs EN 12464-1 maintained illuminance by space use;
   < 50% FAIL-to-explain; meter exposure + stops vs outdoor logged. No exposure knob (rule 5).
+**red1 APPROVED (2026-09-25 15:04), reference 'outside looking in': ~/Downloads/bounce_still_1790319885328.png** (Hospital,
+  cam [-5.53,-0.54,-42.32], 8619 tree): sun through the curtain wall onto floors/stair "very good"; deeper interior dark
+  but "acceptable as in real life we cannot see from outside in such well lit building. Only when entering the exposure
+  changes." (mean 87, p5 35, p95 157, 0% black). Rule: seen from outside, interiors stay at outdoor exposure (no lift);
+  exposure changes on entering (Alt+S: camera inside/outside meter; Alt+C: the F3 crossing ramp). The glass-veil fix must
+  keep this view's look.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
