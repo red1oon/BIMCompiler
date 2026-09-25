@@ -47,6 +47,44 @@ fix/sl-gl-link 75dd41e5): slFragZone once per fragment — the per-light inlined
 7. Later: parity PR (films follow the approved lighting; film-fill default revisits under sourced light), §STILL_RES cost
    table (window/1440p/4k same pose; 4k cap one-line fix), 4-nearest-lamp shadows (stills only, zone casters) only if red1 asks.
 
+**§STILL_SHADOW_EDGE — SPEC (2026-09-25, dev red1-5a; watchdog reorder: jagged edges + base gap BEFORE §SOURCED_DAYLIGHT,
+one shadow change with NEXT 6). red1 on v1337: shadows "jagged and with a base gap". Alt+S only (`!A._maxqActive`); films
+and nav unchanged. Branch bim-ootb feat/still-shadow-edge off feat/sourced-light 3395ae42.**
+Facts from source (not re-derived later): r186 PCFShadowMap = 5 Vogel-disk taps on a sampler2DShadow (each tap a hardware
+2x2 bilinear compare), disk radius = shadow.radius TEXELS, taps rotated per pixel by interleaved gradient noise of
+gl_FragCoord. Depth bias is world 0.305 m, fixed (effects.js ~3480) -> base gap = 0.305/tan(elev) = 0.34 m at 42 deg,
+0.305 m at 45 deg. normalBias = 2 x fitted texel (_stillFitApply). Map 8192 on Hospital (square); fitted box on the default
+exterior 530x285 m -> texel 0.065 x 0.035 m. A texel's on-screen size = texel / pixel footprint, pixel footprint at view
+depth d = d x 2 tan(fov/2) / H: at d = 5 m (fov 60, H 864) a pixel is 0.0067 m, so a 0.065 m texel is a ~10 px stair.
+1. BASE GAP (NEXT 6). At the fit (_stillFitApply, Alt+S): worldBias = 1 x the fitted texel (max of texelX/texelY; per
+   cascade in 3), bias = -worldBias / (far - near). normalBias = (R + 1) x texel (R = the PCF radius): a tap s texels off
+   on a surface tilted theta from the light differs in depth by s.texel.tan(theta); lifting the lookup (R+1) texels
+   along the normal clears the whole kernel (R) plus the bilinear footprint (1). normalBias makes no base gap on the ground
+   (a lifted ground point behind a column still meets the column on its sun ray). Log `predictedBaseGap45=` worldBias/tan45.
+   With one 0.065 m texel the gap is 0.065 m at 45 deg: the < 0.05 m target needs a texel <= 0.05 m where the gap is seen,
+   i.e. the near cascade (3).
+2. RADIUS. The PCF radius cannot remove a stair wider than a few pixels: it only turns a 10 px stair into a ~30 px blur.
+   So R is fixed at 1.5 texels (edge filtered over 2R = 3 texels + the bilinear 1, the watchdog's "2-3 texels"), and the
+   PROJECTED texel decides the cascade instead (3). &shadowradius / APP._stillShadowRadius still override. Log R.
+3. NEAR CASCADE (Alt+S only). Trigger: the fitted texel > 0.03 m (watchdog's budget) — on Hospital's default exterior it is.
+   Near map: a second shadow-only DirectionalLight (colour 0, same direction as the sun, castShadow, map = the sun's size
+   when maxTextureSize allows, else 4096; logged) whose box = the light-space rect of the view frustum slice [near, S],
+   S = 35 m (watchdog's 30-40 m) or the farthest building corner if nearer, + 2 m pad, centre snapped to whole texels.
+   The ortho cameras keep the whole sun ray (near/far = the sun's), so a caster outside the slice that shades inside it is
+   still in the map. Shader: one patch in lights_fragment_begin's directional-shadow line — for the SUN (identified by a
+   uniform index, not list order), shadow = mix(near lookup, far lookup, w), w = smoothstep(S - 3, S, view depth); the near
+   light adds no light (colour 0). Texture budget +1 (sampler2DShadow): §LIGHT_TEXTURE_BUDGET reserve 9 -> 10 (logged;
+   shadowed portals drop by one only on a 16-unit backend). Near map rendered once per still (autoUpdate false, like the
+   portals). Removed at teardown; §R17 releases both maps.
+4. WITNESS (numbers only, no frames judged): viewer/tests/witness_still_shadow_edge.js, Hospital (OCI db) default exterior
+   + café + one grazing pose, sun 45 deg and 20 deg, real GPU. Logs `§STILL_SHADOW_FIT` texel per cascade, `R`,
+   `predictedBaseGap45`, shadow-pass ms (both maps, gl.finish-timed) vs before. ACNE / GAP predicate on a 48x25 grid of
+   visible surface points: RAY = a ray to the sun from the point + 0.05 m along its normal (glass skipped: it casts
+   nothing since §SUN_GLASS_CASTERS) vs LOOKUP = the renderer's own sun-only shading of that pixel (white Lambert override,
+   every other light at intensity 0, float target) / N.L.Isun. ACNE = ray lit, lookup < 0.5; GAP = ray shadowed, lookup
+   > 0.5; a point whose ray flips when moved (R+1) texels in light space is EDGE (penumbra), counted apart. Target: acne 0,
+   gap 0 outside EDGE, predictedBaseGap45 < 0.05 m in the near cascade. Arms: before (v1337 values) / after.
+
 **red1's rulings this lane (don't re-litigate):** only real sources light surfaces; no light through walls/floors (only
 glass/openings); no exposure/brightness knob, no lamp-count caps, no per-building values; bounce is paramount; mid-film
 lamps OFF only for the freeze, discipline reveal, or full-ARC-hidden (§INTERIOR_LIGHTS_BOUNDARY today is far wider — narrow
