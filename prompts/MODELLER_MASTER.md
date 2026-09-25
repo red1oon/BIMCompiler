@@ -14,6 +14,21 @@ i have no time to sight, i rely on a good vibe coder to do so."
 ## ▶ §RESUME 2026-09-26b — START HERE (session 2, same day). Then §RESUME 2026-09-26 below, then §STRATEGY 2026-09-24.
 ## Every number was measured on the combined branch bim-ootb `feat/modeller-next-0926`. Specs: `prompts/Modeller/NEXT_0926/`.
 
+**▶ "resume Modeller session" (red1's trigger phrase) — do exactly this, in order:**
+1. Read this block, then the §RESUME 2026-09-26 block and §STRATEGY 2026-09-24 below (method rules + traps).
+2. State of the world at the 2026-09-26 reboot: **everything is merged** — bim-ootb main `b0826a5a` (#1769, sw v50),
+   BIMCompiler master (#125 + this note). No Modeller work lives in any `/tmp/wt-*` worktree; nothing is unpushed.
+3. First task: run the five witnesses NOT yet re-run on merged main (held so red1's Alt+S on :8624 stayed light) in a
+   fresh worktree off origin/main, with `NODE_PATH=~/bim-ootb/tests/node_modules:~/bim-compiler/node_modules` and the
+   gitignored `Terminal_arcstr_proof.db` + `Terminal_plates_proof.db` copied from `~/bim-ootb/modeller/`:
+   `witness_e2e_walk_all_disciplines.js` · `witness_e2e_walk.js` (5/3 on the pre-#1769 base) · `witness_e2e_save.js` ·
+   `witness_route_pattern_bridge.js` (6/4 red since #846 — expected, it is NEXT 1 below) · `witness_e2e_walkall_terminal_scale.js`.
+   Compare each red against origin/main `1069c70c` before calling it a regression. **Ask the photoreal session / red1
+   before a heavy headless run if red1 is testing Alt+S** (headless Chrome slows the look port).
+4. Then work the NEXT list below in order. Data calls: decide them yourself (simplest sourced option, checked against
+   the `*_silent.db` references) — red1 wants "simple and workable … visually and generally correct".
+5. Merge convention: one combined branch, one PR at session end (bim-ootb auto-merges on green checks); update this block.
+
 **NEXT #1-#5 DONE; #6 handed over.** One combined bim-ootb branch (row 7 + #2/#3 + #4 + #5).
 | item | result (base → fix) | spec |
 |---|---|---|
