@@ -281,6 +281,19 @@ METHOD, cited:
    portals drop only on a 16-unit backend).
 5. Stabilisation (films only, later): bounding-sphere cascade boxes + whole-texel snapping (Valient, "Stable Rendering of
    Cascaded Shadow Maps", ShaderX6, 2008) so edges do not crawl between frames.
+WATCHDOG GATE CONDITIONS (red1-c6, 2026-09-25 — OPEN with these; they override items 1-4 where they differ):
+C1 FIXED m, one program: m fixed for the session (4, or 3 if enough); unused cascades get a degenerate box, render
+   skipped, sampler still bound. Log `programs=` before/after the first press and on a second press at another pose:
+   second-press new programs = 0.
+C2 ONE LINK: the cascade lights are added in the same staging step, before the first compile, as the §SOURCED_LIGHT
+   patches. Log §SOURCED_LIGHT_LINK totalMs with and without cascades (46.4 s baseline); target <= +10%.
+C3 MEMORY: cascade 0 at 8192 only if its fit needs it, cascades 1..m-1 at 4096; total memMB <= 512; graceful fallback
+   (fewer/smaller cascades), logged, never a crash (4 x 8192^2 x 4 B = 1 GB is a Context Lost risk).
+C4 zMax CLAMP: the SDSM readback's zMax is clamped to the §STILL_SHADOW_EDGE depth fit (building + kept props + slab);
+   sky and far-ground pixels excluded, so the last split does not balloon.
+C5 texelPerPixel per cascade at its near split edge (texel / pixel footprint at that depth, from H and fov): <= 2 in
+   every cascade; cascade-0 texel <= 0.0167 m stays the thin-caster target.
+Portal thinCasterRisk (0.34 m café / 0.56 m Terminal) is logged, not on the zero list.
 GATE, from one Alt+S press per pose (witness_still_shadow_lines.js extended; no ray grid): `§STILL_SHADOW_CASCADE m= splits=
 [m] texel=[m per cascade] normalBias=[..] thinCasterRisk=[..] memMB= ms=` + the per-cascade §STILL_SHADOW_EDGE numbers,
 Hospital default exterior / aerial / café + Terminal hall_floor; FAIL if cascade-0 texel > 0.0167 m or any gap45/20 >= 0.05 m;
