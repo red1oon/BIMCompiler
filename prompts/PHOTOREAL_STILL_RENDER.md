@@ -1105,6 +1105,20 @@ V5' outside fragments are filtered too (stencil accepts every non-solid cell): t
 V11 SKY_STEP witness: a step pair whose two points (0.25 m off the surface, eye side) straddle a SOLID grid cell (a partition or
    glass line the readback does not draw — glass is hidden) is a physical boundary: reported as acrossSolid, not in SKY_STEP.
    Each debug readback is rendered twice (a program built in the first draw gets its uniforms on the next).
+V12 INTERREFLECTED COMPONENT (after the gate run on 5bae708a: §WASH §GLARE black_direct_samples Terminal hall 291/576, hall_floor
+   221/573, café 1 — before 0/0/0). Cause (source): F is the sky component only; a ceiling / soffit under an opaque roof sees
+   no sky (F = 0) and the portals that lit it are retired, so no source reaches it (the GI still pass is not in the analytic
+   witness). BRE's DF is SC + ERC + IRC; the IRC was never modelled. Added, per zone, the uniform interreflected term of the
+   flux balance behind the ADF formula itself (Sumpner's integrating-sphere relation; Littlefair, BRE Digest 310, derives
+   ADF = T W theta / (A (1 - R^2)) from it): F_ir,z = R x (mean working-plane F_z x floorM2_z) / (A_z (1 - R)), R = 0.5 (the
+   same stated constant), A_z = surfaceM2 + apertureM2 (D7). Added to every covered cell of the zone (clamped to F <= 1);
+   a zone with no sky has F_ir = 0 (lamps only). Logged: `§SKY_VIEW_FIELD ... irc(zones/median/max)=`. The DIST and ADF
+   cross-check report the final F (SC + ERC-by-ground + IRC).
+V13 ARCHITECTURE (red1 via the coordinator: Alt+S is the source of truth, Alt+C inherits): the field is BUILD (LightZones.field,
+   per building, camera-free, cached; the zone cache key has no film time: note for the 4D build-up item F5) + DECIDE (one
+   filtered texel read per fragment in slFragZone; skyField is its CPU mirror). SourcedLight.fieldOn() carries no film gate;
+   the only gate is the existing staging call site (effects.js: SourcedLight.stage runs for !A._maxqActive). Film path: not
+   called yet; when it is, F needs no smoothing (static per building) — exposure hold per shot is the film's own continuity.
 V10 SKY_STEP witness targets: the camera looks along the longest free horizontal ray at eye height (32 azimuths, the
    zone grid's first SOLID cell), target = camera + that ray x its free length ("along the room", rule not eye).
 
