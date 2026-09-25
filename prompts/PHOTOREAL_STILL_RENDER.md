@@ -39,6 +39,13 @@ Alt+C: parked until the zero list; plan prompts/ALTC_FOUNDATION.md + ALTC_SHOWST
   earlier read was wrong). Suspects: N8AO screen-space AO at large radius, or far-cascade sun shadow blur. Next: log the
   AO term vs the sun-shadow term at points on that wall (one press, the §CAMDEP_SURFACE point set) — same probe also
   answers the Terminal ceiling halos (AO) item. Minor: slight green cast (g−r +2..+5) on 8622/8624 interiors.
+(4) 2026-09-26 later: tower blotch SOLVED = lamp cap + portal light lost on no-sky walls (AO minor) → LAMP_UNCAPPED on
+  the zero list; IRC ruling FINAL = ON with MAX(IRC, SSGI) per fragment. red1 dropped test sweeps for quick turnaround
+  BUT wants in-viewer §FAULT logging per press to catch faults during debug (dev WIP f5ff2085 :8625, must move to
+  §STILL_REFINE done + add fieldBad/unlitCeil/blown/dark). Open on :8624: RAINBOW VOXEL EDGE on a Hospital ceiling
+  (Fable fix/field-zone-edge :8626 in flight), black ceilings/voids (cove), Clinic exterior warm orbs = the 2026-07-15
+  PHOTO PROPS (effects.js _buildPhotoProps ~686-760: facade up/downlights, sconces, sparkle sprites; fabricated) —
+  red1 asked: remove completely or off by day. Clinic glass opaque (item D). Clinic corridor 'perfect' reference.
 
 You are the WATCHDOG (previous: red1-c6, before it red1-4b). You do not write viewer code. You gate every dev spec/step from pushed code + full
 console-captured § logs, do ALL visual comparison yourself (red1's stills in ~/Downloads vs the baseline), relay red1's asks,
