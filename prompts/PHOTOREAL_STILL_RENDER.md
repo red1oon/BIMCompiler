@@ -85,6 +85,10 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   source + red1 principle 3 cove base light) · B SKY_STEP (continuous filtered sky-view fraction instead of the binary
   SKY_BIT) · C ENTRANCE_GLOW (count of glow/halo quads drawn by day or failing the depth test) · minor: skyline day windows,
   Terminal roof-edge pockets.
+**red1 14:26 (…317578153, Hospital, cam [-15.84,2.47,4.14] looking through a glazed pane into the atrium):** "the window
+  glass should allow light thru or/and reflect the cam point of lite if any". Seen: the whole view behind the glass is a
+  flat lavender-grey veil (no contrast, no colour, no lamp highlights), though that atrium renders lit and colourful
+  without glass between. The pane acts as a fog layer, neither transmitting nor reflecting. => item D GLASS_VEIL.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
