@@ -284,7 +284,7 @@ slabs — so it is never approximated. See [What a wall is made of](#what-a-wall
 wall is selected, one signed `GEOM_CUT` lands, the opening is visible, and undo closes it again. Two limits:
 - **Rounding an edge (Fillet) right after cutting a layered wall** is not reliable yet.
 - **A wall boxed in on every side by other walls** can't be clicked. On the Duplex that is the 7-layer party-wall core,
-  which touches its neighbours on four sides and is covered from above. Pick it from the Outliner instead.
+  which touches its neighbours on four sides and is covered from above.
 
 ![Cut — a signed opening void subtracted from the wall](img/modeller/cut-open.png)
 
