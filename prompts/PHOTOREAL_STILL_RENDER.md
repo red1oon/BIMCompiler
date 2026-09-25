@@ -896,6 +896,17 @@ a `daylight` source (G/10000 x hemi-up, analytic) and reports tone-mapped median
 indoor irradiance (watchdog: carry colour). Target (zero list): café median 0.55-0.70; Clinic/Terminal wash <= Hospital's;
 GUARD 0/0/0; link time within +10% (probe_link_time.js). No per-building values, no hand tuning (R and the dial default are
 the only constants, both stated).
+WATCHDOG GATE (red1-c6, 2026-09-25): OPEN with 3 changes, overriding the text above:
+G1 TARGET: "café median 0.55-0.70" is NOT a FAIL criterion (it came from the old-lighting reference; red1 now holds the
+   darker v1337 atrium as realistic; forcing a band = hand tuning). Gate on physics sanity instead: per-zone DF in BRE ranges
+   (LG10 bands logged); a roof-glazed atrium/café zone should land >= 2%; any zone > 10%, or a glazed zone at 0%, is
+   FAIL-to-explain; plus Clinic/Terminal wash <= Hospital's, GUARD 0/0/0, link <= +10%. Report the café median next to the
+   old 0.636 as information only. red1 judges the look.
+G2 DIRECTION: log `§SOURCED_DAYLIGHT_DIR` = area-weighted mean source direction per zone. Dev decision: LOG ONLY in this
+   build (a directional weight max(0,N.dir)k + (1-k) needs a k with no cited value = hand tuning); the RGBA16UI octahedral
+   direction is a follow-up item once a sourced k exists.
+G3 BLOCKED PORTAL: when a blocked portal's pane counts in the DF (portaledKept), its portal light is dropped (intensity 0,
+   pad kept so the light count does not change) and logged `droppedBlockedPortals=`.
 
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
