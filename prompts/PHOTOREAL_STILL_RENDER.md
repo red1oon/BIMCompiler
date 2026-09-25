@@ -1002,6 +1002,40 @@ with |dF| > 0.25, reported as count and metres of edge (pixel footprint); plus t
 same-zone cells with |dF| > 0.5). Poses: Terminal canteen + waiting hall (red1's PNG poses), Hospital café, Clinic corridor.
 Regressions: zone_glare, shadow_lines, wash (metered), link <= +10%, GUARD 0/0/0.
 
+**§SKY_VIEW_FIELD — SPEC (2026-09-25, dev red1-5a; watchdog red1-c6 OPEN option (a)). SUPERSEDES the §SOURCED_DAYLIGHT
+v2 per-cell DF (ADF) and §SKY_FRACTION's max(skyView, DF): ONE camera-independent sky-view field. Alt+S only for now;
+the field is camera-free by design (ALTC_FOUNDATION F1/F4 can reuse it).**
+WHY: 522b3eac FAILED (watchdog): ADF is a room formula (Littlefair, BRE Digest 310, sidelit rooms); on open-sided zones and
+small glass boxes it gave DFmedian 14-33% over lit zones and DFmax 125.6% (> 100% is impossible), and the meter hid it
+(exposure 2-3.5x down). The BRE SKY COMPONENT per cell is bounded by definition and needs no room-validity test.
+1. FIELD F(c) per covered cell (open-to-sky cells = 1): F = sum_d w_d v_d(c) / sum_d w_d over a direction set d, with
+   v_d(c) = 1 at an open-to-sky cell, v_d(next) through an empty cell, T_pane x v_d(next) through a GLASS cell (glass
+   rasterised into its own per-cell bit at build; T_pane = 1 - opacity of its glazing material), 0 at any other solid.
+   Computed by one dynamic sweep per direction (top layer first, like today's skySweep), cached per building.
+2. DIRECTIONS (condition 1): down to <= 10 deg elevation (the 24-lattice has none below 19.5 deg, so deep rooms behind side
+   windows fell off too fast). Lattice dy = +1 with |dx|,|dz| up to 6 (min elevation ~6.7 deg diagonal, 9.5 deg axial),
+   subsampled as the cost allows; log `dirs= minElevDeg=`. Cost cap: first press per building <= +3 s on Hospital
+   (§STILL_STAGE_MS).
+3. SKY MODEL (condition 2): the CIE standard overcast sky (CIE S 011/E:2003, sky type 1; the sky the daylight factor is
+   defined under): luminance L(gamma) proportional to (1 + 2 sin gamma), gamma = elevation; weight w_d = cos(zenith angle)
+   x (1 + 2 sin gamma) x the direction's solid angle. The hemi's GROUND term is scaled by the same F (an opening admits the
+   ground view as it admits the sky view, to first order); the externally reflected component (BRE ERC) is NOT modelled
+   beyond that and is logged as such.
+4. STORAGE + SHADER: G channel (RG16UI, F x 10000), read with the §SKY_FRACTION irradiance-volume trilinear filter once per
+   fragment (8 fetches, same-zone/open cells only, renormalised); zone fragments' hemi + ambient + IBL (irradiance and
+   radiance) are scaled by F_filtered. SKY_BIT stays for binding/audit only; the separate DF add is removed.
+5. PORTALS RETIRED when the field is on (&portals=1 keeps them for A/B): sky through glass is now F; the sun through glass is
+   the real sun. Removes the portal stage (3.4-3.8 s) and 8 shadow maps from the texture budget (logged).
+6. DIRECTION recorded, not used (condition 3): per zone the F-weighted mean unoccluded direction ("bent normal", Landis,
+   "Production-ready global illumination", SIGGRAPH 2002 course) in the stats/log only — the G2 follow-up.
+7. GLASS T (condition 4): one number per glazing material, T = 1 - opacity, logged per material; item D (§GLASS_VEIL) must
+   make the visible pane transmit the same T.
+8. ADF kept ONLY as a logged cross-check per enclosed glazed zone (mean F x 100 vs ADF), not used.
+GATE (condition 5): m2-weighted F distribution over all lit zones, enclosed rooms reported separately (median 1-10%,
+against the ADF cross-check); max F <= 1 asserted; exposure before/after per pose (> 2x drop FAILs unless explained per
+source); SKY_STEP = 0 on red1's Terminal canteen [-20.06,-16.13,-1.00] and waiting hall [0.45,-12.80,11.90] poses;
+§GLARE black counts unchanged; link <= +10%; first-press cost in §STILL_STAGE_MS (<= +3 s Hospital); GUARD 0/0/0.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
