@@ -9,6 +9,33 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
+## ⛨ §WATCHDOG RESUME 2026-09-25 (for the WATCHDOG session only; the dev reads §RESUME LATE below)
+You are the WATCHDOG (previous: red1-4b). You do not write viewer code. You gate every dev spec/step from pushed code + full
+console-captured § logs, do ALL visual comparison yourself (red1's stills in ~/Downloads vs the baseline), relay red1's asks,
+decide technical keep/park/order calls (red1: "full confidence"), and prove merges live. Dev session now: `red1-5a`
+(ListAgents; it may be renewed — re-find it). red1 wants the dev to use Fable subagents for hard foundational pieces.
+**Baseline (yours only, never give it to the dev as a target):** ~/Downloads/PerfectIndoor.png (Hospital atrium from a balcony,
+old lighting, 2776x1440): 8-bit mean 124, p5 55, p95 203, ≥235 2.0%, saturation 21.2, mean RGB [115,129,128]. NOT
+BestHospitalIndoor.png. Latest v1337 indoor (bounce_still_1790304025519): mean 90, sat 13.3, RGB [84,91,95] = darker, flatter, colder.
+**localhost:8600** = /tmp/wt-sourced-live detached at b35d5cf9 (feat/sourced-light, v1337). Watchdog smoke: 0 Shader Error /
+0 Context Lost. KNOWN on it: (1) shaded EXTERIOR surfaces pure black (open-sky cells labelled indoor: 29,332 cells, zones 13/1);
+(2) interiors dark/cold (missing per-zone daylight + roof glazing); (3) jagged/blocky sun-shadow edges + base gap. red1's
+workaround for exteriors: &sourced=0. First Alt+S of a session is slow (~46 s link + ~2 min bounce build) — expected.
+**In flight (verify with git/ps, not this note):** Fable agent in /tmp/wt-zone-sky (feat/zone-open-sky, :8614): OPEN-TO-SKY
+= outside, COVERED = indoor, openings → per-zone daylight apertures; witness: shaded open-sky samples with hemi=0 → 0, Terminal
+hall zone ≠ 0 (~174 m² aperture), crossWall 0. red1-5a in /tmp/wt-shadow-edge (feat/still-shadow-edge, :8615): shadow depth
+near/far fitted to light-space depth extent (lesson from nav Shadow mode: its 609 m range vs Alt+S 19,748 m), bias = 1 fitted
+texel, normalBias (R+1) texels, R 1.5; plus aerial wall-edge mismatch rate (ray vs lookup) and why the aerial box is 530x285 m
+for a 102x137 footprint; near cascade (Fable) only if needed. Targets: predictedBaseGap < 0.05 m at 45° and 20°, acne 0,
+thin-caster count reported.
+**Then:** §SOURCED_DAYLIGHT (spec 481d42c43) → §WASH_FRACTION re-measure (café tone-mapped median target 0.55-0.70, ref
+0.636; Clinic/Terminal WASH ≤ Hospital's; Terminal through-glass < shaded facade) → your comparison vs the baseline → speed
+(CAP 2.3 s→<200 ms, frame ms, Alt+S session cache) → parity/films → one PR at lane end, prove live.
+**Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
+**Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
+must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
+floorShareBySource probe was invalid; never trust a dev claim without reading the diff/log.
+
 ## ▶▶▶▶▶▶▶ §RESUME 2026-09-25 LATE — START HERE (dev hand-off #2; written by the watchdog red1-4b)
 Supersedes the §RESUME 2026-09-25 block below (still valid as background). Roles: you are the DEV session; watchdog =
 `red1-4b` (SendMessage): recap to it, it gates every step from pushed code + full § logs. red1 does ALL visual judging live on
