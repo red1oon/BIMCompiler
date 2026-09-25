@@ -928,6 +928,15 @@ D5 A source with T*A*theta = 0 (theta 0) is not a BFS source. Side-aperture thet
 D6 DFmedian / DFmax / bands over the LIT zones (DF > 0); zones= counts all. Per press also `§SOURCED_DAYLIGHT_CAM` (the
    camera zone: DF, source m2 by kind vertGlass/roofGlass/apUp/apSide, surfaceM2, D_z, band) and `over10=` / `glazedZero=`
    lists (FAIL-to-explain, G1). Films (A._maxqActive): SourcedLight.stage does not run, so there is NO film path (G = 0).
+D7 A_z = surfaceM2 + apertureM2 (after run 1 on 746662af). BRE's A is the total area of the room's surfaces INCLUDING
+   its windows; glass is SOLID so panes are already in surfaceM2, open apertures (faces to open-sky cells) were not (a zone
+   with open sides divided its aperture light by its solid surface only: Terminal hall 10.12%). over10 logged split into
+   all-sky-lit zones (G never written there) and receiving zones with their glazing ratio (vert+roof glass m2 / A_z).
+FINDING run 1 (8618 = 0a9950a3 AND 8621): `§METER camera=inside VACUOUS no lit surface pixels — exposure unchanged 0.383`
+   on every indoor pose (café, Clinic corridor, Terminal hall/hall_floor) — the meter reads nothing on the base tree, so the
+   tone-mapped medians are unmetered in both arms (café 0.008 before). Pre-existing, not in this lane: reported, not fixed.
+   Hospital carries NO roof glazing: up-facing glassy area = 15.3 m2 IfcPlate + 28.3 m2 in BatchedMesh (pane top edges),
+   0 tiles >= 0.5 m2 (probe_roofglass.js) — the "atrium roof glass" premise does not hold for this model; café = zone 1.
 
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
