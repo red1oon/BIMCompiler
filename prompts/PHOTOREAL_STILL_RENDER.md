@@ -217,7 +217,23 @@ clinic_entrance = 8 m outside the exterior double door M_Double-Flush 1830 x 213
 on the Exterior Slab on Grade in front of it, for red1's Clinic canopy still. witness_sourced_crosswall.js prints
 crossWall=N (VACUOUS = FAIL); witness_wash_sources.js prints black_direct_samples=N (direct samples no source reaches at
 all). Default fleet list drops LTU_AHouse (its v1337 zone build returns null; on request) and runs the aerial pose on the
-three reference buildings only, to keep a full run near 15 min. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
+three reference buildings only, to keep a full run near 15 min.
+WATCHDOG DECISION (red1: "ray-test runs waste time"; supersedes the pose walk as the gate): the three counts are CPU facts
+of the zone grid, computed by LightZones.audit(grid, rule, cellSky) at build time and logged in the §LIGHT_ZONE line +
+a `§GLARE bld= PASS|FAIL black_exterior= junction_zone_flip= covered_open_side_black=` line, no render, no pose walk:
+black_exterior = faces between a SOLID cell and an OPEN-TO-SKY cell whose fragment lookup at the face centre (normal
+toward the open cell) withholds sky; junction_zone_flip = for every empty cell E with a solid below (floor) and a solid
+side neighbour W (wall / column / partition base), the lookup at the floor point INSIDE W's column 0.2 m from E, 0.05 m
+above W's bottom, normal up, is not E's zone + sky class; covered_open_side_black = covered cells that see the sky
+sideways (the 24-direction sweep, no dilation) whose cell class withholds sky. witness_zone_glare.js (Hospital, Clinic,
+Terminal; ~80 s for all three) builds the tree's grid (AFTER) and injects the 3395ae42 builder as LightZonesOld to audit
+the BEFORE grid from the same scene with the old rule (atSurface: 0 / off-grid = sky, zone > 0 or solid = no sky); the
+GPU readback (witness_zone_open_sky.js) stays a one-off cross-check. RESULT (2026-09-25, WIP 30924ff0, sw v1338):
+BEFORE Hospital FAIL 26800 / 5087 / 42305, Clinic FAIL 10438 / 2251 / 4761, Terminal FAIL 8837 / 2252 / 488513;
+AFTER Hospital PASS 0 / 0 / 0, Clinic PASS 0 / 0 / 0, Terminal PASS 0 / 0 / 0 (exteriorFaces 146293 / 60295 / 44228,
+junctionTested 193225 / 43616 / 63181, rayLitCoveredCells 240291 / 3905 / 466309). Zones 964 -> 1117 (Hospital),
+434 -> 456 (Clinic), 203 -> 156 (Terminal); apertureM2 6875 / 325 / 5185; build ms 2184 / 404 / 1462 (skyMs 1580 /
+283 / 784, auditMs 1469 / 272 / 659) vs 1536 / 324 / 1160 before. GUARD PASS. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
 (tone-mapped median/p95/wash per pose) before/after. The off-grid = unknown bug in witness_wash_sources.js:77 and the
 crosswall witness's CPU column (a -1 raw value is OUTSIDE 65534, not unknown) is fixed in the same commit.
 **§PORTAL_SHADOW_BIAS — SPEC (2026-09-25, dev red1-5a; watchdog red1-c6 order (1) after 3883eebe PASS). Alt+S only
