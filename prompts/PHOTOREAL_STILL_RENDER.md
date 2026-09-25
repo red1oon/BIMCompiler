@@ -1197,8 +1197,9 @@ often misaligned, prime suspect for item C (Clinic entrance shaft/blobs by day).
 CALL SITES (source): both are staged at ONE place, startStillRefine (effects.js ~6117-6119: `_glowOff(); _glowOn(exit
 filter); _glowLensOn();`). Films call startStillRefine every baked frame (cinema_maxq.js:4005), so the same switch covers
 Alt+C (Alt+S-truth rule). Nav stages neither (§GLOW_SPRITE_NAV_OFF; A._glowStage has no caller outside effects.js).
-1. Default OFF there; &glowlens=1 / APP._stillGlowLens=true and &glowsprite=1 / APP._stillGlowSprite=true bring each back
-   for A/B. No code deleted until red1 has looked. Log `§GLOW_LAYERS lens=on|off sprite=on|off (A/B flags)` per press.
+1. CORRECTION (red1: "I mean remove completely"): DELETE both, code and all, from every path (Alt+S, films, nav, teardown/
+   §R17, the vacuous-log tables, the bloom threshold note). No flags, no A/B. Grep proof in the commit: 0 references left.
+   bbox_x/bbox_y/rotation_z are MODEL data and stay (the K-lamp emissive shapes use them).
 2. COUNT FIRST: `§FIXTURE_EMISSIVE lamps=N withMesh=M withoutMesh=K byClass={}` per press — a lamp (fixture world
    position, A._nightFixtureWorldPositions) "withMesh" when its element's own drawn mesh/instance (guid -> object via
    A.guidMap) has a material with emissive > 0 at the staged still. K listed per building (Hospital/Clinic/Terminal). If
