@@ -58,6 +58,14 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   near split) + texelPerPixel <= 2 (cascades; watchdog ruling 2026-09-25, pixel-based) · black_exterior 0 · junction_zone_flip 0 · canopy (covered_open_side_black, fixed
   predicate) 0 · §SKY_PORTAL_BLOCKED explained/0 · Terminal ceiling-fixture AO halo count 0 · §SOURCED_DAYLIGHT per-zone DF in
   BRE-plausible bands (café median REPORTED vs old 0.636, not a fail band: baseline replaced, no hand tuning) · GUARD 0/0/0. Then red1's look on 8600 -> one PR -> live.
+**red1's look test of 8619 (e61c116b), Hospital, 2026-09-25 14:01-14:05, 6 stills (pose in each PNG; watchdog notes):**
+  GOOD: atrium stair from balcony (…099886, mean 94 ≈ baseline 92, stair-tower shadow now soft); ground-floor stair
+  (…152626, mean 80, soft clean shadows); aerial courtyard (…292291) + close roof aerial (…353319): shaded facades grey,
+  no black exteriors. BAD: small interior room (…225589, cam [9.9,-7.7,0.1]) 98% black; toilet (…255696, cam
+  [8.3,-8.6,-3.6]) 57% black — only the lamp-facing side lit, the rest pure black (no bounce/base light reaches it).
+  => new zero-list item BLACK_INTERIOR: zones with NO source (no lamp, portal, daylight DF, sky) and lit zones whose
+  surfaces get ~0 — count zones/m2 from the grid; red1 principle 3 (cove base light for rooms with no window/fixture) is
+  the spec'd answer. Held until red1 finishes testing Clinic/Terminal.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
