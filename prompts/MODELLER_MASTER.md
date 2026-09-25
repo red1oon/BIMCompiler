@@ -132,7 +132,15 @@ bim-compiler `deploy/dev/walker_guards.js`, 0 hits in bim-ootb's `disc_walker.js
   from an MEP-bearing Terminal, which is the wrong test for an ARC-only strategy, and W-MEP-ROUTE-RENDER already covers
   that render seam, 12/12.
 
-**The productivity claim needs its own number.** "More productive than normal work" is so far a thesis, not a
+**§PRODUCTIVITY — measured 2026-09-25 (one "Walk ALL Services", W-MEP-OPENPATH ALL):** generated / flagged for review
+(an unresolved clash, ≤1 edit each): SampleHouse 60/0 · Duplex 206/29 (15.7%) · SampleCastle 514/9 (1.8%) · HHS 3,415/0 ·
+Clinic 5,140/0 · Hospital 39,979/22 (0.1%) · HospitalGarage 13,965/0 · Terminal 7,854/60 (1.4%). This is "little left to fix", NOT
+"X times faster": there is no measured hand-modelling baseline. ⚠ The first run read 0 flagged EVERYWHERE. That was a gate
+defect, not a result: the clash gate's global yield floor let FP's foundation-level sprinklers drag it to -1.257 m, and 20 Duplex
+fixtures were "resolved" by sinking them ~1 m underground. Fixed as §GATE-STOREY-FLOOR (bim-ootb, W-GATE-STOREY-FLOOR: sunk 30/9/60 → 0).
+Lesson: a "zero problems" measurement gets an instrument check against the app's own per-step log before it is believed.
+
+The productivity claim needs its own number (original note below). "More productive than normal work" is so far a thesis, not a
 measurement. Once L1-L5 hold, record per resident: fixtures + runs generated vs user edits needed to reach a network
 the gate accepts. Until then, do not state it as a result.
 
