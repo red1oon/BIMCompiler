@@ -220,6 +220,16 @@ all). Default fleet list drops LTU_AHouse (its v1337 zone build returns null; on
 three reference buildings only, to keep a full run near 15 min. Plus witness_sourced_crosswall.js (crossWall must stay 0) and witness_wash_sources.js
 (tone-mapped median/p95/wash per pose) before/after. The off-grid = unknown bug in witness_wash_sources.js:77 and the
 crosswall witness's CPU column (a -1 raw value is OUTSIDE 65534, not unknown) is fixed in the same commit.
+**§PORTAL_SHADOW_BIAS — SPEC (2026-09-25, dev red1-5a; watchdog red1-c6 order (1) after 3883eebe PASS). Alt+S only
+(`!A._maxqActive`); films keep -0.0005 / 0.** The 8 shadowed sky portals (sky_portal.js) are SpotLights: perspective shadow
+camera near 0.1 / far 40 m, map 512, cone half-angle 70 deg, bias -0.0005 (NDC depth), normalBias 0. Ray grid (café, v1337
+before arm): 916 portal acne samples (walls 632, floors 204). Same rule as §STILL_SHADOW_EDGE: the texel of a perspective
+map grows with distance, texel(d) = 2 d tan(angle) / mapSize; the still is seen from ONE camera, so each portal takes
+d_ref = its distance to the camera (clamped 1..40 m) and normalBias = (R + 1.5) x texel(d_ref). Depth bias = -1/65536
+(the 16-bit format step, as the sun's range/65536); its world size at d is d^2 (f - n) / (f n) / 65536, logged as the gap
+at d_ref. Log per still: `§PORTAL_SHADOW_BIAS shadowed= dRef[] texel[] normalBias[] gapAtDref[] (was bias -0.0005 = world
+gapAtDref[])`. Gate: that line + the café portal acne count from one press (witness_still_shadow_edge POSES=cafe SUNS=45).
+
 **red1's rulings this lane (don't re-litigate):** only real sources light surfaces; no light through walls/floors (only
 glass/openings); no exposure/brightness knob, no lamp-count caps, no per-building values; bounce is paramount; mid-film
 lamps OFF only for the freeze, discipline reveal, or full-ARC-hidden (§INTERIOR_LIGHTS_BOUNDARY today is far wider — narrow
