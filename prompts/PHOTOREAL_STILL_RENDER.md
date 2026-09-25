@@ -10,6 +10,19 @@
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
 ## ⛨ §WATCHDOG RESUME 2026-09-25 (for the WATCHDOG session only; the dev reads §RESUME LATE below)
+**WATCHDOG STATE at suspend (red1-c6, 2026-09-25 evening) — read this first, then the rest of this block.**
+Gated PASS (on bim-ootb branches, NOT on 8600, NOT merged): shadow edge 3883eebe · portal bias 2980872b/3edd28a8 · zone open sky
+b4cb61c1 · cascades 0a9950a3 + meter-exists fix c56769bf (= feat/sourced-light-int remote) · lamp zone pick (FLYIN_DARK)
+3df3e1bf (8622). FAIL: per-zone ADF daylight 522b3eac (DF > 100%) → replaced by §SKY_VIEW_FIELD (OPEN, option a: portals
+retired; conditions: low elevations, CIE overcast, bent normal logged, one glass T, IRC OFF by default). In build: sky field
+(/tmp/wt-daylight, 8621), glow layers DELETE (/tmp/wt-noglow, 8623). Specs OPEN, not built: §COVE_LIGHT (all compartments,
+deficit vs EN 12464-1, voids 100 lx watchdog decision), §GLASS_VEIL (premultiplied, T+Fresnel only), §METER_HIST (70/95
+from Unreal docs; red1 A/B of avg/centre/hist at café-corner + stair poses before any default change), ENTRANCE_GLOW (may
+close with the glow deletion). red1 served tree for looks: 8619 = e61c116b (frozen); 8622 = lamp pick. 8600 unchanged
+(b35d5cf9 v1337). References: see the baseline lines below + 'outside looking in' …319885328 + fly-in series.
+Alt+C: parked until the zero list; plan prompts/ALTC_FOUNDATION.md + ALTC_SHOWSTOPPERS.md; rules: Alt+S = lighting truth
+(BUILD cached + DECIDE per frame), films steady exposure by default, ramp opt-in last, continuity not identity.
+
 You are the WATCHDOG (previous: red1-c6, before it red1-4b). You do not write viewer code. You gate every dev spec/step from pushed code + full
 console-captured § logs, do ALL visual comparison yourself (red1's stills in ~/Downloads vs the baseline), relay red1's asks,
 decide technical keep/park/order calls (red1: "full confidence"), and prove merges live. Dev session now: `red1-5a`
