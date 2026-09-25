@@ -451,6 +451,28 @@ feat/film-parity @eb3a41c1).**
   `§LIGHT_ZONE cells= solid= zones= outsideCells= largestZoneM3= lampsBound=/ portalsBound=/ ms=` per building, and
   the café floor sample names lamps from the upper storeys around the atrium as own-zone.
 
+**§SOURCED_DAYLIGHT — BUILD SPEC for gate items (b)+(c) (2026-09-25, dev session; watchdog: "the café reads as MISSING
+PHYSICS" — 92% portal-lit at 1.3% of outdoor, and sky_portal.js drops |n.y|>0.7 so the atrium roof glazing gives nothing).**
+- Per zone z: DF_z = T * Ag_z * theta_z / (A_z * (1 - R^2)) in percent (BRE average daylight factor; Littlefair, BRE Digest
+  309/310; CIBSE LG10: DF < 2% "not adequately lit", > 5% "well lit").
+  T = the pane's transmittance, 1 - material opacity (glass drawn at opacity 0.3 -> 0.7); stated, per pane.
+  Ag_z = glazing m2 of every pane whose inward cell (centre + 0.3 m inward; skylights: 0.3 m BELOW) is in zone z — ALL panes
+  (collectPanes), including |n.y| > 0.7 roof glazing, EXCEPT panes that carry a placed portal spot this still (no double
+  count: the portal already delivers that pane's sky light, shadowed, near the camera).
+  theta_z (deg, per pane, area-weighted): vertical pane = 90 x (sky fraction of its 5 outward side rays, §SKY_PORTAL_SIDE);
+  roof pane = 180 x (sky fraction of its up rays). BRE's definition: angle of visible sky from the window centre.
+  A_z = total zone surface = boundary faces between zone cells and solid cells x CELL^2 (from the voxel grid).
+  R = 0.5, BRE's typical area-weighted reflectance for a light-coloured room (stated constant, logged).
+- Indoor daylight irradiance at a cell = DF_z/100 x E_skyH x f(d)/mean_z(f), E_skyH = the hemi's up-facing irradiance
+  (the sky, not the sun: DF is an overcast-sky ratio); f(d) = 1/(1+(d/D_z)^2), d = BFS distance through zone cells to
+  the nearest glazed cell, D_z = area-weighted pane-centre height above the zone floor (logged). Normalised by the
+  zone mean so the zone average stays exactly DF (BRE's is an average).
+- Storage: the zone texture becomes RG16UI (R = zone, G = daylight fraction x 10000); the fragment reads both in the one
+  per-fragment lookup (§SOURCED_LIGHT_LINK zone-once); shader adds  G/10000 x skyColour x hemiIntensity  to the indirect
+  irradiance of zone fragments. No new sampler (texture-unit budget unchanged). Rebuilt per still (portals are per still).
+- Log `§SOURCED_DAYLIGHT zones= glazedZones= panes= (skylights= portaled=) T= R= DFmedian= DFmax= topZones=[id:DF%:Ag:A]
+  ms=`; witness: §WASH_SOURCES gains a `daylight` source; the café/atrium zone's DF and the re-measured medians.
+
 **✅ SHIPPED (was HOTFIX FIRST) — #1764 live v1294 (watcher, 2026-09-24 ~18:40; LIVE since #1763 / sw v1293):** Alt+S on a
 `&ghost=1` URL renders GHOST BOXES, not the model. red1's v1293 console (OCI Hospital + &ghost=1): §STILL_LOCK on →
 §STILL_ROOMS lazily loads navigate_find + NEEDLE (rooms recompiled 1,053 ms) → `[MG] §SHELL_GHOST_AUTO meshCacheKeys=20609
