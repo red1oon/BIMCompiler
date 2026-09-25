@@ -207,7 +207,16 @@ median 78 mm, up to 425 mm. **Three consumers found:**
 2. **Row 7's heavy session** — now has what it lacked: it must decide WHETHER it chases 0.0939 m (what
    ships) or 0.1039 m (the honest number). Starting without that decision is how it stalls again.
 3. **Row 6** — Terminal serves 0 MEP on the real open path.
-4. **Datums 802 → 657** (SampleCastle, from #1744). Still unverified as a *correction* rather than a new
+4. ✅ **CLOSED 2026-09-25 — CORRECTIONS, 0 box-caused artifacts** (802 → 657 → 643). Method: independent
+   re-derivation of the datum definition (cross_edges.js deriveDatumsAnchored: ≥3 faces within 50 mm, greedy window),
+   instrument-checked (reproduces 802/657/643 exactly from the shipped boxes; live mesh boxes == current boxes within
+   1.2 µm on 3,225/3,225), then each datum tested on the LIVE render (≥3 supports within 50 mm of its plane):
+   OLD 802 → **138 not real**; #1744's 657 → 5 not real (all its tilted-guard boxes); current **643 → 0 not real**, 2 unclear
+   (held only by aggregate ghost rows, no mesh), 3 real alignments not emitted because the greedy window cuts them (a
+   property of the definition, identical in the Python oracle — a spec note for red1, not a defect). #1744 also lost 6
+   real planes and made 1 spurious one through the rx/ry guard; #1762 restored/removed all 7. 76 count changes are
+   re-clusterings (plane kept, merged with a neighbour ≤ 97 mm). Row 7 stays un-linked. Evidence: session scratch
+   probe_datums.js + analyze_run2-4.log (two runs, identical). The original line read: Datums 802 → 657 (SampleCastle, from #1744). Still unverified as a *correction* rather than a new
    artifact. ⚠ It does NOT bear on row 7 — I claimed it did and that is retracted (#118).
 5. Rows 8 · 9 · 11 · 13 · 14 · 22 · 25. **Row 14's cited example does not reproduce** — re-source it or
    its witness is green on arrival.
