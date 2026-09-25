@@ -132,7 +132,15 @@ bim-compiler `deploy/dev/walker_guards.js`, 0 hits in bim-ootb's `disc_walker.js
   from an MEP-bearing Terminal, which is the wrong test for an ARC-only strategy, and W-MEP-ROUTE-RENDER already covers
   that render seam, 12/12.
 
-**The productivity claim needs its own number.** "More productive than normal work" is so far a thesis, not a
+**§PRODUCTIVITY — measured 2026-09-25 (one "Walk ALL Services", W-MEP-OPENPATH ALL):** generated / flagged for review
+(an unresolved clash, ≤1 edit each): SampleHouse 60/0 · Duplex 206/29 (15.7%) · SampleCastle 514/9 (1.8%) · HHS 3,415/0 ·
+Clinic 5,140/0 · Hospital 39,979/22 (0.1%) · HospitalGarage 13,965/0 · Terminal 7,854/60 (1.4%). This is "little left to fix", NOT
+"X times faster": there is no measured hand-modelling baseline. ⚠ The first run read 0 flagged EVERYWHERE. That was a gate
+defect, not a result: the clash gate's global yield floor let FP's foundation-level sprinklers drag it to -1.257 m, and 20 Duplex
+fixtures were "resolved" by sinking them ~1 m underground. Fixed as §GATE-STOREY-FLOOR (bim-ootb, W-GATE-STOREY-FLOOR: sunk 30/9/60 → 0).
+Lesson: a "zero problems" measurement gets an instrument check against the app's own per-step log before it is believed.
+
+The productivity claim needs its own number (original note below). "More productive than normal work" is so far a thesis, not a
 measurement. Once L1-L5 hold, record per resident: fixtures + runs generated vs user edits needed to reach a network
 the gate accepts. Until then, do not state it as a result.
 
@@ -207,7 +215,16 @@ median 78 mm, up to 425 mm. **Three consumers found:**
 2. **Row 7's heavy session** — now has what it lacked: it must decide WHETHER it chases 0.0939 m (what
    ships) or 0.1039 m (the honest number). Starting without that decision is how it stalls again.
 3. **Row 6** — Terminal serves 0 MEP on the real open path.
-4. **Datums 802 → 657** (SampleCastle, from #1744). Still unverified as a *correction* rather than a new
+4. ✅ **CLOSED 2026-09-25 — CORRECTIONS, 0 box-caused artifacts** (802 → 657 → 643). Method: independent
+   re-derivation of the datum definition (cross_edges.js deriveDatumsAnchored: ≥3 faces within 50 mm, greedy window),
+   instrument-checked (reproduces 802/657/643 exactly from the shipped boxes; live mesh boxes == current boxes within
+   1.2 µm on 3,225/3,225), then each datum tested on the LIVE render (≥3 supports within 50 mm of its plane):
+   OLD 802 → **138 not real**; #1744's 657 → 5 not real (all its tilted-guard boxes); current **643 → 0 not real**, 2 unclear
+   (held only by aggregate ghost rows, no mesh), 3 real alignments not emitted because the greedy window cuts them (a
+   property of the definition, identical in the Python oracle — a spec note for red1, not a defect). #1744 also lost 6
+   real planes and made 1 spurious one through the rx/ry guard; #1762 restored/removed all 7. 76 count changes are
+   re-clusterings (plane kept, merged with a neighbour ≤ 97 mm). Row 7 stays un-linked. Evidence: session scratch
+   probe_datums.js + analyze_run2-4.log (two runs, identical). The original line read: Datums 802 → 657 (SampleCastle, from #1744). Still unverified as a *correction* rather than a new
    artifact. ⚠ It does NOT bear on row 7 — I claimed it did and that is retracted (#118).
 5. Rows 8 · 9 · 11 · 13 · 14 · 22 · 25. **Row 14's cited example does not reproduce** — re-source it or
    its witness is green on arrival.
