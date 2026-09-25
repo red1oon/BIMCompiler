@@ -32,6 +32,13 @@ Alt+C: parked until the zero list; plan prompts/ALTC_FOUNDATION.md + ALTC_SHOWST
   glass = item C cause confirmed. K lamps without an emissive mesh = 14/98/28, ALL synthetic no-guid lamps: check they are
   fabricated staging lights (red1 rule: only real sources) — if so, remove them rather than give them shapes. Two old
   witnesses test deleted code: retire them.
+(3) red1's look on the watchdog's combined tree (bim-ootb local branch look/combined-0925 9991dcee = 59e0b22d + 92b36bdb +
+  3df3e1bf, /tmp/wt-look, :8624; flyin gate 5/5 PASS, cap 160 with portals retired, GUARD 0), 5 Hospital stills
+  …331480796-…331589447: aerial fine; interiors no black (≤1.2%). CORRECTION: the soft dark blotches on the stair-tower
+  wall and under the stair (…331509591, …331544049) PERSIST with portals retired, so they are NOT portal shadows (my
+  earlier read was wrong). Suspects: N8AO screen-space AO at large radius, or far-cascade sun shadow blur. Next: log the
+  AO term vs the sun-shadow term at points on that wall (one press, the §CAMDEP_SURFACE point set) — same probe also
+  answers the Terminal ceiling halos (AO) item. Minor: slight green cast (g−r +2..+5) on 8622/8624 interiors.
 
 You are the WATCHDOG (previous: red1-c6, before it red1-4b). You do not write viewer code. You gate every dev spec/step from pushed code + full
 console-captured § logs, do ALL visual comparison yourself (red1's stills in ~/Downloads vs the baseline), relay red1's asks,
