@@ -7,6 +7,13 @@
 #   @5c48105a, sw v1351) and bim-compiler prompts/PHOTOREAL_STILL_RENDER.md @7613fa219 ("the record").
 #   "not measured" means exactly that. Honour this block until the lane is DONE.
 
+**ARCHITECTURE RULE (red1 2026-09-25): "make Alt+S the source of truth in managing such lighting so that Alt+C merely
+inherits."** Every lighting decision (lamp pick, sky field, sun fit, glass, meter, cove) lives in ONE Alt+S function of
+(camera, sun, time, visible geometry) with no still-only state; Alt+C calls the same functions per frame and adds ONLY
+continuity (fades/hysteresis on picks, per-shot exposure hold, stable shadow boxes). No new look logic behind
+`!A._maxqActive`; a film-only branch may exist only for smoothing, named as such. Gate: every Alt+S look commit lists
+the functions it adds/changes and confirms the film path calls them (or names the smoothing it still needs).
+
 ## 0. How to read this
 - "Alt+S" = one press of the still: `_applyPhotoStaging` (effects.js:3966-4411) runs ONCE, then the
   TAA/AO fold (16 + 24 composer renders, effects.js:4711-4712) and the 8-pass bounce (gi_still.js:58, 662-711).

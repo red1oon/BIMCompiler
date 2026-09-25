@@ -101,6 +101,12 @@ Alt+C (prompts/ALTC_FOUNDATION.md) waits, no parallel build. ZERO = every count 
   changes." (mean 87, p5 35, p95 157, 0% black). Rule: seen from outside, interiors stay at outdoor exposure (no lift);
   exposure changes on entering (Alt+S: camera inside/outside meter; Alt+C: the F3 crossing ramp). The glass-veil fix must
   keep this view's look.
+**ARCHITECTURE RULE (red1 2026-09-25): "make Alt+S the source of truth in managing such lighting so that Alt+C merely
+inherits."** Every lighting decision (lamp pick, sky field, sun fit, glass, meter, cove) lives in ONE Alt+S function of
+(camera, sun, time, visible geometry) with no still-only state; Alt+C calls the same functions per frame and adds ONLY
+continuity (fades/hysteresis on picks, per-shot exposure hold, stable shadow boxes). No new look logic behind
+`!A._maxqActive`; a film-only branch may exist only for smoothing, named as such. Gate: every Alt+S look commit lists
+the functions it adds/changes and confirms the film path calls them (or names the smoothing it still needs).
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
