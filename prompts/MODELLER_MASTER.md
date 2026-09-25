@@ -11,7 +11,38 @@ study deeply how to make the Modeller work", and "all the objectives of the Mode
 i have no time to sight, i rely on a good vibe coder to do so."
 ```
 
-## ▶ §RESUME 2026-09-26 — START HERE. Then read §STRATEGY 2026-09-24 (the thesis + lanes) and §RESUME 2026-09-21
+## ▶ §RESUME 2026-09-26b — START HERE (session 2, same day). Then §RESUME 2026-09-26 below, then §STRATEGY 2026-09-24.
+## Every number was measured on the combined branch bim-ootb `feat/modeller-next-0926`. Specs: `prompts/Modeller/NEXT_0926/`.
+
+**NEXT #1-#5 DONE; #6 handed over.** One combined bim-ootb branch (row 7 + #2/#3 + #4 + #5).
+| item | result (base → fix) | spec |
+|---|---|---|
+| Row 7 grid | red1 picked **0.1039 (true centres)**, then **"on the beams"** (median line fit). The bridge reads true mesh centres via `CrossEdges.readBoxes` (#1744's reader, not re-derived) and re-inits after the geo fetch (§STRWALK-GEO — without it the fix never fires on split residents). Terminal: facade gridlines on the beam lines (0 mm, were 107/161 mm off), 131/158 columns exact (was 92), grid 18×10 and membership unchanged, skeleton column z fixed (63 off, max 3.944 m). Headline RMS 0.0939 → **0.1323**: it now measures only by-design facade eccentricity; **no estimator lowers it without minting fake lines** (measured). Wall-bearing semi-grid unchanged (mean). | SPEC_ROW7.md |
+| #2 re-route signed | 1 m Duplex move: 0 new signed rows → keep 16 / new 5 / retire 6, bend fittings re-derived (3 kept / 2 new / 2 retired); one Ctrl+Z / Ctrl+Y, no new rows. `bonsai_oplog.undo/redo` skip rows a re-route owns (`_treeOwned`). W-MEP-REROUTE 5/3 → 9/0 | SPEC_MEP_SIGN.md |
+| #3 sign all | `DW_CHAIN_COMMIT_CAP` 60 → Infinity. The old "1.6-2 s per sweep" was the per-sweep-commit era. Terminal PLB 60 → 2,915 signed, walk 16.5 → 24.0 s. **Hospital 60 → 19,331, PLB walk 69.6 → 123.2 s, +19k solids — kept (every step signed), red1 may re-cap big buildings.** | SPEC_MEP_SIGN.md |
+| #4 ACMV/ELEC/FP | `_RW_PATTERN_DISC` covers all four; 10 sourced rows added to `mep_rw.db` ad_mep_pattern (FP_TERMINAL_01 ×4, ACMV_TERMINAL_01 ×3 from SJTII_Terminal; ELEC_DUPLEX_01 ×3 from Ifc2x3_Duplex); products FP_Drop_Pipe 21.3 mm · Terminal_Rect_Duct_150x150 · Duplex_EMT_Conduit_29. Combined: Terminal runs signed **4,345/4,345** (PLB 2,915 + FP + ACMV). Engine-measured zeros kept as EXPECTED 0 gates (SampleCastle FP/ACMV, ELEC on Duplex/Terminal). | SPEC_MEP_ROUTE_DISC.md |
+| #5 NNCHAIN | N4/N6 retargeted to the routePattern bridge's identity (rule/kinds/product/path) and id-targeted setUndone. 6/2 → 8/0. Test-only. | SPEC_NNCHAIN.md |
+| #6 viewer routewalker | **Handed over to the Viewer lane, not taken**: `viewer/routewalker.js` has the same vertical-post clash box at 3 sites that §RW-RUNBOX (L2) fixed in `modeller/routewalker.js`. | — |
+
+**§PRODUCTIVITY now (one Walk ALL Services, combined branch):** Duplex 221 generated (185 fixtures + 33 runs signed + 3 fittings) / 29 flagged · SampleCastle 525 / 9 · Terminal 9,284 (4,342 + 4,345 signed + 597) / 60.
+
+**Combined-branch witnesses:** W-ROW7-TRUE-CENTRE 6/0 · W-ROW7-GRID-BASELINE 5/0 (pinned to the mean fit it recorded) · W-E2E-ROW7-GEO-REINIT 6/0 · W-MEP-REROUTE 9/0 · W-WALK-GESTURE 4/0 · W-ROUTER-NNCHAIN 8/0 · W-MEP-OPENPATH 33/0 (M5-M7 per discipline, M8 all-signed). STR/grid: STR-REWALK-COMMIT 9/0 · GRIDMOVE-REAL 8/0 · STR-INTO-ARC 11/0 · STRWALK-SMOKE 9/0 (row 7 branch).
+
+**QUESTIONS FOR red1 (data calls, nothing blocked):**
+- Q1 FP METER on an ARC-only resident = the seed door (same proxy CW uses). OK, or name a better proxy?
+- Q2 ACMV product: keep the measured mode 150×150 (a branch size) or a mains size (300×200, 2nd most common)?
+- Q3 ACMV has no plant→main step (no AHU modelled in Terminal). Accept mains + drops only?
+- Q4 ELEC: no real source wires a branch to a fixture. Accept mains only, or authorise an AUTHORED JUNCTION→FIXTURE step?
+- Q5 Hospital signing cost (+54 s PLB walk, +19k solids): keep, or cap big buildings?
+
+**NEXT, ranked:** 1. Retarget W-ROUTE-PATTERN-BRIDGE (6/4 red since #846; still asserts ELEC/ACMV refuse — they route now) · 2. Carry the 10 new pattern rows into bim-compiler `IFCtoERP.java seedMepPatterns` so a re-extract keeps them · 3. HospitalGarage grid (140 columns off-lattice: 15×102, colRMS 1.20 m — the 1D axis clustering doesn't describe it; its own row) · 4. Older undo edge: undo a whole walk, new edit, Ctrl+Z/Ctrl+Y can resurrect one walk row (predates this session) · 5. then the older rows from §RESUME 2026-09-26.
+
+**NEW TRAPS:**
+- **sql.js: two `new SQL.Database(sameBuffer)` share storage** — a DROP on one showed in the other (measured). Always pass a fresh `new Uint8Array(fs.readFileSync(...))` per db in node witnesses.
+- **Signing everything makes walks commit later.** W-WALK-GESTURE went 1/3 once under load, snapshotting before the walk's history node existed. Wait on `__dwRowsByDisc[disc].walk` + `ModellerHistory.pending()`, not `__dwWalks`.
+- **A Terminal-scale commit blocks the page > 180 s** — puppeteer `protocolTimeout` 900 s in W-MEP-OPENPATH, or a finished walk reads as walked=false.
+
+## ▶ §RESUME 2026-09-26 — (superseded as entry point by 2026-09-26b above). Then read §STRATEGY 2026-09-24 (the thesis + lanes) and §RESUME 2026-09-21
 ## (method rules + traps). Written at session close; every number was measured on merged main.
 
 **WHERE IT STANDS.** The generate-then-edit loop runs end to end on the real Open path. A bare ARC building → "Walk ALL
