@@ -9,7 +9,8 @@
 #   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
 #   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
 
-## ⛨ §WATCHDOG RESUME 2026-09-25 (for the WATCHDOG session only; the dev reads §RESUME LATE below)
+## ⛨ §WATCHDOG RESUME 2026-09-25 — RETIRED 2026-09-26 (history only). red1: no watchdog from now; one combined
+## session works the cycle in §WORKING MODE below (its RULINGS + REFERENCES + LESSONS absorb this block).
 **WATCHDOG STATE at suspend (red1-c6, 2026-09-25 evening) — read this first, then the rest of this block.**
 Gated PASS (on bim-ootb branches, NOT on 8600, NOT merged): shadow edge 3883eebe · portal bias 2980872b/3edd28a8 · zone open sky
 b4cb61c1 · cascades 0a9950a3 + meter-exists fix c56769bf (= feat/sourced-light-int remote) · lamp zone pick (FLYIN_DARK)
@@ -193,6 +194,30 @@ LESSONS LEARNED (2026-09-25/26):
   fabricated — remove or ask); no brightness/exposure knobs; no invented values (cite a source or ask red1); the Alt+S look
   is the source of truth and films inherit it.
 - Keep specs short and write them before code, but for small fixes a one-paragraph note in the commit is enough now.
+
+RULINGS IN FORCE (combined from the retired watchdog red1-c6, 2026-09-25/26; don't re-litigate):
+- PHOTO PROPS: REMOVE COMPLETELY (red1 2026-09-26, on the watchdog's recommendation): effects.js _buildPhotoProps ~686-760 —
+  facade up/downlights, sconces, _photoSparkles, and any other fabricated staging light — code and all, every path, like the
+  glow layers (deleted 92b36bdb). Night facade lighting later only from real model fixtures. Closes the Clinic 'warm orbs'.
+- Only real sources; no brightness/exposure knobs; no invented values (cite or ask red1). Glow quads/sprites: deleted.
+- Alt+S = lighting source of truth; every lighting function = BUILD (per building, cached) + DECIDE (per camera/frame,
+  ray-free, ms); films call the same functions and add only continuity. Alt+C waits until the Alt+S zero list is met
+  (plan: prompts/ALTC_FOUNDATION.md + ALTC_SHOWSTOPPERS.md): films steady exposure by default (per shot, held), crossing
+  ramp opt-in last; camera-dependent light OK in films if it changes smoothly frame to frame.
+- Sky: §SKY_VIEW_FIELD (portals retired, &portals=1 A/B) + IRC ON with MAX(IRC, SSGI) per fragment (never a sum).
+- Dark places: ceiling-perimeter cove in ALL compartments (rooms, voids, shafts, MEP crevices), deficit vs EN 12464-1 by
+  space use; voids TRIM_LUX_VOID = 100 lx (EN circulation row, via summaries; primary not consulted).
+- Lamps: pick by the zones they light (done); LAMP_UNCAPPED next (the cap = the tower blotches, CAP_LIMITED).
+- Glass: T + Fresnel reflection only, premultiplied (out = refl + dst·t_s·(1−F)), √T per surface, every glassy material
+  incl. Clinic's; from outside by day interiors stay darker (real) — no interior lift.
+- Meter: red1 picks avg / centre / hist(70/95, Unreal docs) at the café-corner + stair poses before any default change.
+REFERENCES red1 approved (no regression allowed; files in ~/Downloads, pose in each PNG): Hospital atrium from balcony
+  bounce_still_1790307025522 (baseline, mean 92, 'darker is realistic'); Clinic corridor 1790352156838 ('perfect');
+  Hospital outside-looking-in 1790319885328; Clinic look 1790304784259; Terminal indoor 1790306684370 ('amazing').
+LESSONS from the watchdog side: read the FULL log before believing a summary (the ADF distribution, the meter VACUOUS);
+  spot-check a claim's file:line in source; red1's eye found almost every fault — so the in-viewer §FAULT line must grow a
+  counter for each eye-found class; never hand red1 a tree without the 1-minute smoke; answer red1 in plain short English,
+  lead with the verdict; a still's camera pose + host are in its PNG — use them, never guess.
 
 ## ▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 (dev red1-5a; context low -> new session) — START HERE
 LOOP NOW: see §WORKING MODE above (no watchdog). NO new witnesses/A-B/gate runs. Build a fix -> merge into ONE look tree /tmp/wt-look
