@@ -1131,6 +1131,11 @@ the range 70 .. 80"; auto_exposure_high_percent "... good values are in the rang
 default. (A search summary claims UE5 changed the defaults to 10 / 90; not verified from a primary page — 403 on the 5.0
 doc page — so NOT used.) Open for the watchdog: which values inside the quoted ranges (or the verified engine-source
 defaults if someone can cite Scene.h), stated once.
+WATCHDOG RULING (red1-c6, 2026-09-25): hist = 70 / 95 — the widest band the quoted Unreal pages endorse (low "70 .. 80",
+high "80 .. 95"; no engine-source default could be verified by either session). Stated plainly: it is HIGHLIGHT-WEIGHTED and
+will likely read DARKER than avg — the opposite of red1's "too dark" — so red1 sees it next to the others. The A/B for red1:
+café corner + stair, three cited modes: avg (Reinhard log-average, today), centre (Nikon C-W, built), hist 70/95; one line
+per press (exposure, stops, metered band). red1 picks; no default change without that.
 GATE (logged state only): at red1's two poses both modes; log per press `§METER_HIST low%= high%= bandEin= bandPixels=
 allLogAvg= exposure= stops=`; the stops difference between the two poses must be explained by the two bands' own Ein
 (log both); plus exposure per pose (café / Clinic corridor / Terminal hall) in avg vs hist. Default flips only after red1
