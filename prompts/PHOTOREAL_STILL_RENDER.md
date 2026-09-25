@@ -28,7 +28,7 @@ fix/sl-gl-link 75dd41e5): slFragZone once per fragment — the per-light inlined
 (exit 133) → LINK-false storm → Context Lost = red1's red bar. Link total 129.8 s → 46.4 s (old shaders 28.9 s), max 1.7 s.
 
 **NEXT, in order:**
-1. GL-fix acceptance matrix on the merged branch: pose (default exterior + café) × db (local + OCI Hospital) × ANGLE
+1. ✅ DONE (watchdog, 2026-09-25): matrix 8/8 on merged b35d5cf9 + agent 10/10; 8600 now serves /tmp/wt-sourced-live detached at b35d5cf9 (v1337), watchdog smoke 0/0/0. Original text: GL-fix acceptance matrix on the merged branch: pose (default exterior + café) × db (local + OCI Hospital) × ANGLE
    (gl-egl + vulkan): 0 Shader Error, 0 Context Lost, §SOURCED_LIGHT_GLERR clean, feature ON. Log §SOURCED_LIGHT_LINK
    totalMs/maxMs. Then 8600 (sw bump) → message the watchdog (it tells red1 what to look at).
 2. §SOURCED_DAYLIGHT (spec 481d42c43): per-zone BRE daylight factor over ALL panes incl. ROOF glazing (sky_portal drops
