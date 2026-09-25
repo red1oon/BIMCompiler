@@ -187,6 +187,12 @@ shot boundary. Within a shot the camera moves and the exposure does not — a re
 Cost: 0 per frame; one meter render per shot.
 Witness: `§FILM_EXPOSURE f= shot= exposure= stops= source=fixed|meter` per frame; a script asserts 0 changes inside
 any shot and lists the values at boundaries. Seconds.
+**red1 ruling (2026-09-25): camera-dependent light is ACCEPTABLE in a film if it flows — "consistency in frame to frame
+changes".** So the film criterion is CONTINUITY, not camera-independence: every light term per fixed surface point
+(§CAMDEP_SURFACE sample sets) may change with the camera, but by at most a stated per-frame step (fades over F frames,
+F1 hysteresis; exposure per F3). Witness: max per-frame change per term per point <= 1/F of its range; 0 one-frame jumps.
+For stills §CAMDEP_SURFACE stays a REPORT (which terms depend on the camera), not a FAIL.
+
 **Watchdog add (2026-09-25, red1: "during alt-c lighting may fluctuate while in scene"):** confirmed risk: today's
 Alt+S meter swings 1.16 stops between two poses in the SAME zone (§STILL_CAMDEP: café corner 18.2 vs stair 8.2, same
 lamps), so a per-frame meter would pulse. Rule stands: never per frame. One case per-shot freezing does not cover: a
