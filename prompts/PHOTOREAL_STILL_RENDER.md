@@ -1229,6 +1229,22 @@ WATCHDOG GATE (red1-c6): OPEN with one change, overriding 1 and 3: QUALIFY BY DA
    (EN - existing, >= 0), 0 where the room already meets EN. The source-less room is the case existing = 0. Log per zone:
    existingE, enRow, coveE, qualified yes/no. The Clinic ceiling gaps stay GEOMETRY_DARK (plenum) and are named plainly in the
    recap for red1 to judge by eye after the cove lands; no fix without their word.
+RED1 AMENDMENT (2026-09-25, via red1-c6): "there are crevices where MEP goes through, so ALL compartments must have trim
+   lighting" (a BIM viewer: MEP in ceiling voids, shafts and crevices must be readable). Overrides the headroom exclusion:
+   a. EVERY covered zone qualifies (rooms, plenums/voids, shafts, crevices), same mechanism (perimeter emitters along the
+      zone's ceiling edges, texture term, zero new program keys) and the same DEFICIT rule vs the zone's level.
+   b. ZONE TYPE (logged per zone: type, count, cove E): room = walkable floor with >= 2.0 m headroom; void = headroom < 2.0 m
+      and footprint aspect (long/short side) < 4; crevice = headroom < 2.0 m and aspect >= 4 (a slot); shaft = vertical
+      extent > 2 x its largest horizontal side.
+   c. LEVEL for non-room compartments — no invented lux: EN 12464-1 has no row for ceiling voids or crevices. Nearest rows
+      found only in SECONDARY summaries (primary standard not accessible here): "circulation areas and corridors 100 lx";
+      "plant rooms, switch gear rooms" given as 150 lx (BS EN 12464-1:2002 summaries) or 200 lx (other summaries) — sources
+      disagree. So: UNVERIFIED; proposal = the circulation row, 100 lx, for void/crevice/shaft; shown to red1 before it is
+      used (the build ships the value as a logged constant behind that decision).
+   d. THIN ZONES: a zone under 2 cells (1.0 m) tall gets ONE emitter line along its long axis centred at mid-height (not two
+      edges); a shaft gets emitter lines at the top perimeter only, as a room.
+   GATE adds: red1's Clinic ceiling-gap pose [0.617,3.56,-19.198] reads BLACK_INTERIOR 0 (the gaps are no longer
+   GEOMETRY_DARK); one Hospital plenum pose with MEP visible (picked and logged) reads 0 black on MEP surfaces.
 2. PLACEMENT (BUILD): ceiling-edge cells = zone cells with SOLID directly above AND SOLID on a horizontal side; emitters
    every 0.5 m (one cell) along that perimeter, per wall run. Logged per zone: perimeterM, emitters.
 3. LEVEL, cited: the emitters' total output is set so the zone's mean working-plane illuminance (0.8 m) equals the EN 12464-1
