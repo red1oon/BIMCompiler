@@ -38,6 +38,10 @@ thin-caster count reported.
 nav viewer colour — materials are identical in nav and Alt+S (§ALBEDO_SRGB off by default; triplanar only multiplies);
 nav's flat fill (ambient 0.386 + hemi 0.617, scene.js) is the likely wash, UNPROVEN: side-by-side same pose first, then a
 cheap zone-aware indoor fill / nearest lamps as a look change for red1.
+**Witness duty (red1 2026-09-25):** the dev does no A/B visual checks (red1 + watchdog do). Witnesses must flag GLARING errors
+before red1 sees them: each prints a FAIL count per known class (black_exterior, junction_zone_flip, covered_open_side_black,
+acne, gap outside EDGE), target 0, run FAILs if > 0. A glaring error that reaches red1 past a green witness = the witness
+is wrong: fix the witness first, then the code. Watchdog gates on those lines.
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
