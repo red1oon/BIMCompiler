@@ -187,6 +187,14 @@ shot boundary. Within a shot the camera moves and the exposure does not — a re
 Cost: 0 per frame; one meter render per shot.
 Witness: `§FILM_EXPOSURE f= shot= exposure= stops= source=fixed|meter` per frame; a script asserts 0 changes inside
 any shot and lists the values at boundaries. Seconds.
+**Watchdog add (2026-09-25, red1: "during alt-c lighting may fluctuate while in scene"):** confirmed risk: today's
+Alt+S meter swings 1.16 stops between two poses in the SAME zone (§STILL_CAMDEP: café corner 18.2 vs stair 8.2, same
+lamps), so a per-frame meter would pulse. Rule stands: never per frame. One case per-shot freezing does not cover: a
+CONTINUOUS shot that crosses outside<->inside (flythrough through a door): frozen = indoor near-black or outdoor blown.
+For those shots only (detected from the plan: camera zone changes 0 <-> indoor inside one shot), a time-limited ramp
+between the two frozen meter values, rate quoted from a cited source (engine eye-adaptation speed in f-stops/s from its
+docs, or a published human adaptation figure), logged `§FILM_EXPOSURE ... source=ramp`. Witness: max |d stops/d frame|
+<= the cited rate / fps, 0 changes inside non-crossing shots. Metering MODE is whatever red1 picks for Alt+S (§METER_HIST A/B).
 
 ### F4. Bounce — MRQ sub-samples per frame now (Unreal Movie Render Queue: spatial sub-samples, warm-up); DDGI probes (Majercik et al., JCGT 2019) as the next step, not this one
 What the film has: one SSGI pass per frame (gi_still.js:887, :931), no temporal history. So there is nothing to
