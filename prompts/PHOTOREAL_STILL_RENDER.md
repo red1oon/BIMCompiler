@@ -332,6 +332,13 @@ D6 m: fixed per session = 4 unless every gate pose meets C5 + the cascade-0 targ
 D7 C2 LINK TIME: the witness (LINK=1) sums wall ms of compileShader + linkProgram + getProgramParameter(LINK_STATUS) +
    getShaderParameter over one Hospital default press with Chrome's program cache and the NVIDIA disk cache off,
    &shadowcascade=0 vs on.
+D8 NEVER COARSER THAN THE SINGLE MAP (first after-arm run, 2026-09-25): at 4 x 4096 the Hospital default exterior (nearest
+   visible surface 179 m away, ground across the whole 593 m-wide slice) gave cascade texels [0.108, 0.143, 0.140, 0.135] m
+   against the single 8192 map's 0.085 m — every visible surface coarser. Rule: the cascades are used only when every used
+   cascade's texel <= the single map's texel at its §SHADOW_SIZE_BY_ENVELOPE size (same 512 MB); otherwise the still keeps
+   the single map (sun map back to that size, the §STILL_SHADOW_EDGE fit re-applied), uCsm off, the cascade lights stay in
+   the scene unrendered (program unchanged, C1), logged `mode=single(reason)` with the cascade numbers it declined.
+   m = 4: m = 3 does not meet more poses (aerial cascade-0 texel 0.0328 vs 0.0207 at m = 4; café both meet).
 GATE, from one Alt+S press per pose (witness_still_shadow_lines.js extended; no ray grid): `§STILL_SHADOW_CASCADE m= splits=
 [m] texel=[m per cascade] normalBias=[..] thinCasterRisk=[..] memMB= ms=` + the per-cascade §STILL_SHADOW_EDGE numbers,
 Hospital default exterior / aerial / café + Terminal hall_floor; FAIL if cascade-0 texel > 0.0167 m or any gap45/20 >= 0.05 m;
