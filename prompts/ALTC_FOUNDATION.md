@@ -194,6 +194,12 @@ F1 hysteresis; exposure per F3). Witness: max per-frame change per term per poin
 red1 added: "as in cinematic film, lighting changes to give a balance to the scene to scene movement" = per-SHOT balance
 is intended (a cinematographer rebalances each setup): the meter (red1's chosen mode) sets each shot's balance, changes
 land at cuts or as smooth ramps inside a shot, never as jumps. Automatic from cited metering; still no hand dial (rule 5).
+**red1 ruling (2026-09-25): "the steady static control is acceptable; the more dramatic path, that risk must be
+weighed."** Watchdog decision: F3 DEFAULT = steady (exposure fixed per film, or per shot from the meter, held; changes only
+at cuts). The crossing ramp is an OPT-IN flag (--exposure-ramp), OFF by default, built LAST in the film lane, and only
+after the crossing-path witness passes. Risks weighed: a ramp is one more moving term (pulsing if the meter's inputs jump),
+needs a cited rate, and interacts with lamp fades + bounce; steady has one known cost: a shot that walks in from outside
+stays at the outside look until the next cut (accepted by red1).
 **Crossing-shot test path (red1 2026-09-25, both poses approved):** outside looking in (…1790319885328, cam
 [-5.529,-0.544,-42.321]) -> entering the café (…1790320117679, cam [-7.990,-7.785,-24.269]), same target [4.014,-6.761,2.325].
 red1: "will it evolve smoothly frame to frame". Witness on that path (e.g. 120 frames): per-frame §FILM_EXPOSURE + the
