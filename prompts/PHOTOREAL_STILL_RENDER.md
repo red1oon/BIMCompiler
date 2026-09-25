@@ -1158,7 +1158,9 @@ lamp behind the camera lights the wall in front). Candidates = every lamp bound 
 zones visible in frame (zone ids of the existing 12x7 §SOURCED_LIGHT_CAP readback: zone -> share of frame hits), ordered
 camera zone first, then by the zone's share of the frame, within a zone by distance to the camera. Cap = the uniform
 budget as today (until ALTC F1 makes lamps zone data with no cap). The frustum test and the zone-blind top-up are removed
-from the Alt+S path (nav keeps its own).
+from the Alt+S path (nav keeps its own). ARCHITECTURE (red1, Alt+S = source of truth): the pick is ONE function
+(camera, visible zones) called by the still AND per frame by films (it replaces tools.js:1947-2012 for both); the film adds
+only continuity (a lamp entering/leaving the kept set fades over §LAMP_CAP_FADE_M-equivalent frames, no 0<->full step).
 LOG per press: `§LAMP_ZONE_PICK camZone= zoneLamps= kept= perZone=[z:kept/available] dropped= (= §LAMP_CAP_DROPPED)`.
 GATE (logged state, one run): red1's 5 fly-in poses in one session: zone-1 left-wall points at 0 lamp light = 0 at every
 pose; camera-zone lamps kept = min(cap, zone lamps) at every pose; exposure change pose 4 -> 5 reported (was +1.77 stops);
