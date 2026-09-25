@@ -108,6 +108,10 @@ inherits."** Every lighting decision (lamp pick, sky field, sun fit, glass, mete
 continuity (fades/hysteresis on picks, per-shot exposure hold, stable shadow boxes). No new look logic behind
 `!A._maxqActive`; a film-only branch may exist only for smoothing, named as such. Gate: every Alt+S look commit lists
 the functions it adds/changes and confirms the film path calls them (or names the smoothing it still needs).
+**red1's 8622 series (lamp-zone-pick 3df3e1bf + cascades + meter fix), 7 Hospital stills …329927399-…330146959:**
+  all 76-94 mean, black ≤ 1.4%; the fly-in end pose (…330146959, cam [-9.26,-12.30,12.16], near the old dark pose 5) is lit
+  (was mean 40 / 39% black) — FLYIN_DARK confirmed by eye. Stair-tower wall (…329927399) carries a soft blurred shadow of
+  the flights/railings: plausible sun shadow, not a defect. Lower atrium levels dark (awaits the sky field).
 **Hi-res:** feat/still-res served on :8603 (/tmp/wt-stillres, old tree) for red1: &stillres=1440p works (2776x1440), 4k cap bug.
 **Recurring traps:** 8600 must serve a clean committed tree (check `git status` of the SERVED worktree via `ps`); witnesses
 must console-capture "Shader Error"/"Context Lost"; the exterior default pose + OCI URL is what red1 uses; the dev's
