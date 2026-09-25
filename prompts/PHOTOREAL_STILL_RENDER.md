@@ -1046,6 +1046,45 @@ its EN value (says whether lamps are under-scaled — a calibration bug — or t
 poses (atrium stair [-10.95,-2.91,5.42], inner room [9.95,-7.70,0.10], toilet [8.34,-8.65,-3.58]) + café / Clinic corridor
 / Terminal hall. Plus the METER: exposure picked and stops vs the outdoor base on every indoor press (a real camera indoors
 sits several stops above outdoors; if ours does not, that is a finding, not a knob). Red1 rule 5 stands: no exposure knob.
+BUILD DECISIONS (agent on feat/sourced-daylight from 522b3eac, 2026-09-25; written before the code):
+V1 DIRECTIONS: zenith + the 24 lattice dirs (|dx|,|dz| <= 2) + axial and diagonal dirs at max(|dx|,|dz|) = 4 and 6 (16) =
+   41 dirs, minElev = atan(1/(6 sqrt 2)) = 6.7 deg (axial 9.5). The outer rings are sparse (cost). WEIGHTS (spec item 3,
+   exact on the partition): the plane y = 1 square |x|,|z| <= 6 (the set's footprint) is sampled on a 0.05 grid; each sample
+   is assigned to the angularly nearest direction and adds cos(zenith) x (1 + 2 sin(elev)) x dOmega (dOmega = dA / r^3 on the
+   plane); w_d = its sum, normalised to sum 1 (elevations below the square's edge are outside the set; logged).
+V2 SWEEP: per direction, top layer first, over the covered + glass cells only; v(c) = transmittance of the cells the
+   centre-to-centre segment crosses (mids, as skySweep: empty 1, glass T, other solid 0) x v(c + d), a glass cell x its own
+   T; a target off the grid's x/z edge or above its top = sky (1). Timed in `§SKY_VIEW_FIELD ... ms=`, cached per building.
+V3 GLASS CELL: a boundary cell hit only by triangles of glassy materials (sky_portal's test: transparent, opacity < 0.95, no
+   map, not Basic) — any opaque triangle in the cell makes it opaque; T = min over its glassy materials of 1 - opacity. A
+   glass cell stays SOLID for zones / open-to-sky (unchanged topology). BatchedMesh: its one material decides.
+V4 G = round(F x 10000) in every non-solid cell (open = 10000); solid 0. Uploaded once per building (camera-free).
+V5 SHADER: the §SKY_FRACTION filter (8 fetches around wp + 0.5 cell x eye-facing normal, trilinear, cells kept when not SOLID
+   and (same zone as the fragment or open), renormalised; none kept -> the picked cell's G). Zone fragments: hemi (sky +
+   ground), ambient, IBL irradiance + radiance x F_filtered; outside x 1; unknown (-1) x indoorSky as today. SKY_BIT no
+   longer gates light when the field is on. &skyfield=0 = the old binary SKY_BIT path + portals (A/B).
+V6 PORTALS retired when the field is on (Alt+S only): budget portalCap 0 / shadowed 0, stage logs `§SKY_PORTAL off
+   retired=1`; &portals=1 keeps them. Films untouched (field off when A._maxqActive: no film path).
+V7 ADF cross-check: LightZones.daylight without BFS/G (no portal exclusion: portals retired); per ENCLOSED glazed zone
+   (apertureM2 0, glazing > 0): mean working-plane F x 100 vs ADF, logged `§SKY_VIEW_ADF_CHECK`.
+V8 DISTRIBUTION: per lit zone the mean F over its WORKING-PLANE cells (0.8 m above a floor: the cell floor(0.8/CELL) layers
+   above a zone cell with SOLID below, same zone), weighted by the zone's floor m2; p10/p50/p90/max, all lit zones and
+   enclosed zones separately; max F over every covered cell asserted <= 1.
+V9 LUX: luxPerUnit = CALIB_SUN_LUX / calibSunI (the §SOURCED_LIGHT_CALIB scale: the scene sun = 100,000 lx). E_skyH =
+   lum(hemi) x intensity + lum(ambient) x intensity (both are sky fills scaled by F in the shader) x luxPerUnit. E_sky =
+   F_wp x E_skyH. E_lamps = the zone-bound point lamps (sourcedZone = z, intensity > 0, camera fill excluded) at <= 64
+   working-plane cells (fixed stride), I x lum(colour) x three's getDistanceAttenuation x cos(up), unoccluded (an upper
+   bound inside the zone), x luxPerUnit. EN 12464-1 values QUOTED from the CEN enquiry draft prEN 12464-1 (July 2019, will
+   supersede EN 12464-1:2011; https://www.valosto.com/tiedostot/prEN%2012464-1.pdf, Em,r column) — the 2021 final text
+   is not verified, so every row is tagged `prEN2019`: 6.1.1 Corridors and circulation 100 · 6.1.2 Stairs, escalators 100 ·
+   6.2.1 Canteens and break areas 200 · 6.2.4 Cloakroom, washrooms, bathrooms, ... toilet areas 200 · 6.26.2 Writing,
+   typing, reading, data processing 500 · 6.28.1 Entrance halls 100 (places of public assembly; education 6.36.16 and
+   railway 6.53.7 give 200) · 6.28.3 Lounges 200 · 6.37.1 Waiting rooms (health care) 200 · 6.38.1 Staff office 500 ·
+   6.3.1 Plant rooms, switch gear rooms 200. Atrium: no row -> "unverified". Space names: elements_meta IfcSpace +
+   element_transforms (A.ifc2three) or spatial_structure; a zone takes the use of most of its mapped spaces; none ->
+   "unknown". Hospital has no IfcSpace rows, Terminal's are "Aras NN RN" (unmappable): both "unknown".
+V10 SKY_STEP witness targets: the camera looks along the longest free horizontal ray at eye height (32 azimuths, the
+   zone grid's first SOLID cell), target = camera + that ray x its free length ("along the room", rule not eye).
 
 **§GLASS_VEIL — SPEC (2026-09-25, dev red1-5a; watchdog item D; builds on §SKY_VIEW_FIELD's per-material T). Alt+S
 only (`!A._maxqActive`), films later (parity list).**
