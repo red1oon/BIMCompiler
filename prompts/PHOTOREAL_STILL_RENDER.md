@@ -302,6 +302,11 @@ NEXT (red1 11:22, before suspend):
    habitable 200 default = 6.37.1); per room box, 3 passes, cap p90, unassigned -> median; Clinic achieved E/EN p50 0.88,
    lamps were ~7x over EN. §LUX_CHECK fixed (read point lights -> lamp-blind since §LAMP_UNCAPPED). Clinic IFC has 269 named
    IfcSpace (CORRIDOR 40, TOILET, WAITING, OFFICE...) dropped by extraction -> carry over later; Hospital/Terminal IFC have 0.
+1a. WARM PROBE (use it instead of fresh-browser runs): viewer/tests/warm_probe.js on the look tree — `node viewer/tests/warm_probe.js
+   8699 &` then curl -g 'localhost:8699/open?port=8624&db=Hospital&q=%26ghost%3D1', /alts?cam=[..]&tgt=[..]&gi=0|1, POST /eval.
+   Hospital: load 38.6 s once, first press 103 s, then 4.9 s (gi=0) / 8-17 s (gi=1). /open reload=1 after a code change.
+   First catch: Hospital has only 8 injected rooms -> §LAMP_EN is effectively one building-wide scale 0.142 (1270/1274 lamps
+   unassigned); Hospital indoor ref composite 72.3 -> 56.1 (meter 9.76 -> 21.1). Awaiting red1's eye.
 1b. Corner blotches (item 1) — Fable §GROUND_VIEW_SUN step 1: hypothesis WRONG, nothing built. 55% of the black is an OPEN 0.5 m
    slot between two "Roof Soffit: Metal Panel - 50mm" layers (0yBDUVxBfEAwIEA5xi7UcV above, 3j5XRUDAL1bfmNQ9$z3SDQ below) at
    "Exterior - Metal Panel" wall 2kX3tz5gv6bv4UYUPS1hhW, x 10.2-14.5 y 4.5-4.8 z 9.7: no fascia modelled; mesh sky view ~0.09,
