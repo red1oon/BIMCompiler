@@ -307,6 +307,12 @@ NEXT (red1 11:22, before suspend):
    Hospital: load 38.6 s once, first press 103 s, then 4.9 s (gi=0) / 8-17 s (gi=1). /open reload=1 after a code change.
    First catch: Hospital has only 8 injected rooms -> §LAMP_EN is effectively one building-wide scale 0.142 (1270/1274 lamps
    unassigned); Hospital indoor ref composite 72.3 -> 56.1 (meter 9.76 -> 21.1). Awaiting red1's eye.
+1c. SHIPPED 2026-09-26 PM (look @ 3a29e730, sw v1445): 90f82d95 §LAMP_EN_ZONE (Hospital lamps in no room -> per light zone,
+   402 zones at 1.00x EN); 508664ac §SPACE_USES (Clinic lamps by REAL IfcSpace use via GUID containment in the Electrical IFC —
+   821 lamps, office 500 / corridor 100 / waiting-toilet-plant 200; sidecar buildings/space_uses/Clinic.json, script
+   viewer/tests/extract_space_uses.py); 3a29e730 §METER_ADAPT (red1: "dynamic lever derived from such data"): meter exposure
+   = base x ratio^-D, D = CIECAM02 degree of adaptation from the metered lux (corridor 168 lx D 0.843 -> composite 78, approved
+   was 77.7; Hospital indoor 351 lx D 0.862 -> 116). &adapt=stevens = old fixed 0.33. Snapshots sent to red1 for the look call.
 1b. Corner blotches (item 1) — Fable §GROUND_VIEW_SUN step 1: hypothesis WRONG, nothing built. 55% of the black is an OPEN 0.5 m
    slot between two "Roof Soffit: Metal Panel - 50mm" layers (0yBDUVxBfEAwIEA5xi7UcV above, 3j5XRUDAL1bfmNQ9$z3SDQ below) at
    "Exterior - Metal Panel" wall 2kX3tz5gv6bv4UYUPS1hhW, x 10.2-14.5 y 4.5-4.8 z 9.7: no fascia modelled; mesh sky view ~0.09,
