@@ -313,6 +313,16 @@ NEXT (red1 11:22, before suspend):
    viewer/tests/extract_space_uses.py); 3a29e730 §METER_ADAPT (red1: "dynamic lever derived from such data"): meter exposure
    = base x ratio^-D, D = CIECAM02 degree of adaptation from the metered lux (corridor 168 lx D 0.843 -> composite 78, approved
    was 77.7; Hospital indoor 351 lx D 0.862 -> 116). &adapt=stevens = old fixed 0.33. Snapshots sent to red1 for the look call.
+1d. SHIPPED (look @ d0125d74, sw v1448): 933e2a8b §GLASS_ENV (per-still cube capture of the staged scene as the glass clones'
+   envMap; Clinic outside glass mean 4.8 -> 36.2, near-black 63/81 -> 33/81, 189 ms); d0125d74 §COVE_LIGHT (Fable): every dark
+   compartment gets a ceiling-perimeter cove sized to its deficit (rooms EN row / TRIM_LUX_VOID 100 lx), own RGBA8UI texture
+   (deviation from spec 4, stated), visible 0xffe4b5 strip mesh (+1 program); Hospital 382 zones qualified, inner room black px
+   45,980 -> ~1,050, plenum 74% -> 7.7% (remaining = floor-facing undersides, bounce's job); lit refs unchanged (cove 0).
+   Open: Clinic ceiling-gap + Hospital toilet defect poses do not reproduce (0 black before) — INCONCLUSIVE; Terminal 2 shafts
+   >15 m below top-only emitters stay dark. WARM PROBE LANDMINE: after editing a file WITHOUT bumping CACHE_VERSION the SW
+   precache serves the stale file — clear SW + caches (scratchpad/cove/swclear.js) before /open reload=1, or bump sw per test.
+   ALT+C next (red1 asked "way paved?"): order = F0 gate hygiene + F8/F7 instruments -> lamp data for films -> per-shot meter
+   freeze -> gi_film max(IR) -> 5 s check clips -> S3 4D build-up (hardest). Films are gated out of ALL of today's work.
 1b. Corner blotches (item 1) — Fable §GROUND_VIEW_SUN step 1: hypothesis WRONG, nothing built. 55% of the black is an OPEN 0.5 m
    slot between two "Roof Soffit: Metal Panel - 50mm" layers (0yBDUVxBfEAwIEA5xi7UcV above, 3j5XRUDAL1bfmNQ9$z3SDQ below) at
    "Exterior - Metal Panel" wall 2kX3tz5gv6bv4UYUPS1hhW, x 10.2-14.5 y 4.5-4.8 z 9.7: no fascia modelled; mesh sky view ~0.09,
