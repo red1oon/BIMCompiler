@@ -581,3 +581,27 @@ base-vs-fix numbers. Method that worked: probe the app's own state numerically b
 | W-E2E-ROW7-GEO-REINIT R4 | env | `Terminal_arcstr_proof.db` is gitignored, only in the main checkout → correct INCONCLUSIVE in a worktree | — |
 | disc_density D3/D4, walkall_terminal_scale T5 | VACUOUS | `[].every()` / `envChecked===0` passed on nothing; guards added. **NOT RUN yet** | — |
 **⛔ OPEN before any PR:** a post-fix 3-parallel run (loadavg ~38 vs ~31 at baseline) went red on CUT C4, CUT-LAYERS L6, SKETCH K5b (PIXEL-AS-PROOF framebuffer sums) and GRIDMOVE-ROOF R6 — all green at baseline. Re-run these serially on the branch vs main to separate a harness regression (the flySettle yield) from load. Then run the 51 node witnesses + the 46 direct-puppeteer ones (not yet touched).
+
+### §MODELLER-NET-AUDIT — RESULT batch 2 (2026-09-27, PAUSED — suspend). bim-ootb branch `test/modeller-net-audit`, pushed, **still NO PR**.
+**Batch-1 open item CLOSED:** CUT C4 / CUT-LAYERS L6 / SKETCH K5b flipped with no code change (serial, load ~0: C4 red on main and
+green on the branch; L6 the reverse) → PIXEL-AS-PROOF, retired as verdicts (numeric C6 / K5 / L6-tris carry the claim).
+GRIDMOVE-ROOF is green on both serially (load flake).
+**Two PRODUCT bugs found + fixed (both red identically on main):**
+- `bonsai_outliner.js`: the ⇄ adjacency lens was keyed on the numeric `_selId` while rows are GUID-keyed → dead for every ARC-seeded pick (W-UX-XEDGE 7/3→10/0).
+- `str_walker_outliner.js`: nothing repainted the Outliner after the ARC bridge landed → 0 leaf eye toggles on open (W-E2E-OLEYE 2/3→5/0).
+**Node-run set (51):** 27 red at first, mostly ENV: playwright lives in `~/bim-ootb/tests/node_modules` (set NODE_PATH); gitignored
+fixtures `Terminal_arcstr_proof.db` / `Terminal_plates_proof.db` / `JKR_ARC.db` must be copied into a worktree; render_fidelity needs
+a server on :8399. Real ones fixed: green_report (MEP oracle read the ARC-only DB since c63939a3; 0→11,567 MEP), grid_tilt_guard
+(missing cut_move.js copy since #1711), ux_pill A5 and pill_verbs D5 (hardcoded counts), stretch_gate_smoke S4 (stretched outward),
+dw_dedup_render D3 (sampled before the routed sweeps committed), olsync (fly race).
+**⛔ Questions for red1 (a data/doctrine call, not a witness edit):**
+1. SampleHouse has 0 IfcSpace in both DBs, but W-UX-PILL A8 expects 3 rooms. Were rooms lost in the 07-10 ARC-only embed, or never there?
+2. Since #1770 (catalog loads), 274/281 SampleCastle ELEC IfcFlowFitting render as `FITTING_BEND_PVC_DWV` (a plumbing drain bend).
+   Allowed borrow, or wrong class? (W-DW-HONEST-FALLBACK is red on this.)
+**Parked with cause:** W-TERM-WALK (asserts SampleHouse loads terminal_rules, which contradicts the Walker Doctrine; needs repointing
+to the Terminal resident and re-validating 7 claims); W-DW-ROT-UNITS R4/R5 (all 5 yaw≈π/2 fixtures are square now → INCONCLUSIVE);
+W-E2E-INSTHIDE H1 (fixture gone); W-MODELLER-GIT-HISTORY G6 (labelled KNOWN GAP).
+**NEXT (resume here):** the direct-puppeteer batch ran 45/46 on the branch. Untriaged reds: mv_parity, gridstretch_multi,
+grid_clear_leak_round2, hba_iot_scanline_fix, walk_gesture, xray_poc, residents_anchor_sweep, xray_regression_sh,
+grid_scale_yaw_hardening, xray_sc_duplex; walkall_terminal_scale did not finish. Check each against main first, then root-cause.
+Then PR the branch (a bot auto-merges, so only once every listed change is witnessed green).
