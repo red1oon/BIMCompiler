@@ -759,3 +759,24 @@ fallthrough) — zero regression to PR #732's habitability filter or Type-toggle
 room-data uploads. The Viewer-side render bug is now fixed, tested, and PR'd (#733) — **the block
 should be considered LIFTED once #733 merges**, with the caveat above (uploaded multi-rect data
 will render correctly; single-rect data already did and continues to, per the regression witness).
+
+## §MODELLER-ROOM-INJECT — SPEC (2026-09-27, red1: "You can examine that all have rooms. Rooms injection does not work?" → "Proceed")
+```
+SCOPE: bim-ootb modeller/str_walker_outliner.js _openBuffer + modeller.html script tag + modeller/sw.js precache.
+Reuse viewer/lib/room_walker.js (RoomWalker.walk) — NO fork. Read the log after every run.
+```
+**Measured gap (2026-09-27):** WalkerDoctrine §14 says every building gets rooms auto-infused. The Viewer does it
+(`A.ensureRooms()`, viewer/navigate_find.js:937 → `RoomWalker.walk(db,{write:true})`); the Modeller never loads room_walker
+and never calls it. Result: 6 of 8 residents open with 0 rooms (their *_ARC.db has no `spatial_structure` table at all) —
+SampleHouse, SampleCastle, HHS, Clinic, Hospital, HospitalGarage. Duplex has 21 REAL IfcSpace; Terminal 43 curated `RM_` (patch).
+**Measured cure (node, RoomWalker.walk on an in-memory copy of each ARC db, file untouched):** SampleHouse 3 · SampleCastle 51 ·
+HHS 33 · Clinic 207 · Hospital 201 · Garage 6 compiled rooms, ≤200 ms each. SampleHouse 3 == the 3 W-UX-PILL A8 expects.
+**Rule (same as ensureRooms' 'zero' state):** in `_openBuffer`, before `window.__dwBuf = buf`: if the db has ZERO
+`spatial_structure` IfcSpace rows → create `rel_contained_in_space` if absent → `RoomWalker.walk(db,{write:true})` → re-export the
+db into `window.__dwBuf` so EVERY consumer (BOM-graph tree, room move, UBBL demo, route walker) reads the same rooms.
+Any IfcSpace present (real, or curated RM_) → untouched. RoomWalker unavailable → honest log, no rooms, never invented.
+Compiled rooms keep the walker's `RM_`/approximate identity (never presented as real). Log `§MODELLER-ROOM-INJECT`.
+**Witness W-MODELLER-ROOM-INJECT (new):** open each of the 8 residents through the real Open panel; per resident assert the
+Outliner BOM-graph has room nodes > 0 and the log line's source (`walker` for the 6, `present` for Duplex/Terminal); Duplex's 21
+real IfcSpace guids unchanged. Must be shown RED with the hook disabled. Regression: W-UX-PILL A8 (3 rooms), W-XEDGE-LENS,
+W-OLEYE, room-move + UBBL witnesses.
