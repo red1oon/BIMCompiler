@@ -543,3 +543,22 @@ All five cinema/aim witnesses share the shape and all five get instrumented:
 `witness_cpe_stick_hold.js`, `witness_cpe_hose.js`. No product code is touched — this is entirely
 harness-side, so it cannot perturb any measured number, and every existing `§`-line keeps its exact
 text (progress lines are a NEW tag, not a rewrite of an old one).
+
+## §MODELLER-NET-AUDIT — SPEC, 2026-09-26. Priority 1 from the Modeller assessment (MODELLER_MASTER ⚖ block).
+```
+SCOPE: every bim-ootb modeller/tests/witness_*.js. Find witnesses that PASS without judging the claim they name.
+Read the log after every run. Report per witness; fix or mark, one PR per batch.
+```
+**Why (measured 2026-09-26, all hidden behind green witnesses):** catalog empty 3 months (W-TERMINAL-WALKALL-PERF T6 saw
+pageerror only — 1,194 fold failures unseen); the Outliner roof row never walked (engine-seam witnesses bypassed discWalk);
+W-ROUTE-PATTERN-BRIDGE tested an opts-less walk production never runs; W-E2E-CUT C6 compared pixels after a click that hit
+another element; W-SAVE-BLOCKED-HEAL-INDUCED's fixture found nothing since §XEDGE-3AXIS; W-E2E-WALK read the op-log before the seed.
+**Per witness, classify (write the table into this section):**
+1. WRONG-PATH — drives an engine seam / hook where users go through a UI handler (discWalk, Outliner rows, toast buttons).
+2. SCOPE-BLIND — asserts pageerror/exit only while the app logs failures as console lines (grep the run log for fail/refuse/
+   unknown/REFUSE/§*-FAIL that no check reads).
+3. VACUOUS — a check that passes over an empty population (0 rows, 0 placed, no fixture found) without printing INCONCLUSIVE.
+4. RACE — snapshots before the ARC seed / history settle (op-log length 0, before.oplogLen=0).
+5. PIXEL-AS-PROOF — framebuffer sums used as the verdict (Primal Law: numbers, not pixels).
+**Done when:** every witness has a class (or "sound"), each non-sound one is fixed or retired with a reason, and each fix shows
+base-vs-fix numbers. Method that worked: probe the app's own state numerically before trusting a red (C6: bbox + selection).

@@ -391,3 +391,20 @@ production URL when hosting is chosen. Do NOT commit the 220 MB db to bim-ootb.
 ## RELATED
 [[project_modeller_bom_catalog]] · [[project_connect_scene]] · bonsai_library.js §W-BONSAI-INSERT.
 ```
+
+## §CATALOG-REBIND — SPEC, 2026-09-26. Priority 2 (MODELLER_MASTER row 14, parked with cause).
+```
+SCOPE: bim-compiler scripts/extract_dagevu_catalog.py → bim-ootb viewer/dagevu_catalog.json + dagevu_geometries.json
+(read ONLY by the Modeller — verified). Read the log after every run.
+```
+**Measured:** 794 products with a mesh — 201 mesh extents == declared w/d/h · 52 same numbers axes permuted (mostly the METADATA
+order, e.g. SLAB_SH_SIMPLE) · 14 placeholder dims (d=h=1) · 527 no match, many because `get_by_name` (name-substring, largest
+footprint — a port of the retired Java resolver) binds the WRONG part (GABLE_PORCH_MY and HIP_ROOF_MY both got a 14.8×7.3 m
+flat-roof mesh). Dining_Chair metadata h=0.45 vs its own mesh 1.227 m.
+**Blocker first:** `library/DX_BOM.db` and `library/SH_BOM.db` are 0 bytes locally; the generator reads per-building SET layouts
+from them — regenerating now silently drops the furniture sets. Find them (OCI / another clone / reference_source_ifc_locations
+memory) before any regeneration. Never commit a .db binary (CLAUDE.md DB rule).
+**Then:** (1) per product, bind the mesh whose extents match its measured dims (or its own extracted instance), not a name guess;
+report bound/unbound counts; (2) w/d/h := the bound mesh's extents (industry practice: geometry is the source of truth);
+(3) unbindable → keep the LOD-200 box, flagged. **Witness W-CATALOG-BIND:** every product with `gh` has mesh extents == w/d/h
+(±5 %), base 201/794; assemblies (layout_assembly uses w) re-verified; W-BEND-FITTING, T7 FOLD-CLEAN unchanged.

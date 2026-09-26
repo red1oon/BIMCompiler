@@ -46,7 +46,7 @@ layer (Duplex tubes 33 → 0) — now redraws like every other re-fold. New T7 F
 **⚖ DECISION (red1 2026-09-26): the tiled roof is PREFAB ARC/STR the user reshapes along its axis like any other element; walkers
 FILL IN services (MEP).** → no roof walk row in the Outliner (bim-ootb PR #1785, §ROOF-PREFAB); the engine keeps the §ROOF-PATTERN
 verdict so no fabricated plates can return. Do not re-open "generate the roof" without red1.
-**Assessment 2026-09-26 (asked by red1) — next priorities:** (1) audit the witness net for scope-blind / vacuous / wrong-path checks
+**Assessment 2026-09-26 (asked by red1) — next priorities (specs written: WITNESS_INTERFACE_FRAMEWORK.md §MODELLER-NET-AUDIT · MODELLER_BOM_CATALOG_SPEC.md §CATALOG-REBIND · this file §IFC-EXPORT-DEPTH):** (1) audit the witness net for scope-blind / vacuous / wrong-path checks
 (every defect found this session hid behind a green witness: empty catalog 3 months, roof row never worked); (2) data quality:
 restore `library/DX_BOM.db` + `SH_BOM.db`, rebind catalog meshes (row 14); (3) IFC export depth (Psets, storeys, materials).
 
@@ -820,6 +820,16 @@ Rules that produced this list (keep for the next harvest):
 - **Never edit the shared `~/bim-ootb` checkout** — a PreToolUse hook blocks it. Work in a `/tmp/wt-*`
   worktree, and reuse an existing one (`git worktree list`) before creating another.
 - **DB changes ship as a SQL patch + self-heal loader, never a committed binary** (`CLAUDE.md`).
+
+
+## §IFC-EXPORT-DEPTH — SPEC, 2026-09-26. Priority 3 (builds on §IFC-EXPORT-SEED below).
+Today the export carries shapes + classes only (status reads `walls=0` for an opened building, `modeller.html:~3042`).
+A user hands the IFC to the next tool, so depth decides whether our output is usable. Add, each from data we already hold:
+(1) IfcBuildingStorey containment (storey names on every seeded/walked element); (2) IfcMaterial from `material_rgba`/material
+names (the §COLOR-PARITY source); (3) Psets — at minimum the element's extracted properties and, for walked MEP, the signed
+provenance (`_dw.prov`, rule id, pipe product); (4) opening/void relations for cut walls. **Witness:** round-trip — export
+Duplex → re-open with the same IFC extractor → per-class counts, storey assignment, material and Pset presence equal to the
+source (numbers per class, base = today's export). Validate against IfcOpenShell (the user's fork is prior art).
 
 ## ▶ §IFC-EXPORT-SEED — SPEC for row 36 (2026-09-18). Written before any code.
 
