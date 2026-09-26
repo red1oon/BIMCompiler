@@ -219,6 +219,17 @@ LESSONS from the watchdog side: read the FULL log before believing a summary (th
   counter for each eye-found class; never hand red1 a tree without the 1-minute smoke; answer red1 in plain short English,
   lead with the verdict; a still's camera pose + host are in its PNG — use them, never guess.
 
+## ▶▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 EVENING ("resume altc") — START HERE
+TRIGGER: red1 says "resume altc". Look tree /tmp/wt-look (look/combined-0925) @ d0125d74, sw v1448, served :8624 (after a reboot:
+`git worktree add /tmp/wt-look look/combined-0925` from ~/bim-ootb + `node ~/bin/serve_tree.js /tmp/wt-look 8624 &`).
+FIRST TASK (red1): a READ-ONLY REVIEW of present Alt+C (cinema_maxq.js recorder + cli_silent_bake.js + gi_film + tools.js bake
+pool) against the pending Alt+S version (everything shipped 2026-09-26, all gated `!A._maxqActive`: §ZONE_IDB_CACHE, §LAMP_UNCAPPED
+lamp data, §IRC_MAX v2, §GROUND_VIEW_FIELD, §GLASS_SPEC_GATE/§GLASS_BATCHED/§GLASS_ENV, §LAMP_EN(+ZONE, SPACE_USES), §METER_ADAPT,
+§COVE_LIGHT) to anticipate STOPPERS before any film code: update prompts/ALTC_SHOWSTOPPERS.md (its S1-S5 predate today) with a
+dated section — per new function: can it run per frame / per shot, cost, determinism, 4D build-up (S3), flicker risk. Then the
+order in the 1d block below. Tools: viewer/tests/warm_probe.js (checks in 5-17 s; SW landmine noted in 1d).
+The full day's record is the "resume bounce" block and its 1a-1d notes below.
+
 ## ▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 PM ("resume bounce") — START HERE (dev red1-55; red1 rebooting for the NVIDIA driver)
 TRIGGER: when red1 says "resume bounce", read §WORKING MODE above, then this block, then continue the NEXT list. Supersedes the
 09-26 AM block below (kept for history).
