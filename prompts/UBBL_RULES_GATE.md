@@ -211,3 +211,17 @@ incomplete TLS chain, so it was fetched unverified — the hash pins the exact c
 | 42(2) room width ≥ 2 m | `spatial_structure` size_x/size_y per IfcSpace + a habitable label | sizes yes (Duplex); habitable label NO (§1c) | as the existing DEMO indicator, same labelling rule as 42(1) |
 | 181 exit access ≥ 700 mm | which doors/passages are on an escape route | NO — no door↔room graph (§1c) | not yet — applying it to every door would flag legit 600 mm WC doors (invented scope) |
 | 168(5) door swing vs stair width | door swing direction + stair landing geometry | NO — swing/OperationType not extracted | not yet |
+
+## §MISCITE 2026-09-26 — the shipped room-size demo applies habitable-room minimums to every room
+`modeller/sdg_gate.js` `ubblRoomSizeDemo`: `UBBL_MIN_AREA = 6.5` ("By-Law 42 all other rooms") and `UBBL_MIN_HEADROOM = 2.5`
+("By-Law 42 minimum headroom"). Against the gazetted text (§SOURCED hash):
+- 2.5 m headroom is **By-law 44(1)(a), living rooms and bedrooms only**; kitchens 2.25 m (44(1)(b)); bathrooms, WCs, porches,
+  garages 2.0 m (44(1)(c)); proviso: "not part of any room shall be less than 2 metres in height". 42 has no headroom figure.
+- 42(1)'s 6.5 m² sits in the habitable-room sequence (first 11, second 9.3, all other 6.5); latrines/WCs/bathrooms have their
+  own, smaller minimums in **By-law 43**: WC 1.5 × 0.75 m (pedestal) / 1.25 × 0.75 m; bathroom ≥ 1.5 m² (≥ 2 m² with closet),
+  width ≥ 0.75 m.
+- Effect: an unlabelled Duplex bathroom of, say, 3 m² × 2.2 m high is flagged on both counts though it is legal.
+**Recommended fix (needs red1's OK — it changes a demo he scoped on 2026-07-05):** two tiers, each citing its clause.
+(1) ANY-ROOM floor, true whatever the room type: area ≥ 0.9375 m² (43(b)), width ≥ 0.75 m (43), height ≥ 2.0 m (44 proviso) —
+a violation here is real. (2) HABITABLE tier (42(1) 6.5 m², 42(2) width 2 m, 44(1)(a) 2.5 m): reported as "would fail if this
+is a living room/bedroom", never as a violation, until a room-type label exists (§1c).
