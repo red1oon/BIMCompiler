@@ -286,7 +286,11 @@ S3 plenum/shafts (question, answered): Hospital plenum pose (void zone 50) cam [
   would lift the Terminal shaft bottoms. Q to red1: allow the cove's light into the IR bounce floor?
 S3 overhang meter ⛔ needs the still: no pose recorded for "Hospital corner pose -> bright". hueNoise over-report: see S4 witness.
 PAUSED 2026-09-26 late (red1 suspending the machine). Look @ 1916bf34 sw v1454 on :8624. OPEN, in order:
- M1 "latest changes introduced some mem hog" (red1) — NOT measured cleanly yet. First A/B (d0125d74 vs 1916bf34, Terminal, 4 x
+ M1 MEASURED 2026-09-26 (headless gpu-process PID only + performance.memory, Terminal, 3 x ext+int presses, d0125d74 vs 1916bf34):
+   GPU 2631-2735 vs 2639-2731 MiB (same), after Esc 2137 vs 2169; JS heap 1818-2033 vs 1750-2184 MB (same swing), after Esc
+   1654 vs 1876 (one sample, inside the swing); press secs equal. NO regression found. Asked red1 which number/where they saw it.
+   (M2's ghost shell built on every Esc since 09-24 is the only new-on-Esc work found.)
+ M1 original: "latest changes introduced some mem hog" (red1) — first A/B was confounded: First A/B (d0125d74 vs 1916bf34, Terminal, 4 x
    exterior+interior presses) was CONFOUNDED: nvidia-smi summed red1's own Chrome (2276 MiB) with the headless one (2786 MiB);
    the heap read failed (window.gc absent -> whole eval threw). Redo: per-PID GPU (headless chrome gpu-process pid only) +
    performance.memory WITHOUT gc(), both trees, same sequence; press secs were equal (ext 33-37 s, int 12-15 s both). Suspects
