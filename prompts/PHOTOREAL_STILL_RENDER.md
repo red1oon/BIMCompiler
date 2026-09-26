@@ -415,6 +415,72 @@ RERUN COMMANDS (all from a shell; one GPU browser at a time; the warm page seria
   Refs: Clinic corridor cam [21.243,-0.606,-1.261] tgt [1.197,-4.155,-2.608] (&ghost=1); Hospital inner room [9.947,-7.699,0.098]->
   [14.735,-8.114,2.081]; outside-in [-5.529,-0.544,-42.321]->[4.014,-6.761,2.325]; Terminal inside [7.473,-7.532,1.036]->[6.397,-8.016,3.054].
 
+### B1 RESULT (Opus, 2026-09-27) — §SKY_SHELL_RAYS applied, witnessed, pushed. bim-ootb fable/b1-sky-field @ 808f578f, sw v1457
+### (light_zones.js ?v=16). NOT merged, look not FF'd, no PR (coordinating session). Logs + probes: prompts/photoreal_probes/b1/.
+WHAT WAS BUILT (review of the Fable draft, then changed): shell selection, estimator (64 seeded stratified CIE-cos rays), 5-ray
+ pre-test and bent-normal swap kept from the draft. Changed: (1) the triangle soup is built INSIDE field() (draft: in build()),
+ so a field rebuilt over a zone grid restored from §ZONE_IDB_CACHE still gets it; (2) glass = x T per PANE along the ray (all
+ hits, a new pane after a 0.3 m gap = fgeo.js's rule; draft: once per T group); (3) BVH indirect on non-indexed soup (unit
+ check bvhtest.log: faceIndex = original triangle, any-hit shapecast OK); (4) occluders ARC/STR only — MEASURED all-discipline
+ occluders on Hospital 10.16M tris (4.3M of them PLB/MEP/ELEC/FP proxies, occcount_hospital.log) > the 6M budget, so the draft
+ dropped them all; ARC/STR = fgeo.js's own reference geometry, 5.82M; (5) occluder triangles in covered cells with lattice F = 0
+ culled (1.19M Hospital / 1.11M Terminal); cull A/B (&shellcull=0, cull*_G.json via shellG.js): Hospital 4 of 31,630 shell
+ cells differ (max 0.19), Terminal 0 of 5,615; (6) &capcentre=0 and &skyshell=0 enter the IDB fingerprint (a switch flip
+ rebuilds). § line: `§SKY_SHELL_RAYS bld cache=built|hit on shellCells pretestSkipped recomputed mc rays usPerRay boundaryTris
+ occluderTris cull occluderCulled glassTris soupMs bvhMs selectMs passMs F mean dF mean meanAbs lifted lowered maxLift maxDrop`
+ (+ VACUOUS / INCONCLUSIVE when nothing judged). Hospital: 31,630 shell, 16,621 kept by pre-test, 15,009 recomputed, 1.08M rays
+ at ~6 us, soup 0.6 s + BVH 2.2 s + pass 6.4 s; lifted 6,841, lowered 3,025 (occluders). Clinic 6,159/871 recomputed, 0.7 s.
+ Terminal 5,615/2,368, 2.4 s, maxDrop -0.87 (the roof space frame under glass).
+NOISE (same code, repeated cold first presses on a fresh profile): Clinic corridor 75.5 vs 78.2 (2.7); Hospital inner room 99.83
+ vs 99.84; outside-in 129.75 vs 130.04; Terminal inside 103.35 / 103.45 / 103.73 / 103.69 (0.38); red1 P2 111.68 / 111.50.
+ px<=15 at red1's aerial pose on the UNCHANGED tree: 1.64% cold, 2.13% warm — the HANDOFF's 3.86% did not reproduce (same zone
+ stats, same exposure); so W2 is judged as a same-session A/B (&skyshell=0 = the before field on this tree), 2 reps per arm.
+W1 F vs 64-ray truth (fgeo.js, seed 7, same 400+120 sample as BEFORE; covered exterior = truth > 0.2):
+ | bld      | n   | within +-0.1  | mean F vs truth       | median dF      | > 0.1 low | > 0.1 high | truly covered: within / mean dF |
+ | Hospital | 53  | 60.4% -> 100% | 0.246 -> 0.314 / 0.318 | -0.045 -> 0.000 | 18 -> 0   | 3 -> 0     | 85.0% -> 97.1% / -0.017 -> -0.010 |
+ | Clinic   | 32  | 37.5% -> 100% | 0.215 -> 0.393 / 0.381 | -0.151 -> 0.015 | 20 -> 0   | 0 -> 0     | 97.8% -> 100% / -0.007 -> -0.003 |
+ | Terminal | 140 | 16.4% -> 98.6%| 0.358 -> 0.430 / 0.432 | -0.139 -> 0.000 | 89 -> 1   | 28 -> 1    | 86.2% -> 100% / +0.020 -> -0.005 |
+ Terminal roof-glass cells (the > 0.3-high bin, lattice 0.90 vs truth 0.42-0.65): 15 -> 0. Truly-covered over-lift: none (mean dF
+ stays <= 0 on all three; W1 target over-lift <= 0.05 met). INDEPENDENT truth (256 rays, seed 11, a different 400-cell sample,
+ x_sh*_hosp_fgeo256.log), Hospital sh0 -> sh1: exterior n=64 57.8% -> 100%, mean F 0.268 -> 0.334 (truth 0.334); truly covered
+ 86.3% -> 98.2%, 0.039 -> 0.044 (truth 0.053). SCOPE NOTE (PRIMAL LAW 4): W1 samples exactly the shell population, so it cannot
+ see facade cells whose nearest open cell is > 2 cells away: at red1's aerial pose 2 of the 15 covered 707f8e cells skycheck
+ hit are such cells (9911662/3: nearest open r=3, F 0.07/0.06 vs 256-ray truth 0.43/0.40, unchanged). The other 13 went from
+ F 0.06-0.31 to 0.44-0.48 (truth 0.44-0.48) (x_sh*_cells707.log). Widening SHELL_R to 3 is the obvious next step — not done
+ (out of the approved scope; the witness population would widen with it).
+W2 red1 aerial 1790438202002 (Hospital &ghost=1), &skyshell=0 -> default, 2 cold reps each (w2ab_*): px<=15 composite
+ 1.614 / 1.627% -> 1.465 / 1.475%; app frame 2.965 / 2.959% -> 2.323 / 2.339%. dark_cls: 707f8e side-facing shaded ~4,120 px ->
+ ~1,990 px; the rest is up-facing sun-blocked 564b4d / 009e49 / GROUND / ebe6d9 in zone 1 and albedo-0 000000 outside (not the
+ shell population). skycheck 707f8e dark samples 23 -> 5.
+ red1 P1 aerial 1790449862668 (cam [-41.633,17.723,25.635] tgt [-1.62,-5.131,2.23]; red1: 2.27% on v1455 = no attempt 1, OCI db,
+ 1685x874): px<=15 composite 0.83% -> 0.73%, app 1.10% -> 0.94%; §FAULT OK both. Remaining dark (dark_cls, est. px): proxy
+ ebe6d9 up sun-blocked ~2,500, 707f8e side ~2,400 (was ~3,070), 009e49 up sun-blocked ~2,150, albedo-0 000000 zone=out ~1,450.
+W3 leak: zones / indoorCells / largest identical sh0 vs sh1 on all three (Hospital 848 / 1,531,269 / 159,087 m3; Clinic 441 /
+ 141,215 / 5,523; Terminal 156 / 1,153,331 / 134,395). Named roofed cells stay COVERED with SOLID above: inner room 7058199
+ zone 207 cap 1, Clinic corridor 797874 zone 27 cap 11, Terminal inside 1825936 zone 16 cap 2.
+ ATTEMPT-1 A/B (&capcentre=0 -> default, abcap*): Hospital zones 1,117 -> 848, indoorCells 1,557,348 -> 1,531,269 (-26,079 =
+ -1.7%), largest 161,739 -> 159,087, openSky +14,912; Clinic 456 -> 441, 142,298 -> 141,215, 5,619 -> 5,523; Terminal 156 -> 156,
+ 1,185,166 -> 1,153,331 (-2.7%), 138,385 -> 134,395. Named cells covered in both arms; §GLARE 0/0/0 both; aerial px<=15 1.87% ->
+ 1.49%. Whether any of the ~26k/32k opened cells lies inside a roofed room is NOT judged beyond the named cells (INCONCLUSIVE).
+W4 §GLARE black_exterior / junction_zone_flip / covered_open_side_black = 0/0/0 on every run, all three buildings.
+W5 refs (cold first press, fresh profile), before -> after: Clinic corridor 75.5 / 78.2 -> 76.91; Hospital inner room 99.83 /
+ 99.84 -> 99.85; outside-in 129.75 / 130.04 -> 129.67; Terminal inside (named proxy) 103.35 / 103.45 / 103.73 / 103.69 -> 104.01
+ / 103.53 / 103.68; red1 P2 1790449885596 (cam [-7.307,-6.507,12.017] tgt [-2.403,-7.682,3.378], meter 6.49 stops, zonePass
+ 182.8 = red1's 6.48 / 182.8) 111.68 / 111.50 -> 111.62 / 111.61, px<=15 0.02% both. All inside the measured noise. Terminal
+ approved still and Clinic look: PNGs not on disk -> INCONCLUSIVE for those stills.
+W6 staging (§STILL_STAGE_MS stagingTotal, cold = fresh profile): Hospital 10,952 / 11,187 (sh0) -> 20,533 / 20,631 / 21,028
+ (+9.5 s — OVER the spec's <= +5 s); IDB-hit press 4,659 -> 4,923 (unchanged; §SKY_SHELL_RAYS cache=hit logged). Clinic 2,831 ->
+ 3,689; Terminal 8,037 / 8,135 -> 10,682 / 10,787. Smoke (viewer/tests/smoke_alts.js, real Alt+S): SMOKE PASS shaderError=0
+ contextLost=0 pageError=0 on Hospital / Clinic / Terminal; the §FAULT glassLow on Clinic (1) / Terminal (2) is identical with
+ &skyshell=0 (pre-existing); one Terminal default-pose hueNoise 68 did not reproduce (2 vs 2 on repeat).
+VERDICT per the coordinator's PASS rule: refs unchanged (within noise) PASS; guards 0 PASS; no interior leak (zone stats
+ identical) PASS; exterior within +-0.1 improved on all three PASS -> READY TO FF. Not in the PASS rule but judged: W6 FAIL
+ (+9.5 s cold on Hospital). W2 PASS (falls, modest). Attempt-1 leak INCONCLUSIVE beyond named cells.
+⛔ red1 (one question): Hospital's FIRST Alt+S per code version now stages ~20.6 s instead of ~11 s (one time; cached after, warm
+ press unchanged). Cost split: the 64-ray pass 6.4 s (boundary-only it was 5.0 s), the roof-structure BVH 2.2 s + soup 0.6 s.
+ Accept the one-time +9.5 s, or trade accuracy for time (boundary-only occluders: +2.7 s, but Terminal's roof-glass cells lose
+ their space frame)?
+
 ### Other open items (after B1)
  - S4: an outside still AFTER an inside still gets 1,127-1,430 fringe px (Terminal [41.691,4.561,33.774]->[0.377,-13.544,0.58] after
    [7.473,-7.532,1.036]->[6.397,-8.016,3.054]); first press 5-6. Not cascades (off: 1,237). App frame itself is darker after the inside

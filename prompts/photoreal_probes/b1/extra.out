@@ -1,0 +1,21 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.01
+
+x_sh1_hosp §SKY_SHELL_RAYS bld=Hospital cache=built on stagingTotal=20122 
+fgeo256 sh1 ext {"n":64,"within01":1,"bins":{"lt-0.5":0,"-0.5..-0.3":0,"-0.3..-0.1":0,"within0.1":64,"0.1..0.3":0,"gt0.3":0},"dF_minus_geoMC":{"median":0.002,"mean":0},"dVisibility_F_minus_geoLat":{"median":0.058,"mean":0.064},"dQuadrature_geoLat_minus_geoMC":{"median":-0.054,"mean":-0.065},"meanF":0.334,"meanGeoMC":0.334,"meanGeoLat":0.269,"meanFwall":0.217} le {"n":336,"within01":0.982,"bins":{"lt-0.5":0,"-0.5..-0.3":0,"-0.3..-0.1":6,"within0.1":330,"0.1..0.3":0,"gt0.3":0},"dF_minus_geoMC":{"median":0,"mean":-0.008},"dVisibility_F_minus_geoLat":{"median":0,"mean":-0.007},"dQuadrature_geoLat_minus_geoMC":{"median":0,"mean":-0.001},"meanF":0.044,"meanGeoMC":0.053,"meanGeoLat":0.052,"meanFwall":0.005}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell=0", "elements": 63182, "loadS
+
+x_sh0_hosp §SKY_SHELL_RAYS bld=Hospital cache=built off stagingTotal=11543 
+fgeo256 sh0 ext {"n":64,"within01":0.578,"bins":{"lt-0.5":0,"-0.5..-0.3":1,"-0.3..-0.1":23,"within0.1":37,"0.1..0.3":3,"gt0.3":0},"dF_minus_geoMC":{"median":-0.052,"mean":-0.067},"dVisibility_F_minus_geoLat":{"median":0.001,"mean":-0.002},"dQuadrature_geoLat_minus_geoMC":{"median":-0.054,"mean":-0.065},"meanF":0.268,"meanGeoMC":0.334,"meanGeoLat":0.269,"meanFwall":0.217} le {"n":336,"within01":0.863,"bins":{"lt-0.5":0,"-0.5..-0.3":0,"-0.3..-0.1":32,"within0.1":290,"0.1..0.3":14,"gt0.3":0},"dF_minus_geoMC":{"median":0,"mean":-0.014},"dVisibility_F_minus_geoLat":{"median":0,"mean":-0.013},"dQuadrature_geoLat_minus_geoMC":{"median":0,"mean":-0.001},"meanF":0.039,"meanGeoMC":0.053,"meanGeoLat":0.052,"meanFwall":0.005}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48428, "loadSecs": 27.813}
+
+x_term_sh1_r1 §SKY_SHELL_RAYS bld=TerminalMerged cache=built on stagingTotal=10787 compositeMean=103.53 appMean=108.62 
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48428, "loadSecs": 27.049}
+
+x_term_sh1_r2 §SKY_SHELL_RAYS bld=TerminalMerged cache=built on stagingTotal=10682 compositeMean=103.68 appMean=108.7 
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db&skyshell=0", "elements": 48428, "loadSecs": 26
+
+x_term_sh0_r1 §SKY_SHELL_RAYS bld=TerminalMerged cache=built off stagingTotal=8135 compositeMean=103.73 appMean=108.74 
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db&skyshell=0", "elements": 48428, "loadSecs": 28
+
+x_term_sh0_r2 §SKY_SHELL_RAYS bld=TerminalMerged cache=built off stagingTotal=8037 compositeMean=103.69 appMean=108.9 
+== extra done 04:01:27

@@ -1,0 +1,53 @@
+== open Hospital %26ghost%3D1 03:12:41
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.664}
+
+== hospital_after_aerial alts 03:13:10
+"verdict": "DONE" §SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=6.26 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 soupMs=646 bvhMs=2178 selectMs=87 passMs=6794 F mean=0.1878 dF mean=0.0372 meanAbs=0.0901 lifted(>0.05)=6841 lowered(<-0.05)=3025 maxLift=0.564 maxDrop=-0.411 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice) stagingTotal=21028 compositeMean=71.97 appMean=72.55 
+
+"darkPct": 1.36
+{"result":{"w":1666,"h":864,"compositeDarkPct":1.364,"appDarkPct":2.231}}
+skycheck 707f8e rows 4 F 1.00 0.19 0.09 0.07 geom 0.02 0.33 0.44 0.46
+== hospital_after fgeo 03:15:42
+ext {"n":53,"within01":1,"bins":{"lt-0.5":0,"-0.5..-0.3":0,"-0.3..-0.1":0,"within0.1":53,"0.1..0.3":0,"gt0.3":0},"dF_minus_geoMC":{"median":0,"mean":-0.004},"dVisibility_F_minus_geoLat":{"median":0.049,"mean":0.052},"dQuadrature_geoLat_minus_geoMC":{"median":-0.055,"mean":-0.056},"meanF":0.314,"meanGeoMC":0.318,"meanGeoLat":0.263,"meanFwall":0.192} dark {"median":0,"mean":-0.01} 4599 ms
+hospital_after cells [{"name":"red1aerial","cell":10007498,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1},{"name":"innerroom","cell":7058199,"raw":207,"cls":"COVERED","zone":207,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":1},{"name":"outsidein","cell":4491800,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1}]
+== open Hospital %26ghost%3D1 03:15:47
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 36.557}
+
+== hospital_after_fresh_innerroom alts 03:16:24
+"verdict": "DONE" §SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=5.98 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 soupMs=616 bvhMs=2151 selectMs=84 passMs=6488 F mean=0.1878 dF mean=0.0372 meanAbs=0.0901 lifted(>0.05)=6841 lowered(<-0.05)=3025 maxLift=0.564 maxDrop=-0.411 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice) stagingTotal=20943 compositeMean=99.85 appMean=104.19 
+
+== open Hospital %26ghost%3D1 03:18:01
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 27.744}
+
+== hospital_after_fresh_outsidein alts 03:18:29
+"verdict": "DONE" §SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=5.9 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 soupMs=594 bvhMs=2163 selectMs=86 passMs=6404 F mean=0.1878 dF mean=0.0372 meanAbs=0.0901 lifted(>0.05)=6841 lowered(<-0.05)=3025 maxLift=0.564 maxDrop=-0.411 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice) stagingTotal=20473 compositeMean=129.67 appMean=132.34 
+
+== open Hospital %26ghost%3D1 03:20:21
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.411}
+
+== hospital_after_warm_aerial alts 03:20:49
+"verdict": "DONE" §SKY_SHELL_RAYS bld=Hospital cache=hit on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=5.9 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 soupMs=594 bvhMs=2163 selectMs=86 passMs=6404 F mean=0.1878 dF mean=0.0372 meanAbs=0.0901 lifted(>0.05)=6841 lowered(<-0.05)=3025 maxLift=0.564 maxDrop=-0.411 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice) stagingTotal=4923 compositeMean=69.47 appMean=70.01 
+
+== open Clinic %26ghost%3D1 03:22:19
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "elements": 16071, "loadSecs": 35.967}
+
+== clinic_after_corridor alts 03:22:56
+"verdict": "DONE" §SKY_SHELL_RAYS bld=Clinic cache=built on shellCells=6159 pretestSkipped=5288 recomputed=871 mc=64 rays=84728 usPerRay=2.67 boundaryTris=60812 occluderTris=1297825 cull=1 occluderCulled=323258 glassTris=10840 soupMs=142 bvhMs=336 selectMs=20 passMs=226 F mean=0.2492 dF mean=0.0933 meanAbs=0.1153 lifted(>0.05)=555 lowered(<-0.05)=86 maxLift=0.585 maxDrop=-0.164 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice) stagingTotal=3689 compositeMean=76.91 appMean=82.05 
+
+"darkPct": 0.02
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.02,"appDarkPct":0.023}}
+== clinic_after fgeo 03:23:09
+ext {"n":32,"within01":1,"bins":{"lt-0.5":0,"-0.5..-0.3":0,"-0.3..-0.1":0,"within0.1":32,"0.1..0.3":0,"gt0.3":0},"dF_minus_geoMC":{"median":0.015,"mean":0.012},"dVisibility_F_minus_geoLat":{"median":0.071,"mean":0.09},"dQuadrature_geoLat_minus_geoMC":{"median":-0.056,"mean":-0.078},"meanF":0.393,"meanGeoMC":0.381,"meanGeoLat":0.303,"meanFwall":0.4} dark {"median":0,"mean":-0.003} 1202 ms
+clinic_after cells [{"name":"corridor","cell":797874,"raw":27,"cls":"COVERED","zone":27,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":11}]
+== open Terminal  03:23:11
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48428, "loadSecs": 27.375}
+
+== terminal_after_inside alts 03:23:38
+"verdict": "DONE" §SKY_SHELL_RAYS bld=TerminalMerged cache=built on shellCells=5615 pretestSkipped=3247 recomputed=2368 mc=64 rays=173203 usPerRay=4.31 boundaryTris=1737653 occluderTris=2397514 cull=1 occluderCulled=1110743 glassTris=4669 soupMs=407 bvhMs=1220 selectMs=31 passMs=746 F mean=0.3569 dF mean=0.0236 meanAbs=0.1918 lifted(>0.05)=1395 lowered(<-0.05)=764 maxLift=0.531 maxDrop=-0.872 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice) stagingTotal=10734 compositeMean=104.01 appMean=109.2 
+
+"darkPct": 0.01
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.007,"appDarkPct":0.797}}
+== terminal_after fgeo 03:23:58
+ext {"n":140,"within01":0.986,"bins":{"lt-0.5":0,"-0.5..-0.3":0,"-0.3..-0.1":1,"within0.1":138,"0.1..0.3":1,"gt0.3":0},"dF_minus_geoMC":{"median":0,"mean":-0.002},"dVisibility_F_minus_geoLat":{"median":0.12,"mean":0.092},"dQuadrature_geoLat_minus_geoMC":{"median":-0.118,"mean":-0.094},"meanF":0.43,"meanGeoMC":0.432,"meanGeoLat":0.338,"meanFwall":0.368} dark {"median":0,"mean":-0.005} 2968 ms
+terminal_after cells [{"name":"inside","cell":1825936,"raw":16,"cls":"COVERED","zone":16,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":2}]
+== after done 03:24:02

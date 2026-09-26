@@ -1,0 +1,17 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&shellcull=0", "elements": 63182, "load
+
+§SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16623 recomputed=15007 mc=64 rays=1084805 usPerRay=7.66 boundaryTris=234224 occluderTris=5824916 cull=0 occluderCulled=0 glassTris=21776 soupMs=598 bvhMs=3011 selectMs=97 passMs=8309 F mean=0.1878 dF mean=0.0372 meanAbs=0.0901 lifted(>0.05)=6839 lowered(<-0.05)=3025 maxLift=0.564 maxDrop=-0.411 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice)
+stagingTotal=25264
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 29.00
+
+§SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=5.82 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 soupMs=620 bvhMs=2212 selectMs=86 passMs=6314 F mean=0.1878 dF mean=0.0372 meanAbs=0.0901 lifted(>0.05)=6841 lowered(<-0.05)=3025 maxLift=0.564 maxDrop=-0.411 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice)
+stagingTotal=20942
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db&shellcull=0", "elements": 48428, "loadSecs": 2
+
+§SKY_SHELL_RAYS bld=TerminalMerged cache=built on shellCells=5615 pretestSkipped=3247 recomputed=2368 mc=64 rays=173203 usPerRay=4.51 boundaryTris=1737653 occluderTris=2397514 cull=0 occluderCulled=0 glassTris=4669 soupMs=352 bvhMs=1842 selectMs=31 passMs=781 F mean=0.3569 dF mean=0.0236 meanAbs=0.1918 lifted(>0.05)=1395 lowered(<-0.05)=764 maxLift=0.531 maxDrop=-0.872 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice)
+stagingTotal=11628
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48428, "loadSecs": 26.339}
+
+§SKY_SHELL_RAYS bld=TerminalMerged cache=built on shellCells=5615 pretestSkipped=3247 recomputed=2368 mc=64 rays=173203 usPerRay=4.31 boundaryTris=1737653 occluderTris=2397514 cull=1 occluderCulled=1110743 glassTris=4669 soupMs=393 bvhMs=1234 selectMs=31 passMs=747 F mean=0.3569 dF mean=0.0236 meanAbs=0.1918 lifted(>0.05)=1395 lowered(<-0.05)=764 maxLift=0.531 maxDrop=-0.872 (shell = covered cells beside a wall within 2 cells of open air; F = 64 CIE-cos rays vs boundary + occluder triangles; deeper cells keep the lattice)
+stagingTotal=10897
+== cullab done 03:11:35
