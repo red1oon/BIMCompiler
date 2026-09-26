@@ -220,7 +220,7 @@ LESSONS from the watchdog side: read the FULL log before believing a summary (th
   lead with the verdict; a still's camera pose + host are in its PNG — use them, never guess.
 
 ## ▶▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 EVENING ("resume altc") — START HERE
-TRIGGER: red1 says "resume altc". Look tree /tmp/wt-look (look/combined-0925) @ d0125d74, sw v1448, served :8624 (after a reboot:
+TRIGGER: red1 says "resume altc" (or "resume alts loose"): do the STILL FINDINGS S1-S3 first, then this. Look tree /tmp/wt-look (look/combined-0925) @ d0125d74, sw v1448, served :8624 (after a reboot:
 `git worktree add /tmp/wt-look look/combined-0925` from ~/bim-ootb + `node ~/bin/serve_tree.js /tmp/wt-look 8624 &`).
 FIRST TASK (red1): a READ-ONLY REVIEW of present Alt+C (cinema_maxq.js recorder + cli_silent_bake.js + gi_film + tools.js bake
 pool) against the pending Alt+S version (everything shipped 2026-09-26, all gated `!A._maxqActive`: §ZONE_IDB_CACHE, §LAMP_UNCAPPED
@@ -243,6 +243,18 @@ STILL FINDINGS TO FIX BEFORE ALT+C (red1's 17:47-17:52 Hospital stills, v1448; 4
  S3. Carried: Terminal 2 tall shafts dark (top-only cove >15 m above the floor); plenum duct undersides dark (floor-facing);
      camera under an overhang metered as inside (Hospital corner pose → bright); hueNoise over-reports colour bleed.
 Then the Alt+C review (FIRST TASK above). red1 will discuss the implications of adopting the new Alt+S settings for films.
+ORDER (red1 2026-09-26 18:30): loose Alt+S items FIRST (S1 blown, S2 unlit ceilings, then S3), THEN the Alt+C review.
+ALT+C RULINGS (red1 2026-09-26, recorded for the film lane — do not re-litigate):
+ R1. EXPOSURE = a movie camera in action: meter every frame (the §METER_ADAPT CIECAM02 meter, 160x90 readback) and ease toward
+     it at a capped adaptation speed (cite the source of the speed, e.g. Unreal Engine auto-exposure documented defaults), never
+     a jump; not fixed per film.
+ R2. 4D BUILD-UP: shadows + bounce follow the visible geometry per frame (as today). Zone-based interior lighting (zone binding,
+     sky gating, IR floor, cove, EN lamps) applies to a space only once it is ENCLOSED (its walls + roof built); until then it is
+     lit as OUTDOORS (sun, sky, shadows, bounce). The switch fades over a few frames. Lamps light as they are placed; where a
+     space has no lamp, ambient/sky as in Alt+S. Realism of a fast daytime film is the goal (red1: "realism is what we going
+     for"; build-up mostly in bright day, MEP comes on soon).
+ R3. Alt+S defines the look; films inherit it, camera-free terms computed per building (or per build-up stage), only sun,
+     camera and exposure ease vary per frame; continuity beats per-frame optimum; fixed seeds, constant program count.
 
 ## ▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 PM ("resume bounce") — START HERE (dev red1-55; red1 rebooting for the NVIDIA driver)
 TRIGGER: when red1 says "resume bounce", read §WORKING MODE above, then this block, then continue the NEXT list. Supersedes the
