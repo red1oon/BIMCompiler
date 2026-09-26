@@ -261,6 +261,76 @@ What the Fable agent should decide and build (spec first, in this file, then cod
  SW landmine: after editing, bump sw CACHE_VERSION or clear SW+caches before /open reload=1. One GPU browser at a time. The agent
  works in its own /tmp/wt-* worktree + port, never edits /tmp/wt-look; you (the dev session) review its diff, smoke it, FF look.
 
+### B1 SPEC (Fable, 2026-09-27) — measured mechanism, chosen fix, witness claims. Tree /tmp/wt-b1 (fable/b1-sky-field, from
+### fix/zone-cap-centre def9c79b), port :8630, warm probe :8631. Probes: bim-compiler prompts/photoreal_probes/ + scratch fgeo.js/shellpass.js.
+MEASURED BEFORE (Hospital, v1456 tree = attempt 1 in place; one Alt+S at red1's aerial pose, headless NVIDIA 1666x864):
+ - px<=15 at red1's pose 3.86% on this harness (dark_cls: 90/253 sampled dark px = facade 707f8e side-facing shaded zone=in, 50 = 564b4d
+   up-facing sun-blocked, 20 = GROUND up-facing zone=in). skycheck at the pose: the 707f8e cells read F 0.07-0.37 (adjacent cells
+   differ 4x: 0.37 vs 0.09) against geomSky 0.23-0.54 in skycheck's units (cosine about the wall normal, upward rays only, max 0.5).
+ - The reference for F is made precise: F_geoMC = the SAME integral the field defines (upper hemisphere, CIE overcast x cos(zenith),
+   64 stratified rays from the cell centre against a BVH over the real ARC+STR meshes, glass x T) — F is a horizontal-receiver
+   quantity of the CELL; skycheck's geomSky is a different quantity (the wall's own hemisphere) and is reported beside it, not
+   as the target. Sample: seeded 400 covered + 120 open cells beside a wall (lateral SOLID neighbour) within 2 cells of open air.
+ - COVERED cells with F_geoMC > 0.2 (the exterior population, n=53 of 400: most covered cells beside walls are truly covered):
+   F within +-0.1 of F_geoMC for 60%; mean F 0.246 vs truth 0.318; median dF -0.045, 18 of 53 more than 0.1 low, 3 more than 0.3 low.
+   Split of the error: VISIBILITY (F - sum_d w_d vis_mesh_d along the lattice's own 41 directions) median +0.003 on the population,
+   but 14 of 53 cells are BLIND (F - F_geoLat < -0.1, down to F=0 vs 0.37): in every one the lost directions are the 45/35/27 deg
+   rays TOWARD a SOLID neighbour that the exact ray clears — the neighbour is a thin or low feature (sill, lintel, slab edge,
+   coping, string course) fattened to a whole 0.5 m cell by the any-touch rasteriser, and the march's conservative mids rule
+   (any SOLID content in any touched cell blocks) turns it into a wall. QUADRATURE (41 directions vs the integral) median -0.055.
+   The wall's OWN voxels are not the cause: directions into a real wall are blocked in the mesh too (agreement on those).
+ - OPEN control (F = 1 by definition, 120 cells beside walls): F_geoMC mean 0.538. An open cell beside a wall truly sees half the
+   sky; the code's F=1 there is what makes a free-standing wall render right (three's hemisphere light already halves the sky for a
+   vertical normal), and it means a COVERED cell beside the same wall (F ~0.3-0.45 even with perfect visibility) renders that wall
+   at 30-45% of its open-cell neighbours: the open/covered SEAM. Any cap above the column (coping, overhang, upper-floor
+   projection) makes the cell covered, so a facade is patched at half brightness — red1's "dark patches" are this seam plus
+   the blind cells. This is a DEFINITION mismatch (a horizontal-receiver F applied to a vertical surface), not a visibility bug.
+ - Zone label (attempt 1, §ZONE_CAP_CENTRE): a continuous roof crosses every column centre it covers, so a roofed room cannot be
+   opened by it; the interior-leak numbers (zones / indoorCells / largest zone, named roofed cells) are measured with and without
+   it (&capcentre=0&zonecache=0 A/B switch added). KEEP unless those numbers move.
+ - Cost facts: raycasts through the scene 10 ms/ray (4,856 objects); ONE merged BVH over the 234,224 boundary triangles (the
+   voxeliser's own draws) builds in ~0.4 s (10 MB) and answers an any-hit ray in 4.5 us (raycastFirst 11-14 us). Shell = covered
+   cells beside a wall within 2 cells of open air: Hospital 31,630; 34.9 of 41 directions lattice-blocked per cell; a 5-ray
+   pre-test (zenith + 4 axis 45 deg, all blocked -> keep the lattice value) skips 46%: ~630k rays ~ 3 s one-time (IDB-cached).
+CHOSEN FIX (this branch): §SKY_SHELL_RAYS — the FIELD, visibility only, monotone (F can only rise, never fall):
+ 1. build(): while rasterising, keep the boundary triangle soup (world positions + per-triangle glass T) on the cache (not in IDB).
+ 2. field(): shell cells = covered, non-solid, j >= groundJ, lateral SOLID neighbour, an open cell within 2 cells laterally at
+    dy 0..2. During the 41-direction sweep record each shell cell's per-direction lattice value. After the sweep: opaque any-hit
+    BVH (three-mesh-bvh shapecast, already loaded: §BVH_INIT) + a glass BVH (x T per pane, as the march does). Pre-test 5 axis
+    rays; for every direction the lattice called blocked, one exact ray from the cell centre replaces it; acc += w_d v'_d;
+    the bent-normal sums follow. Directions the lattice called open are kept (lattice-open agreed with the mesh: 'gained' ~0).
+    Correction applies to the shell cell's own F (not re-propagated down the chains: deeper cells keep the lattice value).
+ 3. No BVH (loader failed) or &skyshell=0 / APP._stillSkyShell=false -> today's field, logged. New § line: §SKY_SHELL_RAYS
+    bld shellCells pretestSkipped rays raysPerCell bvhTris bvhMs passMs lifted(>0.05) meanLift maxLift; VACUOUS when shellCells=0.
+    SRC hash changes -> §ZONE_IDB_CACHE rebuilds. Attempt 1 kept (see above).
+ PREDICTED (prototype shellpass.js on the same Hospital sample): exterior within +-0.1: 60% -> 79%; mean F 0.246 -> 0.334 (truth
+ 0.318, bias +0.016); truly-covered cells (F_geoMC <= 0.2, n=347): mean 0.040 -> 0.081 (+0.03 over-lift where a non-boundary
+ element — beam/member/proxy canopy — is the real cover; within +-0.1 85% -> 87%).
+NOT FIXED HERE, ⛔ FOR red1 (needs a look decision, indoors changes by design): the SEAM. The principled repair is a DIRECTIONAL
+ read: store per cell the four half-space sums S(+x) S(-x) S(+z) S(-z) (= sum over the lattice directions on that side of
+ w_d v_d / that side's weight; 4 x 8 bit, one RGBA8UI 3D texture, Hospital +41 MB GPU/IDB) and read F_n = the half-space of the
+ fragment's normal (blend by |n.x|,|n.z|; F itself for n.y <= 0 and blended in by n.y). A wall in a covered cell beside a free wall
+ then reads ~1 like its open neighbours; under a real overhang it reads the overhang's loss once, not the wall's own back half.
+ Indoors it changes looks: walls facing a window brighter (~2F), the window wall itself darker (~0) — physically right, but the
+ approved indoor refs (Clinic corridor ~76-78, Hospital inner room ~101) will move. Question for red1: accept the directional
+ read indoors (refs re-approved) or restrict it? The cheap analytic form F/H(n) (H = 0.5 for a vertical normal) needs no texture
+ but doubles every vertical wall's F indoors regardless of facing — not proposed.
+WITNESS CLAIMS (numbers, per building Hospital / Clinic / Terminal, before -> after; INCONCLUSIVE where a population is empty):
+ W1 F vs F_geoMC on covered exterior cells (F_geoMC > 0.2): share within +-0.1 rises on every building; target >= 75%; mean bias
+    |dF| <= 0.05. Truly-covered cells (F_geoMC <= 0.2): mean over-lift <= 0.05.
+ W2 red1's pose (Hospital aerial, &ghost=1): px<=15 fraction falls (3.86% before on this harness); F at the 707f8e facade cells
+    (skycheck rows) rises toward ~0.45 (their horizontal-receiver truth; the seam keeps them below the open cells' 1.0).
+ W3 interior leak guard: zones / indoorCells / largest zone identical before vs after (the fix touches F only, not labels); named
+    roofed cells (Hospital inner-room cam, Clinic corridor cam, Terminal inside cam) stay COVERED with SOLID above; attempt 1
+    A/B (&capcentre=0) reported for the same numbers.
+ W4 §GLARE guards black_exterior / junction_zone_flip / covered_open_side_black = 0 on all three.
+ W5 refs: Clinic corridor composite (§GI_STILL compositeMean) and Hospital inner room, Hospital outside-looking-in unchanged
+    within +-1.5; Terminal indoor and Clinic look: the approved PNGs are not on disk and no pose is recorded -> the Terminal
+    inside pose [7.473,-7.532,1.036]->[6.397,-8.016,3.054] (the S4 pose) is measured as a named proxy, INCONCLUSIVE for the
+    approved still itself.
+ W6 first-press staging (§STILL_STAGE_MS stagingTotal, fresh profile, no IDB record) grows by <= 5 s on Hospital; IDB-hit press
+    unchanged. Smoke: 0 Shader Error / Context Lost / pageerror.
+
 ### Other open items (after B1)
  - S4: an outside still AFTER an inside still gets 1,127-1,430 fringe px (Terminal [41.691,4.561,33.774]->[0.377,-13.544,0.58] after
    [7.473,-7.532,1.036]->[6.397,-8.016,3.054]); first press 5-6. Not cascades (off: 1,237). App frame itself is darker after the inside
