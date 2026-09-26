@@ -192,3 +192,22 @@ values), and any spec deviation.** Status: **✅ DONE 2026-07-11 (W-UBBL-ROOM-DE
   3. `witness_sdg_gate_smoke.js` fails on pristine `main` too (missing `playwright` module in env) —
      pre-existing, unrelated, not fixed here.
 - §3 NON-GOALS: all untouched, still deferred and named.
+
+## §SOURCED 2026-09-26 — clauses read from the gazetted text (MODELLER_MASTER row 22 part 2)
+Source: KPKT-hosted gazette "Uniform Building By-Laws 1984 – K.GN. 5178/1984" (§1b URL; 163 pages, SHA-256
+`f8aa89b7e511ad723c33d970ddd28679e5f1f44301a0918290bd7f2b3cee8147`; the server needs a browser User-Agent and sends an
+incomplete TLS chain, so it was fetched unverified — the hash pins the exact copy read). Quoted verbatim:
+- **By-law 181 (Width of means of egress):** "Means of egress shall be measured in units of exits width of 552 millimetres.
+  … no individual access to exit shall be less than 700 millimetres."
+- **By-law 168(5) (Staircases):** "Doors giving access to staircases shall be so positioned that their swing shall at no point
+  encroach on the required width of the staircase or landing." (168(3): required width = clear width between walls; handrails
+  may encroach ≤ 75 mm.)
+- **By-law 42(2)/(3):** habitable room width ≥ 2 m; kitchen ≥ 4.5 m² and ≥ 1.5 m wide (42(1) areas as already in §1b).
+- Occupancy-based exit widths live in the **Seventh Schedule** (units of 552 mm × occupant load) — need occupancy data we do not have.
+
+**Measurability on today's data (the build decision):**
+| clause | data needed | have it? | build |
+|---|---|---|---|
+| 42(2) room width ≥ 2 m | `spatial_structure` size_x/size_y per IfcSpace + a habitable label | sizes yes (Duplex); habitable label NO (§1c) | as the existing DEMO indicator, same labelling rule as 42(1) |
+| 181 exit access ≥ 700 mm | which doors/passages are on an escape route | NO — no door↔room graph (§1c) | not yet — applying it to every door would flag legit 600 mm WC doors (invented scope) |
+| 168(5) door swing vs stair width | door swing direction + stair landing geometry | NO — swing/OperationType not extracted | not yet |
