@@ -1952,6 +1952,11 @@ GATE: at red1's tower pose + fly-in poses + the sweep: every lamp within range o
 all-fixture irradiance vs the rendered set, max relative loss < 1% per point); §CAMDEP_SURFACE lamps term identical across
 poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame ms reported.
 
+**RULINGS red1 2026-09-27 (inside still …1790465698534, v1457):** (1) "If original colors then OK" — the pale-interior check
+passes if the chroma readback shows the IFC material colours intact (low saturation = the data's greys, not a render fault).
+(2) Outside very bright through the openings from an inside pose = WANTED: "relative eye adjustment" (§METER_ADAPT, expStep
+6.61 there). Not a defect; do not cap it. (Same class as S1's Hospital curtain-wall case.)
+
 **§COVE_NO_STRIP — RULING (red1 2026-09-27, overrides §COVE_LIGHT "and a VISIBLE thin emissive strip mesh" + impl note 6):**
 red1: "The ceiling rim lighting need not have the actual lighting element. That be inventing objects. Rather just have the
 glow that goes along its corner axes. Need not be accurate or bright. Just to replace the sheer darkness."
