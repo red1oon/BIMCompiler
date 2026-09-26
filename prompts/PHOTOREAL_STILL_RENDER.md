@@ -1466,6 +1466,23 @@ GATE (the sweep + these): Terminal hall + hall_floor blackDirectGI 0 with a real
 and the outside-looking-in pose unchanged within the sweep's tolerance; link <= +10%; GUARD 0/0/0. Films: the film GI path
 (gi_film.js) must use the same max composite — named in the commit ("film path: gi_film composite uses the same max").
 
+**§IRC_MAX v2 (lamps + daylight) — SPEC (2026-09-26 PM, dev; supersedes the §IRC_MAX method below, keeps its RULE).**
+TRIGGER: red1 "One room has black strip" (Clinic …385840825). State: 398/400 sampled near-black pixels (max channel <= 3, the
+§FAULT_GI definition) are HORIZONTAL surfaces at y 4 m in windowless zone 173 (819 m3, 29 lamps); every lamp sits 8 cm ABOVE
+them, 1-1.6 m away: the ceiling band around recessed fittings, lit only by interreflection, which nothing supplies (SSGI needs
+lit neighbours on screen; V12 IRC is daylight-only and the room has no aperture).
+METHOD (Sumpner flux balance, the V12 relation): per zone E_ir = R/(1-R) x mean DIRECT irradiance over the zone's own surfaces
+(R = R_BRE 0.5). Lamps: the mean of three's own point-light term (att(d, range, decay) x cos) from the zone's lamps (+ unbound),
+over zone-grid surface faces (every zone cell face against SOLID; <= 4000 faces sampled per zone, even stride). Daylight: the
+V12 irc_z (already computed by LightZones.field) x the hemisphere sky irradiance (hemi sky colour x intensity at staging).
+One RGBA32F texel per zone; shader: irradiance += E_ir[_slFZ] (indirect diffuse, the material's own BRDF), staged only.
+RULE (unchanged, watchdog): indirect = max(IR, SSGI), never the sum: gi_still composite adds max(0, bounce - IR_px), IR_px =
+decode(app) x share, share = IR radiance / total radiance per pixel from two linear renders (IR-only readback w=9, normal).
+The share is exact in linear light; applying it to the tone-mapped app colour is an approximation (stated in the log).
+LOG: §IRC_MAX build (zones with IR, lamp/day parts, ms) + per press (pixels IR wins / SSGI wins, mean share).
+WITNESS: red1's Clinic pose near-black app pixels in zone 173 (2044 before) -> after; Hospital indoor + Clinic corridor refs
+app mean change reported (not forced); 0 shader/context/page errors. &ir=0 = off; &ircmax=0 = sum (A/B only).
+
 **§LAMP_UNCAPPED — SPEC (2026-09-26, dev red1-5a; watchdog: the lamp cap is now a GLARING Alt+S defect; ALTC F1 moves into
 the Alt+S zero list). After the sweep and §IRC_MAX.**
 DEFECT: the uniform budget caps point lights (120-160); a zone like Hospital zone 1 has 547 lamps, so far walls lose their
