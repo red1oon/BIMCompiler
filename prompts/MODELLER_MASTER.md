@@ -18,7 +18,7 @@ i have no time to sight, i rely on a good vibe coder to do so."
 1. Read this block, then the §RESUME 2026-09-26 block and §STRATEGY 2026-09-24 below (method rules + traps).
 2. State of the world at the 2026-09-26 reboot: **everything is merged** — bim-ootb main `b0826a5a` (#1769, sw v50),
    BIMCompiler master (#125 + this note). No Modeller work lives in any `/tmp/wt-*` worktree; nothing is unpushed.
-3. First task: run the five witnesses NOT yet re-run on merged main (held so red1's Alt+S on :8624 stayed light) in a
+3. ⏸ 2026-09-26c: red1 said HOLD on headless runs (Alt+S testing on :8624); still not re-run. First task: run the five witnesses NOT yet re-run on merged main (held so red1's Alt+S on :8624 stayed light) in a
    fresh worktree off origin/main, with `NODE_PATH=~/bim-ootb/tests/node_modules:~/bim-compiler/node_modules` and the
    gitignored `Terminal_arcstr_proof.db` + `Terminal_plates_proof.db` copied from `~/bim-ootb/modeller/`:
    `witness_e2e_walk_all_disciplines.js` · `witness_e2e_walk.js` (5/3 on the pre-#1769 base) · `witness_e2e_save.js` ·
@@ -28,6 +28,20 @@ i have no time to sight, i rely on a good vibe coder to do so."
 4. Then work the NEXT list below in order. Data calls: decide them yourself (simplest sourced option, checked against
    the `*_silent.db` references) — red1 wants "simple and workable … visually and generally correct".
 5. Merge convention: one combined branch, one PR at session end (bim-ootb auto-merges on green checks); update this block.
+
+**§WITNESS RE-RUN 2026-09-26c (merged main `b0826a5a`, logs in session scratchpad/wit/):** W-E2E-WALK-ALL 13/0 (63 s) ·
+W-E2E-WALK 8/0 (9 s) · W-SAVE-COMPLETEIT 11/0 (11 s) · W-TERMINAL-WALKALL-PERF 6/0 (100 s; Walk-ALL 73.6 s, PLB 2,915/2,915 +
+FP 623/623 + ACMV 807/807 signed, 1 group each) · W-ROUTE-PATTERN-BRIDGE 6/4 (P3-P6, the known NEXT #1 retarget).
+**🔴 NEW FINDING (scope-blind green):** the Modeller's catalog has been EMPTY since #550 (2026-06-27, modeller/ split).
+`modeller/bonsai_library.js:34` fetches `modeller/dagevu_catalog.json`; the file stayed at `viewer/dagevu_catalog.json`
+(live: modeller URL 404, viewer URL 200 / 274,212 B). Log: `§LIBRARY catalog loaded products=0`. Effect measured on Terminal:
+every bend fitting fails to fold — 726× `GEOM_INSERT unknown component FITTING_ELBOW_GENERIC` + 468× `…TEE_GENERIC`
+(= 2 × the 597 in `§BEND disc=PLB joints=597`). So §PRODUCTIVITY's "597 fittings" are signed rows that never render, and
+W-TERMINAL-WALKALL-PERF T6 NO-ERROR does not see it. Any catalog insert (picker, assemblies) is likewise unresolvable.
+**→ FIXED, bim-ootb PR #1770 (`fix/modeller-catalog-path` @ 22c123fa, auto-merge on; spec SPEC_CATALOG_PATH.md):** catalog +
+geometries fetched from `../viewer/`; sw v51; a 2nd latent bug it exposed — `_dwUpgradeFitMeshes`'s scrubTo wiped the dwRoot tube
+layer (Duplex tubes 33 → 0) — now redraws like every other re-fold. New T7 FOLD-CLEAN: base 1,194 unknown / 0 products → 0 / 837.
+9-witness sweep base = fix (only T7 moved); Duplex fittings real mesh 3/3 (was 0/3). Cost: W-WALK-GESTURE 7 → 47 s, W-MEP-REROUTE 16 → 46 s.
 
 **NEXT #1-#5 DONE; #6 handed over.** One combined bim-ootb branch (row 7 + #2/#3 + #4 + #5).
 | item | result (base → fix) | spec |
@@ -50,7 +64,31 @@ the Hospital_silent reference, 437 of 4,816 IfcDuctSegment) · ACMV mains + drop
 signs every run. Rule going forward: take the simplest sourced option, check it against the `*_silent.db` references
 (Hospital_silent, HHS_Office_Federated_silent), ask red1 only when something is visibly or generally wrong.
 
-**NEXT, ranked:** 1. Retarget W-ROUTE-PATTERN-BRIDGE (6/4 red since #846; still asserts ELEC/ACMV refuse — they route now) · 2. Carry the 10 new pattern rows into bim-compiler `IFCtoERP.java seedMepPatterns` so a re-extract keeps them · 3. HospitalGarage grid (140 columns off-lattice: 15×102, colRMS 1.20 m — the 1D axis clustering doesn't describe it; its own row) · 4. Older undo edge: undo a whole walk, new edit, Ctrl+Z/Ctrl+Y can resurrect one walk row (predates this session) · 5. then the older rows from §RESUME 2026-09-26.
+**NEXT, ranked:** 1. ✅ DONE 2026-09-26c — bim-ootb PR #1771 (test-only): W-ROUTE-PATTERN-BRIDGE 6/4 → 10/0 ×2 (engine seam now uses the production `{schedule:true, geoDb}` opts; P6 = coverage honesty on unmapped STR; waits for the ARC seed). Found on the way → **FIXED, PR #1779 (§WALK-AFTER-SEED)**: the Walk row is usable 4.4 s (Duplex) / 24.0 s (Terminal) before the ARC seed commits; a Walk in that window signed its rows before the seed's and lost its layer. Walks now await `window.__arcSeedReady`; W-WALK-AFTER-SEED base 1/3 → 4/0; W-E2E-WALK's early op-log read fixed (8/0 ×2) · 2. ✖ RETIRED 2026-09-26c (red1: the Java backend is deprecated — OOTB is a JS PWA with no Java; memory java-bridge SUPERSEDED 2026-08-06). The 10 rows live in bim-ootb `modeller/mep_rw.db`, which is the source of truth; nothing to carry into `IFCtoERP.java` · 3. HospitalGarage grid (140 columns off-lattice: 15×102, colRMS 1.20 m — the 1D axis clustering doesn't describe it; its own row) — ✅ DONE 2026-09-26c (Fable agent) — bim-ootb PR #1774: ONE lattice rotated −2.000° (= the IfcSite placement, 0 IfcGrid in the IFC); `swDetectRotation` (all-pairs mod-90 mode + support gate) → 15×103 / 1.193 m / 6 exact → **17×29 / 0.0607 m / 132 of 140 exact**; Terminal unchanged; Hospital refused by the support gate (wings at −5°/+10°). Open: the authoring grid still drags world-axis lines (fine at 2°; a rotated authoring grid is its own row). Spec SPEC_ROW7_HGARAGE.md · 4. ✅ DONE 2026-09-26c — bim-ootb PR #1772: a plain Ctrl+Y resurrected the lowest-id undone row (an undone walk's row, or a deleted row) instead of the edit. Rows a history node leaves undone now sit in `oplog._treeUndone`, skipped by redo(). W-UNDO-RESURRECT base 3/2 → 5/0; 7-witness sweep base = fix (spec SPEC_UNDO_RESURRECT.md) · 5. then the older rows from §RESUME 2026-09-26. **Row 9 ✅ 2026-09-26c — bim-ootb PR #1773:** edit-time ORANGE toast gets an Accept
+button → one signed gesture (Save's own heal ops, shared `_healOps`), one hop, re-checked; W-ORANGE-ACCEPT base 1/1 → 5/0, Save/gate
+witnesses base = fix. Accept follows Save's heal rule (moves the UNMOVED partner) — in the witness it moved a wall 0.5 m and raised 2
+new RED, reported not applied; red1 may want the heal to move the pulled element instead (not changed). **Stale witness found:**
+W-SAVE-BLOCKED-HEAL-INDUCED 0/2 on main — its fixture needs "unrelated" neighbours, none exist since §XEDGE-3AXIS (every Duplex element
+has edges) → **fixed PR #1778** (fixture found by simulating the real gate; 7/0). **Row 22:** part 1 ✅ PR #1775 (RED toast → one-click Revert = one Ctrl+Z, only while the edit is still latest; W-RED-REVERT base 1/1 → 4/0) ·
+part 3 ✅ PR #1776 (§GATE-SCALE: the gate's `seen` map threw RangeError past ~300 moved on Terminal; spatial grid → identical results,
+100 moved 3,119 → 10 ms, 1,000 moved 40 ms; W-GATE-SCALE base 4/1 → 5/0) · part 2 ⛔ BLOCKED: *which gazetted UBBL clause + value for corridor width and door swing?* UBBL_RULES_GATE.md §1b verified only By-Laws 39/42; its corridor/stair/dead-end figures have conflicting sources and no door-swing clause is cited — building a named check on them would invent the number. **Row 11 ✅ PR #1777** (§COLOR-PARITY: the element's authored `material_rgba`
+r,g,b, the Viewer's rule; palette only for NULL — W-COLOR-PARITY base 3/1 (all 196 Duplex + 1,077 HHS on the palette) → 4/0, fallback
+leg INCONCLUSIVE: no NULL rgba in either). Stale/red witnesses seen, not touched: W-E2E-CUT C6 (pixel, red on main). **Row 8** — Fable agent measured it; parent review changed the outcome (spec SPEC_ROW8_ROOF_PERELEMENT.md §REVIEW). Today's roof walk is a
+BULK FILL (Terminal 10,584 of 33,324 plates at the flat band-mid z, RMS 2.627 m) and FABRICATES arrays elsewhere (Clinic 331 on glazing,
+Hospital 47,526). But Terminal's 33,324 real plates are `discipline='ARC'` — the seed already puts them on screen, so a "per-element walk"
+would only re-place them (RMS 0 by identity, 33k duplicate rows). Fix: a tessellating row (fill ≥ 0.5, derived) measures the array and
+reports `§ROOF-PATTERN-PRESENT … nothing to generate` (0 placed) or REFUSES — never the fill. W-ROW8-ROOF-PATTERN (node) base 1/6/1 →
+7/0. Branch feat/row8-roof-perelement (/tmp/wt-row8-roof), committed locally, NOT pushed — its browser regression runs wait on the GPU
+(paused 2026-09-26 for the photoreal lane's Alt+S runs). Also **W-E2E-CUT C6 → PR #1780** (it compared pixels after a re-select click
+that hit another element; now the cut element's own mesh fingerprint: changed by the cut, restored exactly by the undo). **Rows 13/25** stay deferred by design (§OPEN LIST).
+**Row 14 ⛔ BLOCKED — re-sourced 2026-09-26c, the row's premise is wrong.** Measured over `viewer/dagevu_catalog.json` × `dagevu_geometries.json`
+(794 products with a real mesh; `§ROW14-CATALOG`): 201 mesh extents == declared w/d/h (Z-up) · 52 same numbers, axes permuted · 14
+placeholder dims (d=h=1) · 527 no match. The permuted ones are mostly the METADATA's order, not the mesh (SLAB_SH_SIMPLE whd 0.165/13.97/5.77,
+mesh 13.97×5.77×0.17 Z-up — correct slab); Dining_Chair h=0.45 but its mesh is 1.227 m tall and ROLE__CHAIR_A (same mesh) says h=1.227.
+So "bake an axis permutation into the vertices, witness tallest-axis==h" would bake BAD METADATA into good meshes. The measured fix is the
+other way: for mesh-bearing products take w/d/h FROM the mesh extents (non-invent; changes LOD-200 proxy box sizes). The catalog files are the
+Viewer's (`viewer/`), so it is cross-lane. *Question for red1: OK to derive the shared catalog's w/d/h from the real mesh extents (Modeller +
+Viewer proxy sizes change), instead of the row's vertex bake?*
 
 **NEW TRAPS:**
 - **sql.js: two `new SQL.Database(sameBuffer)` share storage** — a DROP on one showed in the other (measured). Always pass a fresh `new Uint8Array(fs.readFileSync(...))` per db in node witnesses.

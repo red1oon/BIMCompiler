@@ -162,3 +162,16 @@ Q2 ACMV product: the mode is 150 × 150 mm (branch size). Keep the mode, or choo
 Q3 ACMV has no plant → main step (no AHU in the Terminal). Accept mains + drops only?
 Q4 ELEC has no fixture step in any real source. Accept mains only, or authorise a JUNCTION → FIXTURE step
    as a data decision (it would be an authored step, not a mined one)?
+
+## §SEED-JAVA — RETIRED 2026-09-26c (red1: Java backend deprecated; `modeller/mep_rw.db` is the source of truth). Not built.
+
+## §BRIDGE-RETARGET — NEXT #1: W-ROUTE-PATTERN-BRIDGE 6/4 red since #846 (spec 2026-09-26c, before code)
+**Measured cause (merged main 9bc2d3c8 log):** the witness's engine seam calls `dwWalk('PLB', bdb, name)` with NO opts, i.e.
+the legacy walk: `§WALK-PATTERN disc=PLB EMPTY placements=32 [CW 0/0@125, SP 0/0@125]` → P3/P4/P5 red. The production
+walk (`modeller.html:3778`, `_discWalkOne`) calls `dwWalk(disc, bdb, name, {schedule:true, geoDb, avoid})` first and places
+18 / routes 22 (`CW 1/1@90, SP 21/21@90`) — P7/P8/P9 (the real handler) are green. P6 asserts ELEC/ACMV REFUSE for no
+ad_mep_pattern coverage; since §MEP-ROUTE-DISC D2/D3 they have rows and route, so the claim is stale, not the code.
+**Change (test-only):** (a) the engine seam calls dwWalk with the production opts `{schedule:true, geoDb}` (geoDb from
+`__dwGeoBuf`, like `_discWalkOne`); the noPattern control uses the same opts + `noPattern:true`. (b) P6 keeps its honesty
+purpose on a discipline that really has no coverage: `routePattern('STR')` must refuse with `no ad_mep_pattern coverage`,
+and ACMV/ELEC/FP must NOT refuse for coverage (they are mapped). **Done:** 10/0; P1/P2/P7-P10 unchanged.
