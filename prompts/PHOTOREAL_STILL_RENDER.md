@@ -331,6 +331,87 @@ WITNESS CLAIMS (numbers, per building Hospital / Clinic / Terminal, before -> af
  W6 first-press staging (§STILL_STAGE_MS stagingTotal, fresh profile, no IDB record) grows by <= 5 s on Hospital; IDB-hit press
     unchanged. Smoke: 0 Shader Error / Context Lost / pageerror.
 
+### B1 HANDOFF (Fable, 2026-09-27) — stopped at red1's request before any code went into the tree. Everything below is
+### measured; nothing was changed in /tmp/wt-b1 (still def9c79b = fix/zone-cap-centre, sw v1456, served :8630, warm probe :8631).
+FILES: prompts/photoreal_probes/b1/ — probes fgeo.js (F vs geometric, pose-free), cells.js (named cells: label/zone/F/cap),
+ shellpass.js (fix prototype), weights.js (lattice direction weights, node), pngpose.js (pose from a still's tEXt), measure.sh /
+ before_all.sh / before2.sh / after_all.sh (drivers), warm_probe.js (= photoreal_probes/warm_probe_key.js, ctl port 8631);
+ every before-log (*_before_*.log, hospital_before_* etc.); light_zones.SKY_SHELL_RAYS.draft.js + .patch = the UNAPPLIED,
+ node-syntax-checked draft of the chosen fix against /tmp/wt-b1/viewer/light_zones.js (review before use; never run in a browser yet).
+HEADLINE NUMBERS (BEFORE = v1456 tree, attempt 1 §ZONE_CAP_CENTRE on; headless NVIDIA 1666x864, default sun 45 deg):
+ Hospital (&ghost=1): red1's aerial pose FIRST press px<=15 = 3.86% (alts_hospital_red1pose_before.log, darkcls_hospital_before.log;
+   dark classes: 90/253 = facade 707f8e side-facing shaded zone=in, 50 = 564b4d up-facing sun-blocked zone=in, 20 = GROUND up zone=in,
+   19 = 737278 side). skycheck_hospital_before.log: 707f8e cells F 0.07-0.37 (adjacent cells 0.37 vs 0.09) vs geomSky 0.23-0.54.
+   Zones 848, indoorCells 1,531,269, largest 159,087 m3 (83.1%), capCells 236,984 / capSkipped 210,815, §GLARE PASS 0/0/0,
+   staging 11,843 ms (zoneBuild 3,787 + sourcedStage 4,923), compositeMean 67.18 / appMean 71.64.
+   fgeo_hospital_before.log (400 covered + 120 open wall-adjacent cells, ARC+STR BVH truth): covered EXTERIOR (F_geoMC > 0.2)
+   n=53: within +-0.1 60.4%, mean F 0.246 vs truth 0.318, visibility error median +0.003, quadrature -0.055; 14/53 BLIND
+   (blind_hospital_before.log: every lost direction is a 45/35/27 deg ray toward a SOLID neighbour the exact ray clears = a
+   thin/low feature fattened to a cell). Truly covered (<= 0.2) n=347: 85% within. OPEN control n=120: truth 0.538, F = 1.
+   shellpass_hospital_before.log / shellpass_pretest_hospital.log (prototype, boundary BVH 234,224 tris 0.4 s): exterior within
+   +-0.1 60% -> 79%, mean F 0.334 (truth 0.318); 31,630 shell cells, 34.9 lattice-blocked dirs/cell, pre-test skips 14,632;
+   raybench_hospital.log: raycastFirst 11-14 us/ray, shapecast any-hit 4.5 us/ray.
+   REFS: inner room [9.947,-7.699,0.098]->[14.735,-8.114,2.081] FIRST press on a fresh page compositeMean 99.83 (ref ~101,
+   hospital_before_fresh_innerroom.log, staging 14,799); the SAME pose as a 2nd press on a warm page after the aerial press gave
+   65.61 (hospital_before_alts_innerroom.log) and every warm-page pose landed at 65-67 -> REF PROTOCOL: first press, fresh page
+   (fresh puppeteer profile = no IDB record), one pose per page. Outside-looking-in fresh first press: see
+   hospital_before_fresh_outsidein.log (was running at hand-off; before2.out has the summary line if it finished).
+   cells: inner-room cam cell 7058199 zone 207 COVERED cap 1 above; red1 aerial cam OPEN; outside-in cam OPEN.
+ Clinic (&ghost=1): corridor [21.243,-0.606,-1.261]->[1.197,-4.155,-2.608] first press compositeMean 75.5 (ref 76-78), px<=15
+   0.02%, staging 7,284, zones 441, indoorCells 141,215, largest 5,523 m3 (31.3%), capCells 57,141 / capSkipped 49,916, §GLARE PASS.
+   clinic_before_fgeo.log: exterior n=32: within +-0.1 37.5%, mean F 0.215 vs 0.381, visibility median -0.052, quadrature -0.056;
+   truly covered n=368: 97.8% within. (clinic cells: corridor cam — see clinic_before_cells.log if before2 finished.)
+ Terminal: inside [7.473,-7.532,1.036]->[6.397,-8.016,3.054] (proxy for the approved indoor still, whose pose is unknown) first
+   press compositeMean 103.35, px<=15 0.01%, staging 20,190, zones 156, indoorCells 1,153,331, largest 134,395 m3 (93.2%),
+   capCells 54,525 / capSkipped 78,714, §GLARE PASS. terminal_before_fgeo.log: exterior n=140: within +-0.1 16.4%, mean F 0.358 vs
+   0.432, visibility median 0.000, QUADRATURE median -0.118; 15 cells read F 0.90 (lattice, through glass T) where the truth is
+   0.42-0.65 = under the glazed hall roof whose space frame (IfcMember/IfcBeam, not a boundary class) blocks the sky.
+   cells: inside cam cell 1825936 zone 16 COVERED cap 2 above.
+WHAT THE NUMBERS SAY — LABEL vs FIELD:
+ 1. FIELD, not LABEL. The zone labels are right where checked (named roofed cells covered on all three; §GLARE 0/0/0); attempt 1
+    changes labels only where no triangle crosses the column centre (a continuous roof always does) — KEEP it; its interior-leak
+    A/B (same numbers with &capcentre=0&zonecache=0) is still unmeasured (the draft adds that switch).
+ 2. Inside the field the error is NOT the wall's own voxels (directions into a real wall are blocked in the mesh too). It is
+    (a) visibility past THIN features fattened to a cell (Hospital 14/53 cells, up to F 0 vs 0.37), (b) the 41-direction
+    QUADRATURE (Terminal median -0.12, Clinic/Hospital -0.06), (c) sky occluders outside the boundary classes (Terminal roof
+    structure: lattice 0.90 vs 0.42-0.65). None of these is fixed by moving the ray start or skipping own-wall voxels.
+ 3. The largest visible effect is a DEFINITION seam, not a bug: F is a horizontal-receiver sky view of the cell; an OPEN cell is set
+    to 1 (right for a free wall: three's hemisphere already halves the sky for a vertical normal), a COVERED cell beside the same
+    wall reads its true ~0.3-0.5 (the wall's own back half counted as loss) -> that wall renders at 30-50% of its open-cell
+    neighbours. Any cap above the column (coping, overhang, upper-floor projection) makes the cell covered -> red1's dark
+    patches. Fixing (a)-(c) lifts the 707f8e cells from 0.07-0.37 to ~0.45; they stay at half of the open cells' 1.0.
+RECOMMENDED FIX DIRECTION (why): two layers, both in the FIELD, in this order —
+ A. §SKY_SHELL_RAYS (draft patch in b1/): for the SHELL cells (covered, above ground, lateral SOLID neighbour, open cell within 2
+    cells) replace the lattice F by 64 stratified CIE-cos rays (the witness's own estimator, seeded per cell) against one BVH
+    over the boundary soup + sky-occluder classes (IfcMember/Beam/Column/Railing/Stair/Proxy/Footing; budget 6M tris), glass x T
+    per group, 5-ray pre-test keeps truly covered cells; three-mesh-bvh shapecast any-hit 4.5 us/ray -> est. Hospital ~6 s
+    ONE-TIME (IDB-cached, SRC hash rebuilds), Clinic/Terminal shells are 5-6k cells (cheap). Fixes (a)+(b)+(c) by construction;
+    deeper cells keep the lattice. &skyshell=0 A/B. Expected W1 within +-0.1 >= 75% on all three (Hospital prototype: 79% with
+    the weaker blocked-only variant).
+ B. The SEAM (⛔ red1): a DIRECTIONAL read — per cell the four half-space sums S(+x) S(-x) S(+z) S(-z) (RGBA8UI 3D texture,
+    Hospital +41 MB GPU/IDB), F_n = the half-space of the fragment's normal (F itself for n.y <= 0). Removes the open/covered
+    seam (a wall beside a free wall reads ~1 in both), but changes indoor walls by design (facing a window ~2F, the window wall
+    ~0) so the approved indoor refs move -> red1 must accept or restrict it. The analytic F/H(n) shortcut doubles every indoor
+    wall regardless of facing: not proposed.
+STILL UNMEASURED: everything AFTER (the draft never ran in a browser): W1 after per building, px<=15 after at red1's pose, refs
+ after (first-press protocol), staging after (target <= +5 s Hospital), attempt-1 A/B numbers (&capcentre=0&zonecache=0), the
+ Terminal approved-still pose and the Clinic-look pose (PNGs 1790306684370 / 1790304784259 not on disk), Hospital outside-in
+ fresh first press if before2 did not finish, smoke (viewer/tests/smoke_alts.js) on the changed tree.
+RERUN COMMANDS (all from a shell; one GPU browser at a time; the warm page serialises calls):
+  node ~/bin/serve_tree.js /tmp/wt-b1 8630 &            # tree server (already up)
+  cd <scratch> && node prompts/photoreal_probes/b1/warm_probe.js 8631 &   # warm probe (already up on 8631)
+  curl 'localhost:8631/open?port=8630&db=Hospital&q=%26ghost%3D1&reload=1'      # fresh page (reload=1 after ANY edit + sw bump)
+  curl -G localhost:8631/alts --data-urlencode 'cam=[-44.334,20.357,48.696]' --data-urlencode 'tgt=[-2.924,-11.908,7.912]' \
+       --data-urlencode gi=1 --data-urlencode 're=§LIGHT_ZONE|§GLARE|§SKY_VIEW_FIELD on|§SKY_SHELL|§STILL_STAGE_MS|§GI_STILL result|§FAULT|§METER camera'
+  curl -X POST localhost:8631/eval --data-binary @prompts/photoreal_probes/dark_cls.js      # px<=15 at the staged pose
+  curl -X POST localhost:8631/eval --data-binary @prompts/photoreal_probes/skycheck.js      # F vs geomSky at the pose (707f8e rows)
+  curl -X POST localhost:8631/eval --data-binary @prompts/photoreal_probes/b1/fgeo.js       # W1 distribution (pose-free; window.__b1opt = {kCov,kOpen,mc,seed})
+  { echo "window.__b1pts=[['innerroom',9.947,-7.699,0.098]];"; cat prompts/photoreal_probes/b1/cells.js; } | curl -X POST localhost:8631/eval --data-binary @-
+  curl -X POST localhost:8631/eval --data-binary @prompts/photoreal_probes/b1/shellpass.js  # fix prototype (needs fgeo first; window.__b1shell={pretest:true})
+  TAG=after prompts/photoreal_probes/b1/after_all.sh   # the whole AFTER set (fresh page per ref, first press) -> <scratch>/*_after_*.log
+  Refs: Clinic corridor cam [21.243,-0.606,-1.261] tgt [1.197,-4.155,-2.608] (&ghost=1); Hospital inner room [9.947,-7.699,0.098]->
+  [14.735,-8.114,2.081]; outside-in [-5.529,-0.544,-42.321]->[4.014,-6.761,2.325]; Terminal inside [7.473,-7.532,1.036]->[6.397,-8.016,3.054].
+
 ### Other open items (after B1)
  - S4: an outside still AFTER an inside still gets 1,127-1,430 fringe px (Terminal [41.691,4.561,33.774]->[0.377,-13.544,0.58] after
    [7.473,-7.532,1.036]->[6.397,-8.016,3.054]); first press 5-6. Not cascades (off: 1,237). App frame itself is darker after the inside

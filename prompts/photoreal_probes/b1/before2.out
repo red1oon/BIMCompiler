@@ -1,0 +1,10 @@
+terminal_before cells [{"name":"inside","cell":1825936,"raw":16,"cls":"COVERED","zone":16,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":2}]
+== open Hospital %26ghost%3D1 01:31:35
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 57.102}
+
+== hospital_before_fresh_innerroom alts 01:32:32
+"verdict": "DONE" stagingTotal=14799 compositeMean=99.83 appMean=104.19 
+== open Hospital %26ghost%3D1 01:34:20
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 54.217}
+
+== hospital_before_fresh_outsidein alts 01:35:14
