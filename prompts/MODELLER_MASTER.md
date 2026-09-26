@@ -43,10 +43,16 @@ geometries fetched from `../viewer/`; sw v51; a 2nd latent bug it exposed — `_
 layer (Duplex tubes 33 → 0) — now redraws like every other re-fold. New T7 FOLD-CLEAN: base 1,194 unknown / 0 products → 0 / 837.
 9-witness sweep base = fix (only T7 moved); Duplex fittings real mesh 3/3 (was 0/3). Cost: W-WALK-GESTURE 7 → 47 s, W-MEP-REROUTE 16 → 46 s.
 
-**▶ PAUSED 2026-09-26d (red1 suspended the machine).** Row 8 = bim-ootb branch `feat/row8-roof-perelement` (pushed, NO PR yet, worktree
-/tmp/wt-row8-roof): node witness W-ROW8-ROOF-PATTERN 7/0 done; the browser regression sweep (W-E2E-ROOF-PATTERN + 8 roof/STR/MEP witnesses,
-base on main vs fix) was stopped before any result — re-run it, then PR. Rows 22 (UBBL: read the gazetted KPKT PDF, build only cited clauses)
-and 14 (catalog w/d/h from real mesh extents, check Viewer readers first) were recommended to red1 — wait for his OK.
+**▶ 2026-09-26e (resumed) — rows 8 + 22 closed, row 14 parked.** Row 8 → **bim-ootb PR #1782**: roof walk returns a VERDICT
+(present / refuse), never the band fill; the Outliner roof row had NEVER walked for a user (discWalk upper-cased 'roof' → 'ROOF',
+§DISC-CASE fix); W-ROW8-ROOF-PATTERN 1/6/1 → 7/0, W-E2E-ROOF-PATTERN 2/1 → 3/0, 10 regression witnesses base = fix. Row 22 part 2 →
+UBBL clauses read from the gazette (UBBL_RULES_GATE.md §SOURCED, hash-pinned); only room size is checkable on today's data, and the
+shipped demo applied bedroom minimums to every room → **PR #1781** (§UBBL-TIERS: real violations = any-room floor 43(b)/43/44 proviso;
+"would fail if habitable" = 42(1)/42(2)/44(1)(a); Duplex 8 false violations → 0, 10 "check"). By-laws 181 (exit ≥ 700 mm) and 168(5)
+(door swing) need escape-route / swing data we do not extract. **Row 14 PARKED:** catalog meshes are bound by a name/footprint
+heuristic (many are the wrong part — e.g. two different roofs share one flat-roof mesh), and `library/DX_BOM.db` + `SH_BOM.db` are
+0-byte locally, so the catalog cannot be regenerated safely; needs those libraries restored + a mesh re-binding pass (Fable-sized).
+Not the Viewer's concern: only the Modeller reads `viewer/dagevu_catalog.json`.
 
 **NEXT #1-#5 DONE; #6 handed over.** One combined bim-ootb branch (row 7 + #2/#3 + #4 + #5).
 | item | result (base → fix) | spec |
