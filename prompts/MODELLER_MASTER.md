@@ -43,6 +43,13 @@ geometries fetched from `../viewer/`; sw v51; a 2nd latent bug it exposed — `_
 layer (Duplex tubes 33 → 0) — now redraws like every other re-fold. New T7 FOLD-CLEAN: base 1,194 unknown / 0 products → 0 / 837.
 9-witness sweep base = fix (only T7 moved); Duplex fittings real mesh 3/3 (was 0/3). Cost: W-WALK-GESTURE 7 → 47 s, W-MEP-REROUTE 16 → 46 s.
 
+**⚖ DECISION (red1 2026-09-26): the tiled roof is PREFAB ARC/STR the user reshapes along its axis like any other element; walkers
+FILL IN services (MEP).** → no roof walk row in the Outliner (bim-ootb PR #1785, §ROOF-PREFAB); the engine keeps the §ROOF-PATTERN
+verdict so no fabricated plates can return. Do not re-open "generate the roof" without red1.
+**Assessment 2026-09-26 (asked by red1) — next priorities:** (1) audit the witness net for scope-blind / vacuous / wrong-path checks
+(every defect found this session hid behind a green witness: empty catalog 3 months, roof row never worked); (2) data quality:
+restore `library/DX_BOM.db` + `SH_BOM.db`, rebind catalog meshes (row 14); (3) IFC export depth (Psets, storeys, materials).
+
 **▶ 2026-09-26e (resumed) — rows 8 + 22 closed, row 14 parked.** Row 8 → **bim-ootb PR #1782**: roof walk returns a VERDICT
 (present / refuse), never the band fill; the Outliner roof row had NEVER walked for a user (discWalk upper-cased 'roof' → 'ROOF',
 §DISC-CASE fix); W-ROW8-ROOF-PATTERN 1/6/1 → 7/0, W-E2E-ROOF-PATTERN 2/1 → 3/0, 10 regression witnesses base = fix. Row 22 part 2 →
