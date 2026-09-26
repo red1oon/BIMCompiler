@@ -285,6 +285,20 @@ S3 plenum/shafts (question, answered): Hospital plenum pose (void zone 50) cam [
   level still holds) = a zone-flat term in dark compartments, against red1's "no flat fill" for BLACK_INTERIOR; the same term
   would lift the Terminal shaft bottoms. Q to red1: allow the cove's light into the IR bounce floor?
 S3 overhang meter ⛔ needs the still: no pose recorded for "Hospital corner pose -> bright". hueNoise over-report: see S4 witness.
+PAUSED 2026-09-26 late (red1 suspending the machine). Look @ 1916bf34 sw v1454 on :8624. OPEN, in order:
+ M1 "latest changes introduced some mem hog" (red1) — NOT measured cleanly yet. First A/B (d0125d74 vs 1916bf34, Terminal, 4 x
+   exterior+interior presses) was CONFOUNDED: nvidia-smi summed red1's own Chrome (2276 MiB) with the headless one (2786 MiB);
+   the heap read failed (window.gc absent -> whole eval threw). Redo: per-PID GPU (headless chrome gpu-process pid only) +
+   performance.memory WITHOUT gc(), both trees, same sequence; press secs were equal (ext 33-37 s, int 12-15 s both). Suspects
+   by code: §FAULT_GI hueCls raycasts all scene meshes x 64 rays per press when hueNoise>0 (runs every exterior-after-interior
+   press); irCoveApply texture (small, 1 row). Ask red1 whether "hog" = RAM/GPU number or a stall (lesson: a past 'hog' was a
+   shader-compile stall).
+ M2 NEW (red1): after Alt+S -> Esc, rooftop solar panels + cafeteria tables go missing in navigation. Same class as
+   §BAKE_MISSING_ELEMENTS (dlod restoring zeroed matrices)? Witness first: per-mesh non-zero instance/batch matrix census before
+   Alt+S vs after Esc; building + pose from red1.
+ S4 REPRODUCED headless: hueNoise 1183-1398 on the Terminal exterior pose [41.691,4.561,33.774] EVERY time it follows an interior
+   press ([7.473,-7.532,1.036]); 5-6 on a first press. Same on d0125d74 (pre-today) = sequence state carried across presses in the
+   GI path (G.acc / kept renderer?). hueCls will now classify it; bisect what the interior press leaves behind.
 ORDER (red1 2026-09-26 18:30): loose Alt+S items FIRST (S1 blown, S2 unlit ceilings, then S3), THEN the Alt+C review.
 ALT+C RULINGS (red1 2026-09-26, recorded for the film lane — do not re-litigate):
  R1. EXPOSURE = a movie camera in action: meter every frame (the §METER_ADAPT CIECAM02 meter, 160x90 readback) and ease toward
