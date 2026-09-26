@@ -243,6 +243,18 @@ STILL FINDINGS TO FIX BEFORE ALT+C (red1's 17:47-17:52 Hospital stills, v1448; 4
  S3. Carried: Terminal 2 tall shafts dark (top-only cove >15 m above the floor); plenum duct undersides dark (floor-facing);
      camera under an overhang metered as inside (Hospital corner pose → bright); hueNoise over-reports colour bleed.
 Then the Alt+C review (FIRST TASK above). red1 will discuss the implications of adopting the new Alt+S settings for films.
+REINFORCED by red1's 24 stills 17:47-18:13 (Hospital, Terminal, Clinic OCI, HHS, LTU; v1448; read with the tEXt pose/fault):
+ S1+ blown correlates with LOW zonePass (lamps passing the zone test per fragment): Clinic …416837500 cam [-9.095,-0.161,1.44]
+     tgt [0.472,-0.961,0.704] blown 9.83% zonePass 5 (vs ~100-180 on clean stills); Hospital …416110090 2.91%; HHS …417251249
+     1.16% expStep 6.63. Mechanism to confirm: dim zone -> meter opens 5-8 stops -> bright areas seen through openings clip.
+ S2+ unlitCeil in a 2nd building: HHS …417274231 cam [-10.669,-3.739,-29.894] tgt [1.565,-4.363,0.902] unlitCeil 10/143
+     zonePass 14.9; Hospital 21/144 zonePass 9.3 — same low-own-lamps pattern.
+ S4 NEW: hueNoise spikes on EXTERIOR stills: HHS …417236845 1785, Terminal …416662700 805 / …416627932 420, LTU …417533045 432,
+     …417596710 399, Clinic …416868223 178. Either the rainbow-edge artifact (§GI_RECEIVER_QUANT) is back outdoors or the counter
+     counts real colour bleed (known over-report) — classify the flagged pixels (app near-black + composite saturated) by surface
+     before trusting either.
+ S5 minor: the FIRST still after a page load records sw=None in its tEXt (…416041529, …416505303, …416707328, …417236845,
+     …417533045) — §STILL_POSE_HOST reads the SW version before the worker controls the page.
 ORDER (red1 2026-09-26 18:30): loose Alt+S items FIRST (S1 blown, S2 unlit ceilings, then S3), THEN the Alt+C review.
 ALT+C RULINGS (red1 2026-09-26, recorded for the film lane — do not re-litigate):
  R1. EXPOSURE = a movie camera in action: meter every frame (the §METER_ADAPT CIECAM02 meter, 160x90 readback) and ease toward
