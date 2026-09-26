@@ -298,6 +298,15 @@ NEXT (red1 11:22, before suspend):
    room. Spec: per zone scale lamps so the zone's mean working-plane E (0.8 m, lamps only, analytic — §LUX_CHECK way) meets
    its EN row (cite rows; unknown use -> circulation 100 lx, as TRIM_LUX_VOID). Indoor still …392969959 cam
    [-9.745,-2.417,8.472] tgt [-4.804,-0.83,-2.23] (blown 0.32%).
+   -> 167af49a §LAMP_EN shipped (sw v1442): room-category EN table (corridor 100, restroom 200, kitchen 200, utilities 200,
+   habitable 200 default = 6.37.1); per room box, 3 passes, cap p90, unassigned -> median; Clinic achieved E/EN p50 0.88,
+   lamps were ~7x over EN. §LUX_CHECK fixed (read point lights -> lamp-blind since §LAMP_UNCAPPED). Clinic IFC has 269 named
+   IfcSpace (CORRIDOR 40, TOILET, WAITING, OFFICE...) dropped by extraction -> carry over later; Hospital/Terminal IFC have 0.
+1b. Corner blotches (item 1) — Fable §GROUND_VIEW_SUN step 1: hypothesis WRONG, nothing built. 55% of the black is an OPEN 0.5 m
+   slot between two "Roof Soffit: Metal Panel - 50mm" layers (0yBDUVxBfEAwIEA5xi7UcV above, 3j5XRUDAL1bfmNQ9$z3SDQ below) at
+   "Exterior - Metal Panel" wall 2kX3tz5gv6bv4UYUPS1hhW, x 10.2-14.5 y 4.5-4.8 z 9.7: no fascia modelled; mesh sky view ~0.09,
+   ground 0, sunlit-obstruction share 0.000 -> physically dark at exposure 0.383. 36% = dark interior through glass (ruling).
+   Levers = data (closure) or a ruling on shaded cavities. Lattice limit noted: min elevation 6.72 deg, a 1-cell slot reads F 0.
 3. Parked: §FAULT_BLOCK instrument (fix/fault-block), films on lamp data (still pool), 3183 unresolved-zone near-black px (Clinic).
 RED1 2026-09-26 PM on still …380099073 (aerial, outside, day): "windows very dark no light within". State: lamps 0/200 lit —
 §STILL_LAMPS_OUTSIDE (effects.js ~4338) turns all lamps off for a daylight still shot from outside; &lampsout=1 keeps them
