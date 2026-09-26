@@ -286,6 +286,19 @@ OPEN (branches pushed, NOT merged):
 - fix/glass-batched: §GLASS_FRESNEL patches untagged batched buckets whose members are all glazing (Clinic 40/80 stock glass
   hits); glassStock counts them. Untested (GPU busy).
 - fix/fault-block: §FAULT_BLOCK instrument parked (confounded by grid-aligned geometry).
+SHIPPED later (look/combined-0925 @ 5c9e7fc6, sw v1441): 9e491e8e §IRC_MAX v2 (meter counts all light — decided for red1:
+"darker is realistic"; Clinic strip 2044 -> 0; refs Clinic corridor 77.7 -> 70.4, Hospital indoor 83.5 -> 72.4), db29c4b8
+§GLASS_BATCHED (Clinic stock glass 40/80 -> 0), 5c9e7fc6 §GROUND_VIEW_FIELD (Fable; hemi ground half x Gd 'bounce' mode;
+Hospital aerial near-black 6101 -> 3844, dark 0.24% -> 0.13%).
+NEXT (red1 11:22, before suspend):
+1. "Outside Hospital there are dark blotches along corners" — still …392936525 cam [16.708,9.062,17.766] tgt 0,0,0 (taken on
+   v1440, BEFORE §GROUND_VIEW_FIELD). First: black_probe.js (scratchpad) exact classification at that pose on v1441.
+2. "lamp strength should be commensurate with indoor space, a standard governs it" — EN 12464-1 maintained illuminance per
+   space use (§LUX_CHECK already maps it). Today every lamp = one calibrated intensity (§SOURCED_LIGHT_CALIB) regardless of
+   room. Spec: per zone scale lamps so the zone's mean working-plane E (0.8 m, lamps only, analytic — §LUX_CHECK way) meets
+   its EN row (cite rows; unknown use -> circulation 100 lx, as TRIM_LUX_VOID). Indoor still …392969959 cam
+   [-9.745,-2.417,8.472] tgt [-4.804,-0.83,-2.23] (blown 0.32%).
+3. Parked: §FAULT_BLOCK instrument (fix/fault-block), films on lamp data (still pool), 3183 unresolved-zone near-black px (Clinic).
 RED1 2026-09-26 PM on still …380099073 (aerial, outside, day): "windows very dark no light within". State: lamps 0/200 lit —
 §STILL_LAMPS_OUTSIDE (effects.js ~4338) turns all lamps off for a daylight still shot from outside; &lampsout=1 keeps them
 on; default 0 "until red1 picks". -> red1 picked ON (28f86ff7).
