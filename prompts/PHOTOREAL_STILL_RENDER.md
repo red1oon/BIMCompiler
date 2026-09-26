@@ -263,9 +263,19 @@ NEXT (red1's order, decide nothing twice):
    dark 2.9%) not caught by unlit.
 6. Then the old queue: §LAMP_UNCAPPED (b00ea663e; capDropNear=120 on a Hospital aerial), §COVE_LIGHT (TRIM_LUX_VOID 100),
    §GLASS_VEIL (Clinic windows opaque from outside: still …374222505), floor blotches.
+SHIPPED later 2026-09-26 PM (look/combined-0925, each its own fix/ branch):
+- 28f86ff7 §STILL_LAMPS_OUTSIDE default 1 (red1: "good to have them on and bright so outside view can be impressive"; calibrated
+  intensity, no boost; films same). Aerial pose: GPU peak 5244 vs 5892 MiB, GI 72 vs 73 s — no cost.
+- 524c3db1 §LAMP_UNCAPPED (NEXT 6 pulled forward; red1 "far corner dark, lights up when near" / "one angle lit, other dark").
+  Cause measured: cap 160-200 picked around the camera (Terminal 421 lamps near red1's target lit 132 vs 91 from two poses).
+  Now every placed lamp is data (tools.js A._lampData -> sourced_light.js clusters 2 m, shader loop). Witness scratch probe
+  uncap_probe.js: Terminal 861/861 lit both poses, target list identical, 0/221 missing; Hospital indoor 1274/1274 (was 160),
+  refine 12.3 vs 12.2 s, link same, loop mean 164/fragment. §FAULT now prints lampList mean/max. Films still on the pool (next).
 RED1 2026-09-26 PM on still …380099073 (aerial, outside, day): "windows very dark no light within". State: lamps 0/200 lit —
 §STILL_LAMPS_OUTSIDE (effects.js ~4338) turns all lamps off for a daylight still shot from outside; &lampsout=1 keeps them
-on; default 0 "until red1 picks". Asked red1 to pick the default (one line).
+on; default 0 "until red1 picks". -> red1 picked ON (28f86ff7).
+red1 2026-09-26 PM: "Terminal, Hospital indoor rather botchy shadows. Only Clinic hallway is nice ... clear up any pending fixes
+and do good WITNESS logging and no more rely on my visuals" -> work the NEXT list, every fix proven by a § counter.
 LESSONS today: pkill -f / pgrep -f self-match killed my own shell twice (exit 144) — kill by pid. A memory "hog" report was a
 main-thread stall (shader compile), not RAM: measure the first staged frame (SOURCED_LIGHT_BIND -> GLERR firstFrame gap).
 red1 tests the latest always — never ask which version.
