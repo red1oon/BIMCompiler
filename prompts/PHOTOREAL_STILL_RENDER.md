@@ -353,14 +353,17 @@ HEADLINE NUMBERS (BEFORE = v1456 tree, attempt 1 §ZONE_CAP_CENTRE on; headless 
    raybench_hospital.log: raycastFirst 11-14 us/ray, shapecast any-hit 4.5 us/ray.
    REFS: inner room [9.947,-7.699,0.098]->[14.735,-8.114,2.081] FIRST press on a fresh page compositeMean 99.83 (ref ~101,
    hospital_before_fresh_innerroom.log, staging 14,799); the SAME pose as a 2nd press on a warm page after the aerial press gave
-   65.61 (hospital_before_alts_innerroom.log) and every warm-page pose landed at 65-67 -> REF PROTOCOL: first press, fresh page
-   (fresh puppeteer profile = no IDB record), one pose per page. Outside-looking-in fresh first press: see
-   hospital_before_fresh_outsidein.log (was running at hand-off; before2.out has the summary line if it finished).
+   65.61 (hospital_before_alts_innerroom.log) and every warm-page pose landed at 65-67 -> REF PROTOCOL: first press on a fresh
+   PAGE, one pose per page. Outside-looking-in fresh-page first press: compositeMean 129.75 / appMean 132.37, §FAULT OK, §GLARE
+   PASS (hospital_before_fresh_outsidein.log; the warm 2nd press at the same pose gave 66.48). NOTE the warm-probe BROWSER keeps its
+   IndexedDB across /open: that press shows zoneBuild=116 audit=0 = §ZONE_IDB_CACHE hit, staging 15,518 (zoneCap 3,374 +
+   sourcedStage 6,448). A truly cold staging number (W6) needs /close before /open (11,843 measured cold at the aerial pose).
    cells: inner-room cam cell 7058199 zone 207 COVERED cap 1 above; red1 aerial cam OPEN; outside-in cam OPEN.
  Clinic (&ghost=1): corridor [21.243,-0.606,-1.261]->[1.197,-4.155,-2.608] first press compositeMean 75.5 (ref 76-78), px<=15
    0.02%, staging 7,284, zones 441, indoorCells 141,215, largest 5,523 m3 (31.3%), capCells 57,141 / capSkipped 49,916, §GLARE PASS.
    clinic_before_fgeo.log: exterior n=32: within +-0.1 37.5%, mean F 0.215 vs 0.381, visibility median -0.052, quadrature -0.056;
-   truly covered n=368: 97.8% within. (clinic cells: corridor cam — see clinic_before_cells.log if before2 finished.)
+   truly covered n=368: 97.8% within. cells: corridor cam cell 797874 zone 27 COVERED cap 11 above (clinic_before_cells.log);
+   a zone-only re-press on a fresh page: §GLARE PASS, staging 5,971 IDB-hit (clinic_before_zoneonly.log).
  Terminal: inside [7.473,-7.532,1.036]->[6.397,-8.016,3.054] (proxy for the approved indoor still, whose pose is unknown) first
    press compositeMean 103.35, px<=15 0.01%, staging 20,190, zones 156, indoorCells 1,153,331, largest 134,395 m3 (93.2%),
    capCells 54,525 / capSkipped 78,714, §GLARE PASS. terminal_before_fgeo.log: exterior n=140: within +-0.1 16.4%, mean F 0.358 vs

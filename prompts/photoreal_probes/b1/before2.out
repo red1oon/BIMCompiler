@@ -8,3 +8,11 @@ terminal_before cells [{"name":"inside","cell":1825936,"raw":16,"cls":"COVERED",
 { "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 54.217}
 
 == hospital_before_fresh_outsidein alts 01:35:14
+"verdict": "DONE" stagingTotal=15518 compositeMean=129.75 appMean=132.37 
+== open Clinic %26ghost%3D1 01:37:47
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "elements": 16071, "loadSecs": 30.316}
+
+== clinic_before_zoneonly alts 01:38:18
+"verdict": "DONE" stagingTotal=5971 
+clinic_before cells [{"name":"corridor","cell":797874,"raw":27,"cls":"COVERED","zone":27,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":11}]
+== before2 done 01:38:30
