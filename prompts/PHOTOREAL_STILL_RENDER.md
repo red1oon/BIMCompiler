@@ -276,7 +276,10 @@ S4 ⛔ NOT REPRODUCED headless (same GPU class, nvidia|lovelace): HHS …4172368
   hue pair red/orange + cyan/blue, value ~45. 17f1af2a sw v1453: §FAULT_GI + PNG faultGi now carry hueCls {behindGlass,
   blackMat, other, miss} over 64 flagged px + giAdapter — red1's next exterior still classifies itself. Headless: 5/5 behindGlass,
   composite lift behind glass +4.3 (56.6 -> 60.9) vs opaque +2.6.
-S3 plenum/shafts ⛔ RULING (one question covers both): Hospital plenum pose (void zone 50) cam [-20.496,-5.619,-34.439] tgt
+S3 plenum/shafts ✅ DONE (witness) 1916bf34 sw v1454 — red1 ruled "Yes as long it's not left in the dark": §COVE_IR = cove light
+  enters its zone's IR (direct = deficit x (1-R), IR = deficit x R, level holds). Plenum dark 4.15% -> 0%, unlit 89 -> 0; Terminal
+  26 m / 17 m shafts ~50 lx IR top to bottom; corridor ref unchanged. (Record of the question below.)
+S3 plenum/shafts (question, answered): Hospital plenum pose (void zone 50) cam [-20.496,-5.619,-34.439] tgt
   [-23.527,-6.051,-22.952]: cove 100 lx, IR 0 (IR is built BEFORE the cove, so cove light never enters the zone's interreflection),
   floor-facing undersides get neither -> dark 4.15%, unlit 89/144. Fix candidate: IR includes the cove (cove sized x(1-R) so the
   level still holds) = a zone-flat term in dark compartments, against red1's "no flat fill" for BLACK_INTERIOR; the same term
