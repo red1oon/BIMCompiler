@@ -255,6 +255,17 @@ REINFORCED by red1's 24 stills 17:47-18:13 (Hospital, Terminal, Clinic OCI, HHS,
      before trusting either.
  S5 minor: the FIRST still after a page load records sw=None in its tEXt (…416041529, …416505303, …416707328, …417236845,
      …417533045) — §STILL_POSE_HOST reads the SW version before the worker controls the page.
+S1 ✅ DONE (witness) 2026-09-26 night — look @ 5e5fda56, sw v1450, served :8624 (branch fix/s1-blown). The "low zonePass"
+  correlation was WRONG; three different causes, classified by readback + raycast at each pose (scratchpad s1/blown_probe.js):
+  - Clinic …416837500 (9.83%) = REAL DEFECT §CSM_NEAR_LEAK: the 1 m zMin floor also bounded cascade 0's box, surfaces < 1 m sat
+    in no cascade box, shadow_cascade.js D3 lit them -> full sun through the roof on a wall 0.9 m away (249/249 sun-facing
+    clipped samples ray-blocked; meter read them at E 0.001 — the meter was right). Fix: cascade 0 box from cam.near. New
+    witness §STILL_SHADOW_CASCADE uncovered= / §FAULT csmUncovered (n/a when not judged). 6250 -> 0, blown 9.67% -> 0.03%.
+  - Hospital …416110090 (0.95% here) = sunlit exterior through curtain-wall glass (IfcPlate T 0.30) at interior exposure 5.8 stops:
+    physical single-exposure behaviour, not a defect.
+  - HHS …417251249 (1.24%) = ELEC luminaires' own emissive (cccc44/em ffe4b5), mostly added by the bounce composite: physical.
+  Also built (non-default, red1 to A/B): 140bc884 &metermode=hist (70/95) — at Clinic S1 8.45 vs 9.43 stops, corridor ref
+  composite 66.9 vs 78.6 (avg). avg/centre/zone all gave ~9 stops at Clinic S1 (none of them was the cause).
 ORDER (red1 2026-09-26 18:30): loose Alt+S items FIRST (S1 blown, S2 unlit ceilings, then S3), THEN the Alt+C review.
 ALT+C RULINGS (red1 2026-09-26, recorded for the film lane — do not re-litigate):
  R1. EXPOSURE = a movie camera in action: meter every frame (the §METER_ADAPT CIECAM02 meter, 160x90 readback) and ease toward
