@@ -621,3 +621,11 @@ routewalk self-tests (planned − refused, not a literal 23), gridstretch_multi 
 `Duplex_geo.db` (196 el); the two Duplex geometry sources disagree on triangle count for 82/203 hashes (121 agree, 12 missing).
 **⛔ New question 3 for red1:** should ROUTED RUNS (conduit/pipe tubes, `dwChain`) glow in x-ray like fixtures? Today they stay opaque.
 **⛔ Question 4:** which Duplex geometry is canonical — `Duplex_geo.db` (served) or `Duplex_extracted.db` (82 hashes differ)?
+**Full 155 re-run on the branch (2026-09-27, 3-parallel, may have spanned a machine suspend) — NOT a verdict:** 25 non-zero, incl. 6
+that are green serially this session (xray_sc_duplex, oleye, instpick, e2e_scale, residents_anchor_sweep, dw_dedup_render) → load /
+suspend suspects. **Resume:** re-run these 25 SERIALLY on the branch AND on main (same env: NODE_PATH, fixtures copied, :8399 server):
+arc_3axis_rotation, arc_source_parity, dw_rot_units*, dw_dedup_render, e2e_instance_hide*, e2e_instpick, e2e_mv_parity*, e2e_oleye,
+e2e_rotate, e2e_scale, e2e_seedtrunk, e2e_terminal_open, e2e_zoom_to_selection, ifc_export_seed, modeller_disc_walk,
+modeller_git_history*, modeller_terminal_walk*, modeller_ux_pill*, e2e_scale_check_terminal, render_fidelity, route_pattern_bridge,
+residents_anchor_sweep, sdg_cascade_smoke, sdg_gate_smoke, xray_sc_duplex (* = parked/known). Any red on branch but green on main
+= a regression from this branch → fix before the PR. Logs: session scratchpad `full/`.
