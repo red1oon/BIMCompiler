@@ -562,3 +562,22 @@ another element; W-SAVE-BLOCKED-HEAL-INDUCED's fixture found nothing since §XED
 5. PIXEL-AS-PROOF — framebuffer sums used as the verdict (Primal Law: numbers, not pixels).
 **Done when:** every witness has a class (or "sound"), each non-sound one is fixed or retired with a reason, and each fix shows
 base-vs-fix numbers. Method that worked: probe the app's own state numerically before trusting a red (C6: bbox + selection).
+
+### §MODELLER-NET-AUDIT — RESULT batch 1 (2026-09-26, PAUSED — machine suspend). bim-ootb branch `test/modeller-net-audit`, pushed, **NO PR yet**.
+**Scope done:** the 58 `e2e_harness` witnesses, run at 3-parallel on untouched `origin/main` (baseline), then serially, then on 1069c70c (09-25).
+**Headline:** 19/58 were RED on main. 8 of them pass serially (load flakes); 11 were red serially too, and 10 of those were already red on 09-25. Nothing runs these in CI, so nobody saw it.
+**SCOPE-BLIND (harness `§NET-FAILLOG`, report-only):** the 39 green witnesses hide NO product failure line. Every hit was noise (favicon, `total=0`/`refused=0` summaries) or intended (ITEMDRAG REFUSED, simulated quota). One real data gap: `ELEC/EMERGENCY_LIGHT` has no catalog mesh (row 14). ⚠ The 46 direct-puppeteer witnesses do not use the harness — NOT yet covered.
+| witness | class | root cause (measured) | base → fix |
+|---|---|---|---|
+| W-E2E-SCALE | RACE | a §ZOOM-SEL fly outlived flySettle's 15 s cap at load, overwrote the frame; press landed (1251,866) off a 1200×850 viewport → move, not scale | 4/3 → 7/0 |
+| W-E2E-RSARM | RACE | the scale commit re-selects → fly; ring pixels projected mid-fly; ring grabbed at 0° where it crosses the X arrow (rotZ@4.16 vs x@4.18) | 7/1 → 8/0 |
+| W-E2E-DM-SNAPGEOM | RACE | the select-fly lands the camera 2 m away → drag target off-canvas, no commit | 2/5 → 7/0 |
+| W-E2E-FLOATDIM | RACE | D1 commit re-select fly moved the camera under D4's ring press | 5/1 → 6/0 (3/3 under load) |
+| W-E2E-SEL-TINT-REFOLD | RACE | re-click while #stat='cutting…'; bCut's trailing highlight(null) wiped it | 6/3 → 9/0 |
+| W-E2E-INSTPICK | WRONG-VIEW + RACE | camera 0.6 m ABOVE a ceiling fixture → slab 175 hit first; P2b camera overwritten by P2's fly | 4/3 → 7/0 |
+| W-E2E-LOD-MATCH | WRONG-PROXY | raw vertex count (renderer splits per face: 762→3230) vs geometry; now tris + distinct positions (758=758) | 4/2 → 6/0 |
+| W-E2E-VOID-ANCHOR G6 | STALE-BASELINE | 07-30 file predates §XEDGE-3AXIS (varied code AND anchors); now a same-run control: live == stripped, kept differs (+350 abuts) | 18/1 → 19/0 |
+| W-E2E-INSTHIDE H1-rig | ⛔ FIXTURE GONE | twin match was centre-vs-base (fixed via `_dw.cz`, 0/480 → matched); still no pose shows 5 unoccluded (best=2) → prints INCONCLUSIVE. Needs a fixture redesign | 2/1 (honest) |
+| W-E2E-ROW7-GEO-REINIT R4 | env | `Terminal_arcstr_proof.db` is gitignored, only in the main checkout → correct INCONCLUSIVE in a worktree | — |
+| disc_density D3/D4, walkall_terminal_scale T5 | VACUOUS | `[].every()` / `envChecked===0` passed on nothing; guards added. **NOT RUN yet** | — |
+**⛔ OPEN before any PR:** a post-fix 3-parallel run (loadavg ~38 vs ~31 at baseline) went red on CUT C4, CUT-LAYERS L6, SKETCH K5b (PIXEL-AS-PROOF framebuffer sums) and GRIDMOVE-ROOF R6 — all green at baseline. Re-run these serially on the branch vs main to separate a harness regression (the flySettle yield) from load. Then run the 51 node witnesses + the 46 direct-puppeteer ones (not yet touched).
