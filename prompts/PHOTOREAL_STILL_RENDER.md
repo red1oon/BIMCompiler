@@ -229,6 +229,20 @@ lamp data, §IRC_MAX v2, §GROUND_VIEW_FIELD, §GLASS_SPEC_GATE/§GLASS_BATCHED/
 dated section — per new function: can it run per frame / per shot, cost, determinism, 4D build-up (S3), flicker risk. Then the
 order in the 1d block below. Tools: viewer/tests/warm_probe.js (checks in 5-17 s; SW landmine noted in 1d).
 The full day's record is the "resume bounce" block and its 1a-1d notes below.
+LIVE 2026-09-26 18:00: PR bim-ootb#1783 merged (890e4c70, merge of release/look-0926 = look d0125d74 + main's 17 Modeller commits;
+conflicts were version lines: sw v1449, cinema_maxq ?v=9, rule_findings_film ?v=15). GH Pages built 890e4c70; live sw.js =
+v1449 (minified: grep 'CACHE_VERSION="v1449"'). Release smoke: Hospital/Clinic/Terminal Alt+S+bounce 0/0/0; Modeller page 0 errors.
+STILL FINDINGS TO FIX BEFORE ALT+C (red1's 17:47-17:52 Hospital stills, v1448; 4 of 5 §FAULT OK):
+ S1. …416110090 cam [-10.903,-1.976,-16.429] tgt [3.839,-6.592,0.064]: blown 2.91% (clipped white), expStep 5.74 — the
+     §METER_ADAPT exposure opened 5.7 stops. Find WHICH surfaces clip (lamp fixtures? cove strips 0xffe4b5 MeshBasic? surfaces
+     near lamps?) by readback, then decide: blown cap in the meter (a cited rule) vs a source-side cause. No knob.
+ S2. …416128632 cam [-18.514,-8.311,-2.779] tgt [3.838,-6.592,0.065]: §FAULT unlitCeil 21/144 REPRODUCED on the release build
+     (lampList mean 138 but zonePass 8: the ceilings' fragment zone has few lamps of its own). Hypothesis to test: the zone meets
+     its EN row on the 0.8 m plane so §COVE_LIGHT's deficit is 0, and §IRC_MAX's zone floor is low — ceilings are judged
+     nowhere. Measure per-term (lamps/IR/cove/sky) at the 21 samples before changing anything.
+ S3. Carried: Terminal 2 tall shafts dark (top-only cove >15 m above the floor); plenum duct undersides dark (floor-facing);
+     camera under an overhang metered as inside (Hospital corner pose → bright); hueNoise over-reports colour bleed.
+Then the Alt+C review (FIRST TASK above). red1 will discuss the implications of adopting the new Alt+S settings for films.
 
 ## ▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 PM ("resume bounce") — START HERE (dev red1-55; red1 rebooting for the NVIDIA driver)
 TRIGGER: when red1 says "resume bounce", read §WORKING MODE above, then this block, then continue the NEXT list. Supersedes the
