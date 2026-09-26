@@ -266,6 +266,22 @@ S1 ✅ DONE (witness) 2026-09-26 night — look @ 5e5fda56, sw v1450, served :86
   - HHS …417251249 (1.24%) = ELEC luminaires' own emissive (cccc44/em ffe4b5), mostly added by the bounce composite: physical.
   Also built (non-default, red1 to A/B): 140bc884 &metermode=hist (70/95) — at Clinic S1 8.45 vs 9.43 stops, corridor ref
   composite 66.9 vs 78.6 (avg). avg/centre/zone all gave ~9 stops at Clinic S1 (none of them was the cause).
+S2 ✅ DONE (witness) a00637e5 sw v1451 — §FAULT unlitCeil was IR-BLIND (false positive): at the Hospital pose the 21 'unlit'
+  ceiling samples display 70/255 median (frame p10; median 118) with §IRC_MAX IR, 0 with &ir=0. Counter now reports irOnly
+  (zone IR > 0) apart from unlit; SourcedLight.irZone(z). Hospital: unlit 0 / irOnly 21 (IR off: FAULT unlit 21, dark 27.5%);
+  HHS: unlit 0 / irOnly 10, dark 0%. The low-own-lamps pattern was real but those ceilings are lit by the zone IR floor.
+S5 ✅ DONE (witness) 31bdfcec sw v1452 — the sw.js fetch now patches the first press's pose; PNG sw on a fresh page = "v1452" (was null).
+S4 ⛔ NOT REPRODUCED headless (same GPU class, nvidia|lovelace): HHS …417236845 3 vs 1785, Terminal …416662700 6 vs 805. From red1's
+  PNGs: flagged px lie within 2 px of app-black px (IfcWindow colour 000000 + dark interiors through glass, zone=in, 30-56 m),
+  hue pair red/orange + cyan/blue, value ~45. 17f1af2a sw v1453: §FAULT_GI + PNG faultGi now carry hueCls {behindGlass,
+  blackMat, other, miss} over 64 flagged px + giAdapter — red1's next exterior still classifies itself. Headless: 5/5 behindGlass,
+  composite lift behind glass +4.3 (56.6 -> 60.9) vs opaque +2.6.
+S3 plenum/shafts ⛔ RULING (one question covers both): Hospital plenum pose (void zone 50) cam [-20.496,-5.619,-34.439] tgt
+  [-23.527,-6.051,-22.952]: cove 100 lx, IR 0 (IR is built BEFORE the cove, so cove light never enters the zone's interreflection),
+  floor-facing undersides get neither -> dark 4.15%, unlit 89/144. Fix candidate: IR includes the cove (cove sized x(1-R) so the
+  level still holds) = a zone-flat term in dark compartments, against red1's "no flat fill" for BLACK_INTERIOR; the same term
+  would lift the Terminal shaft bottoms. Q to red1: allow the cove's light into the IR bounce floor?
+S3 overhang meter ⛔ needs the still: no pose recorded for "Hospital corner pose -> bright". hueNoise over-report: see S4 witness.
 ORDER (red1 2026-09-26 18:30): loose Alt+S items FIRST (S1 blown, S2 unlit ceilings, then S3), THEN the Alt+C review.
 ALT+C RULINGS (red1 2026-09-26, recorded for the film lane — do not re-litigate):
  R1. EXPOSURE = a movie camera in action: meter every frame (the §METER_ADAPT CIECAM02 meter, 160x90 readback) and ease toward
