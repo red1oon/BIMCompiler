@@ -1886,6 +1886,16 @@ GATE: at red1's tower pose + fly-in poses + the sweep: every lamp within range o
 all-fixture irradiance vs the rendered set, max relative loss < 1% per point); §CAMDEP_SURFACE lamps term identical across
 poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame ms reported.
 
+**§COVE_NO_STRIP — RULING (red1 2026-09-27, overrides §COVE_LIGHT "and a VISIBLE thin emissive strip mesh" + impl note 6):**
+red1: "The ceiling rim lighting need not have the actual lighting element. That be inventing objects. Rather just have the
+glow that goes along its corner axes. Need not be accurate or bright. Just to replace the sheer darkness."
+SPEC: delete the visible strip (coveStrip/coveStripOff, the 'cove_strip' MeshBasicMaterial mesh, the strip bar list). The cove
+FIELD (the glow along the wall-ceiling edges: DOWN + UP lobes in the RGBA8UI texture, §COVE_IR) stays as is — level unchanged
+(red1 allows it to be dimmer, not a request to retune; no knob added). WITNESS: §COVE_LIGHT strip line gone; scene has 0 meshes
+named cove_strip / userData.coveStrip after an Alt+S press; §COVE_LIGHT zones/emitters and the cove readback term unchanged vs
+before (same pose); program count -1 (the strip's MeshBasic program); approved refs (Clinic corridor, Hospital inner room)
+unchanged except where a strip bar was on screen. Branch fix/cove-no-strip (from look @ 48204a78), sw v1457.
+
 **§COVE_LIGHT — SPEC (2026-09-25, dev red1-5a; item A BLACK_INTERIOR; red1: "a dark place just gets a ceiling-perimeter back
 glow"). Builds on §SKY_VIEW_FIELD (same zone texture). Alt+S-truth: BUILD per building + DECIDE per frame; films inherit.**
 DEFECT (8619): Hospital inner room cam [9.947,-7.699,0.098] 98% black; toilet [8.344,-8.647,-3.579] 57% black; Clinic room
