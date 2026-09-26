@@ -780,3 +780,8 @@ Compiled rooms keep the walker's `RM_`/approximate identity (never presented as 
 Outliner BOM-graph has room nodes > 0 and the log line's source (`walker` for the 6, `present` for Duplex/Terminal); Duplex's 21
 real IfcSpace guids unchanged. Must be shown RED with the hook disabled. Regression: W-UX-PILL A8 (3 rooms), W-XEDGE-LENS,
 W-OLEYE, room-move + UBBL witnesses.
+**✅ DONE (witness) 2026-09-27 — bim-ootb branch `test/modeller-net-audit` (no PR yet).** W-MODELLER-ROOM-INJECT 25/0 across all 8
+residents via the real Open panel (SampleHouse 3 · SampleCastle 51 · HHS 33 · Clinic 206 · Hospital 201 · HospitalGarage 5 room
+nodes; Duplex 21 real + Terminal 73 curated left untouched); hook disabled → 11/14 RED. W-UX-PILL A8 green. Not in scope, still open:
+the Viewer's version-stale recompile (`rooms_meta` ≠ ROOM_WALKER_V) is not ported — a Modeller resident with stale curated RM_
+rooms keeps them.

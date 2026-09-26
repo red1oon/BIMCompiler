@@ -629,3 +629,7 @@ e2e_rotate, e2e_scale, e2e_seedtrunk, e2e_terminal_open, e2e_zoom_to_selection, 
 modeller_git_history*, modeller_terminal_walk*, modeller_ux_pill*, e2e_scale_check_terminal, render_fidelity, route_pattern_bridge,
 residents_anchor_sweep, sdg_cascade_smoke, sdg_gate_smoke, xray_sc_duplex (* = parked/known). Any red on branch but green on main
 = a regression from this branch → fix before the PR. Logs: session scratchpad `full/`.
+**2026-09-27 update — question 1 ANSWERED + FIXED (red1: "all have rooms. Rooms injection does not work?"):** the Modeller never ran
+the room walker; 6/8 residents opened with 0 rooms. Fixed (ROOM_INJECTION_HYBRID.md §MODELLER-ROOM-INJECT, W-MODELLER-ROOM-INJECT
+25/0, RED without it). W-UX-PILL A8 green. Of the 25-list: olsync = load flake (6/0 alone); dw_dedup_render fixed (waits for the refold);
+modeller_disc_walk B3/B4 red identically with and without the room hook (pre-existing, still to triage).
