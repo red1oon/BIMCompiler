@@ -219,6 +219,56 @@ LESSONS from the watchdog side: read the FULL log before believing a summary (th
   counter for each eye-found class; never hand red1 a tree without the 1-minute smoke; answer red1 in plain short English,
   lead with the verdict; a still's camera pose + host are in its PNG — use them, never guess.
 
+## ▶▶▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-27 ("resume alts loose") — START HERE. LAUNCH A FABLE AGENT FOR B1 (red1's request)
+red1 2026-09-27: "it has fallen dark on walls away from the Sun outside. Dark patches still persists. ... launch a Fable agent to
+tackle the toughest layer". (Overrides the standing Sonnet-only dispatch memory for THIS task — red1 named Fable explicitly.)
+STATE: look tree /tmp/wt-look = look/combined-0925 @ 48204a78 sw v1455 served :8624 (after a reboot: `git worktree add /tmp/wt-look
+look/combined-0925` in ~/bim-ootb + `node ~/bin/serve_tree.js /tmp/wt-look 8624 &`). Shipped this lane 2026-09-26/27 (each its own
+fix/ branch, all FF'd into look): 5e5fda56 §CSM_NEAR_LEAK · 140bc884 &metermode=hist · a00637e5 §FAULT irOnly · 31bdfcec sw in first
+PNG · 17f1af2a §FAULT_GI hueCls · 1916bf34 §COVE_IR · 48204a78 M2 (ghost=1 auto-shell no longer fires on Alt+S Esc).
+NOT MERGED: fix/zone-cap-centre (4ca8a627 + bump, sw v1456) — see B1.
+
+### B1 — THE TOUGHEST LAYER: exterior walls in shade go black (the sky-view field on the 0.5 m lattice). Dispatch to Fable.
+Evidence (red1 still ~/Downloads/bounce_still_1790438202002.png, Hospital aerial, cam [-44.334,20.357,48.696] tgt
+[-2.924,-11.908,7.912], db /buildings/Hospital_extracted.db &ghost=1; v1455): 4.31% of pixels <= 15/255. Classes (probe
+prompts/photoreal_probes/dark_cls.js):
+ (a) IFC colour 000000 parts in the open (albedo 0) — data, leave.
+ (b) facade 707f8e, side-facing, 27-41 m, shaded: the cells in front are labelled COVERED (zone 1 = the building's giant zone,
+     83% of indoor volume) and their sky-view field G reads F 0.06-0.10 (skycheck.js), while 48 cosine rays against the real
+     meshes find ~0.44 of a possible ~0.5 open (a vertical wall fully open to sky). ~3-4x too little sky -> black in shade.
+ Mechanism measured: the voxeliser (light_zones.js build(): barycentric samples at CELL/2 -> any touched cell SOLID) + the open-sky
+ top-down scan (any SOLID above = covered) + the field (FIELD_DIRS lattice march; a SOLID mid cell blocks) together turn a lip that
+ clips a column's edge (coping/fascia/window head/parapet) into a full 0.5 m roof, and the facade's own fattened voxels block the
+ field's rays. Census (cand.js, Hospital): 21,507 covered cells beside open air; 1,170 under a thin cap with open sky above; mesh
+ up-ray from the cell centre escapes in 113/167 of those. Mesh raycasts cost ~10 ms/ray (4,856 objects, no scene BVH) — a
+ per-cell ray pass is too slow as-is.
+ Attempt 1 (fix/zone-cap-centre, UNMERGED): only a SOLID cell whose column centre line is crossed by a triangle counts as a roof.
+ Result at red1's pose: px<=15 4.31% -> 2.82% (capSkipped 210,815 of capCells 236,984). NOT enough (red1: walls away from the
+ sun still dark), and the interior-leak check (roofed rooms must stay covered; zone count / indoorCells / largest zone before vs
+ after) was NOT run. The field (G) itself is untouched by it: side-facing wall cells still march through the wall's own voxels.
+What the Fable agent should decide and build (spec first, in this file, then code; witness = numbers, never red1's eyes):
+ 1. Is the right fix at the LABEL (covered vs open) or the FIELD (F per cell), or both? Measure F vs geometric sky on a sample of
+    exterior wall cells across Hospital/Clinic/Terminal (skycheck.js pattern), before and after, as a distribution — target: F
+    within +-0.1 of the geometric fraction for cells whose geometric sky > 0.2.
+ 2. Candidate directions (not decided): start field rays from the surface-side face of the cell instead of its centre / skip the
+    source cell's own-wall voxels; exact mesh visibility for the boundary shell only (needs a BVH over the merged boundary draws —
+    three-mesh-bvh is loaded, §BVH_DEFERRED); finer lattice near facades.
+ 3. Guards: black_exterior / junction_zone_flip / covered_open_side_black (§GLARE audit) stay 0; approved refs unchanged (Clinic
+    corridor [21.243,-0.606,-1.261]->[1.197,-4.155,-2.608] composite ~76-78; Hospital inner room [9.947,-7.699,0.098]->
+    [14.735,-8.114,2.081] ~101; red1's outside-looking-in / Terminal indoor refs in §WORKING MODE); zone stats logged; ZONE cache
+    rebuilds on code change (SRC hash) — fine.
+ Tools: viewer/tests/warm_probe.js (or prompts/photoreal_probes/warm_probe_key.js = same + /key?k=Escape for real key presses);
+ SW landmine: after editing, bump sw CACHE_VERSION or clear SW+caches before /open reload=1. One GPU browser at a time. The agent
+ works in its own /tmp/wt-* worktree + port, never edits /tmp/wt-look; you (the dev session) review its diff, smoke it, FF look.
+
+### Other open items (after B1)
+ - S4: an outside still AFTER an inside still gets 1,127-1,430 fringe px (Terminal [41.691,4.561,33.774]->[0.377,-13.544,0.58] after
+   [7.473,-7.532,1.036]->[6.397,-8.016,3.054]); first press 5-6. Not cascades (off: 1,237). App frame itself is darker after the inside
+   press (Terminal appMean 87.6 -> 70.7). Part explained: the first press renders before the ground texture ('earth') loads. Also
+   §SOURCED_LIGHT pushed 105 -> 109 materials after an inside press. Fringe class = 'other' opaque surfaces in a dark block.
+ - M1 "mem hog": no regression measured old vs new (GPU 2.6-2.7 GB same, heap same swing); red1 not yet said where it showed.
+ - Overhang meter pose: needs red1's still id. Then the Alt+C read-only review (FIRST TASK of the block below).
+
 ## ▶▶▶▶▶▶▶▶▶▶▶ §DEV RESUME 2026-09-26 EVENING ("resume altc") — START HERE
 TRIGGER: red1 says "resume altc" (or "resume alts loose"): do the STILL FINDINGS S1-S3 first, then this. Look tree /tmp/wt-look (look/combined-0925) @ d0125d74, sw v1448, served :8624 (after a reboot:
 `git worktree add /tmp/wt-look look/combined-0925` from ~/bim-ootb + `node ~/bin/serve_tree.js /tmp/wt-look 8624 &`).
