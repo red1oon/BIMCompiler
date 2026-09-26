@@ -605,3 +605,19 @@ W-E2E-INSTHIDE H1 (fixture gone); W-MODELLER-GIT-HISTORY G6 (labelled KNOWN GAP)
 grid_clear_leak_round2, hba_iot_scanline_fix, walk_gesture, xray_poc, residents_anchor_sweep, xray_regression_sh,
 grid_scale_yaw_hardening, xray_sc_duplex; walkall_terminal_scale did not finish. Check each against main first, then root-cause.
 Then PR the branch (a bot auto-merges, so only once every listed change is witnessed green).
+
+### §MODELLER-NET-AUDIT — RESULT batch 3 (2026-09-27). Branch `test/modeller-net-audit`, pushed, NO PR yet (full 155 re-run in progress).
+**Two more PRODUCT bugs fixed (red on main, each shown falsifiable):**
+- **§XRAY-REFOLD** — x-ray was never re-applied after a re-fold: any commit / undo / a walk's late routed commits while x-ray was ON
+  returned the building to opaque with the button still lit. SampleCastle: structureLeaked 3144, fixtures glowing 0/274. Now
+  re-applied on 'bonsai:refold' + after _redrawAllDiscWalks. New X-REFOLD claim: fix disabled → leaked 3151/174 FAIL; fix → 0 PASS.
+- **§RW-TAG-SIGNED** — `oplog.commit` signs only {op_type, parameters}; route-walk ops carried `_rw` at the op's top level, so the tag
+  never reached the log and x-ray treated every route-walk fixture as structure (glow 0/21). Moved inside `parameters`.
+**Witness fixes:** residents_anchor_sweep (read the retired `mesh.db` → each resident's own `_geo.db` from `GEO_BASE`; 32/0 on all 8
+residents), grid_scale_yaw_hardening (cut_move.js copy), hba_iot_scanline_fix (pre-fix ref = `4a2e3f65^`, HEAD had become the fix),
+grid_clear_leak_round2 (detached-row retry), xray_poc / xray_sc_duplex (routed-run `dwChain` mesh is not a fixture bucket),
+routewalk self-tests (planned − refused, not a literal 23), gridstretch_multi / walk_gesture (load waits).
+**Parked with cause:** W-MV-PARITY Leg M — asserts against `Duplex_extracted.db` (253 el) while the resident renders `Duplex_ARC.db` +
+`Duplex_geo.db` (196 el); the two Duplex geometry sources disagree on triangle count for 82/203 hashes (121 agree, 12 missing).
+**⛔ New question 3 for red1:** should ROUTED RUNS (conduit/pipe tubes, `dwChain`) glow in x-ray like fixtures? Today they stay opaque.
+**⛔ Question 4:** which Duplex geometry is canonical — `Duplex_geo.db` (served) or `Duplex_extracted.db` (82 hashes differ)?
