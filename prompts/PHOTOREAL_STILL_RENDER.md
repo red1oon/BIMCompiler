@@ -271,6 +271,21 @@ SHIPPED later 2026-09-26 PM (look/combined-0925, each its own fix/ branch):
   Now every placed lamp is data (tools.js A._lampData -> sourced_light.js clusters 2 m, shader loop). Witness scratch probe
   uncap_probe.js: Terminal 861/861 lit both poses, target list identical, 0/221 missing; Hospital indoor 1274/1274 (was 160),
   refine 12.3 vs 12.2 s, link same, loop mean 164/fragment. §FAULT now prints lampList mean/max. Films still on the pool (next).
+SHIPPED 2026-09-26 PM (cont.; witness = § counters, red1: "no more rely on my visuals"):
+- e04af53d §FAULT glassOpaque windows-only (IfcPlate opaque = IFC-opaque: Hospital "Spandrel Glass" T 0.0, Terminal "Metal
+  Deck") + glassPlateLost per guid; d4c12d99 §INST_RGBA_SPLIT (57 Hospital glass panels drawn opaque: instanced hash groups
+  keyed on geometry alone; now split by rgba/class/matVariant) — Hospital §FAULT OK first time.
+- 87c9bf77 §GLASS_SPEC_GATE (Clinic glass black from outside: reflection gated by diffuse F in window reveals; now its own
+  mirror-ray march) — §FAULT glassReflDark 32/37 -> 5/37; refs unchanged.
+OPEN (branches pushed, NOT merged):
+- fix/irc-max §IRC_MAX v2 (spec above): Clinic black strip 2044 -> 0 near-black px; BUT refs move (Clinic corridor composite
+  77.7 -> 72.2 meter-with-IR / 97.7 meter-direct; Hospital indoor 83.5 -> 72.3 / 107.4) -> ASKED red1 which (recommended
+  meter-with-IR). Branch currently = meter-direct (flip = drop the IRP[1]=0 in meterRead).
+- fix/ground-view (Fable agent): red1 "very black shadows" (Hospital aerial …387480591): 6101 near-black px, shader-exact
+  class = covered exterior surfaces F<0.2 in sun shadow; slSkyKeep scales hemi ground half by the UPWARD sky-view F.
+- fix/glass-batched: §GLASS_FRESNEL patches untagged batched buckets whose members are all glazing (Clinic 40/80 stock glass
+  hits); glassStock counts them. Untested (GPU busy).
+- fix/fault-block: §FAULT_BLOCK instrument parked (confounded by grid-aligned geometry).
 RED1 2026-09-26 PM on still …380099073 (aerial, outside, day): "windows very dark no light within". State: lamps 0/200 lit —
 §STILL_LAMPS_OUTSIDE (effects.js ~4338) turns all lamps off for a daylight still shot from outside; &lampsout=1 keeps them
 on; default 0 "until red1 picks". -> red1 picked ON (28f86ff7).
