@@ -285,6 +285,20 @@ S3 plenum/shafts (question, answered): Hospital plenum pose (void zone 50) cam [
   level still holds) = a zone-flat term in dark compartments, against red1's "no flat fill" for BLACK_INTERIOR; the same term
   would lift the Terminal shaft bottoms. Q to red1: allow the cove's light into the IR bounce floor?
 S3 overhang meter ⛔ needs the still: no pose recorded for "Hospital corner pose -> bright". hueNoise over-report: see S4 witness.
+PAUSED 2026-09-27 (red1 suspend) — RESUME HERE. Look @ 48204a78 sw v1455 on :8624 (M2 ghost-on-Esc fixed there).
+ B1 BLACK BLOTCHES (red1 …438202002, Hospital aerial cam [-44.334,20.357,48.696] tgt [-2.924,-11.908,7.912], v1455): 4.3% px <=15.
+   Classes: (a) IFC colour 000000 parts in the open (albedo 0, data); (b) grey facade 707f8e 27-41 m: cells labelled covered zone 1
+   because a SOLID voxel sits 0.5 m above, but a mesh up-ray from the cell centre escapes (3/5; census: 1,170 thin-cap cells beside
+   open air, 113/167 escape) -> sky field F 0.06-0.10 vs geometric sky ~0.44 -> black in shade. red1 said "yes" to the fix.
+   BUILT, UNTESTED: branch fix/zone-cap-centre (/tmp/wt-cap, pushed): §ZONE_CAP_CENTRE — capC[cell] = a triangle crosses the column
+   centre line in that cell (plan-view point-in-triangle, seam tol 1e-6); the open-sky scan counts only capC cells as roofs;
+   §LIGHT_ZONE stats capCells/capSkipped/capTris. NEXT: serve /tmp/wt-cap, witness at red1's pose (px<=15, F at the 707f8e cells),
+   zone count / largest zone / indoorCells vs before (no interior leak: check a roofed room stays covered), refs (Clinic corridor
+   [21.243,-0.606,-1.261]->[1.197,-4.155,-2.608], Hospital inner room, Terminal indoor), bump sw/?v= (light_zones.js), FF look.
+ S4 partly explained: the FIRST outside press after a load renders before the ground texture ('earth') loads (§GROUND_ALBEDO logs
+   map=none), so later presses at the same pose are darker (Hospital appMean 71.2 -> 62.2). Fringe after an inside press is NOT
+   cascades (off: still 1237). Remaining diff: pushed materials 105 -> 109 after an inside press. Open.
+ M1: no regression measured (see below); ask red1 where the "hog" showed.
 PAUSED 2026-09-26 late (red1 suspending the machine). Look @ 1916bf34 sw v1454 on :8624. OPEN, in order:
  M1 MEASURED 2026-09-26 (headless gpu-process PID only + performance.memory, Terminal, 3 x ext+int presses, d0125d74 vs 1916bf34):
    GPU 2631-2735 vs 2639-2731 MiB (same), after Esc 2137 vs 2169; JS heap 1818-2033 vs 1750-2184 MB (same swing), after Esc
