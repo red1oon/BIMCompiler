@@ -293,7 +293,10 @@ PAUSED 2026-09-26 late (red1 suspending the machine). Look @ 1916bf34 sw v1454 o
    by code: §FAULT_GI hueCls raycasts all scene meshes x 64 rays per press when hueNoise>0 (runs every exterior-after-interior
    press); irCoveApply texture (small, 1 row). Ask red1 whether "hog" = RAM/GPU number or a stall (lesson: a past 'hog' was a
    shader-compile stall).
- M2 NEW (red1): after Alt+S -> Esc, rooftop solar panels + cafeteria tables go missing in navigation. Same class as
+ M2 ✅ DONE (witness) 48204a78 sw v1455 — cause: ghost=1 (landing default) auto bbox-shell trigger in navigate_find.js, armed by
+   Alt+S's module load, only HELD during the still, fired on Esc (4,518 ARC/STR boxes, 0 solid tris). Now skipped when the module
+   was loaded by still/cinema. Hospital aerial after Esc: old 0 tris ghostOn, fixed 13,689,020 tris = before Alt+S.
+ M2 (original report): after Alt+S -> Esc, rooftop solar panels + cafeteria tables go missing in navigation. Same class as
    §BAKE_MISSING_ELEMENTS (dlod restoring zeroed matrices)? Witness first: per-mesh non-zero instance/batch matrix census before
    Alt+S vs after Esc; building + pose from red1.
  S4 REPRODUCED headless: hueNoise 1183-1398 on the Terminal exterior pose [41.691,4.561,33.774] EVERY time it follows an interior
