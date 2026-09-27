@@ -106,3 +106,54 @@ Scope: `/tmp/wt-mnet-audit` @ `ee18f81c` (branch test/modeller-net-audit) — `m
   (WalkerDoctrine §14 / its own comment: synthetic rooms are guesses, never schedule input) — not a defect. The fork of room
   SOURCES (mep_rw.db building_room with a literal 'Ground Floor' storey) is still a real consolidation candidate.
 - No code changed. Nothing here is scheduled; red1 picks rows.
+
+## §BATCH1 — implementation specs (2026-09-27, bim-ootb `refactor/pattern-batch1` off `origin/test/modeller-net-audit` @ee18f81c)
+Order: row 3 → row 6 → row 8 → row 1 (row 1 only if 3/6/8 green). Measurement rule for all rows: an
+instrument commit lands FIRST (log lines only, zero behaviour), and base numbers are read on that
+instrumented base; fix numbers on the same tree after. Pure refactors (3/6/8) must show behaviour UNCHANGED
+(identical counts/digests) + a measured saving. Row 1 must show a witness RED on base before the fix.
+
+### §B1-ROW3 — build the geometry index once, pass it down
+- WHAT: `real_geometry.js buildGeometryIndex` gets a `§GEOIDX build` log (count + ms + caller-visible sizes).
+  `cross_edges.js`: `_readBoxes(db, geoDb, geoIndex)` accepts a prebuilt index; `deriveAll` reads the boxes
+  ONCE and hands `opts.boxes` to `deriveDatumsAnchored`/`deriveAdjacency`/`deriveSpans` (each takes a
+  `.slice()` so adjacency's in-place sort cannot reorder what spans iterates — output order preserved).
+  `str_walker_outliner.js _deriveXEdges` builds the index once (it already did, for its log count) and passes
+  it as `opts.geoIndex` instead of discarding it; the geo continuation of `_forkEditable` threads that same
+  index into `_reinitStrWalkWithGeo` → `swbInit(opts.geoIndex)` → `_trueCentres` → `readBoxes`, and into
+  `_seedArcEditable` → `seedArc(io.geoIndex)` → `buildSeedOps`. The sync open path shares one index between
+  `swbInit` and `_deriveXEdges` the same way.
+- WHY IT IS SAFE: the index is a pure function of `element_instances` (building db) × the geometry table (geo
+  db). `composeGhostsFromAggregates` and the §ANCHOR-BLIND `DELETE` only touch `element_transforms`, so the
+  prepared and the raw handles give the same index. Consumers only read `resolved` (cross_edges copies into new
+  arrays); `arc_editable` is last in the chain, and the index is never stored beyond one Open.
+- WITNESS CLAIM (W-PATTERN-OPEN-COST, new, `modeller/tests/witness_pattern_open_cost.js`): on a real resident
+  Open, (a) swXEdges digest + §XEDGE-ALL / §XEDGE-GEO / §STRWALK-GEO / seed counts are IDENTICAL base vs fix;
+  (b) `§GEOIDX build` lines per Open drop from the review's 5-6 to 2 (one per db-pair: meta-only sync, meta×geo).
+  Regression: witness_sdg_gate, witness_sdg_cascade, witness_row7_true_centre, witness_cross_edges_real_aabb,
+  witness_modeller_xedge_lens + the batch regression set.
+
+### §B1-ROW6 — kernel-owned featureId → mesh map, one accessor
+- WHAT: `bonsai_kernel.js` keeps `_byFid: Map` — reset where `foldChainToScene` clears the group, set
+  (first-wins, matching `Array.find`) where fold/`author` add a mesh. `Bonsai.meshFor(fid)` returns the map entry
+  only if it is still a child of the group with that featureId; otherwise it falls back to the original linear
+  scan and repairs the entry — so a clear done outside the kernel (Clear button, self-tests) can never return a
+  stale mesh. The 16 `g.children.find(o => o.isMesh && o.userData.featureId === fid)` sites in modeller.html
+  route through it. Other builders listed in row 6 (dwRoot finds, gridmove/roommove/ifc maps, AABB snapshots)
+  are NOT in this batch.
+- WITNESS CLAIM (W-PATTERN-MESHFOR, new): for EVERY featureId in the group after Open, after a re-fold
+  (history scrub), after an optimistic append and after Clear, `meshFor(fid) === children.find(...)`
+  (identity, 0 mismatches); plus a timing line (§MESHFOR) of N lookups scan vs map. Regression: the batch set.
+
+### §B1-ROW8 — persist the room-compiled resident buffer
+- WHAT: `openResident` keeps caching RAW server bytes (the patch must still re-apply over raw). After
+  `_applyPendingPatch`, the patched bytes are SHA-256'd; the compiled buffer is looked up in the same IDB store
+  under `mrooms_<url>|<ROOM_WALKER_V>|<sha>` (the `rw_<url>` key-prefix precedent, routewalker.js). HIT → open
+  that buffer and log `§MODELLER-ROOM-INJECT source=cache` (no walk, no export). MISS → today's path; if the
+  walker produced a new buffer, persist it and delete every other `mrooms_<url>|*` key (version invalidation:
+  a new ROOM_WALKER_V, a new raw `?v=`, or a changed patch changes the key).
+- WHY: the inject output is a pure function of (patched bytes, ROOM_WALKER_V); re-running it every Open is waste.
+- WITNESS CLAIM (W-PATTERN-OPEN-COST, room half): open a room-less resident twice in one page. Open 1 logs
+  `source=walker`, open 2 `source=cache`; the two `__dwBuf` are byte-identical (sha) and the IfcSpace/RM_ counts
+  and Outliner room nodes are equal; `ms` of the room step (walk+export vs hash+get) side by side. First-open
+  behaviour unchanged → witness_modeller_room_inject stays 17/0-shape (its runs use a fresh profile each resident).
