@@ -25,6 +25,15 @@ i have no time to sight, i rely on a good vibe coder to do so."
 - Worktrees: `/tmp/wt-mnet-audit` (PR #1788 branch) and `/tmp/wt-mnet-base` (detached main, comparison) — prune both
   once #1788 is merged; `/tmp/wt-bc-netaudit` = this docs branch.
 
+**▶ 2026-09-27 BACKLOG (red1 direction): §SLOPE-HANDLES — drag an axis / apex / edge of a sloped element along its natural build
+lines, as the industry does (Revit sub-element + slope-arrow editing, ArchiCAD pet-palette offset-edge / move-node, SketchUp
+push-pull). Measured state on bim-ootb main: NO face/edge/vertex handles exist (0 hits for push-pull/faceDrag/edgeDrag/vertexDrag);
+grid drag is orthogonal-plan only and §ROTATION-GUARD refuses tilted elements; `dagevu_engine.js:23` AngleEdge ⛔ PAUSED "no
+measured roof-slope data"; row 30 (roof height scale, wrong axis, dead). Industry default to honour: a stretch KEEPS THE PITCH
+(ridge rises); apex-proportional is an explicit scale, never the default. Data path (non-invent): the slope plane is measurable
+from the source mesh's own face normals / the IFC's extrusion direction — measure first (Phase M), like §SLIDE-REAL-WALLS.
+Sequence: after §SLIDE-REAL-WALLS and insert-with-opening (same host/cut substrate).**
+
 ## ▶ §RESUME 2026-09-26b — (superseded as entry point by 2026-09-27 above; read it second). Then §RESUME 2026-09-26 below, then §STRATEGY 2026-09-24.
 ## Every number was measured on the combined branch bim-ootb `feat/modeller-next-0926`. Specs: `prompts/Modeller/NEXT_0926/`.
 
