@@ -1952,6 +1952,23 @@ GATE: at red1's tower pose + fly-in poses + the sweep: every lamp within range o
 all-fixture irradiance vs the rendered set, max relative loss < 1% per point); §CAMDEP_SURFACE lamps term identical across
 poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame ms reported.
 
+**§METER_ONE_RULE — SPEC (red1 2026-09-27: "for outside or in, the exposure rule must be consistent based on condition of
+light reaching the eye"; trigger: first outside still …1790468166215 "as if night time", cam [33.5,8.121,11.498] tgt [0,0,0],
+v1457, L p5/50/95 23/40/79).**
+CAUSE (code, look @808f578f): sourced_light.js meter() line 1235 `if (!inside) ... return null` = an OUTSIDE camera keeps the
+base exposure (no adaptation), while an inside camera adapts up to METER_MAX_STOPS 10 (CIECAM02 D). A view of the shade side
+(sun from -z at 45 deg; that facade gets sky only) with nothing sunlit in frame is shown at the sunlit-surface exposure -> night.
+Also: stops < 0 clamped to 0 (a scene brighter than the outdoor reference is never stopped down). Exposure does NOT carry
+between presses (effects.js 4428/4642 save/restore, stage() -> unstage(A,true) -> meterOff), so the "previous still's memory"
+is not the exposure.
+RULE: ONE meter for every camera, no inside/outside branch: exposure = base x (Ein / Eout)^(-D), Ein = the log-average light
+reaching the visible surfaces (existing meterRead, 160x90), Eout = the outdoor reference (sun x sinElev + sky), D = CIECAM02
+(unchanged). Clamp symmetric: |stops| <= METER_MAX_STOPS. The inside flag stays only as a logged fact (and for &metermode=zone).
+&meter=0 = off as before.
+WITNESS: §METER line now prints for outside cameras with Ein/Eout/D/stops; at the night pose p50 rises (report p5/50/95); a
+sunlit aerial (…1790465616826 pose) moves < 0.5 stop (Ein ~ Eout); inside refs (Clinic corridor, Hospital inner room, Terminal
+inside, P2 …885596, …698534) unchanged (same code path); §GLARE 0/0/0. Branch fix/meter-one-rule from look @808f578f, sw v1460.
+
 **RULINGS red1 2026-09-27 (inside still …1790465698534, v1457):** (1) "If original colors then OK" — the pale-interior check
 passes if the chroma readback shows the IFC material colours intact (low saturation = the data's greys, not a render fault).
 (2) Outside very bright through the openings from an inside pose = WANTED: "relative eye adjustment" (§METER_ADAPT, expStep
