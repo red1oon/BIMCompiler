@@ -1968,7 +1968,7 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
  Z5 ⏳ §LAMP_TRUTH (fixes 3+4: remeter, 0.5 cut, cove L1a) — fix/lamp-truth c539f129, queued.
  Z6 ⏳ §LIGHT_LAW_MODULE identity — fix/light-law-module 39959e8a, queued. Then FF Z4-Z6 into look.
  Z7 ⏳ §FILM_LAW S1-S3 — fix/film-law 3688b3c5, film bake witness queued (ALTC_SHOWSTOPPERS §FILM_LAW).
- Z8 ⏳ B1 reach 3 — fix/sky-shell-reach, GPU agent (after Z7).
+ Z8 ⏳ B1 reach — BUILT radius-free rule in fix/alts-all (### Z8 SPEC; node W 4/0); GPU row GZ queued (### ALTS-ALL BUILD).
  Z9 ⏳ fix 5 ALBEDO sRGB — fix/z9-albedo-srgb 5127a649 (sw v1466), node W pass=4/0 ran=11; GPU witness queued (### Z9 SPEC).
  Z10 ⏳ fix 6 AO indirect-only (option A, shader path) + 0.5 m world radius — fix/z10-ao-indirect 5c1739ec (sw v1467), node W pass=4/0 ran=18; GPU witness queued (### Z10 SPEC).
  Z11 ⏳ fix 7 BUILT: AO once + real receiver albedo — fix/z11-bounce-linear 024ce32d (sw v1468), node W pass=4/0 ran=10; composite-before-tone = PLAN P1-P5 (### Z11 SPEC); GPU witness queued.
@@ -2029,6 +2029,109 @@ PAUSED 2026-09-27 (red1 "pause for now"). RESUME: (1) read the GPU agent's §ALT
  Z10/Z11 witnesses, Z8 reach-3, Z15/Z16. Worktrees: /tmp/wt-torch /tmp/wt-film2 /tmp/wt-comb /tmp/wt-z9..z12 /tmp/wt-law
  /tmp/wt-lamp /tmp/wt-meter /tmp/wt-b1 /tmp/wt-look(:8624).
  Z14 open carry-overs: S4 fringe after an inside press (pushed materials 105->109); M1 "hog" (no regression measured); overhang meter pose.
+
+### Z8 SPEC — B1 reach: a radius-free shell rule (2026-09-27; B1 RESULT scope note) — bim-ootb `fix/alts-all`, light_zones.js ?v=17
+DATA (reach_r2_{hosp,clinic,term}_dist.log, look 808f578f, reachdist.js: wall-side covered cells bucketed by lateral distance r to the
+nearest open cell, 150-cell seeded sample per bucket vs 64-ray truth): exterior cells (truth > 0.2) under-read by > 0.1 at EVERY
+reach — Hospital r3..8/far 6/5/2/2/2/3/1 (est. 1,292 + 291 + 250 + 211 + 177 + 305 + 814 cells), Terminal 46/67/19/27/2/3/2 (est.
+1,957 + 1,384 + 185 + 1,704 + 38 + 148 + 336), Clinic 1 at r3. The error does not stop at any radius, so SHELL_R = 3 (or any value)
+would be one arbitrary constant; the data supports a radius-free rule.
+RULE: a covered, non-solid, above-ground cell with a lateral SOLID neighbour (unchanged) is SHELL when (a) an open cell lies within 2
+cells (B1, kept: it catches the BLIND cells whose every lattice direction is fattened shut) OR (b) the lattice's own 41-direction
+sweep reached the sky through AIR only in at least one direction (vt === 1: no solid, no glass on the path) — an exterior-exposed
+cell however far the open column is. Cells that see sky only through glass (rooms behind windows) or not at all keep the lattice F.
+The exact estimator (64 seeded CIE-cos rays, W1 100 / 100 / 98.6 % within ±0.1 on the B1 population) replaces F for them.
+RESIDUAL (stated): a BLIND F = 0 cell more than 2 cells from open air (e.g. Hospital 7211325, F 0 vs 0.11) is not caught — rule (b)
+needs one open lattice direction. COST: unknown until the GPU press (§SKY_SHELL_RAYS passMs / rays; first press only, IDB-cached).
+SWITCH: &shellreach=2 / APP._stillShellReach = 2 = the B1 rule exactly; the rule enters the §ZONE_IDB_CACHE fingerprint ('sr' token);
+the SRC hash changed with the code, so every building rebuilds once.
+§-LINE: §SKY_SHELL_RAYS … reach=air|r2 candidates= near2= airOnly= recomputedAirOnly= airOnlyDMean= airOnlyLifted= airOnlySample=[cells]
+(+ Z8_NOOP when the air rule added no cell). WITNESS node viewer/tests/witness_z8_shell_reach.js (the REAL field() over a synthetic
+wall + 5-cell overhang + skylit room; LightZones._testField hook): 4/0, 9 rows — 96 facade cells at reach 5 selected by 'air', 0 by
+'r2'; the glass-only skylit cell (F 0.165) and a deep F = 0 cell not selected; r2 shell = near2 set; air ⊇ r2; redControl = clear glass
+(T = 1) selects the skylit cell. GPU row (harness GZ): at the a202 aerial pose cells 9911662/3 F >= 0.33 (truth 0.43/0.40).
+
+### ALTS-ALL BUILD (2026-09-27) — bim-ootb `fix/alts-all` @e0d2082b (pushed, NOT merged, no PR), sw v1474, lawHash dc0e8638
+TREE: fix/film-law-v2 @931882df (torch Alt+S + film law v2) + merge fix/z10-ao-indirect @5c1739ec + merge fix/z11-bounce-linear
+@024ce32d. Conflicts (sw.js, viewer.html, light_law.js, sourced_light.js export line) kept both sides: LightLaw gains AO beside
+TORCH/ALBEDO/GROUND/SUN (hence lawHash 918804c2 -> dc0e8638), SourcedLight exports both aoPatch/aoSet/aoOn and albedoMap/albedoEncode.
+Both branches had gi_still.js?v=29 with different content -> bumped. Versions: light_law 6, sourced_light 59, effects 115, gi_still 30,
+light_zones 17, cinema_maxq 11. Node witnesses on the tree: light_law_unit 4/0 (41), z9 4/0, z10 4/0, z11 4/0, z12 4/0,
+film_exposure_unit 4/0, z8_shell_reach 4/0 (9), z18_gridblend 4/0 (15), alts_all_selftest 4/0 (26). (witness_still_res is a GPU witness.)
+WHAT IS IN (switch = its A/B off arm):
+ - Z4-Z6/Z9/Z12/Z17 (from the torch + film-law-v2 chain): meter v3, lamp truth, LightLaw, albedo sRGB (&srgbfix=0), ground half
+   (&groundlaw=0), camera torch (&torch=0), film law S1-S3 + film torch.
+ - Z10 AO on indirect light only, world radius 0.5 m (&aoindirect=0). Z11 bounce: AO once + real receiver albedo (&gialb=0).
+ - Z8 radius-free shell rule (&shellreach=2 = B1; &skyshell=0 = no shell pass) — spec above.
+ - Z18 (### Z18 DIAGNOSIS: the teeth are the §GLASS_SPEC_GATE binary mirror march): §SPEC_SMOOTH, DEFAULT ON, &specsmooth=0 = the
+   binary march. Each march sample reads the 8 texels around it (trilinear): o = open/off-grid weight, s = SOLID weight (ignored for the
+   first 4 samples, as before); P += T·o, T ·= 1 − o − s; gate = F + (1 − F)·P — continuous in the fragment position, equal to the
+   binary result where all 8 texels agree. Node (CPU mirror LightZones.specVis(p, n, eye, true), same maths): binary max jump per cm
+   0.80 (the F -> 1 tooth), smooth 0.014, range kept 0.21..1.00. Cost: up to 8 fetches × 32 samples per reflective fragment (early out
+   at T < 0.004) — the GPU press-time row reports it. &gridblend=1 (the earlier diffuse-grid hypothesis, ruled out as the cause): kept,
+   default OFF, harmless (node: continuous across zone boundaries, unchanged across walls), not part of the look.
+ - TORCH REMETER VACUOUS (§ALTS_COMBINED RESULT): cause not isolated in node (the remeter render drew nothing: skyPx = pixels = 14400,
+   Lavg = the hemi sky luminance 6780.8 cd/m² at every pose; the 9 new programs compiled only at the first frame AFTER staging, so that
+   render compiled and drew no mesh). Fix by construction: a still now stages the torch BEFORE SourcedLight.stage (the stage meter and
+   the lamp remeter both see it); the separate torch remeter is gone. Guard kept: a remeter whose readback is all sky after a meter that
+   saw the scene keeps the previous exposure and logs `§METER remeter VACUOUS …`.
+ - STAGE -> LAMP REMETER JUMP at outside poses (filmD2 f=57: EV 16.10 -> 18.52 on the SAME pixels 7201 / skyPx 3040; bandL 0.388 ->
+   2.071, allLogAvg 0.241 -> 1.033, hidden 1 -> 36): NOT fixed (cause not clear from the logs: between the two meters staging
+   reasserts the ground colour 0xd9c39a × gain 2.3 (§GROUND_COLOR_ORDER_FIX), rebuilds the lamps and fits the sun shadow). New
+   `§METER_STATE` line before every §METER: ground colour/gain/map/visible, sun I / castShadow, shadow autoUpdate/needsUpdate, visible
+   light census by type (count/sum), envMap mean, hidden, bandL; for OUTSIDE cameras also the band L re-read with the ground hidden
+   (groundShare = 1 − L_noGround/L). Harness row G3 "stage -> final remeter EV jump <= 1 EV" prints the fields that changed.
+ - §FRAME_QA (cinema_maxq.js): every captured frame logs the luma of the exact canvas encoded (64×36: mean/min/max, dark %, clip %,
+   reused, cam) beside §FRAME_HASH. cli_silent_bake.js `--url-query '&torch=0'` appends raw switches (film off arms).
+HARNESS — viewer/tests/witness_alts_all.js (+ alts_all_judge.js pure judge, witness_alts_all_selftest.js). RUN ONCE, PERSIST: raw
+records <out>/raw/<pose>__<arm>.json, film logs <out>/film/{A,C,E,T,B,altc}.log/.mp4/_tap.json/_frames.json; `--judge <out>` re-judges
+with no browser; a record is re-run only with --rerun. Output: <out>/alts_all.log (table), <out>/alts_all.json.
+ GPU COMMANDS (one browser at a time):
+   node ~/bin/serve_tree.js /tmp/wt-all 8640 &
+   cd /tmp/wt-all && node viewer/tests/witness_alts_all.js --port 8640 --tree /tmp/wt-all --out /tmp/alts_all --plan     # prints the plan only
+   cd /tmp/wt-all && node viewer/tests/witness_alts_all.js --port 8640 --tree /tmp/wt-all --out /tmp/alts_all --noise --film --altc 90
+   (film bakes serve themselves on port+20; add --base-tree /tmp/wt-film2 for overlay identity vs the pre-merge tree, else vs control C)
+ PRESS COUNT: default = 12 base poses (clinic, inner, term, p2, night, p614, p698 pale, p672 blotch, a616, a202 aerial/Z8, plenum,
+ hhs_z18) + 13 off-arm presses at their own poses (torch0 inner+night, srgbfix0 inner, groundlaw0 night, aoindirect0 inner, gialb0
+ inner, skyshell0 a202, shellreach2 a202, gridblend1 hhs_z18, specsmooth0 hhs_z18, meterband7095 inner+night) = 25 (+ --noise:
+ a second base press at each arm pose, 5) — each press = fresh profile + load 60-90 s + press 15-215 s ≈ 2-5 min => ~1-2.5 h.
+ --arms all = the full matrix 12 poses × 11 arms = 132 presses (≈ 4.5-11 h). --arms a,b / --arm-poses p,q / --poses limit it.
+ Film: 4 bakes (A parity, C --film-exposure 0 --film-fill restore, E --film-parity 0, T --url-query &torch=0) × ~6-8 min at 90 frames;
+ --altc 90 = one in-browser MaxQ run (APP.startMaxQualityOrbit({frames:90}) — the function the Alt+C key calls, capped).
+ STATES: PASS / FAIL / INCONCLUSIVE (instrument) / VACUOUS (population 0) / NO-OP (global fix: on == off beyond max(0.05, 2×noise)) /
+ SCOPE-BLIND (local fix — skyshell, shellreach, gridblend, specsmooth — acted but this pose's image is unchanged; also a look row judged
+ on the app frame instead of the saved composite) / WARN (listed: programs, press time, ref deltas, the Z18 step proxy).
+ ROWS: G1 (per press, else the whole press = INCONCLUSIVE, no other row judged): served sw == tree sw, every edited file's ?v= in
+ the DOM, served bytes of each edited file == tree (FNV), LightLaw lawHash page == node, LightZones SRC page == node, 0 PAGEERROR /
+ §LOAD_FAIL / Shader Error / context lost / GPU OOM, no SW controller at load (fresh profile), zone/field cache built|hit reported,
+ staged pose == requested, PNG tEXt pose == requested (Save PNG clicked, PNG parsed in node), last §METER finite / pixels > 0 / not all
+ sky, press finished. G2 per fix vs its off arm (on line in base, off line in the arm, population > 0, effect vs noise). G3 §COVE_QUAL
+ qualified, §ALBEDO_SRGB converted, shell recomputed, AO bound mats, receiver-albedo px, §GLARE populations, no inside §METER all-sky,
+ torch staged before the stage meter, stage -> final EV jump <= 1 EV. G4 p5/p50/p95, px<=15 %, clipped %, PASS band p50 40..200 &
+ clipped < 2 %, §GLARE 0/0/0, programs, press time. G5 deltas vs §ALTS_COMBINED RESULT (torch) else §METER_EV v2 40/90 else B1. GZ Z8
+ cells at a202, Z18 step proxy. FILM (every bake channel): SW purge/reload race (unregistered > 0 AND a pre-purge *_INIT tag also after
+ the purge => INCONCLUSIVE-instrument; v1 film_law_new.log trips it, v2 does not), env sw, tap (?v= + lawHash of the baked page), page
+ errors, frames > 0, §FILM_EXPOSURE every frame, step within +3/−1 stops/s (INCONCLUSIVE if never capped), no overshoot, programs
+ constant f >= 2, torch = exactly ONE §CAM_TORCH film line per CAPTURED staging (the bake stages twice; the first staging is torn down)
+ and torch= constant == it (T arm: off every frame), fill ambient 0 + drift=none, lawHash film == node, frame luma < 5 / > 250 / NaN
+ (in-page §FRAME_QA and ffprobe YAVG of the file, limited range converted), byte-identical consecutive frames while the camera moved
+ (§FRAME_HASH / framemd5; §FRAME_REUSE or a static camera = intentional), NO-OP of film exposure+fill (A vs C), parity (A vs E), torch
+ (A vs T) on the per-frame luma, overlay identity vs base/control with the exclusion list printed (§CLASH_MEM, §LOADPATH_PIXEL_DIAG*;
+ timings stripped). The film judge on the real v2 log: every row PASS except tap (not run then) and frame luma (no §FRAME_QA then) =
+ INCONCLUSIVE — as it must be.
+ VERDICT LINES: `§ALTS_ALL_VERDICT PASS|FAIL|INCONCLUSIVE` (stills) and `§BAKE_RELEASE_GATE PASS|FAIL|INCONCLUSIVE` (bakes). Exit 0
+ only when every judged row is PASS (SCOPE-BLIND / WARN listed, not blocking) and no press is INCONCLUSIVE.
+ RELEASE-GATE RULE (red1 2026-09-27: "on any baking channel you may administer, use deeply such logging to debug before releasing"):
+ NOTHING SHIPS — no FF of look/combined, no merge, no publish of a film or still build — unless the harness prints
+ `§BAKE_RELEASE_GATE PASS` for the bake channels and `§ALTS_ALL_VERDICT PASS` for the stills on that exact tree commit.
+ SELF-TEST (node viewer/tests/witness_alts_all.js --selftest): 26 red controls, 4/0 — a GREEN still and a GREEN film fixture PASS;
+ sw mismatch, SW controller, lawHash mismatch, page error, stale ?v= => INCONCLUSIVE; all-sky meter, converted=0, §GLARE populations 0
+ => VACUOUS; 2.4 EV remeter jump => FAIL naming the changed §METER_STATE fields; p50 25 => FAIL; identical torch arm => NO-OP;
+ identical skyshell arm => SCOPE-BLIND; converted=0 in G2 => VACUOUS; dead switch => FAIL; effect inside noise => NO-OP; film black
+ frame => FAIL; reused frame => FAIL; SW-race double init => INCONCLUSIVE (gate INCONCLUSIVE); identical torch-off film => NO-OP;
+ film lawHash mismatch => FAIL; no bake => gate INCONCLUSIVE.
+ NOT JUDGED IN NODE (GPU owes it): every rendered number; the Z18 teeth count after §SPEC_SMOOTH (the step proxy is a proxy — the
+ diagnosis probes b1/t3*.js + z18gate.py are the direct instrument); the Z8 staging cost; whether the lamp remeter jump is the ground.
 
 ### Z9 SPEC — ALBEDO sRGB (2026-09-27, audit #48; L2) — branch bim-ootb `fix/z9-albedo-srgb` from fix/light-law-module @39959e8a, sw v1466
 CAUSE (code): loader.js:145 `THREE.ColorManagement.enabled = false` ("enabling breaks HSL color slider palettes"); streaming.js:1542
