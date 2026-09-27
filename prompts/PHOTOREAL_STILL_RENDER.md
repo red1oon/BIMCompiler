@@ -2141,6 +2141,10 @@ calibration in this file).** One photometric chain for every source, every surfa
     with no real source (no lamp, no sky reaching it), and it obeys L1-L3 like any lamp (lux calibration, albedo x E / pi,
     counted once incl. its IR share, same exposure). CHANGE vs the 2026-09-25 watchdog gate: a compartment that HAS a real
     source but falls below its EN row no longer gets a cove top-up (it is shown as its real sources light it).
+ L1b THE CAMERA TORCH (red1 2026-09-27: "a torch effect is more realistic", "agree on the spotlight offset"): a rated handheld
+    source, allowed in every view — Petzl ACTIK STANDARD 100 lm, ANSI FL1 60 m -> 900 cd peak, 10.8 deg half angle; spotlight 0.3 m
+    right / 0.1 m up of the lens (on-axis hides its own shadows), shadow-casting, inverse square, metered. bim-ootb fix/alts-torch
+    @1dd60a62 (§CAM_TORCH, Alt+S; films = Z17). Replaces the old unsourced CAM_LIGHT (intensity 3, 4 m cut).
  L2 TRANSPORT: seen luminance = albedo x E / pi; every path (direct, sky view, interreflection, screen GI, AO as visibility)
     counted ONCE — a term that re-adds light another term already carries is a double count, removed.
  L3 EYE: one exposure from the light reaching the eye (§METER_ONE_RULE), then one tone curve.
