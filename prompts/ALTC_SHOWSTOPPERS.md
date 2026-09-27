@@ -252,3 +252,126 @@ arithmetic (effects.js:4265 block is `!A._maxqActive || A._filmParity`) -> lamp 
 9. (quality, not law) cascades still-only; GiFilm off in the default software-GPU CLI; N8AO + GiFilm inherit audit #54/#56.
 Witness to open before any remedy: one parity bake log on Hospital, read for `§FILM_FILL_RESTORE`, `§SUN_ARC_FILL_PIN drift=`,
 `§CAM_LIGHT on`, `§SKY_VIEW_FIELD off (film)`, absence of `§METER`/`§LIGHT_LAW` — each line proves one row above.
+
+**§FILM_LAW — SPEC (2026-09-27; coordinator dispatch "make films follow the same optics law as the Alt+S still"; bim-ootb
+branch `fix/film-law` from `fix/light-law-module` @39959e8a, tree /tmp/wt-film, sw v1465).** Light/exposure path ONLY — the
+overlays (clash/measure boxes, rule findings film, captions, discipline reveal, CPE paths, HUD) are not edited and draw the same
+things (red1 HARD CONSTRAINT). Every step is gated `A._maxqActive && A._filmParity`: the control clip (`--film-parity 0`) and
+Alt+S are unchanged. One commit per step.
+ S1 FILM EXPOSURE LAW (stopper S-LAW-2, D5; R1; L3 via §METER_EV). Replaces the fixed 0.3825 for parity films.
+   - LAW: `LightLaw.ADAPT = { up: 3, down: 1 }` EV100 stops per second (UE `speed_up 3.0 / speed_down 1.0` [UE-CES], HDRP
+     "dark->light 3 / light->dark 1" [HDRP-EXP]; engine_light_laws.md lines 56/118/143). `up` applies when the target EV100
+     is ABOVE the current one (scene got brighter = eye goes dark->light), `down` when below. LAW.version 1 -> 2, so lawHash
+     changes for the still too (a law value was added — same file, still and film agree by construction).
+   - FORMULA (pure, node-tested): `LightLaw.adaptEv(evPrev, evTarget, dt)` = evTarget when evPrev is null (the first frame
+     takes its target — no ramp-in), else evPrev + clamp(evTarget - evPrev, -down x dt, +up x dt). Linear capped rate: it
+     cannot overshoot (the step never exceeds the remaining gap). UE's exponential tail inside 1.5 stops
+     (`r.EyeAdaptation.ExponentialTransitionDistance`) is NOT reproduced: its closed form is not in the cited sources, and
+     linear only arrives sooner, never overshoots (recorded deviation, no invention).
+   - PER FRAME (effects.js `A._filmExposureStep(i, fps)`, called by cinema_maxq.js right after the fill step, before the
+     fold is awaited): target = the §METER_EV chain on this frame — `SourcedLight.meterRead(A, {mode, quiet:true})` (160x90
+     float readback, same mode rule as the still: &metermode / APP._stillMeterMode / 'hist') -> Lcd = L x luxPer ->
+     `LightLaw.ev100` -> eased EV -> `LightLaw.exposureFromEv(EV, luxPer, acesDiv)` -> renderer.toneMappingExposure.
+     dt = 1 / fps of the bake (frame clock, never the wall clock: deterministic, same film at 15 or 24 fps adapts in the
+     same seconds). luxPer = the calibration the parity film already computes (effects.js:4265 block). `quiet` only
+     suppresses the per-call §METER_HIST line (no change for the still, which never passes it).
+   - LOG per frame: `§FILM_EXPOSURE f= targetEV= EV= exposure= Lcd= first=0|1 capped=up|down|- ms=`. VACUOUS lines (no
+     calibration / no luminance read) hold the previous exposure and say so. Opt-out (control): `&filmexp=0` /
+     APP._filmExpOff = true -> `§FILM_EXPOSURE off (control)` once, fixed staging exposure as before.
+   - STATE: reset at each film staging and at teardown (teardown restores the staging exposure first). A resumed
+     `--frame-range` run starts from its own first-frame target (logged first=1) — deterministic per run.
+   - LAW PROOF: `LightLaw.log(A, 'film-first')` on the first metered frame and `'film'` every 24th — lawHash per film equals
+     the still's (same file), liveHash carries this frame's exposure/ev.
+ S2 NO SOURCELESS FILM FILL (stopper S-LAW-3, D1+D2; L1; R3). `_filmFillRestore` default FALSE under parity: the film takes
+   the §STILL_BASE result exactly as Alt+S (ambient x &base 0 = 0, hemi x &sky 2). Opt-in back-compat: `&filmfill=restore` /
+   APP._filmFillRestore = true / cli `--film-fill restore` (logged `§FILM_PARITY ... fill=restore (opt-in, NOT the law)`).
+   The per-frame §SUN_ARC_FILL pin no longer WRITES ambient/hemi in a parity film without restore: it checks them against the
+   staged still base and logs `§FILM_FILL_CHECK drift=none|...` (a witness, not a writer — a drift exposes stopper 8's
+   latent writers instead of masking them). Lamp budget/plScale/pool part of the pin untouched (stopper 7, not this pass).
+   ⚠ supersedes red1's 2026-09-24 "restored is better" (§FILM_FILL_RESTORE) by §LIGHT_ONE_SCALE L1 — re-approval by numbers.
+ S3 CAM_LIGHT OFF IN FILMS (stopper S-LAW-6, D4; L1a): `_camSourcedOff` also true for `A._maxqActive && A._filmParity &&
+   A._stillCalibOn` (the film's own calibration switch; &calib=0 keeps it on as in Alt+S). §CAM_LIGHT line says `off (film,
+   L1a)`.
+ S4 (SPEC ONLY this pass — see plan below): the sourced chain in films under R2/R3.
+ CHECKS: node --check each edited file; `viewer/tests/witness_film_exposure_unit.js` (witness_kit contract) on adaptEv:
+   step up 4 stops and down 4 stops at 30 fps -> per-frame delta <= 3/30 up and <= 1/30 down, reaches the target in
+   ceil(4 x 30 / 3) = 40 frames up and 120 frames down, never overshoots, bit-identical on a second run, first frame = target;
+   redControl = an uncapped ease (jump) is detected as a violation. INCONCLUSIVE if light_law.js lacks adaptEv / nothing judged.
+ GPU WITNESS (queued by the coordinator, NOT run here) — see "§FILM_LAW — GPU witness" below.
+**§FILM_LAW — DONE S1-S3 (code + node witness; GPU witness QUEUED, not run).** bim-ootb `fix/film-law` pushed @3688b3c5 (base
+39959e8a): S1 d3166849 (+a8b1bad1 teardown clears the film's _meterLast, +78b4e14f/3688b3c5 log fields), S2 51a401ba, S3
+b7a6af87. Files: light_law.js (v2, ADAPT + adaptEv), effects.js (_filmExposureStep, fill default, fill check, camlight),
+cinema_maxq.js (one call after the fill pin), sourced_light.js (meterRead opts.quiet), cli_silent_bake.js (--film-fill law|restore,
+--film-exposure 0|1), viewer.html ?v= light_law 2 / sourced_light 55 / effects 110 / cinema_maxq 9, sw v1465. No overlay file
+touched (diff stat: 8 files, none of clash/measure/findings/captions/reveal/CPE/HUD code). node: witness_film_exposure_unit.js
+`§WITNESS_FILM_EXPOSURE_UNIT pass=4 fail=0 ran=12` (up: 40 frames to +4 EV, max rise 0.1/frame; down: 120 frames, max fall
+0.0333/frame; no overshoot; bit-identical rerun; 15 vs 30 fps both 1.3333 s; redControl jump detected). FOUND BY THE WITNESS:
+float summation left the EV 1e-14 short -> one extra frame (41 vs 40); fixed with a 1e-9 EV landing tolerance.
+witness_light_law_unit.js still pass=4 (41 rows). lawHash is now 611dfd50 (v2; was 5368cb0a — ADAPT is a law value).
+
+**§FILM_LAW — GPU witness (for the coordinator's queue; one GPU agent, real GPU, NOT software).**
+ RUNS (Hospital, `bim-ootb` tree /tmp/wt-film @3688b3c5, serve it, real GPU so GiFilm runs as in production):
+  A. NEW: `node cli_silent_bake.js --db HospitalAjaibPath --gpu real --fps 15 --frame-range 0:90 --out /tmp/film_law_new.mp4
+     --log /tmp/film_law_new.log` (defaults: parity 1, fill law, exposure meter). Same flags as the lane's usual Hospital bake
+     (if the lane's reference bake adds --clash/--measure/--label, add the SAME ones to A, B and C — overlays must be ON to
+     judge that they are unaffected).
+  B. BASE (same flags, tree /tmp/wt-law @39959e8a — the light-law module without §FILM_LAW) -> /tmp/film_law_base.log.
+  C. CONTROL on the new tree: `--film-exposure 0 --film-fill restore` -> /tmp/film_law_ctl.log (must reproduce B's light lines).
+  D. Alt+S on the new tree at the pose printed by A's `§FILM_EXPOSURE f=0 ... cam=[..] tgt=[..]`, SAME db (HospitalAjaibPath), one press;
+     read its `§METER ... EV100=` and `§LIGHT_LAW tag=remeter lawHash=`. If f=0 is an interior pose, also press at the first
+     frame whose `skyPx` > 20% of 14400 (outside) — the outside pose isolates the exposure law from stopper S-LAW-1 (no zones /
+     field / lamp data in films yet).
+ ASSERTIONS (read the logs, no pixels; each prints PASS / FAIL / INCONCLUSIVE):
+  1. `§FILM_EXPOSURE` present on every captured frame of A (90 lines, VACUOUS count reported; > 10% VACUOUS = INCONCLUSIVE).
+  2. Speed limit: for consecutive frames, EV[f] - EV[f-1] <= 3/15 + 1e-9 and >= -1/15 - 1e-9; `capped=` frames counted
+     (0 capped frames over the whole clip = the limit was never exercised -> report INCONCLUSIVE for this row, not PASS).
+  3. No overshoot: EV never crosses targetEV in the direction it moves (same rule as the unit witness).
+  4. First frame: `first=1` on f=0 only; EV(f=0) = targetEV(f=0) exactly.
+  5. Still parity of the law: |EV(A, f=k) at the outside pose - EV100(D, same pose)| <= 0.3 when that frame is not capped
+     (use targetEV of the film frame). An interior pose may differ by more — record the delta as the stopper-1 residual, not a fail.
+  6. lawHash: every `§LIGHT_LAW tag=film-first|film` line in A = the Alt+S `§LIGHT_LAW` lawHash in D = 611dfd50 (node value).
+  7. S2: A shows `§FILM_PARITY on fill=alt-s (ambient 0, §FILM_LAW S2)`, no `§FILM_FILL_RESTORE ambient` line, `§FILM_FILL_CHECK
+     ... drift=none` (any drift line = a latent writer, stopper 8 — FAIL with the writer's values), and every §FILM_EXPOSURE line
+     ambient=0.000 hemi=<the §STILL_BASE hemi of the press>. C shows the restore line (control intact).
+  8. S3: A shows `§CAM_LIGHT off (film, L1a: not a real source)` and camLight=0 on every §FILM_EXPOSURE line; C shows the
+     same line (C only changes fill/exposure) — B shows `§CAM_LIGHT on`.
+  9. Overlays unchanged: for every overlay §-tag family in B (§CLASH_*, §MEASURE_*, §FINDINGS_*, §HUD_*, §CPE_REVEAL*/§CPE_TAIL*,
+     room titles / captions, §LOADPATH_HUD*) the count of lines and every numeric field except ms= / timings are identical in A
+     (diff of the tag-filtered, timing-stripped lines). Zero overlay lines in B = INCONCLUSIVE (overlays were not on).
+  10. Program count: `programs=` on §FILM_EXPOSURE constant from f=1 to the end (f=0 may add the meter's float-target programs
+     once; report that delta). Frame time: mean §FILM_EXPOSURE ms= reported (the per-frame meter cost — the number S4 needs).
+  11. C's §FILM_EXPOSURE `off (control)` line present and its exposure constant all clip (= B's staging exposure 0.3825 x
+     &stillexp) — the opt-out works.
+
+**§FILM_LAW S4 — SPEC ONLY (not implemented this pass): the §SOURCED_LIGHT chain in films under R2/R3 (stopper S-LAW-1).**
+ Why not now: S-LAW-1 is the whole chain behind one gate (effects.js:4438 stage, :5623 remeter, sourced_light.js:335 lampWanted,
+ sky_portal.js:87 retired, effects.js:4294 prepare) and R2 has no data to switch on (stopper 4). Not "small".
+ SPLIT (R3: camera-free terms once per building / build-up stage; per frame only sun, camera, exposure):
+  4a. KEY: add a build-up stage to the zone / sky-field / cove / IR cache keys (light_zones.js:129; sourced_light.js field key
+      ~:756, cove key :991, irKey). Stage = a hash of the set of PLACED enclosure elements (walls, slabs, roofs, windows) at the
+      TM cursor, quantised to change only when an enclosure element is added (not per frame). Cost: a set hash per frame
+      (O(placed) once per change, index by _metaGen like §SHADOW_FRONTIER's _fcIdx). Witness: key changes exactly on enclosure
+      adds over a buildup film; constant over a no-buildup film.
+  4b. ENCLOSED test (R2): a zone is "enclosed" when its boundary cells are all SOLID in the stage's grid AND a roof slab
+      covers it; unenclosed zones read as OUTDOORS (zone id 0: sun + sky + shadows + bounce). Comes free from building the zone
+      grid on the stage's placed geometry (4a) — LightZones.build already floods from outside; an open room joins zone 0.
+      Cost: one zone build per stage change — Hospital 2184 ms / Clinic 404 / Terminal 1462 (record) per build; with N stages
+      that is N x build. Cap: build only on stage changes at least K frames apart (K from the film's own pacing), reuse
+      otherwise; log `§FILM_ZONES stage= built= ms=`. Needs a cost number from the GPU witness first (row 10).
+  4c. FADE (R2 "switch fades over a few frames"): per zone, blend factor 0->1 over a fixed frame count (film clock, not wall)
+      when it becomes enclosed — a uniform per zone (texture row), no recompile. Constant program count (R3).
+  4d. STAGE ONCE PER FILM: lift the `!A._maxqActive` gate at effects.js:4438 / :4294 / sourced_light.js:335 for parity films,
+      with SourcedLight.stage() doing only the camera-free parts at staging (install uniforms, lamp data + §LAMP_EN, IR, cove on
+      the current stage); its meter() replaced in films by S1's §FILM_EXPOSURE (already the same chain). Per frame: camZone
+      bind (cheap, LightZones.at) + the S1 meter. Remeter (effects.js:5623) stays still-only — S1 meters every frame anyway.
+  4e. PORTALS vs FIELD (stopper 5): sky_portal.js:87 retired() for parity films once the field exists on the stage (4a);
+      until then keep portals (a film with neither would lose window light). Constant light count -> constant programs.
+  4f. LAMPS (stopper 7): lamp data path (lampWanted) in films + §LAMP_EN; lamps enter with their elements (the pool's order
+      replaced by the data list filtered by placed guids); decay 1.5 as the still. Fade-in over the same frame count as 4c.
+ ORDER + COST: 4a (small, keys only) -> 4b (one zone build per stage — the main cost) -> 4d (gate lift, needs 4a/4b so the
+ finished-building field is never used on an unfinished building) -> 4c -> 4e -> 4f. Each on its own fix/ branch with a GPU
+ witness (per-frame §-lines; overlay counts unchanged; programs constant). S4 cannot be judged before the S1 GPU witness gives
+ the per-frame meter ms and the program-count behaviour.
+ ⛔ red1: (1) S2 retires the §FILM_FILL_RESTORE look you approved 2026-09-24 ("restored is better") in favour of L1 + the S1 meter
+ — confirm by numbers from the GPU witness (restore stays available via --film-fill restore). (2) R2's "enclosed" = walls + roof
+ of THAT space (4b) — confirm a space with walls and no roof yet is lit as outdoors.
