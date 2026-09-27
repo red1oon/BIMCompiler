@@ -481,3 +481,119 @@ the gap is 2.48 / 1.91 (still side); 11 + the C/E halves of 8'/14 not run (INCON
    not added light. The 2026-09-24 "restored is better" look stays reachable only as the opt-in &filmfill=restore / --film-fill restore.
 2. R2 enclosure: a space with walls but NO roof is NOT enclosed — lit as outdoors (sun, sky, shadows, bounce). Enclosed = walls AND
    roof/slab above, i.e. the same test light_zones.js already uses (a covered cell = SOLID above in its column). No separate rule.
+
+### Z22 SPEC — Alt+C bake speed: LOAD ONCE + SHADER PRE-COMPILE (2026-09-28, CODE + node checks only, no GPU/browser this pass)
+MEASURED (PHOTOREAL_STILL_RENDER.md "§FILM_LAW v2 RESULT" + "§ALTS_ALL_3 RESULT" F12/row 10, same numbers restated here so this
+spec stands alone): a 90-frame Hospital CLI bake (`cli_silent_bake.js`) runs ~416-432 s wall. The page loads and stages the
+building TWICE — module `*_INIT` lines appear twice in the log, the first staging torn down at ~124.9-125 s — because the
+`§CLI_BAKE_SW_PURGE` unregister/cache-clear used to run AFTER `page.goto(url)` (the FIRST navigation, which starts fetching/
+staging the instant its `<script>` tags run, long before `waitUntil:'domcontentloaded'` resolves and the purge's
+`page.evaluate()` gets a turn), and was followed by `page.reload()` (the SECOND navigation) to actually run the current
+build. Frame cost: f=0 ~14.9-16.2 s, f=1 ~5.2 s (first-frame shader compiles); `programs=` 110 at f=0, 149 constant f=1..89
+(one +39 jump). Base for both items: bim-ootb `fix/alts-all-3` @05d0ee7d (sw v1478), worktree `/tmp/wt-speed`, branch
+`fix/bake-speed`.
+
+**Z22-1 LOAD ONCE.**
+ PROBLEM: `getRegistrations()`/`caches.keys()`/`caches.delete()` are per-ORIGIN, not per-path (Service Worker spec:
+ `ServiceWorkerContainer.getRegistrations()` returns every registration for the current origin regardless of the document's
+ own path; `CacheStorage` is likewise one bucket per origin) — so the purge does not need to run on the real bake page at
+ all. It only needs to run on ANY same-origin document, before the real page is ever asked for.
+ FIX: purge on a lightweight SAME-ORIGIN landing page BEFORE the one and only navigation to the real bake URL:
+  1. `page.goto('http://127.0.0.1:PORT/viewer/sw.js', {waitUntil:'domcontentloaded', timeout:30000})` — `viewer/sw.js` is a
+     small static file the CLI's own server already reads (`fs.readFileSync(... 'viewer/sw.js')` for the `§CLI_BAKE_ENV`
+     line), guaranteed present, and navigating a top-level frame directly to a `.js` URL displays it as plain text — it is
+     never executed as a page script, so nothing from the app runs on this page. No server change needed.
+  2. Run the SAME unregister-every-registration + delete-every-cache `page.evaluate()` the old code ran (unchanged body),
+     reading `window.__swCtlAtLoad` (still captured via the existing `evaluateOnNewDocument` hook, which persists across the
+     page's later navigation too) — this now answers "did the PROFILE already have a stale SW controlling this origin",
+     which is the same question F12 (ALTS-ALL FIX 15) was trying to answer, just asked one navigation earlier.
+  3. Log the EXISTING `§CLI_BAKE_SW_PURGE unregistered=... cachesDeleted=... controllerAtLoad=... regs=[...]` line, same
+     field names/order (the judge in `viewer/tests/alts_all_judge.js` `swRace()` parses `unregistered=(\d+)` and
+     `controllerAtLoad=(-?\d+)` by regex and does not care about the trailing prose — only the trailing sentence changes).
+  4. Log a NEW `§CLI_BAKE_LOADS count=1 firstStagingMs=<Date.now()-t0>` line, immediately before navigating to the real URL.
+     count is always 1 by construction: everything above ran on the throwaway landing page.
+  5. `page.goto(realUrl, {waitUntil:'domcontentloaded', timeout:120000})` — the ONE AND ONLY navigation to the real bake
+     page. `page.reload()` is removed; there is no second navigation to the real page.
+  6. Continue exactly as before: `waitForFunction` for `APP.startMaxQualityOrbit`/`window.__maxqBake`, the
+     `buildingsRendered` race, `§CLI_BAKE_LOADED`.
+ WHY THIS PRESERVES THE EXISTING RACE JUDGE FOR FREE: `alts_all_judge.js`'s `swRace()` looks for `_INIT` tags that appear
+ BOTH before and after the `§CLI_BAKE_SW_PURGE` line (`sliceAfterPurge`/`before`/`after` sets) and calls that a race. Since
+ the purge now runs on a page that never executes app code, the "before" set is always empty — `dup` is always `[]`, so
+ `sr.race` is always `false`. That is the CORRECT judgement (there is no double init to detect any more), and it needs no
+ change to the judge file.
+ REFACTOR FOR TESTABILITY: the sequence above is pulled into a top-level `async function loadPageOnce(page, {purgeUrl,
+ realUrl, gotoTimeout, log})` in `cli_silent_bake.js`, returning `{swPurge, loadsCount:1}`. The file's single top-level
+ `(async () => {...})().catch(...)` becomes `const _main = async () => {...}` invoked only `if (require.main === module)`
+ (identical behaviour for `node cli_silent_bake.js ...`), plus `module.exports = { loadPageOnce }` — a minimal-diff guard,
+ not a rewrite, so a node test can `require()` the file and drive `loadPageOnce` against a MOCKED `page` with no browser.
+ WITNESS (node, no browser): `viewer/tests/witness_bake_loads_once.js` — mocks `page.goto/evaluate/reload`, drives
+ `loadPageOnce`, asserts: exactly one `goto` to the real URL, the purge `goto`+`evaluate` precede it, `reload` is NEVER
+ called, `loadsCount===1`, and the captured log lines carry `§CLI_BAKE_SW_PURGE` and `§CLI_BAKE_LOADS count=1`. redControl:
+ a row set with a `reload` call + a second `goto` to the real URL appended (the exact pre-fix shape) must FAIL.
+ NOTHING ABOUT THE RENDERED FRAMES CHANGES — this item only removes a navigation, it touches no rendering code.
+
+**Z22-2 SHADER PRE-COMPILE.**
+ PROBLEM: the first captured frame after staging pays for shader compilation live (f=0 measured 14.9-16.2 s vs a steady
+ ~5-6 s for f=1, and `programs=` measured 110 at f=0 growing to a constant 149 by f=1 — 39 programs compile on the frame
+ boundary between f=0 and f=1, which is exactly the frame-time cliff §STILL_STAGE_MS's own `link=` field already names as
+ "first frame after staging (program link)").
+ FIX (`viewer/effects.js`, inside `_applyPhotoStaging()`, gated `A._maxqActive` — bakes only, no change to interactive
+ Alt+S): after everything that changes the LIGHT COUNT or adds scene content for this staging has already run — lamps,
+ portals, `_repairDegenerateNormals`, `GlassFresnel.stage`, `_camTorchStage(true)`, `SourcedLight.stage`, `_camLight`,
+ ground reassert, `_buildRoomProbe()`, shadow fit — call `A.renderer.compile(A.scene, A.camera)` (three's
+ `WebGLRenderer.compile(scene, camera, sceneOverride=null)`, confirmed in `viewer/lib/three.module.min.js`).
+ VERIFIED (read, not guessed): `_applyPhotoStaging()` is called synchronously from `startStillRefine()` (effects.js:5900)
+ and the Alt+M path (effects.js:10600), with code continuing right after the call with nothing awaited — it is not an
+ `async function` and none of its callers await it. `renderer.compileAsync()` also exists in this three build, but its
+ Promise cannot be awaited from a synchronous call site without restructuring the staging call chain (out of scope this
+ pass, and unverified without a GPU run); calling it here WITHOUT awaiting would make the `programsAfter`/"f=0 already at
+ steady count" claim below FALSE on any driver lacking `KHR_parallel_shader_compile` (compilation would still be pending
+ when frame 0 renders). The synchronous `compile()` guarantees every program is linked before this function returns, i.e.
+ before cinema_maxq.js's frame loop ever renders f=0 — the correct, verifiable choice for this call site, so `compileAsync`
+ is not used. `compile()` traverses the WHOLE scene graph (no camera-frustum culling), which is what satisfies "compile
+ against the whole scene, not the view frustum" without any bespoke traversal — every material added to `A.scene` by this
+ point, including ones the camera has not yet framed this film, gets its program built now. Log `§BAKE_PRECOMPILE
+ programsBefore=<n> programsAfter=<n> ms=<t>` (before = `A.renderer.info.programs.length` measured immediately before the
+ call, after = the same count immediately after — the call is synchronous, so this is a true post-condition, not a race).
+ EXPECTED EFFECT: `programs=` on the FIRST `§FILM_EXPOSURE f=0` line should already equal the steady-state count (no +39
+ jump at f=1), and f=0's own frame time should drop toward f=1's (the compile cost moves into `§BAKE_PRECOMPILE ms=`
+ instead of the first captured frame). MUST NOT CHANGE PIXELS: this only pre-warms GPU program objects for materials
+ already staged into the scene — no material, light, or camera property is touched.
+ SCOPE NOTE (stated, not solved here): for a Time-Machine BUILD-UP film (elements added progressively), this precompile
+ only covers the geometry present in `A.scene` AT STAGING TIME — a build-up film's later-appearing elements still compile
+ lazily on their own first frame, same as before. That is Z13/S4 territory (ALTC_SHOWSTOPPERS.md §FILM_LAW S4 4a-4f), not a
+ regression this item introduces; the GPU witness below runs the plain (non build-up) 90-frame Hospital orbit, where the
+ whole building is already staged before frame 0.
+ NODE CHECK: `node --check viewer/effects.js` (syntax only — `renderer.compile`/`compileAsync` need a real WebGL context,
+ so their numeric effect is GPU-witness territory, not node-testable).
+
+**Z22 VERSION LINES:** `viewer/viewer.html` effects.js `?v=119 -> 120`; `viewer/sw.js` `CACHE_VERSION 'v1478' -> 'v1479'`.
+`cli_silent_bake.js` carries no `?v=` (it is a node CLI, not fetched by the page/SW).
+
+**Z22 GPU WITNESS (queued, NOT run this pass — this pass is code + node checks only per red1's "NO GPU/browser" instruction;
+one GPU agent, real GPU, serial, per CLAUDE.md PRIMAL LAW "WITNESS REPLACES EVERY HUMAN VISUAL CHECK").**
+ RUNS (Hospital, `--db HospitalAjaibPath --gpu real --fps 15 --frame-range 0:90`, same flags the lane's reference Hospital
+ bake already uses if it adds `--clash --measure --label`, add the SAME ones to both arms):
+  BEFORE: `cd /tmp/wt-all3 && node cli_silent_bake.js --db HospitalAjaibPath --gpu real --fps 15 --frame-range 0:90
+    --out /tmp/z22_before.mp4 --log /tmp/z22_before.log` (tree @05d0ee7d, unmodified — the fix/alts-all-3 baseline).
+  AFTER: `cd /tmp/wt-speed && node cli_silent_bake.js --db HospitalAjaibPath --gpu real --fps 15 --frame-range 0:90
+    --out /tmp/z22_after.mp4 --log /tmp/z22_after.log` (tree = this branch, fix/bake-speed).
+ ASSERTIONS (read the logs, no pixels):
+  1. Wall time: `§CLI_BAKE_WALL totalSec=` AFTER < BEFORE (report the delta and %; the theoretical floor is BEFORE minus the
+     ~125 s the first, torn-down staging cost, minus whatever `§BAKE_PRECOMPILE ms=` moves out of f=0/f=1).
+  2. `§CLI_BAKE_LOADS count=1` present exactly once in AFTER (absent in BEFORE — old CLI, INCONCLUSIVE-instrument for that
+     row on BEFORE, not a fail); no `_INIT` tag appears both before AND after the (single) `§CLI_BAKE_SW_PURGE` line in
+     AFTER (reuses `alts_all_judge.js`'s existing `swRace()` — should read `race:false` on AFTER with an empty "before" set).
+  3. `§BAKE_PRECOMPILE programsBefore=/programsAfter=/ms=` present exactly once in AFTER (absent in BEFORE); programsAfter
+     equals the steady-state `programs=` seen on `§FILM_EXPOSURE` frames f>=1 in BEFORE (i.e. 149, or whatever this run's
+     building/flags produce).
+  4. `programs=` on `§FILM_EXPOSURE f=0` in AFTER equals `programs=` on `§FILM_EXPOSURE f=1` in AFTER (no jump); compare to
+     BEFORE's f=0/f=1 split (110 -> 149) to show the jump moved to staging.
+  5. f=0 and f=1 `§FILM_EXPOSURE ms=` (frame-render cost) in AFTER vs BEFORE — report the delta; f=0 should fall toward
+     f=1's steady value once its program-link cost has moved into `§BAKE_PRECOMPILE`.
+  6. Frame-by-frame identity: `§FRAME_HASH`/`§FRAME_QA` (or per-frame ffprobe YAVG luma) equal BEFORE vs AFTER at every
+     frame index, or within the A/A2 noise band already measured in "§ALTS_ALL_3 RESULT" (noise A-A2 0.109, tol 0.218) —
+     Z22 must not change a single rendered pixel, only when the GPU work for it happens.
+  7. Overlay identity (if `--clash --measure --label` are part of the reference command): same tag-family line counts,
+     timing-stripped, BEFORE vs AFTER (the existing `ovdiff`-style check in `alts_all_judge.js`).
+ VERDICT LINE: `§Z22_GPU_WITNESS PASS|FAIL|INCONCLUSIVE` — PASS only if 1-6 all hold (7 WARN-only if flags weren't shared).
