@@ -1106,3 +1106,51 @@ hashless placements now refuse) retargeted to Duplex ELEC 102 real-mesh → 6/0.
 them removes the LOD200 option + makes those products un-insertable; tied to row 14 / §CATALOG-REBIND. Pre-existing red,
 not touched: W-E2E-INSTHIDE H1-rig (no fixture pose on main too ⇒ its assembly leg H5–H8 unexercised); node
 dw_rot_units · git_history · terminal_walk · render_fidelity (red on main).
+
+---
+
+## §ROW34-ANCHOR-SAVE — SPEC 2026-09-27 (MODELLER_MASTER row 34, re-verified against bim-ootb origin/main `363ba414` first)
+**Re-verify result (code read, not grep):**
+- **IFC export half — ALREADY CLOSED** by bim-ootb #1747 (`58bce229`, 2026-09-18): `bonsai_ifc.js:181`
+  `if (P.anchorOnly) { seedAnchors++; continue; }`, `§IFC-SEED … anchorsExcluded=N`, witness
+  `witness_ifc_export_seed.js` E4 ANCHORS-OUT asserts SampleCastle 65 excluded. Not re-opened.
+- **Save half — STILL UNWITNESSED.** `runSave()` (`modeller.html:2867`) → `Bonsai.exportDb()` (`:3113`)
+  writes the signed op-log bytes VERBATIM (`O.db.export()`), so the 65 `GEOM_INSERT params.anchorOnly`
+  ops are IN every Save/Native-.db snapshot. That is correct by construction — they are part of the
+  signed hash chain (dropping them breaks `verifyChain`) and the cascade needs them after re-open. So the
+  leak question is NOT "are they in the bytes" but **"does a re-opened snapshot still treat them as
+  anchors"** (invisible, out of every count/gate/export). The one save/re-open witness
+  (`witness_e2e_export_db.js` E4) runs on **Duplex = 0 anchors ⇒ VACUOUS for this question.**
+- Mechanism that SHOULD make it hold (read, unproven): `importBytes` (`bonsai_oplog.js:234`) re-folds
+  the ops; the fold keys on `params.anchorOnly` → `bonsai_kernel.js:257` invisible `userData.anchor`
+  mesh; `_gateBoxes` (`modeller.html:2710`) and IFC export both key on that flag, not on the seed-time
+  `window.__arcAnchorFids`.
+
+**BUILD (bim-ootb):**
+1. `§EXPORT-NATIVE` log line gains `anchors=N` (count of `GEOM_INSERT` ops whose parameters carry
+   `anchorOnly`, read from the SAME `O.db` bytes being exported) — the save path becomes §ANCHOR-tagged,
+   as the row-34 spec requires. Log-only, no behaviour change.
+2. Witness **W-E2E-ANCHOR-SAVE-ROUNDTRIP** (`modeller/tests/witness_e2e_anchor_save_roundtrip.js`),
+   SampleCastle, real `#b-open ▸ Open local .db…` door:
+   - **R0 NON-VACUOUS** — baseline anchor meshes == anchorOnly ops == 65, else INCONCLUSIVE (not PASS).
+   - **R1 TAGGED** — exported bytes carry exactly 65 anchorOnly ops AND `§EXPORT-NATIVE … anchors=65`.
+   - **R2 RE-OPEN STAYS ANCHORED** — after `oplog.clear()` + re-open from the file: 65 `userData.anchor`
+     meshes, all `visible=false`; visible-mesh count, `_gateBoxes` key count IDENTICAL to baseline.
+   - **R3 EXPORT AFTER RE-OPEN** — IFC build on the re-opened model: `seeded` == baseline,
+     `anchorsExcluded` == 65.
+   - **R4 FALSIFY** — the same bytes with ONE op's `anchorOnly` stripped, re-opened: anchors 64, visible
+     meshes baseline+1 (the flag in the bytes is what drives it; the witness sees a real leak), and
+     `verify=false` (the chain detects the tamper).
+**Done =** R0–R4 PASS, log read, PR merged. If R2/R3 FAIL, the leak is real → fix, RED-first.
+
+### ✅ §ROW34-ANCHOR-SAVE — DONE (witness) 2026-09-27, bim-ootb PR #1787 (`feat/anchor-save-roundtrip`, auto-merge on)
+**No leak. It was never a leak, only unproven.** W-E2E-ANCHOR-SAVE-ROUNDTRIP **6/6**, SampleCastle:
+- R0 baseline: 65 anchor meshes == 65 anchorOnly ops, 0 visible · 3225 visible meshes · 3225 gate boxes · IFC 3225 seeded + 65 excluded.
+- R1 snapshot 2,375,680 bytes carries 65 anchorOnly ops; `§EXPORT-NATIVE ops=3290 anchors=65 sealed=3290` (new tag;
+  RED on prior code by construction — the line had no `anchors=`).
+- R2/R3 after `clear()` + real Open-local-.db door: `verify=true`, every number above IDENTICAL.
+- R4 falsify (one anchorOnly stripped in the bytes): anchors 64 · visible 3226 · gate 3226 · IFC 3226/64 · `verify=false`.
+Regression W-E2E-EXPORT-DB 6/6. sw v60→v61. Logs: session scratchpad `ancsave_run1.log`, `expdb.log`.
+**This file's LOD400 lane has no open build items left.** Still open elsewhere, not here: SampleCastle layer
+shipping (blocked on `sporenkap`'s honest refusal); per-layer slab colours (optional); `rel_fills_host` for
+Clinic/Hospital/HHS/Garage/Terminal (MODELLER_MASTER row 12 — blocked on locating their source IFCs).
