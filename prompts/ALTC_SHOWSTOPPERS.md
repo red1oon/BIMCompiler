@@ -375,3 +375,9 @@ witness_light_law_unit.js still pass=4 (41 rows). lawHash is now 611dfd50 (v2; w
  ⛔ red1: (1) S2 retires the §FILM_FILL_RESTORE look you approved 2026-09-24 ("restored is better") in favour of L1 + the S1 meter
  — confirm by numbers from the GPU witness (restore stays available via --film-fill restore). (2) R2's "enclosed" = walls + roof
  of THAT space (4b) — confirm a space with walls and no roof yet is lit as outdoors.
+
+### §FILM_LAW DECISIONS (coordinator, delegated by red1 2026-09-27: "You know my direction well, i leave to you to manage the language and decisions")
+1. S2 fill: ACCEPTED — films drop the sourceless fill (§LIGHT_ONE_SCALE L1); dark interiors are handled by the S1 meter (exposure),
+   not added light. The 2026-09-24 "restored is better" look stays reachable only as the opt-in &filmfill=restore / --film-fill restore.
+2. R2 enclosure: a space with walls but NO roof is NOT enclosed — lit as outdoors (sun, sky, shadows, bounce). Enclosed = walls AND
+   roof/slab above, i.e. the same test light_zones.js already uses (a covered cell = SOLID above in its column). No separate rule.
