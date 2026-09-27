@@ -1952,6 +1952,23 @@ GATE: at red1's tower pose + fly-in poses + the sweep: every lamp within range o
 all-fixture irradiance vs the rendered set, max relative loss < 1% per point); §CAMDEP_SURFACE lamps term identical across
 poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame ms reported.
 
+**§ZERO LIST 2026-09-27 (red1: "You have my confidence and mandate to chase paths till zero") — work top to bottom; each item
+✅ DONE (witness) or ⛔ BLOCKED: <question>. Coordinator = the dev session; GPU witness = one agent, serial.**
+ Z1 ✅ B1 §SKY_SHELL_RAYS — look 808f578f (walls within ±0.1: Hospital 60->100%, Clinic 38->100%, Terminal 16->98.6%).
+ Z2 ✅ §COVE_NO_STRIP — look fdecbd1c (strip 1->0 at 5 poses, refs within noise).
+ Z3 ✅ §STILL_RES port — look 53128dd3 (opt-in &stillres=; default path unchanged by code; cost of 4k unmeasured -> Z12).
+ Z4 ⏳ §METER_EV (fixes 1+2) — fix/meter-one-rule 1b5f1c0b, GPU witness queued.
+ Z5 ⏳ §LAMP_TRUTH (fixes 3+4: remeter, 0.5 cut, cove L1a) — fix/lamp-truth c539f129, queued.
+ Z6 ⏳ §LIGHT_LAW_MODULE identity — fix/light-law-module 39959e8a, queued. Then FF Z4-Z6 into look.
+ Z7 ⏳ §FILM_LAW S1-S3 — fix/film-law 3688b3c5, film bake witness queued (ALTC_SHOWSTOPPERS §FILM_LAW).
+ Z8 ⏳ B1 reach 3 — fix/sky-shell-reach, GPU agent (after Z7).
+ Z9 fix 5 ALBEDO sRGB (flat IFC colours decoded as sRGB, loader.js:145 / effects.js:4409) — code prepared off-GPU, refs re-approved by numbers.
+ Z10 fix 6 AO = visibility of indirect light only, radius in metres (N8AO effects.js:4911-4950).
+ Z11 fix 7 bounce before the tone curve with real albedo; drop the second AO (gi_still.js:482/526/723) — spec first (high cost).
+ Z12 fix 8 ground half from ground albedo; sun penumbra from 0.53 deg; + 4k §STILL_RES cost measured.
+ Z13 §FILM_LAW S4 (sourced chain in films, R2 build-up key) 4a->4f — after Z7 numbers.
+ Z14 open carry-overs: S4 fringe after an inside press (pushed materials 105->109); M1 "hog" (no regression measured); overhang meter pose.
+
 **§LIGHT_ONE_SCALE — LAW (red1 2026-09-27: "The laws of optical physics should be singular"; ranks above every per-term
 calibration in this file).** One photometric chain for every source, every surface, every camera, inside or out:
  L1 SOURCES in physical units through ONE calibration (§SOURCED_LIGHT_CALIB lux-per-unit): sun + sky from one cited clear-sky
