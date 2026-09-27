@@ -98,6 +98,7 @@ nav:
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:
+      - "Architecture Overview (for reviewers)": ArchitectureOverview.md
       - "Fold Engine Black Book (dev manual)": FoldEngineBlackBook.html
       - "The Holy Grail (editable rules, live)": HolyGrail.md
       - "Cross-ERP Rosetta Stone (concept + cost)": ERPConceptRosetta.html
