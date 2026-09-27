@@ -26,6 +26,14 @@ the forward path). The Modeller is NOT a creative authoring tool. Users author i
 2. **ASSEMBLE — edits on authored parts:** walkers generating MEP, BOM assembly, grid stretch, slide/insert openings,
    copy/array along a host, the universal handle set (§SLOPE-HANDLES) along measured build lines.
 3. **OUT — hand-off:** IFC export carrying storeys, Psets, materials (§IFC-EXPORT-DEPTH), plus 4D/5D and ERP.
+**No original object making (red1, same day: "we dispense off with original object making. We take any object and mould
+it further").** Every object in the Modeller starts as an existing authored object — from a resident, a user's IFC, or the
+extracted catalog/BOM libraries — and is MOULDED (stretch, slide, cut, copy, handles). Decided consequences:
+- The Sketch tool (`#b-sketch`, `bonsai_sketch.js` + planegcs) is FROZEN: kept working, not extended, not a priority case.
+- A catalog product with no real source mesh is not an object to mould ⇒ insert REFUSED, never a box (answers the row-14
+  question: rebind from the extraction source in the restored BOM libraries; what cannot be rebound stays unavailable).
+- Insert-with-opening = place a COPY of an existing authored door/window (any source) into a wall, cutting its opening.
+- The slide witness's sketched-wall case (S8 plain-extrude) is not a priority case.
 **Out of scope (do not list as gaps):** from-scratch wall drawing, type/family editing, dimension constraints, stair/railing/
 curtain generators, documentation sheets.
 **Queue, in order (decided 2026-09-27):** (a) §SLIDE-REAL-WALLS Phase B (in progress) · (b) §IFC-EXPORT-DEPTH — the OUT half is
