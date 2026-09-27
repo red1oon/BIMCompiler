@@ -1959,6 +1959,12 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
+**LIVE ON LOOK 2026-09-28 06:30: look/combined-0925 FF'd to fix/alts-all-3 @0323302c (sw v1478, served :8624) — §RELEASE GATE
+all PASS: §ALTS_ALL_VERDICT PASS (937 PASS, 0 FAIL/INCONCLUSIVE/VACUOUS/NO-OP, 3 SCOPE-BLIND), §BAKE_RELEASE_GATE PASS (A,A2,C,E,T,
+altc), §W_COLOUR_TRUTH_GPU PASS 25/25 (after the harness pin fix 0323302c; the first run's single FAIL was an all-black instrument
+arm). Logs /tmp/alts_all5. Watch item: Alt+S trade colours near-saturated (duct still sat 0.98) — candidate: trade hues at paint
+strength, one named value, after red1's look.**
+
 **STATUS 2026-09-28 — Alt+S RESTS, Alt+C FIRST (red1: "Done many stills. Overall much improvement. Would just update results and
 rest on alt-s to see to alt-c first").** Alt+S candidate = bim-ootb fix/alts-all-3 @05d0ee7d (sw v1478): B1 + Z8 sky shell rays,
 cove glow only (no strip, L1a), §METER one bound reading on the final scene (EV100 band 40/90, ACES pre-scale kept), lamp truth, LightLaw,
