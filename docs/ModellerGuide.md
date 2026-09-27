@@ -395,8 +395,10 @@ Anchor vs. Ride is not a guess about what looks hosted. It follows the **authore
 chain recovered verbatim from the building's own IFC, so a door is only ever held or ridden against the
 wall its designer actually put it in — and where a building's author never declared that relationship, the
 modeller says so rather than inventing one. In practice that means the relationship is exact on
-*SampleHouse* (all 7 hosted openings) and *Duplex* (36 of its 38), and partial on *SampleCastle*, whose
-window-frame walls are consumed by their own openings and so aren't separate things to hold or ride.
+*SampleHouse* (all 7 hosted openings), *Duplex* (36 of its 38), *SampleCastle* (all 74 — its
+window-frame walls are consumed by their own openings, so they take part as invisible anchors that are
+never drawn or counted), *HHS* (99), *Clinic* (302), *Hospital* (506) and *Garage* (36). *Terminal*
+has none: its source IFC declares no opening/filling relationship at all, so there is nothing to follow.
 
 **A carved hole comes along too.** If the held or ridden opening has a real cut-through void (a door or
 window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
