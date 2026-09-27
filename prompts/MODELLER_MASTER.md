@@ -15,7 +15,12 @@ i have no time to sight, i rely on a good vibe coder to do so."
 > *"Our strategy is to leave fine detail creative authoring to those models that users are familiar with but to bring to
 > us to assemble and hand off all the rest."*
 
-The Modeller is NOT a creative authoring tool. Users author in Revit/ArchiCAD; the Modeller must do three things well:
+**The true parametry is ours (red1, same day: "able to take any created model, those aesthetic bits and we refine it
+more better").** Authoring tools hold parameters only for what the author typed in; we EXTRACT the grammar from any authored
+model — BOM sets, bay ratios, storey heights, MEP densities, host↔filling relations — keep its aesthetic parts at LOD400, and
+refine from that grammar. This is the Red Pill / "New from Reference" idea already written up: `docs/RED_PILL.md` §1 and
+`docs/internal/NEW_FROM_REFERENCE.md` §1 (IFC → SQLite → verified reconstruction is the inverse; grammar → refined design is
+the forward path). The Modeller is NOT a creative authoring tool. Users author in Revit/ArchiCAD; the Modeller must do three things well:
 1. **IN — faithful import:** authored LOD400 geometry and relations survive (openings, fills, layers, anchors). A user's OWN
    IFC must get what the residents get — whether the local-IFC open path writes `rel_fills_host` is UNVERIFIED (measure it).
 2. **ASSEMBLE — edits on authored parts:** walkers generating MEP, BOM assembly, grid stretch, slide/insert openings,
