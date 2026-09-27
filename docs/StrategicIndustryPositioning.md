@@ -98,9 +98,16 @@ yet fleet-clean, independent of the editor fix above. **Corrected, not carried f
 cited `W-MV-PARITY` (Modeller ≡ Viewer geometry agreement) at 12/12 — that no longer holds. The
 Modeller now renders each building from its own per-resident `_geo.db`, while the witness still
 checks it against `Duplex_extracted.db`; the two disagree on triangle count for 82 of 203 shared
-geometry hashes. Parked, not fixed — full detail in Tier 3 below. **Not independently re-verified
-this pass, carried forward as before:** the BIM↔ERP fold row, EVM, POS, iDempiere extraction, and
-the 5D cost row.
+geometry hashes. Parked, not fixed — full detail in Tier 3 below. **Two more items verified merged and live, not in
+the table above but bearing on it:** a photoreal-still defect that silently dropped whole element
+classes (glazing, furniture) from Alt+S bakes mid-playback — root-caused to a camera-culler/
+Time-Machine matrix-ownership conflict, fixed on a full re-bake (bim-ootb PR #1660, sw v1141 at
+merge); and a 2026-09-04 audit that found three things believed live on bim-ootb's GitHub Pages
+were actually 404 despite green CI and a green deploy workflow — a version stamp, JS minification,
+and both ERP agent-download zips — caught only by fetching the live URL, fixed and re-verified by
+`curl`, not by trusting the pipeline (`§PAGES-SERVES-THE-BRANCH`, bim-ootb PR #1680). **Not
+independently re-verified this pass, carried forward as before:** the BIM↔ERP fold row, EVM, POS,
+iDempiere extraction, and the 5D cost row.
 
 | Capability | What it does | Witness |
 |---|---|---|
@@ -109,7 +116,7 @@ the 5D cost row.
 | **5D cost (editable)** | BOQ + cost rollup with **editable** per-jurisdiction rate templates; Variation Order Excel (FIDIC Clause 12). | `4D5DAnalysis.md`; VO demo [[10]](#ref10) |
 | **BIM↔ERP — to the cent** | A BIM-pushed building folds into a real procurement/project order and ERP documents, reproducing iDempiere/Odoo output at **`maxDiff=0c`**. **No other tool connects BIM to ERP over one signed log.** | `W-PROJ-FOLD`, `W-GW-HOSP-FOLD`, `W-FOLD-COMPLETE` |
 | **ERP screens — AD-driven, not a hand-list** | The five core document screens (Sales Order, Shipment, Invoice, Payment, Allocation Line) now render iDempiere's own AD field set per window instead of a curated shortlist — `c_order` 8→56 fields, `c_payment` 4→78, 139 DisplayLogic-bearing fields now evaluated live off the same AD metadata iDempiere reads, plus live AD_Ref_List/Yes-No editors and AD_Val_Rule-filtered FK pickers. | `W-PARITY-FIELDSET`, `W-PARITY-REFLIST`, `W-PARITY-VALRULE`, `W-AD-DISPLAYLOGIC-LIVE` |
-| **MEP clash + narrated fly-through** | A camera-directed tour of the building (Cinema Path Editor) surfaces real, triangle-exact clashes (not bounding-box proxies) as persistent world markers, reveals disciplines in sequence (ARC → STR → MEP) as it passes, and overlays live measurements (spans, clear heights, room areas) — an automated clash-and-measure narration, not a static report. | `witness_clash_mesh_narrowphase`, `witness_clash_film_labels`/`_markers`, `witness_datum_stability`, `witness_indoor_beats`, `witness_linear_beat`, `witness_storey_walkable_card` |
+| **MEP clash + narrated fly-through** | A camera-directed tour of the building (Cinema Path Editor) surfaces real, triangle-exact clashes (not bounding-box proxies) as persistent world markers, reveals disciplines one at a time (finest-detail discipline first, MEP always last) as it passes, and overlays live measurements (spans, clear heights, room areas) — an automated clash-and-measure narration, not a static report. | `witness_clash_mesh_narrowphase`, `witness_clash_film_labels`/`_markers`, `witness_datum_stability`, `witness_indoor_beats`, `witness_linear_beat`, `witness_storey_walkable_card` |
 | **Budget vs Actual (EVM)** | Planned vs Committed at project + phase + task grain; CV/SV/CPI/SPI in BigDecimal; cost overrun surfaced on the 4D S-curve. | `W-GW-HOSP-COSTVAR`; `proj_control.js` |
 | **What-If (cost)** | Speculative VO branch — revised = original + approved + pending — kept separate from the official ledger, reversible. | `W-FIN-BLUE-SPEC` (5/5) |
 | **Dashboard / analytics** | Generic multi-view over **any** data model: donut grid, "By-X" group-by chips that fill the grid, pivot lens, scrubbable timeline filmstrip, CSV/SVG/PNG export. Field-driven, not hardcoded per table. | `W-DASHBOARD`; `pivot_lens.html` |
