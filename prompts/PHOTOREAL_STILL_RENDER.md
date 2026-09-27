@@ -1985,6 +1985,13 @@ reaching the visible surfaces (existing meterRead, 160x90), Eout = the outdoor r
 WITNESS: §METER line now prints for outside cameras with Ein/Eout/D/stops; at the night pose p50 rises (report p5/50/95); a
 sunlit aerial (…1790465616826 pose) moves < 0.5 stop (Ein ~ Eout); inside refs (Clinic corridor, Hospital inner room, Terminal
 inside, P2 …885596, …698534) unchanged (same code path); §GLARE 0/0/0. Branch fix/meter-one-rule from look @808f578f, sw v1460.
+SUPERSEDED same day by §METER_EV (1b5f1c0b, sw v1461) — the audit showed D (CIECAM02) is CHROMATIC adaptation (D=1 outdoors =
+full re-exposure = pale). LAW NOW (engine chain, Frostbite 2014 / Filament / HDRP; sources + URLs in the §LIGHT_TRUTH_AUDIT
+follow-up): meter renders the frame as the eye gets it (real materials, glass, emitters; sky pixels = the hemi sky luminance
+the lighting uses), histogram 70/95 log-average L -> cd/m2 via luxPer -> EV100 = log2(L x 100 / 12.5) -> exposure =
+1/(1.2 x 2^EV100) (x luxPer, x 0.6 to cancel three's ACES 1/0.6). No base, no compensation, no clamp; inside and outside alike.
+Inside refs WILL move (new rule for all); re-approval by numbers. Engine reference: sun 100-120 klx, clear sky 13-30 klx at
+45 deg, sunny EV100 ~15, office 7-9, K 12.5, adaptation 3 stops/s up / 1 down (films, R1).
 
 **RULINGS red1 2026-09-27 (inside still …1790465698534, v1457):** (1) "If original colors then OK" — the pale-interior check
 passes if the chroma readback shows the IFC material colours intact (low saturation = the data's greys, not a render fault).
