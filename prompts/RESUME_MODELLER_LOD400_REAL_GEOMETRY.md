@@ -1072,3 +1072,12 @@ real mesh are refused, not boxed. `§DW-PRIM-LOD` must read `lod300=0 lod200=0` 
 SampleCastle FP → lod400=126 kept; Duplex ELEC walked immediately after open → lod400=102, lod200=0. RED on base (lod200=270).
 **Next (separate item):** ARC seed `§GEO-SERVED-DEGRADED` (geo fetch fails → measured bounding boxes rendered, arc_editable path)
 violates the same rule → must hard-fail/refuse instead.
+**§WALK-LOD400-ONLY — ✅ DONE (witness) 2026-09-27** on bim-ootb `test/modeller-net-audit` (no PR): W-WALK-LOD400-ONLY 7/0 (base 4/3).
+**§FOLD-NO-BOX — ⏸ WIP, PAUSED (red1) 2026-09-27.** Finding: a reopened building folded every saved walk op as a box (Duplex 102/102) because
+`foldInsert` fell back to `boxArrays(bbox)` when `realGeomHash` was unregistered. Fix (committed WIP): fold throws §LOD400-REFUSE (never boxes);
+saved walk meshes registered from the building geo on open → 102/102 real after reload. Node witnesses now pass `registerGeometry` like production
+(5 recovered; sdg_gate 11/0 with A1 restated; arc_editable A3/A4-extent retired → W-ANCHOR-SWEEP, A10 = unit guard).
+**RESUME HERE — still red on the WIP:** arc_editable A9 (matched-catalog half), opening_slide 0/8 (slide rule requires a "plain axis-aligned box"
+host — real-mesh hosts refuse; decide: slide on real hosts vs refuse), room_move T3, arc_3axis_rotation R1/R2 (real=0 — check its own registration),
+e2e_instpick P4. Then: `_renderDiscAssembly` box parts, ARC seed §GEO-SERVED-DEGRADED bbox path, catalog inserts without a mesh (fold boxes;
+527/794 products have no matching mesh — tie to §CATALOG-REBIND). Preview ghosts/gizmos are UI, not element geometry.
