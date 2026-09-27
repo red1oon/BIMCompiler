@@ -1982,8 +1982,8 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
      shadow. Prove by readback of sun term vs grid term along the floor band, then continuous cross-cell blending; witness =
      0.5 m steps along the line -> 0, refs unchanged. FIRST item of the next pass.
  Z19 ⏳ BUILT: COLOURED INTERREFLECTION (L2) — zone IR tinted by its surfaces' area-weighted mean albedo, Y unchanged — fix/colour-truth c89d7de7 (sw v1476), node W pass=4/0 ran=12; GPU witness queued (### Z19 SPEC, ### COLOUR-TRUTH BUILD).
- Z20 ⏳ BUILT: PORCELAIN — own colour, roughness 0.08 (physicallybased.info Porcelain 0, §refl floor), metal 0 — c89d7de7, node W pass=4/0 ran=33, Hospital 554 matched; GPU queued (### Z20 SPEC).
- Z21 ⏳ BUILT: PLACEHOLDER = NO COLOUR — cream -> class STD_MAT default, canvas AND Alt+S — c89d7de7, node W pass=4/0 ran=27, Hospital replaced 10,947; GPU queued (### Z21 SPEC).
+ Z20 ⏳ BUILT: PORCELAIN — own colour, roughness 0.08 (physicallybased.info Porcelain 0, §refl floor), metal 0 — 564066f5, node W pass=4/0 ran=35, matched Hospital 554 / LTU 85; GPU queued (### Z20 SPEC, ### COLOUR-TRUTH DECISIONS).
+ Z21 ⏳ BUILT: PLACEHOLDER = NO COLOUR — cream -> class STD_MAT default, MEP-trade proxies -> trade hue, canvas AND Alt+S — 564066f5, node W pass=4/0 ran=32, Hospital replaced 10,947 + proxies hued 3,683; GPU queued (### Z21 SPEC, ### COLOUR-TRUTH DECISIONS).
 ### Z18 DIAGNOSIS (Opus GPU witness, 2026-09-27, no code change) — VERDICT: the hard stair-stepped edges on the floor AND the duct
 sides are the §GLASS_SPEC_GATE mirror-ray march (slSpecKeep, sourced_light.js:159-176): the IBL reflection gate flips from F to 1.
 They are NOT the sun shadow, NOT the sky field F / ground Gd, NOT IR per zone, NOT AO, NOT the lamp clusters. The suspicion written
@@ -2499,6 +2499,26 @@ canvas and still; Z21 plenum MEP placeholder pipe/duct pixels unchanged (<= 2 co
 REFS untouched-element canvas pixels (same cell, same guid, not placeholder, not porcelain) mean abs <= 2 codes; Z19 plenum/beams still mean
 saturation rises with a non-VACUOUS §IR_COLOUR line. Any class with < 5 sampled pixels / missing anchor -> INCONCLUSIVE. §MATERIALS lines print the
 built THREE material colours/roughness per class for both arms.
+
+### COLOUR-TRUTH DECISIONS (2026-09-27, coordinator for red1) — amends ### Z21 SPEC rule 3 and ### Z20 SPEC; bim-ootb `fix/colour-truth` @564066f5 (pushed, not merged)
+ D1 (Z21, replaces the "⛔ OPEN" in rule 3): an IfcBuildingElementProxy whose EXTRACTED `discipline` is an MEP trade (MEP/FP/PLB/ELEC/ACMV/HVAC/SAN/VENT/HEAT)
+    AND carries the exporter placeholder is MEP-hue eligible like the MEP classes. ONE owner `A._mepHueEligible(cls, disc, rgba, matName)`, read by
+    `_mepDiscAlbedo`, the batch/merge bucket 'M' bit, the instanced mixed-set guard (a hash set mixing eligible and ineligible members is still built
+    with noMepHue), §MEP_HUE_TALLY and §PLACEHOLDER_COLOUR. ARC/STR proxies stay cream and count as proxyKept. Red control `A._mepProxyOff`.
+ D2 (Z20/Z21): `A.EXPORTER_PLACEHOLDER_MAT_NAMES = {'tomt mönster'}` inside `_isAuthoredMatName` (Swedish Revit "empty pattern"; MEASURED LTU_AHouse
+    2,858 rows over 14 classes with dozens of different rgba — the name carries no material identity). Side effect, measured through §MEP_HUE_TALLY on
+    LTU: tier1_authored_name 5 -> 0, tinted 14 -> 19 in the tally — those 5 are the `WC` IfcFlowTerminals, which render porcelain (porcelain skips the
+    MEP hue), so no LTU pipe changes colour. Hospital / HHS tallies are unaffected by D2 (no such name).
+ NEW COUNTS (node, real DB queues through the shipped rollups):
+   §PLACEHOLDER_COLOUR Hospital placeholder 57098 replaced 10947 mepTier2 44246 (was 40563; +3683 MEP-trade proxies = 3715 - 32 porcelain) proxyKept 1293
+   (= the ARC proxies; was 4976) noStdMat 580 porcelain 32 · Clinic 14142 / replaced 1534 / mepTier2 11629 / proxyKept 0 / noStdMat 867 / porcelain 112 ·
+   Duplex 1012 / 60 / 892 / 0 / 48 / 12 · JKR 425 / 0 NO-OP (all IfcOpeningElement) · HHS, LTU, Terminal VACUOUS (no placeholder row).
+   §MEP_HUE_TALLY Hospital mep_elements 41987 -> 45702, tinted 40634 -> 44349, distinct hues 5 -> 6.
+   §PORCELAIN matched Hospital 554, Clinic 112, Duplex 12, HHS 11, JKR 40, LTU 85 (80 IfcFurnishingElement + 5 IfcFlowTerminal; was 0), Terminal 74.
+ Witnesses: z21 pass=4/0 ran=32 (+PLB proxy -> PLB hue at own V, ARC/STR proxy cream, real-colour MEP proxy untouched, eligibility owner rows, Hospital
+   mepTier2 44246 / proxyKept 1293; red control = both switches off), z20 pass=4/0 ran=35 (LTU row IN, placeholder-name row, LTU 85; red control also empties
+   the list), z19 unchanged 4/0 ran=12. GPU witness pass conditions add: §PLACEHOLDER_COLOUR mepTier2 = 44246 and proxyKept = 1293; MEP-trade proxy
+   placeholder pixels gain saturation (+0.1) where >= 5 are sampled.
 
 **§ZERO GPU POSES + METRICS (shared by Z9-Z12).** Poses: Clinic corridor cam [21.243,-0.606,-1.261] → tgt [1.197,-4.155,-2.608];
 Hospital inner room [9.947,-7.699,0.098] → [14.735,-8.114,2.081]; Terminal inside (the §METER_EV ref pose); P2 …885596; red1's
