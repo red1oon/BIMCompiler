@@ -11,6 +11,23 @@ study deeply how to make the Modeller work", and "all the objectives of the Mode
 i have no time to sight, i rely on a good vibe coder to do so."
 ```
 
+## ⚖ §STRATEGY-ASSEMBLE-HANDOFF — the governing product direction (red1 2026-09-27). Ranks everything below.
+> *"Our strategy is to leave fine detail creative authoring to those models that users are familiar with but to bring to
+> us to assemble and hand off all the rest."*
+
+The Modeller is NOT a creative authoring tool. Users author in Revit/ArchiCAD; the Modeller must do three things well:
+1. **IN — faithful import:** authored LOD400 geometry and relations survive (openings, fills, layers, anchors). A user's OWN
+   IFC must get what the residents get — whether the local-IFC open path writes `rel_fills_host` is UNVERIFIED (measure it).
+2. **ASSEMBLE — edits on authored parts:** walkers generating MEP, BOM assembly, grid stretch, slide/insert openings,
+   copy/array along a host, the universal handle set (§SLOPE-HANDLES) along measured build lines.
+3. **OUT — hand-off:** IFC export carrying storeys, Psets, materials (§IFC-EXPORT-DEPTH), plus 4D/5D and ERP.
+**Out of scope (do not list as gaps):** from-scratch wall drawing, type/family editing, dimension constraints, stair/railing/
+curtain generators, documentation sheets.
+**Queue, in order (decided 2026-09-27):** (a) §SLIDE-REAL-WALLS Phase B (in progress) · (b) §IFC-EXPORT-DEPTH — the OUT half is
+thin today (products carry geometry + class only) · (c) IN-check: open a third-party IFC locally and measure that its
+openings/fills/storeys survive · (d) insert-with-opening · (e) §SLOPE-HANDLES · (f) row 14 catalog rebind from the restored
+`library/DX_BOM.db`/`SH_BOM.db` (May 22 backups, restored locally 2026-09-27).
+
 ## ▶ §RESUME 2026-09-27 — START HERE (supersedes 2026-09-26b as entry point; read that block second)
 - **Merged/merging:** bim-ootb #1786 (root JS tidy, MERGED) · #1787 (row 34 anchor save, MERGED) · **#1788** (net-audit
   batches 1-3 + pattern rows 1/3/6/8 + room-inject + LOD400-or-refuse everywhere: walks, re-open fold, assemblies,
