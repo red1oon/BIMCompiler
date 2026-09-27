@@ -11,7 +11,21 @@ study deeply how to make the Modeller work", and "all the objectives of the Mode
 i have no time to sight, i rely on a good vibe coder to do so."
 ```
 
-## ▶ §RESUME 2026-09-26b — START HERE (session 2, same day). Then §RESUME 2026-09-26 below, then §STRATEGY 2026-09-24.
+## ▶ §RESUME 2026-09-27 — START HERE (supersedes 2026-09-26b as entry point; read that block second)
+- **Merged/merging:** bim-ootb #1786 (root JS tidy, MERGED) · #1787 (row 34 anchor save, MERGED) · **#1788** (net-audit
+  batches 1-3 + pattern rows 1/3/6/8 + room-inject + LOD400-or-refuse everywhere: walks, re-open fold, assemblies,
+  geometry-less seed; auto-merge on — verify it landed). Detail + numbers: `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`
+  §FOLD-NO-BOX-DONE; witness-net state: `WITNESS_INTERFACE_FRAMEWORK.md` §MODELLER-NET-AUDIT.
+- **⛔ red1 decisions pending:** (1) slide an opening along a REAL wall? (today refused: every real host has the opening
+  baked in; #1710's slide was never user-reachable) · (2) catalog inserts with no mesh / at LOD200 still fold boxes
+  (527/794 products) — refuse them (removes LOD200 + those products) or rebind meshes first (row 14 / §CATALOG-REBIND,
+  also needs `library/DX_BOM.db` + `SH_BOM.db` restored — 0 bytes locally).
+- **Known red, pre-existing on main:** W-E2E-INSTHIDE H1-rig (no fixture pose); node dw_rot_units · git_history ·
+  terminal_walk · render_fidelity; W-DISC-DENSITY D3/D4 need re-baselining on the LOD400 walk (§WALK-LOD400-ONLY note).
+- Worktrees: `/tmp/wt-mnet-audit` (PR #1788 branch) and `/tmp/wt-mnet-base` (detached main, comparison) — prune both
+  once #1788 is merged; `/tmp/wt-bc-netaudit` = this docs branch.
+
+## ▶ §RESUME 2026-09-26b — (superseded as entry point by 2026-09-27 above; read it second). Then §RESUME 2026-09-26 below, then §STRATEGY 2026-09-24.
 ## Every number was measured on the combined branch bim-ootb `feat/modeller-next-0926`. Specs: `prompts/Modeller/NEXT_0926/`.
 
 **▶ "resume Modeller session" (red1's trigger phrase) — do exactly this, in order:**
