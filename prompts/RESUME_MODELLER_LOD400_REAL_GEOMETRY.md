@@ -1185,3 +1185,17 @@ one `GEOM_CUT` per opening; slide then runs through the existing engine + §CUT-
 refusal, named. **Witness W-SLIDE-REAL-WALL:** the re-cut host (kernel) matches the source's baked mesh (AABB + volume within
 tolerance) BEFORE any move; after a slide the hole is at the new position and the old position is solid; undo restores;
 RED on today's main (refusal).
+**Phase M RESULT — 2026-09-27** (`scripts/measure_slide_real_walls.py`, logs `logs/slide_measure/`, source IFCs read directly):
+| building | fills | box opening, through wall | host is a plain box | host fully consumed | **slideable** | refused (named) |
+|---|---|---|---|---|---|---|
+| SampleHouse | 7 | 7 | 2 | 0 | **7** | — |
+| Duplex | 38 | 36 | 18 | 0 | **36** | 2 host has NULL Representation |
+| SampleCastle | 74 | 70 | 74 | 65 | **5** | 65 host = the opening strip (void-consumed) · 4 opening not a box · 4 no bake |
+In every slideable row the shipped bake is exactly the opening subtraction (tris uncut ≠ cut). **Cost verdict: build it.**
+The one new geometry need — re-cutting a NON-box host (SampleHouse 5, Duplex 18) — already exists in the kernel: the
+§LAYER-SOLID-SEED path sews a real triangulated wall into a solid (`buildTriFace` + `sewAndSolidify`) for layered walls; a
+single-range seed opens it to plain walls. Order for Phase B: SampleHouse (7) → Duplex (36) → SampleCastle (5).
+**Direction link (red1 2026-09-27, "macro editing — inserting openings, placing and snapping to walls"):** Phase B's host model
+(uncut body + one GEOM_CUT per opening, the filling riding its cut) is the same model "insert a door INTO a wall" needs — today
+item-drag only snaps a wall-hung item flush to a wall face and the cut is a separate manual tool. Insert-with-opening is the
+follow-on slice on the same substrate.
