@@ -404,6 +404,45 @@ symlinked into the untracked, git-ignored buildings/ of both trees — the CLI s
  VERDICT: film law rows 1-4, 6-11 PASS (row 2 up-limit untested); row 5 FAIL only through the still's remeter (emitters) —
    re-check after the meter v3 emitter mask lands on this chain.
 
+**§FILM_LAW v2 RESULT (Opus GPU witness, 2026-09-27) — VERDICT: film law PASS (rows 1-4, 6', 7, 8'(A), 9, 10, 12, 13, 14); row 5/15
+f=0 PASS vs the still's stage meter (0.13 EV), first sky frame f=57 FAIL (stage 0.52 EV); vs the still's FINAL lamp-remeter EV
+the gap is 2.48 / 1.91 (still side); 11 + the C/E halves of 8'/14 not run (INCONCLUSIVE — red1 "dispense with redundant checking", v1 results stand).**
+ A = bim-ootb fix/film-law-v2 @931882df (sw v1473 from §CLI_BAKE_ENV), /tmp/wt-film2, real GPU (RTX 4060, ANGLE GL), `--db
+ HospitalAjaibPath --gpu real --fps 15 --frame-range 0:90 --clash --measure --label` -> /tmp/film_law_v2.mp4 (2,068,305 B, 90 frames,
+ §CLI_BAKE_WALL 416 s, 0 page errors). Overlay reference B = the v1 base log film_law_base.log (/tmp/wt-law @39959e8a — NOT the torch
+ build; B/C/E were not re-run). D = one fresh-page Alt+S press per pose on /tmp/wt-film2 (served :8639), same db. Logs
+ bim-compiler prompts/photoreal_probes/b1/film_law_v2.log, film_v2A.out, filmD2_{f0,f57}{,_lum,_open}.log; checkers filmcheck2.py, ovdiff3.py.
+ 1 PASS — 90 §FILM_EXPOSURE lines (f=0..89), VACUOUS 0.
+ 2 PASS (down limit only) — steps max +0.020 / min -0.067 EV per frame (limits +0.2 / -0.0667, 3-decimal print tolerance);
+   capped=down 6 frames, capped=up 0 -> the up limit was never exercised (as v1).
+ 3 PASS — no overshoot. 4 PASS — first=1 only on f=0; EV(0) = targetEV(0) = 16.664 (v1 16.925).
+ 5 FAIL at f=57 / PASS at f=0 on the stage meter — outside poses, skyPx identical film vs still (0 / 3040): film targetEV 16.664 /
+   16.617; Alt+S stage EV100 16.53 / 16.10 (|d| 0.13 PASS / 0.52 FAIL); the still then remeters twice: torch remeter 15.73 / 15.73
+   (VACUOUS — skyPx=14400/14400, the same all-sky frame §ALTS_COMBINED found at all 7 still poses) and the lamp remeter 19.14 /
+   18.52 (|d| to the film 2.48 / 1.91) -> still exposure 0.0327 / 0.0503, compositeMean 22.3 / 61.3, p50 20.8 / 38.8 (dark). With
+   the emitter mask on (hidden=36) the lamp remeter still reads +2.6 / +2.4 stops over the stage meter at these aerial poses (cf.
+   §ALTS_COMBINED aerial a616: +1.76). The film law itself agrees with the still's stage meter at f=0; the residual is the still side.
+ 6' PASS — every §LIGHT_LAW tag=film-first|film lawHash=918804c2 = D's stage + both remeter lawHash 918804c2 (node value).
+ 7 PASS — `§FILM_PARITY on fill=alt-s (ambient 0, §FILM_LAW S2)`, 0 §FILM_FILL_RESTORE lines, §FILM_FILL_CHECK drift=none (1 line),
+   ambient=0.000 hemi=1.234 on all 90 lines = §STILL_BASE hemi=1.234 ambient=0.000. (C half not re-run.)
+ 8' PASS for A — `§CAM_LIGHT off (film, L1a: not a real source) intensity=0`, camLight=0 on all 90 lines. B (v1 base) `§CAM_LIGHT on
+   intensity=3`, 0 `§CAM_TORCH film` lines. C and E not run (INCONCLUSIVE for those halves).
+ 9 PASS — overlays A vs v1 base, page after §CLI_BAKE_SW_PURGE: 415 = 415 overlay lines, 81 tag families, 0 differing lines after
+   timing strip. Same exclusions as v1: §CLASH_MEM (heap) and §LOADPATH_PIXEL_DIAG_PRE_HUD (scene pixels sampled before the HUD =
+   exposure-dependent: A 75,54,46 / 18,13,7 / 115,94,81 vs base 135,105,93 / 62,47,33 / 176,156,141).
+ 10/14 PASS — programs=110 at f=0, 149 constant f=1..89 (+39 once; the torch is in the scene from staging, no recompiles);
+   §FILM_EXPOSURE ms mean 147.7 (f>=2), median 130.7, f=0 16,158. A-vs-C equality not judged (C not run).
+ 11 INCONCLUSIVE — C not run on v2 (v1 row 11 PASS stands for the opt-out code path, unchanged by v2's cherry-pick).
+ 12 PASS — `§CAM_TORCH film on intensityUnits=3.960000e-2 peakCd=900 lawHash=918804c2`, preceded by `§CAM_TORCH on peakCd=900 ...`;
+   X = 900 / luxPer 22727.273 = 0.03960000 (rel err 1.2e-8). The log carries it TWICE (99.2 s and 173.2 s): the bake stages twice
+   (the first staging is torn down at 124.9 s with `§CAM_TORCH off`, same two-staging shape as v1's two §FILM_PARITY lines); on the
+   staging that captured f=0..89 it appears exactly once and is never re-created mid-film. Stated so the coordinator can rule on
+   the spec's "exactly ONE" wording.
+ 13 PASS — torch=3.960000e-2 string-identical on all 90 §FILM_EXPOSURE lines, never `off`.
+ 15 — A f=0 targetEV 16.664 vs D §METER EV100 16.53 (stage, |d| 0.13 <= 0.3) / 19.14 (final lamp remeter, |d| 2.48): same verdict
+   as row 5.
+ NEW vs v1: row 5's f=0 stage gap closed (0.34 -> 0.13) with meter v3; the remaining gap is the lamp remeter at outside poses plus
+   the torch remeter's vacuous all-sky read — both on the Alt+S side, not the film law.
 **§FILM_LAW S4 — SPEC ONLY (not implemented this pass): the §SOURCED_LIGHT chain in films under R2/R3 (stopper S-LAW-1).**
  Why not now: S-LAW-1 is the whole chain behind one gate (effects.js:4438 stage, :5623 remeter, sourced_light.js:335 lampWanted,
  sky_portal.js:87 retired, effects.js:4294 prepare) and R2 has no data to switch on (stopper 4). Not "small".
