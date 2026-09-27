@@ -1981,6 +1981,9 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
      v1464): suspected 0.5 m zone-grid stepping (audit C cause 4 stencil drop + cause 3 per-zone IR) overlapping the soft sun
      shadow. Prove by readback of sun term vs grid term along the floor band, then continuous cross-cell blending; witness =
      0.5 m steps along the line -> 0, refs unchanged. FIRST item of the next pass.
+ Z19 ⏳ BUILT: COLOURED INTERREFLECTION (L2) — zone IR tinted by its surfaces' area-weighted mean albedo, Y unchanged — fix/colour-truth c89d7de7 (sw v1476), node W pass=4/0 ran=12; GPU witness queued (### Z19 SPEC, ### COLOUR-TRUTH BUILD).
+ Z20 ⏳ BUILT: PORCELAIN — own colour, roughness 0.08 (physicallybased.info Porcelain 0, §refl floor), metal 0 — c89d7de7, node W pass=4/0 ran=33, Hospital 554 matched; GPU queued (### Z20 SPEC).
+ Z21 ⏳ BUILT: PLACEHOLDER = NO COLOUR — cream -> class STD_MAT default, canvas AND Alt+S — c89d7de7, node W pass=4/0 ran=27, Hospital replaced 10,947; GPU queued (### Z21 SPEC).
 ### Z18 DIAGNOSIS (Opus GPU witness, 2026-09-27, no code change) — VERDICT: the hard stair-stepped edges on the floor AND the duct
 sides are the §GLASS_SPEC_GATE mirror-ray march (slSpecKeep, sourced_light.js:159-176): the IBL reflection gate flips from F to 1.
 They are NOT the sun shadow, NOT the sky field F / ground Gd, NOT IR per zone, NOT AO, NOT the lamp clusters. The suspicion written
@@ -2381,6 +2384,121 @@ GPU WITNESS (queue): §ZERO GPU POSES + red1's night (shade-side) still, 39959e8
 should be texture), metrics table; at the night pose the shaded façade patch L p50 must RISE (the −0.67 stop) with §GLARE 0/0/0;
 an interior pose must move < 2 % (Gd small indoors); `§SUN_PENUMBRA` dMatch per cascade reported. `&groundlaw=0` at one pose =
 byte-identical §STILL_BASE line to 39959e8a.
+
+### Z21 SPEC — PLACEHOLDER = NO COLOUR (2026-09-27; red1: "MEP in Hospital even normal canvas, is all greyish. If they lack materials, didn't we have a standard setting?"; "Even beams, columns frames, or any else without material color.") — bim-ootb `fix/colour-truth` from look/combined-0925 @53128dd3, streaming.js ?v=78, sw v1476
+**Measured (elements_meta, local ~/bim-ootb/buildings, `material_rgba = '0.920,0.900,0.850,1.000'`, material_name empty on EVERY such row, all 4 buildings that carry it):**
+Hospital IfcPipeSegment 14452, IfcPipeFitting 12323, IfcMember 6635, IfcBuildingElementProxy 5008, IfcDuctSegment 4816, IfcDuctFitting 4740,
+IfcBeam 1970, IfcFireSuppressionTerminal 1354, IfcWallStandardCase 1226, IfcLightFixture 1151, IfcDistributionControlElement 860, IfcOpeningElement 580,
+IfcColumn 506, IfcValve 466, IfcFooting 444, IfcCovering 152, IfcElectricAppliance 138, IfcSwitchingDevice 113, IfcCableCarrier* 150, IfcDoor 5, IfcRailing 4,
+IfcWall 3, IfcSlab 2. Clinic IfcFlowFitting 4908, IfcFlowSegment 4441, IfcFlowTerminal 1974, IfcBeam 738, IfcMember 534, IfcSpace 529, IfcFlowController 369,
+IfcOpeningElement 338, IfcColumn 159, IfcFurnishingElement 68, IfcBuildingElementProxy 29, … Duplex IfcFlowSegment 427, IfcFlowFitting 358, IfcFlowTerminal 105,
+IfcFurnishingElement 45, IfcBeam 8, … JKR IfcOpeningElement 425 only. (Clinic also carries `0.920,0.900,0.850,0.250` — alpha 0.25 = a real transparent
+material, NOT the placeholder.) streaming.js §ENTOURAGE already documents this value as "the RPC exporter's default, NOT a deliberate design color".
+**Defect.** Only two paths treat it as "no colour": §ENTOURAGE (named RPC proxies, Alt+S only) and MEP tier 2 (`_mepDiscAlbedo`). Every other class
+keeps the cream although `_getMaterial`'s STD_MAT (streaming.js ~1232, "§S265 standard reference materials", applied "when IFC author assigned no
+material") has a class default: IfcBeam steel 0.55/0.57/0.60, IfcMember steel 0.50/0.52/0.55, IfcColumn concrete 0.65/0.64/0.62, IfcFooting 0.60/0.58/0.56,
+IfcCovering plasterboard, IfcDoor timber, IfcFurnishingElement wood, … The gate is `!rgbaStr` — the placeholder IS a string, so it never fires.
+**Rule (ONE owner, `A._isExporterPlaceholder(rgbaStr, matName)`):** true iff rgba parses to exactly (0.920, 0.900, 0.850) at 3 decimals, alpha absent or
+1.000, AND the material name is not authored (empty, or `≈`-prefixed — `A._isAuthoredMatName`, reused). Then in `_getMaterial`:
+ 1. MEP tier 2 runs FIRST and is unchanged (its input V stays the placeholder's 0.92, so its output is byte-identical to today).
+ 2. If tier 2 returned nothing AND the element is a placeholder AND its class has a STD_MAT row → the albedo is the STD_MAT colour. Roughness,
+    metalness, envInt already come from STD_MAT by class (unchanged; they never depended on the rgba).
+ 3. EXCLUDED: IfcBuildingElementProxy — its STD_MAT row is TEAL 0.00/0.78/0.78, a flag colour, not a real-world material (it is the
+    §BATCH_BUCKET_CLASS_PAINT "floating blue piece"). Proxies keep the cream (Hospital 5,008). Entourage proxies keep their §ENTOURAGE variant.
+    ⛔ OPEN for red1: the 3,715 MEP/PLB/ELEC/FP-discipline proxies (boilers, VAV valves) could take the discipline trade hue by joining MEP_HUE_CLASSES —
+    a colour-policy call, not taken here.
+ 4. Classes with no STD_MAT row (IfcOpeningElement, IfcSpace, IfcDistributionControlElement, IfcSwitchingDevice, IfcCableCarrierSegment/Fitting, …) are unchanged.
+ 5. The alpha, the §S260d near-white taming, triplanar, §SURFACE_RULES all run after, as before.
+**⚠ This changes the NORMAL CANVAS look too** (red1 asked for it there): `_getMaterial` builds the one material both views use. Beams/members turn steel
+grey, columns/footings concrete, doors timber, furnishings wood.
+**Cache key.** The decision is a function of (rgbaStr, ifcClass, matName) — all three already in `cacheKey`. The red control `A._placeholderOff`
+(witness only) is appended as `|phOff` when set, so a flipped flag can never be served a stale material.
+**Log.** `§PLACEHOLDER_COLOUR bld= rows= placeholder= replaced= proxyKept= mepTier2= noStdMat= off=` + one `§PLACEHOLDER_CLASS cls= n=` per replaced class,
+computed at stream-complete over the REAL stream queue through the REAL owner (as §MEP_HUE_TALLY). VACUOUS when rows=0 or placeholder=0; NO-OP when replaced=0.
+**Witness (node, `viewer/tests/witness_z21_placeholder_colour.js`):** detection exact (0.920,0.900,0.850[,1.000] true; alpha 0.25 false; 0.921 false; authored
+name false; `≈` name true); IfcBeam/IfcMember/IfcColumn placeholder → STD_MAT colour + STD_MAT rough/metal; MEP placeholder colour byte-identical to
+`_placeholderOff`; proxy + no-STD_MAT class + non-placeholder rgba byte-identical; red control = `_placeholderOff` must fail the beam row.
+
+### Z20 SPEC — PORCELAIN (2026-09-27; red1: "at least toilet bowls should have porcelain white") — `fix/colour-truth`, same build
+**Measured matches (elements_meta, 7 buildings):** Hospital 282 `Toilet-Wall-Mounted` proxy 0.949,0.953,0.953; 119 `Sink_Wall-Mounted` 0.498 grey;
+20 `M_Sink - Island` + 12 `M_Urinal - Wall Hung` placeholder cream; 13 `Urinal-Wall-3D` 0.969,0.969,0.937. Clinic 42 `M_Lavatory`, 24 `M_Water Closet`,
+36+6 `M_Sink`, 3 `M_Urinal` (IfcFlowTerminal, placeholder). Duplex 4+2 lavatory, 4 WC, 2 sink. HHS 5 WC, 4 lavatory, 2 urinal (proxy, NULL rgba → today TEAL).
+JKR 24 `(TD2) WC` (NULL → today PLB purple), 12 `MRV basic round sink` 0.976/0.937/0.902. LTU 67+13 `WC` IfcFurnishingElement + 5 IfcFlowTerminal.
+Terminal IfcFlowTerminal `Porcelain - Linen` (sinks 20, toilets 16+6+6+2+2), `Fixtures - Porcelain - Ivory` urinals 11+8+3. No IfcSanitaryTerminal row exists
+in any shipped DB. **False positives found in the same census and excluded by the rule:** IfcSpace `TOILET`, IfcOpeningElement, IfcWallStandardCase
+`Toilet Partition`/`WC Trennwand`, IfcDoor `M_Toilet Partition`, IfcFlowController `Lavatory Faucet`/`Kitchen Sink Faucet`, IfcFurnishingElement
+`Counter Top w Sink Hole`/`Vanity Cabinet … Sink Unit`, `Urinal Screen`, `Hand Bidet Flexible Hose` (chrome), `WCPU` AHUs, `JWCC_Mask_Dispenser`,
+Terminal walls `…CeramicPaint…`, Terminal sinks authored `Metal - Steel, Polished` / `<Unnamed>` 0.224.
+**Rule (ONE owner, `A._porcelainVariant(ifcClass, name, matName)` → 'porcelain' | ''):**
+ - class ∈ {IfcSanitaryTerminal, IfcFlowTerminal, IfcBuildingElementProxy, IfcFurnishingElement} (fixture classes; spaces/openings/walls/doors/faucet
+   controllers never match);
+ - an AUTHORED material name (`A._isAuthoredMatName`) decides alone: porcelain iff it contains porcelain | vitreous china | ceramic (Terminal's
+   Porcelain rows in, its polished-steel / `<Unnamed>` sinks out);
+ - otherwise IfcSanitaryTerminal always; else the element name, whole word, case-insensitive, one of import_worker.js:97's fixture words
+   lavatory | water closet | urinal | sink | basin | toilet | wc | bidet — and NONE of the accessory words faucet | tap | hose | partition | screen |
+   counter | cabinet | vanity | hole | dispenser (each one is a measured false positive above).
+ - It is carried as the element's `matVariant` (entourage first — `A._elementVariant`), which already splits batch/merge/instance buckets and the
+   material cache key, so a porcelain fixture never shares a material with a non-fixture.
+**Finish.** Colour = the element's own (Hospital 0.949 white stays 0.949). Where the element has NO colour of its own (NULL, or the Z21 placeholder),
+the colour is STD_MAT.IfcSanitaryTerminal's "ceramic" 0.88/0.88/0.85 (the class default the sanitary class already has) and MEP tier 2 is skipped
+(a toilet is not painted plumbing purple). **Roughness = 0, metalness = 0, ior 1.5 from physicallybased.info "Porcelain"**
+(https://api.physicallybased.info/materials, entry `Porcelain`: color [0.745,0.745,0.723], metalness 0, roughness 0, ior 1.5; sources Wikipedia
+Vitreous_china/Porcelain/Ceramic, engineeringtoolbox ceramics-properties). Applied roughness = max(0.08, 0) = **0.08** — 0.08 is the existing
+§refl floor ("nothing becomes a mirror artefact"), not a new value. envMapIntensity = the global 0.6 (a dielectric: the §HOSPITAL_BLUE_TINT
+0.05 override exists only for high-metalness classes, the same argument §GLASS_NOT_METAL made), no triplanar wear texture, no fake grain (glaze is smooth).
+**Log.** `§PORCELAIN bld= matched= byClass={…} byKey={authored,class,name} ownColour= classDefault=` at stream-complete over the real queue; VACUOUS when rows=0,
+NO-OP (building has no fixture) printed as such. **Witness (node, `viewer/tests/witness_z20_porcelain.js`):** the census rows above in/out exactly;
+porcelain material roughness 0.08 / metal 0 / own colour; placeholder + NULL fixtures → 0.88/0.88/0.85; red control = accessory words removed must fail.
+
+### Z19 SPEC — COLOURED INTERREFLECTION (2026-09-27; red1: "The bounce still gives impressive surfacing but its like a black and white still"; law L2) — `fix/colour-truth`, light_zones.js ?v=17, sourced_light.js ?v=51
+**Measured (coordinator, Hospital interior):** frame saturation +45 % with `&ir=0` — the zone IR (§IRC_MAX v2) adds a colourless term: E_ir = R/(1-R) x mean
+direct E with R = 0.5 on all three channels, so every interreflected photon is white whatever it bounced off.
+**L2:** interreflected light carries the colour of the surfaces it left. Per zone, IR colour = the AREA-WEIGHTED MEAN ALBEDO (linear) of the zone's own
+surfaces, normalised so the zone's IR LUMINANCE is unchanged (the Sumpner magnitude R/(1-R) and its §LUX_CHECK / §LAMP_EN / meter readers are untouched;
+only chromaticity moves). IR_rgb' = IR_rgb x (a_rgb / Y(a)) x Y(IR) / Y(IR x a / Y(a)), Y = Rec.709 0.2126/0.7152/0.0722 (the file's own luminance).
+**Where the albedo comes from (the cheaper of the two options):** the zone rasteriser (light_zones.js build) already visits every boundary triangle with
+its material and its cells; it now also accumulates, per SOLID cell, the material colour (`mat.color`, the linear value the shader uses as diffuseColor)
+over its uniform barycentric samples (sample count ∝ area → area-weighted by construction); glass triangles are not counted. Stored as `alb`
+(Uint8 RGB, linear x 255) in the zone record (+ §ZONE_IDB_CACHE; its fingerprint gains the sum of boundary material colours so a colour change
+rebuilds). irBuild reads it at each sampled IR face (≤ 4,000 per zone, equal 0.5 m faces = equal areas): the solid cell behind the face.
+**Not counted (stated):** MEP/furniture (not boundary geometry — they do not bound a zone), the triplanar texture multiply (colour only), the cove's
+own IR share (keeps the cove colour). A cell rasterised before the change (an old cache record) has no `alb` → the zone stays neutral and the log says so.
+**Switch:** `&ircol=0` / `APP._stillIrColour = false` = today's neutral IR (red control). **Log:** `§IR_COLOUR bld= zones= coloured= neutral(noAlb)= meanSat= maxSat=`
++ `§IR_COLOUR_ZONE z= faces= alb=r,g,b tint=r,g,b Y before/after` for the 3 zones with the most faces. VACUOUS when no zone has an albedo; NO-OP when every
+tint is (1,1,1). **Cost:** +1 Float32 accumulator of 4 x N cells during the rasterise (Hospital grid N from §LIGHT_ZONE stats) freed after, + 3 bytes/cell stored;
+irBuild +1 lookup per sampled face. **Witness (node, `viewer/tests/witness_z19_ir_colour.js`):** luminance unchanged to 1e-9 over random zones; grey albedo
+→ identity; red wall → red-shifted IR with the same Y; zero/NULL albedo → identity; red control = un-normalised tint must fail the Y row.
+
+### COLOUR-TRUTH BUILD (2026-09-27) — bim-ootb `fix/colour-truth` @c89d7de7 (pushed, NOT merged, no PR), sw v1476, streaming.js ?v=78, sourced_light.js ?v=51, light_zones.js ?v=17
+**Node witnesses (logs = the run output; node --check clean on all edited files):**
+ - `witness_z21_placeholder_colour.js` pass=4/0 ran=27. Real Hospital queue through the shipped rollup:
+   `§PLACEHOLDER_COLOUR bld=Hospital rows=64150 placeholder=57098 replaced=10947 mepTier2=40563 proxyKept=4976 noStdMat=580 porcelain=32` —
+   IfcMember 6635, IfcBeam 1970, IfcWallStandardCase 1226, IfcColumn 506, IfcFooting 444, IfcCovering 152, IfcDoor 5, IfcRailing 4, IfcWall 3, IfcSlab 2.
+   mepTier2 40,563 = the §MEP_COLOR_SURVIVES_PHOTOREAL census number exactly (tier 2 output byte-identical to `_placeholderOff`, asserted on FP pipe / MEP duct).
+   noStdMat 580 = IfcOpeningElement. Red control `_placeholderOff` fails the beam row.
+ - `witness_z20_porcelain.js` pass=4/0 ran=33. 25 census rows in/out exact; toilet 0.949 white kept (x0.92 §S260d taming as every white),
+   roughness 0.08 / metal 0 / env 0.6 / no triplanar; the same row without the variant = 0.375 / 0.1 (old finish); NULL / placeholder / HHS NULL proxy ->
+   0.88,0.88,0.85 (control: NULL PLB terminal without the variant = tier-2 purple 0.533,0.267,0.8). Per building matched: Hospital 554 (282 toilets,
+   119+108 grey sinks, 20 island sinks, 12+13 urinals), Clinic 112, Duplex 12, HHS 11, JKR 40, Terminal 74 (all by authored `Porcelain` names),
+   LTU 0 (NO-OP: its 85 `WC` rows carry the authored name `tomt mönster` = "empty pattern", which decides "not porcelain" under the rule —
+   ⛔ red1: treat `tomt mönster` as a non-material placeholder? one-line change in `_porcelainKey`).
+ - `witness_z19_ir_colour.js` pass=4/0 ran=12. max relative dY over 2000 random zones 4.67e-16; grey = identity; red wall (0.6,0.2,0.15) on 0.3 grey IR ->
+   0.6396,0.2132,0.1599 (sat 0.75, dY 0); NULL / black albedo = identity; zoneAlbedo reads the SOLID cell behind a face, skips no-albedo cells, old cache -> null;
+   source contract (opaque-only accumulation, `alb` in KEYS, colour sum in fp, `|col` in the IR key). Red control = un-normalised tint breaks Y.
+**Z19 cost as built:** 7 bytes/cell while rasterising (Uint16 x3 sums + Uint8 count, <= 255 samples/cell), 3 bytes/cell kept + cached; irBuild +1 cell
+lookup per sampled face (<= 4,000/zone). Code: light_zones.js +15 lines, sourced_light.js +30.
+**GPU witness (queued for the coordinator) — `viewer/tests/witness_colour_truth_gpu.js`:**
+`node viewer/tests/witness_colour_truth_gpu.js <PORT_BEFORE> <PORT_AFTER> [63182] > viewer/tests/witness_colour_truth_gpu.log 2>&1` — BEFORE = a server on
+look/combined-0925 @53128dd3, AFTER = fix/colour-truth @c89d7de7; fresh profile per arm; AFTER runs first and its poses are replayed in BEFORE.
+Poses: plenum cam [-20.496,-5.619,-34.439] -> [-23.527,-6.051,-22.952]; toilet = first `Toilet-Wall-Mounted` (guid order) whose centre ray from 2.2 m
+horizontal / +0.8 m is a first hit on it; beams = first placeholder IfcBeam seen from 3 m horizontal / 2.5 m below as a first hit. Per pose: canvas frame
+(render + same-task copy) AND the Alt+S overlay canvas; 48x27 raycast grid -> guid -> elements_meta class / placeholder / porcelain; per-class mean RGB
++ saturation; frame mean saturation. Verdicts: instrument (sw v1476, streaming.js?v=78, no page errors) else INCONCLUSIVE; §PLACEHOLDER_COLOUR
+replaced = 10947 and §PORCELAIN matched = 554 on Hospital; BEFORE has no such line; Z21 beam/member placeholder pixels cream (r>b) -> steel (b>=r),
+canvas and still; Z21 plenum MEP placeholder pipe/duct pixels unchanged (<= 2 codes); Z20 toilet porcelain pixels stay white (sat < 0.12, mean within 8 %);
+REFS untouched-element canvas pixels (same cell, same guid, not placeholder, not porcelain) mean abs <= 2 codes; Z19 plenum/beams still mean
+saturation rises with a non-VACUOUS §IR_COLOUR line. Any class with < 5 sampled pixels / missing anchor -> INCONCLUSIVE. §MATERIALS lines print the
+built THREE material colours/roughness per class for both arms.
 
 **§ZERO GPU POSES + METRICS (shared by Z9-Z12).** Poses: Clinic corridor cam [21.243,-0.606,-1.261] → tgt [1.197,-4.155,-2.608];
 Hospital inner room [9.947,-7.699,0.098] → [14.735,-8.114,2.081]; Terminal inside (the §METER_EV ref pose); P2 …885596; red1's
