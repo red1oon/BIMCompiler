@@ -2033,6 +2033,25 @@ PAUSED 2026-09-27 (red1 "pause for now"). RESUME: (1) read the GPU agent's §ALT
  /tmp/wt-lamp /tmp/wt-meter /tmp/wt-b1 /tmp/wt-look(:8624).
  Z14 open carry-overs: S4 fringe after an inside press (pushed materials 105->109); M1 "hog" (no regression measured); overhang meter pose.
 
+### MEP GREY (Hospital nav) — RESULT (2026-09-27, nav only, no Alt+S; /tmp/wt-look @53128dd3 sw v1464 served read-only on :8650; probe
+scratchpad mep_nav.js, fresh profile per URL). Three URLs: OCI `?db=https://objectstorage…/Hospital_extracted.db&ghost=1`, local
+`?db=/buildings/Hospital_extracted.db&ghost=1`, local without &ghost=1 — ALL THREE IDENTICAL:
+ `§MEP_HUE_TALLY bld=Hospital rows=63182 mep_elements=41987 tinted=40634 tier1_authored_name=0 tier1_own_hue=1353 no_trade_hue=0
+ distinct_hues=5 trade_codes=5 T=0.344 inst_mep_uniform=2870 inst_mep_mixed=0 hue_off=0`; A._instMepUniform 2870, A._instMepMixed 0.
+ Materials actually used (A._matCache, meshes counted in the scene): IfcPipeSegment `0.920,0.900,0.850|…|FP|PLB` -> 0x9c4eeb
+ (1,926 uses), `…|PLB|PLB` -> 9c4eeb (1,320), `…|MEP|PLB` -> 9c4eeb (1,080); IfcDuctSegment `…|MEP|DUCT` -> 0x4eeb4e (387–417).
+ => the hue is NOT dropped: tier 2 fires for 40,634 / 41,987 MEP rows (the other 1,353 keep their own hue: the FP fittings' red),
+ OCI and local DB behave the same, ghost mode changes nothing, no noMepHue path (inst_mep_mixed 0), §INST_RGBA_SPLIT not involved.
+ TWO FACTS for the "greyish" read (no code changed):
+ (1) streaming.js:691-697 `A._mepTradeHue`: the Revit NAME HINT wins over the discipline — every IfcPipeSegment, including the 6,228
+     FP (sprinkler) pipes, carries mepHint PLB, so ALL pipes are one purple 0x9c4eeb (PLB 8844cc hue at the element's V 0.92) and
+     never FP orange; only the ducts differ (green). Trade separation between pipes is lost, not the colour.
+ (2) streaming.js:1275/1278 STD_MAT (IfcPipeSegment metal 0.45 rough 0.40 envInt 0.05; IfcDuctSegment 0.40/0.45/0.05) + the material
+     build (opts.metalness = stdMat.metal; roughness x 0.75; envMapIntensity = envInt): at metalness 0.45 the diffuse albedo is scaled
+     by 0.55 and the tinted specular reflection is nearly off (envInt 0.05) — a hued but dim, low-contrast pipe. Not measured on
+     canvas pixels here (no pose looks at MEP in this probe); a pixel readback at an MEP pose is the next step if red1's "grey" is
+     not the name-hint purple.
+
 ### Z8 SPEC — B1 reach: a radius-free shell rule (2026-09-27; B1 RESULT scope note) — bim-ootb `fix/alts-all`, light_zones.js ?v=17
 DATA (reach_r2_{hosp,clinic,term}_dist.log, look 808f578f, reachdist.js: wall-side covered cells bucketed by lateral distance r to the
 nearest open cell, 150-cell seeded sample per bucket vs 64-ray truth): exterior cells (truth > 0.2) under-read by > 0.1 at EVERY
@@ -2229,6 +2248,192 @@ SETUP CAUSES SEEN (so the rerun avoids them; all were caught as INCONCLUSIVE, th
     §MAXQ tag, 15-min stall guard). Also f49048f2: the in-browser race row = single-init check (was INCONCLUSIVE by construction).
  f. Overlay identity A vs B failed only on '§CLASH_RTREE ready … in 1085ms' (no space) -> normaliser fixed 1bf2831f.
  g. `--help` is not a flag: it starts the full run (killed, output discarded).
+
+### ALTS-ALL FIX 1 (2026-09-27) — ONE METER READING PER STILL, on a BOUND final scene — bim-ootb `fix/alts-all-2` (from fix/alts-all @f49048f2), sw v1475
+CAUSE (code + the saved lines, /tmp/alts_all/raw): three r186 `getProgram` (lib/three.module.min.js, `dt()`): when a material needs
+a program key it has not had before (new light count / spot-shadow count, or the meter's own variant: float target + NoToneMapping +
+fog null), it runs `s.uniforms = getUniforms(e)` = a fresh clone of ShaderLib[k].uniforms and makes it `properties.uniforms`. For the
+§SOURCED_LIGHT uniforms that clone carries the INSTALL-TIME values: the shared typed arrays (P, SKY, IRP, LAMP, COVEP: live, so
+uSLParams.x = 1 "staged") but the DUMMY textures (uSLZone = 1x1 zone 0, uSLGround, uSLIr, uSLCove, uSLLampT/LIdx/Clu, uSLAoT).
+`push()` (sourced_light.js 737) re-binds only when called, and its callers run BEFORE the draw: stage()'s push (on the old uniforms)
+and scene.onBeforeRender `own` (only when renderer.info.programs.length changed — blind to a new key served by an existing GL program).
+So a meter render that creates program keys draws the scene with sourced ON + zone texture = dummy: every fragment reads zone 0 =
+"not in a zone" -> slPass() returns 1 -> nav hemi/ambient indoors, no IR, no cove, no lamp data = a DIFFERENT scene from the still.
+ WHAT EACH READING SAW (inner room / night / plenum; §METER ms = compile time):
+ - fix/alts-all stage meter: torch staged just before -> spot-shadow count 0->1 -> every lit material gets a new key in the meter's
+   own render (ms 4170 inner) -> DUMMY scene. Lamp remeter: lamp rebuild -> point count 0->1 -> new keys again (ms 3875) -> DUMMY
+   again. Both identical at inner (bandL 4.527e-3 both, EV 9.68) = "stable" only because both were wrong the same way.
+ - torch build @1dd60a62: stage meter DUMMY (9.68 inner); torch remeter compiled the torch keys and drew nothing (all sky); lamp
+   remeter: no new key, `own` pushed on the programs.length change -> the only BOUND reading of the press = 7.85 inner, 13.98 night
+   (x15 of the dummy 10.07). That is why the torch build's interiors were 63/131/140 and this tree's 23/36/20.
+ - PROOF IN THE SAVED LINES (no new run): §METER_STATE's own no-ground re-read at night (second render, keys now exist, `own`
+   pushed) gives noGroundL 8.880e-2 vs L 5.886e-3 = groundShare −14.1: hiding the ground cannot make the band 15x BRIGHTER — the
+   re-read was simply the first bound render. Same x15 as the torch build's bound final (EV 10.07 -> 13.98).
+ - the other §METER_STATE deltas: ground 555566 -> ffffff = the ground is NOT yet staged at the stage meter (§GROUND_COLOR_ORDER_FIX
+   reasserts colour x gain 2.30 after SourcedLight.stage; getHexString clamps 2.30 to ff) — the stage meter reads the wrong ground at
+   every outside pose; hidden 1 -> 36/38 = the lamp rebuild's MeshBasic fixture glows (the §METER_EV v2 emitter mask working as
+   meant, not lit surfaces: inner/clinic/term bandL unchanged by them); point 0/0.000 -> 1/0.000 = one pool light at intensity 0,
+   whose only effect is the key change above. The all-sky guard never fired (no remeter was all-sky) — not a factor.
+RULE (implemented): ONE §METER reading per still, taken on the FINAL staged scene (after the lamp rebuild, ground reassert, torch,
+albedo, glass env capture — immediately before §STILL_REFINE start), and taken on BOUND uniforms:
+ (a) meterRead() primes: one render into the meter target (creates every key this exact render needs), then push() on every scene
+     material, then the measured render. §METER_BIND line: programs before/after prime, rebound = materials whose uniforms object the
+     prime replaced, dummyAtRead = staged lit materials still on the dummy zone texture at the read (must be 0 while staged).
+ (b) SourcedLight.stage() no longer sets exposure: it logs `§METER_DIAG camera=.. EV100=..` (+ its §METER_STATE tag=diag) — a
+     diagnostic only; effects.js calls SourcedLight.meterFinal(A) once (replaces the lamp-remeter call, which only ran with the night
+     still boost); it prints the ONE `§METER camera=.. tag=final` + `§METER_STATE tag=final` + `§LIGHT_LAW tag=final`.
+ (c) `own` also re-pushes any staged material whose properties.uniforms object changed since its last push (not only on a
+     programs.length change) and logs `§SOURCED_REBIND n=` when it had to — it cannot rescue the frame that created the key (its hook
+     runs before the draw), so it counts how many app frames drew with dummies (diagnostic for a follow-up: first TAA frame / glass
+     env capture — same mechanism, NOT fixed here).
+ §METER_STATE kept; adds hiddenKinds (sky/sprite/points/line/basic/shader + first names) and torchShadowMap (0/1).
+WITNESS: harness G3 "one §METER per still, after the lamp rebuild + ground reassert" (count == 1, order), G3 "meter read on bound
+uniforms" (§METER_BIND dummyAtRead == 0, rebound reported), G3 "stage diag -> final" printed as INFO with the §METER_STATE diff.
+Red control (selftest): two §METER camera= lines => FAIL; dummyAtRead > 0 => FAIL.
+
+### ALTS-ALL FIX 2 — film bakes A/C 404 (instrument)
+CAUSE: cli_silent_bake.js serves only its own --root; HospitalAjaibPath.db is git-ignored and was absent from /tmp/wt-all/buildings in
+pass 1 (§DB_404_OCI_FAIL, exit 2 in 3-4 s; the witness agent symlinked it at 16:32, after A/C). FIX (harness): before any bake, for
+the film DB and Hospital_silent_local.db (ALTC_SHOWSTOPPERS §FILM_LAW RESULT: both symlinked in v1) link <tree>/buildings/<f> ->
+~/bim-ootb/buildings/<f> when absent and log `§ALTS_FILM_DB`; a missing source => the bake is not run and its F-G1 row
+"building loaded" is INCONCLUSIVE naming the file. Judge F-G1 "building loaded": no §DB_404 / §CLI_BAKE_LOAD_FATAL in the log.
+
+### ALTS-ALL FIX 3 — WebGPU OOM (instrument + measure)
+The harness ALREADY launches a fresh browser + profile per press (pressStill: launch … finally b.close()); the 5 OOM presses (a202
+x3, a616, p672 — all Hospital aerial/outside + gi_still WebGPU) were single presses in a fresh browser. So per the rule "one press
+alone OOMs = a real defect" it is reported with numbers. Harness adds: nvidia-smi sampling every 3 s during each press (total used
++ per-pid for the press's chrome gpu-process and every other GPU process, e.g. the user's own Chrome), peak logged per press as
+`§ALTS_GPU_MEM` in the record (rec.gpu), and the G1 OOM row detail prints the peak.
+
+### ALTS-ALL FIX 4 — torch judged at a CLOSE pose (instrument)
+900 cd at 8.9 m (inner room centre hit (18.1,−8.4,3.5), §LIGHT_STACK) is 11 lx on a surface lit by ~100s of lx: a NO-OP there is
+physics, not a dead switch. New pose `inner_close`: the inner room camera moved along its own centre ray to 1.5 m from that hit
+(cam [16.72,−8.28,2.92], tgt [18.1,−8.4,3.5]; 900 cd at 1.5 m = 400 lx). torch0 arm runs at inner_close; the torch G2 rows at far
+poses (inner, night) print INFO (not NO-OP, not blocking) with the numbers.
+
+### ALTS-ALL FIX 5 — Alt+C programs 137 -> 139 (instrument first)
+altc.log (pass 1): programs 103 (f0) -> 137 (f1, staging) -> 139 at f=85, the frame where the orbit first swings to the far side
+(skyPx 0 -> 1120, cam [-58.4,70.3,85.2]): 2 programs compiled for objects entering the frustum for the first time (three compiles
+lazily per visible object). Harness adds an in-page program census for the altc channel (`§ALTC_PROGRAM_NEW f= names=` — the
+material type/name of each material whose program is new since the last frame). Decision after the census: if the late programs
+belong to our staging (torch shadow, a staged material), fix it; if they are scene materials first seen at f=85, document (the film
+judge's "programs constant f>=2" row then becomes WARN with the names, since a first-seen material is not a staging defect).
+
+### ALTS-ALL FIX 6 — DEFECT 6 (red1, v1464): Terminal glass see-thru on canvas, OPAQUE after Alt+S — re-scoped to carried state (S4)
+red1 (coordinator relay): gone after a Chrome restart; seen only after many Alt+S presses in one long-lived tab while headless GPU runs
+shared the 8 GB card (WebGPU OOM seen then). The PNG tEXt counter (glassLow=2, glassOpaque=0) did not see it = scope-blind.
+TEST (harness, instrument): (a) `--sequence`: ONE tab on Terminal, red1's six poses (tr1..tr6 from the PNG tEXt of
+~/Downloads/bounce_still_1790495808484/…6624063/…6658867/…6698786/…6721496/…6748431) pressed twice (12 presses, Esc between);
+per press: composite look, glass see-through, JS heap, renderer.info (geometries/textures/programs), materials, §GLASS_FRESNEL clone
+count, GPU memory of this tab's gpu-process (nvidia-smi per pid, 3 s), any allocation-failure/OOM/context-lost/page-error line. The
+fresh-page presses tr1..tr6 (ordinary base presses) are the control.
+ GLASS SEE-THROUGH (G6, every Terminal press): glass pixels = a 32x18 ray grid whose FIRST hit is glass (a §GLASS_FRESNEL clone, or
+ transparent with opacity < 0.95, or transmission > 0); at those pixels the staged scene rendered linear into a float target with the
+ glass visible vs hidden (a prime render first — ### ALTS-ALL FIX 1) -> ratio = L_vis / L_hid. Physical rule: transmitted T x
+ background + Fresnel x env, no diffuse => ratio in [0.5 T, T + 0.5], T = 1 − opacity. PASS: >= 80 % of glass samples in band;
+ n < 10 at a pose => INFO (no glass in view); no Terminal pose with n >= 10 => VACUOUS. Also logs the composite luma at those pixels.
+ SEQUENCE (G7): per pose, the 2nd-round press vs the fresh-page press: |p50| <= 5 codes, |glass ratio p50| <= 0.1, |composite glass
+ luma| <= 8 codes; growth: JS heap slope <= 20 MB/press, gpu-process peak slope <= 50 MiB/press, textures/geometries 2nd-round minus
+ 1st-round at the same pose <= 2; zero allocation failures. (Bounds are stated before the run; noise of a Terminal repeat press is
+ not measured — a FAIL within 2x of a bound is reported as such, not re-tuned.) Cross-building sequences (red1's tab may have switched
+ Hospital/Clinic/Terminal) are NOT covered: the harness loads one building per tab.
+ The diffuse-glass hypothesis (a) of the first relay is not chased first (a fresh page is fine); G6 still decomposes it by numbers.
+
+### ALTS-ALL FIX 7 — a zone/field cache written WITHOUT the shell pass must not be reused (GPU run p2: three-mesh-bvh CDN import failed)
+light_zones.js: scheduleSave() persists the zone grid but NOT the field when the field's shell pass was wanted and skipped ('no BVH'
+or 'failed') — `§ZONE_IDB_CACHE field NOT saved`; restore() rejects such a field from an older record (`§ZONE_IDB_CACHE field
+REJECTED`) and rebuilds it. (Fresh-profile witness presses never reuse a cache; this protects a real user's IndexedDB.)
+
+### ALTS-ALL FIX 8 — harness rows the coordinator asked for (instrument)
+ - "final meter re-rendered the scene": §METER_BIND logs rendered (renderer.info.render.frame advanced), calls (draw calls of the read
+   render) and bufHash (FNV of the float read-back). FAIL when rendered=0 or calls=0; a final buffer byte-identical to the diag buffer
+   while §METER_STATE changed => WARN (legit only when every change is off-screen). (The <= 1 EV row was blind to an identical re-read.)
+ - film arms vs A: noise baseline = a repeat bake A2 (`--film A,A2,...`): d = mean per-frame |A − arm| luma, noise = mean |A − A2|,
+   PASS iff d > max(0.05, 2 x noise), else NO-OP; without A2, PASS only when d > 1 code, else INCONCLUSIVE (a fixed 0.01 threshold
+   passed a 0.28/255 difference).
+ - in-browser Alt+C: `startMaxQualityOrbit({frames, fps, editor:false})` (the #cpe-ok click stays as a fallback).
+
+### ALTS-ALL FIX 9 — DEFECT 6 CAUSE: glazing in material ARRAYS was never skipped by the GI geometry pass (measured, first rerun)
+MEASURED (/tmp/alts_all2, @5f14d0e4): every Terminal press, fresh page AND one-tab sequence, logged `§GI_STILL glass skip: 0` while
+`§GLASS_FRESNEL patched={"IfcWindow(R10 pane)":65,"IfcWindow":1,"IfcWindow(members)":4}`; GI mask solid 98.4 % (fresh tr4) = 98.5 %
+(sequence tr4). CODE: gi_still.js §GI_GLASS_SKIP `if (!o.visible || !m || Array.isArray(m)) return;` — Terminal's panes are R10
+material ARRAYS (frame + pane groups, streaming.js A._r10MatArray = a real Array), so every pane went into the geometry pass as a
+SOLID wall and the composite replaced the app's see-through glass with bounce shading of that wall = red1's "alt-s makes them opaque
+… sunlight into the hall from an opposing angle" (the bounce lights the pane plane). The one-tab difference: at tr4/tr5 the saved
+composite's value at the glass samples was 0 on the fresh page and 192/169 on the 2nd-round press (same mask) — the solid-pane
+shading changes with carried GI state; no growth was measured (geometries 1193, textures 1814, programs 129, clones 2, heap and
+gpu-process flat over 12 presses, zero allocation failures). FIX: an object with ANY glass group (transparent, opacity < 0.9) is left
+out of the geometry pass (its frame keeps the app's pixels too — a sliver); the skip line is logged on EVERY press (was once per page:
+a press-2+ change was invisible) with the multi-material count. Smoke tr4: `glass skip: 82 (65 multi-material)`, mask clear 1.58 ->
+2.33 %. ROW (G6, blocking): glass skip >= §GLASS_FRESNEL patched glazing count at every Terminal press; composite-vs-app luma at
+the glass samples = INFO (the bounce legitimately shades the surface BEHIND a pane). The L_vis/L_hid probe of FIX 6 is kept as INFO:
+it read 1.000 at every sample (the probe's float-target render did not draw the clones — instrument, not a scene fact).
+### ALTS-ALL FIX 1 (e) — a §SOURCED_REBIND DURING the still's accumulation restarts it (TAA accumulateIndex = −1, the refine loop's
+own §STILL_REFINE_RESTART mechanism, max 3 per press): first rerun showed 14–25 materials re-keyed on one accumulation frame after
+§STILL_REFINE start at every pose (that sample drew them with the dummy zone texture). §METER_PRIME_APP (the composer-target variant
+primed after the final meter) rebound 0 — the late key is a different variant (not isolated; the restart makes it harmless).
+
+§ALTS_ALL_2 RESULT (Opus GPU fix-and-rerun, 2026-09-27) — bim-ootb `fix/alts-all-2` @b19ba5c5 (pushed, NOT merged, no PR; from fix/alts-all
+ @1bf2831f), sw v1477 (v1476 = fix/colour-truth), lawHash dc0e8638, served /tmp/wt-all2 :8641, fresh profile per press. Harness run on the
+ EXACT commit: `--noise --film A,C --altc 90 --sequence` = 37 presses + one-tab 12-press Terminal sequence + in-browser Alt+C 90 + bakes A, C.
+ Logs: photoreal_probes/alts_all2/run3_alts_all.log (the judged table; raw records /tmp/alts_all3), run2_alts_all.log (the intermediate run
+ @5f14d0e4 that found FIX 9 / FIX 1(e)), glass_seq*.log, mep_nav.log. Node on the tree: selftest 4/0 (37), light_law 4/0, z8/z9/z10/z11/z12/
+ z18/film_exposure 4/0.
+ VERDICTS: `§ALTS_ALL_VERDICT FAIL` (PASS 769 FAIL 6 INCONCLUSIVE 3 SCOPE-BLIND 1 WARN 77 INFO 24; 0 inconclusive presses — the a202 WebGPU
+ OOM did not recur) · `§BAKE_RELEASE_GATE INCONCLUSIVE` (bakes E, T not in this run's scope; C tripped the SW-race row, see below).
+ FIX 1 PROOF — the one BOUND final reading now equals the torch build's only bound reading (§ALTS_COMBINED RESULT) at every shared pose:
+ final EV100 pass 1 (unbound) -> fix/alts-all-2 (torch build): clinic 8.79 -> 7.04 (6.95), inner 9.68 -> 7.85 (7.85), Terminal 10.31 -> 7.55
+ (7.54), night 10.00 -> 14.11 (13.98), a616 15.33 -> 16.62 (16.62), p672 9.20 -> 10.75 (10.75), plenum 11.93 -> 10.44 (10.44). Rows: "ONE §METER per
+ still, on the final scene" PASS all 19 base poses; "meter read on BOUND uniforms" dummyAtRead 0 PASS; "final meter re-rendered" PASS; diag -> final
+ EV (INFO) within 0.2 EV except plenum 7.40 -> 10.44 (the lamp rebuild adds the lit 70/95 band: EV 15.02 there) and a616 15.91 -> 16.62.
+ LOOK (composite, p5/p50/p95 · le15 % · clip %; PASS = p50 40..200 & clip < 2):
+  clinic 45.2/66.3/159.7 · 0 · 2.70 FAIL | inner 19/100.2/141.2 · 0.20 · 0 | term 69.1/78.1/241.9 · 1.07 · 4.53 FAIL | night 43.4/76.0/166.5 · 1.00 · 0
+  a616 10.7/58.4/104.3 · 13.49 · 0 | p672 28.8/68.4/193.8 · 0.66 · 0.42 | plenum 6.3/95.6/255 · 17.41 · 21.74 FAIL | p2 35.8/74.6/133.4 · 0.53 · 0.64
+  p614 28.2/60.0/137.3 · 0.20 · 0 | p698 50.7/78.6/134.0 · 0.02 · 0.23 | a202 18.3/45.0/168.0 · 3.55 · 0.56 | hhs_z18 0/48.6/152.9 · 29.65 · 0
+  inner_close 32.6/45.3/182.5 · 0 · 0 | tr1 52.2/79.9/99.9 · 0.31 · 0 | tr2 53.8/79.0/157.9 · 0.24 · 0.94 | tr3 30.9/88.6/108.7 · 0.49 · 0.03
+  tr4 6/55.1/227.9 · 8.28 · 0.16 | tr5 0/60.9/151.5 · 11.05 · 0.19 | tr6 16.3/63.9/164.3 · 4.58 · 0.03
+  (pass 1 @e0d2082b: clinic p50 23.1, inner 36.1, term 20.0, night clip 21.7 %, plenum clip 9.25 %.)
+ REMAINING NON-PASS (6 FAIL, 3 INCONCLUSIVE, 1 SCOPE-BLIND):
+  - clinic clip 2.70 %, term clip 4.53 %: the app frame already clips (GI meanAbsDiff 0.8 / 2.2) — bright exterior through the openings from an
+    inside pose at EV 7.0/7.6. red1 RULING 2 ("outside very bright through the openings = WANTED, relative eye adjustment") conflicts with the
+    band's clip < 2 %: a rule decision for the coordinator, not a render change.
+  - plenum clip 21.74 %: the GI composite adds +46 codes (compositeMean 116.3 vs appMean 70.2, meanAbsDiff 46.2) in the ceiling void — a GI
+    bounce defect in tight spaces, not the meter (final EV 10.44 = the torch build's). Not fixed here.
+  - G7 sequence tr4 / tr5 / tr6 (2nd-round press vs fresh page): p50 within 1.4-3.7 codes, NO growth (geometries 1193, textures 1814, programs
+    129, glass clones 2, heap and gpu-process flat, 0 allocation failures over 12 presses) — they FAIL on the glass-pixel luma: fresh page 0 at
+    tr4/tr5 vs 176-183 / 136-156 in the tab. DIRECT PROBE (glass_seq*.log, one tab, tr4 x3): on the FIRST press of a page every glass sample of
+    the saved still is 0 (14/14, app layer AND bounce), the glass clone renders NaN in a float probe render at 7/14 samples; presses 2-3 are
+    see-through (app 167-253 = the hall/exterior behind). RULED OUT by numbers (both reverted, not shipped): the §GLASS_ENV cube capture being
+    unbound (prime + SourcedLight re-push: rebound 0, same black) and HalfFloat overflow in the capture (6 non-finite texels on EVERY press,
+    FloatType capture: same black on press 1). OPEN: first-press black glass — cause not isolated (next: the clone's first program build on press
+    0, `newClones=2` only then). tr6's miss (fresh 148.7 vs 130.3) is inside the same tab's own round-to-round spread (150.9 -> 130.3).
+  - film C "SW purge / reload race" INCONCLUSIVE: unregistered=1 even with a fresh --profile per bake (A passed the same row) — instrument, open.
+  - film A vs E / T: arms not run (scope --film A,C) -> INCONCLUSIVE by construction.
+  - a202 Z8 &shellreach=2 SCOPE-BLIND (mean 68.47 vs 66.52, p50 45 = 45, noise 2.02) — the Z8 cells move, this pose's frame does not.
+ FIX 2: films A, C loaded (§ALTS_FILM_DB linked HospitalAjaibPath.db 262 MB + Hospital_silent_local.db 315 MB; "building loaded" PASS).
+ FIX 3 (OOM, numbers): a202 press alone peaks 4.28 GB of 8.19 GB (a616 4.24). Run 2 OOM'd a202 x3 when red1's Chrome held 2.4-3.3 GB (total
+ 7.74-7.78 GB at the peak); run 3 (red1's Chrome 0.4 GB): peak 4.82 GB total, zero OOM. => card contention, not a single-press defect.
+ FIX 4: torch at inner_close (1.5 m): mean 76.02 vs 75.25, p50 45.3 vs 44.8, EV 6.86 vs 6.83 -> PASS (the torch acts); inner / night INFO.
+ FIX 5: census — f=1 +7 staging programs (MeshStandard, batched/instanced building meshes), f=84/85 +1 each = SpriteMaterial (overlay sprite
+ first on screen late in the orbit; a `_halo` sprite in the scene) -> row WARN (overlay only), not ours to fix.
+ FIX 9: Terminal `glass skip: 82 (65 multi-material)` at every press (was 0); G6 PASS at tr1..tr6 and term.
+ FIX 1(e): §SOURCED_REBIND during accumulation -> 2 accumulation restarts at every press, 3 (the cap) at 9 presses (clinic, term, inner_r2 …);
+  no rebind after STILL_REFINE start went un-restarted at those 9.
+
+### MEP GREY + COLOUR-TRUTH RESULT (Opus GPU, 2026-09-27) — see ### MEP GREY (Hospital nav) under §ZERO LIST for the nav check.
+### COLOUR-TRUTH RESULT — `node viewer/tests/witness_colour_truth_gpu.js 8650 8651` from /tmp/wt-colour (BEFORE = /tmp/wt-look @53128dd3 sw v1464
+ :8650 read-only, AFTER = fix/colour-truth @564066f5 sw v1476 :8651; log photoreal_probes/alts_all2/witness_colour_truth_gpu.log).
+ `§W_COLOUR_TRUTH_GPU FAIL judged=17 fail=4 inconclusive=4`. PASS: instrument (both arms booted, v1476 + streaming.js?v=78, 0 page errors);
+ §PLACEHOLDER_COLOUR replaced 10947 / mepTier2 44246 / proxyKept 1293; §PORCELAIN matched 554; BEFORE has no such line; plenum canvas beams
+ cream -> steel (55.5,54.0,50.5 -> 38.2,38.1,38.2, n 143); plenum MEP placeholder pipes unchanged (meanAbs 0.01, n 129); REFS untouched pixels
+ plenum/toilet/beams meanAbs 0.00/0.00/0.01; toilet still white (sat 0.025); beams still cream -> steel (94.1,96.3,92.4 -> 76.4,82.6,81.9);
+ Z19 beams still saturation 0.0807 -> 0.0887.
+ FAIL: (1) Z21 plenum STILL beams stay r > b (136.5,126.0,110.1 -> 131.5,126.4,117.6) — canvas is steel, the still's warm light keeps r > b;
+ (2) Z19 plenum still saturation FALLS 0.1872 -> 0.1717 (§IR_COLOUR coloured=489 meanSat 0.116, Y unchanged per zone); (3) Z20 toilet CANVAS
+ mean +14.7 % (92.8,91.7,90.4 -> 106.4,105.2,109.5; sat 0.054 < 0.12 passes, the mean-within-8 % part fails — the roughness 0.08 specular);
+ (4) Z21 beams CANVAS 39.8,37.5,34.0 -> 24.9,24.5,24.0 — neutral grey, misses the strict b >= r by 0.9 code.
+ INCONCLUSIVE (4): the MEP-trade proxy rows sampled 1 and 4 pixels (< 5): the hue does move (plenum canvas sat 0.041 -> 0.398, beams canvas
+ 0.128 -> 0.600, beams still 0.026 -> 0.429) but under the population rule.
 
 ### Z9 SPEC — ALBEDO sRGB (2026-09-27, audit #48; L2) — branch bim-ootb `fix/z9-albedo-srgb` from fix/light-law-module @39959e8a, sw v1466
 CAUSE (code): loader.js:145 `THREE.ColorManagement.enabled = false` ("enabling breaks HSL color slider palettes"); streaming.js:1542
