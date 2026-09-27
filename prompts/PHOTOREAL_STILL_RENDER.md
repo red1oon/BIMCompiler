@@ -1959,6 +1959,17 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
+**STATUS 2026-09-28 — Alt+S RESTS, Alt+C FIRST (red1: "Done many stills. Overall much improvement. Would just update results and
+rest on alt-s to see to alt-c first").** Alt+S candidate = bim-ootb fix/alts-all-3 @05d0ee7d (sw v1478): B1 + Z8 sky shell rays,
+cove glow only (no strip, L1a), §METER one bound reading on the final scene (EV100 band 40/90, ACES pre-scale kept), lamp truth, LightLaw,
+Z9 albedo sRGB, Z10 AO indirect-only, Z11 bounce real albedo + FIX 10 energy bound, Z12 ground half, §CAM_TORCH (L1b), §SPEC_SMOOTH (Z18),
+colour truth Z19-Z21 (+ MEP discipline hue, metalness 0), FIX 11 normals (first-press black glass), FIX 16 cascade fit front-side,
+FIX 17 skyline seed. Pass 3: stills 894 PASS / 1 FAIL (tr4, fixed by FIX 17), bakes PASS, colour-truth 0 FAIL. Final gate run (Sonnet,
+/tmp/alts_all5) in progress; FF look/combined-0925 to it only on §ALTS_ALL_VERDICT + §BAKE_RELEASE_GATE + §W_COLOUR_TRUTH_GPU PASS.
+Open Alt+S (parked): Z15 baked bounce volume, Z18 teeth count by the direct instrument, S4 carried state residue (tr6 spread), M1.
+NEXT = Alt+C (prompts/ALTC_SHOWSTOPPERS.md): Z22 bake speed (load once, shader pre-compile), §FILM_LAW S4 (sourced chain in films,
+4a-4f, R2 enclosure), Z16 camera track, film torch done (fix/film-law-v2 -> in alts-all-3).
+
 **§ZERO LIST 2026-09-27 (red1: "You have my confidence and mandate to chase paths till zero") — work top to bottom; each item
 ✅ DONE (witness) or ⛔ BLOCKED: <question>. Coordinator = the dev session; GPU witness = one agent, serial.**
  Z1 ✅ B1 §SKY_SHELL_RAYS — look 808f578f (walls within ±0.1: Hospital 60->100%, Clinic 38->100%, Terminal 16->98.6%).
