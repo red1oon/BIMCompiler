@@ -1052,3 +1052,23 @@ until this is on `main`.
   green" without a visual check. See `feedback_test_real_user_path_not_seams` memory.
 - Don't re-run the 32-file witness audit — it's done, 0 flagged, detail in this session's transcript if ever
   needed, not worth re-deriving.
+
+## §WALK-LOD400-ONLY — SPEC (2026-09-27, red1: "One first principle is no BBoxes or cubes, or LOD200 fallback. All must be LOD400 or fail hard")
+```
+SCOPE: bim-ootb modeller/modeller.html — _discWalkOne (gate before register/render/commit), _renderDiscWalk (no box path),
+_renderDiscAssembly (no box path). Reference-only harvest unchanged (Duplex/Terminal, WalkerDoctrine §2). Read the log after every run.
+```
+**Measured violation (2026-09-27, §DW-PRIM-LOD):** SampleCastle walks render ELEC 270 + ACMV 12 + PLB 84 = **366 LOD200 boxes**
+(legacy fallback walk after `§SCHED-FALLBACK`: placements carry no `device` and no `geometry_hash` — only a generic class, so no
+reference mesh can be bound without inventing). Duplex ELEC/PLB rendered `lod200=102/18` in runs where the walk resolved before
+`__dwGeoBuf` had loaded (race; `lod400=102` otherwise). FP borrowed from terminal_rules is already LOD400 on SampleCastle (126).
+§5's "POC = primitive box" is superseded by §11 / the unbreakable no-fake-LOD rule.
+**Rule:** a walked placement is kept ONLY if its `geometry_hash` resolves to a real mesh in the building's geo buffer. Otherwise it is
+REFUSED — not registered, not rendered, not committed — and logged `§DW-LOD400-REFUSE disc=… refused=N kept=M (class×count …)`.
+The gate first waits for the geo buffer (cap 60 s) so a resident's own meshes never refuse from a race. All refused → the walk
+returns the existing honest REFUSE path (0 fabricated). `_renderDiscWalk` never calls the box/LOD300 path; assembly parts with no
+real mesh are refused, not boxed. `§DW-PRIM-LOD` must read `lod300=0 lod200=0` on every walk.
+**Witness W-WALK-LOD400-ONLY:** SampleCastle ELEC/ACMV/PLB → lod200=0, all 366 refused and logged, 0 box meshes under dwRoot;
+SampleCastle FP → lod400=126 kept; Duplex ELEC walked immediately after open → lod400=102, lod200=0. RED on base (lod200=270).
+**Next (separate item):** ARC seed `§GEO-SERVED-DEGRADED` (geo fetch fails → measured bounding boxes rendered, arc_editable path)
+violates the same rule → must hard-fail/refuse instead.
