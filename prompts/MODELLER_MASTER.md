@@ -29,7 +29,9 @@ the forward path). The Modeller is NOT a creative authoring tool. Users author i
 **No original object making (red1, same day: "we dispense off with original object making. We take any object and mould
 it further").** Every object in the Modeller starts as an existing authored object — from a resident, a user's IFC, or the
 extracted catalog/BOM libraries — and is MOULDED (stretch, slide, cut, copy, handles). Decided consequences:
-- The Sketch tool (`#b-sketch`, `bonsai_sketch.js` + planegcs) is FROZEN: kept working, not extended, not a priority case.
+- The Sketch tool (`#b-sketch`, `bonsai_sketch.js` + planegcs) is the LIFEBELT (red1: "we may create basic design from scratch,
+  but it is just a lifebelt"): basic from-scratch design when no source object exists. Keep it working (its witnesses stay
+  green); fix it when it breaks; do not grow it toward a full authoring tool — the main path is always mould-an-existing-object.
 - A catalog product with no real source mesh is not an object to mould ⇒ insert REFUSED, never a box (answers the row-14
   question: rebind from the extraction source in the restored BOM libraries; what cannot be rebound stays unavailable).
 - Insert-with-opening = place a COPY of an existing authored door/window (any source) into a wall, cutting its opening.
