@@ -342,6 +342,29 @@ witness_light_law_unit.js still pass=4 (41 rows). lawHash is now 611dfd50 (v2; w
      once; report that delta). Frame time: mean §FILM_EXPOSURE ms= reported (the per-frame meter cost — the number S4 needs).
   11. C's §FILM_EXPOSURE `off (control)` line present and its exposure constant all clip (= B's staging exposure 0.3825 x
      &stillexp) — the opt-out works.
+**§FILM_LAW v2 — GPU witness amendment (2026-09-27; film law rebased onto the Alt+S torch build). SUPERSEDES the tree/hash in
+the runs above; assertions 1-5, 7, 9, 11 stand unchanged.** bim-ootb `fix/film-law-v2` @931882df (base `fix/alts-torch` @1dd60a62 =
+light-law module + meter v3 [emitters hidden, band 40/90, acesDiv 1 = ACES 1/0.6 pre-scale kept] + Z9 + Z12 + look + §CAM_TORCH;
+then S1-S3 cherry-picked + film torch Z17/L1b), sw v1473. Node: witness_film_exposure_unit 4/0 (12 rows), witness_light_law_unit
+4/0 (41 rows; its acesDiv + histLo/Hi rows moved to the v3 law — they were stale on fix/alts-torch).
+ RUNS: A and C on tree /tmp/wt-film2 @931882df (same commands as above). B = BASE on tree /tmp/wt-torch @1dd60a62 (the torch build,
+ no film law). E (new) = PARITY CONTROL on /tmp/wt-film2: `--film-parity 0` -> /tmp/film_law_e.log. D as above (the Alt+S press now
+ carries the torch: `§CAM_TORCH on` + `§LIGHT_LAW tag=remeter`).
+  6'. lawHash: every `§LIGHT_LAW tag=film-first|film` line in A = the Alt+S lawHash in D = **918804c2** (node value; was 611dfd50
+     on fix/film-law, 2e6b6612 on fix/alts-torch — v2 adds ADAPT, version 2).
+  8'. S3 + torch: A shows `§CAM_LIGHT off (film, L1a: not a real source)` and camLight=0 on every §FILM_EXPOSURE line. C same
+     (parity on). B and E show `§CAM_LIGHT on` and NO `§CAM_TORCH film` line (control clip unchanged).
+  12. §CAM_TORCH film: A has exactly ONE `§CAM_TORCH film on intensityUnits=X peakCd=900 lawHash=918804c2` line (preceded by
+     one `§CAM_TORCH on peakCd=900 ...`); X = 900 / luxPer of that staging (cross-check with the `§LIGHT_LAW ... luxPer=` line,
+     rel. err <= 1e-6). 0 lines = FAIL (torch not staged); >1 = FAIL (re-created mid-bake).
+  13. Torch constant: every §FILM_EXPOSURE line in A carries `torch=` equal to X (string-identical, never `off`) on all frames.
+  14. Programs constant: `programs=` on §FILM_EXPOSURE identical f=1..end in A (the shadow-casting torch is in the scene from
+     staging, so no light-count change => no recompiles); report f=0 delta and A-vs-C equality. A drift = FAIL with the frame.
+  15. The film meter reads the torch: A's f=0 targetEV vs a `--torch 0` re-run is NOT required; instead report A f=0 targetEV and
+     D's `§METER ... EV100=` at the same pose (row 5 rule) — the torch is in both, so row 5's 0.3 bound applies unchanged.
+ BAKE COMMAND (A): cd /tmp/wt-film2 && node cli_silent_bake.js --db HospitalAjaibPath --gpu real --fps 15 --frame-range 0:90
+   --out /tmp/film_law_v2.mp4 --log /tmp/film_law_v2.log   (C: add `--film-exposure 0 --film-fill restore`; E: `--film-parity 0`;
+   B: same as A from /tmp/wt-torch; add the lane's --clash/--measure/--label flags to all four if its reference bake uses them).
 
 **§FILM_LAW S4 — SPEC ONLY (not implemented this pass): the §SOURCED_LIGHT chain in films under R2/R3 (stopper S-LAW-1).**
  Why not now: S-LAW-1 is the whole chain behind one gate (effects.js:4438 stage, :5623 remeter, sourced_light.js:335 lampWanted,
