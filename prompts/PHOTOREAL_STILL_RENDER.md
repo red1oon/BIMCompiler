@@ -2042,6 +2042,11 @@ PAUSED 2026-09-27 (red1 "pause for now"). RESUME: (1) read the GPU agent's §ALT
  and tell red1 to reload :8624; (2) film test bake fix/film-law-v2 (ALTC_SHOWSTOPPERS §FILM_LAW v2 amendment); (3) Z18; then
  Z10/Z11 witnesses, Z8 reach-3, Z15/Z16. Worktrees: /tmp/wt-torch /tmp/wt-film2 /tmp/wt-comb /tmp/wt-z9..z12 /tmp/wt-law
  /tmp/wt-lamp /tmp/wt-meter /tmp/wt-b1 /tmp/wt-look(:8624).
+ Z23 GENERALITY GAPS (red1 2026-09-28, SampleCastle stills …541575336-…541653414, v1464: "introduces new gaps in our abstract
+     treatment of general cases"): (a) glass found by IFC class convention (IfcPlate/IfcWindow + opacity) — Castle (Modeller-authored)
+     glassOpaque=22, plates glassDb 0: glass must be recognised by MATERIAL (transmission/opacity/name), class-free; (b) sloped /
+     non-axis-aligned surfaces (dormer reveal) vs the 0.5 m axis-aligned zone lattice — speckled dark edges, hueNoise 528; (c) the
+     witness fleet has no Modeller-authored building — add SampleCastle poses to every gate. Measurement queued (post-gate A/B).
  Z14 open carry-overs: S4 fringe after an inside press (pushed materials 105->109); M1 "hog" (no regression measured); overhang meter pose.
 
 ### MEP GREY (Hospital nav) — RESULT (2026-09-27, nav only, no Alt+S; /tmp/wt-look @53128dd3 sw v1464 served read-only on :8650; probe
