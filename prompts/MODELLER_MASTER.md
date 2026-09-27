@@ -32,6 +32,13 @@ extracted catalog/BOM libraries — and is MOULDED (stretch, slide, cut, copy, h
 - The Sketch tool (`#b-sketch`, `bonsai_sketch.js` + planegcs) is the LIFEBELT (red1: "we may create basic design from scratch,
   but it is just a lifebelt"): basic from-scratch design when no source object exists. Keep it working (its witnesses stay
   green); fix it when it breaks; do not grow it toward a full authoring tool — the main path is always mould-an-existing-object.
+- **A sketched object is a PLACEHOLDER that a final crafted object replaces** (red1: "it can be a placeholder, where a final
+  well crafted object replaces it"). This does NOT reopen the no-box rule: that rule bans a box SILENTLY standing in for
+  missing geometry. A placeholder is DECLARED — created deliberately by the user, flagged on its op (`placeholder:true`),
+  visibly marked, counted apart from LOD400 elements, and tagged as a placeholder on export. Automatic fallbacks stay refused.
+- **REPLACE verb (not built — measured 0 hits for replace/swap in modeller/):** swap a placeholder (or any object) for a
+  crafted one from any source as ONE signed op, keeping its placement and relations (host, fills, cuts). Queued after
+  insert-with-opening, which it shares code with.
 - A catalog product with no real source mesh is not an object to mould ⇒ insert REFUSED, never a box (answers the row-14
   question: rebind from the extraction source in the restored BOM libraries; what cannot be rebound stays unavailable).
 - Insert-with-opening = place a COPY of an existing authored door/window (any source) into a wall, cutting its opening.
