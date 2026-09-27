@@ -50,6 +50,39 @@ thin today (products carry geometry + class only) · (c) IN-check: open a third-
 openings/fills/storeys survive · (d) insert-with-opening · (e) §SLOPE-HANDLES · (f) row 14 catalog rebind from the restored
 `library/DX_BOM.db`/`SH_BOM.db` (May 22 backups, restored locally 2026-09-27).
 
+## 🔎 §VISION-REVIEW 2026-09-28 — every shipped Modeller feature vs §STRATEGY-ASSEMBLE-HANDOFF (asked by red1)
+Inventory: bim-ootb main toolbar (28 buttons) + 39 `modeller/*.js` modules, read 2026-09-28.
+**Aligned:** Open (IN) · grid drag + openings anchor/ride (ASSEMBLE) · move / multi-select / snap · item drag + host snap ·
+room move · walkers generating MEP from mined patterns, LOD400-or-refuse · Cut on authored walls · Insert library component
+("assemble, don't draw") · Save + gate · Export (OUT, but thin) · World History / Connect / Teams (process + future sharing) ·
+X-ray. Red Pill "New from Reference" (grammar → design) is the vision itself, not object making.
+**CONFLICTS (fix):**
+- C1 **LOD button (`#b-lod`, 200⇄300) + `lodFor(...,'200')` default** — LOD200 IS the box; the rule is LOD400 or refuse. The
+  insert path still starts every catalog component as a box (`foldInsert` `boxArrays(c.bbox)` unless lod==='300').
+  → retire the 200 state; an insert shows its real mesh or is refused (same fix as row 14 / §CATALOG-REBIND).
+- C2 **ModellerGuide.md:216** tells users an insert "lands as a LOD-200 box that lazily refines" — the doc teaches the
+  banned fallback. → rewrite with C1.
+- C3 **Scale handles + typed `x1.5` (`GEOM_SCALE`) stretch ANY insert's mesh**, incl. real authored doors/furniture —
+  that distorts authored geometry (a 1.5× door = a stretched door, not a wider real door). OK for plain extrusions (a wall
+  lengthens = more wall), wrong for crafted objects. → gate scale to plain-extrusion hosts; crafted objects are
+  REPLACED (the REPLACE verb) or edited via measured handles, never stretched.
+**DRIFT (outside the vision, keep as lifebelt, do not grow):** Sketch/Extrude/Constrain (documented as the main way to
+"draw a wall" in the guide — relabel as the lifebelt/placeholder path) · Fillet (fine creative detail) · Route sweep
+(`#b-route`, manual MEP drawing — the walkers are the main path). None is flagged `placeholder:true` yet (the declared-
+placeholder rule is not built).
+**REDUNDANT / OVERLAPPING:**
+- R1 §SLOPE-HANDLES vs the SHIPPED gizmo handles (MODELLER_DIRECT_MANIPULATION.md P1/H2/H3: move axis, rotate ring, scale
+  cubes, snap) — the universal handle set must GENERALISE these, not add a second handle system.
+- R2 Routing: `modeller/routewalker.js` + `viewer/routewalker.js` (duplicate, handed to Viewer lane) + `disc_walker.routeChains`
+  + manual `#b-route` — four ways to make a run; one engine should own it.
+- R3 Five outliners (`bonsai_outliner`, `bom_tree_outliner`, `building_parts_outliner`, `dw_instances_outliner`,
+  `str_walker_outliner`) — row 5's incremental unification call stands; not re-litigated here.
+**Vision now answers an old blocked row:** row 29 (`CONSTRUCTION_GRID_BOM_DUAL_MODEL.md`, grid ⊗ BOM as one substrate,
+"is this still the intended architecture?") — the extracted grammar (BOM sets + bay ratios + grid) IS "the true parametry
+is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
+**Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
+C3 lands with the REPLACE verb.
+
 ## ▶ §RESUME 2026-09-27 — START HERE (supersedes 2026-09-26b as entry point; read that block second)
 - **Merged/merging:** bim-ootb #1786 (root JS tidy, MERGED) · #1787 (row 34 anchor save, MERGED) · **#1788** (net-audit
   batches 1-3 + pattern rows 1/3/6/8 + room-inject + LOD400-or-refuse everywhere: walks, re-open fold, assemblies,
