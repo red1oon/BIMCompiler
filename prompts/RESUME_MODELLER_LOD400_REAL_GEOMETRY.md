@@ -1157,3 +1157,45 @@ shipping (blocked on `sporenkap`'s honest refusal); per-layer slab colours (opti
 sources — bim-ootb #1749 shipped HHS/Clinic/Hospital/Garage on 2026-09-18; Terminal's source authors no
 void/fill chain. The 'sources not in this checkout' line in §START HERE OPEN 2 was stale; always check
 `reference_source_ifc_locations` memory before repeating a 'source missing' claim.
+
+---
+
+## §SLIDE-REAL-WALLS — SPEC 2026-09-27 (red1 direction: "It should allow … the embedded ARCs are cohesive designs with own openings and trappings and they are editable likewise")
+```
+SCOPE: slide a door/window along its REAL host wall in the Modeller, for the embedded ARC residents' own authored
+openings (rel_fills_host). No invention: the wall and the opening are both authored in the source IFC. Read the log after
+every run. User-imported IFCs take the same path only if their open path writes rel_fills_host (unverified — not in scope).
+```
+**Why it fails today (measured, §FOLD-NO-BOX-DONE):** the shipped host mesh has the opening BAKED IN (the tessellator
+subtracted `IfcRelVoidsElement` at extraction), so sliding the door would leave the hole behind → refused.
+**IFC fact this rests on:** a wall's `Body` is authored UNCUT; openings are separate `IfcOpeningElement`s applied by the
+consumer. So the extractor can obtain (a) the host body with opening subtraction DISABLED and (b) each opening's own solid —
+both pure extraction. The Modeller already has the rest: `GEOM_CUT` (kernel box-void subtraction) and §CUT-MOVE (a cut rides
+its filling).
+**Phase M (measure — decides cost, no build):** per building (SampleHouse, Duplex, SampleCastle), per `IfcRelFillsElement`:
+  M1 opening solid kind — a plain axis-aligned rectangular extrusion (kernel-cuttable box) vs anything else (arched, polygon,
+     clipped → REFUSE, never approximated);
+  M2 host body kind with openings disabled — plain extrusion vs boolean/clipped/brep;
+  M3 the source's own cut: host tris with openings vs without (proves the bake is exactly the opening subtraction);
+  M4 box opening vs host frame: opening axis-aligned in the host's local frame (yaw-only), fully through the wall thickness.
+  Log `§SLIDE-MEASURE bldg=… fills=N boxOpenings=a hostPlain=b through=c` + per-row reasons for every non-box.
+**Phase B (build, only for rows that pass M1–M4):** extractor persists host uncut body (own geometry hash) + opening box
+params; residents get them via the patch + self-heal loader (never a binary); the seed folds the host as uncut body +
+one `GEOM_CUT` per opening; slide then runs through the existing engine + §CUT-MOVE. Rows failing M keep today's honest
+refusal, named. **Witness W-SLIDE-REAL-WALL:** the re-cut host (kernel) matches the source's baked mesh (AABB + volume within
+tolerance) BEFORE any move; after a slide the hole is at the new position and the old position is solid; undo restores;
+RED on today's main (refusal).
+**Phase M RESULT — 2026-09-27** (`scripts/measure_slide_real_walls.py`, logs `logs/slide_measure/`, source IFCs read directly):
+| building | fills | box opening, through wall | host is a plain box | host fully consumed | **slideable** | refused (named) |
+|---|---|---|---|---|---|---|
+| SampleHouse | 7 | 7 | 2 | 0 | **7** | — |
+| Duplex | 38 | 36 | 18 | 0 | **36** | 2 host has NULL Representation |
+| SampleCastle | 74 | 70 | 74 | 65 | **5** | 65 host = the opening strip (void-consumed) · 4 opening not a box · 4 no bake |
+In every slideable row the shipped bake is exactly the opening subtraction (tris uncut ≠ cut). **Cost verdict: build it.**
+The one new geometry need — re-cutting a NON-box host (SampleHouse 5, Duplex 18) — already exists in the kernel: the
+§LAYER-SOLID-SEED path sews a real triangulated wall into a solid (`buildTriFace` + `sewAndSolidify`) for layered walls; a
+single-range seed opens it to plain walls. Order for Phase B: SampleHouse (7) → Duplex (36) → SampleCastle (5).
+**Direction link (red1 2026-09-27, "macro editing — inserting openings, placing and snapping to walls"):** Phase B's host model
+(uncut body + one GEOM_CUT per opening, the filling riding its cut) is the same model "insert a door INTO a wall" needs — today
+item-drag only snaps a wall-hung item flush to a wall face and the cut is a separate manual tool. Insert-with-opening is the
+follow-on slice on the same substrate.
