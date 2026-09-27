@@ -1,0 +1,27 @@
+evC night [CACHE_VERSION = v1470] compositeMean=198.17 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=160.5/203/231.4 le15=0.397% ge250=0.6% exp=5.7764
+   §METER_HIST low%=70 high%=95 bandsL[70/95:1.082e-2 40/90:5.965e-3 10/90:3.827e-3] bandL=1.082e-2 bandPixels=3601/14400 allLogAvg=4.640e-3 bandL=6.69e-3..7.44e-2
+evC p367 [CACHE_VERSION = v1470] compositeMean=48.96 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=8.1/31.3/162 le15=16.755% ge250=0% exp=0.1716
+   §METER_HIST low%=70 high%=95 bandsL[70/95:3.715e-1 40/90:1.171e-1 10/90:3.440e-2] bandL=3.642e-1 bandPixels=3958/14400 allLogAvg=3.210e-2 bandL=2.98e-1..4.71e-1
+evC p100 [CACHE_VERSION = v1470] compositeMean=49.57 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=1/11.9/239.6 le15=55.085% ge250=0.48% exp=1.6899
+   §METER_HIST low%=70 high%=95 bandsL[70/95:3.593e-2 40/90:8.100e-3 10/90:3.614e-3] bandL=3.698e-2 bandPixels=3651/14400 allLogAvg=3.966e-3 bandL=8.01e-3..2.98e-1
+evC p501 [CACHE_VERSION = v1470] compositeMean=54.96 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=7.1/34.7/166.6 le15=18.892% ge250=0% exp=0.1877
+   §METER_HIST low%=70 high%=95 bandsL[70/95:3.381e-1 40/90:9.881e-2 10/90:2.779e-2] bandL=3.330e-1 bandPixels=4098/14400 allLogAvg=2.686e-2 bandL=2.98e-1..4.42e-1
+evC p614 [CACHE_VERSION = v1470] compositeMean=32.07 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=5.9/23.2/74.2 le15=35.967% ge250=0% exp=0.1486
+   §METER_HIST low%=70 high%=95 bandsL[70/95:4.206e-1 40/90:1.266e-1 10/90:4.344e-2] bandL=4.206e-1 bandPixels=3601/14400 allLogAvg=4.160e-2 bandL=3.19e-1..4.68e-1
+evC a616 [CACHE_VERSION = v1470] compositeMean=34.28 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=3/24/83.4 le15=41.913% ge250=0% exp=0.099
+   §METER_HIST low%=70 high%=95 bandsL[70/95:6.314e-1 40/90:1.962e-1 10/90:3.813e-2] bandL=6.314e-1 bandPixels=3601/14400 allLogAvg=3.511e-2 bandL=2.88e-1..7.91e-1
+evC a862 [CACHE_VERSION = v1470] compositeMean=69.87 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=27.1/60.4/161.1 le15=0.635% ge250=0% exp=0.3925
+   §METER_HIST low%=70 high%=95 bandsL[70/95:1.593e-1 40/90:5.690e-2 10/90:2.472e-2] bandL=1.593e-1 bandPixels=3601/14400 allLogAvg=2.622e-2 bandL=4.95e-2..7.14e-1
+evC clinic [CACHE_VERSION = v1470] compositeMean=29.45 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=11.1/21/65.3 le15=20.085% ge250=0% exp=19.6237
+   §METER_HIST low%=70 high%=95 bandsL[70/95:3.185e-3 40/90:2.433e-3 10/90:2.193e-3] bandL=3.185e-3 bandPixels=3602/14400 allLogAvg=2.472e-3 bandL=2.36e-3..4.87e-3
+evC inner [CACHE_VERSION = v1470] compositeMean=15.86 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=5.5/17.1/28.1 le15=45.067% ge250=0% exp=11.3067
+   §METER_HIST low%=70 high%=95 bandsL[70/95:5.528e-3 40/90:4.522e-3 10/90:3.466e-3] bandL=5.528e-3 bandPixels=3605/14400 allLogAvg=3.562e-3 bandL=4.78e-3..8.57e-3
+evC term [CACHE_VERSION = v1470] compositeMean=21.66 GLARE bld=TerminalMerged PASS 0 0 0 | comp p5/50/95=3/10/114 le15=68.88% ge250=0% exp=5.4669
+   §METER_HIST low%=70 high%=95 bandsL[70/95:1.143e-2 40/90:6.969e-3 10/90:5.232e-3] bandL=1.143e-2 bandPixels=3601/14400 allLogAvg=5.238e-3 bandL=7.02e-3..1.77e-2
+evC p2 [CACHE_VERSION = v1470] compositeMean=40.06 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=11.8/32.6/85.1 le15=12.423% ge250=0.27% exp=7.256
+   §METER_HIST low%=70 high%=95 bandsL[70/95:8.617e-3 40/90:4.621e-3 10/90:1.703e-3] bandL=8.614e-3 bandPixels=3604/14400 allLogAvg=1.618e-3 bandL=5.31e-3..1.38e-2
+evC p698 [CACHE_VERSION = v1470] compositeMean=29.75 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=11.6/26.7/66.3 le15=10.98% ge250=0.04% exp=5.8062
+   §METER_HIST low%=70 high%=95 bandsL[70/95:1.076e-2 40/90:6.641e-3 10/90:3.334e-3] bandL=1.076e-2 bandPixels=3601/14400 allLogAvg=2.749e-3 bandL=7.61e-3..1.44e-2
+evC p672 [CACHE_VERSION = v1470] compositeMean=68.29 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=25.7/57.2/156.1 le15=1.085% ge250=0.01% exp=9.3892
+   §METER_HIST low%=70 high%=95 bandsL[70/95:6.657e-3 40/90:3.249e-3 10/90:1.974e-3] bandL=6.657e-3 bandPixels=3601/14400 allLogAvg=1.929e-3 bandL=3.56e-3..1.78e-2
+== evC done 10:59:10

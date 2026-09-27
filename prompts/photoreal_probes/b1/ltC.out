@@ -1,0 +1,23 @@
+ltC night [CACHE_VERSION = v1462] compositeMean=203.03 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=167.1/207.7/234.9 le15=0.373% ge250=1.55% exp=6.4114
+   §METER_HIST low%=70 high%=95 bandL=1.078e-2 bandPixels=3601/14400 allLogAvg=4.642e-3 bandL=6.69e-3..7.44e-2
+ltC a616 [CACHE_VERSION = v1462] compositeMean=11.64 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=0/6.9/33.2 le15=62.915% ge250=0% exp=0.0543
+   §METER_HIST low%=70 high%=95 bandL=6.152e-1 bandPixels=3601/14400 allLogAvg=3.486e-2 bandL=2.83e-1..7.72e-1
+ltC clinic [CACHE_VERSION = v1462] compositeMean=28.55 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=10.1/20.3/65.3 le15=31.109% ge250=0% exp=19.6287
+   §METER_HIST low%=70 high%=95 bandL=3.185e-3 bandPixels=3602/14400 allLogAvg=2.472e-3 bandL=2.36e-3..4.87e-3
+ltC inner [CACHE_VERSION = v1462] compositeMean=15.86 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=5.5/17.1/28.1 le15=45.038% ge250=0% exp=11.3067
+   §METER_HIST low%=70 high%=95 bandL=5.528e-3 bandPixels=3605/14400 allLogAvg=3.562e-3 bandL=4.78e-3..8.57e-3
+ltC term [CACHE_VERSION = v1462] compositeMean=20.78 GLARE bld=TerminalMerged PASS 0 0 0 | comp p5/50/95=2.9/9/111 le15=70.61% ge250=0% exp=5.443
+   §METER_HIST low%=70 high%=95 bandL=1.143e-2 bandPixels=3601/14400 allLogAvg=5.247e-3 bandL=7.02e-3..1.77e-2
+ltC p2 [CACHE_VERSION = v1462] compositeMean=40.01 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=11.8/32.6/85.1 le15=12.368% ge250=0.27% exp=7.2589
+   §METER_HIST low%=70 high%=95 bandL=8.610e-3 bandPixels=3604/14400 allLogAvg=1.613e-3 bandL=5.31e-3..1.38e-2
+ltC p698 [CACHE_VERSION = v1462] compositeMean=29.72 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=11.8/26.7/66.3 le15=11.02% ge250=0.04% exp=5.8062
+   §METER_HIST low%=70 high%=95 bandL=1.076e-2 bandPixels=3601/14400 allLogAvg=2.748e-3 bandL=7.61e-3..1.44e-2
+ltC p672 [CACHE_VERSION = v1462] compositeMean=68.76 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=25.9/57.5/157 le15=1.049% ge250=0.07% exp=9.4559
+   §METER_HIST low%=70 high%=95 bandL=6.657e-3 bandPixels=3601/14400 allLogAvg=1.933e-3 bandL=3.56e-3..1.78e-2
+ltC plenum [CACHE_VERSION = v1462] compositeMean=22.83 GLARE bld=Hospital PASS 0 0 0 | comp p5/50/95=0/0/102.2 le15=73.406% ge250=0% exp=0.1752
+   §METER_HIST low%=70 high%=95 bandL=5.887e-3 bandPixels=3603/14400 allLogAvg=2.571e-3 bandL=3.63e-3..1.31e-2
+ltC cgap [CACHE_VERSION = v1462] compositeMean=63.4 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=1/1/229 le15=72.361% ge250=0% exp=4.4603
+   §METER_HIST low%=70 high%=95 bandL=1.401e-2 bandPixels=3601/14400 allLogAvg=3.908e-3 bandL=2.01e-3..2.72e-1
+ltC cgapup [CACHE_VERSION = v1462] compositeMean=33.73 GLARE bld=Clinic PASS 0 0 0 | comp p5/50/95=1/1/226.9 le15=79.502% ge250=0% exp=4.133
+   §METER_HIST low%=70 high%=95 bandL=1.512e-2 bandPixels=3602/14400 allLogAvg=3.969e-3 bandL=2.69e-3..2.72e-1
+== ltC done 10:28:55

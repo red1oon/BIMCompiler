@@ -2148,6 +2148,28 @@ PLAN: the §LIGHT_TRUTH_AUDIT table (appended at the end of this file) lists eve
 DOUBLE-COUNT row becomes one change on its own fix/ branch, witnessed by numbers (refs, §GLARE, the night/pale/blotch poses)
 before it goes to look. Exceptions need red1's word, recorded here.
 
+§LAMP_TRUTH RESULT (Opus, 2026-09-27) — fix/lamp-truth @c539f129 (sw v1462, /tmp/wt-lamp :8634), fresh-profile first press.
+ Baseline for the shared poses = 1b5f1c0b (evB_* logs, same session). ⚠ the ltB_* baseline run for plenum / Clinic gap poses
+ landed on /tmp/wt-meter AFTER it moved to 53608f22 (sw v1470, meter v2 hides emitters): it is NOT a 1b5f1c0b baseline — used
+ only where stated. Logs photoreal_probes/b1/ltC_* ltB_*.
+ (a) REMETER: every press now prints two §METER lines (stage, then after the still lamp rebuild). First -> second stops:
+   aerial 616826 -1.91 -> -2.82 (EV100 16.77 -> 17.68; comp 36.98 on 1b5f1c0b -> 11.64, le15 62.9 %); night +3.92 -> +4.07;
+   Hospital plenum +4.79 -> -1.13 (EV100 10.06 -> 15.99; bandL x60; inferred, not isolated: the rebuilt lamps' emitters enter the 70/95 band) ->
+   comp 22.8, p50 0, le15 73.4 % NEAR-BLACK (v1470 arm, which hides emitters: EV100 10.03, comp 100.9, le15 21.3 %);
+   Clinic corridor / inner room / P2 / 698534 / Clinic gap poses: second = first (within 0.01 EV); Terminal 11.02 -> 11.03;
+   672505 10.24 -> 10.23.
+ (b) lamp staging cut 0.5 -> 1.0: not separately judged (no § line isolates it) -> INCONCLUSIVE beyond the refs below.
+ (c) §COVE_QUAL (L1a): Hospital qualified 358 / belowLevelWithLamps 0 / belowLevelWithSkyOnly 18 (was 376 qualified);
+   Clinic 110 / 62-66 / 0 (was 166); Terminal 54 / 3 / 5 (was 63). Lost-cove check: Hospital inner room comp 15.86 = 15.86,
+   §FAULT unlit 0/144; plenum §FAULT unlit 0/144 irOnly 89 both arms — its near-black comes from (a), not cove loss;
+   Clinic gap poses [0.617,3.56,-19.198] -> [0.617,7.16,-17.454] / [0.617,8.5,-19.0]: comp 63.4 / 33.7, le15 72.4 / 79.5 %
+   IDENTICAL to the v1470 arm (63.4 / 33.8, 72.4 / 79.5 %) = the black void is there without this branch too.
+ REFS vs 1b5f1c0b: Clinic corridor 28.74 -> 28.55, inner room 15.86 -> 15.86, Terminal inside 22.14 -> 20.78, P2 39.87 -> 40.01,
+   698534 29.96 -> 29.72, 672505 66.64 -> 68.76, night 199.4 -> 203.0, aerial 616826 36.98 -> 11.64 (remeter). §GLARE 0/0/0 all.
+ VERDICT: NOT READY as-is — (a) the remeter re-reads lamp emitters and blacks out the plenum pose and darkens the sunlit aerial
+   by a further 0.9 stop; the meter v2 emitter mask (53608f22) is the evident companion (after the rebase, re-witness plenum
+   and aerial). (c) cove L1a: no near-black caused by lost coves at the judged poses.
+
 **§LIGHT_LAW_MODULE — SPEC (2026-09-27; coordinator ask: "one file that holds the chain's values and formulas so Alt+S reads
 them now and Alt+C can later read the SAME values").** PURE REFACTOR — zero behaviour change, no value retuned, no Alt+C wiring.
 FILE: bim-ootb `viewer/light_law.js`, global `window.LightLaw` (frozen objects; also `module.exports` so node can test it).
@@ -2188,6 +2210,25 @@ WITNESS (two parts):
      §LUX_CHECK, §COVE_LIGHT, §LAMP_EN and §TONEMAPPING lines byte-identical (diff the §-lines of the two full console logs,
      timings `ms=` excluded); `§LIGHT_LAW tag=stage` + `tag=remeter` lines on every press, lawHash identical on all three
      buildings (node value 5368cb0a), and `exposure=` on the remeter line = the §METER exposure of that press.
+§LIGHT_LAW_MODULE RESULT (Opus, 2026-09-27) — fix/lamp-truth @c539f129 (:8634) vs fix/light-law-module @39959e8a (:8635, sw v1463),
+ fresh-profile first press (own puppeteer per press, full console saved: photoreal_probes/b1/law_{8634,8635}_{hospital,clinic,
+ terminal}[_r2].txt; diff tool lawdiff2.py, every `*ms=` / `(types N)` timing stripped). TWO presses per arm per building, so
+ same-arm run noise is measured next to the cross-arm diff:
+ | bld      | A1-A2 (same arm) | B1-B2 (same arm) | A-B pairs                                        |
+ | Hospital | differ (METER*, LUX_CHECK*) | identical | A2 = B2 and A2 = B1 BYTE-IDENTICAL; A1 differs from both B exactly as from A2 |
+ | Clinic   | identical        | differ (METER_HIST) | A1 = B1 and A2 = B1 BYTE-IDENTICAL; B2 differs as from B1 |
+ | Terminal | differ           | differ           | never identical — nor within either arm (meter readback 4th digit: exposure 5.4679 / 5.4674 / 5.4686) |
+ The only lines that ever differ are §METER / §METER_HIST / §LUX_CHECK(_CAM) (which print the exposure), and only in the 4th
+ significant digit (Hospital bandL 5.540e-3 vs 5.528e-3, 3604 vs 3605 band pixels) — the same size within an arm.
+ §SOURCED_LIGHT_CALIB, §COVE_LIGHT*, §LAMP_EN*, §TONEMAPPING identical in every pair. §LIGHT_LAW tag=stage + tag=remeter on
+ every press, lawHash=5368cb0a on all three; remeter exposure = that press's (second) §METER exposure (Hospital 11.3067 =
+ 11.3067, Clinic 19.6287 = 19.6287, Terminal 5.4425 = 5.4425 / 5.4436 = 5.4436); stage exposure = the first §METER line.
+ node viewer/tests/witness_light_law_unit.js: §WITNESS_LIGHT_LAW_UNIT pass=4 fail=0 ran=41.
+ NOTE: the first Clinic capture on 8635 logged 40,373 'Uncaptured WebGPU GPUOutOfMemoryError / Invalid Texture' lines — a
+ second headless browser (the warm probe's) was still holding 4 GB of the 8 GB GPU (red1's Chrome 3.1 GB). Closed it and re-ran:
+ 0 such lines on every r2 capture. Its §-lines matched anyway.
+ VERDICT: PASS — byte-identical where the same arm repeats byte-identically (Hospital, Clinic); Terminal byte-identity
+ INCONCLUSIVE (not reproducible within one arm), cross-arm deltas no larger than same-arm deltas.
 
 **§METER_ONE_RULE — SPEC (red1 2026-09-27: "for outside or in, the exposure rule must be consistent based on condition of
 light reaching the eye"; trigger: first outside still …1790468166215 "as if night time", cam [33.5,8.121,11.498] tgt [0,0,0],
@@ -2239,6 +2280,32 @@ Inside refs WILL move (new rule for all); re-approval by numbers. Engine referen
  VERDICT: NOT READY as a look (the rule is consistent inside/outside, but under the 70/95 band + exposure 0.6/(1.2 x 2^EV)
  the median surface sits 1.5-3 stops under mid-grey at 10 of 13 poses; the avg arm lifts interiors only ~+0.4 stop and makes the
  night pose clip). Not judged: which constant red1 wants (band, K, compensation) — that is a look decision, not a defect.
+§METER_EV v2 RESULT (Opus, 2026-09-27) — fix/meter-one-rule @53608f22 (sw v1470, :8633), fresh-profile first press, 13 poses.
+ Logs photoreal_probes/b1/evC_* (default 70/95) + evD_* (&meterband=40,90). EV100bands per pose (70/95 / 40/90 / 10/90):
+ night 10.94/10.08/9.44 · 367731 16.04/14.38/12.61 · 100646 12.67/10.52/9.36 · 501304 15.91/14.13/12.30 · 614025 16.22/14.49/12.95 ·
+ aerial 616826 16.81/15.12/12.76 · aerial 862668 14.82/13.34/12.13 · Clinic 9.18/8.79/8.64 · inner 9.97/9.68/9.30 · Terminal
+ 11.02/10.31/9.89 · P2 10.61/9.71/8.27 · 698534 10.93/10.24/9.24 · 672505 10.24/9.21/8.49.
+ BAND CHOICE (worst error: sunlit aerials vs ANSI 15, interiors vs 7-9): 70/95 max(1.81, 2.02) = 2.02; 40/90 max(1.66, 1.31) =
+ 1.66; 10/90 max(2.87, 0.89) = 2.87 -> second arm = 40/90 (none fits both: 40/90 puts 616826 at 15.12 but 862668 at 13.34;
+ 10/90 fits interiors but sunlit aerials read 12.1-12.8).
+ | pose          | 70/95: EV100 stops comp  p50   le15  ge250 | 40/90: EV100 stops comp  p50   le15  ge250 | skyPx |
+ | night         | 10.94 +3.92 198.2 203.0 0.40 0.60        | 10.08 +4.78 221.6 227.0 0.28 4.82 FLAG     | 0     |
+ | 367731        | 16.01 -1.16 49.0  31.3  16.8 0           | 14.40 +0.46 96.4  75.3  0.42 0           | 1781  |
+ | 100646        | 12.72 +2.14 49.6  11.9  55.1 0.48        | 11.03 +3.83 75.8  35.6  10.9 6.87 FLAG     | 1032  |
+ | 501304        | 15.89 -1.03 55.0  34.7  18.9 0           | 14.13 +0.73 107.6 85.1  0.38 0.05        | 2402  |
+ | 614025        | 16.22 -1.36 32.1  23.2  36.0 0           | 14.48 +0.37 80.8  67.4  0.41 0           | 0     |
+ | aerial 616826 | 16.81 -1.95 34.3  24.0  41.9 0           | 15.04 -0.18 87.1  78.0  1.15 0           | 0     |
+ | aerial 862668 | 14.82 +0.04 69.9  60.4  0.64 0           | 13.30 +1.56 126.7 120.2 0.11 1.45        | 235   |
+ | Clinic        | 9.18  +5.68 29.5  21.0  20.1 0           | 8.79  +6.07 35.6  27.3  5.14 0           | 0     |
+ | inner room    | 9.97  +4.89 15.9  17.1  45.1 0           | 9.68  +5.18 20.0  21.9  38.8 0           | 0     |
+ | Terminal      | 11.02 +3.84 21.7  10.0  68.9 0           | 10.31 +4.55 28.2  15.0  51.1 0           | 170   |
+ | P2            | 10.61 +4.25 40.1  32.6  12.4 0.27        | 9.71  +5.14 63.9  55.6  0.81 0.27        | 32    |
+ | 698534        | 10.93 +3.92 29.8  26.7  11.0 0.04        | 10.24 +4.62 45.7  42.1  1.66 0.04        | 6     |
+ | 672505        | 10.24 +4.62 68.3  57.2  1.09 0.01        | 9.21  +5.65 104.3 94.7  0.04 0.37        | 56    |
+ §GLARE 0/0/0 every run; meter ms 295-2561 (typ. 450-520). Emitter mask: `hidden=2` (v1 1) — the 70/95 EVs moved <= 0.06 vs v1.
+ VERDICT (rule: median 40..200 at >= 11 of 13 and clipped < 2 %): 70/95 2/13 -> NOT READY; 40/90 8/13 with 2 poses clipped
+ > 2 % (night 4.82, 100646 6.87) -> NOT READY. Failing under 40/90: Clinic 27.3, inner room 21.9, Terminal 15.0 (interiors at
+ EV100 8.8-10.3 still land 1.5-2.5 stops under), night 227 (shade view with no sky), 100646 35.6 with clipped glass.
 
 **RULINGS red1 2026-09-27 (inside still …1790465698534, v1457):** (1) "If original colors then OK" — the pale-interior check
 passes if the chroma readback shows the IFC material colours intact (low saturation = the data's greys, not a render fault).
