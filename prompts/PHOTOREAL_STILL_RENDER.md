@@ -1981,6 +1981,48 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
      v1464): suspected 0.5 m zone-grid stepping (audit C cause 4 stencil drop + cause 3 per-zone IR) overlapping the soft sun
      shadow. Prove by readback of sun term vs grid term along the floor band, then continuous cross-cell blending; witness =
      0.5 m steps along the line -> 0, refs unchanged. FIRST item of the next pass.
+### Z18 DIAGNOSIS (Opus GPU witness, 2026-09-27, no code change) — VERDICT: the hard stair-stepped edges on the floor AND the duct
+sides are the §GLASS_SPEC_GATE mirror-ray march (slSpecKeep, sourced_light.js:159-176): the IBL reflection gate flips from F to 1.
+They are NOT the sun shadow, NOT the sky field F / ground Gd, NOT IR per zone, NOT AO, NOT the lamp clusters. The suspicion written
+above (0.5 m zone-grid stepping of the diffuse terms) is RULED OUT.
+ Setup: /tmp/wt-torch @1dd60a62 (sw v1472, :8638), HHS_Office_Federated &ghost=1, red1's pose, one fresh-page Alt+S (probe
+ z18_press.log: §GLARE 0/0/0, §SKY_VIEW_FIELD on, §COVE_LIGHT on, §IRC_MAX on, torch on). Then linear float-RT readbacks of the
+ frozen staged frame (1685x874; red1's PNG is 1666x864, so image coords differ ~1 %). Probes b1/t3*.js, analysis z18gate.py ->
+ z18_gate_teeth.log. Both of red1's stepped edges reproduce at this build: the floor sawtooth at image x ~780-810, y 730-874; the
+ duct-side staircases at x 480-600, y 150-200 and x 760-840, y 0-110.
+ PER-TERM, one term at a time (sample pixels either side of the floor edge (792|796, 860) and a duct-side step (520, 170|172)):
+  - full linear luminance: floor 0.0438 -> 0.0759 (x1.73), duct 0.0228 -> 0.0312 (x1.37) across one pixel.
+  - sun direct: 0 on both ROIs. Duct sides face ±x, and N.L with sun (-0.002,0.707,-0.707) is ~0. The floor band is in shadow:
+    castShadow=false lifts both floor sides to 0.249/0.244 with no step. Caveat: A.sun.intensity=0 did not reach the shader
+    (intensity is an own property there), so the sun was judged through castShadow and cascade hiding, not through its intensity.
+  - sky field F (mode 6/8 G) and ground view Gd (mode 10): continuous across both edges (F 0.2132 -> 0.2138 floor, 0.0123 ->
+    0.0127 duct). They are trilinear, so they give the SOFT wide gradient (tier A of the look). They add 0 steps: along floor
+    rows y=780/820/860, the line crosses 0.5 m cell boundaries (e.g. z cell 88->89 at x 792) with no jump in F, Gd, IR or AO.
+  - IR per zone (mode 9): constant 0.00593 inside zone 57. It changes only at the zone-57/zone-0 boundary, which on the floor is
+    a straight grid-plane line (the dark triangle), not stepped. uSLIrP.y=0 lowers both sides by the same 0.0041, and the step remains.
+  - AO (N8AO accumulation target, half float): 1.0 on both sides (min 0.76, only at contacts); no steps.
+  - lamps (uSLLamp.x=0): -0.0002 on both sides; step remains. Cove 0 here. Torch 0 at these pixels (and red1's v1464 had no torch).
+  - All light colours black: step remains (duct 0.0008 -> 0.0092). uSLSky.x=0 (binary path) removes it (0.1446/0.1447). So
+    does uSLParams.x=0 (0.1403/0.1403).
+  - DECIDING: mode 8 (_slSpec) = F on one side and exactly 1 on the other at every sampled edge (floor 0.2132 | 1, duct 0.0123 |
+    1). With material envMapIntensity=0 (32 of 69 materials carry a cube-RT envMap), the edge is gone: floor 0.01649/0.01653,
+    duct 0.02259/0.02262. The stepped tier is the IBL radiance, x1 where the 0.25 m mirror-ray march through the 0.5 m zone
+    grid reaches an OPEN cell and xF where it meets a SOLID one first. That is a binary cell test.
+ STEP COUNT / SPACING (gate boundary traced line by line; teeth = boundary jumps >= 3 px):
+  - Floor (y=-5.354): 6 teeth in 174 rows, period along z 0.208 / 0.203 / 0.197 / 0.193 / 0.182 m. The edge runs x = 0.558 z +
+    1.84. Tooth z positions sit at cell fractions 0.00/0.58/0.18/0.77/0.37/0.99, so they are NOT on 0.5 m cell boundaries of the
+    receiver, and the spacing is ~0.2 m, not 0.5 m. The cause is still the grid: the march's far samples (k x 0.25 m along the
+    reflected ray) cross a 0.5 m cell of the occluder/opening, and that crossing is projected back onto the floor. Brightness
+    ratio across a tooth is 1.49.
+  - Duct left side (x=-7.908 plane): 4 teeth in 117 columns, period along z 0.110 / 0.118 / 0.129 m, y rise ~0.07 m per tooth,
+    ratio 1.34. Upper-right duct: 3 jumps in 66 columns (0.19 / 0.10 m), ratio 1.71.
+  - The 3-5 consecutive 1-px jumps inside each tooth are the slanted riser of one tooth, not a second step family.
+ "TWO TIERS" = tier A, the soft wide wedge (hemi x F/Gd, trilinear, smooth), with tier B on top of it: the hard sawtooth of the IBL
+ spec gate. A fix belongs in slSpecKeep. Make the open/solid verdict continuous, e.g. filter the march with the same 8-texel
+ trilinear weights as _slF, or blend F->1 over the last samples, or feather by the distance from the cell boundary. The Z18 witness
+ is unchanged: teeth along these three traced lines -> 0, and the envMapIntensity=0 control stays equal. A confound was seen and
+ not used: hiding the stillShadowCascade lights (which changes the program variant) also removed the floor jump. The deciding
+ test (envMapIntensity=0) changes no program.
 PAUSED 2026-09-27 (red1 "pause for now"). RESUME: (1) read the GPU agent's §ALTS_COMBINED RESULT (partial) — torch Alt-S witness
  on fix/alts-torch @1dd60a62, 7 poses, PASS = p50 40..200 & clipped < 2 % at >= 6/7, §GLARE 0; if PASS FF look/combined-0925 to it
  and tell red1 to reload :8624; (2) film test bake fix/film-law-v2 (ALTC_SHOWSTOPPERS §FILM_LAW v2 amendment); (3) Z18; then
