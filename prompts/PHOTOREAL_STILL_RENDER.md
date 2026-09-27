@@ -1969,6 +1969,47 @@ PLAN: the §LIGHT_TRUTH_AUDIT table (appended at the end of this file) lists eve
 DOUBLE-COUNT row becomes one change on its own fix/ branch, witnessed by numbers (refs, §GLARE, the night/pale/blotch poses)
 before it goes to look. Exceptions need red1's word, recorded here.
 
+**§LIGHT_LAW_MODULE — SPEC (2026-09-27; coordinator ask: "one file that holds the chain's values and formulas so Alt+S reads
+them now and Alt+C can later read the SAME values").** PURE REFACTOR — zero behaviour change, no value retuned, no Alt+C wiring.
+FILE: bim-ootb `viewer/light_law.js`, global `window.LightLaw` (frozen objects; also `module.exports` so node can test it).
+Loaded in viewer.html BEFORE sourced_light.js (and so before effects.js / scene.js), precached in sw.js, sw v1463. Branch
+`fix/light-law-module` from `fix/lamp-truth` @c539f129.
+WHAT MOVES (the literal leaves its file; the file reads LightLaw):
+ - CALIB (L1, §SOURCED_LIGHT_CALIB): sunLux 100000, lampLux 500, refH 2.5 m — effects.js:4274 `CALIB_*` and the three
+   `|| 100000` fallbacks in sourced_light.js (§LAMP_EN enApply, §LUX_CHECK luxRows, §METER meter). Formula
+   `luxPer(sunLux, sunI)` = sunLux / sunI (null when sunI <= 0) — the ONE scene-units -> lux conversion.
+ - SCENE source values (L1, scene.js:125-213): tone curve 'ACESFilmic', base exposure 0.45, sun 0xfff0dd x 4.4, hemi sky
+   0xb0c4de / ground 0x8b7355 x 0.617, ambient 0xffffff x 0.386. scene.js builds its lights from them (same numbers, same
+   order). They are still §LIGHT_TRUTH_AUDIT rows #1/#2/#12/#19/#24 with their verdicts — moving them is not endorsing them.
+ - METER (L3, §METER_EV): K 12.5, 100 (ISO), q-factor 1.2, ACES exposure divisor 0.6, histogram band 0.70 / 0.95, readback
+   160 x 90. Formulas: `ev100(Lcd)` = log2(Lcd x 100 / K); `exposureFromEv(ev, luxPer, acesDiv)` = luxPer x acesDiv /
+   (1.2 x 2^ev) — the same floating-point operation order as sourced_light.js meter() so the result is bit-identical;
+   `acesDiv(renderer, THREE)` = 0.6 when the renderer's toneMapping is ACESFilmic, else 1.
+ - COVE (L1a, §COVE_LIGHT): TRIM_LUX_VOID 100, COVE_UNKNOWN_LUX 100, colour 0xffe4b5 (red1 exception #46).
+WHAT STAYS (not law values, or not this step): PHOTO_* scales in effects.js (audit NO-OP/mood rows #3/#4/#16/#17 — to be
+deleted, not dignified by a move); lamp decay / range dials (§STILL_DIALS, audit #38/#39); NIGHT_LIGHT_INTENSITY_BASE
+(tools.js); EN_ROWS (sourced_light.js, a data table, not a constant); R_BRE / IR formulas (light_zones.js); COVE_R /
+COVE_MAX_EMIT / COVE_BUDGET (range + perf); N8AO / gi_still dials (audit #54/#56 — to be removed by their own fixes);
+time_machine.js / cinema_maxq.js values (Alt+C wiring is a later step, see ALTC_SHOWSTOPPERS 2026-09-27).
+SNAPSHOT: `LightLaw.snapshot(A)` -> { law: {version, CALIB, SCENE, METER, TONE, COVE}, lawHash, live: {calibSunI,
+calibSunLux, luxPer, exposure, toneMapping, sunI, sunColor, hemiI, hemiSky, hemiGround, ambientI, meterEv100, meterExposure},
+liveHash }. lawHash = FNV-1a 32 over the key-sorted JSON of `law` (constants only: the same in node and every browser, changes
+only when a law value changes). liveHash = the same over law + live (the state a frame was rendered with). A is optional
+(node: live = {}). Logs nothing by itself; `LightLaw.log(A, tag)` prints `§LIGHT_LAW tag=.. lawHash=.. liveHash=.. luxPer=..
+exposure=.. ev100=..`; Alt+S calls it after each meter (tags `stage`, `remeter`; log only, no value changes) so a film frame
+can later log/assert the same law as the still (the film call is NOT wired in this step).
+WITNESS (two parts):
+ (1) node, now: viewer/tests/witness_light_law_unit.js (witness_kit contract): asserts ev100 / exposureFromEv / luxPer
+     numerically against hand-computed values (100 klx sun at sunI 4.4 -> luxPer 22727.27; L 1000 cd/m2 -> EV100 12.966;
+     exposure at that EV = luxPer x 0.6 / (1.2 x 2^EV)), bit-identity vs the pre-refactor inline expressions, and lawHash
+     stable across calls + unchanged by a live A; redControl = a law value changed -> hash differs. Prints INCONCLUSIVE (not
+     PASS) if light_law.js cannot be loaded.
+ (2) GPU agent, later (NOT run here — no browser in this step): Hospital / Clinic / Terminal reference poses, Alt+S on
+     fix/lamp-truth @c539f129 vs fix/light-law-module: every number on the §SOURCED_LIGHT_CALIB, §METER, §METER_HIST,
+     §LUX_CHECK, §COVE_LIGHT, §LAMP_EN and §TONEMAPPING lines byte-identical (diff the §-lines of the two full console logs,
+     timings `ms=` excluded); `§LIGHT_LAW tag=stage` + `tag=remeter` lines on every press, lawHash identical on all three
+     buildings (node value 5368cb0a), and `exposure=` on the remeter line = the §METER exposure of that press.
+
 **§METER_ONE_RULE — SPEC (red1 2026-09-27: "for outside or in, the exposure rule must be consistent based on condition of
 light reaching the eye"; trigger: first outside still …1790468166215 "as if night time", cam [33.5,8.121,11.498] tgt [0,0,0],
 v1457, L p5/50/95 23/40/79).**

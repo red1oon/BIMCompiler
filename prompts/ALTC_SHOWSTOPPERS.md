@@ -177,3 +177,78 @@ zone-id readback, per ALTC F1; the same function serves Alt+S (which also meets 
 8. Lamp churn on the current pick (baseline for F1 fades): `§LAMP_CAP_CHURN entered= left= maxStep= stepPctOfMax=` (tools.js:2216).
 9. Reused frames inside holds (R3): `§FRAME_REUSE run ended ... reused=` and `§FRAME_REUSE_TOTAL` (cinema_maxq.js:4567, :4726).
 10. Blank grabs (R7): `§GI_FILM_BLANK_GRAB ... total=` (gi_still.js:909) and `§GI_FILM done ... blankGrabsRecovered=` (gi_still.js:969).
+
+## 2026-09-27 — review vs §LIGHT_ONE_SCALE
+READ-ONLY (no code edited, no browser, no bake). Tree `/tmp/wt-lamp` = bim-ootb `fix/lamp-truth` @c539f129 (look lineage +
+§SKY_SHELL_RAYS 808f578f, §METER_ONE_RULE fc8b07f6, §METER_EV 1b5f1c0b, §LIGHT_ONE_SCALE fixes 3-4 c539f129). Judged against
+PHOTOREAL_STILL_RENDER.md §LIGHT_ONE_SCALE L1/L1a/L2/L3, §METER_EV, ALT+C RULINGS R1-R3. Line numbers re-found on this tree
+(the 2026-09-25 table above cites the retired /tmp/wt-daylight). No gi_film*.js exists: `GiFilm` is gi_still.js:975-1042.
+cli_silent_bake.js is at the repo root. HARD CONSTRAINT (red1): overlays (clash/measure boxes, rule findings film, captions,
+discipline reveal, CPE paths, HUD) are out of scope of every remedy below — each remedy is in the light/exposure path only.
+
+**Headline: a film today is NOT lit by §LIGHT_ONE_SCALE at all, parity or not.** One call-site gate, effects.js:4438
+`if (!A._maxqActive && window.SourcedLight) SourcedLight.stage(A)` (no `_filmParity` carve-out), removes zones, sky field,
+lamp data + §LAMP_EN, §IRC_MAX IR, cove + §COVE_IR and the §METER from every film. What films inherit is only the calibration
+arithmetic (effects.js:4265 block is `!A._maxqActive || A._filmParity`) -> lamp multiplier + portal exposure 1.
+
+| Alt+S light function | Alt+S file:line | Alt+C calls it? (gate) | per frame / per shot, cost | determinism | 4D build-up (R2) | flicker risk |
+|---|---|---|---|---|---|---|
+| §METER_EV meter / meterRead / remeter | sourced_light.js:1149, 1226, 1243 | NO — stage() effects.js:4438 and remeter effects.js:5623 are both `!A._maxqActive` only (meter() itself has no gate) | one 160x90 float render + sync readback (+ zone-mask render in mode zone); `ms=` logged, value not read; per frame never tried | pure log-average of a fixed readback: deterministic for a fixed frame | reads the frame as drawn -> follows build-up by construction | as a per-frame JUMP: high (R1 forbids); as a per-frame target eased at a cited rate: low |
+| §SOURCED_LIGHT_CALIB (luxPer) | effects.js:4265-4290 | YES under parity (`!A._maxqActive \|\| A._filmParity`, :4265) | JS only, once per staging | pure arithmetic | computed once at warm-up on the finished-building sun | none |
+| zones `LightZones.build` | light_zones.js:197, key :129 | NO (only inside stage()) | Hospital 2184 ms / Clinic 404 / Terminal 1462 (record) — per building, not per frame | deterministic | key = building + guidMap count: no 4D cursor -> R2 "enclosed" needs a per-stage key | n/a |
+| sky field §SKY_VIEW_FIELD / §SKY_SHELL_RAYS | sourced_light.js:711 fieldOn, :756 | NO; and portals are never retired for films: sky_portal.js:87 `retired()` requires `!A._maxqActive` | per building (sun-free, camera-free) | deterministic | field is built on the finished building -> wrong while walls/roof are missing (R2) | n/a in films today; films keep up to 32 portals (sky_portal.js:89) |
+| lamps: data path + §LAMP_EN | sourced_light.js:333-336 `lampWanted` (explicit `!A._maxqActive`), enApply :510 | NO (doubly excluded); films use the tools.js capped pool | pool update runs ~3x per frame (record); not re-measured | pool pick is frustum/list order (`_zoneCap` tools.js:2067 needs `A._sourcedCap` from prepare(), `!A._maxqActive` effects.js:4294) | lamps appear with their elements (pool) | pool churn = pop-in (record R6); no fades |
+| §IRC_MAX IR share | sourced_light.js ~421-490 | NO (inside stage()) | per building | deterministic | per-zone flux balance on the finished zones — wrong before enclosure | n/a |
+| §COVE_LIGHT + §COVE_IR | sourced_light.js:858-1046 | NO (inside stage()) | per building (key :991) | deterministic | L1a "no real source" must be re-judged as lamps arrive (R2) | n/a |
+| glass Fresnel / §GLASS_ENV | glass_fresnel.js:57 stage, :100 capture | stage YES (effects.js:4437 parity carve-out); capture NO (effects.js:5662 `!A._maxqActive` only) | capture = 6-face cube, not measured | deterministic | env would need a re-capture per build-up stage | low |
+| gi_still bounce -> GiFilm | gi_still.js:925-1042; armed cinema_maxq.js:4035 | YES under parity, same dials as Alt+S | one SSGI pass per frame, `§GI_FILM f= meanMs=`; OFF in the default CLI (`--gpu sw`, cli_silent_bake.js:107/300 -> no WebGPU -> §GI_FILM_OFF) | per frame deterministic; blank-grab retry up to 3x | reads the drawn frame -> 4D-correct | low (blank-grab fallback, record R7); but it inherits audit #56 (bounce after the tone curve, albedo 0.5) |
+| N8AO fold | effects.js:5205, consts :4857-4859 | YES, always (bake's own fold), budget 8 TAA + 12 AO (cinema_maxq.js:503, :2443) vs Alt+S 16 + 24 | ~450 ms of a 1989 ms Hospital frame (record, not re-measured) | deterministic for a fixed budget | occludes what is drawn | low (less converged); inherits audit #54 (AO over direct light) |
+| shadow cascades | effects.js:3142 `_cascadeOn`, :3072 `csmRun = !film && ...` | NO by design; films use the single-map fit (:2996, :3589 parity carve-out) | cascade = SDSM readback + up to 4 maps per sun move | n/a | single map re-fit per frame -> follows build-up | low; coarser penumbra than the still |
+
+**Alt+C's OWN light values that diverge from the law (all live on this tree unless marked):**
+- D1 `FILM_FILL_AMBIENT 0.785 / FILM_FILL_HEMI 1.257` (effects.js:2775) written at :4446-4451 when `A._maxqActive && (!A._filmParity
+  || A._filmFillRestore)`; `_filmFillRestore` defaults TRUE (:4104, off only with `&filmfill=alts`) => on even under parity. It
+  overwrites the §STILL_BASE result (ambient x &base 0 = 0, hemi x &sky 2 = 1.234, :4382-4394) — i.e. re-adds a sourceless
+  ambient 0.785 (audit #24 says 0) — and becomes `A._photoFillBase` (:4453). Breaks L1 + R3.
+- D2 §SUN_ARC_FILL pin `_bakeFillPin` (effects.js:2623-2660, every frame via `A._sunArcFillPin`) holds ambient/hemi at that
+  base whatever the sun elevation: while `_sunArcStep` (:2562) moves only the sun direction, sun intensity stays 4.4 (4315)
+  and the sky term never follows the sun/sky split for the elevation. Breaks L1 (one clear-sky model for sun + sky).
+- D3 `_nightPLScaleStaged` + §PL_TOPOUT_UNPIN `PL_TOPOUT_TARGET 1.0` (effects.js:2616-2621, 2636-2640): on this tree
+  `_nightPLScaleStill` = 1.0 (tools.js:1100, §STAGED_PL_CUT retired), so staged 1.0 -> target 1.0 = a NO-OP ramp (delete);
+  and lamp level in films is `NIGHT_LIGHT_INTENSITY 2.0` (tools.js:1309, eye-tuned) x the calibrated `_stillLampMul`, with
+  decay `NIGHT_LIGHT_DECAY 1.0` for control films (tools.js:2261, 1321) vs the still's 1.5 — L1 for control films.
+- D4 CAM_LIGHT 3 / 4 m / 0xffdca8 (effects.js:381) ON in every film: `_camSourcedOff` (:4501) contains `!A._maxqActive`, so
+  the admitted non-source Alt+S turns off stays on in films. Breaks L1a (the cove is the only added source).
+- D5 exposure: no meter in films => the film runs at the staging exposure 0.45 x PHOTO_EXPOSURE_SCALE 0.85 = 0.3825
+  (effects.js:4318; x &stillexp :4428) for the whole film, whatever the view or sun. Breaks L3 and R1 (meter every frame,
+  ease at a cited rate). Also SUPERSEDES ALTC_FOUNDATION F3 ("never per frame"): R1 (red1 2026-09-26) ruled per-frame metering
+  with eased adaptation; §METER_EV cites the rate (3 stops/s up, 1 down).
+- D6 portals vs field (sky_portal.js:87): films light windows with up to 32 SpotLights, Alt+S with the sky-view field —
+  a different transport model (L2), not a magnitude. `PORTAL_EXPOSURE_EYE 10` is correctly replaced by 1 when calibrated
+  (sky_portal.js:154) — negative finding, not a divergence.
+- D7 LATENT (time_machine.js, no `_maxqActive` awareness): `applySunCycle` (:2584, called from `renderAtTime` :2318) writes
+  `sun = 0.05 + dayFactor x 4.4`, `ambient = 0.15 + 0.6 d`, `hemi = 0.1 + 1.1 d` (:2707-2709) whenever `_sunCycle` is on, and
+  `tmActivateForBake` (:9789-9794) reuses an active TM session without resetting it; Fly-Tour exposure ease
+  `toneMappingExposure += (1.3|1.15 - cur) x 0.08` per frame (:2034-2039, gated `_camFollow && _cineStoryboard`, not set by
+  cinema_maxq.js). Not observed in a bake; nothing prevents it. Break L1/L3 when triggered.
+- D8 §GLASS_ENV capture absent in films (effects.js:5662): glass reflects the HDRI, not the lit scene (minor L2).
+
+**Ranked stoppers (why a film cannot yet inherit the law):**
+1. **S-LAW-1 the one gate** (effects.js:4438, :5623; sourced_light.js:335; sky_portal.js:87): the entire §SOURCED_LIGHT chain
+   is still-only. Remedy = the 2026-09-25 S1 split (build per building / per build-up stage; bind + meter per frame) — no
+   film inherits L1/L2 until it exists.
+2. **S-LAW-2 no exposure law in films** (D5): fixed 0.3825 all film; R1 needs the §METER_EV meter per frame (one 160x90
+   readback, cost `§METER ms=` to be read) eased at 3 stops/s up / 1 down. Best first step: it is camera-only, needs no zones,
+   and reads the same `LightLaw` values (fix/light-law-module).
+3. **S-LAW-3 FILM_FILL_RESTORE default-on** (D1+D2): films re-add a sourceless ambient 0.785 and pin a non-physical fill every
+   frame. Remedy: default `_filmFillRestore` false under parity; fill from the same sky model as the sun (L1).
+4. **S-LAW-4 R2 needs a 4D-aware zone/field/cove key**: the zone cache key (light_zones.js:129) and field/cove keys have no
+   build-up stage, so "interior lighting only once ENCLOSED" has no data to switch on.
+5. **S-LAW-5 portals vs field** (D6): two window-light models; film parity is impossible while films keep portals.
+6. **S-LAW-6 CAM_LIGHT on in films** (D4): one-condition fix (drop `!A._maxqActive` from :4501), L1a.
+7. **S-LAW-7 lamp pool pick/decay** (D3): frustum pick, no §LAMP_EN, decay 1.0 on control films, NO-OP topout ramp.
+8. **S-LAW-8 latent TM writers** (D7): add a `_maxqActive` guard to applySunCycle / the Fly-Tour ease before any film
+   exposure work, so nothing else writes exposure/sun during a bake.
+9. (quality, not law) cascades still-only; GiFilm off in the default software-GPU CLI; N8AO + GiFilm inherit audit #54/#56.
+Witness to open before any remedy: one parity bake log on Hospital, read for `§FILM_FILL_RESTORE`, `§SUN_ARC_FILL_PIN drift=`,
+`§CAM_LIGHT on`, `§SKY_VIEW_FIELD off (film)`, absence of `§METER`/`§LIGHT_LAW` — each line proves one row above.
