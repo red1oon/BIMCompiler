@@ -1962,12 +1962,174 @@ poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame m
  Z6 ⏳ §LIGHT_LAW_MODULE identity — fix/light-law-module 39959e8a, queued. Then FF Z4-Z6 into look.
  Z7 ⏳ §FILM_LAW S1-S3 — fix/film-law 3688b3c5, film bake witness queued (ALTC_SHOWSTOPPERS §FILM_LAW).
  Z8 ⏳ B1 reach 3 — fix/sky-shell-reach, GPU agent (after Z7).
- Z9 fix 5 ALBEDO sRGB (flat IFC colours decoded as sRGB, loader.js:145 / effects.js:4409) — code prepared off-GPU, refs re-approved by numbers.
- Z10 fix 6 AO = visibility of indirect light only, radius in metres (N8AO effects.js:4911-4950).
- Z11 fix 7 bounce before the tone curve with real albedo; drop the second AO (gi_still.js:482/526/723) — spec first (high cost).
- Z12 fix 8 ground half from ground albedo; sun penumbra from 0.53 deg; + 4k §STILL_RES cost measured.
+ Z9 ⏳ fix 5 ALBEDO sRGB — fix/z9-albedo-srgb 5127a649 (sw v1466), node W pass=4/0 ran=11; GPU witness queued (### Z9 SPEC).
+ Z10 ⏳ fix 6 AO indirect-only (option A, shader path) + 0.5 m world radius — fix/z10-ao-indirect 5c1739ec (sw v1467), node W pass=4/0 ran=18; GPU witness queued (### Z10 SPEC).
+ Z11 ⏳ fix 7 BUILT: AO once + real receiver albedo — fix/z11-bounce-linear 024ce32d (sw v1468), node W pass=4/0 ran=10; composite-before-tone = PLAN P1-P5 (### Z11 SPEC); GPU witness queued.
+ Z12 ⏳ fix 8 BUILT: ground half = rho_g x E_g + §SUN_PENUMBRA diagnostic — fix/z12-ground-penumbra c6463e4b (sw v1469), node W pass=4/0 ran=12; PCSS = spec only; 4k §STILL_RES cost = GPU queue (### Z12 SPEC).
  Z13 §FILM_LAW S4 (sourced chain in films, R2 build-up key) 4a->4f — after Z7 numbers.
  Z14 open carry-overs: S4 fringe after an inside press (pushed materials 105->109); M1 "hog" (no regression measured); overhang meter pose.
+
+### Z9 SPEC — ALBEDO sRGB (2026-09-27, audit #48; L2) — branch bim-ootb `fix/z9-albedo-srgb` from fix/light-law-module @39959e8a, sw v1466
+CAUSE (code): loader.js:145 `THREE.ColorManagement.enabled = false` ("enabling breaks HSL color slider palettes"); streaming.js:1542
+`new THREE.Color(r,g,b)` from the AUTHORED (sRGB) IFC values; output encodes sRGB ⇒ every flat albedo is used as linear
+(0.5 → 0.5, true 0.214, ×2.3; 0.8 → 0.8, true 0.604, ×1.3) while textures (colorSpace sRGB) are decoded. The switch exists:
+effects.js §ALBEDO_SRGB (4400-4431, restore 4641), default OFF since 2026-09-24 because it "darkened the exterior refs
+(courtyard_a 73.2 -> 45.0)" — that was BEFORE §METER_EV: the base now includes the eye meter (sourced_light.js meter(), run
+inside SourcedLight.stage AFTER the §ALBEDO_SRGB block), which meters the frame with the real materials, so a darker albedo is
+re-exposed by the law instead of shown dark. The darkening objection is therefore obsolete by construction; the GPU numbers decide.
+WHERE: Alt+S staging ONLY (not the loader). Reasons from code: (a) nav has a FIXED exposure (0.45, no meter) — a loader-wide decode
+would drop every nav frame ~1 stop with nothing to re-expose it; (b) loader.js:145's own reason (HSL slider palettes) is a nav UI
+constraint; (c) Alt+C (`A._maxqActive`) is outside the block (`if (!A._maxqActive)`), untouched. A colour is a uniform: convert at
+stage, restore at unstage (Esc) — no recompile, no program-count change.
+CHANGE: (1) LightLaw gains `ALBEDO: { authored: 'sRGB', decode: true }` + `srgbToLinear(c)` (IEC 61966-2-1 EOTF, the exact
+expression of three r186 `SRGBToLinear`, bit-identical) + `decodeAlbedo(color)` (skip rule below). (2) effects.js §ALBEDO_SRGB default
+= `LightLaw.ALBEDO.decode` (off switches kept: `&srgbfix=0` / `APP._stillSrgbFix = false`). (3) SKIP a colour that is not an authored
+sRGB albedo: the ground material (its colour is the §GROUND_ALBEDO linear GAIN 2.3 over a map whose 0.155 mean was measured
+sRGB-DECODED — already linear; tools.js:162-166 multiplies AFTER setHex's transfer) and any colour with a channel > 1 (a gain, not a
+reflectance). (4) `§ALBEDO_SRGB` line adds `decode=law skippedGround= skippedGain= meanLumBefore= meanLumAfter=` (Rec.709 luminance
+mean over converted materials). Light colours (sun/hemi/lamps hex, audit #12/#42) are NOT in Z9 — they stay rows of their own.
+WITNESS node `viewer/tests/witness_z9_albedo_srgb.js`: srgbToLinear bit-identical to the r186 function text extracted from
+lib/three.core.min.js over 4097 inputs (INCONCLUSIVE if the function cannot be extracted); hand values 0.5 → 0.21404, 0.8 → 0.60383,
+0.04 → 0.003096 (linear toe); decodeAlbedo skips gain > 1 and the ground; converts in place and returns the original for restore;
+redControl = a γ 2.2 approximation must fail bit-identity.
+GPU WITNESS (queue): the poses of §ZERO GPU POSES below, Alt+S on 39959e8a vs fix/z9-albedo-srgb: `§ALBEDO_SRGB srgbfix=1
+converted=N>0 decode=law` + `restored mats=N` on Esc (same N); `§METER` ev100 per pose (expected LOWER exposure-independent
+luminance ⇒ the meter opens: report Δev100); metrics table per pose, before/after. The refs WILL move; judged by numbers: p50 within
+±15 % of before (the meter's job) with p5 lower (contrast restored) = accept; p50 collapse (> −30 %) = the meter did not absorb it ⇒ ⛔.
+
+### Z10 SPEC — AO = visibility of INDIRECT light, radius in metres (2026-09-27, audit #54/#55, blotch rank 1; L2) — branch `fix/z10-ao-indirect` from 39959e8a, sw v1467
+CAUSE (code, effects.js @39959e8a): §PHOTO_AO folds N8AO over the FINISHED TAA beauty (adapter 5093-5160, composite
+`mix(C, C·AO^4, …)` in the n8ao compositer): (a) it multiplies direct sun + lamps (Frostbite 2014 §4.10.3 p.79: "medium and large
+scale occlusion is only applied on indirect lighting"; Filament: "only applied to indirect lighting"; UE `ambient_occlusion_intensity`
+"non direct lighting") — a sunlit crease at AO 0.7 loses ×0.7⁴ = 0.24 (−2.1 stops) of DIRECT sun; (b) `screenSpaceRadius` 32 px ⇒
+world radius r = 32·2d·tan(fov/2)/H grows linearly with depth (fov 50°, H 921: 0.10 m at 3 m, 0.97 m at 30 m) — the "far wall gets a
+large dark band" blotch; (c) intensity 4 is an exponent, not a visibility.
+OPTIONS COSTED (code read, no GPU):
+ A. SHADER PATH (chosen). Patch three's `aomap_fragment` ONCE at install (sourced_light.js install, next to the §SOURCED_LIGHT chunks,
+    before any compile): `if (uSLAo.x > 0.5) { ao = texture(uSLAoT, gl_FragCoord.xy·uSLAo.zw).r; reflectedLight.indirectDiffuse *= ao;
+    STANDARD+envmap: indirectSpecular *= computeSpecularOcclusion(NdotV, ao, roughness) }` — three's OWN aoMap maths (indirect diffuse +
+    Lagarde specular occlusion), fed by a screen-space AO texture instead of a UV map. `irradiance` there already carries hemi (× F / Gd),
+    ambient, IBL irradiance, §IRC_MAX IR and the cove (sourced_light.js 246-250), so exactly the indirect terms are occluded, direct sun
+    and lamps (RE_Direct) never. Order: the AO must exist BEFORE the beauty: phase 1 = N8AO world-radius, renderMode 1 (AO only), 24
+    accumulated frames into a private half-float target while the screen keeps the TAA frame; phase 2 = TAA re-accumulates 16 frames
+    with uSLAo.x = 1 (set around each composer render only, so no other render — probes, meter, shadow — ever samples it; after the
+    last TAA frame it stays 1 for the frozen frame — a later composer render is the TAA short-circuit of the same accumulation — and
+    is released at teardown: `§AO_INDIRECT released`). Cost: +16
+    scene renders per press (≈ +1.2 s on Hospital by the §MAXQ_FRAME_BUDGET measure, TAA ≈ 1.2 s / 16), +1 sampler per lit program,
+    program COUNT unchanged (patched at page load, uniform-gated, like every §SOURCED_LIGHT line). TAA jitter vs an unjittered AO
+    texture: ≤ 0.5 px registration at depth edges, under the denoise radius (7 px).
+ B. Two-render composite `out = C − I·(1−AO)` with I = a second 16-frame TAA of indirect-only light (sun + lamps at 0): same +16
+    renders, but emissive and the lamp-data path need their own zeroing and the subtraction happens after TAA clamping — more state,
+    less exact. Rejected.
+ C. MRT G-buffer (indirect in a second attachment): a composer rewrite. Rejected (large).
+ D. Delete AO (audit's first option: F + IR already carry occlusion). F is a 0.5 m cell field (light_zones.js:15 CELL) — it cannot
+    resolve a skirting, a mullion or a column foot; the sub-cell band is what AO is for. Kept as the fallback question if A's numbers fail.
+RADIUS (cited): r = the sky-view field's cell, 0.5 m (light_zones.js:15 `CELL = 0.5`): the field carries occlusion at ≥ one cell, AO
+carries the sub-cell band, so the two do not count the same occluder twice (Frostbite fn 49: an AO already in the indirect term
+"should not be applied … again"; min() for overlapping terms — here the scales are split instead). World-space mode
+(`screenSpaceRadius=false`, n8ao README: aoRadius in world units), distanceFalloff 1 (n8ao default), intensity 1 (AO = visibility,
+no exponent). These are law values: `LightLaw.AO = { radiusM: 0.5, power: 1, falloff: 1, appliesTo: 'indirect' }`.
+SCOPE: stills only (`!A._maxqActive`); a film keeps today's composite and today's values (explicitly re-set per phase, so a still never
+leaks its config into a film) until Z13 (§FILM_LAW S4) inherits the approved still. Alt+G (effects_gi_poc.js) untouched.
+§SUN_SHADOW_RESTORE is bypassed in mode A (direct light is no longer blurred by AO, so there is nothing to restore). Fallbacks: the
+patch missing (&sourced=0 / link-fail fallback) ⇒ the old composite with the LAW radius/power ("world-radius step only"), logged;
+`&aoindirect=0` ⇒ today's path exactly (A/B switch).
+§-LINES (as built): `§AO_INDIRECT mode=shader|composite|legacy radius=0.5m power=1 falloff=1 patch=1` at phase start;
+`§PHOTO_AO start … mode=`; `§AO_INDIRECT done mode=shader boundMats= aoFrames=24 taa2=16 taa2Ms= totalMs=`; install:
+`§AO_INDIRECT installed patch=1`; teardown `§AO_INDIRECT released (reason)`. Node witness caught one real bug before any GPU run
+(aoSet released the texture while the gate was closed = no AO at all; RED on the old line, fixed in 5c1739ec).
+WITNESS node `viewer/tests/witness_z10_ao_indirect.js`: (1) the patch applied to the REAL r186 `aomap_fragment` text (extracted from
+lib/three.module.min.js): original text preserved, new block multiplies ONLY indirectDiffuse/indirectSpecular, never direct*, gated by
+uSLAo.x, only in STANDARD/LAMBERT/PHONG/TOON; (2) LightLaw.AO radius = light_zones CELL (parsed); (3) maths rows: sunlit crease
+(direct 1, indirect 0.25, AO 0.7): legacy ×0.7⁴ vs new = 1 + 0.25·0.7 (direct kept); screen-radius world size at 3/30 m vs 0.5 m.
+INCONCLUSIVE if the chunk cannot be extracted. redControl: a patch that touches directDiffuse must fail.
+GPU WITNESS (queue): §ZERO GPU POSES, 39959e8a vs fix/z10-ao-indirect: `§AO_INDIRECT mode=shader` on every still press, program count
+equal before/after (the patch compiles at load), press time delta (expect ≈ +1.2 s Hospital), metrics table; plus at the blotch pose
+the patch L spread (p95−p5 of a 64×64 patch on the far wall) before/after, and a sunlit exterior crease's L (direct must NOT drop).
+&aoindirect=0 run at one pose = byte-identical §PHOTO_AO line to 39959e8a (the switch is honest).
+
+### Z11 SPEC — BOUNCE (gi_still): real receiver albedo, AO counted once; plan for the composite before the tone curve (2026-09-27, audit #56; L2/L3) — branch `fix/z11-bounce-linear` from 39959e8a, sw v1468
+CAUSE (code, gi_still.js @39959e8a): composite (outputFor, 526) `out = C·(1−aoK+aoK·AO) + max(0, recv·GI·gain − C·IRshare)` where
+C = the app's FINISHED frame (tone-mapped ACES, exposure applied, sRGB-decoded on sample), GI = SSGINode gathered from that same
+display-referred frame × giIntensity 10 (741), recv = the lit colour's hue at a FIXED brightness 0.5 (GI_ALBEDO_EST 482, "not measured
+data"), aoK = 0.55 (GI_AO_DEFAULT 452) = a second AO on top of §PHOTO_AO. Three faults: (1) light added after exposure + tone curve
+(L3); (2) receiver albedo invented (L2); (3) AO twice (L2 double count).
+BUILT NOW (small, safe):
+ (a) AO ONCE: GI_AO_DEFAULT 0.55 → 0 — §PHOTO_AO (Z10: the indirect-only AO) is the one AO; gi_still adds bounce only. The dial stays
+     (`&ao=` / APP._stillAo) for A/B.
+ (b) REAL RECEIVER ALBEDO: a new §SOURCED_LIGHT readback mode (uSLParams.w = 13, the same dithering_fragment switch as the IR share
+     mode 9) writes each lit fragment's `material.diffuseColor` (the albedo the app actually shades with: colour × map × vertex colour,
+     × (1−metalness) for STANDARD) with marker alpha 0.75. `SourcedLight.albedoMap(A, w, h)` renders it once per press into a float
+     target at the bounce resolution (the irShare pattern: same row flip, background null), sRGB-encodes it into a canvas (alpha 255 =
+     real albedo, 0 = none: sky, unpatched or blended-transparent pixels). gi_still's receiver uses the real albedo where alpha > 0.5
+     and the old estimate elsewhere. `&gialb=0` = the estimate everywhere (A/B). Cost: one app render + one float readback per press
+     (≈ the irShare cost, which the §IRC_MAX line reports as ms=).
+ §-LINES: `§GI_RECEIVER_ALBEDO real=<px> est=<px> realPct= meanAlbLum= ms=`; `§GI_STILL … ao=0 …` (existing line, new default).
+NOT BUILT (plan, costed) — THE COMPOSITE BEFORE THE TONE CURVE (L3):
+ P1. Source = the composer's pre-OutputPass buffer (the TAA + AO result, half-float LINEAR, exposure not yet applied) read with
+     readRenderTargetPixels at the bounce size (1600×900×4 half floats ≈ 11.5 MB, ~20 ms) instead of the tone-mapped canvas.
+ P2. SSGINode on that linear radiance; giIntensity → 1 (the gathered radiance is then in scene units; 10 was a display-space gain).
+ P3. Composite in linear: `L_out = L + ρ_recv·GI − IR` with the max(IR, SSGI) rule on LINEAR values (exact, no share approximation).
+ P4. The app's exposure × three's ACESFilmic (incl. the 1/0.6 factor, LightLaw.TONE.acesDiv) + sRGB OETF in TSL, identity-checked by
+     mode 'coloronly' against the app frame (< 1 code mean abs diff) — the witness that the tone curve was replicated, not approximated.
+ P5. L3 re-meter: the meter ran before the bounce existed; with P1-P4 the bounce is part of the light reaching the eye, so the meter
+     histogram is taken on L_out (one extra histogram pass on data already in hand).
+ COST: ~150-200 lines in gi_still.js + a 20-line readback in effects.js; +20-40 ms per press; risk = tone-curve replication (caught
+ by P4's identity mode); gi_still's films hook (§GI_FILM) must follow in the same change (it shares outputFor). Recommended as the
+ next gi_still change after Z10's GPU numbers (Z10 changes the AO the bounce sits on).
+WITNESS node `viewer/tests/witness_z11_bounce_receiver.js`: GI_AO_DEFAULT = 0 read from gi_still.js; the receiver maths on sample
+pixels (a shaded white soffit: C = 0.02 linear, real ρ 0.8 → bounce ×1.6 vs the 0.5 estimate; a dark floor ρ 0.1 → ×0.2); the
+readback mode 13 is present in sourced_light.js's dithering branch and writes material.diffuseColor with the 0.75 marker; the
+albedo encoder (sRGB OETF bytes, alpha rule) round-trips through the r186 SRGBToLinear within 2 linear codes (the 8-bit sRGB step
+at white is 2.28 linear codes). FILMS UNCHANGED (as built): a film keeps ao 0.55 (GI_AO_FILM_PRE_Z11) and the estimate receiver
+until Z13. INCONCLUSIVE if a file is
+missing. redControl: GI_AO_DEFAULT 0.55 must fail.
+GPU WITNESS (queue, desktop WebGPU only — gi_still is OFF elsewhere): §ZERO GPU POSES, 39959e8a vs fix/z11-bounce-linear: the
+`§GI_RECEIVER_ALBEDO` line (realPct expected > 80 % of geometry pixels indoors), `§GI_STILL ao=0`, `§GI_STILL_TERM` giterm/aoloss
+means before/after, metrics table on the FINAL (bounce) PNG, §GI_PRESS_COST newPipelines ≈ 0 on the second press.
+
+### Z12 SPEC — GROUND HALF from the ground's albedo; SUN PENUMBRA from the 0.53° disc (2026-09-27, audit #21/#57, blotch rank 5; L1/L2) — branch `fix/z12-ground-penumbra` from 39959e8a, sw v1469
+GROUND HALF — CAUSE: the hemi ground colour is a fixed hex 0x8b7355 (LightLaw.SCENE.hemi.ground, used as linear, lum 0.4626) ×
+hemi I (1.234 after &sky 2.0) ⇒ upward irradiance 0.571 u whatever the ground is or how it is lit. Physics (Lambertian ground,
+L2 `L = ρE/π`): the irradiance a downward-facing surface receives from an infinite ground plane is π·L_g = ρ_g·E_g, with
+E_g = sun·sinE·f + E_sky (f = sunlit fraction of the ground seen). In three's units the hemi's ground term IS that upward
+irradiance (getHemisphereLightIrradiance → mix(ground, sky, ·); the slHemi patch keeps the same split × Gd), so
+`groundColor = ρ_g,rgb × E_g / hemi.I`. At red1's 45° noon: ρ_g 0.36, E_g = 4.4·0.707 + 0.938 = 4.05 u ⇒ upward 1.46 u (audit #21:
+the render is 0.63× physical on a shaded vertical wall, −0.67 stop).
+CHANGE (built): LightLaw gains `GROUND: { sunlitFraction: 1 }` + `groundIrradiance(ρ, sunI, sinE, skyE, f)` + `groundColor(ρrgb, Eg,
+hemiI)`; §STILL_BASE (stills only, `!A._maxqActive`) sets hemi.groundColor from them and restores it at unstage. ρ_g = the ground
+AS SHOWN: the ground map's mean linear RGB measured at stage time (a 32×32 drawImage of `ground.material.map.image`, sRGB-decoded per
+pixel — the same method as the §GROUND_ALBEDO constant, textures/materials/NOTICE.txt) × the §GROUND_ALBEDO gain (2.3); if the image
+cannot be read, the code's own measured luminance (earth 0.1599 / paved 0.155, effects.js §GROUND_ALBEDO) × gain as grey. sunI and
+sinE from the scene sun (position − target), E_sky = lum(hemi sky) × hemi I (the meter's own Eout term). f = 1 (ground sunlit): the
+honest unknown — a façade whose foreground lies in the building's shadow gets up to ρ·sun·sinE too much there (the audit: "slightly
+HIGH" in shadow); per-fragment f needs the shadow map at a ground point, which the fragment stage does not have (three's
+directionalShadowMatrix is vertex-only) — plan below. `&groundlaw=0` = today's hex. Wetness (#50) not folded in (its own row).
+§-LINE: `§GROUND_HALF rho=[r,g,b] rhoSrc=texture|table sunI= sinE= skyE= f=1 Eg= upward= groundColor=[..] was=0x8b7355 (upward 0.571)`.
+SUN PENUMBRA — CAUSE: §STILL_SHADOW_EDGE PCF radius 1.5 texels per cascade (effects.js:3591) ⇒ filter width (2R+1)·texel, a
+per-cascade constant; the sun's disc (0.53°, Frostbite 2014 fn 29 solid angle 6.6-7.1e-5 sr ⇒ 0.52-0.54°) gives a penumbra
+w = d·tan(0.53°) = 0.00925·d growing with the occluder→receiver distance d. NOT BUILT (cost): faithful = PCSS in
+shadowmap_pars_fragment (blocker search 16 taps → d → variable PCF radius per fragment), with the §CSM cascade selection
+(shadow_cascade.js) inside the same chunk — ~60-90 GLSL lines, +16-32 shadow taps per lit fragment, every shadowed program
+recompiles once at load; risk: peter-panning/acne interplay with §129.45 bias. BUILT: the diagnostic — a `§SUN_PENUMBRA` line per
+cascade fit (stills): `filterM=[(2R+1)·texel] dMatch=[filterM / tan 0.53°]` = the occluder distance at which today's fixed filter
+equals the true penumbra (shorter occluders are too soft, longer ones too hard), so the GPU witness reports how far from the law the
+current edge is before PCSS is paid for. LightLaw gains `SUN: { discDeg: 0.53 }` + `penumbra(d)`.
+WITNESS node `viewer/tests/witness_z12_ground_penumbra.js`: groundIrradiance(0.36, 4.4, sin45, 0.938, 1) = 4.05·0.36 = 1.458;
+vertical wall ground half = 0.729 (audit 0.73); today's 0.286; groundColor × hemiI = upward (round trip); penumbra(10 m) = 0.0925 m;
+dMatch for a 4096 map over 100 m at R 1.5 = 4·0.0244/0.00925 = 10.6 m. INCONCLUSIVE if light_law.js cannot be loaded. redControl:
+the old fixed hex must fail the ρ·E rule.
+GPU WITNESS (queue): §ZERO GPU POSES + red1's night (shade-side) still, 39959e8a vs fix/z12-ground-penumbra: `§GROUND_HALF` (rhoSrc
+should be texture), metrics table; at the night pose the shaded façade patch L p50 must RISE (the −0.67 stop) with §GLARE 0/0/0;
+an interior pose must move < 2 % (Gd small indoors); `§SUN_PENUMBRA` dMatch per cascade reported. `&groundlaw=0` at one pose =
+byte-identical §STILL_BASE line to 39959e8a.
+
+**§ZERO GPU POSES + METRICS (shared by Z9-Z12).** Poses: Clinic corridor cam [21.243,-0.606,-1.261] → tgt [1.197,-4.155,-2.608];
+Hospital inner room [9.947,-7.699,0.098] → [14.735,-8.114,2.081]; Terminal inside (the §METER_EV ref pose); P2 …885596; red1's
+night / pale / blotch stills in ~/Downloads (pose in the PNG tEXt chunk `bim-still-pose`: …1790468614025 night, …1790465698534 pale,
+…1790468672505 blotch). Per pose, before (39959e8a) and after (the Z branch): L p5 / p50 / p95 (Rec.709 luma 0-255 of the PNG),
+px ≤ 15 (%), clipped ≥ 250 (%), `§GLARE` 0/0/0, WebGL program count after the press (`renderer.info.programs.length`), press time
+(`§STILL_STAGE_MS` total + the TAA end), plus the Z-specific §-line named in each spec.
 
 **§LIGHT_ONE_SCALE — LAW (red1 2026-09-27: "The laws of optical physics should be singular"; ranks above every per-term
 calibration in this file).** One photometric chain for every source, every surface, every camera, inside or out:
