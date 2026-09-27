@@ -1952,6 +1952,13 @@ GATE: at red1's tower pose + fly-in poses + the sweep: every lamp within range o
 all-fixture irradiance vs the rendered set, max relative loss < 1% per point); §CAMDEP_SURFACE lamps term identical across
 poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame ms reported.
 
+**§RELEASE GATE — STANDING RULE (red1 2026-09-27: "let the WITNESS logging dig thoroughly to filter off any GIGO"; "on any baking
+channel you may administer, use deeply such logging to debug before releasing").** Nothing is FF'd into look, published, or handed
+to red1 as ready — still OR bake (cli_silent_bake, Alt+C MaxQ, gi_film/bake pool) — until the GIGO witness (viewer/tests/
+witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdicts PASS: instrument sanity first (sw/?v=/lawHash/
+fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
+VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
+
 **§ZERO LIST 2026-09-27 (red1: "You have my confidence and mandate to chase paths till zero") — work top to bottom; each item
 ✅ DONE (witness) or ⛔ BLOCKED: <question>. Coordinator = the dev session; GPU witness = one agent, serial.**
  Z1 ✅ B1 §SKY_SHELL_RAYS — look 808f578f (walls within ±0.1: Hospital 60->100%, Clinic 38->100%, Terminal 16->98.6%).
