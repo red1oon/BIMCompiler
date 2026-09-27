@@ -6700,3 +6700,146 @@ truly happy with the bake result, and we shall use that as the baseline to proce
 *"Clinic in OCI is now solved.. no more boxed non glass panels"* · the HHS right-side ground-floor
 wall stays open. **Baseline for every later comparison = `Hospital_silent_bake_2026-09-05.mp4`
 (§BME.11), not the 09-04 film.**
+
+### §LIGHT_TRUTH_AUDIT (2026-09-27)
+READ-ONLY code audit, tree /tmp/wt-meter (bim-ootb fix/meter-one-rule @fc8b07f6 = look @808f578f + §METER_ONE_RULE). Judged
+against §LIGHT_ONE_SCALE L1/L2/L3 (+L1a cove). No render, no browser: every number below is read from code or computed from
+code constants; no screenshot was used. Units: scene "units" = three.js physical-light units; the one calibration is
+§SOURCED_LIGHT_CALIB `luxPerUnit = 100000 / calibSunI` = 100000 / 4.4 = 22,727 lx per unit (effects.js:4274-4280).
+
+**PATH TRACED (daytime still, default URL, Night mode OFF before the press, desktop Chrome + WebGPU).**
+scene.js:3238 Alt+S → effects.js:5947 `toggleStillRefineUI` → 5980 `startStillRefine` → 5582 `_applyPhotoStaging` (4075):
+fog/HDRI save 4172-4185 · sky visible 4212 · env boost 4245 · shadows 4246 · CALIB 4266-4290 · `toggleNightMode` 4312-4336 (tools.js:1586;
+saves day lights 1593, sets moonlight, then 4315-4318 restores them ×PHOTO_* scales) · §STILL_GLOW 4346-4375 · §STILL_BASE 4382-4386 ·
+§ALBEDO_SRGB 4407-4431 · SkyPortal 4435 · GlassFresnel 4437 · SourcedLight.stage 4438 (sourced_light.js:1068: zones, sky field,
+lamps, IR, cove, then **§METER 1131** and §LUX_CHECK) · fog/ground re-assert 4471-4487 · CAM_LIGHT 4501 · shadow fit. Back in
+startStillRefine: lamps re-updated at the still budget 5605-5620 (AFTER the meter) → TAA 16 → `_finishStillRefine` → N8AO fold
+4831 (SSGI off: effects_gi_poc.js:541) → gi_still.js bounce (keydown listener gi_still.js:935, gate 925-933: desktop + navigator.gpu +
+three r186 — the viewer loads r186, lib/three.core.min.js — so LIVE on red1's desktop, OFF on phones / no WebGPU).
+Tone curve: ACESFilmic, set once (scene.js:125), applied by the composer's output; float render targets (meter, glass env, IR share)
+bypass it (three: tone mapping only on the default framebuffer). Nothing in the Alt+S path changes the operator.
+
+**Exposure actually applied** = 0.45 (scene.js:132) → 0.8 (tools.js:1606 moonlight) → 0.45 × 0.85 × 1.0 = **0.3825** (effects.js:4318)
+× &stillexp 1 (4428) → §METER: `base × (Ein/Eout)^(-D)`, |stops| ≤ 10 (sourced_light.js:1250-1252).
+
+#### A. The value table
+
+Verdicts: TRUE / UNSOURCED / INCONSISTENT / DOUBLE-COUNT / NO-OP (identity, delete) / NOT LIVE. "Law" = the §LIGHT_ONE_SCALE clause it breaks (— = none).
+
+| # | value | file:line | live? (chain) | source in code | effect on brightness / colour | verdict | law | truthful replacement |
+|---|---|---|---|---|---|---|---|---|
+| **EXPOSURE / TONE** |||||||||
+| 1 | toneMapping = ACESFilmic | scene.js:125 | LIVE (never changed on the path) | "crisp vibrant like Bonsai/Autodesk" (taste); ACES itself is the Academy RRT/ODT | the one tone curve | TRUE (one curve) | — | keep; but see #57 (light added after it) |
+| 2 | toneMappingExposure 0.45 | scene.js:132 | LIVE: saved as `_nightSaved.exposure` tools.js:1595 → effects.js:4318 | "deliberate… overexposure memory" | sets the absolute level of every still (meter is relative to it) | UNSOURCED | L3 | no fixed base: exposure = K / L_frame (reflected-light meter equation, ISO 2720 K = 12.5) or key/L_avg (Reinhard 2002, key 0.18) |
+| 3 | PHOTO_EXPOSURE_SCALE 0.85 | effects.js:2478 | **LIVE**: 4318, inside `if (!_photoNightWasOn …)` 4312 = the default | "slightly underexposed — materials in little light" (the old dusk photoshoot) | −0.23 stop on every still | UNSOURCED (mood, flag 1) | L1/L3 | delete |
+| 4 | PHOTO_EXPOSURE_LIFT 1.0 | 2487 | LIVE 4318, identity | — | none | NO-OP | — | delete |
+| 5 | &stillexp / APP._stillExpMul, default 1 | 4427-4428 | LIVE, identity by default | dial | none by default | NO-OP (dial) | L3 if ≠1 | delete or debug-only |
+| 6 | meter base = the exposure at stage time (0.3825) | sourced_light.js:1234 | LIVE | none | a view with Ein = Eout is shown at 0.3825, i.e. the whole meter is anchored to #2 × #3 | INCONSISTENT | L3 | anchor = the meter equation (#2 replacement), not a carried number |
+| 7 | Eout = sun·sinElev + lum(hemi.sky)·hemi.I | 1226-1232 | LIVE (read after §STILL_BASE, so hemi = 1.234) | "the scene's own outdoor light on a horizontal surface" | 4.4·0.707 + 0.760·1.234 = **4.05 units = 92 klx** at 45° | TRUE (matches rendered sun+hemi; ambient is 0 in the still so its omission is consistent). Minor: uses `sun.position.normalize()` not (pos − target); target moved to bbox centre (effects.js:3447) but pos is 5000 m out → <1 % | — | keep |
+| 8 | meter hides sky (`o === A._sky`), glass (transparent opacity<0.95), MeshBasic, ShaderMaterial, sprites, points, lines | 1154-1157 | LIVE | "incident light … sky / lamp glows / glass hidden" | (a) the sky never pulls exposure down → sky/sun side blows when exposure opens; (b) glazing removed ⇒ lamp-lit rooms BEHIND curtain walls (≈0.5 % of sun, EN 500 lx vs 100 klx) are metered as bare surfaces; log-average weights them heavily (30 % such pixels ≈ −2.2 stops of Ein) ⇒ exterior opened ⇒ pale facade/sky | INCONSISTENT | L3 ("light reaching the eye") | meter what the eye receives: the rendered frame's luminance incl. sky and glass (reflected-light meter), or an incident meter that stops at the glass |
+| 9 | D = CIECAM02 degree of adaptation, `1-(1/3.6)e^((-LA-42)/92)`, LA = 0.2·Ein_lux/π | 1246-1249 | LIVE (adapt='ciecam02' default) | CIE 159:2004 eq. 7.4 | outdoors LA ≈ 1,000-6,000 cd/m² ⇒ D = 1.000: **full normalisation** — every view is re-exposed to Eout. All-shade view (Ein 0.755, row 19) ⇒ ×5.4 = **+2.4 stops**, exposure 2.05 | INCONSISTENT: D is the degree of CHROMATIC (von Kries white-point) adaptation, not luminance adaptation; the source is cited for a job it does not do | L3 | a luminance-adaptation law (e.g. Ferwerda et al. 1996, SIGGRAPH "A model of visual adaptation for realistic image synthesis") or the photographic meter (#2) |
+| 10 | METER_MAX_STOPS 10 | 1151 | LIVE | none | clamp | UNSOURCED (minor) | L3 | camera/eye dynamic range from a cited figure, or drop |
+| 11 | metermode 'avg' log-average | 1188-1199 | LIVE | Reinhard 2002 eq. 1 | — | TRUE | — | keep |
+| **SUN** |||||||||
+| 12 | sun 4.4, colour 0xfff0dd | scene.js:207; restored effects.js:4315 (×1.0), 4326 colour | LIVE | 4.4 = TM balance; mapped to 100 klx by #14 | direct term | 4.4 TRUE as the unit (L1 single calibration). Colour 0xfff0dd UNSOURCED (warm tint, raw hex used as linear, no CCT/model) | L1 (colour) | sun colour from the same sky model as the sky (e.g. Preetham sun colour at that elevation) |
+| 13 | sun elevation 45° / az 180 (or TM's) | scene.js:358 | LIVE; Alt+S no longer moves it (dusk mood off, 4213) | user/TM | — | TRUE | — | keep |
+| 14 | CALIB_SUN_LUX 100000, CALIB_LAMP_LUX 500 | effects.js:4274 | LIVE | Wikipedia "Lux" (Schlyter); EN 12464-1 office | the one calibration | TRUE | — | keep |
+| 15 | CALIB_H 2.5 m | 4274 | LIVE (calibMul 4283; superseded in rooms by §LAMP_EN #42, still governs lamps in no room) | none | lamp base level | UNSOURCED (minor) | L1 | lamp flux from data |
+| 16 | PHOTO_SUN_INTENSITY/AMBIENT/HEMI_SCALE 1.0 | 2477, 2791, 2774 | LIVE 4315-4317, identity | — | none | NO-OP | — | delete |
+| 17 | PHOTO_SUN_COLOR 0xffa55c / AMBIENT 0x8a6a55 / HEMI 0x6a5a7a, PHOTO_SKY_DRAMA uniforms | 2463-2465, 4217-4227, 4321-4324 | NOT LIVE (only `APP._photoDuskMood = true`) | dusk mood | — | NOT LIVE (mood) | L1 | delete |
+| 18 | PHOTO_SUN_ELEVATION 6° as the day/dusk threshold | 2503 → 4349 | LIVE (window glow / lamp decision only) | "Preetham near-black cutoff" | decides glow on/off | UNSOURCED | — | a cited twilight definition (sun < 0° / civil −6°) |
+| **SKY / FILL — the full chain to a SHADED EXTERIOR surface** |||||||||
+| 19 | hemi 0.617, sky 0xb0c4de, ground 0x8b7355 | scene.js:213 | LIVE | k-fit to a wall-contrast target (witness_wall_side_light_floor), not a sky model | the ONLY sky light on a shaded exterior surface (with #20, #22) | UNSOURCED (as sky physics) | L1 | sky + ground terms from one clear-sky model (sun/sky split for the elevation) |
+| 20 | &sky dial 2.0 on hemi → 1.234 | effects.js:4384-4386 | LIVE | red1 eye pick ("hit it now") | horizontal sky E = 0.760·1.234 = 0.938 u = **21.3 klx**; DHI/DNI = 0.938/4.4 = **0.213**; diffuse fraction DHI/GHI = 0.23 | UNSOURCED — but the RESULT lands inside the code's own cited source: Wikipedia "Lux", "full daylight (not direct sun) 10,000–25,000 lx" vs "direct sunlight 32,000–100,000 lx" ⇒ 0.10–0.25. **The horizontal sky is not weak** | L1 | derive, don't dial (value can stay near 21 klx) |
+| 21 | hemi GROUND half = fixed 0x8b7355 × 1.234 → upward light 0.463·1.234 = 0.571 u | scene.js:213 via slHemi sourced_light.js:145 | LIVE | none | on a vertical shaded wall (three's w = 0.5, F = Gd = 1): sky half 0.469 + ground half 0.286 = **0.755 u (17 klx)**. Physical ground half = 0.5·ρg·Eg with the ground's own ρg 0.36 (#49) and sunlit Eg 4.05 ⇒ 0.73 ⇒ total 1.20 u: render = **0.63× physical (−0.67 stop)** when the ground in front is sunlit; when it lies in the building's shadow (Eg = 0.938) physical = 0.64 u and the render is slightly HIGH | INCONSISTENT (ground-reflected light not derived from the ground's albedo nor its sun/shadow state). Isotropic sky also overstates a wall facing away from the sun on a clear sky (Perez et al. 1990, Solar Energy 44(5), anisotropic model) — opposite sign | L1/L2 | groundColor·I = ρg × (sun·sinE × unshadowed fraction + E_sky) |
+| 22 | slHemi / slSkyKeep: sky half × F, ground half × Gd; outside fragments F = 1 | sourced_light.js:137, 145-149 | LIVE | geometry (sky-view field) | indoors: sky scaled by the measured sky view | TRUE (derived) | — | keep |
+| 23 | indoorSky 0 for UNKNOWN fragments (solid column above) | 1094, 137 | LIVE | "principle 1" | wall feet / ceiling strips lose ALL sky | INCONSISTENT (unknown ≠ covered) — blotch candidate, §B | L2 | treat unknown as the nearest known cell's F |
+| 24 | ambient 0.386 × &base 0 = 0 | scene.js:203; effects.js:4383-4386 | LIVE (= 0) | red1 ruling | removes a sourceless fill | TRUE | — | delete the light |
+| 25 | matte IBL: SFR_MATTE_ENV_I 0 | effects.js:2877, 2928-2934 | LIVE | §SUN_FILL_RATIO (IBL is unshadowed) | sky counted once (by hemi) on matte | TRUE (prevents a double count) | — | keep |
+| 26 | glossy IBL = HDRI **belfast_sunset**_puresky × PHOTO_ENVMAP_BOOST 2.0 | 3953, 4185; 2667 → 2961 | LIVE on roughness ≤0.5 / metal >0.3 (2955-2959) | "tuned 2.2→3.2→4.5→3.0→2.0" | a SUNSET sky in a noon still, radiance in the HDRI's own units ×2 — a third sky model | UNSOURCED + INCONSISTENT | L1 | env = PMREM of the sky that lights the scene, intensity 1 |
+| 27 | PHOTO_METAL_ROUGHNESS_SCALE 0.4 | 2715 → 2965 | LIVE (metal >0.3) | "tighter/brighter highlight" | brighter speculars | UNSOURCED | L1 | delete (roughness is data) |
+| 28 | room probe (one interior cube capture) for all glossy | 4013-4040 | LIVE | heuristic "35 % up" | exterior glossy reflect an interior point | INCONSISTENT (low impact) | L2 | per-camera capture (GLASS_ENV already does this for glass) |
+| 29 | Sky background: Preetham, EE 1000, ×0.04, `pow(tex, 1/(1.2+1.2·sunfade))`; turbidity 4 / rayleigh 2 / mie 0.005 / g 0.8 | lib/Sky.js:124, 268; scene.js:253-256; visible effects.js:4212 | LIVE (tone-mapped with the scene exposure) | three example shader | the sky SEEN is a different model from the sky that LIGHTS (#19-21) and from the reflected sky (#26); not in the lux calibration; excluded from the meter (#8) ⇒ blows when exposure opens | INCONSISTENT + UNSOURCED | L1/L3 | one sky model in the one calibration; hemi, IBL and background all from it |
+| 30 | lensflare toneMapped=false | 4232, 4236 | LIVE when the sun is in frame | "keep glare independent of the exposure cut" | additive sprite past the tone curve | UNSOURCED | L3 | delete (or bloom from real sun radiance) |
+| 31 | fog 0xc9a878, density ≤ 0.00006 | 4472-4473 | LIVE in daylight (not dusk-gated) | "warm hazy dusk horizon" | warm tan haze, constant radiance independent of light/exposure; meter drops fog (1172) | UNSOURCED (mood, flag 1) — small (<1 % at 1 km) | L1 | aerial perspective from the sky model, or delete |
+| 32 | sky portals | sky_portal.js:87 | NOT LIVE (retired while the sky field is on) | — | — | NOT LIVE | — | — |
+| 33 | §SKY_OCCLUSION | sky_occlusion.js:42 | NOT LIVE (opt-in &skyocc=) | — | — | NOT LIVE | — | — |
+| 34 | day IR = V12 `R/(A(1−R))` × hemi colour, R_BRE 0.5 | light_zones.js:461, 784-790; sourced_light.js:466-468 | LIVE (zone fragments only) | BRE ADF flux balance (Sumpner) | interreflected daylight indoors | TRUE (R = 0.5 is BRE's stated average) | — | keep; see #47 |
+| 35 | lamp IR k = R/(1−R) = 1 × mean direct lamp E | sourced_light.js:433, 457-462 | LIVE | flux balance | per-zone UNIFORM fill | TRUE (formula) — uniform per zone ⇒ blotch §B | — | keep formula |
+| **LAMPS** (on indoors by day; outside too since &lampsout default 1, 4362) |||||||||
+| 36 | NIGHT_LIGHT_INTENSITY 2.0 × calibMul | tools.js:1308; effects.js:4283-4284 | LIVE | calib divides the base out | fixture = 0.087 u ⇒ 500 lx at 2.5 m | TRUE (via #14) | — | keep |
+| 37 | _nightPLScaleStill 0.5 (§STAGED_PL_CUT) | tools.js:1100 → effects.js:4262, 5611 → tools.js:2226 | LIVE | "too bright… reduce" (look) | halves every lamp AFTER the calibration; §LAMP_EN re-normalises lamps in rooms, but **lamps in no room stay at 250 lx** (half the cited 500) | UNSOURCED + INCONSISTENT with #14 | L1 | delete |
+| 38 | lamp decay 1.5 (&lampdecay) | effects.js:4266 → tools.js:2350 / `_lampData.decay` | LIVE | §FLOOR_WASH eye pick | point source is inverse-square (2); calibrated at 2.5 m only: 1.41× too bright at 5 m, 2× at 10 m | UNSOURCED | L1/L2 | decay 2 + a photometric distribution |
+| 39 | lamp range 25 m window `(1−(d/R)^4)^2` | 4290 | LIVE | perf | cut-off | UNSOURCED (small) | — | keep as perf, log it |
+| 40 | lamps are omni point lights | tools.js:2226 path; sourced_light.js lamp loop 220-235 | LIVE | none | ceilings lit as much as floors (a recessed downlight emits ~0 upward) ⇒ bright/pale ceilings | INCONSISTENT with the EN working-plane calibration | L2 | cosine / IES-LDT distribution per fixture type |
+| 41 | §LAMP_EN: per-room scale to prEN 12464-1 rows, cap at P90 | sourced_light.js:499-583 | LIVE | prEN 12464-1 (2019) | rooms meet EN | TRUE; P90 cap UNSOURCED (small) | — | keep |
+| 42 | lamp colours NIGHT_WARM 0xffdca8 "~2900 K" / rect 0xffffff | tools.js:1110, 1263 | LIVE | red1 shape ruling | hex used as linear (ColorManagement off) ⇒ not the stated CCT | UNSOURCED (colour; shape rule = red1) | L1 | chromaticity from a CCT (data or catalogue) |
+| 43 | fixture emissive 0xffe4b5 × 0.3 | tools.js:1375 | LIVE whenever lamps are on | "reduced 0.8→0.65→0.45→0.3" | glow not tied to lumens; not metered (override material) | UNSOURCED | L1 | luminaire luminance = flux / (π·area) in the one calibration |
+| 44 | window glow 0xfff8ec × 0.55 | tools.js:1376 → 0 at effects.js:4366 | NOT LIVE by day | — | — | NOT LIVE | — | — |
+| 45 | CAM_LIGHT 3 / 4 m | effects.js:381 → 0 at 4501-4502 (calib + sourced, default) | NOT LIVE | — | — | NOT LIVE | — | — |
+| **COVE (L1a)** |||||||||
+| 46 | TRIM_LUX_VOID 100, COVE_UNKNOWN_LUX 100, colour 0xffe4b5 | sourced_light.js:896 | LIVE | "EN circulation row via secondary summaries" | level of the added glow | red1 EXCEPTION (§COVE_NO_STRIP: "need not be accurate") — not counted UNSOURCED | — | — |
+| 47 | cove QUALIFICATION: `lv = room ? (EN row ∥ 100) : 100; df = max(0, lv − existingE); if (!(df > 0.5)) continue;` | 994-998 (coveBuild), existingE = luxRows 797-818 | LIVE | watchdog gate | **no test for lamps = 0 or sky = 0**: any zone below its level is topped up — lit rooms whose §LAMP_EN scale hit the P90 cap, lamp-less rooms with some sky, voids next to lit rooms. existingE = sky share + lamp direct + LAMP IR, but **omits DAY IR** (ircAll × hemi, which the IR texture carries, #34) ⇒ in sky-lit zones the cove re-adds light the day IR already delivers | INCONSISTENT (breaks L1a) + DOUBLE-COUNT (day IR) | L1a/L2 | qualify only `lamps == 0 && Fwp == 0 && lampIR == 0`; existingE must include day IR |
+| 47a | §COVE_IR: adds R/(1−R) × cove direct, direct = deficit × (1−R) | 974-985 | LIVE | flux balance | cove direct + its IR = deficit exactly | TRUE (no self double count); gi_still's max(IR, SSGI) rule (gi_still.js:526, irMaxU 630) counts cove IR once | — | keep |
+| 47b | how many Hospital cove zones HAVE lamps or sky | — | — | — | total: 848 zones, **376 qualified** (room 223, void 140, crevice 2, shaft 11) — this file, §COVE_NO_STRIP result | **INCONCLUSIVE**: no § line prints the lamps/F of qualified zones (§COVE_LIGHT_ZONE = top 8, §LUX_CHECK = largest 8 + 20 FAIL rows) | — | add at 998: `§COVE_QUAL withLamps= withSky= withDayIR= neither=` — "neither" is the count L1a allows |
+| **MATERIALS / ALBEDO** |||||||||
+| 48 | IFC colours used as LINEAR (ColorManagement.enabled = false; &srgbfix default OFF) | loader.js:145; effects.js:4409 | LIVE | §ALBEDO_SRGB (fact stated in code) | every flat albedo brighter than authored: 0.5 used as 0.5 (true linear 0.214, **×2.3**), 0.8 → ×1.3; textures with colorSpace sRGB ARE decoded ⇒ flat vs textured materials disagree; mid-tones compress toward white = pale, low contrast | INCONSISTENT (red1's 2026-09-27 ruling covers CHROMA of intact colours, not this scale) | L2 | decode authored sRGB to linear (the §ALBEDO_SRGB switch) |
+| 49 | ground: 'earth' map × gain 2.3 (GROUND_TEX_AVG_LUM 0.155 measured on paved) = 0.36 "dry concrete" | effects.js:2801-2802, 4151-4153, 4487 | LIVE | concrete 0.25-0.40 (cited in comment); map is EARTH | ground albedo | INCONSISTENT (concrete albedo on a soil texture) | L2 | albedo of the material actually shown (site data or the texture's own measured mean) |
+| 50 | ground wetness 0.5 | 3821 → 3888-3899 (uPuddleActive = 1 during a still, 3904) | LIVE | "wetness override auto-applied" (look) | roughness 0.95→0.515, diffuse ×0.86, **metalness 0.425 over the whole ground** ⇒ diffuse albedo 0.36 → ≈0.18 + sun glints: a sunny still rendered as wet ground | UNSOURCED (mood) | L1/L2 | 0 unless weather data says wet |
+| 51 | puddles (PHOTO_PUDDLE_COUNT 6, random seed) | 3785, 4123-4126 | LIVE | look | random wet patches | UNSOURCED (mood) | L1 | delete |
+| 52 | glass Schlick F0 0.04 / GLASS_BODY 0.08 | glass_fresnel.js:10 | LIVE | F0 = n 1.5 glass (TRUE); body = red1 start value | glazing | F0 TRUE; body UNSOURCED (small) | — | body from the IFC transmittance |
+| 53 | concrete triplanar strength 0.55, tile 4 m | streaming.js:1392-1393 | LIVE (still-only triplanar) | look | low-frequency albedo variation | UNSOURCED (texture look) — blotch candidate §B | — | measured texture scale / off |
+| **POST (after the meter and/or after the tone curve)** |||||||||
+| 54 | N8AO over the WHOLE beauty: screenSpaceRadius, aoRadius 32 px, distanceFalloff 0.2, intensity 4, samples 8, denoise 5 / 7, 24 frames | effects.js:4911-4912, 4930-4950; fold 4831 | LIVE | n8ao README ranges; retuned by eye (§PHOTO_AO_*) | darkens direct sun + lamps too; world radius grows with depth (see §B) | UNSOURCED + INCONSISTENT (AO is visibility of AMBIENT/indirect light only — Zhukov et al. 1998 obscurances; Jimenez et al. 2016 GTAO applies it to indirect diffuse) + DOUBLE-COUNT (the sky field F and IR already encode that occlusion) | L2 | delete, or world-space radius applied to indirect terms only |
+| 55 | §SUN_SHADOW_RESTORE: blend AO-composited colour back to the pre-AO colour near detected sun-shadow edges, kernel 4 px × kScale ≤ 4 | 4982-4990 | LIVE | patch for #54's blur | AO present/absent halos at shadow edges | UNSOURCED | L2 | goes away with #54 |
+| 56 | gi_still composite `out = C·(1−0.55+0.55·AO) + max(0, recv·GI·1.0 − C·IRshare)`; C = the app's FINISHED frame (tone-mapped, sRGB-decoded); recv = hue at fixed albedo **0.5**; giIntensity **10**; ao 0.55; 8 passes, slices 3, steps 16 | gi_still.js:482, 452, 526, 616, 723 | LIVE (desktop WebGPU) | "not measured data" (says so, 476-481); dials by eye | adds light AFTER exposure and ACES and after the meter; every dark pixel receives bounce as if its albedo were 0.5 ⇒ shade lifted toward mid-grey = flat/pale; a SECOND AO on top of #54 | INCONSISTENT (L2/L3) + UNSOURCED + DOUBLE-COUNT (AO ×2) | L2/L3 | bounce in scene-linear radiance, before exposure, from real albedo (G-buffer), counted once against IR |
+| 57 | sun PCF radius 1.5 texels, per cascade (slice.R), CSM_BLEND 0.1 | effects.js:3592-3593, 3140, 3264 | LIVE | §STILL_SHADOW_EDGE ("2R = 3 texels") | penumbra width = 1.5 × each cascade's texel | UNSOURCED | L2 | penumbra from the sun's angular diameter 0.53° (w ≈ 0.0093 × occluder-receiver distance) |
+| **ORDER / FIRST PRESS / DIFFERS** |||||||||
+| 58 | lamps at the METER are built during staging with the NAV near-fade floor 0.3 (tools.js:1089; data path tools.js:2225); the still floor 1.0 is set only after staging (effects.js:5610) and the lamps re-built | effects.js:4312 vs 5605-5620; meter sourced_light.js:1131 | LIVE every press | — | the meter reads a different lamp set from the one rendered (near-camera lamps up to 3.3× dimmer at meter time; §LAMP_EN re-normalises each data version so room means match, the within-room shape does not) | INCONSISTENT | L3 | build lamps at the still budget BEFORE SourcedLight.stage |
+| 59 | HDRI first press: `_hdriEnvMap` null → glossy keep the procedural sky until the async load lands | 4185, 3944-3967 | first press only | — | first still's glossy reflections differ from the second's | INCONSISTENT (first-press) | — | await the HDRI (or delete it, #26) |
+| 60 | Night mode already ON before Alt+S: restore block skipped (4312) ⇒ sun 0.15 moonlight, exposure 0.8 — while calibSunI = `_nightSaved.sunI` 4.4 (4275) | 4275, 4312 | only if the user had Night on | — | lamps calibrated to a 4.4 sun, scene sun 0.15; Eout uses 0.15 | INCONSISTENT | L1 | one sun value for calib, render and meter |
+| 61 | inside-only / outside-only terms | — | — | — | IR, cove, sky-field F < 1: zone fragments only; unknown fragments sky 0 (#23); shadow-fit props only for an outside camera; lamps on both sides (lampsout 1); meter: one rule, inside only logged (1238) | TRUE except #23 | — | — |
+
+**COUNT: 26 LIVE rows carry UNSOURCED** (#2, 3, 10, 12-colour, 15, 18, 19, 20, 26, 27, 29, 30, 31, 37, 38, 39, 41-cap, 42, 43, 50, 51, 52-body, 53, 54, 56, 57); NO-OP rows to delete: #4, 5, 16; NOT LIVE: #17, 32, 33, 44, 45; red1 exception: #46.
+
+#### B. TOP-5 — "pale-bright outside" and "night-dark shade side"
+
+1. **§METER D = CIECAM02 → full normalisation** (sourced_light.js:1246-1251). Outdoors D = 1.000, so every view is re-exposed until
+   its metered light equals Eout. All-shade view: Ein 0.755 / Eout 4.05 ⇒ +2.4 stops (exposure 0.3825 → 2.05); the unmetered sky
+   (#29) and any sunlit edge ride the same +2.4 stops ⇒ pale/blown. Before fc8b07f6 the outside branch applied 0 stops ⇒ the same
+   view at 0.3825 = "night" (…1790468614025: p50 48). **Both symptoms are one rule**: no adaptation, then total adaptation, and D is
+   a chromatic-adaptation factor, not a luminance one.
+2. **The meter excludes sky and glass** (1154-1157). The sky never pulls the exposure down; curtain walls are removed so the
+   lamp-lit rooms behind them (≈0.5 % of sun) drag the log-average down ⇒ the exterior of a glazed building (Hospital, Terminal)
+   is opened up ⇒ pale. Not "the light reaching the eye".
+3. **The absolute anchor is a mood number**: base = 0.45 (scene.js:132) × PHOTO_EXPOSURE_SCALE 0.85 "slightly underexposed"
+   (effects.js:2478, live via 4318) = 0.3825. Every exposure is a multiple of it; with the v1457 outside branch it WAS the shade
+   view's exposure.
+4. **gi_still bounce added after the tone curve** (gi_still.js:526) with receiver albedo fixed at 0.5 (482) and giIntensity 10
+   (723): shade pixels get bounce as if mid-grey regardless of their real albedo or their real incident light, on the
+   display-referred frame, unmetered ⇒ shade lifted and flattened (pale), plus a second AO (0.55) on top of N8AO.
+5. **Flat IFC albedos used as linear** (loader.js:145, §ALBEDO_SRGB off at effects.js:4409): mid-greys ×2.3, whites ×1.3 ⇒
+   compressed, pale surfaces everywhere, while textured materials are decoded correctly.
+
+Just outside the five: **#21 hemi ground half** — the SKY term red1 asked about. The full chain to a shaded exterior surface is:
+hemi only (sky half 0.469 u × F=1 + ground half 0.286 u × Gd) — ambient 0 (#24), matte IBL 0 (#25), IR/cove zone-only (not
+exterior), portals retired (#32), plus the gi_still screen-space bounce (#56, only from surfaces on screen). Horizontal sky is
+21.3 klx, DHI/DNI 0.213 — inside the cited 0.10-0.25 (Wikipedia "Lux"), so the sky is NOT weak; the ground-reflected half is
+0.63× physical when the ground in front is sunlit (−0.67 stop), smaller than #1-#5 (≥1.2 stops each). #50 wet ground (diffuse
+0.36 → 0.18 + sun glints) is seventh.
+
+#### C. INDOOR BLOTCH FORMULAS (red1: "the blotches may need more realistic formulas"; …1790468672505: soft mid-tone patches, no black)
+
+| rank | term | file:line | formula as coded | basis | realistic formula |
+|---|---|---|---|---|---|
+| 1 | N8AO | effects.js:4911-4912, 4930-4950 | screen-space radius 32 px ⇒ world radius r = 32 × 2·d·tan(fov/2) / H_px (grows linearly with depth d: a far wall gets a large dark band, a near one a thin line); AO^intensity 4 with distanceFalloff 0.2; 8 samples, denoise 5 samples / 7 px, 24-frame accumulate; multiplies the WHOLE beauty | n8ao README "16-64 px"; retuned by eye three times (§PHOTO_AO_TUNE/DARK/SCALE/EDGE) | AO as visibility of indirect light only, world-space radius (GTAO, Jimenez 2016); here F + IR already carry it ⇒ remove |
+| 2 | gi_still AO + bounce | gi_still.js:452, 482, 526, 616, 723 | AO blend `1−0.55+0.55·AO` (second AO); bounce = recv(hue × 0.5) × SSGI × 1.0, SSGI 3 slices × 16 steps, radius 12, 8 passes + temporal filter; on the tone-mapped frame | eye dials; 0.5 stated "not measured" | one indirect pass in scene-linear radiance with real albedo; enough slices/steps for convergence (or path-traced), counted once vs IR |
+| 3 | per-zone flat terms | sourced_light.js:176 (IR: `texelFetch(uSLIr, zone)`), 499-583 (§LAMP_EN per-room scale), cove per zone | IR is ONE value per zone (nearest, no spatial interpolation); lamp scale jumps room to room; ⇒ steps where zones meet (doorways, zone splits of one visible space) | flux balance gives the zone MEAN only | IR varying with position (per-cell radiosity or form-factor gather), or interpolate across open zone boundaries |
+| 4 | sky field F / Gd / cove stencil | sourced_light.js:108-121 (8-texel trilinear, texels of another zone or SOLID rejected, weights renormalised), CELL 0.5 m light_zones.js:15; unknown fragments sky 0 (137, 1094) | at every zone or solid boundary the stencil drops texels ⇒ 0.5 m-cell steps; wall feet / ceiling strips with a solid column above read "unknown" ⇒ lose all sky | Greger et al. 1998 irradiance volume (the interpolation is cited; the rejection + unknown=0 rule is not) | keep trilinear, fall back to the nearest known F instead of 0 for unknown; finer cell where it steps |
+| 5 | sun PCF per cascade | effects.js:3592-3593, 3264 (L.shadow.radius = slice.R), CSM_BLEND 0.1 at 3140 | penumbra = 1.5 × cascade texel (world width changes per cascade), 10 % blend between cascades | §STILL_SHADOW_EDGE | penumbra w = d_occluder→receiver × tan(0.53°) ≈ 0.0093·d (sun angular diameter ≈ 0.53°): PCSS-style, independent of cascade |
+| 6 | concrete triplanar | streaming.js:1392-1393 | strength 0.55, tile 4 m, contrast 1.1× | look | the albedo texture's own variation — a blotch by design; confirm with &concrete=0 before blaming lighting |
+| 7 | lamps | effects.js:4266 (decay 1.5), omni | broad overlapping pools, ceiling lit like floor | eye pick | decay 2 + photometric distribution (#38, #40) |
+
+**Witness plan for C (no build here):** the §-lines that already isolate each term — §PHOTO_AO (N8AO has no URL dial — STILL_AO_ENABLED is a const at effects.js:4857, so its A/B needs a one-line switch; &ao / APP._stillAo is gi_still's AO, not N8AO),
+§GI_STILL giterm/aoloss modes (gi_still.js:506-510), §IRC_MAX share, §SKY_VIEW_FIELD SKY_STEP readback (uSLParams.w = 6),
+§STILL_SHADOW_RADIUS — one A/B per term at the …1790468672505 pose, reported as the patch's L change, ranks by the number.
