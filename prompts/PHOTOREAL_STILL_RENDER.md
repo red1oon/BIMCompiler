@@ -1967,6 +1967,18 @@ poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame m
  Z11 ⏳ fix 7 BUILT: AO once + real receiver albedo — fix/z11-bounce-linear 024ce32d (sw v1468), node W pass=4/0 ran=10; composite-before-tone = PLAN P1-P5 (### Z11 SPEC); GPU witness queued.
  Z12 ⏳ fix 8 BUILT: ground half = rho_g x E_g + §SUN_PENUMBRA diagnostic — fix/z12-ground-penumbra c6463e4b (sw v1469), node W pass=4/0 ran=12; PCSS = spec only; 4k §STILL_RES cost = GPU queue (### Z12 SPEC).
  Z13 §FILM_LAW S4 (sourced chain in films, R2 build-up key) 4a->4f — after Z7 numbers.
+ Z15 baked bounce light in the 3D light volume (per building + build-up stage) — film speed + still/film identity.
+ Z16 camera track precompute per film/shot (exposure, visible set, lamp pool, reflection points) — extends _filmFitPrecompute.
+ Z17 ⏳ camera torch L1b — Alt+S fix/alts-torch @1dd60a62 (v1472); films in fix/film-law-v2 @931882df (v1473).
+ Z18 two-tier stair-stepped shadow edges (red1 still …1790484725274, HHS, cam [-10.011,-4.496,-21.246] tgt [0.306,-2.129,0.238],
+     v1464): suspected 0.5 m zone-grid stepping (audit C cause 4 stencil drop + cause 3 per-zone IR) overlapping the soft sun
+     shadow. Prove by readback of sun term vs grid term along the floor band, then continuous cross-cell blending; witness =
+     0.5 m steps along the line -> 0, refs unchanged. FIRST item of the next pass.
+PAUSED 2026-09-27 (red1 "pause for now"). RESUME: (1) read the GPU agent's §ALTS_COMBINED RESULT (partial) — torch Alt-S witness
+ on fix/alts-torch @1dd60a62, 7 poses, PASS = p50 40..200 & clipped < 2 % at >= 6/7, §GLARE 0; if PASS FF look/combined-0925 to it
+ and tell red1 to reload :8624; (2) film test bake fix/film-law-v2 (ALTC_SHOWSTOPPERS §FILM_LAW v2 amendment); (3) Z18; then
+ Z10/Z11 witnesses, Z8 reach-3, Z15/Z16. Worktrees: /tmp/wt-torch /tmp/wt-film2 /tmp/wt-comb /tmp/wt-z9..z12 /tmp/wt-law
+ /tmp/wt-lamp /tmp/wt-meter /tmp/wt-b1 /tmp/wt-look(:8624).
  Z14 open carry-overs: S4 fringe after an inside press (pushed materials 105->109); M1 "hog" (no regression measured); overhang meter pose.
 
 ### Z9 SPEC — ALBEDO sRGB (2026-09-27, audit #48; L2) — branch bim-ootb `fix/z9-albedo-srgb` from fix/light-law-module @39959e8a, sw v1466
