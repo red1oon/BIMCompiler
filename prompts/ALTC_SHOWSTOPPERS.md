@@ -366,6 +366,44 @@ then S1-S3 cherry-picked + film torch Z17/L1b), sw v1473. Node: witness_film_exp
    --out /tmp/film_law_v2.mp4 --log /tmp/film_law_v2.log   (C: add `--film-exposure 0 --film-fill restore`; E: `--film-parity 0`;
    B: same as A from /tmp/wt-torch; add the lane's --clash/--measure/--label flags to all four if its reference bake uses them).
 
+**§FILM_LAW RESULT (Opus, 2026-09-27) — GPU witness, real GPU (RTX 4060, ANGLE GL), Hospital `--db HospitalAjaibPath --fps 15
+--frame-range 0:90 --clash --measure --label`.** A = /tmp/wt-film @3688b3c5 (432 s wall), B = /tmp/wt-law @39959e8a (341 s),
+C = A + `--film-exposure 0 --film-fill restore`. Logs + checker: bim-compiler prompts/photoreal_probes/b1/film_law_{new,base,ctl}.log,
+filmcheck.py, ovdiff2.py, filmD_*.log, w_sun_arc_fill.log, w_pl_topout_unpin.log. (HospitalAjaibPath.db / Hospital_silent_local.db
+symlinked into the untracked, git-ignored buildings/ of both trees — the CLI serves only its own root.)
+ 1 PASS — 90 §FILM_EXPOSURE lines (f=0..89), VACUOUS 0.
+ 2 PASS — steps max +0.032 / min -0.067 EV per frame (limits +0.2 / -0.0667; the log prints EV to 3 decimals, tolerance = that
+   precision); capped=down on 4 frames (f 86-89), capped=up 0 -> the up limit was never exercised (down limit only).
+ 3 PASS — no overshoot. 4 PASS — first=1 only on f=0, EV(0) = targetEV(0) = 16.925.
+ 5 FAIL (still side) — outside f=0 pose (camOutside=1, skyPx 0) and the first sky frame f=57 (skyPx 4968 > 20 %): film targetEV
+   16.925 / 16.822; the Alt+S press at the same pose (D, same tree + db) meters stage EV100 17.27 / 16.96 (delta 0.34 / 0.14) and
+   then REMETERS at 19.78 / 19.15 (delta 2.85 / 2.33) -> the still ends at exposure 0.0127 / 0.0196, compositeMean 7.0 / 31.2.
+   The gap is the still's remeter re-reading emitters (§LAMP_TRUTH RESULT, bim-compiler PHOTOREAL_STILL_RENDER.md), not the film
+   law; on the stage meter f=57 is within 0.3, f=0 misses by 0.34. Sun differs too: the film's §SUN_ARC is at 54.8 deg at f=0,
+   the Alt+S press uses its own sun.
+ 6 PASS — every §LIGHT_LAW tag=film-first|film lawHash=611dfd50 = D's stage + remeter lawHash 611dfd50.
+ 7 PASS — A: `§FILM_PARITY on fill=alt-s (ambient 0, §FILM_LAW S2)`, 0 §FILM_FILL_RESTORE lines, §FILM_FILL_CHECK drift=none,
+   ambient=0.000 hemi=1.234 on all 90 lines = §STILL_BASE hemi=1.234 ambient=0.000. C: 10 restore lines; C's §STILL_BASE,
+   §FILM_FILL_RESTORE, §NIGHT_STILL_LIGHTS lines identical to B and §SUN_ARC_FILL_PIN values identical (ambient 0.785 hemi 1.257,
+   text adds `fill=pinned` / `(opt-in, NOT the law)`).
+ 8 PASS — A and C `§CAM_LIGHT off (film, L1a: not a real source) intensity=0`, camLight=0 on every A line; B `§CAM_LIGHT on intensity=3`.
+ 9 PASS — overlays: on the page the bake actually ran (after §CLI_BAKE_SW_PURGE), 415 overlay lines in 81 tag families
+   (§CLASH_*, §FLYTHRU_*, §LOADPATH_*, §BILLBOARD_*, §STOREY_REVEAL_*, §FILM_BOXES_*, beats, §CPE_TAIL_*, ...) identical A vs B and
+   C vs B after stripping timings (ms, msPerPair, 'in N ms', time=). Excluded: §CLASH_MEM (heap) and §LOADPATH_PIXEL_DIAG_PRE_HUD
+   (scene pixels sampled BEFORE the HUD: exposure-dependent, 42,29,24 in A vs 135,105,93 in B). The raw logs show the module
+   *_INIT lines twice in A and C: the SW-purge reload happened after the first page had initialised (unregistered=1) — a harness
+   timing race, not a code change (B purged before init, unregistered=0).
+ 10 PASS — programs=117 at f=0, 156 constant f=1..89 (+39 once); §FILM_EXPOSURE ms mean 157.8 (f>=2), median 119.7; f=0 14,921,
+   f=1 5,206 (first-frame compiles).
+ 11 PASS — C: `§FILM_EXPOSURE off (control: &filmexp=0) exposure=0.3825 fixed`, no per-frame lines.
+ EXTRA witnesses on A: witness_sun_arc_fill pass=9 fail=2 (five-samples-per-run-on-the-arc, capture-state-equals-pin-line):
+   the after-bake logs pinLines=0 — S2 turned the pin into a checker in parity films, so the witness's pin-line expectations
+   no longer apply (needs updating to §FILM_FILL_CHECK), not a light regression (base, lit counts, sun + shadow identical rows
+   PASS). witness_pl_topout_unpin pass=3 fail=1 (U2 window strictly between: staged plScale is 1 since §LAMP_TRUTH retired the 0.5
+   cut, so the window has no range; U4 poolLit 0 -> 0) — inherited from the base chain, NOT verified on B (not run there).
+ VERDICT: film law rows 1-4, 6-11 PASS (row 2 up-limit untested); row 5 FAIL only through the still's remeter (emitters) —
+   re-check after the meter v3 emitter mask lands on this chain.
+
 **§FILM_LAW S4 — SPEC ONLY (not implemented this pass): the §SOURCED_LIGHT chain in films under R2/R3 (stopper S-LAW-1).**
  Why not now: S-LAW-1 is the whole chain behind one gate (effects.js:4438 stage, :5623 remeter, sourced_light.js:335 lampWanted,
  sky_portal.js:87 retired, effects.js:4294 prepare) and R2 has no data to switch on (stopper 4). Not "small".
