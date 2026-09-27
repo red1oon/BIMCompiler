@@ -1,0 +1,16 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+reach_r2_hosp_a1 §SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=6.04 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 s compositeMean=65.78 
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+reach_r2_hosp_a2 §SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=6.05 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 s compositeMean=68.38 
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+reach_r2_hosp_a3 §SKY_SHELL_RAYS bld=Hospital cache=built on shellCells=31630 pretestSkipped=16621 recomputed=15009 mc=64 rays=1084927 usPerRay=5.96 boundaryTris=234224 occluderTris=5824916 cull=1 occluderCulled=1194363 glassTris=21776 s compositeMean=91.06 
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "element
+
+reach_r2_clinic §SKY_SHELL_RAYS bld=Clinic cache=built on shellCells=6159 pretestSkipped=5288 recomputed=871 mc=64 rays=84728 usPerRay=2.82 boundaryTris=60812 occluderTris=1297825 cull=1 occluderCulled=323258 glassTris=10840 soupMs=162  
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48
+
+reach_r2_term §SKY_SHELL_RAYS bld=TerminalMerged cache=built on shellCells=5615 pretestSkipped=3247 recomputed=2368 mc=64 rays=173203 usPerRay=4.42 boundaryTris=1737653 occluderTris=2397514 cull=1 occluderCulled=1110743 glassTris=4669 
+== reach done 08:27:21

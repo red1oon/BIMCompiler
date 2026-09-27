@@ -1,0 +1,51 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+coveA_hosp_plenum GLARE bld=Hospital PASS qualified=376 emitters=10498 NOFLAT PASS §COVE_LIGHT strip mesh bars=13713 qualified=376 emitters=10498 NOFLAT PASS §COVE_LIGHT strip mesh bars=13713 newPrograms=5 compositeMean=144.32 appMean=131.8 
+{"result":{"stripMeshes":1,"programs":85,"geometries":3448,"textures":3889}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0,"appDarkPct":0.213}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+coveA_hosp_innerroom GLARE bld=Hospital PASS qualified=376 emitters=10498 NOFLAT PASS §COVE_LIGHT strip mesh bars=13713 qualified=376 emitters=10498 NOFLAT PASS §COVE_LIGHT strip mesh bars=13713 newPrograms=5 compositeMean=99.84 appMean=104.19 
+{"result":{"stripMeshes":1,"programs":83,"geometries":3448,"textures":3889}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0,"appDarkPct":0.017}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+coveA_hosp_p2 GLARE bld=Hospital PASS qualified=376 emitters=10498 NOFLAT PASS §COVE_LIGHT strip mesh bars=13713 qualified=376 emitters=10498 NOFLAT PASS §COVE_LIGHT strip mesh bars=13713 newPrograms=5 compositeMean=111.6 appMean=120.78 
+{"result":{"stripMeshes":1,"programs":85,"geometries":3448,"textures":3889}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.02,"appDarkPct":0.036}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "element
+
+coveA_clinic_corridor GLARE bld=Clinic PASS qualified=166 emitters=4536 NOFLAT PASS §COVE_LIGHT strip mesh bars=5374 qualified=166 emitters=4536 NOFLAT PASS §COVE_LIGHT strip mesh bars=5374 newPrograms=4 compositeMean=76.97 appMean=82.18 
+{"result":{"stripMeshes":1,"programs":67,"geometries":644,"textures":525}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.019,"appDarkPct":0.023}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48
+
+coveA_terminal_inside GLARE bld=TerminalMerged PASS qualified=63 emitters=742 NOFLAT PASS §COVE_LIGHT strip mesh bars=849 qualified=63 emitters=742 NOFLAT PASS §COVE_LIGHT strip mesh bars=849 newPrograms=6 compositeMean=103.95 appMean=108.94 
+{"result":{"stripMeshes":1,"programs":84,"geometries":1194,"textures":1810}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.006,"appDarkPct":0.915}}
+{ "reused": false, "url": "http://127.0.0.1:8632/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+coveB_hosp_plenum GLARE bld=Hospital PASS qualified=376 emitters=10498 NOFLAT PASS qualified=376 emitters=10498 NOFLAT PASS newPrograms=5 compositeMean=143.47 appMean=130.5 
+{"result":{"stripMeshes":0,"programs":84,"geometries":3447,"textures":3889}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0,"appDarkPct":0.207}}
+{ "reused": false, "url": "http://127.0.0.1:8632/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+coveB_hosp_innerroom GLARE bld=Hospital PASS qualified=376 emitters=10498 NOFLAT PASS qualified=376 emitters=10498 NOFLAT PASS newPrograms=5 compositeMean=99.84 appMean=104.19 
+{"result":{"stripMeshes":0,"programs":82,"geometries":3447,"textures":3889}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0,"appDarkPct":0.017}}
+{ "reused": false, "url": "http://127.0.0.1:8632/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+coveB_hosp_p2 GLARE bld=Hospital PASS qualified=376 emitters=10498 NOFLAT PASS qualified=376 emitters=10498 NOFLAT PASS newPrograms=5 compositeMean=111.53 appMean=120.68 
+{"result":{"stripMeshes":0,"programs":84,"geometries":3447,"textures":3889}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.021,"appDarkPct":0.036}}
+{ "reused": false, "url": "http://127.0.0.1:8632/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "element
+
+coveB_clinic_corridor GLARE bld=Clinic PASS qualified=166 emitters=4536 NOFLAT PASS qualified=166 emitters=4536 NOFLAT PASS newPrograms=4 compositeMean=76.35 appMean=81.6 
+{"result":{"stripMeshes":0,"programs":66,"geometries":643,"textures":525}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.021,"appDarkPct":0.023}}
+{ "reused": false, "url": "http://127.0.0.1:8632/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48
+
+coveB_terminal_inside GLARE bld=TerminalMerged PASS qualified=63 emitters=742 NOFLAT PASS qualified=63 emitters=742 NOFLAT PASS newPrograms=6 compositeMean=103.47 appMean=108.33 
+{"result":{"stripMeshes":0,"programs":83,"geometries":1193,"textures":1810}}
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.006,"appDarkPct":0.866}}
+== cove done 07:47:09

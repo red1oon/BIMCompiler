@@ -1,0 +1,26 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "eleme
+
+{"result":{"mats":109,"instColourSets":0}}
+pale_def GLARE bld=Hospital PASS stops=6.60 expStep=0 compositeMean=117.08 appMean=124.71 
+{"staged":true,"tm":4,"exp":37.219,"mats":{"compared":4777,"changedByStaging":1,"examples":[["MeshStandardMaterial","5c4033","ffffff"]]},"comp":{"p5":68.1,"p25":100.9,"p50":115.9,"p75":133.8,"p95":182.3,"mean":117.9,"std":29.7,"meanSat":0.0548},"app":{"p5":69.1,"p25":109.2,"p50":125.1,"p75":141.3,"p95":197.2,"mean":125.6,"std":33.1,"meanSat":0.0579},"dq":{"n":89342,"meanF":0.0014,"shareFpos":0.354,"meanIRlin":0.0025,"meanCove":0,"meanGIliftL":-4.46,"meanFallSurfaces":0.0081},"s":{"n":200,"mS":0.0464,"pred":0.0224,"appS":0.0622,"compS":0.058,"col":{"n":5,"meanMatS":0.5722,"meanPredS":0.319,"meanAppS":0.392,"meanCompS":0.3864,"hueDiffMedian":6},"tex":0}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell
+
+{"result":{"mats":109,"instColourSets":0}}
+pale_skyshell0 GLARE bld=Hospital PASS stops=6.61 expStep=0 compositeMean=116.79 appMean=124.37 
+{"staged":true,"tm":4,"exp":37.374,"mats":{"compared":4777,"changedByStaging":1,"examples":[["MeshStandardMaterial","5c4033","ffffff"]]},"comp":{"p5":67.7,"p25":100.5,"p50":115.4,"p75":133.8,"p95":182.4,"mean":117.6,"std":29.9,"meanSat":0.0548},"app":{"p5":68.7,"p25":108.7,"p50":124.4,"p75":141.1,"p95":197.2,"mean":125.3,"std":33.2,"meanSat":0.0579},"dq":{"n":90967,"meanF":0.0014,"shareFpos":0.358,"meanIRlin":0.0024,"meanCove":0,"meanGIliftL":-4.87,"meanFallSurfaces":0.0081},"s":{"n":200,"mS":0.0464,"pred":0.0224,"appS":0.0619,"compS":0.0571,"col":{"n":5,"meanMatS":0.5722,"meanPredS":0.319,"meanAppS":0.393,"meanCompS":0.39,"hueDiffMedian":5},"tex":0}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&ir=0", "
+
+{"result":{"mats":109,"instColourSets":0}}
+pale_ir0 GLARE bld=Hospital PASS stops=7.21 expStep=0 compositeMean=122.07 appMean=115.93 
+{"staged":true,"tm":4,"exp":56.783,"mats":{"compared":4777,"changedByStaging":1,"examples":[["MeshStandardMaterial","5c4033","ffffff"]]},"comp":{"p5":73.5,"p25":98.6,"p50":118.2,"p75":143.9,"p95":202.1,"mean":123.7,"std":35.5,"meanSat":0.0795},"app":{"p5":60.6,"p25":88.7,"p50":111.1,"p75":139.6,"p95":209.5,"mean":117.2,"std":40.7,"meanSat":0.086},"dq":{"n":88226,"meanF":0.001,"shareFpos":0.369,"meanIRlin":0,"meanCove":0,"meanGIliftL":7.03,"meanFallSurfaces":0.0081},"s":{"n":200,"mS":0.0464,"pred":0.0224,"appS":0.0922,"compS":0.0853,"col":{"n":5,"meanMatS":0.5722,"meanPredS":0.319,"meanAppS":0.4196,"meanCompS":0.402,"hueDiffMedian":4},"tex":0}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&cove=0",
+
+{"result":{"mats":109,"instColourSets":0}}
+pale_cove0 GLARE bld=Hospital PASS stops=6.60 expStep=0 compositeMean=116.86 appMean=124.35 
+{"staged":true,"tm":4,"exp":37.222,"mats":{"compared":4777,"changedByStaging":1,"examples":[["MeshStandardMaterial","5c4033","ffffff"]]},"comp":{"p5":67.9,"p25":100.6,"p50":115.6,"p75":133.8,"p95":182.3,"mean":117.6,"std":29.9,"meanSat":0.0544},"app":{"p5":69,"p25":108.3,"p50":124.6,"p75":141.1,"p95":197.2,"mean":125.2,"std":33.2,"meanSat":0.0575},"dq":{"n":89228,"meanF":0.0014,"shareFpos":0.36,"meanIRlin":0.0025,"meanCove":0,"meanGIliftL":-4.6,"meanFallSurfaces":0.0081},"s":{"n":200,"mS":0.0464,"pred":0.0224,"appS":0.0614,"compS":0.0565,"col":{"n":5,"meanMatS":0.5722,"meanPredS":0.319,"meanAppS":0.392,"meanCompS":0.386,"hueDiffMedian":6},"tex":0}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&srgbfix=
+
+{"result":{"mats":109,"instColourSets":0}}
+pale_srgbfix1 GLARE bld=Hospital PASS stops=6.60 expStep=0 compositeMean=99.73 appMean=106.52 
+{"staged":true,"tm":4,"exp":37.214,"mats":{"compared":4777,"changedByStaging":4775,"examples":[["MeshStandardMaterial","5c4033","ffffff"],["MeshStandardMaterial","ebe6d9","d3c9b0"],["MeshStandardMaterial","ebe6d9","d3c9b0"],["MeshStandardMaterial","ebe6d9","d3c9b0"],["MeshStandardMaterial","737278","2c2b30"]]},"comp":{"p5":58,"p25":83.9,"p50":99.3,"p75":114.7,"p95":163.1,"mean":100.9,"std":27.9,"meanSat":0.0823},"app":{"p5":60.5,"p25":89.2,"p50":106.6,"p75":122.6,"p95":176.2,"mean":107.8,"std":30.9,"meanSat":0.0865},"dq":{"n":89824,"meanF":0.002,"shareFpos":0.377,"meanIRlin":0.002,"meanCove":0,"meanGIliftL":-4.85,"meanFallSurfaces":0.0081},"s":{"n":200,"mS":0.0901,"pred":0.0464,"appS":0.0946,"compS":0.0893,"col":{"n":89,"meanMatS":0.2022,"meanPredS":0.1042,"meanAppS":0.1376,"meanCompS":0.1298,"hueDiffMedian":18},"tex":0}}
+== pale done 08:02:17

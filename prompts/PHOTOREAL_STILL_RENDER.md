@@ -2050,11 +2050,54 @@ the lighting uses), histogram 70/95 log-average L -> cd/m2 via luxPer -> EV100 =
 1/(1.2 x 2^EV100) (x luxPer, x 0.6 to cancel three's ACES 1/0.6). No base, no compensation, no clamp; inside and outside alike.
 Inside refs WILL move (new rule for all); re-approval by numbers. Engine reference: sun 100-120 klx, clear sky 13-30 klx at
 45 deg, sunny EV100 ~15, office 7-9, K 12.5, adaptation 3 stops/s up / 1 down (films, R1).
+§METER_EV RESULT (Opus, 2026-09-27) — fix/meter-one-rule @1b5f1c0b (sw v1461, /tmp/wt-meter :8633) vs look 808f578f (:8630). Fresh
+ profile, first press, Hospital &ghost=1 unless noted. Logs prompts/photoreal_probes/b1/evA_* evB_* evBavg_* (+ _lum = lum.js stats).
+ (Superseded fc8b07f6 partial run, for the record: sunlit aerials +1.59 / +2.64 stops, night +3.75 stops -> p50 43.6 -> 199.8.)
+ | pose            | before: comp  p50  le15%  ge250%  stops | after (hist 70/95): EV100  stops  comp   p50   le15%  ge250%  skyPx  ms |
+ | night 166215    | 43.4   41.4  1.95  0     0 (outside)    | 10.94  +3.92  199.4  206.3  0.38  0.79  0     576  |
+ | pale 367731     | 171.5  169.3 0.00  3.28  2.61           | 16.01  -1.15  47.3   30.2   17.1  0     1781  492  |
+ | pale 100646     | 127.1  95.6  0.31  7.15  5.90           | 12.72  +2.14  49.6   11.8   55.1  0.51  1032  516  |
+ | shade 501304    | 85.8   61.2  2.65  0     0 (outside)    | 15.90  -1.04  56.7   35.4   19.1  0     2402  481  |
+ | shade 614025    | 69.5   55.6  1.46  0     0 (outside)    | 16.17  -1.31  32.6   21.9   32.6  0     0     543  |
+ | aerial 616826   | 90.5   79.1  1.33  0     0 (outside)    | 16.78  -1.92  37.0   28.1   33.4  0     0     558  |
+ | aerial 862668   | 67.5   55.4  0.75  0     0 (outside)    | 14.81  +0.05  69.9   59.5   0.63  0     235   538  |
+ | Clinic corridor | 76.8   69.5  0.02  0     7.65           | 9.18   +5.68  28.7   20.3   21.8  0     0     796  |
+ | Hosp inner room | 99.9   107.2 0     0     7.96           | 9.97   +4.89  15.9   17.1   45.0  0     0     766  |
+ | Terminal inside | 103.4  99.0  0.01  0.06  7.95           | 11.02  +3.84  22.1   10.0   68.0  0     170   1752 |
+ | P2 885596       | 111.6  107.1 0.02  0.28  6.48           | 10.62  +4.24  39.9   32.3   12.7  0.27  32    1018 |
+ | 698534          | 116.9  115.8 0.01  0.04  6.60           | 10.93  +3.93  30.0   26.9   10.7  0.04  6     1039 |
+ | 672505          | 118.5  110.6 0.01  0.01  6.02           | 10.30  +4.56  66.6   55.3   1.30  0.01  56    1725 |
+ &metermode=avg (after tree): night EV100 9.72 +5.14 stops comp 227.5 p50 232.8 ge250 7.71% (FLAG > 2% clipped, median > 200);
+ aerial 616826 EV100 12.61 +2.25 comp 175.6 p50 179.4; Clinic corridor EV100 8.81 +6.05 comp 35.8 p50 27.4 le15 5.2%.
+ FLAGS (median < 40 / > 200 / clipped > 2%): median < 40 at 10 of 13 poses (367731 30.2, 100646 11.8, 501304 35.4, 614025 21.9,
+ 616826 28.1, Clinic 20.3, inner room 17.1, Terminal 10.0, P2 32.3, 698534 26.9); night median 206.3 > 200. Clipped > 2%: none (hist).
+ EV SANITY: sunlit aerial 616826 16.78 (ANSI ~15: +1.8, the 70/95 band sits on the sunlit roofs), 862668 14.81 (in range);
+ interiors 9.2-11.0 (office 7-9: +1-2). The sky enters the meter when visible (skyPx up to 16.7%) and then pulls interiors and
+ shade views dark (367731, 501304). §GLARE 0/0/0 on every run. Meter ms: hist 481-1752 vs old 123-1025.
+ VERDICT: NOT READY as a look (the rule is consistent inside/outside, but under the 70/95 band + exposure 0.6/(1.2 x 2^EV)
+ the median surface sits 1.5-3 stops under mid-grey at 10 of 13 poses; the avg arm lifts interiors only ~+0.4 stop and makes the
+ night pose clip). Not judged: which constant red1 wants (band, K, compensation) — that is a look decision, not a defect.
 
 **RULINGS red1 2026-09-27 (inside still …1790465698534, v1457):** (1) "If original colors then OK" — the pale-interior check
 passes if the chroma readback shows the IFC material colours intact (low saturation = the data's greys, not a render fault).
 (2) Outside very bright through the openings from an inside pose = WANTED: "relative eye adjustment" (§METER_ADAPT, expStep
 6.61 there). Not a defect; do not cap it. (Same class as S1's Hospital curtain-wall case.)
+PALE CHECKS RESULT (Opus, 2026-09-27, look 808f578f :8630, fresh-profile first press; logs photoreal_probes/b1/pale_*, seq*, sky0_* sky1_*,
+ probes chroma.js / matsnap.js / lum.js / clip_cls.js):
+ INSIDE 1790465698534 (chroma): material colours INTACT — 4,777 materials snapshotted before Alt+S, 1 changed by staging
+ (5c4033 -> ffffff, one unnamed MeshStandardMaterial; which object carries it was NOT checked — suspected the ground texture swap). 200 surface
+ samples: mean material HSV S 0.046 (only 5 of 200 have S > 0.15) = the Hospital interior's IFC colours are low-saturation
+ greys; hue kept (median |dH| 4-6 deg on the coloured ones). Saturation by stage (frame mean S): app 0.058, composite 0.055
+ (GI composite -6%); &ir=0 composite 0.080 (+45%: the §IRC_MAX IR floor is the stage that greys it; also std 29.7 -> 35.5,
+ meter 6.60 -> 7.21 stops); &cove=0 0.054 (no change); &skyshell=0 0.055 (B1: none — comp 117.08 vs 116.79, darkest-quartile
+ F 0.0014 both); &srgbfix=1 0.082 (albedo used as linear, §ALBEDO_SRGB: on coloured samples authored S 0.57 -> 0.32 predicted
+ -> 0.39 rendered). VERDICT: not a colour override; low-chroma data + IR floor + albedo-as-linear. No code changed.
+ OUTSIDE 1790466367731: pale on a FRESH first press too (p5/50/95 102/170/249, >=250 4.1-5.2 %); 251/253 clipped samples hit
+ nothing = the SKY; the camera cell is covered -> metered 'inside', +2.61 stops. &skyshell=0 vs default 173.5 vs 173.0 (B1 none).
+ 1790466100646: clipped = IfcPlate glass 211/251 at +5.90 stops interior exposure (red1 ruling 2: wanted). SEQUENCE (red1's
+ order 616826 -> 698534 -> 100646 -> 367731 on one page) vs fresh at 367731: comp 177.9 vs 172.5/173.0/173.5, p50 178.9 vs 170-172,
+ >=250 2.97 vs 4.1-5.2 %; exposure identical 2.3309; carried state seen: §SOURCED_LIGHT pushed 105 -> 109 after the inside press,
+ GI pass 1 s vs 66 s (kept renderer). VERDICT: meter class (covered camera looking out), not B1; carried state adds ~+5.
 
 **§COVE_NO_STRIP — RULING (red1 2026-09-27, overrides §COVE_LIGHT "and a VISIBLE thin emissive strip mesh" + impl note 6):**
 red1: "The ceiling rim lighting need not have the actual lighting element. That be inventing objects. Rather just have the
@@ -2065,6 +2108,15 @@ FIELD (the glow along the wall-ceiling edges: DOWN + UP lobes in the RGBA8UI tex
 named cove_strip / userData.coveStrip after an Alt+S press; §COVE_LIGHT zones/emitters and the cove readback term unchanged vs
 before (same pose); program count -1 (the strip's MeshBasic program); approved refs (Clinic corridor, Hospital inner room)
 unchanged except where a strip bar was on screen. Branch fix/cove-no-strip (from look @ 48204a78), sw v1457.
+§COVE_NO_STRIP RESULT (Opus, 2026-09-27) — branch fix/cove-no-strip @ fdecbd1c (sw v1458, served /tmp/wt-cove :8632) vs look 808f578f
+ (:8630); fresh-profile first press per pose, Hospital &ghost=1. Logs prompts/photoreal_probes/b1/cove{A,B}_*.log + cove.out (probe coveprobe.js).
+ Strip gone: scene meshes named cove_strip / userData.coveStrip after Alt+S 1 -> 0 at all 5 poses; '§COVE_LIGHT strip mesh' line
+ (Hospital bars=13,713, Clinic 5,374, Terminal 849) -> absent. §COVE_LIGHT build identical (Hospital zones 848, qualified 376
+ {room 223, void 140, crevice 2, shaft 11}, emitters 10,498, perimeter 5,413 m, cells 98,576; Clinic qualified 166 / emitters 4,536;
+ Terminal 63 / 742); NOFLAT PASS both. renderer.info.programs -1 at every pose (Hospital 85->84 / 83->82 / 85->84, Clinic 67->66,
+ Terminal 84->83); geometries -1. compositeMean A -> B: Hospital plenum pose (strip on screen) 144.32 -> 143.47, px<=15 composite
+ 0 -> 0 %, app 0.213 -> 0.207 %; inner room 99.84 -> 99.84; P2 111.60 -> 111.53; Clinic corridor 76.97 -> 76.35 (noise 2.7);
+ Terminal inside 103.95 -> 103.47 (all runs this session 103.35-104.01). §GLARE 0/0/0 all. VERDICT: READY (every claim judged).
 
 **§COVE_LIGHT — SPEC (2026-09-25, dev red1-5a; item A BLACK_INTERIOR; red1: "a dark place just gets a ceiling-perimeter back
 glow"). Builds on §SKY_VIEW_FIELD (same zone texture). Alt+S-truth: BUILD per building + DECIDE per frame; films inherit.**
