@@ -1073,7 +1073,7 @@ SampleCastle FP → lod400=126 kept; Duplex ELEC walked immediately after open �
 **Next (separate item):** ARC seed `§GEO-SERVED-DEGRADED` (geo fetch fails → measured bounding boxes rendered, arc_editable path)
 violates the same rule → must hard-fail/refuse instead.
 **§WALK-LOD400-ONLY — ✅ DONE (witness) 2026-09-27** on bim-ootb `test/modeller-net-audit` (no PR): W-WALK-LOD400-ONLY 7/0 (base 4/3).
-**§FOLD-NO-BOX — ⏸ WIP, PAUSED (red1) 2026-09-27.** Finding: a reopened building folded every saved walk op as a box (Duplex 102/102) because
+**§FOLD-NO-BOX — ✅ DONE (witness) 2026-09-27 PM, bim-ootb PR #1788 (auto-merge on) — see §FOLD-NO-BOX-DONE below. Original WIP note kept:** ⏸ WIP, PAUSED (red1) 2026-09-27. Finding: a reopened building folded every saved walk op as a box (Duplex 102/102) because
 `foldInsert` fell back to `boxArrays(bbox)` when `realGeomHash` was unregistered. Fix (committed WIP): fold throws §LOD400-REFUSE (never boxes);
 saved walk meshes registered from the building geo on open → 102/102 real after reload. Node witnesses now pass `registerGeometry` like production
 (5 recovered; sdg_gate 11/0 with A1 restated; arc_editable A3/A4-extent retired → W-ANCHOR-SWEEP, A10 = unit guard).
@@ -1081,3 +1081,28 @@ saved walk meshes registered from the building geo on open → 102/102 real afte
 host — real-mesh hosts refuse; decide: slide on real hosts vs refuse), room_move T3, arc_3axis_rotation R1/R2 (real=0 — check its own registration),
 e2e_instpick P4. Then: `_renderDiscAssembly` box parts, ARC seed §GEO-SERVED-DEGRADED bbox path, catalog inserts without a mesh (fold boxes;
 527/794 products have no matching mesh — tie to §CATALOG-REBIND). Preview ghosts/gizmos are UI, not element geometry.
+
+### ✅ §FOLD-NO-BOX-DONE — 2026-09-27 PM (bim-ootb `test/modeller-net-audit` → PR #1788, auto-merge on)
+The 5 WIP reds, triaged on real geometry (read the §-log, not the exit code):
+- **arc_editable A9** — stale: `foldInsert`'s own rule is *own registered mesh wins over a catalog match*; the 1 matched
+  SampleHouse door folds its own 762-vertex mesh. Assertion now strict vertex-count. 8/1 → **9/0**.
+- **opening_slide 0/8** — ⚖ decided REFUSE (the no-invent default, reversible): fills come only from extracted IFC hosts and
+  every one carries a BAKED opening (host meshes 106/106/44 tris), so sliding would leave the hole behind. **Finding: the
+  #1710 slide was never reachable by a real user** — its witness passed only on box-folded hosts. S0 proves the refusal,
+  S1–S7 INCONCLUSIVE. → 2/0/7 INC. **⛔ OPEN for red1: build slide-on-real-walls?** (needs pre-boolean host body + the
+  opening as a GEOM_CUT void — the §CUT-MOVE machinery then carries it.)
+- **room_move T3** — on real meshes no filling centre lies inside any room footprint (nearest: window 13 at 6.2 mm, door 8
+  at 26 mm — they sit in the boundary walls); "SampleHouse has one" was a box artefact. T3 real-data + T3b constructed
+  counterfactual (excluded with fills, swept without). 9/1 → **11/0**.
+- **arc_3axis R1/R2**, **e2e_instpick P4** — green on the merged branch, no change needed.
+Then the two spec'd follow-ons:
+- **`_renderDiscAssembly`** — parts render only from a resolved `geometry_hash`; the Ø×length box is gone. `assemble()` emits
+  no mesh today ⇒ every part refused + `§DW-LOD400-REFUSE asm` logged. W-E2E-INSTPICK 8/0 (new P2c).
+- **ARC seed `§GEO-SERVED-DEGRADED`** — no geometry substrate ⇒ every element refused (`no-geometry-substrate`), nothing
+  seeded as a box, loud `§GEOM-HARDFAIL`. New W-SEED-NO-SUBSTRATE 3/0, RED on main (39 ops, 38 boxes).
+Regression: node sweep 51 → branch 46 green / main 35; only branch-vs-main regression W-DW-OPLOG (SampleHouse FP's 17
+hashless placements now refuse) retargeted to Duplex ELEC 102 real-mesh → 6/0. 13 browser witnesses green (list in PR).
+**Still open (needs red1):** catalog inserts fold a box at LOD200 or when the product has no mesh (527/794) — refusing
+them removes the LOD200 option + makes those products un-insertable; tied to row 14 / §CATALOG-REBIND. Pre-existing red,
+not touched: W-E2E-INSTHIDE H1-rig (no fixture pose on main too ⇒ its assembly leg H5–H8 unexercised); node
+dw_rot_units · git_history · terminal_walk · render_fidelity (red on main).
