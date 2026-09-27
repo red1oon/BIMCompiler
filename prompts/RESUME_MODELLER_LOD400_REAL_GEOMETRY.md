@@ -475,7 +475,7 @@ failure than a whole-layer clip; do not extend the exception to it.
    **▶ EXTRACTOR HALF SHIPPED 2026-07-30 — see §ANCHOR-EXTRACT-SHIPPED at the top of this file
    (witness 7/7 incl. RED falsification; SC patch SQL committed). Remaining: the bim-ootb
    seeding/invisible-mesh half.**
-2. **Clinic / Hospital / Terminal have no `rel_fills_host`** — their source IFCs are not in this checkout,
+2. ~~**Clinic / Hospital / Terminal have no `rel_fills_host`**~~ ✅ CLOSED by bim-ootb #1749 (2026-09-18) — see §ROW34 correction. Original (stale) text: their source IFCs are not in this checkout,
    so there is nothing to recover from. Not an oversight. When a source lands, one command finishes it:
    `python3 scripts/gen_rel_fills_host_patch.py --ifc <src> --target ~/bim-ootb/modeller/<X>_ARC.db --out <wt>/modeller/patches/<X>_ARC.db.sql`
    The generator imports `extract_rel_fills_host()` (one recovery implementation) and measures reach
@@ -1152,5 +1152,8 @@ dw_rot_units · git_history · terminal_walk · render_fidelity (red on main).
 - R4 falsify (one anchorOnly stripped in the bytes): anchors 64 · visible 3226 · gate 3226 · IFC 3226/64 · `verify=false`.
 Regression W-E2E-EXPORT-DB 6/6. sw v60→v61. Logs: session scratchpad `ancsave_run1.log`, `expdb.log`.
 **This file's LOD400 lane has no open build items left.** Still open elsewhere, not here: SampleCastle layer
-shipping (blocked on `sporenkap`'s honest refusal); per-layer slab colours (optional); `rel_fills_host` for
-Clinic/Hospital/HHS/Garage/Terminal (MODELLER_MASTER row 12 — blocked on locating their source IFCs).
+shipping (blocked on `sporenkap`'s honest refusal); per-layer slab colours (optional).
+⚠ CORRECTION (user, same day): `rel_fills_host` for the other residents is NOT open and was never blocked on
+sources — bim-ootb #1749 shipped HHS/Clinic/Hospital/Garage on 2026-09-18; Terminal's source authors no
+void/fill chain. The 'sources not in this checkout' line in §START HERE OPEN 2 was stale; always check
+`reference_source_ifc_locations` memory before repeating a 'source missing' claim.
