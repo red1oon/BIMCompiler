@@ -157,3 +157,24 @@ instrumented base; fix numbers on the same tree after. Pure refactors (3/6/8) mu
   `source=walker`, open 2 `source=cache`; the two `__dwBuf` are byte-identical (sha) and the IfcSpace/RM_ counts
   and Outliner room nodes are equal; `ms` of the room step (walk+export vs hash+get) side by side. First-open
   behaviour unchanged → witness_modeller_room_inject stays 17/0-shape (its runs use a fresh profile each resident).
+
+### §B1-ROW1 — one view-decoration registry re-applied after every re-fold (2026-09-27)
+- CONFLICT NOTED FIRST: bim-ootb `prompts/RESUME_MODELLER_POLISH3.md` §V1 documents eye-hide as a session lens that
+  "a re-walk/re-fold that rebuilds meshes resets it — documented, honest". It is not honest in practice: the Outliner's
+  `_hidden` set (and the find box's term) SURVIVE the re-fold, so the UI keeps saying hidden/filtered while the scene
+  shows the element visible/undimmed. Two honest options: re-apply (scene follows UI) or clear the UI state. This row
+  implements RE-APPLY as the orchestrator directed (the pattern review's row-1 fix); if red1 prefers reset, the change
+  is one registry entry each (`hidden`, `dim`) to swap for a UI clear.
+- WHAT: `modeller.html` gets `window.Bonsai.decor.register(name, fn)` + ONE `bonsai:refold` listener that runs every
+  entry in registration order and logs `§DECOR-REFOLD applied=[…]`. The three existing refold listeners (x-ray 667,
+  selection tint 1101, shadows 1412) become registrations (same functions, same order). Two new entries: `hidden`
+  (Outliner `_applyHidden()` when `_hidden` is non-empty — eye-hide + §I5 instance-hide + disc-bucket hide, it already
+  resets and re-applies deterministically and never reveals anchors) and `dim` (`dimExcept(lastSel)` while a find-box
+  dim is active; `dimExcept` now remembers its last selection). Not moved in this batch: `_redrawAllDiscWalks`'
+  direct `_xrayReapply` call, the `bonsai:oplog` duplicates of tint/shadows, per-mesh apply inside `_buildMesh`.
+- WITNESS CLAIM (W-PATTERN-DECOR-REFOLD, new, Duplex, real eye glyph + real #bo-find): H1 an eye-hidden element's NEW
+  mesh is still hidden after `oplog.scrubTo(cur-1)→scrubTo(cur)` (the slider's call) while the Outliner marks it
+  hidden; D1 the find-box dim survives the same re-fold. Both MUST be RED on the pre-fix tree (`refactor/pattern-batch1`
+  @671352f5) and GREEN after. H2/D2 (show / clear restore exactly) and A0 (no anchor revealed) guard the fix.
+  Regression: W-E2E-SEL-TINT-REFOLD, W-XRAY-SC-LIVE/DUPLEX, W-E2E-OLEYE, W-E2E-OLFILTER, W-E2E-INSTHIDE (if present),
+  W-E2E-SHADOWS (if present), W-E2E-CUT + the batch set.
