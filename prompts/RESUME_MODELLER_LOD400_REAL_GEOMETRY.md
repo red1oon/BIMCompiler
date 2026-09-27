@@ -475,7 +475,7 @@ failure than a whole-layer clip; do not extend the exception to it.
    **▶ EXTRACTOR HALF SHIPPED 2026-07-30 — see §ANCHOR-EXTRACT-SHIPPED at the top of this file
    (witness 7/7 incl. RED falsification; SC patch SQL committed). Remaining: the bim-ootb
    seeding/invisible-mesh half.**
-2. **Clinic / Hospital / Terminal have no `rel_fills_host`** — their source IFCs are not in this checkout,
+2. ~~**Clinic / Hospital / Terminal have no `rel_fills_host`**~~ ✅ CLOSED by bim-ootb #1749 (2026-09-18) — see §ROW34 correction. Original (stale) text: their source IFCs are not in this checkout,
    so there is nothing to recover from. Not an oversight. When a source lands, one command finishes it:
    `python3 scripts/gen_rel_fills_host_patch.py --ifc <src> --target ~/bim-ootb/modeller/<X>_ARC.db --out <wt>/modeller/patches/<X>_ARC.db.sql`
    The generator imports `extract_rel_fills_host()` (one recovery implementation) and measures reach
@@ -1052,3 +1052,108 @@ until this is on `main`.
   green" without a visual check. See `feedback_test_real_user_path_not_seams` memory.
 - Don't re-run the 32-file witness audit — it's done, 0 flagged, detail in this session's transcript if ever
   needed, not worth re-deriving.
+
+## §WALK-LOD400-ONLY — SPEC (2026-09-27, red1: "One first principle is no BBoxes or cubes, or LOD200 fallback. All must be LOD400 or fail hard")
+```
+SCOPE: bim-ootb modeller/modeller.html — _discWalkOne (gate before register/render/commit), _renderDiscWalk (no box path),
+_renderDiscAssembly (no box path). Reference-only harvest unchanged (Duplex/Terminal, WalkerDoctrine §2). Read the log after every run.
+```
+**Measured violation (2026-09-27, §DW-PRIM-LOD):** SampleCastle walks render ELEC 270 + ACMV 12 + PLB 84 = **366 LOD200 boxes**
+(legacy fallback walk after `§SCHED-FALLBACK`: placements carry no `device` and no `geometry_hash` — only a generic class, so no
+reference mesh can be bound without inventing). Duplex ELEC/PLB rendered `lod200=102/18` in runs where the walk resolved before
+`__dwGeoBuf` had loaded (race; `lod400=102` otherwise). FP borrowed from terminal_rules is already LOD400 on SampleCastle (126).
+§5's "POC = primitive box" is superseded by §11 / the unbreakable no-fake-LOD rule.
+**Rule:** a walked placement is kept ONLY if its `geometry_hash` resolves to a real mesh in the building's geo buffer. Otherwise it is
+REFUSED — not registered, not rendered, not committed — and logged `§DW-LOD400-REFUSE disc=… refused=N kept=M (class×count …)`.
+The gate first waits for the geo buffer (cap 60 s) so a resident's own meshes never refuse from a race. All refused → the walk
+returns the existing honest REFUSE path (0 fabricated). `_renderDiscWalk` never calls the box/LOD300 path; assembly parts with no
+real mesh are refused, not boxed. `§DW-PRIM-LOD` must read `lod300=0 lod200=0` on every walk.
+**Witness W-WALK-LOD400-ONLY:** SampleCastle ELEC/ACMV/PLB → lod200=0, all 366 refused and logged, 0 box meshes under dwRoot;
+SampleCastle FP → lod400=126 kept; Duplex ELEC walked immediately after open → lod400=102, lod200=0. RED on base (lod200=270).
+**Next (separate item):** ARC seed `§GEO-SERVED-DEGRADED` (geo fetch fails → measured bounding boxes rendered, arc_editable path)
+violates the same rule → must hard-fail/refuse instead.
+**§WALK-LOD400-ONLY — ✅ DONE (witness) 2026-09-27** on bim-ootb `test/modeller-net-audit` (no PR): W-WALK-LOD400-ONLY 7/0 (base 4/3).
+**§FOLD-NO-BOX — ✅ DONE (witness) 2026-09-27 PM, bim-ootb PR #1788 (auto-merge on) — see §FOLD-NO-BOX-DONE below. Original WIP note kept:** ⏸ WIP, PAUSED (red1) 2026-09-27. Finding: a reopened building folded every saved walk op as a box (Duplex 102/102) because
+`foldInsert` fell back to `boxArrays(bbox)` when `realGeomHash` was unregistered. Fix (committed WIP): fold throws §LOD400-REFUSE (never boxes);
+saved walk meshes registered from the building geo on open → 102/102 real after reload. Node witnesses now pass `registerGeometry` like production
+(5 recovered; sdg_gate 11/0 with A1 restated; arc_editable A3/A4-extent retired → W-ANCHOR-SWEEP, A10 = unit guard).
+**RESUME HERE — still red on the WIP:** arc_editable A9 (matched-catalog half), opening_slide 0/8 (slide rule requires a "plain axis-aligned box"
+host — real-mesh hosts refuse; decide: slide on real hosts vs refuse), room_move T3, arc_3axis_rotation R1/R2 (real=0 — check its own registration),
+e2e_instpick P4. Then: `_renderDiscAssembly` box parts, ARC seed §GEO-SERVED-DEGRADED bbox path, catalog inserts without a mesh (fold boxes;
+527/794 products have no matching mesh — tie to §CATALOG-REBIND). Preview ghosts/gizmos are UI, not element geometry.
+
+### ✅ §FOLD-NO-BOX-DONE — 2026-09-27 PM (bim-ootb `test/modeller-net-audit` → PR #1788, auto-merge on)
+The 5 WIP reds, triaged on real geometry (read the §-log, not the exit code):
+- **arc_editable A9** — stale: `foldInsert`'s own rule is *own registered mesh wins over a catalog match*; the 1 matched
+  SampleHouse door folds its own 762-vertex mesh. Assertion now strict vertex-count. 8/1 → **9/0**.
+- **opening_slide 0/8** — ⚖ decided REFUSE (the no-invent default, reversible): fills come only from extracted IFC hosts and
+  every one carries a BAKED opening (host meshes 106/106/44 tris), so sliding would leave the hole behind. **Finding: the
+  #1710 slide was never reachable by a real user** — its witness passed only on box-folded hosts. S0 proves the refusal,
+  S1–S7 INCONCLUSIVE. → 2/0/7 INC. **⛔ OPEN for red1: build slide-on-real-walls?** (needs pre-boolean host body + the
+  opening as a GEOM_CUT void — the §CUT-MOVE machinery then carries it.)
+- **room_move T3** — on real meshes no filling centre lies inside any room footprint (nearest: window 13 at 6.2 mm, door 8
+  at 26 mm — they sit in the boundary walls); "SampleHouse has one" was a box artefact. T3 real-data + T3b constructed
+  counterfactual (excluded with fills, swept without). 9/1 → **11/0**.
+- **arc_3axis R1/R2**, **e2e_instpick P4** — green on the merged branch, no change needed.
+Then the two spec'd follow-ons:
+- **`_renderDiscAssembly`** — parts render only from a resolved `geometry_hash`; the Ø×length box is gone. `assemble()` emits
+  no mesh today ⇒ every part refused + `§DW-LOD400-REFUSE asm` logged. W-E2E-INSTPICK 8/0 (new P2c).
+- **ARC seed `§GEO-SERVED-DEGRADED`** — no geometry substrate ⇒ every element refused (`no-geometry-substrate`), nothing
+  seeded as a box, loud `§GEOM-HARDFAIL`. New W-SEED-NO-SUBSTRATE 3/0, RED on main (39 ops, 38 boxes).
+Regression: node sweep 51 → branch 46 green / main 35; only branch-vs-main regression W-DW-OPLOG (SampleHouse FP's 17
+hashless placements now refuse) retargeted to Duplex ELEC 102 real-mesh → 6/0. 13 browser witnesses green (list in PR).
+**Still open (needs red1):** catalog inserts fold a box at LOD200 or when the product has no mesh (527/794) — refusing
+them removes the LOD200 option + makes those products un-insertable; tied to row 14 / §CATALOG-REBIND. Pre-existing red,
+not touched: W-E2E-INSTHIDE H1-rig (no fixture pose on main too ⇒ its assembly leg H5–H8 unexercised); node
+dw_rot_units · git_history · terminal_walk · render_fidelity (red on main).
+
+---
+
+## §ROW34-ANCHOR-SAVE — SPEC 2026-09-27 (MODELLER_MASTER row 34, re-verified against bim-ootb origin/main `363ba414` first)
+**Re-verify result (code read, not grep):**
+- **IFC export half — ALREADY CLOSED** by bim-ootb #1747 (`58bce229`, 2026-09-18): `bonsai_ifc.js:181`
+  `if (P.anchorOnly) { seedAnchors++; continue; }`, `§IFC-SEED … anchorsExcluded=N`, witness
+  `witness_ifc_export_seed.js` E4 ANCHORS-OUT asserts SampleCastle 65 excluded. Not re-opened.
+- **Save half — STILL UNWITNESSED.** `runSave()` (`modeller.html:2867`) → `Bonsai.exportDb()` (`:3113`)
+  writes the signed op-log bytes VERBATIM (`O.db.export()`), so the 65 `GEOM_INSERT params.anchorOnly`
+  ops are IN every Save/Native-.db snapshot. That is correct by construction — they are part of the
+  signed hash chain (dropping them breaks `verifyChain`) and the cascade needs them after re-open. So the
+  leak question is NOT "are they in the bytes" but **"does a re-opened snapshot still treat them as
+  anchors"** (invisible, out of every count/gate/export). The one save/re-open witness
+  (`witness_e2e_export_db.js` E4) runs on **Duplex = 0 anchors ⇒ VACUOUS for this question.**
+- Mechanism that SHOULD make it hold (read, unproven): `importBytes` (`bonsai_oplog.js:234`) re-folds
+  the ops; the fold keys on `params.anchorOnly` → `bonsai_kernel.js:257` invisible `userData.anchor`
+  mesh; `_gateBoxes` (`modeller.html:2710`) and IFC export both key on that flag, not on the seed-time
+  `window.__arcAnchorFids`.
+
+**BUILD (bim-ootb):**
+1. `§EXPORT-NATIVE` log line gains `anchors=N` (count of `GEOM_INSERT` ops whose parameters carry
+   `anchorOnly`, read from the SAME `O.db` bytes being exported) — the save path becomes §ANCHOR-tagged,
+   as the row-34 spec requires. Log-only, no behaviour change.
+2. Witness **W-E2E-ANCHOR-SAVE-ROUNDTRIP** (`modeller/tests/witness_e2e_anchor_save_roundtrip.js`),
+   SampleCastle, real `#b-open ▸ Open local .db…` door:
+   - **R0 NON-VACUOUS** — baseline anchor meshes == anchorOnly ops == 65, else INCONCLUSIVE (not PASS).
+   - **R1 TAGGED** — exported bytes carry exactly 65 anchorOnly ops AND `§EXPORT-NATIVE … anchors=65`.
+   - **R2 RE-OPEN STAYS ANCHORED** — after `oplog.clear()` + re-open from the file: 65 `userData.anchor`
+     meshes, all `visible=false`; visible-mesh count, `_gateBoxes` key count IDENTICAL to baseline.
+   - **R3 EXPORT AFTER RE-OPEN** — IFC build on the re-opened model: `seeded` == baseline,
+     `anchorsExcluded` == 65.
+   - **R4 FALSIFY** — the same bytes with ONE op's `anchorOnly` stripped, re-opened: anchors 64, visible
+     meshes baseline+1 (the flag in the bytes is what drives it; the witness sees a real leak), and
+     `verify=false` (the chain detects the tamper).
+**Done =** R0–R4 PASS, log read, PR merged. If R2/R3 FAIL, the leak is real → fix, RED-first.
+
+### ✅ §ROW34-ANCHOR-SAVE — DONE (witness) 2026-09-27, bim-ootb PR #1787 (`feat/anchor-save-roundtrip`, auto-merge on)
+**No leak. It was never a leak, only unproven.** W-E2E-ANCHOR-SAVE-ROUNDTRIP **6/6**, SampleCastle:
+- R0 baseline: 65 anchor meshes == 65 anchorOnly ops, 0 visible · 3225 visible meshes · 3225 gate boxes · IFC 3225 seeded + 65 excluded.
+- R1 snapshot 2,375,680 bytes carries 65 anchorOnly ops; `§EXPORT-NATIVE ops=3290 anchors=65 sealed=3290` (new tag;
+  RED on prior code by construction — the line had no `anchors=`).
+- R2/R3 after `clear()` + real Open-local-.db door: `verify=true`, every number above IDENTICAL.
+- R4 falsify (one anchorOnly stripped in the bytes): anchors 64 · visible 3226 · gate 3226 · IFC 3226/64 · `verify=false`.
+Regression W-E2E-EXPORT-DB 6/6. sw v60→v61. Logs: session scratchpad `ancsave_run1.log`, `expdb.log`.
+**This file's LOD400 lane has no open build items left.** Still open elsewhere, not here: SampleCastle layer
+shipping (blocked on `sporenkap`'s honest refusal); per-layer slab colours (optional).
+⚠ CORRECTION (user, same day): `rel_fills_host` for the other residents is NOT open and was never blocked on
+sources — bim-ootb #1749 shipped HHS/Clinic/Hospital/Garage on 2026-09-18; Terminal's source authors no
+void/fill chain. The 'sources not in this checkout' line in §START HERE OPEN 2 was stale; always check
+`reference_source_ifc_locations` memory before repeating a 'source missing' claim.
