@@ -2595,6 +2595,125 @@ primed after the final meter) rebound 0 — the late key is a different variant 
   (the first rule "< 20 % black" was mine without a source — tr4 3/14 samples over a 0-code background); film torch INFO when its upper-bound share
   < 1/255 (FIX 4 rule); arms gibound0 / metalpbr0 / csmsides0 / normrepair0; EDITED += glass_fresnel.js, streaming.js; D3 colour-truth rows.
  NOT MERGED to look (coordinator's call): the still gate is FAIL on the single G7 tr4 row; the bake gate is PASS.
+### ALTS-ALL FIX 17 SPEC (2026-09-28, pass 4) — G7 tr4: the glass is not the variable; the backdrop behind it is re-rolled every press
+ PROBE (photoreal_probes/alts_all4/seq4.js; one Terminal tab; §GLASS_ENV now logs capture# / capMeanL / exposureAtCapture / clonesEnvInt):
+  - the coordinator's suspect is RULED OUT by numbers: §GLASS_ENV recaptures on EVERY press (capture#1..#6, one per press), from the final
+    staged scene, linear HalfFloat, tone mapping not applied to a render target (exposureAtCapture 0.3825 = the pre-meter base on every
+    press, irrelevant to a linear capture), capMeanL at tr4 6.50e-2 / 6.77e-2 / 6.25e-2 over three presses (±4 %); the clones persist with
+    envMapIntensity 1.2, opacity 0.1, roughness 0.08 unchanged, and the same PMREM texture object.
+  - what DOES change: the scene BEHIND the panes. With glass materials invisible, the displayed background at the same 14 tr4 samples
+    reads 252.5/189.4/251.5/253.4 (press 1) vs 180.5/182.8/174.7/180.5 (press 3): the far hits are `MeshBasicMaterial` boxes at 132-153 m
+    whose object ids change every press (1443/1445 -> 1591 -> 1687/1688/1689) and cover different samples (6, 2, 9 of 14) — the
+    §PHOTO_PROPS skyline ring (effects.js _buildPhotoProps: 40 boxes, bw = 18 + Math.random()*32, bh = 20 + Math.random()*60, shade
+    Math.random), rebuilt on every press (_disposePhotoProps on real exit). A sample is sky (253) or a box (~180) by the roll.
+ RULE: §PHOTO_VARIATION (2026-07-16, user spec) already says ONE seed, A._photoPaintSeed, "drives every randomized presentation touch",
+  re-rolled per press while unlocked and locked by the cinema capture. The skyline's Math.random calls are outside that owner — an unowned
+  random. FIX: the skyline draws its sizes/shades from the same seed (the file's own _seededRand, keyed seed + box index). A still is then a
+  function of (build, pose, seed). Witness instrument: `&photoseed=<x>` (witness-only URL param) sets and locks A._photoPaintSeed at the
+  roll, so every press of every arm and the one-tab sequence render the same variation; the harness passes &photoseed=0.5 (logged in
+  §PHOTO_PAINT_SEED ... pinned=url). User behaviour without the param is unchanged (per-press variation while unlocked, now including the
+  skyline — which was already varying, only not through the owner).
+ WITNESS: G7 sequence tr4/tr5/tr6 as before (bounds unchanged); new G1 row "variation seed pinned (§PHOTO_PAINT_SEED pinned=url)".
+ ### ALTS-ALL FIX 18 SPEC (2026-09-28, colour-truth witness instrument; coordinator items 2a/2b)
+  (a) MEP-trade proxy population: a 4th pose `proxy` = the first (guid order, up to 80) IfcBuildingElementProxy whose extracted discipline is
+      an MEP trade, carrying the exporter placeholder, not porcelain, that is the FIRST opaque hit on the centre ray from 3 m horizontal /
+      +0.5 m (the toilet/beam anchor rule). The row reads the anchor's own pixels on the dense 32x32 grid in its screen box (was: the 48x27
+      frame grid, 1-4 px): saturation after > before + 0.1, >= 5 px each arm. At the other poses a < 5 px proxy sample prints INFO (the
+      population is judged where it is framed), not INCONCLUSIVE.
+  (b) toilet still at ONE exposure: after the metered press, the toilet pose is pressed again in each arm with the meter OFF
+      (`APP._stillMeter = false`, honoured by both builds: sourced_light.js stage/meterFinal log `§METER off (&meter=0) exposure=`), so
+      both arms render at the base exposure; row `stillFixed` = white (sat < 0.12) + p99 of the anchor > the matte arm, judged only if the
+      two logged exposures agree within 0.001 (else INCONCLUSIVE). The metered still prints INFO with both EV100. Every arm URL carries
+      &photoseed=0.5 (FIX 17; the BEFORE build ignores it).
+§ALTS_ALL_5 RESULT (Sonnet GPU run, 2026-09-28) — bim-ootb `fix/alts-all-3` @05d0ee7d (tree unchanged from §ALTS_ALL_3 except the two
+ witness-only commits already listed under ### ALTS-ALL FIX 17/18 above), sw v1478, served /tmp/wt-all3 :8642. Run: `--noise --film
+ A,A2,C,E,T --altc 90 --sequence` (matches the §ALTS_ALL_3 command exactly, confirmed via `--plan` against /tmp/alts_all4/run's raw
+ records before running). Logs /tmp/alts_all5/*.log.
+ §ALTS_ALL_VERDICT PASS — PASS=937 FAIL=0 INCONCLUSIVE=0 VACUOUS=0 NO-OP=0 SCOPE-BLIND=3 WARN=77 INFO=40. §BAKE_RELEASE_GATE PASS.
+ The pass-3 FAIL (G7 sequence tr4 carried-state) is now PASS: `p50 49.5 vs 49.7 (1st round 49.5) glass ratioP50 1 vs 1 compL 173.623
+ vs 171.483 meter 13.02 vs 13.05` — FIX 17's photoseed pin closed it. tr5/tr6 also PASS. All 19 G4 look bands PASS. SCOPE-BLIND (not
+ blocking, unchanged from pass-3): a202 shellreach2/skyshell0, hhs_z18 gridblend1 — all inside noise tolerance (0.1-0.2 vs tol 0.200).
+ §W_COLOUR_TRUTH_GPU — run 1 (BEFORE fix, log colour.log): FAIL judged=25 fail=1 inconclusive=0. The one FAIL (`Z20 toilet stillFixed:
+ porcelain pixels stay white + specular highlight` at fixed exposure 0.383) read mean 0,0,0 / sat 0.000 / p99 0.0 on BOTH arms — flagged
+ INSTRUMENT-SUSPECT (not a rendering regression: the SAME toilet pose's regular `canvas`/`still` (metered) modes gave real sensible
+ numbers on both arms just above it in the log; two different codebases producing byte-identical degenerate zero is far more consistent
+ with a harness timing/read bug in the newly-added FIX 18(b) re-press path than a shared app defect). Coordinator (red1) fixed the
+ harness, commit `0323302c` on fix/alts-all-3 (pins both arms to the AFTER arm's metered exposure via `&meter=0&stillexp=k`; an all-black
+ arm is now INCONCLUSIVE, never FAIL — no viewer code touched). Run 2 (log colour2.log) after that fix, tree confirmed @0323302c via
+ `git log -1`: **§W_COLOUR_TRUTH_GPU PASS judged=25 fail=0 inconclusive=0** — no non-PASS rows.
+ GPU: 0 OOM/context-lost across the whole run; per-press peaks 1.3-4.6 GiB of 8.2 (well inside budget).
+
+§RED1_STILLS_0928 A/B (PARTIAL — Sonnet GPU run, 2026-09-28; STOPPED mid-list on red1's URGENT priority to hand the GPU back for a
+ 30 s film bake, per his instruction; append-and-stop, no further presses were run after this point).
+ ⚠ SCOPE CAVEAT (read before trusting any BEFORE number below): BEFORE was meant to be a frozen v1464 snapshot (`/tmp/wt-look`, matching
+ the `"sw":"v1464"` every source PNG's own tEXt records) served read-only on :8654. Mid-run, red1/coordinator began live-editing
+ `/tmp/wt-look` on the SAME worktree (it is also his interactive :8624 tab) — first to `0323302c` (the colour-truth harness fix, no
+ viewer change) then to `9996bd46` ("hotfix: §GROUND_NOMAP_ALBEDO … + torch at rated max power", sw v1480), found via `git -C
+ /tmp/wt-look log -1` AFTER this batch's presses had already run. `serve_tree.js` reads files fresh off disk every request, so every
+ press below picked up WHATEVER commit was checked out at that instant — BEFORE is a **moving target**, not a controlled v1464 baseline,
+ for every row in this run. Where BEFORE ≈ AFTER below (duplex_28pct, castle_dormer) that is now explained: `0323302c` is a commit ON
+ fix/alts-all-3, the SAME branch AFTER serves — the two arms may have been running near-identical code by press time, not "the fix did
+ nothing." Where BEFORE and AFTER differ (ltu_dark1, hitos_4) the delta is a real measurement but of two POINTS ALONG A MOVING TIMELINE,
+ not a clean v1464-vs-fix diff — re-run against a re-frozen `/tmp/wt-look` before citing these as regression/improvement proof.
+ Completed (5 of 21, priority order honoured: LTU dark, Duplex 28%, HITOS over-exposure+ground, Castle glass, then next-in-list):
+ - **ltu_dark1** (LTU_AHouse, cam [-31.79,3.467,-28.134]): BEFORE(moving) p5/50/95 52/110.1/178.8 le15 0.066% EV100 n/a (indoor CIECAM02
+   line, no EV100 field) meanSat 0.270 | AFTER(fix-alts-all-3) p5/50/95 11.4/57.7/98 le15 12.763% EV100=16.71 exposure=0.1768 (-1.11
+   stops) meanSat 0.429. Both §FAULT glassOpaque=1 glassLow=1. Note: BEFORE's le15%=0.066 does NOT match red1's original v1464 reading
+   of 52.6% near-black for this pose — consistent with the moving-BEFORE caveat above (BEFORE had already picked up brightening fixes).
+ - **duplex_28pct** (Duplex, cam [-3.531,-0.868,3.254]): BEFORE p5/50/95 0.8/7/246 le15 61.28% clip{interiorPct 0.003% only, zone "6"} EV100
+   =12.72 exposure=2.805 (+2.87 stops) | AFTER p5/50/95 0.8/7/246 le15 61.29% — effectively IDENTICAL to BEFORE (both arms same branch
+   by press time, see caveat). §FAULT OK both arms (no fault flags) — the 28.2% clip red1 saw on his ORIGINAL v1464 capture is not
+   reproduced by either arm here; whatever fixed it landed before this run's BEFORE was captured. D1 classifies the clip that IS present
+   (39/37 px, 0.003%) as 100% interior-surface (zone "6"), 0% sky/exterior, 0% lamp-glow — not the 28.2% split red1's own capture showed.
+ - **hitos_4** (HITOS, cam [10.837,0.589,0.524], red1's "over exposure" pose): BEFORE p5/50/95 70.7/192.6/250 le15 0.001% clip 0.12%
+   (100% interior, zone "112" dominant) EV100=12.51 exposure=3.2507 (+3.09 stops) | AFTER p5/50/95 0/29.6/222.1 le15 37.15% clip 0.119%
+   — SAME meter line (EV100/exposure byte-identical both arms) but AFTER's composite is far darker (le15 37% vs 0.001%) despite identical
+   exposure: the difference is downstream of the meter, in the two builds' scene state, not a fresh over-exposure candidate-fix check
+   (the caveat applies here too — cannot attribute this cleanly to "AFTER" vs "BEFORE" since BEFORE may have out-run AFTER on fixes).
+   **HITOS ground — CONFIRMED LIVE, matches the DB-side prediction exactly:** both arms log `§GROUND_Y src=gf-storey-slab(u.etg)
+   z=27.63 y=-3.89`. Pre-computed via sqlite3 against `HITOS_extracted.db` (no IfcSite rows; exterior "Ytterdør" doors cluster at
+   z=24.2-24.7, the true grade): `tools.js` `_calcGroundY` Step 1 (`/tmp/wt-look` lines 8-91) DOES match storey `u.etg` (already in the
+   `gfNames` allowlist) but its "top-5-by-area, then lowest-of-5" rule picks slabs at z=28.02/28.02/27.76/27.80/27.63 that are tagged
+   `u.etg` in the DB yet sit at 1.etg's own elevation (1.etg wall_bottom_min=27.615, Δ0.015 m from the picked 27.63) — a storey-bucket
+   bleed in the source IFC (u.etg's own slabs legitimately span z 24.05-31.21, a mezzanine/double-height condition), not a tools.js
+   name-matching bug. The true entry-level slab (z 24.05-24.23, area 105.82) is smaller than 5 higher slabs sharing the label, so it
+   never enters the top-5 window the lowest-of-5 rule scans. Ground plane sits ~3.4-3.6 m (about one storey) too high. Identical on both
+   arms — confirmed by `diff` of `tools.js` lines 1-92 between `/tmp/wt-look` and `/tmp/wt-all3` (byte-identical) — a DATA/heuristic
+   defect, not something FIX 1-18 touched.
+ - **castle_dormer** (SampleCastle, external landing-page IFC, NOT Modeller-authored): BEFORE/AFTER effectively identical (moving-BEFORE
+   caveat) p50 61.2/61.3, EV100=8.58 exposure=49.57 (+7.02 stops, a very dark interior), §FAULT glassOpaque=22 both arms.
+   **glassOpaque=22 provenance (measured, all 22 identical both arms):** every hit is `ifc_class=IfcWindow` per `elements_meta`, mesh
+   material `MeshStandardMaterial transparent=false opacity=1`, each with a real authored solid colour (e.g. "dakkoepel 1000x" (dormer
+   window) colour `646557` olive-grey; two "stelkozijn" (window frame) instances `370d00` dark brown and `d8b17a` tan). `plates.glassDb=0
+   /glassMeshes=0` confirms this model has NO IfcPlate-based glazing at all. Detection is NOT missing anything by class convention — it
+   correctly flags IfcWindow — the SOURCE IFC exports these windows with a solid frame/pane material and no separate transparent glazing
+   sub-material, unlike Hospital/Terminal's IfcPlate-glass split. This is a source-model authoring characteristic, not an instrument gap.
+   **Dormer dark-speckle probe (contrary to the sloped-surface hypothesis, measured):** 162-164 isolated dark pixels found (L<=20,
+   neighbour contrast >=45), 60 raycast-sampled. Only **1 of 60** hit a genuinely sloped (non-axis-aligned) surface (maxAxis=0.906); the
+   other **59/60 hit AXIS-ALIGNED surfaces** — mostly `IfcDoor` meshes at normal=[1,0,0] (14) and unclassified mesh faces at normal=
+   [0,0,-1] (38, the largest single group) — all reporting zone=65535 (sentinel/solid) at the hit point. **31/60 samples showed a
+   SOLID/open flip** within one voxel-step (cell×0.6) along the surface tangent — real zone-lattice inconsistency, but on wall/door
+   faces near the dormer, not on the sloped roof itself as hypothesised. hueNoise 528 / hueCls {behindGlass:0 blackMat:0 other:64
+   miss:0} (both arms) — the "other" bucket (unclassified-by-material rainbow-edge pixels) dominates; not further split by this probe.
+
+**HITOS ground — URGENT diagnostic (Hospital, red1's outdoors-all-dark pose, 2026-09-28):** requested separately from the fleet A/B
+ above — different building (Hospital, not HITOS; filed here as it's the same ground/exposure diagnostic class of work this session.
+ Live LIVE-look code check, `/tmp/wt-look`, found at commit `9996bd46` at press time (NOT `0323302c` as first stated — it had already
+ moved forward again), a hotfix titled "§GROUND_NOMAP_ALBEDO (ground drew white × 2.3 albedo before its texture loaded → meter blacked
+ out outdoor views)" (sw v1480). Pose cam [-80.492,31.033,24.844] tgt [-6.162,-13.338,8.453] (red1's still …1790549015779: outdoors all
+ dark, p50 21, 42% near-black on whatever build he captured that on). MEASURED on `9996bd46`: **p5/50/95 = 24.3/82.1/144, le15%=0.79**
+ — i.e. the reported defect is NOT reproduced on this commit; p50 is 4x higher and near-black is 0.79% not 42%, consistent with the
+ hotfix's own stated purpose already having fixed this exact symptom. `§METER` (final): `EV100bands[70/95=16.23 40/90=15.77
+ 10/90=15.23] Lavg=7006.8cd/m2 EV100=15.77 exposure=0.3379 vs base 0.383 = -0.18 stops skyPx=0/14400 pixels=7201 hidden=36`. `§METER_STATE`
+ (final): `ground=5e5e5e gain=2.30 map=0 vis=1 sunI=4.400 ... bandL=3.083e-1 noGroundL=2.984e-1 groundShare=0.032 noGroundSkyPx=8604`.
+ skyPx=0/14400 at both meterband settings — this camera angle frames zero sky pixels in the metered buffer. With `&meterband=70,95`:
+ p5/50/95=17.3/67.8/121.1, le15%=2.89%, `§METER` EV100=16.23 exposure=0.2469 (-0.63 stops), Lavg=9590.4cd/m2. Sky-exclusion witness
+ switch: none exists in the code (checked `sourced_light.js` `meter()`/`meterband` handling — `&meterband=lo,hi` reweights the
+ percentile band read from the SAME buffer, it does not remove sky pixels) — third press skipped per instruction.
+
+**Z22 bake-speed GPU witness — NOT YET RUN.** Queued last in this session's plan (BEFORE=/tmp/wt-all3 @05d0ee7d, AFTER=/tmp/wt-speed
+ fix/bake-speed @9a271b18 sw v1479); prep complete (DBs symlinked into `/tmp/wt-speed/buildings/`, fix code confirmed present in AFTER /
+ absent in BEFORE, a red-control-tested judge script written) but the GPU was reclaimed for red1's own priority work before this ran.
 ### MEP GREY + COLOUR-TRUTH RESULT (Opus GPU, 2026-09-27) — see ### MEP GREY (Hospital nav) under §ZERO LIST for the nav check.
 ### COLOUR-TRUTH RESULT — `node viewer/tests/witness_colour_truth_gpu.js 8650 8651` from /tmp/wt-colour (BEFORE = /tmp/wt-look @53128dd3 sw v1464
  :8650 read-only, AFTER = fix/colour-truth @564066f5 sw v1476 :8651; log photoreal_probes/alts_all2/witness_colour_truth_gpu.log).
