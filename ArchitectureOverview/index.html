@@ -1,0 +1,3278 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Architecture overview of the BIM Compiler and bim-ootb for outside reviewers — parts, data, flows, verification, known limits, how the methods evolved, and lessons for others. Every claim cites a file.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+      
+        <link rel="prev" href="../TeamsOverlayGuide/">
+      
+      
+        <link rel="next" href="../FoldEngineBlackBook.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Architecture Overview (for reviewers) - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bim-compiler-architecture-overview" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture Overview (for reviewers)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href=".." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-purpose-and-how-to-read-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Purpose and how to read this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-core-idea-a-building-is-its-bill-of-materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Core idea: a building is its Bill of Materials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-system-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. System map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-data-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Data layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-compile-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Compile pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-viewer-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Viewer runtime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-4d-to-7d-schedule-cost-and-the-gantt-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 4D to 7D: schedule, cost and the Gantt editor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-erp-layer-and-the-bim-to-erp-fold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. ERP layer and the BIM-to-ERP fold
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-verification-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Verification model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-deployment-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Deployment and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-known-limits-open-risks-and-how-to-extend-safely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Known limits, open risks, and how to extend safely
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-how-the-methods-evolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. How the methods evolved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-lessons-for-others" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Lessons for others
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-glossary-and-where-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Glossary and where to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host (DIY installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-purpose-and-how-to-read-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Purpose and how to read this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-core-idea-a-building-is-its-bill-of-materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Core idea: a building is its Bill of Materials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-system-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. System map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-data-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Data layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-compile-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Compile pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-viewer-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Viewer runtime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-4d-to-7d-schedule-cost-and-the-gantt-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 4D to 7D: schedule, cost and the Gantt editor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-erp-layer-and-the-bim-to-erp-fold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. ERP layer and the BIM-to-ERP fold
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-verification-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Verification model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-deployment-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Deployment and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-known-limits-open-risks-and-how-to-extend-safely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Known limits, open risks, and how to extend safely
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-how-the-methods-evolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. How the methods evolved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-lessons-for-others" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Lessons for others
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-glossary-and-where-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Glossary and where to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="bim-compiler-architecture-overview">BIM Compiler — Architecture Overview<a class="headerlink" href="#bim-compiler-architecture-overview" title="Permanent link">&para;</a></h1>
+<p><em>As of 2026-09-28 · written for outside engineers and domain experts</em></p>
+<h2 id="1-purpose-and-how-to-read-this">1. Purpose and how to read this<a class="headerlink" href="#1-purpose-and-how-to-read-this" title="Permanent link">&para;</a></h2>
+<p>The BIM Compiler treats a building as a compiled program. An IFC model is broken down into a Bill of Materials (BOM) tree, rebuilt by deterministic arithmetic, and checked element by element against the source. The same data then drives schedule, cost and ERP views in a browser, with no server.</p>
+<p><strong>Who this is for.</strong> An outside engineer or domain expert who must understand, assess or extend the system without the author in the room.</p>
+<p><strong>What it covers.</strong> The current design: parts, data, flows, verification and known limits. Every statement cites a file in <code>bim-compiler</code> or <code>bim-ootb</code>.</p>
+<p><strong>What it leaves out.</strong> History, except for sections 12–13, which summarise how the methods evolved. The repos hold about 6,600 commits and 332 prompt files, and many earlier decisions have been superseded. If a prompt file disagrees with this document, check the cited code first. If the code agrees with the prompt file, this document is out of date.</p>
+<p><strong>The system in one paragraph.</strong> There are two repositories:</p>
+<ul>
+<li><code>bim-compiler</code> (Java 17, SQLite, Python scripts) is the compiler backend. It extracts IFC, mines rules, compiles BOMs and runs the seven proof gates (G0–G6).</li>
+<li><code>bim-ootb</code> is the browser app (JavaScript, sql.js WASM, Three.js). It holds the Viewer, the Modeller and a browser ERP kernel descended from iDempiere.</li>
+</ul>
+<p>Both work on SQLite files. By the README's own figures, 35 real buildings have been compiled, the largest with 126K elements, and the browser code runs to about 90K lines (<a href="https://github.com/red1oon/BIMCompiler">README</a>). Those figures are self-reported and should be re-measured before anyone relies on them.</p>
+<h2 id="2-core-idea-a-building-is-its-bill-of-materials">2. Core idea: a building is its Bill of Materials<a class="headerlink" href="#2-core-idea-a-building-is-its-bill-of-materials" title="Permanent link">&para;</a></h2>
+<p>The system rests on one model. A building is a recursive BOM, and every element's position is the sum of parent-relative offsets. It is decomposed from real IFC, recompiled by arithmetic, and verified against the source per element. Source: <a href="../SpatialCompilationPaper/">Spatial Compilation paper</a>, priority date 2026-03-30.</p>
+<p><strong>Recursion.</strong> A BOM has one parent, N children and a quantity for each. Each child can itself be a BOM: building → floor → room → furniture → leaf. Each level is atomic and self-contained (<code>CLAUDE.md</code> §BOM PRINCIPLE). The table model is iDempiere's <code>M_BOM</code> / <code>M_BOM_Line</code>, extended with three offset columns (paper §2.4).</p>
+<p><strong>Tack convention (paper §3.1).</strong> Each BOM line carries <code>dx, dy, dz</code>: the child's offset from its parent, in metres, measured from the left-bottom-down (LBD) corner. The element's centroid is:</p>
+<div class="highlight"><pre><span></span><code>centroid = parent_anchor + (dx, dy, dz) + (W/2, D/2, H/2)
+</code></pre></div>
+<p>The rule can be inverted: the offset equals the child's LBD corner minus the parent's. That is how extraction turns an IFC model into a BOM. Compiling is a depth-first walk that adds up anchors and applies each level's rotation.</p>
+<p><strong>Identity.</strong> Each compiled element keeps its IFC GlobalId (GUID) through a Material Allocation table. Verification is therefore per element, not a bulk statistic. The paper reports a worst-case error of 0.002 mm across 1,653 element pairs in a 58-element house (paper §4.3). That error comes from double-precision arithmetic and is far below the 1 mm construction tolerance.</p>
+<p><strong>Three Concerns never merge (<code>docs/MANIFESTO.md</code>, <code>CLAUDE.md</code>).</strong></p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Holds</th>
+<th>Tables / files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WHAT</td>
+<td>Orders, categories, products</td>
+<td><code>M_Product</code>, <code>M_Product_Category</code></td>
+</tr>
+<tr>
+<td>HOW</td>
+<td>Recipes, attribute sets, validation</td>
+<td>BOMs, rules DBs</td>
+</tr>
+<tr>
+<td>WHERE</td>
+<td>Compiled placement for downstream use</td>
+<td><code>output.db</code> (4D–8D)</td>
+</tr>
+</tbody>
+</table>
+<p>With this split, swapping a product (WHAT) never touches a recipe (HOW), and neither is rewritten when the output is projected (WHERE).</p>
+<p><strong>Dimensional folding (paper §5.6).</strong> 4D to 8D are projections of the same BOM, not separate models:</p>
+<ul>
+<li>schedule comes from BOM depth and support order;</li>
+<li>cost is leaf quantities × prices;</li>
+<li>compliance is constraint rules applied to the fold.</li>
+</ul>
+<p>The ERP layer (section 8) applies the same idea to business records.</p>
+<p><strong>Rosetta Stones.</strong> Rules are mined from reference buildings of three types: small residential (SH), multi-storey residential (DX) and large institutional (TE, the Terminal). A new building of a matching type takes its BOM structure from its stone through category matching (paper §2.5). Matching across types is recorded as not yet specified (paper §2.6, Gap 2).</p>
+<h2 id="3-system-map">3. System map<a class="headerlink" href="#3-system-map" title="Permanent link">&para;</a></h2>
+<p>The system is two repositories joined by SQLite files. The backend compiles and proves buildings. The browser apps read the resulting DBs from OCI, and their code is served as static files. No application server runs anywhere.</p>
+<p><img alt="System map: bim-compiler (Extract IFC → IFCtoBOM → DAGCompiler → Gates G0–G6) sends building DBs to OCI; GitHub Pages serves app code; bim-ootb holds Viewer, ERP kernel and Modeller on sql.js" src="../img/architecture_system_map.png" /></p>
+<p>The compiler runs top to bottom. Viewer DBs from extraction go to OCI, and the browser apps load them through sql.js. The Viewer's 4D/5D data folds into the ERP kernel (section 8).</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Repo path</th>
+<th>Size</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compiler (Java)</td>
+<td><code>DAGCompiler/</code>, <code>IFCtoBOM/</code>, <code>ORMSandbox/</code>, <code>orm-core/</code> + 6 more modules</td>
+<td>1,288 Java files</td>
+<td><code>find</code>, excluding <code>target/</code> and worktrees</td>
+</tr>
+<tr>
+<td>Extraction + tooling</td>
+<td><code>scripts/</code>, <code>IFCtoBOM/</code></td>
+<td>218 Python files</td>
+<td><code>find</code></td>
+</tr>
+<tr>
+<td>Viewer</td>
+<td><code>bim-ootb/viewer/</code></td>
+<td>504 JS files, about 280K lines (173 top-level files, about 139K lines)</td>
+<td><code>find</code> + <code>wc</code></td>
+</tr>
+<tr>
+<td>ERP</td>
+<td><code>bim-ootb/erp/</code></td>
+<td><code>ad_full.db</code>, <code>ad_parser.js</code></td>
+<td><code>docs/internal/ERP.md</code></td>
+</tr>
+<tr>
+<td>Modeller</td>
+<td><code>bim-ootb/modeller/</code></td>
+<td>kernel + op-log + grid modules</td>
+<td><code>docs/BIM_Modeller_OOTB.md</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each browser app has its own service worker for offline use: Viewer <code>v1449</code>, ERP <code>v793</code>, Modeller <code>v61</code> (<code>CACHE_VERSION</code> in each <code>sw.js</code>). <code>bim-ootb</code> HEAD was <code>b6b7c9c9</code> on 2026-09-27 when these counts were taken.</p>
+<h2 id="4-data-layer">4. Data layer<a class="headerlink" href="#4-data-layer" title="Permanent link">&para;</a></h2>
+<p>All state lives in SQLite files. On the compiler side there are four kinds of database with more than 120 tables in all. Catalog, ERP metadata, recipe and output never share a file, which is how the Three Concerns are enforced physically (<code>docs/internal/DATA_MODEL.md:5–24</code>, <code>:589</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Database</th>
+<th>Holds</th>
+<th>Written by</th>
+<th>Read by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{PREFIX}_BOM.db</code> (e.g. <code>SH_BOM.db</code>)</td>
+<td>Per-building recipe: <code>C_DocType</code>, <code>m_bom</code> (headers + origin), <code>m_bom_line</code> (type-level lines, not instances)</td>
+<td>IFCtoBOM Java pipeline</td>
+<td>Compiler, read-only (<code>DATA_MODEL.md:178–284</code>)</td>
+</tr>
+<tr>
+<td><code>component_library.db</code></td>
+<td>Product catalog + geometry: <code>I_Element_Extraction</code>, <code>M_Product</code>, <code>M_Product_Image</code>, <code>LOD_Object</code> mesh BLOBs</td>
+<td><code>ProductRegistrar.ensureProductCatalog()</code></td>
+<td>Compiler, viewer export (<code>:313–380</code>)</td>
+</tr>
+<tr>
+<td><code>ERP.db</code></td>
+<td>Discipline metadata + compliance: <code>AD_Org</code>, <code>M_Product_Category</code>, <code>ad_val_rule</code> (415 mined + 63 authored), <code>AD_Clash_Rule</code>, <code>AD_Occupancy_Class</code></td>
+<td>Rule mining, migrations</td>
+<td>Compiler validation, browser ERP (<code>:22</code>, <code>:579</code>)</td>
+</tr>
+<tr>
+<td><code>output.db</code></td>
+<td>One compile's result: <code>c_order</code>, <code>c_orderline</code>, <code>elements_meta</code>, <code>elements_rtree</code>, <code>element_instances</code>, <code>base_geometries</code></td>
+<td><code>PlacementCollectorVisitor</code>, fresh on every compile</td>
+<td>Gates, 4D–8D projections (<code>:382–420</code>)</td>
+</tr>
+<tr>
+<td><code>duplex_rules.db</code>, <code>terminal_rules.db</code></td>
+<td>Mined walker rules by building class</td>
+<td><code>run_RosettaStones.sh</code>, <code>onboard_ifc.sh</code></td>
+<td><code>disc_walker</code> (section 5)</td>
+</tr>
+<tr>
+<td><code>*_extracted.db</code> / <code>*_library.db</code> / <code>*_geo.db</code> / <code>*_meta.db</code></td>
+<td>Viewer-side building data. One file can be served as both extracted and library.</td>
+<td>Extraction + export</td>
+<td>Browser Viewer (<code>bim-ootb docs/internal/SQLite3D_Schema.md:147</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>In <code>output.db</code>, each placement is <code>anchor = origin + Σ(line.dx + child.origin)</code> (<code>DATA_MODEL.md:395–401</code>). That is the tack rule from section 2 as it appears in code.</p>
+<p><strong>Changing a database.</strong> Binary <code>.db</code> commits are banned. A change ships in one of two ways:</p>
+<ul>
+<li><strong>Schema and rules DBs</strong> get an idempotent SQL script in <code>migration/</code>, which holds 186 files. Existing migrations are append-only. The one exception is <code>DV_&lt;prefix&gt;_rules.sql</code>, which is regenerated by mining.</li>
+<li><strong>Deployed building DBs</strong> get a SQL patch at <code>&lt;dir&gt;/patches/&lt;dbFile&gt;.sql</code>. The app applies it on every load (<code>bim-ootb modeller/str_walker_outliner.js:751–792</code>, <code>viewer/scene.js:1781–1810</code>). It runs on every load because a cached copy may predate the fix. Statements are fed in chunks of about 500, because one very large string crashes the bundled <code>sql-wasm.wasm</code>.</li>
+</ul>
+<p>A full rebuilt building DB goes to OCI, never to git (section 10).</p>
+<p><strong>Open discrepancy:</strong> <code>mesh.db</code> appears in <code>CLAUDE.md</code> as a 120 MB LFS file in <code>bim-ootb/modeller/</code>, but the compiler's data docs never name it.</p>
+<h2 id="5-compile-pipeline">5. Compile pipeline<a class="headerlink" href="#5-compile-pipeline" title="Permanent link">&para;</a></h2>
+<p>Adding a new building takes eight scripted stages. The only hand-written input is one YAML classification file per building (<code>scripts/onboard_ifc.sh:49–50</code>). The pipeline ends in seven gates "proving the compiler extracts and compiles, never invents" (<code>RosettaStoneGateTest.java:36</code>).</p>
+<p><strong>Stages</strong> (<code>scripts/onboard_ifc.sh:5–15</code>):</p>
+<ol>
+<li><strong>Recon:</strong> <code>ifc_recon.py</code> surveys the IFC. Python 3 with IfcOpenShell is required.</li>
+<li><strong>Extract:</strong> <code>extract.py</code> writes <code>{type}_extracted.db</code>.</li>
+<li><strong>Skeleton:</strong> the hand-written <code>classify_XX.yaml</code> and a generated <code>dsl_XX.bim</code>.</li>
+<li><strong>Manifest:</strong> the building is registered in <code>scripts/construction_manifest.yaml</code>.</li>
+<li><strong>Gate scope:</strong> the building is registered in <code>BuildingRegistryTest</code> and <code>RosettaStoneGateTest</code>.</li>
+<li><strong>Pipeline:</strong> <code>run_RosettaStones.sh</code> extracts to <code>*_BOM.db</code>, compiles to <code>output.db</code> and runs the gates. It builds with <code>mvn install -pl orm-core,ORMSandbox</code>, then <code>mvn compile -pl DAGCompiler</code> (<code>:120–132</code>).</li>
+<li><strong>Validation rules:</strong> <code>extract_validation_rules.sh</code>.</li>
+<li><strong>Report:</strong> <code>rosetta_report.sh</code>.</li>
+</ol>
+<p><strong>The compiler.</strong> <code>BuildingCompiler.java</code> (<code>DAGCompiler/.../dsl/BuildingCompiler.java:47</code>) turns a <code>BuildingDefinition</code> into a <code>BuildingSpec</code> with geometry. It works with:</p>
+<ul>
+<li><code>SpaceSolver</code>, which places rooms that have no position (it uses the Choco constraint solver);</li>
+<li><code>MEPSystem</code> and <code>Discipline</code>;</li>
+<li>the building-code checks under <code>validation.building.*</code>, with IRC 2021 stair, door and window constants in <code>BIMConstants</code>.</li>
+</ul>
+<p>The file is listed as a "Sacred File" in <code>CLAUDE.md</code>.</p>
+<p><strong>The gates</strong> (<code>RosettaStoneGateTest.java:38–46</code>). They apply per building through <code>GATE_SCOPE</code>, which lists 29 document-type tags (<code>:62</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Checks</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G0 COMPILED</td>
+<td>The output has at least one <code>c_order</code> row, so it is not extraction-only</td>
+<td><code>:96–113</code></td>
+</tr>
+<tr>
+<td>G1 COUNT</td>
+<td>Element count, reference = output</td>
+<td><code>:40</code></td>
+</tr>
+<tr>
+<td>G2 VOLUME</td>
+<td>Total bounding-box volume within ±0.1%</td>
+<td><code>:199–202</code></td>
+</tr>
+<tr>
+<td>G3 DIGEST</td>
+<td>Spatial SHA-256 per element, reference vs compiled</td>
+<td><code>:42</code></td>
+</tr>
+<tr>
+<td>G4 TAMPER</td>
+<td>Self-inspection: 20 rules (T1–T20) over source and git history</td>
+<td><code>:415</code></td>
+</tr>
+<tr>
+<td>G5 PROVENANCE</td>
+<td>Every output element traces to the library (material + geometry)</td>
+<td><code>:44</code></td>
+</tr>
+<tr>
+<td>G6 ISOLATION</td>
+<td>Spatial containment; no metadata leaks between buildings</td>
+<td><code>:612–616</code></td>
+</tr>
+</tbody>
+</table>
+<p>No CI job runs these gates. Keeping them green before a commit is a local discipline (<code>CLAUDE.md</code> §Sacred Files).</p>
+<p><strong>Walkers.</strong> Walkers generate or place elements from mined rules instead of copying them from a source model (<code>docs/internal/WalkerDoctrine.md</code>).</p>
+<ul>
+<li><code>disc_walker</code> is one engine for every discipline (Placer, Router, Gate). The discipline is a data filter (<code>WHERE disc=?</code>), never a separate code path.</li>
+<li><code>room_walker</code> finds rooms by rasterising the wall and door footprints of each storey and flood-filling from outside (<code>bim-ootb viewer/lib/room_walker.js:1–16</code>).</li>
+<li>
+<p>Rules are chosen by building class, never per building:</p>
+<ul>
+<li><code>duplex_rules.db</code> for small residential buildings (Sample House, Duplex, Sample Castle);</li>
+<li><code>terminal_rules.db</code> for complex LOD400 buildings (Terminal, Clinic, Hospital).</li>
+</ul>
+<p>The Terminal rules can also lend a discipline that residential rules lack, such as sprinklers, through <code>dwBorrow</code>.</p>
+</li>
+</ul>
+<p><strong>Known trap:</strong> <code>disc_walker.dwInit()</code> defaults to <code>terminal_rules.db</code>, so a residential caller must pass <code>duplex_rules.db</code> explicitly (<code>WalkerDoctrine.md</code> §1).</p>
+<p><strong>Fleet on disk.</strong> There are 23 <code>classify_*.yaml</code> files in <code>IFCtoBOM/src/main/resources/</code>. They include Sample House (SH), Duplex (DX), Airport Terminal (TE), Clinic (CN), Schependomlaan (SC), FZK-Haus (FK) and two IFC Infra samples, a bridge (BR) and rail (RL). The paper claims 35 buildings, and <code>GATE_SCOPE</code> lists 11 tags with no YAML on disk. Those three numbers have not been reconciled.</p>
+<h2 id="6-viewer-runtime">6. Viewer runtime<a class="headerlink" href="#6-viewer-runtime" title="Permanent link">&para;</a></h2>
+<p>The Viewer is a static web app. SQLite runs in the page through sql.js (WebAssembly), Three.js r186 draws the model, and a service worker keeps it working offline. Building DBs are fetched from OCI and cached in IndexedDB.</p>
+<p><strong>How a building loads.</strong></p>
+<ol>
+<li><code>viewer/loader.js:6–8</code> loads <code>lib/sql-wasm.wasm</code>, falling back to the jsDelivr copy of <code>rtree-sql.js@1.7.0</code>.</li>
+<li><code>db_resolve.js</code> works out the building's URL, retries against OCI, and applies the IndexedDB cache-key rules.</li>
+<li><code>A._applyPendingPatch()</code> applies any SQL patch for that DB (<code>scene.js:1781–1810</code>, section 4).</li>
+<li><code>streaming.js</code> streams geometry from SQLite BLOBs into batched and instanced meshes.</li>
+<li><code>scene.js</code> (3,519 lines) owns the scene, camera, controls, lighting and ground.</li>
+</ol>
+<p><strong>Level of detail</strong> (<code>viewer/dlod.js:6–20</code>). Culling works per slot and per instance against the view frustum. <code>BatchedMesh</code> slots are hidden with <code>setVisibleAt</code>, and <code>InstancedMesh</code> instances outside the view are scaled to zero so the GPU skips them. It re-evaluates every 6 frames and only switches on above 5,000 elements.</p>
+<p><strong>Other modules.</strong> Each is a top-level file in <code>viewer/</code>: <code>time_machine.js</code> (4D/5D playback and the Gantt editor, section 7), <code>panels.js</code>, <code>city.js</code>, <code>import.js</code> (import of IFC, OBJ, DAE, GLB, FBX and STL), and <code>room_walker.js</code> in <code>lib/</code>.</p>
+<p><strong>Offline.</strong> <code>viewer.html</code> links a web manifest and registers <code>sw.js</code>. Every deploy must bump <code>CACHE_VERSION</code>. Otherwise users keep running stale code, which is the error recorded in §CRISIS (section 9).</p>
+<p><strong>Measured browser limit</strong> (<code>prompts/IFC_LARGE_PRIVATE_STRESS_TEST.md</code>, closed 2026-07-30). Importing IFC in the browser hits the 4 GB WebAssembly (wasm32) memory ceiling. A real Chrome Web Worker failed at 63,608 elements, while Node on the main thread reached 125,570. A 2.0 GB IFC (KUL070, 66,214 elements) was extracted without loss by splitting it into 8 regions, recovering 100% of GUIDs. The earlier suspect, a call-stack overflow in <code>.apply()</code>, was real but minor.</p>
+<p><strong>Doc drift to note.</strong> <code>GH_DEPLOY.md</code> says <code>viewer/*.js</code> has about 80 files, but there are now 173. A comment in <code>scene.js:34</code> names Three.js r184, while the shipped library is r186.</p>
+<h2 id="7-4d-to-7d-schedule-cost-and-the-gantt-editor">7. 4D to 7D: schedule, cost and the Gantt editor<a class="headerlink" href="#7-4d-to-7d-schedule-cost-and-the-gantt-editor" title="Permanent link">&para;</a></h2>
+<p>The schedule is derived from the model, not drawn by hand. A declared task template is filled with the building's elements, which are ordered by physical support. Durations come from labour rates, and a critical-path (CPM) solve sets the dates. The Time Machine plays the result or lets the user edit it as a Gantt chart. Canonical spec: <code>prompts/4D_MODEL_INTEGRITY.md</code> (read §L, then §A). Since 2026-08-27 the canonical model is the <strong>template path</strong>. The older zone-derivation path is labelled <code>legacy-deriveZones</code>.</p>
+<p><strong>Who owns each question</strong> (§I, <code>4D_MODEL_INTEGRITY.md:460–491</code>). Paths are relative to <code>bim-ootb/viewer/</code>. The rule: call the owner, never re-derive the answer.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does S support T?</td>
+<td><code>support_sweep.js:384 _contactGraph()</code></td>
+</tr>
+<tr>
+<td>Which one thing supports T?</td>
+<td><code>support_sweep.js:432 _designatedSupport()</code></td>
+</tr>
+<tr>
+<td>Is anything floating?</td>
+<td><code>support_sweep.js:500 _midairAudit()</code> and <code>schedule_gate.js:1147 auditFloating()</code></td>
+</tr>
+<tr>
+<td>Does T rest on soil?</td>
+<td><code>schedule_gate.js:1210</code> (<code>T.seq !== 1</code>)</td>
+</tr>
+<tr>
+<td>Phase and trade of an element</td>
+<td><code>schedule_author.js</code> <code>matchNameOverride()</code> / <code>matchRule()</code>, tables in <code>rates.js</code></td>
+</tr>
+<tr>
+<td>Install duration</td>
+<td><code>schedule_author.js:78 _installSecs()</code> with labour rates from <code>rates.js</code></td>
+</tr>
+<tr>
+<td>The task grid</td>
+<td><code>schedule_author.js:425 instantiateTemplate()</code> from <code>rates/4D_template.json</code></td>
+</tr>
+<tr>
+<td>Authored schedule</td>
+<td><code>schedule_author.js:924/965 remapSolveToTasks()</code> / <code>_writeTemplateSchedule()</code></td>
+</tr>
+<tr>
+<td>CPM solve</td>
+<td><code>cpm_schedule.js:796 run()</code></td>
+</tr>
+</tbody>
+</table>
+<p>Known duplicates, flagged in §I:</p>
+<ul>
+<li><code>cpm_schedule.js:81</code> carries a copy of <code>_contactGraph</code>, which a parity witness keeps equal to the original (closed 2026-09-15).</li>
+<li><code>schedule_gate.js:338/404</code> is the old, broken level-derivation path.</li>
+<li><code>schedule_gate.js:382 deriveStoreyMergeMap()</code> was measured as non-functional across the fleet.</li>
+<li><code>rates/sequence_rules.json</code> is a dead mirror of the tables in <code>rates.js</code>.</li>
+</ul>
+<p><strong>Data path, template to bars</strong> (<code>4D_MODEL_INTEGRITY.md:1867–1874</code>):</p>
+<ol>
+<li><code>instantiateTemplate</code> builds the task grid.</li>
+<li><code>_writeTemplateSchedule</code> persists <code>tasks</code>, <code>task_elements</code> and <code>task_sequences</code>.</li>
+<li><code>time_machine.js:5290 buildTaskIndex()</code> reads those tables.</li>
+<li><code>gantt_model.js:96 buildTasks()</code> draws the bars.</li>
+</ol>
+<p>The Time Machine plays a <strong>played</strong> layer, which is separate from the <strong>authored</strong> <code>displaySchedule</code>. Edits are checked by <code>verifyGanttIntegrity()</code> (<code>time_machine.js:4395</code>) against the floating-element audits, relative to a locked baseline.</p>
+<p><strong>Edit witnesses.</strong> <code>witness_gantt_edit_coherence</code>, <code>witness_gantt_lock_integrity</code>, <code>witness_tm_edit_exception</code> (23/0), <code>witness_undo_dot_spawn</code> and <code>witness_whatif_authored_sync</code>. The spec records two open caveats:</p>
+<ul>
+<li>the flagship coherence witness (11/0) runs a configuration the browser never runs, and never asserts the actual move (<code>:2135</code>);</li>
+<li><code>witness_gantt_edit_undo</code> (9/0) still runs on the legacy model (<code>:2140</code>).</li>
+</ul>
+<p>A standalone <code>schedule_editor_ui.js</code> exists but is unverified (<code>:1800</code>).</p>
+<p><strong>Cost (5D)</strong> (<code>prompts/SETTINGS_5D_COST.md</code>). <code>_projectCost()</code> reads quantities from <code>qto_cache</code> (for example, the Hospital) or from <code>m_bom_line</code> (for example, Sample House). It takes rates from an AD price list (<code>m_pricelist</code>). An item with no price is marked <code>rateSource=TBD</code>, never estimated.</p>
+<p><strong>6D and 7D.</strong> The paper treats carbon, lifecycle and compliance as further projections of the BOM (§5.6). No owner function for them is listed in §I.</p>
+<h2 id="8-erp-layer-and-the-bim-to-erp-fold">8. ERP layer and the BIM-to-ERP fold<a class="headerlink" href="#8-erp-layer-and-the-bim-to-erp-fold" title="Permanent link">&para;</a></h2>
+<p>The ERP is a browser kernel descended from iDempiere. iDempiere's Application Dictionary (AD) is exported to SQLite and interpreted in JavaScript, so there is no JVM, PostgreSQL, OSGi or server process (<code>docs/internal/ERP.md:7–23</code>). <code>CLAUDE.md</code> names <code>docs/ERP.md</code> as the blueprint; that path does not exist, and the ERP doc is <code>docs/internal/ERP.md</code>.</p>
+<p><strong>Where the dictionary comes from</strong> (<code>ERP.md:1206–1230</code>, <code>:1386</code>). <code>scripts/export_ad.sh</code> exports from a live iDempiere PostgreSQL database:</p>
+<ul>
+<li><code>AD_Menu</code>, <code>AD_Window</code>, <code>AD_Tab</code>, <code>AD_Field</code> (21,432 rows);</li>
+<li><code>AD_Column</code>, <code>AD_Table</code>, <code>AD_Reference</code>, <code>AD_Ref_List</code>, <code>AD_Element</code>.</li>
+</ul>
+<p>That is about 60,000 rows and 8–12 MB of SQLite. It ships as <code>bim-ootb/erp/ad_full.db</code> / <code>ad_seed.db</code> and is parsed by <code>erp/ad_parser.js</code>.</p>
+<p><strong>Storage model</strong> (<code>ERP.md:96–97</code>). About 1,000 iDempiere tables collapse into five runtime tables with a <code>doc_type</code> discriminator: <code>containers</code>, <code>items</code>, <code>documents</code>, <code>document_lines</code> and <code>journal</code>. The doc claims 98.4% of business edges map onto this model. State is a deterministic fold over a signed operation log. Business logic is a few pure verbs of the form <code>(doc, ctx) → ops[]</code>: <code>completeOrder</code>, <code>createShipment</code>, <code>createInvoice</code>, <code>allocate</code> and <code>match</code> (<code>scripts/erp_kernel.js</code>, <code>erp_engine.js</code>).</p>
+<p><strong>Business cycles covered:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Cycle</th>
+<th>Status</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Order to cash (Order → Shipment → Invoice)</td>
+<td>Closed 2026-07-22</td>
+<td><code>prompts/ERP_BUSINESS_CYCLE_E2E.md:1–40</code></td>
+</tr>
+<tr>
+<td>Procure to pay</td>
+<td>Material receipt + signed <code>M_MatchPO</code> proven (PR #972); vendor-invoice match (<code>M_MatchInv</code>) not built</td>
+<td><code>prompts/ERP_P2P_INVOICE_MATCH.md</code></td>
+</tr>
+<tr>
+<td>Scope</td>
+<td>Narrow O2C / P2P / GL / Inventory. O2C, P2P and GL are diff-checked against a GardenWorld reference run</td>
+<td><code>ERP.md:323</code>, <code>:888</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The fold</strong> (<code>prompts/BIM_ERP_FOLD.md</code>). A building becomes an iDempiere Project Order. Only one new file is added, a pure mapping adapter (<code>bim_adapter.js</code>); the kernel verbs are unchanged.</p>
+<ul>
+<li>4D tables (<code>tasks</code>, <code>task_sequences</code>, <code>task_elements</code>) map to <code>C_ProjectPhase</code> / <code>C_ProjectTask</code>.</li>
+<li>5D quantities × rates map to <code>C_ProjectLine</code>.</li>
+<li>iDempiere's "Generate Order from Project" then produces a <code>C_Order</code>.</li>
+</ul>
+<p>A process step then posts a BOQ receipt and project cost to <code>Fact_Acct</code>. The witness tag is <code>§BIM-FOLD</code>.</p>
+<p><strong>Modeller.</strong> It sits alongside the ERP on the same kernel. The Modeller assembles buildings from the BOM catalogue, and every operation is a committed transaction; geometry is a derived view (<code>docs/BIM_Modeller_OOTB.md:282</code>). A save is a validated snapshot, not a raw dump (<code>prompts/MODELLER_MASTER.md</code> O7–O8). The strategy is to leave authoring in Revit or ArchiCAD, and to assemble and hand off here.</p>
+<h2 id="9-verification-model">9. Verification model<a class="headerlink" href="#9-verification-model" title="Permanent link">&para;</a></h2>
+<p>The system is verified by witnesses: scripts that assert numbers the running code writes to its own logs, not by eye. There are 743 witness files (624 in <code>bim-ootb</code>, 119 in <code>bim-compiler</code>, main checkouts only). No single command runs them all.</p>
+<p><strong><code>§</code>-tagged logs.</strong> Code under test prints lines such as <code>§TAG context: value=X expected=Y result=PASS|FAIL</code> (format rule in <code>2D_Layout/docs/2D_ARCHITECTURAL_LAYOUT.md:2356</code>). A witness reads those lines. Tagged console output is the primary browser check, ahead of Playwright (<code>docs/archive/TestArchitecture.md:419</code>). A grep of <code>bim-ootb</code> JavaScript finds 6,758 distinct tags.</p>
+<p><strong>The witness contract</strong> (<code>bim-ootb/witness_kit/contract.js:28–142</code>). A new witness must declare three things, or <code>run()</code> throws (<code>:71–74</code>):</p>
+<ol>
+<li>the population it judges;</li>
+<li>the schema it expects;</li>
+<li>a red control, meaning a case that must fail.</li>
+</ol>
+<p>Invariants are optional. The contract does not itself print NO-OP, VACUOUS or INCONCLUSIVE. That rule lives in <code>CLAUDE.md</code>, and each witness implements it on its own (for example <code>viewer/tests/witness_vacuous_tag_guards.js</code>).</p>
+<p><strong>Entry points.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Covers</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/system_is_real.sh</code></td>
+<td>One shallow check each: compiler gates G1/G2, browser gate + anti-drift audit, ERP headless witness, Red Pill governance</td>
+<td><code>bim-compiler/scripts/system_is_real.sh:1–40</code></td>
+</tr>
+<tr>
+<td><code>node tests/run_witness_suite.js</code></td>
+<td>Every <code>viewer/tests/witness_*.js</code>: 42 headless (they gate), 21 browser-driven (report only)</td>
+<td><code>bim-ootb/tests/run_witness_suite.js:1–52</code></td>
+</tr>
+<tr>
+<td><code>./scripts/run_RosettaStones.sh classify_&lt;prefix&gt;.yaml</code></td>
+<td>Compiler gates for one building type</td>
+<td><code>CLAUDE.md</code> §Session Startup</td>
+</tr>
+<tr>
+<td><code>scripts/cache_4d_run.js</code></td>
+<td>Runs the 4D pipeline once per building and caches <code>witness.log</code> + <code>run.json</code>, keyed on the content of the pipeline files</td>
+<td><code>bim-ootb/scripts/cache_4d_run.js:1–45</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>CI.</strong> In <code>bim-ootb</code>, <code>ci.yml</code> runs syntax, eslint, audits and a Playwright golden path. In <code>bim-compiler</code>, <code>docs.yml</code> runs the <code>system_is_real.sh</code> headless subset plus 39 of the 46 ERP witnesses. Most witnesses run in no CI job.</p>
+<p><strong>Enforced by code vs written only as rules.</strong> Reviewers should know which rules a machine enforces:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Enforced by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No direct edits to the shared <code>bim-ootb</code> checkout</td>
+<td>Hook <code>~/.claude/hooks/block-shared-tree.sh</code> (Edit/Write only; Bash not covered)</td>
+</tr>
+<tr>
+<td>Docs publish must not delete or shrink live pages</td>
+<td><code>scripts/safe_gh_deploy.sh</code> (aborts above a 5% shrink)</td>
+</tr>
+<tr>
+<td>A witness must have a red control</td>
+<td><code>contract.js:73–74</code> throws</td>
+</tr>
+<tr>
+<td>Playwright tests must assert, not skip</td>
+<td><code>deploy/dev/tests/audit_specs.js</code> (reported as WARN in CI, not gating)</td>
+</tr>
+<tr>
+<td>OCI uploads checked against the live etag</td>
+<td><code>bim-ootb/scripts/oci_patch_gate.js</code></td>
+</tr>
+<tr>
+<td>Never invent data (PRIME RULE)</td>
+<td>Written rule only</td>
+</tr>
+<tr>
+<td>Never edit <code>deploy/live/</code></td>
+<td>Written rule only (no hook in <code>bim-compiler</code>)</td>
+</tr>
+<tr>
+<td>Witness replaces visual checks</td>
+<td>Written rule only</td>
+</tr>
+<tr>
+<td>DB change = migration + self-heal loader</td>
+<td>Written rule only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A recorded failure</strong> (<code>prompts/WITNESS_INTERFACE_FRAMEWORK.md</code> §CRISIS, 2026-08-25). A Gantt date fix (PR #1520) collapsed 6,880 elements onto a few instants. Its witness checked "inside the window", never "spread out", so it stayed green. Two follow-up PRs within 90 minutes repeated a cache-version mistake that had just been documented. The lesson: a witness proves only its exact claim, so coverage has to be designed in, not left to each author's judgment.</p>
+<h2 id="10-deployment-and-operations">10. Deployment and operations<a class="headerlink" href="#10-deployment-and-operations" title="Permanent link">&para;</a></h2>
+<p>There are two hosting targets. Building databases and the live app go to Oracle Cloud (OCI) Object Storage. Documentation goes to GitHub Pages. GitHub rejects files over 100 MB and every major building DB exceeds that, which is why DBs go to OCI (<code>PROGRESS.md:213–216</code>).</p>
+<p><strong>OCI rules</strong> (<code>deploy/OCI_UPLOAD.md</code> §RULES):</p>
+<ul>
+<li>Download and diff before any upload, and upload one file at a time.</li>
+<li>Always set <code>--content-type</code>. OCI does not infer it, and a wrong type is blocked by <code>nosniff</code>.</li>
+<li>Building DBs are gzip-compressed and uploaded with <code>--content-encoding gzip</code>.</li>
+<li>Split pairs (<code>_extracted.db</code> with <code>_meta.db</code> / <code>_geo.db</code>) must come from the same build run. This rule followed a traced incident.</li>
+<li>Every bucket patch goes through <code>scripts/oci_patch_gate.js</code>.</li>
+</ul>
+<p><strong>Environments.</strong> <code>deploy/dev/</code> is the working copy. <code>deploy/live/</code> is a production snapshot and is never edited directly. Promotion from dev to production is described in <code>OCI_UPLOAD.md:210–286</code>.</p>
+<p><strong>Docs</strong> (<code>prompts/DOCS_DEPLOY_POLICY.md</code>). Automatic docs deploy is permanently disabled after two incidents wiped live pages. Docs are published only through <code>scripts/safe_gh_deploy.sh</code>, which refuses a publish that would delete or shrink a live page.</p>
+<p><strong>CI and releases (<code>bim-ootb</code>).</strong></p>
+<ul>
+<li><code>release-please.yml</code> batches semantic-version releases.</li>
+<li><code>auto-publish-release.yml</code> publishes a release daily.</li>
+<li><code>curate-release.yml</code> attaches the offline bundle to each release.</li>
+<li><code>deploy-pages.yml</code> deploys on push to <code>main</code>, but see section 11: Pages actually serves tracked files from the branch.</li>
+</ul>
+<p><strong>Database changes</strong> are shipped as SQL patch files, not binaries. A loader in the app applies pending patches when it starts: <code>str_walker_outliner.js _applyPendingPatch()</code> in the Modeller and <code>viewer/scene.js A._applyPendingPatch()</code> with <code>buildings/patches/*.sql</code> in the Viewer (<code>CLAUDE.md</code> §DB CHANGES).</p>
+<h2 id="11-known-limits-open-risks-and-how-to-extend-safely">11. Known limits, open risks, and how to extend safely<a class="headerlink" href="#11-known-limits-open-risks-and-how-to-extend-safely" title="Permanent link">&para;</a></h2>
+<p>The biggest risks come from how the knowledge is held, not from the core model. Much of what a maintainer needs lives in dated prompt files rather than in code checks, and a single author holds the context that ties them together.</p>
+<p><strong>Recorded limits and risks:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>What is recorded</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browser memory</td>
+<td>wasm32 has a 4 GB ceiling; browser IFC import fails around 63,600 elements in a Web Worker</td>
+<td><code>prompts/IFC_LARGE_PRIVATE_STRESS_TEST.md</code></td>
+</tr>
+<tr>
+<td>File size</td>
+<td>GitHub rejects files over 100 MB and every major building DB exceeds it, so DBs live only on OCI</td>
+<td><code>PROGRESS.md:213–216</code></td>
+</tr>
+<tr>
+<td>Serving model</td>
+<td>GitHub Pages for <code>bim-ootb</code> is "legacy" and serves the tracked files on <code>main</code>; the build artifact is never published, so anything users fetch must be committed</td>
+<td><code>.github/workflows/deploy-pages.yml:42</code></td>
+</tr>
+<tr>
+<td>Verification coverage</td>
+<td>743 witnesses, but no single runner; most run in no CI job; the compiler gates run only locally</td>
+<td>Section 9</td>
+</tr>
+<tr>
+<td>Witness quality</td>
+<td>Green witnesses shipped two regressions in 90 minutes (§CRISIS); the flagship Gantt witness does not assert the edit it names</td>
+<td><code>WITNESS_INTERFACE_FRAMEWORK.md</code>, <code>4D_MODEL_INTEGRITY.md:2135</code></td>
+</tr>
+<tr>
+<td>Rules held in prose only</td>
+<td>PRIME RULE, no edits to <code>deploy/live/</code>, and the migration + loader rule have no hook or check</td>
+<td>Section 9</td>
+</tr>
+<tr>
+<td>Duplicate owners</td>
+<td>Several 4D questions have two implementations, and some legacy paths are still live</td>
+<td><code>4D_MODEL_INTEGRITY.md</code> §I</td>
+</tr>
+<tr>
+<td>Fleet count</td>
+<td>23 YAML files on disk, 29 gate tags, and 35 buildings claimed in the paper, not reconciled</td>
+<td>Section 5</td>
+</tr>
+<tr>
+<td>Open decisions</td>
+<td>12 items wait on the author in the agent queue (e.g. Hospital duration calibration 318 → 940 days, LFS 8.53 GB pay-or-rewrite)</td>
+<td><code>PROGRESS.md:198–211</code>, <code>prompts/AGENT_QUEUE.md</code></td>
+</tr>
+<tr>
+<td>Concurrency</td>
+<td><code>bim-compiler</code> has no hook against parallel sessions editing the shared checkout; one such collision was recorded on 2026-07-11</td>
+<td><code>CLAUDE.md</code> §WORK-TO-ZERO</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to extend without breaking it:</strong></p>
+<ol>
+<li><strong>Start from the owner.</strong> Before computing any 4D relation, find its row in §I (section 7) and call that function. If the question has no row, add one.</li>
+<li><strong>Write the claim first.</strong> A spec section, then a witness built on <code>witness_kit/contract.js</code> (population, schema, red control), then code that prints <code>§</code> lines the witness can read. A witness that judged nothing must print INCONCLUSIVE.</li>
+<li><strong>Keep the Three Concerns apart.</strong> A new product goes in WHAT, a new recipe or rule in HOW, and a new projection reads WHERE (<code>output.db</code>). Never mix them in one table or file.</li>
+<li><strong>Change DBs by script.</strong> Write a migration in <code>migration/</code> or a patch in <code>patches/</code>, together with the loader that applies it. Never commit a <code>.db</code> file.</li>
+<li><strong>Run the gates for the building type</strong> you touched (<code>run_RosettaStones.sh classify_&lt;prefix&gt;.yaml</code>) and <code>system_is_real.sh</code> before merging.</li>
+<li><strong>Deploy only through the guards:</strong> <code>safe_gh_deploy.sh</code> for docs, <code>oci_patch_gate.js</code> for buckets, and a <code>CACHE_VERSION</code> bump for app code.</li>
+<li><strong>Turn each new lesson into a check.</strong> If a rule is worth writing down, make a hook, audit or witness enforce it. History shows written-only rules get broken again.</li>
+</ol>
+<h2 id="12-how-the-methods-evolved">12. How the methods evolved<a class="headerlink" href="#12-how-the-methods-evolved" title="Permanent link">&para;</a></h2>
+<p>Over time the way of working changed more than the architecture did. Three runtimes were tried, and the SQLite schema survived all of them (<a href="../PROJECT_CHRONOLOGY/">Project Chronology</a>). Each period ran into one kind of failure, and its fix became the next period's standard method.</p>
+<table>
+<thead>
+<tr>
+<th>Period</th>
+<th>Way of working</th>
+<th>What broke</th>
+<th>What it taught</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oct–Dec 2025, Blender federation (349 commits)</td>
+<td>Build it, then optimise by force</td>
+<td>A units bug made everything 1000× off; Blender hit scale ceilings</td>
+<td>Pin units and coordinates before anything else</td>
+</tr>
+<tr>
+<td>Jan–Mar 2026, Java compiler</td>
+<td>Proof gates G0–G6; first witness 2026-01-30; paper 2026-03-30</td>
+<td>The risk that the compiler invents data instead of extracting it</td>
+<td>Extract, never invent (PRIME RULE, G4 tamper gate)</td>
+</tr>
+<tr>
+<td>Apr 2026, browser pivot</td>
+<td>Measure the ceiling, then abandon the runtime</td>
+<td>Geometry Nodes took 8 minutes per orbit at 500 trees (S175)</td>
+<td>The schema is the asset; runtimes can be thrown away</td>
+</tr>
+<tr>
+<td>May–Jul 2026, parallel AI sessions (948 commits in July)</td>
+<td>Many agents in many worktrees</td>
+<td>Docs wiped twice, 49 worktrees draining LFS bandwidth, two sessions editing one file, stale service-worker caches</td>
+<td>Deploy guards, patch-plus-loader for DB changes, worktree hygiene, the edit-blocking hook</td>
+</tr>
+<tr>
+<td>Aug–Sep 2026, verification crisis</td>
+<td>Witnesses as law</td>
+<td>Two regressions shipped with every witness green; 3 retractions in one session; 5 re-derivations of the same relation</td>
+<td>A witness must be able to report its own failure; call the owner, don't re-derive; cache runs</td>
+</tr>
+</tbody>
+</table>
+<p>What counted as proof kept moving:</p>
+<ol>
+<li>the eye (Blender);</li>
+<li>a number (the gates);</li>
+<li>a <code>§</code> log line in the browser;</li>
+<li>a witness with a red control;</li>
+<li>whether the witness itself can be wrong.</li>
+</ol>
+<p>Each step came from finding that the previous kind of proof could be fooled. 121 commits say retract, supersede or revert, and every dated rule in <code>CLAUDE.md</code> falls between June and August 2026. The rules are a record of past failures, not a design made up front.</p>
+<h2 id="13-lessons-for-others">13. Lessons for others<a class="headerlink" href="#13-lessons-for-others" title="Permanent link">&para;</a></h2>
+<p>Six lessons generalise beyond this project, strongest first. Most have known relatives in other fields. What this project adds is one measured case of them holding together in AI-built software over nine months.</p>
+<ol>
+<li><strong>With AI, the bottleneck moves from writing code to proving it, and the proofs need proving too.</strong> Two regressions shipped with every witness green. The fix was checks that can say "I judged nothing" and must include a case that fails.</li>
+<li><strong>AI sessions do not accumulate experience, so lessons must be turned into code.</strong> 404 memory files and 332 prompt files did not stop rules being broken again. Only hooks, guards and witnesses held.</li>
+<li><strong>A building is a manufactured product, and 4D to 8D are views of one recipe.</strong> Construction treats BIM as a drawn artefact, with schedule, cost and ERP in separate tools. Here they are all derived from one spatial BOM. This is the lesson with a real claim to originality in its field (paper priority date 2026-03-30).</li>
+<li><strong>The data format outlives every runtime.</strong> Blender, the desktop Java tools and the browser came and went; the schema stayed. Design the schema as the asset.</li>
+<li><strong>The server was a habit, not a requirement.</strong> A static page with SQLite in WebAssembly runs a 126K-element viewer, a 4D schedule and a 5-table ERP kernel offline. The measured limit is the 4 GB wasm32 ceiling, reached at about 63,600 elements during in-browser IFC import.</li>
+<li><strong>Projects like this are discovered, not planned, so the method must absorb being wrong.</strong> Dated specs, marking work superseded instead of deleting it, and gates that make reversal cheap turned 121 retractions into progress rather than loss.</li>
+</ol>
+<h2 id="14-glossary-and-where-to-read-next">14. Glossary and where to read next<a class="headerlink" href="#14-glossary-and-where-to-read-next" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AD</td>
+<td>iDempiere's Application Dictionary: windows, tabs, fields and rules stored as data</td>
+</tr>
+<tr>
+<td>BOM</td>
+<td>Bill of Materials; here a recursive, spatial recipe (section 2)</td>
+</tr>
+<tr>
+<td>Tack offset</td>
+<td><code>dx, dy, dz</code> of a child relative to its parent's left-bottom-down corner</td>
+</tr>
+<tr>
+<td>Rosetta Stone</td>
+<td>A reference building whose mined rules define a building class (SH, DX, TE)</td>
+</tr>
+<tr>
+<td>Gate (G0–G6)</td>
+<td>A JUnit check in <code>RosettaStoneGateTest.java</code> comparing compiled output with the source</td>
+</tr>
+<tr>
+<td>Walker</td>
+<td>A rule-driven generator that places elements (<code>disc_walker</code>, <code>room_walker</code>)</td>
+</tr>
+<tr>
+<td>Witness</td>
+<td>A script asserting values from <code>§</code> logs; must say PASS, FAIL or INCONCLUSIVE</td>
+</tr>
+<tr>
+<td><code>§</code> tag</td>
+<td>A structured log line emitted by code under test (<code>§TAG value=… expected=…</code>)</td>
+</tr>
+<tr>
+<td>Fold</td>
+<td>Turning an operation log into state; also, building data mapped into an ERP Project Order</td>
+</tr>
+<tr>
+<td>Played / authored layer</td>
+<td>The schedule the Time Machine plays vs the schedule the author stored</td>
+</tr>
+<tr>
+<td>DLOD</td>
+<td>Per-slot and per-instance frustum culling in the Viewer</td>
+</tr>
+<tr>
+<td>Self-heal loader</td>
+<td>App code that applies pending SQL patches to a cached DB on every load</td>
+</tr>
+<tr>
+<td>OOTB</td>
+<td>The browser app repository, <code>bim-ootb</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading order for a newcomer:</strong></p>
+<ol>
+<li><a href="../SpatialCompilationPaper/">Spatial Compilation paper</a>: the model and its proof.</li>
+<li><a href="../MANIFESTO/">The ERP World View</a>: the Three Concerns.</li>
+<li><code>docs/internal/DATA_MODEL.md</code> (repo only): every table and cross-DB key.</li>
+<li><code>docs/internal/WalkerDoctrine.md</code> (repo only): settled walker rules.</li>
+<li><code>prompts/4D_MODEL_INTEGRITY.md</code> §L, §A, §I: the 4D model and its owners.</li>
+<li><code>docs/internal/ERP.md</code>: the ERP kernel (not published on this site; read it in the repo).</li>
+<li><code>bim-ootb/witness_kit/contract.js</code> and <code>viewer/tests/witness_tm_schedule_output_of_truth.js</code>: how to write a witness.</li>
+<li><code>deploy/OCI_UPLOAD.md</code> §RULES and <code>prompts/DOCS_DEPLOY_POLICY.md</code>: before any deploy.</li>
+</ol>
+<p><strong>Sources.</strong> Every path above is in <a href="https://github.com/red1oon/BIMCompiler">BIMCompiler</a> or <a href="https://github.com/red1oon/bim-ootb">bim-ootb</a>. The counts were taken on 2026-09-28 from local checkouts: <code>bim-compiler</code> at branch <code>fable/meshdb-livewire</code>, <code>bim-ootb</code> at <code>b6b7c9c9</code>.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

@@ -292,7 +292,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../FoldEngineBlackBook.html" class="md-tabs__link">
+        <a href="../ArchitectureOverview/" class="md-tabs__link">
           
   
   
@@ -1645,6 +1645,8 @@
       
         
       
+        
+      
     
     
     
@@ -1689,6 +1691,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -3528,8 +3558,10 @@ to disarm. <code>R</code> is reserved for Insert, so it doesn't arm anything her
 chain recovered verbatim from the building's own IFC, so a door is only ever held or ridden against the
 wall its designer actually put it in — and where a building's author never declared that relationship, the
 modeller says so rather than inventing one. In practice that means the relationship is exact on
-<em>SampleHouse</em> (all 7 hosted openings) and <em>Duplex</em> (36 of its 38), and partial on <em>SampleCastle</em>, whose
-window-frame walls are consumed by their own openings and so aren't separate things to hold or ride.</p>
+<em>SampleHouse</em> (all 7 hosted openings), <em>Duplex</em> (36 of its 38), <em>SampleCastle</em> (all 74 — its
+window-frame walls are consumed by their own openings, so they take part as invisible anchors that are
+never drawn or counted), <em>HHS</em> (99), <em>Clinic</em> (302), <em>Hospital</em> (506) and <em>Garage</em> (36). <em>Terminal</em>
+has none: its source IFC declares no opening/filling relationship at all, so there is nothing to follow.</p>
 <p>Since 18 September 2026 four more residents carry it too, so a door or window there holds or rides
 its wall the same way:</p>
 <table>
