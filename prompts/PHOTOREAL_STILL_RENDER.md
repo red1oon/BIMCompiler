@@ -2047,6 +2047,11 @@ PAUSED 2026-09-27 (red1 "pause for now"). RESUME: (1) read the GPU agent's §ALT
      glassOpaque=22, plates glassDb 0: glass must be recognised by MATERIAL (transmission/opacity/name), class-free; (b) sloped /
      non-axis-aligned surfaces (dormer reveal) vs the 0.5 m axis-aligned zone lattice — speckled dark edges, hueNoise 528; (c) the
      witness fleet lacks SampleCastle (sloped roofs/dormers, non-Revit conventions) — add its poses to every gate. Measurement queued (post-gate A/B).
+ Z24 GROUND LEVEL general rule (red1 2026-09-28, HITOS stills …542813611-…542991128: "ground level is miscalculated (prior
+     condition)"): tools.js _calcGroundY picks ground by a hard-coded storey-NAME list, then largest-lowest slab heuristics — a
+     name convention, not a general rule. Measure HITOS (§GROUND_Y source vs storey elevations / slab bottoms / exterior door sills),
+     then derive a data rule (e.g. the storey whose exterior doors/walls meet the site, or the IfcSite/terrain reference) that
+     holds for every fleet building; witness: ground Y vs door-sill elevation per building.
  Z14 open carry-overs: S4 fringe after an inside press (pushed materials 105->109); M1 "hog" (no regression measured); overhang meter pose.
 
 ### MEP GREY (Hospital nav) — RESULT (2026-09-27, nav only, no Alt+S; /tmp/wt-look @53128dd3 sw v1464 served read-only on :8650; probe
