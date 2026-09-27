@@ -81,13 +81,20 @@ ERP — is a projection of the same verified BOM.
 
 These work now, in a browser tab, no install. Each carries a witness you can run.
 
-**Currency note, 2026-09-27:** re-verified two rows, corrected one, left the rest as before —
+**Currency note, 2026-09-27:** re-verified three rows, corrected one, left the rest as before —
 stated plainly so the table isn't read as freshly confirmed where it wasn't touched this pass.
 **Verified merged and live:** the ERP UX-parity row above — bim-ootb `main` carries PR #1613,
 #1626, #1636 (field sets, AD_Ref_List/Yes-No, AD_Val_Rule, all read from `erp/ad_seed.db` at run
-time, not asserted from a lane doc); and the Viewer's clash + narrated fly-through row — PR
+time, not asserted from a lane doc); the Viewer's clash + narrated fly-through row — PR
 #1697/#1699 merged (`viewer/sw.js` was `v1168` at merge, currently `v1449` on `origin/main`,
-confirming nothing since has reverted it). **Corrected, not carried forward:** the prior note here
+confirming nothing since has reverted it); and the 4D Gantt editor's own flagship witness — it had
+been silently judging a dead scheduling model since before this file's Tier-1 claim was written;
+`witness_gantt_edit_coherence` now builds its fixture from the canonical model and a live editor
+test confirmed drag/clamp/cascade/persist all work off real `§`-logs (bim-ootb PR #1553, 7 PRs
+total merged 2026-08-27). **One caveat carried honestly, not the editor's fault:** a fleet-wide
+construction-sequencing check still fails on 6 of 7 test buildings on floor-ordering grounds,
+re-verified 2026-09-15 (`§CPM_FLEET_VERDICT buildings=7 fails=6`) — the schedules themselves are not
+yet fleet-clean, independent of the editor fix above. **Corrected, not carried forward:** the prior note here
 cited `W-MV-PARITY` (Modeller ≡ Viewer geometry agreement) at 12/12 — that no longer holds. The
 Modeller now renders each building from its own per-resident `_geo.db`, while the witness still
 checks it against `Duplex_extracted.db`; the two disagree on triangle count for 82 of 203 shared
@@ -102,7 +109,7 @@ the 5D cost row.
 | **5D cost (editable)** | BOQ + cost rollup with **editable** per-jurisdiction rate templates; Variation Order Excel (FIDIC Clause 12). | `4D5DAnalysis.md`; VO demo [[10]](#ref10) |
 | **BIM↔ERP — to the cent** | A BIM-pushed building folds into a real procurement/project order and ERP documents, reproducing iDempiere/Odoo output at **`maxDiff=0c`**. **No other tool connects BIM to ERP over one signed log.** | `W-PROJ-FOLD`, `W-GW-HOSP-FOLD`, `W-FOLD-COMPLETE` |
 | **ERP screens — AD-driven, not a hand-list** | The five core document screens (Sales Order, Shipment, Invoice, Payment, Allocation Line) now render iDempiere's own AD field set per window instead of a curated shortlist — `c_order` 8→56 fields, `c_payment` 4→78, 139 DisplayLogic-bearing fields now evaluated live off the same AD metadata iDempiere reads, plus live AD_Ref_List/Yes-No editors and AD_Val_Rule-filtered FK pickers. | `W-PARITY-FIELDSET`, `W-PARITY-REFLIST`, `W-PARITY-VALRULE`, `W-AD-DISPLAYLOGIC-LIVE` |
-| **MEP clash + narrated fly-through** | A camera-directed tour of the building surfaces real, triangle-exact clashes (not bounding-box proxies) as persistent world markers, with live measurements (spans, clear heights, room areas) overlaid as the camera passes — an automated clash-and-measure narration, not a static report. | `witness_clash_mesh_narrowphase`, `witness_clash_film_labels`/`_markers`, `witness_datum_stability`, `witness_indoor_beats`, `witness_linear_beat`, `witness_storey_walkable_card` |
+| **MEP clash + narrated fly-through** | A camera-directed tour of the building (Cinema Path Editor) surfaces real, triangle-exact clashes (not bounding-box proxies) as persistent world markers, reveals disciplines in sequence (ARC → STR → MEP) as it passes, and overlays live measurements (spans, clear heights, room areas) — an automated clash-and-measure narration, not a static report. | `witness_clash_mesh_narrowphase`, `witness_clash_film_labels`/`_markers`, `witness_datum_stability`, `witness_indoor_beats`, `witness_linear_beat`, `witness_storey_walkable_card` |
 | **Budget vs Actual (EVM)** | Planned vs Committed at project + phase + task grain; CV/SV/CPI/SPI in BigDecimal; cost overrun surfaced on the 4D S-curve. | `W-GW-HOSP-COSTVAR`; `proj_control.js` |
 | **What-If (cost)** | Speculative VO branch — revised = original + approved + pending — kept separate from the official ledger, reversible. | `W-FIN-BLUE-SPEC` (5/5) |
 | **Dashboard / analytics** | Generic multi-view over **any** data model: donut grid, "By-X" group-by chips that fill the grid, pivot lens, scrubbable timeline filmstrip, CSV/SVG/PNG export. Field-driven, not hardcoded per table. | `W-DASHBOARD`; `pivot_lens.html` |
