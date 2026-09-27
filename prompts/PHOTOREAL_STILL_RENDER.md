@@ -2133,6 +2133,100 @@ with no browser; a record is re-run only with --rerun. Output: <out>/alts_all.lo
  NOT JUDGED IN NODE (GPU owes it): every rendered number; the Z18 teeth count after §SPEC_SMOOTH (the step proxy is a proxy — the
  diagnosis probes b1/t3*.js + z18gate.py are the direct instrument); the Z8 staging cost; whether the lamp remeter jump is the ground.
 
+### §ALTS_ALL RESULT (GPU) (Opus GPU witness, 2026-09-27) — RELEASE GATE: FAIL (stills FAIL, bakes FAIL; instrument clean: INCONCLUSIVE 0)
+BUILD: viewer = fix/alts-all @e0d2082b (sw v1474, lawHash dc0e8638, LightZones SRC 567a94fc:97712; every press: served sw, all 6 edited
+ ?v= in the DOM, FNV bytes == tree, fresh profile, pose + PNG tEXt pose == requested). Harness-only commits on top (instrument fixes,
+ below): e5417ab3, ad6e40aa, f49048f2, 1bf2831f — `git diff e0d2082b..1bf2831f -- viewer ':!viewer/tests'` is empty, so the verdict
+ is the e0d2082b viewer's. Served /tmp/wt-all :8640, bakes :8660, B = /tmp/wt-film2 (v1473). Headless puppeteer, gl-egl, RTX 4060 8 GB.
+RUNS: pass 1 14:58 -> 16:49 (28 presses + Alt+C 90 f + bakes A,C,E,T,B; 1 h 51 min). Pass 2 16:51 -> 17:16 (6 instrument re-presses +
+ A, C re-baked). Final `--judge /tmp/alts_all --base-tree /tmp/wt-film2`. GPU total about 2 h 20 min. Press wall 25..191 s (load 28..42 s,
+ press 14..149 s); bakes 246..436 s each. Data: photoreal_probes/alts_all/ (alts_all.json, summary.md); raw records /tmp/alts_all/raw.
+ §ALTS_ALL_SUMMARY tree=1bf2831f sw=v1474 lawHash=dc0e8638 records=28 bakes=A,C,E,T,B,altc PASS=565 FAIL=8 INCONCLUSIVE=0 VACUOUS=0 NO-OP=2 SCOPE-BLIND=1 WARN=41
+ §ALTS_ALL_VERDICT FAIL
+ §BAKE_RELEASE_GATE FAIL — nothing ships (no FF of look/combined, no publish) on this tree.
+STILLS, base arm (composite canvas = the saved PNG; EV100 = every §METER camera line, stage -> lamp remeter; "old" = final EV of the
+ same pose on the torch build, §ALTS_COMBINED RESULT). G3 VACUOUS guards all PASS (cove qualified, sRGB converted, shell recomputed, AO
+ bound, receiver albedo, §GLARE populations, torch before the stage meter).
+ | pose    | EV stage -> final (old) | p5/p50/p95       | px<=15 % | clip % | G4 band | GLARE | progs | press s | hueNoise | step proxy |
+ | clinic  | 8.79 -> 8.79 (6.95)     | 12.3/23.1/90.9   | 18.66    | 2.32   | FAIL    | 0/0/0 | 94    | 25.1    | 0        | 0.74 |
+ | inner   | 9.68 -> 9.68 (7.85)     | 3.2/36.1/58.1    | 20.27    | 0      | FAIL    | 0/0/0 | 122   | 146.4   | 0        | 0.37 |
+ | term    | 10.31 -> 10.31 (7.54)   | 10/20/174.8      | 33.04    | 0.66   | FAIL    | 0/0/0 | 114   | 31.6    | 0        | 13.93 |
+ | p2      | 9.71 -> 9.71            | 45.9/92.3/156.2  | 0.13     | 0.76   | PASS    | 0/0/0 | 128   | 105.0   | 0        | 5.58 |
+ | night   | 10.06 -> 10.00 (13.98)  | 216.4/238.1/255  | 0.38     | 21.72  | FAIL    | 0/0/0 | 128   | 129.3   | 0        | 5.80 |
+ | p614    | 13.54 -> 13.30          | 65.6/115.1/207.2 | 0.001    | 0.03   | PASS    | 0/0/0 | 129   | 149.1   | 21       | 4.06 |
+ | p698    | 10.23 -> 10.23          | 42.6/66.9/119.2  | 0.03     | 0.21   | PASS    | 0/0/0 | 128   | 132.1   | 0        | 2.06 |
+ | p672    | 9.20 -> 9.20 (10.75)    | 69.5/137.1/243.2 | 0        | 3.15   | FAIL    | 0/0/0 | 128   | 108.3   | 0        | 5.76 |
+ | a616    | 14.86 -> 15.33 (16.62)  | 29.8/112.6/170.3 | 2.70     | 0      | PASS    | 0/0/0 | 129   | 115.3   | 0        | 3.45 |
+ | a202    | 12.81 -> 13.17          | 70.7/139.9/238.6 | 0.07     | 1.52   | PASS    | 0/0/0 | 129   | 118.8   | 11       | 5.35 |
+ | plenum  | 9.38 -> 11.93 (10.44)   | 0.9/88.9/253.6   | 25.17    | 9.25   | FAIL (+G3 jump 2.55 EV) | 0/0/0 | 126 | 103.0 | 79008 | 2.63 |
+ | hhs_z18 | 12.32 -> 12.22          | 0/119.4/233.1    | 22.78    | 0.86   | PASS    | 0/0/0 | 89    | 14.3    | 645      | 3.63 |
+FIX ARMS (G2, arm vs base at the arm's pose; noise = |base - base_r2| of the same pose):
+ | fix (arm)                         | pose    | base vs arm (mean / p50 / EV)          | noise | state |
+ | Z9 albedo sRGB (&srgbfix=0)       | inner   | 31.88 vs 43.34 / 36.1 vs 48 / =        | 0.04  | PASS |
+ | Z10 AO indirect (&aoindirect=0)   | inner   | 31.88 vs 31.08 / 36.1 vs 35.0 / =      | 0.04  | PASS |
+ | Z11 receiver albedo (&gialb=0)    | inner   | 31.88 vs 31.38 / 36.1 vs 34.9 / =      | 0.04  | PASS |
+ | Z12 ground half (&groundlaw=0)    | night   | 236.76 vs 230.99 / 238.1 vs 232.3 / =  | 0.7   | PASS |
+ | meter band 70/95 (&meterband)     | inner   | 31.88 vs 26.28 / EV 9.68 vs 9.97       | 0.04  | PASS |
+ | meter band 70/95 (&meterband)     | night   | 236.76 vs 220.2 / EV 10.00 vs 10.79    | 0.7   | PASS |
+ | B1 shell (&skyshell=0)            | a202    | 153.64 vs 152.58 / 139.9 vs 138.4      | 0.43  | PASS |
+ | Z8 reach (&shellreach=2)          | a202    | 153.64 vs 153.24 / 139.9 vs 141.2      | 0.43  | PASS |
+ | Z18 spec smooth (&specsmooth=0)   | hhs_z18 | 112.01 vs 111.82 / EV 12.22 vs 12.23   | 0.5   | PASS (on the 0.01 EV move only) |
+ | Z18 grid blend (&gridblend=1)     | hhs_z18 | 112.01 vs 112.02 / 119.4 vs 118.6      | 0.5   | SCOPE-BLIND |
+ | L1b camera torch (&torch=0)       | inner   | 31.88 vs 31.85 / 36.1 vs 36.1 / =      | 0.04  | NO-OP |
+ | L1b camera torch (&torch=0)       | night   | 236.76 vs 236.84 / 238.1 vs 237.9 / =  | 0.7   | NO-OP |
+ GZ Z8 (a202): cells 9911662/3 F 0.4063/0.4375 (truth 0.43/0.40) PASS; the r2 rule gives 0.0714/0.0597, &skyshell=0 the same. Cost
+ (§SKY_SHELL_RAYS, Hospital, first press, IDB-cached after): reach=air recomputed=22154 (airOnly 7145, lifted 2793) rays 1.58 M passMs
+ 10.6..11.1 s, vs r2 15009 cells / 1.08 M rays / 6.6 s.
+FILM (Hospital AjaibPath 0:90, 15 fps): A/C/E/T all rows PASS except the WARN "SW unregistered=1, no pre-purge _INIT after" on every CLI
+ bake. A vs C 93.63 vs 139.44, A vs E 93.63 vs 149.93, overlay identity A vs B PASS (after the 1bf2831f normaliser fix), programs 110 ->
+ 149 constant f>=2, step max +0.020/-0.067 per frame (capped down 6), 0 black/white/reused frames (in-page §FRAME_QA and ffprobe).
+ B (reference, v1473, lawHash 918804c2) rows PASS against its own tree facts. Alt+C (in-browser, 90 frames, §MAXQ_DONE, lawHash
+ dc0e8638, torch line once): every row PASS except programs.
+NON-PASS ROWS, cause + evidence:
+ 1. G4 FAIL clinic / inner / term (too dark), night / p672 (clipped), plenum (G3 + G4): ONE cause. The lamp remeter reads the frame the
+    STAGE meter read, not the staged scene. Evidence: §METER_HIST bandL stage | remeter = clinic 2.430e-3 | 2.430e-3, inner 4.527e-3 |
+    4.527e-3, term 6.967e-3 | 6.975e-3, night 5.886e-3 | 5.650e-3; EV stage == final at 9 of 12 poses. The torch build's 3rd render at
+    the SAME poses read the staged scene: clinic 6.807e-4 (EV 6.95), inner 1.270e-3 (7.85), term 1.025e-3 (7.54), night 8.877e-2 (13.98)
+    (photoreal_probes/b1/torch_<pose>.log). Clinic closes numerically: old/new exposure 153.02 / 42.86 = 3.57 = bandL 2.430e-3 / 6.807e-4,
+    and p50 63.3 -> 23.1. What changed between: ALTS-ALL moved the torch before SourcedLight.stage and deleted the torch remeter —
+    the only render between staging and the lamp remeter (effects.js diff 931882df..e0d2082b). The mechanism is in ### ALTS-ALL FIX 1
+    below (r186 getProgram: a new program key clones install-time §SOURCED_LIGHT uniforms). Plenum is the partial case: the remeter
+    sees the lamp tail (70/95 band 2.632e-1) but its dark floor stays at the stage frame's 2.66e-3 (old 6.84e-4) -> EV 11.93 vs old
+    10.44, clip 9.25 %. §METER_STATE shows what changed between the meters (ground 555566->ffffff, point 0->1, hidden 1->36/38) — it
+    does not explain equal bandL. WITNESS NOTE (scope-blind row): G3 "stage -> final <= 1 EV" PASSES a remeter that re-reads the
+    identical frame (it passed at 9 poses here). A row "remeter bandL != stage bandL when staging changed the scene" would have caught it.
+ 2. NO-OP torch (inner, night): torch staged (§CAM_TORCH on intensityUnits=3.960e-2; §METER_STATE spot=1/0.0396; §SOURCED_LIGHT_BIND
+    spots=1; slPass(zone 0) = 1, unbound passes) but its effect is below noise. Saved-PNG diff base vs torch0: inner 0.087 % px > 4
+    codes/ch, meanAbs 0.415 (noise base vs base_r2: 5.73 %, 1.018); night meanAbs 2.41 (noise 2.06). Film T: per-frame YAVG max |A - T|
+    = 0.28/255; the judge prints PASS because same() uses a fixed 0.01 with no noise baseline -> read the film torch effect as unproven
+    too. Cause not isolated. Candidates: target distance/exposure (FIX 4 below: close pose), or a spot shadow map never drawn while
+    shadowMap.autoUpdate=0 (§METER_STATE shadowAuto=0/0).
+ 3. SCOPE-BLIND &gridblend=1 (default OFF, not in the look): mean/p50 unchanged; PNG diff 8.6 % px > 4/ch vs noise 4.9 % = acts
+    locally. Not blocking.
+ 4. Alt+C programs 137 -> 139 at f85 (bake FAIL): the camera cuts f84 -> f85 ([62.63,92.79,69.96] -> [-58.43,70.26,85.21], 123 m in one
+    frame) while §BAKE_INTERIOR_TOPUP lamps go 30 -> 50 and §STILL_REFINE restarts; 2 programs compile mid-film. The CLI bakes A/T stay
+    at 149 for f>=2. Sky is ruled out (skyPx > 0 already at f2-8 and f54-71). New materials first visible after the cut = likely, not
+    isolated.
+ Z18 (not a row, WARN): §SPEC_SMOOTH changes the image (PNG diff 11.9 % px > 4/ch, 1.40 % > 16 vs noise 4.9 % / 0.32 %), but the step
+    proxy cannot judge teeth: base 3.63, base_r2 6.07, specsmooth0 3.82 (noise > effect). The Z18 teeth count after SPEC_SMOOTH is still
+    owed to the direct instrument (b1/t3*.js + z18gate.py). hueNoise (WARN, not judged): plenum 79008, hhs_z18 645.
+SETUP CAUSES SEEN (so the rerun avoids them; all were caught as INCONCLUSIVE, then re-run clean):
+ a. WebGPU OOM on 5 presses (a202 base/skyshell0/shellreach2, a616, p672): `GPUOutOfMemoryError: vkAllocateMemory failed with
+    VK_ERROR_OUT_OF_DEVICE_MEMORY` from '§GI_STILL stage copying the building' (2846..8077 lines per press; 0 in the torch run). red1's
+    desktop Chrome held 3204 MiB of 8188 MiB then (590 MiB at the re-run). Before a GPU run: `nvidia-smi --query-compute-apps=pid,used_memory`.
+ b. HospitalAjaibPath.db 404 in /tmp/wt-all film bakes A/C: cli_silent_bake serves --root with no ~/bim-ootb/buildings fallback
+    (serve_tree.js has one) -> §CLI_BAKE_LOAD_FATAL §DB_404_OCI_FAIL. Fix = the gitignored symlink /tmp/wt-film2 already had:
+    `ln -s ~/bim-ootb/buildings/HospitalAjaibPath.db <tree>/buildings/`.
+ c. B tree sw/lawHash mismatch BY DESIGN (B = the pre-merge reference): the judge compared it to this tree -> INCONCLUSIVE by
+    construction; fixed f49048f2 (B judged against --base-tree facts).
+ d. p2: three-mesh-bvh CDN import failed (§BVH_INIT_FAIL) -> §SKY_SHELL_RAYS "no BVH" recomputed=0 while G1 PASSED; G1 row added
+    e5417ab3. Viewer note (not checked): the press saved §ZONE_IDB_CACHE field=1 anyway — whether a later press reuses a shell-less field.
+ e. Alt+C channel: harness called startMaxQualityOrbit without editor:false -> §CPE_OPEN, the editor waited 23 min, no frame. The
+    witness clicked #cpe-ok once over CDP (the real Alt+C one-click OK, no edit = derived plan); fixed ad6e40aa (auto-OK, every terminal
+    §MAXQ tag, 15-min stall guard). Also f49048f2: the in-browser race row = single-init check (was INCONCLUSIVE by construction).
+ f. Overlay identity A vs B failed only on '§CLASH_RTREE ready … in 1085ms' (no space) -> normaliser fixed 1bf2831f.
+ g. `--help` is not a flag: it starts the full run (killed, output discarded).
+
 ### Z9 SPEC — ALBEDO sRGB (2026-09-27, audit #48; L2) — branch bim-ootb `fix/z9-albedo-srgb` from fix/light-law-module @39959e8a, sw v1466
 CAUSE (code): loader.js:145 `THREE.ColorManagement.enabled = false` ("enabling breaks HSL color slider palettes"); streaming.js:1542
 `new THREE.Color(r,g,b)` from the AUTHORED (sRGB) IFC values; output encodes sRGB ⇒ every flat albedo is used as linear
