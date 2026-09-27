@@ -6,5 +6,5 @@ function st(useFin) { const L = new Float32Array(w * h); let s = 0, c250 = 0, c1
   const m = s / L.length; let v = 0; for (let p = 0; p < L.length; p++) v += (L[p] - m) * (L[p] - m); const so = L.slice().sort(), q = f => +so[Math.floor(so.length * f)].toFixed(1);
   return { p5: q(.05), p25: q(.25), p50: q(.5), p75: q(.75), p95: q(.95), mean: +m.toFixed(1), std: +Math.sqrt(v / L.length).toFixed(1), ge250pct: +(100 * c250 / L.length).toFixed(2), le15pct: +(100 * c15 / L.length).toFixed(3), meanSat: +(sat / L.length).toFixed(4) }; }
 const cv = SL.coveStats && SL.coveStats(), ir = SL.irStats && SL.irStats();
-return { comp: st(true), app: st(false), exposure: +R.toneMappingExposure.toFixed(4), toneMapping: R.toneMapping, coveKey: cv ? String(cv.key).slice(0, 80) : null, irKey: ir ? String(ir.key || '').slice(0, 80) : null,
+return { programs: R.info.programs ? R.info.programs.length : null, comp: st(true), app: st(false), exposure: +R.toneMappingExposure.toFixed(4), toneMapping: R.toneMapping, coveKey: cv ? String(cv.key).slice(0, 80) : null, irKey: ir ? String(ir.key || '').slice(0, 80) : null,
   sceneChildren: A.scene.children.length, hemiI: A.hemi ? +A.hemi.intensity.toFixed(3) : null, ambI: A.ambient ? +A.ambient.intensity.toFixed(3) : null, sunI: A.sun ? +A.sun.intensity.toFixed(3) : null };

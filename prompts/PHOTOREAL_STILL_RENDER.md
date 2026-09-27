@@ -2322,6 +2322,35 @@ Inside refs WILL move (new rule for all); re-approval by numbers. Engine referen
  VERDICT (rule: median 40..200 at >= 11 of 13 and clipped < 2 %): 70/95 2/13 -> NOT READY; 40/90 8/13 with 2 poses clipped
  > 2 % (night 4.82, 100646 6.87) -> NOT READY. Failing under 40/90: Clinic 27.3, inner room 21.9, Terminal 15.0 (interiors at
  EV100 8.8-10.3 still land 1.5-2.5 stops under), night 227 (shade view with no sky), 100646 35.6 with clipped glass.
+§ALTS_COMBINED RESULT (Opus GPU witness, 2026-09-27) — VERDICT: PASS 7/7 (p50 40..200 and clipped < 2 % at 7 of 7, §GLARE 0/0/0,
+ 0 page errors) -> FF look to fix/alts-torch @1dd60a62 is supported by these numbers. One defect found: the torch remeter is VACUOUS (below).
+ Build: bim-ootb fix/alts-torch @1dd60a62 (sw v1472 read from the served sw.js), /tmp/wt-torch :8638, fresh profile + fresh page
+ per pose (warm_probe /close -> /open reload=1), ONE first press per pose, Hospital &ghost=1 except Terminal. Presses ran
+ 12:47-13:00 (the earlier witness agent's queue, completed before it died); read back from its logs, not re-run.
+ Logs photoreal_probes/b1/torch_<pose>{,_lum,_zpatch,_esc}.log + torch.out; summary `node zsumm.js torch`. p50 / px<=15 /
+ clipped>=250 = Rec.709 luma of the composite canvas (__giStillDebugCanvas.bounce, the image the PNG saves; lum.js), not a
+ re-decoded PNG file. EV100 = every §METER camera line in press order (stage -> torch remeter -> lamp remeter = final).
+ | pose (source)                    | EV100 stage/torch/final | exposure | p50   | px<=15 % | clip>=250 % | GLARE | programs | press s |
+ | night (…1790468166215)           | 10.07 / 15.73 / 13.98   | 1.1735   | 76.1  | 1.04     | 0           | 0/0/0 | 128      | 215.7*  |
+ | sunlit aerial a616 (…1790465616826) | 14.86 / 15.73 / 16.62 | 0.1875   | 43.1  | 15.21    | 0           | 0/0/0 | 129      | 147.4   |
+ | Clinic corridor                  | 8.79 / 15.73 / 6.95     | 153.02   | 63.3  | 0.07     | 0           | 0/0/0 | 94       | 24.2    |
+ | Hospital inner room              | 9.68 / 15.73 / 7.85     | 82.03    | 131.4 | 0.02     | 0           | 0/0/0 | 122      | 106.5   |
+ | Terminal inside (evC/evD pose)   | 10.31 / 15.73 / 7.54    | 101.63   | 140.4 | 0.34     | 0.45        | 0/0/0 | 114      | 24.4    |
+ | blotch p672 (…1790468672505)     | 9.20 / 15.73 / 10.75    | 11.02    | 76.5  | 1.36     | 0.12        | 0/0/0 | 128      | 96.6    |
+ | Hospital plenum                  | 9.38 / 15.73 / 10.44    | 13.65    | 69.4  | 20.23    | 0.26        | 0/0/0 | 126      | 99.4    |
+ (*first page of the run pays the 66 s one-time "copying the building to the bounce-light engine"; press s = warm_probe /alts secs.)
+ Poses: PNG tEXt 'bim-still-pose' cams match (a616 [26.431,36.87,42.209], night [33.5,8.121,11.498], p672 [-13.552,1.366,-1.289]).
+ §CAM_TORCH (identical every pose): on peakCd=900 (100 lm, FL1 60 m) halfAngle=10.8 offset R0.3/U0.1 m intensityUnits=3.960e-2
+ (cd / luxPer 22727.3) shadow=1024. §ALBEDO_SRGB (Hospital) converted=108 meanLum 0.6557->0.4680, Esc: restored mats=108
+ lateDecoded=0 changedDuringStill=0 (Clinic 64/64, Terminal 95/95). §GROUND_HALF rhoSrc=table(earth) rho 0.368 upward 1.485u
+ (33760 lx) ratio 2.60. vs §METER_EV v2 40/90 (evD): Clinic 27.3 -> 63.3, inner 21.9 -> 131.4, Terminal 15.0 -> 140.4, night 227
+ -> 76.1 (clip 4.82 -> 0), 672505 94.7 -> 76.5 — the lamp remeter (final EV 7-8 inside) is what moved the interiors in band.
+ DEFECT (VACUOUS, all 7 poses): the torch remeter (effects.js:4604 `SourcedLight.remeter(A)` right after §CAM_TORCH on) reads a
+ frame with skyPx=14400/14400, pixels=14400, EV100=15.73, Lavg=6780.8 cd/m2 — the same value everywhere = it metered an all-sky
+ frame, not the scene. Its exposure (0.3491) is overwritten by the lamp remeter (effects.js:5768) before §STILL_REFINE, so the
+ still is unaffected, but the claim "the meter sees the torch (L3)" is NOT witnessed: population judged = 0 scene pixels.
+ Not judged: the torch's own contribution (no &torch=0 A/B — no pose failed, so none was owed); dark share px<=15 is high at the
+ aerial (15.2 %) and the plenum (20.2 %) — inside the PASS rule, stated for the look decision.
 
 **RULINGS red1 2026-09-27 (inside still …1790465698534, v1457):** (1) "If original colors then OK" — the pale-interior check
 passes if the chroma readback shows the IFC material colours intact (low saturation = the data's greys, not a render fault).
