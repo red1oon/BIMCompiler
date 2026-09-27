@@ -178,3 +178,15 @@ instrumented base; fix numbers on the same tree after. Pure refactors (3/6/8) mu
   @671352f5) and GREEN after. H2/D2 (show / clear restore exactly) and A0 (no anchor revealed) guard the fix.
   Regression: W-E2E-SEL-TINT-REFOLD, W-XRAY-SC-LIVE/DUPLEX, W-E2E-OLEYE, W-E2E-OLFILTER, W-E2E-INSTHIDE (if present),
   W-E2E-SHADOWS (if present), W-E2E-CUT + the batch set.
+
+### §BATCH1 — RESULT (2026-09-27, bim-ootb `refactor/pattern-batch1` @af0593f9, pushed, no PR)
+| Row | Status | Base → fix (same tree, §-log numbers) | Commit |
+|---|---|---|---|
+| instr | ✅ | `§GEOIDX build` + `§MODELLER-ROOM-COST` log lines, W-PATTERN-OPEN-COST witness (log-only) | 785cb88c |
+| 3 | ✅ DONE (witness) | index builds per resident Open 10 → 2 (SampleHouse + SampleCastle, both opens); SampleCastle index ms 294/348 → 71/48. swXEdges digest, §XEDGE-ALL/GEO, §STRWALK-INIT/GEO lines, seed ops IDENTICAL | b433047a |
+| 6 | ✅ DONE (witness) | W-PATTERN-MESHFOR SampleCastle 3,290 fids: 0 mismatches vs `children.find` after Open / scrubTo re-fold / Clear; 16,450 lookups scan 314.9 ms → map 2.5 ms | 36addfd7 |
+| 8 | ✅ DONE (witness) | 2nd Open: room walk 98–164 ms (SampleCastle), 18–39 ms (SampleHouse) → cache lookup 11 ms / 1–2 ms; room content digest + IfcSpace/RM_ + Outliner rooms IDENTICAL; stale old-version entry dropped (C6) | 671352f5 |
+| 1 | ✅ DONE (witness) | W-PATTERN-DECOR-REFOLD pre-fix 6/2 RED (H1 hidden mesh visible=true after re-fold; D1 dim lost, opacity 1) → 8/0; refold listeners 3 → 1 | af0593f9 |
+Correction to the review's row-3 count: measured 10 index builds per Open (4 on the meta-only sync path + 6 on the
+geo path), not 5-6. Regression: every red on the branch is red on base too (W-XRAY-SC-LIVE, W-E2E-SCALE S5);
+W-OL-SYNC S5 and W-DW-DEDUP D3 flaked once each and were green on rerun (OL-SYNC S5 also flakes pre-fix).
