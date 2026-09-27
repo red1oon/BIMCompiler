@@ -2420,6 +2420,154 @@ primed after the final meter) rebound 0 — the late key is a different variant 
  FIX 1(e): §SOURCED_REBIND during accumulation -> 2 accumulation restarts at every press, 3 (the cap) at 9 presses (clinic, term, inner_r2 …);
   no rebind after STILL_REFINE start went un-restarted at those 9.
 
+### ALTS-ALL FIX 10–16 SPEC (2026-09-27, pass 3; coordinator decisions D1–D3 for red1) — bim-ootb `fix/alts-all-3` = fix/alts-all-2 @b19ba5c5 + merge fix/colour-truth @564066f5 (ce65724a: keep both; light_zones fp csum + sr; SourcedLight irTint/zoneAlbedo + FIX 1 API; light_zones.js?v=19, sourced_light.js?v=62; sw v1478)
+ FIX 10 (D1, harness, ruling 2) — CLIPPING IS COUNTED ONLY ON INTERIOR OPAQUE SURFACES. RULE: red1 ruling 2 ("outside very bright
+  through the openings from an inside pose = WANTED, relative eye adjustment; do not cap"). Per press, after the still, the harness
+  classifies every clipped (L >= 250) pixel of the SAVED composite by the surface under it, from the staged scene itself (no pose is
+  excluded): pass (b) "first surface" = every mesh re-materialled flat (lit opaque -> black, glass [§GLASS_FRESNEL clone | transparent
+  opacity < 0.95 | transmission > 0] -> blue, drawn after opaque without depth write, every non-lit material [MeshBasic emitters,
+  sprites, points, lines, raw shaders] -> red), sky/background off; pass (a) "zone of the first OPAQUE lit surface" = glass materials
+  and non-lit meshes hidden, SourcedLight.debugZones(1) (the shipped §SOURCED_LIGHT_ZONE_DEBUG readback: R,G = slFragZone zone,
+  B = sky flag) into a float target at the composite size. Classes: EMITTER (first surface non-lit: a source seen directly — it is
+  the light, not a lit surface), EXTERIOR (no opaque surface = sky, or its zone is 0 = outdoors / 65534 = off-grid), INTERIOR (zone
+  > 0; behind interior glass still interior). Inside camera (§METER camera=inside): the band's clip % = INTERIOR clipped / all pixels;
+  EXTERIOR (with its glass-backed part) and EMITTER shares print as INFO. Outside camera: every clipped pixel counts (unchanged).
+  Row: G4 "p50 40..200 & interior-opaque clip < 2%" + INFO "clip by surface". Missing classification (probe error / no zone data) =>
+  the row falls back to the whole-frame clip and says so (never PASS on a missing readback: INCONCLUSIVE if the whole-frame clip >= 2).
+  Selftest red control: a fixture whose clipped pixels are INTERIOR must FAIL; all-EXTERIOR must PASS with the INFO share.
+ FIX 11 (D2, viewer, streaming.js) — MEP TRADE COLOUR + PHYSICAL METALNESS. (a) `A._mepTradeHue`: when the extracted discipline is a
+  SPECIFIC trade (FP/PLB/ELEC/ACMV/HVAC/SAN/VENT/HEAT) with a chromatic DISC_COLORS entry, the discipline decides; the Revit element-name
+  hint decides only when the discipline is the generic 'MEP' or absent (the HHS case it was built for). Hospital's 6,228 FP pipes ->
+  FP 0xcc8844 hue, not PLB purple. (b) PBR metallic workflow: metalness is near-binary — 0 for dielectrics incl. painted/coated metal,
+  1 for bare metal (Filament, "Physically Based Rendering in Filament" §Parameterization / Standard parameters: Metallic "Whether a surface appears to be dielectric (0.0) or conductor (1.0). Often used as a binary value (0 or 1)"; physicallybased.info
+  v2 materials, schema 2.2 updated 202609010742: every metal metalness 1, porcelain 0). STD_MAT defaults of pipes (IfcPipe,
+  IfcPipeFitting, IfcPipeSegment, IfcFlowSegment, IfcFlowFitting), ducts (IfcDuct, IfcDuctFitting, IfcDuctSegment) and structural steel
+  (IfcBeam, IfcMember, IfcPlate) -> metal 0 (painted/coated: the data gives no bare-metal statement). BARE METAL only when the authored
+  material name or the element name says so (galvani[sz]ed|zinc -> Zinc, stainless -> Stainless Steel, copper -> Copper,
+  alumin(i)um -> Aluminum): metalness 1 and, when the element has no colour of its own (NULL / exporter placeholder), the cited
+  srgb-linear base colour (Zinc 0.808,0.844,0.865 · Stainless 0.669,0.639,0.598 · Copper 0.932,0.623,0.522 · Aluminum 0.916,0.923,0.924),
+  stored sRGB-encoded (the colour domain of every _getMaterial albedo, which Z9 decodes at stage); a bare-metal element takes no MEP hue
+  (the name states its material). Owner `A._bareMetalKey(cls, name, matName)` via the element variant ('metal:<key>', in the cache/batch
+  key like 'porcelain'). DB census (fleet, those classes): Hospital 0 pipe/duct/steel rows + 2 IfcCableCarrierFitting (out of class
+  scope) -> the bare-metal branch is VACUOUS on shipped data; node witness proves it on fixtures. (c) the pipe/duct envInt 0.05 overrides
+  are REMOVED (their stated reason — §PIPE_DUCT_BLUE_TINT, sky-blue PMREM dominating a metal 0.40–0.45 albedo — is a metalness artefact;
+  a dielectric's reflection is F0 0.04 and untinted by the albedo): those classes take the global 0.6 like every dielectric. KEPT:
+  IfcBeam/IfcRailing envInt 0 (red1 2026-08-15 "get rid of those railings and overhead beams from been recolorized" = a user source),
+  IfcMember/IfcPlate 0.05 and the terminals/devices block (not in D2's scope; listed). Switch `&metalpbr=0` / APP._metalPbrOff (in the
+  cache key) = the old table. CANVAS LOOK CHANGE (stated): pipes/ducts/steel lose the ×(1−metal) diffuse cut (0.55/0.60/0.35–0.40) ->
+  diffuse albedo ×1.8/×1.7/×2.5–2.9 brighter, hue now fully visible; reflections become weak white dielectric sheen (F0 0.04 × env 0.6;
+  in Alt+S the §PHOTO_ENVMAP_BOOST ×2.0 now applies to them because they are no longer envInt-exempt and roughness 0.30 <= 0.5 — that
+  boost is itself an unsourced value, listed for the audit, not changed here); Hospital FP pipes orange, PLB purple, ducts green.
+  Node witness `viewer/tests/witness_d2_mep_metal.js` (red control = &metalpbr=0 table + old hint order must fail).
+ FIX 12 (D3, witness_colour_truth_gpu.js criteria) — the pass-2 criteria were ad hoc: (1) toilet: porcelain stays white (sat < 0.12)
+  AND a specular highlight is present: p99 of the porcelain pixel luma > p99 of the matte arm (BEFORE = look @53128dd3, the old
+  roughness 0.375 finish), on a 32x32 ray grid inside the anchor's screen box; the "mean within 8 %" part is DROPPED (a glossy white
+  correctly reads brighter: Z20 roughness 0.08 adds the specular term). (2) beams/members: the Z21 claim is about the MATERIAL, so
+  the row reads the hit material's colour (× instance/batch colour when present) and requires it == STD_MAT steel for its class
+  (canvas: max channel diff <= 0.01; still: == LightLaw.srgbToLinear(STD) when §ALBEDO_SRGB srgbfix=1, else STD); the lit-pixel "b >= r"
+  test is dropped (warm lamps / the cove legitimately warm a neutral surface — pass 2 row 1 failed on exactly that). (3) FIX 11 moves
+  pipe/duct/steel pixels by design: the "MEP placeholder pipes keep their tier-2 colour" row becomes "FP/PLB pipes' material hue ==
+  their DISCIPLINE's DISC_COLORS hue (±6°)" and REFS excludes the FIX 11 classes. (4) instrument: expected sw / streaming.js ?v= are
+  read from the tree the witness runs in (was hard-coded v1476/78); §PLACEHOLDER_COLOUR / §PORCELAIN counts unchanged.
+ FIX 13 (F10, viewer, gi_still.js) — THE BOUNCE ENERGY BOUND (L2). Cause (plenum, /tmp/alts_all3): meanShare 0.54 (IR carries half the
+  radiance, R = IR_R 0.5 -> E_ir = R/(1−R) x mean direct = the Sumpner total of ALL bounces), yet the composite added +46 codes: the
+  SSGI term (giIntensity 10, a display-space gain, gathering from the tone-mapped frame incl. emitter pixels at 1.0) has no energy
+  bound, and a tight void (most rays hit bright near geometry, few escape) is where it is largest. RULE: the interreflected light at a
+  pixel cannot exceed k2 x its direct light, k2 = R/(1−R) at the SAME R the zone IR uses (SourcedLight IR_R; zone-average of the bound
+  = k2 x mean direct = the Sumpner total, so the bound's zone mean equals the physical interreflection). Composite: added =
+  clamp(giT − IR_px, 0, max(0, k2·D_px − IR_px)), D_px = C·(1 − share) (the pixel's non-IR light: sun, sky, lamps, cove),
+  IR_px = C·share (both on the display colour — the same approximation §IRC_MAX already states). `&gibound=0` = unbounded (A/B).
+  §GI_BOUND line per press: k2, bounded px %, mean added before/after the bound (display codes). Composite-before-tone (Z11 P1–P5)
+  stays the planned exact form; this is the energy law without it. Witness: plenum interior-opaque clip < 2 % (FIX 10 classification)
+  and the §GI_BOUND share logged; G2 arm gibound0 at plenum (moved => PASS, else NO-OP).
+ FIX 14 (F11) — FIRST-PRESS BLACK GLASS. PROBE (probe/f11*.js, Terminal tr4, one fresh tab, press 1 then 2; /tmp/alts_all4/probe):
+  press 1: the clones' uniforms ARE bound (uSLZone = the real 184x123x187 texture, same object as a staged wall) yet a float render
+  gives NaN at 4/4 glass samples and 1208 NaN pixels frame-wide; glass hidden -> 0 NaN; envMapIntensity 0 -> still NaN (NaN x 0);
+  a second §GLASS_ENV capture -> 0 NaN. The capture itself holds NaN texels on EVERY press (nonFinitePerFace [6,0,0,0,0,0]); with an
+  explicit PMREMGenerator the NaN reached the glass on EVERY press (three's lazy regeneration happened to wash them out on presses
+  2+). Locator (probe/f11nan.js): the NaN texels are a grey Terminal surface seen edge-on in +X; plain MeshStandardMaterial swap, sourced
+  light unstaged, every light type off: still NaN; its geometry (batched mesh 924, guid 3Q026pUy1CnxmrPEZ8YaXF) has 145 zero-length
+  vertex normals of 16,547 -> normalize(0) = NaN. CAUSE = degenerate normals (the §RED_GREY_MYSTERY repair existed, disabled at
+  ~12 s/building). FIX: `A._repairDegenerateNormals` rewritten O(triangles) (first non-degenerate adjacent face normal; a vertex on
+  zero-area triangles only rasterises nothing -> copied from a valid vertex at the same position, else counted unfixed; 5 % valve
+  removed — a face normal is right at any fraction), run at Alt+S staging, once per geometry version (&normrepair=0 = off,
+  §NORMAL_REPAIR line). Kept as guards: explicit PMREM prefilter + re-capture while any material re-keys (§GLASS_ENV passes=
+  rekeyedPerPass= nonFinitePerFace= pmrem=explicit). Probe after: Terminal 282,023 degenerate (36 from a face, 244,920 same-position,
+  37,067 zero-area only) in 1.24 s on press 1, 1 ms after; nonFinite [0x6]; press 1 glass see-through (app 499-757 at the samples).
+  Harness G6 (blocking) "glass see-through on this press" (n >= 10): 0 NaN glass samples AND no black pane over a lit background
+  (app <= 2 codes while the glass-hidden linear L behind > 1e-3). First run used "< 20 % black" (my number, no rule): tr4 read 3/14
+  black with NaN 0 — a dark object behind clear glass is correctly dark, so the rule was refined to the physical one before the rerun.
+ FIX 16 (found by F10's probe) — PLENUM SUN LEAK. With FIX 13 the composite = app (+0.7 codes, was +46) but the APP frame still
+  clipped 22 %: probe/plen.js — clipped pixels are INTERIOR (zone 24), L 0.66 linear vs frame median 0.00086, sun off -> 0.00064,
+  every sampled sun ray blocked at 1-3 m, and a +-80 m single shadow box -> 0.00064: a SHADOW COVERAGE leak. The §STILL_SHADOW_CASCADE
+  depth readback (_csmReadback) drew every mesh DoubleSide while the still draws the §WALL_SIDE closed classes FrontSide; from inside
+  the ceiling void its nearest depth was those culled back faces (median view depth 0.75 m; readback 1.01 m where the visible face is
+  2.03 m), the SDSM boxes shrank onto them (cascade 0 1.2 x 2.6 m) and the visible surfaces fell in no box. `uncovered=0/14400` was
+  SCOPE-BLIND (it judges the readback's own points). FIX: the readback draws each mesh with ITS side (FrontSide pass, then
+  DoubleSide/BackSide) into one depth buffer; &csmsides=0 = old; the cascade line prints readbackSides=. Probe after: app clip 21.96 %
+  -> 0.78 %, meter EV 10.39 -> 7.32. Arm csmsides0 at plenum (G2).
+ FIX 15 (F12, instrument, cli_silent_bake.js + judge) — the SW-race row flagged a FRESH-profile bake: with --profile fresh the first
+  navigation installs THIS tree's sw.js; if the purge runs after that install it unregisters 1 (C: purge at 1.6 s, A at 0.5 s) and the
+  pre-purge page's _INIT lines repeat after the reload. That page was served by the NETWORK (no controller at load), i.e. by this tree
+  — not stale JS. RULE: the race exists only when a service worker CONTROLLED the pre-purge page. The CLI records
+  `navigator.serviceWorker.controller` at document start (evaluateOnNewDocument) and logs `controllerAtLoad=0|1` + the registration's
+  script URL on §CLI_BAKE_SW_PURGE; judge: race = unregistered > 0 AND duplicated _INIT AND controllerAtLoad = 1; controllerAtLoad = 0
+  -> PASS with the detail; line without the field (old CLI) -> old rule.
+§ALTS_ALL_3 RESULT (Opus GPU fix-and-rerun pass 3, 2026-09-27/28) — bim-ootb `fix/alts-all-3` @c939e963 (pushed, NOT merged, no PR; viewer code last
+ changed @b2daafd0, later commits = harness/witness only), sw v1478, lawHash dc0e8638, served /tmp/wt-all3 :8642, bakes :8662, fresh profile per
+ press/bake. Run: `--noise --film A,A2,C,E,T --altc 90 --sequence` = 43 presses + one-tab 12-press Terminal sequence + Alt+C 90 + 5 bakes; then
+ re-presses tr4/tr5/tr6 (harness G6 change only) + bake E re-run (first E: page never finished loading, §CLI_BAKE_CRASH 900 s wait, no frame).
+ Logs: photoreal_probes/alts_all3/ (run_alts_all.log = every judge pass appended, the LAST block is the verdict; alts_all.json; probes f11*/plen*;
+ witness_colour_truth_gpu.log); raw records /tmp/alts_all4/run/raw. Node: selftest 4/0 (42), d2_mep_metal 4/0 (23), z19 4/0 (12, loads light_law.js
+ first after the merge), z20 4/0 (35), z21 4/0 (32), z8/z9/z10/z11/z12/z18/light_law_unit 4/0.
+ §ALTS_ALL_VERDICT FAIL — PASS 894 FAIL 1 INCONCLUSIVE 0 VACUOUS 0 NO-OP 0 SCOPE-BLIND 2 WARN 77 INFO 40 (0 inconclusive presses, 0 OOM; GPU peak
+   per press 1.8-4.1 GB of 8.2).
+ §BAKE_RELEASE_GATE PASS — films A, A2, C, E, T + in-browser Alt+C 90: SW race PASS on all (A/C: unregistered=1 controllerAtLoad=0 = this tree's own
+   fresh install, FIX 15); A vs C d 45.95, A vs E d 56.39 (noise A-A2 0.109, tol 0.218) PASS; overlay identity 394/394; frame luma / reuse / lawHash /
+   fill / exposure step / overshoot PASS on every arm; torch A vs T d 0.093 < tol -> INFO by the FIX 4 rule carried to films (upper-bound torch share
+   8.6e-5 < 1/255 at every frame: aerial, camera >= 20 m from its target); Alt+C programs f>=2 129 -> 131 = 2 SpriteMaterial (WARN, overlay).
+ §W_COLOUR_TRUTH_GPU INCONCLUSIVE judged=17 fail=0 inconclusive=5 (BEFORE = look code @53128dd3 served from /tmp/wt-res :8652, AFTER :8642). PASS:
+   instrument (served tree v1478 / streaming.js?v=81), replaced 10947, mepTier2 44246 / proxyKept 1293, porcelain 554, BEFORE no line; beam/member
+   MATERIAL = STD_MAT steel canvas n 143/186 off 0 and still (sRGB-decoded) n 143/186 off 0; FIX 11 pipe/duct hue == discipline hue: plenum 129 MEP
+   ducts, beams pose 166 (11 FP pipes, 155 MEP ducts), off 0, metal 0; REFS 0.05/0.00/0.02 codes; toilet canvas white sat 0.054 + p99 197.2 > 191.2;
+   Z19 still saturation plenum 0.187 -> 0.296, beams 0.081 -> 0.167 (pass 2: FELL 0.187 -> 0.172). INCONCLUSIVE: 4 MEP-trade-proxy rows with 1 and 4
+   pixels (< 5; hue moves: sat 0.04 -> 0.40, 0.13 -> 0.60); toilet STILL — the arms are metered differently (BEFORE has no §METER line; still means
+   81.8 vs 40.2), p99 126.9 vs 128.9 at unequal exposure = not a finish comparison (a p99/p50 ratio was tried and DROPPED: no rule behind it).
+ LOOK (composite PNG; p5/p50/p95 · le15 % · clip judged [whole frame] · final EV100; D1: inside cameras judge interior-opaque clip):
+  clinic 45.1/66.4/145.1 · 0 · 1.67 [2.68] · 6.99 | inner 18.9/81.9/131.2 · 0.43 · 0 · 7.80 | term 66.1/77.0/243 · 1.46 · 0.83 [4.61] · 7.55
+  night 45.8/78.8/156.8 · 1.09 · 0 (outside) · 14.04 | a616 11.8/57.2/105.3 · 12.19 · 0 · 16.62 | a202 24.6/45.4/167.6 · 2.50 · 0.59 · 15.45
+  p672 27.6/64.3/188.9 · 0.65 · 0.05 [0.70] · 10.70 | plenum 24.1/66.3/134.5 · 0 · 0.78 [0.78] · 7.32 | p2 31.1/66.7/140 · 0.54 · 0.36 [0.64] · 9.99
+  p614 27.2/57.7/133.5 · 0.55 · 0 · 14.84 | p698 39.7/75.4/139.9 · 0.02 · 0.19 [0.23] · 9.83 | hhs_z18 13.7/68.9/186.6 · 7.43 · 0 · 14.24
+  inner_close 32.9/44.9/166.3 · 0.21 · 0 · 6.82 | tr1 46.6/77.8/99.8 · 1.26 · 0 · 8.34 | tr2 51/71/158 · 0.67 · 0.37 [1.15] · 8.08
+  tr3 28.8/84.9/108.4 · 1.45 · 0.03 · 10.89 | tr4 11/48.4/219.9 · 9.17 · 0.005 [0.67] · 13.02 | tr5 9.7/62.7/162.3 · 8.61 · 0 [0.01] · 12.42
+  tr6 17/62.6/170.7 · 4.53 · 0.006 [0.05] · 12.45   => all 19 G4 bands PASS (pass 2: clinic/term/plenum FAIL).
+ PER ITEM:
+  D1 FIX 10 — clip classification live on every press: clinic whole 2.68 % = interior 1.67 + exterior 1.01; term 4.61 % -> interior 0.83; plenum
+   (before FIX 16) 22.7 % = interior 22.7 (NOT exterior — ruling 2 did not apply there, the fix was needed). 0 % unclassified at every pose.
+  D2 FIX 11 — Hospital 6,228 FP pipe rows -> FP (node, 6228/6228); pipes/ducts/steel metal 0 (built: IfcPipeSegment 9c4eeb/eb9c4e r0.300 m0.00,
+   IfcBeam 8c9199 m0.00); bare-metal branch VACUOUS on shipped data (0 named pipe/duct/steel rows fleet-wide; fixture-proven). Arm metalpbr0
+   at plenum: mean 74.61 vs 71.44 (G2 PASS). Canvas look: pipes/ducts/steel brighter and fully hued (lit duct pixels 45,94,46 -> 78,133,81).
+  D3 FIX 12 — witness criteria as specified; the toilet still is INCONCLUSIVE for the exposure reason above (not re-tuned).
+  F10 FIX 13 — plenum composite +46 -> +0.8 codes (compositeMean 69.60 vs appMean 68.79); arm gibound0 mean 74.61 vs 80.81 (PASS); composite -
+   app at the other poses 0.1-4.8 codes. The plenum CLIP was not the GI: see FIX 16.
+  F11 FIX 14 — cause = zero-length vertex normals (NaN in the §GLASS_ENV capture); first-press glass see-through: tr4/tr5/tr6 G6 PASS (NaN 0; tr4's
+   3 and tr6's 1 black samples sit over a background the app itself displays at 0 / 4 codes); §GLASS_ENV nonFinitePerFace [0 x6]; §NORMAL_REPAIR
+   Terminal 282,023 degenerate / 1.24 s press 1, 1 ms after; Hospital 79,212 / ~2 s. Arm normrepair0 at tr4 mean 79.22 vs 75.70 (PASS).
+  F12 FIX 15 — every bake's §CLI_BAKE_SW_PURGE carries controllerAtLoad (0 on all 6); C's race row PASS (was INCONCLUSIVE).
+  FIX 16 — plenum app clip 22.69 % -> 0.78 %, EV 10.39 -> 7.32; arm csmsides0 p50 66.3 vs 10.2 (PASS).
+ REMAINING NON-PASS:
+  - FAIL G7 sequence tr4: the 2nd-round press in the one tab shows the glass samples brighter than the fresh page — compL 250.4 vs 159.4 (1st round
+    in the same tab 172.3; bound 8 codes, stated before the run). p50 48.2 vs 48.4, meter 12.99 vs 13.02, no growth (geometries 1204, textures 1815,
+    programs 131, heap/gpu slopes -8.7 MB / 6.9 MiB per press, 0 allocation failures). Same carried-state class as DEFECT 6 (S4); not black any more
+    (pass 2: 0 on the fresh page). Cause NOT isolated — suspect the §GLASS_ENV capture/PMREM target reused across presses (the only glass input that
+    persists per page). tr5/tr6 PASS this time (Δ 4.6 / 2.0).
+  - SCOPE-BLIND (not blocking) Z18 gridblend1 / specsmooth0 at hhs_z18: mean moves 0.93 / 0.01 inside tol 4.8 (noise 2.4).
+  - Pre-existing, not this lane: node witness_mep_color_photoreal 54/55 — LTU tinted 107 vs its stored census 102, identical on fix/colour-truth
+    @564066f5 (the COLOUR-TRUTH D2 'tomt mönster' decision moved 5 LTU WC rows; the witness's expectation was not updated).
+ HARNESS CHANGES THIS PASS (each with its rule): D1 clip classification (ruling 2); G6 black glass = over a background the app DISPLAYS >= 10 codes
+  (the first rule "< 20 % black" was mine without a source — tr4 3/14 samples over a 0-code background); film torch INFO when its upper-bound share
+  < 1/255 (FIX 4 rule); arms gibound0 / metalpbr0 / csmsides0 / normrepair0; EDITED += glass_fresnel.js, streaming.js; D3 colour-truth rows.
+ NOT MERGED to look (coordinator's call): the still gate is FAIL on the single G7 tr4 row; the bake gate is PASS.
 ### MEP GREY + COLOUR-TRUTH RESULT (Opus GPU, 2026-09-27) — see ### MEP GREY (Hospital nav) under §ZERO LIST for the nav check.
 ### COLOUR-TRUTH RESULT — `node viewer/tests/witness_colour_truth_gpu.js 8650 8651` from /tmp/wt-colour (BEFORE = /tmp/wt-look @53128dd3 sw v1464
  :8650 read-only, AFTER = fix/colour-truth @564066f5 sw v1476 :8651; log photoreal_probes/alts_all2/witness_colour_truth_gpu.log).
