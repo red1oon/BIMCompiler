@@ -1952,6 +1952,18 @@ GATE: at red1's tower pose + fly-in poses + the sweep: every lamp within range o
 all-fixture irradiance vs the rendered set, max relative loss < 1% per point); §CAMDEP_SURFACE lamps term identical across
 poses; program count constant across presses; link <= +10%; GUARD 0/0/0; frame ms reported.
 
+**§LIGHT_ONE_SCALE — LAW (red1 2026-09-27: "The laws of optical physics should be singular"; ranks above every per-term
+calibration in this file).** One photometric chain for every source, every surface, every camera, inside or out:
+ L1 SOURCES in physical units through ONE calibration (§SOURCED_LIGHT_CALIB lux-per-unit): sun + sky from one cited clear-sky
+    model (sun/sky split for the sun elevation), lamps from their data (lumens), cove from its EN 12464-1 level. No scale, boost,
+    lift or tint that is not a physical quantity (mood constants = deleted, not tuned).
+ L2 TRANSPORT: seen luminance = albedo x E / pi; every path (direct, sky view, interreflection, screen GI, AO as visibility)
+    counted ONCE — a term that re-adds light another term already carries is a double count, removed.
+ L3 EYE: one exposure from the light reaching the eye (§METER_ONE_RULE), then one tone curve.
+PLAN: the §LIGHT_TRUTH_AUDIT table (appended at the end of this file) lists every live value; each UNSOURCED / INCONSISTENT /
+DOUBLE-COUNT row becomes one change on its own fix/ branch, witnessed by numbers (refs, §GLARE, the night/pale/blotch poses)
+before it goes to look. Exceptions need red1's word, recorded here.
+
 **§METER_ONE_RULE — SPEC (red1 2026-09-27: "for outside or in, the exposure rule must be consistent based on condition of
 light reaching the eye"; trigger: first outside still …1790468166215 "as if night time", cam [33.5,8.121,11.498] tgt [0,0,0],
 v1457, L p5/50/95 23/40/79).**
