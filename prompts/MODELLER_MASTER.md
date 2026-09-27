@@ -25,6 +25,24 @@ i have no time to sight, i rely on a good vibe coder to do so."
 - Worktrees: `/tmp/wt-mnet-audit` (PR #1788 branch) and `/tmp/wt-mnet-base` (detached main, comparison) — prune both
   once #1788 is merged; `/tmp/wt-bc-netaudit` = this docs branch.
 
+**▶ 2026-09-27 BACKLOG (red1 direction): §SLOPE-HANDLES — drag an axis / apex / edge of a sloped element along its natural build
+lines, as the industry does (Revit sub-element + slope-arrow editing, ArchiCAD pet-palette offset-edge / move-node, SketchUp
+push-pull). Measured state on bim-ootb main: NO face/edge/vertex handles exist (0 hits for push-pull/faceDrag/edgeDrag/vertexDrag);
+grid drag is orthogonal-plan only and §ROTATION-GUARD refuses tilted elements; `dagevu_engine.js:23` AngleEdge ⛔ PAUSED "no
+measured roof-slope data"; row 30 (roof height scale, wrong axis, dead). Industry default to honour: a stretch KEEPS THE PITCH
+(ridge rises); apex-proportional is an explicit scale, never the default. Data path (non-invent): the slope plane is measurable
+from the source mesh's own face normals / the IFC's extrusion direction — measure first (Phase M), like §SLIDE-REAL-WALLS.
+Sequence: after §SLIDE-REAL-WALLS and insert-with-opening (same host/cut substrate).
+**DESIGN (red1 2026-09-27: "a universal handler set that is abstract to accommodate any natural handling"):** ONE handle
+abstraction, not a tool per element type. Every element EXPOSES handles derived from its own extracted geometry; each handle =
+`{ kind: point|edge|face|axis, anchor (where it sits), dofs: the natural build lines it may move along (wall long axis,
+slope-plane down-direction, ridge line, extrusion direction, grid line), invariants it must keep (pitch, thickness, face
+offset), constrain(candidate) → { delta } | refusal }` — exactly the shape `HostFillEdge.constrain()` already has (1-DOF along
+the host, delta-honest bounds, never a clamp). Cascades stay DAGeVu edges (anchor/ride). Existing drags become instances:
+grid-line drag = axis handle on a grid line; opening slide = edge handle on the host long axis; roof stretch = edge handle on the
+eave keeping pitch; apex drag = point handle on the ridge (explicit pitch change). Handles are only offered where their build
+line is MEASURED from the source (no measured slope ⇒ no slope handle — refused, never guessed).**
+
 ## ▶ §RESUME 2026-09-26b — (superseded as entry point by 2026-09-27 above; read it second). Then §RESUME 2026-09-26 below, then §STRATEGY 2026-09-24.
 ## Every number was measured on the combined branch bim-ootb `feat/modeller-next-0926`. Specs: `prompts/Modeller/NEXT_0926/`.
 
