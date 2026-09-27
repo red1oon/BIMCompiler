@@ -1957,6 +1957,11 @@ calibration in this file).** One photometric chain for every source, every surfa
  L1 SOURCES in physical units through ONE calibration (§SOURCED_LIGHT_CALIB lux-per-unit): sun + sky from one cited clear-sky
     model (sun/sky split for the sun elevation), lamps from their data (lumens), cove from its EN 12464-1 level. No scale, boost,
     lift or tint that is not a physical quantity (mood constants = deleted, not tuned).
+ L1a THE ONE ADDED SOURCE (red1 2026-09-27: "It is only internal lighting source for non lighted room and that also subjected
+    to the same law of optics"): the cove (§COVE_LIGHT) is the ONLY light not in the model data, placed ONLY in a compartment
+    with no real source (no lamp, no sky reaching it), and it obeys L1-L3 like any lamp (lux calibration, albedo x E / pi,
+    counted once incl. its IR share, same exposure). CHANGE vs the 2026-09-25 watchdog gate: a compartment that HAS a real
+    source but falls below its EN row no longer gets a cove top-up (it is shown as its real sources light it).
  L2 TRANSPORT: seen luminance = albedo x E / pi; every path (direct, sky view, interreflection, screen GI, AO as visibility)
     counted ONCE — a term that re-adds light another term already carries is a double count, removed.
  L3 EYE: one exposure from the light reaching the eye (§METER_ONE_RULE), then one tone curve.
