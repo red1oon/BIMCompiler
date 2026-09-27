@@ -81,33 +81,28 @@ ERP — is a projection of the same verified BOM.
 
 These work now, in a browser tab, no install. Each carries a witness you can run.
 
-**Currency note, 2026-09-27:** re-verified three rows, corrected one, left the rest as before —
-stated plainly so the table isn't read as freshly confirmed where it wasn't touched this pass.
-**Verified merged and live:** the ERP UX-parity row above — bim-ootb `main` carries PR #1613,
-#1626, #1636 (field sets, AD_Ref_List/Yes-No, AD_Val_Rule, all read from `erp/ad_seed.db` at run
-time, not asserted from a lane doc); the Viewer's clash + narrated fly-through row — PR
-#1697/#1699 merged (`viewer/sw.js` was `v1168` at merge, currently `v1449` on `origin/main`,
-confirming nothing since has reverted it); and the 4D Gantt editor's own flagship witness — it had
-been silently judging a dead scheduling model since before this file's Tier-1 claim was written;
-`witness_gantt_edit_coherence` now builds its fixture from the canonical model and a live editor
-test confirmed drag/clamp/cascade/persist all work off real `§`-logs (bim-ootb PR #1553, 7 PRs
-total merged 2026-08-27). **One caveat carried honestly, not the editor's fault:** a fleet-wide
-construction-sequencing check still fails on 6 of 7 test buildings on floor-ordering grounds,
-re-verified 2026-09-15 (`§CPM_FLEET_VERDICT buildings=7 fails=6`) — the schedules themselves are not
-yet fleet-clean, independent of the editor fix above. **Corrected, not carried forward:** the prior note here
-cited `W-MV-PARITY` (Modeller ≡ Viewer geometry agreement) at 12/12 — that no longer holds. The
-Modeller now renders each building from its own per-resident `_geo.db`, while the witness still
-checks it against `Duplex_extracted.db`; the two disagree on triangle count for 82 of 203 shared
-geometry hashes. Parked, not fixed — full detail in Tier 3 below. **Two more items verified merged and live, not in
-the table above but bearing on it:** a photoreal-still defect that silently dropped whole element
-classes (glazing, furniture) from Alt+S bakes mid-playback — root-caused to a camera-culler/
-Time-Machine matrix-ownership conflict, fixed on a full re-bake (bim-ootb PR #1660, sw v1141 at
-merge); and a 2026-09-04 audit that found three things believed live on bim-ootb's GitHub Pages
-were actually 404 despite green CI and a green deploy workflow — a version stamp, JS minification,
-and both ERP agent-download zips — caught only by fetching the live URL, fixed and re-verified by
-`curl`, not by trusting the pipeline (`§PAGES-SERVES-THE-BRANCH`, bim-ootb PR #1680). **Not
-independently re-verified this pass, carried forward as before:** the BIM↔ERP fold row, EVM, POS,
-iDempiere extraction, and the 5D cost row.
+**Currency note, 2026-09-27:** three rows re-verified, one corrected, two more sourced facts folded
+in that bear on rows above without being their own row, everything else carried forward untouched.
+**Verified merged and live:** the ERP UX-parity row — bim-ootb PR #1613/#1626/#1636, read live off
+`erp/ad_seed.db`; the Viewer's clash + narrated fly-through row — PR #1697/#1699 merged,
+`viewer/sw.js` now `v1449` on `origin/main`; and the 4D Time Machine row's editor claim —
+`witness_gantt_edit_coherence` had been silently judging a dead scheduling model, now fixed to judge
+the canonical one, with a live editor test confirming drag/clamp/cascade/persist off real `§`-logs
+(PR #1553, 7 PRs total, merged 2026-08-27). **One caveat carried honestly:** a fleet-wide
+construction-sequencing check still fails on 6 of 7 test buildings on floor-ordering grounds
+(`§CPM_FLEET_VERDICT`, re-verified 2026-09-15) — a schedule-data gap, not an editor defect.
+**Corrected, not carried forward:** `W-MV-PARITY`'s prior 12/12 no longer holds. The Modeller now
+renders each building from its own per-resident `_geo.db`, while the witness still checks it against
+`Duplex_extracted.db`; the two disagree on triangle count for 82 of 203 shared geometry hashes.
+Parked, not fixed — full detail in Tier 3 below. **Two more verified facts, not their own row:** a
+photoreal-still defect that silently dropped whole element classes (glazing, furniture) from Alt+S
+bakes mid-playback, traced to a camera-culler/Time-Machine matrix-ownership conflict and fixed (PR
+#1660); and a 2026-09-04 audit that found three things believed live on bim-ootb's GitHub Pages —
+a version stamp, JS minification, both ERP agent-download zips — were 404 despite green CI, caught
+only by fetching the live URL (`§PAGES-SERVES-THE-BRANCH`, PR #1680: the zips are fixed and
+re-verified by `curl`; the minification/version-stamp gap is a live repo-settings question, still
+unresolved). **Not independently re-verified this pass, carried forward as before:** the BIM↔ERP
+fold row, EVM, POS, iDempiere extraction, and the 5D cost row.
 
 | Capability | What it does | Witness |
 |---|---|---|
@@ -117,6 +112,7 @@ iDempiere extraction, and the 5D cost row.
 | **BIM↔ERP — to the cent** | A BIM-pushed building folds into a real procurement/project order and ERP documents, reproducing iDempiere/Odoo output at **`maxDiff=0c`**. **No other tool connects BIM to ERP over one signed log.** | `W-PROJ-FOLD`, `W-GW-HOSP-FOLD`, `W-FOLD-COMPLETE` |
 | **ERP screens — AD-driven, not a hand-list** | The five core document screens (Sales Order, Shipment, Invoice, Payment, Allocation Line) now render iDempiere's own AD field set per window instead of a curated shortlist — `c_order` 8→56 fields, `c_payment` 4→78, 139 DisplayLogic-bearing fields now evaluated live off the same AD metadata iDempiere reads, plus live AD_Ref_List/Yes-No editors and AD_Val_Rule-filtered FK pickers. | `W-PARITY-FIELDSET`, `W-PARITY-REFLIST`, `W-PARITY-VALRULE`, `W-AD-DISPLAYLOGIC-LIVE` |
 | **MEP clash + narrated fly-through** | A camera-directed tour of the building (Cinema Path Editor) surfaces real, triangle-exact clashes (not bounding-box proxies) as persistent world markers, reveals disciplines one at a time (finest-detail discipline first, MEP always last) as it passes, and overlays live measurements (spans, clear heights, room areas) — an automated clash-and-measure narration, not a static report. | `witness_clash_mesh_narrowphase`, `witness_clash_film_labels`/`_markers`, `witness_datum_stability`, `witness_indoor_beats`, `witness_linear_beat`, `witness_storey_walkable_card` |
+| **Photoreal still render (Alt+S)** | A physically-lit single-frame render from any camera pose, in the same browser tab — light comes only from the building's own modelled fixtures and openings (fabricated staging lights were found and removed outright), with zone-based daylight visibility and shadow cascades. **Under active accuracy tuning, stated plainly:** a light-intensity-scale audit run the same day this note was written found part of the scale unsourced, and an exterior-wall darkening defect is being fixed on an unmerged branch. | `witness_sky_view_field`, `witness_zone_glare`, `witness_still_shadow_fit`, `viewer/tests/smoke_alts.js` |
 | **Budget vs Actual (EVM)** | Planned vs Committed at project + phase + task grain; CV/SV/CPI/SPI in BigDecimal; cost overrun surfaced on the 4D S-curve. | `W-GW-HOSP-COSTVAR`; `proj_control.js` |
 | **What-If (cost)** | Speculative VO branch — revised = original + approved + pending — kept separate from the official ledger, reversible. | `W-FIN-BLUE-SPEC` (5/5) |
 | **Dashboard / analytics** | Generic multi-view over **any** data model: donut grid, "By-X" group-by chips that fill the grid, pivot lens, scrubbable timeline filmstrip, CSV/SVG/PNG export. Field-driven, not hardcoded per table. | `W-DASHBOARD`; `pivot_lens.html` |
