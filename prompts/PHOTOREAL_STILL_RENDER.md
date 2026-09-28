@@ -2008,6 +2008,13 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   24.25); Clinic/Terminal/LTU/Hospital/HHS/Duplex "consistent". Door-level-only rules REJECTED by the fleet: lowest GF cluster chains
   storeys (LTU 2.40->0.70, Terminal 14.72->13.99). NOTED not changed: Clinic ground -1.37 is a 192 m2 sunken GF slab while 145 doors
   stand at 0.00 (doors ABOVE the plane, outside this rule's direction) — raise only if red1 reports Clinic ground.
+- Z23(b) RE-MEASURED on v1494 (§SPECKLE, diag.js; red1's Castle stills …541575336 / …541605417 read from ~/.local/share/Trash, not
+  restored; OOM 0): hueNoise 528 / 158 (red1, v1464) -> 0 / 0 now (§GI_CARRY-era). Isolated dark px (L<=20, 8-neighbour mean >= +45) in
+  the final: 108 / 205 (app frame 259 / 194) = 0.01 % of the frame. Sampled 40: 39 on axis-aligned faces, surfaceInfo resolves them to
+  an INTERIOR zone (18/20/30) with sky-view F 0-0.001 — mostly IfcWindow jamb/reveal faces (n = -x) in the wall opening seen from
+  OUTSIDE (cam [-13.8,0.6,-14.9]): the 27-cell nearest-eye-side search lands in the room behind the opening. Same class as Z26
+  (0.5 m lattice at thin elements). NOT built: fix after Z26's build-time exact-raycast mechanism lands (extend it to reveal faces:
+  a surface whose eye-side lookup crosses a window cell takes the open side), else two agents collide in light_zones.js.
 LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
 DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
 scratchpad …/diag*.js, reads the PNG tEXt pose, one fresh-page press, prints § lines) -> FF look. No long gates unless asked.
