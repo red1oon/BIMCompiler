@@ -2057,6 +2057,10 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   0.004/0.004 => the lattice is RIGHT at the bright points and 5-6x LOW at the dim ones (41-direction aliasing of a small window), not a
   leak. My earlier HEMI probe (uniform-elevation, glass-then-opaque counted blocked) disagrees -> INCONCLUSIVE until one method is used.
   Z23(b) reveal speckle: different mechanism (diffuse surfaceInfo lookup) — not extended.
+  FINAL BATCH (all OOM 0 / linkfail 0 / pageerr 0; old march &glassopen=0 vs final): §FAULT glassReflDark Clinic 5/44 -> 2/44 (v3
+  blocker-F), Hospital …196433 1/107 -> 0/107, Hospital …138871 0/75 -> 0/75, Terminal …725998 0/119 -> 0/119, Terminal …578781
+  0/76 -> 0/76; §FAULT_GI dark % unchanged every pose. Hospital final build 66.7 s (level 2, 35053 sides). READY TO MERGE pending
+  red1's Hospital first-press cost call (accept 67 s once per building per code version, IDB-cached, vs cap buried sides).
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
