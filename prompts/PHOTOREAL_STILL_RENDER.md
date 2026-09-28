@@ -1964,6 +1964,30 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
 - ✅ §FAULT_TORCH_EXEMPT (95608fa7, v1488): red1 exterior stills …582731985/…582785182 FAULT extLightsDay=1 = cam_torch (probe listed it). Torch exempt like _camLight, logged torch=1. Re-press: §FAULT OK both.
 - ✅ §GI_REDIST_EVIDENCE (v1489): red1 HHS still …583845329 black ceiling corners = §GI_REDISTRIBUTE removing zone IR where screen-space SSGI saw nothing (bounce~0, AO~1). Now IR removed x (1-AO_ssgi). At that pose: dark 1.29%->0%, composite mean 104.2->122.8 (app 130), meanAbsDiff 25.5->7.6 (add-only 0.04). Hospital interior …582878311: dark 0%, meanAbsDiff 4.2.
 - Probe harness: scratchpad diag.js (PNG tEXt pose -> fresh page -> Alt+S -> § lines + light culprits); env OUTD/SUF/Q.
+- OPEN(1) §CONTACT_BOUNCE RESULT (v1489 + &aolamps=0 A/B switch in /tmp/wt-hot sourced_light.js, AOP[1]): floor pixels with an
+  opaque hit within 1.5 m straight up ("under") vs open floor, grid 24 px, luminance ratio under/open. def runs of cafe + Hospital were
+  OOM-contaminated (Z14 agent sharing the card: 485 / 1392 WebGPU OOM lines) -> discarded; clean rows:
+  | pose | app ratio aolamps ON | app ratio OFF | final ratio redist ON | final ratio &giredist=0 |
+  | cafe …366920 (n 114/1222) | 0.858 | 0.870 | (OOM) | 0.860 |
+  | stair …426486 (n 4/321, thin) | 0.904 | 0.911 | 0.802 | 0.900 |
+  | Hospital int …582878311 (n 37/487) | 0.742 | 0.757 | 0.719 (aol0 run) | 0.735 |
+  => §AO_LAMPS darkens under-furniture floor only 1-2 % (hypothesis CONFIRMED: LightLaw.AO radiusM 0.5 cannot see a 0.74 m table top).
+  §GI_REDIST_EVIDENCE adds 2-11 %. PROPOSAL (not built): a SECOND N8AO buffer for the lamp term only, radius >= furniture height
+  (indirect AO stays 0.5 m = the field cell, so no double count); cost = a second AO accumulation per press.
+- ✅ Z14/S4 §GI_CARRY (b690eec7, v1490, Fable agent + parent witness): kept WebGPU bounce RT held the previous press when a pass was
+  dropped by WebGPU OOM (shared 8 GB card) -> pasted onto the next still. RED: ext mask = int mask to the digit, meanAbsDiff 41-48 vs
+  fresh 4.7. GREEN (OOM 0): Terminal int->ext OK 4.29; Hospital int->ext OK 2.73; forced drop (__GI_STILL_INJECT_GEOM_DROP) -> STALE +
+  released + §GI_STILL_FAIL, next press OK 4.75 (fresh 4.72); same pose twice OK. hueNoise>0 not re-measured (INCONCLUSIVE, same mechanism).
+  LESSON: two GPU probe streams on the card at once = OOM = false defects. Serialize every headless GPU run: `flock /tmp/claude-1000/gpu.lock node …`.
+- Z25 MEASURED (§FIXTURE_PIXELS, diag.js FIX=1, HHS pose …583845329): every fixture pixel = emissive ffe4b5 x 0.3 = 6818 cd/m2
+  (x luxPer 22727) at exposure 92.9 (meter 51 cd/m2) -> 944/955 samples clipped white; faces down 539 / side 379 / up 37 ALL glow —
+  the whole fixture mesh emits, housing included (audit #43 UNSOURCED). Hospital interior pose: 0 fixture pixels in view.
+  Z25 SPEC: (a) only the EMITTING face emits — the face §LAMP_SHAPE_FACE already picks per geometry hash (plan = bottom, -Y local;
+  xy/zy = the elevation, either sign); housing emissive 0, lit like any surface. (b) face luminance L = Phi / (pi x A_face) in the
+  one calibration (emissive = L / luxPer), Phi = the fixture's own lamp flux as §LAMP_EN/lamp data already carry it, A_face = the
+  hull area _fixtureFaceFill computes; no flux -> keep 0.3 and log it UNSOURCED. (c) § line §FIXTURE_FACE per press: fixtures,
+  faceEmit / housingDark counts, L range cd/m2, clipped% of fixture pixels. Witness: §FIXTURE_PIXELS side/up buckets -> 0 emissive
+  where the face is plan; blown% of the whole still drops; fixture faces may still clip (a real camera clips a 3000+ cd/m2 face 6 stops over).
 LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
 DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
 scratchpad …/diag*.js, reads the PNG tEXt pose, one fresh-page press, prints § lines) -> FF look. No long gates unless asked.
