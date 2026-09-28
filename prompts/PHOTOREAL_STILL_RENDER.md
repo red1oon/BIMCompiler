@@ -1959,6 +1959,23 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
+## ▶▶▶ §DEV RESUME 2026-09-28 ("resume alts live") — START HERE
+LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
+DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
+scratchpad …/diag*.js, reads the PNG tEXt pose, one fresh-page press, prints § lines) -> FF look. No long gates unless asked.
+Shipped today on top of fix/alts-all-3 (release gate PASS 06:30): §GROUND_NOMAP_ALBEDO (ground white x2.3 before its texture
+loaded blacked out outdoor views), torch = soft 120 deg flood 450 lm -> 573 cd penumbra 1 (L1b), §R10_CLONE_MAP_SHADOW (bake crash
+'arr.map'), §METER_EC +1 EV (Unreal 4.25+ default), §METER_ROOM (inside camera meters its own zone), §AO_LAMPS (AO on lamp direct
+light), §GI_REDISTRIBUTE (bounce = local estimate replacing the flat IR; smoke: GI meanAbsDiff 0.92 -> 14.4, mean 117 -> 104).
+OPEN, in order: (1) red1: "last two stills not confirming the fix evident enough" — stills …1790556283542 / …1790556366920: check
+contact shadows under furniture (§AO_LAMPS) + bounce surfacing (§GI_REDISTRIBUTE) there by numbers; the bounce layer's magnitude
+vs the flat IR (mean dropped 11 %) may need calibration. (2) Z25 lit fixtures wash out (MeshBasic glow outside the lux scale ->
+emitting face calibrated, housing lit). (3) Z26 Clinic roof glass opaque from outside (glassReflDark). (4) Z14/S4 carried state
+between presses (odd frames that clear on reload). (5) Z23 zone grid at thin elements (dormer speckle; camera 'not in a zone').
+(6) Z24 ground level by slab-elevation clusters (HITOS storey bleed, 3.4 m high). (7) Alt+C: 30 s clip ~/Videos/altc_witness_0928/
+hospital_first30s_all.mp4 PASSED (baked at EC 0 — re-bake at +1 if asked); Z22 bake-speed (fix/bake-speed) GPU witness not run;
+§FILM_LAW S4 + Z16 camera track next. Opus subagents hit the weekly limit (resets Oct 2 16:00) — use Sonnet agents.
+
 **LIVE ON LOOK 2026-09-28 06:30: look/combined-0925 FF'd to fix/alts-all-3 @0323302c (sw v1478, served :8624) — §RELEASE GATE
 all PASS: §ALTS_ALL_VERDICT PASS (937 PASS, 0 FAIL/INCONCLUSIVE/VACUOUS/NO-OP, 3 SCOPE-BLIND), §BAKE_RELEASE_GATE PASS (A,A2,C,E,T,
 altc), §W_COLOUR_TRUTH_GPU PASS 25/25 (after the harness pin fix 0323302c; the first run's single FAIL was an all-black instrument
