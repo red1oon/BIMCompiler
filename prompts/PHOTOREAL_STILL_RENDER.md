@@ -2046,6 +2046,17 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   (lamp buf 0.898 / 0.822; truth 0.18), cafe 0.869/0.863/0.837 (lamp buf 0.856 / 0.674; truth 0.33), stair (n=2) 0.896/0.891/0.853.
   Open floor unchanged in f5 (122.9 / 112.0 vs 123.1 / 112.6 — no halo). Cost 382 ms/press. Even f5 closes < 15 % of the gap to the
   raycast truth => fix/lamp-ao NOT merged; the overhead lamp shadow map is the path (awaiting red1 go).
+- Z26 §GLASS_REFL_OPEN (Fable agent, bim-ootb fix/z26-glass-open @7d9252d6 v1496, NOT merged yet): per glass cell/side, exact rays
+  (12 az x 25 el, 7.5 deg) at field build, blocker = its rho x field F; RGBA32UI uSLGO table; &glassopen=0 old march, &glassblock=0 literal.
+  Clinic …495545980: census dark 24 -> 15, dark-pane lum median 6 -> 14, §FAULT glassReflDark 5/44 -> 3/44 (§FAULT now follows
+  §SPEC_SMOOTH). 13 of the remaining 15 REALLY reflect a wall 1-5 m away (next sawtooth riser) — dim, not sky; v3 (blocker F from the
+  near-side cell) pending. Build cost once per building per code version (IDB-cached): Clinic 10 s, Terminal 15.7 s, HHS 23 s,
+  Hospital 54 s (+~11 s est.) — DECISION for red1: accept vs GO_RAY_BUDGET level 2 (~33 s). Hospital/Terminal: no regression seen.
+  HHS_LEAK RE-JUDGED by the agent's lattice trace: the bright band's 7-8 lattice directions all pass the room's window glass (T 0.749)
+  to sky, exact cone rays confirm; exact cosine hemisphere T-weighted 0.035/0.053 bright vs 0.023/0.023 dim, lattice 0.032/0.044 vs
+  0.004/0.004 => the lattice is RIGHT at the bright points and 5-6x LOW at the dim ones (41-direction aliasing of a small window), not a
+  leak. My earlier HEMI probe (uniform-elevation, glass-then-opaque counted blocked) disagrees -> INCONCLUSIVE until one method is used.
+  Z23(b) reveal speckle: different mechanism (diffuse surfaceInfo lookup) — not extended.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
