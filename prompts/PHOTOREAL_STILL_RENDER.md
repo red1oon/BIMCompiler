@@ -1959,6 +1959,31 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
+## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — START HERE (model: Opus allowed by red1 for this task; Fable resting)
+# ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
+# § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
+STATE: look/combined-0925 @43db04b6 sw v1500 served :8624 from /tmp/wt-look (after a reboot: `git -C ~/bim-ootb worktree add /tmp/wt-look
+look/combined-0925` + symlink ~/bim-ootb/buildings/*.db + ~/bim-compiler/deploy/dev/buildings/HITOS_extracted.db into buildings/ +
+`node ~/bin/serve_tree.js /tmp/wt-look 8624 &`). Hotfix tree /tmp/wt-hot = fix/look-hot1 (same commit), serves :8662 for probes.
+PROBE: scratchpad of session deaf078b… (/tmp/claude-1000/-home-red1-bim-compiler/deaf078b-7b7d-43e2-a8ce-dce2f252d96b/scratchpad/
+diag.js; copy it if /tmp was wiped — lost on reboot, then rebuild from the env list below): env LEAK=1 LEAKW/LEAKH (grid rows: zone, sky,
+F, N.sun, sunOpaqueAt, blocker, Lu/Lf, mat), HEMI='[[x,y,z],..]' (exact hemisphere), PREJS='js' (eval before Alt+S), Q='&flag',
+OUTD/SUF; judge: sl/judge.py (bright+blocked count).
+MEASURED (see SUN_SHADOW_LEAK status below): Hospital …598818184, 23 floor points Lf 200-230 vs median 129; NOT the sun map
+(&shadowcascade/fit/edge=0 and sun off all still 23; two-sided shadowSide on 107 mats still 23). All 23 have field F 0.062 vs 0 on 193
+normal points. Exact rays (uniform elevation, glass-then-opaque=blocked) see 0 % sky. red1: stairs also pass light.
+STEP 1 (15 min): re-probe the 3 bright + 2 normal points with a COSINE-weighted, GLASS-TRANSMISSIVE exact hemisphere (the Z26 agent's
+  HHS method, z26r/leak.js if present) + APP._fieldTrace=[points] (Z.field.trace per-direction lattice contributions). Decide: lattice
+  over-reads (leak) vs real skylight.
+STEP 2 (spec first, append here): if leak — bound each cell's F by exact rays at field build (reuse the Z26 §GLASS_REFL_OPEN BVH/ray
+  machinery in light_zones.js), § line §SKY_FIELD_EXACT (cells, rays, ms, meanΔF, cells lowered/raised); A/B &skyexact=0. Hospital build
+  cost must be stated (field sweep today 91 s).
+STEP 3 witness: …598818184 bright+blocked 23 -> ~0, floor median unchanged ±3; HHS …601892033 bright band (real window light) stays;
+  Terminal ext …622137170 229/236 ground agreement stays; Clinic …495545980 glassReflDark 2/44 stays. Then commit, FF look, push.
+ALSO OPEN (order red1 approved): lamp overhead shadow map fix/lamp-shadow @295ac63f (batch: scratchpad run_lampsh.sh + table_lampsh.js),
+  room-use -> EN 12464-1 lamp targets (Sonnet), light-field DB persistence fix/light-field-db @98677577 (witness unfinished) + OCI SQL
+  patches, then Alt+C film law S4.
+
 ## ▶▶▶ §DEV RESUME 2026-09-28 ("resume alts live") — START HERE
 2026-09-28 PM (after reboot; /tmp wiped, diag6.js + uncommitted &aolamps=0 LOST; worktrees rebuilt, DBs symlinked, :8624 look / :8662 hot):
 - ✅ §FAULT_TORCH_EXEMPT (95608fa7, v1488): red1 exterior stills …582731985/…582785182 FAULT extLightsDay=1 = cam_torch (probe listed it). Torch exempt like _camLight, logged torch=1. Re-press: §FAULT OK both.
