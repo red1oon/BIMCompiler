@@ -2042,6 +2042,10 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   ALONG THE VIEW RAY (kernel, verbatim in the agent report). Radius is not the lever. &lampaof=5 run pending (halo check needed).
   STANDARD MECHANISM (recommended): a straight-down orthographic depth (shadow) map over the visible zone for the ceiling lamps as one
   broad overhead source, PCF kernel sized to the lamp spread, sampled by the lamp term — same shadow-map machinery as sun/torch.
+  FULL TABLE (9/9 runs, OOM 0; table_lampao.js): under/open ratioApp base / 0.75m f1 / 0.75m f5 — Hospital 0.745/0.740/0.727
+  (lamp buf 0.898 / 0.822; truth 0.18), cafe 0.869/0.863/0.837 (lamp buf 0.856 / 0.674; truth 0.33), stair (n=2) 0.896/0.891/0.853.
+  Open floor unchanged in f5 (122.9 / 112.0 vs 123.1 / 112.6 — no halo). Cost 382 ms/press. Even f5 closes < 15 % of the gap to the
+  raycast truth => fix/lamp-ao NOT merged; the overhead lamp shadow map is the path (awaiting red1 go).
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
