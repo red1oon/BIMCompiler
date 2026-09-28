@@ -2023,6 +2023,18 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   OOM 0). Hospital: housing meanL 250 -> 132. RULED (red1 2026-09-28 21:15, after viewing stills): "lighting fixtures treatment as it is,
   is very nice now" -> KEEP 4 pi (omni, as lit); the pi/Lambertian face is NOT to be applied. red1's standing goal the same day: predict
   real-life optics (design, surfacing, daylight, interior lighting) with standard expected settings.
+- HHS_LEAK (red1 21:30 "HHS still has some mishaps in enclosed room", still …601892033, v1495; diag.js LEAK=1 + HEMI, OOM 0):
+  closed room zone 92, sun blocked at every sample. Floor/wall band z 18.7-20.1 renders Lu ~200 / 165 vs ~123 / 106 beside it, and the
+  ONLY input that changes is the sky-view field F: 0.027-0.044 there vs 0.003-0.005. Real raycasts (128 dirs, upper hemisphere) from
+  the bright floor points: sky 0 %, through glass 0-0.8 % => the field sees sky that the geometry does not = a lattice leak (same
+  0.5 m-lattice class as Z26/Z23). Handed to the Z26 agent (build-time exact rays can bound F by geometry).
+- HHS_CORRIDOR_DARK (red1 "left corridor has too darkened walls in shadows, somehow its surface material maybe affecting lighting",
+  still …601860293): MATERIAL RULED OUT — wall "Lamelle 11.5" IFC ≈ Grey rgba 0.502 -> linear 0.216 (Z9 sRGB decode), SAME as the
+  corridor floor "Fliesen" 0.498. Floor = sun through the atrium glazing (Lu 193-201, F 0.12-0.22); wall = shaded by the corridor
+  ceiling (sun ray blocked 1.8-3.3 m), F 0.05, Lu 15-25 (bounce pass 23 -> 29 only). Wall/floor linear ratio rendered ~1.5 %;
+  view-factor estimate for a wall facing a sunlit floor strip 2-5 % => ~1-1.7 stops too dark. Likely cause: the floor->wall bounce
+  is the zone-flat IR (zone 57 = the whole corridor wing) + a screen-space SSGI that adds little. OPEN: measure the sunlit-floor
+  first bounce onto that wall exactly (raycast view factor x floor radiance) before any fix.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
