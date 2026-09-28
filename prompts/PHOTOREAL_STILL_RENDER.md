@@ -2114,6 +2114,12 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   NOT face culling / winding. NOT yet run: &shadowcascade=0 / &shadowfit=0 / &shadowedge=0 A/B (scratchpad sl/judge.py + diag.js LEAK=1
   LEAKW=40 LEAKH=22, Q=...). Next suspects: CSM cascade fit / SDSM depth-slice box excluding the L2 slab (§STILL_SHADOW_FIT box
   105.5x60.4 m vs footprint 102x137), shadow camera near/far. NO FIX COMMITTED.
+  UPDATE (same day): &shadowcascade=0 / &shadowfit=0 / &shadowedge=0 -> all 23 (identical); sun.intensity=0 via PREJS -> still 23
+  (caveat: staging may re-set sunI). The 23 bright points ALL carry sky-view field F 0.062 (median) vs F 0 on the 193 normal floor
+  points, all zone 1. Exact 128-ray upper hemisphere (uniform-elevation, glass-then-opaque = blocked) at 3 bright points: sky 0 %,
+  through-glass 0-1.6 %, while the field says F 0.035-0.077 => the patches are the SKY-VIEW FIELD (0.5 m lattice), not the sun shadow
+  map: same class as Z23/Z26/HHS_LEAK. INCONCLUSIVE until a cosine-weighted, glass-transmissive probe (the Z26 agent's method) agrees.
+  FIX DIRECTION: bound F per cell by exact rays at field build (the Z26 build-time ray machinery). red1 confirmed stairs also pass light.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
