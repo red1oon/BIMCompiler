@@ -2089,6 +2089,15 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   v1499) incl. Terminal hall …602379032 + HHS. Exterior Terminal …622137170 stays the control (229/236 correct).
 - Light-field DB persistence DISPATCHED (Fable, bim-ootb fix/light-field-db, v1498): red1 "put it as part of the one time DB save;
   I can save the DB again as a silent_bake.db to test". Memory answer given: IndexedDB = disk, GPU 11.1 MB only while a still is staged.
+- PRECOMPUTE LIST (red1 2026-09-29 "what else can be pre calculated during save"; Hospital first-press timings, bl/1790598818184_blk.log):
+  camera-free (store per building, keyed to code version): §SKY_VIEW_FIELD 91.5 s (sweep 88.9), §GLASS_REFL_OPEN 66.8, §SKY_SHELL_RAYS
+  16.0 (bvh 3.2), §GROUND_VIEW_FIELD 2.5 — ALL in the light_zones field record = fix/light-field-db scope (~177 s). NEXT (Sonnet):
+  §MEP_SMOOTH_NORMALS 4.2 + §NORMAL_REPAIR 2.5 (bake into geometry), §BVH_DEFERRED 2.9, §GLARE audit 2.1, §COVE_LIGHT 0.6,
+  §IRC_MAX faces 0.24, §SURFACE_ROOF_LAYER 0.3, §FIXTURE_FACE 0.2 (~13 s). Camera-bound (cannot): §STILL_REFINE 112, bounce GI 77,
+  §SOURCED_LIGHT_CAP 7.8, meters ~2. Delivery to OCI DBs = buildings/patches/<bld>.sql + the viewer self-heal loader, regenerated per
+  light-code release (the record's key carries the code version).
+- AGENT MODEL (red1 2026-09-29): "rest the Fable agents once done; use Sonnet if they can carry on clearly, save tokens" — no new Fable
+  dispatches; follow-ups = Sonnet with tight specs, or parent.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
