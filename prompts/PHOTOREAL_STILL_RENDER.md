@@ -2035,6 +2035,13 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   view-factor estimate for a wall facing a sunlit floor strip 2-5 % => ~1-1.7 stops too dark. Likely cause: the floor->wall bounce
   is the zone-flat IR (zone 57 = the whole corridor wing) + a screen-space SSGI that adds little. OPEN: measure the sunlit-floor
   first bounce onto that wall exactly (raycast view factor x floor radiance) before any fix.
+- §AO_LAMP_BUF (Fable agent, bim-ootb fix/lamp-ao @af16db95 v1497, NOT merged): second N8AO buffer at 0.75 m (EN 12464-1 desk
+  reference plane, >= EN 527-1 type C 740 mm) for the lamp term only. RESULT Hospital int (OOM 0): under/open 0.745 -> 0.740 (-0.7 %),
+  lamp buffer 0.898 vs indirect 0.908; cost +383 ms (24 frames). RAYCAST TRUTH (§LAMP_VIS, floor -> nearest 12 lamps, I cos/d^1.5):
+  under/open = 0.18. => screen-space AO at ANY radius cannot reach it: n8ao counts an occluder only within 0.2 r falloff of the sample
+  ALONG THE VIEW RAY (kernel, verbatim in the agent report). Radius is not the lever. &lampaof=5 run pending (halo check needed).
+  STANDARD MECHANISM (recommended): a straight-down orthographic depth (shadow) map over the visible zone for the ceiling lamps as one
+  broad overhead source, PCF kernel sized to the lamp spread, sampled by the lamp term — same shadow-map machinery as sun/torch.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
