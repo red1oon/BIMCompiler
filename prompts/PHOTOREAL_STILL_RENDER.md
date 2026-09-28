@@ -2067,6 +2067,20 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   at load and after far/back camera moves; red1 confirmed "I was mistaken". Hospital has no FE elements (fire alarm panels 0.92,0.90,0.85).
 - Lamp overhead shadow map DISPATCHED (Fable, bim-ootb fix/lamp-shadow, v1497): red1 2026-09-29 "is it required to achieve as I and
   others would expect?" -> yes (under-furniture 0.745 vs raycast truth 0.18); direction already given, so no further go needed.
+- TERMINAL_CORNER (red1 "slight black blotch at a corner", still …621233765, v1495; LEAK grid 32x18, OOM 0): (a) the pure-black
+  pixels (1.31 %, all x 1388-1665 y 89-572) = the IfcWindow frame, authored material 000000 — data, not a fault. (b) the dark wall strip
+  left of the door (red1 PNG mean 69.6 vs 139.1 beside it): SAME wall guid 3Q026pUy1CnxmrPEZ8YbBE, same d3d3d3, but its last ~0.4 m
+  before the corner resolves to zone 70 (Lu 74-84) while the rest is zone 1 (Lu 175-210) = surfaceInfo's 27-cell eye-side lookup
+  taking the neighbour room at a corner — the Z23 lattice class (same as the Castle reveal speckle). Alt+S only: SourcedLight.stage
+  never runs for films (sourced_light.js:847), so Alt+C does not show THIS; films carry their own lighting (pool lamps, no zones).
+- TERMINAL_GROUND_SHADOWS (red1 "roof lets light blast thru, splats of shadow", still …622137170): ground pixels vs an exact ray to the
+  sun (0,0.707,-0.707): 229/236 agree (dark <-> blocked); sunlit median 141 (min 112), blocked median 55, blockers 10-30 m away
+  (the open-truss roof edge / overhangs). => the splats are real sun shadows of the geometry, not an anomaly; patchiness partly the
+  ground's dirt texture. 7 disagreements = blocked-but-bright (penumbra / through glass / map resolution at 25 m).
+- Z26 build cost follow-up (red1: "will it hog mem? cached? can't it be saved during saving to DB?"): built once, stored in the
+  browser IndexedDB field record (Hospital record 113.8 MB incl. the rest of the field; glass table 11.1 MB GPU texture while a still
+  is staged). PLAN: bake it offline at publish (same code, headless) as a per-building sidecar on OCI keyed to the code version; the
+  viewer fetches it and only computes when missing — users never pay the 67 s.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
