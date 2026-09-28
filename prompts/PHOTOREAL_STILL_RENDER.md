@@ -1988,6 +1988,20 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   hull area _fixtureFaceFill computes; no flux -> keep 0.3 and log it UNSOURCED. (c) § line §FIXTURE_FACE per press: fixtures,
   faceEmit / housingDark counts, L range cd/m2, clipped% of fixture pixels. Witness: §FIXTURE_PIXELS side/up buckets -> 0 emissive
   where the face is plan; blown% of the whole still drops; fixture faces may still clip (a real camera clips a 3000+ cd/m2 face 6 stops over).
+- Z26 MEASURED (§GLASS_DARK_CENSUS, diag.js GLASS=1, Clinic ext still …495545980 cam [39.743,7.291,-6.397], v1491, OOM 0):
+  64x36 grid, 159 glass hits: 24 dark by the binary mirror gate (25 by §SPEC_SMOOTH — the §FAULT counter uses binary, the shader smooth;
+  same verdict here). Dark panes render lum median 3.5 vs 89 for the rest (near-black). ALL are vertical clerestory panes (n.y 0) stepping
+  down the roof at x 4.28 / 10.67 / 16.95 / 23.44 — NOT flat roof glass. The mirror-ray march (0.25 m x 32, SOLID after 1 m -> base F)
+  meets opaque cells 0.25-2 m out (trace e.g. `G 188* 188* 188* S S S 0 0 …`: glass, covered sky-lit zone 188 (eave), opaque, open),
+  but a real three.js raycast along the SAME reflected ray hits NOTHING within 60 m for 6 of 8 traced samples (2 of 8 hit a wall at
+  0.53 / 3.18 m = real). Nearby instances are all visible (no hidden-batch voxels); classes near: IfcRoof standing-seam, exterior
+  IfcWall, mullions (IfcMember, not rasterised). => false blocking = 0.5 m voxel thickening of eave/roof edges grazing the reflected
+  ray (Z23 class). The gate then falls back to sky-view F ~0 -> no reflection -> black pane.
+  Z26 SPEC (fix direction, exact against geometry, build-time): per glass cell, a CPU reflection-openness computed ONCE at zone build
+  by real raycasts against the boundary+occluder meshes (a small cone of mirror directions about the pane normal, e.g. the lattice
+  FIELD_DIRS in the outward hemisphere), stored beside glassT; the shader/specVis use it for glass cells instead of the voxel march
+  (the march stays for opaque specular). § line §GLASS_REFL_OPEN per build: glass cells, mean/min openness, ms. Witness: this pose's
+  dark count 24 -> ~2 (the two real walls), dark-pane lum up, other glass unchanged; Hospital/Terminal glass counts unchanged.
 LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
 DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
 scratchpad …/diag*.js, reads the PNG tEXt pose, one fresh-page press, prints § lines) -> FF look. No long gates unless asked.
