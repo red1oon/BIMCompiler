@@ -1967,7 +1967,7 @@ Shipped today on top of fix/alts-all-3 (release gate PASS 06:30): §GROUND_NOMAP
 loaded blacked out outdoor views), torch = soft 120 deg flood 450 lm -> 573 cd penumbra 1 (L1b), §R10_CLONE_MAP_SHADOW (bake crash
 'arr.map'), §METER_EC +1 EV (Unreal 4.25+ default), §METER_ROOM (inside camera meters its own zone), §AO_LAMPS (AO on lamp direct
 light), §GI_REDISTRIBUTE (bounce = local estimate replacing the flat IR; smoke: GI meanAbsDiff 0.92 -> 14.4, mean 117 -> 104).
-OPEN, in order: (1) red1: "last two stills not confirming the fix evident enough" — stills …1790556283542 / …1790556366920: check
+OPEN, in order: (1) red1: "last two stills not confirming the fix evident enough" — stills …1790556283542 / …1790556366920 (red1 then: the next still …1790556426486 "shows better signs" — compare all three): check
 contact shadows under furniture (§AO_LAMPS) + bounce surfacing (§GI_REDISTRIBUTE) there by numbers; the bounce layer's magnitude
 vs the flat IR (mean dropped 11 %) may need calibration. (2) Z25 lit fixtures wash out (MeshBasic glow outside the lux scale ->
 emitting face calibrated, housing lit). (3) Z26 Clinic roof glass opaque from outside (glassReflDark). (4) Z14/S4 carried state
