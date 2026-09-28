@@ -1960,6 +1960,10 @@ fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIV
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
 ## ▶▶▶ §DEV RESUME 2026-09-28 ("resume alts live") — START HERE
+2026-09-28 PM (after reboot; /tmp wiped, diag6.js + uncommitted &aolamps=0 LOST; worktrees rebuilt, DBs symlinked, :8624 look / :8662 hot):
+- ✅ §FAULT_TORCH_EXEMPT (95608fa7, v1488): red1 exterior stills …582731985/…582785182 FAULT extLightsDay=1 = cam_torch (probe listed it). Torch exempt like _camLight, logged torch=1. Re-press: §FAULT OK both.
+- ✅ §GI_REDIST_EVIDENCE (v1489): red1 HHS still …583845329 black ceiling corners = §GI_REDISTRIBUTE removing zone IR where screen-space SSGI saw nothing (bounce~0, AO~1). Now IR removed x (1-AO_ssgi). At that pose: dark 1.29%->0%, composite mean 104.2->122.8 (app 130), meanAbsDiff 25.5->7.6 (add-only 0.04). Hospital interior …582878311: dark 0%, meanAbsDiff 4.2.
+- Probe harness: scratchpad diag.js (PNG tEXt pose -> fresh page -> Alt+S -> § lines + light culprits); env OUTD/SUF/Q.
 LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
 DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
 scratchpad …/diag*.js, reads the PNG tEXt pose, one fresh-page press, prints § lines) -> FF look. No long gates unless asked.
