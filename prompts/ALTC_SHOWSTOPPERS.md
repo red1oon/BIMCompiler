@@ -597,3 +597,21 @@ one GPU agent, real GPU, serial, per CLAUDE.md PRIMAL LAW "WITNESS REPLACES EVER
   7. Overlay identity (if `--clash --measure --label` are part of the reference command): same tag-family line counts,
      timing-stripped, BEFORE vs AFTER (the existing `ovdiff`-style check in `alts_all_judge.js`).
  VERDICT LINE: `§Z22_GPU_WITNESS PASS|FAIL|INCONCLUSIVE` — PASS only if 1-6 all hold (7 WARN-only if flags weren't shared).
+
+**Z22 GPU WITNESS — RUN 2026-09-28 (parent session, serial under `flock /tmp/claude-1000/gpu.lock`, RTX 4060, logs
+scratchpad deaf078b…/z22/{before,after}.out). `§Z22_GPU_WITNESS FAIL` — no speed gain.**
+ | | BEFORE 05d0ee7d (v1478) | AFTER 9a271b18 fix/bake-speed (v1479) |
+ |---|---|---|
+ | §CLI_BAKE_WALL totalSec | 442 | 448 (+6 s, +1.4 %) |
+ | load (§CLI_BAKE_LOADED) | 25.2 s | 24.8 s |
+ | frame 0 (§FRAME_COST i=0 perFrameMs) | 181,512 | 181,422 |
+ | frames 2/5/8 perFrameMs | 62,748 / 32,594 / 22,555 | 62,349 / 32,422 / 22,439 |
+ | §CLI_BAKE_FRAMES mean / p50 / worst ms | 4259 / 2346 / 182,263 | 4248 / 2320 / 181,199 |
+ | mp4 | 90 fr, 2,068,088 B | 90 fr, 2,066,249 B |
+ (1) FAIL: wall not lower. The "~125 s torn-down first staging" premise does not reproduce here: BEFORE's SW purge happens at
+ +0.7 s, before any staging, and its load is 25 s — the same as AFTER. (2) `§CLI_BAKE_LOADS count=1` present in AFTER (PASS as a
+ line). (3)-(5) INCONCLUSIVE-instrument: the CLI log holds only the §CLAIM digest; `§BAKE_PRECOMPILE` / per-frame
+ `§FILM_EXPOSURE programs=` lines are not in it — but the frame costs say it anyway: frame 0 is still 181 s (41 % of the whole
+ bake) in AFTER, so pre-compile moved none of it. (6) not judged (no per-frame luma; file sizes within 0.09 %).
+ NEXT (the real target, measured): frame 0 = 181 s, frames 1-8 decay 63 -> 22 s, steady ~2 s. Find what frame 0 does
+ (§FRAME_COST breakdown per stage) before any more "pre-compile" work — fix/bake-speed stays UNMERGED.

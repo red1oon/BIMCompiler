@@ -2020,7 +2020,12 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   (Phi = 4 pi I luxPer of the omni lamp the shader already lights with, L = Phi/(pi A)); non-luminaires on a glow material (HHS: 315
   IfcFlowTerminal diffusers) emissive 0 (&fixnonlum=0 A/B; &fixface=0 whole fix off). HHS pose: housing clipped 95.8 -> 0 %, diffuser
   99.2 -> 0 %, face 96 % (a real face 6.7 stops over the meter), whole-still blown 2.37 -> 0.5 % (parent smoke on merged look: 0.5 %,
-  OOM 0). Hospital: housing meanL 250 -> 132. OPEN (red1 ruling): 4 pi (omni, as lit) vs pi (Lambertian face) = 1.6 stops on the face.
+  OOM 0). Hospital: housing meanL 250 -> 132. RULED (red1 2026-09-28 21:15, after viewing stills): "lighting fixtures treatment as it is,
+  is very nice now" -> KEEP 4 pi (omni, as lit); the pi/Lambertian face is NOT to be applied. red1's standing goal the same day: predict
+  real-life optics (design, surfacing, daylight, interior lighting) with standard expected settings.
+- Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
+- Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
+  "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
   Films keep whole-mesh glow (no per-lamp I on the pool path).
 LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
 DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
