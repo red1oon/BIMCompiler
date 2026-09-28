@@ -2061,6 +2061,12 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   blocker-F), Hospital …196433 1/107 -> 0/107, Hospital …138871 0/75 -> 0/75, Terminal …725998 0/119 -> 0/119, Terminal …578781
   0/76 -> 0/76; §FAULT_GI dark % unchanged every pose. Hospital final build 66.7 s (level 2, 35053 sides). READY TO MERGE pending
   red1's Hospital first-press cost call (accept 67 s once per building per code version, IDB-cached, vs cap buried sides).
+  ✅ MERGED 2026-09-29 (look FF to 7d9252d6, sw v1496; smoke OOM 0: Clinic glassReflDark 2/44, HHS blown 0.5 % = Z25 intact).
+  Cost decided by parent per red1's standing direction (real-life optics first): accepted; OPEN = move the build off the press path.
+- FE colour (red1 "fire extinguisher grey then red"): CLOSED, no defect — Terminal FE 1IJh$…SqX material 1.0,0.2,0.2 renders ff3333
+  at load and after far/back camera moves; red1 confirmed "I was mistaken". Hospital has no FE elements (fire alarm panels 0.92,0.90,0.85).
+- Lamp overhead shadow map DISPATCHED (Fable, bim-ootb fix/lamp-shadow, v1497): red1 2026-09-29 "is it required to achieve as I and
+  others would expect?" -> yes (under-furniture 0.745 vs raycast truth 0.18); direction already given, so no further go needed.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
