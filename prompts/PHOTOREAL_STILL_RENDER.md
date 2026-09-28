@@ -2002,6 +2002,12 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   FIELD_DIRS in the outward hemisphere), stored beside glassT; the shader/specVis use it for glass cells instead of the voxel march
   (the march stays for opaque specular). § line §GLASS_REFL_OPEN per build: glass cells, mean/min openness, ms. Witness: this pose's
   dark count 24 -> ~2 (the two real walls), dark-pane lum up, other glass unchanged; Hospital/Terminal glass counts unchanged.
+- ✅ Z24 §GROUND_DOOR_CHECK (v1494, look FF'd): rule = the picked ground slab must be one its storey's own doors stand on; door-sill
+  mode (0.25 m bins) > 1.0 m (the slab filter's thickness bound) below it -> largest slab of that storey whose bottom is within 1.0 m
+  under the doors. sqlite3 fleet (10 DBs) + live §GROUND_Y (7 buildings, flock'd): only HITOS moves 27.63 -> 24.15 (62 u.etg doors at
+  24.25); Clinic/Terminal/LTU/Hospital/HHS/Duplex "consistent". Door-level-only rules REJECTED by the fleet: lowest GF cluster chains
+  storeys (LTU 2.40->0.70, Terminal 14.72->13.99). NOTED not changed: Clinic ground -1.37 is a 192 m2 sunken GF slab while 145 doors
+  stand at 0.00 (doors ABOVE the plane, outside this rule's direction) — raise only if red1 reports Clinic ground.
 LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
 DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
 scratchpad …/diag*.js, reads the PNG tEXt pose, one fresh-page press, prints § lines) -> FF look. No long gates unless asked.
