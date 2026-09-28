@@ -2015,6 +2015,13 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   OUTSIDE (cam [-13.8,0.6,-14.9]): the 27-cell nearest-eye-side search lands in the room behind the opening. Same class as Z26
   (0.5 m lattice at thin elements). NOT built: fix after Z26's build-time exact-raycast mechanism lands (extend it to reveal faces:
   a surface whose eye-side lookup crosses a window cell takes the open side), else two agents collide in light_zones.js.
+- ✅ Z25 §FIXTURE_FACE (Fable agent 34329ab7 v1492, merged into look v1495): per-vertex aFixFace (batched ranges) / aFixInst (instanced)
+  + one uniform uFixFace (1 in the still, 0 at teardown: nav/films unchanged). Face per §LAMP_SHAPE_FACE; emissive = 4 I / A_face
+  (Phi = 4 pi I luxPer of the omni lamp the shader already lights with, L = Phi/(pi A)); non-luminaires on a glow material (HHS: 315
+  IfcFlowTerminal diffusers) emissive 0 (&fixnonlum=0 A/B; &fixface=0 whole fix off). HHS pose: housing clipped 95.8 -> 0 %, diffuser
+  99.2 -> 0 %, face 96 % (a real face 6.7 stops over the meter), whole-still blown 2.37 -> 0.5 % (parent smoke on merged look: 0.5 %,
+  OOM 0). Hospital: housing meanL 250 -> 132. OPEN (red1 ruling): 4 pi (omni, as lit) vs pi (Lambertian face) = 1.6 stops on the face.
+  Films keep whole-mesh glow (no per-lamp I on the pool path).
 LOOK = look/combined-0925 @31c8e3ce (sw v1487) served :8624 from /tmp/wt-look; hotfix branch fix/look-hot1 (/tmp/wt-hot, same commit,
 DBs symlinked in buildings/). Mode: red1 refreshes :8624 and judges; fix -> smoke one press at red1's pose (diag.js pattern:
 scratchpad …/diag*.js, reads the PNG tEXt pose, one fresh-page press, prints § lines) -> FF look. No long gates unless asked.
