@@ -2103,6 +2103,12 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   viewer/tests/witness_light_field_db.js Clinic/Hospital under the GPU flock, read, merge if GREEN); fix/sun-shadow-leak = 0 commits
   (agent stopped while reading; the SUN_SHADOW_LEAK measurement above is the whole handoff); fix/lamp-shadow @295ac63f (2 commits,
   pushed; its RED/GREEN batch never ran: scratchpad run_lampsh.sh + table_lampsh.js).
+- ✅ §METER_FIXFACE (v1500, look FF'd): red1 Clinic corridor …628230228 "went dark" (expStep -1.72). A/B at that pose: default meter
+  117 cd/m2, frame mean 22; &glassopen=0 identical (not Z26); pre-Z25 build v1494 mean 6 (meter 6184 cd/m2 from glows) — NOT a
+  regression. Cause: Z25 made lamp faces lit-material emissive, so the meter (which §METER_EV v2 keeps free of light sources) read
+  them. Fix: meter pass renders faces with emission 0 (uFixFace 2). Result: …628230228 meter 26 cd/m2, mean 74; …628332802 mean 112
+  (blown 2.8 %); HHS …583845329 meter 50.1 vs 50.9 (unchanged). OPEN: red1 "wall lamps had bounce before" — not measured separately;
+  exit-door glare pulling exposure near the corridor end — centre-weighting TBD after red1 re-looks.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
