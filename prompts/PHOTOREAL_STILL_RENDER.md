@@ -2109,6 +2109,11 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   them. Fix: meter pass renders faces with emission 0 (uFixFace 2). Result: …628230228 meter 26 cd/m2, mean 74; …628332802 mean 112
   (blown 2.8 %); HHS …583845329 meter 50.1 vs 50.9 (unchanged). OPEN: red1 "wall lamps had bounce before" — not measured separately;
   exit-door glare pulling exposure near the corridor end — centre-weighting TBD after red1 re-looks.
+- SUN_SHADOW_LEAK status 2026-09-29 (session end, tokens out): v1500 still 23 bright-but-blocked floor points at …598818184 (floor
+  median 129). RULED OUT: shadowSide = DoubleSide on all 107 opaque materials (PREJS A/B, OOM 0) -> identical 23, identical means =>
+  NOT face culling / winding. NOT yet run: &shadowcascade=0 / &shadowfit=0 / &shadowedge=0 A/B (scratchpad sl/judge.py + diag.js LEAK=1
+  LEAKW=40 LEAKH=22, Q=...). Next suspects: CSM cascade fit / SDSM depth-slice box excluding the L2 slab (§STILL_SHADOW_FIT box
+  105.5x60.4 m vs footprint 102x137), shadow camera near/far. NO FIX COMMITTED.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
