@@ -2098,6 +2098,11 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   light-code release (the record's key carries the code version).
 - AGENT MODEL (red1 2026-09-29): "rest the Fable agents once done; use Sonnet if they can carry on clearly, save tokens" — no new Fable
   dispatches; follow-ups = Sonnet with tight specs, or parent.
+- FABLE AGENTS STOPPED 2026-09-29 (red1: "rest the Fable agents early as tokens are running out"): fix/light-field-db @98677577
+  (3 commits on look, pushed, worktree /tmp/wt-lfdb clean, witness NOT finished — resume with Sonnet: run its
+  viewer/tests/witness_light_field_db.js Clinic/Hospital under the GPU flock, read, merge if GREEN); fix/sun-shadow-leak = 0 commits
+  (agent stopped while reading; the SUN_SHADOW_LEAK measurement above is the whole handoff); fix/lamp-shadow @295ac63f (2 commits,
+  pushed; its RED/GREEN batch never ran: scratchpad run_lampsh.sh + table_lampsh.js).
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
