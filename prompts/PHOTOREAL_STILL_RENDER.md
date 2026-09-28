@@ -2081,6 +2081,14 @@ VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/
   browser IndexedDB field record (Hospital record 113.8 MB incl. the rest of the field; glass table 11.1 MB GPU texture while a still
   is staged). PLAN: bake it offline at publish (same code, headless) as a per-building sidecar on OCI keyed to the code version; the
   viewer fetches it and only computes when missing — users never pay the 67 s.
+- SUN_SHADOW_LEAK (red1 2026-09-29: "patchy light splashes in Hospital main hall winding stair surroundings / Terminal main hall
+  cafeteria / HHS — too much interplay?"): Hospital …598818184 (v1496 replay, OOM 0) 40x22 floor grid: 23 floor points render Lf 200-230
+  (median 128) with N.sun 0.71, yet the exact ray to the sun hits OPAQUE geometry 6-8 m up for ALL: 14x Level 2 slab 0e8pm26Tv5vPrj6zU55Mad
+  (IfcSlab 150 mm concrete + metal deck, 98.9x90.6 m, BatchedMesh, castShadow true, visible), 3x cable tray, 4x UB beams. => the sun
+  SHADOW MAP leaks through a slab the scene contains: a DEFECT, not correct interplay. Dispatched (Fable, bim-ootb fix/sun-shadow-leak,
+  v1499) incl. Terminal hall …602379032 + HHS. Exterior Terminal …622137170 stays the control (229/236 correct).
+- Light-field DB persistence DISPATCHED (Fable, bim-ootb fix/light-field-db, v1498): red1 "put it as part of the one time DB save;
+  I can save the DB again as a silent_bake.db to test". Memory answer given: IndexedDB = disk, GPU 11.1 MB only while a still is staged.
 - Z26 Fable agent DIED at start (Fable session limit, resets 20:50 Asia/KL) — nothing built; spec above stands, re-dispatch after reset.
 - Z22 GPU witness RUN: FAIL, no speed gain (442 -> 448 s; frame 0 still 181 s = 41 % of the bake) — see ALTC_SHOWSTOPPERS.md
   "Z22 GPU WITNESS — RUN 2026-09-28". fix/bake-speed stays unmerged; next = what frame 0 spends 181 s on.
