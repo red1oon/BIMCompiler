@@ -2085,6 +2085,11 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   BLOTCH tests over 1 m neighbour pairs on one floor: skyJump (|dF| > 0.02, |dE| < 0.005 — a field edge the geometry lacks), zoneFlip
   (different zones, same up class — the Z23 eye-side lookup class behind TERMINAL_CORNER / Castle speckle), irStep (fill differs
   across a flip), lampStep (lamp ratio > 2, same up class). Not covered (screen-space): AO, SSGI — §LIGHT_WITNESS covers those.
+- CLINIC BASELINE (red1 2026-09-29 "latest Clinic stills showing good", v1501, from the PNG tEXt stamps): …656754442 and …656779058:
+  unlit 0/144 and 0/142, irOnly 0, hueNoise 0, blown 0.27 % / 2.95 %, dark 0 %. Both still say §FAULT FAULT, and the ONLY counter is
+  glassLow = 1 (one visible glazing material with T < 0.7). All 172 see-through plates are drawn as glass (lost 0). So the FAULT flag
+  fires on every Clinic still from one material. OPEN: name that material and check the IFC — a tinted pane is data, and then glassLow
+  should not flip the verdict.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
