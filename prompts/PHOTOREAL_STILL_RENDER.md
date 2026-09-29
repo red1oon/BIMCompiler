@@ -2104,6 +2104,72 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
 - LEFT: not checked on Hospital glass wings / atrium (same readback cap expected wherever a window array is in frame); films unaffected
   (_cascadeFit null). Merge with fix/sky-surface (both from 18d7b2e0; effects.js vs light_zones.js — no file overlap except sw.js /
   viewer.html version lines). Probes/logs: scratchpad 4a28e70a…/c4 (diag2.js, rows.py, cs/px_cols.json).
+### CASE 2 MEASURED (2026-09-30, Opus) — the tiles are the LATTICE, not v1503's exact cells (suspicion refuted)
+- red1's still …709239282 was pressed 03:13:59; the v1505 Terminal sidecar landed 03:24:13 -> that press built the FAST (lattice) field.
+  Its stamp blown 9.4 % = the lattice arm here (9.15 %).
+- Terminal re-baked for v1506 (/tmp/wt-surf, key 771af243:87025, 3,280,003 B, field 122 s, open cells 51,731; restorecheck PASS 90 ms).
+- Hall wall (px_tmwall 105x55 @8 px, 5019 wall px; tm.py; OOM 0, §GI_STILL 1 each):
+  | arm | frame blown | exposure | wall medLf | wall blown | band p50/p90 | Lf jumps>=20 | F steps>=0.01 | wall F med/p90 |
+  | v1506 baseline (:8664) | 7.71 % | 22.15 | 116 | 3.49 % | 0.0184/0.0694 | 738 | 1229 | 0.010/0.077 |
+  | v1502 field (:8663 &skyexactall=0) | 9.15 % | 21.80 | 115 | 3.81 % | 0.0180/0.0711 | 734 | 1229 | - |
+  | v1505 exact covered (:8663) | 5.32 % | 14.69 | 123 | 4.20 % | 0.0126/0.0386 | 360 | 1039 | 0.018/0.056 |
+  | v1505 + case-4 fix (:8665) | 5.16 % | 14.66 | 122 | 3.73 % | 0.0162/0.0508 | 349 | 1039 | - |
+  => on this wall the exact covered field HALVES the cell-scale jumps (734 -> 360) while Clinic showed it costs exposure; the case-4
+  cascade fix does not touch this wall (349 vs 360). The baseline keeps the tiles. CONFLICT: lattice = right frame, blocky cells;
+  exact = smooth cells, lifted mean. NEXT (spec below): smooth the lattice's cell steps without moving its mean.
+### §SKY_FIELD_SMOOTH — SPEC (case 2 fix, 2026-09-30, Opus)
+- WHAT: after the field's sky passes (lattice, shell, §SKY_FIELD_EXACT bound, open-cell exact) and before G is packed: every COVERED
+  non-solid cell's F := mean F over the non-solid cells of the SAME zone in its 3x3x3 neighbourhood (itself included; open, solid and
+  other-zone cells excluded -> nothing crosses a wall or leaves a room; open-cell exact values untouched). One pass (radius 1 = 0.5 m).
+  Local mean-preserving: the zone's summed F is logged before/after (must agree within 1 %).
+- SWITCH &skysmooth=0 / APP._stillSkySmooth = false (in the §ZONE_IDB_CACHE fingerprint). § line §SKY_FIELD_SMOOTH: cells, meanAbsDF,
+  maxDF, sumF before/after (ratio), ms.
+- WITNESS: Terminal hall wall (…709239282, tm.py): Lf jumps and F steps drop vs the v1506 baseline (738 / 1229), toward exact's 360;
+  wall medLf / exposure within 0.2 EV of baseline. Clinic (wop.py-style vs the v1506 baseline at the 6 case-1 poses): exposure within
+  0.2 EV; walle truth errors on the case-1 floor/wall sets not worse than v1502 by more than 10 %. HHS §STAIR_UNDER open points unchanged.
+### §SKY_FIELD_SMOOTH RESULT (2026-09-30, Opus) — shipped to fix/sky-surface (sw v1507), case 2 partly closed
+- Bakes v1507 key f46378d4:88601: Clinic 385,460 B, Terminal 3,910,133 B (HHS not re-baked). Terminal §SKY_FIELD_SMOOTH cells 1,153,331
+  meanAbsDF 0.0115 maxDF 0.46 sumF 92817.7 -> 92723.9 (ratio 0.999) 209 ms.
+- Terminal hall wall (tm.py): Lf jumps 738 -> 337, F steps 1229 -> 572, band p90 0.0694 -> 0.0674, frame blown 7.71 -> 6.13 %,
+  wall medLf 116 -> 105.
+- Clinic 6 case-1 poses (cmp4.py): exposure 185.1 -> 184.0, 248.9 -> 241.6, 320.7 -> 319.3, 47.3 -> 48.4 (<= 0.04 EV). walle truth:
+  floors err 0.0023 = 0.0023 / 0.0048 vs 0.0044; walls …965285 0.049 vs 0.0504; walls …038659 0.0083 vs 0.0073 (+14 %: the spec's
+  10 % clause missed on that one set). Recorded, shipped as switchable (&skysmooth=0).
+- red1's 8 v1507 Clinic stills (…720007530-…720195167, blk.py, v1507 vs &skysmooth=0): interior "blocks" are NOT the sky field any more
+  (edges >= 15 Lf on the same element 154-941 per pose; coincident F steps 0-53). unlit 0/144 at all 8 (red1: "no more black corner
+  bleeps"). irOnly 23 at …720125219 in BOTH arms (pre-existing). NEXT: per-term A/B (r9.sh: groundview / giredist / ir / cove /
+  aoindirect / lamps off) at …720125219 and …720195167 to find the term that makes the remaining blocks.
+### MIRROR (red1 still …720801650, Clinic toilet, v1507) — MEASURED + SPEC §MIRROR_OWN_MAT
+- red1: "the mirror is dark"; hover shows 'mirror' in its IFC. Mirror 197mqEVor8ZRDjVbXCppsz = IfcFlowTerminal "M_Mirror 600mm x 900mm",
+  discipline MEP, IFC material_rgba 0.843 grey. Rendered: Standard c 10ad10 (MEP green), metalness 0.95, roughness 0.03, env 0.1,
+  zone 287 F 0 -> Lu/Lf 5-10 (black) except the torch highlight.
+- CAUSE (code): §MIRROR_TRUE_REFLECT (effects.js _mirrorReflectMats) finds the 22 mirrors (5 meshes loaded) but collects their
+  SHARED MEP material (materials=1) and mirror-finishes it -> every element on that material (grab bars, …) becomes glossy green metal;
+  its env = §MIRROR_ROOM_PROBE, ONE 128 px cube at the building centre (0.6,-0.0,11.9), then x slSpecKeep = the sky-view F gate (0 in a
+  closed toilet) -> black. The per-still §GLASS_ENV camera capture (256 px, staged lights, torch on) goes only to the 3 glass clones.
+- SPEC §MIRROR_OWN_MAT (red1 2026-09-30: "exploit [the glass reflection quality] and use the mirror finishing on those IFCs"):
+  at Alt+S staging each mirror MESH gets ONE dedicated material (not the shared one): colour = the IFC material_rgba (sRGB -> linear),
+  metalness 1, roughness 0.02, envMapIntensity 1; envMap = the §GLASS_ENV capture of the same press; defines SL_MIRROR -> its IBL
+  radiance skips slSpecKeep (the capture already holds the room's staged light; the sky gate is for the sky HDRI). The shared MEP
+  material is no longer mirror-finished. Restored at teardown. § line §MIRROR_OWN_MAT meshes / mirrors / envFromCapture.
+  WITNESS at …720801650: mirror pixels Lf rise from 5-10 to the level of the room they reflect (LEAK rows; mean of mirror px vs the
+  opposite wall's px within 2x), mirror colour ~neutral (|r-g|,|g-b| small) not green; grab-bar material metalness back to its
+  pre-mirror value (logged); exposure within 0.2 EV; §FAULT unchanged.
+### §MIRROR_OWN_MAT RESULT (2026-09-30, Opus) — shipped to fix/sky-surface (sw v1508); witness clause 2 FAILS (recorded)
+- mesh.js: the 22 mirrors sit in 5 meshes that hold ONLY mirrors (80:1, 311:6, 408:5, 608:7, 798:3) -> swapping the mesh material is safe.
+- A/B …720801650 (diag LEAK px_mirror2, :8663 v1505 vs :8664 v1508, OOM 0/0, §GI_STILL 1/1, unlit 0/144 both):
+  | set | v1505 | v1508 |
+  | mirror 30 px | Lf 7 (Lu 8.5), 10ad10 me .95 r .03 env .1 | Lf 40.5 (Lu 49.5), adadad me 1 r .02 env 1 |
+  | wall 373737 17 px | Lf 129 | 125 |
+  | grab bar 14d314 9 px | Lf 98, me 0.3 r 0.3 | 94, me 0.3 r 0.3 |
+  exposure 248.7 -> 238.3 (-0.06 EV). §MIRROR_OWN_MAT applied meshes=5 materials=1 colours=[0.843] ; envFromCapture mats=1.
+- CORRECTION: the grab bars were NOT mirror-finished before (me 0.3 both arms); their green 14d314 is their own MEP colour. The
+  earlier "grab bars glossy because of the shared mirror material" read was wrong.
+- Clause "mirror within 2x of the wall" FAILS (40.5 vs 125). Not yet known whether that is wrong: the reflected surfaces are behind the
+  camera and not on screen. Code-read limit: the capture is ONE cube at the camera position looked up by direction (infinite-distance
+  assumption) -> in a 2 m toilet the mirror shows the wrong part of the room (parallax), same class as the Hospital wing reflections.
+  NEXT (not built): a truth for mirror pixels = exact reflected ray -> hit surface -> its lit value (e.g. a second still from the
+  mirrored camera), then parallax-corrected (box-projected) env for mirrors using the zone's box.
 ## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
