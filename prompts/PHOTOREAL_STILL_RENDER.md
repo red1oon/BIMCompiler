@@ -2256,6 +2256,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   building (BVH, 5.9-8.6 us/ray vs 11 ms/ray raycasts before). zoneFlip wall-between test: Clinic 459/462 walled, Hospital
   25/25, Terminal 65/65, HHS 403/503 walled (100 open flips, all irStep).
 - Pre-existing, not from this change: witness_z19_ir_colour.js FAILS 1 row on HEAD too ("alb joins the zone record KEYS").
+- RULING (red1 2026-09-29 eve, after v1503 Clinic stills "indoors spotty"): TEST EACH CASE TO ZERO BEFORE DOING FURTHER, to conserve
+  cycles — one building / one defect at a time; no batch bakes or multi-building chains while a known defect is open. Chain stopped:
+  Terminal v1503 sidecar baked 16:51 (4.18 MB, restorecheck NOT run), Hospital v1503 bake killed (old v1502 file stays, stale).
+- CLINIC v1503 SPOTS (red1 …673812371 / …673796302 / …673780207, :8663 v1503): mottled corridor floor, cloudy bulkhead + back walls;
+  §FAULT clean (unlit 0, dark <= 0.01 %) — blind to it. Measuring: diag LEAKPX 26x18 on vs &skyexactall=0 + walle exact E at the same
+  pixels (sfa/cs/).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
