@@ -2334,6 +2334,13 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   between neighbouring cells); INFERRED, measuring: cs/tmwall.sh (wall pixels 8 px, v1505 vs &skyexactall=0). …709325036 waiting hall
   washed (blown 2.53 %); …709209021 / …709154205 reasonable (mild mottle, pale floor bands); exteriors clean (glassReflDark 0-1).
   All §FAULT only from glassLow = 2. Also queued: HHS floor mottle A/B (cs/hhsfloor.sh: default / &giredist=0 / env 0) at …708698742.
+- CLINIC v1505 "indoors deteriorates" (red1 2026-09-30, stills …709703618-…709805549, 03:21-03:23): cloudy walls back. CAUSE (timeline,
+  not a new code fault): the §FIELD_KEY_CODE change staled the Clinic sidecar until its re-bake landed 03:04:59 (key f355c8be:86535,
+  restorecheck PASS 34 ms); a tab opened before then found no baked exact field -> §EXACT_WHEN_BAKED built the FAST v1502 field, kept it
+  in memory (prime() returns early when cache.bld matches) for the session. Remedy: reload the tab. OPEN (small): (1) a tab keeps its
+  built field after a better sidecar lands; (2) the PNG stamp does not say WHICH field a still used — add fieldSrc (db/idb/built),
+  exactAll on/off, key, to the §STILL_POSE_PNG stamp so a still answers this itself. Duplex default-off witness: §SKY_FIELD_EXACT_ALL
+  'off (no baked exact field…)', field 1,570 ms (PASS).
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
