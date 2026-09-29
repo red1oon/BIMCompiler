@@ -2284,6 +2284,14 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   indirect AO is not the cause; the mottle is in the NON-lamp light. With sky ~0 here the candidates are the ground-view field
   (§GROUND_VIEW_FIELD, a 0.5 m lattice like the sky one) vs the zone fill (flat per zone, unlikely). Running: &lamps=0&groundview=0 and
   &lamps=0&ir=0.
+- CLINIC SPOTS RESULT 4 (OOM 0): &lamps=0 p50/p90 0.058/0.233 · +&groundview=0 0.056/0.218 (ground-view field RULED OUT) · +&ir=0
+  0.217/0.842 (frame Lu median 21 — too dark to trust). CORRECTION: the relative residual inflates at low brightness (one 8-bit step
+  = 1-5 %) and the lamps-off frames are auto-exposed up to x1011 (render noise amplified), so "lamps-off 4-5x worse" is partly the
+  instrument. Reliable arms (normal exposure): default 0.016/0.047 (~+-2 / +-7 levels at Lu 146), &aoindirect=0 0.018/0.055. Also the
+  5x5 (~40 px) local-mean residual mostly measures fine grain; red1's cloudy patches are ~0.5-2 m. RULED OUT: sky field, ground-view
+  field, indirect AO; lamps mask, do not cause. OPEN: floor env specular (envMapIntensity), §GI_REDISTRIBUTE, refine/soft-shadow
+  noise — measure at the 0.5-2 m scale (band-pass on the final floor pixels), normal exposure only. Parent's recommendation to red1:
+  park this and do the explained zone-assignment fix (floor-corner bands / TERMINAL_CORNER / Castle speckle) first.
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
