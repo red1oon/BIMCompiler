@@ -319,3 +319,19 @@ survives is the COMBINATION: per-room, standard-cited numbers for all four, in o
 same issue list and in-film markers. Before any public claim: page-verify, and directly check Pascal, BIMvision,
 Speckle Automate and That Open. Positioning consequence (§N): we do not beat Odeon/Treble on acoustics; we put the
 standard-cited statistical number in front of the whole team, and hand the room to them when it fails.
+
+## §12 — Forum demand scout (2026-09-29, one Sonnet pass; Autodesk/revitforum returned 403, Reddit/OSArch/IPVM/LinkedIn gave nothing — thin sample)
+| Need | Demand signal | Evidence (seen) |
+|---|---|---|
+| **Relations / walk distance** | STRONGEST, recurring, people hand-roll Dynamo scripts | forum.dynamobim.com: "Exit Access Travel Distance" (2026-09-02, /115179); "Finding the distance between rooms" (2026-01-05, /113576: every toilet within 40 m walk); "Measure travel distances" (2017, /17103); GitHub CuninghamDev/DynamoAdjacencyAnalysis |
+| **Light (lux per room)** | steady | Dynamo forum "Lighting calculation & place lights without using dialux or relux" (2024-08-22, /103741); Autodesk "How to calculate room lux level" (~2015, snippet); DIAL built a "DIALux Bridge for Revit" (IFC round trip) |
+| **Coverage (CCTV)** | niche served by plugins | RV CameraPlanner, AXIS Plugin for Revit; revitforum 2011 wish-list: Revit camera "pretty well useless as a design tool" (snippet) |
+| **Echo (RT)** | quiet in forums, latent | only academic papers: ITcon 2021 BIM-based RT via Dynamo; the usual flow is exporting geometry, then applying acoustic data by hand (snippet paraphrase) |
+| **One issue list for all** | NOT evidenced, do not claim | no Solibri/BIMcollab request found |
+Consequences:
+1. Relations is the most-asked need, and a code-limit shape exists: the toilet thread wants "every toilet ≤ 40 m walk"
+   = a room-to-room distance with a cited limit. It must use the DRAWN walk metres, not `escapeRoute().distance`
+   (ESCAPE §8: that is a penalty cost). Consider promoting Relations above Echo in build order, once a cited
+   distance-limit pack exists.
+2. The Light pain phrase "without DIALux" fits: the lux check lives inside the viewer.
+3. Echo's value is latent: lead with the numbers card (§N), not a claimed market pull.
