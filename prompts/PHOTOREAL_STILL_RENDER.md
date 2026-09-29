@@ -2272,6 +2272,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   given the wrong zone gets the neighbour's lamps = the dark corner strip. SAME CLASS as TERMINAL_CORNER / Castle speckle / §LIGHT_GRID
   zoneFlip (surfaceInfo's eye-side 0.5 m cell lookup crossing a thin partition). Fix target: surfaceInfo (the zone of a surface point
   must be the room the SURFACE faces, decided by an exact ray / the geometry, not the nearest cell) — witness = zoneFlip with wall test.
+- CLINIC SPOTS RESULT 2 — INCONCLUSIVE, instrument flaws (cs/lamps.sh): (1) &meter=0 left the corridor at median Lu 13/255 (base
+  exposure) -> no jumps measurable, the 'lamp' arm proves nothing; (2) &sourced=0 is NOT lamps-off, it swaps the whole lighting
+  pipeline (§SOURCED_LIGHT not installed) — it still shows 81 relative jumps > 0.15 vs 84 with v1503; (3) the 26x18 neighbour-jump
+  counter mostly counts OBJECT EDGES (60/84 are pairs of different wall elements; 3 on the floor) — coarser than the mottle.
+  NEXT (proposed to red1): dense 8 px floor-only sampling, same element + zone, high-pass residual (the mottle), one term off at a
+  time without switching pipelines (lamp dial / &aoindirect=0 / bounce toggle), same exposure within each A/B.
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
