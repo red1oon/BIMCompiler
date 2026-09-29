@@ -2189,6 +2189,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   judges darkness, not WHAT is reflected. The witness above ("sky shown where the exact reflected ray hits geometry") is the missing
   counter; this pose is its first test case (expect most right-wall samples to hit the opposite wing within ~20-40 m).
   NOT STARTED (red1 resting; no agent assigned).
+- GLASS IN FILMS (Alt+C) — code-read 2026-09-29 (red1: "will the glass reflection feature be in alt-c?" -> "of course"): films get
+  §GLASS_FRESNEL (effects.js:4570, via &filmparity default on, effects.js:4208) but NOT §GLASS_ENV (scene cube capture, skipped when
+  A._maxqActive, effects.js:5990 — film panes mirror the sky HDRI only) and NOT §GLASS_REFL_OPEN (sourced-light staging never runs for
+  films, sourced_light.js:847). PLAN (for the Alt+C lane, ALTC_FOUNDATION.md): reuse the baked Z26 per-pane table in films (camera-
+  independent, already in the sidecar) + the wing-reflection fix above FIRST, so films do not inherit the sky-for-wing error; a per-frame
+  scene capture is a per-frame cost to measure before adopting.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
