@@ -2278,6 +2278,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   counter mostly counts OBJECT EDGES (60/84 are pairs of different wall elements; 3 on the floor) — coarser than the mottle.
   NEXT (proposed to red1): dense 8 px floor-only sampling, same element + zone, high-pass residual (the mottle), one term off at a
   time without switching pipelines (lamp dial / &aoindirect=0 / bounce toggle), same exposure within each A/B.
+- CLINIC SPOTS RESULT 3 (dense 8 px floor-only, 2,219 points, residual vs same-element same-zone 5x5 mean, relative; sfa/cs/mottle.py,
+  OOM 0): default Lu p50/p90 0.016/0.047 (>0.05: 197) · &lamps=0 0.058/0.233 (1,214; Lavg 4.7 cd/m2, exposure 1011) · &aoindirect=0
+  0.018/0.055 (264). Lf ~ Lu (bounce adds little: 0.017 default, 0.078 lamps-off). => lamps are NOT the source (they mask it);
+  indirect AO is not the cause; the mottle is in the NON-lamp light. With sky ~0 here the candidates are the ground-view field
+  (§GROUND_VIEW_FIELD, a 0.5 m lattice like the sky one) vs the zone fill (flat per zone, unlikely). Running: &lamps=0&groundview=0 and
+  &lamps=0&ir=0.
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
