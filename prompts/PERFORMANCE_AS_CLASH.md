@@ -44,6 +44,8 @@ one pack, not the lane.
 *"We use the same approach as for Freeze Stack and Escape Route in Alt+C: we lay out and give info panels,
 rather than advanced simulation, which can be later. Idea is to POC."*
 
+**⚠ SUPERSEDED (red1, 2026-09-29, later the same day): Alt+C = ONE HUD CARD OF STATS, NO MARKERS.** *"On film we avoid clutter so just a HUD card giving the stats will do enough wow."* A checked box adds ONE HUD card to the film. It uses the existing HUD panel component of the escape/load-path cards, and shows the group's headline stats: e.g. Access "82 % of floor within 40 m of a WC · worst 57 m · AD M §5.9(h)"; Comfort "RT 0.9 s vs ≤0.8 s · 3 rooms over · BB93". Nothing is drawn in the scene. Every "marker" below reads as "a line on the card". Spatial detail lives only in the canvas list (§Q).
+
 **Alt+C = MARKERS ONLY (red1, 2026-09-29):** *"The alt-c when checked for those only give markers similar to
 what is done now for other overlays."* A checked box adds in-film MARKERS in the same idiom as the existing
 cpe-clash / cpe-measure overlays (label + leader + short value, composited in `_captureFrame`). There is:
@@ -107,7 +109,7 @@ the spot where a person should be to hear it, the ping is issued, and its calibr
 Same with visual: zoom to a spot and angle, with an indicator of blind spot or ideal CCTV POV."*
 
 Each beat has TWO faces over ONE computation:
-- **Film face:** Alt+C markers only (§P).
+- **Film face:** Alt+C HUD stats card only (§P).
 - **Canvas face:** a list of EVERY flashpoint, like the Clash / Measure / Find panels.
 
 The list reuses the checklist chassis (`A.showRuleChecklist`), list keys (`makeListKeyNav`, as in `clashListNav`
@@ -339,7 +341,7 @@ Consequences:
 ## §13 — GROUPING + the TOILET ACCESS INDEX (red1, 2026-09-29)
 **Group by the question answered**, as new entries in the Inspect drawer beside Sanity/Egress (`viewer/panels.js`
 ~1396). Each entry = one `A.showRuleChecklist` consumer + one `viewer/rates/<x>_rules.json` with a `_cite` per row
-(the `egress_rules.json` convention). Alt+C = one checkbox per entry, markers only (§P).
+(the `egress_rules.json` convention). Alt+C = one checkbox per entry → one HUD stats card, no scene markers (§P).
 | Entry | Question | Rules file | First rows |
 |---|---|---|---|
 | Egress (exists) | can I get OUT? | egress_rules.json | common path, remoteness, door width |
@@ -348,7 +350,7 @@ Consequences:
 | **Security** | can it be seen? | security_rules.json | camera coverage / DORI |
 
 **Toilet Access Index** (the escape-route shape, pointed at the nearest WC instead of the nearest exit):
-- **Film marker:** worst room + its drawn walk to the nearest (accessible) WC. **Card:** walk m vs the cited limit
+- **Film:** HUD card only (no drawn path). **Card:** walk m vs the cited limit
   (+ time via SFPE 1.19 m/s, shown).
 - **Index:** % of occupied floor area within the limit + the worst room.
 - **Canvas list:** every room over the limit.
