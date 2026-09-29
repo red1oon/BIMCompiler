@@ -2050,6 +2050,41 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   MEP into the exact-ray soup, glass by class. MEASURING FIRST which term leaks (lamps ruled weak at distance by red1):
   su/run.sh = &meter=0 vs &meter=0&sunoff=1 (§SUN_OFF_AB debug switch, /tmp/wt-hot, uncommitted) at Hospital …512160 + Terminal
   …602379032 — sun share per grid point vs exact sun ray; sr/ = stair.js (§STAIR_GRID: floor points whose up-ray hits IfcStair*).
+  SETTINGS INFERENCE (no new render; st/1790646512160_on.log, v1501): §STILL_SHADOW_CASCADE uncovered 0/14400, 4 cascades 4096,
+  texel 1.5-8.7 mm, depth range 143 m covers groundY -15.9 .. topY 22 -> the sun map cannot leak a slab at that pose; and EVERY one
+  of 731 grid floor points is sun-blocked by real geometry (STR 422 / ARC 199 / IfcBeam 83). Floor brightness is monotonic in the
+  lattice F: F 0 -> Lf 71 (n 153) · 0.001-0.01 -> 85 · 0.01-0.03 -> 117 · 0.03-0.1 -> 160 · > 0.1 -> 211 (n 23). => the stair-hall
+  floor blotches ARE the sky-view field pattern; whether F matches the structure above is the open question (§LIGHT_WITNESS).
+### §LIGHT_WITNESS — SPEC (2026-09-29, red1: "those latest stills' blotches should give enough clue what to dig up and prepare full
+### WITNESS debug measures"; "reduce testing time with WITNESS logging and settings inference")
+- WHERE: shipped, every Alt+S, computed after the GI composite (gi_still.js, beside §FAULT_GI: it needs the final pixels), result
+  merged into A._stillFaultLast.lw so the saved PNG's tEXt carries it. No external probe needed to judge a red1 still.
+- SAMPLES: 16x9 screen grid, first opaque scene hit (glass skipped), eye-facing normal. Time budget 6 s (logged n done).
+- PER SAMPLE: L = final-pixel luminance; F = lattice sky-view (skyField); E = EXACT sky: 16 stratified CIE-overcast x cos rays, glass
+  x (1 - opacity), any other hit = 0 (the same integrand the field approximates); sun = one exact ray to the sun (blocked + blocker
+  class); up = class of the first hit straight up (stair / slab / beam / none).
+- LINE §LIGHT_WITNESS: n, ms; skyOver (F - E > 0.02 and F > 1.5E) / skyUnder (E - F > 0.02 and E > 1.5F); sunBlocked n; brightness
+  table of SUN-BLOCKED samples binned by E: n, median L, p90 L per bin [0,.001) [.001,.01) [.01,.03) [.03,.1) [.1,1] — a leak shows as
+  a high-L E~0 bin or a non-monotonic table; worst 3 skyOver with p, F, E, up class. Verdict WARN when skyOver > 0 or the E~0 bin p90
+  exceeds the next bin's median; INCONCLUSIVE when n = 0; not part of §FAULT's verdict until calibrated on red1's stills.
+- WITNESS of the witness: on Hospital …512160 it must reproduce the F-band table above from its own samples, and report skyOver at
+  red1's stair-hall stills; &skyexact=0 must raise skyOver at …598818184 (the 23-point patch) — i.e. it can say WRONG.
+### §LIGHT_GRID_TRUTH — SPEC (2026-09-29, red1: "can't we have a mechanism of testing results based on a grid array?")
+- TRUTH (once per building, persisted, keyed on the building DB hash — PRIMAL LAW 5 "run once, persist, read forever"): a WORLD
+  grid, not a screen grid: every 1 m on the top face of each covered slab (a down ray from each slab's storey top finds the floor)
+  + wall points at 1.2 m. Per point: exact sky E (64 CIE-overcast x cos rays, glass x (1 - opacity)), sun blocked + blocker class
+  (at the still's standard sun), class of the first hit straight up. Stored as ~/.cache/bim4d/light_grid/<bld>_<dbhash>.json.
+- MODEL (per code change, seconds): page load, LightZones.build + field (IDB-cached per code version, persistent profile), F at
+  every grid point via skyField — NO Alt+S, no refine, no GI, no pixels.
+- RESULT §LIGHT_GRID <bld>: points, skyOver (F - E > 0.02 and F > 1.5E), skyUnder, median |F - E|, per up-class breakdown (IfcStair*,
+  IfcSlab, IfcBeam, none), worst 10 with p / F / E / up. Before/after = diff of two arrays over the SAME points: a fix is judged over
+  the whole building, not one camera. Renders stay for what needs pixels (exposure, bounce) via §LIGHT_WITNESS on red1's own stills.
+- Tool: scratchpad fieldprobe.js -> lightgrid.js (world grid + persisted truth).
+- EXTENDED (red1: "can it also be used to return other values to infer blotches?"): per point the model side also returns zone
+  (surfaceInfo), ground-bounce Gd, V12 zone fill (field.ircAll), relative lamp sum (I cos / d^1.5, zone-bound; null without lamp data).
+  BLOTCH tests over 1 m neighbour pairs on one floor: skyJump (|dF| > 0.02, |dE| < 0.005 — a field edge the geometry lacks), zoneFlip
+  (different zones, same up class — the Z23 eye-side lookup class behind TERMINAL_CORNER / Castle speckle), irStep (fill differs
+  across a flip), lampStep (lamp ratio > 2, same up class). Not covered (screen-space): AO, SSGI — §LIGHT_WITNESS covers those.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
