@@ -1984,7 +1984,7 @@ OPEN CASES, in order (each to zero before the next):
    script cs/tmwall.sh (wall pixels, v1505 vs &skyexactall=0) — NOT run. Likely the same fix as case 1.
 3. HHS FLOOR MOTTLE closed room (…708698742; also Clinic corridor): ruled out so far = sky field, ground-view field, indirect AO; lamps
    MASK it. Queued cs/hhsfloor.sh (default / &giredist=0 / env 0 via PRE) with band.py — NOT run.
-4. TERMINAL COLUMN BEHIND GLASS looks concrete (…709411794): cs/beam.sh (LEAKSKIPGLASS) NOT run. Lead: behind-glass pixels skip the GI
+4. ✅ CLOSED 2026-09-30 (§CSM_READBACK_GLASS, fix/case4-column @330f5359, see below) TERMINAL COLUMN BEHIND GLASS looks concrete (…709411794): cs/beam.sh (LEAKSKIPGLASS) NOT run. Lead: behind-glass pixels skip the GI
    pass by design ("glass skip") + triplanar concrete material.
 5. then: blowout review (exposure x750 in dim interiors + lux->L 3x loss), lamps/EN targets (withEN=0), lamp shadow map, MEP into the
    exact soup, glass by IFC class, glassLow naming, wing reflections (cube-map parallax), stamp field source into PNGs, key/field CPU
@@ -2087,6 +2087,23 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
   30 covered 0.0212 -> 0.0207 (truth 0.0146: the lattice's small over-read, accepted with the baseline).
 - KNOWN RESIDUAL (accepted with the baseline): lattice under-reads some walls (…965285: 205 walls truth E 0.048, F 0.001). Any later fix
   must be judged on walle truth AND exposure at the same pose (the v1503-v1506 lesson). Next = case 2 (Terminal tiles) on this base.
+### ✅ CASE 4 CLOSED — §CSM_READBACK_GLASS (2026-09-30, Fable agent, parent-verified from its logs)
+- DEFECT (numeric): column behind glass (IfcColumn …0DHQy0EpTAxRiC982SlVDU, IFC "Cast-in-Place Concrete" 0.753 grey = renderer 868686,
+  material FAITHFUL) shows Lu p5/p50/p95 106/126/198 std 31.4 vs the same-material direct column 85/90/96 std 3.3 (diag2 LEAK, 54 px).
+- RULED OUT: GI glass skip (glass is hidden in the GI geometry pass; Lf-Lu +2.7), glass reflection (&glassenv=0 std 32.2).
+  &concrete=0 removes the blotches but sun-facing hall faces stay 252 with the sun ray blocked at 1.8/4.1 m = UNSHADOWED SUN.
+- CAUSE: effects.js _csmReadback hid an object only when EVERY material is glass; Terminal's 65 R10 window arrays (frame + pane) were
+  drawn solid in the depth readback -> zMax 6.6 m (the room's glass wall) -> every cascade box ended there -> the hall behind the glass
+  (16-26 m) in no box -> shadow_cascade.js D3 fallback = full sun; the 0.55 concrete normal map modulates that sun = blotches.
+  §STILL_SHADOW_CASCADE uncovered=0 was SCOPE-BLIND (behind-glass surfaces never enter the readback). Same every-vs-some class as ALTS FIX 9.
+- FIX: bim-ootb fix/case4-column @330f5359 (from 18d7b2e0, pushed, no PR; sw v1507c4, effects.js?v=124): ANY transparent group -> out of
+  the readback; § line §CSM_READBACK_GLASS glassArr hidden zMax; APP._csmLastFit + §CSM_BOX_TEST for witnesses.
+- A/B (:8663 v1505 vs :8665, pose …709411794, same 107 px, OOM 0/0, §GI_STILL 1/1): zMax 6.6 -> 36.4 (splits [1.16,6.36,12.64,21.48,36.39]);
+  column A std 31.4 -> 5.1 (98/108/112); 2nd hall column std 43.7 -> 15.8; sun-facing hall faces 252/253 -> 118/116; seat 242 -> 69;
+  §FAULT_GI blown 2.04 % -> 0 %, dark 1.85 = 1.85; exposure 15.033 -> 15.041. Cost: near cascade texel 0.0011 -> 0.0023 m (< single 0.0144).
+- LEFT: not checked on Hospital glass wings / atrium (same readback cap expected wherever a window array is in frame); films unaffected
+  (_cascadeFit null). Merge with fix/sky-surface (both from 18d7b2e0; effects.js vs light_zones.js — no file overlap except sw.js /
+  viewer.html version lines). Probes/logs: scratchpad 4a28e70a…/c4 (diag2.js, rows.py, cs/px_cols.json).
 ## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
