@@ -2136,6 +2136,25 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   the Hospital stair core (lattice quadrature noise) — INFERRED, not measured here (§SKY_FIELD_EXACT lowered 201,654 Terminal cells);
   …512860 small room: warm mottled ceiling bands (lamp term? unmeasured); …480619 corridor / …320275 hall / …283007 aerial: nothing
   evident. All 6 §FAULT FAULT on glassLow = 2 only (Clinic: 1) -> the verdict flag is noise on these buildings; name the materials.
+### §SKY_FIELD_EXACT_ALL — SPEC (2026-09-29, red1 "proceed systematically"; dispatched to one Opus agent)
+- WHY (measured): smudges on walls/columns in Hospital (stair core …010578: truth E 0.008-0.015 smooth, lattice F 0-0.064 patchy) and
+  Terminal (…374052 / …420910, inferred) = 41-direction lattice quadrature noise, over AND under. §SKY_FIELD_EXACT (lower-only, dirs
+  w vt >= 0.005) cannot reach it. The field is now BAKED (§LIGHT_FIELD_PATCH), so exact cost moves off the user's press.
+- WHAT: for every READ cell (non-solid covered, Chebyshev <= 2 from SOLID) not already shell-recomputed, F := exact CIE-overcast x cos
+  integral over the SAME soup/BVH as the shell pass (boundary + occluders, glass x T per pane), with a FIXED direction set shared by
+  all cells (no per-cell jitter: neighbours integrate the same directions, so residual error is smooth, not speckle). The bent normal
+  (zb) is rebuilt from the same rays. Replaces the lattice value there (raise AND lower). Deeper cells keep the lattice.
+- ORIGIN: the cell centre can sit inside fattened geometry; start rays from the nearest free point (cell centre nudged out along the
+  open side, as the shell pass does or better) — measure how many cells start inside geometry and log it.
+- RAYS: choose N (fixed set, e.g. 128-256 stratified by the integrand) by measurement: residual |F - E_truth| on §LIGHT_GRID points and
+  skyJump must beat v1501; log Hospital build time (expected tens of minutes once per bake — acceptable, it is baked).
+- SWITCH &skyexactall=0 / APP._stillSkyExactAll=false (enters the §ZONE_IDB_CACHE fingerprint). § line §SKY_FIELD_EXACT_ALL: cells,
+  rays, ms, us/ray, startedInside, raised/lowered counts (> 0.005), mean |dF|.
+- WITNESS: (1) §LIGHT_GRID extended with WALL points (1.2 m above each floor point, first wall hit along +-x/+-z within 3 m, normal =
+  the wall's) + zoneFlip wall-between ray; before/after on Hospital, HHS, Terminal, Clinic: skyOver/skyUnder/skyJump/medAbsDF all drop
+  vs v1502, whole building. (2) walle.js at Hospital …010578 core face: F within +-0.01 of E, no patch. (3) §FAULT / glassReflDark
+  unchanged at Clinic …495545980 and the Hospital/Terminal controls. Then re-bake the 4 sidecars (bake.js), restorecheck PASS each,
+  FF look, push. Local only — no OCI.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
