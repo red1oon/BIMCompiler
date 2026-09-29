@@ -2292,6 +2292,17 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   field, indirect AO; lamps mask, do not cause. OPEN: floor env specular (envMapIntensity), §GI_REDISTRIBUTE, refine/soft-shadow
   noise — measure at the 0.5-2 m scale (band-pass on the final floor pixels), normal exposure only. Parent's recommendation to red1:
   park this and do the explained zone-assignment fix (floor-corner bands / TERMINAL_CORNER / Castle speckle) first.
+### §ZONE_EYE — SPEC + FIRST WITNESS (2026-09-29 eve, red1 "yes" to the zone-assignment fix)
+- RULE: the room of a VISIBLE surface point = the first non-solid cell stepping back from it along the eye ray (0.25 m x 12 = 3 m);
+  none -> the old nearest-eye-side-cell rule. The eye ray reached the point through that air, so it cannot cross a partition.
+  Shader slFragZone (sourced_light.js), switch uSLOrg.w (spare slot) = &zoneeye=0 / APP._stillZoneEye=false, § line §ZONE_EYE.
+  CPU mirror surfaceInfo(p, n, eye) written then REVERTED for now: any light_zones.js edit changes the field key (hash of the whole
+  file) and invalidates every baked sidecar — shader-only test first. OPEN: key the field on field-relevant code only.
+- WITNESS toilet …673908384 (px_corner 18x10, :8663, OOM 0, shader errors 0): 6-step walk fixed 2/5 strip points (39->57, 44->64);
+  eyewalk.js showed the other 3 stay SOLID for 1.5 m (view down past the 0.5 m-fattened partition) -> 12 steps: all 5 resolve to the
+  cubicle zone 141 and read 62/67/57/72/64 vs own-floor neighbours 65-75 (were 44/47/39/59/44). 45/180 grid points changed; 11 darker
+  = the partition's own face + top (z -8.6) now lit by the camera-side room it faces (was the cubicle behind it). Running: Terminal
+  corner …621233765 on vs &zoneeye=0 (wall 3Q026pUy1CnxmrPEZ8YbBE).
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
