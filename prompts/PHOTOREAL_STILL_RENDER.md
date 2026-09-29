@@ -2107,6 +2107,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   buildings/patches/<db>.lightfield.bin ('LFP1' + header + gzip blob; gitignored, derived) applied after <db>.sql. Local first
   (red1's ruling): baked into /tmp/wt-lfdb (served :8663) for Clinic/Hospital/HHS/Terminal by scratchpad bake.js; restorecheck.js =
   witness. OCI later, once light_zones.js stops changing (the row's key is that file's hash: every light-code edit makes it stale).
+- §LIGHT_GRID FIRST RESULTS (scratchpad lightgrid.js, :8662, lg/*.log; truth ~/.cache/bim4d/light_grid/): Hospital truth computed once
+  1,456 s (117,784 rays, 11.0 ms/ray — plain scene raycasts), then a check with cached truth + cached field = 36 s wall (vs 337 s for a
+  test press with the field cached, ~21 min fresh). SampleHouse 14 s first run. WHOLE-HOSPITAL A/B (3,000 floor points, 818 neighbour
+  pairs), &skyexact=0 -> v1501: skyOver 191 -> 50, skyJump 22 -> 3, skyUnder 191 -> 224 (the 8-ray bound lowers some cells past the
+  32-ray truth — tune). Remaining skyOver by up class: STR 25, ARC 19, MEP 2, FP 2. DEFECT: zoneFlip has no wall-between test
+  (SampleHouse 75 flips / 63 irStep, many likely real walls) — add a ray between the pair before trusting it.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
