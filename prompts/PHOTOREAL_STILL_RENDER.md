@@ -2306,6 +2306,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
 - ✅ WITNESS 2 Terminal …621233765 (48x26, local db + v1503 sidecar, OOM 0, shader errors 0): wall 3Q026pUy… strip (14 points, old
   zone 70) Lu 68 -> 172 (range 171-181) vs the rest of the wall (723 points, zone 1) 185 -> 185; frame 18/1248 changed > 5, 0 darker.
   COMMITTED bim-ootb fix/lfdb-v1501 @85b9f303 (sw v1504, sourced_light.js?v=71), pushed; :8663 serves it. NOT on look / :8624.
+- STALE-CODE SILENT REBUILD (red1 2026-09-30: "HHS takes long first Alt+S — isn't it injected into the DB?"): a fresh profile on :8663
+  v1504 NOW: §LIGHT_FIELD_PATCH applied HHS key e74a50fe:154742, §ZONE_IDB_CACHE hit src=db ms=15 (field was 220,383 ms) -> the file
+  side works. red1's browser most likely ran service-worker-cached OLDER light_zones.js (different key) -> the sidecar reads
+  '§LIGHT_FIELD_DB stale' -> silent ~220 s rebuild (the agent hit the same SW cache in a persistent profile). Workaround given:
+  Ctrl+Shift+R once. OPEN (UX defect): a key mismatch between the browser's code and the sidecar must not be silent — toast it, or
+  make the SW network-first for light_zones.js / check the sidecar key before staging.
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
