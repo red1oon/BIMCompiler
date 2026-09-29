@@ -2262,6 +2262,10 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
 - CLINIC v1503 SPOTS (red1 …673812371 / …673796302 / …673780207, :8663 v1503): mottled corridor floor, cloudy bulkhead + back walls;
   §FAULT clean (unlit 0, dark <= 0.01 %) — blind to it. Measuring: diag LEAKPX 26x18 on vs &skyexactall=0 + walle exact E at the same
   pixels (sfa/cs/).
+- CLINIC SPOTS RESULT 1 (…673812371, 26x18 LEAKPX + walle exact E, :8663, OOM 0): the SKY FIELD IS NOT THE CAUSE here. v1503 / v1502:
+  mean |F - E| 0.0019 / 0.0013, over(>0.02) 0 / 0, under 0 / 2 (n 468); neighbour pairs with |dLu| >= 15 (the spots) 106 / 89 of
+  420; floor Lu p10/50/90 127/145/156 vs 130/154/163. Sky ~0 in this corridor and right in both. Next: lamps on vs &sourced=0 with
+  &meter=0 (fixed exposure) at the same pixels (cs/lamps.sh), after the floor-corner check (cs/corner.sh).
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
