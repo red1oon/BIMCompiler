@@ -2090,6 +2090,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   glassLow = 1 (one visible glazing material with T < 0.7). All 172 see-through plates are drawn as glass (lost 0). So the FAULT flag
   fires on every Clinic still from one material. OPEN: name that material and check the IFC — a tinted pane is data, and then glassLow
   should not flip the verdict.
+- HHS STILLS 2026-09-29 PM (v1501, PNG stamps + pixel sixths): …657642427 atrium corridor: brightness by sixth L->R 189/179/165/139/47/21,
+  right sixth 8.68 % pure black (corridor wall + doors) while §FAULT says OK unlit 0/102 -> the fault check misses it; same class as
+  HHS_CORRIDOR_DARK (floor->wall bounce under-counted). …657722332 room looking out through glass: 206/183/161/70/33/29, left thirds
+  4.3-6.9 % blown (the atrium seen through glass), no black — possibly correct exposure; undecided. …646782139/…646800064 glassReflDark
+  92/126, 62/120: HYPOTHESIS (unverified) the covered atrium counts as camOutside so inward-facing panes are judged against sky.
+  Queued: lightgrid.js at …657642427 (HHS) after the Hospital grid runs.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
