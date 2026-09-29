@@ -487,3 +487,33 @@ standard and that standard is published."*
   - Icons beyond what the exits can clear turn red. This uses the egress exit-width capacity (IBC §1005.3.2, already
     in `door_occupant_capacity`), so the one red cue ties Capacity to Egress.
 - § line: `§CAPACITY std= factorRows= rooms= designLoad= seats= exitCapacity= overflow=`.
+
+## §18 — POC CONTRACT: computed on the fly, every number carries a stated MARGIN OF ERROR (red1, 2026-09-29)
+*"Again, this is a POC of computed-on-the-fly capability where we also state a margin of error."*
+
+**Applies to every number in §13-§17** (HUD cards, Build Map, flashpoint list, statement export).
+- **On the fly:** computed in the browser at load/bake from the extracted DB + rule packs. Nothing is precomputed
+  offline, and there are no stored verdicts. Cost is logged per group: `§PERF_CLASH_TIMING group= rooms= ms=`.
+- **Margin shown as a range or ±** beside the value, e.g. "RT 0.82 s (0.74-0.91)", "walk 38 m ±4 m",
+  "load 210 (170-260)". The verdict is taken on the WHOLE range:
+  - PASS only if the whole range passes
+  - FAIL only if the whole range fails
+  - otherwise **MARGINAL**, a new verdict between WARN and INCONCLUSIVE
+- **The margin is DERIVED, never guessed.** Each comes from two independent estimates, or from a known input tolerance:
+
+| Number | Margin from | Source of the bound |
+|---|---|---|
+| Room area / volume | bbox vs space-boundary / IfcSpace area where both exist | the two extracted values; bbox-only rooms say "upper bound" |
+| RT | Sabine vs Eyring spread × α band spread (min/max α of the matched material row) | §N inputs |
+| Walk distance | drawn 3D walk vs plan-projected walk; + door-to-point spread for "most remote point" | room_graph polyline |
+| Occupant load | area range ÷ factor | area row above |
+| Lux | metered value vs the zone-lattice value at the same point (Alt+S has both) | light_zones / meter |
+| Camera range | FOV 103° (stated) vs FOV ± vendor tolerance, if the datasheet gives one; else "FOV as stated, no tolerance" | IFC `LensAngleOfView` |
+
+- **No basis for a bound → print "± unknown"**, and the verdict cannot exceed MARGINAL. Never invent a percentage.
+- **Build Map:** axis % counts PASS rooms only; MARGINAL rooms are drawn as a lighter band between the PASS shape
+  and the ring, so the uncertainty is visible at a glance.
+- **Statement header line:**
+  `POC — computed on the fly <date>; values ± derived per row; MARGINAL = verdict depends on the error band.`
+- **Witness:** every row has `lo ≤ value ≤ hi`, and `§MARGIN rows= derived= unknown= marginal=`. An empty population
+  prints INCONCLUSIVE.
