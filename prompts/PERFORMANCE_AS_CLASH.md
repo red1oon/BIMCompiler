@@ -450,3 +450,16 @@ as a Compiler."*
   paths and witnesses don't break. The tooltip/subtitle reads "Build Map — compliance at a glance".
 - **Collision check (2026-09-29):** the only existing "buildMap" is `erp/user_names.js`, an internal function, not
   user-facing.
+
+### §16.1 — The building's short name on the Build Map title (red1, 2026-09-29)
+*"Put the building short name, as it is not really shown or highlighted in the film."* The title reads
+**"Build Map · <short name>"**, e.g. "Build Map · Clinic". This gives ownership without renaming the doctrine term;
+"Building Map" was weighed and declined because it reads as a floor-plan / wayfinding directory.
+- **Source (existing, not invented):** `A.activeBuilding || A.currentBuilding`. That is the same expression
+  `cpe_room_title.js:607` and `cpe_storey_reveal.js` already use. Today the name appears in the film only as the
+  room-title FALLBACK, when no room is sighted (`cpe_room_title.js:605`), which is why red1 rarely sees it.
+- **Empty name → title is plain "Build Map"** plus a § note. Never a placeholder like "bld" (the key-fallback string
+  those files use for caching).
+- § line: `§BUILD_MAP_TITLE name= source=activeBuilding|currentBuilding|none`.
+- Open (not decided): whether the export/statement header (§14) uses the same short name or the IfcBuilding long
+  name. Default = the same short name, for one identity.
