@@ -2132,6 +2132,10 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   (lower-only, dirs >= 0.005) does not reach it. PROPOSAL (now affordable because the field is BAKED, not built on the press): exact
   CIE rays for every READ cell (Hospital ~800k cells; ~7 min at 8 us/ray, once per bake) replacing the lattice value there; witness =
   §LIGHT_GRID with wall points (skyJump -> ~0, skyOver/skyUnder -> ~0) + this core face.
+- TERMINAL v1502 STILLS (red1 PM, local db, :8624): …374052 / …420910 cloudy blotches on columns + the hall partition wall = same look as
+  the Hospital stair core (lattice quadrature noise) — INFERRED, not measured here (§SKY_FIELD_EXACT lowered 201,654 Terminal cells);
+  …512860 small room: warm mottled ceiling bands (lamp term? unmeasured); …480619 corridor / …320275 hall / …283007 aerial: nothing
+  evident. All 6 §FAULT FAULT on glassLow = 2 only (Clinic: 1) -> the verdict flag is noise on these buildings; name the materials.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
