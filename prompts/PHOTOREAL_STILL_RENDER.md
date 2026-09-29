@@ -2162,6 +2162,9 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   the column under a free-standing stair stays open. Sun shadow is right; the SKY term is the leak. Same class: any outdoor surface
   under a canopy / overhang / beam. Added to the §SKY_FIELD_EXACT_ALL agent's scope (open read cells get exact F). The stair.js class
   lookup returns null on HHS (A.metaByGuid lacks it) — use guids.
+- CLINIC v1502 (red1 "look very good", local db + sidecar): …662912403 / …662965285 / …662987583 / …663038659: unlit 0 on all
+  (15-144 samples), irOnly 0, hueNoise 0, blown 0.06-2.96 %, dark 0-0.23 %; exterior …662912403 glassReflDark 3/47. FAULT flag again
+  only from glassLow = 1. Baseline for regression after §SKY_FIELD_EXACT_ALL.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
