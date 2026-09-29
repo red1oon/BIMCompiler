@@ -2155,6 +2155,13 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   vs v1502, whole building. (2) walle.js at Hospital …010578 core face: F within +-0.01 of E, no patch. (3) §FAULT / glassReflDark
   unchanged at Clinic …495545980 and the Hospital/Terminal controls. Then re-bake the 4 sidecars (bake.js), restorecheck PASS each,
   FF look, push. Local only — no OCI.
+- HHS STAIR LIGHT (red1 "staircase doesn't block the light"; …662836953, stair.js §STAIR_GRID 48x27, :8624 v1502, OOM 0): 49 floor points
+  under the stair flight (up-ray hits IfcStairFlight 2x4PKs… / stair slabs 2dAUCO…, 2oD5kL… at 2-3 m): 19 are zone 0 (OPEN) with F 1.0,
+  Lf 220-228, exact sun ray blocked 4.6 m; 30 are zone 57, F ~0.02, Lf ~146; control under slab 3XrBtx…: F 0.01-0.03, Lf 120.
+  CAUSE (code): field() sets G = 10000 (F = 1) for every open cell (zone 0) whatever sits overhead; stairs are not BOUNDARY classes, so
+  the column under a free-standing stair stays open. Sun shadow is right; the SKY term is the leak. Same class: any outdoor surface
+  under a canopy / overhang / beam. Added to the §SKY_FIELD_EXACT_ALL agent's scope (open read cells get exact F). The stair.js class
+  lookup returns null on HHS (A.metaByGuid lacks it) — use guids.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
