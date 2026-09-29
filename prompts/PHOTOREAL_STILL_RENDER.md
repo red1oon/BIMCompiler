@@ -2324,6 +2324,11 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
 - COMMITTED fix/lfdb-v1501 @18d7b2e0 (sw v1505, light_zones.js?v=24), pushed. The in-flight v1504 Hospital bake was stopped (the new
   key would have staled it). Running: Duplex default-off check, then all four re-baked under the new key + restorecheck; then FF look
   (:8624) + copy sidecars + recheck on :8624.
+- HHS v1505 STILLS (red1 2026-09-30 "much faster now, initial some time still, then in secs"; :8663): …708600642 under-stair floor
+  stays mid-grey (§SKY_FIELD_EXACT_ALL holds); corridor right sixth Lu 56, 0 % black (v1502 …657642427: 21 / 8.68 %; v1504
+  …662836953: 49 / 0.18 %; different poses = indicative only). OPEN: soft dark floor blobs (…708600642 foreground; sun-shadow
+  softness vs AO — next A/B at this pose); pendant shades (…708535724) render as large translucent glowing yellow spheres (material
+  of the shade mesh / overlapping shells? unmeasured; expStep +6.84). Aerial …708518238 glassReflDark 0/87 (70 table-decided).
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
