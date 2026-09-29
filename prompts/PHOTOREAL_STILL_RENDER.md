@@ -2040,6 +2040,16 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   amplifies it (IR removed x (1 - AO)). NOT RUN (paused by red1 suspend): &skyfield=0, &ir=0. RESUME: read which meshes N8AO's
   depth pass draws at this pose (hidden / layer / visible flags of the sanitary fixtures behind wall 3cUkl…XWXt), then fix at source.
   Probe: scratchpad 6c1a56ce…/diag.js (env WAIT, LEAKPX) + rg/px_sh.json; still ~/Downloads/bounce_still_1790645217887.png.
+- OPAQUE-SET AUDIT (red1 2026-09-29: "the abstract rule — opaque as long it's not glass?"; "staircase still doesn't block the light";
+  "lamps are not evident on surfaces further away"; "Terminal roof slabs too seem to allow light thru; the pattern of shadows there and
+  in Hospital is not consistent with the structure they fall under"). Each light term uses a DIFFERENT opaque set (code-read v1501):
+  sun = every castShadow mesh (shadow map); sky lattice = BOUNDARY classes only (light_zones.js:16 — no stairs/beams/columns/MEP);
+  sky exact rays (shell + §SKY_FIELD_EXACT) = BOUNDARY + OCCLUDERS (:43) of disc ARC/STR only (:42 — MEP never blocks sky); lamps =
+  nothing (no shadow); AO/SSGI = on-screen only; glass = material opacity < 0.95 (not IFC class; SampleHouse IfcWindow mesh op 0.1).
+  TARGET RULE: one opaque set for every term = every drawn mesh unless glass (IFC class + material). Order: lamp shadow map (queued),
+  MEP into the exact-ray soup, glass by class. MEASURING FIRST which term leaks (lamps ruled weak at distance by red1):
+  su/run.sh = &meter=0 vs &meter=0&sunoff=1 (§SUN_OFF_AB debug switch, /tmp/wt-hot, uncommitted) at Hospital …512160 + Terminal
+  …602379032 — sun share per grid point vs exact sun ray; sr/ = stair.js (§STAIR_GRID: floor points whose up-ray hits IfcStair*).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
