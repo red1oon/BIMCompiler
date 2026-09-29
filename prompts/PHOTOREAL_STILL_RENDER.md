@@ -2029,7 +2029,17 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   wall between piano and door. Diagnostic press (LEAKPX, OOM 0): ALL 6 pixels hit the same opaque wall 3cUkl32yn9qRSPvBJVyWXt (c8c8c8,
   op 1), zone 3, F 0-0.003 -> the shapes are IN the wall's lighting, not geometry seen through it. Lu/Lf inside the shapes 148/120,
   150/135 vs plain wall 159-164/153-160: present in the app frame, ~3x stronger after the bounce pass. §FAULT OK, §FAULT_GI OK (the
-  fault counters do not see it). A/B per light term running (&torch/sourced/aoindirect/giredist/skyfield/ir=0).
+  fault counters do not see it). A/B per light term (:8624 v1501, LEAKPX rg/px_sh.json, Lu/Lf per pixel; px0/1 = basin/pedestal,
+  px4/5 = plain wall; baseline 148/120 150/135 · 159/153 164/160):
+  | &torch=0 | 143/119 144/110 · 153/141 159/154 (unchanged -> not the torch) |
+  | &sourced=0 | 143/171 129/149 · 155/183 178/194 (pattern stays) |
+  | &aoindirect=0 | 155/145 162/139 · 159/153 164/160 (APP frame flattens: basin 155-162 vs wall 159-164) |
+  | &giredist=0 | 149/149 148/148 · 159/159 164/164 (final = app frame: the 3x amplification gone) |
+  LEAD: the silhouette comes from the INDIRECT AO buffer (N8AO, screen-space — cannot legitimately see objects behind an opaque
+  wall; suspect its depth/normal input includes the hidden/behind-wall fixtures, e.g. §METER hidden=36) and §GI_REDISTRIBUTE
+  amplifies it (IR removed x (1 - AO)). NOT RUN (paused by red1 suspend): &skyfield=0, &ir=0. RESUME: read which meshes N8AO's
+  depth pass draws at this pose (hidden / layer / visible flags of the sanitary fixtures behind wall 3cUkl…XWXt), then fix at source.
+  Probe: scratchpad 6c1a56ce…/diag.js (env WAIT, LEAKPX) + rg/px_sh.json; still ~/Downloads/bounce_still_1790645217887.png.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
