@@ -2096,6 +2096,17 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   4.3-6.9 % blown (the atrium seen through glass), no black — possibly correct exposure; undecided. …646782139/…646800064 glassReflDark
   92/126, 62/120: HYPOTHESIS (unverified) the covered atrium counts as camOutside so inward-facing panes are judged against sky.
   Queued: lightgrid.js at …657642427 (HHS) after the Hospital grid runs.
+- §LIGHT_WITNESS FIRST RUNS (/tmp/wt-hot uncommitted, :8662, lw/*.log, OOM 0): CAN SAY WRONG — …598818184 skyOver 0 (fix on) vs 2 with
+  &skyexact=0 (worst F 0.0622 / E 0 = the known patch). DEFECTS before it ships: (1) slow — 24-34 of 144 samples in the 6 s budget
+  (~200 ms/sample, plain scene raycasts); (2) 16 rays quantise E to 0 or >= 0.03 (middle bins empty); (3) DARK_BIN_BRIGHT fires on
+  every press — lamps and bounce legitimately light E~0 points; the rule needs the lamp term or goes. Not shipped.
+- PERSISTENT PROFILE SAVING (measured): Hospital press with the IndexedDB field reused: §ZONE_IDB_CACHE hit ms=53 (was 119,263 ms),
+  run wall 177 s vs 337 s.
+- §LIGHT_FIELD_PATCH (red1 "can the initial glass data be injected into DB ... so my own testing will be faster"): fix/light-field-db
+  merged onto v1501 = bim-ootb fix/lfdb-v1501 (8dbc3bd9, sw v1502) + c6a47418: optional binary sidecar
+  buildings/patches/<db>.lightfield.bin ('LFP1' + header + gzip blob; gitignored, derived) applied after <db>.sql. Local first
+  (red1's ruling): baked into /tmp/wt-lfdb (served :8663) for Clinic/Hospital/HHS/Terminal by scratchpad bake.js; restorecheck.js =
+  witness. OCI later, once light_zones.js stops changing (the row's key is that file's hash: every light-code edit makes it stale).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
