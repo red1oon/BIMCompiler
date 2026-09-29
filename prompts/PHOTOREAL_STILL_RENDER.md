@@ -1975,7 +1975,7 @@ STATE (2026-09-30 ~04:00):
   bake.js (forces exact), bakeall.sh, restorecheck.js, cs/ band.py mottle.py eyewalk.js + px_*.json + the queued A/B scripts). Truth caches
   ~/.cache/bim4d/light_grid/*.v2.json (4 buildings). Run from a scratch copy (they write lg/, cs/, prof_<port>/ beside themselves).
 OPEN CASES, in order (each to zero before the next):
-1. CLINIC LOOK REGRESSION (red1: "it was quite perfect the time before", i.e. v1502): §SKY_FIELD_EXACT_ALL replaces EVERY read cell —
+1. ✅ CLOSED 2026-09-30 (§SKY_FIELD_EXACT_OPEN, fix/sky-surface @42347e8a, see below) CLINIC LOOK REGRESSION (red1: "it was quite perfect the time before", i.e. v1502): §SKY_FIELD_EXACT_ALL replaces EVERY read cell —
    measured side effects: walls beside windows F 0.15-0.19 where En ~ 0 (agent (c)); Clinic corridor …673812371 v1503 vs v1502 neighbour
    jumps 106 vs 89, floor median 145 vs 154. PLAN: first measure at red1's v1502 "very good" Clinic poses (…656754442, …662965285,
    …662987583, …663038659) exact vs &skyexactall=0 with cs/band.py (mid-scale 0.5-2 m) on floor + wall pixels; then HYBRID: keep the
@@ -2009,6 +2009,84 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
 - Proven fixes this session: v1501 §SKY_FIELD_EXACT (Hospital hall 23 -> 0), §GI_WAIT_BUDGET, §STILL_OVERLAY_GUARD; v1504 §ZONE_EYE (Clinic
   toilet strip 39-59 -> 57-72, Terminal corner 68 -> 172, 0 darker); HHS under-stair open cells F 1 -> 0.0034 (v1503).
 
+### CASE 1 MEASURED (2026-09-30, Opus; :8663 v1505 18d7b2e0 + baked Clinic sidecar f355c8be:86535; all 10 runs OOM 0, §GI_STILL result 1 each)
+- A/B = diag.js LEAK grid 12 px (10,220 px/pose), exact (sidecar, cache=hit on) vs &skyexactall=0 (built off), 5 Clinic poses
+  (…656754442 …662965285 …662987583 …663038659 …673812371). Probe copy + cmp.py in scratchpad 4a28e70a…/c1 (cs/*_sa|_nosa.log).
+  Exact NEVER lowers F at these poses; it RAISES 3-226 px/pose, almost all WALLS (zone 27/177, y 3.9-8.2 m): F 0 -> 0.02-0.09,
+  Lf +50..+150 (77 -> 212 on a 373737 wall). Wall band p50 0.0048 -> 0.0218 (…656754442), 0.0285 -> 0.0504 (…663038659).
+  Exposure: …663038659 247 -> 149 (-0.73 EV) = floor median Lf 123 -> 94 (field unchanged there: the wrongly lit walls move the meter).
+- TRUTH (walle.js, CIE x cos about the SURFACE normal from p + 3 cm, 64 rays; same pixels both arms):
+  | pose | set | truth E med | F exact med | F v1502 med | closer: exact / v1502 |
+  | …965285 | 205 raised walls (compare 0.5F, the shader's w) | 0.048 | 0.034 | 0.001 | 194 / 9 |
+  | …038659 | 55 raised walls | 0 | 0.026 | 0 | 15 / 40 |
+  | …965285 | 284 changed floors | 0 (p90 0.013) | 0.0035 | 0 | 47 / 237 (exact over-reads 163 vs 3) |
+  | …038659 | 230 changed floors | 0 | 0.0035 | 0 | 51 / 179 (over 110 vs 10) |
+  => neither field is right: the exact value is right AT THE CELL CENTRE but surfaces read it (a) ~0.5 m off the real surface
+  (fattened solids: floors read +0.43..0.59 m) and (b) with the UP integrand whatever the surface faces (walls). The planned HYBRID
+  (keep lattice unless |F - E| large) is the WRONG lever: it would keep …038659's false walls (large |dF|) and v1502's under-read at
+  …965285. v1502 "looked right" by accident (agent finding (c)).
+- red1 still …713186729 (v1505, cam [-4.685,9.96,-0.003], "exposure from outside too bright, inside too dark"): stamp expStep -1.02,
+  blown 0.59 %, dark 0 %, fault only glassLow. Add to the case-1 A/B set after the fix (exposure is the visible symptom).
+### §SKY_FIELD_SURFACE — SPEC (case 1 fix, 2026-09-30, Opus; supersedes case 1's HYBRID plan)
+- WHAT: in the §SKY_FIELD_EXACT_ALL pass, a covered READ target cell (saTg 1) with a SOLID FACE neighbour is computed for the SURFACE
+  it serves, not its centre: (1) SOLID below -> FLOOR mode: origin = first BVH hit straight down from the centre within 0.75 m + 3 cm
+  up (no hit: the cell's bottom face); integrand unchanged (CIE x cos about up) -> F. (2) else SOLID at +-x / +-z -> WALL mode: per
+  solid side a, origin = BVH hit along a within 0.75 m - 3 cm x a (no hit: that cell face); V_a = sum v max(0, d.(-a)) / d.y over
+  the same fixed 256 dirs / the same sum unobstructed (self-normalised: an unobstructed wall = 1, the outdoor convention the shader's
+  w = 0.5 already assumes); F = mean V over solid sides. (3) else (ceiling-only / no face solid) -> centre integrand as today.
+  Floor beats wall (a floor-corner cell serves the floor). Near-occluder (3), open (2), shell cells unchanged. Bent share skipped
+  for (1)/(2) (bentSkipped; log only anyway). One scalar per cell: no texture / sidecar format change; code hash re-keys sidecars.
+- SWITCH &skysurface=0 / APP._stillSkySurface=false = v1505 centre integrand (in the §ZONE_IDB_CACHE fingerprint).
+- § line: §SKY_FIELD_SURFACE bld cells floor/wall/centre, originHit floor/wall, noHit, meanF per mode, ms.
+- WITNESS (same probes, Clinic, bake first): walle truth at …965285 / …038659 raised-wall + changed-floor pixels: surface arm
+  closer than BOTH v1505 and v1502 on the majority of each set; floor over (F > E + 0.003) <= v1502's; exposure at …038659 within
+  0.2 EV of v1502's 247; §LIGHT_GRID whole-building Clinic (lightgrid.js) FLOOR/WALL over+under not worse than sa256; §FAULT at
+  the 5 poses + …713186729 unchanged apart from blown/dark. Then HHS / Terminal / Hospital grid per the catch-all plan.
+### §SKY_FIELD_SURFACE RESULT (2026-09-30, Opus) — WITNESS FAIL, NOT SHIPPED
+- Code: bim-ootb fix/sky-surface (from 18d7b2e0, /tmp/wt-surf, served :8664, sw v1506, light_zones.js?v=25), uncommitted at time of
+  writing. Clinic baked key 8728a111:88964 field 134 s; §SKY_FIELD_SURFACE floor=34653 wall=34051 (sides 40645) centre=64163
+  originHit floor 22968 / wall 36130, noHit 16200, meanF floor 0.0108 wall 0.0038; restorecheck PASS. All runs OOM 0, §GI_STILL 1 each.
+- vs truth (walle, same pixels; err = |F - E| floors, |0.5F - E| walls; "best" = best or tied of 3 arms):
+  | pose set | v1506 surface | v1505 exact | v1502 lattice |
+  | …965285 205 walls (E med 0.048) | err 0.0343 best 109 over 32 | 0.0341 / 91 / 16 | 0.0504 / 8 / 1 |
+  | …965285 284 floors (E 0) | 0.0039 / 65 / over 67 | 0.0048 / 38 / 163 | 0.0023 / 236 / 3 |
+  | …038659 55 walls (E 0) | 0.0084 / 26 / 17 | 0.0151 / 12 / 42 | 0.0073 / 31 / 6 |
+  | …038659 230 floors (E 0) | 0.0042 / 111 / 81 | 0.0053 / 36 / 110 | 0.0044 / 153 / 10 |
+  Better than v1505 on every set, but NOT better than v1502 on floors or on …038659 walls.
+- LOOK numbers (LEAK 12 px): wall mottle WORSE: band p50 0.022 -> 0.057 (…656754442), 0.021 -> 0.052 (…965285), 0.050 -> 0.075
+  (…038659); wall jumps 547 -> 856, 480 -> 972. Exposure falls further: 153 -> 110, 141 -> 100, 149 -> 105 (v1502 191/185/247);
+  floor median …038659 94 -> 73 (v1502 123). red1 still …713186729 (the "outside too bright, inside too dark" pose): exposure
+  v1502 42.8 / v1505 22.0 / v1506 21.9 = the exact field costs ~1 stop there; floor median 32 -> 19 either exact arm.
+  Spec witness (exposure within 0.2 EV of v1502) FAILS at every interior pose.
+- READING: wall mode raises the wall mean F (0.005 -> 0.015 over the frame) and neighbouring cells switch between floor / wall /
+  centre modes (a cell with a slab below serves the floor, the one above it the wall) = new cell-scale steps on walls. The larger
+  lesson: every exact variant so far lifts small F on many interior surfaces; at +8.5-stop interior exposure that drives the meter
+  down ~0.5-1 stop and darkens the room. The lattice's zeros were wrong in places (…965285 walls) but its FRAME is what red1 liked.
+### §SKY_FIELD_EXACT_OPEN — SPEC (case 1 decision, red1 "Agreed" 2026-09-30 to: v1502 default + exact only where the lattice is plainly wrong)
+- WHAT: the §SKY_FIELD_EXACT_ALL pass keeps ONLY its open-cell targets (saTg 2: open cells under / beside an occluder, where the field
+  forced F = 1 — HHS under-stair 1 -> 0.0034). Covered cells (saTg 1 read / 3 near-occluder / 4 shell) are NOT replaced: they keep the
+  lattice + the v1501 §SKY_FIELD_EXACT lower-only bound (no longer 'superseded'). = v1502's covered field + the open-cell fix.
+- SWITCH (measurement only): &skyexactcov=1 / APP._stillSkyExactCov = true = v1503-v1505 covered replacement (in the fingerprint).
+  &skyexactall=0 unchanged (= no open-cell pass either). §EXACT_WHEN_BAKED unchanged (the open pass runs when baked / forced).
+- § lines: §SKY_FIELD_EXACT_ALL gains 'covered=off (open-only; &skyexactcov=1 replaces covered)'; §SKY_FIELD_EXACT back to on.
+- WITNESS: Clinic re-bake; LEAK grid at the 5 case-1 poses + …713186729: every covered pixel's F equals the &skyexactall=0 arm's
+  (|dF| <= 0.001 on >= 99 % of floor+wall px), exposure within 0.05 EV of it; open-cell pixels may differ (logged). HHS §STAIR_UNDER
+  (stairpts.js): 19 zone-0 points F median stays ~0.003 (not 1). Then HHS / Terminal / Hospital grid per the catch-all plan.
+### §SKY_FIELD_EXACT_OPEN RESULT — ✅ CASE 1 CLOSED (2026-09-30, Opus; red1 decision "Agreed")
+- CODE: bim-ootb fix/sky-surface @42347e8a (pushed; sw v1506, light_zones.js?v=25; the §SKY_FIELD_SURFACE attempt was reverted, not
+  committed). Served :8664 from /tmp/wt-surf. NOT on look/combined-0925, NOT on OCI (needs red1). Sidecars in /tmp/wt-surf/buildings/
+  patches key 771af243:87025: Clinic_meta 362,722 B (field 35 s; exact-all open cells 39,804, 21 s; restorecheck PASS 26 ms), HHS_extracted
+  1,259,482 B (field 90 s; open cells 47,083). Terminal / Hospital NOT baked for v1506 (stale -> fast field) — bake once at the end.
+- §SKY_FIELD_EXACT is back ON under it (Clinic cellsLowered 4101, meanDF -0.0355, 480 ms) = v1502's covered field exactly.
+- W-SKY_FIELD_EXACT_OPEN (wop.py, LEAK 12 px, :8664 vs :8663 &skyexactall=0, OOM 0 all): covered floor+wall px F identical at 6/6
+  poses (10166/10166, 9696/9696, 9470/9470, 9558/9558, 7428/7428, 10214/10215); exposure dEV 0 / 0 / 0 / 0.009 / 0 at the 5 case-1
+  poses. red1 …713186729 (the roof-level pose): +0.09..+0.15 EV, REPEATABLE (op 47.3 / 46.9 vs nosa 42.8 / 44.0; run noise ±0.04 EV)
+  = the open-cell pass itself: open surfaces under the canopy F 1 -> 0.74 (Lf 89 -> 78), 70/95 band 12.37 -> 12.00 -> the interior
+  brightens (the direction red1 asked for). Spec clause "0.05 EV" was written for covered equality; recorded, not waived silently.
+- HHS §STAIR_UNDER (stairpts.js, :8664, fresh profile, OOM 0): 19 open points F median 1 (v1502) -> 0.0039 (truth 0.0029), stillF1 0;
+  30 covered 0.0212 -> 0.0207 (truth 0.0146: the lattice's small over-read, accepted with the baseline).
+- KNOWN RESIDUAL (accepted with the baseline): lattice under-reads some walls (…965285: 205 walls truth E 0.048, F 0.001). Any later fix
+  must be judged on walle truth AND exposure at the same pose (the v1503-v1506 lesson). Next = case 2 (Terminal tiles) on this base.
 ## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
