@@ -2171,6 +2171,19 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   glassReflDark 2/59, open 5, blown 0, dark 0.12. Regression controls for §SKY_FIELD_EXACT_ALL (glass gates read the field).
 - RULING (red1 2026-09-29 PM): let the running §SKY_FIELD_EXACT_ALL agent finish gracefully; after its report assign NO further
   agents (red1 resting). Parent only reviews the report + records it; no look FF / OCI without red1.
+- NOTE — GLASS MUST REFLECT THE BUILDING'S OWN SHAPE (red1 2026-09-29: "glass reflection should also take into account building shape
+  is reflected. In Hospital its wing is not reflected in the glass wall, but the unobstructed skyline. The wing should be the
+  obstruction."). CODE-READ CAUSE (not yet measured): §GLASS_ENV (glass_fresnel.js:92-97) captures ONE cube map from the CAMERA
+  position and uses it as every pane's envMap. A cube map assumes reflected things are infinitely far, so a pane's reflected ray is
+  looked up by DIRECTION from the camera, not traced from the pane: a wing 20-40 m from the pane but off the camera's line in that
+  direction reads as the sky beyond it (parallax error). §GLASS_REFL_OPEN (Z26) only scales the reflection brightness
+  (T x rho_hit x F_hit) — it knows the wing blocks, but not what it looks like. CANDIDATE FIXES (to measure, cheapest first): (a) the
+  Z26 table already stores per pane side whether the mirror direction is blocked — where blocked, tint the reflection toward the
+  blocker's lit colour instead of the env sample; (b) parallax-corrected (box-projected) env per facade / per wing; (c) screen-space
+  reflections for panes whose reflected ray lands on screen; (d) ray-traced reflections from the pane against the shell BVH at a
+  reduced resolution. WITNESS idea: at red1's Hospital exterior poses (…663408931, …664322668), per glass sample, exact reflected ray
+  from the pane -> hit class (wing IfcWall/IfcPlate vs sky) vs what the env lookup returns; count "sky shown where geometry is hit".
+  NOT STARTED (red1 resting; no agent assigned).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
