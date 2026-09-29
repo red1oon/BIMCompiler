@@ -2113,6 +2113,9 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   pairs), &skyexact=0 -> v1501: skyOver 191 -> 50, skyJump 22 -> 3, skyUnder 191 -> 224 (the 8-ray bound lowers some cells past the
   32-ray truth — tune). Remaining skyOver by up class: STR 25, ARC 19, MEP 2, FP 2. DEFECT: zoneFlip has no wall-between test
   (SampleHouse 75 flips / 63 irStep, many likely real walls) — add a ray between the pair before trusting it.
+- §LIGHT_GRID HHS (…657642427 pose, v1501): truth 192 s once (1.6 ms/ray). 3,000 floor points: skyOver 145 (4.8 %), skyUnder 352
+  (11.7 %), skyJump 136 / 5,129 pairs (2.7 % vs Hospital 0.4 % — HHS is the blotchiest), zoneFlip 503 (no wall test yet). Under MEP
+  46/515 over-read = MEP never blocks sky (opaque-set step 2). Corridor wall NOT answered: the grid samples floors only — add 1.2 m wall points.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
