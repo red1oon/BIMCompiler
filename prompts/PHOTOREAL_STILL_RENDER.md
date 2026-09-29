@@ -2116,6 +2116,13 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
 - §LIGHT_GRID HHS (…657642427 pose, v1501): truth 192 s once (1.6 ms/ray). 3,000 floor points: skyOver 145 (4.8 %), skyUnder 352
   (11.7 %), skyJump 136 / 5,129 pairs (2.7 % vs Hospital 0.4 % — HHS is the blotchiest), zoneFlip 503 (no wall test yet). Under MEP
   46/515 over-read = MEP never blocks sky (opaque-set step 2). Corridor wall NOT answered: the grid samples floors only — add 1.2 m wall points.
+- ✅ §LIGHT_FIELD_PATCH LIVE LOCALLY (look FF to c6a47418, sw v1502, :8624; sidecars copied into /tmp/wt-look/buildings/patches,
+  gitignored). Baked (bake.js, key 6cf4c681:142097): Clinic 0.34 MB (raw 22 MB), HHS 1.2 MB, Terminal 3.2 MB, Hospital 5.8 MB (raw
+  125 MB). NAME = the file the viewer patches: <bld>_meta.db for Clinic/Hospital/Terminal (they load the meta split), HHS
+  _extracted.db (first attempt used _extracted everywhere -> INCONCLUSIVE, no sidecar fetched). W_LIGHT_FIELD_PATCH fresh profile
+  (restorecheck.js): Clinic PASS field 11.6 s -> 24 ms; Hospital PASS 111 s -> 66 ms (restore at open 1.2 s); Terminal PASS 87 ms;
+  HHS PASS 22 ms. Only for LOCAL db URLs (?db=../buildings/<bld>_extracted.db); OCI URLs fetch OCI patches. Re-bake after every
+  light_zones.js edit (the key is that file's hash).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
