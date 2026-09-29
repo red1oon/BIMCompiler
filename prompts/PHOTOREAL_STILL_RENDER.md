@@ -2312,6 +2312,18 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   '§LIGHT_FIELD_DB stale' -> silent ~220 s rebuild (the agent hit the same SW cache in a persistent profile). Workaround given:
   Ctrl+Shift+R once. OPEN (UX defect): a key mismatch between the browser's code and the sidecar must not be silent — toast it, or
   make the SW network-first for light_zones.js / check the sidecar key before staging.
+### §FIELD_KEY_CODE + §EXACT_WHEN_BAKED — SPEC + BUILD (2026-09-30, red1 "I am just worried of impact and bloat ops" -> "Yes")
+- MEASURED COSTS behind it: baked press +0 (field 15-86 ms from the sidecar); UNBAKED first press +2.2 min Clinic / +3.1 min HHS /
+  +33 min Hospital (over the 900 s bounce wait); sidecar sizes v1502 -> v1503 Clinic 0.34 -> 0.40 MB, HHS 1.21 -> 1.34, Terminal
+  3.19 -> 4.18; OPS: the key = hash of the whole light_zones.js, so ANY edit (even a comment) staled every sidecar -> ~50 min re-bake.
+- (1) §FIELD_KEY_CODE: key = hash of light_zones.js with comments + whitespace stripped. Witness (node, same hashing): key
+  f355c8be:86535; +comment SAME; one code char DIFF (safe direction kept).
+- (2) §EXACT_WHEN_BAKED: skyExactAllOn = forced (APP._stillSkyExactAll = true / &skyexactall=1; bake.js sets it) OR the loaded record
+  for this building (sidecar / saved .db / IndexedDB) was built with it; else the fast v1502 field (imports, unbaked), logged with the
+  reason. New users / imports: no 33-min first press. No worker, no size budgets, no new machinery.
+- COMMITTED fix/lfdb-v1501 @18d7b2e0 (sw v1505, light_zones.js?v=24), pushed. The in-flight v1504 Hospital bake was stopped (the new
+  key would have staled it). Running: Duplex default-off check, then all four re-baked under the new key + restorecheck; then FF look
+  (:8624) + copy sidecars + recheck on :8624.
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
