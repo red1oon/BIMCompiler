@@ -2165,6 +2165,10 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
 - CLINIC v1502 (red1 "look very good", local db + sidecar): …662912403 / …662965285 / …662987583 / …663038659: unlit 0 on all
   (15-144 samples), irOnly 0, hueNoise 0, blown 0.06-2.96 %, dark 0-0.23 %; exterior …662912403 glassReflDark 3/47. FAULT flag again
   only from glassLow = 1. Baseline for regression after §SKY_FIELD_EXACT_ALL.
+- HOSPITAL EXTERIOR BASELINE (red1 "best angle shot, the reflection play kills it", …664322668, v1502 local db, low camera
+  [41.8,-10.5,-50.8]): §FAULT OK (first all-OK Hospital exterior of the session), glassReflDark 0/67, glassReflOpen 12 (Z26 table
+  decided), blown 0.01 %, dark 0.16 %, hueNoise 0. Also …663408931 (red1: glass "reflective and see-thru at realistic returns"):
+  glassReflDark 2/59, open 5, blown 0, dark 0.12. Regression controls for §SKY_FIELD_EXACT_ALL (glass gates read the field).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
