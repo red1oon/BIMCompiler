@@ -2183,6 +2183,11 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   reflections for panes whose reflected ray lands on screen; (d) ray-traced reflections from the pane against the shell BVH at a
   reduced resolution. WITNESS idea: at red1's Hospital exterior poses (…663408931, …664322668), per glass sample, exact reflected ray
   from the pane -> hit class (wing IfcWall/IfcPlate vs sky) vs what the env lookup returns; count "sky shown where geometry is hit".
+  ILLUSTRATION (red1 still …667308830, v1502 local db, cam [-21.39,7.57,41.34] tgt [-1.61,-3.24,-0.31], Hospital courtyard): the
+  right-hand glass wall faces the opposite wing at a grazing angle, yet its panes show a pale sky gradient, not that wing's facade.
+  The still's own check is BLIND to it: §FAULT OK, glassReflDark 0/263, glassReflOpen 7, blown 0.33 %, dark 0.05 % — glassReflDark
+  judges darkness, not WHAT is reflected. The witness above ("sky shown where the exact reflected ray hits geometry") is the missing
+  counter; this pose is its first test case (expect most right-wall samples to hit the opposite wing within ~20-40 m).
   NOT STARTED (red1 resting; no agent assigned).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
