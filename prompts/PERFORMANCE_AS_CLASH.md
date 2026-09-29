@@ -381,3 +381,24 @@ Consequences:
 Measurement methods, not design rules: ISO 3382, ISO 12354. Not geometry: ISO 7730.
 **Malaysia-first note:** MS 1184 is free from JKR, and UBBL 34A is the local accessibility law. Read both before
 choosing AD M's 40 m as the default pack. It's a per-jurisdiction pack, the same as `rates/*_my.json` vs `*_uk.json`.
+
+## §14 — THE COMPILED BUILD STATEMENT (red1, 2026-09-29)
+*"All those standards counts, disability access in HUD cards, adds to the BIM as compiled build statement."*
+
+The framing ties the lane to the project's core thesis (IFC → compiled building; Spatial Compilation paper). A software
+compiler ends with a build report: N passed, warnings, errors, each pointing at a line. The building compiler ends
+the same way.
+- **Each group card = one section of the statement.** Access includes disability access (WC ≤ 40 m, accessible WC
+  size, turning space) and fixture counts (WCs per occupant load, once Table 2902.1 / BS 6465-1 values are extracted).
+- **Each line has five parts:** the rule, measured vs limit, a verdict (PASS / WARN / FAIL / INCONCLUSIVE / UNSOURCED),
+  the cited clause, and the room count.
+- **One statement per building:** the same rows in three places.
+  1. The HUD cards in the Alt+C film.
+  2. The canvas lists (§Q).
+  3. An exportable text/CSV "build statement" (later: BCF).
+- **Honesty rules, as a compiler would:**
+  - A check with no rooms of that use prints INCONCLUSIVE, never PASS.
+  - A use with no sourced pack prints UNSOURCED.
+  - A distance built on a known-defective input (§13 prerequisites) carries a warning flag until the fix lands.
+- **Header line:** building, compile date, packs loaded with their jurisdiction (e.g. UK AD M 2024 / MY MS 1184 /
+  BB93 / IEC 62676-4:2014), and counts of pass/warn/fail/inconclusive.
