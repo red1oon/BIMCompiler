@@ -1980,6 +1980,59 @@ STEP 2 (spec first, append here): if leak — bound each cell's F by exact rays 
   cost must be stated (field sweep today 91 s).
 STEP 3 witness: …598818184 bright+blocked 23 -> ~0, floor median unchanged ±3; HHS …601892033 bright band (real window light) stays;
   Terminal ext …622137170 229/236 ground agreement stays; Clinic …495545980 glassReflDark 2/44 stays. Then commit, FF look, push.
+STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m into the air cell; :8662 v1500, OOM 0; logs
+  scratchpad 6c1a56ce…/s1/1790598818184_s1b.*): LATTICE OVER-READS (quadrature), not real skylight at that level.
+  | point | lattice F | lattice dirs | exact cos-hemisphere 128 rays, x glass T | dir 8 cone (48 rays) clear / xT | 0.0886 x coneT |
+  | [-0.2,-15.4,-10] bright | 0.0622 | 1: di 8 (dx -1 dz 0, 45 deg) w 0.0886 vt 0.702 (glass) | 0.0191 | 0.333 / 0.163 | 0.0144 |
+  | [0.4,-15.4,-6] bright | 0.0622 | same one dir | 0.0038 | 0.146 / 0.071 (centre ray hits opaque at 6.85 m) | 0.0063 |
+  | [-1.8,-15.4,1.7] bright | 0.0622 | same one dir | 0.0115 | 0.375 / 0.184 | 0.0163 |
+  | [-8.9,-15.4,2.3] / [-10.3,-15.4,3.7] normal | 0 / 0 | none | 0 / 0 | - | - |
+  => ONE of the 41 directions (weight 8.9 % of the sky) is credited in FULL because its single lattice path threads the atrium
+  glazing, while 62-85 % of that direction's solid angle is really blocked (the cone check reproduces the exact hemisphere:
+  0.014/0.006/0.016 vs 0.019/0.004/0.012). The lattice F is 3-16x too high; the hall floor gets the patch wherever that one path
+  threads the gap. Real skylight exists there but is 0.004-0.019, not 0.062.
+### §SKY_FIELD_EXACT — SPEC (2026-09-29, Opus; Witness = STEP 3 above)
+- WHAT: after the lattice sweep and the §SKY_SHELL_RAYS pass, over the SAME BVH (boundary + occluders, glass x T per pane), bound
+  every lattice contribution of a READ cell by exact rays inside that direction's own quadrature cell. Contribution (cell c, dir d)
+  = w_d vt_d (lattice) -> min(w_d vt_d, w_d E_cd), E_cd = mean exact T over sub-directions of d. LOWER ONLY (a bound): the lattice's
+  under-reads (HHS dim points) are out of scope, counted as `wouldRaise`, not applied.
+- READ cells = non-solid covered cells within Chebyshev distance 2 of a SOLID cell (fieldRead samples the 2x2x2 texels around
+  p + 0.5 cell x n: at most 2 cells off the solid). Cells the shell pass recomputed are skipped (already exact).
+- SUB-DIRECTIONS: per d, the plane-y=1 points (0.05 step, the same integrand cos x (1 + 2 sin elev) dOmega that makes w_d) that
+  pick d as nearest, systematic-sampled by cumulative weight into K = 16 fixed directions (same set for every cell: spatially
+  coherent, no per-cell noise). Stage 1 = every 4th (4 rays); if all 4 reach sky with T >= lattice vt, the contribution stands;
+  else stage 2 casts the other 12 and E = mean of 16.
+- Bent normal (zb) moves by the removed share x u_d. Switch &skyexact=0 / APP._stillSkyExact=false (enters the §ZONE_IDB_CACHE
+  fingerprint); needs the shell BVH (shell off -> skyexact off, logged).
+- § line §SKY_FIELD_EXACT per build: readCells, pairs, rays (stage1/stage2), ms, cells lowered (>0.005 F), meanDF over lowered,
+  maxDrop, wouldRaise pairs, VACUOUS when pairs = 0. Hospital cost stated from the log.
+§SKY_FIELD_EXACT BUILD LOG (Opus, /tmp/wt-hot uncommitted, Hospital …598818184, OOM 0):
+  v1 (16 sub-dirs, every pair): readCells 800088, pairs 1470932 (shell-skipped 290540), lowered pairs 744797, cells lowered 107764
+  meanDF -0.0445 maxDrop -0.59, wouldRaise 925, rays 13.7 M, 112 s — too slow.
+  v2 (8 of 16, pairs with w vt < 0.005 unchecked = the 16 lowest dirs, sum w 0.029): pairs checked 498913, cells lowered 102998
+  meanDF -0.0438, wouldRaise 143, rays 3.17 M, 29.1 s (9.2 us/ray). => ~96 % of v1's effect at 26 % of the cost.
+  FOUND ON THE WAY (pre-existing, silent): gi_still.js waitForStill(120000) counts the first press's staging (field build inside it:
+  Hospital 109 s baseline, 138 s with v2) -> > 120 s = the bounce pass is abandoned with a toast and NO § line (runs fx/fx2/fx3 had
+  no §GI_STILL result). Fix §GI_WAIT_BUDGET: wait while the still stays active (900 s cap) + §GI_STILL_FAIL reason=… on every give-up.
+  WITNESS Hospital …598818184 (v2 + §GI_WAIT_BUDGET, fx/…_fx4.log, OOM 0, §GI_STILL result OK): bright+blocked 23 -> 0. The 31 floor
+  points whose F changed: F 0.017-0.075 -> 0-0.015, Lf 202-228 -> 133-185. The 200 floor points with F UNCHANGED moved Lf median
+  128 -> 134 = auto-exposure, not the field: meter Lavg 67.5 -> 56.4 cd/m2, exposure 70.1 -> 84.0 (+0.26 EV) because the false
+  light left the frame. Spec's "median ±3" is outside by +3 for that reason (camera behaviour, not a field regression).
+  §STILL_OVERLAY_GUARD (red1 2026-09-29 "a guard not to allow the canvas to be in x-ray or other overlay mode"): startStillRefine
+  clears X-Ray + the ghost bbox shell before every still (same reset as the film's §CINEMA_XRAY_RESET/§CINEMA_GHOST_RESET), logs it.
+  REGRESSION A/B (same tree, &skyexact=0 vs default, all OOM 0): HHS …601892033 window band kept (F 0.032 -> 0.022-0.028, Lf
+  160-170 -> 141-168; 125/880 grid points' F changed); Terminal ext …622137170 ground dark<->sun-blocked agreement 364/371 -> 366/373
+  (build +20.0 s, 201591 cells lowered); Clinic …495545980 glassReflDark 2/44 -> 2/44 (build +0.5 s). HHS build +10.0 s.
+  ✅ SHIPPED 9d7ebc71 sw v1501 (look/combined-0925 FF + fix/look-hot1, both pushed; :8624 serves v1501). W-OVERLAY (overlay.js):
+  X-Ray PASS on Clinic; ghost arm INCONCLUSIVE (the ghost auto-shell only arms after the navigate module loads — never on a fresh page).
+- SAMPLEHOUSE_WALL_GHOST (red1 still …645217887, v1500, "done without any overlay"): faint white basin/pedestal silhouettes on the
+  wall between piano and door. Diagnostic press (LEAKPX, OOM 0): ALL 6 pixels hit the same opaque wall 3cUkl32yn9qRSPvBJVyWXt (c8c8c8,
+  op 1), zone 3, F 0-0.003 -> the shapes are IN the wall's lighting, not geometry seen through it. Lu/Lf inside the shapes 148/120,
+  150/135 vs plain wall 159-164/153-160: present in the app frame, ~3x stronger after the bounce pass. §FAULT OK, §FAULT_GI OK (the
+  fault counters do not see it). A/B per light term running (&torch/sourced/aoindirect/giredist/skyfield/ir=0).
+RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
+  the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
+  after the numbers stop moving — mistakes and debug iterations stay local.
 ALSO OPEN (order red1 approved): lamp overhead shadow map fix/lamp-shadow @295ac63f (batch: scratchpad run_lampsh.sh + table_lampsh.js),
   room-use -> EN 12464-1 lamp targets (Sonnet), light-field DB persistence fix/light-field-db @98677577 (witness unfinished) + OCI SQL
   patches, then Alt+C film law S4.
