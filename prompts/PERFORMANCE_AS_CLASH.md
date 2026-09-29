@@ -335,3 +335,42 @@ Consequences:
    distance-limit pack exists.
 2. The Light pain phrase "without DIALux" fits: the lux check lives inside the viewer.
 3. Echo's value is latent: lead with the numbers card (§N), not a claimed market pull.
+
+## §13 — GROUPING + the TOILET ACCESS INDEX (red1, 2026-09-29)
+**Group by the question answered**, as new entries in the Inspect drawer beside Sanity/Egress (`viewer/panels.js`
+~1396). Each entry = one `A.showRuleChecklist` consumer + one `viewer/rates/<x>_rules.json` with a `_cite` per row
+(the `egress_rules.json` convention). Alt+C = one checkbox per entry, markers only (§P).
+| Entry | Question | Rules file | First rows |
+|---|---|---|---|
+| Egress (exists) | can I get OUT? | egress_rules.json | common path, remoteness, door width |
+| **Access** | can I get TO what I need? | access_rules.json | toilet walk distance, WC size, turning circle |
+| **Comfort** | is the room fit for its use? | comfort_rules.json | lux, RT, glare, daylight |
+| **Security** | can it be seen? | security_rules.json | camera coverage / DORI |
+
+**Toilet Access Index** (the escape-route shape, pointed at the nearest WC instead of the nearest exit):
+- **Film marker:** worst room + its drawn walk to the nearest (accessible) WC. **Card:** walk m vs the cited limit
+  (+ time via SFPE 1.19 m/s, shown).
+- **Index:** % of occupied floor area within the limit + the worst room.
+- **Canvas list:** every room over the limit.
+- **Prerequisites, from the room-injection lane (triage it first):**
+  - walk metres, not routing cost (ESCAPE §8)
+  - the `stairBaseKey` stair collapse (ESCAPE §15)
+  - "nearest of many targets" from the most remote point of a space, not the room centre
+  - WC room identification (M0)
+
+### §13.1 Standards map (one Sonnet pass 2026-09-29; "read" = page text read, else snippet)
+| Rule | Source | Value | Access |
+|---|---|---|---|
+| WC travel, wheelchair user | UK Approved Doc M vol 2 **§5.9(h)** (read) | ≤ 40 m same floor; ≤ 40 m combined horizontal if another floor by lift | FREE |
+| Toilet location | IBC 2021 §2902.3.2 (snippet; clause no. varies by edition) | ≤ 1 storey away, path ≤ 500 ft (152 m); malls 300 ft | free (ICC/UpCodes) |
+| WC fixture count | IBC/IPC Table 2902.1; BS 6465-1 | per occupancy; NOT extracted | ICC free / BS paid |
+| Accessible WC size | AD M §5.10; BCA Code on Accessibility 2019/2025; MS 1184:2014 + UBBL 34A | 1.5 m wide unisex (2 m if only WC) — rest NOT extracted | all FREE |
+| Paths / turning | ISO 21542:2021 §6.3.3, §7.1.3-4 | values NOT extracted | paid |
+| Lux, U0, UGR | EN 12464-1:2021 | e.g. office 500 lx, U0 ≥ 0.6, UGR ≤ 19 (snippet) | paid (we hold prEN 2019 draft rows) |
+| Daylight | EN 17037:2018 | 300 lx over 50 % / 100 lx over 95 % of plane, > half daylight hours (snippet) — needs climate sim, NOT a layout check | paid |
+| RT | DIN 18041 (paid) / BB93 (OGL) | see §9.2 | — |
+| Camera | IEC 62676-4 **2014** (pin edition; 2025 has 7 levels) | 25/62.5/125/250 px/m | paid; Axis whitepapers free |
+| Sign size | ISO 3864-1 h = L/Z | Z 200/100/50 by lighting (one snippet, unverified) | paid |
+Measurement methods, not design rules: ISO 3382, ISO 12354. Not geometry: ISO 7730.
+**Malaysia-first note:** MS 1184 is free from JKR, and UBBL 34A is the local accessibility law. Read both before
+choosing AD M's 40 m as the default pack. It's a per-jurisdiction pack, the same as `rates/*_my.json` vs `*_uk.json`.
