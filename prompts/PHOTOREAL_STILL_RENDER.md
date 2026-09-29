@@ -2262,6 +2262,17 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
 - CLINIC v1503 SPOTS (red1 …673812371 / …673796302 / …673780207, :8663 v1503): mottled corridor floor, cloudy bulkhead + back walls;
   §FAULT clean (unlit 0, dark <= 0.01 %) — blind to it. Measuring: diag LEAKPX 26x18 on vs &skyexactall=0 + walle exact E at the same
   pixels (sfa/cs/).
+- BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
+  LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
+  the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
+  +6.52; Hospital hall 56 -> +7.78; HHS room 51 -> +7.92; Clinic corridor …673812371 (red1's "spotty") 16.5 -> +9.55 stops (x750).
+  => in dim interiors every residual error (field noise, flat fill, bounce blotch) is amplified ~x750 — the corridor with the most
+  gain is the spotty one (consistent, not yet proven causal). GI is not the blowout (composite vs app mean 4-8 levels).
+  LIGHT LOST IN THE CHAIN: same press §LUX_CHECK_CAM zone 27: sky 112 + lamps 191 = 303 lx predicted -> ~48 cd/m2 on a rho 0.5 floor
+  (L = rho E / pi); meter measured 16.5 cd/m2 = ~3x less. §LUX_CHECK withEN=0 unknown=439: NO zone has a room use / EN 12464-1
+  target yet. REVIEW ORDER (measure before change): (1) trace predicted lux vs rendered L at the same points in the Clinic corridor
+  (lamp term, sky term, albedo, meter) to find the 3x; (2) exposure rule — cap, or meter against the room's design level, so dim rooms
+  stay dim; (3) room use -> EN 12464-1 lamp targets. After the Clinic spot case closes (one case at a time).
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
