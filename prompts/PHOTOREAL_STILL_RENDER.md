@@ -1968,7 +1968,8 @@ STATE (2026-09-30 ~04:00):
   look/combined-0925) is still v1502 — FF HELD until the Terminal tile question (below) is answered. wip/light-witness @ad0cf318 (pushed,
   /tmp/wt-hot) = unshipped §LIGHT_WITNESS + §SUN_OFF_AB. No OCI changes.
 - SIDECARS (/tmp/wt-lfdb/buildings/patches, key f355c8be:86535, gitignored): Clinic_meta 0.40 MB PASS, HHS_extracted 1.34 MB PASS,
-  Terminal_meta 4.18 MB (baked 03:24), Hospital_meta = baking at handover (ship2.sh; check sfa/bake_Hospital.out + rc_Hospital.out).
+  Terminal_meta 4.18 MB (baked 03:24). Hospital: bake ABORTED by red1 (~04:00, "we already know much from Hospital's many stills —
+  abort and channel effort to a single catch-all approach"); its sidecar is the old v1502 bake = stale -> Hospital builds the FAST field.
   Re-bake one: `BLDS=Clinic ./bakeall.sh` (probes dir). Local-db links only: viewer.html?db=../buildings/<bld>_extracted.db.
 - PROBES (survive reboot): prompts/photoreal_probes/lightgrid/ (diag.js +PRE +LEAKSKIPGLASS +URLDB, lightgrid.js, walle.js, stair.js,
   bake.js (forces exact), bakeall.sh, restorecheck.js, cs/ band.py mottle.py eyewalk.js + px_*.json + the queued A/B scripts). Truth caches
@@ -1988,6 +1989,10 @@ OPEN CASES, in order (each to zero before the next):
 5. then: blowout review (exposure x750 in dim interiors + lux->L 3x loss), lamps/EN targets (withEN=0), lamp shadow map, MEP into the
    exact soup, glass by IFC class, glassLow naming, wing reflections (cube-map parallax), stamp field source into PNGs, key/field CPU
    mirror surfaceInfo(p,n,eye).
+CATCH-ALL APPROACH (red1 2026-09-30 ~04:00): no per-building bakes/still loops while developing. ONE dev building (Clinic) + the
+WHOLE-BUILDING GRID TRUTH for the rest (Hospital/HHS/Terminal truth already cached; a grid check needs only a field, fast field if
+unbaked) + the gaps already evidenced by Hospital's many stills in this file (hall 23-point patch, stair-core smudge = lattice noise,
+basement irOnly room, glass wings, exposure x750 interiors). Bake the others ONCE at the end.
 ONE DEV BUILDING: iterate on CLINIC (bake 2.5 min; has thin partitions, corridor mottle, atrium + vault, piers beside windows, glass in/
 out). At zero: bake + check HHS (stair open-cell), Terminal (tiles/corner), Hospital by ONE §LIGHT_GRID run on its cached truth (36 s)
 + the two exterior baselines (…663408931, …664322668). Field code is shared, so Clinic results transfer; Hospital-only = scale, atrium
