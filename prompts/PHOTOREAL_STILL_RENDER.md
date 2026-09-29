@@ -2266,6 +2266,12 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   mean |F - E| 0.0019 / 0.0013, over(>0.02) 0 / 0, under 0 / 2 (n 468); neighbour pairs with |dLu| >= 15 (the spots) 106 / 89 of
   420; floor Lu p10/50/90 127/145/156 vs 130/154/163. Sky ~0 in this corridor and right in both. Next: lamps on vs &sourced=0 with
   &meter=0 (fixed exposure) at the same pixels (cs/lamps.sh), after the floor-corner check (cs/corner.sh).
+- CLINIC FLOOR-CORNER BANDS (red1 "floor corners bandish", toilet still …673908384, LEAKPX 18x10 floor grid, v1503 vs &skyexactall=0,
+  OOM 0): F = 0 at every floor point and on == off -> NOT the sky field. The cubicle floor is zone 141 (Lu 63-80, smooth), but points
+  hugging the partition base resolve to zone 130 (the neighbouring cubicle) and read Lu 36-59 -> lamps are zone-bound, so a point
+  given the wrong zone gets the neighbour's lamps = the dark corner strip. SAME CLASS as TERMINAL_CORNER / Castle speckle / §LIGHT_GRID
+  zoneFlip (surfaceInfo's eye-side 0.5 m cell lookup crossing a thin partition). Fix target: surfaceInfo (the zone of a surface point
+  must be the room the SURFACE faces, decided by an exact ray / the geometry, not the nearest cell) — witness = zoneFlip with wall test.
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
