@@ -2329,6 +2329,11 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   …662836953: 49 / 0.18 %; different poses = indicative only). OPEN: soft dark floor blobs (…708600642 foreground; sun-shadow
   softness vs AO — next A/B at this pose); pendant shades (…708535724) render as large translucent glowing yellow spheres (material
   of the shade mesh / overlapping shells? unmeasured; expStep +6.84). Aerial …708518238 glassReflDark 0/87 (70 table-decided).
+- TERMINAL v1505 STILLS (red1 2026-09-30, :8663): …709239282 main hall back wall + columns show a BLOCKY ~0.5 m tile mosaic (blown 9.39 %)
+  — cell-sized, sharper than v1502's soft blotches (…662374052) -> suspected v1503 regression (per-cell exact F with no continuity
+  between neighbouring cells); INFERRED, measuring: cs/tmwall.sh (wall pixels 8 px, v1505 vs &skyexactall=0). …709325036 waiting hall
+  washed (blown 2.53 %); …709209021 / …709154205 reasonable (mild mottle, pale floor bands); exteriors clean (glassReflDark 0-1).
+  All §FAULT only from glassLow = 2. Also queued: HHS floor mottle A/B (cs/hhsfloor.sh: default / &giredist=0 / env 0) at …708698742.
 - BLOWOUT FACTOR REVIEW (red1 2026-09-29 eve: "some blowout factor influencing the lighting that needs to be reviewed"). FROM EXISTING
   LOGS, no new render (§METER tag=final, §GI_STILL result): the auto-exposure normalises every still to frame mean ~106-122 whatever
   the scene light: Terminal ext Lavg 8,422 cd/m2 -> +0.56 stops over base; Clinic ext 4,345 -> +1.51; Hospital stair hall 135 ->
