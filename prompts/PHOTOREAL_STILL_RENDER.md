@@ -2123,6 +2123,15 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   (restorecheck.js): Clinic PASS field 11.6 s -> 24 ms; Hospital PASS 111 s -> 66 ms (restore at open 1.2 s); Terminal PASS 87 ms;
   HHS PASS 22 ms. Only for LOCAL db URLs (?db=../buildings/<bld>_extracted.db); OCI URLs fetch OCI patches. Re-bake after every
   light_zones.js edit (the key is that file's hash).
+- HOSPITAL v1502 STILLS (red1 PM, local db + sidecar on :8663): …926827 aerial OK; …010578 / …977510 cloudy smudges on the dark stair
+  core + soffits; …041706 basement room irOnly 81/144 (lit only by the flat zone fill — a fixture-less windowless room would be ~black).
+  STAIR CORE MEASURED (…010578, diag LEAKPX 32 px + walle.js exact 64-ray E per surface normal, sidecar field, OOM 0; staging with the
+  sidecar sourcedStage 6.9 s vs 98-128 s): Lu follows F point by point (F 0 -> Lu 43-57; 0.02-0.03 -> 104-114; 0.047-0.064 -> 121-136),
+  GI adds ~0 (Lu ~ Lf). TRUTH on the main face E 0.008-0.015 ~uniform; lattice F 0 .. 0.029 patchy; side face (n -z) E 0 vs F 0.047 /
+  0.064. => the smudge = lattice quadrature noise (over AND under) on a surface whose true sky is smooth and low; §SKY_FIELD_EXACT
+  (lower-only, dirs >= 0.005) does not reach it. PROPOSAL (now affordable because the field is BAKED, not built on the press): exact
+  CIE rays for every READ cell (Hospital ~800k cells; ~7 min at 8 us/ray, once per bake) replacing the lattice value there; witness =
+  §LIGHT_GRID with wall points (skyJump -> ~0, skyOver/skyUnder -> ~0) + this core face.
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.
