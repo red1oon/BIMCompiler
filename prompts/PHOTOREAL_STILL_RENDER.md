@@ -2195,6 +2195,67 @@ STEP 1 RESULT 2026-09-29 (Opus, leak.js with PTS env + _fieldTrace lifted 0.25 m
   films, sourced_light.js:847). PLAN (for the Alt+C lane, ALTC_FOUNDATION.md): reuse the baked Z26 per-pane table in films (camera-
   independent, already in the sidecar) + the wing-reflection fix above FIRST, so films do not inherit the sky-for-wing error; a per-frame
   scene capture is a per-frame cost to measure before adopting.
+### ▶ RESUME HERE — §SKY_FIELD_EXACT_ALL (paused 2026-09-29, Opus agent; red1 "pause gracefully")
+- CODE: bim-ootb fix/lfdb-v1501 @a62c261d (pushed; sw v1503, light_zones.js?v=23). NOT on look/combined-0925, NOT on OCI.
+  light_zones.js field(): after the shell pass, every target cell gets F := mean T over ONE fixed 256-direction set (16 x 16, mu
+  from the CIE x cos CDF at stratum centres, azimuth rows golden-ratio rotated), same soup/BVH as the shell pass; targets =
+  covered READ cells (Chebyshev <= 2 of SOLID, not shell) + covered cells beside an OCCLUDER cell + OPEN cells under (<= 6 m,
+  plan +-2 cells) or beside an occluder (the HHS scope addition). Occluder cull off under the pass. Start points enclosed by
+  >= 2 opposite axis pairs within 0.3 m are nudged past the nearest face. Supersedes §SKY_FIELD_EXACT (logged 'superseded').
+  Switches: &skyexactall=0 (= v1502 field), &skyexactalln=N, &skyexactallshell=1 (measurement: redo shell cells) - all in fp.
+- BUILD COST (§SKY_FIELD_EXACT_ALL lines): Clinic 173,474 cells 44.4 M rays 134 s (2.96 us/ray); HHS 165,125 cells 42.3 M rays
+  188 s; Hospital 1,146,922 cells (777,991 read / 139,608 near-occluder / 229,323 open) 293.6 M rays 1,994 s = 33 min (6.63
+  us/ray), startedInside 1,688 (nudged 1,669, unresolved 19). N=128 (Clinic): half the time, slightly worse (floor over 33 vs 27,
+  jump 13 vs 10, walls 16/3/5 vs 12/3/1) -> N = 256 kept. RISK: an UNBAKED first press pays this (Hospital 33 min > the 900 s
+  §GI_WAIT_BUDGET cap) -> OCI buildings need the sidecars before this ships beyond local.
+- WITNESS 1 (§LIGHT_GRID v2, lightgrid.js with WALL + OPEN points; truth = BVH over EVERY visible mesh, 256 rays, glass T per pane;
+  over/under/jump/medAbs/meanAbs; FLOOR E at +3 cm, E25 at the field height +0.25 m; WALL truth Eh = field integrand at p+0.25n):
+| log | FLOOR(E +3cm) over/under/jump/medAbs/meanAbs | FLOOR(E25 field height) over/under/jump/meanAbs | WALL over/under/jump/medAbs/meanAbs | WALL vs En over/under/med | OPEN over/under/jump/meanAbs | OPEN underSomething n/over/F1 |
+| Clinic_v1502.log | 17/90/12/0.0000/0.0032 | 13/94/12/0.0031 | 8/23/1/0.0000/0.0019 | 25/32/0 | 151/0/0/0.1127 E25 138/0/0.0984 | 7/7/7 |
+| Clinic_sa256.log | 45/6/12/0.0000/0.0019 | 27/4/10/0.0015 | 12/3/1/0.0000/0.0017 | 45/18/0 | 45/1/28/0.0428 E25 38/1/0.0293 | 7/5/5 |
+| Hospital_v1502.log | 12/312/3/0.0000/0.0081 | 7/282/4/0.0080 | 32/73/3/0.0000/0.0059 | 67/129/0 | 878/0/0/0.3877 E25 811/0/0.3748 | 137/136/137 |
+| Hospital_sa256.log | 45/8/2/0.0000/0.0029 | 13/3/1/0.0022 | 44/11/3/0.0000/0.0036 | 105/64/0 | 63/67/26/0.0674 E25 49/32/0.0436 | 137/16/0 |
+| HHS_Office_Federated_v1502.log | 9/485/46/0.0064/0.0162 | 12/385/57/0.0146 | 114/86/1/0.0037/0.0219 | 146/231/0.0101 | 306/0/0/0.1638 E25 303/0/0.1602 | 104/104/104 |
+| HHS_Office_Federated_sa256.log | 7/23/32/0.0030/0.0074 | 7/2/28/0.0053 | 157/13/1/0.0030/0.0116 | 183/158/0.0081 | 137/0/34/0.0683 E25 134/1/0.0648 | 104/30/15 |
+| TerminalMerged_v1502.log | 27/297/25/0.0000/0.0090 | 22/300/25/0.0090 | 88/139/3/0.0000/0.0372 | 118/108/0.0016 | 234/24/33/0.1550 E25 231/24/0.1471 | 85/83/83 |
+  FINDINGS: (a) skyUnder collapses everywhere (Hospital floor 312 -> 8, HHS 485 -> 23, walls 73 -> 11 / 86 -> 13); open floors
+  under something F = 1 -> exact (Hospital 137/137 F1 -> 0). (b) the REMAINING skyOver is NOT the pass: against the same truth
+  restricted to the soup's opaque set AT THE STENCIL CENTROID fieldRead really samples (§LIGHT_GRID_STENCIL, DIAGC=1) Clinic floor
+  over 25 -> 1 (meanAbs 0.0011), HHS walls over 44 -> 2 (meanAbs 0.0051). Causes: fieldRead's stencil skips the SOLID (fattened)
+  texels, so a floor samples at +0.43..0.59 m (median), a wall 0.45 m out, not 0.25 m; plus MEP/furniture not in the soup
+  (opaque-set step 2). (c) vs the wall's own normal irradiance En, walls beside windows now read F 0.15-0.19 where En ~ 0 (HHS
+  WALL vs En over 146 -> 183): the scalar, normal-agnostic field cannot light a pier/reveal correctly; before, the lattice
+  under-read them to 0 by accident. Next lever = a directional field or a normal-aware stencil, not more rays.
+  (d) open cells beside boundary walls only (facades, courtyard floors) are NOT targets (the hemisphere w already halves a facade;
+  exact F 0.25 m off a facade ~0.5 would double-count): Hospital open floors still over 63 (mostly facade/courtyard feet).
+- HHS OPEN-CELL SCOPE ADDITION (parent 2026-09-29): DONE. §STAIR_UNDER (stairpts.js, parent's 49 §STAIR_GRID points): the 19
+  zone-0 points under stair flight 2x4PKsKvfDM97UO7ZhjXbT: F median 1 -> 0.0034 (min 0, max 0.0286), truth E 0.0029, stillF1 0
+  (control &skyexactall=0: median 1, 14 still F 1). The 30 covered points under stair slabs: F 0.0212 -> 0.0045 vs truth 0.0146 /
+  E25 0.0176 = now UNDER by ~0.01 (not diagnosed: stencil height / soup vs truth there). The pixel-level stair.js re-press (Lf) NOT run.
+- BAKES (bake.js, key e74a50fe:154742, fresh profile): Clinic 0.40 MB (raw 22 MB) field 147 s, restorecheck PASS 26 ms; HHS 1.34
+  MB field 222 s, restorecheck PASS 24 ms. Sidecars in /tmp/wt-lfdb/buildings/patches at pause: Clinic_meta.db.lightfield.bin
+  404,584 B key e74a50fe:154742 (v1503, PASS) · HHS_Office_Federated_extracted.db.lightfield.bin 1,341,914 B key e74a50fe:154742
+  (v1503, PASS) · Hospital_meta.db.lightfield.bin 5,777,760 B and Terminal_meta.db.lightfield.bin 3,193,668 B are the OLD v1502
+  bakes (key 6cf4c681:142097) = STALE under v1503: the viewer logs '§LIGHT_FIELD_DB stale' and rebuilds (Hospital ~33 min).
+  Terminal bake ABORTED mid-build at red1's request (bake.js 'FATAL Target closed', no sidecar written — expected). Hospital NOT baked.
+- NOT DONE (exact next steps, in order): (1) Terminal: `flock /tmp/claude-1000/gpu.lock node <probes>/bake.js 8663 Terminal`, then
+  mv buildings/patches/Terminal_extracted.db.lightfield.bin -> Terminal_meta.db.lightfield.bin, then restorecheck.js 8663 Terminal
+  (or BLDS=Terminal ./bakeall.sh, which does all three); (2) BLDS=Hospital ./bakeall.sh (~35 min)
+  -> rename to Hospital_meta.db... (bakeall does it) + restorecheck; (3) Terminal after-grid: BLDS=Terminal SUFX=_sa256 ./base.sh
+  (reads the sidecar), then python3 summ.py lg/*.log; (4) walle.js at Hospital …010578 core face: PX=hp/px_core.json node walle.js
+  8663 ~/Downloads/bounce_still_1790661010578.png (fresh profile reads the Hospital sidecar), compare to &skyexactall=0; (5) §FAULT
+  controls: diag.js with URLDB=../buildings/<bld>_extracted.db at Clinic …495545980 (glassReflDark 2/44 before), Hospital
+  …598818184, Terminal …622137170, default vs Q=&skyexactall=0; (6) record the results here, then the parent FFs look + OCI.
+  Every run through flock /tmp/claude-1000/gpu.lock; grep 'Uncaptured WebGPU' (all runs so far: 0).
+- PROBES: prompts/photoreal_probes/lightgrid/ (lightgrid.js v2, walle.js (+Eh, 256 rays, PROF/Q), stairpts.js + stairpts.json,
+  diag.js (+URLDB, SW bypass), bake.js, bakeall.sh, restorecheck.js, base.sh, summ.py, key.js; lg/*.log = every § line quoted
+  above). Run them from a copy in a scratch dir (they write lg/ and prof_<port>/ next to themselves). Probes bypass the service
+  worker (a persistent profile served the v1502 light_zones.js from the SW cache until setBypassServiceWorker — cost one run).
+- TRUTH CACHES: ~/.cache/bim4d/light_grid/Clinic_16071.v2.json, Hospital_63182.v2.json, HHS_Office_Federated_6839.v2.json,
+  TerminalMerged_48428.v2.json (v2: pts / walls / opens / flip, E, E25, Es25, Esh; v1 files kept). Truth v2 cost: 12-15 s per
+  building (BVH, 5.9-8.6 us/ray vs 11 ms/ray raycasts before). zoneFlip wall-between test: Clinic 459/462 walled, Hospital
+  25/25, Terminal 65/65, HHS 403/503 walled (100 open flips, all irStep).
+- Pre-existing, not from this change: witness_z19_ir_colour.js FAILS 1 row on HEAD too ("alb joins the zone record KEYS").
 RULING (red1 2026-09-29): precomputed light results (field + §SKY_FIELD_EXACT + glass-open etc.) go into the LOCAL copies of
   the OCI building DBs first (buildings/patches/<bld>.sql + self-heal loader, applied and witnessed on localhost); post to OCI only
   after the numbers stop moving — mistakes and debug iterations stay local.

@@ -1,0 +1,7 @@
+§W_LIGHT_FIELD_PATCH Clinic PASS build+fieldMs=26 cached=true wallS=21
+   §LIGHT_FIELD_PATCH applied Clinic_meta.db key=e74a50fe:154742 bytes=404330 raw=22135608 created=2026-09-29T07:42:12.547Z ms=15 from ../buildings/patches/Clinic_meta.db.lightfield.bin
+   §LIGHT_FIELD_DB restore key=e74a50fe:154742 bld=Clinic bytes=404330 raw=22135608 inflateMs=591 unpackMs=14 ms=605 field=1 ground=1 glassOpen=2339 MB=20.9 created=2026-09-29T07:42:12.547Z heapMB=514 (primed: the first Alt+S restores it after the geometry fingerprint check)
+   §SKY_FIELD_EXACT bld=Clinic cache=hit superseded (§SKY_FIELD_EXACT_ALL on: every read cell is replaced, not bounded) readCells=133824 pairs=0 skipShell=0 belowMin(w vt<0.005)=0 stand=0 pairsLowered=0 wouldRaise=0 rays=0 (stage1/2 0/0) ms=0 readMs=102 usPerRay=0 cellsLowered(>0.005)=0 meanDF=0 maxDro
+   §SKY_FIELD_EXACT_ALL bld=Clinic cache=hit on N=256 cells=173474 (readCovered 132867 / shellRedone 0 / nearOccluderCovered 803 / openUnderOccluder 39804) occluderTris=1297825 occluderCells=33612 rays=44409344 insideRays=1041078 ms=133727 usPerRay=2.94 startedInside=34 (nudged 34, unresolved 0 kept ol
+   §GLASS_REFL_OPEN bld=Clinic cache=hit built glassCells(any/majority)=2684/1819 cells=2339 sides=3404 (open/skylit/offgrid 1445/304/0) airBeyond4Cells=698 interiorSides(march)=1964 buried(>8 cells solid: kept/dropped)=1655:794/861 capped=0 axis(x/y/z)=1185/522/632 refinedToPane=1261/3404 level=0 (el 
+   §ZONE_IDB_CACHE hit bld=Clinic src=db ms=21 (build was 928 ms + audit 372 ms) field=hit (was 145696 ms) ground=hit (was 215 ms)
