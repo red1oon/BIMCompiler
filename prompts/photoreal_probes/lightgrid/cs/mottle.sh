@@ -1,0 +1,3 @@
+#!/bin/bash
+S=/tmp/claude-1000/-home-red1-bim-compiler/6c1a56ce-3efb-4bf6-9566-7b9616e78a94/scratchpad/sfa; cd $S
+for q in "" "&lamps=0" "&aoindirect=0"; do s=$(echo "${q:-def}" | tr -dc 'a-z0-9'); WAIT=900 LEAK=1 LEAKPX=cs/px_dense.json Q="$q" OUTD=cs SUF=_m$s flock /tmp/claude-1000/gpu.lock timeout 1800 node diag.js 8663 /home/red1/Downloads/bounce_still_1790673812371.png > /dev/null 2>&1; echo "$s oom=$(grep -c 'Uncaptured WebGPU' cs/1790673812371_m$s.log) $(grep -oE '§STILL_DIALS_LAMPS[^§]{0,60}' cs/1790673812371_m$s.log | head -1) $(grep -oE '§METER camera=[a-z]+ tag=final[^§]{0,140}' cs/1790673812371_m$s.log | grep -oE 'Lavg=[0-9.]+cd/m2|exposure=[0-9.]+' | tr '\n' ' ')"; done; echo ALLDONE

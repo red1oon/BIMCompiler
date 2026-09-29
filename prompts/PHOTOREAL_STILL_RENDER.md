@@ -1959,7 +1959,52 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
-## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — START HERE (model: Opus allowed by red1 for this task; Fable resting)
+## ▶▶▶▶▶ §DEV RESUME 2026-09-30 PM ("resume light fixing") — START HERE, supersedes the 09-30 block below (Opus allowed)
+# ⚠ DO NOT REMOVE — scope: Alt+S still lighting defects, ONE CASE AT A TIME TO ZERO (red1 ruling). Read the log after every run;
+# proof = § numbers, never red1's eyes. Every headless GPU run: `flock /tmp/claude-1000/gpu.lock`; 'Uncaptured WebGPU' > 0 = not evidence.
+STATE (2026-09-30 ~04:00):
+- CODE: bim-ootb fix/lfdb-v1501 @18d7b2e0 sw v1505 (pushed) = look v1501 + §LIGHT_FIELD_DB/§LIGHT_FIELD_PATCH (v1502) + §SKY_FIELD_EXACT_ALL
+  (v1503, agent) + §ZONE_EYE (v1504) + §FIELD_KEY_CODE/§EXACT_WHEN_BAKED (v1505). Served :8663 from /tmp/wt-lfdb. :8624 (/tmp/wt-look,
+  look/combined-0925) is still v1502 — FF HELD until the Terminal tile question (below) is answered. wip/light-witness @ad0cf318 (pushed,
+  /tmp/wt-hot) = unshipped §LIGHT_WITNESS + §SUN_OFF_AB. No OCI changes.
+- SIDECARS (/tmp/wt-lfdb/buildings/patches, key f355c8be:86535, gitignored): Clinic_meta 0.40 MB PASS, HHS_extracted 1.34 MB PASS,
+  Terminal_meta 4.18 MB (baked 03:24), Hospital_meta = baking at handover (ship2.sh; check sfa/bake_Hospital.out + rc_Hospital.out).
+  Re-bake one: `BLDS=Clinic ./bakeall.sh` (probes dir). Local-db links only: viewer.html?db=../buildings/<bld>_extracted.db.
+- PROBES (survive reboot): prompts/photoreal_probes/lightgrid/ (diag.js +PRE +LEAKSKIPGLASS +URLDB, lightgrid.js, walle.js, stair.js,
+  bake.js (forces exact), bakeall.sh, restorecheck.js, cs/ band.py mottle.py eyewalk.js + px_*.json + the queued A/B scripts). Truth caches
+  ~/.cache/bim4d/light_grid/*.v2.json (4 buildings). Run from a scratch copy (they write lg/, cs/, prof_<port>/ beside themselves).
+OPEN CASES, in order (each to zero before the next):
+1. CLINIC LOOK REGRESSION (red1: "it was quite perfect the time before", i.e. v1502): §SKY_FIELD_EXACT_ALL replaces EVERY read cell —
+   measured side effects: walls beside windows F 0.15-0.19 where En ~ 0 (agent (c)); Clinic corridor …673812371 v1503 vs v1502 neighbour
+   jumps 106 vs 89, floor median 145 vs 154. PLAN: first measure at red1's v1502 "very good" Clinic poses (…656754442, …662965285,
+   …662987583, …663038659) exact vs &skyexactall=0 with cs/band.py (mid-scale 0.5-2 m) on floor + wall pixels; then HYBRID: keep the
+   lattice value unless it is clearly wrong (open-under-occluder, |F - E| large) — exact only there.
+2. TERMINAL TILES (…709239282 hall wall: ~0.5 m blocky mosaic, blown 9.4 %): suspected v1503 per-cell exact discontinuity. Queued
+   script cs/tmwall.sh (wall pixels, v1505 vs &skyexactall=0) — NOT run. Likely the same fix as case 1.
+3. HHS FLOOR MOTTLE closed room (…708698742; also Clinic corridor): ruled out so far = sky field, ground-view field, indirect AO; lamps
+   MASK it. Queued cs/hhsfloor.sh (default / &giredist=0 / env 0 via PRE) with band.py — NOT run.
+4. TERMINAL COLUMN BEHIND GLASS looks concrete (…709411794): cs/beam.sh (LEAKSKIPGLASS) NOT run. Lead: behind-glass pixels skip the GI
+   pass by design ("glass skip") + triplanar concrete material.
+5. then: blowout review (exposure x750 in dim interiors + lux->L 3x loss), lamps/EN targets (withEN=0), lamp shadow map, MEP into the
+   exact soup, glass by IFC class, glassLow naming, wing reflections (cube-map parallax), stamp field source into PNGs, key/field CPU
+   mirror surfaceInfo(p,n,eye).
+ONE DEV BUILDING: iterate on CLINIC (bake 2.5 min; has thin partitions, corridor mottle, atrium + vault, piers beside windows, glass in/
+out). At zero: bake + check HHS (stair open-cell), Terminal (tiles/corner), Hospital by ONE §LIGHT_GRID run on its cached truth (36 s)
++ the two exterior baselines (…663408931, …664322668). Field code is shared, so Clinic results transfer; Hospital-only = scale, atrium
+sun, MEP density, wing reflections.
+LEARNING POINTS / METHODS (earned this session — do not relearn):
+- Settings inference first: §STILL_SHADOW_CASCADE / §METER / §LUX_CHECK lines already answer many questions (no render).
+- Grid truth (lightgrid.js) + saved field = 36 s whole-building check vs ~21 min per still press. Walls need walle.js (normal-oriented E).
+- Instrument traps hit: &meter=0 crushes interiors to Lu ~13 (unmeasurable); &sourced=0 swaps the WHOLE pipeline (not lamps-off; use
+  &lamps=0); relative residuals inflate at low brightness / high auto-exposure; a 5x5 residual misses 0.5-2 m blotches (use band.py);
+  LEAK's first hit is the glass pane (LEAKSKIPGLASS); stair.js class lookup is null on HHS (use guids); never edit a running bash script.
+- The field key hashed the whole file -> comment edits staled every bake (fixed v1505: code-only hash). A tab keeps the field it built
+  for the session (reload after a bake lands). Service-worker-cached old code = silent 220 s rebuild (Ctrl+Shift+R).
+- GPU: one run at a time; red1's own browser shares the 8 GB card with bakes.
+- Proven fixes this session: v1501 §SKY_FIELD_EXACT (Hospital hall 23 -> 0), §GI_WAIT_BUDGET, §STILL_OVERLAY_GUARD; v1504 §ZONE_EYE (Clinic
+  toilet strip 39-59 -> 57-72, Terminal corner 68 -> 172, 0 darker); HHS under-stair open cells F 1 -> 0.0034 (v1503).
+
+## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
 STATE: look/combined-0925 @43db04b6 sw v1500 served :8624 from /tmp/wt-look (after a reboot: `git -C ~/bim-ootb worktree add /tmp/wt-look

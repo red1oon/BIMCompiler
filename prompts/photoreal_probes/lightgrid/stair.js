@@ -3,14 +3,13 @@ const puppeteer = require('/home/red1/bim-compiler/node_modules/puppeteer'), fs 
 const [PORT, ...PNGS] = process.argv.slice(2), OUT = __dirname + '/' + (process.env.OUTD || 'out') + '/';
 function pose(f) { const d = fs.readFileSync(f); let i = 8; while (i < d.length) { const n = d.readUInt32BE(i), t = d.toString('latin1', i + 4, i + 8), c = d.slice(i + 8, i + 8 + n); i += 12 + n;
   if (t === 'tEXt') { const z = c.indexOf(0); if (c.toString('latin1', 0, z) === 'bim-still-pose') return JSON.parse(c.slice(z + 1).toString('utf8')); } } }
-(async () => { const b = await puppeteer.launch({ headless: true, protocolTimeout: 900000, userDataDir: process.env.PROFILE || undefined, env: Object.assign({}, process.env, { __EGL_VENDOR_LIBRARY_FILENAMES: '/usr/share/glvnd/egl_vendor.d/10_nvidia.json' }), args: ['--no-sandbox', '--use-angle=gl-egl', '--ignore-gpu-blocklist', '--window-size=1503,889'] });
+(async () => { const b = await puppeteer.launch({ headless: true, protocolTimeout: 900000, env: Object.assign({}, process.env, { __EGL_VENDOR_LIBRARY_FILENAMES: '/usr/share/glvnd/egl_vendor.d/10_nvidia.json' }), args: ['--no-sandbox', '--use-angle=gl-egl', '--ignore-gpu-blocklist', '--window-size=1503,889'] });
   for (const f of PNGS) { const P = pose(f), tag = f.match(/(\d+)\.png$/)[1] + (process.env.SUF || '');
-    const p = await b.newPage(); await p.setBypassServiceWorker(true); await p.setViewport({ width: P.w, height: P.h }); const L = [];
+    const p = await b.newPage(); await p.setViewport({ width: P.w, height: P.h }); const L = [];
     p.on('console', m => L.push(m.text().replace(/\n/g, '\\n'))); p.on('pageerror', e => L.push('PAGEERROR ' + e.message));
-    await p.goto('http://127.0.0.1:' + PORT + '/viewer/viewer.html' + (process.env.URLDB ? P.url.replace(/db=[^&]*/, 'db=' + process.env.URLDB) : P.url) + (process.env.Q || ''), { waitUntil: 'domcontentloaded' });
+    await p.goto('http://127.0.0.1:' + PORT + '/viewer/viewer.html' + P.url + (process.env.Q || ''), { waitUntil: 'domcontentloaded' });
     { let last = -1, same = 0; for (let i = 0; i < 400 && same < 6; i++) { await sleep(2000); const n = await p.evaluate(() => window.APP && window.APP.guidMap ? Object.keys(window.APP.guidMap).length : 0); if (n > 0 && n === last) same++; else same = 0; last = n; } L.push('§DIAG loaded guids=' + last); } await sleep(3000);
     await p.evaluate((c, t) => { const A = window.APP; A.camera.position.fromArray(c); A.controls.target.fromArray(t); A.controls.update(); }, P.cam, P.tgt);
-    if (process.env.PRE) { const pr = await p.evaluate(src => { try { return String(eval(src)); } catch (e) { return 'ERR ' + e.message; } }, process.env.PRE); L.push('§DIAG_PRE ' + pr); }
     await sleep(500); const j0 = L.length; await p.keyboard.down('Alt'); await p.keyboard.press('s'); await p.keyboard.up('Alt');
     for (let i = 0; i < (+process.env.WAIT || 400) && !L.slice(j0).some(t => /§GI_STILL result|§GI_STILL_FAIL/.test(t)); i++) await sleep(1000); await sleep(1500);
     if (process.env.FIX) await p.evaluate(() => { window.__FIX = 1; });
@@ -18,8 +17,7 @@ function pose(f) { const d = fs.readFileSync(f); let i = 8; while (i < d.length)
     if (process.env.PREJS) { const pr = await p.evaluate(src => { try { return String(eval(src)); } catch (e) { return 'ERR ' + e.message; } }, process.env.PREJS); L.push('§DIAG_PREJS ' + pr); }
     if (process.env.SCONCE) await p.evaluate(() => { window.__SCONCE = 1; });
     if (process.env.LEAK) await p.evaluate((w, h, px) => { window.__LEAK = 1; window.__LEAKW = w; window.__LEAKH = h; if (px) window.__LEAKPX = JSON.parse(px); }, process.env.LEAKW || 12, process.env.LEAKH || 9, process.env.LEAKPX ? require('fs').readFileSync(process.env.LEAKPX, 'utf8') : '');
-    if (process.env.LW) L.push('§LW_ROWS ' + JSON.stringify(await p.evaluate(() => window.APP._lightWitnessRows || null)));
-    if (process.env.LEAKSKIPGLASS) await p.evaluate(() => { window.__LEAKSKIPGLASS = 1; });
+    if (process.env.STAIR) await p.evaluate((w, h) => { window.__STAIR = 1; window.__STAIRW = w; window.__STAIRH = h; }, process.env.STAIRW || 64, process.env.STAIRH || 36);
     if (process.env.HEMI) await p.evaluate(h => { window.__HEMI = JSON.parse(h); }, process.env.HEMI);
     const cul = await p.evaluate(() => { const A = window.APP, T = window.THREE, r = [];
       A.scene.traverse(o => { if (!o.visible) return; let path = [], q = o; while (q && path.length < 5) { path.push((q.name || q.type) + (q.userData && Object.keys(q.userData).length ? '{' + Object.keys(q.userData).slice(0, 4).join(',') + '}' : '')); q = q.parent; }
@@ -104,7 +102,7 @@ function pose(f) { const d = fs.readFileSync(f); let i = 8; while (i < d.length)
         A.scene.traverse(o => { if ((o.isMesh || o.isInstancedMesh || o.isBatchedMesh) && o.visible && o !== A._sky) tg.push(o); });
         const sd = A.sun.position.clone().sub(A.sun.target.position).normalize(); leak = { sunDir: sd.toArray().map(v => +v.toFixed(3)), cam: LZl.at ? LZl.at(A.camera.position) : null, rows: [] };
         const GW = +(window.__LEAKW || 12), GH = +(window.__LEAKH || 9); const PXL = window.__LEAKPX || null; const NIT = PXL ? PXL.length : GW * GH; for (let it = 0; it < NIT; it++) { const gx = PXL ? it : it % GW, gy = PXL ? 0 : Math.floor(it / GW); const x = PXL ? Math.min(w - 1, Math.round(PXL[it][0] * w / innerWidth)) : Math.floor((gx + 0.5) / GW * w), y = PXL ? Math.min(h - 1, Math.round(PXL[it][1] * h / innerHeight)) : Math.floor((gy + 0.5) / GH * h);
-          rc.setFromCamera(new T.Vector2((x + 0.5) / w * 2 - 1, 1 - (y + 0.5) / h * 2), A.camera); const hsAll = rc.intersectObjects(tg, false); const q = window.__LEAKSKIPGLASS ? hsAll.find(z => { const mz = Array.isArray(z.object.material) ? z.object.material[(z.face && z.face.materialIndex) || 0] : z.object.material; return !(mz && mz.transparent && mz.opacity < 0.95); }) : hsAll[0]; if (!q || !q.face) continue;
+          rc.setFromCamera(new T.Vector2((x + 0.5) / w * 2 - 1, 1 - (y + 0.5) / h * 2), A.camera); const q = rc.intersectObjects(tg, false)[0]; if (!q || !q.face) continue;
           const n = q.face.normal.clone().transformDirection(q.object.matrixWorld); if (n.dot(A.camera.position.clone().sub(q.point)) < 0) n.negate();
           const si = LZl.surfaceInfo(q.point, n), sf = LZl.skyField(q.point, n); rs.set(q.point.clone().addScaledVector(n, 0.02), sd); rs.far = 200; const shAll = rs.intersectObjects(tg, false); const sh = shAll[0]; const shOp = shAll.find(z => { const m = Array.isArray(z.object.material) ? z.object.material[0] : z.object.material; return !(m && m.transparent && m.opacity < 0.95); }); const nGlass = shOp ? shAll.indexOf(shOp) : shAll.length;
           const i = (y * w + x) * 4; leak.rows.push({ g: [gx, gy], k: Math.abs(n.y) > 0.7 ? (n.y > 0 ? 'floor' : 'ceil') : 'wall', zone: si.zone, sky: si.sky, F: sf.F == null ? null : +sf.F.toFixed(3), NdotSun: +n.dot(sd).toFixed(2), sunBlockedAt: sh ? +sh.distance.toFixed(1) : null, sunOpaqueAt: shOp ? +shOp.distance.toFixed(1) : null, glassBefore: nGlass,
@@ -133,7 +131,23 @@ function pose(f) { const d = fs.readFileSync(f); let i = 8; while (i < d.length)
           const up = new T.Vector3(0, 1, 0), side = new T.Vector3().crossVectors(n, up).normalize(); const ring = {};
           for (const r of [0.3, 0.6, 1.0, 1.6, 2.5]) { const vals = []; for (const dir of [side, side.clone().negate(), up.clone().negate()]) { const v = lum(best.point.clone().addScaledVector(dir, r).addScaledVector(n, 0.005)); if (v != null) vals.push(v); } ring[r] = vals.length ? +(vals.reduce((a, b) => a + b) / vals.length).toFixed(1) : null; }
           sconce.push({ p: [q.x, q.y, q.z].map(v => +v.toFixed(2)), I: +q.I.toFixed(4), dWall: +best.distance.toFixed(2), ring }); if (sconce.length >= 8) break; } }
-      return { cul: r, fault: A._stillFaultLast, contact: contact, fix: fix, glass: glass, speck: speck, leak: leak, hemi: hemi, sconce: sconce }; });
+
+      let stair = null; const Dst = window.__giStillDebugCanvas;
+      if (window.__STAIR && Dst) { const w = Dst.under.width, h = Dst.under.height, fc = document.createElement('canvas'); fc.width = w; fc.height = h; const fx = fc.getContext('2d'); fx.drawImage(Dst.under, 0, 0); fx.drawImage(Dst.bounce, 0, 0);
+        const F = fx.getImageData(0, 0, w, h).data, U = Dst.under.getContext('2d').getImageData(0, 0, w, h).data, LZs = window.LightZones, tg = [], rc = new T.Raycaster(), up = new T.Raycaster(), rs = new T.Raycaster();
+        A.scene.traverse(o => { if ((o.isMesh || o.isInstancedMesh || o.isBatchedMesh) && o.visible && o !== A._sky) { const m = Array.isArray(o.material) ? o.material[0] : o.material; if (m && !m.isMeshBasicMaterial && !(m.transparent && m.opacity < 0.95)) tg.push(o); } });
+        const cls = q => { const o = q.object, id = o.isBatchedMesh ? q.batchId : o.isInstancedMesh ? q.instanceId : null, g = A.guidMap[o.id + '_' + id] || null, mt = g && A.metaByGuid ? A.metaByGuid[g] : null; return { g, c: (mt && (mt.ifc_class || mt.cls)) || null }; };
+        const sd = A.sun.position.clone().sub(A.sun.target.position).normalize(); const rows = []; const GW = +(window.__STAIRW || 64), GH = +(window.__STAIRH || 36); const t0 = performance.now();
+        for (let gy = 0; gy < GH; gy++) for (let gx = 0; gx < GW; gx++) { if (performance.now() - t0 > 240000) break; const x = Math.floor((gx + 0.5) / GW * w), y = Math.floor((gy + 0.5) / GH * h);
+          rc.setFromCamera(new T.Vector2((x + 0.5) / w * 2 - 1, 1 - (y + 0.5) / h * 2), A.camera); const q = rc.intersectObjects(tg, false)[0]; if (!q || !q.face) continue;
+          const n = q.face.normal.clone().transformDirection(q.object.matrixWorld); if (n.dot(A.camera.position.clone().sub(q.point)) < 0) n.negate(); if (n.y < 0.9) continue;
+          up.set(q.point.clone().add(new T.Vector3(0, 0.03, 0)), new T.Vector3(0, 1, 0)); up.far = 15; const u0 = up.intersectObjects(tg, false)[0]; const uc = u0 ? cls(u0) : null;
+          rs.set(q.point.clone().addScaledVector(n, 0.03), sd); rs.far = 300; const s0 = rs.intersectObjects(tg, false)[0]; const sc = s0 ? cls(s0) : null;
+          const sf = LZs.skyField(q.point, n), i = (y * w + x) * 4;
+          rows.push({ g: [gx, gy], p: q.point.toArray().map(v => +v.toFixed(2)), up: u0 ? +u0.distance.toFixed(2) : null, upCls: uc && uc.c, upG: uc && uc.g, sun: s0 ? +s0.distance.toFixed(1) : null, sunCls: sc && sc.c, F: sf.F == null ? null : +sf.F.toFixed(4), zone: sf.zone, Lu: Math.round((U[i] + U[i + 1] + U[i + 2]) / 3), Lf: Math.round((F[i] + F[i + 1] + F[i + 2]) / 3) }); }
+        stair = { ms: Math.round(performance.now() - t0), rows }; }
+      return { cul: r, fault: A._stillFaultLast, contact: contact, fix: fix, glass: glass, speck: speck, leak: leak, hemi: hemi, sconce: sconce, stair: stair }; });
+    if (cul.stair) L.push('§STAIR_GRID ' + JSON.stringify(cul.stair));
     if (cul.sconce) L.push('§SCONCE_RING ' + JSON.stringify(cul.sconce));
     if (cul.hemi) L.push('§HEMI ' + JSON.stringify(cul.hemi));
     if (cul.leak) L.push('§LEAK_GRID ' + JSON.stringify(cul.leak));
