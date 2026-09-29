@@ -46,6 +46,11 @@ rather than advanced simulation, which can be later. Idea is to POC."*
 
 **⚠ SUPERSEDED (red1, 2026-09-29, later the same day): Alt+C = ONE HUD CARD OF STATS, NO MARKERS.** *"On film we avoid clutter so just a HUD card giving the stats will do enough wow."* A checked box adds ONE HUD card to the film. It uses the existing HUD panel component of the escape/load-path cards, and shows the group's headline stats: e.g. Access "82 % of floor within 40 m of a WC · worst 57 m · AD M §5.9(h)"; Comfort "RT 0.9 s vs ≤0.8 s · 3 rooms over · BB93". Nothing is drawn in the scene. Every "marker" below reads as "a line on the card". Spatial detail lives only in the canvas list (§Q).
 
+**PASS-BY HIGHLIGHT (red1, 2026-09-29):** *"On rare occasion the film path passes such a marker, it is highlighted through."* The camera path is NOT changed to visit flashpoints. When the existing path happens to bring a flashpoint room into frame, that room shines through with the existing storey/discipline-reveal shine-through (the escape beat's room glow). Its HUD card line pulses in step, so the viewer links the stat to the place. The card is unchanged otherwise, and it adds no label, line or marker.
+- **Trigger:** the room box is inside the view frustum AND within a stated distance of the camera. That distance is a `~`design parameter, logged, not a standard. It uses a short fade in/out, and at most one room glows at a time (the worst verdict wins).
+- **Precompute:** along the known camera path, like the per-shot exposure/visible-set precompute. The bake knows its pass-by windows before it renders.
+- **§ line per bake:** `§FLASH_PASSBY group= rooms_in_path= windows= total_s=`. `rooms_in_path=0` is a normal outcome and prints NONE, not a failure. "Rare" is expected.
+
 **Alt+C = MARKERS ONLY (red1, 2026-09-29):** *"The alt-c when checked for those only give markers similar to
 what is done now for other overlays."* A checked box adds in-film MARKERS in the same idiom as the existing
 cpe-clash / cpe-measure overlays (label + leader + short value, composited in `_captureFrame`). There is:
