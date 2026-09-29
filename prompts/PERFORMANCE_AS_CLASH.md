@@ -402,3 +402,33 @@ the same way.
   - A distance built on a known-defective input (§13 prerequisites) carries a warning flag until the fix lands.
 - **Header line:** building, compile date, packs loaded with their jurisdiction (e.g. UK AD M 2024 / MY MS 1184 /
   BB93 / IEC 62676-4:2014), and counts of pass/warn/fail/inconclusive.
+
+## §15 — COMPLIANCE WEB on the Freeze-stack background (red1, 2026-09-29)
+*"A spider web graphic to indicate how much it is in compliance or not during the Freeze stack, as its black ample
+background can be made more useful … a simple graph with flaticon and indicators, as long as legible in an instant."*
+
+**Goal:** read in under a second. It sits on the Freeze-stack beat's black background (LOADPATH_FREEZE_POLISH_RESUME)
+and is fed by the same rows as the §14 build statement. There is no second calculation.
+- **One unit on every axis:** % of judged rooms that PASS, 0-100. Raw metres/lux/seconds are never plotted; they
+  stay on the HUD card.
+- **Few axes, one per GROUP** (not per rule), in a fixed order so buildings compare: Egress · Access · Comfort ·
+  Security · Structure. Each group's % is its rules' judged-room pass rate. The drill-down lives in the canvas list.
+- **An icon at each axis tip.** Reuse the in-repo icon set first (`viewer/panels.js` `I.*`, e.g. `I.doorOpen` Egress,
+  `I.shieldAlert` Sanity/Structure). Flaticon only where no in-repo icon fits, with its licence and attribution
+  recorded (Flaticon's free tier requires attribution).
+- **Indicators, instantly legible:**
+  - a 100 % reference ring, and the filled shape inside it
+  - the % printed at each vertex, large
+  - a colour dot per axis: green PASS / amber WARN / red FAIL
+  - grey dashed axis = INCONCLUSIVE or UNSOURCED, never drawn as 0
+  - a red notch on the axis if ANY life-safety rule in the group FAILs (egress, accessible WC), whatever the %
+  - hatched = built on a known-defective input (§13 prerequisites)
+- **Motion:** it grows with the freeze beat's existing counter-while-drawing idiom (§129.x), then holds. No new
+  animation mechanics.
+- **Legibility witness (numbers, not eyes):**
+  - at the bake resolution, each vertex label ≥ the HUD card's minimum text height
+  - contrast vs the black background ≥ WCAG AA 4.5:1 for text and 3:1 for icons/marks
+  - no two labels overlap (bbox test)
+  - § line `§COMPLIANCE_WEB axes= pass%=[…] inconclusive= notches= hatched= minTextPx= minContrast= overlaps=0`
+- **Deliberately not:** per-rule axes (too many to read at once), and area-as-score claims (the card's numbers are the
+  score; the web is the glance).
