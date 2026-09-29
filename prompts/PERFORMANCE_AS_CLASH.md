@@ -463,3 +463,27 @@ as a Compiler."*
 - § line: `§BUILD_MAP_TITLE name= source=activeBuilding|currentBuilding|none`.
 - Open (not decided): whether the export/statement header (§14) uses the same short name or the IfcBuilding long
   name. Default = the same short name, for one identity.
+
+## §17 — CAPACITY on the Build Map (red1, 2026-09-29)
+*"Should we add 'capacity' and a human graph where each avatar indicates # of pax"* … *"it is calculated by a
+standard and that standard is published."*
+
+**Capacity = design occupant load from the PUBLISHED standard, and the card NAMES that standard.**
+- **Formula:** room area ÷ the standard's occupant-load factor for that room use, summed. The card prints the
+  standard, table, row and factor, e.g. "IBC 2021 Table 1004.5 · Business 13.94 m²/person".
+- **Existing code:** `viewer/egress_sanity.js:325` `OCCUPANT_LOAD_FACTOR_M2 = 13.94` (IBC 2021 Table 1004.5
+  "Business areas"). It is applied to EVERY room today; its own comment (~312-315) admits denser uses are
+  under-counted. Per-use rows need room use (M0). Until then the card is captioned "Business factor, all rooms".
+- **Per-jurisdiction pack**, like the rates files:
+  - IBC 2021 Table 1004.5 (have)
+  - UK Approved Document B floor-space factors (⛔ verify the table number and values)
+  - Malaysia UBBL occupant-load provisions (⛔ locate the clause)
+- **Seated count (secondary, EXTRACTED):** chairs/seats counted from IFC furniture. Labelled "seats counted in
+  model". Omitted when the model has no seating.
+- **Person-icon graph:** a header strip beside the compliance web (a size, not an axis).
+  - One icon = a fixed round N, stated in the legend.
+  - Filled = design load; outlined = seats counted.
+  - Exact numbers printed.
+  - Icons beyond what the exits can clear turn red. This uses the egress exit-width capacity (IBC §1005.3.2, already
+    in `door_occupant_capacity`), so the one red cue ties Capacity to Egress.
+- § line: `§CAPACITY std= factorRows= rooms= designLoad= seats= exitCapacity= overflow=`.
