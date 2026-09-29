@@ -432,3 +432,21 @@ and is fed by the same rows as the §14 build statement. There is no second calc
   - § line `§COMPLIANCE_WEB axes= pass%=[…] inconclusive= notches= hatched= minTextPx= minContrast= overlaps=0`
 - **Deliberately not:** per-rule axes (too many to read at once), and area-as-score claims (the card's numbers are the
   score; the web is the glance).
+
+## §16 — NAME: "BUILD MAP" (red1, 2026-09-29) — the doctrine term
+*"Build Map? It is easy to catch, and elevates our doctrine: when we say it we are speaking about high-level
+stuff."* On sitting beside Buildup: *"Build Up jives, as it is all in the 4D-onwards flow or feature pool of our BIM
+as a Compiler."*
+
+- **Build Map** = the Freeze-stack beat's new user-facing name. It shows the §15 compliance web plus the §14 build
+  statement, with the load-path stack as its Structure section.
+- **Paired with Buildup** on purpose: Buildup = the 4D build-up (how it is built); Build Map = the compiled result
+  (how well it compiled). Both belong to the 4D-onwards pool of BIM-as-a-Compiler.
+- **Doctrine levels (use these words consistently):**
+  1. **Build Map:** headline. Five group % + life-safety notches, legible in an instant.
+  2. **Build Statement:** the per-group HUD cards; rule · measured vs limit · verdict · clause · rooms.
+  3. **Flashpoint list:** the canvas list, one row per room/spot (zoom, listen, POV).
+- **Label only:** checkbox label + HUD title change. Internal id `cpe-load-path` and existing § tags stay, so saved
+  paths and witnesses don't break. The tooltip/subtitle reads "Build Map — compliance at a glance".
+- **Collision check (2026-09-29):** the only existing "buildMap" is `erp/user_names.js`, an internal function, not
+  user-facing.
