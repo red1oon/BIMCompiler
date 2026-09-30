@@ -2239,6 +2239,11 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
 - RESULT (OOM 0): …753057418 core clipped 98.8 % -> 0 %, mean 255 -> 194, frame blown 1.89 -> 1.0 %; …752787823 (glass roof, sky)
   92.9 -> 83.5 % (the sky itself ~243 at EV15); Clinic …735402935 untouched (0.02 %). ~0.9 s per press.
 - INSTRUMENT NOTE: the LEAK grid Lf reads under+bounce, NOT the final composite -> window-pull effects must be read from the § line / FAULT_GI.
+### RULING (red1 2026-09-30 night): IFC-AS-MODELLED IS TRUTH — "if it is due to IFC element been not well put, then it is not our fault.
+Leave it be as a truth." A defect traced to how the IFC element was authored (placement, overlap, class, material) is NOT compensated in the
+renderer. Renderer-side fixes stay allowed only where the model is consistent and the renderer is arbitrary (e.g. §BEAM_UNDER_SLAB: two
+coplanar faces, the depth test picked the loser at random -> the finished floor is drawn on top; no data changed). Terminal closed at v1513
+(fix/sky-surface @ede3c55c, case-4 merged; :8665 retired). NEXT: Hospital (baked v1511 key 21324567:90186, restorecheck PASS 196 ms).
 ## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
