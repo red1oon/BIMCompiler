@@ -703,6 +703,118 @@ NOT line-level conflicts on shared files).
     do not remove it, and do not assume a published DB's `tasks` table is the current shape.
 
 # ═════════════════════════ PHASE 2 — THE WEDGE (from twin to commercial cockpit) ═════════════════════════
+## §S8 — EDIT → Δ ON THE THING  (a Modeller edit's cost + schedule consequence, on hover/click, BOTH surfaces)   ⬜ SPEC 2026-09-30
+```
+# ⚠ DO NOT REMOVE — scope + log mandate
+SCOPE: when a wall is moved or stretched in the Modeller, the edited element shows what that edit changes in
+MATERIAL COST and in LABOUR TIME, on hover or click, in the Modeller AND the Viewer. ONE pure function computes it.
+No new rate, no new duration formula, no copy of any owner. Read the `§S8-*` log after every run; a witness that judged
+nothing prints INCONCLUSIVE, never PASS.
+```
+Idea + go-ahead: red1, 2026-09-30 ("a hover or click will reveal the edited artifact's change in materials cost and
+schedule variance impact"). Decision change that permits the Modeller to DISPLAY it: `RATES_SOURCE_OF_TRUTH.md` §5.
+Re-read before any 4D number: `4D_MODEL_INTEGRITY.md` §I (ownership table) and §E (proxies). Cached runs
+(`~/.cache/bim4d/`, `scripts/cache_4d_run.js`) are NOT consulted: this Δ is closed-form on one element and reads no
+solve output, so nothing needs a pipeline run (recorded so the omission is deliberate, PRIMAL LAW 5).
+
+### §S8-QTY — which quantity changes, and where it is read
+| edit (signed op) | changes | read from |
+|---|---|---|
+| `GEOM_MOVE {parent,dx,dy,dz}` | **no quantity** (length, area, volume, count all unchanged) → Δ = 0, printed as 0, labelled "a move changes no quantity" | the op log |
+| `GEOM_SCALE {parent,fx,fy,fz}` (net, multiplicative, LOCAL axes, edge-anchored) | the element's bbox dims `[bx,by,bz] × [fx,fy,fz]` → its length / dominant-face area / volume | net per parent = `bonsai_kernel.js:311-316` (the fold's own accumulation) |
+| `GEOM_GRID_MOVE` (stretch via gridline) | quantity changes but the per-command extents are not in the payload shape this stage reads | ⛔ **BLOCKED (S8 does not cover it): "does a `GEOM_GRID_MOVE` command carry the new span, or only the gridline delta?"** — shown as "quantity Δ not computed for grid-stretch" (never guessed) |
+- "before" = the element's RECORD: `element_transforms.bbox_x/y/z` joined to `elements_meta` by guid (the same rows
+  `analysis_sidecar.js compute5D` sums). "after" = before × the net scale.
+- **The quantity basis is the shipped 5D basis** (`compute5D`: length = longest bbox edge; area = longest × second-longest;
+  volume = bbox product; count). §E says a bbox test is a proxy — true, and it is the SAME proxy the existing 5D report and
+  the duration engine already use, so the Δ is consistent with them; it is labelled `basis: bbox` and is not a claim about the
+  true B-rep quantity.
+- featureId → guid: the Modeller's own `window.__arcGuidByFid` (the §ARC-1 bridge). The seed op rows carry NO guid
+  (measured: Duplex #82 params = bbox, color, provenance, ifc_class, realGeomHash, placement), so the Modeller adds the map
+  for EDITED features to its `identity` publish (additive field `edits:[{fid,guid}]`). The Viewer never guesses a guid.
+
+### §S8-COST — costΔ = quantity Δ × the EXISTING rate at the EXISTING grain
+- Rate owner: `viewer/rates.js` `RATES[ifcClass] = {rate, unit}` (CIDB 2024 MATERIAL rates; the table
+  `analysis_sidecar.js apply5DRates` bills). Unit selects the quantity: `M`→length, `M2`→area, `M3`→volume, `EA`/unmapped→count
+  (an unmapped class bills rate 0 exactly as `apply5DRates` does — labelled "unpriced class", never a default rate).
+- **Grain: PER ELEMENT.** Not the S7 class-line grain. S7-GRAIN said per-element cost is "out of S7" because it needed guid-grain
+  pricing; the 5D quantity basis above already gives a per-element quantity from the record, and `rate × qty` is what the 5D
+  report sums per class. So `costΔ(element) = rate × (qty_after − qty_before)` is the SAME arithmetic at element grain — a
+  finer read of the same engine, not a new price. Labelled "material, CIDB rate table".
+- Money through `erp/bigdecimal.js` (rate as a decimal STRING, qty rounded to mm-precision strings), HALF_UP to 2 dp, printed
+  as decimal strings. Never `Number` money arithmetic.
+- Example (Duplex wall #82, IfcWallStandardCase, M2 @ 145): dims 0.417 × 17.383 × 1.25 → area = 17.383 × 1.25 = 21.729 m²;
+  `GEOM_SCALE fy=1.5` → 32.594 m² → costΔ = 145 × 10.865 = 1,575.4 (illustrative, the witness prints the measured value).
+
+### §S8-SCHED — does an element quantity feed a duration in the shipped pipeline? ANSWER FROM THE §I OWNER
+Owner: `schedule_author.js:100` `_installSecs(cls, rule, laborRates, realQty, lengthRatio)` (§I "how long does it take?"). Measured
+from the code, `schedule_author.js:552-563`:
+- **`realQty` (area) enters ONLY when the class is `_classFragmentation`-flagged** (avg area < `FRAGMENT_M2_FLOOR`).
+- **`lengthRatio` (this element's longest edge ÷ its class's average) enters ONLY for `RATES[cls].unit === 'M'` classes**
+  (beams, columns, ducts, pipes, cable trays) — `_linearWeighting`.
+- **Otherwise the install time is FLAT per element** — a stretched ordinary wall (M2, not fragmented) changes cost but its
+  labour time is unchanged. That is what the pipeline does, and S8 reports it as `schedΔ = 0 (flat per element: IfcWall M2)`,
+  not as a missing number.
+So `labourSecsΔ = _installSecs(after) − _installSecs(before)` via the owner, with `secsPerUnit = _productivity_basis_secs ÷ prod`;
+shown in working days (`÷ _productivity_basis_secs`, the owner's own 28,800 s/day).
+- **What S8 does NOT claim: a finish-date shift.** Labour seconds of one element → task duration → CPM start/finish goes through
+  crews, `max_crews`, dependencies and `computeSchedule`/`cpm_schedule.run`. Re-solving at hover time is not spec'd.
+  ⛔ **BLOCKED (finish-date Δ): "may a hover trigger a whole-programme re-solve (`computeSchedule` + `cpm_schedule.run`), or is the
+  labour-seconds Δ the agreed schedule variance?"** Until answered the label says `finish date: not re-solved`.
+- The class average length used by `lengthRatio` is held at its RECORD value (before the edit) for both before/after — the edit
+  moves the class average by 1/N, which is the redistribution effect the owner already documents; S8 does not model it.
+
+### §S8-LABEL — honest labels (§DOCTRINE 4)
+`costΔ` = "**projected** — CIDB rate table × bbox quantity Δ, this element" · the record it starts from = "**from records**"
+(element_transforms) · `schedΔ` = "**projected** — labour time per the shipped duration rule; finish date not re-solved".
+Never a bare money string next to an element name; the line always names the class, the unit and the quantity Δ.
+
+### §S8-FN — ONE pure function, called by both surfaces
+`viewer/edit_delta.js` → `window.EditDelta` / `module.exports` (DOM-free, node-testable; loads owners, never copies them):
+`netEdits(ops)` → Map fid→{dx,dy,dz,fx,fy,fz} · `readRecord(db,guid)` · `classCtx(db,env)` (calls the owners `_classFragmentation` /
+`_linearWeighting`) · `deltaFor(rec, net, ctx, env)` → `{guid, cls, unit, qtyBefore, qtyAfter, rate, costBefore, costAfter, costDelta,
+labourSecsBefore, labourSecsAfter, labourSecsDelta, labourDaysDelta, schedBasis, finish:'not re-solved', labels[]}`.
+Two declared TWINS exist (a twin without a parity gate is a drift; both are gated below): `netEdits` mirrors the fold's net-scale
+accumulation (`bonsai_kernel.js:311-316`); `qtyOf(unit,dims)` mirrors the `compute5D` / `_AREA_EXPR` SQL. `env` = the rates.js globals +
+`ScheduleAuthor` + `BigDecimal`, supplied by the caller (Viewer: already loaded; Modeller: lazily `<script>`-loaded from `../viewer/`,
+`../erp/`, on the first hover/click of an EDITED element — Open time unchanged).
+Log: `§S8-DELTA guid= cls= unit= qty=<before>-><after> rate= costDelta= schedDelta=<secs>s(<days>d) basis= surface=modeller|viewer`.
+
+### §S8-SURFACES
+- **Modeller** (additive only, `modeller/edit_delta_ui.js` + two `dispatchEvent` lines in `modeller.html`'s `setHover`/`setSelectionIds`):
+  hover → a small label near the cursor; click → the same line appended to the status line. Only for a feature with a net edit.
+- **Viewer** (`viewer/main.js`-side subscriber): `Connect.subscribe('identity')` → log `§CONNECT-ID-IN viewer` → read the shared signed
+  log (`localStorage bonsai_model_v1`, same origin, `kernel_ops WHERE undone=0` — what `Bonsai.oplog.reload()` reads) → `netEdits` →
+  `deltaFor` per edited guid → S7's hover label (`hover_name.js`) and `#info-panel` `#info-4d` block get the Δ line. Independent of any
+  persisted schedule (the S7 window line still needs one; the Δ line does not).
+- ⚠ Cascade defect (finding #1, `RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md` 2026-09-30): moving a wall that HOSTS a door/window is 3 ops
+  and one Ctrl+Z undoes one. S8 does not build on it: witnesses use a wall with no hosted filling (`SdgCascade.ridersFor` = []).
+- Scrub position: the log store has no cursor; `undone=1` (Ctrl+Z) is honoured, a slider scrub-back is carried by the existing
+  `timeline` channel and is out of S8.
+
+### §S8-WITNESS (each NAMES what it proves or disproves; RED first — on today's main neither surface prints any Δ)
+- **W-S8-PURE** (node) — `qtyOf` equals the `compute5D`/`_AREA_EXPR` SQL on every bbox of the real Duplex DB (sql.js), all four units;
+  `deltaFor` with net = identity returns 0/0; an M-unit class (a beam record) returns a non-zero labourΔ, an M2 wall returns 0.
+  *Disproves: a drifted quantity twin; a fabricated schedule number for a flat class.*
+- **W-S8-EDIT-DELTA** (Modeller, headless vs LIVE) — pick a wall with no hosted filling → drag its scale cube → hover → `§S8-DELTA` whose
+  `costDelta` equals, to the cent, the value the WITNESS recomputes independently from the DB (`rate × (area_after − area_before)`, area_after
+  read from the folded mesh's REAL bbox, not from the op) → Ctrl+Z → hover again → Δ = 0. A move (not a scale) prints costΔ 0.
+  *Disproves: Δ computed from the op instead of the fold; Δ surviving an undo; a move billed as a quantity change.* INCONCLUSIVE if the
+  scale commit did not land (op-log length unchanged) or the wall's quantity was 0.
+- **W-CONNECT-COMMIT** (Viewer, two pages one context, vs LIVE) — Modeller edit → Viewer logs `§CONNECT-ID-IN viewer tip=<the Modeller's tip>` →
+  hover the same guid in the Viewer → `§S8-DELTA … surface=viewer` with **costDelta and schedDelta byte-equal to the Modeller's** (the
+  cross-surface equality is the falsifier) → Ctrl+Z in the Modeller → Viewer Δ = 0 → `KernelOps.verifyChain` ok on the shared store.
+  *Disproves: a Viewer that never receives the edit (the P3 half-built state on main), or two surfaces computing different numbers.*
+
+### §S8-DEMO-MOVIE (later — a NOTE, no movie is made now)
+Beats, and the witness-proven state each shot must be cut from (a shot with no proven state is not filmed):
+1. Modeller, Duplex, one wall selected — state: W-S8-EDIT-DELTA "selected fid, hostedRiders=0".
+2. Drag the scale cube; hover the wall — the label reads the `§S8-DELTA` line whose numbers W-S8-EDIT-DELTA asserted (costΔ, qty before→after).
+3. Cut to the Viewer tab (Connect ON) — the same element, the same Δ line — state: W-CONNECT-COMMIT byte-equal numbers.
+4. Ctrl+Z in the Modeller; both labels return to 0 — state: the undo legs of both witnesses.
+5. Save — state: `§SAVE_SNAPSHOT bytes>0`. The finish-date shift is NOT shown (⛔ above) — the film must not imply it.
+Rule (`feedback_no_autonomous_bakes`): filming/baking needs red1's explicit go; nothing here authorises it.
+
 ## §WEDGE-STRATEGY (decided 2026-06-22 after the "is it a killer?" analysis)
 VERDICT of the analysis: the one-op-log BIM↔ERP twin is a killer *architecture* + killer *demo*; it is NOT yet a
 killer *product* because (a) it is demo-grade on the seed (990000), (b) "unifies 4 tools" is a feature list, not a
