@@ -2079,6 +2079,18 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
 - § line: §MEP_SERVICE_COLOUR per-building counts by rule (red / green / black / duct / class) at load (the existing tier census).
 - WITNESS: HHS: 0 elements with albedo 0x44cc44; ducts (1,749 by name) = duct grey. Hospital: FP pipes red, PLB pipes green (counts
   match the DB census: FP 12,128 pipe+fitting, PLB 8,539). Terminal: tier-2 count unchanged. Stills: red1 judges one still per building.
+- v2 (red1 same day: "when it is joined with sprinklers and elbows, or different function, it has to be distinguishable ... if industry has
+  such colouring diff, apply"): PARTS by function, sourced:
+  | part | colour | source |
+  | FP pipe segments | RAL 3000 flame red | BS 1710 fire (as v1) |
+  | FP fittings / grooved couplings (Pipe/FlowFitting class) | orange enamel, as RAL 2004 #E75B12 (nearest RAL orange — Victaulic gives no RAL) | Victaulic 51.01 "standard housing and fitting coating: orange enamel" |
+  | sprinkler heads (IfcFireSuppressionTerminal, or a terminal named sprinkler) | natural brass, physicallybased.info Brass lin [0.91,0.778,0.423] | sprinkler data sheets: natural brass standard finish (chrome/white options) |
+  | water pipe segments | RAL 6010 grass green | BS 1710 water (as v1) |
+  | water fittings | galvanised grey (STD_MAT.IfcPipeFitting) | galvanised malleable-iron fittings |
+  | drainage, ducts | as v1 | |
+  ✅ v2 BUILT @7d9a4f5b sw v1518 (pushed): W-MEP-SERVICE-COLOUR PASS 7/7 — Hospital fire line FP 7,111 red / FP_FIT 4,602 orange / 1,354 brass
+  heads; water 4,308 green segments / 2,644 galvanised fittings; HHS 6 brass heads. No-own-colour share of MEP: HHS 100 %, Clinic 99.9 %,
+  Hospital 97.0 %, Terminal 37.1 %. Whole building, no authored material name: HHS 94.7 %, Hospital 85.5 %, Clinic 100 %, Terminal 0 %.
 - NOT IN SCOPE: ARC proxies' teal flag (HHS 659, e.g. 'Stahlbalkon' steel balcony) — separate item.
 - ✅ BUILT 2026-10-01: bim-ootb fix/sky-surface @1a9a7eea sw v1517 (pushed). W-MEP-SERVICE-COLOUR (viewer/tests/witness_mep_service_colour.js,
   runs the shipped owner over every elements_meta row, headless, no GPU) PASS 6/6: HHS green 0 (RED CONTROL &mephue=disc: 1,773), HHS
