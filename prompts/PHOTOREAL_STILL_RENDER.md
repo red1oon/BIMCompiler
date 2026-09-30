@@ -2170,6 +2170,33 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
   assumption) -> in a 2 m toilet the mirror shows the wrong part of the room (parallax), same class as the Hospital wing reflections.
   NEXT (not built): a truth for mirror pixels = exact reflected ray -> hit surface -> its lit value (e.g. a second still from the
   mirrored camera), then parallax-corrected (box-projected) env for mirrors using the zone's box.
+### BLOCKS on red1's v1507/v1508 Clinic stills — MEASURED (2026-09-30, Opus; zedge.py / blk.py, LEAK 12 px, OOM 0 every arm)
+- Per-term A/B at …720125219 / …720195167 (groundview / giredist / ir / cove / aoindirect / lamps off): only &giredist=0 removes
+  zone-boundary steps: app-frame steps 16 -> final 77 with §GI_REDISTRIBUTE, 16 -> 16 without. &gridblend=1 (Z18) is NOT the fix:
+  app steps 16 -> 71, 27 -> 57. Top steps: zone 0 (open cells) vs zone 141 on one wall (Lu 131/81 -> Lf 123/70): the redistribute
+  removes the zone IR where SSGI saw an occluder; the zone-0 side has no IR to remove -> the step grows.
+- &giredist=0 on all 8 v1507 poses (vs default): zone steps equal except …125219 77 -> 16; edges equal or lower (941 -> 754 there);
+  compositeMean +0.2..+11.1 (redistribute darkens occluded areas); blown / dark unchanged (dark 0 % indoors both); exposure same.
+  DECISION for red1: default §GI_REDISTRIBUTE off (it was added 2026-09-28 for "bounce reduced", already evidence-gated after HHS
+  blotches), or keep it and fix the zone-0/zone-IR asymmetry.
+### SESSION 2026-09-30 PM-2 (Opus) — fix/sky-surface @ v1510, what was measured (all runs OOM 0, §GI_STILL 1)
+- v1509 §GI_REDIST_DEFAULT_OFF (red1 "yes"): &giredist=1 = on. §MIRROR_PARALLAX (red1 "yes"): box-projected mirror env; box = per axis
+  the farthest opaque hit of a 9-ray fan (+-15 deg) from the capture point (v1 zone-grid walk gave 0.30 m on 5/6 axes: camera among
+  fattened wall cells). Witness mirw.js (exact reflected ray vs lookup target): …727819587 512/512 px within 0.5 m, err 2.01 -> 0.05 m;
+  red1 …729229470 451/490, 1.69 -> 0.17 m.
+- v1510 §BEAM_UNDER_SLAB (red1 "floor line slight black strip", Terminal …734512094): strip Lu 88 -> 39 in EVERY arm (lamps / ir / cove /
+  aoindirect / torch / surf=off / zoneeye=0 all x0.45) = not light. zfight.js: IfcBeam "M_Concrete-Rectangular Beam" 303030 top face at
+  hit distance 0 with IfcSlab "A_Floor_CementRender_V1" 868686 = depth fight. IfcBeam materials polygonOffset(1,4): strip 40 -> 89-90.
+- PATCHES / BLOCKS (red1's v1508-9 Clinic stills): mid-scale band (pband.py) — …142544 floor patchy 10.1 % is the sky field (sky off 1.6 %)
+  and §SKY_FIELD_SMOOTH DOUBLES it (5.4 -> 10.1 %: the 1.5 m window spreads bright cells); walle truth there: E med 0.025, F 0.007
+  (field under-reads 4x) and the truth itself varies more at mid-scale (0.105) than F (0.070) -> real daylight, not a defect.
+  Cell-boundary block test (blocks2.py: |dLf| across the p+0.5 cell n stencil cell / inside it, same element + normal + zone):
+  WALLS 2.0-3.3x at 5 poses; floors 1.0-1.45; NOT removed by any single term, NOR all per-cell terms off together (sky/lamps/cove/ground/
+  ir off: 3.03 / 2.79), NOR &zoneeye=0 (2.62 / 3.77). => wall blocks are not the light fields; cause still open (candidates: the sun
+  shadow cascade texel pattern, N8AO, or a metric artefact of the 12 px grid on walls) — next: sun-off arm + a finer grid.
+- CONTACT SHADOWS (red1 "table sets get bounce shadow on floor but not rows of seats", Terminal …735021015, contact.js): floor under seats
+  app 156 / final 156.6 vs open 142 / 146; under tables app 141 / final 149.4 (bounce +8). Neither gets a contact shadow; the seats
+  (IfcFurniture Waiting_Room_Seat, opaque Mesh, castShadow) ARE in the GI geometry pass. Open: why the AO term leaves no contact darkening.
 ## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
