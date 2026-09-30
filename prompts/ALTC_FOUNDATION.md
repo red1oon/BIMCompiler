@@ -159,6 +159,24 @@ to 105 (e.g. i=1156 199 vs 139 brighter, i=1236 70 vs 107 darker) = the Alt+S mo
 127.9, max |dLuma| 10.9 = off equals the old film. The dark frame i=1202 is dark in BOTH (17 vs 26, darkPct 88.7 vs 84.9): the load-path shot.
 HUD pathmap x loadpath.card overlap FAILs in BOTH (pre-existing). 1 unconverged frame in the inherit arm only (i=242 timeout).
 Hospital_silent.db.lightfield.bin baked (6,912,376 B, fieldMs 2,348,558 = 39 min, full-quality EXACT_ALL).
+### §IDLE_PREWARM STUDY 2026-10-01 (red1: "study how 'pre processing in background' when user idles can squeeze away runtime costs")
+Existing pattern to copy (no new mechanism): effects.js:2125 §PHOTO_PREWARM (requestIdleCallback, idempotent, the press keeps its own
+call as fallback — "DEGRADE, DON'T DISABLE") and time_machine.js:9828 tmWarmXrayElements (pure idle, no timeout, skipped while
+streaming / _maxqActive / _stillRefineActive). A headless CLI bake has no idle user: there the same work must come PRE-BAKED (sidecar in
+patches/, like the light field) or from a persistent browser profile. Setup costs measured on Hospital_silent (mid2.log, 960x540, before
+frame 1 at ~620 s):
+| cost | s | kind | idle-prewarm (viewer) | pre-bake (CLI + viewer) |
+|---|---|---|---|---|
+| load-path shot search (§LOADPATH_BEARING -> §LOADPATH_SHOT) | 155 | pure data: camera path x geometry | yes | YES — key = path + geometry fp; biggest item |
+| bounce-engine copy (§GI_STILL stage, §GI_FILM built) | 62-66 | GPU objects, per page | yes (arm GiFilm build at idle) | no (GPU); bulk compile (FB4) untested |
+| first bounce frame / shader pipelines | ~60-75 | GPU pipeline compile | yes (warm one render at idle) | partly — Chrome GPUPersistentCache with a fixed --profile |
+| window classification (§SKY_PORTAL_FILM_CACHE) | 27 | pure data: glass x geometry | yes | YES — into the light-field sidecar (FB3) |
+| light field (zones/sky/ground/glass) | <1 (was 160) | pure data | done | DONE (patches/<db>.lightfield.bin) |
+| MEP smooth normals / HDRI / ground tex | ~2 | CPU | DONE (§PHOTO_PREWARM) | — |
+| page + DB load | 38 | I/O | — | no |
+Squeezable per bake: ~155 + 27 s by pre-bake (data), ~60-75 s by a persistent shader cache, ~65 s only by idle warm in a live viewer.
+~5 min setup -> ~1.5-2 min for a CLI bake; near 0 extra for an interactive Alt+C started after the viewer idled. Every item keeps its
+in-line call as the fallback and logs `src=prewarm|sidecar|built` so the saving is a log fact. Not built.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
