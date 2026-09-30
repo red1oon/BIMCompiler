@@ -1978,6 +1978,8 @@ CONTACT SHADOWS: code-read — GI_AO_DEFAULT = 0 by design (§ZERO Z11 "AO once"
 §AO_INDIRECT), and lamps are unshadowed. red1 at wrap-up: "The seats shadow is due to overlighting from outside" (red1's reading, NOT
 measured; the lamps-off confirmation run was stopped at wrap-up). red1: "no more to fix" for stills — lamp shadows / smoothing retune /
 merge + OCI stay listed as open, not scheduled.
+red1 (same wrap-up): "when in a more darker room, the seats shadows shows up well" — consistent with the code-read: AO darkens INDIRECT light only,
+so contact shadows show where indirect dominates (dark rooms) and fade where direct light (outside daylight / unshadowed lamps) dominates.
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
