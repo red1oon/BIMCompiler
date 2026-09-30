@@ -2202,6 +2202,16 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
 - L4 (red1 v1521 HHS …808472346): "outside light drowns inside light" — pendants show no pools, expStep -0.51. Suspect §LAMP_EN (lamps
   scaled to an EN 12464-1 target, 200 lx when the room use is unknown; Terminal log scale p50 0.218) vs daylight. A/B queued (hhs7.sh:
   default vs &lampen=0) — read §LAMP_EN*, §METER, §GLASS_TONE.
+  RESULT 07:4x (hhs7: …808472346 default vs &lampen=0, WebGPU 0 both):
+  - §LAMP_EN applied rooms=100, all 'habitable' 200 lx: lamp scale p50 0.13 (p90/max 0.21), 129 unassigned lamps -> median 0.126 =
+    lamps run at ~13 % of rated.
+  - &lampen=0 (rated lamps): §METER Lavg 1183.8 -> 1335.2 cd/m2 (+13 %), exposure 4.00 -> 3.55. => at this pose DAYLIGHT is ~87 % of the
+    metered luminance even with lamps at full rating; pools under the pendants cannot show against it (physically consistent).
+  - The interior itself is bright: EV100 13.21 (Clinic interior …808307859 ran EV100 ~7). NOT verified against truth — next check: the
+    HHS light-grid truth cache (~/.cache/bim4d/light_grid) at this ground-floor zone, to see whether daylight is over-read.
+  - §GLASS_TONE works: mats=1, meanSat 0.784 -> 0.479.
+  DECISION for red1: (a) keep physics (lamps show at dusk/overcast, not at midday by a glass wall); (b) drop the EN dimming (+13 % here);
+  (c) first verify the daylight level against the truth grid (if over-read, fixing it lets the lamps show without inventing).
 
 - OPEN (red1 2026-10-01 ~06:5x): "mirror true reflection still problematic in Clinic" — no still id given; mirrors are §MIRROR_OWN_MAT +
   §MIRROR_PARALLAX (v1508-09, stills only). NOT investigated yet: first find red1's latest Clinic stills with a mirror in view, read their
