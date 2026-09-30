@@ -1461,6 +1461,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#see-what-your-edit-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what your edit costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#send-it-to-erp-project-order-variant-vo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Send it to ERP — Project Order, variant, VO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#export-db-ifc-or-a-bcf-issue" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3171,6 +3193,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#see-what-your-edit-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what your edit costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#send-it-to-erp-project-order-variant-vo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Send it to ERP — Project Order, variant, VO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#export-db-ifc-or-a-bcf-issue" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3329,7 +3373,7 @@ retreat across every tool below.</p>
 <hr />
 <h2 id="getting-started-your-first-five-minutes">Getting started — your first five minutes<a class="headerlink" href="#getting-started-your-first-five-minutes" title="Permanent link">&para;</a></h2>
 <blockquote>
-<p><strong>Brand new?</strong> Start with the nine-step <strong><a href="../ModellerFirstSteps/">First Steps</a></strong> page — one tiny job, start to finish.</p>
+<p><strong>Brand new?</strong> Start with the <strong><a href="../ModellerFirstSteps/">First Steps</a></strong> page — a nine-step first edit, then <a href="../ModellerFirstSteps/#part-2-see-what-your-edit-costs-and-send-it-to-erp">what your edit costs and sending it to ERP</a>, then <a href="../ModellerFirstSteps/#part-3-fill-the-building-with-services-mep-walk">filling the building with services</a>.</p>
 </blockquote>
 <ol>
 <li><strong>Open the app</strong> — <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">red1oon.github.io/bim-ootb/modeller/modeller.html</a>
@@ -4108,15 +4152,15 @@ Open → Walk (<code>W-MEP-OPENPATH</code>):</p>
 <p>Typical run length is 2–3 m. The pipe sizes are real, measured from the Duplex plumbing model:
 - cold water 25.4 mm (1″, the mains size; the Duplex also has ½″ branches)
 - waste 48.3 mm (1½″)</p>
-<p>A pipe is never drawn at an invented size. Ducts (ACMV), cable (ELEC) and sprinklers (FP) are placed but not
-yet routed.</p>
+<p>A pipe is never drawn at an invented size. A stand-alone PLB walk on the live Duplex measured 18 fixtures and 22 pipe runs (1 cold-water 25.4 mm, 21 waste 48.3 mm), all signed. In <strong>Walk ALL</strong> the existing witness (<code>W-MEP-OPENPATH</code>, Duplex, 2026-09-30) also routes ducts (ACMV, 8 runs) and sprinklers (FP, 4 runs), signed; cable (ELEC) is placed but not routed (0 runs on Duplex).</p>
 <p><strong>One Ctrl+Z takes the whole walk back.</strong> A walk appears in the history as one step, e.g. <em>Walk PLB (45)</em>:
 the fixtures, the pipe runs and their bend fittings together. <code>Ctrl+Z</code> removes all of it from the model and
 the screen, and <code>Ctrl+Y</code> brings it all back (<code>W-WALK-GESTURE</code>).</p>
 <p><strong>Move a fixture and its pipes follow.</strong> Moving a walked fixture, by dragging it or a gridline, re-routes
 that trade's pipes from the new positions (<code>W-MEP-REROUTE</code>: a 1 m move re-routes the Duplex network so a
-run ends at the fixture's new spot). Undo the move and the pipes route back. Two limits for now: the re-routed
-runs are shown but not signed, and the bend fittings from the original walk are not recalculated.</p>
+run ends at the fixture's new spot). Undo the move and the pipes route back. The re-routed runs and their bend fittings are written to
+the signed history too (measured 2026-09-30, live Duplex: after a 0.5 m move, 14 runs kept, 2 new, 8 superseded; fittings 3 kept, 1 new, 2 superseded; re-route about 0.5 s).
+Walked fixtures have no drag handle yet (clicking one only identifies it), so that move is made by the engine — see <a href="../ModellerFirstSteps/#part-3-fill-the-building-with-services-mep-walk">First Steps, Part 3</a>.</p>
 <h3 id="seed-trunk-route-a-service-trunk">Seed-Trunk — route a service trunk<a class="headerlink" href="#seed-trunk-route-a-service-trunk" title="Permanent link">&para;</a></h3>
 <p>After walking a discipline, route its <strong>service trunk</strong> from a real entry.</p>
 <ol>
@@ -4165,6 +4209,64 @@ one heal, never an unbounded cascade.</p>
 write outright (no snapshot written); a real auto-healable pair heals, re-verifies clean, and a real
 snapshot lands; a heal engineered to disturb a third element reports that one new finding by name without
 touching it further.</p>
+<hr />
+<h2 id="see-what-your-edit-costs">See what your edit costs<a class="headerlink" href="#see-what-your-edit-costs" title="Permanent link">&para;</a></h2>
+<p><em>Commits nothing new — it reads the edit you already made. Proven on the live site (<code>W-S8-EDIT-DELTA</code> 9/9,
+<code>W-CONNECT-COMMIT</code> 10/10); first-timer version: <a href="../ModellerFirstSteps/#part-2-see-what-your-edit-costs-and-send-it-to-erp">First Steps, Part 2</a>.</em></p>
+<p>When you <strong>stretch</strong> an element (the cube handles of the Move gizmo), its quantity changes — and so do its material
+cost and, for some classes, its labour time. The Modeller shows that change on the element itself:</p>
+<ol>
+<li><strong>Stretch a wall</strong> with the Move gizmo's cube handle, then press <strong>Esc</strong>.</li>
+<li><strong>Hover</strong> the wall: a label shows the class, the quantity <strong>before → after</strong>, the <strong>material</strong> change and the <strong>labour</strong> change.</li>
+</ol>
+<p><img alt="Hover label on a stretched wall" src="../img/modeller/first-steps-s8-1-hover-label.png" /></p>
+<ol>
+<li><strong>Click</strong> the wall: the same line stays pinned at the bottom-left.</li>
+</ol>
+<p><img alt="The same line pinned after a click" src="../img/modeller/first-steps-s8-2-click-line.png" /></p>
+<ol>
+<li><strong>Ctrl+Z</strong>: the line reads <code>Δ 0 — edit undone</code>.</li>
+<li>Tap <strong>Connect</strong>, open the Viewer with <code>?connect=1</code> and hover the same wall: the Viewer shows the <strong>identical</strong> line.</li>
+</ol>
+<p><img alt="The Viewer's hover label for the same wall" src="../img/modeller/first-steps-s8-viewer-hover.png" /></p>
+<p><strong>What the numbers are</strong> (honest labels): the quantity basis is the bounding box, the same one the 5D cost report uses
+(length, face area, volume or count, by the class's unit). <strong>Material</strong> = the change in quantity × the price of the
+active <strong>rate pack</strong> — your language setting picks it (the tested run used US English: 48 per m² for a wall) — rounded the same way the Project Order line is, so the hover, a fresh order and a Variation Order all show <strong>one number</strong>. It is
+<em>projected</em>, per element. <strong>Labour</strong> comes from the shipped duration rule: an ordinary wall (priced per m²) takes a
+<strong>flat time per element</strong>, so stretching it changes cost but not labour (<code>+0 s</code>); a linear class such as a beam or duct
+scales with length. A plain <strong>move</strong> changes no quantity, so it reads <code>+0.00</code>. The <strong>finish date is not re-solved</strong> — that
+would need a whole-programme re-run, and whether a hover may trigger one is an open question.
+Grid-stretch edits are not priced yet (the line says so).</p>
+<h2 id="send-it-to-erp-project-order-variant-vo">Send it to ERP — Project Order, variant, VO<a class="headerlink" href="#send-it-to-erp-project-order-variant-vo" title="Permanent link">&para;</a></h2>
+<p><em>Proven on the live site across the Modeller, the Viewer and the ERP app (<code>W-S9-MODELLER-PROJECT</code> 10/10); first-timer
+version: <a href="../ModellerFirstSteps/#part-2-see-what-your-edit-costs-and-send-it-to-erp">First Steps, Part 2</a>.</em></p>
+<p>Select parts and click <strong>ERP ▸ Project Order</strong> (bottom-left). It reads the ERP's Project Order for those parts:</p>
+<ol>
+<li><strong>No Project Order yet</strong> → the panel prices the parts and offers <strong>Generate Project Order</strong> (the same engine as the Viewer's <strong>› ERP</strong> button; a second Generate adds nothing).</li>
+</ol>
+<p><img alt="Not generated yet" src="../img/modeller/first-steps-s9-1-read-not-generated.png" /></p>
+<ol>
+<li>After generating, the panel shows the order, its planned amount and <strong>Open in ERP ↗</strong> (opens the ERP app on that record).</li>
+</ol>
+<p><img alt="Generated" src="../img/modeller/first-steps-s9-2-generated.png" /></p>
+<ol>
+<li><strong>Edit a part that is already in the order</strong> → it is a <strong>variant item of the same Project Order</strong>. Two options:</li>
+</ol>
+<p><img alt="Variant: A or B" src="../img/modeller/first-steps-s9-3-variant.png" /></p>
+<ul>
+<li>
+<p><strong>A · Delete &amp; re-issue</strong> — only while the order is <strong>not committed</strong>. It leaves exactly one order, issued from the selected parts.</p>
+<p><img alt="After A" src="../img/modeller/first-steps-s9-4-option-a.png" />
+   - <strong>B · Issue Variation Order</strong> — required once the order is <strong>committed to a vendor</strong> (a completed purchase order on the project, read from the ERP records). A is then disabled with its reason. The VO is the <strong>priced difference of the order line it amends</strong>: original order + VO = a fresh order for the edited parts, to the cent. It is sent as <strong>Drafted</strong>; the Modeller only shows the status the ERP record carries — approval is done on the ERP side.</p>
+<p><img alt="Committed: A disabled" src="../img/modeller/first-steps-s9-5-committed.png" /></p>
+<p><img alt="After B" src="../img/modeller/first-steps-s9-6-option-b.png" /></p>
+</li>
+<li>
+<p>Undo the edit (<strong>Ctrl+Z</strong>) and the panel's price for the parts returns to the original.</p>
+</li>
+</ul>
+<p>The Viewer reads the same store: the same parts folded from the Viewer give the same planned amount and find the existing order.
+Any IFC you open works: the order is keyed by the model's own name (the Duplex resident keeps its measured Viewer label).</p>
 <hr />
 <h2 id="export-db-ifc-or-a-bcf-issue">Export — .db, IFC, or a BCF issue<a class="headerlink" href="#export-db-ifc-or-a-bcf-issue" title="Permanent link">&para;</a></h2>
 <p>Tap the <strong>Export</strong> pill. A small menu offers three things:</p>
