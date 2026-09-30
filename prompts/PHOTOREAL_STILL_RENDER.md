@@ -2174,6 +2174,23 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   the light direction in the depth buffer, lamps only). §SKY_FIELD_FURNITURE: no measured benefit at this pose; it re-keyed Hospital
   (now fast field) — revert 41144850 + restore lf_backup_v1519 if red1 prefers.
 
+### §LAMP_CONTACT_SHADOW — SPEC (2026-10-01, red1 "fix it for Clinic and HHS first" after §CONTACT_BRIGHT failed twice)
+- WHY (measured): seats/open 1.07-1.08 with every existing lever (AO 0.5 m on lamps, top-4 lamp shadows share 13-20 %, furniture in the
+  daylight soup). Lamps are ~90 % of the Terminal hall floor light and ~160 lamps light it: no per-lamp shadow scales.
+- WHAT (the game-engine "contact shadow": a short screen-space ray march toward the light against the depth buffer — e.g. Unreal Engine
+  "Contact Shadows"): Alt+S second TAA phase only (same gate as §AO_INDIRECT, uSLAo.x). In the §LAMP_UNCAPPED data loop, per fragment:
+  the lamps' DOMINANT direction D = sum(dir x luminance(colour) x N.L); after the loop, march from the surface (+2 cm along N) toward D,
+  16 steps over 0.5 m, against the phase-1 depth (N8AO beautyRenderTarget.depthTexture, the §PHOTO_AO depth prime); a hit (stored
+  surface 1 cm .. 0.5 m in front of the ray point) scales ONLY the lamps' direct diffuse + specular added by this loop by f = 1 - occ.
+  Sun, sky field, IR, cove, torch untouched. Length 0.5 m / thickness 0.5 m / 16 steps are AUTHORED (no source): &contact=0 off,
+  &contactlen=, &contactthick=. No bake (shader + uniforms only, light_zones.js untouched). § line §LAMP_CONTACT on len thick steps.
+- WITNESS (contact.js): Terminal …735021015 seats/open and tables/open < 1.00 (was 1.07 / 1.02), open floor within ±3 of 146.7; &contact=0
+  arm = the old numbers (RED CONTROL). Clinic: a pose with furnishing elements, same metric. HHS: 0 furniture elements in the model (n/a).
+
+- OPEN (red1 2026-10-01 ~06:5x): "mirror true reflection still problematic in Clinic" — no still id given; mirrors are §MIRROR_OWN_MAT +
+  §MIRROR_PARALLAX (v1508-09, stills only). NOT investigated yet: first find red1's latest Clinic stills with a mirror in view, read their
+  §MIRROR_* lines, then measure.
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
