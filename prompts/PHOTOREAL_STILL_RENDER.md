@@ -1980,6 +1980,11 @@ measured; the lamps-off confirmation run was stopped at wrap-up). red1: "no more
 merge + OCI stay listed as open, not scheduled.
 red1 (same wrap-up): "when in a more darker room, the seats shadows shows up well" — consistent with the code-read: AO darkens INDIRECT light only,
 so contact shadows show where indirect dominates (dark rooms) and fade where direct light (outside daylight / unshadowed lamps) dominates.
+red1: "Thus the bounce shadows should reflect compensate" -> OPEN ITEM (stills, next): contact shadows must hold in bright rooms too.
+Recommendation on record: NOT AO on direct light (would darken sunlit/lamp-lit open floor wrongly); occlude the DIRECT terms where they
+are really blocked — (a) lamp shadows (none today) and (b) the sky/daylight term under furniture (furniture is not in the sky-field soup:
+IfcFurniture is neither BOUNDARY nor OCCLUDER, light_zones.js:16/30). Measure first: seat pose …735021015, floor under seats vs open with
+lamps off / sky off (the stopped run), then spec.
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
