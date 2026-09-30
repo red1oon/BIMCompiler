@@ -75,7 +75,7 @@ retreat across every tool below.
 
 ## Getting started — your first five minutes
 
-> **Brand new?** Start with the nine-step **[First Steps](ModellerFirstSteps.md)** page — one tiny job, start to finish.
+> **Brand new?** Start with the **[First Steps](ModellerFirstSteps.md)** page — a nine-step first edit, then [what your edit costs and sending it to ERP](ModellerFirstSteps.md#part-2-see-what-your-edit-costs-and-send-it-to-erp), then [filling the building with services](ModellerFirstSteps.md#part-3-fill-the-building-with-services-mep-walk).
 
 1. **Open the app** — [red1oon.github.io/bim-ootb/modeller/modeller.html](https://red1oon.github.io/bim-ootb/modeller/modeller.html)
    (desktop; the B-rep kernel is heavy). Tap **⋯** at the bottom-right to fan the pill toolbar open.
@@ -737,8 +737,7 @@ Typical run length is 2–3 m. The pipe sizes are real, measured from the Duplex
 - cold water 25.4 mm (1″, the mains size; the Duplex also has ½″ branches)
 - waste 48.3 mm (1½″)
 
-A pipe is never drawn at an invented size. Ducts (ACMV), cable (ELEC) and sprinklers (FP) are placed but not
-yet routed.
+A pipe is never drawn at an invented size. A stand-alone PLB walk on the live Duplex measured 18 fixtures and 22 pipe runs (1 cold-water 25.4 mm, 21 waste 48.3 mm), all signed. In **Walk ALL** the existing witness (`W-MEP-OPENPATH`, Duplex, 2026-09-30) also routes ducts (ACMV, 8 runs) and sprinklers (FP, 4 runs), signed; cable (ELEC) is placed but not routed (0 runs on Duplex).
 
 **One Ctrl+Z takes the whole walk back.** A walk appears in the history as one step, e.g. *Walk PLB (45)*:
 the fixtures, the pipe runs and their bend fittings together. `Ctrl+Z` removes all of it from the model and
@@ -746,8 +745,9 @@ the screen, and `Ctrl+Y` brings it all back (`W-WALK-GESTURE`).
 
 **Move a fixture and its pipes follow.** Moving a walked fixture, by dragging it or a gridline, re-routes
 that trade's pipes from the new positions (`W-MEP-REROUTE`: a 1 m move re-routes the Duplex network so a
-run ends at the fixture's new spot). Undo the move and the pipes route back. Two limits for now: the re-routed
-runs are shown but not signed, and the bend fittings from the original walk are not recalculated.
+run ends at the fixture's new spot). Undo the move and the pipes route back. The re-routed runs and their bend fittings are written to
+the signed history too (measured 2026-09-30, live Duplex: after a 0.5 m move, 14 runs kept, 2 new, 8 superseded; fittings 3 kept, 1 new, 2 superseded; re-route about 0.5 s).
+Walked fixtures have no drag handle yet (clicking one only identifies it), so that move is made by the engine — see [First Steps, Part 3](ModellerFirstSteps.md#part-3-fill-the-building-with-services-mep-walk).
 
 ### Seed-Trunk — route a service trunk
 
@@ -805,6 +805,72 @@ Witnessed end-to-end (`modeller/tests/witness_e2e_save.js`, 11/11): a real hard 
 write outright (no snapshot written); a real auto-healable pair heals, re-verifies clean, and a real
 snapshot lands; a heal engineered to disturb a third element reports that one new finding by name without
 touching it further.
+
+---
+
+## See what your edit costs
+
+*Commits nothing new — it reads the edit you already made. Proven on the live site (`W-S8-EDIT-DELTA` 9/9,
+`W-CONNECT-COMMIT` 10/10); first-timer version: [First Steps, Part 2](ModellerFirstSteps.md#part-2-see-what-your-edit-costs-and-send-it-to-erp).*
+
+When you **stretch** an element (the cube handles of the Move gizmo), its quantity changes — and so do its material
+cost and, for some classes, its labour time. The Modeller shows that change on the element itself:
+
+1. **Stretch a wall** with the Move gizmo's cube handle, then press **Esc**.
+2. **Hover** the wall: a label shows the class, the quantity **before → after**, the **material** change and the **labour** change.
+
+   ![Hover label on a stretched wall](img/modeller/first-steps-s8-1-hover-label.png)
+
+3. **Click** the wall: the same line stays pinned at the bottom-left.
+
+   ![The same line pinned after a click](img/modeller/first-steps-s8-2-click-line.png)
+
+4. **Ctrl+Z**: the line reads `Δ 0 — edit undone`.
+5. Tap **Connect**, open the Viewer with `?connect=1` and hover the same wall: the Viewer shows the **identical** line.
+
+   ![The Viewer's hover label for the same wall](img/modeller/first-steps-s8-viewer-hover.png)
+
+**What the numbers are** (honest labels): the quantity basis is the bounding box, the same one the 5D cost report uses
+(length, face area, volume or count, by the class's unit). **Material** = the change in quantity × the price of the
+active **rate pack** — your language setting picks it (the tested run used US English: 48 per m² for a wall) — rounded the same way the Project Order line is, so the hover, a fresh order and a Variation Order all show **one number**. It is
+*projected*, per element. **Labour** comes from the shipped duration rule: an ordinary wall (priced per m²) takes a
+**flat time per element**, so stretching it changes cost but not labour (`+0 s`); a linear class such as a beam or duct
+scales with length. A plain **move** changes no quantity, so it reads `+0.00`. The **finish date is not re-solved** — that
+would need a whole-programme re-run, and whether a hover may trigger one is an open question.
+Grid-stretch edits are not priced yet (the line says so).
+
+## Send it to ERP — Project Order, variant, VO
+
+*Proven on the live site across the Modeller, the Viewer and the ERP app (`W-S9-MODELLER-PROJECT` 10/10); first-timer
+version: [First Steps, Part 2](ModellerFirstSteps.md#part-2-see-what-your-edit-costs-and-send-it-to-erp).*
+
+Select parts and click **ERP ▸ Project Order** (bottom-left). It reads the ERP's Project Order for those parts:
+
+1. **No Project Order yet** → the panel prices the parts and offers **Generate Project Order** (the same engine as the Viewer's **› ERP** button; a second Generate adds nothing).
+
+   ![Not generated yet](img/modeller/first-steps-s9-1-read-not-generated.png)
+
+2. After generating, the panel shows the order, its planned amount and **Open in ERP ↗** (opens the ERP app on that record).
+
+   ![Generated](img/modeller/first-steps-s9-2-generated.png)
+
+3. **Edit a part that is already in the order** → it is a **variant item of the same Project Order**. Two options:
+
+   ![Variant: A or B](img/modeller/first-steps-s9-3-variant.png)
+
+   - **A · Delete & re-issue** — only while the order is **not committed**. It leaves exactly one order, issued from the selected parts.
+
+     ![After A](img/modeller/first-steps-s9-4-option-a.png)
+   - **B · Issue Variation Order** — required once the order is **committed to a vendor** (a completed purchase order on the project, read from the ERP records). A is then disabled with its reason. The VO is the **priced difference of the order line it amends**: original order + VO = a fresh order for the edited parts, to the cent. It is sent as **Drafted**; the Modeller only shows the status the ERP record carries — approval is done on the ERP side.
+
+     ![Committed: A disabled](img/modeller/first-steps-s9-5-committed.png)
+
+     ![After B](img/modeller/first-steps-s9-6-option-b.png)
+
+4. Undo the edit (**Ctrl+Z**) and the panel's price for the parts returns to the original.
+
+The Viewer reads the same store: the same parts folded from the Viewer give the same planned amount and find the existing order.
+Any IFC you open works: the order is keyed by the model's own name (the Duplex resident keeps its measured Viewer label).
 
 ---
 
