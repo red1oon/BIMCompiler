@@ -4066,3 +4066,35 @@ peak value); a 5 s CONTROL clip (floor 0.15, pause 0, peak 1, opacity 0.22 = tod
 frames and target size, on a building with a lone structural set re-appearing across the orbit; looked at first. No
 full film before red1 rules on the clips. Unit test extends tests/test_rule_mode_tint.js: base opts still equal Clash
 MODE's material; film opacity dial applies only with filled+shineThrough.
+
+## §132 §LOADPATH_TWINS — SPEC (2026-10-01, red1 on the Hospital mid clip)
+**red1:** "the Freeze LoadPath. The cam still pivot or pan around. That is in fact nice but can it then have more similar stacks of the
+same load so the canvas does not frame off the first stack. User intuition will understand this is a 'cut out moment to show something
+else'." … "isn't that stack common so we can show the same in few spots so that the pan is meaningful showing the same stack exists?"
+**Measured (Hospital_silent mid clip, bim-compiler ALTC_FOUNDATION.md §FILM_INHERIT mid-clip):** §LOADPATH_PICK stacks=1, farReason=
+none-beyond-depth, candidates=4605, kept=2700 bearing chains; the far slot (cpe_load_path.js _pickTwoStacks) only takes a chain beyond the
+building's depth, so a second stack is rare. Camera position fixed through the 165 hold frames; the pan red1 likes is not yet measured —
+§LOADPATH_HOLD_CAMDIR (cinema_maxq.js, sw v1520) logs pos + view direction every 15 hold frames (full-film bake 2026-10-01 answers it).
+**Rule:** a TWIN = another bearing chain with the SAME SIGNATURE as the picked (near) stack: the same hop sequence of (IFC class, storey)
+top-down. "Same load path, elsewhere" is a data fact (the model repeats the structural bay), not a look choice.
+- T1 PICK (arm time, after the near pick): from `_lp.validCandidates`, signature-equal chains, ranked by the near's own comparator order;
+  greedy, each twin's chain box centre >= TWIN_MIN_SEP m (horizontal) from every stack already chosen; its centre must project in front of
+  the arm camera within |ndc.x| <= TWIN_NDC_X (1.6: covers a pan beyond the frame edge) and |ndc.y| <= 1.1. Up to N (dial &lptwins=,
+  APP._lpTwins, default 3; 0 = today). Log `§LOADPATH_TWINS sig=<n hops> sameSig=<count> picked=<k> guids=[..] sepM=[..] ndcX=[..]`
+  and, when fewer than asked, `reason=` (no-same-signature | spacing | off-view).
+- T2 DRAW: twins are stacks like near/far — same clones, same colours per hop, same `_revealStackStep` timing as the NEAR stack (they rise
+  together: one load path shown N times). NO info panel, NO ladder labels, NO HUD rects for twins (clutter rule §131).
+- T3 RESTORE: twins' clones disposed with near/far; `§LOADPATH_RESTORE` counts include them.
+- T4 PAN: kept as it is (red1 likes it). If the full-film CAMDIR shows yawDeg constant (truly frozen), a deliberate slow yaw is a separate
+  ruling — not in this item.
+**Witness:** §LOADPATH_TWINS picked>=1 on Hospital; §LOADPATH_CLONES stack=twinK placed=N/N for each; revealedHops equal to the near's on
+every hold frame (logged once at hold end: `§LOADPATH_TWINS_SYNC maxLag=0`); control &lptwins=0 = today's single stack (stacks=1).
+
+**§132 addendum 2026-10-01 (red1: "it broke the momentum path, where getting out of the freeze supposed to continue the full ARC return
+to the starting stick … straight cut to no ARC DISCs only").** CAUSE (measured): cinema_maxq.js `if (_frameRange) _tn = (a+i)/(total-1)`
+ignored the inserted hold frames, so a --frame-range clip ran the film clock through the 165-frame freeze (§FILM_GEOM_WHOLE f=250
+tn=0.4653 past the clip's own end 0.4516) — the post-freeze arc return was spent while frozen and the clip resumed in the discipline round.
+The SAME bug made the "pan" red1 liked (clock advancing under a pinned position). FIX §LOADPATH_CLIP_CLOCK: clips freeze the clock exactly as
+full films do. The pan is then made deliberate (T4): yaw about world up PAN_DEG x sin(pi t/T), default 18 deg, out and back so the first and
+last hold frames equal the arm pose; &lppan=0 = hard freeze; §LOADPATH_PAN maxYawDeg at restore. Built on bim-ootb fix/fast-bake sw v1521 with
+T1-T3 (§LOADPATH_TWINS, _TWINS_SYNC). Full films were NOT affected by the clock bug (they take the non-clip branch).
