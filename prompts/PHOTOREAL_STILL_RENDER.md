@@ -2059,6 +2059,35 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
   The saturated albedo also tints the bounce (SSGI reads the frame) -> coloured shadows. Decision for red1, not a bug: keep trade hues in
   stills (they were asked for 09-02 so MEP is readable) vs realistic neutral materials (galvanised grey duct etc.) in stills only.
 
+### §MEP_SERVICE_COLOUR — SPEC (2026-10-01, Opus; red1 "realistic coloring rather than plain all grey", "follow how industry does it",
+### "not all such grey — understand my original complaint" = the 09-02 ask: std colours per service, Yellow/Blue/Green/Red)
+- WHY: §MEP_COLOR_SURVIVES_PHOTOREAL (09-02) answered the ask with the HUD palette A.DISC_COLORS at full HUD saturation, hue-transferred
+  onto the off-white V 0.92 (bright, cartoon); HHS's 3,390 colourless MEP (discipline 'MEP', no trade) all get DISC_COLORS.MEP 0x44cc44
+  verbatim = the green duct. Its own header: "AN AUTHORED CHOICE, NOT A PUBLISHED STANDARD". A published standard exists: BS 1710
+  pipeline identification (BS 4800 / RAL references), and ducts are bare galvanised sheet in practice (not service-painted).
+- SOURCES: BS 1710 content -> colour + RAL: promain.co.uk/colour-charts-pipeline-identification (water RAL 6010, air 5012, gas 1004,
+  steam 9006, other liquids 9005; Stop/Fire RAL 3000). RAL -> sRGB hex: en.wikipedia.org List_of_RAL_colours (raw wikitext, verified):
+  6010 #3E753B grass green, 3000 #AB2524 flame red, 9005 #131516 jet black, 5012 #3481B8, 1004 #E49E00, 9006 #A5A8A6.
+- RULE (tier 2 only — tier 1a authored names / 1b own hue stay byte-identical; Terminal untouched):
+  | element | colour | why |
+  | FP discipline, or name sprinkler/groove/coupling/victaulic | RAL 3000 flame red | fire service, safety red |
+  | pipe (Pipe*/FlowSegment/FlowFitting by name 'pipe', or pipe classes) of PLB, HEAT, ACMV, HVAC | RAL 6010 grass green | water |
+  | name dwv / sanitary, or SAN pipes | RAL 9005 jet black | drainage (BS 1710 'other') |
+  | duct (class Duct* or name 'duct') | STD_MAT.IfcDuctSegment galvanised grey | ducts are bare galvanised |
+  | anything else (terminals, lights, ELEC, generic 'MEP' pipes with no service) | its class STD_MAT (no HUD hue) | no service known -> no paint |
+  Colour used VERBATIM (paint colour), not hue-transferred onto the element's V. &mephue=disc = the 09-02 HUD palette (A/B + revert).
+- § line: §MEP_SERVICE_COLOUR per-building counts by rule (red / green / black / duct / class) at load (the existing tier census).
+- WITNESS: HHS: 0 elements with albedo 0x44cc44; ducts (1,749 by name) = duct grey. Hospital: FP pipes red, PLB pipes green (counts
+  match the DB census: FP 12,128 pipe+fitting, PLB 8,539). Terminal: tier-2 count unchanged. Stills: red1 judges one still per building.
+- NOT IN SCOPE: ARC proxies' teal flag (HHS 659, e.g. 'Stahlbalkon' steel balcony) — separate item.
+- ✅ BUILT 2026-10-01: bim-ootb fix/sky-surface @1a9a7eea sw v1517 (pushed). W-MEP-SERVICE-COLOUR (viewer/tests/witness_mep_service_colour.js,
+  runs the shipped owner over every elements_meta row, headless, no GPU) PASS 6/6: HHS green 0 (RED CONTROL &mephue=disc: 1,773), HHS
+  ducts galvanised 1,767/1,767, sprinklers red 6, DWV black 15; Hospital FP pipes red 10,830/10,830 (the 1,298 own-hue fire-red fittings
+  untouched), PLB supply green 6,952/6,952, drainage black 1,587, ducts 9,558; Clinic water green 2,932, ducts 1,633; Terminal only its
+  568 colourless ducts painted, 7,455 authored/own-hue untouched. SUPERSEDED: witness_mep_color_photoreal.js asserts the 09-02 HUD
+  palette — now only true under &mephue=disc (not re-run). OPEN: HHS 'Pipe Types:Standard' pipes (discipline 'MEP', no service in
+  the data) stay class grey; Clinic PLB fittings whose names lack 'pipe' stay class grey — red1 judges one still per building.
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
