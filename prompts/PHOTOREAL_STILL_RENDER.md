@@ -2252,6 +2252,24 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   Stills batch (shots.sh, real Save-PNG capture into ~/Downloads/stills_v1523/) stopped by red1 after 3 stills; red1 takes stills
   manually. Clinic mirror …729229470 (v1509): two blown-white vertical strips + sawtooth dark patch — NOT measured yet.
 
+### §SEAT_SHADOW STUDY (2026-10-01 ~08:1x, red1 v1524 Terminal …812326377 / …812428117: "very nice balance, no more sun blast across roof,
+### but that seating shadow not getting it. Study don't fix") — no code, no render
+- WHY no shadow under seats/tables, each from a measurement already on file:
+  1. The hall floor is lit mostly by LAMPS (~90 %, …753057418 lamps-off A/B 09-30) — and since v1522 §LAMPS_RATED_DEFAULT the Terminal
+     lamps run at rated instead of EN-scaled (Terminal §LAMP_EN p50 0.218) = ~4.6x stronger -> even more lamp-dominated.
+  2. Lamp light has no geometric shadow (data lamps, room gate only); top-4 shadow maps carry 13-20 % of the lamp weight (today).
+  3. The only lamp-side darkening under objects is §AO_LAMPS at LightLaw.AO radiusM 0.5 (light_law.js:67): a table top 0.74 m up is
+     outside it -> under-furniture floor only 1-2 % darker (§CONTACT_BOUNCE, 09-28, 3 poses).
+  4. Daylight furniture blocking (§SKY_FIELD_FURNITURE v1520) reaches open/shell cells only; interior hall floor unchanged (1.07 -> 1.08).
+  5. Screen-space contact shadow worked on seats (0.92) but drew hard jagged patches -> opt-in since v1524.
+- FURNITURE HEIGHTS (elements_meta x element_transforms.bbox_z): Terminal 176 items mean 0.75 m, max 1.21; Clinic 118 mean 0.52, max
+  0.86; Hospital 201 mean 0.79, max 1.40.
+- RECOMMENDED FIX (09-28 proposal, still unbuilt): a SECOND AO accumulation for the LAMP term only, world radius DERIVED from the building's
+  furniture heights (e.g. the mean-to-max band above: ~0.8-1.2 m), indirect AO kept at 0.5 m (no double count). Physically: many ceiling
+  luminaires ~ one broad overhead source, and hemispheric visibility (what AO measures) is that source's visibility — soft by nature and
+  TAA-averaged (no jagged patches). Cost: one more N8AO accumulation per still (measure). Witness: …735021015 seats/tables < 1.00, open
+  floor within +-3, corners/ceiling junction darkening checked.
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
