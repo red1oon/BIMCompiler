@@ -118,7 +118,7 @@ were right, but its work list was the **2026-07-30 status column** of §OPEN LIS
 
 **Still open, and worth doing BETWEEN queue items only when they are cheap:** row 6 (Terminal 0 MEP — accept or fix) ·
 row 10 (Terminal open speed on the LIVE URL; local was 20,592 ms headless — do not diff that against the old 14 s) ·
-row 11 (real `material_rgba` RGB — also feeds queue item 2) · row 13 (EffectComposer) · row 22 (revert-a-RED, rtree prune) ·
+row 11 (real `material_rgba` RGB — also feeds queue item 2) · row 13 (lazy N8AO ambient occlusion, reuse Viewer Alt+G — §ROW13-RESCOPE) · row 22 (revert-a-RED, rtree prune) ·
 the §XEDGE residual 11 · the ELEC 2.11× over-count.
 **Do not start:** row 7 (heavy, red1's word first) · rows 25, 26, 30 (deferred) · the SampleCastle sporenkap refusal
 (honest, stays RED) · re-opening rows 1 and 4, the ARC-only filter, or the renderer LOD audit.
@@ -925,7 +925,7 @@ Format, one row per item, ranked most-blocking first:
 | 10 | O11 | Terminal open speed: staged pre-sealed rows + incremental `sealFrom` HAVE shipped since the 14 s profile — re-measure on the LIVE URL, then decide if Candidate C (batch-sign bulk classes) is still needed | `RESUME_MODELLER_TERMINAL_LOAD_LOD400.md` ⛔ signing | live `§STAT-TRACE` numbers on the real URL | re-measure — `kernel_ops.js:210/404` supersedes the old profile |
 | 11 | O5 | full colour-parity: Modeller still paints the cosmetic PALETTE; real `material_rgba` RGB unused (only alpha recovered) | `MODELLER_RENDER_MATERIAL_PARITY.md` §Still-open | real per-element colour, before/after on Duplex + HHS glazing, witness | verified-open — `arc_editable.js:30-31` says so in its own comment |
 | 12 | O1 | `rel_fills_host` missing on ALL five new residents (Clinic/Hospital/HHS/Garage/Terminal); the fresh `Clinic_extracted.db` ALSO lacks the table | LOD400 §START HERE OPEN 2 | `gen_rel_fills_host_patch.py` per building once its source IFC is locatable; guide Grid-Stretch sentence extended | ✅ **DONE 2026-09-18 — bim-ootb #1749 + #1750.** All five sources WERE locatable, each identified by the DB's own `project_metadata.source_file` rather than a filename guess. Recovered verbatim via the existing `gen_rel_fills_host_patch.py`: **HHS 218 edges / 99 rideable · Clinic 403 / 302 · Hospital 665 / 506 · Garage 220 / 36** — 943 new rideable host↔filling edges, every one matching its generator-predicted reach EXACTLY on the live scene (Duplex, for scale, is 36/38). **Terminal is deliberately NOT patched:** its source `TerminalMerged.ifc` (567 MB, identified by 5/5 GUID match) declares ZERO `IfcRelVoidsElement`/`IfcRelFillsElement` — the author never authored a void/fill chain, so the generator refused to write a file rather than invent one. That is a SOURCE DATA GAP, asserted in W-RFH-RESIDENTS F4 so nobody 'fixes' it by fabricating edges. So §DAGEVU's anchor/ride now works on **7 of 8 residents**, with the 8th explained by its own data. Witness W-RFH-RESIDENTS 15/15, RED-first |
-| 13 | O14 | SSAO + OutlinePass selection — blocked on vendoring EffectComposer (own slice) | `RESUME_MODELLER_COMPETITIVE_POLISH.md` §NEEDS-DESIGN 6/7 | vendored composer + witness | verified-open — `modeller.html:411/1022` name the gap |
+| 13 | O14 | ~~SSAO + OutlinePass selection — blocked on vendoring EffectComposer~~ **RE-SCOPED 2026-09-30 (§ROW13-RESCOPE below): ambient occlusion = reuse the Viewer's Alt+G N8AO path; OutlinePass dropped** | `RESUME_MODELLER_COMPETITIVE_POLISH.md` §NEEDS-DESIGN 6/7 | lazy N8AO in the Modeller behind the same key + witness | verified-open, **NOT blocked** — see §ROW13-RESCOPE |
 | 14 | O7 | per-mesh furniture orientation normalize-at-extraction (metadata lies: Dining_Chair z=0.14, FURN_DESK z=2.0) | `MODELLER_BOM_CATALOG_SPEC.md` §ALSO QUEUED | bake axis-permutation into vertices; witness tallest-axis==h | verified-open — no bake code in `extract_dagevu_catalog.py` |
 | 15 | O7 | full 23,888-part library via httpvfs range-load — ⛔ BLOCKED: **where does the 220 MB `component_library.db` live (GH vs OCI)? user's call** | same §BUILD LEGS L1–L3 + §OPEN | W-LIBDB-RANGE: bytes-read ≪ 220 MB | verified-open — no `createDbWorker` anywhere in `modeller/` |
 | 16 | O1 | §SEL-TINT-REFOLD: an authoritative re-fold drops the selection tint while `_selSet` still holds the mesh | LOD400 §START HERE OPEN 4 | tint survives cut/undo re-fold, witnessed | ✅ DONE 2026-07-30 (bim-ootb PR #1094, MERGED + LIVE-verified): `bonsai:refold` event + `_paintSel` repaint at the true choke point (+ shadow-flag re-apply, same root cause); witness `witness_e2e_sel_tint_refold.js` proven RED on unmodified main first, 9/9 with fix; W-E2E-CUT C6 now pixel-EXACT |
@@ -978,6 +978,24 @@ Rules that produced this list (keep for the next harvest):
 - **Live-vs-local is a first-class check** for anything user-visible — see §PRIME LESSON.
 - **WORK-TO-ZERO** (`CLAUDE.md`): work top-to-bottom, never stop to report "parked", never loop on a
   blocked item — mark it `⛔` with the ONE question and move to the next.
+
+### §ROW13-RESCOPE — 2026-09-30 (red1: "review whether EffectsComposer is deprecated … alt-g … good enough")
+Measured on bim-ootb `origin/main` @ `3f962fb7`:
+- **The "not vendored" blocker is stale.** `viewer/lib/` already ships `EffectComposer.js`, `SSAOPass.js`, `OutlinePass.js`
+  (three's own, r184 headers) and `postprocessing-n8ao.bundle.js` (pmndrs composer + N8AO). The three core is **r186**
+  (`viewer/lib/three.core.min.js` `REVISION="186"`). `modeller.html:434` and `:1078` still say "not in the vendored build".
+- **EffectComposer is not deprecated for WebGL.** The r186 deprecation is WebGPU-only: `PostProcessing` → `RenderPipeline`
+  (`three.webgpu.min.js` warns: *"PostProcessing" has been renamed to "RenderPipeline"*). Viewer and Modeller both draw with
+  `WebGLRenderer`.
+- **Use the Viewer's proven path, not SSAOPass.** `viewer/effects_gi_poc.js` (Alt+G) builds the pmndrs composer + N8AO
+  **lazily on first press** (§GI_POC_LAZY — no GPU cost for sessions that never press it), skips mobile, and stays live
+  while the camera moves. Alt+S is the slow still-only path. Its AO tuning history (§PHOTO_AO_DARK, radius/intensity) applies.
+- **OutlinePass: dropped.** The Modeller's EdgesGeometry selection outline (`modeller.html:1078`) already does the job
+  without a composer.
+**Slice:** lazy-load the same bundle in the Modeller behind the same key; fix the two stale comments. **Witness:** `§` line
+with composer built=false before the first press / true after, AO pass present, and frame time on Terminal (35,552
+elements) before vs after — RED-first = the key does nothing on today's main. **Open, unmeasured:** N8AO frame cost at
+Terminal scale; whether the Viewer's AO numbers suit the Modeller's lighting.
 
 ## 🚧 KNOWN TRAPS — do not rediscover these
 - **`console.warn` is invisible** in DevTools' default filter. Failure paths use `console.error`.
