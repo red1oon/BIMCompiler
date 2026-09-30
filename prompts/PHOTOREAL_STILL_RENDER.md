@@ -2003,8 +2003,20 @@ lamps off / sky off (the stopped run), then spec.
 - VERDICT: red1's "overlighting from outside" is NOT what this pose shows — the lamps are the larger cause here; daylight is the second.
   Both levers of the recommendation are needed, lamps first.
 - SPEC (not built; each needs red1's go — (b) re-keys all 4 bakes, Hospital 48 min):
-  (a) §LAMP_SHADOW_TOPK — Alt+S only: shadow the K lamps contributing most to the still's floor pixels (rank from the §FLOOR_WASH lamp list at
-      the camera), three PointLight castShadow; K and map size set by a measured GPU budget on the 8 GB card (first step: time K=1,4,8).
+  (a) §LAMP_SHADOW_TOPK — Alt+S only. CORRECTED after code-read (2026-10-01): still lamps are NOT three lights — they are DATA
+      (§LAMP_UNCAPPED, tools.js:2466 builds A._lampData; sourced_light.js shader loops the cluster list, no shadows). So: the K lamps with
+      the largest I x getDistanceAttenuation(d_eye, range, decay), restricted to the eye's zone (LightZones.atLamp), LEAVE the data list and
+      become real THREE.PointLights (same colour x intensity, range, decay; cube shadow map, shadow.autoUpdate=false, rendered once per
+      staging). Their zone binds via bindLights (sourced_light.js:762, any scene point light); the loop falls back to three's unrolled
+      loop only over these K (sourced_light.js:300 `#if NUM_POINT_LIGHT_SHADOWS > 0`). Bounce unaffected (gi_still.js:627 lighting off, it
+      reads the app frame). Switch &lampshadow=K (default 0 = today, max 16), &lampshadowmap=px (default 512). § line §LAMP_SHADOW k, picked
+      (guid, weight share), eyeZone, ms. Teardown when the data path is off. First step: time K=0,1,4,8 at this pose (§GI_STILL secs +
+      staging ms), then the contact witness below.
+      STATE 2026-10-01 04:15: BUILT, bim-ootb fix/sky-surface @81a1b359 sw v1516 (pushed), default OFF. Picked lamps stay in the data
+      list (§LAMP_EN + lux check see them) at shader colour 0; lampBuild hands the post-EN colour to the PointLight. NOT RUN: the one
+      render (&lampshadow=4, …735021015, contact.js) was stopped by red1 to free the GPU for Alt+C ("I know what to expect").
+      RESUME when the GPU is free: that one render; read §LAMP_SHADOW share= first (if the 4 lamps carry little of the eye-zone light,
+      raise K, not retry).
   (b) §SKY_FIELD_FURNITURE — add IfcFurniture to OCCLUDERS (light_zones.js:43) so the exact pass sees seats/tables.
   WITNESS (contact.js, this pose): default arm seats/open < 1.00 and tables/open < 1.00; open floor final within ±3 of 146.7 (open floor not
   darkened); &lamps=0 arm seats/open < 1.00 after (b). Clinic case-1 poses: exposure within 0.2 EV.
