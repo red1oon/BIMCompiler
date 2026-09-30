@@ -1972,6 +1972,12 @@ RULINGS: IFC-as-modelled is truth (authored defects not compensated); ground alb
 OPEN (still): lamp shadows (none exist; lampsh.js probe timed out — rerun with fewer px / top lamps), contact shadows under furniture
 (none under seats OR tables, contact.js), torch share in lit rooms (measure &torch=0 at a lit pose), §SKY_FIELD_SMOOTH doubles floor
 patchiness at Clinic …142544 (5.4 -> 10.1 %) while real daylight — keep/retune decision, merge fix/sky-surface -> look/main + OCI sidecars.
+LATE ADDENDUM (same night): TORCH ✅ no change needed — share of scene light (&torch=0 A/B, exposure-normalised linear, OOM 0): Terminal
+hall median 2.9 % (p90 22 %, near-camera), Clinic corridor 3.7 %, dark Clinic toilet 53 % = it already gives way in lit rooms (red1 ask met).
+CONTACT SHADOWS: code-read — GI_AO_DEFAULT = 0 by design (§ZERO Z11 "AO once": the app frame's N8AO applies to INDIRECT light only,
+§AO_INDIRECT), and lamps are unshadowed. red1 at wrap-up: "The seats shadow is due to overlighting from outside" (red1's reading, NOT
+measured; the lamps-off confirmation run was stopped at wrap-up). red1: "no more to fix" for stills — lamp shadows / smoothing retune /
+merge + OCI stay listed as open, not scheduled.
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
