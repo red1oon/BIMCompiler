@@ -2159,6 +2159,20 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
 - BUILT @41144850 sw v1520 (pushed). Old v1519 sidecars backed up: session scratchpad 9cdf2c10…/lf_backup_v1519/ (restore = copy back +
   revert 41144850). RUN STARTED ~06:1x: scratchpad c1/bk4.sh (bk4_<B>.out, rc4_<B>.out, cs/1790735021015_furn.log). Hospital NOT re-baked
   (red1) -> fast field until it is.
+- RESULT 06:4x (all logs 'Uncaptured WebGPU' 0, PAGEERROR 0; key 1b214d46:90224; restore PASS Clinic/HHS/Terminal; bakes 183/226/352 s):
+  contact.js at …735021015 with &lampshadow=4 (cs/1790735021015_furn.log) vs the v1515 default (…_con.log):
+  | | open final | seats final | seats/open | tables final | tables/open |
+  | v1515 default | 146.7 | 156.9 | 1.07 | 150.1 | 1.02 |
+  | v1520 furniture + lampshadow=4 | 145.7 | 157.6 | 1.08 | 148.9 | 1.02 |
+  => WITNESS FAIL: neither fix moves the seat/table floor. Open floor held (-1.0). WHY, from the log + code:
+  (1) §LAMP_SHADOW share=0.129 / 0.204: the 4 strongest lamps carry 13-20 % of the eye-zone lamp weight (161 candidates) — the hall is lit
+      by many lamps; 4 shadows cannot show. (2) §SKY_FIELD_EXACT_OPEN recomputes only open cells + shell cells (see its spec above); the hall
+      floor cells under seats are COVERED interior cells that keep the lattice, so furniture in the soup never reaches them — and daylight
+      is the smaller share here anyway (lamps ~90 % of Terminal hall floor light, …753057418).
+  NEXT (not done): contact shadow needs the LAMP direct term occluded at fine scale near objects — options: K much larger (measure share
+  at K=16/32 + cost), or a short-range screen-space direct-light occlusion (contact shadows as game engines do: a few-pixel ray march along
+  the light direction in the depth buffer, lamps only). §SKY_FIELD_FURNITURE: no measured benefit at this pose; it re-keyed Hospital
+  (now fast field) — revert 41144850 + restore lf_backup_v1519 if red1 prefers.
 
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
