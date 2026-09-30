@@ -76,6 +76,31 @@ the orientation check gone — NOT yet attributed. Where a bake's time goes (v15
 levers, largest first: (1) the §GI_STILL building copy 66 s + two full Alt+S stagings (122 s and 186 s marks) — once per film but paid
 every bake; (2) frames 1-16 warm-up (§FRAME_COST running mean 106 s at i=1 -> 2.5 s at i=25); (3) steady 2.3 s x frames (20 renders/frame:
 taa=8 ao=12 + one bounce). Next: per-stage timing of frame 0 and of the two stagings, then spec.
+**§BAKE_SPEED BREAKDOWN 2026-09-30 22:00 (Opus, read from z22b/v1515.log timestamps + the shipped §STILL_STAGE_MS/§GI_FILM lines — no new
+bake).** 504 s wall = ~340 s before frame 1 + ~185 s of 90 frames. CORRECTION to §BAKE_SPEED above: there is NO frames-1..16 warm-up — §FRAME_COST
+perFrameMs is a RUNNING MEAN that includes frame 0; by §CLI_BAKE_PROGRESS stamps frame 1 -> 81 took 182.6 s = 2.28 s/frame from frame 1 on.
+| setup stage (v1515) | s | source line |
+|---|---|---|
+| page load | 37.7 | §CLI_BAKE_LOADED |
+| staging #1 — sky-portal film cache | 70.8 of 75.5 | §STILL_STAGE_MS portals=70812 / §SKY_PORTAL_FILM_CACHE ms=70792 |
+| staging torn down (§PHOTO_STAGING off +127.4) and re-applied — portal cache AGAIN | 53.0 of 54.8 | §STILL_STAGE_MS portals=52974 |
+| bounce engine: copy building (progressive compile, 1537 chunks, worst 509 ms vs 40 ms budget) | 66.3 | §GI_FILM built ms=66473 |
+| first bounce frame | 75 (f=1 ms=141,821 incl. above) | §GI_FILM f=1; f=2 ms=152 |
+The sky-portal classification is 124 s = 36 % of setup, 25 % of the whole 90-frame bake. It is camera-independent (sky_portal.js:171-192
+"classify EVERY pane's inward side ONCE") yet runs per staging (stage() sets film=null, sky_portal.js:174) and brute-forces 462 panes x 2 sides x 5
+rays against every visible mesh (~4.9k, Raycaster.intersectObjects, no BVH). v1478 paid 42.6 + 45.2 s for the same (v1515 +36 s = the unattributed
+setup growth). Per-frame bounce is only 0.11-0.15 s of the 2.28 s; the rest is the 20-render still-refine burst (taa=8 ao=12).
+**FASTER-BAKE SPEC (proposed, not built — each item BUILD cached + DECIDE per frame, no look change):**
+- FB1 portal cache per BUILDING, not per staging: keep the classified pane set across unstage/stage (key = building + pane count). Saves the
+  second pass, −53 s. Witness: second §SKY_PORTAL_FILM_CACHE line reads `reused` ms<50; per-frame portal set identical (paneKey list equal).
+- FB2 portal classification off the brute-force raycast: prefilter targets by the ray's segment AABB (rays are ≤60 m) or reuse the light_zones
+  column grid (the same "covered = solid above" test, record R2). Target <5 s. Witness: inward side per pane identical to the brute-force pass on
+  all 425 panes (Terminal + Hospital), else FAIL.
+- FB3 persist it: pane inward-sides are camera-independent — write them into the lightfield sidecar (same BUILD key) so a bake pays 0 s.
+- FB4 bounce-engine copy for a CLI bake: the 40 ms progressive budget exists for UI responsiveness; a headless bake has no UI — measure one bulk
+  compile vs 1537 chunks. Unknown gain, measure first.
+- FB5 (optional, look-changing, ask red1): a draft-bake mode at 960x540 / taa 4 for checks; steady 2.28 s is the renders, not the model.
+Expected with FB1+FB2: 90-frame Hospital 504 -> ~385 s; full 2,027-frame path setup share falls from ~340 to ~220 s.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
