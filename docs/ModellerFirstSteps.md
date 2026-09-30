@@ -241,7 +241,7 @@ Press **Ctrl + Z**. The fixture and its pipes return: the original 22 runs are b
 Press **Ctrl + Z** once more. The **whole** walk goes — fixtures 18 → 0, pipe runs drawn 22 → 0 — and the model is back to its
 opened state (history position 196).
 
-![After the second Ctrl+Z: the bare building again](img/modeller/first-steps-mep7-undo-walk.png)
+![After the second Ctrl+Z: the bare building again (x-ray still on)](img/modeller/first-steps-mep7-undo-walk.png)
 
 ### 3.8 — Ctrl + Y brings it back
 
