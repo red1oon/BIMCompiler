@@ -2044,6 +2044,21 @@ ONCE-AND-FOR-ALL OPTIONS (not chosen, not built):
  (3) Unknown-zone fragments: count them first (they are lit by every lamp in reach).
 NOT MEASURED YET: how much light each row actually leaks per building (only the Terminal seat pose is measured: lamps 1.07 -> 1.00).
 
+### red1 LOOK NOTES 2026-10-01 (after §LIGHT_THROUGH_OBJECTS) — code-read status, no render
+- L1 CLINIC MAIN HALL WALL SEMI-SPHERE LAMPS: patchy, not a smooth round falloff between the amber fixture and its light; surround washed by
+  daylight. NOT DIAGNOSED (no pose given; needs one still + a lamp-only arm &sky/daylight vs lamps). Candidates to test, none measured:
+  the room-map gate on wall pixels beside a wall-mounted lamp (lamp zone vs the wall fragment's zone, 0.5 m cells = patch-sized steps),
+  and daylight over-wash. It is NOT the in-room-object case unless an object sits between lamp and wall.
+- L2 HHS TOP-FLOOR HANGING LAMPS DO NOT LIGHT (lower floors do). NOT DIAGNOSED. First read, no render needed if a HHS still log exists:
+  §LAMP_DATA lit=, §LAMP_EN per-zone scale (daylight-rich top floor may be scaled toward 0 by the EN rule), the lamp's zone/band
+  (lampInfo, light_zones.js:576; a pendant bound into a roof/covering SOLID cell -> zone 0). No HHS still log in the c1 scratchpad.
+- L3 COLOURS CARTOONISH (HHS most; green duct etc.): CAUSE FOUND (code). Two AUTHORED palettes paint elements the IFC gives no real
+  colour: (a) §MEP_COLOR_SURVIVES_PHOTOREAL (streaming.js:618-647, 2026-09-02) gives MEP with no/achromatic colour the HUD trade hue
+  A.DISC_COLORS (config.js:43: MEP 0x44cc44 green, PLB purple, ACMV red, SAN magenta, ELEC yellow) at full HUD saturation — the file says
+  "THE PALETTE IS AN AUTHORED CHOICE"; (b) STD_MAT class defaults, e.g. IfcBuildingElementProxy 0.00/0.78/0.78 teal (streaming.js:1406).
+  The saturated albedo also tints the bounce (SSGI reads the frame) -> coloured shadows. Decision for red1, not a bug: keep trade hues in
+  stills (they were asked for 09-02 so MEP is readable) vs realistic neutral materials (galvanised grey duct etc.) in stills only.
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
