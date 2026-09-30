@@ -36,6 +36,18 @@ Which of the day's Alt+S fixes a FILM (A._maxqActive, cinema_maxq.js) inherits t
 | §CSM_READBACK_GLASS v1507c4 (merged v1513) | effects.js _csmReadback | _cascadeFit(film) returns null (effects.js:3353) | NO — films keep §STILL_SHADOW_FIT (F2 not built); the glass-capped readback bug class applies to F2 when built |
 | §STILL_RES_DEFAULT_1440 v1514 | effects.js _stillResApply | `if (A._maxqActive) return` | NO — films keep their own size; 4k FAILS the bounce on the 8 GB card (358,369 WebGPU errors) — relevant if films ever run the bounce at 4k |
 | IFC-AS-MODELLED ruling (red1) | — | — | applies to films too: authored-model defects are not compensated |
+**Alt+S STANDARD (red1 2026-09-30 "wrap this hi res as std in alt-s"): stills are 1440p by default (v1514 §STILL_RES_DEFAULT_1440,
+2776x1440; red1's v1515 Hospital stills confirmed 2776x1440); &stillres=window = the quick size; 4k is NOT offered (bounce FAILS on the
+8 GB card). Films keep their own size (_stillResApply returns under A._maxqActive).**
+**HOW MUCH OF Alt+S A FILM GAINS TODAY: one fix (§BEAM_UNDER_SLAB). Everything sky/ground/lamp-field sits behind showstopper S2
+(effects.js:4624, films never stage SourcedLight) — the baked sidecars are camera-independent (F1-ready), so lifting S2 is the lever that
+carries the whole day's field work into films at once.**
+**FIRST STEP NEXT SESSION — a few-seconds POC bake (measure before building):** from /tmp/wt-surf (so the film loads v1515 + the local
+sidecars): `cd /tmp/wt-surf && flock /tmp/claude-1000/gpu.lock node cli_silent_bake.js --db Hospital --seconds 3 --gpu real
+--out <scratch>/poc_hosp.mp4 --log <scratch>/poc_hosp.log` (usage: cli_silent_bake.js:1-70; path source = the DB cinema_path table —
+check the building has one, else --plan/--override). Read the log: §CLI_BAKE_PROGRESS ms/frame, §SOURCED_LIGHT (expect NOT staged = S2),
+§LIGHT_FIELD_DB (does the film even load the sidecar), §MIRROR_OWN_MAT skipped, 'Uncaptured WebGPU' = 0. Then an arm with S2 lifted
+(film stages SourcedLight once per shot) to see what the field adds per frame and at what cost.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
