@@ -141,6 +141,15 @@ staged: field (1.55 M active cells), ground field, §GLASS_REFL_OPEN 27,214 cell
 zones. 0 WebGPU / pageerror / unconverged. COST: trailing rate 5.0-5.1 s/frame vs 2.2 s (§FAST_BAKE), GI_FILM bounce ms 130 -> 260.
 §FILM_INHERIT_GATE printed nothing (logs only a CHANGE; stage already sets on) — fix: log the first call. NEXT: control (&filminherit=0)
 vs on, same persistent --profile (zone cache warm) to split shader cost from staging.
+**§FILM_INHERIT mid-clip 2026-10-01 01:33 (sw v1519, Hospital_silent frames 1116:1326 = tn 0.380-0.465, 960x540, all flags but storey
+reveal; log scratchpad mid/mid.log; ~/Downloads/hospital_silent_inherit_mid.mp4):** §FILM_GEOM_WHOLE f=0 tn=0.3801 whole=1 (topoutU 0.3607)
+-> gate ON; f=250 tn=0.4653 whole=0 why=discs-hidden:ARC+STR -> OFF. §SOURCED_OWN_COST 0.21 ms/render (CPU hook is NOT the cost).
+COST: 13.3 s/frame with the gate ON vs 2.4 s OFF on the same clip (x5.5); this scene holds 68,910 visible meshes (§FRAME_COST, overlays
+on) vs 4,892 on HospitalAjaibPath (x1.45 there) -> GPU shader cost scales with what is drawn; §PHOTO_AO avgRenderMs 363. Wall 3579 s.
+§FRAME_QA i=1202 lumaMean=17 darkPct=88.7 (camera inside at the load-path shot) — dark by design or the indoor sky cut: control pending.
+Also: §MAXQ_FRAME_TIMEOUT i=242 (1 unconverged), §HUD_OVERLAP_WORST hud.pathmap x loadpath.card FAIL — not attributed yet.
+Sidecars: bake.js (full-quality, §SKY_FIELD_EXACT_ALL 2125 s) made patches/HospitalAjaibPath.db.lightfield.bin (6,930,474 B, 38 min);
+an in-bake rebuild skips EXACT_ALL (160 s) = NOT the Alt+S field -> per-path-db sidecars are needed for parity, not only speed.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
