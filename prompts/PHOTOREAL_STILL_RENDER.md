@@ -2227,6 +2227,24 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   §MIRROR_PARALLAX (v1508-09, stills only). NOT investigated yet: first find red1's latest Clinic stills with a mirror in view, read their
   §MIRROR_* lines, then measure.
 
+### §LOCAL_EXPOSURE — SPEC (2026-10-01, red1: "real life perception no matter how bright outside light is, indoors do show own lighting
+### impact no matter how slight")
+- MEASURED (v1522, HHS …808472346, lamps rated vs &lamps=0, WebGPU 0; display images, exposure 3.47 vs 4.02 so shares are approximate):
+  lamps give > 10 % of the pixel's light on 21.1 % of pixels, > 25 % on 13.6 % — the SHADOWED side (right wall, corridor) and ceiling spots
+  around pendants; the sunlit floor sets the global exposure (EV100 13.4), so the lamp-lit regions sit dark and read flat.
+- WHAT: the eye's local adaptation as a presentation step (industry: Unreal Engine 5 "Local Exposure"). Alt+S only, CPU, on the finished
+  still right after §WINDOW_PULL (gi_still.js:948): Y = linear luminance; base B = log2 Y averaged on a 1/8-res grid, Gaussian-blurred
+  (sigma 4 cells ~ 1/40 of the width), bilinear up; dEV = (c - 1) (B - median B), clamped to +-1 EV; rgb_lin x 2^dEV, re-encoded.
+  c = 0.6 and the +-1 EV cap are AUTHORED (no source): &localexp=c (1 = off), APP._stillLocalExp. Pixels in the §WINDOW_PULL view-out
+  mask excluded (already exposed for outside).
+- § line: §LOCAL_EXPOSURE c cap dEV p5/p50/p95, px lifted/lowered, ms.
+- WITNESS (HHS …808472346): median of the lamp-dominant pixels (share > 25 % from the pair above) rises >= +0.5 EV; §FAULT_GI blown %
+  not higher than without; the sunlit floor median moves <= 0.5 EV; &localexp=1 = byte-identical to v1522 (RED CONTROL).
+- ✅ BUILT @723b2667 sw v1523 (pushed). RESULT (HHS …808472346, WebGPU 0, 885 ms; cs/1790808472346_h9le.log): §LOCAL_EXPOSURE dEV
+  p5/p50/p95 -0.50/0.00/1.00, lifted 49 % / lowered 45.1 % of px. vs v1522 (h8lon): lamp-dominant px (12.7 %) median +0.64 EV (PASS >= 0.5),
+  brightest 15 % -0.26 EV (PASS <= 0.5), blown 0.41 % -> 0.08 %, dark 4.88 -> 4.85 %. RED CONTROL &localexp=1 not rendered (early return in
+  code). Still -> ~/Downloads/HHS_local_exposure_AFTER.png.
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
