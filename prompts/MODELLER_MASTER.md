@@ -94,7 +94,8 @@ were right, but its work list was the **2026-07-30 status column** of §OPEN LIS
 **What that draft had WRONG (all verified closed or changed — do NOT redo):**
 - Row 34 anchor save: ✅ bim-ootb #1787 MERGED 2026-09-27 (W-E2E-ANCHOR-SAVE-ROUNDTRIP 6/6). IFC half: #1747.
 - Rows 19, 23, 24, 28, 32: ✅ closed in §SWEEP (#73, #1704, #1738). Row 23's D3 wording is dead; what is left open is the
-  `ELEC over-count 1754 vs real 833 = 2.11×` finding.
+  `ELEC over-count 1754 vs real 833 = 2.11×` finding. **→ 2026-09-30: that 2.11× was the legacy walk; the production walk measures
+  0.91–1.05× (§SESSION 2026-09-30). Stale.**
 - Row 12 `rel_fills_host`: ✅ #1749. Row 36 empty IFC export: ✅ #1747 (the export is still THIN — see §IFC-EXPORT-DEPTH).
 - Row 29 (grid ⊗ BOM): NOT blocked any more. §VISION-REVIEW says it fits the strategy → it joins the queue after the catalog rebind.
 - Row 14: its Dining_Chair example no longer reproduces (upright, 1.227 m). §STRATEGY answers the row: rebind the mesh from the
@@ -123,10 +124,13 @@ when the core witness net is green on bim-ootb main with no known-red entries. T
 dw_rot_units · git_history · terminal_walk · render_fidelity · W-DISC-DENSITY D3/D4 (list in §RESUME 2026-09-27; net state in
 `WITNESS_INTERFACE_FRAMEWORK.md` §MODELLER-NET-AUDIT). Each known red counts as core work: fix it, or re-point the witness
 RED-first with the reason written down. Never delete it to get green.
+**→ 2026-09-30 (§SESSION 2026-09-30 below): all six worked — git_history ✅ 8/0 · INSTHIDE ✅ 17/0 · dw_rot_units ✅ · terminal_walk ✅ 11/0 ·
+render_fidelity ✅ (was a stale claim) · DISC-DENSITY D3/D4/D4b ✅ with ONE ⛔ left (D4c, run classes placed as fixtures — red1's call).
+Three of them hid product bugs (twin-hide dead, walk facing dropped, band envelope on raw origins) — all fixed on that PR.**
 **Still open, and worth doing BETWEEN queue items only when they are cheap:** row 6 (Terminal 0 MEP — accept or fix) ·
 row 10 (Terminal open speed on the LIVE URL; local was 20,592 ms headless — do not diff that against the old 14 s) ·
 row 11 material DATA only (names/RGB into the IFC export — queue item 2; on-screen colour is aesthetic, parked) · row 22 (revert-a-RED, rtree prune) ·
-the §XEDGE residual 11 · the ELEC 2.11× over-count.
+the §XEDGE residual 11 · ~~the ELEC 2.11× over-count~~ (stale 2026-09-30 — legacy-walk number; production 0.91–1.05×).
 **Do not start:** anything cosmetic (see CORE BEFORE LOOKS) · row 7 (heavy, red1's word first) · rows 25, 26, 30 (deferred) · the SampleCastle sporenkap refusal
 (honest, stays RED) · re-opening rows 1 and 4, the ARC-only filter, or the renderer LOD audit.
 **⛔ red1's calls — ask ONCE each, then move on:** row 15 (220 MB `component_library.db`: GH or OCI?) · row 21 · row 27 · row 31.
@@ -157,6 +161,93 @@ Next session starts at: <queue item>
 ```
 "Is it done?" is binary: yes only if every queue item is ✅. Otherwise no, and name the blocker.
 
+## ▶ §SESSION 2026-09-30 — Part A of red1's "make the CORE witness net trustworthy" prompt: the six known reds, to zero.
+## Measured on bim-ootb `origin/main` @ `8311ba5f` (baseline logs first), fixed on branch `fix/modeller-core-net`
+## (worktree `/tmp/wt-mnet-core`), bim-ootb PR **#1792 — MERGED 2026-09-30 10:04 UTC as `5c5b01b4`**. Every number below is read from a saved run log.
+**Method (the prompt's, kept):** re-run each red on unmodified main → root-cause from code + `§` lines → fix the code
+RED→GREEN, or re-point the witness RED-first with the reason in its header. Nothing deleted, nothing loosened. **Three of
+the six were hiding PRODUCT bugs behind an INCONCLUSIVE or empty-population witness** — the §CRISIS shape again.
+
+| item | on main 8311ba5f | cause (file) | what shipped | now |
+|---|---|---|---|---|
+| **git_history** | 7/1 — G6 `active=[1,2] want=[1,4]` | `modeller_history.js` `_restore`: a commit node replays through the LIFO boundary (`O.undo()/O.redo()`); a direct switch between two non-trunk tips leaves {B,C} freshly undone beside D, so the lowest-id-undone pick was B | **§MHIST-SWITCH-TARGETED** — when the boundary's own pick is not one of the node's `ids`, replay them through the existing `setUndone` (§MHIST-ROWS); the linear path is untouched (gridundo U6 still 8/0). `§MHIST_TARGETED` logs the divergence | ✅ **8/0** |
+| **W-E2E-INSTHIDE H1-rig** | 2/1 INCONCLUSIVE — no pose found, so H1–H9 had not run since 2026-09-26 | rig: the ARC walls/slabs occluded every twin. **PRODUCT (found once the rig ran):** `modeller.html` `_dwTwinFids` matched `placement.z` exactly, but since §LIVEWIRE a hash placement commits its SEAT there and the centre in `_dw.cz` → 0 twins → the eye hid only the instance = **zero visible change on every LOD400 walk fixture** (§I5b-TWIN's own measurement: instance-only = 0/12 pixels) | **§I5b-TWIN-CZ** (match the centre). Rig: §IH-ISOLATE (ARC hidden for the walk leg, re-applied after every eye click — `_applyHidden` resets all visible), §IH-FRONT (frontmost object by raycast replaces the 24-px readPixels hashes: two reads with no scene change differed = PIXEL-AS-PROOF), controls H1-pre / H3-ctl / H5-pre, the camera re-posed after every real click (the select fly moved it). `FALSIFY=1` → H1/H2/H3 RED | ✅ **17/0** |
+| **dw_rot_units** | 1/5 — `recs=0`: SampleHouse ELEC refuses under §WALK-LOD400-ONLY (28 hashless legacy placements), the witness judged nothing | **PRODUCT:** `disc_walker.js` `placeSchedule` wrote each wall-anchored device's facing (`_schedFacing`/`_snapToWall`) to `rot`; the renderer (`makeRotationZ(p.yaw)`) and the commit (`placement.rot = p.yaw·180/π`) read `yaw` → **all 102 Duplex ELEC fixtures were drawn and signed at 0°** | **§SCHED-YAW** — emit `yaw` = the facing in the mesh's own frame: the thin horizontal axis (read off the vertex buffer — receptacle `031416…` is 0.0587 m deep on local X, `23c614…`/`4730c9…` on local Y) is the depth and turns onto the wall normal. Witness re-pointed to the Duplex ELEC production walk: 58 wall-anchored; R2 preview / R3 signed rot **39/58 → 58/58**; R4 measures the folded WORLD footprint against the wall run | ✅ **6/0** (R4 52/52 flat along the wall; RED with main's `disc_walker.js`: 3/3 — R2/R3 39/58, R4 33/52) |
+| **terminal_walk** | 5/5 — FP/ELEC `placed=0` on SampleHouse | the witness asserted a HOUSE loads `terminal_rules.db` (contradicts the Walker Doctrine) and that FP/ELEC place >0 there — under LOD400-only both refuse (FP 17 + ELEC 28 hashless legacy placements, `§DW-LOD400-REFUSE`) | re-pointed to the building class the rules were mined for: Terminal resident (FP **974** / ELEC **744** LOD400 fixture instances == placed, routed tubes counted apart, gate flags == red instances) + one house claim (duplex_rules.db loaded at WALK time, FP → honest refuse, 0 instances, no box). `FALSIFY=1` blanks `resolveHashes` → T4/T5/T6/T7 RED (run, 5/5 red as designed) | ✅ **11/0** |
+| **render_fidelity** | GREEN — SH 646 / DX 186 / SC 74 / HHS 311 tris/element, verdict REAL ×4; `BREAK=1` trips ×4 (now `tris=2 hardFail=N`: §GEO-SERVED-DEGRADED draws nothing) | **STALE CLAIM** — nothing to fix | — | ✅ stale |
+| **W-DISC-DENSITY D3/D4** | 5/3 — D3 `ELEC 33/35 FP 368/703` (graded **35 of 878** ELEC: measured-band placements carry a Terminal `storey_scope`, not a substrate storey — scope-blind), D4 vacuous, D4b ACMV −28% (the whole-disc oracle counted duct runs) | re-baselined on the LOD400 production walk: D3 grades each banded placement against ITS band's ARC envelope + the engine's logged `§NOSPACES-TOPUP`; D4/D4b per CLASS. **That exposed PRODUCT:** `placeMeasured` built its band bbox + cells from RAW `element_transforms.center` (§BUG-A: the placement-line origin) → top-up grid points up to **9.9 m outside the real building** (OFFBOX PLB 47 / ELEC 142 / FP 79 / ACMV 93) | **§BAND-MIDPOINT** — envelope + cells on `_trueMidpoint` (cached per guid); the COUNT keeps the miner's raw-bbox parity. D3 OFFBOX **0** ×4; fixture classes 0.89–1.84×; ACMV/FP terminals **0 / 7 / −1 %** | ✅ D3 · D4 · D4b · **⛔ D4c** (below) |
+| **ELEC 2.11× over-count** | — | **STALE:** 2.11× was the LEGACY walk the witness no longer drives (§NET-AUDIT WRONG-PATH, 2026-09-27). Production measured-band walk: ELEC **878/833 = 1.05×** at 8311ba5f, **761/833 = 0.91×** after §BAND-MIDPOINT; per class LightFixture 0.89×, ElectricAppliance 1.84× (35/19) | FINDING line re-worded; the per-class verdict is D4 | ✅ stale |
+
+**⛔ BLOCKED — the one question (D4c):** `placeMeasured` places RUN classes as banded fixtures because `rule_placement` carries their
+mined rows: PLB/IfcPipeSegment **748 vs 3,821 real (0.20×)**, ACMV/IfcDuctSegment 268/568 (0.47×), IfcDuctFitting 464/713 (0.65×).
+Keep them as the Stage-1 fill, or exclude Segment/Fitting classes from the fixture walk and leave runs to the router (§MEP-ROUTE-DISC)?
+W-DW-DENSITY-TE stays **8/1** (D4c RED, honestly labelled) until answered.
+**Regression on the touched paths (history restore · `_dwTwinFids` · `placeSchedule` yaw · `placeMeasured` midpoints), all on the
+branch, serial:** gridundo 8/0 · delete 8/0 · undo_resurrect 5/0 · mep_reroute 9/0 · oleye 5/0 · instpick **8/0** (two earlier runs
+7/1 on P4 ROW-FRAMES with Δtarget 30.4 m then 3.6 m — the 1.5 s wait vs the 1.1 s fly; 8/0 on unmodified main too → timing flake,
+not this branch) · walk 8/0 · dw_oplog 6/0 · dedup_render 4/0 · walk_lod400_only 7/0 · livewire 12/12 · storey_band SC=PASS
+DUPLEX=PASS (placed=102 outliers=0) · walk_all 13/0.
+**Served change:** `modeller.html` · `disc_walker.js` · `modeller_history.js` → `sw.js` CACHE_VERSION **v64 → v65**. Live proof (real bytes,
+`https://red1oon.github.io/bim-ootb/modeller/`, fetched after the merge): `sw.js` `CACHE_VERSION = 'v65'`, `modeller.html` carries
+`§I5b-TWIN-CZ`, `disc_walker.js` carries `§SCHED-YAW` ×4.
+**Stale claims found:** this file :122-123 and :169-170 listed `render_fidelity` as red — GREEN at 8311ba5f; :97 / :129 / row 23 "ELEC
+2.11× over-count" — a legacy-walk number, not the production walk's.
+**Part B (§SLIDE-REAL-WALLS Phase B):** STARTED, not finished — handed to a Sonnet session: **§HANDOFF-SLIDE-SH 2026-09-30** below.
+
+## ▶ §HANDOFF-SLIDE-SH 2026-09-30 — §SLIDE-REAL-WALLS Phase B, SampleHouse only. Started by Fable 2026-09-30, handed to a
+## Sonnet session on red1's word (save Fable tokens). Everything below is measured; nothing here has run in a browser yet.
+**Where the work is:** bim-ootb branch `feat/slide-real-walls-sh` @ `e8acba00` (ONE "WIP:" commit, pushed, **NO PR**, worktree
+`/tmp/wt-slide` — REUSE it). It branched from main `d5977e4e`, i.e. BEFORE #1792 landed → `git merge origin/main` first; `sw.js`
+will conflict → keep the higher CACHE_VERSION, then bump to **v66** for this change. bim-compiler: the generator is on master
+(this PR).
+**Built so far (file → what it does):**
+- bim-compiler `scripts/gen_slide_host_patch.py` — per `IfcRelFillsElement` re-measures the Phase M rules (box opening,
+  through-wall, bake == opening subtraction, frame proof) and emits `slide_hosts` (the host's UNCUT body — verts float32 /
+  faces int32 — in the SERVED mesh frame: world − `element_transforms.center`, rotated by −`rotation_z`; hash sha256[:16]) +
+  `slide_openings` (the opening's own solid as a WORLD box c1/c2 = the GEOM_CUT `void`). Run:
+  `python3 scripts/gen_slide_host_patch.py --ifc reference/residential/Ifc4_SampleHouse.ifc --bldg SampleHouse --arc-db <modeller/SampleHouse_ARC.db> --geo-db <served SampleHouse_geo.db: curl GEO_BASE/SampleHouse_geo.db?v=3> --out <patch> --append`
+  → `§SLIDE-PATCH-SUMMARY fills=7 slideable=7 hosts=3 openings=7` (uncut 121/144/12 tris vs baked 106/106/44; frame Δ ≤ 1 mm).
+- bim-ootb `modeller/patches/SampleHouse_ARC.db.sql` — the generated section appended (13.6 KB, `X'hex'` blobs, 47 statements).
+  The existing loader (`str_walker_outliner.js _applyPendingPatch`) applies it to the ARC db on every open — NOT yet seen in a browser.
+- bim-ootb `modeller/arc_editable.js` §SLIDE-SEED — `_slideTables(db)` reads both tables (uncut blob recentred by
+  `RealGeometry.recenter`, the fold's §ARC-ANCHOR contract); `buildSeedOps` folds a slide host with `realGeomHash` = the uncut
+  hash + `params.slideHost = true`, asset flagged `uncut: true`; `seedArc` then commits ONE `GEOM_CUT {parent: host fid,
+  void: {c1, c2}, slide: {opening, filling, fillingFid}, provenance: 'ifc:opening-box'}` per opening as its own idempotent group
+  `arcseed-cuts-<name>` (after the hosts, parent from the bridge; `outputGuid` = the opening guid), logs
+  `§SLIDE-SEED building=SampleHouse uncutHosts=3/3 openings=7 cuts=7`, returns `slideCutIds / slideCutOps / slide`.
+- bim-ootb `modeller/bonsai_library.js` — `registerRealGeometry` keeps `uncut`; new `isUncutBody(hash)`.
+- bim-ootb `modeller/bonsai_kernel.js` `_insertCutLayerSeed` — an uncut real body with no layer index seeds as ONE range
+  (buildTriFace + sewAndSolidify, the "single-range seed" the Phase M verdict named) → `Bonsai.canCut(host)` **true ×3** (node).
+- bim-ootb `modeller/bonsai_itemdrag.js` — `beginSlideSession` accepts `ctx.uncutHostOf(host)` beside `plainBoxOf`; the production
+  ctx passes `uncutHostOf` (= `Library.isUncutBody` on the op's `realGeomHash`). The §CUT-MOVE rider machinery is unchanged.
+- bim-ootb `modeller/tests/witness_slide_real_wall.js` — **W-SLIDE-REAL-WALL** (pure node: `SampleHouse_extracted.db` + the patch):
+  W0 control (main's substrate refuses 7/7 — RED-first built in) · W1 patch applies · W2 seed-uncut · W3 cuts · W4 sessions · W5 ops · W6 replay.
+**Verified vs not:** VERIFIED (node, `scratchpad/slide/w_slide1.log`): W0 ✓ (refused 7/7 without the tables), W1 ✓ (3 hosts, 7 openings),
+W6 ✓ (second seedArc adds 0 rows, 46→46); seed log `uncutHosts=3/3 cuts=7`; `canCut=[true,true,true]`; for the 2 fillings that reached
+W4/W5 a slide session FORMED carrying exactly its own cut (`§ITEMDRAG §SLIDE host=1 axis=x t∈[-9.577,2.808] … §CUT-MOVE cuts=#41(F=1)`)
+and `resolveDrop` produced `GEOM_MOVE {dx:0.2}` + ONE `GEOM_CUT_MOVE {cutId:41, parent:host, dx:0.2}` rider — the mechanism works
+end to end in node. NOT verified: W2/W3/W4/W5 as written (3/4 RED for the frame trap below), anything in a browser (loader → seed →
+worker fold with the void subtracted → the re-cut host vs the baked mesh → a real drag moving the hole → Ctrl+Z), the live site.
+**Exact next step:** (1) fix the witness's frame TRAP: `modeller/SampleHouse_extracted.db` `base_geometries` blobs are in the
+create_shape/placement local frame, while the SERVED `SampleHouse_geo.db` (what production AND the generator use) is world −
+center — the two differ by **4.5087 / 7.9520 / 5.4646 m** on the 3 hosts (exactly the numbers the generator's first run refused
+with). So the node control's baked fold cannot be the W2 reference: compare the uncut fold's WORLD AABB against
+`element_transforms` center ± bbox/2 (DB truth), and compute W3's inside/through and `wallFills` from the UNCUT host boxes (then all
+7 fillings reach W4/W5, not 2). (2) `cd /tmp/wt-slide && node modeller/tests/witness_slide_real_wall.js` → expect 7/0.
+(3) Browser witness on the e2e harness (`t.open('SampleHouse')`): assert `§SLIDE-SEED … cuts=7` on the real Open; the 3 host fids
+are in `Bonsai._computeSeeds(ops).promoted` and no `§LAYER-SOLID-SEED-REFUSE`; the rendered host is the worker solid (tris ≠ the
+uncut buffer, world AABB == `element_transforms`); a REAL item-tool drag of a door commits `GEOM_MOVE` + `GEOM_CUT_MOVE`; after the
+fold a point at the OLD hole centre is inside solid and at the NEW one is open (raycast, numbers); Ctrl+Z restores. (4) Re-point
+`witness_opening_slide.js` S0 — once the patch is live its "every real host refuses" claim is RED by design; it becomes the
+sketched-host (plain-extrude) witness. (5) `sw.js` v66, PR, merge, live bytes.
+**Traps hit:** ifcopenshell `use-world-coords=False` is NOT the shipped local frame (the shipped one is world − center, R(−rz),
+from the DB row — verify with the generator's frame check, never assume) · the IFC is in mm (placement matrix) while
+`create_shape` geometry comes back in m · the patch goes to the ARC db only (the geo db is untouched; the uncut blobs live in the
+ARC db tables — by design) · GEOM_CUT rows carry `outputGuid` = the opening guid (the ARC bridge is built from the host ops only,
+unaffected) · `git merge origin/main` will conflict on `sw.js`.
+**Witness state:** W-SLIDE-REAL-WALL written (node); RED on main's substrate proven by its own W0 control (7/7 refuse); 3/4 on the
+WIP for the frame reason above; no e2e witness yet.
+
 ## ▶ §RESUME 2026-09-27 — (superseded as entry point by 2026-09-30 above; read it second)
 - **Merged/merging:** bim-ootb #1786 (root JS tidy, MERGED) · #1787 (row 34 anchor save, MERGED) · **#1788** (net-audit
   batches 1-3 + pattern rows 1/3/6/8 + room-inject + LOD400-or-refuse everywhere: walks, re-open fold, assemblies,
@@ -168,6 +259,7 @@ Next session starts at: <queue item>
   also needs `library/DX_BOM.db` + `SH_BOM.db` restored — 0 bytes locally).
 - **Known red, pre-existing on main:** W-E2E-INSTHIDE H1-rig (no fixture pose); node dw_rot_units · git_history ·
   terminal_walk · render_fidelity; W-DISC-DENSITY D3/D4 need re-baselining on the LOD400 walk (§WALK-LOD400-ONLY note).
+  **→ all worked 2026-09-30, see §SESSION 2026-09-30 (render_fidelity was already green — a stale claim).**
 - Worktrees: `/tmp/wt-mnet-audit` (PR #1788 branch) and `/tmp/wt-mnet-base` (detached main, comparison) — prune both
   once #1788 is merged; `/tmp/wt-bc-netaudit` = this docs branch.
 
@@ -942,7 +1034,7 @@ Format, one row per item, ranked most-blocking first:
 | 20 | O13 | one live-bytes sweep: guide screenshots + claims vs the LIVE site (all captures were localhost) | master §KNOWN TRAPS | content-hash/curl pass against live gh-pages | ✅ DONE 2026-07-30: `§GUIDE-LIVE-SWEEP imgs=33 bad=0` + `§GUIDE-LIVE-HASH checked=33 mismatch=0` — every live guide image byte-identical to origin/master; live page carries the new wall section (3 hits) |
 | 21 | O1/O7 | multi-part window sibling-clustering as a BOM — creates NEW relations (an authoring act, not recovery) | LOD400 §NEW ARCHITECTURE QUESTION | design call | ⛔ BLOCKED: user's design call, unscoped |
 | 22 | O9 | gate residuals: one-click revert of a RED · UBBL named checks · rtree prune at Terminal scale | `RESUME_MODELLER_CONFORMITY_GATE.md` §NEXT | each its own witness | verified-open (door-crush + abuts-realign + Save-gating SHIPPED — see stale-claims) |
-| 23 | O10 | W-DW-DENSITY-TE D3 density drift (ELEC 94.3 / FP 92.0 / ACMV 94.8 vs ≥99%) — find what shifted, decide the band | `RESUME_GRAPH_MODELLER_INTEGRATION.md` §RESOLVED note | re-run + named cause | ✅ **the named D3 drift is FIXED — see §SWEEP** (D3 ENVELOPE 100% on all four discs). Row re-pointed at the live finding the witness still prints: ELEC over-count 1754 vs oracle 833 = 2.11× |
+| 23 | O10 | W-DW-DENSITY-TE D3 density drift (ELEC 94.3 / FP 92.0 / ACMV 94.8 vs ≥99%) — find what shifted, decide the band | `RESUME_GRAPH_MODELLER_INTEGRATION.md` §RESOLVED note | re-run + named cause | ✅ **the named D3 drift is FIXED — see §SWEEP** (D3 ENVELOPE 100% on all four discs). Row re-pointed at the live finding the witness still prints: ELEC over-count 1754 vs oracle 833 = 2.11× **→ 2026-09-30: stale (legacy walk); production measured-band walk 0.91–1.05×, per-class D4 green; the witness's one open RED is D4c (run classes as fixtures, ⛔ red1) — §SESSION 2026-09-30** |
 | 24 | O5 | `smoke_arc_only.js` SampleCastle iteration produced no output/screenshot — flagged, never chased | `MODELLER_RENDER_MATERIAL_PARITY.md` §Still-open | root-caused or cleared | verified-open (flag only) |
 | 25 | O14 | PBR texture maps (biggest lift) · per-instance hide + full virtualization · BCF IMPORT (export MVP shipped #620) | `RESUME_MODELLER_COMPETITIVE_POLISH.md` items 9, §DECISIONS 2, §COMPETITIVE | — | verified-open (deferred by design, in this order) |
 | 26 | O4 | solid-scale B-rep (occt `Copy=true` recompile or shape-lifecycle rework) | `RESUME_MODELLER_POLISH.md` 3b | — | ⛔ user-gated deferred ("only if authored-wall scaling becomes a real need") |
