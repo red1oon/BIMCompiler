@@ -2218,6 +2218,10 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   The meter is already room-only when inside (sourced_light.js:1540 roomOnly, default on). => the ground-floor room really is daylit
   (EV100 13.2; rated lamps add +13 %). NOTHING TO FIX in the daylight data. Lamp pools there need lamps ~7x rated (invented) or a
   different light condition (dusk / overcast still) or local tone mapping (presentation) — red1 to pick if wanted.
+  DUSK TRIED (&dusk=1 = the existing APP._photoDuskMood package, …808472346, WebGPU 0): Lavg 1184 -> 376 cd/m2 but auto-exposure 4.0 ->
+  12.6, windows clipped 99.9 %, still no pools -> not the answer. red1 RULING 2026-10-01: stills are BRIGHT DAY; dusk belongs to Alt+C;
+  "leave the lights on as normal practice when clients view property" -> §LAMPS_RATED_DEFAULT BUILT @2b91cc22 sw v1522 (pushed): EN
+  scaling opt-in (&lampen=1), lamps at rated output by default. No bake (sourced_light.js only).
 
 - OPEN (red1 2026-10-01 ~06:5x): "mirror true reflection still problematic in Clinic" — no still id given; mirrors are §MIRROR_OWN_MAT +
   §MIRROR_PARALLAX (v1508-09, stills only). NOT investigated yet: first find red1's latest Clinic stills with a mirror in view, read their

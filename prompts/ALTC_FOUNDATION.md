@@ -22,7 +22,7 @@ rule. RULE ADDENDUM: every Alt+S lighting function is written as BUILD (per buil
 ms-scale).
 
 ## ▶ §FROM THE STILLS SESSION 2026-10-01 — merge before the next bake (red1: "alt-c can proceed to bake after you")
-fix/fast-bake lacks 4 commits of origin/fix/sky-surface (6d725a81 added 05:5x: proxies by name RAL 7035 / luminaires RAL 9016 = all views; §GLASS_TONE_STILL = Alt+S only): 0bd4e6c8 + 1a9a7eea §MEP_SERVICE_COLOUR v1/v2 (MEP painted by service, BS 1710:
+fix/fast-bake lacks the commits of origin/fix/sky-surface after 22a8e253 (as of 2b91cc22 v1522: also §SKY_FIELD_FURNITURE (re-keys sidecars — Hospital NOT re-baked), §LAMP_CONTACT_SHADOW (Alt+S only), §LAMPS_RATED_DEFAULT (still data path only), &dusk=1; red1: dusk is an Alt+C matter) (6d725a81 added 05:5x: proxies by name RAL 7035 / luminaires RAL 9016 = all views; §GLASS_TONE_STILL = Alt+S only): 0bd4e6c8 + 1a9a7eea §MEP_SERVICE_COLOUR v1/v2 (MEP painted by service, BS 1710:
 fire red pipe / orange-enamel fittings / brass sprinkler heads, water green, drainage black, ducts galvanised — replaces the HUD
 DISC_COLORS palette; applies at material creation = canvas, stills AND films; &mephue=disc = old) and 81a1b359 §LAMP_SHADOW_TOPK
 (still-only data path, default off — no film effect). No light_zones.js change -> sidecar key unchanged, no re-bake. In /tmp/wt-fastbake:
