@@ -2227,6 +2227,18 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
   the GI pass. LAMP SHADOWS: none exist (lamps unshadowed) — lampsh.js probe (per floor px: lamp light that should be blocked) timed out
   at 5000 px x ~1000 lamps; rerun with fewer px / top-contributing lamps. TORCH (red1: "give way in well lit compartments"): measure its
   share at a lit pose (&torch=0) before any change — it is a rated physical torch (effects.js:4830).
+### §WINDOW_PULL — SPEC + RESULT (2026-09-30, Opus; red1 "outside light too overwhelming", "As you know best") — shipped v1512
+- WHY: Terminal …753057418 far windows 255 under ACES AND AgX (AgX A/B: blown 1.89 -> 1.55 %, windows still 255): interior exposure 106 vs
+  the view out ~6.6 stops brighter; no tone curve holds both. GROUND ALBEDO NOT CHANGED: 0.36 was red1's 2026-07-28 call (dry ground /
+  concrete 0.25-0.40, effects.js §GROUND_ALBEDO) -> the bright Terminal roof is consistent physics (ground bounce through the clerestory).
+- WHAT (gi_still.js windowPull, after the GI composite): camera inside only; GPU mask at 1/4 res = depth WITH vs WITHOUT glass (glass
+  nearest) x SourcedLight.debugZones readback with glass hidden (zone 0 or no geometry = outside); one extra render of the staged scene at
+  LightLaw.exposureFromEv(15) (sunny-16 daylight; exterior stills meter EV 14-15); soft mask (bilinear + 1-cell box) x a highlight ramp
+  (weight 0 at luminance 200 -> 1 at 250: recovery only — MEASURED without it the Clinic corridor's open atrium behind glass went 72 -> 7).
+  § line §WINDOW_PULL viewOut / blended / exposure in-out / core mean + clipped before -> after. &windowpull=0 / APP._stillWindowPull=false.
+- RESULT (OOM 0): …753057418 core clipped 98.8 % -> 0 %, mean 255 -> 194, frame blown 1.89 -> 1.0 %; …752787823 (glass roof, sky)
+  92.9 -> 83.5 % (the sky itself ~243 at EV15); Clinic …735402935 untouched (0.02 %). ~0.9 s per press.
+- INSTRUMENT NOTE: the LEAK grid Lf reads under+bounce, NOT the final composite -> window-pull effects must be read from the § line / FAULT_GI.
 ## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
