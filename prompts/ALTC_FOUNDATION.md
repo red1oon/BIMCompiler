@@ -21,6 +21,14 @@ vs a timeless zone cache, per-frame cascades unstable, zone lamp pick needs the 
 rule. RULE ADDENDUM: every Alt+S lighting function is written as BUILD (per building, cached) + DECIDE (per camera/frame, ray-free,
 ms-scale).
 
+## ▶ §FROM THE STILLS SESSION 2026-10-01 — merge before the next bake (red1: "alt-c can proceed to bake after you")
+fix/fast-bake lacks 3 commits of origin/fix/sky-surface: 0bd4e6c8 + 1a9a7eea §MEP_SERVICE_COLOUR v1/v2 (MEP painted by service, BS 1710:
+fire red pipe / orange-enamel fittings / brass sprinkler heads, water green, drainage black, ducts galvanised — replaces the HUD
+DISC_COLORS palette; applies at material creation = canvas, stills AND films; &mephue=disc = old) and 81a1b359 §LAMP_SHADOW_TOPK
+(still-only data path, default off — no film effect). No light_zones.js change -> sidecar key unchanged, no re-bake. In /tmp/wt-fastbake:
+`git fetch origin && git merge origin/fix/sky-surface`; sw.js conflict -> keep BOTH precache additions, take the HIGHER CACHE_VERSION.
+Witness: viewer/tests/witness_mep_service_colour.js (headless, no GPU) PASS 7/7 on sky-surface.
+
 ## ▶ §STILL→FILM INHERITANCE 2026-09-30 (Opus, end of the still-lighting session) — READ FIRST for the Alt+C bake session
 State: bim-ootb **fix/sky-surface @22a8e253, sw v1515** (pushed; NOT merged to main / look / OCI). Served locally :8664 from /tmp/wt-surf.
 Baked sidecars (gitignored, local only): /tmp/wt-surf/buildings/patches/{Clinic,Hospital,Terminal}_meta.db.lightfield.bin +
