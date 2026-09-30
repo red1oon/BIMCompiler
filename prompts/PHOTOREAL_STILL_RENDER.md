@@ -2186,6 +2186,17 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   &contactlen=, &contactthick=. No bake (shader + uniforms only, light_zones.js untouched). § line §LAMP_CONTACT on len thick steps.
 - WITNESS (contact.js): Terminal …735021015 seats/open and tables/open < 1.00 (was 1.07 / 1.02), open floor within ±3 of 146.7; &contact=0
   arm = the old numbers (RED CONTROL). Clinic: a pose with furnishing elements, same metric. HHS: 0 furniture elements in the model (n/a).
+- RESULTS (uncommitted code in /tmp/wt-surf, served live as v1521; Terminal …735021015, contact.js, all WebGPU 0 unless noted):
+  | arm | open final | seats/open | tables/open |
+  | &contact=0 (RED CONTROL) | 143.8 | 1.08 | 1.03 |
+  | on len 0.5 thick 0.5 (first run FAILED: 160,108 WebGPU errors in the bounce while Alt+C baked; re-run clean) | 137.7 (-6.1) | 0.92 | 1.01 |
+  | on len 0.8 thick 0.15 | 140.2 (-3.6) | 1.00 | 0.90 |
+  Clinic …803740793 (on): no furniture in frame -> INCONCLUSIVE. red1 v1521 Clinic still …808307859: sconce spheres show jagged dark
+  notches (suspect: self-occlusion — the march from the fixture's own surface toward its own lamp) + stepped dark patches at wall/
+  pilaster bases (suspect: march steps). A/B (cs6.sh, &contact=0) queued to attribute them. NOT COMMITTED until attributed.
+- L4 (red1 v1521 HHS …808472346): "outside light drowns inside light" — pendants show no pools, expStep -0.51. Suspect §LAMP_EN (lamps
+  scaled to an EN 12464-1 target, 200 lx when the room use is unknown; Terminal log scale p50 0.218) vs daylight. A/B queued (hhs7.sh:
+  default vs &lampen=0) — read §LAMP_EN*, §METER, §GLASS_TONE.
 
 - OPEN (red1 2026-10-01 ~06:5x): "mirror true reflection still problematic in Clinic" — no still id given; mirrors are §MIRROR_OWN_MAT +
   §MIRROR_PARALLAX (v1508-09, stills only). NOT investigated yet: first find red1's latest Clinic stills with a mirror in view, read their
