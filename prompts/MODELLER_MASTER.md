@@ -83,7 +83,74 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
-## ▶ §RESUME 2026-09-27 — START HERE (supersedes 2026-09-26b as entry point; read that block second)
+## ▶ §RESUME 2026-09-30 — START HERE (supersedes §RESUME 2026-09-27 as entry point; read that block second).
+## A corrected "Close the Modeller Gap" session prompt. Every status below was checked on 2026-09-30 against bim-ootb
+## `origin/main` @ `3f962fb7` and this file on bim-compiler `origin/master` @ `659524c4e`.
+
+**Why this block exists:** red1 pasted an outside draft prompt ("Close the Modeller Gap", written by DeepSeek). Its rules
+were right, but its work list was the **2026-07-30 status column** of §OPEN LIST. That column is superseded by §SWEEP
+2026-09-15 and §STRATEGY-ASSEMBLE-HANDOFF 2026-09-27. Launch sessions from THIS block, not from that draft.
+
+**What that draft had WRONG (all verified closed or changed — do NOT redo):**
+- Row 34 anchor save: ✅ bim-ootb #1787 MERGED 2026-09-27 (W-E2E-ANCHOR-SAVE-ROUNDTRIP 6/6). IFC half: #1747.
+- Rows 19, 23, 24, 28, 32: ✅ closed in §SWEEP (#73, #1704, #1738). Row 23's D3 wording is dead; what is left open is the
+  `ELEC over-count 1754 vs real 833 = 2.11×` finding.
+- Row 12 `rel_fills_host`: ✅ #1749. Row 36 empty IFC export: ✅ #1747 (the export is still THIN — see §IFC-EXPORT-DEPTH).
+- Row 29 (grid ⊗ BOM): NOT blocked any more. §VISION-REVIEW says it fits the strategy → it joins the queue after the catalog rebind.
+- Row 14: its Dining_Chair example no longer reproduces (upright, 1.227 m). §STRATEGY answers the row: rebind the mesh from the
+  restored BOM libraries, or refuse the insert. Never a box.
+- Per-layer slab colours: optional in the LOD400 file. PBR / BCF import (row 25): deferred by design. Neither is Tier-1 work.
+
+**THE QUEUE — in this order (§STRATEGY queue + §VISION-REVIEW move-up). Nothing outside it without red1's word:**
+1. **§SLIDE-REAL-WALLS Phase B** (spec + Phase M result: `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md` §SLIDE-REAL-WALLS).
+   Order SampleHouse 7 → Duplex 36 → SampleCastle 5. Witness W-SLIDE-REAL-WALL, RED on today's main (refusal).
+   Check first whether a Phase B branch already exists (§STRATEGY said "in progress" on 2026-09-27; on 2026-09-30 no
+   branch and no main commit found by grep).
+2. **§IFC-EXPORT-DEPTH** — storeys, materials, Psets, void relations. Round-trip witness on Duplex.
+3. **IN-check** — open a third-party IFC locally and measure that its openings, fills and storeys survive (does the local
+   open path write `rel_fills_host`?). Measure only; the gap found becomes its own row.
+4. **Insert-with-opening** — on the Phase B substrate.
+5. **Row 14 catalog rebind + C1 + C2** (no-box violations, live): retire LOD200 (`#b-lod`, `foldInsert` `boxArrays`);
+   rewrite `ModellerGuide.md:216`. A product with no real mesh → insert REFUSED.
+6. **§SLOPE-HANDLES** — generalise the shipped gizmo handles (R1). Do not build a second handle system.
+7. **REPLACE verb + C3** (gate scale to plain-extrusion hosts only). Declared placeholders (`placeholder:true`).
+8. **Row 29** grid ⊗ BOM (`CONSTRUCTION_GRID_BOM_DUAL_MODEL.md`).
+
+**Still open, and worth doing BETWEEN queue items only when they are cheap:** row 6 (Terminal 0 MEP — accept or fix) ·
+row 10 (Terminal open speed on the LIVE URL; local was 20,592 ms headless — do not diff that against the old 14 s) ·
+row 11 (real `material_rgba` RGB — also feeds queue item 2) · row 13 (EffectComposer) · row 22 (revert-a-RED, rtree prune) ·
+the §XEDGE residual 11 · the ELEC 2.11× over-count.
+**Do not start:** row 7 (heavy, red1's word first) · rows 25, 26, 30 (deferred) · the SampleCastle sporenkap refusal
+(honest, stays RED) · re-opening rows 1 and 4, the ARC-only filter, or the renderer LOD audit.
+**⛔ red1's calls — ask ONCE each, then move on:** row 15 (220 MB `component_library.db`: GH or OCI?) · row 21 · row 27 · row 31.
+
+**Rules for the session (from the draft, plus what it left out):**
+- The §PRIME LESSON order for any "looks wrong" report: curl every live asset (size + magic header) → read what the code
+  substitutes when an asset is missing → check SW version + precache → only then explain.
+- Spec paragraph first, naming the falsifier. If none can be named → ⛔ with the one question.
+- RED-first: show the witness fail on unmodified main. Then prove the fix FIRES (grep a real `§` line), then prove it on
+  the LIVE URL for anything user-visible (real bytes, not a 200).
+- Bump `modeller/sw.js` `CACHE_VERSION` on every served change — read it from the file (it was **v64** @ `3f962fb7`).
+- DB changes: SQL patch + self-heal loader, never a binary. One commit per fix. Never soften a gate.
+- Worktrees: run `git worktree list` first and reuse one if it exists; new ones go in `/tmp/wt-*`; never edit `~/bim-ootb`.
+  At close, prune only worktrees that have 0 commits ahead, are clean, and have no live process in them. The 13 listed in §RESUME 2026-09-15 hold real work — leave them.
+- Sub-agents run on Sonnet. Findings go in THIS file (a dated section), not `MEMORY.md`. Push before you end —
+  0 commits ahead of origin.
+- Mark every item in its own row: `✅ DONE (witness)` or `⛔ BLOCKED: <one question>`. Rows closed elsewhere must be
+  closed in the table too.
+
+**Report at session end — this format only:**
+```
+§ SESSION <date>
+Worktree: <path> · branch: <name> · sw: v<NNN>
+Done:     ✅ <item> — <one line> · witness: <name> (<n/n>) · PR/commit: <ref>
+Blocked:  ⛔ <item> — <the one question>
+Stale-claims found: <file:line> claimed open, verified shipped at <sha>
+Next session starts at: <queue item>
+```
+"Is it done?" is binary: yes only if every queue item is ✅. Otherwise no, and name the blocker.
+
+## ▶ §RESUME 2026-09-27 — (superseded as entry point by 2026-09-30 above; read it second)
 - **Merged/merging:** bim-ootb #1786 (root JS tidy, MERGED) · #1787 (row 34 anchor save, MERGED) · **#1788** (net-audit
   batches 1-3 + pattern rows 1/3/6/8 + room-inject + LOD400-or-refuse everywhere: walks, re-open fold, assemblies,
   geometry-less seed; auto-merge on — verify it landed). Detail + numbers: `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`
