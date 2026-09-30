@@ -150,6 +150,15 @@ on) vs 4,892 on HospitalAjaibPath (x1.45 there) -> GPU shader cost scales with w
 Also: §MAXQ_FRAME_TIMEOUT i=242 (1 unconverged), §HUD_OVERLAP_WORST hud.pathmap x loadpath.card FAIL — not attributed yet.
 Sidecars: bake.js (full-quality, §SKY_FIELD_EXACT_ALL 2125 s) made patches/HospitalAjaibPath.db.lightfield.bin (6,930,474 B, 38 min);
 an in-bake rebuild skips EXACT_ALL (160 s) = NOT the Alt+S field -> per-path-db sidecars are needed for parity, not only speed.
+**§FILM_INHERIT CONTROL 2026-10-01 (same clip, &filminherit=0; mid/ctl.log; ~/Downloads/hospital_silent_mid_CONTROL_noinherit.mp4).
+RETRACTION: the "x5.5 shader cost" in the mid-clip entry above is WRONG — the control runs the same window at 13.5 s/frame too (frame 186:
+13.53 vs 13.42). The 13 s/frame stretch (clip frames ~83-250) is pre-existing, not the inherited lighting.** Real cost of the inheritance:
+Hospital_silent clip wall 3579 vs 3452 s (+3.7 %), mean frame 8551 vs 8240 ms; HospitalAjaibPath 90 f 3.0-3.6 vs 2.1-2.5 s (+45 %, 4.9k meshes).
+Luma (§FRAME_QA, 375 frames both arms): gate-ON window (250 f) mean 116.6 inherit vs 126.4 control, dark% 23.5 vs 20.4, per-frame |dLuma| up
+to 105 (e.g. i=1156 199 vs 139 brighter, i=1236 70 vs 107 darker) = the Alt+S model visibly changes the film; gate-OFF window (125 f) 128.5 vs
+127.9, max |dLuma| 10.9 = off equals the old film. The dark frame i=1202 is dark in BOTH (17 vs 26, darkPct 88.7 vs 84.9): the load-path shot.
+HUD pathmap x loadpath.card overlap FAILs in BOTH (pre-existing). 1 unconverged frame in the inherit arm only (i=242 timeout).
+Hospital_silent.db.lightfield.bin baked (6,912,376 B, fieldMs 2,348,558 = 39 min, full-quality EXACT_ALL).
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
