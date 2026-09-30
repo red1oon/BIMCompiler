@@ -2049,7 +2049,8 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
   daylight. NOT DIAGNOSED (no pose given; needs one still + a lamp-only arm &sky/daylight vs lamps). Candidates to test, none measured:
   the room-map gate on wall pixels beside a wall-mounted lamp (lamp zone vs the wall fragment's zone, 0.5 m cells = patch-sized steps),
   and daylight over-wash. It is NOT the in-room-object case unless an object sits between lamp and wall.
-- L2 HHS TOP-FLOOR HANGING LAMPS DO NOT LIGHT (lower floors do). NOT DIAGNOSED. First read, no render needed if a HHS still log exists:
+- L2 HHS lamps that do not light — CORRECTED by red1 2026-10-01 ~07:0x: it is the GROUND-FLOOR overhead lamps, not the top floor (the
+  queued hhs7.sh A/B at …808472346 is a ground-floor atrium pose = the right place to measure). Original note: NOT DIAGNOSED. First read, no render needed if a HHS still log exists:
   §LAMP_DATA lit=, §LAMP_EN per-zone scale (daylight-rich top floor may be scaled toward 0 by the EN rule), the lamp's zone/band
   (lampInfo, light_zones.js:576; a pendant bound into a roof/covering SOLID cell -> zone 0). No HHS still log in the c1 scratchpad.
 - L3 COLOURS CARTOONISH (HHS most; green duct etc.): CAUSE FOUND (code). Two AUTHORED palettes paint elements the IFC gives no real
