@@ -196,6 +196,21 @@ Two pure-data setup steps get a per-DB sidecar `buildings/patches/<db>.prebake.j
   sky_portal.js, cli --write-prebake, .gitignore). Node witness viewer/tests/witness_prebake_loader.js 8/8 PASS. NOT run in a browser yet
   (no GPU, red1). First GPU run: a bake with --write-prebake writes the file; the next bake must log §PREBAKE loadPath src=sidecar +
   §PREBAKE portal src=sidecar, and one run with &prebakecheck=1 must log §PREBAKE_CHECK PASS.
+### §FRAME_COST STUDY 2026-10-01 (red1: "keep studying our alt-c where we can make more saving"; read from mid2.log, no GPU run)
+NORMAL frame (960x540, pre-freeze, 86 frames): 1.9 s p50 = still-refine 8 samples 0.76 s + AO fold 12 renders 0.66 s (51 ms/render)
++ capture/HUD/encode 0.30 s (AO done -> §FRAME_QA) + ~0.2 s other per-frame steps (exposure meter render, sun/fill pins, §PERF_TRAVERSE
+13 ms over 74k objects, §LOADPATH_PIXEL_DIAG_PRE_HUD getImageData, §FRAME_HASH).
+FREEZE frame (165 frames): refine 6.77 s + AO 4.90 s (407 ms/render = x8) + 1 §STILL_REFINE_RESTART cam-moved per frame (clip-clock bug —
+full films pin the camera). CAUSE of x8: §LOADPATH_BATCH_UNPACK containers=4872 elements=63059 — the whiten look hides every
+BatchedMesh/InstancedMesh container and draws its elements as individual meshes (cpe_load_path.js:815-840, §129 FIX 3), so the scene goes
+from 4,983 held / 25,948 instances to 73,797 held objects (§FRAME_COST i=86) — ~69k draw calls per render, 20 renders per frame.
+| lever | saving per Hospital film | look change | status |
+|---|---|---|---|
+| S1 freeze whiten WITHOUT un-batching: building drawn with one white clipped scene.overrideMaterial pass (the GI geom pass already does this, §GI_STILL geom pass mode=scene.overrideMaterial), stack/twin clones in a second pass (they are depthTest=false, renderOrder 999 already) | freeze frame ~13 -> ~2 s: ~12 min with reuse (≈66 rendered freeze frames), ~30 min without | none intended — needs a pixel witness vs today's whiten on 3 freeze frames | proposal |
+| S2 freeze frame reuse (full film, camera pinned) | 99 of 165 freeze frames skipped (record: 199/265 on 1080p) | none | EXISTS (§129.57); clips fixed by §LOADPATH_CLIP_CLOCK |
+| S3 pre-bake setup (§PREBAKE PB1+PB2) | ~3 min | none | BUILT, not run |
+| S4 per-frame diagnostics every Nth frame (§LOADPATH_PIXEL_DIAG getImageData, §FRAME_HASH/§FRAME_QA qaEvery=1) | not measured; bounded by the 0.2 s "other" | none | measure first |
+| S5 AO fold 12 -> 6 renders | ~0.33 s/frame = ~16 min | softer/grainier corner shading | red1's call |
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
