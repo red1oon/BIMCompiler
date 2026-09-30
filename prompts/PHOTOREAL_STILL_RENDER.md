@@ -2092,6 +2092,10 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
   heads; water 4,308 green segments / 2,644 galvanised fittings; HHS 6 brass heads. No-own-colour share of MEP: HHS 100 %, Clinic 99.9 %,
   Hospital 97.0 %, Terminal 37.1 %. Whole building, no authored material name (SQL, elements_meta): HHS 100 % of 6,880, Hospital 100 % of 64,150,
   Clinic 100 % of 17,322, Terminal 9.7 % of 48,428.
+  RENDERS 2026-10-01 05:09-05:50 (:8664 v1518, 1440p default, OOM/WebGPU 0): HHS …771790856 -> ~/Downloads/HHS_colours_AFTER.png (live
+  §MEP_HUE_TALLY tinted=1788 = witness). Clinic sconce view FAILED twice (aim_sconce.js: guidMap found 1 of 2 sconces, then NO_CLEAR_VIEW;
+  likely instanced mesh -> wrong centre) — both rendered the old corridor pose, not delivered. red1 then: "give the URLs, sight myself".
+  No re-bake needed: light_zones.js unchanged since 22a8e253, all 4 sidecars valid (key 21324567:90186).
 - NOT IN SCOPE: ARC proxies' teal flag (HHS 659, e.g. 'Stahlbalkon' steel balcony) — separate item.
 - ✅ BUILT 2026-10-01: bim-ootb fix/sky-surface @1a9a7eea sw v1517 (pushed). W-MEP-SERVICE-COLOUR (viewer/tests/witness_mep_service_colour.js,
   runs the shipped owner over every elements_meta row, headless, no GPU) PASS 6/6: HHS green 0 (RED CONTROL &mephue=disc: 1,773), HHS
