@@ -48,6 +48,16 @@ sidecars): `cd /tmp/wt-surf && flock /tmp/claude-1000/gpu.lock node cli_silent_b
 check the building has one, else --plan/--override). Read the log: §CLI_BAKE_PROGRESS ms/frame, §SOURCED_LIGHT (expect NOT staged = S2),
 §LIGHT_FIELD_DB (does the film even load the sidecar), §MIRROR_OWN_MAT skipped, 'Uncaptured WebGPU' = 0. Then an arm with S2 lifted
 (film stages SourcedLight once per shot) to see what the field adds per frame and at what cost.
+**§POC_BAKE RESULT 2026-09-30 21:10 (Opus, log = session scratchpad poc_hosp.log, NOT committed):** `/tmp/wt-surf` v1515,
+`--db HospitalAjaibPath --seconds 3 --gpu real` (RTX 4060 8 GB; another session's witness_s9 ran on the GPU during it). Aborted at the 12-min
+`--timeout-min` cap, but the file was delivered (§MAXQ_DONE frames=30 bytes=654999; §MAXQ_QUALITY unconverged=0; 'Uncaptured WebGPU'=0; no pageerror).
+- Setup ~6.5 min before frame 1: load 45 s, two Alt+S-style stagings (57 s, 252 s), §GI_STILL copy to the bounce engine 70 s (§GI_FILM built 1280x720 ms=70298).
+- §CLI_BAKE_FRAMES poses=30 p50=5.2 s/frame, worst 360 s (= frame 1, carries the setup). Steady rate 4.5-5.6 s/frame.
+- S2 CONFIRMED: §SOURCED_LIGHT "installed … inert until an Alt+S stages it"; no stage line in the film.
+- SIDECAR NOT LOADED: §LIGHT_FIELD_PATCH none HospitalAjaibPath.db (404) + §LIGHT_FIELD_DB skip reason=no-table. The sidecar is keyed on
+  Hospital_meta.db; the film DB (the one with cinema_path) is HospitalAjaibPath.db, so even with S2 lifted the film would find no field. The lookup
+  must resolve by building (bld=Hospital), not by the path DB's file name. This comes before the S2 arm.
+- §MIRROR_OWN_MAT skipped (film) — as designed at v1515.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
