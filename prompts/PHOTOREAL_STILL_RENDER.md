@@ -2201,6 +2201,32 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
 - CONTACT SHADOWS (red1 "table sets get bounce shadow on floor but not rows of seats", Terminal …735021015, contact.js): floor under seats
   app 156 / final 156.6 vs open 142 / 146; under tables app 141 / final 149.4 (bounce +8). Neither gets a contact shadow; the seats
   (IfcFurniture Waiting_Room_Seat, opaque Mesh, castShadow) ARE in the GI geometry pass. Open: why the AO term leaves no contact darkening.
+### §SKY_FIELD_OPEN_ROOF — SPEC (2026-09-30, Opus; red1 Terminal …752787823 "why is the roof so bright as if sunlight seeping thru")
+- MEASURED: roof undersides Lu 200-247 (metal deck), beams 164 at F 0-0.04 and no direct sun; &groundview=0 halves them (240 -> 117) at
+  higher exposure. gtruth.js (exact lower-hemisphere escape, cos about -y, glass x T, a ray escapes when it leaves the grid or ends on a
+  surface in an OPEN cell): 65 roof px Gd median 0.21 vs exact 0.137, 38/65 over by > 0.05; the worst are roof cells in ZONE 0 (the roof
+  void connects to outside through the clerestory band) with F = 1 AND Gd = 1 (open cells default) vs exact 0.11-0.21.
+- WHAT: (1) §SKY_FIELD_EXACT_ALL open targets also include open cells with an opaque SOLID cell above within SA_OCC_UP (roof / canopy /
+  overhang), not only occluders -> exact F. (2) For every open target the same pass computes exact Gd (16x16 cos-weighted lower-hemisphere
+  dirs, the escape rule above) -> groundBuild writes it instead of 1. Switch &skyopenroof=0 / APP._stillSkyOpenRoof=false (fingerprint).
+- § line §SKY_FIELD_OPEN_ROOF cells added (roof-only), gdExact cells / mean, ms.
+- WITNESS: Terminal …752787823 gtruth: Gd over (> exact + 0.05) 38/65 -> <= 10 %; roof Lu down; exposure logged; Clinic case-1 poses: covered
+  px F unchanged, exposure within 0.2 EV; HHS §STAIR_UNDER unchanged.
+### ROOF / FLOOR / LAMPS at red1's Terminal v1510 stills (2026-09-30 evening, Opus; all runs OOM 0)
+- §SKY_FIELD_OPEN_ROOF shipped v1511 (fix/sky-surface @157eee88): roofAdded 1527 cells; Gd vs exact at …752787823 roof px: median 0.21 ->
+  0.15 (exact 0.137), over 38 -> 31 of 65; RENDER unchanged (metal 231 -> 232, beams 164 -> 163). Terminal re-baked (key 21324567:90186);
+  Clinic / HHS / Hospital sidecars STALE for v1511 (re-bake before judging them).
+- ROOF brightness source (…752787823): &groundview=0 metal 232 -> 144, beams 165 -> 112; env reflections off: no drop (232 -> 236); lamps /
+  ir / cove off: no drop. §GROUND_HALF: rho 0.368 = earth texture mean 0.16 x DISPLAY gain 2.3, Eg 4.049 u, upward 33,847 lx = (sun x sinE
+  + sky) x rho -> the roof's ground light is physically consistent with that rho; rho 0.368 is the questionable input (bare earth ~0.1-0.3).
+  DECISION (red1): ground bounce from the texture's own albedo (no display gain) -> roof ground light x0.43.
+- FLOOR / LAMPS (…753057418): lamps off -> exposure 106 -> 777 and floor 117 -> 58 = lamps are ~90 % of the floor light; env off 117 -> 118
+  (the floor streaks are lamp pools, not reflections); ceiling 81 vs floor 117. Far windows clip to 255 in every arm = interior exposure,
+  outside ~7x brighter. DECISION (red1): highlight compression (tone-map shoulder) vs window-exposure blend.
+- SEATS vs TABLES contact (…735021015): no contact darkening under either (seats app 156 vs open 142; tables 141, bounce +8); seats are in
+  the GI pass. LAMP SHADOWS: none exist (lamps unshadowed) — lampsh.js probe (per floor px: lamp light that should be blocked) timed out
+  at 5000 px x ~1000 lamps; rerun with fewer px / top-contributing lamps. TORCH (red1: "give way in well lit compartments"): measure its
+  share at a lit pose (&torch=0) before any change — it is a rated physical torch (effects.js:4830).
 ## ▶▶▶▶ §DEV RESUME 2026-09-30 ("resume sky leak") — superseded by the PM block above (model: Opus allowed by red1 for this task; Fable resting)
 # ⚠ DO NOT REMOVE — scope: the SKY-VIEW FIELD false-bright patches (Hospital hall, stairs). Read the log after every run. Proof =
 # § numbers, never red1's eyes (PRIMAL LAW). GPU probes ALWAYS `flock /tmp/claude-1000/gpu.lock`; OOM lines > 0 = not evidence.
