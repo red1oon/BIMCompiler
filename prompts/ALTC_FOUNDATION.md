@@ -219,6 +219,13 @@ from 4,983 held / 25,948 instances to 73,797 held objects (§FRAME_COST i=86) �
 | S3 pre-bake setup (§PREBAKE PB1+PB2) | ~3 min | none | BUILT, not run |
 | S4 per-frame diagnostics every Nth frame (§LOADPATH_PIXEL_DIAG getImageData, §FRAME_HASH/§FRAME_QA qaEvery=1) | not measured; bounded by the 0.2 s "other" | none | measure first |
 | S5 AO fold 12 -> 6 renders | ~0.33 s/frame = ~16 min | softer/grainier corner shading | red1's call |
+BUILT 2026-10-01 (fix/fast-bake sw v1525, no GPU): S5 as ao 12 -> 8, NOT 6 — 8/8 is the measured row in cinema_maxq.js §MAXQ_FRAME_BUDGET
+(RMS 0.37, at the noise floor); 6 never measured (red1: the earlier 40 -> 20 halving showed no grain). ~0.2 s/frame, ~10 min per Hospital film.
+S4: §LOADPATH_PIXEL_DIAG_PRE_HUD now on freeze frames only, as its own comment always said (it ran on every frame, 16 getImageData each).
+S1 NOT built blind: the un-pack exists because container-level colour changes on BatchedMesh never reached the pixels (§129 FIX 3, cause
+never found) and a one-material pass would have to spare the overlays (stack/twin clones, clash boxes, datum) through TAA, AO and bounce
+passes. FIRST GPU STEP (one freeze clip, no film): on 3 freeze frames log the whitened pixels (§LOADPATH_PIXEL_DIAG) with the un-pack vs a
+container-material white (colorsTexture nulled + material swapped), to find why the earlier attempt failed; build S1 only on that result.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
