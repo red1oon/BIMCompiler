@@ -4106,3 +4106,10 @@ render, ~13 s per freeze frame (bim-compiler ALTC_FOUNDATION.md §FRAME_COST STU
 every 3D object except the stack clones (near / far / §132 twins); no cut plane, whiten, cap or un-pack; exposure held through the freeze
 (cinema_maxq.js skips §FILM_EXPOSURE while A._lpStackOnly && hold); restored in _restore/_forceRestore (§LOADPATH_STACK_ONLY_RESTORE shown=N).
 &lpcontext=1 = the old white cut-away (with §LOADPATH_VIEW_CULL, sw v1528, skipping off-view pieces). Not yet run.
+
+## §134 §INTERIOR_LIGHTS_ARC (2026-10-01, red1 correcting the reading of §116/§129.47: "It is only to be off during freeze, no ARC but to
+resume when ARC returns. Now this is in conflict with alt-s benefit. Bring it back on.")
+MEASURED before: Hospital_silent clip 1065:1365 (camera back on the ground floor) logged §LAMP_DATA film=1 lamps=0 placed=1274 — the film-time
+window [beats.out 0.353, beats.rise 0.959) held every fixture off. BUILT (bim-ootb fix/fast-bake sw v1532): off only when no ARC is on screen —
+the load-path freeze (_lpHoldCtl.inHold) or a reveal round hiding ARC (A.hiddenDiscs has 'ARC'); on otherwise. §INTERIOR_LIGHTS_ARC logs each
+switch; §INTERIOR_LIGHTS_WITNESS now expects lit whenever the gate is on. Not yet run.
