@@ -2194,6 +2194,10 @@ LEARNING POINTS / METHODS (earned this session — do not relearn):
   WALLS 2.0-3.3x at 5 poses; floors 1.0-1.45; NOT removed by any single term, NOR all per-cell terms off together (sky/lamps/cove/ground/
   ir off: 3.03 / 2.79), NOR &zoneeye=0 (2.62 / 3.77). => wall blocks are not the light fields; cause still open (candidates: the sun
   shadow cascade texel pattern, N8AO, or a metric artefact of the 12 px grid on walls) — next: sun-off arm + a finer grid.
+  INSTRUMENT CHECK (same session): the wall "blockiness" is a METRIC ARTEFACT. Re-scored with p-based cells and FAKE grids shifted 0.125 /
+  0.25 m: …196354 2.74 real-offset vs 2.08 / 2.12 fake; per metre of world distance 1.35 vs 1.04 / 1.02; …142544 and …162689 0.9-1.3 for
+  every offset. Pairs straddling a cell boundary are farther apart in the world (grazing walls), so they differ more under ANY smooth
+  light. No cell-aligned wall blocks are evidenced. zfight.js at …196354: 25 / 10220 px coplanar double hits (element edges only).
 - CONTACT SHADOWS (red1 "table sets get bounce shadow on floor but not rows of seats", Terminal …735021015, contact.js): floor under seats
   app 156 / final 156.6 vs open 142 / 146; under tables app 141 / final 149.4 (bounce +8). Neither gets a contact shadow; the seats
   (IfcFurniture Waiting_Room_Seat, opaque Mesh, castShadow) ARE in the GI geometry pass. Open: why the AO term leaves no contact darkening.
