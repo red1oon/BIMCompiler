@@ -75,6 +75,8 @@ retreat across every tool below.
 
 ## Getting started — your first five minutes
 
+> **Brand new?** Start with the nine-step **[First Steps](ModellerFirstSteps.md)** page — one tiny job, start to finish.
+
 1. **Open the app** — [red1oon.github.io/bim-ootb/modeller/modeller.html](https://red1oon.github.io/bim-ootb/modeller/modeller.html)
    (desktop; the B-rep kernel is heavy). Tap **⋯** at the bottom-right to fan the pill toolbar open.
 2. **Open a building** — tap **📂 Open** and pick a resident building (e.g. *Duplex*). Its **ARC** model loads
