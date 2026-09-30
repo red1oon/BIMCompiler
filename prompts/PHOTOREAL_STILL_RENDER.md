@@ -2135,11 +2135,11 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
      0 = neutral grey, 1 = IFC colour unchanged). § line §GLASS_TONE mats, k, mean sat before/after.
   WITNESS: W-MEP-SERVICE-COLOUR extended — HHS proxies: WSHP/panelboard/sensor/transformer/cooling-tower -> 7035, Stahlbalkon -> steel, teal
      count = unmatched only; lights -> 9016 (HHS pendants, Hospital IfcLightFixture). Glass: §GLASS_TONE line in one still's log.
-  ✅ BUILT @b04e8a44 sw v1519 (pushed, NOT baked — none needed: no light_zones.js change): W-MEP-SERVICE-COLOUR PASS 9/9 — HHS colourless
+  ✅ BUILT @6d725a81 sw v1519 (pushed, NOT baked — none needed: no light_zones.js change): W-MEP-SERVICE-COLOUR PASS 9/9 — HHS colourless
   proxies 659: equip 563 (RAL 7035) / steel 81 / ceramic 11 / teal 3; luminaires RAL 9016: HHS 410, Hospital 1,222, Clinic 1,074. Glass tone:
   code only, its §GLASS_TONE line not yet seen in a still log (red1 sights). Hospital 3,781 unmatched proxies carry the exporter cream
   placeholder (render cream, not teal): receptacles matched; dampers 546, diffusers ~870, grab bars 219, solar panels 567 unmatched — left.
-  Alt+C: merge note in ALTC_FOUNDATION.md now covers up to b04e8a44 (glass tone is still-only; P1/P2 reach films on merge).
+  Alt+C: merge note in ALTC_FOUNDATION.md now covers up to 6d725a81 (glass tone is still-only; P1/P2 reach films on merge).
 - P5 minor: exterior ground texture blotchy (white mottles) …255867/…639671; context blocks plain mauve.
 Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal 2, Clinic 1).
 
