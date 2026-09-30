@@ -101,6 +101,18 @@ setup growth). Per-frame bounce is only 0.11-0.15 s of the 2.28 s; the rest is t
   compile vs 1537 chunks. Unknown gain, measure first.
 - FB5 (optional, look-changing, ask red1): a draft-bake mode at 960x540 / taa 4 for checks; steady 2.28 s is the renders, not the model.
 Expected with FB1+FB2: 90-frame Hospital 504 -> ~385 s; full 2,027-frame path setup share falls from ~340 to ~220 s.
+**§FAST_BAKE RESULT 2026-09-30 22:26 (Opus): FB1+FB2 BUILT — bim-ootb fix/fast-bake @68771ccf (off fix/sky-surface), sw v1517, pushed, no PR.**
+sky_portal.js: anyHit() = first-object/first-triangle ray (same boolean as intersectObjects), filmCache keyed on the visible glass (pane keys).
+First try keyed on the visible TARGET count too and never reused (the two stagings differ by one non-glass object, 4855/4856) — dropped.
+| same z22 command, Hospital 90 fr | v1515 | FB2 only | FB1+FB2 |
+|---|---|---|---|
+| §CLI_BAKE_WALL | 504 s | 411 s | **385 s** |
+| portal classification staging #1 / #2 | 70.8 / 53.0 s | 25.8 / 27.3 s | 26.8 / 0 s (reused=462) |
+| p50 frame | 2335 ms | 2348 ms | 2367 ms |
+| mp4 bytes | 2,071,282 | 2,070,125 | 2,081,490 (+0.5 %, not pixel-judged) |
+§FAST_BAKE_WITNESS (&portalwitness=1) PASS panesJudged=462 mismatches=0 on BOTH arms (fresh: fast 26.0 s vs brute 44.8 s; reuse: cache vs a
+fresh brute pass on the second staging's 4856 targets). WebGPU errors 0, pageerror 0, unconverged 0 on all runs. Logs: session scratchpad fb/, fb2/.
+FB3 (persist the pane sides in the lightfield sidecar, −27 s more) and FB4 (bulk bounce-engine compile, 64-66 s) remain.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
