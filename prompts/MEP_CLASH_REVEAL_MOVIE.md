@@ -4098,3 +4098,11 @@ The SAME bug made the "pan" red1 liked (clock advancing under a pinned position)
 full films do. The pan is then made deliberate (T4): yaw about world up PAN_DEG x sin(pi t/T), default 18 deg, out and back so the first and
 last hold frames equal the arm pose; &lppan=0 = hard freeze; §LOADPATH_PAN maxYawDeg at restore. Built on bim-ootb fix/fast-bake sw v1521 with
 T1-T3 (§LOADPATH_TWINS, _TWINS_SYNC). Full films were NOT affected by the clock bug (they take the non-clip branch).
+
+## §133 §LOADPATH_STACK_ONLY (2026-10-01, red1: "it is supposed to identify the stack only and draw that only.. no context background
+other than the overlay info panel on the loadpath" … "Yes cut off that 13s stuff!" … "Those words about cut surface was never done.")
+MEASURED cost of the old freeze look: §LOADPATH_BATCH_UNPACK containers=4872 elements=63059 -> 73,797 held objects, 407 ms per composer
+render, ~13 s per freeze frame (bim-compiler ALTC_FOUNDATION.md §FRAME_COST STUDY). BUILT (bim-ootb fix/fast-bake sw v1529): the freeze hides
+every 3D object except the stack clones (near / far / §132 twins); no cut plane, whiten, cap or un-pack; exposure held through the freeze
+(cinema_maxq.js skips §FILM_EXPOSURE while A._lpStackOnly && hold); restored in _restore/_forceRestore (§LOADPATH_STACK_ONLY_RESTORE shown=N).
+&lpcontext=1 = the old white cut-away (with §LOADPATH_VIEW_CULL, sw v1528, skipping off-view pieces). Not yet run.
