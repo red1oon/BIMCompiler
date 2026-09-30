@@ -58,6 +58,24 @@ check the building has one, else --plan/--override). Read the log: §CLI_BAKE_PR
   Hospital_meta.db; the film DB (the one with cinema_path) is HospitalAjaibPath.db, so even with S2 lifted the film would find no field. The lookup
   must resolve by building (bld=Hospital), not by the path DB's file name. This comes before the S2 arm.
 - §MIRROR_OWN_MAT skipped (film) — as designed at v1515.
+**§BAKE_SPEED A/B 2026-09-30 21:41 (Opus): v1515 vs the Z22 v1478 baseline, SAME command** (`--db HospitalAjaibPath --gpu real --fps 15
+--frame-range 0:90`, 1280x720, GPU lock held, no other bake; logs session scratchpad z22b/v1515.log vs deaf078b…/z22/before.log):
+| | v1478 (09-28) | v1515 (today) |
+|---|---|---|
+| §CLI_BAKE_WALL | 442 s | 504 s (+62) |
+| §CLI_BAKE_FRAMES p50 / mean / worst | 2346 / 4259 / 182,263 ms | 2335 / 4584 / 207,118 ms |
+| steady rate (trailing 10, last 3) | 2.37 / 2.17 / 1.93 s | 2.40 / 2.25 / 2.02 s |
+| load (§CLI_BAKE_LOADED) | 25.2 s | 37.7 s |
+| MAXQ_START -> 1st staging | 47 s | 76 s |
+| §GI_STILL copy building to bounce engine | 63.9 s | 66.3 s |
+| §GI_STILL orientation check | 65.1 s (measured) | 0 (§GI_ORIENT_CACHE hit) |
+| mp4 / WebGPU errs / unconverged | 2,068,088 B / 0 / 0 | 2,071,282 B / 0 / 0 |
+VERDICT: nothing broken; STEADY frame cost unchanged (~2.3 s p50). The earlier "5 s/frame" (§POC_BAKE) was the 3-s squeeze of the whole
+path (camera indoors) + a concurrent GPU witness, not a regression. v1515 setup is ~60 s slower (load +12 s, pre-staging +29 s) even with
+the orientation check gone — NOT yet attributed. Where a bake's time goes (v1515): ~55 % setup before frame 1, ~45 % frames. Faster-bake
+levers, largest first: (1) the §GI_STILL building copy 66 s + two full Alt+S stagings (122 s and 186 s marks) — once per film but paid
+every bake; (2) frames 1-16 warm-up (§FRAME_COST running mean 106 s at i=1 -> 2.5 s at i=25); (3) steady 2.3 s x frames (20 renders/frame:
+taa=8 ao=12 + one bounce). Next: per-stage timing of frame 0 and of the two stagings, then spec.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
