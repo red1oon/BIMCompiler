@@ -2195,6 +2195,10 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   Clinic …803740793 (on): no furniture in frame -> INCONCLUSIVE. red1 v1521 Clinic still …808307859: sconce spheres show jagged dark
   notches (suspect: self-occlusion — the march from the fixture's own surface toward its own lamp) + stepped dark patches at wall/
   pilaster bases (suspect: march steps). A/B (cs6.sh, &contact=0) queued to attribute them. NOT COMMITTED until attributed.
+  ATTRIBUTED 07:2x (cs6: …808307859 on/off, WebGPU 0 both): sconce notches AND stepped wall-base patches are present with &contact=0 ->
+  NOT the contact shadow. Pattern = 0.5 m zone/field cell steps (same family as L1 "patchy" sconces). Code COMMITTED @0bf669d1 (bim-ootb
+  fix/sky-surface, pushed) sw v1521 with len 0.5 / thick 0.5 default; params NOT final (table above). red1 asks params be DERIVED, not
+  authored: reach/thickness from elements_meta object sizes, lamp-vs-daylight from the bake's per-zone daylight vs lamp E.
 - L4 (red1 v1521 HHS …808472346): "outside light drowns inside light" — pendants show no pools, expStep -0.51. Suspect §LAMP_EN (lamps
   scaled to an EN 12464-1 target, 200 lx when the room use is unknown; Terminal log scale p50 0.218) vs daylight. A/B queued (hhs7.sh:
   default vs &lampen=0) — read §LAMP_EN*, §METER, §GLASS_TONE.
