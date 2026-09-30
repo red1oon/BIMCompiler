@@ -177,6 +177,25 @@ frame 1 at ~620 s):
 Squeezable per bake: ~155 + 27 s by pre-bake (data), ~60-75 s by a persistent shader cache, ~65 s only by idle warm in a live viewer.
 ~5 min setup -> ~1.5-2 min for a CLI bake; near 0 extra for an interactive Alt+C started after the viewer idled. Every item keeps its
 in-line call as the fallback and logs `src=prewarm|sidecar|built` so the saving is a log fact. Not built.
+### §PREBAKE spec 2026-10-01 (red1: "build the pre-bake items to operate gracefully and safely. NO film bake or use GPU yet")
+Two pure-data setup steps get a per-DB sidecar `buildings/patches/<db>.prebake.json` (gitignored, derived — like the lightfield.bin):
+- PB1 LOAD-PATH SHOT (cpe_load_path.js loadPathBuild, the §LOADPATH_BEARING -> §LOADPATH_SHOT span, 155 s on Hospital_silent): cache
+  buildingBox, the hold-point `shot`, per-candidate {visibleHops, footprint, minMemberPx, memberPx} in pick.valid order, and the winner.
+  KEY = code (the ?v= of cpe_load_path.js + cinema_maxq.js script tags) + items fingerprint (count, bbox sum, first/last guid) + path
+  fingerprint (5 sampled bake poses, 3 dp, + filmSecFull/topoutU/beats) + camera (fov, outW x outH) + candidate chains hash.
+  HIT only if the key matches AND the stored winner guid equals items[winner].guid; anything else = compute as today (logged reason).
+- PB2 WINDOW SIDES (sky_portal.js film cache, 27 s): inward side per pane key; KEY = FNV hash of the pane-key list (the same sig FB1
+  uses in-page). HIT fills the film cache; a pane missing from the record is classified as today.
+- LOAD: main.js, beside §LIGHT_FIELD_BY_BUILDING — fetch patches/<opened db>.prebake.json once; 404 = none. Never blocks: a record that
+  arrives late is simply not used.
+- WRITE: every build/classification that COMPUTED records itself into A._prebakeOut; cli_silent_bake.js --write-prebake writes it to
+  <root>/buildings/patches/<db>.prebake.json at the end of a bake (a normal bake produces it; no separate GPU run).
+- SAFETY: miss/stale/corrupt -> today's path, one §PREBAKE line with src=sidecar|computed and reason=. &prebake=0 ignores the sidecar.
+  &prebakecheck=1 computes anyway on a hit and compares (shot tNorm + winner guid; every pane side) -> §PREBAKE_CHECK PASS|FAIL.
+  BUILT 2026-10-01 bim-ootb fix/fast-bake sw v1524 (scene.js A._loadPrebake/_prebakeRecord, main.js, cpe_load_path.js loadPathBuild,
+  sky_portal.js, cli --write-prebake, .gitignore). Node witness viewer/tests/witness_prebake_loader.js 8/8 PASS. NOT run in a browser yet
+  (no GPU, red1). First GPU run: a bake with --write-prebake writes the file; the next bake must log §PREBAKE loadPath src=sidecar +
+  §PREBAKE portal src=sidecar, and one run with &prebakecheck=1 must log §PREBAKE_CHECK PASS.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
