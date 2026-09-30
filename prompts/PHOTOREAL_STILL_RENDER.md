@@ -2088,9 +2088,10 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
   | water pipe segments | RAL 6010 grass green | BS 1710 water (as v1) |
   | water fittings | galvanised grey (STD_MAT.IfcPipeFitting) | galvanised malleable-iron fittings |
   | drainage, ducts | as v1 | |
-  ✅ v2 BUILT @7d9a4f5b sw v1518 (pushed): W-MEP-SERVICE-COLOUR PASS 7/7 — Hospital fire line FP 7,111 red / FP_FIT 4,602 orange / 1,354 brass
+  ✅ v2 BUILT @0bd4e6c8 sw v1518 (pushed): W-MEP-SERVICE-COLOUR PASS 7/7 — Hospital fire line FP 7,111 red / FP_FIT 4,602 orange / 1,354 brass
   heads; water 4,308 green segments / 2,644 galvanised fittings; HHS 6 brass heads. No-own-colour share of MEP: HHS 100 %, Clinic 99.9 %,
-  Hospital 97.0 %, Terminal 37.1 %. Whole building, no authored material name: HHS 94.7 %, Hospital 85.5 %, Clinic 100 %, Terminal 0 %.
+  Hospital 97.0 %, Terminal 37.1 %. Whole building, no authored material name (SQL, elements_meta): HHS 100 % of 6,880, Hospital 100 % of 64,150,
+  Clinic 100 % of 17,322, Terminal 9.7 % of 48,428.
 - NOT IN SCOPE: ARC proxies' teal flag (HHS 659, e.g. 'Stahlbalkon' steel balcony) — separate item.
 - ✅ BUILT 2026-10-01: bim-ootb fix/sky-surface @1a9a7eea sw v1517 (pushed). W-MEP-SERVICE-COLOUR (viewer/tests/witness_mep_service_colour.js,
   runs the shipped owner over every elements_meta row, headless, no GPU) PASS 6/6: HHS green 0 (RED CONTROL &mephue=disc: 1,773), HHS
