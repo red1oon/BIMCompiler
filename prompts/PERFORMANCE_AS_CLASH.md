@@ -1,6 +1,8 @@
 <!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
 # PERFORMANCE AS CLASH — room performance failures as clash rows, sensed through Alt+S and Alt+C
 
+> ⏸ **PARKED 2026-09-30 (red1: "keep this park for future session").** SPEC ONLY, zero code. RESUME ORDER: (1) triage the room-injection/pathing specs (`prompts/Viewer/FindRooms/*` + ESCAPE_ROUTE_REVEAL §8/§15): walk metres not cost, `stairBaseKey` collapse; (2) M0 room-use key; (3) answer §8 questions; then build per §P/§Q/§N/§13-§18. Doctrine names: Build Map (headline) / Build Statement (cards) / Flashpoint list (canvas) — §16.
+
 ```
 # ⚠ DO NOT REMOVE — SCOPE
 HIGH-LEVEL LANE SPEC (2026-09-29). NO CODE YET. Every module below opens with its own spec section
