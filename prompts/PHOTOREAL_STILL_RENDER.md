@@ -1985,6 +1985,29 @@ Recommendation on record: NOT AO on direct light (would darken sunlit/lamp-lit o
 are really blocked — (a) lamp shadows (none today) and (b) the sky/daylight term under furniture (furniture is not in the sky-field soup:
 IfcFurniture is neither BOUNDARY nor OCCLUDER, light_zones.js:16/30). Measure first: seat pose …735021015, floor under seats vs open with
 lamps off / sky off (the stopped run), then spec.
+### §CONTACT_BRIGHT — MEASURED + SPEC (2026-09-30 23:30, Opus; red1 "contact shadows must hold in bright rooms")
+- RUN: Terminal …735021015, :8664 v1515 @22a8e253, diag.js + PREJS=contact.js, &stillres=window, 3 arms under gpu.lock, all 'Uncaptured
+  WebGPU' 0. Logs: scratchpad 4a28e70a…/c1/cs/1790735021015_{con,clp0,csk0}.log. Floor px (n.y>0.9), grouped by what is within 1.2 m above:
+  | arm | open (2183 px) final | under seats (106) final | seats/open | under tables (677) | tables/open | exposure |
+  | default (21:23) | 146.7 | 156.9 | 1.07 | 150.1 | 1.02 | (not read) |
+  | &lamps=0 | 101.0 | 100.9 | 1.00 | 93.9 | 0.93 | 45.50 |
+  | &sky=0 | 168.5 | 182.4 | 1.08 | 178.1 | 1.06 | 63.44 |
+  (display 8-bit values after auto-exposure; the ratio is the metric, the absolute values move with exposure.)
+- READ: (1) LAMPS make the floor under the seats BRIGHTER than open floor (1.07 -> 1.00 when lamps go off): the unshadowed lamps light the
+  floor through the seats. §AO_LAMPS (sourced_light.js:255, AO on lamp direct light, default ON) does not recover it — the bounce giDelta
+  under seats is 0.1-0.7 vs 1.3-4.4 open, i.e. AO acts, but on a term too small to matter. (2) With lamps off the seats still leave NO
+  contact shadow (1.00) — the remaining daylight also passes through them (furniture is not in the sky-field soup, light_zones.js:16/43).
+  Tables do darken (0.93) with lamps off. (3) &sky=0 changes nothing material (1.08): it zeroes only the hemi fill (effects.js:4553), NOT the
+  sky field — INSTRUMENT GAP: there is no clean "sky field off" switch (&skyfield=0 swaps to the binary SKY_BIT path, sourced_light.js:911),
+  so the daylight share at this pose is NOT isolated.
+- VERDICT: red1's "overlighting from outside" is NOT what this pose shows — the lamps are the larger cause here; daylight is the second.
+  Both levers of the recommendation are needed, lamps first.
+- SPEC (not built; each needs red1's go — (b) re-keys all 4 bakes, Hospital 48 min):
+  (a) §LAMP_SHADOW_TOPK — Alt+S only: shadow the K lamps contributing most to the still's floor pixels (rank from the §FLOOR_WASH lamp list at
+      the camera), three PointLight castShadow; K and map size set by a measured GPU budget on the 8 GB card (first step: time K=1,4,8).
+  (b) §SKY_FIELD_FURNITURE — add IfcFurniture to OCCLUDERS (light_zones.js:43) so the exact pass sees seats/tables.
+  WITNESS (contact.js, this pose): default arm seats/open < 1.00 and tables/open < 1.00; open floor final within ±3 of 146.7 (open floor not
+  darkened); &lamps=0 arm seats/open < 1.00 after (b). Clinic case-1 poses: exposure within 0.2 EV.
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
