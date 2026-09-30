@@ -240,6 +240,13 @@ container-material white (colorsTexture nulled + material swapped), to find why 
 - WINDOW PULL: ran on the inside freeze frames, skipped by its own rule (outside exposure 1.156 >= inside 0.47).
 - PREBAKE: loadPath computed 153.8 s + portal recomputed (key-mismatch: different visible glass at this tn) -> file written with both parts
   (294,359 B, merge kept); the next bake of the same range reads them.
+### §RED1 FILM NOTES 2026-10-01 (red1 watching ~/Downloads/Hospital_silent_ARCfull_AFTER_1920x1080_15fps_2026-10-01_0543.mp4; "just take note")
+Liked: the eye-adaptation exposure going indoors -> outdoors. Asked (study only): the dark passage (frames 1106-1136) — torch IS on
+(§CAM_TORCH film on, 450 lm), exposure adapts ~1 EV/s (capped=down) but the passage needs ~7 EV in ~2 s -> luma 3-12; LightLaw.ADAPT decides.
+- N1 Exterior shadows at the wing still show a GAP, not touching their base. Fact to check first: that clip was baked at sw v1527, BEFORE
+  §FILM_SHADOW_EDGE (sw v1530): films then used normalBias 2 x texel and the ~19.7 km sun-distance depth range (the base-gap cause
+  §STILL_SHADOW_EDGE fixed for stills). v1530 logs range 916.8 m / normalBias 0.2209 m. Open: re-judge on a v1530+ whole-building clip;
+  if the gap stays, measure it (predictedBaseGap line of §STILL_SHADOW_EDGE) at the wing's sun elevation.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
