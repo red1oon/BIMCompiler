@@ -2245,6 +2245,13 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   brightest 15 % -0.26 EV (PASS <= 0.5), blown 0.41 % -> 0.08 %, dark 4.88 -> 4.85 %. RED CONTROL &localexp=1 not rendered (early return in
   code). Still -> ~/Downloads/HHS_local_exposure_AFTER.png.
 
+- §LAMP_CONTACT_SHADOW REVERTED TO OPT-IN @6957d81c sw v1524 (red1 2026-10-01 ~08:0x on the v1523 Terminal_seats still: "bad patches
+  below seat table"): attributed by A/B (…735021015 &contact=0 floor under tables clean). Causes (code): binary occ (1 on first hit, no
+  fade), single un-jittered phase-1 depth (edges never TAA-averaged), dominant-direction blend -> irregular shapes. NEXT (not built):
+  soft version = hit fade by t/len + per-TAA-frame start jitter + max darkening cap; test on …735021015 before any default flip.
+  Stills batch (shots.sh, real Save-PNG capture into ~/Downloads/stills_v1523/) stopped by red1 after 3 stills; red1 takes stills
+  manually. Clinic mirror …729229470 (v1509): two blown-white vertical strips + sawtooth dark patch — NOT measured yet.
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
