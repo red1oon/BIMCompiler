@@ -2105,6 +2105,25 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
   palette — now only true under &mephue=disc (not re-run). OPEN: HHS 'Pipe Types:Standard' pipes (discipline 'MEP', no service in
   the data) stay class grey; Clinic PLB fittings whose names lack 'pipe' stay class grey — red1 judges one still per building.
 
+### red1 v1518 STILLS CHECK 2026-10-01 05:18-05:29 (12 stills, all 2776x1440, v1518; HHS 5 / Terminal 4 / Clinic 3) — PATCH LIST, NOT BAKED
+### (red1: "note what to patch but not bake yet as alt-c is using"). Source of each colour checked in elements_meta.
+- P1 OURS — HHS TEAL objects (ceiling boxes …125414/…218749, rooftop unit …255867): IfcBuildingElementProxy with NO colour, discipline
+  ARC -> STD_MAT proxy teal 0/0.78/0.78 "flag" (streaming.js:1406). Names: WSHP ceiling heat pumps 43, panelboards 24, occupancy sensors
+  54, transformers 4, WCs 5, lavatories 4, balconies 'Stahlbalkon' 81. PATCH: no-colour proxies take a material from their NAME like MEP
+  (equipment -> galvanised/equipment grey, WC/lavatory -> STD_MAT.IfcSanitaryTerminal ceramic, steel balcony -> steel), teal only when
+  nothing matches. No re-bake (material only).
+- P2 OURS — HHS pendant/recessed light housings read as dark blue-grey bells (…125414/…158014): 'M_Pendant Light' is IfcFlowTerminal,
+  its ELEC name hint now returns null -> class STD_MAT 0.45/0.50/0.55. PATCH: light fixtures by name -> a luminaire finish (source to cite:
+  white powder-coat or aluminium, physicallybased.info Aluminum is already in BARE_METAL_PBR).
+- P3 IFC COLOUR (ruling "IFC-as-modelled" applies — red1 to decide): HHS glass IfcPlate rgba 0.502/0.502/1.000 a0.25 x438 = the violet
+  glass; Clinic IfcSlab 0/0.498/0 x7 = the bright green roof, IfcWindow 0/0.502/0.753 a0.1 x58 = saturated blue windows; Terminal
+  ceilings 'PVC Laminated Gypsum Board' 0.337/0.784/0.953 x34 (authored name) = the blue ceiling …499967. Option: a stills-only glass
+  rule (tint from IFC, clamp saturation) — NOT specced.
+- P4 LIGHT — blown: HHS …158014 7.49 %, …181190 4.79 %, …218749 3.1 % (outside through glass; §WINDOW_PULL applies to stills already —
+  measure why not enough). Clinic …740793 wall sconces: bright dome, no visible pool on the wall around it (red1's L1) — NOT measured.
+- P5 minor: exterior ground texture blotchy (white mottles) …255867/…639671; context blocks plain mauve.
+Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal 2, Clinic 1).
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
