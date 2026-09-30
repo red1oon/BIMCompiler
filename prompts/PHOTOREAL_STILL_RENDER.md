@@ -2020,6 +2020,30 @@ lamps off / sky off (the stopped run), then spec.
   (b) §SKY_FIELD_FURNITURE — add IfcFurniture to OCCLUDERS (light_zones.js:43) so the exact pass sees seats/tables.
   WITNESS (contact.js, this pose): default arm seats/open < 1.00 and tables/open < 1.00; open floor final within ±3 of 146.7 (open floor not
   darkened); &lamps=0 arm seats/open < 1.00 after (b). Clinic case-1 poses: exposure within 0.2 EV.
+### §LIGHT_THROUGH_OBJECTS — FINDING (2026-10-01, Opus; red1 "resolve the light passing thru objects which is illegal, once and for all —
+### don't fix, find out first"). Code-read only, bim-ootb fix/sky-surface @81a1b359, no render.
+ONE ROOT: only the sun and the torch are tested against the real geometry (shadow maps). Every other DIRECT term is gated by the 0.5 m
+ROOM MAP (light_zones.js zone grid), and the room map is built from BOUNDARY classes only (light_zones.js:16: wall, slab, roof, covering,
+door, window, curtain wall, plate). Anything else inside a room is invisible to those terms.
+| light term | blocked by | passes through (illegal) | where |
+| sun | CSM shadow map, every visible mesh (glass excluded on purpose) | nothing | effects.js:3815, sourced_light.js:780 |
+| torch | its own shadow map | nothing | effects.js:4852 |
+| LAMPS (data path, ~all still lamps) | room map only: lamp zone == fragment zone (slPass) | columns, beams, stairs, railings, proxy partitions, furniture, MEP — any non-BOUNDARY object in the same room; also every fragment whose zone is UNKNOWN (-1 -> slPass returns 1 = lit by all lamps) | sourced_light.js:146-148, 309-320 |
+| sky + ground field (daylight) | BOUNDARY + OCCLUDERS (column, beam, member, railing, stair, proxy, footing, ramp) at 0.5 m | FURNITURE and MEP (not in the soup) | light_zones.js:16/43 |
+| sky portals | retired in stills while the field is on | — | sky_portal.js:87 |
+| IR + cove (per-zone bounce averages) | room map | not a leak: these ARE bounced light, spread over the room | sourced_light.js:336 |
+| AO (N8AO, 0.5 m world radius) | screen-space, contact only | cannot block anything > 0.5 m away or off-screen; applies to lamps + indirect | light_law.js:67, sourced_light.js:255 |
+| GI bounce (SSGI) | screen only | occluders off-screen | gi_still.js |
+=> "light through objects" = LAMPS through anything that is not a wall/slab/door/window, and DAYLIGHT through furniture/MEP.
+The seat case (§CONTACT_BRIGHT) is one instance of the lamp row.
+ONCE-AND-FOR-ALL OPTIONS (not chosen, not built):
+ (1) Lamp visibility from the real geometry, per lamp — cube shadow maps do not scale (~1000 lamps x 6 renders); §LAMP_SHADOW_TOPK (v1516)
+     covers only the strongest K. The scalable form is a BAKED per-lamp visibility (ray-test lamp -> grid cell against the full mesh soup,
+     stored beside the light field, camera-independent, like the sky field) — cost unmeasured.
+ (2) Add IfcFurniture + MEP classes to the sky/ground field soup (re-keys all 4 bakes; Hospital 48 min).
+ (3) Unknown-zone fragments: count them first (they are lit by every lamp in reach).
+NOT MEASURED YET: how much light each row actually leaks per building (only the Terminal seat pose is measured: lamps 1.07 -> 1.00).
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
