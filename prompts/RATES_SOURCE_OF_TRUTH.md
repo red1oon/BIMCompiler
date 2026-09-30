@@ -158,3 +158,15 @@ discussed earlier this session (edit → see schedule/cost consequence) rather t
 - [ ] Related, spec'd the same day out of the same conversation: `TM_4D5D_VARIANCE_LANE.md` **S7** — the
       per-element 4D window + class-grain cost on `#info-panel` and the hover label. Uses the Viewer's own
       persisted schedule, so it is a Viewer stage, NOT a reason to teach the Modeller rates.
+
+## §5 DECISION CHANGE — 2026-09-30 (red1, "Agree"): KEEP one engine, DROP the display separation
+**Supersedes the §3 recommendation and the §4 "STANDS, user 2026-09-13" line in ONE respect only.**
+- **KEPT (unchanged):** rates, durations and the cost fold have ONE owner, on the Viewer side
+  (`viewer/rates.js` tables, `schedule_author.js` `_installSecs`/`_classFragmentation`/`_linearWeighting`,
+  `analysis_sidecar.js` 5D quantity basis). The Modeller carries NO rate table, NO duration formula, NO copy of any of them.
+- **DROPPED:** "the Modeller must never *show* a 4D/5D consequence; go to the Viewer to see it." The Modeller now
+  DISPLAYS the Δ of an edit on hover/click, by loading the Viewer-side owner module READ-ONLY and LAZILY (first hover
+  or click — Open time unchanged), the same way it already loads `../viewer/connect_scene.js`.
+- **Why it is safe:** the Δ is ONE pure function (`viewer/edit_delta.js` `deltaForEdit`, spec `TM_4D5D_VARIANCE_LANE.md` §S8)
+  called by BOTH surfaces. Same inputs → same numbers; the witness asserts cross-surface equality. There is no second engine.
+- Connect Scene P3 (`W-CONNECT-COMMIT`) is still built (Viewer half), no longer the only route to see the Δ.
