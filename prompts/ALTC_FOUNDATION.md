@@ -113,6 +113,34 @@ First try keyed on the visible TARGET count too and never reused (the two stagin
 §FAST_BAKE_WITNESS (&portalwitness=1) PASS panesJudged=462 mismatches=0 on BOTH arms (fresh: fast 26.0 s vs brute 44.8 s; reuse: cache vs a
 fresh brute pass on the second staging's 4856 targets). WebGPU errors 0, pageerror 0, unconverged 0 on all runs. Logs: session scratchpad fb/, fb2/.
 FB3 (persist the pane sides in the lightfield sidecar, −27 s more) and FB4 (bulk bounce-engine compile, 64-66 s) remain.
+### §FILM_INHERIT spec 2026-09-30 (red1: "not going ahead if there are no new changes from alt-s … U know my direction. See to it")
+GOAL: the film calls the SAME Alt+S SourcedLight (zone grid, sky-view field incl. §SKY_FIELD_EXACT_OPEN/SMOOTH/OPEN_ROOF, ground field,
+lamp binding) — no film-only look logic; the film adds only a per-frame GATE (continuity). bim-ootb fix/fast-bake, sw v1518.
+- I1 FIELD BY BUILDING (scene.js A._lightFieldByBuilding, main.js before primeDb): opened db has no light_field_cache row -> fetch
+  patches/<activeBuilding>_meta.db|_extracted.db.lightfield.bin, insert the row into the live A.db; light_zones.js primeDb/build do
+  their own key (code hash) + fp (geometry) checks. light_zones.js NOT edited (an edit re-keys all 4 baked sidecars; Hospital = 48 min).
+  Witness: §LIGHT_FIELD_BY_BUILDING found … then §LIGHT_FIELD_DB restore, and the zone build reports a cache hit (no 16 s + 67 s build).
+- I2 STAGE (effects.js staging): `(!A._maxqActive || A._filmParity) && SourcedLight.stage` (was `!A._maxqActive`, showstopper S2).
+- I3 GATE per frame (cinema_maxq.js A._filmGeomWhole -> effects.js A._filmParityStep -> SourcedLight.filmGate): uSLParams.x on only
+  while the whole building is on screen = no build-up and no storey reveal in the film, or past the fixtures' own relight boundary
+  (plan.beats.rise / topout). Reason: the grid + field describe the FINISHED building (S3) — during build-up a storey without its roof
+  would be cut to indoor sky = black exteriors. Off = the film's previous model. Uniform only, no recompile. &filminherit=0 = control.
+- I4 PORTALS (sky_portal.js frame): with the field on, portals park at intensity 0 (Alt+S retires them under the field); they
+  re-aim as before when the gate is off. Light count / shadow units unchanged (no recompile). Known difference kept: the film's
+  uniform budget still reserves the portal slots, so its lamp cap is lower than Alt+S's (named, not smoothed).
+- NOT YET (next): F5 build-up-aware field — per-zone enclosedFrac(t) from boundary-element placement, so build-up frames inherit too
+  (on Hospital_silent the gate is ON only from relightFrac 0.959 = the last 4 %). S5 zone lamp pick (prepare, 84 rays) stays still-only.
+WITNESS per run: §LIGHT_FIELD_BY_BUILDING found, §SOURCED_LIGHT on … zonesCache=, §SKY_VIEW_FIELD on, §FILM_INHERIT_GATE lines at the
+expected boundary, §FILM_PARITY_FRAME portal=retired(field) while ON, WebGPU/pageerror 0, ms/frame vs §FAST_BAKE 2.37 s; control arm
+&filminherit=0 must show gate OFF throughout and equal the pre-change film.
+**§FILM_INHERIT WITNESS a90 2026-09-30 23:05 (fix/fast-bake WIP, sw v1518; log scratchpad inh/a90.log):** I1 found the sidecar by
+building (Hospital_meta.db, key 21324567:90186) and §LIGHT_FIELD_DB restored it, BUT §ZONE_IDB_CACHE miss "geometry changed" — the path
+db's boundary geometry differs from Hospital_meta's by mm in the bounds and 20556.206 vs 20581.83 in one sum -> full build: §SKY_VIEW_FIELD
+sweepMs=117408, §SOURCED_LIGHT ms=160393 (setup +160 s). I2/I3/I4 work: every §FILM_PARITY_FRAME sourced=on portal=retired(field);
+staged: field (1.55 M active cells), ground field, §GLASS_REFL_OPEN 27,214 cells, §IRC_MAX day IR 318 zones, lamps 122/122 bound, cove 534
+zones. 0 WebGPU / pageerror / unconverged. COST: trailing rate 5.0-5.1 s/frame vs 2.2 s (§FAST_BAKE), GI_FILM bounce ms 130 -> 260.
+§FILM_INHERIT_GATE printed nothing (logs only a CHANGE; stage already sets on) — fix: log the first call. NEXT: control (&filminherit=0)
+vs on, same persistent --profile (zone cache warm) to split shader cost from staging.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
