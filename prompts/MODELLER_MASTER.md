@@ -104,7 +104,9 @@ were right, but its work list was the **2026-07-30 status column** of §OPEN LIS
 
 **THE QUEUE — in this order (§STRATEGY queue + §VISION-REVIEW move-up). Nothing outside it without red1's word:**
 1. **§SLIDE-REAL-WALLS Phase B** (spec + Phase M result: `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md` §SLIDE-REAL-WALLS).
-   Order SampleHouse 7 → Duplex 36 → SampleCastle 5. Witness W-SLIDE-REAL-WALL, RED on today's main (refusal).
+   Order SampleHouse 7 → Duplex 36 → SampleCastle 5.
+   **→ SampleHouse ✅ DONE 2026-09-30b (W-E2E-SLIDE-REAL 9/0 LIVE, #1793): 2 slideable after M5 (5 refused, brep bodies carry
+   their openings). Duplex 36 (M5-clean) and SampleCastle 5 = next sessions.** Witness W-SLIDE-REAL-WALL, RED on today's main (refusal).
    Check first whether a Phase B branch already exists (§STRATEGY said "in progress" on 2026-09-27; on 2026-09-30 no
    branch and no main commit found by grep).
 2. **§IFC-EXPORT-DEPTH** — storeys, materials, Psets, void relations. Round-trip witness on Duplex.
@@ -193,6 +195,45 @@ DUPLEX=PASS (placed=102 outliers=0) · walk_all 13/0.
 **Stale claims found:** this file :122-123 and :169-170 listed `render_fidelity` as red — GREEN at 8311ba5f; :97 / :129 / row 23 "ELEC
 2.11× over-count" — a legacy-walk number, not the production walk's.
 **Part B (§SLIDE-REAL-WALLS Phase B):** STARTED, not finished — handed to a Sonnet session: **§HANDOFF-SLIDE-SH 2026-09-30** below.
+
+## ▶ §SESSION 2026-09-30b — §SLIDE-REAL-WALLS Phase B on SampleHouse (from §HANDOFF-SLIDE-SH) + one gesture = one undo.
+## Opus session on red1's word (2026-09-30). bim-ootb worktree `/tmp/wt-slide`, branches below; bim-compiler `fix/slide-sh-uncut-check`.
+## Every number is read from a saved run log (scratchpad `slide/`), not from memory.
+
+**SPEC §ONE-GESTURE-ONE-UNDO (written before the fix).** A *gesture* = everything ONE user action commits: one Move-gizmo
+release / arrow nudge / rotate / scale / item-drag drop / Accept click — the primary op for every selected target PLUS every
+induced rider (hosted-by door/window rides, fills-opening rides, GEOM_CUT_MOVE voids). The group boundary lives in ONE place:
+`bonsai_oplog.js commitGesture()` — one signed `gesture-grp-N` gid that `O.undo()/O.redo()` already treat as one LIFO step (§P8)
+and `modeller_history.js` records as ONE node. Rule: a gesture that lands >1 row commits through it; a 1-row gesture keeps
+`commit()` byte-unchanged. **Falsifier:** real Open Duplex → real click on a wall that hosts fillings (asked of
+`SdgCascade.ridersFor`) → Move tool → real X-arrow drag → ONE Ctrl+Z must return active length to pre-gesture and every
+centre (wall + riders) to pre ≤1e-6 m; ONE Ctrl+Y re-applies all rows; Save after the undo not blocked.
+
+**SPEC §CUT-THROUGH.** A GEOM_CUT void face flush (|Δ|<0.1 mm) with the parent's bounding face is pushed 1 cm outward before the
+OCCT boolean. The region removed INSIDE the parent is unchanged; it removes the float32-vs-float64 coplanar skin.
+**Falsifier:** W-E2E-SLIDE-REAL E3 — a thickness-axis ray through each opening centre must pass the host mesh.
+
+**SPEC M5 §UNCUT-IS-SOLID (generator).** The "uncut" host body must be SOLID at every IfcOpeningElement of its host: a line through
+each opening box centre along the host's thickness axis crosses the uncut body ≥2 times; one miss refuses the whole host, named.
+**Falsifier:** W-SLIDE-REAL-WALL W7 on the pre-M5 patch → cuts=[0,0,0,2,2,0,0] (RED, `SLIDE_PATCH=<old patch>`).
+
+| item | result | witness (log) | PR |
+|---|---|---|---|
+| Frame trap (handoff step 1) | Witness re-pointed to the SERVED pair (`SampleHouse_ARC.db` + served `SampleHouse_geo.db`, fetched from the app's own registry). **Correction to the handoff:** `element_transforms.center` in `*_ARC.db` is the vertex CENTROID, not the AABB midpoint (Wy4: served world y∈[-1.3914,-1.1014] vs center±bbox/2 = [-1.3627,-1.0727]) → W2 checks position vs the served baked fold and extent vs `bbox_*`, never center±bbox/2. Also: sql.js MEMFS owns the passed buffer → each Database now gets its own copy. | W-SLIDE-REAL-WALL | #1793 |
+| **M5 — 5 of the 7 "slideable" SampleHouse openings were NOT slideable** | Browser E5 caught it: after sliding a window on host 23 the open span was `[-1.53,1.22]` = old ∪ new. Cause: hosts `3cUkl32yn9qRSPvBJVyWy4` / `…Ww5` are **IfcFacetedBrep** bodies exported WITH their openings in the faces — disabling IfcRelVoidsElement subtraction leaves them holed (0 triangles over any opening centre). Phase M's "tris uncut ≠ cut" could not see it. Generator M5 now refuses such hosts (line through each opening centre must cross the uncut body ≥2×): **SampleHouse 7 → 2 slideable** (host `…WXt`, IfcBooleanClippingResult, 2 doors). Duplex probe with M5: **36/38 still slideable**, 0 M5 refusals (2 tessellation-failed, as Phase M). | W-SLIDE-REAL-WALL **9/0** (pre-M5 patch `SLIDE_PATCH=…` → **1/8**, W7 cuts=[0,0,0,2,2,0,0]) | #1793 + bim-compiler this PR |
+| §CUT-THROUGH (worker) | Flush void faces pushed 1 cm out: the IFC opening is exactly wall-deep and doors start at the wall base → a 0.3 µm float32 skin closed every hole. `§CUT-THROUGH cut=… flushFaces=3` in the page log. | W-E2E-SLIDE-REAL E3 (without the fix: **0/2 open**) | #1793 |
+| Browser proof (handoff step 3) | Real Open: `§SLIDE-SEED uncutHosts=1/1 openings=2 cuts=2`, host promoted, 0 `§LAYER-SOLID-SEED-REFUSE`, world AABB Δ=0; real `#b-itemdrag` drag of door fid 11: `GEOM_MOVE dy=0.455` + `GEOM_CUT_MOVE cutId=39 dy=0.455`, one `gesture-grp-39`; open span `[-0.53,0.27]` → `[-0.07,0.73]`, old centre solid / new open; one Ctrl+Z → len 42→40, door Δ=2.1e-9, spans back; the 5 brep-host fillings still refuse. | W-E2E-SLIDE-REAL **9/0 local, 9/0 LIVE** (v66) | #1793 |
+| Re-point (handoff step 4) | `witness_opening_slide.js` S0 → sketched plain-extrude host: S1–S7 now JUDGE (was 7 INCONCLUSIVE every run) **11/0**. `witness_e2e_opening_slide.js` O0 → REAL-SPLIT (5 refuse / 2 form) **8/0**; its `exitItemDrag` guard never fired (module-scoped) — now clicks the button. | W-DAGEVU-SLIDE, W-E2E-OPENING-SLIDE | #1793 |
+| **One gesture = one undo** | RED on LIVE main v65: Duplex wall #112 + riders 73/42: 196→199, one Ctrl+Z → 198, residual **0.417 m** (G2/G4). Fix: `modeller.html _commitUserGesture` — move/rotate/scale gestures with >1 row go through `commitGesture` (item-drag already did). App log: `§ONE-GESTURE gid=gesture-grp-197 rows=3` · `§GESTURE-UNDO … rows=3 active=196` · `§GESTURE-REDO … rows=3`. Save after undo: `§SAVE_SNAPSHOT`, no block. | W-E2E-GESTURE-UNDO **6/0 local + LIVE** (v67); W-FIRST-STEPS **9/0/0 LIVE** | #1794 |
+
+**Regression (serial, on the combined branch):** gridundo 8/0 · delete 8/0 · move 7/0 · rotate 7/0 · scale 7/0 · dm_rotscale 12/0 ·
+cut 6/0 · cut_move(e2e) 12/0 · cut_move.mjs 26/0 · arc_editable 9/0 · gesture_undo(node) 9/0 · sdg_cascade 7/0 · undo_resurrect 5/0; CI e2e green on both PRs.
+**Live bytes:** `sw.js` v67; `bonsai_kernel_worker.js` carries `§CUT-THROUGH`; the patch carries 3 `slide_*` inserts; `modeller.html` carries `_commitUserGesture` ×4.
+**Stale claims:** `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md` §SLIDE-REAL-WALLS Phase M table "SampleHouse slideable 7" → **2** (M5); this file §HANDOFF-SLIDE-SH "3 hosts / 7 openings / canCut ×3" → 1 / 2 / 1.
+**Not done / found, left for its own row:** multi-select Delete still commits one row per id (N undo steps); autoroute/fixture placement commit per op — not user single-gesture edits in this sense, not changed.
+**Next session:** Duplex (36 slideable, M5-clean) → SampleCastle (5). Regenerate with `gen_slide_host_patch.py` (M5 included), append to `Duplex_ARC.db.sql`, extend W-SLIDE-REAL-WALL / W-E2E-SLIDE-REAL per building.
+
+**⇒ §HANDOFF-SLIDE-SH below is DONE for SampleHouse (✅ §SESSION 2026-09-30b above, bim-ootb #1793/#1794). Kept for history; its host/opening counts are superseded by M5 (1 host / 2 openings).**
 
 ## ▶ §HANDOFF-SLIDE-SH 2026-09-30 — §SLIDE-REAL-WALLS Phase B, SampleHouse only. Started by Fable 2026-09-30, handed to a
 ## Sonnet session on red1's word (save Fable tokens). Everything below is measured; nothing here has run in a browser yet.
