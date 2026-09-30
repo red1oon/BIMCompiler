@@ -226,6 +226,20 @@ S1 NOT built blind: the un-pack exists because container-level colour changes on
 never found) and a one-material pass would have to spare the overlays (stack/twin clones, clash boxes, datum) through TAA, AO and bounce
 passes. FIRST GPU STEP (one freeze clip, no film): on 3 freeze frames log the whitened pixels (§LOADPATH_PIXEL_DIAG) with the un-pack vs a
 container-material white (colorsTexture nulled + material swapped), to find why the earlier attempt failed; build S1 only on that result.
+**§CHECKPOINT T1 2026-10-01 06:24 (sw v1530, Hospital_silent frames 1150:1215 + freeze, 960x540 15 fps; /tmp/bake_Hospital_silent_2026-10-01_0613.log;
+~/Downloads/Hospital_silent_freeze_AFTER_960x540_15fps_2026-10-01_0613.mp4):** delivered, 230 frames, 0 WebGPU/pageerror/unconverged.
+- STACK-ONLY FREEZE: §LOADPATH_STACK_ONLY hidden=4153 -> restored 4153; freeze frames 0.45 s/frame (was ~13 s); §FRAME_REUSE_TOTAL 118/230;
+  §LOADPATH_HOLD cameraMoved=false PASS; §LOADPATH_RESUME stepAtResume=0.0000 PASS; §LOADPATH_CUT OFF (stack-only); no un-pack.
+- CLIP CLOCK: §LOADPATH_HOLD_INSERT armTnMatch=true (freeze inside this clip) — the post-freeze resume is exact.
+- TWINS: sameSig=0 — no other chain with the exact (class@storey) hop sequence on Hospital; the signature is too strict to find any.
+- LAMP DATA: dataPath=1 on the restage; §LAMP_DATA film=1 lamps=0 placed=1274 — this window is inside the §116 interior-lights-off span
+  (last stick 0.353 -> relight 0.959), so 0 lamps is the film's own rule, not a defect; poolLitPrev=0 every frame (no double lamps).
+- SHADOW EDGE: §FILM_SHADOW_EDGE range 916.8 m (was the sun-distance ~19,748 m), normalBias 0.2209 = (R+1.5) texels; the range grew 59x in
+  shot 3 by <0.1 m each (grow-only works; the log line is chatty).
+- GLASS ENV: §FILM_GLASS_ENV capture#1 ms=405 (once, shot 3); §MIRROR_OWN_MAT never applied — no mirror meshes found in view.
+- WINDOW PULL: ran on the inside freeze frames, skipped by its own rule (outside exposure 1.156 >= inside 0.47).
+- PREBAKE: loadPath computed 153.8 s + portal recomputed (key-mismatch: different visible glass at this tn) -> file written with both parts
+  (294,359 B, merge kept); the next bake of the same range reads them.
 Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
 term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
 be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
