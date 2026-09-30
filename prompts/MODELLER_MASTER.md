@@ -127,7 +127,7 @@ dw_rot_units · git_history · terminal_walk · render_fidelity · W-DISC-DENSIT
 `WITNESS_INTERFACE_FRAMEWORK.md` §MODELLER-NET-AUDIT). Each known red counts as core work: fix it, or re-point the witness
 RED-first with the reason written down. Never delete it to get green.
 **→ 2026-09-30 (§SESSION 2026-09-30 below): all six worked — git_history ✅ 8/0 · INSTHIDE ✅ 17/0 · dw_rot_units ✅ · terminal_walk ✅ 11/0 ·
-render_fidelity ✅ (was a stale claim) · DISC-DENSITY D3/D4/D4b ✅ with ONE ⛔ left (D4c, run classes placed as fixtures — red1's call).
+render_fidelity ✅ (was a stale claim) · DISC-DENSITY D3/D4/D4b ✅ with D4c answered 2026-09-30 (option b, per discipline once its router is proven — build slice queued).
 Three of them hid product bugs (twin-hide dead, walk facing dropped, band envelope on raw origins) — all fixed on that PR.**
 **Still open, and worth doing BETWEEN queue items only when they are cheap:** row 6 (Terminal 0 MEP — accept or fix) ·
 row 10 (Terminal open speed on the LIVE URL; local was 20,592 ms headless — do not diff that against the old 14 s) ·
@@ -184,6 +184,15 @@ the six were hiding PRODUCT bugs behind an INCONCLUSIVE or empty-population witn
 mined rows: PLB/IfcPipeSegment **748 vs 3,821 real (0.20×)**, ACMV/IfcDuctSegment 268/568 (0.47×), IfcDuctFitting 464/713 (0.65×).
 Keep them as the Stage-1 fill, or exclude Segment/Fitting classes from the fixture walk and leave runs to the router (§MEP-ROUTE-DISC)?
 W-DW-DENSITY-TE stays **8/1** (D4c RED, honestly labelled) until answered.
+**✅ ANSWERED 2026-09-30 (red1): option (b), PER DISCIPLINE, gated on proof.** Placing fixtures (stage 1) and routing
+runs (stage 2) are the two stages of ONE walk, like normal MEP practice: terminals first, then distribution. Runs come from the
+router only. The rule is: exclude `*Segment`/`*Fitting` run classes from `placeMeasured` for a discipline ONLY once
+its router is witnessed drawing that discipline's runs on the real Open → Walk path (router runs vs real count per class,
+before/after). PLB qualifies now (the guide's W-MEP-OPENPATH table: Duplex 18 runs, Terminal 2,915). ACMV/ELEC/FP keep the
+stage-1 pieces until their routers are proven. The code has had patterns since §MEP-ROUTE-DISC 2026-09-26, but the live
+guide still says "placed but not yet routed". Measure which is true first. red1 also asked: the re-route after a fixture or
+gridline move (MEP stays visible, `W-MEP-REROUTE`) is fine "if it is not costly". Its cost at Terminal scale is UNMEASURED;
+measure it in the same slice.
 **Regression on the touched paths (history restore · `_dwTwinFids` · `placeSchedule` yaw · `placeMeasured` midpoints), all on the
 branch, serial:** gridundo 8/0 · delete 8/0 · undo_resurrect 5/0 · mep_reroute 9/0 · oleye 5/0 · instpick **8/0** (two earlier runs
 7/1 on P4 ROW-FRAMES with Δtarget 30.4 m then 3.6 m — the 1.5 s wait vs the 1.1 s fly; 8/0 on unmodified main too → timing flake,
