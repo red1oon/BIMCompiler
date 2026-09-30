@@ -21,6 +21,25 @@ vs a timeless zone cache, per-frame cascades unstable, zone lamp pick needs the 
 rule. RULE ADDENDUM: every Alt+S lighting function is written as BUILD (per building, cached) + DECIDE (per camera/frame, ray-free,
 ms-scale).
 
+## ▶ §STILL→FILM INHERITANCE 2026-09-30 (Opus, end of the still-lighting session) — READ FIRST for the Alt+C bake session
+State: bim-ootb **fix/sky-surface @22a8e253, sw v1515** (pushed; NOT merged to main / look / OCI). Served locally :8664 from /tmp/wt-surf.
+Baked sidecars (gitignored, local only): /tmp/wt-surf/buildings/patches/{Clinic,Hospital,Terminal}_meta.db.lightfield.bin +
+HHS_Office_Federated_extracted.db.lightfield.bin, key 21324567:90186 (light_zones.js v1511 code hash). Any light_zones.js code edit re-keys
+ALL four (Hospital bake = 48 min). Full still record: PHOTOREAL_STILL_RENDER.md top blocks (§DEV RESUME 2026-09-30 NIGHT).
+Which of the day's Alt+S fixes a FILM (A._maxqActive, cinema_maxq.js) inherits today — code-read, file:line on the branch:
+| fix (sw) | function / where | film gate | film inherits? |
+| §SKY_FIELD_EXACT_OPEN v1506, §SKY_FIELD_SMOOTH v1507, §SKY_FIELD_OPEN_ROOF v1511 | light_zones.js field() -> SourcedLight.stage | effects.js:4624 `!A._maxqActive && SourcedLight.stage` | NO — films never stage sourced light (showstopper S2). They reach films only when F1 (light set as world data) lands. The baked sidecars are camera-independent = F1-ready. |
+| §GI_REDIST_DEFAULT_OFF v1509 | gi_still.js:841 redistU default 0 | Alt+S bounce only | films use the GI composer path (effects_gi_poc.js:133/497 A._giComposerActive) — NOT measured whether it reads redistU |
+| §MIRROR_OWN_MAT + §MIRROR_PARALLAX v1508-09 | effects.js _mirrorOwnApply (staging) + glass_fresnel.js capture | v1515: `if (A._maxqActive) skipped` | NO by design: films skip the §GLASS_ENV capture (effects.js ~6000 `!A._maxqActive`), so a film mirror would show the sky HDRI indoors. Film mirrors = plain MEP material (not mirror-finished). NEEDS: a per-shot room capture (F-list item) |
+| §BEAM_UNDER_SLAB v1510 | streaming.js _getMaterial polygonOffset on IfcBeam | none (material-level) | YES — every render mode |
+| §WINDOW_PULL v1512 | gi_still.js windowPull after the still composite | Alt+S overlay only | NO — films need their own per-frame version (depth/zone mask is ~0.9 s/frame at 1440p; exposure EV15 from LightLaw) or a per-shot one |
+| §CSM_READBACK_GLASS v1507c4 (merged v1513) | effects.js _csmReadback | _cascadeFit(film) returns null (effects.js:3353) | NO — films keep §STILL_SHADOW_FIT (F2 not built); the glass-capped readback bug class applies to F2 when built |
+| §STILL_RES_DEFAULT_1440 v1514 | effects.js _stillResApply | `if (A._maxqActive) return` | NO — films keep their own size; 4k FAILS the bounce on the 8 GB card (358,369 WebGPU errors) — relevant if films ever run the bounce at 4k |
+| IFC-AS-MODELLED ruling (red1) | — | — | applies to films too: authored-model defects are not compensated |
+Measured lessons that carry to films: exact-covered sky cells cost -0.5..-1 EV indoors (the meter answers small F lifts) — any film sky
+term must be judged on exposure, not only on F; the LEAK grid reads under+bounce, not the final composite; a patch/blockiness metric must
+be checked against a fake-grid control (wall "blocks" were a distance-bias artefact).
+
 ## 0. How to read this
 - "Alt+S" = one press of the still: `_applyPhotoStaging` (effects.js:3966-4411) runs ONCE, then the
   TAA/AO fold (16 + 24 composer renders, effects.js:4711-4712) and the 8-pass bounce (gi_still.js:58, 662-711).

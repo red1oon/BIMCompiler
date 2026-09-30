@@ -1959,6 +1959,22 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
+## ▶▶▶▶▶▶ §DEV RESUME 2026-09-30 NIGHT — START HERE (supersedes the PM block below; Opus)
+# ⚠ DO NOT REMOVE — scope: Alt+S still lighting. Read the log after every run; proof = § numbers. GPU runs: flock /tmp/claude-1000/gpu.lock.
+STATE: bim-ootb fix/sky-surface @22a8e253 sw v1515 (pushed; not merged to main / look / OCI). :8664 serves /tmp/wt-surf. :8665 retired
+(case-4 merged at v1513). All 4 buildings baked (key 21324567:90186, restorecheck PASS). Links: http://127.0.0.1:8664/viewer/viewer.html?db=
+../buildings/{Clinic,Terminal,Hospital,HHS_Office_Federated}_extracted.db. Alt+S default 1440p (&stillres=window = old).
+CLOSED today (details in the dated sections below): case 1 (§SKY_FIELD_EXACT_OPEN — v1502 covered field + open-cell exact), case 2 partly
+(§SKY_FIELD_SMOOTH: Terminal wall jumps 738 -> 337), case 4 (§CSM_READBACK_GLASS), mirror (§MIRROR_OWN_MAT + §MIRROR_PARALLAX, stills
+only), §GI_REDIST_DEFAULT_OFF, §BEAM_UNDER_SLAB (floor strip), §SKY_FIELD_OPEN_ROOF, §WINDOW_PULL, §STILL_RES_DEFAULT_1440.
+RULINGS: IFC-as-modelled is truth (authored defects not compensated); ground albedo 0.36 kept (red1 07-28); Terminal closed; Hospital
+"generally OK" (red1: an isolated slight black stretch let go — "light confluence" is a strength).
+OPEN (still): lamp shadows (none exist; lampsh.js probe timed out — rerun with fewer px / top lamps), contact shadows under furniture
+(none under seats OR tables, contact.js), torch share in lit rooms (measure &torch=0 at a lit pose), §SKY_FIELD_SMOOTH doubles floor
+patchiness at Clinic …142544 (5.4 -> 10.1 %) while real daylight — keep/retune decision, merge fix/sky-surface -> look/main + OCI sidecars.
+NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
+§BEAM_UNDER_SLAB today).
+
 ## ▶▶▶▶▶ §DEV RESUME 2026-09-30 PM ("resume light fixing") — START HERE, supersedes the 09-30 block below (Opus allowed)
 # ⚠ DO NOT REMOVE — scope: Alt+S still lighting defects, ONE CASE AT A TIME TO ZERO (red1 ruling). Read the log after every run;
 # proof = § numbers, never red1's eyes. Every headless GPU run: `flock /tmp/claude-1000/gpu.lock`; 'Uncaptured WebGPU' > 0 = not evidence.
