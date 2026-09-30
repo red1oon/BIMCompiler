@@ -832,7 +832,7 @@ cost and, for some classes, its labour time. The Modeller shows that change on t
 
 **What the numbers are** (honest labels): the quantity basis is the bounding box, the same one the 5D cost report uses
 (length, face area, volume or count, by the class's unit). **Material** = the change in quantity × the price of the
-active **rate pack** — your language setting picks it (the tested run used US English: 48 per m² for a wall). It is
+active **rate pack** — your language setting picks it (the tested run used US English: 48 per m² for a wall) — rounded the same way the Project Order line is, so the hover, a fresh order and a Variation Order all show **one number**. It is
 *projected*, per element. **Labour** comes from the shipped duration rule: an ordinary wall (priced per m²) takes a
 **flat time per element**, so stretching it changes cost but not labour (`+0 s`); a linear class such as a beam or duct
 scales with length. A plain **move** changes no quantity, so it reads `+0.00`. The **finish date is not re-solved** — that
@@ -861,7 +861,7 @@ Select parts and click **ERP ▸ Project Order** (bottom-left). It reads the ERP
    - **A · Delete & re-issue** — only while the order is **not committed**. It leaves exactly one order, issued from the selected parts.
 
      ![After A](img/modeller/first-steps-s9-4-option-a.png)
-   - **B · Issue Variation Order** — required once the order is **committed to a vendor** (a completed purchase order on the project, read from the ERP records). A is then disabled with its reason.
+   - **B · Issue Variation Order** — required once the order is **committed to a vendor** (a completed purchase order on the project, read from the ERP records). A is then disabled with its reason. The VO is the **priced difference of the order line it amends**: original order + VO = a fresh order for the edited parts, to the cent. It is sent as **Drafted**; the Modeller only shows the status the ERP record carries — approval is done on the ERP side.
 
      ![Committed: A disabled](img/modeller/first-steps-s9-5-committed.png)
 
@@ -870,9 +870,7 @@ Select parts and click **ERP ▸ Project Order** (bottom-left). It reads the ERP
 4. Undo the edit (**Ctrl+Z**) and the panel's price for the parts returns to the original.
 
 The Viewer reads the same store: the same parts folded from the Viewer give the same planned amount and find the existing order.
-*Coming — needs a decision:* approving a Variation Order (draft → completed) is done in the ERP app; a VO prices an edited element
-the way the model-diff does (element × rate × 1.3 × loading), not by the extra quantity shown above; the order key for buildings other
-than Duplex is not yet measured on the Viewer.
+Any IFC you open works: the order is keyed by the model's own name (the Duplex resident keeps its measured Viewer label).
 
 ---
 

@@ -104,8 +104,10 @@ Rest the pointer on the stretched wall. A small label appears beside the pointer
 
 ![The hover label on the stretched wall: area 10.586 → 13.233, material +127.03, labour +0s, finish date not re-solved](img/modeller/first-steps-s8-1-hover-label.png)
 
-Read it left to right: the wall class, its area **before → after**, the **material** change (**+127.03**, the
-extra square metres times the price per m² — 48 in this run), the **labour** change (**+0 s**: an ordinary wall
+One number everywhere: the same basis prices the Project Order line and any Variation Order below.
+
+Read it left to right: the wall class, its area **before → after**, the **material** change (**+127**, the
+extra square metres times the price per m², rounded the way the Project Order line is — 48 per m² in this run), the **labour** change (**+0 s**: an ordinary wall
 takes a flat time per element, so stretching it changes cost but not labour), and the note that the **finish date
 is not re-solved** (the Modeller does not re-run the whole programme for one edit).
 
@@ -158,7 +160,8 @@ Stretch a selected wall again (2.1). The panel now calls it a **variant** of the
   from the selected parts (test: still exactly **one** Project Order, planned amount 1,004 → 635). If the order held more
   than the selected parts, the panel says so first.
 - **B · Issue Variation Order** — for an order **already committed to a vendor**. It adds a Variation Order to the
-  same Project Order instead of starting over.
+  same Project Order instead of starting over. Its amount is the **priced difference of the order line it amends**, on the
+  same basis as the order itself: original order + Variation Order = what a fresh order for the edited parts costs, to the cent.
 
 ![After A: Deleted and re-issued, one Project Order, planned 635](img/modeller/first-steps-s9-4-option-a.png)
 
@@ -169,13 +172,11 @@ out with the reason written under it, and **B** stays available:
 
 ![Panel: committed to a vendor — A disabled with its reason, B available](img/modeller/first-steps-s9-5-committed.png)
 
-Click **B**. The panel reports the Variation Order (draft), here **81.90** for one stretched wall:
+Click **B**. The panel sends the Variation Order and lists it with its status read from the ERP record (**Drafted**), here **127.00** for a second, larger stretch (original 635 + 127 = 762, the fresh fold):
 
 ![After B: Variation Order issued, draft](img/modeller/first-steps-s9-6-option-b.png)
 
-*Coming — needs a decision:* approving a Variation Order (draft → completed) is done in the ERP app, not here; and a VO
-prices the edited element the way the existing model-diff does (one element × rate × 1.3 × loading), not the extra
-square metres shown in 2.2. Both are open questions, recorded in the project notes.
+Approval of a Variation Order is done **on the ERP side**; the Modeller only sends it and shows the status the ERP record carries (Drafted, Approved …). This works for **any IFC you open**: the order is keyed by the model's own name (e.g. `SampleHouse_ARC` for the sample `.ifc`), tested on the local-IFC open path.
 
 ---
 
@@ -200,24 +201,26 @@ has a blue **▶** — its tooltip reads "Walk this discipline".
 
 ### 3.3 — Click ▶ on PLB
 
-Click the **▶** on the **PLB** row. After a few seconds the fixtures appear and pipes are drawn between them, and
-the structure goes see-through so the services read. The status line reads
-**`PLB — 18 placed across 6/21 spaces · 22 nn-chains`**. Measured on the live site: **18 fixtures**, **22 pipe runs**
-all drawn, **22** written to the signed history, 5 bend fittings, one history step **"Walk PLB (45)"**.
+Click the **▶** on the **PLB** row. After a few seconds the fixtures are placed and pipes are drawn between them. The
+status line reads **`PLB — 18 placed across 6/21 spaces · 22 nn-chains`**. Measured on the live site: **18 fixtures**, **22 pipe
+runs** all drawn, **22** written to the signed history, 5 bend fittings, one history step **"Walk PLB (45)"**, and the
+building itself untouched (196 elements before, 196 after). The pipes sit inside the solid building, so press **X-ray**
+(the pill in the right-hand rail, or the **X** key): the structure goes glass and the plumbing shows.
 
-![The Duplex after the PLB walk: fixtures and pipe runs](img/modeller/first-steps-mep3-walk-done.png)
+![The Duplex after the PLB walk and X-ray: fixtures and pipe runs inside the building](img/modeller/first-steps-mep3-walk-done.png)
 
-### 3.4 — Click a pipe
+### 3.4 — What the pipes are
 
-Click any pipe. It becomes the selected item (the status line reads `selected feature #…`). Its size is stored on it and
-was read from the model, never typed in: **25.4 mm** cold water (1 run) and **48.3 mm** waste (21 runs).
+Every pipe is a signed row that names the product it is drawn as, and its size is read from that row — never typed in:
+**25.4 mm** cold water (1 run) and **48.3 mm** waste (21 runs), all 22 rows citing a real product. *(You cannot click a pipe to
+select it yet: it sits inside the solid building and even the x-ray glass takes the click.)*
 
-![A pipe selected](img/modeller/first-steps-mep4-pipe-clicked.png)
+![The pipes seen through the x-rayed building](img/modeller/first-steps-mep4-pipes-xray.png)
 
 ### 3.5 — Move a fixture and its pipes follow
 
-Moving a walked fixture re-routes its pipes. **Today there is no drag handle on a walked fixture**: clicking one
-only identifies it (`walked PLB · FlowTerminal … (generated — identify only)`, Move stays greyed out). So this
+Moving a walked fixture re-routes its pipes. **Today there is no drag handle on a walked fixture** (a gridline drag moves walls, not fixtures): clicking one
+only identifies it (`walked PLB · FlowTerminal … (generated — identify only)`, Move stays greyed out; measured with the building hidden). So this
 step was proven by moving a fixture 0.5 m with the same signed move the Move tool writes: the network re-routed in
 **about half a second** (524 ms on the live site, Duplex) — 22 runs became 16, and a run now ends **exactly** at the fixture's new spot
 (distance 0.0000 m; it was 0.500 m from the old spot). The re-routed runs and their bend fittings are written to the signed
