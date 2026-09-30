@@ -2121,6 +2121,25 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
   rule (tint from IFC, clamp saturation) — NOT specced.
 - P4 LIGHT — blown: HHS …158014 7.49 %, …181190 4.79 %, …218749 3.1 % (outside through glass; §WINDOW_PULL applies to stills already —
   measure why not enough). Clinic …740793 wall sconces: bright dome, no visible pool on the wall around it (red1's L1) — NOT measured.
+- SPEC P1/P2/GLASS (red1 2026-10-01 "patch P1 and P2, tone down glass in stills"):
+  P1 §PROXY_NAME_MAT — IfcBuildingElementProxy, no authored name, colour absent or exporter placeholder: material from the NAME (matVariant
+     'proxy:equip' / 'proxy:steel', streaming.js _elementVariant; porcelain names already -> ceramic via §PORCELAIN). equip = /wshp|heat
+     pump|panelboard|switchboard|transformer|sensor|switch|receptacle|cctv|camera|ahu|cooling tower|fan|water heater|boiler|chiller/ ->
+     RAL 7035 light grey #CBD0CC (Wikipedia RAL list: "electrical and instrumentation panels"); steel = /stahl|steel|balkon|balcony/ ->
+     STD_MAT.IfcMember steel. No match -> teal flag as today. All views (material). The MEP service rule does not override a proxy variant.
+  P2 §LUMINAIRE_WHITE — IfcLightFixture, or an MEP terminal whose name hint is a light (light|sconce|pendant|lamp), no own colour ->
+     RAL 9016 traffic white #F7FBF5 (pendant luminaire datasheets: "housing colour traffic white RAL 9016", Regiolux panella/alevo).
+     Inside _mepServiceColour (tier 2 only). All views.
+  GLASS §GLASS_TONE_STILL — Alt+S only (staged in SourcedLight.stage beside §SUN_GLASS_CASTERS, restored in unstage): every glassy
+     material's colour c -> L + k (c - L), L = Rec.709 luminance, k = 0.3 (AUTHORED presentation choice, not sourced; &glasstone=k,
+     0 = neutral grey, 1 = IFC colour unchanged). § line §GLASS_TONE mats, k, mean sat before/after.
+  WITNESS: W-MEP-SERVICE-COLOUR extended — HHS proxies: WSHP/panelboard/sensor/transformer/cooling-tower -> 7035, Stahlbalkon -> steel, teal
+     count = unmatched only; lights -> 9016 (HHS pendants, Hospital IfcLightFixture). Glass: §GLASS_TONE line in one still's log.
+  ✅ BUILT @b04e8a44 sw v1519 (pushed, NOT baked — none needed: no light_zones.js change): W-MEP-SERVICE-COLOUR PASS 9/9 — HHS colourless
+  proxies 659: equip 563 (RAL 7035) / steel 81 / ceramic 11 / teal 3; luminaires RAL 9016: HHS 410, Hospital 1,222, Clinic 1,074. Glass tone:
+  code only, its §GLASS_TONE line not yet seen in a still log (red1 sights). Hospital 3,781 unmatched proxies carry the exporter cream
+  placeholder (render cream, not teal): receptacles matched; dampers 546, diffusers ~870, grab bars 219, solar panels 567 unmatched — left.
+  Alt+C: merge note in ALTC_FOUNDATION.md now covers up to b04e8a44 (glass tone is still-only; P1/P2 reach films on merge).
 - P5 minor: exterior ground texture blotchy (white mottles) …255867/…639671; context blocks plain mauve.
 Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal 2, Clinic 1).
 
