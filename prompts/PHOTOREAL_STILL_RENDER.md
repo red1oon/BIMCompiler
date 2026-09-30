@@ -2212,6 +2212,12 @@ Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal
   - §GLASS_TONE works: mats=1, meanSat 0.784 -> 0.479.
   DECISION for red1: (a) keep physics (lamps show at dusk/overcast, not at midday by a glass wall); (b) drop the EN dimming (+13 % here);
   (c) first verify the daylight level against the truth grid (if over-read, fixing it lets the lamps show without inventing).
+  red1 chose (c) "follow your advice and fix". RESULT 07:5x (lightgrid.js on v1521 + the v1520 HHS sidecar, truth cached
+  HHS_Office_Federated_6839.v2.json, 256 rays, WebGPU 0; log scratchpad 9cdf2c10…/lgrun/lg_hhs.out): FLOOR 3,000 pts skyOver 6 / skyUnder
+  484, median |F - E| 0.0085; WALL 1,569 pts skyOver 112 / skyUnder 80, median 0.0039. => daylight is NOT over-read (slightly under).
+  The meter is already room-only when inside (sourced_light.js:1540 roomOnly, default on). => the ground-floor room really is daylit
+  (EV100 13.2; rated lamps add +13 %). NOTHING TO FIX in the daylight data. Lamp pools there need lamps ~7x rated (invented) or a
+  different light condition (dusk / overcast still) or local tone mapping (presentation) — red1 to pick if wanted.
 
 - OPEN (red1 2026-10-01 ~06:5x): "mirror true reflection still problematic in Clinic" — no still id given; mirrors are §MIRROR_OWN_MAT +
   §MIRROR_PARALLAX (v1508-09, stills only). NOT investigated yet: first find red1's latest Clinic stills with a mirror in view, read their
