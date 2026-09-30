@@ -691,3 +691,10 @@ before reusing or removing):**
   rather than expecting it to still exist.
 - `/tmp/wt-winddown-park` (bim-compiler, branch `docs/cut-gate-winddown-park`, this section's own commit —
   pushed, NOT merged, per the wind-down order's explicit "push to feature branch, do not merge" instruction).
+
+## 2026-09-30 — First Steps PoC (docs/ModellerFirstSteps.md) — witness_first_steps.js vs LIVE: 9 PASS / 0 FAIL / 0 INCONCLUSIVE
+Scope narrowed by red1 to one baby-steps flow (open → Duplex → click a wall → Move → Ctrl+Z → Save). Full-guide walk NOT done. Log: `/tmp/claude-1000/gs/first_steps_FINAL.log`.
+Product findings (not fixed; Modeller code untouched):
+1. **Move of a wall that hosts a door/window is 3 ops, Ctrl+Z reverts ONE.** Duplex wall #110 (IfcWallStandardCase): oplog 196→199 (host + 2 riders, `induced:'hosted-by'`), one Ctrl+Z → cursor 199→198, wall centre residual 0.417 m (NOT restored). The very next Save was refused: `§SAVE_BLOCKED reason=RED_CLASH count=1 detail=door-out(46,110) healed=8`. Expected: one user gesture = one undo step. Where: `modeller.html` doUndo (~3657) undoes one op; cascade commits at ~2854. The First Steps page therefore tells the user to pick a wall with no hosted fillings (asked of `SdgCascade.ridersFor`).
+2. Cosmetic: first Save status reads `Saved — v0 (1 version)` (`latestVersion=0`).
+3. Cosmetic: after a Ctrl+Z the history slider reads 196/196 with the redo step no longer shown as range (max=196).
