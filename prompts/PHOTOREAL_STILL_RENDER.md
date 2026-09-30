@@ -2143,6 +2143,23 @@ NOT MEASURED YET: how much light each row actually leaks per building (only the 
 - P5 minor: exterior ground texture blotchy (white mottles) …255867/…639671; context blocks plain mauve.
 Every still: fault unlit/irOnly/glassOpaque/fieldBad = 0; glassLow 1-2 (Terminal 2, Clinic 1).
 
+### §SKY_FIELD_FURNITURE — SPEC + RUN PLAN (2026-10-01, red1 "do all those except Hospital bake"; GPU shared pro-rata with Alt+C, which
+### runs WITHOUT gpu.lock — measured 06:0x: its chrome 3.9 GB of 8 GB, util 100 %)
+- WHAT: IfcFurniture + IfcFurnishingElement join OCCLUDERS (light_zones.js:43) -> they enter the §SKY_SHELL_RAYS / exact-pass soup (ARC
+  discipline passes OCC_DISC). Census (elements_meta): Clinic IfcFurnishingElement 118, Terminal IfcFurniture 176, Hospital IfcFurniture 201,
+  HHS 0 (no furniture in the model: HHS changes nothing but re-keys). RISK: Hospital occluder soup was 5.82 M tris vs the 6 M budget
+  (light_zones.js:1129 skips ALL occluders over budget) — check §SKY_SHELL_RAYS occluderSkipped when Hospital is baked.
+- COST OF SKIPPING THE HOSPITAL BAKE: the code-hash key changes -> Hospital's sidecar is stale -> Hospital builds the FAST field on load
+  until re-baked (~49 min).
+- RUN: Clinic bake -> HHS bake -> Terminal bake (under gpu.lock among my own runs) -> Terminal seat pose …735021015 contact.js render with
+  &lampshadow=4 (tests BOTH parts: daylight through seats (this) + lamp top-4 shadows (v1516)). Every log: 'Uncaptured WebGPU' = 0 or
+  the run is not evidence (shared card).
+- WITNESS (contact.js at …735021015): seats/open < 1.00 and tables/open < 1.00 (was 1.07 / 1.02); open floor final within ±3 of 146.7;
+  §LAMP_SHADOW share= printed.
+- BUILT @41144850 sw v1520 (pushed). Old v1519 sidecars backed up: session scratchpad 9cdf2c10…/lf_backup_v1519/ (restore = copy back +
+  revert 41144850). RUN STARTED ~06:1x: scratchpad c1/bk4.sh (bk4_<B>.out, rc4_<B>.out, cs/1790735021015_furn.log). Hospital NOT re-baked
+  (red1) -> fast field until it is.
+
 NEXT SESSION = Alt+C bake: read ALTC_FOUNDATION.md "§STILL→FILM INHERITANCE 2026-09-30" first (which of today's fixes films inherit: only
 §BEAM_UNDER_SLAB today).
 
