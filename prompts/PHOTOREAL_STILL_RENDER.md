@@ -1980,6 +1980,21 @@ OPEN (in order): (1) Clinic mirror …729229470: two blown-white vertical strips
  (CIBSE/IES: flux = E x A / (UF x MF), UF from room index); §LAMP_EN is its numeric form; at rated, Terminal lamps gave ~4.6x the 200 lx
  default target (scale p50 0.218, pre-v1522 log) — the measuring run (…753057418 &lampen=1) was STOPPED at wrap-up, rerun it first;
  the airport-hall EN 12464-1 value is not yet cited; (4) Alt+C must merge fix/sky-surface (note in ALTC_FOUNDATION.md).
+### §MIRROR_STRIP — MEASURED (2026-10-01 13:30, Opus; OPEN (1)) — :8664 v1525 @8325f5da, diag.js + PREJS=mirw2.js (c1/), log
+### c1/cs/1790729229470_strip.log, §GI_STILL result secs=23, §FAULT unlit 0/144.
+- Strips (x 832-882 / 934-988, y 86-405 at 1685 px): v1509 red1 still blown(L>=250) 78 % / 70 %; v1525 blown 0 % / 0 % but still BANDS:
+  mean L 197.5 / 171.9 vs 86.2 between them. Not clipped any more, still 2.0-2.3x the rest of the mirror.
+- What the EXACT reflected ray hits (§MIRROR_STRIP_W): s1 (509 px, mean 2.04 m) = interior partition wall 373737 300, door 2e1008 150,
+  lavatory 57; s2 (548 px, 0.68 m) = towel dispenser 2c3743 377, wall 147; rest (893 px) = SAME wall 582 / door 213 / lavatory 62.
+  Box lookup agrees with truth (<0.5 m) on s1 450/509, s2 526/548, rest 807/893.
+- READ: the bands reflect the SAME dark surfaces as the rest of the mirror, and the lookup lands on the right surface -> the extra
+  brightness is in the CAPTURE's lit value of those surface parts, not in the parallax. Not yet known which light makes it (the
+  capture runs with staged lamps (unshadowed data lamps) + torch spot at the capture point). Also logged: FlowTerminals carry emissive
+  ffe4b5 x0.30 (towel dispenser, lavatory) — s2 is mostly the dispenser at 0.68 m.
+- Sawtooth: the s1 mismatches (59 px) hit wall/door/floor slab 'X' = lookup lands off the true surface at the box edge — candidate, not
+  confirmed.
+- NEXT (needs GPU go): exact truth for a planar mirror = an app render from the eye reflected across the mirror plane; compare per px with
+  the mirror px; then per-light A/B (&torch=0, &lamps=0) on the band/rest ratio.
 TOOLS: scratchpad 4a28e70a…/c1: diag.js (pose PNG -> Alt+S -> § log), shots.js + shots.sh (real Save-PNG capture, 2776x1440 with
  pose; ~3.2 min/still), contact.js (floor under occluder vs open). lightgrid.js copy in 9cdf2c10…/lgrun.
 
