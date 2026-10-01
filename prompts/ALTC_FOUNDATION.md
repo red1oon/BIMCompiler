@@ -58,6 +58,11 @@ Queue (scratchpad 9e876aa6/queue.sh, log queue.log): HHS_Office_Federated_silent
 found §SKY_FIELD_FURNITURE pushes Hospital's occluder soup over the 6M-tri budget -> shellSoup drops ALL occluders (occluderTris=0, cells
 9,608 vs 229k) — fix = shed by priority, re-keys all sidecars; merge it + their rebaked Hospital_silent sidecar, then touch hospital.go.
 Yesterday's Hospital_silent_full_noLoadPath_AFTER_..._1417.mp4 carries this defect (in-bake rebuild) + no bounce after f=1071 + black 2:35.
+UPDATE 03:20: Alt+S REVERTED §SKY_FIELD_FURNITURE (sky-surface 233b6295, key back to 21324567:90186) + §DOME_GLOW (red1's wall-lamp half-sphere)
++ §ZONE_EYE_SKIP_OPEN + §LOCAL_EXPOSURE_BILATERAL, all on fix/sky-surface @f78a6579. ORDER: HHS (running, 1b214d46) -> Terminal (1b214d46 sidecar)
+-> THEN merge origin/fix/sky-surface into fix/fast-bake -> wait for Alt+S message: Hospital key 21324567:90186 + occluderTris ~5.8M + files in
+/tmp/wt-fastbake/buildings/patches (Alt+S writes to /tmp/wt-surf; PHOTOREAL_STILL_RENDER.md "§DEV RESUME 2026-10-02 03:15") -> touch
+scratchpad hospital.go. After the merge the 1b214d46 HHS/Terminal sidecars are stale (Alt+S rebaking them at 21324567).
 
 ## ▶ §RESOLVE_BY_BUILDING — next abstraction (2026-10-01, red1: "Hope fixes will abstract able to handle any building IFC set")
 Building-agnostic today: §FILM_BLANK_FRAME, §FILM_GATE_EXPOSURE_SNAP, §GI_FILM_CARRY + gpu.lock, freeze panels (any IfcSpace/compiled room
