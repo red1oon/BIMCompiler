@@ -174,3 +174,8 @@
 - §DOME_GLOW: active on 155 round fixtures (Clinic …808307859), 0 shader errors; the uniformity probe (domew.js) caught only 2 non-round
   fixtures (CV 0.006 both arms) — NOT yet proven on a sconce: next = a pose framing a wall sconce, §DOME_W meanCV new vs &domeglow=0.
 - OPEN list unchanged otherwise (see §5a): vault/wall 0.5 m staircase (Clinic …881490077) first.
+- UPDATE 04:10: the Alt+C session's _silent DBs carry §IFC_SURFACE_NAMES patches (fix/fast-bake); my Hospital_silent sidecar was built
+  WITHOUT them -> moved aside (fastbake …/Hospital_silent.db.lightfield.bin.stale_nonames). Their patches copied into wt-surf; REBAKING
+  Hospital_silent with names (…/bake/hs2.sh -> bake_Hospital_silent.out, rc_Hospital_silent.out). Deliver to fastbake ONLY after
+  restorecheck shows "§ZONE_IDB_CACHE hit" + occluderTris ≈ 5.8M, then message bim-compiler-20 (Hospital film held until then).
+  HHS names do not move its fingerprint (their bake: hit) -> HHS .k21324567 stands; Terminal needed 0 name rows.
