@@ -16,6 +16,28 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-02 06:15 (Alt+C session bim-compiler-8e). To-do 1-3 DONE: sky-surface @f78a6579 merged into fix/fast-bake = **sw v1544** (77ace8f3,
+  pushed; both-side files bumped sourced_light 78, tools 73, gi_still 46); HHS/Terminal k21324567 sidecars renamed in (old kept as .k1b214d46);
+  Hospital_silent sidecar released by Alt+S (bim-compiler-72): key 21324567:90186, occluderTris 5,819,012, restorecheck §ZONE_IDB_CACHE hit,
+  names patch md5-identical in wt-surf and wt-fastbake. To-do 4 RUNNING since 04:51: Hospital 24 fps, 4,963 frames, log
+  /tmp/bake_Hospital_silent_2026-10-02_0451.log; boot read: §LIGHT_FIELD_PATCH applied key 21324567:90186, §ZONE_IDB_CACHE hit 56 ms, 0 §GI_FILM_OFF,
+  0 Uncaptured. 06:15 = frame 1,952 (39%), mean 2.40 s/frame. red1: "prepare to pull the plug, but gather all the intel first".
+- §FRAME_PHASES (2026-10-02, measured from the bake logs, no GPU run; scratchpad a0e48414…/phases.py, gaps.py). Per frame, mean ms:
+  | bake | setup (4D tick, staging) | light (lamp/cove/IR + meter) | TAA 8 | AO 8 | capture (HUD + webp + hash) | total |
+  | Hospital 24 fps now (f 50-1924) | 393 | 287 | 547 | 591 | 570 | 2,397 |
+  | Hospital 15 fps 10-01 1417 | 439 | 349 | 695 | 801 | 609 | 2,907 |
+  | HHS 15 fps 10-02 0230 | 186 | 123 | 245 | 279 | 556 | 1,397 |
+  Old Alt+C for scale: Hospital 1.27 s/frame (RESUME_2026-09-02 §MEASURED); per render then AO 27 ms / TAA 49 ms (AGENT_QUEUE U-7), now ~70 ms / ~65 ms.
+  - Item 3 (lamp rebuild) RE-MEASURED: 191 of 1,873 frames rebuild; their light step 922 vs 215 ms -> ~0.7 s x 10% = **~70 ms/frame (~3%)**.
+    Rebuild frames are slow in EVERY phase (TAA 898 vs 507, AO 948 vs 550) = heavy interiors, not the rebuild. The earlier "20-30%" was wrong.
+  - Capture is ~560 ms on every building (resolution-bound): _captureFrame composites HUD then `c.toBlob('image/webp', 0.92)` (cinema_maxq.js:2169),
+    hashed + re-encoded to H.264 anyway. Biggest flat cost: 4,963 x 0.56 s = 46 min of this bake. Not yet split webp vs HUD in the log.
+  - Exposure meter (§SUN_ARC_FILL_PIN -> §FILM_EXPOSURE) 141 ms/frame: SourcedLight.meterRead renders the scene again at 160x90 every frame.
+  - TAA 8 + AO 8 = 16 full renders = 1.14 s (47%). AO legacy mode in films (effects.js:5553, off when A._maxqActive).
+  - MP4 stitch 138 s / 2,937 frames (1417) — small.
+  - SAVING CANDIDATES (to A/B after this bake lands, GPU busy): S-A webp -> jpeg q0.95 at capture (est. -250 ms, look = H.264 anyway; prove by
+    per-frame RMS vs webp); S-B meter on a 1-frame-old capture or every 2nd frame (est. -70..-140 ms; exposure eases, prove §FILM_EXPOSURE EV delta);
+    S-C sample budget taa/ao 8/8 -> 6/6 at 24 fps (est. -285 ms; quality sweep per CPE_4D_PERF_MEM_STUDY RMS rule); S-D fixed lamp set (~-70 ms).
 - ▶ RESUME 2026-10-02 04:00 (Alt+C session closing; red1: "do not start as we resume in new session") — supersedes the 03:25 state + §BAKE_QUEUE blocks.
   - bim-ootb fix/fast-bake **sw v1543**, pushed, no PR, worktree /tmp/wt-fastbake. Since v1533: v1534 §GI_FILM_CARRY C1-C4 (§3) · v1538 merge
     fix/sky-surface v1526-1531 (surface names, plaster, furniture polish reach films; §FLOOR_CONTACT/§OBJECT_CONTACT OFF under A._maxqActive) ·
@@ -56,13 +78,17 @@ Reviewed: ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_15fps_202
 - NOT MEASURED here: whether any frame is "one look" quality (red1's call; no screenshot as evidence). Light-field sidecar used for this bake = 1b214d46 (stale after the f78a6579 merge, see §1).
 - Verdict: technically clean and deliverable; 3 FAILs open. Finish line proposed (red1 to confirm): film clean = 0 black/frozen, §GI_FILM errFrames=0, and the three FAILs above each either fixed or proven a false alarm. After that, stop tuning the look.
 - TERMINAL (reviewed 2026-10-02 04:03; ~/Downloads/Terminal_silent_full_AFTER_1920x1080_15fps_2026-10-02_0322.mp4, log /tmp/bake_Terminal_silent_2026-10-02_0322.log): PASS = 1381 frames 1920x1080 15 fps 92.1 s 69.7 MB; §CLI_BAKE_WALL 2394 s aborted=no fileOk=true; unconverged=0; §FRAME_REUSE_TOTAL 7/1381; §GI_FILM done staleFrames=0 errFrames=0 rebuilds=0 gpuErrors=0 blankGrabsRecovered=77; ffmpeg 0 black + 0 freeze segments (scan completed). FAILS: (a) §CPE_REVEAL_LEAK LEAKED={"ARC":74} on 39 slots (HHS had ARC:17) — real, scales with the building; (b) §HUD_OVERLAP_WORST same pathmap x infopanel overlap 324x216 px (3rd film in a row); (c) §INTERIOR_LIGHTS_WITNESS PASSED (pool 110->122/122 lit past topout) then FAILed ONCE at +2069 s with poolLit=0/122 — one frame-sample, unattributed; (d) NEW: §CLI_BAKE_POSECHECK maxErrVsOverridePlanM=75.85 (MISMATCH), meanDistVsDerivedPlanM=46.7 "the stored path, not the derived one" — the baked camera path differs from the derived plan by up to 75.9 m; not explained in the log, needs an owner (may be by design for an authored path; unproven).
-- HOSPITAL: review pending (a new Hospital bake was about to start/finish; latest log at write time was still yesterday's _1417). Check on delivery: §GI_FILM done errFrames=0, occluderTris ~5.8M in the sidecar (NOT 0), same ffmpeg black/freeze scan, same three FAIL lines.
+- HOSPITAL: NOT baked yet (queue stopped; red1: resume in a new session, "do not start"). Reviewer pick-up when it lands: (1) §GI_FILM done errFrames=0 gpuErrors=0; (2) sidecar occluderTris ~5.8M, NOT 0, key 21324567:90186, §ZONE_IDB_CACHE hit WITH the 18,841 names; (3) same ffmpeg scan: `ffmpeg -nostats -i <mp4> -vf "blackdetect=d=0.2:pix_th=0.10,freezedetect=n=-60dB:d=1.5" -an -f null -` expect 0 black_start / 0 freeze_start, confirm the scan reached the last frame; (4) the FAIL lines below (§2 items 9-11); (5) luma frames 2345-2360 (the 10-01 flash 105.7 -> 87.8 -> 110) via §FRAME_QA, not by eye. Record the numbers here as a new TERMINAL-style bullet.
+- Count note: reviewer grep found 39 §CPE_REVEAL_LEAK lines (all ARC:74) in the Terminal log; the Alt+C resume says 47. Likely counting method (§CLAIM echoes vs [con] lines); the leak size ARC:74 is the same either way — re-count with one stated command before quoting.
 
 ## 2. OPEN ITEMS (from §RESUME 08:30 L39-50, status per later sections)
 1. BOUNCE SPLIT: CLOSED. Root cause = GPU out-of-memory (§3); C1-C4 BUILT v1534, STALE rule amended v1543.
 2. LIGHT FIELDS: the furniture change was REVERTED on fix/sky-surface (233b6295, key 21324567:90186) but fix/fast-bake still carries it (key 1b214d46:90224) until the post-Terminal merge. HHS/Terminal _silent sidecars at 1b214d46 exist (Alt+S, 02:0x) and are used by the running queue; the Alt+S session rebakes all three _silent sidecars at 21324567 (Hospital first). Over budget, shellSoup drops ALL occluders (Hospital occluderTris=0) — the 10-01 1417 Hospital film carries it.
 3. LAMP DATA REBUILDS ~every frame (283 x ~220 ms + cove/IR): films feed the frustum-picked `needed`; feed all placed fixtures as Alt+S does. Expected p50 3.3 -> ~2.6 s/frame. §INTERIOR_LIGHTS_WITNESS counts only the pool (FAIL poolLit=0/122 while 122 data lamps lit).
-9. §CPE_REVEAL_LEAK: the reveal round leaks ARC meshes it hid (Hospital 10-01: 48; HHS 10-02: 17, 58 lines) — open, not investigated.
+9. §CPE_REVEAL_LEAK: the reveal round leaks ARC meshes it hid (Hospital 10-01: 48; HHS 10-02: 17, 58 lines; Terminal 10-02: 74) — open, not investigated; grows with building size. Slots seen: ghost:MEP, tail-one:MEP, tail-all:MEP with hiddenDiscs=[STR,ARC].
+10. §HUD_OVERLAP_WORST hud.pathmap [1566,30,324,216] x loadpath.infopanel.near overlap 324x216 px: FAILs in the Hospital 10-01, HHS 10-02 and Terminal 10-02 films — a standing on-screen layout bug in every film; open, not investigated (reviewer take §1R).
+11. §CLI_BAKE_POSECHECK Terminal 10-02: maxErrVsOverridePlanM=75.85 MISMATCH, meanDistVsDerivedPlanM=46.7 ("the stored path, not the derived one") — baked path differs from the derived plan; may be by design for an authored path, UNPROVEN; check HHS's value too before deciding it matters.
+12. Finish line for the showcase film (reviewer proposal, red1 to confirm): per film 0 black/0 frozen, §GI_FILM errFrames=0, and items 9-11 each fixed or proven a false alarm; then stop tuning the look. Audience (red1): long-tail DIY BIM users; first look matters.
 10. §FREEZE_ANIM on short freezes: HHS's 6 s freeze never printed a settle line (two-stack reveal + 0.5 s CCTV stagger); scale the stagger to the hold.
 11. §GI_FILM_CARRY flash check: §FILM_GATE_EXPOSURE_SNAP fired but the 15-frame slice moved the meter only 0.075 EV (full film: 0.81 EV); a 1-frame
     -4 luma dip stays at the switch (render-level). Prove on the Hospital full bake.
