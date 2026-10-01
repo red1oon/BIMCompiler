@@ -1959,6 +1959,30 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
+## ▶▶▶▶▶▶▶ §DEV RESUME 2026-10-01 MORNING — START HERE (supersedes the 09-30 NIGHT block; Opus)
+# ⚠ DO NOT REMOVE — scope: Alt+S still look. Read the log after every run; proof = § numbers. GPU runs: flock /tmp/claude-1000/gpu.lock
+# (Alt+C bakes do NOT take the lock — check nvidia-smi; a shared run can drop the bounce: 'GI_STILL_FAIL ... WebGPU error(s)').
+STATE: bim-ootb fix/sky-surface @8325f5da sw v1525 (pushed, clean; NOT merged to main / look / fast-bake / OCI). :8664 serves /tmp/wt-surf.
+Sidecars: Clinic / HHS / Terminal re-baked for v1520 (key 1b214d46:90224, restore PASS); Hospital NOT re-baked (stale -> fast field;
+49 min bake when red1 says). Old v1519 sidecars: scratchpad 9cdf2c10…/lf_backup_v1519/.
+SHIPPED TODAY (all browser-side, no bake unless noted; details in the dated sections below):
+ §MEP_SERVICE_COLOUR v1/v2 (BS 1710: fire red pipe / orange fittings / brass heads, water green, drainage black, ducts galvanised;
+ &mephue=disc = old), §PROXY_NAME_MAT (RAL 7035 equipment, steel, ceramic), §LUMINAIRE_WHITE (RAL 9016), §GLASS_TONE_STILL (k 0.3),
+ §SKY_FIELD_FURNITURE (re-keyed bakes), §LAMPS_RATED_DEFAULT (EN scaling opt-in &lampen=1), §LOCAL_EXPOSURE (c 0.6, +-1 EV; HHS lamp px
+ +0.64 EV), &dusk=1. Witness W-MEP-SERVICE-COLOUR PASS 9/9.
+OPT-IN / OFF (measured no or bad result): §LAMP_SHADOW_TOPK (&lampshadow=K, share 13-20 %), §LAMP_CONTACT_SHADOW (&contact=1, hard
+ jagged patches), §AO_LAMPS_FURNITURE (&aolampr=auto|m, no gain at 0.75 / 1.5 m).
+red1 RULINGS today: stills = bright day, dusk is Alt+C's; lamps on at rated ("as clients view property"); glass toned in stills;
+ seat/table shadows "OK as generally the tables do show shadows .. stick to commonly easy" -> STOP chasing seat shadows.
+OPEN (in order): (1) Clinic mirror …729229470: two blown-white vertical strips + sawtooth patch in the mirror — not measured (mirw.js
+ witness + a truth for the reflected surface's lit value); (2) 0.5 m cell steps: Clinic sconce notches + stepped wall-base patches
+ (present with &contact=0) — the L1 family; (3) Terminal "ceiling lights high up should be bright" (red1): industry = lumen method
+ (CIBSE/IES: flux = E x A / (UF x MF), UF from room index); §LAMP_EN is its numeric form; at rated, Terminal lamps gave ~4.6x the 200 lx
+ default target (scale p50 0.218, pre-v1522 log) — the measuring run (…753057418 &lampen=1) was STOPPED at wrap-up, rerun it first;
+ the airport-hall EN 12464-1 value is not yet cited; (4) Alt+C must merge fix/sky-surface (note in ALTC_FOUNDATION.md).
+TOOLS: scratchpad 4a28e70a…/c1: diag.js (pose PNG -> Alt+S -> § log), shots.js + shots.sh (real Save-PNG capture, 2776x1440 with
+ pose; ~3.2 min/still), contact.js (floor under occluder vs open). lightgrid.js copy in 9cdf2c10…/lgrun.
+
 ## ▶▶▶▶▶▶ §DEV RESUME 2026-09-30 NIGHT — START HERE (supersedes the PM block below; Opus)
 # ⚠ DO NOT REMOVE — scope: Alt+S still lighting. Read the log after every run; proof = § numbers. GPU runs: flock /tmp/claude-1000/gpu.lock.
 STATE: bim-ootb fix/sky-surface @22a8e253 sw v1515 (pushed; not merged to main / look / OCI). :8664 serves /tmp/wt-surf. :8665 retired
