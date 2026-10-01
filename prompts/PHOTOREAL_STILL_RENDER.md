@@ -2027,6 +2027,11 @@ OPEN (in order): (1) Clinic mirror …729229470: two blown-white vertical strips
   confirmed.
 - NEXT (needs GPU go): exact truth for a planar mirror = an app render from the eye reflected across the mirror plane; compare per px with
   the mirror px; then per-light A/B (&torch=0, &lamps=0) on the band/rest ratio.
+- TRUTH RUN (10-01 ~14:00, mirtruth.js, c1/cs/1790729229470_mt_{def,torch0,lamps0}.log, WebGPU 0): M = mirror px, T = the lit value
+  the mirror should show (app render from the eye reflected across the mirror plane, clipped at the plane), ratio of means, expect ~0.843:
+  wide band 0.098/0.111 = 0.88 (RIGHT); narrow band (towel dispenser) 0.131/0.053 = 2.5 (too bright); REST of the mirror 0.019/0.135 =
+  0.14 (7x TOO DARK). &torch=0 / &lamps=0 change nothing (0.098 -> 0.096 / 0.095). So the 'bands' are the correct part; the rest of the
+  capture is dark in those directions. mirtruth2.js (capture-point views + &zoneeye=0) was started then stopped: red1 set mirror LOW.
 ### SESSION 2026-10-02 (Opus, overnight; red1 "full yes, all the way") — bim-ootb fix/sky-surface, sw v1529 -> v1534
 - §OBJECT_CONTACT (v1529-31): distance field (0.1 m voxels, 25.6 x 6.4 x 25.6 m box round the camera) of in-room objects (ducts, pipes,
   MEP fittings, furniture, railings, stairs, columns, proxies) -> walls / ceilings / floors near them darken for lamps + diffuse light
