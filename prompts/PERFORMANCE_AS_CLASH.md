@@ -607,3 +607,20 @@ Each panel lists the best room beside the worst ones, from the SAME computation 
 - ⚠ DATA: Hospital_silent.db carries 8 compiled rooms (62.6 m²); Hospital_meta.db has 142 (3,734 m²). The film's room graph / escape route read the
   same 8. Bringing the 142 in is a DB patch affecting escape route too — red1's call.
 - NEXT: Audio (vendor pyroomacoustics materials.json + §N reference-room witness, then the panel).
+
+### §19.4 — PLAIN-ENGLISH COPY + LINE-BY-LINE REVEAL (red1, 2026-10-01)
+*"the copywriting can be improved with better titling sub headlines for user plain english grasp ... They should also likewise be animated line
+by line reveal. The load stack info panel too. Looks too static as if standing around."*
+**Copy (CCTV panel)** — title band "Security cameras", sub-headline in the band "Where one CCTV camera per room can see". Lines:
+"People recognisable over {pct}% of the floor" · "Blind spots: {m2} m² no camera can see" · "Rooms checked: {n} ({floor} m²)" + ", rooms
+estimated from the model" when compiled · "Best covered: {room} — {pct}%" · "Hardest to cover: {room} — {m2} m² unseen" (2 worst) ·
+"Range: identify 4 m · recognise 8 m · observe 16 m · detect 41 m" · footnote (dimmer): "Camera: Paxton 10 mini bullet, 103°×55° ·
+IEC 62676-4 · room-box plan check". Room labels: the compiled flag (⚠/≈) is moved to the "estimated" note; "Level 1 R3" prints as
+"Level 1 · room 3" (presentation only — the data name is unchanged in the § lines). "Recognise" = IEC 62676-4's "recognise a known person".
+**Reveal — one clock: the freeze hold's elapsed seconds e** (cpe_load_path.js `_lp.holdElapsed`, the same value that paces the hop reveal):
+FADE 0.35 s, slide-in 0.6 × body px from the left. Stack panel row ri (hop ri reveals at e = ri): a = clamp((e − ri)/FADE). Info card line i:
+a = clamp((e − 0.15 − 0.25 i)/FADE). CCTV panel: plate + band at e 0.8-1.15 s, line j: a = clamp((e − 1.2 − 0.5 j)/FADE); the headline %
+counts up over 0.8 s from e = 1.2. Audio (when built) follows the CCTV schedule offset +0.4 s.
+**Frame reuse:** the freeze reuses identical frames (§FRAME_REUSE). The reuse key gets `|a<animation state>` from the SAME function the draw uses
+(rounded alphas), so an animating frame is never reused and a settled one still is. Witness: `§FREEZE_ANIM first=<e> settled=<e> lines=<n>`
++ §FRAME_REUSE_TOTAL > 0 (reuse still happens after the animation settles) + per-line alpha monotone (never fades back).
