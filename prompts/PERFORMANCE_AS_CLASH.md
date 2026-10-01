@@ -585,3 +585,12 @@ HUD standard). No new panel component.
 - **Q1 targets: Show RT for every room, mark non-BB93 uses UNSOURCED.** Only BB93 Table 6 room uses get a verdict; Hospital rooms
   read "target unsourced" with their RT numbers. No DIN 18041 purchase, no BB93-as-proxy.
 - §8 Q4 resolved by extraction (§19). Q3 (M3 tiers) not asked — out of this item's scope.
+
+### §19.2 — BEST room line (red1, 2026-10-01: "Should we also list down 'best' room for audio / visual quality?")
+Each panel lists the best room beside the worst ones, from the SAME computation (no second pass):
+- **Visual:** best = highest % floor area inside the Recognise ring from that room's best corner (ties → larger floor area). Line:
+  "Best: <room> <covered%> Recognise from corner <k>".
+- **Audio:** "best" exists only against a target (speech wants short RT, music longer — no target, no ranking). Rooms with a BB93
+  target: best = largest margin under target (Tmf, whole Sabine-Eyring range, §18). Rooms UNSOURCED: the line reads
+  "Shortest RT: <room> <Tmf range>" — labelled as a measurement, never "best". All-UNSOURCED building (Hospital) prints only that.
+- Witness: `§FREEZE_PERF_BEST group= room= value= basis=recognise%|margin|shortest-rt-unsourced`.
