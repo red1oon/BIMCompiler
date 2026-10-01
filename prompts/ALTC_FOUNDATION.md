@@ -49,6 +49,16 @@ OPEN, in order:
 5. N1 exterior shadow base gap at the wing: re-judge on a v1530+ whole-building clip (§FILM_SHADOW_EDGE range 917 m, nb 0.22 m).
 6. §FILM_INHERIT ON only on whole-building frames; the per-zone switch (F5) for build-up is not built.
 
+## ▶ §BAKE_QUEUE 2026-10-02 02:30 (Opus, Alt+C) — STANDING RULE + live state
+**red1 2026-10-02: "Both of you have my confidence to proceed working with each other without my further go ahead. I only feedback on
+exceptional basis."** = the Alt+C session and the Alt+S session (bim-compiler-db) coordinate GPU work, sidecars and merges directly; red1 is
+asked only for exceptions. GPU discipline unchanged: gpu.lock, one headless render at a time, >= 3 GB free before a full bake (red1's Chrome).
+Queue (scratchpad 9e876aa6/queue.sh, log queue.log): HHS_Office_Federated_silent -> Terminal_silent -> Hospital_silent, full hi-res,
+--visual-panel, load path on, saved day corner, fix/fast-bake (sw v1543). Hospital HELD (waits for scratchpad hospital.go): the Alt+S session
+found §SKY_FIELD_FURNITURE pushes Hospital's occluder soup over the 6M-tri budget -> shellSoup drops ALL occluders (occluderTris=0, cells
+9,608 vs 229k) — fix = shed by priority, re-keys all sidecars; merge it + their rebaked Hospital_silent sidecar, then touch hospital.go.
+Yesterday's Hospital_silent_full_noLoadPath_AFTER_..._1417.mp4 carries this defect (in-bake rebuild) + no bounce after f=1071 + black 2:35.
+
 ## ▶ §RESOLVE_BY_BUILDING — next abstraction (2026-10-01, red1: "Hope fixes will abstract able to handle any building IFC set")
 Building-agnostic today: §FILM_BLANK_FRAME, §FILM_GATE_EXPOSURE_SNAP, §GI_FILM_CARRY + gpu.lock, freeze panels (any IfcSpace/compiled room
 set; INCONCLUSIVE when none), saved day-counter corner. NOT agnostic: per-DB artifacts keyed on the DB FILE NAME — patches/<db>.sql
