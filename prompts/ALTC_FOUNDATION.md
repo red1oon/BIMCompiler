@@ -33,7 +33,8 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
     2. rename patches/HHS_Office_Federated_silent.db.lightfield.bin.k21324567 and Terminal_silent...k21324567 over the 1b214d46 files.
     3. Hospital_silent sidecar: the Alt+S session (PHOTOREAL_STILL_RENDER.md resume) is rebaking it WITH the 18,841 names (no-names one = STALE,
        moved aside). Release only on its message: key 21324567:90186, occluderTris ~5.8M, restore = §ZONE_IDB_CACHE hit WITH the names patch.
-    4. Hospital full bake: BAKE_W=1920 BAKE_H=1080 BAKE_FPS=15 BAKE_TAG=full_AFTER BAKE_EXTRA="--visual-panel" scripts/bake_hires_offline.sh
+    4. Hospital full bake at **24 fps** (red1 2026-10-02: "next bake after this, Hospital should be at full 24fps"; HHS 15 fps took 50.5 min at
+       ~1.45 s/frame, Hospital 15 fps ~2.3 s/frame x 2,937 -> at 24 fps ~4,700 frames, plan ~3 h): BAKE_W=1920 BAKE_H=1080 BAKE_FPS=24 BAKE_TAG=full_AFTER BAKE_EXTRA="--visual-panel" scripts/bake_hires_offline.sh
        Hospital_silent (saved corner = tl). Read: §LIGHT_FIELD_DB key match, §ZONE_IDB_CACHE hit, §DOME_GLOW, no §GI_FILM_OFF, frames 2345-2360
        luma (the 10-01 flash: 105.7 -> 87.8 -> 110), §FILM_BLANK_FRAME.
     5. LTU waits for red1 to remake its Alt+C path (LTU_AHouse_silent.db is gone from disk; only ~/Downloads/LTU_AHouse.db 2026-08-03).
