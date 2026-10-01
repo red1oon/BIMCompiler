@@ -1428,3 +1428,35 @@ B at `chargeamt`) turns exactly those two claims RED and nothing else:
 `_crudHas` false ⇒ a view, or a tab with no displayed non-key field — but rendered for neither table
 probed, so it currently has **no** witness. `§AD-DISPLAYLOGIC-FALLBACK` makes its return visible. Giving
 it a real arm needs a window that actually lands on it; that is a separate, bounded item.
+
+## §FS — 2026-10-02 · First-setup journey: the gaps a NEW iDempiere/Odoo user hits, found by executing it
+**Source:** `ERP_FIRST_SETUP_GUIDE.md` (spec + checklist S01–S26 with Odoo/iDempiere doc refs) and its witness
+**W-ERP-FIRST-SETUP** (bim-ootb `erp/tests/poc_erp_first_setup_live.js`, headless, `--disable-gpu`). Every gap
+below is a `§FIRST-SETUP … verdict=GAP` line from the run of 2026-10-02 on `origin/main` `55f54150`; the
+witness pins it, so closing one flips that step to VERIFIED and the run prints `DRIFT` until the pin moves
+(re-pin in the guide spec in the SAME change). User page: bim-compiler `docs/ERP_FirstSetup.md` ("Not yet" boxes).
+
+### §FS-BUILT — closed in this lane (bim-ootb `/tmp/wt-erpguide` `cd7dd887`, local commit, NOT pushed/merged)
+- **FIX-A** born-tenant standard columns (S08 + S09 G→V): `genesis.js` `create()` stamps `ad_org_id=0`
+  (MSetup.java:179), locator takes HQ (MLocator.java:290), `issummary='N'` on AD_Org (MOrg.java:146) and
+  C_BPartner (MBPartner.java:286). Spec `ERP_FIRST_SETUP_GUIDE.md §FS2`.
+- **FIX-B** Trial Balance scope (S24 G→V): `_procCtx().fetchFacts(info)` filters `AD_Client_ID` + the
+  `C_AcctSchema_ID` param (TrialBalance.java:161,400). Before: 42 lines / 93,149.94 (all tenants, USD+EUR
+  summed, `balanced=true` regardless); after == oracle 20 / 25,175.69. Spec `§FS2b`.
+- Post-merge MANDATORY: copy `erp/genesis.js` → bim-compiler `build/erp/genesis.js` (twin), re-run
+  `scripts/poc_genesis_minimal.js` + `poc_genesis_resident.js` (both green against the fixed file today).
+
+### §FS-QUEUED — spec'd, NOT built (each: evidence → fix extracted from source → the witness arm that proves it)
+| id | step | evidence (logged value) | spec'd fix (extract, file:line) | witness |
+|---|---|---|---|---|
+| FS-1 | S07, S15 | born `docTypes=1 [ARI]`; SO New `targetDocTypeOptions=0` (val rule 133 → 0 rows) | genesis G5: port the MSetup doc-type set (`MSetup.java` createDocType calls — SOO/POO/MMS/MMR/ARI/API/ARR/APP/GLJ … with their DocSubTypeSO + sequences) as CREATE ops; extend `crud_ops.json __meta.docPolicy` from the SAME rows so Complete has a policy | S07 + S15 → V |
+| FS-2 | S06 | `year=2024 (today 2026) periods=1 ["Jan-2024","2024-01-01","2024-12-31"]` | wizard passes `dateAcct` = today (idempiere.html renderGenesisWizard hard-codes `'2024-01-15'`); G2 emits 12 monthly C_Period rows (`MYear.java:250` `for (month = 0; month < 12; …)`), names per MYear | S06 → V |
+| FS-3 | S04 | `currencyOptions=1 [USD — US Dollar]` (seed has 163 C_Currency) | wizard `<select>` folds `C_Currency WHERE IsActive='Y'` with `StdPrecision` as `data-prec` | S04 → V |
+| FS-4 | S12, S13 | `C_TaxCategory=0`, Product's picker offers GardenWorld's `Standard (107)`; `C_PaymentTerm=0` | G6: C_TaxCategory "Standard" + link C_Tax to it (`MSetup.java:1252`), C_PaymentTerm "Immediate" (`MSetup.java:1418-1426`) | S12 + S13 → V |
+| FS-5 | S14 | new tenant SO→New BP picker `n=45 byClient={"11":24,"13":18,"17":1,…} foreign=42`; same leak logged in GardenWorld | `crud_overlay.js` FK picker (≈`:1250-1265`, the offered AND admitted SELECTs) appends `AD_Client_ID IN (0,<session client>)` when the target table has the column — the role-access clause iDempiere adds to every lookup (`MRole.addAccessSQL`). One clause, both sets, so §P3.6's "one set by construction" holds | S14 → V; regression W-PARITY-VALRULE / -REFTABLE / -MANDATORY (their `before=` counts will drop — re-read, do not re-pin blindly) |
+| FS-6 | S17 | `CalloutOrder.product … derived={}` on a NEW order; `autoFilled={"priceentered":"0","c_uom_id":"","c_tax_id":""}` | (a) `crud_overlay.js:841-851 productPrice` reads the parent from the raw bundle only → read the sidecar-folded header (the `CORE.listTip` precedent at `completeFanoutReceipt`) and the price-list version valid at DateOrdered; (b) `ad_callout.js:65-78` productHandler: also derive `C_UOM_ID` from the product (CalloutOrder.product) and chain CalloutOrder.tax | S17 → V |
+| FS-7 | S20 | `§SO-COMPLETE fan-out gated: order -3 not in bundle → status-only` (also the PO, `-6`) | `crud_overlay.js:2142 completeFanoutOrder` reads the raw bundle; port the receipt's sidecar-aware `listTip` read (same file, `completeFanoutReceipt`). NB Standard Order (132) auto-generates nothing in iDempiere either — the arm must use a POS/Warehouse order (135/134) for the auto path, and *Generate Shipments (manual)* for 132 | new S20 arms (auto doctype → shipment+invoice ops; 132 → none) |
+| FS-8 | S11b | after the 2nd New+Save in one window session `gridIds=[1700403,-1,-1,-2]` (`-1` twice); reload shows 3 | root-cause first (refold vs append on `§CRUD-COMMIT-LIVE refold … view=grid` + `§CRUD-CREATE-SEL`) — NOT diagnosed here | S11b → V |
+| FS-9 | S24b | `C_AcctSchema_ID param control=INPUT:number` (ad_process_para ref 19 TableDir) | `renderProcParamForm` renders ref 19/18/30 params through the same FK picker as the window form | S24b → V |
+| FS-10 | S25b | `Import Business Partner … table I_BPartner not in curated seed` | additive SQL patch adding the I_* import tables the import windows need (DB CHANGES = patch + self-heal loader, never a binary) | S25b → V |
+| FS-11 | S26 | `window.ErpPersist on idempiere.html=false` | load `erp_persist_ui.js` in idempiere.html and mount its Backup/Restore (reuse, `glassbowl.html` precedent) | S26 → V + a restore round-trip arm |

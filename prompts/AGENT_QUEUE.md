@@ -2581,3 +2581,40 @@ repaired live instruments.
   and my own probe called six files stale when one was missing (`unzip -p` on wrong entry names hashed
   empty input). **Read what the PAGE logged, not what the harness concluded.**
 - **A green pipeline is not a deployed feature.** `§PZ.4`.
+
+---
+
+# §FS 2026-10-02 — ERP FIRST-SETUP GUIDE lane (new-user onboarding, Odoo/iDempiere expectations)
+Spec + checklist: `ERP_FIRST_SETUP_GUIDE.md`. Witness: **W-ERP-FIRST-SETUP** (bim-ootb
+`erp/tests/poc_erp_first_setup_live.js`; run `cd erp && node tests/poc_erp_first_setup_live.js`, read
+`tests/poc_erp_first_setup_live.log`). User page: bim-compiler `docs/ERP_FirstSetup.md` (in `mkdocs.yml` nav
+under "The 3 Apps"; NOT deployed — docs deploy only via `scripts/safe_gh_deploy.sh`).
+**Measured 2026-10-02:** 29 steps · live `origin/main` 13 VERIFIED / 16 GAP · with the local fixes 16 / 13.
+
+## §FS.1 ⬜ HAND-OFF — local, unpushed (this lane had a no-push instruction)
+- bim-ootb `/tmp/wt-erpguide` branch `docs/erp-first-setup` commit **`cd7dd887`** = witness + FIX-A
+  (born-tenant `AD_Org_ID`/`IsSummary`) + FIX-B (Trial Balance client+schema scope), sw `v793→v794`.
+  Needs: push + PR + merge, then **fetch the live URL** (`§PZ.4`), then the genesis twin copy to
+  bim-compiler `build/erp/genesis.js` (`ERP_IDEMPIERE_UX_PARITY.md §FS-BUILT`).
+- bim-compiler: `docs/ERP_FirstSetup.md`, `docs/figs/erp_fs_*.png` (4), `mkdocs.yml` nav line,
+  `prompts/ERP_FIRST_SETUP_GUIDE.md`, and these appended sections. All uncommitted. Once FIX-A/B are
+  live, update the guide's three "live · pending fix" boxes (S08, S09, S24).
+
+## §FS.2 ⬜ NEXT, ranked by how early a new user hits it (full table: `ERP_IDEMPIERE_UX_PARITY.md §FS-QUEUED`)
+1. **FS-1 doc types in a born tenant** — without them no order can be typed in your own company (S07/S15).
+2. **FS-5 FK pickers leak other tenants' rows** — 42 of 45 BP choices are someone else's (S14). Touches
+   `crud_overlay.js` picker; CONFLICTS with any live §P3/§P8 work there.
+3. **FS-6 product → price/UOM/tax on a new order line** (S17).
+4. **FS-7 Complete on a user-typed order is status-only** (S20).
+5. FS-2 calendar/periods · FS-3 currency choice · FS-4 tax category + payment term (all `genesis.js`
+   G2/G6 + the wizard — one owner, do them together).
+6. FS-8 duplicate grid row · FS-9 process-param pickers · FS-10 import tables · FS-11 backup on idempiere.html.
+
+## §FS.3 ⬜ INSTRUMENT DRIFT found on the way (not product defects, `§SW`-class)
+`poc_genesis_sysadmin_live.js` (3 FAIL) and `poc_genesis_resident_live.js` (1 FAIL) are red on plain
+`origin/main`, identically before and after this lane's change. Each failing check pins a seed fact
+that has since changed: `§SYSTEM-TENANT ensure rows=7` (the log shows `rows=2` and the rest
+`insert-fail UNIQUE`, because the seed already carries them), "5 demo tenants at the front door" (they
+are now resident, `demos=[]`), and "GardenWorld 18 BPartners" (the seed has 24). Re-derive each
+expectation from the seed at run time, as `poc_parity_mandatory_live.js` does. Do not re-type the new
+numbers.
