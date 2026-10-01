@@ -92,6 +92,7 @@ nav:
 
   - The 3 Apps:
       - "BIM Viewer Guide": BIMUserGuide.md
+      - "Viewer Ask — First Steps": AskFirstSteps.md
       - "Modeller — First Steps": ModellerFirstSteps.md
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
