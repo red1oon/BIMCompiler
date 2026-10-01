@@ -2600,3 +2600,9 @@ refused item is named with its reason, and the rest continue or stop, per a user
 thread, so scoped undo maps to Void / Reverse-Correct (§DOC-THREADS). Seam: this is ad-hoc routing (ERP_BACKEND_SEPARATION
 §2 A-6), alongside the formal AD_Workflow model, not a replacement for it. Prereqs: §THREADS step 1-2 (in build) and
 §DOC-THREADS view.
+**§ADHOC-WF-BATCH addendum (red1 2026-10-02: "This gravitates towards a 'robot'/WF manager, where daily work can be
+automated"; then "Keep scope in check, align well, or hold off"):** the path is (1) ad-hoc batch → (2) save a batch as a
+RECIPE → (3) triggers (schedule / event). HARD GUARDS: a recipe never does what its owner's ERP role could not do by hand
+(same ad_docfsm + role gate); the first run of a new recipe is PREVIEW-ONLY until a human accepts it once; every action
+lands on its document's thread and is undone only by Void / Reverse. ⏸ HOLD: none of this is built before §THREADS
+steps 1-2 and §DOC-THREADS view exist.
