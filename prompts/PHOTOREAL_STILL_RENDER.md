@@ -182,3 +182,41 @@
 - 04:25: both Hospital rebakes RESTARTED DETACHED (setsid nohup, survive the session exit): session scratchpad e645a98a…/bake/
   hosp_meta.detached.log (+ bake_Hospital_meta.out, rc_Hospital_extracted2.out) and hs2.detached.log (+ bake_Hospital_silent.out,
   rc_Hospital_silent.out). ~41 min each from 04:25. Check `ps -eo cmd | grep bake_` before starting any new Hospital bake.
+
+## 2026-10-02 — §LIGHT_FIELD_IDLE_BAKE — SPEC (red1: "lazy load it when idle" + "status message when user drops or opens an IFC set … pulse when active")
+- WHY (code-read, fix/sky-surface @f78a6579): a user's dropped/opened IFC never gets the exact sky field — §EXACT_WHEN_BAKED
+  (light_zones.js:773) runs §SKY_FIELD_EXACT_ALL only when forced (bake script) or when the loaded record already has it; imports get
+  the fast v1502 field (the blockier one). The pass is synchronous on the main thread (build()/field()), so it cannot simply be started
+  in idle time: Hospital 33 min unbaked would freeze the viewer.
+- WHAT:
+  (1) WORKER: the exact pass moves into a Web Worker. Input = the shell pass's soup (boundary + occluder triangles, glass T per pane,
+      typed arrays, transferred), grid dims/org/cell, the READ/target cell list, the fixed direction set. Output = per-cell F (and Gd for
+      §SKY_FIELD_OPEN_ROOF targets) in chunks of K cells. Same maths as today: worker result for a cell must equal the main-thread value
+      bit-for-bit (same direction set, same order). First step = confirm the soup/BVH has no THREE object dependency (code-read); if it
+      does, flatten it before transfer.
+  (2) IDLE + POLITE: start after the model has loaded AND the fast field exists (first Alt+S done or build() run), only while no
+      Alt+S/Alt+C/§MAXQ render is active (pause on press, resume after); &idlebake=0 / APP._idleBake=false = never. One worker per tab.
+  (3) RESUMABLE: finished chunks are written to IndexedDB under the SAME key as §ZONE_IDB_CACHE (SRC code hash + geometry fp) plus a
+      done-cell bitmap; a reload resumes at the first undone chunk; a key change discards partial work (logged).
+  (4) SWAP: when every target cell is done, the field record gets skyExactAll.on = true and replaces the fast field; the NEXT Alt+S uses
+      it (never mid-render); a model save writes it into light_field_cache (§LIGHT_FIELD_DB S5 path) so a reopened .db starts exact.
+  (5) STATUS (bottom bar, #status in #status-bar-wrap — reuse A.status + the schedule_inject.js progress-bar idiom, no new widget):
+      on drop/open of an IFC set (or a .db without an exact field), once the idle bake is able to start:
+      "Preparing realistic lighting in the background — n %" ; paused: "… paused while rendering" ; done: "Realistic lighting ready —
+      saved with the model on next save" (self-clears after 5 s, the rule_checklist.js/dlod_nav.js convention: clear only if not
+      overwritten). While the worker is ACTIVE the status text PULSES (CSS opacity animation on a class, removed when paused/done/failed;
+      prefers-reduced-motion = no pulse). Other modules writing A.status win; the bake re-asserts its line on its next progress tick only
+      if the bar is empty.
+  (6) Already exact (sidecar / saved .db / IDB record with skyExactAll.on) -> no worker, no status line.
+- § LINES: §IDLE_BAKE start bld= cells= key= ; §IDLE_BAKE progress done=/total= ms= ; §IDLE_BAKE pause|resume why= ;
+  §IDLE_BAKE done cells= ms= swapped=1 ; §IDLE_BAKE discard why= (key change) ; §IDLE_BAKE skip why= (already exact / &idlebake=0).
+- WITNESS (W-IDLE-BAKE, Clinic — 2.5 min bake):
+  (a) PARITY: worker F per target cell == forced main-thread exact pass (max |dF| = 0 over all cells; INCONCLUSIVE if cells = 0).
+  (b) NON-BLOCKING: during the bake, main-thread longest task < 100 ms (PerformanceObserver longtask), viewer frame loop keeps ticking.
+  (c) RESUME: kill the page at ~50 %, reload -> §IDLE_BAKE start reports done > 0 and finishes; final field == (a).
+  (d) SWAP: Alt+S after done logs §SKY_FIELD_EXACT_ALL on cache=… and the LEAK grid F equals the baked-sidecar arm at the same pose.
+  (e) PAUSE: Alt+S mid-bake -> §IDLE_BAKE pause then resume; the still uses the fast field (no mid-render swap).
+  (f) STATUS: the #status text + pulse class present while active, absent when paused/done (DOM read, not a screenshot);
+      reduced-motion -> class present, animation none.
+  (g) SAVE: save -> reopen the .db -> §LIGHT_FIELD_DB restore + §IDLE_BAKE skip why=already exact.
+- ORDER: after the Clinic vault/wall staircase (§5a item 1). Not built yet.
