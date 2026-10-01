@@ -1997,6 +1997,31 @@ OPEN (in order): (1) Clinic mirror …729229470: two blown-white vertical strips
   confirmed.
 - NEXT (needs GPU go): exact truth for a planar mirror = an app render from the eye reflected across the mirror plane; compare per px with
   the mirror px; then per-light A/B (&torch=0, &lamps=0) on the band/rest ratio.
+### SESSION 2026-10-02 (Opus, overnight; red1 "full yes, all the way") — bim-ootb fix/sky-surface, sw v1529 -> v1534
+- §OBJECT_CONTACT (v1529-31): distance field (0.1 m voxels, 25.6 x 6.4 x 25.6 m box round the camera) of in-room objects (ducts, pipes,
+  MEP fittings, furniture, railings, stairs, columns, proxies) -> walls / ceilings / floors near them darken for lamps + diffuse light
+  (5-sample distance-field occlusion along the normal, strength 0.5 after red1 "a bit too strong"); light fittings / diffusers / beams /
+  members NOT occluders (ceiling halos, blotches between beams). Floor map now also railings / stairs / ramps, 4 levels nearest the eye.
+  Both OFF in films (Alt+C session, A._maxqActive). Not yet measured against a ray truth (ask: one render, ray-traced visibility of
+  wall/ceiling points beside ducts vs the field's estimate).
+- §SKY_FIELD_FURNITURE REVERTED (v1532, light_zones.js = 41144850^, key back to 21324567:90186): Hospital_silent bake logged
+  §SKY_FIELD_EXACT_ALL occluderTris=0 cells=9,608 (v1519 bakes: 5,819,012 / 229k) — furniture pushed the occluder soup over the 6M
+  budget and shellSoup drops ALL occluders over it. No measured gain (§CONTACT_BRIGHT) and §FLOOR_CONTACT now shades under furniture.
+  v1519 sidecars restored for stills (Clinic_meta / HHS_extracted / Terminal_meta; Hospital_meta was already that key). v1520 sidecars
+  kept in session scratchpad e645a98a…/lf_backup_v1520.
+- §LOCAL_EXPOSURE_BILATERAL (v1533, red1 "glow halo around objects such as the helicopter"): the Gaussian base mixed dark objects with the
+  sky beside them; now a bilateral grid (Chen/Paris/Durand 2007, as UE5). W (node, real function, synthetic still): sky 8-40 px from a
+  dark object vs far sky +22.16 -> 0 levels; dark-area lift 18 kept.
+- HHS PATCHES (red1 …878367234): A/B on the 12 px grid (all WebGPU 0): floor patchy % (pband) default 43.1 / &lamps=0 52.0 / &ir=0 43.3
+  / &gridblend=1 41.5 / &skyfield=0 0.3 -> the sky-view field. Edge census (|dLf| >= 15, same element): 510 of 556 inside ONE zone,
+  same sky class -> neighbour-cell F jumps of the 41-direction lattice under open roof wells. §FLOOR_F_SMOOTH (v1534): upward
+  fragments average F + Gd over 5 x 5 own-zone cells (sigma 1 cell), open cells only for open fragments. A/B queued (c1/fs.sh: HHS pose
+  + Clinic …728142544 where §SKY_FIELD_SMOOTH once doubled floor patchiness).
+- HOSPITAL WINDOW / WING (red1 …848782458): exact reflected ray per glass pixel (glassw3.js, instance-aware normals): 2,066 tower panes
+  all OPEN to 500 m (reflected rays climb 15-30 deg) -> sky is right for those; the low red-block windows were not counted as glass by
+  the probe (open question to red1: which windows).
+- FILM SIDECARS (Alt+C session request, red1 go): HHS_silent + Terminal_silent baked at 1b214d46:90224 (PASS) — superseded by the
+  revert; re-baking all three _silent at 21324567:90186 (scratchpad bake/chain.sh), handed to the Alt+C session after its merge.
 ### §FLOOR_CONTACT — MEASURED + SPEC + BUILT (2026-10-01 ~15:50, Opus; red1 "Higher is the shadow under furniture on floor. It has to give
 ### some shadow play thus look at the holistic balance"; mirror -> LOW)
 - TRUTH RUN (Terminal …735021015, :8664 v1525, contact.js + shadowtruth.js, shared GPU, Uncaptured WebGPU 0; c1/cs/1790735021015_st.log;
