@@ -129,3 +129,51 @@ orders, shown as ONE thread, because it is one signed log.
    and insert stay byte-identical; a dependent is refused by name or cascaded; verifyChain ok; global undo still
    works after exit.
 3. ERP document threads: view first, then scoped undo mapped to Void/Reverse-Correct for completed documents.
+
+### §THREADS-IMPL — 2026-10-02 (build notes for steps 1+2, written BEFORE the code; bim-ootb `feat/history-threads`)
+**Measured first:** the Modeller never MOUNTS the shared dotline. `modeller_history.js` configures `HistoryBar` but nothing
+calls `HB.open()`; the only visible history is `#hist-slider` (`modeller.html` `#hist` row). So "chips beside the dotline"
+starts by mounting the bar in a new `#hist-dots` host just above the slider row (pointer-events only on the bar itself).
+The Viewer mounts it already; ERP does NOT include `common/history_bar.js` at all (`grep -rl history_bar erp/` = 0 files;
+ERP runs `idmp_history.js`), so "ERP unchanged" is structural, and the ERP history witnesses are run as a control.
+
+**Hook contract (`common/history_bar.js`, all optional):** `configure({ categorize(entry) → [cat…], elementOf(entry) →
+id | [id…], elementLabel(id) → string })`. Absent `categorize` ⇒ no thread code path runs: no container, no listener, no
+`_render` change (proved by rendering the OLD and NEW file side by side with the same entries and comparing the bar's
+`outerHTML` hash). Read API: `threads()` → `{cat: [seq…]}` over the ACTIVE LINE in log order; `threadEntries(cat, el)`;
+`setScope(cat, el) / getScope() / clearScope(reason)`. Scope exits on: tap the glowing strip again, Esc (capture listener,
+installed only when `categorize` is configured), or any `push()` not flagged `scoped:true` (auto-exit).
+
+**Category map (Modeller, from `modeller_history.js` OP_TYPES + the element's own class in the signed log — 7 categories).**
+Each op of a node is classed separately and the node is tagged with the UNION, so a multi-op gesture lands in every thread
+it touched. The class of a transformed element is read at push time from its own `GEOM_INSERT` row (`params.ifc_class`, or
+`params._dw` ⇒ walked MEP), never guessed:
+| category | ops / element classes |
+|---|---|
+| Grid/Structure | `GEOM_GRID_MOVE`, `STR_WALK_EDIT`, `GEOM_INSERT` with `spanSplit`; transforms/deletes of Column/Beam/Slab/Roof/Stair/Member/Footing/Plate/Railing/Ramp/Pile |
+| Walls | transforms/deletes of `Ifc*Wall*` |
+| Openings | `GEOM_OPENING`, `GEOM_CUT`, `GEOM_CUT_MOVE`, `GEOM_CUT_RESIZE`; transforms/deletes of Door/Window/Opening |
+| MEP | `DISC_WALK`, `MEP_REROUTE`, any node a re-route rode (`onRows/offRows`); transforms of `_dw` fixtures or Flow/Pipe/Duct/Cable/Sanitary/Light/… classes |
+| Inserts | a fresh catalog `GEOM_INSERT`; transforms of Furnishing or catalog inserts (no `ifc_class`) |
+| Shapes | `GEOM_EXTRUDE(_POLY)`, `GEOM_SWEEP`, `GEOM_LOFT`, `GEOM_REVOLVE`, `GEOM_FILLET*`, … and transforms of those solids |
+| Other | anything not above (logged `§THREAD_CAT_OTHER`) — `BUILDING_OPEN` has no category |
+`elementOf` = the `parent` of every NON-induced row (the user's own targets); a fresh insert/solid = its new row id.
+
+**Step 2 — scoped undo = an APPENDED inverse (git revert), through `commitGesture`.** Only ops the fold composes
+additively are invertible by appending (`bonsai_kernel.js` foldChainToScene `moveBy`: GEOM_MOVE dx/dy/dz SUMMED, GEOM_ROTATE
+drot SUMMED, GEOM_SCALE fx/fy/fz MULTIPLIED; `cut_move.js netOverrides`: GEOM_CUT_MOVE summed, GEOM_CUT_RESIZE multiplied).
+Inverse = negate / reciprocal, all rows of the gesture in ONE `commitGesture` (one gesture = one step; the revert node carries
+`revertOf`). Every other op type (INSERT, DISC_WALK, CUT, EXTRUDE, GRID_MOVE, STR_WALK_EDIT, DELETE, a node a re-route rode)
+⇒ REFUSED, logged `§THREAD_UNDO_REFUSE reason=not-invertible-by-append type=…` — no flag flip is used as a substitute.
+Scoped redo = append the original rows again (another gesture). The log is only ever appended; `verifyChain` must stay ok.
+
+**Dependents — ONLY relations the code already records** (a LATER, still-applied, not-yet-reverted node on the active line
+that touches any of these is a dependent of target T):
+- R1 host/filling — `swXEdges.fills` (the `SdgCascade.ridersFor` source): elements linked by a fills edge to any T element.
+- R2 cut — `GEOM_CUT` rows whose `parent` is a T element: a later `GEOM_CUT_MOVE/RESIZE` on that `cutId`, or a later `GEOM_CUT` on a T element.
+- R3 cascade rider — a later row with `params.induced` whose `parent` is a T element (a later gesture dragged T's element).
+- R4 grid-span column add — a later `GEOM_INSERT.params.spanSplit` whose `girder`/`srcGuid` is the guid of a T element.
+- R5 MEP re-route source — a later node whose `offRows` supersede rows T wrote (`ids ∪ rows ∪ onRows`).
+Not tracked in the log: a disc walk's route vs the walls it walked past (`§THREAD_DEP_UNTRACKED kind=walk-vs-host`, logged,
+not invented into a rule). Dependents present ⇒ refused with every dependent NAMED (`§THREAD_UNDO_REFUSE dependents=…`) and
+a Cascade button; Cascade = inverses of the dependents + T in ONE gesture. Falsifier: `window.__threadsSkipDepCheck=true`.
