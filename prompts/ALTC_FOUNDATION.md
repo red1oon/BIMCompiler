@@ -37,7 +37,7 @@ work: §FAST_BAKE FB1/FB2, §FILM_INHERIT (gate, lamp data, per-shot shadow edge
 Bake tool: scripts/bake_hires_offline.sh with BAKE_W/H/FPS/TAG/EXTRA (e.g. --frame-range 1065:1365 --no-load-path --write-prebake).
 Deliverables (~/Downloads): Hospital_silent_ARCfull_long_AFTER_..._0655.mp4 (red1: "looks all good"), ..._ARCfull_lamps_AFTER_..._0733.mp4.
 OPEN, in order:
-1. BOUNCE SPLIT (0733 clip): bottom 43% frozen from frame 1. PROVEN the bounce engine: same 30 frames with &filmbounce=0 -> bottom changes
+1. BOUNCE SPLIT (0733 clip) -> ROOT CAUSE FOUND: GPU out-of-memory from a parallel stills run, see §BOUNCE_SPLIT below. Bottom 43% frozen from frame 1. PROVEN the bounce engine: same 30 frames with &filmbounce=0 -> bottom changes
    every frame (11.5 luma/frame, 0 frozen; session scratchpad split/nobounce.log). That bake's GI orientation check FAILED both ways
    (§GI_STILL_ORIENT_GEOM backfacing asRead=79.88% reversed=77.84%, §GI_ROW_PROBE top=0 bottom=0); the good 0655 clip read asRead=0.04%.
    Only code change between them: v1532 lamps ON from frame 0. Next: read gi_still.js engine start (material copy) vs lamp data / glow.
@@ -48,6 +48,28 @@ OPEN, in order:
 4. Torch vs eye light: both on; red1 "Keep if the impact is better" — unjudged. Twins: relax the signature (class sequence) if wanted.
 5. N1 exterior shadow base gap at the wing: re-judge on a v1530+ whole-building clip (§FILM_SHADOW_EDGE range 917 m, nb 0.22 m).
 6. §FILM_INHERIT ON only on whole-building frames; the per-zone switch (F5) for build-up is not built.
+
+## ▶ §BOUNCE_SPLIT ROOT CAUSE + §GI_FILM_CARRY SPEC 2026-10-01 (Opus, Alt+C session, item 1 of §RESUME 08:30)
+CAUSE (measured, not the lamps): the 0733 bake's bounce renderer ran OUT OF GPU MEMORY. A parallel stills session (scratchpad
+4a28e70a/c1, shots.sh, Alt+S bounce stills on the same RTX 4060 8 GB) logged at 07:38:17 `§GI_CARRY verdict=FAIL gpuErrors=60781
+first="GPUOutOfMemoryError: vkAllocateMemory failed with VK_ERROR_OUT_OF_DEVICE_MEMORY"`; the 0733 bake built its bounce engine
+07:37:08-07:38:21, same window. shots.sh holds /tmp/claude-1000/gpu.lock; scripts/bake_hires_offline.sh does NOT (no flock), so they ran
+together. The film saw nothing: build() replaces renderer.onError (gi_still.js ~621), which mutes three.js's own "Uncaptured WebGPU" line,
+and the film path (filmFrame) never read the error count — the still path's §GI_CARRY has no film twin. Symptoms explained: §GI_ROW_PROBE
+top=0 bottom=0 (a 64x64 floor drew nothing at all), texFlip made no difference, the geometry pass kept stale content = the frozen bottom.
+v1532 lamps-ON is CLEARED: repro at v1533, same command, frames 1065:1095, lamps ON from f=0 (§INTERIOR_LIGHTS_ARC f=0 lights=ON):
+§GI_STILL_ORIENT_GEOM asRead=0.04% (= the good 0655), §GI_FILM_CARRY gpuErrors=0, no STALE (scratchpad 9e876aa6/bs/rep.log).
+SPEC (each item a § line):
+- C1 §GI_FILM_CARRY per frame: WebGPU errors since the last frame + the pass fingerprint vs the last one (equal = STALE). §GI_FILM_CENSUS on
+  frame 1 (visible objects by kind, build-time error count). Logged on frames 1-3, every FAIL/STALE frame, every STALE change; totals on
+  §GI_FILM done.
+- C2 self-heal: a FAIL or STALE frame shows the app frame WITHOUT the bounce (never a stale layer), disposes the renderer and rebuilds it on the
+  next frame (orientation re-measured). At most 2 rebuilds per film; a third failure switches the bounce off for the rest of the film
+  (§GI_FILM_OFF reason=gpu-failures). Witness: a forced-drop run (__GI_STILL_INJECT_GEOM_DROP) logs FAIL/STALE -> rebuild -> OK, or -> OFF.
+- C3 orientation: a §GI_ROW_PROBE that drew nothing (top+bottom=0) is NOT an answer — it is not stored in __giOrientDecided, and no
+  orientation measured with GPU errors is written to §GI_ORIENT_CACHE (localStorage outlives the page: a wrong cached flip would follow
+  every later still/film on that machine).
+- C4 scripts/bake_hires_offline.sh runs node under `flock /tmp/claude-1000/gpu.lock` (§BAKE_SCRIPT logs the wait), like shots.sh.
 
 ## ▶ §STILL→FILM INHERITANCE 2026-09-30 (Opus, end of the still-lighting session) — READ FIRST for the Alt+C bake session
 State: bim-ootb **fix/sky-surface @22a8e253, sw v1515** (pushed; NOT merged to main / look / OCI). Served locally :8664 from /tmp/wt-surf.
