@@ -1980,6 +1980,8 @@ OPEN (in order): (1) Clinic mirror …729229470: two blown-white vertical strips
  (CIBSE/IES: flux = E x A / (UF x MF), UF from room index); §LAMP_EN is its numeric form; at rated, Terminal lamps gave ~4.6x the 200 lx
  default target (scale p50 0.218, pre-v1522 log) — the measuring run (…753057418 &lampen=1) was STOPPED at wrap-up, rerun it first;
  the airport-hall EN 12464-1 value is not yet cited; (4) Alt+C must merge fix/sky-surface (note in ALTC_FOUNDATION.md).
+ RE-PRIORITISED 15:00 (red1): mirror = LOW (rare). HIGH = shadow under furniture ("shadow play, holistic balance"), then
+ §IFC_SURFACE_NAMES (bland grey walls/frames, furniture polish, auto-extract at user IFC load).
 ### §MIRROR_STRIP — MEASURED (2026-10-01 13:30, Opus; OPEN (1)) — :8664 v1525 @8325f5da, diag.js + PREJS=mirw2.js (c1/), log
 ### c1/cs/1790729229470_strip.log, §GI_STILL result secs=23, §FAULT unlit 0/144.
 - Strips (x 832-882 / 934-988, y 86-405 at 1685 px): v1509 red1 still blown(L>=250) 78 % / 70 %; v1525 blown 0 % / 0 % but still BANDS:
@@ -1995,6 +1997,53 @@ OPEN (in order): (1) Clinic mirror …729229470: two blown-white vertical strips
   confirmed.
 - NEXT (needs GPU go): exact truth for a planar mirror = an app render from the eye reflected across the mirror plane; compare per px with
   the mirror px; then per-light A/B (&torch=0, &lamps=0) on the band/rest ratio.
+### §IFC_SURFACE_NAMES — SPEC (2026-10-01 15:20, Opus; red1: "surfacing is bland when all greyish. Walls, opening frames should have
+### some diff texture" + "Furniture should have some polish" + "make it auto extract during user loading and saving to DB")
+- FOUND (code + data): the inference already exists — §SURFACE_RULES (streaming.js _surfSubstance(matName) -> R1..R9) + STD_MAT per
+  class. It is STARVED: (1) Clinic/Hospital/HHS elements_meta.material_name holds synthetic colour labels ('≈ Grey' 1,091 Clinic walls,
+  '≈ Brown' doors) — no substance word -> class default; (2) the browser IFC import writes material_name = NULL always
+  (import_db_builder.js:70) and keeps ONE colour per element (import_worker.js bestColor); (3) R5 (painted walls) / R6 / R7 (timber,
+  furniture, frames) are drawn smooth with no texture by design (streaming.js:1627, R1-R3 only).
+- THE DATA IS IN THE IFC: Clinic_Architectural_IFC2x3.ifc has 25 IfcSurfaceStyle names ('Door - Frame', 'Door - Panel', 'Sash',
+  'Laminate - Ivory, Matte', 'Metal - Aluminium', 'Wood - Sheathing - plywood', 'Plasterboard', 'Mirror', 'Counter Top', …) and 12
+  IfcMaterial names. PROBE (scratchpad probe_styles.js, web-ifc 0.0.77): 2,083 IfcStyledItem, 1,950 carry a surface-style name;
+  PlacedGeometry.geometryExpressID == IfcStyledItem.Item -> 17/17 parts of 5 doors named: frame 'Door - Frame' rgb .46,.27,.20 + panel
+  'Door - Panel' rgb .82,.62,.37. The DB stores the frame brown for the whole door (panel lost).
+- WHAT (one extractor, two callers):
+  (a) viewer/ifc_surface_names.js (worker importScripts + node require): build styleOfItem (IfcStyledItem.Item -> IfcSurfaceStyle.Name,
+      via IfcPresentationStyleAssignment in 2x3) and materialOfElement (IfcRelAssociatesMaterial -> IfcMaterial.Name | layer-set layer
+      names joined ' | ' | IfcMaterialList names). Per element, per placed geometry: {style, rgba, tris}. material_name = the style covering
+      the most triangles, else the associated material name, else NULL (never invented).
+  (b) import (user loads an IFC): import_worker.js calls it during the existing GetFlatMesh loop (no extra mesh pass); the DB builder
+      writes elements_meta.material_name + new table element_surfaces(guid, part INTEGER, style_name, rgba, tri_count). Saved with the
+      DB as today. § line §IFC_SURFACE_NAMES elements / withStyle / withMaterial / parts / styledItems; INCONCLUSIVE when styledItems = 0.
+  (c) shipped buildings: scripts/ifc_surface_patch.js (node, same module) over the source IFCs -> appended idempotently to
+      buildings/patches/<db>.sql: CREATE TABLE IF NOT EXISTS element_surfaces + DELETE/INSERT rows, and UPDATE material_name ONLY where it
+      is NULL or a synthetic '≈ ' label (authored names kept). Self-heal loader applies it (scene.js _applyPendingPatch). No binary DB.
+- RENDER USE (step 2, after the data lands): _surfSubstance reads the dominant style name; per-part colour/finish (frame vs panel) needs
+  the part split in the geometry — element_surfaces.tri_count is recorded for that; the split itself is a later step.
+- WITNESS W-IFC-SURFACE-NAMES: node run on Clinic Architectural — IfcDoor rows with both 'Door - Frame' and 'Door - Panel' parts > 0;
+  share of elements with a style name printed; Clinic walls' material_name no longer '≈ Grey' where the IFC names one; RED CONTROL =
+  today's import (material_name NULL on 100 %).
+- BUILT (bim-ootb fix/sky-surface @dc73f9fe sw v1526, then v1527): viewer/ifc_surface_names.js (one module), import_worker.js builds it in
+  the existing GetFlatMesh loop, import_db_builder.js writes material_name + element_surfaces; scripts/ifc_surface_patch.js for shipped
+  DBs (diffs each target DB: UPDATE only NULL / '' / '≈ ' rows, guarded again in SQL; element_surfaces only for elements with 2+ styles).
+  material_name = the associated IfcMaterial (its IFC meaning), else the dominant style — MEASURED Clinic walls: style 'Default Wall' x1,062
+  but material 'Plasterboard | Metal - Stud Layer | Plasterboard'. Layer sets keep every layer in order (faces = first / last).
+  streaming.js _surfSubstance: for 'A | … | Z' reads the FACE layers, skipping stud / firring / loose insulation / air (an insulated PANEL is
+  cladding, kept): Clinic walls -> plaster 1,070, concrete 26 (was: '≈ Grey' -> class default).
+- WITNESS (browser, real worker + builder + bundled sql-wasm on :8664, Clinic_Architectural, scratchpad import_wit.js): §IFC_SURFACE_NAMES
+  elements=2620 withStyle=2138 withMaterial=2024; DB material_name set 2430/2586 (RED CONTROL before: 0 — builder wrote NULL); IfcDoor with
+  both 'Door - Frame' and 'Door - Panel' = 236. PATCH (scratchpad patch_wit.js: scene.js _runSqlChunked + bundled sql-wasm, applied twice):
+  Clinic_meta 3,777 elements off '≈', ~0.85 s per apply, idempotent. Per-file honesty: Clinic_HVAC INCONCLUSIVE (no styles, no material
+  rels); HHS MEP 0 named; Hospital 44,341 of 64,333 unnamed (MEP).
+- GAPS: (1) per-part colour (door frame vs panel) needs the part split in the GEOMETRY — shipped meshes are IfcOpenShell-merged per element
+  (no triangle map to web-ifc parts) -> re-extraction with per-face style ids, a separate task; (2) standalone (file://) packager inlines the
+  worker as a blob -> importScripts('ifc_surface_names.js') fails there (logged §IFC_SURFACE_NAMES_FAIL, import continues without names).
+- RENDER (v1527): §WALL_TEXTURE R5 gets the plaster set at contrast 1.05 (&r5tex=0 = smooth as before); §FURNITURE_POLISH roughness 0.35
+  for IfcFurniture / IfcFurnishingElement unless the name says fabric / matte (&furnpolish=0 | r). Both AUTHORED values. Not yet rendered.
+- red1 2026-10-01 on Clinic still …840734937 (v1527, faultGi blown 0 / dark 0): "more realistic surface treatment". Numeric A/B queued at
+  that pose (texw.js: per-class fine contrast + highlight share, v1527 vs &r5tex=0&furnpolish=0).
 TOOLS: scratchpad 4a28e70a…/c1: diag.js (pose PNG -> Alt+S -> § log), shots.js + shots.sh (real Save-PNG capture, 2776x1440 with
  pose; ~3.2 min/still), contact.js (floor under occluder vs open). lightgrid.js copy in 9cdf2c10…/lgrun.
 
