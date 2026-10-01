@@ -1331,6 +1331,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#grid-span-colours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid span colours
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3063,6 +3074,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#grid-span-colours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid span colours
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3737,6 +3759,15 @@ status line reports it live and by name — <code>⛔ N RED</code> for a hard vi
 disturbed — rather than silently accepting a bad edit.</p>
 <p><img alt="Before — Duplex's real ground floor near the stair, the authoring grid aligned to a real wall's own measured edge" src="../img/modeller/grid-editor-before.png" />
 <img alt="After — gridline &quot;2&quot; dragged 0.5 m for real: 16 recompose commands, hosted doors held per the Anchor default, the conformity gate flags any resulting clashes live in the status line" src="../img/modeller/grid-editor-after.png" /></p>
+<h4 id="grid-span-colours">Grid span colours<a class="headerlink" href="#grid-span-colours" title="Permanent link">&para;</a></h4>
+<p>On a building framed with columns (measured on <em>HospitalGarage</em>), <strong>Move Grid</strong> lays the building's own column lines as the grid, and a drag
+colours each bay it widens or narrows: <strong>green</strong> fine, <strong>orange</strong> the span needs a deeper beam than the building has (hover shows the depth,
+span / ratio), <strong>red</strong> over the limit for the material (hover: "Limit for this column span (12 m, RC). Add one more?"). The rules are the
+preliminary Eurocode-cited table in <code>str_walker.js</code> (RC: depth about span/12, max 12 m; steel: span/20, max 18 m); ORANGE uses the building's own
+median beam depth (0.535 m on Garage, so orange from 6.42 m). The material is the majority material of the building's own beam names
+(Garage: RC, 166 of 195). Release on red opens <strong>Add one more</strong> / <strong>Cancel</strong>: Add one more inserts a column line at the bay midpoint (5 columns on
+Garage, real copies of the building's own column, one Ctrl+Z); Cancel stops the drag at the limit. Wall-bearing or hand-drawn grids get no
+colours. Every message says "preliminary — the structural engineer confirms". Witness: <code>witness_grid_span_gate.js</code> (20 checks).</p>
 <p>Roofs recompose the same way. <em>SampleHouse</em>'s barrel-vault roof spans the two gridlines bracketing the
 building; dragging the far one <strong>0.5000 m</strong> grows the roof's own rendered X-extent from <strong>14.8410 m → 15.3410
 m</strong> — exactly the drag, with the near edge held fixed at the other gridline — while the wall it sits on rides
