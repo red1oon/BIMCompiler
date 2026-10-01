@@ -578,3 +578,10 @@ HUD standard). No new panel component.
 - Audio: §N's reference-room witness (±1 % Sabine) before any panel line is drawn.
 
 **Build order for this item:** Visual first (no open question) → Audio after §8 Q1/Q2.
+
+### §19.1 — red1's answers to §8 Q1/Q2 (2026-10-01)
+- **Q2 α table: ACCEPTED — pyroomacoustics `materials.json` (MIT), values attributed to Vorländer, *Auralization* (Springer 2008).**
+  Cite both on the panel/statement; spot-check against a second source.
+- **Q1 targets: Show RT for every room, mark non-BB93 uses UNSOURCED.** Only BB93 Table 6 room uses get a verdict; Hospital rooms
+  read "target unsourced" with their RT numbers. No DIN 18041 purchase, no BB93-as-proxy.
+- §8 Q4 resolved by extraction (§19). Q3 (M3 tiers) not asked — out of this item's scope.
