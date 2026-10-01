@@ -179,3 +179,6 @@
   Hospital_silent with names (…/bake/hs2.sh -> bake_Hospital_silent.out, rc_Hospital_silent.out). Deliver to fastbake ONLY after
   restorecheck shows "§ZONE_IDB_CACHE hit" + occluderTris ≈ 5.8M, then message bim-compiler-20 (Hospital film held until then).
   HHS names do not move its fingerprint (their bake: hit) -> HHS .k21324567 stands; Terminal needed 0 name rows.
+- 04:25: both Hospital rebakes RESTARTED DETACHED (setsid nohup, survive the session exit): session scratchpad e645a98a…/bake/
+  hosp_meta.detached.log (+ bake_Hospital_meta.out, rc_Hospital_extracted2.out) and hs2.detached.log (+ bake_Hospital_silent.out,
+  rc_Hospital_silent.out). ~41 min each from 04:25. Check `ps -eo cmd | grep bake_` before starting any new Hospital bake.
