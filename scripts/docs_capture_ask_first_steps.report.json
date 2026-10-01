@@ -1,0 +1,46 @@
+{
+ "url": "https://red1oon.github.io/bim-ootb/viewer/viewer.html?db=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/Terminal_extracted.db&ghost=1",
+ "at": "2026-10-01T22:07:50.410Z",
+ "steps": {
+  "loaded": {
+   "building": "TerminalMerged",
+   "elements": 48428
+  },
+  "ask": [
+   "Find 5D cost of all — no costed quantities (qto_cache) in this building",
+   "Find 4D schedule for the whole building",
+   "Find clashes between ARC and MEP",
+   "Find largest rooms",
+   "Find path to exit (worst-case room)",
+   "Find element count by discipline"
+  ],
+  "clashList": [
+   "Find clashes between ARC and MEP"
+  ],
+  "clash": {
+   "question": "Find clashes between ARC and MEP",
+   "verdict": "OK",
+   "summary": "114 mesh-level clashes (200 box overlaps: 86 cleared by the shape tests, 0 unjudged) at 25 mm"
+  },
+  "exitList": [
+   "Find path to exit (worst-case room)"
+  ],
+  "exit": {
+   "question": "Find path to exit (worst-case room)",
+   "verdict": "OK",
+   "summary": "Best: ≈ Aras 01 R1 → Side_opening_ElevatorLift_Door_with_Call_buttons_9478:12000 x 2290 Opening:1245884, 105.6 m walk, 5 doors (worst of 43 rooms). 10 alternative exits (107, 111, 56, 120, 134, … m); the first 88.0 m has no choice of route (routes split at Assembled Stair:Stair:1077606 (upper))."
+  },
+  "schedList": [
+   "Find 4D schedule for the whole building"
+  ],
+  "sched": {
+   "question": "Find 4D schedule for the whole building",
+   "verdict": "OK",
+   "summary": "48428 elements scheduled 2025-07-22 → 2025-11-20 (122 days), 9 trades, labour cost $ 1,721,750 (3,488.8 person-days; time-phased labour, not a BOQ)"
+  },
+  "saved": {
+   "file": "BIM_OOTB_TerminalMerged_Answers_2026-10-01.xlsx",
+   "bytes": 26636
+  }
+ }
+}
