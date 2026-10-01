@@ -29,6 +29,26 @@ DISC_COLORS palette; applies at material creation = canvas, stills AND films; &m
 `git fetch origin && git merge origin/fix/sky-surface`; sw.js conflict -> keep BOTH precache additions, take the HIGHER CACHE_VERSION.
 Witness: viewer/tests/witness_mep_service_colour.js (headless, no GPU) PASS 7/7 on sky-surface.
 
+## ▶ §RESUME 2026-10-01 08:30 (Opus, Alt+C session) — READ FIRST next session
+STATE: bim-ootb fix/fast-bake sw v1533 (pushed, no PR, not merged/OCI) = fix/sky-surface (Alt+S v1516-1525, merged) + tonight's Alt+C
+work: §FAST_BAKE FB1/FB2, §FILM_INHERIT (gate, lamp data, per-shot shadow edge, window pull, glass env/mirrors), §PREBAKE PB1/PB2,
+§LOADPATH_STACK_ONLY (freeze 13 s -> 0.45 s/frame), §LOADPATH_CLIP_CLOCK/_CLIP_SKIP, §132 twins (none found: signature too strict),
+§FILM_CAM_LIGHT (eye light back), ADAPT up 6 / down 4, §INTERIOR_LIGHTS_ARC (lamps off only with no ARC). Worktree /tmp/wt-fastbake.
+Bake tool: scripts/bake_hires_offline.sh with BAKE_W/H/FPS/TAG/EXTRA (e.g. --frame-range 1065:1365 --no-load-path --write-prebake).
+Deliverables (~/Downloads): Hospital_silent_ARCfull_long_AFTER_..._0655.mp4 (red1: "looks all good"), ..._ARCfull_lamps_AFTER_..._0733.mp4.
+OPEN, in order:
+1. BOUNCE SPLIT (0733 clip): bottom 43% frozen from frame 1. PROVEN the bounce engine: same 30 frames with &filmbounce=0 -> bottom changes
+   every frame (11.5 luma/frame, 0 frozen; session scratchpad split/nobounce.log). That bake's GI orientation check FAILED both ways
+   (§GI_STILL_ORIENT_GEOM backfacing asRead=79.88% reversed=77.84%, §GI_ROW_PROBE top=0 bottom=0); the good 0655 clip read asRead=0.04%.
+   Only code change between them: v1532 lamps ON from frame 0. Next: read gi_still.js engine start (material copy) vs lamp data / glow.
+2. LIGHT FIELDS STALE: the merge's §SKY_FIELD_FURNITURE edits light_zones.js -> rebake Hospital_silent (+HospitalAjaibPath) sidecars
+   (scratchpad bake_file.js; ~40 min each, GPU) before judging films; otherwise in-bake rebuild (lower quality, +3 min).
+3. LAMP DATA REBUILDS ~every frame (283 x ~220 ms + cove/IR): films feed the frustum-picked `needed`; feed all placed fixtures (as Alt+S)
+   -> expect p50 3.3 -> ~2.6 s/frame. §INTERIOR_LIGHTS_WITNESS counts only the pool (FAIL poolLit=0/122 while 122 data lamps lit).
+4. Torch vs eye light: both on; red1 "Keep if the impact is better" — unjudged. Twins: relax the signature (class sequence) if wanted.
+5. N1 exterior shadow base gap at the wing: re-judge on a v1530+ whole-building clip (§FILM_SHADOW_EDGE range 917 m, nb 0.22 m).
+6. §FILM_INHERIT ON only on whole-building frames; the per-zone switch (F5) for build-up is not built.
+
 ## ▶ §STILL→FILM INHERITANCE 2026-09-30 (Opus, end of the still-lighting session) — READ FIRST for the Alt+C bake session
 State: bim-ootb **fix/sky-surface @22a8e253, sw v1515** (pushed; NOT merged to main / look / OCI). Served locally :8664 from /tmp/wt-surf.
 Baked sidecars (gitignored, local only): /tmp/wt-surf/buildings/patches/{Clinic,Hospital,Terminal}_meta.db.lightfield.bin +
