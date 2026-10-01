@@ -519,3 +519,62 @@ standard and that standard is published."*
   `POC — computed on the fly <date>; values ± derived per row; MARGINAL = verdict depends on the error band.`
 - **Witness:** every row has `lo ≤ value ≤ hi`, and `§MARGIN rows= derived= unknown= marginal=`. An empty population
   prints INCONCLUSIVE.
+
+## §19 — AUDIO + VISUAL PANELS IN THE LOAD-PATH FREEZE (red1, 2026-10-01) — UNPARKS M2 + M4 for this one surface
+*"Let's work on future features already spec'd about acoustics audio test and visual blindspot with best CCTV locations.
+These can appear as special info panel during loadpath stack as the black is largely empty and can be filled when
+audio/visual box is checked"* … *"it is to appear in conjunction with loadpath"*.
+
+**Where (code read 2026-10-01, bim-ootb fix/fast-bake v1534):** the load-path FREEZE is now stack-only — the building is hidden
+and the frame is black except the stack clones + the 2D info panel (`§LOADPATH_STACK_ONLY`, `cpe_load_path.js:3419`). The freeze's
+2D work is composited by `A.loadPathCompositeOntoCanvas` (`cpe_load_path.js:4519`, called from `cinema_maxq.js:1637`):
+stack info panel `_drawStackInfoPanel` (:4113), ladder `_drawStackLadder` (:4245), info card `_infoCardLayout/_drawInfoCard`
+(:4437/:4469). The two new panels are drawn by that same composite, AFTER those three, in the free black area, avoiding their rects.
+Theme = the freeze's own reversed plate (`_freezePlateDraw` :4094) and body size (`_freezeBodyPx` :4085, 22 px at 1080, the §129.58
+HUD standard). No new panel component.
+
+**Gate — in conjunction with load path, never alone:**
+- Two new Alt+C toggles, default OFF, beside `cpe-load-path` in the CPE toggle row: **Audio** (M2 Echo) and **Visual** (M4 Coverage).
+  CLI: `--audio-panel` / `--visual-panel` (+ `--no-…`), the `triState` idiom of `cli_silent_bake.js`.
+- A checked box draws its panel ONLY on freeze frames of a load-path bake. Load path off → nothing, and the bake logs
+  `§FREEZE_PERF_PANEL group=… skipped reason=load-path-off`.
+- For these two groups this SUPERSEDES §P's film markers / HUD card: in the film they live only in the freeze. The canvas
+  flashpoint list (§Q) is unchanged and remains the place for zoom / listen / POV.
+- Relation to §15/§16: these are the first two Build Statement sections to reach the freeze (Comfort-Echo, Security). The
+  compliance web (Build Map headline) stays spec'd and is not built by this item.
+
+**Panel content (numbers first, §N; margins, §18):**
+- **Visual (Security / CCTV)** — fully sourced today:
+  - Camera = the catalog product we hold, `IFC/LOD/CCTV_Paxton10MiniBulletCamera_CORE.ifc`: `LensAngleOfView` = "Horizontal 103°;
+    Vertical 55°; Diagonal 123°", `LensFocalLength` 2.8 mm, 2560 × 1440. **§8 Q4 is RESOLVED by extraction: V = 55° is in the
+    IFC** — no 16:9 assumption.
+  - DORI ranges COMPUTED (IEC 62676-4:2014 px/m via the Axis whitepaper), d = 2560 / (2·ppm·tan 51.5°):
+    Detect 40.7 m · Observe 16.3 m · Recognise 8.1 m · Identify 4.1 m.
+  - Per room (POC = Q.2 item 4): candidates = the room box's 4 ceiling corners aimed at the floor centroid; score = floor area inside
+    the Recognise ring AND inside the H 103° / V 55° frustum, walls clipped by the room box (plan-level caption, not exact rays).
+    Best corner = "best CCTV location"; blind m² = floor area outside it.
+  - Panel lines: rooms judged · % floor area Recognise-covered (building, from each room's best corner) · total blind m² ·
+    the 3 worst rooms (blind m², best corner) · the four DORI distances · caption "1 camera per room at its best ceiling corner;
+    room-box plan check". No pass/fail: no sourced rule says which rooms MUST be covered → verdict column reads "no target"
+    (never PASS).
+- **Audio (Comfort / Echo)**:
+  - RT per room by Sabine AND Eyring, octave bands 125 Hz-4 kHz, Tmf = mean(500, 1k, 2k); V = room box volume (§18: upper bound
+    where no IfcSpace/boundary exists — Hospital and Terminal are compiled rooms, §9.5); S per surface from the room box faces;
+    α per surface from the material lookup.
+  - Panel lines: rooms judged · Tmf range (Sabine-Eyring) of the median and the worst room · count over target where a target is
+    sourced · rooms whose use has no sourced target, counted as UNSOURCED (never a clash) · ΔA m² of EN ISO 11654 class A to reach
+    target for the worst sourced room · caption "statistical diffuse-field RT, finished-unoccupied, room-box volume".
+  - No audio in the film (§P). The ping stays a canvas-only gesture (§Q.1, SAFE PLAYBACK contract).
+  - ⛔ Still gated by §8 Q1 (targets) and Q2 (α table). Until answered, the Audio panel is not built.
+
+**Cost model (BUILD + DECIDE, ALTC_FOUNDATION rule):** both groups are computed ONCE per bake before frame 0 from the extracted DB
+(room boxes, materials) — `§PERF_CLASH_TIMING group= rooms= ms=`; the freeze frames only draw. Nothing per frame but the panel.
+
+**Witnesses (numbers, not eyes):**
+- `§FREEZE_PERF_PANEL group=visual|audio drawn=1 rows= minTextPx= inFrame=1 overlaps=0 (vs stack panel / ladder / card rects)` on the
+  first freeze frame; INCONCLUSIVE when rooms judged = 0; `skipped reason=` when gated off.
+- `§COVERAGE room= cam=corner<k> covered%= blind_m2= dori=` per room (Q.2 item 6) + a hand-worked unit case: a 6 × 4 × 3 m box,
+  corner camera, coverage area checked against the closed-form frustum ∩ disc ∩ rectangle to ±1 %.
+- Audio: §N's reference-room witness (±1 % Sabine) before any panel line is drawn.
+
+**Build order for this item:** Visual first (no open question) → Audio after §8 Q1/Q2.
