@@ -82,3 +82,50 @@ switching restores each. NO boolean-only asserts — the §-lines are the eviden
 
 ## ▶ MASTER SPEC
 `prompts/HISTORY_KNOB_SIGNAL_TAP.md` — all §LOCKED decisions (FIELD/SNIFFER/KNOB/BRANCH) + build order. Read it first.
+
+## §THREADS — category / element threads on the dotline, scoped undo, ERP document threads (SPEC, red1 2026-10-02)
+red1's words: *"history of a particular category? Ie user may do many things at same time, but does not want to undo
+the others. Just that particular wall adjustment with col/beam shaping"* · *"double click a '+' expands its timeline
+according to type"* · *"touch one category line, hiliting it blue glowing thread and then UNDO/REDO will travel along
+that which is hilited"* · *"Wouldn't this be a killer even in the ERP part? Where we traverse a document instead of
+another that was in between?"* Status 2026-10-02: SPEC ONLY. Nothing built. Verified first: no per-feature revert
+exists in `modeller/` or `common/` (grep `deleteFeature|revertFeature` = 0 hits), and history is linear apart from the
+fork-don't-wipe tree above.
+
+**Doctrine: ONE log, many VIEWS.** A thread is a filter over the one signed op-log, never a second log. A scoped undo
+APPENDS a reverting step (like `git revert`) and never erases anything, so `verifyChain` stays ok.
+
+**Abstraction:** `common/history_bar.js` stays app-agnostic. Each host passes ONE function, `categorize(entry) →
+[category, …]` (and optionally `elementOf(entry) → id`). Modeller maps its op types (`modeller_history.js` OP_TYPES:
+GEOM_GRID_MOVE/STR_WALK_EDIT → Grid/Structure, DISC_WALK/MEP_REROUTE → MEP, GEOM_OPENING/CUT* → Openings, …), Viewer maps
+view/pick/schedule, ERP maps document types. Keep it to 5–7 categories. A gesture touching several categories (a wall
+move + its riding door + re-routed pipes) is tagged in EVERY one it touched; reverting it from any thread reverts the
+whole gesture.
+
+**UI:** the main line stays chronological. Beside it go chips `+ Walls (4)` etc. Double-click a chip (tap on touch;
+long-press is already taken by cherry-pick) to expand that category's strip under the line. A second level,
+`+ Wall #110`, shows one element's thread. Tap a strip and it GLOWS blue, and the badge **"Undo: Walls only"** shows. While
+the badge shows, Ctrl+Z / Ctrl+Y travel along the glowing thread only. Exit by tapping it again, pressing Esc, or
+starting any new edit (auto-exit, so the user can't forget the mode is on).
+
+**Dependents (the hard part):** a scoped revert may leave later work leaning on it (a door slid on that wall,
+pipes re-routed around it, a column added for its span). Use the existing relationship links (host/rider,
+GEOM_CUT_MOVE, grid span, re-route source) to list them. The user then either reverts them too, or gets a refusal
+that names them. Never a silent break.
+
+**ERP (pointer in `AGENT_QUEUE.md`):** tap a document (e.g. a Sales Order) and its own thread glows: created → lines
+→ completed → invoiced → paid, skipping the documents touched in between. VIEW first. Scoped undo maps to the
+BUSINESS action, never deletion: Draft → revert field changes; Completed/Posted → **Void / Reverse-Correct**, creating
+the reversal document, which becomes the thread's next step. Dependents too (invoice→order, payment→invoice):
+cascade or a named refusal. Cross-app: a Modeller edit → its VO on the Project Order (§S9) → that PO's purchase
+orders, shown as ONE thread, because it is one signed log.
+
+**Build order (safest first), each RED-first with `§THREAD` lines:**
+1. Category + element threads as READ-ONLY filters (chips, strips, glow, jump-to-view). No log change.
+   Witness: chip counts == entries per category in the log; expanding a strip lists exactly those, in log order;
+   a multi-category gesture appears in each.
+2. Scoped undo/redo along a thread in the Modeller, with the badge, auto-exit and dependency check. Witness: an
+   interleaved session (wall A, MEP walk, wall B, insert) → scoped undo on Walls reverts B, then A, and the walk
+   and insert stay byte-identical; a dependent is refused by name or cascaded; verifyChain ok; global undo still
+   works after exit.
+3. ERP document threads: view first, then scoped undo mapped to Void/Reverse-Correct for completed documents.

@@ -2581,3 +2581,8 @@ repaired live instruments.
   and my own probe called six files stale when one was missing (`unzip -p` on wrong entry names hashed
   empty input). **Read what the PAGE logged, not what the harness concluded.**
 - **A green pipeline is not a deployed feature.** `§PZ.4`.
+
+## §DOC-THREADS pointer (red1 2026-10-02) — SPEC ONLY
+Per-document glowing thread in the shared history dotline: tap a document and step its own history, skipping the documents
+touched in between. Scoped undo maps to Void / Reverse-Correct for completed documents (never deletion). Cross-app with the
+Modeller's VO → Project Order thread. Spec: `prompts/HISTORY_PARALLEL_TIMELINE.md` §THREADS (step 3).
