@@ -1236,3 +1236,40 @@ Claims, each naming the issue it proves:
 Materials/colours, property sets, spatial hierarchy (`IfcRelContainedInSpatialStructure`), and re-cutting
 openings as `IfcOpeningElement` against seeded hosts. This slice makes the export carry the building's
 real shape; it does not make it a fully-furnished IFC. Row 36 stays open until that is stated in the row.
+
+## ▶ §GRID-SPAN-GATE — SPEC 2026-10-02 (row 38, queue item 1b). Written before any code.
+**MEASURED before building (HospitalGarage, real Open, headless; log `§STRWALK-INIT` / `swbTabData`):**
+(a) **The authoring grid is NOT column-derived on the real Open path.** After Open, `Bonsai.grid` is still the default
+A–D × 1–3 (`xs=[0,4,8,12]`) — nowhere near the building (columns sit at x≈135, y≈171). The STR walker measured a column-framed
+lattice (`grid=17×29`, rot −2.000°, 140 columns, 228 girders) but nothing hands it to `Bonsai.grid`. A span gate on today's grid
+would colour nothing real. → Build step 0 below wires it, honestly (only when the walker is column-framed AND the grid is still
+the untouched default; a user-authored grid is never replaced).
+(b) Material is not in `elements_meta.material_name` (NULL for all 335 STR column/beam rows); it IS in `element_name`
+("Concrete-Square-Column:24 x 24", "Precast-Rectangular Beam:15 x 28 …") → **RC**. Read by keyword over the building's own
+IfcColumn/IfcBeam names (`concrete|precast|reinforced` → RC; `steel|wide flange|W-shape|HSS` → STEEL); mixed or neither →
+`§GRID-SPAN material=unknown refused`, no colour.
+(c) The scene's 140 IfcColumn are the walker's skeleton (`provenance derived:grid`, bbox boxes). The building's real column mesh
+is `element_instances.geometry_hash` of the source IfcColumn → the geo db (`resolveHashes`). "Add one more" copies THAT (same
+hash), never a box; no resolvable hash → refuse, reason named.
+(d) Garage girder spans (walker): 5.486 m ×74, 16.764 m ×83 … Table: RC depthRatio 12, max 12 m.
+
+**Definitions (one source each, nothing invented).**
+- **Bay** = a walker girder piece (its two end datums). Span = |u(to) − u(from)| in the LATTICE frame (θ-aware, same frame
+  `swReWalk` uses). Signal = `swCheckGirder(span, {material, proposedDepth})`, `proposedDepth` = the building's MEASURED median
+  beam depth (`_state.section.depth`, 0.535 m on Garage). So **ORANGE** ⇔ span > depth × depthRatio (0.535×12 = 6.42 m),
+  **RED** ⇔ span > `SW_SPAN_RULES[mat].maxBeamSpan` (12 m). Both thresholds are the table × a measured number.
+- **Fold, not memory.** Gate spans = pristine walker base (`_state.base0`) + the ACTIVE op-log (GEOM_GRID_MOVE deltas, and
+  `params.spanSplit` columns, in order, ≤ cursor) — so Ctrl+Z / Ctrl+Y / scrub revert spans deterministically (the walker's own
+  `_state.base` is imperative and is NOT undone; the gate never reads it).
+- **Add one more** = one `GEOM_INSERT` per girder piece of the over-limit bay, at the bay midpoint on that girder's datum, copy of
+  the girder's FROM column (`realGeomHash`, measured bbox, yaw, colour) with `params.spanSplit = {axis, index, pos, girder, srcGuid}`.
+  "Lines crossed" = the perpendicular gridlines carrying a girder in that bay = number of pieces split = columns added. The new
+  line is folded into `Bonsai.grid` (`foldFromOplog` handles `spanSplit`), so the grid shows it and `gx/gy` indices stay right.
+- **Gesture.** Release on RED does NOT commit; it opens the prompt. **Add one more** → ONE `commitGesture` =
+  [GEOM_GRID_MOVE + riders (as today) + the added GEOM_INSERTs] → one Ctrl+Z. **Cancel** → the drag commits at the clamped delta
+  (widest affected bay = max span). Wall-bearing walker state → gate off (`§GRID-SPAN system=wall-bearing skip`).
+- Every message carries "preliminary — the structural engineer confirms".
+
+**Witness W-GRID-SPAN-GATE** (`modeller/tests/witness_grid_span_gate.js`, real Open, real mouse, one `§GRID-SPAN` line per step).
+RED-first: on main the gate does not exist → G1 (grid column-derived) and every colour step FAIL. Falsifier: `GSG_BREAK=1`
+(page flag `__gsgBreakRule`, rule table lookup returns an unbounded limit) must turn the witness RED.
