@@ -220,3 +220,32 @@
       reduced-motion -> class present, animation none.
   (g) SAVE: save -> reopen the .db -> §LIGHT_FIELD_DB restore + §IDLE_BAKE skip why=already exact.
 - ORDER: after the Clinic vault/wall staircase (§5a item 1). Not built yet.
+
+## 2026-10-02 — §BAKE_RESOURCE_GUARD — SPEC (red1: "mem hog guard, to halt when insufficient resources on machine to say 'cannot bake movie due to ..'")
+- WHY: two red1 tab crashes 10-01 from VRAM exhaustion (parallel headless runs on the shared 8 GB card); no guard exists today — code
+  grep (fix/sky-surface @f78a6579): only heap LOGGING (city.js §CITY_MEM, tools.js, clash_narrow.js performance.memory), nothing halts.
+- SCOPE: every long job a user can start in the viewer — Alt+C movie bake (MaxQ), §LIGHT_FIELD_IDLE_BAKE, Alt+S still at 1440p/4k —
+  plus cli_silent_bake.js (headless). One shared check function, one message format.
+- WHAT THE BROWSER CAN READ (no invented signals): performance.memory (Chromium: usedJSHeapSize / jsHeapSizeLimit),
+  navigator.deviceMemory (coarse GB, capped at 8), navigator.hardwareConcurrency, WebGPU adapter.limits + device.lost +
+  'uncaptured error' OutOfMemory, WebGL context-lost. VRAM free is NOT readable in a browser. The CLI can read os.freemem() and
+  nvidia-smi memory.used/total.
+- REQUIRED BUDGET = MEASURED, not authored: first run memdiag.js (§MEM_* heap/VRAM lines) per building for each job (movie / idle bake /
+  still), record peak heap + peak VRAM vs triangle count in this file; the guard's need = that measured slope x the loaded model's
+  triangle count (+ the measured fixed part). Until measured, the PRE-check logs only (§BAKE_GUARD would-block=…) and never blocks.
+- BEHAVIOUR:
+  (1) PRE-CHECK before start: heap headroom (jsHeapSizeLimit - used) < need, or deviceMemory < need -> do not start; status line
+      "Cannot bake movie: not enough memory on this machine (needs ~X GB, ~Y GB free). Close other tabs or use a smaller model."
+      (job word = movie / realistic lighting / 4k still). CLI: os.freemem / nvidia-smi free < need -> exit 2 with the same sentence.
+  (2) WATCHDOG while running (each progress tick): heap used > 90 % of jsHeapSizeLimit, or any WebGPU OOM / device.lost / WebGL
+      context-lost -> HALT cleanly (stop frame loop, release render targets, keep frames already written), status line
+      "Movie bake stopped: ran out of memory at frame N of M (GPU memory full)" — the cause named from the signal that fired.
+      Idle bake: pause (not discard) and resume on the next idle when headroom returns.
+  (3) No silent degrade: a halt is never turned into a lower-quality continue without saying so.
+- § LINES: §BAKE_GUARD pre job= need= free= heapLimit= devMem= verdict=ok|block|log-only ; §BAKE_GUARD halt job= signal= frame= ;
+  §BAKE_GUARD resume job= (idle bake).
+- WITNESS (W-BAKE-GUARD): (a) forced low limit (APP._bakeGuardNeedGB = huge) -> pre-check blocks, status text matches, no frames
+  rendered; (b) injected device.lost / synthetic OOM mid-movie -> halt at that frame, frames before it intact, status names the
+  signal; (c) normal Clinic movie with real limits -> verdict=ok, 0 halts (NO-OP guard proven not to block real work);
+  (d) VACUOUS guard: performance.memory absent (non-Chromium) -> verdict prints INCONCLUSIVE (heap unknown), never ok.
+- ORDER: with §LIGHT_FIELD_IDLE_BAKE (shares the status line), after the Clinic staircase. Not built yet.
