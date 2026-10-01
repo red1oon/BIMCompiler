@@ -38,6 +38,17 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   - SAVING CANDIDATES (to A/B after this bake lands, GPU busy): S-A webp -> jpeg q0.95 at capture (est. -250 ms, look = H.264 anyway; prove by
     per-frame RMS vs webp); S-B meter on a 1-frame-old capture or every 2nd frame (est. -70..-140 ms; exposure eases, prove §FILM_EXPOSURE EV delta);
     S-C sample budget taa/ao 8/8 -> 6/6 at 24 fps (est. -285 ms; quality sweep per CPE_4D_PERF_MEM_STUDY RMS rule); S-D fixed lamp set (~-70 ms).
+- 06:25 red1: "stop. we experiment with savings is more crucial" -> Hospital bake KILLED at frame ~1,955 (partial, no film). Alt+S told GPU free.
+- §SPEED_AB SPEC (2026-10-02, red1 go). Goal: cut s/frame with no visible change. All arms opt-in URL switches; defaults unchanged until proven.
+  - S-A `&capfmt=jpeg` (`&capq=` default 0.95): _captureFrame encodes JPEG instead of WebP 0.92 (cinema_maxq.js both toBlob sites). §CAPTURE_ENC logs
+    encode ms + bytes per frame (also on the control arm, so the WebP cost is measured, not estimated).
+  - S-B `&metereach=N`: §FILM_EXPOSURE meters (SourcedLight.meterRead) only every Nth film frame and on a gate snap; between, it eases toward the last
+    target. Log `metered=0|1`.
+  - S-C `--still-budget 6,6` (exists, cli_silent_bake.js:240).
+  - Clip: Hospital_silent, full 24 fps grid, `--frame-range 1880:1940` (heavy interior, 3-5 s/frame in the killed run), 1920x1080, --visual-panel.
+  - Witness (numbers, no eyes): per arm s/frame from §FRAME_HASH spacing + §CAPTURE_ENC/§FILM_EXPOSURE; picture change = ffmpeg PSNR/SSIM of each arm's
+    mp4 vs the control mp4, frame by frame. Pass = SSIM >= 0.99 mean and min >= 0.98 (8-bit H.264 both sides). A run where the clip has <50 frames
+    or any arm's §FRAME_HASH count differs = INCONCLUSIVE.
 - ▶ RESUME 2026-10-02 04:00 (Alt+C session closing; red1: "do not start as we resume in new session") — supersedes the 03:25 state + §BAKE_QUEUE blocks.
   - bim-ootb fix/fast-bake **sw v1543**, pushed, no PR, worktree /tmp/wt-fastbake. Since v1533: v1534 §GI_FILM_CARRY C1-C4 (§3) · v1538 merge
     fix/sky-surface v1526-1531 (surface names, plaster, furniture polish reach films; §FLOOR_CONTACT/§OBJECT_CONTACT OFF under A._maxqActive) ·
