@@ -1959,6 +1959,36 @@ witness_alts_all.js, fix/alts-all) prints §BAKE_RELEASE_GATE / per-pose verdict
 fresh profile/no page errors/cache keys/pose tEXt/meter finite) else INCONCLUSIVE; each fix's NO-OP check vs its off switch;
 VACUOUS guards; look bands; refs; per-frame film checks (steps, programs, black/white/reused frames, SW-race double-init).
 
+## ▶▶▶▶▶▶▶▶ §DEV RESUME 2026-10-02 03:15 — START HERE (supersedes the 10-01 MORNING block; Opus)
+# ⚠ DO NOT REMOVE — scope: Alt+S still look. Read the log after every run; proof = § numbers. GPU: red1 allows SHARING with Alt+C
+# ("slower is OK") but keep the VRAM gate (wait while nvidia-smi used > 5.2 GB) — two tab crashes 10-01 from VRAM exhaustion.
+# red1 standing go 10-02: "full yes, all the way. Don't wait for me" + coordinate directly with the Alt+C session (bim-compiler-20).
+STATE: bim-ootb fix/sky-surface @f78a6579 sw v1536 (pushed). :8664 serves /tmp/wt-surf. Light-field key 21324567:90186 (the
+§SKY_FIELD_FURNITURE revert, 233b6295); v1519 sidecars restored for stills (Clinic_meta / HHS_extracted / Terminal_meta / Hospital_meta).
+DETAILS: "### SESSION 2026-10-02 (Opus, overnight)" below + §FLOOR_CONTACT / §IFC_SURFACE_NAMES sections.
+SHIPPED 10-01/02 (all default ON unless said): §IFC_SURFACE_NAMES (import keeps IFC finish names; patches for 4 buildings),
+§WALL_TEXTURE (R5 plaster, x3 fine contrast), §FURNITURE_POLISH (rough 0.35, unmeasured: no furniture in the test frame),
+§FLOOR_CONTACT (exact form factor under furniture/railings/stairs; Terminal seats 1.09 -> 0.97 x open floor; truth says ~0.6),
+§OBJECT_CONTACT (distance field, strength 0.5, beams/members/lights/diffusers excluded), §LOCAL_EXPOSURE_BILATERAL (halo 22 -> 0),
+§ZONE_EYE_SKIP_OPEN (HHS atrium dark band gone), §DOME_GLOW (round fixtures glow whole dome + limb darkening). OPT-IN: §FLOOR_F_SMOOTH.
+RUNNING AT HANDOFF (background, this session; results land in the files named):
+ - Film sidecar rebake chain (session scratchpad e645a98a…/bake/chain.sh, NOLOCK + VRAM gate, NOCOPY): Hospital_silent -> HHS_silent
+   -> Terminal_silent at 21324567:90186 into /tmp/wt-surf/buildings/patches, then restorecheck of 4 still DBs (rc_*.out). When each
+   lands: CHECK Hospital's §SKY_FIELD_EXACT_ALL occluderTris ≈ 5.8M (NOT 0), then copy to /tmp/wt-fastbake/buildings/patches and
+   message bim-compiler-20 the file + key (it merges fix/sky-surface into fix/fast-bake first, then releases the Hospital film bake).
+   The degraded 10-01 file sits at patches/Hospital_silent.db.lightfield.bin.degraded_occluders0 (do not ship).
+ - §DOME_GLOW witness (c1/dm.sh: Clinic …808307859 new vs &domeglow=0, domew.js -> §DOME_W meanCV / meanDarkShare per fixture):
+   expect lower CV + dark share on the new arm; then send commit f78a6579 to bim-compiler-20.
+OPEN (in order): (1) vault/wall junction 0.5 m staircase steps (red1 Clinic …881490077: in/out exposure fine, p1/p99 21/187, 0 clip)
+ — the sky-field cell family on curved surfaces; attribute with the LEAK grid + edge census (c1/blk.py, pband.py) as done for HHS.
+ (2) HHS floor still 40 % patchy (mid-scale metric) after the zone fix — lamps mask / IR / remaining eye-walk; per-term A/B again.
+ (3) §FLOOR_CONTACT reaches ~1/4 of the ray truth (seats 0.97 vs ~0.6): bounce / AO path suspected, measure per term.
+ (4) §OBJECT_CONTACT vs a ray truth (wall points beside ducts). (5) Hospital red-block windows (probe did not count them as glass).
+ (6) Clinic mirror LOW (bands = capture lit values; ask red1 before more). (7) "Paint Finish" names read as bare metal in
+ _surfSubstance (Terminal 157, Clinic ~700) — red1 not yet answered whether to treat as paint.
+TOOLS: c1 scratchpad (4a28e70a…): diag.js, memdiag.js (§MEM_* heap/VRAM lines), contact.js, shadowtruth.js, glassw3.js, domew.js,
+ texw.js, blk.py, pband.py, px12.json; node witnesses in e645a98a…: halo_wit.js, patch_wit.js, import_wit.js.
+
 ## ▶▶▶▶▶▶▶ §DEV RESUME 2026-10-01 MORNING — START HERE (supersedes the 09-30 NIGHT block; Opus)
 # ⚠ DO NOT REMOVE — scope: Alt+S still look. Read the log after every run; proof = § numbers. GPU runs: flock /tmp/claude-1000/gpu.lock
 # (Alt+C bakes do NOT take the lock — check nvidia-smi; a shared run can drop the bounce: 'GI_STILL_FAIL ... WebGPU error(s)').
