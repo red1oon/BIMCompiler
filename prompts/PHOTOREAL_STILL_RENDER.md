@@ -1997,6 +1997,28 @@ OPEN (in order): (1) Clinic mirror …729229470: two blown-white vertical strips
   confirmed.
 - NEXT (needs GPU go): exact truth for a planar mirror = an app render from the eye reflected across the mirror plane; compare per px with
   the mirror px; then per-light A/B (&torch=0, &lamps=0) on the band/rest ratio.
+### §FLOOR_CONTACT — MEASURED + SPEC + BUILT (2026-10-01 ~15:50, Opus; red1 "Higher is the shadow under furniture on floor. It has to give
+### some shadow play thus look at the holistic balance"; mirror -> LOW)
+- TRUTH RUN (Terminal …735021015, :8664 v1525, contact.js + shadowtruth.js, shared GPU, Uncaptured WebGPU 0; c1/cs/1790735021015_st.log;
+  probe hit its 300 s cap: open n=440, seats 26, tables 132):
+  | floor zone | render app/open | lamp weight, unoccluded (vs open) | lamp top-16 ray-tested (cover 23-25 %) | Vh 2 m (ray, vs open) |
+  | under seats | 181.1/165.9 = 1.09 | 1.15 | 1.13 | 0.57 |
+  | under tables | 167.7/165.9 = 1.01 | 0.97 | 0.92 | 0.70 |
+  READ: lamps hang over the seating (geometry alone gives the floor under seats +15 %, real); what is missing is the BLOCKING —
+  cosine-weighted hemisphere visibility says seats hide 43 % and tables 30 % of a uniform overhead source. Earlier levers all fail for
+  one reason each (top-K lamp shadows: 13-20 % weight; sky field 0.5 m cells; screen-space AO: equal on open and under-seat floor).
+- SPEC (built, sw v1528, bim-ootb fix/sky-surface): viewer/contact_floor.js — CPU, once per building, camera-independent: furniture
+  triangles (IfcFurniture / IfcFurnishingElement, the scene's own draws) rasterised top-down on a 0.10 m grid per floor level (<= 4 levels
+  by element count), keeping the LOWEST underside above the floor (> 3 cm); per floor texel occ = sum of the exact differential form
+  factor of each covered texel, dF = A h^2 / (pi (r^2 + h^2)^2), within 1.5 m, clamped 1. Shader (sourced_light.js slCF): upward
+  fragments (n.y > 0.7) within 0.15 m above a level get lamps' direct x (1 - occ) and RE_IndirectDiffuse irradiance x (1 - occ)
+  (IR, cove, sky field / hemi, ambient). Sun + torch untouched (own shadow maps). AUTHORED: cell 0.10 m, radius 1.5 m, 3 cm, band 0.15 m
+  (grid choices, not light values). &floorcontact=0 off, =s strength. § line §FLOOR_CONTACT on/off + levels / tris / occMean / ms.
+  Light-field bake keys untouched (light_zones.js not edited).
+- W-FLOOR-CONTACT-FF (node, exact corner formula x4 vs the kernel): square 0.6 m @0.74 m 0.1719 / 0.1726; 1.2 @0.74 0.4507 / 0.4515;
+  0.8 @0.45 0.4960 / 0.4981; 2.0 @0.74 0.6930 / 0.6934 -> kernel = textbook within 0.5 %.
+- WITNESS (queued, c1/fc.sh): contact.js at …735021015, v1528 default vs &floorcontact=0 (RED CONTROL = the 1.09 / 1.01 above):
+  seats/open < 1.00 and tables/open < 1.00; open floor final within +-3 (open texels mostly beyond 1.5 m of furniture); §FLOOR_CONTACT on.
 ### §IFC_SURFACE_NAMES — SPEC (2026-10-01 15:20, Opus; red1: "surfacing is bland when all greyish. Walls, opening frames should have
 ### some diff texture" + "Furniture should have some polish" + "make it auto extract during user loading and saving to DB")
 - FOUND (code + data): the inference already exists — §SURFACE_RULES (streaming.js _surfSubstance(matName) -> R1..R9) + STD_MAT per

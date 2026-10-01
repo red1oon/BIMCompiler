@@ -49,6 +49,15 @@ OPEN, in order:
 5. N1 exterior shadow base gap at the wing: re-judge on a v1530+ whole-building clip (§FILM_SHADOW_EDGE range 917 m, nb 0.22 m).
 6. §FILM_INHERIT ON only on whole-building frames; the per-zone switch (F5) for build-up is not built.
 
+## ▶ §RESOLVE_BY_BUILDING — next abstraction (2026-10-01, red1: "Hope fixes will abstract able to handle any building IFC set")
+Building-agnostic today: §FILM_BLANK_FRAME, §FILM_GATE_EXPOSURE_SNAP, §GI_FILM_CARRY + gpu.lock, freeze panels (any IfcSpace/compiled room
+set; INCONCLUSIVE when none), saved day-counter corner. NOT agnostic: per-DB artifacts keyed on the DB FILE NAME — patches/<db>.sql
+(§IFC_SURFACE_NAMES, georef, raster) and patches/<db>.lightfield.bin. Measured cost 2026-10-01: Hospital_meta got the surface names, the
+Hospital_silent film did not (fixed by hand, 18,841 rows); HHS/Terminal _silent have no sidecar (requested from the Alt+S session); the
+Hospital_silent sidecar went stale silently. SPEC: resolve per-building artifacts by building identity (the `bld=` the §LIGHT_FIELD_DB line
+already prints), not file name — a DB of building B loads B's patches + sidecar whatever it is saved as; the § line names the file it took
+and why; a key mismatch stays a logged rebuild. Owner: scene.js _applyPendingPatch + the light-field loader (Alt+S lane) — coordinate.
+
 ## ▶ §BOUNCE_SPLIT ROOT CAUSE + §GI_FILM_CARRY SPEC 2026-10-01 (Opus, Alt+C session, item 1 of §RESUME 08:30)
 CAUSE (measured, not the lamps): the 0733 bake's bounce renderer ran OUT OF GPU MEMORY. A parallel stills session (scratchpad
 4a28e70a/c1, shots.sh, Alt+S bounce stills on the same RTX 4060 8 GB) logged at 07:38:17 `§GI_CARRY verdict=FAIL gpuErrors=60781
