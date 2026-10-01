@@ -252,3 +252,62 @@ Press **Ctrl + Y**. The same 18 fixtures and 22 pipe runs return (history positi
 **What is routed today:** plumbing, as above. In **Walk ALL Services** the existing witness (`W-MEP-OPENPATH`, Duplex, run
 2026-09-30) also shows **ACMV** ducts (8 runs) and **FP** sprinklers (4 runs) routed and signed; **ELEC** cable is placed
 but not routed (0 runs on Duplex). Those were not walked step by step here.
+
+## Part 4 — Stretch the grid safely
+
+*A column grid can be stretched until a beam would span too far. The Modeller colours each bay as you drag and offers one more column
+when a bay passes the limit. Walked step by step on **HospitalGarage**, a concrete (RC) frame: 140 columns, 195 beams.*
+
+**What the colours mean.** **Green** is fine. **Orange** means the span needs a deeper beam than the building has (the tip names the depth).
+**Red** means the span is over the limit for that material. These are **preliminary** sizing rules: the structural engineer confirms.
+
+### 4.1 — Open HospitalGarage
+
+Open the Modeller, click the folder (Open) and click **HospitalGarage** (as in Part 1). The Modeller reads the material from the building's own
+beam names: concrete, RC (166 of its 195 beams).
+
+![HospitalGarage opened](img/modeller/first-steps-span1-open.png)
+
+### 4.2 — Click Move Grid and grab a gridline
+
+Click **Move Grid**. The building's own column lines appear as the grid (17 × 29 lines). Press on a gridline between two columns, here line 8,
+and keep the button down.
+
+![A gridline grabbed](img/modeller/first-steps-span2-grab.png)
+
+### 4.3 — Drag it: the bay turns orange
+
+Drag the line. The bays next to it were 5.49 m. Past 6.42 m (the building's own beam depth, 0.535 m, times the RC ratio 12) they turn orange.
+Hover the orange bay: the tip says the beam depth that span needs (6.49 m needs at least 0.54 m).
+
+![An orange bay with its tip](img/modeller/first-steps-span3-orange.png)
+
+### 4.4 — Keep dragging: the bay turns red
+
+Past 12 m, the RC limit, the bay turns red. The tip reads: "Limit for this column span (12 m, RC). Add one more?"
+
+![A red bay with its tip](img/modeller/first-steps-span4-red.png)
+
+### 4.5 — Let go
+
+Release the button. Nothing is committed yet: the tip now has two buttons, **Add one more** and **Cancel**. Cancel stops the drag at the
+limit (12 m).
+
+![The Add one more? prompt](img/modeller/first-steps-span5-prompt.png)
+
+### 4.6 — Click Add one more
+
+One column line appears at the middle of the red bay: 5 new columns, copies of the building's own concrete column (the same shape and type as the
+existing ones). The 12.09 m bay becomes two 6.04 m bays, both green by the same rule. The grid goes from 29 to 30 lines on that axis.
+
+![The new column line](img/modeller/first-steps-span6-added.png)
+
+### 4.7 — Ctrl + Z takes it all back
+
+Press **Ctrl + Z** once. The 5 columns, the new line and the drag all go in one step; the bay is back to 5.49 m. **Ctrl + Y** brings them back
+(5 columns).
+
+![After Ctrl+Z](img/modeller/first-steps-span7-undone.png)
+
+**Limits, as tested:** a grid that was not measured from columns (a wall-bearing building, or a grid you drew yourself) gets no colours. If the
+material cannot be read from the building's names, nothing is coloured. Dragging a line past its neighbour is not blocked by this check.
