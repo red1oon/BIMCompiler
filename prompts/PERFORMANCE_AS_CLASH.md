@@ -594,3 +594,16 @@ Each panel lists the best room beside the worst ones, from the SAME computation 
   target: best = largest margin under target (Tmf, whole Sabine-Eyring range, §18). Rooms UNSOURCED: the line reads
   "Shortest RT: <room> <Tmf range>" — labelled as a measurement, never "best". All-UNSOURCED building (Hospital) prints only that.
 - Witness: `§FREEZE_PERF_BEST group= room= value= basis=recognise%|margin|shortest-rt-unsourced`.
+
+### §19.3 — RESULT 2026-10-01: Visual panel + freeze colour bands BUILT (bim-ootb feat/freeze-perf-panels, sw v1537, pushed, no PR)
+- `viewer/cpe_freeze_perf.js` (wired via `setupCpeFreezePerf(APP)` — main.js:10 replaces window.APP; the first try never reached the film),
+  Alt+C "Visual (CCTV) in freeze" + `--visual-panel`; "Audio (RT) in freeze" toggle reserved, logs `skipped reason=not-built`.
+- Witness `viewer/tests/witness_freeze_perf_coverage.js` PASS 12/12 (independent projection-matrix reference within 0.04 pt; DORI to 0.01 m).
+- Hospital_silent freeze bake 1920x1080 frames 1150:1215: `§FREEZE_PERF_BUILD rooms=8 compiled=8 floor_m2=62.6 recognise%=64.2 blind_m2=5.7`,
+  `§FREEZE_PERF_PANEL drawn=1 rows=10 minTextPx=22 inFrame=1 overlaps=0 => PASS`, `§FREEZE_BAND` stack/card/cctv PASS (6.67 / 6.67 / 5.08).
+  Clip: ~/Downloads/Hospital_freeze_CCTVpanel_AFTER_1920x1080_15fps_2026-10-01_*.mp4.
+- §FREEZE_BANDS (red1: "more striking color"): Structure blue #0B5CAD (not amber — §61 ruled yellow out), Security teal #0E7C70, Comfort violet
+  #7C3AED; `&lpbands=0` = old look. No verdict tint on coverage numbers: no sourced coverage target exists.
+- ⚠ DATA: Hospital_silent.db carries 8 compiled rooms (62.6 m²); Hospital_meta.db has 142 (3,734 m²). The film's room graph / escape route read the
+  same 8. Bringing the 142 in is a DB patch affecting escape route too — red1's call.
+- NEXT: Audio (vendor pyroomacoustics materials.json + §N reference-room witness, then the panel).
