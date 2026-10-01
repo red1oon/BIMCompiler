@@ -159,3 +159,18 @@
   not in this file — the Alt+C lane's record. Same class as this file's 10-01 VRAM note (two red1 tab crashes from parallel headless runs).
 - Corrected in this draft: "doubles HHS …142544" -> Clinic …142544 (original L2639 + 09-30 NIGHT block both say Clinic).
 - Added to the ORIGINAL (was chat-only): §MIRROR_STRIP truth run (bands ≈ right, rest of mirror 7x too dark).
+
+## 2026-10-02 ~04:00 — CLOSE-OUT of the overnight Opus session (resume HERE)
+- Film sidecars DONE at key 21324567:90186, all restore PASS, 0 Uncaptured WebGPU: Hospital_silent (occluderTris 5,819,012, cells
+  240,618, 41 min) placed at /tmp/wt-fastbake/buildings/patches/Hospital_silent.db.lightfield.bin; HHS_silent + Terminal_silent placed
+  BESIDE the Alt+C session's files as *.lightfield.bin.k21324567 (it renames them after merging fix/sky-surface @f78a6579, then runs the
+  Hospital film). Degraded 10-01 Hospital file kept as patches/Hospital_silent.db.lightfield.bin.degraded_occluders0 (never ship).
+- NEW LANDMINE: the §IFC_SURFACE_NAMES patches change the light-field FINGERPRINT (one term, Clinic 4595.804 -> 4612.364; most likely
+  glass picked by material name) -> the stills sidecar is rejected ("§ZONE_IDB_CACHE miss … geometry changed") and the field rebuilds on
+  every first Alt+S. Clinic_meta REBAKED (PASS, hit 30 ms). Hospital_meta REBAKING at close (session scratchpad e645a98a…/bake/
+  hosp_meta.sh -> bake_Hospital_meta.out, rc_Hospital_extracted2.out): CHECK occluderTris ≈ 5.8M and restore PASS. HHS_extracted +
+  Terminal_extracted still PASS. Old v1519 copies: …/bake/Clinic_meta.v1519.bak, Hospital_meta.v1519.bak. Rule: any DB content patch
+  that touches glass/material classes needs a sidecar rebake + restorecheck in the same task.
+- §DOME_GLOW: active on 155 round fixtures (Clinic …808307859), 0 shader errors; the uniformity probe (domew.js) caught only 2 non-round
+  fixtures (CV 0.006 both arms) — NOT yet proven on a sconce: next = a pose framing a wall sconce, §DOME_W meanCV new vs &domeglow=0.
+- OPEN list unchanged otherwise (see §5a): vault/wall 0.5 m staircase (Clinic …881490077) first.
