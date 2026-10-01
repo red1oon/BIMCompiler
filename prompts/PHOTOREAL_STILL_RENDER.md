@@ -249,3 +249,21 @@
   signal; (c) normal Clinic movie with real limits -> verdict=ok, 0 halts (NO-OP guard proven not to block real work);
   (d) VACUOUS guard: performance.memory absent (non-Chromium) -> verdict prints INCONCLUSIVE (heap unknown), never ok.
 - ORDER: with §LIGHT_FIELD_IDLE_BAKE (shares the status line), after the Clinic staircase. Not built yet.
+
+## 2026-10-02 ~05:15 — Clinic vault/wall staircase (§5a item 1): CPU read of the baked grid (GPU held by Alt+C Hospital film ~3 h)
+- Hospital rebakes DONE + PASS (04:25): Hospital_meta + Hospital_silent occluderTris 5,819,012, restorecheck §W_LIGHT_FIELD_PATCH PASS,
+  "§ZONE_IDB_CACHE hit src=db", 0 Uncaptured. Hospital_silent copied to /tmp/wt-fastbake/buildings/patches (04:51, md5 a815d168
+  confirmed by bim-compiler-8e = the Alt+C session now; it merged f78a6579 into fix/fast-bake sw v1544 and started the Hospital 24 fps
+  bake 04:51, holding gpu.lock ~3 h — "no headless GPU work until it lands"). LANDMINE HIT AGAIN: a `while pgrep -f "<pattern>"` wait
+  loop matches its own bash -c line and never exits (cost ~25 min); wait on pids, never on pgrep -f / pkill -f of a string in the same command.
+- Tool: session scratchpad de8632cc…/lfdec.js decodes a .lightfield.bin (LFP1 -> gzip -> LFC1, packRecord layout) in node; slice.js /
+  fslice.js print zone / F / Gd cross-sections (idx = x + nx*(y + ny*z)). Clinic grid 198x39x246, cell 0.5, org (-44.80,-6.97,-52.92).
+- MEASURED (red1 pose cam (-11.9,9.6,-1.9) -> +x, vault hall = zone 27, slices x = -8/-5/-2/1/4, z -6..4, y >= 3):
+  (a) F (sky view) inside the hall = 0.00-0.01 in EVERY cell, both sides of every slice, although the hall has clerestory glazing on both
+      walls (y 6.3-8.3); the cells just outside read F 0.08-0.32. F cannot make the steps (it is flat 0). Whether F = 0 under glazing is
+      right is a SEPARATE question (logged, not judged here).
+  (b) Gd (ground-view field) jumps cell to cell exactly at the vault/wall junction: x=-2, y 8.28/8.78: 26 | 0 | 20 | 8 (%), 1 cell apart,
+      vs 0-2 % in the hall below. The trilinear stencil renormalises over non-solid cells, so on a curved surface the set of solid cells
+      changes in 0.5 m steps -> the Gd jump shows as a 0.5 m staircase. HYPOTHESIS (not proven): §GROUND_VIEW_FIELD Gd is the stepping term.
+- NEXT (when the GPU frees): c1/vs.sh arms def / &groundview=0 / &skyfield=0 at …881490077 with LEAK 140x73 -> blk.py-style census of
+  edges >= 15 Lf on the same element along the vault/wall band; the term whose arm removes the edges owns them. Then fix + witness.
