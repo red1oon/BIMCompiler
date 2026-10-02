@@ -10,6 +10,8 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
+## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
+
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
 **Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.
 bim-ootb: `main` carries PR #1697 (Measure checkbox + datum + slab/linear beats + opening gate, sw v1166, LIVE);

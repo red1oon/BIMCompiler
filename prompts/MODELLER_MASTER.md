@@ -83,6 +83,27 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
+## ▶ §RESUME 2026-10-02 — START HERE (session close; then read §RESUME 2026-09-30 below — its rules and queue still stand)
+**Landed and LIVE 2026-09-30 → 10-02 (all witnessed vs LIVE; modeller sw v76, viewer v1458):**
+- Core reds to zero (#1792) · slide real walls SampleHouse, 2/7 slideable after the M5 check (#1793, BIMCompiler #154) · one gesture = one undo (#1794)
+- §S8 edit→cost Δ in Modeller + Viewer, one pricing basis (#1796, #1801) · §S9 Project Order / VO from the Modeller, any-IFC key (#1797, #1798)
+- §GEOM-KEEP-RG walk-erased-building fix (#1801) · §GRID-SPAN-GATE live span colours + "Add one more?" (#1803, #1806)
+- §THREADS step 1, read-only category scrubber "Viewing: <Cat>" (#1807, #1812, #1815)
+- Guide: First Steps Parts 1–5 + ModellerGuide sections, published via safe_gh_deploy.
+**Decided by red1 (recorded where noted):** D4c = option (b) per discipline (this file) · CORE BEFORE LOOKS (§RESUME 2026-09-30) ·
+S9 flow PO / variant / VO + Q1–Q5 answers (`TM_4D5D_VARIANCE_LANE.md` §S8/§S9-ANSWERS) · row 38 span gate · row 39 threads:
+step 1 only · row 40 scripted edits ⏸ HOLD, generative layout out of scope.
+**On HOLD (red1: "allow time to ponder a better shape"):** §THREADS step 2 scoped undo — branch `wip/history-threads-scoped-undo`
+@034999b7, pushed, unmerged. It breaks W-MODELLER-GIT-HISTORY G5/G6, cause not found (`HISTORY_PARALLEL_TIMELINE.md`
+§THREADS-STEP2-HOLD) · §DOC-THREADS / §ADHOC-WF-BATCH (`AGENT_QUEUE.md`) · row 40.
+**Open findings, not built:** rows 35 (fixture drag handle), 37 (pipes unclickable under x-ray; x-ray stays on after a walk undo),
+the multi-select Delete N-undo, §GRID-SPAN-GATE RESULT items (walker artefact girders, crossing-neighbour rule, girder boxes not
+split), the First Steps witness re-run vs LIVE after #1812/#1815 (only run on localhost).
+**Next queue item:** §SLIDE-REAL-WALLS Phase B **Duplex** (36 slideable, passes M5), then SampleCastle (5) — see §SESSION 2026-09-30b.
+Also open: the Open-panel menu (red1 2026-10-02): the "FROM IFC" rows duplicate SH/DX and weren't asked for, and the
+"wall-bearing / column-framed" tags confuse. Pending red1's call: hide the IFC rows behind a test flag (4 witnesses click them) and
+drop or tooltip the tags, plus an "Open a building — the list explained" dictionary section in the ModellerGuide.
+
 ## ▶ §RESUME 2026-09-30 — START HERE (supersedes §RESUME 2026-09-27 as entry point; read that block second).
 ## A corrected "Close the Modeller Gap" session prompt. Every status below was checked on 2026-09-30 against bim-ootb
 ## `origin/main` @ `3f962fb7` and this file on bim-compiler `origin/master` @ `659524c4e`.
