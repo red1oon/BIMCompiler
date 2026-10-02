@@ -789,6 +789,21 @@ doors, up risers between storeys.
 - Every retreat is exact because the geometry is a pure fold of the log — there is no separate "undo buffer"
   to drift out of sync.
 
+**The dots.** Above the slider sits a row of dots, one per edit gesture (a square dot = a model edit, a round dot =
+a milestone such as *Opened Duplex*). Clicking a dot, or the **‹ ›** arrows beside them, only *shows* that moment —
+the camera and highlight go there, the model is not changed. Undo stays **Ctrl+Z** (or the slider). Until 2026-10-02
+the Modeller kept this dot row hidden and only the slider was visible.
+
+**History threads — see the history of one kind of thing.** Next to the dots, chips such as **`+ Walls (2)`**,
+**`+ Openings (2)`**, **`+ MEP (1)`**, **`+ Inserts (1)`** count the edits of each kind (seven kinds: Grid/Structure,
+Walls, Openings, MEP, Inserts, Shapes, Other). An edit that touched several kinds — a wall move that drags its door
+along — is counted in each. Double-click a chip (tap on a phone) to open that kind's strip: just those edits, in the
+order you made them. Inside it, `+ Wall #112 (1)` opens one element's own thread. Tap a strip and it glows blue with
+the badge **Viewing: Walls**; now **‹ ›** step through the wall edits only, skipping the walk, the insert and
+everything in between. This is a viewer: it never changes the model. Leave it by tapping the strip again, pressing
+**Esc**, or making a new edit. Undoing just one kind of edit is not available yet. Walked through step by step in
+[First Steps, Part 5](ModellerFirstSteps.md#part-5-see-the-history-of-one-thing).
+
 ---
 
 ## Save

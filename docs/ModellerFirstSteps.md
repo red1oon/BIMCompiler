@@ -311,3 +311,45 @@ Press **Ctrl + Z** once. The 5 columns, the new line and the drag all go in one 
 
 **Limits, as tested:** a grid that was not measured from columns (a wall-bearing building, or a grid you drew yourself) gets no colours. If the
 material cannot be read from the building's names, nothing is coloured. Dragging a line past its neighbour is not blocked by this check.
+
+---
+
+## Part 5 — See the history of one thing
+
+*The dots above the history slider are every edit you made, in order. The chips next to them sort those edits by kind, so you can
+look back at just your wall edits without wading through everything else. This part only looks; it never changes the model.
+Walked on **Duplex** after four edits: two wall moves, an ELEC walk and a door insert.*
+
+### 5.1 — Look at the chips
+
+After a few edits, chips appear next to the dots: **+ Walls (2)**, **+ Openings (2)**, **+ MEP (1)**, **+ Inserts (1)**. The number
+is how many of your edits touched that kind. A wall move that carried its door and window counts under Walls *and* Openings; so does the door you inserted.
+
+![The category chips next to the dots](img/modeller/first-steps-thread1-chips.png)
+
+### 5.2 — Double-click + Walls
+
+The Walls strip opens under the dots: one dot per wall edit, oldest first. **+ Wall #112 (1)** opens that one wall's own history.
+On a phone, tap the chip instead.
+
+![The Walls strip](img/modeller/first-steps-thread2-strip.png)
+
+### 5.3 — Tap the strip
+
+It glows blue and the badge reads **Viewing: Walls**.
+
+![The glowing Walls thread](img/modeller/first-steps-thread3-glow.png)
+
+### 5.4 — Press ‹
+
+The view jumps to your newest wall edit, skipping the insert and the walk you made after it. That wall is selected and framed.
+Press **‹** again for the wall edit before it, **›** to come forward. The model does not change.
+
+![Stepping back along the Walls thread](img/modeller/first-steps-thread4-scrub.png)
+
+### 5.5 — Press Esc
+
+The glow goes and the arrows step through every edit again. Tapping the strip again, or making a new edit, does the same.
+
+**Limits, as tested:** this is for looking. To undo, use **Ctrl + Z** as before (it undoes your last edit, whatever its kind).
+Undoing only one kind of edit is not available yet.
