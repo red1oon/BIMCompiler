@@ -26,6 +26,7 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   frames while cam y descends 0.24 -> 0.12 -> -0.71 -> -2.15 with darkPct 100 = camera passing through solid geometry (slab/stair) on the
   saved path; exposure rate cap (capped=down) then ramps back over ~15 frames. Fix = re-author those pins (red1) or a camera-in-solid guard (not built).
   Also open: §INTERIOR_LIGHTS_WITNESS poolLit 0/122 past topout (2 samples); §CLI_BAKE_POSECHECK maxErr 0.42 m.
+  red1 2026-10-03: "done without any buildup or the rest of the overlays. But that is OK as a test film". Overlays need 4D tables (tasks/schedules) in LTU_AHouse.db first.
   Post-film: merged fix/sky-surface @d3bb44a7 (Alt+S stills-only) into fix/fast-bake = 393e0f0f sw v1556 (pushed). Films above were v1555.
 - ▶ 2026-10-03 03:38 HOSPITAL 24 fps DELIVERED (red1 full mandate 00:16): ~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-03_0049.mp4,
   244,712,634 B, ffprobe 4,963 frames / 206.8 s, wall 10,070 s (2.03 s/frame). Tree wt-fastbake @35886fab sw v1555, recipe as below.
