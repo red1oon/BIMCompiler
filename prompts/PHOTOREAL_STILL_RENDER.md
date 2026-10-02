@@ -341,3 +341,9 @@
   `!A._maxqActive` gate; 0 §FIXTURE_FACE lines in both film logs) -> red1 decision. Proposed still witnesses for the film speed
   recipe (gi8: |dLf| + new edges + floor-patchy vs default-twice; 6/6: flat-wall local std) and a §WIND_FLIP film line + flagged-element
   raycast count along the path — NOT RUN, waiting for red1. Open for red1: auto-release §GI_CARRY (0.30 GB) on switching to a heavy mode.
+- 11:55 LTU_AHouse film prep (asked by bim-compiler-8e; film DB = ~/Downloads/LTU_AHouse.db, linked as wt-fastbake buildings/
+  LTU_AHouse_silent.db). Read-only census (session scratchpad wfcount.js, shipped wind_flip.js rule): 104,340 geometries, 13,572
+  flagged; single-sided-class elements 752/34,081 (IfcCovering 706, IfcSlab 43, IfcWall 2, IfcBeam 1). material_name empty
+  58,827/122,667. Sources: DAGCompiler/lib/input/IFC/LTU_AHouse_merged.ifc + internal/UNMERGED/LTU_AHouse_*.ifc.
+  JOB (on red1's go, after the Alt+C Hospital bake ~14:30): write §IFC_SURFACE_NAMES + §WIND_FLIP blocks into
+  patches/LTU_AHouse_silent.db.sql FIRST (names move the fingerprint), then bake the sidecar at 21324567, restorecheck must say hit.
