@@ -4247,6 +4247,19 @@ cards <code>prompts/RESUME_DX_MEP_RESIDENTIAL_STANDARD.md</code>, <code>RESUME_T
 <li>Every retreat is exact because the geometry is a pure fold of the log — there is no separate "undo buffer"
   to drift out of sync.</li>
 </ul>
+<p><strong>The dots.</strong> Above the slider sits a row of dots, one per edit gesture (a square dot = a model edit, a round dot =
+a milestone such as <em>Opened Duplex</em>). Clicking a dot, or the <strong>‹ ›</strong> arrows beside them, only <em>shows</em> that moment —
+the camera and highlight go there, the model is not changed. Undo stays <strong>Ctrl+Z</strong> (or the slider). Until 2026-10-02
+the Modeller kept this dot row hidden and only the slider was visible.</p>
+<p><strong>History threads — see the history of one kind of thing.</strong> Next to the dots, chips such as <strong><code>+ Walls (2)</code></strong>,
+<strong><code>+ Openings (2)</code></strong>, <strong><code>+ MEP (1)</code></strong>, <strong><code>+ Inserts (1)</code></strong> count the edits of each kind (seven kinds: Grid/Structure,
+Walls, Openings, MEP, Inserts, Shapes, Other). An edit that touched several kinds — a wall move that drags its door
+along — is counted in each. Double-click a chip (tap on a phone) to open that kind's strip: just those edits, in the
+order you made them. Inside it, <code>+ Wall #112 (1)</code> opens one element's own thread. Tap a strip and it glows blue with
+the badge <strong>Viewing: Walls</strong>; now <strong>‹ ›</strong> step through the wall edits only, skipping the walk, the insert and
+everything in between. This is a viewer: it never changes the model. Leave it by tapping the strip again, pressing
+<strong>Esc</strong>, or making a new edit. Undoing just one kind of edit is not available yet. Walked through step by step in
+<a href="../ModellerFirstSteps/#part-5-see-the-history-of-one-thing">First Steps, Part 5</a>.</p>
 <hr />
 <h2 id="save">Save<a class="headerlink" href="#save" title="Permanent link">&para;</a></h2>
 <p><em>Clash-check + auto-heal, then write a physical-DB snapshot — blocks on residual RED.</em></p>
