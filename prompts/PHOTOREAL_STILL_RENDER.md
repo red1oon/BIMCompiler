@@ -411,3 +411,9 @@
   a browser run to confirm which mesh carries the class -> after the GPU frees.
 - wt-surf hygiene: a 0-byte buildings/Clinic_extracted.db (created 00:19 BY THIS SESSION: `sqlite3 Clinic_extracted.db` on a missing path creates an empty file — query DBs by absolute ~/bim-ootb/buildings path, never a bare name inside a served tree) shadowed serve_tree's fallback -> Clinic on
   :8664 would have loaded empty. Removed (no process held it); :8664 now serves 'SQLite format 3' for Clinic.
+- ~04:00 Alt+C (bim-compiler-d1) merged fix/sky-surface @d3bb44a7 into fix/fast-bake as 393e0f0f, sw v1556 (verified: d3bb44a7 is an ancestor,
+  CACHE_VERSION v1556 on origin). Alt+C delivered the Hospital and LTU films; the new sidecars Hospital_silent + LTU_AHouse_silent .lightfield.bin
+  (key 21324567:90186, restorecheck PASS per Alt+C) are in /tmp/wt-fastbake/buildings/patches. gpu.lock FREE (flock -n ok).
+  Alt+S GPU QUEUE, waiting on red1's go: (1) rebake wt-surf sidecars for the still DBs (Clinic ~2.5 min, HHS ~5, Hospital ~41, Terminal ?);
+  (2) one browser press to show the v1547 lines (§FAULT verdict, PNG pressS); (3) F2 zone id + lamp count at the Hospital pose …945705039;
+  F4 dark-glass directions at HHS …944262945; F5 confirm the sconce shade is the material behind glassLow.
