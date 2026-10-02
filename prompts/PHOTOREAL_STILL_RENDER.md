@@ -347,3 +347,9 @@
   58,827/122,667. Sources: DAGCompiler/lib/input/IFC/LTU_AHouse_merged.ifc + internal/UNMERGED/LTU_AHouse_*.ifc.
   JOB (on red1's go, after the Alt+C Hospital bake ~14:30): write §IFC_SURFACE_NAMES + §WIND_FLIP blocks into
   patches/LTU_AHouse_silent.db.sql FIRST (names move the fingerprint), then bake the sidecar at 21324567, restorecheck must say hit.
+- 13:30 LTU step (1) DONE: bim-ootb fix/sky-surface @00524a4f (pushed; Alt+C merged it into fix/fast-bake as 35886fab):
+  patches/LTU_AHouse_silent.db.sql = GEOREF/raster + §IFC_SURFACE_NAMES (updates=2; keptAuthored 36,967; MEP IFCs unnamed) +
+  §WIND_FLIP (13,572 geometries). wt-surf buildings/LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db.
+  Steps (2)+(3) QUEUED DETACHED: c1/ltu.sh waits for the Alt+C Hospital bake pid 1205250 to exit, then under gpu.lock: sidecar bake
+  (cs/ltu_bake.out) -> restorecheck (cs/ltu_rc.out) -> Alt+S at cinema pin 0 (c1/ltu_alts.js -> cs/ltu_alts.log). Copies the sidecar to
+  /tmp/wt-fastbake ONLY if occluderTris>0 + PASS + cache hit. Summary: c1/ltu.out. Then message bim-compiler-8e key/occluderTris/hit line.
