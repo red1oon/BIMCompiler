@@ -324,3 +324,9 @@
   — over the spec's 5 % rule (12 MB) but gpuMB is WHOLE-CARD minus baseline and an unrelated headless test (modeller
   witness_history_threads.js, outside the lock) was running -> leak verdict INCONCLUSIVE; needs a 5-round run on a quiet GPU.
   NEXT: name what holds the 0.86 GB after Esc (render targets / GI buffers / light-field textures kept for reuse = intended cache, or leak).
+- 09:40 WHAT HOLDS GPU AFTER Esc (HHS, c1/cs/memlife_hhs_rel{,2}.log): __giStillRelease() frees 0.30 GB (ESC2 1133 -> 832 MB above the
+  pre-launch card baseline; heap 48.5 -> 44.8 MB) = the §GI_CARRY WebGPU renderer + building copy kept ON PURPOSE (gi_still.js:62/808,
+  released only by Alt+Shift+S / __giStillRelease / §GI_CARRY FAIL). Enumerable WebGL side after Esc: composer RTs 2 x 22.5 MB +
+  envMap RT 12 MB; NO light shadow maps in the scene; CSM state idle. ~0.53 GB above LOADED still unattributed (driver/Chrome pool vs
+  the +24 textures / +25 geometries renderer.info keeps). 5-round plateau test (c1/r5.sh -> cs/memlife_hhs_r5.log) QUEUED behind the
+  Alt+C HHS film bake (pid 1166155): flat ESC3..ESC5 = pool, rising = leak.
