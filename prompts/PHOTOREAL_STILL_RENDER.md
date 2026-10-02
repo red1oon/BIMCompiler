@@ -307,3 +307,6 @@
   (Alt+S -> §GI_STILL result). Verdicts: LEAK if ESC2 - ESC1 > 5 % of LOADED heap or gpu, or textures/programs grow ESC1 -> ESC2;
   CLEANUP ratio = (PRESS - ESC) / (PRESS - LOADED) per metric; FIRST-TIME cost = press1 ms - press2 ms. Arms: default, &windflip=0.
   INCONCLUSIVE if any mark is missing or the GPU process is not found.
+- 08:35 QUEUED (detached, survives session exit): c1/ml.sh waits for the Alt+C Hospital 24 fps bake (pid 1115790, ~3 h) to EXIT, then
+  runs §ALTS_MEM_LIFECYCLE on HHS …880424616 (arms on / &windflip=0) under flock -> c1/cs/memlife_hhs_{on,off}.log (+ ml.out).
+  Tool c1/memlife.js. READ those logs first on resume; verdict rules in the spec above.
