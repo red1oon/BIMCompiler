@@ -147,6 +147,24 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   Open: Hospital recipe clip (ACG) INCONCLUSIVE — every phase slower incl. TAA/AO, GI grab 635 ms = GPU contention (an oci_patch_gate.js run
   outside gpu.lock overlapped the window); re-run with a free GPU when red1 resumes.
 
+- §REVEAL_DOOR_LEAK (2026-10-02 11:05, red1 "bad separation of concern" / "PROCEED"). FOUND by §REVEAL_TRAP (&revealtrap=1, sw v1554, HHS slice
+  1285:1345): the 17 leaked ARC meshes are all IfcDoor plain meshes (guids 3XrBtx9eX7mQE6EqWHP…), re-shown by time_machine.js:1685 renderAtTime
+  `obj.visible = true` (single-mesh showReal branch) <- tmSetCursor <- cinema_maxq.js:3764, every frame. time_machine.js has never consulted
+  hiddenDiscs (its own note :694); the reveal writes once per slot, the 4D tick every frame, so the last writer wins.
+  SPEC: final visibility of a single mesh = built at cursor (4D owner, 4D_MODEL_INTEGRITY §I "is it on screen at cursor?") AND its discipline is
+  shown (discipline filter owner, panels.js _applyDiscVisibility / A.hiddenDiscs). renderAtTime keeps computing "built" and writes visible only
+  through one helper `_discShown(obj)` (false when obj.userData.disc is in app.hiddenDiscs). No change to placed/frontier/staged logic.
+  Witness: the same slice with &revealtrap=1 -> §CPE_REVEAL_LEAK lines = 0 and §REVEAL_TRAP lines = 0; §PERF_TRAVERSE/§GEO_ORDER/§SUPPORT_CYCLE
+  unchanged vs the trap run; outside the round (hiddenDiscs empty) behaviour is identical by construction.
+  WHY NOW (red1: "the 4D never put back before"): renderAtTime has always re-written SINGLE meshes every tick — its delta skip exists only for
+  Batched/Instanced (time_machine.js:1736/:1806). §SURFACE_R10 (735c0dd3, PR #1763, 2026-09-24) splits doors with hardware into 2 materials and
+  a split element never enters a batch (streaming.js:989-1003) -> HHS doors became single meshes -> re-shown every tick. Before 09-24 they were
+  batched and skipped once built (topout 0.26 < reveal 0.40). Option B (single meshes join the delta skip) rejected: changes every single mesh.
+  RESULT sw v1555 a7ebeafd (pushed): trap2 slice — §REVEAL_TRAP 17 -> 0, ARC/STR §CPE_REVEAL_LEAK 2 -> 0 (one pre-hide line at slice start,
+  hiddenDiscs=[], in both runs = slice artifact), §PERF_TRAVERSE discKept=17 hiddenDiscs=[STR,ARC] every pass; §GEO_ORDER/§SUPPORT_CYCLE/
+  §HOSTED_BEFORE_HOST/§DEQ_REPAIR identical; GI errFrames 0; frame 1285 luma equal (doors re-shown after it), 1286+ +1.4..3.2 (doors gone).
+  Not yet re-measured: Hospital 48 / Terminal 74 (expected same cause — their split doors), next full film.
+
 ## 1R. REVIEWER TAKE (bim-compiler-19, 2026-10-02; numbers only, no frame judging — PRIMAL LAW)
 Reviewed: ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_15fps_2026-10-02_0230.mp4 + /tmp/bake_HHS_Office_Federated_silent_2026-10-02_0230.log. Goal context (red1): the film is a hook for the long tail of DIY BIM users; first look matters, so polish is justified, but it needs a finish line.
 - PASS (measured): 2,047 frames 1920x1080 15 fps 136.5 s 105 MB; §CLI_BAKE_WALL 3029 s aborted=no fileOk=true; §MAXQ_QUALITY unconverged=0; §FRAME_REUSE_TOTAL 3/2047; §GI_FILM done staleFrames=0 errFrames=0 rebuilds=0 gpuErrors=0 (orientation asRead=1.26%, vs 79.88% in the bad 0733 Hospital clip); blankGrabsRecovered=115; ffmpeg blackdetect(d=0.2) 0 segments + freezedetect(d=1.5 s) 0 segments, scan completed over 2047 frames.
