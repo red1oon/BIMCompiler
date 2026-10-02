@@ -32,7 +32,9 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   - LTU: ~/Downloads/LTU_AHouse.db = red1's LTU film DB (linked as LTU_AHouse_silent.db in wt-fastbake + wt-surf). Alt+S step (1) DONE
     (fix/sky-surface @00524a4f: §IFC_SURFACE_NAMES 2 updates + §WIND_FLIP 13,572 geoms; merged here as 35886fab). Alt+S steps (2) sidecar key
     21324567 + restorecheck hit and (3) Alt+S viewing check run AFTER the Hospital bake exits (red1 go given); Alt+S copies the sidecar into
-    /tmp/wt-fastbake/buildings/patches/ (gitignored) and messages Alt+C. Then: LTU test clip, then full film. Path is the Aug-03 save (61.2 s,
+    /tmp/wt-fastbake/buildings/patches/ (gitignored). Alt+S closed 13:45: queued DETACHED (waits for pid 1205250), result in
+    /tmp/claude-1000/-home-red1-bim-compiler/4a28e70a-9992-4edd-b7c4-64c2a62ac248/scratchpad/c1/ltu.out (key / occluderTris / hit / COPIED or NOT
+    COPIED) — read it on resume. Then: LTU test clip, then full film. Path is the Aug-03 save (61.2 s,
     no buildup/reveal flags, no 4D tables).
   - NEXT speed lever (spec only, not built): Hospital scene renders submit 2,549-3,201 draw calls / 4.4-6.5 M tris (§RENDER_INFO), GPU 36% busy
     -> CPU/draw-call bound; §BATCHED_FLUSH already merges per flush (2682 -> 238) yet the totals stay ~3k -> first measure what the 3k calls are.
