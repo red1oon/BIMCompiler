@@ -353,3 +353,21 @@
   Steps (2)+(3) QUEUED DETACHED: c1/ltu.sh waits for the Alt+C Hospital bake pid 1205250 to exit, then under gpu.lock: sidecar bake
   (cs/ltu_bake.out) -> restorecheck (cs/ltu_rc.out) -> Alt+S at cinema pin 0 (c1/ltu_alts.js -> cs/ltu_alts.log). Copies the sidecar to
   /tmp/wt-fastbake ONLY if occluderTris>0 + PASS + cache hit. Summary: c1/ltu.out. Then message bim-compiler-8e key/occluderTris/hit line.
+
+## 2026-10-02 ~13:40 — CLOSE-OUT (red1 shutting down) — RESUME HERE
+- SHIPPED this session (bim-ootb fix/sky-surface, all pushed, 0 unpushed): 436b85cc §WIND_FLIP (sw v1546; Clinic vault/wall staircase =
+  invisible flipped-winding partition, fixed) + baked patches 4 buildings; 00524a4f LTU_AHouse_silent patches (names + WIND_FLIP).
+  Alt+C merged both into fix/fast-bake (5f5eeecc / 35886fab). Hospital_meta + Hospital_silent sidecars rebaked 04:25 PASS (5.82M occl).
+- IF THE MACHINE REBOOTED: /tmp dies -> c1/ltu.sh (LTU steps 2+3) and its logs are gone, the wt-surf link
+  buildings/LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db is gone, :8664 is down. Restart: `git worktree add /tmp/wt-surf
+  fix/sky-surface` in ~/bim-ootb (or reuse), `node ~/bin/serve_tree.js /tmp/wt-surf 8664 &`, re-link the LTU DB, re-copy
+  sidecars from ~/bim-ootb? (NO — sidecars are gitignored and live only in /tmp/wt-surf/buildings/patches: after a reboot ALL .lightfield.bin
+  must be REBAKED: Clinic 2.5 min, HHS ~5, Terminal ~?, Hospital 41 min, LTU unknown). Then redo LTU (2)+(3) (bake -> restorecheck hit +
+  occluderTris>0 -> Alt+S at cinema pin 0 -> copy to wt-fastbake -> message the Alt+C session key/occluderTris/hit line).
+- IF NOT REBOOTED: read c1/ltu.out (LTU_DONE line) + cs/ltu_{bake.out,rc.out,alts.log}; tell Alt+C.
+- OPEN (red1 decisions): (a) films inherit §DOME_GLOW/§FIXTURE_FACE? (Alt+S-only gate effects.js startStillRefine); (b) run the film
+  speed-recipe still witnesses (gi8 banding, 6/6 wall noise) + §WIND_FLIP film-path pixel count; (c) auto-release §GI_CARRY 0.30 GB on
+  switching to a heavy mode. Not decided: GI half-res / adaptive refine speed specs (press ~38 s @1440p, first press +20-30 s shaders).
+- OPEN (work): Hospital irOnly=1 at …848782458 (both windflip arms; red1 v1531 had 0); heap +0.3 MB per Alt+S round unattributed;
+  +0.2 GB GPU step at round 3; user-IFC save does not write geometry_wind_flip; §5a items 2-7 unchanged; specs §LIGHT_FIELD_IDLE_BAKE +
+  §BAKE_RESOURCE_GUARD written, not built.
