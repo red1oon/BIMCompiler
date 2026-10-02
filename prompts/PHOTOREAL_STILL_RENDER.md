@@ -335,3 +335,9 @@
   48.0 / 48.4 / 48.9 / 49.1 / 49.3 MB (+0.3 MB/round). Press 29.1 s then 9.0 s x4. VERDICT: GPU PLATEAU (~1.35 GB after round 3,
   rounds 4-5 within ±3 MB) = allocator pool, not a leak; one step +197 MB at round 3 unexplained. Heap creep 0.3 MB/round = small,
   not yet attributed. Whole-card metric (other GPU users not excluded).
+- 11:00 HHS 24 fps film (Alt+C, ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_24fps_2026-10-02_0934.mp4) — Alt+S review
+  exchanged with bim-compiler-8e (logs/code only): first film on key 21324567 + §ZONE_EYE_SKIP_OPEN + §WIND_FLIP (2,801 rows);
+  IFC names already in 02:30. INHERITANCE GAP: §DOME_GLOW / §FIXTURE_FACE is Alt+S-only (effects.js startStillRefine
+  `!A._maxqActive` gate; 0 §FIXTURE_FACE lines in both film logs) -> red1 decision. Proposed still witnesses for the film speed
+  recipe (gi8: |dLf| + new edges + floor-patchy vs default-twice; 6/6: flat-wall local std) and a §WIND_FLIP film line + flagged-element
+  raycast count along the path — NOT RUN, waiting for red1. Open for red1: auto-release §GI_CARRY (0.30 GB) on switching to a heavy mode.
