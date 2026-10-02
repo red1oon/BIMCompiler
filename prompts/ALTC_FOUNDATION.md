@@ -91,6 +91,13 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
     timers armed EVERY frame (60 s each -> ~25 live); 2x _raf2 per frame (cinema_maxq.js:3592, 4126). §STILL_RES resize: 0 lines -> not firing.
     HHS capture split (sw v1548): compMs 225 / enc 62 / hash 7 / idb 11 ms — the composite (inside it a composer render + bounce hook) is the cost.
     §BAKE_LEAN (&bakelean=1, sw v1550) = L1 + L2; §CAPTURE_PARTS (sw v1549) splits composer / draw3d / hud. HHS base vs lean test running.
+  - §CAPTURE_PARTS (sw v1549, HHS): composer 7 / draw3d 222 / hud 8 ms — draw3d = the bounce hook. §BAKE_LEAN (&bakelean=1) NO GAIN (0.725 vs 0.700).
+  - §GI_FILM_PARTS (sw v1551, HHS, ms/frame): grab 86 (WebGL frame -> 2D + blank probe + colour copy) / geom 25 (WebGPU bounce) / read 58 (float
+    33 MB) / loop 49 (JS float->byte) / comp 2. &gifast=1 (no Math.max/min) PASS 0.724 -> 0.686 s/frame, luma 0.071/0.77 (HHS floor 0.069/0.79).
+  - §GI_FILM_8BIT &gi8=1 (sw v1552) PASS: rgba8 bounce target -> HHS 0.724 -> **0.565 s/frame (-22%)**; bounce 220 -> 110 ms (read 25, loop 6);
+    luma vs base 0.060/0.62, compositeMean 116.6 vs 116.5, errFrames=0 gpuErrors=0. Remaining grab ~61 ms is mostly the required WebGL readback.
+  - BAKE RECIPE now (all opt-in, defaults unchanged): `--still-budget 6,6 --url-query &capfmt=jpeg&gi8=1`. HHS 24 fps ~3,275 x 0.565 = ~31 min
+    (was ~76 at webp 8/8). Hospital not yet measured with gi8 (bounce ~179 ms there).
   - P2 CAPTURE OVERLAP: first SPLIT the remaining capture (jpeg made encode 23 ms, capture still ~430 ms): §CAPTURE_ENC compMs (HUD composite),
     §CAPTURE_TAIL hashMs + idbMs (sw v1548, logging only). Build the overlap only on the part the split shows is the cost.
   - ABC did not add up (TAA 1060 with taa=6): with the meter skipped its warm-up work moves into the first TAA render; single run, noisy. AC (A+C) arm queued.
