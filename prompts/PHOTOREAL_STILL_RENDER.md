@@ -409,5 +409,5 @@
   Clinic has NO low-T glazing (windows/plates are alpha 0.10 / 0.25). So glassLow=1 is most likely the sconce shade — still_fault.js:68
   filters by transparency only while its own header (:10) says "glazing materials". Fix = restrict glassLow to glazing classes; needs
   a browser run to confirm which mesh carries the class -> after the GPU frees.
-- wt-surf hygiene: a 0-byte buildings/Clinic_extracted.db (created 00:19, unknown writer) shadowed serve_tree's fallback -> Clinic on
+- wt-surf hygiene: a 0-byte buildings/Clinic_extracted.db (created 00:19 BY THIS SESSION: `sqlite3 Clinic_extracted.db` on a missing path creates an empty file — query DBs by absolute ~/bim-ootb/buildings path, never a bare name inside a served tree) shadowed serve_tree's fallback -> Clinic on
   :8664 would have loaded empty. Removed (no process held it); :8664 now serves 'SQLite format 3' for Clinic.
