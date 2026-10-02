@@ -16,6 +16,12 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 00:15 RESUME CHECK (Alt+C, after reboot; uptime 4 min). Hospital 24 fps film LOST: no
+  `Hospital_silent_full_AFTER_…24fps_2026-10-02_1138.mp4` in ~/Downloads, /tmp wiped (bake log, ltu.out, all sidecars gone).
+  Rebuilt (no GPU): worktrees /tmp/wt-fastbake @35886fab + /tmp/wt-surf @00524a4f (both = origin, 0 behind), DB symlinks
+  Hospital/Terminal/HHS/LTU _silent -> ~/Downloads in both. `buildings/patches` holds only Hospital_silent.db.sql — every
+  .lightfield.bin + .prebake.json must be rebaked (Alt+S: Hospital 41 min, LTU unknown). GPU free (201 MiB used).
+  Waiting on red1 go for the GPU chain: Hospital sidecar rebake -> Hospital 24 fps re-bake (~3 h, recipe below) -> LTU steps 2-3.
 - ▶ RESUME 2026-10-02 13:45 (Alt+C session bim-compiler-8e closing; red1 "shutting down, update work") — supersedes the 04:00 to-do.
   - bim-ootb fix/fast-bake @35886fab (pushed), worktree /tmp/wt-fastbake, sw v1555. Since v1543: v1544 merge sky-surface f78a6579; v1545-1552
     §SPEED_AB/§SPEED_PAR switches + timers (all OPT-IN, defaults unchanged); v1547 merge §WIND_FLIP; v1553 §RENDER_INFO; v1554 §REVEAL_TRAP
