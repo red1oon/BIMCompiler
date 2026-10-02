@@ -1460,3 +1460,19 @@ witness pins it, so closing one flips that step to VERIFIED and the run prints `
 | FS-9 | S24b | `C_AcctSchema_ID param control=INPUT:number` (ad_process_para ref 19 TableDir) | `renderProcParamForm` renders ref 19/18/30 params through the same FK picker as the window form | S24b → V |
 | FS-10 | S25b | `Import Business Partner … table I_BPartner not in curated seed` | additive SQL patch adding the I_* import tables the import windows need (DB CHANGES = patch + self-heal loader, never a binary) | S25b → V |
 | FS-11 | S26 | `window.ErpPersist on idempiere.html=false` | load `erp_persist_ui.js` in idempiere.html and mount its Backup/Restore (reuse, `glassbowl.html` precedent) | S26 → V + a restore round-trip arm |
+
+### §FS-BUILT-2 — 2026-10-02 · closed and LIVE (bim-ootb PRs, merged to main, served bytes == minify(main))
+- **FS-1** (S07, S15 G→V) PR #1809 `379662d6` sw v795 — genesis G5 = MSetup's 12 GL categories + 42 doc types
+  (MSetup.java:696-831). `docTypes=42 (oracle 42)`; SO picker `7 == valrule-133 SQL 7, foreignClientOptions=0`.
+- **FS-5** (S14 G→V) PR #1810 `826a576d` sw v796 — fk picker ANDs `MRole.getClientWhere(false)` (MLookupFactory.java:270
+  → MRole.java:1110-1117,2120-2124) on offered + admitted. `BP picker n=45 foreign=42` → `n=3 foreign=0 own=1`.
+- FIX-A / FIX-B (#1808) confirmed live in the same check. Guide boxes updated in `docs/ERP_FirstSetup.md`.
+- **FS-6** (S17) PR #1811 `e189c35a` sw v797 — CalloutOrder.product (:749-855) header from window ctx, PLV by DateOrdered,
+  UOM, Tax.get port (Tax.java:475-560,740-854). Derived == SQL oracle; no-price negative control derives {}.
+- **FS-7** (S20) PR #1813 `5a5fb269` sw v798 — completeFanoutOrder folds bundle+sidecar; MOrder rule
+  (:2178,:2198-2200,:2254-2259). SO → 0 docs (faithful), POS → shipment+invoice (engineOps=4).
+- **FS-2/3/4** (S04,S06,S12,S13) PR #1814 `7e08fdbd` sw v799 — MSetup calendar/periods, currency choice, tax category,
+  Immediate payment term.
+- **FS-8** (S11b) PR #1818 `563c6f1b` sw v800 — idempotent listTip fold.
+- **FS-9** (S24b) PR #1819 `7ab14b99` sw v801 — TableDir param picker (MLookupFactory :812-905 + client clause).
+- Journey on `7ab14b99`: **27 VERIFIED / 2 GAP** (S25b → FS-10, S26 → FS-11, both still queued, no owner question).

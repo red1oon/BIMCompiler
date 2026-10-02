@@ -2618,3 +2618,57 @@ that has since changed: `§SYSTEM-TENANT ensure rows=7` (the log shows `rows=2` 
 are now resident, `demos=[]`), and "GardenWorld 18 BPartners" (the seed has 24). Re-derive each
 expectation from the seed at run time, as `poc_parity_mandatory_live.js` does. Do not re-type the new
 numbers.
+
+## §FS.4 — 2026-10-02 · RESULTS, items shipped (Opus 5.5 worker; each: spec → own PR off fresh origin/main → witness → merged → served bytes checked)
+**Instrument note (read before re-verifying any of these):** the live site is NOT the raw tracked files any more.
+Both `pages build and deployment` (legacy) and `Deploy to GitHub Pages` (deploy-pages.yml, esbuild
+minify) run on every push to main; the served `erp/*.js|html` are the **minified** artifact and
+`erp/version.json` is live (`{"build":"v797"…}` style). `§PAGES-SERVES-THE-BRANCH` / `§PZ` above are stale on
+this point. A raw `git show | cmp` against the live URL therefore always differs; the check used here
+rebuilds the artifact bytes (`scripts/minify_pages.js`, esbuild 0.23.0, same as the workflow) from
+`origin/main` and `cmp`s those — byte-identical for every file listed below.
+- ✅ **FS-1** doc types (S07+S15) — bim-ootb PR **#1809** → `379662d6`, sw **v795**. Live: `genesis.js`
+  (15379 B), `sw.js`, `idempiere.html` == minify(origin/main); `version.json build=v795 sha=379662d6`.
+  Spec `ERP_FIRST_SETUP_GUIDE.md §FS2c`. Not ported, named: AD_Preference SO default doc type (MSetup.java:833).
+- ✅ **FS-5** picker tenant scope (S14) — PR **#1810** → `826a576d`, sw **v796**. Live: `crud_overlay.js`
+  (112038 B), `sw.js`, `idempiere.html`, `glassbowl.html` == minify(origin/main); `version.json build=v796`.
+  W-PARITY-VALRULE oracle now carries the same MRole client clause (42→24, 2→1, explained in the PR).
+  Spec `§FS2d`. Org access (getOrgWhere) not ported, named.
+- Journey tally after FS-5: **19 VERIFIED / 10 GAP / 0 INCONCLUSIVE** (was 16/13).
+- Twin handover still OPEN: bim-compiler `build/erp/genesis.js` ≠ bim-ootb `erp/genesis.js` (FIX-A + FS-1);
+  `build/erp/ad_callout.js` will differ after FS-6. Copy + re-run W-GENESIS-MINIMAL/-RESIDENT/W-CALLOUT (all
+  three were judged green against the bim-ootb files via a require-redirect this session).
+- ✅ **FS-6** product defaults on a session-typed order line (S17) — PR **#1811** → `e189c35a`, sw **v797**.
+  Witness: `derived={PriceEntered:61.75,C_UOM_ID:100,C_Tax_ID:104}` == SQL oracle `{61.75 (plv 104),100,104}`;
+  negative control product 122 (no price row) derives `{}`. Live: `crud_overlay.js` (117170 B), `ad_callout.js`
+  (4776 B), `sw.js`, `idempiere.html` == minify(origin/main); `version.json build=v797 sha=e189c35a`. Spec `§FS2e`.
+- ✅ **FS-7** Complete fan-out on a session-typed order (S20) — PR **#1813** → `5a5fb269`, sw **v798**. Standard Order
+  `policy N,N engineOps=0 commitOps=1` (iDempiere generates nothing for SO); POS Order `policy Y,Y engineOps=4
+  commitOps=5`. GL stays `gl=gated` (named). Live: `crud_overlay.js` (118400 B), `sw.js`, `idempiere.html`,
+  `glassbowl.html` == minify(origin/main); `build=v798`. Spec `§FS2f`.
+- ✅ **FS-2/3/4** setup currency, 12 current-year periods, tax category, payment term (S04, S06, S12, S13) — PR **#1814**
+  → `7e08fdbd`, sw **v799**. `currencyOptions=163 (oracle 163) picked=MYR(301) acctSchemaCcy=301 priceListCcy=301`;
+  `periods=12` Jan-26..Dec-26; own tax category = setup product's; `[["Immediate","Immediate",0,"Y"]]`. Live:
+  `genesis.js` (16237 B), `sw.js`, `idempiere.html`, `genesis.html` == minify(origin/main); `build=v799`. Spec `§FS2g`.
+- ✅ **FS-8** duplicate grid row (S11b) — PR **#1818** → `563c6f1b`, sw **v800**. Root cause: `crud_core.listTip` CREATE
+  appended a synthetic row already in the base (refold over `_records`); now replaces in place.
+  `gridIds=[1700502,-1,-2] statusCount=3 reloadCount=3`. Live: `crud_core.js` (33503 B), `sw.js`, `idempiere.html`,
+  `glassbowl.html` == minify(origin/main); `build=v800`. Spec `§FS2h`.
+- ✅ **FS-9** TableDir process param picker (S24b) — PR **#1819** → `7ab14b99`, sw **v801**. `control=SELECT options=2
+  [101,200000] oracle=2 foreignClientOptions=0`; S24 still == oracle 20 / 25,175.69. Live: `ad_process.js` (20175 B),
+  `sw.js`, `idempiere.html` == minify(origin/main); `version.json build=v801 sha=7ab14b99 pr=1819`. Spec `§FS2i`.
+  bim-compiler `scripts/poc_ad_process_live.js` now selects-by-value when the control is a SELECT (needed: a
+  Playwright `fill` on a <select> throws) — uncommitted, meant to stay.
+- **Final journey tally (origin/main `7ab14b99`): 27 VERIFIED / 2 GAP / 0 INCONCLUSIVE / 0 page errors** (was 16/13).
+- Still ⬜ (not blocked, not in this lane's item list): **FS-10** S25b import windows (I_* tables via SQL patch +
+  self-heal loader), **FS-11** S26 signed backup on idempiere.html (reuse `erp_persist_ui.js`). No owner decision needed.
+- Pre-existing red witnesses found (identical on main before/after every PR above, NOT caused here):
+  `poc_critic_process_signed_live` 5/18, `poc_critic_odoo_process_live` 4/7 (Process-pill chooser drift),
+  `poc_ad_folded_crud_live` 7/14, `poc_critic_create_live` 4/12, `poc_critic_crud_full_live` 3/10; and the §FS.3
+  genesis pins (13/3, 12/1). bim-compiler `poc_callout_harden.js` needs the Postgres oracle (⬜ SKIP).
+- Named, not ported: born price-list version has no ValidFrom (so FS-6 derives no price in a NEW tenant — S17 is
+  witnessed on GardenWorld); genesis.html standalone wizard still dates 2024; GL posting of typed-order fan-out docs.
+- ✅ **Twin handover (2026-10-02):** bim-compiler `build/erp/genesis.js` + `build/erp/ad_callout.js` := bim-ootb
+  `origin/main@7ab14b99` (uncommitted). Logs read: W-GENESIS-MINIMAL 16/0 (head 99d1b03b7141, 513 ops, posts to the
+  cent), W-GENESIS-RESIDENT 15/0, W-CALLOUT PASS. `build/erp/crud_overlay.js|crud_core.js|ad_process.js` twins are a
+  long-diverged older line (2503 vs 3069 lines) consumed by node witnesses with a different shape — NOT copied, named.
