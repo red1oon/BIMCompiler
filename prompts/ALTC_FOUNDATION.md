@@ -16,6 +16,17 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 07:36 LTU FULL FILM DELIVERED (red1 "if all is well, do for LTU"): ~/Downloads/LTU_AHouse_silent_full_AFTER_1920x1080_24fps_2026-10-03_0549.mp4,
+  82,991,547 B, 1,612 frames / 67.2 s, wall 6,377 s (3.96 s/frame). Direct cli_silent_bake (NOT bake_hires_offline.sh, which forces --buildup/--reveal
+  etc.; LTU has no 4D tables): saved path settings + recipe + --dlod-proxy; script scratchpad c/ltu_full.sh. Sidecar first: key 21324567:90186,
+  occluderTris 643,805, restorecheck PASS. Test clip (--clip 0:0.15, 242 fr) clean: 0 black/freeze, §HUD_OVERLAP_WORST PASS, errFrames 0.
+  Full film: §LIGHT_FIELD_PATCH applied, §ZONE_IDB_CACHE hit, §GI_FILM errFrames=0 gpuErrors=0, unconverged 0, §HUD_OVERLAP_WORST PASS.
+  DEFECT (authored path, not compensated per §STILL->FILM ruling): 28 frames luma < 40 in 3 bursts — f714-727 (ffmpeg black 29.75-29.96 s),
+  f746-749 (§FILM_BLANK_FRAME i=748 held last good after 3 tries), f781-797. Cause from §FILM_EXPOSURE: metered Lcd 41,574 -> 581 -> 89 in 2
+  frames while cam y descends 0.24 -> 0.12 -> -0.71 -> -2.15 with darkPct 100 = camera passing through solid geometry (slab/stair) on the
+  saved path; exposure rate cap (capped=down) then ramps back over ~15 frames. Fix = re-author those pins (red1) or a camera-in-solid guard (not built).
+  Also open: §INTERIOR_LIGHTS_WITNESS poolLit 0/122 past topout (2 samples); §CLI_BAKE_POSECHECK maxErr 0.42 m.
+  Post-film: merged fix/sky-surface @d3bb44a7 (Alt+S stills-only) into fix/fast-bake = 393e0f0f sw v1556 (pushed). Films above were v1555.
 - ▶ 2026-10-03 03:38 HOSPITAL 24 fps DELIVERED (red1 full mandate 00:16): ~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-03_0049.mp4,
   244,712,634 B, ffprobe 4,963 frames / 206.8 s, wall 10,070 s (2.03 s/frame). Tree wt-fastbake @35886fab sw v1555, recipe as below.
   Sidecar rebaked first (scratchpad c/bake.js = photoreal_probes/lightgrid/bake.js + SUF env): key 21324567:90186, occluderTris 5,819,012,
