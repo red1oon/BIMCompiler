@@ -310,3 +310,17 @@
 - 08:35 QUEUED (detached, survives session exit): c1/ml.sh waits for the Alt+C Hospital 24 fps bake (pid 1115790, ~3 h) to EXIT, then
   runs §ALTS_MEM_LIFECYCLE on HHS …880424616 (arms on / &windflip=0) under flock -> c1/cs/memlife_hhs_{on,off}.log (+ ml.out).
   Tool c1/memlife.js. READ those logs first on resume; verdict rules in the spec above.
+- 09:20 §ALTS_MEM_LIFECYCLE RESULT (HHS …880424616, c1/cs/memlife_hhs_{on,off}.log, errors 0, ZONE_IDB_CACHE hit, §STILL_EXIT tornDown=1):
+  | mark | on: heapMB gpuMB tex prog | off (&windflip=0) |
+  | LOADED | 27.9 245 277 18 | 27.8 246 277 17 |
+  | PRESS1 | 48.7 2085 318 128 (41.1 s) | 48.3 2086 318 123 (41.1 s) |
+  | ESC1 | 48.0 1109 301 128 | 47.7 1071 301 123 |
+  | PRESS2 | 48.8 2101 318 133 (11.0 s) | 48.5 2102 318 128 (9.0 s) |
+  | ESC2 | 48.4 1133 301 131 | 48.2 1133 301 126 |
+  FIRST-TIME cost = 30-32 s of a 41 s press (press 2 = 9-11 s): ~105-110 shader programs built on press 1 (18 -> 128).
+  §WIND_FLIP: +5 programs, first press equal (41.1 / 41.1 s); press 2 11.0 vs 9.0 s from ONE run each — not separable from noise.
+  CLEANUP: Esc frees ~1.0 GB of the 1.84 GB GPU the press adds; ~0.86 GB STAYS (GPU cleanup 53 %); heap +20 MB stays; textures
+  277 -> 301 (+24) and geometries 434 -> 459 (+25) stay after Esc. Round 2 adds 0 textures / 0 geometries; gpuMB +24 (on) / +62 (off)
+  — over the spec's 5 % rule (12 MB) but gpuMB is WHOLE-CARD minus baseline and an unrelated headless test (modeller
+  witness_history_threads.js, outside the lock) was running -> leak verdict INCONCLUSIVE; needs a 5-round run on a quiet GPU.
+  NEXT: name what holds the 0.86 GB after Esc (render targets / GI buffers / light-field textures kept for reuse = intended cache, or leak).
