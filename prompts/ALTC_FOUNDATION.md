@@ -69,6 +69,9 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
     Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-02_0832.mp4. Estimate ~2.1 s/frame x 4,963 = ~2.9 h (was ~4 h). Meter fix (&meterprime=auto,
     arm M) NOT in it — unproven at launch. On landing: §LIGHT_FIELD_DB key 21324567:90186, §ZONE_IDB_CACHE hit, §GI_FILM done errFrames=0, ffmpeg
     black/freeze scan, §FRAME_QA luma 2345-2360, §CAPTURE_ENC fmt=jpeg, §MAXQ_FRAME_BUDGET taa=6 ao=6.
+  - 08:40 Alt+S fix/sky-surface @436b85cc sw v1546 = §WIND_FLIP (flipped-winding geometries DoubleSide; patches geometry_wind_flip): Hospital 127/20,609
+    flagged, §FAULT identical on/off (their commit) -> queued Hospital bake kept WITHOUT it. MERGE 436b85cc into fix/fast-bake after it lands, before any
+    HHS film (2,801/4,710 flagged); sw clash v1546 both sides -> v1547; check the light-field fingerprint still hits (the names patch moved it).
   - ABC did not add up (TAA 1060 with taa=6): with the meter skipped its warm-up work moves into the first TAA render; single run, noisy. AC (A+C) arm queued.
 - ▶ RESUME 2026-10-02 04:00 (Alt+C session closing; red1: "do not start as we resume in new session") — supersedes the 03:25 state + §BAKE_QUEUE blocks.
   - bim-ootb fix/fast-bake **sw v1543**, pushed, no PR, worktree /tmp/wt-fastbake. Since v1533: v1534 §GI_FILM_CARRY C1-C4 (§3) · v1538 merge
