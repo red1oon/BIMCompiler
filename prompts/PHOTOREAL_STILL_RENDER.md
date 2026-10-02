@@ -330,3 +330,8 @@
   envMap RT 12 MB; NO light shadow maps in the scene; CSM state idle. ~0.53 GB above LOADED still unattributed (driver/Chrome pool vs
   the +24 textures / +25 geometries renderer.info keeps). 5-round plateau test (c1/r5.sh -> cs/memlife_hhs_r5.log) QUEUED behind the
   Alt+C HHS film bake (pid 1166155): flat ESC3..ESC5 = pool, rising = leak.
+- 10:44 5-ROUND RESULT (c1/cs/memlife_hhs_r5.log, after the Alt+C HHS bake exited, errors 0): gpuMB after Esc 1070 / 1132 / 1329 /
+  1353 / 1350; at press 2085 / 2101 / 2174 / 2322 / 2339; textures 301 and geometries 459 constant every round; heap after Esc
+  48.0 / 48.4 / 48.9 / 49.1 / 49.3 MB (+0.3 MB/round). Press 29.1 s then 9.0 s x4. VERDICT: GPU PLATEAU (~1.35 GB after round 3,
+  rounds 4-5 within ±3 MB) = allocator pool, not a leak; one step +197 MB at round 3 unexplained. Heap creep 0.3 MB/round = small,
+  not yet attributed. Whole-card metric (other GPU users not excluded).
