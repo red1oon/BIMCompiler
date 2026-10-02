@@ -49,6 +49,27 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   - Witness (numbers, no eyes): per arm s/frame from §FRAME_HASH spacing + §CAPTURE_ENC/§FILM_EXPOSURE; picture change = ffmpeg PSNR/SSIM of each arm's
     mp4 vs the control mp4, frame by frame. Pass = SSIM >= 0.99 mean and min >= 0.98 (8-bit H.264 both sides). A run where the clip has <50 frames
     or any arm's §FRAME_HASH count differs = INCONCLUSIVE.
+- §SPEED_AB RESULT (2026-10-02 08:12, sw v1545 45a7ed7d, Hospital_silent --frame-range 1880:1940 = 324 frames incl. the load-path freeze, 53 reused;
+  logs scratchpad a0e48414…/ab/*.log, phases.py on the 59 rendered heavy-interior frames; ctrl was partly GPU-shared, ctrl2 = the baseline):
+  | arm | setup | light | TAA | AO | capture | total ms | encode ms | luma vs ctrl mean/max | EV vs ctrl max | PSNR vs ctrl dB |
+  | ctrl2 (repeat) | 463 | 838 | 949 | 1044 | 955 | 4,252 | 360 | 0.02/0.12 | 0.000 | 44.9 (noise floor) |
+  | A jpeg | 430 | 724 | 900 | 861 | 433 | 3,350 | 23 | 0.02/0.14 | 0 | 40.0 |
+  | B metereach=4 | 294 | 149 | 1042 | 873 | 719 | 3,078 | 260 | 1.02/**21.0** | **0.710** | 38.2 |
+  | C budget 6/6 | 300 | 527 | 580 | 674 | 824 | 2,906 | 259 | 0.06/1.46 | 0 | 44.1 |
+  | ABC | 401 | 196 | 1060 | 778 | 649 | 3,087 | 34 | 0.98/21.0 | 0.710 | 36.5 |
+  - Pipeline is deterministic before encode (ctrl vs ctrl2: EV identical, luma <= 0.12). SSIM vs ctrl is NOT a usable gate: ctrl2 itself reads mean 0.9885
+    min 0.918 (H.264 noise), every arm sits inside it — judge by pre-encode luma (§FRAME_QA) + EV + PSNR against the ctrl2 floor instead (§SPEED_AB gate amended).
+  - A PASS: pre-encode picture identical, encode 360 -> 23 ms, capture -0.5 s. PSNR 40 dB = encoder difference only.
+  - B FAIL: exposure lags up to 0.71 EV, a 21-level luma jump — the meter must run every frame. But it costs ~0.7 s in heavy frames -> next: a cheaper meter
+    (read the finished frame's 64x36 like §FRAME_QA, or meter at lower res), not a skip.
+  - C PASS: luma max 1.46, PSNR 44.1 ~ noise floor; TAA+AO -0.74 s.
+  - 08:32 red1 ("what if without LoadPath ON? can we leave it to run on its own while Wifi off?"): load path costs ~264 freeze frames x ~0.9 s
+    = ~4 min of ~3 h -> kept ON. FULL Hospital bake QUEUED on gpu.lock (runs after arms AC + M): sw v1546 @5f371412, `BAKE_EXTRA="--visual-panel
+    --still-budget 6,6 --url-query &capfmt=jpeg"`, log /tmp/wt-fastbake/out/Hospital_silent_hires_2026-10-02_0832.log, lands ~/Downloads/
+    Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-02_0832.mp4. Estimate ~2.1 s/frame x 4,963 = ~2.9 h (was ~4 h). Meter fix (&meterprime=auto,
+    arm M) NOT in it — unproven at launch. On landing: §LIGHT_FIELD_DB key 21324567:90186, §ZONE_IDB_CACHE hit, §GI_FILM done errFrames=0, ffmpeg
+    black/freeze scan, §FRAME_QA luma 2345-2360, §CAPTURE_ENC fmt=jpeg, §MAXQ_FRAME_BUDGET taa=6 ao=6.
+  - ABC did not add up (TAA 1060 with taa=6): with the meter skipped its warm-up work moves into the first TAA render; single run, noisy. AC (A+C) arm queued.
 - ▶ RESUME 2026-10-02 04:00 (Alt+C session closing; red1: "do not start as we resume in new session") — supersedes the 03:25 state + §BAKE_QUEUE blocks.
   - bim-ootb fix/fast-bake **sw v1543**, pushed, no PR, worktree /tmp/wt-fastbake. Since v1533: v1534 §GI_FILM_CARRY C1-C4 (§3) · v1538 merge
     fix/sky-surface v1526-1531 (surface names, plaster, furniture polish reach films; §FLOOR_CONTACT/§OBJECT_CONTACT OFF under A._maxqActive) ·
