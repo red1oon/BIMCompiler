@@ -72,6 +72,19 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   - 08:40 Alt+S fix/sky-surface @436b85cc sw v1546 = §WIND_FLIP (flipped-winding geometries DoubleSide; patches geometry_wind_flip): Hospital 127/20,609
     flagged, §FAULT identical on/off (their commit) -> queued Hospital bake kept WITHOUT it. MERGE 436b85cc into fix/fast-bake after it lands, before any
     HHS film (2,801/4,710 flagged); sw clash v1546 both sides -> v1547; check the light-field fingerprint still hits (the names patch moved it).
+  - 08:45 red1: "kill the hospital bake, do these first" -> queued full bake killed (never started). §WIND_FLIP merged = sw v1547 (5f5eeecc).
+  - AC (jpeg + 6/6) PASS: heavy frames 4,252 -> 3,293 ms (-23%), EV identical, luma max 1.45, §GI_FILM errFrames=0. M (&meterprime=auto) NO GAIN:
+    EV identical but prime forced 20/49 frames (new programs keep appearing); run disturbed by an unrelated GPU witness (/tmp/wt-threads-2) -> dropped.
+  - Code read (effects.js ~5160-5510 + lib/TAARenderPass.js): TAA and AO are ALREADY folded — the 8 AO steps continue TAA jitter samples 9-16 (16-entry
+    table) and add N8AO quads (~34 ms) + one depth-prime render; shadow maps already autoUpdate=false. So 6/6 = 12 of 16 jitter samples, 6 AO accumulations.
+- §SPEED_PAR SPEC (2026-10-02, red1 go). Two levers beyond §SPEED_AB.
+  - P1 PARALLEL SPLIT: K=2 cli_silent_bake instances at once on disjoint --frame-range halves, own ports/profiles, one gpu.lock held for the pair;
+    seams are frame-exact by design (cli_silent_bake.js:130). Test on HHS_Office_Federated_silent (smaller VRAM), 24 fps, jpeg + 6/6, frames
+    1800:1920 (away from the load-path freeze at ~26%): single 1800:1920 vs pair 1800:1860 + 1860:1920. Witness: render-span seconds (first->last
+    §FRAME_HASH, boot excluded), VRAM peak (nvidia-smi every 2 s), §GI_FILM errFrames/gpuErrors=0, §FRAME_QA luma per global index pair vs single
+    (must match <= 0.15, the ctrl/ctrl2 floor). Pass = pair span <= 0.65 x single span with 0 GPU errors.
+  - P2 CAPTURE OVERLAP: first SPLIT the remaining capture (jpeg made encode 23 ms, capture still ~430 ms): §CAPTURE_ENC compMs (HUD composite),
+    §CAPTURE_TAIL hashMs + idbMs (sw v1548, logging only). Build the overlap only on the part the split shows is the cost.
   - ABC did not add up (TAA 1060 with taa=6): with the meter skipped its warm-up work moves into the first TAA render; single run, noisy. AC (A+C) arm queued.
 - ▶ RESUME 2026-10-02 04:00 (Alt+C session closing; red1: "do not start as we resume in new session") — supersedes the 03:25 state + §BAKE_QUEUE blocks.
   - bim-ootb fix/fast-bake **sw v1543**, pushed, no PR, worktree /tmp/wt-fastbake. Since v1533: v1534 §GI_FILM_CARRY C1-C4 (§3) · v1538 merge
