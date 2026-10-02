@@ -177,3 +177,34 @@ that touches any of these is a dependent of target T):
 Not tracked in the log: a disc walk's route vs the walls it walked past (`§THREAD_DEP_UNTRACKED kind=walk-vs-host`, logged,
 not invented into a rule). Dependents present ⇒ refused with every dependent NAMED (`§THREAD_UNDO_REFUSE dependents=…`) and
 a Cascade button; Cascade = inverses of the dependents + T in ONE gesture. Falsifier: `window.__threadsSkipDepCheck=true`.
+
+### §THREADS-STEP1 — RESULT 2026-10-02 (bim-ootb #1807 + follow-up; red1 scope cut the same day)
+**red1, 2026-10-02:** *"I think we scope just that category scrubber will do. The rest allow time to ponder a better shape."*
+So step 1 is the whole shipped feature: a READ-ONLY category scrubber. The glow badge reads **"Viewing: <Category>"** (the
+first ship, #1807, said "Undo: Walls only" — a step-2 promise on a read-only surface; replaced in the follow-up). While a strip
+glows, **‹ ›** (and ←/→ on the focused bar) step the view cursor through that thread's entries only (`§THREAD_SCRUB`).
+Also shipped: Modeller `restoreView` = jump-to-view (a dot / ‹ › step selects that moment's own targets and frames them,
+`§THREAD_VIEW`, selection + camera only). Two defects the witness caught on the way: an empty strips row (flex-basis 100%)
+widened the bar across the canvas and ate wall clicks; the §S8 Δ pin (fixed, z 9998) covered ‹ › once a jump selected an
+element → bar host z 9999 + opaque backing. PRs bim-ootb **#1807** (step 1), **#1812** (Viewing/scrub/jump), **#1815** (backing),
+all squash-merged; LIVE sw modeller **v76**, viewer **v1458**. **W-HISTORY-THREADS 10/0 vs LIVE** (Duplex: wall #112 + 2 riders,
+wall #81, ELEC walk 102 rows, door insert #303 → chips Walls 2 · Openings 2 · MEP 1 · Inserts 1 == independent kernel_ops count;
+scrub visited line idx [2,1,2] skipping walk + insert; jump |target−centre| = 0). Witness `bim-ootb
+modeller/tests/witness_history_threads.js` (RED-first on LIVE main: no chips; then on LIVE #1807: H5/H5b RED on the old badge). Numbers are in the PR bodies and the run logs; the H8 control proves the Viewer bar is byte-identical
+without the hook (outerHTML sha1 `7a37d4469bd7` old = new, §-line sequence `07e3e970f6dc` old = new). ERP does not load
+`common/history_bar.js`.
+
+### §THREADS-STEP2-HOLD — 2026-10-02 (⏸ red1: ponder a better shape)
+Branch `bim-ootb wip/history-threads-scoped-undo` @ `034999b7` — pushed, NO PR, NOT merged. Contains: appended-inverse scoped
+undo/redo (MOVE/CUT_MOVE/ROTATE negated, SCALE/CUT_RESIZE reciprocal, one `commitGesture` per step, nodes tagged
+`scoped/scopedKind/members`, reverted-ness derived from the line), R1–R5 dependents with refuse-by-name + "Undo all" cascade,
+`doUndo/doRedo` routing while a thread glows, witness `witness_history_scoped_undo.js`.
+**Proven (local only, never LIVE):** W-HISTORY-SCOPED-UNDO 7/0 — Duplex A move → ELEC walk → B move → insert → door-on-B move:
+Ctrl+Z on Walls refused `dependents=1 ["Move Door #74" (seq 6) ← R1 host/filling (rides Wall #111)]`, 0 rows added; Undo all
+→ one gesture of 4 rows, B + riders + door at pre-B residual 0.00e+0; walk+insert 103 rows/meshes hash unchanged; A reverted
+residual 0; every pre-existing row byte-identical (306→313 appended only); verifyChain ok; Ctrl+Y re-applies; Esc + global
+Ctrl+Z undoes the last gesture. Falsifier `THREADS_SKIP_DEPCHECK=1` → S1/S2 RED (door left 0.2 m off).
+**Unproven / known open:** (1) regression on that code: W-MODELLER-GIT-HISTORY **6/2** (G5/G6 branch switch leaves extra rows
+active) — cause not found; (2) only additive ops are revertible, so the MEP/Inserts/Grid threads always refuse; (3) a walk's
+route vs walls is not a logged relation (`§THREAD_DEP_UNTRACKED`), so a scoped wall undo after a walk does not re-route;
+(4) the shape question red1 is pondering — append-inverse vs flag-flip vs a branch — is not settled.
