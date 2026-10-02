@@ -83,6 +83,14 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
     1800:1920 (away from the load-path freeze at ~26%): single 1800:1920 vs pair 1800:1860 + 1860:1920. Witness: render-span seconds (first->last
     §FRAME_HASH, boot excluded), VRAM peak (nvidia-smi every 2 s), §GI_FILM errFrames/gpuErrors=0, §FRAME_QA luma per global index pair vs single
     (must match <= 0.15, the ctrl/ctrl2 floor). Pass = pair span <= 0.65 x single span with 0 GPU errors.
+  - P1 RESULT (09:01, HHS 1800:1920, jpeg + 6/6): FAIL. single = boot 51 s + render 84 s (0.71 s/frame, was 1.40 at webp + 8/8 = HALF);
+    pair = 221 s wall vs 143 s: pb sat ~107 s in boot while pa rendered, then rendered alone — two Chrome bakes do NOT render concurrently on
+    this GPU (VRAM was fine: pair peak 2.4 GB). Seam: pb luma +2.3 at 1860, then ~-1.1 for 30+ frames (pa part 0.057 = floor) -> film state
+    carries history (exposure ease, probably bounce) — any piece split needs >= 1-2 s pre-roll frames discarded. Pieces = resilience only, no speed.
+  - Audit (subagent, verified): L1 _waitFoldDone polls 100 ms (cinema_maxq.js:763, ~50 ms idle/frame); L2 effects.js:6159/6169 env-map/glow safety
+    timers armed EVERY frame (60 s each -> ~25 live); 2x _raf2 per frame (cinema_maxq.js:3592, 4126). §STILL_RES resize: 0 lines -> not firing.
+    HHS capture split (sw v1548): compMs 225 / enc 62 / hash 7 / idb 11 ms — the composite (inside it a composer render + bounce hook) is the cost.
+    §BAKE_LEAN (&bakelean=1, sw v1550) = L1 + L2; §CAPTURE_PARTS (sw v1549) splits composer / draw3d / hud. HHS base vs lean test running.
   - P2 CAPTURE OVERLAP: first SPLIT the remaining capture (jpeg made encode 23 ms, capture still ~430 ms): §CAPTURE_ENC compMs (HUD composite),
     §CAPTURE_TAIL hashMs + idbMs (sw v1548, logging only). Build the overlap only on the part the split shows is the cost.
   - ABC did not add up (TAA 1060 with taa=6): with the meter skipped its warm-up work moves into the first TAA render; single run, noisy. AC (A+C) arm queued.
