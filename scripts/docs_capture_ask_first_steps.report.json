@@ -1,19 +1,30 @@
 {
  "url": "https://red1oon.github.io/bim-ootb/viewer/viewer.html?db=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/Terminal_extracted.db&ghost=1",
- "at": "2026-10-01T22:07:50.410Z",
+ "at": "2026-10-02T01:45:54.223Z",
  "steps": {
   "loaded": {
    "building": "TerminalMerged",
    "elements": 48428
   },
   "ask": [
-   "Find 5D cost of all — no costed quantities (qto_cache) in this building",
+   "↵ Find 5D cost of all",
    "Find 4D schedule for the whole building",
    "Find clashes between ARC and MEP",
    "Find largest rooms",
    "Find path to exit (worst-case room)",
    "Find element count by discipline"
   ],
+  "costList": [
+   "Find 5D cost of all for MEP",
+   "Find 5D cost of materials for MEP",
+   "Find 5D cost of labour for MEP",
+   "Find 5D cost of equipment for MEP"
+  ],
+  "cost": {
+   "question": "Find 5D cost of materials for MEP",
+   "verdict": "OK",
+   "summary": "$ 2,038,000 — materials, 9,733 elements in 62 cost rows (rates: cidb2024_my)"
+  },
   "clashList": [
    "Find clashes between ARC and MEP"
   ],
@@ -39,8 +50,8 @@
    "summary": "48428 elements scheduled 2025-07-22 → 2025-11-20 (122 days), 9 trades, labour cost $ 1,721,750 (3,488.8 person-days; time-phased labour, not a BOQ)"
   },
   "saved": {
-   "file": "BIM_OOTB_TerminalMerged_Answers_2026-10-01.xlsx",
-   "bytes": 26636
+   "file": "BIM_OOTB_TerminalMerged_Answers_2026-10-02.xlsx",
+   "bytes": 29931
   }
  }
 }
