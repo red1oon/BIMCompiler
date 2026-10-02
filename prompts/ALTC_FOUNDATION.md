@@ -138,6 +138,12 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   PASS: key 21324567:90186, §ZONE_IDB_CACHE hit, §GI_FILM done 3268 meanMs=100 errFrames=0 gpuErrors=0, unconverged=0, 0 Uncaptured, 0 blank,
   ffmpeg 0 black / 0 freeze to frame 3274. FAIL (unchanged vs 02:30): §CPE_REVEAL_LEAK ARC:17 (57 lines), §HUD_OVERLAP_WORST 324x216,
   §INTERIOR_LIGHTS_WITNESS poolLit 0/122, §CLI_BAKE_POSECHECK maxErr 50.1 m. Quality discussion with Alt+S (bim-compiler-72) sent 10:43.
+  Alt+S review (bim-compiler-72, 10:50, numbers/code only): 0934 is the first film on key 21324567 (02:30 used stale 1b214d46) and on
+  §ZONE_EYE_SKIP_OPEN (no counter line — gap). §DOME_GLOW does NOT reach films: §FIXTURE_FACE 0 lines in both film logs; effects.js startStillRefine
+  gates _fixtureFaceApply / lampSync / meterFinal on !A._maxqActive ("Alt+S only (films: uFixFace 0)") = an inheritance gap (§0 rule), red1 to decide.
+  IFC names were in both films (§PATCH_APPLY 2,637 -> 5,440 statements = +2,801 WIND_FLIP rows). Proposed still checks (~10 min GPU each, on red1's
+  go): gi8 banding at HHS …880424616 + …878367234 (|dLf| p50/p99, new edges |dLf|>=15, floor-patchy vs default-twice floor); 6/6 flat-wall local
+  std; §WIND_FLIP film-start line + raycast count of first hits on the 136 flagged FRONT_SIDE elements, default vs &windflip=0.
   Open: Hospital recipe clip (ACG) INCONCLUSIVE — every phase slower incl. TAA/AO, GI grab 635 ms = GPU contention (an oci_patch_gate.js run
   outside gpu.lock overlapped the window); re-run with a free GPU when red1 resumes.
 
