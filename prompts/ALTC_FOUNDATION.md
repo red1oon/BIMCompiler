@@ -131,6 +131,16 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - SUPERSEDED by the 03:25 state above — §RESUME 2026-10-01 08:30 L32-37: fix/fast-bake sw v1533 (pushed, no PR, not on main/OCI) = fix/sky-surface (Alt+S v1516-1525) + Alt+C work: §FAST_BAKE FB1/FB2, §FILM_INHERIT (gate, lamp data, per-shot shadow edge, window pull, glass env/mirrors), §PREBAKE PB1/PB2, §LOADPATH_STACK_ONLY (freeze 13 s -> 0.45 s/frame), §LOADPATH_CLIP_CLOCK/_CLIP_SKIP, §132 twins (none found: signature too strict), §FILM_CAM_LIGHT (eye light back), ADAPT up 6 / down 4, §INTERIOR_LIGHTS_ARC (lamps off only with no ARC). Worktree /tmp/wt-fastbake. Bake tool scripts/bake_hires_offline.sh with BAKE_W/H/FPS/TAG/EXTRA (e.g. `--frame-range 1065:1365 --no-load-path --write-prebake`).
 - Deliverables (~/Downloads) L38: Hospital_silent_ARCfull_long_AFTER_..._0655.mp4 (red1: "looks all good"); ..._ARCfull_lamps_AFTER_..._0733.mp4 (the bad-bounce clip).
 
+- ▶ 2026-10-02 10:41 HHS 24 fps DELIVERED (red1 "Do the HHS then. Let it run"; then "pause after HHS" — nothing queued; review with Alt+S, red1
+  decides next): ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_24fps_2026-10-02_0934.mp4 (164 MB, 3,274 fr, 136.4 s), sw v1552 @7498bb61
+  (§WIND_FLIP rows=2801) + recipe `--still-budget 6,6 --url-query &capfmt=jpeg&gi8=1`. §CLI_BAKE_WALL 3,650 s (est. ~75 min without the recipe;
+  first 40% 0.97 vs 1.41 s/frame at the 02:30 15 fps bake; the 0.565 s/frame slice estimate was a light stretch — corrected).
+  PASS: key 21324567:90186, §ZONE_IDB_CACHE hit, §GI_FILM done 3268 meanMs=100 errFrames=0 gpuErrors=0, unconverged=0, 0 Uncaptured, 0 blank,
+  ffmpeg 0 black / 0 freeze to frame 3274. FAIL (unchanged vs 02:30): §CPE_REVEAL_LEAK ARC:17 (57 lines), §HUD_OVERLAP_WORST 324x216,
+  §INTERIOR_LIGHTS_WITNESS poolLit 0/122, §CLI_BAKE_POSECHECK maxErr 50.1 m. Quality discussion with Alt+S (bim-compiler-72) sent 10:43.
+  Open: Hospital recipe clip (ACG) INCONCLUSIVE — every phase slower incl. TAA/AO, GI grab 635 ms = GPU contention (an oci_patch_gate.js run
+  outside gpu.lock overlapped the window); re-run with a free GPU when red1 resumes.
+
 ## 1R. REVIEWER TAKE (bim-compiler-19, 2026-10-02; numbers only, no frame judging — PRIMAL LAW)
 Reviewed: ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_15fps_2026-10-02_0230.mp4 + /tmp/bake_HHS_Office_Federated_silent_2026-10-02_0230.log. Goal context (red1): the film is a hook for the long tail of DIY BIM users; first look matters, so polish is justified, but it needs a finish line.
 - PASS (measured): 2,047 frames 1920x1080 15 fps 136.5 s 105 MB; §CLI_BAKE_WALL 3029 s aborted=no fileOk=true; §MAXQ_QUALITY unconverged=0; §FRAME_REUSE_TOTAL 3/2047; §GI_FILM done staleFrames=0 errFrames=0 rebuilds=0 gpuErrors=0 (orientation asRead=1.26%, vs 79.88% in the bad 0733 Hospital clip); blankGrabsRecovered=115; ffmpeg blackdetect(d=0.2) 0 segments + freezedetect(d=1.5 s) 0 segments, scan completed over 2047 frames.
