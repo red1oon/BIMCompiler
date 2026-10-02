@@ -267,3 +267,43 @@
       changes in 0.5 m steps -> the Gd jump shows as a 0.5 m staircase. HYPOTHESIS (not proven): §GROUND_VIEW_FIELD Gd is the stepping term.
 - NEXT (when the GPU frees): c1/vs.sh arms def / &groundview=0 / &skyfield=0 at …881490077 with LEAK 140x73 -> blk.py-style census of
   edges >= 15 Lf on the same element along the vault/wall band; the term whose arm removes the edges owns them. Then fix + witness.
+
+## 2026-10-02 ~07:40 — Clinic staircase ROOT CAUSE + §WIND_FLIP — SPEC
+- MEASURED (c1/vs.sh 3 arms at …881490077, OOM 0, §GI_STILL 1 each): band y>=6 same-element edges (|dLf|>=15) def 651 / &groundview=0
+  624 / &skyfield=0 851 -> NOT the sky / ground fields (Gd hypothesis of 05:15 WITHDRAWN). No direct sun on the band (CPU sun ray:
+  rayLit 0 of 3,345 px). On ONE element (IfcRoof 0rgLSgKBf54Qc3od1vyY2Z) Lf follows the CPU zone exactly: zone 27 (hall) median 201,
+  zone 184 median 76 -> the steps are a ZONE boundary drawn on the 0.5 m cell outline.
+- WHY two zones: the camera (zone 184, cell 65,33,102) stands in the end bay behind IfcWall 0lHL5LPIr3RuynIxjjrPON "Interior -
+  Partition (92mm Stud)" (arched top, face 31.8 m² of a 34.0 m² bbox: solid, no opening), which the zone grid correctly rasterises as
+  SOLID at x≈-7.3. The RENDER does not draw it: probe (c1/wallvis.js) Mesh visible, opaque, side FrontSide; DB winding: its -x face's
+  24 triangles have n.x>0 like the +x face -> both faces back-facing from the camera side -> culled -> the wall is invisible and red1
+  sees the hall "through" it, lit by two zones.
+- FLEET CENSUS (session scratchpad wind.py: weld 1e-4 m, conflict = undirected edge used by exactly 2 triangles in the SAME direction),
+  FRONT_SIDE classes only: Clinic 748 / 3,126 elements (IfcBeam 461, IfcCovering 250/250, IfcWall 15/15, IfcRailing 11, IfcFooting 7,
+  IfcMember 3, IfcPlate 1); HHS 136 / 2,648; Hospital 3 / 37,249 (matches §WALL_WINDING_MEASURE's 0.003 %). §WALL_SIDE (09-01) was
+  measured on Terminal + Hospital only — its premise "winding is consistent" is FALSE for Clinic and HHS.
+- SPEC §WIND_FLIP: (1) A.blobToGeometry (scene.js, the one decode choke point) counts conflict edges per geometry (same weld + rule)
+  -> geo.userData.windFlip. (2) _getMaterial gets a windFlip flag: a FrontSide class whose bucket holds ANY flagged geometry gets
+  DoubleSide (three flips the normal for back faces, so flipped triangles shade correctly); cacheKey + '|wf'. Batched, instanced and
+  frame callers pass it. (3) &windflip=0 / APP._windFlip=false = off (old behaviour). (4) § line: §WIND_FLIP geos= flagged=
+  conflictEdges= ms= ; buckets doubled= (at flush).
+- WITNESS W-WIND-FLIP: (a) Clinic flagged geometries > 0 and the partition's hash flagged; Hospital flagged <= 5; check ms;
+  (b) at …881490077 the CPU LEAK raycast hits 0lHL5LPIr3RuynIxjjrPON (rows > 0) on the default arm and 0 on &windflip=0 (red
+  control); (c) roof element 0rgL…2Z: rows in zone 27 seen from zone 184 drop to 0 on the default arm (the zone step is no longer
+  visible); (d) §FAULT unchanged, OOM 0. NOTE for red1: this pose will then show the partition (the real end wall), not the hall.
+
+## 2026-10-02 ~09:00 — §WIND_FLIP SHIPPED (bim-ootb fix/sky-surface @436b85cc sw v1546) + §ALTS_MEM_LIFECYCLE — SPEC
+- §WIND_FLIP baked: viewer/wind_flip.js (one rule) + scripts/wind_flip_patch.js -> patches/<db>.sql geometry_wind_flip (rule-checked,
+  '__census__' row). Census: Clinic 477/9,230 geometries, HHS 2,801/4,710, Hospital 127/20,609, Terminal 0/9,394. Witness (Clinic
+  …881490077): partition LEAK px 0 -> 6,027, hall-zone roof px 835 -> 0, baked path ms=0, ZONE_IDB_CACHE hit, 0 Uncaptured; Hospital
+  …848782458 table rows=127, §FAULT identical on/off (irOnly=1 BOTH arms -> pre-existing vs red1 v1531's 0, not this change; open).
+  HHS …880424616: table rows=2801, bucketsDoubled=127, all fields cache=hit. Gap: a user IFC's saved .db does not get the table yet.
+- HHS press cost (headless 2776x1440, one run): GI 12.1 s, refine 11.7 s, SOURCED_LIGHT 4.1 s, local exposure 2.9 s, object contact
+  2.2 s, rest ~5 s => ~38 s per press. Cache-hit lines' ms (249 s exact-all, 43 s glass) are BAKE times, not this press.
+  No § line separates shader compile — first-vs-warm split unknown.
+- SPEC §ALTS_MEM_LIFECYCLE (red1 2026-10-02: "mem hog check … when we move to another ops, does it clean up?"): one page, one pose:
+  LOADED -> PRESS1 -> ESC1 -> PRESS2 -> ESC2; at each mark after a forced GC (CDP HeapProfiler.collectGarbage): jsHeapUsedMB,
+  chromeRssMB, gpu process MB (nvidia-smi), renderer.info.memory geometries/textures, renderer.info.programs.length; press wall ms
+  (Alt+S -> §GI_STILL result). Verdicts: LEAK if ESC2 - ESC1 > 5 % of LOADED heap or gpu, or textures/programs grow ESC1 -> ESC2;
+  CLEANUP ratio = (PRESS - ESC) / (PRESS - LOADED) per metric; FIRST-TIME cost = press1 ms - press2 ms. Arms: default, &windflip=0.
+  INCONCLUSIVE if any mark is missing or the GPU process is not found.
