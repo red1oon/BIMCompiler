@@ -66,30 +66,37 @@ const report = { url: URL_, at: new Date().toISOString(), steps: {} };
     report.steps.ask = await page.evaluate(() => Array.from(document.querySelectorAll('#find-ask-catalog .ask-q')).map(e => e.textContent));
     log('§DOCS_STEP3 ' + JSON.stringify(report.steps.ask));
     await shot('3-ask-list', '#find-panel');
-    // Step 4 — type "clash ARC MEP", click "Find clashes between ARC and MEP"
+    // Step 4 — type "cost MEP", click "Find 5D cost of materials for MEP" (needs the §K.1 cost patch live)
+    report.steps.costList = await type('cost MEP');
+    log('§DOCS_STEP4 ' + JSON.stringify(report.steps.costList));
+    await shot('4-cost-list', '#find-panel');
+    report.steps.cost = await runSentence('Find 5D cost of materials for MEP');
+    log('§DOCS_STEP4b ' + JSON.stringify(report.steps.cost));
+    await shot('5-cost-card', '#find-panel');
+    // Step 5 — type "clash ARC MEP", click "Find clashes between ARC and MEP"
     report.steps.clashList = await type('clash ARC MEP');
-    log('§DOCS_STEP4 ' + JSON.stringify(report.steps.clashList));
-    await shot('4-clash-list', '#find-panel');
+    log('§DOCS_STEP5 ' + JSON.stringify(report.steps.clashList));
+    
     report.steps.clash = await runSentence('Find clashes between ARC and MEP');
-    log('§DOCS_STEP4b ' + JSON.stringify(report.steps.clash));
-    await shot('5-clash-card', '#find-panel');
+    log('§DOCS_STEP5b ' + JSON.stringify(report.steps.clash));
+    await shot('6-clash-card', '#find-panel');
     // Step 5 — type "exit", click the worst-case sentence
     report.steps.exitList = await type('exit');
     report.steps.exit = await runSentence('Find path to exit (worst-case room)');
     log('§DOCS_STEP5 ' + JSON.stringify(report.steps.exit));
-    await shot('6-exit-card', '#find-panel');
+    await shot('7-exit-card', '#find-panel');
     // Step 6 — type "schedule", click the whole-building sentence (generates the 4D timeline)
     report.steps.schedList = await type('schedule');
     report.steps.sched = await runSentence('Find 4D schedule for the whole building');
     log('§DOCS_STEP6 ' + JSON.stringify(report.steps.sched));
-    await shot('7-schedule-card', '#find-panel');
+    await shot('8-schedule-card', '#find-panel');
     // Step 7 — Save .xlsx
     await page.click('#find-ask-save');
     let file = null;
     for (let i = 0; i < 120 && !file; i++) { await new Promise(r => setTimeout(r, 500)); file = fs.readdirSync(dl).find(f => f.endsWith('.xlsx')); }
     report.steps.saved = file ? { file, bytes: fs.statSync(path.join(dl, file)).size } : null;
     log('§DOCS_STEP7 ' + JSON.stringify(report.steps.saved));
-    await shot('8-save', '#find-panel');
+    await shot('9-save', '#find-panel');
     fs.writeFileSync(path.join(ROOT, 'scripts', 'docs_capture_ask_first_steps.report.json'), JSON.stringify(report, null, 1));
     log('§DOCS_DONE ok');
   } catch (e) { log('§DOCS_FAIL ' + (e && e.stack || e)); process.exitCode = 1; }
