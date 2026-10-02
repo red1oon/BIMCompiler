@@ -16,12 +16,23 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 03:38 HOSPITAL 24 fps DELIVERED (red1 full mandate 00:16): ~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-03_0049.mp4,
+  244,712,634 B, ffprobe 4,963 frames / 206.8 s, wall 10,070 s (2.03 s/frame). Tree wt-fastbake @35886fab sw v1555, recipe as below.
+  Sidecar rebaked first (scratchpad c/bake.js = photoreal_probes/lightgrid/bake.js + SUF env): key 21324567:90186, occluderTris 5,819,012,
+  restorecheck PASS. Landing checks (page log /tmp/bake_Hospital_silent_2026-10-03_0049.log, scratchpad c/qa.txt):
+  §LIGHT_FIELD_PATCH applied 1, §ZONE_IDB_CACHE hit 1, §GI_FILM done errFrames=0 gpuErrors=0 off=false, 0 §GI_FILM_OFF/Uncaptured/PAGEERROR/
+  §FILM_BLANK_FRAME, §MAXQ_QUALITY unconverged=0, §CPE_REVEAL_LEAK 0, discKept=48 on all 1,578 traversals (door fix holds).
+  ffmpeg: 0 black; 2 freezes 86.1 s + 88.1 s (1.0 s each) = §FRAME_REUSE runs inside the load-path hold (reused 53/4963, cameraMoved=false).
+  Frames 2345-2360 (10-01 flash 105.7->87.8->110): now a monotonic ramp 72.4 -> 131.7, no dip.
+  STILL OPEN (same classes as before): §HUD_OVERLAP_WORST FAIL (now hud.pathmap x loadpath.card 324x163 px); §CLI_BAKE_POSECHECK MISMATCH
+  maxErr 118.1 m; §INTERIOR_LIGHTS_WITNESS 3-4 of 9 samples poolLit 0/122 past topout. NEW, UNEXPLAINED: 114 frame-to-frame luma steps
+  >12 (e.g. f298-303 143.8 -> 83.3, f327 77.5), clustered 10-20 s (34) and 90-100 s (39); no baseline survived the reboot to compare.
 - ▶ 2026-10-03 00:15 RESUME CHECK (Alt+C, after reboot; uptime 4 min). Hospital 24 fps film LOST: no
   `Hospital_silent_full_AFTER_…24fps_2026-10-02_1138.mp4` in ~/Downloads, /tmp wiped (bake log, ltu.out, all sidecars gone).
   Rebuilt (no GPU): worktrees /tmp/wt-fastbake @35886fab + /tmp/wt-surf @00524a4f (both = origin, 0 behind), DB symlinks
   Hospital/Terminal/HHS/LTU _silent -> ~/Downloads in both. `buildings/patches` holds only Hospital_silent.db.sql — every
   .lightfield.bin + .prebake.json must be rebaked (Alt+S: Hospital 41 min, LTU unknown). GPU free (201 MiB used).
-  Waiting on red1 go for the GPU chain: Hospital sidecar rebake -> Hospital 24 fps re-bake (~3 h, recipe below) -> LTU steps 2-3.
+  red1 go 00:16 (full mandate); chain ran — see 03:38 above.
 - ▶ RESUME 2026-10-02 13:45 (Alt+C session bim-compiler-8e closing; red1 "shutting down, update work") — supersedes the 04:00 to-do.
   - bim-ootb fix/fast-bake @35886fab (pushed), worktree /tmp/wt-fastbake, sw v1555. Since v1543: v1544 merge sky-surface f78a6579; v1545-1552
     §SPEED_AB/§SPEED_PAR switches + timers (all OPT-IN, defaults unchanged); v1547 merge §WIND_FLIP; v1553 §RENDER_INFO; v1554 §REVEAL_TRAP
