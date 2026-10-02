@@ -2586,3 +2586,23 @@ repaired live instruments.
 Per-document glowing thread in the shared history dotline: tap a document and step its own history, skipping the documents
 touched in between. Scoped undo maps to Void / Reverse-Correct for completed documents (never deletion). Cross-app with the
 Modeller's VO → Project Order thread. Spec: `prompts/HISTORY_PARALLEL_TIMELINE.md` §THREADS (step 3).
+
+## §ADHOC-WF-BATCH — a work planner: edits queue document actions, then batch-execute (red1 2026-10-02) — IDEA, SPEC LATER
+red1: *"later can be a basis of a work planner where a user, make such edits that triggers the docs to process, put into
+a batch list, and then batch executed <-- we have batch processing aka Workflow model, but this is adhoc WF batch
+processor can be another time killer."*
+Shape (to spec when picked up): Modeller/Viewer edits don't fire documents one by one. Each edit PROPOSES a document
+action (e.g. VO Prepare on the Project Order, Complete a sub-PO) into a **pending batch**, i.e. a "Blue Future" pending
+branch on the one signed log (`HISTORY_PARALLEL_TIMELINE.md` §THREADS). The user reviews the list (reorder, drop) and
+runs it in one go. Execution goes item by item through the EXISTING legality gate `erp/ad_docfsm.js` (the DocumentEngine port:
+legal actions per DocStatus, reversal family VO/RC/RA/RE/CL), in dependency order. Each result is appended to the log. A
+refused item is named with its reason, and the rest continue or stop, per a user choice. Each document keeps its own
+thread, so scoped undo maps to Void / Reverse-Correct (§DOC-THREADS). Seam: this is ad-hoc routing (ERP_BACKEND_SEPARATION
+§2 A-6), alongside the formal AD_Workflow model, not a replacement for it. Prereqs: §THREADS step 1-2 (in build) and
+§DOC-THREADS view.
+**§ADHOC-WF-BATCH addendum (red1 2026-10-02: "This gravitates towards a 'robot'/WF manager, where daily work can be
+automated"; then "Keep scope in check, align well, or hold off"):** the path is (1) ad-hoc batch → (2) save a batch as a
+RECIPE → (3) triggers (schedule / event). HARD GUARDS: a recipe never does what its owner's ERP role could not do by hand
+(same ad_docfsm + role gate); the first run of a new recipe is PREVIEW-ONLY until a human accepts it once; every action
+lands on its document's thread and is undone only by Void / Reverse. ⏸ HOLD: none of this is built before §THREADS
+steps 1-2 and §DOC-THREADS view exist.
