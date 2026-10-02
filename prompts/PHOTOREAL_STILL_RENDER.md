@@ -371,3 +371,31 @@
 - OPEN (work): Hospital irOnly=1 at …848782458 (both windflip arms; red1 v1531 had 0); heap +0.3 MB per Alt+S round unattributed;
   +0.2 GB GPU step at round 3; user-IFC save does not write geometry_wind_flip; §5a items 2-7 unchanged; specs §LIGHT_FIELD_IDLE_BAKE +
   §BAKE_RESOURCE_GUARD written, not built.
+
+## 2026-10-03 ~00:30 — REBOOT RECOVERY + ANALYSIS of red1's 31 stills (10-02 13:24–21:07), read from the PNGs' tEXt only
+- Machine rebooted 10-03 00:09. /tmp/wt-surf re-created at fix/sky-surface @00524a4f (clean), LTU link restored, :8664 up (200).
+  ALL .lightfield.bin sidecars gone (none in wt-surf/buildings/patches) — rebake waits on GPU turn with Alt+C (not pushed, red1).
+- Source: each still's `bim-still-pose` tEXt (= §FAULT + §FAULT_GI of that press, gi_still.js:1149). All sw v1546, 2776x1440,
+  sunI 4.4, film=false. Mix: Hospital 18, HHS 9, Clinic 4. Table + pixel stats: session scratchpad stills_press.txt (python, CPU only).
+  red1 verdict on the look: "mostly good". Findings below are from the numbers, not the eye.
+- F1 VACUOUS OK (Primal Law 4): …939387300 (Clinic) and …945504612 (Hospital) have samples=0 yet fault=false -> printed OK on an
+  empty population. Also thin: …945010042 samples=7, …945422410 11, …938847337 18. FIX (spec): still_fault.js:172 must emit
+  INCONCLUSIVE when samples==0 (and say n when < ~20); fault stays boolean only when something was judged.
+- F2 Hospital irOnly — the open item is BIGGER than "1": …945705039 cam [7.7,-11.3,-24.4] irOnly=92/144 (ceil 27), zonePass=0
+  (lampList mean 13.3) -> that zone draws NO own-zone lamp, lit by bounce only. NOT a fault by rule (still_fault.js:159 counts it,
+  :172 does not gate on it) so the PNG says OK. All other Hospital stills irOnly=0 with zonePass 162–185. Next: name the zone id at
+  that pose + why SourcedLight gives it 0 lamps (no IfcLightFixture in the zone vs lamps dropped by zone assignment).
+- F3 HHS irOnly 16 / 28 at …944536750 / …944593799 (cam z≈21.5), zonePass 5 of list 8–10: a sparsely-lamped zone; same question.
+- F4 glassReflDark (camera outside, glass reflection gate dark): HHS …944262945 80/107 (75 %), …944295992 32/51 (63 %) — large;
+  the rest 1–6 (HHS …943066001 6/187, …944235102 4/319, Hospital 1–3). Two big HHS cases are adjacent poses (cam ≈ [-9.7,±3,-17.7]).
+  Next: read which glass/sky directions fail there (spec<0.3) — CPU mirror of the shader, no GPU needed.
+- F5 Clinic glassLow=1 on ALL 4 Clinic presses: one visible glazing material T_eff<0.7 -> every Clinic still is FAULT for the same
+  single material. Next: name it (still_fault.js:69 loop) — real tinted glass (then exempt with a cited value) or a mis-tagged material.
+- F6 Exposure jumps press-to-press (logged, not a fault): -3.84 (…945821680), +3.64 (…945504612), +2.22, +2.03, +1.67 stops.
+  Each is vs the PREVIOUS pose, so not a defect by itself; no cited limit exists (still_fault.js:168).
+- F7 One dark frame: Clinic …939357212 (cam y 7.4) mean luma 47 vs 104–157 for all others, p1=6.3, 1.1 % px <8; §FAULT clean,
+  expStep 0. Either a correctly dark space or exposure did not adapt — needs the zone/lux at that pose.
+- F8 §FAULT_GI giAdapter='|||' on all 31: GPUAdapterInfo fields all empty (gi_still.js:769) -> field carries no information.
+  blownPct ≤0.01, darkPct ≤0.35, hueNoise 0 everywhere = GI pass clean.
+- NOT IN THE PNG: press wall time / cost — PNG has no timing; needs the console §GI_STILL line (not saved by the still).
+  Proposal: add press ms to the pose JSON so a saved still is self-timing.
