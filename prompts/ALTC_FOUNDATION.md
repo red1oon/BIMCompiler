@@ -16,6 +16,28 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ RESUME 2026-10-02 13:45 (Alt+C session bim-compiler-8e closing; red1 "shutting down, update work") — supersedes the 04:00 to-do.
+  - bim-ootb fix/fast-bake @35886fab (pushed), worktree /tmp/wt-fastbake, sw v1555. Since v1543: v1544 merge sky-surface f78a6579; v1545-1552
+    §SPEED_AB/§SPEED_PAR switches + timers (all OPT-IN, defaults unchanged); v1547 merge §WIND_FLIP; v1553 §RENDER_INFO; v1554 §REVEAL_TRAP
+    (&revealtrap=1); v1555 §REVEAL_DOOR_LEAK FIX (default ON: time_machine renderAtTime honours hiddenDiscs); 35886fab = LTU patch merge.
+  - BAKE RECIPE (proven, use for every film): BAKE_EXTRA="--visual-panel --still-budget 6,6 --url-query &capfmt=jpeg&gi8=1".
+  - DELIVERED: HHS 24 fps 10:41 (~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_24fps_2026-10-02_0934.mp4, 61 min, red1: quality
+    "good enough"; baked BEFORE the door fix -> its reveal shows 17 doors).
+  - RUNNING: Hospital 24 fps started 11:38 (pid 1205250), log /tmp/wt-fastbake/out/Hospital_silent_hires_2026-10-02_1138.log, lands
+    ~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-02_1138.mp4 ~14:25. At 13:39: frame 3764/4963, 0 GI off / 0 Uncaptured /
+    0 blank, §CPE_REVEAL_LEAK 0 lines, discKept=48 on all 1,323 passes (= Hospital's old leak 48 -> door fix proven on Hospital too).
+    ON RESUME: run the landing checks (§GI_FILM done errFrames, ffmpeg black/freeze to last frame, §FRAME_QA luma 2345-2360, §HUD_OVERLAP_WORST,
+    §CLI_BAKE_POSECHECK, §INTERIOR_LIGHTS_WITNESS) and record them here. If the machine was powered off before ~14:30 the film is lost: re-run
+    the same command (bake_hires_offline.sh Hospital_silent with the recipe).
+  - LTU: ~/Downloads/LTU_AHouse.db = red1's LTU film DB (linked as LTU_AHouse_silent.db in wt-fastbake + wt-surf). Alt+S step (1) DONE
+    (fix/sky-surface @00524a4f: §IFC_SURFACE_NAMES 2 updates + §WIND_FLIP 13,572 geoms; merged here as 35886fab). Alt+S steps (2) sidecar key
+    21324567 + restorecheck hit and (3) Alt+S viewing check run AFTER the Hospital bake exits (red1 go given); Alt+S copies the sidecar into
+    /tmp/wt-fastbake/buildings/patches/ (gitignored) and messages Alt+C. Then: LTU test clip, then full film. Path is the Aug-03 save (61.2 s,
+    no buildup/reveal flags, no 4D tables).
+  - NEXT speed lever (spec only, not built): Hospital scene renders submit 2,549-3,201 draw calls / 4.4-6.5 M tris (§RENDER_INFO), GPU 36% busy
+    -> CPU/draw-call bound; §BATCHED_FLUSH already merges per flush (2682 -> 238) yet the totals stay ~3k -> first measure what the 3k calls are.
+  - OPEN (unchanged): §HUD_OVERLAP_WORST pathmap x infopanel; §CLI_BAKE_POSECHECK mismatch; §INTERIOR_LIGHTS_WITNESS pool-only; §DOME_GLOW not in
+    films (stills only, effects.js !A._maxqActive gate) — red1 to decide.
 - ▶ 2026-10-02 06:15 (Alt+C session bim-compiler-8e). To-do 1-3 DONE: sky-surface @f78a6579 merged into fix/fast-bake = **sw v1544** (77ace8f3,
   pushed; both-side files bumped sourced_light 78, tools 73, gi_still 46); HHS/Terminal k21324567 sidecars renamed in (old kept as .k1b214d46);
   Hospital_silent sidecar released by Alt+S (bim-compiler-72): key 21324567:90186, occluderTris 5,819,012, restorecheck §ZONE_IDB_CACHE hit,
