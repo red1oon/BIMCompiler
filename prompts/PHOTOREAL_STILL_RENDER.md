@@ -399,3 +399,15 @@
   blownPct ≤0.01, darkPct ≤0.35, hueNoise 0 everywhere = GI pass clean.
 - NOT IN THE PNG: press wall time / cost — PNG has no timing; needs the console §GI_STILL line (not saved by the still).
   Proposal: add press ms to the pose JSON so a saved still is self-timing.
+- 01:00 LIGHT FIXES (no GPU; red1 "u may fix light work that does not lock GPU") — bim-ootb fix/sky-surface @d3bb44a7 sw v1547, PUSHED:
+  §FAULT_VACUOUS (still_fault.js: out.verdict FAULT/OK/INCONCLUSIVE; no fault + samples=0 -> INCONCLUSIVE), §FAULT_GI S4b
+  (gi_still.js: all-empty adapter -> null -> 'n/a'), §STILL_PRESS_TIME (saved PNG pose gets pressS + passes from the result bar).
+  Witness = replay of the shipped verdict rule over the 31 PNGs (scratchpad vacuous_replay.log): OK 18 / FAULT 12 / INCONCLUSIVE 1
+  (…945504612, was printed OK). Clinic …939387300 stays FAULT (samples=0 but glassLow judged). NOT yet run in a browser (GPU busy).
+- F5 narrowed (DB read, Clinic_extracted.db elements_meta.material_rgba): materials with alpha in (0.3, 0.95) -> T<0.7 are ONLY
+  0.980,0.957,0.882,0.490 = 8x IfcFlowTerminal "M_Sconce Light - Sphere" (T 0.51) and 1.000,0.737,0.475,0.600 = 22x IfcOpeningElement.
+  Clinic has NO low-T glazing (windows/plates are alpha 0.10 / 0.25). So glassLow=1 is most likely the sconce shade — still_fault.js:68
+  filters by transparency only while its own header (:10) says "glazing materials". Fix = restrict glassLow to glazing classes; needs
+  a browser run to confirm which mesh carries the class -> after the GPU frees.
+- wt-surf hygiene: a 0-byte buildings/Clinic_extracted.db (created 00:19, unknown writer) shadowed serve_tree's fallback -> Clinic on
+  :8664 would have loaded empty. Removed (no process held it); :8664 now serves 'SQLite format 3' for Clinic.
