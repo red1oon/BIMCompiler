@@ -122,7 +122,11 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
        ~1.45 s/frame, Hospital 15 fps ~2.3 s/frame x 2,937 -> at 24 fps ~4,700 frames, plan ~3 h): BAKE_W=1920 BAKE_H=1080 BAKE_FPS=24 BAKE_TAG=full_AFTER BAKE_EXTRA="--visual-panel" scripts/bake_hires_offline.sh
        Hospital_silent (saved corner = tl). Read: §LIGHT_FIELD_DB key match, §ZONE_IDB_CACHE hit, §DOME_GLOW, no §GI_FILM_OFF, frames 2345-2360
        luma (the 10-01 flash: 105.7 -> 87.8 -> 110), §FILM_BLANK_FRAME.
-    5. LTU waits for red1 to remake its Alt+C path (LTU_AHouse_silent.db is gone from disk; only ~/Downloads/LTU_AHouse.db 2026-08-03).
+    5. LTU (red1 2026-10-02 12:40: "it was my silent db but i just didn't save as _silent_"): ~/Downloads/LTU_AHouse.db IS the film DB —
+       cinema_path 3 pins, 61.2 s, OLD schema (no buildup/room_title/reveal/day_counter/clash/measure/storey_reveal -> read as off, effects.js:10512),
+       no 4D tables (tasks/schedules). Linked /tmp/wt-fastbake/buildings/LTU_AHouse_silent.db -> it. patches/LTU_AHouse_silent.db.sql = GEOREF +
+       storey_walkable_raster only (no IFC names, no WIND_FLIP). Asked Alt+S for the sidecar (key 21324567) + whether names/WIND_FLIP blocks are
+       needed — after the Hospital bake, on red1's go.
   - Coordination: red1 standing OK (2026-10-02) — Alt+C and Alt+S sessions arrange GPU / sidecars / merges directly; red1 only on exceptions.
     GPU: gpu.lock, one headless render, >= 3 GB free before a full bake. Per-DB artifacts (patches .sql, .lightfield.bin) are keyed on the DB file
     name AND fingerprinted on geometry/material names — a new patch can stale a sidecar (§4 §RESOLVE_BY_BUILDING).
