@@ -806,6 +806,12 @@ verify the replacement actually works at render time.
    resolved through the loader's OWN existing `LOCALE_MAP` (try `code` with `_`→`-`, then the language prefix).
    No new mapping table — `ar` → `ar_SA` is already in `LOCALE_MAP`. An unresolvable code falls through to the old
    order (saved → browser → fallback), as before.
+2b. **The Viewer's own picker keeps working** (red1, 2026-10-03: "Viewer has its main pages able to change languages").
+   The flag grid (`toggleFlagPicker`, opened from landing `index.html` `openFlags()`, `boq_charts.html`/`clash_report.html`
+   `#header-flag-btn`) saves `bim_ootb_config.locale` and reloads. A URL `?lang=` outranks the saved choice, so in a tab
+   opened by Zoom Across the click would reload into the ERP language again — dead button. Fix: the click also rewrites
+   `lang=` in the URL to the picked code (`history.replaceState`) before the reload. The ERP code is NOT written into
+   `bim_ootb_config` — it rides in the URL for that tab only; the user's saved Viewer choice is untouched.
 3. **Log:** `§TRL_DETECT src=url|url-mapped|saved|browser|fallback req=<raw ?lang or -> code=<chosen>` once per load.
 4. **Witness W-ZOOM-LANG** (`erp/tests/witness_zoom_lang.js`, no browser — the two pieces are pure functions):
    - Issue it proves: *"the Viewer opens in a different language from the ERP that launched it."*
@@ -813,6 +819,8 @@ verify the replacement actually works at render time.
      `lang=<code>` — read from the real source, the URL-building lines exercised with a stub `ErpI18n`.
    - (b) For each of the 9 codes, the real `locale_loader.js` `detectLocale()` (run in a stubbed window with
      `?lang=<code>`) picks a Viewer locale whose language prefix equals the ERP code's, with `src=url` or `url-mapped`.
+   - (b2) Picker: with `?lang=ar` in the URL, a flag click for `de_DE` leaves the URL at `lang=de_DE` and the next
+     `detectLocale()` returns `de_DE` — proves the picker is not overridden by the ERP hand-off.
    - (c) Negative control: with the §R1.2 change reverted (exact-match only) `ar` must FAIL — proves (b) can fail.
    - Verdict prints INCONCLUSIVE if 0 codes were read from `index.json`.
 5. **Not in §R1:** translating Viewer strings (that is §R2). After §R1 the Viewer's *existing* `_TRL` labels follow the
