@@ -130,6 +130,26 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
    prints INCONCLUSIVE when the log has no narration sources (vacuous), never PASS.
 6. **Open questions for red1** — one line each.
 
+
+## RESUME HERE (2026-10-03 ~10:20, machine closed by red1 — read this first)
+**State:** 3 narrated Hospital films delivered in `~/Downloads` (original `Hospital_silent_full_…_0049.mp4` untouched):
+`Hospital_narrated_full_…` (Piper Jenny, monologue v1), `Hospital_narrated_lively_…` (Kokoro af_heart, gaps filled),
+`Hospital_narrated_dialogue_…` (Kokoro af_heart + am_michael, conversation). red1: "it is already amazing".
+**Waiting on red1:** which voice route for the MALAY version (options in §4 V2 entry: own voice via prompter /
+Edge ms-MY Yasmin+Osman (cloud) / ElevenLabs (paid, can clone red1) / MMS zlm (local, non-commercial)). Then write the
+Malay dialogue from the same log facts. Also open: confirm "Boston" (IFC site = likely Revit default location).
+**What survives a reboot:** tools in `~/.local/share/film_narration/` (venv: piper-tts, kokoro-onnx, faster-whisper;
+voices/; kokoro/ models). Page log copy `~/Downloads/Hospital_silent_full_…_0049_page.log`. Scripts + fitters in
+`prompts/film_narration_*` . **Lost on reboot:** scratchpad clips/plans/.ass — regenerate (Kokoro is deterministic):
+```
+mkdir -p W && cd W && cp ~/bim-compiler/prompts/film_narration_ass_head.txt ass_head.txt
+P=~/.local/share/film_narration/venv/bin/python
+$P ~/bim-compiler/prompts/film_narration_fit_kokoro.py ~/bim-compiler/prompts/film_narration_hospital_0049_dialogue.tsv dlg 1.15
+#  -> dlg_*.wav, dlg.ass, dlg_plan.tsv ; mux = adelay each clip at its cue + amix + loudnorm -16 LUFS + ass burn-in,
+#     libx264 crf 17, -t 206.79 (see §4 entries). Never write over an existing output name.
+```
+**Rules kept:** every number from a `§` line (PRIME); GPU never used (CPU only, never take gpu.lock); new output names only.
+
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
