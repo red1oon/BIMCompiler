@@ -133,6 +133,21 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: CAPTIONED SAMPLE + TONE. red1: captions at the bottom matching the script; script kept GENERAL (detail
+  only where the gap allows). Fitter v0 (scratchpad `narr/fit.py`): each point has SHORT + DETAIL text; room = next
+  cue − cue − 0.3 s; DETAIL if it fits, else SHORT, else SKIP (`§NARR_FIT` lines). Result: envelope room 2.40 s →
+  SHORT (1.71 s); storey room 10.05 → DETAIL (4.23); corridor → DETAIL (2.95). Burned-in captions + end credit
+  "Voice: AI-generated (Piper, local) · Script directed by red1" →
+  `~/Downloads/Hospital_narrated_captioned_SAMPLE_AFTER_1920x1080_24fps_2026-10-03_0049.mp4` (re-encoded x264 crf 17,
+  4,963 frames, 370 MB; caption witness: bottom-band PSNR vs original 19.6–23.9 dB where a caption is on, 39.9 dB where
+  none). First encode hit a transient "No space left on device" (disk had 59 GB free after) — re-run clean, rc=0.
+  TONE SOURCE: red1's own narration `~/Videos/HospitalNarrative.mp4` (196 s), transcribed locally (faster-whisper
+  small.en, CPU) → `prompts/film_narration_red1_HospitalNarrative_transcript.tsv`. Measured: 346 words / 186.9 s of
+  speech = **1.85 words/s** → use as the fitter's speaking-rate budget for red1's own voice. Style: first-person tour
+  guide, present tense ("as you can see", "now we're on the return path", "as we approach the end"), says WHY a feature
+  is there ("so that the user can easily pick out…"), closes on the value line (air-gapped, no AI call, no installer).
+  Channel: https://www.youtube.com/@redhuanoon/videos (342 videos listed; ~25 film-related, e.g. "Full Movie Clash
+  Analysis 4D 5D from BIM IFC" 7EJ-uFCuOLQ) — captions not yet pulled.
 - 2026-10-03: SAMPLE (red1 go): Piper local TTS installed (`~/.local/share/film_narration/venv`, voice en_GB-alan-medium,
   offline, CPU). 3 lines from §FLYTHRU_CUE_PLACE → `~/Downloads/Hospital_narrated_SAMPLE_AFTER_1920x1080_24fps_2026-10-03_0049.mp4`
   (video copied: 4,963 frames, original untouched). Placed start=max(cue, prevEnd+0.3): envelope 0.00→7.11 s, storey
