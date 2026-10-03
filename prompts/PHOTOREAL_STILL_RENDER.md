@@ -422,3 +422,42 @@
   on every building (Clinic, HHS, Hospital, Terminal, LTU census, read from DB/log), and the fix goes in the function that owns it. No
   per-building exemption, no per-pose threshold. Each fix must show it changes the count on all buildings, not just the pose it came from.
   Applies to tooling too: the _meta/_extracted sidecar-name symlinks (10-03) are a band-aid -> bake.js must write the name the viewer requests.
+- 08:50 REBAKE DONE (red1 go): wt-surf sidecars Clinic/HHS/Terminal/Hospital _extracted, key 21324567:90186, restorecheck PASS cached=true
+  all 4 (Clinic needed the _meta name; bake 2/2.6/4.4/26.9 min). Re-shoots (scratchpad s/press.log, sw v1557, 2776x1440):
+  Clinic …939357212 pressS 18.8 FAULT glassLowWho=["Mesh/d48376b9 T=0.51"] (= alpha 0.49 = the sconce sphere: F5 CONFIRMED);
+  HHS …944262945 pressS 11.2 FAULT glassReflDark=79/106; Hospital …945705039 pressS 107.8 OK irOnly=93 -> irOnlyZones=136:93pts/0lamps;
+  Hospital …945504612 pressS 101.3 INCONCLUSIVE (samples=0). giAdapter headless = 'nvidia|lovelace||' (red1's browser gave '|||').
+- §LAMP_ZONE_CENSUS (s/census.log, after one Alt+S per building; 0.5 m cells; room = >=10 m³): zones with 0 bound lamps,
+  "lamp in box up to 3 m above" / "none": Hospital 68 / 185 of 542 rooms (3.6 % / 3.2 % of room volume); HHS 1 / 14 of 84;
+  Clinic 32 / 22 of 281; Terminal 3 / 10 of 60. Lamps in SOLID / outside: Hospital 0/0, HHS 6/3, Clinic 7/3, Terminal 3/4.
+  ⚠ the "lamp in box" test is LOOSE: it catches stacked zones (Hospital z18/z19 share an XZ box) and zone 1 = 5,957 m³ (HHS) /
+  5,523 m³ (Clinic), which takes 152 / 1,001 'near' lamps that atLamp binds DOWN through the ceiling panel to the room below (by design).
+  So no binding-loss defect is proven. Hospital zone 136 (156 m³, the …945705039 eye zone): 0 lamps; nearest 4 at 3.1–3.4 m, y=-12.62,
+  bound to zone 135 (below the eye y=-11.3) -> 136 has no fixture of its own in the data; bounce-only there is what the IFC gives.
+  F2 = NOT a renderer defect on current evidence. Open: is 136 a plenum/void the camera sits in (box height not logged yet).
+
+## 2026-10-03 — §GLASS_PLANAR_REFL — SPEC (red1: "Only big flaw is the mirror reflection … a joined wing or slab is not indicative but
+## often the same clear skyline as if that part of the building is not there.")
+- ROOT CAUSE (code read, wt-surf @58416ed0): exterior glass reflection = three's env radiance (sky only) x ONE scalar keep from
+  slSpecKeep (sourced_light.js:235) / §GLASS_REFL_OPEN table (light_zones.js:923: 12 az x 25 el, 7.5 deg, per glass cell side).
+  A blocker in the reflected direction can only SCALE the sky (T x rho x F); it never contributes its own image. So a wing reads as the
+  same skyline, dimmer at most; small blockers vanish below the 7.5 deg table step. F4 (glassReflDark 79/106 at HHS …944262945) is
+  this mechanism's other face (sky scaled to dark). Not a tuning problem: a scalar gate cannot form an image.
+- RULE (general, any IFC): a flat pane is a plane mirror; what it shows = the scene rendered from the camera mirrored in that plane.
+  Building glazing is overwhelmingly planar (curtain walls, windows), and the planes come from the geometry, not the building.
+- MECHANISM (Alt+S stills only; films/nav untouched; &planarrefl=0 = today's path):
+  1. Planes: the §GLASS_FRESNEL glazing clones (GLAZE_CLASSES + R10 panes, glass_fresnel.js — the existing owner) -> their visible
+     triangles grouped by plane (normal within 2 deg, offset within 0.10 m), ranked by on-screen area. Top K (budget, measured) get a
+     mirror; the rest keep today's path, counted.
+  2. Per plane: render the scene from the mirrored camera with an oblique near plane at the glass (standard planar reflector), half res,
+     glass hidden in that pass. Store plane id per pane material/group.
+  3. Glass clone shader: on its plane, specular env term := the reflection RT sampled at the fragment's screen position (x Schlick F, as
+     now); the sky-env x keep path stays for panes without a plane slot. One shader branch in the existing clone, no new material class.
+- WITNESS §GLASS_REFL_TRUTH (numbers, not eyes): on the 32x18 outside-glass grid still_fault.js already walks, cast the exact reflected
+  ray (three Raycaster on the scene, not the voxel grid). hitSamples = rays that meet opaque geometry. Today: every hit sample shows sky
+  -> report skyWhereHit = hitSamples (baseline). After: for a mirrored pane, the reflection RT's depth at that texel must equal the ray's
+  hit distance within 5 % -> depthAgree / hitSamples. INCONCLUSIVE when hitSamples = 0. Run on all 4 buildings + HHS …944262945.
+  Cost line: per press K, ms per mirror render, total.
+- RISKS to measure, not assume: K vs press time (Hospital press already 101–108 s); planes cut by the view edge (RT sized to the pane's
+  screen box); curved/faceted glass falls back (counted); interior mirrors (§MIRROR_OWN_MAT cube capture) stay as they are.
+- STATUS: spec only. Changes how every exterior pane renders -> waits for red1's go.
