@@ -323,6 +323,21 @@ Length: ≈ 4–5 min allowed (red1, 2026-10-03: "u may extend more mins where c
 City-mode aerial beat DROPPED (red1, 2026-10-03: "Drop the City aerial for now") — Film-Maker closes.
 Open: the hook beat 9 depends on the 4D/5D page also following the language (in S226 §R2 scope).
 
+### §8 TITLE CARDS — chapter format (red1, 2026-10-04: "put into the script some good titling such as in the latest
+screenshot example. So we can have say chapters format")
+**Reference:** `~/Pictures/Screenshots/Screenshot from 2026-10-04 04-37-58.png`. Its anatomy, copied:
+the live footage keeps running underneath, dimmed to ~35 % · a small letter-spaced coral kicker ("CAPABILITY 1") · a huge
+two-line bold title, line 1 off-white, line 2 coral · one plain sentence under it · a persistent boxed chapter tag at
+top-left ("CAPABILITY 1 · EMOTION", coral on dark) for the rest of the chapter · a series tag at top-right.
+**Applied here:** ~2.5 s card at each chapter start, fade 0.4 s; the boxed tag stays top-left until the next card.
+Colours: off-white #F3EEE8, coral #FF6B78, dim layer black 65 %. Font: a heavy sans with the script's glyphs (Noto Sans
+Black/Bold family + the CJK/Arabic/Thai/Bengali Noto per language — `fc-list` before use; no new font downloads without
+a check). Burned by the same ASS pass as the subtitles (new styles `CardKicker`, `CardTitle1`, `CardTitle2`, `CardLine`,
+`ChapterTag`, `SeriesTag`) + an ffmpeg `drawbox` dim — deterministic, no editor.
+Card language = the slice's language; the kicker carries the English ("CHAPTER 2 · INSPECT") so every card reads in both.
+Series tag: "BIM OOTB · VIEWER" / "· MODELLER". Chapters for §8: 1 OPEN (beats 1–2b) · 2 SEE (3–5) · 3 INSPECT (6–7)
+· 4 TIME (8–8c) · 5 COST (9) · 6 SHARE (9b–10). §9 Modeller: 1 OPEN · 2 BUILD · 3 GENERATE · 4 UNDO ANYTHING · 5 SHARE.
+
 ### §8 RECORDER MAP (selectors + § waits, read from bim-ootb origin/main 01f38710 on 2026-10-04 — file:line in each)
 - Desktop context, non-touch (key handler returns on `_isMobile`, `viewer/scene.js:3257`); every key logs `§SHORTCUT_FIRE key=`.
 - Landing: skip the Morpheus gate with `localStorage mx_entered=1` or film `takeRed()` (`index.html:276`); icons `#por-<id>`
@@ -377,6 +392,72 @@ English UI (a stated exception), or Modeller i18n is built first. ⛔ red1 to ch
 | 6d | generalization table on a held-out building (precision, fabricated count) | "Tested on buildings it never saw — scored against their real pipes." (numbers from `§GC` at record time) | ModellerGuide.md:663-667 |
 | 9b | Teams overlay: two branches, merge gate flags a clash, who-dots | "Two people, two branches. The merge gate shows where they collide." | ModellerGuide.md:826-830 |
 | 10 | close | "The same signed log runs the ERP." (bridge to the ERP trailers) | ModellerGuide.md:7-8 |
+
+## 10. §DOCUMENTARY — Film 2: "who is building this, and why" (SPEC ONLY, 2026-10-04 — after §8 and §9 ship)
+**Ask (red1, 2026-10-04, verbatim — the narration source; keep his words, fix only spelling):**
+> Chapter 1. Who is building this and why. The narrative beasically begins with I am Redhuan D. Oon.. has been a fierce
+> advocate of Information is Free, Yuo have to know, Contributors are Pricess, You have to be. I debut as the founding
+> leader of ADempiere ERP back in 2006, but ERP and Java is so boring and i love art. And AI been evolving so fast it
+> literally helped me do everything i specify right up to this movie.
+> Chapter 2. When and How i started. It was just middle of last year, when a BIM engineer friend suggested to me the
+> challenge of BIM. At first I tried to do a graphical UI on my own, even with Claude Code's help, it was daunting, until
+> Claude suggested using Bonsai, Blender BIM back in October. It was a short blast because large IFCs crashed the app. Then
+> Claude suggested extracting the IFC into an SQLite database. But we hit geometry hell due to AI been a language model thus
+> physically limited. I then came out with the Roseeta Stone strategy but the greatest trick is to build layers of
+> foundation meticolously where AI stitch the phyiscal reality upon. Each further hell we go thru where its past learning
+> has never encountered and there are lots as many parts are prior or novel art.
+> Chapter 3. What am i trying to build. WIth my vast background in ERP modelling and coding, I want to make a Spatial ERP.
+> BIM is thus the best way to build a emperical 3D reality where a warehouse can be in 3D. But the AEC industry by itself is
+> an ERP. A building is a Build of Material or BOM. The SQLite lets it scale alot and no more crashing but the features i
+> tried to add on from 4D to 5D and sophisticated Find and Time Machine or animation is a steep learning curve trying to
+> retrofit ideas at the speed of thought into a legacy though Blender which i must admit is a good stack. But the
+> bottleneck is me as the AI can code at many times my speed. I have to vet and redirect the drifts that happends and
+> context limits do not allow the AI to remember anything past a new session with 200 thousand token limit. Then Claude
+> suggested the biggest breakthru - why not switch to entirely new model of WASM on ThreeJS and Canvas2D? That was a blast
+> as we speed up many times more.
+> Chapter 4. The Triolgy Vision. Now I am able to tackle my long dream of refactoring iDempiere, a legacy inherited from
+> Compiere that debuted in 1999, its old Java hell which though we upgraded to the OSGi plugin GIT model is still steep with
+> the new Maven hell and too much moving parts such as the Postgres Docker, 3 million lines of code and the complex Java
+> monsters such as the Persistent Object Jaba. I spend since 3 years ago using ChatGPT but can not unravel it into a modern
+> stack. With BIM securely wired into a foundation layer of SQLite WASM on a kernel ops PWA (Progressive Web Application),
+> ERP conversion happens within days. I then set my sight onto the Modeller or authoring tool which is the domain and
+> hardest moat surrounding the SAP of 3D design which is Autodesk Revit. Using the most important layer out of this journey
+> namely the WITNESS debug logging wired into the codebase, Claude is able to rumble thru each novel art and prior gap.
+> Thus what you are witnessing is a fast speed train rushing thru. You probably not been noticing it at human speed.
+> Been the sole human author, I placed this under the most promiscous MIT License. I have trouble giving it the right
+> names - OOTB, out of the box, Kernel ERP and DAGeVU and probably changed my mind. But it has been a blast, a fitting hobby
+> in my retired days, but i wana leave the world with a legacy for what i been struggling for. It is my invitation to the
+> rebels and misfits. Do help me continue the conversation after I am gone. At AI speeds, the conversation may end very
+> soon as i lay down the final layer of deterministic, non AI inside code that has become so intelligent that it can
+> update itself from obselescene.
+> … make this a 2nd film documentary … Discuss the breakdown, what snapshots, clips, parts, animation recording of BIM and
+> Modeller in action that is needed coherently. But let what we set out earlier to go first. Just spec this only.
+
+**Order:** §8 Viewer trailer → §9 Modeller trailer → this. Their recordings are this film's main B-roll, so nothing is
+recorded twice.
+**Form:** first-person narration in red1's words, ~900 words ≈ 6 min spoken → ≈ 8–10 min with breathing room. Four
+chapters + a coda, each opened by a §8-style title card (kicker "CHAPTER n", two-tone title, one line). Visuals never
+illustrate a claim they can't show; where there is no footage, a title/text card carries it.
+**Facts:** his story is testimony — kept as he says it. Every DATE / NUMBER on screen gets a source column like the
+trailers' TSV: git history, the repos, a doc quote, or "red1's account". Found so far (2026-10-04): earliest BIM repo
+`~/Projects/2Dto3D` first commit 2025-11-16 (116 commits to 2026-01-16); `bim-compiler` first commit 2026-01-25, 4,754
+commits; `bim-ootb` first commit 2026-05-23, 2,185 commits on main. "Middle of last year" and "Bonsai in October" predate
+those repos → shown as red1's account unless older evidence (GitHub, Bonsai sandbox, chats) is found.
+
+| Ch | Title card (line1 / line2 · line) | Narration (his) | Footage needed — source |
+|---|---|---|---|
+| 1 | WHO IS / BUILDING THIS · "Information is free — you have to know." | Redhuan D. Oon; the motto; ADempiere 2006; "ERP and Java is so boring and I love art"; AI helped "right up to this movie" | ADempiere-era material (**red1 to supply**: photos, 2006 site/forum, logo use OK?) · his art, if he wants it shown (**red1**) · this very session: the recorder driving the Viewer, git log of the last 24 h scrolling (real) |
+| 2 | WHEN / AND HOW · "It began with a challenge from a friend." | the BIM friend; daunting own UI; Bonsai/Blender in October; large IFCs crash; IFC → SQLite; "geometry hell"; Rosetta Stone; layers of foundation | early UI / Blender-Bonsai screenshots (**search** `~/Projects/bonsai-sandbox`, `2Dto3D`, `docs/archive`, ~/Pictures; else red1) · a crash = text card, never faked · SQL query on a real `_extracted.db` (live terminal recording) · broken-geometry frames from the archives (only real ones) · `run_RosettaStones.sh` gate table run (G1–G6 lines) · a layered diagram animating up (ffmpeg/Canvas, drawn from docs) |
+| 3 | WHAT / I AM BUILDING · "A building is a bill of materials." | Spatial ERP; warehouse in 3D; AEC is an ERP; building = BOM; SQLite scales; 4D/5D, Find, Time Machine; the bottleneck is me; drift, 200K-token sessions; WASM + Three.js + Canvas2D breakthrough | Pick Walk warehouse building in the Viewer · BOM tree building→floor→room→furniture (Modeller Outliner) · reuse §8 beats: Find, Time Machine, 4D/5D · City mode 786 buildings for "scale" (dropped from §8 — fits here) · side by side: Blender-era vs browser Viewer, same building |
+| 4 | THE TRILOGY / VISION · "ERP, BIM, Modeller — one kernel." | iDempiere legacy (Compiere 1999, OSGi, Maven, Postgres Docker, 3 M lines, PO); 3 years with ChatGPT; SQLite-WASM kernel-ops PWA → ERP in days; Modeller vs Revit's moat; WITNESS logging; the speed train | stack layers falling away → ERP System Monitor "No longer needed" badges (reuse the ERP tech trailer, `~/Downloads/ERP_TechTrailer_…mp4`) · `erp/` commit history by day (git, real) · Modeller walkers + history slider (reuse §9) · `§`-witness PASS lines scrolling (real logs) · "speed train": a gource-style animation of both repos' history (gource NOT installed — install needs red1's ok, else a Canvas render from `git log`) |
+| coda | REBELS / AND MISFITS · "MIT. Take it further." | sole human author; MIT; the names OOTB / Kernel ERP / DAGeVu; retired-days hobby; legacy; "continue the conversation after I am gone"; deterministic, no AI inside | MIT licence text card · the three names as cards · the "No AI inside" witness line (`project_positioning_no_ai_inside`) · last shot: the front door, flag picker cycling the 18 languages |
+
+**Open — only red1 can answer (ask when this film starts, not now):**
+1. Voice: his own recorded voice (authentic; we time the footage to it), or an AI voice reading his words, labelled
+   "Voice: AI · Words: Redhuan D. Oon"? A synthetic voice speaking as a real person must be labelled either way.
+2. Spelling of the motto — "Contributors are **Princes**, you have to be"? (written "Pricess").
+3. Personal material for Ch 1–2 (photos, ADempiere 2006 era, art) — what he can supply.
+4. Language: English narration with the 13 trailer languages as subtitles, or English only?
 
 ## 4. STATUS
 - 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
