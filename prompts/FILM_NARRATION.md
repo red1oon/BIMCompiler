@@ -4,16 +4,27 @@ SCOPE: plan, then (only after red1 approves the plan) build, a spoken narration 
 numbers, no invented claims. Spec before code; a witness proves the track, not a listen-through.
 **Read the page log after every run** — exit code is not evidence. Honour this block until the lane is DONE.
 
-## 0. THE ASK (red1, 2026-10-03, reworded for this project)
-red1 wants a narrated version of the baked BIM films. The bake already writes a page log that says what is on
-screen and when. Before ANY code, file or API call, the session acts as producer + automation engineer and
-answers three questions, as a written plan for red1 to review:
-1. **Log analysis** — how to read the bake's page log and map each on-screen event to a film timestamp.
-2. **Script drafting** — what template turns those `§` values into short spoken lines a viewer can follow.
-3. **Audio automation** — how the audio files get made and laid onto the film, and what it costs.
+## 0. THE ASK (red1, 2026-10-03 — original words kept verbatim, then what it means here)
+> *"I am creating a narrated movie from a baked BIM construction model. I have raw construction logs detailing
+> what appears on screen at specific timestamps. Before we write any code or call any external APIs, I want you
+> to act as my video producer and automation engineer. Please explain your exact step-by-step approach for doing
+> the following: 1. Log Analysis: How will you parse my raw BIM logs and map them to film timestamps?
+> 2. Script Drafting: What template or format will you use to turn technical logs into professional, spoken
+> narration? 3. Audio Automation Plan: How do you plan to automate the creation of the final audio files (e.g.,
+> using Python, ElevenLabs, or OpenAI TTS)? Do not execute any code or create files yet. Just provide your
+> structural strategy and a brief layout of how you will organize the script so I can review your logic."*
 
-**Deliverable of the first session: the plan only, appended to this file as §PLAN.** No code, no audio,
-no API keys, no network calls. red1 reviews the plan before anything is built.
+**Intent, in this project's terms:**
+- **Goal:** a narrated version of the baked Alt+C films — a **professional, documentary-style voice-over** that tells
+  the viewer what they are seeing (the building, its size, how it goes up, the clashes found), in sync with the picture.
+- **Input:** the bake's page log ("raw construction logs") — it already says what is on screen and when.
+- **Audio:** red1 named **ElevenLabs or OpenAI TTS** (Python or similar) as the expected route. That is the default
+  path to plan for, not something to argue against (see §2 for the one note to raise).
+- **This step = strategy only, kept brief:** a step-by-step approach for the 3 questions + a short layout of the
+  script, for red1 to review. No code, no audio, no API keys, no network calls.
+
+**Deliverable of the first session: that plan, appended to this file as §PLAN** (project rule: findings go in the
+prompts file, not chat-only). Brief — a reviewable strategy, not a design doc. red1 reviews before anything is built.
 
 ## 1. FACTS ALREADY IN HAND (extracted 2026-10-03; re-check before relying on them)
 - Films: `~/Downloads/<Building>_silent_full_*_AFTER_1920x1080_24fps_<date>.mp4`. They are silent. They are
@@ -32,6 +43,12 @@ no API keys, no network calls. red1 reviews the plan before anything is built.
   - `§MEASURE_BUILDING_CARD vol=97487.5m3 footprint=4931.5m2 height=19.77m`.
   - `§SUN_COMPASS built lat=… lon=… (src=ifc_site)`.
   - `§CLASH_LABELS frame=<n> … enter=[…]` (per-frame: which clash labels appear).
+- **The construction story is also logged** (red1's ask is a *construction* film — narrate the build-up, not only
+  the fly-through captions). HHS 0806 log, at setup: `§GANTT band <k> z=[a,b] <n> elements: Superstructure:…,
+  Architecture Envelope:…, MEP Rough-in:…, MEP Final:…` (what goes up, storey by storey, by trade) and
+  `§GANTT storey-bands: … "Level 1" … "Roof Level"`; per-frame `§NIGHT_BUILDUP_GATE total=<N> placed=<n>` (how much
+  is built at that frame). Not every film shows the build-up (HHS 2026-10-03 was baked "no-buildup", per
+  `ALTC_FOUNDATION.md`) — the plan must check which film does before using these tags.
 - **Existing pacing rule for cues** (`viewer/cpe_flythru_cues.js`, spec `MEP_CLASH_REVEAL_MOVIE.md §14`): one cue on
   screen at a time, fade in 0.6 s + hold 1.0 s + fade out 0.6 s, then a 0.5 s gap. A cue's second is derived from the
   real camera path, never hard-coded. Narration must follow the same timeline and never talk over a cue it doesn't describe.
@@ -44,18 +61,20 @@ no API keys, no network calls. red1 reviews the plan before anything is built.
   in the plan (e.g. metres to 1 decimal, areas to whole m²).
 - **Deterministic:** same log in → same script out, byte for byte. The script is a reviewable text file (one row
   per line: start sec, end sec, source `§` tag + field, text) before any audio is made.
-- **'No AI inside' positioning** (`prompts/NO_AI_INSIDE_WITNESS.md`, `prompts/BIM_POSITIONING_RESEARCH.md`): the
-  guarantee is about the shipped runtime, but the film is the 'door' of the product with the tagline 'No AI inside'.
-  A neural or cloud voice (ElevenLabs, OpenAI TTS, even a local neural model like Piper) puts AI in the film itself.
-  The plan MUST lay out this conflict and the options (human voice reading the generated script; local non-neural
-  TTS; cloud TTS with disclosure) for **red1 to decide**. The session does not pick one.
+- **Voice = red1's named route (ElevenLabs / OpenAI TTS).** Plan for it. Raise ONE note, as an open question,
+  not a blocker: the product film carries the 'No AI inside' tagline (`prompts/NO_AI_INSIDE_WITNESS.md` — the
+  guarantee is about the shipped runtime, not the film's voice), so ask red1 whether a neural voice needs a
+  disclosure line. Alternatives (human reading the script, local TTS) get one line each, no more.
+- **Professional, not a log readout:** lines read like a documentary voice-over ("The ground floor goes up first —
+  543 structural members, then the envelope."), but every number and name in them still comes from the log.
 - **Data leaving the machine:** a cloud TTS call sends the script text out (building names, sizes). Say so in the plan.
 - **The film is not re-baked for audio.** Audio is muxed onto the delivered mp4 (e.g. ffmpeg, video stream copied,
   not re-encoded). A re-bake costs ~3 h of GPU and belongs to Alt+C.
 - **GPU:** this lane needs none. Never take `/tmp/claude-1000/gpu.lock`.
 
 ## 3. WHAT THE PLAN MUST CONTAIN (§PLAN, appended below by the next session)
-1. **Event table:** which `§` tags are narration sources, which field gives the time, which gives the words. Separate
+0. **Keep it brief** — red1 asked for a strategy + a short script layout to review, not a full design.
+1. **Event table:** which `§` tags are narration sources (fly-through captions AND the construction sequence), which field gives the time, which gives the words. Separate
    setup-time plans (window lines) from per-frame facts (`§CLASH_LABELS`). Say which tags are missing for something
    the film shows (e.g. a beat with no logged caption): that is a gap to log, not to guess.
 2. **Script format:** the row layout (§2 Deterministic) + 3–5 template sentences, each with its source fields,
@@ -63,8 +82,8 @@ no API keys, no network calls. red1 reviews the plan before anything is built.
 3. **Timing rules:** speech starts at a cue's fade-in, must end before the next cue's window; a speaking-rate
    budget (words per second) that decides whether a line fits, and what happens when it doesn't (shorten by a
    rule, or drop).
-4. **Audio path:** the options in §2 with what each costs (money, time per minute of film, data sent out, AI or not),
-   then mux + loudness target.
+4. **Audio path:** ElevenLabs vs OpenAI TTS (cost per minute of film, voice quality, data sent out), how the
+   per-line clips are generated and placed on the timeline, then mux + loudness target. Alternatives: one line each.
 5. **Witness design (before code):** e.g. `witness_film_narration.js` — every script number matches its source `§`
    value; no two clips overlap; each clip starts within a stated tolerance of its window; total audio ≤ film length;
    prints INCONCLUSIVE when the log has no narration sources (vacuous), never PASS.
@@ -73,3 +92,7 @@ no API keys, no network calls. red1 reviews the plan before anything is built.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: §0 realigned to red1's original words (kept verbatim): professional documentary voice-over of a
+  *construction* film; ElevenLabs/OpenAI TTS is the planned route (the 'No AI inside' point demoted from a forced
+  decision to one open question); construction-sequence tags (`§GANTT`, `§NIGHT_BUILDUP_GATE`) added as sources;
+  plan kept brief.
