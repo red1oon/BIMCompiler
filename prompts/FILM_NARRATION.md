@@ -133,6 +133,12 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: SAMPLE (red1 go): Piper local TTS installed (`~/.local/share/film_narration/venv`, voice en_GB-alan-medium,
+  offline, CPU). 3 lines from §FLYTHRU_CUE_PLACE → `~/Downloads/Hospital_narrated_SAMPLE_AFTER_1920x1080_24fps_2026-10-03_0049.mp4`
+  (video copied: 4,963 frames, original untouched). Placed start=max(cue, prevEnd+0.3): envelope 0.00→7.11 s, storey
+  planned 2.70 → spoken 7.41 (+4.71 s late, envelope line 7.1 s vs 2.2 s on-screen window), corridor 13.05→16.00.
+  silencedetect on the output confirms speech edges at 7.46 / 13.10 s. Finding: cue windows (2.2 s) are far shorter
+  than a spoken line — the fitter must fit to the GAP until the next cue, not the caption window. Log copied beside the film.
 - 2026-10-03: splice step added (red1) — cut the take per line by silence gaps, place each at its fitted second, report drift.
 - 2026-10-03: own-voice prompter route added (red1) — fitter rows → cue file + prompter view over the film.
 - 2026-10-03: §0.1 added from red1's follow-up — the lane's core is the script-to-film FITTER (placed / skipped /
