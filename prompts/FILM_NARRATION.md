@@ -502,7 +502,12 @@ English thus, but when quirps comes in both subtitles."
   deterministic kernel — one signed op-log, folded into all three — is the solution, and that a lone retired author plus
   AI, kept honest by witnesses, got there.
 
-**§10 SCRIPT v1** (draft; EN = narrator; quip rows = `lang: line — gloss`; ≈ 1,000 EN words ≈ 6.5 min + cards/quips ≈ 9 min)
+**§10 SCRIPT v2 — third person** (2026-10-04; SUPERSEDES v1, which spoke as red1. red1: "Oh i see the first party voice
+problem.. so make red1 the 2nd party, and the voice is narrating his story?"). A narrator tells red1's story. His own
+words are never voiced: they appear as **QUOTE cards** — on-screen text in quotation marks, signed "— red1", narrator
+silent for ~3 s (style: centred, off-white, coral attribution, over dimmed footage, same family as §8 cards).
+Row types: `EN:` narrator · `QUOTE:` on-screen text only · `lang:` quip — gloss (a different F/M voice, low key).
+≈ 1,000 EN words ≈ 6.5 min + cards/quotes/quips ≈ 9–10 min.
 
 *Cold open — greetings round over the front door, flags cycling (same as §8):* en Hi · fr Bonjour · es ¡Hola! · de Guten
 Tag · ar السلام عليكم · zh 你好 · ja こんにちは · ms Apa khabar? · th สวัสดี · ko 안녕하세요 · pt Olá · id Halo · bn নমস্কার
@@ -510,81 +515,87 @@ Tag · ar السلام عليكم · zh 你好 · ja こんにちは · ms Apa k
 
 **Prologue — card: THREE / BODIES**
 EN: In physics, three bodies pulling on each other never settle. There is no neat formula. Information technology has
-its own three bodies. The business record — that's ERP. The physical space — that's the building, BIM. And the act of
-design — the modeller. Each orbits its own giant. They have never shared one centre. This film is about trying.
+its own three bodies. The business record — ERP. The physical space — the building, BIM. And the act of design — the
+modeller. Each orbits its own giant. They have never shared one centre. This is the story of one man who tried.
 
 **Ch 1 — card: WHO / IS BUILDING THIS · "Information is free — you have to know."**
-EN: I am Redhuan D. Oon. Most people call me red1. For twenty years I have lived by three lines. Information is free —
-you have to know. People are not — you have to pay. Contributors are priceless — you have to be.
-EN: In September 2006 a community of volunteers forked Compiere, an open-source ERP, to keep it open. We called it
-ADempiere, and they voted me its leader. Later, with Carlos Ruiz, it became iDempiere.
+EN: His name is Redhuan D. Oon. Most people call him red1. For twenty years he has lived by three lines.
+QUOTE: "Information is free — you have to know. People are not — you have to pay. Contributors are priceless — you have
+to be." — red1
+EN: In September 2006 a community of volunteers forked Compiere, an open-source ERP, to keep it open. The idea was first
+raised on his own forum, red1.org. They called it ADempiere, and they voted him its leader. Later, with Carlos Ruiz, it
+became iDempiere.
 ms: *Terima kasih, kawan-kawan* — thank you, friends.
-EN: Here's a confession. ERP and Java bored me. I love art. And then AI arrived, and kept getting better, until it
-could build almost anything I could describe — right up to this film.
+EN: He has a confession to make.
+QUOTE: "ERP and Java is so boring. I love art." — red1
+EN: Then AI arrived, and kept getting better, until it could build almost anything he could describe — right up to this
+film.
 ja: *本当です* — it's true.
 
 **Ch 2 — card: WHEN / AND HOW · "It began with a challenge from a friend."**
-EN: In the middle of last year, a friend who is a BIM engineer dared me: try buildings. I tried to write a 3D interface
-myself, even with Claude Code beside me. It was daunting.
+EN: In the middle of last year, a friend who is a BIM engineer dared him: try buildings. He tried to write a 3D interface
+himself, even with Claude Code beside him. It was daunting.
 fr: *Pas facile* — not easy.
 EN: In October, Claude suggested Bonsai — BIM inside Blender. It was a blast, briefly. Large IFC files crashed it. So
-Claude suggested pulling each IFC model out into a SQLite database. That worked — and led us straight into geometry
-hell. A language model reasons in words. Walls, pipes and slabs live in physics.
+Claude suggested pulling each IFC model out into a SQLite database. That worked — and led straight into geometry hell. A
+language model reasons in words. Walls, pipes and slabs live in physics.
 de: *Na gut* — all right then.
-EN: So I made a Rosetta Stone: real buildings, decoded and checked, to translate between the two. And I learned the
-real trick. You build the foundation in layers, meticulously, and let AI stitch physical reality onto them. Every new
-hell was a place its training had never been — because much of this is prior art nobody connected, or new art nobody
-had made.
+EN: So he made a Rosetta Stone: real buildings, decoded and checked, to translate between the two. And he found the real
+trick.
+QUOTE: "Build layers of foundation meticulously, where AI stitches the physical reality upon." — red1
+EN: Every new hell was a place the AI's training had never been — because much of this is prior art nobody had
+connected, or new art nobody had made.
 es: *¡Seguimos!* — we keep going.
 
-**Ch 3 — card: WHAT / I AM BUILDING · "A building is a bill of materials."**
-EN: What am I building? A spatial ERP. My whole career is ERP modelling. A warehouse should be a real place you can walk
-through, not rows in a table.
-EN: And then I saw it. The building industry already is an ERP. A building is a bill of materials — building, floor,
-room, fixture, part — each one a recipe of the next.
+**Ch 3 — card: WHAT / HE IS BUILDING · "A building is a bill of materials."**
+EN: What is he building? A spatial ERP. His whole career is ERP modelling, and to him a warehouse should be a real place
+you can walk through, not rows in a table.
+EN: Then he saw it. The building industry already is an ERP. A building is a bill of materials — building, floor, room,
+fixture, part — each one a recipe of the next.
 th: *ใช่เลย* — exactly.
 EN: SQLite let it scale, and the crashes stopped. Then came the features: time in 4D, cost in 5D, a real Find, a Time
-Machine, films. Retrofitting ideas at the speed of thought into Blender — a good stack, I admit — was a steep climb.
-EN: And the bottleneck was me. AI writes code many times faster than I can read it. It drifts, and I steer. Each new
-session forgets the last one — two hundred thousand tokens, then a blank page.
+Machine, films. Fitting ideas at the speed of thought into Blender — a good stack, he admits — was a steep climb.
+QUOTE: "The bottleneck is me. The AI can code at many times my speed." — red1
+EN: The AI drifts, and he steers. Each new session forgets the last one — two hundred thousand tokens, then a blank page.
 ko: *괜찮아요* — it's okay.
 EN: Then Claude made the biggest suggestion of all. Leave the old stack. Go to the browser: WebAssembly, Three.js,
-Canvas. We sped up many times over.
+Canvas. Everything sped up, many times over.
 pt: *Que maravilha* — how wonderful.
 
 **Ch 4 — card: THE THREE / BODIES, ONE KERNEL · "ERP, BIM, Modeller."**
-EN: That freed me for my oldest dream: rebuilding iDempiere itself. It inherits Compiere, from 1999 — Java, OSGi
-plugins, Maven, a Postgres server in Docker, millions of lines, and heavy machinery like its Persistent Object layer.
-For three years I tried with ChatGPT, and could not untangle it.
+EN: That freed him for his oldest dream: rebuilding iDempiere itself. It inherits Compiere, from 1999 — Java, OSGi
+plugins, Maven, a Postgres server in Docker, millions of lines, and heavy machinery like its Persistent Object layer. For
+three years he tried with ChatGPT, and could not untangle it.
 EN: This time the building came first. With BIM sitting on a foundation of SQLite in the browser — a kernel of signed
 operations, an app that installs from a web page — the ERP conversion took days.
 id: *Cepat sekali* — so fast.
-EN: Then I turned to the third body: the modeller, the design tool. That is the deepest moat in the industry, guarded by
-the SAP of 3D design — Autodesk Revit.
+EN: Then he turned to the third body: the modeller, the design tool — the deepest moat in the industry, guarded by the
+SAP of 3D design, Autodesk Revit.
 EN: What made it possible is the most important layer of all: the witness. Logging wired through the code, so every
 claim is checked by numbers, not by eye. With witnesses, Claude can push through each gap — old art and new — without
-fooling either of us.
+fooling either of them.
 zh: *稳稳的* — steady.
-EN: So what you are watching is a fast train. At human speed, you might not even notice it pass.
+QUOTE: "What you are witnessing is a fast speed train rushing through. You probably have not been noticing it at human
+speed." — red1
 ar: *هيا بنا* — let's go.
 
 **Coda — card: REBELS / AND MISFITS · "MIT. Take it further."**
-EN: I am its only human author, and I have put it under the most permissive licence there is: MIT. I still can't settle
-its names — Out of the Box, Kernel ERP, DAGeVu. I will probably change my mind again.
-EN: It has been a blast — a fitting hobby for my retired days. But I want to leave something behind for what I have
-struggled for. This is my invitation to the rebels and the misfits. Carry the conversation on after I am gone.
+EN: He is its only human author, and he has put it under the most permissive licence there is: MIT. He still can't
+settle its names — Out of the Box, Kernel ERP, DAGeVu.
+EN: It has been a hobby for his retired days. But he wants to leave something behind, for what he has struggled for.
+QUOTE: "It is my invitation to the rebels and misfits. Do help me continue the conversation after I am gone." — red1
 bn: *ধন্যবাদ* — thank you.
-EN: At AI speed, that conversation may close sooner than we think — as I lay the final layer: deterministic code with
-no AI inside, intelligent enough to keep itself from going obsolete.
-EN: Information is free. Contributors are priceless. You have to be.
+EN: At AI speed, that conversation may close sooner than anyone thinks — as he lays the final layer: deterministic code
+with no AI inside, intelligent enough to keep itself from going obsolete.
+QUOTE: "Information is free. People are not. Contributors are priceless — you have to be." — red1
 *Closing round — every language, one word each:* thank you · merci · gracias · danke · شكراً · 谢谢 · ありがとう ·
 terima kasih · ขอบคุณ · 감사합니다 · obrigado · terima kasih · ধন্যবাদ
 
-**Edits to red1's draft, for his review (none change meaning):** added the Prologue to carry the title; "debut as the
-founding leader" → the public record (forked Sept 2006, voted leader); "3 million lines" → "millions of lines" until
-sourced; "Persistent Object Jaba" → "Persistent Object layer"; "SQLite WASM on a kernel ops PWA" → plain words ("SQLite in
-the browser … an app that installs from a web page"); "update itself from obsolescence" → "keep itself from going
-obsolete"; the closing reprises the mantra.
+**Edits to red1's draft, for his review (none change meaning):** told in third person (his words kept as QUOTE cards,
+lightly cleaned of typos only); added the Prologue to carry the title; "debut as the founding leader" → the public record
+(forked Sept 2006, idea first raised on red1.org, voted leader); "3 million lines" → "millions of lines" until sourced;
+"Persistent Object Jaba" → "Persistent Object layer"; "SQLite WASM on a kernel ops PWA" → plain words; "update itself
+from obsolescence" → "keep itself from going obsolete"; the closing quote reprises the mantra.
 
 ## 4. STATUS
 - 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
