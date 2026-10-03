@@ -775,3 +775,50 @@ verify the replacement actually works at render time.
 - Do not ask the user to test manually — your code must emit `§`-tagged proof
 - Do not claim something works without a log line proving it
 - Do not write test output to `/tmp/` — use `deploy/dev/tests/log/` with timestamps
+
+---
+
+## §RESUME 2026-10-03 — reopened (was wrongly filed under `prompts/done/`)
+
+**Why:** the ERP tech trailer (`prompts/FILM_NARRATION.md` §7) switches to English when it reaches the Viewer
+("Viewer i18n incomplete"). Phase 4 and Phase 5 above were never done. The code now lives in **bim-ootb `viewer/`**
+(not `deploy/dev/`); every path below is bim-ootb.
+
+### §R0 Measured state (bim-ootb origin/main `90eb2bf8`, sw v811)
+- 18 locales in `viewer/locales/*.js`, 334 keys each (en_MY, ms_MY, zh_CN, ar_SA counted).
+- `locale_loader.js` (LOCALE_VERSION 6) is loaded by `viewer/viewer.html`, `viewer/boq_charts.html`,
+  `viewer/clash_report.html`, `viewer/mep_report.html`, landing `index.html`.
+- 22 of 513 viewer JS files reference `_TRL` (city, clash_matrix, clash_report, clash_snag, diff, export_4d,
+  export_5d, find_ask, import, locale_loader, main, measure, navigate_engine, navigate_find, nlp, panels, rates,
+  sitecam, streaming, tools, variation_order, walk).
+- **Two disconnected language systems.** The ERP (`erp/erp_i18n.js`, `ErpI18n.lang`, 9 codes: en_US fr_FR es_ES
+  de_DE ar zh_CN ja_JP ms_MY th_TH) keeps its choice under its own localStorage key. The Viewer reads `?lang=` →
+  `bim_ootb_config.locale` → `navigator.language`. **Zoom Across (`erp/idempiere.html` launch for `viewer` and
+  `timemachine`) passes no language**, so the Viewer opens in its own default whatever the ERP shows.
+- `detectLocale()` accepts `?lang=` only as an EXACT Viewer code. ERP `ar` is not one (Viewer has `ar_SA`), so even
+  a passed `ar` would be ignored. The other 8 ERP codes match Viewer codes exactly.
+
+### §R1 SPEC — the ERP language carries into the Viewer (Witness: W-ZOOM-LANG)
+1. **ERP side** (`erp/idempiere.html`, both Zoom Across launches): append `&lang=<ErpI18n.lang>` to the Viewer URL
+   when `window.ErpI18n` and its `lang` exist. Nothing else in the URL changes. `§ZOOM-ACROSS launch` already prints
+   the URL, so the code appears in the existing log line.
+2. **Viewer side** (`viewer/locale_loader.js` `detectLocale()`): a `?lang=` that is not an exact Viewer code is
+   resolved through the loader's OWN existing `LOCALE_MAP` (try `code` with `_`→`-`, then the language prefix).
+   No new mapping table — `ar` → `ar_SA` is already in `LOCALE_MAP`. An unresolvable code falls through to the old
+   order (saved → browser → fallback), as before.
+3. **Log:** `§TRL_DETECT src=url|url-mapped|saved|browser|fallback req=<raw ?lang or -> code=<chosen>` once per load.
+4. **Witness W-ZOOM-LANG** (`erp/tests/witness_zoom_lang.js`, no browser — the two pieces are pure functions):
+   - Issue it proves: *"the Viewer opens in a different language from the ERP that launched it."*
+   - (a) For each of the 9 codes in `erp/i18n/index.json`, the launch URL built by `idempiere.html` contains
+     `lang=<code>` — read from the real source, the URL-building lines exercised with a stub `ErpI18n`.
+   - (b) For each of the 9 codes, the real `locale_loader.js` `detectLocale()` (run in a stubbed window with
+     `?lang=<code>`) picks a Viewer locale whose language prefix equals the ERP code's, with `src=url` or `url-mapped`.
+   - (c) Negative control: with the §R1.2 change reverted (exact-match only) `ar` must FAIL — proves (b) can fail.
+   - Verdict prints INCONCLUSIVE if 0 codes were read from `index.json`.
+5. **Not in §R1:** translating Viewer strings (that is §R2). After §R1 the Viewer's *existing* `_TRL` labels follow the
+   ERP; the hardcoded English stays until §R2.
+
+### §R2 NEXT — leak scan on the trailer's Viewer screens, then translate those only
+Count hardcoded English on the screens the tech trailer shows (Viewer open on Hospital with `find=IfcWall`, Find
+panel, cost line). Translate for the 9 ERP languages; witness = 0 English leaks on those screens per language.
+### §R3 LATER — Phase 4 file list above (measure/city/import/main/tools/panels), Phase 5, open issues I-1, I-5.
