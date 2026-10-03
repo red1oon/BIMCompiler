@@ -530,3 +530,20 @@
   red1 replaced it 09-25 with bounce_still_1790307025522 (v1337, "darker is expected, but at least realistic"). The v1337 known-defect
   list already named "(3) jagged/blocky sun-shadow edges + base gap" and "stair-stepped shadow of the stair flights" — i.e. the steps
   arrived WITH §SOURCED_LIGHT (zone-grid gating), not later. STEP 1's &sourced=0 arm is therefore the first number to read.
+- 15:40 STEP 1 RESULTS (scratchpad s/study_*.{log,png}, v1561, red1's pose, Hospital camZone=1 = the 26,184 m² atrium zone).
+  Blue-wall ROI (upper | lower): base blot 14.2 | 7.3; &sourced=0 10.4 | 10.3; &skyfield=0 9.8 | 12.3; &localexp=0 6.3 | 10.6;
+  &bounce=0 16.8 | 8.9; &ao=0 15.8 | 8.7; &shadowfit=0 14.6 | 7.2; &skyexactall=0 14.4 | 7.5. No arm restores crisp beam shadows.
+  RETRACTED (same session): "256-ray exact-field noise makes the blotches" — &skyexactall=0 leaves blot unchanged (14.4).
+  Screenshot metrics cannot separate sky field / sourced / local exposure (they interact). NEXT = per-term linear readback along a line
+  across the blue wall (Z18 method, probes b1/t3*.js): F, local-exposure dEV, sun direct (castShadow A/B), IR, AO -> the stepping/blotching
+  term owns it; same readback answers whether direct sun reaches that wall at all (PerfectIndoor's crisp beam shadows need it).
+- OUTSIDE jaggies (red1: "known symptom… carried into Alt+C") — MEASURED at red1's outside Hospital pose (s/patch_on.log):
+  §STILL_SHADOW_CASCADE mode=single (D8: cascade worst texel 0.1700 > single 0.0810 at 8192), texel 0.081 m, texelPerPixel=4.56 -> every
+  sun-shadow edge steps by ~4-5 screen px. Near cascade would be 0.0398 m. LTU: env 967, texelPerM 2.1 (0.48 m). Proposed rule (not
+  built, red1's call — changes every still + film): choose cascades by shadow texels PER SCREEN PIXEL per region (target <= 1), not by
+  the worst cascade's metres.
+- WALL PATCHES (red1 …1791008799450, Hospital outside, top-centre wall): mirror off vs on |diff| ROI mean 0.55, 0.27 % px > 8 ->
+  pre-existing, NOT §GLASS_PLANAR_REFL.
+- LTU inside (cam [-16.481,-0.263,-9.602]): §GI_STILL underlay mean=0 (empty app frame), composite mean 1.5-1.7, with AND without the
+  mirror -> pre-existing blank grab. §FAULT_GI printed OK at 74-78 % black = Primal Law 4 breach -> §FAULT_GI_BLANK (gi_still ?v=51,
+  sw v1562): underlay mean < 1 = FAULT. Verify run queued. Root cause of the blank grab: open.
