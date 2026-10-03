@@ -209,6 +209,18 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await hclick('#find-name'); await page.keyboard.type('IfcWall', { delay: 90 });
     fact('find', await waitLog(n1, /§NAV_FIND_SEARCH query="IfcWall"/, 8000)); fact('findCount', await page.$eval('#find-count', e => e.textContent).catch(() => ''));
     await hold(2000);
+    // s05b Ask (bim-ootb #1789, 2026-09-30): canned questions answered by the shipped engines, verdict + evidence per answer
+    await slice('s05b', 'Ask: largest rooms + worst-case exit'); n1 = PAGELOG.length;
+    if (await page.locator('#find-mode-ask').first().isVisible().catch(() => false)) {
+      await hclick('#find-mode-ask'); await waitLog(n1, /§ASK_MODE ask/, 5000); await hold(500);
+      for (const tpl of ['largest_room', 'exit_path']) {
+        const sel = '.ask-q[data-tpl="' + tpl + '"]'; const n2 = PAGELOG.length;
+        if (await page.locator(sel).first().isVisible().catch(() => false)) { await hclick(sel); fact('ask.' + tpl, await waitLog(n2, /§ASK_ANSWER /, 30000) || 'NO ANSWER'); await hold(1500); }
+        else fact('ask.' + tpl, 'question not offered: ' + (await page.locator('.ask-q', { hasText: /./ }).allInnerTexts().catch(() => [])).join(' | ').slice(0, 200));
+      }
+      await hold(1500); await hclick('#find-mode-find');
+    } else fact('ask', 'NO #find-mode-ask');
+    await key('Escape');
     await slice('s06', 'a floor + X-Ray', 'ar_SA'); n1 = PAGELOG.length;
     const storey = await page.evaluate(() => { const r = window.APP.dbQuery("SELECT storey FROM elements_meta WHERE storey IS NOT NULL AND storey NOT IN ('','Unknown') GROUP BY storey ORDER BY COUNT(*) DESC LIMIT 1"); return r && r[0] ? r[0][0] : null; });
     await page.evaluate((s) => window.APP.filterStorey(s), storey); fact('storey', last(n1, /§STOREY_FILTER/) || storey); await hold(2200);
