@@ -1096,3 +1096,53 @@ viewer`, `tests/audit_sw_precache.js`, `tests/audit_script_tags.js`, `erp/tests/
 file (the 18 JSON are already listed; CSV/XML are build sources, never fetched); `time_machine.js?v=80`, `whatif_panel.js?v=5`
 on `viewer.html`. Live check = curl `viewer/i18n/de_DE.json` (`rows` > 493) + `viewer/sw.js` with cache-busting. Results →
 §R2b RESULT below.
+
+### §R2b RESULT — 2026-10-04 (bim-ootb PR #1832 `feat/viewer-i18n-tm`, viewer sw v1461→v1462)
+**Shipped.** 163 new `AD_Message` rows, ids 1000493–1000655 (dictionary 493→656 rows): the whole `#time-machine-panel` chrome
++ its runtime status/tip/popup lines (playback, Gantt edit refusals/confirmations, lock verify/breach, CPM legend + title, props
+panel, dashboard, Budget-vs-Actual, P6/MSP import/export/diff, load statuses), the What-if popup (`whatif_panel.js`, 19 keys)
+and `ui_downloading_pct` (the `#status` cachedFetch progress line a What-if open puts up while `erp/ad_seed.db` streams).
+14 non-English locales 163/163 `trl="Y"`; en_US 2 spelling rows (programme→program), en_GB/en_AU `trl="N"`. Batch =
+`viewer/tools/trl_batch_2026-10-04_tm.js` (machine, labelled in every XML header: `rows 1000493-1000655 source=machine
+(Claude, Anthropic, 2026-10-04) — viewer/tools/trl_batch_2026-10-04_tm.js`), applied by the NEW reusable
+`viewer/tools/trl_add_batch.js` (`§TRL_ADD lang=<l> rows=656 added=163 trlY=163 trlN=0` ×14; refuses an existing id/value
+or a translation for a key not in NEW; existing rows re-serialized byte-identically — asserted, not assumed);
+`build_trl.js --check changed=0`.
+**Code.** `time_machine.js`: 39 `data-trl*` attributes in `buildPanel()` + `_applyTrlToDOM()` after `appendChild`; 112 runtime
+call sites. Decision widened from R2b.2: not only the 8 known-sliced functions but EVERY touched module-level function (19 —
+`_updatePinpoint updateStatus buildPanel drawVariance _tmCpmLegend undoLastGanttEdit setGanttBaseline rescheduleGanttAsap
+linkGanttBars openGanttProps toggleP6Drawer tmImportForeign tmExportMSProject _tmExportP6 tmDiffVsModel drawGanttMini
+drawDashboard activate _activateAsync` + `wireGanttRulerShift _tmSayException commitGanttDrag shiftGanttSchedule
+commitGanttGroupShift generateGanttSchedule wireGanttDrag`) opens with the local `var _L = (typeof _tmTrl === 'function') ?
+_tmTrl : <English fallback>` guard and calls `_L(key, en, repl)` — MEASURED reason: with `_tmTrl` called directly,
+`witness_gantt_edit_undo` (9→3 PASS) and `witness_tm_p6_interop_fold` (43→32 PASS, 1 FAIL) died with `ReferenceError:
+_tmTrl is not defined` in their vm sandboxes (they slice `undoLastGanttEdit` / the P6 functions, not in my grep of
+`sliceFn` names). Any TM function may be sliced by a future witness; the guard is the uniform contract.
+`whatif_panel.js`: `_wiTrl` guard, 19 sites. **Found + fixed by the witness (pre-existing):** `_fmt(ds)` called
+`WhatIf._date(ds)` on a date STRING (`'2026-06-13 00:00:00'`) → `NaN-NaN-Na` in every What-if track tooltip
+(`drag to slip · official NaN-NaN-Na→NaN-NaN-Na` printed as `§TRL_UNCATALOGUED` on the first run); now
+`(typeof ds === 'number' ? _date(ds) : String(ds)).slice(0, 10)`. `scene.js:1655` → `_TRL.ui_downloading_pct`.
+`viewer.html`: `time_machine.js?v=80`, `whatif_panel.js?v=5`; `sw.js` v1462, no new precache entry (18 JSON already listed).
+**W-VIEWER-I18N** (`viewer/tests/witness_viewer_i18n.js`, headless `--disable-gpu`, `?blank=1`, log
+`viewer/tests/logs/witness_viewer_i18n.log` + `.page.log`): `§W-VIEWER-I18N PASS pass=87 fail=0 locales=18 erp9=8 slots=3442`.
+| check | before (`01f38710`, old witness) | after |
+|---|---|---|
+| drawer | `§TRL_OUT_OF_SCOPE page=viewer n=53` — printed, never judged | `§TRL_SCOPE locale=<x> page=viewer drawer=#time-machine-panel n=58 whatif=#whatif-panel n=24 open=yes` ×18; `(2b) … 58 strings inside #time-machine-panel (min 40)` PASS ×18 — a drawer absent from the DOM FAILS |
+| What-if popup | never opened | opened for real on every locale (`initSqlJs` from `lib/` + the panel's own `_loadDb()` → `erp/ad_seed.db` C_Project 990000, 7 phases, `§WHATIF-UI open project=990000 "BIM: Hospital" phases=7`); `(2b) … 24 strings inside #whatif-panel` PASS ×18 |
+| leaks | first run of the NEW witness before any translation: `de_DE leaks=1 of 137` (the download line) + baseline `§TRL_UNCATALOGUED page=viewer n=2` (download line, NaN tooltip) | `§TRL_LEAK locale=<x> leaks=0 of 190–192 wiring=0 gap=0 uncat=0 pages=5` for ALL 17 non-English locales; `§TRL_UNCATALOGUED n=0` on all 5 pages (viewer baseline slots 85→145) |
+| template slots | a filled-in `{placeholder}` string could only be UNCATALOGUED | judged by its template's static prefix (`EN_TPL`, prefix ≥ 4 chars): English prefix = slot; locale counts it translated only when the string starts with ITS template prefix (text ≠ English) or affirms the same text |
+| (3b) | `checked=181` | `checked=376` — `_tmTrl`/`_L`/`_wiTrl` defaults + `\'` un-escaped in `.js` attribute titles, all == CSV msgtext |
+| (4) control | `leaks=6 of 6 expected>0` | unchanged — `de_DE` saved, `i18n/de_DE.json` aborted → `src=fallback` → `§TRL_LEAK_CONTROL leaks=6 of 6 expected>0` PASS |
+**Regression (logs read, before vs after identical):** gantt_edit_coherence, gantt_lock_integrity 21/0, tm_edit_exception 23/0,
+gantt_reschedule_asap 27/0, gantt_edit_undo 9/0, gantt_baseline 11/0, tm_p6_interop_fold 43/0, whatif_authored_sync 9/9,
+gantt_gesture_wiring 17/0, gantt_native_generate 5/0, tm_bake_lock 17/0, gantt_edit_lock 5/0, gantt_retime_resync_wiring 7/0,
+gantt_edit_persist 19/0, gantt_group_move 9/0, gantt_ruler_shift_lock 4/0, gantt_refold_yield 7/0, gantt_bars_in_rect 5/0,
+gantt_cpm_annotate 28/0 — all PASS exactly as on main; `gantt_props_epoch` 17 PASS / 5 FAIL on main AND after (W-PE-5/6/7a/7b,
+TM clock printed as a 1970 date — not this lane's). `eslint viewer` 0 errors (1 pre-existing warning in
+`witness_reveal_arch_hold.js`); `audit_sw_precache` 158 precached 0 unlisted; `audit_script_tags` 191/0 missing;
+`erp/tests/witness_zoom_lang.js` PASS 14/0. Never a GPU run, never a bake.
+**Out of scope, named:** task/phase/storey names, dates (`tm-label` uses the browser's `toLocaleDateString`, not the picker's
+locale), engine reasons (`res.reason`, schedule_diff `flagMsg`), the ⋯ pill `children` help + F1 palette (§R2 open item (a)
+second half — still open), `<title>` brand. **Open for the user (⛔ not blocking):** the 163 translations are machine-made
+and labelled so — a native review per language is the quality step; `gantt_props_epoch` is red on main independently of this.
+Merge sha + live check: appended below once auto-merge lands.
