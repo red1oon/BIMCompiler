@@ -15,7 +15,7 @@ g_bn_BD	bn	greeting	F: নমস্কার!	F: নমস্কার!	F: Greet
 c1	en	card	M: Chapter one. Open.	M: Chapter one. Open.
 s01	en	BIMUserGuide.md:11 zero install; §HUB_CARDS city=17 landmark=8	F: The front door. Nothing to install.	F: The front door. Nothing to install — any browser, desktop or mobile. | M: Twenty-five ready-made buildings, right here.
 s02	en	BIMUserGuide.md:26-27 drop own IFC, parsed in-browser	M: Or drop your own IFC.	M: Got your own IFC? Drop it here — it's read right in the browser.
-s03	en	§FILM_FACT elements=6839 loadSec=6.1; BIMUserGuide.md:11-12 cached, second visit instant	F: An office. Six thousand eight hundred elements.	F: Open one — an office, six thousand eight hundred and thirty-nine elements. | M: In about six seconds. Downloaded once, instant the next time.
+s03	en	§FILM_FACT elements=6839 loadSec=6.1; VibeProgramming.md:324 (no server — the same DBs loaded into a browser tab); BIMUserGuide.md:11-12	F: An office. Six thousand eight hundred elements.	F: Open one — an office, six thousand eight hundred and thirty-nine elements. | M: Streamed straight from a database, in the browser — about six seconds. No server.
 c2	en	card	F: Chapter two. See.	F: Chapter two. See.
 s04	es	§PICK IfcWallStandardCase … ARC Level 1	M: ¡Mira! Un muro.	M: ¡Mira! Un muro: su clase, su planta, su material.	M: Look! A wall.	M: Look! A wall: its class, its storey, its material.
 s05	en	§NAV_FIND_SEARCH results=50 (LIMIT 50); bim-ootb 58318b9b Find fly-to on click	F: Ask for walls. Fifty found.	F: Ask for walls. | M: Fifty found, and listed — click one, and you fly straight to it.

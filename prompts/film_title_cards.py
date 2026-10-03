@@ -17,6 +17,13 @@ CARDS = {  # n: (kicker, title line 1 (off-white), title line 2 (coral), one pla
 }
 TAG = {1: 'OPEN', 2: 'SEE', 3: 'INSPECT', 4: 'TIME', 5: 'COST', 6: 'SHARE'}
 SERIES = 'BIM OOTB  ·  VIEWER'
+# NOVEL ART badges (red1 2026-10-04: "u know the hilites.. those that are novel art") — a small coral-boxed badge under the
+# chapter tag for the length of the beat; each maps to an item in FILM_NARRATION.md §10 NOVEL ART (source there).
+NOVEL = {'s03': 'IFC → SQLite, streamed in the browser',            # §10 NOVEL ART 2
+         's05b': 'Answers from the engines — with evidence',         # find_ask.js; exit path = room graph (NOVEL ART 1/10)
+         's11': '4D: nothing before what holds it up',               # NOVEL ART 6 (MIDAIR 5,561 → 0)
+         's15_en_US': 'Language = cost context',                     # Localization.md: a locale is a complete cost context
+         's17': 'A film derived from the room graph'}                # NOVEL ART 9
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
@@ -49,6 +56,7 @@ styles = [
     f'Style: CardTitle2,DejaVu Sans,128,{CORAL},&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,2,0,1,0,0,5,0,0,0,1',
     f'Style: CardLine,DejaVu Sans,40,{WHITE},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1',
     f'Style: ChapterTag,DejaVu Sans,26,{CORAL},&H00FFFFFF,&H00000000,&HB0140E12,1,0,0,0,100,100,4,0,3,10,0,7,46,0,40,1',
+    f'Style: NovelBadge,DejaVu Sans,28,&H00FFFFFF,&H00FFFFFF,&H00000000,&HC0786BFF,1,0,0,0,100,100,2,0,3,10,0,7,46,0,96,1',
     f'Style: SeriesTag,DejaVu Sans,26,&H00FFFFFF,&H00FFFFFF,&H00000000,&HB0140E12,1,0,0,0,100,100,3,0,3,10,0,9,0,46,40,1',
 ]
 hd = open(ass_in).read()
@@ -67,5 +75,11 @@ for i, n in enumerate(order):
     tag_end = chap[order[i + 1]] if i + 1 < len(order) else end
     events.append(f'Dialogue: 1,{ts(b)},{ts(tag_end)},ChapterTag,,0,0,0,,{k}  ·  {TAG[n]}')
 events.append(f'Dialogue: 1,{ts(chap[order[0]])},{ts(end)},SeriesTag,,0,0,0,,{SERIES}')
+beats = [(m.group(1), float(m.group(2))) for m in re.finditer(r'§FILM_BEAT id=(\S+) t=([\d.]+)', txt)]
+nb = 0
+for i, (bid, t) in enumerate(beats):
+    if bid in NOVEL and i + 1 < len(beats):
+        events.append(f'Dialogue: 1,{ts(t)},{ts(beats[i + 1][1])},NovelBadge,,0,0,0,,{{\\fad(250,250)}}★ NOVEL ART  ·  {NOVEL[bid]}'); nb += 1
+print(f'§CARDS novel-art badges={nb} of {len(NOVEL)}')
 open(os.path.join(out, 'carded.ass'), 'w').write(head + '[Events]' + ev.rstrip('\n') + '\n' + '\n'.join(events) + '\n')
 print(f'§CARDS ass events={len(events)} cards={len(order)} out={out}')
