@@ -475,6 +475,16 @@ English thus, but when quirps comes in both subtitles."
 - **The mantra** (red1's account; not found in public sources 2026-10-04): *"Information is free — you have to know.
   People are not — you have to pay. Contributors are priceless — you have to be."* ⛔ confirm line 1's ending: he wrote
   "you have to know" the first time and "u have to be" the second; the draft uses "know" (line 3 already ends "be").
+  **Sources (2026-10-04):** red1: "it was on the red1.org website which is now in archive. And in the ADempiere wiki" /
+  "in my User:red1 page there has it but the www.red1.org domain was lost but there was an archive project that stores
+  everything". Found: (a) local copy `~/Projects/red1org/From Flames To Fork, Comes Freedom • View topic - Future of
+  IDEMPIERE.html` — red1's own words "Information is Free, always" and "I honor and look up to contributors to call them
+  'priceless'" (partial, not the 3-line form); (b) the ADempiere wiki page "Red1.org" (mirror adempierebr.com/Red1.org,
+  search snippet): "Information Is Free People Are Not Contributors Are Priceless", and "on September 1st 2006 in the
+  forums of Red1.org the idea of a fork was brought to the compiere community" (mirror refused connection; adempiere.com
+  now 301 → idempiere.org). TO FETCH when the Internet Archive is back (it returned "Temporarily Offline" 2026-10-04):
+  web.archive.org copies of red1.org and of the ADempiere wiki `User:Red1` and `Red1.org` pages — exact mantra wording +
+  red1.org screenshots as Ch 1 backdrop (the forum where the fork began).
 - **Public facts used** (Wikipedia "ADempiere", fetched 2026-10-04): ADempiere forked from Compiere 1 Sept 2006 after the
   community split with Compiere Inc.; SourceForge project opened 9 Sept 2006; red1 = project manager, voted leader by the
   founding council; stepped down 24 June 2010; joined Carlos Ruiz's GlobalQSS 361 / iDempiere fork May 2011.
