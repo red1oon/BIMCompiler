@@ -734,6 +734,16 @@ furious" / "it is growing faster.. and the key was both Anthropic AI leaps in mo
 - **WITNESS layers:** the Witness System began 2026-01-30 (BC `df1ea1953`, 7 claims); today 766 witness files
   (bim-ootb 647, bim-compiler 119). The VibeProgramming Capability Snapshot (2026-08-27) is the honest counterweight:
   "What changed was the working pattern, not the model" — both engines matter, neither alone.
+- **Outside credence (red1, 2026-10-04: "yes to give credence to the vibe assistance that red1 taking advantage of"):**
+  METR, "Measuring AI Ability to Complete Long Software Tasks", 2025-03-19 (Thomas Kwa, Ben West, Joel Becker + 21;
+  metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/, fetched 2026-10-04). Verbatim: the length of
+  tasks "that generalist frontier model agents can complete autonomously with 50% reliability" — "has been doubling
+  approximately every 7 months for the last 6 years"; 2024-2025 data alone "shortens the estimate of when AI can
+  complete month-long tasks with 50% reliability by about 2.5 years". ⚠ Do NOT say "every 4 months" (not in the source
+  text). Line: F: One independent study measured how long a task an AI agent can finish on its own. | M: It has been
+  doubling about every seven months — for six years. | F: That curve is what red1 is riding. Source tag on screen:
+  "METR · 2025-03-19". Our own repo numbers show the effect, not the exponential (commits plateaued ~1,200–1,500/month
+  since June) — never present them as proof of the curve.
 - **Visual:** an animated timeline — monthly commit bars rising left to right, model names dropping in as pins on their
   first-commit dates, and a witness-file counter ticking up underneath (rendered headless from the numbers above, CPU).
 - **Lines (F/M):** F: Why did it keep getting faster? | M: Two engines. The models kept leaping — ten Claude versions
