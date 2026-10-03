@@ -23,6 +23,33 @@ numbers, no invented claims. Spec before code; a witness proves the track, not a
 - **This step = strategy only, kept brief:** a step-by-step approach for the 3 questions + a short layout of the
   script, for red1 to review. No code, no audio, no API keys, no network calls.
 
+### 0.1 What red1 actually needs (red1, 2026-10-03, follow-up — the core of this lane)
+> *"It is AI assisted as the narrative is under my direction … the baked movie ie for Hospital buildup and its
+> overlays where i want a voice over to say what each item is about and it has to miss a few in such a way the whole
+> narration is balanced, well timed and i cannot do that easily without such assistance. As i have to go to and fro
+> marking which part of the film does not allow enough time to say a certain point and have to skip to the right
+> ones, and where my script is leaving any gaps as to the features been showcased."*
+
+So the hard part is **not the voice — it is FITTING the script to the film.** red1 writes the points (the narrative
+is theirs). The lane builds a **fitter** that does the to-and-fro for them:
+- **Film timeline:** every showcased item (each overlay/caption/beat/build-up phase) with its on-screen window
+  [start s, end s], read from the bake's page log.
+- **red1's script:** one point per item (text + priority). Speaking time = words ÷ a fixed rate.
+- **Fitter output (one reviewable table):** ✔ placed (item, start, end, slack) · ✂ skipped — no room in that window
+  (by how many seconds) · ⚠ **gap** — item shown on screen with no script line · ✖ orphan — script line for something
+  the film never shows. Balance rule: no long silence and no back-to-back crowding (thresholds written in §PLAN).
+- **Deterministic arithmetic, no AI needed for the fitting.** red1 edits the script, re-runs, reads the table again.
+  AI is only optional help: wording suggestions red1 accepts or not, and the TTS voice.
+- **Test film:** `~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-03_0049.mp4` (206.8 s, 4,963 frames,
+  build-up ON) with its page log `/tmp/bake_Hospital_silent_2026-10-03_0049.log` (27 MB; carries §CINEMA_BEATS,
+  §FLYTHRU_CUE_PLACE, §FLYTHRU_DIM_DRAW, §STOREY_REVEAL_WINDOW, §CLASH_LABELS, §MEASURE_BUILDING_CARD, §GANTT,
+  §NIGHT_BUILDUP_GATE). ⚠ `/tmp` is wiped on reboot — copy the log next to the film before relying on it.
+  Several §CINEMA_BEATS lines appear (dur=60/15/195.8/278.8 s): the plan must say which one the film used, from the log.
+
+**On "No AI inside" (red1 asked if it is a thin line):** the tagline is about the shipped product, which has no AI.
+A film whose story is red1's, whose facts come from the log, and whose timing is plain arithmetic does not break it.
+The only AI is the voice (if TTS). A short credit line ("Script: red1 · Voice: synthetic") removes any doubt — red1's call.
+
 **Deliverable of the first session: that plan, appended to this file as §PLAN** (project rule: findings go in the
 prompts file, not chat-only). Brief — a reviewable strategy, not a design doc. red1 reviews before anything is built.
 
@@ -74,11 +101,13 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 
 ## 3. WHAT THE PLAN MUST CONTAIN (§PLAN, appended below by the next session)
 0. **Keep it brief** — red1 asked for a strategy + a short script layout to review, not a full design.
-1. **Event table:** which `§` tags are narration sources (fly-through captions AND the construction sequence), which field gives the time, which gives the words. Separate
+1. **Event table:** which `§` tags are narration sources (fly-through captions AND the construction sequence) —
+   this is the fitter's film timeline (§0.1), which field gives the time, which gives the words. Separate
    setup-time plans (window lines) from per-frame facts (`§CLASH_LABELS`). Say which tags are missing for something
    the film shows (e.g. a beat with no logged caption): that is a gap to log, not to guess.
-2. **Script format:** the row layout (§2 Deterministic) + 3–5 template sentences, each with its source fields,
-   and a worked example filled from one real log (HHS 2026-10-03 0806).
+2. **Script format:** red1's input layout (item id, priority, text) + the fitter's output table (§0.1: placed /
+   skipped / gap / orphan), with a worked example on the Hospital 0049 log. Template sentences only as optional
+   starters for red1 to rewrite.
 3. **Timing rules:** speech starts at a cue's fade-in, must end before the next cue's window; a speaking-rate
    budget (words per second) that decides whether a line fits, and what happens when it doesn't (shorten by a
    rule, or drop).
@@ -92,6 +121,8 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: §0.1 added from red1's follow-up — the lane's core is the script-to-film FITTER (placed / skipped /
+  gap / orphan), red1 writes the narrative; test film switched to Hospital 0049 (build-up ON).
 - 2026-10-03: §0 realigned to red1's original words (kept verbatim): professional documentary voice-over of a
   *construction* film; ElevenLabs/OpenAI TTS is the planned route (the 'No AI inside' point demoted from a forced
   decision to one open question); construction-sequence tags (`§GANTT`, `§NIGHT_BUILDUP_GATE`) added as sources;
