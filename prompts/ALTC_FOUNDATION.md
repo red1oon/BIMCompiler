@@ -16,6 +16,22 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 09:15 CODE REVIEW (Fable, read-only) — full report prompts/archive/ALTC_CODE_REVIEW_2026-10-03.md. Verified by Alt+C before citing:
+  - RETRACTION: "interior lamps never relit / lamps 0 all film" (07:36 + 08:30 entries) is WRONG. Films light lamps on the DATA path
+    (effects.js:4484 _lampDataOn, tools.js:2528-2552 _filmLD -> pool slots set to 0); LTU log: §LAMP_DATA film=1 lit=50..122, §LAMP_UNCAPPED on
+    lit=122 x500. §INTERIOR_LIGHTS_WITNESS + §LAMP_CAP_CHURN count only the POOL = scope-blind witnesses (law 4).
+  - Real lamp defects: (A) pool toggles 30<->0 every frame via still teardown (effects.js:5760-5767); (B) tools.js:2295-2296 `var` dedupe
+    re-declared per call -> never dedupes (5,530 §INTERIOR_LIGHTS_OFF lines in Hospital, confirmed); (C) data-path lamp set follows the
+    camera (cap 122) -> 648 LTU / 486 Hospital table rebuilds, lamp popping unwitnessed. Fixes ~1.5 h total + one `§LAMPS` line per frame.
+  - SPEED: LTU 3.8 s vs Hospital 2.0 s/frame = 2.1x draw calls (6,349 vs 3,019) for the same ~7.2 M tris; CPU-submission bound
+    (~0.69 ms/call/frame). A._consolidateBatched (streaming.js:3404) is defined with NO caller (confirmed). Wiring it = look-neutral,
+    upper bound -2.3 s/frame on LTU, 1-2 days. Meter render 488/164 ms; hidden 13th TAA sample (look-changing, red1).
+  - MEMORY: heap instruments disagree (CDP 0.3-1.4 GB vs performance.memory 2.0-2.6 GB); light field 99-114 MB resident; 8192² shadow map
+    512 MB; stitch holds all H.264 chunks (245 MB Hospital) in RAM. First step: one §MEM line (2 h).
+  - LAYERING: lamp state decided in 4 files per frame; Alt+S state machine torn down + restarted every frame (cinema_maxq.js:3593/4098);
+    41 `!A._maxqActive` sites in effects.js incl. look-deciding ones. Proposed: one decideLamps() owner (0.5 d), filmRefineFrame() without
+    teardown (1 d), §FILM_GATES census (0.5 d). WITNESS: 11 vacuous/scope-blind witnesses listed; one `§F` record per frame (~2 d) would
+    replace ~30 lines/frame (Hospital page log 27 MB).
 - ▶ 2026-10-03 08:30 WITNESS RE-CHECKS (red1: "map path does not overlap any HUD", "pose check — go back to the code"; path-thru-geometry = user's
   choice, NOT a bake defect). Both FAILs are WITNESS errors, not film errors:
   - §HUD_OVERLAP_WORST (cinema_maxq.js:1018-1048) judges every rect registered with alpha > 0 (_drawUnlessHold :1491) and never logs frame or
@@ -39,7 +55,7 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   f746-749 (§FILM_BLANK_FRAME i=748 held last good after 3 tries), f781-797. Cause from §FILM_EXPOSURE: metered Lcd 41,574 -> 581 -> 89 in 2
   frames while cam y descends 0.24 -> 0.12 -> -0.71 -> -2.15 with darkPct 100 = camera passing through solid geometry (slab/stair) on the
   saved path; exposure rate cap (capped=down) then ramps back over ~15 frames. Fix = re-author those pins (red1) or a camera-in-solid guard (not built).
-  Also open: §INTERIOR_LIGHTS_WITNESS poolLit 0/122 past topout (2 samples); §CLI_BAKE_POSECHECK maxErr 0.42 m.
+  Also: §INTERIOR_LIGHTS_WITNESS poolLit 0/122 = scope-blind witness, lamps WERE lit (see 09:15); §CLI_BAKE_POSECHECK 0.42 m = witness error (08:30).
   red1 2026-10-03: "done without any buildup or the rest of the overlays. But that is OK as a test film". Overlays need 4D tables (tasks/schedules) in LTU_AHouse.db first.
   Post-film: merged fix/sky-surface @d3bb44a7 (Alt+S stills-only) into fix/fast-bake = 393e0f0f sw v1556 (pushed). Films above were v1555.
 - ▶ 2026-10-03 03:38 HOSPITAL 24 fps DELIVERED (red1 full mandate 00:16): ~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-03_0049.mp4,
