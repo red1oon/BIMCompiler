@@ -584,3 +584,15 @@ same file minus the `C_RECEIVABLE_ACCT` line → the wizard shows `Account not d
   interest areas / greeting creation / DeleteOldImported; POS payments on Complete; fact currency conversion and multi-schema
   posting; session-created invoices in Aging and Trial Balance (they read the bundle); BP acct rows for imported/session BPs
   (MBPartner.afterSave) — a session BP's invoice would not post until that is ported.
+
+## §FS2q — FS-19 Grid→Form toggle leaves Save disabled (found by the polyglot film recorder, 2026-10-03)
+**Issue (measured, `scratchpad/probe/save_probe.js`, GardenWorld window 146):** grid → toolbar toggle (`[data-tb=toggle]`) →
+form mounts but `#idmp-toolbar` Save stays `disabled=true`; after an edit (description typed) still `true`, while the inline
+form's own save pill (`.ic-vb[data-v=save]`, not visible: offsetWidth 0) becomes enabled. Row click (`tr` handler) does
+`renderBody(); renderToolbar();` and gives `saveDisabled=false`. A human cannot open an existing record and save it by the
+toggle path (a data-cell click edits the cell, the checkbox selects the row — the toggle is the visible way to the form).
+**Cause:** toggle handler (`idempiere.html` ~1572) calls `renderBody()` only; the toolbar's `editing` flag is computed when
+the toolbar is drawn (`!!#idmp-inline-mount`), before the form exists.
+**Fix:** toggle handler = `renderBody(); renderToolbar();` (the tr handler's existing order). **Witness:**
+`erp/tests/poc_toggle_save_live.js` — toggle → Save enabled (by DOM value); tick a checkbox → Save → `§CRUD validate
+key=m_pricelist verb=update ok`; toggling back to grid disables Save (negative control: no form → no save).
