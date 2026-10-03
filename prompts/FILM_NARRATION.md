@@ -368,6 +368,10 @@ Series tag: "BIM OOTB · VIEWER" / "· MODELLER". Chapters for §8: 1 OPEN (beat
   x=928 → viewport ≥1158 wide.
 - `trl-ready` listeners today: landing relabel, `panels.js` pill relabel, the three report pages (init once) — nothing else.
 
+### ⏸ STANDING ORDER (red1, 2026-10-04): "After viewer, wait for my go ahead on the next, Modeller." / "BUt do the first
+one we agreed on first. This big story is to rest a while" — finish §8 (Viewer trailer) end to end, then STOP. Do not
+start §9 (Modeller) or §10 (documentary) without red1's explicit go.
+
 ## 9. §MODELLER-TRAILER — polyglot trailer for the Modeller (DRAFT script, 2026-10-03, not recorded)
 PLAYBOOK B, ≈ 4–5 min (red1 allowed longer), one take. **Gate:** the Modeller has NO language switch (no `locale_loader`/`_TRL` in `modeller/`,
 measured on bim-ootb main 2026-10-03) → PLAYBOOK B rule 1 (switch ON SCREEN) can't be met. Either voices rotate over an
