@@ -614,3 +614,13 @@ materials; (a) `clone()` returns an R10 array of clones of the same length; (b) 
   STILLS (scratchpad s/stills_trend.txt, p5-p95 in linear stops): PerfectIndoor 4.1 stops, sat 0.156, p5 55 / p95 201; Hospital indoor
   v1564 (4 stills) 2.3-3.0 stops, sat 0.09-0.12, p5 73-88 / p95 160-188 -> range squeezed from BOTH ends, middle unchanged.
   READ (inferred, to be measured): the flood arrived when v1522 un-did §LAMP_EN (rated default) and v1523 added the +1 EV lift on top.
+- 2026-10-04 08:00 JAGGED SHADOWS — CAUSE + A/B (bim-ootb fix/sky-surface sw v1565, &csmlambda switch, default unchanged).
+  47 presses / 7 buildings: cascade 0 depth ratio vs tpp: Clinic toilet 1.4x -> 0.65; Terminal 4.9x -> 2.19; HHS 5.3x -> 3.51; Hospital stair
+  9.5x -> 4.18; SampleHouse 22x -> 9.85; cascades 1-3 always <= ~1. Owner: effects.js PSSM split CSM_LAMBDA 0.5 (L3360). Sep 25 spec C5
+  (tpp <= 2 every cascade, archive B:1043) was never in the shipped gate (it checked c0 metres + gaps only).
+  &csmlambda=1: HHS tpp [3.51,1.09,0.68,0.60] -> [1.60,1.58,1.27,0.83]; SampleHouse [8.63,0.82,0.54,0.43] -> [1.74,1.68,1.60,0.87]; press
+  time equal. C5 PASS both. Waits on red1's look ruling before becoming default.
+- §INDOOR_FLAT A/B at Clinic toilet (red1 …1791063796885): &lampen=1 lamp scale p50 0.316 (rated ~3x EN), p50 123 -> 107, sat 0.114 -> 0.129;
+  &localexp=0 p95 150 -> 137. Contrast stops NOT informative here (dark door holds p5 = 19 in all arms). Needs Hospital atrium after rebake.
+- Terminal rebake on the OCI DB FAILED (§LIGHT_FIELD_BAKE Terminal FAIL no field, wallS 802) — open. Hospital rebake stopped at red1's
+  request (GPU for other sessions) — open; Hospital headless presses rebuild the field (~26 min) until it is rebaked.
