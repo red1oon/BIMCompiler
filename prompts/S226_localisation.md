@@ -1027,3 +1027,72 @@ The ERP already switches in place (`prompts/ERP_UI_LOCALES.md` §L4 "in place (p
    moment") and `#info-4d` (construction window), both written by `viewer/find_erp_push.js` (0 `_trl(` calls on origin/main
    01f38710), plus its status lines ("Folding Project Order…", "Project Order: … lines · contract …"). Key them in the
    same AD_Message CSV + XML, re-render on `trl-ready`, include in the leak scope (pick an element, then judge the panel).
+
+### §R2b SPEC — 2026-10-04 — Time Machine / Gantt / What-if / Pull Back / P6 drawer joins the dictionary (Witness: W-VIEWER-I18N, extended)
+**The ask (red1, 2026-10-04):** translate the Time Machine drawer now — it is in the upcoming trailer (Time Machine playback,
+What-if slip, ⏪ Pull Back). §R2 RESULT had left it `§TRL_OUT_OF_SCOPE page=viewer n=53 container=#time-machine-panel` and asked
+the user (open item (a)); this answers it. Conventions = §R2 FORMAT RULE + §R2 SPEC R2.1/R2.2 unchanged: CSV base rows,
+`AD_Message_Trl_<lang>.xml` ×17 as THE source, JSON built by `build_trl.js`, English byte-identical, machine translations
+labelled in every XML header.
+**Measured before (bim-ootb `01f38710`, viewer sw v1461):** `witness_viewer_i18n.js --locales de_DE --pages viewer` →
+`§TRL_OUT_OF_SCOPE page=viewer n=53` (9 of the 53 are glyphs/acronyms: 📊 ⎆ ⇄ P6/MSP 📋 ⚖ ◀◀ ■ ▶▶ DAY 0 | HR 0); the drawer's
+runtime status/tip/popup strings (`tm-status`, `tm-gantt-tip`, `tm-gantt-lockmsg`, `tm-p6-out`, `tm-gantt-props`, the What-if
+panel `#whatif-panel`) are all string literals in `viewer/time_machine.js` (buildPanel + ~60 message sites) and
+`viewer/whatif_panel.js` (panel chrome + 6 status lines). Headless TM/Gantt witnesses on main before any change: 19/20 PASS;
+`witness_gantt_props_epoch.js` FAILS on main (W-PE-5/6/7a/7b — the TM clock printed as a 1970 date; nothing to do with text).
+
+**R2b.1 Scope.** IN (keyed, every locale): the drawer's static chrome (8 header titles, `4D Construction Playback`, DAY/HR/MIN,
+5 transport titles, `Undo edit`/`Set Baseline`/`Pull Back` + titles, grips, lock button both states + both titles, ruler title,
+`Import`/`Export`, `P6/MSP file`, `auto-bind`, 3 export titles, `Diff vs Model` + title, `Phase Progress`/`S-Curve`
+(`Site Resources` + `Close` reuse `t_site_resources`/`ui_close`)); the runtime lines the drawer's actions print — playback status
+(`{n} placed | {names}`, `idle`, DAY/HR counter composed from the mode keys), bar hover tip, every edit refusal/confirmation
+(`Locked — click 🔒 Locked to enable editing`, `Not editable…`, `Blocked by…`, `Rejected:…`, `Move/Resize…`, `Shift whole
+schedule…`, `Linked…`, `Refused — cycle`, `Nothing to undo`, `Undone…`, baseline 2, Pull Back 4 incl. `Compressed {n} task(s) —
+project finish moved up {d} day(s)`), the exception tip + `Close other panels ({n})`, lock verify/breach lines, CPM legend +
+title, props panel (`Start`/`Finish`/`Apply`/`Close`/`← after`/`→ before`/`CRITICAL PATH · zero float`/`Total float {n}d`),
+dashboard (`Day {c} / {t} — {p}% complete`), variance head fragments, the `⊕ Now building · {n} item(s)` chip, P6 section
+(import/export/diff — 16 lines), load statuses (`Loading timeline...`, `Setting up 4D construction timeline...`, `No elements
+found in database`); `whatif_panel.js` (title, sub, legend, `Finish:`/`BAC:`/`PV @ finish:`/`(unchanged — same scope)`, track +
+stepper titles, `Accept — re-baseline`/`Discard`, 4 status lines, `Project {id}`).
+OUT (named, dynamic data): task/phase/storey/building names, dates (`tm-label` already uses `toLocaleDateString` — the
+browser's locale, not the picker's; left as is), numbers, engine-produced reasons (`res.reason`, schedule_diff `flagMsg`,
+`det.format`), file names, console `§` lines, the `MSP`/`PMXML`/`XER`/`P6`/`MSPDI`/`WBS`/`EPS` acronyms (ALLOW).
+
+**R2b.2 Mechanism (no new convention).** Static markup in `buildPanel()` gets `data-trl`/`data-trl-title` (icons stay outside a
+`<span data-trl>`), then `window._applyTrlToDOM()` runs once after `appendChild` (the loader's own `trl-ready` pass also covers
+it). Runtime strings go through ONE module helper `_tmTrl(key, en, repl)` = the `_trlD` pattern panels.js already uses
+(`typeof _trl === 'function' ? _trl(key, repl, en) : en`). The functions that witnesses SLICE OUT of the source and execute
+alone in a vm sandbox (`wireGanttDrag`, `wireGanttRulerShift`, `commitGanttDrag`, `shiftGanttSchedule`, `commitGanttGroupShift`,
+`generateGanttSchedule`, `_tmSayException`, `_tmEditLocked` — witness_gantt_edit_lock/group_move/ruler_shift_lock/
+tm_edit_exception/tm_bake_lock/native_generate) cannot see a module helper, so each opens with a local guard
+`var _L = (typeof _tmTrl === 'function') ? _tmTrl : function (k, en, r) {…substitute…}` and uses `_L(key, en, repl)` — English
+in the sandbox, the locale in the page, one English literal per string. `whatif_panel.js` gets the same guard as `_wiTrl`.
+The English default at every call site == the CSV `msgtext` — W-VIEWER-I18N (3b) is widened to read `_tmTrl`/`_L`/`_wiTrl`
+and to un-escape `\'` in `.js` attribute titles before comparing.
+
+**R2b.3 Files.** `viewer/tools/trl_batch_2026-10-04_tm.js` — the batch: `NEW` (value → English, byte-identical) + `TRL` per
+locale, machine translation (Claude, 2026-10-04), labelled so; en_US gets only spelling rows (`programme`→`program`),
+en_GB/en_AU none (`trl="N"` = the English is their text). `viewer/tools/trl_add_batch.js <batch>` — the reusable applier the
+migration did not leave behind: appends the NEW rows to `ad_message_base.csv` (ids continue at 1000493, never renumbering),
+appends one `<row>` per new id to every XML (`trl="Y"` when the batch has the text, else `trl="N"` with the English), adds the
+batch's source line to each XML header comment, REFUSES to touch an existing id/value or a key whose English differs, exits
+non-zero on any problem, prints `§TRL_ADD lang=<l> added=<n> trlY=<y> trlN=<n>`; then `build_trl.js` (`--check` clean).
+`viewer/tests/witness_viewer_i18n.js`: `OUT_OF_SCOPE` removed — the drawer is judged like the rest; prints
+`§TRL_SCOPE page=viewer drawer=#time-machine-panel n=<strings>` and FAILS when n < 40 (anti-vacuous: a drawer that is not in
+the DOM must not pass by absence); opens the real What-if panel on the viewer page when it can (`initSqlJs` from `lib/`, the
+panel's own `_loadDb()` → `erp/ad_seed.db` C_Project 990000, 7 phases) and judges `#whatif-panel` too — `§TRL_WHATIF
+locale=<x> open=yes|no strings=<n>`; `open=no` is printed and counted as NOT judged, never as pass. ALLOW += MSP PMXML XER P6
+MSPDI EPS. Negative control (4) unchanged.
+
+**R2b.4 Regression (English unchanged ⇒ these must stay exactly as on main).** Re-run after the change, read the logs:
+gantt_edit_coherence, gantt_lock_integrity, tm_edit_exception, gantt_reschedule_asap, gantt_edit_undo, gantt_baseline,
+tm_p6_interop_fold, whatif_authored_sync, gantt_gesture_wiring, gantt_native_generate, tm_bake_lock, gantt_edit_lock,
+gantt_retime_resync_wiring, gantt_edit_persist, gantt_group_move, gantt_ruler_shift_lock, gantt_refold_yield,
+gantt_bars_in_rect, gantt_cpm_annotate (all PASS on main) + gantt_props_epoch (FAIL on main, must not get worse); `eslint
+viewer`, `tests/audit_sw_precache.js`, `tests/audit_script_tags.js`, `erp/tests/witness_zoom_lang.js`. Software GL only
+(`--disable-gpu`), `?blank=1`, never a bake.
+
+**R2b.5 Ship.** bim-ootb branch `feat/viewer-i18n-tm` → PR to `main`, auto-squash; `viewer/sw.js` v1461→v1462; no new precached
+file (the 18 JSON are already listed; CSV/XML are build sources, never fetched); `time_machine.js?v=80`, `whatif_panel.js?v=5`
+on `viewer.html`. Live check = curl `viewer/i18n/de_DE.json` (`rows` > 493) + `viewer/sw.js` with cache-busting. Results →
+§R2b RESULT below.
