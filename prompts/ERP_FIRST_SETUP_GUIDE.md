@@ -322,3 +322,87 @@ live Pages now serves the esbuild-minified artifact (deploy-pages.yml), so the c
 `scripts/minify_pages.js` + esbuild 0.23.0 and `cmp`s; `erp/version.json` live confirms build/sha/pr.
 Where S16–S22 are witnessed: GardenWorld (session-typed orders). In a NEW tenant the journey verifies S03–S15; an order
 walk-through there is not yet measured (born price-list version has no ValidFrom → no price, named).
+
+## §FS2j — FS-12 spec: a sales order in the NEW company prices its line and completes (2026-10-03, before code)
+**Issue this proves/disproves (new step S15b):** the journey's order walk-through (S16–S21) runs in demo GardenWorld
+because in a born tenant a typed order cannot price its line. Measured cause (§FS3.2 last line + genesis.js G6 read
+2026-10-03): the born `m_pricelist_version` has NO `ValidFrom` (CalloutOrder.java:783-797 picks `ValidFrom <=
+DateOrdered` → no version), there is NO `M_ProductPrice` row, the product has NO `C_UOM_ID`, and neither the BP, the
+org nor the warehouse has a location (Tax.get needs bill-from = AD_OrgInfo location, bill-to = BP location —
+Tax.java:475-560; MOrder.beforeSave `setBPartner` rejects a BP with no location, `MOrder.java:772-774`).
+**Oracle (iDempiere `org.adempiere.base/src/org/compiere/model/`, extract only):**
+- `MSetup.createEntities` takes `C_Country_ID` (+ optional Region/City) — Initial Client Setup param 53161 seq 100,
+  default `MIN(C_Country_ID) … WHERE AD_Language='@#AD_Language@'` (= 100 United States for en_US). One `MLocation` each
+  for the Standard BP (`MSetup.java:1193-1198`, `MBPartnerLocation` X_ defaults IsBillTo/IsShipTo/IsPayFrom/IsRemitTo=Y,
+  Name '.' `MBPartnerLocation.java:93`), the org (`:1286-1292` `UPDATE AD_OrgInfo SET C_Location_ID`), the warehouse
+  (`:1298-1303`). Tax category name `'Sales Tax'` when the country is US else `'Standard'` (`:1233`).
+- Product `C_UOM_ID=100` (`:1225,1266`), `Value=Name`.
+- Price list `IsDefault=Y` (`:1336`); `MPriceList.setInitialDefaults` `:243-249` → `IsSOPriceList=N, EnforcePriceLimit=N,
+  IsTaxIncluded=N, PricePrecision=2` (the setup list is NOT a sales list — extracted, not "fixed"). A discount schema
+  `DiscountType='P'` (`:1340-1346`). The version `MPriceListVersion.setName` `:177-187` → `ValidFrom = today`
+  (genesis is clock-free: the wizard's explicit `dateAcct` = today). `MProductPrice(plv, product, 1, 1, 1)` (`:1355-1356`).
+- How a Sales Order gets that list (the step a port must not skip): `Login.loadDefault` (`Login.java:701-734`) puts
+  `#<KeyColumn>` = the client's `IsDefault='Y'` row of every table with an IsDefault column into the context
+  (`ORDER BY AD_Client_ID DESC, AD_Org_ID DESC`, role access SQL); `GridField.getDefault` priority `"123457"`
+  (`GridField.java:98`) stage 5 = system preference `#ColumnName` (`:1001-1012` → `Env.getPreference(…,true)`
+  `Env.java:1072-1078`). So a new order's `M_PriceList_ID` = the setup "Standard" list. `CalloutOrder.bPartner`
+  (`:284-302`) keeps it (Standard BP has no list, the default list's IsSOPriceList≠IsSOTrx and no SO list exists).
+- `MOrder.beforeSave` price-list fallback is CLIENT-scoped: `MOrder.java:1285-1286` `WHERE AD_Client_ID=? AND
+  IsSOPriceList=? AND IsActive=?` — the port (`ad_modelval.js MOrder.priceListDefault`) omits `AD_Client_ID` (would
+  borrow GardenWorld's list for a tenant with none) — fixed in the same item.
+**Fix:** (a) `genesis.js` G1/G6: org/BP/warehouse `c_location` (input `countryId`, default 100), `c_bpartner_location`,
+`ad_org_info.c_location_id`, `m_warehouse.c_location_id`; product `c_uom_id`/`value`; price list flags; discount
+schema; PLV `validfrom`; one `m_productprice`; tax-category name per `:1233` only when a country is given (headless
+callers without `countryId` keep 'Standard'). (b) wizard: Country `<select>` (active C_Country, default per the param
+SQL). (c) `crud_core.foldCrudSpec` GridField stage 5: `ctx.sysPref[col]` when no earlier stage resolved; the host
+(`idempiere.html`) computes `sysPref` per login = the Login.loadDefault port (client clause `AD_Client_ID IN (0,<c>)`),
+one `§LOGIN-DEFAULTS` line; one `§GRIDFIELD-SYSPREF-DEFAULT` line per fold. (d) `ad_modelval.js` priceListDefault +
+`AD_Client_ID`. Marked `FS-12`; sw +1; genesis twin copied to bim-compiler.
+**Witness (W-ERP-FIRST-SETUP new step S15b, BY VALUE):** log in as the NEW tenant's admin, Sales Order → New → BP =
+the setup "Standard BP" (the S10 customer has no location — iDempiere would reject it too) → Standard Order → Save →
+line: the setup product → derived `PriceEntered / C_UOM_ID / C_Tax_ID` == SQL oracle (PLV of the order's price list
+with ValidFrom ≤ today → PriceStd; product UOM; the tenant's tax of that category) AND oracle price > 0 AND the header's
+price list belongs to THIS client (negative control: a borrowed foreign list fails) → Complete → `to=CO verifyChain=ok`.
+Regression: genesis browser witnesses + bim-compiler W-GENESIS-MINIMAL/-RESIDENT (post to the cent), W-CALLOUT.
+
+## §FS2k — FS-13 spec: a Location (address) field takes an address; a session customer can then be ordered for (2026-10-03, before code)
+**Issue (reported by the film recorder, new step S10b):** in a NEW tenant, Business Partner → Location tab → New, column
+`C_Location_ID` (AD_Reference **21** Location) renders as a plain `<input type=text>` (`crud_core.mapRefDisplayType` maps 21
+→ `string`). A user cannot enter an address, so a customer typed in the session has no `C_BPartner_Location`, and the Sales
+Order header for it is rejected: `§CRUD validate key=c_order verb=create REJECT errors=[{"col":"c_bpartner_location_id","why":"required"}]`.
+Second cause (read): the beforeSave hooks read the RAW bundle (`fireBeforeSaveHooks` → `withBundle`), so `MOrder.bpLocationDefault`
+/ `bpLocationConsistency` (ad_modelval.js, MOrder.java:1239-1270) can never see a location created in the session.
+**Oracle (iDempiere):** the Location editor (`WLocationEditor` → `WLocationDialog`) edits an `MLocation` and SAVES it on OK, in its
+own transaction, then sets the field to the new `C_Location_ID` — the parent row is saved separately afterwards. Fields:
+Address1..4, City, Postal, Country (default `MCountry.getDefault`, `MCountry.java:105-202`: the client language's country,
+else US 100), Region when `C_Country.HasRegion='Y'`. `MLocation.beforeSave` (`MLocation.java:719-764`): `AD_Org_ID=0`; a region
+on a country without regions is cleared; `C_City_ID` looked up by (country, region, City name, client 0|own); a country with
+`IsAllowCitiesOutOfList='N'` and no city found → `CityNotFound`. `MBPartnerLocation.beforeSave` (`MBPartnerLocation.java:207-217`)
+renames a `Name='.'` row from the address (`makeUnique :225-268`: City, then Address1 …, uniqueness by suffix level).
+**Fix:** (a) `crud_core.mapRefDisplayType(21)` → `location`. (b) `crud_overlay` renders a `location` field as the id input + an
+"Address" editor (inputs `data-loc=address1..4|city|postal`, selects `data-loc=c_country_id|c_region_id`, OK `data-loc-ok`); OK runs
+the MLocation.beforeSave port, commits one signed `CRUD_CREATE c_location` (its own group, like iDempiere's own trx), sets the field
+to the new synthetic id; one `§LOC-EDITOR` line (id, fields, country, city_id). (c) `fireBeforeSaveHooks` runs the hooks over the
+TIP: for the tables the session has written among {C_BPartner_Location, C_Location, AD_User, C_BPartner}, a TEMP table of the same
+name holding the `listTip`-folded rows shadows the base table for the hook call only (SQLite resolves unqualified names to `temp`
+first), dropped right after; one `§MV-TIP-SHADOW` line. (d) a `MBPartnerLocation.beforeSave` hook (`Name='.'` → makeUnique levels 0-1).
+Marked `FS-13`; sw +1.
+**Witness (W-ERP-FIRST-SETUP new step S10b, BY VALUE):** customer C-001 (made in S10) → Location tab → New → Address editor: Address1,
+City, Postal, country → OK → `§LOC-EDITOR created id=<neg>` and the folded `C_Location` row == the typed values; Save → `§CRUD validate
+key=c_bpartner_location verb=create ok` + persist, its `C_Location_ID` == that id and `Name` == the City (makeUnique level 0); then
+Sales Order → New → BP = C-001 → Standard Order → Save → `§CRUD-PERSIST key=c_order` and the header's `C_BPartner_Location_ID` ==
+the new BP location (negative control: before the location exists, the same header is REJECTED — the step records both).
+
+### §FS3.3 — 2026-10-03 · gap list to zero (Opus 5.5 worker; each: spec → own PR off fresh origin/main → witness by value → merged → live bytes checked)
+**Live-check instrument (2026-10-03):** both Pages workflows run per push; this session the served `erp/*` were the RAW
+tracked bytes (legacy build won), so the check is `git show <merge-sha>:<file> | cmp - <live URL>`; `erp/version.json`
+404s live today. Either way the claim is "served bytes == origin/main at the merge sha", checked per file.
+| item | step(s) | PR → merge | sw | witness (by value) | status |
+|---|---|---|---|---|---|
+| FS-12 new-tenant price §FS2j | S15b (new) | #1820 → 5292535b | v802 | `derived={PriceEntered:1,C_UOM_ID:100,C_Tax_ID:1700506}` == oracle `{pl:1700500,plv:1700501,price:1,uom:100,tax:1700506}`, priced from pl 1700500 of client 17, Complete `to=CO verifyChain=ok`; journey 28V/2G/0I/0err | ✅ DONE (witness); live == raw(5292535b) for genesis.js, crud_core.js, crud_overlay.js, ad_modelval.js, idempiere.html, genesis.html, glassbowl.html, sw.js |
+Found while executing FS-12 (fixed in the same PR, each extracted): born `AD_OrgInfo` was emitted as `ad_org_info` and
+silently skipped by the merge (no org info row at all); born role UserLevel `'  C'`/`'   O'` are not iDempiere values (MSetup:258
+`' CO'`) — the admin could not UPDATE any AccessLevel-3 table (`§CRUD-GATE … wrong-accesslevel`); `MOrder.priceListDefault`
+had no client clause and read a not-yet-derived IsSOTrx; MSetup's payment term needs `PaymentTermUsage='B'` (column default)
+or AD_Ref_Table 53383 hides it. iDempiere fact recorded for the guide: the setup price list is NOT a sales list
+(IsSOPriceList=N) — the user ticks "Sales Price list" once (S15b does exactly that), as in iDempiere.
