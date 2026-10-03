@@ -1146,3 +1146,11 @@ locale), engine reasons (`res.reason`, schedule_diff `flagMsg`), the ⋯ pill `c
 second half — still open), `<title>` brand. **Open for the user (⛔ not blocking):** the 163 translations are machine-made
 and labelled so — a native review per language is the quality step; `gantt_props_epoch` is red on main independently of this.
 Merge sha + live check: appended below once auto-merge lands.
+**MERGED + LIVE (2026-10-04 04:46 UTC+8):** bim-ootb PR #1832 squash-merged as `0ebf2c0d` (fast-checks 31 s + e2e-tests 1 m 38 s green,
+auto-merge); Pages build `0ebf2c0d` status=built 20:46:57Z. Fetched with cache-busting from `https://red1oon.github.io/bim-ootb/`:
+`viewer/sw.js` `CACHE_VERSION="v1462"` (the live file is MINIFIED — a `grep "CACHE_VERSION = 'v…'"` with spaces finds nothing;
+grep `CACHE_VERSION=` instead); `viewer/i18n/de_DE.json` `rows: 656, translated: 656, untranslated: 0`, `tm_pull_back` =
+"Vorziehen", `wi_title` = "Was-wäre-wenn-Terminplan"; `ar_SA.json` `tm_pull_back` = "سحب للأمام", 656 rows; `viewer/viewer.html`
+serves `time_machine.js?v=80` + `whatif_panel.js?v=5`; `viewer/time_machine.js` carries `_tmTrl` + `data-trl="tm_pull_back"`;
+`viewer/whatif_panel.js` carries `_wiTrl`; `viewer/i18n/AD_Message_Trl_de_DE.xml` HTTP 200 (114,880 B); `ad_message_base.csv`
+last row `1000655,ui_downloading_pct`. Worktree `/tmp/wt-viewer-i18n-tm` removed.
