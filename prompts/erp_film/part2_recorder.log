@@ -1,0 +1,57 @@
+§ERP_FILM_FACT prep.seedMiB=25.9
+§ERP_FILM_FACT prep.boot=§IDEMPIERE boot db=network ms=178
+§ERP_FILM_FACT prep.tenants=7 [System,GardenWorld,Odoo,iDempiere,SAP Flights,Oracle Scott,Dynamics Cronus]
+§ERP_FILM_FACT prep.role=ROLE System Administrator System Administrator CLIENT ORGANISATION * (All accessible) ‹ Back Log In › System · 2 role(s)
+§ERP_FILM_FACT prep.menu=§IDEMPIERE menu groups=41 leaves=195 visibleWindows=175/332 source=ad_menu handAuthored=0
+§ERP_FILM_FACT prep.menuPath=System Admin > Tenant Rules > Initial Tenant Setup
+§ERP_FILM_FACT prep.currencyOptions=163
+§ERP_FILM_FACT prep.created=§W-GENESIS-SYSADMIN-LIVE created client=17 rows=515 persisted=true
+§ERP_FILM_FACT prep.clientId=17
+§ERP_FILM_FACT prep.accounts=311
+§ERP_FILM_FACT prep.periods=12
+§ERP_FILM_FACT prep.fiscalYear=2026
+§ERP_FILM_FACT prep.docTypes=42
+§ERP_FILM_FACT prep.acctSchemaCcy=MYR
+§ERP_FILM_FACT prep.priceListCcy=MYR
+§ERP_FILM_FACT prep.enterUsers=owner
+§ERP_FILM_BEAT id=login2 t=0.39 FirstCo: log in as owner
+§ERP_FILM_FACT role2=ROLE FirstCo Admin CLIENT ORGANISATION FirstCo HQ ‹ Back Log In › owner · 1 role(s) — context selection, not authenticat
+§ERP_FILM_FACT menu2=§IDEMPIERE menu groups=51 leaves=534 visibleWindows=332/332 source=ad_menu handAuthored=0
+§ERP_FILM_HOLD after=login2 extra=3.25
+§ERP_FILM_BEAT id=bpwin t=8.69 Business Partner window
+§ERP_FILM_FACT menuPath=Partner Relations > Business Partner Rules > Business Partner
+§ERP_FILM_BEAT id=customer t=13.50 new customer Acme Retail
+§ERP_FILM_FACT customer.orgPicker=options=2 ownHQ=FirstCo HQ (1700002)
+§ERP_FILM_FACT customer.group=Standard (1700501)
+§ERP_FILM_FACT customer.iscustomer=true
+§ERP_FILM_FACT customer.validate=§CRUD validate key=c_bpartner verb=create ok
+§ERP_FILM_FACT customer.persist=yes
+§ERP_FILM_FACT customer.records=1->2
+§ERP_FILM_BEAT id=address t=29.55 the customer's address: Location tab
+§ERP_FILM_FACT addressControl={"tag":"INPUT","type":"text","value":""} ref=21
+§ERP_FILM_FACT addressRef=Location (Address)
+§ERP_FILM_BEAT id=vendor t=40.58 new vendor Kedai Bekalan
+§ERP_FILM_FACT vendor.orgPicker=options=2 ownHQ=FirstCo HQ (1700002)
+§ERP_FILM_FACT vendor.group=Standard (1700501)
+§ERP_FILM_FACT vendor.isvendor=true
+§ERP_FILM_FACT vendor.validate=§CRUD validate key=c_bpartner verb=create ok
+§ERP_FILM_FACT vendor.persist=yes
+§ERP_FILM_FACT vendor.records=2->3
+§ERP_FILM_BEAT id=product t=56.82 Product window: tax category of this company
+§ERP_FILM_FACT menuPath=Material Management and Pricing > Material Management Rules > Product
+§ERP_FILM_FACT taxCategory=options=1 ofThisCompany=1 [Standard (1700506)]
+§ERP_FILM_FACT paymentTerm=[["Immediate",0,"Y"]]
+§ERP_FILM_HOLD after=product extra=0.71
+§ERP_FILM_BEAT id=order t=66.53 Sales Order: customer + Standard Order
+§ERP_FILM_FACT menuPath=Quote-to-Invoice (Sales) > Sales Orders > Sales Order
+§ERP_FILM_FACT bpPicker=n=3 byClient={"17":1,"":2}
+§ERP_FILM_FACT docTypes2=7 [Binding offer (1700470)|Non binding offer (1700472)|Prepay Order (1700474)|Standard Order (1700478)|Credit Order (1700480)|Warehouse Order (1700482)|POS Order (1700496)]
+§ERP_FILM_FACT orderPersist=NONE
+§ERP_FILM_FACT orderValidate=§CRUD validate key=c_order verb=create REJECT errors=[{"col":"c_bpartner_location_id","why":"required"}]
+§ERP_FILM_FACT orderStatusText=Sales Order › Order · 0 records
+§ERP_FILM_FACT orderErrUI=" (1700480) Warehouse Order (1700482) POS Order (1700496) Self-Service * Partner Location * required Invoice Location User/Contact Invoice Contact Warehouse * HQ"
+§ERP_FILM_BEAT id=gap t=82.08 order rejected: the customer has no address — the film stops here
+§ERP_FILM_HOLD after=gap extra=6.29
+§ERP_FILM_BEAT id=end t=95.09 
+§ERP_FILM_CURSOR clicks=34 cursorOnTarget=34 OK
+§ERP_FILM_DONE frames=3065 dur=95.39 out=/tmp/claude-1000/-home-red1-bim-compiler/8519b4b5-edd1-490f-b702-87598b3b718f/scratchpad/erp5/erp_film_part2.mp4

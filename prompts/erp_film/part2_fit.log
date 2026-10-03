@@ -1,0 +1,17 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT login2 cue=0.39 room=8.00 dur=7.47 -> DETAIL slack=+0.53 words=21
+§NARR_FIT bpwin cue=8.69 room=4.51 dur=3.51 -> DETAIL slack=+1.00 words=6
+§NARR_FIT customer cue=13.50 room=15.75 dur=9.92 -> DETAIL slack=+5.83 words=22
+§NARR_FIT address cue=29.55 room=10.73 dur=9.07 -> DETAIL slack=+1.66 words=27
+§NARR_TONE address#2 F YN rose=5.0st endDelta=+4.1st want=rise OK "No address form?"
+§NARR_FIT vendor cue=40.58 room=15.94 dur=7.05 -> DETAIL slack=+8.89 words=13
+§NARR_FIT product cue=56.82 room=9.41 dur=8.90 -> DETAIL slack=+0.51 words=23
+§NARR_TONE product#0 F WH rose=0st endDelta=-0.7st want=fall OK "What about products?"
+§NARR_TONE product#2 F YN rose=5.0st endDelta=+4.2st want=rise OK "And payment terms?"
+§NARR_FIT order cue=66.53 room=15.25 dur=6.05 -> DETAIL slack=+9.20 words=16
+§NARR_TONE order#0 F ! rose=0st endDelta=-4.4st want=any OK "Now, a sales order!"
+§NARR_FIT gap cue=82.08 room=12.71 dur=12.15 -> DETAIL slack=+0.56 words=37
+§NARR_TONE gap#0 F YN rose=5.0st endDelta=+4.3st want=rise OK "Wait, it won't save?"
+§NARR_TONE gap#3 M ! rose=0st endDelta=-1.9st want=any OK "The fix is already being worked on. See you in part three!"

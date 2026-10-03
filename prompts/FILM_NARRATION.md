@@ -197,6 +197,18 @@ Enter → the new company's login shows its admin user. Then the ▶ PLAYBOOK st
 mux, English first). Witness: every spoken number has a §ERP_FILM_FACT; beats in order; film frames = concat output.
 
 ## 4. STATUS
+- 2026-10-03 16:00: §ERP-FILM PART 2 BUILT (95.4 s, English dialogue) — continues part 1 in FirstCo, ends at the first
+  real GAP. Recorder `PART=2` replays part 1 off camera (fast), then films: owner login → Business Partner → customer
+  C-001 Acme Retail (own HQ offered, records 1→2, §CRUD validate ok + persist) → its Location tab: the Address field
+  (C_Location_ID, AD_Reference 21 "Location (Address)") is a plain text input — no address editor (**GAP**, handed to
+  the Opus gap agent) → vendor V-001 Kedai Bekalan (2→3) → Product: 1 tax category, this company's → payment term
+  Immediate/0/default → Sales Order: Acme + Standard Order (7 types) → Save REJECTED `c_bpartner_location_id required`
+  (UI shows "Partner Location * required"). §ERP_FILM_CURSOR 34/34 OK, 0 PAGEERR. Fit 8/8 DETAIL, 0 WRONG.
+  `~/Downloads/ERP_FirstSetup_narrated_part2_1920x1080_24fps_2026-10-03.mp4` (2,290 frames, 5.0 MB, −17.0 LUFS; quiet
+  stretches 6–10 s while typing in vendor/order). Script `film_narration_erp_part2_dialogue.tsv`; logs
+  `prompts/erp_film/part2_*`. Re-run: `BEAT_MIN='{"login2":8.3,"bpwin":4.3,"customer":10.7,"address":9.9,"vendor":7.9,
+  "product":9.7,"order":6.9,"gap":13.0}' PART=2 node scripts/film_erp_first_setup.js <dir>`. Part 3 = after the
+  address editor + new-tenant price land: address → order line priced → Complete → shipment/invoice → journal → aging.
 - 2026-10-03 15:10: §ERP-FILM PART 1 MANDARIN (zh-CN). `film_narration_fit_edge.py` gained `'zh'` (Xiaoxiao F / Yunxi M,
   pitch=False, Noto Sans CJK SC, Chinese credit). Script `film_narration_erp_part1_dialogue_zh.tsv` (same ids/cues/turns/§sources
   as English). Fit 7/7 DETAIL (login + form first fell SHORT, detailDur 11.20>9.91 / 8.72>7.10; shortened -> 9.25 / 6.56).
