@@ -994,3 +994,13 @@ WBS/UOM/GPS/GUID/ERP/OK/CSV/X-Ray/4D / 5D; the 25 `panels.js` ICONS `trl` keys t
 …) got rows so `A.icon()`'s existing `_TRL[trl] || desc` path translates them; page `<title>`s keyed as
 `title_boq/clash/mep` (brand prefix kept); `mep_report.html`'s older 2-arg `_t(k, fb)` fallbacks are exempt from (3b).
 Merge sha + live check: appended below once auto-merge lands.
+**MERGED + LIVE (2026-10-03 23:16):** bim-ootb PR #1831 squash-merged as `01f38710` (fast-checks + e2e-tests green, auto-merge).
+Fetched, not inferred, from `https://red1oon.github.io/bim-ootb/` with cache-busting: `viewer/sw.js` `CACHE_VERSION = 'v1461'`;
+`viewer/i18n/de_DE.json` and `ar_SA.json` served (`rows: 493, translated: 493, untranslated: 0`, `ui_tools` = "أدوات");
+`viewer/locale_loader.js` carries `§TRL_LABELS`/`§TRL_LANGDIR`/`LOCALE_VERSION = 7`; `index.html` and `viewer/viewer.html`
+serve the keyed markup (`data-trl="landing_hub_title"`, `locale_loader.js?v=9`); `viewer/i18n/AD_Message_Trl_de_DE.xml`
+HTTP 200 (81,107 B). Worktree `/tmp/wt-viewer-i18n` removed.
+**Open for the user (⛔ not blocking):** (a) should the ⋯ pill `children` help text + F1 palette and the Time Machine /
+Gantt / P6 drawer (53 strings) be translated now or stay English until those lanes settle? (b) the base dictionary's
+English is en_MY (British spelling: Storey/Labour/centre) — keep as the AD_Message base, or re-base on en_US as iDempiere
+does? (c) all new translations are machine-made and labelled so; a native review pass per language is the next quality step.
