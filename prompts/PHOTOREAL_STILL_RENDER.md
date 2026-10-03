@@ -485,3 +485,48 @@
   design — serve_tree has no dir index), LTU_AHouse_silent.db relinked, Clinic_extracted.db serves 'SQLite format 3'. gpu.lock FREE.
 - Alt+C merged 58416ed0 into fix/fast-bake as d304efd3 (sw v1560).
 - ALL wt-surf .lightfield.bin sidecars gone again -> rebake (~36 min GPU) waits on red1's go. §GLASS_PLANAR_REFL still waits on red1's go.
+
+## 2026-10-03 ~13:00 — §GLASS_PLANAR_REFL — red1 GO; SPEC v2 (root cause corrected from a full read of glass_fresnel.js @58416ed0)
+- CORRECTION to v1 "ROOT CAUSE": the clones' env is NOT sky-only. §GLASS_ENV (glass_fresnel.js:100-156, called effects.js:6086) already
+  renders the staged scene into a cube FROM THE CAMERA POSITION; the clones sample it by reflected direction, then x slMirK = slSpecKeep
+  (sourced_light.js:459). Two faults stack: (1) PARALLAX — the cube is centred on the eye, not the pane; a wing next to the pane lies in
+  the reflected direction as seen from the PANE but in a different direction from the eye, so the lookup returns sky behind the eye; (2) the
+  gate then SCALES that wrong sample down where the reflected ray is blocked (F4 glassReflDark). Result = the dimmed clear skyline red1 saw.
+  A cube from one point is exact only for infinitely far content — a facade 10-50 m away is not. Rule unchanged: a flat pane is a plane mirror.
+- MECHANISM v2 (glass_fresnel.js, the owner; Alt+S only, after GlassFresnel.capture; &planarrefl=0 = today; &planark=N, default 6):
+  P1 planes: every triangle of the swapped glazing meshes (Mesh + InstancedMesh per instance; BatchedMesh counted as fallback in v1) in world
+     space, normal oriented to the eye, merged when normal within 2 deg and offset within 0.10 m (both faces of a pane = one plane).
+     Rank by projected screen area (triangles fully in front of the eye). Top K mirrored; rest counted (fallback = today's cube path).
+  P2 render: one HalfFloat atlas RT, 3x2 tiles, each tile = half the drawing-buffer size. Per plane: mirrored camera (three Reflector
+     construction: reflected position/target/up, same projection) + oblique near plane at the glass (Lengyel), glass + mirrors hidden,
+     same FIX-14 re-pass rule as the cube capture (repeat while a material's uniforms object rekeyed, max 3).
+  P3 shader: clone onBeforeCompile appends after #include <lights_fragment_maps>: for k < uGfK, the fragment is on plane k when
+     |n.p + d| < 0.10 m (view space); uv = proj(uGfTex[k] * p) in [0,1] -> radiance := atlas(tile k, uv). No slMirK there: the mirror pass
+     already lit what it shows, a blocker shows itself. Off a slot = today's cube x gate, unchanged.
+- still_fault: glassReflDark must not count a sample whose pane is mirrored (the gate no longer applies there) -> glassReflMirrored.
+- WITNESS §GLASS_REFL_TRUTH (&refltruth=1, adds one distance render per plane): 32x18 grid; first hit = glazing clone -> reflected ray
+  from the hit point, scene raycast without glass -> hitDist. hitSamples = rays that meet geometry; onSlot = those whose point lies on a
+  mirrored plane. Distance render (MeshDistanceMaterial from the mirrored eye, same oblique clip) read at the sample's uv must equal
+  |eye-X| + hitDist within 5 % -> depthAgree/onSlot. INCONCLUSIVE when onSlot = 0. Baseline (&planarrefl=0): onSlot 0 by construction,
+  so the before number is hitSamples itself (rays where today's pane shows the eye-centred cube instead of the blocker).
+  Cost line §GLASS_PLANAR: K, planes total, tris, per-mirror ms, total ms.
+
+## 2026-10-03 ~14:40 — §INDOOR_SHADOW_STUDY — SPEC (red1: "shadows are jagged.. the PerfectIndoor.png virtues has to be studied what has changed")
+- Evidence pair: ~/Downloads/PerfectIndoor.png (2026-09-25 05:27, 2776x1440, NO pose tEXt — predates §STILL pose tagging) vs red1's
+  bounce_still_1791009120422.png (v1561, same Hospital atrium, cam [-13.857,3.573,36.133] tgt [4.087,-8.018,-22.315], sun [0,3535,-3535],
+  sunI 4.4, pressS 16.2, §FAULT OK). Old: crisp straight beam shadows on the blue shaft wall. New: soft dark blotches + axis-aligned
+  steps on the same wall. Live code on 09-25 05:27 sat just after §STILL_SHADOW_FIT (v1298, 21ffe710, "~4x finer shadow edges") and
+  §STILL_RES (v1299); fix/sky-surface has 198 viewer commits since.
+- METRICS (numbers, not eyes), on the blue-wall ROI of a 1685x874 page screenshot, rows clear of the beams: luma mean; BLOTCH = std of
+  luma after a 9 px box blur (low-frequency patches); EDGE = p99 |grad luma| (crisp shadow edges); STEP = share of strong-gradient px
+  whose gradient is axis-aligned within 5 deg (grid steps).
+- STEP 1, layer isolation at red1's pose on v1561: baseline, then one switch off each: &sourced=0, &skyfield=0, &bounce=0, &localexp=0,
+  &ao=0, &shadowfit=0. The layer whose removal drops BLOTCH/STEP and raises EDGE owns the defect; its § lines are read from the same log.
+- STEP 2 (after 1): render the same pose on the 09-25 code (v1298/1299 commit, own worktree) -> the same metrics = the "virtue" numbers;
+  bisect commits between only if STEP 1 does not name the owner.
+- Rule (no band-aid): the fix goes in the owning function and must move the metrics on every building, not just this pose.
+- FOUND in the archive (full_history 2026-08-11_to_2026-10-02 L55-75): PerfectIndoor.png = the OLD baseline, "old lighting" = before
+  §SOURCED_LIGHT (feat/sourced-light, v1337). Its numbers then: 8-bit mean 124, p5 55, p95 203, >=235 2.0 %, sat 21.2, RGB [115,129,128].
+  red1 replaced it 09-25 with bounce_still_1790307025522 (v1337, "darker is expected, but at least realistic"). The v1337 known-defect
+  list already named "(3) jagged/blocky sun-shadow edges + base gap" and "stair-stepped shadow of the stair flights" — i.e. the steps
+  arrived WITH §SOURCED_LIGHT (zone-grid gating), not later. STEP 1's &sourced=0 arm is therefore the first number to read.
