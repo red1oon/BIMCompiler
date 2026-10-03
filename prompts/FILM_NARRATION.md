@@ -699,12 +699,14 @@ ERP was smooth sailing as it is out of the geometry blindspot")
   overlap) has no framework precedent → the drift points (LAST_MILE_PROBLEM.md). Live example: a 4D lane "produced three
   retractions of the same finding in one session" (VibeProgramming.md Capability Snapshot 2026-08-27; 4D_MODEL_INTEGRITY.md).
 - **Where it sailed — ERP:** iDempiere's tables, AD_Val_Rule and BOM explosion are "20 years of open-source ERP code in
-  training data" (VibeProgramming.md table) — out of the geometry blind spot. Evidence: ten ERP PRs in one day
-  (bim-ootb #1820–#1829, 2026-10-03, FS-12…FS-19 + 9 UI languages).
+  training data" (VibeProgramming.md table) — out of the geometry blind spot. Evidence: the Kernel ERP got its own
+  `erp/` home in bim-ootb on 2026-06-02 (#88); June 2026 = 243 ERP commits (Jul 37 · Aug 6 · Sep 27 · Oct 19, git log
+  origin/main -- erp, counted 2026-10-04); and four months on, ten ERP PRs in one day (bim-ootb #1820–#1829, 2026-10-03,
+  FS-12…FS-19 + 9 UI languages). Say it as: "built in June — and still shipping ten features in a single day."
 - **Lines (F/M):** F: How fast is fast? | M: One viewer — three weeks. The estimate for a hired team: six months to a
   year and a half. | F: Ten to twenty-five times. | M: But not everywhere. Ask a language model whether a wall sits on a
   slab… | F: …and it guesses. No pattern to copy. | M: Geometry drifted — the same finding retracted three times in one
-  session. | F: The ERP? Smooth sailing. Twenty years of iDempiere it had already read. | M: Ten ERP features in a single day.
+  session. | F: The ERP? Smooth sailing. Twenty years of iDempiere it had already read. | M: Built in June — and still shipping ten features in a single day.
 - **Visual:** an explainer diagram (§10 EXPLAINER) — two lanes side by side, GEOMETRY (no precedent → drift → witness)
   vs ERP (pattern → fold → ship), highlight moving with the lines; then the live VibeProgramming page rolled.
 
