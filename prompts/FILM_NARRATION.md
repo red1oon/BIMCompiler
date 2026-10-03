@@ -675,7 +675,11 @@ Each: idea · the first struggle · the breakthrough (source) · what to show. P
    attachment, BC `3cdd378aa` 2026-08-02 — unroutable 45.3 % → 18.4 %. Room-type classifier (size + aspect + doors)
    `41e1347de` 2026-07-11: 21/23 on labelled rooms, 62.8 % of 602 unseen rooms honestly "unclassified". Sparse walls:
    HHS 14 → 105 rooms (PR #732). SHOW: Find rooms → A* polyline, spine raster, before/after %.
-2. **IFC → SQLite + geometry hell** — 2D repo 2025-11-16: "Fix Blender viewport blank — coordinate normalization",
+2. **IFC → SQLite + geometry hell** — TRUE ORIGIN in the Bonsai days: red1's IfcOpenShell fork `~/IfcOpenShell`
+   (github.com/red1oon/IfcOpenShell, branch `feature/IFC4_DB`, the Federation module inside Bonsai/Blender; 415 commits
+   by red1, 2025-10-21 → 2026-04-20): `c6e50b64c` 2025-10-21 "Add Federation module - multi-model spatial indexing" →
+   `c861f61f5` 2025-10-25 "Fix critical scale bug (1000x error)" → `f410e32a1` 2025-10-30 "Full IFC4 database extraction
+   and loading - MILESTONE". Then the 2D repo 2025-11-16: "Fix Blender viewport blank — coordinate normalization",
    a terminal that became 5.4 km × 3.3 km (mm vs m), R-tree unit flips; BC `9b431a243` 2026-06-23 an 8.6 m-tall slab +
    a witness that was a tautology. Browser pivot: BC `66fc9413` 2026-04-18 (no .blend) → `7a19d6e2` 2026-04-20 (sql.js
    WASM). SHOW: the km-scale building, a load, the schema diagram.
@@ -684,10 +688,17 @@ Each: idea · the first struggle · the breakthrough (source) · what to show. P
    SHOW: G1–G6 gate run, the 26 % → 100 % ladder.
 4. **A building is a BOM** — BC `eb0ddb9f5` 2026-02-11; "51,000 elements → ~700 BOM lines (73× compression)"
    (unified_mathematical_formulation.txt). SHOW: BOM tree beside the model.
-5. **Walkers fill missing trades from measured rules** — ModellerGuide (BC `5afdf00e6` 2026-06-28); clash collapse
-   SampleHouse 2,235 → 11, Duplex 3,172 → 37, SampleCastle 360 → 1; unseen buildings 0 fabricated joins (precision
+5. **Walkers fill missing trades from measured rules** — docs/ModellerGuide.md "Why the right standard matters";
+   gated irreducible clash residual, large-complex → residential standard: SampleHouse 9 → 4, Duplex 32 → 2,
+   SampleCastle 501 → 3 (`build/logs/witness_disc_walk_duplex_generalize.log` §DXG-GATED, 2026-06-28 02:31 — the
+   ACCURATE figures, red1 2026-10-04: "Use the more accurate stats"); unseen buildings 0 fabricated joins (precision
    Duplex 0.969 … HHS 0.620). Pre-history 2D `a8a0fb1` 2025-11-16 "5,282 automatic adjustments on Terminal 1".
-   ⚠ these clash numbers differ from the ModellerGuide table quoted in §9 (9→4, 32→2, 501→3) — reconcile before use.
+   **⏳ RECONCILE LATER (red1: "make note … to reconcile later"):** a different table — SampleHouse 2,235 → 11, Duplex
+   3,172 → 37, SampleCastle 360 → 1, "99.5/98.8/99.7 %" — sits in docs/ModellerGuide.md on the UNMERGED branch
+   `lane/benchmark-clash-resolution` (BC `5afdf00e6`, 2026-06-28 00:42, two hours BEFORE the log run that master's
+   numbers match; that branch's RESUME_DX_MEP_RESIDENTIAL_STANDARD.md mentions a §DXG-CAP 6000/disc stride cap, so it
+   may be a different run). Never narrate the 2,235/3,172 set; if that branch is ever merged, its table must be re-derived
+   from a fresh §DXG run first.
 6. **4D: nothing before what holds it up** — bim-ootb `bcec6706` 2026-08-12 §MIDAIR_REPAIR 5,561 → 0 across 7
    buildings / 266,954 elements (HHS 156 → 0). Struggle (4D_MODEL_INTEGRITY.md): "S supports T" implemented three
    ways (1,961 vs 95), "63 uncountable was really 10", a template path "shipped, witnessed and NEVER CALLED". SHOW:
@@ -704,10 +715,12 @@ Each: idea · the first struggle · the breakthrough (source) · what to show. P
 12. **Honest refusal** — REFUSE / UNCLASSIFIED / 972 orphans printed, never guessed. SHOW: a refusal line.
 13. Red Pill (design from a trusted building's grammar) · 14. hash-addressed two-DB split (85 % draw-call cut,
     `9cca45a3` 2026-04-27) — secondary.
-**Timeline:** Nov 2025 2Dto3D (DXF→3D, unit saga) · Jan–Feb 2026 compiler, Witness, Rosetta 100 % · Apr 2026 browser
+**Timeline:** Oct 2025 IfcOpenShell fork — Federation module in Bonsai, the 1000× scale bug, IFC4 → SQLite milestone · Nov 2025 2Dto3D (DXF→3D, unit saga) · Jan–Feb 2026 compiler, Witness, Rosetta 100 % · Apr 2026 browser
 pivot, Find & Navigate · May 2026 kernel_ops, Time Machine, bim-ootb · Jun signed log, fold prior art, walkers ·
 Jul–Sep room classifier, spine 45.3 → 18.4 %, MIDAIR 5,561 → 0, Escape Route · Oct 2026 this film.
-Unverified: an IfcOpenShell fork Oct 2025 (`feature/IFC4_DB`, docs/PROJECT_CHRONOLOGY.md) — not in these repos.
+Repos in order (red1 2026-10-04: "IfcOpenShell fork was during the Bonsai days. It is in the earliest repo before
+BIM-compiler, BOM-OOTB, as it is under IfcOpenShell clone as a Federation feature"): ~/IfcOpenShell (Oct 2025) →
+~/Projects/2Dto3D (Nov 2025) → bim-compiler (Jan 2026) → bim-ootb (May 2026).
 
 ## 4. STATUS
 - 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
