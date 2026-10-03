@@ -854,3 +854,111 @@ bim-ootb branch `feat/zoom-lang` (erp sw v812, viewer sw v1460). W-ZOOM-LANG `er
 9/9 (`§TRL_DETECT src=url-mapped req=ar code=ar_SA`); (b2) flag picker wins after reload; (c) control without §R1.2 →
 8/9, fails on `ar`. Regression W-ZOOM-ACROSS 8/8. **Open, by design of the existing Viewer:** choosing a language there
 also chooses its currency/rate book (S226 §Current Status) — German ERP → Viewer in EUR/DIN rates.
+
+### §R2 SPEC — 2026-10-03 — Viewer strings as iDempiere AD_Message / AD_Message_Trl XML, language set on the landing page carries through (Witness: W-VIEWER-I18N)
+**The ask (red1, 2026-10-03, verbatim):** "update the languages populating all labels and pop up or important most static
+info as the rest may change and so can be later. This is to set language during Viewer main landing page and it should
+carry thru." Format rule = §R2 FORMAT RULE above ("we follow idempiere convention where lingo/locales are stored in XML").
+**Measured before (bim-ootb `4cd440ae`, viewer sw v1460):** 18 `viewer/locales/*.js`, 334 keys each = 308 label strings +
+20 identity/currency/rate-attribution strings + 6 rate objects. The label translations are INCOMPLETE: keys equal to the
+English in ms_MY 12, es_ES 28, zh_CN 29, fr_FR 33, de_DE 35, pt_BR 50, id_ID/ko_KR 53, th_TH 51, ja_JP 52, ar_SA/af_ZA 58,
+bn_BD 59, bl_BD 88 (the whole "Phase 4" block `ui_index_ready…ui_no_elements_bld` + `mep_*` was copied as English into
+every non-English pack). en_US differs from en_MY on 1 label (`t_lab_summary`), en_GB/en_AU on 0. Hardcoded English still
+on screen: landing `index.html` (8 launcher names, hub headings/drop text/cards, confirm dialog, Morpheus tips, toast),
+`viewer.html` (`Grid Bays`, `Share` with a `data-trl="ui_share"` key that does not exist, 6 titles, SW toast), the ⋯ pill
+(38 action names via `PillBuilder` `btn.title`), `panels.js` role presets + settings panel, `main.js`/`tools.js`/
+`navigate_find.js` status + title strings, `boq_charts.html` (h1, 5 titles, subtitle states, `Site Resources`, BOQ h2),
+`clash_report.html` (~30: toolbar, stat cards, 7 chart h2, 8 table th, share dialog), `mep_report.html` (3 titles,
+`Loading...`). `<html lang="en">` fixed on all 5 pages, no `dir`.
+
+**R2.1 Files (iDempiere layout, under `bim-ootb/viewer/i18n/`).**
+| file | role | edited by hand? |
+|---|---|---|
+| `ad_message_base.csv` | the AD_Message base rows: `ad_message_id,value,msgtext,msgtype` — the SAME four columns as the real iDempiere-12 export this repo already uses for the ERP (`~/.cache/erp_trl/ad_message_base.csv`, written by `erp/tools/fetch_i18n_packs.sh`). `value` = the existing `_TRL` key (unchanged, so the 22 `_TRL.*`/`_trl()` callers keep working), `msgtext` = the English shown today, byte-identical. IDs start at **1000000** (`MTable.MAX_OFFICIAL_ID`+1), assigned once in en_MY.js key order then appended; an ID is never renumbered (iDempiere's join key). `msgtype` I, or E for failure messages. | YES (add a row = add a string) |
+| `AD_Message_Trl_<lang>.xml` ×17 (every locale except the base en_MY) | the translations, in the exact `org.compiere.install.Translation` export format copied from `~/.cache/erp_trl/gq/es_CO/AD_Message_Trl_es_CO.xml`: `<?xml … standalone="no"?>`, one provenance comment + the commented DTD line, `<idempiereTrl language="<lang>" table="AD_Message">`, `<row id="<id>" trl="Y|N">`, `<value column="MsgText" original="<English>">…</value>`, `<value column="MsgTip" original=""/>`. Every base id is present in every file; `trl="N"` = not translated (text = English, counted apart, never claimed), `trl="Y"` = a translation (also when the word is legitimately the same, e.g. de `Status`). The header comment names the source per id range: rows 1000000–1000307 `source=viewer/locales/<lang>.js (S225/S226 sessions, machine)`; new rows and gap fills `source=machine (Claude, 2026-10-03)` — the same labelling the ERP lane uses (ERP_UI_LOCALES.md §L2b). | YES — this is THE source |
+| `<code>.json` ×18 | runtime labels, flat `{value: text}` (+ `_meta`: built-from, counts), BUILT by `viewer/tools/build_trl.js` = CSV ⋈ XML by id; a `trl="N"` row yields the English. Precached by `viewer/sw.js`. | NEVER |
+| `viewer/tools/build_trl.js` | the builder (node, deterministic, prints `§TRL_BUILD lang=<l> rows=<n> trl=<y> same=<n> missing=<n>` per locale). Run after every XML/CSV edit. | — |
+| `viewer/tools/trl_migrate_2026-10-03.js` | ONE-SHOT migration: extracts the 308 labels from the 18 `locales/*.js` into CSV + XML (no retranslation), appends the 2026-10-03 machine batch (new keys + gap fills), strips the label keys from `locales/*.js`. Refuses to run when `viewer/i18n/*.xml` already exist — the XML is the source from then on; this file is its birth record. | — |
+| `viewer/locales/<code>.js` ×18 | keep ONLY `iso lang locale`, `cur cur2 cur_rate cur_name cur2_name`, the 12 `rate_*` attribution strings and the 6 rate objects — cost data, not language (S226 §DO NOT). | yes (rates) |
+
+**Why the base English lives in a CSV, not an XML (decision + reason).** In iDempiere the base language has NO `_Trl` rows:
+`Translation.exportTrl` on the base language emits a degenerate file (every row `trl="N"`, `original` == text) and carries no
+`Value` column, so a `AD_Message_Trl_en_US.xml` could not even tell the runtime which key a row is — the ERP lane hit exactly
+this and had to export `ad_message_base.csv` from the live iDempiere 12 to map id→Value (§L1 "Messages"). The base rows are the
+AD_Message TABLE; the CSV is that table in the one export shape this repo already holds from a real iDempiere. Rejected: a
+2Pack `PackOut.xml` (iDempiere's base-row distribution format — not in the cache, would have to be invented from memory,
+breaks PRIME RULE), a `migration/*.sql` INSERT script (iDempiere's own delivery form, but the Viewer has no AD database to
+run it against; the ERP keeps `ad_seed.db`, the Viewer does not).
+**Why the page loads a BUILT JSON and not the XML (decision + reason).** The runtime needs Value→text; the XML keys rows by
+id (iDempiere's rule, `TranslationHandler`), so a join with the CSV is required anyway — do it once, at build, as iDempiere
+loads XML into `_Trl` tables once at import and never parses XML at request time. Same path as the ERP (`erp/i18n/<lang>.json`
+from `build_i18n.py`). The JSON is 1 precacheable file per locale, no DOMParser on a 100-script page. Staleness is a
+witness assertion, not a hope: W-VIEWER-I18N rebuilds in memory and FAILS if any shipped JSON ≠ CSV⋈XML.
+
+**R2.2 Loading path (`viewer/locale_loader.js`).**
+1. `detectLocale()` — unchanged §R1 order (url > url-mapped > saved `bim_ootb_config.locale` > browser > en_MY), `§TRL_DETECT`.
+2. Labels: fetch `i18n/<code>.json` (localStorage cache key `bim_ootb_trl_<code>`, `LOCALE_VERSION` 6→7 invalidates the old
+   per-code caches). Rates: fetch `locales/<code>.js` as today. Both resolved → `deepMerge(_TRL, labels)` then
+   `deepMerge(_TRL, rates)` (the .js no longer carries labels; cost data wins only on cost keys), `applyRateOverrides`,
+   `applyUrlOverrides`. Log `§TRL_LABELS locale=<code> keys=<n> src=cached|fetched|fallback` beside the existing `§TRL_LOADED`.
+3. `applyTrlToDOM()` gains `data-trl-html` (innerHTML, for the few strings with inline markup) and sets
+   `document.documentElement.lang = <iso-639 of the code>` + `dir="rtl"` for `ar_SA` (ltr otherwise) — on every page that
+   loads the loader (landing + the 4 viewer pages). `window._trl(key, repl, dflt)` gains a 3rd arg = the English default,
+   so JS-built UI shows English until the labels land, never the raw key.
+4. JS-built UI (landing launchers/hub, the ⋯ pill, role presets) renders through `_trl()` and re-labels on `trl-ready`
+   (`PillBuilder` re-`build()`), so a first visit without a label cache ends in the chosen language too.
+5. The flag picker is unchanged (saves `bim_ootb_config.locale`, §R1.2b URL rewrite). That saved value is what every Viewer
+   page reads → "set on the landing page, carries through". The landing `index.html` already loads the loader and already
+   has the Language launcher (`openFlags()`); its own strings are now `data-trl`/`_trl()` so the landing itself is in the
+   chosen language after the reload.
+
+**R2.3 Scope (translated now) / skipped (may change, said so).**
+IN: landing (Morpheus tips, blue-end quote + back, `choose your door`, `Live Stats`, hub heading/sub/drop text/cards/
+`City buildings`/`Landmark buildings`/`Blank Viewer`/`Open your own .db file`/`loading…`/`reload`, 8 launcher names, `More`,
+mobile toast, Clear-cache confirm, `No DB for`), `viewer.html` statics (`Grid Bays`, `Share`, `Min/Max`, `Menu`, `Previous/Next
+phase`, bookmark titles, `Update ready — tap to refresh`, `Report Bug`), ⋯ pill 38 action names + 3 drawer masters, role
+presets (5), settings panel (`5D Rate Pack`, `Cache Info`, `Reset Pill Icons`, `Defaults restored`), ground presets
+(None/Grass/Earth/Paved), `Off`/`On — {n} fixtures`, Find panel (`Find`/`Ask`/`Save .xlsx`/`Clear`/`All Storeys`/`All Types`/
+`View back`/`View forward`/`Expand`/`Voice not supported`), `main.js` status (`Loading Find…`, `Find failed to load`, GPU shader
+lines, `OFFLINE`, wire the existing `ui_back_online`/`ui_offline_mode`/`ui_close_measure`), `boq_charts.html` (h1 suffix
+`4D/5D Analytics`, 5 titles, `Loading...`, `Requesting data from viewer...`, `Waiting for DB to cache in main scene...`,
+`Site Resources`, `5D — Bill of Quantities`, the existing `ui_tt_export_5d/4d`), `clash_report.html` (all ~30),
+`mep_report.html` (`Copy shareable link`, `Back`, `Loading...`, share dialog). Plus the GAP FILL: every `trl="N"` row of the
+308 existing keys gets a translation in all 17 non-English locales.
+OUT (named): building names, IFC classes, discipline codes, numbers, user content (dynamic data); `<title>` brand strings
+(`BIM / ERP OOTB`, `BIM OOTB v3 — DEV`); the ⋯ pill's `children` help descriptions and the F1 command palette (feature help
+text under active change — "the rest may change"); Time Machine / Gantt editor / 4D window / CPE cinema / HBA / Pick-Walk
+panel internals (lanes under active development, same reason); doc-mode pill titles (S266 niche); `Alt+S/P/C` cinema
+titles; IFC class names, nD codes, BIM/BOQ/MEP/IFC/GPS/WBS/UOM/GUID/CSV/DXF acronyms, units, axis letters, the brand.
+
+**R2.4 Witness W-VIEWER-I18N — `bim-ootb/viewer/tests/witness_viewer_i18n.js`** (Playwright chromium, `--disable-gpu` software
+GL only, serves the worktree root on a local port; logs `viewer/tests/logs/witness_viewer_i18n.log` + `.page.log`).
+ISSUE IT PROVES OR DISPROVES: *"a user who picks a language on the landing page still sees English on Viewer screens."*
+1. CARRY-THROUGH — on `index.html` call the real `_TRL_LOADER.openFlagPicker()` and click the `<code>` button (the real
+   handler saves `bim_ootb_config.locale` and reloads); then open `viewer/viewer.html?blank=1&ghost=1`, `boq_charts.html`,
+   `clash_report.html`, `mep_report.html` in the same context: each must log `§TRL_DETECT src=saved req=- code=<code>` and
+   `§TRL_LABELS locale=<code>`, and have `<html lang>` = the language (+ `dir=rtl` for ar_SA).
+2. LEAK COUNT — per page, after `trl-ready` + pill built: collect every text node, `title`, `placeholder`, `<title>` under
+   `<body>`/`<head>` (not script/style/svg). English baseline (en_MY) run first: a string that equals a base `msgtext` is a
+   SLOT; a string that is none, after removing allow-listed tokens (acronyms, discipline codes, units, brand, key names,
+   numbers, symbols; `.hub-card .nm` building names excluded) and still holds a Latin word ≥3 letters is UNCATALOGUED
+   (printed once: `§TRL_UNCATALOGUED page=<p> n=<n> [strings]`). For locale X: leak = a slot whose on-screen text is still
+   the English while X's XML row is `trl="Y"` with a different text (wiring leak) OR whose row is `trl="N"` and the English
+   is not allow-listed (translation gap) — plus the uncatalogued count. Prints `§TRL_LEAK locale=<x> page=<p> leaks=<n> of
+   <total> [strings]` and the per-locale sum `§TRL_LEAK locale=<x> leaks=<n> of <total>`. Target: 0 for the 9 ERP languages.
+3. FORMAT — every `AD_Message_Trl_*.xml` parsed by Python `xml.etree` (an oracle independent of the Node builder): root
+   `idempiereTrl`, `table="AD_Message"`, `language` == filename suffix, every `row` has `id`>999999 unique and `trl` ∈ {Y,N},
+   `MsgText` `original` == the CSV `msgtext` for that id, `MsgTip` present with `original=""`, every CSV id present; the
+   shipped `i18n/<code>.json` == CSV⋈XML (rebuilt in memory). Also every `data-trl*` element's static English in the 5 pages
+   == CSV `msgtext` (so `original` stays true to the screen).
+4. NEGATIVE CONTROL — with locale de_DE saved, the `i18n/de_DE.json` request is aborted (route) → the page falls back to
+   English → the same counter must report leaks > 0 (`§TRL_LEAK_CONTROL leaks=<n> expected>0`). Proves (2) can fail.
+5. Verdict `§W-VIEWER-I18N PASS|FAIL|INCONCLUSIVE pass=<n> fail=<n> slots=<n>` — INCONCLUSIVE whenever slots == 0 or no
+   locale was judged. Read the log after every run; exit code is not evidence.
+Regression: `node erp/tests/witness_zoom_lang.js` stays PASS (it drives the real loader in a vm sandbox); `node
+tests/audit_sw_precache.js`, `node tests/audit_script_tags.js`, `npx eslint viewer` green.
+
+**R2.5 Ship.** bim-ootb branch `feat/viewer-i18n-xml` → PR(s) against `main`, auto-squash, confirm merged + live
+(`curl https://red1oon.github.io/bim-ootb/viewer/i18n/de_DE.json?x=<ts>`, `viewer/sw.js` version). `viewer/sw.js`
+CACHE_VERSION v1460→v1461, 18 `i18n/*.json` added to PRECACHE_ASSETS; `locale_loader.js?v=9` on the 4 viewer pages +
+`viewer/locale_loader.js?v=9` on the landing. Results → §R2 RESULT below.
