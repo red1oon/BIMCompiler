@@ -752,6 +752,15 @@ industry plating field.. how the giants dinosaurs not aware of this writing on t
   it, and the constraints are lost. | F: The ERP side still assumes a server room. | M: And between the budget and the
   model… a person with a spreadsheet. | QUOTE: "The dinosaurs can't see the writing on the wall." — red1 (⛔ red1 to
   word his own line) | F: Here, the model and the money are one database, in one browser tab.
+- **THE THESIS (red1, 2026-10-04: "yes the strongest FOSS spirit if to open up from info hiding which makes the industry
+  slow rather than a guestion of fee or free lunch.. it is always the freedom to innovate that happens elsewhere"):** the
+  segment's point is NOT price — it is information hiding. QUOTE card (his words, typos only): "The strongest FOSS spirit
+  is opening up from information hiding — that is what makes the industry slow. It was never a question of fee or free
+  lunch. The freedom to innovate always happens elsewhere." — red1. Echo, same man ~16 years earlier, from red1.org
+  (local copy `~/Projects/red1org/From Flames To Fork, Comes Freedom • View topic - Future of IDEMPIERE.html`):
+  "Information is Free, always, and thus no information hiding has and will occur." → closes on the mantra's first line.
+  Narrator bridge (F/M): F: So is it about price? | M: Not really. It's about what's hidden. | (quote card) | F: And the
+  innovation goes where the information is open.
 - **Visual:** the positioning doc's tier table rolled from the live docs site; an explainer diagram: three islands
   (DESIGN · BIM · ERP) with a "spreadsheet person" bridge → collapsing into one box (the kernel).
 - **Care:** no claim about any company beyond what the cited refs say; no logos/branding on screen (names in text only).
