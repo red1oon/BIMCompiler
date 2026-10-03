@@ -16,6 +16,17 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 20:55 PAUSE (red1). fix/fast-bake @932346cf PUSHED: info panel clears solid HUD boxes (W2, UNVERIFIED — run
+  V_HOSP_freeze8 was mid-render, frame 13/364). ZONE CORRECTNESS DECIDED by a new witness, prompts/photoreal_probes/lightgrid/zonefloor.js
+  (+ zonelib.js/zonediff.js; decodes .lightfield.bin offline, CPU only): §ZONE_FLOOR = INDOOR cells below the lowest boundary geometry.
+  OLD box FAIL: LTU 255,790 cells / 31,974 m3 (42% of indoor), Hospital 620,865 / 77,608 m3 (41%), HHS 42,809 / 5,351 m3 — all zone 1,
+  a fake "basement" void under the whole footprint (light_zones.js ~L403 EARTH rule: a covered cell below ground stays empty; only the bottom
+  2 grid layers were forced solid, and the inflated grid reached ~6 m under the foundations). TRUE box (fix/zone-truebox): LTU PASS,
+  Hospital PASS, HHS FAIL 8,187 cells / 1,023 m3 (zone 4) — its ground -6.00 = lowest geometry, so only 1 padding layer was filled.
+  FIX READY (not applied): session scratchpad c/rootfix/light_zones.js = truebox + §ZONE_FLOOR rule (2 padding layers solid: below ground
+  as before, above it covered cells only); copy in ~/.cache/bim4d/altc_2026-10-03/round4to6/rootfix/. RESUME: read freeze8 W2 verdict (or
+  re-run it), then merge fix/zone-truebox, apply rootfix/light_zones.js, run round4to6/v9.sh (rebuilds 3 sidecars + zonefloor witness +
+  LTU clip; ~58 min GPU), expect §ZONE_FLOOR PASS x3.
 - ▶ 2026-10-03 18:50 ROUNDS 4-6 (red1 "proceed, decide for me"). bim-ootb fix/fast-bake @75dae6d4 PUSHED (tree clean, OLD-box sidecars
   back in /tmp/wt-fastbake/buildings/patches). Runs + logs: session scratchpad c/ (V_*_opq5, *_freeze5/7, *_ctl6/cons6; v5-v7.sh).
   W2: §HUD_ROW_YIELD — the load-path card (opaque from arm, ruling §129.12/§129.29, ~970 px wide at [30,30]) covers the WHOLE top row:
