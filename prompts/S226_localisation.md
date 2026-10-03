@@ -1022,3 +1022,8 @@ The ERP already switches in place (`prompts/ERP_UI_LOCALES.md` §L4 "in place (p
    place: (a) no navigation event / reload, building + camera unchanged; (b) `§TRL_LEAK` 0 on the in-scope screens after
    each switch (same scope as W-VIEWER-I18N); (c) negative control: a module that does not listen to `trl-ready` shows
    ≥1 leak after a switch. INCONCLUSIVE if 0 strings judged.
+6. **Info panel (red1, 2026-10-04: "Oh yes the info panels.. i forgot..")** — its static labels are keyed (#1831:
+   `ui_class`, `h_storey`, …) but the blocks filled on pick are English: `#info-cost` (Planned→Committed, "⏱ View at this
+   moment") and `#info-4d` (construction window), both written by `viewer/find_erp_push.js` (0 `_trl(` calls on origin/main
+   01f38710), plus its status lines ("Folding Project Order…", "Project Order: … lines · contract …"). Key them in the
+   same AD_Message CSV + XML, re-render on `trl-ready`, include in the leak scope (pick an element, then judge the panel).
