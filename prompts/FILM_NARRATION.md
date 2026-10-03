@@ -524,6 +524,13 @@ English thus, but when quirps comes in both subtitles."
   deterministic kernel — one signed op-log, folded into all three — is the solution, and that a lone retired author plus
   AI, kept honest by witnesses, got there.
 
+**§10 PACE + REGISTER (red1, 2026-10-04: "it may run slowly this documentary.. rather technical, it is a good testimony from
+me.. as we already got the earlier more trailer style"):** the trailers (§7, §8, §9) carry the fast advert register; THIS
+film is the slow, technical TESTIMONY. Let lines breathe; give each NOVEL ART explainer the time it needs (40–90 s, not
+20–30 s); hold red1's QUOTE cards longer (~5 s); the F/M narrators stay warm with his humour but stop chasing a beat. No
+hard length cap — the earlier "≈ 9–10 min" estimate is lifted; expect ~15–25 min. Quips in other languages stay sparse.
+The "fast — and furious" style lines in the segments below are softened to the slower register when the script is fitted.
+
 **§10 DIRECTION 2026-10-04 (red1, brainstorm — "suggest technical details that are novel art.. such as in the Find panel how
 it tries to analyse 3D metadata IFC to derive room dimensions towards which is a corridor, room, isolated leading to the
 difficult path finding. Relate abit on its initial difficulty of things. We got the git history to remind back. The film
