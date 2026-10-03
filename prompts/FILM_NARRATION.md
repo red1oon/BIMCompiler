@@ -684,6 +684,30 @@ and roll with a few more graphically upbeat types.. just slide roll them quickly
   of ERP. | F: Comparisons, architecture, audits… | M: …one page each, every claim with a source.
   (Source column: the doc titles above; "twenty years" = ADempiere 2006 → today, public record.)
 
+### §10 VIBE PROGRAMMING — the speed, where it drifted, where it sailed (red1, 2026-10-04: "online in github.io it is laid
+out well.. also on the Vibe Programming, say abit the time multipliers range and on which was drifting bad and the one on
+ERP was smooth sailing as it is out of the geometry blindspot")
+- **Capture:** the LIVE docs site (red1oon.github.io/BIMCompiler, laid out well) — the doc rolls use the published pages,
+  not the markdown. Page: docs/VibeProgramming.md, nav "Vibe Programming — AI + Domain Expertise".
+- **The multiplier (doc's own table):** Bonsai RTree federation viewer, ~13,000 lines, 1,063,911 elements — "~3 weeks"
+  Claude-assisted vs "6–9 months" expert team / "12–18 months" single senior / "9–12 months" outsourced
+  → **≈ 9× to 26×** (derived: 6 mo ≈ 26 wk ÷ 3 wk ≈ 9; 18 mo ≈ 78 wk ÷ 3 = 26 — say "about ten to twenty-five times",
+  name it as our arithmetic on the doc's estimates). Second ruler: the ERP fold's code ratio "89×, 76×, 51×, now ~26×"
+  (TwoAppsOneKernel.md — falls as real coverage grows; "not feature parity").
+- **Where it drifted badly — geometry:** the doc's rule: "LLMs extrapolate well from established patterns. They
+  hallucinate when there is no pattern to follow" — spatial reasoning (does a wall sit on a slab, do two columns
+  overlap) has no framework precedent → the drift points (LAST_MILE_PROBLEM.md). Live example: a 4D lane "produced three
+  retractions of the same finding in one session" (VibeProgramming.md Capability Snapshot 2026-08-27; 4D_MODEL_INTEGRITY.md).
+- **Where it sailed — ERP:** iDempiere's tables, AD_Val_Rule and BOM explosion are "20 years of open-source ERP code in
+  training data" (VibeProgramming.md table) — out of the geometry blind spot. Evidence: ten ERP PRs in one day
+  (bim-ootb #1820–#1829, 2026-10-03, FS-12…FS-19 + 9 UI languages).
+- **Lines (F/M):** F: How fast is fast? | M: One viewer — three weeks. The estimate for a hired team: six months to a
+  year and a half. | F: Ten to twenty-five times. | M: But not everywhere. Ask a language model whether a wall sits on a
+  slab… | F: …and it guesses. No pattern to copy. | M: Geometry drifted — the same finding retracted three times in one
+  session. | F: The ERP? Smooth sailing. Twenty years of iDempiere it had already read. | M: Ten ERP features in a single day.
+- **Visual:** an explainer diagram (§10 EXPLAINER) — two lanes side by side, GEOMETRY (no precedent → drift → witness)
+  vs ERP (pattern → fold → ship), highlight moving with the lines; then the live VibeProgramming page rolled.
+
 ### §10 NOVEL ART — candidate list (mined 2026-10-04 from 2Dto3D + bim-compiler + bim-ootb history; read-only research)
 Each: idea · the first struggle · the breakthrough (source) · what to show. Pick ~7 for the film; each = one explainer diagram.
 1. **Rooms + paths from walls and doors** — "An IFC file says where the walls and doors are. It does not say how to walk
