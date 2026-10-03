@@ -829,4 +829,19 @@ verify the replacement actually works at render time.
 ### §R2 NEXT — leak scan on the trailer's Viewer screens, then translate those only
 Count hardcoded English on the screens the tech trailer shows (Viewer open on Hospital with `find=IfcWall`, Find
 panel, cost line). Translate for the 9 ERP languages; witness = 0 English leaks on those screens per language.
+**§R2 FORMAT RULE — iDempiere convention (red1, 2026-10-03: "we follow idempiere convention where lingo/locales are
+stored in XML. Maintain the same original format. Been idempiere like is vital where applicable").**
+- The Viewer's translatable strings are **AD_Message** entries: `Value` = the key, `MsgText` = the English shown today.
+- Each language's translations are kept as **`AD_Message_Trl_<lang>.xml` in the exact `org.compiere.install.Translation`
+  export format**, copied from a real pack (`~/.cache/erp_trl/gq/es_CO/AD_Message_Trl_es_CO.xml`):
+  `<idempiereTrl language="<lang>" table="AD_Message">` → `<row id="<AD_Message_ID>" trl="Y">` →
+  `<value column="MsgText" original="<English>">…</value>` + `<value column="MsgTip" original=""/>`.
+  Ids for app-own messages sit above 999999 (`MTable.MAX_OFFICIAL_ID`, the export's own bound for non-official rows).
+- The XML is the source that gets edited and versioned. Anything the page loads at runtime (JSON, as the ERP does today)
+  is BUILT from it, the way iDempiere loads XML into its `_Trl` tables — never hand-edited.
+- The existing 18 `viewer/locales/*.js` packs hold labels + rates + currency together. §R2 moves only the LABELS to the
+  XML; rates/currency stay where they are (they are cost data, not language — S226 §DO NOT).
+- Note on the ERP lane (not changed here): it reads iDempiere XML packs but its labelled machine supplement
+  `erp/i18n/machine/<lang>.json` is a flat `{English: translation}` JSON, not the XML format. Bringing it into the same
+  XML form belongs to `prompts/ERP_UI_LOCALES.md`.
 ### §R3 LATER — Phase 4 file list above (measure/city/import/main/tools/panels), Phase 5, open issues I-1, I-5.
