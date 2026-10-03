@@ -149,6 +149,9 @@ Delivered so far (Hospital 0049, `~/Downloads/Hospital_narrated_dialogue_{v3,MAL
 | Spanish | Edge (`… es`) | es-ES Elvira / Álvaro | cloud | rise only if voice doesn't |
 | Mandarin | Edge (`… zh`) | zh-CN Xiaoxiao / Yunxi | cloud | NONE (tonal) · font Noto Sans CJK SC |
 | Cantonese | Edge (`… yue`) | zh-HK HiuMaan / WanLung | cloud | NONE (tonal) · Traditional script, Noto Sans CJK HK |
+| German | Edge (`… de`) | de-DE Katja / Conrad | cloud | rise only if voice doesn't |
+| Arabic | Edge (`… ar`) | ar-SA Zariyah / Hamed | cloud | NONE · RTL subtitles (libass built with fribidi + harfbuzz) |
+| Japanese | Edge (`… ja`) | ja-JP Nanami / Keita | cloud | NONE (pitch accent) · Noto Sans CJK JP |
 New language: add a `CFG` entry in `film_narration_fit_edge.py` (voices via `edge-tts --list-voices`, wh-word regex,
 `pitch=False` if tonal, font with the script's glyphs — `fc-list :lang=xx`, credit line in that language).
 ⚠ Edge = script text sent to Microsoft (unofficial, no SLA); clips cached by (text,voice,rate) in

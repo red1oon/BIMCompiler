@@ -1,6 +1,6 @@
 # Fitter v3-edge (Microsoft Edge neural TTS, cloud; Malay, Thai, French, Spanish, Mandarin). Same fit / beat / chunk rules as
 # film_narration_fit_kokoro_v3.py. Spec: FILM_NARRATION.md §4 2026-10-03 11:40.
-# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh|yue   (rate base = +0%; re-voice up to +10%)
+# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh|yue|de|ar|ja   (rate base = +0%; re-voice up to +10%)
 # Malay: yes/no question gets the PSOLA rise only if the voice's own ending is below +1 st (measured first).
 # Thai: tonal, so no pitch edit; §NARR_TONE is reported only.
 # Clips cached in ~/.local/share/film_narration/cache_edge/<sha1>.wav keyed on (text, voice, rate%).
@@ -24,6 +24,15 @@ CFG={'ms':dict(VOX={'F':'ms-MY-YasminNeural','M':'ms-MY-OsmanNeural'},
      'zh':dict(VOX={'F':'zh-CN-XiaoxiaoNeural','M':'zh-CN-YunxiNeural'},
                WH=r'(什么|为什么|怎么|多少|哪|谁|几)',pitch=False,font='Noto Sans CJK SC',
                credit='声音：AI 生成（Microsoft Edge TTS，云端）  ·  脚本导演 red1'),
+     'de':dict(VOX={'F':'de-DE-KatjaNeural','M':'de-DE-ConradNeural'},
+               WH=r'\b(was|warum|wieso|wie|wo|wer|welche[rsnm]?|wann|wieviel)\b',pitch=True,font='DejaVu Sans',
+               credit='Stimmen: KI-generiert (Microsoft Edge TTS, Cloud)  ·  Drehbuch: red1'),
+     'ar':dict(VOX={'F':'ar-SA-ZariyahNeural','M':'ar-SA-HamedNeural'},   # subtitles right-to-left (libass + fribidi)
+               WH=r'(ماذا|لماذا|كيف|أين|من|متى|كم|ما)',pitch=False,font='Noto Sans Arabic',
+               credit='الأصوات: مولدة بالذكاء الاصطناعي (Microsoft Edge TTS، سحابي)  ·  إخراج النص red1'),
+     'ja':dict(VOX={'F':'ja-JP-NanamiNeural','M':'ja-JP-KeitaNeural'},     # pitch-accent language: no pitch edit
+               WH=r'(何|なに|なぜ|どう|どこ|誰|だれ|いつ|いくつ|どれ)',pitch=False,font='Noto Sans CJK JP',
+               credit='音声：AI生成（Microsoft Edge TTS、クラウド）  ·  脚本 red1'),
      'yue':dict(VOX={'F':'zh-HK-HiuMaanNeural','M':'zh-HK-WanLungNeural'},   # Cantonese (Hong Kong), Traditional script
                WH=r'(咩|乜|點|幾|邊|誰)',pitch=False,font='Noto Sans CJK HK',
                credit='聲音：AI 生成（Microsoft Edge TTS，雲端）  ·  劇本導演 red1')}[LANG]
