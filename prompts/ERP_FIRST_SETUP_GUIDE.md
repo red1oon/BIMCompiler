@@ -36,29 +36,34 @@ Legend for **Expected verdict** (pinned in the witness as `EXPECT`; a change in 
 | S03 | Create a new company | create a company ([companies](https://www.odoo.com/documentation/17.0/applications/general/companies.html)) | System login → **Initial Client Setup** ([Process 53161](https://wiki.idempiere.org/en/Initial_Client_Setup_(Process_ID-53161))) | System → menu "Initial Tenant Setup" → name + admin → Create → a new AD_Client id ≥ 17, Enter lists its admin | V |
 | S04 | Pick the company currency | any currency ([multi-currency](https://www.odoo.com/documentation/17.0/applications/finance/accounting/get_started/multi_currency.html)) | any currency in the setup form ([Currency](https://wiki.idempiere.org/en/Currency_(Window_ID-115))) | wizard currency `<select>` option count == active C_Currency; the pick (MYR) is the schema + price-list currency | ~~G (1 = USD only)~~ → **V (FS-3, §FS2g)** |
 | S05 | Chart of accounts | localisation package ([chart of accounts](https://www.odoo.com/documentation/17.0/applications/finance/accounting/get_started/chart_of_accounts.html), [fiscal localizations](https://www.odoo.com/documentation/17.0/applications/finance/fiscal_localizations.html)) | default CoA or your own CSV file ([Account Element](https://wiki.idempiere.org/en/Account_Element_(Chart_of_Accounts)_(Window_ID-118))) | `C_ElementValue` rows for the new client == 311 | V |
+| S05b | My own chart of accounts from a file | localisation package | `UseDefaultCoA`/`CoAFile` (MSetup.java:455-560, NaturalAccountMap) | a 2nd tenant from iDempiere's AccountingUS.csv 53-key subset: C_ElementValue == file distinct values, every required key → file account; minus C_RECEIVABLE_ACCT → refused, 0 clients | **V (FS-18, §FS2p)** |
 | S06 | Calendar / fiscal periods | fiscal year + lock dates ([year-end](https://www.odoo.com/documentation/17.0/applications/finance/accounting/reporting/year_end.html)) | current year, 12 monthly periods (`MYear.java:250` loops `month < 12`; [Calendar](https://wiki.idempiere.org/en/Calendar_Year_and_Period_(Window_ID-117))) | `C_Period` count for the new client and its year; first/last period names + dates | ~~G (1 period, year 2024)~~ → **V (FS-2, §FS2g)** |
 | S07 | Document types exist | journals/sequences pre-made | ~all doc types made by MSetup (`MSetup.java` creates them; [Document Type](https://wiki.idempiere.org/en/Document_Type_(Window_ID-135))) | `C_DocType` rows for the new client by DocBaseType == 42 | ~~G (ARI only)~~ → **V (FS-1, §FS2c)** |
 | S08 | My own organization is offered on a new record | company is preselected | `#AD_Org_ID` context default, org picker lists it | org picker on Business Partner → New contains the new tenant's HQ | G → **FIX-A** |
 | S09 | The defaults setup made are visible in their own windows | yes | yes (MSetup writes `AD_Org_ID=0`, `MSetup.java:179`) | Business Partner / Price List / Calendar grids for the new tenant show ≥ 1 record each | G → **FIX-A** |
 | S10 | Create a customer | Contacts ([sales](https://www.odoo.com/documentation/17.0/applications/sales/sales.html)) | [Business Partner](https://wiki.idempiere.org/en/Business_Partner_(Window_ID-123)) | New → Search Key + Name + group + Customer ✓ → Save → `§CRUD validate … ok` + `§CRUD-PERSIST` + grid count +1 | V |
 | S11 | Create a vendor | same, as vendor | same window, Vendor ✓ | as S10 with Vendor ✓ | V |
+| S10b | A customer gets an address; an order for it saves | contact address | Location editor (WLocationEditor) + MOrder.setBPartner | Location tab → Address… → C_Location == typed; BP location named by makeUnique; SO header REJECTED before / persists after | **V (FS-13, §FS2k)** |
 | S11b | Right after a 2nd New+Save the list shows each record once | yes | yes | grid `data-ad-record` ids after the vendor save have no duplicate (found executing S11: `[-1,-1,-2]`, reload shows 2); == the reload count | ~~G~~ → **V (FS-8, §FS2h)** |
 | S12 | Create a product (needs a tax category) | product form ([pricing](https://www.odoo.com/documentation/17.0/applications/sales/sales/products_prices/prices/pricing.html)) | [Product](https://wiki.idempiere.org/en/Product_(Window_ID-140)) + [Tax Category](https://wiki.idempiere.org/en/Tax_Category_(Window_ID-138)) made by MSetup (`MSetup.java:1252` uses `C_TaxCategory_ID`) | Product → New: the Tax Category picker offers ≥ 1 row OF THIS tenant, and it is the setup product's | ~~G~~ → **V (FS-4, §FS2g)** |
 | S13 | Payment terms | ([payment terms](https://www.odoo.com/documentation/17.0/applications/finance/accounting/customer_invoices/payment_terms.html)) | MSetup inserts one (`MSetup.java:1418-1426`; [Payment Term](https://wiki.idempiere.org/en/Payment_Term_(Window_ID-141))) | `C_PaymentTerm` rows for the new client: one Immediate/0/IsDefault | ~~G (0)~~ → **V (FS-4, §FS2g)** |
 | S14 | Pickers only show MY company's data | yes (company rules) | role access SQL on every lookup (client + org) | Sales Order → New in the new tenant: BP picker rows whose AD_Client_ID ∉ {0, mine} == 0, own ≥ 1 | ~~G (leak)~~ → **V (FS-5, §FS2d)** |
 | S15 | Sales order in the new company | ([sales](https://www.odoo.com/documentation/17.0/applications/sales/sales.html)) | [Sales Order](https://wiki.idempiere.org/en/Sales_Order_(Window_ID-143)) | Sales Order → New: Target Document Type picker option count == val-rule-133 SQL count, 0 foreign | ~~G (0 — blocked by S07)~~ → **V (FS-1, §FS2c)** |
+| S15b | A sales order in the NEW company prices its line and completes | yes | MSetup price list/version/price + Login.loadDefault | tick Sales Price list → SO → line derives price/UOM/tax == oracle, priced from the tenant's own list → CO | **V (FS-12, §FS2j)** |
 | S16 | Sales order header (demo company GardenWorld) | — | as above | New → BP + "Standard Order" → Save → `§CRUD-PERSIST key=c_order` | V |
 | S17 | Product on the line fills price / UOM / tax | yes (pricelist) | CalloutOrder.product → price, UOM, tax | derived PriceEntered / C_UOM_ID / C_Tax_ID on a NEW order's line == SQL oracle; no-price product derives none | ~~G~~ → **V (FS-6, §FS2e)** |
 | S18 | Line saved when user types UOM, tax and price | — | — | `§CRUD validate key=c_orderline verb=create ok` | V |
 | S19 | Complete the order | Confirm | DocAction Complete | `[data-doc-action=CO]` → `§CRUD process committed … to=CO verifyChain=ok` | V |
 | S20 | Completing makes shipment / invoice / journal | delivery + invoice ([invoices](https://www.odoo.com/documentation/17.0/applications/finance/accounting/customer_invoices.html)) | Generate Shipments / Invoices; POS/Warehouse order auto-generate ([Shipment](https://wiki.idempiere.org/en/Shipment_(Customer)_(Window_ID-169)), [Invoice](https://wiki.idempiere.org/en/Invoice_(Customer)_(Window_ID-167)), [Payment](https://wiki.idempiere.org/en/Payment_and_Receipt_(Window_ID-195))) | session-typed Standard Order → 0 docs; POS Order → shipment + invoice (counts from the doc type row) | ~~G~~ → **V (FS-7, §FS2f)** |
+| S20b | The shipment/invoice Complete creates are readable and posted | journal items | Doc_Invoice / Doc_InOut via the Accounting Processor | tip rows carry BP/doctype/totals; fact_acct per doc == SQL oracle, balanced, Posted=Y | **V (FS-15, §FS2m)** |
 | S21 | The completed order survives a reload | yes | yes | reload → `readTip('c_order', id) == 'CO'` | V |
 | S22 | Purchase order create + complete (demo company) | ([purchase](https://www.odoo.com/documentation/17.0/applications/inventory_and_mrp/purchase.html)) | [Purchase Order](https://wiki.idempiere.org/en/Purchase_Order_(Window_ID-181)) → [Material Receipt](https://wiki.idempiere.org/en/Material_Receipt_(Window_ID-184)) | header + line + Complete → `to=CO verifyChain=ok` | V |
 | S23 | See the journal a document posts | journal items ([cheat sheet](https://www.odoo.com/documentation/17.0/applications/finance/accounting/get_started/cheat_sheet.html)) | Posted button → Accounting facts | Sales Invoice (demo) → Posted button → `§PREVIEW-LIVE … coverage=complete balanced=true` | V |
 | S24 | Trial balance shows MY company's books in the schema I chose | ([reporting](https://www.odoo.com/documentation/17.0/applications/finance/accounting/reporting.html)) | [Trial Balance](https://wiki.idempiere.org/en/Trial_Balance_(Report_ID-310)): `TrialBalance.java:161` `C_AcctSchema_ID=<param>`, `:400` `Fact_Acct WHERE AD_Client_ID=<client>` | `?process=310` → schema id → Run → result table (rows, ΣDr, ΣCr) == oracle `GROUP BY` over `fact_acct` for (client 11, schema 101) | G → **FIX-B** |
 | S24b | The Accounting Schema parameter is a dropdown | — | TableDir lookup (AD_Reference 19) | `[data-proc-param=C_AcctSchema_ID]` is SELECT, options == SQL, 0 foreign | ~~G~~ → **V (FS-9, §FS2i)** |
-| S25 | Import data (CSV / import loader) | ([import/export](https://www.odoo.com/documentation/17.0/applications/general/export_import_data.html)) | Import loader windows ([Import Business Partner](https://wiki.idempiere.org/en/Import_Business_Partner_(Window_ID-172))) | (a) Help → DIY tab offers agent downloads; (b) Import Business Partner window renders a table | a V · b G |
-| S26 | Save / back up my company | DB manager backup | DB dump | `window.ErpPersist` (signed backup) present on `idempiere.html`? | G |
+| S24c | Aging report | aged receivables | [Aging](https://wiki.idempiere.org/en/Aging_(Report_ID-238)) (Aging.java, MAging.add, RV_OpenItem) | process 238 at two statement dates: bucket totals == oracle; vacuity control INCONCLUSIVE | **V (FS-14, §FS2l)** |
+| S25 | Import data (CSV / import loader) | ([import/export](https://www.odoo.com/documentation/17.0/applications/general/export_import_data.html)) | Import loader windows ([Import Business Partner](https://wiki.idempiere.org/en/Import_Business_Partner_(Window_ID-172))) | (a) Help → DIY tab offers agent downloads; (b) CSV → Import File Loader → I_BPartner → ImportBPartner → BPs == CSV | a V · b ~~G~~ → **V (FS-16, §FS2n)** |
+| S26 | Save / back up my company | DB manager backup | DB dump | backup (UI) → wipe → tampered copy rejected → restore (UI) → ops/tip/BPs equal, also after reload | ~~G~~ → **V (FS-17, §FS2o)** |
 
 ## §FS2 — FIX-A spec (the only fix built in this lane; bounded, extracted)
 **Gap (S08, S09).** Measured before the fix (`/tmp/wt-erpguide` @ `55f54150`, probe logs):
@@ -483,3 +488,99 @@ M_Cost) — a fact set with a wrong account or amount fails.
   114.43, 91+ 161.12 == the witness's re-derived oracle; vacuity control BP 112 → `§AGING-VACUOUS … verdict=INCONCLUSIVE`. Live ==
   minify(1968f642) for ad_process.js, idempiere.html, sw.js (this time the deploy-pages minified artifact was served — the
   check script tries raw, then minify, and names which one matched).
+
+## §FS2n — FS-16 spec: Import Business Partner — a CSV comes in through the Import File Loader and becomes business partners (2026-10-03, before code)
+**Issue (S25b, FS-10):** window 172 *Import Business Partner* says `table I_BPartner not in curated seed` — the AD for the window
+(tab 441 → AD_Table 533), the loader form (AD_Form 101 `org.compiere.apps.form.VFileImport`), the format (AD_ImpFormat 101
+"Example BPartner", 9 rows) and the process (AD_Process 194 `org.compiere.process.ImportBPartner`) are all in the bundle; the
+staging TABLE is not, no form renderer exists for 101, and no process handler for 194.
+**Oracle (iDempiere):** DDL of `i_bpartner` = the live Postgres `information_schema.columns` (49 columns). Loader:
+`ImpFormat.parseFlexFormat` (`ImpFormat.java:467-538`: comma/tab/custom delimiter, `"…"` quoting with `""` escape, empty field
+skipped), `parseLine` (constant rows → their ConstantValue, `ignoreEmpty`), `updateDB` (`:547-680`: one new row per non-empty
+line with AD_Client_ID / AD_Org_ID of the session, IsActive='Y', Processed='N', I_IsImported='N'; I_BPartner has no unique
+columns, `:174-177`, so every line inserts). Process: `ImportBPartner.doIt` (`ImportBPartner.java:92-605`): default client/org,
+GroupValue ← the client's default group, C_BP_Group_ID by GroupValue (else `ERR=Invalid Group`), C_Country_ID by CountryCode
+(else `ERR=Invalid Country` when an address is given), region default/by name (error only when the country HasRegion), existing
+BP by Value (→ update), existing contact by name, `Value is mandatory`; then per Value (first row = the BP, later rows =
+contacts): `new MBPartner(impBP)` (`MBPartner.java:310-335` Value/Name fallbacks, group) + `setTypeOfBPartner`, a new
+`MLocation(country, region, city)` + `MBPartnerLocation` when Country+Address1+City, a new `MUser(bp)` when ContactName or EMail;
+the staging row gets C_BPartner_ID / C_BPartner_Location_ID / AD_User_ID, I_IsImported='Y', Processed='Y'.
+**Fix:** (a) DDL via the FS-15 self-heal patch (`erp/patches/build_ad_seed_patch.sh` adds `CREATE TABLE IF NOT EXISTS i_bpartner`
+from the live schema). (b) `idempiere.html` `_registerForm('org.compiere.apps.form.VFileImport')`: format picker (AD_ImpFormat
+of the session client or 0), file input, preview, Save → one signed group of `CRUD_CREATE i_bpartner` rows (`§IMPLOADER`). (c)
+`ad_process.js` handler `org.compiere.process.ImportBPartner` (validation + creation as ONE signed group of CRUD ops, FKs by
+`{__opRef}`; `§IMPORT-BP inserted= updated= errors=`), the host commits it (`window.__crud.applyOpGroup`). Not ported, named:
+interest areas, greeting lookup when absent from the bundle, DeleteOldImported, password, BP acct rows (MBPartner.afterSave).
+**Witness (W-ERP-FIRST-SETUP S25b G→V, BY VALUE):** a 3-line CSV (one line with a quoted comma) → loader → `§IMPLOADER rows=3`;
+window 172 then lists those 3 staging rows; process 194 → `inserted=3 errors=0`; oracle from the CSV itself: 3 new C_BPartner
+(tip) with exactly those Value/Name, each with a C_Location (Address1, City, Postal, Country=US per the format's constant) and
+a contact AD_User named ContactName; the staging rows read I_IsImported='Y'. Negative control: re-running 194 imports 0.
+
+## §FS2o — FS-17 spec: signed Backup / Restore on the classic ERP page (2026-10-03, before code)
+**Issue (S26, FS-11):** `window.ErpPersist` is absent on `idempiere.html`; only `glassbowl.html` loads `erp_persist_ui.js` (+ its
+dependency `erp_replica_client.js`). Read before wiring: `erp_persist_ui.js _freshDb` builds its throwaway validation db with
+`initSqlJs({locateFile: 'sqljs/'+f})` — on idempiere.html `initSqlJs` is the FTS5 build (`lib/sql-wasm-fts5.js`), so pairing it
+with `sqljs/sql-wasm.wasm` would mix two different sql.js builds.
+**Oracle:** the module's own contract (W-PERSIST-SLICE / `erp/tests/poc_persist_wire.js`): backup = seal + verify the signed
+op-log, sign the tip with the device key, embed the public key + 8-hex fingerprint; restore = replay into a THROWAWAY db,
+recompute tip == signed tip AND signature verifies under the embedded key, only then adopt into the live sidecar + persist.
+iDempiere itself has no in-app backup (a DB dump by the administrator) — this is the browser ERP's equivalent and is named so.
+**Fix:** `idempiere.html` loads `erp_replica_client.js` + `erp_persist_ui.js` and mounts `ErpPersist.renderInto` in a header
+"Backup" panel (`[data-erp-backup]`); `erp_persist_ui.js _freshDb` reuses the page's already-initialised `window.SQL` when present
+(same build as the live db), else its old path (glassbowl unchanged). Marked `FS-17`; sw +1.
+**Witness (W-ERP-FIRST-SETUP S26 G→V, BY VALUE):** on idempiere.html `window.ErpPersist` present and the control mounted; click
+Backup → the downloaded file's `ops.length` == the live `kernel_ops` row count and its tip == `KernelOps.verifyChain().tip`; WIPE
+(delete the sidecar IndexedDB, reload: kernel_ops count 0 — the wipe is proven, not assumed); Restore that file through the UI
+→ `§INTEG-WIRE-B restore validate tipMatch=true sigValid=true`, kernel_ops count == before, and the session-created Business
+Partners (listTip) == before by id. Negative control: the same file with ONE op's parameters altered is REJECTED (tipMatch=false)
+and adopts nothing.
+
+## §FS2p — FS-18 spec: Initial Tenant Setup can load your own chart of accounts file (2026-10-03, before code)
+**Issue (guide "Not yet: loading your own chart of accounts", new step S05b):** the wizard always folds the 311-account default.
+Process 53161 carries `UseDefaultCoA` (seq 220) and `CoAFile` (seq 230).
+**Oracle (iDempiere):** `MSetup.createAccounting` (`MSetup.java:455-560`) → `NaturalAccountMap.parseFile/parseLine`
+(`NaturalAccountMap.java:90-280`): quoted fields have their commas replaced by spaces, `",,"` → `", ,"`, a line with < 9 tokens or a
+`[Header]` token is skipped, columns A..H = Value, Name, Description, Type (first char), Sign (first char), DocControlled, IsSummary,
+Default_Account; a line with an EMPTY Default_Account is ignored; a summary line is kept only when its key is `SUMMARY`; the same
+Value on several lines = ONE account serving several keys. `saveAccounts` writes one C_ElementValue per distinct Value. Then
+`createAccountingRecord(C_AcctSchema_GL / C_AcctSchema_Default)` (`:683-684`, `:877-900`) calls `getAcct(column)` for EVERY active
+column of AD_Reference 25 (Account) on those tables — 53 in this dictionary — and a key the file does not define throws
+`Account not defined: <KEY>` (`:911-919`): the WHOLE setup is rolled back.
+**Fix:** `genesis.js` `parseCoA(text)` (the parseLine port) + `birthTenant({coa, requiredKeys})`: G3 from the file's distinct values,
+G4 wires each required key from the file's key map; a missing one throws `Account not defined: KEY` before any op exists (nothing is
+installed). The wizard offers "iDempiere default (311)" or "Load your own file (CSV, iDempiere AccountingUS format)", reads the
+required keys from the AD (`AD_Column` ref 25 on the two tables), and prints `§GENESIS-COA`. Default path unchanged byte-for-byte.
+**Witness (S05b, BY VALUE):** fixture `erp/tests/fixtures/coa_small_AccountingUS.csv` = the header + the 53 lines of iDempiere's
+own `data/import/AccountingUS.csv` whose Default_Account is a required key (extract, not authored); a second tenant made with it:
+C_ElementValue count == the distinct Values the witness parses from the file itself (53) and, for every required key,
+`C_AcctSchema_Default/GL.<key>` → C_ValidCombination → C_ElementValue.Value == the file's line for that key. Negative control: the
+same file minus the `C_RECEIVABLE_ACCT` line → the wizard shows `Account not defined: C_RECEIVABLE_ACCT` and NO client is created.
+- ✅ **FS-15 readable + posted Complete documents §FS2m** (S20b new, S20 extended) — **#1823 → dcb3d5ac**, sw v805. Invoice -17 (doctype
+  117, BP 118, GrandTotal 61.75, Posted=Y) facts `[[518,61.75,0],[758,0,61.75]]` == oracle; shipment -15 facts `[[430,51.45,0],[742,0,51.45]]`
+  == oracle; cost 51.45 == live iDempiere M_Cost (Average PO). Needed a DB fix: GardenWorld M_Cost Average-PO/Fifo rows missing
+  from the bundle → `erp/patches/ad_seed.db.sql` (generated from the idempiere Postgres DB by `erp/patches/build_ad_seed_patch.sh`)
+  + the ad_seed self-heal loader in idempiere.html boot (`§AD-SEED-PATCH statements=362 changed=95`, then `changed=0`). Live ==
+  minify(dcb3d5ac) for crud_overlay.js, sw.js; raw for idempiere.html and patches/ad_seed.db.sql.
+- ✅ **FS-16 Import File Loader + ImportBPartner §FS2n** (S25b G→V) — **#1824 → bc3f65ea**, sw v806. `§IMPLOADER saved rows=3`, window 172
+  0→3, `§IMPORT-BP staged=3 inserted=3 locations=3 contacts=3 errors=0 ops=15`, every BP/location/contact == the CSV, rerun
+  inserted=0. Live == minify(bc3f65ea) for ad_process.js, crud_overlay.js, sw.js; raw for idempiere.html, glassbowl.html, the patch.
+- ✅ **FS-17 Backup / Restore on idempiere.html §FS2o** (S26 G→V) — **#1825 → 64e0b389**, sw v807. Backup 47 ops == live, wipe → 0,
+  tampered copy REJECTED (tip), UI restore `tipMatch=true sigValid=true` → 47 ops, same tip, same 5 BPs, same after reload.
+  Found + fixed: `__crud.persist()` did not exist, so any restore was lost on reload (`poc_persist_wire` W6 red on main → 6/6).
+- ✅ **FS-18 own chart of accounts §FS2p** (S05b new) — **#1826 → 5f82edfd**, sw v808. C_ElementValue 53 == file distinct values;
+  53/53 required keys → the file's account; minus C_RECEIVABLE_ACCT → `Account not defined: C_RECEIVABLE_ACCT`, 0 clients. Found +
+  fixed: no born tenant ever had a C_AcctSchema_GL row (MSetup.java:683); now born with its 7 accounts (extracted). Genesis twin
+  (`build/erp/genesis.js`, `genesis_seed.js`) := bim-ootb 5f82edfd; W-GENESIS-MINIMAL 16/0, W-GENESIS-RESIDENT 15/0.
+- Live == minify(5f82edfd) for genesis.js, genesis_seed.js, idempiere.html, sw.js, erp_persist_ui.js, common/about_diy.js,
+  crud_overlay.js, genesis.html (FS-17 + FS-18 files).
+- **Final journey on origin/main 5f82edfd (served bytes == minify(5f82edfd)): 34 VERIFIED / 0 GAP / 0 INCONCLUSIVE / 0 page errors**
+  (29 → 34 steps: S05b, S10b, S15b, S20b, S24c added; S25b, S26 flipped). Guide `docs/ERP_FirstSetup.md` rewritten from that run:
+  no *Not yet* box remains.
+- Regression across the lane (each identical before/after on main): genesis sysadmin 13/3 + resident 12/1 (§FS.3 stale pins),
+  wizard 7/0; PARITY valrule 23/23, reftable 12/12, mandatory 18/18, fieldset 30/30, reflist 14/14, docno 10/10;
+  ad_folded_crud_live 7/14, critic_process_signed 5/18, critic_odoo_process 4/7, critic_lensswap FAIL (all pre-existing);
+  bim-compiler W-AD-PROC-LIVE PASS, W-GENESIS-MINIMAL 16/0, W-GENESIS-RESIDENT 15/0.
+- Named, not ported (the code refuses or says so, never approximates): Aging DateAcct=Y / currency conversion; ImportBPartner
+  interest areas / greeting creation / DeleteOldImported; POS payments on Complete; fact currency conversion and multi-schema
+  posting; session-created invoices in Aging and Trial Balance (they read the bundle); BP acct rows for imported/session BPs
+  (MBPartner.afterSave) — a session BP's invoice would not post until that is ported.
