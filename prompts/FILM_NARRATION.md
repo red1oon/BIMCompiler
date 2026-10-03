@@ -183,6 +183,29 @@ New language: add a `CFG` entry in `film_narration_fit_edge.py` (voices via `edg
 edge-tts, praat-parselmouth); `kokoro/` models; `cache_edge/`. Scratch clips/plans are lost on reboot — re-run step 3.
 **Still open:** confirm "Boston" (IFC site = likely Revit default location); a native Thai listener for question tone.
 
+## ▶ PLAYBOOK B — red1's POLYGLOT TRAILER style (settled 2026-10-03; v1 + v3 kept as POC)
+**What it is:** one film that is three things at once — *multilingual demo, setup/feature trailer, advert*
+(red1: "a show killing 3 birds at once"). Reference: `~/Downloads/ERP_Polyglot_9languages_v3_…mp4` (v1 kept for contrast).
+**Rules (red1's corrections, in order — don't re-ask):**
+1. **One continuous take.** The app is driven live by a headless recorder; no cuts, no splicing ("all played out in the
+   same film clip"). Language switches happen ON SCREEN (in-app picker, ~0.1 s), data carries straight through.
+2. **Open with a greeting round:** Hi · Bonjour · ¡Hola! ¿Cómo está? · Guten Tag · السلام عليكم · 你好 · こんにちは · Apa khabar? ·
+   สวัสดี — voices alternating F/M, the login/landing screen re-rendering in each language (Arabic RTL), ~2 s each.
+3. **Slices of ~10 s, languages rotate** en→fr→es→de→ar→zh→ja→ms→th→en… ("rotate when we run out").
+4. **No language announcements** ("need not reintroduce each other's languages, just intersperse without formality").
+   Each stretch of speech is simply in the slice's language; the story is ONE flow across languages.
+5. **Narrate the step on screen**, as one coordinated flow ("naturally cover each coordinated step as if a single flow").
+6. **Fill the silence:** measure `§POLY_DUR` per slice vs its room, top lines up to ~85–100 % of the slice; target
+   silencedetect (−40 dB, ≥ 2 s) ≈ 0 gaps (v3: one 2.2 s gap in 180 s).
+7. **Advert register, factual:** short confident lines ("Nothing to install", "Un seul écran suffit…", "马上试试吧！"),
+   every number/claim traced to a `§` line or a documented guarantee, written into the TSV's source column.
+8. **≈ 3 minutes.** Subtitles in each line's language, font per script (driver handles it).
+**Pipeline:** recorder (`scripts/film_erp_polyglot.js` pattern: `BEAT_MIN` per beat, language-proof selectors, `ERP_REPO`
+to film a worktree) → dialogue TSV `id lang source SHORT DETAIL` → `prompts/film_narration_poly.py … measure` (durations) →
+re-record with BEAT_MIN → `film_narration_poly.py <tsv> <erp_film.log> <dir> <dur>` → `film_narration_mux.py poly …`.
+**The recorder doubles as a tester:** a step it cannot do is a real bug (FS-19 toggle/Save was found this way) — fix by
+spec + witness + PR, not by a recorder workaround.
+
 ## 5. §ERP-FILM — a narrated walkthrough of the ERP guide, recorded by a headless browser (spec 2026-10-03)
 **Ask (red1):** "Can AI also do a simulation movie of the ERP side? step by step as in the guide … I would have to do
 it manually, calling up the URL, click on.." → "proceed, first part about a minute or so to see how it turns out."
