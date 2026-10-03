@@ -271,7 +271,7 @@ in English as we haven't got the Viewer fully updated its translation. And it st
 manner. Make the movie also 3 mins long."
 **Style:** PLAYBOOK B, all rules. **Arc:** greeting round → System Monitor (what runs where: in-browser DB, op-log,
 service worker — the layers that are gone) → iDempiere as the model (the AD: windows/tabs/fields/callouts/val rules/
-processes rendered from AD tables — counts from the live DB) → AD features at work on screen → timeline (advanced ops)
+processes rendered from AD tables — counts from the live DB) → AD features at work on screen (DocAction buttons, the Graphics tab — red1: "the DocAction.. Graphics tab") → timeline (advanced ops)
 → Hospital Project Order → jump to the Viewer, Hospital, same element set (counts matched by § lines) → ENDS IN ENGLISH
 in the Viewer (its translation is incomplete) and stops there. ≈ 180 s. Every claim traced to a § line or a doc quote
 (file:line) in the TSV source column.
