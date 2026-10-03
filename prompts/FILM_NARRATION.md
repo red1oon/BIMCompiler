@@ -231,6 +231,13 @@ Edge en (Kokoro for English), fr-FR Denise/Henri, es-ES Elvira/Álvaro, de-DE Ka
 ar-AE), zh-CN Xiaoxiao/Yunxi, ja-JP Nanami/Keita, ms-MY Yasmin/Osman, th-TH Premwadee/Niwat. Fitter per segment by
 language (CFG entries exist for ms/th/fr/es/zh/yue; add de/ar/ja). Recorder: new PART=poly in
 `scripts/film_erp_first_setup.js` with a `LANG_PLAN` of (segment → login language → guide steps).
+**PRE-REQ DONE → `prompts/ERP_UI_LOCALES.md`** (bim-ootb PR #1827, W-ERP-I18N 9/9 PASS). Switch method = **IN PLACE, no
+relogin** (session, open windows, current record, grid/form mode kept). Selectors for the recorder: login card
+`page.selectOption('#idmp-login-lang', code)` (greeting round — re-renders the card before login, carries into the
+session); in session `page.selectOption('#idmp-lang', code)`; or `page.evaluate(c => ErpI18n.set(c), code)` (resolves
+`{lang,dir,ms}`). Codes: `en_US fr_FR es_ES de_DE ar zh_CN ja_JP ms_MY th_TH`. Measured `§I18N ms=` 7–22 ms (login),
+74–99 ms (session, 2 windows) — wait on the console line `§I18N lang=<code> ` before the next action; call
+`ErpI18n.preload()` once after load so no switch waits on a fetch. `?lang=<code>` sets the start language.
 
 ## 4. STATUS
 - 2026-10-03 16:20: ERP PART 1 — CANTONESE. Edge zh-HK HiuMaan (F) + WanLung (M); written Cantonese, Traditional
