@@ -1004,3 +1004,21 @@ HTTP 200 (81,107 B). Worktree `/tmp/wt-viewer-i18n` removed.
 Gantt / P6 drawer (53 strings) be translated now or stay English until those lanes settle? (b) the base dictionary's
 English is en_MY (British spelling: Storey/Labour/centre) — keep as the AD_Message base, or re-base on en_US as iDempiere
 does? (c) all new translations are machine-made and labelled so; a native review pass per language is the next quality step.
+
+### §R2c SPEC — 2026-10-04 — in-place language switch in the Viewer (Witness: W-VIEWER-LANG-INPLACE)
+**Why:** the Viewer trailer (`prompts/FILM_NARRATION.md` §8, PLAYBOOK B rule 1) switches language every ~10 s inside one
+continuous take. Today the flag picker (`toggleFlagPicker`) saves `bim_ootb_config.locale` and calls `location.reload()`
+— on `viewer.html` that re-downloads/re-streams the building (Hospital) and loses camera, selection and open panels.
+The ERP already switches in place (`prompts/ERP_UI_LOCALES.md` §L4 "in place (primary and only method)") — mirror it.
+1. `_TRL_LOADER.setLocale(code)` → Promise: fetch that locale's built label JSON + cost pack, re-merge `_TRL` (labels
+   AND cost), `applyTrlToDOM()`, `<html lang dir>`, persist `bim_ootb_config.locale` (+ rewrite a URL `lang=` as §R1.2b),
+   then dispatch `trl-ready` again with `detail.inplace=true`. No reload.
+2. The flag picker calls `setLocale` instead of reloading. Modules that build text once must re-label on `trl-ready`
+   (the ⋯ pill already does — #1831). Any panel that can't re-label is listed, not hidden.
+3. Cost: currency/rates switch with the locale (existing bundle). Numbers already on screen that were computed from the
+   old rates are recomputed by their owner on `trl-ready`, or listed as stale.
+4. Log: `§TRL_SWITCH from=<a> to=<b> ms=<n> relabelled=<n> leaks=<n>` per switch.
+5. Witness: on viewer.html with a small building loaded (SampleHouse, software GL), switch through all 18 locales in
+   place: (a) no navigation event / reload, building + camera unchanged; (b) `§TRL_LEAK` 0 on the in-scope screens after
+   each switch (same scope as W-VIEWER-I18N); (c) negative control: a module that does not listen to `trl-ready` shows
+   ≥1 leak after a switch. INCONCLUSIVE if 0 strings judged.

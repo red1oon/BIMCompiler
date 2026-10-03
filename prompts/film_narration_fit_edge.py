@@ -1,6 +1,6 @@
 # Fitter v3-edge (Microsoft Edge neural TTS, cloud; Malay, Thai, French, Spanish, Mandarin). Same fit / beat / chunk rules as
 # film_narration_fit_kokoro_v3.py. Spec: FILM_NARRATION.md §4 2026-10-03 11:40.
-# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh|yue|de|ar|ja   (rate base = +0%; re-voice up to +10%)
+# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh|yue|de|ar|ja|ko|pt|id|bn|af   (rate base = +0%; re-voice up to +10%)
 # Malay: yes/no question gets the PSOLA rise only if the voice's own ending is below +1 st (measured first).
 # Thai: tonal, so no pitch edit; §NARR_TONE is reported only.
 # Clips cached in ~/.local/share/film_narration/cache_edge/<sha1>.wav keyed on (text, voice, rate%).
@@ -33,6 +33,22 @@ CFG={'ms':dict(VOX={'F':'ms-MY-YasminNeural','M':'ms-MY-OsmanNeural'},
      'ja':dict(VOX={'F':'ja-JP-NanamiNeural','M':'ja-JP-KeitaNeural'},     # pitch-accent language: no pitch edit
                WH=r'(何|なに|なぜ|どう|どこ|誰|だれ|いつ|いくつ|どれ)',pitch=False,font='Noto Sans CJK JP',
                credit='音声：AI生成（Microsoft Edge TTS、クラウド）  ·  脚本 red1'),
+     # §VIEWER-TRAILER (FILM_NARRATION.md §8) — the 5 extra Viewer languages; voices listed live via edge_tts.list_voices() 2026-10-04
+     'ko':dict(VOX={'F':'ko-KR-SunHiNeural','M':'ko-KR-InJoonNeural'},
+               WH=r'(무엇|뭐|왜|어떻게|얼마|어디|누구|언제|몇)',pitch=True,font='Noto Sans CJK KR',
+               credit='음성: AI 생성 (Microsoft Edge TTS, 클라우드)  ·  각본 red1'),
+     'pt':dict(VOX={'F':'pt-BR-FranciscaNeural','M':'pt-BR-AntonioNeural'},
+               WH=r'(\bque\b|por que|como|quant[oa]s?|onde|quem|qual|quando)',pitch=True,font='DejaVu Sans',
+               credit='Vozes: geradas por IA (Microsoft Edge TTS, nuvem)  ·  Roteiro dirigido por red1'),
+     'id':dict(VOX={'F':'id-ID-GadisNeural','M':'id-ID-ArdiNeural'},
+               WH=r'\b(apa|mengapa|kenapa|berapa|bagaimana|mana|siapa|kapan)\b',pitch=True,font='DejaVu Sans',
+               credit='Suara: dibuat oleh AI (Microsoft Edge TTS, cloud)  ·  Naskah diarahkan oleh red1'),
+     'bn':dict(VOX={'F':'bn-BD-NabanitaNeural','M':'bn-BD-PradeepNeural'},
+               WH=r'(কী|কি|কেন|কীভাবে|কত|কোথায়|কে|কখন)',pitch=True,font='Noto Sans Bengali',
+               credit='কণ্ঠ: AI দ্বারা তৈরি (Microsoft Edge TTS, ক্লাউড)  ·  স্ক্রিপ্ট পরিচালনা red1'),
+     'af':dict(VOX={'F':'af-ZA-AdriNeural','M':'af-ZA-WillemNeural'},
+               WH=r'\b(wat|hoekom|hoe|hoeveel|waar|wie|watter|wanneer)\b',pitch=True,font='DejaVu Sans',
+               credit='Stemme: KI-gegenereer (Microsoft Edge TTS, wolk)  ·  Draaiboek deur red1'),
      'yue':dict(VOX={'F':'zh-HK-HiuMaanNeural','M':'zh-HK-WanLungNeural'},   # Cantonese (Hong Kong), Traditional script
                WH=r'(咩|乜|點|幾|邊|誰)',pitch=False,font='Noto Sans CJK HK',
                credit='聲音：AI 生成（Microsoft Edge TTS，雲端）  ·  劇本導演 red1')}[LANG]

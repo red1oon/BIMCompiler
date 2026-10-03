@@ -9,7 +9,12 @@ import sys, os, re, subprocess
 src, beats, out = sys.argv[1], sys.argv[2], sys.argv[3]; film = sys.argv[4] if len(sys.argv) > 4 else '900'
 H = os.path.dirname(os.path.abspath(__file__)); PY = os.path.expanduser('~/.local/share/film_narration/venv/bin/python')
 FONT = {'en': 'DejaVu Sans', 'fr': 'DejaVu Sans', 'es': 'DejaVu Sans', 'de': 'DejaVu Sans', 'ms': 'DejaVu Sans',
-        'ar': 'Noto Sans Arabic', 'zh': 'Noto Sans CJK SC', 'ja': 'Noto Sans CJK JP', 'th': 'Noto Sans Thai'}
+        'ar': 'Noto Sans Arabic', 'zh': 'Noto Sans CJK SC', 'ja': 'Noto Sans CJK JP', 'th': 'Noto Sans Thai',
+        'ko': 'Noto Sans CJK KR', 'pt': 'DejaVu Sans', 'id': 'DejaVu Sans', 'bn': 'Noto Sans Bengali', 'af': 'DejaVu Sans',
+        'bl': 'DejaVu Sans'}
+# 'bl' = Banglish (romanized Bengali, Viewer locale bl_BD): no voice of its own → spoken by the bn voice from the Bengali-script
+#   SHORT/DETAIL, subtitled with column 6 (the Banglish spelling) via the fitter's caption file (FILM_NARRATION.md §8).
+CREDIT = os.environ.get('POLY_CREDIT', 'Voices: AI-generated (Kokoro, local · Microsoft Edge TTS, cloud)  ·  UI labels: iDempiere language packs + labelled machine fill  ·  Script directed by red1')
 rows = [l.rstrip('\n').split('\t') for l in open(src) if l.strip()]
 if beats == 'measure':
     T = {r[0]: (i * 100.0, i * 100.0 + 95) for i, r in enumerate(rows)}
@@ -31,6 +36,11 @@ for L in langs:
     env = dict(os.environ, FILM_SEC=str(film))
     cmd = [PY, os.path.join(H, 'film_narration_fit_kokoro_v3.py'), f'poly_{L}.tsv', f'p{L}', '1.15'] if L == 'en' else \
           [PY, os.path.join(H, 'film_narration_fit_edge.py'), f'poly_{L}.tsv', f'p{L}', L]
+    if L == 'bl':
+        with open('poly_bl_cap.tsv', 'w') as f:
+            for r in rows:
+                if r[1] == 'bl': f.write(r[0] + '\t' + r[5] + '\n')
+        cmd = [PY, os.path.join(H, 'film_narration_fit_edge.py'), f'poly_{L}.tsv', f'p{L}', 'bn', 'poly_bl_cap.tsv']
     log = subprocess.run(cmd, capture_output=True, text=True, env=env); open(f'fit_{L}.log', 'w').write(log.stdout + log.stderr)
     for m in re.finditer(r'§NARR_FIT (\S+) cue=\S+ room=\S+ dur=([\d.]+) -> (\S+)', log.stdout):
         durs[m.group(1)] = float(m.group(2)); print(f'§POLY_FIT lang={L} id={m.group(1)} dur={m.group(2)} pick={m.group(3)}')
@@ -48,7 +58,7 @@ styles = ''.join(base_f.replace('Style: F,DejaVu Sans', f'Style: F_{L},{FONT[L]}
 hd = hd.replace(base_m + '\n', base_m + '\n' + styles)
 ts = lambda x: f'{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}'
 fs = float(film)
-credit = f'Dialogue: 0,{ts(fs-8)},{ts(fs-0.1)},Credit,,0,0,0,,Voices: AI-generated (Kokoro, local · Microsoft Edge TTS, cloud)  ·  UI labels: iDempiere language packs + labelled machine fill  ·  Script directed by red1\n'
+credit = f'Dialogue: 0,{ts(fs-8)},{ts(fs-0.1)},Credit,,0,0,0,,{CREDIT}\n'
 open('poly.ass', 'w').write(hd + ''.join(e for _, e in sorted(events)) + credit)
 open('poly_plan.tsv', 'w').write(''.join(plan))
 print(f'§POLY_DONE langs={len(langs)} clips={len(plan)} events={len(events)}')
