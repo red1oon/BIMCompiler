@@ -16,6 +16,10 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 21:00 W2 PASS (V_HOSP_freeze8, fix/fast-bake @932346cf, Hospital 1900:2000 + bake_hires_offline.sh flags): §HUD_OVERLAP_WORST
+  none judgedFrames=311/311 => PASS; §LOADPATH_INFOPANEL_AVOID near moves=[stats-panel>down] final=366,565 418x418; only a CROSSFADE left
+  (hud.status 0.04/1.00 x infopanel, 11 fr = fading, by design). W1 PASS (POSECHECK MATCH 364 fr, LOADPATH_RESUME 0.0000). GPU handed to the
+  audio-voice session (red1); v9.sh NOT started.
 - ▶ 2026-10-03 20:55 PAUSE (red1). fix/fast-bake @932346cf PUSHED: info panel clears solid HUD boxes (W2, UNVERIFIED — run
   V_HOSP_freeze8 was mid-render, frame 13/364). ZONE CORRECTNESS DECIDED by a new witness, prompts/photoreal_probes/lightgrid/zonefloor.js
   (+ zonelib.js/zonediff.js; decodes .lightfield.bin offline, CPU only): §ZONE_FLOOR = INDOOR cells below the lowest boundary geometry.
