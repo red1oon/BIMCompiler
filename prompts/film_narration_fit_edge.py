@@ -1,6 +1,6 @@
 # Fitter v3-edge (Microsoft Edge neural TTS, cloud; Malay + Thai). Same fit / beat / chunk rules as
 # film_narration_fit_kokoro_v3.py. Spec: FILM_NARRATION.md §4 2026-10-03 11:40.
-# usage: fit_edge.py script.tsv tag ms|th   (rate base = +0%; re-voice up to +10%)
+# usage: fit_edge.py script.tsv tag ms|th|fr|es   (rate base = +0%; re-voice up to +10%)
 # Malay: yes/no question gets the PSOLA rise only if the voice's own ending is below +1 st (measured first).
 # Thai: tonal, so no pitch edit; §NARR_TONE is reported only.
 # Clips cached in ~/.local/share/film_narration/cache_edge/<sha1>.wav keyed on (text, voice, rate%).
@@ -12,6 +12,12 @@ CAP={l.split('\t')[0]:[x.strip()[2:].strip() for x in l.rstrip('\n').split('\t')
 CFG={'ms':dict(VOX={'F':'ms-MY-YasminNeural','M':'ms-MY-OsmanNeural'},
                WH=r'\b(apa|kenapa|mengapa|berapa|bagaimana|mana|siapa|bila)\b',pitch=True,font='DejaVu Sans',
                credit='Suara: dijana AI (Microsoft Edge TTS, awan)  ·  Skrip diarahkan oleh red1'),
+     'fr':dict(VOX={'F':'fr-FR-DeniseNeural','M':'fr-FR-HenriNeural'},
+               WH=r"(\bque\b|qu'|\bquoi\b|pourquoi|comment|combien|\boù\b|\bqui\b|\bquel|\bquand\b)",pitch=True,font='DejaVu Sans',
+               credit='Voix : générées par IA (Microsoft Edge TTS, cloud)  ·  Script réalisé par red1'),
+     'es':dict(VOX={'F':'es-ES-ElviraNeural','M':'es-ES-AlvaroNeural'},
+               WH=r'(qué|por qué|cómo|cuánt[oa]s?|dónde|quién|cuál|cuándo)',pitch=True,font='DejaVu Sans',
+               credit='Voces: generadas por IA (Microsoft Edge TTS, nube)  ·  Guion dirigido por red1'),
      'th':dict(VOX={'F':'th-TH-PremwadeeNeural','M':'th-TH-NiwatNeural'},
                WH=r'(อะไร|ทำไม|เท่าไร|เท่าไหร่|อย่างไร|ยังไง|ที่ไหน|ใคร|เมื่อไร|กี่)',pitch=False,font='Noto Sans Thai',
                credit='เสียง: สร้างโดย AI (Microsoft Edge TTS, คลาวด์)  ·  บทกำกับโดย red1')}[LANG]

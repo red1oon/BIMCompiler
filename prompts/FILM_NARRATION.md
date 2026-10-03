@@ -151,6 +151,19 @@ $P ~/bim-compiler/prompts/film_narration_fit_kokoro.py ~/bim-compiler/prompts/fi
 **Rules kept:** every number from a `§` line (PRIME); GPU never used (CPU only, never take gpu.lock); new output names only.
 
 ## 4. STATUS
+- 2026-10-03 13:30: FRENCH + SPANISH BUILT (native subtitles). First voicing: FR 13/18, ES 12/18 DETAIL (lines run
+  long like Malay; `detailDur` logged) → trimmed open/loadpath/parade/reveal/value (+ ES which); FP|STR said as
+  "pareil"/"igual" (= 38, same as MEP|STR). Fit 18/18 DETAIL both, 0 Edge retries. §NARR_TONE 0 WRONG: FR 10 yes/no
+  end +0.7…+4.2 st (4 needed the PSOLA rise; one at the 11 st cap only reached +0.7 — rising, under the +1 target),
+  ES 12 yes/no end +1.3…+4.9 st (8 needed it). Films `~/Downloads/Hospital_narrated_dialogue_{FRENCH,SPANISH}_AFTER_…
+  _0049.mp4` (4,963 frames each, −16.3 LUFS, longest gap 6.4 / 6.5 s at the datum overlay). Logs
+  `film_narration_hospital_0049_{fr,es}_fit.txt`.
+- 2026-10-03 13:00: SPEC — FRENCH then SPANISH (red1: "do it in French followed by Español"). Same route + rules as
+  Malay: Edge fr-FR Denise (F) + Henri (M); es-ES Elvira (F) + Álvaro (M); native subtitles only. Scripts are
+  line-for-line translations of v3 (same ids, cues, `§` sources, numbers spelled out). Both languages rise on yes/no
+  questions → PSOLA rise only where the voice's own ending is below +1 st; wh-questions (FR que/qu'/quoi/pourquoi/
+  comment/combien/où/qui/quel/quand; ES qué/por qué/cómo/cuánto/dónde/quién/cuál/cuándo) left as voiced. Witness as
+  Malay: §NARR_FIT 18/18 placed, §NARR_TONE 0 WRONG, 4,963 frames, silencedetect gaps.
 - 2026-10-03 12:30: MALAY + THAI BUILT. red1 then: "do the Thai in Thai subtitles" + "drop the English subtitling
   for now" → English-caption encodes stopped and their partial files deleted; only native-caption films delivered.
   The English caption maps + fitter 4th-arg path stay in the repo, unused, for later.
