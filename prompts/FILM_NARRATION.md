@@ -735,6 +735,27 @@ furious" / "it is growing faster.. and the key was both Anthropic AI leaps in mo
   across these repos since January. | F: And the witnesses. Seven-hundred-and-sixty-six of them now, one per claim. |
   M: The model brings speed. | F: The witness keeps it honest. | M: Fast — and furious.
 
+### §10 THE PLAYING FIELD — "the dinosaurs and the writing on the wall" (red1, 2026-10-04: "even taking spats from the
+industry plating field.. how the giants dinosaurs not aware of this writing on the wall")
+- **Register rule:** this is red1's VIEW, told as testimony — the "dinosaurs / writing on the wall" line is a QUOTE card
+  signed red1, never a narrator fact. Narrators state only facts already sourced in red1's own docs, with their refs.
+- **Sourced material (quote, don't paraphrase upward):**
+  · StrategicIndustryPositioning.md:36-39 — "Autodesk solved it behind a proprietary wall. Revit's .rvt keeps full spatial
+    fidelity internally, but is editable only in Revit with a shelf-life tied to Autodesk's support cycle [6]. Leave via
+    IFC and 'there's always loss of data… all constraints are lost and component parametrics are gone' [7]."
+  · StrategicIndustryPositioning.md §landscape — Tier 1 incumbents (Revit, ArchiCAD, Tekla) "create IFC… They do not
+    decompose it into a BOM recipe, compile from intent, or verify the round-trip."
+  · MANIFESTO.md:683-687 — Autodesk SVF/SVF2 internally; buildingSMART–AOUSD liaison Oct 2024; and the gap "neither side
+    addresses": "a construction budget is separated from a 3D model by a human with a spreadsheet."
+  · MigrateComparisonPaper.md — "The Server Is Dead" (the ERP side: the server stack no longer needed).
+- **Lines (F/M, slow register):** F: Meanwhile, the giants. | M: The design side lives behind a proprietary wall — leave
+  it, and the constraints are lost. | F: The ERP side still assumes a server room. | M: And between the budget and the
+  model… a person with a spreadsheet. | QUOTE: "The dinosaurs can't see the writing on the wall." — red1 (⛔ red1 to
+  word his own line) | F: Here, the model and the money are one database, in one browser tab.
+- **Visual:** the positioning doc's tier table rolled from the live docs site; an explainer diagram: three islands
+  (DESIGN · BIM · ERP) with a "spreadsheet person" bridge → collapsing into one box (the kernel).
+- **Care:** no claim about any company beyond what the cited refs say; no logos/branding on screen (names in text only).
+
 ### §10 NOVEL ART — candidate list (mined 2026-10-04 from 2Dto3D + bim-compiler + bim-ootb history; read-only research)
 Each: idea · the first struggle · the breakthrough (source) · what to show. Pick ~7 for the film; each = one explainer diagram.
 1. **Rooms + paths from walls and doors** — "An IFC file says where the walls and doors are. It does not say how to walk
