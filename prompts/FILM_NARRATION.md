@@ -197,6 +197,12 @@ Enter → the new company's login shows its admin user. Then the ▶ PLAYBOOK st
 mux, English first). Witness: every spoken number has a §ERP_FILM_FACT; beats in order; film frames = concat output.
 
 ## 4. STATUS
+- 2026-10-03 15:10: §ERP-FILM PART 1 MANDARIN (zh-CN). `film_narration_fit_edge.py` gained `'zh'` (Xiaoxiao F / Yunxi M,
+  pitch=False, Noto Sans CJK SC, Chinese credit). Script `film_narration_erp_part1_dialogue_zh.tsv` (same ids/cues/turns/§sources
+  as English). Fit 7/7 DETAIL (login + form first fell SHORT, detailDur 11.20>9.91 / 8.72>7.10; shortened -> 9.25 / 6.56).
+  No §NARR_TONE lines are emitted for zh (pitch=False path prints none; not measured). Witness: 1,476 frames 1920x1080;
+  silencedetect -40dB d=2 -> no gaps; ebur128 I = -16.2 LUFS; fontselect = Noto Sans CJK SC (NotoSansCJK-Regular.ttc).
+  Output `~/Downloads/ERP_FirstSetup_narrated_part1_MANDARIN_1920x1080_24fps_2026-10-03.mp4` (2.8 MB). Fit log `prompts/erp_film/part1_zh_fit.log`.
 - 2026-10-03 14:30: §ERP-FILM PART 1 BUILT (≈1 min, English dialogue). Recorder `scripts/film_erp_first_setup.js`
   (first run worked: 35 s, 0 PAGEERR). Then timed to the narration: dialogue `film_narration_erp_part1_dialogue.tsv`
   voiced first (Kokoro v3) to measure each beat's spoken length → `BEAT_MIN` env → recorder holds each beat until its
