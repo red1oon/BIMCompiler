@@ -16,6 +16,24 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 16:10 VERIFY ROUND 3 (bim-ootb fix/fast-bake @a1847484, pushed; runs in session scratchpad c/, 1080p24).
+  §ZONE_BOX_TRUE (new, cinema_maxq.js, &zonebox=1, read-only; kept OUT of light_zones.js because its code hash SRC is the zone cache
+  key — any edit there stales every .lightfield.bin sidecar): today's (unmerged) zone grid is 2-2.5x the true building box.
+  Hospital built 141.7x50.2x168.9 m vs true 101.8x39.5x119.3 (extraCells 80,21,99). LTU built 245.5x25.0x162.5 vs true 183.9x17.3x134.4
+  (extraCells 124,16,56; grid 496x55x329 = 8.98M cells vs ~3.96M). Recompute == the builder's stored fp box (-119.614..93.906) = instrument
+  checked. Root fix (per-slot getBoundingBoxAt in light_zones.js) = look-changing + all 3 sidecars rebuilt (Hospital field 30.5 min) -> red1.
+  W4 (LTU clip 0:0.15, &consolidate=1 vs control, same commit): §CONSOLIDATE 5999->558 failed 0, 850 ms; §CONSOLIDATE_ZONES PASS grid kept
+  496x55x329:950; §ZONE_IDB_CACHE HIT (round 2 missed); clip 1051 -> 493 s (2.13x). Luma (ffmpeg YAVG per frame, 242/242): mean |d| 0.296,
+  max 3.677 @f163, 53 frames > 0.5 (round 2: max 27.07). Residual is in the RAW scene (§F Lcd f163 3636 vs 3389, -6.8%), exposure just
+  follows; clustered f156-240 (indoor). Cause NOT measured (untested guess: merged-batch transparent draw order). &consolidate=1 stays opt-in.
+  W1 PASS (Hospital --frame-range 1900:2000 WITH the bake_hires_offline.sh flag set): §LOADPATH_HOLD_INSERT holdFrameStart=23 inserted=264,
+  §LOADPATH_HOLD cameraMoved=false PASS, §LOADPATH_RESUME stepAtResume=0.0000 maxStepElsewhere=0.3118 PASS, §CLI_BAKE_POSECHECK MATCH
+  maxPosErr 0 over 364 frames. ⚠ Rounds 1+3 HOSP runs called cli_silent_bake.js WITHOUT --buildup/--load-path => no freeze ran (0 HOLD lines):
+  always use the bake_hires_offline.sh flag list for a freeze test.
+  W2: §HUD_OVERLAP_CROSSFADE hud.pathmap x loadpath.card 22 frames (alpha 0.46/1.00) = transition, OK; but §HUD_OVERLAP_WORST FAIL f=23
+  (freeze onset) alpha 1.00/1.00 — the card PLATE (cpe_load_path.js _freezePlateDraw, ~L4546) draws opaque from the first hold frame while
+  the path map is still at alpha 1 (its fade starts there); only the card LINES fade in (FREEZE_SCHED). Same FAIL in the 0049 full film
+  (pre-existing, not a W-regression). Fix proposal (HUD look change -> red1): plate alpha = 1 - A._loadPathHudAlpha, register it with that alpha.
 - ▶ 2026-10-03 11:20 RESUME DONE + W4 CAUSE FOUND (no GPU). /tmp/wt-fastbake recreated (DB symlinks + 3 sidecars copied back).
   CAUSE (code read): light_zones.js:328 build() bounds every BatchedMesh slot with d.geo.boundingBox = the WHOLE batch geometry's
   box x slot matrix (boundaryDraws L59-67 never sets a per-slot box). 558 merged batches -> each slot gets a bigger box -> grid box
