@@ -572,3 +572,14 @@
   Fix in the owner (effects.js A._stillShadowWide, called by glass_fresnel capture + planar): sun box -> the fit's building union,
   cascades suspended, restored after. Mirror hfStd planar 9.1->2.7, cube 9.6->2.1, wall 2.0 unchanged; truth PASS 3 poses.
   Side lesson: an accumulation clear inherited the app clear colour (linear) -> pale sheet, avg/last 3.85-4.24; cleared to 0 -> 1.000.
+- 2026-10-04 ~06:30 ONE SOURCE OF TRUTH = OCI (red1: "OCI ... should be pristine"; "lets have one sane source of truth").
+  FOUND: ~/bim-ootb/buildings/{Clinic,Duplex,Hospital,JKR}_extracted.db all rewritten 2026-08-03 02:50 (gitignored, writer not recorded):
+  Clinic + Duplex = in-browser re-imports (import_db_builder.js, import_date 2026-08-02 UTC, source_file *.ifc), all with 4D schedules/tasks
+  tables, no spatial_structure/bom_tree. Duplex local 1,193 elements / 21 IfcSpace with geometry ("Roof" 0,0.569,0.788,0.150 = red1's roof
+  halo) vs OCI 1,119 / 0 IfcSpace. ~/bin/serve_tree.js falls back to ~/bim-ootb/buildings for any missing /buildings/ file -> the
+  Oct 3 stills of Clinic/Hospital/Duplex ran on those local copies.
+  DONE: /tmp/wt-surf/buildings now holds OCI copies — Duplex_extracted/_meta + Terminal_extracted md5 MATCH; HHS md5 MATCH (was already OCI);
+  Clinic_extracted, Terminal_meta, Hospital_meta gzip-served -> integrity ok; Hospital_extracted size = OCI 263,307,264 (multipart, no md5),
+  quick_check ok. :8664 now runs scratchpad serve_strict.js (= serve_tree.js with NO fallback for *.db) -> a DB missing from the tree 404s
+  (Clinic_meta.db 404, as on OCI). Rebake queued: Duplex, Clinic, Terminal, Hospital. LTU_AHouse_silent (Downloads link) and SampleHouse
+  (bim-compiler/deploy link) are NOT OCI copies — open.
