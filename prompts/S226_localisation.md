@@ -800,7 +800,9 @@ verify the replacement actually works at render time.
 
 ### §R1 SPEC — the ERP language carries into the Viewer (Witness: W-ZOOM-LANG)
 1. **ERP side** (`erp/idempiere.html`, both Zoom Across launches): append `&lang=<ErpI18n.lang>` to the Viewer URL
-   when `window.ErpI18n` and its `lang` exist. Nothing else in the URL changes. `§ZOOM-ACROSS launch` already prints
+   when `window.ErpI18n.lang` exists AND differs from `ErpI18n.BASE` (en_US). A Viewer locale also carries currency +
+   rate book, so the ERP default must not override the Viewer user's saved locale (found in the first run: every
+   launch carried `lang=en_US` → US rates in $). Nothing else in the URL changes. `§ZOOM-ACROSS launch` already prints
    the URL, so the code appears in the existing log line.
 2. **Viewer side** (`viewer/locale_loader.js` `detectLocale()`): a `?lang=` that is not an exact Viewer code is
    resolved through the loader's OWN existing `LOCALE_MAP` (try `code` with `_`→`-`, then the language prefix).
@@ -845,3 +847,10 @@ stored in XML. Maintain the same original format. Been idempiere like is vital w
   `erp/i18n/machine/<lang>.json` is a flat `{English: translation}` JSON, not the XML format. Bringing it into the same
   XML form belongs to `prompts/ERP_UI_LOCALES.md`.
 ### §R3 LATER — Phase 4 file list above (measure/city/import/main/tools/panels), Phase 5, open issues I-1, I-5.
+
+### §R1 RESULT — 2026-10-03
+bim-ootb branch `feat/zoom-lang` (erp sw v812, viewer sw v1460). W-ZOOM-LANG `erp/tests/witness_zoom_lang.js` **PASS 14/0**:
+(a) 8/8 chosen ERP languages ride in both Zoom Across URLs, none on base en_US; (b) Viewer picks the same language
+9/9 (`§TRL_DETECT src=url-mapped req=ar code=ar_SA`); (b2) flag picker wins after reload; (c) control without §R1.2 →
+8/9, fails on `ar`. Regression W-ZOOM-ACROSS 8/8. **Open, by design of the existing Viewer:** choosing a language there
+also chooses its currency/rate book (S226 §Current Status) — German ERP → Viewer in EUR/DIN rates.
