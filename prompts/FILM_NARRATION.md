@@ -667,6 +667,23 @@ lightly cleaned of typos only); added the Prologue to carry the title; "debut as
 "Persistent Object Jaba" → "Persistent Object layer"; "SQLite WASM on a kernel ops PWA" → plain words; "update itself
 from obsolescence" → "keep itself from going obsolete"; the closing quote reprises the mantra.
 
+### §10 DOCUMENTATION ROLL (red1, 2026-10-04: "talk abit abot the documentation - that Server is dead doc is nice to snap
+and roll with a few more graphically upbeat types.. just slide roll them quickly also can to fit the general script,
+'Claude helps out with fast and clear documentation on Red1's deep ERP software experience..'")
+- **Where:** a ~15–20 s bridge in Ch 4, right after "the ERP conversion? Days." — the docs are the visible trail of it.
+- **Hero snap (held ~2 s):** "The Server Is Dead" — docs/MigrateComparisonPaper.md (docs-site nav "Migrate & Compare (ERP)").
+- **Quick roll (~1–1.5 s each, slide/pan, upbeat cut on the beat):** "Two Apps, One Kernel" one-page infographic
+  (TwoAppsOneKernelInfographicLandscape.html) · "SQLite-WASM — The Trick Behind Zero Servers" (SQLiteWasmArchitectureActual.html)
+  · "Times Have Changed — And So Must ISO for ERP" (AssuranceControlMap.html) · "Does your ERP age? — 20-year side-by-side"
+  (age_demo.html) · "Cross-ERP Rosetta Stone" (ERPConceptRosetta.html) · "The Fold Engine Black Book" (FoldEngineBlackBook.html)
+  · "Retail at Scale — Two Messages a Day" (RetailScaleStory.html) · "Glassbowl — your business, mapped" (glassbowl.html)
+  · "Time Machine — 4D Competitive Position" (tm_competitive_brief.html). 58 doc pages in docs/ (md + html) today.
+- **Capture:** headless CPU screenshots of the LIVE docs pages (1920×1080, top of page / hero block), rolled with ffmpeg
+  pans — deterministic, no GPU. Page titles above are read from each file's `<title>` / H1 (2026-10-04).
+- **Lines (F/M, same register):** F: And the paperwork? | M: Claude writes it — fast and clear, from red1's twenty years
+  of ERP. | F: Comparisons, architecture, audits… | M: …one page each, every claim with a source.
+  (Source column: the doc titles above; "twenty years" = ADempiere 2006 → today, public record.)
+
 ### §10 NOVEL ART — candidate list (mined 2026-10-04 from 2Dto3D + bim-compiler + bim-ootb history; read-only research)
 Each: idea · the first struggle · the breakthrough (source) · what to show. Pick ~7 for the film; each = one explainer diagram.
 1. **Rooms + paths from walls and doors** — "An IFC file says where the walls and doors are. It does not say how to walk
