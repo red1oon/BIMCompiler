@@ -16,6 +16,25 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ RESUME 2026-10-03 10:25 (red1 closing the machine). Tree bim-ootb fix/fast-bake @d304efd3 sw v1560 (PUSHED, 0 unpushed;
+  W1-W7 + sky-surface @58416ed0 merged). /tmp dies on shutdown — DURABLE COPY in ~/.cache/bim4d/altc_2026-10-03/: sidecars/
+  (Hospital_silent, LTU_AHouse_silent, HHS_Office_Federated_silent .lightfield.bin, key 21324567:90186 — copy back into
+  <tree>/buildings/patches/, no rebake needed while light_zones.js is unchanged), verify*.sh/hhs.sh/ltu_full.sh/bake.js/restorecheck.js/
+  flick.py/phases.py, CODE_REVIEW_ALTC.md, all V_* .out + page logs (.gz), both full-film page logs.
+  RECREATE: `git -C ~/bim-ootb worktree add /tmp/wt-fastbake fix/fast-bake`; symlink buildings/{Hospital,Terminal,HHS_Office_Federated}_silent.db
+  -> ~/Downloads/<same>.db and LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db; copy sidecars in.
+  VERIFY ROUND 2 (v1560, LTU clip 0:0.15 1080p24, &filmlog=compact):
+  - W6 PASS: §F on 242/242 frames, §F_SUMMARY foldedLines=5,154, page log 1,406,223 -> 790,606 B (-44%); look-neutral vs v1558 (max |d| 0.13).
+    First real `renders=` reading: 112 scene renders in one LTU frame (f200) — the per-frame teardown question now has its number.
+  - W4 STILL NOT LOOK-NEUTRAL after the copy-live-slots fix: §CONSOLIDATE 5,999 -> 558, failed 0, mixedFlags 0, 802 ms; clip 1,006 -> 636 s
+    (1.58x); luma mean |d| 3.10, max 27.07 (same as round 1) and §ZONE_IDB_CACHE STILL misses with the same moved box. So positions were
+    never the cause: light_zones.js boundaryDraws() reads a merged BatchedMesh differently (its bounds come out larger with identical
+    counts). NEXT (no GPU): read light_zones.js boundaryDraws() for the isBatchedMesh branch; make it per-slot (slotGeo x getMatrixAt) or
+    run the merge AFTER the zone restore. Keep &consolidate=1 opt-in until a clip shows luma max |d| < 0.5 and §ZONE_IDB_CACHE hit.
+  - NOT RUN (stopped before suspend): HOSP_range (--frame-range 1950:2250 across the load-path freeze) = the W1 non-linear-time + W2
+    CROSSFADE proof. Run it first on resume: verify2.sh's 3rd line alone.
+  - Open for red1 (look-changing, review §5): hidden 13th TAA sample under budget 6/6; previous-frame metering. Layering refactor
+    (decideLamps owner, filmRefineFrame without per-frame teardown — 112 renders/frame says it is worth it) = next build item.
 - ▶ 2026-10-03 09:50 VERIFY ROUND 1 (tree 8c6ebab9 v1558, scratchpad c/V_*.out + V_*_page.log; 1920x1080 24 fps):
   - W1 PASS: §CLI_BAKE_POSECHECK ref=filmT MATCH maxPosErr 0 on LTU clip x2 + Hospital clip 0.39:0.45 (but that clip held NO load-path
     freeze — 0 §LOADPATH_HOLD — so the non-linear case is re-run in round 2 with --frame-range 1950:2250). Target err 0.36-0.41 m = gaze blend.
