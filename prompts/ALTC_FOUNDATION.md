@@ -16,6 +16,24 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 SPEC W-FIX (red1 "proceed with full confidence"), built on fix/fast-bake in /tmp/wt-fastbake, order top->bottom:
+  W1 §CLI_BAKE_POSECHECK: the pose tap records the film time the camera was actually posed at (_poseFilmT) and the bake's own plan duration
+     (window.__maxqPlanDurSec); the check evaluates poseAt(tF) on a plan rebuilt at that duration. Position decides the verdict; target error is
+     printed separately (the §57.5 gaze blend moves it by design). Clips are judged too (tF is whole-film). Witness: MATCH < 0.05 m on a clip;
+     must still say MISMATCH when the override is dropped (control: --plan derived path).
+  W2 §HUD_OVERLAP_WORST: each registered rect carries the alpha it was drawn at; a pair counts as OVERLAP only if both alphas >= 0.5, else as
+     §HUD_OVERLAP_CROSSFADE (worst pair, frame, alphas). The FAIL line names frame + alphas. Frames with < 2 real rects are not "judged"; a
+     film with 0 judged frames prints INCONCLUSIVE (LTU printed PASS with zero rects). Witness: Hospital load-path clip -> CROSSFADE, not FAIL.
+  W3 lamps: (B) hoist the §115/§116 dedupe vars out of the per-call function (tools.js:2295-2296); (A) film frames skip the nav-branch pool
+     rebuild in the still teardown (effects.js:5760-5767); (C) §INTERIOR_LIGHTS_WITNESS judges the lamp OWNER in force (data path: §LAMP_DATA
+     lit vs placed; pool path: poolLit) and prints owner=; one §LAMPS f= owner= dataLit= poolLit= line per frame. Witness: LTU clip shows
+     owner=data dataLit>0 and 0 §INTERIOR_LIGHTS_OFF repeats.
+  W4 draw-call merge for films (speed, look-neutral): A._consolidateBatched (streaming.js:3404, caller removed 2026-05-27 b9b1a816 because it
+     blocked the INTERACTIVE main thread 9.9 s on LTU) is repaired to the current flush contract — same _getMaterial args incl. §WIND_FLIP
+     (A._windFlipAny), A._registerBatchSlot (bx/by/bz from row[13..15]), userData.slotGeo, only BMs that carry _batchMeta, skips any BM with
+     A._dlodSlots — and called ONCE at film start when &consolidate=1 (opt-in until witnessed). Witness: §CONSOLIDATE old_bm/new_bm/ms;
+     §RENDER_INFO sceneCalls before vs after on the same LTU clip; per-frame §FRAME_QA luma within 0.5 of the control on every frame;
+     §WIND_FLIP buckets unchanged; Hospital clip §CPE_REVEAL_LEAK 0 + discKept unchanged (4D wiring). Then default ON for films.
 - ▶ 2026-10-03 09:15 CODE REVIEW (Fable, read-only) — full report prompts/archive/ALTC_CODE_REVIEW_2026-10-03.md. Verified by Alt+C before citing:
   - RETRACTION: "interior lamps never relit / lamps 0 all film" (07:36 + 08:30 entries) is WRONG. Films light lamps on the DATA path
     (effects.js:4484 _lampDataOn, tools.js:2528-2552 _filmLD -> pool slots set to 0); LTU log: §LAMP_DATA film=1 lit=50..122, §LAMP_UNCAPPED on
