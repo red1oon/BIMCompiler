@@ -147,6 +147,8 @@ Delivered so far (Hospital 0049, `~/Downloads/Hospital_narrated_dialogue_{v3,MAL
 | Thai | Edge (`… th`) | th-TH Premwadee / Niwat | cloud | NONE (tonal language) |
 | French | Edge (`… fr`) | fr-FR Denise / Henri | cloud | rise only if voice doesn't |
 | Spanish | Edge (`… es`) | es-ES Elvira / Álvaro | cloud | rise only if voice doesn't |
+| Mandarin | Edge (`… zh`) | zh-CN Xiaoxiao / Yunxi | cloud | NONE (tonal) · font Noto Sans CJK SC |
+| Cantonese | Edge (`… yue`) | zh-HK HiuMaan / WanLung | cloud | NONE (tonal) · Traditional script, Noto Sans CJK HK |
 New language: add a `CFG` entry in `film_narration_fit_edge.py` (voices via `edge-tts --list-voices`, wh-word regex,
 `pitch=False` if tonal, font with the script's glyphs — `fc-list :lang=xx`, credit line in that language).
 ⚠ Edge = script text sent to Microsoft (unofficial, no SLA); clips cached by (text,voice,rate) in
@@ -197,6 +199,11 @@ Enter → the new company's login shows its admin user. Then the ▶ PLAYBOOK st
 mux, English first). Witness: every spoken number has a §ERP_FILM_FACT; beats in order; film frames = concat output.
 
 ## 4. STATUS
+- 2026-10-03 16:20: ERP PART 1 — CANTONESE. Edge zh-HK HiuMaan (F) + WanLung (M); written Cantonese, Traditional
+  script, subtitles in Noto Sans CJK HK (fontselect confirmed). `CFG['yue']` (pitch=False, tonal). Script
+  `film_narration_erp_part1_dialogue_yue.tsv` (cues from part 1's timed TSV). Fit 7/7 DETAIL (open ×1.096, at the cap;
+  facts ×1.004). `~/Downloads/ERP_FirstSetup_narrated_part1_CANTONESE_…mp4` (2.8 MB, 1,476 frames, −16.2 LUFS, no
+  silence ≥ 2 s). Log `prompts/erp_film/part1_yue_fit.log`.
 - 2026-10-03 16:00: §ERP-FILM PART 2 BUILT (95.4 s, English dialogue) — continues part 1 in FirstCo, ends at the first
   real GAP. Recorder `PART=2` replays part 1 off camera (fast), then films: owner login → Business Partner → customer
   C-001 Acme Retail (own HQ offered, records 1→2, §CRUD validate ok + persist) → its Location tab: the Address field

@@ -1,6 +1,6 @@
 # Fitter v3-edge (Microsoft Edge neural TTS, cloud; Malay, Thai, French, Spanish, Mandarin). Same fit / beat / chunk rules as
 # film_narration_fit_kokoro_v3.py. Spec: FILM_NARRATION.md §4 2026-10-03 11:40.
-# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh   (rate base = +0%; re-voice up to +10%)
+# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh|yue   (rate base = +0%; re-voice up to +10%)
 # Malay: yes/no question gets the PSOLA rise only if the voice's own ending is below +1 st (measured first).
 # Thai: tonal, so no pitch edit; §NARR_TONE is reported only.
 # Clips cached in ~/.local/share/film_narration/cache_edge/<sha1>.wav keyed on (text, voice, rate%).
@@ -23,7 +23,10 @@ CFG={'ms':dict(VOX={'F':'ms-MY-YasminNeural','M':'ms-MY-OsmanNeural'},
                credit='เสียง: สร้างโดย AI (Microsoft Edge TTS, คลาวด์)  ·  บทกำกับโดย red1'),
      'zh':dict(VOX={'F':'zh-CN-XiaoxiaoNeural','M':'zh-CN-YunxiNeural'},
                WH=r'(什么|为什么|怎么|多少|哪|谁|几)',pitch=False,font='Noto Sans CJK SC',
-               credit='声音：AI 生成（Microsoft Edge TTS，云端）  ·  脚本导演 red1')}[LANG]
+               credit='声音：AI 生成（Microsoft Edge TTS，云端）  ·  脚本导演 red1'),
+     'yue':dict(VOX={'F':'zh-HK-HiuMaanNeural','M':'zh-HK-WanLungNeural'},   # Cantonese (Hong Kong), Traditional script
+               WH=r'(咩|乜|點|幾|邊|誰)',pitch=False,font='Noto Sans CJK HK',
+               credit='聲音：AI 生成（Microsoft Edge TTS，雲端）  ·  劇本導演 red1')}[LANG]
 VOX=CFG['VOX']; CACHE=os.path.expanduser('~/.local/share/film_narration/cache_edge'); os.makedirs(CACHE,exist_ok=True)
 def tts(txt,voice,sp):
     rate=f'{round((sp-1)*100):+d}%'; h=hashlib.sha1(f'{txt}|{voice}|{rate}'.encode()).hexdigest(); w=f'{CACHE}/{h}.wav'
