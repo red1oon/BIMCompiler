@@ -11,7 +11,7 @@ from kokoro_onnx import Kokoro
 K='/home/red1/.local/share/film_narration/kokoro/'
 k=Kokoro(K+'kokoro-v1.0.onnx',K+'voices-v1.0.bin')
 src,tag,base=sys.argv[1],sys.argv[2],float(sys.argv[3]); VOX={'F':'af_heart','M':'am_michael'}
-FILM=206.79; PAD=0.3; SR=24000; SPK={'F':1.03,'M':0.97}; RISE_ST=5.0; RISE_SPAN=0.6; CHUNK_GAP=0.12
+FILM=float(__import__('os').environ.get('FILM_SEC','206.79')); PAD=0.3; SR=24000; SPK={'F':1.03,'M':0.97}; RISE_ST=5.0; RISE_SPAN=0.6; CHUNK_GAP=0.12
 WH=re.compile(r'\b(what|why|how|where|who|whom|which|when)\b',re.I)
 def gap(prev):
     p=prev.rstrip(); return 0.40 if p.endswith('?') else 0.35 if p.endswith('...') else 0.28 if p.endswith('!') else 0.22

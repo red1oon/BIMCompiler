@@ -37,7 +37,7 @@ def tts(txt,voice,sp):
     n=0
     while n<len(a) and abs(a[n])<0.01: n+=1
     return a[max(0,n-int(0.03*SR)):]   # Edge clips carry ~0.1-0.2 s lead-in silence; keep 30 ms
-FILM=206.79; PAD=0.3; SR=24000; SPK={'F':1.03,'M':0.97}; RISE_ST=5.0; RISE_SPAN=0.6; CHUNK_GAP=0.12
+FILM=float(__import__('os').environ.get('FILM_SEC','206.79')); PAD=0.3; SR=24000; SPK={'F':1.03,'M':0.97}; RISE_ST=5.0; RISE_SPAN=0.6; CHUNK_GAP=0.12
 WH=re.compile(CFG['WH'],re.I)
 def gap(prev):
     p=prev.rstrip(); return 0.40 if p.endswith('?') else 0.35 if p.endswith('...') else 0.28 if p.endswith('!') else 0.22

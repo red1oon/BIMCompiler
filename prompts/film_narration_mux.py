@@ -9,6 +9,6 @@ for _,_,f in rows: cmd+=['-i',f.strip()]
 fl=';'.join(f'[{k+1}:a]adelay={int(round(float(a)*1000))}:all=1[a{k}]' for k,(_,a,_) in enumerate(rows))
 mix=''.join(f'[a{k}]' for k in range(len(rows)))+f'amix=inputs={len(rows)}:normalize=0:duration=longest,apad,loudnorm=I=-16:TP=-1.5:LRA=11[aout]'
 cmd+=['-filter_complex',f'{fl};{mix};[0:v]ass={tag}.ass[vout]','-map','[vout]','-map','[aout]','-c:v','libx264','-crf','17',
-      '-preset','medium','-pix_fmt','yuv420p','-c:a','aac','-b:a','192k','-ar','48000','-t','206.79',OUT]
+      '-preset','medium','-pix_fmt','yuv420p','-c:a','aac','-b:a','192k','-ar','48000','-t',os.environ.get('FILM_SEC','206.79'),OUT]
 r=subprocess.run(cmd,capture_output=True,text=True); open(f'{tag}_mux.log','w').write(r.stderr)
 print(f'§MUX rc={r.returncode} clips={len(rows)} out={OUT}')

@@ -3,6 +3,7 @@ SCOPE: plan, then (only after red1 approves the plan) build, a spoken narration 
 `cli_silent_bake.js` bakes (Alt+C). Every spoken word traces to a `§` line the bake already logs. No invented
 numbers, no invented claims. Spec before code; a witness proves the track, not a listen-through.
 **Read the page log after every run** — exit code is not evidence. Honour this block until the lane is DONE.
+**→ Making another narrated/dialogue film (any language)? Jump to `## ▶ PLAYBOOK` below — voices, steps, commands, pitfalls.**
 
 ## 0. THE ASK (red1, 2026-10-03 — original words kept verbatim, then what it means here)
 > *"I am creating a narrated movie from a baked BIM construction model. I have raw construction logs detailing
@@ -131,24 +132,51 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 6. **Open questions for red1** — one line each.
 
 
-## RESUME HERE (2026-10-03 ~10:20, machine closed by red1 — read this first)
-**State:** 3 narrated Hospital films delivered in `~/Downloads` (original `Hospital_silent_full_…_0049.mp4` untouched):
-`Hospital_narrated_full_…` (Piper Jenny, monologue v1), `Hospital_narrated_lively_…` (Kokoro af_heart, gaps filled),
-`Hospital_narrated_dialogue_…` (Kokoro af_heart + am_michael, conversation). red1: "it is already amazing".
-**Waiting on red1:** which voice route for the MALAY version (options in §4 V2 entry: own voice via prompter /
-Edge ms-MY Yasmin+Osman (cloud) / ElevenLabs (paid, can clone red1) / MMS zlm (local, non-commercial)). Then write the
-Malay dialogue from the same log facts. Also open: confirm "Boston" (IFC site = likely Revit default location).
-**What survives a reboot:** tools in `~/.local/share/film_narration/` (venv: piper-tts, kokoro-onnx, faster-whisper;
-voices/; kokoro/ models). Page log copy `~/Downloads/Hospital_silent_full_…_0049_page.log`. Scripts + fitters in
-`prompts/film_narration_*` . **Lost on reboot:** scratchpad clips/plans/.ass — regenerate (Kokoro is deterministic):
-```
-mkdir -p W && cd W && cp ~/bim-compiler/prompts/film_narration_ass_head.txt ass_head.txt
-P=~/.local/share/film_narration/venv/bin/python
-$P ~/bim-compiler/prompts/film_narration_fit_kokoro.py ~/bim-compiler/prompts/film_narration_hospital_0049_dialogue.tsv dlg 1.15
-#  -> dlg_*.wav, dlg.ass, dlg_plan.tsv ; mux = adelay each clip at its cue + amix + loudnorm -16 LUFS + ass burn-in,
-#     libx264 crf 17, -t 206.79 (see §4 entries). Never write over an existing output name.
-```
-**Rules kept:** every number from a `§` line (PRIME); GPU never used (CPU only, never take gpu.lock); new output names only.
+## ▶ PLAYBOOK — "make a narrated / dialogue film" (read this first; written 2026-10-03 after 7 films shipped)
+**What red1 likes (settled, don't re-ask):** a LIVELY two-voice DIALOGUE (F asks/reacts, M explains), not a monologue
+readout. Every pause filled where the picture allows. Questions must sound like questions (measured, §NARR_TONE).
+Subtitles burned in **in the audio's own language** (red1: Thai→Thai, French→French, Spanish→Spanish; English
+captions over native audio were tried and DROPPED). Original silent film is never touched; every output a new name.
+Delivered so far (Hospital 0049, `~/Downloads/Hospital_narrated_dialogue_{v3,MALAY,THAI,FRENCH,SPANISH}_AFTER_…mp4`).
+
+**Voices (decided):**
+| Lang | Engine | F / M | Where it runs | Pitch fix |
+|---|---|---|---|---|
+| English | Kokoro v1.0 (`film_narration_fit_kokoro_v3.py`) | af_heart / am_michael | local CPU, deterministic | PSOLA rise on yes/no Qs |
+| Malay | Edge TTS (`film_narration_fit_edge.py … ms`) | ms-MY Yasmin / Osman | Microsoft cloud | rise only if voice doesn't |
+| Thai | Edge (`… th`) | th-TH Premwadee / Niwat | cloud | NONE (tonal language) |
+| French | Edge (`… fr`) | fr-FR Denise / Henri | cloud | rise only if voice doesn't |
+| Spanish | Edge (`… es`) | es-ES Elvira / Álvaro | cloud | rise only if voice doesn't |
+New language: add a `CFG` entry in `film_narration_fit_edge.py` (voices via `edge-tts --list-voices`, wh-word regex,
+`pitch=False` if tonal, font with the script's glyphs — `fc-list :lang=xx`, credit line in that language).
+⚠ Edge = script text sent to Microsoft (unofficial, no SLA); clips cached by (text,voice,rate) in
+`~/.local/share/film_narration/cache_edge/` so re-runs make no calls. Kokoro has no Malay/Thai (Piper: id_ID only).
+
+**Steps (all CPU; never take the GPU lock; never re-bake the film):**
+1. **Facts** — from the bake's page log (copy beside the film, e.g. `~/Downloads/…_page.log`): grep the `§` tags in §1/§4
+   (`§FLYTHRU_CUE_PLACE`, `§CPE_DAY_COUNTER`, `§CPE_BUILDUP`, `§MEASURE_BOX*`, `§RULE_FILM*`, `§EGRESS`,
+   `§CLASH_NARROWPHASE`, `§CLASH_HUD_HIGHLIGHT frame=` (÷24 fps = film second), `§COST_ODOMETER_FINAL`,
+   `§MEASURE_BUILDING_CARD`, `§GEOREF_SITE`). Every number spoken must come from one — PRIME rule.
+2. **Script** — TSV, one row per beat: `id  cue_s  end_s  §source  SHORT  DETAIL`; turns as `F: … | M: …`. Numbers
+   spelled out in words. Template = `film_narration_hospital_0049_dialogue_v3.tsv` (English); translations keep the
+   SAME ids/cues/sources/turn count (`…_ms/_th/_fr/_es.tsv`). Punctuation drives prosody: `?` question, `!` excited,
+   `...` hesitation beat.
+3. **Fit** — in a scratch dir: `cp prompts/film_narration_ass_head.txt ass_head.txt`, then
+   `FILM_SEC=<ffprobe duration> ~/.local/share/film_narration/venv/bin/python prompts/film_narration_fit_edge.py <script.tsv> <tag> <lang>`
+   (English: `film_narration_fit_kokoro_v3.py <script.tsv> <tag> 1.15`). Writes `<tag>_*.wav`, `<tag>.ass`, `<tag>_plan.tsv`.
+   **Read the log:** `§NARR_FIT … -> DETAIL|DETAIL xN|SHORT|SKIP … detailDur=` and `§NARR_TONE … OK|WRONG`.
+   Goal = 18/18 DETAIL, 0 WRONG. A row that falls to SHORT: compare `detailDur` to `room`, trim words (allowed ≤10 %
+   speed-up does the rest), re-run (cached clips make it seconds). **Expect Malay/French/Spanish ~30–40 % longer
+   than English** — trim open/loadpath/parade/reveal/value first; "the same"/"sama"/"pareil"/"igual" for repeated numbers.
+4. **Mux** — same dir: `FILM_SEC=… python3 prompts/film_narration_mux.py <tag> <silent.mp4> <new_out.mp4>`
+   (adelay each clip to its cue, amix, loudnorm −16 LUFS, subtitles burned, x264 crf 17; refuses to overwrite).
+   ~3–5 min per film; several can run in parallel.
+5. **Witness** (numbers, not a listen): frames = source (`ffprobe -count_frames`, 4,963 for Hospital 0049);
+   `silencedetect=n=-40dB:d=4` gaps (longest ≤ ~7 s is the bar reached); `ebur128` I ≈ −16 LUFS; mux log font line
+   (`fontselect` must pick the script's font, e.g. Noto Sans Thai). Log a dated §4 entry; commit + push the TSVs/logs.
+**Tools on disk (survive reboot):** `~/.local/share/film_narration/venv` (kokoro-onnx, piper-tts, faster-whisper,
+edge-tts, praat-parselmouth); `kokoro/` models; `cache_edge/`. Scratch clips/plans are lost on reboot — re-run step 3.
+**Still open:** confirm "Boston" (IFC site = likely Revit default location); a native Thai listener for question tone.
 
 ## 4. STATUS
 - 2026-10-03 13:30: FRENCH + SPANISH BUILT (native subtitles). First voicing: FR 13/18, ES 12/18 DETAIL (lines run
