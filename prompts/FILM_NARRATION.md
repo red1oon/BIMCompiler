@@ -323,6 +323,36 @@ Length: ≈ 4–5 min allowed (red1, 2026-10-03: "u may extend more mins where c
 City-mode aerial beat DROPPED (red1, 2026-10-03: "Drop the City aerial for now") — Film-Maker closes.
 Open: the hook beat 9 depends on the 4D/5D page also following the language (in S226 §R2 scope).
 
+### §8 RECORDER MAP (selectors + § waits, read from bim-ootb origin/main 01f38710 on 2026-10-04 — file:line in each)
+- Desktop context, non-touch (key handler returns on `_isMobile`, `viewer/scene.js:3257`); every key logs `§SHORTCUT_FIRE key=`.
+- Landing: skip the Morpheus gate with `localStorage mx_entered=1` or film `takeRed()` (`index.html:276`); icons `#por-<id>`
+  (`§ICON_DROP`); flags `#por-flag` → `openFlags()` `§FLAGS picker opened`, popup `#ootb-flag-popup` buttons `title="Name (code)"`
+  — TODAY reloads (`locale_loader.js:363`) → needs S226 §R2c `setLocale` (in place). Hub: `#por-gps` → `#hub.active`
+  (`§HUB opened`), Hospital card `#hub .hub-card[data-bld="Hospital"]` (`§BUILDING_OPEN`, opens a popup tab `bim_Hospital`;
+  local form `viewer/viewer.html?db=/buildings/Hospital_extracted.db`).
+- Loaded: no `§STREAM_DONE` exists — poll `APP.streaming===false && !(APP._bboxPlaceholders||[]).length`; `§KERNEL_OP
+  committed … type=BUILDING_OPEN`; `#status` "DONE — …". Budget 180 s db + 60 s stream (`tests/probe_history_bar.js`).
+- IFC drop: `setInputFiles('#m-import-file')`; Merge/New = native `confirm()` (`import_own.js:508`) → page.on('dialog');
+  `§VERSION_MERGE_ACCEPT` / `§IMPORT_AUTO_OPEN`.
+- Pick: canvas click at a projected element centre (`viewer/tests/witness_s7_canvas_pick.js:90-118`) until `§PICK <cls>`;
+  panel `#info-panel` (`#info-class/-storey/-disc/-material`).
+- Floors/disciplines: bottom-left panels REMOVED (§S280) → Find panel tree `#find-axis-toggle` (`§LENS_AXES`), `#find-tree`;
+  API `A.filterStorey()` `§STOREY_FILTER`. Beat 4 uses this.
+- X-Ray Alt+Z `§XRAY_CYCLE`; Night `n` `§NIGHT_MODE on`; Shadow+Ground `h` `§SHADOW_GROUND cycle=`.
+- Find `f` → `#find-name`, `§NAV_FIND_SEARCH query="IfcWall" results=N` (LIMIT 50 — say "every wall" only if N<50).
+- Section `x` `#section-slider` (input event; no slider log); Measure `m`, two taps → `§MEASURE <dist> from … to …`.
+- Clash `c` → `§CLASH_MATRIX shown`, cells `[data-pair="A|B"]`. Time Machine `t` → `§TIME_MACHINE ON`, `#tm-fwd-btn`,
+  `#tm-big-counter`; Pull Back `#tm-reschedule-asap` → `§GANTT_RESCHEDULE_ASAP_COMMIT … daysCompressed=N`;
+  What-if `#tm-whatif` needs an ERP-folded project (`§WHATIF-UI no-folded-project` otherwise) — film it ONLY if the run
+  can fold Hospital first for real; else beat 8b = Pull Back alone.
+- Fly Tour `l` → `§SCRUB_UI show`, `#tour-scrub-slider`, `A.tourSeek(T)` `§SCRUB_SEEK`. Share `/` → `#share-preview-overlay`
+  `§SHARE_PREVIEW shown`. 4D/5D `4` → popup `boq_charts.html` (`§S254_STRIP_DONE` last; `#info` not "Loading").
+- Film-Maker Alt+C → `#cpe-ok` appears (path editor), `§MAXQ_DURATION_DERIVED`, `§MAXQ_START` — film the derived path, then
+  `APP.cancelMaxQualityOrbit()` (a full bake is ~10 min). Needs `APP._composer`.
+- ⋯ `#mobile-trigger`; drawers `#pill-navigate|inspect|camview`, rows `#drawer-row-<id>` (`§DRAWER toggle=`); panels sit at
+  x=928 → viewport ≥1158 wide.
+- `trl-ready` listeners today: landing relabel, `panels.js` pill relabel, the three report pages (init once) — nothing else.
+
 ## 9. §MODELLER-TRAILER — polyglot trailer for the Modeller (DRAFT script, 2026-10-03, not recorded)
 PLAYBOOK B, ≈ 4–5 min (red1 allowed longer), one take. **Gate:** the Modeller has NO language switch (no `locale_loader`/`_TRL` in `modeller/`,
 measured on bim-ootb main 2026-10-03) → PLAYBOOK B rule 1 (switch ON SCREEN) can't be met. Either voices rotate over an
