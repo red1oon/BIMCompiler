@@ -216,6 +216,11 @@ AD_Message_Trl. Witness by value per locale (translated-label counts, `dir=rtl` 
 **ONE CONTINUOUS TAKE (red1: "all played out in the same film clip, not going back and splice together").** One
 recording session, no cuts, no splicing: each language switch happens live on screen (in-app language switcher in the
 header, or log out → log in choosing the language), and the journey's data carries straight through.
+**INTRO — a greeting round before the journey** (red1: "make the first intro as a series of greetings, Hi, Bonjour,
+Cómo está.. before beginning"): on the login screen, one greeting per language in red1's order, voices alternating F/M,
+the UI switching to that language on each greeting (≈1.5–2 s each, ≈15–18 s total), subtitle = the greeting. Then the
+journey starts in English. Greetings: Hi! · Bonjour ! · ¡Hola! ¿Cómo está? · Guten Tag! · السلام عليكم (As-salamu alaykum) · 你好！ · こんにちは！ ·
+Apa khabar? · สวัสดีค่ะ/ครับ (Thai particle matches the speaker).
 **Film design:** the guide journey (part 1 → part 2 → part 3 once the gap agent lands address/price/posting) cut into
 **~10 s slices** (red1, 2026-10-03: "make the slices shorter, 10 secs"), languages in red1's order and CYCLING
 (9 languages × ~2 rounds ≈ 18+ slices for 3+ min). One or two dialogue lines per slice; the UI switch must take
