@@ -666,6 +666,49 @@ lightly cleaned of typos only); added the Prologue to carry the title; "debut as
 "Persistent Object Jaba" → "Persistent Object layer"; "SQLite WASM on a kernel ops PWA" → plain words; "update itself
 from obsolescence" → "keep itself from going obsolete"; the closing quote reprises the mantra.
 
+### §10 NOVEL ART — candidate list (mined 2026-10-04 from 2Dto3D + bim-compiler + bim-ootb history; read-only research)
+Each: idea · the first struggle · the breakthrough (source) · what to show. Pick ~7 for the film; each = one explainer diagram.
+1. **Rooms + paths from walls and doors** — "An IFC file says where the walls and doors are. It does not say how to walk
+   from one room to another." First: BC `92c6a716f` 2026-04-29 [S233] (2 m grid + A*). Trials (ROOM_PATHING_SUBSTRATE §5
+   "every way we got it wrong"): doors claiming 3–4 rooms, 16–38 corridor fragments, outdoors flooding in (1,094 m² vs a
+   134 m² spine), a "best result" that was 104 % phantom atrium voids, rotation read as degrees. Breakthrough: spine +
+   attachment, BC `3cdd378aa` 2026-08-02 — unroutable 45.3 % → 18.4 %. Room-type classifier (size + aspect + doors)
+   `41e1347de` 2026-07-11: 21/23 on labelled rooms, 62.8 % of 602 unseen rooms honestly "unclassified". Sparse walls:
+   HHS 14 → 105 rooms (PR #732). SHOW: Find rooms → A* polyline, spine raster, before/after %.
+2. **IFC → SQLite + geometry hell** — 2D repo 2025-11-16: "Fix Blender viewport blank — coordinate normalization",
+   a terminal that became 5.4 km × 3.3 km (mm vs m), R-tree unit flips; BC `9b431a243` 2026-06-23 an 8.6 m-tall slab +
+   a witness that was a tautology. Browser pivot: BC `66fc9413` 2026-04-18 (no .blend) → `7a19d6e2` 2026-04-20 (sql.js
+   WASM). SHOW: the km-scale building, a load, the schema diagram.
+3. **Rosetta Stones** — BC `f970f1477` 2026-02-12: 14 rules from 3 real buildings, SampleHouse 26 % / Duplex 36 %,
+   766 pipe-in-wall overlaps → `355c87deb` 2026-02-15 all 3 at 100 % positional (< 50 mm) via float32-exact extraction.
+   SHOW: G1–G6 gate run, the 26 % → 100 % ladder.
+4. **A building is a BOM** — BC `eb0ddb9f5` 2026-02-11; "51,000 elements → ~700 BOM lines (73× compression)"
+   (unified_mathematical_formulation.txt). SHOW: BOM tree beside the model.
+5. **Walkers fill missing trades from measured rules** — ModellerGuide (BC `5afdf00e6` 2026-06-28); clash collapse
+   SampleHouse 2,235 → 11, Duplex 3,172 → 37, SampleCastle 360 → 1; unseen buildings 0 fabricated joins (precision
+   Duplex 0.969 … HHS 0.620). Pre-history 2D `a8a0fb1` 2025-11-16 "5,282 automatic adjustments on Terminal 1".
+   ⚠ these clash numbers differ from the ModellerGuide table quoted in §9 (9→4, 32→2, 501→3) — reconcile before use.
+6. **4D: nothing before what holds it up** — bim-ootb `bcec6706` 2026-08-12 §MIDAIR_REPAIR 5,561 → 0 across 7
+   buildings / 266,954 elements (HHS 156 → 0). Struggle (4D_MODEL_INTEGRITY.md): "S supports T" implemented three
+   ways (1,961 vs 95), "63 uncountable was really 10", a template path "shipped, witnessed and NEVER CALLED". SHOW:
+   Time Machine + the 7-row table.
+7. **Time Machine** — BC `866bceb60` 2026-05-11. SHOW: scrub/reverse.
+8. **One signed log for ERP + BIM + Modeller** — kernel_ops BC `afed96c59` 2026-05-09; signed ops live bim-ootb
+   #79 2026-06-01; prior-art record docs/ModellerKernelFold.md 2026-06-18. TwoAppsOneKernel: 1,662,512 → 107,550 LOC
+   (~15.5×; "not feature parity"). SHOW: Verify-ledger pill, undo/branch, the LOC infographic.
+9. **Find → film** — "find to film… will also validate the path" (CINEMA_FIND_TO_FILM.md 2026-07-29). SHOW: Film-Maker.
+10. **Escape routes from the same room graph** — room_graph.js: "every one of its 9 edge kinds exists because a
+    specific real building broke the previous assumption". SHOW: Escape Route Reveal (2026-09-20).
+11. **WITNESS** — BC `df1ea1953` 2026-01-30 "[PHASE 31] Witness System"; NO_AI_INSIDE_WITNESS 2026-10-02. SHOW: § log,
+    red → green.
+12. **Honest refusal** — REFUSE / UNCLASSIFIED / 972 orphans printed, never guessed. SHOW: a refusal line.
+13. Red Pill (design from a trusted building's grammar) · 14. hash-addressed two-DB split (85 % draw-call cut,
+    `9cca45a3` 2026-04-27) — secondary.
+**Timeline:** Nov 2025 2Dto3D (DXF→3D, unit saga) · Jan–Feb 2026 compiler, Witness, Rosetta 100 % · Apr 2026 browser
+pivot, Find & Navigate · May 2026 kernel_ops, Time Machine, bim-ootb · Jun signed log, fold prior art, walkers ·
+Jul–Sep room classifier, spine 45.3 → 18.4 %, MIDAIR 5,561 → 0, Escape Route · Oct 2026 this film.
+Unverified: an IfcOpenShell fork Oct 2025 (`feature/IFC4_DB`, docs/PROJECT_CHRONOLOGY.md) — not in these repos.
+
 ## 4. STATUS
 - 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
   (181.0 s, 4,345 frames, 13.2 MB, −16.4 LUFS). One take, GPU (red1 approved; `--use-angle=gl` → RTX 4060; the run
