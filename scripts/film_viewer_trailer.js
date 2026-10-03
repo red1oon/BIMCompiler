@@ -240,9 +240,9 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await slice('s13', 'Pull Back'); n1 = PAGELOG.length;
     if (!(await page.locator('#tm-reschedule-asap').first().isVisible().catch(() => false))) await hclick('#tm-gantt');
     await hclick('#tm-reschedule-asap'); fact('pullBack', await waitLog(n1, /§GANTT_RESCHEDULE_ASAP_(COMMIT|REJECT)/, 8000) || (await page.$eval('#tm-gantt-tip', e => e.textContent).catch(() => 'NONE')));
-    await hold(2500); await key('t');
+    await hold(1000); await key('t');
     await slice('s14', 'Fly Tour scrub', 'ja_JP'); n1 = PAGELOG.length; await key('l', 'fly'); fact('tour', await waitLog(n1, /§SCRUB_UI show/, 60000));
-    await hold(3000); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1500); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1500);
+    await hold(1500); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1200); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1200);
     await hclick('#tour-scrub-close').catch(() => {});
 
     // ── 5 COST ── (the 4 English locales on the report page: currency + rate book change with them)

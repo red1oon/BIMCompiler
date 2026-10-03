@@ -335,6 +335,7 @@ Black/Bold family + the CJK/Arabic/Thai/Bengali Noto per language — `fc-list` 
 a check). Burned by the same ASS pass as the subtitles (new styles `CardKicker`, `CardTitle1`, `CardTitle2`, `CardLine`,
 `ChapterTag`, `SeriesTag`) + an ffmpeg `drawbox` dim — deterministic, no editor.
 Card language = the slice's language; the kicker carries the English ("CHAPTER 2 · INSPECT") so every card reads in both.
+**Backdrops (red1, 2026-10-04: "u may use latest nice stills as backdrop"):** each chapter card sits on a recent Alt+S photoreal still from ~/Downloads, dimmed ~35 %, instead of the live footage, for the card's ~2.6 s: 1 OPEN bounce_still_1791066758986.png (campus aerial) · 2 SEE bounce_still_1791059434614.png (glass office corner) · 3 INSPECT bounce_still_1791059526209.png (atrium stair, structure) · 4 TIME bounce_still_1791066612170.png (layered facade) · 5 COST bounce_still_1791059388656.png (courtyard from above) · 6 SHARE bounce_still_1791059545568.png (atrium walkway). Backdrop only — these are other buildings than the one filmed, never narrated as it.
 Series tag: "BIM OOTB · VIEWER" / "· MODELLER". Chapters for §8: 1 OPEN (beats 1–2b) · 2 SEE (3–5) · 3 INSPECT (6–7)
 · 4 TIME (8–8c) · 5 COST (9) · 6 SHARE (9b–10). §9 Modeller: 1 OPEN · 2 BUILD · 3 GENERATE · 4 UNDO ANYTHING · 5 SHARE.
 
