@@ -133,6 +133,16 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: FULL HOSPITAL FILM (red1 "Go"): 19-point storytelling script (`film_narration_hospital_0049_script.tsv`),
+  female voice Piper en_GB-jenny_dioco-medium, length-scale 1.4 + 0.5 s between sentences (raw Jenny ≈3.4 w/s; result
+  233 words / 98 s spoken = 2.37 w/s). Fitter v1 `film_narration_fit.py`: measures each clip after trimming its silent
+  tail; DETAIL if it fits, else speed up ≤10% (atempo, pitch kept), else SHORT, else SKIP. Log `film_narration_hospital_0049_fit.txt`: 19/19
+  DETAIL, 3 sped up (day1 ×1.024, parade ×1.007, value ×1.058). ⚠ Piper durations vary a little run to run (noise
+  in the model) — the fit is measured on the clips actually used, so placement is consistent, but a re-run is not
+  byte-identical. Output `~/Downloads/Hospital_narrated_full_AFTER_1920x1080_24fps_2026-10-03_0049.mp4` (377 MB, 4,963
+  frames, original untouched). Witness: silencedetect speech onsets at 9.16 13.00 18.52 30.40 43.86 56.90 72.55 82.81
+  95.00 115.00 148.71 159.80 172.65 194.00 s = the planned cues; captions present (bottom-band PSNR vs original
+  19.8–22.9 dB at 20/100/202 s vs 32.5 dB at 140 s, none); credit at top in last 8 s (23.2 vs 36.5 dB).
 - 2026-10-03: CAPTIONED SAMPLE + TONE. red1: captions at the bottom matching the script; script kept GENERAL (detail
   only where the gap allows). Fitter v0 (scratchpad `narr/fit.py`): each point has SHORT + DETAIL text; room = next
   cue − cue − 0.3 s; DETAIL if it fits, else SHORT, else SKIP (`§NARR_FIT` lines). Result: envelope room 2.40 s →
