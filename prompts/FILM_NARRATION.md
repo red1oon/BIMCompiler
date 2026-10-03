@@ -198,6 +198,26 @@ type name + admin, pick MYR → Create → facts (client id, accounts, 12 period
 Enter → the new company's login shows its admin user. Then the ▶ PLAYBOOK steps 2–5 (dialogue script → Kokoro fit →
 mux, English first). Witness: every spoken number has a §ERP_FILM_FACT; beats in order; film frames = concat output.
 
+## 6. §ERP-POLYGLOT — one 3+ minute ERP film that walks the guide while switching language (spec 2026-10-03)
+**Ask (red1):** "a full 3 mins or even beyond (once u clear the path with fixes) but demonstrative of its multi lingual
+capability.. even switching the UI to respective locales.. start with English, then French, Spanish, German, Arabic,
+Mandarin, Japanese, Malay, Thai, space out each line or so, so the viewers quickly catch the drift. UI reflects each
+locale. If not in, set them up first."
+**Measured 2026-10-03 (bim-ootb 5f82edfd):** the ERP has NO UI locale support — `ad_seed.db` has no `AD_Language`, no
+`AD_Menu_Trl`/`AD_Window_Trl`/`AD_Field_Trl`/`AD_Element_Trl`; only some data `_Trl` tables (e.g. `C_DocType_Trl`
+es_CO:51). `idempiere.html` is `lang="en"`. Local iDempiere (docker `idempiere`) has only es_CO loaded (AD_Menu_Trl 826).
+**Pre-req (handed to an Opus agent):** UI locales en_US, fr_FR, es_ES, de_DE, ar (RTL), zh_CN, ja_JP, ms_MY, th_TH —
+language picked at login like iDempiere (AD_Language), menu/window/tab/field/process/ref-list/message translations
+from iDempiere language packs (extracted; source named per locale), chrome strings (toolbar, login, status) via
+AD_Message_Trl. Witness by value per locale (translated-label counts, `dir=rtl` for Arabic).
+**Film design:** the guide journey (part 1 → part 2 → part 3 once the gap agent lands address/price/posting) cut into
+~9 segments of ~20–25 s, one per language in red1's order. Each segment: log in again choosing that language (the switch
+is ON SCREEN) → do the next guide step(s) → the F/M pair speak that language, subtitles in it (Arabic RTL). Voices:
+Edge en (Kokoro for English), fr-FR Denise/Henri, es-ES Elvira/Álvaro, de-DE Katja/Conrad, ar Zariyah/Hamed (or
+ar-AE), zh-CN Xiaoxiao/Yunxi, ja-JP Nanami/Keita, ms-MY Yasmin/Osman, th-TH Premwadee/Niwat. Fitter per segment by
+language (CFG entries exist for ms/th/fr/es/zh/yue; add de/ar/ja). Recorder: new PART=poly in
+`scripts/film_erp_first_setup.js` with a `LANG_PLAN` of (segment → login language → guide steps).
+
 ## 4. STATUS
 - 2026-10-03 16:20: ERP PART 1 — CANTONESE. Edge zh-HK HiuMaan (F) + WanLung (M); written Cantonese, Traditional
   script, subtitles in Noto Sans CJK HK (fontselect confirmed). `CFG['yue']` (pitch=False, tonal). Script
