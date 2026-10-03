@@ -217,7 +217,9 @@ AD_Message_Trl. Witness by value per locale (translated-label counts, `dir=rtl` 
 recording session, no cuts, no splicing: each language switch happens live on screen (in-app language switcher in the
 header, or log out → log in choosing the language), and the journey's data carries straight through.
 **Film design:** the guide journey (part 1 → part 2 → part 3 once the gap agent lands address/price/posting) cut into
-~9 segments of ~20–25 s, one per language in red1's order. Each segment: log in again choosing that language (the switch
+**~10 s slices** (red1, 2026-10-03: "make the slices shorter, 10 secs"), languages in red1's order and CYCLING
+(9 languages × ~2 rounds ≈ 18+ slices for 3+ min). One or two dialogue lines per slice; the UI switch must take
+~1–2 s of the slice, so the in-app header switcher (not a relogin) is the method of choice. Each segment: log in again choosing that language (the switch
 is ON SCREEN) → do the next guide step(s) → the F/M pair speak that language, subtitles in it (Arabic RTL). Voices:
 Edge en (Kokoro for English), fr-FR Denise/Henri, es-ES Elvira/Álvaro, de-DE Katja/Conrad, ar Zariyah/Hamed (or
 ar-AE), zh-CN Xiaoxiao/Yunxi, ja-JP Nanami/Keita, ms-MY Yasmin/Osman, th-TH Premwadee/Niwat. Fitter per segment by
