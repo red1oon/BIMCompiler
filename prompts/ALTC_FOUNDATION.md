@@ -16,6 +16,15 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-04 07:48 §FLYAROUND_ARC STEPS 1+2 DONE (bim-ootb fix/fast-bake @ce4c706e). Poses EXTRACTED from the stills' own
+  `bim-still-pose` PNG tEXt chunk (§STILL_POSE_PNG; PIL needs im.load() before im.text): A cam [65.892,0.994,-10.905] / B cam
+  [54.843,-3.583,-61.841], tgt [-1.098,4.249,1.455] both, fov 60, stills shot on Hospital_extracted.db (= Hospital_silent.db: 64,150
+  elements, identical centres => same three.js frame). Sun in both stills: fixed vector [0,3535.5,-3535.5] (45 deg), sunI 4.4 — films move
+  the sun by default; a fixed-sun flag is NOT built. Override: ~/.cache/bim4d/altc_2026-10-03/flyaround/arc_hosp.json (sec 40, overshoot 15).
+  Test (480p, --frames 48 = whole sweep in 2 s, overlays off): §FLYAROUND_ARC sweepDeg=68.1 cw rA=68.12 rB=84.47 errA=errB=0.0000 m PASS;
+  §CLI_BAKE_POSECHECK maxPosErr 0 (MATCH) 48 fr; §MAXQ_QUALITY 48/48 converged; 270 s wall; no black/freeze. At 40 s the max step is 0.159 m.
+  WAITING on red1 (GPU shared with the documentary session): full bake 40 s 1080p24 (~35-55 min) or still-res 2776x1440 (~1.5-2 h);
+  sun fixed (needs a flag) or moving (--sun-date).
 - ▶ 2026-10-04 SPEC §FLYAROUND_ARC (red1: "showcase its shadow reflection prowess by baking an adhoc movie ... a fly around slowly";
   approved steps 1+2 only — spec+code+short test; the full bake WAITS, the documentary session may need the GPU). Building: Hospital
   (red1: both latest stills, ~/Downloads/bounce_still_1791066612170.png + ..._1791066758986.png, are Hospital).
