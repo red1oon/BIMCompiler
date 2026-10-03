@@ -524,6 +524,11 @@ English thus, but when quirps comes in both subtitles."
   deterministic kernel — one signed op-log, folded into all three — is the solution, and that a lone retired author plus
   AI, kept honest by witnesses, got there.
 
+**§10 VOICE RULE (red1, 2026-10-04: "both narrrators talking about red1 as the 3rd person"):** BOTH F and M narrators speak
+ABOUT red1 in the third person ("he", "red1", "his"), in every segment, always. red1's own first-person words appear ONLY
+on QUOTE cards (on screen, signed "— red1", never voiced). A narrator's own aside ("Sounds like my family") is the
+narrator speaking, not red1. Checked 2026-10-04: no narrator line in §10 speaks as red1.
+
 **§10 PACE + REGISTER (red1, 2026-10-04: "it may run slowly this documentary.. rather technical, it is a good testimony from
 me.. as we already got the earlier more trailer style"):** the trailers (§7, §8, §9) carry the fast advert register; THIS
 film is the slow, technical TESTIMONY. Let lines breathe; give each NOVEL ART explainer the time it needs (40–90 s, not
