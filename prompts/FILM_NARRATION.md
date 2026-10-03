@@ -506,6 +506,8 @@ English thus, but when quirps comes in both subtitles."
 problem.. so make red1 the 2nd party, and the voice is narrating his story?"). A narrator tells red1's story. His own
 words are never voiced: they appear as **QUOTE cards** — on-screen text in quotation marks, signed "— red1", narrator
 silent for ~3 s (style: centred, off-white, coral attribution, over dimmed footage, same family as §8 cards).
+**Tone (red1, 2026-10-04: "in documentary style need not be formal, 'in his own words'.. just 'his famous 3 line
+mantra..'"):** casual, plain, warm — lead into a quote naturally, never announce it ("in his own words", "he says").
 Row types: `EN:` narrator · `QUOTE:` on-screen text only · `lang:` quip — gloss (a different F/M voice, low key).
 ≈ 1,000 EN words ≈ 6.5 min + cards/quotes/quips ≈ 9–10 min.
 
@@ -519,14 +521,15 @@ its own three bodies. The business record — ERP. The physical space — the bu
 modeller. Each orbits its own giant. They have never shared one centre. This is the story of one man who tried.
 
 **Ch 1 — card: WHO / IS BUILDING THIS · "Information is free — you have to know."**
-EN: His name is Redhuan D. Oon. Most people call him red1. For twenty years he has lived by three lines.
+EN: His name is Redhuan D. Oon — red1 to just about everyone. Back in the ADempiere days, his famous three-line
+mantra went like this.
 QUOTE: "Information is free — you have to know. People are not — you have to pay. Contributors are priceless — you have
 to be." — red1
 EN: In September 2006 a community of volunteers forked Compiere, an open-source ERP, to keep it open. The idea was first
 raised on his own forum, red1.org. They called it ADempiere, and they voted him its leader. Later, with Carlos Ruiz, it
 became iDempiere.
 ms: *Terima kasih, kawan-kawan* — thank you, friends.
-EN: He has a confession to make.
+EN: Truth is, he got bored.
 QUOTE: "ERP and Java is so boring. I love art." — red1
 EN: Then AI arrived, and kept getting better, until it could build almost anything he could describe — right up to this
 film.
