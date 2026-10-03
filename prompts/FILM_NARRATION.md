@@ -751,6 +751,16 @@ furious" / "it is growing faster.. and the key was both Anthropic AI leaps in mo
   the last 6 years") and a permanent credit line bottom-left: "Chart: METR, 'Measuring AI Ability to Complete Long
   Software Tasks', 2025-03-19 · metr.org". Same treatment for any other cited source that has a strong graphic
   (one image per source, credit always visible, no edits to the figure). Record the capture date + URL in the TSV.
+  **Correlation callouts (red1, 2026-10-04: "corelate with a pointed bullet to show 'this is where a sudden jump in
+  red1's project happens.. thanks to this.. he could then figure out..'"):** NOT drawn on METR's figure (that would alter
+  a cited source) — on OUR timeline (the two-engines chart), shown right after METR's. Each callout = a pointer bullet on
+  the date + one line; wording "right after <model> arrived, red1 could…" — correlation, never "because" (the record
+  shows timing, not cause). Callouts (all dates from git; see the lists above):
+  · 2026-02-06 Opus 4.6 → commits 27 (Jan) → 308 (Feb) → 796 (Mar); Rosetta Stones 100 % positional 2026-02-15.
+  · 2026-04-18/20 browser pivot (Opus 4.6 / Sonnet 4.6 era) — no .blend, sql.js WASM in a tab.
+  · 2026-05-29 Opus 4.8, 2026-06-11 Fable 5 → signed op-log live 06-01, Kernel ERP home 06-02, 243 ERP commits in June.
+  · 2026-07-02 Sonnet 5, 2026-07-25 Opus 5 → July commit peak 1,535; 276 new witness files in July.
+  · 2026-09-23 Opus 5.5 → ten ERP PRs on 2026-10-03; in-place 13-language Viewer + this film (2026-10-04).
 - **Visual:** an animated timeline — monthly commit bars rising left to right, model names dropping in as pins on their
   first-commit dates, and a witness-file counter ticking up underneath (rendered headless from the numbers above, CPU).
 - **Lines (F/M):** F: Why did it keep getting faster? | M: Two engines. The models kept leaping — ten Claude versions
