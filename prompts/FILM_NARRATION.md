@@ -459,6 +459,123 @@ those repos → shown as red1's account unless older evidence (GitHub, Bonsai sa
 3. Personal material for Ch 1–2 (photos, ADempiere 2006 era, art) — what he can supply.
 4. Language: English narration with the 13 trailer languages as subtitles, or English only?
 
+### §10 REVISION 1 — 2026-10-04 (red1's answers to the 4 open questions; SUPERSEDES the open list and the table's narration column)
+**red1, verbatim:** "1. No need to say AI voice, just 'The Three Body Problem of IT by Red1'. You may readjust the whole
+narrative to make it even more flowing as i written this on the spur and may have missed important bits of the big
+picture. This is a big picture film. 2. Typo. Contributors are PRICELESS.. it is from my famous 3 line mantra back in
+ADempiere days - Information is Free, u have to be, Ppl are not, u have to pay, Contributors.. 3. Gather from public
+resources abit, but the iDempiere snapshots can be a good backdrop about the ERP journey down memory lane as it is still
+pristine similar. 4. I am thinking of the same hellos, and lingo style but weigh 70% content to English only and quirps
+in other languages that listeners do not lost track but yet it usher in the communcal global spirit that i have always
+been. You may even intersperce more, but giving low key phrases to other lingos. Subtitles remain throuout, mostly
+English thus, but when quirps comes in both subtitles."
+
+- **Title:** *The Three-Body Problem of IT* — by Red1. Opening credit only; no voice label (red1's decision for his own
+  words and story).
+- **The mantra** (red1's account; not found in public sources 2026-10-04): *"Information is free — you have to know.
+  People are not — you have to pay. Contributors are priceless — you have to be."* ⛔ confirm line 1's ending: he wrote
+  "you have to know" the first time and "u have to be" the second; the draft uses "know" (line 3 already ends "be").
+- **Public facts used** (Wikipedia "ADempiere", fetched 2026-10-04): ADempiere forked from Compiere 1 Sept 2006 after the
+  community split with Compiere Inc.; SourceForge project opened 9 Sept 2006; red1 = project manager, voted leader by the
+  founding council; stepped down 24 June 2010; joined Carlos Ruiz's GlobalQSS 361 / iDempiere fork May 2011.
+  Compiere 1999 and "3 million lines" = red1's account (no source checked yet).
+- **Backdrop for the ERP years:** real iDempiere screens (first choice: record the public iDempiere demo/test server with
+  the headless recorder; else idempiere.org / wiki screenshots, credited "iDempiere — idempiere.org, GPLv2"), cross-faded
+  into the Kernel-ERP clone of the same window ("still pristine similar") — the memory-lane device of Ch 1 and Ch 4.
+- **Language mix:** ≈ 70 % of speaking time English (one narrator voice, red1's first person, male); ≈ 30 % short
+  low-key quips in the 12 other trailer languages, each a different F/M voice — greetings, "let's go", "no problem",
+  "thank you", "keep going" — never carrying a fact the listener needs. Subtitles all the way: English lines English
+  only; a quip shows its native line + the English gloss under it (the `§POLY_GLOSS` path already built).
+- **Why the title fits (the big picture the narration now carries):** IT has three bodies that each orbit their own
+  giant and never settle together — **the business record (ERP)**, **the physical space (BIM)** and **the design act
+  (the Modeller)**. Classically, three bodies have no closed-form solution; the film's claim is that one small
+  deterministic kernel — one signed op-log, folded into all three — is the solution, and that a lone retired author plus
+  AI, kept honest by witnesses, got there.
+
+**§10 SCRIPT v1** (draft; EN = narrator; quip rows = `lang: line — gloss`; ≈ 1,000 EN words ≈ 6.5 min + cards/quips ≈ 9 min)
+
+*Cold open — greetings round over the front door, flags cycling (same as §8):* en Hi · fr Bonjour · es ¡Hola! · de Guten
+Tag · ar السلام عليكم · zh 你好 · ja こんにちは · ms Apa khabar? · th สวัสดี · ko 안녕하세요 · pt Olá · id Halo · bn নমস্কার
+**Card:** THE THREE-BODY / PROBLEM OF IT · "by Red1"
+
+**Prologue — card: THREE / BODIES**
+EN: In physics, three bodies pulling on each other never settle. There is no neat formula. Information technology has
+its own three bodies. The business record — that's ERP. The physical space — that's the building, BIM. And the act of
+design — the modeller. Each orbits its own giant. They have never shared one centre. This film is about trying.
+
+**Ch 1 — card: WHO / IS BUILDING THIS · "Information is free — you have to know."**
+EN: I am Redhuan D. Oon. Most people call me red1. For twenty years I have lived by three lines. Information is free —
+you have to know. People are not — you have to pay. Contributors are priceless — you have to be.
+EN: In September 2006 a community of volunteers forked Compiere, an open-source ERP, to keep it open. We called it
+ADempiere, and they voted me its leader. Later, with Carlos Ruiz, it became iDempiere.
+ms: *Terima kasih, kawan-kawan* — thank you, friends.
+EN: Here's a confession. ERP and Java bored me. I love art. And then AI arrived, and kept getting better, until it
+could build almost anything I could describe — right up to this film.
+ja: *本当です* — it's true.
+
+**Ch 2 — card: WHEN / AND HOW · "It began with a challenge from a friend."**
+EN: In the middle of last year, a friend who is a BIM engineer dared me: try buildings. I tried to write a 3D interface
+myself, even with Claude Code beside me. It was daunting.
+fr: *Pas facile* — not easy.
+EN: In October, Claude suggested Bonsai — BIM inside Blender. It was a blast, briefly. Large IFC files crashed it. So
+Claude suggested pulling each IFC model out into a SQLite database. That worked — and led us straight into geometry
+hell. A language model reasons in words. Walls, pipes and slabs live in physics.
+de: *Na gut* — all right then.
+EN: So I made a Rosetta Stone: real buildings, decoded and checked, to translate between the two. And I learned the
+real trick. You build the foundation in layers, meticulously, and let AI stitch physical reality onto them. Every new
+hell was a place its training had never been — because much of this is prior art nobody connected, or new art nobody
+had made.
+es: *¡Seguimos!* — we keep going.
+
+**Ch 3 — card: WHAT / I AM BUILDING · "A building is a bill of materials."**
+EN: What am I building? A spatial ERP. My whole career is ERP modelling. A warehouse should be a real place you can walk
+through, not rows in a table.
+EN: And then I saw it. The building industry already is an ERP. A building is a bill of materials — building, floor,
+room, fixture, part — each one a recipe of the next.
+th: *ใช่เลย* — exactly.
+EN: SQLite let it scale, and the crashes stopped. Then came the features: time in 4D, cost in 5D, a real Find, a Time
+Machine, films. Retrofitting ideas at the speed of thought into Blender — a good stack, I admit — was a steep climb.
+EN: And the bottleneck was me. AI writes code many times faster than I can read it. It drifts, and I steer. Each new
+session forgets the last one — two hundred thousand tokens, then a blank page.
+ko: *괜찮아요* — it's okay.
+EN: Then Claude made the biggest suggestion of all. Leave the old stack. Go to the browser: WebAssembly, Three.js,
+Canvas. We sped up many times over.
+pt: *Que maravilha* — how wonderful.
+
+**Ch 4 — card: THE THREE / BODIES, ONE KERNEL · "ERP, BIM, Modeller."**
+EN: That freed me for my oldest dream: rebuilding iDempiere itself. It inherits Compiere, from 1999 — Java, OSGi
+plugins, Maven, a Postgres server in Docker, millions of lines, and heavy machinery like its Persistent Object layer.
+For three years I tried with ChatGPT, and could not untangle it.
+EN: This time the building came first. With BIM sitting on a foundation of SQLite in the browser — a kernel of signed
+operations, an app that installs from a web page — the ERP conversion took days.
+id: *Cepat sekali* — so fast.
+EN: Then I turned to the third body: the modeller, the design tool. That is the deepest moat in the industry, guarded by
+the SAP of 3D design — Autodesk Revit.
+EN: What made it possible is the most important layer of all: the witness. Logging wired through the code, so every
+claim is checked by numbers, not by eye. With witnesses, Claude can push through each gap — old art and new — without
+fooling either of us.
+zh: *稳稳的* — steady.
+EN: So what you are watching is a fast train. At human speed, you might not even notice it pass.
+ar: *هيا بنا* — let's go.
+
+**Coda — card: REBELS / AND MISFITS · "MIT. Take it further."**
+EN: I am its only human author, and I have put it under the most permissive licence there is: MIT. I still can't settle
+its names — Out of the Box, Kernel ERP, DAGeVu. I will probably change my mind again.
+EN: It has been a blast — a fitting hobby for my retired days. But I want to leave something behind for what I have
+struggled for. This is my invitation to the rebels and the misfits. Carry the conversation on after I am gone.
+bn: *ধন্যবাদ* — thank you.
+EN: At AI speed, that conversation may close sooner than we think — as I lay the final layer: deterministic code with
+no AI inside, intelligent enough to keep itself from going obsolete.
+EN: Information is free. Contributors are priceless. You have to be.
+*Closing round — every language, one word each:* thank you · merci · gracias · danke · شكراً · 谢谢 · ありがとう ·
+terima kasih · ขอบคุณ · 감사합니다 · obrigado · terima kasih · ধন্যবাদ
+
+**Edits to red1's draft, for his review (none change meaning):** added the Prologue to carry the title; "debut as the
+founding leader" → the public record (forked Sept 2006, voted leader); "3 million lines" → "millions of lines" until
+sourced; "Persistent Object Jaba" → "Persistent Object layer"; "SQLite WASM on a kernel ops PWA" → plain words ("SQLite in
+the browser … an app that installs from a web page"); "update itself from obsolescence" → "keep itself from going
+obsolete"; the closing reprises the mantra.
+
 ## 4. STATUS
 - 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
   (181.0 s, 4,345 frames, 13.2 MB, −16.4 LUFS). One take, GPU (red1 approved; `--use-angle=gl` → RTX 4060; the run
