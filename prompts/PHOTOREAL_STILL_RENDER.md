@@ -547,3 +547,15 @@
 - LTU inside (cam [-16.481,-0.263,-9.602]): §GI_STILL underlay mean=0 (empty app frame), composite mean 1.5-1.7, with AND without the
   mirror -> pre-existing blank grab. §FAULT_GI printed OK at 74-78 % black = Primal Law 4 breach -> §FAULT_GI_BLANK (gi_still ?v=51,
   sw v1562): underlay mean < 1 = FAULT. Verify run queued. Root cause of the blank grab: open.
+- 17:25 §INDOOR_SHADOW_STUDY STEP 2 — PerfectIndoor's "virtue" = SUN POSITION, not a lost renderer feature.
+  Per-term readback (s/wall_probe.json, t3w.js): blue wall normal ~+z (eye-facing), default sun el 45 az 180 (scene.js:286, dir
+  [0.001,0.705,-0.709]) -> N.L -0.71: the default sun cannot light that wall. Glass is not the blocker (§SUN_GLASS_CASTERS 137 pure-glass
+  meshes discarded from the depth pass). Sun-reach raycast (s/sunrays.json, 395 wall points, glass skipped): lit only for az 270-330
+  (three spherical az; west side) at low sun — el 30: 224/118/25 of 395 at az 270/300/330; el 45: 150/75/5; el 60: 39/3/0; el 75: 0;
+  az 0-60 and 180: 0. Blockers include IfcBeam = the beam shadows. Render at el 30 az 270 (s/sun_w270.png, MINGUID=60000 load gate):
+  crisp diagonal beam shadows on the wall = the PerfectIndoor look, with today's code. Blotches (upper wall rank-corr full~F 0.89,
+  ~Gd 0.86) are the sky-light terms varying across one flat wall in zone 1; only 5 of 43 big F jumps sit on 0.5 m cell edges -> not
+  grid steps. Sun-shadow edge quality indoors: near cascade texelPerPixel 3.43-4.18 (same coarseness class as outside) — an edge-profile
+  witness (per-row FWHM along the shadow edge, as measure_shadow_edge.py did) is the right instrument, not the gradient-angle share.
+  DECISIONS for red1: (a) a default/still sun that lights interiors (today az 180 lights none of this atrium wall); (b) cascade choice
+  by texel-per-pixel (outside + inside jaggies); (c) blotch: is per-wall sky-term variation wanted (physical) or a smoothing target.
