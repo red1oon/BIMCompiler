@@ -559,3 +559,9 @@
   witness (per-row FWHM along the shadow edge, as measure_shadow_edge.py did) is the right instrument, not the gradient-angle share.
   DECISIONS for red1: (a) a default/still sun that lights interiors (today az 180 lights none of this atrium wall); (b) cascade choice
   by texel-per-pixel (outside + inside jaggies); (c) blotch: is per-wall sky-term variation wanted (physical) or a smoothing target.
+- 21:05 TOILET MIRRORS on the planar path (bim-ootb fix/sky-surface eb0e958f, sw v1563): §MIRROR_OWN_MAT mirror meshes join the plane set;
+  their onBeforeCompile calls GlassFresnel.patchShader before the box-chunk expansion (cache key slMirrorBox2). Clinic toilet (red1's
+  trashed …1790729229470 pose, cam [18.713,-1.578,7.893] tgt [20.821,-2.684,8.418]): §GLASS_REFL_TRUTH mirror samples 28, on a mirrored
+  plane with depth agreeing 0/28 -> 28/28, 53 ms. OPEN: brightness truth (Oct 1: rest-of-mirror 7x too dark under the cube path) not
+  re-measured — needs mirtruth-style M/T ratio (expect ~0.843 = mirror colour).
+- SHIPPED today (fix/sky-surface, all pushed): 897b83e0 v1561 §GLASS_PLANAR_REFL · 5cae78f1 v1562 §FAULT_GI_BLANK · eb0e958f v1563 mirrors.
