@@ -210,12 +210,12 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     fact('find', await waitLog(n1, /§NAV_FIND_SEARCH query="IfcWall"/, 8000)); fact('findCount', await page.$eval('#find-count', e => e.textContent).catch(() => ''));
     await hold(2000);
     // s05b Ask (bim-ootb #1789, 2026-09-30): canned questions answered by the shipped engines, verdict + evidence per answer
-    await slice('s05b', 'Ask: largest rooms + worst-case exit'); n1 = PAGELOG.length;
+    await slice('s05b', 'Ask: largest rooms + element counts'); n1 = PAGELOG.length;
     if (await page.locator('#find-mode-ask').first().isVisible().catch(() => false)) {
       await hclick('#find-mode-ask'); await waitLog(n1, /§ASK_MODE ask/, 5000); await hold(500);
-      for (const tpl of ['largest_room', 'exit_path']) {
+      for (const tpl of ['largest_room', 'counts']) {   // exit_path dropped on HHS: §ROOM_GRAPH_EXITS exits=0 (no door reaches outside) → no honest answer
         const sel = '.ask-q[data-tpl="' + tpl + '"]'; const n2 = PAGELOG.length;
-        if (await page.locator(sel).first().isVisible().catch(() => false)) { await hclick(sel); fact('ask.' + tpl, await waitLog(n2, /§ASK_ANSWER /, 30000) || 'NO ANSWER'); await hold(1500); }
+        if (await page.locator(sel).first().isVisible().catch(() => false)) { await hclick(sel); fact('ask.' + tpl, await waitLog(n2, /§ASK_ANSWER /, 12000) || 'NO ANSWER'); await hold(1500); }
         else fact('ask.' + tpl, 'question not offered: ' + (await page.locator('.ask-q', { hasText: /./ }).allInnerTexts().catch(() => [])).join(' | ').slice(0, 200));
       }
       await hold(1500); await hclick('#find-mode-find');

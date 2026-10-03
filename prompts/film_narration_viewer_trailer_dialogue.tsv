@@ -19,7 +19,7 @@ s03	en	§FILM_FACT elements=6839 loadSec=6.1; VibeProgramming.md:324 (no server 
 c2	en	card	F: Chapter two. See.	F: Chapter two. See.
 s04	es	§PICK IfcWallStandardCase … ARC Level 1	M: ¡Mira! Un muro.	M: ¡Mira! Un muro: su clase, su planta, su material.	M: Look! A wall.	M: Look! A wall: its class, its storey, its material.
 s05	en	§NAV_FIND_SEARCH results=50 (LIMIT 50); bim-ootb 58318b9b Find fly-to on click	F: Ask for walls. Fifty found.	F: Ask for walls. | M: Fifty found, and listed — click one, and you fly straight to it.
-s05b	en	bim-ootb #1789 Find Ask mode (find_ask.js: catalog → shipped engines → verdict + evidence → one .xlsx)	M: Or just ask.	M: Or just ask — the largest rooms, the way out. | F: Every answer from the engines, with its evidence.
+s05b	en	bim-ootb #1789 Find Ask (find_ask.js); vfinal §ASK_ANSWER id=largest_room verdict=OK rooms=14; exit_path not asked on HHS (§ROOM_GRAPH_EXITS exits=0)	M: Or just ask.	M: Or just ask — the largest rooms, the element counts. | F: Every answer from the engines, with its evidence.
 s06	ar	§STOREY_FILTER Level 2 · §XRAY_CYCLE	F: طابق واحد، ثم نرى عبر الجدران.	F: طابق واحد… ثم نرى من خلال الجدران، مثل الأشعة السينية.	F: One floor, then through the walls.	F: One floor… then we see through the walls, like an X-ray.
 c3	en	card	M: Chapter three. Inspect.	M: Chapter three. Inspect.
 s07	zh	§SECTION ON	F: 一刀切开。	F: 一刀切开，逐层查看，每一层楼板一目了然。	F: One cut.	F: One cut, floor by floor — every slab in plain sight.
