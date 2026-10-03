@@ -26,7 +26,7 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
     film's real time is not linear: §SUN_ARC_FILL_PIN tNorm vs f/(n-1) differs by up to 0.0316 on Hospital (f2196: 0.411 vs 0.442 —
     the load-path hold) -> 118 m at orbit speed (up to 5.5 m/frame); LTU (no hold) 0.0011 -> 0.42 m. Band anchors pass at 0.00-0.04 m on both
     = the stored path WAS flown. FIX (not built, ~15 min): record the actual t in __maxqPoseLog and evaluate poseAt at that t.
-  - HHS full film launched 08:06 (sidecar rebake first), all overlays ON except --no-buildup. Code-read conflict: §SUN_COMPASS without a 4D
+  - HHS full film launched 08:06 then KILLED ~08:35 on red1 ("let alt-s do its work"); HHS sidecar baked, all overlays ON except --no-buildup. Code-read conflict: §SUN_COMPASS without a 4D
     cursor draws the rose only, sun lines hidden (cpe_sun_compass.js:414-425, §SUN_COMPASS_NO_CURSOR); others to be read from its log.
   - Fable code-expert review dispatched 08:1x (read-only; lamps-never-relit, layering, per-frame witness record, memory, speed) -> scratchpad
     c/CODE_REVIEW_ALTC.md.
