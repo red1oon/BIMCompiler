@@ -16,6 +16,15 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 22:35 ZONE BOX + ZONE FLOOR SHIPPED on bim-ootb fix/fast-bake @d5b1bf56 (PUSHED; merges fix/zone-truebox @8f6c38aa +
+  §ZONE_FLOOR padding rule). Sidecars rebuilt, key 2bce3c9b:90286, restorecheck PASS x3, in /tmp/wt-fastbake/buildings/patches and
+  ~/.cache/bim4d/altc_2026-10-03/sidecars_zonefloor/ (older sets: sidecars_oldbox/, sidecars_truebox/ = now STALE keys).
+  §ZONE_FLOOR PASS x3: HHS 138x27x115 indoor 81,570 (was 89,757 true-box / 138,704 old box), LTU 372x39x273 indoor 342,608 (old 603,006),
+  Hospital 208x84x243 indoor 867,878 (old 1,531,394); belowLowestGeometry 0 on all. Field build: HHS 107 s, LTU 476 s, Hospital 1,586 s.
+  LTU clip 0:0.15 (V_LTU_ctl9, zone cache HIT): vs true box w/o floor rule mean |d| 0.024 max 0.157 (look-neutral on LTU, as expected);
+  vs the OLD box mean 0.197 max 3.855 @f162, 25 frames > 0.5, signed -0.155 (indoor f156-190 slightly darker: the fake basement zone
+  no longer feeds them). Alt+S stills share light_zones.js and change the same way — NOT re-checked on stills.
+  OPEN: (1) W4 merge residual (max ~3.7 @f163, opaque draw order suspected) — &consolidate stays opt-in; (2) Alt+S still A/B on the new zones.
 - ▶ 2026-10-03 21:00 W2 PASS (V_HOSP_freeze8, fix/fast-bake @932346cf, Hospital 1900:2000 + bake_hires_offline.sh flags): §HUD_OVERLAP_WORST
   none judgedFrames=311/311 => PASS; §LOADPATH_INFOPANEL_AVOID near moves=[stats-panel>down] final=366,565 418x418; only a CROSSFADE left
   (hud.status 0.04/1.00 x infopanel, 11 fr = fading, by design). W1 PASS (POSECHECK MATCH 364 fr, LOADPATH_RESUME 0.0000). GPU handed to the
