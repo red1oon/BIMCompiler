@@ -16,6 +16,24 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 18:50 ROUNDS 4-6 (red1 "proceed, decide for me"). bim-ootb fix/fast-bake @75dae6d4 PUSHED (tree clean, OLD-box sidecars
+  back in /tmp/wt-fastbake/buildings/patches). Runs + logs: session scratchpad c/ (V_*_opq5, *_freeze5/7, *_ctl6/cons6; v5-v7.sh).
+  W2: §HUD_ROW_YIELD — the load-path card (opaque from arm, ruling §129.12/§129.29, ~970 px wide at [30,30]) covers the WHOLE top row:
+  round 4 (path map yield only) moved the f=23 FAIL to suncompass.readout. Now hud.pathmap/daycounter/suncompass.clock/readout skip for the
+  card's window and keep their last box as the row reservation. Hospital 1900:2000: f=23 overlap GONE. Worst now = stats-panel
+  [30,259 389x293] x loadpath.infopanel.near [366,206 418x418] f=211 1.00/1.00 — PRE-EXISTING (round 4: stats-panel y=223, same 53 px x
+  overlap, masked by the larger one; the witness prints only the worst pair). NEXT: why the info panel's avoidRects (_lp.armHudRects,
+  cpe_load_path.js ~L4601) miss stats-panel. W1 PASS again (POSECHECK MATCH 364 fr, LOADPATH_RESUME 0.0000).
+  W4 residual is NOT glass order: &consolidate=opaque (19 transparent batches kept) = mean |d| 0.295 max 3.670 @f163 (full merge 0.296/3.677).
+  Also NOT the zone grid: on the true box, merge vs no-merge = mean 0.319 max 3.791 @f163. Lamp data identical both arms (§LAMP_UNCAPPED
+  ver 1-13 same). Raw scene Lcd differs (f163 -6.8%). Remaining suspects (unmeasured): opaque draw order / coplanar depth ties.
+  ROOT BOX FIX = branch fix/zone-truebox @8f6c38aa (PUSHED, NOT merged): changes zone TOPOLOGY, not just extent — LTU grid 8.98M -> 3.96M
+  cells, indoorCells 603,006 -> 342,608, zones 950 -> 635, largest 44,547 -> 12,159 m3 (59% -> 28% of indoor), zonesWithAperture 109 -> 31,
+  skyLitCells 133,715 -> 31,928, soilCells 2.12M -> 0.43M. Clip luma vs old: mean 0.19 max 3.85 @f162 (indoor f156-190 only). Field build
+  NOT 2.3x cheaper: LTU 437 -> 467 s, HHS 108 s, Hospital 1832 -> 1634 s. Sidecars (key 9f4b8c62:90271, all restorecheck PASS):
+  ~/.cache/bim4d/altc_2026-10-03/sidecars_truebox/; old ones: .../sidecars_oldbox/. Needs a ZONE-CORRECTNESS witness before merge (e.g.
+  zones vs IfcSpace volumes) — which of the two zone sets is right is unmeasured. Sidecar tools with SUF support: c/rootfix/{bake,restorecheck}.js
+  (copies of prompts/photoreal_probes/lightgrid/*.js; SUF= for *_silent.db).
 - ▶ 2026-10-03 16:10 VERIFY ROUND 3 (bim-ootb fix/fast-bake @a1847484, pushed; runs in session scratchpad c/, 1080p24).
   §ZONE_BOX_TRUE (new, cinema_maxq.js, &zonebox=1, read-only; kept OUT of light_zones.js because its code hash SRC is the zone cache
   key — any edit there stales every .lightfield.bin sidecar): today's (unmerged) zone grid is 2-2.5x the true building box.
