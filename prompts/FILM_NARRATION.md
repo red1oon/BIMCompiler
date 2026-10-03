@@ -46,9 +46,15 @@ is theirs). The lane builds a **fitter** that does the to-and-fro for them:
   §NIGHT_BUILDUP_GATE). ⚠ `/tmp` is wiped on reboot — copy the log next to the film before relying on it.
   Several §CINEMA_BEATS lines appear (dur=60/15/195.8/278.8 s): the plan must say which one the film used, from the log.
 
+**Own-voice route (red1, 2026-10-03: *"I can also use my voice where u just prepared the script with timeline
+prompters"*):** a first-class option, not a fallback. The fitter's placed lines become a **prompter**: the film plays
+silent, each line shows on screen at its start second with a countdown and a bar for its time budget, red1 records
+over it in one pass. Outputs: a subtitle-style cue file (e.g. .srt/.vtt — the same rows as the fitter table) and a
+prompter view that plays it over the mp4. Recording is then muxed onto the film as in §2. No AI anywhere in this route.
+
 **On "No AI inside" (red1 asked if it is a thin line):** the tagline is about the shipped product, which has no AI.
 A film whose story is red1's, whose facts come from the log, and whose timing is plain arithmetic does not break it.
-The only AI is the voice (if TTS). A short credit line ("Script: red1 · Voice: synthetic") removes any doubt — red1's call.
+The only AI is the voice, and only if TTS is chosen over red1's own voice. A short credit line ("Script: red1 · Voice: synthetic") removes any doubt — red1's call.
 
 **Deliverable of the first session: that plan, appended to this file as §PLAN** (project rule: findings go in the
 prompts file, not chat-only). Brief — a reviewable strategy, not a design doc. red1 reviews before anything is built.
@@ -111,7 +117,7 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 3. **Timing rules:** speech starts at a cue's fade-in, must end before the next cue's window; a speaking-rate
    budget (words per second) that decides whether a line fits, and what happens when it doesn't (shorten by a
    rule, or drop).
-4. **Audio path:** ElevenLabs vs OpenAI TTS (cost per minute of film, voice quality, data sent out), how the
+4. **Audio path:** red1's own voice via the prompter (§0.1) vs ElevenLabs vs OpenAI TTS (cost per minute of film, voice quality, data sent out), how the
    per-line clips are generated and placed on the timeline, then mux + loudness target. Alternatives: one line each.
 5. **Witness design (before code):** e.g. `witness_film_narration.js` — every script number matches its source `§`
    value; no two clips overlap; each clip starts within a stated tolerance of its window; total audio ≤ film length;
@@ -121,6 +127,7 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: own-voice prompter route added (red1) — fitter rows → cue file + prompter view over the film.
 - 2026-10-03: §0.1 added from red1's follow-up — the lane's core is the script-to-film FITTER (placed / skipped /
   gap / orphan), red1 writes the narrative; test film switched to Hospital 0049 (build-up ON).
 - 2026-10-03: §0 realigned to red1's original words (kept verbatim): professional documentary voice-over of a
