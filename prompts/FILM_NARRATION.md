@@ -533,6 +533,18 @@ follows a more advertising like as the screenshot hinted"):**
 - **Replay, don't re-film:** footage reuses the §8/§9 trailer takes and the ERP films; the story carries the attention.
 - **Overlay titles are the advert layer** (§8 TITLE CARDS style, ref screenshot): per idea a kicker ("NOVEL ART 3"),
   a two-tone title, one plain line — plus a small source tag (e.g. "git · 2026-06-26") so the claim is checkable.
+- **EXPLAINER DIAGRAMS (red1, 2026-10-04: "giving another screenshot to give an idea how this particular video i am
+  watching does it. It animates to highlight the learning point"; ref `~/Pictures/Screenshots/Screenshot from 2026-10-04
+  06-20-22.png`).** Anatomy, copied: full-frame dark plum (#160E12-ish) background, no footage · coral letter-spaced
+  heading centred above ("STREAMING SPEECH GENERATION") · one row of 3–5 rounded boxes (dark fill, thin grey border),
+  each = bold off-white name + one small grey line, joined by coral arrows · the box being EXPLAINED lights up (coral
+  border + tinted fill) while the rest stay dim; the highlight steps along in time with the narration · persistent
+  boxed chapter tag top-left, series tag top-right (as §8 cards).
+  **Build:** a small HTML page per diagram (steps as data: name, sub-line, highlight cue in seconds) rendered headless
+  frame by frame (deterministic, CPU — no GPU), cues taken from the fitted narration plan so the highlight lands on the
+  spoken word. Used for each NOVEL ART item, e.g. *IFC file → SQLite extract → room graph from IfcSpace metadata →
+  corridor / room / isolated → path through doors* (red1's Find-panel example). Box text = the idea's own terms; every
+  number on a box carries its source (§ line or commit) in the spec's TSV.
 - Idea list: being mined from the three repos (2Dto3D Nov 2025 → bim-compiler Jan 2026 → bim-ootb May 2026) → §10 NOVEL ART.
 
 **§10 SCRIPT v3 — two narrators, F and M** (2026-10-04; SUPERSEDES v2's single narrator. red1: "it can retain the lively
