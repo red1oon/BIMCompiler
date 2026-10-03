@@ -461,3 +461,21 @@
 - RISKS to measure, not assume: K vs press time (Hospital press already 101–108 s); planes cut by the view edge (RT sized to the pane's
   screen box); curved/faceted glass falls back (counted); interior mirrors (§MIRROR_OWN_MAT cube capture) stay as they are.
 - STATUS: spec only. Changes how every exterior pane renders -> waits for red1's go.
+
+## 2026-10-03 ~09:30 — CLOSE-OUT (red1 closing the machine) — RESUME HERE
+- SHIPPED today (bim-ootb fix/sky-surface, pushed, 0 unpushed): d3bb44a7 v1547 §FAULT_VACUOUS / §FAULT_GI S4b / §STILL_PRESS_TIME;
+  58416ed0 v1557 §FAULT_WHO (+ still_fault ?v=13, gi_still ?v=50). Witnessed in 4 re-shoots (s/press.log, summary above).
+  Alt+C merged d3bb44a7 into fix/fast-bake (393e0f0f v1556) and will merge 58416ed0 as v1559+ (both branches used v1557).
+- Prompts written: this file (F1–F8 analysis, census, §GLASS_PLANAR_REFL spec) + prompts/FILM_NARRATION.md (plan-first narration lane,
+  for another session; first deliverable = §PLAN only, red1 reviews; AI-voice vs 'No AI inside' is red1's call).
+- WAITING ON red1: GO for §GLASS_PLANAR_REFL (the only big flaw per red1: exterior glass shows sky where a wing/slab should be).
+  On go: build in /tmp/wt-surf glass_fresnel.js (owner of the glazing clones) + witness §GLASS_REFL_TRUTH first (baseline skyWhereHit),
+  GPU under /tmp/claude-1000/gpu.lock, coordinate with Alt+C (bim-compiler-d1).
+- Other open (no-band-aid rule above): F4 = same mechanism as the mirror flaw (fold into §GLASS_PLANAR_REFL); F5 fix = glassLow judged on
+  glazing classes only (GLAZE_CLASSES, glass_fresnel.js) not transparency; F7 Clinic dark frame unexplained; Hospital zone 136 box height;
+  bake.js sidecar name must follow the viewer's request (_meta vs _extracted) instead of the 10-03 symlinks.
+- AFTER A REBOOT (/tmp dies): `git worktree add /tmp/wt-surf fix/sky-surface` in ~/bim-ootb (prune first), `node ~/bin/serve_tree.js
+  /tmp/wt-surf 8664 &`, relink buildings/LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db, rebake sidecars (Clinic 2 / HHS 2.6 /
+  Terminal 4.4 / Hospital 27 min with a copy of Alt+C's bake.js + restorecheck.js), symlink Clinic/Terminal/Hospital _meta.db.lightfield.bin
+  -> _extracted. NEVER run sqlite3 on a bare DB name inside a served tree (creates a 0-byte file that shadows serve_tree's fallback).
+  After a plain suspend: nothing to do; :8664 survives.
