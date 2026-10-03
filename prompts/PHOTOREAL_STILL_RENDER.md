@@ -479,3 +479,9 @@
   Terminal 4.4 / Hospital 27 min with a copy of Alt+C's bake.js + restorecheck.js), symlink Clinic/Terminal/Hospital _meta.db.lightfield.bin
   -> _extracted. NEVER run sqlite3 on a bare DB name inside a served tree (creates a 0-byte file that shadows serve_tree's fallback).
   After a plain suspend: nothing to do; :8664 survives.
+
+## 2026-10-03 ~11:15 — REBOOT RECOVERY (machine up 11:05)
+- /tmp/wt-surf re-created at fix/sky-surface @58416ed0 (clean, 0 unpushed), :8664 up (index.html / viewer/sw.js 200, v1557; bare "/" is 404 by
+  design — serve_tree has no dir index), LTU_AHouse_silent.db relinked, Clinic_extracted.db serves 'SQLite format 3'. gpu.lock FREE.
+- Alt+C merged 58416ed0 into fix/fast-bake as d304efd3 (sw v1560).
+- ALL wt-surf .lightfield.bin sidecars gone again -> rebake (~36 min GPU) waits on red1's go. §GLASS_PLANAR_REFL still waits on red1's go.
