@@ -1,6 +1,6 @@
 # Fitter v3-edge (Microsoft Edge neural TTS, cloud; Malay, Thai, French, Spanish, Mandarin). Same fit / beat / chunk rules as
 # film_narration_fit_kokoro_v3.py. Spec: FILM_NARRATION.md §4 2026-10-03 11:40.
-# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh|yue|de|ar|ja|ko|pt|id|bn|af   (rate base = +0%; re-voice up to +10%)
+# usage: fit_edge.py script.tsv tag ms|th|fr|es|zh|yue|de|ar|ja|ko|pt|id|bn   (rate base = +0%; re-voice up to +10%)
 # Malay: yes/no question gets the PSOLA rise only if the voice's own ending is below +1 st (measured first).
 # Thai: tonal, so no pitch edit; §NARR_TONE is reported only.
 # Clips cached in ~/.local/share/film_narration/cache_edge/<sha1>.wav keyed on (text, voice, rate%).
@@ -46,9 +46,6 @@ CFG={'ms':dict(VOX={'F':'ms-MY-YasminNeural','M':'ms-MY-OsmanNeural'},
      'bn':dict(VOX={'F':'bn-BD-NabanitaNeural','M':'bn-BD-PradeepNeural'},
                WH=r'(কী|কি|কেন|কীভাবে|কত|কোথায়|কে|কখন)',pitch=True,font='Noto Sans Bengali',
                credit='কণ্ঠ: AI দ্বারা তৈরি (Microsoft Edge TTS, ক্লাউড)  ·  স্ক্রিপ্ট পরিচালনা red1'),
-     'af':dict(VOX={'F':'af-ZA-AdriNeural','M':'af-ZA-WillemNeural'},
-               WH=r'\b(wat|hoekom|hoe|hoeveel|waar|wie|watter|wanneer)\b',pitch=True,font='DejaVu Sans',
-               credit='Stemme: KI-gegenereer (Microsoft Edge TTS, wolk)  ·  Draaiboek deur red1'),
      'yue':dict(VOX={'F':'zh-HK-HiuMaanNeural','M':'zh-HK-WanLungNeural'},   # Cantonese (Hong Kong), Traditional script
                WH=r'(咩|乜|點|幾|邊|誰)',pitch=False,font='Noto Sans CJK HK',
                credit='聲音：AI 生成（Microsoft Edge TTS，雲端）  ·  劇本導演 red1')}[LANG]
@@ -167,7 +164,7 @@ for i,a,f,mk in plan:
     cap=CAP.get(i) if CAP else None
     if CAP and (cap is None or len(cap)!=len(mk)):
         print(f'§CAPTION_MISMATCH {i} turns={len(mk)} captions={0 if cap is None else len(cap)} -> native text kept',flush=True); cap=None
-    for j,(s,e,w,t) in enumerate(mk): ev.append(f'Dialogue: 0,{ts(s)},{ts(e+0.35)},{w},,0,0,0,,{cap[j] if cap else t}')
+    for j,(s,e,w,t) in enumerate(mk): ev.append(f'Dialogue: 0,{ts(s)},{ts(e+0.35)},{w},{i}#{j},0,0,0,,{cap[j] if cap else t}')
 ev.append(f'Dialogue: 0,{ts(FILM-8.0)},{ts(FILM-0.1)},Credit,,0,0,0,,'+('Voices: AI-generated (Microsoft Edge TTS, cloud)  ·  Script directed by red1' if CAP else CFG['credit']))
 open(f'{tag}.ass','w').write(hdr+'\n'.join(ev)+'\n')
 open(f'{tag}_plan.tsv','w').write(''.join(f'{i}\t{a:.3f}\t{f}\n' for i,a,f,_ in plan))

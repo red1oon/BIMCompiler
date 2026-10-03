@@ -105,7 +105,7 @@ for l in open(src):
 def ts(x): return f'{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}'
 hdr=open('ass_head.txt').read(); ev=[]
 for i,a,f,mk in plan:
-    for s,e,w,t in mk: ev.append(f'Dialogue: 0,{ts(s)},{ts(e+0.35)},{w},,0,0,0,,{t}')
+    for s,e,w,t in mk: ev.append(f'Dialogue: 0,{ts(s)},{ts(e+0.35)},{w},{i}#{j},0,0,0,,{t}')
 ev.append(f'Dialogue: 0,{ts(FILM-8.0)},{ts(FILM-0.1)},Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1')
 open(f'{tag}.ass','w').write(hdr+'\n'.join(ev)+'\n')
 open(f'{tag}_plan.tsv','w').write(''.join(f'{i}\t{a:.3f}\t{f}\n' for i,a,f,_ in plan))

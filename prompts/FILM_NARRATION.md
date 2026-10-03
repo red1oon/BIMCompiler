@@ -300,7 +300,13 @@ Every number below is a DOC QUOTE today (source given); the recorder's own `§` 
 | 8c | Fly Tour, scrub bar back and forth | "A guided flight — scrub anywhere, the camera never drifts." | BIMUserGuide.md:119-123 |
 | 9b | Share pill (/) preview card with the deep link | "Share the exact view — one link, camera and all." | BIMUserGuide.md:141, 739-744 |
 | 10 | Film-Maker Alt+C derives a flight — CLOSING beat | "It even makes its own film — from the building's room graph, recorded in the browser." | BIMUserGuide.md:125-127 |
-**Languages (red1, 2026-10-03: "Keep to the same language switching style, but this Viewer supposed to have many more
+**Languages — REVISED 2026-10-04 (red1: "Drop exotic languages.. Banglish.. any others?"):** Banglish (bl_BD) and
+Afrikaans (af_ZA, ~7 M native speakers, SA business runs in English) DROPPED from the film. Bengali kept (~270 M
+speakers; the Bangladesh client, `project_sysnova_kazifarms_bim_scoping`). **13 spoken languages**:
+en→fr→es→de→ar→zh→ja→ms→th→ko→pt→id→bn→en… The Viewer itself still ships all 18 locales. Every non-English line also
+carries a smaller **English subtitle** under it (red1, 2026-10-04: "English translation for the others as a second
+subtitle") — TSV columns 6/7 = EN_SHORT/EN_DETAIL, paired turn-for-turn by `film_narration_poly.py` (`§POLY_GLOSS`).
+(Superseded text follows.) **Languages (red1, 2026-10-03: "Keep to the same language switching style, but this Viewer supposed to have many more
 languages so take them all on"):** all 18 Viewer locales, same PLAYBOOK B switching. 15 spoken languages rotate
 en→fr→es→de→ar→zh→ja→ms→th→ko→pt→id→bn→af→(Banglish)→en…; greeting round = 15 × ~2 s ≈ 30 s
 (+ 안녕하세요 · Olá · Halo · নমস্কার · Hallo). New Edge voices (listed live via `edge_tts.list_voices()` 2026-10-03), F / M:
