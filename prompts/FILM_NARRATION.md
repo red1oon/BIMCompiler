@@ -277,6 +277,21 @@ in the Viewer (its translation is incomplete) and stops there. ≈ 180 s. Every 
 (file:line) in the TSV source column.
 
 ## 4. STATUS
+- 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
+  (181.0 s, 4,345 frames, 13.2 MB, −16.4 LUFS). One take, GPU (red1 approved; `--use-angle=gl` → RTX 4060; the run
+  waited on `flock /tmp/claude-1000/gpu.lock` behind another session's Hospital bake — never contended). Recorder
+  `scripts/film_erp_techtrailer.js`; script `film_narration_erp_tech_dialogue.tsv` (PLAYBOOK B). Arc + § facts:
+  greetings → System Monitor from the login card (`§SYSMON-RELEASE v811`, 3× "No longer needed", "SQLite-wasm, in-page —
+  no Postgres host", "the signed op-log is the trace") → GardenWorld login → AD live counts (375 windows, 1,135 tabs,
+  20,988 fields, 476 processes, 277 callouts) → Sales Order 1500003 form → DocAction DR legal=[CO,PR,VO] → CO
+  (`§DOC-COMMIT-LIVE`, after=[CL,VO]) → Dashboard Graph (5 donuts) + Timeline → World History → Project BIM: Hospital
+  (64,719,479 planned, 28 lines, 7 phases) → EVM `§DASH-VARIANCE` committed 87,372,995 (+35 %) → Phase Architecture →
+  Task MASON → Task Line IfcWall (1,598,552) — **the "trick" (red1): Hospital lines carry a task, so they live in Task
+  Line (TabLevel 3), not Project Line/Phase Line (AD_Tab where clauses)** → red Zoom Across pill (`§ZOOM-ACROSS launch
+  find=IfcWall`) → Viewer in a new tab, the screencast follows it → `§ZOOM-SCOPE IfcWall matches=50`, `§ZOOM-COST
+  linePlanned=1598552` → English to the end (Viewer i18n incomplete). 60/60 clicks, 27 beats, 0 PAGEERR, 0 missing §I18N.
+  Fit 26/26 DETAIL, 0 WRONG. Silences ≥ 2 s: 5, each 2.0–2.7 s. Software GL measured unusable for the Viewer (one frame
+  per ~22 s, `§FPS_MODE mean=21783`). Logs `prompts/erp_film/tech_*`.
 - 2026-10-03 21:40: POLYGLOT v3 (red1: "need not reintroduce each other's languages. Just intersperse without formality.
   Fill up the silence spaces. Naturally cover each coordinated step as if a single flow … a show killing 3 birds:
   multi lingual, setup trailer, and good advertising"). Same 180.2 s take; script rewritten as ONE running ad-style

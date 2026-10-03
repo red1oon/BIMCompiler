@@ -1,0 +1,115 @@
+§ERP_FILM_FACT gpu=ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0)
+§ERP_FILM_BEAT id=g_en_US t=0.00 lang=en_US greeting
+§ERP_FILM_FACT i18n.en_US=§I18N lang=en_US labels=0/15 dir=ltr ms=3 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=0/15 src=pack:0,machine:0 packRows=base
+§ERP_FILM_HOLD after=g_en_US extra=0.56
+§ERP_FILM_BEAT id=g_fr_FR t=1.80 lang=fr_FR greeting
+§ERP_FILM_FACT i18n.fr_FR=§I18N lang=fr_FR labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:2556,Field:56,Form:28,Menu:365,Message:1065,Process:316,Ref_List:746,Tab:658,Window:254
+§ERP_FILM_HOLD after=g_fr_FR extra=0.61
+§ERP_FILM_BEAT id=g_es_ES t=3.60 lang=es_ES greeting
+§ERP_FILM_FACT i18n.es_ES=§I18N lang=es_ES labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:3833,Field:165,Form:45,Menu:48,Message:2054,Process:471,Ref_List:1342,Tab:1103,Window:365
+§ERP_FILM_HOLD after=g_es_ES extra=1.02
+§ERP_FILM_BEAT id=g_de_DE t=5.80 lang=de_DE greeting
+§ERP_FILM_FACT i18n.de_DE=§I18N lang=de_DE labels=22/22 dir=ltr ms=1 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:6,machine:16 packRows=Element:3607,Field:163,Form:44,Menu:46,Message:2021,Process:433,Ref_List:1272,Tab:1064,Window:351
+§ERP_FILM_HOLD after=g_de_DE extra=0.61
+§ERP_FILM_BEAT id=g_ar t=7.60 lang=ar greeting
+§ERP_FILM_FACT i18n.ar=§I18N lang=ar labels=22/22 dir=rtl ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:7,machine:15 packRows=Element:1228,Field:0,Form:9,Menu:190,Message:575,Process:0,Ref_List:0,Tab:0,Window:0
+§ERP_FILM_HOLD after=g_ar extra=1.13
+§ERP_FILM_BEAT id=g_zh_CN t=9.90 lang=zh_CN greeting
+§ERP_FILM_FACT i18n.zh_CN=§I18N lang=zh_CN labels=22/22 dir=ltr ms=4 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:1481,Field:44,Form:26,Menu:393,Message:918,Process:119,Ref_List:430,Tab:800,Window:250
+§ERP_FILM_HOLD after=g_zh_CN extra=0.62
+§ERP_FILM_BEAT id=g_ja_JP t=11.70 lang=ja_JP greeting
+§ERP_FILM_FACT i18n.ja_JP=§I18N lang=ja_JP labels=22/22 dir=ltr ms=1 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:2800,Field:104,Form:26,Menu:43,Message:918,Process:290,Ref_List:856,Tab:846,Window:289
+§ERP_FILM_HOLD after=g_ja_JP extra=0.60
+§ERP_FILM_BEAT id=g_ms_MY t=13.51 lang=ms_MY greeting
+§ERP_FILM_FACT i18n.ms_MY=§I18N lang=ms_MY labels=22/22 dir=ltr ms=5 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:0,machine:22 packRows=Element:233,Field:14,Form:16,Menu:143,Message:118,Process:62,Ref_List:616,Tab:140,Window:80
+§ERP_FILM_HOLD after=g_ms_MY extra=0.61
+§ERP_FILM_BEAT id=g_th_TH t=15.31 lang=th_TH greeting
+§ERP_FILM_FACT i18n.th_TH=§I18N lang=th_TH labels=22/22 dir=ltr ms=3 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:1866,Field:16,Form:16,Menu:338,Message:802,Process:201,Ref_List:515,Tab:521,Window:188
+§ERP_FILM_HOLD after=g_th_TH extra=0.84
+§ERP_FILM_BEAT id=s01 t=17.31 lang=en_US System Monitor
+§ERP_FILM_FACT i18n.en_US=§I18N lang=en_US labels=0/15 dir=ltr ms=1 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=0/15 src=pack:0,machine:0 packRows=base
+§ERP_FILM_FACT sysmonRelease=§SYSMON-RELEASE version=v811 build=v811 source=sw controlled=Y
+§ERP_FILM_FACT sysmonGather=§SYSTEM-MONITOR gather release=v811 heap=real storage=real tenants=null fieldHealth=na
+§ERP_FILM_FACT sysmonText=System Monitor iDempiere-faithful · serverless kernel — this device × SYSTEM Release v811 · this device’s deployed build Environment Linux x86_64 · 20 cores Client (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) H FIELD HEALTH · PARADIGM VITALS Field errors 0 no uncaught errors this session Durability n/a no
+§ERP_FILM_HOLD after=s01 extra=3.70
+§ERP_FILM_BEAT id=s02 t=24.01 lang=fr_FR No longer needed: background processors, cluster
+§ERP_FILM_FACT badges=["No longer needed","No longer needed","No longer needed"]
+§ERP_FILM_HOLD after=s02 extra=2.70
+§ERP_FILM_BEAT id=s03 t=30.81 lang=es_ES SQLite-wasm in-page; signed op-log is the trace
+§ERP_FILM_HOLD after=s03 extra=4.70
+§ERP_FILM_BEAT id=s04 t=40.12 lang=de_DE GardenWorld login
+§ERP_FILM_FACT i18n.de_DE=§I18N lang=de_DE labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:6,machine:16 packRows=Element:3607,Field:163,Form:44,Menu:46,Message:2021,Process:433,Ref_List:1272,Tab:1064,Window:351
+§ERP_FILM_HOLD after=s04 extra=0.90
+§ERP_FILM_BEAT id=s05 t=47.72 lang=ar the Application Dictionary
+§ERP_FILM_FACT i18n.ar=§I18N lang=ar labels=275/602 dir=rtl ms=26 menu=260/587 window=0/0 tab=0/0 field=0/0 chrome=15/15 src=pack:198,machine:77 packRows=Element:1228,Field:0,Form:9,Menu:190,Message:575,Process:0,Ref_List:0,Tab:0,Window:0
+§ERP_FILM_FACT count.AD_Window=375
+§ERP_FILM_FACT count.AD_Tab=1135
+§ERP_FILM_FACT count.AD_Field=20988
+§ERP_FILM_FACT count.AD_Process=476
+§ERP_FILM_FACT count.AD_Menu=590
+§ERP_FILM_FACT count.AD_Column=26161
+§ERP_FILM_FACT count.AD_Val_Rule=332
+§ERP_FILM_FACT callouts=277
+§ERP_FILM_FACT menu.win143=129
+§ERP_FILM_HOLD after=s05 extra=5.75
+§ERP_FILM_BEAT id=s06 t=58.42 lang=zh_CN Sales Order form from AD_Field
+§ERP_FILM_FACT i18n.zh_CN=§I18N lang=zh_CN labels=603/774 dir=ltr ms=69 menu=422/587 window=1/1 tab=5/5 field=135/141 chrome=40/40 src=pack:543,machine:60 packRows=Element:1481,Field:44,Form:26,Menu:393,Message:918,Process:119,Ref_List:430,Tab:800,Window:250
+§ERP_FILM_FACT gotoRecord=1500003 idx=4 of 5
+§ERP_FILM_FACT recnav=记录 5 / 5
+§ERP_FILM_FACT formFields=56
+§ERP_FILM_FACT adFieldsHeaderTab=88
+§ERP_FILM_BEAT id=s07 t=67.71 lang=ja_JP DocAction legal actions
+§ERP_FILM_FACT i18n.ja_JP=§I18N lang=ja_JP labels=665/804 dir=ltr ms=101 menu=453/587 window=1/1 tab=5/5 field=136/141 chrome=70/70 src=pack:630,machine:35 packRows=Element:2800,Field:104,Form:26,Menu:43,Message:918,Process:290,Ref_List:856,Tab:846,Window:289
+§ERP_FILM_FACT docfsm=§AD-DOCFSM-LIVE table=259(C_Order) record=1500003 status=DR legal=[CO,PR,VO] periodOpen=true(no-dateacct→assume-open) backDate=true(named-default)
+§ERP_FILM_FACT docActions=["CO","PR","VO"]
+§ERP_FILM_HOLD after=s07 extra=7.78
+§ERP_FILM_BEAT id=s08 t=79.52 lang=ms_MY Complete
+§ERP_FILM_FACT i18n.ms_MY=§I18N lang=ms_MY labels=427/804 dir=ltr ms=96 menu=233/587 window=1/1 tab=5/5 field=118/141 chrome=70/70 src=pack:219,machine:208 packRows=Element:233,Field:14,Form:16,Menu:143,Message:118,Process:62,Ref_List:616,Tab:140,Window:80
+§ERP_FILM_FACT complete=§AD-DOCFSM-LIVE table=259(C_Order) record=1500003 clicked=CO from=DR to=CO
+§ERP_FILM_FACT commit=§DOC-COMMIT-LIVE refold table=c_order id=1500003 to=CO view=form
+§ERP_FILM_FACT docActionsAfter=["CL","VO"]
+§ERP_FILM_HOLD after=s08 extra=5.67
+§ERP_FILM_BEAT id=s09 t=89.62 lang=th_TH Dashboard Graph
+§ERP_FILM_FACT i18n.th_TH=§I18N lang=th_TH labels=586/804 dir=ltr ms=91 menu=376/587 window=1/1 tab=5/5 field=134/141 chrome=70/70 src=pack:514,machine:72 packRows=Element:1866,Field:16,Form:16,Menu:338,Message:802,Process:201,Ref_List:515,Tab:521,Window:188
+§ERP_FILM_FACT dashOpen=§DASHBOARD-OPEN table=C_Order tabs=5 amountCol=GrandTotal
+§ERP_FILM_FACT dashOverview=§DASH-OVERVIEW donuts=5 status=DocStatus cats=C_BPartner_ID,C_BPartner_Location_ID,Bill_Location_ID date=DateOrdered
+§ERP_FILM_BEAT id=s10 t=97.15 lang=en_US Dashboard Timeline
+§ERP_FILM_FACT dashTimeline=§DASH-TIMELINE records=5 days=4 forecastCols=0 span=2002-02-22..2026-07-03 dateField=DateOrdered statusCol=DocStatus
+§ERP_FILM_HOLD after=s10 extra=3.98
+§ERP_FILM_BEAT id=s11 t=103.25 lang=fr_FR World History
+§ERP_FILM_FACT i18n.fr_FR=§I18N lang=fr_FR labels=607/774 dir=ltr ms=31 menu=427/587 window=1/1 tab=5/5 field=134/141 chrome=40/40 src=pack:565,machine:42 packRows=Element:2556,Field:56,Form:28,Menu:365,Message:1065,Process:316,Ref_List:746,Tab:658,Window:254
+§ERP_FILM_FACT worldHist=§IDMP-HISTORY-TOGGLE open=true | §WHOLE-OPEN page=idempiere mode=whole
+§ERP_FILM_BEAT id=s12 t=111.94 lang=es_ES Project BIM: Hospital
+§ERP_FILM_FACT i18n.es_ES=§I18N lang=es_ES labels=745/774 dir=ltr ms=27 menu=558/587 window=1/1 tab=5/5 field=141/141 chrome=40/40 src=pack:733,machine:12 packRows=Element:3833,Field:165,Form:45,Menu:48,Message:2054,Process:471,Ref_List:1342,Tab:1103,Window:365
+§ERP_FILM_FACT menu.win130=116
+§ERP_FILM_FACT gotoRecord=990000 idx=2 of 3
+§ERP_FILM_FACT recnav=Registro 3 de 3
+§ERP_FILM_FACT project=["BIM: Hospital",64719479,28,7]
+§ERP_FILM_HOLD after=s12 extra=0.27
+§ERP_FILM_BEAT id=s13 t=120.34 lang=de_DE Planned vs committed
+§ERP_FILM_FACT variance=§DASH-VARIANCE phases=6 planned=64719479 committed=87372995 delta=22653516 pct=35 forecast=0
+§ERP_FILM_HOLD after=s13 extra=3.11
+§ERP_FILM_BEAT id=s14 t=128.04 lang=ar Project Line IfcWall
+§ERP_FILM_FACT i18n.ar=§I18N lang=ar labels=579/958 dir=rtl ms=73 menu=260/587 window=1/2 tab=5/12 field=243/287 chrome=70/70 src=pack:456,machine:123 packRows=Element:1228,Field:0,Form:9,Menu:190,Message:575,Process:0,Ref_List:0,Tab:0,Window:0
+§ERP_FILM_FACT gotoRecord=990003 idx=3 of 7
+§ERP_FILM_FACT recnav=تسجيل 4 من 7
+§ERP_FILM_FACT task=990008 MASON
+§ERP_FILM_FACT gotoRecord=990008 idx=2 of 3
+§ERP_FILM_FACT recnav=تسجيل 3 من 3
+§ERP_FILM_FACT taskLines=Project › Task Line · Record 1 of 2
+§ERP_FILM_FACT wallLine=[11024.494,1598552]
+§ERP_FILM_FACT gotoRecord=990016 idx=0 of 2
+§ERP_FILM_FACT recnav=تسجيل 1 من 2
+§ERP_FILM_BEAT id=s15 t=148.34 lang=zh_CN Zoom Across → Viewer
+§ERP_FILM_FACT i18n.zh_CN=§I18N lang=zh_CN labels=773/958 dir=ltr ms=45 menu=422/587 window=2/2 tab=12/12 field=267/287 chrome=70/70 src=pack:707,machine:66 packRows=Element:1481,Field:44,Form:26,Menu:393,Message:918,Process:119,Ref_List:430,Tab:800,Window:250
+§ERP_FILM_FACT zoomAcross=§ZOOM-ACROSS launch id=viewer bld=Hospital find=IfcWall url=../viewer/viewer.html?db=../buildings/Hospital_extracted.db&bld=Hospital&home=http%3A%2F%2Flocalhost%3A35805%2Ferp%2Fidempiere.html&find=IfcWall
+§ERP_FILM_HOLD after=s15 extra=3.01
+§ERP_FILM_BEAT id=s16 t=154.24 lang=en_US Viewer loading the Hospital
+§ERP_FILM_FACT zoomScope=[viewer] §ZOOM-SCOPE route=find kind=class scope="IfcWall" matches=50
+§ERP_FILM_HOLD after=s16 extra=1.45
+§ERP_FILM_BEAT id=s17 t=171.74 lang=en_US same element set + cost
+§ERP_FILM_FACT zoomCost=[viewer] §ZOOM-COST class="IfcWall" matches=50 linePlanned=1598552 phase="Architecture" phasePlanned=13880038 phaseCommitted=15268042 projPlanned=64719479 projCommitted=87372995 projPct=35%
+§ERP_FILM_HOLD after=s17 extra=4.00
+§ERP_FILM_BEAT id=end t=180.74 lang=en_US 
+§ERP_FILM_CURSOR clicks=60 cursorOnTarget=60 OK
+§ERP_FILM_DONE frames=3495 dur=181.04 out=/tmp/claude-1000/-home-red1-bim-compiler/8519b4b5-edd1-490f-b702-87598b3b718f/scratchpad/techrec/erp_film_tech.mp4
