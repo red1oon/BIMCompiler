@@ -406,3 +406,80 @@ silently skipped by the merge (no org info row at all); born role UserLevel `'  
 had no client clause and read a not-yet-derived IsSOTrx; MSetup's payment term needs `PaymentTermUsage='B'` (column default)
 or AD_Ref_Table 53383 hides it. iDempiere fact recorded for the guide: the setup price list is NOT a sales list
 (IsSOPriceList=N) — the user ticks "Sales Price list" once (S15b does exactly that), as in iDempiere.
+
+## §FS2l — FS-14 spec: Aging (AD_Process 238, `org.compiere.process.Aging`) runs in the browser (2026-10-03, before code)
+**Issue (new step S24c):** menu "Aging" (AD_Menu 413 → process 238, report view RV_T_Aging) dispatches to no handler:
+the process card says "Not available". Neither `RV_OpenItem`, `T_Aging` nor `RV_T_Aging` is in the bundle.
+**Oracle (iDempiere):** `Aging.java` (`org.adempiere.base.process`) `prepare` :60-100 (StatementDate default now,
+`m_statementOffset = TimeUtil.getDaysBetween(now, StatementDate)`), `doIt` :102-262: SELECT from `RV_OpenItem oi JOIN
+C_BPartner bp` WHERE `oi.IsSOTrx=<param>` (+ BPartner / else BP Group / Org filters), `ORDER BY C_BPartner_ID, C_Currency_ID,
+C_Invoice_ID`, `MRole.addAccessSQL` (client clause, as FS-5); one `MAging` row per (BPartner, Currency[, Invoice, PaySchedule
+when IsListInvoices]); `DaysDue = oi.DaysDue + m_statementOffset`; `MAging.add` (`MAging.java:157-235`): InvoicedAmt += GrandTotal,
+OpenAmt += OpenAmt, DaysDue = running mean, DueDate = earliest; OpenAmt into DueAmt / Due0 / Due0_7 / Due0_30 / Due1_7 / Due8_30 /
+Due31_60 / Due31_Plus / Due61_90 / Due61_Plus / Due91_Plus when daysDue ≤ 0, else PastDueAmt / PastDue1_7 / 1_30 / 8_30 / 31_60 /
+31_Plus / 61_90 / 61_Plus / 91_Plus (the exact inclusive bounds of the Java). `RV_OpenItem` (live `pg_get_viewdef`, idempiere DB):
+branch 1 = `RV_C_Invoice` (GrandTotal × −1 for a credit memo) JOIN `C_PaymentTerm`, `IsPaid='N' AND invoiceopen(id,0)<>0 AND
+IsPayScheduleValid<>'Y' AND DocStatus IN (CO,CL)`, DueDate = `paymenttermduedate(term, DateInvoiced)`, DaysDue =
+`paymenttermduedays(term, DateInvoiced, now)`; branch 2 = one row per valid `C_InvoicePaySchedule` (GrandTotal = DueAmt, DueDate
+= ips.DueDate, DaysDue = `daysbetween(now, ips.DueDate)`, OpenAmt = `invoiceopen(id, ips_id)`). PL/pgSQL `paymenttermduedate` /
+`paymenttermduedays` (IsDueFixed branch included) and `invoiceopen` (allocation sum × MultiplierAP, currency-converted; per
+schedule: allocations consume schedules in DueDate order) transcribed from the live DB `pg_proc.prosrc`.
+**Not ported, named (the handler REFUSES, never approximates):** `DateAcct=Y` (RV_OpenItemToDate / invoiceOpenToDate) and
+`ConvertAmountsInCurrency_ID` (currencyConvertInvoice) → `ok=false` with that message. Org access (getOrgWhere). Session-created
+invoices (signed op-log only) are not read — the view runs over the bundle, like Trial Balance's `fetchFacts`.
+**Fix:** `ad_process.js` — pure `openItems(q, opts)` (RV_OpenItem + the three functions) and `agingFold(items, opts)` (doIt loop +
+MAging.add), registered as `org.compiere.process.Aging`; `idempiere.html` `_procCtx` supplies `query` + `today` + client; result
+table: BPartner, Currency, Invoiced, Open, Due, PastDue 1-7/8-30/31-60/61-90/91+; one `§AGING` line (rows, items, Σ per bucket).
+Marked `FS-14`; sw +1.
+**Witness (W-ERP-FIRST-SETUP new step S24c, BY VALUE, two statement dates):** `?process=238` as GardenAdmin, IsSOTrx=Y, Run
+(a) StatementDate empty (today) and (b) StatementDate 2003-11-15 (puts schedule 102 past due 14 days and schedule 103 not yet due
+16 days, so ≥ 3 different buckets carry money); for each, every bucket total shown == an independent oracle computed in the
+witness by SQL + date arithmetic over the bundle's open SO invoices (C_Invoice/C_InvoicePaySchedule/C_AllocationLine/C_PaymentTerm),
+and the open-item set == the live iDempiere view's (`rv_openitem` in the Postgres `idempiere` DB, recorded once in §FS3.3:
+invoices 103, 109/102, 109/103 open 161.12 / 114.43 / 114.42). **Vacuity control:** the same judge over a BPartner with no open
+items prints `§AGING-VACUOUS … verdict=INCONCLUSIVE` (it must, or S24c is not VERIFIED).
+
+## §FS2m — FS-15 spec: the shipment + invoice Complete creates are real, readable documents and are posted (2026-10-03, before code)
+**Issue (S20 + the guide's "Not yet: the journal for those documents"):** measured on `origin/main`: a POS Order's Complete
+commits the engine's skeleton ops verbatim (`CREATE_DOCUMENT`/`CREATE_LINE`, `buildDocActionGroup` → `params: eo`) — `M_InOut
+{movementtype}` + lines `{m_product_id, movementqty}`, `C_InvoiceLine {qtyinvoiced}` — no BPartner, doc type, dates, prices,
+tax or totals, and in a vocabulary `crud_core.listTip` does not fold, so no window can read them (`§KIND2-READBACK` measured the
+same class). `gl=gated`: nothing is posted.
+**Oracle (iDempiere):** `MOrder.completeIt` → `createShipment` (`MOrder.java` → `new MInOut(order, C_DocTypeShipment_ID, date)`:
+client/org, BPartner + location + user, warehouse, IsSOTrx, MovementType from the doc type, C_Order_ID, DocStatus after
+`processIt(COMPLETE)` = CO; one `MInOutLine.setOrderLine` per order line: product, UOM, M_Locator (warehouse default),
+MovementQty/QtyEntered) and `createInvoice` (`new MInvoice(order, C_DocTypeInvoice_ID, date)`: BPartner/location/user, currency,
+price list, payment term, payment rule, sales rep, C_Order_ID, IsSOTrx; `MInvoiceLine.setOrderLine` + `setQtyInvoiced`: product,
+UOM, PriceEntered/PriceActual/PriceList/PriceLimit, C_Tax_ID, LineNetAmt = qty × PriceActual rounded to the currency precision;
+`MInvoice.calculateTaxTotal`: one `C_InvoiceTax` per tax, TaxBaseAmt = Σ LineNetAmt, TaxAmt = `MTax.calculateTax(base,
+IsTaxIncluded, precision)`; TotalLines / GrandTotal). The doc types are the order doc type's `C_DocTypeShipment_ID` /
+`C_DocTypeInvoice_ID`. Posting: GardenWorld `AD_Client.IsPostImmediate='N'` — iDempiere posts these documents through the
+Accounting Processor (`Doc.post`), not inside Complete. `Doc_Invoice` (ARI): DR Receivable = GrandTotal, CR Revenue per line =
+LineNetAmt, CR Tax Due per tax = TaxAmt. `Doc_InOut` (customer shipment, MovementType C-): DR Product COGS / CR Product Asset =
+qty × the product's current cost (`M_Cost.CurrentCostPrice`, acct schema costing element; GardenWorld schema 101 costing
+method A, level C). Accounts through the already oracle-proved `post_resolver` tokens (`{BPartner.Receivable}`,
+`{Product.Revenue}`, `{Tax.Due}`, `{Product.Cogs}`, `{Product.Asset}`; W-DOC-POSTER == real fact_acct to the cent).
+**Fix (crud_overlay.js completeFanoutOrder + commitProcess):** the engine still DECIDES (its skeleton op count is kept as
+`engineOps`), the host now BUILDS the documents as `CRUD_CREATE` ops in the same signed Complete group (header + lines +
+C_InvoiceTax; line → header FK via `{__opRef}` resolved at commit, `crudOps=` in the §SO-FANOUT line). Right after the Complete
+group commits, one more signed group — the Accounting Processor run for exactly those documents — writes their `Fact_Acct` rows
+(`CRUD_CREATE fact_acct`, ad_table 318/319, record = the new synthetic ids) and sets `Posted='Y'`; one `§GL-POST` line per
+document (table, id, lines, ΣDr, ΣCr, balanced, accounts). A missing account or cost → that document is NOT posted and the line
+says which token (never a guessed account or a zero cost). Not ported, named: POS payment (`createPOSPayments`), cost-detail
+rows, multi-schema posting (schema = the client's first, 101 for GardenWorld), currency conversion of facts.
+**Witness (W-ERP-FIRST-SETUP S20 extended + new S20b, BY VALUE):** S20 keeps its decision arms and now also asserts the
+commit carries `1 + crudOps`; S20b: the POS order's new invoice + shipment are readable through the tip (folded rows carry
+BPartner, doc type, GrandTotal == Σ line + tax), their `fact_acct` rows exist, ΣDr == ΣCr per document, and every (account,
+Dr, Cr) == an oracle computed in the witness by SQL (account ids from the acct tables, amounts from price × qty, tax rate,
+M_Cost) — a fact set with a wrong account or amount fails.
+- ✅ **FS-13 Location editor §FS2k** (S10b new, gap reported by the film recorder) — bim-ootb **#1821 → fca41551**, sw v803. Before:
+  `REJECT BPartnerNoShipToAddress` (negative control); `§LOC-EDITOR created id=-3 {address1:'Jalan Ampang 1',city:'Kuala Lumpur',
+  postal:'50450',c_country_id:238}` == tip row; BP location -4 `{loc:-3,bp:-1,name:'Kuala Lumpur'}` (makeUnique level 0);
+  SO header for the customer `§CRUD-PERSIST key=c_order` with `c_bpartner_location_id=-4`. Live == raw(fca41551) for crud_core.js,
+  crud_overlay.js, ad_modelval.js, idempiere.html, glassbowl.html, sw.js. Found on the way: MOrder location hooks tested `> 0`, so a
+  session (negative-id) BP/location never counted as set; beforeSave hooks read the raw bundle (now the tip, `§MV-TIP-SHADOW`).
+- ✅ **FS-14 Aging §FS2l** (S24c new) — **#1822 → 1968f642**, sw v804. Today: open 389.97, all 91+ (items 103, 109/102, 109/103 ==
+  live iDempiere `rv_openitem`, 7/7 rows incl. AP, DaysDue identical); StatementDate 2003-11-15: not-yet-due 114.42, past-due 8-30
+  114.43, 91+ 161.12 == the witness's re-derived oracle; vacuity control BP 112 → `§AGING-VACUOUS … verdict=INCONCLUSIVE`. Live ==
+  minify(1968f642) for ad_process.js, idempiere.html, sw.js (this time the deploy-pages minified artifact was served — the
+  check script tries raw, then minify, and names which one matched).
