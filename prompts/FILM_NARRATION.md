@@ -502,99 +502,120 @@ English thus, but when quirps comes in both subtitles."
   deterministic kernel — one signed op-log, folded into all three — is the solution, and that a lone retired author plus
   AI, kept honest by witnesses, got there.
 
-**§10 SCRIPT v2 — third person** (2026-10-04; SUPERSEDES v1, which spoke as red1. red1: "Oh i see the first party voice
-problem.. so make red1 the 2nd party, and the voice is narrating his story?"). A narrator tells red1's story. His own
-words are never voiced: they appear as **QUOTE cards** — on-screen text in quotation marks, signed "— red1", narrator
-silent for ~3 s (style: centred, off-white, coral attribution, over dimmed footage, same family as §8 cards).
+**§10 SCRIPT v3 — two narrators, F and M** (2026-10-04; SUPERSEDES v2's single narrator. red1: "it can retain the lively
+and my often humour in same female/male dialog style"). Same F/M dialogue style as the Hospital narrated films: two
+English voices telling red1's story to each other, warm, quick, a bit cheeky — his humour, never sneering. His own words
+stay on screen only, as **QUOTE cards** (narrators silent ~3 s; centred off-white text, coral "— red1", dimmed footage).
 **Tone (red1, 2026-10-04: "in documentary style need not be formal, 'in his own words'.. just 'his famous 3 line
-mantra..'"):** casual, plain, warm — lead into a quote naturally, never announce it ("in his own words", "he says").
-Row types: `EN:` narrator · `QUOTE:` on-screen text only · `lang:` quip — gloss (a different F/M voice, low key).
-≈ 1,000 EN words ≈ 6.5 min + cards/quotes/quips ≈ 9–10 min.
+mantra..'"):** casual, plain; lead into a quote naturally, never announce it.
+Rows: `F:` / `M:` English narrators · `QUOTE:` on-screen only · `lang:` quip — gloss (other-language voice, low key).
+≈ 1,050 EN words ≈ 7 min + cards/quotes/quips ≈ 9–10 min.
 
 *Cold open — greetings round over the front door, flags cycling (same as §8):* en Hi · fr Bonjour · es ¡Hola! · de Guten
 Tag · ar السلام عليكم · zh 你好 · ja こんにちは · ms Apa khabar? · th สวัสดี · ko 안녕하세요 · pt Olá · id Halo · bn নমস্কার
 **Card:** THE THREE-BODY / PROBLEM OF IT · "by Red1"
 
 **Prologue — card: THREE / BODIES**
-EN: In physics, three bodies pulling on each other never settle. There is no neat formula. Information technology has
-its own three bodies. The business record — ERP. The physical space — the building, BIM. And the act of design — the
-modeller. Each orbits its own giant. They have never shared one centre. This is the story of one man who tried.
+F: In physics, three bodies pulling on each other never settle down.
+M: Sounds like my family.
+F: Information technology has three of them. The business record — that's ERP. The building — that's BIM. And design —
+the modeller.
+M: Each one orbiting its own giant, and never sharing a centre.
+F: This is the story of the man who decided that was a solvable problem.
+M: Retired, by the way. Supposedly.
 
 **Ch 1 — card: WHO / IS BUILDING THIS · "Information is free — you have to know."**
-EN: His name is Redhuan D. Oon — red1 to just about everyone. Back in the ADempiere days, his famous three-line
-mantra went like this.
+F: His name is Redhuan D. Oon.
+M: red1, to just about everyone.
+F: Back in the ADempiere days, his famous three-line mantra went like this.
 QUOTE: "Information is free — you have to know. People are not — you have to pay. Contributors are priceless — you have
 to be." — red1
-EN: In September 2006 a community of volunteers forked Compiere, an open-source ERP, to keep it open. The idea was first
-raised on his own forum, red1.org. They called it ADempiere, and they voted him its leader. Later, with Carlos Ruiz, it
-became iDempiere.
+M: September 2006. A community of volunteers forks Compiere, an open-source ERP, to keep it open — and the idea is
+first raised on his own forum, red1.org.
+F: They call it ADempiere, and they vote him leader. Later, with Carlos Ruiz, it becomes iDempiere.
 ms: *Terima kasih, kawan-kawan* — thank you, friends.
-EN: Truth is, he got bored.
+M: So, twenty years of enterprise software. Must have loved it.
+F: Not exactly.
 QUOTE: "ERP and Java is so boring. I love art." — red1
-EN: Then AI arrived, and kept getting better, until it could build almost anything he could describe — right up to this
-film.
+M: Fair.
+F: Then AI showed up, and kept getting better — until it could build almost anything he could describe.
+M: Including, apparently, this film.
 ja: *本当です* — it's true.
 
-**Ch 2 — card: WHEN / AND HOW · "It began with a challenge from a friend."**
-EN: In the middle of last year, a friend who is a BIM engineer dared him: try buildings. He tried to write a 3D interface
-himself, even with Claude Code beside him. It was daunting.
+**Ch 2 — card: WHEN / AND HOW · "It began with a dare."**
+F: Middle of last year, a friend — a BIM engineer — dares him: try buildings.
+M: And he says yes, because of course he does.
+F: First he tries writing a 3D interface himself, even with Claude Code beside him.
+M: Daunting. Very daunting.
 fr: *Pas facile* — not easy.
-EN: In October, Claude suggested Bonsai — BIM inside Blender. It was a blast, briefly. Large IFC files crashed it. So
-Claude suggested pulling each IFC model out into a SQLite database. That worked — and led straight into geometry hell. A
-language model reasons in words. Walls, pipes and slabs live in physics.
+F: In October, Claude suggests Bonsai — BIM inside Blender.
+M: Great fun — right up until a big IFC file walks in and the whole thing falls over.
+F: So Claude suggests pulling each IFC model out into a SQLite database.
+M: Which works! And leads them straight into… geometry hell.
+F: A language model thinks in words. Walls, pipes and slabs live in physics.
 de: *Na gut* — all right then.
-EN: So he made a Rosetta Stone: real buildings, decoded and checked, to translate between the two. And he found the real
-trick.
+M: So he builds a Rosetta Stone — real buildings, decoded and checked — to translate between the two.
+F: And he finds the real trick.
 QUOTE: "Build layers of foundation meticulously, where AI stitches the physical reality upon." — red1
-EN: Every new hell was a place the AI's training had never been — because much of this is prior art nobody had
-connected, or new art nobody had made.
+M: Every new hell is somewhere the AI's training had never been.
+F: Because much of it is prior art nobody had connected — or new art nobody had made yet.
 es: *¡Seguimos!* — we keep going.
 
 **Ch 3 — card: WHAT / HE IS BUILDING · "A building is a bill of materials."**
-EN: What is he building? A spatial ERP. His whole career is ERP modelling, and to him a warehouse should be a real place
-you can walk through, not rows in a table.
-EN: Then he saw it. The building industry already is an ERP. A building is a bill of materials — building, floor, room,
-fixture, part — each one a recipe of the next.
+M: So what is he actually building?
+F: A spatial ERP. A warehouse you can walk through, not rows in a table.
+M: Then the penny drops. The building industry already is an ERP.
+F: A building is a bill of materials — building, floor, room, fixture, part — each one a recipe for the next.
 th: *ใช่เลย* — exactly.
-EN: SQLite let it scale, and the crashes stopped. Then came the features: time in 4D, cost in 5D, a real Find, a Time
-Machine, films. Fitting ideas at the speed of thought into Blender — a good stack, he admits — was a steep climb.
+M: SQLite lets it scale. The crashes stop.
+F: Then the features pile up: time in 4D, cost in 5D, a proper Find, a Time Machine, films.
+M: All bolted onto Blender at the speed of thought. Good stack, mind you — he'll tell you that himself.
+F: But there's a catch.
 QUOTE: "The bottleneck is me. The AI can code at many times my speed." — red1
-EN: The AI drifts, and he steers. Each new session forgets the last one — two hundred thousand tokens, then a blank page.
+M: The AI drifts, he steers. And every new session forgets the last one.
+F: Two hundred thousand tokens — then a blank page. Like a goldfish with a PhD.
 ko: *괜찮아요* — it's okay.
-EN: Then Claude made the biggest suggestion of all. Leave the old stack. Go to the browser: WebAssembly, Three.js,
-Canvas. Everything sped up, many times over.
+M: Then Claude makes its biggest suggestion yet: leave the old stack. Go to the browser — WebAssembly, Three.js, Canvas.
+F: And everything speeds up. Many times over.
 pt: *Que maravilha* — how wonderful.
 
 **Ch 4 — card: THE THREE / BODIES, ONE KERNEL · "ERP, BIM, Modeller."**
-EN: That freed him for his oldest dream: rebuilding iDempiere itself. It inherits Compiere, from 1999 — Java, OSGi
-plugins, Maven, a Postgres server in Docker, millions of lines, and heavy machinery like its Persistent Object layer. For
-three years he tried with ChatGPT, and could not untangle it.
-EN: This time the building came first. With BIM sitting on a foundation of SQLite in the browser — a kernel of signed
-operations, an app that installs from a web page — the ERP conversion took days.
+F: Which frees him for his oldest dream: rebuilding iDempiere itself.
+M: Inherited from Compiere, 1999. Java, OSGi plugins, Maven, a Postgres server in Docker, millions of lines —
+F: — and a Persistent Object layer the size of a small moon.
+M: Three years he tried with ChatGPT. It would not untangle.
+F: This time, the building came first. BIM on a foundation of SQLite in the browser — a kernel of signed operations, an
+app that installs from a web page.
+M: And the ERP conversion? Days.
 id: *Cepat sekali* — so fast.
-EN: Then he turned to the third body: the modeller, the design tool — the deepest moat in the industry, guarded by the
-SAP of 3D design, Autodesk Revit.
-EN: What made it possible is the most important layer of all: the witness. Logging wired through the code, so every
-claim is checked by numbers, not by eye. With witnesses, Claude can push through each gap — old art and new — without
-fooling either of them.
+F: Then the third body: the modeller. The design tool.
+M: The deepest moat in the industry — guarded by the SAP of 3D design, Autodesk Revit.
+F: Bold.
+M: Very.
+F: What makes it possible is the most important layer of all — the witness. Logging wired right through the code, so
+every claim is checked by numbers, not by eye.
+M: So Claude can push through every gap, old art and new, without either of them fooling the other.
 zh: *稳稳的* — steady.
 QUOTE: "What you are witnessing is a fast speed train rushing through. You probably have not been noticing it at human
 speed." — red1
 ar: *هيا بنا* — let's go.
 
 **Coda — card: REBELS / AND MISFITS · "MIT. Take it further."**
-EN: He is its only human author, and he has put it under the most permissive licence there is: MIT. He still can't
-settle its names — Out of the Box, Kernel ERP, DAGeVu.
-EN: It has been a hobby for his retired days. But he wants to leave something behind, for what he has struggled for.
+F: One human author. And he's put the whole thing under the most permissive licence there is — MIT.
+M: He still can't settle on a name. Out of the Box. Kernel ERP. DAGeVu.
+F: Ask again next week.
+M: A hobby for his retirement, he says.
+F: A legacy, really — for everything he's fought for.
 QUOTE: "It is my invitation to the rebels and misfits. Do help me continue the conversation after I am gone." — red1
 bn: *ধন্যবাদ* — thank you.
-EN: At AI speed, that conversation may close sooner than anyone thinks — as he lays the final layer: deterministic code
-with no AI inside, intelligent enough to keep itself from going obsolete.
+M: At AI speed, that conversation may close sooner than anyone thinks —
+F: — as he lays the final layer: deterministic code, no AI inside, clever enough to keep itself from going obsolete.
 QUOTE: "Information is free. People are not. Contributors are priceless — you have to be." — red1
 *Closing round — every language, one word each:* thank you · merci · gracias · danke · شكراً · 谢谢 · ありがとう ·
 terima kasih · ขอบคุณ · 감사합니다 · obrigado · terima kasih · ধন্যবাদ
 
-**Edits to red1's draft, for his review (none change meaning):** told in third person (his words kept as QUOTE cards,
+**Edits to red1's draft, for his review (none change meaning):** told by two narrators (F/M) in third person, with
+light humour lines of our own ("Sounds like my family", "goldfish with a PhD", "size of a small moon") — red1 to cut any; (his words kept as QUOTE cards,
 lightly cleaned of typos only); added the Prologue to carry the title; "debut as the founding leader" → the public record
 (forked Sept 2006, idea first raised on red1.org, voted leader); "3 million lines" → "millions of lines" until sourced;
 "Persistent Object Jaba" → "Persistent Object layer"; "SQLite WASM on a kernel ops PWA" → plain words; "update itself
