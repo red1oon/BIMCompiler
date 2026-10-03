@@ -1,0 +1,26 @@
+g_en_US	en	login card en_US	F: Hi!	F: Hi!
+g_fr_FR	fr	login card fr_FR	M: Bonjour !	M: Bonjour !
+g_es_ES	es	login card es_ES	F: ¡Hola!	F: ¡Hola! ¿Cómo está?
+g_de_DE	de	login card de_DE	M: Guten Tag!	M: Guten Tag!
+g_ar	ar	login card ar (RTL)	F: السلام عليكم!	F: السلام عليكم!
+g_zh_CN	zh	login card zh_CN	M: 你好！	M: 你好！
+g_ja_JP	ja	login card ja_JP	F: こんにちは！	F: こんにちは！
+g_ms_MY	ms	login card ms_MY	M: Apa khabar?	M: Apa khabar?
+g_th_TH	th	login card th_TH	F: สวัสดีค่ะ!	F: สวัสดีค่ะ!
+s01	en	§SYSTEM-MONITOR open · "iDempiere-faithful · serverless kernel — this device"	F: Look under the hood first.	F: Before we even log in, look under the hood. | M: The System Monitor. Everything here runs on this device.
+s02	fr	§ERP_FILM_FACT badges=["No longer needed"×3] (Background processors, Cluster & threads)	F: Plus nécessaires.	F: Serveurs d'arrière-plan, cluster, threads : plus nécessaires. | M: Ces couches ont tout simplement disparu.
+s03	es	sysmon "SQLite-wasm, in-page — no Postgres host" · "the signed op-log is the trace … No server log file"	F: SQLite, dentro de la página.	F: La base de datos es SQLite, dentro de la página. Sin servidor Postgres. | M: Y el registro es una cadena de operaciones firmadas.
+s04	de	login GardenWorld/GardenAdmin · docs/internal/ERP.md:15-23 (iDempiere AD model)	M: Das Modell ist iDempiere.	F: Jetzt melden wir uns an, bei GardenWorld. | M: Das Modell dahinter ist iDempiere, ein bewährtes Open-Source-ERP.
+s05	ar	§ERP_FILM_FACT count.AD_Window=375 AD_Field=20988 · ERP.md:15-18 rows not code	F: قاموس التطبيق.	F: قلب iDempiere هو قاموس التطبيق. | M: ثلاثمئة وخمس وسبعون نافذة، وأكثر من عشرين ألف حقل، كلها بيانات لا برمجة.
+s06	zh	Sales Order form rows=56 from AD_Field · ERP.md:15-18 "no recompilation"	F: 字段来自应用字典。	F: 销售订单的每个字段，都来自应用字典。 | M: 改一行数据，界面就跟着变，不用重新编译。
+s07	ja	§AD-DOCFSM-LIVE status=DR legal=[CO,PR,VO] · ad_docfsm.js:3-5 DocumentEngine port	F: 正しい操作だけ。	F: 下のボタンは、次に取れる正しい操作だけ。 | M: 下書きから、完了、準備、無効。iDempiereのDocumentEngineと同じルールです。
+s08	ms	§AD-DOCFSM-LIVE clicked=CO from=DR to=CO · §DOC-COMMIT-LIVE · after legal=[CL,VO]	F: Klik Lengkap.	F: Klik Lengkap. Status bertukar daripada Draf kepada Lengkap. | M: Kini hanya Tutup atau Batal dibenarkan, dan semuanya ditandatangani.
+s09	th	§DASHBOARD-OPEN table=C_Order · §DASH-OVERVIEW donuts=5	F: กราฟทันทีค่ะ	F: แดชบอร์ดสร้างกราฟให้ทันทีค่ะ ห้ากราฟจากคำสั่งขายชุดเดียวกัน | M: ไม่ต้องมีเซิร์ฟเวอร์รายงานแยกครับ
+s10	en	§DASH-TIMELINE records=5 dateField=DateOrdered	F: The Timeline tab.	F: The Timeline tab lays the same orders along the calendar. | M: Every record, in time order.
+s11	fr	§IDMP-HISTORY-TOGGLE open=true · §WHOLE-OPEN page=idempiere · §IDMP-HIST go opLogMutated=NO	F: Et l'historique.	F: Et l'historique : chaque étape de la session, d'une page à l'autre. | M: On peut revenir en arrière, sans rien perdre.
+s12	es	§ERP_FILM_FACT project=["BIM: Hospital",64719479,28,7]	F: BIM Hospital.	F: Ahora, un proyecto de verdad: BIM Hospital. | M: Veintiocho líneas, siete fases, sesenta y cuatro millones planificados.
+s13	de	§DASH-VARIANCE planned=64719479 committed=87372995 pct=35	F: Geplant gegen gebunden.	F: Geplant gegen gebunden, Phase für Phase. | M: Siebenundachtzig Millionen gebunden, fünfunddreißig Prozent über Plan.
+s14	ar	Phase Architecture 990003 → Task MASON 990008 → Task Line IfcWall · wallLine PlannedQty=11024.494 PlannedAmt=1598552	F: الجدران: IfcWall.	F: نفتح مرحلة العمارة، ثم المهمة: البنّاء. | M: وفي سطور المهمة، الجدران: IfcWall. | F: كل منتج هنا صنف من نموذج المبنى، بكمية وتكلفة مخططة. | M: مليون وخمسمئة وثمانية وتسعون ألفاً للجدران وحدها.
+s15	zh	§ZOOM-ACROSS launch id=viewer bld=Hospital find=IfcWall	F: 点红色按钮。	F: 点一下红色的药丸按钮。 | M: 跨应用缩放，直接打开三维模型。
+s16	en	viewer.html?db=Hospital_extracted.db&find=IfcWall · Viewer i18n incomplete (red1)	F: Into the Viewer.	F: And we're in the Viewer, the same Hospital, straight from its IFC file. | M: It opens already searching for the walls the project line pointed to. | F: The Viewer's own translation isn't finished yet, so from here, English. | M: Watch the model come in. | F: Same data, two apps, one browser.
+s17	en	§ZOOM-SCOPE IfcWall matches=50 · §ZOOM-COST linePlanned=1598552 · find-erp-btn links back to window=130	F: Fifty walls.	F: Fifty walls in the model. The same IfcWall line, one point six million planned. | M: One element set, from the ERP to the model, and back.
