@@ -744,6 +744,13 @@ furious" / "it is growing faster.. and the key was both Anthropic AI leaps in mo
   doubling about every seven months — for six years. | F: That curve is what red1 is riding. Source tag on screen:
   "METR · 2025-03-19". Our own repo numbers show the effect, not the exponential (commits plateaued ~1,200–1,500/month
   since June) — never present them as proof of the curve.
+  **Citation snapshot (red1, 2026-10-04: "and u can snapshot those citation if it has nice graphics.. with overlay
+  quotes"):** capture the METR page's headline chart (task length on a log axis vs model release date) with a headless
+  CPU screenshot of the LIVE page at production time — the chart region only, uncropped labels, unaltered. On screen
+  ~5 s, dimmed ~20 %, with the overlay quote in the §8 card style ("has been doubling approximately every 7 months for
+  the last 6 years") and a permanent credit line bottom-left: "Chart: METR, 'Measuring AI Ability to Complete Long
+  Software Tasks', 2025-03-19 · metr.org". Same treatment for any other cited source that has a strong graphic
+  (one image per source, credit always visible, no edits to the figure). Record the capture date + URL in the TSV.
 - **Visual:** an animated timeline — monthly commit bars rising left to right, model names dropping in as pins on their
   first-commit dates, and a witness-file counter ticking up underneath (rendered headless from the numbers above, CPU).
 - **Lines (F/M):** F: Why did it keep getting faster? | M: Two engines. The models kept leaping — ten Claude versions
