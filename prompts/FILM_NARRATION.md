@@ -506,6 +506,18 @@ English thus, but when quirps comes in both subtitles."
   deterministic kernel — one signed op-log, folded into all three — is the solution, and that a lone retired author plus
   AI, kept honest by witnesses, got there.
 
+**§10 DIRECTION 2026-10-04 (red1, brainstorm — "suggest technical details that are novel art.. such as in the Find panel how
+it tries to analyse 3D metadata IFC to derive room dimensions towards which is a corridor, room, isolated leading to the
+difficult path finding. Relate abit on its initial difficulty of things. We got the git history to remind back. The film
+may replay certain parts thus saving film work while the listeners focus more on the story which the overlay titling
+follows a more advertising like as the screenshot hinted"):**
+- A **NOVEL ART** strand runs through Ch 2–4: each idea gets ~20–30 s — what it is, why it was hard at first, what
+  finally worked — sourced from the git history + spec files (dates, commit hashes, before/after numbers).
+- **Replay, don't re-film:** footage reuses the §8/§9 trailer takes and the ERP films; the story carries the attention.
+- **Overlay titles are the advert layer** (§8 TITLE CARDS style, ref screenshot): per idea a kicker ("NOVEL ART 3"),
+  a two-tone title, one plain line — plus a small source tag (e.g. "git · 2026-06-26") so the claim is checkable.
+- Idea list: being mined from the three repos (2Dto3D Nov 2025 → bim-compiler Jan 2026 → bim-ootb May 2026) → §10 NOVEL ART.
+
 **§10 SCRIPT v3 — two narrators, F and M** (2026-10-04; SUPERSEDES v2's single narrator. red1: "it can retain the lively
 and my often humour in same female/male dialog style"). Same F/M dialogue style as the Hospital narrated films: two
 English voices telling red1's story to each other, warm, quick, a bit cheeky — his humour, never sneering. His own words
