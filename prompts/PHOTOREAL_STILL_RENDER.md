@@ -583,3 +583,11 @@
   quick_check ok. :8664 now runs scratchpad serve_strict.js (= serve_tree.js with NO fallback for *.db) -> a DB missing from the tree 404s
   (Clinic_meta.db 404, as on OCI). Rebake queued: Duplex, Clinic, Terminal, Hospital. LTU_AHouse_silent (Downloads link) and SampleHouse
   (bim-compiler/deploy link) are NOT OCI copies — open.
+- 2026-10-04 §INDOOR_FLAT — red1: "stairs are drowned from the front.. too strong indoor lighting.. flood to bland.. see how to get industry
+  settings". Poses …1791067908689 cam [1.469,-7.862,-14.681] / …1791067957166 cam [-11.138,-6.739,-13.168], tgt [-3.987,-8.416,-6.031];
+  both lampsLit 1274, lampListMean 178-182. Suspects (measure before change): lamps at rated vs design target (Terminal earlier ~4.6x the
+  200 lx default), §LOCAL_EXPOSURE lifting up to +1 EV (48.6 % px lifted at the atrium pose), no per-zone EN target (withEN=0, 565 zones).
+  EN 12464-1 maintained illuminance (Em, floor/working plane) per secondary sources (manufacturer application guides citing the standard,
+  not the standard text): circulation areas/corridors 100 lx; canteens/pantries 200 lx; entrance halls 200 lx (EN 12464-1:2021);
+  hospital transport corridors 100 lx, ward corridors used for work/sitting 200 lx. Sources: glamox.com healthcare communal/circulation,
+  trilux.com corridors-staircases-day-rooms, helvar.com New Norm whitepaper (2021). Lamp output stays red1's call (09-30 ruling: rated).
