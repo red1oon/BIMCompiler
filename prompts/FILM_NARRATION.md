@@ -276,6 +276,46 @@ processes rendered from AD tables — counts from the live DB) → AD features a
 in the Viewer (its translation is incomplete) and stops there. ≈ 180 s. Every claim traced to a § line or a doc quote
 (file:line) in the TSV source column.
 
+## 8. §VIEWER-TRAILER — polyglot trailer for the BIM Viewer (DRAFT script, 2026-10-03, not recorded)
+**Ask (red1, 2026-10-03):** "think of a good trailer script for the Viewer and also the Modeller". PLAYBOOK B, ≈180 s,
+one take. **Gate:** needs the Viewer UI translated (S226 §R2, Fable agent running 2026-10-03) — the language is picked
+on the landing page and must carry through; record only after its `§TRL_LEAK` is low on these screens. Needs the GPU
+(software GL measured unusable for the Viewer, `§FPS_MODE mean=21783`) → red1's go + `flock gpu.lock`.
+Every number below is a DOC QUOTE today (source given); the recorder's own `§` lines replace them at record time.
+| # | beat (on screen) | line idea | source |
+|---|---|---|---|
+| 0 | landing page, flag picker re-renders 9× (ar RTL) | greeting round | PLAYBOOK B |
+| 1 | front door → Buildings & IFC hub | "Zero install. Any browser, desktop or mobile." | BIMUserGuide.md:11 |
+| 2 | open Hospital card, stream-in | "Download once — the next visit is instant." | BIMUserGuide.md:11-12 |
+| 3 | click a wall → Info panel | "Any element: its class, GUID, storey, discipline, material." | BIMUserGuide.md:38 |
+| 4 | storey filter, discipline toggle, X-Ray cycle | "Isolate a floor. See through the walls." | BIMUserGuide.md:131-137 |
+| 5 | Find → IfcWall | "Ask for walls — get every wall." (count from the run's § line) | recorder § |
+| 6 | Section cut + Measure two taps | "Cut through floors. Two taps, a distance in metres." | BIMUserGuide.md:135-136 |
+| 7 | Clash Matrix grid | "Clashes by discipline pair — review, resolve, accept." | BIMUserGuide.md:347-348 |
+| 8 | Time Machine plays | "The schedule is built from the model itself: nothing appears before what holds it up — 0 violations in 266,954 elements, seven buildings." | BIMUserGuide.md:356-358 |
+| 9 | 4D/5D dashboard; switch language → currency + rate book change with it | "Change the language, the cost speaks your currency." | S226 §Current Status (locale = language + currency + rates) |
+| 10 | Film-Maker Alt+C derives a flight | "It even makes its own film — from the building's room graph, recorded in the browser." | BIMUserGuide.md:125-127 |
+| 11 | City mode aerial, close | "One building, or a whole city — 786 of them." | BIMUserGuide.md:142 |
+Open: the hook beat 9 depends on the 4D/5D page also following the language (in S226 §R2 scope).
+
+## 9. §MODELLER-TRAILER — polyglot trailer for the Modeller (DRAFT script, 2026-10-03, not recorded)
+PLAYBOOK B, ≈180 s, one take. **Gate:** the Modeller has NO language switch (no `locale_loader`/`_TRL` in `modeller/`,
+measured on bim-ootb main 2026-10-03) → PLAYBOOK B rule 1 (switch ON SCREEN) can't be met. Either voices rotate over an
+English UI (a stated exception), or Modeller i18n is built first. ⛔ red1 to choose. Desktop + GPU, same rule as §8.
+| # | beat | line idea | source |
+|---|---|---|---|
+| 0 | greeting round | — | PLAYBOOK B |
+| 1 | 📂 Open a real building's ARC | "Don't draw from a blank grid. Open a real building and edit that." | ModellerGuide.md:22-24 |
+| 2 | op-log visible beside the 3D | "Every action is one signed operation. The 3D is the log, folded." | ModellerGuide.md:5-7 |
+| 3 | Insert from catalog, Sketch→Extrude wall | "Drop a part. Draw a wall." | ModellerGuide.md §Assemble & draw |
+| 4 | Cut an opening, Route→Sweep a duct | "Open a wall. Run a duct." | same |
+| 5 | Move / Rotate / Grid-Stretch / Room Move | "Move a whole room — the walls follow." | ModellerGuide.md §Transform |
+| 6 | Walk ELEC, X-ray reveal | "Missing a trade? Walk it — 270 fixtures across six storeys, at spacing measured from real buildings." | ModellerGuide.md:567-569 |
+| 7 | clash residual shown | "The right standard: Duplex clashes 32 → 2. Castle 501 → 3. None hidden." | ModellerGuide.md:641-646 |
+| 8 | drag the history slider back and forth | "Drag back to undo, forward to redo — exact, every time." | ModellerGuide.md:722-726 |
+| 9 | Save / BCF export | "Save it, share an issue as BCF." | ModellerGuide.md §Save, §BCF |
+| 10 | close | "The same signed log runs the ERP." (bridge to the ERP trailers) | ModellerGuide.md:7-8 |
+
 ## 4. STATUS
 - 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
   (181.0 s, 4,345 frames, 13.2 MB, −16.4 LUFS). One take, GPU (red1 approved; `--use-angle=gl` → RTX 4060; the run
