@@ -248,6 +248,10 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await slice('s11', 'Time Machine plays'); n1 = PAGELOG.length; await key('t', 'tm'); fact('tm', await waitLog(n1, /§TIME_MACHINE ON/, 60000));
     await page.waitForSelector('#tm-fwd-btn', { timeout: 20000 }); await hclick('#tm-fwd-btn'); await hold(5000);
     fact('tmDay', await page.$eval('#tm-big-counter', e => e.textContent).catch(() => ''));
+    // scrub the 4D timeline back and forth (red1: "scrubbing the timelines") — the real slider, input events, day counter follows
+    const tmr = await page.evaluate(() => { const s = document.getElementById('tm-slider'); return s ? [Number(s.min), Number(s.max)] : null; });
+    if (tmr) { for (const f of [0.15, 0.35, 0.6, 0.85, 0.6, 0.3, 0.7]) { await page.evaluate((v) => { const s = document.getElementById('tm-slider'); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }, tmr[0] + (tmr[1] - tmr[0]) * f); await hold(450); } }
+    fact('tmScrub', (tmr ? 'range ' + tmr.join('..') + ' ' : 'NO #tm-slider ') + (await page.$eval('#tm-big-counter', e => e.textContent).catch(() => '')));
     // s12 What-if DROPPED on HHS: §WHATIF-UI opens the ERP seed's project 990000 "BIM: Hospital" whatever building is open
     await slice('s13', 'Pull Back'); n1 = PAGELOG.length;
     if (!(await page.locator('#tm-reschedule-asap').first().isVisible().catch(() => false))) await hclick('#tm-gantt');

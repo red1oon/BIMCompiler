@@ -19,11 +19,15 @@ TAG = {1: 'OPEN', 2: 'SEE', 3: 'INSPECT', 4: 'TIME', 5: 'COST', 6: 'SHARE'}
 SERIES = 'BIM OOTB  ·  VIEWER'
 # NOVEL ART badges (red1 2026-10-04: "u know the hilites.. those that are novel art") — a small coral-boxed badge under the
 # chapter tag for the length of the beat; each maps to an item in FILM_NARRATION.md §10 NOVEL ART (source there).
-NOVEL = {'s03': 'IFC → SQLite, streamed in the browser',            # §10 NOVEL ART 2
-         's05b': 'Answers from the engines — with evidence',         # find_ask.js; exit path = room graph (NOVEL ART 1/10)
-         's11': '4D: nothing before what holds it up',               # NOVEL ART 6 (MIDAIR 5,561 → 0)
-         's15_en_US': 'Language = cost context',                     # Localization.md: a locale is a complete cost context
-         's17': 'A film derived from the room graph'}                # NOVEL ART 9
+NOVEL = {'s03': ('NOVEL ART', 'IFC → SQLite, streamed in the browser'),          # §10 NOVEL ART 2
+         's05b': ('NOVEL ART', 'Answers from the engines — with evidence'),     # find_ask.js; exit path = room graph
+         's10': ('BIM KILLER', 'Clash matrix in a browser tab'),               # §CLASH_MATRIX, no install
+         's11': ('NOVEL ART', '4D: nothing before what holds it up'),          # NOVEL ART 6 (MIDAIR 5,561 → 0)
+         's14': ('BIM KILLER', 'Scrub any timeline — it never drifts'),         # BIMUserGuide.md:119-123 deterministic scrub
+         's15_en_US': ('BIM KILLER', 'Language = cost context'),               # Localization.md: a locale is a cost context
+         's16': ('BIM KILLER', 'Clash to a phone — nothing to install'),       # BIMUserGuide.md:741-745 + :11
+         's17': ('NOVEL ART', 'A film derived from the room graph')}           # NOVEL ART 9
+# red1 2026-10-04: "or killers in BIM world" — two badge kinds: NOVEL ART (new ideas) · BIM KILLER (standout features)                # NOVEL ART 9
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
@@ -79,7 +83,7 @@ beats = [(m.group(1), float(m.group(2))) for m in re.finditer(r'§FILM_BEAT id=(
 nb = 0
 for i, (bid, t) in enumerate(beats):
     if bid in NOVEL and i + 1 < len(beats):
-        events.append(f'Dialogue: 1,{ts(t)},{ts(beats[i + 1][1])},NovelBadge,,0,0,0,,{{\\fad(250,250)}}★ NOVEL ART  ·  {NOVEL[bid]}'); nb += 1
-print(f'§CARDS novel-art badges={nb} of {len(NOVEL)}')
+        events.append(f'Dialogue: 1,{ts(t)},{ts(beats[i + 1][1])},NovelBadge,,0,0,0,,{{\\fad(250,250)}}★ {NOVEL[bid][0]}  ·  {NOVEL[bid][1]}'); nb += 1
+print(f'§CARDS badges={nb} of {len(NOVEL)}')
 open(os.path.join(out, 'carded.ass'), 'w').write(head + '[Events]' + ev.rstrip('\n') + '\n' + '\n'.join(events) + '\n')
 print(f'§CARDS ass events={len(events)} cards={len(order)} out={out}')

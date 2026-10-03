@@ -27,7 +27,7 @@ s08	en	§MEASURE 66.25m; tap the same dot again → §MEASURE_AREA (measure.js)	
 s09	ms	§NIGHT_MODE on fixtures=410 · §SHADOW_GROUND shadow=true	M: Malam pun boleh.	M: Malam pun boleh — empat ratus sepuluh lampu menyala. Bayang-bayang pun ada.	M: Night works too.	M: Night works too — four hundred and ten lights come on. Shadows too.
 s10	th	§CLASH_MATRIX shown discs=ARC,MEP,STR	F: ชนกันตรงไหน?	F: ชนกันตรงไหน? ดูตามสาขางาน — สถาปัตย์ ระบบ และโครงสร้าง	F: Where do they clash?	F: Where do they clash? By discipline — architecture, services and structure.
 c4	en	card	F: Chapter four. Time.	F: Chapter four. Time.
-s11	en	§TIME_MACHINE ON — 6882 ops, 55 days; BIMUserGuide.md:356-358 support invariant	M: The Time Machine. Fifty-five days, from the model.	M: The Time Machine. The schedule comes from the model itself — | F: fifty-five days, and nothing appears before what holds it up.
+s11	en	§TIME_MACHINE ON — 6882 ops, 55 days; BIMUserGuide.md:356-358 support invariant; scrub: #tm-slider dragged back and forth (red1 2026-10-04: "scrubbing the timelines")	M: The Time Machine. Fifty-five days, from the model.	M: The Time Machine. The schedule comes from the model itself — | F: fifty-five days, and nothing appears before what holds it up. | M: Scrub it back and forth — any day, either way.
 s13	en	§FILM_FACT pullBack=Nothing to compress — already at earliest float	M: Pull it back? Already there.	M: Pull it back as early as it can go? | F: It's already there. Nothing to compress. | M: An honest answer — it won't invent a gain.
 s14	ja	§SCRUB_UI show actions=34	M: 建物の中を飛ぶ。	M: 建物の中を飛ぶ。三十四か所を巡り、どこへでも戻れる。	M: Fly through the building.	M: Fly through the building — thirty-four stops, and back to any point.
 c5	en	card	M: Chapter five. Cost.	M: Chapter five. Cost.
