@@ -210,6 +210,9 @@ es_CO:51). `idempiere.html` is `lang="en"`. Local iDempiere (docker `idempiere`)
 language picked at login like iDempiere (AD_Language), menu/window/tab/field/process/ref-list/message translations
 from iDempiere language packs (extracted; source named per locale), chrome strings (toolbar, login, status) via
 AD_Message_Trl. Witness by value per locale (translated-label counts, `dir=rtl` for Arabic).
+**ONE CONTINUOUS TAKE (red1: "all played out in the same film clip, not going back and splice together").** One
+recording session, no cuts, no splicing: each language switch happens live on screen (in-app language switcher in the
+header, or log out → log in choosing the language), and the journey's data carries straight through.
 **Film design:** the guide journey (part 1 → part 2 → part 3 once the gap agent lands address/price/posting) cut into
 ~9 segments of ~20–25 s, one per language in red1's order. Each segment: log in again choosing that language (the switch
 is ON SCREEN) → do the next guide step(s) → the F/M pair speak that language, subtitles in it (Arabic RTL). Voices:
