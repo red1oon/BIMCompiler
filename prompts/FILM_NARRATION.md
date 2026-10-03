@@ -710,6 +710,24 @@ ERP was smooth sailing as it is out of the geometry blindspot")
 - **Visual:** an explainer diagram (§10 EXPLAINER) — two lanes side by side, GEOMETRY (no precedent → drift → witness)
   vs ERP (pattern → fold → ship), highlight moving with the lines; then the live VibeProgramming page rolled.
 
+### §10 TWO ENGINES OF SPEED — model leaps + the WITNESS layers (red1, 2026-10-04: "yes this recent spate was fast and
+furious" / "it is growing faster.. and the key was both Anthropic AI leaps in models and user ingrained WITNESS layers")
+- **Model leaps, dated from the repos' own "Co-Authored-By: Claude …" lines (first appearance · commits carrying it,
+  bim-compiler / bim-ootb, counted 2026-10-04):** Opus 4.5 2026-01-25 (81/–) · Opus 4.6 2026-02-06 (1,540/297) ·
+  Sonnet 4.6 2026-02-20 (307/171) · Opus 4.8 2026-05-29 (869/794) · Fable 5 2026-06-11 (506/126) · Sonnet 5 2026-07-02
+  (1,248/424) · Opus 5 2026-07-25 (1,130/807) · Fable 5.1 2026-09-04 (40/76) · Opus 5.5 2026-09-23 (566/512) ·
+  Sonnet 5.5 2026-09-30 (27/25).
+- **Commits per month (bim-compiler + bim-ootb main):** Jan 27 · Feb 308 · Mar 796 · Apr 528 · May 988 · Jun 1,324 ·
+  Jul 1,535 · Aug 1,193 · Sep 1,255.
+- **WITNESS layers:** the Witness System began 2026-01-30 (BC `df1ea1953`, 7 claims); today 766 witness files
+  (bim-ootb 647, bim-compiler 119). The VibeProgramming Capability Snapshot (2026-08-27) is the honest counterweight:
+  "What changed was the working pattern, not the model" — both engines matter, neither alone.
+- **Visual:** an animated timeline — monthly commit bars rising left to right, model names dropping in as pins on their
+  first-commit dates, and a witness-file counter ticking up underneath (rendered headless from the numbers above, CPU).
+- **Lines (F/M):** F: Why did it keep getting faster? | M: Two engines. The models kept leaping — ten Claude versions
+  across these repos since January. | F: And the witnesses. Seven-hundred-and-sixty-six of them now, one per claim. |
+  M: The model brings speed. | F: The witness keeps it honest. | M: Fast — and furious.
+
 ### §10 NOVEL ART — candidate list (mined 2026-10-04 from 2Dto3D + bim-compiler + bim-ootb history; read-only research)
 Each: idea · the first struggle · the breakthrough (source) · what to show. Pick ~7 for the film; each = one explainer diagram.
 1. **Rooms + paths from walls and doors** — "An IFC file says where the walls and doors are. It does not say how to walk
