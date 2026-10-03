@@ -151,6 +151,34 @@ $P ~/bim-compiler/prompts/film_narration_fit_kokoro.py ~/bim-compiler/prompts/fi
 **Rules kept:** every number from a `§` line (PRIME); GPU never used (CPU only, never take gpu.lock); new output names only.
 
 ## 4. STATUS
+- 2026-10-03 12:30: MALAY + THAI BUILT. red1 then: "do the Thai in Thai subtitles" + "drop the English subtitling
+  for now" → English-caption encodes stopped and their partial files deleted; only native-caption films delivered.
+  The English caption maps + fitter 4th-arg path stay in the repo, unused, for later.
+  Scripts `..._dialogue_ms.tsv` / `..._dialogue_th.tsv` (same ids/cues/`§` sources/numbers as v3); English caption
+  maps `..._ms_en.tsv` (back-translation of the SHORTER Malay lines, so captions match what is said) and `..._th_en.tsv`
+  (= v3 English; Thai is line-for-line). Fitter `film_narration_fit_edge.py` (4th arg = caption tsv; §CAPTION_MISMATCH
+  if turn counts differ → 0 on both); mux `film_narration_mux.py` (refuses to overwrite). Edge lead-in silence trimmed
+  (~0.1–0.2 s per clip). One transient `NoAudioReceived` on Thai → retry added (§EDGE_RETRY, 3 tries; 1 retry used).
+  MALAY: first draft ran ~30–40 % long (13/18 fell to SHORT, `detailDur` logged) → lines trimmed, two numbers kept
+  as "sama" (FP|STR = MEP|STR = 38). Fit 18/18 DETAIL. §NARR_TONE: 12 yes/no questions all end rising (+1.0…+5.7 st;
+  9 needed the PSOLA rise, 3 already rose on their own), 0 WRONG. Film (Malay captions):
+  `~/Downloads/Hospital_narrated_dialogue_MALAY_AFTER_…_0049.mp4` (4,963 frames, −16.1 LUFS, longest gap 5.1 s).
+  THAI: fit 18/18 DETAIL first try (only `open` sped ×1.045). No pitch edit (tonal). §NARR_TONE reported only:
+  all 17 question chunks end flat-to-falling (−0.2…−12.2 st) — Thai questions are marked by particles (ไหม/เหรอ/คะ),
+  not a rise; whether these sound natural is a native-speaker check, not measured here. Thai captions in Noto Sans Thai.
+  Fit logs `film_narration_hospital_0049_{ms,th}_fit.txt`.
+- 2026-10-03 11:40: SPEC — MALAY then THAI dialogue (red1: "go with what you suggest, Malay, then Thai").
+  Route picked: Microsoft Edge neural TTS (`edge-tts` 7.2.8 in the venv) — ms-MY Yasmin (F) + Osman (M), th-TH
+  Premwadee (F) + Niwat (M). Reason: only free route with M+F in both languages and natural prosody (Kokoro/Piper
+  have neither language; MMS is non-commercial and flat). ⚠ Cloud: script text goes to Microsoft; it is unofficial
+  (no SLA). Clips cached on disk by (text, voice, rate) hash so a re-run makes no new call and is stable.
+  Scripts translate the v3 English rows line-for-line: same ids, cues, `§` sources, same numbers (spelled out in the
+  language). Fitter `film_narration_fit_edge.py` = v3 rules (fit / per-speaker rate / beats / chunks), plus:
+  Malay — yes/no questions (ke?/-kah, no apa/kenapa/berapa/bagaimana/di mana/siapa/bila) get the PSOLA rise ONLY if
+  the voice's own ending does not already rise ≥ +1 st (measured first). Thai — tonal language: pitch is part of the
+  word, so NO pitch edit; questions carry their particle (ไหม / หรือ / อะไร); §NARR_TONE reported, not enforced.
+  Captions: Malay DejaVu Sans; Thai Noto Sans Thai. Credit line in each language naming the cloud voice.
+  Witness: §NARR_FIT all rows placed; §NARR_TONE Malay YN rise / WH any; output frames = 4,963; silencedetect gaps.
 - 2026-10-03 11:20: V3 — DIALOGUE, GAPS FILLED + INTONATION (red1: "yes do it, with proper intonation").
   Spec: (a) fill the two long silences with log-sourced lines; (b) questions must sound like questions, as a
   measured value, not a listen. Gap lines: `which` adds §MEASURE_BOX "Structural — span depth cantilever" (linger

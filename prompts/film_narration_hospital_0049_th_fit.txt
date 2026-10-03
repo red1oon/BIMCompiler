@@ -1,0 +1,116 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=34 -> ada5115c38
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=18 -> 46be4b5ecb
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=73 -> 4a37d92ce3
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="ทุกอย่างเลยเหรอคะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=18 -> 0f5b5ee5dc
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=51 -> e4b44272ae
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+9% chars=34 -> 9aba1119b3
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+9% chars=18 -> c21e180d84
+§EDGE_CALL voice=th-TH-NiwatNeural rate=+2% chars=73 -> 19bdd6ce10
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+9% chars=18 -> 20bb8c515f
+§EDGE_CALL voice=th-TH-NiwatNeural rate=+2% chars=51 -> 98b6dd71ca
+§NARR_FIT open cue=0.00 room=12.70 dur=12.66 -> DETAIL x1.045 slack=+0.04 detailDur=13.27 words=12
+§NARR_TONE open#0 F WH own=-0.8st rose=0st endDelta=-0.8st want=report OK "เรามีอะไรตรงนี้คะ?"
+§NARR_TONE open#2 F YN own=-0.5st rose=0st endDelta=-0.5st want=report OK "ทุกอย่างเลยเหรอคะ?"
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=51 -> 07865aaee4
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=27 -> 7941dd6443
+§NARR_FIT inside cue=13.00 room=5.10 dur=4.44 -> DETAIL slack=+0.66 detailDur=4.44 words=4
+§NARR_TONE inside#1 F ! own=-7.7st rose=0st endDelta=-7.7st want=report OK "ทั้งที่ยังสร้างไม่เสร็จเลย!"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=17 -> fbc120d3be
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=42 -> 439e66a00f
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=28 -> eae4eca355
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=45 -> 8ef698bc88
+§NARR_FIT hall cue=18.40 room=11.70 dur=8.98 -> DETAIL slack=+2.72 detailDur=8.98 words=7
+§NARR_TONE hall#0 F ! own=+0.3st rose=0st endDelta=+0.3st want=report OK "โอ้โห ดูโถงนี้สิ!"
+§NARR_TONE hall#2 F YN own=-6.7st rose=0st endDelta=-6.7st want=report OK "แล้วทางออกที่ไกลที่สุดล่ะคะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=26 -> 3f4017666c
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=60 -> 25347aea60
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=45 -> 5839c34712
+§NARR_FIT days cue=30.40 room=13.10 dur=8.55 -> DETAIL slack=+4.55 detailDur=8.55 words=6
+§NARR_TONE days#0 F ! own=-2.4st rose=0st endDelta=-2.4st want=report OK "ข้างนอก ปฏิทินวิ่งเร็วมาก!"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=27 -> ea6f4c2799
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=60 -> 88e91ffb6b
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=12 -> 120e92de19
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=49 -> 32910f44ce
+§NARR_FIT checks cue=43.80 room=12.80 dur=10.14 -> DETAIL slack=+2.66 detailDur=10.14 words=7
+§NARR_TONE checks#0 F WH own=-2.7st rose=0st endDelta=-2.7st want=report OK "เอ๊ะ กล่องอะไรเด้งขึ้นมาคะ?"
+§NARR_TONE checks#2 F WH own=-0.9st rose=0st endDelta=-0.9st want=report OK "เจอกี่จุดคะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=25 -> 00642e5750
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=42 -> afaeb1a702
+§NARR_FIT egress cue=56.90 room=5.70 dur=4.40 -> DETAIL slack=+1.30 detailDur=4.40 words=3
+§NARR_TONE egress#0 F WH own=-2.6st rose=0st endDelta=-2.6st want=report OK "ความปลอดภัยหมายถึงอะไรคะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=18 -> e03ea0a815
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=67 -> 39fe274b54
+§NARR_FIT door cue=62.90 room=9.30 dur=5.57 -> DETAIL slack=+3.73 detailDur=5.57 words=5
+§NARR_TONE door#0 F ! own=-2.3st rose=0st endDelta=-2.3st want=report OK "ประตูก็ถูกวัดด้วย!"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=24 -> 93e9e3fccf
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=75 -> 1417deeafb
+§NARR_FIT done cue=72.50 room=10.00 dur=6.02 -> DETAIL slack=+3.98 detailDur=6.02 words=4
+§NARR_TONE done#0 F ! own=-3.9st rose=0st endDelta=-3.9st want=report OK "วันที่สามร้อยยี่สิบเอ็ด!"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=11 -> 2180f20d9a
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=14 -> 0de17b202e
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=74 -> 4472442b53
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=30 -> e572fe7d11
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=36 -> 5822dc56de
+§NARR_FIT loadpath cue=82.80 room=11.90 dur=10.70 -> DETAIL slack=+1.20 detailDur=10.70 words=8
+§NARR_TONE loadpath#0 F WH own=-2.3st rose=0st endDelta=-2.3st want=report OK "ทำไมมันหยุดคะ?"
+§NARR_TONE loadpath#2 F YN own=-3.6st rose=0st endDelta=-3.6st want=report OK "แล้วกล่องความปลอดภัยนั่นล่ะคะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=28 -> fb2967aeef
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=80 -> 72eb0f4499
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=16 -> 09d9620264
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=50 -> a7ca58a977
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=22 -> 29ce67d524
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=32 -> ee4a7ba578
+§NARR_FIT clash cue=95.00 room=19.70 dur=14.89 -> DETAIL slack=+4.81 detailDur=14.89 words=12
+§NARR_TONE clash#0 F ! own=-3.3st rose=0st endDelta=-3.3st want=report OK "ดูสิ มันแสดงจุดชนทั้งหมดเลย!"
+§NARR_TONE clash#2 F YN own=-0.9st rose=0st endDelta=-0.9st want=report OK "สำคัญด้วยเหรอคะ?"
+§NARR_TONE clash#3 M YN own=-0.2st rose=0st endDelta=-0.2st want=report OK "กล่องขอบเขตเจอเกือบหนึ่งพันห้าร้อย ซ้อนทับจริงล่ะ?"
+§NARR_TONE clash#4 F ! own=-2.7st rose=0st endDelta=-2.7st want=report OK "งั้นห้าจุด เป็นสัญญาณหลอกถึงสี่!"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=25 -> b254d49fd1
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=36 -> e34493b733
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=51 -> d4a2c4cd85
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=56 -> e1a472ad43
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=19 -> f640190547
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=52 -> 76add36e35
+§NARR_FIT which cue=115.00 room=18.50 dur=16.75 -> DETAIL slack=+1.75 detailDur=16.75 words=11
+§NARR_TONE which#0 F WH own=-4.1st rose=0st endDelta=-4.1st want=report OK "แล้วอะไรชนกันมากที่สุดคะ?"
+§NARR_TONE which#4 F YN own=-1.1st rose=0st endDelta=-1.1st want=report OK "แล้วกล่องนั้นล่ะคะ?"
+§NARR_TONE which#5 M YN own=-2.4st rose=0st endDelta=-2.4st want=report OK "ช่วงพาดกับความลึก คานแต่ละตัวลึกพอกับช่วงพาดไหมครับ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=32 -> 94bb7f9c11
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=42 -> 20a0ecfb4c
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=25 -> 10351f6dcf
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=44 -> e3443be52d
+§NARR_FIT rules2 cue=133.80 room=14.60 dur=9.45 -> DETAIL slack=+5.15 detailDur=9.45 words=7
+§NARR_TONE rules2#0 F YN own=-2.4st rose=0st endDelta=-2.4st want=report OK "กล่องอีกแล้ว ระยะทางสัญจรเหรอคะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=23 -> ae392f2cfb
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=36 -> 2f782f2e5d
+§NARR_FIT datum cue=148.70 room=10.80 dur=3.88 -> DETAIL slack=+6.92 detailDur=3.88 words=3
+§NARR_TONE datum#0 F ! own=-3.0st rose=0st endDelta=-3.0st want=report OK "โอ้ แบบวางผังมาอีกแล้ว!"
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=24 -> c99df121ed
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=68 -> 4fc2dac96e
+§NARR_FIT parade cue=159.80 room=7.70 dur=5.62 -> DETAIL slack=+2.08 detailDur=5.62 words=8
+§NARR_TONE parade#1 F ! own=-2.0st rose=0st endDelta=-2.0st want=report OK "ระบบดับเพลิง สามสิบแปด ไฟฟ้า สามสิบสาม เครื่องกล หนึ่งร้อยสามสิบสาม!"
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=21 -> 6605faa112
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=32 -> aa6c12bd1d
+§NARR_FIT pairs cue=167.80 room=4.50 dur=3.22 -> DETAIL slack=+1.28 detailDur=3.22 words=3
+§NARR_TONE pairs#0 M YN own=-12.2st rose=0st endDelta=-12.2st want=report OK "คู่ที่ใหญ่ที่สุดเหรอ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=33 -> cc032dc6fa
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=36 -> c48978e981
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=58 -> 494802449a
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=62 -> 8d185f2a4b
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=27 -> d8e59f797e
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=41 -> e9534a5e17
+§NARR_FIT reveal cue=172.60 room=21.00 dur=16.17 -> DETAIL slack=+4.83 detailDur=16.17 words=20
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=25 -> 23ff34fd19
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=39 -> c9a0791e96
+§NARR_FIT value cue=193.90 room=4.60 dur=4.40 -> DETAIL slack=+0.20 detailDur=4.40 words=5
+§NARR_TONE value#0 F YN own=-2.0st rose=0st endDelta=-2.0st want=report OK "ทั้งหมดแบบทันทีเลยเหรอคะ?"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=14 -> f6bfd45fb6
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=27 -> f3a0b47318
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=20 -> 49b38cdf6d
+§NARR_FIT cards cue=198.80 room=7.70 dur=4.57 -> DETAIL slack=+3.13 detailDur=4.57 words=4
+§NARR_TONE cards#0 F YN own=-3.6st rose=0st endDelta=-3.6st want=report OK "สรุปแล้วล่ะคะ?"
+§NARR_TONE cards#2 F ! own=-2.5st rose=0st endDelta=-2.5st want=report OK "ขอให้มีวันที่ดีนะคะ!"
