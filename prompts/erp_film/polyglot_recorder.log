@@ -1,0 +1,135 @@
+§ERP_FILM_BEAT id=g_en_US t=0.00 lang=en_US greeting
+§ERP_FILM_FACT i18n.en_US=§I18N lang=en_US labels=0/15 dir=ltr ms=3 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=0/15 src=pack:0,machine:0 packRows=base
+§ERP_FILM_FACT dir.en_US=ltr
+§ERP_FILM_FACT loginTitle.en_US=Language | English
+§ERP_FILM_HOLD after=g_en_US extra=0.56
+§ERP_FILM_BEAT id=g_fr_FR t=1.80 lang=fr_FR greeting
+§ERP_FILM_FACT i18n.fr_FR=§I18N lang=fr_FR labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:2556,Field:56,Form:28,Menu:365,Message:1065,Process:316,Ref_List:746,Tab:658,Window:254
+§ERP_FILM_FACT dir.fr_FR=ltr
+§ERP_FILM_FACT loginTitle.fr_FR=Langue | English
+§ERP_FILM_HOLD after=g_fr_FR extra=0.63
+§ERP_FILM_BEAT id=g_es_ES t=3.60 lang=es_ES greeting
+§ERP_FILM_FACT i18n.es_ES=§I18N lang=es_ES labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:3833,Field:165,Form:45,Menu:48,Message:2054,Process:471,Ref_List:1342,Tab:1103,Window:365
+§ERP_FILM_FACT dir.es_ES=ltr
+§ERP_FILM_FACT loginTitle.es_ES=Lenguaje | English
+§ERP_FILM_HOLD after=g_es_ES extra=1.03
+§ERP_FILM_BEAT id=g_de_DE t=5.80 lang=de_DE greeting
+§ERP_FILM_FACT i18n.de_DE=§I18N lang=de_DE labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:6,machine:16 packRows=Element:3607,Field:163,Form:44,Menu:46,Message:2021,Process:433,Ref_List:1272,Tab:1064,Window:351
+§ERP_FILM_FACT dir.de_DE=ltr
+§ERP_FILM_FACT loginTitle.de_DE=Sprache | English
+§ERP_FILM_HOLD after=g_de_DE extra=0.63
+§ERP_FILM_BEAT id=g_ar t=7.60 lang=ar greeting
+§ERP_FILM_FACT i18n.ar=§I18N lang=ar labels=22/22 dir=rtl ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:7,machine:15 packRows=Element:1228,Field:0,Form:9,Menu:190,Message:575,Process:0,Ref_List:0,Tab:0,Window:0
+§ERP_FILM_FACT dir.ar=rtl
+§ERP_FILM_FACT loginTitle.ar=لغة | English
+§ERP_FILM_HOLD after=g_ar extra=1.13
+§ERP_FILM_BEAT id=g_zh_CN t=9.90 lang=zh_CN greeting
+§ERP_FILM_FACT i18n.zh_CN=§I18N lang=zh_CN labels=22/22 dir=ltr ms=3 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:1481,Field:44,Form:26,Menu:393,Message:918,Process:119,Ref_List:430,Tab:800,Window:250
+§ERP_FILM_FACT dir.zh_CN=ltr
+§ERP_FILM_FACT loginTitle.zh_CN=语言 | English
+§ERP_FILM_HOLD after=g_zh_CN extra=0.63
+§ERP_FILM_BEAT id=g_ja_JP t=11.70 lang=ja_JP greeting
+§ERP_FILM_FACT i18n.ja_JP=§I18N lang=ja_JP labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:2800,Field:104,Form:26,Menu:43,Message:918,Process:290,Ref_List:856,Tab:846,Window:289
+§ERP_FILM_FACT dir.ja_JP=ltr
+§ERP_FILM_FACT loginTitle.ja_JP=言語 | English
+§ERP_FILM_HOLD after=g_ja_JP extra=0.62
+§ERP_FILM_BEAT id=g_ms_MY t=13.50 lang=ms_MY greeting
+§ERP_FILM_FACT i18n.ms_MY=§I18N lang=ms_MY labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:0,machine:22 packRows=Element:233,Field:14,Form:16,Menu:143,Message:118,Process:62,Ref_List:616,Tab:140,Window:80
+§ERP_FILM_FACT dir.ms_MY=ltr
+§ERP_FILM_FACT loginTitle.ms_MY=Bahasa | English
+§ERP_FILM_HOLD after=g_ms_MY extra=0.63
+§ERP_FILM_BEAT id=g_th_TH t=15.30 lang=th_TH greeting
+§ERP_FILM_FACT i18n.th_TH=§I18N lang=th_TH labels=22/22 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=22/22 src=pack:8,machine:14 packRows=Element:1866,Field:16,Form:16,Menu:338,Message:802,Process:201,Ref_List:515,Tab:521,Window:188
+§ERP_FILM_FACT dir.th_TH=ltr
+§ERP_FILM_FACT loginTitle.th_TH=ภาษา | English
+§ERP_FILM_HOLD after=g_th_TH extra=0.82
+§ERP_FILM_BEAT id=s01 t=17.30 lang=en_US login System
+§ERP_FILM_FACT i18n.en_US=§I18N lang=en_US labels=0/15 dir=ltr ms=2 menu=0/0 window=0/0 tab=0/0 field=0/0 chrome=0/15 src=pack:0,machine:0 packRows=base
+§ERP_FILM_FACT dir.en_US=ltr
+§ERP_FILM_HOLD after=s01 extra=4.56
+§ERP_FILM_BEAT id=s02 t=27.30 lang=fr_FR menu: Initial Tenant Setup
+§ERP_FILM_FACT i18n.fr_FR=§I18N lang=fr_FR labels=442/602 dir=ltr ms=13 menu=427/587 window=0/0 tab=0/0 field=0/0 chrome=15/15 src=pack:413,machine:29 packRows=Element:2556,Field:56,Form:28,Menu:365,Message:1065,Process:316,Ref_List:746,Tab:658,Window:254
+§ERP_FILM_FACT dir.fr_FR=ltr
+§ERP_FILM_FACT menu.ITS=53202
+§ERP_FILM_HOLD after=s02 extra=5.53
+§ERP_FILM_BEAT id=s03 t=37.31 lang=es_ES FirstCo / owner / MYR
+§ERP_FILM_FACT i18n.es_ES=§I18N lang=es_ES labels=572/601 dir=ltr ms=18 menu=558/587 window=0/0 tab=0/0 field=0/0 chrome=14/14 src=pack:561,machine:11 packRows=Element:3833,Field:165,Form:45,Menu:48,Message:2054,Process:471,Ref_List:1342,Tab:1103,Window:365
+§ERP_FILM_FACT dir.es_ES=ltr
+§ERP_FILM_HOLD after=s03 extra=4.51
+§ERP_FILM_BEAT id=s04 t=47.31 lang=de_DE Create
+§ERP_FILM_FACT i18n.de_DE=§I18N lang=de_DE labels=559/601 dir=ltr ms=14 menu=545/587 window=0/0 tab=0/0 field=0/0 chrome=14/14 src=pack:546,machine:13 packRows=Element:3607,Field:163,Form:44,Menu:46,Message:2021,Process:433,Ref_List:1272,Tab:1064,Window:351
+§ERP_FILM_FACT dir.de_DE=ltr
+§ERP_FILM_FACT created=§W-GENESIS-SYSADMIN-LIVE created client=17 rows=530 persisted=true
+§ERP_FILM_FACT accounts=311
+§ERP_FILM_FACT periods=12
+§ERP_FILM_FACT docTypes=42
+§ERP_FILM_HOLD after=s04 extra=6.35
+§ERP_FILM_BEAT id=s05 t=57.31 lang=ar Enter FirstCo, owner logs in
+§ERP_FILM_FACT i18n.ar=§I18N lang=ar labels=274/601 dir=rtl ms=12 menu=260/587 window=0/0 tab=0/0 field=0/0 chrome=14/14 src=pack:198,machine:76 packRows=Element:1228,Field:0,Form:9,Menu:190,Message:575,Process:0,Ref_List:0,Tab:0,Window:0
+§ERP_FILM_FACT dir.ar=rtl
+§ERP_FILM_FACT langCarried=ar
+§ERP_FILM_HOLD after=s05 extra=4.83
+§ERP_FILM_BEAT id=s06 t=67.32 lang=zh_CN Business Partner: new
+§ERP_FILM_FACT i18n.zh_CN=§I18N lang=zh_CN labels=437/602 dir=ltr ms=18 menu=422/587 window=0/0 tab=0/0 field=0/0 chrome=15/15 src=pack:404,machine:33 packRows=Element:1481,Field:44,Form:26,Menu:393,Message:918,Process:119,Ref_List:430,Tab:800,Window:250
+§ERP_FILM_FACT dir.zh_CN=ltr
+§ERP_FILM_FACT menu.BusinessPartner=110
+§ERP_FILM_BEAT id=s07 t=77.89 lang=ja_JP customer Acme Retail
+§ERP_FILM_FACT i18n.ja_JP=§I18N lang=ja_JP labels=656/806 dir=ltr ms=24 menu=453/587 window=1/1 tab=9/9 field=153/169 chrome=40/40 src=pack:632,machine:24 packRows=Element:2800,Field:104,Form:26,Menu:43,Message:918,Process:290,Ref_List:856,Tab:846,Window:289
+§ERP_FILM_FACT dir.ja_JP=ltr
+§ERP_FILM_FACT customer=§CRUD validate key=c_bpartner verb=create ok persist=yes
+§ERP_FILM_HOLD after=s07 extra=1.85
+§ERP_FILM_BEAT id=s08 t=87.89 lang=ms_MY address: Location editor
+§ERP_FILM_FACT i18n.ms_MY=§I18N lang=ms_MY labels=394/806 dir=ltr ms=40 menu=233/587 window=1/1 tab=9/9 field=111/169 chrome=40/40 src=pack:211,machine:183 packRows=Element:233,Field:14,Form:16,Menu:143,Message:118,Process:62,Ref_List:616,Tab:140,Window:80
+§ERP_FILM_FACT dir.ms_MY=ltr
+§ERP_FILM_FACT location=§LOC-EDITOR created id=-2 col=c_location_id fields={"address1":"Jalan Ampang 1","city":"Kuala Lumpur","postal":"50450","c_country_id":238,"ad_org_id":0} anyAddress=true gid=3bcede47-78ec-4582-b9eb-68270c0d501d verifyChain=ok
+§ERP_FILM_FACT bpLocation=§CRUD validate key=c_bpartner_location verb=create ok persist=yes
+§ERP_FILM_BEAT id=s09 t=104.12 lang=th_TH vendor Kedai Bekalan
+§ERP_FILM_FACT i18n.th_TH=§I18N lang=th_TH labels=573/806 dir=ltr ms=25 menu=376/587 window=1/1 tab=9/9 field=147/169 chrome=40/40 src=pack:521,machine:52 packRows=Element:1866,Field:16,Form:16,Menu:338,Message:802,Process:201,Ref_List:515,Tab:521,Window:188
+§ERP_FILM_FACT dir.th_TH=ltr
+§ERP_FILM_FACT vendor=§CRUD validate key=c_bpartner verb=create ok persist=yes
+§ERP_FILM_BEAT id=s10 t=118.43 lang=en_US price list: Sales Price list
+§ERP_FILM_FACT i18n.en_US=§I18N lang=en_US labels=0/780 dir=ltr ms=18 menu=0/587 window=0/1 tab=0/9 field=0/169 chrome=0/14 src=pack:0,machine:0 packRows=base
+§ERP_FILM_FACT dir.en_US=ltr
+§ERP_FILM_FACT menu.PriceList=132
+§ERP_FILM_FACT plGrid=["1700507"] want=1700507 status=Price List › Price List · Record 1 of 1
+§ERP_FILM_FACT plForm=["ad_client_id","ad_org_id","name","description","basepricelist_id","isdefault","c_currency_id","priceprecision","issopricelist","istaxincluded","enforcepricelimit","isactive"]
+§ERP_FILM_FACT issopricelistBefore=false
+§ERP_FILM_FACT issopricelistAfter=true
+§ERP_FILM_FACT saveBtn=[["Refresh",false],["New record (Alt+N)",false],["Copy this record to a new one (Alt+C)",false],["Save (Alt+S)",false],["Save and start a new record (Alt+A)",false],["Delete this record (Alt+D)",false],["Ignore — discard unsaved edits (Alt+Z)",false],["Process (Alt+O) — run the document/table proces
+§ERP_FILM_FACT priceList=1700507 §CRUD validate key=m_pricelist verb=update ok
+§ERP_FILM_FACT plSaveLog=§STD-DEFAULTS create table=c_bpartner_location client=17 org=1700002 by=1700005 active=Y ‖ §MV-TIP-SHADOW table=c_bpartner_location base=17 tip=18 created=1 ‖ §STD-DEFAULTS create table=c_location client=17 org=0 by=1700005 active=Y ‖ §MV-TIP-SHADOW table=c_location base=36 tip=37 created=1 ‖ §STD-D
+§ERP_FILM_HOLD after=s10 extra=0.28
+§ERP_FILM_BEAT id=s11 t=128.43 lang=fr_FR sales order: Acme, Standard Order
+§ERP_FILM_FACT i18n.fr_FR=§I18N lang=fr_FR labels=717/898 dir=ltr ms=41 menu=427/587 window=2/2 tab=13/15 field=205/224 chrome=70/70 src=pack:677,machine:40 packRows=Element:2556,Field:56,Form:28,Menu:365,Message:1065,Process:316,Ref_List:746,Tab:658,Window:254
+§ERP_FILM_FACT dir.fr_FR=ltr
+§ERP_FILM_FACT menu.SalesOrder=129
+§ERP_FILM_FACT bpOptions=[{"v":"","t":""},{"v":"-4","t":"Kedai Bekalan Sdn Bhd (-4)"},{"v":"-1","t":"Acme Retail Sdn Bhd (-1)"},{"v":"1700510","t":"Standard BP (1700510)"}]
+§ERP_FILM_FACT stdDocType=1700486 Standard Order (1700486)
+§ERP_FILM_FACT order=§CRUD validate key=c_order verb=create ok persist=yes
+§ERP_FILM_FACT orderId=-6
+§ERP_FILM_BEAT id=s12 t=139.80 lang=es_ES order line: price derived
+§ERP_FILM_FACT i18n.es_ES=§I18N lang=es_ES labels=979/1015 dir=ltr ms=23 menu=558/587 window=3/3 tab=20/20 field=358/365 chrome=40/40 src=pack:967,machine:12 packRows=Element:3833,Field:165,Form:45,Menu:48,Message:2054,Process:471,Ref_List:1342,Tab:1103,Window:365
+§ERP_FILM_FACT dir.es_ES=ltr
+§ERP_FILM_FACT fs6=§FS6-PRICE product=1700512 header=window-ctx pricelist=1700507 date=2026-10-03 plv=1700508 std=1 list=1 limit=1 uom=100 | §FS6-TAX product=1700512 order=-6 header=window-ctx org=1700002 shipLoc=-3 tax=null rule=undefined note="TaxCriteriaNotFound (product/org-info/BP-location joi
+§ERP_FILM_FACT derived={"price":"1","uom":"Each (100)","tax":"Standard (1700513)"}
+§ERP_FILM_FACT line=§CRUD validate key=c_orderline verb=create ok persist=yes
+§ERP_FILM_HOLD after=s12 extra=0.29
+§ERP_FILM_BEAT id=s13 t=149.80 lang=de_DE Complete
+§ERP_FILM_FACT i18n.de_DE=§I18N lang=de_DE labels=951/1015 dir=ltr ms=20 menu=545/587 window=3/3 tab=19/20 field=344/365 chrome=40/40 src=pack:934,machine:17 packRows=Element:3607,Field:163,Form:44,Menu:46,Message:2021,Process:433,Ref_List:1272,Tab:1064,Window:351
+§ERP_FILM_FACT dir.de_DE=ltr
+§ERP_FILM_FACT orderGrid=["-6"]
+§ERP_FILM_FACT complete=§CRUD process committed key=c_order viaGroup=Y gid=8e5adfe3-63a1-4294-904d-781a6227ad87 ops=1 sealed=1 op_uuid=8045c09e-2117-4855-ab89-b444687ceb14 to=CO verifyChain=ok
+§ERP_FILM_FACT docStatus=CO
+§ERP_FILM_HOLD after=s13 extra=2.16
+§ERP_FILM_BEAT id=s14 t=159.80 lang=ar backup
+§ERP_FILM_FACT i18n.ar=§I18N lang=ar labels=680/1045 dir=rtl ms=136 menu=260/587 window=2/3 tab=14/20 field=334/365 chrome=70/70 src=pack:537,machine:143 packRows=Element:1228,Field:0,Form:9,Menu:190,Message:575,Process:0,Ref_List:0,Tab:0,Window:0
+§ERP_FILM_FACT dir.ar=rtl
+§ERP_FILM_FACT backupOpen=Pills → #pill-showme
+§ERP_FILM_FACT backup=§INTEG-WIRE-B backup ops=8 tip=5a71c0a315cb… signed=Y fp=43ec0479 file=erp-backup-5a71c0a3.json
+§ERP_FILM_BEAT id=s15 t=169.92 lang=zh_CN closing
+§ERP_FILM_FACT i18n.zh_CN=§I18N lang=zh_CN labels=847/1045 dir=ltr ms=147 menu=422/587 window=3/3 tab=17/20 field=335/365 chrome=70/70 src=pack:773,machine:74 packRows=Element:1481,Field:44,Form:26,Menu:393,Message:918,Process:119,Ref_List:430,Tab:800,Window:250
+§ERP_FILM_FACT dir.zh_CN=ltr
+§ERP_FILM_HOLD after=s15 extra=6.32
+§ERP_FILM_BEAT id=end t=179.92 lang=zh_CN 
+§ERP_FILM_CURSOR clicks=89 cursorOnTarget=89 OK
+§ERP_FILM_DONE frames=5931 dur=180.23 out=/tmp/claude-1000/-home-red1-bim-compiler/8519b4b5-edd1-490f-b702-87598b3b718f/scratchpad/polyrec/erp_film_polyglot.mp4

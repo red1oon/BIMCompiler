@@ -238,9 +238,7 @@ const LANGS = ['en_US', 'fr_FR', 'es_ES', 'de_DE', 'ar', 'zh_CN', 'ja_JP', 'ms_M
     fact('complete', last(n1, /§CRUD process committed key=c_order/) || 'NONE'); fact('docStatus', await page.evaluate(id => { const c = window.__crud; try { return c.readTip('c_order', id); } catch (e) { return 'ERR'; } }, ORD));
     // 14 backup — signed, through the Help (show me) panel
     L = nextLang(); await beat('s14', L, 'backup'); await setLang(L, 'session');
-    fact('showmeEls', JSON.stringify(await page.evaluate(() => Array.from(document.querySelectorAll('*')).filter(e => Array.from(e.attributes).some(a => /showme/i.test(a.value) || /showme/i.test(a.name))).slice(0, 6).map(e => e.tagName + ' ' + Array.from(e.attributes).map(a => a.name + '=' + a.value).join(' ').slice(0, 120)))));
-    const pill = await page.$('[data-pill="showme"], [data-id="showme"], [data-key="showme"], [data-pill-id="showme"]');
-    if (pill) { await hclick('[data-pill="showme"], [data-id="showme"], [data-key="showme"], [data-pill-id="showme"]'); fact('backupOpen', 'pill'); } else { await page.evaluate(() => window.AboutDIY && window.AboutDIY.open('diy')); fact('backupOpen', 'api'); }
+    await hclick('#idmp-pill-trigger'); await page.waitForTimeout(500); await hclick('#pill-showme'); fact('backupOpen', 'Pills → #pill-showme');
     await page.waitForTimeout(600); await hclick('.adq-segb[data-tab="diy"]').catch(() => {}); await page.waitForTimeout(500);
     n1 = PAGELOG.length;
     const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 15000 }).catch(() => null), hclick('[data-erp-backup] .persist-btn')]);

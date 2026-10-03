@@ -1,0 +1,24 @@
+g_en_US	en	login card en_US	F: Hi!	F: Hi!
+g_fr_FR	fr	login card fr_FR	M: Bonjour !	M: Bonjour !
+g_es_ES	es	login card es_ES	F: ¡Hola!	F: ¡Hola! ¿Cómo está?
+g_de_DE	de	login card de_DE	M: Guten Tag!	M: Guten Tag!
+g_ar	ar	login card ar (RTL)	F: السلام عليكم!	F: السلام عليكم!
+g_zh_CN	zh	login card zh_CN	M: 你好！	M: 你好！
+g_ja_JP	ja	login card ja_JP	F: こんにちは！	F: こんにちは！
+g_ms_MY	ms	login card ms_MY	M: Apa khabar?	M: Apa khabar?
+g_th_TH	th	login card th_TH	F: สวัสดีค่ะ!	F: สวัสดีค่ะ!
+s01	en	§I18N lang=en_US · login System	F: One ERP, nine languages.	F: One ERP, nine languages, one browser. | M: Let's build a company. First, log in as System.
+s02	fr	§I18N lang=fr_FR · menu Initial Tenant Setup	F: En français !	F: On passe au français ! | M: Le menu, puis la création d'une nouvelle société.
+s03	es	§I18N lang=es_ES · FirstCo / owner / MYR	F: En español.	F: Ahora en español. | M: La empresa se llama FirstCo, el administrador es owner, y la moneda, ringgit.
+s04	de	§I18N lang=de_DE · created rows=530 · accounts=311 periods=12 docTypes=42	M: Anlegen!	F: Jetzt auf Deutsch! | M: Anlegen. Dreihundertelf Konten, zwölf Perioden, zweiundvierzig Belegarten.
+s05	ar	§I18N lang=ar dir=rtl · enter FirstCo · owner login · langCarried=ar	F: والآن بالعربية!	F: والآن بالعربية! | M: ندخل إلى FirstCo، والمستخدم owner يسجّل الدخول.
+s06	zh	§I18N lang=zh_CN · Business Partner · New	F: 现在说中文！	F: 现在说中文！ | M: 打开业务伙伴，新建一条记录。
+s07	ja	§I18N lang=ja_JP · customer C-001 Acme Retail Sdn Bhd · persist=yes	F: 次は日本語で！	F: 次は日本語で！ | M: 顧客、Acme Retail。保存します。
+s08	ms	§I18N lang=ms_MY · §LOC-EDITOR created Jalan Ampang 1, Kuala Lumpur, 50450, MY	F: Bahasa Melayu!	F: Sekarang dalam Bahasa Melayu! | M: Alamat pelanggan: Jalan Ampang, Kuala Lumpur.
+s09	th	§I18N lang=th_TH · vendor V-001 Kedai Bekalan Sdn Bhd · persist=yes	F: ภาษาไทยค่ะ!	F: ต่อด้วยภาษาไทยค่ะ! | M: เพิ่มผู้ขาย Kedai Bekalan ครับ
+s10	en	§I18N lang=en_US · m_pricelist update ok (IsSOPriceList)	F: Back to English.	F: Back to English. | M: Tick Sales Price list on the company's price list, and save.
+s11	fr	§I18N lang=fr_FR · c_order create ok persist=yes · Standard Order	F: Encore en français !	F: Encore en français ! | M: Une commande client pour Acme, commande standard. Enregistrée.
+s12	es	§I18N lang=es_ES · §FS6-PRICE std=1 uom=Each · line persist=yes	F: ¡Otra vez español!	F: ¡Otra vez español! | M: Elegimos el producto... y el precio sale solo: uno, por unidad.
+s13	de	§I18N lang=de_DE · c_order to=CO verifyChain=ok · docStatus=CO	F: Wieder Deutsch.	F: Wieder Deutsch. | M: Fertigstellen! Der Auftrag ist abgeschlossen.
+s14	ar	§I18N lang=ar · §INTEG-WIRE-B backup signed=Y · file downloaded	F: ومرة أخرى بالعربية.	F: ومرة أخرى بالعربية. | M: نسخة احتياطية موقّعة، تُحفظ على جهازك.
+s15	zh	§I18N lang=zh_CN · closing	F: 九种语言，一个浏览器。	F: 九种语言，一个浏览器。 | M: 一个ERP，不用安装。

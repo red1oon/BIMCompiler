@@ -1,0 +1,66 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_ar cue=7.60 room=2.00 dur=1.28 -> DETAIL slack=+0.72 detailDur=1.28 words=2
+§NARR_TONE g_ar#0 F ! own=-2.6st rose=0st endDelta=-2.6st want=report OK "السلام عليكم!"
+§NARR_FIT s05 cue=57.31 room=9.71 dur=5.87 -> DETAIL slack=+3.84 detailDur=5.87 words=9
+§NARR_TONE s05#0 F ! own=-0.7st rose=0st endDelta=-0.7st want=report OK "والآن بالعربية!"
+§NARR_FIT s14 cue=159.80 room=9.82 dur=6.08 -> DETAIL slack=+3.74 detailDur=6.08 words=9
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_de_DE cue=5.80 room=1.50 dur=0.76 -> DETAIL slack=+0.74 detailDur=0.76 words=2
+§NARR_TONE g_de_DE#0 M ! own=-8.1st rose=0st endDelta=-8.1st want=any OK "Guten Tag!"
+§NARR_FIT s04 cue=47.31 room=9.70 dur=7.10 -> DETAIL slack=+2.60 detailDur=7.10 words=10
+§NARR_TONE s04#0 F ! own=-3.3st rose=0st endDelta=-3.3st want=any OK "Jetzt auf Deutsch!"
+§NARR_FIT s13 cue=149.80 room=9.70 dur=4.57 -> DETAIL slack=+5.13 detailDur=4.57 words=7
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_en_US cue=0.00 room=1.50 dur=0.47 -> DETAIL slack=+1.03 words=1
+§NARR_TONE g_en_US#0 F ! rose=0st endDelta=+0.3st want=any OK "Hi!"
+§NARR_FIT s01 cue=17.30 room=9.70 dur=5.37 -> DETAIL slack=+4.33 words=15
+§NARR_FIT s10 cue=118.43 room=9.70 dur=4.40 -> DETAIL slack=+5.30 words=14
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_es_ES cue=3.60 room=1.90 dur=1.20 -> DETAIL slack=+0.70 detailDur=1.20 words=3
+§NARR_TONE g_es_ES#0 F ! own=-2.8st rose=0st endDelta=-2.8st want=any OK "¡Hola!"
+§NARR_TONE g_es_ES#0 F WH own=-7.4st rose=0st endDelta=-7.4st want=any OK "¿Cómo está?"
+§NARR_FIT s03 cue=37.31 room=9.70 dur=6.24 -> DETAIL slack=+3.46 detailDur=6.24 words=16
+§NARR_FIT s12 cue=139.80 room=9.70 dur=5.26 -> DETAIL slack=+4.44 detailDur=5.26 words=14
+§NARR_TONE s12#0 F ! own=-5.8st rose=0st endDelta=-5.8st want=any OK "¡Otra vez español!"
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_fr_FR cue=1.80 room=1.50 dur=0.61 -> DETAIL slack=+0.89 detailDur=0.61 words=2
+§NARR_TONE g_fr_FR#0 M ! own=-2.7st rose=0st endDelta=-2.7st want=any OK "Bonjour !"
+§NARR_FIT s02 cue=27.30 room=9.71 dur=3.89 -> DETAIL slack=+5.82 detailDur=3.89 words=13
+§NARR_TONE s02#0 F ! own=-3.5st rose=0st endDelta=-3.5st want=any OK "On passe au français !"
+§NARR_FIT s11 cue=128.43 room=11.07 dur=5.70 -> DETAIL slack=+5.37 detailDur=5.70 words=12
+§NARR_TONE s11#0 F ! own=-2.2st rose=0st endDelta=-2.2st want=any OK "Encore en français !"
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_ja_JP cue=11.70 room=1.50 dur=0.72 -> DETAIL slack=+0.78 detailDur=0.72 words=1
+§NARR_FIT s07 cue=77.89 room=9.70 dur=4.88 -> DETAIL slack=+4.82 detailDur=4.88 words=3
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_ms_MY cue=13.50 room=1.50 dur=0.84 -> DETAIL slack=+0.66 detailDur=0.84 words=2
+§NARR_TONE g_ms_MY#0 M WH own=-0.7st rose=0st endDelta=-0.7st want=any OK "Apa khabar?"
+§NARR_FIT s08 cue=87.89 room=15.93 dur=5.36 -> DETAIL slack=+10.57 detailDur=5.36 words=10
+§NARR_TONE s08#0 F ! own=-7.7st rose=0st endDelta=-7.7st want=any OK "Sekarang dalam Bahasa Melayu!"
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_th_TH cue=15.30 room=1.70 dur=0.92 -> DETAIL slack=+0.78 detailDur=0.92 words=1
+§NARR_TONE g_th_TH#0 F ! own=+0.7st rose=0st endDelta=+0.7st want=report OK "สวัสดีค่ะ!"
+§NARR_FIT s09 cue=104.12 room=14.01 dur=3.14 -> DETAIL slack=+10.87 detailDur=3.14 words=5
+§NARR_TONE s09#0 F ! own=+0.0st rose=0st endDelta=+0.0st want=report OK "ต่อด้วยภาษาไทยค่ะ!"
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_zh_CN cue=9.90 room=1.50 dur=0.45 -> DETAIL slack=+1.05 detailDur=0.45 words=1
+§NARR_FIT s06 cue=67.32 room=10.27 dur=3.84 -> DETAIL slack=+6.43 detailDur=3.84 words=2
+§NARR_FIT s15 cue=169.92 room=9.70 dur=4.23 -> DETAIL slack=+5.47 detailDur=4.23 words=2

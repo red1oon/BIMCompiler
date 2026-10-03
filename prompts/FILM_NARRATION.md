@@ -240,6 +240,24 @@ session); in session `page.selectOption('#idmp-lang', code)`; or `page.evaluate(
 `ErpI18n.preload()` once after load so no switch waits on a fetch. `?lang=<code>` sets the start language.
 
 ## 4. STATUS
+- 2026-10-03 21:00: §ERP-POLYGLOT FILM BUILT — one continuous take, 180.2 s, 9 languages rotating every ~10 s.
+  Pre-reqs landed first: UI locales (Opus agent, bim-ootb #1827/#1828, `prompts/ERP_UI_LOCALES.md`, W-ERP-I18N 11/0
+  re-run here) and the gap closures (Opus agent, #1820–#1826, journey 34/34 re-run here). The recorder found one more
+  real bug — Grid/Form toggle left Save disabled (FS-19, `ERP_FIRST_SETUP_GUIDE.md §FS2q`) — fixed in bim-ootb #1829
+  (W-TOGGLE-SAVE 4/4, 2 FAIL without; journey 34/34; W-ERP-I18N 11/0 after a record-counter regression in the first
+  version was caught by W-ERP-I18N and fixed). Recorder `scripts/film_erp_polyglot.js` (language-proof selectors:
+  menu `data-menu-id`, tabs by tableName title, toolbar `(Alt+x)` titles; `ERP_REPO` env films a worktree);
+  driver `prompts/film_narration_poly.py` (per-language fitters → merged plan + per-language subtitle fonts).
+  Take: intro greeting round on the login card (9 locales, login card re-rendered each, Arabic RTL) → System login →
+  Initial Tenant Setup FirstCo/owner/MYR → Create (rows=530, 311 accounts, 12 periods, 42 doc types) → owner login
+  (language carried) → customer Acme → address via the Location editor (Jalan Ampang 1, Kuala Lumpur) → vendor →
+  Sales Price list ticked → sales order → line priced (std=1, Each) → Complete → CO → Pills → Help → signed backup
+  (ops=8, signed=Y) → closing. §ERP_FILM_CURSOR 89/89 OK, 25 beats, 0 missing §I18N, 0 PAGEERR. Fit 24/24 DETAIL, 0 WRONG.
+  `~/Downloads/ERP_Polyglot_9languages_1920x1080_24fps_2026-10-03.mp4` (4,326 frames, 10.2 MB, −16.4 LUFS; per-language
+  fontselect: DejaVu / Noto Sans Arabic / CJK SC / CJK JP / Thai). Quiet stretches 4–11 s inside slices (speech ≈5 s
+  per 10 s slice; longest 10.9 s address typing, 11.2 s vendor typing). Logs `prompts/erp_film/polyglot_*`.
+  Re-run: BEAT_MIN in the recorder log header of this entry's run (greetings 1.8–2.3 s, slices 10 s), then
+  `film_narration_poly.py <tsv> <erp_film.log> <dir> <dur>` and `film_narration_mux.py poly …`.
 - 2026-10-03 16:20: ERP PART 1 — CANTONESE. Edge zh-HK HiuMaan (F) + WanLung (M); written Cantonese, Traditional
   script, subtitles in Noto Sans CJK HK (fontselect confirmed). `CFG['yue']` (pitch=False, tonal). Script
   `film_narration_erp_part1_dialogue_yue.tsv` (cues from part 1's timed TSV). Fit 7/7 DETAIL (open ×1.096, at the cap;
