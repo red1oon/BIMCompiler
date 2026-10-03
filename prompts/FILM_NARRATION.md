@@ -218,7 +218,8 @@ recording session, no cuts, no splicing: each language switch happens live on sc
 header, or log out → log in choosing the language), and the journey's data carries straight through.
 **INTRO — a greeting round before the journey** (red1: "make the first intro as a series of greetings, Hi, Bonjour,
 Cómo está.. before beginning"): on the login screen, one greeting per language in red1's order, voices alternating F/M,
-the UI switching to that language on each greeting (≈1.5–2 s each, ≈15–18 s total), subtitle = the greeting. Then the
+the LOGIN SCREEN itself re-rendering in that language on each greeting (red1: "the login screen reflects so
+respectively"; Arabic flips RTL) (≈1.5–2 s each, ≈15–18 s total), subtitle = the greeting. Then the
 journey starts in English. Greetings: Hi! · Bonjour ! · ¡Hola! ¿Cómo está? · Guten Tag! · السلام عليكم (As-salamu alaykum) · 你好！ · こんにちは！ ·
 Apa khabar? · สวัสดีค่ะ/ครับ (Thai particle matches the speaker).
 **Film design:** the guide journey (part 1 → part 2 → part 3 once the gap agent lands address/price/posting) cut into
