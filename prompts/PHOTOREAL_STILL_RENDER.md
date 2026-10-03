@@ -591,3 +591,16 @@
   not the standard text): circulation areas/corridors 100 lx; canteens/pantries 200 lx; entrance halls 200 lx (EN 12464-1:2021);
   hospital transport corridors 100 lx, ward corridors used for work/sitting 200 lx. Sources: glamox.com healthcare communal/circulation,
   trilux.com corridors-staircases-day-rooms, helvar.com New Norm whitepaper (2021). Lamp output stays red1's call (09-30 ruling: rated).
+
+## §R10-MAP-SHADOW (moved here from CPE_4D_PERF_MEM_STUDY.md — `_r10MatArray` was born in this lane, bim-ootb #1763) — 2026-10-04 · `_r10MatArray.clone()` throws (found by the Viewer trailer recorder)
+**Defect:** `viewer/streaming.js` `A._r10MatArray` forwards `_R10_FWD_FIRST` property names onto the material ARRAY via
+`Object.defineProperty`; that list contains `'map'` (the texture slot), so `arr.map` is the first material's texture and
+the array's own `.map()` is shadowed. `clone()` calls `arr.map(...)` → `TypeError: arr.map is not a function`
+(streaming.js:975). Seen live: HHS, right after `§HIGHLIGHT_APPLY` (a highlight clones the material) →
+`§ERR_GLOBAL Uncaught TypeError: arr.map is not a function` (trailer take vfinal, 2026-10-04) — the highlight of a
+frame+second-material element (window/door) fails.
+**Fix spec:** `clone` and `dispose` use `Array.prototype.map/forEach.call(arr, …)` — never the (shadowed) own names.
+`'map'` stays forwarded (the texture forward is the R10 contract). **Witness W-R10-CLONE**
+(`viewer/tests/witness_r10_clone.js`, node, no browser): builds `_r10MatArray` from the REAL streaming.js source with stub
+materials; (a) `clone()` returns an R10 array of clones of the same length; (b) `arr.map` still reads `arr[0].map`
+(forward kept); (c) control: the unfixed `clone` body throws the same TypeError. INCONCLUSIVE if the function isn't found.
