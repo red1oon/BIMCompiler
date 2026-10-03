@@ -16,6 +16,19 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 09:50 VERIFY ROUND 1 (tree 8c6ebab9 v1558, scratchpad c/V_*.out + V_*_page.log; 1920x1080 24 fps):
+  - W1 PASS: §CLI_BAKE_POSECHECK ref=filmT MATCH maxPosErr 0 on LTU clip x2 + Hospital clip 0.39:0.45 (but that clip held NO load-path
+    freeze — 0 §LOADPATH_HOLD — so the non-linear case is re-run in round 2 with --frame-range 1950:2250). Target err 0.36-0.41 m = gaze blend.
+  - W2: judgedFrames printed (LTU 169/242, Hospital 282/282) PASS; CROSSFADE path not exercised (no hold in clip) -> round 2.
+  - W3 PASS + LOOK-NEUTRAL: LTU §LAMPS_SUMMARY owner data 242/242 lit 122/122, dataSetChanges=112; Hospital §INTERIOR_LIGHTS_WITNESS
+    owner=data PASS (114-122/114-122). §LAMP_CAP_CHURN lines 487 -> 5 (LTU clip); per-frame luma v1558 vs v1555 max |d| 0.09.
+  - W4 SPEED 2.05x (LTU clip 1,221 -> 595 s; §CONSOLIDATE 5,999 -> 531 batches, 1,079 ms) BUT NOT LOOK-NEUTRAL: frames 0-130 equal,
+    from f140 (indoors) up to +26 luma. Cause: §ZONE_IDB_CACHE miss — boundary box x -119.6..125.9 -> -137.4..174.0 (same counts):
+    the re-derive-from-streamQueue merge moved elements placed after streaming -> zones rebuilt (251 vs 219 lit zones). FIX c081302a:
+    merge COPIES live slots (slotGeo + getMatrixAt + visibility + colour + the batch's own material). Re-verified in round 2.
+  - W5: §CLI_BAKE_MEM max cdpHeap 605-1412 MB, performance.memory 3.5-3.9 GB, Chrome tree RSS 8.1-9.7 GB (upper bound, shared pages
+    counted per process), GPU 4.7-5.1 GB of 8 GB.
+  - Merged W6/W7 (328f39d0) + fix/sky-surface @58416ed0 -> fix/fast-bake d304efd3 sw v1560 (pushed).
 - ▶ 2026-10-03 SPEC W-FIX (red1 "proceed with full confidence"), built on fix/fast-bake in /tmp/wt-fastbake, order top->bottom:
   W1 §CLI_BAKE_POSECHECK: the pose tap records the film time the camera was actually posed at (_poseFilmT) and the bake's own plan duration
      (window.__maxqPlanDurSec); the check evaluates poseAt(tF) on a plan rebuilt at that duration. Position decides the verdict; target error is
