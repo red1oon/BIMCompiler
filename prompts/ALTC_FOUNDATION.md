@@ -16,6 +16,16 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 11:20 RESUME DONE + W4 CAUSE FOUND (no GPU). /tmp/wt-fastbake recreated (DB symlinks + 3 sidecars copied back).
+  CAUSE (code read): light_zones.js:328 build() bounds every BatchedMesh slot with d.geo.boundingBox = the WHOLE batch geometry's
+  box x slot matrix (boundaryDraws L59-67 never sets a per-slot box). 558 merged batches -> each slot gets a bigger box -> grid box
+  grows -> §ZONE_IDB_CACHE fp miss + rebuilt zones -> luma max |d| 27. The SAME error exists in today's unmerged baseline (smaller
+  boxes), so a true per-slot fix (getBoundingBoxAt(gid)) would change every film's zone grid = look-changing + sidecar rebuild ->
+  red1 decision, NOT done.
+  FIX (look-neutral) bim-ootb fix/fast-bake @361349f4 (PUSHED, sw not bumped): cinema_maxq.js runs the &consolidate=1 merge AFTER the
+  stream-wait and AFTER LightZones.prime+build, then build() again; new line §CONSOLIDATE_ZONES PASS grid kept / WRONG grid rebuilt /
+  INCONCLUSIVE. NOT YET RUN. Next GPU runs (need red1 go): (1) verify2.sh 3rd line = HOSP_range 1950:2250 (W1+W2 proof);
+  (2) LTU clip 0:0.15 &consolidate=1 -> expect §CONSOLIDATE_ZONES PASS, §ZONE_IDB_CACHE hit, luma max |d| < 0.5 vs ctl2.
 - ▶ RESUME 2026-10-03 10:25 (red1 closing the machine). Tree bim-ootb fix/fast-bake @d304efd3 sw v1560 (PUSHED, 0 unpushed;
   W1-W7 + sky-surface @58416ed0 merged). /tmp dies on shutdown — DURABLE COPY in ~/.cache/bim4d/altc_2026-10-03/: sidecars/
   (Hospital_silent, LTU_AHouse_silent, HHS_Office_Federated_silent .lightfield.bin, key 21324567:90186 — copy back into
