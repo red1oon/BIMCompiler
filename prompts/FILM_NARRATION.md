@@ -50,7 +50,13 @@ is theirs). The lane builds a **fitter** that does the to-and-fro for them:
 prompters"*):** a first-class option, not a fallback. The fitter's placed lines become a **prompter**: the film plays
 silent, each line shows on screen at its start second with a countdown and a bar for its time budget, red1 records
 over it in one pass. Outputs: a subtitle-style cue file (e.g. .srt/.vtt — the same rows as the fitter table) and a
-prompter view that plays it over the mp4. Recording is then muxed onto the film as in §2. No AI anywhere in this route.
+prompter view that plays it over the mp4. No AI anywhere in this route.
+**Splice step (red1: *"and then help splice it more accurately in"*):** a live read never lands exactly on time.
+After recording, the tool finds where each spoken line really starts and ends (silence gaps — e.g. ffmpeg
+`silencedetect`, plain signal maths), matches them to the fitter rows in order, cuts the take into one clip per line,
+and places each clip at its fitted start second. It reports each line's drift (spoken vs planned, in seconds), any
+clip that runs past its window, and any line it could not match — so red1 re-records just that line, not the whole
+take. Then the clips are mixed into one track and muxed onto the film (video stream copied, not re-encoded).
 
 **On "No AI inside" (red1 asked if it is a thin line):** the tagline is about the shipped product, which has no AI.
 A film whose story is red1's, whose facts come from the log, and whose timing is plain arithmetic does not break it.
@@ -127,6 +133,7 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: splice step added (red1) — cut the take per line by silence gaps, place each at its fitted second, report drift.
 - 2026-10-03: own-voice prompter route added (red1) — fitter rows → cue file + prompter view over the film.
 - 2026-10-03: §0.1 added from red1's follow-up — the lane's core is the script-to-film FITTER (placed / skipped /
   gap / orphan), red1 writes the narrative; test film switched to Hospital 0049 (build-up ON).
