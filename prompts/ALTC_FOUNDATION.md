@@ -34,6 +34,15 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
      A._dlodSlots — and called ONCE at film start when &consolidate=1 (opt-in until witnessed). Witness: §CONSOLIDATE old_bm/new_bm/ms;
      §RENDER_INFO sceneCalls before vs after on the same LTU clip; per-frame §FRAME_QA luma within 0.5 of the control on every frame;
      §WIND_FLIP buckets unchanged; Hospital clip §CPE_REVEAL_LEAK 0 + discKept unchanged (4D wiring). Then default ON for films.
+  W5 §CLI_BAKE_MEM (BUILT 8c6ebab9): every 20 s CDP heap + performance.memory + Chrome process-tree RSS (/proc) + nvidia-smi; max summary.
+  W6 §F per-frame record (review §3): layers write A._fr.{pose,4d,light,render,hud,cap}; cinema_maxq prints ONE `§F i= ...` line after
+     §FRAME_HASH with `renders=` (renderer.info.render.frame delta). The ~30 per-frame repeat lines (§STILL_REFINE x3, §PHOTO_AO x3,
+     §LAMP_ZONE_PICK x2, §SUN_ARC_FILL_PIN, §PHOTO_SHADOW_FORCE_REASSERT, §TRIPLANAR_PERF, §STILL_OVERLAY_GUARD, §PHOTO_STAGING, ...) go
+     behind &verbose=1 in films ONLY (stills unchanged). Witness: Hospital-hold clip page log bytes/frame before vs after; every field of
+     §F non-empty on every frame; phases.py reproduces from §F alone.
+  W7 vacuous witnesses (review §3 items 3,5,6,8): §NIGHT_PL_INTENSITY_HEURISTIC prints once + VACUOUS when min==max; §CPE_PIE_HOLD /
+     §CPE_STATS_TAIL VACUOUS when no resource panel existed; §DLOD_BAKE_PROXY prints NO-OP when boxed stays 0 for the whole film;
+     §FRAME_COST lastRenderCalls dropped (order-dependent) in favour of §RENDER_INFO / §F calls=.
 - ▶ 2026-10-03 09:15 CODE REVIEW (Fable, read-only) — full report prompts/archive/ALTC_CODE_REVIEW_2026-10-03.md. Verified by Alt+C before citing:
   - RETRACTION: "interior lamps never relit / lamps 0 all film" (07:36 + 08:30 entries) is WRONG. Films light lamps on the DATA path
     (effects.js:4484 _lampDataOn, tools.js:2528-2552 _filmLD -> pool slots set to 0); LTU log: §LAMP_DATA film=1 lit=50..122, §LAMP_UNCAPPED on
