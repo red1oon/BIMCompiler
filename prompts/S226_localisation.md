@@ -1154,3 +1154,18 @@ grep `CACHE_VERSION=` instead); `viewer/i18n/de_DE.json` `rows: 656, translated:
 serves `time_machine.js?v=80` + `whatif_panel.js?v=5`; `viewer/time_machine.js` carries `_tmTrl` + `data-trl="tm_pull_back"`;
 `viewer/whatif_panel.js` carries `_wiTrl`; `viewer/i18n/AD_Message_Trl_de_DE.xml` HTTP 200 (114,880 B); `ad_message_base.csv`
 last row `1000655,ui_downloading_pct`. Worktree `/tmp/wt-viewer-i18n-tm` removed.
+
+### §R2c RESULT — 2026-10-04
+bim-ootb PR #1833 `feat/viewer-lang-inplace` (viewer sw v1463). `_TRL_LOADER.setLocale(code)` — labels + cost pack
+re-merged from boot snapshots (RATES/LABOR_RATES/EQUIPMENT_RATES/RATES_DEFAULT restored in place), `data-trl*` re-applied,
+once-built text re-translated by the dictionary (exact whole-value matches), `<html lang dir>`, persisted, `trl-ready`
+`{inplace:true}`, `§TRL_SWITCH from= to= ms= tagged= retranslated= cur=`. Opt-in `window.__TRL_INPLACE` on `index.html` +
+`viewer/viewer.html`; report pages keep the reload (charts built once at init). 4D pill title re-resolved on trl-ready
+(it was cached in the boot language — the one real leak the first run found). Info panel: 16 rows (1000656–1000671,
+machine, labelled), `#info-cost` + `#info-4d` re-render on a switch.
+**Witness W-VIEWER-I18N PASS 89/0** (full: 18 locales × 5 pages) incl. new (6): on viewer.html with a real building
+(warehouse_gardenworld.db, 26 elements) 18 in-place switches, first via the real picker: navs=0, building/camera/marker
+kept, Info 4D block in the new language each time, 0 leaks, 3–36 ms per switch; control (dictionary pass disabled) →
+leaks=15>0. W-ZOOM-LANG 14/0; eslint + audit_sw_precache + audit_script_tags clean.
+Not judged here (printed): uncatalogued strings on the building page are data (status, stats) — one real English UI
+button seen there, `Confirm` on the warehouse walk (`#wh-scan-btn`), outside the trailer's screens.
