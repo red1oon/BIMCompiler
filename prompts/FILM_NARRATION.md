@@ -262,6 +262,20 @@ session); in session `page.selectOption('#idmp-lang', code)`; or `page.evaluate(
 74–99 ms (session, 2 windows) — wait on the console line `§I18N lang=<code> ` before the next action; call
 `ErpI18n.preload()` once after load so no switch waits on a fetch. `?lang=<code>` sets the start language.
 
+## 7. §ERP-TECH-TRAILER — second polyglot trailer: the technology (spec 2026-10-03)
+**Ask (red1):** "another similar style: a. 9 lingo intro, b. this time explain about the technology that in the system
+monitor etc why it no longer needs certain layers, how iDempiere is chosen to be the model for this local first
+framework, how key features are still there [= the AD, the Application Dictionary], advanced ops such as timeline,
+integration between the Project Order (Hospital sample) with the Viewer (Hospital) similar element set, that part ending
+in English as we haven't got the Viewer fully updated its translation. And it stops there. … those 9 lingo switch in same
+manner. Make the movie also 3 mins long."
+**Style:** PLAYBOOK B, all rules. **Arc:** greeting round → System Monitor (what runs where: in-browser DB, op-log,
+service worker — the layers that are gone) → iDempiere as the model (the AD: windows/tabs/fields/callouts/val rules/
+processes rendered from AD tables — counts from the live DB) → AD features at work on screen → timeline (advanced ops)
+→ Hospital Project Order → jump to the Viewer, Hospital, same element set (counts matched by § lines) → ENDS IN ENGLISH
+in the Viewer (its translation is incomplete) and stops there. ≈ 180 s. Every claim traced to a § line or a doc quote
+(file:line) in the TSV source column.
+
 ## 4. STATUS
 - 2026-10-03 21:40: POLYGLOT v3 (red1: "need not reintroduce each other's languages. Just intersperse without formality.
   Fill up the silence spaces. Naturally cover each coordinated step as if a single flow … a show killing 3 birds:
