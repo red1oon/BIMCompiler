@@ -19,7 +19,7 @@ rows = [l.rstrip('\n').split('\t') for l in open(src) if l.strip()]
 if beats == 'measure':
     T = {r[0]: (i * 100.0, i * 100.0 + 95) for i, r in enumerate(rows)}
 else:
-    b = [(m.group(1), float(m.group(2))) for m in re.finditer(r'§ERP_FILM_BEAT id=(\S+) t=([\d.]+)', open(beats).read())]
+    b = [(m.group(1), float(m.group(2))) for m in re.finditer(r'§(?:ERP_)?FILM_BEAT id=(\S+) t=([\d.]+)', open(beats).read())]
     T = {}
     for i, (k, t) in enumerate(b):
         if i + 1 < len(b): T[k] = (t, b[i + 1][1])

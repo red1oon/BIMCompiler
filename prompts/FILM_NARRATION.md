@@ -865,6 +865,15 @@ BIM-compiler, BOM-OOTB, as it is under IfcOpenShell clone as a Federation featur
 ~/Projects/2Dto3D (Nov 2025) → bim-compiler (Jan 2026) → bim-ootb (May 2026).
 
 ## 4. STATUS
+- 2026-10-04 07:43: §VIEWER-TRAILER v1 BUILT — `~/Downloads/BIM_Viewer_Trailer_13languages_1920x1080_24fps_2026-10-04.mp4`
+  (237.75 s, 5,706 frames @24, 42.5 MB, −16.8 LUFS). One take, HHS_Office_Federated, GPU (`flock gpu.lock`; the other
+  sessions gave way on request). Recorder `scripts/film_viewer_trailer.js` (take vfinal2: 66/66 clicks on target,
+  0 PAGEERR), script `prompts/film_narration_viewer_trailer_dialogue.tsv` (52 rows, 13 languages, ~70 % English),
+  fit 52/52 DETAIL, 0 WRONG tones, English gloss 30/30, cards `prompts/film_title_cards.py` (6 chapter cards on Alt+S
+  stills + 8 NOVEL ART / BIM KILLER badges). Fonts: every script found its Noto face (fontselect lines). Silences
+  −40 dB ≥ 2 s: 14, max 5.0 s (most in the greeting round 4–38 s = flag-picker clicks) — tighten in v2.
+  Bugs the recorder found + FIXED live on the way: bim-ootb #1833 (in-place switch; 4D pill title), #1834 (rail flag
+  picker closed itself), #1835 (highlight threw arr.map — §R10-MAP-SHADOW). Next version notes: §8 NEXT VERSION.
 - 2026-10-03 23:30: §ERP-TECH-TRAILER BUILT — `~/Downloads/ERP_TechTrailer_9languages_1920x1080_24fps_2026-10-03.mp4`
   (181.0 s, 4,345 frames, 13.2 MB, −16.4 LUFS). One take, GPU (red1 approved; `--use-angle=gl` → RTX 4060; the run
   waited on `flock /tmp/claude-1000/gpu.lock` behind another session's Hospital bake — never contended). Recorder
