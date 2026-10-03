@@ -386,6 +386,17 @@ Series tag: "BIM OOTB · VIEWER" / "· MODELLER". Chapters for §8: 1 OPEN (beat
   load, Time Machine, Pull Back, cost, Film-Maker stay English. Greeting round + closing thank-you round in all 13.
   Cost chapter: 2 flips (RM → $ → RM) instead of 4 (each reloads that page).
 
+### §8 NEXT VERSION — noted, NOT in the current take (red1, 2026-10-04: "dont stop what is already embarked in the movie...
+just take note perhaps next version")
+- **"o" — nav LOD boxes** (red1: "the 'O'cclusion impact when u open up Hospital and just press 'o' it hides the rest";
+  "or u bring it up from the pill icons tray"): key `o` → `toggleDlodNav()` (viewer/scene.js:2310; tray: ⋯ → Navigate →
+  row `dlodnav` "Nav LOD (large bldgs)", panels.js:1489). Slight on HHS → cut ~2 s to docs/img/viewer/
+  time-machine-dlod-wireframe.png (Hospital: full LOD in view, wireframe boxes outside, "63419 elements").
+- **Help → run it yourself / air-gapped** (red1: "show also the Help panel with install to local for airgapped ops"):
+  Help pill (F1) → command palette → corner badge `#cmd-install-badge` → shared About/DIY modal (common/about_diy.js)
+  → tab `[data-tab="diy"]` "Run it yourself (DIY)": "Download install script" `#adq-dl-viewer` + "Save an offline copy"
+  `#adq-save-offline`. Line idea: "No internet on site? Install it locally — it runs air-gapped."
+
 ### ⏸ STANDING ORDER (red1, 2026-10-04): "After viewer, wait for my go ahead on the next, Modeller." / "BUt do the first
 one we agreed on first. This big story is to rest a while" — finish §8 (Viewer trailer) end to end, then STOP. Do not
 start §9 (Modeller) or §10 (documentary) without red1's explicit go.
