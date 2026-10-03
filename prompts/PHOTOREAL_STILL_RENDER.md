@@ -417,3 +417,8 @@
   Alt+S GPU QUEUE, waiting on red1's go: (1) rebake wt-surf sidecars for the still DBs (Clinic ~2.5 min, HHS ~5, Hospital ~41, Terminal ?);
   (2) one browser press to show the v1547 lines (§FAULT verdict, PNG pressS); (3) F2 zone id + lamp count at the Hospital pose …945705039;
   F4 dark-glass directions at HHS …944262945; F5 confirm the sconce shade is the material behind glassLow.
+- red1 2026-10-03: "The pictures are already very much better as it is, minus a few quirks, which needs your good time to abstract
+  out as we do not want band aid fixes." RULE for F2/F4/F5/F7: each quirk is fixed only after its cause is stated as ONE rule that holds
+  on every building (Clinic, HHS, Hospital, Terminal, LTU census, read from DB/log), and the fix goes in the function that owns it. No
+  per-building exemption, no per-pose threshold. Each fix must show it changes the count on all buildings, not just the pose it came from.
+  Applies to tooling too: the _meta/_extracted sidecar-name symlinks (10-03) are a band-aid -> bake.js must write the name the viewer requests.
