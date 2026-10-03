@@ -35,7 +35,7 @@ s15	en	§RENDER_CHARTS: done — 6 charts; Localization.md chart titles (5D cost
 s15_en_US	en	§FILM_FACT cur.en_US=USD RS Means 2024	M: US English: dollars, RS Means.	M: Switch to US English — dollars, and RS Means rates.
 s15_en_MY	en	§FILM_FACT cur.en_MY=RM CIDB Malaysia 2024	F: Back home: ringgit, CIDB.	F: Back home — ringgit, and CIDB rates. Language is a cost context.
 c6	en	card	F: Chapter six. Share.	F: Chapter six. Share.
-s16	ko	§SHARE_PREVIEW shown	F: 링크 하나로.	F: 이 화면 그대로, 링크 하나로.	F: In one link.	F: This exact view, in one link.
+s16	en	§SHARE_PREVIEW shown; BIMUserGuide.md:741-745 (clash open → shared text+photo are about that clash; mobile native share sheet); BIMUserGuide.md:11 zero install, desktop and mobile; BIMUserGuide.md:776 Share → WhatsApp	F: Share the exact view — one link.	F: Share the exact view — one link, camera and all. | M: Got a clash open? The share is about that clash. | F: Send it to a phone — it opens in the browser. Nothing to install.
 s17	en	§MAXQ_DURATION_DERIVED 24.0s→25.7s; BIMUserGuide.md:125-127 edit the flight by dragging it	M: It makes its own film.	M: And it makes its own film, from the building's rooms. | F: About twenty-six seconds, paced to this building. | M: Drag the flight itself to change it.
 t_fr_FR	fr	thank-you round	M: Merci !	M: Merci !	M: Thank you!	M: Thank you!
 t_es_ES	es	thank-you round	F: ¡Gracias!	F: ¡Gracias!	F: Thank you!	F: Thank you!

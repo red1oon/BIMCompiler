@@ -273,7 +273,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
 
     // ── 6 SHARE ──
     await chapter(6, 'SHARE');
-    await slice('s16', 'Share the exact view', 'ko_KR'); n1 = PAGELOG.length; await key('/', 'share'); fact('share', await waitLog(n1, /§SHARE_PREVIEW shown/, 8000)); await hold(3000);
+    await slice('s16', 'Share the exact view');   // English: carries the clash-share + no-install point (red1 2026-10-04); ko stays in the greeting/thank-you rounds n1 = PAGELOG.length; await key('/', 'share'); fact('share', await waitLog(n1, /§SHARE_PREVIEW shown/, 8000)); await hold(3000);
     await page.locator('#share-preview-overlay button', { hasText: /./ }).last().click().catch(() => {});
     await slice('s17', 'Film-Maker derives a film'); n1 = PAGELOG.length; await page.keyboard.press('Alt+c');
     await page.waitForSelector('#cpe-ok', { timeout: 180000 }).catch(() => {});
