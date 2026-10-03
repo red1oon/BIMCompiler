@@ -962,3 +962,35 @@ tests/audit_sw_precache.js`, `node tests/audit_script_tags.js`, `npx eslint view
 (`curl https://red1oon.github.io/bim-ootb/viewer/i18n/de_DE.json?x=<ts>`, `viewer/sw.js` version). `viewer/sw.js`
 CACHE_VERSION v1460→v1461, 18 `i18n/*.json` added to PRECACHE_ASSETS; `locale_loader.js?v=9` on the 4 viewer pages +
 `viewer/locale_loader.js?v=9` on the landing. Results → §R2 RESULT below.
+
+### §R2 RESULT — 2026-10-03 (bim-ootb PR #1831 `feat/viewer-i18n-xml`, viewer sw v1460→v1461)
+**Shipped.** `viewer/i18n/ad_message_base.csv` (493 AD_Message rows, ids 1000000–1000492: 309 extracted from the 18
+`locales/*.js` packs @`4cd440ae`, 184 new for the screens that were still hardcoded) + `AD_Message_Trl_<lang>.xml` ×17 in
+the exact `org.compiere.install.Translation` export format (Python `xml.etree` oracle PASS on every file: root/attrs,
+ids > 999999 unique, `trl∈{Y,N}`, `original` == CSV msgtext, `MsgTip original=""`, full coverage) → `i18n/<code>.json` ×18
+built by `viewer/tools/build_trl.js` (`--check` = 0 stale). 14 non-English locales 493/493 `trl="Y"`; en_US/en_GB/en_AU
+carry only spelling rows (`center`, `Colour Studio`), the rest `trl="N"` (English IS their text — the witness treats an
+English-prefix locale's `trl="N"` as its own text, not a gap). `locales/*.js` now hold cost data only (20 keys + 5 rate
+objects). One-shot birth record `viewer/tools/trl_migrate_2026-10-03.js` + per-locale `trl_batch_2026-10-03_<lang>.js`
+(machine, labelled); it refuses to run once the XML exists. `locale_loader.js` LOCALE_VERSION 7, `§TRL_LABELS`,
+`§TRL_LANGDIR`, `<html lang dir>` (ar_SA rtl), `data-trl-html`/`data-trl-tip`, `_trl(key, repl, dflt)`.
+
+**W-VIEWER-I18N** (`viewer/tests/witness_viewer_i18n.js`, headless `--disable-gpu`, `?blank=1`, logs
+`viewer/tests/logs/witness_viewer_i18n.log` + `.page.log`): `§W-VIEWER-I18N PASS pass=51 fail=0 locales=18 slots=2368`.
+| check | result |
+|---|---|
+| (1) carry-through | 18/18 locales: real `openFlagPicker()` click on `index.html` → `bim_ootb_config.locale` saved → `§TRL_DETECT src=saved req=- code=<x>` + `§TRL_LABELS locale=<x>` + `<html lang>` on landing, viewer, boq, clash, mep (`ar_SA` → `dir=rtl`, e.g. `§TRL_CARRY locale=ar_SA page=viewer detect=saved html.lang=ar dir=rtl`) |
+| (2) leaks | BEFORE (first run, old code + empty batch): `de_DE leaks=137 of 186 wiring=2 gap=63 uncat=72`. AFTER: `§TRL_LEAK leaks=0 of 131–133` for ALL 17 non-English locales (ms_MY de_DE fr_FR es_ES zh_CN th_TH ja_JP ko_KR ar_SA pt_BR id_ID bn_BD bl_BD af_ZA + en_US/en_GB/en_AU 0 of 132); `§TRL_UNCATALOGUED n=0` on all 5 pages (baseline 132 slots). The 2 last wiring leaks (`#night-val` "Off", `#issue-d-share` "Share" without `data-trl`) were found by the run and fixed. |
+| (3) format + staleness + screen==CSV | PASS: 17 files; `build_trl.js --check changed=0`; `(3b) checked=181` static `data-trl*` texts and in-code `_trl/_trlD/_lt/_t(..,'dflt')` defaults == CSV msgtext (`source_app` brand placeholder exempt, pre-existing). |
+| (4) control | `de_DE` saved, `i18n/de_DE.json` route ABORTED → `§TRL_LABELS … src=fallback` → `§TRL_LEAK_CONTROL leaks=6 of 6 expected>0` PASS |
+| dialog/toast | `landing_clear_confirm` captured via `window.confirm` == the locale's row, 18/18; locale toast suffix (`ui_locale_toast_hint`) 90/90 pages ok; 0 page errors |
+Out of scope, PRINTED not judged (`§TRL_OUT_OF_SCOPE page=viewer n=53 container=#time-machine-panel`): the Time Machine /
+Gantt / P6 drawer; also the ⋯ pill `children` help text + F1 palette, and the 5 NLP example chips (`count doors` …) kept
+English because `nlp.js` parses English. `<title>` of `viewer.html`/`index.html` = brand, untouched. Regression:
+`erp/tests/witness_zoom_lang.js` PASS 14/0 (loader still drives it); eslint viewer green (`_trl` added to
+`eslint.globals.json`); `audit_sw_precache`, `audit_script_tags`, CI node tests green.
+**Decided during implementation (addenda to R2.1/R2.4):** `source_app` (brand) counted UNIVERSAL (`trl="Y"` same text) with
+WBS/UOM/GPS/GUID/ERP/OK/CSV/X-Ray/4D / 5D; the 25 `panels.js` ICONS `trl` keys that never had a row (`ui_tt_tm`, `ui_sun`,
+…) got rows so `A.icon()`'s existing `_TRL[trl] || desc` path translates them; page `<title>`s keyed as
+`title_boq/clash/mep` (brand prefix kept); `mep_report.html`'s older 2-arg `_t(k, fb)` fallbacks are exempt from (3b).
+Merge sha + live check: appended below once auto-merge lands.
