@@ -151,6 +151,21 @@ $P ~/bim-compiler/prompts/film_narration_fit_kokoro.py ~/bim-compiler/prompts/fi
 **Rules kept:** every number from a `§` line (PRIME); GPU never used (CPU only, never take gpu.lock); new output names only.
 
 ## 4. STATUS
+- 2026-10-03 11:20: V3 — DIALOGUE, GAPS FILLED + INTONATION (red1: "yes do it, with proper intonation").
+  Spec: (a) fill the two long silences with log-sourced lines; (b) questions must sound like questions, as a
+  measured value, not a listen. Gap lines: `which` adds §MEASURE_BOX "Structural — span depth cantilever" (linger
+  123.03) + red1's false-alarm point; `reveal` walks the side panel in step with §CLASH_HUD_HIGHLIGHT (FP|MEP 81
+  f4116, MEP|STR 38 f4205, FP|STR 38 f4294, ARC|ELEC 29 f4383). FOUND (measured): Kokoro ends EVERY question falling
+  (−2…−7 st, voice- and en-us/en-gb-independent, `§QRISE_PROBE`). Fix in fitter v3 `film_narration_fit_kokoro_v3.py`:
+  per-speaker speed (F ×1.03, M ×0.97), beat between turns by ending (? 0.40 · … 0.35 · ! 0.28 · . 0.22 s), each
+  question sentence voiced alone; yes/no + elliptical questions (no wh-word) get a Praat PSOLA rise on the last 0.6 s
+  (praat-parselmouth 0.4.7 added to the venv; formants + duration kept), raised in 3 st steps until the end measurably
+  rises ≥ +1 st (cap 11); wh-questions keep the fall. Witness `§NARR_TONE` (autocorrelation F0, self-test
+  `§F0_SELFTEST` 3/3 OK): 17 questions, 0 WRONG — 12 rise +1.2…+3.6 st, 5 wh fall −1.8…−5.4 st. Fit 18/18 DETAIL
+  (log `film_narration_hospital_0049_v3_fit.txt`, script `..._dialogue_v3.tsv`). Output
+  `~/Downloads/Hospital_narrated_dialogue_v3_AFTER_…_0049.mp4` (379 MB, 4,963 frames, −16.7 LUFS). silencedetect
+  (−40 dB, ≥4 s): v2 had 11.1 s (122.7–133.8) + 10.5 s (183.4–193.9) + 4 others; v3 longest is 7.4 s (152.5–159.9,
+  the datum overlay), 4 gaps total. Previous films untouched.
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
 - 2026-10-03: V2 — DIALOGUE + LIVELY (red1: fill the pauses, livelier, male/female conversation, compare versions).
