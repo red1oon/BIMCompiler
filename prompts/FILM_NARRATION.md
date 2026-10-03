@@ -133,6 +133,22 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 ## 4. STATUS
 - 2026-10-03: file created from red1's request (Alt+S session bim-compiler-6d). Nothing built. Next: a session
   writes §PLAN, then stops for red1's review.
+- 2026-10-03: V2 — DIALOGUE + LIVELY (red1: fill the pauses, livelier, male/female conversation, compare versions).
+  Voice engine Kokoro v1.0 (local ONNX, CPU, deterministic: same text → same samples): af_heart (F) + am_michael (M).
+  Fitter v2 `film_narration_fit_kokoro.py` (multi-speaker turns, ≤10% speed-up by re-voicing). New log-sourced facts:
+  site = Boston (§GEOREF_SITE 42.358,-71.060 from IFC — likely the Revit default location), clash narrow phase
+  (§CLASH_NARROWPHASE broad=1478 → meshTrue=271, falsePositiveRate 79.0%; clash_film.js per-rule tolerance mm),
+  rule totals (§RULE_FILM structural 384 / egress 26; isolated_room 1; column_continuity 15; circulation 13),
+  §COST_ODOMETER_FINAL 94,880.8 h. Fit: dialogue 18/18 DETAIL, lively 21/21 DETAIL (`..._v2_fit.txt`).
+  Outputs (original untouched): `~/Downloads/Hospital_narrated_dialogue_…_0049.mp4` (longest silence 11.1 s at
+  122.7–133.8, next 10.5 s at 183.4–193.9) and `~/Downloads/Hospital_narrated_lively_…_0049.mp4` (longest 13.5 s at
+  180.4–193.9). Scripts: `film_narration_hospital_0049_dialogue.tsv`, `..._lively.tsv`. Speaker-coloured captions.
+  YouTube: per support.google.com/youtube/answer/14328491, disclosure is for realistic content that could mislead
+  (real person made to say things, altered real events, realistic invented scenes); AI-assisted scripts and cloning
+  one's OWN voice are listed as not requiring it. Generic synthetic voices are not named either way → red1's call.
+  MALAY (discussed, not built): no Malay in Kokoro or Piper (Piper has id_ID only); options = red1/native speaker via
+  prompter; Edge ms-MY Yasmin/Osman (cloud, unofficial, M+F); ElevenLabs (paid, cloud, can clone red1's voice);
+  Meta MMS zlm (local, flat, CC-BY-NC — not for product use). Awaiting red1's pick.
 - 2026-10-03: FULL HOSPITAL FILM (red1 "Go"): 19-point storytelling script (`film_narration_hospital_0049_script.tsv`),
   female voice Piper en_GB-jenny_dioco-medium, length-scale 1.4 + 0.5 s between sentences (raw Jenny ≈3.4 w/s; result
   233 words / 98 s spoken = 2.37 w/s). Fitter v1 `film_narration_fit.py`: measures each clip after trimming its silent
