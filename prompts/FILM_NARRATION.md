@@ -300,6 +300,19 @@ Every number below is a DOC QUOTE today (source given); the recorder's own `§` 
 | 8c | Fly Tour, scrub bar back and forth | "A guided flight — scrub anywhere, the camera never drifts." | BIMUserGuide.md:119-123 |
 | 9b | Share pill (/) preview card with the deep link | "Share the exact view — one link, camera and all." | BIMUserGuide.md:141, 739-744 |
 | 10 | Film-Maker Alt+C derives a flight — CLOSING beat | "It even makes its own film — from the building's room graph, recorded in the browser." | BIMUserGuide.md:125-127 |
+**Languages (red1, 2026-10-03: "Keep to the same language switching style, but this Viewer supposed to have many more
+languages so take them all on"):** all 18 Viewer locales, same PLAYBOOK B switching. 15 spoken languages rotate
+en→fr→es→de→ar→zh→ja→ms→th→ko→pt→id→bn→af→(Banglish)→en…; greeting round = 15 × ~2 s ≈ 30 s
+(+ 안녕하세요 · Olá · Halo · নমস্কার · Hallo). New Edge voices (listed live via `edge_tts.list_voices()` 2026-10-03), F / M:
+ko-KR SunHi / InJoon · pt-BR Francisca / Antonio · id-ID Gadis / Ardi · bn-BD Nabanita / Pradeep · af-ZA Adri / Willem —
+each needs a `CFG` entry in `film_narration_fit_edge.py` (ko: pitch=False not needed — Korean isn't tonal; check rise).
+Fonts present: Noto Sans CJK KR (via the CJK family), Noto Sans Bengali (`fc-list`).
+- **Banglish (`bl_BD`)** is romanized Bengali, a UI variant with no voice of its own: its slice shows the Banglish UI,
+  speaks the line with the bn-BD voice from the Bengali-script text, subtitle in the Banglish (Latin) spelling.
+- **The 4 English locales** (en_MY, en_US, en_GB, en_AU) are one language, different currency + rate book → they carry
+  hook beat 9: flip en_MY → en_US → en_GB → en_AU on the 4D/5D page and the cost changes RM → $ → £ → A$, with the
+  page's rate source (CIDB / RS Means / Spon's / Rawlinsons, `docs/internal/Localization.md` §Available Locales).
+- Gate unchanged: record only after the Fable agent's S226 §R2 lands all 18 locales with low `§TRL_LEAK`.
 Length: ≈ 4–5 min allowed (red1, 2026-10-03: "u may extend more mins where comfortable") — beats 2b/6b/8b/8c/9b added.
 City-mode aerial beat DROPPED (red1, 2026-10-03: "Drop the City aerial for now") — Film-Maker closes.
 Open: the hook beat 9 depends on the 4D/5D page also following the language (in S226 §R2 scope).
