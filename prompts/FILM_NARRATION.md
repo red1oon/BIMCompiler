@@ -178,7 +178,37 @@ New language: add a `CFG` entry in `film_narration_fit_edge.py` (voices via `edg
 edge-tts, praat-parselmouth); `kokoro/` models; `cache_edge/`. Scratch clips/plans are lost on reboot — re-run step 3.
 **Still open:** confirm "Boston" (IFC site = likely Revit default location); a native Thai listener for question tone.
 
+## 5. §ERP-FILM — a narrated walkthrough of the ERP guide, recorded by a headless browser (spec 2026-10-03)
+**Ask (red1):** "Can AI also do a simulation movie of the ERP side? step by step as in the guide … I would have to do
+it manually, calling up the URL, click on.." → "proceed, first part about a minute or so to see how it turns out."
+**Source of truth:** `docs/ERP_FirstSetup.md` (the guide) and its witness `bim-ootb/erp/tests/poc_erp_first_setup_live.js`
+(W-ERP-FIRST-SETUP, steps S01..S26, spec `prompts/ERP_FIRST_SETUP_GUIDE.md §FS1`). The witness is NOT edited; the film
+script copies its selectors and SQL oracles.
+**Recorder:** `scripts/film_erp_first_setup.js` (bim-compiler; serves `~/bim-ootb` read-only, Playwright from
+`bim-ootb/tests/node_modules`, `--disable-gpu`, CPU only). Human pace: visible cursor (injected overlay) that glides
+to each target, typed text at ~12 chars/s, a hold on each result. Frames by CDP screencast (JPEG q90, 1920×1080,
+timestamped) → constant 24 fps mp4 via ffmpeg concat — not Playwright's recordVideo (1 Mbit/s VP8 blurs text).
+**Log:** `§ERP_FILM_BEAT id=<beat> t=<film s>` at the start of each beat (the narration cue), `§ERP_FILM_FACT k=v`
+for every number the voices say (SQL on the live in-browser DB, same oracles as the witness), `§ERP_FILM_DONE
+frames= dur=`. Page console lines kept in a page log (§-lines are primary evidence).
+**Part 1 (≈1 min) = S01–S07:** cold load (data-file MiB) → login System/System/role → menu → Initial Tenant Setup →
+type name + admin, pick MYR → Create → facts (client id, accounts, 12 periods, 42 doc types, currency carried) →
+Enter → the new company's login shows its admin user. Then the ▶ PLAYBOOK steps 2–5 (dialogue script → Kokoro fit →
+mux, English first). Witness: every spoken number has a §ERP_FILM_FACT; beats in order; film frames = concat output.
+
 ## 4. STATUS
+- 2026-10-03 14:30: §ERP-FILM PART 1 BUILT (≈1 min, English dialogue). Recorder `scripts/film_erp_first_setup.js`
+  (first run worked: 35 s, 0 PAGEERR). Then timed to the narration: dialogue `film_narration_erp_part1_dialogue.tsv`
+  voiced first (Kokoro v3) to measure each beat's spoken length → `BEAT_MIN` env → recorder holds each beat until its
+  lines fit (`§ERP_FILM_HOLD`) → re-cue the TSV from `§ERP_FILM_BEAT` → fit → mux. Facts (all `§ERP_FILM_FACT`,
+  live DB): seed 25.9 MiB, 7 demo tenants, menu path System Admin > Tenant Rules > Initial Tenant Setup, 163 currencies,
+  created client=17 rows=515, 311 accounts, 12 periods FY2026, 42 doc types, MYR on schema + price list, enter user
+  `owner`. §ERP_FILM_CURSOR clicks=11 onTarget=11 OK. Fit 7/7 DETAIL, §NARR_TONE 0 WRONG.
+  Output `~/Downloads/ERP_FirstSetup_narrated_part1_1920x1080_24fps_2026-10-03.mp4` (61.5 s, 1,476 frames, 1920×1080,
+  3.0 MB — static UI compresses well; −16.9 LUFS; no silence ≥ 2 s). Logs in `prompts/erp_film/part1_*`.
+  Re-run: `BEAT_MIN='{"open":12.9,"login":10.2,"menu":5.4,"form":7.4,"create":2.5,"facts":15.3,"enter":7.4}' node
+  scripts/film_erp_first_setup.js <dir>` then PLAYBOOK steps 3–4 with FILM_SEC=61.5. Next (if red1 likes it): part 2 =
+  guide S08–S16 (customers, vendors, products) in the same recorder.
 - 2026-10-03 13:30: FRENCH + SPANISH BUILT (native subtitles). First voicing: FR 13/18, ES 12/18 DETAIL (lines run
   long like Malay; `detailDur` logged) → trimmed open/loadpath/parade/reveal/value (+ ES which); FP|STR said as
   "pareil"/"igual" (= 38, same as MEP|STR). Fit 18/18 DETAIL both, 0 Edge retries. §NARR_TONE 0 WRONG: FR 10 yes/no
