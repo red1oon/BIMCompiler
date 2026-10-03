@@ -294,8 +294,8 @@ Every number below is a DOC QUOTE today (source given); the recorder's own `§` 
 | 7 | Clash Matrix grid | "Clashes by discipline pair — review, resolve, accept." | BIMUserGuide.md:347-348 |
 | 8 | Time Machine plays | "The schedule is built from the model itself: nothing appears before what holds it up — 0 violations in 266,954 elements, seven buildings." | BIMUserGuide.md:356-358 |
 | 9 | 4D/5D dashboard; switch language → currency + rate book change with it | "Change the language, the cost speaks your currency." | S226 §Current Status (locale = language + currency + rates) |
-| 10 | Film-Maker Alt+C derives a flight | "It even makes its own film — from the building's room graph, recorded in the browser." | BIMUserGuide.md:125-127 |
-| 11 | City mode aerial, close | "One building, or a whole city — 786 of them." | BIMUserGuide.md:142 |
+| 10 | Film-Maker Alt+C derives a flight — CLOSING beat | "It even makes its own film — from the building's room graph, recorded in the browser." | BIMUserGuide.md:125-127 |
+City-mode aerial beat DROPPED (red1, 2026-10-03: "Drop the City aerial for now") — Film-Maker closes.
 Open: the hook beat 9 depends on the 4D/5D page also following the language (in S226 §R2 scope).
 
 ## 9. §MODELLER-TRAILER — polyglot trailer for the Modeller (DRAFT script, 2026-10-03, not recorded)
