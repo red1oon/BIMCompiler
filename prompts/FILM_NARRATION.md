@@ -368,6 +368,23 @@ Series tag: "BIM OOTB · VIEWER" / "· MODELLER". Chapters for §8: 1 OPEN (beat
   x=928 → viewport ≥1158 wide.
 - `trl-ready` listeners today: landing relabel, `panels.js` pill relabel, the three report pages (init once) — nothing else.
 
+### §8 RUN LOG + STRUCTURE v2 (2026-10-04)
+- **Building → HHS_Office_Federated** (red1: "Perhaps use HHS, lighter"). Hospital (265 MB): the recorder's Viewer tab
+  closed mid-load (after `ROUTE Hospital_geo.db`, no PAGEERR) while another process held ~2.6 GB of GPU memory. HHS
+  (75 MB, served from GitHub Pages on the live site → routed to the local file): loads in 5.9 s.
+- **Full path filmed on HHS** (run vtrail6, 239 s, 0 PAGEERR): 6,839 elements · pick IfcWallStandardCase "Basic
+  Wall:STB 30.0:573321" (Info panel in Spanish) · Find IfcWall = 50 (LIMIT 50) · measure 66.25 m · night fixtures=410 ·
+  clash ARC/MEP/STR · Time Machine 6,882 ops, 56 days (generated) · Pull Back "nothing to compress — already at earliest
+  float" · fly tour 34 stops / 895 s · 4D/5D 6 charts · share url · Film-Maker 24.0 s → 25.7 s derived.
+- **Bugs the recorder found + fixed (bim-ootb #1833):** landing ⋯ rail flag opened-and-closed the picker; 4D pill title
+  stuck in the boot language. Recorder bug fixed: the OCI route regex matched the Viewer page's own URL (?db= query).
+- **FINDING (not fixed, not filmed):** What-if opens the ERP seed's project 990000 "BIM: Hospital" whatever building is
+  open (`§WHATIF-UI open project=990000` on HHS) — dropped from the HHS take; owner lane: TM/What-if.
+- **Structure v2 (red1: "have more English so that it does not need to switch at crucial bottleneck"):** ≈ 70 % English.
+  UI language flips only on light beats as quips — s04 es · s06 ar · s07 zh · s09 ms · s10 th · s14 ja · s16 ko;
+  load, Time Machine, Pull Back, cost, Film-Maker stay English. Greeting round + closing thank-you round in all 13.
+  Cost chapter: 2 flips (RM → $ → RM) instead of 4 (each reloads that page).
+
 ### ⏸ STANDING ORDER (red1, 2026-10-04): "After viewer, wait for my go ahead on the next, Modeller." / "BUt do the first
 one we agreed on first. This big story is to rest a while" — finish §8 (Viewer trailer) end to end, then STOP. Do not
 start §9 (Modeller) or §10 (documentary) without red1's explicit go.

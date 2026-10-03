@@ -53,6 +53,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   if (document.documentElement) go(); else addEventListener('DOMContentLoaded', go); })();`;
 
 // the 13 film languages (FILM_NARRATION.md §8 REVISED 2026-10-04) → Viewer locale codes; English = en_MY (the base, RM)
+const FILM_BLD = process.env.FILM_BLD || 'HHS_Office_Federated';   // red1 2026-10-04: "Perhaps use HHS, lighter" (Hospital's tab crashed mid-load)
 const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'ms_MY', 'th_TH', 'ko_KR', 'pt_BR', 'id_ID', 'bn_BD'];
 
 (async () => {
@@ -62,10 +63,17 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3 });
   await ctx.addInitScript(CURSOR);
   // the live site downloads buildings from OCI — route those exact URLs to the same files on this disk
-  await ctx.route(/objectstorage\.[^/]+\/n\/[^/]+\/b\/bim-ootb\/o\/buildings\//, (route) => {
+  await ctx.route(/^https:\/\/objectstorage\.[^/]+\/n\/[^/]+\/b\/bim-ootb\/o\/buildings\//, (route) => {   // anchored: the Viewer's OWN url carries this address in its ?db= query
     const f = path.join(BLD, decodeURIComponent(route.request().url().split('?')[0].split('/').pop()));
     if (!fs.existsSync(f)) return route.fulfill({ status: 404, body: 'not local: ' + f });
     PAGELOG.push('ROUTE ' + path.basename(f)); return route.fulfill({ path: f, contentType: 'application/octet-stream' });
+  });
+  // HHS_Office_Federated is served from GitHub Pages on the live site (index.html openBuilding gh override) — same local file
+  await ctx.route(/^https:\/\/red1oon\.github\.io\/bim-ootb\/buildings\//, (route) => {
+    const f = path.join(fs.existsSync(path.join(REPO, 'buildings')) ? path.join(REPO, 'buildings') : BLD, decodeURIComponent(route.request().url().split('?')[0].split('/').pop()));
+    const g = fs.existsSync(f) ? f : path.join(BLD, path.basename(f));
+    if (!fs.existsSync(g)) return route.fulfill({ status: 404, body: 'not local: ' + g });
+    PAGELOG.push('ROUTE gh ' + path.basename(g)); return route.fulfill({ path: g, contentType: 'application/octet-stream' });
   });
   let page = await ctx.newPage();
   const wire = (p, tag) => { p.on('console', m => PAGELOG.push((tag || '') + m.text())); p.on('pageerror', e => PAGELOG.push('PAGEERR ' + (tag || '') + e)); p.on('dialog', async d => { PAGELOG.push('DIALOG ' + d.message()); await d.dismiss(); }); };
@@ -117,17 +125,23 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await glide(sel);
     const c = await page.evaluate(() => { const e = document.getElementById('__fc'); return e ? [parseFloat(e.style.left), parseFloat(e.style.top)] : null; });
     const b = await page.locator(sel).first().boundingBox();
-    clicks++; if (c && b && Math.abs(c[0] - (b.x + b.width / 2)) < 2 && Math.abs(c[1] - (b.y + b.height / 2)) < 2) cursorOk++;
+    clicks++; if (c && b && Math.abs(c[0] - (b.x + b.width / 2)) < 2 && Math.abs(c[1] - (b.y + b.height / 2)) < 2) cursorOk++; else say('§FILM_CURSOR_MISS sel=' + sel + ' cursor=' + JSON.stringify(c) + ' box=' + (b ? [b.x, b.y, b.width, b.height].map(Math.round).join(',') : 'none'));
     await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(280);
   }
   async function key(k, note) { const n = PAGELOG.length; await page.keyboard.press(k); await hold(350); if (note) fact('key.' + note, last(n, /§SHORTCUT_FIRE|§KBD_ROUTE/) || k); }
+  // a landing launcher: on the portal until the first pick, then docked in the ⋯ rail (index.html §PICK → §DOCK)
+  async function launcher(id) {
+    if (await page.locator('#por-' + id).first().isVisible().catch(() => false)) return hclick('#por-' + id);
+    if (!(await page.locator('#pill-' + id).first().isVisible().catch(() => false))) { await hclick('#erp-pill-trigger'); await page.waitForSelector('#pill-' + id, { state: 'visible', timeout: 5000 }); }
+    return hclick('#pill-' + id);
+  }
+  const onLanding = async () => /\/index\.html|\/$/.test(new URL(page.url()).pathname);
   // language switch through the REAL flag picker; in place on landing + viewer (S226 §R2c), a reload on the report pages
   let curLang = LANGS[0];
   async function setLang(code) {
     if (code === curLang) return;
     const n0 = PAGELOG.length;
-    const viaRail = await page.locator('#por-flag').first().isVisible().catch(() => false);
-    if (viaRail) await hclick('#por-flag');
+    if (await onLanding()) await launcher('flag');
     else if (await page.locator('#header-flag-btn').first().isVisible().catch(() => false) && !(await page.locator('#header-flag-btn svg').count())) await hclick('#header-flag-btn');
     else await page.evaluate(() => window._TRL_LOADER.openFlagPicker());
     await page.waitForSelector('#ootb-flag-popup.active', { timeout: 5000 });
@@ -135,8 +149,11 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     const sw = await waitLog(n0, new RegExp('§TRL_SWITCH .* to=' + code + ' |§TRL_LABELS locale=' + code + ' '), 15000);
     fact('lang.' + code, sw || 'NO SWITCH LINE'); curLang = code; await hold(200);
   }
-  let li = 1; const nextLang = () => LANGS[(li++) % LANGS.length];
-  async function slice(id, note) { const L = nextLang(); await beat(id, L, note); await setLang(L); return L; }
+  // red1 2026-10-04: "have more English so that it does not need to switch at crucial bottleneck" — ~70 % English;
+  // other languages are QUIPS on light beats (and the greeting + thank-you rounds). slice(id, note, lang) defaults to English.
+  async function slice(id, note, lang) { const L = lang || LANGS[0]; await beat(id, L, note); await setLang(L); return L; }
+  // the hub overlay covers the ⋯ rail (no language picker reachable there) — its beats keep the current language
+  async function keep(id, note) { await beat(id, curLang, note + ' (lang kept: hub covers the rail)'); return curLang; }
 
   // project an element's bbox centre to screen pixels (witness_s7_canvas_pick.js pattern) — for a real canvas click
   async function screenOf(where) {
@@ -159,17 +176,17 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     // ── 1 OPEN ──
     await chapter(1, 'OPEN');
     let n1;
-    await slice('s01', 'front door → Buildings & IFC hub'); n1 = PAGELOG.length; await hclick('#por-gps'); await page.waitForSelector('#hub.active', { timeout: 10000 });
+    await slice('s01', 'front door → Buildings & IFC hub'); n1 = PAGELOG.length; await launcher('gps'); await page.waitForSelector('#hub.active', { timeout: 10000 });
     fact('hub', await waitLog(n1, /§HUB_CARDS rendered/, 8000)); await hold(1200);
-    await slice('s02', 'drop zone — your own IFC'); await glide('#m-import-zone'); await hold(2500);
-    await slice('s03', 'Hospital card → the Viewer');
+    await keep('s02', 'drop zone — your own IFC'); await glide('#m-import-zone'); await hold(2500);
+    await keep('s03', FILM_BLD + ' card → the Viewer');
     n1 = PAGELOG.length;
-    const [vp] = await Promise.all([ctx.waitForEvent('page', { timeout: 20000 }), hclick('#hub .hub-card[data-bld="Hospital"]')]);
+    const [vp] = await Promise.all([ctx.waitForEvent('page', { timeout: 20000 }), hclick('#hub .hub-card[data-bld="' + FILM_BLD + '"]')]);
     fact('open', last(n1, /§BUILDING_OPEN/));
     wire(vp, '[viewer] '); page = vp; await castOn(vp); await page.mouse.move(720, 405);
     await page.waitForFunction(() => window._TRL_READY === true, null, { timeout: 60000 });
     const tLoad0 = Date.now();
-    await page.waitForFunction(() => window.APP && window.APP.streaming === false && !(window.APP._bboxPlaceholders || []).length && window.APP.guidMap && Object.keys(window.APP.guidMap).length > 1000, null, { timeout: 300000 });
+    await page.waitForFunction(() => window.APP && window.APP.streaming === false && !(window.APP._bboxPlaceholders || []).length && window.APP.guidMap && Object.keys(window.APP.guidMap).length > 500, null, { timeout: 300000 });
     fact('loadSec', ((Date.now() - tLoad0) / 1000).toFixed(1));
     fact('elements', await page.evaluate(() => Object.keys(window.APP.guidMap).length));
     fact('status', await page.$eval('#status', e => e.textContent).catch(() => ''));
@@ -177,7 +194,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
 
     // ── 2 SEE ──
     await chapter(2, 'SEE');
-    await slice('s04', 'pick a wall → Info panel');
+    await slice('s04', 'pick a wall → Info panel', 'es_ES');
     let picked = '';
     for (const pt of (await screenOf("m.ifc_class IN ('IfcWall','IfcWallStandardCase')")) || []) {
       n1 = PAGELOG.length; await glideXY(pt.x, pt.y); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(700);
@@ -190,16 +207,16 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await hclick('#find-name'); await page.keyboard.type('IfcWall', { delay: 90 });
     fact('find', await waitLog(n1, /§NAV_FIND_SEARCH query="IfcWall"/, 8000)); fact('findCount', await page.$eval('#find-count', e => e.textContent).catch(() => ''));
     await hold(2000);
-    await slice('s06', 'a floor + X-Ray'); n1 = PAGELOG.length;
-    const storey = await page.evaluate(() => { const r = window.APP.dbQuery("SELECT storey FROM elements_meta WHERE storey IS NOT NULL GROUP BY storey ORDER BY COUNT(*) DESC LIMIT 1"); return r && r[0] ? r[0][0] : null; });
+    await slice('s06', 'a floor + X-Ray', 'ar_SA'); n1 = PAGELOG.length;
+    const storey = await page.evaluate(() => { const r = window.APP.dbQuery("SELECT storey FROM elements_meta WHERE storey IS NOT NULL AND storey NOT IN ('','Unknown') GROUP BY storey ORDER BY COUNT(*) DESC LIMIT 1"); return r && r[0] ? r[0][0] : null; });
     await page.evaluate((s) => window.APP.filterStorey(s), storey); fact('storey', last(n1, /§STOREY_FILTER/) || storey); await hold(2200);
     await page.evaluate(() => window.APP.filterStorey(null));
-    n1 = PAGELOG.length; await page.keyboard.press('Alt+z'); await hold(2200); fact('xray', last(n1, /§XRAY_CYCLE/));
+    n1 = PAGELOG.length; await page.keyboard.press('Alt+z'); await hold(2200); fact('xray', PAGELOG.slice(n1).find(l => /§XRAY_CYCLE/.test(l)) || 'NONE');
     await page.keyboard.press('Alt+z'); await hold(1500); await page.keyboard.press('Alt+z'); await hold(500);
 
     // ── 3 INSPECT ──
     await chapter(3, 'INSPECT');
-    await slice('s07', 'section cut'); n1 = PAGELOG.length; await key('x', 'section'); fact('section', await waitLog(n1, /§SECTION ON/, 5000));
+    await slice('s07', 'section cut', 'zh_CN'); n1 = PAGELOG.length; await key('x', 'section'); fact('section', await waitLog(n1, /§SECTION ON/, 5000));
     const rng = await page.evaluate(() => { const s = document.getElementById('section-slider'); return s ? [Number(s.min), Number(s.max), Number(s.value)] : null; });
     if (rng) for (let i = 0; i <= 24; i++) { await page.evaluate((v) => { const s = document.getElementById('section-slider'); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }, rng[1] - (rng[1] - rng[0]) * 0.55 * i / 24); await hold(90); }
     await hold(1500); await key('x');
@@ -207,9 +224,9 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     const pts = (await screenOf("m.ifc_class IN ('IfcSlab','IfcWall','IfcWallStandardCase')")) || [];
     for (const pt of pts.slice(0, 2)) { await glideXY(pt.x, pt.y); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(900); }
     fact('measure', await waitLog(n1, /§MEASURE \d/, 4000) || 'NO DISTANCE'); await hold(1500); await key('m'); await key('Escape');
-    await slice('s09', 'night + shadow'); n1 = PAGELOG.length; await key('n', 'night'); fact('night', await waitLog(n1, /§NIGHT_MODE on/, 5000)); await hold(2200);
+    await slice('s09', 'night + shadow', 'ms_MY'); n1 = PAGELOG.length; await key('n', 'night'); fact('night', await waitLog(n1, /§NIGHT_MODE on/, 5000)); await hold(2200);
     await key('n'); n1 = PAGELOG.length; await key('h', 'shadow'); fact('shadow', await waitLog(n1, /§SHADOW_GROUND cycle=/, 5000)); await hold(1800);
-    await slice('s10', 'clash matrix'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
+    await slice('s10', 'clash matrix', 'th_TH'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
     await glide('[data-pair]').catch(() => {}); await hold(2500); await key('c');
 
     // ── 4 TIME ──
@@ -217,15 +234,12 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await slice('s11', 'Time Machine plays'); n1 = PAGELOG.length; await key('t', 'tm'); fact('tm', await waitLog(n1, /§TIME_MACHINE ON/, 60000));
     await page.waitForSelector('#tm-fwd-btn', { timeout: 20000 }); await hclick('#tm-fwd-btn'); await hold(5000);
     fact('tmDay', await page.$eval('#tm-big-counter', e => e.textContent).catch(() => ''));
-    await slice('s12', 'What-if slip'); n1 = PAGELOG.length; await hclick('#tm-whatif'); fact('whatif', await waitLog(n1, /§WHATIF-UI (open|no-folded)/, 15000));
-    if (await page.locator('#whatif-panel').first().isVisible().catch(() => false)) {
-      await hclick('.wi-step button[data-d="7"]'); fact('slip', await waitLog(n1, /§WHATIF-UI slip/, 5000)); await hold(2500); await hclick('#wi-discard');
-    }
+    // s12 What-if DROPPED on HHS: §WHATIF-UI opens the ERP seed's project 990000 "BIM: Hospital" whatever building is open
     await slice('s13', 'Pull Back'); n1 = PAGELOG.length;
     if (!(await page.locator('#tm-reschedule-asap').first().isVisible().catch(() => false))) await hclick('#tm-gantt');
     await hclick('#tm-reschedule-asap'); fact('pullBack', await waitLog(n1, /§GANTT_RESCHEDULE_ASAP_(COMMIT|REJECT)/, 8000) || (await page.$eval('#tm-gantt-tip', e => e.textContent).catch(() => 'NONE')));
     await hold(2500); await key('t');
-    await slice('s14', 'Fly Tour scrub'); n1 = PAGELOG.length; await key('l', 'fly'); fact('tour', await waitLog(n1, /§SCRUB_UI show/, 60000));
+    await slice('s14', 'Fly Tour scrub', 'ja_JP'); n1 = PAGELOG.length; await key('l', 'fly'); fact('tour', await waitLog(n1, /§SCRUB_UI show/, 60000));
     await hold(3000); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1500); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1500);
     await hclick('#tour-scrub-close').catch(() => {});
 
@@ -236,22 +250,23 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     const [bp] = await Promise.all([ctx.waitForEvent('page', { timeout: 20000 }), page.keyboard.press('4')]);
     wire(bp, '[boq] '); page = bp; await castOn(bp); await page.mouse.move(720, 405);
     fact('boq', await waitLog(n1, /§S254_STRIP_DONE|§RENDER_CHARTS/, 120000)); await hold(2500);
-    for (const E of ['en_US', 'en_GB', 'en_AU', 'en_MY']) {
+    for (const E of ['en_US', 'en_MY']) {
       await beat('s15_' + E, E, 'currency ' + E); n1 = PAGELOG.length; curLang = 'x'; await setLang(E);
       await page.waitForLoadState('load'); await waitLog(n1, /§S254_STRIP_DONE|§RENDER_CHARTS/, 90000); await hold(1500);
-      fact('cur.' + E, await page.evaluate(() => (window._TRL && (_TRL.cur + ' ' + (_TRL.rate_source || ''))) || ''));
+      fact('cur.' + E, last(n1, /TRL_CUR_MATCH|§CHARTS_CUR|CUR=/) || (await page.evaluate(() => { try { return typeof _TRL !== 'undefined' ? _TRL.cur + ' ' + (_TRL.rate_source || '') : 'no _TRL'; } catch (e) { return 'ERR ' + e.message; } })));
     }
     curLang = 'en_MY'; page = viewerPage; await page.bringToFront(); await castOn(page);
 
     // ── 6 SHARE ──
     await chapter(6, 'SHARE');
-    await slice('s16', 'Share the exact view'); n1 = PAGELOG.length; await key('/', 'share'); fact('share', await waitLog(n1, /§SHARE_PREVIEW shown/, 8000)); await hold(3000);
+    await slice('s16', 'Share the exact view', 'ko_KR'); n1 = PAGELOG.length; await key('/', 'share'); fact('share', await waitLog(n1, /§SHARE_PREVIEW shown/, 8000)); await hold(3000);
     await page.locator('#share-preview-overlay button', { hasText: /./ }).last().click().catch(() => {});
     await slice('s17', 'Film-Maker derives a film'); n1 = PAGELOG.length; await page.keyboard.press('Alt+c');
     await page.waitForSelector('#cpe-ok', { timeout: 180000 }).catch(() => {});
     fact('filmmaker', last(n1, /§MAXQ_DURATION_DERIVED/) || last(n1, /§MAXQ_START/) || 'NONE'); await hold(5000);
     await page.evaluate(() => { if (window.APP.cancelMaxQualityOrbit) window.APP.cancelMaxQualityOrbit(); }).catch(() => {});
     await hold(1500);
+    for (const L of LANGS.slice(1).concat([LANGS[0]])) { await beat('t_' + L, L, 'thank-you round'); await setLang(L); await hold(500); }
     await beat('end', curLang, '');
     say('§FILM_CURSOR clicks=' + clicks + ' cursorOnTarget=' + cursorOk + (clicks === cursorOk ? ' OK' : ' WRONG'));
   } catch (e) { say('§FILM_ERROR ' + e.message.split('\n')[0]); }
