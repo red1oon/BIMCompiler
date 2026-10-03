@@ -7,18 +7,18 @@ g_zh_CN	zh	login card zh_CN	M: 你好！	M: 你好！
 g_ja_JP	ja	login card ja_JP	F: こんにちは！	F: こんにちは！
 g_ms_MY	ms	login card ms_MY	M: Apa khabar?	M: Apa khabar?
 g_th_TH	th	login card th_TH	F: สวัสดีค่ะ!	F: สวัสดีค่ะ!
-s01	en	§I18N lang=en_US · login System	F: One ERP, nine languages.	F: One ERP, nine languages, one browser. | M: Let's build a company. First, log in as System.
-s02	fr	§I18N lang=fr_FR · menu Initial Tenant Setup	F: En français !	F: On passe au français ! | M: Le menu, puis la création d'une nouvelle société.
-s03	es	§I18N lang=es_ES · FirstCo / owner / MYR	F: En español.	F: Ahora en español. | M: La empresa se llama FirstCo, el administrador es owner, y la moneda, ringgit.
-s04	de	§I18N lang=de_DE · created rows=530 · accounts=311 periods=12 docTypes=42	M: Anlegen!	F: Jetzt auf Deutsch! | M: Anlegen. Dreihundertelf Konten, zwölf Perioden, zweiundvierzig Belegarten.
-s05	ar	§I18N lang=ar dir=rtl · enter FirstCo · owner login · langCarried=ar	F: والآن بالعربية!	F: والآن بالعربية! | M: ندخل إلى FirstCo، والمستخدم owner يسجّل الدخول.
-s06	zh	§I18N lang=zh_CN · Business Partner · New	F: 现在说中文！	F: 现在说中文！ | M: 打开业务伙伴，新建一条记录。
-s07	ja	§I18N lang=ja_JP · customer C-001 Acme Retail Sdn Bhd · persist=yes	F: 次は日本語で！	F: 次は日本語で！ | M: 顧客、Acme Retail。保存します。
-s08	ms	§I18N lang=ms_MY · §LOC-EDITOR created Jalan Ampang 1, Kuala Lumpur, 50450, MY	F: Bahasa Melayu!	F: Sekarang dalam Bahasa Melayu! | M: Alamat pelanggan: Jalan Ampang, Kuala Lumpur.
-s09	th	§I18N lang=th_TH · vendor V-001 Kedai Bekalan Sdn Bhd · persist=yes	F: ภาษาไทยค่ะ!	F: ต่อด้วยภาษาไทยค่ะ! | M: เพิ่มผู้ขาย Kedai Bekalan ครับ
-s10	en	§I18N lang=en_US · m_pricelist update ok (IsSOPriceList)	F: Back to English.	F: Back to English. | M: Tick Sales Price list on the company's price list, and save.
-s11	fr	§I18N lang=fr_FR · c_order create ok persist=yes · Standard Order	F: Encore en français !	F: Encore en français ! | M: Une commande client pour Acme, commande standard. Enregistrée.
-s12	es	§I18N lang=es_ES · §FS6-PRICE std=1 uom=Each · line persist=yes	F: ¡Otra vez español!	F: ¡Otra vez español! | M: Elegimos el producto... y el precio sale solo: uno, por unidad.
-s13	de	§I18N lang=de_DE · c_order to=CO verifyChain=ok · docStatus=CO	F: Wieder Deutsch.	F: Wieder Deutsch. | M: Fertigstellen! Der Auftrag ist abgeschlossen.
-s14	ar	§I18N lang=ar · §INTEG-WIRE-B backup signed=Y · file downloaded	F: ومرة أخرى بالعربية.	F: ومرة أخرى بالعربية. | M: نسخة احتياطية موقّعة، تُحفظ على جهازك.
-s15	zh	§I18N lang=zh_CN · closing	F: 九种语言，一个浏览器。	F: 九种语言，一个浏览器。 | M: 一个ERP，不用安装。
+s01	en	§I18N lang=en_US · login System	F: One ERP, nine languages.	F: One ERP, right in your browser. Nothing to install. | M: We start as System, the administrator, and build a brand new company from scratch, in a few clicks.
+s02	fr	§I18N lang=fr_FR · menu Initial Tenant Setup	F: En français !	F: Dans le menu, Administration système, puis la configuration initiale de la société. | M: Un seul écran suffit pour créer une société complète, avec sa comptabilité.
+s03	es	§I18N lang=es_ES · FirstCo / owner / MYR · currencyOptions=163	F: En español.	F: Le damos un nombre, FirstCo, y un administrador, owner. | M: Y la moneda: el ringgit malasio, una de ciento sesenta y tres monedas disponibles.
+s04	de	§I18N lang=de_DE · created rows=530 · accounts=311 periods=12 docTypes=42	M: Anlegen!	F: Ein Klick auf Anlegen, und die Firma steht. | M: Dreihundertelf Konten, zwölf Perioden, zweiundvierzig Belegarten. Sofort einsatzbereit.
+s05	ar	§I18N lang=ar dir=rtl · enter FirstCo · owner login · langCarried=ar · langCarried	F: والآن بالعربية!	F: ندخل إلى الشركة الجديدة، ويسجّل المالك دخوله. | M: واللغة التي اخترتها تبقى معك طوال الجلسة، من دون أي إعداد إضافي.
+s06	zh	§I18N lang=zh_CN · Business Partner · New	F: 现在说中文！	F: 接下来是第一个客户。打开业务伙伴，新建一条记录。 | M: 公司总部已经在组织列表里，客户组也一样，选上就行。
+s07	ja	§I18N lang=ja_JP · customer C-001 Acme Retail Sdn Bhd · persist=yes	F: 次は日本語で！	F: コードはC-001、名前はAcme Retail Sdn Bhd。 | M: 顧客にチェックを入れて、保存。数秒で完了です。
+s08	ms	§I18N lang=ms_MY · §LOC-EDITOR created Jalan Ampang 1, Kuala Lumpur, 50450, MY	F: Bahasa Melayu!	F: Pelanggan perlu alamat. Tab Lokasi, kemudian borang alamat. | M: Jalan Ampang satu, Kuala Lumpur, poskod lima puluh ribu empat ratus lima puluh, Malaysia. | F: Simpan. Alamat itu terus dipautkan kepada pelanggan.
+s09	th	§I18N lang=th_TH · vendor V-001 Kedai Bekalan Sdn Bhd · persist=yes	F: ภาษาไทยค่ะ!	F: ต่อไปเป็นผู้ขายค่ะ รหัส V-001 ชื่อ Kedai Bekalan | M: ติ๊กว่าเป็นผู้ขาย แล้วบันทึก ลูกค้าและผู้ขายอยู่ในหน้าจอเดียวกันครับ | F: ไม่ต้องสลับหน้าจอ ไม่ต้องเปิดโปรแกรมอื่นเลยค่ะ | M: และทุกอย่างบันทึกไว้ทันทีครับ
+s10	en	§I18N lang=en_US · m_pricelist update ok (IsSOPriceList)	F: Back to English.	F: Next, the company's price list. One tick, Sales Price list, and a save. | M: From now on, every sales order prices itself, straight from that list.
+s11	fr	§I18N lang=fr_FR · c_order create ok persist=yes · Standard Order · c_bpartner_location_id derived from the BP (§FS2k S10b)	F: Encore en français !	F: Place à la vente. Une commande client pour Acme, de type commande standard. | M: L'adresse de livraison vient toute seule de la fiche client. Et c'est enregistré.
+s12	es	§I18N lang=es_ES · §FS6-PRICE std=1 uom=Each · line persist=yes	F: ¡Otra vez español!	F: En la línea, elegimos el producto, y la cantidad: dos. | M: El precio, la unidad y el impuesto aparecen solos, desde la lista de precios. Así de fácil.
+s13	de	§I18N lang=de_DE · c_order to=CO verifyChain=ok · docStatus=CO · kernel_ops sealed, verifyChain=ok	F: Wieder Deutsch.	F: Zurück zum Auftrag, und mit einem Klick: Fertigstellen. | M: Status abgeschlossen. Jede Änderung ist signiert und verkettet, also prüfbar.
+s14	ar	§I18N lang=ar · §INTEG-WIRE-B backup signed=Y · file downloaded · data stays in the browser (guide privacy note)	F: ومرة أخرى بالعربية.	F: وللحماية، نسخة احتياطية بنقرة واحدة. | M: ملف موقّع يُحفظ على جهازك، ولا يغادر شيء متصفحك.
+s15	zh	§I18N lang=zh_CN · closing	F: 九种语言，一个浏览器。	F: 九种语言，一个浏览器，一套完整的ERP。 | M: 不用安装，数据留在你自己的电脑里。马上试试吧！

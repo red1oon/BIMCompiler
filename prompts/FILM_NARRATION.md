@@ -240,6 +240,15 @@ session); in session `page.selectOption('#idmp-lang', code)`; or `page.evaluate(
 `ErpI18n.preload()` once after load so no switch waits on a fetch. `?lang=<code>` sets the start language.
 
 ## 4. STATUS
+- 2026-10-03 21:40: POLYGLOT v3 (red1: "need not reintroduce each other's languages. Just intersperse without formality.
+  Fill up the silence spaces. Naturally cover each coordinated step as if a single flow … a show killing 3 birds:
+  multi lingual, setup trailer, and good advertising"). Same 180.2 s take; script rewritten as ONE running ad-style
+  voice-over — no "now in X" lines, each speech stretch simply in the slice's language, each line narrating the step on
+  screen, slices filled to ~85–100 % (measured `§POLY_DUR` vs room, then topped up). New claims carry their `§` source
+  in the TSV (currencies 163, address derived from the BP, signed/chained ops verifyChain=ok, data stays in the browser).
+  Fit 24/24 DETAIL, 0 WRONG. silencedetect −40 dB ≥ 2 s: v1 had 13 gaps up to 11.2 s → v3 has ONE, 2.2 s (116.2–118.5).
+  `~/Downloads/ERP_Polyglot_9languages_v3_1920x1080_24fps_2026-10-03.mp4` (4,326 frames, 11.9 MB, −16.3 LUFS). v2 deleted
+  (intermediate). v1 kept. Fit log `prompts/erp_film/polyglot_v3_fit.log`.
 - 2026-10-03 21:00: §ERP-POLYGLOT FILM BUILT — one continuous take, 180.2 s, 9 languages rotating every ~10 s.
   Pre-reqs landed first: UI locales (Opus agent, bim-ootb #1827/#1828, `prompts/ERP_UI_LOCALES.md`, W-ERP-I18N 11/0
   re-run here) and the gap closures (Opus agent, #1820–#1826, journey 34/34 re-run here). The recorder found one more
