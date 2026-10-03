@@ -16,6 +16,21 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-04 SPEC §FLYAROUND_ARC (red1: "showcase its shadow reflection prowess by baking an adhoc movie ... a fly around slowly";
+  approved steps 1+2 only — spec+code+short test; the full bake WAITS, the documentary session may need the GPU). Building: Hospital
+  (red1: both latest stills, ~/Downloads/bounce_still_1791066612170.png + ..._1791066758986.png, are Hospital).
+  INPUT: `--override arc.json` = { "arc": { "a": {"cam":[x,y,z],"tgt":[x,y,z]}, "b": {...}, "sec": 40, "overshootDeg": 15,
+  "dir": "short"|"cw"|"ccw" } }, three.js world coords exactly as viewer/share.js writes them (cam=, tgt=); the stills carry no pose,
+  so A/B come from red1's Share links (never estimated from the PNG).
+  SEAM: A.cinemaPathPlan(durationSec, ov) returns an ARC plan when ov.arc is set — the bake (cinema_maxq.js) AND the CLI pose check
+  (cli_silent_bake.js) both build through it, so §CLI_BAKE_POSECHECK covers the arc unchanged. Plan fields the bake reads are filled
+  neutrally (beats all 0, reveal {discs:[]}, storeyReveal {on:false}), naturalTotal = sec.
+  MATHS (t = film time 0..1): u = (1 - cos(pi t))/2 (zero speed at both ends). Offsets cam - tgt in cylinder form (r, h, az) for A and B;
+  sweep from azA - d*ov to azB + d*ov (d = direction sign; "short" = the smaller signed angle). az(u) linear in u over the sweep;
+  s = clamp((az - azA)/(azB - azA), 0, 1) drives tgt = lerp(tgtA, tgtB, s), r = lerp(rA, rB, s), h = lerp(hA, hB, s) (held through the
+  overshoot). pose = tgt + (r cos az, h, r sin az).
+  WITNESS: §FLYAROUND_ARC (once, at plan build): azA/azB/sweepDeg/r/h/sec + poseAt at s=0 and s=1 vs A/B (errA/errB m, PASS if < 0.01)
+  + max per-frame step at 24 fps (m); then §CLI_BAKE_POSECHECK MATCH on the test clip. Test = 480p, 2 s (--frames 48), overlays off.
 - ▶ 2026-10-03 22:35 ZONE BOX + ZONE FLOOR SHIPPED on bim-ootb fix/fast-bake @d5b1bf56 (PUSHED; merges fix/zone-truebox @8f6c38aa +
   §ZONE_FLOOR padding rule). Sidecars rebuilt, key 2bce3c9b:90286, restorecheck PASS x3, in /tmp/wt-fastbake/buildings/patches and
   ~/.cache/bim4d/altc_2026-10-03/sidecars_zonefloor/ (older sets: sidecars_oldbox/, sidecars_truebox/ = now STALE keys).
