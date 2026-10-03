@@ -76,7 +76,9 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     PAGELOG.push('ROUTE gh ' + path.basename(g)); return route.fulfill({ path: g, contentType: 'application/octet-stream' });
   });
   let page = await ctx.newPage();
-  const wire = (p, tag) => { p.on('console', m => PAGELOG.push((tag || '') + m.text())); p.on('pageerror', e => PAGELOG.push('PAGEERR ' + (tag || '') + e)); p.on('dialog', async d => { PAGELOG.push('DIALOG ' + d.message()); await d.dismiss(); }); };
+  // the cursor overlay is injected into EVERY page we drive, and again after each load: tabs opened by the page itself
+  // (window.open → Viewer, 4D/5D) came up WITHOUT it in run vtrail7 (every click there logged cursor=null)
+  const wire = (p, tag) => { p.on('load', () => p.evaluate(CURSOR).catch(() => {})); p.evaluate(CURSOR).catch(() => {}); p.on('console', m => PAGELOG.push((tag || '') + m.text())); p.on('pageerror', e => PAGELOG.push('PAGEERR ' + (tag || '') + e)); p.on('dialog', async d => { PAGELOG.push('DIALOG ' + d.message()); await d.dismiss(); }); };
   wire(page, '[landing] ');
   const last = (n, re) => PAGELOG.slice(n).filter(l => re.test(l)).pop() || '';
   const waitLog = async (n, re, ms) => { for (let i = 0; i < (ms || 20000) / 100 && !last(n, re); i++) await page.waitForTimeout(100); return last(n, re); };
@@ -264,7 +266,11 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await slice('s17', 'Film-Maker derives a film'); n1 = PAGELOG.length; await page.keyboard.press('Alt+c');
     await page.waitForSelector('#cpe-ok', { timeout: 180000 }).catch(() => {});
     fact('filmmaker', last(n1, /§MAXQ_DURATION_DERIVED/) || last(n1, /§MAXQ_START/) || 'NONE'); await hold(5000);
+    // close the path editor through its own Cancel button (it overlays the page — the thank-you round's flag clicks never
+    // landed behind it in run vtrail7), then make sure no orbit/bake is left running
+    if (await page.locator('#cpe-cancel').first().isVisible().catch(() => false)) await hclick('#cpe-cancel');
     await page.evaluate(() => { if (window.APP.cancelMaxQualityOrbit) window.APP.cancelMaxQualityOrbit(); }).catch(() => {});
+    fact('cpeClosed', !(await page.locator('#cpe-panel').first().isVisible().catch(() => false)));
     await hold(1500);
     for (const L of LANGS.slice(1).concat([LANGS[0]])) { await beat('t_' + L, L, 'thank-you round'); await setLang(L); await hold(500); }
     await beat('end', curLang, '');
