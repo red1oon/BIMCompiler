@@ -1,0 +1,19 @@
+day1	0.0	2.7	§CPE_DAY_COUNTER day=1/321 · §CPE_BUILDUP placed=2/63418	Day one.	Day one. An empty site.
+level1	2.7	6.4	§FLYTHRU_CUE_ON storey "Level 1"	Level one takes shape.	Level one starts to take shape.
+steel	6.4	9.1	§LINEAR_BEAT_DRAW IfcBeam 14,328 mm	Steel goes in.	Then the steel goes in.
+slab	9.1	13.0	§SLAB_BEAT_LABEL "Floor plate" 3,361 m²	Floor plates follow.	Then the floor plates, one by one.
+inside	13.0	18.4	§FLYTHRU_DATUM_ENTRY 10.75 s · §FLYTHRU_CUE_ON corridor 15.5 m	We step inside.	And we step inside, while it is still rising.
+hall	18.4	30.4	§INDOOR_BEAT_DRAW hall 6,239 m² · height 5,498 mm · §RULE_FILM_EXIT_STAT ~217 steps	This is the main hall.	This is the main hall, over six thousand square metres. The longest way out, about two hundred and seventeen steps.
+days	30.4	43.8	§CPE_DAY_COUNTER day 137→182 · §CPE_BUILDUP 29,922→40,725 of 63,418	Outside, the days tick on.	Outside, the days tick on. By day one hundred and eighty, nearly two thirds of the pieces are in.
+checks	43.8	56.9	§MEASURE_BOX "Structural — span depth cantilever" · §RULE_FILM_SETS	As it grows, the model checks itself.	As you can see, the model checks itself as it grows. Every span, every cantilever, every column, against the rules.
+egress	56.9	72.5	§MEASURE_BOX "Safety — common path of egress travel"	And for safety, the way out.	And for safety, how far anyone must walk to find a way out.
+done	72.5	82.8	§CPE_BUILDUP placed=63418/63418 · §CPE_DAY_COUNTER day=321 (frame 1740)	Day three hundred and twenty one. Done.	Day three hundred and twenty one. All sixty three thousand pieces are in place.
+loadpath	82.8	95.0	§LOADPATH_STACK bottomUp 10 steps · §FRAME_REUSE hold 82.8–90.2 s	Now we pause, on the load path.	Now we pause. Strip it back, and you see how the weight finds its way down, floor by floor, to the ground.
+clashes	95.0	115.0	§CLASH_LABELS enter (top: Pipe/Duct 66, Cable Tray/Wall 44)	On the way back, the clashes light up.	On the way back, the alarm bells ring again. Pipes against ducts, cable trays against walls, each one flagged where it happens.
+falsepos	115.0	148.7	red1 own narration (HospitalNarrative 29.8–45.4 s) — opinion, not a log value	Some are false alarms.	Some are false alarms. But that is the point. If your model has these problems, it will find them.
+datum	148.7	159.8	§FLYTHRU_DATUM_LIFE2 148.7–163.4 s	The setting out, over the finished building.	Here is the setting out drawing, laid over the finished building.
+parade	159.8	167.8	§CLASH_DISC_ARRIVAL_HIGHLIGHT FP 38 · ELEC 33 · MEP 133 · ALL 204	Trade by trade.	Now trade by trade. Fire protection, electrical, mechanical. Two hundred and four in all.
+pairs	167.8	172.6	§CLASH_HUD_HIGHLIGHT ARC|STR 66 (largest)	Architecture against structure.	The biggest group, architecture against structure.
+reveal	172.6	193.9	§FINDINGS_CEASE trigger=storey-reveal-onset · §STOREY_REVEAL_TIMING Level_1..Level_6	Level by level, the whole hospital.	Now the signs step aside. Level by level, the whole hospital.
+value	193.9	198.8	red1 own narration (HospitalNarrative 169.9–187.1 s) — value line	No installer. No AI call.	All on the fly. No installer. No AI call.
+cards	198.8	206.8	§MEASURE_BUILDING_CARD 440 doors · 22,031,100 est. cost · §ESCAPE_ROUTE_DRAW 156.2 m	Four hundred and forty doors.	Four hundred and forty doors. An estimated twenty two million to build.
