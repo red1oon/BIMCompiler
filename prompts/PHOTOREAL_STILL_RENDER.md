@@ -604,3 +604,13 @@ frame+second-material element (window/door) fails.
 (`viewer/tests/witness_r10_clone.js`, node, no browser): builds `_r10MatArray` from the REAL streaming.js source with stub
 materials; (a) `clone()` returns an R10 array of clones of the same length; (b) `arr.map` still reads `arr[0].map`
 (forward kept); (c) control: the unfixed `clone` body throws the same TypeError. INCONCLUSIVE if the function isn't found.
+- 2026-10-04 LIGHT EVOLUTION (log study, Sonnet read-only agent; B = archive/..._2026-08-11_to_2026-10-02.md; key cites spot-checked):
+  09-25 v1337 §SOURCED_LIGHT: lamps room-bound (were leaking 54-87 % through walls, 100-700x real lux); atrium mean 124 -> 92 (B:52-58,
+  1441-1444); red1 "darker is expected, but at least realistic". 09-26 v1442 §LAMP_EN: lamps per room to EN 12464-1 (Clinic was ~7x
+  over; E/EN p50 0.88, B:685-690). 09-26 §LAMP_UNCAPPED: Hospital 1274/1274 lamps lit (was 160). 09-27 v1466 Z9 §ALBEDO_SRGB darkens
+  (31.88 vs 43.34). 10-01 v1522 §LAMPS_RATED_DEFAULT (red1 "leave the lights on as normal practice when clients view property"): EN
+  scaling -> opt-in &lampen=1; Terminal lamps ~4.6x the 200 lx target (B:2393-2395, 2425-2431). 10-01 v1523 §LOCAL_EXPOSURE: lamp-lit
+  px +0.64 EV, 49 % px lifted (B:2400-2417). 10-01/02 v1527-34 surfaces (IFC names, plaster, furniture polish 0.35, floor/object contact).
+  STILLS (scratchpad s/stills_trend.txt, p5-p95 in linear stops): PerfectIndoor 4.1 stops, sat 0.156, p5 55 / p95 201; Hospital indoor
+  v1564 (4 stills) 2.3-3.0 stops, sat 0.09-0.12, p5 73-88 / p95 160-188 -> range squeezed from BOTH ends, middle unchanged.
+  READ (inferred, to be measured): the flood arrived when v1522 un-did §LAMP_EN (rated default) and v1523 added the +1 EV lift on top.
