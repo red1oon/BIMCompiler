@@ -565,3 +565,10 @@
   plane with depth agreeing 0/28 -> 28/28, 53 ms. OPEN: brightness truth (Oct 1: rest-of-mirror 7x too dark under the cube path) not
   re-measured — needs mirtruth-style M/T ratio (expect ~0.843 = mirror colour).
 - SHIPPED today (fix/sky-surface, all pushed): 897b83e0 v1561 §GLASS_PLANAR_REFL · 5cae78f1 v1562 §FAULT_GI_BLANK · eb0e958f v1563 mirrors.
+- 23:00 MIRROR SPECKLE — cause + fix (bim-ootb fix/sky-surface, sw v1564 §SHADOW_WIDE_OTHER_CAMERA). red1 …1791034193582 / …1791036241851
+  (Clinic toilet). Chain of evidence (scratchpad s/): speckle also with &planarrefl=0 (pre-existing in the cube path); not the torch
+  (&torch=0 9.4); not sub-pixel aliasing (8 jittered frames 9.1->7.2, +600 ms, dropped); &shadowcascade=0 -> 2.3. Cascade boxes at that
+  pose 1.5x2.1..1.2x1.8 m fitted to the eye's 1.0-2.8 m view: the mirror shows the room behind the eye = outside every box = D3 "lit".
+  Fix in the owner (effects.js A._stillShadowWide, called by glass_fresnel capture + planar): sun box -> the fit's building union,
+  cascades suspended, restored after. Mirror hfStd planar 9.1->2.7, cube 9.6->2.1, wall 2.0 unchanged; truth PASS 3 poses.
+  Side lesson: an accumulation clear inherited the app clear colour (linear) -> pale sheet, avg/last 3.85-4.24; cleared to 0 -> 1.000.
