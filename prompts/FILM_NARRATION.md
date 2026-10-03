@@ -294,12 +294,18 @@ Every number below is a DOC QUOTE today (source given); the recorder's own `§` 
 | 7 | Clash Matrix grid | "Clashes by discipline pair — review, resolve, accept." | BIMUserGuide.md:347-348 |
 | 8 | Time Machine plays | "The schedule is built from the model itself: nothing appears before what holds it up — 0 violations in 266,954 elements, seven buildings." | BIMUserGuide.md:356-358 |
 | 9 | 4D/5D dashboard; switch language → currency + rate book change with it | "Change the language, the cost speaks your currency." | S226 §Current Status (locale = language + currency + rates) |
+| 2b | drop own `.ifc` on the hub; same building again → Merge / New prompt | "Your own IFC, parsed right here in the browser. Same building again? Merge the disciplines." | BIMUserGuide.md:26-31 |
+| 6b | Night (N) + Shadow & Ground | "Day or night, it is the same model." | BIMUserGuide.md:691-701 |
+| 8b | Time Machine What-if slip, then ⏪ Pull Back | "Slip a task, see the knock-on. Pull it back as early as it can go." | BIMUserGuide.md:351, 366 |
+| 8c | Fly Tour, scrub bar back and forth | "A guided flight — scrub anywhere, the camera never drifts." | BIMUserGuide.md:119-123 |
+| 9b | Share pill (/) preview card with the deep link | "Share the exact view — one link, camera and all." | BIMUserGuide.md:141, 739-744 |
 | 10 | Film-Maker Alt+C derives a flight — CLOSING beat | "It even makes its own film — from the building's room graph, recorded in the browser." | BIMUserGuide.md:125-127 |
+Length: ≈ 4–5 min allowed (red1, 2026-10-03: "u may extend more mins where comfortable") — beats 2b/6b/8b/8c/9b added.
 City-mode aerial beat DROPPED (red1, 2026-10-03: "Drop the City aerial for now") — Film-Maker closes.
 Open: the hook beat 9 depends on the 4D/5D page also following the language (in S226 §R2 scope).
 
 ## 9. §MODELLER-TRAILER — polyglot trailer for the Modeller (DRAFT script, 2026-10-03, not recorded)
-PLAYBOOK B, ≈180 s, one take. **Gate:** the Modeller has NO language switch (no `locale_loader`/`_TRL` in `modeller/`,
+PLAYBOOK B, ≈ 4–5 min (red1 allowed longer), one take. **Gate:** the Modeller has NO language switch (no `locale_loader`/`_TRL` in `modeller/`,
 measured on bim-ootb main 2026-10-03) → PLAYBOOK B rule 1 (switch ON SCREEN) can't be met. Either voices rotate over an
 English UI (a stated exception), or Modeller i18n is built first. ⛔ red1 to choose. Desktop + GPU, same rule as §8.
 | # | beat | line idea | source |
@@ -314,6 +320,13 @@ English UI (a stated exception), or Modeller i18n is built first. ⛔ red1 to ch
 | 7 | clash residual shown | "The right standard: Duplex clashes 32 → 2. Castle 501 → 3. None hidden." | ModellerGuide.md:641-646 |
 | 8 | drag the history slider back and forth | "Drag back to undo, forward to redo — exact, every time." | ModellerGuide.md:722-726 |
 | 9 | Save / BCF export | "Save it, share an issue as BCF." | ModellerGuide.md §Save, §BCF |
+| 1b | 📂 Open → FROM IFC with your own file | "Or bring your own .ifc." | ModellerGuide.md:94-99 |
+| 2b | zoom on a Duplex party wall, layer list | "A wall is what it's made of — seven real layers, from the file." | ModellerGuide.md:164-168 |
+| 2c | windows as glass | "Glass is glass — its real transparency, read from the model." | ModellerGuide.md:155-160 |
+| 6b | ▶▶ Walk ALL Disciplines | "Or walk every missing trade at once." | ModellerGuide.md:680-684 |
+| 6c | Route trunk from a real entry | "Then route the service trunk from a real door." | ModellerGuide.md:699-703 |
+| 6d | generalization table on a held-out building (precision, fabricated count) | "Tested on buildings it never saw — scored against their real pipes." (numbers from `§GC` at record time) | ModellerGuide.md:663-667 |
+| 9b | Teams overlay: two branches, merge gate flags a clash, who-dots | "Two people, two branches. The merge gate shows where they collide." | ModellerGuide.md:826-830 |
 | 10 | close | "The same signed log runs the ERP." (bridge to the ERP trailers) | ModellerGuide.md:7-8 |
 
 ## 4. STATUS
