@@ -16,6 +16,20 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-03 08:30 WITNESS RE-CHECKS (red1: "map path does not overlap any HUD", "pose check — go back to the code"; path-thru-geometry = user's
+  choice, NOT a bake defect). Both FAILs are WITNESS errors, not film errors:
+  - §HUD_OVERLAP_WORST (cinema_maxq.js:1018-1048) judges every rect registered with alpha > 0 (_drawUnlessHold :1491) and never logs frame or
+    alpha. At load-path hold start the HUD fades OUT over 24 frames (§LOADPATH_HUD_FADE fadeOutFrames=24, alpha 1->0) while the card plate is
+    drawn from holdElapsed 0 (cpe_load_path.js:4569 registers it unconditionally) — a ~1 s cross-fade, both boxes at [30,30]. FIX (not built):
+    carry alpha in _hudLayoutRegister, judge only when both alphas >= 0.5 (else count as CROSSFADE), print frame + alphas in the FAIL line.
+  - §CLI_BAKE_POSECHECK (cli_silent_bake.js ~:910-948) compares flown pose i with plan.poseAt(i/(n-1)), assuming linear film time. The
+    film's real time is not linear: §SUN_ARC_FILL_PIN tNorm vs f/(n-1) differs by up to 0.0316 on Hospital (f2196: 0.411 vs 0.442 —
+    the load-path hold) -> 118 m at orbit speed (up to 5.5 m/frame); LTU (no hold) 0.0011 -> 0.42 m. Band anchors pass at 0.00-0.04 m on both
+    = the stored path WAS flown. FIX (not built, ~15 min): record the actual t in __maxqPoseLog and evaluate poseAt at that t.
+  - HHS full film launched 08:06 (sidecar rebake first), all overlays ON except --no-buildup. Code-read conflict: §SUN_COMPASS without a 4D
+    cursor draws the rose only, sun lines hidden (cpe_sun_compass.js:414-425, §SUN_COMPASS_NO_CURSOR); others to be read from its log.
+  - Fable code-expert review dispatched 08:1x (read-only; lamps-never-relit, layering, per-frame witness record, memory, speed) -> scratchpad
+    c/CODE_REVIEW_ALTC.md.
 - ▶ 2026-10-03 07:36 LTU FULL FILM DELIVERED (red1 "if all is well, do for LTU"): ~/Downloads/LTU_AHouse_silent_full_AFTER_1920x1080_24fps_2026-10-03_0549.mp4,
   82,991,547 B, 1,612 frames / 67.2 s, wall 6,377 s (3.96 s/frame). Direct cli_silent_bake (NOT bake_hires_offline.sh, which forces --buildup/--reveal
   etc.; LTU has no 4D tables): saved path settings + recipe + --dlod-proxy; script scratchpad c/ltu_full.sh. Sidecar first: key 21324567:90186,
