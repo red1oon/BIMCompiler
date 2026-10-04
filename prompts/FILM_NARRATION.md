@@ -5,6 +5,50 @@ numbers, no invented claims. Spec before code; a witness proves the track, not a
 **Read the page log after every run** — exit code is not evidence. Honour this block until the lane is DONE.
 **→ Making another narrated/dialogue film (any language)? Jump to `## ▶ PLAYBOOK` below — voices, steps, commands, pitfalls.**
 
+## ▶ RESUME HERE — VIEWER TRAILER v4 (written 2026-10-04 for a NEW session; read this, then §8 STORYBOARD v3 + §8 RUN LOG)
+**State:** Viewer trailer v2 is built and in red1's hands (`~/Downloads/BIM_Viewer_Trailer_v2_13languages_…mp4`, 220.9 s).
+red1 reviewed it and gave the v4 notes below. **⛔ DO NOT RECORD until red1 OKs the v4 storyboard** (red1: "dont bake yet,
+until we get the storyboard right"). The Modeller trailer (§9) and the documentary (§10) stay parked (⏸ standing order).
+**Next session, in order:** (1) implement the ⏳ items below in `scripts/film_viewer_trailer.js` + the TSV; (2) regenerate
+the storyboard (same generator style as §8 STORYBOARD v3) and show red1 the delta; (3) on his OK, record → align page audio →
+fit → cards → mix (commands in §8 PIPELINE below); (4) measure (silences, LUFS, fonts) and report.
+
+**red1's v4 decisions (2026-10-04, verbatim where quoted):**
+1. ✅ Info panel pick is fine. **Wireframe must never show** — "If it accidentally comes on it is a bug, just keep those
+   frames out after refresh or mesh back on". (`solid()` already cuts ghost/x-ray toggles; ⏳ extend: if a ghost/bbox frame
+   is detected anywhere, cut until refresh or mesh back.)
+2. ✅ Language switches happen (UI translated) but the **picker action is cut** (`quietLang()`, done) — only the one g_pick
+   demo shows the picker. ⏳ The cost page's RM→$→RM flip still opens the picker on screen → use the same cut.
+3. ⏳ **Cost page: linger longer** — "so user sinks in the BIM 5D full suite feature" (pan/scroll the 4D/5D charts).
+4. ⏳ **V sounds ONLY during the Fly**, made elaborate with the scrub — "V only in Fly as u wana make it elaborate with
+   scrub"; "let it fly thru, not cut jump.. stop frame hasten it to the action part" (trim the dead start; no jump-cuts
+   inside the fly). Remove V from the Time Machine (currently `key('v','sfxOn')` there — move it to s09).
+5. ⏳ **Time Machine** — "just a focussed build up then fast forward to near end where the drawers showed completion";
+   "show the Sun follow shadow with the drawers 4D 5D opened.. arrange them to be balance on frame not overlap each other".
+   → sun on with shadows during the build; open the dashboard (`#tm-dash`) and Gantt (`#tm-gantt`) drawers, place every
+   panel so nothing overlaps (drag panels; log each panel's rect, assert no intersections — a § line, not a look);
+   fast-forward near the end (slider ~95 % or `#tm-end-btn`) so the drawers read complete. The separate HR-mode sunset
+   beat (s11sun) is replaced by this fast-forward beat (rewrite its line).
+6. ⏳ **Section cut deeper + second axis** — "not deep enough, we cannot see the HHS been cut.. quickly jump to the other
+   axis to show it is been cut from the front inwards" → slide well below mid-height, then `#sec-axis-x` and cut from the
+   front inwards.
+7. ✅ Done in v3 code (not yet filmed): refresh+cut after the clash list (red1: "Refresh is the best way"), list ✕ clears the
+   dots, full chapter titles spoken, page audio captured from a private PulseAudio sink and aligned (`prompts/film_page_audio.py`,
+   `SFX_WAV` in `film_narration_mux.py`), fly-timeline scrub by a real slider drag, quips spoken + subtitled.
+**Open from red1 (not yet answered):** a soft music bed under the 2–6 s quiet visual moments, or leave them silent?
+
+**§8 PIPELINE (one take, all CPU except the record step):**
+`flock -w 7200 /tmp/claude-1000/gpu.lock env BEAT_MIN="$(cat beat_min.json)" timeout 1500 node scripts/film_viewer_trailer.js <O>`
+→ `python3 prompts/film_page_audio.py <O>/viewer_film.log <O>/page_audio.wav <dur> <O>/page_audio_aligned.wav`
+→ `FIT_PAD=0.12 POLY_CREDIT=… python3 prompts/film_narration_poly.py prompts/film_narration_viewer_trailer_dialogue.tsv <O>/viewer_film.log <O>/fit <dur>`
+→ `python3 prompts/film_title_cards.py <O>/viewer_film.log card_backdrops.txt <O>/fit/poly.ass <O>/viewer_film.mp4 <O>/fit`
+→ in `<O>/fit`: `cp carded.ass final.ass; cp poly_plan.tsv final_plan.tsv; SFX_WAV=… FILM_SEC=<dur> python3 prompts/film_narration_mux.py final carded.mp4 <out>`.
+BEAT_MIN = per-beat speech + 0.7 s (greetings + 0.15 s with FIT_PAD=0.12), from `film_narration_poly.py <tsv> measure <dir>`.
+Card backdrops = 6 Alt+S stills (paths in §8 TITLE CARDS). **GPU etiquette:** always `flock gpu.lock`; other sessions
+give way on request (SendMessage) — never kill their jobs. **pkill/pgrep pitfall:** use `grep "[f]ilm_…"` patterns — a bare
+`pkill -f film_viewer_trailer` matches its own shell and kills the command. Live bugs this lane found + fixed: bim-ootb #1833,
+#1834, #1835 (see §8 RUN LOG).
+
 ## 0. THE ASK (red1, 2026-10-03 — original words kept verbatim, then what it means here)
 > *"I am creating a narrated movie from a baked BIM construction model. I have raw construction logs detailing
 > what appears on screen at specific timestamps. Before we write any code or call any external APIs, I want you

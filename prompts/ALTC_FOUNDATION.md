@@ -16,6 +16,26 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶▶ RESUME HERE (2026-10-04 10:40, for a new session) — supersedes every RESUME block below.
+  TREE: /tmp/wt-fastbake = bim-ootb fix/fast-bake @ce4c706e, PUSHED, clean. /tmp dies on reboot — recreate:
+  `git -C ~/bim-ootb worktree add /tmp/wt-fastbake fix/fast-bake`; symlink buildings/{Hospital,Terminal,HHS_Office_Federated}_silent.db ->
+  ~/Downloads/<same>.db and LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db; copy the CURRENT sidecars (key 2bce3c9b:90286) from
+  ~/.cache/bim4d/altc_2026-10-03/sidecars_zonefloor/ into buildings/patches/ (older sets oldbox/truebox are STALE keys — a stale key = a
+  26-min Hospital zone rebuild on first press).
+  SHIPPED 2026-10-03/04 (all witnessed, details in the entries below): W1 pose check (PASS), W2 HUD overlap (PASS: row yield + info panel
+  avoid), zone box = true box + §ZONE_FLOOR (PASS x3 via prompts/photoreal_probes/lightgrid/zonefloor.js), §FLYAROUND_ARC (arc path from
+  two Alt+S stills; poses come from the PNG's own `bim-still-pose` chunk — PIL im.load() then im.text).
+  IN FLIGHT at 10:40: Hospital fly-around (40 s, 1080p24, 4 parts of 240 frames). Part 2 delivered
+  (~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4); part 1 done 10:22 (MATCH); parts 3+4 + join were
+  running in the old session's background (`parts.sh`, scratchpad c/parts_run.log). TO FINISH in a new session: check which of
+  V_HOSP_fly_part{1..4}.mp4 exist (old scratchpad c/ or ~/.cache/bim4d/altc_2026-10-03/flyaround/), re-render only the missing ones with
+  ~/.cache/bim4d/altc_2026-10-03/flyaround/parts.sh (edit C= to the new scratchpad, keep arc_hosp.json; each part waits on
+  /tmp/claude-1000/gpu.lock), join with `ffmpeg -f concat -c copy`, check 960 frames + 0 black/freeze, copy to
+  ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04.mp4 (never overwrite). ⚠ --sun-date is ignored unless --sun-compass is on;
+  the film's own sun arc ran (42.6 -> 31.6 deg over part 2).
+  OPEN: (1) W4 merge brightness residual (max ~3.7 luma indoors, not glass order, not the zone grid; opaque draw order suspected) —
+  &consolidate stays opt-in. (2) Alt+S stills on the new zones not A/B-checked. (3) fixed-sun flag for films (stills use a fixed sun) — not built.
+  RULES: GPU is SHARED with the documentary/trailer sessions — each GPU run needs red1's go and goes through gpu.lock; give way on request.
 - ▶ 2026-10-04 08:23 §FLYAROUND_ARC PART 2/4 DELIVERED: ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4
   (frames 240:480 of 960, 1920x1080@24, 240 fr, 12.3 MB, 848 s wall ~2.8 s/frame, still A's pose at frame 298 inside it).
   §CLI_BAKE_POSECHECK MATCH 240 fr maxPosErr 0 planDurSec 40; §MAXQ_QUALITY 240/240; zone cache HIT; no black/freeze.
