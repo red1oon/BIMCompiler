@@ -134,6 +134,24 @@ A BOM is a recipe: one parent, N children, each with a quantity. Each child can 
 ## ERP Blueprint
 ERP / secured-distributed / serverless work → **`docs/ERP.md`** is the overarching blueprint; its Companion-docs map fans out to `docs/DistributedERP.md` (the doctrine + edge suite) + the `scripts/poc_*.js` witnesses. Read it first for ERP-side sessions.
 
+## ⚖ AD-LAYER LAW — ERP UI is ONE generic AD engine, never per-window code (2026-10-04, user directive)
+> *"must follow the AD layer of window grid handling abstract and not custom to each window. So that any new
+> model will be handled without further custom code as how iDempiere dealt with such."* … *"do watch that no
+> drift from such may occur again."* Cause: `prompts/ERP_IDEMPIERE_UX_PARITY.md §MD` — a "fully tested" sales
+> cycle shipped with master→detail broken on EVERY window, because lanes walked ONE path and patched symptoms.
+1. **Port the iDempiere mechanism, not the symptom.** A fault on one window = find the owning class
+   (`GridWindow/GridTab/GridTable/GridField`, `AbstractADWindowContent/ADTabpanel`, source under
+   `~/idempiere-dev-setup/idempiere/`), cite its file:line, fix it in the generic JS layer. A `if table==='c_order'`
+   branch (or a hand table list) for window behaviour is a defect, not a fix.
+2. **Goal = invariant × denominator.** ERP UI claims are "X of N AD windows/processes/doctypes pass", N taken from
+   the dictionary (`ad_seed.db`), never a hand-picked route. "Sales Order works end to end" is not a done-claim.
+3. **Witness what the USER sees, sweep the dictionary.** Count grid rows + parent id per row, switch tabs WITHOUT
+   Save, return to the parent — not "§CRUD validate ok". A witness over a scripted happy path is scope-blind.
+4. **Deletion budget.** A generic-layer PR states lines +/−; it deletes the special cases it supersedes. Add-only = not done.
+5. **One implementation per responsibility** (no second master-detail engine in `ad_ui.js` beside `idempiere.html`).
+6. **Real iDempiere is the oracle** where behaviour is in doubt (local source + `idempiere` postgres DB) — read
+   or run it, never guess. Fix history goes in the prompts file, not in code comments.
+
 ## Walker Doctrine (ANTI-DRIFT — read before ANY disc-walker / MEP-walk / rules-DB work)
 **`docs/internal/WalkerDoctrine.md`** is the LOCKED core doc. The settled fundamentals (do NOT re-litigate or override): small/residential
 buildings (SH/DX/**SC**) walk **`duplex_rules.db`** — they do NOT use Terminal rules in production; the walk axis is BUILDING-CLASS,
