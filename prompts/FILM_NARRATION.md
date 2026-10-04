@@ -865,6 +865,16 @@ BIM-compiler, BOM-OOTB, as it is under IfcOpenShell clone as a Federation featur
 ~/Projects/2Dto3D (Nov 2025) → bim-compiler (Jan 2026) → bim-ootb (May 2026).
 
 ## 4. STATUS
+- 2026-10-04 08:55: §VIEWER-TRAILER v2 BUILT — `~/Downloads/BIM_Viewer_Trailer_v2_13languages_1920x1080_24fps_2026-10-04.mp4`
+  (220.9 s, 58.7 MB, −16.9 LUFS). red1's v2 notes applied: greetings voiced back to back at the start (no red-pill line,
+  no per-greeting UI switch) + ONE picker demo; building kept SOLID (pick's shell ghost turned off via toggleGhostXray —
+  Alt+X was merged into Alt+Z), orbit drag + zoom after load, floor via a Find category tap; Night + Fly live with Alt+G
+  denoise then F5 (6.3 s cut out cleanly, clock + capture re-armed); clash pair from §CLASH_MATRIX_COUNT (ARC|STR 4,992)
+  → tap one (fly-to) → shift-range 12 (red dots + zoom out); Time Machine scrub + sun on, HR mode 08:00→20:04 sunset;
+  Ask (largest rooms 14 / counts 6,880) + Terminal escape-route cutaway (HHS room graph has 0 exits); Film-Maker ticks
+  (clash/measure/floors/sun) + Eye preview, then the finished Hospital clip. Take vv6: 53/53 clicks, 0 PAGEERR; fit 55/55,
+  0 WRONG, gloss 28/28; 6 cards + 8 badges + 2 cutaways. Silences ≥ 2 s: 10, max 6.5 s — all on visual payoffs (Ask
+  answers, X-ray, fly, sunset, preview, Hospital clip). Recorder bug fixed: Playwright's 30 s auto-wait on the share card.
 - 2026-10-04 07:43: §VIEWER-TRAILER v1 BUILT — `~/Downloads/BIM_Viewer_Trailer_13languages_1920x1080_24fps_2026-10-04.mp4`
   (237.75 s, 5,706 frames @24, 42.5 MB, −16.8 LUFS). One take, HHS_Office_Federated, GPU (`flock gpu.lock`; the other
   sessions gave way on request). Recorder `scripts/film_viewer_trailer.js` (take vfinal2: 66/66 clicks on target,
