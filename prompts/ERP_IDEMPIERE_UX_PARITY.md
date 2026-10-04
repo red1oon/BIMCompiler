@@ -1837,3 +1837,30 @@ M_ProductDownload/M_Substitute/C_BankStatementMatcher/C_OrderPaySchedule DDL and
 C_PeriodControl.PeriodStatus); `paymentTermDueDate`/`invoiceWriteOff` SQL functions; model ports carried locally in support_*.js (MOrder/MInvoice
 copyLinesFrom, MJournal*, MAllocation* delete/reverse, MAccount.get, MYear.createStdPeriods) belong in model_*.js; runJava passes only
 AD_Process_Para-declared params and the oracle sends date params as String; executeUpdateEx can't translate aliased/row-value SQL.
+
+## §CP-NEW — 2026-10-04 · the New row = GridTable.dataNew (GridField.getDefault + validateValueNoDirect), in the GridTab layer
+**Found by W-CP-CALLOUT-LIVE:** Sales Invoice (window 167) callouts ran with IsSOTrx=N → CalloutInvoice.bPartner took the PO branch
+(payment term 105, ref 106). Cause: our GridTab had NO GridField.getDefault — `load({},true)` wrote null for every column the form did not
+carry (C_Invoice.IsSOTrx is not a form field) and `updateContext` wiped the window's AD_Window.IsSOTrx=Y. The only default code was crud_core
+`defaultsFor` = a replay of per-FORM-field precomputed defaults (§P7), blind to non-form columns and missing stages 2/4 (§GT.7).
+Also found: the ORACLE opened header windows on an empty query, which wipes AD_Window.IsSOTrx too — so the SO-invoice header had been
+judged under IsSOTrx=N on BOTH sides (a matching wrong scenario). Witnesses now open header windows on their query, as ZK does.
+**Port (ad_callout.js, one pass = GridTable.dataNew :2129-2143):** per field in order: host value if given, else `getDefault()` priority
+"123457" (special case/parent/IsActive/AccessLevel → `@SQL=` → DefaultValue expression → `P<win>|`/`P|` user pref → `#`/`$`/`+` system pref
+→ data type), `createDefault` typing, `updateContext`, then `validateValueNoDirect` (value outside the validated lookup → null; keys/parents
+exempt). The bridge reports `§GRIDTAB-DEFAULTS … defaulted=N`; defaulted columns ride the save like any callout-set column.
+**W-CP-NEW** (`cp_callout_oracle.js --new`): oracle New row vs ours from an EMPTY row (login globals + AD_Window.IsSOTrx + dataNew fan), every
+column except Created/Updated/_UU. **14 case files PASS, 0 column diffs; every `--off` (no getDefault) DIFFs**; 6 files INCONCLUSIVE (line-tab
+cases only). Before validateValueNoDirect: AD_User_ID (#AD_User_ID pref) and PO-window M_PriceList_ID (#M_PriceList_ID) differed.
+**Named, not ported:** New inheriting the CURRENT row's window context (ZK opens a window on its newest row; GL_Journal `@DateAcct@`-style
+defaults then take that row's values — `cp_gl_hdr` pinned openQuery=false). **Follow-up (deletion budget):** crud_core `defaultsFor` +
+the fold's per-field `default` become redundant once the form reads its New values from the GridTab — not yet deleted.
+**Live fixes in the same pass (crud_overlay §CP bridge):** (a) `_coLookupReset` limited to combo editors (List/Table/TableDir) — Search
+fields use WSearchEditor, which shows any existing value; the oracle `lookupMiss` op is restricted the same way (an MLookup for a Search
+field holds no full list, so "not in list" was a false reset: Bill_BPartner_ID / C_BPartner_ID). (b) after the post-cascade refresh a Search
+value is re-shown (getDirect). (c) populateRefs: an ADMITTED value past the picker's `LIMIT 200` stays offered+selected (GL_Journal
+C_Period_ID 200170 blanked → 9/9 again).
+**OPEN (AD-LAYER LAW, named):** the PO/SO Order form renders `M_PriceList_ID` as a curated `type=number` "Price List (ID)" input, not the AD
+TableDir lookup — so AD_Val_Rule 271 never applies there and the WTableDirEditor reset cannot fire (live: `cp_ord_po_hdr #1
+M_PriceList_ID:ref=null,grid=101`). The curated c_order field spec must give way to the AD-folded field (rule 1/5: one implementation).
+**OPEN:** W-CP-CALLOUT-LIVE CalloutCashJournal — the page never mounts window 198 (`page.waitForSelector` 30 s timeout in pilot_ours.openWin), pre-existing; SO order `InvoiceRule` ref D/ours I = the named New-inherits-current-row context item.

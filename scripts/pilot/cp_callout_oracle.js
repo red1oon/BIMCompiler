@@ -11,6 +11,7 @@ const cfg = require('./pilot_cfg');
 const OOTB = process.env.CP_OOTB || '/tmp/wt-callouts';
 const args = process.argv.slice(2);
 const OFF = args.includes('--off');
+const NEWMODE = args.includes('--new');   // W-CP-NEW: judge the New row (GridField.getDefault + dataNew fan) from an EMPTY row, not the steps
 const only = (args[args.indexOf('--only') + 1] && args.includes('--only')) ? args[args.indexOf('--only') + 1].split(',') : null;
 const logFile = args.includes('--log') ? args[args.indexOf('--log') + 1] : null;
 const out = [];
@@ -116,6 +117,22 @@ function diffRows(ref, ours) {
     const ctx = new A.Ctx();
     Object.keys(rctx.ctx).forEach(k => { if (!/^\d+\|/.test(k)) ctx.setProperty(k, rctx.ctx[k]); });
     const windowNo = 1;
+    if (NEWMODE) {
+      if ((c.parents && c.parents.length) || c.id || !ref.afterNew) { tot.vacuous = (tot.vacuous || 0) + 1; continue; }
+      // ours starts exactly as the page does: login globals + AD_Window.IsSOTrx in the window ctx, an EMPTY row, dataNew fan
+      const w = query('SELECT IsSOTrx AS s FROM AD_Window WHERE AD_Window_ID=?', [c.window])[0];
+      if (w && w.s != null) ctx.setProperty(windowNo + '|IsSOTrx', String(w.s));
+      const tabsN = query("SELECT AD_Tab_ID AS id FROM AD_Tab WHERE AD_Window_ID=? AND IsActive='Y' ORDER BY SeqNo", [c.window]);
+      const tabN = A.openTab(tabsN[c.tab].id, { ctx, windowNo, tabNo: c.tab });
+      if (OFF) tabN.load({}, false); else { tabN.load({}, true); tabN.dataNewCallouts(); }   // --off: no GridField.getDefault → must DIFF
+      const ours = tabN.snapshot();
+      const skip = /^(Created|Updated|CreatedBy|UpdatedBy)$|_UU$/;
+      const d = diffRows(Object.fromEntries(Object.entries(ref.afterNew).filter(([k]) => !skip.test(k))), ours);
+      tot.newCols = (tot.newCols || 0) + Object.keys(ref.afterNew).filter(k => !skip.test(k)).length; tot.newDiff = (tot.newDiff || 0) + d.length;
+      tot.newCases = (tot.newCases || 0) + 1; if (!d.length) tot.newMatch = (tot.newMatch || 0) + 1;
+      L('§CP-NEW ' + c.name + ' window=' + c.window + ' cols=' + Object.keys(ref.afterNew).length + (d.length ? ' DIFF ' + d.length + ' [' + d.join(' ; ') + ']' : ' MATCH') + ' defaulted=' + Object.keys(tabN.lastDefaults || {}).length);
+      continue;
+    }
     // the oracle window context right after New (keys the dataNew callout fan set, e.g. OrderType/HasCharges) — mirrored
     if (ref.ctxAfterNew) Object.keys(ref.ctxAfterNew).forEach(k => ctx.setProperty(windowNo + "|" + k, ref.ctxAfterNew[k]));
     // c.mirror: [{table, where}] — reference rows the callout READS (M_Cost, C_DepositBatch …) that exist only in idempiere_pilot
@@ -160,6 +177,7 @@ function diffRows(ref, ours) {
         ' traceRef=[' + (rs.trace || []).join(',') + '] traceOurs=[' + tab.trace.join(',') + ']');
     }
   }
+  if (NEWMODE) L('§CP-NEW-SUMMARY cases=' + (tot.newCases || 0) + ' match=' + (tot.newMatch || 0) + ' cols=' + (tot.newCols || 0) + ' colDiffs=' + (tot.newDiff || 0) + ' skipped(line/open cases)=' + (tot.vacuous || 0) + ' verdict=' + (!tot.newCases ? 'INCONCLUSIVE' : tot.newMatch === tot.newCases ? 'PASS' : 'DIFF'));
   L('§CP-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' match=' + tot.stepsMatch + ' fieldDiffs=' + tot.fieldsDiff +
     ' oracleErr=' + tot.oracleErr + ' stepsWithNoRefDerive=' + tot.vacuous + (OFF ? ' MODE=OFF' : '') +
     ' unported=' + JSON.stringify(A.RUNTIME.stats().unported));

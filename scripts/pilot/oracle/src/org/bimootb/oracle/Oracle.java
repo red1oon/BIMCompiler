@@ -155,7 +155,8 @@ public class Oracle implements Runnable {
 		JSONArray miss = new JSONArray();
 		for (GridField f : t.getFields()) {
 			try {
-				if (!f.isDisplayed() || f.isReadOnly() || f.getDisplayType() == DisplayType.ID) continue;
+				int dtp = f.getDisplayType();   // combo editors only (WTableDirEditor): Table/TableDir/List — a Search field uses WSearchEditor, its MLookup holds no full list
+				if (!f.isDisplayed() || f.isReadOnly() || !(dtp == DisplayType.Table || dtp == DisplayType.TableDir || dtp == DisplayType.List)) continue;
 				Object v = f.getValue();
 				if (!(v instanceof Integer)) continue;
 				Lookup lk = f.getLookup();
