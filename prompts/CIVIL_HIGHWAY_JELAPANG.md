@@ -239,6 +239,15 @@ Measured (world-axis bbox, `element_transforms` + `element_psets`):
 - Values must be read from the JKR PDFs ourselves before `primary`; `std_values` holds standards, rates stay in the
   rate pack (§R.2), not one table.
 - Also seen: `01_Component_Name` = ROAD STUD ×940 (not in §0 list).
+- **Standards obtained (2026-10-05), official JKR copies** — live host `epsmg.jkr.gov.my` does not resolve from
+  outside Malaysia, fetched via Wayback (`id_` raw). Saved `~/Downloads/JALAN JELAPANG IFC/standards/` (+ `.txt` via pdftotext):
+  - `ATJ_2A-85_Pindaan2019_StandardTrafficSigns.pdf` — ATJ 2A/85 (Pindaan 2019), 124 pp. Source
+    http://epsmg.jkr.gov.my/images/8/81/ATJ_2A.85_P_2019-WM.pdf (snapshot 20250614112213). e.g. WD. 39a/39b chevron size table, txt L5399.
+  - `ATJ_2D-85_original_RoadMarkingDelineation.pdf` — despite the file name, it is ATJ 2D/85 (Pindaan 2019), 79 pp. Source
+    http://epsmg.jkr.gov.my/images/9/99/Atj_2d-ori_-_wm.pdf (snapshot 20260307083029). §3.3.2.1 stop line 300 mm (txt L1660), §3.3.2.2 give-way.
+  - Also archived there, not downloaded: ATJ 2B/85 (Pindaan 2019) sign application (`images/6/6b/…`), **ATJ 8/86 geometric
+    design** (`images/c/c9/BPIS_ATJ_8-86_19062020.pdf`, lane widths), ATJ 5/85, 4/85, 7/85.
+  - Status label: `primary` (JKR's own document); values still to be transcribed into `std_values` with clause/table refs.
 
 ### FUTURE (recorded, not started)
 Design-revision diff · snags/issues with QR · variation orders on civil rates · rule-findings film for road
