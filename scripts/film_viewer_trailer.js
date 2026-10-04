@@ -245,6 +245,9 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
       await hold(1500); await hclick('#find-mode-find');
     } else fact('ask', 'NO #find-mode-ask');
     await key('Escape');
+    // room path / escape route — HHS's room graph has no exits (§ROOM_GRAPH_EXITS exits=0), so the route is shown from the
+    // Terminal's finished film (post: film_title_cards.py CLIPS 's05c'); Ask's exit answer uses the same record (8311ba5f)
+    await beat('s05c', curLang, 'cut to the Terminal escape route (same engine as Ask)'); await hold(4600);
     await slice('s06', 'a floor + X-Ray', 'ar_SA'); n1 = PAGELOG.length;
     // a floor via the Find panel's own category tree (red1: "the Find panel can do that easily when selected a category")
     await key('f'); await page.waitForSelector('#find-tree', { timeout: 10000 }).catch(() => {});

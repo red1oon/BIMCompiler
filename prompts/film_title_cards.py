@@ -30,7 +30,9 @@ NOVEL = {'s03': ('NOVEL ART', 'IFC → SQLite, streamed in the browser'),       
 # red1 2026-10-04: "or killers in BIM world" — two badge kinds: NOVEL ART (new ideas) · BIM KILLER (standout features)                # NOVEL ART 9
 # CUTAWAY CLIPS (red1 2026-10-04: "About taking a clip, perhaps u can then take Hospital, a nice part" / "this clip be cheap
 # to snatch") — a silent baked film shown over the footage inside a beat; label bottom-left. beat: (file, ss, dur, offset, label)
-CLIPS = {'s17clip': (os.path.expanduser('~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4'), 0.5, 5.0, 0.0,
+CLIPS = {'s05c': (os.path.expanduser('~/Downloads/Terminal_escroute_1080p.mp4'), 1.2, 4.6, 0.0,
+                 'Terminal  ·  worst-case escape route — the same engine as Ask'),
+         's17clip': (os.path.expanduser('~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4'), 0.5, 5.0, 0.0,
                  'Hospital  ·  a film baked in the browser')}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
