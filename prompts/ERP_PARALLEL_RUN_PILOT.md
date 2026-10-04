@@ -288,3 +288,7 @@ Host fetch-back md5 matched for OCI and GH. Admin fold: 210 ops, `verifyMultiDev
 **Raw group report (UNVERIFIED, Phase B compares to real iDempiere; derived by gid from admin folded ops):** stock product 123: wh 50003/50004/50005 each seed 0, shipped 9 -> on-hand -9 each (seed stock exists only in wh 103 = 20; stations had none). P&L cents per org (identical per org): Revenue 41000 cr 55575, CoGs 51100 dr 46305, AR 12110 dr 55575, Product asset 14120 cr 46305; consolidated revenue 166725, CoGs 138915, profit 27810 (9 units x 61.75 / 51.45 per station x3; arithmetic matches), ledger balanced.
 **Objects put (all dev, listed):** OCI `bim-ootb-dev/sandbox/erp/pilot_phaseA/202610040658/{south,admin}/relay_snapshot.json` (+ dry-run none); GH `red1oon/BIMCompiler@mock/relay-snapshot:pilot_phaseA/202610040658/{east,admin}/relay_snapshot.json`. Demo GardenWorld data only, no customer data.
 **⛔ list:** (a) static hosts have no relay write path; (b) POS lens ops are not relayed and have no org choice; (c) local negative ids and DocumentNo collide across (and within) stations — needs the model-layer owner; (d) Phase B (compare to reference iDempiere) waits for the model layer.
+
+## §DECISIONS 2026-10-04 (red1: "Go with yes first. If anything amiss I can easily direct its correction")
+- **Plugins vs reference:** ours is judged against STOCK iDempiere behaviour; each customer plugin's effect on the
+  reference is listed separately as a plugin delta (§2), not folded into the pass/fail.

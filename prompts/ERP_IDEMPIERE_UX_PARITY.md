@@ -1689,3 +1689,8 @@ IDENTICAL fail set on the untouched base tree (pre-existing, not this change). p
 3393→3421, crud_core.js 1269→1320, ad_ui.js 3361→2711, ad_parser.js 536→538, new ad_gridtab.js 191. Removed: `_lastFoldCreated` +
 its guess (W-SO-CHILD-BIND), both parent-key-name searches (grid filter + §ORDERLINE-PARENT-FK seed), the post-SQL JS client/org
 re-filter, the `IsSOTrx` WhereClause regex, the login-org row filter, the curated `_crudHas`/verbs gate, the dead ad_ui master-detail.
+
+## §GT-DECISION 2026-10-04 — Ninja stages detail tables as tabs (red1: "Go with yes first")
+Resolves §GT ⛔ item 8: `ninja_stage.js` stages a detail table as a TabLevel-1 AD_Tab inside its master's window,
+with `IsParent='Y'` on `<Master>_ID` (iDempiere AD convention; GridWindow.initTab link resolution). The generic
+GridTab layer then gives Ninja master-detail with zero host code. `extractModel` + the export round-trip follow.
