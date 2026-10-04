@@ -738,6 +738,12 @@ Steps 1–4 can ship with null rates first (the meaningless RM 4.82 M disappears
   template-declared `placement:'logic'` (civil template only). JELAPANG 66 → 60 days; finishing trades all start d48.
 - **5D:** JELAPANG BOQ 1 line × RM 850 'Misc Element' → 6 civil lines, material 0 (UNPRICED, JKR SoR pending),
   labour RM 175,894 (MASON-copied crews, flagged). Quantities counted; m²/m need a mesh measure (next).
+- **#1853 MERGED. User then: "only one resource in play all the time" → PR #1854.** The generated programme had six
+  crews (headless TM: `§CREW_DEMAND`/`§HR_COST` over 6 CIVIL_* trades) but four READERS re-derived resource/phase
+  from the class rule: `schedule_read_4d.js` (Gantt resource → MASON only, phase 'Architecture Envelope'),
+  `boq_charts` kernel_ops discipline, `cpe_load_path.js`, `edit_delta.js`. All now go through `civilRuleFor`;
+  `_GANTT_CACHE_VERSION` 39→40 regenerates programmes saved before the crews. **Lesson: a new owner must be wired
+  into every reader of the relation, not just the writers — grep every `matchRule(`/`rules[cls]` consumer.**
 - Probe note: a lamp picked by `LIMIT 1` was one of the ~16 LIGHTING strays ~57 m below the road (§M) — its shadow
   test was vacuous; the user confirmed shadows on the real lamps.
 
@@ -763,3 +769,24 @@ Steps 1–4 can ship with null rates first (the meaningless RM 4.82 M disappears
   5674 elements, 2114×1296×96 m, ROAD 4008 / FURNITURE 1011 / LIGHTING 227 / DRAINAGE 200 /
   SIGNAGE 138 / MARKING 90, georef offset (28608,−23548,0). User confirmed it works on localhost.
   **Next: §PLAN P3 measure (near plane on the real-size road), then pset extraction (§E.2).**
+
+## 2026-10-05 ~01:20 — Alt+S on JELAPANG_AFTER.db: NO STALL REPRODUCED (headless, this machine)
+red1: "process seems to stall towards the end … maybe it is too big". URL tested = red1's own:
+`http://192.168.1.22:8402/viewer/viewer.html?db=/buildings/JELAPANG_AFTER.db#bld=JELAPANG&cx=1169&cy=542&cz=226`
+(served tree /tmp/wt-civil-units @15f2909a). Runner = Playwright headless, `--use-angle=gl`, 1600x900, under gpu.lock.
+- Model: 5,674 elements, ALL IfcBuildingElementProxy, extent 2,137 x 1,324 x 120 m; DB 428 MB; page heap 1.72 GB flat.
+- Light-zone grid: `§LIGHT_ZONE VACUOUS no boundary geometry (guids=0)` -> `§SOURCED_LIGHT skipped` (BOUNDARY list has no
+  proxies). Grid NOT built — so the uncapped 0.5 m grid (would be ~2.8e9 cells / 5.5 GB at this extent, light_zones.js:343)
+  is NOT the stall. It is a latent risk for any civil model that DOES carry IfcSlab/IfcWall.
+- Shadow: `§STILL_SHADOW_FIT env=4653 … texel 0.8178 at 8192 mode=single` — fits, 89 ms.
+- Timeline after press: staging 1.8 s, `§STILL_REFINE done` 1.0-2.8 s, `§PHOTO_AO done` 0.4 s, `§FAULT OK`; toast hidden,
+  `_stillRefineActive=true busy=false`; 133 s of heartbeats after, page responsive. Run twice, same result.
+- `§GI_STILL_OFF reason=no-webgpu` in both runs: http://192.168.1.22 is not a secure context, so `navigator.gpu` is absent
+  (gi_still.js:917). Same holds in red1's Chrome on that URL, so the GI bounce stage is not in red1's path either.
+- RESOLVED same night from red1's own console log (Chrome, RTX 4060 Vulkan, 1544x961): it is NOT a hang. The log ends at
+  `§PHOTO_AO done … (frozen with AO — stays until interaction)` = the normal end, identical to the headless runs.
+  CAUSE: on http://192.168.1.22 `navigator.gpu` is absent (not a secure context) -> `§GI_STILL_OFF reason=no-webgpu`.
+  The Save PNG / Close overlay is built ONLY by gi_still.js (:867, WebGPU path). effects.js:5973 just hides the toast when
+  refine ends, and `§STILL_LOCK` swallows clicks (only Esc exits). So the user sees a frozen picture, no status, no button.
+  Not size-related; hits every building opened from a LAN IP. Workaround: open via http://localhost:8402/… (secure context).
+  Proposed fix (awaits red1 OK, UI change): on the no-bounce path show the same overlay (Save PNG / Close) when §PHOTO_AO done.
