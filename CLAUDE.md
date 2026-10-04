@@ -149,7 +149,11 @@ ERP / secured-distributed / serverless work → **`docs/ERP.md`** is the overarc
    Save, return to the parent — not "§CRUD validate ok". A witness over a scripted happy path is scope-blind.
 4. **Deletion budget.** A generic-layer PR states lines +/−; it deletes the special cases it supersedes. Add-only = not done.
 5. **One implementation per responsibility** (no second master-detail engine in `ad_ui.js` beside `idempiere.html`).
-6. **Real iDempiere is the oracle** where behaviour is in doubt (local source + `idempiere` postgres DB) — read
+6. **Scope of "complete" (user, 2026-10-04):** CORE = trade cycle + accounting (orders, purchasing, inventory,
+   invoices, payments, posting, costing). Everything else (manufacturing, HR, assets, …) is NOT core — it arrives
+   like any other extra module through Ninja/plugins. **Ninja/plugin handling is the ONE core extension enabler:**
+   a staged module must get full window, model and doc-action behaviour with zero host code.
+7. **Real iDempiere is the oracle** where behaviour is in doubt (local source + `idempiere` postgres DB) — read
    or run it, never guess. Fix history goes in the prompts file, not in code comments.
 
 ## Walker Doctrine (ANTI-DRIFT — read before ANY disc-walker / MEP-walk / rules-DB work)
