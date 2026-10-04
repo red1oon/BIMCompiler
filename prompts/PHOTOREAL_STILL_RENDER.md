@@ -635,8 +635,9 @@ materials; (a) `clone()` returns an R10 array of clones of the same length; (b) 
   reboot recreate it: copy ~/bin/serve_tree.js and change line 8 so the /buildings/ fallback skips URLs ending .db. ~/bim-ootb/buildings
   copies are 08-03 re-imports (import_db_builder, IfcSpace kept, 4D tables) — do NOT test on them. LTU (Downloads link) + SampleHouse
   (bim-compiler/deploy link) are not OCI copies (open: red1 to say).
-- RUNNING at close (headless, GPU lock): Hospital rebake on the OCI DB (rebake_h.sh -> buildings/patches/Hospital_extracted.db.lightfield.bin),
-  then run_gb.sh: SampleHouse pose cam [-7.169,0.998,2.58] tgt [-0.556,-0.94,-1.262] x {base, &lampsout=0, &skyfield=0, both} with
+- AT CLOSE: Hospital rebake on the OCI DB left to finish (~26 min, started 10:22; writes /tmp/wt-surf/buildings/patches/Hospital_extracted.db.lightfield.bin
+  — check its size/date + run restorecheck.js 8664 Hospital first; if missing, rebake). All queued runners KILLED, nothing else runs. NOT RUN, do first:
+  run_gb.sh: SampleHouse pose cam [-7.169,0.998,2.58] tgt [-0.556,-0.94,-1.262] x {base, &lampsout=0, &skyfield=0, both} with
   termimgs.js (per-term images) -> gb_*.json. Read: share of strong full-frame jumps on zone-boundary edges per arm (method: §SH zone
   analysis 10-04, IR 99.6 % / F 54 % / Gd 57 % on zone edges at base). Scratchpad dir dies with this session — rerun if lost.
 - OPEN, in priority order (each needs one measured cause before code; red1 rules any look change):
