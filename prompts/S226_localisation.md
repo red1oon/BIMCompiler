@@ -1169,3 +1169,30 @@ kept, Info 4D block in the new language each time, 0 leaks, 3–36 ms per switch
 leaks=15>0. W-ZOOM-LANG 14/0; eslint + audit_sw_precache + audit_script_tags clean.
 Not judged here (printed): uncatalogued strings on the building page are data (status, stats) — one real English UI
 button seen there, `Confirm` on the warehouse walk (`#wh-scan-btn`), outside the trailer's screens.
+
+### §R2d SPEC — 2026-10-04 — the Help palette (F1 / `?`) joins the dictionary (Witness: W-VIEWER-I18N (2c))
+red1 2026-10-04 (Viewer trailer v4 closing round): *"show the lingo chosen on the UI pill icon tray (at the Help screen)"* —
+*"translate the Help panel if haven't"*. MEASURED (bim-ootb origin/main `84f6d060`, read-only): the palette's pill rows read
+`_mainPillActions[].name`, already re-labelled through `pill_<id>` (panels.js:1546 `_relabelPill`) — 38/38 keys present in all
+12 non-English JSONs. STILL ENGLISH (hard-coded in `showCommandPalette`, scene.js:2566-2660): the search placeholder
+`Type a command...`, the 5 keyboard-only rows `Zoom In` · `Zoom Out` · `MaxQ Movie` · `Populate (people + trees)` · `Hover Name`,
+and the tooltips `Report Bug` · `Viewer User Guide` · `Installed ✔` · `Download · Run Offline`.
+1. **Rows.** One labelled machine batch `viewer/tools/trl_batch_2026-10-04_help.js` (same format + provenance line as the
+   `_info` batch): 8 new keys `ui_cmd_*` (English byte-identical to today's screen); `Report Bug` reuses `ui_report_bug`.
+   Applied by `trl_add_batch.js`, built by `build_trl.js`. (Measured once wired: 9 palette keys + 72 sub-rows = 81 rows.)
+2. **Code.** `showCommandPalette` reads each string through `_trl(key, null, 'English')` (guarded `typeof _trl`), so the
+   palette is built in the current language every time it opens (it is rebuilt on each open — no switch hook needed).
+3. **Witness (2c).** The viewer page opens the real palette (`window.showCommandPalette`) before the strings are collected;
+   strings inside `#cmd-palette` are counted (`§TRL_SCOPE … help=#cmd-palette n=`) AND judged by the same leak counter.
+   n < 10 FAILS (absent palette cannot pass). Must show leaks > 0 on the palette BEFORE the batch (English baseline marks the
+   strings UNCATALOGUED) and 0 after.
+
+### §R2d RESULT — 2026-10-04 (bim-ootb PR #1836 `fix/help-palette-i18n`, viewer sw v1465→v1466, auto-merge armed)
+BEFORE (witness extended first, run on origin/main code): palette judged n=144 strings, viewer-page leaks **82 per locale**
+(77 uncatalogued — 72 sub-rows were the bulk, plus the 5 keyboard rows, placeholder, badge title). The sub-rows (`children` in
+panels.js, shown when a palette row is expanded) were not in the first measurement above — the witness found them.
+FIX: 81 rows (1000672–1000752: 9 `ui_cmd_*` + 72 `pillc_<id>_<n>`), machine translation (3 Sonnet agents, terms reused from each
+locale's JSON), batch `viewer/tools/trl_batch_2026-10-04_help.js`. Key caps (`CTRL+S`, `ALT+Z`, `CAPS LOCK`) allow-listed in the
+witness: printed in English on the keyboard itself.
+**W-VIEWER-I18N PASS 109/0** (18 locales × 5 pages): (2c) palette n=144 every locale; (3c) 72/72 sub-rows code English == CSV;
+leaks 0 of 303–308 in all 17 non-base locales; pageErrors 0. audit_sw_precache 200/200 · audit_script_tags 191/191.

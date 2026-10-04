@@ -506,6 +506,42 @@ just take note perhaps next version")
 - **END ** — Thank-you round: 13 languages, UI switches (picker cut), ends English + “Free, open…”
   · [en] M: Thank you! / F: Free, open, and right in your browser.
 
+### §8 STORYBOARD v4 — DELTA vs v3, for red1's review (2026-10-04, NOT filmed: "dont bake yet, until we get the storyboard right")
+Code: `scripts/film_viewer_trailer.js` + `prompts/film_narration_viewer_trailer_dialogue.tsv` (62 rows). Recorder NOT run (no take
+until red1 OKs this) — `node --check` only; every new step prints a `§FILM_FACT`/verdict line so the first take proves or disproves it.
+Unchanged beats are not repeated here (see v3 above).
+- **WHOLE FILM — wire guard** (v4 #1). Polls ghost/bbox shell · Nav-LOD boxes · load placeholders · X-ray every 150 ms after load; any
+  hit outside an allowed X-ray beat is CUT until the mesh is back (`§FILM_WIRE_GUARD hit/clear`, `LONG` if > 3 s; total + verdict at end).
+  s06's X-ray now turns off straight from X-ray — the old 2nd Alt+Z went xray→**bbox** (tools.js cycle), i.e. the wireframe itself.
+- **· s05** — Find "IfcWall" → 50 found → **3 result picks**, each flies to its wall (v4: "only showed one selection")
+  · [en] F: Ask for walls. / M: Fifty found, and listed — click one, and you fly straight to it.
+- **· s05cat NEW** — clear the query → tap categories in the Find tree on two axes (storey, then the next axis); X-ray dims the rest
+  · [en] M: Or browse by category — storey, discipline — / F: one tap, and the rest steps back.  ⚠ line checked against the take's findCat facts
+- **· s05c REPLACED** — was the Terminal escape-route cutaway → now **live door-to-door path on HHS**: Find → Room → Path; room pairs
+  searched inside a cut (failed pairs never show), a route with ≥ 3 doors clicked on screen, camera swung round it
+  · [en] F: Door to door — pick two rooms, and the shortest route is drawn through the building. / M: Swing round it — every door it passes, in order.
+- **· s07 + s07b NEW** — section cut to 35 % of the elements' real height (v3 stopped above mid — "not deep enough"), then the other
+  axis (X or Z, whichever faces the camera) cut from the front inwards
+  · [zh] (unchanged) · [en] s07b F: Now the other axis — cut from the front, straight in.
+- **· s09 + s09v NEW** — **V on only here**; the fly's dead lead-in (key → camera first moves) is CUT, nothing cut inside the fly;
+  timeline drag; Alt+G; refresh cut. V removed from the Time Machine.
+  · [ms] (unchanged) · [en] s09v M: Sound on — the flight plays out loud, and the timeline drags.
+- **· s11 REWRITTEN** — TM → ¾ drag → shadows on (H) + Sun on → Gantt + Dashboard drawers open → panel group dragged bottom-left, view
+  panned right; **witness `§FILM_TM_LAYOUT … overlaps=0 offFrame=0 verdict=PASS`** (every visible panel's rect, no pair intersects)
+  → play ~6.5 s build-up
+  · [en] M: The Time Machine. The schedule comes from the model itself — / F: fifty-five days, and nothing appears before what holds it up. / M: Sun on — the shadows follow it. Gantt and dashboard, side by side.
+- **· s11ff REPLACES s11sun** — day slider dragged on screen to ~95 % → drawers read complete (`§FILM_FACT tmEnd` = day + phases)
+  · [en] F: Fast-forward to near the end — every phase in the drawers, filling to complete.
+- **· s15tour NEW** — the 4D/5D page scrolled top to bottom (every section title logged `boqSections`) and back (v4 #3 "linger")
+  · [en] M: Scroll on — cost components, workload, the S-curve, milestones, the Gantt — / F: and the full bill of quantities, priced.
+- **· s15_en_US / s15_en_MY** — the RM→$→RM flips now happen inside a cut (picker never on screen, v4 #2)
+- **· s16** — BUG FIXED: v3's share keypress sat inside a `//` comment, so the share card never opened in the take
+- **END REWRITTEN** (red1: "just hover each while saying its lingo version of ending" + "show the lingo chosen on the UI pill icon tray
+  (at the Help screen)… jump frames if need") — picker shown, cursor rests on a flag → CUT → that language's Help palette fills the
+  screen while its thank-you plays → CUT → next flag. `closingHelp` fact checks each palette's placeholder is that locale's text.
+  **Help palette translated** (red1: "translate the Help panel if haven't") — bim-ootb `fix/help-palette-i18n`, see S226 §R2d.
+- **Still open from red1:** a soft music bed under the 2–6 s quiet visual moments, or leave them silent?
+
 ### ⏸ STANDING ORDER (red1, 2026-10-04): "After viewer, wait for my go ahead on the next, Modeller." / "BUt do the first
 one we agreed on first. This big story is to rest a while" — finish §8 (Viewer trailer) end to end, then STOP. Do not
 start §9 (Modeller) or §10 (documentary) without red1's explicit go.
