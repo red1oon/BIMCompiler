@@ -609,6 +609,25 @@ Ranked by value ÷ risk; "non-impact" = cannot change any building's output.
    table; existing columns untouched. Feeds Find + 5D.
 Not non-impact (need review): zoom-to-cursor (all models), near plane (all), hub disc-list dedupe.
 
+### §O results (2026-10-05, work-to-zero pass)
+- ✅ **#1847 MERGED (live, sw v1470)** — cache-bust: #1844 changed `import.js` but not its tag
+  (`viewer.html` `import.js?v=4`) → cached browsers kept the old worker; user re-dropped live and still got
+  `§CAMERA envelope=2x1x0m`. Fetched back live: `import.js?v=5` → `import_worker.js?v=13`.
+  **Lesson: bump the script tag of EVERY changed file, on every page that loads it.**
+- ✅ **1. §GROUND_ROBUST + 2. civil colours** — bim-ootb PR #1849 (sw v1471), **open, awaiting the user's localhost
+  check**, served at `:8401`. Witness (same SQL on real DBs): JELAPANG reaches step 4 → plane −11.10 → **51.74 m**;
+  Hospital / Terminal / LTU_AHouse / Duplex resolve at **step 1** → unchanged. All CI fast-check steps pass locally.
+- ⛔ **3. route length** — principal-axis binned-median polyline on ROAD+MARKING+FURNITURE centres is UNSTABLE:
+  2,816 / 3,126 / 3,583 m at 100 / 50 / 25 m bins (junction roads J2A/J2B + existing lanes spread 528 m
+  laterally). Not shipped. Solid number: **main-axis extent 2,348 m (lower bound)**, axis bearing 22.8°.
+  **Question:** can the designer export the alignment (IFC4.3 IfcAlignment, or a LandXML alignment from
+  Civil 3D)? That gives route length and chainage exactly; deriving it from solids is a guess.
+- ⛔ **4. 5D civil quantities** — 5D owner = `mep_qto_populate.js` → `qto_cache` (keyed ifc_class/storey/
+  **discipline** — civil codes slot in) priced from `rates/cidb2024_my.json` (CIDB N3C 2024, SMM2 building items):
+  **no road / drain / sign / marking items in it.** **Question:** which civil rate source — JKR Schedule of
+  Rates (Jadual Kadar Harga) for road works, or CIDB N3C civil items? Quantities (m² / m / EA) can be built once
+  the source fixes the units to measure in.
+
 ---
 
 ## Status
