@@ -924,7 +924,7 @@ In the viewer: matrix cell click marks mesh-true per 200-row page; the "Total" s
 - Witness: headless render of `_renderClashList` with judged rows above/below the limit — hidden count = CLEAR count above,
   0 below; every visible row is CLASH or unjudged above the limit.
 
-### §V.4 Result — bim-ootb PR #1861 (auto-merge on, sw v1481); harness tolerance fix PR #1860
+### §V.4 Result — bim-ootb PR #1861 (MERGED, sw v1481); harness tolerance fix PR #1860
 Witness `witness_clash_boxonly_hide.js` 11/11 (JELAPANG, GPU=sw): DRAINAGE×ROAD 23,288 box → page of 200 = 174 hidden,
 26 real (20 shown + "6 more"); SIGNAGE×DRAINAGE 385 → 0 hidden. Header "Total: N" no longer wiped by the mesh refresh.
 
@@ -992,7 +992,11 @@ called" · "consider road street/traffic lights" · "elegant, does not impact no
   LAMP HEAD read from the element's own mesh: pole = mean of vertices in the bottom 1 m; top band = top 0.5 m;
   head = top-band vertices at the far end from the pole (each side → a double-arm column gives 2 heads; < 0.8 m
   offset = lantern on top). World = DB centre + (local − local mid), rotation_z applied. Rejected + counted:
-  bottom > 1 m below `A.groundIfcZ` (strays) and height < 2.5 m (bases/boxes; presentation rule). NO pset label is
+  STRAYS = below the largest jump in sorted LIGHTING bottoms when that jump exceeds the tallest column (smaller group
+  only) — tried and REJECTED first: one ground datum (`groundIfcZ` p2 51.7 m → 67 real poles dropped, the road climbs
+  47→68 m) and nearest-8-neighbours (dropped 3 real short columns incl. a traffic signal, ~80 m from any other element);
+  and height < 2.5 m (bases/boxes; presentation rule). JELAPANG: gap 46.3 m vs tallest 33.4 m → 172 columns / 223 heads
+  lit, 9 buried + 46 short skipped, 6/6 signals lit. PR **bim-ootb #1862** (sw v1482, auto-merge). NO pset label is
   read (the handover's `15_Name` idea dropped per "no project values") → signals light because they are LIGHTING
   columns, not because of their name. Measured mesh (JELAPANG): single-arm head 1.3–2.9 m off the box centre,
   double-arm heads 7.5 m apart.
