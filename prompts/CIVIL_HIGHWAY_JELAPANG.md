@@ -985,6 +985,49 @@ needed from the designer (§I.2). Anything sun/GPS/basemap-based waits for it.
 - Witness: JELAPANG fixture count from the owner (expected ≈ 227 LIGHTING minus strays, with 6 signals flagged),
   §PHOTO_EMBER lamp count in an Alt+S run — numbers, not screenshots. Use localhost (WebGPU needs a secure context).
 
+### §W.1 Spec as built (2026-10-05, this session) — branch `fix/civil-fly-night`
+User rules this round: "behave as expected when imported fresh, all injection needed is done, or lazy when Fly is
+called" · "consider road street/traffic lights" · "elegant, does not impact nor hard code project values in algorithm".
+- **Night (`tools.js` A._loadNightFixtures, same owner):** selector = discipline LIGHTING (civil-only). Light at the
+  LAMP HEAD read from the element's own mesh: pole = mean of vertices in the bottom 1 m; top band = top 0.5 m;
+  head = top-band vertices at the far end from the pole (each side → a double-arm column gives 2 heads; < 0.8 m
+  offset = lantern on top). World = DB centre + (local − local mid), rotation_z applied. Rejected + counted:
+  bottom > 1 m below `A.groundIfcZ` (strays) and height < 2.5 m (bases/boxes; presentation rule). NO pset label is
+  read (the handover's `15_Name` idea dropped per "no project values") → signals light because they are LIGHTING
+  columns, not because of their name. Measured mesh (JELAPANG): single-arm head 1.3–2.9 m off the box centre,
+  double-arm heads 7.5 m apart.
+- **Fly (`tour.js` A._civilRouteTour):** label names/values moved to **`viewer/civil_labels.json`** (route_path,
+  route_stops + label; Settings-editable, registry in panels.js) — the algorithm holds no project strings.
+  **§CIVIL_ROUTE_LAZY:** no labels table / no route_path match → route over every ROAD-discipline piece (stops
+  need labels) instead of the orbit fallback. A pre-#1844 import (all ARC, e.g. `JELAPANG.db`) has no ROAD → needs
+  re-import (nothing lazy can recover a discipline the file names were never read for).
+- **Diagnosis of "scrubber does not appear":** fresh browser import of all 7 IFCs on main → labels kept
+  (102,495 rows), §CIVIL_ROUTE 2,373 m / 5 stops / 12 actions, scrubber visible (`witness_civil_fresh_import_fly.js`
+  7/7). So the failing run opened an import saved before #1858 → no labels → orbit fallback. The lazy route fixes that.
+- Witnesses: `witness_civil_night_lamps.js` (heads at column top ±5 cm, inside the column plan box, some > 0.5 m off
+  centre, no stray lit, signal columns lit, Alt+S world list = same list; lazy Fly with labels dropped in page memory
+  plays + scrubber) · `witness_civil_fresh_import_fly.js`. Fleet: 0 LIGHTING-discipline rows in all 27 buildings/*.db.
+
+### §Y Measure — item size by double-click (user, 2026-10-05) — SPEC
+User: "we place dots to get its length … getting items length is good new idea … double click already gives area.
+What if that area is highlighted (the original effect months ago, somehow gone) with its dimensions along its axes?"
+**Why the highlight vanished (code read, measure.js:1471 `handleMeasureDblClick`):** elements are drawn in shared
+BatchedMesh/InstancedMesh batches now. `hits[0].object` is the whole batch: `_highlightMesh` clones the batch
+material (tints all or nothing) and `_meshArea` sums the batch's triangles, not the element's. Same defect on the
+"tap same dot" path (measure.js:1330). Mouse NDC also uses window size, not the canvas rect (the click path was fixed, S246b).
+**Design (reuse, one owner):**
+1. Resolve the element: batchId/instanceId → guid via `A._batchMeta` / `A._instanceGuids` (the picking.js:333
+   resolver — call it, don't copy it).
+2. Highlight = an overlay mesh built from the element's OWN geometry (`meshCache[hash]`) + its DB world matrix —
+   the clash reveal already does exactly this (measure.js ~700–760, red/blue overlap meshes); reuse that builder.
+3. Area = triangle area of that element geometry (world scale).
+4. Dimensions along the element's own axes: local geometry box (rotation from the element transform) → 3 dimension
+   lines on the box edges labelled with metres; the longest = "length". Curved items (a road strip): the box gives
+   the chord — say "chord" and report the mesh's centre-line length only when computed (later).
+5. Witness by numbers: double-click on known elements → resolved guid = the element hit, dims = its local box
+   (±1 mm), area = its own triangles, overlay vertex count = its geometry; a batch with >1 element proves the area
+   is no longer the batch sum.
+
 ### FUTURE (recorded, not started)
 Model comparison/diff of design revisions · snags/issues with QR for inspection · variation orders on civil
 rates · rule-findings film for road standards · 2D plan view of the corridor (storey-free) · cross-sections
