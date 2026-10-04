@@ -501,6 +501,51 @@ pipes/structures + earthwork surface as 3D · the JKR standard clauses to check 
 
 ---
 
+## §L Default standards pack — suggest lux / drain sizes when the designer's data is missing (2026-10-04)
+
+**Rule (fits the PRIME RULE):** a value taken from a **published standard, cited to clause**, is
+extraction — not invention. Allowed, on four conditions:
+1. Every default lives in a **standards table** (`std_values`: quantity, value, unit, standard,
+   edition, clause/table, source-status) — never a constant in JS.
+2. **Source-status** is one of: `primary` (read from the standard itself) · `secondary` (quoted by
+   a third party — usable for a draft, flagged) · `user` (partner/designer supplied). Output shows it.
+3. **Designer data always wins.** A default only fills a field the IFC leaves empty.
+4. Anything computed from a default is labelled **SUGGESTED (per <standard> <clause>)** in its own
+   colour — never presented as the design.
+
+### L.1 Lighting — what the research found
+- Malaysian code: **MS 825** (Part 1:2007 principles; **Part 4:2012 lighting classes**; Part 5
+  calculation; Part 6 measurement). Drafts of Parts 4 and 5 were out for public comment
+  Nov–Dec 2025 (jsm.gov.my). The class values are **behind the standard's paywall** — buy MS 825-4 to
+  make them `primary`.
+- **EN 13201-2** (European; MS 825-4 appears to follow the same class scheme — **unconfirmed**)
+  M-classes, `secondary` (performanceinlighting.com): M1 L=2.00 cd/m², U0 0.40, Ul 0.70 · M2 1.50,
+  0.40, 0.70 · M3 1.00, 0.40, 0.60.
+- **What we can do:** (a) **check** — given lamp positions + photometry, compute luminance/illuminance
+  on the road grid (the MS 825-5 / EN 13201-3 point method) vs the class target → pass/fail heat map;
+  (b) **suggest** — given the road class, propose pole spacing for a reference luminaire. (b) still
+  needs ONE photometric file (IES) — a manufacturer's published file the user picks from a catalogue,
+  recorded as the assumption. Without any IES file only (a)'s target can be shown, not a result.
+
+### L.2 Drainage — what the research found
+- Malaysian manual: **MSMA 2nd Edition** (DID/JPS). Rational method **Q = C·i·A / 360** with C
+  from **MSMA Table 2.5**; rainfall intensity i from MSMA's IDF for the nearest station.
+- Manning's n for reinforced concrete pipe ≈ **0.012** — `secondary` (generic, not yet read from MSMA).
+- **What we can do:** paved area A per drain catchment from road-surface geometry → Q → required
+  size by Manning → **suggest the smallest standard pipe/drain ≥ required**, compare with what's
+  modelled (sizes ARE in the drainage psets, §K). Standard pipe size list must come from a cited
+  source (MS / manufacturer catalogue), not typed in.
+
+### L.3 First step (spec'd, not started)
+Buy/obtain **MS 825-4** and **MSMA 2nd Ed. Table 2.5 + IDF for Perak/Ipoh station** → fill
+`std_values` as `primary`. Until then any demo runs on `secondary` values with the flag visible.
+
+Sources: https://www.jsm.gov.my/images/Public%20Comment/1%20Nov%20-%2031%20Dec%2025/Draft%20MS%20825-4_202X_PC.pdf ·
+https://www.performanceinlighting.com/au/en/en-13201-2-2015 ·
+https://www.scribd.com/doc/293680050/MSMA (MSMA reference copy — verify against DID original)
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written. **Next: user reviews §PLAN checklist; nothing coded.**
