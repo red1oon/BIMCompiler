@@ -562,4 +562,15 @@ https://www.scribd.com/doc/293680050/MSMA (MSMA reference copy — verify agains
 
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
-  §C redesign + §PLAN (P1–P5, impact) written. **Next: user reviews §PLAN checklist; nothing coded.**
+  §C redesign + §PLAN (P1–P5, impact) written.
+- 2026-10-04 (later): **P1 + P2 + §I.3 framing CODED** — bim-ootb branch `fix/civil-units-disc-framing`
+  (worktree `/tmp/wt-civil-units`, localhost `http://127.0.0.1:8401`), sw v1469, NOT merged.
+  Witness `viewer/tests/witness_import_units_disc.js` (real worker in vm), BEFORE→AFTER:
+  SIGNAGE 2.0×1.2 m ARC → 2023.7×1196.8 m SIGNAGE; LIGHTING 2.0×1.2 → 2048.8×1189.3 m LIGHTING;
+  DRAINAGE 2004.6 m / MARKING 2004.3 m / FURNITURE 1940.0 m each own discipline; EARTHWORK INCONCLUSIVE
+  (0 elements); SampleHouse 14.0×5.9×3.5 m ARC 38 / STR 20 both sides (regression guard).
+  Filename sweep 464 names: first cut changed "IFC4 Demo Library.ifc" → DEMO (wrong) → space-split
+  limited to civil words → 13 changes, all road/furniture/drainage files.
+  Framing impact: plain p2–98 tightened Hospital 151→85 m (real wings) → gated on full > 2× core:
+  LTU 426→126 m TRIM; Hospital 1.8, Duplex 1.3, Terminal 1.15 KEEP. Browser §FRAME_ROBUST line not
+  yet read from a live run. ROAD.ifc (278 MB) not run through the witness (time).
