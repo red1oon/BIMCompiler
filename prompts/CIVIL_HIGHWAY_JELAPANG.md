@@ -900,6 +900,15 @@ Witness 7/10 — the 3 FAILs, none caused by civil data:
 Harness bug fixed (bim-ootb #1860): it read tolerance with `|| 0.025`, so it would have run civil at 25 mm.
 In the viewer: matrix cell click marks mesh-true per 200-row page; the "Total" stays the box count; Ask/Find skips mesh above 3,000 box hits.
 
+### §V.4 Spec — hide box-only rows on big pairs (user, 2026-10-05: "any thousands means no need to show bbox clashes")
+- `clash_rules.json` `display.hide_box_only_above: 1000` (the user's number). When the pair's BOX total (the count
+  `_countClashesAsync` already computes) is ≥ it, the clash list skips rows whose mesh verdict is CLEAR (today: struck
+  through + "bbox-only"). Rows not yet judged still show until their verdict lands. Header says "N box-only hidden".
+- Applies to every model, not only civil (user's rule is by count) — e.g. Hospital ARC×STR 11,906 box hits.
+- Below the limit: unchanged (struck-through rows stay visible). 0 or missing = off.
+- Witness: headless render of `_renderClashList` with judged rows above/below the limit — hidden count = CLEAR count above,
+  0 below; every visible row is CLASH or unjudged above the limit.
+
 ---
 
 ## ▶ RESUME HERE (2026-10-05, session closing — read this first)
@@ -933,6 +942,35 @@ earthwork + drainage pipes as 3D · lamp IES files · approval of the other sess
 **Rules that bit this session:** bump the script tag of EVERY changed file on EVERY page (#1847) · a new owner
 (civilRuleFor) must be wired into every READER, not just writers (#1854) · fleet non-impact proof = cache_4d_run
 before/after with the civil table ACTIVE (`scratchpad/cache4d_civil_on.js` pattern) + headless BOQ for 5D.
+
+---
+
+## §W Building features reusable on roads (2026-10-05)
+**Geo-reference: NONE in JELAPANG** — IFC2X3 (no IfcMapConversion), `site_latitude/longitude` unknown,
+`true_north_source=default_zero`; coordinates ~28.6 km E / −23.5 km N sit in an unknown local grid → CRS code
+needed from the designer (§I.2). Anything sun/GPS/basemap-based waits for it.
+
+### ACTIVE (user, 2026-10-05) — the ONLY one to build now
+**Night mode treats road lamps and traffic lights as light sources; Alt+S renders them (photoreal / "surreal").**
+- Cause (code read, bim-ootb main): the ONE owner `A._loadNightFixtures` (`viewer/tools.js:1462`,
+  §NIGHT_FIXTURE_VOCAB — shared by night point lights, §PHOTO_EMBER, §LAMP_SHAPE_COLOUR, §FIXTURE_EMISSIVE)
+  selects luminaires by element NAME containing 'light'. JELAPANG names are `IfcBuildingElementProxy_<id>`
+  → zero fixtures → night mode / Alt+S have no lamps.
+- Fix shape: inside that SAME owner (no second selector), a civil branch: elements with discipline LIGHTING
+  (CIVIL_DISCS) are fixtures; traffic signals identified by `element_psets` `15_Name` LIKE 'TRAFFIC SIGNAL%'
+  (6 columns) — signal colour/emissive is a presentation choice, label it. Lamp HEAD = top of the element bbox,
+  not its centre (poles median 13.9 m tall). Strays: ~16 LIGHTING elements sit ~57 m below the road (§M) —
+  exclude by the same p2-bottom ground (§GROUND_ROBUST) or report them.
+- Gate: discipline LIGHTING only exists in civil imports → building fixture lists byte-identical (prove on
+  Hospital/Terminal/LTU/Duplex: §NIGHT_MODE fixture count + positions before = after).
+- Witness: JELAPANG fixture count from the owner (expected ≈ 227 LIGHTING minus strays, with 6 signals flagged),
+  §PHOTO_EMBER lamp count in an Alt+S run — numbers, not screenshots. Use localhost (WebGPU needs a secure context).
+
+### FUTURE (recorded, not started)
+Model comparison/diff of design revisions · snags/issues with QR for inspection · variation orders on civil
+rates · rule-findings film for road standards · 2D plan view of the corridor (storey-free) · cross-sections
+square to the road · measure-based lane widths/clearances · chainage grid overlay · staffage cars on the road ·
+sun path (needs CRS) · ERP fold → JKR asset register.
 
 ---
 
