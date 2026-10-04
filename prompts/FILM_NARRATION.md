@@ -397,6 +397,71 @@ just take note perhaps next version")
   → tab `[data-tab="diy"]` "Run it yourself (DIY)": "Download install script" `#adq-dl-viewer` + "Save an offline copy"
   `#adq-save-offline`. Line idea: "No internet on site? Install it locally — it runs air-gapped."
 
+### §8 STORYBOARD v3 — for red1's review (2026-10-04, NOT filmed yet: "dont bake yet, until we get the storyboard right")
+
+- **OPEN ** — Red pill → portal; 13 greetings spoken back to back (no UI switching)
+  · [en] F: Hi!
+- **· g_pick** — ONE on-screen demo: flag picker → French UI (switch shown)
+  · [en] M: Your language — one click, and it switches in place.
+- **CH1 c1** — Card “OPEN ANY BUILDING” on Alt+S still
+  · [en] M: Chapter one. Open any building.
+- **· s01** — Rail → Buildings & IFC hub
+  · [en] F: The front door. Nothing to install — any browser, desktop or mobile. / M: Twenty-five ready-made buildings, right here.
+- **· s02** — Hover the drop zone
+  · [en] M: Got your own IFC? Drop it here — it's read right in the browser.
+- **· s03** — HHS card → Viewer streams in (6 s) → drag + zoom in  ★NOVEL ART: IFC→SQLite in browser
+  · [en] F: Open one — an office, six thousand eight hundred and thirty-nine elements. / M: Streamed straight from a database, in the browser — about six seconds. No server.
+- **CH2 c2** — Card “SEE EVERYTHING”
+  · [en] F: Chapter two. See everything.
+- **· s04** — UI→Spanish (switch cut) · click a wall → Info panel; ghost/x-ray toggles cut
+  · [es] M: ¡Mira! Un muro: su clase, su planta, su material.  ⟶ EN: M: Look! A wall: its class, its storey, its material.
+- **· s05** — Find “IfcWall” → 50 found
+  · [en] F: Ask for walls. / M: Fifty found, and listed — click one, and you fly straight to it.
+- **· s05b** — Ask: largest rooms (14, 11.44 m²) + element counts (6,880)  ★NOVEL ART
+  · [en] M: Or just ask — the largest rooms, the element counts. / F: Every answer from the engines, with its evidence.
+- **· s05c** — Cutaway 4.6 s: Terminal escape route (same engine as Ask)
+  · [en] F: Ask for the way out — here on the Terminal: the worst-case route, step by step, timed.
+- **· s06** — UI→Arabic RTL (cut) · floor via storey filter (no wireframe) · X-Ray on/off
+  · [ar] F: طابق واحد… ثم نرى من خلال الجدران، مثل الأشعة السينية.  ⟶ EN: F: One floor… then we see through the walls, like an X-ray.
+- **CH3 c3** — Card “INSPECT IN DEPTH”
+  · [en] M: Chapter three. Inspect in depth.
+- **· s07** — UI→Chinese (cut) · section cut slider
+  · [zh] F: 一刀切开，逐层查看，每一层楼板一目了然。  ⟶ EN: F: One cut, floor by floor — every slab in plain sight.
+- **· s08** — Measure: two taps → 66.25 m
+  · [en] M: Measure? Two taps. / F: Sixty-six metres, end to end. / M: Tap the same dot again, and you get an area.
+- **· s09** — UI→Malay (cut) · Night on (410 lights) → Fly tour → drag its timeline slider → Alt+G denoise → refresh CUT  ★BIM KILLER
+  · [ms] M: Malam pun boleh — empat ratus sepuluh lampu menyala. Jom terbang, dan tarik garis masanya.  ⟶ EN: M: Night works too — four hundred and ten lights come on. Let's fly in, and drag its timeline.
+- **· s10** — Clash matrix → busiest pair ARC|STR (4,992) → list → tap one (fly to) → shift-select 12 (red dots, zoom out) → list ✕ → refresh CUT  ★BIM KILLER
+  · [en] F: Clashes by discipline pair. / M: Tap one — and fly straight to it. / F: Select a range — every clash a red dot, zoomed out for the overview.
+- **CH4 c4** — Card “BUILD OVER TIME”
+  · [en] F: Chapter four. Build over time.
+- **· s11** — Time Machine: drag to ¾ perspective → V sounds ON (only sample) → play 55-day build  ★NOVEL ART
+  · [en] M: The Time Machine. The schedule comes from the model itself — / F: fifty-five days, and nothing appears before what holds it up. / M: Listen — every trade has its own sound.
+- **· s11sun** — Sun on → HR mode → play → sunset (~20:00) → V off
+  · [en] F: Turn on the sun, and the day runs down to sunset.
+- **· s13** — Pull Back → “nothing to compress”
+  · [en] M: Pull it back as early as it can go? / F: It's already there. Nothing to compress. / M: An honest answer — it won't invent a gain.
+- **CH5 c5** — Card “COUNT THE COST”
+  · [en] M: Chapter five. Count the cost.
+- **· s15** — 4D/5D page: 6 charts
+  · [en] F: Four-D and five-D — six charts, straight from the model. / M: Cost by discipline, and the schedule, side by side.
+- **· s15_en_US** — Flag → US English: $ + RS Means  ★BIM KILLER
+  · [en] M: Switch to US English — dollars, and RS Means rates.
+- **· s15_en_MY** — Back to RM + CIDB
+  · [en] F: Back home — ringgit, and CIDB rates. Language is a cost context.
+- **CH6 c6** — Card “SHARE THE VIEW”
+  · [en] F: Chapter six. Share the view.
+- **· s16** — Share card (one link; clash share; phone, no install)  ★BIM KILLER
+  · [en] F: Share the exact view — one link, camera and all. / M: Got a clash open? The share is about that clash. / F: Send it to a phone — it opens in the browser. Nothing to install.
+- **· s17** — Alt+C Film-Maker → tick clashes/measures/floors/sun
+  · [en] M: And it makes its own film — from the building's rooms. / F: Tick what to show: clashes, measures, floors, the sun.
+- **· s17prev** — Eye → preview plays
+  · [en] M: Preview it — and drag the flight itself to change it.
+- **· s17clip** — Cutaway 5 s: finished Hospital film  ★NOVEL ART
+  · [en] F: And here is one, finished — the Hospital, baked in the browser.
+- **END ** — Thank-you round: 13 languages, UI switches (picker cut), ends English + “Free, open…”
+  · [en] M: Thank you! / F: Free, open, and right in your browser.
+
 ### ⏸ STANDING ORDER (red1, 2026-10-04): "After viewer, wait for my go ahead on the next, Modeller." / "BUt do the first
 one we agreed on first. This big story is to rest a while" — finish §8 (Viewer trailer) end to end, then STOP. Do not
 start §9 (Modeller) or §10 (documentary) without red1's explicit go.
