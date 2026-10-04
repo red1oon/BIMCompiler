@@ -155,7 +155,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   async function solid(tag) {
     for (let i = 0; i < 3; i++) {
       const st = await page.evaluate(() => ({ ghost: typeof window.ghostXrayOn === 'function' && window.ghostXrayOn(), xray: !!(window.APP && window.APP.xrayOn) }));
-      if (st.ghost) { await page.keyboard.press('Alt+x'); await hold(400); continue; }
+      if (st.ghost) { await page.evaluate(() => window.toggleGhostXray && window.toggleGhostXray()); await hold(400); continue; }   // Alt+X was merged into Alt+Z (scene.js:3264); this is the ghost's own toggle
       if (st.xray) { await page.keyboard.press('Alt+z'); await hold(400); continue; }
       fact('solid.' + tag, 'ok'); return;
     }
@@ -264,7 +264,10 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await hold(1800); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1200); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1200);
     await hclick('#tour-scrub-close').catch(() => {}); await key('n'); await solid('afterFly');
     await slice('s10', 'clash: pair → list → one → range'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
-    const pair = await page.evaluate(() => { let best = null, n = -1; document.querySelectorAll('[data-pair]').forEach(c => { const v = parseInt((c.textContent || '').replace(/[^0-9]/g, ''), 10); if (v > n) { n = v; best = c.getAttribute('data-pair'); } }); return best; });
+    // the counts arrive as §CLASH_MATRIX_COUNT lines after the grid shows — wait, then take the busiest pair
+    for (let i = 0; i < 80 && PAGELOG.slice(n1).filter(l => /§CLASH_MATRIX_COUNT /.test(l)).length < 3; i++) await page.waitForTimeout(100);
+    let pair = null, pn = -1; PAGELOG.slice(n1).forEach(l => { const m = l.match(/§CLASH_MATRIX_COUNT (\S+) = (\d+)/); if (m && +m[2] > pn) { pn = +m[2]; pair = m[1]; } });
+    fact('clashCounts', PAGELOG.slice(n1).filter(l => /§CLASH_MATRIX_COUNT /.test(l)).map(l => l.replace(/^.*COUNT /, '').replace(/ size.*/, '')).join(' · '));
     fact('clashPair', pair);
     if (pair) {
       n1 = PAGELOG.length; await hclick('[data-pair="' + pair + '"]'); await page.waitForSelector('[data-clash-idx]', { timeout: 20000 }).catch(() => {});
