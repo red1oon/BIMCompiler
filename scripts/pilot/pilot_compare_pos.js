@@ -21,7 +21,8 @@ for (const o of ours.ops) {
 for (const o of ours.ops) {
   const p = typeof o.parameters === 'string' ? JSON.parse(o.parameters) : o.parameters; const t = String(p.table || p.key || '').toLowerCase();
   if (!['CRUD_UPDATE', 'SET_STATUS'].includes(o.op_type)) continue;
-  const row = (created[t] || []).find(r => -r._op === Number(p.id)); if (!row) continue;
+  // a composite-key row (C_OrderTax, M_StorageOnHand …) is addressed by its <Table>_UU (op.idCol — PO.saveNew:3546 identity)
+  const row = (created[t] || []).find(r => p.idCol ? String(r[p.idCol]) === String(p.id) : -r._op === Number(p.id)); if (!row) continue;
   if (o.op_type === 'CRUD_UPDATE') for (const c in p.changes) row[c] = p.changes[c].new; else row.docstatus = p.to;
 }
 const SKIPC = /(_uu$|^created|^updated|^processedon$|^isactive$|^ad_client_id$|^ad_org_id$)/;
@@ -66,7 +67,7 @@ for (const t of oursTables) if (!ref.find(r => r.table === t) && created[t]) out
 for (const c of out.tables) {
   const bad = (c.cols || []).filter(x => x.v && x.v !== 'MATCH' && !/^\(/.test(x.col));
   emit('§PILOT-POS-CMP table=' + c.table + ' verdict=' + c.verdict + ' ref=' + (c.ref ? 'ins' + c.ref.inserted + '/upd' + c.ref.updated + (c.ref.cols.length ? '[' + c.ref.cols.join(',') + ']' : '') : '-') +
-    ' ours=' + (c.ours ? 'ins' + c.ours.inserted + (c.ours.updatedCols.length ? '/updcols[' + c.ours.updatedCols.join(',') + ']' : '') : '-') +
+    ' ours=' + (c.ours ? 'ins' + c.ours.inserted + ((c.ours.updatedCols || []).length ? '/updcols[' + c.ours.updatedCols.join(',') + ']' : '') : '-') +
     (c.owner && /MISSING|PARTIAL/.test(c.verdict) ? ' owner=' + c.owner.java + ' trap=' + c.owner.trap : ''));
   bad.forEach(x => emit('§PILOT-POS-CMP-COL table=' + c.table + ' col=' + x.col + ' ' + x.v + (x.ref !== undefined ? ' ref=' + JSON.stringify(x.ref) : '') + (x.ours !== undefined ? ' ours=' + JSON.stringify(x.ours) : '')));
   (c.cols || []).filter(x => /^\(/.test(x.col)).forEach(x => emit('§PILOT-POS-CMP-COL table=' + c.table + ' ' + x.col + ' matched=' + x.matched + ' missing=' + JSON.stringify(x.missing) + ' extra=' + JSON.stringify(x.extra)));
