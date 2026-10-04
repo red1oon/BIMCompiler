@@ -398,6 +398,20 @@ design speed values must be cited (JKR Arahan Teknik / AASHTO), not chosen. Spec
   (screen-space drift in px, asserted), on Hospital + JELAPANG.
 - Near plane: stays P3 (measure first).
 
+
+### I.3 Strays shrink the VIEW, not the model — LTU measured (2026-10-04)
+User: "LTU … due to large strays ends up very small — same with this highway?" Measured with the
+same web-ifc probe on all 9 `internal/UNMERGED/LTU_AHouse_*.ifc`: every file spans 119–174 m,
+**except PLB = 426.0 × 260.7 m** (strays). Shipped `LTU_AHouse_extracted.db` x 199.6→625.1
+(= 426 m). All < 1500 ⇒ the units heuristic **never fired on LTU** — P1 does not change LTU.
+LTU looks small because the camera fit uses the full min/max envelope (`streaming.js:3870-3891`):
+PLB strays stretch it from ~170 m to 426 m, so the building is framed ~2.5× too far. Different
+cause from JELAPANG (real ×0.001 shrink), same symptom.
+**Fix (separate, small): robust framing** — envelope from the 2nd–98th percentile of element
+centres instead of min/max, strays still loaded and visible. Impact: initial camera on EVERY
+building (only changes where strays exist). Witness: per fleet building, envelope before/after;
+LTU ~426 → ~170 m expected; buildings without strays change < 5%.
+
 ### I.2 GPS site-walk — `walk.js` exists, but its anchor assumes a building
 How it works now (read `walk.js`):
 - Anchor = nearest **door** (`:40` `findNearestDoorPosition`), else the building centre (`:44`).
