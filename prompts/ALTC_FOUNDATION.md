@@ -45,8 +45,9 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   ✅ BUILT bim-ootb fix/fast-bake @e1f12d9a (pushed), sw v1561, effects.js?v=139 cinema_path_editor.js?v=20. Witness 8/8 PASS
   (n=21: seeded 3, bandSum 62.10 m vs cap 93.15 m; old rule 434.70 m on a 207 m walk = visible). :8664 serves it. NOT yet live-witnessed:
   next Alt+C on Terminal must print `§CPE_SEED_FEW wp=21 seeded=3` and `§CPE_OPEN ... bands=3`.
-- ▶▶ RESUME HERE (2026-10-04 11:15, for a new session) — supersedes every RESUME block below.
-  TREE: /tmp/wt-fastbake = bim-ootb fix/fast-bake @ce4c706e, PUSHED, clean. /tmp dies on reboot — recreate:
+- ▶▶ RESUME HERE (2026-10-04 11:15, tree line updated 2026-10-05 shutdown) — supersedes every RESUME block below.
+  TREE: /tmp/wt-fastbake = bim-ootb fix/fast-bake @28266006 (sw v1562), PUSHED, clean. :8664 = `node ~/bin/serve_tree.js /tmp/wt-fastbake 8664`;
+  Terminal_* DBs symlinked from ~/bim-ootb/buildings/. OPEN: live proof of §CPE_SEED_FEW (see the 2026-10-05 entry). /tmp dies on reboot — recreate:
   `git -C ~/bim-ootb worktree add /tmp/wt-fastbake fix/fast-bake`; symlink buildings/{Hospital,Terminal,HHS_Office_Federated}_silent.db ->
   ~/Downloads/<same>.db and LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db; copy the CURRENT sidecars (key 2bce3c9b:90286) from
   ~/.cache/bim4d/altc_2026-10-03/sidecars_zonefloor/ into buildings/patches/ (older sets oldbox/truebox are STALE keys — a stale key = a
