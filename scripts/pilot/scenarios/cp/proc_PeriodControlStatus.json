@@ -1,0 +1,5 @@
+[
+ {"name":"cp_pcs_open_148","process":168,"recordId":148,"tableId":229,"preSql":["UPDATE c_periodcontrol SET periodaction='O', periodstatus='C' WHERE c_periodcontrol_id=148"],"tables":["c_periodcontrol"]},
+ {"name":"cp_pcs_close_148","process":168,"recordId":148,"tableId":229,"preSql":["UPDATE c_periodcontrol SET periodaction='C', periodstatus='O' WHERE c_periodcontrol_id=148"],"tables":["c_periodcontrol"]},
+ {"name":"cp_pcs_noaction_149","process":168,"recordId":149,"tableId":229,"preSql":["UPDATE c_periodcontrol SET periodaction='N' WHERE c_periodcontrol_id=149"],"tables":["c_periodcontrol"]}
+]

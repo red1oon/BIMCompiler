@@ -1725,3 +1725,74 @@ childNew:"saved rows=1 linkedToHeader1=1", back1:current=-1, child2:{parent=-3 l
 **Regression:** poc_ninja_{callout,export,extract,bundle,create,model} PASS against the new file; `poc_ninja_pill` FAILs identically on the untouched base (pre-existing).
 **FOLLOW-UP (bim-compiler, not touched — scope):** `scripts/poc_ninja_stage.js` R1 asserts menus = tables+1 (old one-window-per-table shape); with details folded it must
 assert `counts.windows+1` (verified PASS 18 tables/2 windows/3 menus with that one-line change in a scratch copy), and `build/erp/ninja_*.js` need the sync from bim-ootb.
+
+## §CP — 2026-10-04 · Core callouts + core processes, verbatim (SPEC, written before the class ports; results appended as §CP-RESULT)
+**Directive (red1, 2026-10-04):** "iDempiere core model integrity … with all its core logic and processes as verbatim as can be." Scope = CORE
+(trade cycle + accounting, CLAUDE.md §AD-LAYER LAW rule 6). Owner split: this lane = `ad_callout.js`, `callouts/*`, `ad_process.js`, `processes/*`,
+the callout bridge in `crud_overlay.js`, field rendering hooks in `idempiere.html`; model classes/ctors/posting = DOCUMENTS+POSTING lane.
+**Mechanism, not symptom (AD-LAYER LAW rule 1):**
+- **CP.1 Callout runtime** = a port of the objects iDempiere runs callouts on: `Env` context (Env.java:322-1003), `GridField` value+context
+  (GridField.java:2102-2175, getDependentOn :305), `GridTab` row (GridTab.java setValue :2849-2885, processFieldChange/processCallout :2912-3170,
+  dataNew fan :1179-1181; GridTable.setValueAt :1387-1440, isValueChanged :3581), the UI cascade (zk ADTabpanel.dataStatusChanged :1692-1712:
+  a callout's `mTab.setValue` fires the target column's callouts, `activeCallouts` loop guard, `isCalloutActive` = >1 active), `CalloutEngine`
+  (start/isCalloutActive/dateAcct/checkPeriodOpen/rate), lookup re-validation of dependent fields (GridField.updateDependentField :2874).
+  Dispatch = the `AD_Column.Callout` string (`;`/`,` tokens) → registered class.method; `@Callout`/IColumnCallout classes by table|column.
+  Java types cross as Java does (ID int, money BigDecimal, Timestamp, boolean). An unported class.method is skipped with `§CALLOUT-UNPORTED`
+  (logged, chain continues), a branch needing an absent dependency logs `§CALLOUT-UNPORTED-DEP`.
+- **CP.2 Callout classes**, one file per Java class (`erp/callouts/<Class>.js`), bodies verbatim with `// File.java:line` per block; the model
+  statics they call (MProductPricing, Tax, MUOMConversion, MConversionRate, MPeriod, PL/pgSQL functions as SQLite UDFs) in support files.
+- **CP.3 The form is a VIEW of one GridTab** (crud_overlay §CP bridge): every user change (create AND edit) → `GridTab.setValue`; New runs the
+  dataNew callout fan before the dirty baseline; a callout-set column with no form field (e.g. C_Order.DateAcct, IsDisplayed=N) is saved
+  with the row (GridTable saves the whole row). Host gives the tab context (`opts.calloutCtx`: AD_Tab_ID, TabNo, IsSOTrx, parent rows).
+  Deletes the 14 hand-written host handlers + 9 accessors + the 7 engine stubs (deletion budget, rule 4).
+- **CP.4 Process runtime** = SvrProcess (SvrProcess.java:132-330: prepare→doIt, exception/`@Error@` = failed, Msg.parseTranslation summary),
+  ProcessInfoParameter (typed as AD_PInstance_Para: BigDecimal/Timestamp/String), run inside ONE ModelLayer.Trx (Java trxName); raw
+  `DB.executeUpdateEx` UPDATE/DELETE/INSERT translated into Trx ops; the host commits `trx.groupOps()` as one signed group. Processes in
+  `erp/processes/<Class>.js`. Model ctors (MInOut(MOrder…), MInvoice(…), lines, allocation, pay selection) come from the DOCUMENTS lane
+  (`ModelTrade.ctor.*`, coordinator ruling 2026-10-04).
+**Witnesses (claims first; real iDempiere is the oracle):**
+- **W-CP-CALLOUT-ORACLE** (`scripts/pilot/cp_callout_oracle.js`): an OSGi bundle on the PILOT server (`scripts/pilot/oracle/`, 127.0.0.1:8097,
+  DB idempiere_pilot) drives the REAL GridWindow/GridTab headless (dataNew → setValue → the ADTabpanel cascade via a DataStatusListener).
+  Both sides start from the oracle's own row + login ctx; every field of the row is diffed after every step; `--off` (our classes unregistered)
+  must diff (vacuity). Claim: every step MATCH or a named data/env cause.
+- **W-CP-CALLOUT-LIVE** (`cp_callout_live.js`): the same steps typed into OUR PAGE (headless, --disable-gpu): the oracle-derived columns must equal
+  our GridTab row and the visible field.
+- **W-CP-PROC-ORACLE** (`cp_process_oracle.js`): the same AD_Process + params on both; reference changes = whole-DB snapshot diff (pilot_tablediff);
+  ours = the Trx ops; per-table counts + row multisets over business columns; `--off` vacuity.
+- **Denominators:** callouts = active `AD_Column.Callout` rows on core tables (C_Order/Line, C_Invoice/Line, C_InvoiceBatchLine, M_InOut/Line,
+  C_Payment, C_PaymentAllocate, C_PaymentTransaction, C_PaySelectionLine, C_BankStatement/Line, C_Cash/Line, C_Conversion_Rate, C_UOM_Conversion,
+  C_DepositBatch, GL_Journal/Batch/Line, M_Inventory/Line, M_Movement/Line, M_Requisition/Line, M_RMA/Line, C_POSPayment); processes = the core
+  AD_Process.Classname rows listed in §CP-RESULT.
+**First measurement (logs read):** `logs/cp/engine.log` `§CP-SUMMARY cases=3 steps=4 match=4 fieldDiffs=0` (CalloutEngine.rate both ways, dateAcct
+open/closed-period date); `engine_off.log` match=0 fieldDiffs=4 (vacuity holds); `live_engine.log` `§CP-LIVE-SUMMARY … judged=4 match=4 …
+pageErrors=0` — on the page the New fan now derives C_Order.DateAcct (no form field) into the saved row (`§CALLOUT-NEW … extra={"DateAcct":…}`),
+the pilot's "DateAcct missing on forms" gap at its root.
+
+## §CP-RESULT — 2026-10-04 (session 2, after the /tmp wipe)
+**Recovery.** The shutdown wiped `/tmp/wt-callouts` before any commit. Rebuilt byte-exact by replaying the first session's 227 recorded
+edits (transcripts of session 32c05e99 + forks) onto `de9682e3`: 39 files, +6369/−811 — identical to that session's last `git diff --cached --stat`.
+Now on bim-ootb `feat/core-callouts` (pushed), merged with main #1843 (model layer), sw v817.
+**Witness fixes (the instrument, before the code):**
+- The witnesses loaded the RAW `ad_seed.db`; the page applies `erp/patches/ad_seed.db.sql` on every load. All three now apply it (`§AD-SEED-PATCH (witness) statements=1262 failed=0`). This alone cleared CostAdjustmentLine (M_Cost rows) and GLJournal's `no such table: c_conversiontype`.
+- DocumentNo diffs (20 steps) were sequence STATE: `§CP-MIRROR-SEQ ad_sequence=376` copies the oracle's counters first.
+- `alignFromSeed` was declared in proc cases but never implemented → PeriodStatus judged 23 open rows vs our 22 closed + 1 never-opened. Implemented (`§CP-PROC-ALIGN`).
+- Proc witness could not say VACUOUS: now `§CP-PROC-VACUOUS` + `verdict=INCONCLUSIVE|PASS-PARTIAL|PASS|DIFF`; table-ID counter bumps (AD_PInstance's own row) ignored (`§CP-PROC-IDSEQ`).
+**Code fixes:** C_DepositBatch/C_DepositBatchLine DDL added to the self-heal patch generator (CalloutBankStatement read them); `MCostDetail.processProduct(product, trx)` overload (:992-1013) ported in model_cost.js; CostCreate called a nonexistent `MODEL_STATICS`.
+**W-CP-CALLOUT-ORACLE: 288 / 292 steps MATCH** over 20 case files (17 classes + 2 @Callout + engine); every file's `--off` run diffs (vacuity holds).
+The 4 left = one named data cause: `ad_seed.db` stores C_Conversion_Rate.MultiplyRate as a 15-digit double (`1.17647058823529`), Postgres keeps
+38 digits — GLJournal CurrencyRate ×3, Payment CurrencyRate/ConvertedAmt ×1; equal after currency rounding.
+**Denominator:** 159 active core-table columns carry `AD_Column.Callout` → 77 distinct class.method → **77 / 77 registered** (probe with two fake names reports them missing, so the check discriminates).
+**W-CP-PROC-ORACLE:** PeriodStatus 2/2, PeriodControlStatus PASS-PARTIAL (1 case vacuous), InvoicePayScheduleValidate PASS; CostCreate INCONCLUSIVE (no unprocessed M_CostDetail in either DB — needs a staged pre-state); FactAcctReset has no case.
+
+## §CP-PROC-CORE — 2026-10-04 · the core BUTTON processes, verbatim (SPEC before the ports)
+**Denominator (extracted, `ad_seed.db`):** AD_Process with a Classname referenced by `AD_Column.AD_Process_ID` on a core trade/accounting table = **34**.
+Ported verbatim before this section: PeriodStatus, PeriodControlStatus, InvoicePayScheduleValidate (3). Open 31, in four families (one worker each):
+- **A copy-from:** CopyFromInvoice, CopyFromOrder, CopyFromJournal, CopyFromJournalDoc, CopyFromBankStmt, CopyProduct.
+- **B doc-from-doc:** InOutCreateInvoice, InvoiceCreateInOut, OrderLineCreateShipment, OrderLineCreateProduction, RMACreateOrder, InOutCreateConfirm, PackageCreate.
+- **C pay/bank/match:** AllocationReset, BankStatementMatcher, PaySelectionCreateFrom, PaySelectionCreateCheck, PaySelectionCheckReverse, MatchInvDelete, MatchPODelete, PaymentOnline.
+- **D stock/period/acct:** InventoryCountCreate, InventoryCountUpdate, M_PriceList_Create, YearCreatePeriods, AcctSchemaCopyAcct, BOMVerify, ProductionCreate, CommissionAPInvoice, DunningRunCreate, SalesOrderRateInquiryProcess.
+**Mechanism:** `erp/processes/<Class>.js` via `defineProcess` (SvrProcess runtime, §CP.4); body verbatim with `// File.java:line`; DB writes through the
+Trx; model ctors from `model_ctor.js`. A branch needing an external service (payment processor, carrier rate inquiry) logs `§PROC-UNPORTED-DEP` and
+returns the Java error text — counted as ported-with-named-dep, never silently passed.
+**Claim (W-CP-PROC-ORACLE per class):** ≥1 NON-VACUOUS case (the process changes ≥1 judged table on the oracle) whose per-table
+counts + row multisets MATCH; its `--off` run must DIFF. A class with only vacuous cases = INCONCLUSIVE, not done.

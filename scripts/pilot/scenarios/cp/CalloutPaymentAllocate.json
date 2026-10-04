@@ -1,0 +1,8 @@
+[
+ {"name":"cp_payalloc_invoice","window":195,"tab":1,"parents":[{"tab":0,"id":1009101,"from":"ref"}],"steps":[
+   {"set":"C_Invoice_ID","value":103},{"set":"Amount","value":"150"},{"set":"DiscountAmt","value":"2"},{"set":"WriteOffAmt","value":"1"},{"set":"OverUnderAmt","value":"3"}]},
+ {"name":"cp_payalloc_allocated_payment","window":195,"tab":1,"parents":[{"tab":0,"id":1009100,"from":"ref"}],"steps":[
+   {"set":"C_Invoice_ID","value":103}]},
+ {"name":"cp_payalloc_noinvoice","window":195,"tab":1,"parents":[{"tab":0,"id":1009101,"from":"ref"}],"steps":[
+   {"set":"Amount","value":"10"}]}
+]

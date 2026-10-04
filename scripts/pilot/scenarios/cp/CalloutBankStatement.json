@@ -1,0 +1,9 @@
+[
+ {"name":"cp_bs_header_bankaccount","window":194,"tab":0,"steps":[{"set":"C_BankAccount_ID","value":101},{"set":"C_BankAccount_ID","value":100},{"set":"StatementDate","value":"2006-12-15"}]},
+ {"name":"cp_bs_line_payment","window":194,"tab":1,"parents":[{"tab":0,"id":101,"from":"ref"}],"steps":[
+   {"set":"C_Payment_ID","value":101},{"set":"ChargeAmt","value":"3"},{"set":"StmtAmt","value":"60"},{"set":"InterestAmt","value":"1.5"},{"set":"StatementLineDate","value":"2006-12-16"}]},
+ {"name":"cp_bs_line_stmtfirst","window":194,"tab":1,"parents":[{"tab":0,"id":101,"from":"ref"}],"steps":[
+   {"set":"StmtAmt","value":"45"},{"set":"C_Payment_ID","value":100}]},
+ {"name":"cp_bs_line_depositbatch","mirror":[{"table":"C_DepositBatch","where":"C_DepositBatch_ID=1009100"},{"table":"C_DepositBatchLine","where":"C_DepositBatch_ID=1009100"}],"window":194,"tab":1,"parents":[{"tab":0,"id":101,"from":"ref"}],"steps":[
+   {"set":"C_DepositBatch_ID","value":1009100},{"set":"StmtAmt","value":"80"}]}
+]

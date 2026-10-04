@@ -1,0 +1,5 @@
+[
+ {"name":"cp_gl_hdr","window":200005,"tab":0,"steps":[{"set":"DateDoc","value":"2026-03-15"},{"set":"DateAcct","value":"2026-02-10"},{"set":"C_Period_ID","value":200168},{"set":"AD_Org_ID","value":11},{"set":"C_DocType_ID","value":115},{"set":"C_AcctSchema_ID","value":101},{"set":"C_Currency_ID","value":102},{"set":"C_ConversionType_ID","value":114}]},
+ {"name":"cp_gl_batch","window":132,"tab":0,"steps":[{"set":"DateDoc","value":"2026-03-15"},{"set":"C_Period_ID","value":200168},{"set":"C_DocType_ID","value":50001}]},
+ {"name":"cp_gl_line","window":200005,"tab":1,"parents":[{"tab":0,"id":1005100,"from":"ref"}],"steps":[{"set":"AmtSourceDr","value":"100.555"},{"set":"CurrencyRate","value":"1.5"},{"set":"AmtSourceCr","value":"3.333"},{"set":"C_ValidCombination_ID","value":298},{"set":"Alias_ValidCombination_ID","value":297},{"set":"C_Project_ID","value":100},{"set":"C_Currency_ID","value":102}]}
+]

@@ -1,0 +1,1 @@
+[ {"name":"cp_ipsv_102","process":242,"recordId":102,"tableId":551,"preSql":["UPDATE c_invoicepayschedule SET isvalid='N' WHERE c_invoice_id=109","UPDATE c_invoice SET ispayschedulevalid='N' WHERE c_invoice_id=109"],"tables":["c_invoice","c_invoicepayschedule"]} ]

@@ -1,0 +1,3 @@
+[
+ {"name":"cp_depbatch_bankaccount","window":200031,"tab":0,"steps":[{"set":"C_Currency_ID","value":102},{"set":"C_BankAccount_ID","value":101},{"set":"C_Currency_ID","value":102},{"set":"C_BankAccount_ID","value":100}]}
+]

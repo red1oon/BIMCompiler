@@ -1,0 +1,4 @@
+[
+ {"name":"cp_rma_hdr","window":320,"tab":0,"steps":[{"set":"C_DocType_ID","value":131},{"set":"InOut_ID","value":108},{"set":"C_DocType_ID","value":150}]},
+ {"name":"cp_rma_line","window":320,"tab":1,"parents":[{"tab":0,"id":100}],"steps":[{"set":"M_InOutLine_ID","value":126},{"set":"M_Product_ID","value":124},{"set":"C_Charge_ID","value":100}]}
+]

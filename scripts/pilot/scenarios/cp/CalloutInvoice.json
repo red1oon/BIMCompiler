@@ -1,0 +1,24 @@
+[
+ {"name":"cp_inv_so_hdr","window":167,"tab":0,"steps":[
+   {"set":"C_DocTypeTarget_ID","value":118},{"set":"C_DocTypeTarget_ID","value":116},
+   {"set":"C_BPartner_ID","value":117},{"set":"C_BPartner_ID","value":118},{"set":"DateInvoiced","value":"2026-09-15"}]},
+ {"name":"cp_inv_po_hdr","window":183,"tab":0,"steps":[
+   {"set":"C_DocTypeTarget_ID","value":124},{"set":"C_DocTypeTarget_ID","value":123},{"set":"C_BPartner_ID","value":114},{"set":"C_BPartner_ID","value":120}]},
+ {"name":"cp_inv_so_line_product","window":167,"tab":1,"parents":[{"tab":0,"id":1009103,"from":"ref"}],"steps":[
+   {"set":"M_Product_ID","value":130},{"set":"QtyEntered","value":"3"},{"set":"PriceEntered","value":"46"},
+   {"set":"PriceEntered","value":"40"},{"set":"PriceActual","value":"50"},{"set":"QtyInvoiced","value":"4"},
+   {"set":"C_UOM_ID","value":101},{"set":"QtyEntered","value":"2.555"},{"set":"C_Tax_ID","value":105},{"set":"M_Product_ID","value":123}]},
+ {"name":"cp_inv_so_line_manual60","window":167,"tab":1,"parents":[{"tab":0,"id":1009103,"from":"ref"}],"steps":[
+   {"set":"QtyEntered","value":"2"},{"set":"PriceEntered","value":"60"},{"set":"PriceActual","value":"55"},{"set":"QtyInvoiced","value":"5"}]},
+ {"name":"cp_inv_so_line_charge","window":167,"tab":1,"parents":[{"tab":0,"id":1009103,"from":"ref"}],"steps":[
+   {"set":"C_Charge_ID","value":100},{"set":"PriceEntered","value":"10"},{"set":"QtyEntered","value":"3"}]},
+ {"name":"cp_inv_so_line_charge_excl","window":167,"tab":1,"parents":[{"tab":0,"id":1009103,"from":"ref"}],"steps":[
+   {"set":"M_Product_ID","value":128},{"set":"C_Charge_ID","value":101}]},
+ {"name":"cp_inv_so_line_nav","window":167,"tab":1,"parents":[{"tab":0,"id":1009103,"from":"ref"}],"steps":[
+   {"set":"M_Product_ID","value":136},{"set":"C_InvoiceLine_ID","value":103}]},
+ {"name":"cp_inv_po_line","window":183,"tab":1,"parents":[{"tab":0,"id":1009104,"from":"ref"}],"steps":[
+   {"set":"M_Product_ID","value":128},{"set":"QtyEntered","value":"2"},{"set":"C_Tax_ID","value":106},
+   {"set":"TaxAmt","value":"9.99"},{"set":"PriceEntered","value":"12.345"},{"set":"C_Charge_ID","value":200000}]},
+ {"name":"cp_inv_po_line_manual","window":183,"tab":1,"parents":[{"tab":0,"id":1009104,"from":"ref"}],"steps":[
+   {"set":"QtyEntered","value":"3"},{"set":"PriceEntered","value":"60"},{"set":"C_Tax_ID","value":108},{"set":"TaxAmt","value":"1"}]}
+]

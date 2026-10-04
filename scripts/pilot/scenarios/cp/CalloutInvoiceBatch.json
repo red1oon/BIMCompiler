@@ -1,0 +1,6 @@
+[
+ {"name":"cp_ib_line","window":342,"tab":1,"parents":[{"tab":0,"id":1009342,"from":"ref"}],"steps":[
+   {"set":"C_DocType_ID","value":123},{"set":"DateInvoiced","value":"2026-09-20"},{"set":"C_BPartner_ID","value":114},
+   {"set":"QtyEntered","value":"3"},{"set":"PriceEntered","value":"12.345"},{"set":"C_Charge_ID","value":200000},
+   {"set":"C_Tax_ID","value":106},{"set":"IsTaxIncluded","value":"Y"},{"set":"TaxAmt","value":"2"},{"set":"C_BPartner_Location_ID","value":109}]}
+]

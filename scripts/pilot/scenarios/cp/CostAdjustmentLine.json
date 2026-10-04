@@ -1,0 +1,4 @@
+[
+ {"name":"cp_costadj_avgpo","window":200043,"tab":1,"parents":[{"tab":0,"id":1005200,"from":"ref"}],"steps":[{"set":"M_Product_ID","value":124},{"set":"M_AttributeSetInstance_ID","value":0},{"set":"M_Product_ID","value":null}]},
+ {"name":"cp_costadj_std","window":200043,"tab":1,"parents":[{"tab":0,"id":1005201,"from":"ref"}],"steps":[{"set":"M_Product_ID","value":124},{"set":"M_Product_ID","value":129}]}
+]
