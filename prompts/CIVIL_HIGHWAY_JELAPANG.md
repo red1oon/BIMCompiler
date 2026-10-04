@@ -581,6 +581,36 @@ flows to them; check `cinema_maxq.js:272` consumer).
 
 ---
 
+## §N 4D/5D on a road — what it produces today and what's needed (2026-10-04)
+**Today (code read, bim-ootb main):** 4D/5D key on `ifc_class`. JELAPANG is 5674 × `IfcBuildingElementProxy`, so:
+- **5D:** every element gets `rates.js:53` `IfcBuildingElementProxy {rate:850, unit:'EA', desc:'Misc Element'}`
+  → 5674 × 850 = **RM 4.82 M, meaningless** — a 1.9 km road slab costs the same as one sign.
+- **4D:** every element gets `rates.js:289` `{phase:'Architecture Envelope', sequence:5, resource:'MASON'}` —
+  one building phase for a whole road.
+**What a road needs (non-impact: keyed on the CIVIL discipline codes from #1844, so no building changes):**
+1. **5D quantity basis by discipline, measured from geometry:** ROAD → m² (plan area) / m³ (solid
+   volume) · MARKING → m (length) · DRAINAGE → m (length, size from `03_Dimension` pset) · SIGNAGE /
+   LIGHTING / FURNITURE → EA. Rates from **JKR Schedule of Rates (cited, `std_values` §L)** — never typed.
+2. **4D phases by discipline:** earthwork/drainage → pavement → furniture / signage / lighting / marking
+   (typical road sequence — to be cited from JKR spec, not assumed), **ordered by chainage band** (needs P4).
+3. **Gate:** read `4D_MODEL_INTEGRITY.md` §I ownership table + §E before touching 4D (CLAUDE.md PRIMAL LAW 0);
+   use the cached-run witness path (`scripts/cache_4d_run.js`).
+
+## §O Priority list — non-impact items (for "what can we fix now", 2026-10-04)
+Ranked by value ÷ risk; "non-impact" = cannot change any building's output.
+1. **§M ground floor** — stray-robust floor only on models with no slab/storey match (step 4). Small.
+2. **Civil discipline colours** — `rates.js:524` / `import.js:628` have no rows for the 6 civil codes → all
+   fall to default. Add 6 rows. Trivial.
+3. **§SITE_PROFILE log-only (P4 first half)** — centreline + route length logged, read by nothing yet.
+   Settles the "7 km" with a number; unblocks chainage 4D/5D, nav, drive.
+4. **5D civil quantity basis (§N.1)** — measured quantities per civil discipline; rates column stays
+   empty/flagged until JKR rates are supplied. Replaces the meaningless RM 4.82 M with real m²/m/EA.
+5. **Pset extraction to an additive table (§E.2)** — sign codes, component names, drain sizes into a new
+   table; existing columns untouched. Feeds Find + 5D.
+Not non-impact (need review): zoom-to-cursor (all models), near plane (all), hub disc-list dedupe.
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written.
