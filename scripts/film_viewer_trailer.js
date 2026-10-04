@@ -186,7 +186,9 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   }
   // red1 2026-10-04: "have more English so that it does not need to switch at crucial bottleneck" — ~70 % English;
   // other languages are QUIPS on light beats (and the greeting + thank-you rounds). slice(id, note, lang) defaults to English.
-  async function slice(id, note, lang) { const L = lang || LANGS[0]; await beat(id, L, note); await setLang(L); return L; }
+  // red1 2026-10-04: "need not show subsequent changes to languages" / "just speak out those short quips" — after the one picker
+  // demo the UI stays English; a quip beat keeps its language for the VOICE + subtitle only. English beats switch back once.
+  async function slice(id, note, lang) { const L = lang || LANGS[0]; await beat(id, L, note); if (L === LANGS[0] && curLang !== LANGS[0]) await setLang(L); return L; }
   // the hub overlay covers the ⋯ rail (no language picker reachable there) — its beats keep the current language
   async function keep(id, note) { await beat(id, curLang, note + ' (lang kept: hub covers the rail)'); return curLang; }
 
