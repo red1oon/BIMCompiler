@@ -16,6 +16,12 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-04 08:23 §FLYAROUND_ARC PART 2/4 DELIVERED: ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4
+  (frames 240:480 of 960, 1920x1080@24, 240 fr, 12.3 MB, 848 s wall ~2.8 s/frame, still A's pose at frame 298 inside it).
+  §CLI_BAKE_POSECHECK MATCH 240 fr maxPosErr 0 planDurSec 40; §MAXQ_QUALITY 240/240; zone cache HIT; no black/freeze.
+  ⚠ --sun-date 2026-10-04 was NOT applied: cinema_maxq.js ~L3511 calls A.sunCompassSetDate only when --sun-compass is on (no §SUN_DAY line).
+  The film's own sun arc ran anyway: §FILM_PARITY_FRAME sunElev 42.6 -> 31.6 deg across the part (stills: fixed 45 deg). Script/logs:
+  ~/.cache/bim4d/altc_2026-10-03/flyaround/. Parts 1/3/4 + join WAIT on red1's review.
 - ▶ 2026-10-04 07:48 §FLYAROUND_ARC STEPS 1+2 DONE (bim-ootb fix/fast-bake @ce4c706e). Poses EXTRACTED from the stills' own
   `bim-still-pose` PNG tEXt chunk (§STILL_POSE_PNG; PIL needs im.load() before im.text): A cam [65.892,0.994,-10.905] / B cam
   [54.843,-3.583,-61.841], tgt [-1.098,4.249,1.455] both, fov 60, stills shot on Hospital_extracted.db (= Hospital_silent.db: 64,150
