@@ -16,6 +16,29 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-04 22:10 SPEC §CPE_SEED_FEW + §CPE_STICK_CLEAR (red1: "a bug when done with Terminal from the landing page.. which
+  spawned many exit sticks" / "a need to be able to delete such sticks" / "stick to quite the original which was 1 waypoint.. so
+  here perhaps just 2 or 3"). MEASURED from red1's pasted console (Terminal_extracted.db, :8664 = /tmp/wt-fastbake fix/fast-bake v1560):
+  derived route 21 control points, 207.0 m, film 151.1 s. Alt+C open -> `§CPE_OPEN src=seeded bands=21 waypoints=42 bandLen=20.70m`.
+  Cause: effects.js `_cinemaSeedBands` seeds ONE band PER waypoint (its header: written to seed three from three); band len = 10% walk
+  = 20.7 m vs ~10 m waypoint spacing; 21 x 20.7 = 435 m of band > the 207 m route -> bands overlap, the authored walk zig-zags:
+  `§CPE_WALK_BUDGET_NOISE_BLIND totalLen=703.97m`, film 474.1 s. Buildup is default-ON so `_isEdited()` is always true -> an untouched
+  OK bakes the 474 s zig-zag. Second defect: the × button shows only for `_stick` (user-dropped) bands, so the 19 seeded middle bands
+  could not be deleted at all.
+  SPEC: (1) §CPE_SEED_FEW — seed at most 3 bands: first, middle (index floor(n/2)), last derived waypoint (2 if n=2); direction =
+  local tangent from the FULL route's neighbours (unchanged rule); band length rule unchanged (10% walk, screen floor, 15% cap). Log
+  `§CPE_SEED_FEW wp=<n> seeded=<k> idx=[..] bandSum=<m> pathLen=<m>`. Invariant: bandSum <= 0.45 x pathLen (3 x 15% cap) for any n.
+  Known cost (told red1): the authored walk between 3 bands is not the room-graph route, so it can cut a wall; red1 chose it.
+  (2) §CPE_STICK_CLEAR — × on EVERY middle band (settle/stop stay fixed — dive lands on one, orbit stretches off the other); a
+  "clear sticks" button under the band rows removes every middle band in ONE undo step, disabled when there are none. Log
+  `§CPE_STICK_CLEAR removed=<k> remaining=2`.
+  WITNESS viewer/tests/witness_cpe_seed_few.js (node, no browser): runs the shipped `_cinemaSeedBands` source on routes of n=2,3,5,21
+  waypoints -> seeded <= 3, endpoints = route ends, bandSum <= 0.45 pathLen, middle = wp[floor(n/2)]; NO-OP guard: the old
+  one-per-waypoint rule on n=21 must FAIL the bandSum invariant (proves the witness can see the defect); source asserts: × condition no
+  longer reads `b._stick`, clear button + `§CPE_STICK_CLEAR` line present. Live proof on next Alt+C: `§CPE_OPEN ... bands=3`.
+  ✅ BUILT bim-ootb fix/fast-bake @e1f12d9a (pushed), sw v1561, effects.js?v=139 cinema_path_editor.js?v=20. Witness 8/8 PASS
+  (n=21: seeded 3, bandSum 62.10 m vs cap 93.15 m; old rule 434.70 m on a 207 m walk = visible). :8664 serves it. NOT yet live-witnessed:
+  next Alt+C on Terminal must print `§CPE_SEED_FEW wp=21 seeded=3` and `§CPE_OPEN ... bands=3`.
 - ▶▶ RESUME HERE (2026-10-04 11:15, for a new session) — supersedes every RESUME block below.
   TREE: /tmp/wt-fastbake = bim-ootb fix/fast-bake @ce4c706e, PUSHED, clean. /tmp dies on reboot — recreate:
   `git -C ~/bim-ootb worktree add /tmp/wt-fastbake fix/fast-bake`; symlink buildings/{Hospital,Terminal,HHS_Office_Federated}_silent.db ->
