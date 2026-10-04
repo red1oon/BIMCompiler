@@ -470,6 +470,37 @@ while flying end to end, evictions; `§TILE_LOAD`/`§TILE_EVICT` lines, resident
 
 ---
 
+## §K BIM partner's wish-list — feasibility against THIS data (2026-10-04)
+Partner's 8 items, each scored against what JELAPANG actually carries (measured from the IFC
+`Design Parameter` psets) and what we already run. ✅ data in hand · 🟡 derivable / partial · ⛔ data missing.
+
+**Extra data found for this:** DRAINAGE psets carry `02_Type` (ROADSIDE DRAIN TYPE 5 ×32, TOE DRAIN
+TYPE 5 ×33, SCUPPER ×28, MEDIAN DRAIN TYPE 5 ×24+3, …, EXTENSION CULVERT ×6), `03_Dimension`
+(600×600 mm ×79, 1500×1500 ×33, 1500×1300 ×17, 900×900 ×15, 1200×1200 ×4), culvert 1200 mm RCP ×6,
+and one culvert's invert levels (in 58.55 → out 57.03 m). LIGHTING psets: only 6 named (TRAFFIC
+SIGNAL); **no wattage / lumen / photometric data** for any lamp.
+
+| # | Item | Fit | What it would be | Blocker / data needed |
+|---|---|---|---|---|
+| 1 | Vehicle simulation | 🟡 | DRIVE (§H) at design speed; **swept-path check** of a design lorry through the roundabout (EXISTING LANE -ROUNDABOUT is in the data) | vehicle dimensions from the standard; centreline (P4). Multi-car traffic flow = a traffic simulator's job, not ours |
+| 2 | Lighting lux | ⛔→🟡 | point-by-point illuminance on the road surface (inverse-square × cosine — standard method) as a heat map | **lamp photometry (IES files) + wattage** — not in the IFC; target lux from the Malaysian road-lighting code (designer to cite) |
+| 3 | Best route for new utilities | 🟡 | shortest corridor path avoiding existing drains/culverts/sign footings with clearance — our routing + clash engine as the cost | existing-utility data (not in set); ROW width (`31_Lebar_ROW` empty) |
+| 4 | Traffic management | ✅/🟡 | **4D by chainage showing lane closures per phase** — EXISTING LANE -J1A/-J1B vs new MAINLINE / J2A / J2B is exactly the input | phase plan from the contractor; chainage (P4) |
+| 5 | Drainage flow | 🟡 | flow direction from drain-bottom slope (geometry), connectivity drain→culvert by proximity, capacity by Manning's equation from the extracted sizes | 106 pipes/structures were **skipped by the exporter** — network incomplete; roughness value from the standard |
+| 6 | Follow road standard | 🟡 | **rule check**, same engine as our Structural Sanity / Egress findings film (§RULE_FILM): lane widths measured from geometry, sign codes valid against the JKR sign list (codes ARE in the data: WD. 39a, RP. 13 …), clearances | the standard's rule values (JKR road design Arahan Teknik) supplied + cited — never chosen by us |
+| 7 | Flood mitigation | ⛔ | hydraulic modelling (catchment, river levels) — specialist GIS/hydraulics territory | terrain (skipped), rainfall, catchment. We could **display** imported flood results, not compute them |
+| 8 | Rainfall calculation | 🟡 | **runoff from the road itself** — rational method Q = C·i·A: A = paved area computed from road-surface geometry | rainfall intensity (IDF) for the site from the Malaysian stormwater manual (MSMA); runoff coefficient from same |
+
+**Combined win: 5 + 8** — road runoff (8) vs drain capacity (5) per drain section → "this drain is
+under-sized" findings, shown in the model like clashes. Needs only MSMA values + the skipped pipes.
+
+**Recommended order:** 6 standards check → 4 traffic management 4D → 5+8 drainage capacity →
+1 drive + swept path → 3 utility route → 2 lux (after IES files) → 7 display-only.
+**Ask the partner for:** lamp IES files + wattage · the CRS code (§I.2) · re-export with drainage
+pipes/structures + earthwork surface as 3D · the JKR standard clauses to check against · TMP phases.
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written. **Next: user reviews §PLAN checklist; nothing coded.**
