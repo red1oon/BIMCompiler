@@ -306,6 +306,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     fact('tmScrub', (tmr ? 'range ' + tmr.join('..') + ' ' : 'NO #tm-slider ') + (await page.$eval('#tm-big-counter', e => e.textContent).catch(() => '')));
     // the sun: Day/night on, then HR mode — the slider becomes the hour of that day (onSlide: anchorDay + (val+1) h) → morning to sunset
     if (await page.locator('#tm-sun').first().isVisible().catch(() => false)) {
+      await beat('s11sun', curLang, 'sun on → HR mode → sunset');
       n1 = PAGELOG.length; await hclick('#tm-sun'); await hold(600);
       if (await page.locator('.tm-mode[data-mode="HR"]').first().isVisible().catch(() => false)) await hclick('.tm-mode[data-mode="HR"]');
       for (let h = 8; h <= 19; h++) { await page.evaluate((v) => { const s = document.getElementById('tm-slider'); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }, h); await hold(260); }
@@ -335,7 +336,8 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     // ── 6 SHARE ──
     await chapter(6, 'SHARE');
     await slice('s16', 'Share the exact view');   // English: carries the clash-share + no-install point (red1 2026-10-04); ko stays in the greeting/thank-you rounds n1 = PAGELOG.length; await key('/', 'share'); fact('share', await waitLog(n1, /§SHARE_PREVIEW shown/, 8000)); await hold(3000);
-    await page.locator('#share-preview-overlay button', { hasText: /./ }).last().click().catch(() => {});
+    // close the preview card without Playwright's 30 s auto-wait (v5: 20 s of dead air here) — only if a button is really there
+    { const cb = page.locator('#share-preview-overlay button', { hasText: /Cancel|×|Close/i }).last(); if (await cb.isVisible().catch(() => false)) await cb.click({ timeout: 2000 }).catch(() => {}); else await key('Escape'); }
     await slice('s17', 'Film-Maker derives a film'); n1 = PAGELOG.length; await page.keyboard.press('Alt+c');
     await page.waitForSelector('#cpe-ok', { timeout: 180000 }).catch(() => {});
     fact('filmmaker', last(n1, /§MAXQ_DURATION_DERIVED/) || last(n1, /§MAXQ_START/) || 'NONE'); await hold(1200);
@@ -346,6 +348,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
       if (await page.locator('#' + id).first().isVisible().catch(() => false)) { await hclick('#' + id); ticked.push(id + '=' + (await page.$eval('#' + id, e => e.checked).catch(() => '?'))); await hold(450); }
     }
     fact('cpeTicked', ticked.join(' ') || 'none visible');
+    await beat('s17prev', curLang, 'preview the film');
     // the preview strip belongs to the Eye (viewfinder) toggle — it is built only when the eye is on (cinema_path_editor.js:2227)
     if (!(await page.locator('#cpe-scrub-play').first().isVisible().catch(() => false)) && await page.locator('#cpe-vf-toggle').first().isVisible().catch(() => false)) { await hclick('#cpe-vf-toggle'); await hold(700); }
     if (await page.locator('#cpe-scrub-play').first().isVisible().catch(() => false)) { await hclick('#cpe-scrub-play'); await hold(3200); fact('cpePreview', 'played'); }
