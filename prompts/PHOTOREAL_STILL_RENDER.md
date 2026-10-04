@@ -660,3 +660,20 @@ materials; (a) `clone()` returns an R10 array of clones of the same length; (b) 
   probe file in page), probe_nopress.js, termimgs.js (per-term images via SourcedLight.debugZones), t3w.js (per-term ROI arrays),
   sunrays*.js (sun-reach raycasts), reflratio.js, matstats.js, atlasdump.js. Always under flock /tmp/claude-1000/gpu.lock; give way to
   other sessions' films when asked (red1 asked once today).
+
+## 2026-10-05 — §STILL_OVERLAY_NOGI — SPEC (red1: "go build the fix")
+- DEFECT (measured, red1 console log 2026-10-05 + 2 headless runs, JELAPANG): when the bounce cannot run (`§GI_STILL_OFF
+  reason=no-webgpu|touch-device|three-rNNN`), Alt+S finishes (`§PHOTO_AO done`, `_stillRefineBusy=false`) but nothing says so:
+  the Save PNG / Close overlay is built ONLY by gi_still.js `show()` (bounce path), effects.js hides the status toast, and
+  `§STILL_LOCK` swallows clicks. Looks hung. Hits every phone/tablet (touch-device gate) and any http LAN-IP desktop.
+- FIX: gi_still.js keydown, `!giSupported()` branch: instead of returning, wait for the app's own still (same `waitForStill`),
+  copy the finished app canvas (re-render once if the displayed buffer reads blank, as `grabAppFrame` does) and call the SAME
+  `show()` with kind 'plain': title "Still", PNG name `still_<ts>.png`, pose tEXt as today. One overlay implementation, no copy.
+  Bounce path untouched. Toggle-off press (`_stillRefineActive` already true) still left alone.
+- LOG: `§STILL_OVERLAY_NOGI shown reason=<r> size=WxH mean=<0-255> ms=<press→overlay>`; `mean<2` → `§STILL_OVERLAY_NOGI FAULT
+  blank frame`; still cancelled → `§STILL_OVERLAY_NOGI skipped reason=cancelled`.
+- WITNESS W-STILL-OVERLAY-NOGI (headless, no WebGPU, JELAPANG via LAN-IP URL): after Alt+S, overlay `#gi-still-overlay` exists
+  with a Save PNG button and a canvas of the frame size, mean>=2 (else FAULT), `§STILL_OVERLAY_NOGI shown` logged once; Esc →
+  overlay gone AND `_stillRefineActive=false`. Without the fix the overlay never appears (proves the issue). INCONCLUSIVE if
+  `§GI_STILL_OFF` was not logged (then the run took the bounce path and judged nothing).
+- SHIPPED bim-ootb PR #1856 (fix/still-overlay-nogpu @2c06bea1, sw v1478): W-STILL-OVERLAY-NOGI before FAIL / after PASS (overlay 1280x720 mean 138.9, 3.2 s, Esc ends still).
