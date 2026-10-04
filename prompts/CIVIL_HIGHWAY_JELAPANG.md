@@ -712,6 +712,21 @@ User: "obtain std default from CIDB or JKR whichever is more commonly used." Res
 (RM 20) → fill `std_values` as `primary` → build §N.1 quantities in its units.
 Sources: https://myepplus.uitm.edu.my/ep/public/iklan/viewFileLukisan/66655/1259 · https://n3c.cidb.gov.my/n3c/about.php
 
+
+### §R.3 Free official rate sources found (2026-10-05, at close) — NOT yet wired
+JKR's national SoR 2023 is a purchased document (RM 20) — no free official copy found (only scribd/academia
+re-uploads, not used). **Official, public, state-level schedules exist inside government tender documents:**
+- **Selangor tender "JKH Perabot Jalan"** (state tender portal, FPDF, created 2023-09-27, 38 pp) — saved to
+  `~/Downloads/JALAN JELAPANG IFC/rates/Selangor_tender_JKH_Perabot_Jalan_2023-09.pdf` (+ .txt). Measured items:
+  regulatory signs RM 800–870/Nos, "lampu isyarat dihadapan" (traffic-signal-ahead) RM 900 / 990, chevron
+  delineators (several sizes), thermoplastic line marking per Set by road width (e.g. 300 mm/6 mm AC14 5-line
+  3.5 m RM 244, 7.0 m RM 480 …). Source URL: https://tender.selangor.my/uploads/eLDSCJ35WfyBH4nMaIK1wCyVVWWVWJexzXTx1xrV/7.%20JKH%20PERABOT%20JLN.pdf
+- Kedah premix repair quotation document (pavement items): https://idaftar.kedah.gov.my/upload/Dokumen%20Meja-509-1395.pdf
+- Penang JKR quotation summary (2025): https://ep.penang.gov.my/Dokumen_meja/30715/tender_5-%20RINGKASAN%20SEBUTHARTGA%2007.pdf
+**Status label to use:** `regional-official` (state tender schedule; Selangor ≠ Perak where JELAPANG is) — cite the
+item letter + page; never present as the JKR national SoR. Mapping JELAPANG pset sign names/codes (16_Name /
+17_Code) to these items is the next step. JKR SoR purchase still the `primary` route.
+
 ### §R.2 5D civil layer — design (2026-10-05, user: "include rate source 5D too")
 Mirror of §CIVIL_PHASE, same gate, same NON-IMPACT rule:
 1. **`rates/jkr_sor2023_my_civil.json`** — the civil rate pack: one item per civil discipline (and per
