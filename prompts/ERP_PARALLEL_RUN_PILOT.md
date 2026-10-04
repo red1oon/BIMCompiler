@@ -52,3 +52,18 @@ alone on a wiped client. Witness `§PILOT-BACKUP sent=… restored_ops=… tip_m
 ## §7 Report
 One page: X-of-N on this customer's real usage, replay diffs by month, load numbers, backup round-trip, the
 ranked porting backlog. No claim beyond what the § lines show.
+
+## §8 Jasper reports → Ninja Excel (added 2026-10-04, red1)
+**Ask:** the customer's few Jasper reports (GL entries across the ~100 users) convert to red1's Ninja Excel way.
+**Input I5:** the `.jrxml` files (+ subreports, any scriptlet jars/images) — ⛔ awaiting, arrive with I1-I3.
+**Target:** `erp/ninja_excel.js` workbook = BACKUP (filled sample) / Input (params) / Process (SQL rows), run
+over the folded client db, verify-by-example in integer cents (`internal/NinjaExcelAdaptation.md`).
+**Conversion = extract, never author:** per jrxml — `queryString` → Process rows; `parameter` → Input rows
+(incl. iDempiere-passed AD_Client_ID / AD_Org_ID / RECORD_ID / AD_PInstance_ID); `field`/`group`/`variable`
+(sums, counts, resets) → Process aggregates + layout cells.
+**Oracle:** run the SAME report on the reference iDempiere (Jasper plugin `org.adempiere.report.jasper` is in the
+local source) with the same params → its output fills BACKUP; the Ninja workbook must reproduce it to the cent.
+Witness `§PILOT-JASPER report=… rows=… cents_diff=0 params=…`.
+**Traps to inventory per report (each a named gap until handled):** `$P!{}` dynamic SQL, subreports, scriptlets
+(Java code), Java expressions in variables/print-when, Jasper-side sorting/grouping not in SQL, i18n resource
+bundles, iDempiere context tokens. Report that hits one → ⛔ with the one construct named, never a silent rewrite.
