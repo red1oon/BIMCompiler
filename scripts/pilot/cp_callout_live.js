@@ -35,7 +35,7 @@ function norm(v) {
   try {
     for (const c of cases) {
       tot.cases++;
-      const ref = await oracle({ op: 'callout', window: c.window, tab: c.tab, ctx: { date: today }, steps: c.steps });
+      const ref = await oracle({ op: 'callout', window: c.window, tab: c.tab, ctx: { date: today }, steps: c.steps, lookupMiss: true, openQuery: c.openQuery != null ? !!c.openQuery : true });   // lookupMiss: the columns ZK's WTableDirEditor would clear
       if (!ref.ok) { L('§CP-LIVE ' + c.name + ' ORACLE-ERROR ' + ref.error); continue; }
       await O.openWin(o, c.window); const n0 = o.LOG.length; await O.clickNew(o);
       const fan = o.since(n0, /§CALLOUT-NEW/).pop() || '(no §CALLOUT-NEW line)';
@@ -56,7 +56,10 @@ function norm(v) {
         const diffs = [];
         derived.forEach(k => {
           tot.cols++;
-          const r = norm(rs.fields[k]), g = snap ? norm(snap[k]) : 'NO-GRIDTAB', f = Object.prototype.hasOwnProperty.call(lcForm, k.toLowerCase()) ? norm(lcForm[k.toLowerCase()]) : undefined;
+          // §CP-EDITOR: a column real iDempiere's refreshed, validated lookup excludes is cleared by WTableDirEditor.setValue → expect null
+          const zkReset = (rs.lookupMiss || []).includes(k) && k !== st.set;
+          if (zkReset) tot.zkReset = (tot.zkReset || 0) + 1;
+          const r = zkReset ? null : norm(rs.fields[k]), g = snap ? norm(snap[k]) : 'NO-GRIDTAB', f = Object.prototype.hasOwnProperty.call(lcForm, k.toLowerCase()) ? norm(lcForm[k.toLowerCase()]) : undefined;
           const ok = r === g && (f === undefined || f === r);
           if (ok) tot.colsMatch++; else diffs.push(k + ':ref=' + r + ',grid=' + g + (f === undefined ? ',form=(not on form)' : ',form=' + f));
         });
@@ -66,6 +69,6 @@ function norm(v) {
       }
     }
   } finally { await o.close(); }
-  L('§CP-LIVE-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' judged=' + tot.judged + ' match=' + tot.match + ' notOnForm=' + tot.notOnForm + ' derivedCols=' + tot.cols + ' colsMatch=' + tot.colsMatch + ' pageErrors=' + o.ERRS.length + ' verdict=' + (!tot.judged ? 'INCONCLUSIVE(no header case judged)' : (tot.match === tot.judged && !o.ERRS.length ? 'PASS' : 'DIFF')) + (o.ERRS.length ? ' ' + JSON.stringify(o.ERRS.slice(0, 3)) : ''));
+  L('§CP-LIVE-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' judged=' + tot.judged + ' match=' + tot.match + ' notOnForm=' + tot.notOnForm + ' derivedCols=' + tot.cols + ' colsMatch=' + tot.colsMatch + ' pageErrors=' + o.ERRS.length + ' zkEditorResets=' + (tot.zkReset || 0) + ' verdict=' + (!tot.judged ? 'INCONCLUSIVE(no header case judged)' : (tot.match === tot.judged && !o.ERRS.length ? 'PASS' : 'DIFF')) + (o.ERRS.length ? ' ' + JSON.stringify(o.ERRS.slice(0, 3)) : ''));
   if (logFile) fs.writeFileSync(logFile, out.join('\n') + '\n');
 })().catch(e => { L('§CP-LIVE-FATAL ' + (e && e.stack || e)); if (logFile) fs.writeFileSync(logFile, out.join('\n') + '\n'); process.exit(2); });

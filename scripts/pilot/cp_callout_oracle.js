@@ -109,7 +109,7 @@ function diffRows(ref, ours) {
   for (const c of cases) {
     tot.cases++;
     const date = c.date || '2026-10-04';
-    const ref = await oracle({ op: 'callout', openQuery: !!c.openQuery, window: c.window, tab: c.tab, parents: c.parents || [], id: c.id, ctx: Object.assign({ date }, c.ctx || {}), steps: c.steps });
+    const ref = await oracle({ op: 'callout', openQuery: c.openQuery != null ? !!c.openQuery : !(c.parents && c.parents.length) && !c.id, window: c.window, tab: c.tab, parents: c.parents || [], id: c.id, ctx: Object.assign({ date }, c.ctx || {}), steps: c.steps });   // ZK opens a header window on its query → AD_Window.IsSOTrx stays in ctx (without it Sales Invoice ran IsSOTrx=N)
     if (!ref.ok) { tot.oracleErr++; L('§CP-CASE ' + c.name + ' ORACLE-ERROR ' + ref.error + ' ' + String(ref.stack || '').split('\n').slice(0, 4).join(' | ')); continue; }
     const rctx = await oracle({ op: 'ctx', ctx: Object.assign({ date }, c.ctx || {}) });
     // our ctx = the oracle's login context (globals only) — isolates callout logic from login-default porting
