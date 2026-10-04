@@ -727,6 +727,21 @@ re-uploads, not used). **Official, public, state-level schedules exist inside go
 item letter + page; never present as the JKR national SoR. Mapping JELAPANG pset sign names/codes (16_Name /
 17_Code) to these items is the next step. JKR SoR purchase still the `primary` route.
 
+### §R.4 CIDB sourced (2026-10-05, user: "can u source CIDB reference")
+- **CIDB N3C** (https://n3c.cidb.gov.my — National Construction Cost Centre) publishes Building Material Price, Labour
+  Wage Rates, Machinery Hire Rates & Equipment Purchase Price, cost indices (material/labour/machinery/building),
+  Tender Price Index. **Every product page is behind Login + a paid "Pricing Data Plan"** (fetched 2026-10-05:
+  `/products/building-materials-price`, `/products/labour-wage-rate` show only Login/Subscription). Old `/n3c/about.php` = 404.
+  These are INPUTS (cement, rebar, wage per trade per state), not road unit rates — usable to BUILD UP a rate (or to
+  calibrate §Q.2 crews' wage), not to price a road m² directly. ⛔ needs a subscription → user decision.
+- `cidb.gov.my/eng/construction-material/` lists no price data (MyCESMM2 = measurement method, not rates).
+- **Found instead, free + official:** DBKL (KL City Hall) "Jadual Kadar Harga No. 1: Roadworks" for a 2-year road
+  milling/resurfacing contract (12 pp, created 2026-01-02): new road m² items (excavation RM 7.00/m², crusher run 225 mm
+  RM 19.24/m², ACB28 50 mm RM 27.00/m², AC 40 mm RM 28.00/m²), mill-and-pave, footpath, manholes, **road marking (4-1)**.
+  Saved `~/Downloads/JALAN JELAPANG IFC/rates/DBKL_JKH1_Roadworks_resurfacing.pdf` (+ .txt). Source:
+  https://eperolehan.dbkl.gov.my/download/7FFDB0A7-5404-4545-B9C4-C6082F6B8C14 — label `regional-official` (KL ≠ Perak),
+  cite item no. Covers ROAD m² + MARKING; with Selangor (§R.3) covers SIGNAGE. Still no free source for drains or lamps.
+
 ### §R.2 5D civil layer — design (2026-10-05, user: "include rate source 5D too")
 Mirror of §CIVIL_PHASE, same gate, same NON-IMPACT rule:
 1. **`rates/jkr_sor2023_my_civil.json`** — the civil rate pack: one item per civil discipline (and per
