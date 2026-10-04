@@ -53,6 +53,23 @@ alone on a wiped client. Witness `§PILOT-BACKUP sent=… restored_ops=… tip_m
 One page: X-of-N on this customer's real usage, replay diffs by month, load numbers, backup round-trip, the
 ranked porting backlog. No claim beyond what the § lines show.
 
+## §9 Three POS stations over the relay → admin folds a GROUP report (added 2026-10-04, red1)
+**Ask:** "simulate 3 party relay using this machine, OCI and GitHub as POS stations and see if an 'admin' can fold
+all changes to make a group stock report or financial performance statement."
+**Already proven (do not redo):** W-REPLICA (`scripts/test_kernel_replica.js`) — ONE snapshot served by 3 LOCAL
+stand-in origins replays to the same tip (read replica, single writer); W-N-CONVERGE N=2/N=10 real browser; S7
+W-REBASE-ATTRIB (bim-ootb PR #930) — rebase keeps per-device sig + gid. `prompts/ERP_MULTIUSER_CONCURRENCY_POC.md`.
+**Not proven:** three real hosts each WRITING (each a POS station, own org/warehouse, own key), and an admin who
+pulls all three logs and folds a group report whose numbers equal real iDempiere's.
+**Phase A — relay + fold integrity (now):** each station rings N POS sales; relay; admin pulls. Witness
+`§PILOT-GROUP-RELAY station=… ops_sent=… ops_at_admin=… sig_ok=… gid_intact=… docno_dup=…` + admin tip identical
+across hosts. **Phase B — report values (after the model layer's POS chain matches):** group stock (on-hand per
+warehouse/product) and financial performance (P&L from Fact_Acct by account, per org + consolidated) vs the SAME
+sales entered in the reference iDempiere (one org per station). Witness `§PILOT-GROUP-REPORT kind=stock|pl
+org=…|ALL cents_diff=… qty_diff=…`. Hosts: use only the relay/host paths that already exist
+(`docs/DistributedERP.md §6`, `erp_sync_relay.js`, OCI dev bucket per `deploy/OCI_UPLOAD.md §RULES`, never
+deploy/live). Missing host write path → ⛔ naming it, never improvised infra.
+
 ## §8 Jasper reports → Ninja Excel (added 2026-10-04, red1)
 **Ask:** the customer's few Jasper reports (GL entries across the ~100 users) convert to red1's Ninja Excel way.
 **Input I5:** the `.jrxml` files (+ subreports, any scriptlet jars/images) — ⛔ awaiting, arrive with I1-I3.
