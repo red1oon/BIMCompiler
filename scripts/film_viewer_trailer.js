@@ -126,12 +126,19 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     cutting = true; cutAt = Date.now() / 1000; say('§FILM_CUT start t=' + now().toFixed(2) + ' wall=' + cutAt.toFixed(3) + ' owner=' + own + ' ' + why); };
   const cutEnd = (own) => { own = own || 'rec'; if (!cutOwners.delete(own) || cutOwners.size) return; const w = Date.now() / 1000, d = w - cutAt; cutTotal += d; cutting = false; say('§FILM_CUT end wall=' + w.toFixed(3) + ' removed=' + d.toFixed(2) + 's total=' + cutTotal.toFixed(2) + ' owner=' + own); };
   const MIN = JSON.parse(process.env.BEAT_MIN || '{}'); let prev = null;
+  // the previous line is held to its spoken length in FILM time (take7: a guard cut inside a wall-clock hold shortened s16 by 1.2 s)
+  const settle = async () => { if (!(prev && MIN[prev.id])) return; const wait = MIN[prev.id] - (now() - prev.t); if (wait <= 0) return;
+    say('§FILM_HOLD after=' + prev.id + ' extra=' + wait.toFixed(2)); while (now() - prev.t < MIN[prev.id]) await page.waitForTimeout(100); };
   const beat = async (id, lang, note) => {
-    if (prev && MIN[prev.id]) { const wait = MIN[prev.id] - (now() - prev.t); if (wait > 0) { say('§FILM_HOLD after=' + prev.id + ' extra=' + wait.toFixed(2)); await page.waitForTimeout(wait * 1000); } }
+    await settle();
     prev = { id, t: now() }; say('§FILM_BEAT id=' + id + ' t=' + prev.t.toFixed(2) + ' lang=' + lang + ' ' + (note || ''));
   };
   const chapter = async (n, key) => { await beat('c' + n, LANGS[0], 'chapter ' + n + ' ' + key); say('§FILM_CHAPTER n=' + n + ' key=' + key + ' t=' + now().toFixed(2)); await page.waitForTimeout(2600); };
   const hold = (ms) => page.waitForTimeout(ms);
+  const glBox = () => page.evaluate(() => { const r = window.APP.renderer.domElement.getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; });   // NOT locator('canvas').first() — the TM dashboard adds canvases
+  // red1 v4 (2026-10-04): "Make jumps where it's time consuming" — a wait that only shows a spinner is CUT (§FILM_JUMP + its length)
+  // take7: a jump BEFORE the previous line's hold put the next screen under that line — settle first
+  async function jump(why, fn) { await settle(); const t = Date.now(); cutStart('jump: ' + why); try { return await fn(); } finally { cutEnd(); say('§FILM_JUMP ' + why + ' waited=' + ((Date.now() - t) / 1000).toFixed(2) + 's'); } }
   async function glideXY(x, y) { await page.mouse.move(x, y, { steps: 22 }); await hold(160); }
   async function glide(sel) {
     const loc = page.locator(sel).first(); await loc.scrollIntoViewIfNeeded().catch(() => {});
@@ -170,10 +177,12 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   // REFRESH + CUT: reload the page, wait until the building is back, re-arm the screencast — the reload is cut out of the film
   // (red1: "refresh F5 (jump ahead when done)" / "or simply refresh and wait to continue")
   async function refreshCut(why) {
-    cutStart('F5 ' + why); await page.reload({ waitUntil: 'load' });
+    await settle(); cutStart('F5 ' + why); await page.reload({ waitUntil: 'load' });
     await page.waitForFunction(() => window._TRL_READY === true && window.APP && window.APP.streaming === false && !(window.APP._bboxPlaceholders || []).length && window.APP.guidMap && Object.keys(window.APP.guidMap).length > 500, null, { timeout: 180000 });
     await page.waitForFunction(() => Array.isArray(window._mainPillActions) && window._mainPillActions.length > 0, null, { timeout: 60000 }).catch(() => {});
-    await castOn(page); await page.waitForTimeout(1500); cutEnd(); curLang = LANGS[0];
+    await castOn(page); await page.waitForTimeout(1500); cutEnd();
+    // take1 bug: assumed English after F5 — the page restores the SAVED locale (ms_MY after s09) → clash/TM/cost filmed in Malay
+    curLang = await page.evaluate(() => { try { return JSON.parse(localStorage.getItem('bim_ootb_config') || '{}').locale || 'en_MY'; } catch (e) { return 'en_MY'; } }); say('§FILM_LOCALE after F5=' + curLang);
   }
   // keep the building SOLID: the pick's xray-dim focus + Find's shell ghost left the v1 take in box/wireframe mode
   async function solid(tag) {
@@ -208,7 +217,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   // demo the UI stays English; a quip beat keeps its language for the VOICE + subtitle only. English beats switch back once.
   // red1 2026-10-04: "do the language switch so that the UI reflects it but cut out the switch action" — the picker clicks are
   // inside a CUT; the film jumps straight to the translated UI. Only the one g_pick demo shows the picker on screen.
-  async function quietLang(L) { if (L === curLang) return; cutStart('lang switch → ' + L); await setLang(L); await hold(250); cutEnd(); }
+  async function quietLang(L) { if (L === curLang) return; await settle(); cutStart('lang switch → ' + L); await setLang(L); await hold(250); cutEnd(); }
   async function slice(id, note, lang) { const L = lang || LANGS[0]; await quietLang(L); await beat(id, L, note); return L; }
   // the hub overlay covers the ⋯ rail (no language picker reachable there) — its beats keep the current language
   async function keep(id, note) { await beat(id, curLang, note + ' (lang kept: hub covers the rail)'); return curLang; }
@@ -253,22 +262,32 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     fact('elements', await page.evaluate(() => Object.keys(window.APP.guidMap).length));
     fact('status', await page.$eval('#status', e => e.textContent).catch(() => ''));
     // drag the building around a little (real mouse drag on the canvas) so it reads as solid 3D
-    { const cb = await page.locator('canvas').first().boundingBox(); if (cb) { const cx = cb.x + cb.width / 2, cy = cb.y + cb.height / 2;
+    { const cb = await glBox(); if (cb) { const cx = cb.x + cb.width / 2, cy = cb.y + cb.height / 2;
       await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 260, cy - 40, { steps: 40 }); await page.mouse.move(cx - 120, cy + 20, { steps: 40 }); await page.mouse.up();
       for (let i = 0; i < 8; i++) { await page.mouse.wheel(0, -120); await hold(90); } } }   // and zoom in a bit (red1: "while drag zoom close a bit")
     await hold(800); await solid('afterLoad'); guardOn = true; say('§FILM_WIRE_GUARD armed t=' + now().toFixed(2));
 
     // ── 2 SEE ──
     await chapter(2, 'SEE');
-    await slice('s04', 'pick a wall → Info panel', 'es_ES');
-    let picked = '';
+    await slice('s04', 'pick a wall → Info panel', 'es_ES'); allowXray = true;   // the pick's focus dim is X-ray (take1: guard cut 2.8 s of the Info panel)
+    // take3: trying projected wall centres one by one ON SCREEN took 55 s (most centres hide behind other walls) — the search is a
+    // CUT; the point that picks a wall is then clicked once, visibly.
+    let picked = '', hit = null, tries = 0, anyHit = null;
+    cutStart('wall pick search');
     for (const pt of (await screenOf("m.ifc_class IN ('IfcWall','IfcWallStandardCase')")) || []) {
-      n1 = PAGELOG.length; await glideXY(pt.x, pt.y); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(700);
-      picked = last(n1, /§PICK [A-Z]/); if (picked && /IfcWall/.test(picked)) break;
+      tries++; n1 = PAGELOG.length; await page.mouse.move(pt.x, pt.y, { steps: 3 }); await hold(80); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(600);   // take4: an instant mouse.click never registered as a pick (0/40)
+      const pk = last(n1, /§PICK [A-Z]/); if (pk && !anyHit) anyHit = pt; if (pk && /IfcWall/.test(pk)) { hit = pt; break; }
     }
-    fact('pick', picked || 'NO PICK');
+    hit = hit || anyHit;
+    // take5: Escape does not clear a pick and a 2nd click on the same element DESELECTS it (§PICK_DESELECT) — so the visible click
+    // un-picked the wall. Deselect here, inside the cut, so the on-screen click is a fresh pick.
+    // take6: the 1st reset click hit a dimmed mesh (§PICK no guid) — repeat until the pick is really cleared
+    if (hit) { let r = ''; n1 = PAGELOG.length; for (let k = 0; k < 3 && !/§PICK_DESELECT/.test(r); k++) { await page.mouse.move(hit.x, hit.y, { steps: 2 }); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(500); r = last(n1, /§PICK_DESELECT/); } fact('pickReset', r || 'NOT DESELECTED'); }
+    await hold(300); cutEnd();   // take4: from this camera the roof slab covers every wall centre — the first element that picks will do (the line names no class)
+    if (hit) { n1 = PAGELOG.length; await page.mouse.move(720, 600); await glideXY(hit.x, hit.y); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(700); picked = last(n1, /§PICK [A-Z]/); }
+    fact('pick', (picked || 'NO PICK') + ' (search tries=' + tries + ', cut)');
     fact('infoPanel', await page.$eval('#info-panel', e => e.innerText.replace(/\s+/g, ' ').slice(0, 300)).catch(() => ''));
-    await hold(2500); await key('Escape'); await solid('afterPick');
+    await hold(2500); await key('Escape'); allowXray = false; await solid('afterPick');
     await slice('s05', 'Find IfcWall'); n1 = PAGELOG.length; await key('f', 'find'); await page.waitForSelector('#find-name', { timeout: 15000 });
     await hclick('#find-name'); await page.keyboard.type('IfcWall', { delay: 90 });
     fact('find', await waitLog(n1, /§NAV_FIND_SEARCH query="IfcWall"/, 8000)); fact('findCount', await page.$eval('#find-count', e => e.textContent).catch(() => ''));
@@ -277,21 +296,29 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     // its element), then clear the query and tap categories in the Find tree on two axes (storey, then the next axis). The drill
     // dims the rest with X-ray on HHS (6,839 < 25,000 elements, navigate_find.js:1535 — no bbox shell), so X-ray is allowed here.
     allowXray = true;
-    for (let i = 0; i < 3; i++) { const sel = '#find-results .find-result-item >> nth=' + (i * 7);
-      if (!(await page.locator('#find-results .find-result-item').first().isVisible().catch(() => false))) { await hclick('#find-name'); await page.keyboard.press('End'); await page.keyboard.type(' '); await page.keyboard.press('Backspace'); await hold(600); }
-      if (await page.locator(sel).isVisible().catch(() => false)) { n1 = PAGELOG.length; await hclick(sel); fact('findPick' + i, await waitLog(n1, /§NAV_FIND_SELECT/, 4000) || 'NO §NAV_FIND_SELECT'); await hold(1700); }
-      else fact('findPick' + i, 'row ' + (i * 7) + ' not visible'); }
-    await beat('s05cat', curLang, 'Find by category: tree rows on two axes');
-    await hclick('#find-name'); await page.keyboard.press('Control+a'); await page.keyboard.press('Backspace'); await hold(800);
-    for (let ax = 0; ax < 2; ax++) {
-      const axis = await page.$eval('#find-axis-toggle', e => e.getAttribute('data-axis')).catch(() => '?');
-      const rows = await page.locator('#find-tree .find-tree-row').count(); const picks = [];
-      for (let i = 0; i < Math.min(rows, 3 - ax); i++) { const sel = '#find-tree .find-tree-row >> nth=' + i; if (!(await page.locator(sel).isVisible().catch(() => false))) continue;
-        n1 = PAGELOG.length; const label = (await page.locator(sel).innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 40); await hclick(sel); await hold(1500);
-        picks.push(label + ' → ' + (last(n1, /§[A-Z_]*(DRILL|ISOLATE|SELECT|FILTER|LENS)[A-Z_]*/) || 'no §line').replace(/^.*?§/, '§').slice(0, 90)); }
-      fact('findCat.' + axis, rows + ' rows; ' + picks.join(' | '));
-      if (ax === 0) { n1 = PAGELOG.length; await hclick('#find-axis-toggle'); await hold(900); fact('findAxis', last(n1, /§LENS_AXES/) || 'no §LENS_AXES'); }
-    }
+    // take1: after a pick the result list COLLAPSES (navigate_find.js:4844) and Ctrl+A goes to the panel's key router — so each
+    // further pick comes from a NEW search: a category from the Type accordion, then a floor from the Storey accordion (each item
+    // re-runs the search → the list expands again, navigate_find.js:4677).
+    const pickRow = async (tag) => { await page.waitForSelector('#find-panel.results-expanded #find-results .find-result-item', { timeout: 5000 }).catch(() => {});
+      const sel = '#find-results .find-result-item >> nth=0'; if (!(await page.locator(sel).isVisible().catch(() => false))) { fact('findPick.' + tag, 'no visible result row'); return; }
+      n1 = PAGELOG.length; await hclick(sel); fact('findPick.' + tag, await waitLog(n1, /§NAV_FIND_SELECT/, 4000) || 'NO §NAV_FIND_SELECT'); await hold(1600); };
+    await beat('s05p', curLang, 'first pick → fly to it'); await pickRow('wall');
+    await beat('s05cat', curLang, 'Find by category: Type accordion → Doors, then a floor');
+    { await glide('#find-name'); const b = await page.locator('#find-name').boundingBox(); await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2, { clickCount: 3 }); await page.keyboard.press('Backspace'); await hold(500); }
+    // the categories: the Find OUTLINER tree (the legacy Type/Storey accordions are display:none, navigate_find.js:196) — with the
+    // query empty it lists the current axis: tap a floor (storey), then cycle the axis and tap two disciplines (plain tap = replace).
+    await page.waitForSelector('#find-tree .find-tree-row', { state: 'visible', timeout: 6000 }).catch(() => {});
+    const tapRow = async (re, nth, tag) => { const rows = page.locator('#find-tree .find-tree-row'); const texts = (await rows.allInnerTexts().catch(() => [])).map(t => t.replace(/\s+/g, ' ').trim());
+      let i = re ? texts.findIndex(t => re.test(t)) : nth; if (i < 0 || i >= texts.length) i = Math.min(nth || 0, texts.length - 1);
+      if (i < 0) { fact('findCat.' + tag, 'no tree rows'); return; }
+      n1 = PAGELOG.length; await hclick('#find-tree .find-tree-row >> nth=' + i); await hold(1100);
+      fact('findCat.' + tag, texts[i].slice(0, 40) + ' → ' + PAGELOG.slice(n1).filter(l => /§(TAP_FIRE|STOREY_FILTER|DISC_FILTER|FILTER_GUIDS|NAV_FIND_SEARCH)/.test(l)).map(l => l.replace(/^.*?§/, '§').slice(0, 60)).join(' ; ')); };
+    // take3: the storey tree is EMPTY right after the query is cleared (rows rebuild on an axis change) — the floor is shown in s06
+    // anyway; the categories here are the disciplines (tap → that one solid, the rest §XRAY_DIM 0.2, navigate_find.js §FIND_MULTISEL)
+    n1 = PAGELOG.length; await hclick('#find-axis-toggle'); await hold(800); fact('findAxis', last(n1, /§LENS_AXES/) || 'no §LENS_AXES');
+    await tapRow(null, 0, 'disc1'); await tapRow(null, 1, 'disc2'); await tapRow(null, 2, 'disc3');
+    // take3: the drill's X-ray stayed on into Ask → the guard cut 8.6 s of the Ask answers. Clear it inside a cut.
+    cutStart('clear the discipline drill'); await page.evaluate(() => { const A = window.APP; if (A.filterByGuids) A.filterByGuids(null); if (A.xrayOn) A.toggleXray(); }); await hold(300); cutEnd();
     allowXray = false;
     // s05b Ask (bim-ootb #1789, 2026-09-30): canned questions answered by the shipped engines, verdict + evidence per answer
     await slice('s05b', 'Ask: largest rooms + element counts'); n1 = PAGELOG.length;
@@ -326,8 +353,9 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
         cutEnd();
         if (best) { n1 = PAGELOG.length; await hclick(findBtn); fact('roomPath', (await waitLog(n1, /§ROOM_PATH /, 4000)).replace(/^.*§ROOM_PATH/, '§ROOM_PATH').slice(0, 300)); await hold(1500);
           // orbit round the route so it reads clearly (real left drag on the canvas, slow)
-          const cb = await page.locator('canvas').first().boundingBox(); if (cb) { const cx = cb.x + cb.width * 0.62, cy = cb.y + cb.height * 0.45; const c0 = await page.evaluate(() => window.APP.camera.position.toArray().map(v => +v.toFixed(1)));
-            await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 300, cy - 60, { steps: 90 }); await page.mouse.move(cx + 120, cy - 20, { steps: 60 }); await page.mouse.up();
+          await beat('s05c2', curLang, 'orbit round the route');
+          const cb = await glBox(); if (cb) { const cx = cb.x + cb.width * 0.62, cy = cb.y + cb.height * 0.45; const c0 = await page.evaluate(() => window.APP.camera.position.toArray().map(v => +v.toFixed(1)));
+            await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 260, cy - 50, { steps: 45 }); await page.mouse.move(cx + 140, cy - 25, { steps: 25 }); await page.mouse.up();
             fact('pathOrbit', JSON.stringify(c0) + ' → ' + JSON.stringify(await page.evaluate(() => window.APP.camera.position.toArray().map(v => +v.toFixed(1))))); }
           await hold(1500); }
         else fact('roomPath', 'NO pair with ≥3 hops in ' + opts.length + ' rooms (search cut out)');
@@ -374,7 +402,12 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await slice('s08', 'measure two taps'); n1 = PAGELOG.length; await key('m', 'measure');
     const pts = (await screenOf("m.ifc_class IN ('IfcSlab','IfcWall','IfcWallStandardCase')")) || [];
     for (const pt of pts.slice(0, 2)) { await glideXY(pt.x, pt.y); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(900); }
-    fact('measure', await waitLog(n1, /§MEASURE \d/, 4000) || 'NO DISTANCE'); await hold(1500); await key('m'); await key('Escape');
+    fact('measure', await waitLog(n1, /§MEASURE \d/, 4000) || 'NO DISTANCE'); await hold(1500);
+    // the area: one tap places a dot, the SAME dot tapped again measures that face (measure.js:1287 "tap same dot for area")
+    if (pts.length > 2) { await beat('s08a', curLang, 'same dot twice → area'); n1 = PAGELOG.length;
+      for (let k = 0; k < 2; k++) { await glideXY(pts[2].x, pts[2].y); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(900); }
+      fact('measureArea', await waitLog(n1, /§MEASURE_AREA [^c]/, 5000) || 'NO §MEASURE_AREA'); await hold(1800); }
+    await key('m'); await key('Escape');
     // Night + Fly together, live (red1: "u can use the Fly mode with Night on to get it going")
     await slice('s09', 'night + fly', 'ms_MY'); n1 = PAGELOG.length; await key('n', 'night'); fact('night', await waitLog(n1, /§NIGHT_MODE on/, 5000)); await hold(1200);
     // red1 v4 #4: "V only in Fly as u wana make it elaborate with scrub"; "let it fly thru, not cut jump.. stop frame hasten it to
@@ -386,25 +419,27 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     cutEnd(); fact('flyLeadIn', ((Date.now() - tL) / 1000).toFixed(2) + 's cut, moving=' + !!moved); fact('tour', last(n1, /§SCRUB_UI show/) || 'NO §SCRUB_UI');
     await beat('s09v', LANGS[0], 'V sounds during the fly'); await hold(5000);
     { const sb = await page.locator('#tour-scrub-slider').first().boundingBox();   // red1: "the fly has timeline, should show the scrub then"
-      if (sb) { const y = sb.y + sb.height / 2; await glideXY(sb.x + sb.width * 0.15, y); await page.mouse.down(); await page.mouse.move(sb.x + sb.width * 0.7, y, { steps: 45 }); await hold(500); await page.mouse.move(sb.x + sb.width * 0.35, y, { steps: 35 }); await page.mouse.up(); fact('tourScrub', last(0, /§SCRUB_SEEK/) || 'dragged'); } }
+      if (sb) { await beat('s09s', LANGS[0], 'drag the fly timeline'); const y = sb.y + sb.height / 2; await glideXY(sb.x + sb.width * 0.15, y); await page.mouse.down(); await page.mouse.move(sb.x + sb.width * 0.7, y, { steps: 45 }); await hold(500); await page.mouse.move(sb.x + sb.width * 0.35, y, { steps: 35 }); await page.mouse.up(); fact('tourScrub', last(0, /§SCRUB_SEEK/) || 'dragged'); } }
     await hold(2500); fact('flySfx', PAGELOG.slice(n1).filter(l => /§SFX_(PLAY|HELI|GROOVE|CINE|NAV)/.test(l)).length + ' §SFX lines during the fly');
     // Alt+G denoise during the night fly (red1: "there is an alt-g toggle to give it denoise mode but when deactivate it
     // leaves a ghost effect. Thus refresh F5 (jump ahead when done)")
     n1 = PAGELOG.length; await page.keyboard.press('Alt+g'); fact('denoise', await waitLog(n1, /§KBD_ROUTE Alt\+G|§GI_POC/, 8000)); await hold(2600);
     await key('v', 'sfxOff');
     await refreshCut('after Alt+G (toggle-off leaves a ghost)'); await solid('afterF5');
-    await slice('s10', 'clash: pair → list → one → range'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
-    // the counts arrive as §CLASH_MATRIX_COUNT lines after the grid shows — wait, then take the busiest pair
-    for (let i = 0; i < 80 && PAGELOG.slice(n1).filter(l => /§CLASH_MATRIX_COUNT /.test(l)).length < 3; i++) await page.waitForTimeout(100);
+    n1 = PAGELOG.length;
+    await jump('clash matrix computes', async () => { await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
+      // the counts arrive as §CLASH_MATRIX_COUNT lines after the grid shows — wait, then take the busiest pair
+      for (let i = 0; i < 80 && PAGELOG.slice(n1).filter(l => /§CLASH_MATRIX_COUNT /.test(l)).length < 3; i++) await page.waitForTimeout(100); });
+    await slice('s10', 'clash matrix by discipline pair'); await hold(800);
     let pair = null, pn = -1; PAGELOG.slice(n1).forEach(l => { const m = l.match(/§CLASH_MATRIX_COUNT (\S+) = (\d+)/); if (m && +m[2] > pn) { pn = +m[2]; pair = m[1]; } });
     fact('clashCounts', PAGELOG.slice(n1).filter(l => /§CLASH_MATRIX_COUNT /.test(l)).map(l => l.replace(/^.*COUNT /, '').replace(/ size.*/, '')).join(' · '));
     fact('clashPair', pair);
     if (pair) {
       n1 = PAGELOG.length; await hclick('[data-pair="' + pair + '"]'); await page.waitForSelector('[data-clash-idx]', { timeout: 20000 }).catch(() => {});
       fact('clashList', last(n1, /§CLASH_MATRIX_FILTER|§CLASH_QUERY/) + ' rows=' + (await page.locator('[data-clash-idx]').count()));
-      await hold(800); n1 = PAGELOG.length; await hclick('[data-clash-idx] >> nth=0'); fact('clashOne', await waitLog(n1, /§CLASH|§LISTNAV_SELECT/, 6000)); await hold(2200);
+      await hold(800); await beat('s10a', curLang, 'tap one clash → fly to it'); n1 = PAGELOG.length; await hclick('[data-clash-idx] >> nth=0'); fact('clashOne', await waitLog(n1, /§CLASH|§LISTNAV_SELECT/, 6000)); await hold(2200);
       const rows = await page.locator('[data-clash-idx]').count(); const lastRow = Math.min(rows, 12) - 1;
-      if (lastRow > 0) { n1 = PAGELOG.length; await page.keyboard.down('Shift'); await hclick('[data-clash-idx] >> nth=' + lastRow); await page.keyboard.up('Shift');
+      if (lastRow > 0) { await beat('s10b', curLang, 'shift-select a range'); n1 = PAGELOG.length; await page.keyboard.down('Shift'); await hclick('[data-clash-idx] >> nth=' + lastRow); await page.keyboard.up('Shift');
         fact('clashRange', await waitLog(n1, /§LISTNAV_SELECT count=/, 6000)); await hold(2800); }
     }
     n1 = PAGELOG.length;
@@ -415,13 +450,15 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
 
     // ── 4 TIME ──
     await chapter(4, 'TIME');
-    await slice('s11', 'Time Machine plays'); n1 = PAGELOG.length; await key('t', 'tm'); fact('tm', await waitLog(n1, /§TIME_MACHINE ON/, 60000));
-    await page.waitForSelector('#tm-fwd-btn', { timeout: 20000 });
+    n1 = PAGELOG.length;
+    await jump('Time Machine builds its schedule', async () => { await key('t', 'tm'); fact('tm', await waitLog(n1, /§TIME_MACHINE ON/, 60000)); await page.waitForSelector('#tm-fwd-btn', { timeout: 20000 }); });
+    await slice('s11', 'Time Machine open');
     // a better view of the build: drag the camera round to a three-quarter perspective (red1: "it is not drag around to view better")
-    { const cb = await page.locator('canvas').first().boundingBox(); if (cb) { const cx = cb.x + cb.width * 0.4, cy = cb.y + cb.height * 0.55;
+    { const cb = await glBox(); if (cb) { const cx = cb.x + cb.width * 0.4, cy = cb.y + cb.height * 0.55;
       await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 220, cy - 70, { steps: 40 }); await page.mouse.up(); for (let i = 0; i < 4; i++) { await page.mouse.wheel(0, -120); await hold(80); } } }
     // red1 v4 #5: "just a focussed build up then fast forward to near end where the drawers showed completion"; "show the Sun follow
     // shadow with the drawers 4D 5D opened.. arrange them to be balance on frame not overlap each other". No V here (V lives in s09).
+    await beat('s11d', curLang, 'sun + shadows, Gantt + dashboard drawers');
     n1 = PAGELOG.length; await key('h', 'shadow'); fact('shadow', last(n1, /§SHADOW_INIT|§SHADOW/) || (await page.evaluate(() => String(window.APP._shadowGroundKey))));
     await hclick('#tm-sun'); fact('tmSunOn', await page.evaluate(() => document.getElementById('tm-sun').classList.contains('tm-active')));
     await hclick('#tm-gantt'); await hold(300); await hclick('#tm-dash'); await hold(500);
@@ -429,11 +466,11 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     { const vw = 1440, vh = 810, M = 16;
       const g = await page.evaluate(() => { const r = (id) => { const e = document.getElementById(id); if (!e) return null; const b = e.getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; };
         return { panel: r('time-machine-panel'), dash: r('tm-dash-col') }; });
-      if (g.panel) { const h = Math.max(g.panel[3], g.dash ? g.dash[3] : 0); const tx = M, ty = vh - M - h;
+      if (g.panel) { const tx = M, ty = M;   // top-left: take1 bottom-left overlapped #tm-pinpoint (fixed bottom:128px, centred) by 40×28
         await page.mouse.move(g.panel[0] + 40, g.panel[1] + 12); await page.mouse.down(); await page.mouse.move(tx + 40, ty + 12, { steps: 30 }); await page.mouse.up(); await hold(300); }
-      const cb = await page.locator('canvas').first().boundingBox(); const t0 = await page.evaluate(() => window.APP.controls.target.toArray().map(v => +v.toFixed(2)));
-      if (cb) { const cx = cb.x + cb.width * 0.5, cy = cb.y + cb.height * 0.35; await page.mouse.move(cx, cy); await page.mouse.down({ button: 'right' }); await page.mouse.move(cx + 260, cy, { steps: 30 }); await page.mouse.up({ button: 'right' }); }
-      fact('tmPan', 'target ' + JSON.stringify(t0) + ' → ' + JSON.stringify(await page.evaluate(() => window.APP.controls.target.toArray().map(v => +v.toFixed(2))))); }
+      const cb = await glBox(); const t0 = await page.evaluate(() => window.APP.controls.target.toArray().map(v => +v.toFixed(2)));
+      if (cb) { const cx = cb.x + cb.width * 0.5, cy = cb.y + cb.height * 0.6; await page.mouse.move(cx, cy); await page.mouse.down({ button: 'right' }); await page.mouse.move(cx + 220, cy + 60, { steps: 30 }); await page.mouse.up({ button: 'right' }); }
+      fact('tmPan', 'target ' + JSON.stringify(t0) + ' → ' + JSON.stringify(await page.evaluate(() => window.APP.controls.target.toArray().map(v => +v.toFixed(2)))) + ' cam ' + JSON.stringify(await page.evaluate(() => window.APP.camera.position.toArray().map(v => +v.toFixed(1))))); }
     // WITNESS (not a look): every visible fixed/absolute panel's rect; no pair intersects, all inside the frame. Empty set → INCONCLUSIVE.
     const layout = await page.evaluate(() => { const out = [];
       document.querySelectorAll('body *').forEach(e => { if (e.id === '__fc' || e.tagName === 'CANVAS') return; const cs = getComputedStyle(e); if (!/fixed|absolute/.test(cs.position) || cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return;
@@ -443,7 +480,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
         for (let j = i + 1; j < layout.length; j++) { const B = layout[j].r; const w = Math.min(A_[2], B[2]) - Math.max(A_[0], B[0]), h = Math.min(A_[3], B[3]) - Math.max(A_[1], B[1]); if (w > 1 && h > 1) hits.push(layout[i].id + '×' + layout[j].id + '=' + w + 'x' + h); } }
       const tm = layout.filter(l => /time-machine-panel|tm-dash-col/.test(l.id)).length;
       say('§FILM_TM_LAYOUT panels=' + layout.map(l => l.id + '[' + l.r.join(',') + ']').join(' ') + ' overlaps=' + (hits.join(' ') || 0) + ' offFrame=' + (off.join(' ') || 0) + ' verdict=' + (tm < 2 ? 'INCONCLUSIVE (tm panels seen=' + tm + ')' : (hits.length || off.length ? 'WRONG' : 'PASS'))); }
-    await hclick('#tm-fwd-btn'); await hold(6500);   // the focussed build-up
+    await beat('s11p', curLang, 'play the build-up'); await hclick('#tm-fwd-btn'); await hold(6500);   // the focussed build-up
     fact('tmDay', await page.$eval('#tm-big-counter', e => e.textContent).catch(() => ''));
     // fast-forward: a real drag of the day slider to ~95 % (visible, not a cut) → the drawers read complete
     await beat('s11ff', curLang, 'fast-forward to near the end — drawers complete');
@@ -461,11 +498,11 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
 
     // ── 5 COST ── (the 4 English locales on the report page: currency + rate book change with them)
     await chapter(5, 'COST');
-    await slice('s15', '4D/5D dashboard'); n1 = PAGELOG.length;
+    n1 = PAGELOG.length;
     const viewerPage = page;
-    const [bp] = await Promise.all([ctx.waitForEvent('page', { timeout: 20000 }), page.keyboard.press('4')]);
-    wire(bp, '[boq] '); page = bp; await castOn(bp); await page.mouse.move(720, 405);
-    fact('boq', await waitLog(n1, /§RENDER_CHARTS: done/, 120000)); await hold(2500);
+    await jump('4D/5D page opens + draws its charts', async () => { const [bp] = await Promise.all([ctx.waitForEvent('page', { timeout: 20000 }), page.keyboard.press('4')]);
+      wire(bp, '[boq] '); page = bp; fact('boq', await waitLog(n1, /§RENDER_CHARTS: done/, 120000)); await castOn(bp); await page.mouse.move(720, 405); await hold(300); });
+    await slice('s15', '4D/5D dashboard'); await hold(2500);
     // red1 v4 #3: "linger longer so user sinks in the BIM 5D full suite feature" — scroll the whole page slowly, every section title logged
     await beat('s15tour', LANGS[0], 'scroll the 4D/5D suite'); await page.mouse.move(900, 450);
     { const seen = []; const H = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
@@ -489,9 +526,10 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     n1 = PAGELOG.length; await key('/', 'share'); fact('share', await waitLog(n1, /§SHARE_PREVIEW shown/, 8000) || 'NO §SHARE_PREVIEW'); await hold(3000);   // v3 had this line inside the comment above — the card never opened
     // close the preview card without Playwright's 30 s auto-wait (v5: 20 s of dead air here) — only if a button is really there
     { const cb = page.locator('#share-preview-overlay button', { hasText: /Cancel|×|Close/i }).last(); if (await cb.isVisible().catch(() => false)) await cb.click({ timeout: 2000 }).catch(() => {}); else await key('Escape'); }
-    await slice('s17', 'Film-Maker derives a film'); n1 = PAGELOG.length; await page.keyboard.press('Alt+c');
-    await page.waitForSelector('#cpe-ok', { timeout: 180000 }).catch(() => {});
-    fact('filmmaker', last(n1, /§MAXQ_DURATION_DERIVED/) || last(n1, /§MAXQ_START/) || 'NONE'); await hold(1200);
+    n1 = PAGELOG.length;
+    await jump('Film-Maker derives the path', async () => { await page.keyboard.press('Alt+c'); await page.waitForSelector('#cpe-ok', { timeout: 180000 }).catch(() => {}); });
+    await slice('s17', 'Film-Maker: the derived film'); fact('filmmaker', last(n1, /§MAXQ_DURATION_DERIVED/) || last(n1, /§MAXQ_START/) || 'NONE'); await hold(1200);
+    await beat('s17t', curLang, 'tick what to show');
     // tick a few of the film's options and play a short preview (red1: "show the alt-c, checking the boxes explaining with
     // some preview.. just to give idea.. then switch to the finished clip") — real clicks on the real (transparent) inputs
     const ticked = [];

@@ -6,6 +6,7 @@ numbers, no invented claims. Spec before code; a witness proves the track, not a
 **→ Making another narrated/dialogue film (any language)? Jump to `## ▶ PLAYBOOK` below — voices, steps, commands, pitfalls.**
 
 ## ▶ RESUME HERE — VIEWER TRAILER v4 (written 2026-10-04 for a NEW session; read this, then §8 STORYBOARD v3 + §8 RUN LOG)
+**UPDATE 2026-10-04 13:30: v4 is BUILT and in red1's hands — see §4 STATUS top entry. The items below are DONE; next = red1's notes on v4, then (only on his go) §9 Modeller.**
 **State:** Viewer trailer v2 is built and in red1's hands (`~/Downloads/BIM_Viewer_Trailer_v2_13languages_…mp4`, 220.9 s).
 red1 reviewed it and gave the v4 notes below. **⛔ DO NOT RECORD until red1 OKs the v4 storyboard** (red1: "dont bake yet,
 until we get the storyboard right"). The Modeller trailer (§9) and the documentary (§10) stay parked (⏸ standing order).
@@ -542,6 +543,21 @@ Unchanged beats are not repeated here (see v3 above).
   **Help palette translated** (red1: "translate the Help panel if haven't") — bim-ootb `fix/help-palette-i18n`, see S226 §R2d.
 - **Still open from red1:** a soft music bed under the 2–6 s quiet visual moments, or leave them silent?
 
+### §8 MUSIC BED + NARRATION-FOLLOWS-ACTION — SPEC (red1, 2026-10-04: "Narrations to follow animation of each task. Make jumps
+where it's time consuming. Proceed with your soft music bed")
+1. **Lines follow the action.** A multi-turn line that describes steps done one after another is split into sub-beats, each logged
+   at the moment its step starts: s05p (first pick), s05c2 (orbit), s08a (same-dot area — now filmed, measure.js:1287), s09s
+   (timeline drag), s10a/s10b (tap one / range), s11d/s11p (sun+drawers / play), s17t (ticks). Lines that described something not
+   on screen are dropped (s16 "clash open → share is about that clash"). 68 rows.
+2. **Jumps.** A wait that shows only a spinner is CUT via `jump()` (`§FILM_JUMP <why> waited=`): Time Machine schedule build,
+   clash matrix compute, 4D/5D page open + charts, Film-Maker path derive (plus the existing fly lead-in, refreshes, language
+   switches, room-pair search).
+3. **Music bed** `prompts/film_music_bed.py <wav> <sec>`: synthesised pad, Cmaj7→Am7→Fmaj7→G6, 8 s per chord, 2 s cross-fades,
+   detuned sines + octave-down root, slow swell, 3 s fade in/out, no drums/melody, no samples (no licence question).
+   `film_narration_mux.py` `MUSIC_WAV` (+ `MUSIC_VOL`, default 0.16): the voices are the sidechain key, the bed is ducked under
+   every line (ratio 10, attack 40 ms, release 600 ms). **Witness (numbers, not a listen):** `MUSIC_STEM` writes the ducked bed
+   alone; its RMS inside spoken intervals (from final_plan.tsv) vs in the gaps must differ by ≥ 6 dB (`§MUSIC_DUCK`), else WRONG.
+
 ### ⏸ STANDING ORDER (red1, 2026-10-04): "After viewer, wait for my go ahead on the next, Modeller." / "BUt do the first
 one we agreed on first. This big story is to rest a while" — finish §8 (Viewer trailer) end to end, then STOP. Do not
 start §9 (Modeller) or §10 (documentary) without red1's explicit go.
@@ -1010,6 +1026,17 @@ BIM-compiler, BOM-OOTB, as it is under IfcOpenShell clone as a Federation featur
 ~/Projects/2Dto3D (Nov 2025) → bim-compiler (Jan 2026) → bim-ootb (May 2026).
 
 ## 4. STATUS
+- 2026-10-04 13:30: §VIEWER-TRAILER v4 BUILT — `~/Downloads/BIM_Viewer_Trailer_v4_13languages_1920x1080_24fps_2026-10-04.mp4`
+  (278.0 s, 84.7 MB, −17.9 LUFS). red1 go: "Narrations to follow animation of each task. Make jumps where it's time consuming.
+  Proceed with your soft music bed". Take8 (8 takes; each fixed a real recorder fault found in its log): 52/52 clicks on target,
+  0 PAGEERR, wire guard 4 hits / 6.7 s cut, `§FILM_TM_LAYOUT overlaps=0 offFrame=0 PASS`, closingHelp 13/13 ALL TRANSLATED,
+  wall picked on screen (Info panel, Spanish UI), room path 7 doors, 416 lights, 55 days, 6 charts. Fit 68/68 DETAIL, 0 wrong
+  tones, gloss 28/28; 6 cards + 8 badges + 1 cutaway (Hospital). Music bed `film_music_bed.py` (Cmaj7→Am7→Fmaj7→G6 pad)
+  ducked: `§MUSIC_DUCK duck=11.3dB PASS`. Silences −40 dB ≥ 2 s: 0 (v2: 10). Take faults fixed on the way: Malay UI after F5
+  (locale restored), result list collapses after a pick, legacy Find accordions are hidden, empty storey tree, X-ray left on
+  into Ask, TM panel over #tm-pinpoint, wrong canvas for drags, 55 s wall-pick search (now a cut), 2nd click deselects,
+  jumps/refreshes before the previous line's hold, wall-clock holds shortened by guard cuts. Line changes from the takes:
+  measure/area numbers vary per take → not spoken; lights 410→416; load 6–14 s → no seconds spoken; s04 "one click" (any element).
 - 2026-10-04 08:55: §VIEWER-TRAILER v2 BUILT — `~/Downloads/BIM_Viewer_Trailer_v2_13languages_1920x1080_24fps_2026-10-04.mp4`
   (220.9 s, 58.7 MB, −16.9 LUFS). red1's v2 notes applied: greetings voiced back to back at the start (no red-pill line,
   no per-greeting UI switch) + ONE picker demo; building kept SOLID (pick's shell ghost turned off via toggleGhostXray —

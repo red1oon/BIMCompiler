@@ -22,17 +22,16 @@ SERIES = 'BIM OOTB  ·  VIEWER'
 NOVEL = {'s03': ('NOVEL ART', 'IFC → SQLite, streamed in the browser'),          # §10 NOVEL ART 2
          's05b': ('NOVEL ART', 'Answers from the engines — with evidence'),     # find_ask.js; exit path = room graph
          's10': ('BIM KILLER', 'Clash matrix in a browser tab'),               # §CLASH_MATRIX, no install
-         's11': ('NOVEL ART', '4D: nothing before what holds it up'),          # NOVEL ART 6 (MIDAIR 5,561 → 0)
-         's09': ('BIM KILLER', 'Night + fly — scrub it, it never drifts'),      # BIMUserGuide.md:119-123 deterministic scrub
+         's11p': ('NOVEL ART', '4D: nothing before what holds it up'),         # v4: the line moved to the play sub-beat          # NOVEL ART 6 (MIDAIR 5,561 → 0)
+         's09s': ('BIM KILLER', 'Night + fly — scrub it, it never drifts'),     # v4: on the timeline-drag sub-beat      # BIMUserGuide.md:119-123 deterministic scrub
          's15_en_US': ('BIM KILLER', 'Language = cost context'),               # Localization.md: a locale is a cost context
-         's16': ('BIM KILLER', 'Clash to a phone — nothing to install'),       # BIMUserGuide.md:741-745 + :11
+         's16': ('BIM KILLER', 'One link to a phone — nothing to install'),    # BIMUserGuide.md:11 + :776 (v4 dropped the clash line)
          's17': ('NOVEL ART', 'A film derived from the room graph')}           # NOVEL ART 9
 # red1 2026-10-04: "or killers in BIM world" — two badge kinds: NOVEL ART (new ideas) · BIM KILLER (standout features)                # NOVEL ART 9
 # CUTAWAY CLIPS (red1 2026-10-04: "About taking a clip, perhaps u can then take Hospital, a nice part" / "this clip be cheap
 # to snatch") — a silent baked film shown over the footage inside a beat; label bottom-left. beat: (file, ss, dur, offset, label)
-CLIPS = {'s05c': (os.path.expanduser('~/Downloads/Terminal_escroute_1080p.mp4'), 1.2, 4.6, 0.0,
-                 'Terminal  ·  worst-case escape route — the same engine as Ask'),
-         's17clip': (os.path.expanduser('~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4'), 0.5, 5.0, 0.0,
+# v4: s05c is LIVE now (door-to-door room path on HHS) — the Terminal escape-route cutaway is retired
+CLIPS = {'s17clip': (os.path.expanduser('~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4'), 0.5, 5.0, 0.0,
                  'Hospital  ·  a film baked in the browser')}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
