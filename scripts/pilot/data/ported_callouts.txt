@@ -1,0 +1,7 @@
+org.compiere.model.CalloutOrder.amt
+org.compiere.model.CalloutOrder.qty
+org.compiere.model.CalloutOrder.product
+org.compiere.model.CalloutInvoice.amt
+org.compiere.model.CalloutInvoice.qty
+org.compiere.model.CalloutInvoice.product
+org.compiere.model.CalloutEngine.dateAcct
