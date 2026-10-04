@@ -346,6 +346,8 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
       if (await page.locator('#' + id).first().isVisible().catch(() => false)) { await hclick('#' + id); ticked.push(id + '=' + (await page.$eval('#' + id, e => e.checked).catch(() => '?'))); await hold(450); }
     }
     fact('cpeTicked', ticked.join(' ') || 'none visible');
+    // the preview strip belongs to the Eye (viewfinder) toggle — it is built only when the eye is on (cinema_path_editor.js:2227)
+    if (!(await page.locator('#cpe-scrub-play').first().isVisible().catch(() => false)) && await page.locator('#cpe-vf-toggle').first().isVisible().catch(() => false)) { await hclick('#cpe-vf-toggle'); await hold(700); }
     if (await page.locator('#cpe-scrub-play').first().isVisible().catch(() => false)) { await hclick('#cpe-scrub-play'); await hold(3200); fact('cpePreview', 'played'); }
     else fact('cpePreview', 'no #cpe-scrub-play visible');
     // close the path editor through its own Cancel button (it overlays the page — the thank-you round's flag clicks never
