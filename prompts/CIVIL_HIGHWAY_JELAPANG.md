@@ -452,6 +452,18 @@ never all be in memory at once.
    implementation per responsibility). `city.js` already loads many buildings into one scene —
    check whether it unloads before choosing it as the base (NOT checked yet).
 
+**§J.1 Swapping without a freeze (user: "it may pause as Google Earth does?").**
+- Google Earth doesn't stop — it shows coarse first and sharpens as data lands. We already do that
+  pattern on load: `§BBOX_PLACEHOLDERS` → `§BBOX_EARLY` boxes before meshes → `§PROGRESSIVE_FLUSH`
+  in batches of 500. Tile swap reuses it: proxy stays on screen until the full tile is ready.
+- **A road is easier than a globe:** travel is 1-D along chainage, so the next tile is predictable —
+  prefetch ahead in the direction of travel, evict behind. Pause only if the user jumps far (e.g.
+  "go to km 80"), and then it's coarse-first, not blank.
+- **Origin reset is free:** shifting the floating origin to the new tile is a matrix offset — no
+  visible pause. Pauses come from parsing/uploading on the main thread → parse in a worker, upload
+  in a per-frame budget. Witness: frame-time max during an end-to-end fly stays under budget
+  (`§FPS_MODE` max-frame + `§TILE_LOAD` ms).
+
 **Prerequisites:** P1 (units), P4 (centreline/chainage). **Data needed to prove it:** a longer
 real road set — or JELAPANG tiled into ~1 km pieces as a synthetic test (tile count, MB resident
 while flying end to end, evictions; `§TILE_LOAD`/`§TILE_EVICT` lines, resident MB never > budget).
