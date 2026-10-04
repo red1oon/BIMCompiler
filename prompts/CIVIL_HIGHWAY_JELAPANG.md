@@ -930,37 +930,23 @@ Witness `witness_clash_boxonly_hide.js` 11/11 (JELAPANG, GPU=sw): DRAINAGE×ROAD
 
 ---
 
-## ▶ RESUME HERE (2026-10-05, session closing — read this first)
-**Live on main (bim-ootb):** #1844 units+disciplines+framing · #1847 cache-bust · #1849 ground+colours ·
-#1850/#1852 shadow follow + throttle · #1851 TM civil phases · #1853 civil crews + parallel + 5D lines ·
-#1854 crews in every reader · #1857 large-site fog + Fly no-rooms message.
-#1858 civil psets + road Fly Tour (merged). **Open PR: #1859** civil clash pairs (§V.2, auto-merge on) — check
-`gh pr view 1859` before any follow-up push (the #1850 orphan: follow-up pushed after an auto-merge).
-**Localhost:** `/tmp/wt-civil-units` served at **http://localhost:8402** (branch `feat/civil-clash`, = #1859);
-`/tmp/wt-civil-shadow` at :8401 (old, merged branch — prune when idle). Use `localhost`, not the LAN IP (WebGPU
-needs a secure context — other session's note). Test DB: `buildings/JELAPANG_PSETS.db` and `buildings/JELAPANG_AFTER.db` → symlinks to
-`~/Downloads/JALAN JELAPANG IFC/JELAPANG_AFTER.db` (labelled, 451 MB; rebuild with the fixed importer if lost).
-**Next, in order:** (1) Fly Tour scrubber fails on the user's run (handed over 2026-10-05, undiagnosed) · (2) mesh-measured quantities (road m², marking/drain m) for 5D
-§R.2 step 3 · (3) Find by property (sign code / road part) on `element_psets` · (4) road-standard rule check §K-6.
-**Waiting on the user / partner:** JKR SoR 2023 (rates) · CRS code · alignment export (IFC4.3/LandXML) ·
-earthwork + drainage pipes as 3D · lamp IES files · approval of the other session's no-WebGPU Alt+S overlay.
-
-**UPDATE at close (2026-10-05 ~03:45):**
-- **#1858 MERGED** (civil property labels + road route in Fly Tour). Live check: `tour.js?v=19` on Pages contains
-  `§CIVIL_ROUTE_TOUR`, live `import_worker.js` contains `§CIVIL_PSETS`.
-- **⛔ OPEN — user: "Fly tour not working yet, timeline scrubber does not appear."** Headless on localhost with
-  the labelled DB showed the route + scrubber (12 ticks), so the user's run differs — NOT yet diagnosed. First
-  check: does the user's DB have `element_psets` (only imports done with the #1858 importer do — an older saved
-  import or a fresh import before the deploy has none → `_civilRouteTour` returns null → old orbit fallback, no
-  scrubber)? Read the user's log for `[TOUR] §CIVIL_ROUTE` / `§CIVIL_ROUTE skip` / `§TOUR_NO_ROOMS`.
-  If `§CIVIL_ROUTE skip mainline=0`: the DB lacks psets → re-import. If absent entirely: tour.js cache/version.
-- **Clash is owned by ANOTHER session** (user). #1859 (civil clash pairs) merged to main from branch
-  `feat/civil-clash`, which is now checked out in `/tmp/wt-civil-units` (so localhost:8402 serves that branch).
-  A background agent this session launched for clash was stopped at the user's instruction — do not resume it,
-  do not touch clash files or that worktree.
-**Rules that bit this session:** bump the script tag of EVERY changed file on EVERY page (#1847) · a new owner
-(civilRuleFor) must be wired into every READER, not just writers (#1854) · fleet non-impact proof = cache_4d_run
-before/after with the civil table ACTIVE (`scratchpad/cache4d_civil_on.js` pattern) + headless BOQ for 5D.
+## ▶ RESUME HERE (2026-10-05 late, session closed — read this first)
+**Live on main (bim-ootb), this session:** #1859 civil clash pairs (§V.1/2) · #1860 narrowphase-witness tolerance ·
+#1861 hide box-only rows ≥1000 box hits (§V.4) · #1862 + #1863 night lamps at real lamp heads, lazy Fly route on
+label-less imports, `civil_labels.json` (§W.1/§W.2) · #1864 import progress on the viewer status line (§Z).
+**Open PR (auto-merge on):** **#1865** Measure double-click item size (§Y) — verify `gh pr view 1865` merged; a
+follow-up push after auto-merge orphans (happened twice this session: #1859, #1862 → re-landed as #1860/#1863).
+**User confirmed:** Fly with Night works · Alt+S bounce still renders as expected (§W item 8 closed).
+**Next, in order:** (1) §W.2 — measure how many elements per building have centroid ≠ box middle (clash broad phase
+uses center±bbox/2 and can MISS lopsided pairs) · (2) 5D: wire `regional-official` rates (Selangor signs §R.3, KL DBKL
+roadworks §R.4) + mesh-measured quantities (road m², marking/drain m — §Y's `A.minAreaRect`/own-axis length is a start;
+curved strips need a centre-line length) · (3) Find by property on `element_psets` · (4) road-standard check §K-6.
+**Waiting on user/partner:** CIDB N3C subscription (login+paid, inputs only) or JKR SoR 2023 · CRS code · alignment
+export · earthwork + drainage pipes as 3D · lamp IES files.
+**Rules that bit this session:** DB `center` = vertex CENTROID (never center±bbox/2 for a true box) · a witness must not
+share the module's assumption — judge against the RENDERER (scene matrix × geometry) · no project values in algorithms
+(labels → JSON config) · software-GL headless plays ~1 frame / few s → sample tours with `A.tourSeek(T)` · `pkill -f`
+with the pattern in the same command kills its own shell.
 
 ---
 
