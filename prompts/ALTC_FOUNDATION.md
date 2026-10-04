@@ -16,6 +16,12 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
+- ▶ 2026-10-05 §CPE_SEED_FEW REVISED (red1: "OK go with 4-5"): count = floor(0.45 x pathLen / bandLen), >= 2, <= waypoints;
+  middles on the waypoints nearest even arc spacing, ends fixed. Band = 10% of walk unless the screen floor lifts it (max 15%), so the
+  count is 4 on ANY walk at 10% (0.45/0.10 = 4.5) and 3 when the floor binds — NOT building-adaptive (earlier "Hospital 2-3" was wrong).
+  5 does not fit: 5 x 20.7 = 103.5 m > 93.15 m budget on Terminal. bim-ootb fix/fast-bake @28266006 (pushed), sw v1562, effects.js?v=140.
+  Witness 11/11 PASS (Terminal-shaped 21 wp/207 m -> idx [0,7,13,20], min gap 62.1 m >= 20.7 m band). Live proof owed:
+  `§CPE_SEED_FEW wp=21 budgetK=4 seeded=4` + `§CPE_OPEN ... bands=4`. Supersedes the 3-band rule below.
 - ▶ 2026-10-04 22:10 SPEC §CPE_SEED_FEW + §CPE_STICK_CLEAR (red1: "a bug when done with Terminal from the landing page.. which
   spawned many exit sticks" / "a need to be able to delete such sticks" / "stick to quite the original which was 1 waypoint.. so
   here perhaps just 2 or 3"). MEASURED from red1's pasted console (Terminal_extracted.db, :8664 = /tmp/wt-fastbake fix/fast-bake v1560):
