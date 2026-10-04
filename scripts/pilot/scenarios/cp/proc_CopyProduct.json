@@ -12,7 +12,6 @@
    }
   ],
   "preSql": [
-   "CREATE TABLE IF NOT EXISTS m_productdownload (m_productdownload_id INTEGER PRIMARY KEY, ad_client_id INTEGER, ad_org_id INTEGER, isactive TEXT, created TEXT, createdby INTEGER, updated TEXT, updatedby INTEGER, m_product_id INTEGER, name TEXT, downloadurl TEXT, m_productdownload_uu TEXT)",
    "DELETE FROM m_productprice WHERE m_product_id IN (1009500,1009501)",
    "DELETE FROM m_replenish WHERE m_product_id IN (1009500,1009501)",
    "DELETE FROM c_bpartner_product WHERE m_product_id IN (1009500,1009501)",

@@ -63,7 +63,8 @@
   ],
   "tables": [
    "c_orderline",
-   "c_order"
+   "c_order",
+   "c_ordertax"
   ]
  }
 ]

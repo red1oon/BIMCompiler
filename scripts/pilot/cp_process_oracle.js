@@ -35,6 +35,8 @@ function refRows(tag) {
     rows: t.insRows || [], updRows: (t.updRows || []).map(u => { const o = { __key: u.key.join('|') }; Object.keys(u.changes).forEach(c => { o[c] = u.changes[c][1]; }); return o; }) };
   return res;
 }
+// the real process runs on the server's sysdate: default BOTH sides to the machine's LOCAL current date (case.date overrides)
+const TODAY = (() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
 async function engine() {
   const initSqlJs = require(os.homedir() + '/bim-ootb/tests/node_modules/sql.js');
   const SQL = await initSqlJs();
@@ -114,7 +116,15 @@ function project(rows, tbl, newIds, keyCol) {
     // one reference run at a time across concurrent harness processes (snap→process→diff is DB-global)
     const LOCK = path.join(os.homedir(), '.cache/pilot/cp_proc.lock');
     fs.mkdirSync(path.dirname(LOCK), { recursive: true });
-    for (let w = 0; ; w++) { try { fs.mkdirSync(LOCK); break; } catch (e) { if (w > 3600) throw new Error('lock timeout ' + LOCK); await new Promise(r => setTimeout(r, 1000)); } }
+    // mkdir spin-lock; the owner PID is written inside so a killed run's stale lock is recovered (owner PID dead → remove + retry)
+    const pidOf = () => { try { return parseInt(fs.readFileSync(path.join(LOCK, 'pid'), 'utf8'), 10); } catch (e) { return NaN; } };
+    const alive = pid => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+    for (let w = 0; ; w++) {
+      try { fs.mkdirSync(LOCK); fs.writeFileSync(path.join(LOCK, 'pid'), String(process.pid)); break; }
+      catch (e) {
+        const pid = pidOf();   // no pid file = an old-style or just-created lock: wait, never steal
+        if (Number.isFinite(pid) && !alive(pid)) { L('§CP-PROC-LOCK-STALE recovered lock of dead owner pid=' + pid); fs.rmSync(LOCK, { recursive: true, force: true }); continue; }
+        if (w > 3600) throw new Error('lock timeout ' + LOCK); await new Promise(r => setTimeout(r, 1000)); } }
     let ref, R;
     try {
     // case.preSql — the same pre-state on BOTH sides (e.g. the PeriodAction a user sets before pressing the button); applied before the snapshot
@@ -134,16 +144,16 @@ function project(rows, tbl, newIds, keyCol) {
       seq.forEach(row => { const use = cols.filter(k => Object.prototype.hasOwnProperty.call(row, k.toLowerCase())); try { E.query('INSERT OR REPLACE INTO AD_Sequence (' + use.join(',') + ') VALUES (' + use.map(() => '?').join(',') + ')', use.map(k => row[k.toLowerCase()] === undefined ? null : row[k.toLowerCase()])); n++; } catch (eS) {} });
       L('§CP-PROC-MIRROR-SEQ ' + c.name + ' ad_sequence=' + n); }
     td.snap(tag);
-    ref = await oracle({ op: 'process', process: c.process, recordId: c.recordId || 0, tableId: c.tableId || 0, params: c.params || [], ctx: Object.assign({ date: c.date || '2026-10-04' }, c.ctx || {}) });
+    ref = await oracle({ op: 'process', process: c.process, recordId: c.recordId || 0, tableId: c.tableId || 0, params: c.params || [], ctx: Object.assign({ date: c.date || TODAY }, c.ctx || {}) });
     L('§CP-PROC-REF ' + c.name + ' ok=' + ref.ok + ' summary="' + (ref.summary || ref.error || '') + '" logs=' + JSON.stringify((ref.logs || []).slice(0, 5)));
     R = refRows(tag);
     cfg.psql('DROP SCHEMA IF EXISTS snap_' + tag + ' CASCADE;');
-    } finally { try { fs.rmdirSync(LOCK); } catch (e) {} }
+    } finally { try { fs.rmSync(LOCK, { recursive: true, force: true }); } catch (e) {} }
     // ours
     const env = { client: (c.ctx && c.ctx.client) || 11, org: (c.ctx && c.ctx.org) || 11, role: (c.ctx && c.ctx.role) || 102, user: (c.ctx && c.ctx.user) || 101, wh: (c.ctx && c.ctx.wh) || 103,
-      date: (c.date || '2026-10-04') + ' 00:00:00', now: (c.date || '2026-10-04') + ' 00:00:00', nowMillis: Date.parse((c.date || '2026-10-04') + 'T00:00:00Z'), noWorkflow: !!c.noWorkflow };
+      date: (c.date || TODAY) + ' 00:00:00', now: (c.date || TODAY) + ' 00:00:00', nowMillis: Date.parse((c.date || TODAY) + 'T00:00:00Z'), noWorkflow: !!c.noWorkflow };
     const procRow = E.query('SELECT classname, name FROM ad_process WHERE ad_process_id=?', [c.process])[0] || {};
-    const params = {}; (c.params || []).forEach(p => { params[p.name] = { v: p.value, vTo: p.valueTo }; });
+    const params = {}; (c.params || []).forEach(p => { params[p.name] = { v: p.value, vTo: p.valueTo, type: p.type }; });
     let ours = { ok: false, summary: 'no port', ops: [], log: [] };
     if (E.P.JAVA[procRow.classname]) ours = E.P.runJava(E.query, env, { AD_Process_ID: c.process, className: procRow.classname, title: procRow.name, Record_ID: c.recordId || 0, Table_ID: c.tableId || 0, params });
     (ours.log || []).filter(l => /§(PROC|CALLOUT|MODEL)-(EXCEPTION|UNPORTED|ERR)/.test(l)).forEach(l => L('  ' + l));

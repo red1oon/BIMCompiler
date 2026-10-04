@@ -220,7 +220,7 @@ public class Oracle implements Runnable {
 			// context (e.g. IsSOTrx from AD_Window) is not wiped by an empty current row before New.
 			boolean openQuery = req.optBoolean("openQuery", false);
 			if (!t.isDetail() && !openQuery) { MQuery q = new MQuery(t.getTableName()); q.addRestriction("1=2"); t.setQuery(q); }
-			if (openQuery && !t.isDetail()) { t.query(false, 0, 1); if (t.getRowCount() > 0) t.setCurrentRow(0, true); }
+			if (openQuery && !t.isDetail()) { t.query(false, 0, 1); if (t.getRowCount() > 0) { t.setCurrentRow(0, true); out.put("currentBeforeNew", snapshot(t)); } }
 			else t.query(false);
 			boolean ok = t.dataNew(false);
 			out.put("dataNew", ok);
@@ -271,11 +271,13 @@ public class Oracle implements Runnable {
 		List<ProcessInfoParameter> list = new ArrayList<>();
 		if (ps != null) for (int i = 0; i < ps.length(); i++) {
 			JSONObject p = ps.getJSONObject(i);
-			list.add(new ProcessInfoParameter(p.getString("name"), conv(p.opt("value"), p.optString("type", "")), conv(p.opt("valueTo"), p.optString("type", "")), null, null));
+			String ty = p.optString("type", "");
+			if (ty.length() == 0) ty = paraType(procId, p.getString("name"));
+			list.add(new ProcessInfoParameter(p.getString("name"), conv(p.opt("value"), ty), conv(p.opt("valueTo"), ty), null, null));
 			// AD_PInstance_Para rows, as the UI writes them (ProcessParameterPanel.saveParameters)
 			MPInstancePara para = new MPInstancePara(inst, (i + 1) * 10);
 			para.setParameterName(p.getString("name"));
-			Object v = conv(p.opt("value"), p.optString("type", ""));
+			Object v = conv(p.opt("value"), ty);
 			if (v instanceof BigDecimal) para.setP_Number((BigDecimal) v);
 			else if (v instanceof Integer) para.setP_Number(new BigDecimal((Integer) v));
 			else if (v instanceof Timestamp) para.setP_Date((Timestamp) v);
@@ -292,6 +294,15 @@ public class Oracle implements Runnable {
 		ProcessInfoLog[] l = pi.getLogs();
 		if (l != null) for (ProcessInfoLog x : l) logs.put(new JSONObject().put("id", x.getP_ID()).put("date", toJson(x.getP_Date())).put("number", toJson(x.getP_Number())).put("msg", x.getP_Msg() == null ? JSONObject.NULL : x.getP_Msg()));
 		return new JSONObject().put("ok", ok && !pi.isError()).put("summary", pi.getSummary()).put("isError", pi.isError()).put("logs", logs).put("pinstance", inst.getAD_PInstance_ID()).put("classname", proc.getClassname());
+	}
+	// type from AD_Process_Para.AD_Reference_ID when the case gives none: date -> Timestamp, number/amount -> BigDecimal, ID/integer -> Integer
+	static String paraType(int procId, String name) {
+		int ref = DB.getSQLValue(null, "SELECT AD_Reference_ID FROM AD_Process_Para WHERE AD_Process_ID=? AND ColumnName=? AND IsActive='Y'", procId, name);
+		if (ref <= 0) return "";
+		if (org.compiere.util.DisplayType.isDate(ref)) return "date";
+		if (ref == org.compiere.util.DisplayType.Integer || org.compiere.util.DisplayType.isID(ref)) return "int";
+		if (org.compiere.util.DisplayType.isNumeric(ref)) return "num";
+		return "";
 	}
 	static Object conv(Object v, String type) {
 		if (v == null || v == JSONObject.NULL) return null;
