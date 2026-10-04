@@ -118,7 +118,8 @@ function diffRows(ref, ours) {
     Object.keys(rctx.ctx).forEach(k => { if (!/^\d+\|/.test(k)) ctx.setProperty(k, rctx.ctx[k]); });
     const windowNo = 1;
     if (NEWMODE) {
-      if ((c.parents && c.parents.length) || c.id || !ref.afterNew) { tot.vacuous = (tot.vacuous || 0) + 1; continue; }
+      if (c.id || !ref.afterNew) { tot.vacuous = (tot.vacuous || 0) + 1; continue; }
+      if (c.parents && c.parents.length) { /* line New: judged after the parent setup below */ } else {
       // ours starts exactly as the page does: login globals + AD_Window.IsSOTrx in the window ctx, an EMPTY row, dataNew fan
       const w = query('SELECT IsSOTrx AS s FROM AD_Window WHERE AD_Window_ID=?', [c.window])[0];
       if (w && w.s != null) ctx.setProperty(windowNo + '|IsSOTrx', String(w.s));
@@ -134,9 +135,10 @@ function diffRows(ref, ours) {
       tot.newCases = (tot.newCases || 0) + 1; if (!d.length) tot.newMatch = (tot.newMatch || 0) + 1;
       L('§CP-NEW ' + c.name + ' window=' + c.window + ' cols=' + Object.keys(ref.afterNew).length + (d.length ? ' DIFF ' + d.length + ' [' + d.join(' ; ') + ']' : ' MATCH') + ' defaulted=' + Object.keys(tabN.lastDefaults || {}).length);
       continue;
+      }
     }
     // the oracle window context right after New (keys the dataNew callout fan set, e.g. OrderType/HasCharges) — mirrored
-    if (ref.ctxAfterNew) Object.keys(ref.ctxAfterNew).forEach(k => ctx.setProperty(windowNo + "|" + k, ref.ctxAfterNew[k]));
+    if (ref.ctxAfterNew && !NEWMODE) Object.keys(ref.ctxAfterNew).forEach(k => ctx.setProperty(windowNo + "|" + k, ref.ctxAfterNew[k]));
     // c.mirror: [{table, where}] — reference rows the callout READS (M_Cost, C_DepositBatch …) that exist only in idempiere_pilot
     for (const m of (c.mirror || [])) {
       const rows = (await oracle({ op: 'sql', sql: 'SELECT * FROM ' + m.table + ' WHERE ' + m.where })).rows || [];
@@ -158,8 +160,18 @@ function diffRows(ref, ours) {
     }
     if (parent === 'MISSING') continue;
     const tab = A.openTab(tabs[c.tab].id, { ctx, windowNo, tabNo: c.tab, parentTab: parent });
+    if (NEWMODE) {   // line New: same parents as the steps path, then an EMPTY child row through dataNew
+      const skip = /^(Created|Updated|CreatedBy|UpdatedBy)$|_UU$/;
+      if (OFF) tab.load({}, false); else { tab.load({}, true); tab.dataNewCallouts(); }
+      const ours = tab.snapshot();
+      const d = diffRows(Object.fromEntries(Object.entries(ref.afterNew).filter(([k]) => !skip.test(k))), ours);
+      tot.newCols = (tot.newCols || 0) + Object.keys(ref.afterNew).filter(k => !skip.test(k)).length; tot.newDiff = (tot.newDiff || 0) + d.length;
+      tot.newCases = (tot.newCases || 0) + 1; if (!d.length) tot.newMatch = (tot.newMatch || 0) + 1;
+      L('§CP-NEW ' + c.name + ' window=' + c.window + ' tab=' + c.tab + ' (line) cols=' + Object.keys(ref.afterNew).length + (d.length ? ' DIFF ' + d.length + ' [' + d.join(' ; ') + ']' : ' MATCH') + ' defaulted=' + Object.keys(tab.lastDefaults || {}).length);
+      continue;
+    }
     const start = ref.afterNew || ref.afterOpen;
-    tab.load(start, !c.id);
+    tab.load(start, !c.id, { noDefaults: true });   // the oracle's afterNew is already GridTable.dataNew's result — never re-default it
     const d0 = diffRows(start, tab.snapshot());
     if (d0.length) L('§CP-START ' + c.name + ' load-diff=' + d0.join(' '));
     for (let i = 0; i < (c.steps || []).length; i++) {

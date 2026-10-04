@@ -36,8 +36,7 @@
     "set": "C_ConversionType_ID",
     "value": 114
    }
-  ],
-  "openQuery": false
+  ]
  },
  {
   "name": "cp_gl_batch",
