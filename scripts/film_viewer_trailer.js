@@ -188,7 +188,10 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   // other languages are QUIPS on light beats (and the greeting + thank-you rounds). slice(id, note, lang) defaults to English.
   // red1 2026-10-04: "need not show subsequent changes to languages" / "just speak out those short quips" — after the one picker
   // demo the UI stays English; a quip beat keeps its language for the VOICE + subtitle only. English beats switch back once.
-  async function slice(id, note, lang) { const L = lang || LANGS[0]; await beat(id, L, note); if (L === LANGS[0] && curLang !== LANGS[0]) await setLang(L); return L; }
+  // red1 2026-10-04: "do the language switch so that the UI reflects it but cut out the switch action" — the picker clicks are
+  // inside a CUT; the film jumps straight to the translated UI. Only the one g_pick demo shows the picker on screen.
+  async function quietLang(L) { if (L === curLang) return; cutStart('lang switch → ' + L); await setLang(L); await hold(250); cutEnd(); }
+  async function slice(id, note, lang) { const L = lang || LANGS[0]; await quietLang(L); await beat(id, L, note); return L; }
   // the hub overlay covers the ⋯ rail (no language picker reachable there) — its beats keep the current language
   async function keep(id, note) { await beat(id, curLang, note + ' (lang kept: hub covers the rail)'); return curLang; }
 
@@ -388,7 +391,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     fact('cpeClosed', !(await page.locator('#cpe-panel').first().isVisible().catch(() => false)));
     await beat('s17clip', curLang, 'cut to the finished Hospital film (post: film_title_cards.py CLIPS)'); await hold(5200);
     await hold(1500);
-    for (const L of LANGS.slice(1).concat([LANGS[0]])) { await beat('t_' + L, L, 'thank-you round'); await setLang(L); await hold(500); }
+    for (const L of LANGS.slice(1).concat([LANGS[0]])) { await quietLang(L); await beat('t_' + L, L, 'thank-you round'); await hold(500); }
     await beat('end', curLang, '');
     say('§FILM_CURSOR clicks=' + clicks + ' cursorOnTarget=' + cursorOk + (clicks === cursorOk ? ' OK' : ' WRONG'));
   } catch (e) { say('§FILM_ERROR ' + e.message.split('\n')[0]); }
