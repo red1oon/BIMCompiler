@@ -24,7 +24,9 @@ Each PR states the gate and proves it on the fleet (Hospital, Terminal, LTU_AHou
 | #1844 framing (§I.3) | full envelope > 2× p2–98 core | Hospital 1.8 / Duplex 1.3 / Terminal 1.15 → KEEP |
 | #1849 ground (§M) | §GROUND_Y step 4 only (no slab/storey match) | all 4 resolve at step 1 |
 | #1850 shadow follow (§P) | whole-site texel > 0.25 m (env > 256 m) | envelopes 151 / 126 / 69 / 22 m → off |
-| §Q TM civil phases | element discipline ∈ CIVIL_DISCS; civil template only when ALL elements civil | 4D cache run before/after byte-identical schedules |
+| §Q TM civil phases (#1851, merged) | element discipline ∈ CIVIL_DISCS; civil template only when ALL elements civil | cache_4d_run before/after, civil table ACTIVE: 4 buildings run.json identical |
+| §Q.2 civil trades + parallel (#1853) | trades referenced only by SEQUENCE_CIVIL; `placement:'logic'` only in the civil template | same fleet run: identical; witness_sequence_template_lock PASS |
+| §R.2 5D civil lines (#1853) | CIVIL_RATES keyed by civil discipline in boq_charts | BOQ headless Duplex: 34 lines / RM 1,064,715.92 / labour 103,231 = main |
 A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
@@ -727,6 +729,17 @@ Mirror of §CIVIL_PHASE, same gate, same NON-IMPACT rule:
    of 0 with all items unpriced prints INCONCLUSIVE, never RM 0 as a result); fleet 5D export byte-identical.
 **⛔ Needs:** a copy of the JKR SoR 2023 (RM 20, Ministry of Works procurement unit) to make rates `primary`.
 Steps 1–4 can ship with null rates first (the meaningless RM 4.82 M disappears, quantities appear).
+
+### §Q.2 / §R.2 result (2026-10-05) — bim-ootb PR #1853 (open, localhost :8402)
+- **#1850 squash-merged before its throttle commit** (605d8483 only) → re-landed as **#1852** (merged, sw v1475).
+  Same orphan landmine CLAUDE.md names (PR #138) — after pushing a follow-up to an open PR, check it is still OPEN.
+- **Civil trades:** finishing was serialized NOT by crew capacity (`§TPL_CAPACITY_LEVEL tasksDelayed=0`) but by the
+  template instantiator's within-level `cursor` + edge-from-`prevOnLevel` — shared with buildings. Fixed behind a
+  template-declared `placement:'logic'` (civil template only). JELAPANG 66 → 60 days; finishing trades all start d48.
+- **5D:** JELAPANG BOQ 1 line × RM 850 'Misc Element' → 6 civil lines, material 0 (UNPRICED, JKR SoR pending),
+  labour RM 175,894 (MASON-copied crews, flagged). Quantities counted; m²/m need a mesh measure (next).
+- Probe note: a lamp picked by `LIMIT 1` was one of the ~16 LIGHTING strays ~57 m below the road (§M) — its shadow
+  test was vacuous; the user confirmed shadows on the real lamps.
 
 ---
 
