@@ -560,6 +560,27 @@ https://www.scribd.com/doc/293680050/MSMA (MSMA reference copy — verify agains
 
 ---
 
+## §M Road floats high above the shadow-mode ground (user note 2026-10-04, after #1844 went live)
+**Cause (code read + measured on JELAPANG_AFTER.db):** the ground plane height comes from
+`tools.js:8-90` §GROUND_Y — steps 1–3 need IfcSlab / storey names (road has neither), so it falls to
+step 4 **`MIN(center_z)`** = **−11.1 m**. Element bottoms by discipline:
+ROAD 51.1 → 78.7 m (median 57.2) · DRAINAGE 42.9 → 70.6 · FURNITURE 52.8 → 65.1 ·
+**LIGHTING −18.1 → 68.4, p5 = −0.6** — a few lighting elements sit at/below 0 m (likely blocks
+inserted at elevation 0 in Civil 3D — a source-data stray, same family as LTU's PLB strays).
+So the plane sits at −11 m and the road (real elevation ~51–79 m) floats **~62–90 m** above it.
+**Two limits, stated honestly:**
+1. A stray-robust floor (e.g. low percentile of element bottoms instead of MIN) would put the plane
+   at ~51 m — touching the road's LOW end.
+2. The road itself climbs ~28 m over 2 km; any FLAT plane leaves the high end up to ~28 m above it.
+   The real ground for a road is the terrain surface — which the exporter skipped (EARTHWORK TIN, §B.3).
+**Fix options (for review, not coded):** (a) robust floor = p2 of element bottoms when no slab/storey
+rule matched — small change, applies only to step-4 models; (b) ask the designer to export the
+earthwork/existing-ground surface as 3D → use it as the ground. (a) now, (b) when data arrives.
+Owner: `tools.js` §GROUND_Y (one owner — `A.groundIfcZ` is reused by CPE ghost-ground, so the change
+flows to them; check `cinema_maxq.js:272` consumer).
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written.
