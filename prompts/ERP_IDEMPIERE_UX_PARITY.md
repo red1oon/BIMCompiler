@@ -1510,3 +1510,182 @@ but nothing reads the grid. The film records that same script path.
 
 **Next:** spec each MD-n as a witness claim that COUNTS detail rows + parent id per row (not a save log line), extend
 W-ERP-FIRST-SETUP with an un-saved-header tab switch and a 2nd-order line count — then fix. Nothing fixed yet.
+**→ CLOSED 2026-10-04 by §GT (bim-ootb PR #1837, merged `880824d1`, live on Pages): MD-1..MD-8 all ported generically — read §GT-RESULT.**
+
+## §GT — 2026-10-04 · The GridTab layer: one AD-driven tab contract for EVERY window (SPEC, written BEFORE code)
+**Why this exists (user, 2026-10-04):** *"must follow the AD layer of window grid handling abstract and not custom to each
+window. So that any new model will be handled without further custom code as how iDempiere dealt with such."* Closes §MD-1..8.
+
+### §GT.0 Root cause — why five lanes ported record-level iDempiere and never the tab contract
+1. **The porting unit was the record, never the tab.** §P7 ported `GridTab.dataNew:1179-1181` callouts, `GridField.getDefault`,
+   `GridTable.getMandatory:1973-2001` (this file :920-946) — all *one-row* semantics, unit-testable per row. The navigation half of
+   GridTab (current row, link column, WhereClause on every row, save-on-tab-change) lived as a name-convention shim inside
+   `idempiere.html renderActiveTab` and never got a unit, a spec row, or a witness of its own. `IsParent` is mentioned in none of
+   SO_FULL_CRUD_GAP / ERP_BUSINESS_CYCLE_E2E / AGENT_QUEUE / ERP_FIRST_SETUP_GUIDE / this file before §MD.
+2. **Every master-detail defect was patched at its symptom.** W-SO-CHILD-BIND (PR #928) = "select the created row" by guessing the
+   last `_lastFoldCreated` entry; §ORDERLINE-PARENT-FK (PR #956) = seed the line's FK by the same name convention; §DOCTYPE-PER-WINDOW
+   regex-parses `IsSOTrx` out of the WhereClause at create. Three patches around the one missing object.
+3. **The generalisation was written down and dropped.** `idempiere.html _overlayListTip` comment (bim-ootb fcaaa411 :2259-2260):
+   *"a created CHILD row's parent-FK scope is the next generalization (§-noted), not silently dropped"* — no §-line, no queue item,
+   never picked up. Meanwhile `ad_tabquery.js` (W-TABQUERY, bim-compiler `build/erp/`) implemented AD_Tab WhereClause and was scored
+   "✅ BUILT" in `docs/internal/ERP_COVERAGE_MATRIX.md:260` from a node witness on `ad_full.db` — it was never shipped to bim-ootb.
+4. **Witnesses could not fail on the defect (PRIMAL LAW §4 scope-blind).** `witness_so_child_bind.js` asserts the `§IDEMPIERE-MD …
+   filter=` pk equals the new pk — one order, wiped IDB, header saved first; `poc_erp_first_setup_live.js newOrder()` saves before the
+   Line tab (:342→:345) and judges a line by `§CRUD validate … create ok`. Nothing ever COUNTED detail rows per parent, made a 2nd
+   parent, or left a header unsaved. "Done" was scored on engine/log output, not on the grid the user sees.
+**Prevention rule (proposed for the lane's standing rules):** *A ported iDempiere behaviour is scored by the CLASS that owns it in
+iDempiere (GridTab / GridTable / GridField / AbstractADWindowContent), and its witness must drive EVERY AD object of that class in the
+seed (every window with a TabLevel>0 tab), counting rows per parent — never a hand-picked window or a log line. A deferral written in
+a code comment is not a deferral until it is a queue row with an owner.*
+
+### §GT.1 iDempiere → ours (Java read 2026-10-04; ours = bim-ootb fcaaa411)
+M = org.adempiere.base/src/org/compiere/model, Z = org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/adwindow
+| responsibility | iDempiere | ours before §GT |
+|---|---|---|
+| query lands on row 0 / refresh keeps the record by key | M/GridTab.java:752,766 · dataRefreshAll :908-940 (scan for same key) | `renderActiveTab` `_recIdx = 0` on EVERY tab entry (idempiere.html:1984) — **WRONG (MD-3)**; no keep-by-key |
+| navigate = save old row first, ignore untouched insert | M/GridTab.java:2558-2582 | `_dirtyGuard` prompt Cancel/Discard (:1425) — **MISSING save** |
+| dataNew: insert after current; IsInsertRecord + parentNeedSave gate | M/GridTab.java:1151-1190; GridTable.java:2052-2150 | New always enabled on any non-RO tab (:1521) — **MISSING gate** |
+| parent link value on the new row | M/GridField.java:757-768 defaultFromParent (Env ctx of the LINK column) | `buildForm` seedVals by parent-key NAME (:4011-4018) — **name convention** |
+| dataSave → saved record stays current | M/GridTab.java:985-1016; GridTable.java:1848-1854 | `_lastFoldCreated` last entry (:4358) — **guessed (MD-8)** |
+| dataIgnore → current row back to previous | M/GridTab.java:1129-1145 | `_newMode=null` then row 0 — **WRONG** |
+| tab change: dirty → save (AutoCommit default Y); save error → stay on tab; untouched New → dataIgnore + refresh | Z/AbstractADWindowContent.java:1651-1685 setActiveTab, :1693-1725 saveAndNavigate, :2893-2945 onSaveCallback/onSave0 | prompt only (:1879 → :1425) — **MISSING (MD-1)** |
+| link column: AD_Tab.AD_Column_ID, else single IsParent, else IsParent == parent key / parent's parents | M/GridWindow.java:193-242; GridTab.java:1317-1339 | parent key NAME present on child (:1956-1969) — **MISSING (MD-6)** |
+| link value = window ctx of the link column (parent tab first) ; Parent_Column_ID explicit | M/GridTab.java:688-700 | `_selByLevel[level-1]` (parent KEY) |
+| no link column → `2=3`; empty link value / parent new → `2=3` + parentNeedSave (detail read-only, no New) | M/GridTab.java:684-722; isReadOnly :1523; dataNew :1161 | no filter → ALL child rows — **WRONG** |
+| WhereClause `@ctx@` → Env.parseContextForSql; unresolved → `1 = 2` | M/GridTable.java:415-440 | skipped entirely (:1949) — **MISSING (MD-7)** |
+| OrderByClause via Env.parseContext | M/GridTab.java:1760-1789 | `@` clause dropped (:1980) |
+| role access (client/org) on the tab query | M/GridTable.java:452-458 MRole.addAccessSQL | client+org clause (:1952-1955) — present |
+| every row the tab shows passed the SAME where | GridTable SELECT is the only row source | op-log created rows appended AFTER the SQL, only client/org re-checked (:2261-2290) — **WRONG (MD-2, MD-5)** |
+| IsReadOnly / IsInsertRecord / IsSingleRow | M/GridTabVO.java:123-139; GridTab.java:1517-1571; Z:2119-2136 | IsReadOnly + IsSingleRow read (ad_parser.js:258), IsInsertRecord **not read** |
+| DocAction/Process button: save first, then WDocActionPanel on the current record | Z/AbstractADWindowContent.java:3719-3815, 4326-4349 | `buildDocActionBar` on current rec; Process disabled while dirty (T3) — present |
+
+### §GT.2 The layer (bim-ootb `erp/ad_gridtab.js`, browser + node, no kernel dep)
+`AdGridTab.open(db, win, tabIndex)` → one **tab model** per AD_Tab, built ONLY from AD rows: `tabLevel, parentIndex` (nearest earlier
+tab with level-1, GridTab.getParentTabNo), `keyColumn`, `parents` (AD_Column.IsParent='Y'), `linkColumn` (+`linkSource`), `parentColumn`
+(AD_Tab.Parent_Column_ID), `whereClause`, `orderByClause`, `isReadOnly`, `isInsertRecord`, `isSingleRow`.
+- `tm.query(ctxGet, access)` → `{ where, orderBy, linkValue, parentNeedSave, note }`: WhereClause (parsed; unresolved → `1=2`),
+  access clause, detail link `Table.link=value` / `2=3`. ctxGet = window context (parent tab row first, then window rows, then session).
+- `AdGridTab.admit(db, tableName, rows, where)` → the subset of `rows` for which `where` is TRUE, evaluated by sqlite over a one-row
+  derived table aliased as the tab table (every column of the table bound, numeric strings as numbers). **The op-log fold runs the
+  created rows through this — the same where the bundle SELECT used.** No JS re-implementation of the where.
+- `AdGridTab.indexOfKey(rows, keyCol, key)` — dataRefreshAll's keep-by-key.
+- `tm.canInsert(q)` = `!isReadOnly && isInsertRecord && !q.parentNeedSave` (GridTab.isInsertRecord + dataNew guard).
+Host (`idempiere.html`) keeps a current KEY per tab (`_curKeyByTab`), not an index: tab entry/refresh lands on that key (else row 0);
+New remembers it; Ignore returns to it; a committed CREATE sets it to the exact synthetic pk `-opId` carried by the commit event
+(`overlay:committed` detail `createdId`, from `commitGroup` ids — no guessing). Tab change + record navigation run
+`_saveAndNavigate(proceed)`: content-dirty → Save (AutoCommit Y); result ok → proceed; REJECT → stay (no tab change, error on form);
+untouched New → ignore → proceed. Window close/menu keep the CloseUnSave prompt (Z onExit). The New line's link value = the tab's
+`linkValue` (defaultFromParent). Superseded and REMOVED: `_lastFoldCreated` guess, the name-convention parent search (2 copies),
+the post-SQL client/org JS re-filter. KEPT: §P7 record logic, `_createIsSOTrx`/`_createMovementType` (record defaults, not navigation).
+
+### §GT.3 Witness claims (BEFORE code)
+**W-GRIDTAB-CONTRACT** (`erp/tests/witness_gridtab_contract.js`, node, Witness() kit): population = EVERY active window with an active
+TabLevel≥1 tab whose table AND parent table exist in `ad_seed.db` (data-driven, 128 at fcaaa411). Per tab: link column resolved per
+GridWindow.initTab; `linkSource` ∈ {AD_Column_ID, IsParent-single, IsParent-parentKey, none}; for the first header row with children the
+query returns exactly the child rows whose link == parent value (SQL oracle `COUNT(*) WHERE link=v`); `admit` of a synthetic row with a
+FOREIGN parent = false, own parent = true; WhereClause `@` tokens resolved or `1=2`. redControl: drop the link clause → must FAIL.
+**W-GRIDTAB-LIVE** (`erp/tests/witness_gridtab_live.js`, Playwright `--disable-gpu`): the same population, per window as role
+SuperUser-equivalent: New header → fill mandatory generically → click the first child tab WITHOUT Save →
+`§GT-NAV autosave … verdict=saved` (or `blocked` with the save error and still on the header tab — both iDempiere outcomes); New child row
+with its mandatory → saved; 2nd header the same way → child rows == 0 and every row's link == current parent (`§GT-SNAP`); back to the
+header → current key == the 2nd header. Per window `§GT-LIVE window=… verdict=PASS|GAP|INCONCLUSIVE(reason)`; INCONCLUSIVE when the
+window cannot be driven (no access, New disabled, mandatory unfillable — counted, never PASS). Totals line `§GT-LIVE-TOTAL`.
+**W-ERP-FIRST-SETUP extension:** S16b — the POS order's header is NOT saved before its Line tab; asserted autosaved; the Line tab of the
+2nd order counts its rows and every row's `c_order_id` (S16c), via the `§GT-SNAP` seam, not a save log line.
+
+### §GT.4 Found by the sweep (W-GRIDTAB-LIVE run 1-3, 2026-10-04) — each a generic iDempiere rule, ported, no per-window code
+Written as each GAP surfaced (spec of the fix before the fix; the witness that found it is the witness that proves it).
+| GAP seen (window) | iDempiere rule | port |
+|---|---|---|
+| new Role vanished from its own window → child bound to row 0 (111) | GridTable.dataNew:2052-2150 defaults EVERY field, hidden ones too (`AD_Role.IsMasterRole` 'N' → tab WhereClause `IsMasterRole='N'` finds it) | crud_core `foldCrudSpec.hiddenDefaults` (literal / @#ctx@ / defaultFromDatatype) ride the create op; `§GRIDFIELD-HIDDEN-DEFAULT` |
+| saved BP fails the tab WhereClause (`EXISTS M_Product_PO`) → not current (176, 337, 349…) | GridTable.dataRefreshAll(rowToRetained) ORs the retained row into the requery (M/GridTable.java:2474-2490) | `AdGridTab.query.whereRetain` (link + access, no tab clause); the current key is kept; `§GT-RETAIN` |
+| child row saved under the wrong parent when the link field is NOT displayed (234, 252, 328) | GridField.defaultFromParent:757-768 sets the link for every field incl. hidden | crud_overlay `_inlineSeed` merged into the create values; the seeded link fk keeps its value in the picker |
+| UU-linked child (`TestUU_UU`) has no link value (200138) | PO.saveNew:3546-3555 stamps `<Table>_UU` when empty | listTip CREATE fold: `<table>_uu` = the op's own `op_uuid` |
+| a saved row under org 12 hidden in a session logged in at org 11 (252) | MRole.getOrgWhere(false) (MRole.java:1192-1230): the tab's org access = the ROLE's org list + 0 (none when IsAccessAllOrgs), not the login org | `_roleOrgWhere()` replaces `AD_Org_ID IN (0,<login org>)` in the tab query |
+| autosave proceeded before the async fold made the saved row current → detail bound to row 0 (181, 195, 53144 under load) | GridTab.dataSave is synchronous: the saved row is current when the tab changes | `_saveAndNavigate` waits (≤3 s) until the saved key is current, then proceeds; `§GT-NAV … current=` |
+| a late op-log fold re-rendered an open New and wiped what was typed (53059) | — (our async fold; iDempiere has no such race) | fold repaint skips the form while `_newMode` or content-dirty |
+
+### §GT.5 One renderer (coordinator item 3)
+`erp.html` loads `ad_ui.js` (erp.html:85); `idempiere.html` does NOT load it (no `<script src="ad_ui.js">`; only a comment at :2219).
+`ad_ui.js` master-detail (`_loadTabRecords` :1872, `_renderWindow` detail panels :2026-2040, `_switchTab` :2491) was **unreachable**:
+`_currentWindow` is declared null (:16) and never assigned; `openWindow` (:1866-1870) routes every window to idempiere.html
+(§IDEMPIERE-ROUTE, PR #228). Live master-detail = idempiere.html only → it runs through ad_gridtab.js; the dead ad_ui cluster (12 functions,
+650 lines) is deleted. `poc_share_roundtrip.js` FAILs identically before/after (pre-existing: capture=home, the window navigates away).
+
+### §GT.6 No hand table list for window behaviour (coordinator item 4)
+Editability, insert, delete, process now come from AD only: `_crudHas` = `_foldableTab` (AD_Table.IsView, AD_Tab.IsReadOnly);
+fold `verbs` = IsReadOnly→none, `IsInsertRecord`→create, `AD_Table.IsDeleteable`→delete, a `DocAction` column→process; the merge takes the
+AD verbs over crud_ops.json. **crud_ops.json keeps only what AD cannot express:** `docAction`/`docPolicy` (the MOrder/MInOut/MInvoice
+completeIt fan-out rules are Java code, not AD rows), `ownerGated` + `cas` (our signed op-log ownership / compare-and-swap — no iDempiere
+analogue), curated field pins for the five O2C tables (§IMPL F3: AD marks GrandTotal read-only while totals are not engine-derived yet).
+Leftover per-window record default kept and named: `_createMovementType` (M_InOut tab WhereClause regex; iDempiere derives MovementType in
+MInOut.beforeSave from the doc type — not navigation). `_createIsSOTrx` regex REPLACED by the window context `AD_Window.IsSOTrx`
+(AbstractADWindowContent.java:416 `Env.setContext(ctx, curWindowNo, "IsSOTrx", gridWindow.isSOTrx())`).
+
+### §GT.7 Hard-coded column semantics + AD features (coordinator traps), Java → ours
+| rule | Java | ours after §GT |
+|---|---|---|
+| Processed/Processing record read-only; Processing/DocAction/GenerateTo stay editable on an active record; IsActive editable unless processed; inactive record read-only | M/GridField.java:565-585 | crud_core `effectiveFlags` (record = saved row + form) — PORTED |
+| Posted / Record_ID button always enabled | M/GridField.java:450-452 | Posted is its own button (`_postedButton`) — present |
+| AD_Column.IsAlwaysUpdateable | M/GridField.java:462 | ad_parser `isAlwaysUpdateable` → fold `alwaysupdateable` exempts the state rules — PORTED |
+| AD_Column.ColumnSQL (virtual, 65 cols) never editable | M/GridField.java:445 | ad_parser `isVirtual` → fold readonly, no hidden default — PORTED |
+| IsSOTrx window context | AbstractADWindowContent.java:416; GridTab.setIsSOTrxContext :2736 | `AD_Window.IsSOTrx` in window ctx + create default — PORTED (record-level setIsSOTrxContext from C_DocType: NOT ported) |
+| IsActive/Processed/Processing column indices | M/GridTab.java:432-434, GridTable.java:503-505 | used only by the state rule above |
+| DocumentNo / DocAction mandatory exemptions | M/GridField.java:377-385 | §P7.1 `gridFieldMandatoryExempt` — present |
+| AlwaysUpdatableLogic | M/GridField.java:468-483 | MISSING (no column in ad_seed AD_Column) |
+| AD_Preference user defaults (11 rows in seed) | GridField.getDefault stage 4 | MISSING (named in §P7-NOT-BUILT) |
+| `@SQL=` defaults (148 cols) | GridField.getDefault stage 2 | MISSING on the live form (crud_core :818 names it; not run) |
+| ReadOnlyLogic / MandatoryLogic | GridField.isEditable :544-561, isMandatory | live: crud_overlay `applyAdLogic` on every input/change (§AD-LOGIC-LIVE) — present |
+| composite parent (206 tables with >1 IsParent) | GridWindow.initTab:203-240 | ad_gridtab `linkColumn` (IsParent == parent key, else parent's parents) — PORTED; W-GRIDTAB-CONTRACT linkSource IsParent-parentKey=39 |
+| AD_Tab.AD_Column_ID explicit link (346 tabs) | GridTab.setLinkColumnName :1317-1339 | ad_gridtab — PORTED (linkSource AD_Column_ID=135 of the judged) |
+| AD_Tab.IsInsertRecord | GridTab.isInsertRecord :1555-1560 | ad_gridtab `canInsert` + fold verbs — PORTED |
+
+### §GT.8 Ninja-staged windows (coordinator acceptance case)
+`ninja_stage.js` stages EVERY model table as its own window with one tab; a detail table gets TabLevel 1 in its own window with no
+TabLevel-0 tab before it, and writes neither `AD_Column.IsParent` nor `AD_Tab.AD_Column_ID` (ninja_stage.js:124-128, :143-148).
+`§GT-CONTRACT-NINJA` on ninja_starter's AST_Asset→AST_Maintenance: `tabsInWindow=1 parentIndex=-1 isDetail=false` → INCONCLUSIVE (named).
+iDempiere would behave the same on that AD (no parent tab → not a detail). The generic layer needs NO Ninja code; Ninja must emit the
+iDempiere shape: the detail as a TabLevel-1 tab inside its master's window and `IsParent='Y'` on `<Master>_ID`. ⛔ owner decision
+(changes `extractModel`/export round-trip, which today keys a master by its own window's TabLevel).
+
+### §GT.9 Never-wired, headless-proven AD engines (bim-compiler build/erp, absent from bim-ootb erp) — same root-cause pattern as §GT.0-3
+`ad_tabquery.js` (81, W-TABQUERY; scored "✅ BUILT" in ERP_COVERAGE_MATRIX.md:260) — superseded by ad_gridtab.js; NOT reused verbatim
+because its `substitute()` QUOTES token values and reports unresolved tokens as `deferred`, where Env.parseContext substitutes raw text
+and GridTable.createSelectSql:431-436 turns an unparsable clause into `1 = 2`. `ad_reference.js` (80, W-REFERENCE: AD_Ref_Table FK
+membership + VFormat) — the Ref_Table half shipped separately as §P8; VFormat never wired. `ad_workflow.js` (166, W-WF node walk) —
+never wired (not a tab concern). Also only in build/erp: `erp_sequencer.js`, `offline_queue.js`, `op_class_tags.js`, `shard_loader.js`,
+`wh_route.js`, nine `report_*.js` — not AD window engines; listed for the record.
+
+## §GT-RESULT — 2026-10-04 · the tab contract, measured over every window (logs read; bim-ootb branch `fix/ad-gridtab-layer`)
+**THE INVARIANT (coordinator item 1): N = 128** windows in `ad_seed.db` with an active TabLevel-1 tab directly under the header whose
+tables are in the seed. **X = 82 of 128 windows pass the tab contract, 0 GAP, 46 INCONCLUSIVE — every one named** (`§GT-LIVE-TOTAL
+windows=128 PASS=82 (full=55 partial=27) GAP=0 INCONCLUSIVE=46`, `§WITNESS_GRIDTAB_LIVE pass=5 fail=0 ran=128`, pageErrors=0):
+- 16 header not saveable by the generic filler — each with iDempiere's own save error (`c_bpartner_location_id:required` ×6 on BPs
+  with no location; `entitytype:required` ×3; `MRMA.soTrxMatchesShipment` ×2; GL Journal `c_conversiontype_id`; Asset
+  `a_asset_group_id`; Print Format paper/font/colour; Web Service ids; Warehouse `c_location_id`). The window STAYED on the header
+  each time (`verdict=blocked … → stay`) — that is the iDempiere outcome; the sweep just cannot type real data for them.
+- 13 New disabled: 12 with `AD: canInsert=false` (AD_Tab IsReadOnly/IsInsertRecord — iDempiere offers no New either) and
+  **1 open: window 201 Request — `canInsert=true` but no create form within 20 s** in the sweep (a direct probe mounts all 61 rows
+  after 6 s; not diagnosed).
+- 10 header form with nothing the filler could type → untouched New → dataIgnore (iDempiere-correct; the arm is not judged).
+- 7 System-only windows (AD_* dictionary) — `?login=SuperUser` takes the user's first role (102); granted to role 0 only.
+"partial" = MD-1/2/3 judged, the child-create arm not driven (child tab read-only per AD, or its mandatory data not fillable).
+Same contract node-side: **W-GRIDTAB-CONTRACT 265/282 detail tabs PASS, 0 GAP, 17 INCONCLUSIVE (VACUOUS: no child rows in the
+seed / parent column on a higher level)**; the old name convention mis-counted 8 tabs and filtered 5 not at all. Ninja arm:
+`§GT-CONTRACT-NINJA … isDetail=false` → ⛔ §GT.8.
+**Before** (fcaaa411, repro): `§REPRO B order2=-3 lineTabRows=1 ids=["-2"] expected=0`; `§REPRO C dirtyPrompt=… headerSaved=0`.
+**After** (same repro): B `lineTabRows=0`; C `§GT-NAV autosave table=C_Order … verdict=saved id=-4`; D untouched New → `ignore-new`,
+lines bound to the header's current record (-4), not row 0.
+
+**W-ERP-FIRST-SETUP no longer scope-blind:** 36/36 VERIFIED incl. new **S16b** (`§GT-NAV autosave table=C_Order verdict=saved id=-13
+current=-13`) and **S16c** (`firstOrder=-10 thisOrder=-13 before={rows:0} after={rows:1,own:1,ids:["-14→-13"]}`).
+**Regression (logs read):** W-PARITY-VALRULE 23/23, -REFTABLE 12/12, -MANDATORY 18/18, -REFLIST 14/14, -DOCNO 10/10, -FIELDSET 26/26
+(c_allocationline case re-judged as AD read-only: tab 349 IsReadOnly=Y/IsInsertRecord=N → New disabled), W-CRITIC-POST-LIVE 17/17,
+W-POSTED-COLUMN PASS, POC-ACCTS-POSTED PASS, W-DIRTY-GATE PASS (re-specified: record navigation SAVES (GridTab.navigate), window close
+still prompts), test_idempiere_master_detail ALL PASS. W-CRITIC-CRUD-FULL-LIVE 3/10 and W-AD-FOLDED-CRUD-LIVE 7/14 fail with the
+IDENTICAL fail set on the untouched base tree (pre-existing, not this change). poc_share_roundtrip FAILs identically before/after.
+
+**Deletion budget (coordinator item 2), production files:** +481 / −796 = **net −315 lines**. idempiere.html 6325→6387, crud_overlay.js
+3393→3421, crud_core.js 1269→1320, ad_ui.js 3361→2711, ad_parser.js 536→538, new ad_gridtab.js 191. Removed: `_lastFoldCreated` +
+its guess (W-SO-CHILD-BIND), both parent-key-name searches (grid filter + §ORDERLINE-PARENT-FK seed), the post-SQL JS client/org
+re-filter, the `IsSOTrx` WhereClause regex, the login-org row filter, the curated `_crudHas`/verbs gate, the dead ad_ui master-detail.

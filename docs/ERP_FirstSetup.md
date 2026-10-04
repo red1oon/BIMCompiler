@@ -224,7 +224,13 @@ uses it. Sign in as **GardenAdmin**, or open `idempiere.html?login=GardenAdmin&w
 
 ### Step 8 · Add a line
 
-1. Open the **Order Line** tab and click **New record**.
+1. Open the **Order Line** tab and click **New record**. You do not have to click **Save** on the header first: as in
+   iDempiere, moving to another tab saves the record you were typing. If a required field is still empty, the header is
+   not saved and you stay on it, with the field marked. The **Order Line** tab only ever lists the lines of the order you
+   are on, including lines added during this session to other orders.
+   *(Verified 4 October 2026: an order typed and left unsaved is saved when the Line tab is clicked
+   (`§GT-NAV autosave … verdict=saved`). The second order's Line tab shows 0 rows before its line is added and 1 row
+   after, and that row belongs to this order, even though an earlier order got a line in the same session.)*
 2. **Product**: e.g. *Oak Tree*. Choosing it fills the **Price** from the order's price list (`61.75`),
    the **UOM** (*Each*) and the **Tax** (*Standard*), as iDempiere does. **Quantity**: `2`.
    Line Net Amount becomes **123.50**.
@@ -235,7 +241,7 @@ uses it. Sign in as **GardenAdmin**, or open `idempiere.html?login=GardenAdmin&w
 
 ### Step 9 · Complete the order
 
-1. Go back to the **Order** tab and select your new order in the list.
+1. Go back to the **Order** tab. Your order is still the selected record, so there is nothing to look up in the list.
 2. The form shows the actions that are allowed now: **Complete · Prepare · Void**. Click **Complete**.
 
 The status becomes **Completed (CO)**. The change is stored as a signed entry, and the chain check
