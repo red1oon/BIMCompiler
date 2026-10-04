@@ -808,6 +808,45 @@ Steps 1–4 can ship with null rates first (the meaningless RM 4.82 M disappears
 
 ---
 
+## §V Clash on a civil model — why "no clash items", and the next step (2026-10-05, NOT started)
+**Cause (code read):** `clash_matrix.js:17-23` looks up a rule per discipline PAIR from `rules.clash_rules`
+(source/target discipline). The rules exist only for building disciplines (ARC/STR/MEP…). The old JELAPANG import
+had ONE discipline (ARC) → "Matrix needs 2+ disciplines". After a fresh import (6 civil disciplines, #1844) the
+matrix can draw, but **no civil pair has a rule** → no clash items.
+**Is it useful? Yes** — partner list §K (drainage vs pavement, lighting vs drains, sign footings vs drains,
+furniture vs lighting). **Next session:**
+1. Find where `clash_rules` is loaded (rules DB/JSON) and its schema (tolerance, type hard/clearance).
+2. Add CIVIL pairs as **hard clash only (tolerance 0 = pure geometry, nothing invented)**: DRAINAGE×ROAD,
+   LIGHTING×DRAINAGE, SIGNAGE×DRAINAGE, FURNITURE×LIGHTING, SIGNAGE×LIGHTING. Clearance distances only later,
+   cited from JKR / MS standards (§L rule).
+3. Expect INTENDED hits (culverts/scuppers pass through the pavement by design) — report them grouped by pset
+   `02_Type` (e.g. EXTENSION CULVERT, SCUPPER DRAIN) so a reviewer can mark them intended, never auto-hide.
+4. Gate = civil disciplines only → building clash rules untouched (NON-IMPACT). Witness: civil pair counts on
+   JELAPANG; Hospital/Terminal clash matrix output byte-identical before/after.
+
+---
+
+## ▶ RESUME HERE (2026-10-05, session closing — read this first)
+**Live on main (bim-ootb):** #1844 units+disciplines+framing · #1847 cache-bust · #1849 ground+colours ·
+#1850/#1852 shadow follow + throttle · #1851 TM civil phases · #1853 civil crews + parallel + 5D lines ·
+#1854 crews in every reader · #1857 large-site fog + Fly no-rooms message.
+**Open PR:** **#1858** civil property labels + road route in the existing Fly Tour (scrubber, 5 traffic-signal stops).
+User is testing a fresh import of the 7 IFCs. Check #1858 merged (`gh pr view 1858`) before any follow-up push —
+the #1850 orphan happened because a follow-up was pushed after an auto-merge.
+**Localhost:** `/tmp/wt-civil-units` served at **http://localhost:8402** (branch `feat/civil-psets`, = #1858);
+`/tmp/wt-civil-shadow` at :8401 (old, merged branch — prune when idle). Use `localhost`, not the LAN IP (WebGPU
+needs a secure context — other session's note). Test DB: `buildings/JELAPANG_PSETS.db` →
+scratchpad `JELAPANG_AFTER_psets.db` (also copied to `~/Downloads/JALAN JELAPANG IFC/JELAPANG_AFTER.db`).
+**Next, in order:** (1) §V civil clash rules · (2) mesh-measured quantities (road m², marking/drain m) for 5D
+§R.2 step 3 · (3) Find by property (sign code / road part) on `element_psets` · (4) road-standard rule check §K-6.
+**Waiting on the user / partner:** JKR SoR 2023 (rates) · CRS code · alignment export (IFC4.3/LandXML) ·
+earthwork + drainage pipes as 3D · lamp IES files · approval of the other session's no-WebGPU Alt+S overlay.
+**Rules that bit this session:** bump the script tag of EVERY changed file on EVERY page (#1847) · a new owner
+(civilRuleFor) must be wired into every READER, not just writers (#1854) · fleet non-impact proof = cache_4d_run
+before/after with the civil table ACTIVE (`scratchpad/cache4d_civil_on.js` pattern) + headless BOQ for 5D.
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written.
