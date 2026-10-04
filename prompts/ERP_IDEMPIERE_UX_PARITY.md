@@ -1887,3 +1887,25 @@ Branch bim-ootb `feat/cp-open-items` (worktree /tmp/wt-callouts). File ownership
    (ProcessInfoParameter from AD_Process_Para when declared, else as given — as ProcessUtil does); oracle date params typed Timestamp;
    executeUpdateEx translates aliased UPDATE / row-value SET / row-value IN; cp_proc.lock = mkdir lock with stale-PID recovery.
 5. **CostCreate + FactAcctReset cases** (coordinator; scenarios only): a NON-vacuous case for each, `--off` DIFF.
+
+### §CP-OPEN-RESULT — 2026-10-05 (coordinator + Sonnet W1/W2/W3; every claim re-read from logs by the coordinator)
+2. ✅ **New inherits the on-screen record** — GridTable.dataNew removes only `W|T|col` per field; the host passes the current record and the
+   bridge loads it first. Oracle `currentBeforeNew` (W3) → W-CP-NEW loads it: Order 10/10, Invoice 9/9, Payment 9/9, GL 3/3 incl. the openQuery
+   header. Exposed + fixed: `isParentValue` was the column's IsParent flag; ported GridField.isParentValue (tab 0 never; ancestor key).
+   W-CP-NEW now judges LINE tabs too (parents set up as the steps path; never reads the oracle's post-New ctx) → exposed every line `Line`=0:
+   NVL + get_sysconfig UDFs, seed `dual` view, AD_SysConfig (client 0/11), C_InvoiceBatch(+Line) DDL → **99 cases / 20 files, 0 column diffs**.
+   The engine witness loads the oracle's afterNew with `noDefaults` (it is already dataNew's result).
+3. ✅ **Cash Journal** — window 198 and 79 others are IsActive='N' in iDempiere (no UI path); the live witness reports NOT-JUDGED with the reason.
+4a. ✅ (W1) DDL M_ProductDownload/M_Substitute/C_BankStatementMatcher; UDFs paymentTermDueDate, paymentTermDueDays, invoiceWriteOff (13/13 vs
+   PL/pgSQL). Coordinator: `ad_ddl_default` is now derived from EVERY bundle table (build_model_patch.py: ad_seed.db tables + this run's
+   CREATEs; was a 29-table hand list — W2 had appended 1467 rows by hand to the generated file; the generator now emits 1690 ⊇ them).
+4b. ✅ (W2) M-class code moved from processes/support_*.js + inline process copies into model_*.js (processes −999/+103, model +977/−37);
+   support_copy.js / support_proc.js deleted (tags + precache removed); Trx.update net no-op, Trx.insert keeps a given parent key, newPO =
+   PO.setStandardDefaults, C_OrderTax zero row dropped only at line level (MOrderLine.updateOrderTax 1049-1062), MInvoice/MOrder.beforeSave
+   C_DocType_ID 0; witness scripts/poc_model_trx_fixes.js (HEAD fails 4/6). CopyFromOrder now judges c_ordertax (del 1/1 MATCH).
+4c. ✅ (W3) runJava passes every given param (ProcessInfoUtil.setParameterFromDB:181-253); oracle types params from AD_Process_Para;
+   executeUpdate(Ex) Java overloads (a Trx was bound as `?` → FactAcctReset's -1) + aliased UPDATE/DELETE, row-value SET; PID lock with stale
+   recovery; local-date default both sides (was literal 2026-10-04); aging uses the UDFs (JS copies deleted). Coordinator: alignFromSeed
+   deletes ours for the filter first (no-pk m_costqueue/m_costhistory duplicated).
+5. ✅ **CostCreate** non-vacuous (`proc_CostCreate_work.json`, back-dated invoice cost details reopened): 4/4 MATCH after W2's cdSet fix;
+   **FactAcctReset** (`proc_FactAcctReset.json`, DeletePosting=N): Updated = 4 = ref, MATCH. Both `--off` DIFF.

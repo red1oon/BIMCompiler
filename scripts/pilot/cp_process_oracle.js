@@ -133,6 +133,8 @@ function project(rows, tbl, newIds, keyCol) {
     // (declared by the cases since 2026-10-04 but never implemented: PeriodStatus close judged 23 open vs our 22 closed + 1 never-opened).
     for (const a of (c.alignFromSeed || [])) {
       const rows = (await oracle({ op: 'sql', sql: 'SELECT * FROM ' + a.table + ' WHERE ' + a.where })).rows || [];
+      // ALIGN = ours equals the oracle for that filter: drop ours first (m_costqueue/m_costhistory have no pk → INSERT OR REPLACE duplicated)
+      try { E.query('DELETE FROM ' + a.table + ' WHERE ' + a.where); } catch (eD) { L('§CP-PROC-ALIGN ' + c.name + ' ' + a.table + ' delete failed: ' + eD.message); }
       const cols = E.query('PRAGMA table_info(' + a.table + ')').map(r => r.name);
       rows.forEach(row => { const use = cols.filter(k => Object.prototype.hasOwnProperty.call(row, k.toLowerCase()));
         E.query('INSERT OR REPLACE INTO ' + a.table + ' (' + use.join(',') + ') VALUES (' + use.map(() => '?').join(',') + ')', use.map(k => { const v = row[k.toLowerCase()]; return v === undefined ? null : v; })); });
