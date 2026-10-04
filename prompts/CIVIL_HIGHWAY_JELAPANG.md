@@ -749,6 +749,49 @@ Steps 1–4 can ship with null rates first (the meaningless RM 4.82 M disappears
 
 ---
 
+## §S Drone fly-through along the highway, orbiting the traffic lights (user, 2026-10-05) — SPEC, not coded
+**Ask:** a drone flight over the whole length; at important traffic lights it circles and closes in to near walking height.
+
+**What the data gives today (measured on JELAPANG_AFTER.db):**
+- A path from ALL ROAD element centres (principal axis, 100 m bins, median per bin) is NOT clean: 23 bins, **max
+  sideways jump 173 m** (median 60 m), one empty gap — the junction roads (ROAD J2A/J2B) and existing lanes pull
+  the median between carriageways. Height along it 53.2–64.9 m (real road profile — good for a drone height offset).
+- The fix is in the data, not a smarter guess: the road solids carry `01_Component_Name` (**MAINLINE 541**, ROAD
+  J2A 211, J2B 94, EXISTING LANE… — §E.0). A path through **MAINLINE** elements only follows one carriageway.
+- **Traffic lights:** the LIGHTING psets name **6 × TRAFFIC SIGNAL / TRAFFIC SIGNAL COLUMN** (`15_Name`) — the
+  stops. Signs add more candidate stops (GIVEWAY 7, U-TURN 4, TRAFFIC SIGNAL AHEAD 4; `16_Name`/`17_Code`).
+- **Both need pset extraction (§E.2)** — today the importer keeps none of these fields. That is the gate.
+
+**Design (reuse, no new engine):**
+1. **P-1 pset extraction** (additive table `element_psets`, guid/pset/name/value) — importer + DB builder.
+   Feeds this film, Find by sign code, and 5D sub-types. Building DBs gain a table; no existing column changes.
+2. **Path:** MAINLINE centres → principal-axis order → bin medians → smoothed spline; drone at road height +
+   altitude, looking ahead along the tangent. Where the alignment is exported later (IFC4.3/LandXML, §O-3) the
+   spline is replaced by it.
+3. **Stops:** each TRAFFIC SIGNAL group (clustered within ~50 m) = one beat: slow down, spiral from drone
+   altitude down to eye height while orbiting the signal, one full turn, rise back to the path. Orbit/approach
+   beats already exist in the film engine (CPE `§CINEMA_ORBIT_V2`, the Reveal pull-in) — reuse them as the beat.
+4. **Pacing:** constant ground speed between stops (km/h from a cited design speed, §H), so a 2.3 km+ flight
+   length is predictable; total time logged.
+5. **Witness (numbers, not eyes):** `§DRONE_PATH` points/length/max-lateral-jump (must fall well below the
+   173 m all-ROAD figure); `§DRONE_STOP n=6` each with min camera-to-signal distance (≤ walking range) and
+   orbit swept angle ≈ 360°; camera height time series never below the road surface (raycast).
+
+**Order:** P-1 pset extraction → path + stops spec'd numbers → film beat wiring → witness.
+
+## §T What else is important — ranked (2026-10-05)
+1. **Merge #1854** (crews in every reader) once checked on localhost.
+2. **Pset extraction (§S P-1 / §E.2)** — unlocks the drone film stops + path, Find by sign code / road part,
+   EXISTING vs new lanes, 5D sub-types (drain sizes). Biggest single unlock.
+3. **Mesh-measured quantities** — true road area (m²) and marking/drain length (m) from the geometry, so 5D
+   stops counting (§R.2 step 3).
+4. **From the designer / partner:** JKR SoR 2023 (rates) · CRS code (GPS walk, basemap) · alignment export
+   (route length, chainage) · earthwork + drainage pipes as 3D (terrain, drainage network) · lamp IES files.
+5. **Road-standard rule check (§K-6)** and **drainage capacity (§K 5+8)** — after psets.
+6. Alt+S without WebGPU overlay — proposed by the other session, awaiting user approval (§ 2026-10-05 ~01:20).
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written.
