@@ -352,6 +352,33 @@ Ranked by what we already have running for buildings:
 
 ---
 
+## §H Navisworks feature parity — for a road (2026-10-04, user: "Navisworks has Walk … can we have them?")
+Status read from shipped code/log names — **none yet exercised on JELAPANG** (every row needs a `§`
+reading on the re-imported road before it is claimed).
+
+| Navisworks | Ours (shipped, building-tuned) | Road gap |
+|---|---|---|
+| Orbit / Pan / Zoom / Focus | orbit controls, `resetCamOrbit` (A), pivot (Q) | none expected |
+| **Walk** (gravity, collision, crouch) | `walk.js` (phone step/GPS, floor = **storey** levels `:248-254`, "no floor/stair snap" `:470`); `cpe_walk.js` (finger / gamepad) | road has no storeys → walk.js floor logic has nothing to snap to. **Need: gravity onto the surface below** (raycast down; BVH already built, `§BVH_DEFERRED built=5094`) |
+| Third-person avatar | staffage car mesh already loads (`§STAFFAGE_CAR_MESH verts=2058`) | reuse as the driven car |
+| Fly | `toggleFlyAround` (L), fly tour | tour is room-graph based → needs centreline |
+| Viewpoints | share links / hash state, history | none expected |
+| Sectioning | section tool + scissors | needs "square to road at chainage" (§E.5) |
+| Measure | `toggleMeasure` (M) | none expected |
+| Clash Detective | clash matrix / narrow / report / snag | works once disciplines exist (P2) |
+| TimeLiner (4D) | Time Machine + auto-4D | chainage axis (P5) |
+| Quantification | QTO / rates, 4D5D export (4) | per-km (§E.6) |
+| Search / selection sets | Find (data-driven) | pset fields (§E.2) |
+| Redline / comments | snags, issues (I) | none expected |
+| Animator | CPE films | drive-through film (§G.6) |
+| Appearance Profiler | colour palette | colour by pset (sign code, EXISTING vs new) |
+
+**The one new feature a road needs: DRIVE** = walk + gravity onto the road surface + car eye height
++ speed in km/h + optional auto-drive along the P4 centreline, car mesh as avatar. Eye height and
+design speed values must be cited (JKR Arahan Teknik / AASHTO), not chosen. Spec it after P4.
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written. **Next: user reviews §PLAN checklist; nothing coded.**
