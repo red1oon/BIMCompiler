@@ -73,7 +73,7 @@ var OUT_DB_PATH   = path.resolve('/tmp', 'ninja_stage_test.db');
   // R1: menu nodes exist (AD_Menu with IsSummary='Y' for bundle + leaves)
   var menuNodes = db.exec("SELECT COUNT(*) FROM AD_Menu WHERE AD_Menu_ID >= " + NinjaStage.NINJA_BASE + " AND IsActive='Y'");
   var menuCount = menuNodes[0].values[0][0];
-  console.log('§ AD_Menu rows: ' + menuCount + ' (expect ' + (filteredModel.tables.length + 1) + ')');
+  console.log('§ AD_Menu rows: ' + menuCount + ' (expect ' + (counts.windows + 1) + ')');
 
   // R2: windows openable (AD_Window → AD_Tab → AD_Table chain intact)
   var windowChain = db.exec(
@@ -99,7 +99,7 @@ var OUT_DB_PATH   = path.resolve('/tmp', 'ninja_stage_test.db');
   var opLogOk = opLog.length > 0 && opLog[0].values.length > 0;
   console.log('§ kernel_ops NINJA_STAGE: ' + (opLogOk ? 'PRESENT ' + opLog[0].values[0][0] : 'MISSING'));
 
-  var renderPass = (Number(menuCount) === filteredModel.tables.length + 1) &&
+  var renderPass = (Number(menuCount) === counts.windows + 1) &&
                    (Number(chainCount) === filteredModel.tables.length) &&
                    (Number(fieldChainCount) === counts.fields) &&
                    opLogOk;
