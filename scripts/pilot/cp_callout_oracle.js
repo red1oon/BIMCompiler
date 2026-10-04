@@ -124,6 +124,8 @@ function diffRows(ref, ours) {
       if (w && w.s != null) ctx.setProperty(windowNo + '|IsSOTrx', String(w.s));
       const tabsN = query("SELECT AD_Tab_ID AS id FROM AD_Tab WHERE AD_Window_ID=? AND IsActive='Y' ORDER BY SeqNo", [c.window]);
       const tabN = A.openTab(tabsN[c.tab].id, { ctx, windowNo, tabNo: c.tab });
+      // a window opened on its query: the oracle's current row stays in the WINDOW ctx (GridTable.dataNew :2134) — load it first, as the page does
+      if (ref.currentBeforeNew && !OFF) { tabN.load(ref.currentBeforeNew, false); tot.newFromCurrent = (tot.newFromCurrent || 0) + 1; }
       if (OFF) tabN.load({}, false); else { tabN.load({}, true); tabN.dataNewCallouts(); }   // --off: no GridField.getDefault → must DIFF
       const ours = tabN.snapshot();
       const skip = /^(Created|Updated|CreatedBy|UpdatedBy)$|_UU$/;
@@ -177,7 +179,7 @@ function diffRows(ref, ours) {
         ' traceRef=[' + (rs.trace || []).join(',') + '] traceOurs=[' + tab.trace.join(',') + ']');
     }
   }
-  if (NEWMODE) L('§CP-NEW-SUMMARY cases=' + (tot.newCases || 0) + ' match=' + (tot.newMatch || 0) + ' cols=' + (tot.newCols || 0) + ' colDiffs=' + (tot.newDiff || 0) + ' skipped(line/open cases)=' + (tot.vacuous || 0) + ' verdict=' + (!tot.newCases ? 'INCONCLUSIVE' : tot.newMatch === tot.newCases ? 'PASS' : 'DIFF'));
+  if (NEWMODE) L('§CP-NEW-SUMMARY cases=' + (tot.newCases || 0) + ' match=' + (tot.newMatch || 0) + ' cols=' + (tot.newCols || 0) + ' colDiffs=' + (tot.newDiff || 0) + ' fromCurrentRow=' + (tot.newFromCurrent || 0) + ' skipped(line/open cases)=' + (tot.vacuous || 0) + ' verdict=' + (!tot.newCases ? 'INCONCLUSIVE' : tot.newMatch === tot.newCases ? 'PASS' : 'DIFF'));
   L('§CP-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' match=' + tot.stepsMatch + ' fieldDiffs=' + tot.fieldsDiff +
     ' oracleErr=' + tot.oracleErr + ' stepsWithNoRefDerive=' + tot.vacuous + (OFF ? ' MODE=OFF' : '') +
     ' unported=' + JSON.stringify(A.RUNTIME.stats().unported));

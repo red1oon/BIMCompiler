@@ -1864,3 +1864,26 @@ C_Period_ID 200170 blanked → 9/9 again).
 TableDir lookup — so AD_Val_Rule 271 never applies there and the WTableDirEditor reset cannot fire (live: `cp_ord_po_hdr #1
 M_PriceList_ID:ref=null,grid=101`). The curated c_order field spec must give way to the AD-folded field (rule 1/5: one implementation).
 **OPEN:** W-CP-CALLOUT-LIVE CalloutCashJournal — the page never mounts window 198 (`page.waitForSelector` 30 s timeout in pilot_ours.openWin), pre-existing; SO order `InvoiceRule` ref D/ours I = the named New-inherits-current-row context item.
+
+## §CP-OPEN — 2026-10-05 · the open items, worked to zero (SPEC; results appended per item)
+Branch bim-ootb `feat/cp-open-items` (worktree /tmp/wt-callouts). File ownership is exclusive per owner.
+1. ✅ **Curated FK pins** (coordinator) — 7 `type:number` *_ID pins removed from crud_ops.json; the AD fold supplies lookups. Live: order
+   `M_PriceList_ID` now resets like ZK (§CALLOUT-LOOKUP-RESET value=101 = oracle). W-PARITY-FIELDSET 25/26 (= main; it now reads its pinned set
+   from crud_ops.json), W-PARITY-VALRULE 23/23, first-setup verdict set identical to main. FOUND, pre-existing (also on c9607aec, before §CP):
+   W-CRITIC-CREATE-LIVE 4/12, W-CRITIC-PROCESS-LIVE 4/18 — not caused by this lane; listed for its owner.
+2. **New inherits the current row's window context** (coordinator; crud_overlay bridge + idempiere.html calloutCtx). Claim: with a record
+   current, our New row's defaults = the oracle's `openQuery` New row (W-CP-NEW with openQuery on GL_Journal / Order).
+3. **Cash Journal window does not mount headless** (coordinator; idempiere.html). Claim: W-CP-CALLOUT-LIVE CalloutCashJournal judged>0.
+4a. **Seed + SQL functions** (worker W1; owns erp/patches/*, erp/callouts/sqlfn.js): DDL for M_ProductDownload, M_Substitute, C_BankStatementMatcher,
+   C_OrderPaySchedule; ad_ddl_default rows for C_BankStatementLine (IsManual, EftAmt), M_InventoryLine (QtyCsv, CurrentCostPrice, NewCostPrice),
+   C_PeriodControl.PeriodStatus; SQL functions paymentTermDueDate, invoiceWriteOff (+paymentTermDueDays IsDueFixed). Claim: every case that used a
+   preSql stub / local fallback for these passes without it.
+4b. **Model code home** (worker W2; owns erp/model_*.js + erp/processes/*): the M-class ports carried locally in processes/support_*.js move into
+   model_*.js (MOrder/MInvoice.copyLinesFrom, MJournal*/MJournalBatch, MAllocationHdr/Line delete+reverse, MAccount.get, MYear.createStdPeriods,
+   MOrder ctor/beforeSave, MBankStatementLine, MProductPrice.setPrices, MInOutConfirm); C_OrderTax zero row deleted (MOrderTax as Java);
+   Trx.update net no-op; Trx.insert keeps a given parent key; newPO stamps as PO.setStandardDefaults. Claim: 30/34 proc sweep unchanged, deletion
+   budget stated (lines removed from support_*.js).
+4c. **Process harness** (worker W3; owns erp/ad_process.js, scripts/pilot/oracle/*, cp_process_oracle.js): runJava passes every given param
+   (ProcessInfoParameter from AD_Process_Para when declared, else as given — as ProcessUtil does); oracle date params typed Timestamp;
+   executeUpdateEx translates aliased UPDATE / row-value SET / row-value IN; cp_proc.lock = mkdir lock with stale-PID recovery.
+5. **CostCreate + FactAcctReset cases** (coordinator; scenarios only): a NON-vacuous case for each, `--off` DIFF.

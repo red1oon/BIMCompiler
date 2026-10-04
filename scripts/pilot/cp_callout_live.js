@@ -37,6 +37,9 @@ function norm(v) {
       tot.cases++;
       const ref = await oracle({ op: 'callout', window: c.window, tab: c.tab, ctx: { date: today }, steps: c.steps, lookupMiss: true, openQuery: c.openQuery != null ? !!c.openQuery : true });   // lookupMiss: the columns ZK's WTableDirEditor would clear
       if (!ref.ok) { L('§CP-LIVE ' + c.name + ' ORACLE-ERROR ' + ref.error); continue; }
+      // an AD_Window inactive in real iDempiere cannot be opened there either (Cash Journal 198 et al., IsActive='N') — not judged
+      const wact = ((await oracle({ op: 'sql', sql: 'SELECT IsActive FROM AD_Window WHERE AD_Window_ID=' + Number(c.window) })).rows || [])[0];
+      if (!wact || wact.isactive !== 'Y') { tot.inactiveWin = (tot.inactiveWin || 0) + 1; L('§CP-LIVE-CASE ' + c.name + ' NOT-JUDGED window=' + c.window + ' IsActive=' + (wact ? wact.isactive : 'absent') + ' in iDempiere (no UI path)'); continue; }
       await O.openWin(o, c.window); const n0 = o.LOG.length; await O.clickNew(o);
       const fan = o.since(n0, /§CALLOUT-NEW/).pop() || '(no §CALLOUT-NEW line)';
       L('§CP-LIVE-NEW ' + c.name + ' ' + fan.slice(0, 300));
@@ -69,6 +72,6 @@ function norm(v) {
       }
     }
   } finally { await o.close(); }
-  L('§CP-LIVE-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' judged=' + tot.judged + ' match=' + tot.match + ' notOnForm=' + tot.notOnForm + ' derivedCols=' + tot.cols + ' colsMatch=' + tot.colsMatch + ' pageErrors=' + o.ERRS.length + ' zkEditorResets=' + (tot.zkReset || 0) + ' verdict=' + (!tot.judged ? 'INCONCLUSIVE(no header case judged)' : (tot.match === tot.judged && !o.ERRS.length ? 'PASS' : 'DIFF')) + (o.ERRS.length ? ' ' + JSON.stringify(o.ERRS.slice(0, 3)) : ''));
+  L('§CP-LIVE-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' judged=' + tot.judged + ' match=' + tot.match + ' notOnForm=' + tot.notOnForm + ' derivedCols=' + tot.cols + ' colsMatch=' + tot.colsMatch + ' pageErrors=' + o.ERRS.length + ' zkEditorResets=' + (tot.zkReset || 0) + ' inactiveWindows=' + (tot.inactiveWin || 0) + ' verdict=' + (!tot.judged ? 'INCONCLUSIVE(no header case judged)' : (tot.match === tot.judged && !o.ERRS.length ? 'PASS' : 'DIFF')) + (o.ERRS.length ? ' ' + JSON.stringify(o.ERRS.slice(0, 3)) : ''));
   if (logFile) fs.writeFileSync(logFile, out.join('\n') + '\n');
 })().catch(e => { L('§CP-LIVE-FATAL ' + (e && e.stack || e)); if (logFile) fs.writeFileSync(logFile, out.join('\n') + '\n'); process.exit(2); });

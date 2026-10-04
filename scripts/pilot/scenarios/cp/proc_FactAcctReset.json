@@ -1,0 +1,14 @@
+[
+ {
+  "name": "cp_factacctreset_payment_unlock",
+  "process": 176,
+  "params": [
+   {"name": "AD_Client_ID", "value": 11, "type": "num"},
+   {"name": "AD_Table_ID", "value": 335, "type": "num"},
+   {"name": "DeletePosting", "value": "N"}
+  ],
+  "tables": ["c_payment"],
+  "preSql": ["UPDATE c_payment SET posted='E', processing='Y' WHERE c_payment_id IN (100,101)"],
+  "alignFromSeed": [{"table": "C_Payment", "where": "AD_Client_ID=11"}]
+ }
+]
