@@ -1476,3 +1476,37 @@ witness pins it, so closing one flips that step to VERIFIED and the run prints `
 - **FS-8** (S11b) PR #1818 `563c6f1b` sw v800 — idempotent listTip fold.
 - **FS-9** (S24b) PR #1819 `7ab14b99` sw v801 — TableDir param picker (MLookupFactory :812-905 + client clause).
 - Journey on `7ab14b99`: **27 VERIFIED / 2 GAP** (S25b → FS-10, S26 → FS-11, both still queued, no owner question).
+
+## §MD — 2026-10-04 · Master→detail gaps: header doesn't auto-save on tab change, detail not scoped to its parent
+**User report:** "all models have same issue when creating new master then going to detail it does not auto save and
+sometimes at detailing it does not filter to only that parent." The guide (`docs/ERP_FirstSetup.md` Steps 6b/7/8) and its
+film claim Sales Order create works; both are true ONLY on the exact path the witness drives.
+
+**Measured** (bim-ootb `fcaaa411`, window 143 GardenAdmin, fresh IDB; repro = session scratch `repro_md.js`, log read):
+- `§REPRO B order2=-3 lineTabRows=1 ids=["-2"] expected=0` — order 2's Line tab shows order 1's line. `§LIST-TIP created=1`
+  appended it AFTER the SQL filter `C_Order_ID=-3`.
+- `§REPRO C dirtyPrompt="…Close without saving? Cancel | Close without saving" headerSaved=0` — no Save path on tab change.
+- `§REPRO C afterDiscard … parentFilter=C_Order_ID=108 ids=["124","-2"]` — lines now filtered by seed order 108 (row 0), not
+  the order just worked on, plus the leaked -2.
+- `§REPRO D untouchedNew prompt=false … parentFilter=C_Order_ID=108` — untouched New → silently discarded → Line tab bound
+  to an arbitrary order; a New line here is seeded with C_Order_ID=108 (`idempiere.html:4011-4018`).
+
+**Why the guide/film pass (scope-blind witness, PRIMAL LAW §4):** `poc_erp_first_setup_live.js` `newOrder()` clicks Save
+BEFORE the Line tab (:342→:345); wipes IDB first (:116) so the only created line is its own; judges the line by its
+`§CRUD validate … create ok` line, never counts Line-tab rows; the 2nd order (POS, :462) would show the 1st order's line
+but nothing reads the grid. The film records that same script path.
+
+**Gaps vs iDempiere (generic code → every master-detail window: SO/PO/Invoice/Shipment/BP→Location…):**
+| # | iDempiere | Here | Where | Evidence |
+|---|---|---|---|---|
+| MD-1 | Tab change on a dirty record auto-saves (AutoCommit, default Y); save error → stays on tab | Prompt offers only Cancel / Close without saving | `idempiere.html:1425` `_dirtyGuard`, :1879 | measured C |
+| MD-2 | Detail rows = parent link filter, incl. new rows | Session-created rows of ALL parents appended after the SQL filter (only client/org re-checked) | `idempiere.html:2262` `_overlayListTip`; `crud_core.js:399` `listTip` | measured B |
+| MD-3 | Returning to the header tab keeps the current row | Re-query resets to row 0 → detail binds to a different parent | `idempiere.html:1990` `_recIdx = 0; _setSel` | measured C/D |
+| MD-4 | New header must be saved before a child tab (child disabled / save forced) | Untouched New silently dropped; child opens on stale parent; New line seeded with that wrong parent | `renderActiveTab` `_newMode=null`; :4011 seed | measured D |
+| MD-5 | Tab WhereClause applies to every row (e.g. IsSOTrx='Y') | Created rows bypass it — a session PO can surface in Sales Order | `_overlayListTip` (same as MD-2) | code read, not measured |
+| MD-6 | Link via AD_Tab.AD_Column_ID / IsParent column | Name convention only (parent key name on child); no match → NO filter, all rows | `idempiere.html:1956-1969` | code read, not measured |
+| MD-7 | `@ctx@` WhereClause resolved from context | Skipped entirely | `idempiere.html:1949` | code read, not measured |
+| MD-8 | Post-save current row = the saved record | Picked as last entry of `_lastFoldCreated`; foundIdx<0 leaves stale parent | `idempiere.html:4358` | code read |
+
+**Next:** spec each MD-n as a witness claim that COUNTS detail rows + parent id per row (not a save log line), extend
+W-ERP-FIRST-SETUP with an un-saved-header tab switch and a 2nd-order line count — then fix. Nothing fixed yet.
