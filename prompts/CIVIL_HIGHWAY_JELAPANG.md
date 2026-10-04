@@ -253,6 +253,8 @@ start until the earlier one's witness is read green.
 4. P3 — agree to measure-before-change?
 5. §D — Civil switch auto-on from profile + manual override, named "Civil" not "CW"?
 6. §E.2 — add pset extraction as step 3?
+7. §I.1 — zoom-to-cursor for all models, or only large ones?
+8. §I.2 — can you get the CRS code from the designer (Civil 3D drawing settings)?
 
 ---
 
@@ -376,6 +378,51 @@ reading on the re-imported road before it is claimed).
 **The one new feature a road needs: DRIVE** = walk + gravity onto the road surface + car eye height
 + speed in km/h + optional auto-drive along the P4 centreline, car mesh as avatar. Eye height and
 design speed values must be cited (JKR Arahan Teknik / AASHTO), not chosen. Spec it after P4.
+
+---
+
+## §I Auto zoom sizing + GPS site-walk for large models (2026-10-04, user ask)
+
+### I.1 Zoom — framing is already auto; ZOOM DIRECTION is the large-model gap
+- **Initial fit is already sized from the model:** `streaming.js:3891-3900` envelope → `dist =
+  max(80, envelope×1.5)`, `far = max(10000, dist×5)`. After P1 the road frames at ≈3,150 m, far
+  ≈15,750 m; `controls.maxDistance = 20000` (`scene.js:161`) has room. No change needed — witness it.
+- **Gap:** OrbitControls dollies toward a FIXED target (the site centre). On a 2 km road, zooming
+  in always heads to the middle; reaching a spot 1 km away means pan-zoom-pan, and dolly slows as it
+  nears the target. **Fix: `controls.zoomToCursor = true`** — supported by our shipped
+  `lib/OrbitControls.module.js`. Zoom goes toward the point under the pointer/pinch (Google Earth /
+  Navisworks behaviour).
+- **Impact:** changes zoom feel on EVERY building (one-line change, but universal). Options for
+  review: on for all, or on only when `envelope > N` (N from the site profile, P4). Witness: wheel
+  steps over a far point → camera-to-point distance shrinks while the point stays under the cursor
+  (screen-space drift in px, asserted), on Hospital + JELAPANG.
+- Near plane: stays P3 (measure first).
+
+### I.2 GPS site-walk — `walk.js` exists, but its anchor assumes a building
+How it works now (read `walk.js`):
+- Anchor = nearest **door** (`:40` `findNearestDoorPosition`), else the building centre (`:44`).
+  JELAPANG has no doors → anchor = site centre, **~1 km from wherever the user stands**.
+- GPS → model = metres from the anchor's GPS fix (`:268-273`, flat 111,320 m/deg — fine over 2 km),
+  rotated by true north (`:275`). JELAPANG true north = `0 (source=default_zero)` → **unknown**, so
+  the blue dot can move in the wrong direction.
+- Height snaps to **storey** floors (`:283-293`) — none on a road.
+
+So on the road today the blue dot would start in the wrong place and may track in the wrong
+direction. Two fixes, best first:
+1. **Real georeferencing (no anchor at all).** The model's coordinates (x ≈ 27.6–29.7 km,
+   y ≈ −24.2 to −22.9 km, metres) look like a Malaysian state grid (a Cassini-Soldner state
+   grid is a candidate — **unconfirmed**). The Civil 3D drawing has its coordinate system set —
+   **ask the designer for the CRS code**. With it, GPS lat/long → model x/y is an exact projection:
+   blue dot right anywhere on the 2 km, north solved, no tap. (IFC2X3 can't carry it; IFC4.3
+   `IfcMapConversion` can.)
+2. **Two-tap anchor (fallback when no CRS).** User taps where they stand on the model at two
+   spots ≥ ~50 m apart while GPS records each → solves offset + rotation from measurements.
+   Replaces the door anchor for sites without doors.
+- **Height:** drop storey-snap for sites; put the dot on the surface below (raycast — same need as
+  DRIVE, §H). One shared "ground under point" function, not two.
+- **Witness (no field trip needed):** feed recorded GPS fixes (synthetic track along known model
+  points converted through the CRS) → blue dot within X m of the expected model point; with no CRS
+  and no two-tap → `§WALK_GPS INCONCLUSIVE no georef`, never a silent wrong dot.
 
 ---
 
