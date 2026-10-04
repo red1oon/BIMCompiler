@@ -882,6 +882,20 @@ needs a secure context — other session's note). Test DB: `buildings/JELAPANG_P
 §R.2 step 3 · (3) Find by property (sign code / road part) on `element_psets` · (4) road-standard rule check §K-6.
 **Waiting on the user / partner:** JKR SoR 2023 (rates) · CRS code · alignment export (IFC4.3/LandXML) ·
 earthwork + drainage pipes as 3D · lamp IES files · approval of the other session's no-WebGPU Alt+S overlay.
+
+**UPDATE at close (2026-10-05 ~03:45):**
+- **#1858 MERGED** (civil property labels + road route in Fly Tour). Live check: `tour.js?v=19` on Pages contains
+  `§CIVIL_ROUTE_TOUR`, live `import_worker.js` contains `§CIVIL_PSETS`.
+- **⛔ OPEN — user: "Fly tour not working yet, timeline scrubber does not appear."** Headless on localhost with
+  the labelled DB showed the route + scrubber (12 ticks), so the user's run differs — NOT yet diagnosed. First
+  check: does the user's DB have `element_psets` (only imports done with the #1858 importer do — an older saved
+  import or a fresh import before the deploy has none → `_civilRouteTour` returns null → old orbit fallback, no
+  scrubber)? Read the user's log for `[TOUR] §CIVIL_ROUTE` / `§CIVIL_ROUTE skip` / `§TOUR_NO_ROOMS`.
+  If `§CIVIL_ROUTE skip mainline=0`: the DB lacks psets → re-import. If absent entirely: tour.js cache/version.
+- **Clash is owned by ANOTHER session** (user). #1859 (civil clash pairs) merged to main from branch
+  `feat/civil-clash`, which is now checked out in `/tmp/wt-civil-units` (so localhost:8402 serves that branch).
+  A background agent this session launched for clash was stopped at the user's instruction — do not resume it,
+  do not touch clash files or that worktree.
 **Rules that bit this session:** bump the script tag of EVERY changed file on EVERY page (#1847) · a new owner
 (civilRuleFor) must be wired into every READER, not just writers (#1854) · fleet non-impact proof = cache_4d_run
 before/after with the civil table ACTIVE (`scratchpad/cache4d_civil_on.js` pattern) + headless BOQ for 5D.
