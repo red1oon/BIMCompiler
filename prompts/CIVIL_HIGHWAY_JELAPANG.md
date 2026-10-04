@@ -835,8 +835,8 @@ User is testing a fresh import of the 7 IFCs. Check #1858 merged (`gh pr view 18
 the #1850 orphan happened because a follow-up was pushed after an auto-merge.
 **Localhost:** `/tmp/wt-civil-units` served at **http://localhost:8402** (branch `feat/civil-psets`, = #1858);
 `/tmp/wt-civil-shadow` at :8401 (old, merged branch — prune when idle). Use `localhost`, not the LAN IP (WebGPU
-needs a secure context — other session's note). Test DB: `buildings/JELAPANG_PSETS.db` →
-scratchpad `JELAPANG_AFTER_psets.db` (also copied to `~/Downloads/JALAN JELAPANG IFC/JELAPANG_AFTER.db`).
+needs a secure context — other session's note). Test DB: `buildings/JELAPANG_PSETS.db` and `buildings/JELAPANG_AFTER.db` → symlinks to
+`~/Downloads/JALAN JELAPANG IFC/JELAPANG_AFTER.db` (labelled, 451 MB; rebuild with the fixed importer if lost).
 **Next, in order:** (1) §V civil clash rules · (2) mesh-measured quantities (road m², marking/drain m) for 5D
 §R.2 step 3 · (3) Find by property (sign code / road part) on `element_psets` · (4) road-standard rule check §K-6.
 **Waiting on the user / partner:** JKR SoR 2023 (rates) · CRS code · alignment export (IFC4.3/LandXML) ·
