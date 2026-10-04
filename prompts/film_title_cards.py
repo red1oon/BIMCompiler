@@ -33,6 +33,24 @@ NOVEL = {'s03': ('NOVEL ART', 'IFC → SQLite, streamed in the browser'),       
 # v4: s05c is LIVE now (door-to-door room path on HHS) — the Terminal escape-route cutaway is retired
 CLIPS = {'s17clip': (os.path.expanduser('~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4'), 0.5, 5.0, 0.0,
                  'Hospital  ·  a film baked in the browser')}
+# §9 MODELLER TRAILER (FILM_NARRATION.md §9 STORYBOARD v1): FILM_SET=modeller swaps the chapter text, tags and badges; no cutaways.
+if os.environ.get('FILM_SET') == 'modeller':
+    CARDS = {
+        1: ('CHAPTER 1', 'OPEN', 'A REAL BUILDING', "Don't draw from a blank grid."),
+        2: ('CHAPTER 2', 'ASSEMBLE', 'AND DRAW', 'Insert, sketch, cut, route.'),
+        3: ('CHAPTER 3', 'MOVE IT', 'EVERYTHING FOLLOWS', 'One drag, one signed edit.'),
+        4: ('CHAPTER 4', 'IT FILLS', 'ITSELF IN', 'Missing trades, walked from measured rules.'),
+        5: ('CHAPTER 5', 'THE LOG IS', 'THE TIMELINE', 'Drag back to undo. Forward to redo.'),
+        6: ('CHAPTER 6', 'SAVE', 'AND SHARE', 'Clash-gated save. BCF out.'),
+    }
+    TAG = {1: 'OPEN', 2: 'DRAW', 3: 'MOVE', 4: 'WALK', 5: 'TIME', 6: 'SHARE'}
+    SERIES = 'BIM OOTB  ·  MODELLER'
+    NOVEL = {'m02': ('NOVEL ART', 'The model is a signed op-log, folded'),        # ModellerGuide.md:4-7
+             'm09': ('NOVEL ART', 'Walk a missing trade from measured rules'),   # ModellerGuide.md:563-566
+             'm12': ('NOVEL ART', 'The slider is the history — exact'),          # ModellerGuide.md:720-726
+             'm03': ('BIM KILLER', 'Assemble, not draw — in a browser'),         # ModellerGuide.md:205
+             'm14': ('BIM KILLER', 'BCF 2.1 out of a browser tab')}              # ModellerGuide.md:758-765
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}

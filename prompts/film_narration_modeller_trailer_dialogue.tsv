@@ -1,0 +1,49 @@
+g_en_MY	en	greeting	F: Hi!	F: Hi!
+g_fr_FR	fr	greeting	M: Bonjour !	M: Bonjour !	M: Hello!	M: Hello!
+g_es_ES	es	greeting	F: ¡Hola!	F: ¡Hola!	F: Hello!	F: Hello!
+g_de_DE	de	greeting	M: Guten Tag!	M: Guten Tag!	M: Good day!	M: Good day!
+g_ar_SA	ar	greeting	F: السلام عليكم!	F: السلام عليكم!	F: Peace be upon you!	F: Peace be upon you!
+g_zh_CN	zh	greeting	M: 你好！	M: 你好！	M: Hello!	M: Hello!
+g_ja_JP	ja	greeting	F: こんにちは！	F: こんにちは！	F: Hello!	F: Hello!
+g_ms_MY	ms	greeting	M: Apa khabar?	M: Apa khabar?	M: How are you?	M: How are you?
+g_th_TH	th	greeting	F: สวัสดี!	F: สวัสดี!	F: Hello!	F: Hello!
+g_ko_KR	ko	greeting	M: 안녕하세요!	M: 안녕하세요!	M: Hello!	M: Hello!
+g_pt_BR	pt	greeting	F: Olá!	F: Olá!	F: Hello!	F: Hello!
+g_id_ID	id	greeting	M: Halo!	M: Halo!	M: Hello!	M: Hello!
+g_bn_BD	bn	greeting	F: নমস্কার!	F: নমস্কার!	F: Greetings!	F: Greetings!
+g_pick	en	S226 §R2c in-place switch (bim-ootb #1833); flag picker	M: Your language — one click.	M: Your language — one click, and it switches in place.
+g_pick	en	S226 §R3 Modeller i18n (bim-ootb #1839); #header-flag-btn → shared picker; §TRL_DICT_PAGE	M: Your language — one click.	M: Your language — one click, and the Modeller switches in place.
+c1	en	card — full title	M: Chapter one. Open a real building.	M: Chapter one. Open a real building.
+m01	en	ModellerGuide.md:20-24 (open a real ARC twin, edit that); :94-99 FROM IFC	F: Open a real building, and edit that.	F: Don't draw from a blank grid. | M: Open a real building — and edit that. | F: Or bring your own IFC.
+m02	en	ModellerGuide.md:4-7 (every action one signed operation, folded hash chain); #bo-foot N features 🔒 tip	M: Every element, one signed operation.	M: Here it is — every element one signed operation, in a hash chain.
+c2	en	card — full title	F: Chapter two. Assemble and draw.	F: Chapter two. Assemble and draw.
+m03	es	ModellerGuide.md:205 Insert — assemble from the catalog → §OPLOG op=GEOM_INSERT	M: Insertar, desde el catálogo.	M: Insertar: se ensambla desde el catálogo, sin dibujar.	M: Insert, from the catalog.	M: Insert: assemble from the catalog, no drawing.
+m04	zh	ModellerGuide.md:222 Sketch → Extrude → §OPLOG op=GEOM_EXTRUDE_POLY	F: 画轮廓，拉伸成墙。	F: 画一个轮廓，拉伸成一面墙。	F: Sketch, extrude a wall.	F: Sketch a footprint, extrude it into a wall.
+m05	ar	ModellerGuide.md:278 Cut — open a wall → §OPLOG op=GEOM_CUT	M: فتحة في جدار.	M: نفتح فتحة في جدار حقيقي.	M: An opening in a wall.	M: We cut an opening into a real wall.
+m06	en	ModellerGuide.md:266 Route → Sweep-Run → §OPLOG op=GEOM_SWEEP	F: Route a run, and sweep it.	F: Route a run — and sweep it into a duct.
+c3	en	card — full title	M: Chapter three. Move it.	M: Chapter three. Move it — everything follows.
+m07	en	ModellerGuide.md:326 Move → §MOVE commit (+ §SDG-CASCADE hosted-by when the wall hosts fillings)	M: Move a wall.	M: Move a wall — drag the arrow, and it is one more signed edit.
+m08	ms	ModellerGuide.md:464-480 (Room Move: everything the room contains + freestanding items + hosted fillings, one delta, one signed op) → §ROOMMOVE commit	F: Atau alihkan sebuah bilik.	F: Atau alihkan seluruh bilik — semua isinya ikut sekali.	F: Or move a whole room.	F: Or move a whole room — everything in it comes along.
+c4	en	card — full title	F: Chapter four. It fills itself in.	F: Chapter four. It fills itself in.
+m09	en	ModellerGuide.md:563-566 (walk a missing trade at the measured cadence of a real building; rules mined from the Duplex MEP, :585-588) → §DISC-WALK ELEC placed= / §DISC-WALK-COMMIT	M: Missing a trade? Walk it.	M: Missing a trade? Walk it — | F: placed at the spacing mined from a real house.
+m09x	en	ModellerGuide.md:567-571 X-ray reveal → §MODELLER xray on	M: X-ray — the fixtures glow through.	M: X-ray: the structure turns to glass, and the fixtures glow through.
+m10	ja	ModellerGuide.md:699 Seed-Trunk — route a service trunk → §SEED-TRUNK ELEC	F: 入口から幹線を。	F: 次に、実際の入口から幹線を引きます。	F: A trunk, from the entry.	F: Next, route the trunk from a real entry.
+m11	en	ModellerGuide.md:680 Walk them all at once → §DISCWALK-ALL done	M: Or walk them all at once.	M: Or walk every missing trade at once.
+c5	en	card — full title	M: Chapter five. The log is the timeline.	M: Chapter five. The log is the timeline.
+m12	en	ModellerGuide.md:720-726 (drag the scrubber back to undo, forward to redo — exact) → §OPLOG scrub upto=	F: Drag back — undone. Forward — back.	F: Drag back — every edit undone, exactly. | M: Drag forward — and it is all back.
+c6	en	card — full title	F: Chapter six. Save and share.	F: Chapter six. Save and share.
+m13	en	ModellerGuide.md:730-740 (Save: clash-check + auto-heal; blocks on residual RED, names the clash) → take1 §SAVE_GATE red=463 · §SAVE_BLOCKED reason=RED_CLASH · §SAVE_RED_FOCUS (camera frames it)	M: Save checks the clashes first.	M: Save checks the clashes first — | F: hard clashes left, so it refuses to write, and takes you to one.
+m14	en	ModellerGuide.md:758-765 (BCF 2.1 .bcfzip; opens in Navisworks, Solibri, BIMcollab, Revit, Trimble Connect) → §BCF export	F: Share an issue as BCF.	F: Share an issue as BCF — it opens in the other BIM tools.
+t_fr_FR	fr	thank-you round	M: Merci !	M: Merci !	M: Thank you!	M: Thank you!
+t_es_ES	es	thank-you round	F: ¡Gracias!	F: ¡Gracias!	F: Thank you!	F: Thank you!
+t_de_DE	de	thank-you round	M: Danke!	M: Danke!	M: Thank you!	M: Thank you!
+t_ar_SA	ar	thank-you round	F: شكراً!	F: شكراً!	F: Thank you!	F: Thank you!
+t_zh_CN	zh	thank-you round	M: 谢谢！	M: 谢谢！	M: Thank you!	M: Thank you!
+t_ja_JP	ja	thank-you round	F: ありがとう！	F: ありがとう！	F: Thank you!	F: Thank you!
+t_ms_MY	ms	thank-you round	M: Terima kasih!	M: Terima kasih!	M: Thank you!	M: Thank you!
+t_th_TH	th	thank-you round	F: ขอบคุณ!	F: ขอบคุณ!	F: Thank you!	F: Thank you!
+t_ko_KR	ko	thank-you round	M: 감사합니다!	M: 감사합니다!	M: Thank you!	M: Thank you!
+t_pt_BR	pt	thank-you round	F: Obrigada!	F: Obrigada!	F: Thank you!	F: Thank you!
+t_id_ID	id	thank-you round	M: Terima kasih!	M: Terima kasih!	M: Thank you!	M: Thank you!
+t_bn_BD	bn	thank-you round	F: ধন্যবাদ!	F: ধন্যবাদ!	F: Thank you!	F: Thank you!
+t_en_MY	en	LICENSE (MIT); ModellerGuide.md:9-10 (browser, desktop)	M: Thank you! Free and open.	M: Thank you! | F: Free, open, and right in your browser.

@@ -587,6 +587,37 @@ English UI (a stated exception), or Modeller i18n is built first. ⛔ red1 to ch
 | 9b | Teams overlay: two branches, merge gate flags a clash, who-dots | "Two people, two branches. The merge gate shows where they collide." | ModellerGuide.md:826-830 |
 | 10 | close | "The same signed log runs the ERP." (bridge to the ERP trailers) | ModellerGuide.md:7-8 |
 
+### §9 STORYBOARD v1 + RECORDER SPEC (2026-10-04 — red1: "Go" on the Modeller; gate answered: "Translate the Modeller first" → done, S226 §R3, bim-ootb #1839)
+One continuous take of `modeller/modeller.html` on the **Duplex** resident, GPU (`flock gpu.lock`), same pipeline as §8
+(recorder → page audio → fit → cards → music bed → mix). Recorder `scripts/film_modeller_trailer.js`: the §8 helpers (cuts,
+settle-before-cut, jump(), quietLang via the REAL flag button `#header-flag-btn`), and the Modeller e2e harness's OWN aiming code
+(`modeller/tests/e2e_harness.js` `window.__e2e` — proj / candidates / clickPointFor / clearGround / overhead / frame, injected
+verbatim from that file at run time, never re-implemented) so every canvas click lands on a raycast-verified point. Beat map:
+selectors + success `§` lines from a read-only sweep of the Modeller code/tests (2026-10-04). Every number spoken comes from the
+take's `§FILM_FACT` lines; lines are written number-free where the value is per-take.
+DROPPED (not drivable / not on screen in the Modeller): "Duplex clashes 32 → 2" (no such counter in the app — offline witness
+only), the §GC generalization table (bim-compiler node script), the 7-layer readout (no panel), the two-branch merge gate
+(`teams/teams.html`, a separate page), glass (no log line to witness). Kept honest: the walk's own `gated=`/`clash=` counts.
+| beat | on screen | line (lang) | success § |
+|---|---|---|---|
+| g_* + g_pick | boot; 13 greetings; ONE flag-picker demo → French UI | greetings · "Your language — one click." | §TRL_SWITCH / §TRL_DICT_PAGE |
+| c1 m01 | card OPEN A REAL BUILDING · Open chooser (resident + FROM IFC rows hovered) | "Don't draw from a blank grid — open a real building, and edit that." · "Or bring your own IFC." | §MODELLER-OPEN chooser open=true |
+| m02 | Duplex picked (load JUMPED) → Fit → outliner BOM tree + footer | "Every element is one signed operation, in a hash chain." | §ARC-SEED-WIRE … / §WALK-AFTER-SEED |
+| c2 m03 | card ASSEMBLE AND DRAW · Insert: catalog → item → placed | (es) "Insertar: se ensambla desde el catálogo." | §OPLOG commit … op=GEOM_INSERT |
+| m04 | Sketch 4 points on clear ground → Extrude | (zh) quip "画个轮廓，拉伸成墙。" | op=GEOM_EXTRUDE_POLY |
+| m05 | pick a cuttable wall → Cut | (ar) quip "نفتح فتحة في جدار حقيقي." | op=GEOM_CUT |
+| m06 | Route 3 points → Sweep Run | "Route a run — and sweep it." | op=GEOM_SWEEP |
+| c3 m07 | card MOVE IT — EVERYTHING FOLLOWS · select wall → Move gizmo drag | "Move a wall — what it hosts moves with it." | §MOVE commit (+ §SDG-CASCADE if hosted) |
+| m08 | outliner ⛶ room glyph → drag | (ms) "Atau alihkan sebuah bilik." | §ROOMMOVE commit |
+| c4 m09 | card IT FILLS ITSELF IN · Walk ELEC | "Missing a trade? Walk it — at the spacing mined from a real house." | §DISC-WALK ELEC placed= / §DISC-WALK-COMMIT |
+| m09x | X-ray on | "X-ray: the structure turns to glass, the fixtures glow through." | §MODELLER xray on |
+| m10 | Route trunk · ELEC → modal → Route ▶ (animated) | "Then route the trunk, from a real entry." | §SEED-TRUNK ELEC / -ANIM |
+| m11 | ▶▶ Walk ALL Services | "Or walk every missing trade at once." | §DISCWALK-ALL done |
+| c5 m12 | card THE LOG IS THE TIMELINE · #hist-slider dragged back, then forward | "Drag back — every edit undone, exactly. Drag forward — all back." | §OPLOG scrub upto= |
+| c6 m13 | card SAVE AND SHARE · Save | "Save checks the clashes first — then writes the snapshot." | §SAVE_GATE / §SAVE_SNAPSHOT or §SAVE_BLOCKED (said as shown) |
+| m14 | Export → BCF | "Share an issue as BCF — it opens in the other BIM tools." | §BCF export |
+| END | picker shown, hover each flag → cut → the Help panel in that language during its thank-you | thank-you round | per-locale placeholder/label check |
+
 ## 10. §DOCUMENTARY — Film 2: "who is building this, and why" (SPEC ONLY, 2026-10-04 — after §8 and §9 ship)
 **Ask (red1, 2026-10-04, verbatim — the narration source; keep his words, fix only spelling):**
 > Chapter 1. Who is building this and why. The narrative beasically begins with I am Redhuan D. Oon.. has been a fierce
@@ -1026,6 +1057,15 @@ BIM-compiler, BOM-OOTB, as it is under IfcOpenShell clone as a Federation featur
 ~/Projects/2Dto3D (Nov 2025) → bim-compiler (Jan 2026) → bim-ootb (May 2026).
 
 ## 4. STATUS
+- 2026-10-04 16:40: §MODELLER-TRAILER v1 BUILT — `~/Downloads/BIM_Modeller_Trailer_v1_13languages_1920x1080_24fps_2026-10-04.mp4`
+  (144.8 s, 20.9 MB, −17.4 LUFS; mobile copy `…_v1_mobile_720p.mp4`). Gate first: Modeller i18n (S226 §R3, bim-ootb #1839) +
+  picker-in-viewport fix found by take 1 (§R3a, #1841). Take2 (`scripts/film_modeller_trailer.js`, Duplex, GPU): 9/9 language
+  switches (§TRL_DICT_PAGE each), signed edits GEOM_INSERT/EXTRUDE_POLY/CUT/SWEEP + §MOVE + §ROOMMOVE (members=4), ELEC walk
+  placed=102 → trunk served=94/refused=8, Walk ALL placedTotal=177 (4 trades), slider 80 scrub steps (514 ops ↔ 129), Save
+  BLOCKED red=463 (said as shown), BCF exported (Duplex.bcfzip), closingHelp 13/13 ALL TRANSLATED, 0 PAGEERR. Fit 49/49 DETAIL,
+  0 wrong tones, gloss 29/29; 6 cards + 5 badges (FILM_SET=modeller); §MUSIC_DUCK 12.1 dB PASS; silences ≥ 2 s: 0.
+  Known gap (not witnessed): panels the i18n harvest never opened (Insert catalog `#ins-panel`, Seed-Trunk modal) may show
+  English under a quip language — second batch through W-MODELLER-I18N when red1 reviews. Dropped beats + reasons: §9 STORYBOARD v1.
 - 2026-10-04 13:30: §VIEWER-TRAILER v4 BUILT — `~/Downloads/BIM_Viewer_Trailer_v4_13languages_1920x1080_24fps_2026-10-04.mp4`
   (278.0 s, 84.7 MB, −17.9 LUFS). red1 go: "Narrations to follow animation of each task. Make jumps where it's time consuming.
   Proceed with your soft music bed". Take8 (8 takes; each fixed a real recorder fault found in its log): 52/52 clicks on target,
