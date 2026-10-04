@@ -792,6 +792,22 @@ Steps 1–4 can ship with null rates first (the meaningless RM 4.82 M disappears
 
 ---
 
+## §U Fly on a road — fog, no-rooms, and the road route inside the existing Fly Tour (2026-10-05)
+- **"Fly shows nothing" — cause (headless probe):** fog density 0.004 (sized at `streaming.js:3801` from the 100 m
+  default, before the envelope existed) with the Fly camera ~3 km out → nothing visible. Also the `1.5/env` branch
+  hides any site > ~375 m from its own framing distance (0.6 %). **PR #1857 MERGED:** re-size after envelope;
+  sites past the 0.004 cap use `sqrt(ln2)/(1.5·env)` (≥ 50 % visible at framing distance) → JELAPANG 0.00026;
+  fleet stays on the cap (unchanged). Fly Tour logs `§TOUR_NO_ROOMS VACUOUS` when a model has no rooms.
+- **User: reuse Fly, scrubber must appear, markers = traffic stops, no new tour → PR #1858.** Property labels
+  (`§CIVIL_PSETS`, civil files only, `element_psets`) + `A._civilRouteTour()` in front of `buildTour()`, built
+  ONLY from existing actions (moveTo / flyPath / orbit fullCircle / pause). Headless JELAPANG: path 2,373 m
+  (541 MAINLINE pieces, 50 m bins, 30 m up, 25 m/s), 5 stops from 6 signal columns (stop offsets 36/62/80/37/173 m),
+  12 actions, **scrubber visible, 12 named ticks**, 131.8 s. Gate: `element_psets` — no fleet DB has it.
+- Path max step 189 m (dual carriageway / empty bins) — acceptable for a camera, not a measurement.
+- New labelled DB for testing: `~/Downloads/JALAN JELAPANG IFC/JELAPANG_AFTER.db` (replaced; 451 MB).
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written.
