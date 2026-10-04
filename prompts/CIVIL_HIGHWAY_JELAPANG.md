@@ -881,6 +881,25 @@ verdict (`clash_narrow.js`) runs per page on cell click in the browser, not in t
 mesh-true count per civil pair (narrowphase over the full set, headless) — that number is the real civil clash list.
 Landmine: Settings → Clash Rules saved overrides (`json_clash_rules`) would hide the new rules for that user.
 
+### §V.3 Mesh-true civil clashes (2026-10-05) — existing `clash_narrow.js`, harness `witness_clash_mesh_narrowphase.js`
+Run: `BLD=JELAPANG_AFTER BLD_DIR=~/Downloads/JALAN\ JELAPANG\ IFC GPU=sw`, all 5674 streamed, every geometry with a BVH.
+| Pair | box | mesh-true (module) | witness oracle | box-only share |
+|---|---|---|---|---|
+| DRAINAGE×ROAD | 23,288 | 1,852 (+30 touch-only) | 1,854 | 92.0 % |
+| LIGHTING×DRAINAGE | 1,040 | 67 | 67 | 93.6 % |
+| SIGNAGE×DRAINAGE | 385 | 4 | 4 | 99.0 % |
+| FURNITURE×LIGHTING | 253 | 52 | 52 | 79.4 % |
+| SIGNAGE×LIGHTING | 12 | 0 | 0 | 100 % |
+| **Total** | **24,978** | **1,975** | **1,977** | 92.1 % |
+173 of the 1,975 are flat (thinnest overlap < 1 mm = surfaces resting on each other). Narrowphase 17.5 s total.
+Witness 7/10 — the 3 FAILs, none caused by civil data:
+- I3: 2 of 23,001 CLEAR pairs disagree — OBB says 0.17 mm apart-ish, the oracle says touching. The 1 mm touch rule, at its edge.
+- I4: DB matrix vs scene matrix differ by 3.0e-5 m (limit 1e-5). That's float32 precision at 2 km coordinates (~6e-5 m step), not a wrong transform.
+- I5: synthetic case S7b (cubes face to face, OBB stage off) → CLASH, expected CLEAR. Pure maths in node (`summary(node) 15/1`),
+  independent of the building → a pre-existing narrowphase defect; flagged, not chased here.
+Harness bug fixed (bim-ootb #1860): it read tolerance with `|| 0.025`, so it would have run civil at 25 mm.
+In the viewer: matrix cell click marks mesh-true per 200-row page; the "Total" stays the box count; Ask/Find skips mesh above 3,000 box hits.
+
 ---
 
 ## ▶ RESUME HERE (2026-10-05, session closing — read this first)
@@ -893,7 +912,7 @@ Landmine: Settings → Clash Rules saved overrides (`json_clash_rules`) would hi
 `/tmp/wt-civil-shadow` at :8401 (old, merged branch — prune when idle). Use `localhost`, not the LAN IP (WebGPU
 needs a secure context — other session's note). Test DB: `buildings/JELAPANG_PSETS.db` and `buildings/JELAPANG_AFTER.db` → symlinks to
 `~/Downloads/JALAN JELAPANG IFC/JELAPANG_AFTER.db` (labelled, 451 MB; rebuild with the fixed importer if lost).
-**Next, in order:** (1) §V.2 mesh-true civil clash count (box hits 23,288 on DRAINAGE×ROAD are mostly box-only) · (2) mesh-measured quantities (road m², marking/drain m) for 5D
+**Next, in order:** (1) Fly Tour scrubber fails on the user's run (handed over 2026-10-05, undiagnosed) · (2) mesh-measured quantities (road m², marking/drain m) for 5D
 §R.2 step 3 · (3) Find by property (sign code / road part) on `element_psets` · (4) road-standard rule check §K-6.
 **Waiting on the user / partner:** JKR SoR 2023 (rates) · CRS code · alignment export (IFC4.3/LandXML) ·
 earthwork + drainage pipes as 3D · lamp IES files · approval of the other session's no-WebGPU Alt+S overlay.
