@@ -426,6 +426,38 @@ direction. Two fixes, best first:
 
 ---
 
+## §J Very long roads (100 km) — DLOD is not enough; it needs section streaming (2026-10-04)
+
+**What our DLOD does today (read `dlod.js`, `dlod_nav.js`, JELAPANG log):** draw-time only.
+`§DLOD_ENABLE mode=per_slot_frustum` hides instances outside the camera view; `dlod_nav.js` swaps to
+boxes while moving. Real geometry **stays loaded** — geometries are shared and "disposed never"
+(`dlod_nav.js:475`, `:1397`). So DLOD saves GPU draw work, **not memory**.
+
+**Why that matters at 100 km:** memory, not drawing, is the limit (§F.2). At JELAPANG density
+(423.9 MB geometry per this 2 km set; estimate, linear) 100 km ≈ **~21 GB** — beyond the browser's
+4 GB wasm ceiling by ~5×, and beyond the GPU too. No amount of hiding fixes that; the data must
+never all be in memory at once.
+
+**Design (industry-standard hierarchical LOD — the approach of OGC 3D Tiles / Google Earth):**
+1. **Chainage tiles.** Cut the road into sections (~1–2 km, size from measured MB per tile) at
+   import/extract time; one geometry pack per tile, keyed by chainage range (needs P4 centreline).
+2. **Load near, coarse far, drop behind.** Full-detail tiles only within a view distance of the
+   camera; tiles further out shown as a light proxy (road surface ribbon / decimated slabs /
+   bbox); tiles out of range evicted (geometry actually disposed — the step today's DLOD never does).
+3. **Per-tile origin.** Each tile's coordinates relative to its own centre → sub-mm precision at
+   any length (beats the ±50 km → 3.9 mm global case in §F.1).
+4. **Metadata stays whole.** `elements_meta` (names, discipline, psets) for all 100 km is small —
+   Find / QTO / 4D work on the whole road; only geometry streams.
+5. **Reuse, don't add a second engine:** extend the existing DLOD to own load/evict (one
+   implementation per responsibility). `city.js` already loads many buildings into one scene —
+   check whether it unloads before choosing it as the base (NOT checked yet).
+
+**Prerequisites:** P1 (units), P4 (centreline/chainage). **Data needed to prove it:** a longer
+real road set — or JELAPANG tiled into ~1 km pieces as a synthetic test (tile count, MB resident
+while flying end to end, evictions; `§TILE_LOAD`/`§TILE_EVICT` lines, resident MB never > budget).
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written. **Next: user reviews §PLAN checklist; nothing coded.**
