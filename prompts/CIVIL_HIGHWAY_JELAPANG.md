@@ -1012,6 +1012,18 @@ called" · "consider road street/traffic lights" · "elegant, does not impact no
   centre, no stray lit, signal columns lit, Alt+S world list = same list; lazy Fly with labels dropped in page memory
   plays + scrubber) · `witness_civil_fresh_import_fly.js`. Fleet: 0 LIGHTING-discipline rows in all 27 buildings/*.db.
 
+### §W.2 FINDING — DB `center` is the vertex CENTROID, not the box middle (2026-10-05) — affects more than lamps
+`import_worker.js` ~L462: "apply 4x4 transform → compute centroid → re-center at origin; center_x/y/z = world position".
+So an element's true box is `center + [localMin, localMax]` of its own vertices; **`center ± bbox/2` is shifted** for
+any lopsided element (JELAPANG pole: centroid 3.6 m above the box middle, because the lamp head carries most vertices).
+- Bit this session: #1862 lamp heads 3.6 m low → fixed in **bim-ootb #1863** (world = center + R(local)); its witness
+  shared the assumption and passed — now judged against the RENDERED box (scene matrix × geometry): 223/223 within 1.3 cm.
+- **Not fixed, not measured yet — other users of `center ± bbox/2`:** clash broad phase (measure.js `_queryClashesPairRtree`,
+  `elements_rtree` build, clash_matrix count) → a lopsided pair can be MISSED at the box stage (narrowphase never sees
+  it); `§GROUND_ROBUST`/`§GROUND_Y` bottoms; tour.js road-route heights; §V.2/§V.3 civil clash counts. Next step:
+  measure how many elements have |centroid − box middle| > tolerance per building (needs vertex min/max per geometry)
+  before deciding whether the DB should store the true box.
+
 ### §Y Measure — item size by double-click (user, 2026-10-05) — SPEC
 User: "we place dots to get its length … getting items length is good new idea … double click already gives area.
 What if that area is highlighted (the original effect months ago, somehow gone) with its dimensions along its axes?"
