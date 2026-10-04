@@ -95,20 +95,26 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
 
   // ── screencast that FOLLOWS a new tab: frames from whichever page is being cast go to one list ──
   const frames = []; let T0 = null; let cdp = null;
+  // CUT: frames are not captured while `cutting`, and the cut time is taken out of the clock — the film jumps ahead
+  // cleanly (red1: "refresh F5 (jump ahead when done)") and every later beat keeps its sync with the narration.
+  let cutting = false, cutTotal = 0, cutAt = 0;
   async function castOn(p) {
     if (cdp) { await cdp.send('Page.stopScreencast').catch(() => {}); }
     cdp = await ctx.newCDPSession(p); const me = cdp;
     me.on('Page.screencastFrame', async f => {
       if (me !== cdp) return;
+      if (cutting) { me.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); return; }
       const fn = path.join(FR, String(frames.length).padStart(6, '0') + '.jpg');
-      fs.writeFileSync(fn, Buffer.from(f.data, 'base64')); frames.push({ fn, ts: f.metadata.timestamp });
+      fs.writeFileSync(fn, Buffer.from(f.data, 'base64')); frames.push({ fn, ts: f.metadata.timestamp - cutTotal });
       if (T0 === null) T0 = f.metadata.timestamp;
       me.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {});
     });
     await me.send('Page.startScreencast', { format: 'jpeg', quality: 90, maxWidth: 1920, maxHeight: 1080, everyNthFrame: 1 });
   }
   await castOn(page);
-  const now = () => (T0 === null ? 0 : Date.now() / 1000 - T0);
+  const now = () => (T0 === null ? 0 : Date.now() / 1000 - T0 - cutTotal);
+  const cutStart = (why) => { cutting = true; cutAt = Date.now() / 1000; say('§FILM_CUT start t=' + now().toFixed(2) + ' ' + why); };
+  const cutEnd = () => { const d = Date.now() / 1000 - cutAt; cutTotal += d; cutting = false; say('§FILM_CUT end removed=' + d.toFixed(2) + 's total=' + cutTotal.toFixed(2)); };
   const MIN = JSON.parse(process.env.BEAT_MIN || '{}'); let prev = null;
   const beat = async (id, lang, note) => {
     if (prev && MIN[prev.id]) { const wait = MIN[prev.id] - (now() - prev.t); if (wait > 0) { say('§FILM_HOLD after=' + prev.id + ' extra=' + wait.toFixed(2)); await page.waitForTimeout(wait * 1000); } }
@@ -208,7 +214,8 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     fact('status', await page.$eval('#status', e => e.textContent).catch(() => ''));
     // drag the building around a little (real mouse drag on the canvas) so it reads as solid 3D
     { const cb = await page.locator('canvas').first().boundingBox(); if (cb) { const cx = cb.x + cb.width / 2, cy = cb.y + cb.height / 2;
-      await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 260, cy - 40, { steps: 40 }); await page.mouse.move(cx - 120, cy + 20, { steps: 40 }); await page.mouse.up(); } }
+      await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 260, cy - 40, { steps: 40 }); await page.mouse.move(cx - 120, cy + 20, { steps: 40 }); await page.mouse.up();
+      for (let i = 0; i < 8; i++) { await page.mouse.wheel(0, -120); await hold(90); } } }   // and zoom in a bit (red1: "while drag zoom close a bit")
     await hold(800); await solid('afterLoad');
 
     // ── 2 SEE ──
@@ -262,7 +269,13 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await slice('s09', 'night + fly', 'ms_MY'); n1 = PAGELOG.length; await key('n', 'night'); fact('night', await waitLog(n1, /§NIGHT_MODE on/, 5000)); await hold(1200);
     n1 = PAGELOG.length; await key('l', 'fly'); fact('tour', await waitLog(n1, /§SCRUB_UI show/, 60000));
     await hold(1800); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1200); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1200);
-    await hclick('#tour-scrub-close').catch(() => {}); await key('n'); await solid('afterFly');
+    // Alt+G denoise during the night fly (red1: "there is an alt-g toggle to give it denoise mode but when deactivate it
+    // leaves a ghost effect. Thus refresh F5 (jump ahead when done)")
+    n1 = PAGELOG.length; await page.keyboard.press('Alt+g'); fact('denoise', await waitLog(n1, /§KBD_ROUTE Alt\+G|§GI_POC/, 8000)); await hold(2600);
+    cutStart('F5 after Alt+G (toggle-off leaves a ghost)'); await page.reload({ waitUntil: 'load' });
+    await page.waitForFunction(() => window._TRL_READY === true && window.APP && window.APP.streaming === false && !(window.APP._bboxPlaceholders || []).length && window.APP.guidMap && Object.keys(window.APP.guidMap).length > 500, null, { timeout: 180000 });
+    await page.waitForFunction(() => Array.isArray(window._mainPillActions) && window._mainPillActions.length > 0, null, { timeout: 60000 }).catch(() => {});
+    await castOn(page); await page.waitForTimeout(1500); cutEnd(); curLang = LANGS[0]; await solid('afterF5');   // re-arm the screencast after the reload
     await slice('s10', 'clash: pair → list → one → range'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
     // the counts arrive as §CLASH_MATRIX_COUNT lines after the grid shows — wait, then take the busiest pair
     for (let i = 0; i < 80 && PAGELOG.slice(n1).filter(l => /§CLASH_MATRIX_COUNT /.test(l)).length < 3; i++) await page.waitForTimeout(100);
@@ -322,12 +335,22 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await page.locator('#share-preview-overlay button', { hasText: /./ }).last().click().catch(() => {});
     await slice('s17', 'Film-Maker derives a film'); n1 = PAGELOG.length; await page.keyboard.press('Alt+c');
     await page.waitForSelector('#cpe-ok', { timeout: 180000 }).catch(() => {});
-    fact('filmmaker', last(n1, /§MAXQ_DURATION_DERIVED/) || last(n1, /§MAXQ_START/) || 'NONE'); await hold(5000);
+    fact('filmmaker', last(n1, /§MAXQ_DURATION_DERIVED/) || last(n1, /§MAXQ_START/) || 'NONE'); await hold(1200);
+    // tick a few of the film's options and play a short preview (red1: "show the alt-c, checking the boxes explaining with
+    // some preview.. just to give idea.. then switch to the finished clip") — real clicks on the real (transparent) inputs
+    const ticked = [];
+    for (const id of ['cpe-clash', 'cpe-measure', 'cpe-storey-reveal', 'cpe-sun-compass']) {
+      if (await page.locator('#' + id).first().isVisible().catch(() => false)) { await hclick('#' + id); ticked.push(id + '=' + (await page.$eval('#' + id, e => e.checked).catch(() => '?'))); await hold(450); }
+    }
+    fact('cpeTicked', ticked.join(' ') || 'none visible');
+    if (await page.locator('#cpe-scrub-play').first().isVisible().catch(() => false)) { await hclick('#cpe-scrub-play'); await hold(3200); fact('cpePreview', 'played'); }
+    else fact('cpePreview', 'no #cpe-scrub-play visible');
     // close the path editor through its own Cancel button (it overlays the page — the thank-you round's flag clicks never
     // landed behind it in run vtrail7), then make sure no orbit/bake is left running
     if (await page.locator('#cpe-cancel').first().isVisible().catch(() => false)) await hclick('#cpe-cancel');
     await page.evaluate(() => { if (window.APP.cancelMaxQualityOrbit) window.APP.cancelMaxQualityOrbit(); }).catch(() => {});
     fact('cpeClosed', !(await page.locator('#cpe-panel').first().isVisible().catch(() => false)));
+    await beat('s17clip', curLang, 'cut to the finished Hospital film (post: film_title_cards.py CLIPS)'); await hold(5200);
     await hold(1500);
     for (const L of LANGS.slice(1).concat([LANGS[0]])) { await beat('t_' + L, L, 'thank-you round'); await setLang(L); await hold(500); }
     await beat('end', curLang, '');
@@ -335,7 +358,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   } catch (e) { say('§FILM_ERROR ' + e.message.split('\n')[0]); }
 
   if (cdp) await cdp.send('Page.stopScreencast').catch(() => {}); await page.waitForTimeout(300).catch(() => {});
-  const endTs = Date.now() / 1000;
+  const endTs = Date.now() / 1000 - cutTotal;
   fs.writeFileSync(path.join(OUT, 'viewer_film.page.log'), PAGELOG.join('\n') + '\n');
   say('§FILM_PAGEERR n=' + PAGELOG.filter(l => l.startsWith('PAGEERR')).length);
   const lines = [];

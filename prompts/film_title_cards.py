@@ -28,6 +28,10 @@ NOVEL = {'s03': ('NOVEL ART', 'IFC → SQLite, streamed in the browser'),       
          's16': ('BIM KILLER', 'Clash to a phone — nothing to install'),       # BIMUserGuide.md:741-745 + :11
          's17': ('NOVEL ART', 'A film derived from the room graph')}           # NOVEL ART 9
 # red1 2026-10-04: "or killers in BIM world" — two badge kinds: NOVEL ART (new ideas) · BIM KILLER (standout features)                # NOVEL ART 9
+# CUTAWAY CLIPS (red1 2026-10-04: "About taking a clip, perhaps u can then take Hospital, a nice part" / "this clip be cheap
+# to snatch") — a silent baked film shown over the footage inside a beat; label bottom-left. beat: (file, ss, dur, offset, label)
+CLIPS = {'s17clip': (os.path.expanduser('~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4'), 0.5, 5.0, 0.0,
+                 'Hospital  ·  a film baked in the browser')}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
@@ -46,6 +50,17 @@ for i, n in enumerate(sorted(chap)):
     f.append(f'[{i + 1}:v]scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,eq=brightness=-0.32:saturation=0.85,format=yuv420p[s{n}]')
     f.append(f'[{prev}][s{n}]overlay=0:0:enable=\'between(t,{a:.3f},{b:.3f})\':shortest=1[v{n}]')
     prev = f'v{n}'
+beats_v = [(m.group(1), float(m.group(2))) for m in re.finditer(r'§FILM_BEAT id=(\S+) t=([\d.]+)', txt)]
+clip_win = {}
+k = len(chap) + 1
+for bid, (cf, ss, dur, off, lab) in CLIPS.items():
+    bt = next((t for b2, t in beats_v if b2 == bid), None)
+    if bt is None or not os.path.exists(cf): print(f'§CARDS clip SKIP {bid} beat={bt} file={os.path.exists(cf)}'); continue
+    a0 = bt + off; clip_win[bid] = (a0, a0 + dur, lab)
+    inputs += ['-ss', str(ss), '-t', str(dur), '-i', cf]
+    f.append(f'[{k}:v]scale=1920:1080,setpts=PTS-STARTPTS+{a0:.3f}/TB,format=yuv420p[c{k}]')
+    f.append(f'[{prev}][c{k}]overlay=0:0:eof_action=pass:enable=\'between(t,{a0:.3f},{a0 + dur:.3f})\'[w{k}]'); prev = f'w{k}'; k += 1
+    print(f'§CARDS clip {bid} {os.path.basename(cf)} ss={ss} dur={dur} at={a0:.2f}')
 cmd = ['ffmpeg', '-v', 'error', '-y'] + inputs + ['-filter_complex', ';'.join(f), '-map', f'[{prev}]', '-c:v', 'libx264', '-crf', '17',
        '-preset', 'medium', '-pix_fmt', 'yuv420p', os.path.join(out, 'carded.mp4')]
 r = subprocess.run(cmd, capture_output=True, text=True)
@@ -85,5 +100,7 @@ for i, (bid, t) in enumerate(beats):
     if bid in NOVEL and i + 1 < len(beats):
         events.append(f'Dialogue: 1,{ts(t)},{ts(beats[i + 1][1])},NovelBadge,,0,0,0,,{{\\fad(250,250)}}★ {NOVEL[bid][0]}  ·  {NOVEL[bid][1]}'); nb += 1
 print(f'§CARDS badges={nb} of {len(NOVEL)}')
+for bid, (a0, a1, lab) in clip_win.items():
+    events.append(f'Dialogue: 1,{ts(a0)},{ts(a1)},NovelBadge,,0,0,0,,{{\\fad(250,250)}}{lab}')
 open(os.path.join(out, 'carded.ass'), 'w').write(head + '[Events]' + ev.rstrip('\n') + '\n' + '\n'.join(events) + '\n')
 print(f'§CARDS ass events={len(events)} cards={len(order)} out={out}')
