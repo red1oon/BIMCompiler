@@ -23,7 +23,7 @@ NOVEL = {'s03': ('NOVEL ART', 'IFC → SQLite, streamed in the browser'),       
          's05b': ('NOVEL ART', 'Answers from the engines — with evidence'),     # find_ask.js; exit path = room graph
          's10': ('BIM KILLER', 'Clash matrix in a browser tab'),               # §CLASH_MATRIX, no install
          's11': ('NOVEL ART', '4D: nothing before what holds it up'),          # NOVEL ART 6 (MIDAIR 5,561 → 0)
-         's14': ('BIM KILLER', 'Scrub any timeline — it never drifts'),         # BIMUserGuide.md:119-123 deterministic scrub
+         's09': ('BIM KILLER', 'Night + fly — scrub it, it never drifts'),      # BIMUserGuide.md:119-123 deterministic scrub
          's15_en_US': ('BIM KILLER', 'Language = cost context'),               # Localization.md: a locale is a cost context
          's16': ('BIM KILLER', 'Clash to a phone — nothing to install'),       # BIMUserGuide.md:741-745 + :11
          's17': ('NOVEL ART', 'A film derived from the room graph')}           # NOVEL ART 9

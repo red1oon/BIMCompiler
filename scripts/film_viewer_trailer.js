@@ -151,6 +151,16 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     const sw = await waitLog(n0, new RegExp('§TRL_SWITCH .* to=' + code + ' |§TRL_LABELS locale=' + code + ' '), 15000);
     fact('lang.' + code, sw || 'NO SWITCH LINE'); curLang = code; await hold(200);
   }
+  // keep the building SOLID: the pick's xray-dim focus + Find's shell ghost left the v1 take in box/wireframe mode
+  async function solid(tag) {
+    for (let i = 0; i < 3; i++) {
+      const st = await page.evaluate(() => ({ ghost: typeof window.ghostXrayOn === 'function' && window.ghostXrayOn(), xray: !!(window.APP && window.APP.xrayOn) }));
+      if (st.ghost) { await page.keyboard.press('Alt+x'); await hold(400); continue; }
+      if (st.xray) { await page.keyboard.press('Alt+z'); await hold(400); continue; }
+      fact('solid.' + tag, 'ok'); return;
+    }
+    fact('solid.' + tag, 'STILL NOT SOLID ' + JSON.stringify(await page.evaluate(() => ({ ghost: window.ghostXrayOn && window.ghostXrayOn(), xray: window.APP.xrayOn }))));
+  }
   // red1 2026-10-04: "have more English so that it does not need to switch at crucial bottleneck" — ~70 % English;
   // other languages are QUIPS on light beats (and the greeting + thank-you rounds). slice(id, note, lang) defaults to English.
   async function slice(id, note, lang) { const L = lang || LANGS[0]; await beat(id, L, note); await setLang(L); return L; }
@@ -172,8 +182,12 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
   try {
     // ── greeting round on the front door ──
     await page.mouse.move(720, 600);
-    await beat('g_red', LANGS[0], 'red pill'); await hclick('.hot.red'); await page.waitForFunction(() => document.querySelectorAll('#portal-stage .por-ic').length >= 8, null, { timeout: 15000 }); await hold(800);
-    for (const L of LANGS) { await beat('g_' + L, L, 'greeting'); await setLang(L); await hold(500); }
+    // red1 v2: no "take the red pill" line — the greetings start right away while the portal loads; NO UI switching per
+    // greeting (voices only, back to back, no silence) — then ONE picker demonstration of the in-place switch.
+    await hclick('.hot.red');
+    for (const L of LANGS) await beat('g_' + L, L, 'greeting (voice only)');
+    await page.waitForFunction(() => document.querySelectorAll('#portal-stage .por-ic').length >= 8, null, { timeout: 15000 });
+    await beat('g_pick', 'fr_FR', 'one picker demo: switch in place'); await setLang('fr_FR'); await hold(900);
 
     // ── 1 OPEN ──
     await chapter(1, 'OPEN');
@@ -192,7 +206,10 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     fact('loadSec', ((Date.now() - tLoad0) / 1000).toFixed(1));
     fact('elements', await page.evaluate(() => Object.keys(window.APP.guidMap).length));
     fact('status', await page.$eval('#status', e => e.textContent).catch(() => ''));
-    await hold(1500);
+    // drag the building around a little (real mouse drag on the canvas) so it reads as solid 3D
+    { const cb = await page.locator('canvas').first().boundingBox(); if (cb) { const cx = cb.x + cb.width / 2, cy = cb.y + cb.height / 2;
+      await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 260, cy - 40, { steps: 40 }); await page.mouse.move(cx - 120, cy + 20, { steps: 40 }); await page.mouse.up(); } }
+    await hold(800); await solid('afterLoad');
 
     // ── 2 SEE ──
     await chapter(2, 'SEE');
@@ -204,7 +221,7 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     }
     fact('pick', picked || 'NO PICK');
     fact('infoPanel', await page.$eval('#info-panel', e => e.innerText.replace(/\s+/g, ' ').slice(0, 300)).catch(() => ''));
-    await hold(2500);
+    await hold(2500); await key('Escape'); await solid('afterPick');
     await slice('s05', 'Find IfcWall'); n1 = PAGELOG.length; await key('f', 'find'); await page.waitForSelector('#find-name', { timeout: 15000 });
     await hclick('#find-name'); await page.keyboard.type('IfcWall', { delay: 90 });
     fact('find', await waitLog(n1, /§NAV_FIND_SEARCH query="IfcWall"/, 8000)); fact('findCount', await page.$eval('#find-count', e => e.textContent).catch(() => ''));
@@ -222,9 +239,12 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     } else fact('ask', 'NO #find-mode-ask');
     await key('Escape');
     await slice('s06', 'a floor + X-Ray', 'ar_SA'); n1 = PAGELOG.length;
-    const storey = await page.evaluate(() => { const r = window.APP.dbQuery("SELECT storey FROM elements_meta WHERE storey IS NOT NULL AND storey NOT IN ('','Unknown') GROUP BY storey ORDER BY COUNT(*) DESC LIMIT 1"); return r && r[0] ? r[0][0] : null; });
-    await page.evaluate((s) => window.APP.filterStorey(s), storey); fact('storey', last(n1, /§STOREY_FILTER/) || storey); await hold(2200);
-    await page.evaluate(() => window.APP.filterStorey(null));
+    // a floor via the Find panel's own category tree (red1: "the Find panel can do that easily when selected a category")
+    await key('f'); await page.waitForSelector('#find-tree', { timeout: 10000 }).catch(() => {});
+    const rowSel = '#find-tree .find-tree-row[data-find-parent]:not([data-find-parent="Unknown"])';
+    if (await page.locator(rowSel).first().isVisible().catch(() => false)) { await hclick(rowSel); await hold(2200); }
+    fact('storey', last(n1, /§STOREY_FILTER|§FILTER_GUIDS|§LENS/) || 'no tree row');
+    await page.evaluate(() => window.APP.filterStorey && window.APP.filterStorey(null)); await key('Escape'); await solid('afterFloor');
     n1 = PAGELOG.length; await page.keyboard.press('Alt+z'); await hold(2200); fact('xray', PAGELOG.slice(n1).find(l => /§XRAY_CYCLE/.test(l)) || 'NONE');
     await page.keyboard.press('Alt+z'); await hold(1500); await page.keyboard.press('Alt+z'); await hold(500);
 
@@ -238,10 +258,23 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     const pts = (await screenOf("m.ifc_class IN ('IfcSlab','IfcWall','IfcWallStandardCase')")) || [];
     for (const pt of pts.slice(0, 2)) { await glideXY(pt.x, pt.y); await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(900); }
     fact('measure', await waitLog(n1, /§MEASURE \d/, 4000) || 'NO DISTANCE'); await hold(1500); await key('m'); await key('Escape');
-    await slice('s09', 'night + shadow', 'ms_MY'); n1 = PAGELOG.length; await key('n', 'night'); fact('night', await waitLog(n1, /§NIGHT_MODE on/, 5000)); await hold(2200);
-    await key('n'); n1 = PAGELOG.length; await key('h', 'shadow'); fact('shadow', await waitLog(n1, /§SHADOW_GROUND cycle=/, 5000)); await hold(1800);
-    await slice('s10', 'clash matrix', 'th_TH'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
-    await glide('[data-pair]').catch(() => {}); await hold(2500); await key('c');
+    // Night + Fly together, live (red1: "u can use the Fly mode with Night on to get it going")
+    await slice('s09', 'night + fly', 'ms_MY'); n1 = PAGELOG.length; await key('n', 'night'); fact('night', await waitLog(n1, /§NIGHT_MODE on/, 5000)); await hold(1200);
+    n1 = PAGELOG.length; await key('l', 'fly'); fact('tour', await waitLog(n1, /§SCRUB_UI show/, 60000));
+    await hold(1800); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1200); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1200);
+    await hclick('#tour-scrub-close').catch(() => {}); await key('n'); await solid('afterFly');
+    await slice('s10', 'clash: pair → list → one → range'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
+    const pair = await page.evaluate(() => { let best = null, n = -1; document.querySelectorAll('[data-pair]').forEach(c => { const v = parseInt((c.textContent || '').replace(/[^0-9]/g, ''), 10); if (v > n) { n = v; best = c.getAttribute('data-pair'); } }); return best; });
+    fact('clashPair', pair);
+    if (pair) {
+      n1 = PAGELOG.length; await hclick('[data-pair="' + pair + '"]'); await page.waitForSelector('[data-clash-idx]', { timeout: 20000 }).catch(() => {});
+      fact('clashList', last(n1, /§CLASH_MATRIX_FILTER|§CLASH_QUERY/) + ' rows=' + (await page.locator('[data-clash-idx]').count()));
+      await hold(800); n1 = PAGELOG.length; await hclick('[data-clash-idx] >> nth=0'); fact('clashOne', await waitLog(n1, /§CLASH|§LISTNAV_SELECT/, 6000)); await hold(2200);
+      const rows = await page.locator('[data-clash-idx]').count(); const lastRow = Math.min(rows, 12) - 1;
+      if (lastRow > 0) { n1 = PAGELOG.length; await page.keyboard.down('Shift'); await hclick('[data-clash-idx] >> nth=' + lastRow); await page.keyboard.up('Shift');
+        fact('clashRange', await waitLog(n1, /§LISTNAV_SELECT count=/, 6000)); await hold(2800); }
+    }
+    await key('c'); await solid('afterClash');
 
     // ── 4 TIME ──
     await chapter(4, 'TIME');
@@ -252,14 +285,19 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     const tmr = await page.evaluate(() => { const s = document.getElementById('tm-slider'); return s ? [Number(s.min), Number(s.max)] : null; });
     if (tmr) { for (const f of [0.15, 0.35, 0.6, 0.85, 0.6, 0.3, 0.7]) { await page.evaluate((v) => { const s = document.getElementById('tm-slider'); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }, tmr[0] + (tmr[1] - tmr[0]) * f); await hold(450); } }
     fact('tmScrub', (tmr ? 'range ' + tmr.join('..') + ' ' : 'NO #tm-slider ') + (await page.$eval('#tm-big-counter', e => e.textContent).catch(() => '')));
+    // the sun: Day/night on, then HR mode — the slider becomes the hour of that day (onSlide: anchorDay + (val+1) h) → morning to sunset
+    if (await page.locator('#tm-sun').first().isVisible().catch(() => false)) {
+      n1 = PAGELOG.length; await hclick('#tm-sun'); await hold(600);
+      if (await page.locator('.tm-mode[data-mode="HR"]').first().isVisible().catch(() => false)) await hclick('.tm-mode[data-mode="HR"]');
+      for (let h = 8; h <= 19; h++) { await page.evaluate((v) => { const s = document.getElementById('tm-slider'); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }, h); await hold(260); }
+      await hold(1200); fact('tmSun', (await page.$eval('#tm-label', e => e.textContent).catch(() => '')) + ' | ' + (last(n1, /§TM_SAVE_LIGHTING|§SUN|sun/i) || ''));
+      await hclick('#tm-sun'); if (await page.locator('.tm-mode[data-mode="DAY"]').first().isVisible().catch(() => false)) await hclick('.tm-mode[data-mode="DAY"]');
+    }
     // s12 What-if DROPPED on HHS: §WHATIF-UI opens the ERP seed's project 990000 "BIM: Hospital" whatever building is open
     await slice('s13', 'Pull Back'); n1 = PAGELOG.length;
     if (!(await page.locator('#tm-reschedule-asap').first().isVisible().catch(() => false))) await hclick('#tm-gantt');
     await hclick('#tm-reschedule-asap'); fact('pullBack', await waitLog(n1, /§GANTT_RESCHEDULE_ASAP_(COMMIT|REJECT)/, 8000) || (await page.$eval('#tm-gantt-tip', e => e.textContent).catch(() => 'NONE')));
     await hold(1000); await key('t');
-    await slice('s14', 'Fly Tour scrub', 'ja_JP'); n1 = PAGELOG.length; await key('l', 'fly'); fact('tour', await waitLog(n1, /§SCRUB_UI show/, 60000));
-    await hold(1500); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1200); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1200);
-    await hclick('#tour-scrub-close').catch(() => {});
 
     // ── 5 COST ── (the 4 English locales on the report page: currency + rate book change with them)
     await chapter(5, 'COST');

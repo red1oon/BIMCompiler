@@ -1,4 +1,3 @@
-g_red	en	index.html .hot.red — the red pill (Matrix front door)	M: Take the red pill.	M: Take the red pill.
 g_en_MY	en	greeting	F: Hi!	F: Hi!
 g_fr_FR	fr	greeting	M: Bonjour !	M: Bonjour !	M: Hello!	M: Hello!
 g_es_ES	es	greeting	F: ¡Hola!	F: ¡Hola!	F: Hello!	F: Hello!
@@ -12,6 +11,7 @@ g_ko_KR	ko	greeting	M: 안녕하세요!	M: 안녕하세요!	M: Hello!	M: Hello!
 g_pt_BR	pt	greeting	F: Olá!	F: Olá!	F: Hello!	F: Hello!
 g_id_ID	id	greeting	M: Halo!	M: Halo!	M: Hello!	M: Hello!
 g_bn_BD	bn	greeting	F: নমস্কার!	F: নমস্কার!	F: Greetings!	F: Greetings!
+g_pick	en	S226 §R2c in-place switch (bim-ootb #1833); flag picker	M: Your language — one click.	M: Your language — one click, and it switches in place.
 c1	en	card	M: Chapter one. Open.	M: Chapter one. Open.
 s01	en	BIMUserGuide.md:11 zero install; §HUB_CARDS city=17 landmark=8	F: The front door. Nothing to install.	F: The front door. Nothing to install — any browser, desktop or mobile. | M: Twenty-five ready-made buildings, right here.
 s02	en	BIMUserGuide.md:26-27 drop own IFC, parsed in-browser	M: Or drop your own IFC.	M: Got your own IFC? Drop it here — it's read right in the browser.
@@ -24,12 +24,11 @@ s06	ar	§STOREY_FILTER Level 2 · §XRAY_CYCLE	F: طابق واحد، ثم نر�
 c3	en	card	M: Chapter three. Inspect.	M: Chapter three. Inspect.
 s07	zh	§SECTION ON	F: 一刀切开。	F: 一刀切开，逐层查看，每一层楼板一目了然。	F: One cut.	F: One cut, floor by floor — every slab in plain sight.
 s08	en	§MEASURE 66.25m; tap the same dot again → §MEASURE_AREA (measure.js)	M: Two taps. Sixty-six metres.	M: Measure? Two taps. | F: Sixty-six metres, end to end. | M: Tap the same dot again, and you get an area.
-s09	ms	§NIGHT_MODE on fixtures=410 · §SHADOW_GROUND shadow=true	M: Malam pun boleh.	M: Malam pun boleh — empat ratus sepuluh lampu menyala. Bayang-bayang pun ada.	M: Night works too.	M: Night works too — four hundred and ten lights come on. Shadows too.
-s10	th	§CLASH_MATRIX shown discs=ARC,MEP,STR	F: ชนกันตรงไหน?	F: ชนกันตรงไหน? ดูตามสาขางาน — สถาปัตย์ ระบบ และโครงสร้าง	F: Where do they clash?	F: Where do they clash? By discipline — architecture, services and structure.
+s09	ms	§NIGHT_MODE on fixtures=410 · §SCRUB_UI show (fly tour) · BIMUserGuide.md:119-123	M: Malam pun boleh. Jom terbang.	M: Malam pun boleh — empat ratus sepuluh lampu menyala. Jom terbang ke dalam.	M: Night works too. Let's fly.	M: Night works too — four hundred and ten lights come on. Let's fly in.
+s10	en	§CLASH_MATRIX shown discs=ARC,MEP,STR; clash list rows [data-clash-idx]; tap → fly-to; shift-range → red dots + zoom (measure.js:1021, scene.js clashListNav onToggle)	F: Tap a clash — fly to it. Select a range — the overview.	F: Clashes by discipline pair. | M: Tap one — and fly straight to it. | F: Select a range — every clash a red dot, zoomed out for the overview.
 c4	en	card	F: Chapter four. Time.	F: Chapter four. Time.
-s11	en	§TIME_MACHINE ON — 6882 ops, 55 days; BIMUserGuide.md:356-358 support invariant; scrub: #tm-slider dragged back and forth (red1 2026-10-04: "scrubbing the timelines")	M: The Time Machine. Fifty-five days, from the model.	M: The Time Machine. The schedule comes from the model itself — | F: fifty-five days, and nothing appears before what holds it up. | M: Scrub it back and forth — any day, either way.
+s11	en	§TIME_MACHINE ON — 6882 ops, 55 days; BIMUserGuide.md:356-358 support invariant; scrub: #tm-slider dragged back and forth (red1 2026-10-04: "scrubbing the timelines"); sun: #tm-sun + HR mode, slider = hour of the day (time_machine.js onSlide) → 08:00…19:00	M: The Time Machine. Fifty-five days, from the model.	M: The Time Machine. The schedule comes from the model itself — | F: fifty-five days, and nothing appears before what holds it up. | M: Scrub it any way you like. | F: Turn on the sun, and the day runs down to sunset.
 s13	en	§FILM_FACT pullBack=Nothing to compress — already at earliest float	M: Pull it back? Already there.	M: Pull it back as early as it can go? | F: It's already there. Nothing to compress. | M: An honest answer — it won't invent a gain.
-s14	ja	§SCRUB_UI show actions=34	M: 建物の中を飛ぶ。	M: 建物の中を飛ぶ。三十四か所を巡り、どこへでも戻れる。	M: Fly through the building.	M: Fly through the building — thirty-four stops, and back to any point.
 c5	en	card	M: Chapter five. Cost.	M: Chapter five. Cost.
 s15	en	§RENDER_CHARTS: done — 6 charts; Localization.md chart titles (5D cost by discipline, 4D Gantt)	F: Four-D and five-D. Six charts.	F: Four-D and five-D — six charts, straight from the model. | M: Cost by discipline, and the schedule, side by side.
 s15_en_US	en	§FILM_FACT cur.en_US=USD RS Means 2024	M: US English: dollars, RS Means.	M: Switch to US English — dollars, and RS Means rates.
