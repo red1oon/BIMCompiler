@@ -299,3 +299,6 @@ Host fetch-back md5 matched for OCI and GH. Admin fold: 210 ops, `verifyMultiDev
   → **DocumentNo = each station's OWN running sequence, prefixed by its Org / POS cashier** — iDempiere-native:
   org-level sequence (`AD_Sequence.IsOrgLevelSequence` + `OrgColumn`) and `AD_Sequence.Prefix`; no central allocator,
   relay stays logic-free. Gapless + unique per station; globally unique by prefix.
+- **Double-phone fraud (red1, 2026-10-04):** a customer using a second phone is caught at PICKUP — the identity is
+  bound in the phone and checked at pickup/redemption (complements `DistributedERP.md` §5 bind-on-first-open). Not a
+  §10 shortcoming; record-and-consequence applies.
