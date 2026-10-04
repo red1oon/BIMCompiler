@@ -11,6 +11,22 @@
   `element_transforms` extents.
 - No visual check is a test (PRIMAL LAW). "Close-up no longer cuts off" must be stated as numbers.
 
+## ⚖ NON-IMPACT RULE — civil work must not change how existing buildings behave (user, 2026-10-05)
+> User: *"note in the specs that this new CW does not impact present buildings behaviour"*
+
+Every civil change in this file is **gated on civil data** (the CIVIL_DISCS codes from file names, a
+slab-less model, or a site envelope beyond building scale) so a building model never takes the new path.
+Each PR states the gate and proves it on the fleet (Hospital, Terminal, LTU_AHouse, Duplex):
+| Change | Gate | Fleet proof |
+|---|---|---|
+| #1844 units (§A) | none needed — the removed rule never fired below 1.5 km | SampleHouse 14.0×5.9×3.5 m before = after |
+| #1844 disciplines (§B.2a) | civil words in file name; space-split matches civil words only | 464 IFC names: 13 change, all road/furniture/drainage |
+| #1844 framing (§I.3) | full envelope > 2× p2–98 core | Hospital 1.8 / Duplex 1.3 / Terminal 1.15 → KEEP |
+| #1849 ground (§M) | §GROUND_Y step 4 only (no slab/storey match) | all 4 resolve at step 1 |
+| #1850 shadow follow (§P) | whole-site texel > 0.25 m (env > 256 m) | envelopes 151 / 126 / 69 / 22 m → off |
+| §Q TM civil phases | element discipline ∈ CIVIL_DISCS; civil template only when ALL elements civil | 4D cache run before/after byte-identical schedules |
+A civil change that cannot name its gate and its fleet proof does not ship.
+
 ---
 
 ## §0 Source set (measured 2026-10-04)
@@ -656,6 +672,20 @@ re-derive), `time_machine.js:3605` `_classifyRule`, `schedule_diff.js:144`. Thei
 **Civil phase order (default, `secondary` per §L):** EARTHWORK → DRAINAGE → ROAD (pavement) →
 FURNITURE / SIGNAGE / LIGHTING / MARKING (finishing). Source so far: JKR road-works method statements
 quoting JKR Standard Specification for Road Works (JKR/SPJ/2008) — primary document not yet read.
+**Concrete design (2026-10-05):**
+1. `rates.js` gets `SEQUENCE_CIVIL` keyed by discipline — DRAINAGE→`Drainage` seq 2, ROAD→`Pavement` 3,
+   FURNITURE→`Road Furniture` 4, SIGNAGE→`Signage` 4, LIGHTING→`Road Lighting` 4, MARKING→`Road Marking` 4,
+   EARTHWORK→`Earthworks` 1. **resource = the trade the proxy class gets today (MASON)** so durations equal
+   today's per-element calc — no new trade/productivity invented; durations are flagged NOT civil-calibrated.
+2. Phase owner: `civilRule(discipline)` consulted before `matchNameOverride`/`matchRule` at every site that
+   assigns a phase; the sites' SELECTs add `m.discipline`. Non-civil discipline → `civilRule` returns null →
+   path byte-identical.
+3. **Separate template `rates/4D_template_civil.json`** (copy of calendar/duration/capacity rules; civil
+   phases, scope `building`, deps: Earthworks→Drainage→Pavement→{Furniture,Signage,Lighting,Marking} FS).
+   `4D_template.json` is NOT edited (editing it would add "phase absent" reports to every building's log).
+   Time Machine picks the civil template only when every element's discipline ∈ CIVIL_DISCS.
+4. Expected JELAPANG result: tasks Drainage(200) → Pavement(4008) → Furniture(1011) ∥ Signage(138) ∥
+   Lighting(227) ∥ Marking(90); Earthworks reported absent (0 elements).
 **Gate before coding:** this changes `schedule_author.js` → the 4D run cache key (CLAUDE.md PRIMAL LAW 5)
 invalidates; run `scripts/cache_4d_run.js` before/after on the 4 fleet buildings and assert their
 schedules are byte-identical (civil layer never fires on them), plus JELAPANG → 4 phases in that order.
