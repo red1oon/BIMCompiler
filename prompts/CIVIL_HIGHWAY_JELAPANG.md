@@ -251,6 +251,63 @@ start until the earlier one's witness is read green.
 2. P2 codes — verbatim file words, or prefixed civil codes?
 3. P2 — OK to delete the hub's duplicate discipline list (`import_own.js`)?
 4. P3 — agree to measure-before-change?
+5. §D — Civil switch auto-on from profile + manual override, named "Civil" not "CW"?
+6. §E.2 — add pset extraction as step 3?
+
+---
+
+## §D Civil switch — advice (2026-10-04, user asked "perhaps a CW switch?")
+
+**Yes — but auto-set, user-overridable, and not called "CW".**
+- **Auto:** P4's `§SITE_PROFILE shape=linear` turns it on at load — a road opens as a road with
+  no click. **Override:** one pill/setting flips it (mixed sites: a road with a toll building, or a
+  long factory that measures "linear"). The switch changes a *settings bundle* (camera/fog, nav,
+  pill set, 4D axis = chainage), never the data.
+- **Name collision (extracted):** in our own fleet `CW` already means **Cold Water** — JKR file
+  `jkrME23_5a_CW_(BSktLLP_04K-4)…ifc`. A "CW" switch would read as plumbing. Use **Civil**; the
+  discipline code `CIV` already exists in `VALID_DISCS` (`import_worker.js:76`).
+
+## §E Industry features for a highway IFC set — research mapped to what THIS set carries
+
+### E.0 What JELAPANG actually carries beyond geometry (measured from the IFC text)
+Every element has 5 JKR asset property sets (`01 Jelapang Project Information`, `02 … Design
+Parameter`, `03 … DPA`, `04 … DAK (Road)`, `04 … DAK (Perabut Jalan)`), ~130 fields (Malay/English).
+**Mostly empty** — chainage/coordinate fields (`03_Koordinat_Mula`, `06_Koordinate_GPS_X`,
+`39_Subseksyen_Mula`, `08_Alignment_Length`) are all `$`. **Filled and useful:**
+- Signage: `16_Name` (CHEVRON DELINATOR 46, OBSTRUCTION MARKER 36, GIVEWAY 7 …) + `17_Code` JKR
+  sign code (WD. 39a/39b 23 each, WD. 24a 15, RP. 13 7 …).
+- Road solids: `01_Component_Name` — MAINLINE 541, ROAD J2A 211, ROAD J2B 94, EXISTING LANE -J1B 118,
+  -J1A 96, -ROUNDABOUT 62, VBC 6; 2880 blank.
+- **Our importer stores none of this** — `element_name` is `IfcBuildingElementProxy_<id>`, no
+  property table in `JELAPANG.db`. Pset extraction is the cheapest big win (feature E.2).
+
+### E.1 Feature list, ranked by fit (✅ data in hand · 🟡 derivable · ⛔ data missing)
+| # | Feature (industry practice) | Fit | Source in this set |
+|---|---|---|---|
+| E.1 | **Chainage navigation** — browse alignment, "go to km", 3D view follows (TUM Open Infra / road viewers) | 🟡 | P4 centreline from element centres (no IfcAlignment in IFC2X3) |
+| E.2 | **Asset breakdown by property** — Find by sign code / component name; EXISTING vs new lanes coloured | ✅ | psets in E.0 → needs pset extraction in importer |
+| E.3 | **Drive-through sign review** — driver-view along the road at traffic speed to spot sign density / blocked signs (FHWA RSA practice) | 🟡 | centreline + existing fly/walk engine; signs are their own discipline after P2 |
+| E.4 | **Linear 4D — time-chainage chart** linked to 3D (Linear4D / ScheLo; standard for highways/pipelines) | 🟡 | chainage per element (P4) + existing schedule engine |
+| E.5 | **Cross-section at chainage** — section plane square to the road | 🟡 | existing section tool + centreline tangent |
+| E.6 | **QTO per km / per component** — sign & lamp counts per km, marking length, pavement solid volume | ✅/🟡 | counts+volumes from geometry; "per km" needs P4 |
+| E.7 | **Clash** — drainage vs pavement, lighting vs signage clearance | ✅ | existing clash matrix, data-driven by discipline (after P2) |
+| E.8 | **Sight-distance check** on the 3D alignment (research + design-review practice) | ⛔/🟡 | needs terrain + alignment; a raycast approximation along the drive path is possible but would be a NEW rule — spec separately |
+| E.9 | **Terrain / cut-fill** | ⛔ | EARTHWORK TIN skipped by exporter (§B.3) |
+| E.10 | **Basemap / georef** | ⛔ | GPS fields empty; IFC2X3 has no map conversion; CRS of the ~28 km easting unknown — ask designer |
+| E.11 | **IFC 4.3 alignment import** (IfcAlignment, the standard home of stationing) | future | only if designer re-exports IFC4.3 — not verified that their Civil 3D build can |
+
+### E.2 Recommended order (for review)
+1. P1 units → 2. P2 disciplines → 3. **pset extraction** (E.2 — unlocks names, sign codes, existing
+vs new; also helps every building) → 4. P4 profile + **Civil switch** (§D) → 5. E.1 chainage nav →
+6. E.3 drive-through → 7. E.4 linear 4D. E.8–E.11 wait for data from the designer.
+
+### E.3 Sources
+- IFC alignment overview: https://wiki.osarch.org/ifc-industry-foundation-classes-ifc-alignment/
+- TUM Open Infra Platform (alignment browse + cross-sections): https://www.cee.ed.tum.de/cms/research/research-fields/building-information-modeling-in-infrastructure/tum-open-infra-platform
+- Linear 4D with schedule-location charts: https://pure.seoultech.ac.kr/en/publications/linear-4d-system-using-schedule-location-charts-for-infrastructur/
+- Time-chainage diagrams: https://schedulereader.com/?p=20820 · https://www.fticonsulting.com/uk/insights/articles/linear-schedules
+- FHWA road safety audit (drive-through sign review): https://highways.dot.gov/safety/data-analysis-tools/rsa/fhwa-road-safety-audit-guidelines/post-construction-phase-prompt
+- Civil 3D IFC export / corridor solid property data: https://help.autodesk.com/cloudhelp/2024/ENG/Civil3D-UserGuide/files/GUID-C5C9DEEE-2C46-4094-B350-05829C1ED5DC.htm · https://help.autodesk.com/cloudhelp/2023/ENU/Civil3D-UserGuide/files/GUID-BFA65589-25B2-41CE-BCEE-7A68E83D4103.htm
 
 ---
 
