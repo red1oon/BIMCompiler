@@ -1233,3 +1233,10 @@ excluded by printed rules), in-place en→de via the real flag button navs=0 lea
 Not covered yet (printed for the trailer lane): panels the harvest could not open without a selection/edit — Insert catalog,
 Teams overlay, Save dialog, walk results, history slider labels. The trailer recorder will meet them; any English it finds goes in
 a second batch through the same witness.
+
+### §R3a — 2026-10-04 — the language picker stays inside the window (bim-ootb PR #1841, viewer sw v1468, modeller sw v78)
+FOUND by the Modeller trailer recorder (take 1: es/zh/ar/ms switches never fired): the popup opened at the flag button's left
+edge; from the Modeller's right-edge toolbar rail, es_ES sat at x=1443, zh_CN at x=1485 on a 1440 px window (headless probe,
+`elementFromPoint` = null) — unclickable for any user. FIX `_placeFlagPopup()` (clamp into the viewport, 8 px margin; open above
+the button when no room below; re-run on every reopen). WITNESS W-MODELLER-I18N (6): all 18 flags inside the viewport and
+hit-testable — popup x 1196..1432 of 1440, unreachable=0; PASS 12/0 (en_MY, de_DE, ar_SA). W-VIEWER-I18N landing+viewer 34/0.
