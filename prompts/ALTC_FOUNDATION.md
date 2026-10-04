@@ -16,7 +16,7 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
 - Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
 
 ## 1. LATEST STATE (newest first)
-- ▶▶ RESUME HERE (2026-10-04 10:40, for a new session) — supersedes every RESUME block below.
+- ▶▶ RESUME HERE (2026-10-04 11:15, for a new session) — supersedes every RESUME block below.
   TREE: /tmp/wt-fastbake = bim-ootb fix/fast-bake @ce4c706e, PUSHED, clean. /tmp dies on reboot — recreate:
   `git -C ~/bim-ootb worktree add /tmp/wt-fastbake fix/fast-bake`; symlink buildings/{Hospital,Terminal,HHS_Office_Federated}_silent.db ->
   ~/Downloads/<same>.db and LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db; copy the CURRENT sidecars (key 2bce3c9b:90286) from
@@ -25,18 +25,10 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   SHIPPED 2026-10-03/04 (all witnessed, details in the entries below): W1 pose check (PASS), W2 HUD overlap (PASS: row yield + info panel
   avoid), zone box = true box + §ZONE_FLOOR (PASS x3 via prompts/photoreal_probes/lightgrid/zonefloor.js), §FLYAROUND_ARC (arc path from
   two Alt+S stills; poses come from the PNG's own `bim-still-pose` chunk — PIL im.load() then im.text).
-  ⏩ 10:43 DETACHED JOB (survives the session): `setsid nohup ~/.cache/bim4d/altc_2026-10-03/flyaround/parts34.sh` (pid 469606) renders
-  parts 3+4 (waits on gpu.lock — another session's Hospital light-field bake held it at 10:41), joins part1..4 in that folder, checks 960 frames
-  + 0 black/freeze and copies to ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04.mp4 (§DELIVERED / §NOT_DELIVERED). FIRST in a
-  new session: read ~/.cache/bim4d/altc_2026-10-03/flyaround/parts34_run.log — only re-run what it says failed.
-  IN FLIGHT at 10:40: Hospital fly-around (40 s, 1080p24, 4 parts of 240 frames). Part 2 delivered
-  (~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4); part 1 done 10:22 (MATCH); parts 3+4 + join were
-  running in the old session's background (`parts.sh`, scratchpad c/parts_run.log). TO FINISH in a new session: check which of
-  V_HOSP_fly_part{1..4}.mp4 exist (old scratchpad c/ or ~/.cache/bim4d/altc_2026-10-03/flyaround/), re-render only the missing ones with
-  ~/.cache/bim4d/altc_2026-10-03/flyaround/parts.sh (edit C= to the new scratchpad, keep arc_hosp.json; each part waits on
-  /tmp/claude-1000/gpu.lock), join with `ffmpeg -f concat -c copy`, check 960 frames + 0 black/freeze, copy to
-  ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04.mp4 (never overwrite). ⚠ --sun-date is ignored unless --sun-compass is on;
-  the film's own sun arc ran (42.6 -> 31.6 deg over part 2).
+  ✅ 11:13 §FLYAROUND_ARC DELIVERED: ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04.mp4 (40.0 s, 960 fr, 1920x1080@24,
+  49.4 MB). Parts 1-4 each §CLI_BAKE_POSECHECK MATCH 240 fr maxPosErr 0 (part3 855 s, part4 818 s wall); §JOIN ok frames=960; black/freeze
+  0 events. Log: ~/.cache/bim4d/altc_2026-10-03/flyaround/parts34_run.log. ⚠ --sun-date ignored without --sun-compass — the film's own sun
+  arc ran (stills used a fixed 45 deg sun).
   OPEN: (1) W4 merge brightness residual (max ~3.7 luma indoors, not glass order, not the zone grid; opaque draw order suspected) —
   &consolidate stays opt-in. (2) Alt+S stills on the new zones not A/B-checked. (3) fixed-sun flag for films (stills use a fixed sun) — not built.
   RULES: GPU is SHARED with the documentary/trailer sessions — each GPU run needs red1's go and goes through gpu.lock; give way on request.
