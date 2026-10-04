@@ -1,0 +1,34 @@
+§PILOT-RUN id=202610040658 sales_per_station=5 net_writes=true served=/tmp/wt-pilot
+§PILOT-SALE station=south n=1 qty=1 local_order_id=-1 completed=true posted=true
+§PILOT-SALE station=north n=1 qty=1 local_order_id=-1 completed=true posted=true
+§PILOT-SALE station=east n=1 qty=1 local_order_id=-1 completed=true posted=true
+§PILOT-SALE station=south n=2 qty=2 local_order_id=-15 completed=true posted=true
+§PILOT-SALE station=north n=2 qty=2 local_order_id=-15 completed=true posted=true
+§PILOT-SALE station=east n=2 qty=2 local_order_id=-15 completed=true posted=true
+§PILOT-SALE station=south n=3 qty=1 local_order_id=-29 completed=true posted=true
+§PILOT-SALE station=north n=3 qty=1 local_order_id=-29 completed=true posted=true
+§PILOT-SALE station=east n=3 qty=1 local_order_id=-29 completed=true posted=true
+§PILOT-SALE station=south n=4 qty=3 local_order_id=-43 completed=true posted=true
+§PILOT-SALE station=north n=4 qty=3 local_order_id=-43 completed=true posted=true
+§PILOT-SALE station=east n=4 qty=3 local_order_id=-43 completed=true posted=true
+§PILOT-SALE station=south n=5 qty=2 local_order_id=-57 completed=true posted=true
+§PILOT-SALE station=north n=5 qty=2 local_order_id=-57 completed=true posted=true
+§PILOT-SALE station=east n=5 qty=2 local_order_id=-57 completed=true posted=true
+§PILOT-HOST station=north host=here role=REAL url=http://localhost:29201/snapshot bytes=78573 fetchback=live-relay
+§PILOT-HOST station=south host=OCI role=REAL url=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-dev/o/sandbox/erp/pilot_phaseA/202610040658/south/relay_snapshot.json bytes=78573 fetchback=md5-match
+§PILOT-HOST station=east host=GH role=REAL url=https://raw.githubusercontent.com/red1oon/BIMCompiler/03bde5422d1054cf3c668984960558ecdb31f8cf/pilot_phaseA/202610040658/east/relay_snapshot.json bytes=78572 fetchback=md5-match
+§PILOT-ADMIN-PULL station=north pushed=70 accepted=70 skipped=0 head=70
+§PILOT-ADMIN-PULL station=south pushed=70 accepted=70 skipped=0 head=140
+§PILOT-ADMIN-PULL station=east pushed=70 accepted=70 skipped=0 head=210
+§PILOT-ADMIN-FOLD rows=210 tip=b9ca6477cb217c63 verifyChain(single-signer)={"ok":false,"why":"group torn","opFail":"signature"}
+§PILOT-MULTIDEVICE-VERIFY ok=true len=210 attributed=210 anonymous=0 why=
+§PILOT-GROUP-RELAY station=north host=here org=50002 wh=50003 sales=5/5 ops_sent=70 ops_at_relay=70 ops_at_admin=70 sig_ok=70 gid_intact=70 docno_dup=1 verdict=FAIL
+§PILOT-GROUP-RELAY station=south host=OCI org=50004 wh=50004 sales=5/5 ops_sent=70 ops_at_relay=70 ops_at_admin=70 sig_ok=70 gid_intact=70 docno_dup=1 verdict=FAIL
+§PILOT-GROUP-RELAY station=east host=GH org=50005 wh=50005 sales=5/5 ops_sent=70 ops_at_relay=70 ops_at_admin=70 sig_ok=70 gid_intact=70 docno_dup=1 verdict=FAIL
+§PILOT-ID-CLASH doc_targets=5 targets_hit_by_multiple_ops=5 (same table:id completed by >1 station => local negative ids collide) sample=c_order:-1,c_order:-15,c_order:-29,c_order:-43
+§PILOT-DOCNO-CLASH distinct_docnos=1 dup_docnos=10000000
+§PILOT-ADMIN-TIP host=here replay_tip=b9ca6477cb217c63 len=210 fetchback=n/a equals_admin_browser_tip=true
+§PILOT-ADMIN-TIP host=OCI replay_tip=b9ca6477cb217c63 len=210 fetchback=match equals_admin_browser_tip=true
+§PILOT-ADMIN-TIP host=GH replay_tip=b9ca6477cb217c63 len=210 fetchback=match equals_admin_browser_tip=true
+§PILOT-ADMIN-TIP-VERDICT hosts=3 all_equal=true
+§PILOT-OBJECTS-PUT OCI bim-ootb-dev/sandbox/erp/pilot_phaseA/202610040658/south/relay_snapshot.json ; GH red1oon/BIMCompiler@mock/relay-snapshot:pilot_phaseA/202610040658/east/relay_snapshot.json commit=03bde5422d ; OCI bim-ootb-dev/sandbox/erp/pilot_phaseA/202610040658/admin/relay_snapshot.json ; GH red1oon/BIMCompiler@mock/relay-snapshot:pilot_phaseA/202610040658/admin/relay_snapshot.json commit=2b8dd910e0
