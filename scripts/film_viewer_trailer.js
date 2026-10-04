@@ -15,7 +15,7 @@
 //       VIEWER_REPO=/tmp/wt-x  films a worktree · BEAT_MIN='{"s01":9.5,…}' holds each beat to its fitted speech length.
 'use strict';
 const { chromium } = require(require('os').homedir() + '/bim-ootb/tests/node_modules/playwright');
-const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), { execFileSync } = require('child_process');
+const http = require('http'), fs = require('fs'), path = require('path'), os = require('os'), { execFileSync, spawn } = require('child_process');
 
 const REPO = process.env.VIEWER_REPO || path.join(os.homedir(), 'bim-ootb');
 const BLD = path.join(os.homedir(), 'bim-ootb', 'buildings');            // the untracked local building store
@@ -59,7 +59,15 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
 (async () => {
   await new Promise(r => server.listen(0, r));
   const base = 'http://localhost:' + server.address().port;
-  const browser = await chromium.launch({ args: ['--no-sandbox', '--use-angle=gl', '--ignore-gpu-blocklist', '--enable-gpu-rasterization'] });
+  // AUDIO (red1: "can have V sounds on to let it hear the knocks"): the browser plays into a PRIVATE null sink (nothing on the
+  // speakers), recorded for the whole take; post aligns it to the picture and removes the same cuts (§FILM_AUDIO lines).
+  let sinkMod = null, rec = null, audioT0 = null;
+  try { sinkMod = execFileSync('pactl', ['load-module', 'module-null-sink', 'sink_name=film_sink', 'sink_properties=device.description=film_sink']).toString().trim();
+    rec = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'pulse', '-i', 'film_sink.monitor', '-ac', '2', '-ar', '48000', path.join(OUT, 'page_audio.wav')]); audioT0 = Date.now() / 1000;
+    say('§FILM_AUDIO sink=film_sink module=' + sinkMod + ' recStart=' + audioT0.toFixed(3));
+  } catch (e) { say('§FILM_AUDIO unavailable ' + e.message); }
+  const browser = await chromium.launch({ args: ['--no-sandbox', '--use-angle=gl', '--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--autoplay-policy=no-user-gesture-required'],
+    ignoreDefaultArgs: ['--mute-audio'], env: Object.assign({}, process.env, { PULSE_SINK: 'film_sink' }) });
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3 });
   await ctx.addInitScript(CURSOR);
   // the live site downloads buildings from OCI — route those exact URLs to the same files on this disk
@@ -106,15 +114,15 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
       if (cutting) { me.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); return; }
       const fn = path.join(FR, String(frames.length).padStart(6, '0') + '.jpg');
       fs.writeFileSync(fn, Buffer.from(f.data, 'base64')); frames.push({ fn, ts: f.metadata.timestamp - cutTotal });
-      if (T0 === null) T0 = f.metadata.timestamp;
+      if (T0 === null) { T0 = f.metadata.timestamp; say('§FILM_AUDIO T0=' + T0.toFixed(3)); }
       me.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {});
     });
     await me.send('Page.startScreencast', { format: 'jpeg', quality: 90, maxWidth: 1920, maxHeight: 1080, everyNthFrame: 1 });
   }
   await castOn(page);
   const now = () => (T0 === null ? 0 : Date.now() / 1000 - T0 - cutTotal);
-  const cutStart = (why) => { cutting = true; cutAt = Date.now() / 1000; say('§FILM_CUT start t=' + now().toFixed(2) + ' ' + why); };
-  const cutEnd = () => { const d = Date.now() / 1000 - cutAt; cutTotal += d; cutting = false; say('§FILM_CUT end removed=' + d.toFixed(2) + 's total=' + cutTotal.toFixed(2)); };
+  const cutStart = (why) => { if (cutting) return; cutting = true; cutAt = Date.now() / 1000; say('§FILM_CUT start t=' + now().toFixed(2) + ' wall=' + cutAt.toFixed(3) + ' ' + why); };
+  const cutEnd = () => { if (!cutting) return; const w = Date.now() / 1000, d = w - cutAt; cutTotal += d; cutting = false; say('§FILM_CUT end wall=' + w.toFixed(3) + ' removed=' + d.toFixed(2) + 's total=' + cutTotal.toFixed(2)); };
   const MIN = JSON.parse(process.env.BEAT_MIN || '{}'); let prev = null;
   const beat = async (id, lang, note) => {
     if (prev && MIN[prev.id]) { const wait = MIN[prev.id] - (now() - prev.t); if (wait > 0) { say('§FILM_HOLD after=' + prev.id + ' extra=' + wait.toFixed(2)); await page.waitForTimeout(wait * 1000); } }
@@ -157,12 +165,21 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     const sw = await waitLog(n0, new RegExp('§TRL_SWITCH .* to=' + code + ' |§TRL_LABELS locale=' + code + ' '), 15000);
     fact('lang.' + code, sw || 'NO SWITCH LINE'); curLang = code; await hold(200);
   }
+  // REFRESH + CUT: reload the page, wait until the building is back, re-arm the screencast — the reload is cut out of the film
+  // (red1: "refresh F5 (jump ahead when done)" / "or simply refresh and wait to continue")
+  async function refreshCut(why) {
+    cutStart('F5 ' + why); await page.reload({ waitUntil: 'load' });
+    await page.waitForFunction(() => window._TRL_READY === true && window.APP && window.APP.streaming === false && !(window.APP._bboxPlaceholders || []).length && window.APP.guidMap && Object.keys(window.APP.guidMap).length > 500, null, { timeout: 180000 });
+    await page.waitForFunction(() => Array.isArray(window._mainPillActions) && window._mainPillActions.length > 0, null, { timeout: 60000 }).catch(() => {});
+    await castOn(page); await page.waitForTimeout(1500); cutEnd(); curLang = LANGS[0];
+  }
   // keep the building SOLID: the pick's xray-dim focus + Find's shell ghost left the v1 take in box/wireframe mode
   async function solid(tag) {
     for (let i = 0; i < 3; i++) {
       const st = await page.evaluate(() => ({ ghost: typeof window.ghostXrayOn === 'function' && window.ghostXrayOn(), xray: !!(window.APP && window.APP.xrayOn) }));
-      if (st.ghost) { await page.evaluate(() => window.toggleGhostXray && window.toggleGhostXray()); await hold(400); continue; }   // Alt+X was merged into Alt+Z (scene.js:3264); this is the ghost's own toggle
-      if (st.xray) { await page.keyboard.press('Alt+z'); await hold(400); continue; }
+      if (st.ghost) { cutStart('ghost→solid ' + tag); await page.evaluate(() => window.toggleGhostXray && window.toggleGhostXray()); await hold(400); continue; }   // Alt+X merged into Alt+Z (scene.js:3264): the ghost's own toggle; frames CUT (red1: "wireframes kept popping up.. avoid such frames")
+      if (st.xray) { cutStart('xray→solid ' + tag); await page.keyboard.press('Alt+z'); await hold(400); continue; }
+      if (cutting) { await hold(300); cutEnd(); }
       fact('solid.' + tag, 'ok'); return;
     }
     fact('solid.' + tag, 'STILL NOT SOLID ' + JSON.stringify(await page.evaluate(() => ({ ghost: window.ghostXrayOn && window.ghostXrayOn(), xray: window.APP.xrayOn }))));
@@ -250,11 +267,11 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     await beat('s05c', curLang, 'cut to the Terminal escape route (same engine as Ask)'); await hold(4600);
     await slice('s06', 'a floor + X-Ray', 'ar_SA'); n1 = PAGELOG.length;
     // a floor via the Find panel's own category tree (red1: "the Find panel can do that easily when selected a category")
-    await key('f'); await page.waitForSelector('#find-tree', { timeout: 10000 }).catch(() => {});
-    const rowSel = '#find-tree .find-tree-row[data-find-parent]:not([data-find-parent="Unknown"])';
-    if (await page.locator(rowSel).first().isVisible().catch(() => false)) { await hclick(rowSel); await hold(2200); }
-    fact('storey', last(n1, /§STOREY_FILTER|§FILTER_GUIDS|§LENS/) || 'no tree row');
-    await page.evaluate(() => window.APP.filterStorey && window.APP.filterStorey(null)); await key('Escape'); await solid('afterFloor');
+    // the Find drill turns the bbox SHELL on for large buildings by design (navigate_find.js:3522 §BBOX_SHELL_DEFAULT) — the
+    // plain storey filter shows the same floor with NO wireframe (red1: avoid wireframe frames)
+    const storey = await page.evaluate(() => { const r = window.APP.dbQuery("SELECT storey FROM elements_meta WHERE storey IS NOT NULL AND storey NOT IN ('','Unknown') GROUP BY storey ORDER BY COUNT(*) DESC LIMIT 1"); return r && r[0] ? r[0][0] : null; });
+    await page.evaluate((st) => window.APP.filterStorey(st), storey); fact('storey', last(n1, /§STOREY_FILTER/) || storey); await hold(2200);
+    await page.evaluate(() => window.APP.filterStorey(null)); await solid('afterFloor');
     n1 = PAGELOG.length; await page.keyboard.press('Alt+z'); await hold(2200); fact('xray', PAGELOG.slice(n1).find(l => /§XRAY_CYCLE/.test(l)) || 'NONE');
     await page.keyboard.press('Alt+z'); await hold(1500); await page.keyboard.press('Alt+z'); await hold(500);
 
@@ -271,14 +288,14 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
     // Night + Fly together, live (red1: "u can use the Fly mode with Night on to get it going")
     await slice('s09', 'night + fly', 'ms_MY'); n1 = PAGELOG.length; await key('n', 'night'); fact('night', await waitLog(n1, /§NIGHT_MODE on/, 5000)); await hold(1200);
     n1 = PAGELOG.length; await key('l', 'fly'); fact('tour', await waitLog(n1, /§SCRUB_UI show/, 60000));
-    await hold(1800); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(30)); await hold(1200); await page.evaluate(() => window.APP.tourSeek && window.APP.tourSeek(8)); await hold(1200);
+    await hold(1500);
+    { const sb = await page.locator('#tour-scrub-slider').first().boundingBox();   // red1: "the fly has timeline, should show the scrub then"
+      if (sb) { const y = sb.y + sb.height / 2; await glideXY(sb.x + sb.width * 0.15, y); await page.mouse.down(); await page.mouse.move(sb.x + sb.width * 0.7, y, { steps: 45 }); await hold(500); await page.mouse.move(sb.x + sb.width * 0.35, y, { steps: 35 }); await page.mouse.up(); fact('tourScrub', last(0, /§SCRUB_SEEK/) || 'dragged'); } }
+    await hold(1000);
     // Alt+G denoise during the night fly (red1: "there is an alt-g toggle to give it denoise mode but when deactivate it
     // leaves a ghost effect. Thus refresh F5 (jump ahead when done)")
     n1 = PAGELOG.length; await page.keyboard.press('Alt+g'); fact('denoise', await waitLog(n1, /§KBD_ROUTE Alt\+G|§GI_POC/, 8000)); await hold(2600);
-    cutStart('F5 after Alt+G (toggle-off leaves a ghost)'); await page.reload({ waitUntil: 'load' });
-    await page.waitForFunction(() => window._TRL_READY === true && window.APP && window.APP.streaming === false && !(window.APP._bboxPlaceholders || []).length && window.APP.guidMap && Object.keys(window.APP.guidMap).length > 500, null, { timeout: 180000 });
-    await page.waitForFunction(() => Array.isArray(window._mainPillActions) && window._mainPillActions.length > 0, null, { timeout: 60000 }).catch(() => {});
-    await castOn(page); await page.waitForTimeout(1500); cutEnd(); curLang = LANGS[0]; await solid('afterF5');   // re-arm the screencast after the reload
+    await refreshCut('after Alt+G (toggle-off leaves a ghost)'); await solid('afterF5');
     await slice('s10', 'clash: pair → list → one → range'); n1 = PAGELOG.length; await key('c', 'clash'); fact('clash', await waitLog(n1, /§CLASH_MATRIX shown/, 30000));
     // the counts arrive as §CLASH_MATRIX_COUNT lines after the grid shows — wait, then take the busiest pair
     for (let i = 0; i < 80 && PAGELOG.slice(n1).filter(l => /§CLASH_MATRIX_COUNT /.test(l)).length < 3; i++) await page.waitForTimeout(100);
@@ -293,26 +310,35 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
       if (lastRow > 0) { n1 = PAGELOG.length; await page.keyboard.down('Shift'); await hclick('[data-clash-idx] >> nth=' + lastRow); await page.keyboard.up('Shift');
         fact('clashRange', await waitLog(n1, /§LISTNAV_SELECT count=/, 6000)); await hold(2800); }
     }
-    await key('c'); await solid('afterClash');
+    n1 = PAGELOG.length;
+    if (await page.locator('#clash-list-close').first().isVisible().catch(() => false)) await hclick('#clash-list-close');
+    await key('c'); fact('clashDismiss', await waitLog(n1, /§CLASH_DISMISS/, 3000) || 'NO §CLASH_DISMISS');
+    if (await page.locator('#clash-list-close').first().isVisible().catch(() => false)) { await hclick('#clash-list-close'); await waitLog(n1, /§CLASH_DISMISS/, 3000); }
+    await refreshCut('after the clash list (clean scene for the Time Machine)'); await solid('afterClash');
 
     // ── 4 TIME ──
     await chapter(4, 'TIME');
     await slice('s11', 'Time Machine plays'); n1 = PAGELOG.length; await key('t', 'tm'); fact('tm', await waitLog(n1, /§TIME_MACHINE ON/, 60000));
-    await page.waitForSelector('#tm-fwd-btn', { timeout: 20000 }); await hclick('#tm-fwd-btn'); await hold(5000);
+    await page.waitForSelector('#tm-fwd-btn', { timeout: 20000 });
+    // a better view of the build: drag the camera round to a three-quarter perspective (red1: "it is not drag around to view better")
+    { const cb = await page.locator('canvas').first().boundingBox(); if (cb) { const cx = cb.x + cb.width * 0.4, cy = cb.y + cb.height * 0.55;
+      await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 220, cy - 70, { steps: 40 }); await page.mouse.up(); for (let i = 0; i < 4; i++) { await page.mouse.wheel(0, -120); await hold(80); } } }
+    // V = construction sounds, the ONE audible sample in the film (red1: "just a sample of V.. other times turn off")
+    n1 = PAGELOG.length; await key('v', 'sfxOn'); fact('sfx', last(n1, /§SFX_[A-Z]+/) || 'no §SFX line');
+    await hclick('#tm-fwd-btn'); await hold(5500);
     fact('tmDay', await page.$eval('#tm-big-counter', e => e.textContent).catch(() => ''));
-    // scrub the 4D timeline back and forth (red1: "scrubbing the timelines") — the real slider, input events, day counter follows
-    const tmr = await page.evaluate(() => { const s = document.getElementById('tm-slider'); return s ? [Number(s.min), Number(s.max)] : null; });
-    if (tmr) { for (const f of [0.15, 0.35, 0.6, 0.85, 0.6, 0.3, 0.7]) { await page.evaluate((v) => { const s = document.getElementById('tm-slider'); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }, tmr[0] + (tmr[1] - tmr[0]) * f); await hold(450); } }
-    fact('tmScrub', (tmr ? 'range ' + tmr.join('..') + ' ' : 'NO #tm-slider ') + (await page.$eval('#tm-big-counter', e => e.textContent).catch(() => '')));
     // the sun: Day/night on, then HR mode — the slider becomes the hour of that day (onSlide: anchorDay + (val+1) h) → morning to sunset
     if (await page.locator('#tm-sun').first().isVisible().catch(() => false)) {
       await beat('s11sun', curLang, 'sun on → HR mode → sunset');
       n1 = PAGELOG.length; await hclick('#tm-sun'); await hold(600);
       if (await page.locator('.tm-mode[data-mode="HR"]').first().isVisible().catch(() => false)) await hclick('.tm-mode[data-mode="HR"]');
-      for (let h = 8; h <= 19; h++) { await page.evaluate((v) => { const s = document.getElementById('tm-slider'); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }, h); await hold(260); }
-      await hold(1200); fact('tmSun', (await page.$eval('#tm-label', e => e.textContent).catch(() => '')) + ' | ' + (last(n1, /§TM_SAVE_LIGHTING|§SUN|sun/i) || ''));
+      // HR mode + play forward: the clock runs through the hours and the sun goes down with it (no manual scrub here)
+      await page.evaluate(() => { const s = document.getElementById('tm-slider'); s.value = 9; s.dispatchEvent(new Event('input', { bubbles: true })); });
+      if (await page.locator('#tm-fwd-btn').first().isVisible().catch(() => false)) await hclick('#tm-fwd-btn');
+      await hold(5200); fact('tmSun', (await page.$eval('#tm-label', e => e.textContent).catch(() => '')) + ' | ' + (last(n1, /§TM_SAVE_LIGHTING|§SUN|sun/i) || ''));
       await hclick('#tm-sun'); if (await page.locator('.tm-mode[data-mode="DAY"]').first().isVisible().catch(() => false)) await hclick('.tm-mode[data-mode="DAY"]');
     }
+    await key('v', 'sfxOff');
     // s12 What-if DROPPED on HHS: §WHATIF-UI opens the ERP seed's project 990000 "BIM: Hospital" whatever building is open
     await slice('s13', 'Pull Back'); n1 = PAGELOG.length;
     if (!(await page.locator('#tm-reschedule-asap').first().isVisible().catch(() => false))) await hclick('#tm-gantt');
@@ -379,6 +405,9 @@ const LANGS = ['en_MY', 'fr_FR', 'es_ES', 'de_DE', 'ar_SA', 'zh_CN', 'ja_JP', 'm
       '-vf', 'fps=24,scale=1920:1080:flags=lanczos,format=yuv420p', '-c:v', 'libx264', '-crf', '17', '-preset', 'medium', mp4]);
     say('§FILM_DONE frames=' + frames.length + ' dur=' + (endTs - (T0 || endTs)).toFixed(2) + ' out=' + mp4);
   } catch (e) { say('§FILM_ERROR ffmpeg ' + String(e.message).split('\n')[0]); }
+  await browser.close();
+  if (rec) { rec.kill('SIGINT'); await new Promise(r => setTimeout(r, 800)); say('§FILM_AUDIO stop offset=' + (T0 - audioT0).toFixed(3) + ' cutTotal=' + cutTotal.toFixed(3)); }
+  if (sinkMod) { try { execFileSync('pactl', ['unload-module', sinkMod]); } catch (e) { /* */ } }
   fs.writeFileSync(path.join(OUT, 'viewer_film.log'), LOG.join('\n') + '\n');
-  await browser.close(); server.close();
+  server.close();
 })();
