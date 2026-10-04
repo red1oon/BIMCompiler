@@ -109,6 +109,18 @@ signal is the **source file name** (ROAD / FURNITURE / LIGHTING / DRAINAGE / SIG
 Stamping discipline from filename is extraction, not invention — mapping to our discipline codes
 needs one user decision (which codes a civil set uses).
 
+B.2a **ANSWERED 2026-10-04 — it is list expansion, not new panels.** Find's discipline axis is
+data-driven: `find_ask_grammar.js:32` `SELECT DISTINCT discipline FROM elements_meta`; clash matrix
+(`clash_matrix.js:98`) and clash report read the same column. The importer ALREADY stamps discipline
+from the file name — `import_worker.js:78 discFromFilename()`, which wins over class in
+`classifyDisc()` (`:100`). JELAPANG fell to `ARC` for two extracted reasons:
+  1. `VALID_DISCS` (`:76`) has no ROAD / FURNITURE / LIGHTING / DRAINAGE / SIGNAGE / MARKING.
+  2. The split is `/[_\-]/` (`:81`) — the files use spaces (`JELAPANG_ROAD FURNITURE.ifc` →
+     part `"ROAD FURNITURE"`), so even a listed word would not match. Add space to the split.
+  Then `DISC_MAP[IfcBuildingElementProxy]` → `'ARC'` default (`:108`).
+Fix = add the civil codes + split on space. Colour maps (`import.js:629`, `rates.js:526`) are
+hand-listed — new codes need a colour row or they fall to default. Find/clash pick them up with no code.
+
 B.3 **Exporter dropped content.** No terrain (EARTHWORK TIN skipped), no drainage network
 (106 pipes/structures skipped as 2D). The viewer cannot show what the IFC doesn't carry — fix is
 upstream (export settings) or a separate surface import; record, don't fake a ground.
