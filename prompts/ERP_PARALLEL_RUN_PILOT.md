@@ -292,3 +292,10 @@ Host fetch-back md5 matched for OCI and GH. Admin fold: 210 ops, `verifyMultiDev
 ## §DECISIONS 2026-10-04 (red1: "Go with yes first. If anything amiss I can easily direct its correction")
 - **Plugins vs reference:** ours is judged against STOCK iDempiere behaviour; each customer plugin's effect on the
   reference is listed separately as a plugin delta (§2), not folded into the pass/fail.
+- **Station identity + DocumentNo (red1, 2026-10-04):** "DocumentNo of course different. Running number as set in
+  SequenceNo ensures they are running … if it is not centralised [we have an issue]. But we settled for UUID. Or we let
+  each own running number but prefix by Org/POS cashier own."
+  → **Record identity = `<Table>_UU`** (fold + FK by UUID, never the per-device -opId).
+  → **DocumentNo = each station's OWN running sequence, prefixed by its Org / POS cashier** — iDempiere-native:
+  org-level sequence (`AD_Sequence.IsOrgLevelSequence` + `OrgColumn`) and `AD_Sequence.Prefix`; no central allocator,
+  relay stays logic-free. Gapless + unique per station; globally unique by prefix.
