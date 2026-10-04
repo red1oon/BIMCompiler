@@ -624,3 +624,38 @@ materials; (a) `clone()` returns an R10 array of clones of the same length; (b) 
   &localexp=0 p95 150 -> 137. Contrast stops NOT informative here (dark door holds p5 = 19 in all arms). Needs Hospital atrium after rebake.
 - Terminal rebake on the OCI DB FAILED (§LIGHT_FIELD_BAKE Terminal FAIL no field, wallS 802) — open. Hospital rebake stopped at red1's
   request (GPU for other sessions) — open; Hospital headless presses rebuild the field (~26 min) until it is rebaked.
+
+## 2026-10-04 ~09:00 — CLOSE-OUT — RESUME HERE (supersedes the 10-03 09:30 block)
+- SHIPPED (bim-ootb fix/sky-surface, all pushed, 0 unpushed): 897b83e0 v1561 §GLASS_PLANAR_REFL (outside glass mirrors wings; truth 0 real
+  misses / 5 bldgs) · 5cae78f1 v1562 §FAULT_GI_BLANK · eb0e958f v1563 toilet mirrors on planar path (28/28) · 2f091e30 v1564
+  §SHADOW_WIDE_OTHER_CAMERA (mirror speckle 9.1 -> 2.7) · 861cfb56 v1565 A/B switches &csmlambda / &shadowwide (defaults unchanged).
+  Alt+C has v1560 merged; v1561-v1565 NOT yet merged into fix/fast-bake (tell bim-compiler-d1 / the Alt+C session).
+- TEST TREE = ONE SOURCE OF TRUTH (red1): /tmp/wt-surf/buildings holds OCI copies (Clinic/HHS/Terminal/Hospital/Duplex _extracted + OCI
+  _meta where it exists), md5/integrity verified. :8664 = scratchpad serve_strict.js (serve_tree.js with NO fallback for *.db) — after a
+  reboot recreate it: copy ~/bin/serve_tree.js and change line 8 so the /buildings/ fallback skips URLs ending .db. ~/bim-ootb/buildings
+  copies are 08-03 re-imports (import_db_builder, IfcSpace kept, 4D tables) — do NOT test on them. LTU (Downloads link) + SampleHouse
+  (bim-compiler/deploy link) are not OCI copies (open: red1 to say).
+- RUNNING at close (headless, GPU lock): Hospital rebake on the OCI DB (rebake_h.sh -> buildings/patches/Hospital_extracted.db.lightfield.bin),
+  then run_gb.sh: SampleHouse pose cam [-7.169,0.998,2.58] tgt [-0.556,-0.94,-1.262] x {base, &lampsout=0, &skyfield=0, both} with
+  termimgs.js (per-term images) -> gb_*.json. Read: share of strong full-frame jumps on zone-boundary edges per arm (method: §SH zone
+  analysis 10-04, IR 99.6 % / F 54 % / Gd 57 % on zone edges at base). Scratchpad dir dies with this session — rerun if lost.
+- OPEN, in priority order (each needs one measured cause before code; red1 rules any look change):
+  1. SampleHouse/Hospital BLOTCHY STAIRCASES = room-zone boundary steps (0.5 m cell zone id, no blend). &gridblend=1 does NOT remove them
+     (red1 live test). Suspects: lamp-to-zone binding (sourced_light.js:202/429 abs(_slFZ-lz)<0.5) and the per-zone sky class _slSky.
+     run_gb answers which. Fix belongs in sourced_light.js slFragZone / lamp gate.
+  2. JAGGED SUN-SHADOW EDGES (small ones): &csmlambda=1 measured tpp 3.51->1.60 (HHS), 8.63->1.74 (SampleHouse); red1 tried it, said
+     "still same" — because the big steps are #1, not shadows. Decide default after #1.
+  3. INDOOR FLAT / BLAND (red1): history = v1522 rated lamps (EN sizing opt-in) + v1523 local exposure lift; stills: PerfectIndoor 4.1 stops
+     sat 0.156 vs Hospital v1564 2.3-3.0 stops sat ~0.1. Clinic A/B: &lampen=1 lamps x0.316, sat +13 %. Needs Hospital atrium A/B
+     (poses …1791067908689 / …1791067957166) after the rebake. Lamp output = red1's ruling (rated, 09-30).
+  4. Surface lustre / pinkish FP pipes / "not sturdy": matstats.js probe written (roughness/metal/env per class, screen-weighted), not run.
+     Pink is NOT an sRGB bug (pipe colour is material.color, decoded by §ALBEDO_SRGB). Suspects: flood + sheen r0.225.
+  5. Mirror brightness: ratio probe (reflratio.js) median 1.02 vs expected ~0.68-0.75 (display-linear); bounce/localexp/ao each ruled out.
+     Next: scene-linear ratio (float RT) before any change.
+  6. Terminal rebake on OCI DB FAILED ("no field", wallS 802) — Terminal stills use the in-page field until fixed.
+  7. LTU inside pose renders blank (underlay mean 0) — now FAULTs (§FAULT_GI_BLANK); cause open.
+  8. Mirror flat-white areas at red1's sink pose; Hospital zone 136 height; F7 Clinic dark frame; bake.js sidecar name vs _meta (from 10-03).
+- PROBES (re-create from this file if scratchpad gone): press_sun.js (press + screenshot, SUNEA/MINGUID env), press_probe.js (press + run a
+  probe file in page), probe_nopress.js, termimgs.js (per-term images via SourcedLight.debugZones), t3w.js (per-term ROI arrays),
+  sunrays*.js (sun-reach raycasts), reflratio.js, matstats.js, atlasdump.js. Always under flock /tmp/claude-1000/gpu.lock; give way to
+  other sessions' films when asked (red1 asked once today).
