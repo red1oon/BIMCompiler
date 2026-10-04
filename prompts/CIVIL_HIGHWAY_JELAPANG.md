@@ -1044,6 +1044,17 @@ material (tints all or nothing) and `_meshArea` sums the batch's triangles, not 
    (±1 mm), area = its own triangles, overlay vertex count = its geometry; a batch with >1 element proves the area
    is no longer the batch sum.
 
+### §Z Import progress from the viewer + Fly×Night check (2026-10-05)
+- **User:** "During opening of IFCs import it should give status feedback … may leave user wondering." Cause: import.js
+  wrote progress only to `#import-status`/`#import-progress-bar` (landing card); viewer.html has neither → silent until done.
+  Fix **bim-ootb #1864** (sw v1484): card if present else viewer status line, percent in text. Witness
+  `witness_import_feedback.js` 6/6: first line 0.00 s, 118+ updates, 0→90 %, longest quiet 6.4 s (merged-DB build, no %).
+- **Fly × Night** (`witness_civil_fly_night.js`, seek-sampled, 13 points over the 131.8 s flight, main @ v1483): 10/10 —
+  night stays on, 30 lit = real heads, the lamp nearest the view lit at every sample (7–12 m at signal stops, 19–89 m on
+  the open stretch where the model has no closer lamps). Wall-clock sampling under software GL is useless (~1 frame per
+  few s: 5 m moved in 60 s) — seek with `A.tourSeek(T)` instead. File lives on branch `feat/measure-item-dims` (to ship).
+- Localhost for the user: `python3 -m http.server 8402` on `/tmp/wt-civil-shadow` (main + #1864).
+
 ### FUTURE (recorded, not started)
 Model comparison/diff of design revisions · snags/issues with QR for inspection · variation orders on civil
 rates · rule-findings film for road standards · 2D plan view of the corridor (storey-free) · cross-sections
