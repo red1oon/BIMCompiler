@@ -1196,3 +1196,40 @@ locale's JSON), batch `viewer/tools/trl_batch_2026-10-04_help.js`. Key caps (`CT
 witness: printed in English on the keyboard itself.
 **W-VIEWER-I18N PASS 109/0** (18 locales × 5 pages): (2c) palette n=144 every locale; (3c) 72/72 sub-rows code English == CSV;
 leaks 0 of 303–308 in all 17 non-base locales; pageErrors 0. audit_sw_precache 200/200 · audit_script_tags 191/191.
+
+### §R3 SPEC — 2026-10-04 — the Modeller speaks the 13 film languages (Witness: W-MODELLER-I18N)
+red1 2026-10-04 (Modeller trailer gate, §9 FILM_NARRATION): chose *"Translate the Modeller first"* over voices-only.
+MEASURED (bim-ootb main `880824d1`, headless CPU probe of `modeller/modeller.html`, no building): 104 UI strings at boot
+(54 text · 49 title · 1 placeholder; 28 toolbar buttons × label+tooltip, outliner, history), 0 `data-trl` tags, no
+`locale_loader` at boot — `edit_delta_ui.js` lazy-loads it with `__TRL_NO_AUTORUN` for RATES only. Most panels (Open
+chooser, catalog, walk, save, export, Teams) are built later by JS — tagging 600 KB of markup by hand is the fragile path.
+1. **Generic mechanism, not per-panel code.** `viewer/locale_loader.js` gains an opt-in `window.__TRL_DICT_PAGE`: after the
+   labels land (boot and every in-place switch), every text node / `title` / `placeholder` / `aria-label` whose WHOLE trimmed
+   value equals a dictionary English msgtext is shown in the current locale (map built from `i18n/en_MY.json` → current
+   labels); nodes added later are translated as they appear (one MutationObserver, batched per animation frame). The
+   original English is kept on the node (`__trlEn`) so a later switch maps from English again, never from a translation.
+   Exact whole-value matches only — never substrings — so data (names, numbers) is untouched. Viewer unaffected (no flag).
+2. **Modeller wiring.** `modeller.html` loads `../viewer/locale_loader.js` at boot with `__TRL_INPLACE` + `__TRL_DICT_PAGE`;
+   a flag button `#header-flag-btn` in the toolbar opens the shared picker. `edit_delta_ui.js` reuses an already-loaded
+   `_TRL_LOADER` (no second load, no `__TRL_NO_AUTORUN` on a page that runs the full loader).
+3. **Rows.** One labelled machine batch `viewer/tools/trl_batch_2026-10-04_modeller.js`: `mdl_*` keys for the Modeller
+   strings on the trailer's screens (boot chrome + panels the trailer opens), English byte-identical to the screen; a text
+   already in the CSV reuses its key (no duplicate rows).
+4. **Witness W-MODELLER-I18N** (`viewer/tests/witness_modeller_i18n.js`, CPU only): per locale, modeller.html opened with
+   the saved locale, the trailer's panels opened, strings collected and judged by the W-VIEWER-I18N rules (slot = equals a
+   base English msgtext; leak = slot still English while that locale has another text, or an English string the en_MY
+   baseline found UNCATALOGUED). Population printed; n < 80 FAILS (anti-vacuous). In-place: switch via the REAL picker, then
+   open a panel AFTER the switch → it must arrive translated (observer). CONTROL: `__TRL_DICT_PAGE` off → leaks > 0.
+
+### §R3 RESULT — 2026-10-04 (bim-ootb PR #1839 `feat/modeller-i18n`, viewer sw v1467, modeller sw v77, auto-merge armed)
+Built as specified: `__TRL_DICT_PAGE` in `viewer/locale_loader.js` (exact whole-value + `{template}` matches, whitespace runs
+collapsed — the outliner footer is written `"222 features␣␣🔒 …"`, found by the witness), Modeller boot load + `#header-flag-btn`,
+`edit_delta_ui.js` reuses the boot loader. 110 `mdl_*` rows (1000753–1000862, machine, 3 Sonnet agents, placeholder sets checked)
+harvested from the trailer's screens (boot chrome, Help, Open chooser, Duplex opened: walker rows, Export). `LOCALE_VERSION` 7→8:
+cached packs (7-day localStorage) would otherwise hide new rows — this also un-hides §R2d's Help rows for returning users.
+BEFORE the rows: de_DE leaks=108 (all UNCAT). **W-MODELLER-I18N PASS 56/0**: 0 leaks in 17 locales (slots 100–130 each, data=72
+excluded by printed rules), in-place en→de via the real flag button navs=0 leaks=0, Help panel built after the switch translated
+25/30 slots leaks=0, control (de_DE.json aborted) leaks=124. W-VIEWER-I18N PASS 109/0 (Viewer unaffected). Audits 200/200, 191/191.
+Not covered yet (printed for the trailer lane): panels the harvest could not open without a selection/edit — Insert catalog,
+Teams overlay, Save dialog, walk results, history slider labels. The trailer recorder will meet them; any English it finds goes in
+a second batch through the same witness.
