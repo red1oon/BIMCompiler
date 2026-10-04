@@ -223,6 +223,23 @@ Test data: longer real set, or JELAPANG tiled into ~1 km pieces.
 Combined win 5 + 8: runoff vs drain capacity → "drain under-sized" findings shown like clashes.
 Order: 6 → 4 → 5+8 → 1 → 3 → 2 → 7.
 
+### §K-6.1 Outside analyst proposal reviewed (2026-10-05) — road-standard checker, measured against JELAPANG_AFTER.db
+Proposal: free JKR standards → `std_values` → colour non-compliant elements. Sources named (NOT yet read by us; the
+analyst's citations were blank): ATJ 8/86 geometric design (lane/shoulder widths, grades, sight distance), ATJ 2A/85
+signs (size per code), ATJ 2D/85 markings (stop line 300 mm, give-way 200 mm, zebra 600 mm), ATJ 13/87 drainage.
+Measured (world-axis bbox, `element_transforms` + `element_psets`):
+- **Lane width — not doable as proposed.** Road solids are not lanes: MAINLINE plan-min width avg 51.5 m (541 pieces),
+  J2A 31.5 m, EXISTING LANE -J1B 17.8 m. Lane width needs a cross-section of the surface + lane lines (MARKING), not
+  an element's own-axis width.
+- **Markings — not per-line.** 90 MARKING elements, plan width 1.46 m → 698 m long, avg height 2.06 m: each is a
+  group of strips. Stop-line / give-way widths need a mesh cross-section per strip.
+- **Signs — doable but low yield.** Same code → identical height (WD. 39a ×23 all 3.73 m; WD. 24a ×15 all 1.51 m):
+  standard Civil 3D blocks; bbox = post + face. Check = face size per code vs ATJ 2A/85 table, needs face split from post.
+  Real value: validating the 17_Code against the ATJ sign list + post height / placement rules.
+- Values must be read from the JKR PDFs ourselves before `primary`; `std_values` holds standards, rates stay in the
+  rate pack (§R.2), not one table.
+- Also seen: `01_Component_Name` = ROAD STUD ×940 (not in §0 list).
+
 ### FUTURE (recorded, not started)
 Design-revision diff · snags/issues with QR · variation orders on civil rates · rule-findings film for road
 standards · 2D corridor plan (storey-free) · cross-sections square to road · lane widths/clearances by measure ·
