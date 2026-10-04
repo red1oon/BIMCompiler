@@ -311,6 +311,47 @@ vs new; also helps every building) → 4. P4 profile + **Civil switch** (§D) �
 
 ---
 
+## §F Length limits — ours vs Civil 3D (2026-10-04, user: "Civil 3D seems to have a 10 km limit")
+
+**Civil 3D claim:** NOT confirmed — no Autodesk doc found stating a 10 km cap. What IS documented:
+float precision loss for civil objects at large coordinates (surfaces fail to rebuild after a big
+coordinate move), and the common practice of splitting long jobs into ~4–5 km sections or a
+master-in-map-coords + detail-near-origin file pair. Sources: forum.bricsys.com/discussion/comment/59580/ ·
+forums.autodesk.com/t5/civil-3d-forum/splitting-up-large-projects-for-design-efficiency/m-p/7673028
+
+**Ours — two different limits; coordinates are NOT the binding one:**
+1. **Coordinates (fine to ~100 km).** Element centres are stored as SQLite REAL (double); vertices are
+   stored relative to each element's own centroid (`import_worker.js:524-529`) — the "detail file
+   near origin" workaround, done per element, automatically. Only the GPU instance matrix is float32,
+   after the §A georef rebase to the site middle. float32 step at distance d from origin:
+   ±5 km (10 km road) → 0.49 mm · ±50 km (100 km road) → 3.9 mm. (Computed: ulp = 2^(⌊log2 d⌋−23).)
+2. **Memory (binding, ~8–9 km for THIS density).** JELAPANG geometry = **423.9 MB, 14.77 M vertices,
+   5094 geometries for 5674 elements** (road solids barely repeat). The browser import + sql.js run in
+   wasm32 with a hard **4 GB** ceiling (measured on KUL070: `limit is 4294901760 bytes`,
+   `IFC_LARGE_PRIVATE_STRESS_TEST.md`). Linear estimate: ~212 MB/km of bbox span → 10 km ≈ 2.1 GB of
+   geometry alone, before the IFC bytes and working copies. **Estimate, not measured** — the real
+   ceiling must be found by importing a longer set.
+   **Ways past it (existing patterns, not new):** offline extractor path (KUL070's 2 GB IFC shipped as
+   a 311 MB DB) · one DB per section streamed by chainage (City/multi-building loader) · decimate
+   road solids (14.77 M verts for 2 km is heavy tessellation of mostly flat slabs).
+
+## §G Where we can beat the field (proposals — each needs its own spec before work)
+Ranked by what we already have running for buildings:
+1. **Whole road in a browser link** — no install, phone/tablet, offline on site (PWA). Desktop tools
+   (Civil 3D, Navisworks, InfraWorks) need installs and licences.
+2. **One drop federates all 7 discipline files** — already works today (5674/5674 loaded, 0 orphans).
+3. **4D generated, not authored — by chainage.** Our auto-4D engine + a time-chainage chart. Linear
+   schedules are the highway norm but are hand-drawn in planning tools.
+4. **JKR asset handover (DAK psets → asset register).** Each sign already carries its JKR code
+   (WD. 39a/39b …); the DAK template is JKR's own asset structure. BIM → ERP asset register is our
+   ERP fold — a road owner's O&M handover nobody else ties to the model in the browser.
+5. **Signed review trail** — kernel-ops ledger records every review action, verifiable.
+6. **Drive-through film** baked from the model for stakeholders (our film/CPE engine on the centreline).
+7. **No section splitting** — coordinates hold to ~100 km (§F.1); memory is solvable by streaming
+   sections, so the user sees ONE road, not 4–5 km files.
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written. **Next: user reviews §PLAN checklist; nothing coded.**
