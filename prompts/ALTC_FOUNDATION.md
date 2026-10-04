@@ -25,6 +25,10 @@ Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-
   SHIPPED 2026-10-03/04 (all witnessed, details in the entries below): W1 pose check (PASS), W2 HUD overlap (PASS: row yield + info panel
   avoid), zone box = true box + §ZONE_FLOOR (PASS x3 via prompts/photoreal_probes/lightgrid/zonefloor.js), §FLYAROUND_ARC (arc path from
   two Alt+S stills; poses come from the PNG's own `bim-still-pose` chunk — PIL im.load() then im.text).
+  ⏩ 10:43 DETACHED JOB (survives the session): `setsid nohup ~/.cache/bim4d/altc_2026-10-03/flyaround/parts34.sh` (pid 469606) renders
+  parts 3+4 (waits on gpu.lock — another session's Hospital light-field bake held it at 10:41), joins part1..4 in that folder, checks 960 frames
+  + 0 black/freeze and copies to ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04.mp4 (§DELIVERED / §NOT_DELIVERED). FIRST in a
+  new session: read ~/.cache/bim4d/altc_2026-10-03/flyaround/parts34_run.log — only re-run what it says failed.
   IN FLIGHT at 10:40: Hospital fly-around (40 s, 1080p24, 4 parts of 240 frames). Part 2 delivered
   (~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4); part 1 done 10:22 (MATCH); parts 3+4 + join were
   running in the old session's background (`parts.sh`, scratchpad c/parts_run.log). TO FINISH in a new session: check which of
