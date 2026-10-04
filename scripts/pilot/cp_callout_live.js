@@ -49,6 +49,7 @@ function norm(v) {
         const how = await O.setField(o, st.set.toLowerCase(), st.value);
         if (!/^ok/.test(how)) { tot.notOnForm++; L('§CP-LIVE-STEP ' + c.name + ' #' + i + ' set ' + st.set + '=' + st.value + ' NOT-JUDGED (' + how + ') refDerived=[' + derived.join(',') + ']'); continue; }
         await o.page.waitForTimeout(300);
+        if (process.env.CP_PAGELOG) o.since(n1, new RegExp(process.env.CP_PAGELOG)).forEach(l => L('    page: ' + l.slice(0, 300)));   // debug: page § lines for this step
         const snap = await o.page.evaluate(() => { const t = window.__crud && window.__crud.calloutTab && window.__crud.calloutTab(); return t ? t.snapshot() : null; });
         const form = await O.readForm(o);
         const lcForm = {}; Object.keys(form).forEach(k => { lcForm[k.toLowerCase()] = form[k]; });
@@ -65,6 +66,6 @@ function norm(v) {
       }
     }
   } finally { await o.close(); }
-  L('§CP-LIVE-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' judged=' + tot.judged + ' match=' + tot.match + ' notOnForm=' + tot.notOnForm + ' derivedCols=' + tot.cols + ' colsMatch=' + tot.colsMatch + ' pageErrors=' + o.ERRS.length + (o.ERRS.length ? ' ' + JSON.stringify(o.ERRS.slice(0, 3)) : ''));
+  L('§CP-LIVE-SUMMARY cases=' + tot.cases + ' steps=' + tot.steps + ' judged=' + tot.judged + ' match=' + tot.match + ' notOnForm=' + tot.notOnForm + ' derivedCols=' + tot.cols + ' colsMatch=' + tot.colsMatch + ' pageErrors=' + o.ERRS.length + ' verdict=' + (!tot.judged ? 'INCONCLUSIVE(no header case judged)' : (tot.match === tot.judged && !o.ERRS.length ? 'PASS' : 'DIFF')) + (o.ERRS.length ? ' ' + JSON.stringify(o.ERRS.slice(0, 3)) : ''));
   if (logFile) fs.writeFileSync(logFile, out.join('\n') + '\n');
 })().catch(e => { L('§CP-LIVE-FATAL ' + (e && e.stack || e)); if (logFile) fs.writeFileSync(logFile, out.join('\n') + '\n'); process.exit(2); });

@@ -1,0 +1,34 @@
+[
+ {
+  "name": "cp_ascopy_gw101_to_9800",
+  "process": 338,
+  "recordId": 1009800,
+  "tableId": 265,
+  "params": [
+   {
+    "name": "C_AcctSchema_ID",
+    "value": 101
+   }
+  ],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM c_acctschema_gl WHERE c_acctschema_id=1009800",
+   "DELETE FROM c_acctschema_default WHERE c_acctschema_id=1009800",
+   "DELETE FROM c_validcombination WHERE c_acctschema_id=1009800",
+   "DELETE FROM c_acctschema_element WHERE c_acctschema_id=1009800",
+   "DELETE FROM c_acctschema WHERE c_acctschema_id=1009800",
+   "INSERT INTO c_acctschema (gaap,name,created,enddate,updated,hasalias,isactive,ad_org_id,createdby,isaccrual,separator,startdate,updatedby,processing,backdateday,c_period_id,description,ad_client_id,costinglevel,isadjustcogs,ad_orgonly_id,c_currency_id,costingmethod,m_costtype_id,commitmenttype,hascombination,ispostservices,c_acctschema_id,c_acctschema_uu,autoperiodcontrol,period_openfuture,taxcorrectiontype,period_openhistory,isdiscountcorrectstax,ispostifclearingequal,istradediscountposted,isallownegativeposting,isexplicitcostadjustment) VALUES ('UN','CP Copy Target','2001-03-27T15:44:17',NULL,'2026-10-04T16:06:33.571','Y','Y',0,0,'Y','-',NULL,101,NULL,NULL,200177,NULL,11,'C','Y',NULL,100,'A',100,'N','N','N',1009800,'a1b2c3d4-0000-4000-8000-000001009800','Y',100,'B',10000,'N','Y','N','Y','N')",
+   "INSERT INTO c_acctschema_element (name,seqno,org_id,created,updated,isactive,ad_org_id,createdby,updatedby,a_asset_id,isbalanced,c_charge_id,elementtype,ismandatory,ad_client_id,ad_column_id,c_element_id,c_project_id,m_product_id,ad_column2_id,c_activity_id,c_bpartner_id,c_campaign_id,c_employee_id,c_location_id,m_warehouse_id,c_acctschema_id,c_costcenter_id,c_department_id,c_salesregion_id,c_elementvalue_id,c_acctschema_element_id,c_acctschema_element_uu,m_attributesetinstance_id) VALUES ('Organization',10,11,'2001-03-27T15:44:17','2001-03-27T15:44:17','Y',0,0,0,NULL,'Y',NULL,'OO','Y',11,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1009800,NULL,NULL,NULL,NULL,100980000,'a1b2c3d4-0000-4000-9000-000100980000',NULL)",
+   "INSERT INTO c_acctschema_element (name,seqno,org_id,created,updated,isactive,ad_org_id,createdby,updatedby,a_asset_id,isbalanced,c_charge_id,elementtype,ismandatory,ad_client_id,ad_column_id,c_element_id,c_project_id,m_product_id,ad_column2_id,c_activity_id,c_bpartner_id,c_campaign_id,c_employee_id,c_location_id,m_warehouse_id,c_acctschema_id,c_costcenter_id,c_department_id,c_salesregion_id,c_elementvalue_id,c_acctschema_element_id,c_acctschema_element_uu,m_attributesetinstance_id) VALUES ('Account',20,NULL,'2001-03-27T15:44:17','2001-03-27T15:44:17','Y',0,0,0,NULL,'N',NULL,'AC','Y',11,NULL,105,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1009800,NULL,NULL,NULL,697,100980001,'a1b2c3d4-0000-4000-9000-000100980001',NULL)",
+   "INSERT INTO c_acctschema_element (name,seqno,org_id,created,updated,isactive,ad_org_id,createdby,updatedby,a_asset_id,isbalanced,c_charge_id,elementtype,ismandatory,ad_client_id,ad_column_id,c_element_id,c_project_id,m_product_id,ad_column2_id,c_activity_id,c_bpartner_id,c_campaign_id,c_employee_id,c_location_id,m_warehouse_id,c_acctschema_id,c_costcenter_id,c_department_id,c_salesregion_id,c_elementvalue_id,c_acctschema_element_id,c_acctschema_element_uu,m_attributesetinstance_id) VALUES ('Product',30,NULL,'2001-03-27T15:44:17','2001-03-27T15:44:17','Y',0,0,0,NULL,'N',NULL,'PR','N',11,NULL,NULL,NULL,122,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1009800,NULL,NULL,NULL,NULL,100980002,'a1b2c3d4-0000-4000-9000-000100980002',NULL)",
+   "INSERT INTO c_acctschema_element (name,seqno,org_id,created,updated,isactive,ad_org_id,createdby,updatedby,a_asset_id,isbalanced,c_charge_id,elementtype,ismandatory,ad_client_id,ad_column_id,c_element_id,c_project_id,m_product_id,ad_column2_id,c_activity_id,c_bpartner_id,c_campaign_id,c_employee_id,c_location_id,m_warehouse_id,c_acctschema_id,c_costcenter_id,c_department_id,c_salesregion_id,c_elementvalue_id,c_acctschema_element_id,c_acctschema_element_uu,m_attributesetinstance_id) VALUES ('Bus.Partner',40,NULL,'2001-03-27T15:44:17','2001-03-27T15:44:17','Y',0,0,0,NULL,'N',NULL,'BP','N',11,NULL,NULL,NULL,NULL,NULL,NULL,112,NULL,NULL,NULL,NULL,1009800,NULL,NULL,NULL,NULL,100980003,'a1b2c3d4-0000-4000-9000-000100980003',NULL)",
+   "INSERT INTO c_acctschema_element (name,seqno,org_id,created,updated,isactive,ad_org_id,createdby,updatedby,a_asset_id,isbalanced,c_charge_id,elementtype,ismandatory,ad_client_id,ad_column_id,c_element_id,c_project_id,m_product_id,ad_column2_id,c_activity_id,c_bpartner_id,c_campaign_id,c_employee_id,c_location_id,m_warehouse_id,c_acctschema_id,c_costcenter_id,c_department_id,c_salesregion_id,c_elementvalue_id,c_acctschema_element_id,c_acctschema_element_uu,m_attributesetinstance_id) VALUES ('Project',50,NULL,'2001-03-27T15:44:17','2001-03-27T15:44:17','Y',0,0,0,NULL,'N',NULL,'PJ','N',11,NULL,NULL,100,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1009800,NULL,NULL,NULL,NULL,100980004,'a1b2c3d4-0000-4000-9000-000100980004',NULL)",
+   "INSERT INTO c_acctschema_element (name,seqno,org_id,created,updated,isactive,ad_org_id,createdby,updatedby,a_asset_id,isbalanced,c_charge_id,elementtype,ismandatory,ad_client_id,ad_column_id,c_element_id,c_project_id,m_product_id,ad_column2_id,c_activity_id,c_bpartner_id,c_campaign_id,c_employee_id,c_location_id,m_warehouse_id,c_acctschema_id,c_costcenter_id,c_department_id,c_salesregion_id,c_elementvalue_id,c_acctschema_element_id,c_acctschema_element_uu,m_attributesetinstance_id) VALUES ('Campaign',60,NULL,'2001-03-27T15:44:17','2001-03-27T15:44:17','Y',0,0,0,NULL,'N',NULL,'MC','N',11,NULL,NULL,NULL,NULL,NULL,NULL,NULL,101,NULL,NULL,NULL,1009800,NULL,NULL,NULL,NULL,100980005,'a1b2c3d4-0000-4000-9000-000100980005',NULL)"
+  ],
+  "tables": [
+   "c_validcombination",
+   "c_acctschema_gl",
+   "c_acctschema_default"
+  ]
+ }
+]

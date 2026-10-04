@@ -1,0 +1,37 @@
+[
+ {
+  "name": "cp_yearcreateperiods_9800",
+  "process": 100,
+  "recordId": 1009800,
+  "tableId": 177,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM c_periodcontrol WHERE c_period_id IN (SELECT c_period_id FROM c_period WHERE c_year_id=1009800)",
+   "DELETE FROM c_period WHERE c_year_id=1009800",
+   "DELETE FROM c_year WHERE c_year_id=1009800",
+   "INSERT INTO c_year (c_year_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,fiscalyear,c_calendar_id,c_year_uu) VALUES (1009800,11,0,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'2041',102,'a1b2c3d4-0000-4000-8000-000001009800')"
+  ],
+  "tables": [
+   "c_period",
+   "c_periodcontrol"
+  ]
+ },
+ {
+  "name": "cp_yearcreateperiods_9801_fiscalyear_split",
+  "process": 100,
+  "recordId": 1009801,
+  "tableId": 177,
+  "params": [],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM c_periodcontrol WHERE c_period_id IN (SELECT c_period_id FROM c_period WHERE c_year_id=1009801)",
+   "DELETE FROM c_period WHERE c_year_id=1009801",
+   "DELETE FROM c_year WHERE c_year_id=1009801",
+   "INSERT INTO c_year (c_year_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,fiscalyear,c_calendar_id,c_year_uu) VALUES (1009801,11,0,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'2042/43',102,'a1b2c3d4-0000-4000-8000-000001009801')"
+  ],
+  "tables": [
+   "c_period",
+   "c_periodcontrol"
+  ]
+ }
+]

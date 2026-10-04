@@ -1,0 +1,69 @@
+[
+ {
+  "name": "cp_copyfromorder_closed_same_bp",
+  "process": 211,
+  "recordId": 1009500,
+  "tableId": 259,
+  "params": [
+   {
+    "name": "C_Order_ID",
+    "value": 1009590,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM c_ordertax WHERE c_order_id IN (1009500,1009501)",
+   "DELETE FROM c_orderline WHERE c_order_id IN (1009500,1009501)",
+   "UPDATE c_order SET totallines=0, grandtotal=0 WHERE c_order_id IN (1009500,1009501)",
+   "INSERT INTO c_ordertax (c_order_id,c_tax_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,taxbaseamt,taxamt,processed,istaxincluded,c_ordertax_uu) VALUES (1009500,105,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,0,0,'N','N','00000000-0000-4000-8000-100950010501')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Order",
+    "where": "C_Order_ID IN (1009590,1009591,1009500,1009501)"
+   },
+   {
+    "table": "C_OrderLine",
+    "where": "C_Order_ID IN (1009590,1009591)"
+   }
+  ],
+  "tables": [
+   "c_orderline",
+   "c_order",
+   "c_ordertax"
+  ]
+ },
+ {
+  "name": "cp_copyfromorder_other_bp_pricelist_refusal",
+  "process": 211,
+  "recordId": 1009501,
+  "tableId": 259,
+  "params": [
+   {
+    "name": "C_Order_ID",
+    "value": 1009591,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM c_ordertax WHERE c_order_id IN (1009500,1009501)",
+   "DELETE FROM c_orderline WHERE c_order_id IN (1009500,1009501)",
+   "UPDATE c_order SET totallines=0, grandtotal=0 WHERE c_order_id IN (1009500,1009501)",
+   "INSERT INTO c_ordertax (c_order_id,c_tax_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,taxbaseamt,taxamt,processed,istaxincluded,c_ordertax_uu) VALUES (1009501,104,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,0,0,'N','N','00000000-0000-4000-8000-100950010502')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Order",
+    "where": "C_Order_ID IN (1009590,1009591,1009500,1009501)"
+   },
+   {
+    "table": "C_OrderLine",
+    "where": "C_Order_ID IN (1009590,1009591)"
+   }
+  ],
+  "tables": [
+   "c_orderline",
+   "c_order"
+  ]
+ }
+]

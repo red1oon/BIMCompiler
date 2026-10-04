@@ -1,0 +1,20 @@
+[
+ {
+  "name": "cp_payonline_approved_1000002",
+  "process": 153,
+  "recordId": 1000002,
+  "tableId": 335,
+  "tables": [
+   "c_payment"
+  ],
+  "preSql": [
+   "UPDATE c_payment SET isonline='N' WHERE c_payment_id=1000002"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Payment",
+    "where": "C_Payment_ID=1000002"
+   }
+  ]
+ }
+]

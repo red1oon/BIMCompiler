@@ -1,0 +1,37 @@
+[
+ {
+  "name": "cp_copyfrombankstmt_charge_line_and_payment_line",
+  "process": 200012,
+  "recordId": 1009500,
+  "tableId": 392,
+  "params": [
+   {
+    "name": "C_BankStatement_ID",
+    "value": 1009510,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM c_bankstatementline WHERE c_bankstatement_id=1009500 AND line>=1010",
+   "UPDATE c_bankstatement SET statementdifference=0, endingbalance=0 WHERE c_bankstatement_id=1009500"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_BankStatement",
+    "where": "C_BankStatement_ID IN (1009500,1009510)"
+   },
+   {
+    "table": "C_BankStatementLine",
+    "where": "C_BankStatement_ID IN (1009500,1009510)"
+   },
+   {
+    "table": "C_Payment",
+    "where": "C_Payment_ID=1000000"
+   }
+  ],
+  "tables": [
+   "c_bankstatementline",
+   "c_bankstatement"
+  ]
+ }
+]

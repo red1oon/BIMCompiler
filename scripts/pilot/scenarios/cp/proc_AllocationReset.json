@@ -1,0 +1,116 @@
+[
+ {
+  "name": "cp_allocreset_direct_1009700",
+  "process": 303,
+  "recordId": 1009700,
+  "tableId": 735,
+  "tables": [
+   "c_allocationhdr",
+   "c_allocationline",
+   "c_payment",
+   "c_invoice",
+   "c_order",
+   "c_bpartner"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Invoice",
+    "where": "C_BPartner_ID=112"
+   },
+   {
+    "table": "C_Payment",
+    "where": "C_BPartner_ID=112"
+   },
+   {
+    "table": "C_AllocationLine",
+    "where": "C_BPartner_ID=112"
+   },
+   {
+    "table": "C_AllocationHdr",
+    "where": "C_AllocationHdr_ID IN (SELECT C_AllocationHdr_ID FROM C_AllocationLine WHERE C_BPartner_ID=112)"
+   },
+   {
+    "table": "C_Order",
+    "where": "C_Order_ID=1000310"
+   },
+   {
+    "table": "C_BPartner",
+    "where": "C_BPartner_ID=112"
+   }
+  ],
+  "preSql": [
+   "UPDATE c_payment SET isallocated='Y' WHERE c_payment_id=101",
+   "UPDATE c_invoice SET ispaid='N', c_payment_id=101 WHERE c_invoice_id=1000002",
+   "UPDATE c_order SET c_payment_id=101 WHERE c_order_id=1000310",
+   "DELETE FROM c_allocationline WHERE c_allocationline_id=1009700",
+   "DELETE FROM c_allocationhdr WHERE c_allocationhdr_id=1009700",
+   "INSERT INTO c_allocationhdr (c_allocationhdr_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,documentno,description,datetrx,dateacct,c_currency_id,approvalamt,ismanual,docstatus,docaction,isapproved,processing,processed,posted,c_allocationhdr_uu,c_doctype_id) VALUES (1009700,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'CP-1009700','cp_ allocation','2006-12-15 00:00:00','2006-12-15 00:00:00',100,0,'N','CO','CL','Y','N','Y','N','00000000-0000-4000-8000-000001009700',137)",
+   "INSERT INTO c_allocationline (c_allocationline_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,ismanual,c_invoice_id,c_bpartner_id,c_order_id,c_payment_id,amount,discountamt,writeoffamt,overunderamt,c_allocationhdr_id,c_allocationline_uu) VALUES (1009700,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'N',1000002,112,1000310,101,50,0,0,0,1009700,'00000000-0000-4000-8000-000001009700')"
+  ]
+ },
+ {
+  "name": "cp_allocreset_bulk_bp112",
+  "process": 303,
+  "recordId": 0,
+  "tableId": 0,
+  "params": [
+   {
+    "name": "C_BPartner_ID",
+    "value": 112
+   },
+   {
+    "name": "AllAllocations",
+    "value": "Y"
+   },
+   {
+    "name": "DateAcct",
+    "value": "2006-12-14",
+    "valueTo": "2006-12-14",
+    "type": "date"
+   }
+  ],
+  "tables": [
+   "c_allocationhdr",
+   "c_allocationline",
+   "c_payment",
+   "c_invoice",
+   "c_order",
+   "c_bpartner"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Invoice",
+    "where": "C_BPartner_ID=112"
+   },
+   {
+    "table": "C_Payment",
+    "where": "C_BPartner_ID=112"
+   },
+   {
+    "table": "C_AllocationLine",
+    "where": "C_BPartner_ID=112"
+   },
+   {
+    "table": "C_AllocationHdr",
+    "where": "C_AllocationHdr_ID IN (SELECT C_AllocationHdr_ID FROM C_AllocationLine WHERE C_BPartner_ID=112)"
+   },
+   {
+    "table": "C_Order",
+    "where": "C_Order_ID=1000310"
+   },
+   {
+    "table": "C_BPartner",
+    "where": "C_BPartner_ID=112"
+   }
+  ],
+  "preSql": [
+   "UPDATE c_payment SET isallocated='Y' WHERE c_payment_id=101",
+   "UPDATE c_invoice SET ispaid='N', c_payment_id=101 WHERE c_invoice_id=1000002",
+   "UPDATE c_order SET c_payment_id=101 WHERE c_order_id=1000310",
+   "DELETE FROM c_allocationline WHERE c_allocationline_id=1009700",
+   "DELETE FROM c_allocationhdr WHERE c_allocationhdr_id=1009700",
+   "INSERT INTO c_allocationhdr (c_allocationhdr_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,documentno,description,datetrx,dateacct,c_currency_id,approvalamt,ismanual,docstatus,docaction,isapproved,processing,processed,posted,c_allocationhdr_uu,c_doctype_id) VALUES (1009700,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'CP-1009700','cp_ allocation','2006-12-14 00:00:00','2006-12-14 00:00:00',100,0,'N','CO','CL','Y','N','Y','N','00000000-0000-4000-8000-000001009700',137)",
+   "INSERT INTO c_allocationline (c_allocationline_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,ismanual,c_invoice_id,c_bpartner_id,c_order_id,c_payment_id,amount,discountamt,writeoffamt,overunderamt,c_allocationhdr_id,c_allocationline_uu) VALUES (1009700,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'N',1000002,112,1000310,101,50,0,0,0,1009700,'00000000-0000-4000-8000-000001009700')"
+  ]
+ }
+]

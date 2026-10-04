@@ -82,13 +82,23 @@ function norm(v, newIds) {
   if (v === null || v === undefined || v === '') return null;
   if (typeof v === 'boolean') return v ? 'Y' : 'N';
   const s = String(v);
-  if (newIds && newIds.has(s)) return 'NEW';
+  if (newIds && newIds.has(s)) return 'NEW';   // newIds here = the ids admissible for THIS column (see project)
   if (/^-?\d+(\.\d+)?$/.test(s)) return String(Number(s));
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
   return s;
 }
+// newIds: Map<table, Set<id>> of SURROGATE keys the reference run inserted. A ref value reads "NEW" only in an *_id column: the
+// TableDir table's own set when it inserted rows (c_invoice_id → c_invoice), else any inserted id (non-TableDir FKs such as
+// Ref_Invoice_ID). Never Line/SeqNo/Qty (pre-fix: AD_PInstance_Para SeqNo 10 masked every Line=10), never a composite/FK pk.
+function colIds(newIds, lc) {
+  if (!newIds) return null;
+  if (/_acct$/.test(lc)) return newIds.get('c_validcombination') || null;   // Account reference (DisplayType 25) → C_ValidCombination
+  if (!/_id$/.test(lc)) return null;
+  const own = newIds.get(lc.slice(0, -3)); if (own) return own;
+  return newIds.get('*');
+}
 function project(rows, tbl, newIds, keyCol) {
-  return rows.map(r => { const o = {}; Object.keys(r).sort().forEach(c => { const lc = c.toLowerCase(); if (lc === keyCol || VOLATILE.test(lc) || lc === '__key') return; const v = norm(r[c], newIds); if (v !== null) o[lc] = v; }); return JSON.stringify(o); }).sort();
+  return rows.map(r => { const o = {}; Object.keys(r).sort().forEach(c => { const lc = c.toLowerCase(); if (lc === keyCol || VOLATILE.test(lc) || lc === '__key') return; const v = norm(r[c], colIds(newIds, lc)); if (v !== null) o[lc] = v; }); return JSON.stringify(o); }).sort();
 }
 
 (async () => {
@@ -118,6 +128,11 @@ function project(rows, tbl, newIds, keyCol) {
         E.query('INSERT OR REPLACE INTO ' + a.table + ' (' + use.join(',') + ') VALUES (' + use.map(() => '?').join(',') + ')', use.map(k => { const v = row[k.toLowerCase()]; return v === undefined ? null : v; })); });
       L('§CP-PROC-ALIGN ' + c.name + ' ' + a.table + ' rows=' + rows.length);
     }
+    // document-number sequences are STATE (the pilot's counters advance with every reference run): start ours from the oracle's
+    { const seq = (await oracle({ op: 'sql', sql: "SELECT * FROM AD_Sequence WHERE IsTableID='N' AND AD_Client_ID IN (0," + ((c.ctx && c.ctx.client) || 11) + ")" })).rows || [];
+      const cols = E.query('PRAGMA table_info(AD_Sequence)').map(r => r.name); let n = 0;
+      seq.forEach(row => { const use = cols.filter(k => Object.prototype.hasOwnProperty.call(row, k.toLowerCase())); try { E.query('INSERT OR REPLACE INTO AD_Sequence (' + use.join(',') + ') VALUES (' + use.map(() => '?').join(',') + ')', use.map(k => row[k.toLowerCase()] === undefined ? null : row[k.toLowerCase()])); n++; } catch (eS) {} });
+      L('§CP-PROC-MIRROR-SEQ ' + c.name + ' ad_sequence=' + n); }
     td.snap(tag);
     ref = await oracle({ op: 'process', process: c.process, recordId: c.recordId || 0, tableId: c.tableId || 0, params: c.params || [], ctx: Object.assign({ date: c.date || '2026-10-04' }, c.ctx || {}) });
     L('§CP-PROC-REF ' + c.name + ' ok=' + ref.ok + ' summary="' + (ref.summary || ref.error || '') + '" logs=' + JSON.stringify((ref.logs || []).slice(0, 5)));
@@ -135,7 +150,9 @@ function project(rows, tbl, newIds, keyCol) {
     L('§CP-PROC-OURS ' + c.name + ' class=' + procRow.classname + ' ok=' + ours.ok + ' summary="' + (ours.summary || '') + '" ops=' + (ours.ops || []).length + ' logs=' + JSON.stringify((ours.logs || []).slice(0, 5)));
     const O = oursRows(ours.ops || []);
     const ignore = new Set((c.ignoreTables || ['ad_process', 'ad_pinstance', 'ad_pinstance_para', 'ad_pinstance_log', 'ad_changelog', 'ad_session', 'ad_user', 'c_acctprocessorlog', 'c_acctprocessor', 'ad_issue']).map(s => s.toLowerCase()));
-    const newIds = new Set(); Object.keys(R).forEach(t => (R[t].rows || []).forEach(r => { (R[t].pk || []).forEach(k => newIds.add(String(r[k]))); }));
+    const newIds = new Map([['*', new Set()]]);   // surrogate keys only: pk = [<table>_id]
+    Object.keys(R).forEach(t => { const pk = R[t].pk || []; if (pk.length !== 1 || String(pk[0]).toLowerCase() !== t.toLowerCase() + '_id') return;
+      const set = newIds.get(t.toLowerCase()) || new Set(); (R[t].rows || []).forEach(r => { set.add(String(r[pk[0]])); newIds.get('*').add(String(r[pk[0]])); }); newIds.set(t.toLowerCase(), set); });
     // ID-allocation counters (AD_Sequence.IsTableID='Y', e.g. AD_PInstance's for the harness's own instance row) are not process
     // behaviour — ours allocates NEW: ids. Document-number sequences (IsTableID='N') stay judged.
     if (R.ad_sequence) { const ids = (R.ad_sequence.updRows || []).map(u => Number(u.__key)).filter(n => n > 0);

@@ -1796,3 +1796,44 @@ Trx; model ctors from `model_ctor.js`. A branch needing an external service (pay
 returns the Java error text — counted as ported-with-named-dep, never silently passed.
 **Claim (W-CP-PROC-ORACLE per class):** ≥1 NON-VACUOUS case (the process changes ≥1 judged table on the oracle) whose per-table
 counts + row multisets MATCH; its `--off` run must DIFF. A class with only vacuous cases = INCONCLUSIVE, not done.
+
+## §CP-EDITOR — 2026-10-04 · OPEN: a callout-set value outside the validated dropdown (SPEC; do after the §CP-PROC-CORE workers, needs an oracle reload)
+**Found by W-CP-CALLOUT-LIVE** (`logs/cp/live_CalloutInvoice.log`): `cp_inv_po_hdr #2 set C_BPartner_ID=114 … DIFF [M_PriceList_ID:ref=101,grid=101,form=null]`.
+CalloutInvoice.bPartner sets price list 101 (Standard, IsSOPriceList=Y) on a PURCHASE invoice; the field's AD_Val_Rule 271
+(`IsSOPriceList='@IsSOTrx@'`) excludes 101, so our select shows blank while the GridTab row keeps 101 → Save writes a sales price list the
+user cannot see. **iDempiere** (`WTableDirEditor.setValue`, org.adempiere.ui.zk/…/editor/WTableDirEditor.java): value not selected →
+`lookup.refresh()`; still not in list and DisplayType≠ID → `setValue(null)` + `fireValueChange(cur→null)` → the row value becomes null (the
+user must pick a purchase list; mandatory check bites). **Port:** in the crud_overlay §CP bridge, after a callout cascade: for each callout-set fk
+SELECT with a val rule, refresh its option set (populateRefs valRuleOnly) and, if the value is still absent, set the field null and
+`tab.setValue(col, null)`; log `§CALLOUT-LOOKUP-RESET col= value=`. Remove `_coOnSet`'s raw-option append for validated lookups (it hides the case).
+**Chain verified in code (2026-10-04):** `setValue` → `lookup.refresh()` → `Lookup.fillComboBox` fires contentsChanged (Lookup.java:289/321)
+→ `WTableDirEditor.contentsChanged` → `refreshList()` (:498): `removeAllItems`, rebuild from the validated lookup; the old value is re-appended via
+`getDirect` because `retainSelectedValueAfterRefresh` defaults true (:135, :542) but it is NOT selected (Combobox.setValue/isSelected :162/:197) →
+back in `setValue`, `!isSelected(value)` → record-access check → `setValue(null)` + `fireValueChange(cur→null)`.
+**DONE (code, bim-ootb b6a83ad4):** `_coLookupReset` in the crud_overlay bridge, at New and after every change, over every editable fk; live run:
+`§CALLOUT-LOOKUP-RESET table=c_invoice col=m_pricelist_id value=101 admitted=2` → `M_PriceList_ID:grid=null,form=null` (was grid=101/form=null).
+**Still open — Witness:** oracle op `lookup` (GridField.getLookup().refresh(); validated-list membership of the value) so W-CP-CALLOUT-LIVE's expected FORM+ROW value for that
+column is null exactly when real iDempiere's lookup excludes it — never our own val-rule engine judging itself.
+
+## §CP-PROC-CORE-RESULT — 2026-10-04 (4 Sonnet workers A–D + coordinator verification on the SHARED witness)
+**30 / 34 core button processes PASS** (≥1 non-vacuous case MATCH, `--off` DIFF), full sweep `logs/cp/sw_proc_*.log` on the final harness:
+PeriodStatus, PeriodControlStatus (+1 vacuous case), InvoicePayScheduleValidate · CopyFromOrder, CopyFromInvoice, CopyFromJournal,
+CopyFromJournalDoc, CopyFromBankStmt, CopyProduct (+composite case) · InOutCreateInvoice, InvoiceCreateInOut, OrderLineCreateShipment,
+InOutCreateConfirm, PackageCreate, RMACreateOrder · AllocationReset, PaySelectionCreateFrom, PaySelectionCreateCheck, PaySelectionCheckReverse,
+MatchInvDelete, MatchPODelete, PaymentOnline · YearCreatePeriods, InventoryCountCreate, InventoryCountUpdate, M_PriceList_Create,
+AcctSchemaCopyAcct, BOMVerify, CommissionAPInvoice, DunningRunCreate.
+**4 INCONCLUSIVE, named:** BankStatementMatcher (core ships no BankStatementMatcherInterface; plugin seam `AdProcess.BANK_MATCHERS`),
+OrderLineCreateProduction + ProductionCreate (manufacturing — not core, §AD-LAYER LAW 6), SalesOrderRateInquiryProcess (external carrier).
+Outside the 34: CostCreate INCONCLUSIVE (no unprocessed M_CostDetail anywhere), FactAcctReset no case.
+**Harness fixes found by the workers, landed by the coordinator (cp_process_oracle.js):** NEW-masking was value-global — any ref value equal to any
+inserted id read "NEW" (AD_PInstance_Para SeqNo 10 masked every Line=10; composite pks c_invoicetax/c_acctschema_gl masked FK values). Now
+column-aware: only `*_id` columns (TableDir table's own inserted surrogate set, else any) and `*_Acct` → C_ValidCombination; only surrogate pks
+(`[<table>_id]`) enter the set. Document sequences mirrored per case (`§CP-PROC-MIRROR-SEQ`).
+**Model fix:** `model_layer.newPO` stamped Processed/Processing/Posted on tables without them (C_InvoiceLine, C_InvoiceTax, C_PaySelectionLine) — guarded by columnsOf.
+**Pilot hygiene:** worker D's cases had added today-dated versions to GardenWorld's REAL price lists 101/103 → every later pricing oracle changed
+(CalloutRMA 48.45 vs 51.82). Cases now create their own cp_ price lists 1009800/1009801; RMA back to 6/6; callouts 288/292 again.
+**Worker-reported gaps NOT yet closed (next):** C_OrderTax zero rows deleted by Java, updated by `calculateOrderTaxTotal`; ad_seed patch lacks
+M_ProductDownload/M_Substitute/C_BankStatementMatcher/C_OrderPaySchedule DDL and some ad_ddl_default rows (C_BankStatementLine, M_InventoryLine,
+C_PeriodControl.PeriodStatus); `paymentTermDueDate`/`invoiceWriteOff` SQL functions; model ports carried locally in support_*.js (MOrder/MInvoice
+copyLinesFrom, MJournal*, MAllocation* delete/reverse, MAccount.get, MYear.createStdPeriods) belong in model_*.js; runJava passes only
+AD_Process_Para-declared params and the oracle sends date params as String; executeUpdateEx can't translate aliased/row-value SQL.

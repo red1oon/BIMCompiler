@@ -1,0 +1,47 @@
+[
+ {
+  "name": "cp_rmaco_100",
+  "process": 52000,
+  "recordId": 100,
+  "tableId": 661,
+  "params": [],
+  "tables": [
+   "c_order",
+   "c_orderline",
+   "m_rma"
+  ],
+  "preSql": [
+   "UPDATE m_rma SET c_order_id=NULL WHERE m_rma_id=100"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "m_rma",
+    "where": "m_rma_id=100"
+   },
+   {
+    "table": "m_rmaline",
+    "where": "m_rma_id=100"
+   },
+   {
+    "table": "c_order",
+    "where": "c_order_id=108"
+   },
+   {
+    "table": "c_orderline",
+    "where": "c_order_id=108"
+   },
+   {
+    "table": "m_pricelist_version",
+    "where": "m_pricelist_id=(select m_pricelist_id from c_order where c_order_id=108)"
+   },
+   {
+    "table": "m_productprice",
+    "where": "m_pricelist_version_id in (select m_pricelist_version_id from m_pricelist_version where m_pricelist_id=(select m_pricelist_id from c_order where c_order_id=108)) and m_product_id=128"
+   }
+  ]
+ }
+]

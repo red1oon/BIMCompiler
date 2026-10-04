@@ -1,0 +1,59 @@
+[
+ {
+  "name": "cp_copyproduct_prices_replenish_bp_related",
+  "process": 53206,
+  "recordId": 1009500,
+  "tableId": 208,
+  "params": [
+   {
+    "name": "M_Product_ID",
+    "value": 128,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "CREATE TABLE IF NOT EXISTS m_productdownload (m_productdownload_id INTEGER PRIMARY KEY, ad_client_id INTEGER, ad_org_id INTEGER, isactive TEXT, created TEXT, createdby INTEGER, updated TEXT, updatedby INTEGER, m_product_id INTEGER, name TEXT, downloadurl TEXT, m_productdownload_uu TEXT)",
+   "DELETE FROM m_productprice WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM m_replenish WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM c_bpartner_product WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM m_relatedproduct WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM m_productdownload WHERE m_product_id IN (1009500,1009501,1009591)"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "M_Product",
+    "where": "M_Product_ID IN (128,1009500,1009501,1009591)"
+   },
+   {
+    "table": "M_ProductPrice",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "M_Replenish",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "C_BPartner_Product",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "M_RelatedProduct",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "M_PriceList_Version",
+    "where": "M_PriceList_Version_ID IN (SELECT M_PriceList_Version_ID FROM M_ProductPrice WHERE M_Product_ID=128)"
+   },
+   {
+    "table": "M_PriceList",
+    "where": "M_PriceList_ID IN (SELECT M_PriceList_ID FROM M_PriceList_Version WHERE M_PriceList_Version_ID IN (SELECT M_PriceList_Version_ID FROM M_ProductPrice WHERE M_Product_ID=128))"
+   }
+  ],
+  "tables": [
+   "m_productprice",
+   "m_replenish",
+   "c_bpartner_product",
+   "m_relatedproduct"
+  ]
+ }
+]

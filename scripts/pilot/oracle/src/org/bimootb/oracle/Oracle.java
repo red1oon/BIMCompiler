@@ -148,6 +148,29 @@ public class Oracle implements Runnable {
 		return o;
 	}
 
+	// lookupMiss — the editable lookup fields whose current Integer value is NOT in the refreshed, validated list: exactly the
+	// fields WTableDirEditor.setValue would reset to null (lookup.refresh() → refreshList, value not selected → setValue(null)).
+	// MLookup.getData(mandatory, onlyValidated=true, onlyActive=true, temporary=false, shortlist) is the list the editor shows.
+	static JSONArray lookupMiss(GridTab t) {
+		JSONArray miss = new JSONArray();
+		for (GridField f : t.getFields()) {
+			try {
+				if (!f.isDisplayed() || f.isReadOnly() || f.getDisplayType() == DisplayType.ID) continue;
+				Object v = f.getValue();
+				if (!(v instanceof Integer)) continue;
+				Lookup lk = f.getLookup();
+				if (!(lk instanceof MLookup)) continue;
+				MLookup ml = (MLookup) lk;
+				ml.refresh();
+				boolean in = false;
+				for (Object o : ml.getData(f.isMandatory(false), true, true, false, ml.isShortList()))
+					if (o instanceof KeyNamePair && ((KeyNamePair) o).getKey() == ((Integer) v).intValue()) { in = true; break; }
+				if (!in) miss.put(f.getColumnName());
+			} catch (Exception e) { /* a lookup that cannot load is not judged */ }
+		}
+		return miss;
+	}
+
 	private JSONObject callout(Properties ctx, JSONObject req) throws Exception {
 		int windowNo = ++windowSeq;
 		GridWindow gw = GridWindow.get(ctx, windowNo, req.getInt("window"));
@@ -218,7 +241,8 @@ public class Oracle implements Runnable {
 			Object v = fromJson(f, st.opt("value"));
 			String r = t.setValue(f, v);
 			sOut.put(new JSONObject().put("set", f.getColumnName()).put("value", toJson(v)).put("setResult", r)
-					.put("msgs", new JSONArray(msgs.toList())).put("trace", new JSONArray(trace.toList())).put("fields", snapshot(t)));
+					.put("msgs", new JSONArray(msgs.toList())).put("trace", new JSONArray(trace.toList())).put("fields", snapshot(t))
+					.put("lookupMiss", req.optBoolean("lookupMiss", false) ? lookupMiss(t) : new JSONArray()));
 		}
 		out.put("steps", sOut);
 		JSONObject cw = new JSONObject();

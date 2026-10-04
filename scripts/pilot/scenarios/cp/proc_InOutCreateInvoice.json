@@ -1,0 +1,48 @@
+[
+ {
+  "name": "cp_iocinv_so108",
+  "process": 154,
+  "recordId": 108,
+  "tableId": 319,
+  "params": [],
+  "tables": [
+   "c_invoice",
+   "c_invoiceline",
+   "c_invoicetax",
+   "c_invoicepayschedule",
+   "m_inout",
+   "m_inoutline",
+   "c_orderline",
+   "c_order"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   }
+  ]
+ },
+ {
+  "name": "cp_iocinv_po107",
+  "process": 154,
+  "recordId": 107,
+  "tableId": 319,
+  "params": [],
+  "tables": [
+   "c_invoice",
+   "c_invoiceline",
+   "c_invoicetax",
+   "c_invoicepayschedule",
+   "m_inout",
+   "m_inoutline",
+   "c_orderline",
+   "c_order"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   }
+  ]
+ }
+]

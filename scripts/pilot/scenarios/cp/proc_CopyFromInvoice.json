@@ -1,0 +1,70 @@
+[
+ {
+  "name": "cp_copyfrominvoice_same_bp",
+  "process": 210,
+  "recordId": 1009500,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "C_Invoice_ID",
+    "value": 1009590,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM c_invoicetax WHERE c_invoice_id IN (1009500,1009501)",
+   "DELETE FROM c_invoiceline WHERE c_invoice_id IN (1009500,1009501)",
+   "UPDATE c_invoice SET totallines=0, grandtotal=0 WHERE c_invoice_id IN (1009500,1009501)",
+   "INSERT INTO c_invoicetax (c_invoice_id,c_tax_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,taxbaseamt,taxamt,processed,istaxincluded,c_invoicetax_uu) VALUES (1009500,105,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,0,0,'N','N','00000000-0000-4000-8000-100950020001')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Invoice",
+    "where": "C_Invoice_ID IN (1009590,1009591,1009500,1009501)"
+   },
+   {
+    "table": "C_InvoiceLine",
+    "where": "C_Invoice_ID IN (1009590,1009591)"
+   }
+  ],
+  "tables": [
+   "c_invoiceline",
+   "c_invoice",
+   "c_invoicetax"
+  ]
+ },
+ {
+  "name": "cp_copyfrominvoice_other_bp",
+  "process": 210,
+  "recordId": 1009501,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "C_Invoice_ID",
+    "value": 1009591,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM c_invoicetax WHERE c_invoice_id IN (1009500,1009501)",
+   "DELETE FROM c_invoiceline WHERE c_invoice_id IN (1009500,1009501)",
+   "UPDATE c_invoice SET totallines=0, grandtotal=0 WHERE c_invoice_id IN (1009500,1009501)",
+   "INSERT INTO c_invoicetax (c_invoice_id,c_tax_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,taxbaseamt,taxamt,processed,istaxincluded,c_invoicetax_uu) VALUES (1009501,104,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,0,0,'N','N','00000000-0000-4000-8000-100950020002')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Invoice",
+    "where": "C_Invoice_ID IN (1009590,1009591,1009500,1009501)"
+   },
+   {
+    "table": "C_InvoiceLine",
+    "where": "C_Invoice_ID IN (1009590,1009591)"
+   }
+  ],
+  "tables": [
+   "c_invoiceline",
+   "c_invoice",
+   "c_invoicetax"
+  ]
+ }
+]

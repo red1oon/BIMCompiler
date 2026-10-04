@@ -1,0 +1,71 @@
+[
+ {
+  "name": "cp_plc_po_to_eur",
+  "process": 103,
+  "recordId": 1009800,
+  "tableId": 293,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM m_productprice WHERE m_pricelist_version_id=1009800",
+   "DELETE FROM m_pricelist_version WHERE m_pricelist_version_id=1009800",
+   "DELETE FROM m_pricelist WHERE m_pricelist_id=1009800",
+   "INSERT INTO m_pricelist (m_pricelist_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,name,description,basepricelist_id,istaxincluded,issopricelist,isdefault,c_currency_id,enforcepricelimit,priceprecision,ismandatory,ispresentforproduct,m_pricelist_uu) SELECT 1009800,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,'CP PL 1009800',description,basepricelist_id,istaxincluded,issopricelist,'N',c_currency_id,enforcepricelimit,priceprecision,ismandatory,ispresentforproduct,'00000000-0000-0000-0000-000001009800' FROM m_pricelist WHERE m_pricelist_id=103",
+   "INSERT INTO m_pricelist_version (m_pricelist_version_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,name,m_pricelist_id,m_discountschema_id,validfrom,m_pricelist_version_base_id,m_pricelist_version_uu) VALUES (1009800,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'CP PLV 1009800',1009800,100,'2026-10-04 00:00:00',NULL,'a1b2c3d4-0000-4000-8000-000001009800')"
+  ],
+  "tables": [
+   "m_productprice"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "M_Product",
+    "where": "M_Product_ID=1009500"
+   },
+   {
+    "table": "M_ProductPrice",
+    "where": "M_PriceList_Version_ID=103"
+   },
+   {
+    "table": "M_PriceList",
+    "where": "M_PriceList_ID=1009800"
+   }
+  ]
+ },
+ {
+  "name": "cp_plc_base_deleteold",
+  "process": 103,
+  "recordId": 1009801,
+  "tableId": 293,
+  "params": [
+   {
+    "name": "DeleteOld",
+    "value": "Y"
+   }
+  ],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM m_productprice WHERE m_pricelist_version_id=1009801",
+   "DELETE FROM m_pricelist_version WHERE m_pricelist_version_id=1009801",
+   "DELETE FROM m_pricelist WHERE m_pricelist_id=1009801",
+   "INSERT INTO m_pricelist (m_pricelist_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,name,description,basepricelist_id,istaxincluded,issopricelist,isdefault,c_currency_id,enforcepricelimit,priceprecision,ismandatory,ispresentforproduct,m_pricelist_uu) SELECT 1009801,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,'CP PL 1009801',description,basepricelist_id,istaxincluded,issopricelist,'N',c_currency_id,enforcepricelimit,priceprecision,ismandatory,ispresentforproduct,'00000000-0000-0000-0000-000001009801' FROM m_pricelist WHERE m_pricelist_id=101",
+   "INSERT INTO m_pricelist_version (m_pricelist_version_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,name,m_pricelist_id,m_discountschema_id,validfrom,m_pricelist_version_base_id,m_pricelist_version_uu) VALUES (1009801,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'CP PLV 1009801',1009801,100,'2026-10-04 00:00:00',103,'a1b2c3d4-0000-4000-8000-000001009801')",
+   "INSERT INTO m_productprice (m_productprice_id,m_pricelist_version_id,m_product_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,pricelist,pricestd,pricelimit,m_productprice_uu) VALUES (10098010,1009801,123,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,1,1,1,'a1b2c3d4-0000-4000-9000-000010098010')"
+  ],
+  "tables": [
+   "m_productprice"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "M_Product",
+    "where": "M_Product_ID=1009500"
+   },
+   {
+    "table": "M_ProductPrice",
+    "where": "M_PriceList_Version_ID=103"
+   },
+   {
+    "table": "M_PriceList",
+    "where": "M_PriceList_ID=1009801"
+   }
+  ]
+ }
+]

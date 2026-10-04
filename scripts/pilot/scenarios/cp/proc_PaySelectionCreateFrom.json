@@ -1,0 +1,45 @@
+[
+ {
+  "name": "cp_pscreatefrom_1009702",
+  "process": 156,
+  "recordId": 1009702,
+  "tableId": 426,
+  "tables": [
+   "c_payselection",
+   "c_payselectionline"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Invoice",
+    "where": "IsSOTrx='N'"
+   },
+   {
+    "table": "C_AllocationLine",
+    "where": "C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE IsSOTrx='N')"
+   },
+   {
+    "table": "C_AllocationHdr",
+    "where": "C_AllocationHdr_ID IN (SELECT C_AllocationHdr_ID FROM C_AllocationLine WHERE C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE IsSOTrx='N'))"
+   },
+   {
+    "table": "C_PaySelectionLine",
+    "where": "1=1"
+   },
+   {
+    "table": "C_PaySelectionCheck",
+    "where": "1=1"
+   },
+   {
+    "table": "C_Payment",
+    "where": "C_Payment_ID IN (SELECT C_Payment_ID FROM C_PaySelectionCheck)"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM c_payselectionline WHERE c_payselection_id=1009702",
+   "DELETE FROM c_payselectioncheck WHERE c_payselection_id=1009702",
+   "DELETE FROM c_payselection WHERE c_payselection_id=1009702",
+   "INSERT INTO c_payselection (c_payselection_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,name,c_bankaccount_id,paydate,isapproved,totalamt,createfrom,processing,processed,c_payselection_uu) VALUES (1009702,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'cp_ create from',100,'2006-12-15 00:00:00','N',0,'N','N','N','00000000-0000-4000-8000-000001009702')",
+   "INSERT INTO c_payselectionline (c_payselectionline_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,c_payselection_id,line,paymentrule,ismanual,c_invoice_id,payamt,differenceamt,processed,discountamt,openamt,issotrx,writeoffamt) SELECT c_invoice_id+1009800000,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,1009702,900,'S','N',c_invoice_id,0,0,'N',0,0,'N',0 FROM c_invoice WHERE issotrx='N' AND ispaid='N' AND docstatus IN ('CO','CL') AND c_invoice_id<>102"
+  ]
+ }
+]

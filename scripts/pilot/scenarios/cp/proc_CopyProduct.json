@@ -1,0 +1,53 @@
+[
+ {
+  "name": "cp_copyproduct_download_only",
+  "process": 53206,
+  "recordId": 1009501,
+  "tableId": 208,
+  "params": [
+   {
+    "name": "M_Product_ID",
+    "value": 1009591,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "CREATE TABLE IF NOT EXISTS m_productdownload (m_productdownload_id INTEGER PRIMARY KEY, ad_client_id INTEGER, ad_org_id INTEGER, isactive TEXT, created TEXT, createdby INTEGER, updated TEXT, updatedby INTEGER, m_product_id INTEGER, name TEXT, downloadurl TEXT, m_productdownload_uu TEXT)",
+   "DELETE FROM m_productprice WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM m_replenish WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM c_bpartner_product WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM m_relatedproduct WHERE m_product_id IN (1009500,1009501)",
+   "DELETE FROM m_productdownload WHERE m_product_id IN (1009500,1009501,1009591)",
+   "INSERT INTO m_productdownload (m_productdownload_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,m_product_id,name,downloadurl,m_productdownload_uu) VALUES (1009500,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,1009591,'cp_ download','http://cp.example/dl.zip','00000000-0000-4000-8000-100950030001')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "M_Product",
+    "where": "M_Product_ID IN (128,1009500,1009501,1009591)"
+   },
+   {
+    "table": "M_ProductPrice",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "M_Replenish",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "C_BPartner_Product",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "M_RelatedProduct",
+    "where": "M_Product_ID=128"
+   },
+   {
+    "table": "M_ProductDownload",
+    "where": "M_Product_ID=1009591"
+   }
+  ],
+  "tables": [
+   "m_productdownload"
+  ]
+ }
+]

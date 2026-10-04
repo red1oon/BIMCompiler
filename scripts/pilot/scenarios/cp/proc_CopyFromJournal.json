@@ -1,0 +1,44 @@
+[
+ {
+  "name": "cp_copyfromjournal_batch_2journals",
+  "process": 214,
+  "recordId": 1009500,
+  "tableId": 225,
+  "params": [
+   {
+    "name": "GL_JournalBatch_ID",
+    "value": 1009590,
+    "type": "num"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM gl_journalline WHERE gl_journal_id IN (SELECT gl_journal_id FROM gl_journal WHERE gl_journalbatch_id=1009500)",
+   "DELETE FROM gl_journal WHERE gl_journalbatch_id=1009500",
+   "UPDATE gl_journalbatch SET totaldr=0, totalcr=0 WHERE gl_journalbatch_id=1009500"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "GL_JournalBatch",
+    "where": "GL_JournalBatch_ID IN (1009500,1009590)"
+   },
+   {
+    "table": "GL_Journal",
+    "where": "GL_JournalBatch_ID IN (1009500,1009590)"
+   },
+   {
+    "table": "GL_JournalLine",
+    "where": "GL_Journal_ID IN (1009590,1009591)"
+   },
+   {
+    "table": "AD_Sequence",
+    "where": "AD_Sequence_ID=373"
+   }
+  ],
+  "tables": [
+   "gl_journalbatch",
+   "gl_journal",
+   "gl_journalline",
+   "ad_sequence"
+  ]
+ }
+]

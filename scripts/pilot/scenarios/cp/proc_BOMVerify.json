@@ -1,0 +1,53 @@
+[
+ {
+  "name": "cp_bomv_patioset_145",
+  "process": 53229,
+  "recordId": 145,
+  "tableId": 208,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "UPDATE m_product SET isverified='Y' WHERE isbom='Y'",
+   "UPDATE pp_product_bomline SET isactive='Y' WHERE pp_product_bom_id=50005",
+   "UPDATE m_product SET isverified='N' WHERE m_product_id IN (145,133,50000)"
+  ],
+  "tables": [
+   "m_product"
+  ]
+ },
+ {
+  "name": "cp_bomv_category_110",
+  "process": 53229,
+  "recordId": 0,
+  "tableId": 0,
+  "params": [
+   {
+    "name": "M_Product_Category_ID",
+    "value": 110
+   }
+  ],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "UPDATE m_product SET isverified='Y' WHERE isbom='Y'",
+   "UPDATE pp_product_bomline SET isactive='Y' WHERE pp_product_bom_id=50005",
+   "UPDATE m_product SET isverified='N' WHERE m_product_id IN (145,133)"
+  ],
+  "tables": [
+   "m_product"
+  ]
+ },
+ {
+  "name": "cp_bomv_nolines_50007",
+  "process": 53229,
+  "recordId": 50007,
+  "tableId": 208,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "UPDATE m_product SET isverified='Y' WHERE isbom='Y'",
+   "UPDATE pp_product_bomline SET isactive='Y' WHERE pp_product_bom_id=50005",
+   "UPDATE pp_product_bomline SET isactive='N' WHERE pp_product_bom_id=50005"
+  ],
+  "tables": [
+   "m_product"
+  ]
+ }
+]
