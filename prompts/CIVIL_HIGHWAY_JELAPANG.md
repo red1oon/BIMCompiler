@@ -630,6 +630,50 @@ Not non-impact (need review): zoom-to-cursor (all models), near plane (all), hub
 
 ---
 
+## §P Lamp posts cast no shadow (user, 2026-10-05) — ✅ CODED, bim-ootb PR #1850 (open, on localhost :8401)
+**Cause (code read, `tools.js` §S276b):** shadow box = ±envelope with one 2048² map. JELAPANG env 2114 m →
+**2.064 m/texel**; lamp elements (181 tall >3 m, median height 13.9 m, plan-min-width median 1.85 m incl. arm,
+pole itself thinner) are sub-texel → no shadow. Sun distance ≈ 4.7 km also stretches the depth range, so the
+fixed bias −0.0005 ≈ metres of world depth.
+**Fix §SHADOW_FOLLOW:** when whole-site texel > 0.25 m (env > 256 m), box fits the camera neighbourhood,
+half = clamp(1.2 × camera-to-target distance, 40 m, env), refit 150 ms after each camera move, sun DIRECTION
+kept (TM sun-cycle owns it). Texel at camera distance 30 / 100 / 300 / 1000 m → 0.039 / 0.117 / 0.352 /
+1.172 m. Fleet (Hospital 151, LTU 126, Terminal 69, Duplex 22 m envelopes) → texel ≤ 0.147 m → follow OFF,
+unchanged. Log `§SHADOW_FOLLOW half=… texel=…`. Not yet read from a live browser run.
+
+## §Q Time Machine has no discipline breakdown (user, 2026-10-05) — SPEC, not coded
+**Cause (code read):** 4D phase owner = `schedule_author.js` `matchNameOverride()` → `matchRule(cls)` with
+tables in `rates.js` (`4D_MODEL_INTEGRITY.md` §I row "what phase/trade is this element?"). Class-only.
+JELAPANG = 5674 × IfcBuildingElementProxy → `rates.js:289` one phase `Architecture Envelope` / MASON.
+An engine-level `breakdownByAttribute(db, sched, task, 'discipline')` exists (`schedule_author.js:2998`,
+sync op `'breakdown'`) but **no UI calls it** — and on the old all-ARC import it would SKIP (single_group).
+**Design (civil-only, so no building changes):** a civil override layer ahead of the class rule —
+`rule = civilRule(discipline) || matchNameOverride(...) || matchRule(cls...)`, `civilRule` only for the
+CIVIL_DISCS codes from #1844. Call sites that must all carry discipline (one relation, every consumer):
+`schedule_author.js:555` (`_buildScheduleElements`), `:1871` (`materializeDefault`), `:2134` (width
+re-derive), `time_machine.js:3605` `_classifyRule`, `schedule_diff.js:144`. Their SELECTs don't read
+`m.discipline` today — add it.
+**Civil phase order (default, `secondary` per §L):** EARTHWORK → DRAINAGE → ROAD (pavement) →
+FURNITURE / SIGNAGE / LIGHTING / MARKING (finishing). Source so far: JKR road-works method statements
+quoting JKR Standard Specification for Road Works (JKR/SPJ/2008) — primary document not yet read.
+**Gate before coding:** this changes `schedule_author.js` → the 4D run cache key (CLAUDE.md PRIMAL LAW 5)
+invalidates; run `scripts/cache_4d_run.js` before/after on the 4 fleet buildings and assert their
+schedules are byte-identical (civil layer never fires on them), plus JELAPANG → 4 phases in that order.
+
+## §R Civil rate source — decided: JKR (2026-10-05)
+User: "obtain std default from CIDB or JKR whichever is more commonly used." Research:
+- **JKR "Jadual Kadar Kerja Kejuruteraan Awam dan Bangunan" (Schedule of Rates for Civil Engineering and
+  Building Works), 2023 edition** — itemised unit rates incl. drainage etc.; used for JKR project estimates;
+  RM 20 from the Procurement Management Unit, Ministry of Works. JELAPANG's own psets are JKR DAK templates
+  → it is a JKR project. **This is the one.**
+- CIDB N3C (n3c.cidb.gov.my) publishes INPUTS (material prices, wage rates, machinery hire), not road
+  unit rates — useful to build up a rate, not a schedule of rates.
+**⛔ BLOCKED: the JKR 2023 SoR is a purchased document** — its values can't be extracted without it. Buy
+(RM 20) → fill `std_values` as `primary` → build §N.1 quantities in its units.
+Sources: https://myepplus.uitm.edu.my/ep/public/iklan/viewFileLukisan/66655/1259 · https://n3c.cidb.gov.my/n3c/about.php
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
   §C redesign + §PLAN (P1–P5, impact) written.
