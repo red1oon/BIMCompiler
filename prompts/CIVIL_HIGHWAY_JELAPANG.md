@@ -824,20 +824,61 @@ furniture vs lighting). **Next session:**
 4. Gate = civil disciplines only → building clash rules untouched (NON-IMPACT). Witness: civil pair counts on
    JELAPANG; Hospital/Terminal clash matrix output byte-identical before/after.
 
+### §V.1 Spec — civil clash pairs (2026-10-05, code read on bim-ootb main @3076755f)
+**Second cause found (bigger than the missing rules):** `ignore_classes` is per-rule in `clash_rules.json`, but
+FOUR copies of the same loop (`measure.js:193` `_clashWhereParts`, `measure.js:332` `_queryClashesPairRtree`,
+`clash_matrix.js:17` `_countClashesRtree`, plus the fallback SQL that uses `_clashWhereParts`) merge EVERY rule's
+list into one global ignore set. "ARC vs STR" ignores `IfcBuildingElementProxy` → every query drops proxies →
+JELAPANG (5674 elements, ALL `IfcBuildingElementProxy`) can never clash, rule or no rule.
+Third: `tolerance_m || 0.025` (`clash_matrix.js:296`, `find_ask.js:75`, `measure.js:400`) turns a 0 tolerance into 25 mm.
+**Design:**
+1. Civil rules in `clash_rules.json` carry `"family": "civil"`; missing family = `building`. Pairs (hard only,
+   `tolerance_m: 0`, `ignore_classes: ["IfcOpeningElement"]`): DRAINAGE×ROAD, LIGHTING×DRAINAGE, SIGNAGE×DRAINAGE,
+   FURNITURE×LIGHTING, SIGNAGE×LIGHTING.
+2. ONE owner `A._clashIgnoreSet(rules, discA, discB)` (measure.js). Pair given → union of `ignore_classes` over
+   rules of THAT pair's family. No pair → `building` family if any building rule has both disciplines in the model,
+   else `civil`. The four copies call it. Building pairs: the building-family union = today's union (civil lists add
+   nothing new) → identical SQL.
+3. Tolerance read as `typeof tolerance_m === 'number' ? tolerance_m : 0.025` — building rules are all non-zero
+   numbers → unchanged.
+4. Intended hits (culverts through pavement) are LISTED, never hidden; grouped by pset `02_Type` in the witness log.
+**Witness `viewer/tests/witness_clash_civil_pairs.js` (headless, real measure.js + clash_matrix.js in vm,
+better-sqlite3):** issue = "civil models get 0 clash items". RED on main = JELAPANG count 0 for every civil pair
+(no rule / proxies ignored). GREEN = each civil pair count from `_countClashesRtree` equals an independent bbox
+oracle over the same rows; `§CIVIL_CLASH_TYPES` groups hits by `02_Type`. NON-IMPACT: Hospital + Terminal +
+Duplex + LTU per-building-pair counts identical old code vs new code (same DB). Pair with 0 elements both sides →
+VACUOUS, not PASS.
+
+### §V.2 Result (2026-10-05) — bim-ootb PR #1859 (auto-merge on, sw v1480, localhost :8402 = branch `feat/civil-clash`)
+Witness `viewer/tests/witness_clash_civil_pairs.js` **11/11, 53 rows** (log: run it, ~55 s):
+| Pair (tol 0, bbox) | A | B | hits = oracle | old code |
+|---|---|---|---|---|
+| DRAINAGE×ROAD | 200 | 4008 | 23,288 | 0 |
+| LIGHTING×DRAINAGE | 227 | 200 | 1,040 | 0 |
+| SIGNAGE×DRAINAGE | 138 | 200 | 385 | 0 |
+| FURNITURE×LIGHTING | 1011 | 227 | 253 | 0 |
+| SIGNAGE×LIGHTING | 138 | 227 | 12 | 0 |
+`§CIVIL_CLASH_TYPES` (pair-ends by drain `02_Type`): DRAINAGE×ROAD led by ROADSIDE DRAIN TYPE 5 7,557 · TOE DRAIN TYPE 5
+5,594 · MEDIAN DRAIN 3,882 … SCUPPER 482 · CASCADE 329 · EXTENSION CULVERT 8. Fleet: Hospital 9 / Terminal 9 / LTU 3 /
+Duplex 4 non-empty building pairs, every one same sha1 guid-pair list + count old vs new; no-pair clause identical.
+**Read honestly:** these are BOX overlaps. Road pieces have large boxes, so 23,288 is mostly box-only; the mesh-exact
+verdict (`clash_narrow.js`) runs per page on cell click in the browser, not in this witness. **Next on this item:**
+mesh-true count per civil pair (narrowphase over the full set, headless) — that number is the real civil clash list.
+Landmine: Settings → Clash Rules saved overrides (`json_clash_rules`) would hide the new rules for that user.
+
 ---
 
 ## ▶ RESUME HERE (2026-10-05, session closing — read this first)
 **Live on main (bim-ootb):** #1844 units+disciplines+framing · #1847 cache-bust · #1849 ground+colours ·
 #1850/#1852 shadow follow + throttle · #1851 TM civil phases · #1853 civil crews + parallel + 5D lines ·
 #1854 crews in every reader · #1857 large-site fog + Fly no-rooms message.
-**Open PR:** **#1858** civil property labels + road route in the existing Fly Tour (scrubber, 5 traffic-signal stops).
-User is testing a fresh import of the 7 IFCs. Check #1858 merged (`gh pr view 1858`) before any follow-up push —
-the #1850 orphan happened because a follow-up was pushed after an auto-merge.
-**Localhost:** `/tmp/wt-civil-units` served at **http://localhost:8402** (branch `feat/civil-psets`, = #1858);
+#1858 civil psets + road Fly Tour (merged). **Open PR: #1859** civil clash pairs (§V.2, auto-merge on) — check
+`gh pr view 1859` before any follow-up push (the #1850 orphan: follow-up pushed after an auto-merge).
+**Localhost:** `/tmp/wt-civil-units` served at **http://localhost:8402** (branch `feat/civil-clash`, = #1859);
 `/tmp/wt-civil-shadow` at :8401 (old, merged branch — prune when idle). Use `localhost`, not the LAN IP (WebGPU
 needs a secure context — other session's note). Test DB: `buildings/JELAPANG_PSETS.db` and `buildings/JELAPANG_AFTER.db` → symlinks to
 `~/Downloads/JALAN JELAPANG IFC/JELAPANG_AFTER.db` (labelled, 451 MB; rebuild with the fixed importer if lost).
-**Next, in order:** (1) §V civil clash rules · (2) mesh-measured quantities (road m², marking/drain m) for 5D
+**Next, in order:** (1) §V.2 mesh-true civil clash count (box hits 23,288 on DRAINAGE×ROAD are mostly box-only) · (2) mesh-measured quantities (road m², marking/drain m) for 5D
 §R.2 step 3 · (3) Find by property (sign code / road part) on `element_psets` · (4) road-standard rule check §K-6.
 **Waiting on the user / partner:** JKR SoR 2023 (rates) · CRS code · alignment export (IFC4.3/LandXML) ·
 earthwork + drainage pipes as 3D · lamp IES files · approval of the other session's no-WebGPU Alt+S overlay.
