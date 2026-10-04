@@ -574,3 +574,9 @@ https://www.scribd.com/doc/293680050/MSMA (MSMA reference copy — verify agains
   Framing impact: plain p2–98 tightened Hospital 151→85 m (real wings) → gated on full > 2× core:
   LTU 426→126 m TRIM; Hospital 1.8, Duplex 1.3, Terminal 1.15 KEEP. Browser §FRAME_ROBUST line not
   yet read from a live run. ROAD.ifc (278 MB) not run through the witness (time).
+- 2026-10-04: **LIVE** — bim-ootb PR #1844 squash-merged `011dd746`, CI fast-checks + e2e green, Pages
+  serves sw v1469 (fetched back: `UNITS_V3`/`CIVIL_DISCS`, `FRAME_ROBUST`, `import_worker.js?v=13`,
+  `streaming.js?v=79`). Full 7-file federated build in Node (incl. ROAD.ifc) = `JELAPANG_AFTER.db`:
+  5674 elements, 2114×1296×96 m, ROAD 4008 / FURNITURE 1011 / LIGHTING 227 / DRAINAGE 200 /
+  SIGNAGE 138 / MARKING 90, georef offset (28608,−23548,0). User confirmed it works on localhost.
+  **Next: §PLAN P3 measure (near plane on the real-size road), then pset extraction (§E.2).**
