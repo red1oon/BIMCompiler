@@ -909,6 +909,10 @@ In the viewer: matrix cell click marks mesh-true per 200-row page; the "Total" s
 - Witness: headless render of `_renderClashList` with judged rows above/below the limit — hidden count = CLEAR count above,
   0 below; every visible row is CLASH or unjudged above the limit.
 
+### §V.4 Result — bim-ootb PR #1861 (auto-merge on, sw v1481); harness tolerance fix PR #1860
+Witness `witness_clash_boxonly_hide.js` 11/11 (JELAPANG, GPU=sw): DRAINAGE×ROAD 23,288 box → page of 200 = 174 hidden,
+26 real (20 shown + "6 more"); SIGNAGE×DRAINAGE 385 → 0 hidden. Header "Total: N" no longer wiped by the mesh refresh.
+
 ---
 
 ## ▶ RESUME HERE (2026-10-05, session closing — read this first)
