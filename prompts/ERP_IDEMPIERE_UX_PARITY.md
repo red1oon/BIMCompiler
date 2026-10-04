@@ -1694,3 +1694,34 @@ re-filter, the `IsSOTrx` WhereClause regex, the login-org row filter, the curate
 Resolves §GT ⛔ item 8: `ninja_stage.js` stages a detail table as a TabLevel-1 AD_Tab inside its master's window,
 with `IsParent='Y'` on `<Master>_ID` (iDempiere AD convention; GridWindow.initTab link resolution). The generic
 GridTab layer then gives Ninja master-detail with zero host code. `extractModel` + the export round-trip follow.
+
+## §GT-NINJA — 2026-10-04 · Ninja stages a detail as a tab of its master's window (SPEC + RESULT; implements §GT-DECISION, closes §GT.8 ⛔)
+**Witness claim (written first):** a two-table Ninja module (header + lines) staged at RUNTIME in the page gets full master-detail from the
+generic GridTab layer with ZERO host code — `§GT-CONTRACT-NINJA … isDetail=true`; New header → switch to lines WITHOUT Save → header saved;
+add a line; a second header shows 0 lines, every visible line's link = current parent; back on the header keeps the row; and the export
+round-trip (stage → `extractModel` → sheet → `parseSheet` → stage) keeps tab level + `IsParent`.
+**How a detail is identified (no guess):** `t.master` (sheet column `Master`) names ANOTHER table staged in the SAME model AND that table has the
+`<Master>_ID` column (`buildTable` always appends it). Anything else (external master such as `C_BPartner`, self, cycle) is NOT a detail — it keeps
+the legacy own-window shape, because iDempiere has no parent tab for it either. No table names in code.
+**Shape written (GridWindow.initTab:193-242):** detail → `AD_Tab` TabLevel = master level+1 (depth-first SeqNo so the nearest lower-level tab IS its
+master, GridTab.getParentTabNo), `AD_Window_ID` = the root master's window, `AD_Table.AD_Window_ID` likewise; NO window / menu leaf of its own;
+`AD_Column.IsParent='Y'` on `<Master>_ID` only. `AD_Tab.AD_Column_ID` is NOT written: with exactly one IsParent column iDempiere resolves the link
+from IsParent alone (`linkSource=IsParent-single`); it is set only when a tab's table has >1 IsParent column, which the Ninja grammar cannot yield.
+`extractModel` reads the master from the IsParent column (legacy tail-FK fallback kept); re-stage is idempotent and corrects a pre-§GT-NINJA staging.
+**Three real defects the live witness exposed (all in ninja_stage.js, fixed in bim-ootb PR #1842):**
+1. ids are index-derived and `ensure()` reactivates by id: the shipped `ad_seed.db` holds a DEACTIVATED Ninja leftover `C_Attendance @7000000`, so the
+   first table of any model was silently staged AS C_Attendance. Fix: shift the whole model to the first slot where each id is free or already ours
+   (`counts.slot`; re-stage stable). `§NINJA-DETAIL-TAB NT-9`.
+2. standard columns had no `DefaultValue` → a New record is not `IsActive='Y'` → GridField.isEditable (:565-585) made EVERY other field read-only (dead form).
+   Fix: IsActive 'Y', AD_Org_ID/AD_Client_ID `@#..@`, Created/Updated SYSDATE (as stock C_Order in the seed).
+3. no physical data table was ever created → window rendered "table not in this seed". Fix: `CREATE TABLE IF NOT EXISTS` (NUMERIC/TEXT, PK `<T>_ID`, seed convention);
+   rollback never drops it.
+**RESULT (logs read):** `erp/tests/witness_ninja_detail_tab.js` `§WITNESS_NINJA_DETAIL_TAB pass=5 fail=0 ran=10` (NT-1..NT-9 incl. 3-level chain, external master,
+round-trip, idempotent legacy correction); `§GT-CONTRACT-NINJA {"window":7100001,"tabsInWindow":2,"tabLevel":1,"parentIndex":0,"isDetail":true,"link":"AST_Asset_ID",
+"source":"IsParent-single","verdict":"PASS"}` and W-GRIDTAB-CONTRACT unchanged (265 PASS / 17 INCONCLUSIVE, pass=6); `GT_NINJA=1 witness_gridtab_live.js`: staged in-page,
+`§GT-LIVE window=7100001 "AST Asset" … verdict=PASS pageErrors=0 arms={autosave1:saved id=-1, child1:{link:AST_Asset_ID,linkValue:-1,rows:0,foreign:0},
+childNew:"saved rows=1 linkedToHeader1=1", back1:current=-1, child2:{parent=-3 linkValue=-3 rows=0 foreign=0}, back2:current=-3}`
+(`§GT-NAV autosave … verdict=saved`, `§IDEMPIERE-MD … link=AST_Asset_ID source=IsParent-single`). Default sweep subset (143,181) still PASS 2/2.
+**Regression:** poc_ninja_{callout,export,extract,bundle,create,model} PASS against the new file; `poc_ninja_pill` FAILs identically on the untouched base (pre-existing).
+**FOLLOW-UP (bim-compiler, not touched — scope):** `scripts/poc_ninja_stage.js` R1 asserts menus = tables+1 (old one-window-per-table shape); with details folded it must
+assert `counts.windows+1` (verified PASS 18 tables/2 windows/3 menus with that one-line change in a scratch copy), and `build/erp/ninja_*.js` need the sync from bim-ootb.
