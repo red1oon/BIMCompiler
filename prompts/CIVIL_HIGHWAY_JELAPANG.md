@@ -179,6 +179,81 @@ each `§` line on JELAPANG after §A lands.
 
 ---
 
+## §PLAN — phased, impact-first (2026-10-04, for user review — NOTHING implemented yet)
+
+Order is by blast radius: smallest/most-proven first. Each phase = its own PR in a `/tmp/wt-*`
+worktree off bim-ootb `origin/main`, its own witness, its own `§` lines. A later phase does not
+start until the earlier one's witness is read green.
+
+### P1 — Units: delete the span heuristic  *(spec §A.4, witness §A.5)*
+- **Change:** `viewer/import_worker.js:666-705` → `autoScale = 1`, remove the scale loops; rewrite
+  the `:177` and `:666-679` comments to state the probe fact; `§UNITS_V2` gains `declared=`.
+  Deletion budget ≈ −20 / +3 lines.
+- **Impact (read, not assumed):**
+  - Callers: all IFC imports go through this one worker — `viewer/import.js:162/395/452` and the
+    hub's `import_own.js:319/322`. `mesh_import_worker.js` (OBJ/STL/…) has no such heuristic — unaffected.
+  - `meta.unitScale` → written to `project_metadata.unit_scale` (`import_db_builder.js:34`), and
+    passed through `import.js:310/346`, `import_own.js:659/689`. **No reader** found in viewer/modeller
+    — it becomes a constant `1`. Keep the column (old DBs carry it), no migration.
+  - Buildings: the heuristic never fired on a mm building (probe: house 16.9 m, hospital 101.5 m —
+    both web-ifc-normalised, < 1500). **Zero change expected for every building** — the regression
+    guard in §A.5 proves it, not this sentence.
+  - Already-imported DBs are not rewritten. Only models > 1.5 km were crushed; JELAPANG must be
+    **re-imported** (it sits in the user's import IDB — re-drop the 7 files).
+  - Offline extractor (bim-compiler Python/Java) is a separate path — unaffected.
+- **Witness:** `W-UNITS-DECLARED` (§A.5): JELAPANG LIGHTING x-span 2,000–2,200 m, rebase fired;
+  SampleHouse still 16.9 × 3.9 × 8.7 m; INCONCLUSIVE on 0 transforms.
+
+### P2 — Civil disciplines from file name  *(spec §B.2a)*
+- **Change:** `import_worker.js:76` add civil codes; `:81` split on `/[_\-\s]+/`.
+- **Impact:**
+  - **Space split can reclassify existing files.** Any file whose name has a space-separated word
+    already in `VALID_DISCS` (EXT, INT, SITE, ROOF, CEIL, DEMO, LAND, FIRE, GAS, AIR …) changes
+    discipline on its next import (e.g. a hypothetical `Hospital Site.ifc` → `SITE`). Witness must
+    sweep every IFC filename on disk (fleet + JKR + Downloads) and print old→new; any change other
+    than the JELAPANG six is listed for the user, not shipped silently.
+  - **Duplicate implementation:** `import_own.js:8-24` (hub, index2 only) has its OWN 12-code list +
+    alias table and **overwrites** the worker's discipline (`:368-372`). Per one-implementation rule,
+    P2 deletes the hub copy and lets the worker's stamp stand — otherwise civil works in the viewer
+    but not from the hub. Its alias table (ELECTRICAL→ELEC, SPRINKLER→FP …) moves into the worker
+    so no existing hub import loses a mapping.
+  - Consumers are data-driven — Find (`find_ask_grammar.js:32`), clash matrix/report, 4D breakdown
+    by discipline (`schedule_author.js:3004`) — pick new codes up with no code.
+  - Colours: `import.js:629`, `rates.js:526` are hand lists → new codes get a colour row, else default.
+- **⛔ Needs one user decision:** the codes. Option shown for review: use the file's own words
+  verbatim (ROAD, FURNITURE, LIGHTING, DRAINAGE, SIGNAGE, MARKING). Concern: `FURNITURE` and
+  `LIGHTING` clash with building meanings (FF&E, ELEC lighting) — alternatively prefix as civil
+  (e.g. `RD-FURN`). The user picks; not invented here.
+- **Witness:** `W-DISC-FILENAME` — JELAPANG: 6 disciplines with counts 4008/1011/227/200/138/90;
+  filename sweep old→new diff printed; EARTHWORK (0 elements) → VACUOUS, not PASS.
+
+### P3 — Camera near plane  *(measure first — may be unnecessary)*
+- After P1 the road is real size; fixed `near=0.1 m` / `far=max(10000, dist×5)` may be fine
+  (ratio 10⁵). **Do not change** until a `§` reading on re-imported JELAPANG shows clipping or
+  depth fighting. If it does: near follows camera distance. Impact would be EVERY building, walk,
+  CPE (`cinema_path_editor.js:1862` copies near) and film — so it needs a fleet before/after table.
+
+### P4 — Site profile (additive, read-only)  *(spec §C)*
+- New owner computes `{envelope, shape, primaryAxis, typicalElement}` once at load from stored
+  transforms and logs `§SITE_PROFILE`. For a linear site: centreline through element centres +
+  chainage `s` per element. **Nothing reads it yet** → zero behaviour change; witness = the profile
+  values for the 4 fleet buildings (all `shape=building`) + JELAPANG (`shape=linear`, length ≈ ?).
+  This also measures the real route length — settles the "7 km".
+- Goes into §I ownership table of `4D_MODEL_INTEGRITY.md` as a new row (one owner).
+
+### P5 — Consumers adopt `primaryAxis`  *(each its own spec later)*
+- 4D phasing by chainage band, section box as chainage window, "go to km", fly tour along the
+  centreline; building-only pills hidden by their own VACUOUS evidence. Each changes visible
+  behaviour → separate spec + review per consumer. Not specced in detail until P4's numbers exist.
+
+### Review checklist for the user
+1. P1 go? (deletion; regression guard on SampleHouse)
+2. P2 codes — verbatim file words, or prefixed civil codes?
+3. P2 — OK to delete the hub's duplicate discipline list (`import_own.js`)?
+4. P3 — agree to measure-before-change?
+
+---
+
 ## Status
 - 2026-10-04: §0 measured, §A cause read from code, A.3 answered by probe (web-ifc already metres),
-  §C redesign written. **Next: implement A.4 (delete heuristic) + W-UNITS-DECLARED, re-import JELAPANG.**
+  §C redesign + §PLAN (P1–P5, impact) written. **Next: user reviews §PLAN checklist; nothing coded.**
