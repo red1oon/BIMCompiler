@@ -646,7 +646,7 @@ Not non-impact (need review): zoom-to-cursor (all models), near plane (all), hub
 
 ---
 
-## §P Lamp posts cast no shadow (user, 2026-10-05) — ✅ CODED, bim-ootb PR #1850 (open, on localhost :8401)
+## §P Lamp posts cast no shadow (user, 2026-10-05) — ✅ CODED, bim-ootb PR #1850 (open, on localhost :8401; user confirmed shadows appear, then reported lag → §SHADOW_FOLLOW_THROTTLE pushed to the same PR)
 **Cause (code read, `tools.js` §S276b):** shadow box = ±envelope with one 2048² map. JELAPANG env 2114 m →
 **2.064 m/texel**; lamp elements (181 tall >3 m, median height 13.9 m, plan-min-width median 1.85 m incl. arm,
 pole itself thinner) are sub-texel → no shadow. Sun distance ≈ 4.7 km also stretches the depth range, so the
@@ -657,7 +657,7 @@ kept (TM sun-cycle owns it). Texel at camera distance 30 / 100 / 300 / 1000 m �
 1.172 m. Fleet (Hospital 151, LTU 126, Terminal 69, Duplex 22 m envelopes) → texel ≤ 0.147 m → follow OFF,
 unchanged. Log `§SHADOW_FOLLOW half=… texel=…`. Not yet read from a live browser run.
 
-## §Q Time Machine has no discipline breakdown (user, 2026-10-05) — SPEC, not coded
+## §Q Time Machine has no discipline breakdown (user, 2026-10-05) — ✅ CODED, bim-ootb PR #1851 (open, localhost :8402)
 **Cause (code read):** 4D phase owner = `schedule_author.js` `matchNameOverride()` → `matchRule(cls)` with
 tables in `rates.js` (`4D_MODEL_INTEGRITY.md` §I row "what phase/trade is this element?"). Class-only.
 JELAPANG = 5674 × IfcBuildingElementProxy → `rates.js:289` one phase `Architecture Envelope` / MASON.
@@ -686,6 +686,14 @@ quoting JKR Standard Specification for Road Works (JKR/SPJ/2008) — primary doc
    Time Machine picks the civil template only when every element's discipline ∈ CIVIL_DISCS.
 4. Expected JELAPANG result: tasks Drainage(200) → Pavement(4008) → Furniture(1011) ∥ Signage(138) ∥
    Lighting(227) ∥ Marking(90); Earthworks reported absent (0 elements).
+
+**§Q result (2026-10-05):** witness `viewer/tests/witness_civil_phase.js` — JELAPANG 1 phase → 6 tasks: Drainage 200
+(d0–3) → Pavement 4008 (d3–48) → Road Furniture 1011 (48–60) → Signage 138 (60–62) → Road Lighting 227 (62–65) →
+Road Marking 90 (65–66); Earthworks absent (`_empty_ok`). Finishing trades are logically parallel (all FS after
+Pavement) but serialized by capacity levelling because all four book MASON — resolves when civil trades/rates exist.
+Duplex identical ON/OFF. **Fleet non-impact, civil table ACTIVE:** `cache_4d_run` main (3fd88da61c41) vs branch
+(a243e908765d) — Duplex, Terminal, Hospital (63,182 els / 36 tasks), LTU_AHouse: run.json els/sched/play/tasks
+identical; witness.log differs only in ms. Existing 4D witnesses identical to main (band_monotonic 5/6 FAIL pre-existing).
 **Gate before coding:** this changes `schedule_author.js` → the 4D run cache key (CLAUDE.md PRIMAL LAW 5)
 invalidates; run `scripts/cache_4d_run.js` before/after on the 4 fleet buildings and assert their
 schedules are byte-identical (civil layer never fires on them), plus JELAPANG → 4 phases in that order.
@@ -701,6 +709,24 @@ User: "obtain std default from CIDB or JKR whichever is more commonly used." Res
 **⛔ BLOCKED: the JKR 2023 SoR is a purchased document** — its values can't be extracted without it. Buy
 (RM 20) → fill `std_values` as `primary` → build §N.1 quantities in its units.
 Sources: https://myepplus.uitm.edu.my/ep/public/iklan/viewFileLukisan/66655/1259 · https://n3c.cidb.gov.my/n3c/about.php
+
+### §R.2 5D civil layer — design (2026-10-05, user: "include rate source 5D too")
+Mirror of §CIVIL_PHASE, same gate, same NON-IMPACT rule:
+1. **`rates/jkr_sor2023_my_civil.json`** — the civil rate pack: one item per civil discipline (and per
+   pset sub-type where the data carries it, e.g. DRAINAGE `02_Type` + `03_Dimension`, SIGNAGE `17_Code`),
+   each with `unit` (m² / m³ / m / EA), `rate` and `source:{doc:'JKR Jadual Kadar Kerja Kejuruteraan Awam dan
+   Bangunan 2023', item:'<SoR item no.>', status:'primary'|'pending'}`. **Until the SoR is bought every
+   `rate` is null + status `pending`** — never a typed-in number.
+2. **`RATES_CIVIL` / `rateForElement(guid)`** — one owner (like `civilRuleFor`) consulted before
+   `getRate(ifcClass)`; null for non-civil → building 5D unchanged. Consumers (`export_5d`, BOQ charts,
+   variation_order, nlp `calcCost`, diff) call the owner instead of `getRate` directly.
+3. **Quantities measured from geometry, per the pack's unit:** ROAD m² = plan area (bbox x·y as first cut,
+   true area from mesh later), MARKING / DRAINAGE m = length along the long bbox axis, SIGNAGE / LIGHTING /
+   FURNITURE EA. Shown with `UNPRICED (JKR SoR 2023 pending)` instead of today's RM 850 EA × 5674 = RM 4.82 M.
+4. Witness: JELAPANG 5D total = sum of priced items only, unpriced count reported (VACUOUS-aware — a total
+   of 0 with all items unpriced prints INCONCLUSIVE, never RM 0 as a result); fleet 5D export byte-identical.
+**⛔ Needs:** a copy of the JKR SoR 2023 (RM 20, Ministry of Works procurement unit) to make rates `primary`.
+Steps 1–4 can ship with null rates first (the meaningless RM 4.82 M disappears, quantities appear).
 
 ---
 
