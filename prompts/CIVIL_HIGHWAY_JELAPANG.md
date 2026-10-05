@@ -19,8 +19,40 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶ RESUME HERE (session closed 2026-10-05 midday — user: "wrap up … shall continue later")
-**Shipped this session (bim-ootb, all live on main unless marked):** #1866 merged scene = one model (reopen streams every
+## ▶ RESUME HERE (session closed 2026-10-05 ~15:30 — user: "wrap up to continue in new session")
+**Do FIRST, in order:**
+1. **GHOST over the highway = MY BUG (#1869 §CIVIL_LAMP_GLOW).** In a daylight film the glow Points (6 px SQUARES, one per lamp
+   head, sizeAttenuation off) float above the road — seen in the aborted film ~/Downloads/BIM_MaxQ_JELAPANG_1791177960446.mp4 at 4 s.
+   User: "if not for the ghost u could have used that movie". FIX (not built): glow visible only when NOT daylight — follow the
+   existing flag `A._stillWindowGlowOff` (effects.js:4569 still, :4835 film parity per frame `= day`, :4958 teardown resets); film
+   parity is ON for films by default (:4304). Also draw a soft round dot, not a square. Witness: glow hidden at sun > 6°, shown at
+   dusk/night; buildings unaffected (no civil heads).
+2. **"Reveal no ARC is not working"** (user, from the trial bake) — not investigated. Read §CPE_REVEAL_ROUND / reveal visual lines
+   from a bake log first (note: a BROWSER bake saves no log file — only cli_silent_bake.js writes `<film>.log`; consider a
+   "save log with film" option).
+3. **§ALTC v2 film** (spec 2h; user: "set in the deterministic code its waypoints, speed control, buildup stages"; "plan the path
+   to give u best in frame shots of the buildup where u can overlay explanations"): one drive; build-up done by ≤ 50 %; second
+   half discipline reveal in the drive; ONLY orbit = close-up at the large junction; data panels on quiet stretches; all from
+   code (route = A.civilRoutePath, pace = noise law, stages = 4D), never hand-authored. Branch `feat/altc-oneway` = v1 only
+   (one-way reveal + 35 m/s, 135.9 s) — NOT shipped; reuse its pieces.
+4. **§CHAINAGE build-up — branch `feat/civil-chainage-buildup` (pushed WIP, NOT shippable).** time_machine element builder gives
+   civil elements storey "CH nn" (section = nearest A.civilRoutePath point) + lvlSec on every element; schedule_gate.deriveBandRanks
+   and cpm_schedule bandRank order by (section, z). Witness `witness_civil_chainage_buildup.js` (reads kernel_ops ELEMENT_PLACE
+   from window.tmGenerateTimeline): lamps-before-own-pavement control 7 → 0 ✔, but route-order rank corr 0.237 = control ✖ and
+   first-2 % still 25 lamps ✖; ladder now CH 00… with bridge storeys at their section, stragglers 5614 → 3861, E4 drops
+   11566 → 4204. Tried + REVERTED: skip same-discipline civil E1 support → midair 957, rho 0.046. NEXT: find what decides the
+   PLAYED order downstream (4D_MODEL_INTEGRITY §I rows "where inside its bar does it PLAY" → _tmTilePlayWithinTasks /
+   remapSolveToTasks; template tasks per level come from the DB storey ladder (§STOREY_DATUM), not from el.storey). Read §I + §E
+   before touching. User wants the build path in line with industry (time-chainage / line of balance, item 2f sources).
+5. Narration for the highway film: script + chapter cards ready (FILM_NARRATION.md §11; FILM_SET=highway). User cancelled the trial
+   bake and saved the partial — fit/test the narration + cards on it. The English is dense (~3.2 w/s) — trim clash/roadmap/tech.
+   The aborted film shows building rule cards ("Structural — floating member 68 / open depth cantilever 20", "Building Envelope")
+   and clash tags "Misc Element" on the road — v2 should show road checks + road labels instead.
+**Rules learned this session:** a browser can't be driven by me — user rule: "Only with explicit go ahead" (memory updated).
+Don't double down when the user rebuts a diagnosis — measure the thing they named. A follow-up refactor must re-run the witness
+of the code it moved (the BIN_M no-undef only CI caught).
+
+**Shipped earlier today (bim-ootb, all live on main, sw v1566):** #1866 merged scene = one model (reopen streams every
 building, Find scope owner A.sceneScopeBuilding) · #1867 roof-layer 16 s → 33 ms · #1868 Night/Shadow ground no longer
 buries the road (civil → p2-bottom) · #1869 road lamps: head glow + mountH throw · #1870 §MESH_SLIM (civil normals not
 stored/read; Save NULL+VACUUM → AFTER.db 661 → ~396 MB) · #1871 §FLY smooth route + junction stops. User verdict: "Lights and
