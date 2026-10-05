@@ -240,6 +240,15 @@ before own-section pavement 83/227, 16 lamps in first 2 %). The template program
 Gantt has materialised tasks. Next: decide the owner that guarantees tasks exist before the played layer is built (§I row
 "where inside its bar does it PLAY").
 
+**§CIVIL_GRAPH_GATE (spec 2026-10-06) — cause of the played-layer lamps-before-pavement, MEASURED:** Merged.db `§CELL_GATE repr=99.99%
+path=CELL` (JELAPANG_AFTER.db went GRAPH: the partner's 9,145 tightly-contacting ground-treatment pieces lifted representability over
+the 0.88 mark). The CELL path files by `LocationAxis` HEIGHT levels (LevelDeriver grid): played-layer probe — LIGHTING cells at levels
+0, 5–7, 22–25 vs ROAD 24–31 → lamps in lower height levels are placed before the pavement; EARTHWORK at day 0 alongside GEOTECH.
+The road's location is its CHAINAGE section (`lvlSec`, §CHAINAGE_LEVELS), which only the GRAPH path reads (E3-civil + E4 line of
+balance, witness 0 lamps before own pavement on JELAPANG_AFTER.db). Rule: `CpmSchedule.run` routes to GRAPH when any item carries a
+chainage section (`lvlSec` is a number) — `§CELL_GATE … path=GRAPH reason=chainage`. Gate = civil data only (no building item has
+lvlSec) → fleet unchanged. Not an order rule: it picks the path that models the road's location axis.
+
 ### §DOCTRINE_AUDIT — 2026-10-06 (user: "check that no doctrine or flow of work is broken … nothing new is invented to patch any gap")
 Checked against 4D_MODEL_INTEGRITY.md §B (layers: CLASSIFY = lookup, DECLARE = 4D_template*.json, SOLVE must never discover order).
 - ✅ #1887 look/ground: extends the ground owner `tools.js _calcGroundY` (no second ground); height from the mesh. Opacity 0.28 is a
