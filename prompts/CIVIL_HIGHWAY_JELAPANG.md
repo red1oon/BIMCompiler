@@ -230,6 +230,16 @@ offset, 1.06 m); ROW true z 1.00–77.76. Both cover the road + GEOTECH when dra
 and an edge line present with > 0 segments; `§GROUND_Y src=earthwork-bottom z=30.52`. JELAPANG_AFTER.db → `src=p2-bottom z=43.46`
 (backward compat). RED control: same witness on main must fail L1/L2/G1.
 
+**§MIXED_PROGRAMME status 2026-10-06:** BUILT — bim-ootb PR #1890 (sw v1581, auto-merge). witness_civil_mixed_programme GREEN 6/6 on
+Merged.db: makespan 163 d (24/7 calendar) — GT 0→102 (9,145 el), EW 102→103 (1 el — count-based crew rate, NOT a real earthworks
+duration: needs volume m³ + an earthworks output rate), drainage+gabion 103→106, pavement 106→151, finishing 151→163, bridge 102→135.
+Fleet cache_4d_run identical. **⛔ PLAYED-LAYER GAP (pre-existing, main identical):** `tmGenerateTimeline` on a DB with no stored
+tasks (Merged.db: tasks=0) plays the CPM display only — `§TM_REVEAL_TILED skip reason=no dated task windows (_cap null)`, no
+`§TPL_MODEL`, `§CELL_GATE path=CELL` (civil e3 chain not enforced there) → witness_civil_chainage_buildup 0/3 (branch: lamps
+before own-section pavement 83/227, 16 lamps in first 2 %). The template programme reaches the scrubber/film only after the
+Gantt has materialised tasks. Next: decide the owner that guarantees tasks exist before the played layer is built (§I row
+"where inside its bar does it PLAY").
+
 ### §DOCTRINE_AUDIT — 2026-10-06 (user: "check that no doctrine or flow of work is broken … nothing new is invented to patch any gap")
 Checked against 4D_MODEL_INTEGRITY.md §B (layers: CLASSIFY = lookup, DECLARE = 4D_template*.json, SOLVE must never discover order).
 - ✅ #1887 look/ground: extends the ground owner `tools.js _calcGroundY` (no second ground); height from the mesh. Opacity 0.28 is a
