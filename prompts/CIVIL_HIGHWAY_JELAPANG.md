@@ -227,7 +227,13 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   §CIVIL_ROUTE_JUNCTION (stops within 100 m of route = one junction, radius holds members → 2 junctions). Witness
   witness_civil_fly_route.js: main FAIL 2/4 → branch PASS 4/4. User same day: "Lights and ground shadow sun day with light
   distance normal fog all OK good enough."
-- **§ALTC_HIGHWAY — ⏸ PAUSED (user moved to Fly). Code map done (read-only agent, all file:line on main @ 2026-10-05):**
+- **§ALTC_HIGHWAY — ✅ SHIPPED bim-ootb PR #1872 (auto-merge; user "go ahead with alt-c").** Route seeded from A.civilRoutePath
+  (one owner, Fly reads it too) as ov.waypoints when nothing authored; civil pace 25 m/s for drive + pull-back (natural film
+  1243 s → 206 s: dive 57 + spin 6 + drive 101 + pull-back 34 + orbit 8); sun 15° → 6°; interior-lights window skipped for civil
+  (lamps whole film); civil lamp cap nearest-first. #cpe-panel / cinema_path_editor.js untouched. witness_altc_highway.js 8/8
+  (no bake). NOT yet seen in a real bake (bakes need the user's go) — the 57 s approach (dive from the 3 km framing camera) is the
+  first thing to judge on a real film. (Original code map kept below.)
+  Code map done (read-only agent, all file:line on main @ 2026-10-05):**
   plan = effects.js `_cinemaPathPlan` :7140 (no rooms → bbox-centre dive :7339, facade-fallback exit :7447 → meaningless orbit on a
   road); route seam = `ov.waypoints` :10132 / `A.stageCinemaPath(ov)` :10046 / `__maxqBake` cinema_maxq.js:4902; sun =
   `_sunElevationAt` effects.js:2523 linear 55°→6° (PHOTO_SUN_ELEVATION_END :2515, azimuth const 200, no URL param; graze/day
