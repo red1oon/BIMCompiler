@@ -1321,8 +1321,9 @@ spin 57–63 · drive 63–164 · pull-back 164–198 · orbit 198–206; `§CIN
    §8 TITLE CARDS via `FILM_SET=highway prompts/film_title_cards.py` — 6 chapters (ONE COMPILER / ROADS TOO · READ THE /
    DISCIPLINES · DRIVE / THE ROAD · CHECK / THE CLASHES · TIME AND COST / ON THE FLY · LOCAL FIRST / AND WHAT NEXT), series tag
    "BIM OOTB · CIVIL", 4 badges keyed to rows proxies/clash/onthefly/tech. Inputs from `prompts/film_highway_chapters.py
-   <tsv> <film.mp4> <dir> [still]` (chapter log from the TSV cues; backdrop c1 = red1's Alt+S still bounce_still_1791175762627.png
-   12:49, others = frames of the film itself). DRY RUN on a 206 s placeholder: §HW_CHAPTERS chapters=6 · §CARDS video rc=0 ·
+   <tsv> <film.mp4> <dir> [still ...]` (chapter log from the TSV cues; backdrops = red1's two road Alt+S stills cycled — red1:
+   "u may use 2 stills back i saved as backdrop for the chapter paging": c1/c3/c5 bounce_still_1791178512975.png (13:35,
+   2776×1440), c2/c4/c6 bounce_still_1791175762627.png (12:49, 1482×768); no stills → frames of the film itself). DRY RUN on a 206 s placeholder: §HW_CHAPTERS chapters=6 · §CARDS video rc=0 ·
    badges 4/4 · 35 ass events · output 206.0 s. Then film_narration_mux.py burns carded.ass (PLAYBOOK §8 PIPELINE).
 5. `onthefly` row (red1 2026-10-05: *"say also how most of the tasks and analysis here are on the fly including this movie.. it is
    just a minute to setup due to computed data"*): the "about a minute" is red1's statement, voiced as his ("says Red1"); the
