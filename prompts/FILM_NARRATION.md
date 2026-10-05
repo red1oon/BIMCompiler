@@ -1313,6 +1313,10 @@ spin 57–63 · drive 63–164 · pull-back 164–198 · orbit 198–206; `§CIN
    each clip keeps its own cue) — small change, witness = frames == source, silencedetect gaps, ebur128 −16 LUFS, the .ass
    carries every row's own-language caption (Noto CJK / Thai / Arabic RTL fonts per PLAYBOOK table).
 4. Register: `field` row = sourced fact (§10 Tier-1 line) + red1's own ambition in his words; no claim about any company.
+8. **Framing (red1 2026-10-05):** *"On the narrative explain that this is civil works making its debut and a test that the BIM
+   Compiler concept can work for any construction discipline. There are quirks due to category changes but once aligned they fall
+   in reusing the proven track for buildings."* → `open` (debut + test of "any construction discipline") and `proxies` (quirks =
+   category changes → once aligned, the proven building track). Same rows, same cues; the "buildings don't notice" line gave way.
 6. `field` row (red1 2026-10-05: *"say a line that we be expanding our Modeller concept to civil works construction too! That
    is said to be very difficult. Put this before that last line of red1 welcoming the challenge"*): Modeller → civil works line
    sits just before the closing "Red1 set out to close… welcomes the challenge" line; it is red1's stated PLAN, voiced as a plan.
