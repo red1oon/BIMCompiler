@@ -54,6 +54,11 @@ Import gate check (viewer/import_worker.js `discFromFilename`, CIVIL_DISCS = ROA
 EARTHWORK maps to EARTHWORK (SEQUENCE_CIVIL phase Earthworks, seq 1). **CHAINAGE, GEOTECH, GABION MATTRESS, ROW match NO civil word → they
 would import with no civil discipline** (class fallback). Decide per file before merging (e.g. GEOTECH/GABION → earthworks or a new civil
 code; CHAINAGE/ROW → reference/annotation, not built in 4D) — needs a spec + the user's ruling; NON-IMPACT rule applies.
+**NEXT SESSION TASK (user 2026-10-06):** these files come from the BIM partner for the SAME project → analyse each and DEFINE them as new
+civil disciplines, the same way the road set was done (CIVIL_DISCS word from the file name, SEQUENCE_CIVIL phase/sequence/crew in rates.js,
+civil_labels/psets read, clash family, 4D phase order, 5D CIVIL_RATES line pending SoR, Find/reveal shell). Per file: measure first (element
+names, psets, extents, where it sits vs the road), write the spec section, then code + witness + fleet NON-IMPACT proof; then merge into the
+same DB and save.
 **Open, in order:**
 1. Route order of the build (drive-order correlation 0.30, need ≥ 0.8). Measured: E4 (trade section→section) loses 4,971 of 7,685
    edges to cycles through the section milestones. POC tried and dropped: soil rule (0.33, 714 floating), bridge by section (0.30).
