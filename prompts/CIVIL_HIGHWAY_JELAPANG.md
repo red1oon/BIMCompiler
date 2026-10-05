@@ -21,7 +21,7 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ## ▶ RESUME HERE (session closed 2026-10-05 ~15:30 — user: "wrap up to continue in new session")
 **Do FIRST, in order:**
-1. **GHOST over the highway = MY BUG (#1869 §CIVIL_LAMP_GLOW).** In a daylight film the glow Points (6 px SQUARES, one per lamp
+1. ✅ **GHOST FIXED 2026-10-06 — bim-ootb PR #1875 (sw v1567, auto-merge), §GLOW_DAY, witness_civil_night_lamps 18/18; CHECK IT MERGED.** Was: **GHOST over the highway = MY BUG (#1869 §CIVIL_LAMP_GLOW).** In a daylight film the glow Points (6 px SQUARES, one per lamp
    head, sizeAttenuation off) float above the road — seen in the aborted film ~/Downloads/BIM_MaxQ_JELAPANG_1791177960446.mp4 at 4 s.
    User: "if not for the ghost u could have used that movie". FIX (not built): glow visible only when NOT daylight — follow the
    existing flag `A._stillWindowGlowOff` (effects.js:4569 still, :4835 film parity per frame `= day`, :4958 teardown resets); film
@@ -250,6 +250,20 @@ Total 24,978 box → 1,975 real (92 % box-only); 173 are flat contacts < 1 mm. M
 through pavement) — listed by `02_Type`, never auto-hidden.
 
 ---
+
+### §GLOW_DAY — road lamp glow off in daylight, soft dot (spec 2026-10-06; fixes the #1869 ghost)
+**Issue:** §CIVIL_LAMP_GLOW Points (6 px squares, sizeAttenuation off, one per civil head) are drawn whatever the sun does →
+in a daylight film they float over the road as square "ghosts" (user's aborted film, 4 s).
+**Rule:** the glow follows the ONE existing daylight flag `A._stillWindowGlowOff` (owner: effects.js — Alt+S still sets it,
+film parity rewrites it per frame `= day`, teardown resets it). No new daylight test. New `A._civilGlowSync(src)` (tools.js)
+sets `A._civilGlowPts.visible = !A._stillWindowGlowOff`, logs `§CIVIL_LAMP_GLOW_DAY visible=0|1 src=` on each CHANGE; called
+at build and right after each of the three flag writes. Each point drawn as a soft round dot (radial-gradient sprite map),
+not a square; size stays 6 px.
+**Gate:** `A._civilGlowPts` exists only when civil heads exist (§CIVIL_LAMP_GLOW heads=0 VACUOUS on buildings) → sync is a
+no-op on every building.
+**Witness:** witness_civil_night_lamps.js — drive the real per-frame owner `A._filmParityStep` with the sun at 30° (day) →
+glow hidden; sun at 2° (dusk) → shown; teardown reset → shown; the points' material has a round map. Red control: glow
+left visible at 30° must FAIL.
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
