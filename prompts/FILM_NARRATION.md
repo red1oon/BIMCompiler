@@ -1545,7 +1545,8 @@ one line at a time, held ~2 s each, voiced softly by M (or silent — the user's
 (gc.zgo.at, page-view count; opt-out `?ignore-me`, skipped when `embedded=true`). It sends visits, not model data — but a skeptic watching the
 network tab sees the page call out. Options: (a) keep the line and add "your files never leave your machine" only after a witness proves no
 model bytes leave (none run yet); (b) remove the counter first; (c) word it "No back door — the only call home is a visit counter you can
-see in the code". User's decision; not baked until answered.
+see in the code". **RESOLVED (user 2026-10-06): *"that is not AI, just a counter that offline work wont work"* — the line stays as
+written; the counter is a page-view count, absent offline, never model data.**
 **Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
