@@ -37,9 +37,29 @@ sup{font:600 10px var(--mono);color:var(--sand)}
 .refs{list-style:none;display:grid;gap:8px;font-size:12.5px;color:var(--dim);border-top:1px solid var(--line);padding-top:20px}
 .refs li{display:grid;grid-template-columns:28px 1fr;gap:6px;min-width:0}
 .refs a{word-break:break-word}
+
+/* Light/print theme: same tokens, white paper */
+:root.light{--bg:#ffffff;--panel:#f4f2ee;--line:#dedad3;--fg:#141414;--muted:#55524c;--dim:#6f6b64;
+  --sand:#a8741a;--teal:#1b7f73;--sky:#2463b8;color-scheme:light}
+:root.light .card p{color:#2b2925} :root.light .card q{color:#2b2925}
+.printbtn{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:clamp(16px,3vw,30px);z-index:2;
+  font:600 13px var(--sans);padding:9px 16px;border-radius:999px;border:1.5px solid var(--line);
+  background:var(--panel);color:var(--fg);cursor:pointer}
+.printbtn:hover{border-color:var(--sand)}
+.printbtn:focus-visible{outline:2px solid var(--sand);outline-offset:3px}
+@media print{
+  :root{--bg:#ffffff;--panel:#f4f2ee;--line:#dedad3;--fg:#141414;--muted:#55524c;--dim:#6f6b64;
+    --sand:#a8741a;--teal:#1b7f73;--sky:#2463b8;color-scheme:light}
+  .card p,.card q{color:#2b2925}
+  .printbtn{display:none}
+  body{padding-block:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card{break-inside:avoid}
+  .grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
+<button class="printbtn" id="printbtn" type="button">Print</button>
 <main>
 
 <header>
@@ -97,5 +117,12 @@ sup{font:600 10px var(--mono);color:var(--sand)}
 </ol>
 
 </main>
+<script>
+document.getElementById('printbtn').addEventListener('click',function(){
+  var r=document.documentElement;r.classList.add('light');
+  setTimeout(function(){window.print();},50);
+});
+window.addEventListener('afterprint',function(){document.documentElement.classList.remove('light');});
+</script>
 </body>
 </html>
