@@ -164,6 +164,32 @@ through pavement) — listed by `02_Type`, never auto-hidden.
     Original Find-only fix shape: when the open scene holds > 1 building and is not City mode, Find's storey/disc trees query
     without the building filter (or group building → disc). Gate = building count > 1 & !CITY_URL, so single-building
     loads are unchanged. Witness: AFTER.db → disc tree parent rows = 9 codes, counts = the GROUP BY above.
+- **§FB SPEC — SHIPPED as bim-ootb PR #1866 (auto-merge on). (user go 2026-10-05: "during the first merge … it should refresh and treat both as one … ensure no impact to others").**
+  Gate everywhere: `!A.CITY_URL && Object.keys(A.buildingCentres).length > 1` (a MERGED scene). Fleet proof of the gate:
+  every hub DB has 1 building (`viewer/buildings/*_extracted.db` + `*_meta.db`, 15 files; the live OCI
+  `buildings/Clinic_extracted.db` = gzip, 1 building "Clinic" 16,071) → gate false → byte-identical behaviour.
+  City mode keeps its per-building scope (excluded by `A.CITY_URL`).
+  1. ONE owner `A.sceneScopeBuilding()` (streaming.js): merged scene → `''` (all buildings), else `A.activeBuilding||''`.
+     `§SCENE_SCOPE all buildings=n` / `one bld=X`, logged on change only.
+  2. Find's 6 SQL-scope readers call it (`buildTree`, lens probe, `_isolateGuidSet`, `_emitIsolate` total,
+     `populateDropdowns`, `runSearch`). Room needle (per-building rooms) unchanged.
+  3. Open of a saved merged DB: after the first `streamBuilding`, the other centres go into `A._mergePending` → the
+     existing drain (`_mergeStreamNext`) streams them. `§OPEN_ALL_BUILDINGS queued=k first=X`.
+  4. `§MERGE_CONTRACT … verdict=COMPLETE|DRAINING|INCOMPLETE` (rendered buildings vs centres, pending queue).
+     On COMPLETE in a merged scene, an open Find panel rebuilds (`§FIND_REFRESH why=merge-complete`) → the live merge
+     shows all disciplines without reopening.
+  Witness `witness_merge_all_buildings.js`: (a) open AFTER-shape DB (2 buildings) → rendered both, verdict=COMPLETE,
+  Find disc parents = union; (b) Duplex alone → `sceneScopeBuilding()` = its building, Find disc parents unchanged.
+- **§FB night (user 2026-10-05: "street lamps are not lighting up … too dark … was better before") — SAME root cause.**
+  `witness_civil_night_lamps.js` on AFTER.db: main → lamps SELECTED identically (227 → 172 columns / 223 heads /
+  strayBuried 9) but `noBox=227` — the road building never streamed, so the lights shine on nothing (pass 7/13).
+  Fix branch (§FB.3) → `noBox=0`, 223/223 heads on the rendered column tops, 13/13. Control JELAPANG.db (road only) 13/13.
+  Witness oracle was scope-blind: "buried" floor = MIN bottom of every non-LIGHTING element on the SITE — the merged
+  bridge's piers (−1.4 m) dropped it below the strays. Now scoped to the building(s) carrying LIGHTING (42.9 m both files).
+  Open: merged buried=13 vs single 16 at the same floor (3 columns' rendered tops differ) — not read yet.
+- **§FB ground (seen, not worked):** merged scene `§GROUND_Y src=gf-storey-slab(Level 1) z=56.58` — the BRIDGE's storey
+  wins step 1; road-only scene resolves `p2-bottom z=51.74`. Ground plane is hidden by default (`§GROUND_INIT
+  visible=false`), but shadow/sky/walk read this height. Needs its own spec (whose ground in a merged scene?).
 - **Narrowphase defect (pre-existing, not civil):** synthetic S7b (cubes face to face, OBB off) → CLASH, expected
   CLEAR (`witness_clash_mesh_narrowphase.js` I5). Also I3 (2 of 23,001 at the 1 mm touch edge) and I4 (3.0e-5 m
   DB-vs-scene matrix = float32 at 2 km, limit 1e-5 too tight).
