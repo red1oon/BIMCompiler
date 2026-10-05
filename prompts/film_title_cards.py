@@ -70,6 +70,25 @@ if os.environ.get('FILM_SET') == 'highway':
              'onthefly': ('NOVEL ART', 'A film derived from the road itself'),       # §ALTC_HIGHWAY waypoints = Fly route
              'tech': ('NOVEL ART', 'Recomputed normals — a 40 % lighter file')}      # §MESH_SLIM 661,573,632 → 395,710,464 B
     CLIPS = {}
+# §ALTC_V2 (FILM_NARRATION.md §11 v2): FILM_SET=highway2 — the same six cards in the v2 film's TIME order (chapter script
+# film_highway_chapters.py maps greet_en/open/fourD/lamps/clash/field); badges keyed to the v2 row ids.
+if os.environ.get('FILM_SET') == 'highway2':
+    CARDS = {
+        1: ('CHAPTER 1', 'ONE COMPILER', 'ROADS TOO', 'The same model that runs our buildings.'),
+        2: ('CHAPTER 2', 'READ THE', 'DISCIPLINES', 'Road, drainage, lighting, signage — from the files.'),
+        3: ('CHAPTER 3', 'TIME AND COST', 'ON THE FLY', 'Built section by section. Rates only when official.'),
+        4: ('CHAPTER 4', 'DRIVE', 'THE ROAD', 'Each trade on its own, read from the model.'),
+        5: ('CHAPTER 5', 'CHECK', 'THE CLASHES', 'Box overlaps narrowed to real contacts.'),
+        6: ('CHAPTER 6', 'LOCAL FIRST', 'AND WHAT NEXT', 'One browser tab — terrain and alignment next.'),
+    }
+    TAG = {1: 'ONE COMPILER', 2: 'DISCIPLINES', 3: '4D · 5D', 4: 'THE ROAD', 5: 'CLASHES', 6: 'LOCAL FIRST'}
+    SERIES = 'BIM OOTB  ·  CIVIL'
+    NOVEL = {'counts': ('NOVEL ART', 'Disciplines read from the file names'),        # §CIVIL_DISC (import_worker.js)
+             'check': ('NOVEL ART', 'Road checks shown as formulas — valid or speculative'),   # §ALTC_CHECKS road_rules.json film_status
+             'clash': ('BIM KILLER', 'Road clash matrix in a browser tab'),          # §V.3 23,288 box → 1,852 mesh-true
+             'onthefly': ('NOVEL ART', 'A film derived from the road itself'),       # §ALTC_V2 route = A.civilDriveRoute
+             'tech': ('NOVEL ART', 'Recomputed normals — a 40 % lighter file')}      # §MESH_SLIM 661,573,632 → 395,710,464 B
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}

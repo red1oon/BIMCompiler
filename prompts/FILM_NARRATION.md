@@ -1349,3 +1349,23 @@ IfcBuildingElementProxy · discipline from file name (§CIVIL_DISC) · JELAPANG 
 lamps 227 → 172 columns / 223 heads / 9 buried strays · signals 5 stops → 2 junctions · clash DRAINAGE×ROAD 23,288 box →
 1,852 mesh-true · civil 4D phases (SEQUENCE_CIVIL) + civil crews · 5D rates pending (never invented) · 21,957,746 verts;
 661,573,632 → 395,710,464 bytes after §MESH_SLIM (user's own save) · roof pass 16,132 → 22 ms.
+
+### §11.v2 — v2 road film baked + narrated (2026-10-06; user: "Complete a film and then apply your probable script")
+- **Film:** `~/Downloads/BIM_JELAPANG_v2.mp4` — cli_silent_bake.js, bim-ootb main @ #1882 (sw v1573), JELAPANG_AFTER.db,
+  override = `A.civilDriveRoute()` (29 waypoints, the film's own seed — the DB has no saved path), `--buildup --reveal --label
+  --clash --measure --gpu real --fps 15 1852×960`. Log beside it: `BIM_JELAPANG_v2.log`. 1,740 frames, all converged, 74 MB,
+  1,596 s wall (0.64–0.70 s/frame). Plan 112.0 s + a 4.0 s load-path freeze at 56.0 s (`§LOADPATH_HOLD_INSERT framesInserted=60`)
+  = 116.0 s. Log confirms the session's work live: §ALTC_V2 (reversed seed, junction pivot r 67.5 m), §CHAINAGE_LEVELS,
+  §ROAD_PANELS 3 cards (counts / check / planned at 29.5 / 37.5 / 48.5 s), §ROAD_CHECK_FILM 302 rows (20 valid / 282 speculative),
+  §RULE_FILM VACUOUS (road), §CIVIL_LAMP_GLOW_DAY visible=0 (ghost fix).
+- **Script:** `prompts/film_narration_jelapang_highway_v2_dialogue.tsv` — 24 rows (6 greet · 12 English · 6 bye), body 2.2 words/s
+  (v1 2.7–3.2). Numbers re-checked against THIS bake log: lamp heads 223 (§NIGHT_CIVIL_LAMPS), clash = the film's own set
+  `§CLASH_NARROWPHASE pair=film broad=1011 meshTrue=138` (v1's 1,852 was the whole-model count — replaced), junction 5 heads
+  (§ALTC_V2), route 2,110 m (§ROAD_PANELS routeLenM). Dropped: v1 `fourD` "lamps up first = debut quirk" (lamps-before-pavement is 0).
+- **Mixed languages solved:** `prompts/film_narration_merge.py` merges the Kokoro English run + one Edge run per language into
+  one plan + one .ass (per-run F/M styles keep their fonts). Fit: 24/24 DETAIL, 0 WRONG tones.
+- **Cards:** `FILM_SET=highway2` (film_title_cards.py) + v2 map in film_highway_chapters.py — chapters at 0.0 / 9.6 / 60.0 / 73.6 /
+  87.2 / 100.7 s (clear of the data cards), backdrops = red1's two road stills; 5/5 badges (adds "Road checks shown as formulas —
+  valid or speculative").
+- **Output:** `~/Downloads/BIM_JELAPANG_v2_narrated_AFTER.mp4` — witness: frames 1,740 = source · longest silence 7.5 s ·
+  −16.9 LUFS · fontselect Noto Sans Arabic / CJK SC / Thai + DejaVu.

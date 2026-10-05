@@ -12,6 +12,12 @@ CHAP = {'greet_en': (1, 'open'), 'proxies': (2, 'disciplines'), 'junction': (3, 
         'fourD': (5, 'time'), 'tech': (6, 'local')}
 os.makedirs(out, exist_ok=True)
 rows = [l.rstrip('\n').split('\t') for l in open(tsv) if l.strip()]
+# §ALTC_V2 film (112 s, script film_narration_jelapang_highway_v2_dialogue.tsv — no 'proxies' row): chapters re-placed in TIME
+# order and clear of the three road data cards (29.5 / 37.5 / 48.5 s); film_title_cards.py FILM_SET=highway2 carries the
+# matching card text order (c3 = time & cost, c4 = the road).
+if not any(r[0] == 'proxies' for r in rows):
+    CHAP = {'greet_en': (1, 'open'), 'open': (2, 'disciplines'), 'fourD': (3, 'time'), 'lamps': (4, 'road'),
+            'clash': (5, 'clash'), 'field': (6, 'local')}
 log, back = [], []
 for r in rows:
     rid, cue = r[0], float(r[1])
