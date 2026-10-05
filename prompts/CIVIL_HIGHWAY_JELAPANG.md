@@ -34,6 +34,10 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    get the second, list every drawn object above the model at that frame (sky surface, ghost ground, fog, TAA/SSR history).
 3. **Build order along the route** — drive-order correlation 0.30 (need ≥ 0.8); E4 loses ~4,970 of 7,685 edges to cycles through the section
    milestones (§CHAINAGE_V2). A real chainage may now come from the partner's CHAINAGE labels (332 solids).
+   **Rule (user 2026-10-06):** *"ensure backward compatibility on chainage for messy IFC2X3 that lacks such IFCs which we presently
+   achieved as a fallback"* → real chainage from CHAINAGE labels ONLY when the model has them; a model without them keeps today's
+   inferred route (Fly path / `A.civilDriveRoute()`, §CHAINAGE_V2) unchanged. Witness both: JELAPANG_AFTER.db (no labels) must give
+   the identical route/levels before and after.
 4. **Next bake (user):** after the build-up, the finished highway night-lit, sunset → dusk / nightfall. Ghost x-ray intro needs a supported
    see-through mode (a --tap translucency stalled the bake at frame 0).
 5. **Road checks:** 4 of 5 rules SPECULATIVE (road_rules.json film_status) — fix sign/marker height (road-edge level picks a higher piece) and
@@ -197,6 +201,7 @@ group k to group k+1, none inside a group; a building item set builds the identi
   new one. Old is default in lieu of such ground terrain IFC"* → when an EARTHWORK terrain solid is present, the ground comes from
   it; the p2-bottom rule stays the default only when there is none. ⛔ Open: flat plane at which earthworks height, or hide the flat
   plane and let the earthworks solid be the ground (user's look ruling).
+  Same shape as chainage: no EARTHWORK terrain → today's p2-bottom ground, unchanged (JELAPANG_AFTER.db plane stays 51.74 m).
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
