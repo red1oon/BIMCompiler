@@ -271,8 +271,14 @@ HORIZONTAL DRAIN 228 (17_Length "12m HORIZONTAL DRAIN AT 3m c/c") · 4 RC walls 
   → one row per discipline with its count. No GEOTECH/GABION in the stretch → no card. Joins the KIND_ORDER rotation.
 - G2 `planned` card: the "Terrain profile — planned — no earthwork surface in this model" row is now false when an EARTHWORK body
   exists → that row becomes "Earthworks body (solids) = N" from the DB; models without one keep the planned row.
+- G3 (user 2026-10-06: *"can our card then give user a report card? Ie saying what is missing? or an o/s card in red title banner"*):
+  card kind `outstanding`, shown ONCE per film, RED title banner "Outstanding — not in this model yet". Rows, each a count (no prose
+  claim), only rows > 0: (a) civil pieces with no properties = civil-discipline elements with 0 element_psets rows; (b) disciplines
+  with no rate = civil disciplines present whose CIVIL_RATES.rate is null (5D shows quantities, no RM); (c) disciplines measured by
+  count, not their unit = present civil disciplines whose CIVIL_RATES.measure is a quantity unit (M, M2, M3) but qtyBasis 'EA'
+  (earthworks timed as 1 piece). All rows 0 → no card.
 - Gate: GEOTECH / GABION / EARTHWORK rows only — JELAPANG_AFTER.db cards unchanged except none (no such rows); buildings build no cards.
-- Witness: witness_road_panels.js — every number on a `ground` card = COUNT(DISTINCT guid) with that 15_Name (or discipline) over the
+- Witness: witness_road_panels.js — every `outstanding` number = its own SQL/rates count; every number on a `ground` card = COUNT(DISTINCT guid) with that 15_Name (or discipline) over the
   card's guids; the earthworks row = COUNT of EARTHWORK rows. Fixture with psets: Merged.db + the GEOTECH/GABION instance psets read
   from the partner IFCs (IfcOpenShell, same rule as import_worker §CIVIL_PSETS) — what a re-merge after #1891 would store.
 
