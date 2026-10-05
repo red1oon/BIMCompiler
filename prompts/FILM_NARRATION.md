@@ -1445,4 +1445,47 @@ No project story, no author. Every number from the DB / a § line; [VALID] / [SP
 **Before baking (blocking):** PRs #1887/#1888/#1890 on main; the played-layer gap (TM generate with no stored tasks ignores the
 template) fixed or the build-up beat reworded to the Gantt only; re-check every number against the bake log.
 
+## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
+User: *"Prepare a script to narrate this. Use the big Chapter pages to intersperse to explain what this BIM OOTB is capable of doing … mute
+[the background sound] … a good intro as users maybe unclear on the big picture"* + *"1. How it can open all the IFCs (sizes and types)"* +
+*"Describe the process it goes thru, the tech it is using"* + *"How quite all we see are computed on the fly such as this Tour, with
+scrubber.. then in the Find … go thru the Types and Disciplines shown"*.
+**Source:** `~/Videos/simplescreenrecorder-2026-10-06_07.16.55.mp4` (90.2 s, 1920×1080, 26 fps; model = CivilWorks.db — the Ask answer's
+19,559 scheduled = 19,892 − 333 references). **Trimmed + muted:** `~/Videos/IFC_Extraction_Program_intro_trimmed_silent.mp4` = 4.00 → 78.00 s
+(fullscreen settles at 4.00 s by top-bar luminance 117→11; from 78 s the frame is dark/near-empty, freezedetect 79–89 s), 74.0 s, 1,924 frames.
+**Timeline of the trimmed clip (t = original − 4):** S1 0–5 night Fly over the junction (tour box "Traffic signal 1 (5 columns) (2/7)",
+0:04 / 1:18) · S2 5–15 Find, Storey tree · S3 15–23 Find, Discipline tree · S4 23–41 Ask: canned questions + answers · S5 41–55 slopes
+and ground works → the bridge · S6 55–69 drive with element labels · S7 69–74 the whole route from above.
+**Facts (each line's source):** files `IFC/` + `IFC_MORE/` on disk — 15 files, 970 MB: 4 bridge files IFC4X3_ADD2 from Autodesk Revit 25.4
+(BR1 258 MB, BR2 101, BR3 25, VBC 5) + 11 road files IFC2X3 from Civil 3D (ROAD 265 MB, GEOTECH 96, MARKING 86, DRAINAGE 58 …) → one
+CivilWorks.db 421 MB, 19,892 elements (read-only check 2026-10-06). On screen: Storey tree (13 storeys of the bridge + "Unknown" 15,242 = the
+road, which has no storeys), Discipline tree (14 disciplines, counts above), Ask answers (86 mesh-level ARC×STR clashes at 25 mm from 200 box
+overlaps, 114 cleared; 4D 19,559 elements, 114 days, 14 trades, labour RM 695,316 [SPECULATIVE: rates are standard crews copied from MASON,
+uncalibrated — say "at standard rates you can edit"]; rooms VACUOUS "no habitable rooms" — the engine says so instead of guessing).
+Tech (code): web-ifc (WebAssembly) parses each file in a web worker → discipline from the file name (import_worker.js CIVIL_DISCS) → elements,
+placements, geometry, properties written into ONE SQLite file (sql.js WebAssembly) → three.js draws it, streamed from that file. Merging =
+folding another file's tables in (scene.js). Everything after load is a query over that one file, computed when asked: the Fly route from the
+road's MAINLINE pieces + its stops from traffic-signal properties (tour.js, civil_labels.json), lamps from lighting heads, Find trees (GROUP BY
+storey / discipline / material), Ask answers with their § proof lines, the 4D schedule. No server, no upload, no install (local-first).
+**Chapter pages (full-screen cards, ~5 s each, inserted between segments):**
+| # | before | card title | card lines (all measured) |
+|---|---|---|---|
+| 0 | start | IFC Extraction Program | everything your model already knows — at no extra cost |
+| 1 | S1 | 15 files. 970 MB. Two worlds. | Civil 3D road set, IFC2X3 · Revit bridges, IFC4X3 · one model, 19,892 elements |
+| 2 | S2 | How it reads them | your browser: web-ifc → one SQLite file → three.js · no server · no upload · no install |
+| 3 | S3 | Computed when you ask | the tour, the trees, the answers — queries on that one file |
+| 4 | S4 | Ask your model | ready questions · answers with proof · Save to Excel |
+| 5 | S5 | Messy IFC? Inferred by default. | generic proxies, meaning from names and properties · inferred values are labelled |
+| 6 | S6 | Publish now, update later | standard rates you can edit · what is missing is listed · merge new files any time |
+**Narration (F asks, M answers; English first, numbers as words in the TSV; 6-language greeting kept before card 1 — en ms zh th ar fr as §11.v3c):**
+- S1 F: "Is that the whole highway, live, in a browser?" M: "Yes — the Fly tour found the road and its seven stops by itself; this is stop two, a traffic signal of five columns."
+- S2 M: "Find, Storey view: the bridge's own levels — piers, deck slab, finished road level. The road has no storeys, so its fifteen thousand pieces sit under Unknown — the file says so, we don't invent levels."
+- S3 F: "And by trade?" M: "Fourteen disciplines: nine thousand one hundred forty-five ground-treatment pieces, four thousand and eight road, then plumbing, structure, furniture, architecture, chainage, lighting, drainage, signage, marking, gabions, the right-of-way, and the earthworks."
+- S4 F: "Can I just ask it?" M: "Pick a question. Clashes between architecture and structure: eighty-six real ones at twenty-five millimetres. The schedule: nineteen thousand five hundred fifty-nine pieces, one hundred fourteen days, fourteen trades — at standard rates you can edit. Rooms? None here — and it tells you that, instead of guessing."
+- S5 M: "Under the slopes: seven thousand five hundred seventy-five piles, eighteen metres long, one thousand three hundred thirty-eight soil nails — straight from the partner's own file."
+- S6 F: "And when the files change?" M: "Merge the new ones; everything recomputes."
+- S7 M: "Two kilometres of road, two bridges' worth of structure, one file on your own machine. Everything your model already knows."
+**Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
+assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
+
 ## §BROWSER_SCALE_AND_CLAIMS — MOVED to `docs/BrowserScaleBenchmark.md` (2026-10-06). The Chapter 0 claim card (§11.next) cites it.
