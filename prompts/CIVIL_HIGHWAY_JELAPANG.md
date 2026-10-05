@@ -187,7 +187,7 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   Witness oracle was scope-blind: "buried" floor = MIN bottom of every non-LIGHTING element on the SITE — the merged
   bridge's piers (−1.4 m) dropped it below the strays. Now scoped to the building(s) carrying LIGHTING (42.9 m both files).
   Open: merged buried=13 vs single 16 at the same floor (3 columns' rendered tops differ) — not read yet.
-- **§FB ground (seen, not worked):** merged scene `§GROUND_Y src=gf-storey-slab(Level 1) z=56.58` — the BRIDGE's storey
+- **§FB ground — ✅ FIXED bim-ootb PR #1868 (auto-merge): civil model → Step 4 p2 over all (43.46 merged; road-only 51.74 unchanged). Was:** merged scene `§GROUND_Y src=gf-storey-slab(Level 1) z=56.58` — the BRIDGE's storey
   wins step 1; road-only scene resolves `p2-bottom z=51.74`. Ground plane is hidden by default (`§GROUND_INIT
   visible=false`), but shadow/sky/walk read this height. Needs its own spec (whose ground in a merged scene?).
 - **§LOAD — slow canvas load, large MB / low element count (user 2026-10-05). MEASURED on JELAPANG_AFTER.db.**
@@ -217,6 +217,9 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   point light intensity 2.0, decay 1, range ∞ (indoor-tuned, ~0.2 at 10 m); moon sun 0.15 / ambient 0.2 / hemi 0.08,
   exposure 0.8; night fog colour (0.03,0.03,0.09) at the site-sized density 0.00026 → ~49 % fog at the 3,171 m framing
   distance. → everything beyond the 30 lamps is unlit and fogs to black = "hidden".
+  User 2026-10-05 (live, after ground report): "distance reflection on the shiny road, but no street lamps get lighted" —
+  consistent with the numbers above: moon/env specular reads at distance; 30 indoor-strength point lights 10+ m up give
+  ~0.2 at the road, and no head glows (§GLOW_LAYERS_OFF removed the sprite).
   Proposal (NOT BUILT, needs go + look ruling): civil gate (all elements ∈ CIVIL_DISCS, envelope > 1 km).
   (a) every lamp head reads at any distance: emissive head glow from the head list (no light cost);
   (b) light POOL on the road under every head: downward spot (cone) for the nearest N, a cheap ground pool for the rest —
