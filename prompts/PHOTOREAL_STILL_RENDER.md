@@ -661,18 +661,6 @@ materials; (a) `clone()` returns an R10 array of clones of the same length; (b) 
   sunrays*.js (sun-reach raycasts), reflratio.js, matstats.js, atlasdump.js. Always under flock /tmp/claude-1000/gpu.lock; give way to
   other sessions' films when asked (red1 asked once today).
 
-## 2026-10-04 ~11:50 — RESUME RUN (this session)
-- Hospital rebake on the OCI DB DONE: §LIGHT_FIELD_BAKE Hospital key=21324567:90186 bytes=6922133 wallS=1763 blobOk=true;
-  §W_LIGHT_FIELD_PATCH Hospital PASS (cached=true, 32 s). Sidecar /tmp/wt-surf/buildings/patches/Hospital_extracted.db.lightfield.bin 11:45.
-  (The 10:22 attempt from the close-out was killed before writing — log had LOCK only.) Hospital atrium A/B (§5 open #3) is now unblocked.
-- run_gb (SampleHouse 4 arms, &csmlambda=1) RAN 11:14-11:16, gb_*.json in the 1ab07a47 scratchpad. VERDICT: INCONCLUSIVE — instrument.
-  termimgs.js packs zoneR p99-normalised to 8 bit; p99 comes from non-zone pixels (zoneR hi == F_sky hi in every arm: 5.60/4.00/5.63/2.93),
-  so decoded zone ids are quantised by ~hi. Proof it is broken: SAME camera gives zones=5/21/7/9 per arm (a zone id cannot depend on
-  &lampsout/&skyfield). Edge shares then contradict each other (full-frame jumps on zone edges 0.1 % base vs 77 % lamps0).
-  sky0/both arms also logged 370/375 "32 texture units while this GPU supports only 32" — those arms may render with a texture dropped.
-- FIX WRITTEN (not run): 508155bc scratchpad termimgs2.js = termimgs.js + raw Uint16 zone id (R*255 + G*255*256, 65535 = non-zone, 0 = unknown)
-  + histogram. Rerun the 4 arms with it (~3 min GPU), then the zone-edge share (gbedge.js same dir) on the raw ids.
-
 ## 2026-10-05 — §STILL_OVERLAY_NOGI — SPEC (red1: "go build the fix")
 - DEFECT (measured, red1 console log 2026-10-05 + 2 headless runs, JELAPANG): when the bounce cannot run (`§GI_STILL_OFF
   reason=no-webgpu|touch-device|three-rNNN`), Alt+S finishes (`§PHOTO_AO done`, `_stillRefineBusy=false`) but nothing says so:
