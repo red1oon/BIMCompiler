@@ -32,7 +32,7 @@ NONE of the film changes has been seen in a real bake — the next step is the u
 2. ⛔ Narration (item 5 below) — waits for the v2 bake: the script was timed to the old 206 s plan; v2 is 111.9 s, so the body
    must be re-cut to ~2.3 w/s against the bake's own §CINEMA_BEATS. Drop the `fourD` "lamps up first = debut quirk" line if the
    bake's log shows §CHAINAGE_LEVELS (lamps-before-pavement is now 0).
-3. Road checks in the film (§MC) — road_check.js has two measurement faults (sign height reads a higher road piece; every sign
+3. ✅ PARTLY 2026-10-06 — bim-ootb #1882 (sw v1573) §ALTC_CHECKS: road checks shown as worked formulas tagged VALID/SPECULATIVE (tracking list = road_rules.json film_status; 4 speculative, 1 valid). To turn a rule VALID: fix its method, then edit its film_status with the reason. Was: Road checks in the film (§MC) — road_check.js has two measurement faults (sign height reads a higher road piece; every sign
    foot inside a ROAD solid); fix those before wiring them into the film in place of the building rule cards.
 4. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is
    not defined" (their slice of effects.js misses the constant).
@@ -381,6 +381,24 @@ Seen in the aborted trial film: building rule cards ("Structural — floating me
 **Witness** witness_altc_labels.js (headless, no bake): JELAPANG — rule film VACUOUS + stats.built false, envelope cue title
 "Site Envelope", every civil clash side named by its SEQUENCE_CIVIL phase (0 "Misc Element"); Duplex — rule film builds
 (state ≠ VACUOUS-road), envelope "Building Envelope", clash names from rates.js.
+
+### §ALTC_CHECKS — road checks in the film as worked formulas, each tagged VALID or SPECULATIVE (spec 2026-10-06)
+User 2026-10-06: *"If they are trivial just bake"* · *"Just give a sample measure"* · *"As a formula to educate"* · *"Need not be
+accurate.. it's demonstrative of what can be done"* · *"As long we keep track which is valid and speculative"*.
+- C1 — `viewer/road_check.js` + `viewer/rates/road_rules.json` come to main from WIP `feat/civil-model-check` (dc7223d4) unchanged
+  in method; used ONLY by the film cards (Model Check report / boq button stays a later item).
+- C2 — THE TRACKING LIST: every rule in road_rules.json carries `film_status: {status: "valid"|"speculative", why}` and a
+  display `formula` (ours, not from the standard). Status as of the §MC first run: sign_mounting_height SPECULATIVE (road-top
+  band can catch a higher road piece — min −6.02 m) · obstruction_marker_height SPECULATIVE (same road-top method) ·
+  sign_lateral_clearance SPECULATIVE (all 138 read 0.00 m — sign feet inside ROAD solids) · chevron_spacing SPECULATIVE
+  (distance is measured; whether "laterally 6 m apart" means nearest neighbour is unconfirmed against ATJ 2B Fig. 10) ·
+  rrpm_spacing VALID (stud spacing 1.00 m measured; it matches no Table 4.2 row — application not in the data). A status
+  changes only by editing this list with its reason.
+- C3 — card kind `check` in cpe_road_panels (§ALTC_PANELS), after `counts`: one RoadCheck row whose element lies in the stretch,
+  VALID rows preferred. Rows: formula = measured value · the clause limit · result (meets / outside) · status tag
+  ("VALID" or "SPECULATIVE — <why>"). RoadCheck runs once per bake (adapter over A.db returning row objects).
+- Gate: civil only (cards are civil-only already). Witness: witness_road_panels.js extended — a `check` card exists, its
+  measured value = the RoadCheck row's, its status = the rule's film_status in road_rules.json; Duplex unchanged.
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
