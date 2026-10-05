@@ -190,6 +190,41 @@ through pavement) — listed by `02_Type`, never auto-hidden.
 - **§FB ground (seen, not worked):** merged scene `§GROUND_Y src=gf-storey-slab(Level 1) z=56.58` — the BRIDGE's storey
   wins step 1; road-only scene resolves `p2-bottom z=51.74`. Ground plane is hidden by default (`§GROUND_INIT
   visible=false`), but shadow/sky/walk read this height. Needs its own spec (whose ground in a merged scene?).
+- **§LOAD — slow canvas load, large MB / low element count (user 2026-10-05). MEASURED on JELAPANG_AFTER.db.**
+  Bytes: component_geometries 605 of 661 MB; 22.0M vertices / 8.5M triangles for 10,413 elements. LIGHTING 227 poles =
+  204 MB / 7.57M verts (~33k verts, ~12k tris per pole); bridge STR 186 MB; ROAD 109 MB. Normals stored per vertex.
+  "Consolidate redundant draws" measured: exact (position+normal) weld 22.0M → 18.3M verts (−16 %; ROAD −46 %, MARKING −41 %,
+  LIGHTING −2 %, STR −6 %); same shape stored per location (translation-only duplicates): LIGHTING 200 → 162, ROAD 3750 → 3707
+  → instancing gains ~nothing. The poles are flat-shaded facet soup (dup ratio 4.8 vs unique positions) — only a crease-angle
+  smooth + weld would cut them (lossless for position, changes normals) — needs spec + look ruling.
+  Headless timing (GPU=sw; per-frame times inflated, CPU steps real): DB open 3.4 s · `§SURFACE_ROOF_LAYER` 10.1 s (user's real
+  log 17.0 s) · `§MEP_SMOOTH_NORMALS` 4.3 s over 10.9M verts · `§DUCT_SILHOUETTE` +4.0M verts (BUDGET_HIT) · both buildings
+  COMPLETE 46.6 s · `§KRN_PERSIST` rewrites the whole 646 MB DB after BUILDING_OPEN.
+  ✅ ROOF LAYER FIXED — bim-ootb PR #1867: over a 2M-cell budget (fleet max 381,732, JELAPANG 13.4M) judge only envelope classes
+  via 16 m buckets; `witness_roof_layer_budget.js` diff=0 on 11 fleet DBs + JELAPANG; 10,140 ms → 33 ms; COMPLETE 36.5 s.
+  Open (not worked): which elements `§MEP_SMOOTH`/`§DUCT_SILHOUETTE` take on a civil model (prewarm for Alt+S, runs at load) ·
+  KRN_PERSIST full rewrite per op on a 646 MB DB (save/reload efficiency, user asked) · URL loads > 400 MB skip the IDB cache
+  (`§CACHE_WRITE_SKIP_TOO_LARGE`) → every reload re-downloads.
+- **§CULL_SPHERE (found 2026-10-05, not fixed):** `dlod.js:77-81` culls each instance by a sphere at the instance ORIGIN (vertex
+  centroid) with radius = half the bbox diagonal. On JELAPANG_AFTER the true mesh extends > 1 m outside that sphere for 1,173
+  elements (ROAD 771, LIGHTING 171, DRAINAGE 122, MARKING 57, ARC 34, FURNITURE 18; worst 167.8 m) → hidden while on screen
+  once DLOD engages (≥ 5000 streamed; JELAPANG alone 5674, merged 10,413 `§DLOD_ENABLE`). Same §W.2 class. Fix shape: per
+  InstancedMesh, `geometry.boundingSphere` (shared by its instances) transformed by the instance matrix — exact, cheaper.
+  Fleet before/after table (hidden counts) required.
+- **§NL night look on km roads (user 2026-10-05: "luminosity realistic … lamps really shine out and reflected on surface …
+  Alt+C late evening with lamps on … special treatment for outdoor CW roads"; "distance proximity … elements hidden when
+  pressing Night").** MEASURED in code (tools.js): nav lights = 30 nearest of 223 heads (`_nightMaxLightsNav`), Alt+S 50;
+  point light intensity 2.0, decay 1, range ∞ (indoor-tuned, ~0.2 at 10 m); moon sun 0.15 / ambient 0.2 / hemi 0.08,
+  exposure 0.8; night fog colour (0.03,0.03,0.09) at the site-sized density 0.00026 → ~49 % fog at the 3,171 m framing
+  distance. → everything beyond the 30 lamps is unlit and fogs to black = "hidden".
+  Proposal (NOT BUILT, needs go + look ruling): civil gate (all elements ∈ CIVIL_DISCS, envelope > 1 km).
+  (a) every lamp head reads at any distance: emissive head glow from the head list (no light cost);
+  (b) light POOL on the road under every head: downward spot (cone) for the nearest N, a cheap ground pool for the rest —
+      street lighting is a pool on the carriageway, not an omni bulb;
+  (c) night fog density from the camera's view distance, not the whole site, and a moonlit sky colour that is not black;
+  (d) Alt+C "late evening": sun just below horizon (dusk sky), lamps on — reuses (a)–(c).
+  Witness: per-lamp pool luminance on the road surface below each head vs between heads (numbers from a render target
+  readback at the head's projected pixel), lit-head count at the overview, fleet night unchanged (gate false).
 - **Narrowphase defect (pre-existing, not civil):** synthetic S7b (cubes face to face, OBB off) → CLASH, expected
   CLEAR (`witness_clash_mesh_narrowphase.js` I5). Also I3 (2 of 23,001 at the 1 mm touch edge) and I4 (3.0e-5 m
   DB-vs-scene matrix = float32 at 2 km, limit 1e-5 too tight).
