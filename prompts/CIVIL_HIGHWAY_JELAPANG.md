@@ -29,12 +29,9 @@ ground shadow sun day with light distance normal fog all OK good enough."
 1. **PR #1872 §ALTC_HIGHWAY — OPEN, auto-merge on.** First CI run failed no-undef (BIN_M left in the Fly log after the
    civilRoutePath split — would have thrown → room-tour fallback); fixed + pushed (witness_civil_fly_route 4/4 after the split).
    CHECK IT MERGED. Not yet seen in a real bake.
-2. **§ALTS_HIGHWAY — branch `feat/alts-highway-dusk` pushed, NO PR, ⛔ awaiting user go for the proof render.** User:
-   "alt-s … more towards dusk so the street lighting can be more prominent" + "some bluish sky and orange sunset hues".
-   Code: civil still → dusk mood default, sun 2° (`&duskelev=`, 0–10), sky turbidity 4 / rayleigh 2.5 / mie 0.010 / G 0.88
-   (buildings keep 6° + turbidity 8). Proof needed (headless Alt+S, CPU, JELAPANG + Duplex): §ALTS_HIGHWAY sunElev, lamps on,
-   sky pixel hues (zenith blue, horizon-toward-sun orange) read numerically, Duplex unchanged. User asked for Alt+S BEFORE
-   Alt+C ("i mean alt-s first") — Alt+C (#1872) was built on a misread but is civil-gated, kept.
+2. **§ALTS_HIGHWAY — ✖ DROPPED by user ruling 2026-10-05:** "i tested alt-s, i think it should stay as it is to avoid too much
+   customizing.. it is good enough .. all things working well". Alt+S stays the shared look for buildings and roads. Branch
+   `feat/alts-highway-dusk` (2° sun / blue-orange sky) left unmerged for reference only — do not ship it.
 3. **User's first real Ctrl+S of AFTER.db** = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
 4. Not worked: §CULL_SPHERE (1,173 elements culled while on screen once DLOD engages) · §NL (b) pools beyond nearest 30 ·
