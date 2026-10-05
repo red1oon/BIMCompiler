@@ -24,8 +24,13 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 `feat/civil-model-check` @ pushed WIP commit (evaluator + rules JSON only, nothing loads it, no PR). Worktree removed —
 re-create with `git worktree add /tmp/wt-civil-modelcheck feat/civil-model-check`.
 **Next, in order:**
-1. **⛔ USER GO NEEDED — clash broad-phase fix (§W.2, measured: LIVE BUG on buildings too).** Asked, not answered (user
-   moved to closing). Recommendation given: fix first. It changes every building's clash candidates → fleet table.
+1. **⛔ USER GO NEEDED — clash broad-phase fix (§W.2, measured: LIVE BUG on buildings too).** Recommendation: fix first.
+   User asked "won't it bloat the buildings clash results?" — answered from `prompts/civil_probes/missed_pairs.log`: NO,
+   it is a SWAP — box-stage totals move ≤ ±3 % (Hospital ARC×STR 15,885 → 15,853: +3,119 gained / −3,151 phantom
+   dropped; ARC×MEP 17,409 → 17,175; Duplex ARC×MEP 1,068 → 1,095; JELAPANG DRAINAGE×ROAD 23,288 → 21,466). Outlier
+   Hospital STR×ELEC 32 → 93. Shown list stays mesh-true (box-only hidden ≥ 1000, #1861). What SHOULD rise = mesh-true
+   clashes among the gained pairs — the fix witness must report it per pair (shipped filters: ignore_classes + 25 mm tol,
+   which the probe skipped). Still awaiting go.
 2. **§MC finish** — fix the 2 measurement faults (see §MC "First run"), then `model_check_report.html` (MEP-report
    styling), the MEP→Model Check button swap in `boq_charts.html` (civil gate `RoadCheck.isCivilModel`), witness, sw bump +
    precache `road_check.js`, `rates/road_rules.json`, `model_check_report.html`.
