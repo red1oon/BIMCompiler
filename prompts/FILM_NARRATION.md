@@ -1286,3 +1286,36 @@ BIM-compiler, BOM-OOTB, as it is under IfcOpenShell clone as a Federation featur
   *construction* film; ElevenLabs/OpenAI TTS is the planned route (the 'No AI inside' point demoted from a forced
   decision to one open question); construction-sequence tags (`§GANTT`, `§NIGHT_BUILDUP_GATE`) added as sources;
   plan kept brief.
+
+## 11. §HIGHWAY-FILM — narrated JELAPANG highway film (DRAFT script, 2026-10-05; film lands ~3 h later)
+**The ask (red1, 2026-10-05, verbatim):** *"we did audio narration with main chapters over a selected movie … in 3 hrs the
+highway movie will land and u can prepare a script to narrate it well. Same female/male dialog, with about 5 languages greet
+and end only. In between full english with transcribed captions. Explaining how Civil works is reuse fully the same BIM
+compiler model that is used for buildings successfully. Talk about the 4D 5D, clash analysis.. and anything important we have
+gone thru. Note to audience that this IFC set is less the actual terrain coming soon. Relate the difference in disciplines and
+some technical explanation how delicate our SQLite WASM on ThreeJS local first is proving itself. Touch on the pending roadmap
+and the playing field still lacking in such good one stop app that Red1 here will be overcoming easily it seems. IT is exciting
+to overcome those challenges."*
+**Script:** `prompts/film_narration_jelapang_highway_dialogue.tsv` — 24 rows (6 greet + 12 English body + 6 farewell),
+PLAYBOOK A format (`id cue_s end_s §source SHORT DETAIL`), F asks / M explains; greet/bye rows carry `lang=` in the source
+column (en, ms, zh, th, ar, fr — Malaysia's languages + two neighbours/reach; swap freely). Body = 501 words over 186 s
+(2.7 w/s — dense: the fit will drop some rows to SHORT; trim DETAIL first, PLAYBOOK step 3).
+**Cues are a PLAN, not measured:** written against the §ALTC_HIGHWAY natural plan (JELAPANG, 206 s: approach 0–57 · junction
+spin 57–63 · drive 63–164 · pull-back 164–198 · orbit 198–206; `§CINEMA_PACING` in witness_altc_highway). When the film lands:
+1. Copy the bake's page log beside the film; read `§CINEMA_BEATS` (fractions) × `ffprobe` duration → re-time every row so
+   approach rows sit in dive, `junction` on the spin, body rows on the drive, `roadmap`/`field` on the pull-back, bye on orbit.
+2. RE-CHECK every number against THAT log/DB (sources column names the § line): lamp heads/strays (`§NIGHT_CIVIL_LAMPS`),
+   junctions (`§CIVIL_ROUTE_JUNCTION`), route length (`§ALTC_HIGHWAY lenM`), element counts (baked DB), any 4D day count
+   (`§CREW_DAY_CLOCK`/`§CPM_RUN`) — only speak a 4D/5D number the bake log prints.
+3. **Mixed-language gap:** `film_narration_fit_edge.py` voices ONE language per run and `film_narration_mux.py` muxes ONE tag.
+   Plan: body rows → Kokoro (`fit_kokoro_v3.py`, tag `hw_en`); greet/bye rows → one Edge run per language on a 2-row TSV
+   each (tags `hw_ms`, `hw_zh` …); then extend mux to take several `<tag>_plan.tsv` (concatenate plans + .ass dialogue lines,
+   each clip keeps its own cue) — small change, witness = frames == source, silencedetect gaps, ebur128 −16 LUFS, the .ass
+   carries every row's own-language caption (Noto CJK / Thai / Arabic RTL fonts per PLAYBOOK table).
+4. Register: `field` row = sourced fact (§10 Tier-1 line) + red1's own ambition in his words; no claim about any company.
+**Facts used (all from this session's § lines / DB reads, CIVIL_HIGHWAY_JELAPANG.md):** 7 IFCs Civil 3D 2024 IFC2X3, all
+IfcBuildingElementProxy · discipline from file name (§CIVIL_DISC) · JELAPANG 5,674 (ROAD 4,008 · FURNITURE 1,011 · LIGHTING 227
+· DRAINAGE 200 · SIGNAGE 138 · MARKING 90) + bridge VBC 4,739 = 10,413 · EARTHWORK IFC 0 elements (terrain TIN skipped) ·
+lamps 227 → 172 columns / 223 heads / 9 buried strays · signals 5 stops → 2 junctions · clash DRAINAGE×ROAD 23,288 box →
+1,852 mesh-true · civil 4D phases (SEQUENCE_CIVIL) + civil crews · 5D rates pending (never invented) · 21,957,746 verts;
+661,573,632 → 395,710,464 bytes after §MESH_SLIM (user's own save) · roof pass 16,132 → 22 ms.
