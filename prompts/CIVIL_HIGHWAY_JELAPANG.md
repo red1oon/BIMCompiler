@@ -262,6 +262,20 @@ key (guid, pset, name, value — import_db_builder.js:193), so the fold's INSERT
 Witness `witness_merge_psets.js`: live = JELAPANG_AFTER.db minus its SIGNAGE elements, src = the SIGNAGE elements + psets (real rows)
 → first merge adds every SIGNAGE pset row; a second merge of the same src adds 0. RED on main (0 rows folded).
 
+### §ALTC_GROUND_CARDS — Alt+C cards for the partner's ground works (spec 2026-10-06, queue item d)
+Data (JELAPANG_GEOTECH.ifc, instance psets): `15_Name` PILE EMBANKMENT 7,575 (20_PILE_DIAMETER 350mm · 22_DRIVEN_LENGTH 18m ·
+21_PILE_WORKING_LOAD 750kN · 23_PILE_SPACING 1.9m c/c) · SOIL NAILING 1,338 (17_Length "12m SOIL NAILING WITH EROSION MAT AT 1.5m c/c") ·
+HORIZONTAL DRAIN 228 (17_Length "12m HORIZONTAL DRAIN AT 3m c/c") · 4 RC walls (CorridorName RC WALL, no 15_Name).
+- G1 new card kind `ground` (cpe_road_panels.js, same shape as drainage/signs): GEOTECH + GABION elements of the stretch, grouped by
+  `15_Name` (value = element count; sub = 22_DRIVEN_LENGTH or 17_Length, text from the file). No psets (a model merged before #1891)
+  → one row per discipline with its count. No GEOTECH/GABION in the stretch → no card. Joins the KIND_ORDER rotation.
+- G2 `planned` card: the "Terrain profile — planned — no earthwork surface in this model" row is now false when an EARTHWORK body
+  exists → that row becomes "Earthworks body (solids) = N" from the DB; models without one keep the planned row.
+- Gate: GEOTECH / GABION / EARTHWORK rows only — JELAPANG_AFTER.db cards unchanged except none (no such rows); buildings build no cards.
+- Witness: witness_road_panels.js — every number on a `ground` card = COUNT(DISTINCT guid) with that 15_Name (or discipline) over the
+  card's guids; the earthworks row = COUNT of EARTHWORK rows. Fixture with psets: Merged.db + the GEOTECH/GABION instance psets read
+  from the partner IFCs (IfcOpenShell, same rule as import_worker §CIVIL_PSETS) — what a re-merge after #1891 would store.
+
 ### §DOCTRINE_AUDIT — 2026-10-06 (user: "check that no doctrine or flow of work is broken … nothing new is invented to patch any gap")
 Checked against 4D_MODEL_INTEGRITY.md §B (layers: CLASSIFY = lookup, DECLARE = 4D_template*.json, SOLVE must never discover order).
 - ✅ #1887 look/ground: extends the ground owner `tools.js _calcGroundY` (no second ground); height from the mesh. Opacity 0.28 is a
