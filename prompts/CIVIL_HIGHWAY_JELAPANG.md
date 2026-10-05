@@ -246,6 +246,26 @@ Checked against 4D_MODEL_INTEGRITY.md §B (layers: CLASSIFY = lookup, DECLARE = 
   disciplines → civil programme, the rest → building programme), one owner. Not built; needs the user's ruling on how the two
   programmes join (bridge before/after/alongside the road phases).
 
+### §MIXED_PROGRAMME — road + bridge in one 4D programme (spec 2026-10-06; user ruling: "alongside — bridge built during earthworks and pavement")
+Supersedes the held `feat/civil-partner-discs` D2/D3/D6 (doctrine audit above). Layers per 4D_MODEL_INTEGRITY.md §B / §I:
+- **SELECT** (`time_machine.js _civilSwap`, the one owner): any civil row → `4D_template_civil.json`; no civil row → `4D_template.json`
+  (unchanged, fleet 0 civil rows). Today: civil only when EVERY element is civil → Merged.db / JELAPANG_AFTER.db get the building template.
+- **DECLARE** (`4D_template_civil.json` v0.4.0, the only place order lives): civil phases ground_treatment → earthworks → drainage +
+  slope_protection → pavement → furniture / signage / lighting → marking, PLUS the structure phases copied verbatim from
+  4D_template.json (substructure … finishes, their own within/across-level edges). Alongside: `substructure` takes the SAME
+  predecessor as `earthworks` (ground_treatment), so the bridge starts with the earthworks and runs through pavement in parallel.
+  Engine fact (schedule_author.js:806-900): placement = predecessor FINISH + lag, one within_level predecessor per phase — FS only,
+  so "alongside" is declared as a shared predecessor, not SS/FF (no engine change).
+- **CLASSIFY** (rates.js, lookup only): SEQUENCE_CIVIL gains GEOTECH → Ground Treatment, GABION → Slope Protection (phase names only).
+  No solver edit (D3 dropped). Crews for the new phases: none invented — ⛔ needs a cited labour source (§L); until then the phase
+  uses the existing uncalibrated civil crew of the nearest trade, labelled as such, or is left unpriced (user's call).
+- **POPULATION:** CHAINAGE / ROW are references, not built → excluded from the schedule like IfcSpace / IfcOpeningElement. The
+  exclusion is written inline in 7 places today (schedule_author.js:490/1895, time_machine.js:3972/4446/4525/5056/10129) → ONE owner
+  function first (deletes the 7 copies), then the two disciplines added there once.
+**Witness:** Merged.db → §CIVIL_TEMPLATE loaded; GEOTECH bars before EARTHWORK; substructure start = earthworks start (shared
+predecessor); lamps before pavement = 0; CHAINAGE/ROW in no task. JELAPANG_AFTER.db → civil template now (expected change);
+all-civil road-only DB → identical to before (structure phases empty, bridged). Fleet: cache_4d_run 4 buildings identical.
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
