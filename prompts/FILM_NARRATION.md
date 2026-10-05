@@ -1317,6 +1317,9 @@ spin 57–63 · drive 63–164 · pull-back 164–198 · orbit 198–206; `§CIN
    Compiler concept can work for any construction discipline. There are quirks due to category changes but once aligned they fall
    in reusing the proven track for buildings."* → `open` (debut + test of "any construction discipline") and `proxies` (quirks =
    category changes → once aligned, the proven building track). Same rows, same cues; the "buildings don't notice" line gave way.
+9. `fourD` row (red1 2026-10-05: *"So this explains away any mishap in the early part of buildup"*): says it openly — lamps up first
+   = debut quirk (merged bridge → building Z-band rule, CIVIL_HIGHWAY_JELAPANG.md 2e), road order comes next. Keep ONLY if the
+   bake's own §GANTT/§CIVIL_PHASE lines show the same (a road-only bake takes the civil order and this line must go).
 6. `field` row (red1 2026-10-05: *"say a line that we be expanding our Modeller concept to civil works construction too! That
    is said to be very difficult. Put this before that last line of red1 welcoming the challenge"*): Modeller → civil works line
    sits just before the closing "Red1 set out to close… welcomes the challenge" line; it is red1's stated PLAN, voiced as a plan.
