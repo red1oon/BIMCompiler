@@ -233,7 +233,9 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   ~0.2 at the road, and no head glows (§GLOW_LAYERS_OFF removed the sprite).
   ✅ STEP 1 SHIPPED bim-ootb PR #1869 (user go 2026-10-05 "still no change in Night lighting"): §CIVIL_LAMP_THROW head
   intensity × mountH/3 (median ×4.63, max ×11.14) + §CIVIL_LAMP_GLOW 6 px Points on all 223 heads; witness 15/15.
-  Still open from the proposal: (b) pools for heads beyond the 30 nearest, (c) night fog by view distance, (d) Alt+C dusk.
+  Still open from the proposal: (b) pools for heads beyond the 30 nearest, (d) Alt+C dusk (user go 2026-10-05: "proceed to alt-c
+  for hiway mode"). (c) STRUCK — user 2026-10-05: "hidden in Night is due to the raised ground. Fog is OK" (fog = existing
+  §U FogExp2, Night only recolours it; JELAPANG 1.7 % at 500 m … 50 % at the 3.2 km framing distance).
   #1868 CI lesson: a bare cross-file global (SEQUENCE_CIVIL) fails the no-undef gate — read it via window.
   Proposal (original, civil gate) (all elements ∈ CIVIL_DISCS, envelope > 1 km).
   (a) every lamp head reads at any distance: emissive head glow from the head list (no light cost);
