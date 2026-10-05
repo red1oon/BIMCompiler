@@ -216,6 +216,10 @@ group k to group k+1, none inside a group; a building item set builds the identi
   are skipped; the all-elements fallback needs envelope < 2 % AND < 200 (here 587/19,903 = 2.9 %). Same on the old DBs (587/10,413)
   → not caused by the merge. Fix shape (spec, not built): decide envelope-vs-all PER BUILDING — a civil building (0 envelope
   elements) boxes all its elements. Gate: buildings with envelope ≥ 2 % unchanged → fleet identical.
+  **ORDER-INDEPENDENCE (user 2026-10-06: "does it matter? Users may do any ways above"):** #1889 decided per BUILDING NAME, so a
+  one-shot import (road + bridge under one name) still gave the road 0 boxes while two drops gave 15,751. Rule v2: the group is
+  "civil" for every element in a SEQUENCE_CIVIL discipline, else its building — the same boxes whatever the drop order. Witness:
+  Merged.db and a one-building copy of it (every row building='JELAPANG') must draw the same count.
 - **Ground moved down 18.8 m.** `§GROUND_CIVIL civilRows=5675 → p2-bottom over all elements` → `§GROUND_Y z=32.90` (was 51.74 after
   #1849): the p2 of bottoms now lands on pile/earthworks bottoms. **User rule 2026-10-06:** *"our new ground level will be using the
   new one. Old is default in lieu of such ground terrain IFC"* → when an EARTHWORK terrain solid is present, the ground comes from
