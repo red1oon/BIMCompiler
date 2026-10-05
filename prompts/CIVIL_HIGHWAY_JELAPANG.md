@@ -85,6 +85,19 @@ ground shadow sun day with light distance normal fog all OK good enough."
    (earthworks → drainage → pavement → furniture → signage → lighting → marking), bridge keeps its storeys; (b) a road "level" =
    chainage segment along A.civilRoutePath instead of Z (construction by section); (c) civil-majority model → civil template.
    Each needs the §I owner edited (level owner = LevelDeriver / schedule_gate collapsePhase), not a second copy.
+   **Industry correlation (user 2026-10-05: "U have to corelate to industry practice in 4d schedule") — sources:**
+   · Location axis = CHAINAGE: time-location / time-chainage / line-of-balance charts are the planning form for roads; a research
+     Linear4D system links 4D to a schedule-location chart over tens of km (scholarworks.gnu.ac.kr/item/0992be81-…; FTI "Linear
+     schedules"; planningplanet.com/comment/560). OURS: location = bridge storeys by Z → ✖ the core mismatch.
+   · Phase order = earthworks → drainage → pavement → finishing works (line marking, signage, lighting) — JKR/SPJ/2008 section order.
+     OURS: SEQUENCE_CIVIL 1-7 ✔ (but outranked by storey bands).
+   · Drains right after earthworks, before pavement layers (NATSPEC/AUS-SPEC 1173 pavement drains; Designing Buildings "Sub-base") ✔.
+   · Street lighting: ducts/crossings before poles (street-lighting method statement; Iowa DOT LI-142) — ducts not in this IFC.
+   · Road markings LAST, ≥ 14 days after the final asphalt course (FDOT 711) ✔ seq 7.
+   · Bridge: piles → pile caps → piers/crossheads → girders → deck → barriers/parapets → surfacing; approach slabs at the end (JICA
+     12110953_04; WSDOT WBES 2017 7A1) ≈ ✔ its own storeys.
+   → RECOMMENDED shape (b): road LEVEL = chainage section along A.civilRoutePath (one owner), phase order inside each section, bridge =
+     its own section keeping its storey order; crews advance section by section (line of balance). Not built — needs the user's go.
 3. **User's first real Ctrl+S — ✅ DONE live 2026-10-05 12:33:** JELAPANG.db saved at 395,710,464 bytes = the predicted slim
    size (witness_mesh_slim now reads it VACUOUS: no stored normals). Original note: = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
