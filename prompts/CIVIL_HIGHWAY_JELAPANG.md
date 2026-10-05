@@ -297,6 +297,16 @@ building → MEP unchanged (NON-IMPACT gate). Rule-checklist panel adoption = la
 two-post sign face bottom > 1 m (proves the slice fix); road top ≥ every ROAD vertex z within 0.5 m (proves top not underside);
 Duplex → every rule VACUOUS/INCONCLUSIVE, button stays MEP; a rule with 0 population never prints PASS.
 
+### §RP Road panel + Alt+C film (user, 2026-10-05) — REQUEST RECORDED, not specced
+> *"We can have a dedicated Road CW Overlay Panel that addresses [the 8 §K items] … then in the Alt-C film making has them
+> similar to buildings"*
+- One panel, shown only on civil models (same gate as §MC), one tab per §K item, each tab stating its status from §K's table
+  (data in hand / derivable / waiting on what). No tab fakes a result for missing data (lux needs IES; flood needs terrain + hydraulics).
+- First tab = **6 Follow Road Standard** = §MC's evaluator. Its rows use the StructuralSanity/EgressSanity row shape on
+  purpose → the existing building path (`rule_checklist.js` panel + `rule_findings_film.js` film beats) can take them. That is
+  the "similar to buildings" route for Alt+C: road findings become film beats through the SAME film code, no second film engine.
+- Order follows §K: 6 → 4 traffic management 4D → 5+8 drainage capacity → 1 drive / swept path → 3 utility route → 2 lux → 7 display-only.
+
 ### FUTURE (recorded, not started)
 Design-revision diff · snags/issues with QR · variation orders on civil rates · rule-findings film for road
 standards · 2D corridor plan (storey-free) · cross-sections square to road · lane widths/clearances by measure ·
