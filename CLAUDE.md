@@ -325,6 +325,19 @@ confirmed clean + 100+ commits stale first). Rules going forward:
   be mid-command there — pulling the directory out from under them is disruptive even when no data is at
   risk). Prune everything else that qualifies; leave dirty/unpushed/actively-occupied ones alone and move on.
 
+## ⚡ PERF BUDGET — consider while coding (proposed 2026-10-06; data: `docs/BrowserScaleBenchmark.md`)
+Measured, not guessed: in one tab the binding limit is **memory, not draw speed**. Heap ≈ **0.17 GB per million vertices** (fit over
+HHS / Hospital / JELAPANG bake logs); JELAPANG (22 M verts) peaks 3.4–3.8 GB while a render pass costs ~6 ms on an RTX 4060 laptop.
+- **Count vertices, not elements.** Before adding geometry (welds, clones, silhouettes, prewarm meshes) state its vertex/heap cost;
+  `§DUCT_SILHOUETTE`/`§MEP_SMOOTH_NORMALS` style passes must log verts added.
+- **Release what is off screen.** DLOD saves draws but disposes nothing — new geometry paths should support evict-behind; streaming
+  (httpvfs range reads, chainage tiles §J) is the growth path, not more RAM.
+- **Never duplicate big buffers** (a second copy of vertices/normals in JS = +heap); prefer typed-array views and on-demand reads.
+- **Save deltas, not the DB** — whole-DB rewrites (KRN_PERSIST) scale with model size.
+- **Occlusion helps draws only** (dlod_nav OCCL, > 20k elements) — it does not move the memory threshold.
+- **Log the cost:** heap (performance.memory) and verts in a `§` line at the end of any heavy pass, so the bake log keeps the benchmark current.
+Phones (~0.6 GB per tab, unverified) fit only ~4 M verts as a whole model — design new features so they degrade, not crash.
+
 ## Sacred Files (edit with extreme care)
 - `deploy/live/*` — PRODUCTION snapshot, never edit (see PRIME RULE)
 - `migration/*.sql` — append only, never modify existing migrations. EXEMPT: `DV_<prefix>_rules.sql` — regenerated

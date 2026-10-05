@@ -50,7 +50,7 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 6. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined";
    witness_civil_phase reports FAIL on a merged road+bridge DB (its building rule does not fit a merged model) — on main too.
 **Moved out (2026-10-06, user: "keep the future from the prompt file"):** prior-art claim wording, scale/limits/growth, benchmark chart plan,
-IFC4.3 path + lean-code reality → `prompts/FILM_NARRATION.md` §BROWSER_SCALE_AND_CLAIMS · Modeller covering civil
+IFC4.3 path + lean-code reality → `docs/BrowserScaleBenchmark.md` · Modeller covering civil
 (DeepSeek view) → `prompts/MODELLER_MASTER.md` §CIVIL_IN_MODELLER.
 **Rules learned:** bake only on the user's go; `cd /tmp/wt-x || exit` before any edit/commit in a script (a failed worktree add once let
 commands commit another session's work in the shared ~/bim-ootb — undone, nothing lost); `pgrep/pkill -f` patterns can match their own

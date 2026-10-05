@@ -173,4 +173,4 @@ The measure scripts PROVE the logic; production code goes into `~/bim-ootb/viewe
 
 ---
 
-## §BROWSER_SCALE_AND_CLAIMS — MOVED to FILM_NARRATION.md §BROWSER_SCALE_AND_CLAIMS (2026-10-06, user: part of the film scope)
+## §BROWSER_SCALE_AND_CLAIMS — MOVED to docs/BrowserScaleBenchmark.md (2026-10-06, user: part of the film scope)
