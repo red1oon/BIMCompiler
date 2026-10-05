@@ -44,6 +44,23 @@ ground shadow sun day with light distance normal fog all OK good enough."
    branch `merge/altc-alts-lane`; resolutions + witnesses in the PR body (all civil witnesses green on it; lint 21 → 0).
    ⚠ Squash-merge: main gets ONE commit — the lane's history stays on fix/fast-bake / fix/sky-surface (do not delete them).
    Lane-owned debt flagged: witness_light_law_unit + witness_film_exposure_unit each 1 FAIL, identical on fix/fast-bake.
+2d. **Alt+C red POV cone missing during preview (user 2026-10-05) — CULPRIT NOT FOUND YET.** I first claimed "the cone is
+   only out of the parked camera's view" and kept pushing it after the user rebutted ("the red cone must get into the canvas
+   and trace the given path. it does not appear anymore"; "do not double down") — that account is WITHDRAWN as the answer.
+   Verified so far: _syncPovMarker + every caller (_applyVFPose ← _scrubTo / scrub-Play _previewFly(true) / reopen) are
+   byte-identical before #1874, on fix/fast-bake and on main; the #1874 diff to cinema_path_editor.js is only §FREEZE_PERF
+   checkboxes; time_machine.js §REVEAL_DOOR_LEAK only touches objects with userData.guid (the cone has none); main-canvas
+   Preview (_previewFly(false) → _applyCameraPose) never drew the cone. Headless scrub on JELAPANG + Duplex: cone mesh created,
+   visible=true, positioned on the path. NEXT: the user's console log from one preview where the cone is missing (§CPE_*,
+   errors) — evidence, not a look. User rule: restore what was there, don't invent new behaviour.
+2e. **4D on the road + bridge merge: street lights early — CAUSE FOUND from the user's own log (not fixed).** The civil
+   schedule (SEQUENCE_CIVIL: earthworks → drainage → pavement → furniture → signage → lighting → marking) is gated on ALL
+   elements being civil (§Q). The merged file is 5,674 civil + 4,739 bridge (ARC/PLB/STR) → `§CIVIL_PHASE map=5674 of 10413`
+   → the BUILDING path runs: storey/Z-bands (`§GANTT storey-bands: 12 bands`), and `§GANTT band 0 z=[0.4,2.5] 11 elements: Road
+   Lighting:11` — lamp columns (incl. low strays) are built in the FIRST band; bands 16-21 mix Pavement, Road Lighting, Drainage
+   and MEP Rough-in by height. A road-only DB takes the civil template (#1851 witness_civil_phase). Fix needs a spec + user go:
+   mixed civil+building model → civil elements by SEQUENCE_CIVIL phase, building elements by bands, or civil-majority rule.
+   Build-up / reveal round 2 "broken?" — not judged yet; needs the trial bake's page log (§CPE_BUILDUP, §CPE_REVEAL_ROUND).
 3. **User's first real Ctrl+S — ✅ DONE live 2026-10-05 12:33:** JELAPANG.db saved at 395,710,464 bytes = the predicted slim
    size (witness_mesh_slim now reads it VACUOUS: no stored normals). Original note: = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
