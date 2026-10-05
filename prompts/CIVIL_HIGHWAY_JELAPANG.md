@@ -30,6 +30,10 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    (CI rerun after a runner outage; job never started) → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
    new disciplines: ground-treatment card (piles/nails/drains/walls per stretch + pset design values), earthworks card, real
    chainage from CHAINAGE labels with today's inferred route as fallback; at most ONE new checkbox (show below-ground work).
+   (e) **Film script (user 2026-10-06):** *"make the movie script more of reporting for the user's POV, reporting on their works,
+   stats.. no more about red1 as that film is done. 6 lingo greetings stay to demonstrate such film option to users"* → narration
+   reports the model's own numbers (counts, phases, durations, checks) to its owner; drop the red1/project-story lines; keep the
+   6-language greeting as the language-option demo. Recipe lives in FILM_NARRATION.md — edit there.
 1. **§PARTNER_DISCS build order** — the partner files now IMPORT as GEOTECH / GABION / CHAINAGE / ROW (#1886) but schedule by class (no civil
    phase). The full order (setting out → ground treatment → earthworks → drainage + gabion → pavement → finishing → marking) is on WIP branch
    `feat/civil-partner-discs`; it tipped the merged road schedule onto the CELL path (no §CPM_RUN; lamps before pavement 0 → 92, first-2 %
