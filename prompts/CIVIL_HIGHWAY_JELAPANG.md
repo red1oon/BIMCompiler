@@ -231,7 +231,11 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   User 2026-10-05 (live, after ground report): "distance reflection on the shiny road, but no street lamps get lighted" —
   consistent with the numbers above: moon/env specular reads at distance; 30 indoor-strength point lights 10+ m up give
   ~0.2 at the road, and no head glows (§GLOW_LAYERS_OFF removed the sprite).
-  Proposal (NOT BUILT, needs go + look ruling): civil gate (all elements ∈ CIVIL_DISCS, envelope > 1 km).
+  ✅ STEP 1 SHIPPED bim-ootb PR #1869 (user go 2026-10-05 "still no change in Night lighting"): §CIVIL_LAMP_THROW head
+  intensity × mountH/3 (median ×4.63, max ×11.14) + §CIVIL_LAMP_GLOW 6 px Points on all 223 heads; witness 15/15.
+  Still open from the proposal: (b) pools for heads beyond the 30 nearest, (c) night fog by view distance, (d) Alt+C dusk.
+  #1868 CI lesson: a bare cross-file global (SEQUENCE_CIVIL) fails the no-undef gate — read it via window.
+  Proposal (original, civil gate) (all elements ∈ CIVIL_DISCS, envelope > 1 km).
   (a) every lamp head reads at any distance: emissive head glow from the head list (no light cost);
   (b) light POOL on the road under every head: downward spot (cone) for the nearest N, a cheap ground pool for the rest —
       street lighting is a pool on the carriageway, not an omni bulb;
