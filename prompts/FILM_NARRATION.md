@@ -1320,6 +1320,13 @@ spin 57–63 · drive 63–164 · pull-back 164–198 · orbit 198–206; `§CIN
 9. `fourD` row (red1 2026-10-05: *"So this explains away any mishap in the early part of buildup"*): says it openly — lamps up first
    = debut quirk (merged bridge → building Z-band rule, CIVIL_HIGHWAY_JELAPANG.md 2e), road order comes next. Keep ONLY if the
    bake's own §GANTT/§CIVIL_PHASE lines show the same (a road-only bake takes the civil order and this line must go).
+10. `fourD` row, JSON templates (red1 2026-10-05: *"And how the JSON template can be edited by users to correct them later"*):
+   MEASURED in code — Settings › Edit Project JSON registry (panels.js:2217) = Corporate, Grid Rules, Clash Rules, Civil Labels,
+   ERP Globe Bubbles, Sound Effects (editable) + 4D Schedule (read-only). 4D_template.json and sequence_rules.json are READ with a
+   Settings override key (json_4d_template / json_sequence_rules) but are NOT in the registry, so no user can open them there;
+   4D_template_civil.json is a plain fetch with no override. Narration says: road labels + clash rules editable today, "the 4D
+   templates join them next". To make it present tense: 3 registry rows + route the civil template through
+   loadJsonWithOverrides('json_4d_template_civil') — not done (needs user go; touches Settings for every model).
 6. `field` row (red1 2026-10-05: *"say a line that we be expanding our Modeller concept to civil works construction too! That
    is said to be very difficult. Put this before that last line of red1 welcoming the challenge"*): Modeller → civil works line
    sits just before the closing "Red1 set out to close… welcomes the challenge" line; it is red1's stated PLAN, voiced as a plan.
