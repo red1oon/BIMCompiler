@@ -1,6 +1,8 @@
 # Local-First Prior Art — How Others Did It, Their Weaknesses, Our Workarounds
 *[← Back to the **User Guide**](USER_GUIDE.md) · [Home](index.md)*
 
+> **See also:** [Browser-Scale Benchmark](BrowserScaleBenchmark.md) — how large our one-tab, local-first app is today, measured render and memory numbers, the memory threshold, and the claims we can cite against other projects.
+
 
 **Scope.** Research companion to `ERP.md §0.20` (secured/durable next phase). For each production
 local-first system: *how it works*, *its documented weakness*, and *the workaround our architecture
@@ -186,7 +188,7 @@ The hard constraints (each maps to one of our engine issues):
 
 | SQLite-WASM finding | Source | Maps to |
 |---|---|---|
-| **~2 GB DB cap** (up from 512 MB) | [sqlite.org/wasm persistence](https://sqlite.org/wasm/doc/trunk/persistence.md) | I-A storage cap is hard-bounded → gravity-sharding ([DistributedERP §13](DistributedERP.md)) not optional at full-AD scale |
+| **OPFS storage limit: "generous but differ per environment"** — no fixed cap stated on the current page (an earlier reading here said ~2 GB, up from 512 MB; re-checked 2026-10-06, that figure is no longer on the cited page). In practice the ceiling is per-tab memory — measured in [Browser-Scale Benchmark](BrowserScaleBenchmark.md) | [sqlite.org/wasm persistence](https://sqlite.org/wasm/doc/trunk/persistence.md) | I-A storage is bounded per browser → gravity-sharding ([DistributedERP §13](DistributedERP.md)) not optional at full-AD scale |
 | **OPFS = one read/write txn at a time** | [PowerSync state-of-persistence](https://powersync.com/blog/sqlite-persistence-on-the-web) | **single-writer holds at the *storage* layer too** — reinforces G-SINGLE-WRITER / I-E from below |
 | **Multi-MB JS strings = measurable WASM-bridge cost** | [sqlite.org/wasm](https://sqlite.org/wasm/doc/trunk/persistence.md) | **exactly I-D** (projection 52→336 KB re-export) — keep state *in* SQLite, don't marshal big strings out |
 | **SAHPool VFS = 3–4× I/O; 8–16 MB page cache = big win** | [PowerSync](https://powersync.com/blog/sqlite-persistence-on-the-web) | free wins for the engine-perf lane (Agent E) *before* any algorithmic change |

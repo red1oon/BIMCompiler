@@ -8,6 +8,11 @@ measured or labelled an estimate, and where others win or the comparison is unfa
 three.js rendering, a 4D schedule, 5D quantities, clash, road checks, ERP and in-browser film baking. This page records how large that is
 today, where it breaks, how it can grow, and what we can and cannot claim against other projects.
 
+**Companion page:** [Local-First Prior Art](LocalFirstPriorArt.md) (researched 2026-05/06) already covers the SYNC systems (Replicache,
+ElectricSQL, PowerSync, LiveStore, CRDTs, SQLSync, cr-sqlite) and the storage axis — notably **Notion**, the at-scale production example of
+SQLite-WASM in the browser (Web Worker + OPFS SAHPool), which keeps Postgres as the source of truth (a server-backed projection, not
+local-first). Rows below that say "not checked" for those systems defer to that page.
+
 **Contents:** §PRIOR_ART (claims we can cite) · §SCALE (size today, what breaks) · measured render + heap numbers · THRESHOLD (fitted from
 48 bake logs) · §IFC43 (the IFC4.3 path and code-size reality).
 
