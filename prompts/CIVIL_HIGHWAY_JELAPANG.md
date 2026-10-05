@@ -19,7 +19,24 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶ RESUME HERE (session closed 2026-10-05 ~15:30 — user: "wrap up to continue in new session")
+## ▶ RESUME HERE (session 2026-10-06 — user: "continue on this" → "All proceed according to your analysis")
+**This session shipped (bim-ootb main, all live, sw v1572):** #1875 §GLOW_DAY lamp glow hidden by day, soft dot · #1877
+§REVEAL_SHELL road reveal hides the pavement · #1878 §ALTC_V2 road film one drive 353.8 → 111.9 s, build-up by half-way,
+parade in the drive, close-up orbit at the 5-head junction · #1879 §ALTC_PANELS data cards on quiet stretches · #1880
+§CHAINAGE_V2 lamps never before their pavement (route order still open) · #1881 §ALTC_LABELS no building labels on road films.
+NONE of the film changes has been seen in a real bake — the next step is the user's bake of JELAPANG_AFTER (Alt+C, Reveal on).
+**Open, in order:**
+1. ⛔ §CHAINAGE_V2 route order (drive-order correlation 0.30, need ≥ 0.8) — RULING NEEDED: do at-grade road pieces (ROAD /
+   DRAINAGE / MARKING) rest on the soil (ground-exempt like `seq === 1`), so neighbouring pieces stop counting as each other's
+   support? Measured payoff and cost in §CHAINAGE_V2. Also the bridge ARC builds first (107 of the first 208 placements).
+2. ⛔ Narration (item 5 below) — waits for the v2 bake: the script was timed to the old 206 s plan; v2 is 111.9 s, so the body
+   must be re-cut to ~2.3 w/s against the bake's own §CINEMA_BEATS. Drop the `fourD` "lamps up first = debut quirk" line if the
+   bake's log shows §CHAINAGE_LEVELS (lamps-before-pavement is now 0).
+3. Road checks in the film (§MC) — road_check.js has two measurement faults (sign height reads a higher road piece; every sign
+   foot inside a ROAD solid); fix those before wiring them into the film in place of the building rule cards.
+4. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is
+   not defined" (their slice of effects.js misses the constant).
+**Previous resume block (2026-10-05) — items 1-3 ✅ this session, 4-5 see above:**
 **Do FIRST, in order:**
 1. ✅ **GHOST FIXED 2026-10-06 — bim-ootb PR #1875 (sw v1567, auto-merge), §GLOW_DAY, witness_civil_night_lamps 18/18; CHECK IT MERGED.** Was: **GHOST over the highway = MY BUG (#1869 §CIVIL_LAMP_GLOW).** In a daylight film the glow Points (6 px SQUARES, one per lamp
    head, sizeAttenuation off) float above the road — seen in the aborted film ~/Downloads/BIM_MaxQ_JELAPANG_1791177960446.mp4 at 4 s.
