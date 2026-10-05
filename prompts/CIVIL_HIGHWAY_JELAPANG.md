@@ -36,7 +36,12 @@ user: "a good concept documentary that answers both the developers and general u
    0.00 m), then flip film_status in road_rules.json with the reason (§MC, §ALTC_CHECKS).
 4. Storyboard ideas not built: camera follows the construction front (needs item 1); more part clips (junction build, drainage
    section) via the same assembly tools (film_assemble.py, film_page_clip.js).
-5. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined".
+5. GHOST REFLECTION above the construction, in the sky (user 2026-10-06: "did u manage to solve the ghost reflection above
+   construction in sky"). The lamp-glow squares ghost IS fixed (#1875; bake logs show §CIVIL_LAMP_GLOW_DAY visible=0 src=still for the
+   whole film). If the user still sees a ghost in v2/v3, it is a DIFFERENT cause — not identified, nothing measured yet. First step:
+   get the film + second from the user, then read that frame's § lines (glow, §CPE_BUILDUP hidden/pending meshes, ghost ground
+   groundOpacity, sky/reflection layers) — do not guess the cause.
+6. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined".
 **Rules learned this session:** bake only on the user's go (given 2026-10-06 for this lane); a `pgrep/pkill -f` pattern can match its
 own shell — match on the port or PID; the CLI bake needs an --override when the DB has no saved path (use A.civilDriveRoute()).
 
