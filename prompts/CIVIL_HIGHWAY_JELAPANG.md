@@ -19,7 +19,28 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶ RESUME HERE (session 2026-10-06 — user: "continue on this" → "All proceed according to your analysis")
+## ▶ RESUME HERE (session closed 2026-10-06 — user: "wrap up, clean, push, new session will resume later")
+**State:** bim-ootb main live at sw v1574. This session's PRs, all merged: #1875 lamp glow off by day · #1877 road reveal shell ·
+#1878 film v2 (one drive, junction orbit) · #1879 data cards · #1880 chainage build (lamps never before road) · #1881 no building
+labels · #1882 road checks as formula cards (VALID/SPECULATIVE list in viewer/rates/road_rules.json film_status) · #1883 film v3
+(build by pieces completed, no freeze, 8 s approach, grass) + compliance mock-up model_check_report.html (MEP button → Model Check).
+**Films in ~/Downloads (logs beside them):** BIM_JELAPANG_v2.mp4 + _narrated_AFTER (116 s) · BIM_JELAPANG_v3.mp4 (94.6 s, no Reveal) ·
+BIM_JELAPANG_v3_bridge.mp4 · BIM_HIGHWAY_v3_assembled.mp4 + BIM_HIGHWAY_v3_narrated_AFTER.mp4 (118.6 s — the current documentary;
+user: "a good concept documentary that answers both the developers and general users"). Recipe: FILM_NARRATION.md §11.v3.
+**Open, in order:**
+1. Route order of the build (drive-order correlation 0.30, need ≥ 0.8). Measured: E4 (trade section→section) loses 4,971 of 7,685
+   edges to cycles through the section milestones. POC tried and dropped: soil rule (0.33, 714 floating), bridge by section (0.30).
+   Next: find what forms the loops (one cross-section support edge couples whole sections via the milestone hammock) — §CHAINAGE_V2.
+2. 1,485 'Jelapang VBC' pieces have their drawn box at the origin (not placed) — not investigated (§ALTC_V3 data fact).
+3. Road checks: 4 of 5 rules SPECULATIVE — fix sign/marker height (road-edge level picks a higher piece) and lateral clearance (all
+   0.00 m), then flip film_status in road_rules.json with the reason (§MC, §ALTC_CHECKS).
+4. Storyboard ideas not built: camera follows the construction front (needs item 1); more part clips (junction build, drainage
+   section) via the same assembly tools (film_assemble.py, film_page_clip.js).
+5. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined".
+**Rules learned this session:** bake only on the user's go (given 2026-10-06 for this lane); a `pgrep/pkill -f` pattern can match its
+own shell — match on the port or PID; the CLI bake needs an --override when the DB has no saved path (use A.civilDriveRoute()).
+
+**Previous resume block (2026-10-06 morning), kept for history:**
 **This session shipped (bim-ootb main, all live, sw v1572):** #1875 §GLOW_DAY lamp glow hidden by day, soft dot · #1877
 §REVEAL_SHELL road reveal hides the pavement · #1878 §ALTC_V2 road film one drive 353.8 → 111.9 s, build-up by half-way,
 parade in the drive, close-up orbit at the 5-head junction · #1879 §ALTC_PANELS data cards on quiet stretches · #1880
