@@ -287,6 +287,15 @@ HORIZONTAL DRAIN 228 (17_Length "12m HORIZONTAL DRAIN AT 3m c/c") · 4 RC walls 
   card's guids; the earthworks row = COUNT of EARTHWORK rows. Fixture with psets: Merged.db + the GEOTECH/GABION instance psets read
   from the partner IFCs (IfcOpenShell, same rule as import_worker §CIVIL_PSETS) — what a re-merge after #1891 would store.
 
+### §WORLDBOX_DLOD — the drawn-box owner reads a DLOD-culled (zeroed) matrix (MEASURED 2026-10-06)
+`cpe_load_path.js _sourceInstance` (owner behind `A._loadPathInstanceWorldBox`) reads the LIVE instance matrix. DLOD culls an
+off-screen InstancedMesh slot by writing a zero-scale matrix (dlod.js:221) and keeps the real one in `_instanceMeta[..]._origMatrix`.
+Merged.db: 25 lamp columns read scale 0 → a (0,0,0) box → §CHAINAGE_V2 filed them by centroid (the code's own miss rule) and the
+chainage witness (before its guard) put them at the origin's route index. Same read places Load Path member clones (cpe_load_path.js
+:487) → a culled hop clones at zero scale. Ruled out: BatchedMesh `getBoundingBoxAt(slot)` vs geometry id — measured 7,911/7,911
+slot == geometry id on Merged.db. Fix: when the slot is `_dlodHid` with an `_origMatrix`, use `_origMatrix`. Witness: zero-box
+lamps 25 → 0 on Merged.db; chainage witness stays 3/3; `§CHAINAGE_LEVELS fromDrawnBox` rises by the recovered slots.
+
 ### §DOCTRINE_AUDIT — 2026-10-06 (user: "check that no doctrine or flow of work is broken … nothing new is invented to patch any gap")
 Checked against 4D_MODEL_INTEGRITY.md §B (layers: CLASSIFY = lookup, DECLARE = 4D_template*.json, SOLVE must never discover order).
 - ✅ #1887 look/ground: extends the ground owner `tools.js _calcGroundY` (no second ground); height from the mesh. Opacity 0.28 is a
