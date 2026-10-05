@@ -64,6 +64,27 @@ ground shadow sun day with light distance normal fog all OK good enough."
    and MEP Rough-in by height. A road-only DB takes the civil template (#1851 witness_civil_phase). Fix needs a spec + user go:
    mixed civil+building model → civil elements by SEQUENCE_CIVIL phase, building elements by bands, or civil-majority rule.
    Build-up / reveal round 2 "broken?" — not judged yet; needs the trial bake's page log (§CPE_BUILDUP, §CPE_REVEAL_ROUND).
+2f. **"The build path is hardcoded to MEP / building structure" (user 2026-10-05) — CONFIRMED, traced to owners (4D_MODEL_INTEGRITY
+   §I read first). Investigation only, nothing changed.** From the user's own pasted log of the merged road+bridge DB:
+   - PHASE is right: `schedule_author.js:1904` `civilRuleFor(...) || matchNameOverride(...)` — the civil rule wins first. The
+     `§NAME_OVERRIDE 5826` line is misleading: it counts civil hits (5,674) + ~152 real name overrides and prints EVERY override id
+     whether matched or not (logging defect, not a classification one).
+   - The ORDER is building physics with a STOREY axis: the task/solve group key is (LEVEL, phase) — `cpm_schedule.js:201-297`
+     (§CPM_STRAGGLER_MEMBERSHIP: groupKey = level then phase). LEVEL comes from storeys: `§GANTT storey-bands: 12 bands from storey
+     names (median Z)` — the BRIDGE's storeys (BASE, CROSSHEAD PIER 14, DATUM, FRL ABT A/B, Level 1/2, DECKSLAB, TOP DECK SLAB,
+     Datum) — then `§GANTT_STOREY_Z reassigned=5763 no-storey elements to nearest real storey by median Z`: every road element
+     (no storey of its own) is filed under a bridge storey by its HEIGHT. `§4D_BAND_MONOTONIC ranks=12` then builds bottom-up.
+     → a lamp column whose base sits low is in band 0 (`§GANTT band 0 … Road Lighting:11`) and goes up before the pavement above
+     it; pavement on the climbing road is spread over bands 16-26 by its own Z.
+   - Support physics is the building one: E1 contact / bearing-below / hang-carrier (`support_sweep.js` `_contactGraph`, owner
+     §I) → `§CPM_RUN stragglers=5614` ≈ the 5,674 civil elements: almost every road piece's physics ancestry reaches a "later"
+     (bridge-storey, phase) group. Ground exemption = `seq !== 1` (§I row "rests on soil") — the civil seq 1 is EARTHWORK, which
+     this set has none of (terrain TIN not exported), so no road element is soil-exempt.
+   - Road-only DB: all civil → civil template (§Q, #1851) — not affected by the bridge storeys. The mixed DB is the failing case.
+   Fix shapes for a ruling (none built): (a) civil elements get NO storey reassignment — one level for the road, phase order only
+   (earthworks → drainage → pavement → furniture → signage → lighting → marking), bridge keeps its storeys; (b) a road "level" =
+   chainage segment along A.civilRoutePath instead of Z (construction by section); (c) civil-majority model → civil template.
+   Each needs the §I owner edited (level owner = LevelDeriver / schedule_gate collapsePhase), not a second copy.
 3. **User's first real Ctrl+S — ✅ DONE live 2026-10-05 12:33:** JELAPANG.db saved at 395,710,464 bytes = the predicted slim
    size (witness_mesh_slim now reads it VACUOUS: no stored normals). Original note: = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
