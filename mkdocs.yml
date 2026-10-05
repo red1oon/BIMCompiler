@@ -86,6 +86,7 @@ nav:
       - "Two Apps, One Kernel": TwoAppsOneKernel.md
       - "One Page InfoGraphics - Landscape": TwoAppsOneKernelInfographicLandscape.html
       - "Benchmark Comparison (live)": bench_suite.html
+      - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Does Your ERP Age? (live)": age_demo.html
       - The ERP World View: MANIFESTO.md
       - Contribute: CONTRIBUTING.md
