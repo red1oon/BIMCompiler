@@ -27,7 +27,12 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    existing flag `A._stillWindowGlowOff` (effects.js:4569 still, :4835 film parity per frame `= day`, :4958 teardown resets); film
    parity is ON for films by default (:4304). Also draw a soft round dot, not a square. Witness: glow hidden at sun > 6°, shown at
    dusk/night; buildings unaffected (no civil heads).
-2. **"Reveal no ARC is not working"** (user, from the trial bake) — not investigated. Read §CPE_REVEAL_ROUND / reveal visual lines
+2. ⛔ **"Reveal no ARC" — CAUSE READ FROM CODE + DATA 2026-10-06 (no bake log yet).** The reveal's ghost round hides only
+   ARC + STR (effects.js A.cpeRevealVisualAt round 2: visDiscs = every non-ARC/STR disc; A.cpeRevealDiscsPresent drops ARC/STR).
+   JELAPANG_AFTER: ROAD 4008 · PLB 2062 · STR 1851 · FURNITURE 1011 · ARC 826 · LIGHTING 227 · DRAINAGE 200 · SIGNAGE 138 ·
+   MARKING 90. So the round hides only the bridge (2,677) and the pavement (ROAD, 4,008) stays solid → along the road nothing
+   changes → "not working". BLOCKED on one user decision: on a road, does the ghost hide the pavement (ROAD) too, as the
+   road's "shell"? Same answer shapes item 3's reveal-in-the-drive. Was: **"Reveal no ARC is not working"** (user, from the trial bake) — not investigated. Read §CPE_REVEAL_ROUND / reveal visual lines
    from a bake log first (note: a BROWSER bake saves no log file — only cli_silent_bake.js writes `<film>.log`; consider a
    "save log with film" option).
 3. **§ALTC v2 film** (spec 2h; user: "set in the deterministic code its waypoints, speed control, buildup stages"; "plan the path
