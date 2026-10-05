@@ -33,6 +33,9 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    earthwork solids). New finding: 25 lamp columns return a zero (0,0,0) box from `A._loadPathInstanceWorldBox` (lookup miss). → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
    new disciplines: ground-treatment card (piles/nails/drains/walls per stretch + pset design values), earthworks card, real
    chainage from CHAINAGE labels with today's inferred route as fallback; at most ONE new checkbox (show below-ground work).
+   ✅ MERGED #1891 (merge carries psets) · #1893 (§WORLDBOX_DLOD: fromDrawnBox 7,578→19,570) · PR #1894 reveal-witness slices
+   (arch_hold 6/6, tail_lights 8/8, were erroring) · box view v2 order-free (branch fix/bbox-ghost-order-free: one-shot = two-drop
+   = 15,751; Clinic 1,549) + merge-all witness instrument fixes (phase B served on its own path; B2 vs drawable rows).
    (d) ✅ BUILT PR #1892 (§ALTC_GROUND_CARDS: ground card, red Outstanding card, earthworks row; 14/14 on 3 DBs) · ✅ PR #1891 merge
    carries element_psets (§MERGE_PSETS). ⛔ real chainage from the CHAINAGE labels: the 332 labels are 3D text SOLIDS with NO
    properties (§CIVIL_PSETS VACUOUS) — the station number exists only as letter shapes; reading it = OCR of geometry, not extraction.
@@ -59,7 +62,7 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    see-through mode (a --tap translucency stalled the bake at frame 0).
 5. **Road checks:** 4 of 5 rules SPECULATIVE (road_rules.json film_status) — fix sign/marker height (road-edge level picks a higher piece) and
    lateral clearance (all 0.00 m), then flip the status with the reason.
-6. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined";
+6. ✅ witness_reveal_arch_hold + witness_tail_lights_all_discs "ARCH_BULK_CUT_FRAC is not defined" — instrument slices fixed (PR #1894);
    ✅ witness_civil_phase on merged road+bridge — fixed in #1890 (owner gate, judges civil elements only).
 **Moved out (2026-10-06, user: "keep the future from the prompt file"):** prior-art claim wording, scale/limits/growth, benchmark chart plan,
 IFC4.3 path + lean-code reality → `docs/BrowserScaleBenchmark.md` · Modeller covering civil
