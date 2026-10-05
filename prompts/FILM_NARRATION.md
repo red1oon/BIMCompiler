@@ -1494,6 +1494,16 @@ Suggested order: section streaming + incremental save BEFORE more features.
 **Developer doc (user 2026-10-06):** the scale chart + these numbers go into a separate doc published for the dev community (§SCALE
 benchmark axes; fill the listed gaps first). Where to publish: OPEN (public docs site via scripts/safe_gh_deploy.sh vs a shared page).
 
+**MEASURED from the v3c bake log (2026-10-06, `~/Downloads/BIM_JELAPANG_v3c.log`, 1,419 frames at 1852×960, machine = NVIDIA GeForce RTX 4060
+LAPTOP GPU, 8 GB):**
+- 3D draw per captured frame (`§CAPTURE_PARTS draw3d`): p50 93 ms · p90 113 ms (first frame 884 ms). Each capture = 16 renders
+  (`§MAXQ_FRAME_BUDGET taa=8 ao=8`) → ≈ 5.8 ms p50 / 7.1 ms p90 per render ≈ 170 / 140 fps-equivalent — an ESTIMATE of interactive headroom
+  (assumes the 16 renders cost the same; AO/TAA passes differ; interactive navigation fps itself is still unmeasured).
+- Drawn per frame (`§RENDER_INFO`, 60 samples): p50 1.03 M triangles, max 4.65 M; 135–210 draw calls.
+- JS heap (`§NIGHT_MEM_WITNESS heapMB`): 3,462–3,808 MB ← ⚠ NEAR the ~4 GB tab limit on this model. This is the real ceiling today, before
+  GPU or speed — confirms streaming + eviction as the growth path.
+- Whole bake frame incl. capture + encode (`§FRAME_COST`): p50 766 ms, p90 1,893 ms (offline film quality, not interactive).
+
 ### §IFC43 — what the partner set gives, the novel-art claim, and the IFC4.3 path (recorded 2026-10-06)
 **What the files give:** the whole highway as a construction model — what is underneath (7,575 embankment piles 350 mm / 18 m / 750 kN,
 1,338 soil nails, 228 horizontal drains, 4 RC walls), the earthworks body, slope protection (gabions), setting-out references (332 chainage
