@@ -276,6 +276,23 @@ proxy-only models acknowledged (IFCNet arXiv 2106.09712 — class from geometry)
 **Before publishing:** verify the UNVERIFIED rows (APS/Forge, iTwin.js, Trimble Connect, Dalux, Catenda, PGlite/ElectricSQL/PowerSync,
 DuckDB-WASM, JupyterLite, Figma/Linear architecture) from primary docs.
 
+### §SCALE — how large we are, and what breaks as we grow (recorded 2026-10-06, from §LOAD / §J / §MESH_SLIM measurements)
+**Today (road + bridge, before the partner set):** 10,413 elements · DB 661 MB (605 MB = component_geometries; 396 MB after §MESH_SLIM) ·
+22.0 M vertices / 8.5 M triangles · heaviest: 227 lamp poles = 204 MB / 7.6 M verts (~33k verts per pole, flat-shaded facet soup, dup
+ratio 4.8) · load to COMPLETE 36.5 s headless (46.6 s before the roof fix #1867). Partner set adds 9,145 geotech pieces but ~0.26 M verts
+(IfcOpenShell tessellation — a different count basis from the DB).
+**What breaks as we grow, worst first:**
+1. MEMORY CEILING — geometry is never disposed (DLOD saves draw work, not memory: dlod_nav.js :475/:1397); estimate 100 km ≈ ~21 GB →
+   chainage tiles / section streaming (§J). The DB lives whole in the sql.js WASM heap — 32-bit WebAssembly memory caps at 4 GiB, so a DB in
+   the low GB will hit a wall before that (general platform limit — not measured on our build).
+2. SAVE COST — §KRN_PERSIST rewrites the whole 646 MB DB per op; URL loads > 400 MB skip the IDB cache (§CACHE_WRITE_SKIP_TOO_LARGE) → every
+   reload re-downloads. Grows with size → incremental / delta saves.
+3. LATENT GRID — light_zones 0.5 m grid ≈ 2.8e9 cells / 5.5 GB at this extent if a road model ever carries IfcSlab/IfcWall.
+4. GPU VRAM — 8 GB card; three GPU tenants (user Chrome + bake + headless) crashed the user's tab once (memory feedback).
+5. HEAVY MESH — lamp poles: crease-angle smooth + weld would cut most of their 7.6 M verts (needs spec + look ruling).
+Helps already: §MESH_SLIM (661 → 396 MB), roof layer 10.1 s → 33 ms. IFC4.3 alignment/stations make tiling by station natural (§IFC43).
+Suggested order: section streaming + incremental save BEFORE more features.
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
