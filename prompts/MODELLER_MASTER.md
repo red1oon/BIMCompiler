@@ -334,4 +334,4 @@ GPU=sw push its click past 30 s → harness timeout. merge_save_roundtrip / open
 scratchpads (missing) → not run.
 
 
-Related: IFC4.3 target classes and the alignment-first rule — BENCHMARK_AND_CLASH_RESOLUTION_LANE.md §BROWSER_SCALE_AND_CLAIMS (§IFC43).
+Related: IFC4.3 target classes and the alignment-first rule — FILM_NARRATION.md §BROWSER_SCALE_AND_CLAIMS (§IFC43).
