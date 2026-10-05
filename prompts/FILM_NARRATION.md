@@ -1537,6 +1537,15 @@ F: "Built WITH AI…" M: "…but there's no AI inside. What you see is computed,
 MIT licensed. Two hundred fifty-six tests that can fail, so the claims hold up." F: "And next?" M: "IFC4.3 roads — read the alignment instead
 of inferring it." F: "How do I help?" M: "Open the code. Break a test. Send a fix." F: "Information is free…" M: "…and contributors are
 priceless." F+M: "You have to be." → goodbyes ×6. (C1–C5 lines as v3, retitled; C2 as v4.)
+**CHAPTER END (user 2026-10-06: *"a fade off with a closing words on black (no more screenshot background) Chapter End - 'Strangely, there is
+no AI inside. No back door. You can see the code. MIT Licensed.'"*):** after the goodbyes the junction still fades to BLACK; white text,
+one line at a time, held ~2 s each, voiced softly by M (or silent — the user's call): *Strangely, there is no AI inside.* / *No back door.* /
+*You can see the code.* / *MIT Licensed.* Then the repository link.
+⛔ **Claim check before baking "No back door":** viewer/viewer.html:1144-1148 and index.html:645-648 load the GoatCounter visit counter
+(gc.zgo.at, page-view count; opt-out `?ignore-me`, skipped when `embedded=true`). It sends visits, not model data — but a skeptic watching the
+network tab sees the page call out. Options: (a) keep the line and add "your files never leave your machine" only after a witness proves no
+model bytes leave (none run yet); (b) remove the counter first; (c) word it "No back door — the only call home is a visit counter you can
+see in the code". User's decision; not baked until answered.
 **Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
