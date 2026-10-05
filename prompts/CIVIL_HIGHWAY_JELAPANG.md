@@ -53,6 +53,9 @@ ground shadow sun day with light distance normal fog all OK good enough."
    Preview (_previewFly(false) → _applyCameraPose) never drew the cone. Headless scrub on JELAPANG + Duplex: cone mesh created,
    visible=true, positioned on the path. NEXT: the user's console log from one preview where the cone is missing (§CPE_*,
    errors) — evidence, not a look. User rule: restore what was there, don't invent new behaviour.
+   User then: "just examine if the code displaying the cone is obscured by something new". ANSWER: NO. Cone = renderOrder 1005,
+   depthTest off. Every object with renderOrder ≥ 100 in viewer/*.js is IDENTICAL between this morning's main (4e3fa0a3, before
+   #1866) and main now (after #1874); no DOM overlay with z-index ≥ 100 added; no new EffectComposer addPass/insertPass.
 2e. **4D on the road + bridge merge: street lights early — CAUSE FOUND from the user's own log (not fixed).** The civil
    schedule (SEQUENCE_CIVIL: earthworks → drainage → pavement → furniture → signage → lighting → marking) is gated on ALL
    elements being civil (§Q). The merged file is 5,674 civil + 4,739 bridge (ARC/PLB/STR) → `§CIVIL_PHASE map=5674 of 10413`
