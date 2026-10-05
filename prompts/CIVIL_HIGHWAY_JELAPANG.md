@@ -37,6 +37,23 @@ the bake — needs a supported mode.
 ⚠ INCIDENT: a failed `git worktree add` (branch existed) let the following commands run in the SHARED ~/bim-ootb and commit another
 session's working state onto its local main (not pushed). Undone with reset --soft + reset (all content kept; their staged/unstaged split
 lost). RULE: always `cd /tmp/wt-x || exit` before editing/committing in a script.
+**NEW SOURCE SET (user 2026-10-06): `~/Downloads/JELAPANG IFC.zip`** (120 MB, 23 files, folder `IFC/`). User plans next session: merge
+them into the same DB and save. ⚠ AS OF THIS NOTE IT IS NOT EXTRACTED — `~/Downloads/JALAN JELAPANG IFC/IFC/` still holds the OLD files
+(EARTHWORK 4,982 B from 2026-09-08) and no JELAPANG_GEOTECH.ifc exists anywhere on disk. Extract first (it overwrites the older versions).
+Contents (all IFC2X3, Civil 3D export, every object IfcBuildingElementProxy; counts from the files + their export .log):
+| file | size | objects | vs what we have |
+|---|---|---|---|
+| JELAPANG_EARTHWORK.ifc | 8.45 MB | 1 (AcDb3dSolid) | NEW CONTENT — old file was empty (TIN skipped); likely the terrain/earthworks solid |
+| JELAPANG_GEOTECH.ifc | 100.5 MB | 9,145 (6 solids + 9,139 block refs) | NEW discipline |
+| JELAPANG_CHAINAGE.ifc | 2.15 MB | 332 solids | NEW — chainage markers (may give a REAL chainage for §CHAINAGE, replacing the inferred route) |
+| JELAPANG_ROW.ifc | 7.93 MB | 1 solid | NEW — right-of-way boundary solid |
+| JELAPANG_GABION MATTRESS.ifc | 0.33 MB | 11 solids | NEW |
+| JELAPANG_ROAD LIGHTING.ifc | 19.67 MB | 216 block refs | RE-EXPORT 2026-10-05 (old 19.71 MB from 10-02) |
+| ROAD / DRAINAGE / ROAD FURNITURE / ROAD MARKING / ROAD SIGNAGE | unchanged sizes + dates (09-08 / 10-02) | — | same as loaded |
+Import gate check (viewer/import_worker.js `discFromFilename`, CIVIL_DISCS = ROAD, FURNITURE, LIGHTING, DRAINAGE, SIGNAGE, MARKING, EARTHWORK):
+EARTHWORK maps to EARTHWORK (SEQUENCE_CIVIL phase Earthworks, seq 1). **CHAINAGE, GEOTECH, GABION MATTRESS, ROW match NO civil word → they
+would import with no civil discipline** (class fallback). Decide per file before merging (e.g. GEOTECH/GABION → earthworks or a new civil
+code; CHAINAGE/ROW → reference/annotation, not built in 4D) — needs a spec + the user's ruling; NON-IMPACT rule applies.
 **Open, in order:**
 1. Route order of the build (drive-order correlation 0.30, need ≥ 0.8). Measured: E4 (trade section→section) loses 4,971 of 7,685
    edges to cycles through the section milestones. POC tried and dropped: soil rule (0.33, 714 floating), bridge by section (0.30).
