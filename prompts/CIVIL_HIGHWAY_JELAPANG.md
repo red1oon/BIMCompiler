@@ -19,27 +19,27 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶ RESUME HERE (session closed 2026-10-05 late — user shutting machine down)
-**State:** all civil PRs #1844 → #1865 merged. In progress: **§MC Model Check** on bim-ootb branch
-`feat/civil-model-check` @ pushed WIP commit (evaluator + rules JSON only, nothing loads it, no PR). Worktree removed —
-re-create with `git worktree add /tmp/wt-civil-modelcheck feat/civil-model-check`.
-**Next, in order:**
-1. **⛔ USER GO NEEDED — clash broad-phase fix (§W.2, measured: LIVE BUG on buildings too).** Recommendation: fix first.
-   User asked "won't it bloat the buildings clash results?" — answered from `prompts/civil_probes/missed_pairs.log`: NO,
-   it is a SWAP — box-stage totals move ≤ ±3 % (Hospital ARC×STR 15,885 → 15,853: +3,119 gained / −3,151 phantom
-   dropped; ARC×MEP 17,409 → 17,175; Duplex ARC×MEP 1,068 → 1,095; JELAPANG DRAINAGE×ROAD 23,288 → 21,466). Outlier
-   Hospital STR×ELEC 32 → 93. Shown list stays mesh-true (box-only hidden ≥ 1000, #1861). What SHOULD rise = mesh-true
-   clashes among the gained pairs — the fix witness must report it per pair (shipped filters: ignore_classes + 25 mm tol,
-   which the probe skipped). Still awaiting go.
-2. **§MC finish** — fix the 2 measurement faults (see §MC "First run"), then `model_check_report.html` (MEP-report
-   styling), the MEP→Model Check button swap in `boq_charts.html` (civil gate `RoadCheck.isCivilModel`), witness, sw bump +
-   precache `road_check.js`, `rates/road_rules.json`, `model_check_report.html`.
-3. **§RP road panel** (8 tabs) + Alt+C findings film via `rule_findings_film.js` — after §MC.
-4. **5D real numbers** — `regional-official` rates (Selangor §R.3, DBKL §R.4) + mesh-measured quantities. User is buying
-   the JKR SoR 2023 (said 2026-10-05).
-5. **Find by property** on `element_psets`.
-**User is obtaining:** JKR SoR 2023 · terrain/earthwork IFC from the BIM friend (unlocks ground plane, flood display,
-runoff, and a true road-edge level for the sign-height rule).
+## ▶ RESUME HERE (session closed 2026-10-05 midday — user: "wrap up … shall continue later")
+**Shipped this session (bim-ootb, all live on main unless marked):** #1866 merged scene = one model (reopen streams every
+building, Find scope owner A.sceneScopeBuilding) · #1867 roof-layer 16 s → 33 ms · #1868 Night/Shadow ground no longer
+buries the road (civil → p2-bottom) · #1869 road lamps: head glow + mountH throw · #1870 §MESH_SLIM (civil normals not
+stored/read; Save NULL+VACUUM → AFTER.db 661 → ~396 MB) · #1871 §FLY smooth route + junction stops. User verdict: "Lights and
+ground shadow sun day with light distance normal fog all OK good enough."
+**Open, in order:**
+1. **PR #1872 §ALTC_HIGHWAY — OPEN, auto-merge on.** First CI run failed no-undef (BIN_M left in the Fly log after the
+   civilRoutePath split — would have thrown → room-tour fallback); fixed + pushed (witness_civil_fly_route 4/4 after the split).
+   CHECK IT MERGED. Not yet seen in a real bake.
+2. **§ALTS_HIGHWAY — branch `feat/alts-highway-dusk` pushed, NO PR, ⛔ awaiting user go for the proof render.** User:
+   "alt-s … more towards dusk so the street lighting can be more prominent" + "some bluish sky and orange sunset hues".
+   Code: civil still → dusk mood default, sun 2° (`&duskelev=`, 0–10), sky turbidity 4 / rayleigh 2.5 / mie 0.010 / G 0.88
+   (buildings keep 6° + turbidity 8). Proof needed (headless Alt+S, CPU, JELAPANG + Duplex): §ALTS_HIGHWAY sunElev, lamps on,
+   sky pixel hues (zenith blue, horizon-toward-sun orange) read numerically, Duplex unchanged. User asked for Alt+S BEFORE
+   Alt+C ("i mean alt-s first") — Alt+C (#1872) was built on a misread but is civil-gated, kept.
+3. **User's first real Ctrl+S of AFTER.db** = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
+   ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
+4. Not worked: §CULL_SPHERE (1,173 elements culled while on screen once DLOD engages) · §NL (b) pools beyond nearest 30 ·
+   hub import (index.html) lacks rates.js → hub civil imports keep normals + own discipline list · §W.2 clash broad-phase
+   (still ⛔ user go) · §MC finish · §RP road panel.
 
 **Waiting on user/partner (ask once, don't re-ask):** JKR SoR 2023 (RM 20) or CIDB N3C subscription (paid, inputs
 only) · CRS code of the drawing · alignment export (IFC4.3 IfcAlignment or LandXML) · earthwork surface + drainage
