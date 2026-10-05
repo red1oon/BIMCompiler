@@ -181,9 +181,12 @@ group k to group k+1, none inside a group; a building item set builds the identi
   corridor coordinates as the road. LIGHTING still 227 (the 216-element re-export was NOT swapped in). Earlier DBs
   (JELAPANG.db, JELAPANG_AFTER.db): 10,413 elements, 0 missing boxes → the earlier merge stripped nothing.
 - **Viewer draws all of it.** `§MERGE_CONTRACT buildings=2 rendered={VBC 4739, JELAPANG 15164} verdict=COMPLETE`; every discipline
-  db = registered = visible (scene graph). `§DLOD_ENABLE count=19903`. So "new elements not seen" is NOT a load gap. Not yet measured:
-  what covers them on screen — EARTHWORK is one opaque solid 2,539 × 2,008 × 60 m (z 29.5–89.4) and ROW one red solid
-  2,071 × 1,334 × 77 m; GEOTECH piles (avg 15.6 m tall) sit inside the embankment; §CULL_SPHERE may hide long pieces.
+  db = registered = visible (scene graph). `§DLOD_ENABLE count=19903`. User correction: they DO show on canvas — the gap is the
+  **Find panel**. User's live tree summed to 10,413 (Unknown 5,763 = pre-merge); a fresh open of Merged.db gives `§FIND_TREE` Unknown
+  15,253 = all 19,903. Cause (code): the only Find refresh after a merge is `streaming.js:2345` (§MERGE_CONTRACT COMPLETE, after a NEW
+  building streams). The partner files fold into the EXISTING building name `JELAPANG` → `scene.js` §MERGE_SPLIT_CENTRES `added=[]`
+  → no stream, no refresh → an open Find panel keeps the pre-merge tree. Fix shape: refresh Find at the end of every fold
+  (`_mergeDbIntoScene` / `_mergeSplitDbIntoScene`), not only on new-building stream complete.
 - **Bbox view (Alt+Z / Find lens) = 587 boxes, all ARC** (`§SHELL_GHOST_BBOX boxes=587 discs=1`). Cause = `navigate_find.js`
   `_isEnvelope` (Wall|Slab|Roof|CurtainWall|Covering|Plate): VBC's STR/PLB and every civil element (all IfcBuildingElementProxy)
   are skipped; the all-elements fallback needs envelope < 2 % AND < 200 (here 587/19,903 = 2.9 %). Same on the old DBs (587/10,413)
