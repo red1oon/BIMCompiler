@@ -327,6 +327,44 @@ overlap a registered HUD rect. Drawn through `_drawUnlessHold('road.panels')` so
 window, each slot's busy ≤ the window median; every number on a card equals an SQL count over the slot's listed guids; drawing at a
 slot mid changes pixels only inside the returned rect, drawing between slots draws nothing; Duplex → VACUOUS, nothing drawn.
 
+### §CHAINAGE_V2 — road build order: section by START along the drive + trade order inside a section (spec 2026-10-06)
+Builds on the WIP §CHAINAGE_LEVELS commit (time_machine element builder: civil storey "CH nn" + lvlSec; deriveBandRanks /
+cpm bandRank by (section, z)). Gate: civil model with a route (lvlSec / civil phase names exist only there).
+**Measured on JELAPANG_AFTER (probe: wrap CpmSchedule.run, rebuild its graph, classify E1 edges against (section, phase)):**
+- WIP: 2,451 of 10,078 support (E1) edges run BACKWARDS, 2,265 because the supporter is filed in a LATER section — top pairs
+  DRAINAGE→ROAD 995, FURNITURE→ROAD 412, ROAD→ROAD 191. Cause: section by the vertex CENTROID files a long drain / guardrail /
+  curved road piece by its middle, later than the pieces it touches at its start.
+- After R1 below: backward 359 (later-section 104).
+**Rules:** R1 — section = lowest route index over the 4 plan corners of the element's DRAWN box (owner
+`A._loadPathInstanceWorldBox`, cpe_load_path.js), on the film's DRIVE route (`A.civilDriveRoute`, new one-line owner in
+effects.js over `_civilFilmOv` — §ALTC_V2 V1 direction) → the build runs the way the camera drives. R2 — inside a section the
+road trades chain in their declared order (cpm_schedule E3-civil, ranks from rates.js `SEQUENCE_CIVIL`): before, every civil
+phase was "Tier-2" on a level with no Tier-1, so a section's trades ran in parallel.
+**Result (witness_civil_chainage_buildup.js, judged from kernel_ops timestamps):** lamps before their own pavement 46 → 0 ✔ ·
+lamps in the first 2 % 22 → 0 ✔ · midair 0 ✔ · drive-order rank correlation 0.30 ✖ (needs ≥ 0.8).
+**Still open — why route order is not reached (measured, not fixed):** E4 (each trade section → section) loses 4,971 of 7,685
+edges to cycles: a support edge between touching road pieces in DIFFERENT sections closes a loop through the section
+milestones. EXPERIMENT (reverted, not shipped): ignoring the 3,538 cross-section civil-civil support edges → E4 drops 1,443,
+correlation 0.40, but 187 elements then read as floating (no soil exemption for civil). Also the bridge's ARC builds first
+(107 of the first 208 placements). ⛔ Needs a ruling: do at-grade road pieces (ROAD / DRAINAGE / MARKING) rest on the
+soil (ground-exempt like `seq === 1`), so neighbouring pieces stop counting as each other's support?
+
+### §ALTC_LABELS — road films stop showing building labels (spec 2026-10-06; resume item 5, user: "v2 should show road checks + road labels")
+Seen in the aborted trial film: building rule cards ("Structural — floating member 68 / open depth cantilever 20"), a
+"Building Envelope" cue and clash tags "Misc Element" on the road. Gate: `A.isCivilModel()`; buildings unchanged.
+- L1 — rule findings film (rule_findings_film.js `ruleFindingsFilmBuild`): on a civil model → `§RULE_FILM VACUOUS — road model:
+  building structural/egress rules do not apply; road checks (§MC) not wired yet`. stats.built=false → no rule cards and no
+  "structural issues flagged" HUD card (cpe_resource_panel reads rf.built). Road checks join when §MC's two measurement faults
+  are fixed (not this item).
+- L2 — flythru envelope cue (cpe_flythru_cues.js B1): title/label "Site Envelope" on a civil model (same numbers, no
+  "Building").
+- L3 — clash tags (clash_labels.js): a pair side whose discipline is a SEQUENCE_CIVIL key is named by that trade's phase
+  (ROAD → "Pavement", DRAINAGE → "Drainage", LIGHTING → "Road Lighting"…), `§CLASH_LABEL_NAME … source=SEQUENCE_CIVIL`.
+  Building disciplines never match → rates.js names unchanged.
+**Witness** witness_altc_labels.js (headless, no bake): JELAPANG — rule film VACUOUS + stats.built false, envelope cue title
+"Site Envelope", every civil clash side named by its SEQUENCE_CIVIL phase (0 "Misc Element"); Duplex — rule film builds
+(state ≠ VACUOUS-road), envelope "Building Envelope", clash names from rates.js.
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
