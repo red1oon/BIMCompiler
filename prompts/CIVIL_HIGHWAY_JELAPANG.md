@@ -173,6 +173,28 @@ group k to group k+1, none inside a group; a building item set builds the identi
 **Status 2026-10-06:** D1/D4/D5/D8 SHIPPED (#1886, witness_civil_partner_import 3/3, main 1/3). D2/D3/D6/D7 HELD on `feat/civil-partner-discs`
 (witness_civil_partner_discs 8/8 there, but the browser chainage witness regressed: cell path, lamps before pavement 92).
 
+### §MERGED_DB — the user's merge of the partner files, measured 2026-10-06
+`~/Downloads/JALAN JELAPANG IFC/Merged.db` (525 MB, saved 03:29). SQL read-only + one headless load on bim-ootb main `dfb47486`
+(probe + logs: bim-compiler session scratchpad `merged_probe.js`, `merged_probe{,3}.log`, GPU=sw).
+- **DB complete.** 19,903 elements = JELAPANG 15,164 (road 5,674 + GEOTECH 9,145, CHAINAGE 332, GABION 11, EARTHWORK 1, ROW 1)
+  + Jelapang VBC 4,739 (ARC 826, PLB 2,062, STR 1,851). Every element: transform, non-zero bbox, instance, geometry. Same
+  corridor coordinates as the road. LIGHTING still 227 (the 216-element re-export was NOT swapped in). Earlier DBs
+  (JELAPANG.db, JELAPANG_AFTER.db): 10,413 elements, 0 missing boxes → the earlier merge stripped nothing.
+- **Viewer draws all of it.** `§MERGE_CONTRACT buildings=2 rendered={VBC 4739, JELAPANG 15164} verdict=COMPLETE`; every discipline
+  db = registered = visible (scene graph). `§DLOD_ENABLE count=19903`. So "new elements not seen" is NOT a load gap. Not yet measured:
+  what covers them on screen — EARTHWORK is one opaque solid 2,539 × 2,008 × 60 m (z 29.5–89.4) and ROW one red solid
+  2,071 × 1,334 × 77 m; GEOTECH piles (avg 15.6 m tall) sit inside the embankment; §CULL_SPHERE may hide long pieces.
+- **Bbox view (Alt+Z / Find lens) = 587 boxes, all ARC** (`§SHELL_GHOST_BBOX boxes=587 discs=1`). Cause = `navigate_find.js`
+  `_isEnvelope` (Wall|Slab|Roof|CurtainWall|Covering|Plate): VBC's STR/PLB and every civil element (all IfcBuildingElementProxy)
+  are skipped; the all-elements fallback needs envelope < 2 % AND < 200 (here 587/19,903 = 2.9 %). Same on the old DBs (587/10,413)
+  → not caused by the merge. Fix shape (spec, not built): decide envelope-vs-all PER BUILDING — a civil building (0 envelope
+  elements) boxes all its elements. Gate: buildings with envelope ≥ 2 % unchanged → fleet identical.
+- **Ground moved down 18.8 m.** `§GROUND_CIVIL civilRows=5675 → p2-bottom over all elements` → `§GROUND_Y z=32.90` (was 51.74 after
+  #1849): the p2 of bottoms now lands on pile/earthworks bottoms. **User rule 2026-10-06:** *"our new ground level will be using the
+  new one. Old is default in lieu of such ground terrain IFC"* → when an EARTHWORK terrain solid is present, the ground comes from
+  it; the p2-bottom rule stays the default only when there is none. ⛔ Open: flat plane at which earthworks height, or hide the flat
+  plane and let the earthworks solid be the ground (user's look ruling).
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
