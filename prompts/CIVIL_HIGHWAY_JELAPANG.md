@@ -252,6 +252,16 @@ balance, witness 0 lamps before own pavement on JELAPANG_AFTER.db). Rule: `CpmSc
 chainage section (`lvlSec` is a number) — `§CELL_GATE … path=GRAPH reason=chainage`. Gate = civil data only (no building item has
 lvlSec) → fleet unchanged. Not an order rule: it picks the path that models the road's location axis.
 
+### §MERGE_PSETS — Open→Merge drops every property (MEASURED 2026-10-06)
+Merged.db has 0 `element_psets` rows for GEOTECH / GABION / CHAINAGE / ROW. A fresh import on main DOES store them
+(`§CIVIL_PSETS file=JELAPANG_GABION MATTRESS.ifc … values=143`). Cause: `scene.js A._MERGE_META_TABLES` (the fold whitelist) lacks
+`element_psets`, so a merge carries meta/transforms/instances/geometry but no properties → drainage sizes, JKR sign codes and the
+partner's pile data vanish from any merged model (cards, Model Check, Fly route labels read them). `element_psets` has NO unique
+key (guid, pset, name, value — import_db_builder.js:193), so the fold's INSERT OR IGNORE cannot dedupe a re-merge. Rule: fold
+`element_psets` rows only for guids NEW to the live DB (the §MERGE_FOLD_TOPUP `A._mergeNewGuids` set, computed before the fold).
+Witness `witness_merge_psets.js`: live = JELAPANG_AFTER.db minus its SIGNAGE elements, src = the SIGNAGE elements + psets (real rows)
+→ first merge adds every SIGNAGE pset row; a second merge of the same src adds 0. RED on main (0 rows folded).
+
 ### §DOCTRINE_AUDIT — 2026-10-06 (user: "check that no doctrine or flow of work is broken … nothing new is invented to patch any gap")
 Checked against 4D_MODEL_INTEGRITY.md §B (layers: CLASSIFY = lookup, DECLARE = 4D_template*.json, SOLVE must never discover order).
 - ✅ #1887 look/ground: extends the ground owner `tools.js _calcGroundY` (no second ground); height from the mesh. Opacity 0.28 is a
