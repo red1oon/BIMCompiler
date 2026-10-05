@@ -68,6 +68,12 @@ ground shadow sun day with light distance normal fog all OK good enough."
    moved INTO the drive, not a tail); (3) the ONLY orbit = close-up at the large junction (§CIVIL_ROUTE_JUNCTION junction 1, 5 signal
    heads, r 68 m) — no final pull-back, no whole-site orbit; junction 2 driven through; (4) FUTURE: marker overlays along the route
    (terrain, weather, traffic info) — recorded only.
+   (5) user: *"Or you can already infer just for demo to show pop up panels similar to freeze load path but running along the length
+   of the film where it is clear and silent"* → road PANELS in the load-path freeze panel style, placed only on QUIET stretches
+   (low view change — the noise law's own busy signal) and never over the junction close-up. Content = model data only (Prime Rule):
+   chainage (inferred route), per-stretch discipline counts, drainage sizes (element_psets 02_Type/03_Dimension), JKR sign codes
+   (16_Name/17_Code), per-stretch mesh-true clash count, current 4D phase. Terrain / weather / traffic = labelled "planned" cards
+   with NO numbers (no earthwork surface exported; no weather/traffic data in hand).
 2d. **Alt+C red POV cone missing during preview (user 2026-10-05) — CULPRIT NOT FOUND YET.** I first claimed "the cone is
    only out of the parked camera's view" and kept pushing it after the user rebutted ("the red cone must get into the canvas
    and trace the given path. it does not appear anymore"; "do not double down") — that account is WITHDRAWN as the answer.
