@@ -1446,6 +1446,9 @@ No project story, no author. Every number from the DB / a § line; [VALID] / [SP
 template) fixed or the build-up beat reworded to the Gantt only; re-check every number against the bake log.
 
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
+**SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
+viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
+for the user's bake go). The two share the title idea and the 6-language greeting only; no cue, card or TSV is shared.
 User: *"Prepare a script to narrate this. Use the big Chapter pages to intersperse to explain what this BIM OOTB is capable of doing … mute
 [the background sound] … a good intro as users maybe unclear on the big picture"* + *"1. How it can open all the IFCs (sizes and types)"* +
 *"Describe the process it goes thru, the tech it is using"* + *"How quite all we see are computed on the fly such as this Tour, with
@@ -1485,7 +1488,7 @@ only / no one else" (§11.next rule). English first; 6-language greeting kept be
 - S3 (Find · Discipline) F: "By trade, then?" M: "Fourteen of them. Nine thousand one hundred forty-five ground-treatment pieces —" F: "Nine thousand?!" M: "Piles, mostly. Then four thousand road pieces, plumbing, structure, furniture, lighting, drainage, signs… right down to one earthworks body." F: "All from file names?" M: "File names and the properties inside. Nothing typed in."
 - S4 (Ask) F: "Can I just… ask it things?" M: "Go on, pick one." F: "Clashes!" M: "Eighty-six real ones, architecture against structure — and look, every answer shows its working." F: "Receipts included." M: "Always. Schedule: nineteen and a half thousand pieces, one hundred fourteen days, fourteen trades — at standard rates you can edit." F: "And the biggest rooms?" M: "None. It's a road — and it says so, instead of guessing." F: "Honest software. Rare."
 - S5 (slopes → bridge) F: "What's holding all this up?" M: "Seven thousand five hundred seventy-five piles, eighteen metres each, and over a thousand soil nails — straight from the partner's own file." F: "So it tells me what's underground, too."
-- S6 (drive with labels) F: "And when the partner sends new files tomorrow?" M: "Drop them in. Everything recomputes. And what's still missing gets its own red card." F: "A to-do list from my own model."
+- S6 (drive with labels) F: "And when the partner sends new files tomorrow?" M: "Drop them in. Everything recomputes — and anything your model still lacks is listed for you." F: "A to-do list from my own model."
 - S7 (whole route) F: "So — where's the server?" M: "There isn't one. Fifteen files, nine hundred seventy megabytes, one file on your own machine." F: "Everything my model already knows…" M: "…at no extra cost."
 **Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
