@@ -1500,9 +1500,25 @@ LAPTOP GPU, 8 GB):**
   (`§MAXQ_FRAME_BUDGET taa=8 ao=8`) → ≈ 5.8 ms p50 / 7.1 ms p90 per render ≈ 170 / 140 fps-equivalent — an ESTIMATE of interactive headroom
   (assumes the 16 renders cost the same; AO/TAA passes differ; interactive navigation fps itself is still unmeasured).
 - Drawn per frame (`§RENDER_INFO`, 60 samples): p50 1.03 M triangles, max 4.65 M; 135–210 draw calls.
-- JS heap (`§NIGHT_MEM_WITNESS heapMB`): 3,462–3,808 MB ← ⚠ NEAR the ~4 GB tab limit on this model. This is the real ceiling today, before
+- JS heap (`§NIGHT_MEM_WITNESS heapMB`): 3,462–3,808 MB ← high (see THRESHOLD below: the 4 GB figure is not a hard wall here). This is the real ceiling today, before
   GPU or speed — confirms streaming + eviction as the growth path.
 - Whole bake frame incl. capture + encode (`§FRAME_COST`): p50 766 ms, p90 1,893 ms (offline film quality, not interactive).
+
+**THRESHOLD — fitted from our own bake logs (2026-10-06; machine RTX 4060 laptop, 31 GB RAM, headless Chrome; heap = performance.memory
+.usedJSHeapSize from §NIGHT_MEM_WITNESS):**
+| building | elements | DB MB | geometry M verts | typical peak heap GB | logs |
+|---|---|---|---|---|---|
+| HHS_Office_Federated | 6,880 | 73 | 4.13 | 0.39–0.69 | 16 hhs_* bakes |
+| Hospital | 63,415 | 251 | 13.5 | 2.10–2.64 (5.4–5.6 with clash / load-path films) | 23 Hospital_* bakes |
+| JELAPANG road+bridge | 10,413 | 631 | 21.96 | 3.43–3.81 | 9 BIM_JELAPANG_* bakes |
+Fit: **heap ≈ 0.173 GB per million vertices** (≈ 173 bytes/vertex resident; r = 0.997 over 3 buildings — few points, treat as indicative).
+Heap tracks GEOMETRY, not element count (Hospital has 6× JELAPANG's elements but 60 % of its vertices and of its heap).
+Thresholds (base model, before feature overhead): mobile ~0.6 GB (unverified per-tab figure) → ~4 M verts (≈ HHS size) · 4 GB → ~24 M
+verts (≈ JELAPANG today) · 5.6 GB (highest seen here, no crash) → ~33 M verts. Feature overhead seen: up to +3 GB (Hospital clash /
+load-path films). ⚠ Correction: the "~4 GB tab limit" is NOT a hard wall on this setup — Hospital bakes ran at 5.4–5.6 GB; the true
+V8 ceiling here is unmeasured. Occlusion (dlod_nav OCCL, >20k elements) cuts DRAW cost, not memory → does not move this threshold; on an
+open road little is occluded. What moves it: fewer vertices (weld/smooth the lamp poles — 7.6 M verts in 227 poles), and streaming +
+eviction (memory follows the visible window). The partner set adds ~0.26 M verts (IfcOpenShell count) → negligible against the threshold.
 
 ### §IFC43 — what the partner set gives, the novel-art claim, and the IFC4.3 path (recorded 2026-10-06)
 **What the files give:** the whole highway as a construction model — what is underneath (7,575 embankment piles 350 mm / 18 m / 750 kN,
