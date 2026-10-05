@@ -1541,6 +1541,10 @@ priceless." F+M: "You have to be." → goodbyes ×6. (C1–C5 lines as v3, retit
 no AI inside. No back door. You can see the code. MIT Licensed.'"*):** after the goodbyes the junction still fades to BLACK; white text,
 one line at a time, held ~2 s each, voiced softly by M (or silent — the user's call): *Strangely, there is no AI inside.* / *No back door.* /
 *You can see the code.* / *MIT Licensed.* Then the repository link.
+**Subtext under the last line (user 2026-10-06):** *"In network, we use file folding relay, through web service, email or local repo. See
+the docs and code that has done it."* — smaller, same black card. Sources: docs/DistributedERP.md (state = a fold over the signed op-log;
+durability on the user's own email; a dumb facilitator relays; git is the model: every clone holds the history) · bim-ootb
+erp/erp_relay_client.js, erp/erp_sync_fsm.js, scripts/poc_email_dr.js · sync PR #203 MERGED.
 ⛔ **Claim check before baking "No back door":** viewer/viewer.html:1144-1148 and index.html:645-648 load the GoatCounter visit counter
 (gc.zgo.at, page-view count; opt-out `?ignore-me`, skipped when `embedded=true`). It sends visits, not model data — but a skeptic watching the
 network tab sees the page call out. Options: (a) keep the line and add "your files never leave your machine" only after a witness proves no
