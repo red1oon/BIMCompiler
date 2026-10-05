@@ -1296,7 +1296,7 @@ gone thru. Note to audience that this IFC set is less the actual terrain coming 
 some technical explanation how delicate our SQLite WASM on ThreeJS local first is proving itself. Touch on the pending roadmap
 and the playing field still lacking in such good one stop app that Red1 here will be overcoming easily it seems. IT is exciting
 to overcome those challenges."*
-**Script:** `prompts/film_narration_jelapang_highway_dialogue.tsv` — 24 rows (6 greet + 12 English body + 6 farewell),
+**Script:** `prompts/film_narration_jelapang_highway_dialogue.tsv` — 25 rows (6 greet + 13 English body + 6 farewell),
 PLAYBOOK A format (`id cue_s end_s §source SHORT DETAIL`), F asks / M explains; greet/bye rows carry `lang=` in the source
 column (en, ms, zh, th, ar, fr — Malaysia's languages + two neighbours/reach; swap freely). Body = 501 words over 186 s
 (2.7 w/s — dense: the fit will drop some rows to SHORT; trim DETAIL first, PLAYBOOK step 3).
@@ -1313,6 +1313,10 @@ spin 57–63 · drive 63–164 · pull-back 164–198 · orbit 198–206; `§CIN
    each clip keeps its own cue) — small change, witness = frames == source, silencedetect gaps, ebur128 −16 LUFS, the .ass
    carries every row's own-language caption (Noto CJK / Thai / Arabic RTL fonts per PLAYBOOK table).
 4. Register: `field` row = sourced fact (§10 Tier-1 line) + red1's own ambition in his words; no claim about any company.
+5. `onthefly` row (red1 2026-10-05: *"say also how most of the tasks and analysis here are on the fly including this movie.. it is
+   just a minute to setup due to computed data"*): the "about a minute" is red1's statement, voiced as his ("says Red1"); the
+   on-the-fly facts behind it are § lines (4D generated at open, film path derived, lamps from mesh). RE-CHECK in the bake log
+   that the film's plan came from §ALTC_HIGHWAY (derived, not hand-authored) before keeping "even this film's path".
 **Facts used (all from this session's § lines / DB reads, CIVIL_HIGHWAY_JELAPANG.md):** 7 IFCs Civil 3D 2024 IFC2X3, all
 IfcBuildingElementProxy · discipline from file name (§CIVIL_DISC) · JELAPANG 5,674 (ROAD 4,008 · FURNITURE 1,011 · LIGHTING 227
 · DRAINAGE 200 · SIGNAGE 138 · MARKING 90) + bridge VBC 4,739 = 10,413 · EARTHWORK IFC 0 elements (terrain TIN skipped) ·
