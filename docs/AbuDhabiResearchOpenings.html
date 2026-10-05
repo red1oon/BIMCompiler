@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Three Research Openings in Abu Dhabi</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one short dark page, Sarawak look — headline, three openings, sources. Single dark theme by choice. */
+:root{
+  --bg:#0b0c0d; --panel:rgba(255,255,255,.05); --line:rgba(255,255,255,.10);
+  --fg:#f4f2ee; --muted:#9a968e; --dim:#6a665f;
+  --sand:#e0b25c; --teal:#2bb3a3; --sky:#5b9cf0;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6;
+  padding-inline:clamp(16px,5vw,72px);padding-block:56px 64px}
+main{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+a{color:var(--sky);text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--sand);outline-offset:3px}
+.eyebrow{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-size:clamp(34px,5.4vw,60px);font-weight:800;line-height:1.06;text-wrap:balance;max-width:18ch;margin-top:12px}
+.lede{font-size:clamp(17px,1.9vw,21px);color:var(--muted);font-weight:300;max-width:62ch;margin-top:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.card{background:var(--panel);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card .k{font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.card h2{font-size:22px;font-weight:700;line-height:1.25;text-wrap:balance}
+.card p{font-size:15px;color:#cfcac1}
+.card .why{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.card q{font-style:italic;color:#e3ded5}
+sup{font:600 10px var(--mono);color:var(--sand)}
+.close{font-size:17px;color:var(--muted);max-width:62ch}
+.close strong{color:var(--fg)}
+.refs{list-style:none;display:grid;gap:8px;font-size:12.5px;color:var(--dim);border-top:1px solid var(--line);padding-top:20px}
+.refs li{display:grid;grid-template-columns:28px 1fr;gap:6px;min-width:0}
+.refs a{word-break:break-word}
+
+/* Light/print theme: same tokens, white paper */
+:root.light{--bg:#ffffff;--panel:#f4f2ee;--line:#dedad3;--fg:#141414;--muted:#55524c;--dim:#6f6b64;
+  --sand:#a8741a;--teal:#1b7f73;--sky:#2463b8;color-scheme:light}
+:root.light .card p{color:#2b2925} :root.light .card q{color:#2b2925}
+.printbtn{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:clamp(16px,3vw,30px);z-index:2;
+  font:600 13px var(--sans);padding:9px 16px;border-radius:999px;border:1.5px solid var(--line);
+  background:var(--panel);color:var(--fg);cursor:pointer}
+.printbtn:hover{border-color:var(--sand)}
+.printbtn:focus-visible{outline:2px solid var(--sand);outline-offset:3px}
+@media print{
+  :root{--bg:#ffffff;--panel:#f4f2ee;--line:#dedad3;--fg:#141414;--muted:#55524c;--dim:#6f6b64;
+    --sand:#a8741a;--teal:#1b7f73;--sky:#2463b8;color-scheme:light}
+  .card p,.card q{color:#2b2925}
+  .printbtn{display:none}
+  body{padding-block:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card{break-inside:avoid}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<button class="printbtn" id="printbtn" type="button">Print</button>
+<main>
+
+<header>
+  <div class="eyebrow">For discussion · Oct 2026</div>
+  <h1>Three research openings in <span style="color:var(--sand)">Abu Dhabi</span> infrastructure</h1>
+  <p class="lede">Each one meets a stated Abu Dhabi priority and builds on a working open-source platform that already runs whole construction
+    models in a browser tab. Each could be a conference paper first and a journal paper after.</p>
+</header>
+
+<section class="grid" aria-label="Openings">
+  <article class="card">
+    <div class="k" style="color:var(--sand)">01 · Delivery</div>
+    <h2>A construction schedule worked out from the model itself</h2>
+    <p>Mainstream 4D tools link a model to a schedule someone has already written. Our platform proposes a build sequence straight from
+      the model, and an automatic check confirms each element goes up only after what supports it. That works even on poor data, such as
+      road and bridge files where every object is an unlabelled generic proxy.</p>
+    <p class="why">Fits ADPIC × ASPIRE's aim to use digital science <q>to optimise infrastructure design, improve operational efficiency</q>.<sup>[1]</sup>
+      Automatic 4D from IFC already appears in the literature<sup>[2]</sup>, so the new part is working from poor data and checking the result.</p>
+  </article>
+
+  <article class="card">
+    <div class="k" style="color:var(--teal)">02 · Carbon</div>
+    <h2>Embodied carbon straight from the model's quantities</h2>
+    <p>The platform already takes quantities off the model. Multiplying them by an open carbon dataset gives an embodied-carbon estimate per
+      element, per stretch of road and per construction phase. Design options can then be compared on carbon while they are still drawings.</p>
+    <p class="why">Fits ASPIRE's focus on <q>low-carbon alternatives</q><sup>[1]</sup> and the building-materials category of Abu Dhabi's
+      Estidama Pearl Rating System<sup>[3]</sup>. Open factors are available in the ICE database v4.1<sup>[4]</sup>, and CIBSE launched TM65 UAE, a UAE-specific embodied-carbon method, in January 2025.<sup>[9]</sup></p>
+  </article>
+
+  <article class="card">
+    <div class="k" style="color:var(--sky)">03 · Operations</div>
+    <h2>From handover model to asset records</h2>
+    <p>Abu Dhabi's infrastructure BIM guideline says project information <q>must be fed into ADM asset management systems</q>.<sup>[5]</sup>
+      The platform already turns model elements into structured business records (products, project phases, tasks). The research question is
+      how much of a handover model reaches those records intact.</p>
+    <p class="why">A UAE study of 14 practitioners found asset management still relies on paper-based systems, with data loss and information
+      gaps.<sup>[6]</sup> DMT is building a city-wide digital twin.<sup>[7]</sup></p>
+  </article>
+</section>
+
+<p class="close"><strong>What exists today:</strong> an open-source (MIT) platform that imports IFC, renders, schedules, takes off quantities and
+  checks clashes in one browser tab with no server. It is measured on a 10,413-element road and bridge model.<sup>[8]</sup>
+  Not yet tested on an IFC 4.3 infrastructure file, which would be a good first joint step.</p>
+
+<ol class="refs" aria-label="Sources">
+  <li><span>[1]</span><span>Abu Dhabi Media Office, <i>ADPIC and ASPIRE partner to accelerate infrastructure innovation in emirate</i>, 15 Feb 2026. <a href="https://www.mediaoffice.abudhabi/en/infrastructure/abu-dhabi-projects-and-infrastructure-centre-and-aspire-partner-to-accelerate-infrastructure-innovation-in-emirate/">mediaoffice.abudhabi</a></span></li>
+  <li><span>[2]</span><span>Automated 4D from IFC without a schedule, ASCE 2009. <a href="https://ascelibrary.com/doi/10.1061/41052%28346%2966">ascelibrary.com</a></span></li>
+  <li><span>[3]</span><span>DMT, <i>The Pearl Rating System for Estidama</i>. <a href="https://pages.dmt.gov.ae/en/Urban-Planning/The-Pearl-Rating-System-for-Estidama">pages.dmt.gov.ae</a></span></li>
+  <li><span>[4]</span><span>Circular Ecology, <i>Inventory of Carbon &amp; Energy (ICE) Database v4.1</i>. <a href="https://circularecology.com/?p=7059">circularecology.com</a></span></li>
+  <li><span>[5]</span><span>DMT, Abu Dhabi City Municipality, <i>BIM Documentation Guidelines for Infrastructure</i>, v1.0, Oct 2020. <a href="https://www.dmt.gov.ae/adm/-/media/Project/DMT/ADM/E-Library/0001-Jan-2022-Doc/ADM-BIM-002Documentation-Guidelines-for-Infrastructure-projects.pdf">dmt.gov.ae (PDF)</a></span></li>
+  <li><span>[6]</span><span>Abdelmoti, Shafiq, Rauf, Khalfan, <i>Challenges in Asset Management and Digital Twins: Industry Insights</i>, Buildings 15(11):1809, 2025. <a href="https://research.uaeu.ac.ae/en/publications/challenges-in-asset-management-and-digital-twins-industry-insight/">research.uaeu.ac.ae</a></span></li>
+  <li><span>[7]</span><span>Construction Management, <i>Abu Dhabi digital twin launches</i>. <a href="https://constructionmanagement.co.uk/abu-dhabi-digital-twin-launches/">constructionmanagement.co.uk</a></span></li>
+  <li><span>[8]</span><span><i>Browser-Scale Benchmark</i>, our measurements. <a href="https://red1oon.github.io/BIMCompiler/BrowserScaleBenchmark/">red1oon.github.io/BIMCompiler</a></span></li>
+  <li><span>[9]</span><span>CIBSE, <i>CIBSE unveils TM65 UAE … as UAE targets net zero by 2050</i>. <a href="https://www.cibse.org/policy-advocacy/news/cibse-unveils-the-revolutionary-tm65-uae-at-light-plus-intelligent-building-middle-east-summit-as-uae-targets-net-zero-by-2050/">cibse.org</a></span></li>
+</ol>
+
+</main>
+<script>
+document.getElementById('printbtn').addEventListener('click',function(){
+  var r=document.documentElement;r.classList.add('light');
+  setTimeout(function(){window.print();},50);
+});
+window.addEventListener('afterprint',function(){document.documentElement.classList.remove('light');});
+</script>
+</body>
+</html>
