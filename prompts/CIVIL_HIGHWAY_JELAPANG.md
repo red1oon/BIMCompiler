@@ -32,13 +32,20 @@ ground shadow sun day with light distance normal fog all OK good enough."
 2. **§ALTS_HIGHWAY — ✖ DROPPED by user ruling 2026-10-05:** "i tested alt-s, i think it should stay as it is to avoid too much
    customizing.. it is good enough .. all things working well". Alt+S stays the shared look for buildings and roads. Branch
    `feat/alts-highway-dusk` (2° sun / blue-orange sky) left unmerged for reference only — do not ship it.
-2b. **PR #1873 — few deletable Alt+C sticks on main (auto-merge).** User: "the alt-c has many sticks.. it is not using the corrected
+2b. **PR #1873 — few deletable Alt+C sticks on main (MERGED).** User: "the alt-c has many sticks.. it is not using the corrected
    one last session … it has deletable sticks. This has none". The correction (§CPE_SEED_FEW + §CPE_STICK_CLEAR, commits
    e1f12d9a + 28266006) lives on `fix/fast-bake` — 183 ahead / 106 behind main, NO PR, worktree gone → never reached main, so
    #1872's 29-waypoint road seeded 29 undeletable sticks. Cherry-picked only those 2 commits; witness_cpe_seed_few.js 11/11 on
    main. ⚠ The REST of fix/fast-bake (W1-W7 bake speed/HUD, light-zone fixes, sky-surface merges, sw numbering at v1562) is still
    unmerged — a lane-level decision for the user / that lane's next session, not this one.
-3. **User's first real Ctrl+S of AFTER.db** = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
+2c. **PR #1874 — git-admin integration of the WHOLE Alt+C/Alt+S lane into main (auto-merge).** User: "it must be from
+   yesterday's alt-c, alt-s sessions, check that it is so, then u be git admin". Verified: fix/fast-bake 183 commits, red1,
+   09-26→10-05, ALTC_FOUNDATION/ALTC_SHOWSTOPPERS/PHOTOREAL_STILL_RENDER + 5 newer fix/sky-surface commits. Integration
+   branch `merge/altc-alts-lane`; resolutions + witnesses in the PR body (all civil witnesses green on it; lint 21 → 0).
+   ⚠ Squash-merge: main gets ONE commit — the lane's history stays on fix/fast-bake / fix/sky-surface (do not delete them).
+   Lane-owned debt flagged: witness_light_law_unit + witness_film_exposure_unit each 1 FAIL, identical on fix/fast-bake.
+3. **User's first real Ctrl+S — ✅ DONE live 2026-10-05 12:33:** JELAPANG.db saved at 395,710,464 bytes = the predicted slim
+   size (witness_mesh_slim now reads it VACUOUS: no stored normals). Original note: = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
 4. Not worked: §CULL_SPHERE (1,173 elements culled while on screen once DLOD engages) · §NL (b) pools beyond nearest 30 ·
    hub import (index.html) lacks rates.js → hub civil imports keep normals + own discipline list · §W.2 clash broad-phase
