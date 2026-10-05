@@ -26,10 +26,12 @@ parade in the drive, close-up orbit at the 5-head junction · #1879 §ALTC_PANEL
 §CHAINAGE_V2 lamps never before their pavement (route order still open) · #1881 §ALTC_LABELS no building labels on road films.
 NONE of the film changes has been seen in a real bake — the next step is the user's bake of JELAPANG_AFTER (Alt+C, Reveal on).
 **Open, in order:**
-1. ⛔ §CHAINAGE_V2 route order (drive-order correlation 0.30, need ≥ 0.8) — RULING NEEDED: do at-grade road pieces (ROAD /
+1. ⛔ §CHAINAGE_V2 route order — POC TRIED 2026-10-06 (user: "proceed as this is a poc"), NOT shipped: bridge elements filed by
+   section too → correlation 0.30 (no change); + soil rule (cross-section civil support ignored) → 0.33 with 714 floating. Neither
+   helps, so route order needs a different cause found (the E4 milestone hammock couples whole sections). Original question: do at-grade road pieces (ROAD /
    DRAINAGE / MARKING) rest on the soil (ground-exempt like `seq === 1`), so neighbouring pieces stop counting as each other's
    support? Measured payoff and cost in §CHAINAGE_V2. Also the bridge ARC builds first (107 of the first 208 placements).
-2. ⛔ Narration (item 5 below) — waits for the v2 bake: the script was timed to the old 206 s plan; v2 is 111.9 s, so the body
+2. ✅ DONE 2026-10-06 — v2 film baked (~/Downloads/BIM_JELAPANG_v2.mp4, 116 s) + narrated (BIM_JELAPANG_v2_narrated_AFTER.mp4), FILM_NARRATION.md §11.v2. Was: Narration (item 5 below) — waits for the v2 bake: the script was timed to the old 206 s plan; v2 is 111.9 s, so the body
    must be re-cut to ~2.3 w/s against the bake's own §CINEMA_BEATS. Drop the `fourD` "lamps up first = debut quirk" line if the
    bake's log shows §CHAINAGE_LEVELS (lamps-before-pavement is now 0).
 3. ✅ PARTLY 2026-10-06 — bim-ootb #1882 (sw v1573) §ALTC_CHECKS: road checks shown as worked formulas tagged VALID/SPECULATIVE (tracking list = road_rules.json film_status; 4 speculative, 1 valid). To turn a rule VALID: fix its method, then edit its film_status with the reason. Was: Road checks in the film (§MC) — road_check.js has two measurement faults (sign height reads a higher road piece; every sign
