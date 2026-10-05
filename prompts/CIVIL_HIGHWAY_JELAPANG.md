@@ -32,6 +32,12 @@ ground shadow sun day with light distance normal fog all OK good enough."
 2. **§ALTS_HIGHWAY — ✖ DROPPED by user ruling 2026-10-05:** "i tested alt-s, i think it should stay as it is to avoid too much
    customizing.. it is good enough .. all things working well". Alt+S stays the shared look for buildings and roads. Branch
    `feat/alts-highway-dusk` (2° sun / blue-orange sky) left unmerged for reference only — do not ship it.
+2b. **PR #1873 — few deletable Alt+C sticks on main (auto-merge).** User: "the alt-c has many sticks.. it is not using the corrected
+   one last session … it has deletable sticks. This has none". The correction (§CPE_SEED_FEW + §CPE_STICK_CLEAR, commits
+   e1f12d9a + 28266006) lives on `fix/fast-bake` — 183 ahead / 106 behind main, NO PR, worktree gone → never reached main, so
+   #1872's 29-waypoint road seeded 29 undeletable sticks. Cherry-picked only those 2 commits; witness_cpe_seed_few.js 11/11 on
+   main. ⚠ The REST of fix/fast-bake (W1-W7 bake speed/HUD, light-zone fixes, sky-surface merges, sw numbering at v1562) is still
+   unmerged — a lane-level decision for the user / that lane's next session, not this one.
 3. **User's first real Ctrl+S of AFTER.db** = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
 4. Not worked: §CULL_SPHERE (1,173 elements culled while on screen once DLOD engages) · §NL (b) pools beyond nearest 30 ·
