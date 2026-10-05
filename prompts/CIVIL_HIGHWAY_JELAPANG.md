@@ -98,6 +98,14 @@ ground shadow sun day with light distance normal fog all OK good enough."
      12110953_04; WSDOT WBES 2017 7A1) ≈ ✔ its own storeys.
    → RECOMMENDED shape (b): road LEVEL = chainage section along A.civilRoutePath (one owner), phase order inside each section, bridge =
      its own section keeping its storey order; crews advance section by section (line of balance). Not built — needs the user's go.
+   **Principle (user 2026-10-05: "So our engine remains same? Our strength is also inferring a schedule where there is none or
+   chainage"): ENGINE UNCHANGED.** Shape (b) only feeds the existing LEVEL owner a different source for civil elements — same
+   schedule_author / schedule_gate / cpm_schedule / time_machine. Both inferences already exist on this data: no native IFC
+   programme → `§GANTT_SOURCE generated`; no IfcAlignment / chainage (IFC2X3, §0) → route inferred from the model
+   (A.civilRoutePath: MAINLINE labels, else ROAD pieces; `§ALTC_HIGHWAY lenM=2110 junctions=2`). A real alignment export
+   (IFC 4.3 IfcAlignment / LandXML) later REPLACES the inferred route as the chainage source; nothing downstream changes.
+   Reusability: road profile still half code (import_worker CIVIL_DISCS, rates.js SEQUENCE_CIVIL) — fold into one Settings-editable
+   civil-profile JSON together with (b).
 3. **User's first real Ctrl+S — ✅ DONE live 2026-10-05 12:33:** JELAPANG.db saved at 395,710,464 bytes = the predicted slim
    size (witness_mesh_slim now reads it VACUOUS: no stored normals). Original note: = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
