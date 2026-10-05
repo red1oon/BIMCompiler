@@ -1484,7 +1484,7 @@ storey / discipline / material), Ask answers with their § proof lines, the 4D s
 - S4 F: "Can I just ask it?" M: "Pick a question. Clashes between architecture and structure: eighty-six real ones at twenty-five millimetres. The schedule: nineteen thousand five hundred fifty-nine pieces, one hundred fourteen days, fourteen trades — at standard rates you can edit. Rooms? None here — and it tells you that, instead of guessing."
 - S5 M: "Under the slopes: seven thousand five hundred seventy-five piles, eighteen metres long, one thousand three hundred thirty-eight soil nails — straight from the partner's own file."
 - S6 F: "And when the files change?" M: "Merge the new ones; everything recomputes."
-- S7 M: "Two kilometres of road, two bridges' worth of structure, one file on your own machine. Everything your model already knows."
+- S7 M: "Over two kilometres of road, three bridge files, one file on your own machine. Everything your model already knows." [route 2,110 m = §ROAD_PANELS routeLenM on the same set — RE-CHECK on CivilWorks.db before voicing]
 **Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
