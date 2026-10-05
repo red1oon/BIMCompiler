@@ -133,7 +133,7 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   - Fix shape (proposal, not built): build the rtree from center + per-geometry local min/max (geometry bounding box
     already computed per hash in the viewer) — no DB change. Changes every building's clash candidates → fleet before/after
     table (candidates, mesh-true clashes) required. Also: `§GROUND_ROBUST`/`§GROUND_Y` bottoms, tour.js road heights.
-- **§FB Find panel "loses" highway disciplines after a merge — MEASURED 2026-10-05: data intact, Find is scoped to ONE building.**
+- **§FB Find panel "loses" highway disciplines after a merge — MEASURED 2026-10-05: data intact in the DB; reopen streams ONE building, Find scoped to it.**
   User: import 6 JELAPANG IFCs → save `JELAPANG.db`; merge `IFC_MORE/` (BR1/BR2/BR3-001-002 + Jelapang VBC) → canvas OK,
   Find shows no ROAD/DRAINAGE/… → save `JELAPANG_AFTER.db` (661 MB).
   - DB: `elements_meta` GROUP BY building,discipline — AFTER keeps JELAPANG ROAD 4008 · FURNITURE 1011 · LIGHTING 227 ·
@@ -147,7 +147,21 @@ through pavement) — listed by `02_Type`, never auto-hidden.
     from City mode (one building at a time).
   - Side facts: all 4 merged files landed under ONE building name `Jelapang VBC` (multi-IFC merge = one building); the
     bridge files carry no civil word in the name → classed ARC/PLB/STR (PLB 2062 on a bridge is suspect, not read yet).
-  - Fix shape (not built): when the open scene holds > 1 building and is not City mode, Find's storey/disc trees query
+  - **CORRECTION (user reopened AFTER.db, console log 2026-10-05): the road is gone from the CANVAS too, not just Find.**
+    AFTER.db holds both buildings complete — JELAPANG 5674 meta / 5674 transforms / 5674 instances / 5674 geometries;
+    Jelapang VBC 4739 / 4739 / 4739 / 4739. The reopen streams only ONE: `§CENTRES_RESULT rows=2` →
+    `§DS_AUTO_START bld=Jelapang VBC dist=2371m` → `§DS_QUEUED elements=4739` → `§MERGE_CONTRACT buildings=1
+    rendered={"Jelapang VBC":4739} centres=2`. Cause: single-DB open calls `A.startStreaming()` (`streaming.js:3990`),
+    which streams the camera-nearest building ONLY (`:304-316`). The N-building drain (`A._mergePending` +
+    `_mergeStreamNext`, `scene.js:1224/1338/1346`) is filled only by a LIVE merge, never by opening a saved DB → the
+    other building never streams. Find then follows `activeBuilding` = the one that streamed. The shipped §MERGE_CONTRACT
+    line already showed 1 of 2 but does not flag it.
+    Applies to every saved merge (Clinic 5-building package would reopen as 1 building).
+  - Fix shape (not built): (1) on single-DB open with > 1 building and !CITY_URL, after `startStreaming()` push the other
+    `buildingCentres` names into `A._mergePending` → the existing drain streams them (one owner, no new drain);
+    `§MERGE_CONTRACT` prints `INCOMPLETE rendered=k of centres=n` when k < n. (2) Find scope below.
+    Witness: open AFTER.db → rendered={JELAPANG:5674, Jelapang VBC:4739}, Find disc parents = 9.
+    Original Find-only fix shape: when the open scene holds > 1 building and is not City mode, Find's storey/disc trees query
     without the building filter (or group building → disc). Gate = building count > 1 & !CITY_URL, so single-building
     loads are unchanged. Witness: AFTER.db → disc tree parent rows = 9 codes, counts = the GROUP BY above.
 - **Narrowphase defect (pre-existing, not civil):** synthetic S7b (cubes face to face, OBB off) → CLASH, expected
