@@ -15,7 +15,10 @@ rows = [l.rstrip('\n').split('\t') for l in open(tsv) if l.strip()]
 # §ALTC_V2 film (112 s, script film_narration_jelapang_highway_v2_dialogue.tsv — no 'proxies' row): chapters re-placed in TIME
 # order and clear of the three road data cards (29.5 / 37.5 / 48.5 s); film_title_cards.py FILM_SET=highway2 carries the
 # matching card text order (c3 = time & cost, c4 = the road).
-if not any(r[0] == 'proxies' for r in rows):
+if any(r[0] == 'compile' for r in rows):   # §ALTC_V3 assembled film (film_narration_highway_v3_dialogue.tsv) — FILM_SET=highway3
+    CHAP = {'greet_en': (1, 'open'), 'compile': (2, 'model'), 'fourD': (3, 'built'), 'quantities': (4, 'time'),
+            'tech': (5, 'local'), 'fourd5d': (6, 'reports')}
+elif not any(r[0] == 'proxies' for r in rows):
     CHAP = {'greet_en': (1, 'open'), 'open': (2, 'disciplines'), 'fourD': (3, 'time'), 'lamps': (4, 'road'),
             'clash': (5, 'clash'), 'field': (6, 'local')}
 log, back = [], []

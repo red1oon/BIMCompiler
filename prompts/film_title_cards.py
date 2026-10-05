@@ -89,6 +89,23 @@ if os.environ.get('FILM_SET') == 'highway2':
              'onthefly': ('NOVEL ART', 'A film derived from the road itself'),       # §ALTC_V2 route = A.civilDriveRoute
              'tech': ('NOVEL ART', 'Recomputed normals — a 40 % lighter file')}      # §MESH_SLIM 661,573,632 → 395,710,464 B
     CLIPS = {}
+# §ALTC_V3 (FILM_NARRATION.md §11.v3): FILM_SET=highway3 — the assembled clip-series film; the narrative extols what compilation gives.
+if os.environ.get('FILM_SET') == 'highway3':
+    CARDS = {
+        1: ('CHAPTER 1', 'ONE COMPILER', 'ROADS TOO', 'A Malaysian highway, through the same compiler as our buildings.'),
+        2: ('CHAPTER 2', 'ONE MODEL', 'MANY ANSWERS', 'Schedule, quantities, clashes, checks — from one database.'),
+        3: ('CHAPTER 3', 'BUILT', 'ALL THE WAY', 'Piece by piece, in the schedule\'s own order.'),
+        4: ('CHAPTER 4', 'TIME AND COST', 'ON THE FLY', 'Quantities now. Prices when official.'),
+        5: ('CHAPTER 5', 'LOCAL FIRST', 'NO SERVER', 'One browser tab. Nothing drawn by hand.'),
+        6: ('CHAPTER 6', 'REPORTS', 'AND CHECKS', '4D / 5D and road compliance, one click.'),
+    }
+    TAG = {1: 'ONE COMPILER', 2: 'ONE MODEL', 3: 'BUILT', 4: '4D · 5D', 5: 'LOCAL FIRST', 6: 'REPORTS'}
+    SERIES = 'BIM OOTB  ·  CIVIL'
+    NOVEL = {'check': ('NOVEL ART', 'Road checks as formulas — valid or speculative'),   # §ALTC_CHECKS road_rules.json film_status
+             'clash': ('BIM KILLER', 'Road clash matrix in a browser tab'),            # §CLASH_NARROWPHASE broad 1011 → 138 mesh-true
+             'tech': ('NOVEL ART', 'A film derived from the road itself'),             # §ALTC_V2 route = A.civilDriveRoute
+             'compliance': ('BIM KILLER', 'Compliance report in place of the MEP bill')}  # §MC_MOCKUP model_check_report.html
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}

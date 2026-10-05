@@ -1369,3 +1369,20 @@ lamps 227 → 172 columns / 223 heads / 9 buried strays · signals 5 stops → 2
   valid or speculative").
 - **Output:** `~/Downloads/BIM_JELAPANG_v2_narrated_AFTER.mp4` — witness: frames 1,740 = source · longest silence 7.5 s ·
   −16.9 LUFS · fontselect Noto Sans Arabic / CJK SC / Thai + DejaVu.
+
+### §11.v3 — assembled clip-series highway film, narration extols what compilation gives (2026-10-06)
+User: *"narrative this time extols what the compilation can give, at least in theory"* · no load-path freeze · show the 4D5D page and
+the compliance mock-up · *"Show the underpass bridge works"* · *"More such cinematic clips of respective parts to assemble"* · *"need
+not do Reveal, just remain full build all the way"* · *"replace the words Jalan Jelapang, with 'A Malaysian Highway'"*.
+- **Bakes** (bim-ootb #1883 code, sw v1574): main `~/Downloads/BIM_JELAPANG_v3.mp4` (94.6 s, 1,419 frames, `--no-reveal`, grass ground,
+  no freeze, 8.2 s approach, 7 data cards at 12.1/19.1/32.6/43.1/55.6/63.1/74.6 s, build 0 → 10,417 pieces steadily over 88 s) ·
+  bridge close-up `BIM_JELAPANG_v3_bridge.mp4` (35.4 s, side pass along the 2,148-piece structure; bridge pieces 6,094 → 10,417 over
+  frames 240–420). Page clips (`prompts/film_page_clip.js`): 4D/5D page (§RENDER_CHARTS 6 charts, 8 s), compliance report
+  (§MC_REPORT rows=302, 6 s).
+- **Assembly** (`prompts/film_assemble.py`): main 0–26 · bridge 15–25 · main 26–86.2 · 4D/5D · compliance · main 86.2–94.6 (junction
+  orbit) = `BIM_HIGHWAY_v3_assembled.mp4`, 118.6 s, 1,779 frames. The path map (top right) stays the timeline inside film segments.
+- **Script** `prompts/film_narration_highway_v3_dialogue.tsv` — 28 rows, 2.2 w/s, every source tagged [VALID] / [SPECULATIVE]
+  (speculative: sign-height method, full route order, prices, flood check). "A Malaysian highway" replaces the road's name in all
+  spoken/caption text. Fit 28/28 DETAIL, 0 WRONG. Cards FILM_SET=highway3 (6 chapters in card-free gaps, 4/4 badges).
+- **Output** `~/Downloads/BIM_HIGHWAY_v3_narrated_AFTER.mp4` — witness: frames 1,779 = source · longest silence 5.4 s · −16.9 LUFS ·
+  fontselect Noto Arabic / CJK SC / Thai + DejaVu.

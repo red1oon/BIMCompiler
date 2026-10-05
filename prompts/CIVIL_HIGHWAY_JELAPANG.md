@@ -402,6 +402,25 @@ accurate.. it's demonstrative of what can be done"* · *"As long we keep track w
 - Gate: civil only (cards are civil-only already). Witness: witness_road_panels.js extended — a `check` card exists, its
   measured value = the RoadCheck row's, its status = the rule's film_status in road_rules.json; Duplex unchanged.
 
+### §ALTC_V3 — road film storyboard v3 + compliance mock-up page (spec 2026-10-06)
+User 2026-10-06: *"narrative this time extols what the compilation can give, at least in theory. Remove the loadpath freeze path.
+Better show the 4D5D html and also the new compliance mock up report replacing the MEP tab"* · *"Show the underpass bridge works"* ·
+*"More such cinematic clips of respective parts to assemble"* · *"The cam path map top right is already a timeline"* · *"a ground map
+that has vegetation"*. Measured on v2 (picture change per second from the film + §CPE_BUILDUP placed counts): all 5,674 road pieces
+placed by 4 s; 4–56 s 0 pieces added; 4,739 bridge pieces in one frame at 56 s; 57–60 s still freeze (YDIF 0.1).
+Gate everywhere: `A.isCivilModel()`.
+- V3a — build-up advances by pieces COMPLETED on a road film (cinema_maxq `_workCursorAt`: skip even-calendar tempo → k-th completion
+  at t = k/N). Cause: the bridge's heavy structure owns most of the calendar, so calendar tempo dumped the road into 7 %.
+- V3b — no load-path freeze on a road film (`§ALTC_V3 load-path freeze off`).
+- V3c — approach seconds capped at CIVIL_DIVE_MAX_M = 280 m @ 35 m/s (8.2 s, was 25.6 s).
+- V3d — film ground = the shipped CC0 'grass' map (Poly Haven aerial_grass_rock) with a neutral tint (`§ALTC_V3_GRASS`).
+- §MC_MOCKUP — `viewer/model_check_report.html`: road_check.js rows, ATJ clauses, formula + VALID/SPECULATIVE per rule (road_rules.json
+  film_status), stat cards, CSV. `boq_charts.html`: the MEP button reads "Model Check" and opens it on a road model (`§MC_BUTTON`).
+- Assembly (FILM_NARRATION.md §11.v3): clips = main film segments + a bridge-works close-up bake (side pass along the 2,148-piece
+  structure, piers to −59 m) + page clips of the 4D/5D page and the compliance report (`prompts/film_page_clip.js`); the path map stays
+  the in-film timeline. Narration extols what compilation gives; every claim's source column says VALID or SPECULATIVE.
+- Data fact found: 1,485 'Jelapang VBC' pieces have their drawn box at the origin (0,0,0) — not placed; not investigated.
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
