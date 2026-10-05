@@ -226,6 +226,26 @@ offset, 1.06 m); ROW true z 1.00–77.76. Both cover the road + GEOTECH when dra
 and an edge line present with > 0 segments; `§GROUND_Y src=earthwork-bottom z=30.52`. JELAPANG_AFTER.db → `src=p2-bottom z=43.46`
 (backward compat). RED control: same witness on main must fail L1/L2/G1.
 
+### §DOCTRINE_AUDIT — 2026-10-06 (user: "check that no doctrine or flow of work is broken … nothing new is invented to patch any gap")
+Checked against 4D_MODEL_INTEGRITY.md §B (layers: CLASSIFY = lookup, DECLARE = 4D_template*.json, SOLVE must never discover order).
+- ✅ #1887 look/ground: extends the ground owner `tools.js _calcGroundY` (no second ground); height from the mesh. Opacity 0.28 is a
+  presentation value (Prime Rule scope = data). ✅ merge top-up: extends the existing merge drain + `streamBuilding`, no rival.
+  ✅ bbox per building: extends `_buildMergedGhost`; civil list = `SEQUENCE_CIVIL` keys (the viewer's one civil list).
+- ⛔ HELD `feat/civil-partner-discs` must change before it ships:
+  1. D3 edits `cpm_schedule.js` to chain phases by `SEQUENCE_CIVIL.sequence` → SOLVE deriving order from CLASSIFY = §B backflow, and a
+     second order source beside `4D_template_civil.json` logic. Drop D3; declare the order ONLY in the template (D6).
+  2. CHAINAGE / ROW as a "Setting Out" phase with a crew = scheduling work for labels/boundaries that are not built. Existing
+     pattern: non-work is excluded from the schedule population (IfcSpace / IfcOpeningElement, schedule_author.js:483-490).
+     Exclude them the same way; no CIVIL_SURVEY crew.
+  3. CIVIL_SURVEY / CIVIL_GEOTECH / CIVIL_GABION crews "copied from MASON" are invented productivity (as the existing civil crews,
+     already flagged uncalibrated). Per §L a default belongs in `std_values` with source + SUGGESTED label; GEOTECH quantity can be
+     EXTRACTED from psets (pile length 18 m, spacing) rather than EA.
+- ⛔ FOUND: `time_machine.js:4518 _allCivil` uses the civil template only when EVERY element is civil. Merged.db (road + bridge
+  4,739) → the BUILDING template schedules the whole road, so no civil order (current or §PARTNER_DISCS) reaches the merged model
+  (same root as witness_civil_phase FAIL on road+bridge). Needs a design: template chosen per element group by discipline (civil
+  disciplines → civil programme, the rest → building programme), one owner. Not built; needs the user's ruling on how the two
+  programmes join (bridge before/after/alongside the road phases).
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
