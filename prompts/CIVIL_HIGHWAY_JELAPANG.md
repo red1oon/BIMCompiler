@@ -133,6 +133,23 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   - Fix shape (proposal, not built): build the rtree from center + per-geometry local min/max (geometry bounding box
     already computed per hash in the viewer) — no DB change. Changes every building's clash candidates → fleet before/after
     table (candidates, mesh-true clashes) required. Also: `§GROUND_ROBUST`/`§GROUND_Y` bottoms, tour.js road heights.
+- **§FB Find panel "loses" highway disciplines after a merge — MEASURED 2026-10-05: data intact, Find is scoped to ONE building.**
+  User: import 6 JELAPANG IFCs → save `JELAPANG.db`; merge `IFC_MORE/` (BR1/BR2/BR3-001-002 + Jelapang VBC) → canvas OK,
+  Find shows no ROAD/DRAINAGE/… → save `JELAPANG_AFTER.db` (661 MB).
+  - DB: `elements_meta` GROUP BY building,discipline — AFTER keeps JELAPANG ROAD 4008 · FURNITURE 1011 · LIGHTING 227 ·
+    DRAINAGE 200 · SIGNAGE 138 · MARKING 90 (= `JELAPANG.db` exactly) + new building `Jelapang VBC` PLB 2062 · STR 1851 ·
+    ARC 826. Nothing lost on save.
+  - Cause: `navigate_find.js:638` `buildTree()` passes `bld = A.activeBuilding`; `_buildDiscTree` (`:4093`) and the storey
+    tree add `AND building = ?`. The merge drain (`streaming.js:2080-2092`, §SCENE_MERGE) streams the merged building last,
+    so `A.activeBuilding = 'Jelapang VBC'` → Find lists only ARC/PLB/STR. Same scope on reopen: whichever building
+    streams last owns Find.
+  - Not civil-specific: any Open→Merge scene (Clinic 5-building package) has the same scoping. One-building scope came
+    from City mode (one building at a time).
+  - Side facts: all 4 merged files landed under ONE building name `Jelapang VBC` (multi-IFC merge = one building); the
+    bridge files carry no civil word in the name → classed ARC/PLB/STR (PLB 2062 on a bridge is suspect, not read yet).
+  - Fix shape (not built): when the open scene holds > 1 building and is not City mode, Find's storey/disc trees query
+    without the building filter (or group building → disc). Gate = building count > 1 & !CITY_URL, so single-building
+    loads are unchanged. Witness: AFTER.db → disc tree parent rows = 9 codes, counts = the GROUP BY above.
 - **Narrowphase defect (pre-existing, not civil):** synthetic S7b (cubes face to face, OBB off) → CLASH, expected
   CLEAR (`witness_clash_mesh_narrowphase.js` I5). Also I3 (2 of 23,001 at the 1 mm touch edge) and I4 (3.0e-5 m
   DB-vs-scene matrix = float32 at 2 km, limit 1e-5 too tight).
