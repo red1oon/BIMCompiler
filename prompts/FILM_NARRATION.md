@@ -1398,3 +1398,10 @@ worded for the plain far orbit), 29/29 DETAIL, 0 WRONG. Output `~/Downloads/BIM_
 longest silence 5.4 s · −16.9 LUFS.
 **User notes for the NEXT bake:** after the build-up, the finished highway in night-lit mode — sunset → dusk / nightfall. (The
 "Alt+S can learn from the screenshots" note and the screenshot backdrops were withdrawn by the user.)
+
+### §11.next — script note for the next highway film (2026-10-06)
+Add one beat (closing third): our IFC2X3 mastery before IFC4.3 — "compiled from the messiest IFC there is: IFC2X3, every piece a generic
+proxy, meaning only in file names and properties. IFC4.3 brings alignment and real road classes; the same compiler will read what it now
+infers." Sources/tags in CIVIL_HIGHWAY_JELAPANG.md §IFC43 ([VALID] 2X3 facts · [SPECULATIVE] 4.3 until a 4.3 file runs). Also new in the
+model for that film: the partner's ground works (7,575 piles, 1,338 soil nails, earthworks body, gabions, chainage labels, ROW) — §PARTNER_DISCS.
+Never say "no one has attempted this" (no survey done).

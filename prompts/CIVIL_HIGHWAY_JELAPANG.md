@@ -218,6 +218,38 @@ offset, 1.06 m); ROW true z 1.00–77.76. Both cover the road + GEOTECH when dra
 and an edge line present with > 0 segments; `§GROUND_Y src=earthwork-bottom z=30.52`. JELAPANG_AFTER.db → `src=p2-bottom z=51.74`
 (backward compat). RED control: same witness on main must fail L1/L2/G1.
 
+### §IFC43 — what the partner set gives, the novel-art claim, and the IFC4.3 path (recorded 2026-10-06)
+**What the files give:** the whole highway as a construction model — what is underneath (7,575 embankment piles 350 mm / 18 m / 750 kN,
+1,338 soil nails, 228 horizontal drains, 4 RC walls), the earthworks body, slope protection (gabions), setting-out references (332 chainage
+labels, right-of-way line) — one coordinate frame with road, bridge, drainage, lighting, signs. 4D can follow real road-building order,
+clash can test piles/nails against drains, the film can show ground works normally never seen.
+**Novel art (our claim, worded as a claim):** the data is poor — IFC2X3, every object IfcBuildingElementProxy, no alignment, no schedule;
+meaning only in file names, psets and geometry. The compiler INFERS discipline (file name), route + chainage (geometry), phases and trade
+order, junctions (signal psets), JKR sign codes, per-stretch quantities — and produces 4D, 5D quantities, clash, road checks and a narrated
+film, local-first in one browser tab, no server, nothing hand-drawn, each step witnessed, uncertain items tagged SPECULATIVE. Positioning
+line on record (FILM_NARRATION §10 Tier-1): incumbents create IFC but do not decompose / compile / verify the round trip. NOT measured:
+no other product has been run on these files — state it as positioning, never as a test result. "No one has attempted this" is NOT a
+claim we can make (no survey done).
+**IFC4.3 (backward compatible) — less inference, more extraction.** MEASURED: the shipped parser (viewer/lib/web-ifc-api-iife.js, 6 MB)
+carries the IFC4X3 ADD2 schema incl. IfcAlignment, IfcReferent, IfcRoad, IfcCourse, IfcKerb, IfcEarthworksFill, IfcPile,
+IfcGeotechnicalStratum, IfcSign. NOT measured: an IFC4.3 road file through our importer (first test when one is in hand).
+| inferred today (IFC2X3 proxies) | read directly in IFC4.3 |
+|---|---|
+| discipline from the file name (CIVIL_DISCS) | object class (IfcPile, IfcCourse, IfcKerb, IfcSign, IfcEarthworksFill) |
+| route by principal axis of ROAD pieces; chainage = nearest route point / drawn-box start | IfcAlignment + IfcReferent stations — exact chainage |
+| build order by inferred section (drive-order corr 0.30) | linear placement along the alignment — order by station |
+| ground treatment from pset text ("PILE EMBANKMENT") | IfcPile attributes; geotechnical strata as objects |
+| road / bridge / earthworks split by file | IfcRoad / IfcBridge / earthworks spatial structure |
+Design rule when it lands: IFC4.3 classes/alignment FIRST, the IFC2X3 inference stays as the fallback (same owners: civilRoutePath,
+civilDriveRoute, discFromFilename, SEQUENCE_CIVIL) — one route owner, two sources, never two pipelines.
+**Lean-code reality (measured 2026-10-06, bim-ootb main):** viewer = 237 JS files, 157,098 lines (excl. lib/ and tests), 256 witnesses;
+largest: effects.js 11,128 · time_machine.js 10,549 · cinema_maxq.js 5,339 · navigate_find.js 5,302 · cpe_load_path.js 4,675. It is NOT lean
+today. The IFC4.3 path is a deletion opportunity (route inference, section filing, file-name discipline become thin fallbacks) — any refactor
+must state lines +/− and keep every witness green (deletion budget, CLAUDE.md AD-LAYER rule 4 applies in spirit).
+**Film script note (next version):** the narration names the achievement honestly — "this film was compiled from the messiest kind of IFC:
+IFC2X3, every piece a generic proxy, meaning only in file names and properties; IFC4.3 brings alignment and real road classes — the same
+compiler then reads instead of infers" — tag: [VALID] for the 2X3 facts, [SPECULATIVE] for 4.3 until a 4.3 file has been run.
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
