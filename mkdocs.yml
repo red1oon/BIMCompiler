@@ -86,7 +86,6 @@ nav:
       - "Two Apps, One Kernel": TwoAppsOneKernel.md
       - "One Page InfoGraphics - Landscape": TwoAppsOneKernelInfographicLandscape.html
       - "Benchmark Comparison (live)": bench_suite.html
-      - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Does Your ERP Age? (live)": age_demo.html
       - The ERP World View: MANIFESTO.md
       - Contribute: CONTRIBUTING.md
@@ -120,6 +119,7 @@ nav:
 
   - Papers & Positioning:
       - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
+      - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
       - "Strategic Positioning": StrategicIndustryPositioning.md
