@@ -27,8 +27,8 @@ labels · #1882 road checks as formula cards (VALID/SPECULATIVE list in viewer/r
 **Films in ~/Downloads (logs beside them):** BIM_JELAPANG_v2.mp4 + _narrated_AFTER (116 s) · BIM_JELAPANG_v3.mp4 (94.6 s, no Reveal) ·
 BIM_JELAPANG_v3_bridge.mp4 · BIM_HIGHWAY_v3_assembled.mp4 + BIM_HIGHWAY_v3_narrated_AFTER.mp4 (118.6 s — the current documentary;
 user: "a good concept documentary that answers both the developers and general users"). Recipe: FILM_NARRATION.md §11.v3.
-**Later the same day (after the close):** #1884 mirror ghost FIXED (interior room probe sat at y=-5.0 inside the road band; 6 glossy
-materials mirrored it — roads now skip it) + status box 'Chainage' row replaces the model name · #1885 day counter FIXED (reused raw schedule
+**Later the same day (after the close):** #1884 room-probe defect fixed (interior probe sat at y=-5.0 inside the road band; 6 glossy
+materials mirrored it — roads now skip it; the SKY GHOST STILL PERSISTS per the user, item 5) + status box 'Chainage' row replaces the model name · #1885 day counter FIXED (reused raw schedule
 kept 1970 timestamps for the 5,674 road pieces outside any task → 20,791 days; now 60). v3c documentary re-baked + narrated (FILM_NARRATION
 §11.v3c, ~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4, 127.6 s). The "1,485 bridge pieces at the origin" item was a MEASURING-TOOL error
 (the drawn-box lookup returns a zero box for them; the DB places all 4,739) — withdrawn; chainage filing now treats that as a miss.
@@ -46,7 +46,14 @@ lost). RULE: always `cd /tmp/wt-x || exit` before editing/committing in a script
    0.00 m), then flip film_status in road_rules.json with the reason (§MC, §ALTC_CHECKS).
 4. Storyboard ideas not built: camera follows the construction front (needs item 1); more part clips (junction build, drainage
    section) via the same assembly tools (film_assemble.py, film_page_clip.js).
-5. ✅ FIXED by #1884 (room probe off on roads). Was: GHOST REFLECTION above the construction, in the sky (user 2026-10-06: "did u manage to solve the ghost reflection above
+5. ⛔ STILL OPEN (user 2026-10-06, after watching v3c: "the mirror reflection in the sky is still there"). #1884 removed the
+   interior room probe on roads (6 glossy materials no longer reflect a scene capture) — that was a real defect but NOT this ghost.
+   Ruled out so far: lamp-glow points (#1875, hidden by day), room-probe cube reflection (#1884), glass planar mirrors (§GLASS_PLANAR
+   VACUOUS, no glass). Description to match: a faint but EXACT mirror image of the construction hovering ABOVE it, in the sky, in the
+   baked films (v2, v3, v3c). Next candidates to MEASURE, not guess: the sky/HDRI or a sky-surface layer picking up a scene render
+   (fix/sky-surface merge #1874), a reflection pass on the fog/sky dome, the ghost ground plane (§GHOST_GROUND groundOpacity 0.22)
+   rendered with a flipped transform, TAA/SSR history. First step: get the second where it shows in v3c, then dump the scene
+   objects drawn above the model at that frame (§ list of visible meshes with y > model top). Was: GHOST REFLECTION above the construction, in the sky (user 2026-10-06: "did u manage to solve the ghost reflection above
    construction in sky"). The lamp-glow squares ghost IS fixed (#1875; bake logs show §CIVIL_LAMP_GLOW_DAY visible=0 src=still for the
    whole film). If the user still sees a ghost in v2/v3, it is a DIFFERENT cause — not identified, nothing measured yet. First step:
    get the film + second from the user, then read that frame's § lines (glow, §CPE_BUILDUP hidden/pending meshes, ghost ground
