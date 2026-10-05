@@ -1420,4 +1420,29 @@ before baking): this model 10,413 elements (5,674 road + 4,739 bridge) + the par
 
 ---
 
+### §11.v4 — "IFC Extraction Program": the owner's report film (DRAFT storyboard 2026-10-06, NOT baked — bake only on the user's go)
+User 2026-10-06: *"make the movie script more of reporting for the user's POV, reporting on their works, stats.. no more about red1 as
+that film is done. 6 lingo greetings stay"* · title chosen: **"IFC Extraction Program — everything your model already knows, at no
+extra cost"** · *"your narrative explains how it can deal with messy poor IFCs, infer by default, editable std rates, publish now,
+update later reporting"*.
+**Model:** `~/Downloads/JALAN JELAPANG IFC/Merged.db` (19,903 elements = road 15,164 incl. the partner's ground works + bridge 4,739).
+**Register:** second person — "your model", "your piles"; F asks what an owner would ask, M answers with the model's own number.
+No project story, no author. Every number from the DB / a § line; [VALID] / [SPECULATIVE] tag per row as in v3.
+| beat | what is on screen | lines (gist, F/M) | source |
+|---|---|---|---|
+| greet ×6 | finished road, far orbit | Hello · Selamat petang · 大家好 · สวัสดีครับ · السلام عليكم · Bonjour (en ms zh th ar fr, as v3c) | [VALID] v3c rows |
+| title | card: IFC Extraction Program — everything your model already knows, at no extra cost | M reads the title | user 2026-10-06 |
+| messy | file list → model loading | F: "These are plain IFC2X3 exports — will it even read them?" M: every object a generic proxy, no georeference, half the property fields empty; meaning comes from file names and the properties that ARE filled | [VALID] §0 (IfcBuildingElementProxy, true_north default, psets mostly `$`) |
+| infer | discipline colours appear | M: thirteen files, each discipline inferred from its file name — road, drainage, lighting, signage, marking, furniture, earthworks, and the new ground treatment, gabions, chainage, right-of-way. Inferred values are labelled "inferred" on screen | [VALID] import_worker CIVIL_DISCS; status box "Chainage … (inferred)" |
+| yourworks | earthworks see-through, piles visible | F: "What's under the embankment?" M: nine thousand one hundred forty-five ground-treatment pieces — seven thousand five hundred seventy-five piles, eighteen metres, one point nine metres apart; one thousand three hundred thirty-eight soil nails; two hundred twenty-eight horizontal drains; four retaining walls | [VALID] §PARTNER_DISCS (psets); [VALID] §CIVIL_REF_LOOK |
+| counts | road cards | four thousand and eight pavement pieces, two hundred drainage items, two hundred twenty-seven lighting columns, one hundred thirty-eight signs, eleven gabion mattresses — and the bridge, four thousand seven hundred thirty-nine pieces | [VALID] Merged.db per-discipline counts |
+| programme | Gantt / Time Machine | M: one programme, road and bridge together — ground treatment first, the bridge alongside earthworks and pavement, finishing last: one hundred sixty-three days at round-the-clock crews | [VALID] witness_civil_mixed_programme §MP_MAKESPAN (PR #1890) · ⛔ build-up order on screen only after the played-layer gap is fixed (§MIXED_PROGRAMME status) |
+| rates | 4D rates panel | F: "Where do those days come from?" M: standard crew rates, marked uncalibrated — change any rate and every bar recomputes. Earthworks is one solid here, so it shows one day: add its volume and a rate, and it becomes real | [VALID] rates.js LABOR_RATES "uncalibrated"; [VALID] EW 1 element 102→103 |
+| money | 4D/5D page | quantities counted per discipline; prices left empty until a schedule of rates is given — no invented ringgit | [VALID] CIVIL_RATES rate null (§R) |
+| checks | compliance report | road checks shown as formulas with their status — valid or speculative, never hidden | [VALID] §MC_REPORT valid/speculative split (RE-CHECK on bake) |
+| publish | share / save | M: publish today from what you have — when the partner sends more files, merge them in; the report updates itself | [VALID] this session: 6 partner files merged into the saved DB, Find + canvas refresh (PR #1888) |
+| close | night-lit road (user's next-bake note) | F: "So — everything my model already knows?" M: at no extra cost. Goodbyes ×6 | user notes §11.v3c |
+**Before baking (blocking):** PRs #1887/#1888/#1890 on main; the played-layer gap (TM generate with no stored tasks ignores the
+template) fixed or the build-up beat reworded to the Gantt only; re-check every number against the bake log.
+
 ## §BROWSER_SCALE_AND_CLAIMS — MOVED to `docs/BrowserScaleBenchmark.md` (2026-10-06). The Chapter 0 claim card (§11.next) cites it.
