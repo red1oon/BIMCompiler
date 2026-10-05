@@ -103,10 +103,24 @@ through pavement) — listed by `02_Type`, never auto-hidden.
 ---
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
-- **§W.2 centroid vs box** (RESUME item 1). `import_worker.js` ~L462 stores the vertex centroid as `center`.
-  Users of `center ± bbox/2` not yet measured: clash broad phase (`measure.js _queryClashesPairRtree`,
-  `elements_rtree` build, clash_matrix count), `§GROUND_ROBUST`/`§GROUND_Y` bottoms, tour.js road-route heights,
-  the §V civil clash counts above.
+- **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
+  `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
+  `prompts/civil_probes/centroid_probe2.py` + `missed_pairs.py` (logs beside them), true box = center + R_z(local min/max),
+  rotation convention checked against the renderer (`streaming.js:2548` rotation.set(rotX, rotZ, −rotY) = CCW about IFC Z).
+  - Cause is ONLY the shift: stored bbox size = mesh size exactly (0 elements > 1 cm) on JELAPANG, Duplex, Hospital.
+  - Elements whose true box sticks out of the index box > 1 cm / > 1 m: JELAPANG 2,218 / 1,304 (max 147 m, curved road
+    pieces) · Duplex 317 / 8 (max 3.1 m) · Hospital 21,656 / 265 (max 31 m). Terminal, LTU: NOT measured (`_geo.db`
+    hashes match 0 `element_instances` rows — different storage, needs its own read).
+  - Probe index-box pair counts = shipped §V.2 counts exactly (23,288 / 1,040 / 385 / 253 / 12) → probe reproduces the
+    shipped broad phase. **Candidate pairs the broad phase never hands to narrowphase (true boxes overlap, index boxes
+    don't), tol 0, no ignore-classes:** JELAPANG 2,696 (DRAINAGE×ROAD 2,388) · Hospital ARC×STR 3,119 · ARC×MEP 1,587 ·
+    MEP×FP 88 · STR×ELEC 62 of 93 · STR×MEP 15 · STR×PLB 15 · STR×FP 4 · Duplex ARC×MEP 220 · ARC×STR 31. Plus as many
+    "phantom" pairs (index overlap, true apart) — those are only wasted narrowphase work.
+  - A missed CANDIDATE is not yet a missed CLASH — narrowphase on the missed pairs gives that number (fix witness).
+  - §V.3's mesh-true civil counts went through the same broad phase → they are under-counts too.
+  - Fix shape (proposal, not built): build the rtree from center + per-geometry local min/max (geometry bounding box
+    already computed per hash in the viewer) — no DB change. Changes every building's clash candidates → fleet before/after
+    table (candidates, mesh-true clashes) required. Also: `§GROUND_ROBUST`/`§GROUND_Y` bottoms, tour.js road heights.
 - **Narrowphase defect (pre-existing, not civil):** synthetic S7b (cubes face to face, OBB off) → CLASH, expected
   CLEAR (`witness_clash_mesh_narrowphase.js` I5). Also I3 (2 of 23,001 at the 1 mm touch edge) and I4 (3.0e-5 m
   DB-vs-scene matrix = float32 at 2 km, limit 1e-5 too tight).
