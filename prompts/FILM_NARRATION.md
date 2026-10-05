@@ -1313,6 +1313,17 @@ spin 57–63 · drive 63–164 · pull-back 164–198 · orbit 198–206; `§CIN
    each clip keeps its own cue) — small change, witness = frames == source, silencedetect gaps, ebur128 −16 LUFS, the .ass
    carries every row's own-language caption (Noto CJK / Thai / Arabic RTL fonts per PLAYBOOK table).
 4. Register: `field` row = sourced fact (§10 Tier-1 line) + red1's own ambition in his words; no claim about any company.
+6. `field` row (red1 2026-10-05: *"say a line that we be expanding our Modeller concept to civil works construction too! That
+   is said to be very difficult. Put this before that last line of red1 welcoming the challenge"*): Modeller → civil works line
+   sits just before the closing "Red1 set out to close… welcomes the challenge" line; it is red1's stated PLAN, voiced as a plan.
+   Row widened to 181–198 s (roadmap 164–181).
+7. **Chapter cards (red1: "use the beautiful Chapter by chapter theme nice font layout as in the last movie"):** same anatomy as
+   §8 TITLE CARDS via `FILM_SET=highway prompts/film_title_cards.py` — 6 chapters (ONE COMPILER / ROADS TOO · READ THE /
+   DISCIPLINES · DRIVE / THE ROAD · CHECK / THE CLASHES · TIME AND COST / ON THE FLY · LOCAL FIRST / AND WHAT NEXT), series tag
+   "BIM OOTB · CIVIL", 4 badges keyed to rows proxies/clash/onthefly/tech. Inputs from `prompts/film_highway_chapters.py
+   <tsv> <film.mp4> <dir> [still]` (chapter log from the TSV cues; backdrop c1 = red1's Alt+S still bounce_still_1791175762627.png
+   12:49, others = frames of the film itself). DRY RUN on a 206 s placeholder: §HW_CHAPTERS chapters=6 · §CARDS video rc=0 ·
+   badges 4/4 · 35 ass events · output 206.0 s. Then film_narration_mux.py burns carded.ass (PLAYBOOK §8 PIPELINE).
 5. `onthefly` row (red1 2026-10-05: *"say also how most of the tasks and analysis here are on the fly including this movie.. it is
    just a minute to setup due to computed data"*): the "about a minute" is red1's statement, voiced as his ("says Red1"); the
    on-the-fly facts behind it are § lines (4D generated at open, film path derived, lamps from mesh). RE-CHECK in the bake log

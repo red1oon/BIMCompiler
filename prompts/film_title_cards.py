@@ -51,6 +51,25 @@ if os.environ.get('FILM_SET') == 'modeller':
              'm03': ('BIM KILLER', 'Assemble, not draw — in a browser'),         # ModellerGuide.md:205
              'm14': ('BIM KILLER', 'BCF 2.1 out of a browser tab')}              # ModellerGuide.md:758-765
     CLIPS = {}
+# §11 HIGHWAY FILM (FILM_NARRATION.md §11, red1 2026-10-05: "use the beautiful Chapter by chapter theme nice font layout as in the
+# last movie"): FILM_SET=highway — same card anatomy; chapters/badges keyed to film_narration_jelapang_highway_dialogue.tsv row ids;
+# the chapter log + backdrops come from prompts/film_highway_chapters.py (no recorder for a baked film). No cutaways.
+if os.environ.get('FILM_SET') == 'highway':
+    CARDS = {
+        1: ('CHAPTER 1', 'ONE COMPILER', 'ROADS TOO', 'The same model that runs our buildings.'),
+        2: ('CHAPTER 2', 'READ THE', 'DISCIPLINES', 'Road, drainage, lighting, signage — from the files.'),
+        3: ('CHAPTER 3', 'DRIVE', 'THE ROAD', 'Junctions and lamps, read from the model itself.'),
+        4: ('CHAPTER 4', 'CHECK', 'THE CLASHES', 'Box overlaps narrowed to real contacts.'),
+        5: ('CHAPTER 5', 'TIME AND COST', 'ON THE FLY', 'Phases and crews. Rates only when official.'),
+        6: ('CHAPTER 6', 'LOCAL FIRST', 'AND WHAT NEXT', 'One browser tab — terrain and alignment next.'),
+    }
+    TAG = {1: 'ONE COMPILER', 2: 'DISCIPLINES', 3: 'THE ROAD', 4: 'CLASHES', 5: '4D · 5D', 6: 'LOCAL FIRST'}
+    SERIES = 'BIM OOTB  ·  CIVIL'
+    NOVEL = {'proxies': ('NOVEL ART', 'Disciplines read from the file names'),       # §CIVIL_DISC (import_worker.js)
+             'clash': ('BIM KILLER', 'Road clash matrix in a browser tab'),          # §V.3 23,288 box → 1,852 mesh-true
+             'onthefly': ('NOVEL ART', 'A film derived from the road itself'),       # §ALTC_HIGHWAY waypoints = Fly route
+             'tech': ('NOVEL ART', 'Recomputed normals — a 40 % lighter file')}      # §MESH_SLIM 661,573,632 → 395,710,464 B
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
