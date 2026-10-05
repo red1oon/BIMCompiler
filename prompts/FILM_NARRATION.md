@@ -1477,14 +1477,16 @@ storey / discipline / material), Ask answers with their § proof lines, the 4D s
 | 4 | S4 | Ask your model | ready questions · answers with proof · Save to Excel |
 | 5 | S5 | Messy IFC? Inferred by default. | generic proxies, meaning from names and properties · inferred values are labelled |
 | 6 | S6 | Publish now, update later | standard rates you can edit · what is missing is listed · merge new files any time |
-**Narration (F asks, M answers; English first, numbers as words in the TSV; 6-language greeting kept before card 1 — en ms zh th ar fr as §11.v3c):**
-- S1 F: "Is that the whole highway, live, in a browser?" M: "Yes — the Fly tour found the road and its seven stops by itself; this is stop two, a traffic signal of five columns."
-- S2 M: "Find, Storey view: the bridge's own levels — piers, deck slab, finished road level. The road has no storeys, so its fifteen thousand pieces sit under Unknown — the file says so, we don't invent levels."
-- S3 F: "And by trade?" M: "Fourteen disciplines: nine thousand one hundred forty-five ground-treatment pieces, four thousand and eight road, then plumbing, structure, furniture, architecture, chainage, lighting, drainage, signage, marking, gabions, the right-of-way, and the earthworks."
-- S4 F: "Can I just ask it?" M: "Pick a question. Clashes between architecture and structure: eighty-six real ones at twenty-five millimetres. The schedule: nineteen thousand five hundred fifty-nine pieces, one hundred fourteen days, fourteen trades — at standard rates you can edit. Rooms? None here — and it tells you that, instead of guessing."
-- S5 M: "Under the slopes: seven thousand five hundred seventy-five piles, eighteen metres long, one thousand three hundred thirty-eight soil nails — straight from the partner's own file."
-- S6 F: "And when the files change?" M: "Merge the new ones; everything recomputes."
-- S7 M: "Over two kilometres of road, three bridge files, one file on your own machine. Everything your model already knows." [route 2,110 m = §ROAD_PANELS routeLenM on the same set — RE-CHECK on CivilWorks.db before voicing]
+**Narration v2 — lively (user 2026-10-06: *"make the dialogue more lively conversation, at surprising novel art where merited"*).**
+F = the newcomer who reacts; M = the one who knows the model. Surprise ONLY where the thing is genuinely unusual (sourced); never "first /
+only / no one else" (§11.next rule). English first; 6-language greeting kept before card 1 (en ms zh th ar fr, as §11.v3c).
+- S1 (night Fly) F: "Hold on — is this a game engine?" M: "It's your highway. In a browser tab." F: "Live?!" M: "Live. The tour found the road on its own — seven stops — this one's a traffic signal, five columns." F: "Nobody placed those stops?" M: "Nobody. It read the signals' own labels."
+- S2 (Find · Storey) F: "Okay, show me what's in it." M: "One click — Storey view. The bridge's levels: piers, deck slab, finished road level." F: "And this Unknown — fifteen thousand?" M: "That's the road. Roads don't have storeys — so we don't make any up."
+- S3 (Find · Discipline) F: "By trade, then?" M: "Fourteen of them. Nine thousand one hundred forty-five ground-treatment pieces —" F: "Nine thousand?!" M: "Piles, mostly. Then four thousand road pieces, plumbing, structure, furniture, lighting, drainage, signs… right down to one earthworks body." F: "All from file names?" M: "File names and the properties inside. Nothing typed in."
+- S4 (Ask) F: "Can I just… ask it things?" M: "Go on, pick one." F: "Clashes!" M: "Eighty-six real ones, architecture against structure — and look, every answer shows its working." F: "Receipts included." M: "Always. Schedule: nineteen and a half thousand pieces, one hundred fourteen days, fourteen trades — at standard rates you can edit." F: "And the biggest rooms?" M: "None. It's a road — and it says so, instead of guessing." F: "Honest software. Rare."
+- S5 (slopes → bridge) F: "What's holding all this up?" M: "Seven thousand five hundred seventy-five piles, eighteen metres each, and over a thousand soil nails — straight from the partner's own file." F: "So it tells me what's underground, too."
+- S6 (drive with labels) F: "And when the partner sends new files tomorrow?" M: "Drop them in. Everything recomputes. And what's still missing gets its own red card." F: "A to-do list from my own model."
+- S7 (whole route) F: "So — where's the server?" M: "There isn't one. Fifteen files, nine hundred seventy megabytes, one file on your own machine." F: "Everything my model already knows…" M: "…at no extra cost."
 **Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
