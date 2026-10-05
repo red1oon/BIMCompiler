@@ -25,9 +25,9 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 **State:** bim-ootb main live at sw v1577. Road work so far is all merged (§SHIPPED). Current documentary: `~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4`
 (127.6 s; recipe FILM_NARRATION.md §11.v3c). The user merges the partner files into the DB manually (next session works on that DB directly).
 **Open, in order:**
-0. **Queue agreed with user 2026-10-06** (after Merged.db): (a) Find/merge top-up fix (§MERGE_FOLD_TOPUP, committed on bim-ootb
-   `fix/find-refresh-after-fold`, pending merge-all control run) → (b) bbox view per civil building (§MERGED_DB, branch
-   `fix/bbox-ghost-per-building`, witness written) → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
+0. **Queue agreed with user 2026-10-06** (after Merged.db): (a) ✅ Find/merge top-up — bim-ootb PR #1888 (auto-merge) · (b) ✅ bbox
+   view per civil building — PR #1889 (auto-merge, witness GREEN civil 15,751 / Clinic 1,549 unchanged) · look/ground PR #1887
+   (CI rerun after a runner outage; job never started) → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
    new disciplines: ground-treatment card (piles/nails/drains/walls per stretch + pset design values), earthworks card, real
    chainage from CHAINAGE labels with today's inferred route as fallback; at most ONE new checkbox (show below-ground work).
 1. **§PARTNER_DISCS build order** — the partner files now IMPORT as GEOTECH / GABION / CHAINAGE / ROW (#1886) but schedule by class (no civil
