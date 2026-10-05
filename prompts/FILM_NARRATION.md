@@ -1512,6 +1512,30 @@ viewer, not lean yet; next: IFC4.3 roads — read the alignment instead of infer
 - S5 tour M: "Under the slopes: seven thousand five hundred seventy-five piles, eighteen metres each."
 - C6 still F: "Who builds something like this?" M: "One developer — red1 — for the long tail of BIM users the big vendors don't serve." F: "Open?" M: "MIT licensed. No AI inside. Every claim checked by a test that can fail — two hundred fifty-six of them." F: "And next?" M: "IFC4.3 roads — read the alignment instead of guessing it." F: "And this view?" M: "X-ray on one abutment level; the rest of the bridge ghosted around it."
 - S6–S7 tour F: "So — where's the server?" M: "There isn't one. Your files, your machine." F: "Everything my model already knows…" M: "…at no extra cost." → goodbyes ×6.
+**v4 — chapter titles + red1's opening (user 2026-10-06):** *"1. 'If Linus didn't do Linux, someone else will' - red1. Begin with
+Information is Free, you have to know. Say how what red1 has done for ADempiere is now reinventing with good vibe pair coder, migrating
+BIM and ERP and a Modeller onto the bleeding edge SQLite WASM on ThreeJS in same kernel op log. Gracefully continue from there my drift"*.
+Sources: the mantra + ADempiere 2006 + "AI … helped me do everything i specify" = red1 verbatim in §10 (lines above); one kernel =
+bim-ootb `erp/kernel_ops.js` (`kernel_ops` table) loaded by the viewer too (viewer/sw.js precache `../erp/kernel_ops.js`).
+**Flow — a bookend: it opens and closes on the mantra.**
+| break | title (overlay fades) | backdrop | gist of the lines |
+|---|---|---|---|
+| OPEN | **Information Is Free. You Have to Know.** + quote card *"If Linus didn't do Linux, someone else will." — red1* | 2026-10-06 07-05-44 corridor | the mantra; ADempiere 2006; now again with an AI pair coder: BIM viewer, ERP and a Modeller on SQLite-in-WebAssembly + three.js, one kernel op log |
+| TITLE | IFC Extraction Program — everything your model already knows, at no extra cost | same | 6-language greeting |
+| C1 (S1→S2) | **Fifteen Files. One Truth.** | 2026-10-06 07-11-35 Find · Discipline | 15 files, 970 MB, Civil 3D + Revit, IFC2X3 + IFC4.3 → one model |
+| C2 (S2→S3) | **No Server. No Upload. No Install.** | 2026-10-05 09-09-37 bridge piers | web-ifc → one SQLite file → three.js; piers + pile groups read from Revit's IFC4.3 |
+| C3 (S3→S4) | **Nothing Pre-baked** | 2026-10-05 09-11-33 abutment x-ray | trees, counts, tour = queries on that one file when you ask |
+| C4 (S4→S5) | **Answers With Receipts** | 2026-10-05 06-35-45 clash matrix | every answer shows its proof; red dots = trades that collide |
+| C5 (S5→S6) | **One Laptop. Twenty-Two Million Vertices.** | 2026-10-05 20-14-29 night junction | RTX 4060 laptop 8 GB; ~6 ms a render; ~3.5 GB; a sixth of a GB per million vertices |
+| CLOSE | **Built for the Long Tail** → last frame: *Information is free. Now you know.* | 2026-10-05 20-13-14 junction | MIT, no AI inside, 256 tests that can fail, IFC4.3 next; goodbyes ×6 |
+**OPEN lines (lively; red1's words kept):** F: "Information is free…" M: "…but you have to know." — quote card holds — M: "People are not —
+you have to pay. Contributors are priceless — you have to be. That's red1's mantra, from founding ADempiere, the open-source ERP, back in
+two thousand six." F: "An ERP man… doing BIM?" M: "ERP, BIM — and a Modeller. Rebuilt with an AI pair coder, all three on SQLite running
+inside the browser, drawn by three.js." F: "Three apps?" M: "One kernel. Every change in any of them lands in the same operation log."
+F: "Built WITH AI…" M: "…but there's no AI inside. What you see is computed, and checked." → TITLE.
+**CLOSE lines:** F: "Who is it for?" M: "The long tail — every engineer the big vendors never reach. MIT licensed. Two hundred fifty-six
+tests that can fail, so the claims hold up." F: "And next?" M: "IFC4.3 roads — read the alignment instead of inferring it." F: "Information
+is free…" M: "…and now you know." → goodbyes ×6. (C1–C5 lines as v3, retitled.)
 **Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
