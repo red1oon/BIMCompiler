@@ -1523,7 +1523,7 @@ bim-ootb `erp/kernel_ops.js` (`kernel_ops` table) loaded by the viewer too (view
 | OPEN | **Information Is Free. You Have to Know.** + quote card *"If Linus didn't do Linux, someone else will." — red1* | 2026-10-06 07-05-44 corridor | the mantra; ADempiere 2006; now again with an AI pair coder: BIM viewer, ERP and a Modeller on SQLite-in-WebAssembly + three.js, one kernel op log |
 | TITLE | IFC Extraction Program — everything your model already knows, at no extra cost | same | 6-language greeting |
 | C1 (S1→S2) | **Fifteen Files. One Truth.** | 2026-10-06 07-11-35 Find · Discipline | 15 files, 970 MB, Civil 3D + Revit, IFC2X3 + IFC4.3 → one model |
-| C2 (S2→S3) | **No Server. No Upload. No Install.** | 2026-10-05 09-09-37 bridge piers | web-ifc → one SQLite file → three.js; piers + pile groups read from Revit's IFC4.3 |
+| C2 (S2→S3) | **No Server. No Upload. No Install.** | 2026-10-05 09-09-37 bridge piers | web-ifc → one SQLite file → three.js; piers + pile groups read from Revit's IFC4.3; + user 2026-10-06 *"This new local first is the way to scale, cut online costs"*: each user's own machine does the work → no server bill that grows with users, files never leave the machine (design statement — no cost figure measured, none spoken) |
 | C3 (S3→S4) | **Nothing Pre-baked** | 2026-10-05 09-11-33 abutment x-ray | trees, counts, tour = queries on that one file when you ask |
 | C4 (S4→S5) | **Answers With Receipts** | 2026-10-05 06-35-45 clash matrix | every answer shows its proof; red dots = trades that collide |
 | C5 (S5→S6) | **One Laptop. Twenty-Two Million Vertices.** | 2026-10-05 20-14-29 night junction | RTX 4060 laptop 8 GB; ~6 ms a render; ~3.5 GB; a sixth of a GB per million vertices |
@@ -1533,6 +1533,7 @@ you have to pay. Contributors are priceless — you have to be. That's red1's ma
 two thousand six." F: "An ERP man… doing BIM?" M: "ERP, BIM — and a Modeller. Rebuilt with an AI pair coder, all three on SQLite running
 inside the browser, drawn by three.js." F: "Three apps?" M: "One kernel. Every change in any of them lands in the same operation log."
 F: "Built WITH AI…" M: "…but there's no AI inside. What you see is computed, and checked." → TITLE.
+**C2 lines (v4):** M: "Here's how: your browser reads each file with web-ifc, writes it into one SQLite file, and three.js draws from it." F: "No server at all?" M: "None. That's how it scales — every new user brings their own machine. No server bill that grows with them, nothing uploaded, nothing to install." F: "So the cloud bill is… zero?" M: "For this, yes — the work happens where the files already are." F: "And the bridge?" M: "Piers, crossheads, pile groups — straight from Revit's IFC4.3. Read, not redrawn."
 **CLOSE lines:** F: "Who is it for?" M: "The long tail — every engineer the big vendors never reach. MIT licensed. Two hundred fifty-six
 tests that can fail, so the claims hold up." F: "And next?" M: "IFC4.3 roads — read the alignment instead of inferring it." F: "Information
 is free…" M: "…and now you know." → goodbyes ×6. (C1–C5 lines as v3, retitled.)
