@@ -229,7 +229,7 @@ order, junctions (signal psets), JKR sign codes, per-stretch quantities — and 
 film, local-first in one browser tab, no server, nothing hand-drawn, each step witnessed, uncertain items tagged SPECULATIVE. Positioning
 line on record (FILM_NARRATION §10 Tier-1): incumbents create IFC but do not decompose / compile / verify the round trip. NOT measured:
 no other product has been run on these files — state it as positioning, never as a test result. "No one has attempted this" is NOT a
-claim we can make (no survey done).
+claim we can make — see §PRIOR_ART for the citable wording.
 **IFC4.3 (backward compatible) — less inference, more extraction.** MEASURED: the shipped parser (viewer/lib/web-ifc-api-iife.js, 6 MB)
 carries the IFC4X3 ADD2 schema incl. IfcAlignment, IfcReferent, IfcRoad, IfcCourse, IfcKerb, IfcEarthworksFill, IfcPile,
 IfcGeotechnicalStratum, IfcSign. NOT measured: an IFC4.3 road file through our importer (first test when one is in hand).
@@ -249,6 +249,32 @@ must state lines +/− and keep every witness green (deletion budget, CLAUDE.md 
 **Film script note (next version):** the narration names the achievement honestly — "this film was compiled from the messiest kind of IFC:
 IFC2X3, every piece a generic proxy, meaning only in file names and properties; IFC4.3 brings alignment and real road classes — the same
 compiler then reads instead of infers" — tag: [VALID] for the 2X3 facts, [SPECULATIVE] for 4.3 until a 4.3 file has been run.
+
+### §PRIOR_ART — citable claim wording (Sonnet research agent, 2026-10-06; ~20 searches + 5 page fetches — SHALLOW for several tools)
+**Defensible (state the scope with it):** "In a search of web, vendor docs and academic indexes (Oct 2026), we found no published or
+commercial single browser application that runs local-first with no server and combines ERP document flow, BIM parsing, an auto-generated
+4D schedule, 5D quantities, mesh clash, a road-standards check and film baking." Also defensible: the parts exist separately — the claim is
+about the COMBINATION and the proxy-only inference path (file names + property sets).
+**NOT defensible:** "first" · "only" · "no one has attempted" · "no ERP works offline" (Odoo has an offline mode, short-term only) ·
+"proxy-only IFC2X3 civil is a known industry problem" (no source found) · "Figma is not local-first" (unverified) · any claim that That Open,
+xeokit, Speckle, Trimble, Dalux, Catenda or iTwin LACK 4D/5D/clash (their docs were not checked — absence of evidence only).
+**Closest prior art:** (1) IFClite — fully client-side WASM, IFC2X3/4/4X3/5, clash, IDS validation; no 4D/5D/ERP/film per its docs
+(https://docs.rs/crate/ifc-lite-wasm/4.1.1). (2) MI ERP BIM Suite for Odoo 19 — ERP + BIM + 4D/5D + clash in one product, but IFC parsed
+server-side, Odoo-hosted, xeokit viewer; no film / road checks found (https://apps.odoo.com/apps/modules/19.0/mierp_bim_suite).
+(3) SYNCHRO 4D / Navisworks / Fuzor — mature 4D (SYNCHRO imports IFC2x3 + OpenRoads) but desktop, schedule-driven, no ERP
+(https://www.bentley.com/software/synchro-4d/).
+**Other cited facts:** local-first definition — Kleppmann et al., Onward! 2019, DOI 10.1145/3359591.3359737 (its ideals include multi-device
+sync, so a no-server tab meets only some: offline, privacy, longevity, control) · SQLite WASM + OPFS https://sqlite.org/wasm/doc/trunk/index.md ·
+Odoo offline "not intended to offer full or long-term offline capabilities" https://www.odoo.com/documentation/saas-19.1/applications/general/offline_mode.html ·
+IFC 4.3.2.0 = ISO 16739-1:2024 (road, rail, bridge, tunnel, ports) https://www.buildingsmart.org/ifc-4-3-approved-as-a-final-standard/ ·
+Civil 3D IFC 4.3 extension https://www.autodesk.com/blogs/aec/2023/05/12/whats-new-in-openbim-and-infrastructure-ifc-4-3-for-civil-3d/ ·
+Civil 3D objects must be 3D solids before IFC export (Autodesk help 2025) · auto-4D from IFC without a schedule exists in literature
+(ASCE 2009 https://ascelibrary.com/doi/10.1061/41052%28346%2966 ; 2012 spatial reasoning https://repository.lsu.edu/mechanical_engineering_pubs/1482) ·
+proxy-only models acknowledged (IFCNet arXiv 2106.09712 — class from geometry); none seen uses file names + psets.
+**Priority note:** an OSArch forum post describes web-ifc WASM → in-memory SQLite → three.js, no backend
+(https://community.osarch.org/discussion/comment/29036/) — possibly the user's own; check before citing priority for that stack.
+**Before publishing:** verify the UNVERIFIED rows (APS/Forge, iTwin.js, Trimble Connect, Dalux, Catenda, PGlite/ElectricSQL/PowerSync,
+DuckDB-WASM, JupyterLite, Figma/Linear architecture) from primary docs.
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
