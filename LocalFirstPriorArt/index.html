@@ -2536,6 +2536,9 @@
 
 <h1 id="local-first-prior-art-how-others-did-it-their-weaknesses-our-workarounds">Local-First Prior Art — How Others Did It, Their Weaknesses, Our Workarounds<a class="headerlink" href="#local-first-prior-art-how-others-did-it-their-weaknesses-our-workarounds" title="Permanent link">&para;</a></h1>
 <p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
+<blockquote>
+<p><strong>See also:</strong> <a href="../BrowserScaleBenchmark/">Browser-Scale Benchmark</a> — how large our one-tab, local-first app is today, measured render and memory numbers, the memory threshold, and the claims we can cite against other projects.</p>
+</blockquote>
 <p><strong>Scope.</strong> Research companion to <code>ERP.md §0.20</code> (secured/durable next phase). For each production
 local-first system: <em>how it works</em>, <em>its documented weakness</em>, and <em>the workaround our architecture
 (<code>kernel_ops</code> deterministic semantic verbs + two-domain async split + native SQL + BIM/ERP unification)
@@ -2751,9 +2754,9 @@ SQLite-WASM</strong>, and what does it cost? The canonical production example is
 </thead>
 <tbody>
 <tr>
-<td><strong>~2 GB DB cap</strong> (up from 512 MB)</td>
+<td><strong>OPFS storage limit: "generous but differ per environment"</strong> — no fixed cap stated on the current page (an earlier reading here said ~2 GB, up from 512 MB; re-checked 2026-10-06, that figure is no longer on the cited page). In practice the ceiling is per-tab memory — measured in <a href="../BrowserScaleBenchmark/">Browser-Scale Benchmark</a></td>
 <td><a href="https://sqlite.org/wasm/doc/trunk/persistence.md">sqlite.org/wasm persistence</a></td>
-<td>I-A storage cap is hard-bounded → gravity-sharding (<a href="../DistributedERP/">DistributedERP §13</a>) not optional at full-AD scale</td>
+<td>I-A storage is bounded per browser → gravity-sharding (<a href="../DistributedERP/">DistributedERP §13</a>) not optional at full-AD scale</td>
 </tr>
 <tr>
 <td><strong>OPFS = one read/write txn at a time</strong></td>

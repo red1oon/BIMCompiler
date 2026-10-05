@@ -2331,6 +2331,10 @@ measured or labelled an estimate, and where others win or the comparison is unfa
 <p><strong>What this covers:</strong> BIM OOTB runs a whole construction workflow in one browser tab with no server — IFC import into SQLite (WASM),
 three.js rendering, a 4D schedule, 5D quantities, clash, road checks, ERP and in-browser film baking. This page records how large that is
 today, where it breaks, how it can grow, and what we can and cannot claim against other projects.</p>
+<p><strong>Companion page:</strong> <a href="../LocalFirstPriorArt/">Local-First Prior Art</a> (researched 2026-05/06) already covers the SYNC systems (Replicache,
+ElectricSQL, PowerSync, LiveStore, CRDTs, SQLSync, cr-sqlite) and the storage axis — notably <strong>Notion</strong>, the at-scale production example of
+SQLite-WASM in the browser (Web Worker + OPFS SAHPool), which keeps Postgres as the source of truth (a server-backed projection, not
+local-first). Rows below that say "not checked" for those systems defer to that page.</p>
 <p><strong>Contents:</strong> §PRIOR_ART (claims we can cite) · §SCALE (size today, what breaks) · measured render + heap numbers · THRESHOLD (fitted from
 48 bake logs) · §IFC43 (the IFC4.3 path and code-size reality).</p>
 <p>Same lane rule: CREDIBILITY FIRST — measured or labelled estimate; research-agent findings marked UNVERIFIED where so. Feeds the film's Chapter 0 claim card (§11.next) and the published scale chart
