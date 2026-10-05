@@ -44,6 +44,30 @@ ground shadow sun day with light distance normal fog all OK good enough."
    branch `merge/altc-alts-lane`; resolutions + witnesses in the PR body (all civil witnesses green on it; lint 21 → 0).
    ⚠ Squash-merge: main gets ONE commit — the lane's history stays on fix/fast-bake / fix/sky-surface (do not delete them).
    Lane-owned debt flagged: witness_light_law_unit + witness_film_exposure_unit each 1 FAIL, identical on fix/fast-bake.
+2g. **§ALTC_ONEWAY — SPEC (user 2026-10-05: "Can we custom the path to be one way where buildup then reveal same … quick along parts
+   which are not much variance" → "So you try to hit below 3 mins and 3 hrs").** Gate: A.isCivilModel(); building films unchanged.
+   1. ONE-WAY REVEAL: civil → reveal pull-out / fly-back / round-2 seconds = 0 (zero-width beats tP=tF=tV=tO are the shipped
+      reveal-off geometry, all divided by Math.max(1e-6, …)); the disc-parade TAIL (2 s × discipline + 2) stays, folded into the
+      rise beat as shipped. Build-up topout = end of the single drive.
+   2. FASTER CRUISE: civil film pace 25 → 35 m/s for dive, drive and pull-back (CIVIL_FILM_SPEED); the noise law still slows busy
+      stretches (×(1+(1.45−1)·busy)), so quiet straights run at cruise and junctions/bridge slow down. Fly tour keeps its own 25.
+   Budget (from the measured 206 s plan: dive 57 + spin 6 + drive 101 + pull-back 34 + orbit 8, + tail 16): ~160 s → 3,840 frames
+   → 2.1-3.2 h at the measured 2-3 s/frame (Hospital 2.03, LTU 3.96 — ALTC_FOUNDATION).
+   Witness (no bake): witness_altc_highway.js — road natural length with Reveal ON < 180 s and round-2 width 0; Duplex Reveal round 2
+   still present and its pace unchanged.
+2h. **§ALTC_ONEWAY v2 — film SHAPE re-dictated (user 2026-10-05, while v1 was being witnessed; NOT built, awaiting go):**
+   *"I am thinking buildup finishes early before half way point.. the rest is discipline reveal"* · *"Only orbit is at the large
+   intersection and close-up"* · *"We have planned future interesting overlays at certain markers to indicate terrain, weather,
+   traffic info"*.
+   v1 state (branch feat/altc-oneway @ /tmp/wt-oneway, NOT pushed as PR): civil reveal one-way + cruise 35 m/s → road film with
+   Reveal natural 135.9 s (3,262 frames ≈ 1.8-2.7 h); Duplex unchanged (round2 4.9 s, flyback 1.7 s). Witness 8/10 — the 2 FAILs are
+   the WITNESS reading plan.reveal.flybackSec (no such field; read §CINEMA_PACING instead), not the film. Also seen: the
+   §CINEMA_PACING line prints pullback 106.6 s while natural=135.9 = dive 25.6 + spin 4.7 + walk 76 + tail 16 + orbit 8 + 5.6 →
+   _natSec.rise is changed AFTER _natTotal is summed (not read yet — frame count = naturalTotal).
+   v2 shape: (1) ONE drive; build-up topout at ≤ 50 % of the drive; (2) second half = discipline reveal (the shipped disc parade
+   moved INTO the drive, not a tail); (3) the ONLY orbit = close-up at the large junction (§CIVIL_ROUTE_JUNCTION junction 1, 5 signal
+   heads, r 68 m) — no final pull-back, no whole-site orbit; junction 2 driven through; (4) FUTURE: marker overlays along the route
+   (terrain, weather, traffic info) — recorded only.
 2d. **Alt+C red POV cone missing during preview (user 2026-10-05) — CULPRIT NOT FOUND YET.** I first claimed "the cone is
    only out of the parked camera's view" and kept pushing it after the user rebutted ("the red cone must get into the canvas
    and trace the given path. it does not appear anymore"; "do not double down") — that account is WITHDRAWN as the answer.
