@@ -283,8 +283,8 @@ ratio 4.8) · load to COMPLETE 36.5 s headless (46.6 s before the roof fix #1867
 (IfcOpenShell tessellation — a different count basis from the DB).
 **What breaks as we grow, worst first:**
 1. MEMORY CEILING — geometry is never disposed (DLOD saves draw work, not memory: dlod_nav.js :475/:1397); estimate 100 km ≈ ~21 GB →
-   chainage tiles / section streaming (§J). The DB lives whole in the sql.js WASM heap — 32-bit WebAssembly memory caps at 4 GiB, so a DB in
-   the low GB will hit a wall before that (general platform limit — not measured on our build).
+   chainage tiles / section streaming (§J). The DB lives whole in the sql.js WASM heap — 32-bit WebAssembly caps at 4 GB (Memory64 lifts it on Chrome/Firefox desktop);
+   the tighter real limit is mobile/Safari per-tab memory (see benchmark context below).
 2. SAVE COST — §KRN_PERSIST rewrites the whole 646 MB DB per op; URL loads > 400 MB skip the IDB cache (§CACHE_WRITE_SKIP_TOO_LARGE) → every
    reload re-downloads. Grows with size → incremental / delta saves.
 3. LATENT GRID — light_zones 0.5 m grid ≈ 2.8e9 cells / 5.5 GB at this extent if a road model ever carries IfcSlab/IfcWall.
@@ -292,6 +292,22 @@ ratio 4.8) · load to COMPLETE 36.5 s headless (46.6 s before the roof fix #1867
 5. HEAVY MESH — lamp poles: crease-angle smooth + weld would cut most of their 7.6 M verts (needs spec + look ruling).
 Helps already: §MESH_SLIM (661 → 396 MB), roof layer 10.1 s → 33 ms. IFC4.3 alignment/stations make tiling by station natural (§IFC43).
 Suggested order: section streaming + incremental save BEFORE more features.
+**Benchmark context (Sonnet research agent, 2026-10-06 — partial; anecdotes are NOT benchmarks):**
+- Wasm memory: DuckDB-WASM docs "WebAssembly limits … to 4 GB and browsers may impose even stricter limits"
+  (https://duckdb.org/docs/current/clients/wasm/overview.html). Memory64 ships in Chrome 133+ / Firefox 134+, practical JS cap 16 GB,
+  10 %–100 %+ slower than 32-bit (https://caniuse.com/wf-wasm-memory64 ; https://spidermonkey.dev/blog/2025/01/15/is-memory64-actually-worth-using.html);
+  Safari status UNVERIFIED. → OUR REAL CEILING IS SAFARI/iOS AND CHROME MOBILE (old third-party figures: Chrome mobile ~500–700 MB per tab,
+  Firefox 2 GB, Safari kills the tab instead of failing memory.grow — UNVERIFIED as current), not Chrome desktop.
+- Storage quotas (web.dev, may be dated): Chrome up to 60 % of disk per origin · Firefox 2 GB per eTLD+1 · Safari ~1 GB per origin.
+- xeokit published sample: 5,512 objects / 283,238 triangles, ~2 s over the network from a pre-converted XKT
+  (https://xeokit.io/blog/automatically-splitting-large-models-for-better-performance). Ours: 8.5 M triangles (~30×), 36.5 s full local DB
+  load — load times NOT comparable (compressed network fetch vs whole local DB).
+- Potree streams 597 B points (~1.6 TB) server-backed — a different class (streamed); never on the same axis without labelling it.
+- No published sql.js / SQLite-WASM database as large as our 661 MB was found; no published fps for any viewer → no frame-rate comparison.
+- Chart axes proposed: (1) resident client data MB (log) × triangles rendered (log), hollow markers for streamed; (2) memory-ceiling ladder
+  bars (kvvfs 5 MB · Safari ~1 GB · Firefox 2 GB · Wasm32 4 GB · Memory64 16 GB) with our 661 / 396 MB overlaid; (3) whole-in-memory vs
+  streamed, colour = server needed. Gaps before charting: ThatOpen/xeokit large-model numbers, APS guidance, Photopea app size, official
+  Chrome/Safari per-tab limits, Safari Memory64.
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
