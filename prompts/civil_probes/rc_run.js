@@ -1,0 +1,14 @@
+const path='/tmp/wt-civil-modelcheck/viewer/';
+const Database=require(process.env.BSQ||'better-sqlite3');
+const RC=require(path+'road_check.js');
+const cfg=JSON.parse(require('fs').readFileSync(path+'rates/road_rules.json','utf8'));
+const db=new Database(process.argv[2],{readonly:true});
+const q=(s,p)=>db.prepare(s).all(...(p||[]));
+const t=Date.now(); const r=RC.run(q,cfg,{log:console.log});
+console.log('ms',Date.now()-t,'rows',r.rows.length);
+const by={}; r.rows.forEach(x=>{by[x.rule]=(by[x.rule]||[]); by[x.rule].push(x.measured)});
+for(const k in by) console.log(k, by[k].length, 'min',Math.min(...by[k]).toFixed(2),'max',Math.max(...by[k]).toFixed(2));
+console.log(JSON.stringify(r.coverage));
+const h=r.signs.filter(s=>s.height!=null).map(s=>s.height); h.sort((a,b)=>a-b); console.log('heights p5/50/95', [0.05,0.5,0.95].map(p=>h[Math.floor(p*h.length)].toFixed(2)).join(' '));
+console.log('no face found', r.signs.filter(s=>!s.face.faceFound).length, 'secondary', r.signs.filter(s=>s.secondary).length);
+r.signs.filter(s=>/SIGN NO/.test(s.label||'')).slice(0,6).forEach(s=>console.log(s.label, 'H',s.height&&s.height.toFixed(2),'post',s.face.postCover.toFixed(2),'W',s.face.faceWidth.toFixed(2),'lat',s.lateral&&s.lateral.toFixed(2)));

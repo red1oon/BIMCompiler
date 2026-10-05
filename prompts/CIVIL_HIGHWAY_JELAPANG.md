@@ -19,15 +19,22 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶ RESUME HERE (state at 2026-10-05, all civil PRs merged — #1844 → #1865)
+## ▶ RESUME HERE (session closed 2026-10-05 late — user shutting machine down)
+**State:** all civil PRs #1844 → #1865 merged. In progress: **§MC Model Check** on bim-ootb branch
+`feat/civil-model-check` @ pushed WIP commit (evaluator + rules JSON only, nothing loads it, no PR). Worktree removed —
+re-create with `git worktree add /tmp/wt-civil-modelcheck feat/civil-model-check`.
 **Next, in order:**
-1. **§W.2 centroid ≠ box middle** — measure per building how many elements have |centroid − box middle| > tol
-   (needs vertex min/max per geometry). Decides whether clash broad phase can MISS lopsided pairs and whether the
-   DB should store the true box. Touches buildings too → measure before any change.
-2. **5D real numbers** — wire `regional-official` rates (Selangor signs §R.3, DBKL roadworks §R.4) + mesh-measured
-   quantities (road m², marking/drain m; §Y's own-axis box is a start, curved strips need a centre-line length).
-3. **Find by property** on `element_psets` (sign code, component name, drain type/size).
-4. **Road-standard rule check** (§K-6) — needs the JKR clause values supplied + cited.
+1. **⛔ USER GO NEEDED — clash broad-phase fix (§W.2, measured: LIVE BUG on buildings too).** Asked, not answered (user
+   moved to closing). Recommendation given: fix first. It changes every building's clash candidates → fleet table.
+2. **§MC finish** — fix the 2 measurement faults (see §MC "First run"), then `model_check_report.html` (MEP-report
+   styling), the MEP→Model Check button swap in `boq_charts.html` (civil gate `RoadCheck.isCivilModel`), witness, sw bump +
+   precache `road_check.js`, `rates/road_rules.json`, `model_check_report.html`.
+3. **§RP road panel** (8 tabs) + Alt+C findings film via `rule_findings_film.js` — after §MC.
+4. **5D real numbers** — `regional-official` rates (Selangor §R.3, DBKL §R.4) + mesh-measured quantities. User is buying
+   the JKR SoR 2023 (said 2026-10-05).
+5. **Find by property** on `element_psets`.
+**User is obtaining:** JKR SoR 2023 · terrain/earthwork IFC from the BIM friend (unlocks ground plane, flood display,
+runoff, and a true road-edge level for the sign-height rule).
 
 **Waiting on user/partner (ask once, don't re-ask):** JKR SoR 2023 (RM 20) or CIDB N3C subscription (paid, inputs
 only) · CRS code of the drawing · alignment export (IFC4.3 IfcAlignment or LandXML) · earthwork surface + drainage
@@ -296,6 +303,19 @@ building → MEP unchanged (NON-IMPACT gate). Rule-checklist panel adoption = la
 **Witness `viewer/tests/witness_road_check.js`** (better-sqlite3, real DB): per-rule population + finding counts on JELAPANG_AFTER;
 two-post sign face bottom > 1 m (proves the slice fix); road top ≥ every ROAD vertex z within 0.5 m (proves top not underside);
 Duplex → every rule VACUOUS/INCONCLUSIVE, button stays MEP; a rule with 0 population never prints PASS.
+
+**§MC First run (2026-10-05, WIP commit on `feat/civil-model-check`; harness `prompts/civil_probes/rc_run.js`, log
+`rc_run.log`; run with `BSQ=/home/red1/bim-compiler/node_modules/better-sqlite3 node rc_run.js <db>`):** 3.05 s, 302 rows.
+| rule | population | findings | measured | read |
+|---|---|---|---|---|
+| sign_mounting_height | 114 | 74 | −6.02 … 1.78 m | ❌ FAULT — negative heights: road-top band (nearest + 0.5 m) catches a HIGHER road piece (embankment / other carriageway). Needs the road surface directly at the post foot, or the foot's own ground level |
+| sign_lateral_clearance | 138 | 138 | all 0.00 m | ❌ FAULT — every sign foot lies inside some ROAD solid's plan (verge/kerb solids are in the ROAD file?). Check which `01_Component_Name` the containing pieces are; carriageway-only pieces may be the right reference |
+| obstruction_marker_height | 24 | 24 | 0.60 … 0.74 m vs 1.2 | plausible real finding — verify after the height fault is fixed (same road-top method) |
+| chevron_spacing | 46 | 46 | 11.9 … 18.7 m vs 6 | plausible real finding; also check "laterally 6 m apart" reading against ATJ 2B Fig. 10 before reporting |
+| rrpm_spacing | 20 groups | 20 | 1.00 m | as predicted (matches no Table 4.2 row) |
+- Face detection: two-post "SIGN NO. n" signs now read face bottom 0.87–1.07 m above the (faulty) road top, post coverage
+  0.25 m vs width 1.9–2.2 m → the slice method separates post from face; 0 signs without a found face.
+- Coverage: 20 codes; only WB. 24a/24b and GI. 9a not found in ATJ 2A text (listed "not verified"); 18 signs carry no code.
 
 ### §RP Road panel + Alt+C film (user, 2026-10-05) — REQUEST RECORDED, not specced
 > *"We can have a dedicated Road CW Overlay Panel that addresses [the 8 §K items] … then in the Alt-C film making has them
