@@ -27,16 +27,26 @@ labels · #1882 road checks as formula cards (VALID/SPECULATIVE list in viewer/r
 **Films in ~/Downloads (logs beside them):** BIM_JELAPANG_v2.mp4 + _narrated_AFTER (116 s) · BIM_JELAPANG_v3.mp4 (94.6 s, no Reveal) ·
 BIM_JELAPANG_v3_bridge.mp4 · BIM_HIGHWAY_v3_assembled.mp4 + BIM_HIGHWAY_v3_narrated_AFTER.mp4 (118.6 s — the current documentary;
 user: "a good concept documentary that answers both the developers and general users"). Recipe: FILM_NARRATION.md §11.v3.
+**Later the same day (after the close):** #1884 mirror ghost FIXED (interior room probe sat at y=-5.0 inside the road band; 6 glossy
+materials mirrored it — roads now skip it) + status box 'Chainage' row replaces the model name · #1885 day counter FIXED (reused raw schedule
+kept 1970 timestamps for the 5,674 road pieces outside any task → 20,791 days; now 60). v3c documentary re-baked + narrated (FILM_NARRATION
+§11.v3c, ~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4, 127.6 s). The "1,485 bridge pieces at the origin" item was a MEASURING-TOOL error
+(the drawn-box lookup returns a zero box for them; the DB places all 4,739) — withdrawn; chainage filing now treats that as a miss.
+NEXT BAKE (user): after build-up, finished highway night-lit, sunset → dusk/nightfall. Ghost x-ray intro: a --tap translucency stalled
+the bake — needs a supported mode.
+⚠ INCIDENT: a failed `git worktree add` (branch existed) let the following commands run in the SHARED ~/bim-ootb and commit another
+session's working state onto its local main (not pushed). Undone with reset --soft + reset (all content kept; their staged/unstaged split
+lost). RULE: always `cd /tmp/wt-x || exit` before editing/committing in a script.
 **Open, in order:**
 1. Route order of the build (drive-order correlation 0.30, need ≥ 0.8). Measured: E4 (trade section→section) loses 4,971 of 7,685
    edges to cycles through the section milestones. POC tried and dropped: soil rule (0.33, 714 floating), bridge by section (0.30).
    Next: find what forms the loops (one cross-section support edge couples whole sections via the milestone hammock) — §CHAINAGE_V2.
-2. 1,485 'Jelapang VBC' pieces have their drawn box at the origin (not placed) — not investigated (§ALTC_V3 data fact).
+2. (withdrawn — measuring-tool error, see above.)
 3. Road checks: 4 of 5 rules SPECULATIVE — fix sign/marker height (road-edge level picks a higher piece) and lateral clearance (all
    0.00 m), then flip film_status in road_rules.json with the reason (§MC, §ALTC_CHECKS).
 4. Storyboard ideas not built: camera follows the construction front (needs item 1); more part clips (junction build, drainage
    section) via the same assembly tools (film_assemble.py, film_page_clip.js).
-5. GHOST REFLECTION above the construction, in the sky (user 2026-10-06: "did u manage to solve the ghost reflection above
+5. ✅ FIXED by #1884 (room probe off on roads). Was: GHOST REFLECTION above the construction, in the sky (user 2026-10-06: "did u manage to solve the ghost reflection above
    construction in sky"). The lamp-glow squares ghost IS fixed (#1875; bake logs show §CIVIL_LAMP_GLOW_DAY visible=0 src=still for the
    whole film). If the user still sees a ghost in v2/v3, it is a DIFFERENT cause — not identified, nothing measured yet. First step:
    get the film + second from the user, then read that frame's § lines (glow, §CPE_BUILDUP hidden/pending meshes, ghost ground

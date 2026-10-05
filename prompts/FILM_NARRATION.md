@@ -1386,3 +1386,15 @@ not do Reveal, just remain full build all the way"* · *"replace the words Jalan
   spoken/caption text. Fit 28/28 DETAIL, 0 WRONG. Cards FILM_SET=highway3 (6 chapters in card-free gaps, 4/4 badges).
 - **Output** `~/Downloads/BIM_HIGHWAY_v3_narrated_AFTER.mp4` — witness: frames 1,779 = source · longest silence 5.4 s · −16.9 LUFS ·
   fontselect Noto Arabic / CJK SC / Thai + DejaVu.
+
+### §11.v3c — re-bake after the bug fixes + far-orbit intro (2026-10-06)
+Bakes from bim-ootb main after #1884 (mirror ghost: no room probe on roads; Chainage row) + #1885 (day counter epoch): main
+`BIM_JELAPANG_v3c.mp4` (log: §MIRROR_ROOM_PROBE skipped, day counter 60 of 60, window 2026-10-04..2026-12-03, status box
+Chainage="… m (inferred)", 0 rows naming the model) · bridge `BIM_JELAPANG_v3c_bridge.mp4` · intro `BIM_JELAPANG_v3c_intro.mp4`
+(9 s far orbit, _arcPlan sweep 80°, r 1,245 m, finished model). The x-ray (ghost) intro via a `--tap` translucency script STALLED the
+bake at frame 0 (only 12 shared materials touched; aborted after 10 min) — not used; ghost x-ray intro stays an idea (needs a supported
+mode, not a tap). Assembly 7 segments = 127.6 s; script `film_narration_highway_v3c_dialogue.tsv` (v3 rows +9.0 s, new `xray` row
+worded for the plain far orbit), 29/29 DETAIL, 0 WRONG. Output `~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4` — frames 1,914 = source ·
+longest silence 5.4 s · −16.9 LUFS.
+**User notes for the NEXT bake:** after the build-up, the finished highway in night-lit mode — sunset → dusk / nightfall. (The
+"Alt+S can learn from the screenshots" note and the screenshot backdrops were withdrawn by the user.)
