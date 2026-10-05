@@ -27,7 +27,7 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    existing flag `A._stillWindowGlowOff` (effects.js:4569 still, :4835 film parity per frame `= day`, :4958 teardown resets); film
    parity is ON for films by default (:4304). Also draw a soft round dot, not a square. Witness: glow hidden at sun > 6°, shown at
    dusk/night; buildings unaffected (no civil heads).
-2. ⛔ **"Reveal no ARC" — CAUSE READ FROM CODE + DATA 2026-10-06 (no bake log yet).** The reveal's ghost round hides only
+2. ✅ **FIXED 2026-10-06 — bim-ootb #1877 (sw v1568) §REVEAL_SHELL: road shell = ARC+STR+ROAD; witness_civil_reveal_shell 10/10 road + 10/10 Duplex.** Was ⛔ **"Reveal no ARC" — CAUSE READ FROM CODE + DATA 2026-10-06 (no bake log yet).** The reveal's ghost round hides only
    ARC + STR (effects.js A.cpeRevealVisualAt round 2: visDiscs = every non-ARC/STR disc; A.cpeRevealDiscsPresent drops ARC/STR).
    JELAPANG_AFTER: ROAD 4008 · PLB 2062 · STR 1851 · FURNITURE 1011 · ARC 826 · LIGHTING 227 · DRAINAGE 200 · SIGNAGE 138 ·
    MARKING 90. So the round hides only the bridge (2,677) and the pavement (ROAD, 4,008) stays solid → along the road nothing
@@ -35,12 +35,16 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    road's "shell"? Same answer shapes item 3's reveal-in-the-drive. Was: **"Reveal no ARC is not working"** (user, from the trial bake) — not investigated. Read §CPE_REVEAL_ROUND / reveal visual lines
    from a bake log first (note: a BROWSER bake saves no log file — only cli_silent_bake.js writes `<film>.log`; consider a
    "save log with film" option).
-3. **§ALTC v2 film** (spec 2h; user: "set in the deterministic code its waypoints, speed control, buildup stages"; "plan the path
+3. ✅ **BUILT 2026-10-06 — bim-ootb #1878 (sw v1569) §ALTC_V2 (353.8 → 111.9 s, witness_altc_highway 15/15) + #1879 (sw v1570) §ALTC_PANELS (3 data cards, witness_road_panels 11/11). Neither seen in a real bake yet — needs the user's bake.** Was: **§ALTC v2 film** (spec 2h; user: "set in the deterministic code its waypoints, speed control, buildup stages"; "plan the path
    to give u best in frame shots of the buildup where u can overlay explanations"): one drive; build-up done by ≤ 50 %; second
    half discipline reveal in the drive; ONLY orbit = close-up at the large junction; data panels on quiet stretches; all from
    code (route = A.civilRoutePath, pace = noise law, stages = 4D), never hand-authored. Branch `feat/altc-oneway` = v1 only
    (one-way reveal + 35 m/s, 135.9 s) — NOT shipped; reuse its pieces.
-4. **§CHAINAGE build-up — branch `feat/civil-chainage-buildup` (pushed WIP, NOT shippable).** time_machine element builder gives
+4. **§CHAINAGE build-up — branch `feat/civil-chainage-buildup` (pushed WIP, NOT shippable).** NEW FACTS 2026-10-06: (a) the road
+   film now drives the route REVERSED (§ALTC_V2 V1: small junction → big junction) and the build-up plays only in the first
+   ~50 % of the film — the chainage order must follow the DRIVE direction (plan.waypoints), not A.civilRoutePath order;
+   (b) JELAPANG_AFTER carries Civil 3D corridor stations on 526 elements (StartStation/EndStation, ROAD 301 · DRAINAGE 195 ·
+   FURNITURE 30) but over 152 baselines (BL - BD MAIN (1)…, J1A…), each with its own 0+000 — not one chainage as stored. time_machine element builder gives
    civil elements storey "CH nn" (section = nearest A.civilRoutePath point) + lvlSec on every element; schedule_gate.deriveBandRanks
    and cpm_schedule bandRank order by (section, z). Witness `witness_civil_chainage_buildup.js` (reads kernel_ops ELEMENT_PLACE
    from window.tmGenerateTimeline): lamps-before-own-pavement control 7 → 0 ✔, but route-order rank corr 0.237 = control ✖ and
@@ -269,6 +273,59 @@ no-op on every building.
 **Witness:** witness_civil_night_lamps.js — drive the real per-frame owner `A._filmParityStep` with the sun at 30° (day) →
 glow hidden; sun at 2° (dusk) → shown; teardown reset → shown; the points' material has a round map. Red control: glow
 left visible at 30° must FAIL.
+
+### §REVEAL_SHELL — on a road, the reveal's "shell" includes the pavement (spec 2026-10-06; user: "All proceed according to your analysis")
+**Issue:** the reveal ghost round + disc parade hide only ARC/STR (hard-coded in effects.js A.cpeRevealDiscsPresent,
+A.cpeRevealVisualAt arch-fade overlap, A.cpeArchFadeApplyVisual). On JELAPANG_AFTER that is only the bridge (2,677); the 4,008
+ROAD pieces stay solid → along the road the round changes nothing ("Reveal no ARC is not working").
+**Rule:** ONE owner `A.cpeRevealShellDiscs()` (effects.js) = ['ARC','STR'], plus 'ROAD' when `A.isCivilModel()`. The three sites
+read it. ROAD leaves the parade list (it is the shell, shown again when the shell returns).
+**Gate:** A.isCivilModel() (any SEQUENCE_CIVIL discipline); buildings → ['ARC','STR'], lists unchanged.
+**Witness:** witness_civil_reveal_shell.js (headless): JELAPANG_AFTER — shell has ROAD, parade has no ROAD/ARC/STR, applying the
+ghost hides every ROAD mesh and leaves the other road disciplines visible, restore shows ROAD again. Duplex control — shell
+['ARC','STR'], parade identical to the pre-change rule. Red control: ROAD kept in the parade must FAIL.
+
+### §ALTC_V2 — road film = one drive, build-up by half-way, parade in the drive, one junction close-up (spec 2026-10-06; user: "All proceed according to your analysis")
+Implements 2g + 2h items 1-3 (item 5 panels = §ALTC_PANELS, next). Gate: `A.isCivilModel()` everywhere; buildings unchanged.
+**Measured before (probe on JELAPANG_AFTER, main @ #1877):** route 29 pts / 2,110 m; junctions at=[0,28]: route START = the big
+one (5 signal heads, r 68 m), END = 1 head (r 25). Film with Reveal = 353.8 s: dive 44.8 + spin 4.8 + walk 104.0 + pullout 1.5 +
+flyback 84.4 + round2 84.4 + tail 14.0 + pullback 283.1 (§STOREY_REVEAL_RISE_GROW on the BRIDGE storeys) + orbit 8.0; orbit
+pivot = ARC bbox centre (whole site).
+**Rules (all from model data; constants named):**
+- V1 — seed direction: `_civilFilmOv` reverses the route when the junction with the most signal heads is at its start, so the
+  drive ENDS at the big junction (the only orbit). Logged `§ALTC_V2 seed reversed=…`.
+- V2 — cruise 35 m/s for dive + drive + pull (v1 constant `CIVIL_FILM_SPEED`, branch feat/altc-oneway); the noise law still slows
+  busy stretches.
+- V3 — one way: pull-out / fly-back / round 2 / tail = 0 s (no second lap, no tail).
+- V4 — orbit = close-up at the junction NEAREST the drive's end: pivot = its centroid (signal heads), radius = its own r
+  (heads' spread + 15 m, tour.js). The storey-reveal pull-back growth is skipped (the bridge storeys are not the subject).
+- V5 — build-up topout at u = min(drive midpoint (beats.spin + beats.out)/2, film half-way 0.5) — user: "buildup finishes early
+  before half way point" (`_civilTopoutU`, read by `_buildupTopoutU`). First measured at the drive midpoint = 0.585 of the film → capped.
+- V6 — discipline parade inside the drive's second half [u, beats.out]: n discs + 1 all-together slot, equal share,
+  shell (ARC+STR+ROAD, §REVEAL_SHELL) hidden during it; `plan.reveal.inDrive = {a, b}`, read by A.cpeRevealVisualAt.
+  Editor estimate (cinema_path_editor `_naturalDuration`) adds 0 s for a reveal in the drive (owner `A.cpeRevealInDrive()`).
+**Witness:** witness_altc_highway.js (no bake): road plan with Reveal — natural < 180 s, round2 = flyback = tail = 0, walk ends
+≤ junction r from the big junction, orbit pivot = that junction (≤ 1 m) and radius = its r, buildupTAt(u) = 1 at the midpoint and
+< 1 just before, parade phases tail-one/tail-all only inside [u, out], null before u and after out. Duplex: round 2 still present,
+pace + pivot unchanged.
+
+### §ALTC_PANELS — road data panels on quiet stretches of the drive (spec 2026-10-06; 2h item 5)
+Gate: `A.isCivilModel()` and a plan with a drive; buildings never build panels (`§ROAD_PANELS VACUOUS`).
+**Where/when:** only inside the build-up part of the drive [beats.spin, reveal.inDrive.a] (or [spin, out] with no Reveal) —
+the parade half carries its own discipline captions, the junction orbit is never covered. Slots of PANEL_SEC 5 s with GAP 2 s,
+placed greedily on the QUIETEST film times: busy = the noise law's own walk probes (effects.js `_walkNoiseBuild`, now exported
+as `plan.walkBusy` {pos, v}) looked up at `plan.poseAt(t)`. No new busyness measure.
+**What (model data only, Prime Rule):** stretch = elements whose nearest route point lies within ±150 m of the camera's route
+position (chainage inferred from the route, labelled "inferred"). Kinds in order, a kind with nothing in its stretch is skipped:
+(1) stretch counts per road discipline; (2) drainage — top 3 `02_Type` with `03_Dimension` and counts; (3) signs — top 3 JKR
+`17_Code` + `16_Name`; (4) one "planned" card: Terrain / Weather / Traffic — "planned, no data in this model", no numbers.
+Not shown (no data in a bake): clash count, 4D phase. (Corridor `StartStation` exists on 526 elements but over 152 baselines —
+not a single chainage; left for §CHAINAGE.)
+**Look:** dark rounded plate, the §HUD_SCALE font law (`window.__hudFontPx`), right-middle; moves to left-middle if it would
+overlap a registered HUD rect. Drawn through `_drawUnlessHold('road.panels')` so it fades with any freeze and registers its rect.
+**Witness:** witness_road_panels.js (headless, no bake): JELAPANG — ≥ 3 slots, none overlapping, all inside the build-up drive
+window, each slot's busy ≤ the window median; every number on a card equals an SQL count over the slot's listed guids; drawing at a
+slot mid changes pixels only inside the returned rect, drawing between slots draws nothing; Duplex → VACUOUS, nothing drawn.
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
