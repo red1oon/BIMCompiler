@@ -33,6 +33,11 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    earthwork solids). New finding: 25 lamp columns return a zero (0,0,0) box from `A._loadPathInstanceWorldBox` (lookup miss). → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
    new disciplines: ground-treatment card (piles/nails/drains/walls per stretch + pset design values), earthworks card, real
    chainage from CHAINAGE labels with today's inferred route as fallback; at most ONE new checkbox (show below-ground work).
+   (d) ✅ BUILT PR #1892 (§ALTC_GROUND_CARDS: ground card, red Outstanding card, earthworks row; 14/14 on 3 DBs) · ✅ PR #1891 merge
+   carries element_psets (§MERGE_PSETS). ⛔ real chainage from the CHAINAGE labels: the 332 labels are 3D text SOLIDS with NO
+   properties (§CIVIL_PSETS VACUOUS) — the station number exists only as letter shapes; reading it = OCR of geometry, not extraction.
+   Needs the partner's alignment export (LandXML / IfcAlignment). Inferred route stays (user's fallback rule). Below-ground checkbox:
+   not built (optional, no ask pending).
    (e) **Film script (user 2026-10-06):** *"make the movie script more of reporting for the user's POV, reporting on their works,
    stats.. no more about red1 as that film is done. 6 lingo greetings stay to demonstrate such film option to users"* → narration
    reports the model's own numbers (counts, phases, durations, checks) to its owner; drop the red1/project-story lines; keep the
