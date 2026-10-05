@@ -25,9 +25,12 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 **State:** bim-ootb main live at sw v1577. Road work so far is all merged (§SHIPPED). Current documentary: `~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4`
 (127.6 s; recipe FILM_NARRATION.md §11.v3c). The user merges the partner files into the DB manually (next session works on that DB directly).
 **Open, in order:**
-0. **Queue agreed with user 2026-10-06** (after Merged.db): (a) ✅ Find/merge top-up — bim-ootb PR #1888 (auto-merge) · (b) ✅ bbox
-   view per civil building — PR #1889 (auto-merge, witness GREEN civil 15,751 / Clinic 1,549 unchanged) · look/ground PR #1887
-   (CI rerun after a runner outage; job never started) → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
+0. **Queue agreed with user 2026-10-06** (after Merged.db): (a) ✅ MERGED Find/merge top-up #1888 · (b) ✅ MERGED bbox view per civil
+   building #1889 · ✅ MERGED look/ground #1887 · (c) ✅ BUILT §MIXED_PROGRAMME + §CIVIL_GRAPH_GATE PR #1890 (auto-merge): Gantt 163 d;
+   played layer on Merged.db chainage witness 0/3 → 3/3 (rho 1.0); witness_civil_phase + partner_import updated to the owner gate (PASS);
+   fleet identical. Note: Gantt programme 163 d (phase by phase) vs played line of balance 114 d (`§CPM_RUN makespanDays=114.2`) —
+   two different questions, both reported; the earthworks body is ONE solid → played at day 0 (can't be sectioned without per-section
+   earthwork solids). New finding: 25 lamp columns return a zero (0,0,0) box from `A._loadPathInstanceWorldBox` (lookup miss). → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
    new disciplines: ground-treatment card (piles/nails/drains/walls per stretch + pset design values), earthworks card, real
    chainage from CHAINAGE labels with today's inferred route as fallback; at most ONE new checkbox (show below-ground work).
    (e) **Film script (user 2026-10-06):** *"make the movie script more of reporting for the user's POV, reporting on their works,
@@ -52,7 +55,7 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 5. **Road checks:** 4 of 5 rules SPECULATIVE (road_rules.json film_status) — fix sign/marker height (road-edge level picks a higher piece) and
    lateral clearance (all 0.00 m), then flip the status with the reason.
 6. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined";
-   witness_civil_phase reports FAIL on a merged road+bridge DB (its building rule does not fit a merged model) — on main too.
+   ✅ witness_civil_phase on merged road+bridge — fixed in #1890 (owner gate, judges civil elements only).
 **Moved out (2026-10-06, user: "keep the future from the prompt file"):** prior-art claim wording, scale/limits/growth, benchmark chart plan,
 IFC4.3 path + lean-code reality → `docs/BrowserScaleBenchmark.md` · Modeller covering civil
 (DeepSeek view) → `prompts/MODELLER_MASTER.md` §CIVIL_IN_MODELLER.
