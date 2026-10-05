@@ -73,7 +73,10 @@ Stored by the importer for civil files only → `element_psets` (102,495 rows on
 ---
 
 **NEW SOURCE SET (user 2026-10-06): `~/Downloads/JELAPANG IFC.zip`** (120 MB, 23 files, folder `IFC/`). User plans next session: merge
-them into the same DB and save. Extract into `~/Downloads/JALAN JELAPANG IFC/IFC/` before merging (it overwrites the older EARTHWORK / ROAD LIGHTING).
+them into the same DB and save. EXTRACTED 2026-10-06 into `~/Downloads/JALAN JELAPANG IFC/IFC_MORE/` (6 files, byte-checked against the zip): GEOTECH, CHAINAGE, ROW,
+GABION MATTRESS, EARTHWORK + ROAD LIGHTING. ROAD LIGHTING new = old minus 11 objects (216 shared GUIDs at identical positions, 0 added; the
+11 removed sit in one ~30 m spot at x≈29,648–29,677, 7 of them based at z −1.6/0 m — the buried strays §NIGHT_CIVIL_LAMPS rejected) →
+REPLACE the old lighting, do not add (adding duplicates 216 lamps). ROAD / DRAINAGE / FURNITURE / MARKING / SIGNAGE unchanged — not extracted.
 Contents (all IFC2X3, Civil 3D export, every object IfcBuildingElementProxy; counts from the files + their export .log):
 | file | size | objects | vs what we have |
 |---|---|---|---|
