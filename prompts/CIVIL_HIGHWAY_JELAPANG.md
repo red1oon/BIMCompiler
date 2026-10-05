@@ -205,6 +205,17 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   Open (not worked): which elements `§MEP_SMOOTH`/`§DUCT_SILHOUETTE` take on a civil model (prewarm for Alt+S, runs at load) ·
   KRN_PERSIST full rewrite per op on a 646 MB DB (save/reload efficiency, user asked) · URL loads > 400 MB skip the IDB cache
   (`§CACHE_WRITE_SKIP_TOO_LARGE`) → every reload re-downloads.
+- **§MESH_SLIM — large-file mesh (user 2026-10-05: "what about the large file mesh?"; "save and reload be efficient").
+  MEASURED on JELAPANG_AFTER.db (7,419 geometries, 21,957,746 verts):** vertices 251.3 MB · faces 97.9 MB (u32) ·
+  NORMALS 251.3 MB = 42 % of geometry. Stored normal == its own triangle's face normal (<1°) for 99.95 % of vertices;
+  6,528 / 7,419 geometries entirely flat. Shipped fleet DBs carry NO normals — the viewer already derives them with
+  computeVertexNormals() from the winding (`streaming.js:1615`, §WALL_WINDING_MEASURE); only BROWSER IMPORTS store them
+  (`§BLOB_FETCH normals_pre=155`). Other levers: u32→u16 indices −37.1 MB (needs a format flag, not proposed);
+  exact weld −16 % verts (would change the flat look, not proposed); instancing ~0 (shapes are unique per location).
+  Proposal (NOT BUILT, needs go): import/save write normals = NULL (fleet format) → ~−251 MB (661 → ~410 MB) on this file;
+  smaller save, faster reload, less sql.js heap (whole DB lives in WASM memory). Existing saved DBs: compact on next Save.
+  Witness: per geometry, computeVertexNormals() vs the stored normal — angle distribution over JELAPANG + one building
+  import; render path proof = the fleet already runs it. Cost to measure: CPU normal compute on load for 22M verts.
 - **§CULL_SPHERE (found 2026-10-05, not fixed):** `dlod.js:77-81` culls each instance by a sphere at the instance ORIGIN (vertex
   centroid) with radius = half the bbox diagonal. On JELAPANG_AFTER the true mesh extends > 1 m outside that sphere for 1,173
   elements (ROAD 771, LIGHTING 171, DRAINAGE 122, MARKING 57, ARC 34, FURNITURE 18; worst 167.8 m) → hidden while on screen
