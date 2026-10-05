@@ -1405,3 +1405,15 @@ proxy, meaning only in file names and properties. IFC4.3 brings alignment and re
 infers." Sources/tags in CIVIL_HIGHWAY_JELAPANG.md §IFC43 ([VALID] 2X3 facts · [SPECULATIVE] 4.3 until a 4.3 file runs). Also new in the
 model for that film: the partner's ground works (7,575 piles, 1,338 soil nails, earthworks body, gabions, chainage labels, ROW) — §PARTNER_DISCS.
 Never say "no one has attempted this" (no survey done).
+
+### §11.next CHAPTER 0 — the claim card (user 2026-10-06: "intro our film with your above cite quote as Chapter 0 … tone down")
+Card text (opening, before greetings), tone per the user:
+> "In our search of the web, vendor documentation and academic indexes (October 2026), we have yet to find a prior art to learn from:
+> one browser tab, local-first, no server — BIM parsing, a 4D schedule, 5D quantities, clash, road-standards checks, ERP and this film.
+> We share it as an MIT-licensed project with the long tail of users."
+Sources + scope: CIVIL_HIGHWAY_JELAPANG.md §PRIOR_ART (closest: IFClite, MI ERP BIM Suite for Odoo, SYNCHRO/Navisworks). Priority for the
+browser stack (web-ifc → SQLite WASM → three.js, no backend): the user's own dated OSArch post, https://community.osarch.org/discussion/comment/29036/.
+DO NOT SAY: "first", "only", "no one has attempted", "the largest local-first app" / "no other local-first of this size" (not surveyed —
+large one-tab apps exist, e.g. Photopea). Instead, state OUR measured numbers and let the viewer judge (re-check each in the bake log/DB
+before baking): this model 10,413 elements (5,674 road + 4,739 bridge) + the partner set (9,145 geotech …) · DB 661 MB (JELAPANG_AFTER.db,
+396 MB after §MESH_SLIM) · ~22 M vertices · viewer 157,098 lines / 237 files, 256 witnesses (bim-ootb main 2026-10-06).
