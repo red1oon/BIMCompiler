@@ -1551,7 +1551,13 @@ network tab sees the page call out. Options: (a) keep the line and add "your fil
 model bytes leave (none run yet); (b) remove the counter first; (c) word it "No back door — the only call home is a visit counter you can
 see in the code". **RESOLVED (user 2026-10-06): *"that is not AI, just a counter that offline work wont work"* — the line stays as
 written; the counter is a page-view count, absent offline, never model data.**
-**Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
+**BUILT 2026-10-06 (Sonnet agent, CPU only):** `~/Videos/IFC_Extraction_Program_intro_narrated_AFTER.mp4` — 286.3 s, 7,445 frames =
+assembled source · fit 34/34 DETAIL, 0 WRONG · −16.8 LUFS · longest silence 7.33 s (S5 tour, 176.7–184.0 s; next 6.77 / 5.75) · fonts Noto
+Thai / Arabic / CJK SC + DejaVu · title fades: box diff ≈ 10–32 at 0.5 s → ≤ 1.05 at 3 s (gone). Script `prompts/film_narration_intro_v1_dialogue.tsv`
+(34 rows). Breaks run 11–38 s (sized to the fitted narration, not 5–8 s). Agent readings: C1/C3 picture sentences re-pointed to their v4
+backdrops; END lines voiced by M, stacked. **v2 with the end-card subtext snip** (6 s on black, fade in/out, appended after the agent run):
+`~/Videos/IFC_Extraction_Program_intro_narrated_v2_AFTER.mp4` — 292.4 s, 7,601 frames (= 7,445 + 156).
+**Status (pre-build):** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
 ## §BROWSER_SCALE_AND_CLAIMS — MOVED to `docs/BrowserScaleBenchmark.md` (2026-10-06). The Chapter 0 claim card (§11.next) cites it.
