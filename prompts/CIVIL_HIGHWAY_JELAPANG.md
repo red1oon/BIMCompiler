@@ -41,6 +41,12 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    properties (§CIVIL_PSETS VACUOUS) — the station number exists only as letter shapes; reading it = OCR of geometry, not extraction.
    Needs the partner's alignment export (LandXML / IfcAlignment). Inferred route stays (user's fallback rule). Below-ground checkbox:
    not built (optional, no ask pending).
+   (f) **VERSION REPLACE on re-export (user 2026-10-06: "yes queue it, version replace on re-export")** — MEASURED case: the partner's
+   JELAPANG_ROAD LIGHTING.ifc v1 (FILE_NAME 2026-10-02T16:47, 227 objects) and v2 (same path + author, 2026-10-05T21:01, 216 objects;
+   all 216 GUIDs ⊂ v1) — v2 deleted 11 (one junction cluster x≈1065–1095 y≈380–398: 7 at z 0.6–1.8 m under the ground, 1 traffic
+   signal column + 2 boxes at road level, 1 33 m element up to ~102 m). Open→Merge only adds → the 11 survive. Needs a spec: same
+   source file identity (IFC FILE_NAME path / file name + discipline) → offer "replace version", removing the elements absent from the
+   new export; NOT built.
    (e) **Film script (user 2026-10-06):** *"make the movie script more of reporting for the user's POV, reporting on their works,
    stats.. no more about red1 as that film is done. 6 lingo greetings stay to demonstrate such film option to users"* → narration
    reports the model's own numbers (counts, phases, durations, checks) to its owner; drop the red1/project-story lines; keep the
