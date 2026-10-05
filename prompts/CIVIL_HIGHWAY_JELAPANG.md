@@ -201,7 +201,7 @@ group k to group k+1, none inside a group; a building item set builds the identi
   new one. Old is default in lieu of such ground terrain IFC"* → when an EARTHWORK terrain solid is present, the ground comes from
   it; the p2-bottom rule stays the default only when there is none. ⛔ Open: flat plane at which earthworks height, or hide the flat
   plane and let the earthworks solid be the ground (user's look ruling).
-  Same shape as chainage: no EARTHWORK terrain → today's p2-bottom ground, unchanged (JELAPANG_AFTER.db plane stays 51.74 m).
+  Same shape as chainage: no EARTHWORK terrain → today's p2-bottom ground, unchanged (JELAPANG_AFTER.db plane stays 43.46 m, measured).
 
 ### §CIVIL_REF_LOOK — earthworks see-through, ROW outline, ground under the earthworks (spec 2026-10-06; user: "Earthworks, can it be a soft or outline bbxes or of diff colouring so not to obscure the main hiway?" → "yes go ahead with that look")
 Measured (Merged.db, mesh vertices, rotation 0 on both): EARTHWORK true z 30.52–90.44 (naive center−bbox/2 = 29.46 — §W.2 centroid
@@ -212,10 +212,10 @@ offset, 1.06 m); ROW true z 1.00–77.76. Both cover the road + GEOTECH when dra
   when the ROW element streams. Picking: ROW is a reference, not built work.
 - G1 ground (§GROUND_CIVIL): a model with EARTHWORK geometry → plane z = lowest TRUE earthworks vertex (center_z + local min z,
   from component_geometries; only when rotation_x/y = 0, else the old rule) → `§GROUND_Y src=earthwork-bottom`. No EARTHWORK
-  geometry → today's p2-bottom rule, byte-identical (JELAPANG_AFTER.db stays 51.74 m).
+  geometry → today's p2-bottom rule, byte-identical (JELAPANG_AFTER.db stays 43.46 m — measured; 51.74 was the road-only value).
 - Gate: discipline EARTHWORK / ROW only (CIVIL_DISCS). Fleet buildings have 0 such rows → no material, ground or edge change.
 **Witness** `witness_civil_ref_look.js`: Merged.db → EARTHWORK materials transparent at 0.28 + depthWrite false; ROW mesh hidden
-and an edge line present with > 0 segments; `§GROUND_Y src=earthwork-bottom z=30.52`. JELAPANG_AFTER.db → `src=p2-bottom z=51.74`
+and an edge line present with > 0 segments; `§GROUND_Y src=earthwork-bottom z=30.52`. JELAPANG_AFTER.db → `src=p2-bottom z=43.46`
 (backward compat). RED control: same witness on main must fail L1/L2/G1.
 
 ### §IFC43 — what the partner set gives, the novel-art claim, and the IFC4.3 path (recorded 2026-10-06)
@@ -308,6 +308,37 @@ Suggested order: section streaming + incremental save BEFORE more features.
   bars (kvvfs 5 MB · Safari ~1 GB · Firefox 2 GB · Wasm32 4 GB · Memory64 16 GB) with our 661 / 396 MB overlaid; (3) whole-in-memory vs
   streamed, colour = server needed. Gaps before charting: ThatOpen/xeokit large-model numbers, APS guidance, Photopea app size, official
   Chrome/Safari per-tab limits, Safari Memory64.
+**How much can we grow (2026-10-06 — ESTIMATES from our own numbers, not measured limits):**
+- GPU: 22 M verts × (12 B position + 12 B normal) ≈ 530 MB + 8.5 M tris × 12 B indices ≈ 100 MB → ~0.6 GB VRAM if everything is uploaded.
+- Desktop (Chrome, 8 GB card): whole-model headroom roughly 5–8× today before VRAM/heap trouble; DB alone up to the 4 GB Wasm cap ≈ 10× the
+  slimmed 396 MB. Mobile (~0.5–0.7 GB per tab, unverified): today's road is ALREADY too big as a whole model.
+- What exists for streaming: `viewer/lib/httpvfs.js` + streaming.js §S260 (`A._useRangeStream`) fetch geometry by HTTP range requests from a
+  URL-served DB — the DB is NOT loaded whole. Gaps: (a) imported/local DBs (IndexedDB) still open whole in the sql.js heap → needs an
+  OPFS-paged SQLite VFS; (b) fetched geometry is never evicted (DLOD disposes nothing) → needs evict-behind; (c) chainage tiles (§J).
+  With (a)+(b)+(c) memory follows the visible WINDOW, not road length → length bounded by storage quota, not RAM. That is the growth path.
+**Developer doc (user 2026-10-06):** the scale chart + these numbers go into a separate doc published for the dev community (§SCALE
+benchmark axes; fill the listed gaps first). Where to publish: OPEN (public docs site via scripts/safe_gh_deploy.sh vs a shared page).
+**Modeller covering civil — DeepSeek's opinion (user-pasted, 2026-10-06), our reading:** agrees with our position — Bonsai/Saikei give IFC4.3
+civil SEMANTICS (IfcAlignment, IfcCourse, IfcRoad as a target schema), not our gap (compliance on messy IFC2X3, browser local-first, mesh-level
+measurement). Its specific claims are UNVERIFIED by us (Bonsai alignment described as a "stop-gap", CSV import; rail-first workflow). Worth
+taking: the IDS gate pattern (write contract → re-open → test → BCF) as the shape of the §MC report; IfcCourse layers as the IFC4.3 target.
+Consistent with the Modeller strategy (memory project_modeller_assemble_handoff_strategy): we do not author roads from scratch — we ASSEMBLE
+and HAND OFF; civil in the Modeller = consume IFC4.3 classes and mould authored objects.
+
+**Status 2026-10-06:** BUILT — bim-ootb PR #1887 (sw v1579, auto-merge). `witness_civil_ref_look.js` GREEN L1/L2/G1/G0:
+Merged.db ground 32.90 → 30.52 m (= sqlite oracle), ROW outline 43,256 segments in #d04fd0, earthworks 0.28 / depthWrite off;
+JELAPANG_AFTER.db (no terrain) p2-bottom 43.46 m unchanged. RED control on main: L1/L2/G1 RED, G0 GREEN. Fleet: 18 DBs, 0 EARTHWORK/ROW rows.
+
+### §MERGE_FOLD_TOPUP — merge into an already-drawn building (2026-10-06)
+Measured RED on main (`witness_merge_fold_refresh.js`, partner-only DB folded into JELAPANG_AFTER.db): Find tree grew 0 of 9,490
+AND 0 of 9,490 folded elements drawn — `added=[]` queues nothing. Fix (scene.js + streaming.js): rows NEW to the live DB
+(`A._mergeNewGuids`) that land in a drawn building are re-queued as a guid-filtered top-up stream (`§MERGE_FOLD_TOPUP kept=`),
+and the open Find tree refreshes at fold end (`§FIND_REFRESH why=merge-fold`). After: GREEN — tree +9,490, 9,490 drawn,
+`guidMap=19903 streamed=19903 orphans=0` (no duplicates).
+Regression: witness_scene_merge_ifc PASS. witness_scene_merge_2026-07-30 already RED on main (3 claims — its Duplex fixture copy
+now holds 21 elements the served copy lacks); with the fix those 21 are drawn (`kept=21`), ~18 s of post-stream passes under
+GPU=sw push its click past 30 s → harness timeout. merge_save_roundtrip / open_split_db_pair: fixtures live in old session
+scratchpads (missing) → not run.
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
