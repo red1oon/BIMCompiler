@@ -39,7 +39,10 @@ ground shadow sun day with light distance normal fog all OK good enough."
    ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
 4. Not worked: §CULL_SPHERE (1,173 elements culled while on screen once DLOD engages) · §NL (b) pools beyond nearest 30 ·
    hub import (index.html) lacks rates.js → hub civil imports keep normals + own discipline list · §W.2 clash broad-phase
-   (still ⛔ user go) · §MC finish · §RP road panel.
+   (still ⛔ user go) · §MC finish (2 measurement faults, report page, MEP→Model Check button) · §RP road panel · 5D real numbers
+   (regional-official rates §R.3/§R.4 + mesh-measured quantities) · Find by property on `element_psets`.
+**User is obtaining:** JKR SoR 2023 · terrain/earthwork IFC from the BIM friend (unlocks ground plane, flood display, runoff,
+and a true road-edge level for the sign-height rule).
 
 **Waiting on user/partner (ask once, don't re-ask):** JKR SoR 2023 (RM 20) or CIDB N3C subscription (paid, inputs
 only) · CRS code of the drawing · alignment export (IFC4.3 IfcAlignment or LandXML) · earthwork surface + drainage
