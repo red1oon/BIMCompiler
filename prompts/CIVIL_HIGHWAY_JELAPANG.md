@@ -216,6 +216,26 @@ through pavement) — listed by `02_Type`, never auto-hidden.
   smaller save, faster reload, less sql.js heap (whole DB lives in WASM memory). Existing saved DBs: compact on next Save.
   Witness: per geometry, computeVertexNormals() vs the stored normal — angle distribution over JELAPANG + one building
   import; render path proof = the fleet already runs it. Cost to measure: CPU normal compute on load for 22M verts.
+- **§MESH_SLIM — ✅ SHIPPED bim-ootb PR #1870 (merged).** A.isCivilModel() owner; civil load ignores stored normals, civil Save
+  NULLs + VACUUMs, civil import doesn't write them. witness_mesh_slim.mjs (three.js's own computeVertexNormals): 21,952,369
+  verts 100.000 % within 1°, 5,377 stored normals were zero-length; derive 594 ms; AFTER.db copy 661.6 → 395.7 MB.
+  Gap: hub index.html loads import_db_builder.js WITHOUT rates.js → hub civil imports still store normals (and §OPEN "hub
+  duplicate discipline list" already says hub civil import differs) — fix with that item.
+- **§FLY — ✅ FIXED bim-ootb PR #1871 (auto-merge).** User 2026-10-05: "Fly is jerky … should orbit from junction to junction,
+  but instead it backs away and returns to the same. It moves facing backwards." Measured: slice medians zig-zag (16 turns
+  > 30°, max 125°); 5 signal stops at route points 0-1. §CIVIL_ROUTE_SMOOTH (3-pt moving average → 0 turns > 30°) +
+  §CIVIL_ROUTE_JUNCTION (stops within 100 m of route = one junction, radius holds members → 2 junctions). Witness
+  witness_civil_fly_route.js: main FAIL 2/4 → branch PASS 4/4. User same day: "Lights and ground shadow sun day with light
+  distance normal fog all OK good enough."
+- **§ALTC_HIGHWAY — ⏸ PAUSED (user moved to Fly). Code map done (read-only agent, all file:line on main @ 2026-10-05):**
+  plan = effects.js `_cinemaPathPlan` :7140 (no rooms → bbox-centre dive :7339, facade-fallback exit :7447 → meaningless orbit on a
+  road); route seam = `ov.waypoints` :10132 / `A.stageCinemaPath(ov)` :10046 / `__maxqBake` cinema_maxq.js:4902; sun =
+  `_sunElevationAt` effects.js:2523 linear 55°→6° (PHOTO_SUN_ELEVATION_END :2515, azimuth const 200, no URL param; graze/day
+  tests :3591/:3615/:4573 assume ≥ 6°); lamps = interior-lights gate cinema_maxq.js:3848 zeroes ALL fixtures [beats.out,
+  beats.rise) incl. civil heads (glow Points not gated); film lamp cap ≤ 200 in list order (tools.js:2278). Building beats
+  (storey reveal, buildup, room title, escape route) are flag-gated / self-VACUOUS. Hooks: (1) civil route points (extract
+  tour.js route builder, now smoothed) → ov.waypoints; (2) A._sunArc {start,end} read by _sunElevationAt + clamp graze/day;
+  (3) civil guard on the interior-lights gate; (4) detector = A.isCivilModel() at plan creation cinema_maxq.js:2496.
 - **§CULL_SPHERE (found 2026-10-05, not fixed):** `dlod.js:77-81` culls each instance by a sphere at the instance ORIGIN (vertex
   centroid) with radius = half the bbox diagonal. On JELAPANG_AFTER the true mesh extends > 1 m outside that sphere for 1,173
   elements (ROAD 771, LIGHTING 171, DRAINAGE 122, MARKING 57, ARC 34, FURNITURE 18; worst 167.8 m) → hidden while on screen
