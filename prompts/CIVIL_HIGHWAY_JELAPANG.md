@@ -203,6 +203,21 @@ group k to group k+1, none inside a group; a building item set builds the identi
   plane and let the earthworks solid be the ground (user's look ruling).
   Same shape as chainage: no EARTHWORK terrain → today's p2-bottom ground, unchanged (JELAPANG_AFTER.db plane stays 51.74 m).
 
+### §CIVIL_REF_LOOK — earthworks see-through, ROW outline, ground under the earthworks (spec 2026-10-06; user: "Earthworks, can it be a soft or outline bbxes or of diff colouring so not to obscure the main hiway?" → "yes go ahead with that look")
+Measured (Merged.db, mesh vertices, rotation 0 on both): EARTHWORK true z 30.52–90.44 (naive center−bbox/2 = 29.46 — §W.2 centroid
+offset, 1.06 m); ROW true z 1.00–77.76. Both cover the road + GEOTECH when drawn opaque.
+- L1 EARTHWORK material: earth colour `DISC_COLORS.EARTHWORK` #8b6b3e (rates.js, already the discipline colour), opacity 0.28,
+  depthWrite off, DoubleSide; `userData.origOpacity` = 0.28 so X-ray/restore returns to it. Owner: streaming.js `_getMaterial`.
+- L2 ROW: the solid hidden; its outline drawn as edges (EdgesGeometry, crease 30°) in the ROW colour, built once from the mesh
+  when the ROW element streams. Picking: ROW is a reference, not built work.
+- G1 ground (§GROUND_CIVIL): a model with EARTHWORK geometry → plane z = lowest TRUE earthworks vertex (center_z + local min z,
+  from component_geometries; only when rotation_x/y = 0, else the old rule) → `§GROUND_Y src=earthwork-bottom`. No EARTHWORK
+  geometry → today's p2-bottom rule, byte-identical (JELAPANG_AFTER.db stays 51.74 m).
+- Gate: discipline EARTHWORK / ROW only (CIVIL_DISCS). Fleet buildings have 0 such rows → no material, ground or edge change.
+**Witness** `witness_civil_ref_look.js`: Merged.db → EARTHWORK materials transparent at 0.28 + depthWrite false; ROW mesh hidden
+and an edge line present with > 0 segments; `§GROUND_Y src=earthwork-bottom z=30.52`. JELAPANG_AFTER.db → `src=p2-bottom z=51.74`
+(backward compat). RED control: same witness on main must fail L1/L2/G1.
+
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
   `measure.js:164` builds `elements_rtree` from `center ± bbox/2`; `center` is the vertex centroid. Probes
