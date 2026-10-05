@@ -19,276 +19,30 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶ RESUME HERE (session closed 2026-10-06 — user: "wrap up, clean, push, new session will resume later")
-**State:** bim-ootb main live at sw v1574. This session's PRs, all merged: #1875 lamp glow off by day · #1877 road reveal shell ·
-#1878 film v2 (one drive, junction orbit) · #1879 data cards · #1880 chainage build (lamps never before road) · #1881 no building
-labels · #1882 road checks as formula cards (VALID/SPECULATIVE list in viewer/rates/road_rules.json film_status) · #1883 film v3
-(build by pieces completed, no freeze, 8 s approach, grass) + compliance mock-up model_check_report.html (MEP button → Model Check).
-**Films in ~/Downloads (logs beside them):** BIM_JELAPANG_v2.mp4 + _narrated_AFTER (116 s) · BIM_JELAPANG_v3.mp4 (94.6 s, no Reveal) ·
-BIM_JELAPANG_v3_bridge.mp4 · BIM_HIGHWAY_v3_assembled.mp4 + BIM_HIGHWAY_v3_narrated_AFTER.mp4 (118.6 s — the current documentary;
-user: "a good concept documentary that answers both the developers and general users"). Recipe: FILM_NARRATION.md §11.v3.
-**Later the same day (after the close):** #1884 room-probe defect fixed (interior probe sat at y=-5.0 inside the road band; 6 glossy
-materials mirrored it — roads now skip it; the SKY GHOST STILL PERSISTS per the user, item 5) + status box 'Chainage' row replaces the model name · #1885 day counter FIXED (reused raw schedule
-kept 1970 timestamps for the 5,674 road pieces outside any task → 20,791 days; now 60). v3c documentary re-baked + narrated (FILM_NARRATION
-§11.v3c, ~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4, 127.6 s). The "1,485 bridge pieces at the origin" item was a MEASURING-TOOL error
-(the drawn-box lookup returns a zero box for them; the DB places all 4,739) — withdrawn; chainage filing now treats that as a miss.
-NEXT BAKE (user): after build-up, finished highway night-lit, sunset → dusk/nightfall. Ghost x-ray intro: a --tap translucency stalled
-the bake — needs a supported mode.
-⚠ INCIDENT: a failed `git worktree add` (branch existed) let the following commands run in the SHARED ~/bim-ootb and commit another
-session's working state onto its local main (not pushed). Undone with reset --soft + reset (all content kept; their staged/unstaged split
-lost). RULE: always `cd /tmp/wt-x || exit` before editing/committing in a script.
-**NEW SOURCE SET (user 2026-10-06): `~/Downloads/JELAPANG IFC.zip`** (120 MB, 23 files, folder `IFC/`). User plans next session: merge
-them into the same DB and save. ⚠ AS OF THIS NOTE IT IS NOT EXTRACTED — `~/Downloads/JALAN JELAPANG IFC/IFC/` still holds the OLD files
-(EARTHWORK 4,982 B from 2026-09-08) and no JELAPANG_GEOTECH.ifc exists anywhere on disk. Extract first (it overwrites the older versions).
-Contents (all IFC2X3, Civil 3D export, every object IfcBuildingElementProxy; counts from the files + their export .log):
-| file | size | objects | vs what we have |
-|---|---|---|---|
-| JELAPANG_EARTHWORK.ifc | 8.45 MB | 1 (AcDb3dSolid) | NEW CONTENT — old file was empty (TIN skipped); likely the terrain/earthworks solid |
-| JELAPANG_GEOTECH.ifc | 100.5 MB | 9,145 (6 solids + 9,139 block refs) | NEW discipline |
-| JELAPANG_CHAINAGE.ifc | 2.15 MB | 332 solids | NEW — chainage markers (may give a REAL chainage for §CHAINAGE, replacing the inferred route) |
-| JELAPANG_ROW.ifc | 7.93 MB | 1 solid | NEW — right-of-way boundary solid |
-| JELAPANG_GABION MATTRESS.ifc | 0.33 MB | 11 solids | NEW |
-| JELAPANG_ROAD LIGHTING.ifc | 19.67 MB | 216 block refs | RE-EXPORT 2026-10-05 (old 19.71 MB from 10-02) |
-| ROAD / DRAINAGE / ROAD FURNITURE / ROAD MARKING / ROAD SIGNAGE | unchanged sizes + dates (09-08 / 10-02) | — | same as loaded |
-Import gate check (viewer/import_worker.js `discFromFilename`, CIVIL_DISCS = ROAD, FURNITURE, LIGHTING, DRAINAGE, SIGNAGE, MARKING, EARTHWORK):
-EARTHWORK maps to EARTHWORK (SEQUENCE_CIVIL phase Earthworks, seq 1). **CHAINAGE, GEOTECH, GABION MATTRESS, ROW match NO civil word → they
-would import with no civil discipline** (class fallback). Decide per file before merging (e.g. GEOTECH/GABION → earthworks or a new civil
-code; CHAINAGE/ROW → reference/annotation, not built in 4D) — needs a spec + the user's ruling; NON-IMPACT rule applies.
-**NEXT SESSION TASK (user 2026-10-06):** these files come from the BIM partner for the SAME project → analyse each and DEFINE them as new
-civil disciplines, the same way the road set was done (CIVIL_DISCS word from the file name, SEQUENCE_CIVIL phase/sequence/crew in rates.js,
-civil_labels/psets read, clash family, 4D phase order, 5D CIVIL_RATES line pending SoR, Find/reveal shell). Per file: measure first (element
-names, psets, extents, where it sits vs the road), write the spec section, then code + witness + fleet NON-IMPACT proof; then merge into the
-same DB and save.
-**Open, in order:**
-1. Route order of the build (drive-order correlation 0.30, need ≥ 0.8). Measured: E4 (trade section→section) loses 4,971 of 7,685
-   edges to cycles through the section milestones. POC tried and dropped: soil rule (0.33, 714 floating), bridge by section (0.30).
-   Next: find what forms the loops (one cross-section support edge couples whole sections via the milestone hammock) — §CHAINAGE_V2.
-2. (withdrawn — measuring-tool error, see above.)
-3. Road checks: 4 of 5 rules SPECULATIVE — fix sign/marker height (road-edge level picks a higher piece) and lateral clearance (all
-   0.00 m), then flip film_status in road_rules.json with the reason (§MC, §ALTC_CHECKS).
-4. Storyboard ideas not built: camera follows the construction front (needs item 1); more part clips (junction build, drainage
-   section) via the same assembly tools (film_assemble.py, film_page_clip.js).
-5. ⛔ STILL OPEN (user 2026-10-06, after watching v3c: "the mirror reflection in the sky is still there"). #1884 removed the
-   interior room probe on roads (6 glossy materials no longer reflect a scene capture) — that was a real defect but NOT this ghost.
-   Ruled out so far: lamp-glow points (#1875, hidden by day), room-probe cube reflection (#1884), glass planar mirrors (§GLASS_PLANAR
-   VACUOUS, no glass). Description to match: a faint but EXACT mirror image of the construction hovering ABOVE it, in the sky, in the
-   baked films (v2, v3, v3c). Next candidates to MEASURE, not guess: the sky/HDRI or a sky-surface layer picking up a scene render
-   (fix/sky-surface merge #1874), a reflection pass on the fog/sky dome, the ghost ground plane (§GHOST_GROUND groundOpacity 0.22)
-   rendered with a flipped transform, TAA/SSR history. First step: get the second where it shows in v3c, then dump the scene
-   objects drawn above the model at that frame (§ list of visible meshes with y > model top). Was: GHOST REFLECTION above the construction, in the sky (user 2026-10-06: "did u manage to solve the ghost reflection above
-   construction in sky"). The lamp-glow squares ghost IS fixed (#1875; bake logs show §CIVIL_LAMP_GLOW_DAY visible=0 src=still for the
-   whole film). If the user still sees a ghost in v2/v3, it is a DIFFERENT cause — not identified, nothing measured yet. First step:
-   get the film + second from the user, then read that frame's § lines (glow, §CPE_BUILDUP hidden/pending meshes, ghost ground
-   groundOpacity, sky/reflection layers) — do not guess the cause.
-6. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined".
-**Rules learned this session:** bake only on the user's go (given 2026-10-06 for this lane); a `pgrep/pkill -f` pattern can match its
-own shell — match on the port or PID; the CLI bake needs an --override when the DB has no saved path (use A.civilDriveRoute()).
-
-**Previous resume block (2026-10-06 morning), kept for history:**
-**This session shipped (bim-ootb main, all live, sw v1572):** #1875 §GLOW_DAY lamp glow hidden by day, soft dot · #1877
-§REVEAL_SHELL road reveal hides the pavement · #1878 §ALTC_V2 road film one drive 353.8 → 111.9 s, build-up by half-way,
-parade in the drive, close-up orbit at the 5-head junction · #1879 §ALTC_PANELS data cards on quiet stretches · #1880
-§CHAINAGE_V2 lamps never before their pavement (route order still open) · #1881 §ALTC_LABELS no building labels on road films.
-NONE of the film changes has been seen in a real bake — the next step is the user's bake of JELAPANG_AFTER (Alt+C, Reveal on).
-**Open, in order:**
-1. ⛔ §CHAINAGE_V2 route order — POC TRIED 2026-10-06 (user: "proceed as this is a poc"), NOT shipped: bridge elements filed by
-   section too → correlation 0.30 (no change); + soil rule (cross-section civil support ignored) → 0.33 with 714 floating. Neither
-   helps, so route order needs a different cause found (the E4 milestone hammock couples whole sections). Original question: do at-grade road pieces (ROAD /
-   DRAINAGE / MARKING) rest on the soil (ground-exempt like `seq === 1`), so neighbouring pieces stop counting as each other's
-   support? Measured payoff and cost in §CHAINAGE_V2. Also the bridge ARC builds first (107 of the first 208 placements).
-2. ✅ DONE 2026-10-06 — v2 film baked (~/Downloads/BIM_JELAPANG_v2.mp4, 116 s) + narrated (BIM_JELAPANG_v2_narrated_AFTER.mp4), FILM_NARRATION.md §11.v2. Was: Narration (item 5 below) — waits for the v2 bake: the script was timed to the old 206 s plan; v2 is 111.9 s, so the body
-   must be re-cut to ~2.3 w/s against the bake's own §CINEMA_BEATS. Drop the `fourD` "lamps up first = debut quirk" line if the
-   bake's log shows §CHAINAGE_LEVELS (lamps-before-pavement is now 0).
-3. ✅ PARTLY 2026-10-06 — bim-ootb #1882 (sw v1573) §ALTC_CHECKS: road checks shown as worked formulas tagged VALID/SPECULATIVE (tracking list = road_rules.json film_status; 4 speculative, 1 valid). To turn a rule VALID: fix its method, then edit its film_status with the reason. Was: Road checks in the film (§MC) — road_check.js has two measurement faults (sign height reads a higher road piece; every sign
-   foot inside a ROAD solid); fix those before wiring them into the film in place of the building rule cards.
-4. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is
-   not defined" (their slice of effects.js misses the constant).
-**Previous resume block (2026-10-05) — items 1-3 ✅ this session, 4-5 see above:**
-**Do FIRST, in order:**
-1. ✅ **GHOST FIXED 2026-10-06 — bim-ootb PR #1875 (sw v1567, auto-merge), §GLOW_DAY, witness_civil_night_lamps 18/18; CHECK IT MERGED.** Was: **GHOST over the highway = MY BUG (#1869 §CIVIL_LAMP_GLOW).** In a daylight film the glow Points (6 px SQUARES, one per lamp
-   head, sizeAttenuation off) float above the road — seen in the aborted film ~/Downloads/BIM_MaxQ_JELAPANG_1791177960446.mp4 at 4 s.
-   User: "if not for the ghost u could have used that movie". FIX (not built): glow visible only when NOT daylight — follow the
-   existing flag `A._stillWindowGlowOff` (effects.js:4569 still, :4835 film parity per frame `= day`, :4958 teardown resets); film
-   parity is ON for films by default (:4304). Also draw a soft round dot, not a square. Witness: glow hidden at sun > 6°, shown at
-   dusk/night; buildings unaffected (no civil heads).
-2. ✅ **FIXED 2026-10-06 — bim-ootb #1877 (sw v1568) §REVEAL_SHELL: road shell = ARC+STR+ROAD; witness_civil_reveal_shell 10/10 road + 10/10 Duplex.** Was ⛔ **"Reveal no ARC" — CAUSE READ FROM CODE + DATA 2026-10-06 (no bake log yet).** The reveal's ghost round hides only
-   ARC + STR (effects.js A.cpeRevealVisualAt round 2: visDiscs = every non-ARC/STR disc; A.cpeRevealDiscsPresent drops ARC/STR).
-   JELAPANG_AFTER: ROAD 4008 · PLB 2062 · STR 1851 · FURNITURE 1011 · ARC 826 · LIGHTING 227 · DRAINAGE 200 · SIGNAGE 138 ·
-   MARKING 90. So the round hides only the bridge (2,677) and the pavement (ROAD, 4,008) stays solid → along the road nothing
-   changes → "not working". BLOCKED on one user decision: on a road, does the ghost hide the pavement (ROAD) too, as the
-   road's "shell"? Same answer shapes item 3's reveal-in-the-drive. Was: **"Reveal no ARC is not working"** (user, from the trial bake) — not investigated. Read §CPE_REVEAL_ROUND / reveal visual lines
-   from a bake log first (note: a BROWSER bake saves no log file — only cli_silent_bake.js writes `<film>.log`; consider a
-   "save log with film" option).
-3. ✅ **BUILT 2026-10-06 — bim-ootb #1878 (sw v1569) §ALTC_V2 (353.8 → 111.9 s, witness_altc_highway 15/15) + #1879 (sw v1570) §ALTC_PANELS (3 data cards, witness_road_panels 11/11). Neither seen in a real bake yet — needs the user's bake.** Was: **§ALTC v2 film** (spec 2h; user: "set in the deterministic code its waypoints, speed control, buildup stages"; "plan the path
-   to give u best in frame shots of the buildup where u can overlay explanations"): one drive; build-up done by ≤ 50 %; second
-   half discipline reveal in the drive; ONLY orbit = close-up at the large junction; data panels on quiet stretches; all from
-   code (route = A.civilRoutePath, pace = noise law, stages = 4D), never hand-authored. Branch `feat/altc-oneway` = v1 only
-   (one-way reveal + 35 m/s, 135.9 s) — NOT shipped; reuse its pieces.
-4. **§CHAINAGE build-up — branch `feat/civil-chainage-buildup` (pushed WIP, NOT shippable).** NEW FACTS 2026-10-06: (a) the road
-   film now drives the route REVERSED (§ALTC_V2 V1: small junction → big junction) and the build-up plays only in the first
-   ~50 % of the film — the chainage order must follow the DRIVE direction (plan.waypoints), not A.civilRoutePath order;
-   (b) JELAPANG_AFTER carries Civil 3D corridor stations on 526 elements (StartStation/EndStation, ROAD 301 · DRAINAGE 195 ·
-   FURNITURE 30) but over 152 baselines (BL - BD MAIN (1)…, J1A…), each with its own 0+000 — not one chainage as stored. time_machine element builder gives
-   civil elements storey "CH nn" (section = nearest A.civilRoutePath point) + lvlSec on every element; schedule_gate.deriveBandRanks
-   and cpm_schedule bandRank order by (section, z). Witness `witness_civil_chainage_buildup.js` (reads kernel_ops ELEMENT_PLACE
-   from window.tmGenerateTimeline): lamps-before-own-pavement control 7 → 0 ✔, but route-order rank corr 0.237 = control ✖ and
-   first-2 % still 25 lamps ✖; ladder now CH 00… with bridge storeys at their section, stragglers 5614 → 3861, E4 drops
-   11566 → 4204. Tried + REVERTED: skip same-discipline civil E1 support → midair 957, rho 0.046. NEXT: find what decides the
-   PLAYED order downstream (4D_MODEL_INTEGRITY §I rows "where inside its bar does it PLAY" → _tmTilePlayWithinTasks /
-   remapSolveToTasks; template tasks per level come from the DB storey ladder (§STOREY_DATUM), not from el.storey). Read §I + §E
-   before touching. User wants the build path in line with industry (time-chainage / line of balance, item 2f sources).
-5. Narration for the highway film: script + chapter cards ready (FILM_NARRATION.md §11; FILM_SET=highway). User cancelled the trial
-   bake and saved the partial — fit/test the narration + cards on it. The English is dense (~3.2 w/s) — trim clash/roadmap/tech.
-   The aborted film shows building rule cards ("Structural — floating member 68 / open depth cantilever 20", "Building Envelope")
-   and clash tags "Misc Element" on the road — v2 should show road checks + road labels instead.
-**Rules learned this session:** a browser can't be driven by me — user rule: "Only with explicit go ahead" (memory updated).
-Don't double down when the user rebuts a diagnosis — measure the thing they named. A follow-up refactor must re-run the witness
-of the code it moved (the BIN_M no-undef only CI caught).
-
-**Shipped earlier today (bim-ootb, all live on main, sw v1566):** #1866 merged scene = one model (reopen streams every
-building, Find scope owner A.sceneScopeBuilding) · #1867 roof-layer 16 s → 33 ms · #1868 Night/Shadow ground no longer
-buries the road (civil → p2-bottom) · #1869 road lamps: head glow + mountH throw · #1870 §MESH_SLIM (civil normals not
-stored/read; Save NULL+VACUUM → AFTER.db 661 → ~396 MB) · #1871 §FLY smooth route + junction stops. User verdict: "Lights and
-ground shadow sun day with light distance normal fog all OK good enough."
-**Open, in order:**
-1. **PR #1872 §ALTC_HIGHWAY — OPEN, auto-merge on.** First CI run failed no-undef (BIN_M left in the Fly log after the
-   civilRoutePath split — would have thrown → room-tour fallback); fixed + pushed (witness_civil_fly_route 4/4 after the split).
-   CHECK IT MERGED. Not yet seen in a real bake.
-2. **§ALTS_HIGHWAY — ✖ DROPPED by user ruling 2026-10-05:** "i tested alt-s, i think it should stay as it is to avoid too much
-   customizing.. it is good enough .. all things working well". Alt+S stays the shared look for buildings and roads. Branch
-   `feat/alts-highway-dusk` (2° sun / blue-orange sky) left unmerged for reference only — do not ship it.
-2b. **PR #1873 — few deletable Alt+C sticks on main (MERGED).** User: "the alt-c has many sticks.. it is not using the corrected
-   one last session … it has deletable sticks. This has none". The correction (§CPE_SEED_FEW + §CPE_STICK_CLEAR, commits
-   e1f12d9a + 28266006) lives on `fix/fast-bake` — 183 ahead / 106 behind main, NO PR, worktree gone → never reached main, so
-   #1872's 29-waypoint road seeded 29 undeletable sticks. Cherry-picked only those 2 commits; witness_cpe_seed_few.js 11/11 on
-   main. ⚠ The REST of fix/fast-bake (W1-W7 bake speed/HUD, light-zone fixes, sky-surface merges, sw numbering at v1562) is still
-   unmerged — a lane-level decision for the user / that lane's next session, not this one.
-2c. **PR #1874 — git-admin integration of the WHOLE Alt+C/Alt+S lane into main (auto-merge).** User: "it must be from
-   yesterday's alt-c, alt-s sessions, check that it is so, then u be git admin". Verified: fix/fast-bake 183 commits, red1,
-   09-26→10-05, ALTC_FOUNDATION/ALTC_SHOWSTOPPERS/PHOTOREAL_STILL_RENDER + 5 newer fix/sky-surface commits. Integration
-   branch `merge/altc-alts-lane`; resolutions + witnesses in the PR body (all civil witnesses green on it; lint 21 → 0).
-   ⚠ Squash-merge: main gets ONE commit — the lane's history stays on fix/fast-bake / fix/sky-surface (do not delete them).
-   Lane-owned debt flagged: witness_light_law_unit + witness_film_exposure_unit each 1 FAIL, identical on fix/fast-bake.
-2g. **§ALTC_ONEWAY — SPEC (user 2026-10-05: "Can we custom the path to be one way where buildup then reveal same … quick along parts
-   which are not much variance" → "So you try to hit below 3 mins and 3 hrs").** Gate: A.isCivilModel(); building films unchanged.
-   1. ONE-WAY REVEAL: civil → reveal pull-out / fly-back / round-2 seconds = 0 (zero-width beats tP=tF=tV=tO are the shipped
-      reveal-off geometry, all divided by Math.max(1e-6, …)); the disc-parade TAIL (2 s × discipline + 2) stays, folded into the
-      rise beat as shipped. Build-up topout = end of the single drive.
-   2. FASTER CRUISE: civil film pace 25 → 35 m/s for dive, drive and pull-back (CIVIL_FILM_SPEED); the noise law still slows busy
-      stretches (×(1+(1.45−1)·busy)), so quiet straights run at cruise and junctions/bridge slow down. Fly tour keeps its own 25.
-   Budget (from the measured 206 s plan: dive 57 + spin 6 + drive 101 + pull-back 34 + orbit 8, + tail 16): ~160 s → 3,840 frames
-   → 2.1-3.2 h at the measured 2-3 s/frame (Hospital 2.03, LTU 3.96 — ALTC_FOUNDATION).
-   Witness (no bake): witness_altc_highway.js — road natural length with Reveal ON < 180 s and round-2 width 0; Duplex Reveal round 2
-   still present and its pace unchanged.
-2h. **§ALTC_ONEWAY v2 — film SHAPE re-dictated (user 2026-10-05, while v1 was being witnessed; NOT built, awaiting go):**
-   *"I am thinking buildup finishes early before half way point.. the rest is discipline reveal"* · *"Only orbit is at the large
-   intersection and close-up"* · *"We have planned future interesting overlays at certain markers to indicate terrain, weather,
-   traffic info"*.
-   v1 state (branch feat/altc-oneway @ /tmp/wt-oneway, NOT pushed as PR): civil reveal one-way + cruise 35 m/s → road film with
-   Reveal natural 135.9 s (3,262 frames ≈ 1.8-2.7 h); Duplex unchanged (round2 4.9 s, flyback 1.7 s). Witness 8/10 — the 2 FAILs are
-   the WITNESS reading plan.reveal.flybackSec (no such field; read §CINEMA_PACING instead), not the film. Also seen: the
-   §CINEMA_PACING line prints pullback 106.6 s while natural=135.9 = dive 25.6 + spin 4.7 + walk 76 + tail 16 + orbit 8 + 5.6 →
-   _natSec.rise is changed AFTER _natTotal is summed (not read yet — frame count = naturalTotal).
-   v2 shape: (1) ONE drive; build-up topout at ≤ 50 % of the drive; (2) second half = discipline reveal (the shipped disc parade
-   moved INTO the drive, not a tail); (3) the ONLY orbit = close-up at the large junction (§CIVIL_ROUTE_JUNCTION junction 1, 5 signal
-   heads, r 68 m) — no final pull-back, no whole-site orbit; junction 2 driven through; (4) FUTURE: marker overlays along the route
-   (terrain, weather, traffic info) — recorded only.
-   (5) user: *"Or you can already infer just for demo to show pop up panels similar to freeze load path but running along the length
-   of the film where it is clear and silent"* → road PANELS in the load-path freeze panel style, placed only on QUIET stretches
-   (low view change — the noise law's own busy signal) and never over the junction close-up. Content = model data only (Prime Rule):
-   chainage (inferred route), per-stretch discipline counts, drainage sizes (element_psets 02_Type/03_Dimension), JKR sign codes
-   (16_Name/17_Code), per-stretch mesh-true clash count, current 4D phase. Terrain / weather / traffic = labelled "planned" cards
-   with NO numbers (no earthwork surface exported; no weather/traffic data in hand).
-2d. **Alt+C red POV cone missing during preview (user 2026-10-05) — CULPRIT NOT FOUND YET.** I first claimed "the cone is
-   only out of the parked camera's view" and kept pushing it after the user rebutted ("the red cone must get into the canvas
-   and trace the given path. it does not appear anymore"; "do not double down") — that account is WITHDRAWN as the answer.
-   Verified so far: _syncPovMarker + every caller (_applyVFPose ← _scrubTo / scrub-Play _previewFly(true) / reopen) are
-   byte-identical before #1874, on fix/fast-bake and on main; the #1874 diff to cinema_path_editor.js is only §FREEZE_PERF
-   checkboxes; time_machine.js §REVEAL_DOOR_LEAK only touches objects with userData.guid (the cone has none); main-canvas
-   Preview (_previewFly(false) → _applyCameraPose) never drew the cone. Headless scrub on JELAPANG + Duplex: cone mesh created,
-   visible=true, positioned on the path. NEXT: the user's console log from one preview where the cone is missing (§CPE_*,
-   errors) — evidence, not a look. User rule: restore what was there, don't invent new behaviour.
-   User then: "just examine if the code displaying the cone is obscured by something new". ANSWER: NO. Cone = renderOrder 1005,
-   depthTest off. Every object with renderOrder ≥ 100 in viewer/*.js is IDENTICAL between this morning's main (4e3fa0a3, before
-   #1866) and main now (after #1874); no DOM overlay with z-index ≥ 100 added; no new EffectComposer addPass/insertPass.
-2e. **4D on the road + bridge merge: street lights early — CAUSE FOUND from the user's own log (not fixed).** The civil
-   schedule (SEQUENCE_CIVIL: earthworks → drainage → pavement → furniture → signage → lighting → marking) is gated on ALL
-   elements being civil (§Q). The merged file is 5,674 civil + 4,739 bridge (ARC/PLB/STR) → `§CIVIL_PHASE map=5674 of 10413`
-   → the BUILDING path runs: storey/Z-bands (`§GANTT storey-bands: 12 bands`), and `§GANTT band 0 z=[0.4,2.5] 11 elements: Road
-   Lighting:11` — lamp columns (incl. low strays) are built in the FIRST band; bands 16-21 mix Pavement, Road Lighting, Drainage
-   and MEP Rough-in by height. A road-only DB takes the civil template (#1851 witness_civil_phase). Fix needs a spec + user go:
-   mixed civil+building model → civil elements by SEQUENCE_CIVIL phase, building elements by bands, or civil-majority rule.
-   Build-up / reveal round 2 "broken?" — not judged yet; needs the trial bake's page log (§CPE_BUILDUP, §CPE_REVEAL_ROUND).
-2f. **"The build path is hardcoded to MEP / building structure" (user 2026-10-05) — CONFIRMED, traced to owners (4D_MODEL_INTEGRITY
-   §I read first). Investigation only, nothing changed.** From the user's own pasted log of the merged road+bridge DB:
-   - PHASE is right: `schedule_author.js:1904` `civilRuleFor(...) || matchNameOverride(...)` — the civil rule wins first. The
-     `§NAME_OVERRIDE 5826` line is misleading: it counts civil hits (5,674) + ~152 real name overrides and prints EVERY override id
-     whether matched or not (logging defect, not a classification one).
-   - The ORDER is building physics with a STOREY axis: the task/solve group key is (LEVEL, phase) — `cpm_schedule.js:201-297`
-     (§CPM_STRAGGLER_MEMBERSHIP: groupKey = level then phase). LEVEL comes from storeys: `§GANTT storey-bands: 12 bands from storey
-     names (median Z)` — the BRIDGE's storeys (BASE, CROSSHEAD PIER 14, DATUM, FRL ABT A/B, Level 1/2, DECKSLAB, TOP DECK SLAB,
-     Datum) — then `§GANTT_STOREY_Z reassigned=5763 no-storey elements to nearest real storey by median Z`: every road element
-     (no storey of its own) is filed under a bridge storey by its HEIGHT. `§4D_BAND_MONOTONIC ranks=12` then builds bottom-up.
-     → a lamp column whose base sits low is in band 0 (`§GANTT band 0 … Road Lighting:11`) and goes up before the pavement above
-     it; pavement on the climbing road is spread over bands 16-26 by its own Z.
-   - Support physics is the building one: E1 contact / bearing-below / hang-carrier (`support_sweep.js` `_contactGraph`, owner
-     §I) → `§CPM_RUN stragglers=5614` ≈ the 5,674 civil elements: almost every road piece's physics ancestry reaches a "later"
-     (bridge-storey, phase) group. Ground exemption = `seq !== 1` (§I row "rests on soil") — the civil seq 1 is EARTHWORK, which
-     this set has none of (terrain TIN not exported), so no road element is soil-exempt.
-   - Road-only DB: all civil → civil template (§Q, #1851) — not affected by the bridge storeys. The mixed DB is the failing case.
-   Fix shapes for a ruling (none built): (a) civil elements get NO storey reassignment — one level for the road, phase order only
-   (earthworks → drainage → pavement → furniture → signage → lighting → marking), bridge keeps its storeys; (b) a road "level" =
-   chainage segment along A.civilRoutePath instead of Z (construction by section); (c) civil-majority model → civil template.
-   Each needs the §I owner edited (level owner = LevelDeriver / schedule_gate collapsePhase), not a second copy.
-   **Industry correlation (user 2026-10-05: "U have to corelate to industry practice in 4d schedule") — sources:**
-   · Location axis = CHAINAGE: time-location / time-chainage / line-of-balance charts are the planning form for roads; a research
-     Linear4D system links 4D to a schedule-location chart over tens of km (scholarworks.gnu.ac.kr/item/0992be81-…; FTI "Linear
-     schedules"; planningplanet.com/comment/560). OURS: location = bridge storeys by Z → ✖ the core mismatch.
-   · Phase order = earthworks → drainage → pavement → finishing works (line marking, signage, lighting) — JKR/SPJ/2008 section order.
-     OURS: SEQUENCE_CIVIL 1-7 ✔ (but outranked by storey bands).
-   · Drains right after earthworks, before pavement layers (NATSPEC/AUS-SPEC 1173 pavement drains; Designing Buildings "Sub-base") ✔.
-   · Street lighting: ducts/crossings before poles (street-lighting method statement; Iowa DOT LI-142) — ducts not in this IFC.
-   · Road markings LAST, ≥ 14 days after the final asphalt course (FDOT 711) ✔ seq 7.
-   · Bridge: piles → pile caps → piers/crossheads → girders → deck → barriers/parapets → surfacing; approach slabs at the end (JICA
-     12110953_04; WSDOT WBES 2017 7A1) ≈ ✔ its own storeys.
-   → RECOMMENDED shape (b): road LEVEL = chainage section along A.civilRoutePath (one owner), phase order inside each section, bridge =
-     its own section keeping its storey order; crews advance section by section (line of balance). Not built — needs the user's go.
-   **Principle (user 2026-10-05: "So our engine remains same? Our strength is also inferring a schedule where there is none or
-   chainage"): ENGINE UNCHANGED.** Shape (b) only feeds the existing LEVEL owner a different source for civil elements — same
-   schedule_author / schedule_gate / cpm_schedule / time_machine. Both inferences already exist on this data: no native IFC
-   programme → `§GANTT_SOURCE generated`; no IfcAlignment / chainage (IFC2X3, §0) → route inferred from the model
-   (A.civilRoutePath: MAINLINE labels, else ROAD pieces; `§ALTC_HIGHWAY lenM=2110 junctions=2`). A real alignment export
-   (IFC 4.3 IfcAlignment / LandXML) later REPLACES the inferred route as the chainage source; nothing downstream changes.
-   Reusability: road profile still half code (import_worker CIVIL_DISCS, rates.js SEQUENCE_CIVIL) — fold into one Settings-editable
-   civil-profile JSON together with (b).
-3. **User's first real Ctrl+S — ✅ DONE live 2026-10-05 12:33:** JELAPANG.db saved at 395,710,464 bytes = the predicted slim
-   size (witness_mesh_slim now reads it VACUOUS: no stored normals). Original note: = the live test of §MESH_SLIM save: expect `§MESH_SLIM_SAVE normalsDropped=7419`,
-   ~396 MB; `§MESH_SLIM_SAVE_ERR` = VACUUM ran out of memory (save proceeds unslimmed).
-4. Not worked: §CULL_SPHERE (1,173 elements culled while on screen once DLOD engages) · §NL (b) pools beyond nearest 30 ·
-   hub import (index.html) lacks rates.js → hub civil imports keep normals + own discipline list · §W.2 clash broad-phase
-   (still ⛔ user go) · §MC finish (2 measurement faults, report page, MEP→Model Check button) · §RP road panel · 5D real numbers
-   (regional-official rates §R.3/§R.4 + mesh-measured quantities) · Find by property on `element_psets`.
-**User is obtaining:** JKR SoR 2023 · terrain/earthwork IFC from the BIM friend (unlocks ground plane, flood display, runoff,
-and a true road-edge level for the sign-height rule).
-
-**Waiting on user/partner (ask once, don't re-ask):** JKR SoR 2023 (RM 20) or CIDB N3C subscription (paid, inputs
-only) · CRS code of the drawing · alignment export (IFC4.3 IfcAlignment or LandXML) · earthwork surface + drainage
-pipes/structures exported as 3D · lamp IES files + wattage · JKR standard clauses · contractor's TMP phases.
-
-**Rules learned (each bit at least once):**
-- DB `center` = vertex CENTROID — never `center ± bbox/2` for a true box (§W.2).
-- A witness must not share the module's assumption — judge against the RENDERER (scene matrix × geometry).
-- No project values in algorithms — labels live in `viewer/civil_labels.json`.
-- Bump the script tag of EVERY changed file on every page that loads it (#1847: cached worker survived #1844).
-- A follow-up push to a PR with auto-merge on orphans after the squash (#1850→#1852, #1859→#1860, #1862→#1863).
-  After pushing, check the PR is still OPEN.
-- A new owner must be wired into every READER of the relation, not just writers (#1854 — grep every
-  `matchRule(` / `rules[cls]` consumer).
-- Software-GL headless plays ~1 frame / few s → sample tours with `A.tourSeek(T)`, not wall clock.
-- `pkill -f <pattern>` in the same command line kills its own shell.
-- Settings → Clash Rules saved overrides (`json_clash_rules`) hide new built-in rules for that user.
-
 ---
+
+## ▶ RESUME HERE (consolidated 2026-10-06; full history: this file at bim-compiler `2278f7df5`)
+**State:** bim-ootb main live at sw v1577. Road work so far is all merged (§SHIPPED). Current documentary: `~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4`
+(127.6 s; recipe FILM_NARRATION.md §11.v3c). The user merges the partner files into the DB manually (next session works on that DB directly).
+**Open, in order:**
+1. **§PARTNER_DISCS build order** — the partner files now IMPORT as GEOTECH / GABION / CHAINAGE / ROW (#1886) but schedule by class (no civil
+   phase). The full order (setting out → ground treatment → earthworks → drainage + gabion → pavement → finishing → marking) is on WIP branch
+   `feat/civil-partner-discs`; it tipped the merged road schedule onto the CELL path (no §CPM_RUN; lamps before pavement 0 → 92, first-2 %
+   lamps 16) — find which change (renumbered sequences vs group chain vs §CELL_GATE quantity) before shipping. Then: clash GEOTECH × DRAINAGE,
+   4D template phases, film narration of the new disciplines. Measure on the user's merged DB.
+2. **Sky mirror ghost** — still present in v3c (user). Ruled out: lamp glow (#1875), room-probe reflection (#1884), glass mirrors. Next:
+   get the second, list every drawn object above the model at that frame (sky surface, ghost ground, fog, TAA/SSR history).
+3. **Build order along the route** — drive-order correlation 0.30 (need ≥ 0.8); E4 loses ~4,970 of 7,685 edges to cycles through the section
+   milestones (§CHAINAGE_V2). A real chainage may now come from the partner's CHAINAGE labels (332 solids).
+4. **Next bake (user):** after the build-up, the finished highway night-lit, sunset → dusk / nightfall. Ghost x-ray intro needs a supported
+   see-through mode (a --tap translucency stalled the bake at frame 0).
+5. **Road checks:** 4 of 5 rules SPECULATIVE (road_rules.json film_status) — fix sign/marker height (road-edge level picks a higher piece) and
+   lateral clearance (all 0.00 m), then flip the status with the reason.
+6. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined";
+   witness_civil_phase reports FAIL on a merged road+bridge DB (its building rule does not fit a merged model) — on main too.
+**Rules learned:** bake only on the user's go; `cd /tmp/wt-x || exit` before any edit/commit in a script (a failed worktree add once let
+commands commit another session's work in the shared ~/bim-ootb — undone, nothing lost); `pgrep/pkill -f` patterns can match their own
+shell — match a port or PID; the CLI bake needs `--override` when the DB has no saved path (use `A.civilDriveRoute()`).
 
 ## §0 Source set (measured 2026-10-04)
 Folder `~/Downloads/JALAN JELAPANG IFC/` — 7 IFCs + Civil 3D export logs. Test DB: **`JELAPANG_AFTER.db`**
@@ -318,7 +72,24 @@ Stored by the importer for civil files only → `element_psets` (102,495 rows on
 
 ---
 
-## §SHIPPED — all merged to bim-ootb main (2026-10-04 → 10-05)
+**NEW SOURCE SET (user 2026-10-06): `~/Downloads/JELAPANG IFC.zip`** (120 MB, 23 files, folder `IFC/`). User plans next session: merge
+them into the same DB and save. Extract into `~/Downloads/JALAN JELAPANG IFC/IFC/` before merging (it overwrites the older EARTHWORK / ROAD LIGHTING).
+Contents (all IFC2X3, Civil 3D export, every object IfcBuildingElementProxy; counts from the files + their export .log):
+| file | size | objects | vs what we have |
+|---|---|---|---|
+| JELAPANG_EARTHWORK.ifc | 8.45 MB | 1 (AcDb3dSolid) | NEW CONTENT — old file was empty (TIN skipped); likely the terrain/earthworks solid |
+| JELAPANG_GEOTECH.ifc | 100.5 MB | 9,145 (6 solids + 9,139 block refs) | NEW discipline |
+| JELAPANG_CHAINAGE.ifc | 2.15 MB | 332 solids | NEW — chainage markers (may give a REAL chainage for §CHAINAGE, replacing the inferred route) |
+| JELAPANG_ROW.ifc | 7.93 MB | 1 solid | NEW — right-of-way boundary solid |
+| JELAPANG_GABION MATTRESS.ifc | 0.33 MB | 11 solids | NEW |
+| JELAPANG_ROAD LIGHTING.ifc | 19.67 MB | 216 block refs | RE-EXPORT 2026-10-05 (old 19.71 MB from 10-02) |
+| ROAD / DRAINAGE / ROAD FURNITURE / ROAD MARKING / ROAD SIGNAGE | unchanged sizes + dates (09-08 / 10-02) | — | same as loaded |
+Import gate check (viewer/import_worker.js `discFromFilename`, CIVIL_DISCS = ROAD, FURNITURE, LIGHTING, DRAINAGE, SIGNAGE, MARKING, EARTHWORK):
+EARTHWORK maps to EARTHWORK (SEQUENCE_CIVIL phase Earthworks, seq 1). **CHAINAGE, GEOTECH, GABION MATTRESS, ROW match NO civil word → they
+would import with no civil discipline** (class fallback). Decide per file before merging (e.g. GEOTECH/GABION → earthworks or a new civil
+code; CHAINAGE/ROW → reference/annotation, not built in 4D) — needs a spec + the user's ruling; NON-IMPACT rule applies.
+
+## §SHIPPED — all merged to bim-ootb main (2026-10-04 → 10-06)
 | PR | What | Gate (non-impact) | Witness / fleet proof |
 |---|---|---|---|
 | #1844 | §A units: deleted the `span>1500 → ×0.001` heuristic (web-ifc 0.0.77 already outputs metres) · §B.2a civil disciplines from file name (space split, civil words only) · §I.3 robust framing p2–98 | units: never fired <1.5 km · disc: civil words · framing: full env > 2× core | `witness_import_units_disc.js`; SampleHouse 14.0×5.9×3.5 m unchanged; 464 names → 13 change, all road; LTU 426→126 m, others KEEP |
@@ -343,148 +114,61 @@ Total 24,978 box → 1,975 real (92 % box-only); 173 are flat contacts < 1 mm. M
 through pavement) — listed by `02_Type`, never auto-hidden.
 
 ---
+- 2026-10-06: #1875 lamp glow hidden by day (§GLOW_DAY) · #1877 road reveal shell incl. pavement (§REVEAL_SHELL) · #1878 film v2 one drive +
+  junction orbit (§ALTC_V2) · #1879 data cards on quiet stretches (§ALTC_PANELS) · #1880 chainage levels, lamps never before road (§CHAINAGE_V2)
+  · #1881 no building labels on road films (§ALTC_LABELS) · #1882 road checks as VALID/SPECULATIVE formula cards (§ALTC_CHECKS) · #1883 film v3:
+  build by pieces completed, no load-path freeze, 8 s approach, grass + compliance mock-up model_check_report.html replaces the MEP tab (§ALTC_V3,
+  §MC_MOCKUP) · #1884 no interior room probe on roads + status box Chainage row (§GHOST_PROBE — did NOT remove the sky ghost) · #1885 day counter
+  epoch (§S4_RAW_EPOCH, 20,791 → 60 days) · #1886 partner files import as GEOTECH / GABION / CHAINAGE / ROW (§PARTNER_DISCS D1/D4/D5/D8).
 
-### §GLOW_DAY — road lamp glow off in daylight, soft dot (spec 2026-10-06; fixes the #1869 ghost)
-**Issue:** §CIVIL_LAMP_GLOW Points (6 px squares, sizeAttenuation off, one per civil head) are drawn whatever the sun does →
-in a daylight film they float over the road as square "ghosts" (user's aborted film, 4 s).
-**Rule:** the glow follows the ONE existing daylight flag `A._stillWindowGlowOff` (owner: effects.js — Alt+S still sets it,
-film parity rewrites it per frame `= day`, teardown resets it). No new daylight test. New `A._civilGlowSync(src)` (tools.js)
-sets `A._civilGlowPts.visible = !A._stillWindowGlowOff`, logs `§CIVIL_LAMP_GLOW_DAY visible=0|1 src=` on each CHANGE; called
-at build and right after each of the three flag writes. Each point drawn as a soft round dot (radial-gradient sprite map),
-not a square; size stays 6 px.
-**Gate:** `A._civilGlowPts` exists only when civil heads exist (§CIVIL_LAMP_GLOW heads=0 VACUOUS on buildings) → sync is a
-no-op on every building.
-**Witness:** witness_civil_night_lamps.js — drive the real per-frame owner `A._filmParityStep` with the sun at 30° (day) →
-glow hidden; sun at 2° (dusk) → shown; teardown reset → shown; the points' material has a round map. Red control: glow
-left visible at 30° must FAIL.
+## §SPECS — shipped 2026-10-06 (full text at bim-compiler `2278f7df5`; witnesses named in each PR)
+| spec | one line |
+|---|---|
+| §GLOW_DAY | civil lamp glow follows the one daylight flag A._stillWindowGlowOff; soft round dot |
+| §REVEAL_SHELL | A.cpeRevealShellDiscs() = ARC+STR (+ROAD on civil) — one owner for what the reveal hides |
+| §ALTC_V2 | road film: seed reversed to end at the 5-head junction, orbit pivot = that junction (r 67.5 m), build-up by min(drive mid, 0.5), parade in the drive |
+| §ALTC_PANELS | road cards in the build-up drive on the quietest times (plan.walkBusy = the noise law's own probes); model data only |
+| §CHAINAGE_V2 | level = chainage section by START along the drive (drawn box, owner A._loadPathInstanceWorldBox); civil trades chain inside a section |
+| §ALTC_LABELS | road films: rule-findings film VACUOUS, "Site Envelope", clash tags by SEQUENCE_CIVIL trade |
+| §ALTC_CHECKS | road_check.js rows as worked formulas; road_rules.json film_status = the VALID/SPECULATIVE tracking list |
+| §ALTC_V3 | build-up by pieces completed; no load-path freeze; approach ≤ 280 m of seconds; grass ground; MEP button → Model Check |
+| §GHOST_PROBE | civil models skip the interior room probe; Chainage row via A.civilChainageAt |
+| §S4_RAW_EPOCH | reused raw schedule rigid-shifted onto baseMs when epoch-relative |
 
-### §REVEAL_SHELL — on a road, the reveal's "shell" includes the pavement (spec 2026-10-06; user: "All proceed according to your analysis")
-**Issue:** the reveal ghost round + disc parade hide only ARC/STR (hard-coded in effects.js A.cpeRevealDiscsPresent,
-A.cpeRevealVisualAt arch-fade overlap, A.cpeArchFadeApplyVisual). On JELAPANG_AFTER that is only the bridge (2,677); the 4,008
-ROAD pieces stay solid → along the road the round changes nothing ("Reveal no ARC is not working").
-**Rule:** ONE owner `A.cpeRevealShellDiscs()` (effects.js) = ['ARC','STR'], plus 'ROAD' when `A.isCivilModel()`. The three sites
-read it. ROAD leaves the parade list (it is the shell, shown again when the shell returns).
-**Gate:** A.isCivilModel() (any SEQUENCE_CIVIL discipline); buildings → ['ARC','STR'], lists unchanged.
-**Witness:** witness_civil_reveal_shell.js (headless): JELAPANG_AFTER — shell has ROAD, parade has no ROAD/ARC/STR, applying the
-ghost hides every ROAD mesh and leaves the other road disciplines visible, restore shows ROAD again. Duplex control — shell
-['ARC','STR'], parade identical to the pre-change rule. Red control: ROAD kept in the parade must FAIL.
-
-### §ALTC_V2 — road film = one drive, build-up by half-way, parade in the drive, one junction close-up (spec 2026-10-06; user: "All proceed according to your analysis")
-Implements 2g + 2h items 1-3 (item 5 panels = §ALTC_PANELS, next). Gate: `A.isCivilModel()` everywhere; buildings unchanged.
-**Measured before (probe on JELAPANG_AFTER, main @ #1877):** route 29 pts / 2,110 m; junctions at=[0,28]: route START = the big
-one (5 signal heads, r 68 m), END = 1 head (r 25). Film with Reveal = 353.8 s: dive 44.8 + spin 4.8 + walk 104.0 + pullout 1.5 +
-flyback 84.4 + round2 84.4 + tail 14.0 + pullback 283.1 (§STOREY_REVEAL_RISE_GROW on the BRIDGE storeys) + orbit 8.0; orbit
-pivot = ARC bbox centre (whole site).
-**Rules (all from model data; constants named):**
-- V1 — seed direction: `_civilFilmOv` reverses the route when the junction with the most signal heads is at its start, so the
-  drive ENDS at the big junction (the only orbit). Logged `§ALTC_V2 seed reversed=…`.
-- V2 — cruise 35 m/s for dive + drive + pull (v1 constant `CIVIL_FILM_SPEED`, branch feat/altc-oneway); the noise law still slows
-  busy stretches.
-- V3 — one way: pull-out / fly-back / round 2 / tail = 0 s (no second lap, no tail).
-- V4 — orbit = close-up at the junction NEAREST the drive's end: pivot = its centroid (signal heads), radius = its own r
-  (heads' spread + 15 m, tour.js). The storey-reveal pull-back growth is skipped (the bridge storeys are not the subject).
-- V5 — build-up topout at u = min(drive midpoint (beats.spin + beats.out)/2, film half-way 0.5) — user: "buildup finishes early
-  before half way point" (`_civilTopoutU`, read by `_buildupTopoutU`). First measured at the drive midpoint = 0.585 of the film → capped.
-- V6 — discipline parade inside the drive's second half [u, beats.out]: n discs + 1 all-together slot, equal share,
-  shell (ARC+STR+ROAD, §REVEAL_SHELL) hidden during it; `plan.reveal.inDrive = {a, b}`, read by A.cpeRevealVisualAt.
-  Editor estimate (cinema_path_editor `_naturalDuration`) adds 0 s for a reveal in the drive (owner `A.cpeRevealInDrive()`).
-**Witness:** witness_altc_highway.js (no bake): road plan with Reveal — natural < 180 s, round2 = flyback = tail = 0, walk ends
-≤ junction r from the big junction, orbit pivot = that junction (≤ 1 m) and radius = its r, buildupTAt(u) = 1 at the midpoint and
-< 1 just before, parade phases tail-one/tail-all only inside [u, out], null before u and after out. Duplex: round 2 still present,
-pace + pivot unchanged.
-
-### §ALTC_PANELS — road data panels on quiet stretches of the drive (spec 2026-10-06; 2h item 5)
-Gate: `A.isCivilModel()` and a plan with a drive; buildings never build panels (`§ROAD_PANELS VACUOUS`).
-**Where/when:** only inside the build-up part of the drive [beats.spin, reveal.inDrive.a] (or [spin, out] with no Reveal) —
-the parade half carries its own discipline captions, the junction orbit is never covered. Slots of PANEL_SEC 5 s with GAP 2 s,
-placed greedily on the QUIETEST film times: busy = the noise law's own walk probes (effects.js `_walkNoiseBuild`, now exported
-as `plan.walkBusy` {pos, v}) looked up at `plan.poseAt(t)`. No new busyness measure.
-**What (model data only, Prime Rule):** stretch = elements whose nearest route point lies within ±150 m of the camera's route
-position (chainage inferred from the route, labelled "inferred"). Kinds in order, a kind with nothing in its stretch is skipped:
-(1) stretch counts per road discipline; (2) drainage — top 3 `02_Type` with `03_Dimension` and counts; (3) signs — top 3 JKR
-`17_Code` + `16_Name`; (4) one "planned" card: Terrain / Weather / Traffic — "planned, no data in this model", no numbers.
-Not shown (no data in a bake): clash count, 4D phase. (Corridor `StartStation` exists on 526 elements but over 152 baselines —
-not a single chainage; left for §CHAINAGE.)
-**Look:** dark rounded plate, the §HUD_SCALE font law (`window.__hudFontPx`), right-middle; moves to left-middle if it would
-overlap a registered HUD rect. Drawn through `_drawUnlessHold('road.panels')` so it fades with any freeze and registers its rect.
-**Witness:** witness_road_panels.js (headless, no bake): JELAPANG — ≥ 3 slots, none overlapping, all inside the build-up drive
-window, each slot's busy ≤ the window median; every number on a card equals an SQL count over the slot's listed guids; drawing at a
-slot mid changes pixels only inside the returned rect, drawing between slots draws nothing; Duplex → VACUOUS, nothing drawn.
-
-### §CHAINAGE_V2 — road build order: section by START along the drive + trade order inside a section (spec 2026-10-06)
-Builds on the WIP §CHAINAGE_LEVELS commit (time_machine element builder: civil storey "CH nn" + lvlSec; deriveBandRanks /
-cpm bandRank by (section, z)). Gate: civil model with a route (lvlSec / civil phase names exist only there).
-**Measured on JELAPANG_AFTER (probe: wrap CpmSchedule.run, rebuild its graph, classify E1 edges against (section, phase)):**
-- WIP: 2,451 of 10,078 support (E1) edges run BACKWARDS, 2,265 because the supporter is filed in a LATER section — top pairs
-  DRAINAGE→ROAD 995, FURNITURE→ROAD 412, ROAD→ROAD 191. Cause: section by the vertex CENTROID files a long drain / guardrail /
-  curved road piece by its middle, later than the pieces it touches at its start.
-- After R1 below: backward 359 (later-section 104).
-**Rules:** R1 — section = lowest route index over the 4 plan corners of the element's DRAWN box (owner
-`A._loadPathInstanceWorldBox`, cpe_load_path.js), on the film's DRIVE route (`A.civilDriveRoute`, new one-line owner in
-effects.js over `_civilFilmOv` — §ALTC_V2 V1 direction) → the build runs the way the camera drives. R2 — inside a section the
-road trades chain in their declared order (cpm_schedule E3-civil, ranks from rates.js `SEQUENCE_CIVIL`): before, every civil
-phase was "Tier-2" on a level with no Tier-1, so a section's trades ran in parallel.
-**Result (witness_civil_chainage_buildup.js, judged from kernel_ops timestamps):** lamps before their own pavement 46 → 0 ✔ ·
-lamps in the first 2 % 22 → 0 ✔ · midair 0 ✔ · drive-order rank correlation 0.30 ✖ (needs ≥ 0.8).
-**Still open — why route order is not reached (measured, not fixed):** E4 (each trade section → section) loses 4,971 of 7,685
-edges to cycles: a support edge between touching road pieces in DIFFERENT sections closes a loop through the section
-milestones. EXPERIMENT (reverted, not shipped): ignoring the 3,538 cross-section civil-civil support edges → E4 drops 1,443,
-correlation 0.40, but 187 elements then read as floating (no soil exemption for civil). Also the bridge's ARC builds first
-(107 of the first 208 placements). ⛔ Needs a ruling: do at-grade road pieces (ROAD / DRAINAGE / MARKING) rest on the
-soil (ground-exempt like `seq === 1`), so neighbouring pieces stop counting as each other's support?
-
-### §ALTC_LABELS — road films stop showing building labels (spec 2026-10-06; resume item 5, user: "v2 should show road checks + road labels")
-Seen in the aborted trial film: building rule cards ("Structural — floating member 68 / open depth cantilever 20"), a
-"Building Envelope" cue and clash tags "Misc Element" on the road. Gate: `A.isCivilModel()`; buildings unchanged.
-- L1 — rule findings film (rule_findings_film.js `ruleFindingsFilmBuild`): on a civil model → `§RULE_FILM VACUOUS — road model:
-  building structural/egress rules do not apply; road checks (§MC) not wired yet`. stats.built=false → no rule cards and no
-  "structural issues flagged" HUD card (cpe_resource_panel reads rf.built). Road checks join when §MC's two measurement faults
-  are fixed (not this item).
-- L2 — flythru envelope cue (cpe_flythru_cues.js B1): title/label "Site Envelope" on a civil model (same numbers, no
-  "Building").
-- L3 — clash tags (clash_labels.js): a pair side whose discipline is a SEQUENCE_CIVIL key is named by that trade's phase
-  (ROAD → "Pavement", DRAINAGE → "Drainage", LIGHTING → "Road Lighting"…), `§CLASH_LABEL_NAME … source=SEQUENCE_CIVIL`.
-  Building disciplines never match → rates.js names unchanged.
-**Witness** witness_altc_labels.js (headless, no bake): JELAPANG — rule film VACUOUS + stats.built false, envelope cue title
-"Site Envelope", every civil clash side named by its SEQUENCE_CIVIL phase (0 "Misc Element"); Duplex — rule film builds
-(state ≠ VACUOUS-road), envelope "Building Envelope", clash names from rates.js.
-
-### §ALTC_CHECKS — road checks in the film as worked formulas, each tagged VALID or SPECULATIVE (spec 2026-10-06)
-User 2026-10-06: *"If they are trivial just bake"* · *"Just give a sample measure"* · *"As a formula to educate"* · *"Need not be
-accurate.. it's demonstrative of what can be done"* · *"As long we keep track which is valid and speculative"*.
-- C1 — `viewer/road_check.js` + `viewer/rates/road_rules.json` come to main from WIP `feat/civil-model-check` (dc7223d4) unchanged
-  in method; used ONLY by the film cards (Model Check report / boq button stays a later item).
-- C2 — THE TRACKING LIST: every rule in road_rules.json carries `film_status: {status: "valid"|"speculative", why}` and a
-  display `formula` (ours, not from the standard). Status as of the §MC first run: sign_mounting_height SPECULATIVE (road-top
-  band can catch a higher road piece — min −6.02 m) · obstruction_marker_height SPECULATIVE (same road-top method) ·
-  sign_lateral_clearance SPECULATIVE (all 138 read 0.00 m — sign feet inside ROAD solids) · chevron_spacing SPECULATIVE
-  (distance is measured; whether "laterally 6 m apart" means nearest neighbour is unconfirmed against ATJ 2B Fig. 10) ·
-  rrpm_spacing VALID (stud spacing 1.00 m measured; it matches no Table 4.2 row — application not in the data). A status
-  changes only by editing this list with its reason.
-- C3 — card kind `check` in cpe_road_panels (§ALTC_PANELS), after `counts`: one RoadCheck row whose element lies in the stretch,
-  VALID rows preferred. Rows: formula = measured value · the clause limit · result (meets / outside) · status tag
-  ("VALID" or "SPECULATIVE — <why>"). RoadCheck runs once per bake (adapter over A.db returning row objects).
-- Gate: civil only (cards are civil-only already). Witness: witness_road_panels.js extended — a `check` card exists, its
-  measured value = the RoadCheck row's, its status = the rule's film_status in road_rules.json; Duplex unchanged.
-
-### §ALTC_V3 — road film storyboard v3 + compliance mock-up page (spec 2026-10-06)
-User 2026-10-06: *"narrative this time extols what the compilation can give, at least in theory. Remove the loadpath freeze path.
-Better show the 4D5D html and also the new compliance mock up report replacing the MEP tab"* · *"Show the underpass bridge works"* ·
-*"More such cinematic clips of respective parts to assemble"* · *"The cam path map top right is already a timeline"* · *"a ground map
-that has vegetation"*. Measured on v2 (picture change per second from the film + §CPE_BUILDUP placed counts): all 5,674 road pieces
-placed by 4 s; 4–56 s 0 pieces added; 4,739 bridge pieces in one frame at 56 s; 57–60 s still freeze (YDIF 0.1).
-Gate everywhere: `A.isCivilModel()`.
-- V3a — build-up advances by pieces COMPLETED on a road film (cinema_maxq `_workCursorAt`: skip even-calendar tempo → k-th completion
-  at t = k/N). Cause: the bridge's heavy structure owns most of the calendar, so calendar tempo dumped the road into 7 %.
-- V3b — no load-path freeze on a road film (`§ALTC_V3 load-path freeze off`).
-- V3c — approach seconds capped at CIVIL_DIVE_MAX_M = 280 m @ 35 m/s (8.2 s, was 25.6 s).
-- V3d — film ground = the shipped CC0 'grass' map (Poly Haven aerial_grass_rock) with a neutral tint (`§ALTC_V3_GRASS`).
-- §MC_MOCKUP — `viewer/model_check_report.html`: road_check.js rows, ATJ clauses, formula + VALID/SPECULATIVE per rule (road_rules.json
-  film_status), stat cards, CSV. `boq_charts.html`: the MEP button reads "Model Check" and opens it on a road model (`§MC_BUTTON`).
-- Assembly (FILM_NARRATION.md §11.v3): clips = main film segments + a bridge-works close-up bake (side pass along the 2,148-piece
-  structure, piers to −59 m) + page clips of the 4D/5D page and the compliance report (`prompts/film_page_clip.js`); the path map stays
-  the in-film timeline. Narration extols what compilation gives; every claim's source column says VALID or SPECULATIVE.
-- Data fact found: 1,485 'Jelapang VBC' pieces have their drawn box at the origin (0,0,0) — not placed; not investigated.
+### §PARTNER_DISCS — the BIM partner's new files defined as civil disciplines (spec 2026-10-06; user: "analyse and define them as new disciplines … proceed here, except for 5 which I will merge manually")
+**Measured** (IfcOpenShell 0.8.4 on `~/Downloads/JELAPANG IFC.zip`, world-coordinate geometry; all IFC2X3, every object
+IfcBuildingElementProxy, all inside the same corridor x 27,345–29,883 / y −24,670…−22,662 as the road). The partner's own package code is
+in each file's IfcBuilding name: 02EW = earthworks, 03RD = road, 04DR = drainage.
+| file (IfcBuilding name) | objects | what it is (from its psets) | new code |
+|---|---|---|---|
+| GEOTECH (C3D24_WIP_F0_**02EW**_GEOTECH JELAPANG SOLID) | 9,145 | ground treatment: 7,575 driven piles under the embankment (350 mm, 18 m, 750 kN, 1.9 m c/c, embankment 5 m), 1,338 soil nails (12 m @ 1.5 m with erosion mat), 228 horizontal drains (12 m @ 3 m), 4 RC retaining walls | GEOTECH |
+| EARTHWORK ("Earthwortk without road SOLID") | 1 solid, z 31–90 | the earthworks body with the road cut out (the old file was empty) | EARTHWORK (exists) |
+| GABION MATTRESS | 11 | 01_Component_Name "GABION MATRESS", 14_Dimension "300mm THK." — slope / scour protection | GABION |
+| CHAINAGE (…**03RD**_CHAINAGE SOLID) | 332 | 3D chainage labels (solids 1.0 m thick, ~5 m across), no psets — setting-out reference, not construction | CHAINAGE |
+| ROW (…**03RD**_ROW JELAPANG SOLID) | 1 | corridor "ROW", baseline "ROW Jelapang", station 0+000–7+003, BasicCurb shape — right-of-way boundary | ROW |
+| ROAD LIGHTING | 216 | re-export, same psets as the loaded one | LIGHTING (exists) |
+**Rules (civil only — every list below is read only for civil codes; NON-IMPACT on buildings):**
+- D1 import (import_worker.js CIVIL_DISCS): + GEOTECH, GABION, CHAINAGE, ROW (file-name word match, as for the road set).
+- D2 build order (rates.js SEQUENCE_CIVIL; sequence = cpm phase rank ≤ 7, equal = parallel):
+  1 Setting Out (CHAINAGE, ROW) · 2 Ground Treatment (GEOTECH) · 3 Earthworks · 4 Drainage + Slope Protection (GABION) · 5 Pavement ·
+  6 Road Furniture + Signage + Road Lighting · 7 Road Marking. Source: physical precedence (piles before the embankment they carry,
+  earthworks before drains cut into them, pavement before finishing) — same JKR road-works order as §Q, with the two new front phases.
+- D3 cpm E3-civil chains by SEQUENCE GROUP (all phases of group k complete → every phase of group k+1); equal sequences no longer chain
+  each other (before: phases were chained one after another in sort order, so equal sequences would have been serialised).
+- D4 crews (LABOR_RATES, uncalibrated, copied from MASON like the other civil trades): CIVIL_SURVEY, CIVIL_GEOTECH, CIVIL_GABION.
+- D5 5D (CIVIL_RATES, rate null pending the JKR SoR): GEOTECH (EA), GABION (M2); CHAINAGE / ROW = "setting-out reference, not priced"
+  (so they never fall back to the building class rate "Misc Element").
+- D6 4D template (rates/4D_template_civil.json → v0.4.0): phases setting_out, ground_treatment, slope_protection added; logic
+  setting_out → ground_treatment → earthworks → drainage + slope_protection → pavement → finishing.
+- D7 clash (clash_rules.json, family civil): + GEOTECH vs DRAINAGE (piles / soil nails / horizontal drains against drains). CHAINAGE and
+  ROW get no rule (references, never clash).
+- D8 colours (rates.js + import.js DISC_COLORS, presentation only).
+**Witness** witness_civil_partner_discs.js (node, no browser): every partner file name → its code; SEQUENCE_CIVIL order constraints
+(setting out < ground treatment < earthworks < drainage = gabion < pavement < finishing < marking, all ≤ 7); template phases + logic acyclic
+and every civil phase has a template phase; CIVIL_RATES covers every civil code; cpm graph on synthetic civil items: E3 edges only from
+group k to group k+1, none inside a group; a building item set builds the identical edge list before/after. Fleet: cache_4d_run 4 buildings.
+**Status 2026-10-06:** D1/D4/D5/D8 SHIPPED (#1886, witness_civil_partner_import 3/3, main 1/3). D2/D3/D6/D7 HELD on `feat/civil-partner-discs`
+(witness_civil_partner_discs 8/8 there, but the browser chainage witness regressed: cell path, lamps before pavement 92).
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
@@ -505,63 +189,6 @@ Gate everywhere: `A.isCivilModel()`.
   - Fix shape (proposal, not built): build the rtree from center + per-geometry local min/max (geometry bounding box
     already computed per hash in the viewer) — no DB change. Changes every building's clash candidates → fleet before/after
     table (candidates, mesh-true clashes) required. Also: `§GROUND_ROBUST`/`§GROUND_Y` bottoms, tour.js road heights.
-- **§FB Find panel "loses" highway disciplines after a merge — MEASURED 2026-10-05: data intact in the DB; reopen streams ONE building, Find scoped to it.**
-  User: import 6 JELAPANG IFCs → save `JELAPANG.db`; merge `IFC_MORE/` (BR1/BR2/BR3-001-002 + Jelapang VBC) → canvas OK,
-  Find shows no ROAD/DRAINAGE/… → save `JELAPANG_AFTER.db` (661 MB).
-  - DB: `elements_meta` GROUP BY building,discipline — AFTER keeps JELAPANG ROAD 4008 · FURNITURE 1011 · LIGHTING 227 ·
-    DRAINAGE 200 · SIGNAGE 138 · MARKING 90 (= `JELAPANG.db` exactly) + new building `Jelapang VBC` PLB 2062 · STR 1851 ·
-    ARC 826. Nothing lost on save.
-  - Cause: `navigate_find.js:638` `buildTree()` passes `bld = A.activeBuilding`; `_buildDiscTree` (`:4093`) and the storey
-    tree add `AND building = ?`. The merge drain (`streaming.js:2080-2092`, §SCENE_MERGE) streams the merged building last,
-    so `A.activeBuilding = 'Jelapang VBC'` → Find lists only ARC/PLB/STR. Same scope on reopen: whichever building
-    streams last owns Find.
-  - Not civil-specific: any Open→Merge scene (Clinic 5-building package) has the same scoping. One-building scope came
-    from City mode (one building at a time).
-  - Side facts: all 4 merged files landed under ONE building name `Jelapang VBC` (multi-IFC merge = one building); the
-    bridge files carry no civil word in the name → classed ARC/PLB/STR (PLB 2062 on a bridge is suspect, not read yet).
-  - **CORRECTION (user reopened AFTER.db, console log 2026-10-05): the road is gone from the CANVAS too, not just Find.**
-    AFTER.db holds both buildings complete — JELAPANG 5674 meta / 5674 transforms / 5674 instances / 5674 geometries;
-    Jelapang VBC 4739 / 4739 / 4739 / 4739. The reopen streams only ONE: `§CENTRES_RESULT rows=2` →
-    `§DS_AUTO_START bld=Jelapang VBC dist=2371m` → `§DS_QUEUED elements=4739` → `§MERGE_CONTRACT buildings=1
-    rendered={"Jelapang VBC":4739} centres=2`. Cause: single-DB open calls `A.startStreaming()` (`streaming.js:3990`),
-    which streams the camera-nearest building ONLY (`:304-316`). The N-building drain (`A._mergePending` +
-    `_mergeStreamNext`, `scene.js:1224/1338/1346`) is filled only by a LIVE merge, never by opening a saved DB → the
-    other building never streams. Find then follows `activeBuilding` = the one that streamed. The shipped §MERGE_CONTRACT
-    line already showed 1 of 2 but does not flag it.
-    Applies to every saved merge (Clinic 5-building package would reopen as 1 building).
-  - Fix shape (not built): (1) on single-DB open with > 1 building and !CITY_URL, after `startStreaming()` push the other
-    `buildingCentres` names into `A._mergePending` → the existing drain streams them (one owner, no new drain);
-    `§MERGE_CONTRACT` prints `INCOMPLETE rendered=k of centres=n` when k < n. (2) Find scope below.
-    Witness: open AFTER.db → rendered={JELAPANG:5674, Jelapang VBC:4739}, Find disc parents = 9.
-    Original Find-only fix shape: when the open scene holds > 1 building and is not City mode, Find's storey/disc trees query
-    without the building filter (or group building → disc). Gate = building count > 1 & !CITY_URL, so single-building
-    loads are unchanged. Witness: AFTER.db → disc tree parent rows = 9 codes, counts = the GROUP BY above.
-- **§FB SPEC — SHIPPED as bim-ootb PR #1866 (auto-merge on). (user go 2026-10-05: "during the first merge … it should refresh and treat both as one … ensure no impact to others").**
-  Gate everywhere: `!A.CITY_URL && Object.keys(A.buildingCentres).length > 1` (a MERGED scene). Fleet proof of the gate:
-  every hub DB has 1 building (`viewer/buildings/*_extracted.db` + `*_meta.db`, 15 files; the live OCI
-  `buildings/Clinic_extracted.db` = gzip, 1 building "Clinic" 16,071) → gate false → byte-identical behaviour.
-  City mode keeps its per-building scope (excluded by `A.CITY_URL`).
-  1. ONE owner `A.sceneScopeBuilding()` (streaming.js): merged scene → `''` (all buildings), else `A.activeBuilding||''`.
-     `§SCENE_SCOPE all buildings=n` / `one bld=X`, logged on change only.
-  2. Find's 6 SQL-scope readers call it (`buildTree`, lens probe, `_isolateGuidSet`, `_emitIsolate` total,
-     `populateDropdowns`, `runSearch`). Room needle (per-building rooms) unchanged.
-  3. Open of a saved merged DB: after the first `streamBuilding`, the other centres go into `A._mergePending` → the
-     existing drain (`_mergeStreamNext`) streams them. `§OPEN_ALL_BUILDINGS queued=k first=X`.
-  4. `§MERGE_CONTRACT … verdict=COMPLETE|DRAINING|INCOMPLETE` (rendered buildings vs centres, pending queue).
-     On COMPLETE in a merged scene, an open Find panel rebuilds (`§FIND_REFRESH why=merge-complete`) → the live merge
-     shows all disciplines without reopening.
-  Witness `witness_merge_all_buildings.js`: (a) open AFTER-shape DB (2 buildings) → rendered both, verdict=COMPLETE,
-  Find disc parents = union; (b) Duplex alone → `sceneScopeBuilding()` = its building, Find disc parents unchanged.
-- **§FB night (user 2026-10-05: "street lamps are not lighting up … too dark … was better before") — SAME root cause.**
-  `witness_civil_night_lamps.js` on AFTER.db: main → lamps SELECTED identically (227 → 172 columns / 223 heads /
-  strayBuried 9) but `noBox=227` — the road building never streamed, so the lights shine on nothing (pass 7/13).
-  Fix branch (§FB.3) → `noBox=0`, 223/223 heads on the rendered column tops, 13/13. Control JELAPANG.db (road only) 13/13.
-  Witness oracle was scope-blind: "buried" floor = MIN bottom of every non-LIGHTING element on the SITE — the merged
-  bridge's piers (−1.4 m) dropped it below the strays. Now scoped to the building(s) carrying LIGHTING (42.9 m both files).
-  Open: merged buried=13 vs single 16 at the same floor (3 columns' rendered tops differ) — not read yet.
-- **§FB ground — ✅ FIXED bim-ootb PR #1868 (auto-merge): civil model → Step 4 p2 over all (43.46 merged; road-only 51.74 unchanged). Was:** merged scene `§GROUND_Y src=gf-storey-slab(Level 1) z=56.58` — the BRIDGE's storey
-  wins step 1; road-only scene resolves `p2-bottom z=51.74`. Ground plane is hidden by default (`§GROUND_INIT
-  visible=false`), but shadow/sky/walk read this height. Needs its own spec (whose ground in a merged scene?).
 - **§LOAD — slow canvas load, large MB / low element count (user 2026-10-05). MEASURED on JELAPANG_AFTER.db.**
   Bytes: component_geometries 605 of 661 MB; 22.0M vertices / 8.5M triangles for 10,413 elements. LIGHTING 227 poles =
   204 MB / 7.57M verts (~33k verts, ~12k tris per pole); bridge STR 186 MB; ROAD 109 MB. Normals stored per vertex.
@@ -577,43 +204,6 @@ Gate everywhere: `A.isCivilModel()`.
   Open (not worked): which elements `§MEP_SMOOTH`/`§DUCT_SILHOUETTE` take on a civil model (prewarm for Alt+S, runs at load) ·
   KRN_PERSIST full rewrite per op on a 646 MB DB (save/reload efficiency, user asked) · URL loads > 400 MB skip the IDB cache
   (`§CACHE_WRITE_SKIP_TOO_LARGE`) → every reload re-downloads.
-- **§MESH_SLIM — large-file mesh (user 2026-10-05: "what about the large file mesh?"; "save and reload be efficient").
-  MEASURED on JELAPANG_AFTER.db (7,419 geometries, 21,957,746 verts):** vertices 251.3 MB · faces 97.9 MB (u32) ·
-  NORMALS 251.3 MB = 42 % of geometry. Stored normal == its own triangle's face normal (<1°) for 99.95 % of vertices;
-  6,528 / 7,419 geometries entirely flat. Shipped fleet DBs carry NO normals — the viewer already derives them with
-  computeVertexNormals() from the winding (`streaming.js:1615`, §WALL_WINDING_MEASURE); only BROWSER IMPORTS store them
-  (`§BLOB_FETCH normals_pre=155`). Other levers: u32→u16 indices −37.1 MB (needs a format flag, not proposed);
-  exact weld −16 % verts (would change the flat look, not proposed); instancing ~0 (shapes are unique per location).
-  Proposal (NOT BUILT, needs go): import/save write normals = NULL (fleet format) → ~−251 MB (661 → ~410 MB) on this file;
-  smaller save, faster reload, less sql.js heap (whole DB lives in WASM memory). Existing saved DBs: compact on next Save.
-  Witness: per geometry, computeVertexNormals() vs the stored normal — angle distribution over JELAPANG + one building
-  import; render path proof = the fleet already runs it. Cost to measure: CPU normal compute on load for 22M verts.
-- **§MESH_SLIM — ✅ SHIPPED bim-ootb PR #1870 (merged).** A.isCivilModel() owner; civil load ignores stored normals, civil Save
-  NULLs + VACUUMs, civil import doesn't write them. witness_mesh_slim.mjs (three.js's own computeVertexNormals): 21,952,369
-  verts 100.000 % within 1°, 5,377 stored normals were zero-length; derive 594 ms; AFTER.db copy 661.6 → 395.7 MB.
-  Gap: hub index.html loads import_db_builder.js WITHOUT rates.js → hub civil imports still store normals (and §OPEN "hub
-  duplicate discipline list" already says hub civil import differs) — fix with that item.
-- **§FLY — ✅ FIXED bim-ootb PR #1871 (auto-merge).** User 2026-10-05: "Fly is jerky … should orbit from junction to junction,
-  but instead it backs away and returns to the same. It moves facing backwards." Measured: slice medians zig-zag (16 turns
-  > 30°, max 125°); 5 signal stops at route points 0-1. §CIVIL_ROUTE_SMOOTH (3-pt moving average → 0 turns > 30°) +
-  §CIVIL_ROUTE_JUNCTION (stops within 100 m of route = one junction, radius holds members → 2 junctions). Witness
-  witness_civil_fly_route.js: main FAIL 2/4 → branch PASS 4/4. User same day: "Lights and ground shadow sun day with light
-  distance normal fog all OK good enough."
-- **§ALTC_HIGHWAY — ✅ SHIPPED bim-ootb PR #1872 (auto-merge; user "go ahead with alt-c").** Route seeded from A.civilRoutePath
-  (one owner, Fly reads it too) as ov.waypoints when nothing authored; civil pace 25 m/s for drive + pull-back (natural film
-  1243 s → 206 s: dive 57 + spin 6 + drive 101 + pull-back 34 + orbit 8); sun 15° → 6°; interior-lights window skipped for civil
-  (lamps whole film); civil lamp cap nearest-first. #cpe-panel / cinema_path_editor.js untouched. witness_altc_highway.js 8/8
-  (no bake). NOT yet seen in a real bake (bakes need the user's go) — the 57 s approach (dive from the 3 km framing camera) is the
-  first thing to judge on a real film. (Original code map kept below.)
-  Code map done (read-only agent, all file:line on main @ 2026-10-05):**
-  plan = effects.js `_cinemaPathPlan` :7140 (no rooms → bbox-centre dive :7339, facade-fallback exit :7447 → meaningless orbit on a
-  road); route seam = `ov.waypoints` :10132 / `A.stageCinemaPath(ov)` :10046 / `__maxqBake` cinema_maxq.js:4902; sun =
-  `_sunElevationAt` effects.js:2523 linear 55°→6° (PHOTO_SUN_ELEVATION_END :2515, azimuth const 200, no URL param; graze/day
-  tests :3591/:3615/:4573 assume ≥ 6°); lamps = interior-lights gate cinema_maxq.js:3848 zeroes ALL fixtures [beats.out,
-  beats.rise) incl. civil heads (glow Points not gated); film lamp cap ≤ 200 in list order (tools.js:2278). Building beats
-  (storey reveal, buildup, room title, escape route) are flag-gated / self-VACUOUS. Hooks: (1) civil route points (extract
-  tour.js route builder, now smoothed) → ov.waypoints; (2) A._sunArc {start,end} read by _sunElevationAt + clamp graze/day;
-  (3) civil guard on the interior-lights gate; (4) detector = A.isCivilModel() at plan creation cinema_maxq.js:2496.
 - **§CULL_SPHERE (found 2026-10-05, not fixed):** `dlod.js:77-81` culls each instance by a sphere at the instance ORIGIN (vertex
   centroid) with radius = half the bbox diagonal. On JELAPANG_AFTER the true mesh extends > 1 m outside that sphere for 1,173
   elements (ROAD 771, LIGHTING 171, DRAINAGE 122, MARKING 57, ARC 34, FURNITURE 18; worst 167.8 m) → hidden while on screen
