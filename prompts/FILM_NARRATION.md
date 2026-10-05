@@ -1555,8 +1555,11 @@ written; the counter is a page-view count, absent offline, never model data.**
 assembled source · fit 34/34 DETAIL, 0 WRONG · −16.8 LUFS · longest silence 7.33 s (S5 tour, 176.7–184.0 s; next 6.77 / 5.75) · fonts Noto
 Thai / Arabic / CJK SC + DejaVu · title fades: box diff ≈ 10–32 at 0.5 s → ≤ 1.05 at 3 s (gone). Script `prompts/film_narration_intro_v1_dialogue.tsv`
 (34 rows). Breaks run 11–38 s (sized to the fitted narration, not 5–8 s). Agent readings: C1/C3 picture sentences re-pointed to their v4
-backdrops; END lines voiced by M, stacked. **v2 with the end-card subtext snip** (6 s on black, fade in/out, appended after the agent run):
-`~/Videos/IFC_Extraction_Program_intro_narrated_v2_AFTER.mp4` — 292.4 s, 7,601 frames (= 7,445 + 156).
+backdrops; END lines voiced by M, stacked. **Two finished versions (both measured):** (A) `~/Videos/IFC_Extraction_Program_intro_narrated_v2_AFTER.mp4` — the first build
+(286.3 s) + the subtext as a separate 6 s fading snip on black, silent (user: "append later as a snip, fade") — 292.4 s, 7,601 frames.
+(B) `~/Videos/IFC_Extraction_Program_intro_narrated_AFTER.mp4` — the agent's rebuild after the subtext message reached it (it overwrote its
+own first build): subtext inside the end card, voiced by M (row end5, 7.64 s), end card 19.15 s — 294.0 s, 7,644 frames, 35 rows, −16.8 LUFS,
+longest silence 7.33 s. Script TSV committed = the 35-row version (B).
 **Status (pre-build):** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
