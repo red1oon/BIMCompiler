@@ -1470,26 +1470,48 @@ placements, geometry, properties written into ONE SQLite file (sql.js WebAssembl
 folding another file's tables in (scene.js). Everything after load is a query over that one file, computed when asked: the Fly route from the
 road's MAINLINE pieces + its stops from traffic-signal properties (tour.js, civil_labels.json), lamps from lighting heads, Find trees (GROUP BY
 storey / discipline / material), Ask answers with their § proof lines, the 4D schedule. No server, no upload, no install (local-first).
-**Chapter pages (full-screen cards, ~5 s each, inserted between segments):**
-| # | before | card title | card lines (all measured) |
-|---|---|---|---|
-| 0 | start | IFC Extraction Program | everything your model already knows — at no extra cost |
-| 1 | S1 | 15 files. 970 MB. Two worlds. | Civil 3D road set, IFC2X3 · Revit bridges, IFC4X3 · one model, 19,892 elements |
-| 2 | S2 | How it reads them | your browser: web-ifc → one SQLite file → three.js · no server · no upload · no install |
-| 3 | S3 | Computed when you ask | the tour, the trees, the answers — queries on that one file |
-| 4 | S4 | Ask your model | ready questions · answers with proof · Save to Excel |
-| 5 | S5 | Messy IFC? Inferred by default. | generic proxies, meaning from names and properties · inferred values are labelled |
-| 6 | S6 | Publish now, update later | standard rates you can edit · what is missing is listed · merge new files any time |
-**Narration v2 — lively (user 2026-10-06: *"make the dialogue more lively conversation, at surprising novel art where merited"*).**
-F = the newcomer who reacts; M = the one who knows the model. Surprise ONLY where the thing is genuinely unusual (sourced); never "first /
-only / no one else" (§11.next rule). English first; 6-language greeting kept before card 1 (en ms zh th ar fr, as §11.v3c).
-- S1 (night Fly) F: "Hold on — is this a game engine?" M: "It's your highway. In a browser tab." F: "Live?!" M: "Live. The tour found the road on its own — seven stops — this one's a traffic signal, five columns." F: "Nobody placed those stops?" M: "Nobody. It read the signals' own labels."
-- S2 (Find · Storey) F: "Okay, show me what's in it." M: "One click — Storey view. The bridge's levels: piers, deck slab, finished road level." F: "And this Unknown — fifteen thousand?" M: "That's the road. Roads don't have storeys — so we don't make any up."
-- S3 (Find · Discipline) F: "By trade, then?" M: "Fourteen of them. Nine thousand one hundred forty-five ground-treatment pieces —" F: "Nine thousand?!" M: "Piles, mostly. Then four thousand road pieces, plumbing, structure, furniture, lighting, drainage, signs… right down to one earthworks body." F: "All from file names?" M: "File names and the properties inside. Nothing typed in."
-- S4 (Ask) F: "Can I just… ask it things?" M: "Go on, pick one." F: "Clashes!" M: "Eighty-six real ones, architecture against structure — and look, every answer shows its working." F: "Receipts included." M: "Always. Schedule: nineteen and a half thousand pieces, one hundred fourteen days, fourteen trades — at standard rates you can edit." F: "And the biggest rooms?" M: "None. It's a road — and it says so, instead of guessing." F: "Honest software. Rare."
-- S5 (slopes → bridge) F: "What's holding all this up?" M: "Seven thousand five hundred seventy-five piles, eighteen metres each, and over a thousand soil nails — straight from the partner's own file." F: "So it tells me what's underground, too."
-- S6 (drive with labels) F: "And when the partner sends new files tomorrow?" M: "Drop them in. Everything recomputes — and anything your model still lacks is listed for you." F: "A to-do list from my own model."
-- S7 (whole route) F: "So — where's the server?" M: "There isn't one. Fifteen files, nine hundred seventy megabytes, one file on your own machine." F: "Everything my model already knows…" M: "…at no extra cost."
+**v3 (user 2026-10-06):** *"talk more of red1's vision and some developer consideration as a FOSS project … That last 6, reserve for the
+alt-c" + "and 5. also it is for alt-c" … "talk about its performance on a single GPU give machine sizing, no lag in navigation, how fast any
+render works. During Chapter breaks use those screenshots, but fade away the title overlay to let users rest on the underlying screenshots,
+and continue narration there describing what it is showing briefly before continuing that running tour"*.
+**Chapter-break mechanics:** each break = a still screenshot (`~/Pictures/Screenshots/`), the chapter title overlaid ~1.5 s then FADING
+OUT, the screenshot held ~5 s while the narration says what it shows, then back to the running tour where it paused. Breaks C5 "Messy IFC,
+inferred by default" and C6 "Publish now, update later" are RESERVED for the Alt+C film (§11.v4) — not used here.
+| # | before tour seg | title (fades) | backdrop screenshot | what the narration says it shows |
+|---|---|---|---|---|
+| 0 | start | IFC Extraction Program — everything your model already knows, at no extra cost | 2026-10-06 07-05-44 (whole corridor) | then 6-language greeting |
+| 1 | S1 | 15 files · 970 MB · two worlds | 07-05-44 (corridor, chainage labels 900–1200) | Civil 3D road set + Revit bridges as one model; chainage labels every hundred metres |
+| 2 | S2 | How it reads them | 2026-10-05 09-09-37 (bridge piers on pile groups) | the bridge from Revit's IFC4.3: piers, crossheads, pile groups — read, not redrawn |
+| 3 | S3 | Computed when you ask | 2026-10-06 07-11-35 (Find · Discipline, GEOTECH lit) | one click on GEOTECH lights all nine thousand ground-treatment pieces along the corridor |
+| 4 | S4 | Ask your model | 2026-10-05 06-35-45 (clash matrix, drainage × lighting) | the clash matrix: every red dot a discipline pair with clashes to review |
+| 5 | S5 | One GPU. One laptop. | 2026-10-05 20-14-29 (night junction, lamps lit) | night mode: each lamp lit from its own lighting head in the model |
+| 6 | S6 | Why open source | 2026-10-05 09-11-33 (bridge abutment lit, x-ray) | x-ray on one abutment level — the rest of the bridge ghosted around it |
+Screenshots NOT used: 07-10-03 / 03-40-59 (box views, older merge), 19-31-45 (a LinkedIn post), 2026-10-04 06-20-22 (unrelated slide).
+**C5 performance facts (docs/BrowserScaleBenchmark.md, measured on the v3c bake log + 4 fleet bakes):** machine = one laptop, NVIDIA RTX 4060
+Laptop GPU 8 GB, 31 GB RAM · one render ≈ 5.8 ms p50 / 7.1 ms p90 (≈ 140–170 frames-per-second equivalent — an ESTIMATE of headroom; live
+navigation fps itself NOT measured → say "about six milliseconds a render", never "no lag" as a measured claim) · this highway ≈ 22 million
+vertices · browser memory ≈ 3.5–3.8 GB · sizing rule ≈ 0.17 GB of memory per million vertices (r 0.997, 3 buildings — indicative) · an 8 GB
+card has roughly 5–8× headroom for whole models today · phones ≈ 4 million vertices as a whole model (UNVERIFIED) · load to complete ≈ 37 s
+(headless). Growth path stated honestly: memory follows the model today → streaming by section is next.
+**C6 vision + developer facts:** red1's line (project_positioning_no_ai_inside): solo, low budget, for the long tail of DIY BIM users;
+"No AI inside"; MIT licence, shared openly (§11.next Chapter 0 card); local-first, one browser tab, no server; dated prior art — the
+Spatial Compilation paper, 2026-03-30; every claim backed by a witness that can fail — 256 witnesses; honest cost: 157,098 lines in the
+viewer, not lean yet; next: IFC4.3 roads — read the alignment instead of inferring it (BrowserScaleBenchmark §IFC43, [SPECULATIVE] until a
+4.3 road file is run). Never "first / only / no one else" (§PRIOR_ART).
+**Narration v3 — lively F/M; break lines describe the still, then hand back to the tour.**
+- C0 (title over corridor) M: "IFC Extraction Program." F: "Everything my model already knows?" M: "At no extra cost." → greetings ×6.
+- C1 still F: "What am I looking at?" M: "The whole corridor — road from Civil 3D, bridges from Revit — and those numbers are the partner's chainage labels, every hundred metres." F: "Fifteen files?" M: "Nine hundred seventy megabytes of them. One model."
+- S1 tour F: "Hold on — is this a game engine?" M: "It's your highway, in a browser tab. The tour found its seven stops by itself — this one's a traffic signal, five columns."
+- C2 still M: "Here's how: your browser reads each file with web-ifc, writes it into one SQLite file, and three.js draws from it." F: "And the bridge?" M: "Piers, crossheads, pile groups — straight from Revit's IFC4.3. Read, not redrawn." F: "No server at all?" M: "None. Nothing uploaded."
+- S2 tour M: "Find, Storey view — the bridge's own levels. The road has no storeys, so it sits under Unknown. We don't make levels up."
+- C3 still F: "That gold streak?" M: "One click on ground treatment — nine thousand one hundred forty-five pieces lit along the corridor." F: "Computed just now?" M: "Every tree, every count — a query on that one file, when you ask."
+- S3 tour M: "Fourteen disciplines — piles, road, plumbing, structure, furniture… down to one earthworks body." F: "Nine thousand piles?!" M: "Mostly. Straight from the partner's file."
+- C4 still M: "The clash matrix — every red dot is a pair of trades that collide." F: "Drainage into lighting?" M: "There — waiting for someone to decide."
+- S4 tour F: "Can I just ask it?" M: "Pick one. Eighty-six real clashes, architecture against structure — and every answer shows its working." F: "Receipts included." M: "And biggest rooms? None — it's a road, and it says so instead of guessing." F: "Honest software."
+- C5 still F: "This must need a monster machine." M: "One laptop. One eight-gigabyte graphics card. Each render takes about six milliseconds." F: "And memory?" M: "About three and a half gigabytes for twenty-two million vertices. Rule of thumb: a sixth of a gigabyte per million." F: "So I can size my own machine." M: "Exactly. And these lamps? Each one lit from its own lighting head in the model."
+- S5 tour M: "Under the slopes: seven thousand five hundred seventy-five piles, eighteen metres each."
+- C6 still F: "Who builds something like this?" M: "One developer — red1 — for the long tail of BIM users the big vendors don't serve." F: "Open?" M: "MIT licensed. No AI inside. Every claim checked by a test that can fail — two hundred fifty-six of them." F: "And next?" M: "IFC4.3 roads — read the alignment instead of guessing it." F: "And this view?" M: "X-ray on one abutment level; the rest of the bridge ghosted around it."
+- S6–S7 tour F: "So — where's the server?" M: "There isn't one. Your files, your machine." F: "Everything my model already knows…" M: "…at no extra cost." → goodbyes ×6.
 **Status:** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
