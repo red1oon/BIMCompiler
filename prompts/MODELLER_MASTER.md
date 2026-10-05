@@ -306,3 +306,32 @@ Rules that produced this list (keep for the next harvest):
 - **Never edit the shared `~/bim-ootb` checkout** — a PreToolUse hook blocks it. Work in a `/tmp/wt-*`
   worktree, and reuse an existing one (`git worktree list`) before creating another.
 - **DB changes ship as a SQL patch + self-heal loader, never a committed binary** (`CLAUDE.md`).
+
+
+---
+
+## §CIVIL_IN_MODELLER — should the Modeller cover civil works? (recorded 2026-10-06, moved from CIVIL_HIGHWAY_JELAPANG.md)
+User-pasted DeepSeek opinion, our reading: agrees with our position — Bonsai/Saikei give IFC4.3
+civil SEMANTICS (IfcAlignment, IfcCourse, IfcRoad as a target schema), not our gap (compliance on messy IFC2X3, browser local-first, mesh-level
+measurement). Its specific claims are UNVERIFIED by us (Bonsai alignment described as a "stop-gap", CSV import; rail-first workflow). Worth
+taking: the IDS gate pattern (write contract → re-open → test → BCF) as the shape of the §MC report; IfcCourse layers as the IFC4.3 target.
+Consistent with the Modeller strategy (memory project_modeller_assemble_handoff_strategy): we do not author roads from scratch — we ASSEMBLE
+and HAND OFF; civil in the Modeller = consume IFC4.3 classes and mould authored objects.
+
+**Status 2026-10-06:** BUILT — bim-ootb PR #1887 (sw v1579, auto-merge). `witness_civil_ref_look.js` GREEN L1/L2/G1/G0:
+Merged.db ground 32.90 → 30.52 m (= sqlite oracle), ROW outline 43,256 segments in #d04fd0, earthworks 0.28 / depthWrite off;
+JELAPANG_AFTER.db (no terrain) p2-bottom 43.46 m unchanged. RED control on main: L1/L2/G1 RED, G0 GREEN. Fleet: 18 DBs, 0 EARTHWORK/ROW rows.
+
+### §MERGE_FOLD_TOPUP — merge into an already-drawn building (2026-10-06)
+Measured RED on main (`witness_merge_fold_refresh.js`, partner-only DB folded into JELAPANG_AFTER.db): Find tree grew 0 of 9,490
+AND 0 of 9,490 folded elements drawn — `added=[]` queues nothing. Fix (scene.js + streaming.js): rows NEW to the live DB
+(`A._mergeNewGuids`) that land in a drawn building are re-queued as a guid-filtered top-up stream (`§MERGE_FOLD_TOPUP kept=`),
+and the open Find tree refreshes at fold end (`§FIND_REFRESH why=merge-fold`). After: GREEN — tree +9,490, 9,490 drawn,
+`guidMap=19903 streamed=19903 orphans=0` (no duplicates).
+Regression: witness_scene_merge_ifc PASS. witness_scene_merge_2026-07-30 already RED on main (3 claims — its Duplex fixture copy
+now holds 21 elements the served copy lacks); with the fix those 21 are drawn (`kept=21`), ~18 s of post-stream passes under
+GPU=sw push its click past 30 s → harness timeout. merge_save_roundtrip / open_split_db_pair: fixtures live in old session
+scratchpads (missing) → not run.
+
+
+Related: IFC4.3 target classes and the alignment-first rule — BENCHMARK_AND_CLASH_RESOLUTION_LANE.md §BROWSER_SCALE_AND_CLAIMS (§IFC43).

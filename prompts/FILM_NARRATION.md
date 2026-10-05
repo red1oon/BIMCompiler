@@ -1402,7 +1402,7 @@ longest silence 5.4 s · −16.9 LUFS.
 ### §11.next — script note for the next highway film (2026-10-06)
 Add one beat (closing third): our IFC2X3 mastery before IFC4.3 — "compiled from the messiest IFC there is: IFC2X3, every piece a generic
 proxy, meaning only in file names and properties. IFC4.3 brings alignment and real road classes; the same compiler will read what it now
-infers." Sources/tags in CIVIL_HIGHWAY_JELAPANG.md §IFC43 ([VALID] 2X3 facts · [SPECULATIVE] 4.3 until a 4.3 file runs). Also new in the
+infers." Sources/tags in BENCHMARK_AND_CLASH_RESOLUTION_LANE.md §IFC43 ([VALID] 2X3 facts · [SPECULATIVE] 4.3 until a 4.3 file runs). Also new in the
 model for that film: the partner's ground works (7,575 piles, 1,338 soil nails, earthworks body, gabions, chainage labels, ROW) — §PARTNER_DISCS.
 Never say "no one has attempted this" (no survey done).
 
@@ -1411,7 +1411,7 @@ Card text (opening, before greetings), tone per the user:
 > "In our search of the web, vendor documentation and academic indexes (October 2026), we have yet to find a prior art to learn from:
 > one browser tab, local-first, no server — BIM parsing, a 4D schedule, 5D quantities, clash, road-standards checks, ERP and this film.
 > We share it as an MIT-licensed project with the long tail of users."
-Sources + scope: CIVIL_HIGHWAY_JELAPANG.md §PRIOR_ART (closest: IFClite, MI ERP BIM Suite for Odoo, SYNCHRO/Navisworks). Priority for the
+Sources + scope: BENCHMARK_AND_CLASH_RESOLUTION_LANE.md §PRIOR_ART (closest: IFClite, MI ERP BIM Suite for Odoo, SYNCHRO/Navisworks). Priority for the
 browser stack (web-ifc → SQLite WASM → three.js, no backend): the user's own dated OSArch post, https://community.osarch.org/discussion/comment/29036/.
 DO NOT SAY: "first", "only", "no one has attempted", "the largest local-first app" / "no other local-first of this size" (not surveyed —
 large one-tab apps exist, e.g. Photopea). Instead, state OUR measured numbers and let the viewer judge (re-check each in the bake log/DB

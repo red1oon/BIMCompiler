@@ -44,6 +44,9 @@ A civil change that cannot name its gate and its fleet proof does not ship.
    lateral clearance (all 0.00 m), then flip the status with the reason.
 6. Pre-existing on main, not this lane: witness_reveal_arch_hold + witness_tail_lights_all_discs throw "ARCH_BULK_CUT_FRAC is not defined";
    witness_civil_phase reports FAIL on a merged road+bridge DB (its building rule does not fit a merged model) — on main too.
+**Moved out (2026-10-06, user: "keep the future from the prompt file"):** prior-art claim wording, scale/limits/growth, benchmark chart plan,
+IFC4.3 path + lean-code reality → `prompts/BENCHMARK_AND_CLASH_RESOLUTION_LANE.md` §BROWSER_SCALE_AND_CLAIMS · Modeller covering civil
+(DeepSeek view) → `prompts/MODELLER_MASTER.md` §CIVIL_IN_MODELLER.
 **Rules learned:** bake only on the user's go; `cd /tmp/wt-x || exit` before any edit/commit in a script (a failed worktree add once let
 commands commit another session's work in the shared ~/bim-ootb — undone, nothing lost); `pgrep/pkill -f` patterns can match their own
 shell — match a port or PID; the CLI bake needs `--override` when the DB has no saved path (use `A.civilDriveRoute()`).
@@ -217,128 +220,6 @@ offset, 1.06 m); ROW true z 1.00–77.76. Both cover the road + GEOTECH when dra
 **Witness** `witness_civil_ref_look.js`: Merged.db → EARTHWORK materials transparent at 0.28 + depthWrite false; ROW mesh hidden
 and an edge line present with > 0 segments; `§GROUND_Y src=earthwork-bottom z=30.52`. JELAPANG_AFTER.db → `src=p2-bottom z=43.46`
 (backward compat). RED control: same witness on main must fail L1/L2/G1.
-
-### §IFC43 — what the partner set gives, the novel-art claim, and the IFC4.3 path (recorded 2026-10-06)
-**What the files give:** the whole highway as a construction model — what is underneath (7,575 embankment piles 350 mm / 18 m / 750 kN,
-1,338 soil nails, 228 horizontal drains, 4 RC walls), the earthworks body, slope protection (gabions), setting-out references (332 chainage
-labels, right-of-way line) — one coordinate frame with road, bridge, drainage, lighting, signs. 4D can follow real road-building order,
-clash can test piles/nails against drains, the film can show ground works normally never seen.
-**Novel art (our claim, worded as a claim):** the data is poor — IFC2X3, every object IfcBuildingElementProxy, no alignment, no schedule;
-meaning only in file names, psets and geometry. The compiler INFERS discipline (file name), route + chainage (geometry), phases and trade
-order, junctions (signal psets), JKR sign codes, per-stretch quantities — and produces 4D, 5D quantities, clash, road checks and a narrated
-film, local-first in one browser tab, no server, nothing hand-drawn, each step witnessed, uncertain items tagged SPECULATIVE. Positioning
-line on record (FILM_NARRATION §10 Tier-1): incumbents create IFC but do not decompose / compile / verify the round trip. NOT measured:
-no other product has been run on these files — state it as positioning, never as a test result. "No one has attempted this" is NOT a
-claim we can make — see §PRIOR_ART for the citable wording.
-**IFC4.3 (backward compatible) — less inference, more extraction.** MEASURED: the shipped parser (viewer/lib/web-ifc-api-iife.js, 6 MB)
-carries the IFC4X3 ADD2 schema incl. IfcAlignment, IfcReferent, IfcRoad, IfcCourse, IfcKerb, IfcEarthworksFill, IfcPile,
-IfcGeotechnicalStratum, IfcSign. NOT measured: an IFC4.3 road file through our importer (first test when one is in hand).
-| inferred today (IFC2X3 proxies) | read directly in IFC4.3 |
-|---|---|
-| discipline from the file name (CIVIL_DISCS) | object class (IfcPile, IfcCourse, IfcKerb, IfcSign, IfcEarthworksFill) |
-| route by principal axis of ROAD pieces; chainage = nearest route point / drawn-box start | IfcAlignment + IfcReferent stations — exact chainage |
-| build order by inferred section (drive-order corr 0.30) | linear placement along the alignment — order by station |
-| ground treatment from pset text ("PILE EMBANKMENT") | IfcPile attributes; geotechnical strata as objects |
-| road / bridge / earthworks split by file | IfcRoad / IfcBridge / earthworks spatial structure |
-Design rule when it lands: IFC4.3 classes/alignment FIRST, the IFC2X3 inference stays as the fallback (same owners: civilRoutePath,
-civilDriveRoute, discFromFilename, SEQUENCE_CIVIL) — one route owner, two sources, never two pipelines.
-**Lean-code reality (measured 2026-10-06, bim-ootb main):** viewer = 237 JS files, 157,098 lines (excl. lib/ and tests), 256 witnesses;
-largest: effects.js 11,128 · time_machine.js 10,549 · cinema_maxq.js 5,339 · navigate_find.js 5,302 · cpe_load_path.js 4,675. It is NOT lean
-today. The IFC4.3 path is a deletion opportunity (route inference, section filing, file-name discipline become thin fallbacks) — any refactor
-must state lines +/− and keep every witness green (deletion budget, CLAUDE.md AD-LAYER rule 4 applies in spirit).
-**Film script note (next version):** the narration names the achievement honestly — "this film was compiled from the messiest kind of IFC:
-IFC2X3, every piece a generic proxy, meaning only in file names and properties; IFC4.3 brings alignment and real road classes — the same
-compiler then reads instead of infers" — tag: [VALID] for the 2X3 facts, [SPECULATIVE] for 4.3 until a 4.3 file has been run.
-
-### §PRIOR_ART — citable claim wording (Sonnet research agent, 2026-10-06; ~20 searches + 5 page fetches — SHALLOW for several tools)
-**Defensible (state the scope with it):** "In a search of web, vendor docs and academic indexes (Oct 2026), we found no published or
-commercial single browser application that runs local-first with no server and combines ERP document flow, BIM parsing, an auto-generated
-4D schedule, 5D quantities, mesh clash, a road-standards check and film baking." Also defensible: the parts exist separately — the claim is
-about the COMBINATION and the proxy-only inference path (file names + property sets).
-**NOT defensible:** "first" · "only" · "no one has attempted" · "no ERP works offline" (Odoo has an offline mode, short-term only) ·
-"proxy-only IFC2X3 civil is a known industry problem" (no source found) · "Figma is not local-first" (unverified) · any claim that That Open,
-xeokit, Speckle, Trimble, Dalux, Catenda or iTwin LACK 4D/5D/clash (their docs were not checked — absence of evidence only).
-**Closest prior art:** (1) IFClite — fully client-side WASM, IFC2X3/4/4X3/5, clash, IDS validation; no 4D/5D/ERP/film per its docs
-(https://docs.rs/crate/ifc-lite-wasm/4.1.1). (2) MI ERP BIM Suite for Odoo 19 — ERP + BIM + 4D/5D + clash in one product, but IFC parsed
-server-side, Odoo-hosted, xeokit viewer; no film / road checks found (https://apps.odoo.com/apps/modules/19.0/mierp_bim_suite).
-(3) SYNCHRO 4D / Navisworks / Fuzor — mature 4D (SYNCHRO imports IFC2x3 + OpenRoads) but desktop, schedule-driven, no ERP
-(https://www.bentley.com/software/synchro-4d/).
-**Other cited facts:** local-first definition — Kleppmann et al., Onward! 2019, DOI 10.1145/3359591.3359737 (its ideals include multi-device
-sync, so a no-server tab meets only some: offline, privacy, longevity, control) · SQLite WASM + OPFS https://sqlite.org/wasm/doc/trunk/index.md ·
-Odoo offline "not intended to offer full or long-term offline capabilities" https://www.odoo.com/documentation/saas-19.1/applications/general/offline_mode.html ·
-IFC 4.3.2.0 = ISO 16739-1:2024 (road, rail, bridge, tunnel, ports) https://www.buildingsmart.org/ifc-4-3-approved-as-a-final-standard/ ·
-Civil 3D IFC 4.3 extension https://www.autodesk.com/blogs/aec/2023/05/12/whats-new-in-openbim-and-infrastructure-ifc-4-3-for-civil-3d/ ·
-Civil 3D objects must be 3D solids before IFC export (Autodesk help 2025) · auto-4D from IFC without a schedule exists in literature
-(ASCE 2009 https://ascelibrary.com/doi/10.1061/41052%28346%2966 ; 2012 spatial reasoning https://repository.lsu.edu/mechanical_engineering_pubs/1482) ·
-proxy-only models acknowledged (IFCNet arXiv 2106.09712 — class from geometry); none seen uses file names + psets.
-**Priority note:** an OSArch forum post describes web-ifc WASM → in-memory SQLite → three.js, no backend
-(https://community.osarch.org/discussion/comment/29036/) — possibly the user's own; check before citing priority for that stack.
-**Before publishing:** verify the UNVERIFIED rows (APS/Forge, iTwin.js, Trimble Connect, Dalux, Catenda, PGlite/ElectricSQL/PowerSync,
-DuckDB-WASM, JupyterLite, Figma/Linear architecture) from primary docs.
-
-### §SCALE — how large we are, and what breaks as we grow (recorded 2026-10-06, from §LOAD / §J / §MESH_SLIM measurements)
-**Today (road + bridge, before the partner set):** 10,413 elements · DB 661 MB (605 MB = component_geometries; 396 MB after §MESH_SLIM) ·
-22.0 M vertices / 8.5 M triangles · heaviest: 227 lamp poles = 204 MB / 7.6 M verts (~33k verts per pole, flat-shaded facet soup, dup
-ratio 4.8) · load to COMPLETE 36.5 s headless (46.6 s before the roof fix #1867). Partner set adds 9,145 geotech pieces but ~0.26 M verts
-(IfcOpenShell tessellation — a different count basis from the DB).
-**What breaks as we grow, worst first:**
-1. MEMORY CEILING — geometry is never disposed (DLOD saves draw work, not memory: dlod_nav.js :475/:1397); estimate 100 km ≈ ~21 GB →
-   chainage tiles / section streaming (§J). The DB lives whole in the sql.js WASM heap — 32-bit WebAssembly caps at 4 GB (Memory64 lifts it on Chrome/Firefox desktop);
-   the tighter real limit is mobile/Safari per-tab memory (see benchmark context below).
-2. SAVE COST — §KRN_PERSIST rewrites the whole 646 MB DB per op; URL loads > 400 MB skip the IDB cache (§CACHE_WRITE_SKIP_TOO_LARGE) → every
-   reload re-downloads. Grows with size → incremental / delta saves.
-3. LATENT GRID — light_zones 0.5 m grid ≈ 2.8e9 cells / 5.5 GB at this extent if a road model ever carries IfcSlab/IfcWall.
-4. GPU VRAM — 8 GB card; three GPU tenants (user Chrome + bake + headless) crashed the user's tab once (memory feedback).
-5. HEAVY MESH — lamp poles: crease-angle smooth + weld would cut most of their 7.6 M verts (needs spec + look ruling).
-Helps already: §MESH_SLIM (661 → 396 MB), roof layer 10.1 s → 33 ms. IFC4.3 alignment/stations make tiling by station natural (§IFC43).
-Suggested order: section streaming + incremental save BEFORE more features.
-**Benchmark context (Sonnet research agent, 2026-10-06 — partial; anecdotes are NOT benchmarks):**
-- Wasm memory: DuckDB-WASM docs "WebAssembly limits … to 4 GB and browsers may impose even stricter limits"
-  (https://duckdb.org/docs/current/clients/wasm/overview.html). Memory64 ships in Chrome 133+ / Firefox 134+, practical JS cap 16 GB,
-  10 %–100 %+ slower than 32-bit (https://caniuse.com/wf-wasm-memory64 ; https://spidermonkey.dev/blog/2025/01/15/is-memory64-actually-worth-using.html);
-  Safari status UNVERIFIED. → OUR REAL CEILING IS SAFARI/iOS AND CHROME MOBILE (old third-party figures: Chrome mobile ~500–700 MB per tab,
-  Firefox 2 GB, Safari kills the tab instead of failing memory.grow — UNVERIFIED as current), not Chrome desktop.
-- Storage quotas (web.dev, may be dated): Chrome up to 60 % of disk per origin · Firefox 2 GB per eTLD+1 · Safari ~1 GB per origin.
-- xeokit published sample: 5,512 objects / 283,238 triangles, ~2 s over the network from a pre-converted XKT
-  (https://xeokit.io/blog/automatically-splitting-large-models-for-better-performance). Ours: 8.5 M triangles (~30×), 36.5 s full local DB
-  load — load times NOT comparable (compressed network fetch vs whole local DB).
-- Potree streams 597 B points (~1.6 TB) server-backed — a different class (streamed); never on the same axis without labelling it.
-- No published sql.js / SQLite-WASM database as large as our 661 MB was found; no published fps for any viewer → no frame-rate comparison.
-- Chart axes proposed: (1) resident client data MB (log) × triangles rendered (log), hollow markers for streamed; (2) memory-ceiling ladder
-  bars (kvvfs 5 MB · Safari ~1 GB · Firefox 2 GB · Wasm32 4 GB · Memory64 16 GB) with our 661 / 396 MB overlaid; (3) whole-in-memory vs
-  streamed, colour = server needed. Gaps before charting: ThatOpen/xeokit large-model numbers, APS guidance, Photopea app size, official
-  Chrome/Safari per-tab limits, Safari Memory64.
-**How much can we grow (2026-10-06 — ESTIMATES from our own numbers, not measured limits):**
-- GPU: 22 M verts × (12 B position + 12 B normal) ≈ 530 MB + 8.5 M tris × 12 B indices ≈ 100 MB → ~0.6 GB VRAM if everything is uploaded.
-- Desktop (Chrome, 8 GB card): whole-model headroom roughly 5–8× today before VRAM/heap trouble; DB alone up to the 4 GB Wasm cap ≈ 10× the
-  slimmed 396 MB. Mobile (~0.5–0.7 GB per tab, unverified): today's road is ALREADY too big as a whole model.
-- What exists for streaming: `viewer/lib/httpvfs.js` + streaming.js §S260 (`A._useRangeStream`) fetch geometry by HTTP range requests from a
-  URL-served DB — the DB is NOT loaded whole. Gaps: (a) imported/local DBs (IndexedDB) still open whole in the sql.js heap → needs an
-  OPFS-paged SQLite VFS; (b) fetched geometry is never evicted (DLOD disposes nothing) → needs evict-behind; (c) chainage tiles (§J).
-  With (a)+(b)+(c) memory follows the visible WINDOW, not road length → length bounded by storage quota, not RAM. That is the growth path.
-**Developer doc (user 2026-10-06):** the scale chart + these numbers go into a separate doc published for the dev community (§SCALE
-benchmark axes; fill the listed gaps first). Where to publish: OPEN (public docs site via scripts/safe_gh_deploy.sh vs a shared page).
-**Modeller covering civil — DeepSeek's opinion (user-pasted, 2026-10-06), our reading:** agrees with our position — Bonsai/Saikei give IFC4.3
-civil SEMANTICS (IfcAlignment, IfcCourse, IfcRoad as a target schema), not our gap (compliance on messy IFC2X3, browser local-first, mesh-level
-measurement). Its specific claims are UNVERIFIED by us (Bonsai alignment described as a "stop-gap", CSV import; rail-first workflow). Worth
-taking: the IDS gate pattern (write contract → re-open → test → BCF) as the shape of the §MC report; IfcCourse layers as the IFC4.3 target.
-Consistent with the Modeller strategy (memory project_modeller_assemble_handoff_strategy): we do not author roads from scratch — we ASSEMBLE
-and HAND OFF; civil in the Modeller = consume IFC4.3 classes and mould authored objects.
-
-**Status 2026-10-06:** BUILT — bim-ootb PR #1887 (sw v1579, auto-merge). `witness_civil_ref_look.js` GREEN L1/L2/G1/G0:
-Merged.db ground 32.90 → 30.52 m (= sqlite oracle), ROW outline 43,256 segments in #d04fd0, earthworks 0.28 / depthWrite off;
-JELAPANG_AFTER.db (no terrain) p2-bottom 43.46 m unchanged. RED control on main: L1/L2/G1 RED, G0 GREEN. Fleet: 18 DBs, 0 EARTHWORK/ROW rows.
-
-### §MERGE_FOLD_TOPUP — merge into an already-drawn building (2026-10-06)
-Measured RED on main (`witness_merge_fold_refresh.js`, partner-only DB folded into JELAPANG_AFTER.db): Find tree grew 0 of 9,490
-AND 0 of 9,490 folded elements drawn — `added=[]` queues nothing. Fix (scene.js + streaming.js): rows NEW to the live DB
-(`A._mergeNewGuids`) that land in a drawn building are re-queued as a guid-filtered top-up stream (`§MERGE_FOLD_TOPUP kept=`),
-and the open Find tree refreshes at fold end (`§FIND_REFRESH why=merge-fold`). After: GREEN — tree +9,490, 9,490 drawn,
-`guidMap=19903 streamed=19903 orphans=0` (no duplicates).
-Regression: witness_scene_merge_ifc PASS. witness_scene_merge_2026-07-30 already RED on main (3 claims — its Duplex fixture copy
-now holds 21 elements the served copy lacks); with the fix those 21 are drawn (`kept=21`), ~18 s of post-stream passes under
-GPU=sw push its click past 30 s → harness timeout. merge_save_roundtrip / open_split_db_pair: fixtures live in old session
-scratchpads (missing) → not run.
 
 ## §OPEN — known issues not yet worked (each needs its own spec first)
 - **§W.2 centroid vs box — MEASURED 2026-10-05: LIVE BUG in the clash broad phase, buildings too.**
