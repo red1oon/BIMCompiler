@@ -21,7 +21,20 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶▶ NEXT SESSION (2026-10-06 close): the Alt+C road film of CivilWorks.db — start at FILM_NARRATION.md "▶▶ RESUME HERE FIRST".
+## ▶▶ NEXT SESSION — do these in order (user 2026-10-06: "update to go at them in a new session")
+1. **Finish §ALTS_CIVIL_TERRAIN_GROUND** (PHOTOREAL_STILL_RENDER.md): bim-ootb branch `feat/alts-civil-terrain-ground` (pushed, WIP commit, no PR).
+   Run `viewer/tests/witness_alts_terrain_ground.js` — RED control with `ROOT=<worktree at origin/main>`, then on the branch (CivilWorks.db +
+   Duplex). The first runs were INCONCLUSIVE from a harness bug (hard-coded ROOT, fixed on the branch). GREEN → PR + auto-merge.
+2. **BIG CARD 1 prerequisite — GEOTECH × DRAINAGE clash rule:** add the pair to `viewer/clash_rules.json` (civil family; the held D7 from
+   §PARTNER_DISCS — json only, CHAINAGE/ROW get no rule); measure the count on CivilWorks.db (`§CLASH_NARROWPHASE`), witness with a RED
+   control; then the clash-film pick of ONE pile-vs-drain example on the drive route for the card (FILM_NARRATION.md §11.v4.1).
+3. **BIG CARD 2 prerequisite — earthworks volume:** EXTRACT V (m³) from the closed EARTHWORK solid (signed-tetra sum over its triangles;
+   check closedness first, say VACUOUS/INCONCLUSIVE if open); witness against an independent computation (IfcOpenShell / numpy on the same
+   mesh); show it as a ground-card line; duration stays on the red OUTSTANDING card (no cited output rate).
+4. Then the Alt+C film per FILM_NARRATION.md "▶▶ RESUME HERE FIRST" + §11.v4/v4.1 — bake only on the user's go.
+Also open: bim-ootb `test/scene-merge-witness-selfconsistent` (pushed, NOT run) — run witness_scene_merge_2026-07-30, PR if green.
+
+## ▶▶ (2026-10-06 close) the Alt+C road film of CivilWorks.db — start at FILM_NARRATION.md "▶▶ RESUME HERE FIRST".
 All of today's viewer work is merged + live (bim-ootb #1887–#1895, sw v1589). Canonical model: `~/Downloads/JALAN JELAPANG IFC/CivilWorks.db`
 (fresh import; Merged.db kept as the merged-route comparison; JELAPANG_AFTER.db was removed by the user — witnesses that default to it now need
 `BLD=`/`JELAPANG=` pointed at JELAPANG.db / Merged.db / CivilWorks.db). Superseded IFCs moved to `IFC_SUPERSEDED/`. Still open (queue below):
