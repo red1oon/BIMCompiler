@@ -64,7 +64,11 @@ const server = http.createServer((q, r) => {
   if (logs.find(t => t.startsWith('§AD-PROC-LIVE proc=310'))) fail('proc 310 dispatched DESPITE missing mandatory');
   const errTxt = await pg.$eval('.idmp-procform .err', e => e.textContent).catch(() => '');
   if (!errTxt.includes('C_AcctSchema_ID')) fail('reject error not shown on-screen');
-  await pg.fill('[data-proc-param="C_AcctSchema_ID"]', '101');   // real c_acctschema row (GardenWorld US/A/USD)
+  // FS-9 (prompts/ERP_FIRST_SETUP_GUIDE.md §FS2i): the TableDir param is now a <select> (MLookupFactory TableDir);
+  // pick by value when it is one, type when it is still a text box — the same real row either way.
+  const acTag = await pg.$eval('[data-proc-param="C_AcctSchema_ID"]', e => e.tagName).catch(() => '');
+  if (acTag === 'SELECT') await pg.selectOption('[data-proc-param="C_AcctSchema_ID"]', '101');
+  else await pg.fill('[data-proc-param="C_AcctSchema_ID"]', '101');   // real c_acctschema row (GardenWorld US/A/USD)
   await pg.click('button[data-proc-run]');
   await pg.waitForSelector('.idmp-procresult', { timeout: 8000 }).catch(() => fail('no result card for proc 310'));
   const l310 = logs.find(t => t.startsWith('§AD-PROC-LIVE proc=310'));

@@ -345,656 +345,141 @@
     });
   }
 
-  // ── §CRUD-CALLOUT (S2/J4) — fire the PROVEN AD callout engine (ad_callout.js, W-CALLOUT) on a create-form
-  // field change so price/defaults FILL like iDempiere, instead of being hand-typed. The dispatch + the line
-  // handlers (amt/qty/product) are the ENGINE's; the W-CALLOUT witness PINS installDefaultHandlers at 6, so the
-  // header bPartner default is registered HERE as HOST GLUE (not in the engine) — a faithful CalloutOrder.bPartner
-  // slice: bill-to defaults to the order BP, the price list from that BP. The accessors (bpDefaults/productPrice)
-  // read the immutable bundle (the real join), never invent. NON-INVENT: the callout NAME + the field it fires on
-  // are AD data (ad_column.callout); every derived value traces to a bundle row.
-  // ══ §CALLOUT-CAMPAIGN (prompts/AGENT_QUEUE.md §CC.3) — the three PL/pgSQL functions iDempiere's OWN
-  // callout SQL calls, ported. They are here, not inside a handler, because CalloutPayment.invoice and
-  // CalloutPayment.amounts both call the same open-amount rule and a second implementation of one rule is
-  // the defect class this lane already paid for (§IC.2 item 4).
-  function _q1(b3, sql) {
-    var args = Array.prototype.slice.call(arguments, 2);
-    try { var st = b3.prepare(sql); return st.get.apply(st, args) || null; } catch (er) { return null; }
-  }
-  function _qAll(b3, sql) {
-    var args = Array.prototype.slice.call(arguments, 2);
-    try { var st = b3.prepare(sql); return st.all.apply(st, args) || []; } catch (er) { return []; }
-  }
-  // FS-6 (§FS2e) — the document header a line callout reads: the raw bundle row, else (a header created this
-  // session, synthetic id) the window context APP._winCtx = the folded parent row (idempiere.html _winCtxFor),
-  // accepted only when its own key IS this id (never a stale window). Returns lower-case fields + source.
-  function _fs6Header(b3, table, id) {
-    var dcol = table === 'c_invoice' ? 'dateinvoiced' : 'dateordered';
-    var cols = 'm_pricelist_id, ' + dcol + ' AS date, ad_org_id, ad_client_id, c_bpartner_location_id, issotrx, m_warehouse_id' +
-               (table === 'c_order' ? ', bill_location_id, deliveryviarule' : '');
-    var row = _q1(b3, 'SELECT ' + cols + ' FROM ' + table + ' WHERE ' + table + '_id=?', Number(id));
-    if (row) { row.source = 'bundle'; return row; }
-    var w = (global.APP && global.APP._winCtx) || null;
-    if (!w || String(w[table + '_id']) !== String(id)) return null;
-    return { m_pricelist_id: w.m_pricelist_id, date: w[dcol], ad_org_id: w.ad_org_id, ad_client_id: w.ad_client_id,
-             c_bpartner_location_id: w.c_bpartner_location_id, issotrx: w.issotrx, m_warehouse_id: w.m_warehouse_id,
-             bill_location_id: w.bill_location_id, deliveryviarule: w.deliveryviarule, source: 'window-ctx' };
-  }
-  // FS-6 — Tax.getProduct (Tax.java:475-560) + Tax.get (Tax.java:740-854), transcribed. Returns {taxId, rule, note}
-  // or {taxId:null, note} (iDempiere then leaves C_Tax_ID unset and raises a status event — CalloutOrder.java:981-984).
-  // NOT ported, named: country GROUPS (a tax carrying one is skipped and counted), postal taxes (the seed's C_Tax has
-  // no IsPostal column), MLocation(0)'s default-country fallback (a header without a location derives no tax).
-  function _fs6Tax(b3, pid, h) {
-    var n = function (v) { return Number(v) || 0; };
-    var shipLoc = n(h.c_bpartner_location_id), billLoc = n(h.bill_location_id) || shipLoc;          // CalloutOrder :946-967
-    if (!shipLoc) return { taxId: null, note: 'no C_BPartner_Location_ID on the header (CalloutOrder.tax :948 → amt only)' };
-    var isSO = String(h.issotrx || 'Y').toUpperCase() === 'Y';
-    var g = _q1(b3, 'SELECT p.c_taxcategory_id AS cat, o.c_location_id AS orgloc, il.c_location_id AS billto, b.istaxexempt AS soex, ' +
-                    'b.ispotaxexempt AS poex, w.c_location_id AS whloc, sl.c_location_id AS shipto FROM m_product p ' +
-                    'JOIN ad_orginfo o ON o.ad_org_id=? JOIN c_bpartner_location il ON il.c_bpartner_location_id=? ' +
-                    'JOIN c_bpartner b ON il.c_bpartner_id=b.c_bpartner_id LEFT JOIN m_warehouse w ON w.m_warehouse_id=? ' +
-                    'JOIN c_bpartner_location sl ON sl.c_bpartner_location_id=? WHERE p.m_product_id=?',
-                    n(h.ad_org_id), billLoc, n(h.m_warehouse_id), shipLoc, pid);
-    if (!g) return { taxId: null, note: 'TaxCriteriaNotFound (product/org-info/BP-location join empty, Tax.java:565-600)' };
-    if (String((isSO ? g.soex : g.poex) || 'N').toUpperCase() === 'Y') {                           // :520-524 getExemptTax
-      var ex = _q1(b3, "SELECT t.c_tax_id AS id FROM c_tax t JOIN ad_org o ON t.ad_client_id=o.ad_client_id " +
-                       "WHERE upper(t.istaxexempt)='Y' AND o.ad_org_id=? AND upper(t.isactive)='Y' ORDER BY t.rate DESC LIMIT 1", n(h.ad_org_id));
-      return ex ? { taxId: ex.id, rule: 'exempt' } : { taxId: null, note: 'TaxNoExemptFound' };
-    }
-    var billFrom = n(g.orgloc), billTo = n(g.billto);
-    if (!isSO) { var t0 = billFrom; billFrom = billTo; billTo = t0; }                                // :530-538
-    else if (String(h.deliveryviarule || '') === 'P') billTo = n(g.whloc);                          // :539-542
-    var loc = function (id) { return id ? (_q1(b3, 'SELECT c_country_id AS c, c_region_id AS r FROM c_location WHERE c_location_id=?', id) || null) : null; };
-    var lf = loc(billFrom), lt = loc(billTo);
-    if (!lf || !lt) return { taxId: null, note: 'bill-from/to location missing (MLocation(0) default-country fallback not ported)' };
-    var cli = (global.APP && global.APP.clientId != null) ? n(global.APP.clientId) : n(h.ad_client_id);
-    // MTax.getAll (MTax.java:78-82): own client, active, Postgres ORDER BY ... ASC → NULLS LAST, ValidFrom DESC.
-    var nl = function (c) { return '(' + c + ' IS NULL), ' + c; };
-    var taxes = _qAll(b3, "SELECT * FROM c_tax WHERE ad_client_id=? AND upper(isactive)='Y' ORDER BY " +
-                [nl('c_countrygroupfrom_id'), nl('c_country_id'), nl('c_region_id'), nl('c_countrygroupto_id'), nl('to_country_id'), nl('to_region_id')].join(', ') +
-                ', validfrom DESC', cli);
-    var lc = function (t) { var o = {}; for (var k in t) o[String(k).toLowerCase()] = t[k]; return o; };
-    var date = String(h.date || '').slice(0, 10) || new Date().toISOString().slice(0, 10), groups = 0;
-    var okType = function (t) { var s = String(t.sopotype || 'B'); return !(isSO && s === 'P') && !(!isSO && s === 'S'); };
-    for (var i = 0; i < taxes.length; i++) {
-      var t = lc(taxes[i]);
-      if (n(t.c_taxcategory_id) !== n(g.cat) || n(t.parent_tax_id) !== 0 || !okType(t)) continue;
-      if (n(t.c_countrygroupfrom_id) || n(t.c_countrygroupto_id)) { groups++; continue; }
-      if ((n(t.c_country_id) === n(lf.c) || !n(t.c_country_id)) && (n(t.c_region_id) === n(lf.r) || !n(t.c_region_id)) &&
-          (n(t.to_country_id) === n(lt.c) || !n(t.to_country_id)) && (n(t.to_region_id) === n(lt.r) || !n(t.to_region_id)) &&
-          String(t.validfrom || '').slice(0, 10) <= date)
-        return { taxId: t.c_tax_id, rule: 'match', note: 'cat=' + g.cat + ' from=' + lf.c + '/' + (lf.r || 0) + ' to=' + lt.c + '/' + (lt.r || 0) + (groups ? ' skippedCountryGroup=' + groups : '') };
-    }
-    for (var j = 0; j < taxes.length; j++) {                                                         // :829-842 default tax
-      var d = lc(taxes[j]);
-      if (String(d.isdefault || 'N').toUpperCase() !== 'Y' || n(d.parent_tax_id) !== 0 || !okType(d)) continue;
-      return { taxId: d.c_tax_id, rule: 'default', note: 'cat=' + g.cat };
-    }
-    return { taxId: null, note: 'TaxNotFound cat=' + g.cat };
-  }
-  function _round(x, p) { var f = Math.pow(10, p == null ? 2 : p); return Math.round((Number(x) || 0) * f + (Number(x) < 0 ? -1e-9 : 1e-9)) / f; }
-  function _day(v) { var t = Date.parse(String(v || '')); return isNaN(t) ? null : Math.floor(t / 86400000); }
-  // MConversionRate.getRate (MConversionRate.java:229-280), transcribed including its ORDER BY.
-  function _rate(b3, from, to, when, convType) {
-    if (!Number(from) || !Number(to)) return null;
-    if (Number(from) === Number(to)) return 1;
-    var d = String(when || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
-    var sql = 'SELECT multiplyrate FROM c_conversion_rate WHERE c_currency_id=? AND c_currency_id_to=?' +
-              (Number(convType) ? ' AND c_conversiontype_id=' + Number(convType) : '') +
-              " AND date(?) BETWEEN date(validfrom) AND date(validto) AND upper(isactive)='Y'" +
-              ' ORDER BY ad_client_id DESC, ad_org_id DESC, validfrom DESC LIMIT 1';
-    var r = _q1(b3, sql, Number(from), Number(to), d);
-    return r && r.multiplyrate != null ? Number(r.multiplyrate) : null;
-  }
-  // invoiceopen(C_Invoice_ID, C_InvoicePaySchedule_ID) — db/postgresql/functions/C_Invoice_Open.sql, plus
-  // the C_Invoice_v multipliers it reads (migration iD12/.../202404301200_IDEMPERIE-5329.sql):
-  //   Multiplier   = charat(DocBaseType,3)='C' ? -1 : 1   (a credit memo negates)
-  //   MultiplierAP = charat(DocBaseType,2)='P' ? -1 : 1   (an AP document negates the allocation)
-  //   GrandTotal   = the invoice GrandTotal x Multiplier, or SUM(ips.DueAmt x Multiplier) when the
-  //                  invoice carries a VALID pay schedule (the view's second UNION branch)
-  // Open = GrandTotal - SUM over active allocation lines of (Amount+Discount+WriteOff) x MultiplierAP,
-  // each converted into the INVOICE's currency at the allocation's own DateTrx; sub-1/10^precision -> 0.
-  function _invoiceOpen(b3, invId) {
-    var i = _q1(b3, 'SELECT i.grandtotal, i.c_currency_id, i.ispayschedulevalid, d.docbasetype ' +
-                    'FROM c_invoice i JOIN c_doctype d ON d.c_doctype_id=i.c_doctype_id WHERE i.c_invoice_id=?', invId);
-    if (!i) return null;
-    var base = String(i.docbasetype || '');
-    var mulCM = base.charAt(2) === 'C' ? -1 : 1, mulAP = base.charAt(1) === 'P' ? -1 : 1;
-    var total;
-    if (String(i.ispayschedulevalid || '').toUpperCase() === 'Y') {
-      var sc = _q1(b3, "SELECT SUM(dueamt) AS s FROM c_invoicepayschedule WHERE c_invoice_id=? AND upper(isvalid)='Y'", invId);
-      total = Number((sc && sc.s) || 0) * mulCM;
-    } else total = Number(i.grandtotal || 0) * mulCM;
-    var cur = Number(i.c_currency_id || 0);
-    var pc = _q1(b3, 'SELECT stdprecision FROM c_currency WHERE c_currency_id=?', cur);
-    var prec = pc ? Number(pc.stdprecision) : 2;
-    var paid = 0;
-    _qAll(b3, "SELECT al.amount, al.discountamt, al.writeoffamt, a.c_currency_id, a.datetrx " +
-              "FROM c_allocationline al JOIN c_allocationhdr a ON a.c_allocationhdr_id=al.c_allocationhdr_id " +
-              "WHERE al.c_invoice_id=? AND upper(a.isactive)='Y'", invId).forEach(function (a) {
-      var t = (Number(a.amount || 0) + Number(a.discountamt || 0) + Number(a.writeoffamt || 0)) * mulAP;
-      var rt = _rate(b3, Number(a.c_currency_id || 0), cur, a.datetrx, 0);
-      paid += (rt == null ? t : _round(t * rt, prec));      // currencyConvert(); same currency -> rate 1
-    });
-    var open = total - paid;
-    var min = Math.pow(10, -prec);
-    if (open > -min && open < min) open = 0;
-    return { open: _round(open, prec), currencyId: cur, precision: prec, docBaseType: base };
-  }
-  // invoicediscount(C_Invoice_ID, PayDate, C_InvoicePaySchedule_ID) — C_Invoice_Discount.sql, which tail-calls
-  // paymenttermDiscount (C_PaymentTerm_Discount.sql). Both transcribed; nothing approximated.
-  function _invoiceDiscount(b3, invId, payDate) {
-    var i = _q1(b3, 'SELECT i.grandtotal, i.totallines, i.c_paymentterm_id, i.dateinvoiced, i.c_currency_id, ' +
-                    'i.ispayschedulevalid, ci.isdiscountlineamt FROM c_invoice i ' +
-                    'LEFT JOIN ad_clientinfo ci ON ci.ad_client_id=i.ad_client_id WHERE i.c_invoice_id=?', invId);
-    if (!i) return 0;
-    var amount;
-    if (String(i.isdiscountlineamt || '').toUpperCase() === 'Y') {
-      var l = _q1(b3, "SELECT COALESCE(SUM(l.linenetamt),0) AS s FROM c_invoiceline l " +
-                      "LEFT JOIN c_charge c ON c.c_charge_id=l.c_charge_id " +
-                      "WHERE l.c_invoice_id=? AND COALESCE(upper(c.isexcludedfromdiscount),'N')='N'", invId);
-      amount = Number((l && l.s) || 0);
-    } else amount = Number(i.grandtotal || 0);
-    if (amount === 0) return 0;
-    var pay = _day(payDate) != null ? _day(payDate) : _day(new Date().toISOString());
-    var pt = _q1(b3, 'SELECT discount, discountdays, gracedays, discount2, discountdays2, isnextbusinessday ' +
-                     'FROM c_paymentterm WHERE c_paymentterm_id=?', Number(i.c_paymentterm_id || 0));
-    var doc = _day(i.dateinvoiced);
-    if (!pt || doc == null) return 0;                                   // "No Data - No Discount"
-    var pc = _q1(b3, 'SELECT stdprecision FROM c_currency WHERE c_currency_id=?', Number(i.c_currency_id || 0));
-    var prec = pc ? Number(pc.stdprecision) : 2, disc = 0;
-    var d1 = doc + Number(pt.discountdays || 0) + Number(pt.gracedays || 0);
-    var d2 = doc + Number(pt.discountdays2 || 0) + Number(pt.gracedays || 0);
-    // nextBusinessDay(): only shifts a discount DATE, and in ad_seed.db every term carrying a non-zero
-    // Discount has IsNextBusinessDay='N' (verified), so it cannot change a value here. Named, not silently
-    // skipped, because on another dataset it could.
-    if (d1 >= pay) disc = amount * Number(pt.discount || 0) / 100;
-    else if (d2 >= pay) disc = amount * Number(pt.discount2 || 0) / 100;
-    var min = Math.pow(10, -prec);
-    if (disc > -min && disc < min) disc = 0;
-    return _round(disc, prec);
-  }
-  function _invoicePayInfo(b3, invId, payDate) {
-    var i = _q1(b3, 'SELECT c_bpartner_id, c_currency_id, issotrx FROM c_invoice WHERE c_invoice_id=?', invId);
-    if (!i) return null;
-    var o = _invoiceOpen(b3, invId);
-    if (!o) return null;
-    return { bpartnerId: i.c_bpartner_id, currencyId: o.currencyId, issotrx: i.issotrx,
-             open: o.open, precision: o.precision, discount: _invoiceDiscount(b3, invId, payDate) };
-  }
-  var _calloutHostReady = false;
-  function _ensureHostCallouts() {
-    if (_calloutHostReady || !global.AdCallout) return;
-    _calloutHostReady = true;
-    // §CALLOUT-CAMPAIGN — MEASURED DEFECT, found by running the coverage claim rather than reading it:
-    // NOTHING in this app ever called AdCallout.installDefaultHandlers(). idempiere.html:2319 installs
-    // AdProcess's, never AdCallout's, so the SIX engine line callouts — CalloutOrder.amt/qty/product and
-    // CalloutInvoice.amt/qty/product, 25 of the 78 bindings on the nine document tables — had never fired
-    // in the browser. The comment below ("the line handlers are the ENGINE's") assumed they were live;
-    // §IC.3's "28 dispatch = 36%" was that same paper assumption. LIVE dispatch was 3 of 78 = 4%.
-    // One line, and it is the single largest coverage move in this campaign.
-    if (typeof global.AdCallout.installDefaultHandlers === 'function') {
-      global.AdCallout.installDefaultHandlers();
-      console.log('§CRUD-CALLOUT engine handlers installed (' + global.AdCallout.registeredNames().length + ' atoms) — they were never installed before this line');
-    }
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutOrder.bPartner')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutOrder.bPartner', function (ctx, info) {
-        var r = info.record || {};
-        var bp = Number(r.C_BPartner_ID || r.c_bpartner_id || 0); if (!bp) return { derived: {} };
-        var d = {};
-        var billNow = Number(r.Bill_BPartner_ID || r.bill_bpartner_id || 0);
-        if (!billNow) d.Bill_BPartner_ID = bp;                              // bill-to defaults to the order BP
-        var pl = ctx.bpDefaults ? ctx.bpDefaults(bp) : null;               // price list from the BP (SO)
-        if (pl && pl.priceListId != null && pl.priceListId !== '') d.M_PriceList_ID = pl.priceListId;
-        return { derived: d, note: 'bill+pricelist defaulted from BP ' + bp };
-      });
-      console.log('§CRUD-CALLOUT host bPartner handler registered (CalloutOrder.bPartner — bill+pricelist default; engine handlers untouched)');
-    }
-    // §INOUT-CALLOUTS (prompts/AGENT_QUEUE.md §INOUT-CALLOUTS, §ERP-SESSION-CLOSE §CLOSE.4 item 3) — the two
-    // atoms §CLOSE.4 named as "half-built and forced". Both are AD data: ad_column.callout declares
-    // CalloutInOut.bpartner on M_InOut.C_BPartner_ID and CalloutInOut.docType on M_InOut.C_DocType_ID
-    // (queried from ad_seed.db, not assumed). Registered as HOST GLUE for the same reason CalloutOrder.bPartner
-    // is: they need the bundle, and W-CALLOUT PINS the engine's installDefaultHandlers at 6 pure atoms.
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutInOut.bpartner')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutInOut.bpartner', function (ctx, info) {
-        // Java home (EXTRACT, do NOT invent) — CalloutInOut.bpartner (CalloutInOut.java:264-333):
-        //   its whole field-setting body is inside `if (!IsSOTrx)` (:291) — the RECEIPT side. It sets
-        //   C_BPartner_Location_ID = (select max(l.C_BPartner_Location_ID) … where IsActive='Y') (:274,:294-298)
-        //   and AD_User_ID = ShipTo_User_ID when > 0 else max(active AD_User) (:275-276, :300-307).
-        //   The IsSOTrx branch (:311-320) only fires a CreditLimitOver STATUS EVENT — a UI notification, not a
-        //   field — so it is NAMED-DEFERRED, never silently skipped.
-        // This is the atom that makes a Material Receipt create stop needing C_BPartner_Location_ID typed by
-        // hand (witness_p2p_invoice_match had to type 114 explicitly, with a comment saying real iDempiere
-        // defaults it via this very callout).
-        var r = info.record || {};
-        var bp = Number(r.C_BPartner_ID || r.c_bpartner_id || 0);
-        if (!bp) return { derived: {} };
-        // IsSOTrx is not a field on this form; the per-window signal is MovementType (§Fix 2's own finding —
-        // the M_InOut AD_Tab family splits Shipment 'C-' vs Receipt 'V+' by MovementType, never IsSOTrx).
-        // Read the record first, then that window signal — the same precedence _docCtx uses.
-        var so = null;
-        if (r.IsSOTrx != null || r.issotrx != null) so = String(r.IsSOTrx != null ? r.IsSOTrx : r.issotrx).toUpperCase() === 'Y';
-        if (so == null) { var mt = String((global.APP && global.APP._createMovementType) || r.MovementType || r.movementtype || ''); if (/^[A-Z][+-]$/.test(mt)) so = mt.charAt(0) === 'C'; }
-        if (so === true) return { derived: {}, deferred: ['CreditLimitOver (fireDataStatusEEvent — a UI status event, not a field)'] };
-        var bpd = ctx.bpShipDefaults ? ctx.bpShipDefaults(bp) : null;
-        if (!bpd) return { derived: {}, note: 'no c_bpartner row for ' + bp };
-        var d = {};
-        if (bpd.locationId != null) d.C_BPartner_Location_ID = bpd.locationId;
-        if (bpd.userId != null) d.AD_User_ID = bpd.userId;
-        return { derived: d, note: 'receipt-side location/contact defaulted from BP ' + bp };
-      });
-      console.log('§CRUD-CALLOUT host CalloutInOut.bpartner registered (receipt-side C_BPartner_Location_ID + AD_User_ID default; the SO credit-limit branch is a status event, named-deferred)');
-    }
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutInOut.docType')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutInOut.docType', function (ctx, info) {
-        // Java home (EXTRACT, do NOT invent) — CalloutInOut.docType (CalloutInOut.java:191-262): reads the
-        // chosen C_DocType's DocBaseType + IsSOTrx, sets IsSOTrx from the doctype when they differ (:214-227)
-        // and MovementType = MInOut.getMovementType(ctx, C_DocType_ID, IsSOTrx, null) (:229).
-        // getMovementType IS ALREADY PORTED, verbatim, as erp_engine.movementTypeOf(docBaseType, issotrx)
-        // (erp_engine.js:302-309) — landed for E-4/stockMoves. This atom calls it; it does not re-derive it
-        // (§CLOSE.4's own words: "its body sets MovementType via the very rule E-4 already ported").
-        // The DocumentNo re-preview branch (:231-258) is NAMED-DEFERRED: _seedDocNoPreview/_previewDocNo
-        // already own DocumentNo-from-sequence on this form, and two writers to one field is the defect.
-        var r = info.record || {};
-        var dt = Number(r.C_DocType_ID || r.c_doctype_id || 0);
-        if (!dt) return { derived: {} };
-        var info2 = ctx.docTypeInfo ? ctx.docTypeInfo(dt) : null;
-        if (!info2) return { derived: {}, note: 'no c_doctype row for ' + dt };
-        var E = global.ERPEngine;
-        if (!E || typeof E.movementTypeOf !== 'function')
-          return { derived: {}, deferred: ['MovementType (erp_engine.movementTypeOf absent — never re-derived here)'] };
-        var d = {}, deferred = [];
-        var mt = E.movementTypeOf(info2.docBaseType, info2.issotrx);
-        if (mt) d.MovementType = mt; else deferred.push('MovementType (DocBaseType ' + info2.docBaseType + ' is not MMS/MMR — getMovementType returns null)');
-        // IsSOTrx is carried too (the Java sets it), even though M_InOut's create form declares no IsSOTrx
-        // field, so nothing applies it today — MOrder/MInOut beforeSave own that column. Derived, not dropped.
-        if (info2.issotrx === 'Y' || info2.issotrx === 'N') d.IsSOTrx = info2.issotrx;
-        deferred.push('DocumentNo re-preview (:231-258 — _seedDocNoPreview already owns this field)');
-        return { derived: d, deferred: deferred, note: 'DocBaseType ' + info2.docBaseType + ' IsSOTrx ' + info2.issotrx + ' -> MovementType ' + mt };
-      });
-      console.log('§CRUD-CALLOUT host CalloutInOut.docType registered (MovementType via erp_engine.movementTypeOf — the E-4 port, not a second derivation)');
-    }
-    // ══ §CALLOUT-CAMPAIGN (prompts/AGENT_QUEUE.md §CC.2/§CC.3) — E-1's ranked gap, worked ═══════════════
-    // §IC.3 measured 78 callout bindings on the nine document tables the app drives, 28 dispatching (36%).
-    // These eight handlers + the engine's CalloutEngine.dateAcct take that to 51/78 (65%). Every one is a
-    // faithful port of the named Java (line numbers per handler); every value it emits comes from a bundle
-    // row. NOT in this batch, deliberately: CalloutOrder.docType — §IC.3 names it as a SECOND writer to
-    // IsSOTrx, which MOrder.issotrxFromWindow (§K2RB.5) already owns at beforeSave.
-    var _cc = {
-      n: function (r, k) { var v = r[k]; if (v == null) v = r[String(k).toLowerCase()]; return Number(v || 0); },
-      s: function (r, k) { var v = r[k]; if (v == null) v = r[String(k).toLowerCase()]; return v == null ? '' : String(v); },
-      // round-half-up to `p` decimals, the BigDecimal.setScale(p, HALF_UP) the Java uses everywhere
-      sc: function (x, p) { var f = Math.pow(10, p == null ? 2 : p); return Math.round((Number(x) || 0) * f + (Number(x) < 0 ? -1e-9 : 1e-9)) / f; }
-    };
-    // ── CalloutInOut.orderLine (CalloutInOut.java:412-461) — the receipt LINE atom §IC.3 ranked for the
-    //    P2P chain: after picking the PO line, the four fields witness_p2p_invoice_match still types by
-    //    hand (m_product_id, c_uom_id, movementqty, qtyentered) are already filled.
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutInOut.orderLine')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutInOut.orderLine', function (ctx, info) {
-        var r = info.record || {}, olId = _cc.n(r, 'C_OrderLine_ID');
-        if (!olId) return { derived: {} };
-        var ol = ctx.orderLineRow ? ctx.orderLineRow(olId) : null;
-        if (!ol) return { derived: {}, note: 'no c_orderline row for ' + olId };
-        var d = {};
-        // :421-431 — a CHARGE line and a PRODUCT line are exclusive; each clears the other.
-        if (Number(ol.c_charge_id || 0) > 0 && Number(ol.m_product_id || 0) <= 0) {
-          d.C_Charge_ID = ol.c_charge_id; d.M_Product_ID = null; d.M_AttributeSetInstance_ID = null;
-        } else {
-          d.M_Product_ID = ol.m_product_id; d.M_AttributeSetInstance_ID = ol.m_attributesetinstance_id; d.C_Charge_ID = null;
-        }
-        d.C_UOM_ID = ol.c_uom_id;
-        // :434-443 — MovementQty = QtyOrdered - QtyDelivered, then MINUS what this same receipt already
-        // took against this order line (IDEMPIERE-1140). The running sum is a real query, not an estimate.
-        var mv = Number(ol.qtyordered || 0) - Number(ol.qtydelivered || 0);
-        var run = ctx.inoutRunningQty ? ctx.inoutRunningQty(_cc.n(r, 'M_InOut_ID'), olId) : null;
-        if (run != null) mv = mv - Number(run);
-        d.MovementQty = mv;
-        // :444-448 — QtyEntered is pro-rated by the order line's own entered:ordered ratio (a different UOM)
-        var qe = mv, qo = Number(ol.qtyordered || 0), qen = Number(ol.qtyentered || 0);
-        if (qo !== 0 && qen !== qo) qe = _cc.sc(mv * qen / qo, 12);
-        d.QtyEntered = qe;
-        // :450-459 — the accounting dimensions ride along, verbatim
-        ['c_activity_id', 'c_campaign_id', 'c_project_id', 'c_projectphase_id', 'c_projecttask_id',
-         'ad_orgtrx_id', 'user1_id', 'user2_id', 'c_costcenter_id', 'c_department_id'].forEach(function (c) {
-          if (Object.prototype.hasOwnProperty.call(ol, c)) d[c.replace(/(^|_)([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); })] = ol[c];
-        });
-        return { derived: d, note: 'order line ' + olId + ' ordered=' + qo + ' delivered=' + Number(ol.qtydelivered || 0) + ' running=' + (run == null ? 'none' : run) };
-      });
-      console.log('§CRUD-CALLOUT host CalloutInOut.orderLine registered (product/uom/qty from the PO line, MovementQty net of this receipt s running qty)');
-    }
-    // ── CalloutInOut.product (CalloutInOut.java:522-568) — the fifth hand-typed field, M_Locator_ID.
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutInOut.product')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutInOut.product', function (ctx, info) {
-        var r = info.record || {}, pid = _cc.n(r, 'M_Product_ID');
-        if (!pid) return { derived: {} };
-        var d = { M_AttributeSetInstance_ID: 0 };                       // :542 — the else branch of the ASI carry
-        // :544-549 — the ENTIRE rest of the body is `if (IsSOTrx) return;`. On a LINE form IsSOTrx is not a
-        // field; the header is. Read the parent M_InOut, the same precedence CalloutInOut.bpartner uses.
-        var hdr = ctx.inoutHeader ? ctx.inoutHeader(_cc.n(r, 'M_InOut_ID')) : null;
-        var so = null;
-        if (hdr && (hdr.issotrx === 'Y' || hdr.issotrx === 'N')) so = hdr.issotrx === 'Y';
-        if (so == null && hdr && /^[A-Z][+-]$/.test(String(hdr.movementtype || ''))) so = String(hdr.movementtype).charAt(0) === 'C';
-        if (so === true) return { derived: d, deferred: ['UOM/Locator/Qty defaults (CalloutInOut.java:544-549 — the shipment side returns early)'] };
-        var p = ctx.productRow ? ctx.productRow(pid) : null;
-        if (!p) return { derived: d, note: 'no m_product row for ' + pid };
-        d.C_UOM_ID = p.c_uom_id;                                        // :553
-        d.MovementQty = _cc.n(r, 'QtyEntered');                         // :554-555
-        // :558-566 — the product's default locator, but ONLY when it belongs to this receipt's warehouse.
-        var loc = Number(p.m_locator_id || 0);
-        if (loc) {
-          var lw = ctx.locatorWarehouse ? ctx.locatorWarehouse(loc) : null;
-          if (hdr && lw != null && Number(lw) === Number(hdr.m_warehouse_id)) d.M_Locator_ID = loc;
-          else return { derived: d, note: 'No Locator for M_Product_ID=' + pid + ' and M_Warehouse_ID=' + (hdr ? hdr.m_warehouse_id : '?') };
-        }
-        return { derived: d, note: 'receipt-side uom/qty/locator from product ' + pid };
-      });
-      console.log('§CRUD-CALLOUT host CalloutInOut.product registered (C_UOM_ID + MovementQty + the warehouse-matched default M_Locator_ID)');
-    }
-    // ── CalloutInOut.qty (CalloutInOut.java:582-680) — the five-branch QtyEntered <-> MovementQty tree.
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutInOut.qty')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutInOut.qty', function (ctx, info) {
-        var r = info.record || {}, col = String(info.column || '').toLowerCase();
-        var pid = _cc.n(r, 'M_Product_ID'), uom = _cc.n(r, 'C_UOM_ID');
-        var qe = _cc.n(r, 'QtyEntered'), mq = _cc.n(r, 'MovementQty'), d = {}, dfr = [];
-        var prec = function (u) { var p = ctx.uomPrecision ? ctx.uomPrecision(u) : null; return p == null ? 0 : Number(p); };
-        // MUOMConversion.convertProductFrom/To. ad_seed.db carries NO m_uom_conversion table (verified);
-        // the Java's own contract is "null when there is no conversion", and every caller below then falls
-        // back to the unconverted quantity (:642-643, :668-669). The port takes that documented null path
-        // rather than inventing a factor — if the table ever ships, the accessor answers and this goes live.
-        var conv = function (dir, q) { var v = ctx.uomConvertProduct ? ctx.uomConvertProduct(pid, uom, q, dir) : null; return v == null ? null : Number(v); };
-        if (!pid) { d.MovementQty = qe; return { derived: d, note: 'no product — MovementQty follows QtyEntered (:592-596)' }; }
-        if (col === 'c_uom_id') {                                       // :598-620
-          var q1 = _cc.sc(qe, prec(uom)); if (q1 !== qe) { d.QtyEntered = q1; qe = q1; }
-          var m1 = conv('from', qe); d.MovementQty = (m1 == null ? qe : m1);
-          if (m1 == null) dfr.push('UOM conversion (no m_uom_conversion row/table — the Java s own null fallback, :617-618)');
-        } else if (!uom) { d.MovementQty = qe;                          // :622-626
-        } else if (col === 'qtyentered') {                              // :628-651
-          var q2 = _cc.sc(qe, prec(uom)); if (q2 !== qe) { d.QtyEntered = q2; qe = q2; }
-          var m2 = conv('from', qe); d.MovementQty = (m2 == null ? qe : m2);
-          if (m2 == null) dfr.push('UOM conversion (no m_uom_conversion row/table — the Java s own null fallback, :642-643)');
-        } else if (col === 'movementqty') {                             // :653-676
-          var pp = ctx.productUomPrecision ? ctx.productUomPrecision(pid) : null;
-          var m3 = _cc.sc(mq, pp == null ? prec(uom) : Number(pp)); if (m3 !== mq) { d.MovementQty = m3; mq = m3; }
-          var e3 = conv('to', mq); d.QtyEntered = (e3 == null ? mq : e3);
-          if (e3 == null) dfr.push('UOM conversion (no m_uom_conversion row/table — the Java s own null fallback, :668-669)');
-        }
-        return { derived: d, deferred: dfr };
-      });
-      console.log('§CRUD-CALLOUT host CalloutInOut.qty registered (the five-branch QtyEntered/MovementQty tree, UOM-precision scaled)');
-    }
-    // ── CalloutPayment.* (CalloutPayment.java) — the payment screen, 14 of the 50 gap bindings ──────────
-    // docType is the tail call of BOTH invoice and order (:127, :198), so it is a plain function reused here.
-    function _payDocType(ctx, r) {                                       // :241-285
-      var dt = _cc.n(r, 'C_DocType_ID'), d = {}, dfr = [];
-      if (!dt) return { derived: d, deferred: dfr };
-      var i2 = ctx.docTypeInfo ? ctx.docTypeInfo(dt) : null;
-      if (!i2) return { derived: d, note: 'no c_doctype row for ' + dt };
-      d.IsReceipt = (i2.issotrx === 'Y') ? 'Y' : 'N';                    // :271 — mTab.setValue(IsReceipt, ...)
-      // :275-284 — the AP/AR vs SO/PO mismatch returns "PaymentDocTypeInvoiceInconsistent". That is a
-      // VALIDATION (ad_valrule's leg per ad_callout.js's seam header), not a derive: named, never applied.
-      dfr.push('PaymentDocTypeInvoiceInconsistent (:275-284 — a validation, the ad_valrule leg, not a field)');
-      return { derived: d, deferred: dfr };
-    }
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutPayment.docType')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutPayment.docType', function (ctx, info) { return _payDocType(ctx, info.record || {}); });
-      console.log('§CRUD-CALLOUT host CalloutPayment.docType registered (IsReceipt from C_DocType.IsSOTrx; the AP/AR-vs-SO/PO mismatch is named-deferred as a validation)');
-    }
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutPayment.invoice')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutPayment.invoice', function (ctx, info) {  // :57-127
-        var r = info.record || {}, inv = _cc.n(r, 'C_Invoice_ID');
-        if (!inv) return { derived: {} };
-        // :64-70 — an invoice payment is not an order payment and not a charge payment; the reset is the atom
-        var d = { C_Order_ID: null, C_Charge_ID: null, IsPrepayment: 'N', DiscountAmt: 0, WriteOffAmt: 0, OverUnderAmt: 0 };
-        var pay = ctx.invoicePayInfo ? ctx.invoicePayInfo(inv, _cc.s(r, 'DateTrx')) : null;
-        if (!pay) return { derived: d, note: 'no c_invoice row for ' + inv };
-        d.C_BPartner_ID = pay.bpartnerId; d.C_Currency_ID = pay.currencyId;   // :98-101
-        d.PayAmt = _cc.sc(Number(pay.open) - Number(pay.discount), pay.precision);  // :110
-        d.DiscountAmt = pay.discount;                                              // :111
-        var dt = _payDocType(ctx, r);
-        for (var k in dt.derived) if (Object.prototype.hasOwnProperty.call(dt.derived, k)) d[k] = dt.derived[k];
-        return { derived: d, deferred: dt.deferred || [],
-                 note: 'invoice ' + inv + ' open=' + pay.open + ' discount=' + pay.discount + ' -> PayAmt=' + d.PayAmt };
-      });
-      console.log('§CRUD-CALLOUT host CalloutPayment.invoice registered (PayAmt = invoiceOpen - invoiceDiscount, both ported from the PL/pgSQL iDempiere s own SQL calls)');
-    }
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutPayment.order')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutPayment.order', function (ctx, info) {    // :141-198
-        var r = info.record || {}, ord = _cc.n(r, 'C_Order_ID');
-        if (!ord) return { derived: {} };
-        var d = { C_Invoice_ID: null, C_Charge_ID: null, IsPrepayment: 'Y', DiscountAmt: 0, WriteOffAmt: 0,
-                  IsOverUnderPayment: 'N', OverUnderAmt: 0 };                       // :148-155
-        var o = ctx.orderPayInfo ? ctx.orderPayInfo(ord) : null;
-        if (!o) return { derived: d, note: 'no c_order row for ' + ord };
-        d.C_BPartner_ID = o.bpartnerId;                                             // :161 COALESCE(Bill_BPartner_ID, C_BPartner_ID)
-        d.C_Currency_ID = o.currencyId; d.PayAmt = o.grandTotal;                    // :175-183
-        var dt = _payDocType(ctx, r);
-        for (var k in dt.derived) if (Object.prototype.hasOwnProperty.call(dt.derived, k)) d[k] = dt.derived[k];
-        return { derived: d, deferred: dt.deferred || [], note: 'order ' + ord + ' GrandTotal=' + o.grandTotal + ' (prepayment)' };
-      });
-      console.log('§CRUD-CALLOUT host CalloutPayment.order registered (prepayment against a PO/SO: bill-BP, currency, PayAmt = GrandTotal)');
-    }
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutPayment.charge')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutPayment.charge', function (ctx, info) {   // :212-228
-        var r = info.record || {}; if (!_cc.n(r, 'C_Charge_ID')) return { derived: {} };
-        return { derived: { C_Invoice_ID: null, C_Order_ID: null, IsPrepayment: 'N', DiscountAmt: 0,
-                            WriteOffAmt: 0, IsOverUnderPayment: 'N', OverUnderAmt: 0 },
-                 note: 'charge payment — invoice/order and the four amounts reset' };
-      });
-      console.log('§CRUD-CALLOUT host CalloutPayment.charge registered (the reset-only atom)');
-    }
-    if (!global.AdCallout.hasHandler('org.compiere.model.CalloutPayment.amounts')) {
-      global.AdCallout.registerHandler('org.compiere.model.CalloutPayment.amounts', function (ctx, info) {  // :296-618
-        var r = info.record || {}, col = String(info.column || '').toLowerCase(), d = {}, dfr = [];
-        var invId = _cc.n(r, 'C_Invoice_ID'), curId = _cc.n(r, 'C_Currency_ID'), convType = _cc.n(r, 'C_ConversionType_ID');
-        var over = _cc.s(r, 'IsOverUnderPayment').toUpperCase() === 'Y';
-        var prec = ctx.currencyPrecision ? Number(ctx.currencyPrecision(curId) || 2) : 2;
-        // :300-304 — the FIRST thing the Java does: OverUnderAmt is zeroed unless over/under is on.
-        if (col === 'isoverunderpayment' || !over) d.OverUnderAmt = 0;
-        var payAmt = _cc.n(r, 'PayAmt'), disc = _cc.n(r, 'DiscountAmt'), woff = _cc.n(r, 'WriteOffAmt'), ovr = _cc.n(r, 'OverUnderAmt');
-        var baseCur = ctx.baseCurrencyId ? Number(ctx.baseCurrencyId() || 0) : 0;
-        var rate = function (from, to) {
-          if (!from || !to) return null; if (from === to) return 1;
-          var v = ctx.conversionRate ? ctx.conversionRate(from, to, _cc.s(r, 'DateTrx'), convType) : null;
-          return v == null ? null : Number(v);
-        };
-        // :329-360 — CurrencyRate typed: negative is refused (a status event), 0 re-reads the table,
-        // otherwise ConvertedAmt = PayAmt x rate. This branch RETURNS; nothing below runs.
-        if (col === 'currencyrate') {
-          var cr = _cc.n(r, 'CurrencyRate');
-          if (cr < 0) return { derived: {}, deferred: ['negative CurrencyRate refused (:337-342 — fireDataStatusEEvent "Invalid", a UI status event)'] };
-          if (cr === 0) { var b = rate(curId, baseCur); if (b == null) return { derived: {}, note: 'no conversion rate ' + curId + '->' + baseCur }; cr = b; d.CurrencyRate = cr; }
-          d.ConvertedAmt = payAmt * cr;
-          return { derived: d, note: 'ConvertedAmt = PayAmt x CurrencyRate' };
-        }
-        // :361-390 — ConvertedAmt typed: the inverse, CurrencyRate = Converted / PayAmt at 12 dp.
-        if (col === 'convertedamt') {
-          var ca = _cc.n(r, 'ConvertedAmt');
-          if (ca === 0) return { derived: {}, deferred: ['zero ConvertedAmt refused (:366-371 — fireDataStatusEEvent "Invalid")'] };
-          d.CurrencyRate = payAmt !== 0 ? _cc.sc(ca / payAmt, 12) : null;
-          return { derived: d, note: 'CurrencyRate = ConvertedAmt / PayAmt' };
-        }
-        // :392-424 — the invoice's OPEN amount, in the invoice's currency
-        var openAmt = 0, invCur = 0;
-        if (invId) {
-          var pay = ctx.invoicePayInfo ? ctx.invoicePayInfo(invId, _cc.s(r, 'DateTrx')) : null;
-          if (pay) { openAmt = Number(pay.open); invCur = Number(pay.currencyId); }
-        }
-        // :455-478 — convert the open amount into the PAYMENT's currency when they differ
-        if ((curId > 0 && invCur > 0 && curId !== invCur) || col === 'c_currency_id' || col === 'c_conversiontype_id') {
-          var cr2 = rate(invCur, curId);
-          if (cr2 == null || cr2 === 0) {
-            if (invCur === 0) return { derived: d, note: 'no invoice selected — no conversion needed' };
-            return { derived: d, deferred: ['NoCurrencyConversion ' + invCur + '->' + curId + ' (:469-473 — an error return, not a field)'] };
-          }
-          openAmt = _cc.sc(openAmt * cr2, prec);
-        }
-        if (col === 'c_currency_id') {
-          // :480-521 — the currency itself changed: every stored amount is restated. oldValue is not
-          // available on this form's change event, so the OLD currency cannot be read; the Java's own
-          // guard is `if (oldValue != null && oldValue instanceof Integer)` and this is that null path.
-          dfr.push('restate PayAmt/Discount/WriteOff/OverUnder at the old->new rate (:480-521 — needs the field s OLD value, which the create form s change event does not carry)');
-        } else if (invId === 0) {
-          // :522-530 — no invoice, so there is nothing to discount, write off, or over/under
-          if (disc !== 0) d.DiscountAmt = 0;
-          if (woff !== 0) d.WriteOffAmt = 0;
-          if (ovr !== 0) d.OverUnderAmt = 0;
-        } else {
-          var processed = _cc.s(r, 'Processed').toUpperCase() === 'Y';
-          if (col === 'payamt' && !processed && over) {                 // :532-543
-            var ou = openAmt - payAmt - disc - woff;
-            if (ou > 0) { d.DiscountAmt = 0; disc = 0; ou = openAmt - payAmt - disc - woff; }
-            d.OverUnderAmt = _cc.sc(ou, prec);
-          } else if (col === 'payamt' && !processed) {                  // :544-550
-            d.WriteOffAmt = _cc.sc(openAmt - payAmt - disc - ovr, prec);
-          } else if (col === 'isoverunderpayment' && !processed) {      // :551-568
-            if (over) { d.WriteOffAmt = 0; d.OverUnderAmt = _cc.sc(openAmt - payAmt - disc, prec); }
-            else { d.WriteOffAmt = _cc.sc(openAmt - payAmt - disc, prec); d.OverUnderAmt = 0; }
-          } else if (!processed) {                                      // :573-581
-            d.PayAmt = _cc.sc(openAmt - disc - woff - ovr, prec);
-          }
-        }
-        // :584-616 — the base-currency tail: same currency clears the override pair, otherwise it is
-        // recomputed from the rate the user is overriding with.
-        if (col === 'c_currency_id' || col === 'payamt' || col === 'isoverridecurrencyrate') {
-          var ovrCR = _cc.s(r, 'IsOverrideCurrencyRate').toUpperCase() === 'Y';
-          if (baseCur && baseCur === curId) { d.IsOverrideCurrencyRate = 'N'; d.CurrencyRate = null; d.ConvertedAmt = null; }
-          else if (!ovrCR) { d.CurrencyRate = null; d.ConvertedAmt = null; }
-          else if (col === 'payamt') {
-            var bcr = _cc.n(r, 'CurrencyRate'), cvd = _cc.n(r, 'ConvertedAmt');
-            if (!bcr) { if (cvd && payAmt) d.CurrencyRate = _cc.sc(cvd / payAmt, 12); }
-            else d.ConvertedAmt = _cc.sc(payAmt * bcr, ctx.currencyPrecision ? Number(ctx.currencyPrecision(baseCur) || 2) : 2);
-          }
-        }
-        return { derived: d, deferred: dfr, note: 'col=' + col + ' invoiceOpen=' + openAmt + ' payCurrency=' + curId + ' invCurrency=' + invCur };
-      });
-      console.log('§CRUD-CALLOUT host CalloutPayment.amounts registered (the full branch tree: over/under, currency-rate pair, WriteOff/OverUnder/PayAmt against invoiceOpen)');
-    }
-  }
-  function fireCreateCallout(e, changedCol) {
-    if (!global.AdCallout || typeof withBundle !== 'function' || !e || !changedCol) return;
-    _ensureHostCallouts();
-    withBundle(function (bdb) {
-      if (!bdb) return;
-      var b3 = _mvB3(bdb), vals = gatherVals(e);
-      var ctx = {
-        bpDefaults: function (bpId) {
-          try { var row = b3.prepare('SELECT m_pricelist_id FROM c_bpartner WHERE c_bpartner_id=?').get(Number(bpId));
-            return row ? { priceListId: row.m_pricelist_id } : null; } catch (er) { return null; }
-        },
-        // §INOUT-CALLOUTS — the two accessors CalloutInOut.bpartner/.docType need, as the SAME kind of
-        // read-the-real-join helper bpDefaults already is. The SQL is the Java's own, transcribed:
-        //   bpShipDefaults ← CalloutInOut.java:274-276 (max active location; ShipTo user else max active user)
-        //   docTypeInfo    ← CalloutInOut.java:197-201 (DocBaseType + IsSOTrx off C_DocType)
-        bpShipDefaults: function (bpId) {
-          try {
-            var row = b3.prepare(
-              "SELECT (SELECT MAX(l.c_bpartner_location_id) FROM c_bpartner_location l WHERE l.c_bpartner_id=p.c_bpartner_id AND l.isactive='Y') AS loc," +
-              " (SELECT MAX(u.ad_user_id) FROM ad_user u WHERE u.c_bpartner_id=p.c_bpartner_id AND u.isactive='Y' AND u.isshipto='Y') AS shipto," +
-              " (SELECT MAX(u.ad_user_id) FROM ad_user u WHERE u.c_bpartner_id=p.c_bpartner_id AND u.isactive='Y') AS anyuser" +
-              " FROM c_bpartner p WHERE p.c_bpartner_id=?").get(Number(bpId));
-            if (!row) return null;
-            return { locationId: row.loc, userId: (Number(row.shipto) > 0 ? row.shipto : row.anyuser) };
-          } catch (er) { return null; }
-        },
-        docTypeInfo: function (dtId) {
-          try { var row = b3.prepare('SELECT docbasetype, issotrx FROM c_doctype WHERE c_doctype_id=?').get(Number(dtId));
-            return row ? { docBaseType: row.docbasetype, issotrx: row.issotrx } : null; } catch (er) { return null; }
-        },
-        // §CALLOUT-CAMPAIGN — SCOPED, because installing the engine handlers above makes this accessor
-        // LOAD-BEARING for the first time. Its old body took `LIMIT 1` of ANY price-list version carrying
-        // the product, which is the wrong price on any client with more than one price list — harmless
-        // while nothing called it, a wrong VALUE the moment CalloutOrder.product fires. The join is now
-        // the one W-CALLOUT (scripts/poc_callout.js) already proves: through the PARENT document's own
-        // M_PriceList_ID. No parent, no price — it returns null and the handler says so, never guesses.
-        productPrice: function (pid, record) {
-          var r = record || {};
-          var ordId = Number(r.C_Order_ID || r.c_order_id || 0), invId = Number(r.C_Invoice_ID || r.c_invoice_id || 0);
-          var sql = null, key = 0;
-          if (ordId) { sql = 'c_order o WHERE o.c_order_id=?'; key = ordId; }
-          else if (invId) { sql = 'c_invoice o WHERE o.c_invoice_id=?'; key = invId; }
-          if (!sql) return null;
-          // FS-6 (bim-compiler prompts/ERP_FIRST_SETUP_GUIDE.md §FS2e — Witness: W-ERP-FIRST-SETUP S17): the header is
-          // the raw bundle row OR, for a header created this session, the window context (CalloutOrder.java:771,783
-          // read M_PriceList_ID / DateOrdered from the WINDOW). Version = newest ValidFrom <= the document date
-          // (CalloutOrder.java:783-797); prices + the product's UOM from M_ProductPrice (MProductPricing.java:190-210).
-          var h = _fs6Header(b3, ordId ? 'c_order' : 'c_invoice', key);
-          if (!h || !Number(h.m_pricelist_id)) return null;
-          var plv = _q1(b3, 'SELECT m_pricelist_version_id AS v FROM m_pricelist_version WHERE m_pricelist_id=? AND ' +
-                        "upper(COALESCE(isactive,'Y'))='Y' AND date(validfrom) <= date(?) ORDER BY validfrom DESC LIMIT 1",
-                        Number(h.m_pricelist_id), String(h.date || '').slice(0, 10) || new Date().toISOString().slice(0, 10));
-          if (!plv) return null;
-          var row = _q1(b3, 'SELECT pp.pricestd, pp.pricelist, pp.pricelimit, p.c_uom_id FROM m_productprice pp JOIN m_product p ' +
-                        'ON p.m_product_id=pp.m_product_id WHERE pp.m_product_id=? AND pp.m_pricelist_version_id=?', Number(pid), Number(plv.v));
-          console.log('§FS6-PRICE product=' + pid + ' header=' + h.source + ' pricelist=' + h.m_pricelist_id + ' date=' + h.date +
-            ' plv=' + plv.v + ' ' + (row ? 'std=' + row.pricestd + ' list=' + row.pricelist + ' limit=' + row.pricelimit + ' uom=' + row.c_uom_id : 'no-price-row'));
-          return row ? { priceStd: row.pricestd, priceList: row.pricelist, priceLimit: row.pricelimit, uomId: row.c_uom_id } : null;
-        },
-        // FS-6 — CalloutOrder.tax (:925-985) → Tax.get → Tax.getProduct (Tax.java:475-560) → Tax.get (Tax.java:740-854).
-        taxFor: function (pid, record) {
-          var r = record || {};
-          var ordId = Number(r.C_Order_ID || r.c_order_id || 0);
-          if (!ordId || !Number(pid)) return null;
-          var h = _fs6Header(b3, 'c_order', ordId);
-          var tx = h ? _fs6Tax(b3, Number(pid), h) : null;
-          console.log('§FS6-TAX product=' + pid + ' order=' + ordId + ' header=' + (h ? h.source : 'none') + ' org=' + (h && h.ad_org_id) +
-            ' shipLoc=' + (h && h.c_bpartner_location_id) + ' tax=' + (tx ? tx.taxId : null) + ' rule=' + (tx && tx.rule) + ' note="' + ((tx && tx.note) || '') + '"');
-          return tx;
-        },
-        // ══ §CALLOUT-CAMPAIGN accessors (§CC.3) — every one is a real join on the immutable bundle, the same
-        // read-the-real-row shape bpShipDefaults/docTypeInfo already are. NOTHING here defaults or invents:
-        // a missing row returns null and the handler says so in its note.
-        orderLineRow: function (olId) { return _q1(b3, 'SELECT * FROM c_orderline WHERE c_orderline_id=?', Number(olId)); },
-        // CalloutInOut.java:435-441 — what THIS receipt has already taken against this order line.
-        inoutRunningQty: function (inoutId, olId) {
-          if (!Number(inoutId)) return null;
-          var r = _q1(b3, 'SELECT SUM(movementqty) AS q FROM m_inoutline WHERE m_inout_id=? AND c_orderline_id=?', Number(inoutId), Number(olId));
-          return (r && r.q != null) ? Number(r.q) : null;
-        },
-        inoutHeader: function (id) { return Number(id) ? _q1(b3, 'SELECT m_warehouse_id, movementtype, issotrx FROM m_inout WHERE m_inout_id=?', Number(id)) : null; },
-        productRow: function (pid) { return _q1(b3, 'SELECT c_uom_id, m_locator_id FROM m_product WHERE m_product_id=?', Number(pid)); },
-        locatorWarehouse: function (locId) { var r = _q1(b3, 'SELECT m_warehouse_id FROM m_locator WHERE m_locator_id=?', Number(locId)); return r ? r.m_warehouse_id : null; },
-        uomPrecision: function (uomId) { var r = _q1(b3, 'SELECT stdprecision FROM c_uom WHERE c_uom_id=?', Number(uomId)); return r ? Number(r.stdprecision) : null; },
-        productUomPrecision: function (pid) { var r = _q1(b3, 'SELECT u.stdprecision AS p FROM m_product pr JOIN c_uom u ON u.c_uom_id=pr.c_uom_id WHERE pr.m_product_id=?', Number(pid)); return r ? Number(r.p) : null; },
-        // MUOMConversion.convertProductFrom/To. ad_seed.db has NO m_uom_conversion table — the Java's own
-        // contract for "no conversion found" is null, and every caller falls back to the unconverted qty.
-        // Returning null here IS that path; it is not a stub. If the table ships, this reads it.
-        uomConvertProduct: function (pid, uomId, qty, dir) {
-          var r = _q1(b3, "SELECT name FROM sqlite_master WHERE type='table' AND lower(name)='m_uom_conversion'");
-          if (!r) return null;
-          var c = _q1(b3, 'SELECT multiplyrate, dividerate FROM m_uom_conversion WHERE m_product_id=? AND c_uom_id=?', Number(pid), Number(uomId));
-          if (!c) return null;
-          return dir === 'to' ? (Number(c.dividerate) ? Number(qty) / Number(c.dividerate) : null) : Number(qty) * Number(c.multiplyrate);
-        },
-        currencyPrecision: function (curId) { var r = _q1(b3, 'SELECT stdprecision FROM c_currency WHERE c_currency_id=?', Number(curId)); return r ? Number(r.stdprecision) : null; },
-        // The client's accounting-schema currency — Env.C_CURRENCY_ID, which is what the base-currency
-        // branches of CalloutPayment.amounts (:435, :586) compare against.
-        baseCurrencyId: function () { var r = _q1(b3, 'SELECT c_currency_id FROM c_acctschema ORDER BY c_acctschema_id LIMIT 1'); return r ? r.c_currency_id : null; },
-        conversionRate: function (from, to, when, convType) { return _rate(b3, from, to, when, convType); },
-        orderPayInfo: function (ordId) {
-          var o = _q1(b3, 'SELECT COALESCE(bill_bpartner_id, c_bpartner_id) AS bp, c_currency_id, grandtotal FROM c_order WHERE c_order_id=?', Number(ordId));
-          return o ? { bpartnerId: o.bp, currencyId: o.c_currency_id, grandTotal: Number(o.grandtotal || 0) } : null;
-        },
-        invoicePayInfo: function (invId, payDate) { return _invoicePayInfo(b3, Number(invId), payDate); }
-      };
-      var res = global.AdCallout.dispatch(b3, { table: e.key, column: changedCol, record: vals }, ctx) || {};
-      var derived = res.derived || {}, applied = [];
-      Object.keys(derived).forEach(function (c) {
-        var inEl = fhost.querySelector('[data-col="' + c + '"]') || fhost.querySelector('[data-col="' + String(c).toLowerCase() + '"]');
-        // §INOUT-CALLOUTS — a READ-ONLY field is still WRITTEN by a callout. iDempiere's callouts set the
-        // model, not the widget (mTab.setValue(...)); IsReadOnly='Y' stops the USER typing, it does not stop
-        // the engine filling. MEASURED: CalloutInOut.docType derived MovementType='V+' and it was dropped on
-        // the floor, because M_InOut.MovementType is IsReadOnly='Y' on AD_Tab 296 — the very column that tab
-        // is keyed on. Same class for C_OrderLine.QtyOrdered (IsReadOnly='Y' on tab 187), which is exactly
-        // what CalloutOrder.qty exists to fill. gatherVals() reads every field element regardless of
-        // `disabled`, so a value written here reaches the saved record. `(ro)` marks it in the §-log so the
-        // two cases stay distinguishable.
-        if (inEl) { _setVal(inEl, derived[c]); applied.push(c + (inEl.disabled ? '(ro)' : '')); }
-      });
-      var short = function (n) { return String(n).split('.').slice(-2).join('.'); };
-      console.log('§CRUD-CALLOUT table=' + e.key + ' col=' + changedCol + ' callouts=[' + (res.callouts || []).map(short).join(',') + '] fired=[' + (res.fired || []).map(short).join(',') + '] absent=[' + (res.absent || []).map(short).join(',') + '] derived=' + JSON.stringify(derived) + ' applied=[' + applied.join(',') + ']' +
-        ((res.deferred && res.deferred.length) ? ' deferred=[' + res.deferred.join(' | ') + ']' : ''));
-      if (applied.length && typeof applyAdLogic === 'function') try { applyAdLogic(e); } catch (er) {}
+  // ══ CALLOUT ENGINE BRIDGE (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §CP — Witness: W-CP-CALLOUT-LIVE) ═══════════
+  // The open form is a VIEW of ONE AdCallout.GridTab (erp/ad_callout.js, a port of GridTab/GridTable/GridField + the ZK
+  // ADTabpanel.dataStatusChanged cascade). A user field change → tab.setValue → processFieldChange → the AD_Column.Callout
+  // classes (erp/callouts/*.js, verbatim ports); every value a callout sets comes back through onSet into the form. A
+  // column the callout sets that has no form field rides the save as an EXTRA column (GridTable saves the whole row).
+  // A New runs GridTab.dataNew's callout fan (M/GridTab.java:1179-1181). Generic over the dictionary: no table or column
+  // is named here. Supersedes the 14 hand-written host handlers + 9 bundle accessors this block used to carry.
+  var _co = null, _coLogin = null, _coLoginKey = null, _coUdfDb = null;
+  function _coDb(fn) {
+    var A = global.AdCallout;
+    if (!A || !A.bind || typeof withBundle !== 'function') return;
+    withBundle(function (db) {
+      if (!db) return;
+      var sh = SIDE ? _tipShadowOn(db, _sideTables(SIDE)) : [];
+      try {
+        A.bind(_modelQuery(db), { now: function () { return Date.now(); } });
+        if (_coUdfDb !== db && A.RUNTIME.registerSqlFunctions) { _coUdfDb = db; try { A.RUNTIME.registerSqlFunctions(function (n, f) { db.create_function(n, f); }); } catch (eu) { console.log('§CALLOUT-UDF failed ' + (eu && eu.message)); } }
+        fn(A);
+      } catch (e) { console.log('§CALLOUT-ERR ' + ((e && e.message) || e)); }
+      finally { _tipShadowOff(db, sh); }
     });
   }
+  // the session's login context (Login.loadPreferences port), rebuilt when the session identity changes
+  function _coLoginCtx(A) {
+    var app = global.APP || {}, d = new Date(), day = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    var key = [app.clientId, app.orgId, app.roleId, app.actor, day].join('|');
+    if (_coLogin && _coLoginKey === key) return _coLogin;
+    var wh = null;
+    try { var w = A.RUNTIME.DB.query('SELECT m_warehouse_id AS w FROM ad_orginfo WHERE ad_org_id=?', [Number(app.orgId) || 0])[0]; wh = w && w.w != null ? Number(w.w) : null; } catch (e) {}
+    _coLogin = A.loginContext({ client: Number(app.clientId) || 0, org: Number(app.orgId) || 0, role: Number(app.roleId) || 0, user: Number(app.actor) || 0, wh: wh, date: day });
+    _coLoginKey = key;
+    console.log('§CALLOUT-LOGINCTX client=' + app.clientId + ' org=' + app.orgId + ' keys=' + _coLogin.keys().length);
+    return _coLogin;
+  }
+  function _coEl(col) { return fhost ? (fhost.querySelector('[data-col="' + col + '"]') || fhost.querySelector('[data-col="' + String(col).toLowerCase() + '"]')) : null; }
+  function _coOnSet(col, v) {
+    if (!_co) return;
+    var el = _coEl(col);
+    if (!el) { _co.extra[col] = v; return; }
+    var sv = v == null ? '' : String(v);
+    if (el.type === 'date') sv = sv.slice(0, 10);
+    // a value the current list lacks gets its option (the editor's getDirect re-append); _coLookupReset then refreshes the list and
+    //   clears it only if the REFRESHED list still excludes it — guarding here instead blanked valid dependent values (Bill_Location_ID)
+    if (el.tagName === 'SELECT' && sv !== '' && !Array.prototype.some.call(el.options, function (o) { return o.value === sv; })) {
+      var o = document.createElement('option'); o.value = sv; o.textContent = sv; el.appendChild(o);
+    }
+    _setVal(el, sv);
+    _co.set.push(col);
+  }
+  function _coOnError(msg, col) {
+    var s = fhost && (fhost.querySelector('.cfe[data-col="' + col + '"]') || fhost.querySelector('.cfe'));
+    if (s) s.textContent = msg;
+    try { toast(msg); } catch (e) {}
+    console.log('§CALLOUT-MSG col=' + col + ' msg="' + msg + '"');
+  }
+  // _coOpen — bind the open form to a GridTab. cc (host opts.calloutCtx()) = {AD_Tab_ID, tabNo, isSOTrx, parents:[{AD_Tab_ID, tabNo, row}]}
+  function _coOpen(verb, e, vals, orig, opts) {
+    _coOpen0(verb, e, vals, orig, opts);
+    if (_co && verb === 'create') _coLookupReset(e, _coLookupCols(e, null));   // ZK editors get the New row's values the same way
+  }
+  function _coOpen0(verb, e, vals, orig, opts) {
+    _co = null;
+    var cc = (opts && typeof opts.calloutCtx === 'function') ? opts.calloutCtx() : null;
+    _coDb(function (A) {
+      var login = _coLoginCtx(A), ctx = new A.Ctx(), W = 1, parent = null;
+      login.keys().forEach(function (k) { ctx.setProperty(k, login.getProperty(k)); });
+      var tabId = cc && cc.AD_Tab_ID;
+      if (!tabId) { var t = A.RUNTIME.DB.query('SELECT t.AD_Tab_ID AS id FROM AD_Tab t JOIN AD_Table tb ON tb.AD_Table_ID=t.AD_Table_ID WHERE lower(tb.TableName)=? AND t.IsActive=? ORDER BY t.TabLevel, t.AD_Tab_ID', [String(e.key).toLowerCase(), 'Y'])[0]; tabId = t && t.id; }
+      if (!tabId) { console.log('§CALLOUT-OPEN table=' + e.key + ' no AD_Tab — callouts off for this form'); return; }
+      if (cc && cc.isSOTrx != null) A.Env.setContext(ctx, W, 'IsSOTrx', String(cc.isSOTrx));
+      ((cc && cc.parents) || []).forEach(function (p) {
+        var pt = A.openTab(p.AD_Tab_ID, { ctx: ctx, windowNo: W, tabNo: p.tabNo, parentTab: parent });
+        if (pt) { pt.load(p.row || {}, false); pt.updateWindowContext = false; parent = pt; }
+      });
+      var tab = A.openTab(tabId, { ctx: ctx, windowNo: W, tabNo: cc ? cc.tabNo : 0, parentTab: parent, onSet: _coOnSet, onError: _coOnError });
+      if (!tab) return;
+      var row = {}, k;
+      if (orig) for (k in orig) row[k] = orig[k];
+      for (k in vals) row[k] = vals[k];
+      if (verb === 'create' && cc && cc.current) { tab.load(cc.current, false); console.log('§GRIDTAB-NEW-FROM-CURRENT table=' + e.key + ' (window ctx carries the on-screen record, GridTable.dataNew :2134)'); }
+      tab.load(row, verb === 'create');
+      _co = { tab: tab, e: e, extra: {}, set: [], verb: verb, orig: orig };
+      if (verb === 'create') {   // GridTable.dataNew :2129-2143 — every column the form left empty gets GridField.getDefault()
+        var given = {}; Object.keys(row).forEach(function (c) { if (row[c] != null && String(row[c]) !== '') given[String(c).toLowerCase()] = 1; });
+        var ds = tab.lastDefaults || {};                        // filled by tab.load(row, true) above
+        Object.keys(ds).forEach(function (c) { _coOnSet(c, ds[c]); });
+        _co.set = [];
+        console.log('§GRIDTAB-DEFAULTS table=' + e.key + ' tab=' + tabId + ' given=' + Object.keys(given).length + ' defaulted=' + Object.keys(ds).length + ' ' + JSON.stringify(ds).slice(0, 400));
+      }
+      if (verb === 'create') { tab.dataNewCallouts(); console.log('§CALLOUT-NEW table=' + e.key + ' tab=' + tabId + ' fan fields=' + tab.getFieldCount() + ' set=[' + _co.set.join(',') + '] extra=' + JSON.stringify(_co.extra) + (tab.msgs.length ? ' msgs=' + JSON.stringify(tab.msgs) : '')); }
+      else console.log('§CALLOUT-OPEN table=' + e.key + ' tab=' + tabId + ' fields=' + tab.getFieldCount() + ' verb=' + verb);
+    });
+  }
+  function _coField(col) { var lc = String(col).toLowerCase(); return _co && (_co.e.fields || []).filter(function (f) { return String(f.col).toLowerCase() === lc; })[0]; }
+  // _coLookupReset — WTableDirEditor.setValue (org.adempiere.ui.zk/WEB-INF/src/org/adempiere/webui/editor/WTableDirEditor.java,
+  //   setValue: `if (!isSelected(value)) { lookup.refresh(); … still not in list → setValue(null); fireValueChange(cur→null) }`):
+  //   a callout-set lookup value the REFRESHED (val-rule + access) list does not hold is cleared in the field AND in the row.
+  //   DisplayType ID is exempt (`gridField.getDisplayType() != DisplayType.ID`); our fk fields are lookups, never ID.
+  // every editable fk lookup on the form except the one the user just picked (its value came FROM the list)
+  function _coLookupCols(e, except) { return (e.fields || []).filter(function (f) { return f.type === 'fk' && !f.readonly && String(f.col).toLowerCase() !== String(except || '').toLowerCase(); }).map(function (f) { return f.col; }); }
+  function _coLookupReset(e, cols) {
+    if (!_co || !cols.length) return;
+    populateRefs(e, _co.orig, { valRuleOnly: true });          // lookup.refresh() with the context the cascade just set
+    // a Search field (WSearchEditor) shows its value whatever the list holds (getDirect) — the refresh above must not blank it
+    (e.fields || []).forEach(function (f) {
+      var gf = _co.tab.getField(f.col); if (!gf || gf.getDisplayType() !== 30) return;
+      var v = gf.getValue(), el = _coEl(f.col); if (v == null || !el || el.tagName !== 'SELECT') return;
+      var sv = String(v); if (!Array.prototype.some.call(el.options, function (o) { return o.value === sv; })) { var o = document.createElement('option'); o.value = sv; o.textContent = sv; el.appendChild(o); }
+      _setVal(el, sv);
+    });
+    cols.forEach(function (col) {
+      var f = _coField(col), v = _co.tab.getValue(col), gf = _co.tab.getField(col), dt = gf ? gf.getDisplayType() : null;
+      if (!f || f.type !== 'fk' || f.readonly || !f.admitted || v == null || v === '') return;
+      if (dt !== 17 && dt !== 18 && dt !== 19) return;          // WTableDirEditor = combo lookups (List/Table/TableDir); Search uses WSearchEditor
+      if (Object.prototype.hasOwnProperty.call(f.admitted, String(v))) return;
+      var el = _coEl(col); if (el) _setVal(el, '');
+      _coDb(function () { _co.tab.setValue(col, null); });
+      console.log('§CALLOUT-LOOKUP-RESET table=' + e.key + ' col=' + col + ' value=' + v + ' admitted=' + Object.keys(f.admitted).length + ' (WTableDirEditor.setValue: not in refreshed list → null)');
+    });
+  }
+  // _coFieldChange — the user changed `col` in the form: GridTab.setValue (fires the callouts + the cascade)
+  function _coFieldChange(e, col) {
+    if (!_co || _co.e !== e || !col) return;
+    var el = _coEl(col); if (!el) return;
+    var v = _getVal(el);
+    _coDb(function () {
+      var tab = _co.tab; tab.trace = []; tab.msgs = []; _co.set = [];
+      tab.setValue(col, v);
+      console.log('§CALLOUT-CHANGE table=' + e.key + ' col=' + col + ' value=' + v + ' trace=[' + tab.trace.join(',') + '] set=[' + _co.set.join(',') + '] extra=' + JSON.stringify(_co.extra) + (tab.msgs.length ? ' msgs=' + JSON.stringify(tab.msgs) : ''));
+    });
+    _coLookupReset(e, _coLookupCols(e, col));
+    if (_co.set.length && typeof applyAdLogic === 'function') try { applyAdLogic(e); } catch (er) {}
+  }
+  // the save takes the GridTab's whole row: callout-set columns with no form field (GridTable.dataSave writes every column)
+  function _coExtras(e) { return (_co && _co.e === e) ? _co.extra : {}; }
 
   // ── the form (bubble kind -> document form of its fields[]) ─────────────────
   function openForm(verb, e, wantId) {
@@ -1032,12 +517,12 @@
     var body = form.querySelector('.cfbody');                   // …and re-apply on every edit so the form REACTS like iDempiere
     if (body) { body.addEventListener('input', function () { applyAdLogic(e); });
                 body.addEventListener('change', function () { applyAdLogic(e); populateRefs(e, orig, { valRuleOnly: true }); }); }
-    // §CRUD-CALLOUT (S2/J4) — on a create form, a field change fires the AD callout (price/defaults FILL like
-    //   iDempiere: e.g. C_BPartner_ID → bill-to + price list). Fires AFTER applyAdLogic; derived siblings filled.
-    if (verb === 'create' && body) body.addEventListener('change', function (ev) {
+    // §CP — the form is a GridTab view: New runs the dataNew callout fan, every change runs GridTab.setValue (create AND edit)
+    _coOpen(verb, e, vals, orig, null);
+    if (body) body.addEventListener('change', function (ev) {
       var el = ev.target && ev.target.closest ? ev.target.closest('[data-col]') : null;
       var col = el ? el.getAttribute('data-col') : null;
-      if (col) fireCreateCallout(e, col);
+      if (col) _coFieldChange(e, col);
     });
     form.querySelector('.cfx').addEventListener('click', closeForm);
     form.querySelector('#cfCancel').addEventListener('click', closeForm);
@@ -1483,6 +968,11 @@
             // previously-shown value unmatched, so that third case must offer the blank too, never fall to row 1.
             var kEmpty = (keep === '' || keep == null);
             var hasKeep = !kEmpty && rows.some(function (r) { return String(r[0]) === String(keep); });
+            // an ADMITTED value past the picker's LIMIT 200 is still a valid value (MLookup holds the whole validated set) —
+            //   keep it offered and selected rather than blank it (GL_Journal C_Period_ID 200170 sorts after the first 200 periods)
+            if (!kEmpty && !hasKeep && admitted && Object.prototype.hasOwnProperty.call(admitted, String(keep))) {
+              try { var kr = db.exec('SELECT ' + pk + ',' + nameCol + ' FROM ' + src + ' WHERE ' + pk + '=' + Number(keep)); if (kr.length && kr[0].values.length) { rows = rows.concat(kr[0].values); hasKeep = true; } } catch (ek) {}
+            }
             var blankSel = (kEmpty || !hasKeep);
             var blankFk = (!f.required || blankSel) ? '<option value=""' + (blankSel ? ' selected' : '') + '></option>' : '';
             if (f.refsource) console.log('§REFTABLE col=' + f.col + ' src=' + f.refsource + ' table=' + t + ' key=' + pk +
@@ -1631,6 +1121,7 @@
   }
   function saveForm(verb, e, orig, id) {
     var vals = gatherVals(e);
+    var _cx = _coExtras(e); Object.keys(_cx).forEach(function (c) { if (!Object.prototype.hasOwnProperty.call(vals, c)) vals[c] = _cx[c]; });   // §CP callout-set columns with no form field
     if (verb === 'create' && _inlineHost && _inlineSeed) Object.keys(_inlineSeed).forEach(function (k) { if (vals[k] == null || vals[k] === '') vals[k] = _inlineSeed[k]; });
     Array.prototype.forEach.call(fhost.querySelectorAll('.cfe'), function (s) { s.textContent = ''; });
     var typedCols = Object.keys(vals).filter(function (c) { return vals[c] != null && String(vals[c]).trim() !== ''; });
@@ -1699,6 +1190,9 @@
       console.log('§CRUD validate key=' + e.key + ' verb=' + verb + ' ok');
       var op = CORE.buildOp(verb, e, vals, orig, { id: id });
       if (op.op_type === 'CRUD_UPDATE') {
+        // §CP — a callout-set column with no form field is part of the GridTab row; it is saved like any changed column
+        Object.keys(_cx).forEach(function (c) { var ov = orig ? (orig[c] !== undefined ? orig[c] : orig[String(c).toLowerCase()]) : undefined;
+          if (!op.changes[c] && String(ov == null ? '' : ov) !== String(_cx[c] == null ? '' : _cx[c])) op.changes[c] = { old: ov == null ? null : ov, new: _cx[c] }; });
         // W-CRUD-DOCSTATUS diff arm: docstatus rides the DOC_ACTION lane (SET_STATUS) — never a silent
         // column write; and a save with ZERO changed columns commits NOTHING (no-op suppression).
         var sp = CORE.splitStatusChange(e, op, vals);
@@ -1784,6 +1278,9 @@
     host.innerHTML = h; host.classList.add('idmp-inline-crud');
     populateRefs(e, orig);                                      // §P3 — see renderForm
     applyAdLogic(e);
+    // §CP — bind the GridTab (and on New run the dataNew callout fan) BEFORE the baseline: iDempiere's dataNew ends with
+    //   m_mTable.setChanged(false) (M/GridTab.java:1182), so the fan's values are not a user edit.
+    _coOpen(verb, e, vals, orig, opts);
     // baseline = the values AS RENDERED (populateRefs picks the selected option, fieldInput normalizes dates/numbers),
     //   so a freshly-mounted form reads CLEAN — dirty is a true user delta, not a render-normalization artifact.
     _inlineBaseline = gatherVals(e);
@@ -1793,7 +1290,7 @@
       // §P3 — a DEPENDENT lookup refresh: changing @C_BPartner_ID@ must re-narrow C_BPartner_Location_ID.
       // valRuleOnly, because a full re-run would reset every list select to its render-time data-cur.
       populateRefs(e, orig, { valRuleOnly: true });
-      if (verb === 'create') { var el = ev.target && ev.target.closest ? ev.target.closest('[data-col]') : null; var col = el ? el.getAttribute('data-col') : null; if (col) fireCreateCallout(e, col); }
+      { var el = ev.target && ev.target.closest ? ev.target.closest('[data-col]') : null; var col = el ? el.getAttribute('data-col') : null; if (col) _coFieldChange(e, col); }   // §CP create AND edit
       _refreshInlineDirty();
     });
     // Save validates + diffs against the POST-RENDER baseline (the true user delta) — so untouched fields that the
@@ -2081,6 +1578,44 @@
     return done;
   }
   function _tipShadowOff(db, done) { (done || []).forEach(function (t) { try { db.run('DROP TABLE IF EXISTS temp.' + t); } catch (e) {} }); }
+  // ══ MODEL LAYER seam (bim-compiler prompts/ERP_MODEL_LAYER.md §Seams — Witness: W-MODEL-ORACLE, pilot replay) ══════
+  // modelRun(spec, cb): ModelLayer.run over the bundle with EVERY session-written table tip-shadowed (so the model
+  // reads what the user sees), env = the session's client/org/user + the recorded clock. cb(result|null).
+  function _sideTables(sdb) {
+    var out = {};
+    try { var r = sdb.exec("SELECT parameters FROM kernel_ops WHERE op_type IN ('CRUD_CREATE','CRUD_UPDATE','CRUD_DELETE') AND undone=0");
+      if (r.length) r[0].values.forEach(function (v) { try { var p = JSON.parse(v[0]); if (p && p.table) out[String(p.table).toLowerCase()] = 1; } catch (e) {} }); } catch (e) {}
+    return Object.keys(out);
+  }
+  function _modelQuery(db) {
+    return function (sql, params) {
+      var st = db.prepare(sql), out = [];
+      try { if (params && params.length) st.bind(params.map(function (v) { return v === undefined ? null : v; }));
+        while (st.step()) { var o = st.getAsObject(), r = {}; for (var k in o) r[String(k).toLowerCase()] = o[k]; out.push(r); } }
+      finally { st.free(); }
+      return out;
+    };
+  }
+  function _modelEnv() {
+    var A = global.APP || {}, d = new Date(), pad = function (n) { return ('0' + n).slice(-2); };
+    var day = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    return { client: A.clientId != null ? Number(A.clientId) : null, org: A.orgId != null ? Number(A.orgId) : 0, user: A.actor != null ? A.actor : null,
+             date: day + ' 00:00:00', now: day + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()), nowMillis: d.getTime(),
+             std: (A.actor != null || A.clientId != null) ? { actor: A.actor, clientId: A.clientId, orgId: A.orgId != null ? A.orgId : 0 } : null,
+             uuid: function () { return (global.crypto && global.crypto.randomUUID) ? global.crypto.randomUUID() : null; } };
+  }
+  function modelRun(spec, cb) {
+    var ML = global.ModelLayer;
+    if (!ML || typeof withBundle !== 'function') { cb(null); return; }
+    withBundle(function (db) {
+      var sh = SIDE ? _tipShadowOn(db, _sideTables(SIDE)) : [], r = null;
+      try { r = ML.run(_modelQuery(db), _modelEnv(), spec); }
+      catch (e) { console.log('§MODEL-ERR ' + (e && e.message)); r = null; }
+      finally { _tipShadowOff(db, sh); }
+      if (r && r.log) r.log.forEach(function (l) { console.log(l); });
+      cb(r);
+    });
+  }
   function fireBeforeSaveHooks(e, vals, orig, cb) {
     var MV = global.AdModelVal;
     if (!MV || typeof withBundle !== 'function') { cb(null); return; }
@@ -2099,9 +1634,18 @@
         //   the warehouse is the session org's own active warehouse (else the client's first), read from m_warehouse.
         // FS-13 (§FS2k): the hooks read the TIP, not the raw bundle — MOrder.setBPartner (MOrder.java:752-774) must
         // see a location the user just created. Session-written tables are shadowed for this call only.
-        var shadowed = _tipShadowOn(db, ['c_bpartner_location', 'c_location', 'ad_user', 'c_bpartner']);
+        var shadowed = _tipShadowOn(db, SIDE ? _sideTables(SIDE) : ['c_bpartner_location', 'c_location', 'ad_user', 'c_bpartner']);
         var v;
-        try { v = MV.fireHooks('BEFORE_SAVE', info, _docCtx(b)); } finally { _tipShadowOff(db, shadowed); }
+        try {
+          v = MV.fireHooks('BEFORE_SAVE', info, _docCtx(b));
+          // the model class's own beforeSave (MOrderLine/MInvoiceLine/MPayment … — model_*.js) + BEFORE_NEW|CHANGE validators
+          var ML = global.ModelLayer;
+          if (v.ok && ML && typeof ML.run === 'function') {
+            var mr = ML.run(_modelQuery(db), _modelEnv(), { table: e.key, timing: 'BEFORE_SAVE', record: Object.assign({}, rec, info.derived || {}), old: orig || null, isNew: !orig });
+            if (!mr.ok) v = { ok: false, fired: v.fired, blocked: 'model.beforeSave', error: mr.error || mr.msg };
+            else if (mr.derived && Object.keys(mr.derived).length) { info.derived = Object.assign(info.derived || {}, mr.derived); console.log('§MODEL-BEFORE-SAVE table=' + e.key + ' derived=' + JSON.stringify(mr.derived)); }
+          }
+        } finally { _tipShadowOff(db, shadowed); }
         out = { ok: v.ok, fired: v.fired, blocked: v.blocked, error: v.error, derived: info.derived || null };
       } catch (er) { console.log('§AD-MODELVAL-LIVE error ' + (er && er.message) + ' → hooks skipped'); out = null; }
       cb(out);
@@ -2388,6 +1932,26 @@
   // dispatcher before). Same CO/success/re-complete gate, same withBundle/SELECT*/lower-case convention —
   // only the per-table body differs (each table's own completeFanout<X> below).
   function completeFanout(op, cb) {
+    // ONE generic DocAction for every table that has a registered DocAction class (ModelLayer — the iDempiere
+    // DocumentEngine/workflow path, bim-compiler prompts/ERP_MODEL_LAYER.md §Seams). The per-table branches below
+    // remain only for hosts that do not load the model layer (glassbowl.html).
+    var ML = global.ModelLayer;
+    if (ML && typeof ML.docActionFor === 'function' && ML.docActionFor(op.key) && op.outcome !== 'illegal' && op.action && op.id != null) {
+      var impl = ML.docActionFor(op.key);
+      var meth = { PR: 'prepareIt', CO: 'completeIt', WC: 'completeIt', AP: 'approveIt', RJ: 'rejectIt', VO: 'voidIt', CL: 'closeIt', RC: 'reverseCorrectIt', RA: 'reverseAccrualIt', RE: 'reActivateIt' }[op.action];
+      if (meth && typeof impl[meth] === 'function') {
+        modelRun({ table: op.key, timing: 'DOCACTION', id: op.id, action: op.action }, function (r) {
+          if (!r) { cb(null); return; }
+          console.log('§MODEL-DOCACTION table=' + op.key + ' id=' + op.id + ' action=' + op.action + ' ok=' + r.ok + ' status=' + r.status + ' ops=' + r.ops.length +
+            ' tables=' + JSON.stringify(r.ops.reduce(function (m, x) { var k = x.table + ':' + String(x.op_type).replace('CRUD_', ''); m[k] = (m[k] || 0) + 1; return m; }, {})) + (r.msg ? ' msg="' + r.msg + '"' : ''));
+          if (!r.ok) { cb({ abort: r.msg || ('DocAction ' + op.action + ' → ' + r.status) }); return; }
+          op.to = r.status; op.outcome = r.status === 'IP' ? 'in-progress' : 'success';
+          cb({ ops: r.ops, model: true });
+        });
+        return;
+      }
+      console.log('§MODEL-NAMED table=' + op.key + ' action=' + op.action + ' — the ' + op.key + ' DocAction class does not implement it yet → status-only (FSM) group');
+    }
     if (!(op.action === 'CO' && op.to === 'CO' && op.outcome === 'success')) { cb(null); return; }
     if (op.from === 'CO') { console.log('§' + fname(op.key) + '-COMPLETE fan-out skipped: already CO (no duplicate consequence docs)'); cb(null); return; }
     if (op.key === 'c_order')  { completeFanoutOrder(op, cb);   return; }
@@ -2401,141 +1965,6 @@
   function _fs15Std() {
     var A = global.APP || {};
     return (A.actor != null || A.clientId != null) ? { actor: A.actor, clientId: A.clientId, orgId: A.orgId != null ? A.orgId : 0 } : null;
-  }
-  // MTax.calculateTax(amt, isTaxIncluded, scale) — rate% of the base, or the included part, HALF_UP to the scale.
-  function _fs15Tax(base, rate, incl, prec) {
-    if (!Number(rate)) return 0;
-    return incl ? _round(base - base / (1 + Number(rate) / 100), prec) : _round(base * Number(rate) / 100, prec);
-  }
-  function _fs15BuildDocs(db, order, olines, dtId, policy) {
-    var ops = [], docs = [], std = _fs15Std(), today = _fs15Today();
-    var dt = _rawRows(db, 'SELECT c_doctypeshipment_id, c_doctypeinvoice_id FROM c_doctype WHERE c_doctype_id=' + Number(dtId))[0] || {};
-    var cur = _rawRows(db, 'SELECT stdprecision FROM c_currency WHERE c_currency_id=' + Number(order.c_currency_id))[0];
-    var prec = cur ? Number(cur.stdprecision) : 2;
-    var pl = _rawRows(db, 'SELECT istaxincluded FROM m_pricelist WHERE m_pricelist_id=' + Number(order.m_pricelist_id))[0] || {};
-    var incl = String(pl.istaxincluded || 'N') === 'Y';
-    function mk(table, fields) { ops.push({ op_type: 'CRUD_CREATE', key: table, table: table, verb: 'create', id: null, fields: fields, cas: null, stdDefaults: std }); return ops.length - 1; }
-    function qtyOf(l) { var q = Number(l.qtyordered); if (!q) q = Number(l.qtyentered); return q || 0; }
-    var org = order.ad_org_id, shipLineIdx = {}, note = [];
-    if (policy.isautogenerateinout === 'Y') {
-      if (!Number(dt.c_doctypeshipment_id)) note.push('no C_DocTypeShipment_ID');
-      // new MInOut(order, C_DocTypeShipment_ID, today) — MInOut.java setOrder/setBPartner/warehouse; Complete → CO
-      var h = mk('m_inout', { ad_org_id: org, c_order_id: order.c_order_id, c_doctype_id: dt.c_doctypeshipment_id || null, issotrx: order.issotrx || 'Y',
-        movementtype: String(order.issotrx || 'Y') === 'Y' ? 'C-' : 'V+', c_bpartner_id: order.c_bpartner_id, c_bpartner_location_id: order.c_bpartner_location_id,
-        ad_user_id: order.ad_user_id || null, m_warehouse_id: order.m_warehouse_id, movementdate: today, dateacct: today, dateordered: order.dateordered || null,
-        poreference: order.poreference || null, salesrep_id: order.salesrep_id || null, deliveryrule: order.deliveryrule || null, deliveryviarule: order.deliveryviarule || null,
-        freightcostrule: order.freightcostrule || null, priorityrule: order.priorityrule || null, docstatus: 'CO', docaction: 'CL', processed: 'Y', posted: 'N' });
-      docs.push({ table: 'm_inout', idx: h });
-      var locr = _rawRows(db, 'SELECT m_locator_id FROM m_locator WHERE m_warehouse_id=' + Number(order.m_warehouse_id) + " ORDER BY CASE WHEN isdefault='Y' THEN 0 ELSE 1 END, m_locator_id")[0];
-      olines.forEach(function (l, i) {     // MInOutLine.setOrderLine — product, UOM, the warehouse's default locator, qty
-        shipLineIdx[l.c_orderline_id] = mk('m_inoutline', { m_inout_id: { __opRef: h }, ad_org_id: org, line: (i + 1) * 10, c_orderline_id: l.c_orderline_id,
-          m_product_id: l.m_product_id, c_uom_id: l.c_uom_id, m_locator_id: locr ? locr.m_locator_id : null, movementqty: qtyOf(l), qtyentered: Number(l.qtyentered) || qtyOf(l), isinvoiced: policy.isautogenerateinvoice === 'Y' ? 'Y' : 'N' });
-      });
-    }
-    if (policy.isautogenerateinvoice === 'Y') {
-      if (!Number(dt.c_doctypeinvoice_id)) note.push('no C_DocTypeInvoice_ID');
-      var lnSum = 0, byTax = {}, iLines = [];
-      olines.forEach(function (l, i) {     // MInvoiceLine.setShipLine/setOrderLine — prices + tax from the order line
-        var q = qtyOf(l), pa = Number(l.priceactual) || Number(l.priceentered) || 0, net = _round(q * pa, prec);
-        lnSum += net; if (l.c_tax_id != null) byTax[l.c_tax_id] = (byTax[l.c_tax_id] || 0) + net;
-        iLines.push({ l: l, i: i, q: q, pa: pa, net: net });
-      });
-      var taxRows = Object.keys(byTax).map(function (tid) {
-        var t = _rawRows(db, 'SELECT rate FROM c_tax WHERE c_tax_id=' + Number(tid))[0];
-        return { c_tax_id: Number(tid), base: _round(byTax[tid], prec), amt: _fs15Tax(byTax[tid], t ? t.rate : 0, incl, prec) };
-      });
-      var taxSum = taxRows.reduce(function (a, t) { return a + t.amt; }, 0);
-      // new MInvoice(order, C_DocTypeInvoice_ID, today) — MInvoice.java:484-510 (Bill_* side of the order)
-      var ih = mk('c_invoice', { ad_org_id: org, c_order_id: order.c_order_id, c_doctype_id: dt.c_doctypeinvoice_id || null, c_doctypetarget_id: dt.c_doctypeinvoice_id || null,
-        issotrx: order.issotrx || 'Y', c_bpartner_id: order.bill_bpartner_id || order.c_bpartner_id, c_bpartner_location_id: order.bill_location_id || order.c_bpartner_location_id,
-        ad_user_id: order.bill_user_id || null, salesrep_id: order.salesrep_id || null, m_pricelist_id: order.m_pricelist_id, c_currency_id: order.c_currency_id,
-        istaxincluded: incl ? 'Y' : 'N', paymentrule: order.paymentrule || null, c_paymentterm_id: order.c_paymentterm_id || null, poreference: order.poreference || null,
-        dateordered: order.dateordered || null, dateinvoiced: today, dateacct: today, totallines: _round(lnSum, prec), grandtotal: _round(lnSum + (incl ? 0 : taxSum), prec),
-        docstatus: 'CO', docaction: 'CL', processed: 'Y', posted: 'N', ispaid: 'N', ispayschedulevalid: 'N' });
-      docs.push({ table: 'c_invoice', idx: ih });
-      iLines.forEach(function (x) {
-        var f = { c_invoice_id: { __opRef: ih }, ad_org_id: org, line: (x.i + 1) * 10, c_orderline_id: x.l.c_orderline_id, m_product_id: x.l.m_product_id,
-          c_uom_id: x.l.c_uom_id, qtyentered: Number(x.l.qtyentered) || x.q, qtyinvoiced: x.q, priceentered: Number(x.l.priceentered) || x.pa, priceactual: x.pa,
-          pricelist: Number(x.l.pricelist) || 0, pricelimit: Number(x.l.pricelimit) || 0, c_tax_id: x.l.c_tax_id, linenetamt: x.net };
-        if (shipLineIdx[x.l.c_orderline_id] != null) f.m_inoutline_id = { __opRef: shipLineIdx[x.l.c_orderline_id] };
-        mk('c_invoiceline', f);
-      });
-      taxRows.forEach(function (t) {        // MInvoice.calculateTaxTotal → MInvoiceTax per tax
-        mk('c_invoicetax', { c_invoice_id: { __opRef: ih }, ad_org_id: org, c_tax_id: t.c_tax_id, taxbaseamt: t.base, taxamt: t.amt, istaxincluded: incl ? 'Y' : 'N' });
-      });
-    }
-    return { ops: ops, docs: docs, note: note.join(',') };
-  }
-  // Doc.post for the documents a Complete created — Doc_Invoice (ARI: DR Receivable GrandTotal / CR Revenue LineNetAmt per line /
-  // CR Tax Due TaxAmt) and Doc_InOut (customer shipment: DR COGS / CR Asset = qty × current cost; Doc_InOut.java:198-320 —
-  // zero cost on a stocked product → "No Costs for" and the document stays unposted). Accounts via the oracle-proved
-  // PostResolver tokens. One signed group: the fact_acct rows + Posted='Y' on each posted document.
-  function _fs15PostDocs(docIds) {
-    var R = global.PostResolver;
-    withBundle(function (db) { withSidecar(function (sdb) {
-      var facade = { prepare: function (sql) { return {
-        get: function (params) { var st = db.prepare(sql); try { if (params != null) st.bind(Array.isArray(params) ? params : (typeof params === 'object' ? Object.keys(params).reduce(function (o, k) { o['@' + k] = params[k]; return o; }, {}) : [params])); if (!st.step()) return undefined; var o = st.getAsObject(), r = {}; for (var k in o) r[k.toLowerCase()] = o[k]; return r; } finally { st.free(); } },
-        all: function (params) { var st = db.prepare(sql), out = []; try { if (params != null) st.bind(Array.isArray(params) ? params : [params]); while (st.step()) { var o = st.getAsObject(), r = {}; for (var k in o) r[k.toLowerCase()] = o[k]; out.push(r); } return out; } finally { st.free(); } } }; } };
-      var tip = function (table, id) {
-        var base = _rawRows(db, 'SELECT * FROM ' + table + ' WHERE 0');
-        var f = CORE.listTip(sdb, table, table + '_id', base, null);
-        return ((f && f.rows) || []).map(function (r) { var o = {}; for (var k in r) o[k.toLowerCase()] = r[k]; return o; });
-      };
-      var cli = (global.APP && global.APP.clientId != null) ? Number(global.APP.clientId) : null;
-      var asRow = _rawRows(db, 'SELECT c_acctschema1_id AS a FROM ad_clientinfo WHERE ad_client_id=' + Number(cli))[0];
-      var schema = asRow ? Number(asRow.a) : null;
-      var asCur = schema ? (_rawRows(db, 'SELECT c_currency_id, costingmethod FROM c_acctschema WHERE c_acctschema_id=' + schema)[0] || {}) : {};
-      var per = _rawRows(db, 'SELECT c_period_id FROM c_period WHERE ad_client_id=' + Number(cli) + " AND date('" + _fs15Today() + "') BETWEEN date(startdate) AND date(enddate) LIMIT 1")[0];
-      var factOps = [], std = _fs15Std();
-      docIds.forEach(function (dref) {
-        var acct = function (token, master) { var r = R ? R.resolve(facade, token, Number(master), schema) : null; return (r && r.acct != null && r.element) ? r.element : null; };
-        var lines = [], absent = [], why = null;
-        var add = function (el, dr, cr, extra) { lines.push(Object.assign({ account_id: el.id, value: el.value, dr: _round(dr, 2), cr: _round(cr, 2) }, extra || {})); };
-        if (!R || !schema) why = !R ? 'PostResolver absent' : 'no C_AcctSchema1_ID for client ' + cli;
-        var hdr = !why ? tip(dref.table).filter(function (r) { return String(r[dref.table + '_id']) === String(dref.id); })[0] : null;
-        if (!why && !hdr) why = 'document ' + dref.id + ' not in the tip';
-        if (!why && Number(hdr.c_currency_id || asCur.c_currency_id) !== Number(asCur.c_currency_id)) why = 'currency conversion of facts not ported';
-        var tableId = dref.table === 'c_invoice' ? 318 : 319, glcat = null;
-        if (!why) { var gc = _rawRows(db, 'SELECT gl_category_id FROM c_doctype WHERE c_doctype_id=' + Number(hdr.c_doctype_id))[0]; glcat = gc ? gc.gl_category_id : null; }
-        if (!why && dref.table === 'c_invoice') {
-          var ils = tip('c_invoiceline').filter(function (r) { return String(r.c_invoice_id) === String(dref.id); });
-          var its = tip('c_invoicetax').filter(function (r) { return String(r.c_invoice_id) === String(dref.id); });
-          var rc = acct('{BPartner.Receivable}', hdr.c_bpartner_id); if (rc) add(rc, Number(hdr.grandtotal), 0, { c_bpartner_id: hdr.c_bpartner_id }); else absent.push('{BPartner.Receivable}');
-          ils.forEach(function (l) { var rv = acct('{Product.Revenue}', l.m_product_id); if (rv) add(rv, 0, Number(l.linenetamt), { m_product_id: l.m_product_id, qty: -Number(l.qtyinvoiced), line_id: l.c_invoiceline_id }); else absent.push('{Product.Revenue}'); });
-          its.forEach(function (t) { if (!Number(t.taxamt)) return; var td = acct('{Tax.Due}', t.c_tax_id); if (td) add(td, 0, Number(t.taxamt), { c_tax_id: t.c_tax_id }); else absent.push('{Tax.Due}'); });
-        } else if (!why) {
-          var sls = tip('m_inoutline').filter(function (r) { return String(r.m_inout_id) === String(dref.id); });
-          sls.forEach(function (l) {
-            var pr = _rawRows(db, 'SELECT isstocked FROM m_product WHERE m_product_id=' + Number(l.m_product_id))[0] || {};
-            var c = _rawRows(db, 'SELECT c.currentcostprice AS p FROM m_cost c JOIN m_costelement e ON e.m_costelement_id=c.m_costelement_id WHERE c.m_product_id=' + Number(l.m_product_id) +
-              ' AND c.c_acctschema_id=' + schema + " AND e.costelementtype='M' AND e.costingmethod='" + String(asCur.costingmethod || '') + "' AND c.ad_org_id=0 AND COALESCE(c.m_attributesetinstance_id,0)=0")[0];
-            var costs = _round(Number(c ? c.p : 0) * Number(l.movementqty), 2);
-            if (!costs) { if (String(pr.isstocked || 'Y') === 'Y') { why = 'No Costs for product ' + l.m_product_id + ' (costing method ' + asCur.costingmethod + ', Doc_InOut.java:244-258)'; } return; }
-            var cg = acct('{Product.Cogs}', l.m_product_id), as = acct('{Product.Asset}', l.m_product_id);
-            if (cg) add(cg, costs, 0, { m_product_id: l.m_product_id, qty: Number(l.movementqty), line_id: l.m_inoutline_id }); else absent.push('{Product.Cogs}');
-            if (as) add(as, 0, costs, { m_product_id: l.m_product_id, qty: -Number(l.movementqty), line_id: l.m_inoutline_id }); else absent.push('{Product.Asset}');
-          });
-        }
-        var sDr = _round(lines.reduce(function (a, x) { return a + x.dr; }, 0), 2), sCr = _round(lines.reduce(function (a, x) { return a + x.cr; }, 0), 2);
-        var ok = !why && !absent.length && lines.length && Math.abs(sDr - sCr) < 0.005;
-        console.log('§GL-POST table=' + dref.table + ' id=' + dref.id + ' schema=' + schema + ' lines=' + lines.length + ' dr=' + sDr + ' cr=' + sCr + ' balanced=' + (Math.abs(sDr - sCr) < 0.005) +
-          ' posted=' + (ok ? 'Y' : 'N') + (why ? ' reason="' + why + '"' : '') + (absent.length ? ' absent=' + absent.join(',') : '') +
-          ' facts=' + JSON.stringify(lines.map(function (x) { return [x.account_id, x.value, x.dr, x.cr]; })));
-        if (!ok) return;
-        lines.forEach(function (x) {
-          factOps.push({ op_type: 'CRUD_CREATE', key: 'fact_acct', table: 'fact_acct', verb: 'create', id: null, cas: null, stdDefaults: std,
-            fields: { ad_org_id: hdr.ad_org_id, c_acctschema_id: schema, account_id: x.account_id, c_period_id: per ? per.c_period_id : null, ad_table_id: tableId, record_id: dref.id,
-              line_id: x.line_id || null, gl_category_id: glcat, c_tax_id: x.c_tax_id || null, postingtype: 'A', c_currency_id: asCur.c_currency_id,
-              amtsourcedr: x.dr, amtsourcecr: x.cr, amtacctdr: x.dr, amtacctcr: x.cr, qty: x.qty != null ? x.qty : null, m_product_id: x.m_product_id || null,
-              c_bpartner_id: x.c_bpartner_id || hdr.c_bpartner_id || null, description: (hdr.documentno || '') + ' #' + dref.id } });
-        });
-        factOps.push({ op_type: 'CRUD_UPDATE', key: dref.table, table: dref.table, verb: 'update', id: dref.id, changes: { posted: { old: 'N', new: 'Y' } } });
-      });
-      if (!factOps.length) { console.log('§GL-POST group skipped (nothing postable)'); return; }
-      applyOpGroup(factOps.map(function (o) { return o.op_type === 'CRUD_UPDATE' ? { op_type: o.op_type, key: o.key, table: o.table, verb: o.verb, id: o.id, changes: o.changes } : o; }), function (res) {
-        console.log('§GL-POST-COMMIT ops=' + factOps.length + ' committed=' + !!(res && res.committed) + ' gid=' + (res && res.gid) + ' verifyChain=' + (res && res.verifyOk ? 'ok' : 'FAIL'));
-      });
-    }); });
   }
   function completeFanoutOrder(op, cb) {
     var E = (typeof global.ERPEngine !== 'undefined') ? global.ERPEngine : null;
@@ -2585,8 +2014,7 @@
           // FS-15 (bim-compiler prompts/ERP_FIRST_SETUP_GUIDE.md §FS2m — Witness: W-ERP-FIRST-SETUP S20/S20b): the engine
           // DECIDES (its skeleton op count stays `engineOps`); the documents themselves are BUILT here as CRUD_CREATE rows
           // (MInOut(order)/MInvoice(order) + setShipLine/setOrderLine + calculateTaxTotal) so every window can read them.
-          var fullLines = lineRows.map(lcRow).filter(function (r) { return String(r.c_order_id) === String(op.id); });
-          var built = ops.length ? _fs15BuildDocs(db, order, fullLines, dtId, policy) : null;
+          var built = null;   // FS-15 document builder superseded by model_order.js (hosts with ModelLayer never reach here)
           console.log('§SO-FANOUT order=' + op.id + ' doctype=' + dtId + ' policy(io,inv)=' + policy.isautogenerateinout + ',' + policy.isautogenerateinvoice +
                       ' policySrc=' + psrc + ' header=' + (baseHdr.length ? 'bundle' : 'sidecar') + ' lines=' + lines.length + ' engineOps=' + ops.length +
                       ' crudOps=' + (built ? built.ops.length : 0) + (built && built.note ? ' note="' + built.note + '"' : '') + ' gl=post-after-commit');
@@ -2719,8 +2147,12 @@
       _gateForOwnedWrite(op.ownerGated ? op : { ownerGated: false }, freshDb, function (gate) {
         if (!gate.ok) { _gateReject(op, gate); done(); return; }
       completeFanout(op, function (fanout) {
+      if (fanout && fanout.abort) {                             // DocumentEngine.processIt returned false → nothing is written (trx rollback)
+        console.log('§CRUD process key=' + op.key + ' id=' + op.id + ' action=' + op.action + ' REFUSED by the model: ' + fanout.abort);
+        toast('PROCESS ' + fname(op.key) + ' — ' + fanout.abort); done(); return;
+      }
       _serializeCommit(function () {                            // EXCLUSIVE: no interleaved async seal (batch-safe, same-tab)
-        if (fanout && fanout.docs) fanout.ops = _resolveOpRefs(freshDb, fanout.ops);   // FS-15: line → header FK = the header op's synthetic pk
+        if (fanout && (fanout.docs || fanout.model)) fanout.ops = _resolveOpRefs(freshDb, fanout.ops);   // FS-15/model: FK = the creating op's synthetic pk
         var groupOps = CORE.buildDocActionGroup(op, fanout);   // PURE assembly: engine consequences + SET_STATUS last
         return Promise.resolve(K.commitGroup(freshDb, groupOps, _commitMeta())).then(function (res) {
           if (!res || res.committed !== true) { console.warn('§CRUD process commitGroup not-committed reason=' + (res && res.reason || '?')); dryProcess(op); return; }
@@ -2738,10 +2170,6 @@
                 fanout.ops.forEach(function (o) { if (o.op_type === 'CREATE_DOCUMENT') { if (o.table === 'M_InOut') nShip++; else if (o.table === 'C_Invoice') nInv++; } });
                 if (fanout.docs) fanout.ops.forEach(function (o) { if (o.op_type === 'CRUD_CREATE' && !(o.fields && (o.fields.m_inout_id || o.fields.c_invoice_id))) { if (o.table === 'm_inout') nShip++; else if (o.table === 'c_invoice') nInv++; } });
                 console.log('§SO-COMPLETE order=' + op.id + ' ship=' + nShip + ' invoice=' + nInv + ' gl=' + (fanout.docs ? 'post-after-commit' : 'gated') + ' sealed=Y gid=' + res.gid);
-                // FS-15: the Accounting Processor run (Doc.post) for exactly the documents this Complete created — queued
-                // behind this commit on the same serial chain; GardenWorld AD_Client.IsPostImmediate='N' (posted async).
-                if (fanout.docs) { var docIds = fanout.docs.map(function (d) { return { table: d.table, id: -Number(res.ids[d.idx]), d: d }; });
-                  setTimeout(function () { _fs15PostDocs(docIds); }, 0); }
               }
               console.log('§CRUD process committed key=' + op.key + ' viaGroup=Y gid=' + res.gid + ' ops=' + res.ids.length + ' sealed=' + res.sealed + ' op_uuid=' + (uuid || 'null') + ' to=' + op.to + ' verifyChain=' + (v && v.ok ? 'ok' : 'FAIL'));
               setDocStatus(op.key, op.to, op.outcome, op.unmet);
@@ -2841,8 +2269,9 @@
   function _docTypeSeqId(mdb, fields) {
     try {
       if (!fields) return null;
-      var dt = fields.c_doctype_id != null ? fields.c_doctype_id : (fields.C_DocType_ID != null ? fields.C_DocType_ID
-             : (fields.c_doctypetarget_id != null ? fields.c_doctypetarget_id : fields.C_DocTypeTarget_ID));
+      // PO.saveNew :3574-3579 — C_DocTypeTarget_ID when the table HAS that column, else C_DocType_ID (0 → table sequence)
+      var dt = fields.c_doctypetarget_id != null ? fields.c_doctypetarget_id : (fields.C_DocTypeTarget_ID != null ? fields.C_DocTypeTarget_ID
+             : (fields.c_doctype_id != null ? fields.c_doctype_id : fields.C_DocType_ID));
       if (dt == null || String(dt) === '' || !isFinite(Number(dt))) return null;
       var r = mdb.exec("SELECT isdocnocontrolled, docnosequence_id FROM c_doctype WHERE c_doctype_id=" + Number(dt) + " LIMIT 1");
       if (!r.length || !r[0].values.length) return null;
@@ -2859,28 +2288,70 @@
         ? mdb.exec("SELECT CurrentNext, Prefix, Suffix FROM AD_Sequence WHERE AD_Sequence_ID=" + dtSeq + " AND IsActive='Y' LIMIT 1")
         : mdb.exec("SELECT CurrentNext, Prefix, Suffix FROM AD_Sequence WHERE UPPER(Name)=UPPER(?) AND IsActive='Y' LIMIT 1", ['DocumentNo_' + table]);
       if (!r.length || !r[0].values.length) return null;
-      var v = r[0].values[0]; return (v[1] || '') + v[0] + (v[2] || '');
+      var v = r[0].values[0], cn = _seqTipNext(dtSeq != null ? dtSeq : null, dtSeq != null ? null : 'DocumentNo_' + table, v[0]);
+      // iDempiere shows the not-yet-allocated number as "<80003>" and PO.saveNew :3571-3572 treats that as EMPTY → the number
+      // is allocated from the record's doctype at save time. Our field keeps the bare number (the docno val-rule is numeric),
+      // so the preview is REMEMBERED and _allocDocNo treats it the same way (a preview is never a user-entered number).
+      var pvs = (v[1] || '') + cn + (v[2] || ''); _previewIssued[pvs] = 1; return pvs;
     } catch (e) { return null; }
   }
+  // the sequence's CurrentNext AS OF THE TIP: the signed op-log carries every bump (MSequence rides the op-group), the
+  // bundle row is only the baseline. A by-name lookup resolves the id first.
+  function _seqTipNext(seqId, seqName, base) {
+    try {
+      var mdb = globalThis.__idmpDb;
+      if (seqId == null && seqName) { var r = mdb.exec("SELECT AD_Sequence_ID FROM AD_Sequence WHERE UPPER(Name)=UPPER('" + String(seqName).replace(/'/g, "''") + "') AND IsActive='Y' LIMIT 1"); seqId = r.length ? r[0].values[0][0] : null; }
+      if (seqId == null || !SIDE) return base;
+      var tv = CORE.tipValues(SIDE, 'ad_sequence', seqId, _readBranch());
+      return (tv && tv.currentnext != null) ? Number(tv.currentnext) : base;
+    } catch (e) { return base; }
+  }
+  var _lastSeqOp = null, _previewIssued = {};
   function _allocDocNo(table, fields) {
+    _lastSeqOp = null;
     var mdb = (typeof globalThis !== 'undefined' && globalThis.__idmpDb) || null;
     if (!mdb) return null;
     var cols = _getTableCols(table);
     if (!cols['documentno']) return null;
+    // ONE MSequence: the model layer's verbatim port (model_trade.js getDocumentNoFromSeq — org-level AD_Sequence_No,
+    // Prefix/Suffix/@vars@, DecimalPattern, StartNewYear), run through a Trx over the tip-shadowed bundle; its ops
+    // (AD_Sequence / AD_Sequence_No bump) ride the document's own signed group (prompts/ERP_MODEL_LAYER.md §CORE-DOCNO).
+    var ML = global.ModelLayer, MT = global.ModelTrade;
+    if (ML && MT && MT.getDocumentNoByDocType) {
+      var given = fields ? (fields['DocumentNo'] != null ? fields['DocumentNo'] : fields['documentno']) : null;
+      if (given != null && (/^<.*>$/.test(String(given)) || _previewIssued[String(given)])) given = null;   // PO.saveNew :3571-3572
+      if (given != null && String(given) !== '') return null;                                 // a manually entered number is kept
+      var sh = SIDE ? _tipShadowOn(mdb, ['ad_sequence', 'ad_sequence_no']) : [], v = null, ops = [];
+      try {
+        var trx = new ML.Trx(_modelQuery(mdb), _modelEnv()), rec = {};
+        Object.keys(fields || {}).forEach(function (k) { rec[k.toLowerCase()] = fields[k]; });
+        var mc = ML.columnsOf(trx, table), dtc = mc.c_doctypetarget_id ? 'c_doctypetarget_id' : mc.c_doctype_id ? 'c_doctype_id' : null;
+        if (dtc) v = MT.getDocumentNoByDocType(trx, Number(rec[dtc] || 0), false, rec);
+        if (v == null) v = MT.getDocumentNoByTable(trx, mc.__tableName || table, rec);
+        ops = trx.groupOps(); trx.log.forEach(function (l) { console.log(l); });
+      } catch (e) { console.log('§DOCNO model MSequence threw: ' + (e && e.message)); v = null; ops = []; }
+      finally { _tipShadowOff(mdb, sh); }
+      _lastSeqOp = ops.length ? ops : null;
+      console.log('§DOCNO table=' + table + ' docno=' + v + ' seqOps=' + ops.map(function (o) { return o.table + ':' + o.op_type; }).join('+') + ' via=ModelTrade.MSequence bump=in-group');
+      return v;
+    }
     try {
       var dtSeq = _docTypeSeqId(mdb, fields), seqName = 'DocumentNo_' + table;
       var r = dtSeq != null
         ? mdb.exec("SELECT AD_Sequence_ID, CurrentNext, IncrementNo, Prefix, Suffix FROM AD_Sequence WHERE AD_Sequence_ID=" + dtSeq + " AND IsActive='Y' LIMIT 1")
         : mdb.exec("SELECT AD_Sequence_ID, CurrentNext, IncrementNo, Prefix, Suffix FROM AD_Sequence WHERE UPPER(Name)=UPPER(?) AND IsActive='Y' LIMIT 1", [seqName]);
       if (!r.length || !r[0].values.length) { console.log('§DOCNO no-sequence table=' + table + (dtSeq != null ? ' doctypeSeq=' + dtSeq : ' seq=' + seqName) + ' (named, not faked)'); return null; }
-      var v = r[0].values[0], seqId = v[0], next = v[1], incr = v[2] || 1, prefix = v[3] || '', suffix = v[4] || '';
+      var v = r[0].values[0], seqId = v[0], next = _seqTipNext(v[0], null, v[1]), incr = v[2] || 1, prefix = v[3] || '', suffix = v[4] || '';
       var docNo = (prefix || '') + next + (suffix || '');
       // honor a MANUAL override (a value the user changed AWAY from the preview); otherwise allocate (consume)
       //   the sequence. The New form pre-fills the preview (= docNo), so an untouched field allocates this number.
       var provided = fields ? (fields['DocumentNo'] != null ? fields['DocumentNo'] : fields['documentno']) : null;
+      if (provided != null && (/^<.*>$/.test(String(provided)) || _previewIssued[String(provided)])) provided = null;   // PO.saveNew :3571-3572
       if (provided != null && String(provided) !== '' && String(provided) !== String(docNo)) return null;
-      mdb.run('UPDATE AD_Sequence SET CurrentNext=' + (next + incr) + ' WHERE AD_Sequence_ID=' + seqId);
-      console.log('§DOCNO table=' + table + ' seq=' + (dtSeq != null ? ('doctype#' + dtSeq) : seqName) + ' next=' + next + ' docno=' + docNo + ' docNoControlled=' + (dtSeq != null) + ' replay-stable=Y');
+      // MSequence bump = a CRUD_UPDATE in the SAME signed group as the document (was a direct bundle UPDATE outside the
+      // op-log — not replay-stable, prompts/ERP_MODEL_LAYER.md E3). The caller appends op._seqOp to its group.
+      _lastSeqOp = { op_type: 'CRUD_UPDATE', key: 'ad_sequence', table: 'ad_sequence', verb: 'update', id: seqId, changes: { currentnext: { old: next, new: next + incr } } };
+      console.log('§DOCNO table=' + table + ' seq=' + (dtSeq != null ? ('doctype#' + dtSeq) : seqName) + ' next=' + next + ' docno=' + docNo + ' docNoControlled=' + (dtSeq != null) + ' bump=in-group');
       return docNo;
     } catch (e) { return null; }
   }
@@ -2959,7 +2430,8 @@
       // Task 4 — DocumentNo: allocate from AD_Sequence for CRUD_CREATE on document tables (approach a-simplified)
       if (op.op_type === 'CRUD_CREATE') {
         var dn = _allocDocNo(op.table, op.fields);
-        if (dn != null) { op.fields = op.fields || {}; op.fields.DocumentNo = dn; }
+        if (dn != null) { op.fields = op.fields || {}; if ('documentno' in op.fields) op.fields.documentno = dn; else op.fields.DocumentNo = dn; op._seqOp = _lastSeqOp; }
+        else if (op.fields && /^<.*>$/.test(String(op.fields.documentno || op.fields.DocumentNo || ''))) { delete op.fields.documentno; delete op.fields.DocumentNo; }   // an unallocated preview is never stored
       }
       // Implementing ERP_OPLOG_APPEND_ONLY_FIX.md F3/F4 — Witness: W-COMMIT-LOCK. The whole
       // refresh-tip→gate→seal→append critical section now runs under the cross-tab commit lock, against
@@ -2983,14 +2455,41 @@
       });
     });
   }
+  // _modelAfterSave — PO.afterSave (MOrderLine → order tax + header totals, MInvoiceLine → invoice tax/totals, …) for the
+  // row this save writes; its ops join the SAME signed group (prompts/ERP_MODEL_LAYER.md §Seams AFTER save).
+  function _modelAfterSave(op, db, cb) {
+    var ML = global.ModelLayer;
+    if (!ML || op.op_type === 'CRUD_DELETE' || !(ML.MODEL[op.table] && ML.MODEL[op.table].afterSave) && !(global.AdModelVal && global.AdModelVal.hooksFor && Object.keys(global.AdModelVal.hooksFor(op.table)).some(function (t) { return /^AFTER_/.test(t); }))) { cb([]); return; }
+    var nextId = 1; try { var r = db.exec('SELECT COALESCE(MAX(id),0) FROM kernel_ops'); if (r.length) nextId = Number(r[0].values[0][0]) + 1; } catch (e) {}
+    var pk = op.table + '_id', rec, old = null;
+    withBundle(function (bdb) {
+      var sh = SIDE ? _tipShadowOn(bdb, _sideTables(SIDE)) : [];
+      try {
+        if (op.op_type === 'CRUD_CREATE') { rec = Object.assign({}, op.fields); rec[pk] = -nextId; }
+        else { old = _modelQuery(bdb)('SELECT * FROM ' + op.table + ' WHERE ' + pk + '=?', [op.id])[0] || null; rec = Object.assign({}, old || {});
+          Object.keys(op.changes || {}).forEach(function (c) { var ch = op.changes[c]; rec[c.toLowerCase()] = (ch && Object.prototype.hasOwnProperty.call(ch, 'new')) ? ch.new : ch; }); rec[pk] = op.id; }
+      } finally { _tipShadowOff(bdb, sh); }
+      modelRun({ table: op.table, timing: 'AFTER_SAVE', record: rec, old: old, isNew: op.op_type === 'CRUD_CREATE' }, function (mr) {
+        if (!mr || !mr.ok || !mr.ops.length) { if (mr && !mr.ok) console.log('§MODEL-AFTER-SAVE table=' + op.table + ' refused: ' + (mr.error || mr.msg)); cb([]); return; }
+        // the host op sits at index 0 → every model {__opRef:i} shifts by one
+        var shift = function (v) { return (v && typeof v === 'object' && v.__opRef != null) ? { __opRef: v.__opRef + 1 } : v; };
+        var ops = mr.ops.map(function (o) { var c = JSON.parse(JSON.stringify(o)); if (c.fields) Object.keys(c.fields).forEach(function (k) { c.fields[k] = shift(c.fields[k]); });
+          if (c.changes) Object.keys(c.changes).forEach(function (k) { c.changes[k].new = shift(c.changes[k].new); }); c.id = shift(c.id); return c; });
+        console.log('§MODEL-AFTER-SAVE table=' + op.table + ' ops=' + ops.length + ' tables=' + JSON.stringify(ops.reduce(function (m, x) { m[x.table] = (m[x.table] || 0) + 1; return m; }, {})));
+        cb(ops);
+      });
+    });
+  }
   function _commitCrudSealed(op, K, db, done) {
-    {
+    _modelAfterSave(op, db, function (modelOps) {
       try {
         var params = { table: op.table, id: op.id == null ? null : op.id };
         if (op.op_type === 'CRUD_UPDATE')      { params.changes = op.changes; if (op.actor != null) params.actor = op.actor; }
         else if (op.op_type === 'CRUD_CREATE') { params.fields = op.fields; params.cas = op.cas || null; if (op.stdDefaults) params.stdDefaults = op.stdDefaults; }
         else if (op.op_type === 'CRUD_DELETE') { params.tombstone = true; params.reversible = true; }
         var groupOps = [{ op_type: op.op_type, op_uuid: op.op_uuid || null, params: params }];
+        if (modelOps.length) _resolveOpRefs(db, [params].concat(modelOps)).slice(1).forEach(function (mo) { groupOps.push({ op_type: mo.op_type, op_uuid: null, params: mo }); });
+        if (op._seqOp) [].concat(op._seqOp).forEach(function (so) { groupOps.push({ op_type: so.op_type || 'CRUD_UPDATE', op_uuid: null, params: so }); });   // MSequence bump(s), same group (last: no op-index shift)
         Promise.resolve(K.commitGroup(db, groupOps, _commitMeta())).then(function (res) {
           if (!res || res.committed !== true) { console.warn('§CRUD ' + op.op_type + ' commitGroup not-committed reason=' + (res && res.reason || '?')); dryCrud(op); done(); return; }
           // T7 fix 2 (W-T7-INC): hot-path verify is tip-cached incremental (first call of a session is full).
@@ -3013,7 +2512,7 @@
           });
         }).catch(function (er) { console.warn('§CRUD ' + op.op_type + ' commit error', er && er.message); dryCrud(op); done(); });
       } catch (er) { console.warn('§CRUD ' + op.op_type + ' commit error', er && er.message); dryCrud(op); done(); }
-    }
+    });
   }
 
   // ── applyOp — the commit funnel. DOC_ACTION + CRUD verbs all take the GP3 signed-write seam (sidecar). ──
@@ -3047,7 +2546,7 @@
   // Returns a COPY (never mutates the caller's ops); an unresolvable ref is left as-is and logged, so a
   // shape this does not understand fails loudly instead of committing a silent null FK.
   function _resolveOpRefs(db, ops) {
-    var hasRef = ops.some(function (o) {
+    var hasRef = ops.some(function (o) { return o && o.id && typeof o.id === 'object' && o.id.__opRef != null; }) || ops.some(function (o) {
       var f = o && o.fields; if (!f) return false;
       for (var k in f) if (f.hasOwnProperty(k) && f[k] && typeof f[k] === 'object' && f[k].__opRef != null) return true;
       return false;
@@ -3059,6 +2558,7 @@
     if (nextId == null) { console.warn('§CRUD-GROUP-OPREF cannot read kernel_ops MAX(id) — leaving refs unresolved'); return ops; }
     var resolved = 0, unresolved = 0;
     var out = ops.map(function (o) {
+      if (o && o.id && typeof o.id === 'object' && o.id.__opRef != null) { var oi = Number(o.id.__opRef); var oc = {}; for (var op2 in o) if (o.hasOwnProperty(op2)) oc[op2] = o[op2]; oc.id = -(nextId + oi); o = oc; resolved++; }   // model_layer: UPDATE of a row this group creates
       if (o && o.changes && !o.fields) {                                    // FS-16: CRUD_UPDATE changes[k].new = {__opRef}
         var ch2 = {}, anyC = false;
         for (var ck in o.changes) if (o.changes.hasOwnProperty(ck)) {
@@ -3373,7 +2873,10 @@
                     formValues: function () { return _formCtx ? gatherVals(_formCtx.e) : null; },   // §P2 (W-PARITY-REFLIST): read-only witness seam — the open form's values AS THE ENGINE READS THEM (Y/N for a Yes-No)
                     formEntry: function () { return _formCtx ? _formCtx.e : null; },              // §P1 (W-PARITY-FIELDSET): the open form's (merged) entry — field set + pins, read-only
                     registerFolded: registerFolded, ensureStore: _ensureStore, hasEntry: hasEntry,   // S2B: AD-folded CRUD — host registers a dictionary-derived spec so ANY table is editable (entryFor fallback)
-                    fireCreateCallout: fireCreateCallout,   // S2/J4: host glue — AD callout dispatch on a create-form field change (price/defaults)
+                    calloutTab: function () { return _co ? _co.tab : null; },
+                    // §CP (W-CP-PROC-LIVE): a SvrProcess port's transaction — the tip-shadowed query + the session env (ModelLayer.Trx inputs)
+                    withModelTrx: function (fn) { var r = null; if (typeof withBundle !== 'function') return null; withBundle(function (db) { if (!db) return; var sh = SIDE ? _tipShadowOn(db, _sideTables(SIDE)) : [];
+                      try { var env = _modelEnv(); env.role = (global.APP && global.APP.roleId) || 0; r = fn(_modelQuery(db), env); } finally { _tipShadowOff(db, sh); } }); return r; },   // §CP (W-CP-CALLOUT-LIVE): read-only witness seam — the open form's GridTab
                     // §P10 (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §P4-OPEN item 5 — W-DOCNO-BRANCH):
                     //   READ-ONLY witness seam over the two IsDocNoControlled branches. The only DocNo witness
                     //   asserted the TABLE-level path against a MOCKED __idmpDb whose oracle was written beside

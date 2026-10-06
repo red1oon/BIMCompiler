@@ -1,0 +1,8 @@
+torch night [CACHE_VERSION = v1472] compositeMean=82.18 "programs":128
+torch a616 [CACHE_VERSION = v1472] compositeMean=50.9 "programs":129
+torch clinic [CACHE_VERSION = v1472] compositeMean=72.39 "programs":94
+torch inner [CACHE_VERSION = v1472] compositeMean=120.42 "programs":122
+torch term [CACHE_VERSION = v1472] compositeMean=138.89 "programs":114
+torch p672 [CACHE_VERSION = v1472] compositeMean=88.91 "programs":128
+torch plenum [CACHE_VERSION = v1472] compositeMean=101.28 "programs":126
+== torch done 13:00:18
