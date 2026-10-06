@@ -1547,7 +1547,7 @@ Lines grid showing the per-discipline lines (Road / Lighting / Drainage / Signag
 Numbers from the push's own § lines (§PROJ_PUSH, §PROJ_PUSH_LINK, §PROJ_ORDER_LINE).
 **+ RETURN (user 2026-10-06: "squeeze in the dialogue saying 'from here, the procurement cycle and materials on site will lead back to the
 viewer'. ... click on the red pill and stop frame fast show it goes back hilite the model on canvas.. that be 2 sec but immense value"):**
-line M: "From here, the procurement cycle and materials on site lead back to the viewer." Picture: red pill (Zoom Across) clicked in the
+line M: "From here, the procurement cycle and materials on site lead back to the viewer — which can result in actual versus budget variance." (user 2026-10-06 addition; variance = existing TM_4D5D_VARIANCE lane, re-check its § line before voicing) Picture: red pill (Zoom Across) clicked in the
 Project window → viewer frame with the order's elements highlighted, held ~2 s. ⛔ Waits on the Zoom-Across source-db + highlight fix
 (erp/idempiere.html:6106 builds `<bld>_extracted.db` — wrong for CivilWorks.db). ⛔ Waits on the proxy-by-discipline fold fix (else the
 grid shows one lumped "IfcBuildingElementProxy" line). Then title "IFC Extracted — 4D, 5D to 8D ERP" is backed by a shown ERP step.
