@@ -638,6 +638,14 @@ Fix 1: CRS code → exact projection (candidate Malaysian Cassini-Soldner state 
 two-tap anchor ≥ ~50 m apart. Height = shared "ground under point" with DRIVE. Witness: synthetic GPS track;
 no georef → `§WALK_GPS INCONCLUSIVE`, never a silent wrong dot.
 
+**§I.2 findings from the mobile walk mock-up (2026-10-06, `prompts/film_mobile_walk_mock.js`, ~/Videos/CivilWorks_mobile_walk_MOCKUP.mp4):**
+the real walk mode RUNS on the road in a phone viewport (toggleWalkMode / advanceWalkStep, §WALK_BASELINE/§WALK_UNLOCK), BUT:
+(1) on mobile `effects.js` is skipped (§EFFECTS_SKIP mobile) → `A.civilDriveRoute` undefined → civilRouteAt / civilCastZ / civilGotoChainage
+return null on a real phone (the mock shimmed it from civilRoutePath() in-page only); (2) walk has NO ground follow — eye 1.71–2.24 m above
+road over 5.4 m (57/75 frames > 0.5 m off 1.7), it rises along the view direction; no storey snap (nearest floor ≥ 12.9 m); (3) setWalkAnchor
+picks a door (13 storeys cached) → camera at (−234.6, −3.6, 105.4), far off the route. GPS site-walk needs: route on mobile, ground-snap, route anchor.
+Heap 2,477 MB in the phone-viewport run (desktop machine).
+
 ### §J Very long roads (100 km) — section streaming
 DLOD today saves draw work, not memory (geometry "disposed never", `dlod_nav.js:475`, `:1397`). 100 km ≈ ~21 GB
 (estimate). Design: chainage tiles (~1–2 km) · load near / proxy far / evict behind · per-tile origin · metadata
