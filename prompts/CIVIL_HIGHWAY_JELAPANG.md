@@ -43,6 +43,15 @@ if it exports, it is a feeder, not a rival. Consequence: the queue below runs di
    check closedness first, say VACUOUS/INCONCLUSIVE if open); witness against an independent computation (IfcOpenShell / numpy on the same
    mesh); show it as a ground-card line; duration stays on the red OUTSTANDING card (no cited output rate).
 4. Then the Alt+C film per FILM_NARRATION.md "▶▶ RESUME HERE FIRST" + §11.v4/v4.1 — bake only on the user's go.
+**Item 2 ✅ DONE (witness) 2026-10-06 — bim-ootb #1897 MERGED.** GEOTECH|DRAINAGE in `clash_rules.json` (family civil, tol 0,
+ignore IfcOpeningElement — copied from the existing civil rules; json only). CivilWorks.db (GEOTECH 9,145 · DRAINAGE 200):
+`§CLASH_NARROWPHASE broad=30529 obbSurvivors=27446 meshTrue=11 touchOnly=1 unknown=0` — **quote 11, never 30,529** (bbox false
+positives). 6 = GROUND TREATMENT horizontal drains vs ROADSIDE DRAIN TYP 5 (0.6–19 mm), 5 = RETAINING WALL vs drains (0.06–0.71 m);
+no driven pile clashes. RED control: origin/main rules → 0. Fleet (`§CGD_FLEET`): Hospital/Terminal/LTU_AHouse/Duplex 17 pairs each,
+lists+counts identical, 0 new rows. Film-card candidate: horizontal drain `28irGXblM$EG0000000Ga8` × roadside drain
+`2fiiNay2Wysm00000008wp`, centre 428.19, 52.08, 62.62, depth 19 mm (alt: wall `…kkT` × drain `…8fR`, 0.71 m) — on-route NOT checked.
+⛔ open: `witness_clash_mesh_narrowphase.js` on CivilWorks 8/10 (I3: 2 disagreements in DRAINAGE|ROAD; I5 selftest S7b) — no
+origin/main baseline run, so pre-existing vs new is unknown. Witness: `viewer/tests/witness_clash_geotech_drainage.js` (10/10).
 Also open: bim-ootb `test/scene-merge-witness-selfconsistent` (pushed, NOT run) — run witness_scene_merge_2026-07-30, PR if green.
 
 ## ▶▶ (2026-10-06 close) the Alt+C road film of CivilWorks.db — start at FILM_NARRATION.md "▶▶ RESUME HERE FIRST".
