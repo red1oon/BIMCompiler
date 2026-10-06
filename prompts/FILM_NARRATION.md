@@ -1520,6 +1520,12 @@ lets the CLI bake run without `--override`.
   "About two hours" = the user's figure, not measured — replace with the real bake's wall time once baked.
   Seen in the clip: browser "press Esc to exit full screen" banner ~first 3 s; the bridge's discipline caption reads "Architecture Envelope".
 
+### §11.v5 CLOSE — truthful summary (user 2026-10-06: "Yes a truthful report and the voice says Now you know what you got")
+End = (1) summary card with only MEASURED items: 11 mesh-true clashes (of 30,529 bbox) GEOTECH×DRAINAGE · earthworks ≈ 22,048 m³ ±2.3 (48 open
+edges) · stud spacing 1.00 m in 20 groups (the one VALID road check) · element counts; (2) scroll of model_check_report.html on CivilWorksPath.db
+(302 rows, 4 of 5 checks tagged speculative — shown, not hidden: sign height reads to −6.02 m, lateral clearance 0.00 m on all 138); (3) last line,
+M: "Now you know what you got." Re-check every number on the bake log / §ROAD_CHECK / §EARTHWORKS_VOLUME before voicing.
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
