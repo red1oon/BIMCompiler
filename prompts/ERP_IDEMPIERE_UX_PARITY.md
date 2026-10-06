@@ -1933,4 +1933,7 @@ Suspect (code-read, unverified): `erp/bim_orders_overlay.js` — the viewer's pu
 blocked outright. Witness needed (user's view, not a scripted happy path): delete a pushed C_Project/C_ProjectLine in the ERP UI →
 reload → count rows; then the fix (delete must write through to the push store, or the push store must be a delta the ERP owns).
 Until fixed: a reload does NOT clear old pushes; clearing the site's data (the push store) does.
+The landing page **Clear cache** (index.html `clearCache()`) empties only IndexedDB `bim_ootb_imports` + `bim_ootb_cache` and the entered
+flags — it does NOT touch the OPFS push store `bim_analysis/bim_project_orders.db` (nor the ERP's own cached seed), so it cannot remove
+pushed project records either. Gap to close with §BIM-CRUD (user expected Clear cache to do it, 2026-10-07).
 **Rule restated:** an ERP "CRUD ok" claim covers delete only when a witness deleted THROUGH THE UI and re-read after reload.
