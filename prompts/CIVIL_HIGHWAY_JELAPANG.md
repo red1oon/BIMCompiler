@@ -21,7 +21,18 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶▶ NEXT SESSION — do these in order (user 2026-10-06: "update to go at them in a new session")
+## ⚖ POSITIONING — the receiving desk for infrastructure models (user, 2026-10-06)
+> User: *"where do u see we might fit in?"* (re InfraGrid3D et al.) → agreed: *"Thus having such advantage, we only need to be 'half as good'"*.
+
+Authoring tools (InfraGrid3D — browser, cloud, roads/utilities/lighting with in-tool clash; Civil 3D; OpenRoads) MAKE the road.
+We take any authored IFC and handle everything after it: **cross-vendor clash** (geotech vs drainage from different teams/files —
+an in-tool clash cannot see the other vendor's file), quantities/earthworks volume, 4D, film, ERP handoff — in the browser, no
+server, deterministic, MIT. **"Half as good" rule:** we do not chase authoring parity (no road design, no alignment editing);
+each feature only needs to be good enough to hand off, and must be provably correct (witness), not rich.
+Source for InfraGrid3D: a directory listing only (productcool.com/product/infragrid3d) — its IFC 4.3 export is UNVERIFIED;
+if it exports, it is a feeder, not a rival. Consequence: the queue below runs differentiators first (clash, volume), looks later.
+
+## ▶▶ NEXT SESSION — order REVISED 2026-10-06 by positioning above: 2 (clash) → 3 (volume) → 1 (terrain) → 4 (film, user's go)
 1. **Finish §ALTS_CIVIL_TERRAIN_GROUND** (PHOTOREAL_STILL_RENDER.md): bim-ootb branch `feat/alts-civil-terrain-ground` (pushed, WIP commit, no PR).
    Run `viewer/tests/witness_alts_terrain_ground.js` — RED control with `ROOT=<worktree at origin/main>`, then on the branch (CivilWorks.db +
    Duplex). The first runs were INCONCLUSIVE from a harness bug (hard-coded ROOT, fixed on the branch). GREEN → PR + auto-merge.
