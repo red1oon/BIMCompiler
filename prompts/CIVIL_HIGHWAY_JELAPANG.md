@@ -87,6 +87,9 @@ FAIL; Duplex VACUOUS (not PASS). Open: fleet proof Duplex only; DLOD-hidden elem
   Witness adds frame time lens on vs off (§PROFILE_LENS_PERF) and precompute ms + heap. **PDF:** "Profile PDF" in Long mode opens a new tab with
   the whole road as fixed-length sheets (same span per sheet) + data band (chainage, ground z, road z every 10 m), print CSS → browser
   "Save as PDF" (no new library). Version 2 (real meshes flattened in the lens) only after v1 is measured.
+- **REVISED again 2026-10-06 (user: "or PNG?" · "may zoom (your idea). Drag the lens.. then scroll within?"):** the lens is DRAGGED and stays
+  where dropped; wheel INSIDE the lens zooms the span (default 100 m, range 50 m … whole road; camera wheel unaffected outside the lens);
+  output = Profile PDF tab AND PNG (lens view, and per sheet).
 - Hover: lens follows the pointer; centre = nearest route point (chainage s0, "inferred"); draws road / ground / drain profile for [s0−w, s0+w],
   flat, read-only overlay (no scene change). Wheel inside the lens sets w (±25 m … whole road); samples re-taken across the span (fine at small w).
 - Click: pin + camera fly (+ Cross cut there if Cross is on). Data band under the curve (chainage, ground z, road z) at the lens scale.
