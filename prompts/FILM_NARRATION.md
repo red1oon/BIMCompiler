@@ -1558,6 +1558,13 @@ Line (M): "Many users, on desktop or mobile, work on the same model — by passi
 share sender works but receiver clash-restore bug OPEN (project_share_sheet); sync FSM/relay PR #203 still open. No witness yet of: viewer A
 exports a fold file → viewer B (mobile viewport) imports it → same state hash. Needs that witness on CivilWorks.db before the line is filmed.
 
+### §11.v5 MOBILE SITE-WALK MOCK-UP (user 2026-10-06: "then just mock up (spec'd that it refers to GPS for location finding)")
+A LABELLED mock-up (presentation, not a claim the feature exists): phone portrait viewport 390×844, the real CivilWorks.db in the real viewer,
+camera at eye height (1.7 m above the ground read by civilCastZ) walking ~40 m along the inferred route; overlays: a blue GPS dot + accuracy
+ring at screen centre-bottom, a top chip "GPS site-walk · mock-up (specified: CIVIL_HIGHWAY_JELAPANG.md §I.2)", chainage readout. ~5 s clip.
+Spec it refers to: §I.2 (GPS → position via CRS or two-tap anchor; height = ground under point; no georef → INCONCLUSIVE, never a silent wrong
+dot). Narration must say "planned" / "mock-up", never "works today". Memory caveat stands: model ~2 GB heap vs ~0.6 GB phone tab (unverified).
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
