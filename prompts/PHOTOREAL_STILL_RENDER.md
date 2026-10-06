@@ -677,3 +677,30 @@ materials; (a) `clone()` returns an R10 array of clones of the same length; (b) 
   overlay gone AND `_stillRefineActive=false`. Without the fix the overlay never appears (proves the issue). INCONCLUSIVE if
   `§GI_STILL_OFF` was not logged (then the run took the bounce path and judged nothing).
 - SHIPPED bim-ootb PR #1856 (fix/still-overlay-nogpu @2c06bea1, sw v1478): W-STILL-OVERLAY-NOGI before FAIL / after PASS (overlay 1280x720 mean 138.9, 3.2 s, Esc ends still).
+
+## 2026-10-06 — §ALTS_CIVIL_TERRAIN_GROUND — SPEC (user: "alt-s, when facing a CW that has ground IFC, should we still apply our default ground?" → "update the dedicated alt-s prompt to those 3 items, do advice on the choices")
+**Measured in code (bim-ootb main, sw v1589):** Alt+S forces the default plane on — `effects.js:4347` `A.ground.visible = true`, then
+`A._calcGroundY()` + `_applyGroundTexture` ('earth', §GROUND_EARTH_DEFAULT, §GROUND_ALBEDO gain) + `_buildGroundPuddles` (`:4340`). On a civil
+model carrying an EARTHWORK body, `_calcGroundY` now places the plane at the earthworks' TRUE lowest vertex (§CIVIL_REF_LOOK G1, #1887:
+CivilWorks/Merged 30.52 m; the body spans z 30.5–90.4, the road ~52–79) and the body itself draws SEE-THROUGH (opacity 0.28, depthWrite off —
+a navigation look). Result in a still: an earth-textured plane with puddles ~30 m under the road, seen through a faint earth-coloured body =
+a double ground. Gate for everything below: the model has EARTHWORK geometry (CIVIL_DISCS); buildings + terrain-less models unchanged.
+1. **The model's terrain IS the ground in Alt+S.** On Alt+S enter, the EARTHWORK materials go OPAQUE (opacity 1, depthWrite on) with the SAME
+   earth texture + `_photoGroundAlbedoGain` the default ground uses (one ground look, not two); restored to the 0.28 navigation look on exit
+   (same save/restore pattern as `_photoGroundWasVisible` / `_photoGroundPrevKey`). Piles / soil nails inside the body are then hidden in the
+   still — correct for a photo (they are underground). Log `§ALTS_TERRAIN_GROUND earthwork=N opaque=1 tex=earth gain=…`.
+2. **The default plane only as horizon, outside the terrain's footprint.** Keep it drawn but never under the body: a hole / clip at the
+   terrain's plan footprint (or simply the plane at the terrain's lowest edge height with the footprint masked), so no plane shows through or
+   z-fights with the terrain. Log the footprint + plane height.
+3. **No puddles on terrain models** — they are painted on the plane (`_buildGroundPuddles`), which is no longer the walking surface. Log
+   `§PHOTO_PAINT_SEED … puddles=0 reason=terrain`.
+**Advice on the open look choice (horizon vs dark sky at the terrain edge) — recommend HORIZON:** the earthworks body is a 2.5 × 2.0 km slab
+with cut edges; ending it on dark sky makes the still read as a table-top model floating in space, and every orbit / wide still (the user's
+far-orbit intro, the whole-route view) would show that edge. A horizon plane at the terrain's edge height, in the same earth texture,
+lets the existing envelope-sized fog (§FOG_DENSITY, env=2130 m on this site) dissolve the seam — no new mechanism. Dark sky only fits a
+deliberate "model on a plinth" presentation shot; keep it as a Settings option, not the default. Plane height: the terrain's own
+EDGE (median z of the body's boundary vertices, measured from the mesh — not the bottom 30.52, which would expose ~20–60 m cut walls at the
+edges); if measuring the boundary is costly, fall back to the bottom and let fog cover it, and log which was used.
+**Witness (to write with the code):** CivilWorks.db Alt+S state — EARTHWORK materials opaque during, 0.28 after exit; plane hidden inside the
+footprint (sample rays straight down inside the footprint hit the terrain, not the plane); puddles 0; Duplex / Hospital Alt+S identical
+(plane on, puddles > 0, no terrain path). NOT built — awaits the user's ruling on the horizon choice.
