@@ -34,6 +34,11 @@ review: `prompts/CWRoadBakeIssues.md` (Issues A–D, each with log lines + code)
   no longer freezes on day 18 (Issue B). Proof pending: v7 bake log.
 - Issue D (backwards CH 10 Ground Treatment bar): task start = template-run date, ops 84 d later. Civil-only (fleet caches 0 mismatches).
   DB patch was applied then overwritten by the user's viewer save → bar backwards again; user: leave it. Generator fix open.
+**ERP side found in the film work (2026-10-07) — owned by `ERP_IDEMPIERE_UX_PARITY.md` §MD-UPSTREAM + §BIM-CRUD:** Task Line showed every
+project's lines in the user's session (master-detail model failed upstream; #1924 only fails closed) and BIM-pushed project records
+cannot be deleted (overlay re-inserts them on boot — suspect). ERP chapter clip v2 (`~/Downloads/CivilWorks_ch3_erp_v2_narrated_AFTER.mp4`)
+and Sections bonus (`…_bonus_sections_narrated_AFTER.mp4`) await user review — NOT spliced. Recorders: `prompts/film_erp_clip_recorder.js`,
+`prompts/film_sections_clip_recorder.js` (real GPU). Lens pending items §PROFILE_LENS_PENDING; Civil guide live (CivilWorksGuide).
 **In flight (check first):**
 1. **v7 bake** → `~/Videos/CivilWorks_film_v7_{BEFORE.mp4,page.log,cli.log}` (flags as v6 + `--sun-compass`, both fixes). Read log:
    `§CW_SOLIDIFY_EVENT civil=true added>0`, `§CW_PACE_DISTINCT`, `§CPE_DAY_COUNTER` advancing, `§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=[]`,

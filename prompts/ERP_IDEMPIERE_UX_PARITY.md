@@ -1909,3 +1909,28 @@ Branch bim-ootb `feat/cp-open-items` (worktree /tmp/wt-callouts). File ownership
    deletes ours for the filter first (no-pk m_costqueue/m_costhistory duplicated).
 5. ✅ **CostCreate** non-vacuous (`proc_CostCreate_work.json`, back-dated invoice cost details reopened): 4/4 MATCH after W2's cdSet fix;
    **FactAcctReset** (`proc_FactAcctReset.json`, DeletePosting=N): Updated = 4 = ref, MATCH. Both `--off` DIFF.
+
+## §MD-UPSTREAM + §BIM-CRUD — OPEN (2026-10-07, user field test on the live site; continue in a new session)
+> User: *"This is common sense coding where AD master detail always filter accordingly. This means a deeper fault upstream."* …
+> *"I also cannot delete those recs. Never tested manually before as i relied on your sessions to delete it must have confirmed such CRUD."*
+
+**1. Master-detail filter missing in a real session (ROOT CAUSE NOT FOUND).** User F12 (live, erp sw v820, GardenAdmin role 102,
+org `*`, `§IDEMPIERE boot db=idb_cache`): Project 990001 (Civil Works) → **Task Line** read
+`C_ProjectLine where=(C_ProjectLine.C_ProjectTask_ID > 0) AND AD_Client_ID IN (0,11)` → **29 rows of two projects**, and NO
+`§IDEMPIERE-MD` line → `_gtModel()` returned null (`AdGridTab.open` threw inside `catch(e){gt=null}`, idempiere.html ~2020). Cursor sat on
+a Hospital line → red pill (correctly for THAT row) opened Hospital `find=IfcFooting`.
+Headless repro on the same code (`erp/tests/probe_md_fail_closed.js`, fresh profile, org access list 10 orgs) does NOT fail:
+direct jump → `filter=(none) 2=3` 0 rows; Phase→Task→Task Line → `C_ProjectTask_ID=990013` 1 row. Differences to chase: org `*`
+(`_roleOrgWhere` null), IDB-cached seed (an older seed missing an AD column `AdGridTab.open` needs?), tab visited without parents.
+**Shipped mask, not the cure:** bim-ootb #1924 (erp sw v821) — logs `§GT-OPEN-FAIL tab=… error="…"` and fails closed (`2=3`) when a
+detail tab has no model. **Next:** get the user's `§GT-OPEN-FAIL` line after #1924 is live → fix the upstream cause in ad_gridtab.js /
+the seed, per AD-LAYER LAW (generic, cite the iDempiere GridTab class).
+
+**2. CRUD — the user cannot delete the BIM-pushed project records. Prior "CRUD done" claims were NOT a manual delete of these rows.**
+Suspect (code-read, unverified): `erp/bim_orders_overlay.js` — the viewer's push store `bim_analysis/bim_project_orders.db` is
+**authoritative**: on every ERP boot `overlayTable` CLEARS the BIM band (PK ≥ 990000) and re-INSERTs it from that store
+(`§BIM_OVERLAY rows=462`). A delete done in the ERP never reaches that store, so the rows come back on the next load — or the delete is
+blocked outright. Witness needed (user's view, not a scripted happy path): delete a pushed C_Project/C_ProjectLine in the ERP UI →
+reload → count rows; then the fix (delete must write through to the push store, or the push store must be a delta the ERP owns).
+Until fixed: a reload does NOT clear old pushes; clearing the site's data (the push store) does.
+**Rule restated:** an ERP "CRUD ok" claim covers delete only when a witness deleted THROUGH THE UI and re-read after reload.
