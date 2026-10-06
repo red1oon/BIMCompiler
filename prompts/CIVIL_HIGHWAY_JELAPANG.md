@@ -206,7 +206,12 @@ All of today's viewer work is merged + live (bim-ootb #1887–#1895, sw v1589). 
    `feat/civil-partner-discs`; it tipped the merged road schedule onto the CELL path (no §CPM_RUN; lamps before pavement 0 → 92, first-2 %
    lamps 16) — find which change (renumbered sequences vs group chain vs §CELL_GATE quantity) before shipping. Then: clash GEOTECH × DRAINAGE,
    4D template phases, film narration of the new disciplines. Measure on the user's merged DB.
-2. **Sky mirror ghost** — still present in v3c (user). Ruled out: lamp glow (#1875), room-probe reflection (#1884), glass mirrors. Next:
+2. **Sky mirror ghost** — PART FIXED 2026-10-06, bim-ootb #1918 (auto-merge): the "ghost boxes" = effects.js _buildPhotoProps fake-city skyline
+   (37 opaque MeshBasic boxes at 2.2× envelope ≈ 5 km out on a road) → skipped when A.isCivilModel() (§SKY_GHOST_SKYLINE). Witness
+   witness_sky_ghost.js GREEN (frame 450: boxes 4 → 0); detector tools/sky_ghost_detect.js (HORIZON_BOXES; v5: 728/1,359 frames ≥3 boxes).
+   NOT proven: faint sparkly / mirrored vertical lines in the sky — absent in single-frame renders → likely temporal (GI film carry or TAA
+   history); judge on the v6 film with the detector. Ruled out: GI bounce, A.ground, earthworks slab (#479) env map, _mirrorOwnApply (no
+   mirrors on roads), planar pass (off in films). Older text: still present in v3c (user). Ruled out: lamp glow (#1875), room-probe reflection (#1884), glass mirrors. Next:
    get the second, list every drawn object above the model at that frame (sky surface, ghost ground, fog, TAA/SSR history).
 3. **Build order along the route** — drive-order correlation 0.30 (need ≥ 0.8); E4 loses ~4,970 of 7,685 edges to cycles through the section
    milestones (§CHAINAGE_V2). A real chainage may now come from the partner's CHAINAGE labels (332 solids).
