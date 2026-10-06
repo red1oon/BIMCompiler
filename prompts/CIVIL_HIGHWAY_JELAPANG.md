@@ -792,3 +792,10 @@ I −17.0 LUFS, longest gap 4.0 s).
 4. **Find panel lower section (ERP price + link) disappears and survives refresh.** Suspect a persisted collapsed/hidden state
    (localStorage / settings) or a section built only on one path. Find the owner, make it always restorable (refresh = shown), witness
    = hide → reload → present.
+5. **(user 2026-10-07) Reuse the open viewer tab.** *"it can reuse the open tab if it is opened. Only when not, it loads again."* Code read: the
+   red pill always opens a fresh viewer page; for an import the db comes from IndexedDB (`import://`, scene.js:1728), so the wait is the
+   full model rebuild, not a download. Spec: ERP asks first (same-origin BroadcastChannel) "is a viewer open on <db>?" → that tab answers,
+   runs applyFindScope on the scope, and is brought to front (named window target) — no reload. No answer within a short timeout →
+   open the URL as today, with a `§ZOOM-REUSE none → cold open` line (an explicit, logged branch, not a silent fall-through).
+   Witness: viewer open → red pill → `§ZOOM-REUSE hit` + zoom, page NOT reloaded (same performance.timeOrigin), ms stated; viewer closed →
+   `§ZOOM-REUSE none` + cold open lands. Matching key = the db URL, never a model name.
