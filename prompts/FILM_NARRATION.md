@@ -1725,3 +1725,6 @@ assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witnes
 - **Ch4 ERP = the focus now** (POC: 1–2 disciplines, push, Project lines, red pill back).
 - **Closing card (replaces nothing; after "Now you know what you got", before Chapter End):** *"Civil Works Road Construction is our latest
   challenge, to prove the concept that BIM compiler can be applied. Give us another week to complete."* (user wording, verbatim.)
+  2nd statement, same card (user 2026-10-06): *"What is important is the computed data - giving the compliance report, truthful geo -
+  drainage clashes, and a full Viewer experience even on mobile."* Backing: §MC_REPORT rows=302 · §CLASH 11 mesh-true GEOTECH×DRAINAGE ·
+  mobile = the 390×844 walk clip; ⚠ memory caveat: whole-model heap on a phone tab is unverified (~0.6 GB/tab vs this model).
