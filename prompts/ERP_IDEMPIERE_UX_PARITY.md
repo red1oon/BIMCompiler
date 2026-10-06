@@ -1947,7 +1947,7 @@ M_Product_Category, M_Product, C_Project, C_ProjectPhase, C_ProjectTask, C_Proje
 re-baseline writes rippled dates onto the official rows) · `schedule_author_ui.js` (authored 4D phases folded 1:1) · reader
 `proj_order_state.js`. A reset/delete design must cover all four writers.
 **Rule restated:** an ERP "CRUD ok" claim covers delete only when a witness deleted THROUGH THE UI and re-read after reload.
-**§BIM-CRUD seed-reset half ✅ (witness) — bim-ootb PR #1925 (erp sw v822, auto-merge on, 2026-10-07).** Both System Monitor resets now
+**§BIM-CRUD seed-reset half ✅ (witness) — bim-ootb PR #1925 (erp sw v822) MERGED + LIVE 2026-10-07 (fetched: live erp/sw.js v822, system_monitor.js has clearBimPushStore).** Both System Monitor resets now
 remove OPFS `bim_analysis/bim_project_orders.db` (`clearBimPushStore`, `§SEED-RESET bim-push-store removed projects=N`). Witness
 `erp/tests/witness_seed_reset_bim_store.js` clicks the real button: fix `after-reset C_Project 990001=0 store=false PASS`; origin/main
 `=1 store=true FAIL`. STILL OPEN: an ERP UI delete does not write through to the store (rows return on reload).
