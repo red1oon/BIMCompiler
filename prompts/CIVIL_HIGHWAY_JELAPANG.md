@@ -54,6 +54,13 @@ Witness: monotonic s; sampled z equals a direct raycast at 5 random s within 1 c
 ### §CROSS_SECTION — section square to the road at a chainage (spec)
 Reuse the existing section box; orient it to the route tangent at the picked s (from §LONG_SECTION click or a chainage input); thin slab
 (width from the box UI). Witness: box normal · route tangent ≥ 0.999; elements cut at s are exactly those whose bbox spans the plane.
+**§LONG_SECTION + §CROSS_SECTION ✅ DONE (witness) — bim-ootb #1901 MERGED 2026-10-06 (sw v1593).** New `viewer/civil_sections.js` ("Road profile"
+button + panel; API civilLongSection / civilRouteAt / civilCastZ / civilCrossSection / civilCrossSectionOff / civilSectionCut / civilGotoChainage).
+Owners reused: route `A.civilDriveRoute()` (effects.js:10849), gate `A.isCivilModel()` (streaming.js:323), section plane tools.js:475-567 (+2nd plane → 2 m slab).
+Δs 10 m (route built from 50 m bins → finer = noise; capped 500 samples). CivilWorks.db: `§LONG_SECTION samples=213 routeLen=2110.3m road=175 ground=51
+drain=16 rays=639 heapMB=1985 vertsAdded=0`; raycast match 0.00000 m (5 random s × 3 series, independent caster); click → camera 3e-14 m from route;
+`§CROSS_SECTION normal·tangent=1.000000 elementsCut=73 ofIndexed=19892` = independent recompute exactly. `§WITNESS_CIVIL_SECTIONS PASS 12/12`; RED (no file)
+FAIL; Duplex VACUOUS (not PASS). Open: fleet proof Duplex only; DLOD-hidden elements not excluded from the cut set; click resolution ≈ 2.7 m/pixel.
 ### §HANDOFF_AUDIT — neutral loss report + version diff (spec only, build later)
 Per import: elements / psets / materials / storey+discipline links kept X of Y, dropped Z (ids listed) vs the source IFC; per re-export
 (same FILE_NAME identity, the (f) case): added / deleted / moved / pset-changed vs the previous version. Deterministic; result row in
