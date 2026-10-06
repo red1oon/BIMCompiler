@@ -21,6 +21,13 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
+## ▶▶ NEXT SESSION (2026-10-06 close): the Alt+C road film of CivilWorks.db — start at FILM_NARRATION.md "▶▶ RESUME HERE FIRST".
+All of today's viewer work is merged + live (bim-ootb #1887–#1895, sw v1589). Canonical model: `~/Downloads/JALAN JELAPANG IFC/CivilWorks.db`
+(fresh import; Merged.db kept as the merged-route comparison; JELAPANG_AFTER.db was removed by the user — witnesses that default to it now need
+`BLD=`/`JELAPANG=` pointed at JELAPANG.db / Merged.db / CivilWorks.db). Superseded IFCs moved to `IFC_SUPERSEDED/`. Still open (queue below):
+(f) version-replace on re-export (not built) · ⛔ earthworks output rate (no cited source) · ⛔ real chainage (labels carry no properties) ·
+§OPEN items (sky ghost, road checks SPECULATIVE, §W.2 broad phase, §CULL_SPHERE, §LOAD).
+
 ## ▶ RESUME HERE (consolidated 2026-10-06; full history: this file at bim-compiler `2278f7df5`)
 **State:** bim-ootb main live at sw v1577. Road work so far is all merged (§SHIPPED). Current documentary: `~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4`
 (127.6 s; recipe FILM_NARRATION.md §11.v3c). The user merges the partner files into the DB manually (next session works on that DB directly).

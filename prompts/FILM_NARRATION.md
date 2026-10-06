@@ -5,6 +5,36 @@ numbers, no invented claims. Spec before code; a witness proves the track, not a
 **Read the page log after every run** — exit code is not evidence. Honour this block until the lane is DONE.
 **→ Making another narrated/dialogue film (any language)? Jump to `## ▶ PLAYBOOK` below — voices, steps, commands, pitfalls.**
 
+## ▶▶ RESUME HERE FIRST (2026-10-06) — the Alt+C ROAD FILM: "IFC Extraction Program — the owner's report" (§11.v4)
+**Read in this order:** this block → §11.v4 (storyboard) → §12 (the INTRO film, DONE — what it already covers) → PLAYBOOK + §11.v3c (recipe).
+**Division of labour (user 2026-10-06):** *"this fulfill a newbie crowd, and answer basic questions. Thus this leaves our alt-c to go deeper but
+again may have to repeat certain basics to ensure even strong users dont get lost."*
+- INTRO (§12, DONE): `~/Videos/IFC_Extraction_Program_intro_short_subfix_AFTER.mp4` (4:20, opens on the title) + long `…_long_subfix_AFTER.mp4`
+  (4:54). Covers: what it is, 15 files / 970 MB → one model, no server, Find trees, Ask with receipts, one-laptop sizing, red1's mantra, MIT.
+- ALT+C FILM (this, NOT built): the BAKED Alt+C road film of `CivilWorks.db`, going DEEPER — build order, ground works, cards, checks — with a
+  30–40 s "basics recap" so a strong user who skipped the intro is not lost: one file, local, computed when asked, inferred values labelled.
+**Chapters reserved for it (taken OUT of the intro on the user's word):** "Messy IFC? Inferred by default." (IFC2X3 proxies, meaning from file
+names + properties, inferred values labelled — BrowserScaleBenchmark §IFC43) and "Publish now, update later" (editable standard rates, the red
+OUTSTANDING card lists what is missing, merge new files any time, version-replace on re-export is QUEUED not built — CIVIL_HIGHWAY_JELAPANG.md (f)).
+Plus the 6-language greeting / goodbye (kept in both films) and the title idea; nothing else shared with the intro (no cue/card/TSV reuse).
+**Model = `~/Downloads/JALAN JELAPANG IFC/CivilWorks.db`** (fresh import 2026-10-06, 421 MB, 19,892 elements: road 9,706 under JELAPANG + the
+5 IFC/ road files with the bridge under "Jelapang VBC" 10,186 — box view groups by discipline since #1895 so this split does not matter;
+partner properties present: piles 7,575 / soil nails 1,338 / horizontal drains 228 / RC walls 4; 216 lamps (latest), 0 stale).
+⚠ It has NO `cinema_path` table (last save 07:06): save the Alt+C path, then SAVE THE DB, before a CLI bake — else the bake needs
+`--override` with `A.civilDriveRoute()` (CIVIL_HIGHWAY_JELAPANG.md "Rules learned").
+**What is live for it (bim-ootb main, sw v1589 — all merged 2026-10-06):** #1887 earthworks see-through + ROW outline + ground at the true
+earthworks bottom · #1888 merge top-up + Find refresh · #1889/#1895 box view order-free · #1890 road + bridge in ONE civil programme (Gantt 163 d;
+GT → earthworks, bridge alongside) + §CIVIL_GRAPH_GATE (played build order: 0 lamps before their pavement, drive-order rho 1.0 on Merged.db) ·
+#1891 merge keeps properties · #1892 cards: ground-works card by 15_Name, red OUTSTANDING card, earthworks row · #1893 drawn boxes for culled
+instances (every element filed by its box) · #1894 reveal witnesses fixed.
+**Facts to RE-CHECK on the bake log before voicing (never from this file alone):** §ROAD_PANELS kinds/at · §ALTC_GROUND card rows ·
+OUTSTANDING counts (on Merged.db they read 9,456 / 9 / 5 — on CivilWorks.db expect ~300 / 9 / 5) · §CPM_RUN makespan (played ≈ 114 d) vs the
+Gantt 163 d — say which one is shown · §CELL_GATE path=GRAPH reason=chainage · night lamps count.
+**Known limits to SAY, not hide:** earthworks is ONE solid → 1 day at a per-piece rate, played at day 0 (needs volume + an output rate — ⛔ no
+cited rate); real chainage from the partner's labels is ⛔ (text solids, no properties) → route is inferred, shown "(inferred)"; labour RM is
+uncalibrated standard crews ("standard rates you can edit").
+**Gate:** bake ONLY on the user's go (GPU; never beside a user's live tab). Narration per PLAYBOOK; numbers from the bake's own § lines.
+
 ## ▶ RESUME HERE — VIEWER TRAILER v4 (written 2026-10-04 for a NEW session; read this, then §8 STORYBOARD v3 + §8 RUN LOG)
 **UPDATE 2026-10-04 13:30: v4 is BUILT and in red1's hands — see §4 STATUS top entry. The items below are DONE; next = red1's notes on v4, then (only on his go) §9 Modeller.**
 **State:** Viewer trailer v2 is built and in red1's hands (`~/Downloads/BIM_Viewer_Trailer_v2_13languages_…mp4`, 220.9 s).
