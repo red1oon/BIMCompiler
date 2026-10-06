@@ -1489,6 +1489,28 @@ subassemblies = roadmap at most). Consistent with the Modeller strategy on recor
 **Before baking (blocking):** PRs #1887/#1888/#1890 on main; the played-layer gap (TM generate with no stored tasks ignores the
 template) fixed or the build-up beat reworded to the Gantt only; re-check every number against the bake log.
 
+### §11.v5 ASSEMBLY — how v3/v3c were spliced, and what to improve (review 2026-10-06, user: "check back the script how it is done so it can be improved further now that we got more quality info in") — PROPOSAL, not built
+**How it was done:** separate GPU bakes per part (main drive, bridge side pass, far-orbit intro) → `prompts/film_page_clip.js` for the
+4D/5D + compliance pages → `prompts/film_assemble.py` cuts each `file@ss-to` (hand-picked seconds, e.g. main 0–26 · bridge 15–25 · main
+26–86.2), re-encodes to one format (crf 16, no audio), concat-copies; logs `§ASSEMBLE seg= … at=`. Narration TSV cues are absolute seconds
+on the assembled timeline, fitted after.
+**Weak points:** (1) cut seconds are picked by eye, not from the bake log; (2) a key moment (BIG CARD 1 clash) is only filmed if the drive
+happens to pass it — the clash pick is NOT checked on-route; (3) changing one segment shifts every later cue by hand; (4) no check that the
+build state (piece count / day counter) is consistent across a cut between two different bakes.
+**Proposed v5 (each item = spec → witness before use):**
+- **A. Cut from § lines:** cut points come from the bake log (first frame where a discipline starts building, card-shown frames), so
+  "each important segment build-up" is caught by rule, reproducible, and logged as `§ASSEMBLE seg=… reason=<§tag>`.
+- **B. Target bakes for the cards:** short bake with the camera at a known element, not the drive: BIG CARD 1 at the mesh-true clash
+  (horizontal drain `28irGXblM$EG0000000Ga8` × roadside drain `2fiiNay2Wysm00000008wp`, 428.19, 52.08, 62.62 — CIVIL_HIGHWAY_JELAPANG.md
+  item 2); BIG CARD 2 over the earthworks body (needs item 3 volume); INSIDER over one pile's property panel. Note: none of the 11 clashes
+  is a pile — card title "Piles meet drains" must become "Drains meet drains" / "Walls meet drains" (11 = 6 + 5).
+- **C. Cues anchored to segments:** assembler writes `segments.json` (seg, src, at, dur); TSV rows cite `seg+offset`, fitter resolves
+  them → re-cutting one segment never breaks later lines.
+- **D. Continuity witness at each cut:** compare built-piece count and day counter just before / after each cut from both bakes' logs;
+  flag a jump backwards (`§ASSEMBLE_CONTINUITY`).
+**Baseline:** the user saves an Alt+C path into CivilWorks.db now (it had no `cinema_path` table) — that saved path is the v5 baseline and
+lets the CLI bake run without `--override`.
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
