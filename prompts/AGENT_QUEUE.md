@@ -2672,3 +2672,22 @@ rebuilds the artifact bytes (`scripts/minify_pages.js`, esbuild 0.23.0, same as 
   `origin/main@7ab14b99` (uncommitted). Logs read: W-GENESIS-MINIMAL 16/0 (head 99d1b03b7141, 513 ops, posts to the
   cent), W-GENESIS-RESIDENT 15/0, W-CALLOUT PASS. `build/erp/crud_overlay.js|crud_core.js|ad_process.js` twins are a
   long-diverged older line (2503 vs 3069 lines) consumed by node witnesses with a different shape — NOT copied, named.
+
+## §PARKED_2026-10-06 — open-PR sweep (git-admin mandate from the user; PR closes/merges NOT executed — blocked by permission, awaiting the user)
+Measured 2026-10-06 against bim-ootb origin/main (`git cherry` + `git merge-tree`). 12 open PRs:
+| PR | branch | idle since | behind main | merge | unique commits | proposed action |
+|---|---|---|---|---|---|---|
+| #966 | feat/gi-preview-pill | 09-02 | 1,012 | **clean** | 1 | **MERGE** — Alt+G GI Preview drawer entry (user asked 2026-07-22 "i cant find it"); `A.toggleGIPreview`/`_giComposerActive` still exist on main, entry still absent |
+| #1327 | fix/bake-interior-lighting | 09-02 | 662 | conflict | 1 | park (close, branch kept) — conflicts with newer night-lighting mechanism (see §above) |
+| #1317 | fix/arch-area-weight | 09-02 | 669 | conflict | 5 | park — lands with #1191/#1196 |
+| #1196 | fix/exact-lookup-classify-p1 | 09-02 | 791 | conflict | 5 | park — stacked on #1191 |
+| #1191 | feat/ifc-schema-classification | 09-02 | 791 | conflict | 1 | park |
+| #1015 | feat/maxq-offline-runner | 09-02 | 1,000 | conflict | 1 | park |
+| #676 | lane/open-button-ifc-merge | 09-02 | 1,295 | conflict | 2 | park |
+| #255 | feat/offline-btn-surface | 09-02 | 389 | conflict | 1 | park |
+| #1743 | docs/xedge-attribute-prior-fix | 09-17 | 252 | conflict | 1 | park |
+| #1741 | docs/code-scrapbook | 09-17 | 274 | conflict | 27 | park |
+| #1903 | refactor/split-cpe-load-path | 10-06 | 0 | — | 2 | HOLD — needs one live bake (VIEWER_FILE_SPLIT_PLAN §RESULT_LP) |
+| #1876 | release-please | 10-06 | — | clean | — | automated, leave |
+"Park" = close with a comment pointing here; the branch is NOT deleted, so reopening loses nothing. None of the nine is
+superseded by patch-id; each still carries work main lacks, so each needs its own resume session, not a blind rebase.

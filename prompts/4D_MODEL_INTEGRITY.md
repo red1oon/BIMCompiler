@@ -2900,3 +2900,23 @@ a wrong locked baseline sitting next to a correct engine change is worse than an
 looks verified when it is not.
 **How to apply:** a fresh session with real time for DB surgery + a `git bisect`-style hunt on defect
 (b) — this is NOT a five-minute fix, per the user's own suspicion when this was raised.
+
+## §I.1a SPEC (2026-10-06) — collapse the two "S supports T" copies onto ONE owner (`CpmSchedule`)
+**Why now:** user go, 2026-10-06 ("slowly review … real savings"). §I.1 closed the disagreement by a parity witness
+but left two byte-identical copies; `4D_SCHEDULE_ARCHITECTURE_REDESIGN.md` §STAGE4_RETIREMENT_PROPOSAL step (5)
+already names the direction: *"`_contactGraph` consumers collapse onto `CpmSchedule.contactGraph`"*.
+**Measured before change (bim-ootb origin/main @ c6038f93):** `support_sweep.js` `_contactGraph` and `_designatedSupport`
+are code-identical to `cpm_schedule.js` `contactGraph`/`designatedSupport` except the `ScheduleGate` lookup
+(cpm's checks `global.ScheduleGate` then bare `ScheduleGate` — a superset). viewer.html loads `cpm_schedule.js`
+(:1028) before `support_sweep.js` (:1038).
+**Change:** `support_sweep.js` keeps its API names (`contactGraph`, `designatedSupport`, and the internal
+`_contactGraph`/`_designatedSupport` callers) but each becomes a one-line delegation to `CpmSchedule`, resolved at
+CALL time: `global.CpmSchedule`, else (node) `require('./cpm_schedule.js')`, else log `§SS_CPM_MISSING` and return the
+existing not-ok shape — never a silent local copy. Test sandboxes that evaluate support_sweep without cpm get
+cpm_schedule loaded too (test-only change).
+**Owner-table update:** row "does S support T?" / "which ONE thing supports T?" → owner `cpm_schedule.js`
+`contactGraph`/`designatedSupport`; `SupportSweep.*` = delegating aliases.
+**Witnesses (all must hold):** (1) full witness suite: same pass/fail set as the pre-change baseline;
+(2) `probe_cpm_schedule.js` `§CPM_PARITY` must say the two are ONE function (report single-owner/INCONCLUSIVE, not a
+vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule outputs identical before/after.
+**Deletion budget:** expect ≈ −150 lines in support_sweep.js (two bodies + duplicated doctrine comment kept once, in cpm).

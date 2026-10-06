@@ -177,3 +177,14 @@ Gates: 1 identity PASS (127 fns + 101 statements) · 2 load order = original hoi
 3 eslint 0 errors · 5 W-LP-SURFACE PASS + 4 related witnesses same exit/§ lines as main · 7 two commits (test-only, then
 move). **Open:** gate 4 (live bake §LOADPATH_* lines before/after) and gate 6 (deploy fetch) — need the user's go.
 Pre-existing, not caused here: `witness_card_font.js` INCONCLUSIVE on main (draw throws in its stub).
+
+## §LANES — who may touch which big file next (2026-10-06, measured: main commits last 14 d / remote branches touching it last 7 d, upper bound)
+| file | 14 d | branches | decision |
+|---|---|---|---|
+| cpe_load_path.js | 4 | 11 | DONE — PR #1903, held for one live bake |
+| navigate_find.js | 7 | 14 | NEXT split candidate (no protection); schedule when its open branches (find-ask, i18n, bbox-ghost) have landed |
+| time_machine.js | 8 | 12 (civil lane: chainage/mixed-programme/tm-phases) | WAIT — civil lane is editing it now; split after that lane lands. Cheaper first slice: the pure draw/curve functions (≈700 lines, §3 above) |
+| effects.js | 45 | 22 | DO NOT SPLIT — protected lane (§S59) AND the hottest file in the repo; helper extraction only, and only with a witness |
+| cinema_maxq.js | 15 | 16 | DO NOT SPLIT — protected lane (§S59); its 4 helper files are near move-only if the ruling is ever lifted |
+Separate refactor lane (not a split): `support_sweep`/`cpm_schedule` one-owner collapse — spec `4D_MODEL_INTEGRITY.md` §I.1a,
+patch prepared, baseline of the 24 related witnesses saved; resume = apply patch, rerun the 24, HHS+Terminal schedule diff.
