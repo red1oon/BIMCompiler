@@ -1560,6 +1560,12 @@ backdrops; END lines voiced by M, stacked. **Two finished versions (both measure
 (B) `~/Videos/IFC_Extraction_Program_intro_narrated_AFTER.mp4` — the agent's rebuild after the subtext message reached it (it overwrote its
 own first build): subtext inside the end card, voiced by M (row end5, 7.64 s), end card 19.15 s — 294.0 s, 7,644 frames, 35 rows, −16.8 LUFS,
 longest silence 7.33 s. Script TSV committed = the 35-row version (B).
+**User pick 2026-10-06: B** (*"B read aloud but cut off the first 34secs as a version, so it begins right away the IFC Extraction Program..
+this is to hold viewer attention. Longer remains for later use"*): SHORT = `~/Videos/IFC_Extraction_Program_intro_short_AFTER.mp4` — B from
+34.42 s (title card start; OPEN narration ends 33.69 s, audio silent 33.5–35.1 s, title voice 35.02) — 259.6 s, 6,749 frames (7,644 − 895),
+−16.8 LUFS; phone copy `…_short_AFTER_mobile720.mp4` (22.8 MiB). LONG = B unchanged, kept for later. A (`…_v2_AFTER.mp4`) still on disk.
+⚠ Subtitle flaw: the TTS spellings ("I F C", "three dot J S" — 5 rows) are burned into the subtitles as spelled. Fix = separate subtitle text
+from spoken text in the TSV and re-mux (no re-voicing needed).
 **Status (pre-build):** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
