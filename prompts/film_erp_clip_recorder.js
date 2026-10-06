@@ -140,7 +140,10 @@ async function erpPart(page, href2) {
     // over (main.js §ZOOM-SCOPE: find=@token → localStorage zoomfind_<token>), so the Find panel shows "Zoom Across · N items" lit.
     const re = await pop.evaluate(() => { const m = /[?&]find=@([^&]+)/.exec(location.search); const sc = m && localStorage.getItem('zoomfind_' + m[1]);
       if (sc && window.APP.applyFindScope) { window.APP.applyFindScope(sc); return sc.split(',').length; } return 0; });
-    S('§CLIP_BACK_RESCOPE guids=' + re); await sleep(4000);
+    S('§CLIP_BACK_RESCOPE guids=' + re); await sleep(2500);
+    await pop.evaluate(() => { const fp = document.getElementById('find-panel'); if (!fp || fp.style.display === 'none') window.APP.openFindPanel(); });
+    await sleep(2500);
+    S('§CLIP_BACK_FINDBAR "' + await pop.evaluate(() => { const e = document.getElementById('find-selected-text'); return e ? e.textContent : ''; }) + '"');
     for (let i = 0; i < 60 && !seen(/\[back\].*§ZOOM-SCOPE|\[back\].*§FIND|\[back\].*§NF_/); i++) await sleep(1000);
     await sleep(6000);
     S('§CLIP_MARK highlighted');
