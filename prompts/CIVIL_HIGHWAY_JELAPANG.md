@@ -66,6 +66,18 @@ Owners reused: route `A.civilDriveRoute()` (effects.js:10849), gate `A.isCivilMo
 drain=16 rays=639 heapMB=1985 vertsAdded=0`; raycast match 0.00000 m (5 random s × 3 series, independent caster); click → camera 3e-14 m from route;
 `§CROSS_SECTION normal·tangent=1.000000 elementsCut=73 ofIndexed=19892` = independent recompute exactly. `§WITNESS_CIVIL_SECTIONS PASS 12/12`; RED (no file)
 FAIL; Duplex VACUOUS (not PASS). Open: fleet proof Duplex only; DLOD-hidden elements not excluded from the cut set; click resolution ≈ 2.7 m/pixel.
+### §SECTION_CIVIL_MODES — Long/Cross live INSIDE the Cut section tool (spec; user 2026-10-06: "i rather not clutter viewer but extend from the cut section tool? it has x/y/z. If detected is a CW long profile then give Long/Cross? And a scrubber to drag along the length of the road?")
+- DELETE the floating "Road profile" button (`civil-section-btn`, civil_sections.js `_build`). No new top-level control.
+- In the existing Cut section panel (tools.js `section-slider-panel`, axis buttons `sec-axis-x/y/z`, `A.setSectionAxis`): when
+  `A.isCivilModel()` AND a route exists, add two axis buttons **Long** and **Cross** after X/Y/Z; buildings see X/Y/Z only (unchanged).
+- **Cross:** the panel's slider becomes a chainage scrubber 0 … route length (m, "inferred" label); dragging moves the 2 m slab square
+  to the route tangent LIVE (`A.civilCrossSection(s)`), shows "chainage N m (inferred)".
+- **Long:** the profile chart (`civilLongSection`) shows inside the section panel; the same scrubber moves the chart cursor + camera
+  along the route (`A.civilGotoChainage`); clicking the chart sets the scrubber.
+- Switching back to X/Y/Z or closing the tool clears the civil slab (fixes the untested "Cut section while civil slab on" path).
+- Witness: building → exactly 3 axis buttons, no civil UI; civil → 5; dragging the scrubber to 3 values → normal·tangent ≥ 0.999 at each, cut set
+  = independent recompute; Long scrub → camera within 1 m of route(s); X/Y/Z after Cross → 1 clip plane, not 2; no `civil-section-btn` in the DOM.
+  Deletion budget stated (lines +/−).
 ### §HANDOFF_AUDIT — neutral loss report + version diff (spec only, build later)
 Per import: elements / psets / materials / storey+discipline links kept X of Y, dropped Z (ids listed) vs the source IFC; per re-export
 (same FILE_NAME identity, the (f) case): added / deleted / moved / pset-changed vs the previous version. Deterministic; result row in
