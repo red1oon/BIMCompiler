@@ -168,3 +168,12 @@ Every split commit must pass ALL of these; a missing one = not done.
 6. **Deploy proof** — `sw.js` precache + `CACHE_VERSION` bump; fetch the live page, every new file 200, zero console errors.
 7. **One commit per file split** — a single revert restores it.
 **Precondition:** effects.js / cinema_maxq.js are a PROTECTED LANE (`SCRIPT_LENGTH_REFACTOR_SEAMS.md` §S59, verified present 2026-10-06) — splitting them needs the user to lift that ruling.
+
+## §RESULT_LP — cpe_load_path.js split DONE, held for a live bake (2026-10-06, bim-ootb PR #1903, not merged)
+4,684 lines → 6 parts (`lp_chain` 1,138 · `lp_geom_pick` 1,125 · `lp_hud` 847 · `lp_apply_restore` 678 · `lp_build` 561 ·
+`lp_backdrop_diag` 426) + 73-line shell. Generated mechanically (two-phase setup; 79 cross names via `LP`; 26 literal
+constants kept verbatim). Correction to §5 above: **16** cross names are written after declaration, not 7.
+Gates: 1 identity PASS (127 fns + 101 statements) · 2 load order = original hoisting by construction (phase 1/2) ·
+3 eslint 0 errors · 5 W-LP-SURFACE PASS + 4 related witnesses same exit/§ lines as main · 7 two commits (test-only, then
+move). **Open:** gate 4 (live bake §LOADPATH_* lines before/after) and gate 6 (deploy fetch) — need the user's go.
+Pre-existing, not caused here: `witness_card_font.js` INCONCLUSIVE on main (draw throws in its stub).
