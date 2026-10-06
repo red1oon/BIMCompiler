@@ -145,3 +145,6 @@ match its ops exactly. TM window `12/29/2026 → 3/18/2027`. TASK_ROOT also star
 (the day the 4D template ran). So the first task bar starts ~84 days before the TM's day 1 → drawn as negative/backwards days.
 `§GANTT_AXIS axisDays=163.0 trueDays=78.5` is the same 84-day split. Question: which owner writes the task start = template run date
 while the ops are packed to the last 18 days (4D_MODEL_INTEGRITY §I "duration"/"solve" rows)? Not fixed.
+**D, narrowed (user: "It is CH 10 - Ground Treatment"):** the CH 10 Ground Treatment ops themselves run FORWARD — 402 ops,
+2026-12-29 → 2027-01-16, 0 with end < start (same for CH 09–CH 14). So the reversal is in how the Gantt row is drawn (bar start taken
+from somewhere other than the ops — the task's 2026-10-06 start is the prime suspect), not in the schedule data the TM plays.
