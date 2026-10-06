@@ -1511,6 +1511,15 @@ build state (piece count / day counter) is consistent across a cut between two d
 **Baseline:** the user saves an Alt+C path into CivilWorks.db now (it had no `cinema_path` table) — that saved path is the v5 baseline and
 lets the CLI bake run without `--override`.
 
+### §11.v5 STRUCTURE — chapters (user 2026-10-06: "Chapter 0 be introduction what this is all about, showing how our compiler can compute all these, and Chapter 1 - How to set it up .. within seconds.. then leave to bake 2 hrs.. depending on features we ticked")
+- **Chapter 0** — what it is: the compiler computes it all from the files (counts, programme, clash 11 mesh-true, volume when item 3 lands). Not built.
+- **Chapter 1 — setup** ✅ BUILT: user's screen recording `~/Videos/simplescreenrecorder-2026-10-06_11.31.34.mp4` (18.0 s, 26 fps) trimmed to the
+  full-screen preview only — frames 33–360 (1.27–13.85 s), cut points from the left-dock brightness (75 windowed → 95 full screen → 75).
+  Silent `~/Videos/CivilWorks_AltC_setup_ch1_BEFORE.mp4` (12.62 s, 328 frames) · narrated `…_AFTER.mp4` · script
+  `prompts/film_narration_altc_setup_ch1.tsv` (3 rows, Kokoro F/M) · fit 3/3 DETAIL, 0 WRONG · frames 328 = source · −16.9 LUFS.
+  "About two hours" = the user's figure, not measured — replace with the real bake's wall time once baked.
+  Seen in the clip: browser "press Esc to exit full screen" banner ~first 3 s; the bridge's discipline caption reads "Architecture Envelope".
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting

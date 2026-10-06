@@ -1,0 +1,3 @@
+ask	0.00	2.40	screen: Alt+C panel open beside the preview	F: How long to set this up?	F: How long does this take to set up?
+how	2.40	7.40	screen: path + feature boxes + preview; captions Ground Treatment, Earthworks	M: Seconds. Path, boxes, preview.	M: Seconds. Draw the path, tick the boxes, press preview.
+bake	7.40	12.60	user 2026-10-06: "leave to bake 2 hrs.. depending on features we ticked"	F: Then? | M: Leave it to bake.	F: And then? | M: Leave it to bake — about two hours, depending on what you ticked.
