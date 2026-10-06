@@ -135,15 +135,15 @@ async function erpPart(page, href2) {
     let ok = false;
     for (let i = 0; i < 400 && !ok; i++) { await sleep(1000); ok = seen(/\[back\].*§MERGE_CONTRACT .*verdict=COMPLETE/); }
     S('§CLIP_BACK_LOAD ' + (ok ? 'COMPLETE' : 'NOT COMPLETE'));
+    // order matters (v11–v14 runs): grab the red pill's scope first, then close the Time Machine, open Find, and apply the scope LAST —
+    // closing TM or opening Find each drop the x-ray highlight the pill applied at load.
+    const scope = await pop.evaluate(() => { const m = /[?&]find=@([^&]+)/.exec(location.search); return (m && localStorage.getItem('zoomfind_' + m[1])) || ''; });
+    S('§CLIP_BACK_SCOPE guids=' + (scope ? scope.split(',').length : 0));
     await closeTM(pop, S); await sleep(1500);
-    // closing the Time Machine restores visibility and drops the red pill's x-ray highlight — re-apply the SAME scope the pill handed
-    // over (main.js §ZOOM-SCOPE: find=@token → localStorage zoomfind_<token>), so the Find panel shows "Zoom Across · N items" lit.
-    const re = await pop.evaluate(() => { const m = /[?&]find=@([^&]+)/.exec(location.search); const sc = m && localStorage.getItem('zoomfind_' + m[1]);
-      if (sc && window.APP.applyFindScope) { window.APP.applyFindScope(sc); return sc.split(',').length; } return 0; });
-    S('§CLIP_BACK_RESCOPE guids=' + re); await sleep(2500);
-    await pop.evaluate(() => window.APP.openFindPanel());   // always: the panel can be hidden by the panel registry, not only display:none
-    S('§CLIP_BACK_FINDPANEL ' + JSON.stringify(await pop.evaluate(() => { const fp = document.getElementById('find-panel'); if (!fp) return null; const r = fp.getBoundingClientRect(), cs = getComputedStyle(fp); return { w: r.width, h: r.height, x: r.left, disp: cs.display, vis: cs.visibility, op: cs.opacity }; })));
-    await sleep(2500);
+    await pop.evaluate(() => window.APP.openFindPanel()); await sleep(2000);
+    if (scope) await pop.evaluate((sc) => window.APP.applyFindScope(sc), scope);
+    await sleep(3000);
+    S('§CLIP_BACK_XRAY ' + await pop.evaluate(() => { const e = Array.from(document.querySelectorAll('div,span')).find(x => /^X-Ray (ON|OFF)$/.test((x.textContent || '').trim())); return e ? e.textContent.trim() : '?'; }));
     S('§CLIP_BACK_FINDBAR "' + await pop.evaluate(() => { const e = document.getElementById('find-selected-text'); return e ? e.textContent : ''; }) + '"');
     for (let i = 0; i < 60 && !seen(/\[back\].*§ZOOM-SCOPE|\[back\].*§FIND|\[back\].*§NF_/); i++) await sleep(1000);
     await sleep(6000);
