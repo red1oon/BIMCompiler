@@ -1571,6 +1571,15 @@ profile of road/ground/drains inside it (3 s) → **Cross**: scrubber dragged, 2
 (script-placed for the clip; Cross does not move the camera itself yet) (4 s) → "Profile PDF" sheet flash (1 s). Numbers on screen come from
 §PROFILE_LENS / §CROSS_SECTION lines. ⛔ Waits on the §PROFILE_LENS PR.
 
+### §11.v6 RUN — re-bake with the sky fix (2026-10-06)
+Bake: same flags as v5, bim-ootb main ddb10b73 + #1918 skyline diff applied (`§SKY_GHOST_SKYLINE skipped` ×1), `§CLI_BAKE_WALL totalSec=1524`
+(a lens witness ran alongside), unconverged=0, HUD overlap none, 1,469 frames. Phases identical to v5 (§V6_PHASE_FIRST) → same cuts.
+**Sky detector (tools/sky_ghost_detect.js, HORIZON_BOXES): v5 728/1,359 flagged (53.6 %) → v6 129/1,359 (9.5 %).** Residual worst frames
+208/209/1397/1393 (8–9 "boxes") — NOT yet separated into real model objects on the horizon vs remaining ghost (the sparkle/mirrored lines).
+Output `~/Videos/CivilWorks_film_v6_narrated_AFTER.mp4` 82.5 s = ch1 + build cuts + phone mock-up (5 s, "You can set it up mobile-ready.")
++ health card + report; script film_narration_civilworks_v6_dialogue.tsv 12/12 DETAIL, 0 WRONG; frames 2,476 = source; −17.0 LUFS; longest
+silence 4.6 s. Still to add: ERP beat (+ red-pill return), sections clip, Chapter 0.
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
