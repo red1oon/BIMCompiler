@@ -5,6 +5,9 @@ numbers, no invented claims. Spec before code; a witness proves the track, not a
 **Read the page log after every run** — exit code is not evidence. Honour this block until the lane is DONE.
 **→ Making another narrated/dialogue film (any language)? Jump to `## ▶ PLAYBOOK` below — voices, steps, commands, pitfalls.**
 
+## ▶▶▶ RESUME (2026-10-06 17:45) — latest road film = `~/Videos/CivilWorks_film_v6_narrated_AFTER.mp4` (§11.v6). Next steps live in
+CIVIL_HIGHWAY_JELAPANG.md "▶▶▶ RESUME HERE — NEW SESSION" (55 s gap first, then lens PR, ERP beat clip, chapter breaks).
+
 ## ▶▶ RESUME HERE FIRST (2026-10-06) — the Alt+C ROAD FILM: "IFC Extraction Program — the owner's report" (§11.v4)
 **Read in this order:** this block → §11.v4 (storyboard) → §12 (the INTRO film, DONE — what it already covers) → PLAYBOOK + §11.v3c (recipe).
 **Division of labour (user 2026-10-06):** *"this fulfill a newbie crowd, and answer basic questions. Thus this leaves our alt-c to go deeper but

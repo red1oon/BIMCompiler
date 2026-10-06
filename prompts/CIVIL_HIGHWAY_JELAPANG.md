@@ -21,6 +21,33 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
+## ▶▶▶ RESUME HERE — NEW SESSION (written 2026-10-06 17:45; supersedes the "NEXT SESSION" blocks below)
+Model = `~/Downloads/JALAN JELAPANG IFC/CivilWorksPath.db`. Films/clips live in `~/Videos/`. Film recipe + chapters: FILM_NARRATION.md §11.v5/§11.v6.
+MERGED today (bim-ootb): #1897 clash GEOTECH×DRAINAGE (11 mesh-true) · #1898 Alt+C checkbox save · #1899/#1900/#1902 earthworks ≈22,048 m³ ±2.3 on
+3 surfaces · #1901/#1904 Long/Cross in Cut section · #1906 civil Find→ERP witness · #1915 ERP fold by discipline · #1916 red pill opens source model +
+highlights pushed GUIDs · #1918 sky skyline boxes skipped on civil. Do in order:
+1. **55 s gap in v6 (user: "the road seems has portions not there, seconds 55th").** v6 narrated 55 s = assembled seg 7 = source film 93.4 s ≈ frame
+   1401 (finishing orbit). Log facts: final `§COST_ODOMETER day=79 placed=19531/19559` → **28 pieces never placed by the end**; frames 1385–1410
+   `§FRAME_COST held=425 visible=254` → 171 held meshes not drawn. Witness first: at frame 1401 list unplaced GUIDs (by discipline) and the hidden
+   meshes (why: build-state / DLOD / frustum), then fix. Files: ~/Videos/CivilWorks_film_v6_page.log, _cli.log, _BEFORE_poses.json.
+2. **Sky reflections residual (user: "still there since seconds 24 but not optically fatal").** Detector tools/sky_ghost_detect.js: v5 53.6 % →
+   v6 9.5 % frames flagged (logs scratch sky_v5/v6). Next: separate real horizon objects from ghost (project model bboxes with the poses), then the
+   temporal suspects (GI film carry, TAA history). Lower priority than 1.
+3. **Profile lens PR** — branch `feat/profile-lens` @82dd462c (pushed, NO PR; worktree /tmp/wt-profile-lens). Witness 38/38 PASS then crashes in the
+   pre-existing "leave" block (X/Y after Cross re-sets clip planes on 421 meshes → swiftshader shader recompile → protocol timeout), twice, even
+   at lower load. Duplex VACUOUS ✓, RED control FAIL-as-expected ✓. Fix the witness leave block (one collectMeshes pass / or --gpu real), re-run,
+   PR. Also: Time Machine panel overlaps the lens bottom; lens is an opaque disc (see-through = design choice); peek script's rim-drag didn't land
+   (scratchpad peek.js) — retake peek at mid-road (s≈1055).
+4. **ERP beat + red-pill return clip** (FILM_NARRATION §11.v5 ERP BEAT). All parts merged + witnessed (#1915/#1916). Work = ONE headless recording
+   script: Find (Discipline axis, 5 road disciplines) → › ERP → open ↗ ERP Project window record → outline the Project Lines grid (5 discipline
+   lines) → red pill → viewer with 644 GUIDs highlighted (2 s). Live chain never ran end-to-end (only under load) — the recording is its first live
+   run. Est. one agent session; run on a quiet machine.
+5. **Chapter breaks** (user: "yes the chapters break") — title cards between: Ch0 intro (title still OPEN — user thinking: "IFC Extracted — 4D, 5D to
+   8D ERP" proposed), Ch1 setup, Ch2 build-up, Ch3 sections, Ch4 ERP, Ch5 mobile, Close (health + report + "Now you know what you got").
+6. Then: sections clip (after the lens PR), closing multi-user line needs its witness, HANDOFF_AUDIT build, Alt+S terrain (§ALTS_CIVIL_TERRAIN_GROUND).
+Rules learned today: whitebox node witnesses first, browser only for wiring, all browser runs `flock /tmp/civil_browser.lock`; agents report after 2
+failures; coordinate agents/sessions internally (memory feedback_manage_coordination_internally).
+
 ## ⚖ CANONICAL MODEL FILE (user 2026-10-06: "File we using has been told - CivilWorksPath.db")
 `~/Downloads/JALAN JELAPANG IFC/CivilWorksPath.db` = CivilWorks.db (renamed: no place name) + the saved Alt+C path (cinema_path). Every
 witness default, bake and film uses THIS file. CivilWorks.db = same elements without the path; witnesses written today that default to
