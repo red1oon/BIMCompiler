@@ -200,3 +200,9 @@ Supersedes the DO-NOT-SPLIT / WAIT rows of §LANES above.
    resolving a 5,000-line conflict. Recipe in the script header.
 4. **One bake window verifies all film-code splits together** (cpe_load_path #1903, cinema_maxq, effects): same
    `§LOADPATH_*`/`§MQ_*`/`§FX_*` lines before vs after. Asked of the user once, not per split.
+**§LANES_RULING amendment (same day):** order also weighs SOURCE-TEXT READERS (tests/scripts that read the file as text and
+slice functions out of it — every one must switch to a reader): time_machine **80** readers (incl. scripts/lib/
+tm_played_layer.js under cache_4d_run.js) · cinema_maxq 17 · effects 16 · navigate_find 8 (done, #1907). New order:
+navigate_find ✅ → cinema_maxq → effects → time_machine LAST, as two PRs: (1) a `readUnsplit()` reader (rebuilds the
+original single-file text from shell + parts, prefixes stripped) rolled out to all 80 readers, no product change;
+(2) the split. Generated time_machine split already verified to generate (8 parts, 228 shared names, no refusals).
