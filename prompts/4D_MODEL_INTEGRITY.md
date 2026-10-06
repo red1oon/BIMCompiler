@@ -2920,3 +2920,15 @@ cpm_schedule loaded too (test-only change).
 (2) `probe_cpm_schedule.js` `§CPM_PARITY` must say the two are ONE function (report single-owner/INCONCLUSIVE, not a
 vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule outputs identical before/after.
 **Deletion budget:** expect ≈ −150 lines in support_sweep.js (two bodies + duplicated doctrine comment kept once, in cpm).
+
+### §I.1a RESUME (2026-10-06 session close) — patch PUSHED, NOT verified, NO PR
+- Branch **bim-ootb `refactor/contactgraph-one-owner`** @ dcdc6b3e (worktree /tmp/wt-contactgraph): the prepared patch, committed as WIP.
+- **Baseline taken on origin/main @ c6038f93 BEFORE the patch** — the 24 witnesses that touch support_sweep/cpm_schedule
+  (exit codes; 10 green, 12 red, 2 inconclusive ON MAIN already): witness_4d_template_instantiation.js=0 · witness_civil_mixed_programme.js=2 · witness_civil_phase.js=1 · witness_crosstask_judge_parity.js=0 · witness_curtain_wall_opening.js=1 · witness_day0_attribution.js=1 · witness_day0_integrity.js=1 · witness_gantt_lock_integrity.js=1 · witness_gantt_og_grid_perf.js=0 · witness_gantt_props_epoch.js=1 · witness_gantt_refold_yield.js=0 · witness_ground_connected.js=0 · witness_hosted_before_host.js=1 · witness_kernel_ops_sched_version.js=1 · witness_midair_zero.js=1 · witness_og_guard_bearing_bound.js=0 · witness_retyped_constants.js=0 · witness_s50_cell_engine.js=1 · witness_s55_identity_vs_cell.js=1 · witness_storey_datum_frame.js=0 · witness_tm_played_layer_midair.js=2 · witness_tm_reveal_within_bar.js=0 · witness_tpl_model_three_producers.js=0 · witness_zone_display_authoring.js=1 · 
+- **Next session, in order:** (1) run the same 24 on the branch — exit codes must equal the list above, and no log may
+  contain `§SS_CPM_MISSING` (a sandbox that loads support_sweep without cpm_schedule → give it cpm, test-only);
+  (2) `cache_4d_run.js --force HHS_Office_Federated Terminal` with `CACHE_4D_DIR` set to two separate dirs, before (main) vs after — run.json
+  must be identical (method proven on the time_machine split, VIEWER_FILE_SPLIT_PLAN §RESULT_ALL); user asked for HHS + Terminal only;
+  (3) PR with lines +/−; then update the §I ownership-table rows "does S support T?" / "which ONE thing supports T?" → owner cpm_schedule.js.
+- ⚠ Do NOT run the full suite (258 files, ~8 h measured) — the targeted 24 are the gate. ⚠ Some node witnesses spawn
+  cli_silent_bake (a real bake): grep for it and exclude — one slipped through this session (crashed on load, no frames).

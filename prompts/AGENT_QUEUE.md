@@ -2691,3 +2691,5 @@ Measured 2026-10-06 against bim-ootb origin/main (`git cherry` + `git merge-tree
 | #1876 | release-please | 10-06 | — | clean | — | automated, leave |
 "Park" = close with a comment pointing here; the branch is NOT deleted, so reopening loses nothing. None of the nine is
 superseded by patch-id; each still carries work main lacks, so each needs its own resume session, not a blind rebase.
+**§PARKED_2026-10-06 status at session close:** NOT executed (GitHub writes permission-blocked). Pending the user. Also add:
+close **#1903** as superseded by **#1910** (VIEWER_FILE_SPLIT_PLAN.md §RESUME).

@@ -225,3 +225,24 @@ order, sw) · eslint 0. Tooling: scripts/split_closure.js (generator parts, two-
 **§LARGEST (after all five, measured on the #1914 branch):** cinema_path_editor.js 4,461 · streaming.js 4,354 · scene.js 3,756 · schedule_author.js 3,254 · tools.js 3,022 · fx_cinema_path_plan.js 2,856 · maxq_start.js 2,788. Was: effects.js 11,149.
 
 **§COORD (2026-10-06):** civil road lane (session bim-compiler-f8, sky-ghost agent) edits main effects.js `_mirror*` / env-map / §STILL_GHOST_OWNERSHIP functions and lands first where it can. Before merging #1909: re-run `scripts/split_closure.js scripts/split_configs/effects.json` on current main and re-run the gates (anchors are names, so their edits land in fx_sun_shadow.js / fx_photo_staging.js / fx_still_refine.js).
+
+## §RESUME (2026-10-06 session close) — read this first next time
+**State:** five split PRs open in bim-ootb, stacked, NOT merged: #1907 (tooling + navigate_find) → #1908 (cinema_maxq) →
+#1909 (effects) → #1910 (cpe_load_path, supersedes #1903) → #1914 (time_machine). Every PR passed every no-browser gate
+(§RESULT_ALL). Worktrees: /tmp/wt-split-nf, -mq, -fx, -lp2, -tm2 (each has a node_modules symlink to ~/bim-ootb/node_modules).
+**Blocked on the user (do not route around):**
+1. ONE verification window — a live bake for the film code (#1908/#1909/#1910: §LOADPATH_*/§MQ_*/effects lines before vs after)
+   + a Find-panel browser smoke (#1907). User rule: no bakes without their explicit go.
+2. GitHub writes are permission-blocked in this mode (auto-mode classifier "External System Writes"): merging the stack,
+   closing #1903, and the §PARKED_2026-10-06 sweep in AGENT_QUEUE.md (merge #966, park 9). The user can add a rule for
+   `gh pr merge` / `gh pr close`, or run them.
+**Before merging #1909:** re-run `node scripts/split_closure.js scripts/split_configs/effects.json` on CURRENT main (the civil
+lane is editing effects.js mirror/env/ghost code, §COORD) and re-run the gates. Same for any part whose file changed on main
+since its PR: the generator is idempotent on a fresh single file. sw.js CACHE_VERSION conflicts: take the higher, keep both notes.
+**Merge order is the stack order.** After each merge: fetch the live viewer, confirm every new part file is 200 and loads
+(witness_module_loads), per CLAUDE.md deploy flow.
+**Tooling (typescript is a parser-only dep):** `npm i --no-save typescript@5.6.3` or `TSLIB=<path>`; split_closure.js,
+split_verify.js, viewer/tests/_split_families.js (readUnsplit / readSource), witness_split_surface.js <family>.
+**Next sizes:** largest viewer files now cinema_path_editor.js 4,461 · streaming.js 4,354 · scene.js 3,756 (§LARGEST).
+Real code SAVINGS were not the goal of the splits (measured copy-paste 0.39%); the deletion lane is §I.1a in
+4D_MODEL_INTEGRITY.md (contactGraph one owner, patch pushed) and the ~280 dead-function lines listed per file above.
