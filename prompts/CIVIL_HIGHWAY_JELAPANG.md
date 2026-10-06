@@ -32,6 +32,12 @@ each feature only needs to be good enough to hand off, and must be provably corr
 Source for InfraGrid3D: a directory listing only (productcool.com/product/infragrid3d) — its IFC 4.3 export is UNVERIFIED;
 if it exports, it is a feeder, not a rival. Consequence: the queue below runs differentiators first (clash, volume), looks later.
 
+**NO PLACE NAME ON SCREEN (user, 2026-10-06: "we do not want the name 'JELAPANG' to crop up … replace with 'Civil Works'").**
+Done on CivilWorks.db: 292,634 text values renamed (project/building name now "Civil Works VBC", 19,892 building rows, 250,385 pset
+names, 14,515 pset values; `quick_check` ok; row count 19,892 = before). `kernel_ops` NOT edited (hash-chained + signed — editing
+breaks the chain). Pre-edit copy: `CivilWorks.before_rename.db`; log: `rename_jelapang.log` (same folder). Viewer code has the name
+only in comments + test default paths (not shown to users). A fresh re-import of the source IFCs brings the name back.
+
 ## ▶▶ NEXT SESSION — order REVISED 2026-10-06 by positioning above: 2 (clash) → 3 (volume) → 1 (terrain) → 4 (film, user's go)
 1. **Finish §ALTS_CIVIL_TERRAIN_GROUND** (PHOTOREAL_STILL_RENDER.md): bim-ootb branch `feat/alts-civil-terrain-ground` (pushed, WIP commit, no PR).
    Run `viewer/tests/witness_alts_terrain_ground.js` — RED control with `ROOT=<worktree at origin/main>`, then on the branch (CivilWorks.db +
