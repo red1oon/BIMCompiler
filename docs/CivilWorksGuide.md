@@ -124,10 +124,18 @@ solid gets an exact figure; a surface too open to bound gets no number at all. T
 Open the **Inspect** drawer → **Section Cut** (keyboard **X**). On a road model its panel shows two extra
 buttons after **X / Y / Z**: **Cross** and **Long**. They appear only on a civil model.
 
-### Step 7 · Long section — the road profile
-Tap **Long**. The road's profile along its length appears: road level (blue), ground level (brown) and
-drain levels (red) against chainage. Drag the slider (or click on the profile) to move along the road;
-the camera follows to that chainage.
+### Step 7 · Long section — the road profile lens
+Tap **Long**. A round **profile lens** opens over the 3D view: road level (blue), ground level (brown) and
+drain levels (red) against chainage, for the stretch under the lens. Drag the slider to move along the
+road; scroll over the lens to widen or narrow the span (100 m by default).
+
+### Step 7a · The profile sheets (Profile PDF) and a PNG
+With **Long** on, two buttons sit under the slider:
+
+- **Profile PDF** — opens a new tab with the whole road as **sheets of 100 m** (22 sheets for the sample
+  road), each with its chart and a table of road and ground levels every 10 m. Use the browser's
+  **Print → Save as PDF** to keep it as a file (`§PROFILE_LENS_PDF sheets=22`).
+- **PNG** — saves the lens view you are looking at.
 
 ### Step 8 · Cross section — a slice at one chainage
 Tap **Cross**. A 2 m slice is cut square to the road at the slider's chainage; drag the slider to slide
@@ -144,8 +152,10 @@ matches an independent recompute from the raw geometry at every slider position 
 
 !!! note "Not yet"
     Chainage is **inferred** from the road pieces (the files carry no alignment), so it is good for
-    finding your way, not for setting out. A round **profile lens** over the 3D view, with a **Profile PDF**
-    of the whole road, is in review and not live yet.
+    finding your way, not for setting out. Known gaps in the lens: the PNG is the round lens as drawn
+    (ring and clipped edges); the legend lists *ground* even where no ground was found; a few sudden
+    road-level dips are under investigation (possibly a lower culvert or drain read as the road top);
+    drains show as short dashes because a drain level exists only where a drain crosses the road.
 
 ---
 
