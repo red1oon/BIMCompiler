@@ -45,6 +45,11 @@ MEASURED: `A.earthworksVolume()` (cpe_road_panels.js:80) is shown ONLY on the Al
 The title is now wrong (it is measured, not planned). Spec: (1) move the volume row to the ground/earthworks card; (2) show the same line in
 `model_check_report.html` (a "Quantities" stat card) and in the 4D/5D page's quantities for the EARTHWORK discipline — one owner
 (`A.earthworksVolume`), no second computation; civil-gated. Witness: the same string on all three surfaces on CivilWorks.db; buildings show none.
+**§EW_VOLUME_SURFACE ✅ DONE — bim-ootb #1902 MERGED 2026-10-06 (sw v1594).** One owner `viewer/earthworks_volume.js` (window.EarthworksVolume;
+cpe_road_panels.js wraps it). Line "≈ 22,048 m³ (48 open edges, ±2.3 m³)" on: Alt+C ground card ("Ground works here" — only in stretches with
+GEOTECH/GABION), `model_check_report.html` Quantities card, `boq_charts.html` EARTHWORK row (`§EW_VOLUME_SURFACE surface=… verdict=APPROXIMATE`);
+planned card no longer carries it; Duplex VACUOUS on all. Witness `witness_ew_volume_surfaces.js` GREEN 11/0 (pass line only in the agent's harness
+output, not in /tmp/ews_logs), RED on #1900 tree 6/5. Not re-run after the final sw.js/viewer.html merge.
 ### §LONG_SECTION — road profile along the route (spec)
 Source of the idea: a road-design tool's public listing (linked plan / 3D / long-section views) + our §E ("chainage nav 🟡") / §H.
 Sample along the inferred route (`A.civilDriveRoute()`, §CHAINAGE_V2) every Δs: road top z, ground z (raycast down onto EARTHWORK/terrain via
