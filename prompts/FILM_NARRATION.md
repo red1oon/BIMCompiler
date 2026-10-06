@@ -1751,3 +1751,11 @@ assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witnes
   day counter 1→79 without a hold, `§SUN_COMPASS built lat=3.8 (mock_film_kuantan)`, `§CLI_BAKE_WALL totalSec=1252`, unconverged=0.
   ERP chain proof (ERP_ONLY run): Task Line `rows=2` (200 ea DRAINAGE, 216 ea LIGHTING, rate not set), `§ZOOM-ACROSS launch`,
   `§FOCUS_ELEM guids=416 lit=416`. Not in v7: sections clip (lens PR), Chapter End black card.
+- **v8 FILM DELIVERED (2026-10-07):** `~/Downloads/CivilWorks_film_v8_narrated_AFTER.mp4` — 174.5 s, 5,235 frames = assembled source,
+  −16.9 LUFS, longest silence 4.6 s; script `film_narration_civilworks_v8_dialogue.tsv` 27/27 DETAIL, 0 tone WRONG. Changes vs v7 (user):
+  chapter cards 1–4 (`film_ch0_card_v7.py` chap1–4, blurred screenshot backdrops; Ch1 = v7 frame 95 s since 07-05-44 shows the place
+  name; Sections skipped → ERP = Ch3, Mobile = Ch4) · mid-film WIP line removed · build-up re-cut so every §ROAD_PANELS card shows its
+  full 5 s (v7 0–7/9–15/21.5–34/42.5–55/57–62.5/79–86/90–end) · ERP redone on SIGNAGE: Find (priced) → offline sign-in → Project →
+  Task Line outline → red pill → viewer (`§PROJ_PUSH plannedAmt=110400` = 138 × RM 800, bim-ootb #1921; `§FOCUS_ELEM guids=138 lit=138`).
+  Waits cut (push 174 s, ERP load 172 s). ⚠ The viewer's Find bar shows "$ 110,400" (`§FIND_COST cur=$ pack=hardcoded`) while the
+  rate is RM — narration says ringgit; the currency label is a viewer locale gap, not fixed.
