@@ -87,6 +87,12 @@ FAIL; Duplex VACUOUS (not PASS). Open: fleet proof Duplex only; DLOD-hidden elem
 - Prior-art check (2026-10-06, 2 web searches): parts exist SEPARATELY — map-synced profile viewers (Carlson Natural Regrade, QGIS, ArcGIS Pro,
   BikeRouter), cursor loupes (image magnifiers, Infor roadway magnifier). The combination (lens over the 3D model showing the profile of the
   stretch under it, wheel = span) was NOT found — do not call it "first"; date the idea here.
+**Find → ERP Project Order on CivilWorks ✅ PASS (witness) 2026-10-06** — `viewer/tests/witness_civil_find_erp_push.js` (PR bim-ootb #1906, witness only).
+Wait `§MERGE_CONTRACT verdict=COMPLETE`, Discipline axis, select ROAD+LIGHTING+DRAINAGE+SIGNAGE+MARKING → `§PROJ_PUSH plannedAmt=1302560`,
+`§PROJ_PUSH_LINK project=990001 record=990001` (window 130 deep-link), read-back 1 C_ProjectLine `IfcBuildingElementProxy · 4652 ea · price 280`.
+My earlier INCONCLUSIVE = instrument (no load wait, 8 s fixed wait). ⚠ LIMIT: proj_fold.js:246-260 makes one line per IFC class → every civil
+discipline collapses into ONE "IfcBuildingElementProxy" line. Proposed generic fix (not built): when the class is the generic proxy, group by
+discipline (IFC2X3 proxies are generic in any model, not civil-only).
 ### §HANDOFF_AUDIT — neutral loss report + version diff (spec only, build later)
 Per import: elements / psets / materials / storey+discipline links kept X of Y, dropped Z (ids listed) vs the source IFC; per re-export
 (same FILE_NAME identity, the (f) case): added / deleted / moved / pset-changed vs the previous version. Deterministic; result row in
