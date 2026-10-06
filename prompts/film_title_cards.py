@@ -92,7 +92,7 @@ if os.environ.get('FILM_SET') == 'highway2':
 # §ALTC_V3 (FILM_NARRATION.md §11.v3): FILM_SET=highway3 — the assembled clip-series film; the narrative extols what compilation gives.
 if os.environ.get('FILM_SET') == 'highway3':
     CARDS = {
-        1: ('CHAPTER 1', 'ONE COMPILER', 'ROADS TOO', 'A Malaysian highway, through the same compiler as our buildings.'),
+        1: ('CHAPTER 1', 'ONE COMPILER', 'ROADS TOO', 'A highway, through the same compiler as our buildings.'),
         2: ('CHAPTER 2', 'ONE MODEL', 'MANY ANSWERS', 'Schedule, quantities, clashes, checks — from one database.'),
         3: ('CHAPTER 3', 'BUILT', 'ALL THE WAY', 'Piece by piece, in the schedule\'s own order.'),
         4: ('CHAPTER 4', 'TIME AND COST', 'ON THE FLY', 'Quantities now. Prices when official.'),
