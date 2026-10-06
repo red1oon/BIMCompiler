@@ -1936,4 +1936,8 @@ Until fixed: a reload does NOT clear old pushes; clearing the site's data (the p
 The landing page **Clear cache** (index.html `clearCache()`) empties only IndexedDB `bim_ootb_imports` + `bim_ootb_cache` and the entered
 flags — it does NOT touch the OPFS push store `bim_analysis/bim_project_orders.db` (nor the ERP's own cached seed), so it cannot remove
 pushed project records either. Gap to close with §BIM-CRUD (user expected Clear cache to do it, 2026-10-07).
+System Monitor **seed reset** (`erp/system_monitor.js resetSeedClients`, W-SEED-RESET-LIVE) re-fetches pristine ad_seed.db and replaces
+`ad_seed_v16` (GardenWorld rows incl. the BIM band drop out), but the next boot's `§BIM_OVERLAY` re-inserts the band from the OPFS push
+store, which seed reset does not touch → the pushed records return. Fix scope for §BIM-CRUD: one "clear BIM pushes" path shared by seed
+reset, landing Clear cache and an ERP delete.
 **Rule restated:** an ERP "CRUD ok" claim covers delete only when a witness deleted THROUGH THE UI and re-read after reload.
