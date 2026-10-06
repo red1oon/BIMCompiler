@@ -747,3 +747,4 @@ Proposed (NOT built — awaiting user go): in Cross mode add **PNG** + **Section
 - PNG = that drawing; Section sheet = new tab, print CSS → "Save as PDF" (same pattern as Profile PDF, no new library).
 - Witness: segment endpoints lie on the plane (|n·p − d| < 1 mm); every element in the table has ≥1 segment or is listed "bbox only";
   table count = `§CROSS_SECTION elementsCut`; Duplex VACUOUS.
+- ✅ 2026-10-07 BUILT (bim-ootb PR #1926, sw v1602): Cross mode has "PNG" + "Section sheet" (A.civilCrossOutput / civilCrossPNG / civilCrossSheetHTML). Real triangle∩mid-plane segments for the civilSectionCut set only; table disc·name·count + "bbox only" rows. Witness (CivilWorksPath, real GPU) PASS 45/45: endpoints |n·p−d| ≤ 2.3e-13 m at s=528/1161/1794; segments 2176/1542/1043; elements 44/35/77 (bboxOnly 8/1/1) == §CROSS_SECTION elementsCut; RED on origin/main FAIL; Duplex VACUOUS. `§CROSS_OUTPUT s= segments= elements= bboxOnly= ms=13-28`.
