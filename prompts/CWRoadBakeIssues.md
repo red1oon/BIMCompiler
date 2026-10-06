@@ -137,3 +137,11 @@ Witness `viewer/tests/witness_cw_solidify_event.js` PASS: gate false on Hospital
 true on CivilWorksPath (14,820); building index byte-identical to main; bug reproduced on main (skip) and fixed (visit) on a
 synthetic mesh. NOT yet proven on the real road: the user's Alt+C preview on localhost:8411 (worktree /tmp/wt-erp-clip) must
 log `§CW_SOLIDIFY_EVENT civil=true added=N>0` and show the full build. Issue B (pacing) next, after that proof.
+
+## 9. ISSUE D — first Gantt bar runs backwards ("days 60 to 1", user 2026-10-06 on the localhost preview)
+DB facts (CivilWorksPath.db, read-only query): `tasks` TASK_Ground_Treatment_BASE `schedule_start=2026-10-06 schedule_finish=2027-01-16
+P102D`; its 9,145 ELEMENT_PLACE ops run `2026-12-29 → 2027-01-16` (kernel_ops.timestamp / parameters._end_ts); every later task's dates
+match its ops exactly. TM window `12/29/2026 → 3/18/2027`. TASK_ROOT also starts 2026-10-06 (P163D) = `schedules.created_date`
+(the day the 4D template ran). So the first task bar starts ~84 days before the TM's day 1 → drawn as negative/backwards days.
+`§GANTT_AXIS axisDays=163.0 trueDays=78.5` is the same 84-day split. Question: which owner writes the task start = template run date
+while the ops are packed to the last 18 days (4D_MODEL_INTEGRITY §I "duration"/"solve" rows)? Not fixed.
