@@ -1559,7 +1559,7 @@ share sender works but receiver clash-restore bug OPEN (project_share_sheet); sy
 exports a fold file → viewer B (mobile viewport) imports it → same state hash. Needs that witness on CivilWorks.db before the line is filmed.
 
 ### §11.v5 MOBILE SITE-WALK MOCK-UP (user 2026-10-06: "then just mock up (spec'd that it refers to GPS for location finding)")
-A LABELLED mock-up (presentation, not a claim the feature exists): phone portrait viewport 390×844, the real CivilWorks.db in the real viewer,
+CORRECTED (user 2026-10-06: "it is built.. but GPS not installed"): the WALK mode exists; only GPS positioning is not connected. Chip: "Site walk · GPS not connected (position simulated)". Use the real walk mode where it runs on the road.: phone portrait viewport 390×844, the real CivilWorks.db in the real viewer,
 camera at eye height (1.7 m above the ground read by civilCastZ) walking ~40 m along the inferred route; overlays: a blue GPS dot + accuracy
 ring at screen centre-bottom, a top chip "GPS site-walk · mock-up (specified: CIVIL_HIGHWAY_JELAPANG.md §I.2)", chainage readout. ~5 s clip.
 Spec it refers to: §I.2 (GPS → position via CRS or two-tap anchor; height = ground under point; no georef → INCONCLUSIVE, never a silent wrong
