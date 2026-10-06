@@ -80,6 +80,13 @@ FAIL; Duplex VACUOUS (not PASS). Open: fleet proof Duplex only; DLOD-hidden elem
   Deletion budget stated (lines +/−).
 ### §PROFILE_LENS — round glass over the 3D view that unrolls the stretch beneath it (spec; user 2026-10-06: "a large round glass that hovers over the canvas and it unrolls a flat profile? Where zooming in or out likewise controls the scope of section")
 - Long mode of the Cut section tool = the lens (DEPRECATES the panel chart from #1901/#1904 — delete it; Cross + scrubber stay).
+- **REVISED 2026-10-06 (user: "set the size perhaps to 1/3 canvas size, and it magnify to a standard fix length? No zooming. It is like a quick
+  purview.. then when needed. output in PDF?"):** lens diameter = 1/3 of the canvas width (capped at the canvas height); FIXED span, NO wheel
+  zoom — default 100 m (±50 m around s0; my choice, not a cited standard — one setting, user may change); version 1 = lines (road / ground /
+  drain + chainage scale), pre-computed ONCE at 1 m on first Long entry ("preparing profile…"), hover only slices arrays (no raycasts on hover).
+  Witness adds frame time lens on vs off (§PROFILE_LENS_PERF) and precompute ms + heap. **PDF:** "Profile PDF" in Long mode opens a new tab with
+  the whole road as fixed-length sheets (same span per sheet) + data band (chainage, ground z, road z every 10 m), print CSS → browser
+  "Save as PDF" (no new library). Version 2 (real meshes flattened in the lens) only after v1 is measured.
 - Hover: lens follows the pointer; centre = nearest route point (chainage s0, "inferred"); draws road / ground / drain profile for [s0−w, s0+w],
   flat, read-only overlay (no scene change). Wheel inside the lens sets w (±25 m … whole road); samples re-taken across the span (fine at small w).
 - Click: pin + camera fly (+ Cross cut there if Cross is on). Data band under the curve (chainage, ground z, road z) at the lens scale.
