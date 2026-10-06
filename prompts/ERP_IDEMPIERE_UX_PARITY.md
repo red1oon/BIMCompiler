@@ -1951,3 +1951,17 @@ re-baseline writes rippled dates onto the official rows) · `schedule_author_ui.
 remove OPFS `bim_analysis/bim_project_orders.db` (`clearBimPushStore`, `§SEED-RESET bim-push-store removed projects=N`). Witness
 `erp/tests/witness_seed_reset_bim_store.js` clicks the real button: fix `after-reset C_Project 990001=0 store=false PASS`; origin/main
 `=1 store=true FAIL`. STILL OPEN: an ERP UI delete does not write through to the store (rows return on reload).
+
+### §MD-UPSTREAM — 2026-10-07 investigation result (bim-ootb branch fix/erp-md-upstream, stacked on #1924; NO PR opened yet)
+**Cause NOT proven — INCONCLUSIVE on the trigger; mechanism of the symptom pinned.**
+- **Correction to the hypothesis above:** the user's read `where=(C_ProjectLine.C_ProjectTask_ID > 0) AND AD_Client_ID IN (0,11)` contains the tab WhereClause, which only
+  `AdGridTab.query` emits (`idempiere.html` ~2140; the `tm==null` branch would drop it). So the model EXISTED and `AdGridTab.open` did NOT throw (its AD reads are
+  try/caught inside `open()`, ad_gridtab.js meta + `parentColumns`). The model had `isDetail=false` (link read as "none") → no link, no `2=3`. That is the signature.
+- **Candidates tested headless** (`erp/tests/probe_md_upstream.js`, fresh profile, logs in `erp/tests/_out/`): (a) role IsAccessAllOrgs=Y (`_roleOrgWhere` null) — NO fail, `2=3`, 0 rows;
+  (b) IDB-cached seed on reload — NO fail; all 12 historical git revisions of `erp/ad_seed.db` carry AD_Tab 796 AD_Column_ID=15451 + C_ProjectLine.C_Project_ID IsParent=Y, so no shipped stale seed lacks the link;
+  (c) direct jump with no parent visits — NO fail. No `§GT-OPEN-FAIL` line was ever produced.
+- **Reproduced the user's exact signature** only by making the AD link reads fail/absent (seed with IsParent cleared + AD_Tab.AD_Column_ID null, or `__idmpDb.exec` throwing on those two queries):
+  `§IDEMPIERE-MD … filter=- link=- source=none`, `where=(…ProjectTask_ID > 0) AND AD_Client_ID IN (0,11)…`, rows=28 (user: 29). Silent swallow sites: ad_gridtab.js `open()` meta catch and `parentColumns` catch; the model was then CACHED forever in `ow.gt[i]` (idempiere.html `_gtModel`).
+- **Shipped on the branch (a hardening, NOT the proven cure):** degraded model (an AD read threw) → `§GT-OPEN-DEGRADED tab=… errors="…"`, `query()` adds `2=3`, model not cached (re-opens next render). Witness `erp/tests/witness_md_upstream.js [old]`: RED on old (rows=28, no 2=3), GREEN on fix (rows=0, `§GT-OPEN-DEGRADED`, self-heal restores `link=C_ProjectTask_ID source=AD_Column_ID`). witness_gridtab_contract 6/0. sw v822. +96/−9.
+- **Left:** get the user's `§GT-OPEN-DEGRADED errors="…"` line from a real session (it names the failing AD read) — that is the real upstream cause. Not done: PR for fix/erp-md-upstream. Side finding: `system_monitor.js` persists seed reset to `ad_seed_v16` while `idempiere.html` loads `ad_seed_v18` (key mismatch).
+- **§BIM-CRUD item 2 (ERP UI delete write-through to the push store) is still OPEN; the seed-reset half is done in bim-ootb PR #1925.**
