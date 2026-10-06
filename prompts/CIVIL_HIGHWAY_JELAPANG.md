@@ -38,6 +38,28 @@ names, 14,515 pset values; `quick_check` ok; row count 19,892 = before). `kernel
 breaks the chain). Pre-edit copy: `CivilWorks.before_rename.db`; log: `rename_jelapang.log` (same folder). Viewer code has the name
 only in comments + test default paths (not shown to users). A fresh re-import of the source IFCs brings the name back.
 
+## §NEXT_WAVE — user 2026-10-06: "I reckoned the rest are yes" (long-section, cross-section, handoff audit, Chapter 0) + "Where to call (a) in the Viewer?"
+### §EW_VOLUME_SURFACE — where the bounded volume is seen (spec)
+MEASURED: `A.earthworksVolume()` (cpe_road_panels.js:80) is shown ONLY on the Alt+C film's card titled "Coming to this view — planned"
+(cpe_road_panels.js:299) — composited at bake time (cinema_maxq.js:2200); no interactive viewer surface; devtools `A.earthworksVolume()` only.
+The title is now wrong (it is measured, not planned). Spec: (1) move the volume row to the ground/earthworks card; (2) show the same line in
+`model_check_report.html` (a "Quantities" stat card) and in the 4D/5D page's quantities for the EARTHWORK discipline — one owner
+(`A.earthworksVolume`), no second computation; civil-gated. Witness: the same string on all three surfaces on CivilWorks.db; buildings show none.
+### §LONG_SECTION — road profile along the route (spec)
+Source of the idea: a road-design tool's public listing (linked plan / 3D / long-section views) + our §E ("chainage nav 🟡") / §H.
+Sample along the inferred route (`A.civilDriveRoute()`, §CHAINAGE_V2) every Δs: road top z, ground z (raycast down onto EARTHWORK/terrain via
+the existing BVH), drain invert z where a DRAINAGE element is crossed. Draw a 2D chart (s on x, z on y, ONE axis) in a panel; click a point →
+camera to that chainage (linked view). Label "chainage (inferred)" while the route is inferred — for navigation, not gradient design.
+Witness: monotonic s; sampled z equals a direct raycast at 5 random s within 1 cm; click → camera within 1 m of route(s); building → no panel.
+### §CROSS_SECTION — section square to the road at a chainage (spec)
+Reuse the existing section box; orient it to the route tangent at the picked s (from §LONG_SECTION click or a chainage input); thin slab
+(width from the box UI). Witness: box normal · route tangent ≥ 0.999; elements cut at s are exactly those whose bbox spans the plane.
+### §HANDOFF_AUDIT — neutral loss report + version diff (spec only, build later)
+Per import: elements / psets / materials / storey+discipline links kept X of Y, dropped Z (ids listed) vs the source IFC; per re-export
+(same FILE_NAME identity, the (f) case): added / deleted / moved / pset-changed vs the previous version. Deterministic; result row in
+kernel_ops. Seed case: LIGHTING v1 227 → v2 216 (11 deleted, all GUIDs ⊂ v1). Witness: the v1→v2 case reports exactly those 11.
+### Chapter 0 (film) — intro "what this is all about": FILM_NARRATION.md §11.v5 STRUCTURE.
+
 ## ▶▶ NEXT SESSION — order REVISED 2026-10-06 by positioning above: 2 (clash) → 3 (volume) → 1 (terrain) → 4 (film, user's go)
 1. **Finish §ALTS_CIVIL_TERRAIN_GROUND** (PHOTOREAL_STILL_RENDER.md): bim-ootb branch `feat/alts-civil-terrain-ground` (pushed, WIP commit, no PR).
    Run `viewer/tests/witness_alts_terrain_ground.js` — RED control with `ROOT=<worktree at origin/main>`, then on the branch (CivilWorks.db +
