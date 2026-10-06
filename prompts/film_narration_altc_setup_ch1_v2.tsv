@@ -1,0 +1,4 @@
+ask	0.00	2.40	screen: Alt+C panel beside the preview (rec 2026-10-07 00.20, 6.0–17.0 s)	F: How long to set this up?	F: How long does this take to set up?
+boxes	2.40	11.00	user 2026-10-07 wording · screen: feature checkboxes ticked	M: Seconds. Check the boxes.	M: Seconds. Easily check the boxes of what you want seen in the film, and all is preset according to your IFC metadata.
+preview	11.00	16.20	screen: preview captions Civil Works [Ground Treatment] → [Road Furniture], Day 18 → Day 78 (rec 26.75–37.25 s)	F: Can I see it first? | M: The preview.	F: Can I see it first? | M: The preview plays the build. Ground treatment first, finishing last.
+bake	16.20	21.50	§CLI_BAKE_WALL totalSec=1524 (v6)	F: Then? | M: Leave it to bake.	F: And then? | M: Leave it to bake. The last one took twenty-five minutes.

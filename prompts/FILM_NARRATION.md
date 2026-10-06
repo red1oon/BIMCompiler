@@ -1728,3 +1728,11 @@ assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witnes
   2nd statement, same card (user 2026-10-06): *"What is important is the computed data - giving the compliance report, truthful geo -
   drainage clashes, and a full Viewer experience even on mobile."* Backing: §MC_REPORT rows=302 · §CLASH 11 mesh-true GEOTECH×DRAINAGE ·
   mobile = the 390×844 walk clip; ⚠ memory caveat: whole-model heap on a phone tab is unverified (~0.6 GB/tab vs this model).
+- **Ch1 v2 BUILT (2026-10-07):** source `~/Videos/simplescreenrecorder-2026-10-07_00.20.15.mp4` (40.8 s); kept the two clean full-screen
+  stretches by top-strip brightness (40 = full screen, 43 = "Esc to exit" banner, 163 = windowed): 6.00–17.00 s (checkbox setup) +
+  26.75–37.25 s (preview build, captions Ground Treatment → Road Furniture, day counter running) → silent
+  `~/Videos/CivilWorks_AltC_setup_ch1_v2_BEFORE.mp4` (21.5 s, 559 frames). Script `film_narration_altc_setup_ch1_v2.tsv` (4 rows, adds the
+  user line "Easily check the boxes … preset according to your IFC metadata"), fit 4/4 DETAIL, 3/3 tone OK → narrated
+  `~/Downloads/CivilWorks_AltC_setup_ch1_v2_narrated_AFTER.mp4` (frames 559 = source, −17.0 LUFS, no silence ≥ 2 s).
+- **v7 bake queued (2026-10-07, user "redo those clips to get build up well"):** /tmp/wt-erp-clip (main + #1919 civil solidify fix),
+  CivilWorksPath.db with the Kuantan mock site + Issue D task dates, flags as v6 + `--sun-compass` → `~/Videos/CivilWorks_film_v7_*`.
