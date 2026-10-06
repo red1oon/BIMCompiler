@@ -113,6 +113,10 @@ async function erpPart(page, href2) {
   S('§CLIP_HEADER_TAB ' + hdr); await sleep(2000);
   // RED PILL = the rail icon #pill-zoomacross (erp/pills_idmp.json id 'zoomacross'), pressed by pointerup exactly as
   // erp/tests/poc_zoom_across.js does — NOT the toolbar magnifier and NOT a direct IdmpPillActions call (user 2026-10-07).
+  // the rail starts folded behind ⋯ (#idmp-pill-trigger, §PILL-CUE collapsed=true) — open it the way a user does
+  await cursorTo(page, '#idmp-pill-trigger', 800); await sleep(900); await cursorRing(page);
+  await page.evaluate(() => { const t = document.getElementById('idmp-pill-trigger'); if (t) t.click(); }); await sleep(1500);
+  await cursorTo(page, '#pill-zoomacross', 700); await sleep(900); await cursorRing(page);
   const pillSel = await page.evaluate(() => { const b = document.getElementById('pill-zoomacross');
     return b && b.getBoundingClientRect().width > 0 ? (b.getAttribute('title') || 'pill-zoomacross') : null; });
   S('§CLIP_PILL ' + pillSel);
@@ -143,7 +147,10 @@ async function erpPart(page, href2) {
 (async () => {
   await new Promise(r => server.listen(8433, '127.0.0.1', r));
   const port = server.address().port;
-  ctx = await chromium.launchPersistentContext(path.join(__dirname, 'erp_clip_profile'), { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+  // REAL GPU (the bakes' selector): on swiftshader the busy page stopped producing frames for minutes, so the pointer clicks never
+  // reached the video (v9 run 2026-10-07). The sections clip on the real GPU recorded smoothly.
+  ctx = await chromium.launchPersistentContext(path.join(__dirname, 'erp_clip_profile'), { args: ['--use-angle=gl-egl', '--ignore-gpu-blocklist'],
+    env: Object.assign({}, process.env, { __EGL_VENDOR_LIBRARY_FILENAMES: '/usr/share/glvnd/egl_vendor.d/10_nvidia.json' }),
     viewport: { width: 1280, height: 720 }, recordVideo: { dir: OUT, size: { width: 1280, height: 720 } } });
   const browser = { close: () => Promise.resolve() };
   hook = (pg, tag) => { pg.on('console', m => { const t = m.text(); if (/§/.test(t)) log.push('  [' + tag + '] ' + t.slice(0, 400)); });
