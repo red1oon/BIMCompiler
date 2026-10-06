@@ -85,15 +85,17 @@ async function erpPart(page, href2) {
   // Red pill from the header record (carries the pushed GUID set).
   const hdr = await tabTo('Project');
   S('§CLIP_HEADER_TAB ' + hdr); await sleep(2000);
-  const pillSel = await page.evaluate(() => { const c = Array.from(document.querySelectorAll('[title],[aria-label],[data-pill],[data-act]')).filter(e => e.getBoundingClientRect().width > 0 &&
-      /zoom.?across|red ?pill|zoomacross/i.test((e.getAttribute('title')||'') + (e.getAttribute('aria-label')||'') + (e.getAttribute('data-pill')||'') + (e.getAttribute('data-act')||'')));
-    if (!c.length) return null; c[0].setAttribute('data-clip-pill', '1'); return c[0].outerHTML.slice(0, 200); });
+  // RED PILL = the rail icon #pill-zoomacross (erp/pills_idmp.json id 'zoomacross'), pressed by pointerup exactly as
+  // erp/tests/poc_zoom_across.js does — NOT the toolbar magnifier and NOT a direct IdmpPillActions call (user 2026-10-07).
+  const pillSel = await page.evaluate(() => { const b = document.getElementById('pill-zoomacross');
+    return b && b.getBoundingClientRect().width > 0 ? (b.getAttribute('title') || 'pill-zoomacross') : null; });
   S('§CLIP_PILL ' + pillSel);
-  if (pillSel) await outline(page, '[data-clip-pill="1"]', 'Red pill');
+  if (pillSel) await outline(page, '#pill-zoomacross', 'Red pill');
   await sleep(1500);
   S('§CLIP_MARK redpill');
   const popupP = ctx.waitForEvent('page', { timeout: 30000 }).catch(() => null);
-  await page.evaluate(() => window.IdmpPillActions && window.IdmpPillActions.zoomacross());
+  await page.evaluate(() => { const o = document.getElementById('clip-outline'); if (o) o.remove();
+    const b = document.getElementById('pill-zoomacross'); if (b) b.dispatchEvent(new PointerEvent('pointerup', { bubbles: true })); });
   const pop = await popupP;
   S('§CLIP_POPUP ' + (pop ? pop.url().slice(0, 200) : 'none'));
   log.filter(l => /§ZOOM-ACROSS/.test(l)).forEach(l => S('§CLIP_ZOOMLOG ' + l.trim()));
