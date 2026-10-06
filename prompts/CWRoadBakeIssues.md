@@ -158,3 +158,10 @@ Not reproduced headless: `cache_4d_run.js` on a copy of CivilWorksPath (building
 window == played span on every task, but the harness never classifies civil phases (`§TPL_PHASE_ABSENT phase="Ground Treatment"
 on NO level`), so it does not walk the live path (viewer Generate Gantt → `_civilSwap` → civil phases). Next: reproduce through
 the viewer's own generate path (or give cache_4d_run the viewer's civil phase classification), then fix the window writer.
+
+## 10. STATUS 2026-10-07 — Issue B fix BUILT, civil-only
+Root (v6 log + DB): 19,559 place ops have 11,893 distinct completion instants; 6,555 share `1800058563674` and 1,057 the next ms.
+Civil pacing = k-th completion (`cinema_maxq.js _workCursorAt`, §ALTC_V3) → cursor frozen frames 120–600 (§CPE_BUILDUP), day 18 held.
+Fix bim-ootb PR #1920 (sw v1599, auto-merge): civil films pace by DISTINCT completion instants (`§CW_PACE_DISTINCT`); buildings
+return earlier through the even-tempo branch, untouched. The 7,612 tied pieces still appear in one step (data: identical ends — why
+the generator gives them one instant is open, likely the same civil-path writer as Issue D). Proof pending: v7 bake log.
