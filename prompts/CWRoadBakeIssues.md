@@ -152,3 +152,9 @@ from somewhere other than the ops — the task's 2026-10-06 start is the prime s
 TASK_Ground_Treatment_BASE 2026-10-06/P102D → 2026-12-29/P18D (start = its own ops' first timestamp). 0 tasks now start before the
 first op; quick_check ok. Generator cause (template writes the run date as the first task's start) NOT fixed — a re-run of the 4D
 template will bring it back.
+**D, scope measured (2026-10-07):** buildings do NOT have it — existing `~/.cache/bim4d` runs: Hospital 36 / Terminal 70 / Duplex 19 /
+LTU_AHouse 60 tasks, task start vs its first played piece mismatch > 0.5 d = **0** on all. So it is a civil-path defect.
+Not reproduced headless: `cache_4d_run.js` on a copy of CivilWorksPath (building template AND a civil-template copy) gives task
+window == played span on every task, but the harness never classifies civil phases (`§TPL_PHASE_ABSENT phase="Ground Treatment"
+on NO level`), so it does not walk the live path (viewer Generate Gantt → `_civilSwap` → civil phases). Next: reproduce through
+the viewer's own generate path (or give cache_4d_run the viewer's civil phase classification), then fix the window writer.
