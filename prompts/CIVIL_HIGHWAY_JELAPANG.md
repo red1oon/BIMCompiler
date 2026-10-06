@@ -58,6 +58,12 @@ lists+counts identical, 0 new rows. Film-card candidate: horizontal drain `28irG
 `2fiiNay2Wysm00000008wp`, centre 428.19, 52.08, 62.62, depth 19 mm (alt: wall `…kkT` × drain `…8fR`, 0.71 m) — on-route NOT checked.
 ⛔ open: `witness_clash_mesh_narrowphase.js` on CivilWorks 8/10 (I3: 2 disagreements in DRAINAGE|ROAD; I5 selftest S7b) — no
 origin/main baseline run, so pre-existing vs new is unknown. Witness: `viewer/tests/witness_clash_geotech_drainage.js` (10/10).
+**Item 3 — bim-ootb #1899 MERGED, but NO volume shown (INCONCLUSIVE, by rule).** `§EARTHWORKS_VOLUME guid=2n63zsNUV13W000000077a tris=69483
+uniqueVerts=34693 openEdges=25 nonManifoldEdges=23 wrongWayEdges=0 closed=false V=NONE`. The card line reads "Earthworks volume — not measurable — surface
+open (48 edges)". The raw signed sum is 22,048.172 m³ (numpy agrees to 2.6e-9), but because the surface is open it moves about ±2 m³ when the origin shifts
+by up to 5 km → it is NOT claimed. Controls: cube/box/tetra/translated/soup exact; open-face and flipped cubes refused (11/11). The RED run on main timed out
+(harness "frame detached"), so the only RED evidence is static (0 `earthworksVolume` on main). ⛔ USER DECISION: either (a) a relaxed rule that shows
+"≈ 22,048 m³ (48 open edges, ±2 m³)" with the bound measured and stated, or (b) the partner re-exports a watertight earthworks solid.
 Also open: bim-ootb `test/scene-merge-witness-selfconsistent` (pushed, NOT run) — run witness_scene_merge_2026-07-30, PR if green.
 
 ## ▶▶ (2026-10-06 close) the Alt+C road film of CivilWorks.db — start at FILM_NARRATION.md "▶▶ RESUME HERE FIRST".
