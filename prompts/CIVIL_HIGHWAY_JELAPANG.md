@@ -45,6 +45,20 @@ highlights pushed GUIDs · #1918 sky skyline boxes skipped on civil. Do in order
 5. **Chapter breaks** (user: "yes the chapters break") — title cards between: Ch0 intro (title still OPEN — user thinking: "IFC Extracted — 4D, 5D to
    8D ERP" proposed), Ch1 setup, Ch2 build-up, Ch3 sections, Ch4 ERP, Ch5 mobile, Close (health + report + "Now you know what you got").
 6. Then: sections clip (after the lens PR), closing multi-user line needs its witness, HANDOFF_AUDIT build, Alt+S terrain (§ALTS_CIVIL_TERRAIN_GROUND).
+**USER STEER 2026-10-06 18:00 (conserve tokens — follow this plan, not the list above where they differ):**
+- **ERP beat = POC only:** select ONE or TWO disciplines (e.g. Lighting, or Lighting + Drainage), push, show the Project lines, red pill back.
+- **55 s build gap = likely a SCHEDULE issue** ("from experience in buildings a tough nut to crack"). Spend little: step back to past knowledge
+  (4D_MODEL_INTEGRITY.md §I ownership table + §E, 4D_GANTT_TM_REFACTOR.md DEBUG MAP) — do NOT re-derive. If not solvable quickly, LEAVE IT and
+  cut film clips only from fully-built stretches (frames where placed == total).
+- **Cheap test before any bake:** the Alt+C PREVIEW already shows the build is incomplete — use the preview as the quick peek, and the Time
+  Machine's own end state (placed vs total at its last day; a § line) to confirm full build BEFORE spending a 25-min bake.
+- **HUDs missing / stuck in v6:** clock not seen; day counter stuck; duration too short — all tied to the Time Machine. Check the bake log
+  (§CPE_DAY_COUNTER showed day=18 held 8–44 s in v5, of=79 days) and the HUD flags (--label/--day) before fixing; same root as the schedule item.
+- **Narration may cover remaining bugs honestly:** add a line such as "Still a work in progress — proof this is not AI but air-gapped,
+  local-first running code." (user wording; keep the "No AI inside" claim to the runtime, per project_positioning_no_ai_inside).
+- Order for the next session: (1) TM end-state + preview check (cheap) → decide build gap fix vs fully-built-only cuts; (2) HUD/day counter
+  from the log; (3) ERP POC clip (1–2 disciplines); (4) chapter cards + WIP line; (5) lens PR witness fix. Sky residual stays parked (not fatal).
+
 Rules learned today: whitebox node witnesses first, browser only for wiring, all browser runs `flock /tmp/civil_browser.lock`; agents report after 2
 failures; coordinate agents/sessions internally (memory feedback_manage_coordination_internally).
 
