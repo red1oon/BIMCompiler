@@ -96,6 +96,7 @@ nav:
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
+      - "Civil Works — Step by Step": CivilWorksGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:

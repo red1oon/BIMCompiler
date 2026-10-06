@@ -338,6 +338,8 @@ above for how to open it) has three more rows besides Find / Navigate:
 
 ### Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour
 
+> **Road (civil works) model?** The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: **[Civil Works — Step by Step](CivilWorksGuide.md)**.
+
 The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles seven tools behind
 one icon:
 
@@ -808,6 +810,7 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 
 | Doc | What |
 |-----|------|
+| [Civil Works — Step by Step](CivilWorksGuide.md) | Road models: discipline counts + cost, cross-vendor clash, earthworks volume, long / cross sections, road Model Check report |
 | [Kernel-ERP User Guide](ERPUserGuide.md) | iDempiere browser ERP — login → install → POS → reporting · [Tenancy](ERPUserGuide.md#hr-tenancy) |
 | [DAGeVu Modeller Guide](ModellerGuide.md) | Author geometry — the editable 3D Grid |
 | [Clash Detection](CLASH_DETECTION.md) | Clash detection engine |
