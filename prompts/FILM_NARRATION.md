@@ -1565,6 +1565,12 @@ ring at screen centre-bottom, a top chip "GPS site-walk · mock-up (specified: C
 Spec it refers to: §I.2 (GPS → position via CRS or two-tap anchor; height = ground under point; no georef → INCONCLUSIVE, never a silent wrong
 dot). Narration (user 2026-10-06, after seeing the clip: "Looks fine. Script can be simply 'You can setup mobile ready'"): M: "You can set it up mobile-ready." The on-screen chip carries the GPS-pending caveat. Memory caveat stands: model ~2 GB heap vs ~0.6 GB phone tab (unverified).
 
+### §11.v5 SECTIONS CLIP (user 2026-10-06: "have the clip on the long cross secs?")
+~8 s, recorded headless after the profile lens lands: Cut section → **Long**: the round lens dragged onto the road, wheel to zoom the span,
+profile of road/ground/drains inside it (3 s) → **Cross**: scrubber dragged, 2 m slice sliding along the road, camera facing the slice square-on
+(script-placed for the clip; Cross does not move the camera itself yet) (4 s) → "Profile PDF" sheet flash (1 s). Numbers on screen come from
+§PROFILE_LENS / §CROSS_SECTION lines. ⛔ Waits on the §PROFILE_LENS PR.
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
