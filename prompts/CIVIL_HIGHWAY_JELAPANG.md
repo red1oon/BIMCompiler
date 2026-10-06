@@ -21,6 +21,12 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
+## ⚖ CANONICAL MODEL FILE (user 2026-10-06: "File we using has been told - CivilWorksPath.db")
+`~/Downloads/JALAN JELAPANG IFC/CivilWorksPath.db` = CivilWorks.db (renamed: no place name) + the saved Alt+C path (cinema_path). Every
+witness default, bake and film uses THIS file. CivilWorks.db = same elements without the path; witnesses written today that default to
+CivilWorks.db (#1897 clash, #1900/#1902 volume, #1901/#1904 sections, #1906/#1915 ERP, #1916 link-back) give identical element results — repoint
+their defaults when next touched.
+
 ## ⚖ POSITIONING — the receiving desk for infrastructure models (user, 2026-10-06)
 > User: *"where do u see we might fit in?"* (re InfraGrid3D et al.) → agreed: *"Thus having such advantage, we only need to be 'half as good'"*.
 
