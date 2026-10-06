@@ -111,13 +111,19 @@ Wait `§MERGE_CONTRACT verdict=COMPLETE`, Discipline axis, select ROAD+LIGHTING+
 My earlier INCONCLUSIVE = instrument (no load wait, 8 s fixed wait). ⚠ LIMIT: proj_fold.js:246-260 makes one line per IFC class → every civil
 discipline collapses into ONE "IfcBuildingElementProxy" line. Proposed generic fix (not built): when the class is the generic proxy, group by
 discipline (IFC2X3 proxies are generic in any model, not civil-only).
-**ERP fold — proxies by discipline (PR bim-ootb #1915, auto-merge ON 2026-10-06; decision: proceed — "U decide because that is a test case").**
+**ERP fold — proxies by discipline (PR bim-ootb #1915 ✅ MERGED 2026-10-06 (CI no-undef fix: window.CIVIL_RATES); decision: proceed — "U decide because that is a test case").**
 proj_fold.js: a proxy with a discipline groups by discipline; price from rates.js CIVIL_RATES (same owner as boq_charts.html:1173), null →
 qty carried, price 0, "rate not set". Old 280 = rsmeans2024_us.json proxy rate via en_US locale (rates.js:720), a building rate on road
 assets. CivilWorks: Road 4008 / Lighting 216 / Drainage 200 / Signage 138 / Marking 90 (sum 4652, price 0). Hospital: amount 64,719,477 and
 qty 63,182 identical; its 1 proxy line splits into 5 (ARC 1770, ELEC 1125, FP 6, MEP 2246, PLB 582) → 28→33 lines (intended). SampleHouse
 identical (9 lines, 155,360). Node witness tests/poc_proj_fold_proxy_disc.js PASS; browser witness_civil_find_erp_push PASS. Existing
 iDempiere Hospital record unchanged; new pushes use the split.
+**Red pill (Zoom Across) back to the civil model ✅ — bim-ootb #1916 MERGED 2026-10-06.** Cause: erp/idempiere.html built
+`../buildings/<Project.Value>_extracted.db` → `Civil Works_extracted.db` (404); order kept no GUIDs. Fix (+48/−4): push stores
+C_Project.Description "BIM src db=<A.DB_URL>" + Note = pushed GUIDs; `_viewerUrl` uses the tag (else the old convention — Hospital
+byte-identical), GUID set → find= (long sets via a localStorage token find=@…), main.js resolves the token into the existing applyFindScope
+guid path. Node witness witness_zoom_linkback_node.js PASS (644 GUIDs = pushed set, 644/644 real rows); poc_zoom_across.js Hospital 8/8.
+Live end-to-end highlight on a real civil load NOT run (load ~30) — parser-level proof only.
 ### §HANDOFF_AUDIT — neutral loss report + version diff (spec only, build later)
 Per import: elements / psets / materials / storey+discipline links kept X of Y, dropped Z (ids listed) vs the source IFC; per re-export
 (same FILE_NAME identity, the (f) case): added / deleted / moved / pset-changed vs the previous version. Deterministic; result row in
