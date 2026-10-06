@@ -148,3 +148,7 @@ while the ops are packed to the last 18 days (4D_MODEL_INTEGRITY §I "duration"/
 **D, narrowed (user: "It is CH 10 - Ground Treatment"):** the CH 10 Ground Treatment ops themselves run FORWARD — 402 ops,
 2026-12-29 → 2027-01-16, 0 with end < start (same for CH 09–CH 14). So the reversal is in how the Gantt row is drawn (bar start taken
 from somewhere other than the ops — the task's 2026-10-06 start is the prime suspect), not in the schedule data the TM plays.
+**D, data patched 2026-10-06 (user cleared the DB):** CivilWorksPath.db `tasks` — TASK_ROOT 2026-10-06/P163D → 2026-12-29/P79D;
+TASK_Ground_Treatment_BASE 2026-10-06/P102D → 2026-12-29/P18D (start = its own ops' first timestamp). 0 tasks now start before the
+first op; quick_check ok. Generator cause (template writes the run date as the first task's start) NOT fixed — a re-run of the 4D
+template will bring it back.
