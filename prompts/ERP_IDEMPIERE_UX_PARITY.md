@@ -1938,6 +1938,12 @@ flags — it does NOT touch the OPFS push store `bim_analysis/bim_project_orders
 pushed project records either. Gap to close with §BIM-CRUD (user expected Clear cache to do it, 2026-10-07).
 System Monitor **seed reset** (`erp/system_monitor.js resetSeedClients`, W-SEED-RESET-LIVE) re-fetches pristine ad_seed.db and replaces
 `ad_seed_v16` (GardenWorld rows incl. the BIM band drop out), but the next boot's `§BIM_OVERLAY` re-inserts the band from the OPFS push
-store, which seed reset does not touch → the pushed records return. Fix scope for §BIM-CRUD: one "clear BIM pushes" path shared by seed
-reset, landing Clear cache and an ERP delete.
+store, which seed reset does not touch → the pushed records return. **This is an ERP seed-reset bug** (user 2026-10-07): "initial state"
+is not initial while the overlay re-inserts. Fix scope for §BIM-CRUD: the ERP's seed reset clears the BIM band in the push store too, and an
+ERP delete writes through to it. **NOT the landing page Clear cache** (user: that is for the Viewer's IndexedDB) — drop it from scope.
+**Every viewer writer of the same store** (`bim_analysis/bim_project_orders.db`, all land in the ERP via `§BIM_OVERLAY`, band PK ≥ 990000:
+M_Product_Category, M_Product, C_Project, C_ProjectPhase, C_ProjectTask, C_ProjectLine, C_Order, C_OrderLine):
+`find_erp_push.js` (› ERP → Project Order) · `diff.js` §H1 (model delta → VO / C_Order amendment, VoFold) · `whatif_panel.js` (What-if
+re-baseline writes rippled dates onto the official rows) · `schedule_author_ui.js` (authored 4D phases folded 1:1) · reader
+`proj_order_state.js`. A reset/delete design must cover all four writers.
 **Rule restated:** an ERP "CRUD ok" claim covers delete only when a witness deleted THROUGH THE UI and re-read after reload.
