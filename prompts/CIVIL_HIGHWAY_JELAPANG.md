@@ -62,7 +62,7 @@ origin/main baseline run, so pre-existing vs new is unknown. Witness: `viewer/te
 uniqueVerts=34693 openEdges=25 nonManifoldEdges=23 wrongWayEdges=0 closed=false V=NONE`. The card line reads "Earthworks volume — not measurable — surface
 open (48 edges)". The raw signed sum is 22,048.172 m³ (numpy agrees to 2.6e-9), but because the surface is open it moves about ±2 m³ when the origin shifts
 by up to 5 km → it is NOT claimed. Controls: cube/box/tetra/translated/soup exact; open-face and flipped cubes refused (11/11). The RED run on main timed out
-(harness "frame detached"), so the only RED evidence is static (0 `earthworksVolume` on main). ⛔ USER DECISION: either (a) a relaxed rule that shows
+(harness "frame detached"), so the only RED evidence is static (0 `earthworksVolume` on main). ✅ USER DECIDED (a) 2026-10-06 — "It is proof of compiler truth" → follow-up PR in progress: (a) a relaxed rule that shows
 "≈ 22,048 m³ (48 open edges, ±2 m³)" with the bound measured and stated, or (b) the partner re-exports a watertight earthworks solid.
 Also open: bim-ootb `test/scene-merge-witness-selfconsistent` (pushed, NOT run) — run witness_scene_merge_2026-07-30, PR if green.
 
