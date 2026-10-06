@@ -1565,7 +1565,10 @@ this is to hold viewer attention. Longer remains for later use"*): SHORT = `~/Vi
 34.42 s (title card start; OPEN narration ends 33.69 s, audio silent 33.5–35.1 s, title voice 35.02) — 259.6 s, 6,749 frames (7,644 − 895),
 −16.8 LUFS; phone copy `…_short_AFTER_mobile720.mp4` (22.8 MiB). LONG = B unchanged, kept for later. A (`…_v2_AFTER.mp4`) still on disk.
 ⚠ Subtitle flaw: the TTS spellings ("I F C", "three dot J S" — 5 rows) are burned into the subtitles as spelled. Fix = separate subtitle text
-from spoken text in the TSV and re-mux (no re-voicing needed).
+from spoken text in the TSV and re-mux (no re-voicing needed). **FIXED 2026-10-06:** subtitles re-burned from `intro_subfix.ass` (I F C → IFC / IFC2X3 /
+IFC4.3, three dot J S → three.js; 0 left) onto the agent's silent assembled film, B's audio track copied unchanged →
+`~/Videos/IFC_Extraction_Program_intro_long_subfix_AFTER.mp4` (294.0 s, 7,644 frames) + `…_short_subfix_AFTER.mp4` (from 34.42 s, 259.6 s,
+6,749 frames) + phone copy `…_short_subfix_AFTER_mobile720.mp4` (22.8 MiB). These two supersede the unfixed long/short files.
 **Status (pre-build):** storyboard + lines for the user's review — NOT voiced/muxed; card visuals not built. Next on the user's go: TSV with cues on the
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
