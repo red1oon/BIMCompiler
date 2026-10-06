@@ -129,3 +129,11 @@ A node witness that slices `_tmBuildEventIndex`/`_tmHasEventIn` and the gate fro
 `_tmXraySolidifyTs` from the real `kernel_ops` of CivilWorksPath.db, replays the 1,469 frame cursors with the delta
 skip, and counts slots that end hidden while the gate (evaluated fully) says shown. Expected if the suspicion is right:
 > 0 on the road, ≈ 0 on Hospital/Terminal.
+
+## 8. STATUS 2026-10-06 late — Issue A fix BUILT, civil-only
+bim-ootb PR #1919 (`fix/cw-solidify-event`, sw v1598, auto-merge set): `_tmBuildEventIndex` also indexes `_tmXraySolidifyTs`
+**only when `isCivilModel()`** (user: "a flag that it is only for 'CW' type and not building … subset treatment of a DocType").
+Witness `viewer/tests/witness_cw_solidify_event.js` PASS: gate false on Hospital/Duplex/LTU_AHouse/Terminal/Clinic (civilRows=0),
+true on CivilWorksPath (14,820); building index byte-identical to main; bug reproduced on main (skip) and fixed (visit) on a
+synthetic mesh. NOT yet proven on the real road: the user's Alt+C preview on localhost:8411 (worktree /tmp/wt-erp-clip) must
+log `§CW_SOLIDIFY_EVENT civil=true added=N>0` and show the full build. Issue B (pacing) next, after that proof.
