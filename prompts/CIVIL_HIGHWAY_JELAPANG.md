@@ -78,6 +78,15 @@ FAIL; Duplex VACUOUS (not PASS). Open: fleet proof Duplex only; DLOD-hidden elem
 - Witness: building → exactly 3 axis buttons, no civil UI; civil → 5; dragging the scrubber to 3 values → normal·tangent ≥ 0.999 at each, cut set
   = independent recompute; Long scrub → camera within 1 m of route(s); X/Y/Z after Cross → 1 clip plane, not 2; no `civil-section-btn` in the DOM.
   Deletion budget stated (lines +/−).
+### §PROFILE_LENS — round glass over the 3D view that unrolls the stretch beneath it (spec; user 2026-10-06: "a large round glass that hovers over the canvas and it unrolls a flat profile? Where zooming in or out likewise controls the scope of section")
+- Long mode of the Cut section tool = the lens (DEPRECATES the panel chart from #1901/#1904 — delete it; Cross + scrubber stay).
+- Hover: lens follows the pointer; centre = nearest route point (chainage s0, "inferred"); draws road / ground / drain profile for [s0−w, s0+w],
+  flat, read-only overlay (no scene change). Wheel inside the lens sets w (±25 m … whole road); samples re-taken across the span (fine at small w).
+- Click: pin + camera fly (+ Cross cut there if Cross is on). Data band under the curve (chainage, ground z, road z) at the lens scale.
+- Print tab (queued after): "Print profile" opens a clean page in a new tab (chart + data band) for paper.
+- Prior-art check (2026-10-06, 2 web searches): parts exist SEPARATELY — map-synced profile viewers (Carlson Natural Regrade, QGIS, ArcGIS Pro,
+  BikeRouter), cursor loupes (image magnifiers, Infor roadway magnifier). The combination (lens over the 3D model showing the profile of the
+  stretch under it, wheel = span) was NOT found — do not call it "first"; date the idea here.
 ### §HANDOFF_AUDIT — neutral loss report + version diff (spec only, build later)
 Per import: elements / psets / materials / storey+discipline links kept X of Y, dropped Z (ids listed) vs the source IFC; per re-export
 (same FILE_NAME identity, the (f) case): added / deleted / moved / pset-changed vs the previous version. Deterministic; result row in
