@@ -35,6 +35,32 @@ async function outline(page, sel, label) {
   }, [sel, label]);
 }
 let ctx, hook;
+
+// Visible pointer for the clip (headless video draws no OS cursor): a DOM arrow that glides to a target and shows a click ring.
+async function cursorTo(page, sel, ms) {
+  return page.evaluate(([sel, ms]) => {
+    let c = document.getElementById('clip-cursor');
+    if (!c) { c = document.createElement('div'); c.id = 'clip-cursor';
+      c.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 2l7 19 2.5-7.5L20 11z" fill="#fff" stroke="#000" stroke-width="1.5"/></svg>';
+      c.style.cssText = 'position:fixed;left:640px;top:400px;z-index:2147483647;pointer-events:none;transition:left ' + ms + 'ms ease,top ' + ms + 'ms ease';
+      document.body.appendChild(c); }
+    c.style.transition = 'left ' + ms + 'ms ease,top ' + ms + 'ms ease';
+    const e = typeof sel === 'string' ? document.querySelector(sel) : null; if (!e) return null;
+    const r = e.getBoundingClientRect(); c.style.left = (r.left + Math.min(40, r.width / 2)) + 'px'; c.style.top = (r.top + r.height / 2) + 'px';
+    return { x: r.left, y: r.top, w: r.width, h: r.height };
+  }, [sel, ms || 700]);
+}
+async function cursorRing(page) {
+  await page.evaluate(() => { const c = document.getElementById('clip-cursor'); if (!c) return; const g = document.createElement('div');
+    g.style.cssText = 'position:fixed;left:' + (parseFloat(c.style.left) - 14) + 'px;top:' + (parseFloat(c.style.top) - 14) + 'px;width:28px;height:28px;border:3px solid #ffeb3b;border-radius:50%;z-index:2147483646;pointer-events:none;transition:transform .5s,opacity .5s';
+    document.body.appendChild(g); requestAnimationFrame(() => { g.style.transform = 'scale(2.2)'; g.style.opacity = '0'; }); setTimeout(() => g.remove(), 700); });
+}
+async function closeTM(page, S) {
+  const r = await page.evaluate(() => { const p = document.getElementById('time-machine-panel');
+    const on = !!(p && p.style.display !== 'none' && p.getBoundingClientRect().width > 0);
+    if (on && typeof window.toggleTimeMachine === 'function') window.toggleTimeMachine(); return on; });
+  S('§CLIP_TM_CLOSE wasOpen=' + r);
+}
 async function erpPart(page, href2) {
   S('§CLIP_MARK erp_open');
   await page.goto(href2, { waitUntil: 'domcontentloaded', timeout: 120000 }); hook(page, 'erp');
@@ -104,6 +130,8 @@ async function erpPart(page, href2) {
     let ok = false;
     for (let i = 0; i < 400 && !ok; i++) { await sleep(1000); ok = seen(/\[back\].*§MERGE_CONTRACT .*verdict=COMPLETE/); }
     S('§CLIP_BACK_LOAD ' + (ok ? 'COMPLETE' : 'NOT COMPLETE'));
+    await closeTM(pop, S); await sleep(1500);
+    await pop.evaluate(() => { const fp = document.getElementById('find-panel'); if (!fp || fp.style.display === 'none') window.APP.openFindPanel(); });
     for (let i = 0; i < 60 && !seen(/\[back\].*§ZOOM-SCOPE|\[back\].*§FIND|\[back\].*§NF_/); i++) await sleep(1000);
     await sleep(6000);
     S('§CLIP_MARK highlighted');
@@ -128,6 +156,7 @@ async function erpPart(page, href2) {
   for (let i = 0; i < 400 && !done; i++) { await sleep(1000); done = seen(/§MERGE_CONTRACT .*verdict=COMPLETE/); }
   S('§CLIP_LOAD ' + (done ? 'COMPLETE' : 'NOT COMPLETE')); if (!done) { save(); await ctx.close(); await browser.close(); server.close(); process.exit(2); }
   await sleep(3000);
+  await closeTM(page, S); await sleep(1500);
   await page.evaluate(() => window.APP.openFindPanel());
   for (let i = 0; i < 120 && !(await page.evaluate(() => !!document.getElementById('find-axis-toggle') && !!document.getElementById('find-erp-btn'))); i++) await sleep(1000);
   await sleep(1200);
@@ -139,21 +168,24 @@ async function erpPart(page, href2) {
   S('§CLIP_MARK find_open');
   const tap = (v, ctrl) => page.evaluate(([v, ctrl]) => { const r = document.querySelector('[data-find-parent="' + v + '"]'); if (!r) return false;
     r.children[1].dispatchEvent(new PointerEvent('pointerup', { bubbles: true, ctrlKey: ctrl })); return true; }, [v, ctrl]);
-  for (let i = 0; i < DISCS.length; i++) { S('§CLIP_TAP ' + DISCS[i] + ' ok=' + await tap(DISCS[i], i > 0)); await sleep(1500); }
+  for (let i = 0; i < DISCS.length; i++) {
+    await cursorTo(page, '[data-find-parent="' + DISCS[i] + '"]', 900); await sleep(1100); await cursorRing(page);
+    S('§CLIP_TAP ' + DISCS[i] + ' ok=' + await tap(DISCS[i], i > 0)); await sleep(1500); }
   await sleep(1500);
   S('§CLIP_SELECTED "' + await page.evaluate(() => (document.getElementById('find-selected-text') || {}).textContent) + '" cost="' +
     await page.evaluate(() => (document.getElementById('find-selected-cost') || {}).textContent) + '"');
   for (let i = 0; i < 60 && !seen(/§FIND_COST scope="DISC_SELECT/); i++) await sleep(1000);
   await sleep(1500);
   S('§CLIP_SEL_READY ' + (log.filter(l => /§FIND_COST scope="DISC_SELECT/.test(l)).slice(-1)[0] || 'none').trim());
+  await cursorTo(page, '#find-erp-btn', 800); await sleep(1000); await cursorRing(page);
   S('§CLIP_MARK push');
   await page.evaluate(() => document.getElementById('find-erp-btn').click());
   for (let i = 0; i < 300 && !seen(/§PROJ_PUSH_LINK|§PROJ_PUSH_DEFER|§PROJ_PUSH_DBERR|§PROJ_PUSH_ERR/); i++) await sleep(1000);
   log.filter(l => /§PROJ_PUSH|§ZOOM_LINKBACK/.test(l)).forEach(l => S('§CLIP_PUSHLOG ' + l.trim()));
   const href = await page.evaluate(() => { const a = document.getElementById('find-erp-open'); return a && getComputedStyle(a).display !== 'none' ? a.href : null; });
   S('§CLIP_OPEN_HREF ' + href);
-  if (href) await outline(page, '#find-erp-open', 'Pushed to ERP');
-  await sleep(2000);
+  if (href) { await outline(page, '#find-erp-open', 'Pushed to ERP'); await sleep(1200);
+    await cursorTo(page, '#find-erp-open', 700); await sleep(900); await cursorRing(page); await sleep(500); }
   if (!href) { save(); await ctx.close(); await browser.close(); server.close(); process.exit(1); }
   await erpPart(page, href);
   S('§CLIP_MAIN_VIDEO ' + (await page.video().path()));
