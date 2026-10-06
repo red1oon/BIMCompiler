@@ -772,3 +772,23 @@ over the first frame, 1.0 s hold + 0.5 s fade into the clip, silent. Also droppe
 src 5.5 s → cut now starts at src 5.6). `~/Videos/CivilWorks_bonus_sections_v3_BEFORE.mp4` 56.4 s / 1466 frames →
 `~/Downloads/CivilWorks_bonus_sections_v3_narrated_AFTER.mp4` (script `…_bonus_sections_v3.tsv`, 5/5 DETAIL, 0 WRONG, frames = source,
 I −17.0 LUFS, longest gap 4.0 s).
+
+## §ZOOM_BACK_FIELD — OPEN (2026-10-07, user field test, live site) — four defects, one round trip
+> User: *"it does not push the planned amount. During zoom back, it seems to reload from DB and has TimeMachine on.. check it should be
+> instant from IndexDB without Time Machine but straight zoom to the selected Signage. But i wana choose a Beam item so that it zooms
+> dramatically. Also sometimes the lower part of the find panel with ERP price and link disappears, even refresh does not bring it back"*
+1. **Planned amount not pushed.** Find → › ERP → Project Order on CivilWorksPath (imported, `db=import:/CivilWorksPath.db`): the project's
+   PlannedAmt / line price arrive 0 or empty although SIGNAGE has a rate (rates.js CIVIL_RATES.SIGNAGE rate 800 RM, §CW_SIGNAGE_RATE) and
+   IfcBeam (STR, 1851 in the model) is a priced building class. Find where the rate is lost (proj_fold.js §PROXY_BY_DISC price lookup,
+   locale/currency, header PlannedAmt roll-up) — witness: push SIGNAGE → C_ProjectLine PlannedPrice=800, PlannedAmt=qty×800, header = Σ lines.
+2. **Zoom back reloads + Time Machine on.** ERP red pill → viewer: cold-opens and re-reads the model, and the Time Machine is open, so
+   applyFindScope routes to the TM (`§ZOOM-SCOPE route=tm`) instead of a straight zoom. Want: the imported model opens from IndexedDB
+   (the import cache, no re-fetch/parse of the source) and the zoom lands on the selected lines' elements with TM CLOSED
+   (`route=find`). Find why TM opens on a zoom-across landing (URL param, persisted TM state, link-back URL) and why the import isn't
+   reused (link-back `BIM src db=` value vs the `import:` URL). Witness: landing log shows the import-cache source, `route=find`, TM inactive,
+   focus set size = selected lines' GUID count; time from navigation to `§ZOOM-SCOPE` stated.
+3. **Beam as the demo item.** User wants to push/zoom an IfcBeam line (dramatic zoom). Covered once 1+2 work for any class; the
+   witness uses IfcBeam (STR) as one of its cases.
+4. **Find panel lower section (ERP price + link) disappears and survives refresh.** Suspect a persisted collapsed/hidden state
+   (localStorage / settings) or a section built only on one path. Find the owner, make it always restorable (refresh = shown), witness
+   = hide → reload → present.
