@@ -21,62 +21,35 @@ A civil change that cannot name its gate and its fleet proof does not ship.
 
 ---
 
-## ▶▶▶ RESUME HERE — NEW SESSION (written 2026-10-06 17:45; supersedes the "NEXT SESSION" blocks below)
-Model = `~/Downloads/JALAN JELAPANG IFC/CivilWorksPath.db`. Films/clips live in `~/Videos/`. Film recipe + chapters: FILM_NARRATION.md §11.v5/§11.v6.
-MERGED today (bim-ootb): #1897 clash GEOTECH×DRAINAGE (11 mesh-true) · #1898 Alt+C checkbox save · #1899/#1900/#1902 earthworks ≈22,048 m³ ±2.3 on
-3 surfaces · #1901/#1904 Long/Cross in Cut section · #1906 civil Find→ERP witness · #1915 ERP fold by discipline · #1916 red pill opens source model +
-highlights pushed GUIDs · #1918 sky skyline boxes skipped on civil. Do in order:
-1. **55 s gap in v6 (user: "the road seems has portions not there, seconds 55th").** v6 narrated 55 s = assembled seg 7 = source film 93.4 s ≈ frame
-   1401 (finishing orbit). Log facts: final `§COST_ODOMETER day=79 placed=19531/19559` → **28 pieces never placed by the end**; frames 1385–1410
-   `§FRAME_COST held=425 visible=254` → 171 held meshes not drawn. Witness first: at frame 1401 list unplaced GUIDs (by discipline) and the hidden
-   meshes (why: build-state / DLOD / frustum), then fix. Files: ~/Videos/CivilWorks_film_v6_page.log, _cli.log, _BEFORE_poses.json.
-2. **Sky reflections residual (user: "still there since seconds 24 but not optically fatal").** Detector tools/sky_ghost_detect.js: v5 53.6 % →
-   v6 9.5 % frames flagged (logs scratch sky_v5/v6). Next: separate real horizon objects from ghost (project model bboxes with the poses), then the
-   temporal suspects (GI film carry, TAA history). Lower priority than 1.
-3. **Profile lens PR** — branch `feat/profile-lens` @82dd462c (pushed, NO PR; worktree /tmp/wt-profile-lens). Witness 38/38 PASS then crashes in the
-   pre-existing "leave" block (X/Y after Cross re-sets clip planes on 421 meshes → swiftshader shader recompile → protocol timeout), twice, even
-   at lower load. Duplex VACUOUS ✓, RED control FAIL-as-expected ✓. Fix the witness leave block (one collectMeshes pass / or --gpu real), re-run,
-   PR. Also: Time Machine panel overlaps the lens bottom; lens is an opaque disc (see-through = design choice); peek script's rim-drag didn't land
-   (scratchpad peek.js) — retake peek at mid-road (s≈1055).
-4. **ERP beat + red-pill return clip** (FILM_NARRATION §11.v5 ERP BEAT). All parts merged + witnessed (#1915/#1916). Work = ONE headless recording
-   script: Find (Discipline axis, 5 road disciplines) → › ERP → open ↗ ERP Project window record → outline the Project Lines grid (5 discipline
-   lines) → red pill → viewer with 644 GUIDs highlighted (2 s). Live chain never ran end-to-end (only under load) — the recording is its first live
-   run. Est. one agent session; run on a quiet machine.
-5. **Chapter breaks** (user: "yes the chapters break") — title cards between: Ch0 intro (title still OPEN — user thinking: "IFC Extracted — 4D, 5D to
-   8D ERP" proposed), Ch1 setup, Ch2 build-up, Ch3 sections, Ch4 ERP, Ch5 mobile, Close (health + report + "Now you know what you got").
-6. Then: sections clip (after the lens PR), closing multi-user line needs its witness, HANDOFF_AUDIT build, Alt+S terrain (§ALTS_CIVIL_TERRAIN_GROUND).
-**USER STEER 2026-10-06 18:00 (conserve tokens — follow this plan, not the list above where they differ):**
-- **ERP beat = POC only:** select ONE or TWO disciplines (e.g. Lighting, or Lighting + Drainage), push, show the Project lines, red pill back.
-- **55 s build gap = likely a SCHEDULE issue** ("from experience in buildings a tough nut to crack"). Spend little: step back to past knowledge
-  (4D_MODEL_INTEGRITY.md §I ownership table + §E, 4D_GANTT_TM_REFACTOR.md DEBUG MAP) — do NOT re-derive. If not solvable quickly, LEAVE IT and
-  cut film clips only from fully-built stretches (frames where placed == total).
-- **Cheap test before any bake:** the Alt+C PREVIEW already shows the build is incomplete — use the preview as the quick peek, and the Time
-  Machine's own end state (placed vs total at its last day; a § line) to confirm full build BEFORE spending a 25-min bake.
-- **HUDs missing / stuck in v6:** clock not seen; day counter stuck; duration too short — all tied to the Time Machine. Check the bake log
-  (§CPE_DAY_COUNTER showed day=18 held 8–44 s in v5, of=79 days) and the HUD flags (--label/--day) before fixing; same root as the schedule item.
-- **Narration may cover remaining bugs honestly:** add a line such as "Still a work in progress — proof this is not AI but air-gapped,
-  local-first running code." (user wording; keep the "No AI inside" claim to the runtime, per project_positioning_no_ai_inside).
-- Order for the next session: (1) TM end-state + preview check (cheap) → decide build gap fix vs fully-built-only cuts; (2) HUD/day counter
-  from the log; (3) ERP POC clip (1–2 disciplines); (4) chapter cards + WIP line; (5) lens PR witness fix. Sky residual stays parked (not fatal).
-
-**§TM_GAP_FINDING (2026-10-06 late, from the v6 bake log only — no re-run; PARKED per user "minimal time to Time Machine"):**
-- The "28 never placed" is a log-read slip: `§TIME_MACHINE` says 80 days, `§COST_ODOMETER` logs up to day 79, and
-  `§COST_ODOMETER_FINAL cost=1336814 total=1336814 => PASS` — every piece IS placed by the end. Not a schedule bug.
-- The "171 held meshes not drawn" is not evidence either: `§FRAME_COST` counts helper objects too, and its `inFrustum`
-  tests the base geometry sphere of an InstancedMesh, not its instances (cinema_maxq.js `_logFrameCost`).
-- Real defect (suspect, unwitnessed): `§XRAY_EDGES staged=12112/19559` — 62 % of the road is "X-ray staged" (hidden
-  until its support finishes). `§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=4/8` watched slabs, all `op=placed mesh=found
-  visible=false`. Mechanism read in time_machine.js (origin/main 9f19b6e3): `_tmBuildEventIndex` indexes each mesh's
-  own start/end/linger times but NOT `_tmXraySolidifyTs`, so when a staged slot's support finishes the delta path
-  (`_incrOK && !_tmHasEventIn(...)` → skip) may never revisit that mesh — the slot stays hidden for the rest of the film.
-  This is the opposite direction of 4D_MODEL_INTEGRITY §O.3 (skip PRESERVES a hidden slot here).
-- Fix candidate (one line, NOT built): push `_tmXraySolidifyTs[guid]` into `guidT[guid]` in `_tmBuildEventIndex`.
-  Touches buildings too → needs fleet proof (NON-IMPACT RULE) + W-TMV-4-style witness. Also open: whether 62 % staged
-  is even right for a flat road (support relation is the 4D owner's question, §I).
-- Film decision: no rebake for this. Cover with the WIP narration line.
-
-Rules learned today: whitebox node witnesses first, browser only for wiring, all browser runs `flock /tmp/civil_browser.lock`; agents report after 2
-failures; coordinate agents/sessions internally (memory feedback_manage_coordination_internally).
+## ▶▶▶ RESUME HERE — NEW SESSION (rewritten 2026-10-07 00:40; older resume blocks retired — full text at bim-compiler `9dd0a3e5f`)
+Model = `~/Downloads/JALAN JELAPANG IFC/CivilWorksPath.db` (now carries the Kuantan MOCK site `site_latlong_source=mock_film_kuantan`,
+for the sun only — undo in `mock_site_kuantan.sql` beside it). Film recipe/chapters: FILM_NARRATION.md §11.v7. Bake/TM defects for outside
+review: `prompts/CWRoadBakeIssues.md` (Issues A–D, each with log lines + code). Working worktree: `/tmp/wt-erp-clip` (bim-ootb, branch
+`fix/cw-pace-distinct`); localhost viewer `http://localhost:8411/viewer/viewer.html?db=buildings/CivilWorksPath.db&bld=CivilWorksPath`.
+**Shipped 2026-10-07 (civil-only, gated on `isCivilModel()` — "subset treatment of a DocType", user):**
+- bim-ootb #1919 MERGED (sw v1598) `§CW_SOLIDIFY_EVENT` — staged road pieces revisited when their support finishes (v6 55 s gap, Issue A).
+  Witness `viewer/tests/witness_cw_solidify_event.js` PASS (fleet gate false ×5, building index byte-identical). User's Alt+C preview:
+  "works, seems to build in full".
+- bim-ootb #1920 (sw v1599, auto-merge) `§CW_PACE_DISTINCT` — civil film paces by distinct completion instants (11,893) so the day counter
+  no longer freezes on day 18 (Issue B). Proof pending: v7 bake log.
+- Issue D (backwards CH 10 Ground Treatment bar): task start = template-run date, ops 84 d later. Civil-only (fleet caches 0 mismatches).
+  DB patch was applied then overwritten by the user's viewer save → bar backwards again; user: leave it. Generator fix open.
+**In flight (check first):**
+1. **v7 bake** → `~/Videos/CivilWorks_film_v7_{BEFORE.mp4,page.log,cli.log}` (flags as v6 + `--sun-compass`, both fixes). Read log:
+   `§CW_SOLIDIFY_EVENT civil=true added>0`, `§CW_PACE_DISTINCT`, `§CPE_DAY_COUNTER` advancing, `§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=[]`,
+   `§GEOREF_SITE lat=3.8`. Then re-cut the build-up clips from v7 (user: "redo those clips to get build up well").
+2. **ERP clip (Ch4)** — recorder `scratchpad/erp_clip.js` (persistent profile, `ERP_ONLY=990001` reuses the push). Facts so far: push
+   LIGHTING+DRAINAGE → `§PROJ_PUSH lines=+2`, `§ZOOM_LINKBACK_STORE guids=416`, project 990001; ERP sign-in automated (GardenAdmin → Log In);
+   `§BIM_OVERLAY rows=465` reaches the ERP; lines live under Phase → Task → **Task Line** (Project Line tab filters task-less lines — iDempiere
+   standard, not a bug). Red pill returned `§ZOOM-ACROSS no-target` from the wrong tab click — fixed to the real `.idmp-adtab`, re-run queued.
+   Deliver to `~/Downloads/` (user). `plannedAmt=0` — LIGHTING/DRAINAGE have no CIVIL_RATES rate (desc says so); don't voice amounts.
+**Done this session:** Ch1 v2 narrated (`~/Downloads/CivilWorks_AltC_setup_ch1_v2_narrated_AFTER.mp4`, checkbox line); Ch0 + closing cards
+(`prompts/film_ch0_card_v7.py`, WIP speech + 2nd closing statement); `CWRoadBakeIssues.md` dump.
+**Next after the two above:** assemble v7 film (Ch0 card → Ch1 v2 → v7 build-up + WIP line → Ch4 ERP → Ch5 mobile → close + WIP card →
+Chapter End). Then: Issue D generator fix (needs the live civil generate path reproduced), 7,612 tied completion instants (same writer?),
+lens PR witness (`feat/profile-lens`), sky residual (parked).
+Rules learned: whitebox first; all browser runs `flock /tmp/civil_browser.lock`; don't edit the user's DB while their viewer has it open
+(their save overwrites it); never pkill with a pattern that matches your own shell (killed a queued job twice).
 
 ## ⚖ CANONICAL MODEL FILE (user 2026-10-06: "File we using has been told - CivilWorksPath.db")
 `~/Downloads/JALAN JELAPANG IFC/CivilWorksPath.db` = CivilWorks.db (renamed: no place name) + the saved Alt+C path (cinema_path). Every
@@ -187,107 +160,7 @@ Per import: elements / psets / materials / storey+discipline links kept X of Y, 
 kernel_ops. Seed case: LIGHTING v1 227 → v2 216 (11 deleted, all GUIDs ⊂ v1). Witness: the v1→v2 case reports exactly those 11.
 ### Chapter 0 (film) — intro "what this is all about": FILM_NARRATION.md §11.v5 STRUCTURE.
 
-## ▶▶ NEXT SESSION — order REVISED 2026-10-06 by positioning above: 2 (clash) → 3 (volume) → 1 (terrain) → 4 (film, user's go)
-1. **Finish §ALTS_CIVIL_TERRAIN_GROUND** (PHOTOREAL_STILL_RENDER.md): bim-ootb branch `feat/alts-civil-terrain-ground` (pushed, WIP commit, no PR).
-   Run `viewer/tests/witness_alts_terrain_ground.js` — RED control with `ROOT=<worktree at origin/main>`, then on the branch (CivilWorks.db +
-   Duplex). The first runs were INCONCLUSIVE from a harness bug (hard-coded ROOT, fixed on the branch). GREEN → PR + auto-merge.
-2. **BIG CARD 1 prerequisite — GEOTECH × DRAINAGE clash rule:** add the pair to `viewer/clash_rules.json` (civil family; the held D7 from
-   §PARTNER_DISCS — json only, CHAINAGE/ROW get no rule); measure the count on CivilWorks.db (`§CLASH_NARROWPHASE`), witness with a RED
-   control; then the clash-film pick of ONE pile-vs-drain example on the drive route for the card (FILM_NARRATION.md §11.v4.1).
-3. **BIG CARD 2 prerequisite — earthworks volume:** EXTRACT V (m³) from the closed EARTHWORK solid (signed-tetra sum over its triangles;
-   check closedness first, say VACUOUS/INCONCLUSIVE if open); witness against an independent computation (IfcOpenShell / numpy on the same
-   mesh); show it as a ground-card line; duration stays on the red OUTSTANDING card (no cited output rate).
-4. Then the Alt+C film per FILM_NARRATION.md "▶▶ RESUME HERE FIRST" + §11.v4/v4.1 — bake only on the user's go.
-**Item 2 ✅ DONE (witness) 2026-10-06 — bim-ootb #1897 MERGED.** GEOTECH|DRAINAGE in `clash_rules.json` (family civil, tol 0,
-ignore IfcOpeningElement — copied from the existing civil rules; json only). CivilWorks.db (GEOTECH 9,145 · DRAINAGE 200):
-`§CLASH_NARROWPHASE broad=30529 obbSurvivors=27446 meshTrue=11 touchOnly=1 unknown=0` — **quote 11, never 30,529** (bbox false
-positives). 6 = GROUND TREATMENT horizontal drains vs ROADSIDE DRAIN TYP 5 (0.6–19 mm), 5 = RETAINING WALL vs drains (0.06–0.71 m);
-no driven pile clashes. RED control: origin/main rules → 0. Fleet (`§CGD_FLEET`): Hospital/Terminal/LTU_AHouse/Duplex 17 pairs each,
-lists+counts identical, 0 new rows. Film-card candidate: horizontal drain `28irGXblM$EG0000000Ga8` × roadside drain
-`2fiiNay2Wysm00000008wp`, centre 428.19, 52.08, 62.62, depth 19 mm (alt: wall `…kkT` × drain `…8fR`, 0.71 m) — on-route NOT checked.
-⛔ open: `witness_clash_mesh_narrowphase.js` on CivilWorks 8/10 (I3: 2 disagreements in DRAINAGE|ROAD; I5 selftest S7b) — no
-origin/main baseline run, so pre-existing vs new is unknown. Witness: `viewer/tests/witness_clash_geotech_drainage.js` (10/10).
-**Item 3 — bim-ootb #1899 MERGED, but NO volume shown (INCONCLUSIVE, by rule).** `§EARTHWORKS_VOLUME guid=2n63zsNUV13W000000077a tris=69483
-uniqueVerts=34693 openEdges=25 nonManifoldEdges=23 wrongWayEdges=0 closed=false V=NONE`. The card line reads "Earthworks volume — not measurable — surface
-open (48 edges)". The raw signed sum is 22,048.172 m³ (numpy agrees to 2.6e-9), but because the surface is open it moves about ±2 m³ when the origin shifts
-by up to 5 km → it is NOT claimed. Controls: cube/box/tetra/translated/soup exact; open-face and flipped cubes refused (11/11). The RED run on main timed out
-(harness "frame detached"), so the only RED evidence is static (0 `earthworksVolume` on main). ✅ USER DECIDED (a) 2026-10-06 — "It is proof of compiler truth" → follow-up PR in progress: (a) a relaxed rule that shows
-"≈ 22,048 m³ (48 open edges, ±2 m³)" with the bound measured and stated, or (b) the partner re-exports a watertight earthworks solid.
-**Item 3b — §EARTHWORKS_VOLUME (a) spec + node result (2026-10-06, branch feat/earthworks-volume-approx d1aa27bf, PR pending browser witness).**
-Weld identical positions; E = open (used 1×) + non-manifold (>2×); wrong-way = used 2× same direction. EXACT (closed) → "N m³".
-APPROXIMATE (open, wrong-way 0, B < V) → "≈ N m³ (E open edges, ±B m³)". INCONCLUSIVE (wrong-way > 0, or B ≥ V, or no triangles) → no number.
-V = |signed sum| with the bbox centre as origin; B = max |V(o) − V| over 14 fixed shifts (8 bbox corners + ±5,000 m per axis), measured every time.
-CivilWorks.db: `verdict=APPROXIMATE E=48 V_m3=22048.191 B_m3=2.256`, numpy dV 2.35e-9 / dB 8.57e-6 → card "≈ 22,048 m³ (48 open edges, ±2.3 m³)".
-Controls: closed cube/box/tetra/moved/soup EXACT; open-face cube 1 m and 100 m → INCONCLUSIVE (B ≥ V), flipped → INCONCLUSIVE. 12/12 node-only; browser 12/12 + road panels 14/14 → bim-ootb #1900 MERGED 2026-10-06 (sw v1592). ✅ DONE (witness).
-Also open: bim-ootb `test/scene-merge-witness-selfconsistent` (pushed, NOT run) — run witness_scene_merge_2026-07-30, PR if green.
-
-## ▶▶ (2026-10-06 close) the Alt+C road film of CivilWorks.db — start at FILM_NARRATION.md "▶▶ RESUME HERE FIRST".
-All of today's viewer work is merged + live (bim-ootb #1887–#1895, sw v1589). Canonical model: `~/Downloads/JALAN JELAPANG IFC/CivilWorks.db`
-(fresh import; Merged.db kept as the merged-route comparison; JELAPANG_AFTER.db was removed by the user — witnesses that default to it now need
-`BLD=`/`JELAPANG=` pointed at JELAPANG.db / Merged.db / CivilWorks.db). Superseded IFCs moved to `IFC_SUPERSEDED/`. Still open (queue below):
-(f) version-replace on re-export (not built) · ⛔ earthworks output rate (no cited source) · ⛔ real chainage (labels carry no properties) ·
-§OPEN items (sky ghost, road checks SPECULATIVE, §W.2 broad phase, §CULL_SPHERE, §LOAD).
-
-## ▶ RESUME HERE (consolidated 2026-10-06; full history: this file at bim-compiler `2278f7df5`)
-**State:** bim-ootb main live at sw v1577. Road work so far is all merged (§SHIPPED). Current documentary: `~/Downloads/BIM_HIGHWAY_v3c_narrated_AFTER.mp4`
-(127.6 s; recipe FILM_NARRATION.md §11.v3c). The user merges the partner files into the DB manually (next session works on that DB directly).
-**Open, in order:**
-0. **Queue agreed with user 2026-10-06** (after Merged.db): (a) ✅ MERGED Find/merge top-up #1888 · (b) ✅ MERGED bbox view per civil
-   building #1889 · ✅ MERGED look/ground #1887 · (c) ✅ BUILT §MIXED_PROGRAMME + §CIVIL_GRAPH_GATE PR #1890 (auto-merge): Gantt 163 d;
-   played layer on Merged.db chainage witness 0/3 → 3/3 (rho 1.0); witness_civil_phase + partner_import updated to the owner gate (PASS);
-   fleet identical. Note: Gantt programme 163 d (phase by phase) vs played line of balance 114 d (`§CPM_RUN makespanDays=114.2`) —
-   two different questions, both reported; the earthworks body is ONE solid → played at day 0 (can't be sectioned without per-section
-   earthwork solids). New finding: 25 lamp columns return a zero (0,0,0) box from `A._loadPathInstanceWorldBox` (lookup miss). → (c) §PARTNER_DISCS build order (item 1 below) → (d) Alt+C cards for the
-   new disciplines: ground-treatment card (piles/nails/drains/walls per stretch + pset design values), earthworks card, real
-   chainage from CHAINAGE labels with today's inferred route as fallback; at most ONE new checkbox (show below-ground work).
-   ✅ MERGED #1891 (merge carries psets) · #1893 (§WORLDBOX_DLOD: fromDrawnBox 7,578→19,570) · PR #1894 reveal-witness slices
-   (arch_hold 6/6, tail_lights 8/8, were erroring) · box view v2 order-free (branch fix/bbox-ghost-order-free: one-shot = two-drop
-   = 15,751; Clinic 1,549) + merge-all witness instrument fixes (phase B served on its own path; B2 vs drawable rows).
-   (d) ✅ BUILT PR #1892 (§ALTC_GROUND_CARDS: ground card, red Outstanding card, earthworks row; 14/14 on 3 DBs) · ✅ PR #1891 merge
-   carries element_psets (§MERGE_PSETS). ⛔ real chainage from the CHAINAGE labels: the 332 labels are 3D text SOLIDS with NO
-   properties (§CIVIL_PSETS VACUOUS) — the station number exists only as letter shapes; reading it = OCR of geometry, not extraction.
-   Needs the partner's alignment export (LandXML / IfcAlignment). Inferred route stays (user's fallback rule). Below-ground checkbox:
-   not built (optional, no ask pending).
-   (f) **VERSION REPLACE on re-export (user 2026-10-06: "yes queue it, version replace on re-export")** — MEASURED case: the partner's
-   JELAPANG_ROAD LIGHTING.ifc v1 (FILE_NAME 2026-10-02T16:47, 227 objects) and v2 (same path + author, 2026-10-05T21:01, 216 objects;
-   all 216 GUIDs ⊂ v1) — v2 deleted 11 (one junction cluster x≈1065–1095 y≈380–398: 7 at z 0.6–1.8 m under the ground, 1 traffic
-   signal column + 2 boxes at road level, 1 33 m element up to ~102 m). Open→Merge only adds → the 11 survive. Needs a spec: same
-   source file identity (IFC FILE_NAME path / file name + discipline) → offer "replace version", removing the elements absent from the
-   new export; NOT built.
-   (e) **Film script (user 2026-10-06):** *"make the movie script more of reporting for the user's POV, reporting on their works,
-   stats.. no more about red1 as that film is done. 6 lingo greetings stay to demonstrate such film option to users"* → narration
-   reports the model's own numbers (counts, phases, durations, checks) to its owner; drop the red1/project-story lines; keep the
-   6-language greeting as the language-option demo. Recipe lives in FILM_NARRATION.md — edit there.
-1. **§PARTNER_DISCS build order** — the partner files now IMPORT as GEOTECH / GABION / CHAINAGE / ROW (#1886) but schedule by class (no civil
-   phase). The full order (setting out → ground treatment → earthworks → drainage + gabion → pavement → finishing → marking) is on WIP branch
-   `feat/civil-partner-discs`; it tipped the merged road schedule onto the CELL path (no §CPM_RUN; lamps before pavement 0 → 92, first-2 %
-   lamps 16) — find which change (renumbered sequences vs group chain vs §CELL_GATE quantity) before shipping. Then: clash GEOTECH × DRAINAGE,
-   4D template phases, film narration of the new disciplines. Measure on the user's merged DB.
-2. **Sky mirror ghost** — PART FIXED 2026-10-06, bim-ootb #1918 (auto-merge): the "ghost boxes" = effects.js _buildPhotoProps fake-city skyline
-   (37 opaque MeshBasic boxes at 2.2× envelope ≈ 5 km out on a road) → skipped when A.isCivilModel() (§SKY_GHOST_SKYLINE). Witness
-   witness_sky_ghost.js GREEN (frame 450: boxes 4 → 0); detector tools/sky_ghost_detect.js (HORIZON_BOXES; v5: 728/1,359 frames ≥3 boxes).
-   NOT proven: faint sparkly / mirrored vertical lines in the sky — absent in single-frame renders → likely temporal (GI film carry or TAA
-   history); judge on the v6 film with the detector. Ruled out: GI bounce, A.ground, earthworks slab (#479) env map, _mirrorOwnApply (no
-   mirrors on roads), planar pass (off in films). Older text: still present in v3c (user). Ruled out: lamp glow (#1875), room-probe reflection (#1884), glass mirrors. Next:
-   get the second, list every drawn object above the model at that frame (sky surface, ghost ground, fog, TAA/SSR history).
-3. **Build order along the route** — drive-order correlation 0.30 (need ≥ 0.8); E4 loses ~4,970 of 7,685 edges to cycles through the section
-   milestones (§CHAINAGE_V2). A real chainage may now come from the partner's CHAINAGE labels (332 solids).
-   **Rule (user 2026-10-06):** *"ensure backward compatibility on chainage for messy IFC2X3 that lacks such IFCs which we presently
-   achieved as a fallback"* → real chainage from CHAINAGE labels ONLY when the model has them; a model without them keeps today's
-   inferred route (Fly path / `A.civilDriveRoute()`, §CHAINAGE_V2) unchanged. Witness both: JELAPANG_AFTER.db (no labels) must give
-   the identical route/levels before and after.
-4. **Next bake (user):** after the build-up, the finished highway night-lit, sunset → dusk / nightfall. Ghost x-ray intro needs a supported
-   see-through mode (a --tap translucency stalled the bake at frame 0).
-5. **Road checks:** 4 of 5 rules SPECULATIVE (road_rules.json film_status) — fix sign/marker height (road-edge level picks a higher piece) and
-   lateral clearance (all 0.00 m), then flip the status with the reason.
-6. ✅ witness_reveal_arch_hold + witness_tail_lights_all_discs "ARCH_BULK_CUT_FRAC is not defined" — instrument slices fixed (PR #1894);
-   ✅ witness_civil_phase on merged road+bridge — fixed in #1890 (owner gate, judges civil elements only).
-**Moved out (2026-10-06, user: "keep the future from the prompt file"):** prior-art claim wording, scale/limits/growth, benchmark chart plan,
-IFC4.3 path + lean-code reality → `docs/BrowserScaleBenchmark.md` · Modeller covering civil
-(DeepSeek view) → `prompts/MODELLER_MASTER.md` §CIVIL_IN_MODELLER.
-**Rules learned:** bake only on the user's go; `cd /tmp/wt-x || exit` before any edit/commit in a script (a failed worktree add once let
-commands commit another session's work in the shared ~/bim-ootb — undone, nothing lost); `pgrep/pkill -f` patterns can match their own
-shell — match a port or PID; the CLI bake needs `--override` when the DB has no saved path (use `A.civilDriveRoute()`).
+## (retired 2026-10-07) older NEXT SESSION / RESUME blocks — all items DONE or carried into the block at the top; full text at bim-compiler `9dd0a3e5f`.
 
 ## §0 Source set (measured 2026-10-04)
 Folder `~/Downloads/JALAN JELAPANG IFC/` — 7 IFCs + Civil 3D export logs. Test DB: **`JELAPANG_AFTER.db`**
@@ -337,7 +210,8 @@ EARTHWORK maps to EARTHWORK (SEQUENCE_CIVIL phase Earthworks, seq 1). **CHAINAGE
 would import with no civil discipline** (class fallback). Decide per file before merging (e.g. GEOTECH/GABION → earthworks or a new civil
 code; CHAINAGE/ROW → reference/annotation, not built in 4D) — needs a spec + the user's ruling; NON-IMPACT rule applies.
 
-## §SHIPPED — all merged to bim-ootb main (2026-10-04 → 10-06)
+## §SHIPPED — all merged to bim-ootb main (2026-10-04 → 10-07)
+- 2026-10-07 #1919 `§CW_SOLIDIFY_EVENT` (gate isCivilModel, witness_cw_solidify_event.js) · #1920 `§CW_PACE_DISTINCT` (gate isCivilModel; civil branch of `_workCursorAt`) — see CWRoadBakeIssues.md §8/§10.
 | PR | What | Gate (non-impact) | Witness / fleet proof |
 |---|---|---|---|
 | #1844 | §A units: deleted the `span>1500 → ×0.001` heuristic (web-ifc 0.0.77 already outputs metres) · §B.2a civil disciplines from file name (space split, civil words only) · §I.3 robust framing p2–98 | units: never fired <1.5 km · disc: civil words · framing: full env > 2× core | `witness_import_units_disc.js`; SampleHouse 14.0×5.9×3.5 m unchanged; 464 names → 13 change, all road; LTU 426→126 m, others KEEP |
