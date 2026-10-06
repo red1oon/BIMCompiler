@@ -1540,6 +1540,13 @@ M: "Now you know what you got." Re-check every number on the bake log / §ROAD_C
   Kokoro F/M), fit 11/11 DETAIL, 0 WRONG · frames 2,326 = assembled source · longest silence 4.6 s · −17.1 LUFS. Ends "Now you know what you got."
 - Not in it yet: Chapter 0 (intro). Bridge captions read "Architecture Envelope / Superstructure / MEP Rough-in" (bridge classed as a building).
 
+### §11.v5 ERP BEAT — the order lands (user 2026-10-06: "the clip on the ERP part just show it lands as a Project Order and zoom or mark out on the panel those items are captured. User need not see whole drawn out cycle. Just that the ERP opening up, window panel shows the same lines")
+~8–10 s, placed before the health card. Recorded headless (no bake): (1) Find panel, Discipline axis, the 5 road disciplines selected —
+1 s; (2) › ERP → green "open ↗" — 1 s; (3) the ERP Project window (window 130) opens on the new record; zoom / outline box on the Project
+Lines grid showing the per-discipline lines (Road / Lighting / Drainage / Signage / Marking with qty) — hold 5 s. No full cycle.
+Numbers from the push's own § lines (§PROJ_PUSH, §PROJ_PUSH_LINK, §PROJ_ORDER_LINE). ⛔ Waits on the proxy-by-discipline fold fix (else the
+grid shows one lumped "IfcBuildingElementProxy" line). Then title "IFC Extracted — 4D, 5D to 8D ERP" is backed by a shown ERP step.
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
