@@ -633,3 +633,13 @@ residents_anchor_sweep, sdg_cascade_smoke, sdg_gate_smoke, xray_sc_duplex (* = p
 the room walker; 6/8 residents opened with 0 rooms. Fixed (ROOM_INJECTION_HYBRID.md §MODELLER-ROOM-INJECT, W-MODELLER-ROOM-INJECT
 25/0, RED without it). W-UX-PILL A8 green. Of the 25-list: olsync = load flake (6/0 alone); dw_dedup_render fixed (waits for the refold);
 modeller_disc_walk B3/B4 red identically with and without the room hook (pre-existing, still to triage).
+
+## §2026-10-06 FINDING — the kit is skipped, and most witnesses only run on one machine
+Measured by the dev-toolkit triage (`bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §9.1), bim-ootb `origin/main`.
+- `viewer/tests/witness_*.js`: **265**; on `witness_kit/contract.js`: **54**. Of the 211 hand-rolled, **135 were
+  written AFTER the kit existed** (2026-08-25 `5c73a5dd`) — 69 plain Node, 66 browser. 29 kit witnesses drive a
+  browser, so shape is not the reason. Nothing gates it: `ci.yml` runs **0** witnesses, no lint requires the kit.
+- **110** witnesses hard-code `/home/red1/...` (41 `require('/home/red1/bim-compiler/node_modules/puppeteer')`) —
+  unrunnable on any other dev's machine.
+- Tool side (bim-ootb DEV_TOOLKIT T14) will lint NEW/changed witnesses for both. Migrating the existing 211 and
+  wiring witnesses into CI is this lane's decision.
