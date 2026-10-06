@@ -799,3 +799,13 @@ I −17.0 LUFS, longest gap 4.0 s).
    open the URL as today, with a `§ZOOM-REUSE none → cold open` line (an explicit, logged branch, not a silent fall-through).
    Witness: viewer open → red pill → `§ZOOM-REUSE hit` + zoom, page NOT reloaded (same performance.timeOrigin), ms stated; viewer closed →
    `§ZOOM-REUSE none` + cold open lands. Matching key = the db URL, never a model name.
+**§ZOOM_BACK_FIELD result (2026-10-07, all LIVE; code-level checks only, user tests live):**
+- Fall-through to Hospital — bim-ootb #1930: whatif_panel `_pickProject` + ERP `_pickPhasedProject` had "else newest project with phases"
+  (= Hospital 990000 on the seed). Removed → null + `§WHATIF-UI no-project-for-building` / `§DASH-VARIANCE-PICK none-in-open-records`.
+  Seed check: Civil Works → none (was Hospital), Hospital → 990000.
+- Reload + Time Machine — #1931: cause = `§SCENE_STATE_RESTORE` (viewer/main.js) re-applied the DB's saved view (tm_on, camera, filter) on a
+  `?find=` landing → now skipped (`§SCENE_STATE_RESTORE skip=tm,camera,find (zoom landing)`). Red pill asks open viewers first on
+  BroadcastChannel `bim-zoom-across` (key = resolved db URL; import:// and ../buildings/… both match) → `§ZOOM-REUSE hit … (no reload)`;
+  none in 400 ms → `§ZOOM-REUSE none (…) → cold open`. Bringing that tab to front works only when this ERP tab opened it (handle focus).
+- Beam planned amount: rates.js IfcBeam 680/M; top beam has real bbox → priced path exists; not re-run in a browser.
+- Find panel ERP section vanishing (item 4): NOT investigated yet.
