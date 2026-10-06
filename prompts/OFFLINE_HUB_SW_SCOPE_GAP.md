@@ -73,3 +73,10 @@ Found by the dev-toolkit triage, `bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §7 (20
   until `CACHE_VERSION` is bumped — mistaken for "my change didn't work".
 - The dev toolkit works around it without app change (launch config with SW bypassed). Whether the SWs
   should get a localhost rule is this lane's call.
+
+## §2026-10-06 FINDING — nobody watches local-storage quota or SQLite integrity
+Found by the dev-toolkit triage, `bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §7 (assigned to this lane as the
+local-storage durability owner). Read from bim-ootb `origin/main` @ fb183ddf. Not fixed — this lane decides.
+- No `navigator.storage.estimate()` call in app code — big imports can fill storage with no warning.
+- No `PRAGMA integrity_check` / `foreign_key_check` in app code — a corrupt or half-patched local DB
+  presents as an app bug. The dev toolkit's Health Monitor (T19) will report both; the app-side fix is here.
