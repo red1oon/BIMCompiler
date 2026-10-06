@@ -136,7 +136,11 @@ async function erpPart(page, href2) {
     for (let i = 0; i < 400 && !ok; i++) { await sleep(1000); ok = seen(/\[back\].*§MERGE_CONTRACT .*verdict=COMPLETE/); }
     S('§CLIP_BACK_LOAD ' + (ok ? 'COMPLETE' : 'NOT COMPLETE'));
     await closeTM(pop, S); await sleep(1500);
-    await pop.evaluate(() => { const fp = document.getElementById('find-panel'); if (!fp || fp.style.display === 'none') window.APP.openFindPanel(); });
+    // closing the Time Machine restores visibility and drops the red pill's x-ray highlight — re-apply the SAME scope the pill handed
+    // over (main.js §ZOOM-SCOPE: find=@token → localStorage zoomfind_<token>), so the Find panel shows "Zoom Across · N items" lit.
+    const re = await pop.evaluate(() => { const m = /[?&]find=@([^&]+)/.exec(location.search); const sc = m && localStorage.getItem('zoomfind_' + m[1]);
+      if (sc && window.APP.applyFindScope) { window.APP.applyFindScope(sc); return sc.split(',').length; } return 0; });
+    S('§CLIP_BACK_RESCOPE guids=' + re); await sleep(4000);
     for (let i = 0; i < 60 && !seen(/\[back\].*§ZOOM-SCOPE|\[back\].*§FIND|\[back\].*§NF_/); i++) await sleep(1000);
     await sleep(6000);
     S('§CLIP_MARK highlighted');
