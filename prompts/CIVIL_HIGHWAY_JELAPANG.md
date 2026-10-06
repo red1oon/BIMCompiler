@@ -64,6 +64,12 @@ open (48 edges)". The raw signed sum is 22,048.172 m³ (numpy agrees to 2.6e-9),
 by up to 5 km → it is NOT claimed. Controls: cube/box/tetra/translated/soup exact; open-face and flipped cubes refused (11/11). The RED run on main timed out
 (harness "frame detached"), so the only RED evidence is static (0 `earthworksVolume` on main). ✅ USER DECIDED (a) 2026-10-06 — "It is proof of compiler truth" → follow-up PR in progress: (a) a relaxed rule that shows
 "≈ 22,048 m³ (48 open edges, ±2 m³)" with the bound measured and stated, or (b) the partner re-exports a watertight earthworks solid.
+**Item 3b — §EARTHWORKS_VOLUME (a) spec + node result (2026-10-06, branch feat/earthworks-volume-approx d1aa27bf, PR pending browser witness).**
+Weld identical positions; E = open (used 1×) + non-manifold (>2×); wrong-way = used 2× same direction. EXACT (closed) → "N m³".
+APPROXIMATE (open, wrong-way 0, B < V) → "≈ N m³ (E open edges, ±B m³)". INCONCLUSIVE (wrong-way > 0, or B ≥ V, or no triangles) → no number.
+V = |signed sum| with the bbox centre as origin; B = max |V(o) − V| over 14 fixed shifts (8 bbox corners + ±5,000 m per axis), measured every time.
+CivilWorks.db: `verdict=APPROXIMATE E=48 V_m3=22048.191 B_m3=2.256`, numpy dV 2.35e-9 / dB 8.57e-6 → card "≈ 22,048 m³ (48 open edges, ±2.3 m³)".
+Controls: closed cube/box/tetra/moved/soup EXACT; open-face cube 1 m and 100 m → INCONCLUSIVE (B ≥ V), flipped → INCONCLUSIVE. 12/12 node-only.
 Also open: bim-ootb `test/scene-merge-witness-selfconsistent` (pushed, NOT run) — run witness_scene_merge_2026-07-30, PR if green.
 
 ## ▶▶ (2026-10-06 close) the Alt+C road film of CivilWorks.db — start at FILM_NARRATION.md "▶▶ RESUME HERE FIRST".
