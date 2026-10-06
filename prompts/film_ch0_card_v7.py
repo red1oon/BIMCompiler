@@ -88,3 +88,12 @@ for n, title, sub, bgf in CHAPS:
     for i, l in enumerate(wrap(d, sub, font(40), W - 240)): d.text((120, 580 + i * 54), l, font=font(40), fill=(255, 235, 59))
     c.convert('RGB').save(os.path.join(outdir, 'chap%d.png' % n))
     print(f'§CHAPTER_CARD n={n} title="{title}" backdrop="{bgf}"')
+# Bonus chapter card (user 2026-10-07: "Cross section as bonus chapter … just append to last chapter").
+b = Image.open(SS + 'CivilWorks_cross_slice_frame.png').convert('RGB').resize((W, H), Image.LANCZOS)
+from PIL import ImageFilter
+b = ImageEnhance.Brightness(b.filter(ImageFilter.GaussianBlur(5))).enhance(0.8)
+c = band(b, 360, 720, 175); d = ImageDraw.Draw(c)
+d.text((120, 395), 'Bonus', font=font(36), fill=(195, 194, 183))
+d.text((120, 450), 'Long and cross sections', font=font(84, True), fill=(255, 255, 255))
+d.text((120, 580), 'Road profile and cross slice, computed from your model.', font=font(40), fill=(255, 235, 59))
+c.convert('RGB').save(os.path.join(outdir, 'chap_bonus.png')); print('§CHAPTER_CARD bonus')

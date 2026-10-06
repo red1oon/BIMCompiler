@@ -1965,3 +1965,6 @@ remove OPFS `bim_analysis/bim_project_orders.db` (`clearBimPushStore`, `§SEED-R
 - **Shipped on the branch (a hardening, NOT the proven cure):** degraded model (an AD read threw) → `§GT-OPEN-DEGRADED tab=… errors="…"`, `query()` adds `2=3`, model not cached (re-opens next render). Witness `erp/tests/witness_md_upstream.js [old]`: RED on old (rows=28, no 2=3), GREEN on fix (rows=0, `§GT-OPEN-DEGRADED`, self-heal restores `link=C_ProjectTask_ID source=AD_Column_ID`). witness_gridtab_contract 6/0. sw v822. +96/−9.
 - **Left:** get the user's `§GT-OPEN-DEGRADED errors="…"` line from a real session (it names the failing AD read) — that is the real upstream cause. Not done: PR for fix/erp-md-upstream. Side finding: `system_monitor.js` persists seed reset to `ad_seed_v16` while `idempiere.html` loads `ad_seed_v18` (key mismatch).
 - **§BIM-CRUD item 2 (ERP UI delete write-through to the push store) is still OPEN; the seed-reset half is done in bim-ootb PR #1925.**
+**2026-10-07 later:** #1925 also fixes seed reset writing `ad_seed_v16` while boot reads `ad_seed_v18` (reset never reset the seed).
+Red pill → ticked lines: bim-ootb #1927 (`§ZOOM-LINES`, ticked C_ProjectLine rows → their model + GUIDs; no browser witness yet).
+MD hardening: branch `fix/erp-md-upstream` (stacked on #1924, no PR) logs `§GT-OPEN-DEGRADED` — need the user's line to name the cause.
