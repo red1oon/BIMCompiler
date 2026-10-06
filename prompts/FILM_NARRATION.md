@@ -1563,7 +1563,7 @@ CORRECTED (user 2026-10-06: "it is built.. but GPS not installed"): the WALK mod
 camera at eye height (1.7 m above the ground read by civilCastZ) walking ~40 m along the inferred route; overlays: a blue GPS dot + accuracy
 ring at screen centre-bottom, a top chip "GPS site-walk · mock-up (specified: CIVIL_HIGHWAY_JELAPANG.md §I.2)", chainage readout. ~5 s clip.
 Spec it refers to: §I.2 (GPS → position via CRS or two-tap anchor; height = ground under point; no georef → INCONCLUSIVE, never a silent wrong
-dot). Narration must say "planned" / "mock-up", never "works today". Memory caveat stands: model ~2 GB heap vs ~0.6 GB phone tab (unverified).
+dot). Narration (user 2026-10-06, after seeing the clip: "Looks fine. Script can be simply 'You can setup mobile ready'"): M: "You can set it up mobile-ready." The on-screen chip carries the GPS-pending caveat. Memory caveat stands: model ~2 GB heap vs ~0.6 GB phone tab (unverified).
 
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
