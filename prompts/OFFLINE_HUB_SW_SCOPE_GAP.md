@@ -65,3 +65,11 @@ Either way: bump CACHE_VERSION(s), re-run 38-offline-pwa.spec.js, and add the ne
 Starting fully offline, a user can open the site root, see the Hub, click a previously-loaded
 building, and get the full mesh view — witnessed by the three W- entries above; CACHE_VERSION
 bumped; live smoke on GH Pages.
+
+## §2026-10-06 FINDING — no localhost bypass in any of the 3 service workers
+Found by the dev-toolkit triage, `bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §7 (2026-10-06). Read from bim-ootb `origin/main` @ fb183ddf. Not fixed — this lane decides.
+- Precached files are cache-first everywhere, localhost included: `viewer/sw.js:1200` (`isNetworkFirst`),
+  `modeller/sw.js:121`, `erp/sw.js:11`. On `localhost:8000` a dev's save + reload can serve the OLD file
+  until `CACHE_VERSION` is bumped — mistaken for "my change didn't work".
+- The dev toolkit works around it without app change (launch config with SW bypassed). Whether the SWs
+  should get a localhost rule is this lane's call.
