@@ -1,0 +1,11 @@
+ask	0.00	2.40	screen: Alt+C panel beside the preview	F: How long to set this up?	F: How long does this take to set up?
+how	2.40	7.40	screen: path + boxes + preview	M: Seconds. Path, boxes, preview.	M: Seconds. Draw the path, tick the boxes, press preview.
+bake	7.40	12.60	§CLI_BAKE_WALL totalSec=1342	F: Then? | M: Leave it to bake.	F: And then? | M: Leave it to bake. This one took twenty-two minutes.
+ground	12.60	18.60	§CGD_PAIR GEOTECH=9145 · §V5_PHASE build=Ground Treatment	M: Ground treatment first.	F: What goes in first? | M: Ground treatment. Nine thousand pieces: piles, soil nails, drains.
+jump	18.60	24.60	cut 20–26 s of the bake; top-right map shows the position	F: We jumped? | M: The map shows where.	F: Did we just jump along the road? | M: Yes. The map, top right, shows where we are.
+earth	24.60	33.60	§V5_PHASE build=Earthworks · §EARTHWORKS_VOLUME V_m3=22048.191 B_m3=2.256	M: Then the earthworks.	M: Then the earthworks body. About twenty-two thousand cubic metres, read from its own solid.
+bridge	33.60	45.60	§V5_PHASE Superstructure/Pavement interleaved · §MIXED_PROGRAMME	F: The bridge? | M: Alongside the pavement.	F: And the bridge? | M: Built alongside the pavement, in one programme. Ground, earth, drains, pavement, then finishing: the usual road-works order.
+finish	45.60	51.60	§V5_PHASE Road Lighting/Signage/Road Furniture/Road Marking	M: Lamps, signs, markings.	M: Lamps, signs, furniture and markings close it out.
+total	51.60	59.50	§COST_ODOMETER placed=/19559 · §CPE_DAY_COUNTER of=79	F: How many pieces? | M: Nineteen thousand.	F: How many pieces in all? | M: Nineteen thousand five hundred fifty-nine, over seventy-nine days.
+health	59.50	67.50	§HEALTH_CARD overall proven=2 bounded=1 speculative=4 · clash real=11 broad=30529 · B=2.256	M: Eleven real clashes.	M: Overall health. Eleven real clashes. Volume within two cubic metres. Four checks still speculative.
+close	67.50	77.50	§MC_REPORT rows=302 valid=20 speculative=282 · user 2026-10-06	M: Now you know what you got.	F: And the full report? | M: Every row, valid or speculative, shown. Now you know what you got.
