@@ -1528,15 +1528,15 @@ M: "Now you know what you got." Re-check every number on the bake log / §ROAD_C
 
 ### §11.v5 RUN — baked + spliced + narrated (2026-10-06)
 - **Bake:** `cli_silent_bake.js --db CivilWorksPath --gpu real --buildup --label --clash --day tr --no-reveal --no-load-path`, bim-ootb main
-  ceaefd5a (sw v1591) → `~/Downloads/CivilWorks_film_v5_BEFORE.mp4` (1280×720, 15 fps, 1,469 frames, 97.9 s). `§CLI_BAKE_WALL totalSec=1342`
+  ceaefd5a (sw v1591) → `~/Videos/CivilWorks_film_v5_BEFORE.mp4` (1280×720, 15 fps, 1,469 frames, 97.9 s). `§CLI_BAKE_WALL totalSec=1342`
   (22 min — NOT the "2 h" first guessed); `§MAXQ_QUALITY unconverged=0`; `§HUD_OVERLAP_WORST none`. Logs `…_v5_cli.log` / `…_v5_page.log`.
 - **Cuts from the log** (`§V5_PHASE` = status-box Build-up changes; `§V5_RATE` = §COST_ODOMETER placed per §CPE_DAY_COUNTER day): Ground
   Treatment 0–37.3 s (day 18 holds 8–44 s while 8,029 pieces land), Earthworks 37.3 s, bridge + pavement interleaved 42.8–77 s, finishing 83.3–86.5 s.
   Segments: ch1 setup · 0–6 · 20–26 · 36–45 · 52–58 · 66–72 · 83–89 · 90–end · health card 8 s · report scroll 10 s
   (`§MC_REPORT rows=302 valid=20 speculative=282`). Same bake throughout → piece count only moves forward across cuts.
 - **Health card:** `prompts/film_health_card.py` (every value parsed from §CLASH_NARROWPHASE / §EARTHWORKS_VOLUME / §ROAD_CHECK + road_rules
-  film_status) → `~/Downloads/CivilWorks_health_card.png`. Spider/radar rejected: it needs invented 0–1 scores per axis.
-- **Output** `~/Downloads/CivilWorks_film_v5_narrated_AFTER.mp4` — 77.5 s, script `prompts/film_narration_civilworks_v5_dialogue.tsv` (11 rows,
+  film_status) → `~/Videos/CivilWorks_health_card.png`. Spider/radar rejected: it needs invented 0–1 scores per axis.
+- **Output** `~/Videos/CivilWorks_film_v5_narrated_AFTER.mp4` — 77.5 s, script `prompts/film_narration_civilworks_v5_dialogue.tsv` (11 rows,
   Kokoro F/M), fit 11/11 DETAIL, 0 WRONG · frames 2,326 = assembled source · longest silence 4.6 s · −17.1 LUFS. Ends "Now you know what you got."
 - Not in it yet: Chapter 0 (intro). Bridge captions read "Architecture Envelope / Superstructure / MEP Rough-in" (bridge classed as a building).
 
