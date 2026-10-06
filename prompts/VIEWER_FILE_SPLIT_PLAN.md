@@ -221,3 +221,5 @@ order, sw) · eslint 0. Tooling: scripts/split_closure.js (generator parts, two-
 `this`/outer-capture/let-const refusals), scripts/split_verify.js, viewer/tests/_split_families.js (readUnsplit/readSource).
 **Open:** one live bake (film code: #1908/#1909/#1910) + a Find-panel browser smoke (#1907) — the user's go; closing #1903
 (permission-blocked for this session). Largest viewer file after all five: see §LARGEST below.
+
+**§LARGEST (after all five, measured on the #1914 branch):** cinema_path_editor.js 4,461 · streaming.js 4,354 · scene.js 3,756 · schedule_author.js 3,254 · tools.js 3,022 · fx_cinema_path_plan.js 2,856 · maxq_start.js 2,788. Was: effects.js 11,149.
