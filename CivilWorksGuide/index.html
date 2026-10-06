@@ -1268,10 +1268,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-7-long-section-the-road-profile" class="md-nav__link">
+  <a href="#step-7-long-section-the-road-profile-lens" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7 · Long section — the road profile
+        Step 7 · Long section — the road profile lens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7a-the-profile-sheets-profile-pdf-and-a-png" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7a · The profile sheets (Profile PDF) and a PNG
       
     </span>
   </a>
@@ -2648,10 +2659,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-7-long-section-the-road-profile" class="md-nav__link">
+  <a href="#step-7-long-section-the-road-profile-lens" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7 · Long section — the road profile
+        Step 7 · Long section — the road profile lens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7a-the-profile-sheets-profile-pdf-and-a-png" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7a · The profile sheets (Profile PDF) and a PNG
       
     </span>
   </a>
@@ -2898,10 +2920,18 @@ solid gets an exact figure; a surface too open to bound gets no number at all. T
 <h3 id="step-6-open-the-section-tool">Step 6 · Open the section tool<a class="headerlink" href="#step-6-open-the-section-tool" title="Permanent link">&para;</a></h3>
 <p>Open the <strong>Inspect</strong> drawer → <strong>Section Cut</strong> (keyboard <strong>X</strong>). On a road model its panel shows two extra
 buttons after <strong>X / Y / Z</strong>: <strong>Cross</strong> and <strong>Long</strong>. They appear only on a civil model.</p>
-<h3 id="step-7-long-section-the-road-profile">Step 7 · Long section — the road profile<a class="headerlink" href="#step-7-long-section-the-road-profile" title="Permanent link">&para;</a></h3>
-<p>Tap <strong>Long</strong>. The road's profile along its length appears: road level (blue), ground level (brown) and
-drain levels (red) against chainage. Drag the slider (or click on the profile) to move along the road;
-the camera follows to that chainage.</p>
+<h3 id="step-7-long-section-the-road-profile-lens">Step 7 · Long section — the road profile lens<a class="headerlink" href="#step-7-long-section-the-road-profile-lens" title="Permanent link">&para;</a></h3>
+<p>Tap <strong>Long</strong>. A round <strong>profile lens</strong> opens over the 3D view: road level (blue), ground level (brown) and
+drain levels (red) against chainage, for the stretch under the lens. Drag the slider to move along the
+road; scroll over the lens to widen or narrow the span (100 m by default).</p>
+<h3 id="step-7a-the-profile-sheets-profile-pdf-and-a-png">Step 7a · The profile sheets (Profile PDF) and a PNG<a class="headerlink" href="#step-7a-the-profile-sheets-profile-pdf-and-a-png" title="Permanent link">&para;</a></h3>
+<p>With <strong>Long</strong> on, two buttons sit under the slider:</p>
+<ul>
+<li><strong>Profile PDF</strong> — opens a new tab with the whole road as <strong>sheets of 100 m</strong> (22 sheets for the sample
+  road), each with its chart and a table of road and ground levels every 10 m. Use the browser's
+  <strong>Print → Save as PDF</strong> to keep it as a file (<code>§PROFILE_LENS_PDF sheets=22</code>).</li>
+<li><strong>PNG</strong> — saves the lens view you are looking at.</li>
+</ul>
 <h3 id="step-8-cross-section-a-slice-at-one-chainage">Step 8 · Cross section — a slice at one chainage<a class="headerlink" href="#step-8-cross-section-a-slice-at-one-chainage" title="Permanent link">&para;</a></h3>
 <p>Tap <strong>Cross</strong>. A 2 m slice is cut square to the road at the slider's chainage; drag the slider to slide
 it along the road. Each position logs what is cut, by discipline. Sample set:</p>
@@ -2936,8 +2966,10 @@ matches an independent recompute from the raw geometry at every slider position 
 <div class="admonition note">
 <p class="admonition-title">Not yet</p>
 <p>Chainage is <strong>inferred</strong> from the road pieces (the files carry no alignment), so it is good for
-finding your way, not for setting out. A round <strong>profile lens</strong> over the 3D view, with a <strong>Profile PDF</strong>
-of the whole road, is in review and not live yet.</p>
+finding your way, not for setting out. Known gaps in the lens: the PNG is the round lens as drawn
+(ring and clipped edges); the legend lists <em>ground</em> even where no ground was found; a few sudden
+road-level dips are under investigation (possibly a lower culvert or drain read as the road top);
+drains show as short dashes because a drain level exists only where a drain crosses the road.</p>
 </div>
 <hr />
 <h2 id="part-e-the-road-check-report">Part E — The road check report<a class="headerlink" href="#part-e-the-road-check-report" title="Permanent link">&para;</a></h2>
