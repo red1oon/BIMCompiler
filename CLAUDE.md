@@ -250,6 +250,13 @@ Before ending, update PROGRESS.md with:
 - **Pre-Flight Citation:** Before code changes, cite the spec: `// Implementing BBC.md §X.Y — Witness: W-NAME`
 - **Traceability:** Check `TestArchitecture.md` §Traceability Matrix before and after changes
 
+## ⛔ NO-LFS HARD STOP (2026-10-07, user: "Hard stop. Let a workaround happen by necessity.")
+GitHub LFS bandwidth 10/10 GB used; resets 2026-11-01. LFS is OFF: global + repo config skip all LFS
+downloads (`smudge --skip`, `lfs.fetchexclude=*`), and `~/.config/git/no-lfs/guard.sh` (pre-commit +
+pre-push in bim-compiler and bim-ootb) rejects any LFS pointer or `filter=lfs` rule. Pushes no longer
+call `git lfs pre-push`. LFS files in a checkout are now small pointer stubs, not data. Do NOT undo
+this or `--no-verify` past it; get DBs via OCI / migration SQL instead.
+
 ## DB CHANGES = MIGRATION SCRIPT + SELF-HEAL LOADER, ALWAYS (hardened 2026-07-11 — read this FIRST)
 **This is the PERMANENT architecture, not a workaround for LFS bandwidth.** Every DB content change —
 schema/rules DB or a shipped extracted/library DB — ships as a small SQL script (`migration/*.sql`, or
