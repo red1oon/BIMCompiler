@@ -141,7 +141,8 @@ async function erpPart(page, href2) {
     const re = await pop.evaluate(() => { const m = /[?&]find=@([^&]+)/.exec(location.search); const sc = m && localStorage.getItem('zoomfind_' + m[1]);
       if (sc && window.APP.applyFindScope) { window.APP.applyFindScope(sc); return sc.split(',').length; } return 0; });
     S('§CLIP_BACK_RESCOPE guids=' + re); await sleep(2500);
-    await pop.evaluate(() => { const fp = document.getElementById('find-panel'); if (!fp || fp.style.display === 'none') window.APP.openFindPanel(); });
+    await pop.evaluate(() => window.APP.openFindPanel());   // always: the panel can be hidden by the panel registry, not only display:none
+    S('§CLIP_BACK_FINDPANEL ' + JSON.stringify(await pop.evaluate(() => { const fp = document.getElementById('find-panel'); if (!fp) return null; const r = fp.getBoundingClientRect(), cs = getComputedStyle(fp); return { w: r.width, h: r.height, x: r.left, disp: cs.display, vis: cs.visibility, op: cs.opacity }; })));
     await sleep(2500);
     S('§CLIP_BACK_FINDBAR "' + await pop.evaluate(() => { const e = document.getElementById('find-selected-text'); return e ? e.textContent : ''; }) + '"');
     for (let i = 0; i < 60 && !seen(/\[back\].*§ZOOM-SCOPE|\[back\].*§FIND|\[back\].*§NF_/); i++) await sleep(1000);
