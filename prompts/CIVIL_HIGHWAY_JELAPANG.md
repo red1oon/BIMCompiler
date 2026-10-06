@@ -735,3 +735,15 @@ chainage grid overlay · staffage cars on the road · sun path (needs CRS) · ER
 4. **Drain invert drawn only as short dashes** — a drain level exists only where a drain crosses the route; correct data, reads as a glitch.
    Possible: dashed style + legend note. Design question, not a bug.
 - Witness downloaded one `profile_818-918m (n).png` into ~/Downloads per run (10 copies) — fixed in #1923 (blob only).
+
+## §CROSS_OUTPUT (spec, 2026-10-07; user: "the 'cross' cut section can pull the line but how do i get the result? Long, yes … PNG and PDF")
+MEASURED (bim-ootb origin/main viewer/civil_sections.js:149-206): Cross mode has NO deliverable. It only (a) clips the 3D view to a 2 m slab
+square to the route and (b) logs `§CROSS_SECTION … elementsCut=N byDisc={…}` to the console. Long mode has PNG (`A.civilLensPNG`) + PDF tab
+(`A.civilProfilePDF`); Cross has neither.
+Proposed (NOT built — awaiting user go): in Cross mode add **PNG** + **Section sheet** buttons beside the scrubber.
+- Drawing = true cut, not the slab render: intersect each cut element's triangles (the `civilSectionCut` set only) with the mid-plane →
+  2D segments in (offset from centreline m, z m), coloured by discipline, ONE scale, chainage + "inferred" in the title.
+- Table under it = elements cut: discipline · name · count (from the same `civilSectionCut` result — one owner, no second computation).
+- PNG = that drawing; Section sheet = new tab, print CSS → "Save as PDF" (same pattern as Profile PDF, no new library).
+- Witness: segment endpoints lie on the plane (|n·p − d| < 1 mm); every element in the table has ≥1 segment or is listed "bbox only";
+  table count = `§CROSS_SECTION elementsCut`; Duplex VACUOUS.
