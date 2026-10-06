@@ -115,7 +115,8 @@ async function erpPart(page, href2) {
   // erp/tests/poc_zoom_across.js does — NOT the toolbar magnifier and NOT a direct IdmpPillActions call (user 2026-10-07).
   // the rail starts folded behind ⋯ (#idmp-pill-trigger, §PILL-CUE collapsed=true) — open it the way a user does
   await cursorTo(page, '#idmp-pill-trigger', 800); await sleep(900); await cursorRing(page);
-  await page.evaluate(() => { const t = document.getElementById('idmp-pill-trigger'); if (t) t.click(); }); await sleep(1500);
+  await page.evaluate(() => { const d = document.getElementById('idmp-pill'), t = document.getElementById('idmp-pill-trigger');   // as erp/tests/poc_dashboard.js clickPill
+    if (d && t && getComputedStyle(d).display === 'none') t.dispatchEvent(new PointerEvent('pointerup', { bubbles: true })); }); await sleep(1500);
   await cursorTo(page, '#pill-zoomacross', 700); await sleep(900); await cursorRing(page);
   const pillSel = await page.evaluate(() => { const b = document.getElementById('pill-zoomacross');
     return b && b.getBoundingClientRect().width > 0 ? (b.getAttribute('title') || 'pill-zoomacross') : null; });
