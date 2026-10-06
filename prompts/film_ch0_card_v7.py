@@ -60,11 +60,13 @@ for i, (a, b) in enumerate(FEES):
     y = 330 + i * 150
     d.text((160, y), a, font=font(40), fill=(195, 194, 183))
     d.text((160, y + 54), b, font=font(48, True), fill=(255, 255, 255))
-d.text((160, 800), 'BIM OOTB: free, MIT licensed, runs in your browser.', font=font(44, True), fill=(255, 235, 59))
+TAIL = ['For the long tail of DIY users who want freedom, not a free lunch.',   # user 2026-10-07 (typos fixed: wants→want, u→you)
+        'MIT Licensed, so you can make the code work better.']
+for i, l in enumerate(TAIL): d.text((160, 780 + i * 56), l, font=font(42, True), fill=(255, 235, 59))
 CITES = ['Published list prices, checked 7 October 2026:',
          '[1] Solibri plans & pricing — https://www.solibri.com/pricing (Essential / Advanced / Premium, per year per license)',
          '[2] Navisworks Manage 2027, new annual, 1 seat, US$3,128.15 — cdwg.com/product/autodesk-navisworks-manage-2027-new-subscription-annual-1-seat/9115559',
          '[3] TUM Open Infra Platform, GPL v3 — https://www.cee.ed.tum.de/ccbe/research/research-fields/building-information-modeling-in-infrastructure/tum-open-infra-platform/']
-for i, c in enumerate(CITES): d.text((160, 925 + i * 30), c, font=font(20), fill=(150, 150, 150))
+for i, c in enumerate(CITES): d.text((160, 935 + i * 30), c, font=font(20), fill=(150, 150, 150))
 f.save(os.path.join(outdir, 'close_fees.png'))
 print(f'§CLOSE_FEES_CARD rows={len(FEES)} out={outdir}/close_fees.png')
