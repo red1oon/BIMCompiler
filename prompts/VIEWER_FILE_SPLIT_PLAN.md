@@ -206,3 +206,18 @@ tm_played_layer.js under cache_4d_run.js) · cinema_maxq 17 · effects 16 · nav
 navigate_find ✅ → cinema_maxq → effects → time_machine LAST, as two PRs: (1) a `readUnsplit()` reader (rebuilds the
 original single-file text from shell + parts, prefixes stripped) rolled out to all 80 readers, no product change;
 (2) the split. Generated time_machine split already verified to generate (8 parts, 228 shared names, no refusals).
+
+## §RESULT_ALL — all five big files split (2026-10-06), stacked PRs, held for one live bake
+| PR | file | before | parts (largest) | proof beyond the shared gates |
+|---|---|---|---|---|
+| #1907 | navigate_find.js + tooling | 5,330 | 7 (1,071) | 8 source readers unchanged |
+| #1908 | cinema_maxq.js | 5,342 | 5 (2,788 — `start()` is one 2,660-line fn) | witness_module_loads: 202 modules load clean |
+| #1909 | effects.js | 11,149 | 8 (2,856 — `_cinemaPathPlan` one fn) | census desktop 84 keys + mobile 7 keys (early return kept) |
+| #1910 | cpe_load_path.js | 4,684 | 6 (1,155) | supersedes #1903 (one split mechanism) |
+| #1914 | time_machine.js | 10,558 | 8 (1,967) | 79 readers same exit; cache_4d_run --force HHS + Terminal: run.json IDENTICAL |
+Shared gates on every PR: split_verify (every statement identical in order, modulo the shared prefix) · readUnsplit()
+rebuilds each original BYTE-IDENTICAL (cmp) · W-SPLIT-SURFACE (A./window. surface, tags, functions, runtime keys, loader
+order, sw) · eslint 0. Tooling: scripts/split_closure.js (generator parts, two-phase, early-exit, strictness copied,
+`this`/outer-capture/let-const refusals), scripts/split_verify.js, viewer/tests/_split_families.js (readUnsplit/readSource).
+**Open:** one live bake (film code: #1908/#1909/#1910) + a Find-panel browser smoke (#1907) — the user's go; closing #1903
+(permission-blocked for this session). Largest viewer file after all five: see §LARGEST below.
