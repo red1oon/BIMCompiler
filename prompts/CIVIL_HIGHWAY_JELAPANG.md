@@ -59,6 +59,22 @@ highlights pushed GUIDs · #1918 sky skyline boxes skipped on civil. Do in order
 - Order for the next session: (1) TM end-state + preview check (cheap) → decide build gap fix vs fully-built-only cuts; (2) HUD/day counter
   from the log; (3) ERP POC clip (1–2 disciplines); (4) chapter cards + WIP line; (5) lens PR witness fix. Sky residual stays parked (not fatal).
 
+**§TM_GAP_FINDING (2026-10-06 late, from the v6 bake log only — no re-run; PARKED per user "minimal time to Time Machine"):**
+- The "28 never placed" is a log-read slip: `§TIME_MACHINE` says 80 days, `§COST_ODOMETER` logs up to day 79, and
+  `§COST_ODOMETER_FINAL cost=1336814 total=1336814 => PASS` — every piece IS placed by the end. Not a schedule bug.
+- The "171 held meshes not drawn" is not evidence either: `§FRAME_COST` counts helper objects too, and its `inFrustum`
+  tests the base geometry sphere of an InstancedMesh, not its instances (cinema_maxq.js `_logFrameCost`).
+- Real defect (suspect, unwitnessed): `§XRAY_EDGES staged=12112/19559` — 62 % of the road is "X-ray staged" (hidden
+  until its support finishes). `§CPE_BUILDUP_PLACED_SUMMARY neverDrawn=4/8` watched slabs, all `op=placed mesh=found
+  visible=false`. Mechanism read in time_machine.js (origin/main 9f19b6e3): `_tmBuildEventIndex` indexes each mesh's
+  own start/end/linger times but NOT `_tmXraySolidifyTs`, so when a staged slot's support finishes the delta path
+  (`_incrOK && !_tmHasEventIn(...)` → skip) may never revisit that mesh — the slot stays hidden for the rest of the film.
+  This is the opposite direction of 4D_MODEL_INTEGRITY §O.3 (skip PRESERVES a hidden slot here).
+- Fix candidate (one line, NOT built): push `_tmXraySolidifyTs[guid]` into `guidT[guid]` in `_tmBuildEventIndex`.
+  Touches buildings too → needs fleet proof (NON-IMPACT RULE) + W-TMV-4-style witness. Also open: whether 62 % staged
+  is even right for a flat road (support relation is the 4D owner's question, §I).
+- Film decision: no rebake for this. Cover with the WIP narration line.
+
 Rules learned today: whitebox node witnesses first, browser only for wiring, all browser runs `flock /tmp/civil_browser.lock`; agents report after 2
 failures; coordinate agents/sessions internally (memory feedback_manage_coordination_internally).
 

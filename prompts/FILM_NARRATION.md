@@ -1711,3 +1711,17 @@ IFC4.3, three dot J S → three.js; 0 left) onto the agent's silent assembled fi
 assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witness (frames, silence, LUFS).
 
 ## §BROWSER_SCALE_AND_CLAIMS — MOVED to `docs/BrowserScaleBenchmark.md` (2026-10-06). The Chapter 0 claim card (§11.next) cites it.
+
+### §11.v7 STORY REVISION — WIP stated up front (user 2026-10-06 evening)
+- **Ch0 (replaces the "yet to find prior art" claim card):** backdrop `~/Pictures/Screenshots/Film2OpeningScreenshot.png`; title fades, then
+  the SAME card carries the whole speech as on-screen text while M says it: *"This is a work in progress, extracting 3D 4D 5D 7D 8D ERP all
+  from your IFC model with no AI API call. It is all landed code in our Github repository."* (user wording, verbatim.)
+- **Ch2 build-up:** cheap fixes via Alt+C checkboxes only — mock site Kuantan, Pahang (so the real sun path + clock can run; source tagged
+  `mock_film`, NOT a georeference) + `--sun-compass`. WIP line (draft, truthful compute — every number from `prompts/CWRoadBakeIssues.md`):
+  M: *"Still a work in progress: we are checking the Time Machine build-up. It is hard — each frame it decides which of nineteen thousand
+  pieces to draw, from support rules written for buildings. On a flat road twelve thousand pieces wait on their neighbours, and some may
+  not be drawn again."* Day counter: work-paced (§CPE_BUILDUP_PACING mode=work) — day 18 holds while ~8,000 ground pieces land; say so or
+  leave it. Fix lane parked → `prompts/CWRoadBakeIssues.md` (relay to an outside reviewer).
+- **Ch4 ERP = the focus now** (POC: 1–2 disciplines, push, Project lines, red pill back).
+- **Closing card (replaces nothing; after "Now you know what you got", before Chapter End):** *"Civil Works Road Construction is our latest
+  challenge, to prove the concept that BIM compiler can be applied. Give us another week to complete."* (user wording, verbatim.)
