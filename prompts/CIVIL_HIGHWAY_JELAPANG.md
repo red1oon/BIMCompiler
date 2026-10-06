@@ -766,3 +766,9 @@ Cut: src 1.7–30.2 fullscreen (as is) · 30.4–33.6 Section sheet · 36.1–59
 21-sheet scroll dropped, user OK) — browser tabs + dock cropped (1854×962 @66,118 → 1920×996, 42 px bars). `~/Videos/CivilWorks_bonus_sections_v2_BEFORE.mp4`
 59.3 s / 1541 frames → `~/Downloads/CivilWorks_bonus_sections_v2_narrated_AFTER.mp4` (Kokoro dialogue, script
 `prompts/film_narration_civilworks_bonus_sections_v2.tsv`, 5/5 DETAIL, 0 WRONG tone, frames 1541 = source, I −17.1 LUFS, longest gap 4.0 s).
+**Sections bonus v3 (2026-10-07, user: "u miss the Bonus Chapter overlay … silent clip for a sec that fades to the underlying screenshot then prepend")
+— supersedes v2, awaits review, NOT spliced.** Card = chapter style (film_ch0_card_v7.py: blur 5, ×0.8, band 360–720, "Bonus" / title / yellow sub)
+over the first frame, 1.0 s hold + 0.5 s fade into the clip, silent. Also dropped the fullscreen "press Esc" banner v2 still had (on screen until
+src 5.5 s → cut now starts at src 5.6). `~/Videos/CivilWorks_bonus_sections_v3_BEFORE.mp4` 56.4 s / 1466 frames →
+`~/Downloads/CivilWorks_bonus_sections_v3_narrated_AFTER.mp4` (script `…_bonus_sections_v3.tsv`, 5/5 DETAIL, 0 WRONG, frames = source,
+I −17.0 LUFS, longest gap 4.0 s).
