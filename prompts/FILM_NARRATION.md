@@ -1736,3 +1736,9 @@ assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witnes
   `~/Downloads/CivilWorks_AltC_setup_ch1_v2_narrated_AFTER.mp4` (frames 559 = source, −17.0 LUFS, no silence ≥ 2 s).
 - **v7 bake queued (2026-10-07, user "redo those clips to get build up well"):** /tmp/wt-erp-clip (main + #1919 civil solidify fix),
   CivilWorksPath.db with the Kuantan mock site + Issue D task dates, flags as v6 + `--sun-compass` → `~/Videos/CivilWorks_film_v7_*`.
+- **Very last card (2026-10-07, user): "How much others will charge for this:"** — `prompts/film_ch0_card_v7.py` → `close_fees.png`
+  (copy `~/Downloads/CivilWorks_close_fees_card.png`). Verified 2026-10-07: Solibri Essential/Advanced/Premium €1,428/€2,109/€2,772 per
+  year per license (solibri.com/pricing; Starter €99 exists, left off as entry tier); Navisworks Manage 2027 new annual 1 seat
+  US$3,128.15 (CDW-G); TUM OIP GPL v3 free viewer. Citations in small print on the card (all lines measured ≤ 1,774 px of 1,920).
+  NOT used (unverified, from a pasted outside summary): R$ 11,217/yr, €6,000+VAT, $185/user/month, InfraGrid3D free tier, "your lane
+  is empty", "JKR clause citation" (our road checks are 4/5 SPECULATIVE — §MC_REPORT).

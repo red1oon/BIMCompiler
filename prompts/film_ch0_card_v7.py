@@ -47,3 +47,24 @@ for i, l in enumerate(ls2): d.text(((W - d.textlength(l, font=f2)) // 2, y1 + i 
 ls = ls + ls2
 c.save(os.path.join(outdir, 'close_wip.png'))
 print(f'§CLOSE_WIP_CARD lines={len(ls)} out={outdir}/close_wip.png')
+# Very last card (user 2026-10-07): "How much others will charge for this:" — list prices checked 2026-10-07:
+#   solibri.com/pricing (Essential €1,428 · Advanced €2,109 · Premium €2,772, per year / license; Starter €99 not used — entry tier),
+#   cdwg.com Navisworks Manage 2027 new annual 1 seat $3,128.15, TUM OIP GPL v3 (cee.ed.tum.de). Unverified figures from the user's pasted
+#   summary (R$ 11,217, €6,000+VAT, $185/month, InfraGrid3D free tier, "lane is empty") are NOT on the card.
+FEES = [('Model checking (Solibri)', '€1,428 – €2,772 per seat, per year'),
+        ('Clash detection (Navisworks Manage)', 'about US$3,100 per seat, per year'),
+        ('Open-source IFC viewer (TUM Open Infra Platform)', 'free — views IFC, no rule checks')]
+f = Image.new('RGB', (W, H), (0, 0, 0)); d = ImageDraw.Draw(f)
+d.text((160, 170), 'How much others will charge for this:', font=font(64, True), fill=(255, 255, 255))
+for i, (a, b) in enumerate(FEES):
+    y = 330 + i * 150
+    d.text((160, y), a, font=font(40), fill=(195, 194, 183))
+    d.text((160, y + 54), b, font=font(48, True), fill=(255, 255, 255))
+d.text((160, 800), 'BIM OOTB: free, MIT licensed, runs in your browser.', font=font(44, True), fill=(255, 235, 59))
+CITES = ['Published list prices, checked 7 October 2026:',
+         '[1] Solibri plans & pricing — https://www.solibri.com/pricing (Essential / Advanced / Premium, per year per license)',
+         '[2] Navisworks Manage 2027, new annual, 1 seat, US$3,128.15 — cdwg.com/product/autodesk-navisworks-manage-2027-new-subscription-annual-1-seat/9115559',
+         '[3] TUM Open Infra Platform, GPL v3 — https://www.cee.ed.tum.de/ccbe/research/research-fields/building-information-modeling-in-infrastructure/tum-open-infra-platform/']
+for i, c in enumerate(CITES): d.text((160, 925 + i * 30), c, font=font(20), fill=(150, 150, 150))
+f.save(os.path.join(outdir, 'close_fees.png'))
+print(f'§CLOSE_FEES_CARD rows={len(FEES)} out={outdir}/close_fees.png')
