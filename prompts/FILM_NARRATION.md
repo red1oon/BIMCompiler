@@ -1742,3 +1742,12 @@ assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witnes
   US$3,128.15 (CDW-G); TUM OIP GPL v3 free viewer. Citations in small print on the card (all lines measured ≤ 1,774 px of 1,920).
   NOT used (unverified, from a pasted outside summary): R$ 11,217/yr, €6,000+VAT, $185/user/month, InfraGrid3D free tier, "your lane
   is empty", "JKR clause citation" (our road checks are 4/5 SPECULATIVE — §MC_REPORT).
+- **v7 FILM DELIVERED (2026-10-07):** `~/Downloads/CivilWorks_film_v7_narrated_AFTER.mp4` — 148.1 s, 4,442 frames = assembled source, −17.0 LUFS,
+  longest silence 4.9 s; script `film_narration_civilworks_v7_dialogue.tsv` 18/18 DETAIL, 0 tone WRONG. Order: Ch0 card (backdrop + WIP
+  speech, spoken line condensed to fit, card text verbatim) 12 s · Ch1 v2 21.5 s · v7 build-up cuts 0–7/9–15/22–30/44–50/62–68/79–86/90–end
+  (48.6 s, cut points from v7 `§STATUS_BOX_ROWS` Build-up changes) · ERP POC 26 s (Project record → Task Line outline "one per discipline"
+  → red pill → viewer highlight) · mobile 5 s · health + report (from v6 assembled 64.53–82.5) · WIP close card 7 s · fees card 10 s.
+  v7 bake proof: `§CPE_BUILDUP_PLACED_SUMMARY drawn=8 neverDrawn=none`, `§CW_SOLIDIFY_EVENT added=12112`, `§CW_PACE_DISTINCT distinctInstants=11893`,
+  day counter 1→79 without a hold, `§SUN_COMPASS built lat=3.8 (mock_film_kuantan)`, `§CLI_BAKE_WALL totalSec=1252`, unconverged=0.
+  ERP chain proof (ERP_ONLY run): Task Line `rows=2` (200 ea DRAINAGE, 216 ea LIGHTING, rate not set), `§ZOOM-ACROSS launch`,
+  `§FOCUS_ELEM guids=416 lit=416`. Not in v7: sections clip (lens PR), Chapter End black card.
