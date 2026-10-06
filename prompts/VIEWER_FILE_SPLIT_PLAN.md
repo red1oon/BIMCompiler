@@ -188,3 +188,15 @@ Pre-existing, not caused here: `witness_card_font.js` INCONCLUSIVE on main (draw
 | cinema_maxq.js | 15 | 16 | DO NOT SPLIT — protected lane (§S59); its 4 helper files are near move-only if the ruling is ever lifted |
 Separate refactor lane (not a split): `support_sweep`/`cpm_schedule` one-owner collapse — spec `4D_MODEL_INTEGRITY.md` §I.1a,
 patch prepared, baseline of the 24 related witnesses saved; resume = apply patch, rerun the 24, HHS+Terminal schedule diff.
+
+## §LANES_RULING — git-admin decisions (2026-10-06, user-delegated: "as git admin u decide on lane control")
+Supersedes the DO-NOT-SPLIT / WAIT rows of §LANES above.
+1. **Move-only splits are allowed in every lane, protected ones included.** The §S59 protection covers BEHAVIOUR
+   (camera beats, pacing, gaze, orbit); a split that passes the identity gate changes none. Behaviour edits stay protected.
+2. **Order = fewest in-flight branches** (remote branches active in the last 3 days with UNMERGED commits touching the
+   file, `git cherry`, measured 2026-10-06): navigate_find 5 → time_machine 6 → cinema_maxq 7 → effects 12.
+3. **The generator is committed** (`scripts/split_closure.js` + a per-file config anchored on declaration NAMES, not line
+   numbers), so an in-flight branch regenerates its own parts from its own version of the old file instead of hand-
+   resolving a 5,000-line conflict. Recipe in the script header.
+4. **One bake window verifies all film-code splits together** (cpe_load_path #1903, cinema_maxq, effects): same
+   `§LOADPATH_*`/`§MQ_*`/`§FX_*` lines before vs after. Asked of the user once, not per split.
