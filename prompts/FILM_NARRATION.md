@@ -1552,6 +1552,12 @@ Project window → viewer frame with the order's elements highlighted, held ~2 s
 (erp/idempiere.html:6106 builds `<bld>_extracted.db` — wrong for CivilWorks.db). ⛔ Waits on the proxy-by-discipline fold fix (else the
 grid shows one lumped "IfcBuildingElementProxy" line). Then title "IFC Extracted — 4D, 5D to 8D ERP" is backed by a shown ERP step.
 
+### §11.v5 CLOSING CHAPTER (user 2026-10-06: "Multi user and mobile also interact same model, via file fold passing in any simple network such as email, or whatsapp.")
+Line (M): "Many users, on desktop or mobile, work on the same model — by passing a small fold file over any simple channel: email, WhatsApp."
+⛔ VERIFY BEFORE VOICING (memory says, 2026-10-06): EMAIL_DR POC passed (Node script, encrypted op ledger over email, `scripts/poc_email_dr.js`);
+share sender works but receiver clash-restore bug OPEN (project_share_sheet); sync FSM/relay PR #203 still open. No witness yet of: viewer A
+exports a fold file → viewer B (mobile viewport) imports it → same state hash. Needs that witness on CivilWorks.db before the line is filmed.
+
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
 **SEPARATE MOVIE (user 2026-10-06: "note that this is a separate movie, not the alt-c one").** Source = the user's own screen recording of the
 viewer UI (Fly tour, Find, Ask), assembled with chapter pages. It is NOT the Alt+C baked film (§11.v4, the owner's report film, still waiting
