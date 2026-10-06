@@ -719,3 +719,14 @@ chainage grid overlay · staffage cars on the road · sun path (needs CRS) · ER
 - Fix (small): re-set clip planes in ONE `collectMeshes` pass, or run the witness on the real GPU like the bakes (`--gpu real`); rebase on
   main; re-run; PR. Then the clip: Long lens drag (3 s) → Cross slice slide (4 s) → Profile PDF flash (1 s) per FILM_NARRATION §11.v5.
 - UI nits found then: Time Machine panel overlaps the lens bottom; lens is an opaque disc (design choice); peek rim-drag didn't land.
+
+## §PROFILE_LENS_PENDING (2026-10-07, user: "publish what is good enough and leave documented the pending") — lens shipped #1922, these open
+1. **PNG export = the round lens as drawn** (blue ring, circular crop; axis labels at the rim, the far end of the span clipped). Fix: render
+   the PNG from an offscreen rectangular canvas with the same series. Small (~1 h with witness).
+2. **Legend lists a series with no data in view** (ground: `§PROFILE_LENS_PRECOMPUTE ground=509` of 2111 samples). Fix: legend only for
+   series with ≥1 finite sample in the span. Tiny.
+3. **Road-top dips** (~2.5 m at 845–865 m in the lens PNG; ~0.5 m at 75–80 m on PDF sheet 1). SUSPECT, unverified: the down-ray may hit a
+   lower object (culvert/drain) instead of the road top. Needs a witness that lists the hit element per dip sample first. Unknown size.
+4. **Drain invert drawn only as short dashes** — a drain level exists only where a drain crosses the route; correct data, reads as a glitch.
+   Possible: dashed style + legend note. Design question, not a bug.
+- Witness downloaded one `profile_818-918m (n).png` into ~/Downloads per run (10 copies) — fixed in #1923 (blob only).
