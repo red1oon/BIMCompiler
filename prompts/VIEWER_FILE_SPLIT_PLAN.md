@@ -223,3 +223,5 @@ order, sw) · eslint 0. Tooling: scripts/split_closure.js (generator parts, two-
 (permission-blocked for this session). Largest viewer file after all five: see §LARGEST below.
 
 **§LARGEST (after all five, measured on the #1914 branch):** cinema_path_editor.js 4,461 · streaming.js 4,354 · scene.js 3,756 · schedule_author.js 3,254 · tools.js 3,022 · fx_cinema_path_plan.js 2,856 · maxq_start.js 2,788. Was: effects.js 11,149.
+
+**§COORD (2026-10-06):** civil road lane (session bim-compiler-f8, sky-ghost agent) edits main effects.js `_mirror*` / env-map / §STILL_GHOST_OWNERSHIP functions and lands first where it can. Before merging #1909: re-run `scripts/split_closure.js scripts/split_configs/effects.json` on current main and re-run the gates (anchors are names, so their edits land in fx_sun_shadow.js / fx_photo_staging.js / fx_still_refine.js).
