@@ -748,3 +748,14 @@ Proposed (NOT built — awaiting user go): in Cross mode add **PNG** + **Section
 - Witness: segment endpoints lie on the plane (|n·p − d| < 1 mm); every element in the table has ≥1 segment or is listed "bbox only";
   table count = `§CROSS_SECTION elementsCut`; Duplex VACUOUS.
 - ✅ 2026-10-07 BUILT (bim-ootb PR #1926, sw v1602): Cross mode has "PNG" + "Section sheet" (A.civilCrossOutput / civilCrossPNG / civilCrossSheetHTML). Real triangle∩mid-plane segments for the civilSectionCut set only; table disc·name·count + "bbox only" rows. Witness (CivilWorksPath, real GPU) PASS 45/45: endpoints |n·p−d| ≤ 2.3e-13 m at s=528/1161/1794; segments 2176/1542/1043; elements 44/35/77 (bboxOnly 8/1/1) == §CROSS_SECTION elementsCut; RED on origin/main FAIL; Duplex VACUOUS. `§CROSS_OUTPUT s= segments= elements= bboxOnly= ms=13-28`.
+
+## §CROSS_LIVE_POPUP (spec, 2026-10-07; user: "When we drag scrub the Cross-section, can't we have a pop up giving in realtime in spot besides the cut? Draggable pop up.")
+- In Cross mode, a small floating panel (~360×240 px) shows the §CROSS_OUTPUT drawing (same owner `civilCrossOutput`, no second cut code)
+  and redraws LIVE while the scrubber is dragged: throttled to one redraw per animation frame, latest chainage wins (measured cost 13–28 ms/cut).
+- Placed beside the cut: anchored at the screen projection of the route point at s (offset right/up, clamped inside the canvas) and follows it
+  while scrubbing — UNTIL the user drags the panel by its header; then it stays where dropped (a ⟲ button re-anchors). Close ✕ hides it for the
+  session; leaving Cross mode / closing the Cut tool removes it. Header shows "chainage N m (inferred) · elements · segments".
+- Keeps the PNG / Section sheet buttons (they act on the same s).
+- Witness: scrub to 3 chainages → popup drawing's chainage = scrubber s each time and its segment count = `§CROSS_OUTPUT segments` for that s;
+  redraws ≤ frames (throttle proven, `§CROSS_LIVE redraws= frames=`); header drag moves it and a later scrub does NOT move it back; leave Cross →
+  popup absent; Duplex → no popup (VACUOUS).
