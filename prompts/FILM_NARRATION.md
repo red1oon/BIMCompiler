@@ -1544,7 +1544,12 @@ M: "Now you know what you got." Re-check every number on the bake log / §ROAD_C
 ~8–10 s, placed before the health card. Recorded headless (no bake): (1) Find panel, Discipline axis, the 5 road disciplines selected —
 1 s; (2) › ERP → green "open ↗" — 1 s; (3) the ERP Project window (window 130) opens on the new record; zoom / outline box on the Project
 Lines grid showing the per-discipline lines (Road / Lighting / Drainage / Signage / Marking with qty) — hold 5 s. No full cycle.
-Numbers from the push's own § lines (§PROJ_PUSH, §PROJ_PUSH_LINK, §PROJ_ORDER_LINE). ⛔ Waits on the proxy-by-discipline fold fix (else the
+Numbers from the push's own § lines (§PROJ_PUSH, §PROJ_PUSH_LINK, §PROJ_ORDER_LINE).
+**+ RETURN (user 2026-10-06: "squeeze in the dialogue saying 'from here, the procurement cycle and materials on site will lead back to the
+viewer'. ... click on the red pill and stop frame fast show it goes back hilite the model on canvas.. that be 2 sec but immense value"):**
+line M: "From here, the procurement cycle and materials on site lead back to the viewer." Picture: red pill (Zoom Across) clicked in the
+Project window → viewer frame with the order's elements highlighted, held ~2 s. ⛔ Waits on the Zoom-Across source-db + highlight fix
+(erp/idempiere.html:6106 builds `<bld>_extracted.db` — wrong for CivilWorks.db). ⛔ Waits on the proxy-by-discipline fold fix (else the
 grid shows one lumped "IfcBuildingElementProxy" line). Then title "IFC Extracted — 4D, 5D to 8D ERP" is backed by a shown ERP step.
 
 ## 12. §INTRO-FILM — "IFC Extraction Program" big-picture intro over the user's own screen recording (DRAFT 2026-10-06, NOT recorded)
