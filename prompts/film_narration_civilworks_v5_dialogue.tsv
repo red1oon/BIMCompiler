@@ -1,5 +1,5 @@
 ask	0.00	2.40	screen: Alt+C panel beside the preview	F: How long to set this up?	F: How long does this take to set up?
-how	2.40	7.40	screen: path + boxes + preview	M: Seconds. Path, boxes, preview.	M: Seconds. Draw the path, tick the boxes, press preview.
+how	2.40	7.40	screen: path + boxes + preview	M: Seconds. Path, boxes, preview.	M: Seconds. Everything is preset, computed from waypoints your model gives.
 bake	7.40	12.60	§CLI_BAKE_WALL totalSec=1342	F: Then? | M: Leave it to bake.	F: And then? | M: Leave it to bake. This one took twenty-two minutes.
 ground	12.60	18.60	§CGD_PAIR GEOTECH=9145 · §V5_PHASE build=Ground Treatment	M: Ground treatment first.	F: What goes in first? | M: Ground treatment. Nine thousand pieces: piles, soil nails, drains.
 jump	18.60	24.60	cut 20–26 s of the bake; top-right map shows the position	F: We jumped? | M: The map shows where.	F: Did we just jump along the road? | M: Yes. The map, top right, shows where we are.
