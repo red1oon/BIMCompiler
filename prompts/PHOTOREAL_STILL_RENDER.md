@@ -715,4 +715,11 @@ EDGE (median z of the body's boundary vertices, measured from the mesh — not t
 edges); if measuring the boundary is costly, fall back to the bottom and let fog cover it, and log which was used.
 **Witness (to write with the code):** CivilWorks.db Alt+S state — EARTHWORK materials opaque during, 0.28 after exit; plane hidden inside the
 footprint (sample rays straight down inside the footprint hit the terrain, not the plane); puddles 0; Duplex / Hospital Alt+S identical
-(plane on, puddles > 0, no terrain path). NOT built — awaits the user's ruling on the horizon choice.
+(plane on, puddles > 0, no terrain path).
+**RULED 2026-10-06 (user: "Go on horizon").** Plane height MEASURED before building (CivilWorks.db earthworks mesh, 25 m plan cells): body
+bottom 30.52 m · the terrain's OWN top surface goes as low as 30.85 m (p1 36.25, p5 48.64, median 57.93) · road bottoms ≥ 51.14 m. No flat
+height avoids edge walls everywhere (the surface itself spans 31–90 m), and any height above 30.85 would cut through the terrain → the
+plane stays at the body bottom (§CIVIL_REF_LOOK G1 owner, unchanged): it never pokes through, the OPAQUE body hides it inside the footprint,
+it shows only outside as horizon, fog takes the far seam. No footprint mask needed. Body albedo = the Alt+S civil ground's own (grass map
+measured mean × gain × tint, table fallback) — logged `§ALTS_TERRAIN_GROUND`. BUILDING on bim-ootb `feat/alts-civil-terrain-ground`,
+witness `witness_alts_terrain_ground.js`.
