@@ -709,3 +709,13 @@ Duplex → every rule VACUOUS/INCONCLUSIVE, button stays MEP; a rule with 0 popu
 Design-revision diff · snags/issues with QR · variation orders on civil rates · rule-findings film for road
 standards · 2D corridor plan (storey-free) · cross-sections square to road · lane widths/clearances by measure ·
 chainage grid overlay · staffage cars on the road · sun path (needs CRS) · ERP fold → JKR asset register.
+
+## §SECTIONS_BLOCKER study (2026-10-07, user: "quick study what is holding it up") — why Ch "Sections" is not in the film
+- Code: bim-ootb `feat/profile-lens` @82dd462c, 3 commits, +412/−66 in 4 files (lens + `witness_civil_sections.js` + viewer.html),
+  6 behind main, **no PR**. Worktree `/tmp/wt-profile-lens`.
+- The lens itself passes: witness 38/38 claims PASS (Duplex VACUOUS ✓, RED control FAIL-as-expected ✓).
+- Blocker = the WITNESS, not the feature: its pre-existing "leave" block (X/Y after Cross) re-sets clip planes on 421 meshes one by one;
+  under swiftshader every change recompiles shaders → Playwright protocol timeout. Crashed twice, also at lower load.
+- Fix (small): re-set clip planes in ONE `collectMeshes` pass, or run the witness on the real GPU like the bakes (`--gpu real`); rebase on
+  main; re-run; PR. Then the clip: Long lens drag (3 s) → Cross slice slide (4 s) → Profile PDF flash (1 s) per FILM_NARRATION §11.v5.
+- UI nits found then: Time Machine panel overlaps the lens bottom; lens is an opaque disc (design choice); peek rim-drag didn't land.

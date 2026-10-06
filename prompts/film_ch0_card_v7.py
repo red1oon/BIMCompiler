@@ -70,3 +70,21 @@ CITES = ['Published list prices, checked 7 October 2026:',
 for i, c in enumerate(CITES): d.text((160, 935 + i * 30), c, font=font(20), fill=(150, 150, 150))
 f.save(os.path.join(outdir, 'close_fees.png'))
 print(f'§CLOSE_FEES_CARD rows={len(FEES)} out={outdir}/close_fees.png')
+# Chapter title cards (user 2026-10-07: titles OK; subtext per chapter; "use the nice screenshots as backdrop" — the captioned
+# set in FILM_NARRATION.md §12). Sections chapter skipped for now, so ERP = 3, Mobile = 4.
+SS = os.path.expanduser('~/Pictures/Screenshots/')
+CHAPS = [(1, 'Bake a movie in seconds', 'Tick the boxes, preview, bake.', 'CivilWorks_v7_orbit_frame95s.png'),   # 07-05-44 shows the place name in its status bar — banned on screen
+         (2, 'Build-up', '4D Time Machine Scheduling on-the-fly. Editable.', 'Screenshot from 2026-10-05 09-11-33.png'),
+         (3, 'ERP', 'The eighth dimension, closing the loop to a true digital twin. This enables 7th D which is Asset Maintenance too.',
+          'Screenshot from 2026-10-06 07-11-35.png'),
+         (4, 'Mobile', 'UI done. GPS linking pending.', 'Screenshot from 2026-10-05 20-14-29.png')]
+for n, title, sub, bgf in CHAPS:
+    b = Image.open(SS + bgf).convert('RGB').resize((W, H), Image.LANCZOS)
+    from PIL import ImageFilter
+    b = ImageEnhance.Brightness(b.filter(ImageFilter.GaussianBlur(5))).enhance(0.8)
+    c = band(b, 360, 720, 175); d = ImageDraw.Draw(c)
+    d.text((120, 395), 'Chapter %d' % n, font=font(36), fill=(195, 194, 183))
+    d.text((120, 450), title, font=font(84, True), fill=(255, 255, 255))
+    for i, l in enumerate(wrap(d, sub, font(40), W - 240)): d.text((120, 580 + i * 54), l, font=font(40), fill=(255, 235, 59))
+    c.convert('RGB').save(os.path.join(outdir, 'chap%d.png' % n))
+    print(f'§CHAPTER_CARD n={n} title="{title}" backdrop="{bgf}"')
