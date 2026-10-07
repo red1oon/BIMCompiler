@@ -10,6 +10,14 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
+## ▶ 2026-10-08 — OpenBIM schema + Dubai paper session (close)
+- **Published `ootb-building` v1 target schema** — bim-ootb `schema/` (PR #1934 MERGED): spec + DDL + `migrate_v0_to_v1.py`.
+  No live DB touched. W-SCHEMA-V1-MIGRATE on copies of 27 files: 22 + 5 pairs PASS, 0 rows lost, 4 zero-byte INCONCLUSIVE.
+  Lane file: `prompts/SQLITE_SCHEMA_PUBLISH.md` (§8 decision, §9 DB-move plan + three.js r186 list). NEXT: §9 step 1 — both writers emit v1.
+- **Certification route** — `prompts/BUILDINGSMART_IFC_CERTIFICATION.md` §2026-10-08: validator + IDS facts; P1 W-IFC-ROUNDTRIP still unbuilt.
+- **Dubai paper** (outside repo): `~/Projects/Dubai/OpenBIM_Paper.docx` = IEEE format, conformed to abstract v4; log in `~/Projects/Dubai/PROMPT.md`.
+- ⛔ user call: 4 zero-byte DBs in bim-ootb/buildings (`city_index`, `city_index_v2`, `Duplex_meta`, `SampleCastle_extracted`).
+
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
 
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
