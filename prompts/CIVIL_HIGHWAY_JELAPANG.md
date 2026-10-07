@@ -808,4 +808,4 @@ I −17.0 LUFS, longest gap 4.0 s).
   BroadcastChannel `bim-zoom-across` (key = resolved db URL; import:// and ../buildings/… both match) → `§ZOOM-REUSE hit … (no reload)`;
   none in 400 ms → `§ZOOM-REUSE none (…) → cold open`. Bringing that tab to front works only when this ERP tab opened it (handle focus).
 - Beam planned amount: rates.js IfcBeam 680/M; top beam has real bbox → priced path exists; not re-run in a browser.
-- Find panel ERP section vanishing (item 4): NOT investigated yet.
+- Find panel ERP row vanishing (item 4) ✅ #1932 LIVE (viewer v1609): saved tall tree height (localStorage findTreeH, drag up to 85% of window) inside panel max-height 88vh overflow:hidden pushed the cost · › ERP · open ↗ row out; refresh re-forced it. Tree now clamped to the room left (`§FIND_ROW_CLIPPED`). Witness witness_find_row_clipped.js: fix row 712–755 in panel 756 PASS; main row at 2271, panel 758 FAIL.
