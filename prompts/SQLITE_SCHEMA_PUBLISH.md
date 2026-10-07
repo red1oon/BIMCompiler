@@ -64,7 +64,7 @@ Name in-file: `project_metadata.schema_name = 'ootb-building'`, `schema_version 
 **Compatibility rule:** adding a table or a nullable column = minor (same `user_version`); readers MUST ignore
 unknown tables/columns. Renaming, removing or changing a type/BLOB layout = bump `user_version`.
 
-## §4 Decisions only the user can make (⛔ until answered)
+## §4 Decisions only the user can make (⛔ until answered — impact of each in §7)
 - **D1** Geometry table name: `component_geometries` (what the viewer reads, in most files) — recommended; then `tools/extract.py` changes to match.
 - **D2** `elements_meta` key: `guid` as primary key, drop/ignore `id` — recommended.
 - **D3** Canonical `tasks`: the 18-column CPM layout — recommended; simple layout deprecated.
@@ -78,10 +78,41 @@ geometry=… modules=[…] missing=[…]` line per file. Must report **INCONCLUS
 LFS-stub file (never PASS), and **FAIL** naming the first mismatched column. Issue it proves: *a file that claims
 `ootb-building` v1 matches §3 exactly.*
 
+## §7 Impact of each decision — and a path to "published" with no breakage (2026-10-07)
+User, 2026-10-07: *"Write this down first, as I not sure what impact it has.. as long we can approach the
+published schema status?"* → **Yes. Publishing does not require changing any table.** A schema can be published
+DESCRIPTIVELY — document what the files contain today, variants included — and that alone gives an outside reader
+everything §1 asks for. Normalising (D1–D3) is a separate, optional clean-up with real cost.
+
+**Measured dependents** (2026-10-07, `git grep -l` over bim-ootb `origin/main` and bim-compiler `HEAD`; *.js/*.py/*.java/*.html;
+counts are FILES that mention the name — an upper bound, tests and docs included; the `id` pattern over-counts):
+
+| Decision | What changes | Files that mention it (ootb / compiler) | Impact |
+|---|---|---|---|
+| D1 rename geometry table | `base_geometries` → `component_geometries` in the writer | base 26 / 76 · component 67 / 128 | **High** — two names live in both repos; the viewer already uses `component_geometries`, so only the WRITER side moves, but 76 compiler files mention the old name |
+| D2 drop `elements_meta.id` | 5 files lose a column | ≤38 / ≤130 (pattern over-counts) | **Medium–high**, unverified — needs a precise read before any change |
+| D3 one `tasks` layout | 9 files' simple tasks converted to CPM columns | simple cols 10 / 48 · CPM cols 19 / 6 | **High** — 4D lane; the Gantt editor witnesses (CLAUDE.md PRIMAL LAW §2) would have to re-pass |
+| D4 exclude app-state tables | nothing in files; spec just says "ignore" | `cinema_path` 45 / 4, `storey_walkable_raster` 30 / 5, `scene_state` 9 / 0 | **None** — documentation only |
+| D5 move sensor rows | 9 rows in HHS | `IOTDEV` 2 / 0 | **Low** |
+| D6 publish location | new doc | — | **None** |
+| Version stamp | `PRAGMA user_version` + 2 metadata keys | `user_version` 0 / 0 | **None** — no reader checks it today |
+
+### Recommended route
+**Phase A — publish descriptively (zero breakage; reaches "published schema" status):**
+1. `bim-ootb/docs/DB_SCHEMA.md` = §3 rewritten as *v0, as found*: each table with its known variants listed
+   (e.g. `elements_meta` with or without `id`; `tasks` simple OR CPM; geometry in `component_geometries`,
+   legacy writer name `base_geometries`), guid forms (bare GlobalId, `<prefix>_<GlobalId>`, non-IFC), BLOB layouts, units.
+2. Stamp `user_version = 1` + `schema_name`/`schema_version` keys via `.sql` patches — no reader affected (0 readers).
+3. `scripts/schema_check.py` (§5) reports which documented variant each file uses — PASS = matches a documented variant.
+4. D4, D5, D6 decided as recommended (all None/Low).
+
+**Phase B — normalise later, one decision at a time, only if wanted:** D1 → D2 → D3, each with its own precise
+dependency read, witnesses re-run, and a `user_version` bump. Phase A stays valid throughout: a variant is retired
+from the doc only when no shipped file uses it.
+
 ## §6 Work list
-1. ⛔ D1–D6 answered by user.
-2. ☐ Write `bim-ootb/docs/DB_SCHEMA.md` from §3 + decisions.
-3. ☐ `scripts/schema_check.py` per §5; run on all files; log read.
-4. ☐ `tools/extract.py` + browser import write v1 (stamp `user_version`, required metadata keys).
-5. ☐ Existing files brought to v1 by `.sql` patches via the self-heal loader (`buildings/patches/*.sql`) — never binary commits.
-6. ☐ 0-byte `Duplex_meta.db`, `SampleCastle_extracted.db`: find their real source or delete (user call).
+1. ☐ Phase A step 1 — write `bim-ootb/docs/DB_SCHEMA.md` (descriptive v0). Needs only D6 (recommended: yes).
+2. ☐ Phase A step 3 — `scripts/schema_check.py` per §5; run on all files; read the log.
+3. ☐ Phase A step 2 — version stamp via `.sql` patch + self-heal loader; `tools/extract.py` + browser import stamp new files.
+4. ☐ 0-byte `Duplex_meta.db`, `SampleCastle_extracted.db`: find real source or delete (⛔ user call).
+5. ⛔ Phase B (D1, D2, D3) — not started; each needs its own impact read and user go-ahead.
