@@ -1088,3 +1088,4 @@ TUM thesis IfcOpenShell road traffic safety (mediatum 1689801) · Malaysia: JKR-
 road-standards checker found.
 NOT FOUND TOGETHER: JKR ATJ 2A/2B/8 rules extracted with page refs + checked on an existing IFC road + in the browser, editable, no install.
 Claim wording allowed: "a combination our search did not find elsewhere (8 Oct 2026, passing search)" — never "the only one" / "first".
+**End card (2026-10-08):** `~/Downloads/CivilWorks_ch_road_signs_narrated_v2_AFTER.mp4` = Road Signs chapter + 7 s silent black prior-art card (57.1 s; card audio max −91 dB). ⚠ card names ATJ 2B — true only once §SIGN_VS_SPEED ships; else re-render without 2B.
