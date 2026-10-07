@@ -1058,3 +1058,23 @@ above applies to M2/M3 (civil-gated); M4 is general and must prove zero look cha
 **Build order:** M4-A → (fleet probe) → M1 → M2+M3 together. M4-B waits on the look ruling. Each item: spec check →
 implement in a `/tmp/wt-*` worktree off `origin/main` → witness `§`-log read → `✅ DONE (witness)` here.
 **Perf budget (CLAUDE.md):** every pass logs verts added/removed and heap at the end.
+
+## §SIGN_VS_SPEED + label clean-up (spec, 2026-10-08; user: "Agree with your approaching speed warning, so we have some of the 138 back but
+## with labels as such? Also we can remove the rest of the labels that maybe irrelevant ie 'not from a standard'")
+**A. New findings group in Road standards: "Sign vs approach speed"** — lists ONLY the signs a speed-dependent rule applies to (not all 138),
+verdict OK / CHECK, click → zoom + HUD (rule, clause/page, model value, required value, approach speed of its zone).
+Rules — EXTRACTED from the standards already on disk (`~/Downloads/JALAN JELAPANG IFC/standards/ATJ_2A…txt`, `ATJ_2B…txt`) by a committed
+script into std_values.json with page refs; a rule whose text can't be read cleanly goes to `_unread`, never typed:
+1. **Advance placement** (ATJ 2B): warning sign → distance to the hazard it announces, measured along the route (chainage). Seen in 2B:
+   intersection signs 100–150 m in advance (txt l.1877/1938), WINDING ROAD 230 m (l.2733), humps 100–300 m (l.3260), etc. Hazards we can
+   locate: the controlled nodes already derived (§ROUNDABOUT_ZONE, §SIGNAL_JUNCTION_ZONE) → "ROUNDABOUT AHEAD" (WD 31), "TRAFFIC SIGNAL
+   AHEAD". Signs whose hazard we cannot locate are not judged (count shown, not CHECK).
+2. **Size vs speed** (ATJ 2A size tables per code where they are speed-banded, e.g. WD 39a/39b chevrons; ATJ 2B Table 2.3 letter height
+   is for guide-sign lettering, which the model does not carry → listed as not judgeable). Model value = the board face size from the
+   §DISC_ON_BOARD_AREA face finder (reuse, one owner) vs the table row for the zone speed.
+**B. Label clean-up** (legend, sign list, Speed section): short tags only — `derived` · `demo` · `NCHRP 672` · `user`; the long provenance
+("demo default — not from a standard", assumed-input lists, table/page) moves to the HUD card on click and a tooltip. Provenance is NOT
+dropped (PRIME RULE: every value traceable) — it is one click away instead of on every row.
+**Witness:** each extracted rule row traces to its .txt line/page; advance-distance verdicts == independent chainage recompute; size verdicts
+== independent face-size recompute vs table; list contains only rule-applicable signs; legend rows ≤ 1 line + tag, HUD carries the full
+provenance; Duplex VACUOUS; RED on origin/main.
