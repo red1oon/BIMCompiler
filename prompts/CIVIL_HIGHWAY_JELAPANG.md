@@ -810,3 +810,10 @@ I −17.0 LUFS, longest gap 4.0 s).
 - Beam planned amount: rates.js IfcBeam 680/M; top beam has real bbox → priced path exists; not re-run in a browser.
 - Find panel ERP row vanishing (item 4) ✅ #1932 LIVE (viewer v1609): saved tall tree height (localStorage findTreeH, drag up to 85% of window) inside panel max-height 88vh overflow:hidden pushed the cost · › ERP · open ↗ row out; refresh re-forced it. Tree now clamped to the room left (`§FIND_ROW_CLIPPED`). Witness witness_find_row_clipped.js: fix row 712–755 in panel 756 PASS; main row at 2271, panel 758 FAIL.
 - **Same item on zoom back ✅ #1933 LIVE 2026-10-07 (viewer v1610, erp v826):** cause erp/idempiere.html:6090 — a line zoom passed only the class (IfcBeam) because `_linkBack(…, useGuids=false)` dropped the pushed GUIDs (C_Project.Note) → viewer selected all 1851 beams. Now `within=<pushed GUIDs>` travels with the line; applyFindScope narrows (`§ZOOM-SAME-ITEM keys= pushed= matched=`, empty → stop). CivilWorksPath top beam: 1 match. First Pages deploy failed on a GitHub OIDC timeout; re-run succeeded. ⚠ witness_zoom_linkback_node.js already broken on main (OLD-code slice regex).
+- **Variance box on red-pill back ✅ #1935 LIVE 2026-10-07 (viewer v1611):** regression from #1933 — `_showClassCost` was drawn only on
+  applyFindScope's class path; the narrowed line zoom takes the GUID path. Now drawn there for a single-class line. User tests (no witness run).
+- **Where the variance comes from (code read):** find_erp_push.js:101-108 reads the push store — line PlannedAmt, its phase and project
+  Planned/CommittedAmt. **CommittedAmt writers in shipped code: only viewer/vo_approve.js (VO approval, project level).** The Hospital
+  variance (64.7M → 87.4M) was BAKED into the seed by erp/tests/bake_gw_hospital_variance.js. No ERP code path (PO complete, receipt)
+  updates C_Project/C_ProjectPhase CommittedAmt, and ERP edits don't reach the viewer's store → a PO + receipt will NOT move the
+  viewer's variance today. OPEN gap (iDempiere oracle for project commitment: MProjectLine/MProject committed roll-up from PO lines — to cite).
