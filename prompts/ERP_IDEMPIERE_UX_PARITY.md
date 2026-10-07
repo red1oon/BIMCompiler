@@ -1970,3 +1970,18 @@ Red pill → ticked lines: bim-ootb #1927 (`§ZOOM-LINES`, ticked C_ProjectLine 
 MD hardening: branch `fix/erp-md-upstream` (stacked on #1924, no PR) logs `§GT-OPEN-DEGRADED` — need the user's line to name the cause.
 
 **2026-10-07 — backup gap cross-ref:** the ERP Backup/Restore does not include BIM-pushed project orders (separate OPFS store). Spec in `prompts/ERP_FIRST_SETUP_GUIDE.md §FS2o-BIM`.
+
+## §PROJ-VARIANCE — what the viewer's "Cost variance" box means, vs iDempiere (2026-10-07, user: "variance is against what is PO Invoiced?")
+**Viewer today (code):** `viewer/find_erp_push.js:101-108` reads the push store: line PlannedAmt + its phase and project
+Planned/CommittedAmt. Shipped writers of CommittedAmt: ONLY `viewer/vo_approve.js:53` (VO approval, project level). Hospital's
+64.7M → 87.4M was baked by `erp/tests/bake_gw_hospital_variance.js`. A pushed project shows Planned → 0 (−100%).
+**iDempiere oracle (local source):**
+- Planned = Σ project lines, rolled to phase/project by `MProjectLine.updateHeader()` (MProjectLine.java:279-320).
+- Committed = entered on the project LINE by hand (commitment/contract value), rolled up the same way. No PO/receipt code writes it.
+- Invoiced = automatic, but from SALES invoices only: `MInvoice.updateProjectInvoiceAmt` (MInvoice.java:3595-3625, `isSOTrx() &&
+  C_Project_ID != 0`). Purchase invoices do not touch it.
+- Supplier cost reaches a project via Project Issue (received goods issued to project lines) — a separate cost path.
+**So:** the variance is estimate vs own commitment, NOT vs PO invoiced. **Gaps:** (1) our ERP has no MProjectLine.updateHeader roll-up
+port, so a Committed typed on a line does not roll up; (2) ERP edits never reach the viewer's push store (`bim_project_orders.db`),
+so even a rolled-up commitment would not show in the viewer. Fix order: port the roll-up verbatim (generic, AD-LAYER LAW), then make
+the viewer read the ERP's committed values (or the overlay write back). Not started.
