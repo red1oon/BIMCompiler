@@ -853,3 +853,19 @@ red-sign close-up at src 24.5) 1.0 s + 0.5 s fade. `~/Videos/CivilWorks_ch_road_
 frames = source, I −16.9 LUFS, longest gap 5.3 s). Claim line "a feature you'd usually pay for" = sourced wording: rule checking is a paid
 model-checker feature (Solibri; its IFC 4.3 road support is "initial"); FOSS IfcTester/IDS can check a property list if one is written →
 "usually", never "not in FOSS". Narration names where to click (Inspect menu top right → signpost under Measure, or J).
+
+## §MODELLER_ROADWORKS — direction (2026-10-07, user; not specced, not started)
+> *"Modeller is for creative discussion what others are doing that we can do better ie similar to present strategy, load parts of this CW
+> for users to craft any road works. There is a terrain topography IFC under old project IfcOpenShell / terrain to use as sample to build on,
+> where it is infused with the present project IFC element set. Terrain also can be for buildings later. We can then add cut and fill feature."*
+- Fits the standing Modeller strategy (memory `project_modeller_assemble_handoff_strategy.md`: authoring stays in Revit/Civil 3D, we
+  ASSEMBLE + HAND OFF): a road-works kit = parts lifted from CivilWorks (sign + post, lamp column, drain, gabion, kerb/road pieces by
+  discipline) placed on a terrain, then cut/fill against that terrain.
+- Terrain sample candidates found on disk (which one the user meant = OPEN QUESTION):
+  - `~/Projects/bim-compiler/DAGCompiler/lib/input/IFC/bSI_Terrain_TIN_IFC4X3.ifc` (192 KB, buildingSMART TIN sample) and
+    `bSI_Terrain_Existing_IFC4X3.ifc` (30.8 MB).
+  - Bonsai PDF-terrain addon `~/IfcOpenShell/src/bonsai/bonsai/bim/module/federation/pdf_terrain/` (samples are JSON point clouds, no .ifc);
+    port spec `prompts/TERRAIN_MIGRATION.md`.
+- Cut/fill: our only volume today is `A.earthworksVolume()` (viewer/earthworks_volume.js, bounded mesh volume, §EW_VOLUME_SURFACE) —
+  design surface vs existing terrain is new.
+- Next step: a competitive read (what Civil 3D / OpenRoads / InfraWorks / FOSS do for "sketch road on terrain + cut/fill") → spec.
