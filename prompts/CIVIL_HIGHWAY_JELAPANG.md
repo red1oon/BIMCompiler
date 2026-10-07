@@ -923,3 +923,14 @@ speeds == ATJ .txt rows; terrain == node recompute; zone boundaries == independe
 painted ROAD slot (4008 elements), toggle off restores all; click → camera dist 5.7e-14 m + card cites ATJ table/page; lever class R6 / manual 70 / per-zone / no-table-row /
 unset / URBAN area-type I (80) vs III (50); no-category row → NO_CATEGORY message; Duplex VACUOUS. §-lines: `§SPEED_ZONES`, `§SPEED_ZONE`, `§SPEED_ZONES_PAINT`, `§SPEED_ZONES_CLICK`, `§SPEED_ZONES_PANEL`.
 Extractor: `tools/extract_atj8_geometric.py` (`§ATJ8_EXTRACT`).
+**§SPEED_ZONES follow-ups (2026-10-07):**
+- ✅ #1940 LIVE — speed number painted on each RP. 7 sign (disc: red ring/white/black number = zone speed; size = sign plan width, top of
+  sign). `§SPEED_SIGN_DISC made=2`; witness 18/18.
+- ✅ #1941 LIVE (v1616) — road colour = legend colour (user: grey-brown far, brick near). Cause: instance colour × grey material (near) +
+  scene fog (far). White material clone, fog off, other slots compensated, all restored on toggle off. The witness compared the tint only
+  (scope-blind) — now judges tint × material + fog: fix 19/19, main fails exactly those 2.
+- ⛔ Roundabouts don't slow down (user). ATJ 8/86 covers road LINKS only — no roundabout/intersection speed rule. The rule lives in
+  **ATJ 11/87 "A Guide to the Design of At-Grade Intersection" (Pindaan 2017, ISBN 9789675957871)** — NOT in the JKR web archive (only
+  2A, 2B, 2D, 5, 8 are). Model side is ready: 62 elements `06_No_Route=ROUNDABOUT` (EXISTING LANE -ROUNDABOUT), 3 "ROUNDABOUT AHEAD"
+  signs. Options: user supplies an ATJ 11/87 copy → extract its roundabout speed table; or meanwhile a roundabout zone with the speed set by
+  the manual lever (labelled "manual (user) — ATJ 11/87 not in hand"). Never a typed "standard" value.
