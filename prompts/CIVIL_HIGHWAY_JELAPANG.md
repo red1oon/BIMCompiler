@@ -132,6 +132,7 @@ P3 near plane · zoom-to-cursor (user: all models or only large?) · hub duplica
 §SIGN_CHECK json_overrides DB save deferred (user scope cut; overrides browser-only) · `witness_viewer_i18n.js` timed out identically on main and branch (inconclusive) ·
 terrain assumed flat for windows with <30 ground samples (2 of 5).
 **ERP side (owned by `ERP_IDEMPIERE_UX_PARITY.md` §MD-UPSTREAM + §BIM-CRUD):** Task Line shows every project's lines in the user's session (#1924 only fails closed) · BIM-pushed project records cannot be deleted
+**ERP cross-file pointers (2026-10-08):** viewer variance meaning + CommittedAmt has no ERP writer → `ERP_IDEMPIERE_UX_PARITY.md` §PROJ-VARIANCE · Backup/Restore omits BIM-pushed orders → `ERP_FIRST_SETUP_GUIDE.md` §FS2o-BIM · stale-tab push-store fix ✅ #1938 (§BIM-CRUD) · seed reset clears push store ✅ #1925.
 (overlay re-inserts on boot — suspect) · CommittedAmt writers: only viewer/vo_approve.js — a PO + receipt does NOT move the viewer's variance (oracle: iDempiere project commitment roll-up, to cite) ·
 planned amount push (§ZOOM_BACK_FIELD item 1) rate path: Beam not re-run in a browser · witness_zoom_linkback_node.js broken on main (old slice regex) · tab-to-front on zoom works only when this ERP tab opened the viewer.
 **§MODELLER_ROADWORKS:** not specced, not started (below).
