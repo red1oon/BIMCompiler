@@ -537,6 +537,19 @@ Backup → the downloaded file's `ops.length` == the live `kernel_ops` row count
 Partners (listTip) == before by id. Negative control: the same file with ONE op's parameters altered is REJECTED (tipMatch=false)
 and adopts nothing.
 
+### §FS2o-BIM — gap: the backup does not carry BIM-pushed Project Orders (2026-10-07, user: "how to save it … when we need to make a backup or open in another machine?")
+**Measured (code read, bim-ootb origin/main):** Backup (`erp/erp_persist_ui.js backup()`, header `[data-erp-backup]`) = the signed kernel
+op-log only (`ops` rows of ERP edits). Project Orders pushed from the BIM Viewer are NOT ops: they live in the separate OPFS store
+`bim_analysis/bim_project_orders.db` (writers: viewer find_erp_push · diff §H1 VO · whatif_panel · schedule_author_ui) and are overlaid
+onto the ERP db at every boot (`erp/bim_orders_overlay.js §BIM_OVERLAY`, band PK ≥ 990000). So a backup → restore on another machine
+brings back every ERP edit but NO pushed project order. Seed reset needs no save (it persists itself to IndexedDB `ad_seed_v18` and,
+since bim-ootb #1925, removes that store).
+**Proposed (not built — awaiting go):** the same Backup file also carries the BIM band: the store's band rows (the 8 overlay tables,
+PK ≥ 990000) as a `bim_band` section, inside the signed payload (hash of the section folded into what is signed); Restore writes them back
+into the OPFS store (create if absent) after the op-log validates, then reloads so §BIM_OVERLAY shows them. One owner per side: the
+overlay's TABLES list + BIM_BASE. Witness: push a project → Backup → wipe op-log AND store → Restore → reload → same C_Project/C_ProjectLine
+rows by id and PlannedAmt; tampered `bim_band` row → restore REJECTED, nothing adopted.
+
 ## §FS2p — FS-18 spec: Initial Tenant Setup can load your own chart of accounts file (2026-10-03, before code)
 **Issue (guide "Not yet: loading your own chart of accounts", new step S05b):** the wizard always folds the 311-account default.
 Process 53161 carries `UseDefaultCoA` (seq 220) and `CoAFile` (seq 230).

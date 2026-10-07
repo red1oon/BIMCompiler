@@ -1968,3 +1968,5 @@ remove OPFS `bim_analysis/bim_project_orders.db` (`clearBimPushStore`, `§SEED-R
 **2026-10-07 later:** #1925 also fixes seed reset writing `ad_seed_v16` while boot reads `ad_seed_v18` (reset never reset the seed).
 Red pill → ticked lines: bim-ootb #1927 (`§ZOOM-LINES`, ticked C_ProjectLine rows → their model + GUIDs; no browser witness yet).
 MD hardening: branch `fix/erp-md-upstream` (stacked on #1924, no PR) logs `§GT-OPEN-DEGRADED` — need the user's line to name the cause.
+
+**2026-10-07 — backup gap cross-ref:** the ERP Backup/Restore does not include BIM-pushed project orders (separate OPFS store). Spec in `prompts/ERP_FIRST_SETUP_GUIDE.md §FS2o-BIM`.
