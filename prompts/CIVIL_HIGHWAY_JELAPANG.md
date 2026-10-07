@@ -874,3 +874,28 @@ model-checker feature (Solibri; its IFC 4.3 road support is "initial"); FOSS Ifc
   the Bonsai PDF-terrain point cloud (`pdf_terrain/samples/survey_highres_extracted.json` + `survey_highres_GV.json`, source image
   `~/bim-ootb/internal/PDF_Terrain/survey_highres.png`). Path today: user converts in Bonsai → exports → imports here; later the converter
   itself comes to the PWA (`prompts/TERRAIN_MIGRATION.md` is that port spec). Terrain also serves buildings later. bSI TIN samples = not the reference.
+
+## §SPEED_ZONES — speed limits derived by standard rules, coloured zones + sign list (spec, 2026-10-07)
+> User: *"Of visual impact won't speed limits placed on the signs be big value?"* … *"it be good if they are derived by std rules, editable later.
+> A click box it shows up with legend each colour band for each speed. And a list of the signs with the speed limit pasted, so clicking on the zoom to see"*
+**Measured:** the 2 speed-limit signs (17_Code "RP. 7", 16_Name "HADLAJU", GUIDs 23nBCvQ1o1nW000000088i / …0894) carry NO speed value;
+no property anywhere matches km/h|km/j. So the speed must be DERIVED by the standard's rules, never typed in as a fact.
+**Standard:** ATJ 8/86 (JKR geometric design), archived `http://epsmg.jkr.gov.my/images/c/c9/BPIS_ATJ_8-86_19062020.pdf` via Wayback (as
+§K-6.1) → save beside the ATJ 2A/2D copies + `.txt`. Extract its design-standard tables (road category × area × terrain → design standard
+class R1–R6 / U1–U6 → design speed, and that class's lane width / max gradient) into `std_values.json` section `geometric` by a committed
+extraction script (as the ATJ 2A one), page/table refs on every row; unreadable rows → `_unread`.
+**Derivation chain (each input labelled with its source):**
+- road category — from the model's own project title (`01_Project_Title` names federal routes FT240 / FT005) → the category the ATJ 8/86
+  table uses for that; the mapping is a row in std_values.json, editable.
+- terrain (flat / rolling / mountainous) — from our long section: measured gradient per stretch, classed by the ATJ 8/86 terrain definition.
+- area type and traffic volume (ADT) — NOT in the model → editable inputs in std_values.json, shipped default labelled `assumed`, shown
+  as "assumed" on the legend and HUD until the user sets them.
+→ design standard class + design speed per stretch. Speed zone boundaries = the speed-limit sign positions (chainage along the route)
+  plus class changes; the speed shown at each RP. 7 sign = the derived speed for the zone it opens.
+**UI (Road standards panel, new "Speed" section, civil-only):** a "Speed zones" toggle colours the road surface by zone (one colour per
+speed); a click-box legend lists each colour band → speed, chainage range, class, and "derived · assumed inputs: …"; a list of the signs
+(RP. 7 first, then every sign) with the derived speed pasted beside each; click → zoom + HUD (code, speed, how derived, ATJ 8/86 table/page).
+**Edit later:** all inputs and the table live in std_values.json → Settings JSON editor (browser override + Reset), as §SIGN_CHECK.
+**Witness:** every derived speed traces to an ATJ 8/86 row (table/page); terrain class per stretch == recomputed from the long-section
+samples; zone boundaries == RP. 7 sign chainages (independent projection); legend colours == the road colouring; click → camera on the
+sign; changing area type in Settings changes the derived speed per the table; Duplex VACUOUS; RED on origin/main.
