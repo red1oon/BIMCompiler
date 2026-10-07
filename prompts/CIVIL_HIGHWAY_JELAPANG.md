@@ -817,3 +817,22 @@ I −17.0 LUFS, longest gap 4.0 s).
   variance (64.7M → 87.4M) was BAKED into the seed by erp/tests/bake_gw_hospital_variance.js. No ERP code path (PO complete, receipt)
   updates C_Project/C_ProjectPhase CommittedAmt, and ERP edits don't reach the viewer's store → a PO + receipt will NOT move the
   viewer's variance today. OPEN gap (iDempiere oracle for project commitment: MProjectLine/MProject committed roll-up from PO lines — to cite).
+
+## §SIGN_CHECK — Road standards tab, item 1: sign codes vs ATJ 2A/85 (spec, 2026-10-07; user: "Go")
+**Why first:** the most free §K item with real findings — model data + a standard already downloaded, no purchase, no missing geometry.
+**Data (one JSON, shipped):** `viewer/std_values.json` (name from §K-6.1). Section `signs`: every sign code in ATJ 2A/85 (Pindaan 2019)
+`~/Downloads/JALAN JELAPANG IFC/standards/ATJ_2A-85_Pindaan2019_StandardTrafficSigns.pdf` (+ `.txt`) → `{ code, name, group, page/table }`,
+plus `_source {doc, url(wayback), status:'primary'}`. TRANSCRIBED from the PDF text only — never typed from memory; a code whose row cannot
+be read cleanly is left out and listed in a `_unread` note. Later sections (ATJ 2D markings, ATJ 8/86 lane widths) go in the same file.
+**Edit:** registered in the existing Settings JSON editor (`viewer/settings_editor.js`, shipped file + localStorage override, Reset).
+**Travels with the model (user: "Isn't JSONs part of the DB save?" — today NO: Save writes the model + `scene_state` only, scene.js:851):**
+on Save, a non-empty override for `std_values.json` is written into the model DB (table `json_overrides(file TEXT PRIMARY KEY, json TEXT,
+saved_at TEXT)`); on open, precedence = DB override > browser override > shipped file, logged `§STD_VALUES src=db|browser|shipped`.
+Generic for any Settings JSON — the sign check is only the first file to use it.
+**Check (engine, no per-model data):** read `element_psets` sign code (property seen in §K-6.1: `17_Code`, e.g. "WD. 39a") for SIGNAGE elements;
+normalise spacing/case only; verdict per element: OK (code in table) · UNKNOWN (not in table) · MISSING (no code). Live, on panel open.
+**UI:** civil-only "Road standards" overlay list grouped by verdict → code, like the clash list; click → zoom + HUD card (code, standard
+name, clause/page, model value). Same row shape as StructuralSanity/EgressSanity so rule_checklist/film can take it later.
+**Witness:** CivilWorksPath: counts per verdict = an independent SQL recount; every OK code exists in std_values.json; click a row → camera
+targets that GUID; Settings override removes one code → that code flips to UNKNOWN; Save → reload → override still active from `src=db`;
+Duplex (no SIGNAGE) → VACUOUS. RED on origin/main.
