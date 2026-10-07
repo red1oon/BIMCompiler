@@ -934,3 +934,20 @@ Extractor: `tools/extract_atj8_geometric.py` (`§ATJ8_EXTRACT`).
   2A, 2B, 2D, 5, 8 are). Model side is ready: 62 elements `06_No_Route=ROUNDABOUT` (EXISTING LANE -ROUNDABOUT), 3 "ROUNDABOUT AHEAD"
   signs. Options: user supplies an ATJ 11/87 copy → extract its roundabout speed table; or meanwhile a roundabout zone with the speed set by
   the manual lever (labelled "manual (user) — ATJ 11/87 not in hand"). Never a typed "standard" value.
+
+## §ROUNDABOUT_ZONE — demo rule, conservative, editable (spec, 2026-10-07; user: "ANy world std?" … "and the median distance from roundabout
+## to apply? Put a conservative safe rule just to demo such feature as it is editable.")
+- **Roundabout zone** = chainage range of the elements `06_No_Route = ROUNDABOUT` (62 pieces, EXISTING LANE -ROUNDABOUT) projected on the
+  route (min..max s). Speed = **NCHRP Report 672** (TRB/FHWA "Roundabouts: An Informational Guide", 2nd ed.) recommended maximum entry
+  design speed — single-lane 20–25 mph (32–40 km/h), multilane 25–30 mph (40–48 km/h). **Conservative demo = the LOWER bound** of the
+  range for the lane type. Lane type NOT in the model → editable input, default `single` labelled assumed. Label everywhere:
+  "NCHRP 672 (US) — international reference, not JKR; ATJ 11/87 not in hand".
+- **Approach zone** (the slow-down distance before AND after the roundabout, on each side) = **ATJ 8/86 Table 4.1 stopping sight distance at
+  the adjoining link's design speed** (100 km/h → 185 m, 80 → 130 m, …; extracted rows with page). Speed in the approach zone = the
+  roundabout speed (conservative: already slow when the driver could first need to stop). Label "demo rule (editable)".
+- All of it in `std_values.json` → `geometric.roundabout { source, lane_type, speed_pick: 'lower'|'upper', approach: 'ssd_table_4_1' |
+  {fixed_m} }`, editable in Settings; the existing speed lever (derived/class/manual) still overrides per zone.
+- Log the 3 "ROUNDABOUT AHEAD" sign chainages beside the derived approach start (comparison only, not a boundary).
+- Witness: roundabout zone s-range == independent projection of the 62 elements; approach length == Table 4.1 row for the link speed
+  (cell present in the ATJ .txt); zone speed == NCHRP lower bound for the lane type; lane_type multilane → 40; approach fixed_m override
+  works; colours/discs/legend/sign list include the new zones; Duplex VACUOUS; RED on origin/main.
