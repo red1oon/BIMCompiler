@@ -869,3 +869,8 @@ model-checker feature (Solibri; its IFC 4.3 road support is "initial"); FOSS Ifc
 - Cut/fill: our only volume today is `A.earthworksVolume()` (viewer/earthworks_volume.js, bounded mesh volume, §EW_VOLUME_SURFACE) —
   design surface vs existing terrain is new.
 - Next step: a competitive read (what Civil 3D / OpenRoads / InfraWorks / FOSS do for "sketch road on terrain + cut/fill") → spec.
+- **ANSWERED (user 2026-10-07):** *"Yes that points cloud, it does appear in Bonsai with its source image perfectly aligned. That can be
+  sample reference. User may use that same tool (later we bring over to our PWA) to convert and import here."* → reference terrain =
+  the Bonsai PDF-terrain point cloud (`pdf_terrain/samples/survey_highres_extracted.json` + `survey_highres_GV.json`, source image
+  `~/bim-ootb/internal/PDF_Terrain/survey_highres.png`). Path today: user converts in Bonsai → exports → imports here; later the converter
+  itself comes to the PWA (`prompts/TERRAIN_MIGRATION.md` is that port spec). Terrain also serves buildings later. bSI TIN samples = not the reference.
