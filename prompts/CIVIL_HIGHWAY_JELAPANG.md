@@ -1104,3 +1104,10 @@ Claim wording allowed: "a combination our search did not find elsewhere (8 Oct 2
 **§LABEL_CLEAN:** legend/sign rows are one line + tag (derived · demo · NCHRP 672 · user, from `geometric.zone_tags` + per-node `tag`/`approach_tag`); full label/assumed list in tooltip + HUD card. HUD card (zone/sign click, legend click) = bold title "N km/h · Zone Zx", key/value rows, collapsed "Why / sources"; upper Road standards panel (titles, counts line, Mode/Zones rows, collapsed Why with assumed inputs + messages, sign-check card the same).
 **Witness:** `viewer/tests/witness_speed_zones.js` 41 → 54 checks; `witness_sign_check.js` 12 → 13 (rule codes exist in the 2A table + occur in the model). GPU=real (nvidia-smi 1.4/8.2 GB). Logs: `/tmp/witness_sign_vs_speed_final.log` → `§WITNESS_SPEED_ZONES pass=54 fail=0 ran=1`; `/tmp/witness_sign_check_final.log` → `§WITNESS_SIGN_CHECK pass=13 fail=0 ran=1`; origin/main `/tmp/witness_sign_vs_speed_main.log` → `verdict=RED reason=§SIGN_VS_SPEED/… feature absent` ; Duplex VACUOUS. Earlier runs (`…_run1/2/3.log`) caught witness faults (TOC-first indexOf, clamp text case, missing sign-row zone field).
 **OPEN (user 2026-10-08, "fix that later"):** the Road standards panel has no close / toggle-off from the Inspect menu (row "Road standards · j" opens it only).
+**Chapter "Speed Zones" (2026-10-08, user's recording `~/Videos/simplescreenrecorder-2026-10-08_05.57.49.mp4`, 54.5 s, with its own
+background audio) — awaits review, NOT spliced.** Cut src 5.7–51.8 (Esc banner + fullscreen exit dropped), chapter card (backdrop = RP. 7
+disc at src 31) 1.0 s + 0.5 s fade → `~/Videos/CivilWorks_ch_speed_zones_BEFORE.mp4` (47.1 s / 1224 frames, clip audio kept). Narration
+`prompts/film_narration_civilworks_ch_speed_zones.tsv` (5/5 DETAIL, 0 WRONG; numbers from §SPEED_ZONES / §SPEED_SIGN_DISC / MISSING SPEED SIGN 6).
+Final `~/Downloads/CivilWorks_ch_speed_zones_narrated_AFTER.mp4` (56.7 s / 1474 frames): narration + the clip's own audio kept as an SFX bed
+(×1.6, under the voice), I −16.1 LUFS, no silent gap ≥ 2 s; then the black prior-art card (8 s hold + 1.5 s fade) with the air-horn + trucks
+mix (−13.5 LUFS).
