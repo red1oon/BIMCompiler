@@ -846,3 +846,10 @@ Duplex (no SIGNAGE) → VACUOUS. RED on origin/main.
 - Logs: /tmp/witness_sign_check.log (green), /tmp/witness_sign_check_main.log (RED on main). §-lines: `§SIGN_CHECK`, `§SIGN_CHECK_PANEL`, `§SIGN_CHECK_CLICK`.
 - **DB save of overrides → deferred (later task)** (user scope cut: no json_overrides table, scene.js save untouched). Settings override today = browser localStorage `json_std_values` + Reset, registered in the Settings JSON hub.
 - Not run to completion: `witness_viewer_i18n.js` timed out (200 s) identically on main and on the branch — inconclusive; the new csv rows (`pill_roadstd`, `pillc_roadstd_1..3`, ids 1000863-66) and `ui_tt_roadstd` (en_* packs) follow the existing key shapes.
+**Chapter "Road Signs" (2026-10-07, user's recording `~/Videos/simplescreenrecorder-2026-10-07_17.20.38.mp4`, 59 s) — awaits review, NOT spliced.**
+Cut src 5.8–54.9 (drops the fullscreen Esc banner + fullscreen exit/recorder menu), 26 fps; chapter card (chapter style, backdrop = blurred
+red-sign close-up at src 24.5) 1.0 s + 0.5 s fade. `~/Videos/CivilWorks_ch_road_signs_BEFORE.mp4` 50.1 s / 1303 frames →
+`~/Downloads/CivilWorks_ch_road_signs_narrated_AFTER.mp4`; script `prompts/film_narration_civilworks_ch_road_signs.tsv` (5/5 DETAIL, 0 WRONG,
+frames = source, I −16.9 LUFS, longest gap 5.3 s). Claim line "a feature you'd usually pay for" = sourced wording: rule checking is a paid
+model-checker feature (Solibri; its IFC 4.3 road support is "initial"); FOSS IfcTester/IDS can check a property list if one is written →
+"usually", never "not in FOSS". Narration names where to click (Inspect menu top right → signpost under Measure, or J).
