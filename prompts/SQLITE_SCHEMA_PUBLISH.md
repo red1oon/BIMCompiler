@@ -134,3 +134,16 @@ Supersedes §7's Phase A step 2 (no version stamp on live files either — nothi
 3. ⛔ Phase A step 2 — version stamp on live files: WITHDRAWN by §8 (no live DB changes).
 4. ⛔ 0-byte `Duplex_meta.db`, `SampleCastle_extracted.db`, `city_index.db`, `city_index_v2.db` in ~/bim-ootb/buildings: find real source or delete (user call).
 5. ⛔ Phase B (D1, D2, D3) — not started; each needs its own impact read and user go-ahead.
+
+## §9 USER DECISION — plan the DB move; unify three.js on r186 (2026-10-07)
+User, 2026-10-07: *"We shall plan for the DB move as advised. And upgrade rest to same r186."*
+- **DB move (plan, not started):** order = (1) both writers emit v1 — bim-compiler `tools/extract.py` and bim-ootb
+  browser import (`viewer/import_worker.js` / `import_db_builder.js`); (2) viewer reads v1 AND v0 (readers ignore unknown,
+  `ifc_guid` optional) so nothing breaks mid-move; (3) shipped files migrated with `schema/migrate_v0_to_v1.py` on copies,
+  re-witnessed, redistributed via OCI; (4) v0 read path retired only when no served file is v0.
+- **three.js r186 everywhere** — files still referencing older builds on bim-ootb `origin/main` (git grep 2026-10-07):
+  `index.html`, `viewer/loader.js`, `viewer/mesh_import_worker.js`, `viewer/sw.js`, `test/test_import_format_to_db.html`,
+  `test/test_mesh_import.html` (refs to r128 / 0.160 / 0.184). Separate lane from the schema; witness = no page loads a
+  second THREE build (count distinct `THREE.REVISION` at runtime = 1).
+- User note: IFC set load → merge → save to one DB → reopen already works (a SQLite round trip, not IFC export);
+  BCF export proof exists (`modeller/tests/witness_e2e_bcf.js`).
