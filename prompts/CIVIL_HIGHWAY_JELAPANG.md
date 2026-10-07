@@ -836,3 +836,4 @@ name, clause/page, model value). Same row shape as StructuralSanity/EgressSanity
 **Witness:** CivilWorksPath: counts per verdict = an independent SQL recount; every OK code exists in std_values.json; click a row → camera
 targets that GUID; Settings override removes one code → that code flips to UNKNOWN; Save → reload → override still active from `src=db`;
 Duplex (no SIGNAGE) → VACUOUS. RED on origin/main.
+**§SIGN_CHECK scope cut (2026-10-07, user: "Drop the must save JSON to DB for later task"):** json_overrides DB save deferred → later task. Edits stay browser-only (Settings override) for now. Menu: "Road standards · j", signpost icon, line under Measure, civil-only.
