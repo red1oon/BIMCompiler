@@ -982,3 +982,79 @@ signal guides do not reduce design speed) → **demo rule, conservative, editabl
 **Witness** (`viewer/tests/witness_speed_zones.js`, 31 → 41 checks, GPU=real nvidia-smi 1.3/8.2 GB): `/tmp/witness_signal_final.log` → `§WITNESS_SPEED_ZONES pass=41 fail=0 ran=1` (summary now mirrored INTO the LOG). origin/main control `/tmp/witness_signal_main.log` → `verdict=RED reason=§SIGNAL_JUNCTION_ZONE/§ROUNDABOUT_ZONE feature absent`. Duplex VACUOUS. Earlier runs caught real defects: run1 detection key wrong (0 elements → NONE message, RED); run2/3 witness faults fixed (zone id on-route, `demo default` label text, 0.5 m boundary tolerance, `offRoute` undefined). New checks: SJ s-range == independent projection; speed == JSON + label; approach == Table 4.1 row + PDF cell; levers (70, fixed 120, off, value-not-found message); AHEAD signs count; legend/node_kinds; disc normal ∥ thinnest axis (≥0.99) + centre within 0.05 m of the face + diameter; one disc per zone start (independent set); borrowed ring pixel vs real; MISSING rows == independent count + click.
 
 **§DISC_ON_FACE + §PROFILE_AFTER_LOAD ✅ #1944 LIVE 2026-10-08 (v1619).** Browser probe of v1618: long section sampled before EARTHWORK streamed → 5/5 terrain windows unmeasured → 80 km/h zone lost (7 zones); discs from world bbox sat 0.2–0.7 m above every board, 23–32° off angled faces. Now: profile waits for streaming stop + 2 s stable count; discs from the board's triangles (face normal, board bands ≥60% max width, 90% of min(w,h), 6 mm off face). Probe after: 9 zones, 8 discs, normal·face 1.000, inside board height. Witness 42/42 (disc check now independent mesh face; old one encoded the bbox bug); main fails it. Both faces carry the disc — user: "OK leave it, for demo only" (traffic-facing side only = not done).
+
+## §MEM_GROWTH — four memory pieces: point merge + paged DB + evict + chainage tiles (spec 2026-10-08, for review by the handling session)
+> User, 2026-10-08: *"perhaps we can use paging to break down larger models?"* … *"Why didn't you name the points
+> reduction as the Missing 4?"* … *"Spec'd all 4 in so the session handling can review it."*
+Expands §J and `docs/BrowserScaleBenchmark.md` §SCALE (read both first). Spec only — nothing built. NON-IMPACT RULE
+above applies to M2/M3 (civil-gated); M4 is general and must prove zero look change on buildings before it touches them.
+
+**Facts this rests on (read, not assumed — bim-ootb `origin/main` 2026-10-08):**
+- §MESH_SLIM removed NO points: it drops stored normals (`viewer/import_db_builder.js:100`, `viewer/scene.js:908`) and
+  derives them on load (`viewer/streaming.js:2563`). DB 661 → 396 MB; heap unchanged in kind — still ~22 M verts, 3.4–3.8 GB.
+- Lamp poles: 227 poles = 7.6 M of 22 M verts, dup ratio 4.8, flat-shaded facet soup (§SCALE).
+- DLOD frees nothing: `dlod_nav.js:510 _hideReal` only sets `visible=false` / zero matrix / `setVisibleAt(false)`;
+  `_disposeBoxes` (`:471`) frees only the box materials. Room occlusion is interior-only (`dlod_nav.js:12`), occl-BVH
+  default off (`:24`) — neither helps an open road and neither frees memory.
+- Range streaming exists for URL DBs: `streaming.js:2498` §S260 (`A._useRangeStream`, `A._rangeDb`). Local/IDB DBs open
+  whole: `new SQL.Database(bytes)` (`scene.js:1215`, `:1338-1340`). URL loads > 400 MB skip IDB (`scene.js:1788`).
+- In-viewer welding is BANNED by an existing owner: `streaming.js` §MEP_SMOOTH_NORMALS — merged meshes address
+  elements by `idxStart/idxCount`; picking, per-element hide, BVH, §TRIPLANAR all read that layout; re-indexing breaks all four.
+- `city.js:165-167` already disposes owned buffers (BatchedMesh/InstancedMesh/merged) — the one existing dispose pattern to copy.
+
+**Stall impact on driving end to end (answers the user's question):**
+| piece | adds a load wait while moving? |
+|---|---|
+| M4 point merge | **No** — whole model still loads once; just less of it. |
+| M1 paged DB | **No** for geometry already loaded; only SQL reads become small disk page reads (OPFS, local). |
+| M2 evict | **Yes, possible** — returning to an evicted area re-fetches. Mitigated by M3 prefetch. |
+| M3 tiles | **Yes, possible** — on a jump; seamless at drive speed only if tile load < time to reach it. Must be MEASURED (W-M3). |
+
+### M4 — point merge (weld duplicate corners) at DATA level — do FIRST (smallest, no stall, general)
+- **Where:** per `component_geometries` row (one geometry = one `vertices` + `faces` blob, `streaming.js:1478`), at
+  import (`import_db_builder.js` beside `§MESH_SLIM_IMPORT`) and save (`scene.js` beside `§MESH_SLIM_SAVE`). Each row is
+  welded on its own BEFORE any merge, so ranges/picking/BVH are built from the welded data — the §MEP_SMOOTH ban is not crossed.
+- **Phase A — look-neutral weld:** merge vertices only when position AND face normal agree (ε to be measured, start 1e-5 m /
+  cos ≥ 0.9999). Flat facets stay flat by construction. ⚠ FIRST read how `streaming.js:2563` derives civil normals: if it
+  calls `computeVertexNormals()` on indexed geometry, a shared vertex will SMOOTH — then Phase A must keep crease-split
+  vertices split, or derivation must stay per-face. State which, with file:line, before coding.
+- **Phase B — smooth weld for round shapes (poles):** facets of a round pole have different normals, so Phase A saves little
+  there. Merging them = smooth look = **needs the user's look ruling** (§SCALE item 5). Reuse §MEP_SMOOTH's measured gate
+  (`CURVE_MIN_DISTINCT=16`, `CREASE_DEG=55`) — do not invent a new one. ⛔ BLOCKED on ruling; Phase A ships without it.
+- **Buildings:** first a read-only probe over the fleet DBs (no render, no GPU): per class, verts before/after Phase A.
+  Apply to buildings only if the probe shows a saving AND the W-M4 look check holds; otherwise civil-only.
+- **W-M4 (issue: points stored 4.8× over, costing heap and load time):** `§VERT_WELD rows= vertsBefore= vertsAfter=
+  dbBytesBefore= dbBytesAfter=` + on reload `§VERT_WELD_LOAD heapMB= loadMs=` vs the same run unwelded. Look-neutral proof =
+  per-triangle derived normal identical before/after (max angle Δ logged), NOT a screenshot. 0 rows welded → `INCONCLUSIVE`.
+
+### M1 — paged local DB (OPFS VFS) — large saved/imported models stop living whole in the WASM heap
+- **Gap:** local/IDB DBs open as one `Uint8Array` in sql.js (`scene.js:1215`); 32-bit WASM caps at 4 GB; >400 MB never cached.
+- **Design:** store the DB as a file in OPFS and open it through a paged SQLite VFS (official SQLite-WASM OPFS VFS; sql.js
+  has none — choice of library is the first decision, record it). Same query API to callers (`A.dbQuery`).
+- **Removes:** the 400 MB cache skip (`scene.js:1788`) → a reload of a big model reads from disk instead of re-downloading.
+- **W-M1 (issue: whole DB held in heap):** `§OPFS_VFS open bytes= heapMBAfterOpen=` — heap after open must be ≪ DB size;
+  `§OPFS_VFS reload source=opfs downloadBytes=0`. Browser without OPFS → logs `§OPFS_VFS unsupported fallback=whole`.
+
+### M2 — evict-behind (DLOD that frees memory)
+- **Gap:** `_hideReal` hides, never frees. Elements inside a merged/batched mesh cannot be freed one by one (shared
+  buffers, `idxStart/idxCount` layout) — so the **evict unit is a whole owned mesh**, which is why M2 lands WITH M3
+  (a tile builds its own meshes; evicting the tile disposes them the `city.js:165-167` way).
+- **Rule:** far tile → box proxy (existing DLOD boxes) + dispose its real meshes; near again → re-stream that tile's rows
+  (range read or OPFS) through the existing streaming path. Hysteresis distance > DLOD promote/demote, so a camera at a
+  boundary does not thrash.
+- **W-M2 (issue: geometry never released):** drive out and back; `§DLOD_EVICT tile= vertsFreed= heapMB=` then
+  `§DLOD_REFETCH tile= ms=`; heap after leaving must fall back within a stated tolerance of the start. No eviction in the
+  run → `INCONCLUSIVE`.
+
+### M3 — chainage tiles (§J, made concrete)
+- **Split:** by chainage along the existing route owner (`A.civilRoutePath()` / `civilRouteAt`, §I.2 notes it is undefined
+  on mobile — fix that dependency first). Tile ~1 km (to be measured, not assumed); metadata stays whole; geometry per tile.
+- **Load:** coarse-first (`§BBOX_EARLY`/`§PROGRESSIVE_FLUSH`), prefetch the next tile(s) in the direction of travel.
+- **W-M3 (issue: does driving end to end stall?):** scripted drive centreline start → end at a stated km/h, plus one jump
+  start → end. Log `§TILE_STREAM drive maxStallMs= p95FrameMs= peakHeapMB= tilesLoaded= tilesEvicted=` and
+  `§TILE_STREAM jump waitMs=`. Pass bar is a number the user rules on; until ruled the verdict prints the numbers only.
+  Test data: JELAPANG tiled into ~1 km (no longer real set on hand).
+
+**Build order:** M4-A → (fleet probe) → M1 → M2+M3 together. M4-B waits on the look ruling. Each item: spec check →
+implement in a `/tmp/wt-*` worktree off `origin/main` → witness `§`-log read → `✅ DONE (witness)` here.
+**Perf budget (CLAUDE.md):** every pass logs verts added/removed and heap at the end.
