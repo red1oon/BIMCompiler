@@ -1985,3 +1985,5 @@ Planned/CommittedAmt. Shipped writers of CommittedAmt: ONLY `viewer/vo_approve.j
 port, so a Committed typed on a line does not roll up; (2) ERP edits never reach the viewer's push store (`bim_project_orders.db`),
 so even a rolled-up commitment would not show in the viewer. Fix order: port the roll-up verbatim (generic, AD-LAYER LAW), then make
 the viewer read the ERP's committed values (or the overlay write back). Not started.
+
+**§BIM-CRUD stale-tab half ✅ (witness) — bim-ootb #1938 MERGED + LIVE 2026-10-07 (viewer v1613).** `ProjOrderState.storeStamp()` (lastModified:size | 'gone'); find_erp_push / diff VO / whatif reuse their cached store only while the stamp is unchanged, else reload (`§PUSH_STORE_RELOAD`); What-if refuses a stale Accept (`§PUSH_STORE_STALE`). schedule_author_ui already re-read each write. Witness witness_store_stamp.js (real OPFS): fix PASS (gone → 100 B → 140 B new stamp → gone), main FAIL. Still open: ERP UI delete write-through.
