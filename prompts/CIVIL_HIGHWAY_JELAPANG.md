@@ -899,3 +899,27 @@ speed); a click-box legend lists each colour band → speed, chainage range, cla
 **Witness:** every derived speed traces to an ATJ 8/86 row (table/page); terrain class per stretch == recomputed from the long-section
 samples; zone boundaries == RP. 7 sign chainages (independent projection); legend colours == the road colouring; click → camera on the
 sign; changing area type in Settings changes the derived speed per the table; Duplex VACUOUS; RED on origin/main.
+
+### §SPEED_ZONES LEVER (user addition, 2026-10-07: "The JSON can have speed std setting lever")
+`std_values.json geometric.speed_setting = { mode: "derived"|"class"|"manual", class, design_speed_kmh, per_zone:{} }`. derived (default) = the ATJ 8/86 chain;
+class = user picks R1–R6/U1–U6, speed/width/gradient from that row; manual = user types a speed (global or per zone id Z1..), width/gradient looked up only when
+the speed identifies exactly one class at that terrain, else "manual (user), no table row". Legend, sign list and HUD print the mode ("derived" / "class R6 (user)" /
+"manual (user)"). Edited through the Settings JSON editor like the rest.
+
+### §SPEED_ZONES RESULT — ✅ DONE (witness), 2026-10-07 — bim-ootb PR #1939 (feat/speed-zones, auto-squash set, sw v1614)
+**Phase 1 gate PASSED.** ATJ 8/86 (Pindaan 2015, 129 pp, text-readable) saved to `~/Downloads/JALAN JELAPANG IFC/standards/ATJ_8-86.pdf` + `.txt` (Wayback `id_`).
+Printed page = pdf page − 7. Tables used: 2.1 p.6 (NETWORK column), **2.4 p.12** (category × ADT → class), terrain definition p.15, **3.2A/3.2B p.25** (design speed),
+**4.10A–F pp.58–60** (max grade), **5.2 p.78** (lane width). One unreadable cell → `_unread`: 4.10B Mountainous @70 km/h (prints a lone "1").
+**Caveats the document forces (not guessed):** (1) ATJ defines terrain by natural-ground CROSS-slope (<3 flat, 3–25 rolling, >25 mountainous); the model has no natural
+ground, so terrain = those thresholds applied to the MEDIAN |gradient| of the long-section `.ground` samples per 500 m window (window / min samples / fallback terrain are
+`assumed` inputs); windows with <30 ground samples are marked "terrain ASSUMED FLAT" with a visible message (2 of 5 on JELAPANG). (2) ATJ has no federal-route→category
+rule: title `(FT240)/(FT005)` → "Highway" is an editable mapping row labelled assumed (Table 2.1: federal = National network). (3) area (RURAL) and ADT are assumed inputs;
+Highway needs no ADT (Table 2.4 "All traffic volume").
+**Derived on CivilWorksPath (mode derived, 2110.3 m route):** class **R5** (Table 2.4 p.12), lane 3.50 m (Table 5.2 p.78). Speed signs = the 2 `RP. 7` at s=323.3 and 1699.3 m.
+Z1 0–323 FLAT 100 km/h · Z2 323–500 FLAT 100 · Z3 500–1500 ROLLING (median 4.99%) **80** · Z4 1500–1699 FLAT(assumed) 100 · Z5 1699–2110 FLAT(assumed) 100;
+speeds Table 3.2A p.25, max grade Table 4.10D p.59 (3% flat / 5% rolling). Note: the sign list covers all 138 SIGNAGE rows (RP. 7 first); the 2 `RP. 9b(i)` reminders are not boundaries.
+**Witness** `viewer/tests/witness_speed_zones.js`, logs `/tmp/witness_speed_zones.log` (GREEN 18/18), `/tmp/witness_speed_zones_main.log` (origin/main → INCONCLUSIVE, feature absent):
+speeds == ATJ .txt rows; terrain == node recompute; zone boundaries == independent brute-force projection of the RP. 7 centres; legend swatch == colour read back from every
+painted ROAD slot (4008 elements), toggle off restores all; click → camera dist 5.7e-14 m + card cites ATJ table/page; lever class R6 / manual 70 / per-zone / no-table-row /
+unset / URBAN area-type I (80) vs III (50); no-category row → NO_CATEGORY message; Duplex VACUOUS. §-lines: `§SPEED_ZONES`, `§SPEED_ZONE`, `§SPEED_ZONES_PAINT`, `§SPEED_ZONES_CLICK`, `§SPEED_ZONES_PANEL`.
+Extractor: `tools/extract_atj8_geometric.py` (`§ATJ8_EXTRACT`).
