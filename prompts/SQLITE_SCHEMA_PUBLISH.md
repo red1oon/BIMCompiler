@@ -110,9 +110,27 @@ counts are FILES that mention the name — an upper bound, tests and docs includ
 dependency read, witnesses re-run, and a `user_version` bump. Phase A stays valid throughout: a variant is retired
 from the doc only when no shipped file uses it.
 
+## §8 DECISION — separate target schema, zero impact on live DBs (2026-10-07)
+User, 2026-10-07: *"Avoid impact to the db schema, can you publish a separate one that we can later migrate to?"*
+Supersedes §7's Phase A step 2 (no version stamp on live files either — nothing in any shipped DB changes).
+
+- Publish **`ootb-building` v1** as a standalone TARGET in bim-ootb `schema/` (public repo, not loaded by any app):
+  `schema/README.md` (the spec), `schema/ootb-building-v1.sql` (DDL), `schema/migrate_v0_to_v1.sql`
+  (copy-in migration from today's files, run on a COPY, never in place).
+- v1 takes the §4 recommendations (D1 `component_geometries`, D2 `guid` key, D3 CPM `tasks`, D4 app-state
+  excluded) and resolves D5 without moving rows: a new nullable `ifc_guid` column = bare 22-char GlobalId,
+  NULL for non-IFC rows; `guid` stays the unique key (may carry a federation prefix).
+- Witness (W-SCHEMA-V1-MIGRATE): migrate COPIES of real files and assert, per file, element/geometry/transform
+  row counts equal before and after, `ifc_guid` length 22 or NULL, `user_version`=1. Prints `§SCHEMA_MIGRATE`
+  lines; INCONCLUSIVE for 0-byte/unreadable sources.
+
 ## §6 Work list
-1. ☐ Phase A step 1 — write `bim-ootb/docs/DB_SCHEMA.md` (descriptive v0). Needs only D6 (recommended: yes).
+0. ✅ DONE (W-SCHEMA-V1-MIGRATE) §8 — `schema/` v1 target published, bim-ootb PR #1934 (auto-merge on). Run on copies of
+   27 files: 22 + 5 pairs PASS, 0 rows lost; 4 zero-byte INCONCLUSIVE (`city_index`, `city_index_v2`, `Duplex_meta`,
+   `SampleCastle_extracted`); source md5 unchanged. First run FAILED on a real DDL type error (schedules INTEGER cols
+   declared TEXT) — fixed. Log: session scratchpad `migtest/mig.log`.
+1. ✅ DONE — v0→v1 difference table is `schema/README.md` §4.
 2. ☐ Phase A step 3 — `scripts/schema_check.py` per §5; run on all files; read the log.
-3. ☐ Phase A step 2 — version stamp via `.sql` patch + self-heal loader; `tools/extract.py` + browser import stamp new files.
-4. ☐ 0-byte `Duplex_meta.db`, `SampleCastle_extracted.db`: find real source or delete (⛔ user call).
+3. ⛔ Phase A step 2 — version stamp on live files: WITHDRAWN by §8 (no live DB changes).
+4. ⛔ 0-byte `Duplex_meta.db`, `SampleCastle_extracted.db`, `city_index.db`, `city_index_v2.db` in ~/bim-ootb/buildings: find real source or delete (user call).
 5. ⛔ Phase B (D1, D2, D3) — not started; each needs its own impact read and user go-ahead.
