@@ -1078,3 +1078,13 @@ dropped (PRIME RULE: every value traceable) — it is one click away instead of 
 **Witness:** each extracted rule row traces to its .txt line/page; advance-distance verdicts == independent chainage recompute; size verdicts
 == independent face-size recompute vs table; list contains only rule-applicable signs; legend rows ≤ 1 line + tag, HUD carries the full
 provenance; Duplex VACUOUS; RED on origin/main.
+
+## §PRIOR_ART_ROAD_STANDARDS — passing web search (2026-10-08, 4 searches; user: "run that prior art search … black card at the end of the film, no voice")
+Found SEPARATELY (each covers a part): Autosign (CGS Labs, https://cgs-labs.com/autosign/) — sign/marking DESIGN with national sign
+libraries, IFC export (places signs; does not check an existing model) · FHWA IHSDM (https://www.fhwa.dot.gov/publications/research/safety/17098/17098.pdf)
+— design-consistency vs speed, desktop, US · IfcOpenShell IfcTester / IDS (FOSS) — property checks if someone writes the spec; no road-sign
+spec ships · Solibri — paid rule checking, IFC 4.3 support "initial" · research: ontology BIM compliance (ScienceDirect S0926580524003923),
+TUM thesis IfcOpenShell road traffic safety (mediatum 1689801) · Malaysia: JKR-referenced BIM libraries (UiTM 28752), no automated ATJ
+road-standards checker found.
+NOT FOUND TOGETHER: JKR ATJ 2A/2B/8 rules extracted with page refs + checked on an existing IFC road + in the browser, editable, no install.
+Claim wording allowed: "a combination our search did not find elsewhere (8 Oct 2026, passing search)" — never "the only one" / "first".
