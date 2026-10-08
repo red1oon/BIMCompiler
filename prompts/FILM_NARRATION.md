@@ -1765,3 +1765,13 @@ User's own screen recording (`~/Videos/simplescreenrecorder-2026-10-08_11.08.02.
 cards (11.5 s, backdrops = the user's 3 screenshots 11-06-57 / 11-07-16 / 11-07-40) + 12 s black end card (user's text, paraphrased).
 Script `prompts/film_narration_chainage_dialogue.tsv` (every number → §CHAINAGE_* line in its source column). Kokoro EN F/M:
 12/12 DETAIL, 0 tone WRONG; 125.5 s; I = −16.9 LUFS; no silence ≥ 4 s at −40 dB. Road Report (R, #1950) = separate Dashboard clip (user).
+
+### §ROAD_REPORT_CLIP (2026-10-08) — "The Road Report" — `~/Videos/Civil_Works_Road_Report_narrated_AFTER.mp4` (125.5 s)
+User recording `~/Videos/simplescreenrecorder-2026-10-08_11.47.16.mp4` (2.5–66 s) + cover + 3 cards (why it matters / what it
+measures / today on Civil Works; backdrops = user screenshots 11-46-52, 11-47-08) + narrated end card + 9.5 s silent black closing card
+with the air-horn/trucks bed (`CivilWorks_endcard_traffic_AIRHORN_TRUCKS_PREVIEW.wav`, CC0 sound design) and the prior-art line in the
+§PRIOR_ART_ROAD_STANDARDS allowed wording. Every number read off the clip's own PDF frame (user's live run: CRITICAL 4 · WARNING 25 ·
+HEALTHY 5 · INFO 1 · NOT CHECKED 5). Script `prompts/film_narration_road_report_dialogue.tsv`; 13/13 DETAIL, 0 tone WRONG; I = −16.5 LUFS,
+closing card −13.5 LUFS; no silence ≥ 4 s. No "JELAPANG" anywhere (cards, subs, script grepped).
+Seen in the PDF frame, to fix in the report: "grade up to 3.0% exceeds max 3%" (3.01 rounds to the limit — show 2 decimals near a limit);
+the no-code sign line lists "CH 0+090, 0+090, 0+090, 0+090" (dedupe chainages).
