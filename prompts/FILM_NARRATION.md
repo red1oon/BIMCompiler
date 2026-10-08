@@ -1759,3 +1759,9 @@ assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witnes
   Task Line outline → red pill → viewer (`§PROJ_PUSH plannedAmt=110400` = 138 × RM 800, bim-ootb #1921; `§FOCUS_ELEM guids=138 lit=138`).
   Waits cut (push 174 s, ERP load 172 s). ⚠ The viewer's Find bar shows "$ 110,400" (`§FIND_COST cur=$ pack=hardcoded`) while the
   rate is RM — narration says ringgit; the currency label is a viewer locale gap, not fixed.
+
+### §CHAINAGE_CLIP (2026-10-08) — "Chainage, read from the model itself" — `~/Videos/Chainage_from_model_letters_narrated_AFTER.mp4`
+User's own screen recording (`~/Videos/simplescreenrecorder-2026-10-08_11.08.02.mp4`, 0–71 s; desktop tail cut) + 8 s cover + 3 chapter
+cards (11.5 s, backdrops = the user's 3 screenshots 11-06-57 / 11-07-16 / 11-07-40) + 12 s black end card (user's text, paraphrased).
+Script `prompts/film_narration_chainage_dialogue.tsv` (every number → §CHAINAGE_* line in its source column). Kokoro EN F/M:
+12/12 DETAIL, 0 tone WRONG; 125.5 s; I = −16.9 LUFS; no silence ≥ 4 s at −40 dB. Road Report (R, #1950) = separate Dashboard clip (user).
