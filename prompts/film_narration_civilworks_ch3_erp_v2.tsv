@@ -1,0 +1,6 @@
+chap3	0.30	3.00	chapter card 3	M: Chapter three.	M: Chapter three. ERP, the eighth dimension.
+find	3.00	15.97	§FIND_COST elements=138 cost=110400 · pointer: SIGNAGE row → › ERP → open ↗ · §PROJ_PUSH lines=+1	F: To the ERP? | M: Pick signage, push.	F: How does it reach the ERP? | M: Pick signage in Find: one hundred thirty-eight signs, priced. Push, then open.
+login	15.97	21.93	ERP sign-in "Offline demo · identity & context selection" · §SIGN alg=ECDSA-P256 custody=idb-nonextractable	M: Offline sign-in.	M: Offline sign-in: no server, local-first. Every change is signed on your device.
+lines	21.93	35.93	Task Line rows=1: 138 ea SIGNAGE · rates.js SIGNAGE 800 (Selangor tender 2023)	F: And in the ERP? | M: One line.	F: And in the ERP? | M: One project line under its task: one hundred thirty-eight signs, at eight hundred ringgit each, from a published state tender.
+pill	35.93	41.40	#pill-zoomacross (rail red pill)	M: The red pill.	M: Open the rail, and press the red pill.
+back	41.40	49.37	§ZOOM-SCOPE route=find n=138 lit=138 · Find bar "Zoom Across · 138 items" · X-Ray ON	M: Back in the model.	M: Back in the model: the same signs lit, with Find open.
