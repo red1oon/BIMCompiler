@@ -450,9 +450,11 @@ above applies to M2/M3 (civil-gated); M4 is general and must prove zero look cha
   import (`import_db_builder.js` beside `§MESH_SLIM_IMPORT`) and save (`scene.js` beside `§MESH_SLIM_SAVE`). Each row is
   welded on its own BEFORE any merge, so ranges/picking/BVH are built from the welded data — the §MEP_SMOOTH ban is not crossed.
 - **Phase A — look-neutral weld:** merge vertices only when position AND face normal agree (ε to be measured, start 1e-5 m /
-  cos ≥ 0.9999). Flat facets stay flat by construction. ⚠ FIRST read how `streaming.js:2563` derives civil normals: if it
-  calls `computeVertexNormals()` on indexed geometry, a shared vertex will SMOOTH — then Phase A must keep crease-split
-  vertices split, or derivation must stay per-face. State which, with file:line, before coding.
+  cos ≥ 0.9999). ✅ ANSWERED 2026-10-08: civil loads skip stored normals (`streaming.js:2565` `_useN=false`) and
+  `A.blobToGeometry` (`scene.js:2201`) sets the index (`:2228`) then calls `geo.computeVertexNormals()` (`:2252`) — so a
+  shared vertex DOES average its faces' normals. Phase A is still look-neutral **only if every face meeting at a welded
+  vertex has the same normal** (parallel normals average to themselves). So the weld key is (position, face normal):
+  group duplicates by position, then split each group by face normal; never merge across a crease.
 - **Phase B — smooth weld for round shapes (poles):** facets of a round pole have different normals, so Phase A saves little
   there. Merging them = smooth look = **needs the user's look ruling** (§SCALE item 5). Reuse §MEP_SMOOTH's measured gate
   (`CURVE_MIN_DISTINCT=16`, `CREASE_DEG=55`) — do not invent a new one. ⛔ BLOCKED on ruling; Phase A ships without it.
@@ -553,3 +555,66 @@ Draw: 84 minor + 22 major ticks, 36 tags, 7,188 verts, one mesh + one LineSegmen
 Hover chip at 3 points == own interpolation within 0.2 m; strip clicks put the camera on the route at that s (0.00 m).
 NOT done (follow-ups): the other "(inferred)" readouts (speed-zone legend, Long/Cross, status row) still use route s — switching
 them to `A.chainage.realAt` changes their numbers, so it needs the user's go (NON-IMPACT rule); arms have tags only (no centreline).
+
+### §CHAINAGE_EVERYWHERE — every chainage readout shows the model's chainage (user 2026-10-08: "yes switch to new chainage.. that is the whole fundamental why chainage is important")
+ONE label owner in chainage_grid.js: `A.civilChainLabel(s)` → `CH 1+152` when the markers are anchored, else `1152 m (inferred)`
+(today's text); `A.civilChainRange(s0, s1)` → `CH 0+185–0+323`. Internal maths stays in route s (zones, sampling, pick) — only the
+TEXT changes. Read happens once after a civil model finishes loading (no panel needed), `§CHAINAGE_AUTO_READ ms=`.
+Sites: speed zones (legend, sign rows, HUD card Chainage / Sign at, missing-sign text), Long scrubber + lens footer + profile sheets,
+Cross header/popup/PNG/sheet, Alt+C road cards (cpe_road_panels CH range), film status box Chainage row (cinema_maxq).
+Witness: existing witnesses' text regexes move to the new format AND assert the printed value == `realAt(s)` of the same s;
+witness_chainage_grid gains: every site's text for a known s == `CH fmt(realAt(s))`, and with markers absent (std map removed)
+every site falls back to "(inferred)".
+
+## §ROAD_REPORT — "R for Road": one-key prognosis dashboard (spec 2026-10-08; user: "dashboard panel (shortcut 'R') instantly spit out an Automated Prognosis Report" · "can also show what is green and healthy")
+**Key:** `R` on a civil model opens/closes the report; on a building R stays Room Cycle (`scene.js _cycleRoom`, unchanged).
+Inspect menu row "Road report · R" (civilOnly). NON-IMPACT: buildings see nothing new.
+**Findings — every line = chainage + measured value + rule + source; nothing typed by hand:**
+| Check | Measured from | Rule / source | Severity |
+|---|---|---|---|
+| Chainage drift | §CHAINAGE_GRID intervals (route length vs printed step) | % of step vs `_road_report.drift_pct` | ≥ critical → CRITICAL, ≥ warning → WARNING, else HEALTHY |
+| Grade | 1 m road profile, chord over `grade_window_m` (both ends on a ROAD surface; interpolated samples never judged) | zone max grade = ATJ 8/86 Table 4.10A–F row (table+page) via §SPEED_ZONES | > max → WARNING; stretches merged |
+| Sign codes | §SIGN_CHECK verdicts | ATJ 2A/85 table | UNKNOWN → CRITICAL, MISSING → WARNING (its own SEV map) |
+| Missing speed sign | §SPEED_ZONES MISSING SPEED SIGN rows | zone start without a speed sign | WARNING |
+| Advance placement | §SIGN_VS_SPEED CHECK rows | ATJ 2B/85 cl.2.2.8 | WARNING |
+| Environment (wetland/buffer) | none in the model (0 psets match wetland/buffer/environment, 2026-10-08) | — | NOT CHECKED, says why |
+Thresholds `drift_pct {critical 10, warning 5}`, `grade_window_m 20` live in std_values.json `_road_report`, tagged "demo default
+(editable)" — no standard gives prognosis cut-offs. The ATJ limits themselves are the cited table values.
+**Panel:** title "Road report", chips CRITICAL n · WARNING n · HEALTHY n · NOT CHECKED n; groups in that order, HEALTHY collapsed
+with one-line totals (e.g. "Grade within ATJ limit: 1,840 m of 2,110 m", "Signs OK 107 of 138"); each line in the user's format
+`[CRITICAL] CH 0+500 to 0+600: 11.5% drift …`; click → fly (chainage) or focus (sign); Copy / Download .txt = the same lines.
+**Witness `witness_road_report.js` — ISSUE: is every line in the report a measured, sourced fact, and does R open it only on roads?**
+drift lines == own interval recompute; grade stretches == own chord recompute on the profile + own ATJ lookup; sign counts == own DB
+query; text export == DOM lines; R on road → report, R on Duplex → §ROOM_CYCLE (report absent); environment line NOT CHECKED;
+RED control (threshold change flips a line's severity).
+
+### §MEM_GROWTH ▶ RESUME HERE (M4-A) — written 2026-10-08 for the next session
+**Where this spec lives:** bim-compiler branch `fable/meshdb-livewire` (NOT yet on `master`) — read this file from that branch.
+**Status:** spec only, zero code. User asked "can u safely do M4 first without impact to the other Road sign session?" —
+checked, answer YES (below). User then parked it for a new session. No go yet to run anything.
+
+**Safety check already done (2026-10-08, bim-ootb `origin/main` @ `5941ada4`) — don't redo, re-verify only if main moved on these files:**
+- Road-sign lane (PRs #1937–#1945, last `fix/speed-disc-top-board`) edits `viewer/speed_zones.js`, `civil_sections.js`,
+  `road_standards.js`, `std_values.json`. M4 edits `viewer/import_db_builder.js` + the save path in `viewer/scene.js`
+  (§MESH_SLIM_SAVE, `:908`). Shared files only `sw.js` / `viewer.html` (version bumps) → CLAUDE.md rule: keep both, higher version.
+- Data: speed discs read board geometry through the index (`speed_zones.js:420`, `I ? I.count : P.count`) — a weld keeps the
+  same triangles and positions, so board bbox/face is unchanged.
+- ⚠ Also check `viewer/silhouette_refine.js` (`SilhouetteRefine.refineGeometry`, called at `scene.js:~2263` on every geometry):
+  its gate may read vertex sharing (weld ratio). Confirm a welded civil geometry does not newly qualify — log it.
+
+**Steps (in order):**
+1. `git -C ~/bim-ootb worktree list` → reuse or `git worktree add /tmp/wt-m4-weld origin/main -b feat/m4-vertex-weld`.
+2. Write `scripts/probe_vertex_weld.js` (node + sql.js, NO browser, NO GPU): open a **copy** of the DB (never the original),
+   per `component_geometries`/`base_geometries` row: decode `vertices`/`faces` exactly as `A.blobToGeometry` does (copy its
+   decode, cite lines), weld by (position ε, face normal) per the Phase A rule, re-encode. Log per run:
+   `§VERT_WELD rows= vertsBefore= vertsAfter= dbBytesBefore= dbBytesAfter= maxNormalDeltaDeg=` (must be 0 within float),
+   plus the top 10 classes by verts saved (expect lamp poles). 0 rows → `INCONCLUSIVE`.
+   Input DBs (local, `~/Downloads/JALAN JELAPANG IFC/`): `CivilWorksPath.db` 463 MB (current), `JELAPANG.db` 396 MB.
+3. Read the log. If the saving is real, wire the same weld into import (`import_db_builder.js` beside `§MESH_SLIM_IMPORT`,
+   `:100-115`) and save (`scene.js` beside `§MESH_SLIM_SAVE`), civil-gated via the existing owner `A.isCivilModel()`
+   (`streaming.js:321`). One weld function, shared by probe + both paths (no second implementation).
+4. Fleet probe (read-only, same script) over the building DBs → decide buildings in/out (spec M4 "Buildings").
+5. ⛔ ASK THE USER before the browser reload witness (heap MB + load ms before/after) — it runs a headless browser on the GPU
+   (MEMORY: no autonomous bakes/GPU; headless beside a live bake crashed the user's tab once).
+6. PR, mark `✅ DONE (witness)` here with the § numbers. Phase B (smooth poles) stays ⛔ on the user's look ruling.
+
