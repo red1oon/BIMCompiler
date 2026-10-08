@@ -1775,3 +1775,9 @@ HEALTHY 5 · INFO 1 · NOT CHECKED 5). Script `prompts/film_narration_road_repor
 closing card −13.5 LUFS; no silence ≥ 4 s. No "JELAPANG" anywhere (cards, subs, script grepped).
 Seen in the PDF frame, to fix in the report: "grade up to 3.0% exceeds max 3%" (3.01 rounds to the limit — show 2 decimals near a limit);
 the no-code sign line lists "CH 0+090, 0+090, 0+090, 0+090" (dedupe chainages).
+
+### §EARTHWORKS_CLIP (2026-10-09) — "Earthworks & Roadworks: cut and fill, inferred from the model" — `~/Videos/Earthworks_cutfill_narrated_AFTER.mp4` (129.65 s)
+User recording `~/Videos/simplescreenrecorder-2026-10-09_06.07.57.mp4` (0.5–66 s; desktop tail after 66 s cut) + 8 s cover + 3 chapter cards (backdrop = user's latest screenshot 06-10-27, all four) + 12 s narrated end card + 9.5 s black closing card
+(air-horn/trucks bed `CivilWorks_endcard_traffic_AIRHORN_TRUCKS_PREVIEW.wav` padded to 120.12 s via `SFX_WAV`, claim line, prior-art + licence fees). Numbers read off the panel frame: CUT 119,703 m³ · FILL 278,307 m³; band row CUT CH 0+919–1+182 76,281 m³.
+Script `prompts/film_narration_earthworks_dialogue.tsv`; Kokoro EN F/M: 13/13 DETAIL, 0 tone WRONG; I = −16.5 LUFS, closing card −13.5 LUFS; frames 3,371 = silent master; silences ≥4 s: 4.2 / 4.3 / 7.2 s (end card, text on screen). No "JELAPANG" anywhere (grepped).
+Work dir `~/Videos/ewclip_work/` (cards PNG/MP4, fit). Rebuild: cards script → ffmpeg fade segments (26 fps) → `film_assemble.py` → fit (kokoro v3) → mux with `SFX_WAV`.

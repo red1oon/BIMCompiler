@@ -162,6 +162,12 @@ check (ATJ 8/86 §4.2.3) needs road-edge geometry · traffic-management 4D secti
   audio `~/Videos/CivilWorks_endcard_traffic_AIRHORN_TRUCKS_PREVIEW.wav` (−13 LUFS; CC0 BigSoundBank #0122 bed, #3434 cars, #1255/#1256 trucks, #3438 horn pitched down = sound design, label as such; `~/Videos/*_CC0.wav`).
 - Superseded previews (end card v2/v3/v4, traffic/horn/horn+trucks variants, bonus v2): details archived, do not splice.
 - **Chainage clip (DONE 2026-10-08):** `~/Videos/Chainage_from_model_letters_narrated_v2_AFTER.mp4` · `prompts/film_narration_chainage_dialogue.tsv` (FILM_NARRATION §CHAINAGE_CLIP)
+- **Earthworks / Cut & Fill clip (DONE 2026-10-09):** `~/Videos/Earthworks_cutfill_narrated_AFTER.mp4` (129.65 s; silent master `~/Videos/Earthworks_cutfill_SILENT.mp4`) · user recording `~/Videos/simplescreenrecorder-2026-10-09_06.07.57.mp4` (0.5–66 s) ·
+  backdrop = user's latest screenshot `06-10-27` · script `prompts/film_narration_earthworks_dialogue.tsv` · cards `prompts/film_earthworks_clip_cards.py` (FILM_NARRATION §EARTHWORKS_CLIP). Closing black card = air-horn/trucks bed + claim line + prior-art with licence fees.
+  Claim wording: user said "extracted"; cut/fill is INFERRED so the card says "computed entirely from a standard IFC2X3 file … No AI. No API call."
+- **PRIOR ART — cut/fill + licence fees (web search 2026-10-09, third-party/undated figures, prices vary by region; re-check before quoting outside the film):** Autodesk Civil 3D US$2,870/yr (Autodesk FAQ: autodesk.com/solutions/aec/civil-3d-subscription-faq) ·
+  Bentley OpenRoads Designer US$6,057/yr Virtuoso, US$15,142 perpetual (G2 pricing page, updated 2026-03-25: g2.com/products/openroads-designer/pricing) · Trimble Business Center Intermediate US$2,865 / Advanced US$4,405 per licence (reseller listings, billing basis unclear; csdsinc.com / cansel.ca) ·
+  12d Model "open price" (quote only) · Novapoint no public price found (only a 2005 trade figure). All compute cut/fill from their own design surfaces; ours infers from the exported IFC alone, in the browser.
 - **Road Report clip (DONE 2026-10-08):** `~/Videos/Civil_Works_Road_Report_narrated_AFTER.mp4` · `prompts/film_narration_road_report_dialogue.tsv` (§ROAD_REPORT_CLIP);
   closing black card carries the air-horn/trucks bed + the prior-art line in the allowed wording.
 
@@ -210,6 +216,223 @@ Claim wording allowed: "a combination our search did not find elsewhere (8 Oct 2
   the Bonsai PDF-terrain point cloud (`pdf_terrain/samples/survey_highres_extracted.json` + `survey_highres_GV.json`, source image
   `~/bim-ootb/internal/PDF_Terrain/survey_highres.png`). Path today: user converts in Bonsai → exports → imports here; later the converter
   itself comes to the PWA (`prompts/TERRAIN_MIGRATION.md` is that port spec). Terrain also serves buildings later. bSI TIN samples = not the reference.
+
+## §INSPECT_EARTH_ROAD — INFERRED cut/fill + 4D, and road-marking overlay (spec 2026-10-09, user; NOT started)
+> *User 2026-10-09:* infer cut/fill from the single model; infer the 4D schedule + resources for it; engineers may later correct the JSON
+> when given the original topology. Apply the JKR marking formula to the model and save it back to the DB as our overlay. Both live under
+> Inspect → "Earthworks" and "Roadworks" extras. Civil-gated (`A.isCivilModel()`); VACUOUS on Duplex/Hospital/Terminal/LTU_AHouse.
+**Measured on CivilWorksPath.db (2026-10-09):** disciplines ARC 826 · CHAINAGE 332 · DRAINAGE 200 · EARTHWORK **1** · GABION 11 · GEOTECH 9145 ·
+LIGHTING 216 · MARKING **90** · PLB 2062 · ROAD 4008 · ROW 1 · SIGNAGE 138 · STR 1851. IFC2X3 → no IfcEarthworksCut/Fill, no alignment entity.
+MARKING = 90 `IfcBuildingElementProxy` named `IfcBuildingElementProxy_<n>`, psets = project info only (no line type/width/direction); only
+discriminator is surface colour: 79 black (597,365 tris) + 11 yellow (12,595 tris). **R1 step 0 MESH-CONFIRMED (2026-10-09; scratch script welds verts at 1 mm, splits connected components, float32 verts / uint32 faces, rotation all 0):**
+- **Black ×79 elements → 3,686 pieces.** (a) **58 long pieces (30 elements), 268–698 m, continuous, no 4.5 m stroke / 7.5 m gap signature anywhere** (no dashed lane lines).
+  Solid prisms (top = bottom area, checked: up 76.7 m² = down 76.7 m²) so strip width = planarArea / 2 / length = **≈0.155 m (0.308–0.327) and ≈0.20 m (0.397)** → matches ATJ 2D/85 §3.3.1.3
+  edge lines 150/200 mm. NOT a double line as a single piece (0.325 m would need 2×100+125 mm; a pair of adjacent pieces is untested). (b) **3,622 small pieces** 0.3–2 m
+  (clusters 0.4×0.3 m, 0.9×0.8 m, 2.1×2.0 m; height 0.02–0.15 m) → NOT line strokes; kind unproven (studs/RRPM? glyphs? arrows?).
+- **Yellow ×11 elements → 132 pieces:** repeated shapes (≈14.3×11.4 m bbox, 21 m² each ×~60; ≈10×2.9 m; ≈11×1.3 m), one 44×38 m, up to 0.7 m high → area-type markings (hatching/
+  chevron/gore?), NOT continuous lines. Kind unproven.
+- **Consequence:** the model has edge-line runs but NO readable centre/no-passing line → a centre-line check would be NOT CHECKED, and the REQUIRED no-passing zones (R1 compute) would be
+  an overlay for markings the model does not carry. Still open: do two long pieces run 125 mm apart (double line)? where do the long runs sit relative to the route (edge vs centre)? what are the 3,622 small pieces?
+**Rule for both:** every inferred row is labelled `INFERRED`, carries its sample count + source, and never overwrites model data. Engineer edits
+set `status=engineer` and win over `inferred`.
+### E1 — cut/fill bands by chainage (inferred, crude)
+- Per station: `d = roadTop − existingGround` from `A.civilProfile()` (ROAD vs GEOTECH/ground series; datum already shared in the profile).
+  `d > +tol` FILL · `d < −tol` CUT · else AT-GRADE; `tol` in `std_values.json` (`_cut_fill.tol_m`, editable, SUGGESTED label).
+- Volume per band = average-end-area of `|d|` × (road width + side slopes) × length — reuse the `A.earthworksVolume()` bounded-mesh math where it
+  applies; no second volume engine.
+- Confidence per band = ground sample count; windows < 30 samples (2 of 5 today, line 138) are labelled `FLAT-ASSUMED`, never presented as measured.
+- Caveat stated in the panel: EARTHWORK/GEOTECH may be the FINISHED ground, not original terrain → bands are a guess until the engineer supplies topology.
+- Output JSON `earth_bands`: `[{ch_from, ch_to, kind, mean_d_m, vol_m3, samples, source, status}]`; engineer edits the same JSON (kind/volume/boundaries).
+- Witness `witness_cut_fill_inferred.js`: `§CUT_FILL_INFERRED bands= cut= fill= atGrade= flatAssumed=`; recompute 3 stations independently; RED control
+  (lift road +0.5 m → bands flip as computed); engineer-edit round-trip (edit a band → totals + 4D change by the asserted amount); Duplex VACUOUS.
+### E2 — inferred 4D schedule + resources for the earthworks
+- From E1 bands: one task per band (cut = excavate + haul, fill = import/place + compact), ordered by chainage, durations = `vol_m3 / output_rate`.
+- Output rates + crews need a CITED source (§L): candidates already on disk `rates/` (DBKL JKH1 roadworks, Selangor JKH) — transcribe with page refs
+  before calling any rate `primary`; until then `SUGGESTED`. No invented rate.
+- Replaces count-based earthworks duration (OPEN line 130) only for civil models, only where bands exist; one owner for CHAINAGE/ROW exclusion (line 130) first.
+- Resulting schedule JSON is adjustable by engineers (same edit path as E1); Gantt edit → witnessed per PRIMAL LAW §2.
+- Witness `§EARTH_4D tasks= totalM3= totalDays= rateSource=`; NOT CHECKED if no rate source.
+### R1 — road-marking formula (JKR) applied to the model, saved as overlay
+Limits go in `std_values.json` `_sight_zones` / `_markings` with standard + clause/table + source-status; NO JS constants. Transcribed from the files on disk:
+| Rule | Value | Source |
+|---|---|---|
+| Min stopping sight distance | 120→250 · 110→220 · 100→185 · 90→160 · 80→130 · 70→105 · 60→85 · 50→65 · 40→50 · 30→35 m | ATJ 8/86 §4.1.2 Table 4.1 (p.36) |
+| Min passing sight distance (2-lane 2-way) | 120→775 · 110→730 · 100→670 · 90→615 · 80→540 · 70→485 · 60→410 · 50→345 · 40→270 · 30→200 m | ATJ 8/86 §4.1.4 Table 4.4 |
+| Object heights | 200 mm (stopping) · 1330 mm (passing) | ATJ 8/86 §4.1.5 |
+| No-passing line | double unbroken, or unbroken+broken (near-side overtaking) at vertical/horizontal curves where passing SD is short | ATJ 2D/85 no-passing zones (p.14) |
+| Min no-passing marking length | ≥ 120 m (extend at the start); gap < 30 m below-min SD → no unbroken line; successive zones < 120 m apart → join | ATJ 2D/85 no-passing zones (p.14) |
+| Line widths | centre/lane 100–150 mm; double line gap 125 mm; edge 150/200 mm; transition 200 mm; stop line 300 mm | ATJ 2D/85 §3.3 |
+| Lane line stroke | 4.5 m stroke / 7.5 m gap (rural, 150/100 mm) | ATJ 2D/85 §3.3 |
+| RRPM colour/spacing | centre + no-passing yellow; lane + edge white; 12 m on curves, 24 m straight | ATJ 2D/85 §4.5.4 Table 4.2 |
+- **Compute:** available passing sight distance along the chainage from route plan curvature + `A.civilProfile()` crest geometry (driver eye 1050 mm; object 200 mm stopping / 1330 mm passing, ATJ 8/86 §4.1.5) vs the speed-zone limit (`A._speedZones`) → REQUIRED no-passing intervals (apply the 120 m / 30 m rules above).
+- **Read the model's existing MARKING** by geometry only (strip count/gaps/colour) after establishing what the 79 black + 11 yellow elements are (first step, one query).
+- **Overlay:** write REQUIRED markings back to the DB as our own table (e.g. `civil_overlay`: kind, ch_from, ch_to, line_type, width_mm, colour, source clause,
+  status `inferred|engineer`), NEVER into `elements_meta`. Delivered as a `patches/*.sql` + self-heal loader pair (DB-CHANGES rule), not a binary.
+- **Compare:** required vs present → mismatch rows `[SEVERITY] CH range: measured — rule (source)` in Road Report ("Roadworks" section); MARKING absent/unreadable → NOT CHECKED.
+- Witness `witness_road_markings.js`: `§ROAD_MARKINGS intervals= requiredNoPassing= presentMarkings= mismatches= overlayRows=`; SSD/PSD recomputed at 3 stations independently;
+  RED control (shorten sight distance → a no-passing interval appears); overlay round-trip (save → reload DB → same rows); Duplex VACUOUS; no alignment/marking → NOT CHECKED.
+### BLOCKED-ITEM RESULTS (2026-10-09)
+**E2 duration — STILL BLOCKED (measured: no productivity source on disk).** `rates/` holds PRICE rates only. `DBKL_JKH1_Roadworks_resurfacing` (resurfacing in KL, not highway bulk earthworks):
+1-3-1 excavate to formation level m² 7.00 · 1-3-3 quarry-dust fill ≤1.5 m deep m³ 8.55 · 1-3-4 soft-patch excavate+backfill m³ 142.50 · 1-4-2 break-up pavement m³ 30.40 ·
+4-1-1 hot thermoplastic markings (edge/centre/continuous) m² 34.00 · 4-1-2 arrows/alphabets m² 38.00 · 4-1-3 preformed m² 109.25 · 4-1-9 road stud no. 45.50 · 4-1-10 delineator no. 18.00.
+`Selangor_tender_JKH_Perabot_Jalan_2023-09` has day rates (Hari) for plant/labour = cost per day, NOT m³ per day. No m³/day or m²/day anywhere in either file (grep'd).
+→ E2 splits: **E2a COST (unblocked, partial):** price fill m³ and markings m² from the cited items above, `SUGGESTED`, resurfacing context stated; there is NO bulk cut-to-spoil/haul m³ rate (1-3-4 is a soft-patch repair rate, wrong item). **E2b DURATION (blocked):** needs a cited crew-output source
+(user to name one: JKR schedule, CIDB, or a contractor output table); until then the generated tasks carry `duration=NOT SET`, never an invented figure.
+**RRPM check — DROPPED (measured, not supported).** The 3,622 small black pieces: nearest-neighbour spacing within an element p5/25/50/75/95 = 0.6/0.6/2.0/3.8/7.2 m (clusters at 1–2, 4, 7 m), NOT the 12 m (curve) / 24 m (straight)
+of ATJ 2D/85 Table 4.2; tri counts 12–44 (box-like, 641 at 20), median 50 pieces per element over 48 elements → clustered, glyph-like fragments (text/arrows/symbols) not a studded line. Kind still unproven;
+do not build a stud-count check from this data. Road-stud pricing (4-1-9) stays available for a REQUIRED-stud overlay if ever wanted.
+
+**Follow-up 2026-10-09 (user "Go"):**
+- **Small black pieces re-measured by rasterising one dense 6×6 m window at 10 cm (own script, no human look):** they form **two straight dotted rows of ~0.4×0.3 m blocks** (pitch ≈0.5–1 m), NOT text/arrow glyphs —
+  this CORRECTS the "glyph-like" guess above. Dotted-row kind still unproven (candidates to test: transverse speed-reducing bars ATJ 2D/85 / rate item 4-1-5; junction guide dots); measure row length, orientation vs route, and
+  block pitch across all 48 elements before naming it. Still not RRPM (spacing ≠ 12/24 m).
+- **E2b duration source — 2 web searches (JKR earthwork output; CIDB output norms): NO citable JKR/CIDB m³/day or m³/h table found.** Only non-Malaysian/unofficial figures (Indonesian cut-and-fill studies ≈12–200 m³/h machine-dependent;
+  a UAE forum 28 m³/h for 0.5 m³ bucket) — not `primary`, NOT adopted. Leads, unread: CIDB labour-output report for building works (KL/Selangor/N.Sembilan, 2006/07 — building, not earthwork); UTM production-rate database papers
+  (Idrus, Zakaria et al., MATEC BUST 2013 04002/04003). → E2b stays `duration=NOT SET` until the user supplies a document (JKR Analisa Harga / SoR, or a contractor output table) into `rates/`.
+
+**USER RULINGS 2026-10-09 (supersede the items above where they differ):**
+1. **Markings / no-passing (R1) = DEFERRED, not dropped.** JELAPANG is a separated two-way highway (divided carriageways) → no centre or no-passing line is required, so the missing centre line is CORRECT, not a defect.
+   R1 compute (PSD, no-passing zones, overlay, ATJ 2D/85 centre-line rules) waits for a single-carriageway road. What still applies on a divided highway: stopping sight distance (ATJ 8/86 Table 4.1), curve radius (Table 4.5),
+   edge-line audit (the measured 0.155/0.20 m solid runs ARE the expected marking). Rows/columns above that mention "required no-passing" are dormant until then.
+2. **E2 rates = the building rate JSON, not a new source.** Measured in `bim-ootb/viewer/rates/`: pack `cidb2024_my.json` (CIDB N3C 2024, RM) and owner-editable `custom_template.json` share one schema
+   (`labor`, `equipment`, `equipment_allocation`, `work_packages`…); owners copy + edit it (loaded via `loadRateTemplate`, rates.js). Existing entries are per-ELEMENT productivity (elements/crew-day by IFC class) +
+   RM/day: **LABORER RM 95/day, crew 1, NO productivity map** (cidb2024_my.json); no earthwork class, no m³/day anywhere in the pack.
+   → E2 prices the bands with the existing day rates (LABORER + the pack's equipment day rates) and adds ONE new productivity key for earthwork bands (m³ per crew-day) to the schema; the shipped value stays EMPTY
+   (a placeholder is invented data) → `duration=NOT SET` until the project owner fills it in their copy of the JSON. The engineer edit path for E1 bands and this key is the same JSON. Gate: the key must be read by
+   `schedule_author.js _installSecs` (single formula owner, 4D_MODEL_INTEGRITY §I) — not a second duration formula.
+
+### E2c — earthwork plant + clearing speed (user 2026-10-09: excavators/trucks join the equipment list; 4D clearing speed = editable default)
+Applies to the rate JSON schema (`equipment`, `equipment_allocation`, `labor`; same owner-editable copy as ruling 2 above). New entries, added to `cidb2024_my.json` + `custom_template.json` + any pack that is to be used for civil:
+| Key | Meaning | `rate_per_day` | Provenance |
+|---|---|---|---|
+| `EXCAVATOR` | cut / load | **null** — no sourced RM/day on disk (DBKL/Selangor have none for excavators) | owner fills; cost shows NOT SET until then |
+| `DUMP_TRUCK` | haul cut to fill/spoil | **null** | owner fills |
+| `BULLDOZER`, `COMPACTOR_ROLLER` | spread / compact fill (proposed, user said "expand the list") | **null** | owner fills |
+| `LABORER` (existing) | ground crew | RM 95/day crew 1 (cidb2024_my.json) | reuse as-is |
+Clearing speed, one editable block per template (`earthwork`), every field carrying `source` + `status` (`default-placeholder` until the owner edits it):
+- `excavator_output_m3_per_h` — default **20.95**, status `default-placeholder`, source = a published Indonesian cut-and-fill study (Damara Village, Bali; figure taken from a search summary, paper NOT opened, NOT a JKR/CIDB value) — present in the UI as "suggested, replace with your fleet's".
+- `shift_hours` default 8 (matches `_productivity_basis_secs: 28800`), `efficiency_factor` default **empty** (not invented; blank = 1.0 and labelled so), `haul_distance_m` default **empty** (comes from mass haul / owner).
+- Derived (no new formula owner): band duration → feeds `schedule_author.js _installSecs` as a quantity-based rate (m³ / (output × shift_hours)); trucks needed = excavator output ÷ (truck_capacity_m3 × trips_per_h), trips_per_h from `haul_distance_m` — NOT SET while those fields are empty.
+- A tooltip/§-line must print the active values and their `status` (`§EARTH_RATE output= shift= eff= haul= status=`) so a 4D duration is never silent about being a placeholder.
+- Witness: change `excavator_output_m3_per_h` ×2 in an owner copy → every earthwork band duration halves (asserted), Gantt bars + total span change, JSON round-trips.
+
+**E2c addendum (checked against origin/main `rates.js SEQUENCE_CIVIL` + `rates/4D_template_civil.json` v0.4.0, 2026-10-09):** the Time Machine ALREADY runs a civil programme: Ground Treatment → Earthworks → Drainage / Slope Protection →
+Pavement → Road Furniture → Signage → Road Lighting → Road Marking (order from a secondary source, JKR method statements; primary JKR/SPJ/2008 not read). Gaps: (1) **Pavement is ONE phase** (crew `CIVIL_PAVING` = MASON params,
+uncalibrated, per-element duration) — no sub-base / base / binder / wearing-course layers, no spread-and-roll/tar tasks; (2) Earthworks is one crew `CIVIL_EARTHWORKS`, count-based; (3) **calendar conflict:** the civil template runs
+`hours_per_shift 24, days_per_week 7` (standing user ruling rates.js SHIFT_HOURS) while E2c above defaults `shift_hours 8` → E2c must READ the template calendar, not carry its own shift length (one owner). Plant (EXCAVATOR, DUMP_TRUCK,
+BULLDOZER, COMPACTOR_ROLLER) attaches to the existing `CIVIL_EARTHWORKS` / `CIVIL_PAVING` trades in `equipment_allocation`. Pavement-layer split = future spec item (needs a cited layer sequence + the model's ROAD elements carry no layer info —
+MAINLINE/ROAD J2A etc. only).
+
+### E3 — civil programme corrections (user 2026-10-09: "correct those, and if there is sequence conflict, apply CPM"; spec only, nothing built)
+Corrects the three gaps in the E2c addendum. Owners unchanged: duration = `schedule_author.js _installSecs`; sequence/solve = `cpm_schedule.js` (ONE dependency DAG, Kahn pass; edges E1 support · E2 host/open · E3 discipline · E4 storey — header read
+2026-10-09); phase/trade = `rates.js SEQUENCE_CIVIL` + `rates/4D_template_civil.json`. No second scheduler.
+1. **Sequence-conflict rule (applies everywhere below):** the template phase order is only the DEFAULT predecessor list. Where it disagrees with an element-level edge (support / host / chainage flow), the **CPM edge wins** and the
+   solved start/finish is what the Gantt shows; the template order is not re-imposed after the solve. Each overridden default is logged `§CIVIL_SEQ_OVERRIDE phase=A->B reason=<edge type> n=` (never silent). Known live case to re-test:
+   Issue D, backwards CH 10 Ground Treatment bar (line 131).
+2. **Pavement split into layers** (replaces the single `Pavement` phase / `CIVIL_PAVING`): Subgrade preparation → Sub-base → Road base → Prime/tack coat → Binder course → Wearing course. Layer names/order = **secondary**
+   (JKR flexible-pavement practice from general knowledge; JKR Standard Specification for Road Works JKR/SPJ/2008 NOT read) → labelled `SUGGESTED`, owner-editable in the template JSON. The model's ROAD elements carry no layer (names MAINLINE / ROAD J2A… only),
+   so layer tasks are generated PER CHAINAGE SEGMENT of the road surface, quantity = segment road area (m²), not per-element. Plant on the layers: BULLDOZER/GRADER spread, COMPACTOR_ROLLER roll (E2c list), paver + tar for binder/wearing —
+   `rate_per_day` null, output m²/crew-day key EMPTY (owner fills, `duration=NOT SET`), same rule as E2b.
+3. **Chainage flow (the civil analogue of CPM E4 "storey"):** segment i of layer k starts after (a) segment i of layer k−1 finishes (FS) and (b) segment i−1 of layer k finishes (FS, same crew). Segment length = `_cut_fill.interval_m`
+   (editable, default 100 m, same as E1 bands). Earthworks band i (E1) precedes sub-base segment i. CPM solves the pipeline; critical path is reported by CPM, not recomputed.
+4. **Calendar:** civil durations read `4D_template_civil.json calendar` (24 h × 7 d today) via the one existing reader; no shift length elsewhere. `witness_civil_phase.js` re-run after each step (10 green / 12 red / 2 inconclusive on main per
+   4D_MODEL_INTEGRITY line 2927 — re-measure, don't assume).
+5. **Witness `witness_civil_pavement_layers.js`:** `§CIVIL_LAYERS segments= layers= tasks= overrides= criticalDays=`; assert (a) every layer-k segment starts ≥ layer k−1 same segment finish, (b) flow edge i−1 holds, (c) editing one layer's output key
+   changes the CPM finish by the asserted amount, (d) template order contradicting an element edge is overridden and logged (RED control: inject a reversed edge), (e) no civil elements → VACUOUS (building programmes byte-identical, NON-IMPACT rule).
+
+### E4 — resource caps (user 2026-10-09: "crew can grow as schedule dictates; constraints planned later on the JSON and the Timeline injection engine, equipment AND human"; spec only)
+- **Default for civil = UNCAPPED:** crews and plant units grow to whatever the CPM-solved schedule needs; the programme length is set by logic + durations, not by headcount. (Building trades keep today's `max_crews` /
+  `MAX_CREWS_DEFAULT` 3 — NON-IMPACT rule; civil trades `CIVIL_EARTHWORKS`, `CIVIL_PAVING` etc. read `max_crews: null` = no cap.) Uncapped must still be VISIBLE: a resource histogram per trade/plant
+  (`§CIVIL_RESOURCE_PEAK trade= peakCrews= peakUnits= atDay=`) so an unrealistic peak (e.g. 40 rollers) is reported, not hidden.
+- **Caps live in the rate JSON, owner-editable, filled later:** human = `labor.<KEY>.max_crews` (exists, §CREW-CAP) · plant = NEW `equipment.<KEY>.max_units` (EXCAVATOR, DUMP_TRUCK, BULLDOZER, COMPACTOR_ROLLER, paver…). Empty = uncapped.
+  Optional later: per-phase / per-period caps (e.g. fleet hired from day N) as a `resource_calendar` block — not specced here, only the slot is reserved.
+- **Enforcement = the existing crew-leveling pass, not a new scheduler:** `cpm_schedule.js` §S6_CREW_PASS (ES = max(crew-slot availability, in-edges)) already levels human crews; the plant cap is the SAME pass keyed by equipment unit
+  (a task needing an excavator takes a free unit slot or waits). The Timeline injection engine (`schedule_author.js` materialize/inject path) only receives the leveled result and writes the bars — it does not level.
+  Overridden defaults/waits logged `§RES_CAP_WAIT resource= task= waitedDays=`.
+- **Witness `witness_civil_resource_caps.js`:** (a) uncapped run → `§CIVIL_RESOURCE_PEAK` printed and equals an independent sweep of the bars' overlap; (b) set `EXCAVATOR.max_units=2` → no instant has >2 excavator tasks (asserted), project finish moves
+  later by the CPM-computed amount; (c) same for `max_crews`; (d) caps empty → byte-identical to uncapped; (e) building models unchanged (VACUOUS for civil caps).
+
+### E5 — cut / fill colouring + shrinking blobs in the 4D (user 2026-10-09: "cut orangy, fill greenish; expands the long earthworks bar that runs minus days before Day 0; the two blobs contract until Day 0 = works completed; easy visual rather than sophisticated apps"; spec only)
+**Reading of the ask (ONE assumption to confirm: "blobs" = a cut blob and a fill blob drawn in the 3D/4D view, sized by remaining volume):**
+1. **Gantt:** the single Earthworks bar is split into its E1 bands → each band is a sub-bar coloured **CUT = orange, FILL = green** (defaults `rgba` in `std_values.json` `_cut_fill.color_cut` / `color_fill`, SUGGESTED, owner-editable —
+   same rule as every limit/colour: no JS constants). Bars keep their CPM-solved dates (E3); earthworks that finish before the programme proper start at negative day-offsets, as today — the split does not move them.
+2. **Blobs:** two shapes, one per kind, in the view with the same two colours. Size = REMAINING volume at the playhead: `remaining_kind(t) = Σ_bands vol_m³ × (1 − progress_band(t))`, `progress_band` from the band's own bar
+   (0 before start, linear to 1 at finish). At playhead ≤ first earthworks start: full size; as the playhead advances toward Day 0 the blobs contract; **at the last earthworks finish (≤ Day 0) both are exactly 0** → "works completed".
+   Scale rule (so size means something, not decoration): blob volume ∝ remaining m³ (cube-root on the linear dimension), with a fixed reference = the TOTAL cut / TOTAL fill, so the cut and fill blobs are visibly comparable to each other
+   (mass-haul balance at a glance; unequal blobs = import/spoil).
+3. **Data owner:** bands come from E1 (`earth_bands` JSON, engineer-editable); an engineer edit of a band's kind/volume/dates changes the colours, the blob sizes and the CPM bars together (one JSON → three projections).
+   No E1 bands (no ground / vacuous) → NOT CHECKED, plain Earthworks bar as today. Civil-gated; building programmes untouched.
+4. **Why this and not a heavier visual:** it re-uses the existing Gantt bar renderer + a pair of primitive meshes; no new viewer engine. Per PERF BUDGET: two blobs = a few hundred vertices, state the count in the `§` line.
+**Witness `witness_earth_blobs.js` (numbers, not looks):** `§EARTH_BLOBS bands= cutM3= fillM3= colourCut= colourFill=`; at 5 playhead times assert `blobScale_kind(t)` equals an independent recompute of the remaining-volume formula;
+assert `colourCut`/`colourFill` equal the `std_values` tokens and differ from each other and from every other phase colour; assert both scales == 0 at/after the last earthworks finish and == full at/before the first start; RED control:
+edit one fill band's volume ×2 in the JSON → fill blob's full size ×2^(1/3), CPM duration changes by the E2c amount, Gantt colour unchanged; Duplex → VACUOUS.
+
+### E6 — Inspect entry points: EW and RW icons + panels (user 2026-10-09: "3D on canvas where the EarthWorks feature calculates and injects into the DB; EW and RW icons on Inspect; panels list features pending except cut and fill []"; spec only)
+- **Two new Inspect icons, civil-gated (`A.isCivilModel()`; hidden/VACUOUS on buildings), same icon/pill conventions as the existing Inspect items:** **EW** (Earthworks) and **RW** (Roadworks). Each opens a panel listing its features
+  as rows `name · status · [ ]`. Only features with a witness-passing implementation are enabled; the rest are shown greyed `PENDING` with the spec section id (no hidden features, no fake buttons).
+- **EW panel:** `Cut & Fill [ ]` = the ONE live feature to build first (E1 bands + E5 colours/blobs; the `[ ]` is its on/off toggle — assumed reading of "cut and fill []", default OFF so nothing draws until chosen).
+  Pending rows: E2 cost · E2b duration (needs owner-filled output key) · E2c plant list · E4 resource caps · mass haul.
+- **RW panel (all PENDING at first):** sight-distance row (SSD) · curve radius · edge-line audit · road-furniture audit (F1) · pavement layers (E3) · markings/no-passing = `DEFERRED (single-carriageway road)`.
+- **Run → inject:** toggling Cut & Fill runs E1 on the loaded model and WRITES the result to the DB as our overlay (`earth_bands` rows: ch_from, ch_to, kind, vol_m3, samples, source, status — the same `civil_overlay`-style table as R1,
+  never into `elements_meta`), shipped as a `patches/*.sql` + self-heal loader pair (DB-CHANGES rule). Re-open of the saved DB reads the bands back; no recompute needed unless the owner asks (RECOMPUTE button, with a `§` line saying inputs changed).
+- **Blobs on the canvas:** E5's two blobs are anchored in 3D at the volume-weighted centroid of the cut bands and of the fill bands (route position at that chainage, offset to the side of the carriageway so they don't sit in the road;
+  offset distance = editable default in `std_values.json`). A band click selects its chainage range. (Placement rule is my reading — confirm or give the anchor you intend.)
+- **Witness `witness_inspect_ew_rw.js`:** with civil model: both icons present, panels list exactly the declared feature set (count asserted), exactly one feature enabled (Cut & Fill), pending rows carry a spec id; toggle ON →
+  `§EARTH_BANDS_SAVED rows=` and a DB reload returns the same rows (round-trip); toggle OFF → blobs removed, no mesh left (vertex count back to baseline, logged); Duplex/Hospital: icons absent (VACUOUS), DOM and scene byte-identical.
+
+**E5/E6 REVISION (user 2026-10-09, confirms toggle + centre-of-bands, then corrects the blob): SUPERSEDES E5 item 2 "Blobs" and E6 "Blobs on the canvas".**
+The "blob" is NOT a free-standing shape beside the road. It is a **recolour of the existing ground-contour surface** over the likely-affected area of each E1 band: cut area tinted orange, fill area green (E5 colour tokens).
+- **Target surface:** only the ground elements the profile already reads as "ground" (discipline name from `std_values geometric.model_map`; not a new mesh). **Protected, never recoloured:** ROAD, DRAINAGE, GABION, FURNITURE, SIGNAGE, LIGHTING, MARKING, STR,
+  ARC/CHAINAGE (the chainage glyphs) and every other non-ground element — a hard exclusion list, asserted.
+- **Footprint:** ground triangles whose chainage (route-projected) falls inside the band and within a lateral reach of the carriageway (editable default in `std_values.json _cut_fill.reach_m`, SUGGESTED; wider for cut/fill height `|d|` if
+  E1 supplies it). Non-destructive: a colour override layer (same mechanism the viewer already uses for discipline/phase colours), original colours restorable; NO geometry or DB element edited.
+- **Contracts toward Day 0:** coloured extent per band = `(1 − progress_band(t))` of its chainage length, receding in the direction work proceeds; fully clear when the band's bar finishes (≤ Day 0). Remaining-volume totals per kind stay in the panel.
+- **Likely-area only:** where ground samples are thin (E1 `FLAT-ASSUMED`, <30 samples) the tint is drawn hatched/lighter and labelled `INFERRED` — never presented as measured.
+- **Vertex budget (PERF BUDGET):** recolour only (vertex-colour attribute on ground meshes) → log `§EARTH_TINT tris= verts= heapΔ=`; no duplicated buffers.
+- **Witness additions (replace the blob-scale checks in `witness_earth_blobs.js`):** at 5 playhead times, coloured ground area per kind = independent recompute of `(1−progress) × band footprint area` within ε; colours of every protected element
+  hash-identical before/after (asserted, count printed); toggle OFF → all ground colours restored (hash equal to baseline); no DB `elements_meta` row changed; RED control: add a fake ROAD triangle inside a band → it stays untinted.
+
+**E1/E5 REFINEMENT (user 2026-10-09; supersedes E5-revision "reach" wording and refines E1's classification):**
+- **Cross-section rule (the user's formula, replaces point-wise `d` as the primary classifier):** at each station, take existing ground at the left and right of the carriageway vs road top.
+  **Ground ABOVE road top on both sides (a slope running through the highway) → CUT. Ground BELOW road top on both sides (ground falls away either side) → FILL.** One side above, one below → SIDE-HILL (split: cut on the high side, fill on the low side).
+  Within ε of road top both sides → AT-GRADE. The old `d = roadTop − ground(centre)` stays as the volume driver and as a cross-check (`§CUT_FILL_XCHECK` flags stations where the two disagree).
+- **Reach default (replaces the unsourced fixed reach):** the tint spreads laterally to the **daylight (catch) point** — where ground meets the road-top level / design slope along that cross-section — capped by `_cut_fill.reach_max_m`
+  (editable, `SUGGESTED`, starts at a conservative value chosen so the tint stays clear of the neighbouring roads; the OWNER tunes it, no look-test in the witness). Daylight absent (ground never meets road level inside the cap) → tint to the cap and label `CAPPED`.
+  Reason it is principled and not an eyeball number: the extent follows the contour, so tinted area = the area the contours say is affected.
+- **Honest labelling:** every tinted area carries `INFERRED` (from the contour IFC) in the panel + legend; engineers' edits set `status=engineer`.
+- **Editable on the canvas = NEXT STEP, TBD:** user drags/reshapes a band's tinted outline → writes back to `earth_bands` (same JSON/DB overlay). Not in the first build; first build is read-only inference + JSON/panel editing. Spec stub only.
+- **Feeds the 4D injection engine:** the bands (kind, volume, chainage range, status) are the quantities the 4D earthworks tasks (E2/E2c/E3) are generated from — one JSON, three projections (tint, Gantt, 5D). Positioning (fact for docs, from memory not re-verified):
+  Civil 3D itself does not author a construction-schedule 4D; that is done in other tools (e.g. Navisworks / Synchro-class), so inferring bands → 4D in the browser removes a hand-off step. Do not claim more than "we generate a draft programme from the model".
+- **Extractability of real cut/fill from the source (answer from memory, NOT verified against Civil 3D export settings or this IFC set):** IFC2X3 has no earthworks entities and no TIN type (a terrain can only appear as generic faceted geometry on IfcSite/proxy, no cut/fill meaning);
+  IFC4.3 adds `IfcEarthworksCut` / `IfcEarthworksFill` / `IfcEarthworksElement` with `Qto_Earthworks*` quantities and tessellated geometry, but only exports what the authoring tool chooses to write — Civil 3D's own cut/fill is computed between TIN surfaces inside the app and may not be exported even in 4.3.
+  → real values are extractable ONLY if the file carries them; JELAPANG (IFC2X3, measured: 1 EARTHWORK element, no earthworks psets) does not. Our inference is the fallback and is labelled as such. Check any new 4.3 file for those entity classes first (`source=ifc` per the DeepSeek-draft priority list, kept).
+
+**BUILT 2026-10-09 (first slice, user: "build the panels and only that one feature"; fill = BLUE not green, user: avoid vegetation confusion):** bim-ootb branch `feat/ew-cutfill-overlay` @a7241ff1 (PR open, NOT merged — user does the visual test), sw v1627.
+`viewer/earthworks_overlay.js` (Inspect **EW** key u + **RW** key k, civil-only rows in `panels.js`), `std_values.json _cut_fill` (station 10 m, step 3 m, reach_max 30 m, tol 0.3 m, orange `#ff8c1a` / blue `#3388ff`, SUGGESTED), `viewer/tests/witness_ew_cutfill.js` **13/13** (CUT/FILL/SIDE-HILL rule, cut volume = independent recompute, road cells never tinted, NO-GROUND not invented, daylight stop, reach cap, EW 5 pending + RW 6 pending, non-civil VACUOUS, colours).
+**Deviations from spec:** (1) tint = a SEPARATE draped transparent mesh (raycast off, no `disc`), not a vertex-colour edit of the ground meshes — simpler and non-destructive by construction; protected elements are untouched trivially; (2) road cells masked by a ROAD-discipline cast per cell. **NOT built (still spec):** contraction toward Day 0 / bar progress, DB overlay save + loader (E6), canvas editing, 4D/CPM hookup, E2–E4, F1, RW features. Log lines: `§CUT_FILL_INFERRED`, `§EARTH_TINT`, `§EW_PANEL`, `§RW_PANEL`. Not verified in a live browser by me (user's visual test); `civilCastZ` ground disc = `std_values geometric.model_map.ground_discipline` (EARTHWORK).
+
+**TM × chainage (user 2026-10-09; spec only, TM untouched):** the shipped chainage (`A.chainage.realAt(s)` / `routeSOf(ch)`, glyph-derived real CH) is the natural key for the 4D Time Machine: E1 bands, E3 pavement segments and E5 tint contraction are all addressed by chainage range, so
+a task = (phase, CH from–to) instead of per-element guesses; Gantt rows read "Earthworks CH 1+200–1+300"; clicking a bar goes to the chainage (existing `A.civilGotoChainage`); the CPM flow edges (E3 item 3) run along chainage. The bands + task chainage ranges are what gets written back to the DB
+as our overlay (`earth_bands`, E6; later `civil_tasks` chainage column) via the patch + self-heal loader pair — NEVER into `elements_meta`. Where drift is high (`DRIFT n m` marker) the range is shown as inferred, as the chainage grid already does.
+
+### F1 — road-furniture audit (user 2026-10-09: reflectors / barriers already in the model → health-check rows)
+**Measured (CivilWorksPath.db psets `01_Component_Name`, origin/main `road_report.js` + `road_standards.js` + `std_values.json` grep'd):** the Road Report does NOT cover any of this (no barrier/stud/post/guardrail terms
+in the three files; `std_values.json` only has CHEVRON DELINEATOR as a sign). The model carries, in discipline FURNITURE: **ROAD STUD ×940** (yellow, 0.12×0.12×0.02 m discs — these ARE the reflectors; my earlier "small
+black pieces ≠ studs" finding stands, they are a different thing) · **FLEXIBLE POST ×32** (0.2×0.2×0.58 m) · **NEW JERSEY BARRIER ×15** · **ROAD KERB TYP B1 ×12**; plus GEOTECH RETAINING WALL ×4, GABION MATTRESS ×11.
+No W-beam/guardrail named (2 `IfcRailing` exist, discipline not yet checked).
+Rows (all chainage-addressed, civil-gated, VACUOUS on buildings):
+| Row | Measured | Rule / source | Status |
+|---|---|---|---|
+| Road-stud spacing | gaps between consecutive studs along the route | ATJ 2D/85 §4.5.4 Table 4.2: 12 m curves / 24 m straights (already transcribed above) | READY — all inputs in hand |
+| Road-stud colour | yellow vs white per side | same table: centre/median yellow, edge/lane white | INFO (divided road: median side yellow) |
+| Barrier coverage | m of NEW JERSEY BARRIER per chainage vs median/embankment length | needs a barrier-warrant standard (fill height / slope / curve / hazard) — NOT on disk | NOT CHECKED until a standard is supplied |
+| Barrier at fill bands | E1 FILL band with no barrier within its extent | same missing warrant | NOT CHECKED (dormant until warrant + E1) |
+| Delineators / flexible posts | count + spacing | ATJ 2D/85 delineator clause (transcribe) | READY after transcription |
+Rule: studs spacing is a pure measurement against a cited table; barrier adequacy is NOT inferred without a cited warrant (never an invented threshold).
+
+### Order + gates
+E1 → SSD + curve-radius rows → edge-line audit → E2 (rate key owner-filled) ; R1 compute/overlay DEFERRED to a single-carriageway model. Each PR: gate statement + fleet VACUOUS proof + `§` line.
+Not in scope: obstruction-based sight lines, true superelevation, original terrain TIN (not in the IFC2X3 export; engineer supplies).
 
 ## §MEM_GROWTH — four memory pieces: point merge + paged DB + evict + chainage tiles (spec 2026-10-08, for review by the handling session)
 > User, 2026-10-08: *"perhaps we can use paging to break down larger models?"* … *"Why didn't you name the points
