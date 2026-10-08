@@ -504,3 +504,52 @@ TUM thesis IfcOpenShell road traffic safety (mediatum 1689801) · Malaysia: JKR-
 road-standards checker found.
 NOT FOUND TOGETHER: JKR ATJ 2A/2B/8 rules extracted with page refs + checked on an existing IFC road + in the browser, editable, no install.
 Claim wording allowed: "a combination our search did not find elsewhere (8 Oct 2026, passing search)" — never "the only one" / "first".
+
+
+## §CHAINAGE_GRID — real chainage from the model's own markers + station grid on the road (spec 2026-10-08, user: "something really visually appealing … similar to … Road Signs")
+**Measured (CivilWorksPath.db, 2026-10-08):** CHAINAGE = 332 solids (`IfcBuildingElementProxy`, no name/pset/text — every
+solid is one glyph piece of 3D text, 1.0 m thick, lying flat). Grouped they spell 36 labels: mainline `0, 100 … 2200` (100 m step,
+neighbour gap 74–113 m, median 100) + junction arms `J1A 0/100/200`, `J1B 0/100`, `J2A 0/100/200/400/472.63`, `J2B 0/100/200`.
+So the model DOES carry design chainage — only as glyph geometry. Today every chainage shown (Long/Cross, speed zones, status row) is
+the inferred route's (`A.civilDriveRoute`, starts at 0 at its own start).
+
+**Reader (pure, no model names — the discipline comes from `std_values.json _chainage_map`):**
+1. Glyph solids → labels: single-link cluster on plan (IFC x,y); link when centre gap < `link_k` × the larger glyph's plan diagonal.
+2. Text axis per label = principal axis of its glyph centres (one glyph → its own long axis); two senses tried, the one with the higher
+   match score wins (fixes 6/9, upside-down labels). Plan view from +Z, never mirrored.
+3. Characters = solids whose spans on the text axis overlap (a glyph in several pieces is one character); a space = gap > 0.45 × cap height.
+4. Each character is rasterised in the label frame (cap-height normalised, baseline kept) and matched by IoU against the browser's own
+   sans-serif glyphs (Arial → Liberation Sans): number token alphabet `0-9 . +`, prefix token `A-Z 0-9`. Score kept per character.
+5. Parse: `[PREFIX ]NUMBER`, NUMBER = metres or `k+mmm`. No prefix = mainline; a prefix = its own alignment (arm).
+**Anchoring:** each mainline label centre projects onto the drive route → (s_route, chainage). Real chainage at any s_route = piecewise
+linear between anchors, slope 1 beyond the ends. CHECK per interval: route length between two markers vs their printed step →
+`OK` within `drift_ok_m`, else `DRIFT n m`. Arms: markers only (no centreline in the model) — listed + tagged, no ticks.
+**On the road (toggle "Show on road" in the panel):** alignment ribbon on the road top (profile road z + lift) with ticks across it,
+minor every 20 m, major every 100 m (Civil 3D / OpenRoads station style), coloured by the speed zone when Speed zones has run, else
+one accent; one camera-facing tag `CH 1+200` per marker (arms `J2A 0+400`); hover chip `CH 1+147 · Z4 80 km/h · road 59.2 · ground 57.8`;
+a chainage strip along the bottom: zones as colour bands, stations, signs as dots, a cursor at the camera target; drag = fly along.
+**Panel:** a "Chainage" section in Road standards (`j`) — title, one-line facts, `Why / sources` collapsed, the interval check
+(DRIFT first), stations list (click → fly), arms collapsed.
+**Anchor (corrected after the first run):** the station is where the label's TEXT LINE crosses the route — the labels stand
+36–113 m beside the road, text running square to it; the nearest-point drop was up to ~20 m off and clamped "0" and "100" onto the
+route start. A label whose line does not cross the route (CH 0+000: the drive route starts after it) is listed, not an anchor.
+**Owners reused:** `A.civilDriveRoute` / `A.civilRouteAt` / `A.civilGotoChainage` / `A.civilProfilePrepare` (civil_sections.js),
+`A._speedZones` (zones + sign chainages). NON-IMPACT: civil-only; a building gets VACUOUS and nothing is drawn. New API:
+`A.chainage.read()`, `A.chainage.realAt(sRoute)`, `A.chainage.routeSOf(ch)`, `A.chainage.show()/hide()`.
+**Perf:** one mesh for ribbon + ticks, sprites for tags; `§CHAINAGE_GRID_DRAW verts= heapMB=` at the end; hide disposes everything.
+**Witness `viewer/tests/witness_chainage_grid.js` — ISSUE: are the stations read from the model's own markers, and do ticks, tags,
+hover and strip all agree with them?** (1) mainline reads as a gap-free 0…N step-100 run, monotone along the route by the witness's
+own projection; each arm monotone; every character's score logged · (2) RED control: delete one glyph of one label → the run check
+FAILS · (3) tags == markers, text == formatted value · (4) tick count == independent count over the anchored range · (5) hover at 3
+projected points → chip value == `realAt` of the witness's own projection ±0.5 m · (6) strip drag to 3 x → camera on the route at that
+chainage ±1 m · (7) hide → 0 objects left, strip gone · (8) Duplex VACUOUS, never PASS.
+
+**§CHAINAGE_GRID RESULT (2026-10-08, bim-ootb `feat/chainage-grid`, sw v1623, witness 13/13 GPU=sw):** reader 332 solids → 36 labels,
+all parsed (mainline 0+000…2+200 = 23, J1A×3 J1B×2 J2A×5 J2B×3), lowest char IoU 0.63 (J2A "7"), read 0.9 s; RED (one glyph of 1300
+deleted) → run check fails. Route check (inferred drive route vs printed 100 m steps): 12 OK / 9 DRIFT, worst 500→600 route 88.5 m
+(−11.5) — the inferred route is up to ~12 % off per 100 m, so the panel now shows where "(inferred)" chainage was wrong.
+No ROAD surface under the route at CH 0+528–0+917 (390 m) → ribbon/tick height interpolated there (400 samples, logged).
+Draw: 84 minor + 22 major ticks, 36 tags, 7,188 verts, one mesh + one LineSegments + 36 sprites; hide removes all.
+Hover chip at 3 points == own interpolation within 0.2 m; strip clicks put the camera on the route at that s (0.00 m).
+NOT done (follow-ups): the other "(inferred)" readouts (speed-zone legend, Long/Cross, status row) still use route s — switching
+them to `A.chainage.realAt` changes their numbers, so it needs the user's go (NON-IMPACT rule); arms have tags only (no centreline).
