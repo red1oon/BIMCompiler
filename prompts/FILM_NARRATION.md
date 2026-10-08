@@ -1760,7 +1760,7 @@ assembled timeline (cards inserted), fit (Kokoro/Edge), mux per PLAYBOOK, witnes
   Waits cut (push 174 s, ERP load 172 s). ⚠ The viewer's Find bar shows "$ 110,400" (`§FIND_COST cur=$ pack=hardcoded`) while the
   rate is RM — narration says ringgit; the currency label is a viewer locale gap, not fixed.
 
-### §CHAINAGE_CLIP (2026-10-08) — "Chainage, read from the model itself" — `~/Videos/Chainage_from_model_letters_narrated_AFTER.mp4`
+### §CHAINAGE_CLIP (2026-10-08) — "Chainage, read from the model itself" — `~/Videos/Chainage_from_model_letters_narrated_v2_AFTER.mp4` (v1 had "JALAN JELAPANG" on the cover — user: no JELAPANG in outputs, only "Civil Works")
 User's own screen recording (`~/Videos/simplescreenrecorder-2026-10-08_11.08.02.mp4`, 0–71 s; desktop tail cut) + 8 s cover + 3 chapter
 cards (11.5 s, backdrops = the user's 3 screenshots 11-06-57 / 11-07-16 / 11-07-40) + 12 s black end card (user's text, paraphrased).
 Script `prompts/film_narration_chainage_dialogue.tsv` (every number → §CHAINAGE_* line in its source column). Kokoro EN F/M:
