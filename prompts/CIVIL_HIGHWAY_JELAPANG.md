@@ -587,6 +587,14 @@ with one-line totals (e.g. "Grade within ATJ limit: 1,840 m of 2,110 m", "Signs 
 drift lines == own interval recompute; grade stretches == own chord recompute on the profile + own ATJ lookup; sign counts == own DB
 query; text export == DOM lines; R on road → report, R on Duplex → §ROOM_CYCLE (report absent); environment line NOT CHECKED;
 RED control (threshold change flips a line's severity).
+Sections (user naming 2026-10-08): 🗺️ Alignment & Drift · ⛰️ Earthworks (cut/fill = road − EARTHWORK ground where both hit; NOT the
+no-road span) · 🚧 Geometric Health (grade; radius NOT CHECKED until edge geometry) · 🚦 Signs · 🌱 Environment. Title "The Road
+Report", sub "Measured on the model · judged by ATJ". PDF = printable A4 of the same lines + sources page.
+**RESULT (2026-10-08):** §CHAINAGE_EVERYWHERE = bim-ootb #1949 (chainage witness 14/14, speed zones 54/54; witness_civil_sections
+needs GPU=real — swiftshader hangs its PNG step — NOT yet run, auto-merge held). §ROAD_REPORT = #1950 stacked on #1949, witness
+12/12 GPU=sw. CivilWorksPath: CRITICAL 1 (0+500–0+600 drift 11.5 %); grade worst 11.4 % vs 3 % (Z3, Table 4.10D p.59) at
+CH 0+430–0+527 — a smooth descent in the profile (10.4 → 3.5 m), real, not a step; HEALTHY 12/21 intervals, 1,174/1,323 m grade,
+107/138 sign codes, 2/8 zones signed; earthworks: ground under only 141 m of road (one fill stretch, 3.0 m). Film code untouched.
 
 ### §MEM_GROWTH ▶ RESUME HERE (M4-A) — written 2026-10-08 for the next session
 **Where this spec lives:** bim-compiler branch `fable/meshdb-livewire` (NOT yet on `master`) — read this file from that branch.
