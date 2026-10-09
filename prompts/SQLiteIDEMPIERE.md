@@ -1182,4 +1182,13 @@ three-level documents (batch → journal → line, e.g. GL_Journal); models whos
 **Checklist to add a model (no code):** (1) pick the legacy table + doc type from the dictionary; (2) register the WS types for it on the pilot (SQL in `scripts/bridge/pilot/`, the same text goes to the admin); (3) write the descriptor; (4) one scenario in the corpus (facts → legacy via the link → SQLite engine result → `compare`); (5) read the `§GAP` lines; (6) fix SQLite per the CARDINAL RULE.
 Candidate first models by the dictionary (34 doc tables carry `DocAction` on the pilot): C_Payment, C_Invoice, M_Inventory, M_Movement, C_Cash, M_Requisition, GL_Journal, and Fixed Assets (A_Asset, A_Asset_Addition, A_Depreciation_Entry).
 
+## §55 "IF THAT IS POSSIBLE" — second model through the frozen layer with data only: PROVEN (2026-10-09)
+**Question (user):** can the layer be an adapter so new models need no further code? **Test:** Inventory Move (`M_Movement` + `M_MovementLine`, doc-action CO) — a different table family from orders — added as a **descriptor + WebService configuration only**:
+`scripts/bridge/pilot/ws_model_movement.sql` (3 WS types: create header, create line, complete; + 2 read-only query types in `ws_changelog_read.sql`) and the descriptor inside `witness_model_movement.js`.
+**Result `§MODEL_VERDICT PASS`:** DATA_ONLY (git shows the 9 layer files unchanged) · MOVE (one composite call; legacy movement CO with DocumentNo 10000000; stock left locator 101 46→45 and arrived at 102 0→1, psql oracle) ·
+READBACK (CONFIRMED by the link's own read-back; idmap has header + line ids + legacy DocumentNo) · REJECT (unknown product ⇒ REJECTED with the server's text, legacy movements +0 — atomic).
+**So: yes, for the header + lines + doc-action shape, which most legacy document models share (34 doc tables carry DocAction on the pilot).** Not yet proven, stated plainly: header-only masters (descriptor needs `docAction`), three-level documents (GL_Journal), and the SQLite-side comparison for movement
+(the SQLite engine's movement/inventory rules are the next `§GAP` hunt — that is the normal loop, not layer code).
+Per-model cost to add: ~30 lines of WS configuration SQL + ~10 lines of descriptor. Wired into `run_all.sh`.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

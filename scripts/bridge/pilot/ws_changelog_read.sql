@@ -51,7 +51,9 @@ BEGIN
       ('QueryADRefList','AD_Ref_List',NULL::text[]),
       ('QueryADValRule','AD_Val_Rule',NULL::text[]),
       ('QueryADProcess','AD_Process',NULL::text[]),
-      ('QueryADProcessPara','AD_Process_Para',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryADProcessPara','AD_Process_Para',NULL::text[]),
+      ('QueryMMovement','M_Movement',NULL::text[]),
+      ('QueryMMovementLine','M_MovementLine',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);
