@@ -37,7 +37,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const PL_CURRENCY = (lc(seed.prepare('SELECT c_currency_id FROM m_pricelist WHERE m_pricelist_id=?').get(pos.m_pricelist_id)) || {}).c_currency_id;
 // §46: currency precision table from the SQLite seed (the production posting db is the bundle that carries it; the scratch posting db lacks the table)
 const GB_PATCH = fs.readFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'patches', 'glassbowl_data.db.sql'), 'utf8');
-gb.exec(GB_PATCH); gb.exec(GB_PATCH);   // patch + loader in miniature: applied twice (idempotent by construction)
+require('./dict_diff').applyPatch(gb, GB_PATCH); require('./dict_diff').applyPatch(gb, GB_PATCH);   // patch + GUARDED loader in miniature (ALTERs skipped when present): applied twice
 // §42 F7: the period data the SQLite side owns (seed): client primary schema + its calendar's periods with their control rows
 const periodData = (() => {
   const ci = lc(seed.prepare('SELECT c_acctschema1_id s, c_calendar_id c FROM ad_clientinfo WHERE ad_client_id=11').get());
@@ -421,6 +421,72 @@ function localMove(mut = 0) {
   };
 }
 
+// ================= MODEL: AR Receipt settling an invoice (spec §57) — legacy through the frozen link (descriptor = test data), own key set =================
+const PAY_DESC = { pay: { composite: 'SyncOrder',
+  header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 119 }, C_BankAccount_ID: { const: 100 }, C_BPartner_ID: { path: 'bp' },
+    C_Invoice_ID: { path: 'invoice' }, C_Currency_ID: { const: 100 }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+  docAction: { serviceType: 'BridgeCompletePayment', table: 'C_Payment', action: 'CO' } } };
+const paySpec = { keys: ['outcome', 'docstatus', 'isallocated', 'invoice_paid', 'allocation', 'postings_payment', 'postings_alloc', 'postings_payment_euro', 'postings_alloc_euro'], notCompared: {} };
+let payLink = null;
+async function legacyPay(f) {
+  if (!payLink) { let bytes = null; payLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: PAY_DESC }); }
+  let invId = f.invoice, amt;
+  if (invId == null) {   // the invoice to settle comes from a real sale (same path as S11)
+    const sale = await legacyRun({ doctype: POSDT, lines: f.lines });
+    if (sale.outcome !== 'COMPLETED') return { outcome: 'ERROR', error: 'sale failed: ' + sale.reason };
+    const inv = (await query(cfg, 'QueryCInvoice', `C_Order_ID=${sale._order}`))[0]; invId = inv.C_Invoice_ID; amt = Number(inv.GrandTotal);
+  } else amt = f.amt;
+  const uid = payLink.submit('pay', { bp: f.bp || BP, invoice: invId, amt: (amt * 100 + (f.mut || 0)) / 100, date: (f.date || TODAY) + ' 00:00:00', note: 'M3 ' + f.id });
+  await payLink.drain(); const st = payLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const pid = payLink.store.idmap(uid).find(x => x.tbl === 'C_Payment').server_id;
+  const p = (await query(cfg, 'QueryCPayment', `C_Payment_ID=${pid}`))[0];
+  const inv = (await query(cfg, 'QueryCInvoice', `C_Invoice_ID=${invId}`))[0];
+  const al = await query(cfg, 'QueryCAllocationLine', `C_Payment_ID=${pid}`);
+  const hdrs = []; for (const a of al) hdrs.push((await query(cfg, 'QueryCAllocationHdr', `C_AllocationHdr_ID=${a.C_AllocationHdr_ID}`))[0]);
+  const books = async (t, id, sc) => id ? await legacyFactsOf(t, id, sc) : 'none';
+  const hid = hdrs[0] && hdrs[0].C_AllocationHdr_ID;
+  return { outcome: 'COMPLETED', docstatus: p.DocStatus, isallocated: p.IsAllocated === true || p.IsAllocated === 'Y' ? 'Y' : 'N', invoice_paid: inv.IsPaid === true || inv.IsPaid === 'Y' ? 'Y' : 'N',
+    allocation: al.map((a, i) => `${hdrs[i].DocStatus}:${cents(a.Amount)}:${cents(a.WriteOffAmt)}:${cents(a.DiscountAmt)}:${a.C_Invoice_ID === invId ? 'inv' : a.C_Invoice_ID}`).join('|') || 'none',
+    postings_payment: await books(335, pid, SCHEMA), postings_alloc: await books(735, hid, SCHEMA), postings_payment_euro: await books(335, pid, SCHEMA2), postings_alloc_euro: await books(735, hid, SCHEMA2) };
+}
+// SQLite side: the sale through the kernel, then the kernel's payment verb (F16) and the posting fold
+function localPay(mut = 0) {
+  return async f => {
+    let inv = null;
+    if (f.invoice == null) {
+      const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: POSDT }, priceOf: priceOfAt, priceDate: TODAY, bomOf: () => [], wrPolicy: { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' },
+        taxOf: taxOfFor({}), taxById, taxChildren, taxIncluded: TAX_INCLUDED };
+      const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty));
+      const o = ++seq * 10, g = POS.buildSaleGroup(ctx, cart, { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: 103 });
+      if (!g.ok) return { outcome: 'ERROR', error: 'sale ' + g.reason };
+      inv = { c_invoice_id: o + 2, c_bpartner_id: f.bp || BP, grandtotal: g.grandTotal / 100, ispaid: 'N', docstatus: 'CO' };
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?)').run(inv.c_invoice_id, inv.c_bpartner_id, inv.grandtotal, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', 11, 11);
+    }
+    if (!inv) return { outcome: 'REJECTED', reason: 'invoice not found' };
+    const pid = ++seq * 10, amt = (cents(inv.grandtotal) + mut) / 100;
+    const pay = { c_payment_id: pid, c_bpartner_id: f.bp || BP, c_invoice_id: inv.c_invoice_id, payamt: amt, isreceipt: 'Y', c_currency_id: 100, c_bankaccount_id: 100, tendertype: 'X', dateacct: TODAY };
+    if (typeof E.completePayment !== 'function')
+      return { outcome: 'COMPLETED', docstatus: 'DR', isallocated: 'N', invoice_paid: 'N', allocation: 'none', postings_payment: 'none', postings_alloc: 'none', postings_payment_euro: 'none', postings_alloc_euro: 'none' };
+    const r = E.completePayment(pay, inv, { newId: () => ++seq * 10 });
+    if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    const status = t => (r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === t).pop() || {}).doc_status;
+    const ah = r.ops.find(o => o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr'), al = r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine');
+    gb.prepare('INSERT INTO c_payment(c_payment_id,c_bpartner_id,c_invoice_id,payamt,isreceipt,c_currency_id,c_bankaccount_id,tendertype,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)')
+      .run(pid, pay.c_bpartner_id, pay.c_invoice_id, amt, 'Y', 100, 100, 'X', TODAY + ' 00:00:00', status('C_Payment'), 11, 11);
+    if (ah) { gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id, TODAY + ' 00:00:00', status('C_AllocationHdr'), 11, 11);
+      for (const l of al) gb.prepare('INSERT INTO c_allocationline(c_allocationline_id,c_allocationhdr_id,c_payment_id,c_invoice_id,c_bpartner_id,amount,writeoffamt,discountamt) VALUES(?,?,?,?,?,?,?,?)')
+        .run(l.c_allocationline_id, ah.c_allocationhdr_id, l.c_payment_id, l.c_invoice_id, l.c_bpartner_id, l.amount, l.writeoffamt || 0, l.discountamt || 0); }
+    const fold = (t, id, sc) => { if (!id) return 'none'; const d = DP.derivePostings(gb, { table: t, id }, sc); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    const flag = (t, f2) => { const u = r.ops.filter(o => o.op_type === 'UPDATE_FIELD' && o.table === t && o.field === f2).pop(); return u ? u.value : 'N'; };
+    return { outcome: 'COMPLETED', docstatus: status('C_Payment'), isallocated: flag('C_Payment', 'isallocated'), invoice_paid: flag('C_Invoice', 'ispaid'),
+      allocation: al.map(l => `${status('C_AllocationHdr')}:${cents(l.amount)}:${cents(l.writeoffamt || 0)}:${cents(l.discountamt || 0)}:${l.c_invoice_id === inv.c_invoice_id ? 'inv' : l.c_invoice_id}`).join('|') || 'none',
+      postings_payment: fold('C_Payment', pid, SCHEMA), postings_alloc: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA),
+      postings_payment_euro: fold('C_Payment', pid, SCHEMA2), postings_alloc_euro: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA2) };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -485,6 +551,10 @@ const quirks = [
   const mrows = await R.run(keepOnly([{ id: 'MV1-move-inter-org', facts: { id: 'MV1', lines: [{ product: 137, qty: 1, from: 101, to: 102 }] }, legacy: legacyMove, local: localMove(0) },
     { id: 'MV-REJ-unknown-product', facts: { id: 'MVR', lines: [{ product: 999999, qty: 1, from: 101, to: 102 }] }, legacy: legacyMove, local: localMove(0) }]), moveSpec, quirks, { log });
   rows.push(...mrows);
+  // MODEL AR Receipt (spec §57)
+  const prows = await R.run(keepOnly([{ id: 'PAY1-receipt-settles-invoice', facts: { id: 'PAY1', lines: [{ product: 137, qty: 1 }] }, legacy: legacyPay, local: localPay(0) },
+    { id: 'PAY-REJ-unknown-invoice', facts: { id: 'PAYR', invoice: 999999999, amt: 1 }, legacy: legacyPay, local: localPay(0) }]), paySpec, quirks, { log });
+  rows.push(...prows);
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
@@ -507,6 +577,9 @@ const quirks = [
   // §56 negative control for the movement key set: +1 qty on the SQLite side MUST surface as a gap on lines/stock/books
   const mneg = await R.run([{ id: 'NEG-move-control', facts: { id: 'MVN', lines: [{ product: 137, qty: 1, from: 101, to: 102 }] }, legacy: legacyMove, local: localMove(1) }], moveSpec, quirks, { log });
   out('§M3_MOVE_NEGATIVE_CONTROL', mneg[0].verdict === 'SQLITE-GAP' && ['lines', 'stock_delta', 'postings'].every(k => mneg[0].gaps.some(g => g.key === k)), `+1 qty on the SQLite move ⇒ verdict=${mneg[0].verdict} gaps=${mneg[0].gaps.map(g => g.key).join(',')}`);
+  // §57 negative control for the payment key set: +1¢ on the SQLite receipt MUST surface (invoice not fully paid, books differ)
+  const pneg = await R.run([{ id: 'NEG-pay-control', facts: { id: 'PAYN', lines: [{ product: 137, qty: 1 }] }, legacy: legacyPay, local: localPay(1) }], paySpec, quirks, { log });
+  out('§M3_PAY_NEGATIVE_CONTROL', pneg[0].verdict === 'SQLITE-GAP' && ['invoice_paid', 'postings_payment'].every(k => pneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite receipt ⇒ verdict=${pneg[0].verdict} gaps=${pneg[0].gaps.map(g => g.key).join(',')}`);
   // §42 F7 rule branches the corpus cannot reach (S8b/S8d stop at the price rule first, like legacy): no period, before history, inside window, standard control
   { const P = (dt, data) => E.periodOpen(data || periodData, dt, 'SOO', TODAY);
     const std = { schema: { autoperiodcontrol: 'N' }, periods: periodData.periods };
@@ -517,12 +590,20 @@ const quirks = [
       `noPeriod=${r.noPeriod} beforeHistory=${r.beforeHistory} today=${r.today} today+200=${r.future200} standardControl(open?/status)=${r.stdControl}`); }
   // §46.1 second oracle for F12: the captured legacy books inside the shared posting db (invoice 109, EUR document, both schemas) — on a patched scratch copy the fold must equal them
   { const f2 = path.join(os.tmpdir(), 'm3-gb109-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), f2);
-    const g2 = new Database(f2); g2.exec(GB_PATCH);
+    const g2 = new Database(f2); require('./dict_diff').applyPatch(g2, GB_PATCH);
     const res = [101, 200000].map(sc2 => { const d = DP.derivePostings(g2, { table: 'C_Invoice', id: 109 }, sc2);
       const fa = g2.prepare('SELECT account_id, SUM(amtacctdr) amtacctdr, SUM(amtacctcr) amtacctcr FROM fact_acct WHERE ad_table_id=318 AND record_id=109 AND c_acctschema_id=? GROUP BY account_id').all(sc2);
       return { sc2, mine: fmtPostings(d.lines), oracle: fmtPostings(fa), absent: d.absent.length }; });
     out('§M3_F12_ORACLE2', res.every(r => r.mine === r.oracle && !r.absent && r.oracle !== 'none'), res.map(r => `schema ${r.sc2}: fold=${r.mine} captured=${r.oracle}`).join(' ; '));
     g2.close(); fs.unlinkSync(f2); }
+  // §57.1 second oracle for F16: every payment + allocation whose legacy books are captured in the shared posting db (both schemas) — 0 DIFF allowed; ABSENT only by name
+  { const f3 = path.join(os.tmpdir(), 'm3-gbpay-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), f3);
+    const g3 = new Database(f3); require('./dict_diff').applyPatch(g3, GB_PATCH); const t = { MATCH: 0, ABSENT: 0, DIFF: 0 }, notes = [];
+    for (const [tb, tid] of [['C_Payment', 335], ['C_AllocationHdr', 735]]) for (const sc2 of [SCHEMA, SCHEMA2]) for (const id of g3.prepare('SELECT DISTINCT record_id r FROM fact_acct WHERE ad_table_id=? AND c_acctschema_id=?').all(tid, sc2).map(r => r.r)) {
+      const d = DP.derivePostings(g3, { table: tb, id }, sc2), o = fmtPostings(g3.prepare('SELECT account_id, SUM(amtacctdr) amtacctdr, SUM(amtacctcr) amtacctcr FROM fact_acct WHERE ad_table_id=? AND record_id=? AND c_acctschema_id=? GROUP BY account_id').all(tid, id, sc2));
+      const v = d.absent && d.absent.length ? 'ABSENT' : fmtPostings(d.lines) === o ? 'MATCH' : 'DIFF'; t[v]++; if (v !== 'MATCH') notes.push(`${tb}#${id}@${sc2}:${v}${d.absent.length ? '(' + d.absent[0].slice(0, 60) + ')' : ''}`); }
+    out('§M3_F16_ORACLE2', t.DIFF === 0 && t.MATCH >= 7, `captured legacy books: MATCH=${t.MATCH} ABSENT=${t.ABSENT} DIFF=${t.DIFF} ${notes.join(' ')}`);
+    g3.close(); fs.unlinkSync(f3); }
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
   out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a quirk entry with no evidence is refused');

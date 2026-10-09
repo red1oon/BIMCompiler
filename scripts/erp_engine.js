@@ -366,6 +366,31 @@ function completeMovement(movement, lines, opts) {
   return { ok: true, ops: ops };
 }
 
+// completePayment — C_Payment CO with the invoice allocation. Implementing prompts/SQLiteIDEMPIERE.md §57 (F16) — Witness: M3 PAY1.
+// MPayment.completeIt → allocateIt (MPayment.java:2298-2304) → allocateInvoice (:2369-2420); MInvoice.testAllocation (:1433-1455); MPayment.testAllocation (:966-982).
+//   pay = { c_payment_id, c_bpartner_id, c_invoice_id, payamt, isreceipt, discountamt, writeoffamt, overunderamt, c_currency_id, dateacct }
+//   invoice = { c_invoice_id, grandtotal, issotrx ('Y' default), iscreditmemo, allocatedamt (already allocated, default 0), dateacct }   opts = { newId() }
+function completePayment(pay, invoice, opts) {
+  var c = function (v) { return Math.round(Number(v || 0) * 100); };
+  var ops = [{ op_type: 'SET_STATUS', table: 'C_Payment', id: pay.c_payment_id, doc_status: 'CO' }];
+  if (!pay.c_invoice_id) return { ok: true, ops: ops };                        // payment-selection / order / multi-allocation paths not ported (stated)
+  if (!invoice) return { ok: false, reason: 'invoice not found' };
+  var amt = c(pay.payamt), over = c(pay.overunderamt);
+  if (over < 0 && amt > 0) amt += over;                                         // :2373-2375 overpayment (negative)
+  var sign = String(pay.isreceipt) === 'N' ? -1 : 1;                            // :2386-2391 AP negated
+  var hid = opts.newId();
+  var da = [pay.dateacct, invoice.dateacct].filter(Boolean).sort().pop() || null;   // :2380-2382 header DateAcct = later of payment/invoice
+  ops.push({ op_type: 'CREATE_DOCUMENT', table: 'C_AllocationHdr', c_allocationhdr_id: hid, c_currency_id: pay.c_currency_id, dateacct: da });
+  ops.push({ op_type: 'CREATE_LINE', table: 'C_AllocationLine', c_allocationline_id: hid * 10 + 1, c_allocationhdr_id: hid, c_payment_id: pay.c_payment_id, c_invoice_id: invoice.c_invoice_id,
+    c_bpartner_id: pay.c_bpartner_id, amount: sign * amt / 100, discountamt: sign * c(pay.discountamt) / 100, writeoffamt: sign * c(pay.writeoffamt) / 100, overunderamt: sign * over / 100 });
+  ops.push({ op_type: 'SET_STATUS', table: 'C_AllocationHdr', id: hid, doc_status: 'CO' });
+  var invAlloc = c(invoice.allocatedamt) + sign * (amt + c(pay.discountamt) + c(pay.writeoffamt)) * (String(invoice.issotrx) === 'N' ? -1 : 1);
+  var total = c(invoice.grandtotal) * (String(invoice.issotrx) === 'N' ? -1 : 1) * (String(invoice.iscreditmemo) === 'Y' ? -1 : 1);
+  if (Math.abs(invAlloc) === Math.abs(total)) ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: invoice.c_invoice_id, field: 'ispaid', value: 'Y' });
+  if (amt === c(pay.payamt)) ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Payment', id: pay.c_payment_id, field: 'isallocated', value: 'Y' });
+  return { ok: true, ops: ops };
+}
+
 // ── TAX (prompts/SQLiteIDEMPIERE.md §45, F11) — Witness: M3 T1 + the tax keys of every scenario ─────────────────────────────────────
 // Integer-exact decimal helpers (BigInt): amounts in minor units (cents at precision 2); rates as decimal strings.
 function _dec(str) { var t = String(str == null ? '0' : str).trim(), neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
@@ -533,7 +558,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,

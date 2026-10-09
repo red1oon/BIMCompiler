@@ -53,7 +53,21 @@ BEGIN
       ('QueryADProcess','AD_Process',NULL::text[]),
       ('QueryADProcessPara','AD_Process_Para',NULL::text[]),
       ('QueryMMovement','M_Movement',NULL::text[]),
-      ('QueryMMovementLine','M_MovementLine',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryMMovementLine','M_MovementLine',NULL::text[]),
+      -- §57 payment model + §58-§61 next models (read-only)
+      ('QueryCPayment','C_Payment',NULL::text[]),
+      ('QueryCAllocationHdr','C_AllocationHdr',NULL::text[]),
+      ('QueryCAllocationLine','C_AllocationLine',NULL::text[]),
+      ('QueryMInventory','M_Inventory',NULL::text[]),
+      ('QueryMInventoryLine','M_InventoryLine',NULL::text[]),
+      ('QueryAAsset','A_Asset',NULL::text[]),
+      ('QueryAAssetAddition','A_Asset_Addition',NULL::text[]),
+      ('QueryADepreciationEntry','A_Depreciation_Entry',NULL::text[]),
+      ('QueryADepreciationExp','A_Depreciation_Exp',NULL::text[]),
+      ('QueryADepreciationWorkfile','A_Depreciation_Workfile',NULL::text[]),
+      ('QueryAAssetAcct','A_Asset_Acct',NULL::text[]),
+      ('QueryAAssetGroupAcct','A_Asset_Group_Acct',NULL::text[]),
+      ('QueryADepreciation','A_Depreciation',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

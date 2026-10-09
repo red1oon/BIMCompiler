@@ -68,11 +68,13 @@ function deriveInvoice(db, R, invId, schema) {
 // Unbalanced after conversion ⇒ legacy Fact.balanceAccounting (Fact.java:548-630) — NOT ported: reported absent, never invented.
 function _bigDec(v) { var t = String(v).trim(); if (/e/i.test(t)) t = Number(t).toFixed(20).replace(/0+$/, '').replace(/\.$/, ''); var neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
 function _rhuB(n, d) { var neg = n < 0n, a = neg ? -n : n, q = a / d; if ((a % d) * 2n >= d) q += 1n; return neg ? -q : q; }
-function convertToSchema(db, by, absent, invId, schema) {
+function convertToSchema(db, by, absent, invId, schema, table) {
+  table = table || 'c_invoice';
   // table/column-guarded like every §29-§38 addition: a posting db without c_currency/c_conversion_rate/c_acctschema keeps the old (unconverted) fold; the
   // c_currency table for the shared posting db ships as build/erp/patches/glassbowl_data.db.sql (patch text; host loader = open item, spec §46.1)
-  if (!_hasCol(db, 'c_invoice', 'c_currency_id') || !_hasCol(db, 'c_acctschema', 'c_currency_id') || !_hasCol(db, 'c_currency', 'stdprecision') || !_hasCol(db, 'c_conversion_rate', 'multiplyrate')) return;
-  var h = getRow(db, 'SELECT c_currency_id, dateacct, c_conversiontype_id, ad_client_id, ad_org_id FROM c_invoice WHERE c_invoice_id=?', num(invId));
+  if (!_hasCol(db, table, 'c_currency_id') || !_hasCol(db, 'c_acctschema', 'c_currency_id') || !_hasCol(db, 'c_currency', 'stdprecision') || !_hasCol(db, 'c_conversion_rate', 'multiplyrate')) return;
+  var ctCol = _hasCol(db, table, 'c_conversiontype_id') ? 'c_conversiontype_id' : 'NULL AS c_conversiontype_id';
+  var h = getRow(db, 'SELECT c_currency_id, dateacct, ' + ctCol + ', ad_client_id, ad_org_id FROM ' + table + ' WHERE ' + table + '_id=?', num(invId));
   var sc = getRow(db, 'SELECT c_currency_id FROM c_acctschema WHERE c_acctschema_id=?', num(schema));
   if (!h || h.c_currency_id == null || !sc || num(h.c_currency_id) === num(sc.c_currency_id)) return;
   var ct = num(h.c_conversiontype_id);
@@ -89,7 +91,23 @@ function convertToSchema(db, by, absent, invId, schema) {
   if (prec !== 2) { absent.push('currency precision ' + prec + ' not ported'); return; }
   var dr = 0, crs = 0;
   Object.keys(by).forEach(function (k) { by[k].dr = conv(by[k].dr); by[k].cr = conv(by[k].cr); dr += by[k].dr; crs += by[k].cr; });
-  if (dr !== crs) absent.push('currency balancing not ported (Fact.balanceAccounting, diff=' + (dr - crs) + ')');
+  if (dr !== crs && table === 'c_allocationhdr') absent.push('allocation rounding correction not ported (Doc_AllocationHdr.java:1147-1900 runs before balanceAccounting; diff=' + (dr - crs) + ')');
+  else if (dr !== crs) balanceAccounting(db, by, absent, schema, dr - crs);
+}
+// Fact.balanceAccounting (Fact.java:548-615) — currency-balancing branch: diff = DR−CR; a line on C_AcctSchema_GL.CurrencyBalancing_Acct, CR |diff| when DR exceeds, DR |diff| otherwise,
+// with sides switched (negative amount) when the biggest balance-sheet line's source balance is on the same side (:600-610). The "correct the biggest line" branch (no currency
+// balancing) is not ported ⇒ absent by name.
+function balanceAccounting(db, by, absent, schema, diff) {
+  var gl = _hasCol(db, 'c_acctschema_gl', 'usecurrencybalancing') ? getRow(db, 'SELECT usecurrencybalancing AS u, currencybalancing_acct AS a FROM c_acctschema_gl WHERE c_acctschema_id=?', num(schema)) : null;
+  if (!gl || String(gl.u) !== 'Y') { absent.push('currency correction of the biggest line not ported (Fact.balanceAccounting, diff=' + diff + ')'); return; }
+  var R = _R(), acct = R && R.elementOf ? R.elementOf(db, gl.a) : null;
+  if (!acct) { absent.push('CurrencyBalancing_Acct unresolved'); return; }
+  var bs = null, bsAmt = 0, isBS = function (id) { var e = getRow(db, 'SELECT accounttype FROM c_elementvalue WHERE c_elementvalue_id=?', num(id)); return e && ['A', 'L', 'O'].indexOf(String(e.accounttype)) >= 0; };
+  Object.keys(by).forEach(function (k) { var x = by[k], amt = Math.abs(x.dr - x.cr); if (isBS(x.account_id) && amt > bsAmt) { bsAmt = amt; bs = x; } });
+  var isDR = diff < 0, d = Math.abs(diff), drAmt = isDR ? d : 0, crAmt = isDR ? 0 : d;
+  if (bs && (((bs.dr > bs.cr) && isDR) || (!(bs.dr > bs.cr) && !isDR))) { drAmt = isDR ? 0 : -d; crAmt = isDR ? -d : 0; }   // switchIt
+  var k = acct.id; if (!by[k]) by[k] = { account_id: acct.id, value: acct.value, name: acct.name, dr: 0, cr: 0 };
+  by[k].dr += drAmt; by[k].cr += crAmt;
 }
 
 // ── SALES SHIPMENT (MMS, IsSOTrx=Y) manifest — gap S11 (prompts/SQLiteIDEMPIERE.md §29/§30), EXTRACTED from org.compiere.acct.Doc_InOut.createFacts
@@ -201,6 +219,65 @@ function costQtyUpdates(db, ioId) {
     }); });
   });
   return out;
+}
+
+// ── PAYMENT + ALLOCATION — §57, F16 ─────────────────────────────────────────────────────────────────────────────────────────────
+// derivePayment = Doc_Payment.createFacts (Doc_Payment.java:110-170): ARR DR {Bank.InTransit} / CR {Bank.UnallocatedCash}; APP DR {Bank.PaymentSelect} / CR {Bank.InTransit};
+// tender 'X' with sysconfig CASH_AS_PAYMENT='N' ⇒ no facts (:114-119; default true). Charge / prepayment branches not ported ⇒ absent.
+function derivePayment(db, R, payId, schema) {
+  var p = getRow(db, 'SELECT c_payment_id, c_bankaccount_id, isreceipt, payamt, tendertype' + (_hasCol(db, 'c_payment', 'c_charge_id') ? ', c_charge_id' : '') + (_hasCol(db, 'c_payment', 'isprepayment') ? ', isprepayment' : '') + ' FROM c_payment WHERE c_payment_id=?', num(payId));
+  if (!p) return null;
+  var by = {}, absent = [];
+  function add(side, el, amt) { var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
+  function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  if (String(p.tendertype) === 'X' && _hasCol(db, 'ad_sysconfig', 'value')) { var sc = getRow(db, "SELECT value FROM ad_sysconfig WHERE name='CASH_AS_PAYMENT'", []); if (sc && String(sc.value) === 'N') return { by: by, absent: absent }; }
+  if (num(p.c_charge_id)) { absent.push('payment charge not ported'); return { by: by, absent: absent }; }
+  if (String(p.isprepayment) === 'Y') { absent.push('prepayment not ported'); return { by: by, absent: absent }; }
+  var amt = cents(p.payamt);
+  if (String(p.isreceipt) !== 'N') { var a = el(R.resolve(db, '{Bank.InTransit}', num(p.c_bankaccount_id), schema)), b = el(R.resolve(db, '{Bank.UnallocatedCash}', num(p.c_bankaccount_id), schema)); if (a) add('DR', a, amt); if (b) add('CR', b, amt); }
+  else { var x = el(R.resolve(db, '{Bank.PaymentSelect}', num(p.c_bankaccount_id), schema)), y = el(R.resolve(db, '{Bank.InTransit}', num(p.c_bankaccount_id), schema)); if (x) add('DR', x, amt); if (y) add('CR', y, amt); }
+  convertToSchema(db, by, absent, payId, schema, 'c_payment');
+  return { by: by, absent: absent };
+}
+// deriveAllocation = Doc_AllocationHdr.createFacts, SO-invoice branch (Doc_AllocationHdr.java:236-363 + Doc_AllocationTax; the fold proven against captured books in
+// scripts/poc_alloc_post.js, now in the product): per line allocationSource = amount + discount + write-off;
+//   DR clearing = {Bank.UnallocatedCash} (payment's bank account) or {CashBook.CashTransfer} (cash line) = amount — skipped when !IsPostIfClearingEqual and clearing == receivable (FR-1840016);
+//   DR {BPGroup.PayDiscount} discount, DR {BPGroup.WriteOff} write-off, CR {BPartner.Receivable} allocationSource;
+//   TaxCorrectionType B/D/W ⇒ per invoice tax: DR {Tax.Due} / CR discount|write-off account, amount = round(tax × corr / invoice total) (calcAmount, 10dp then 2dp ≡ exact rounding).
+// The invoice tax base is the invoice's OWN tax rows (SQLite books are derived, not stored). AP invoices, realized gain/loss (rate differs between invoice and allocation) ⇒ absent by name.
+function deriveAllocation(db, R, hdrId, schema) {
+  var lines = allRows(db, 'SELECT * FROM c_allocationline WHERE c_allocationhdr_id=? ORDER BY c_allocationline_id', num(hdrId));
+  if (!lines.length) return null;
+  var sch = getRow(db, 'SELECT taxcorrectiontype, ispostifclearingequal FROM c_acctschema WHERE c_acctschema_id=?', num(schema)) || {};
+  var tcD = sch.taxcorrectiontype === 'B' || sch.taxcorrectiontype === 'D', tcW = sch.taxcorrectiontype === 'B' || sch.taxcorrectiontype === 'W', pice = sch.ispostifclearingequal === 'Y';
+  var by = {}, absent = [];
+  function add(side, el, amt) { if (!el || amt === 0) return; var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
+  function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  lines.forEach(function (l) {
+    var inv = num(l.c_invoice_id) ? getRow(db, 'SELECT c_invoice_id, issotrx, grandtotal FROM c_invoice WHERE c_invoice_id=?', num(l.c_invoice_id)) : null;
+    if (inv && String(inv.issotrx) === 'N') { absent.push('AP invoice allocation not ported'); return; }
+    var amount = cents(l.amount), disc = cents(l.discountamt), wo = cents(l.writeoffamt), src = amount + disc + wo;
+    var receivable = el(R.resolve(db, '{BPartner.Receivable}', num(l.c_bpartner_id), schema));
+    var clearing = null;
+    if (num(l.c_payment_id)) { var p = getRow(db, 'SELECT c_bankaccount_id FROM c_payment WHERE c_payment_id=?', num(l.c_payment_id)); clearing = p ? el(R.resolve(db, '{Bank.UnallocatedCash}', num(p.c_bankaccount_id), schema)) : null; }
+    else if (num(l.c_cashline_id)) { var cl = (_hasCol(db, 'c_cash', 'c_cashbook_id') ? getRow(db, 'SELECT h.c_cashbook_id AS c_cashbook_id FROM c_cashline c JOIN c_cash h ON h.c_cash_id=c.c_cash_id WHERE c.c_cashline_id=?', num(l.c_cashline_id)) : null) || (_hasCol(db, 'c_cashline', 'c_cashbook_id') ? getRow(db, 'SELECT c_cashbook_id FROM c_cashline WHERE c_cashline_id=?', num(l.c_cashline_id)) : null); /* the cash JOURNAL's cash book */ clearing = cl ? el(R.resolve(db, '{CashBook.CashTransfer}', num(cl.c_cashbook_id), schema)) : null; }
+    if (!pice && clearing && receivable && clearing.id === receivable.id) src = disc + wo; else add('DR', clearing, amount);
+    if (disc) add('DR', el(R.resolve(db, '{BPGroup.PayDiscount}', num(l.c_bpartner_id), schema)), disc);
+    if (wo) add('DR', el(R.resolve(db, '{BPGroup.WriteOff}', num(l.c_bpartner_id), schema)), wo);
+    add('CR', receivable, src);
+    if (inv && ((tcD && disc) || (tcW && wo))) {
+      var total = cents(inv.grandtotal), taxes = allRows(db, 'SELECT c_tax_id, taxamt FROM c_invoicetax WHERE c_invoice_id=?', num(inv.c_invoice_id));
+      taxes.forEach(function (t) {
+        var tax = Math.abs(cents(t.taxamt)); if (!tax || !total) return;
+        var tacct = el(R.resolve(db, '{Tax.Due}', num(t.c_tax_id), schema));
+        var corr = function (x) { return Number(_rhuB(BigInt(tax) * BigInt(x), BigInt(Math.abs(total)))); };
+        if (tcD && disc) { var a = corr(disc); add('DR', tacct, a); add('CR', el(R.resolve(db, '{BPGroup.PayDiscount}', num(l.c_bpartner_id), schema)), a); }
+        if (tcW && wo) { var b = corr(wo); add('DR', tacct, b); add('CR', el(R.resolve(db, '{BPGroup.WriteOff}', num(l.c_bpartner_id), schema)), b); }
+      });
+    }
+  });
+  convertToSchema(db, by, absent, hdrId, schema, 'c_allocationhdr');
+  return { by: by, absent: absent };
 }
 
 // ── INVENTORY MOVE (M_Movement) — §56, F15. Port of Doc_Movement.createFacts (Doc_Movement.java:128-232) + Fact.balanceSegments (Fact.java:405-480);
@@ -807,6 +884,8 @@ function derivePostings(db, recordRef, schema, R) {
   // B-3 0-seed classes (W-POST-B3 §W-3) — these read per-asset/project acct config, not R tokens
   if (table === 'M_InOut') return finish(deriveInOut(db, R, id, schema), 'inout', glOf('m_inout', id));
   if (table === 'M_Movement') return finish(deriveMovement(db, R, id, schema), 'movement', glOf('m_movement', id));
+  if (table === 'C_Payment') return finish(derivePayment(db, R, id, schema), 'payment', glOf('c_payment', id));
+  if (table === 'C_AllocationHdr') return finish(deriveAllocation(db, R, id, schema), 'allocation', glOf('c_allocationhdr', id));
   if (table === 'A_Asset_Addition') return finish(deriveAssetAddition(db, id, schema), 'fa-addition', glOf('a_asset_addition', id));
   if (table === 'A_Depreciation_Entry') return finish(deriveDepreciationEntry(db, id, schema), 'fa-depreciation', glOf('a_depreciation_entry', id));
   if (table === 'A_Asset_Reval') return finish(deriveAssetReval(db, id, schema), 'fa-reval', glOf('a_asset_reval', id));

@@ -180,3 +180,14 @@ INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,element
 INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200003,200000,'BP','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200003);
 INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200004,200000,'PJ','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200004);
 INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200005,200000,'MC','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200005);
+
+-- 2026-10-10 (spec §57, F16): Doc_AllocationHdr posts in the allocation header's currency; the posting db's c_allocationhdr lacks the column.
+-- ALTER statements must go through a guarded loader (dict_diff.applyPatch skips an ADD COLUMN that PRAGMA table_info already lists).
+ALTER TABLE c_allocationhdr ADD COLUMN c_currency_id;
+
+-- 2026-10-10 (spec §57, F16): Fact.balanceAccounting needs C_AcctSchema_GL.UseCurrencyBalancing; the captured allocation headers need their C_Currency_ID (values from the SQLite seed).
+ALTER TABLE c_acctschema_gl ADD COLUMN usecurrencybalancing;
+UPDATE c_acctschema_gl SET usecurrencybalancing='Y' WHERE c_acctschema_id=101;
+UPDATE c_acctschema_gl SET usecurrencybalancing='Y' WHERE c_acctschema_id=200000;
+UPDATE c_allocationhdr SET c_currency_id=100 WHERE c_allocationhdr_id=100 AND c_currency_id IS NULL;
+UPDATE c_allocationhdr SET c_currency_id=100 WHERE c_allocationhdr_id=101 AND c_currency_id IS NULL;
