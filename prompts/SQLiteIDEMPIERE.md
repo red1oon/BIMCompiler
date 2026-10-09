@@ -680,4 +680,17 @@ So no script would have fixed it; the loop's job was to surface it with evidence
 **Next tool (proposed, not built):** `dict_diff` — for a list of dictionary tables, legacy rows (WS) vs `ad_seed` rows → `§DICT_GAP` lines + a generated `patches/*.sql`
 for review. Expect it to clear the DATA family in bulk as scenarios multiply; RULE/MISSING stay one-at-a-time.
 
+### §26.1 DICT_DIFF BUILT + WITNESSED 2026-10-09 — the DATA class is now a script; what remains is RULE only (user: "nail it down to just RULE")
+Code: `dict_diff.js` (app-agnostic: `discover` legacy rows over read WS types → `compare` with the SQLite seed → `toPatch` from LEGACY values; INSERT OR IGNORE + UPDATE, **never DELETE**),
+spec data `dict_spec.json` (table, key, read type, keyBelow=1000000 so pilot test rows are ignored), witness `witness_dict_diff.js`, wired into `run_all.sh` with a `§TRIAGE` line.
+Patches are written to `scripts/bridge/out/dict_patch_<table>.sql` for review and applied only to a SCRATCH copy in the witness; no shared seed is touched (patch + self-heal loader is the delivery path).
+`§DD_VERDICT PASS`: DETECT (a corrupted cell and a deleted row both found — negative control) · PATCH_FIX (patch restores both from the legacy value; re-diff clean) · IDEMPOTENT (apply twice = no change) · NO_DELETE.
+**Real finding (the pattern the user saw):** `c_doctype` (51 legacy rows), `c_tax` (6), `m_pricelist` (4) — **0 differing cells, 0 missing rows**; SQLite's dictionary equals legacy on every column both share
+(41/27/15 columns). The only extra row is the SQLite null/system row `C_DocType_ID=0`. So today's whole gap list (S6) is **not data**: `§TRIAGE DATA_gaps=0 RULE_queue=[S6-standard-order]`.
+**The reduced loop (consistent, no per-gap stitching):**
+1. `scripts/bridge/run_all.sh` — runs everything, persists the log, prints `§TRIAGE`.
+2. If `DATA_gaps > 0` → review + apply the generated `out/dict_patch_*.sql` (ship via patch + loader), re-run. This step is mechanical.
+3. Whatever `SQLITE-GAP` remains with a clean dictionary is, by elimination, an engine **RULE** (MISSING behaviours are treated as RULE work too): failing scenario already exists (the gap IS the test) → decide fix vs accept → engine lane → re-run to MATCH.
+Extending coverage = add rows to `dict_spec.json` (+ a read type per table on the legacy side) and scenarios to the corpus; no new code unless a NEW pattern appears (record it here).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

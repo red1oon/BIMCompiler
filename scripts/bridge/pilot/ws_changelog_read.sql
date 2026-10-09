@@ -4,6 +4,7 @@
 --   QueryChangeLog : AD_ChangeLog (all columns)       QueryADColumn : AD_Column (id, name, table)
 --   QueryADTable   : AD_Table (id, name)
 --   QueryCOrder / QueryCOrderLine : read-back of pushed documents (M1 verify)
+--   QueryCDocType / QueryCTax / QueryMPriceList : dictionary rows for dict_diff (SQLite seed vs legacy)
 --   QueryCInvoice(+Line) / QueryMInOut(+Line) / QueryStorage / QueryFactAcct : read-only comparison inputs for the parallel-run reconcile (M3)
 SET search_path=adempiere;
 DO $$
@@ -20,7 +21,10 @@ BEGIN
       ('QueryMInOut','M_InOut',NULL::text[]),
       ('QueryMInOutLine','M_InOutLine',NULL::text[]),
       ('QueryStorage','M_Storage',NULL::text[]),
-      ('QueryFactAcct','Fact_Acct',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryFactAcct','Fact_Acct',NULL::text[]),
+      ('QueryCDocType','C_DocType',NULL::text[]),
+      ('QueryCTax','C_Tax',NULL::text[]),
+      ('QueryMPriceList','M_PriceList',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

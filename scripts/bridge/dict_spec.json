@@ -1,0 +1,5 @@
+[
+  { "table": "c_doctype",   "key": "C_DocType_ID",   "readType": "QueryCDocType",  "keyBelow": 1000000 },
+  { "table": "c_tax",       "key": "C_Tax_ID",       "readType": "QueryCTax",      "keyBelow": 1000000 },
+  { "table": "m_pricelist", "key": "M_PriceList_ID", "readType": "QueryMPriceList","keyBelow": 1000000 }
+]
