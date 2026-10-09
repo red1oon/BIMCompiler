@@ -1009,10 +1009,10 @@ const quirks = [
     { id: 'BS-REJ-payment-already-reconciled', facts: { id: 'BSR', amt: 7.77, reusePayment: true }, legacy: legacyBS, local: localBS(0) }]), bsSpec, quirks, { log }));
   if (!only) { const bneg = await R.run([{ id: 'NEG-bs-control', facts: { id: 'BSN', amt: 7.77 }, legacy: legacyBS, local: localBS(1) }], bsSpec, quirks, { log });
     out('§M3_BS_NEGATIVE_CONTROL', bneg[0].verdict === 'SQLITE-GAP' && ['statement_diff', 'ending', 'postings'].every(k => bneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite statement line ⇒ verdict=${bneg[0].verdict} gaps=${bneg[0].gaps.map(g => g.key).join(',')}`); }
-  // MODEL Project Issue (spec §71)
-  rows.push(...await R.run(keepOnly([{ id: 'PJI1-project-issue-stocked-item', facts: { id: 'PJI1', project: 100, product: 137, loc: 101, qty: 1 }, legacy: legacyPJI, local: localPJI(0) },
-    { id: 'PJI-REJ-no-product', facts: { id: 'PJIR', project: 100, product: 137, loc: 101, qty: 1, noProduct: true }, legacy: legacyPJI, local: localPJI(0) }]), pjiSpec, quirks, { log }));
-  if (!only) { const jneg = await R.run([{ id: 'NEG-pji-control', facts: { id: 'PJIN', project: 100, product: 137, loc: 101, qty: 1 }, legacy: legacyPJI, local: localPJI(1) }], pjiSpec, quirks, { log });
+  // MODEL Project Issue (spec §71) — product 139 (replenished every run by the P2P receipt): issuing 137 drained the costed qty the O2C/S12 suites ship (§76)
+  rows.push(...await R.run(keepOnly([{ id: 'PJI1-project-issue-stocked-item', facts: { id: 'PJI1', project: 100, product: 139, loc: 101, qty: 1 }, legacy: legacyPJI, local: localPJI(0) },
+    { id: 'PJI-REJ-no-product', facts: { id: 'PJIR', project: 100, product: 139, loc: 101, qty: 1, noProduct: true }, legacy: legacyPJI, local: localPJI(0) }]), pjiSpec, quirks, { log }));
+  if (!only) { const jneg = await R.run([{ id: 'NEG-pji-control', facts: { id: 'PJIN', project: 100, product: 139, loc: 101, qty: 1 }, legacy: legacyPJI, local: localPJI(1) }], pjiSpec, quirks, { log });
     out('§M3_PJI_NEGATIVE_CONTROL', jneg[0].verdict === 'SQLITE-GAP' && ['stock_delta', 'cost_qty_delta', 'postings'].every(k => jneg[0].gaps.some(g => g.key === k)), `+1 qty on the SQLite issue ⇒ verdict=${jneg[0].verdict} gaps=${jneg[0].gaps.map(g => g.key).join(',')}`); }
   // MODEL Distribution Order (spec §72)
   rows.push(...await R.run(keepOnly([{ id: 'DDO1-distribution-order-to-transit', facts: { id: 'DDO1', lines: [{ product: 137, qty: 2, from: 101, to: 50000 }] }, legacy: legacyDDO, local: localDDO(0) },
