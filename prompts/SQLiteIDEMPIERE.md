@@ -1456,4 +1456,12 @@ Cash Journal: MCash.completeIt (MCash.java) — an Invoice cash line creates and
 **Scenarios:** REQ1 = requisition (doctype 127, user = the login user, price list 102, warehouse 103, product 139 × 3, today) CO; REQ-REJ = no AD_User_ID ⇒ legacy Invalid; NEG +1¢. CASH1 = a direct AR invoice (the §58 path) settled by a cash journal (cash book 101) Invoice line for its GrandTotal; CASH-REJ = an Invoice line on a DRAFTED invoice (InvoiceCreateDocNotCompleted).
 **Keys:** REQ: outcome, docstatus, lines `product:qty:price¢:net¢`, total; CASH: outcome, docstatus, statement difference / ending balance, allocation `status:amount¢:inv:cash`, invoice IsPaid, cash books + allocation books (both schemas), BP open-item delta.
 
+### §66.3 DECISION RECORD F28 — the POS void reverses its invoice IN FULL (IsPaid + invoice-vs-reversal allocation), like legacy (2026-10-10, P17 from §64.3)
+**Evidence (`scratchpad/s12_before_f28.log`, after adding the keys S12 never compared):** S12 / S12b `inv_paid legacy Y/Y sqlite N/N`, `inv_allocations legacy CO:300:orig:- | CO:−300:rev:- sqlite none` (taxed: 318). MOrder.voidIt reverses each completed invoice with MInvoice.reverseCorrectIt (MOrder.java:2808-2830), which
+marks both paid and allocates the original against the reversal (MInvoice.java:2754-2812); `voidOrder` emitted only the reversal document.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` `voidOrder` invoice branch calls `reverseInvoice` (F22) instead of `_reversalInvoiceDocOps` alone (same reversal document ops, plus IsPaid, allocation reversal for any allocation the host passes, the new allocation);
+`witness_m3_gap.js` voidSpec + `inv_paid`, `inv_allocations` (legacy read + SQLite op fold).
+**Proof (`s12_after_f28.log`):** `§SCN S12-void-pos-sale MATCH compared=18`, `§SCN S12b-void-taxed-pos-sale MATCH compared=18` (was SQLITE-GAP on the 2 new keys). **Regression:** 99 engine witnesses vs the F27 run: identical except the 4 known-nondeterministic logs (no engine witness calls `voidOrder`).
+**Residue:** the delivery copy of `voidOrder` in ~/bim-ootb (Q-OOTB) does not have it.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

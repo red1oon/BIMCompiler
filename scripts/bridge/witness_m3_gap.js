@@ -274,7 +274,7 @@ async function legacyRun(f) {
 
 // ================= S12 VOID of a completed POS sale (spec §33) — own key set =================
 const voidSpec = { keys: ['outcome', 'docstatus', 'line_qty', 'line_desc', 'total_cents', 'shipments', 'ship_qtys', 'invoices', 'invoice_totals', 'stock_delta',
-  'post_inv_orig', 'post_inv_rev', 'post_ship_orig', 'post_ship_rev', 'invoice_tax_rev', 'order_desc'], notCompared: {} };
+  'post_inv_orig', 'post_inv_rev', 'post_ship_orig', 'post_ship_rev', 'invoice_tax_rev', 'order_desc', 'inv_paid', 'inv_allocations'], notCompared: {} };   // §66.3: the reversal's allocation + IsPaid (MInvoice.reverse) were never compared
 const call_ = require('./ad_client').call;
 const sortStr = a => a.map(String).sort().join(',');
 async function legacyFacts(table, id, wantRows) {                               // wait for the async poster: rows (or Posted=E) before folding
@@ -310,7 +310,11 @@ async function legacyVoid(f) {
     invoice_totals: sortStr(inv.map(x => cents(x.GrandTotal))), stock_delta: JSON.stringify(stock),
     post_inv_orig: oi ? await legacyFacts(318, oi.C_Invoice_ID, true) : 'none', post_inv_rev: ri ? await legacyFacts(318, ri.C_Invoice_ID, true) : 'none',
     invoice_tax_rev: ri ? (await query(cfg, 'QueryCInvoiceTax', `C_Invoice_ID=${ri.C_Invoice_ID}`)).map(t => `${t.C_Tax_ID}:${cents(t.TaxBaseAmt)}:${cents(t.TaxAmt)}`).sort().join('|') || 'none' : 'none',
-    post_ship_orig: os ? await legacyFacts(319, os.M_InOut_ID, true) : 'none', post_ship_rev: rs ? await legacyFacts(319, rs.M_InOut_ID, true) : 'none', _order: id };
+    post_ship_orig: os ? await legacyFacts(319, os.M_InOut_ID, true) : 'none', post_ship_rev: rs ? await legacyFacts(319, rs.M_InOut_ID, true) : 'none', _order: id,
+    inv_paid: `${oi ? (oi.IsPaid === true || oi.IsPaid === 'Y' ? 'Y' : 'N') : '-'}/${ri ? (ri.IsPaid === true || ri.IsPaid === 'Y' ? 'Y' : 'N') : '-'}`,
+    inv_allocations: await (async () => { const ids = [oi, ri].filter(Boolean).map(x => x.C_Invoice_ID); if (!ids.length) return 'none'; const r = [];
+      for (const al of await query(cfg, 'QueryCAllocationLine', `C_Invoice_ID IN (${ids.join(',')})`)) { const hh = (await query(cfg, 'QueryCAllocationHdr', `C_AllocationHdr_ID=${al.C_AllocationHdr_ID}`))[0];
+        r.push(`${hh.DocStatus}:${cents(al.Amount)}:${al.C_Invoice_ID === (oi && oi.C_Invoice_ID) ? 'orig' : 'rev'}:${al.C_Payment_ID ? 'pay' : '-'}`); } return r.sort().join('|') || 'none'; })() };
 }
 const adFull = new Database(path.join(__dirname, '..', '..', 'build', 'erp', 'ad_full.db'), { readonly: true });
 const VOIDED_MSG = adFull.prepare("SELECT msgtext FROM ad_message WHERE value='Voided'").get().msgtext;   // dictionary text, never hard-coded
@@ -337,9 +341,15 @@ function localVoid(mut = 0) {
     const status = { ['C_Order:' + o]: 'CO', ['M_InOut:' + opts.inoutId]: 'CO', ['C_Invoice:' + opts.invoiceId]: 'CO' }, docs = { M_InOut: [opts.inoutId], C_Invoice: [opts.invoiceId] };
     const ioLines = { [opts.inoutId]: sale.shipments[0].lines }, ivLines = { [opts.invoiceId]: sale.invoices[0].lines }, ivTot = { [opts.invoiceId]: sale.invoices[0].grandtotal }, revOf = {},
       ivTax = { [opts.invoiceId]: sale.invoices[0].taxes };
+    const paid = {}, allocs = {};   // §66.3
     let orderDesc = null; const oLines = {}; sl.forEach(l => { oLines[l.c_orderline_id] = { qty: l.qtyordered, desc: null }; }); let total = sl.reduce((a, l) => a + cents(l.linenetamt), 0);
     for (const op of ops) {
-      if (op.op_type === 'SET_STATUS') status[op.table + ':' + op.id] = op.doc_status;
+      if (op.table === 'C_AllocationHdr' || op.table === 'C_AllocationLine') {   // §66.3: the reversal's allocation (F28)
+        if (op.op_type === 'CREATE_DOCUMENT') allocs[op.c_allocationhdr_id] = { st: 'DR', lines: [] };
+        else if (op.op_type === 'CREATE_LINE') allocs[op.c_allocationhdr_id].lines.push(op);
+        else if (op.op_type === 'SET_STATUS' && allocs[op.id]) allocs[op.id].st = op.doc_status;
+      }
+      else if (op.op_type === 'SET_STATUS') status[op.table + ':' + op.id] = op.doc_status;
       else if (op.op_type === 'CREATE_DOCUMENT') { const id = op.m_inout_id || op.c_invoice_id; docs[op.table].push(id); revOf[op.table + ':' + id] = op.reversal_id; if (op.table === 'C_Invoice') ivTot[id] = op.grandtotal; }
       else if (op.op_type === 'CREATE_LINE' && op.table === 'M_InOutLine') (ioLines[op.m_inout_id] = ioLines[op.m_inout_id] || []).push(op);
       else if (op.op_type === 'CREATE_LINE' && op.table === 'C_InvoiceLine') (ivLines[op.c_invoice_id] = ivLines[op.c_invoice_id] || []).push(op);
@@ -347,6 +357,7 @@ function localVoid(mut = 0) {
       else if (op.op_type === 'UPDATE_LINE' && op.table === 'C_OrderLine') oLines[op.id] = { qty: op.qtyordered, desc: op.description };
       else if (op.op_type === 'UPDATE_FIELD' && op.table === 'C_Order' && op.field === 'totallines') total = cents(op.value);
       else if (op.op_type === 'UPDATE_FIELD' && op.table === 'C_Order' && op.field === 'description') orderDesc = op.value;
+      else if (op.op_type === 'UPDATE_FIELD' && op.table === 'C_Invoice' && op.field === 'ispaid') paid[op.id] = op.value;
     }
     // materialise every document into the scratch posting db and fold with the PRODUCT's derivePostings (orig + reversal)
     const post = {};
@@ -368,7 +379,9 @@ function localVoid(mut = 0) {
       total_cents: total, shipments: sortStr(docs.M_InOut.map(id => status['M_InOut:' + id])), ship_qtys: sortStr(docs.M_InOut.map(id => ioLines[id].reduce((a, l) => a + Number(l.movementqty), 0))),
       invoices: sortStr(docs.C_Invoice.map(id => status['C_Invoice:' + id])), invoice_totals: sortStr(docs.C_Invoice.map(id => cents(ivTot[id]))), stock_delta: JSON.stringify(stock),
       invoice_tax_rev: (ivTax[docs.C_Invoice.find(id => revOf['C_Invoice:' + id])] || []).map(t => `${t.c_tax_id}:${cents(t.taxbaseamt)}:${cents(t.taxamt)}`).sort().join('|') || 'none',
-      post_inv_orig: post['inv:orig'] || 'none', post_inv_rev: post['inv:rev'] || 'none', post_ship_orig: post['ship:orig'] || 'none', post_ship_rev: post['ship:rev'] || 'none' };
+      post_inv_orig: post['inv:orig'] || 'none', post_inv_rev: post['inv:rev'] || 'none', post_ship_orig: post['ship:orig'] || 'none', post_ship_rev: post['ship:rev'] || 'none',
+      inv_paid: (() => { const o = docs.C_Invoice.find(id => !revOf['C_Invoice:' + id]), r = docs.C_Invoice.find(id => revOf['C_Invoice:' + id]); return `${o ? paid[o] || 'N' : '-'}/${r ? paid[r] || 'N' : '-'}`; })(),
+      inv_allocations: Object.values(allocs).flatMap(a => a.lines.map(l => `${a.st}:${cents(l.amount)}:${revOf['C_Invoice:' + l.c_invoice_id] ? 'rev' : 'orig'}:${l.c_payment_id ? 'pay' : '-'}`)).sort().join('|') || 'none' };
   };
 }
 

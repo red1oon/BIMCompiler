@@ -409,7 +409,9 @@ function voidOrder(sale, opts) {
   (sale.invoices || []).forEach(function (iv) {
     if (skip[iv.docstatus]) return;
     if (iv.docstatus !== 'CO') { ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: iv.c_invoice_id, doc_status: 'VO' }); return; }
-    ops = ops.concat(_reversalInvoiceDocOps(iv, sale.order.c_order_id, opts.newId('C_Invoice')));   // §64.3: shared with reverseInvoice (same ops, same order)
+    // §66.3 (F28): MOrder.voidIt → MInvoice.reverseCorrectIt (MOrder.java:2808-2830) — the FULL invoice Reverse-Correct (F22): reversal document, both IsPaid, the invoice's allocations reversed,
+    // the invoice-vs-reversal allocation. Was the reversal document only (F4/F14), which left the reversed pair open on the BP and no allocation (measured on the pilot, S12).
+    ops = ops.concat(reverseInvoice(Object.assign({}, iv, { c_order_id: sale.order.c_order_id, issotrx: iv.issotrx || 'Y' }), { allocations: iv.allocations || [], payments: iv.payments || [] }, { newId: opts.newId }).ops);
   });
   (sale.lines || []).forEach(function (l) {
     if (Number(l.qtyordered) === 0) return;
