@@ -226,4 +226,10 @@ Goal: know "the model changed in a way that matters" from the change log alone, 
   change, (c) an AD_Val_Rule code only, (d) an AD_Tab name only. Expect events for a,b; for c only if AD_Val_Rule is in the
   set; none for d. Print INCONCLUSIVE if the log shows nothing for a/b (logging flags off).
 
+**Hash/counter alternative (user, 2026-10-09): rejected as a server field** — a counter or hash column on legacy is an
+"alien field" (schema change, admin impact). **Kept as a CLIENT-SIDE check instead:** the Bridge reads the sentinel tables
+over the existing read-only WS types, hashes the rows locally (kernel side stores the same hash), and compares per sync.
+Zero legacy footprint. It is the safety net for what the change log cannot see (direct SQL, logging flags off), and the
+same hash is the `sentinel_hash` both sides can show to prove "model aligned". Change log = fast path; hash = audit.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
