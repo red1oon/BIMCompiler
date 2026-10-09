@@ -59,7 +59,7 @@ const TAX_INCLUDED = (lc(seed.prepare('SELECT istaxincluded FROM m_pricelist WHE
 function taxOfFor(f) {
   const bp = f.bp || BP, org = f.org || 11, wh = f.wh || 103;
   const b = lc(seed.prepare('SELECT istaxexempt, deliveryviarule FROM c_bpartner WHERE c_bpartner_id=?').get(bp)) || {};
-  const dvr = f.deliveryVia || b.deliveryviarule || DVR_DEFAULT;
+  const dvr = f.invoice ? null : (f.deliveryVia || b.deliveryviarule || DVR_DEFAULT);   // §58: a direct invoice carries no DeliveryViaRule (MInvoiceLine.setTax :504-520)
   const orgLoc = locOf((lc(seed.prepare('SELECT c_location_id FROM ad_orginfo WHERE ad_org_id=?').get(org)) || {}).c_location_id);
   const whLoc = locOf((lc(seed.prepare('SELECT c_location_id FROM m_warehouse WHERE m_warehouse_id=?').get(wh)) || {}).c_location_id);
   const bpLoc = locOf((lc(seed.prepare('SELECT c_location_id FROM c_bpartner_location WHERE c_bpartner_location_id=?').get(LOC[bp])) || {}).c_location_id);
@@ -487,6 +487,49 @@ function localPay(mut = 0) {
   };
 }
 
+// ================= MODEL: AR Invoice created directly (spec §58) — legacy through the frozen link (descriptor = test data) =================
+const INV_DESC = { inv: { composite: 'SyncOrder',
+  header: { serviceType: 'BridgeCreateInvoice', table: 'C_Invoice', fields: { AD_Org_ID: { path: 'org' }, C_DocTypeTarget_ID: { const: 116 }, C_BPartner_ID: { path: 'bp' }, C_BPartner_Location_ID: { path: 'loc' },
+    M_PriceList_ID: { const: 101 }, IsSOTrx: { const: 'Y' }, DateInvoiced: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+  lines: { serviceType: 'BridgeCreateInvoiceLine', table: 'C_InvoiceLine', parent: 'C_Invoice_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
+    fields: { AD_Org_ID: { path: 'org' }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyInvoiced: { path: 'qty' } } },
+  docAction: { serviceType: 'BridgeCompleteInvoice', table: 'C_Invoice', action: 'CO' } } };
+const invSpec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'invoice_tax', 'grand_total_cents', 'postings', 'postings_euro', 'ispaid'], notCompared: {} };
+const invLinks = {};
+async function legacyInvoice(f) {
+  const org = f.org || 11;
+  if (!invLinks[org]) { let bytes = null; invLinks[org] = await createLink({ cfg: cfgFor(f), persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: INV_DESC }); }
+  const L = invLinks[org], bp = f.bp || BP;
+  const uid = L.submit('inv', { org, bp, loc: LOC[bp], date: (f.date || TODAY) + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines.map(l => ({ ...l, org })) });
+  await L.drain(); const st = L.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const id = L.store.idmap(uid).find(x => x.tbl === 'C_Invoice').server_id;
+  const h = (await query(cfg, 'QueryCInvoice', `C_Invoice_ID=${id}`))[0], ls = await query(cfg, 'QueryCInvoiceLine', `C_Invoice_ID=${id}`);
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, lines: ls.map(l => `${l.M_Product_ID}:${Number(l.QtyInvoiced)}:${cents(l.PriceActual)}:${l.C_Tax_ID}`).sort().join('|'), total_cents: cents(h.TotalLines),
+    invoice_tax: (await query(cfg, 'QueryCInvoiceTax', `C_Invoice_ID=${id}`)).map(t => `${t.C_Tax_ID}:${cents(t.TaxBaseAmt)}:${cents(t.TaxAmt)}`).sort().join('|') || 'none', grand_total_cents: cents(h.GrandTotal),
+    postings: await legacyFactsOf(318, id, SCHEMA), postings_euro: await legacyFactsOf(318, id, SCHEMA2), ispaid: h.IsPaid === true || h.IsPaid === 'Y' ? 'Y' : 'N' };
+}
+function localInvoice(mut = 0) {
+  return async f => {
+    const org = f.org || 11, bp = f.bp || BP, date = f.date || TODAY;
+    for (const l of f.lines) if (!lc(seed.prepare('SELECT m_product_id FROM m_product WHERE m_product_id=?').get(l.product))) return { outcome: 'REJECTED', reason: 'unknown product' };
+    if (typeof E.prepareInvoice !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', lines: 'none', total_cents: 0, invoice_tax: 'none', grand_total_cents: 0, postings: 'none', postings_euro: 'none', ispaid: 'N' };
+    const iid = ++seq * 10;
+    const r = E.prepareInvoice({ c_invoice_id: iid, issotrx: 'Y', c_bpartner_id: bp, dateinvoiced: date }, f.lines.map((l, i) => ({ c_invoiceline_id: iid * 100 + i, m_product_id: l.product, qtyinvoiced: l.qty })),
+      { priceOf: priceOfAt, taxOf: taxOfFor({ org, bp, invoice: true, date }), taxById, taxChildren, taxIncluded: TAX_INCLUDED, mutCents: mut });
+    if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    const ops = r.ops.concat(E.completeInvoice({ c_invoice_id: iid, issotrx: 'Y' }, r.lines, {}));
+    const status = (ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'C_Invoice').pop() || {}).doc_status;
+    gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?)').run(iid, bp, r.grandTotal / 100, 'Y', PL_CURRENCY, date + ' 00:00:00', 11, org);
+    r.lines.forEach((l, i) => gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt) VALUES(?,?,?,?)').run(l.c_invoiceline_id, iid, l.m_product_id, l.linenetamt));
+    r.taxes.forEach(t => gb.prepare('INSERT INTO c_invoicetax(c_invoice_id,c_tax_id,taxamt) VALUES(?,?,?)').run(iid, t.c_tax_id, t.taxamt / 100));
+    const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'C_Invoice', id: iid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : fmtPostings(d.lines); };
+    return { outcome: 'COMPLETED', docstatus: status, lines: r.lines.map(l => `${l.m_product_id}:${l.qtyinvoiced}:${cents(l.priceactual)}:${l.c_tax_id}`).sort().join('|'), total_cents: r.totalLines,
+      invoice_tax: r.taxes.map(t => `${t.c_tax_id}:${t.taxbaseamt}:${t.taxamt}`).sort().join('|') || 'none', grand_total_cents: r.grandTotal, postings: fold(SCHEMA), postings_euro: fold(SCHEMA2), ispaid: 'N' };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -555,6 +598,11 @@ const quirks = [
   const prows = await R.run(keepOnly([{ id: 'PAY1-receipt-settles-invoice', facts: { id: 'PAY1', lines: [{ product: 137, qty: 1 }] }, legacy: legacyPay, local: localPay(0) },
     { id: 'PAY-REJ-unknown-invoice', facts: { id: 'PAYR', invoice: 999999999, amt: 1 }, legacy: legacyPay, local: localPay(0) }]), paySpec, quirks, { log });
   rows.push(...prows);
+  // MODEL AR Invoice direct (spec §58)
+  const irows = await R.run(keepOnly([{ id: 'INV1-ar-invoice-taxed-direct', facts: { id: 'INV1', org: 12, wh: 104, lines: [{ product: 137, qty: 2 }] }, legacy: legacyInvoice, local: localInvoice(0) },
+    { id: 'INV2-ar-invoice-product-not-on-pricelist', facts: { id: 'INV2', org: 12, wh: 104, lines: [{ product: 122, qty: 1 }] }, legacy: legacyInvoice, local: localInvoice(0) },
+    { id: 'INV-REJ-unknown-product', facts: { id: 'INVR', org: 12, wh: 104, lines: [{ product: 999999, qty: 1 }] }, legacy: legacyInvoice, local: localInvoice(0) }]), invSpec, quirks, { log });
+  rows.push(...irows);
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
@@ -580,6 +628,9 @@ const quirks = [
   // §57 negative control for the payment key set: +1¢ on the SQLite receipt MUST surface (invoice not fully paid, books differ)
   const pneg = await R.run([{ id: 'NEG-pay-control', facts: { id: 'PAYN', lines: [{ product: 137, qty: 1 }] }, legacy: legacyPay, local: localPay(1) }], paySpec, quirks, { log });
   out('§M3_PAY_NEGATIVE_CONTROL', pneg[0].verdict === 'SQLITE-GAP' && ['invoice_paid', 'postings_payment'].every(k => pneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite receipt ⇒ verdict=${pneg[0].verdict} gaps=${pneg[0].gaps.map(g => g.key).join(',')}`);
+  // §58 negative control for the direct-invoice key set: +1¢ on the SQLite line MUST surface (totals, tax base, books)
+  const ineg = await R.run([{ id: 'NEG-inv-control', facts: { id: 'INVN', org: 12, wh: 104, lines: [{ product: 137, qty: 2 }] }, legacy: legacyInvoice, local: localInvoice(1) }], invSpec, quirks, { log });
+  out('§M3_INV_NEGATIVE_CONTROL', ineg[0].verdict === 'SQLITE-GAP' && ['total_cents', 'grand_total_cents', 'postings'].every(k => ineg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite invoice line ⇒ verdict=${ineg[0].verdict} gaps=${ineg[0].gaps.map(g => g.key).join(',')}`);
   // §42 F7 rule branches the corpus cannot reach (S8b/S8d stop at the price rule first, like legacy): no period, before history, inside window, standard control
   { const P = (dt, data) => E.periodOpen(data || periodData, dt, 'SOO', TODAY);
     const std = { schema: { autoperiodcontrol: 'N' }, periods: periodData.periods };

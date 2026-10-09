@@ -391,6 +391,27 @@ function completePayment(pay, invoice, opts) {
   return { ok: true, ops: ops };
 }
 
+// prepareInvoice — a stand-alone (direct) invoice: line pricing, line tax, invoice tax rows, totals, as ops. Implementing prompts/SQLiteIDEMPIERE.md §58 (F17) — Witness: M3 INV1/INV2.
+// MInvoiceLine.beforeSave (MInvoiceLine.java:877-950): price from the invoice's price list at DateInvoiced when PriceActual = PriceList = 0 (:899-903) — NO price-list refusal for invoices (unlike
+// MOrderLine :846-849), an unpriced product stays at 0; tax via Tax.get when C_Tax_ID = 0 (:917-918); LineNetAmt = PriceEntered × QtyEntered HALF_UP (:941); totals = StandardTaxProvider.calculateInvoiceTaxTotal
+// (StandardTaxProvider.java:166-230 — the order algorithm, `orderTaxes`). ctx = { priceOf(pid, date), taxOf(pid) → {ok,c_tax_id}, taxById, taxChildren, taxIncluded, mutCents (test only) }.
+function prepareInvoice(hdr, lines, ctx) {
+  var out = [], ops = [{ op_type: 'CREATE_DOCUMENT', table: 'C_Invoice', c_invoice_id: hdr.c_invoice_id, issotrx: hdr.issotrx, c_bpartner_id: hdr.c_bpartner_id, dateinvoiced: hdr.dateinvoiced }];
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i], p = ctx.priceOf(l.m_product_id, hdr.dateinvoiced), price = p && p.pricestd != null ? String(p.pricestd) : '0';
+    var t = ctx.taxOf(l.m_product_id); if (!t || !t.ok) return { ok: false, reason: 'TaxNotFound', m_product_id: l.m_product_id };
+    var pd = _dec(price), qd = _dec(l.qtyinvoiced), net = Number(_rhu(pd.n * qd.n * 100n, 10n ** BigInt(pd.k + qd.k))) + (i === 0 ? (ctx.mutCents || 0) : 0);
+    var line = { c_invoiceline_id: l.c_invoiceline_id, m_product_id: l.m_product_id, qtyinvoiced: l.qtyinvoiced, priceactual: price, linenetamt: (net / 100).toFixed(2), c_tax_id: t.c_tax_id };
+    out.push(line); ops.push(Object.assign({ op_type: 'CREATE_LINE', table: 'C_InvoiceLine', c_invoice_id: hdr.c_invoice_id }, line));
+  }
+  var r = orderTaxes(out, ctx.taxById, !!ctx.taxIncluded, ctx.taxChildren);
+  var bad = r.rows.filter(function (x) { return x.error; })[0]; if (bad) return { ok: false, reason: 'tax-error', detail: bad.error };
+  r.rows.forEach(function (x) { ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceTax', c_invoice_id: hdr.c_invoice_id, c_tax_id: x.c_tax_id, taxbaseamt: x.taxbaseamt / 100, taxamt: x.taxamt / 100 }); });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: hdr.c_invoice_id, field: 'totallines', value: r.totalLines / 100 });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: hdr.c_invoice_id, field: 'grandtotal', value: r.grandTotal / 100 });
+  return { ok: true, ops: ops, lines: out, taxes: r.rows, totalLines: r.totalLines, grandTotal: r.grandTotal };
+}
+
 // ── TAX (prompts/SQLiteIDEMPIERE.md §45, F11) — Witness: M3 T1 + the tax keys of every scenario ─────────────────────────────────────
 // Integer-exact decimal helpers (BigInt): amounts in minor units (cents at precision 2); rates as decimal strings.
 function _dec(str) { var t = String(str == null ? '0' : str).trim(), neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
@@ -558,7 +579,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,
