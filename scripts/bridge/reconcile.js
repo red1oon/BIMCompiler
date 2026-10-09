@@ -3,7 +3,8 @@
 //   scenario  = { id, facts, legacy: async facts → result, local: async facts → result }
 //   result    = flat { key: scalar|string } (the adapters decide what is comparable; the layer never interprets a key)
 //   spec      = { keys:[…], notCompared:{ key: 'reason' } }   // keys we cannot compare yet are LISTED, never silently skipped
-//   quirks    = [{ scenario, key, evidence }]                 // accepted LEGACY-QUIRK exclusions, evidence mandatory
+//   quirks    = [{ scenario, key, evidence, exemption }]      // LEGACY-QUIRK exclusions. CARDINAL RULE (spec top): SQLite may NOT differ from legacy,
+//                                                               // so an exclusion needs evidence AND `exemption` = the user's own words + date. Without it the entry is REFUSED (diff stays a SQLITE-GAP).
 'use strict';
 
 // A side may report a key as 'INCONCLUSIVE:<reason>' when its own reference result cannot be obtained (e.g. legacy posting errored).
@@ -22,9 +23,10 @@ function diff(a, b, spec) {
 function classify(scenarioId, diffs, quirks) {
   return diffs.map(d => {
     if (d.inconclusive) return { ...d, verdict: 'INCONCLUSIVE' };
-    const q = (quirks || []).find(q => q.scenario === scenarioId && q.key === d.key);
+    let q = (quirks || []).find(q => q.scenario === scenarioId && q.key === d.key);
     if (q && !q.evidence) throw new Error(`§RECON quirk ${scenarioId}/${d.key} has no evidence — refused`);
-    return { ...d, verdict: q ? 'LEGACY-QUIRK' : 'SQLITE-GAP', evidence: q && q.evidence };
+    if (q && !q.exemption) { console.log(`§QUIRK_REFUSED ${scenarioId}/${d.key} — no user exemption (cardinal rule: SQLite cannot differ from legacy); stays SQLITE-GAP`); q = null; }
+    return { ...d, verdict: q ? 'LEGACY-QUIRK' : 'SQLITE-GAP', evidence: q && q.evidence, exemption: q && q.exemption };
   });
 }
 

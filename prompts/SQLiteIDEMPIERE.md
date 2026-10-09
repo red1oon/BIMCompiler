@@ -8,6 +8,16 @@ Spec-first: every §Wx witness below is named before any implementation. Read th
 Never touch a real server without an explicit GO. EXTRACT/COMPILE ONLY — nothing here is invented; every
 unknown is a ⛔ in §9, not a guess. Honour until DONE.
 
+# ⚖ CARDINAL RULE (user, 2026-10-09 — outranks every other statement in this file; check it before ANY classification, fix, or question)
+> **"SQLite cannot be diff from legacy ops, I thought you knew that."** · **"Even L&F — this is the whole idea for zero impact on users."** · **"Ensure this cardinal rule throughout."**
+**SQLite must be INDISTINGUISHABLE from legacy: same operations, same results, same books, same look & feel. Zero impact on users.**
+1. **No accepted divergence.** A difference is never "a quirk we choose not to copy". The default and only remedy is to change SQLite until it equals legacy. A `LEGACY-QUIRK` exclusion exists only if the USER exempts it in their own words (recorded with date in the `exemption` field; the runner REFUSES it otherwise — `§QUIRK_REFUSED`).
+2. **Legacy defects/crashes are not a licence to differ.** If legacy refuses or errors on a reachable input, SQLite refuses too (same outcome, clearer message allowed); if legacy accepts, SQLite accepts.
+3. **L&F is part of "same result".** What a user sees and can do (windows, tabs, fields, order, labels, read-only/mandatory/display logic, defaults, messages, doc-action buttons, validation timing) must equal legacy. The UI is generated from the dictionary (AD-LAYER LAW), so most L&F parity is DATA/SCHEMA class (`dict_diff` over AD_Window/AD_Tab/AD_Field/AD_Column/AD_Menu/AD_Message/AD_Ref_List/AD_Val_Rule/AD_Process…) — proven by witnesses and `§` values, never by eyeballing (PRIMAL LAW: witness replaces human visual check).
+4. **UX is not "later = never".** The user parked UX for sequencing only (2026-10-09 "leave UX for now"); it stays on the ledger as a parity gap (F2 …) and is closed in turn.
+5. **Never ask the user to approve a divergence** (Q-S7, Q-S13 were wrong questions; answered by this rule). Questions are for undecidable facts only (P16).
+6. Every agent brief, witness, and report restates this rule; a witness that classifies a difference as acceptable without an `exemption` is itself a defect.
+
 # SQLite ⇄ iDempiere — the Bridge
 
 ## §000 SCOPE (user, 2026-10-09) — the limit
@@ -602,7 +612,7 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 |---|---|---|
 | **MATCH** | equal under §21 | keep as a regression scenario |
 | **SQLITE-GAP** | legacy is right, SQLite lacks/mis-implements a rule | fix the SQLite rule (default remedy), scenario stays as regression |
-| **LEGACY-QUIRK** | legacy itself misbehaves (defect, config accident, or deliberate peculiarity) | SQLite does NOT copy it; recorded as an accepted exclusion WITH evidence, so a later session does not "fix" SQLite toward the bug |
+| **LEGACY-QUIRK** | legacy itself misbehaves (defect, config accident, or deliberate peculiarity) | ⚖ **SUPERSEDED by the CARDINAL RULE**: only with the user's explicit `exemption` (their words + date) AND evidence; otherwise it is a SQLITE-GAP and SQLite changes to match. |
 **Seed corpus — behaviours already measured on the pilot this session (each becomes a runnable scenario in M3):**
 | # | Scenario (facts) | Legacy result (measured) | First verdict to establish on SQLite |
 |---|---|---|---|
@@ -821,5 +831,20 @@ storage/Fact_Acct for the original AND the reversal docs; SQLite: the W-POS-VOID
   or have SQLite copy legacy? Copying it means SQLite would need a running costed-quantity ledger (MCost.currentqty upkeep), which it does not have today.
 - **Q-S13** (§32): legacy refuses an order when the customer goes over their credit limit (CreditManagerOrder.java:48-98, including POS orders while `CHECK_CREDIT_ON_CASH_POS_ORDER=Y`). SQLite has no credit check.
   Should SQLite add it? That would mean the POS counter can refuse a sale for credit — a POS UX change, so it is your call (brief rule 6).
+
+## §35 CARDINAL RULE APPLIED (2026-10-09) — what it changes, enforced in code, backlog for the resume
+**Enforced structurally (not just written):** `reconcile.js` `classify()` honours a quirk only when it carries `evidence` AND `exemption` (user's words + date); otherwise logs `§QUIRK_REFUSED` and the diff stays SQLITE-GAP.
+Witness control both ways: `§M3_QUIRK_NEEDS_EXEMPTION PASS` (no exemption ⇒ SQLITE-GAP, with exemption ⇒ LEGACY-QUIRK). The S7a quirk entry the agent had registered was REMOVED (commit below); S3's lacks an exemption and is refused.
+**Re-classification of the open ledger under the rule:**
+| Item | Was | Now |
+|---|---|---|
+| S3 client-keyed price | LEGACY-QUIRK (SQLite refuses by P15) | **SQLITE-GAP (provisional)** — and note P15/"no free numbers" is a POS-LENS-surface concept; the SQLite AD-window clone of the Sales Order line must accept a keyed price exactly like legacy. Measure on the CRUD/AD-window path (`crud_overlay`), not only the POS lens. |
+| S5 stray accounting schema (legacy NPE) | LEGACY-QUIRK candidate | **same OUTCOME required**: legacy cannot complete ⇒ SQLite cannot complete (a named error is allowed). |
+| S7a POS sale beyond on-hand, costed qty < 0 | LEGACY-QUIRK (Q-S7) | **SQLITE-GAP (RULE)** — SQLite must refuse the shipment posting when the Average-PO costed quantity would go below zero (MCost.java:1919-1930). Needs a running costed-qty (`m_cost.currentqty`, cost detail) in the SQLite model — the §29 schema gap becomes a prerequisite, not hygiene. **Q-S7 answered: copy legacy.** |
+| S13 credit hold | SQLITE-GAP (Q-S13 asked) | **SQLITE-GAP (RULE/MISSING)** — implement `CreditManagerOrder` semantics (CreditManagerOrder.java:48-98; BP without a limit skips, MBPartner.java:833-836). **Q-S13 answered: yes, refuse like legacy** (the POS counter refusing for credit IS legacy behaviour). |
+| F2 kitchen/pick/POS lens bundle the DR shipment with the order | parked UX | **parity gap, queued** (sequenced after the data/rule gaps, per the user's "leave UX for now") — not a permanent exemption. |
+| LEGACY-QUIRK count in the corpus | 1-2 accepted | **0 until the user exempts something.** |
+**New backlog item (L&F parity, the user's "even L&F"):** extend `dict_diff` (composite keys + the §29 ALTER generator first) to the UI metadata tables and compare legacy vs SQLite seed; then a structural UI witness in the style of `prompts/ERP_IDEMPIERE_UX_PARITY.md` ("X of N AD windows pass": for every AD window/tab/field the SQLite renderer's computed field list, order, labels, read-only/mandatory/display logic and default values equal the legacy window read via WS) — numbers and `§` lines, never screenshots.
+**Resume brief for the paused agent (also usable by any session):** (1) restart pilot server, finish S12 void (resume point in §33); (2) S13 credit check in SQLite; (3) S7a costed-qty (schema patch first: `m_cost.currentqty` + cost detail semantics); (4) S3 on the AD-window path; (5) S8 past-dated, S5 same-outcome, tax, Euro schema; (6) dict_diff composite keys + ALTER generator; (7) L&F parity over the AD metadata tables; (8) F2 UX parity last. Every item: cardinal rule first, no exemption without the user's words.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

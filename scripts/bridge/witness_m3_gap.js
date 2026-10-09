@@ -148,7 +148,7 @@ const quirks = [
   { scenario: 'S3-client-keyed-price', key: 'lines', evidence: 'legacy accepted client PriceActual=10 with no PriceList recompute (pilot order 80005, 2026-10-09); SQLite refuses keyed prices by design (P15, POSLens §4)' },
   { scenario: 'S3-client-keyed-price', key: 'total_cents', evidence: 'same as lines: total follows the keyed price' },
   { scenario: 'S3-client-keyed-price', key: 'postings', evidence: 'same as lines: the books follow the keyed price (legacy posts 1000c, SQLite 6175c)' },
-  { scenario: 'S7a-pos-sale-beyond-onhand', key: 'postings_shipment', evidence: 'legacy refuses the WHOLE shipment posting when the Average-PO costed qty would go below 0 (MCost.setCurrentQty, MCost.java:1919-1930; pilot AD_Issue 1000287 2026-10-09 "Azalea Bush, Current Qty=5.0, New Current Qty=-1.0") — shipment stays Posted=E; SQLite keeps no costed-qty state and books COGS at current cost (spec §30 record: not reproduced; §31; open question Q-S7)' },
+  // S7a quirk REMOVED 2026-10-09 (user: SQLite cannot differ from legacy ops, incl. L&F): legacy refuses the shipment posting below costed qty 0 (MCost.java:1919-1930) ⇒ SQLite must refuse too. Now a SQLITE-GAP, spec §35.
 ];
 
 (async () => {
@@ -171,13 +171,17 @@ const quirks = [
   out('§M3_NO_ERROR', rows.every(r => r.legacy.outcome !== 'ERROR' && r.sqlite.outcome !== 'ERROR'), `errors=${rows.filter(r => r.legacy.outcome === 'ERROR' || r.sqlite.outcome === 'ERROR').map(r => r.id + ':' + (r.legacy.error || r.sqlite.error)).join(',') || 'none'}`);
   const judged = rows.filter(r => r.legacy.outcome === 'COMPLETED').length;
   out('§M3_NOT_VACUOUS', judged > 0 ? true : 'INCONCLUSIVE', `scenarios where legacy completed a document=${judged} of ${rows.length}`);
-  out('§M3_QUIRK_CLASS', by['S3-client-keyed-price'].verdict === 'LEGACY-QUIRK' && by['S3-client-keyed-price'].gaps.every(g => g.evidence), `S3 verdict=${by['S3-client-keyed-price'].verdict} (registered quirk with evidence)`);
+  // CARDINAL RULE enforcement: a quirk without the user's exemption must NOT be honoured; with it, it is. (control both ways, synthetic diff)
+  const d0 = [{ key: 'k', legacy: 1, sqlite: 2 }];
+  const noEx = R.classify('x', d0, [{ scenario: 'x', key: 'k', evidence: 'e' }])[0];
+  const withEx = R.classify('x', d0, [{ scenario: 'x', key: 'k', evidence: 'e', exemption: 'user 2026-10-09: "<words>"' }])[0];
+  out('§M3_QUIRK_NEEDS_EXEMPTION', noEx.verdict === 'SQLITE-GAP' && withEx.verdict === 'LEGACY-QUIRK', `no exemption ⇒ ${noEx.verdict}; with the user's exemption ⇒ ${withEx.verdict}`);
   // negative control: a SQLite side that is off by one cent MUST be reported as a gap
   const neg = await R.run([{ id: 'NEG-control', facts: { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }, legacy: legacyRun, local: localRun(1) }], spec, quirks, { log });
   out('§M3_NEGATIVE_CONTROL', neg[0].verdict === 'SQLITE-GAP' && neg[0].gaps.some(g => g.key === 'total_cents') && neg[0].gaps.some(g => g.key === 'postings'), `+1 cent on the SQLite side ⇒ verdict=${neg[0].verdict} (must be SQLITE-GAP on total_cents AND postings)`);
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
-  out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a LEGACY-QUIRK entry with no evidence is refused');
+  out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a quirk entry with no evidence is refused');
 
   const gaps = rows.flatMap(r => r.gaps).filter(g => g.verdict === 'SQLITE-GAP');
   const incKeys = rows.flatMap(r => r.inconclusive.map(i => r.id + '/' + i.key));

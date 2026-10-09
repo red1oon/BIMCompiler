@@ -5,6 +5,12 @@
 
 **NEVER TOUCH PRODUCTION.** `deploy/live/` is the production snapshot — do not edit directly. All dev work goes to `deploy/dev/` ONLY. Read `deploy/OCI_UPLOAD.md` §RULES before any OCI upload.
 
+## ⚖ TWIN CARDINAL RULE — SQLite == legacy iDempiere, incl. L&F (2026-10-09, user directive)
+> *"SQLite cannot be diff from legacy ops."* · *"Even L&F — this is the whole idea for zero impact on users."* · *"Ensure this cardinal rule throughout."*
+The SQLite ERP kernel/UI is a TWIN of legacy iDempiere: same operations, results, books, look & feel. **No accepted divergence**: a difference found by the parallel run
+(`scripts/bridge/run_all.sh`, `prompts/SQLiteIDEMPIERE.md`) is fixed on the SQLite side; a `LEGACY-QUIRK` exemption exists only in the user's own words (the runner refuses it otherwise).
+Never ask the user to approve a divergence. Full text: top of `prompts/SQLiteIDEMPIERE.md`.
+
 ## ⚖ PRIMAL LAW — WITNESS REPLACES EVERY HUMAN VISUAL CHECK (2026-08-26, user directive)
 > **USER, 2026-08-26:** *"Can u make it primal law now that WITNESS is to replace all human visual
 > checks"* … *"till Gantt chart editor to successfully edit the bars and it correctly works"*
