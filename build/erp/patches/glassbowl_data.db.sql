@@ -216,3 +216,17 @@ INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) 
 INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 103,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=103 AND c_acctschema_id=200000);
 INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50001,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50001 AND c_acctschema_id=200000);
 INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50008,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50008 AND c_acctschema_id=200000);
+-- 2026-10-10 (spec §65.1, F24): MCost.setWeightedAverage rounds to 2 × the schema currency COSTING precision (MAcctSchema.getCostingPrecision = C_Currency.CostingPrecision,
+-- MAcctSchema.java:550-570); Doc_MatchPO rounds the converted PO cost to it. Values from the SQLite seed ad_seed_fullwidth.db (USD 4, EUR 4). Guarded ALTER (loader skips an existing column).
+ALTER TABLE c_currency ADD COLUMN costingprecision;
+UPDATE c_currency SET costingprecision=4 WHERE c_currency_id IN (100,102,114) AND costingprecision IS NULL;
+UPDATE c_currency SET costingprecision=0 WHERE c_currency_id=113 AND costingprecision IS NULL;
+-- 2026-10-10 (spec §65.1, F24): Doc_InOut / Doc_MatchPO read the order line's TAX (rate, summary) to decide the purchase-cost tax correction (Doc_InOut.java:719-783);
+-- the posting db has no c_tax. Rows = the SQLite seed ad_seed_fullwidth.db, client 11 (SQLite's own dictionary), not invented.
+CREATE TABLE IF NOT EXISTS c_tax(c_tax_id INT, rate REAL, issummary TEXT, parent_tax_id INT);
+INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 104,0,'N',NULL WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=104);
+INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 105,6,'N',NULL WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=105);
+INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 106,7,'N',108 WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=106);
+INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 107,7.5,'N',108 WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=107);
+INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 108,14.5,'Y',NULL WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=108);
+INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 109,0,'N',NULL WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=109);

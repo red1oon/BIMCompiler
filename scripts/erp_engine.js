@@ -721,6 +721,34 @@ function invoiceOrderLineEffects(invoice, iLines, orderLines) {
   return { ok: true, ops: ops };
 }
 
+// completeInOut — a shipment/receipt doc-action CO (MInOut.completeIt MInOut.java:1640-2140), the parts the cycles measure. Implementing prompts/SQLiteIDEMPIERE.md §65.1 (F24) — Witness: M3 P2P2-RCPT.
+// per line with a product: storage at the line locator += qty (a '-' movement: −qty, :1686-1690); the order-line rule (inoutOrderLineEffects); for a PURCHASE receipt (IsSOTrx=N, not a reversal)
+// with an order line: MatchPO (MMatchPO.create(null, sLine, MovementDate, MovementQty) :2076-2090) whose afterSave adds the qty to QtyDelivered (MMatchPO.java:1185-1195). Status CO.
+// io = { m_inout_id, issotrx, movementtype, docstatus, reversal_id }; lines [{m_inoutline_id, m_product_id, movementqty, c_orderline_id, m_locator_id}]; opts = { orderLines, newId(table) }
+function completeInOut(io, lines, opts) {
+  opts = opts || {};
+  if (io.docstatus && io.docstatus !== 'DR' && io.docstatus !== 'IP') return { ok: false, reason: 'not-open', docstatus: io.docstatus };
+  if (!lines || !lines.length) return { ok: false, reason: 'NoLines' };
+  var out = String(io.movementtype).charAt(1) === '-', ops = [];
+  lines.forEach(function (l) { if (l.m_product_id && Number(l.movementqty)) ops.push({ op_type: 'MOVE_STOCK', table: 'M_Storage', m_product_id: l.m_product_id, m_locator_id: l.m_locator_id, qty: out ? -Number(l.movementqty) : Number(l.movementqty) }); });
+  if (opts.orderLines) {
+    var eff = inoutOrderLineEffects(io, lines, opts.orderLines).ops; ops = ops.concat(eff);
+    if (String(io.issotrx) === 'N' && !io.reversal_id) {
+      var cur = {}; opts.orderLines.forEach(function (o) { cur[o.c_orderline_id] = Number(o.qtydelivered || 0); });
+      eff.forEach(function (o) { if (o.qtydelivered != null) cur[o.id] = o.qtydelivered; });
+      lines.forEach(function (l) {
+        if (!l.m_product_id || !l.c_orderline_id || !(l.c_orderline_id in cur)) return;
+        var mid = opts.newId('M_MatchPO');
+        ops.push({ op_type: 'CREATE_DOCUMENT', table: 'M_MatchPO', m_matchpo_id: mid, c_orderline_id: l.c_orderline_id, m_inoutline_id: l.m_inoutline_id, c_invoiceline_id: null, m_product_id: l.m_product_id, qty: Number(l.movementqty) });
+        cur[l.c_orderline_id] += Number(l.movementqty);
+        ops.push({ op_type: 'UPDATE_LINE', table: 'C_OrderLine', id: l.c_orderline_id, qtydelivered: cur[l.c_orderline_id] });
+      });
+    }
+  }
+  ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: io.m_inout_id, doc_status: 'CO' });
+  return { ok: true, ops: ops };
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -914,7 +942,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

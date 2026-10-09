@@ -138,6 +138,7 @@ function currentCost(db, productId, schema) {
 function deriveInOut(db, R, ioId, schema, opt) {
   var hdr = getRow(db, 'SELECT m_inout_id,issotrx,movementtype FROM m_inout WHERE m_inout_id=?', num(ioId));
   if (!hdr) return null;
+  if (String(hdr.issotrx) === 'N' && String(hdr.movementtype) === 'V+') return deriveReceipt(db, R, ioId, schema);   // §65.1 (F24): the vendor receipt
   if (!(String(hdr.issotrx) === 'Y' && String(hdr.movementtype) === 'C-')) return null;       // only the sales-shipment class is built
   // Doc_InOut.loadLines (Doc_InOut.java:126-134): lines with no product or MovementQty 0 are not posted (§47, S14c)
   var lines = allRows(db, 'SELECT m_product_id,movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId)).filter(function (l) { return num(l.m_product_id) && Number(l.movementqty) !== 0; });
@@ -177,6 +178,98 @@ function deriveInOut(db, R, ioId, schema, opt) {
     if (asset) add('CR', asset, amt);
   });
   return { by: by, absent: absent };
+}
+
+// ── VENDOR RECEIPT (MMR, IsSOTrx=N, V+) — §65.1 (F24), Doc_InOut.createFacts "Vendor - Receipt" (Doc_InOut.java:676-880) ─────────────────────────────────────
+// Average PO / Average Invoice / Last PO costing: costs = order line PriceCost (else PriceActual) × qty in the ORDER currency (:704-787); Dr {Product.Asset} / Cr {BPGroup.NotInvoicedReceipts};
+// each fact line converted to the schema currency at the receipt DateAcct, HALF_UP at the schema currency precision (FactLine.convert). Not ported, reported by name: tax-included or
+// tax-distributing order lines (:719-783), landed cost allocations (:692-699), Standard/FIFO costing (current cost path :791), services, reversals of a receipt (updateReverseLine).
+function _fxConvertCents(db, cents, curFrom, schema, dateAcct, client, org, absent) {
+  var as = schemaRow(db, schema); if (!as) { absent.push('schema ' + schema); return null; }
+  if (num(curFrom) === num(as.c_currency_id)) return cents;
+  var rate = fxRate(db, curFrom, as.c_currency_id, dateAcct, client, org);
+  if (rate == null) { absent.push('NoCurrencyConversion ' + curFrom + '->' + as.c_currency_id); return null; }
+  var r = _bigDec(rate); return Number(_rhuB(BigInt(cents) * r.n, 10n ** BigInt(r.k)));
+}
+function _poLineCost(db, ol, absent) {   // order line PriceCost, else PriceActual; tax corrections not ported (named)
+  var price = ol.pricecost != null && Number(ol.pricecost) !== 0 ? ol.pricecost : ol.priceactual;
+  if (num(ol.c_tax_id)) { var t = getRow(db, 'SELECT rate FROM c_tax WHERE c_tax_id=?', num(ol.c_tax_id)); if (!t) { absent.push('c_tax#' + ol.c_tax_id); return null; } if (Number(t.rate) !== 0) { absent.push('tax-corrected purchase cost not ported (Doc_InOut.java:719-783)'); return null; } }
+  return price;
+}
+function deriveReceipt(db, R, ioId, schema) {
+  var hdr = getRow(db, 'SELECT * FROM m_inout WHERE m_inout_id=?', num(ioId));
+  var by = {}, absent = [];
+  function add(side, el, amt) { var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
+  function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  if (num(hdr.reversal_id)) { absent.push('receipt reversal not ported (Doc_InOut.java:826-840 updateReverseLine)'); return { by: by, absent: absent }; }
+  var lines = allRows(db, 'SELECT * FROM m_inoutline WHERE m_inout_id=?', num(ioId)).filter(function (l) { return num(l.m_product_id) && Number(l.movementqty) !== 0; });
+  lines.forEach(function (l) {
+    var cm = costingMethodOf(db, l.m_product_id, schema);
+    if (['A', 'I', 'L'].indexOf(cm) < 0) { absent.push('receipt costing method ' + cm + ' not ported'); return; }
+    var ol = num(l.c_orderline_id) ? getRow(db, 'SELECT ol.*, o.c_currency_id AS ocur FROM c_orderline ol LEFT JOIN c_order o ON o.c_order_id=ol.c_order_id WHERE ol.c_orderline_id=?', num(l.c_orderline_id)) : null;
+    if (!ol) { absent.push('Resubmit - No Costs for ' + l.m_product_id + ' (required order line)'); return; }   // :789-792
+    var price = _poLineCost(db, ol, absent); if (price == null) return;
+    var pd = _bigDec(price), qd = _bigDec(l.movementqty), src = Number(_rhuB(pd.n * qd.n * 100n, 10n ** BigInt(pd.k + qd.k)));
+    if (src === 0 && Number(ol.priceactual) !== 0) { absent.push('Resubmit - No Costs for ' + l.m_product_id); return; }
+    var cur = ol.c_currency_id != null ? ol.c_currency_id : ol.ocur; if (cur == null) { absent.push('order currency'); return; }
+    var amt = _fxConvertCents(db, src, cur, schema, hdr.dateacct, hdr.ad_client_id, hdr.ad_org_id, absent); if (amt == null) return;
+    var asset = el(R.resolve(db, '{Product.Asset}', num(l.m_product_id), schema));
+    var nir = el(R.resolve(db, '{BPGroup.NotInvoicedReceipts}', num(hdr.c_bpartner_id), schema));
+    if (asset) add('DR', asset, amt);
+    if (nir) add('CR', nir, amt);
+  });
+  return { by: by, absent: absent };
+}
+// MatchPO → Average-PO cost (Doc_MatchPO.createFacts :285-410 + createMatchPOCostDetail :584-660 → MCostDetail.createOrder → process :1560-1576 → MCost.setWeightedAverage MCost.java:1696-1742).
+// poCost = order line PriceCost else PriceActual (tax corrections named absent), × rate and HALF_UP at the currency COSTING precision when the order is in another currency;
+// amount = Σ (other MatchPOs of the line with a receipt, same DateAcct) + poCost × qty, HALF_UP at the costing precision; weighted average: old = price × curQty / (curQty+qty), new = amt / (curQty+qty)
+// (each at scale 12 HALF_UP), sum rounded to 2 × costing precision when longer; CumulatedAmt/Qty and CurrentQty += amt/qty. Returns the NEW m_cost values per schema for the
+// Average-PO element only (other elements: named, not ported). Refuses (absent) on AverageCostingNegativeQty / ZeroQty exactly where legacy throws.
+function _decStr(v) { return _bigDec(v); }
+function _scaleTo(d, k) { return k >= d.k ? d.n * 10n ** BigInt(k - d.k) : _rhuB(d.n, 10n ** BigInt(d.k - k)); }
+function _fmtDec(n, k) { var neg = n < 0n, a = neg ? -n : n, t = a.toString().padStart(k + 1, '0'); return (neg ? '-' : '') + (k ? t.slice(0, -k) + '.' + t.slice(-k) : t); }
+function costUpdatesForMatchPO(db, matchPOId) {
+  var mp = getRow(db, 'SELECT * FROM m_matchpo WHERE m_matchpo_id=?', num(matchPOId)); if (!mp || !num(mp.m_inoutline_id)) return [];
+  var ol = getRow(db, 'SELECT ol.*, o.c_currency_id AS ocur, o.ad_client_id AS oclient, o.ad_org_id AS oorg FROM c_orderline ol LEFT JOIN c_order o ON o.c_order_id=ol.c_order_id WHERE ol.c_orderline_id=?', num(mp.c_orderline_id)); if (!ol) return [];
+  var io = getRow(db, 'SELECT h.dateacct, h.ad_client_id, h.ad_org_id FROM m_inoutline l JOIN m_inout h ON h.m_inout_id=l.m_inout_id WHERE l.m_inoutline_id=?', num(mp.m_inoutline_id));
+  var out = [], absent = [];
+  allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct, c_currency_id AS cur FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []).forEach(function (sc) {
+    if (costingMethodOf(db, mp.m_product_id, sc.id) !== 'A') return;
+    var el = getRow(db, "SELECT m_costelement_id FROM m_costelement WHERE costingmethod='A' ORDER BY m_costelement_id LIMIT 1", []); if (!el) return;
+    var cp = getRow(db, 'SELECT ' + (_hasCol(db, 'c_currency', 'costingprecision') ? 'costingprecision' : 'NULL') + ' AS p FROM c_currency WHERE c_currency_id=?', num(sc.cur));
+    if (!cp || cp.p == null) { absent.push('currency costing precision'); return; }
+    var prec = num(cp.p), price = _poLineCost(db, ol, absent); if (price == null) return;
+    var po = _decStr(price), cur = ol.c_currency_id != null ? ol.c_currency_id : ol.ocur;
+    if (num(cur) !== num(sc.cur)) {   // Doc_MatchPO.java:391-408
+      var rate = fxRate(db, cur, sc.cur, io && io.dateacct, ol.oclient || 11, ol.oorg || 0); if (rate == null) { absent.push('PurchaseOrderNotConvertible'); return; }
+      var r = _decStr(rate), n = po.n * r.n, k = po.k + r.k; po = k > prec ? { n: _rhuB(n, 10n ** BigInt(k - prec)), k: prec } : { n: n, k: k };
+    }
+    var qd = _decStr(mp.qty), amtN = po.n * qd.n, amtK = po.k + qd.k;   // poCost × qty (other same-day MatchPOs of the line: none in scope ⇒ named below)
+    var others = allRows(db, 'SELECT m_matchpo_id FROM m_matchpo WHERE c_orderline_id=? AND m_matchpo_id<>? AND m_inoutline_id IS NOT NULL', [num(mp.c_orderline_id), num(matchPOId)]);
+    if (others.length) { absent.push('partial MatchPO accumulation not ported (Doc_MatchPO.java:596-640)'); return; }
+    if (amtK > prec) { amtN = _rhuB(amtN, 10n ** BigInt(amtK - prec)); amtK = prec; }
+    var c = getRow(db, 'SELECT * FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?', [num(mp.m_product_id), sc.id, sc.ct, num(el.m_costelement_id)]);
+    var cq = _decStr(c && c.currentqty != null ? c.currentqty : 0), cpz = _decStr(c && c.currentcostprice != null ? c.currentcostprice : 0);
+    var ca = _decStr(c && c.cumulatedamt != null ? c.cumulatedamt : 0), cuq = _decStr(c && c.cumulatedqty != null ? c.cumulatedqty : 0);
+    var S = 12, q12 = _scaleTo(qd, S), cq12 = _scaleTo(cq, S), sum = cq12 + q12;
+    if (qd.n === 0n && cq.n <= 0n) { absent.push('AverageCostingZeroQty'); return; }
+    if (sum < 0n) { absent.push('AverageCostingNegativeQty'); return; }
+    var price12 = _scaleTo(cpz, S);
+    var newPrice = price12;
+    if (sum !== 0n) {
+      var oldSum = price12 * cq12;                                   // scale 24
+      var oldCost = _rhuB(oldSum, sum);                              // (scale 24) / (scale 12) ⇒ scale 12, HALF_UP
+      var amt12 = amtN * 10n ** BigInt(S - amtK);
+      var newCost = _rhuB(amt12 * 10n ** 12n, sum);                  // scale 12, HALF_UP
+      newPrice = oldCost + newCost;
+      if (S > prec * 2) newPrice = _rhuB(newPrice, 10n ** BigInt(S - prec * 2)) * 10n ** BigInt(S - prec * 2);
+    }
+    var amtS = amtN * 10n ** BigInt(S - amtK);
+    out.push({ m_product_id: num(mp.m_product_id), c_acctschema_id: sc.id, m_costtype_id: sc.ct, m_costelement_id: num(el.m_costelement_id),
+      currentcostprice: Number(_fmtDec(newPrice, S)), currentqty: Number(_fmtDec(cq12 + q12, S)), cumulatedamt: Number(_fmtDec(_scaleTo(ca, S) + amtS, S)), cumulatedqty: Number(_fmtDec(_scaleTo(cuq, S) + q12, S)) });
+  });
+  if (absent.length) return [{ absent: absent }];
+  return out;
 }
 
 // ── §38 (F6) costed quantity — MCostDetail.process (MCostDetail.java:1327-1400) + MCostElement.getCostingMethods (MCostElement.java:148-159) + MCost.setCurrentQty (:1919-1930)
@@ -921,7 +1014,7 @@ function derivePostings(db, recordRef, schema, R) {
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
 var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, costQtyUpdatesFor: costQtyUpdatesFor, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
-             glCategoryFor: glCategoryFor, fxRate: fxRate };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
+             glCategoryFor: glCategoryFor, fxRate: fxRate, costUpdatesForMatchPO: costUpdatesForMatchPO };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }
 if (typeof window !== 'undefined') { window.DocPoster = _api; }

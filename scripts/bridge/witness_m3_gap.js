@@ -210,9 +210,10 @@ async function legacyFactsOf(table, id, schema) {
   let fa = []; for (let i = 0; i < 6 && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${schema}`); if (!fa.length) await new Promise(r => setTimeout(r, 1500)); }
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
   if (fa.length) return fmtPostings(Object.values(by));
-  const tq = table === 318 ? ['QueryCInvoice', 'C_Invoice_ID'] : table === 319 ? ['QueryMInOut', 'M_InOut_ID'] : null;
+  // §65 (P17): the posted-without-lines check knew only invoices/shipments; the cycles post orders, matchings, payments and allocations too
+  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'] }[table] || null;
   const posted = tq ? ((await query(cfg, tq[0], `${tq[1]}=${id}`))[0] || {}).Posted : null;
-  return posted === 'Y' ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
+  return posted === 'Y' || posted === true ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
 // §41/F9: costed quantity (Average PO element, primary schema) — derived cost STATE, compared as a delta so back-date re-processing cannot hide behind the start-of-run sync
 const AVG_EL = 103;
@@ -670,6 +671,17 @@ const quirks = [
     const nr = []; for (const [i, st] of ['SO', 'SHIP', 'INV'].entries()) nr.push(...await R.run([{ ...NEG.scenario(st, i), id: 'NEG-o2c-' + st }], { keys: NEG.KEYS[st], notCompared: {} }, quirks, { log }));
     o2cNeg = nr;
   }
+  // FULL CYCLE Purchase-to-Pay (spec §65)
+  let p2pNeg = null;
+  if (!only || only.startsWith('P2P')) {
+    const ctxP = { cfg, query, createLink, gb, seed, E, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, locStock, taxRows, taxById, taxChildren, log };
+    const P2P = require('./cycle_p2p')(ctxP);
+    for (const [i, st] of P2P.STEPS.entries()) rows.push(...await R.run([P2P.scenario(st, i)], { keys: P2P.KEYS[st], notCompared: {} }, quirks, { log }));
+    if (!only || only === 'P2P-NEG') { const NEG = require('./cycle_p2p')({ ...ctxP, log: () => {}, mut: 1, idBase: 95000 });
+      const nr = []; for (const [i, st] of ['PO', 'RCPT', 'INV'].entries()) nr.push(...await R.run([{ ...NEG.scenario(st, i), id: 'NEG-p2p-' + st }], { keys: NEG.KEYS[st], notCompared: {} }, quirks, { log })); p2pNeg = nr; }
+  }
+  if (p2pNeg) out('§M3_P2P_NEGATIVE_CONTROL', p2pNeg[0].verdict === 'MATCH' && p2pNeg[1].verdict === 'MATCH' && p2pNeg[2].verdict === 'SQLITE-GAP' && ['inv_lines', 'grand_total', 'books'].every(k => p2pNeg[2].gaps.some(g => g.key === k)),
+    `+1¢ on the SQLite AP invoice price ⇒ PO=${p2pNeg[0].verdict} RCPT=${p2pNeg[1].verdict} INV=${p2pNeg[2].verdict} gaps=${p2pNeg[2].gaps.map(g => g.key).join(',')}`);
   if (o2cNeg) out('§M3_O2C_NEGATIVE_CONTROL', o2cNeg[0].verdict === 'MATCH' && o2cNeg[1].verdict === 'MATCH' && o2cNeg[2].verdict === 'SQLITE-GAP' && ['inv_lines', 'grand_total', 'books', 'bp_delta'].every(k => o2cNeg[2].gaps.some(g => g.key === k)),
     `+1¢ on the SQLite invoice price ⇒ SO=${o2cNeg[0].verdict} SHIP=${o2cNeg[1].verdict} INV=${o2cNeg[2].verdict} gaps=${o2cNeg[2].gaps.map(g => g.key).join(',')}`);
   if (only) onlyExit();

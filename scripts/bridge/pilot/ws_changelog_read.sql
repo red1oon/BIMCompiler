@@ -69,7 +69,11 @@ BEGIN
       ('QueryAAssetGroupAcct','A_Asset_Group_Acct',NULL::text[]),
       ('QueryADepreciation','A_Depreciation',NULL::text[]),
       -- §63: the login role's approve-own-doc flag (an AD default of A_Depreciation_Entry.IsApproved)
-      ('QueryADRole','AD_Role',ARRAY['AD_Role_ID','Name','IsCanApproveOwnDoc'])) AS v(val,tbl,cols) LOOP
+      ('QueryADRole','AD_Role',ARRAY['AD_Role_ID','Name','IsCanApproveOwnDoc']),
+      -- §65 Purchase-to-Pay cycle: matching + cost history (read-only)
+      ('QueryMMatchPO','M_MatchPO',NULL::text[]),
+      ('QueryMMatchInv','M_MatchInv',NULL::text[]),
+      ('QueryMCostDetail','M_CostDetail',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);
