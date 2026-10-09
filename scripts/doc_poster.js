@@ -46,6 +46,7 @@ function allRows(db, sql, params) { return (db.prepare(sql).all(params) || []).m
 function deriveInvoice(db, R, invId, schema) {
   var hdr = getRow(db, 'SELECT c_invoice_id,c_bpartner_id,grandtotal,issotrx FROM c_invoice WHERE c_invoice_id=?', num(invId));
   if (!hdr) return null;
+  if (String(hdr.issotrx) === 'N' && _apInvoiceBuilt(db, invId)) return deriveAPInvoice(db, R, invId, schema);   // §65.2 (F25)
   var lines = allRows(db, 'SELECT m_product_id,linenetamt FROM c_invoiceline WHERE c_invoice_id=?', num(invId));
   var taxes = allRows(db, 'SELECT c_tax_id,taxamt FROM c_invoicetax WHERE c_invoice_id=?', num(invId));
   var by = {}, absent = [];
@@ -59,6 +60,35 @@ function deriveInvoice(db, R, invId, schema) {
   if (rcv) add('DR', rcv, hdr.grandtotal);
   lines.forEach(function (l) { var e = el(R.resolve(db, '{Product.Revenue}', num(l.m_product_id), schema)); if (e) add('CR', e, l.linenetamt); });
   taxes.forEach(function (t) { var e = el(R.resolve(db, '{Tax.Due}', num(t.c_tax_id), schema)); if (e) add('CR', e, t.taxamt); });
+  convertToSchema(db, by, absent, invId, schema);
+  return { by: by, absent: absent };
+}
+
+// ── AP INVOICE (API) — §65.2 (F25), Doc_Invoice.createFacts DOCTYPE_APInvoice (Doc_Invoice.java:605-760) ─────────────────────────────────────────────────────────
+// Dr per tax {Tax.Credit} (APTaxType credit; a sales-tax/expense tax is not ported), Dr per line {Product.InventoryClearing} for an item / {Product.Expense} otherwise (amount = LineNetAmt), Cr {Vendor.V_Liability}
+// = GrandTotal (all items, or PostServices off — the services-liability split is deprecated, :733-737); charges, landed cost, trade discount, credit memos (APC) and reversals named absent.
+// Built only when the invoice row carries its C_DocType_ID and that doctype is API (older posting dbs keep the previous behaviour).
+function _apInvoiceBuilt(db, invId) {
+  if (!_hasCol(db, 'c_invoice', 'c_doctype_id')) return false;
+  var r = getRow(db, 'SELECT d.docbasetype AS t FROM c_invoice i JOIN c_doctype d ON d.c_doctype_id=i.c_doctype_id WHERE i.c_invoice_id=?', num(invId));
+  return !!(r && r.t === 'API');
+}
+function deriveAPInvoice(db, R, invId, schema) {
+  var hdr = getRow(db, 'SELECT * FROM c_invoice WHERE c_invoice_id=?', num(invId));
+  var by = {}, absent = [];
+  function add(side, el, amt) { if (!el) return; var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += cents(amt); else by[k].cr += cents(amt); }
+  function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  if (num(hdr.reversal_id)) { absent.push('AP invoice reversal not ported'); return { by: by, absent: absent }; }
+  if (Number(hdr.chargeamt || 0) !== 0) { absent.push('AP invoice header charge not ported'); return { by: by, absent: absent }; }
+  allRows(db, 'SELECT c_tax_id, taxamt FROM c_invoicetax WHERE c_invoice_id=?', num(invId)).forEach(function (t) { if (Number(t.taxamt) !== 0) add('DR', el(R.resolve(db, '{Tax.Credit}', num(t.c_tax_id), schema)), t.taxamt); });
+  allRows(db, 'SELECT m_product_id, linenetamt' + (_hasCol(db, 'c_invoiceline', 'c_charge_id') ? ', c_charge_id' : '') + ' FROM c_invoiceline WHERE c_invoice_id=?', num(invId)).forEach(function (l) {
+    if (num(l.c_charge_id)) { absent.push('AP invoice charge line not ported'); return; }
+    var p = _hasCol(db, 'm_product', 'producttype') ? getRow(db, 'SELECT producttype FROM m_product WHERE m_product_id=?', num(l.m_product_id)) : null;
+    if (!p) { absent.push('m_product.producttype#' + l.m_product_id); return; }
+    if (p.producttype !== 'I') { absent.push('AP invoice service/expense line not ported'); return; }
+    add('DR', el(R.resolve(db, '{Product.InventoryClearing}', num(l.m_product_id), schema)), l.linenetamt);
+  });
+  add('CR', el(R.resolve(db, '{Vendor.V_Liability}', num(hdr.c_bpartner_id), schema)), hdr.grandtotal);
   convertToSchema(db, by, absent, invId, schema);
   return { by: by, absent: absent };
 }
@@ -220,6 +250,41 @@ function deriveReceipt(db, R, ioId, schema) {
   });
   return { by: by, absent: absent };
 }
+// ── MATCH INVOICE — §65.2 (F25), Doc_MatchInv.createFacts (Doc_MatchInv.java:156-420), receipt-matched purchase case:
+// Dr {BPGroup.NotInvoicedReceipts} (BP of the INVOICE, :170-172) = the receipt line's posted amount × (Qty / MovementQty); Cr {Product.InventoryClearing} = the invoice line's posted amount × (Qty / QtyInvoiced)
+// (both read back from the posted documents: updateReverseLine :227-283 — here re-derived with the same folds); both legs removed when the accounts are equal and IsPostIfClearingEqual='N' (:362-372).
+// An invoice price variance (IPV ≠ 0, :376-380), partial matches (multiplier ≠ 1), services, shipments (MMS) and credit memos are named absent — never posted by guess.
+function _receiptLineAmt(db, line, hdr, schema, absent) {
+  var ol = num(line.c_orderline_id) ? getRow(db, 'SELECT ol.*, o.c_currency_id AS ocur FROM c_orderline ol LEFT JOIN c_order o ON o.c_order_id=ol.c_order_id WHERE ol.c_orderline_id=?', num(line.c_orderline_id)) : null;
+  if (!ol) { absent.push('receipt order line'); return null; }
+  var price = _poLineCost(db, ol, absent); if (price == null) return null;
+  var pd = _bigDec(price), qd = _bigDec(line.movementqty), src = Number(_rhuB(pd.n * qd.n * 100n, 10n ** BigInt(pd.k + qd.k)));
+  return _fxConvertCents(db, src, ol.c_currency_id != null ? ol.c_currency_id : ol.ocur, schema, hdr.dateacct, hdr.ad_client_id, hdr.ad_org_id, absent);
+}
+function deriveMatchInv(db, R, id, schema) {
+  var mi = getRow(db, 'SELECT * FROM m_matchinv WHERE m_matchinv_id=?', num(id)); if (!mi) return null;
+  var by = {}, absent = [];
+  function add(side, el, amt) { if (!el) return; var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
+  function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  if (!num(mi.m_product_id) || Number(mi.qty) === 0) return { by: by, absent: absent };
+  var rl = getRow(db, 'SELECT * FROM m_inoutline WHERE m_inoutline_id=?', num(mi.m_inoutline_id)), il = getRow(db, 'SELECT * FROM c_invoiceline WHERE c_invoiceline_id=?', num(mi.c_invoiceline_id));
+  if (!rl || !il) { absent.push(!rl ? 'credit-memo / no-receipt MatchInv not ported' : 'invoice line'); return { by: by, absent: absent }; }
+  var rh = getRow(db, 'SELECT * FROM m_inout WHERE m_inout_id=?', num(rl.m_inout_id)), ih = getRow(db, 'SELECT * FROM c_invoice WHERE c_invoice_id=?', num(il.c_invoice_id));
+  if (String(rh.movementtype) !== 'V+') { absent.push('MatchInv on a shipment not ported'); return { by: by, absent: absent }; }
+  if (Number(mi.qty) !== Number(rl.movementqty) || Number(mi.qty) !== Number(il.qtyinvoiced)) { absent.push('partial MatchInv (multiplier) not ported'); return { by: by, absent: absent }; }
+  var p = _hasCol(db, 'm_product', 'producttype') ? getRow(db, 'SELECT producttype FROM m_product WHERE m_product_id=?', num(mi.m_product_id)) : null;
+  if (!p || p.producttype !== 'I') { absent.push('service MatchInv not ported'); return { by: by, absent: absent }; }
+  var drAmt = _receiptLineAmt(db, rl, rh, schema, absent);
+  var crAmt = _fxConvertCents(db, cents(il.linenetamt), ih.c_currency_id, schema, ih.dateacct, ih.ad_client_id, ih.ad_org_id, absent);
+  if (drAmt == null || crAmt == null) return { by: by, absent: absent };
+  var nir = el(R.resolve(db, '{BPGroup.NotInvoicedReceipts}', num(ih.c_bpartner_id), schema)), clr = el(R.resolve(db, '{Product.InventoryClearing}', num(mi.m_product_id), schema));
+  if (!nir || !clr) return { by: by, absent: absent };
+  var sch = getRow(db, 'SELECT ispostifclearingequal FROM c_acctschema WHERE c_acctschema_id=?', num(schema)) || {};
+  if (!(String(sch.ispostifclearingequal) === 'N' && nir.id === clr.id && drAmt === crAmt)) { add('DR', nir, drAmt); add('CR', clr, crAmt); }
+  if (drAmt !== crAmt) absent.push('invoice price variance not ported (Doc_MatchInv.java:376-380, ipv=' + (crAmt - drAmt) + ')');
+  return { by: by, absent: absent };
+}
+
 // MatchPO → Average-PO cost (Doc_MatchPO.createFacts :285-410 + createMatchPOCostDetail :584-660 → MCostDetail.createOrder → process :1560-1576 → MCost.setWeightedAverage MCost.java:1696-1742).
 // poCost = order line PriceCost else PriceActual (tax corrections named absent), × rate and HALF_UP at the currency COSTING precision when the order is in another currency;
 // amount = Σ (other MatchPOs of the line with a receipt, same DateAcct) + poCost × qty, HALF_UP at the costing precision; weighted average: old = price × curQty / (curQty+qty), new = amt / (curQty+qty)
@@ -1005,6 +1070,7 @@ function derivePostings(db, recordRef, schema, R) {
   // W-POST-TAIL classes (HARDEN_MATRIX.md §W-POST-TAIL)
   if (table === 'C_BankStatement') return finish(deriveBankStatement(db, id, schema), 'bank-statement', glOf('c_bankstatement', id));
   if (table === 'M_MatchPO') return finish(deriveMatchPO(db, id, schema), 'matchpo', glOf('m_matchpo', id));
+  if (table === 'M_MatchInv') return finish(deriveMatchInv(db, R, id, schema), 'matchinv', glOf('m_matchinv', id));   // §65.2 (F25)
   if (table === 'M_Requisition') return finish(deriveRequisition(db, id, schema), 'requisition', glOf('m_requisition', id));
   if (table === 'C_Cash') return finish(deriveCash(db, id, schema), 'cash', glOf('c_cash', id));
   if (table === 'M_Inventory') return finish(deriveInventory(db, id, schema), 'inventory', glOf('m_inventory', id));

@@ -1418,4 +1418,15 @@ zero/negative-qty refusals where legacy throws; partial same-day MatchPO accumul
 **Regression:** 99 engine witnesses vs the F23 run: identical except the 4 known-nondeterministic logs; exit codes identical (no existing witness posts a vendor receipt).
 **Residue:** other cost elements' rows (Average Invoice, FIFO, Material) are not updated by the receipt (not compared; named), receipt reversal and vendor return (V−) not ported.
 
+### §65.2 DECISION RECORD F25 — AP invoice books, MatchInv (+ books), MatchPO invoice link and QtyInvoiced like legacy (2026-10-10)
+**Evidence (`p2p5.log`):** P2P3-INV legacy books `780 Dr 1600 / 749 Cr 1600` (Euro 1360), MatchInv `2` with books `587 Dr 1600 / 780 Cr 1600`, MatchPO `2:rcpt:inv`, line `2/0/2/2`; SQLite posted the AP invoice with the SALES manifest (`518 Dr / 758 Cr`) and made no matching.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW `matchFromInvoice` (MInvoice.completeIt :2075-2160 purchase matching; MMatchPO.create :294-500 main path + afterSave QtyInvoiced :1203-1209; partial attach named absent);
+`scripts/doc_poster.js` NEW `deriveAPInvoice` (Doc_Invoice API :605-760: Dr {Tax.Credit} / Dr {Product.InventoryClearing} per item line / Cr {Vendor.V_Liability} GrandTotal; dispatched from `deriveInvoice` ONLY when the invoice row carries an API doctype — older posting dbs keep their behaviour)
+and NEW `deriveMatchInv` (Doc_MatchInv :156-420: Dr {BPGroup.NotInvoicedReceipts} = receipt line amount, Cr {Product.InventoryClearing} = invoice line amount, clearing-equal removal; IPV / partial / service / credit memo named absent), `derivePostings` dispatches `M_MatchInv`.
+**Proof (`p2p6.log`):** `§SCN P2P3-INV MATCH compared=16` (status, line, tax, total, books both schemas, MatchInv + its books both schemas, MatchPO `2:rcpt:inv`, line `2/0/2/2`, stock, cost unchanged, BP −1600/0); P2P1/P2P2 still MATCH.
+**Regression:** 99 engine witnesses vs the F24 run: identical except the 4 known-nondeterministic logs AND one intended change — `poc_post_b3`'s liveness falsifier folds purchase order 104 through its AP invoice 106: before, the SALES manifest (3 wrong lines); now the AP manifest, which on the
+UNPATCHED shared db (no `m_product.producttype`) reports the item lines ABSENT by name and keeps only the liability (`lines=1`, the falsifier's `>0` still holds). Against legacy's own captured books for every AP invoice in the shared posting db (scratch copy + patch + seed producttype,
+`scratchpad/ap_oracle.js`): **§AP_ORACLE2 MATCH 7 / DIFF 1 / ABSENT 0** — the one DIFF (invoice 106, schema 200000: legacy `780 Dr 3108.87 + 724 Dr 0.01`, SQLite `780 Dr 3108.88`) is legacy converting EACH fact line separately (FactLine.convert) where `convertToSchema` converts the per-account sum — a latent F12 rounding defect for every
+multi-line document in a second-currency schema; fixed next as F27 (P17, same day).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

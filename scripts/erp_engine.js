@@ -749,6 +749,49 @@ function completeInOut(io, lines, opts) {
   return { ok: true, ops: ops };
 }
 
+// matchFromInvoice — the matching a PURCHASE invoice completion creates (MInvoice.completeIt MInvoice.java:2075-2160, not for a reversal). Implementing prompts/SQLiteIDEMPIERE.md §65.2 (F25) — Witness: M3 P2P3-INV.
+//  · invoice line with a receipt line (receipt processed): MatchInv qty = invoiced qty (credit memo −), capped at the receipt's signed MovementQty (:2083-2110);
+//  · invoice line with an order line: MMatchPO.create(iLine, null, …) (:2131-2140 → MMatchPO.create :294-500): every NOT-yet-invoiced MatchPO of the order line whose qty fits the remaining invoiced qty
+//    gets the invoice line; MMatchPO.afterSave adds its qty to QtyInvoiced (MMatchPO.java:1203-1209); nothing to attach ⇒ a new invoice-only MatchPO for the qty. A partial attach
+//    (remaining qty smaller than a MatchPO's qty) is NOT ported ⇒ reported in `absent`.
+// opts = { matchPO:[{m_matchpo_id, c_orderline_id, m_inoutline_id, c_invoiceline_id, qty}], orderLines, receiptLines:[{m_inoutline_id, movementqty, movementtype}], newId(table) }
+function matchFromInvoice(invoice, iLines, opts) {
+  opts = opts || {};
+  var ops = [], absent = [];
+  if (String(invoice.issotrx) !== 'N' || invoice.reversal_id) return { ok: true, ops: ops, absent: absent };
+  var cm = String(invoice.iscreditmemo) === 'Y' ? -1 : 1, inv = {};
+  (opts.orderLines || []).forEach(function (o) { inv[o.c_orderline_id] = Number(o.qtyinvoiced || 0); });
+  var mpos = (opts.matchPO || []).map(function (m) { var o = {}; for (var k in m) o[k] = m[k]; return o; });
+  (iLines || []).forEach(function (il) {
+    if (!il.m_product_id) return;
+    var q = Number(il.qtyinvoiced || 0) * cm;
+    if (il.m_inoutline_id) {
+      var rl = (opts.receiptLines || []).filter(function (r) { return Number(r.m_inoutline_id) === Number(il.m_inoutline_id); })[0];
+      if (rl) {
+        var mq = String(rl.movementtype || 'V+').charAt(1) === '-' ? -Number(rl.movementqty) : Number(rl.movementqty), matchQty = mq < q ? mq : q;
+        ops.push({ op_type: 'CREATE_DOCUMENT', table: 'M_MatchInv', m_matchinv_id: opts.newId('M_MatchInv'), c_invoiceline_id: il.c_invoiceline_id, m_inoutline_id: il.m_inoutline_id, m_product_id: il.m_product_id, qty: matchQty });
+      }
+    }
+    if (!il.c_orderline_id) return;
+    var rem = q, attached = false;
+    mpos.forEach(function (m) {
+      if (rem <= 0 || Number(m.c_orderline_id) !== Number(il.c_orderline_id) || m.c_invoiceline_id) return;
+      if (rem < Number(m.qty)) { absent.push('partial MatchPO attach not ported (MMatchPO.create :370-470)'); return; }
+      m.c_invoiceline_id = il.c_invoiceline_id; attached = true;
+      ops.push({ op_type: 'UPDATE_FIELD', table: 'M_MatchPO', id: m.m_matchpo_id, field: 'c_invoiceline_id', value: il.c_invoiceline_id });
+      inv[il.c_orderline_id] = (inv[il.c_orderline_id] || 0) + Number(m.qty);
+      ops.push({ op_type: 'UPDATE_LINE', table: 'C_OrderLine', id: il.c_orderline_id, qtyinvoiced: inv[il.c_orderline_id] });
+      rem -= Number(m.qty);
+    });
+    if (!attached && rem !== 0) {
+      ops.push({ op_type: 'CREATE_DOCUMENT', table: 'M_MatchPO', m_matchpo_id: opts.newId('M_MatchPO'), c_orderline_id: il.c_orderline_id, m_inoutline_id: null, c_invoiceline_id: il.c_invoiceline_id, m_product_id: il.m_product_id, qty: rem });
+      inv[il.c_orderline_id] = (inv[il.c_orderline_id] || 0) + rem;
+      ops.push({ op_type: 'UPDATE_LINE', table: 'C_OrderLine', id: il.c_orderline_id, qtyinvoiced: inv[il.c_orderline_id] });
+    }
+  });
+  return { ok: true, ops: ops, absent: absent };
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -942,7 +985,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
