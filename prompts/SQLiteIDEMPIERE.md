@@ -897,4 +897,24 @@ when the host supplies `ctx.creditOf(bpId) → { bp row, sysconfig }`; refusal =
 (no tax on these documents — revisit with the tax item); currency conversion to base (`MConversionRate.convertBase`) is not done (same currency on the pilot); the lens does not pass the order's PaymentRule, so the cash-POS
 exemption can only trigger with sysconfig N + PaymentRule B (both 'Y'/unset here); the browser lens path is not executed by any witness (no browsers in this lane) — its wiring is a 6-line host change reviewed by reading.
 
+## §37 dict_diff HARDENING — composite keys + SCHEMA (ALTER) patch generator + loader-guarded apply (2026-10-09, backlog item 6; prerequisite of F6/S7a) — SPEC before code
+**Why now:** S7a (copy legacy's costed-qty refusal) needs `m_cost.currentqty` in the SQLite posting db; §29 listed it as a SCHEMA gap the DATA patch cannot fix.
+**Spec (data, `dict_spec.json`):** `key` may be an ARRAY (composite) — rows are matched on the joined key; `addColumns: [...]` = legacy columns the SQLite table lacks that the patch must ADD (explicit, reviewable list; every other missing column
+is still reported by `§DD_COLUMNS`); `where` narrows the legacy read (e.g. `AD_Org_ID=0 AND M_AttributeSetInstance_ID=0` for m_cost: the SQLite table has no org/ASI columns, so only client-level cost rows map 1:1).
+**Generator (`dict_diff.toSchemaPatch`):** for each `addColumns` entry absent locally: `ALTER TABLE t ADD COLUMN c;` (untyped, like the seed tables) followed by `UPDATE t SET c=<legacy value> WHERE <all key cols>` for every legacy row present locally,
+and `INSERT OR IGNORE` (common + added columns) for legacy rows missing locally. Values ONLY from legacy. Never DELETE, never DROP.
+**Loader-guarded apply (`dict_diff.applyPatch(db, sqlText)`):** executes statement by statement; an `ALTER TABLE … ADD COLUMN` is skipped when `PRAGMA table_info` already lists the column (so the patch is idempotent and safe on a db that already
+has it); everything else runs inside one transaction (all-or-nothing). This is the SQLite self-heal pattern (patch text + guarded loader), applied in this lane to SCRATCH copies only.
+**Witness additions (`witness_dict_diff.js`):** `§DD_SCHEMA_PATCH` (after apply on a scratch copy the added columns exist and a re-diff reports 0 missing for them and 0 differing cells on the composite-key tables), `§DD_SCHEMA_IDEMPOTENT`
+(second apply = no change, no error), `§DD_COMPOSITE_DETECT` (negative control: a corrupted `m_cost.currentqty` cell on the scratch copy is found by the composite-key compare and repaired by the patch).
+**Tables in scope now:** `m_cost` [M_Product_ID, C_AcctSchema_ID, M_CostType_ID, M_CostElement_ID] +currentqty · `m_product_category_acct` [M_Product_Category_ID, C_AcctSchema_ID] +costingmethod,costinglevel ·
+`m_costelement` [M_CostElement_ID] +name · `m_product` [M_Product_ID] +isstocked (glassbowl posting db, §29 list).
+**RESULT §37 (built + witnessed 2026-10-09):** `§DD_SCHEMA_PATCH PASS` (scratch glassbowl: m_product_category_acct +2 cols/28 stmts, m_costelement +1/9, m_cost +1/382, m_product +1/55; re-diff 0 missing / 0 changed / 0 legacy-only) · `§DD_SCHEMA_IDEMPOTENT PASS`
+(second apply: 0 ALTERs run, all skipped by the PRAGMA guard, rows unchanged) · `§DD_COMPOSITE_DETECT PASS` (corrupted `m_cost[125|101|100|100].currentqty` found on the 4-part key and repaired) · DETECT/PATCH_FIX/IDEMPOTENT/NO_DELETE still PASS.
+Reviewable patches: `scripts/bridge/out/dict_schema_<table>.sql` + `dict_patch_<table>.sql`. Pilot fixture: 21 more read-only WS types (product, acct schema, periods, sysconfig, conversion rates, order/invoice tax, BP, tax category, and the AD metadata tables
+Window/Tab/Field/Column(all)/Menu/Message/Ref_List/Val_Rule/Process/Process_Para for L&F parity) — all answered a smoke read, incl. System-client AD rows.
+**Real finding (P17, DATA/state):** `m_cost` 20 cells differ — legacy cost STATE moved since the SQLite snapshot (e.g. Oak Tree Average PO 38.78 legacy vs 51.45 SQLite; Fertilizer cumulated qty 46 vs 40). That is a handover-state gap, not a rule: the parallel run
+must start both sides from the same state (C5). The M3 runner now loads these generated patches into its scratch posting db before comparing (F6 below), which is the patch+loader delivery path in miniature. Shared seeds untouched.
+**Not done here (stated):** the self-heal LOADER in the browser host that would apply `dict_schema_*.sql` to a user's IndexedDB copy of `glassbowl_data.db` (the Viewer/Modeller `_applyPendingPatch` pattern) — the ERP host has no such loader yet; queued with the L&F item.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

@@ -6,6 +6,8 @@
 --   QueryCOrder / QueryCOrderLine : read-back of pushed documents (M1 verify)
 --   QueryCDocType / QueryCTax / QueryMPriceList : dictionary rows for dict_diff (SQLite seed vs legacy)
 --   QueryCInvoice(+Line) / QueryMInOut(+Line) / QueryStorage / QueryFactAcct : read-only comparison inputs for the parallel-run reconcile (M3)
+--   Query{MProduct,CAcctSchema,CPeriod,CPeriodControl,CYear,ADSysConfig,CConversionRate,COrderTax,CInvoiceTax,CBPartner,CTaxCategory} : dict_diff + S8/tax/Euro scenarios
+--   Query{ADWindow,ADTab,ADField,ADColumnAll,ADMenu,ADMessage,ADRefList,ADValRule,ADProcess,ADProcessPara} : look-and-feel parity (AD metadata dict_diff)
 SET search_path=adempiere;
 DO $$
 DECLARE d record; tid int; t int; c record;
@@ -27,7 +29,29 @@ BEGIN
       ('QueryMPriceList','M_PriceList',NULL::text[]),
       ('QueryMProdCatAcct','M_Product_Category_Acct',NULL::text[]),
       ('QueryMCostElement','M_CostElement',NULL::text[]),
-      ('QueryMCost','M_Cost',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryMCost','M_Cost',NULL::text[]),
+      -- 2026-10-09 (spec §37): dict_diff composite keys/ALTER generator, S8 periods, tax, Euro schema, S13 credit, L&F parity (AD metadata)
+      ('QueryMProduct','M_Product',NULL::text[]),
+      ('QueryCAcctSchema','C_AcctSchema',NULL::text[]),
+      ('QueryCPeriod','C_Period',NULL::text[]),
+      ('QueryCPeriodControl','C_PeriodControl',NULL::text[]),
+      ('QueryCYear','C_Year',NULL::text[]),
+      ('QueryADSysConfig','AD_SysConfig',NULL::text[]),
+      ('QueryCConversionRate','C_Conversion_Rate',NULL::text[]),
+      ('QueryCOrderTax','C_OrderTax',NULL::text[]),
+      ('QueryCInvoiceTax','C_InvoiceTax',NULL::text[]),
+      ('QueryCBPartner','C_BPartner',NULL::text[]),
+      ('QueryCTaxCategory','C_TaxCategory',NULL::text[]),
+      ('QueryADWindow','AD_Window',NULL::text[]),
+      ('QueryADTab','AD_Tab',NULL::text[]),
+      ('QueryADField','AD_Field',NULL::text[]),
+      ('QueryADColumnAll','AD_Column',NULL::text[]),
+      ('QueryADMenu','AD_Menu',NULL::text[]),
+      ('QueryADMessage','AD_Message',NULL::text[]),
+      ('QueryADRefList','AD_Ref_List',NULL::text[]),
+      ('QueryADValRule','AD_Val_Rule',NULL::text[]),
+      ('QueryADProcess','AD_Process',NULL::text[]),
+      ('QueryADProcessPara','AD_Process_Para',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

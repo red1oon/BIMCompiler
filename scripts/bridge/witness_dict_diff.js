@@ -34,6 +34,7 @@ const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUS
     for (const c of r.changed.slice(0, 12)) log(`§DICT_GAP ${sp.table}#${c.id}.${c.col} legacy=${JSON.stringify(c.legacy)} sqlite=${JSON.stringify(c.local)}`);
     for (const row of r.onlyLegacy.slice(0, 5)) log(`§DICT_GAP ${sp.table}#${row[sp.key.toLowerCase()]} missing in SQLite`);
     fs.writeFileSync(path.join(__dirname, 'out', `dict_patch_${sp.table}.sql`), D.toPatch(r, sp));
+    if (sp.addColumns) fs.writeFileSync(path.join(__dirname, 'out', `dict_schema_${sp.table}.sql`), D.toSchemaPatch(r, sp));
   }
   if (!total) out('§DD_FINDINGS', 'INCONCLUSIVE', 'legacy returned 0 dictionary rows — nothing judged');
   else log(`§DD_FINDINGS (see §DD_TABLE/§DICT_GAP above; patches written to scripts/bridge/out/dict_patch_*.sql, NOT applied to any shared seed)`);
@@ -61,6 +62,25 @@ const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUS
   db.exec(patch);
   out('§DD_IDEMPOTENT', before === JSON.stringify(db.prepare('SELECT * FROM c_doctype ORDER BY c_doctype_id').all()), 'second apply of the same patch changed nothing');
   out('§DD_NO_DELETE', !/\bDELETE\b/i.test(patch) && !specs.filter(s => !s.columnsOnly).some(s => /\bDELETE\b/i.test(D.toPatch(D.compare(legacy[s.table], dbFor(s), s), s))), `generated patches contain no DELETE (onlyLocal rows: ${specs.filter(s => !s.columnsOnly).map(s => D.compare(legacy[s.table], dbFor(s), s).onlyLocal.length).join('/')} reported only)`);
+  // ---- spec §37: SCHEMA patch (ALTER + legacy values) on the scratch glassbowl copy, loader-guarded, idempotent; composite-key negative control
+  const schemaSpecs = specs.filter(x => x.addColumns && x.db === 'glassbowl');
+  const applied = [];
+  for (const x of schemaSpecs) { const r = D.compare(legacy[x.table], gdb, x); const st = D.applyPatch(gdb, D.toSchemaPatch(r, x) + D.toPatch(r, x)); applied.push(`${x.table}:+${st.altered}col/${st.ran}stmt`); }
+  const after = schemaSpecs.map(x => { const r = D.compare(legacy[x.table], gdb, x); return { t: x.table, missingAdded: x.addColumns.filter(c => r.missingCols.includes(c.toLowerCase())), changed: r.changed.length, onlyLegacy: r.onlyLegacy.length }; });
+  out('§DD_SCHEMA_PATCH', schemaSpecs.length > 0 && after.every(a => !a.missingAdded.length && !a.changed && !a.onlyLegacy),
+    `applied ${applied.join(' ')}; re-diff: ${after.map(a => `${a.t} stillMissing=[${a.missingAdded}] changed=${a.changed} onlyLegacy=${a.onlyLegacy}`).join('; ')}`);
+  const snap = () => JSON.stringify(schemaSpecs.map(x => gdb.prepare(`SELECT * FROM ${x.table}`).all()));
+  const s1 = snap(); let reErr = null, st2 = [];
+  try { for (const x of schemaSpecs) { const r0 = D.compare(legacy[x.table], gdb, x); st2.push(D.applyPatch(gdb, D.toSchemaPatch(Object.assign({}, r0, { missingCols: x.addColumns.map(c => c.toLowerCase()) }), x))); } } catch (e) { reErr = e.message; }
+  out('§DD_SCHEMA_IDEMPOTENT', !reErr && s1 === snap() && st2.every(t => t.altered === 0 && t.skipped > 0), `second apply (ALTERs forced into the text): error=${reErr || 'none'} altered=${st2.map(t => t.altered).join('/')} skipped=${st2.map(t => t.skipped).join('/')} rows unchanged=${s1 === snap()}`);
+  const mc = specs.find(x => x.table === 'm_cost'), lrow = legacy.m_cost.find(r => Number(r.currentqty) > 0);
+  if (mc && lrow) {
+    gdb.prepare('UPDATE m_cost SET currentqty=currentqty+999 WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(lrow.m_product_id, lrow.c_acctschema_id, lrow.m_costtype_id, lrow.m_costelement_id);
+    const rc = D.compare(legacy.m_cost, gdb, mc), hit = rc.changed.find(c => c.col === 'currentqty');
+    D.applyPatch(gdb, D.toPatch(rc, mc)); const rc2 = D.compare(legacy.m_cost, gdb, mc);
+    out('§DD_COMPOSITE_DETECT', !!hit && hit.id === [lrow.m_product_id, lrow.c_acctschema_id, lrow.m_costtype_id, lrow.m_costelement_id].map(Number).join('|') && rc2.changed.length === 0,
+      `corrupted m_cost[${hit && hit.id}].currentqty detected=${!!hit}; after patch changed=${rc2.changed.length}`);
+  } else out('§DD_COMPOSITE_DETECT', 'INCONCLUSIVE', 'no legacy m_cost row with currentqty>0');
   log(`§DD_VERDICT ${fails ? 'FAIL' : incon ? 'PASS-with-INCONCLUSIVE' : 'PASS'} fails=${fails} inconclusive=${incon}`);
   process.exit(fails ? 1 : 0);
 })().catch(e => { log('§DD_VERDICT FAIL exception ' + e.stack); process.exit(2); });
