@@ -1429,4 +1429,14 @@ UNPATCHED shared db (no `m_product.producttype`) reports the item lines ABSENT b
 `scratchpad/ap_oracle.js`): **§AP_ORACLE2 MATCH 7 / DIFF 1 / ABSENT 0** — the one DIFF (invoice 106, schema 200000: legacy `780 Dr 3108.87 + 724 Dr 0.01`, SQLite `780 Dr 3108.88`) is legacy converting EACH fact line separately (FactLine.convert) where `convertToSchema` converts the per-account sum — a latent F12 rounding defect for every
 multi-line document in a second-currency schema; fixed next as F27 (P17, same day).
 
+### §65.3 DECISION RECORD F26 — AP payment + allocation books like legacy; the P2P cycle MATCHES end to end (2026-10-10)
+**Evidence (`p2p6.log`):** P2P4-PAY — SQLite crashed: `post_resolver: unknown token {Bank.PaymentSelect}` (the F16 `derivePayment` APP branch named a token the resolver never had — latent since F16, no AP payment had been folded), and `deriveAllocation` refused AP ("AP invoice allocation not ported").
+Legacy: payment `589 Dr 1600 / 509 Cr 1600`, allocation `749 Dr 1600 / 589 Cr 1600`, invoice paid, BP back to 0.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/post_resolver.js` + `{Bank.PaymentSelect}` (c_bankaccount_acct.b_paymentselect_acct); `scripts/doc_poster.js` NEW `_apAllocLine` = Doc_AllocationHdr purchase branch (Doc_AllocationHdr.java:381-466 + getPaymentAcct :728-783),
+called from `deriveAllocation` for AP invoice lines (the AR branch is untouched).
+**Proof (`p2p7.log`, `p2pneg.log`):** `§SCN P2P1-PO … P2P4-PAY` **all MATCH** (11/10/16/13 keys: statuses, lines, tax, totals, receipt / AP invoice / MatchInv / payment / allocation books on BOTH schemas, MatchPO + MatchInv, order line quantities, stock, Average-PO cost to 8 decimals, BP open item) ·
+`§M3_P2P_NEGATIVE_CONTROL PASS` (second chain, SQLite AP price +1¢: PO and RCPT MATCH, INV differs on lines, tax, total, books, MatchInv books, open item).
+**Regression:** 99 engine witnesses vs the F25 run: identical except the 4 known-nondeterministic logs; exit codes identical.
+**Residue:** AP discounts (discount-revenue account), charge / prepayment payments, cash-journal AP allocations, cash-based accounting — named absent in the fold.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

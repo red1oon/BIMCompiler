@@ -414,6 +414,25 @@ function derivePayment(db, R, payId, schema) {
 //   DR {BPGroup.PayDiscount} discount, DR {BPGroup.WriteOff} write-off, CR {BPartner.Receivable} allocationSource;
 //   TaxCorrectionType B/D/W ⇒ per invoice tax: DR {Tax.Due} / CR discount|write-off account, amount = round(tax × corr / invoice total) (calcAmount, 10dp then 2dp ≡ exact rounding).
 // The invoice tax base is the invoice's OWN tax rows (SQLite books are derived, not stored). AP invoices, realized gain/loss (rate differs between invoice and allocation) ⇒ absent by name.
+// §65.3 (F26) Doc_AllocationHdr purchase-invoice branch (Doc_AllocationHdr.java:381-466), accrual: allocation source = −(Amount + Discount + WriteOff) (the AP line is negative, :409);
+// Dr {Vendor.V_Liability} source; Cr discount / write-off (−amounts); Cr the payment account −Amount — getPaymentAcct (:728-783): AP Payment doctype ⇒ {Bank.PaymentSelect}, else {Bank.UnallocatedCash};
+// a charge or prepayment payment, cash-journal lines, cash-based accounting and the discount-revenue account are named absent. Clearing-equal (payment account = liability, IsPostIfClearingEqual='N') ⇒ only discount + write-off (:397-404).
+function _apAllocLine(db, R, l, schema, pice, add, el, absent) {
+  var amount = cents(l.amount), disc = cents(l.discountamt), wo = cents(l.writeoffamt), src = -(amount + disc + wo);
+  var liab = el(R.resolve(db, '{Vendor.V_Liability}', num(l.c_bpartner_id), schema)), pay = null;
+  if (num(l.c_payment_id)) {
+    var p = getRow(db, 'SELECT p.c_bankaccount_id' + (_hasCol(db, 'c_payment', 'c_charge_id') ? ', p.c_charge_id' : '') + (_hasCol(db, 'c_payment', 'isprepayment') ? ', p.isprepayment' : '') + ', d.docbasetype AS dbt FROM c_payment p LEFT JOIN c_doctype d ON d.c_doctype_id=p.c_doctype_id WHERE p.c_payment_id=?', num(l.c_payment_id));
+    if (!p) { absent.push('payment#' + l.c_payment_id); return; }
+    if (num(p.c_charge_id) || String(p.isprepayment) === 'Y') { absent.push('AP allocation with a charge/prepayment payment not ported'); return; }
+    pay = el(R.resolve(db, p.dbt === 'APP' ? '{Bank.PaymentSelect}' : '{Bank.UnallocatedCash}', num(p.c_bankaccount_id), schema));
+  } else if (num(l.c_cashline_id)) { absent.push('AP cash-journal allocation not ported'); return; }
+  if (disc) { absent.push('AP discount revenue account not ported'); return; }
+  var clearing = true;
+  if (!pice && pay && liab && pay.id === liab.id) { src = -(disc + wo); clearing = false; }
+  add('DR', liab, src);
+  if (wo) add('CR', el(R.resolve(db, '{BPGroup.WriteOff}', num(l.c_bpartner_id), schema)), -wo);
+  if (clearing && num(l.c_payment_id)) add('CR', pay, -amount);
+}
 function deriveAllocation(db, R, hdrId, schema) {
   var lines = allRows(db, 'SELECT * FROM c_allocationline WHERE c_allocationhdr_id=? ORDER BY c_allocationline_id', num(hdrId));
   if (!lines.length) return null;
@@ -424,7 +443,7 @@ function deriveAllocation(db, R, hdrId, schema) {
   function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
   lines.forEach(function (l) {
     var inv = num(l.c_invoice_id) ? getRow(db, 'SELECT c_invoice_id, issotrx, grandtotal FROM c_invoice WHERE c_invoice_id=?', num(l.c_invoice_id)) : null;
-    if (inv && String(inv.issotrx) === 'N') { absent.push('AP invoice allocation not ported'); return; }
+    if (inv && String(inv.issotrx) === 'N') { _apAllocLine(db, R, l, schema, pice, add, el, absent); return; }   // §65.3 (F26)
     var amount = cents(l.amount), disc = cents(l.discountamt), wo = cents(l.writeoffamt), src = amount + disc + wo;
     var receivable = el(R.resolve(db, '{BPartner.Receivable}', num(l.c_bpartner_id), schema));
     var clearing = null;
