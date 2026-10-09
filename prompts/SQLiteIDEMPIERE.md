@@ -44,6 +44,7 @@ Each principle: rule · where it comes from · how it is ENFORCED (not just stat
 | P14 | **Claims cite evidence.** Any statement about iDempiere behaviour cites source `file:line` or a pilot measurement; unknown ⇒ ⛔ not a guess. | CLAUDE.md | review | review |
 | P15 | **Dumb terminal, no free numbers.** POS sends orderlines (product ref, qty, station); price = PriceList master reference; stock/replenishment/backflush are ERP-side results the POS only receives. The layer never computes them for the POS. | POSLens §1-4, user 2026-10-09 | descriptor validator: a UP line may carry no price/amount field; unknown product ⇒ refuse | W-P15 |
 | P16 | **Question protocol (user 2026-10-09).** Every question to the user states (a) the concept source it aligns to (POSLens / POS_ADDON_SPEC / a dated user quote) and (b) **IN** or **OUT** of that concept. OUT ⇒ do not ask: drop it or defer it to "infer from the Unicenta project later". Facts the concept already answers are never asked. | user | self-check before asking; open items below carry the tag | review |
+| P17 | **Legacy is the oracle (§23).** Every behaviour or defect observed on legacy while building becomes a scenario in the differential corpus the same day; both sides run it; the verdict is MATCH / SQLITE-GAP / LEGACY-QUIRK. | user 2026-10-09 | `scripts/bridge/oracle_corpus.md` (list) → M3 runner | M3 |
 Witness ids W-P1/P2/P5/P11/P12/P13/P15 are small structural/unit checks, to be written before the module they guard.
 
 ## §Q PRE-MORTEM — what we had missed (found 2026-10-09 by re-reading the spec against the pilot; each has an owner)
@@ -592,5 +593,33 @@ Found while building (kept as facts): login failure text is `Error login - User 
 composite JSON shape is `{CompositeRequest:{ADLoginRequest,serviceType,operations:{operation:[{TargetPort,ModelCRUD|ModelSetDocAction}]}}}`.
 Still open in M1: G1 (an ambiguous PARKED ticket needs a way to be *resolved* — the ticket-key convention, deferred to the Unicenta project), W6 reference doc.
 Next: M2 DOWN replay, then M3 parallel-run `§GAP` report.
+
+## §23 LEGACY AS ORACLE — differential testing is the point (user 2026-10-09: "a good way to test the SQLite new system against the proven
+## legacy… a better holy grail of perfecting our SQLite"). IN concept: it is the parallel run (§19/§21) seen as a test method.
+**Method.** Same facts → both worlds → compare "same result" (§21 table). The legacy is decades-proven business logic, so each scenario is a
+free oracle for the SQLite rule set. Every discrepancy is one of three verdicts — it must be classified, never just "different":
+| Verdict | Meaning | Action |
+|---|---|---|
+| **MATCH** | equal under §21 | keep as a regression scenario |
+| **SQLITE-GAP** | legacy is right, SQLite lacks/mis-implements a rule | fix the SQLite rule (default remedy), scenario stays as regression |
+| **LEGACY-QUIRK** | legacy itself misbehaves (defect, config accident, or deliberate peculiarity) | SQLite does NOT copy it; recorded as an accepted exclusion WITH evidence, so a later session does not "fix" SQLite toward the bug |
+**Seed corpus — behaviours already measured on the pilot this session (each becomes a runnable scenario in M3):**
+| # | Scenario (facts) | Legacy result (measured) | First verdict to establish on SQLite |
+|---|---|---|---|
+| S1 | POS-type order, 1 line, complete | 1 shipment + 1 invoice auto-created; store on-hand 4→3; GrandTotal 10 (priced 10 as supplied) | MATCH expected (W-POS-WR already green locally) — confirm to the cent |
+| S2 | line sent WITHOUT price | server priced from PriceList: 61.75 (std) | SQLite `ringLine` refuses when absent from list; present ⇒ same price |
+| S3 | line with a price the client invented (10) | legacy ACCEPTED it (no recompute) | **LEGACY-QUIRK candidate**: SQLite must not accept a keyed price (P15) — record as accepted exclusion |
+| S4 | unknown product on a line | whole document rejected + rolled back: `Foreign ID 999999 not found in M_Product_ID` | SQLite must also reject the document atomically |
+| S5 | complete while an extra active accounting schema has no product-category acct ('CP Copy Target') | NPE `MProductCategoryAcct … pca is null`, CO fails | **LEGACY-QUIRK** (data accident + unguarded code): SQLite should fail *clearly* (named error), not NPE; record |
+| S6 | Standard Order complete vs POS Order complete | Standard: no stock drop; POS(WR): stock drops + shipment + invoice | MATCH expected (dictionary-driven `docsubtypeso`) |
+| S7 | order with stock below zero after completion | to be measured (store had 4→3→2, negative not yet tried) | unknown — measure first |
+| S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
+| S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
+**Honesty note on what the "bugs" so far were:** the defects found this session were in the pilot data (S5), in my harness (price, stale text), and
+in my assumptions (G1–G16) — none yet is a proven SQLite bug. The value is real but unrealised: they are the first inputs to the corpus. The first
+true SQLITE-GAP will come from running S1/S2/S4/S6 on the SQLite side (M3), not from anything measured so far.
+**Rule P17 in practice:** when a legacy behaviour surprises a session, the same session appends a row here (facts → legacy result → verdict) — the
+`§GAP` report then runs the whole table every time, so the SQLite side only ever gets more correct.
+**Exit tie-in (§21):** "convinced" = this corpus (grown by real documents too) runs to MATCH or LEGACY-QUIRK-with-evidence for the agreed period.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

@@ -16,3 +16,10 @@ INSERT INTO ws_webservicetypeaccess(ad_client_id,ad_org_id,ad_role_id,created,cr
 SELECT 11,0,102,now(),100,now(),100,'Y','Y',t.ws_webservicetype_id,gen_random_uuid()
 FROM ws_webservicetype t WHERE t.value='SyncOrder'
 AND NOT EXISTS (SELECT 1 FROM ws_webservicetypeaccess a WHERE a.ws_webservicetype_id=t.ws_webservicetype_id AND a.ad_role_id=102);
+
+-- M2: a second, ordinary legacy user (GardenUser, role 103) keys documents through the stock WS types, standing in for a
+-- legacy ZK user. Not the Bridge user, so tracker marks the resulting changes as foreign.
+INSERT INTO ws_webservicetypeaccess(ad_client_id,ad_org_id,ad_role_id,created,createdby,updated,updatedby,isactive,isreadwrite,ws_webservicetype_id,ws_webservicetypeaccess_uu)
+SELECT 11,0,103,now(),100,now(),100,'Y','Y',t.ws_webservicetype_id,gen_random_uuid()
+FROM ws_webservicetype t WHERE t.value IN ('createOrderRecord','CreateOrderLine','CompleteOrder')
+AND NOT EXISTS (SELECT 1 FROM ws_webservicetypeaccess a WHERE a.ws_webservicetype_id=t.ws_webservicetype_id AND a.ad_role_id=103);

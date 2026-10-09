@@ -13,6 +13,8 @@ async function open(file) {
     payload TEXT NOT NULL, state TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0, error TEXT, refs TEXT,
     created TEXT NOT NULL, updated TEXT NOT NULL)`);
   db.run(`CREATE TABLE IF NOT EXISTS bridge_idmap(uid TEXT NOT NULL, tbl TEXT NOT NULL, server_id INTEGER NOT NULL, docno TEXT)`);
+  db.run(`CREATE TABLE IF NOT EXISTS bridge_inbox(tbl TEXT NOT NULL, server_id INTEGER NOT NULL, status TEXT NOT NULL, local_ref TEXT, error TEXT, at TEXT NOT NULL, PRIMARY KEY(tbl,server_id))`);
+  db.run(`CREATE TABLE IF NOT EXISTS bridge_kv(k TEXT PRIMARY KEY, v TEXT)`);
   const persist = () => { if (file) fs.writeFileSync(file, Buffer.from(db.export())); };
   const now = () => new Date().toISOString();
   const all = (sql, p = []) => { const st = db.prepare(sql); st.bind(p); const o = []; while (st.step()) o.push(st.getAsObject()); st.free(); return o; };
@@ -36,6 +38,15 @@ async function open(file) {
     map(uid, tbl, serverId, docno) { db.run('INSERT INTO bridge_idmap VALUES(?,?,?,?)', [uid, tbl, serverId, docno || null]); persist(); },
     setDocno(uid, tbl, docno) { db.run('UPDATE bridge_idmap SET docno=? WHERE uid=? AND tbl=?', [docno, uid, tbl]); persist(); },
     idmap: uid => all('SELECT tbl,server_id,docno FROM bridge_idmap WHERE uid=?', [uid]),
+    // DOWN side: what was applied locally from legacy (exactly-once guard) + small key/value (watermarks)
+    inboxGet: (tbl, id) => all('SELECT * FROM bridge_inbox WHERE tbl=? AND server_id=?', [tbl, id])[0],
+    inboxSet(tbl, id, status, localRef, error) {
+      db.run('INSERT OR REPLACE INTO bridge_inbox VALUES(?,?,?,?,?,?)', [tbl, id, status, localRef || null, error || null, now()]); persist();
+    },
+    inbox: () => all('SELECT * FROM bridge_inbox ORDER BY server_id'),
+    isOwnServerId: (tbl, id) => all('SELECT 1 FROM bridge_idmap WHERE tbl=? AND server_id=?', [tbl, id]).length > 0,
+    kvGet: k => (all('SELECT v FROM bridge_kv WHERE k=?', [k])[0] || {}).v,
+    kvSet(k, v) { db.run('INSERT OR REPLACE INTO bridge_kv VALUES(?,?)', [k, String(v)]); persist(); },
     // crash recovery: anything still SENDING is ambiguous ⇒ PARKED
     recover() {
       const s = all("SELECT uid FROM bridge_outbox WHERE state='SENDING'");
