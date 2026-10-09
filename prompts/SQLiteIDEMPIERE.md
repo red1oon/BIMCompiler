@@ -611,7 +611,7 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 | S3 | line with a price the client invented (10) | legacy ACCEPTED it (line 1000c) | ✅ **LEGACY-QUIRK** registered with evidence (SQLite 6175c by design, P15) |
 | S4 | unknown product on a line | whole document rejected + rolled back: `Foreign ID 999999 not found in M_Product_ID` | ✅ **MATCH** (SQLite refuses the line, no document) |
 | S5 | complete while an extra active accounting schema has no product-category acct ('CP Copy Target') | NPE `MProductCategoryAcct … pca is null`, CO fails | **LEGACY-QUIRK** (data accident + unguarded code): SQLite should fail *clearly* (named error), not NPE; record |
-| S6 | Standard Order (132) complete | CO, no shipment, no invoice, no stock move | ⚠ **SQLITE-GAP** (M3): SQLite `buildDeliverLaterGroup` also creates a **DR shipment at order time**; legacy creates none until a shipment is generated. Everything else equal. |
+| S6 | Standard Order (132) complete | CO, no shipment, no invoice, no stock move | ✅ **MATCH after fix F1** (2026-10-09, §27): was SQLITE-GAP (SQLite also birthed a DR shipment at order time); `buildDeliverLaterGroup` is now the order half only. |
 | S7 | order with stock below zero after completion | to be measured (store had 4→3→2, negative not yet tried) | unknown — measure first |
 | S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
 | S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
@@ -692,5 +692,22 @@ Patches are written to `scripts/bridge/out/dict_patch_<table>.sql` for review an
 2. If `DATA_gaps > 0` → review + apply the generated `out/dict_patch_*.sql` (ship via patch + loader), re-run. This step is mechanical.
 3. Whatever `SQLITE-GAP` remains with a clean dictionary is, by elimination, an engine **RULE** (MISSING behaviours are treated as RULE work too): failing scenario already exists (the gap IS the test) → decide fix vs accept → engine lane → re-run to MATCH.
 Extending coverage = add rows to `dict_spec.json` (+ a read type per table on the legacy side) and scenarios to the corpus; no new code unless a NEW pattern appears (record it here).
+
+## §27 DECISION RECORD F1 — fix S6 on the SQLite side (user 2026-10-09: "Of course fix this way i.e. SQLite. As long as you record everything we can always backtrack")
+**Decision.** Per §21 (SQLite is the working world; default remedy = fix the SQLite rule) the deliver-later path now equals legacy: completing a Standard Order creates no shipment.
+**Evidence it was wrong:** M3 `§GAP scenario=S6-standard-order key=shipments legacy=0 sqlite=1`; dict_diff clean (class RULE, not DATA).
+**What changed (one commit; `git revert <sha>` restores the old behaviour):**
+| File | Change |
+|---|---|
+| `build/erp/pos_core.js` | `buildDeliverLaterGroup` = ORDER HALF ONLY (`shipment:null`, `shipmentDeferred:true`); NEW `buildGenerateShipmentOps` (the "Generate Shipments" act — same `buildDoc` spec, ids, shipment-doctype link as before); NEW `buildDeliverLaterWithShipment` = the old output byte-for-byte (order half + generate in one group). Comment block with the reasoning is in the file. |
+| `build/erp/pos_lens.js` | the one deliver-later call site switched to `buildDeliverLaterWithShipment` (UI behaviour unchanged) |
+| `scripts/poc_pos_deliverlater.js`, `poc_wh_pos_pick.js`, `poc_kitchen_queue.js`, `poc_oplog_clipboard.js` | calls switched to the wrapper (mechanical rename) |
+**Regression proof (logs kept in the session scratchpad, before/after):** all four witnesses stay green with identical counts — deliverlater 26🟢, wh_pos_pick 17🟢, kitchen_queue 15🟢,
+oplog_clipboard 11🟢, 0🔴 — and their logs are identical after masking random group ids (the deliver-later `groupHash` of `poc_oplog_clipboard` is unchanged: `b1dbdd6e75ea`);
+`poc_pos_wr/hold/register/edit/void/crud` still exit 0. M3: `S6-standard-order MATCH`, `RECON_SUMMARY MATCH=4 LEGACY-QUIRK=1 SQLITE-GAP=0`, `§TRIAGE RULE_queue=[]`.
+**Honest residue (not hidden):** the kitchen / warehouse-pick / POS lens flows still create the DR shipment in the SAME group as the order (via the wrapper), because
+"sent to kitchen" and "ready to pick" ARE that shipment. For those flows SQLite is still not twin-equal at the moment of sale. Closing it = those UIs commit the two halves as
+two groups (order CO now; Generate Shipment when sent/picked) — a UX-lane follow-up that changes their witnesses' group shape. Not done here; listed as F2.
+**Rule for future gaps (P17):** every fix gets a row like this — evidence, files, proof, residue, one-commit backtrack.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

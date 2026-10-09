@@ -84,7 +84,7 @@ var whdb = new Database(WH_DB, { readonly: true });
     return (r[0] ? r[0].values : []).map(function (v) { return { gid: v[0], parameters: v[1] }; });
   }
   var cart = [POS.ringLine(ctx, keys[0].m_product_id, 2), POS.ringLine(ctx, keys[1].m_product_id, 1)];
-  var g = POS.buildDeliverLaterGroup(ctx, cart, { orderId: 910001, inoutId: 910002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
+  var g = POS.buildDeliverLaterWithShipment(ctx, cart, { orderId: 910001, inoutId: 910002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
   verdict(g.ok === true && g.newVerbs.length === 0, 'deliver-later group built (W-POS-DELIVERLATER engine, newVerbs=[])', 'ops=' + g.ops.length);
   var r1 = await commit(g.ops, { gid: 'pos-dl-1', baseTs: 1718200000000 });
   // the WR cash-and-carry sale on the SAME log — its shipment completes in-group (§FALSIFIER 3)

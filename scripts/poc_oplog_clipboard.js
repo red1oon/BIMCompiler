@@ -63,7 +63,7 @@ function lc(r) { if (!r) return r; var o = {}; for (var k in r) o[k.toLowerCase(
   var keys = db.prepare('SELECT m_product_id FROM c_poskey WHERE c_poskeylayout_id=? AND m_product_id IS NOT NULL ORDER BY c_poskey_id LIMIT 2').all(pos.c_poskeylayout_id).map(lc);
   var BP = 112;
   var cart = [POS.ringLine(ctx, keys[0].m_product_id, 2), POS.ringLine(ctx, keys[1].m_product_id, 1)];
-  var g = POS.buildDeliverLaterGroup(ctx, cart, { orderId: 910001, inoutId: 910002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
+  var g = POS.buildDeliverLaterWithShipment(ctx, cart, { orderId: 910001, inoutId: 910002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
   verdict(g.ok && g.newVerbs.length === 0, 'deliver-later group built (engine, newVerbs=[])', 'ops=' + g.ops.length);
 
   // ── SENDER: commit to the sender's in-memory DB, then serialize ──

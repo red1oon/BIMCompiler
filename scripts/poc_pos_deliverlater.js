@@ -92,7 +92,7 @@ var db = new Database(COPY);
   var keys = db.prepare('SELECT c_poskey_id, m_product_id FROM c_poskey WHERE c_poskeylayout_id=? AND m_product_id IS NOT NULL ORDER BY c_poskey_id LIMIT 2').all(pos.c_poskeylayout_id).map(lc);
   var cart = [POS.ringLine(ctx, keys[0].m_product_id, 2), POS.ringLine(ctx, keys[1].m_product_id, 1)];
   var BP = 112; // the GardenWorld walk-in (seed c_pos.c_bpartnercashtrx_id is NULL — explicit, §-named)
-  var g = POS.buildDeliverLaterGroup(ctx, cart, { orderId: 950001, inoutId: 950002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
+  var g = POS.buildDeliverLaterWithShipment(ctx, cart, { orderId: 950001, inoutId: 950002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
   verdict(g.ok === true && g.newVerbs.length === 0, 'buildDeliverLaterGroup ok, newVerbs=[] (rides buildDoc + completeOrder only)', 'verbs=' + g.verbsUsed.join(','));
   verdict(g.order.c_doctype_id === 132, 'the order is on doctype 132 (NOT the station\'s WR 135) — the sale doctype is the policy key', 'c_doctype_id=' + g.order.c_doctype_id);
   var statuses = g.ops.filter(function (o) { return o.op_type === 'SET_STATUS'; }).map(function (o) { return o.table + '→' + o.doc_status; });

@@ -1491,7 +1491,7 @@
       var ids = nextIds(cfg.opDb);
       // invoice timing NAMED from the dictionary (the witness's extraction query, verbatim)
       var invR = q1(b3, "SELECT c.defaultvalue AS v FROM ad_column c JOIN ad_table t ON t.ad_table_id=c.ad_table_id WHERE t.tablename='C_Order' AND c.columnname='InvoiceRule'");
-      var g = POS.buildDeliverLaterGroup(ctx, cart, {
+      var g = POS.buildDeliverLaterWithShipment(ctx, cart, {
         orderId: ids.orderId, inoutId: ids.inoutId, c_bpartner_id: Number(bpSel.value),
         doctype: dtSO, invoiceRule: invR ? invR.v : null
       });

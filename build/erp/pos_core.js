@@ -185,6 +185,17 @@
     };
   }
 
+  // ── DECISION 2026-10-09 (twin gap F1/S6, prompts/SQLiteIDEMPIERE.md §23/§25/§27) — user: "fix this way, i.e. SQLite" ──────────
+  // LEGACY (measured on the pilot, M3 S6): completing a Standard Order (IsAutoGenerateInout='N') creates NO shipment; the shipment
+  // appears only when "Generate Shipments" is run later. Before this change buildDeliverLaterGroup ALSO birthed a DR M_InOut in the
+  // same group (the §P-12 "pickable shipment"), so SQLite's result for the same facts differed (shipments 1 vs 0).
+  // Now split into the two legacy acts, composed — exactly the order-half/completion-half pattern buildSaleGroup already uses:
+  //   buildDeliverLaterGroup(...)        = ORDER HALF ONLY (order CO, N/N flags verbatim) — twin-equal to legacy; shipment:null.
+  //   buildGenerateShipmentOps(...)      = the "Generate Shipments" act: the DR shipment (same buildDoc spec, same ids/doctype link as before).
+  //   buildDeliverLaterWithShipment(...) = order half + generate in ONE group = the OLD output byte-for-byte; the convenience the
+  //                                        kitchen / warehouse-pick lanes use. NOT twin-equal until their UI commits the two halves as
+  //                                        two groups (follow-up, UX lane) — recorded, not hidden.
+  // BACKTRACK: revert the single commit carrying this block; callers switched to the wrapper are listed in §27.
   // opts = { orderId, inoutId, c_bpartner_id, doctype: <the SALE doctype's c_doctype row, host-read>,
   //          invoiceRule: <C_Order.InvoiceRule AD_Column defaultvalue, host-EXTRACTED ('I' in seed)> }
   // NO backflush and NO invoice here: §P-3 CONSUME and the C- movement belong to the act that moves
@@ -197,17 +208,31 @@
     if (!built.ok) return built;
     // complete the ORDER with the dictionary flags VERBATIM (N/N ⇒ the bare SET_STATUS C_Order CO)
     var ops = built.ops.concat(E.completeOrder(built.order, built.soLines, pol));
-    // the pickable shipment: the SAME buildDoc spec the WR path rides (replay-equal), born DR by
-    // absence of SET_STATUS — the engine's own convention (buildDoc creates, SET_STATUS transitions)
-    var ship = E.VERBS.createShipment(built.order, built.soLines);
-    ship[0].m_inout_id = opts.inoutId; ship[0].m_warehouse_id = built.order.m_warehouse_id;
-    if (pol.shipDoctypeId != null) ship[0].c_doctype_id = pol.shipDoctypeId;
-    ops = ops.concat(ship);
     return {
       ok: true, ops: ops, order: built.order, soLines: built.soLines,
-      shipment: { m_inout_id: opts.inoutId, docstatus: 'DR' },
+      shipment: null, shipmentDeferred: true, shipDoctypeId: pol.shipDoctypeId,
       invoiceTiming: { inGroup: false, rule: opts.invoiceRule != null ? opts.invoiceRule : null, source: 'C_Order.InvoiceRule dictionary default' },
       newVerbs: [], verbsUsed: ['buildDoc', 'completeOrder']
+    };
+  }
+
+  // The "Generate Shipments" act for an already-completed deliver-later order: the pickable DR shipment, via the SAME buildDoc spec the
+  // WR path rides (replay-equal), born DR by absence of SET_STATUS — the engine's own convention (buildDoc creates, SET_STATUS transitions).
+  function buildGenerateShipmentOps(order, soLines, opts) {
+    var ship = E.VERBS.createShipment(order, soLines);
+    ship[0].m_inout_id = opts.inoutId; ship[0].m_warehouse_id = order.m_warehouse_id;
+    if (opts.shipDoctypeId != null) ship[0].c_doctype_id = opts.shipDoctypeId;
+    return { ok: true, ops: ship, shipment: { m_inout_id: opts.inoutId, docstatus: 'DR' }, newVerbs: [], verbsUsed: ['buildDoc'] };
+  }
+
+  // OLD behaviour, byte-for-byte (order CO + DR shipment in one group) for the lanes that need the pickable shipment at sale time.
+  function buildDeliverLaterWithShipment(ctx, cart, opts) {
+    var g = buildDeliverLaterGroup(ctx, cart, opts);
+    if (!g.ok) return g;
+    var gs = buildGenerateShipmentOps(g.order, g.soLines, { inoutId: opts.inoutId, shipDoctypeId: g.shipDoctypeId });
+    return {
+      ok: true, ops: g.ops.concat(gs.ops), order: g.order, soLines: g.soLines, shipment: gs.shipment,
+      invoiceTiming: g.invoiceTiming, newVerbs: [], verbsUsed: ['buildDoc', 'completeOrder']
     };
   }
 
@@ -504,6 +529,7 @@
     buildRegisterGroup: buildRegisterGroup, buildEditGroup: buildEditGroup,
     buildHoldGroup: buildHoldGroup, buildRecallCompleteGroup: buildRecallCompleteGroup,
     deliverLaterPolicy: deliverLaterPolicy, buildDeliverLaterGroup: buildDeliverLaterGroup,
+    buildGenerateShipmentOps: buildGenerateShipmentOps, buildDeliverLaterWithShipment: buildDeliverLaterWithShipment,
     completeShipmentOps: completeShipmentOps,
     registerNextIds: registerNextIds, dataUrlBytes: dataUrlBytes, IMAGE_CAP_BYTES: IMAGE_CAP_BYTES,
     ALLOWED_VERBS: ALLOWED_VERBS
