@@ -295,49 +295,48 @@ alarm fires; the same change via WS → no alarm; INCONCLUSIVE if hash unchanged
   own-echo = `CreatedBy` + `TrxName ws_*` (W10-proven).
 - 200 new migration scripts upstream (iD14 line). Only 6910 touches the change log. Migrations remain raw SQL (B1).
 
-## §16 Reference scenario: POS (the first sample component; descriptor-only, per §00)
-Edge = SQLite POS (a store). Legacy = iDempiere. Two directions, data only, normal-user role:
-| Dir | Business event | iDempiere docs (stock) | Path |
-|---|---|---|---|
-| UP | Store sells: sale + lines (+ payment/tender) | `C_Order` (DocType **POS Order**, SOO/WR) + `C_OrderLine`, then `setDocAction CO`; payment as `C_Payment` | §3: createData header → lines → setDocAction; id map; read-back verify |
-| DOWN | **Replenishment** to the store | `M_Movement` (DocType **Material Movement**, MMM) from HQ to the store warehouse; driven by `M_Replenish` min/max + process `ReplenishReport` (output Inventory Move / Requisition / PO) | §4: change-log sees movement/requisition DocStatus →CO → local replay increments store stock |
-| DOWN | Master data the POS needs (products, prices) | `M_Product`, `M_ProductPrice` | upserts via same tracker; one-time at handover, then deltas |
-Pilot has the fixtures: DocTypes 'POS Order' + 'Material Movement', warehouses HQ/Store North/South/East/West/Central, 19 `M_Replenish`
-rows. All of C_Order, C_OrderLine, C_Payment, M_Movement(+Line), M_Requisition(+Line), M_Replenish, M_Product, M_ProductPrice are
-`IsChangeLog=Y`; **`M_Storage` is NOT** (stock on hand is derived) → the POS must never be told stock by row copy; it recomputes
-stock from replayed movements + its own sales, and the Bridge reconciles that against legacy (read `M_Storage`/stock via a
-read WS or a report) — falsifier W14.
-Open questions from this scenario (⛔, user's prior Unicenta experience decides):
-1. Replenishment trigger: legacy `ReplenishReport` run by an ERP user creates the move → POS only RECEIVES (assumed), or the
-   POS also raises a requisition UP when it hits min?
-2. Is a store's received goods confirmed on the POS (a receive step → `M_Movement` confirmation) or is CO of the move enough?
-3. Sale identity: one `C_Order` per sale ticket, or batched per shift/day? (affects volume + id map)
-4. Payment: `C_Payment` per sale, or one allocation per shift?
-Witnesses (spec, not built): W15 POS-UP (N offline sales drained in order, ids mapped, order count == legacy, totals recompute
-== legacy GrandTotal); W16 REPLENISH-DOWN (legacy movement CO'd → arrives via change log → store stock == legacy store stock);
-W14 STOCK-RECONCILE.
+## §16 Reference scenario: POS, Unicenta-minimal (user's own prior integration; CORRECTED 2026-10-09 — earlier draft drifted)
+**Exactly two flows, nothing else** (no payment, no requisition, no inventory-move, no receive step — those were my additions
+and are withdrawn):
+| Dir | What | Shape |
+|---|---|---|
+| UP | **Order lines** the POS sold | rows of (product, qty, price) arriving at iDempiere as order + lines under the fixed context |
+| DOWN | **ProductQty** (stock per product) | current on-hand qty per product for the store's warehouse, written into the POS |
+**Context, set up ONCE (not synced per sale):** Org, PriceList (and the rest the order needs — warehouse, customer, doctype).
+Values to be INFERRED later from the user's Unicenta project; never invented here (§9 rule).
+Design consequences to review (not decisions):
+1. **DOWN is a snapshot read, not a change-log feed.** Stock on hand lives in `M_Storage`, which is `IsChangeLog=N` (derived,
+   written by bulk SQL in doc completion). So ProductQty comes from a read-only WS query of stock (one more read WS type on the
+   admin's list, same shape as `QueryChangeLog`), applied to the POS as an ABSOLUTE qty per product. The change-log tracker is
+   NOT needed for this POS flow; it stays in the layer for plugins whose DOWN is documents (§4).
+2. **Local qty rule (one rule, so sales between syncs don't flicker):** shown qty = last server qty − qty of lines still in the
+   outbox (not yet confirmed). When a line is CONFIRMED, the next snapshot already includes it.
+3. **UP unit = a batch of order lines** under the fixed context. Whether one POS ticket = one server order, or lines are grouped,
+   is inferred from the Unicenta project later.
+Witnesses (spec): W15 POS-UP (N offline order lines drained in order, none lost/duplicated on retry, server line count/qty ==
+local); W16 QTY-DOWN (server qty snapshot → POS qty equals server, outbox-pending subtracted per rule 2).
 
-## §17 What the layer must give a plugin (the common base) — draft, derived from §16 POS + what is built
+## §17 What the layer must give a plugin (the common base) — draft; ✂ = NEEDED NOW for §16 Unicenta-minimal, ◻ = later
 **Principle:** the contract between a UI plugin and the Bridge is **SQLite tables + the kernel doc API**, not an RPC.
 A Flutter (or any) UI already reads/writes the local SQLite; the Bridge is a separate worker that moves rows. So a plugin
 UI needs no Bridge SDK to render sync state — it queries tables. (Fits local-first and AD-LAYER LAW: generic, no per-plugin code.)
 **Layer provides (build once):**
 | # | Service | Plugin sees it as | Status |
 |---|---|---|---|
-| 1 | Change-log tracker (watermark, window, dedupe, own-echo) | feeds `inbox` | ✅ built, W10 |
-| 2 | Transport (ADInterface, stateless login, errors → §-lines) | invisible | ✅ `ad_client.js` |
-| 3 | **Outbox**: ordered, batched, idempotent, retry/backoff | kernel ops flagged `to_sync`; plugin just does normal doc ops | ⛔ not built |
-| 4 | **Doc sync state** per doc: `LOCAL → QUEUED → PUSHED → CONFIRMED / REJECTED(msg) / DIVERGED` | table `sync_doc_state(doc,state,msg,server_id,server_docno)` — UI shows badges/“3 pending” | ⛔ |
-| 5 | **Id map** local uuid/provisional no ⇄ server `C_*_ID`/DocumentNo | `sync_idmap`; helper `resolve()` | ⛔ |
-| 6 | **Inbox + replay**: remote events replayed through the local doc engine (create+DocAction) | rows in normal doc tables + `inbox_event` log for UI notifications | ⛔ |
-| 7 | **Descriptor loader/validator** (§5) + mapper helpers (field/enum maps, dependency order) | a JSON file + small pure fns | ⛔ |
-| 8 | **Reconcile runner**: runs component-declared checks (posting equals, stock recompute) and writes results | `sync_reconcile` rows; UI warns on mismatch | ⛔ |
-| 9 | **Connection + settings**: base URL, per-device login in secure store, test-connection, schedule, “Sync now”, offline detect | `sync_config`, `sync_run` rows | ⛔ |
-| 10 | **Handover wizard** (one-time model sync, §000) | generic screen/command | ⛔ |
-| 11 | **Generic UI parts**: sync status bar, Rejected/Diverged inbox, settings screen, run log — plugin embeds, never rewrites | embeddable widgets (reuse theme tokens) | ⛔ |
-| 12 | **Witness kit**: mock ADInterface server, pilot fixtures, W1–W8 parametrised by the descriptor | plugin gets its tests by supplying a descriptor | partly (pilot SQL, W10) |
-| 13 | Standard `§` log lines for every step | read the log | ✅ pattern set |
-| 14 | Rule hook: local validation may only be stricter than legacy (§6) | plugin registers rules; layer checks | ⛔ |
+| 1 | ◻ Change-log tracker (watermark, window, dedupe, own-echo) — for document-DOWN plugins, not POS-minimal | feeds `inbox` | ✅ built, W10 |
+| 2 | ✂ Transport (ADInterface, stateless login, errors → §-lines) | invisible | ✅ `ad_client.js` |
+| 3 | ✂ **Outbox**: ordered, batched, idempotent, retry/backoff | kernel ops flagged `to_sync`; plugin just does normal doc ops | ⛔ not built |
+| 4 | ✂ (simple) **Sync state** per doc: `LOCAL → QUEUED → PUSHED → CONFIRMED / REJECTED(msg) / DIVERGED` | table `sync_doc_state(doc,state,msg,server_id,server_docno)` — UI shows badges/“3 pending” | ⛔ |
+| 5 | ✂ **Id map** local uuid/provisional no ⇄ server `C_*_ID`/DocumentNo | `sync_idmap`; helper `resolve()` | ⛔ |
+| 6 | ◻ **Inbox + replay**: remote events replayed through the local doc engine (create+DocAction) | rows in normal doc tables + `inbox_event` log for UI notifications | ⛔ |
+| 7 | ✂ **Descriptor loader/validator** (§5) + mapper helpers (field/enum maps, dependency order) + NEW: a descriptor may declare a DOWN as `snapshot` (read WS → absolute values) instead of `changelog` | a JSON file + small pure fns | ⛔ |
+| 8 | ◻ **Reconcile runner**: runs component-declared checks (posting equals, stock recompute) and writes results | `sync_reconcile` rows; UI warns on mismatch | ⛔ |
+| 9 | ✂ **Connection + settings + one-time CONTEXT (org, pricelist…)**: base URL, per-device login in secure store, test-connection, schedule, “Sync now”, offline detect | `sync_config`, `sync_run` rows | ⛔ |
+| 10 | ◻ **Handover wizard** (one-time model sync, §000) | generic screen/command | ⛔ |
+| 11 | ◻ **Generic UI parts**: sync status bar, Rejected/Diverged inbox, settings screen, run log — plugin embeds, never rewrites | embeddable widgets (reuse theme tokens) | ⛔ |
+| 12 | ✂ **Witness kit**: mock ADInterface server, pilot fixtures, W1–W8 parametrised by the descriptor | plugin gets its tests by supplying a descriptor | partly (pilot SQL, W10) |
+| 13 | ✂ Standard `§` log lines for every step | read the log | ✅ pattern set |
+| 14 | ◻ Rule hook: local validation may only be stricter than legacy (§6) | plugin registers rules; layer checks | ⛔ |
 **Plugin supplies (and ONLY this):** (a) a descriptor: tables, doc types + FSM map, directions UP/DOWN, field/enum mappers,
 order, reconcile checks; (b) its local rules / decision tables; (c) its UI screens (POS: ticket, tender, receive-stock).
 **Acceptance for "minimal":** W8 — a second plugin's diff contains a descriptor + rules + UI and **zero** change to the
@@ -345,7 +344,6 @@ layer. If a plugin needs a Bridge change, that item goes into this table (the la
 **Plugin-facing commands (the only imperative API; everything else is table reads):** `sync.now()`, `sync.retry(doc)`,
 `sync.discard(doc)` (REJECTED only, with reason), `sync.status()`; implemented as rows in a `sync_command` table so any UI tech
 can issue them.
-**Next build order (core lane):** 3 outbox → 4 state → 5 id map → UP for one POS sale vs pilot (W15) → 6 inbox/replay (W16) →
-7 descriptor loader (extract POS descriptor from the working code, not before) → 8/9/11.
+**Build order — NOT started; this section is design under review.**
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
