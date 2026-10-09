@@ -13,6 +13,9 @@ unknown is a ⛔ in §9, not a guess. Honour until DONE.
 and legacy users' doc work comes back through the change log and is replayed locally (§4 DOWN). Role = a normal
 WebService user. Built + witnessed so far: the §4 tracker (W10, §13). Next in this lane: UP path, id map, outbox,
 local replay, posting reconcile (W1–W7).
+**Model sync happens ONCE, together, at handover (user 2026-10-09)** — the SQLite side and legacy start from the same
+model. After handover the Bridge exchanges DATA only, like a layman's integration (user's prior art: Unicenta POS ⇄ iDempiere).
+Any later model change is the superior-role extra below, not part of routine sync.
 **OUT OF THE CORE (extra, SUPERIOR ROLE only — admin/SuperUser lane, built later, never needed for a user to sync):**
 §14 model-drift sentinel (AD_Field/AD_Column, W11), §15 hard rule + backdoor register (W12/W13), §11 plugin example,
 model (AD) sync itself. A normal user's sync never depends on them; they must not gate or slow it.
@@ -291,5 +294,27 @@ alarm fires; the same change via WS → no alarm; INCONCLUSIVE if hash unchanged
   sets `AuditTraceContext` from a header). That is a legacy change → proposal item for later, NOT a dependency. Until then:
   own-echo = `CreatedBy` + `TrxName ws_*` (W10-proven).
 - 200 new migration scripts upstream (iD14 line). Only 6910 touches the change log. Migrations remain raw SQL (B1).
+
+## §16 Reference scenario: POS (the first sample component; descriptor-only, per §00)
+Edge = SQLite POS (a store). Legacy = iDempiere. Two directions, data only, normal-user role:
+| Dir | Business event | iDempiere docs (stock) | Path |
+|---|---|---|---|
+| UP | Store sells: sale + lines (+ payment/tender) | `C_Order` (DocType **POS Order**, SOO/WR) + `C_OrderLine`, then `setDocAction CO`; payment as `C_Payment` | §3: createData header → lines → setDocAction; id map; read-back verify |
+| DOWN | **Replenishment** to the store | `M_Movement` (DocType **Material Movement**, MMM) from HQ to the store warehouse; driven by `M_Replenish` min/max + process `ReplenishReport` (output Inventory Move / Requisition / PO) | §4: change-log sees movement/requisition DocStatus →CO → local replay increments store stock |
+| DOWN | Master data the POS needs (products, prices) | `M_Product`, `M_ProductPrice` | upserts via same tracker; one-time at handover, then deltas |
+Pilot has the fixtures: DocTypes 'POS Order' + 'Material Movement', warehouses HQ/Store North/South/East/West/Central, 19 `M_Replenish`
+rows. All of C_Order, C_OrderLine, C_Payment, M_Movement(+Line), M_Requisition(+Line), M_Replenish, M_Product, M_ProductPrice are
+`IsChangeLog=Y`; **`M_Storage` is NOT** (stock on hand is derived) → the POS must never be told stock by row copy; it recomputes
+stock from replayed movements + its own sales, and the Bridge reconciles that against legacy (read `M_Storage`/stock via a
+read WS or a report) — falsifier W14.
+Open questions from this scenario (⛔, user's prior Unicenta experience decides):
+1. Replenishment trigger: legacy `ReplenishReport` run by an ERP user creates the move → POS only RECEIVES (assumed), or the
+   POS also raises a requisition UP when it hits min?
+2. Is a store's received goods confirmed on the POS (a receive step → `M_Movement` confirmation) or is CO of the move enough?
+3. Sale identity: one `C_Order` per sale ticket, or batched per shift/day? (affects volume + id map)
+4. Payment: `C_Payment` per sale, or one allocation per shift?
+Witnesses (spec, not built): W15 POS-UP (N offline sales drained in order, ids mapped, order count == legacy, totals recompute
+== legacy GrandTotal); W16 REPLENISH-DOWN (legacy movement CO'd → arrives via change log → store stock == legacy store stock);
+W14 STOCK-RECONCILE.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
