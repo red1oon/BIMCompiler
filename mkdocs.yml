@@ -126,6 +126,7 @@ nav:
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
       - "Strategic Positioning": StrategicIndustryPositioning.md
       - "Local-First Prior Art": LocalFirstPriorArt.md
+      - "Legacy-as-Oracle Adapter (migrate / test an ERP)": LegacyOracleAdapterSpec.md
       - "Enabling-Tech Timeline": EnablingTechTimeline.md
       - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
       - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md
