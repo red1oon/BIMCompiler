@@ -1153,4 +1153,15 @@ it is the same door any integration client uses. This resolves the tension in P1
 on the local pilot we apply the same SQL ourselves. Read-only query types are preferred over write types; each write type is listed with its field whitelist in the admin handover list (§9 P1).
 **Not decided by this note:** Q-OOTB (editing `~/bim-ootb/erp` to deliver the SQLite-side fixes) — still waiting for the user.
 
+## §52 THE PLAN IN ONE PAGE — the user's full-circle restatement, rephrased (2026-10-09: "I am coming full circle recollecting what I have been planning all along")
+1. **Work happens in SQLite.** SQLite is the daily system (the user's world is SQLite throughout). New features, rules and validations are built and used there first.
+2. **Legacy is a twin that must show the same result** (CARDINAL RULE, incl. look & feel). Legacy users keep working in iDempiere; they must not be able to tell the difference.
+3. **After SQLite has done its lane, it recomposes the same facts into legacy through the WebServices** (the legal door, D6). Two shapes:
+   a. **Integration-style flows (the Unicenta POS pattern):** POS orderlines go up through WS to an integration plugin on the legacy side that merges them into the central DB, runs replenishment, and returns stock — exactly the 2012 design, **minus ActiveMQ** (the broker is not a legal/permitted path). Nothing new except the transport.
+   b. **Native-feature flows (e.g. Fixed Asset registration + depreciation):** iDempiere already has the feature. SQLite implements it itself (new rules welcome), then creates the resulting records **directly in legacy through the WS** (asset, additions, depreciation entries, doc-actions) so legacy's OWN engine processes them.
+4. **Compare, then close the gap on the SQLite side.** Legacy's result (its own depreciation numbers, its postings, its refusals) is the oracle. Every difference is a SQLite gap (§21/§23/§35). The parallel run continues until the gap list is empty; only then is legacy retired.
+**Where the build stands against this:** 3b is exactly what the harness already does for orders (descriptor → composite WS → read-back → reconcile); Fixed Assets is the next scenario family (A_Asset / A_Asset_Addition / A_Depreciation_Entry via WS; WS types are configuration under D6). 3a today runs plugin-free through the stock composite WS (Mode A);
+the legacy-side integration plugin of the Unicenta kind (Mode B, parked in §19 C1 under the old "legacy installs nothing" reading) is **re-opened as allowed** by this restatement ("a plugin there that does the integration, as done before") — to be confirmed in scope: build it, or keep using it only as a comparison oracle where it already exists.
+**Not changed:** no direct SQL into legacy; no ActiveMQ; WS config is the only legacy-side setup unless the user says otherwise.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
