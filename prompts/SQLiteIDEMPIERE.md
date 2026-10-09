@@ -1274,4 +1274,35 @@ single-amount `Fact.createLine` rule (Fact.java:206-212: a negative amount is bo
 **Proof required:** `§LAYER_FIX` both gap probes pass after the change; every existing descriptor builds byte-identical operations (W10/M1/M2/LINK/MODEL/M3 unchanged); genericity gate PASS; FA scenario uses it (§61).
 **RESULT §60:** `§LAYER_FIX header-only PASS ["createData"]` · `§LAYER_FIX child doc-action PASS @A_Asset_Addition.A_Asset_Addition_ID` · `§LAYER_IDENTICAL order/pay/move PASS` (old vs new `doc_writer` build byte-identical operations for existing descriptors) · `§GENERICITY PASS`. Backtrack = `git revert <sha>`.
 
+## §61 MODEL 5 — FIXED ASSETS: registration + addition + depreciation (the user's headline, §52 3b) (2026-10-10, work list item 6) — SPEC before code
+**Model as data (D6):** `pilot/ws_model_fa.sql` — create A_Asset (master, no doc-action — needs §60), create A_Asset_Addition + CO (doc-action on the CHILD table, §60), create A_Depreciation_Entry + CO; read types from §57. ONE composite per registration: asset + addition + CO.
+**Facts:** FA1 = asset "M3-FA-<run>" in group 50007 Equipment (Straight Line 50003 on both schemas), product 145, owned, depreciated, UseLifeMonths 12 (+_F 12), manual addition (A_SourceType MAN, no charge) AssetSourceAmt 1200.00 USD, DateDoc = DateAcct = today;
+FA-DEP = a Depreciation Entry (doc type 200002, schema 101, period of today, A_Entry_Type DEP) completed after FA1; FA-REJ = addition for an asset group that does not exist (rejected); NEG control = +1¢ on the SQLite cost.
+**Keys (legacy = the oracle):** asset status · workfile per schema `cost¢:life:period:accum¢` · expense schedule per schema (count, first period expense¢, Σ) · addition books (A_Asset_Addition) per schema · depreciation-entry books per schema · workfile accumulated after the entry.
+**Legacy rules (read so far):** MAssetAddition.beforeSave/prepareIt/completeIt (MAssetAddition.java:112-138, 560-600, 659-800): asset status New ⇒ CreateAsset, activation, workfile per group-acct schema (MDepreciationWorkfile.java:243-280: use life from the asset when > 0), cost via `adjustCost`, `buildDepreciation` (:649-…) builds the A_Depreciation_Exp schedule
+with the method of the asset acct (SL: MDepreciation.apply_SL:330 exp = remaining cost / remaining periods, HALF_UP at precision); Doc_AssetAddition / Doc_DepreciationEntry posting folds exist in `doc_poster` (B-3; to be judged against legacy FIRST, per the work list).
+**SQLite today:** posting folds only; no registration / addition / workfile / schedule / depreciation-run engine ⇒ measure legacy, then port the measured path.
+**MEASURED FA1 on legacy (probe through the link, ONE composite: create asset + addition + CO — the §60 capability in use; psql oracle read-only):** asset 1000000 status `AC`, AssetServiceDate = DateDoc, own UseLifeMonths 12 kept on the asset; addition CO, Posted Y,
+books schema 101 `563 Dr 1200 / 431 Cr 1200` (A_Asset_Acct asset / product-expense default), schema 200000 `563 Dr 1020 / 431 Cr 1020` (converted at 0.85); workfile 101 `cost 1200, UseLifeMonths 0, _F 60, A_Life_Period 0, A_Current_Period 1, DateAcct 2026-10-31`,
+workfile 200000 `cost 1020, life 0/0`; expense schedule 101 = 60 rows of **0.00**, 200000 = none. **Why zero (rule, not accident):** `MAsset.afterSave` creates A_Asset_Acct + workfile per group-accounting schema and then OVERWRITES the use life with the GROUP's values (MAsset.java:438-456) —
+the asset's own 12 months are ignored; every pilot asset group has C life 0 (F 60 on schema 101, 0 on 200000), and `apply_SL` (MDepreciation.java:330-341) gives remaining cost / remaining periods = 0 when the C life is 0. The addition never adjusts use life (`adjustUseLife` is not called, MAssetAddition.java).
+**⏸ PAUSED 2026-10-10 (context budget) — resume point:** (1) SQLite port of the MEASURED path: `registerAsset` (A_Asset NW + per group-acct A_Asset_Acct + workfile with the GROUP life), `completeAssetAddition` (status AC, service date, workfile cost per schema converted at DateAcct, current period 1,
+DateAcct month-end, `buildDepreciation` with lifePeriods = max(C,F) and `apply_SL` incl. the zero-life case), then `deriveAssetAddition` (B-3 fold) judged against the measured books above; (2) FA-DEP depreciation entry (WS types exist: `BridgeCreateDepreciationEntry` / `BridgeCompleteDepreciationEntry`);
+(3) a NON-ZERO depreciation needs a use life on the asset GROUP — question Q-FA below; (4) items 5 (C_Cash / M_Requisition) not started.
+
+## §62 LEDGER — 2026-10-10 resume run (work-to-zero; cardinal rule)
+| # | Item | State | Proof |
+|---|---|---|---|
+| F15 | Inventory Move | ✅ MATCH | §56.1 MV1 + MV-REJ + negative control |
+| F16 | AR receipt + allocation (+ currency balancing) | ✅ MATCH | §57.1 PAY1 + captured books 7 MATCH / 1 named absent / 0 diff |
+| F17 | direct AR invoice with tax | ✅ MATCH | §58.1 INV1, INV2 (unpriced line accepted at 0), INV-REJ |
+| F18 | Physical Inventory (+ costed qty, side rule) | ✅ MATCH | §59.1 PI1, PI2, PI-REJ; harness `TODAY` = local day |
+| L | layer reopened: create-only masters + child-table doc-action | ✅ | §60 (byte-identical for existing descriptors) — work list item 7 delivered by this |
+| FA | Fixed Assets | ⏸ PAUSED | legacy measured (above); SQLite port = resume point |
+| C_Cash / M_Requisition | item 5 | ⏸ not started | — |
+| S2b, F2, delivery | | ⛔ Q-OOTB (unchanged) | |
+| F9 | back-date costing | ⏸ (unchanged) | |
+**Q-FA (concept source §52 3b — legacy's own depreciation is the oracle; undecidable from the record):** every pilot asset group has use life 0, so legacy's depreciation of any newly registered asset is ZERO. To compare a real depreciation the Equipment group needs a use life on legacy.
+May that be set as a recorded pilot fixture (`scripts/bridge/pilot/fa_group_life.sql`, e.g. Equipment 50007 → 60 months on both schemas, restorable), or should it be keyed by a legacy user in the Asset Group window?
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
