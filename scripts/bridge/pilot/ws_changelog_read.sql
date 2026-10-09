@@ -91,7 +91,10 @@ BEGIN
       ('QueryCBankAccount','C_BankAccount',NULL::text[]),
       -- §71 Project Issue model (read-only)
       ('QueryCProjectIssue','C_ProjectIssue',NULL::text[]),
-      ('QueryCProject','C_Project',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryCProject','C_Project',NULL::text[]),
+      -- §72 Distribution Order model (read-only)
+      ('QueryDDOrder','DD_Order',NULL::text[]),
+      ('QueryDDOrderLine','DD_OrderLine',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

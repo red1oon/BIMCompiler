@@ -1603,4 +1603,31 @@ Doc_ProjectIssue.createFacts :125-200 — cost = product costs × qty (ProductCo
 **Proof (`scratchpad/m3_f35.log`, full M3):** `§SCN PJI1-project-issue-stocked-item MATCH compared=7` (stock 137@101 −1, Average qty −1, project balance +2.7000, books 567 Dr / 742 Cr 2.70; Euro 568 / 742 2.30) · `§SCN PJI-REJ-no-product MATCH` · `§M3_PJI_NEGATIVE_CONTROL PASS` · `§M3_VERDICT HARNESS-PASS fails=0`.
 **Regression:** 99 engine witnesses identical except the 4 known-nondeterministic logs (the B3 fixtures have no costing precision ⇒ unchanged fold). **Residue:** issues from a receipt line (PO cost) or time-expense line (labour cost), asset projects (Project Asset account), reversal, negative-inventory-disallowed warehouses and the back-date cost check (BackDateDay ≠ 0) are not exercised.
 
+## §72 MODEL 9 — Distribution Order (DD_Order + DD_OrderLine, CO) (2026-10-10, backlog item 2) — SPEC before code
+**Model as data (D6):** `pilot/ws_model_ddorder.sql` (create header, create line, complete) + read types QueryDDOrder / QueryDDOrderLine. Header: doctype 50012 (DOO), BP 112 / location 108, warehouse = HQ Transit 50000 (IsInTransit warehouse of org 11), DateOrdered/DatePromised; line: product, from locator 101 (HQ) → to locator 50000 (HQ Transit), QtyEntered = QtyOrdered.
+**Legacy rules (org.eevolution MDDOrder.java @{u}):** prepareIt :786-849 — MPeriod.isOpen(DateOrdered, DOO) else @PeriodClosed@; @NoLines@; DeliveryRule O with an IsExcludeAutoDelivery product ⇒ refused; mandatory ASI ⇒ @LinesWithoutProductAttribute@; reserveStock :857-929 — per line QtyReserved += QtyOrdered − QtyReserved − QtyDelivered (storage rows touched with qty 0 for stocked items: no quantity change), Volume / Weight = Σ product volume / weight × QtyOrdered;
+completeIt :963-1010 — approve, Processed, DocAction CL (no books: a distribution order does not post; no storage quantity moves until its movement).
+**Scenarios:** DDO1 = product 137 × 2 from 101 to 50000, today, CO; DDO-REJ = DateOrdered 2000-06-01 (no period) ⇒ @PeriodClosed@; negative control +1 on the SQLite quantity.
+**Keys:** outcome, docstatus, lines `product:ordered:reserved:delivered`, volume, weight, stock_delta (from/to locators: must stay 0).
+
+### §72.1 DECISION RECORD F36 — Distribution Order: legacy REFUSES the completion on an immediate-posting server (no Doc_DDOrder class) and SQLite now refuses the same way (2026-10-10)
+**Evidence (`scratchpad/ddo1-4.log`):** measurement 1-2: the pilot X_DD_Order / X_DD_OrderLine leave the mandatory Yes-No columns IsInDispute / IsInvoiced NULL on a WS create ⇒ the descriptor passes the window's Yes-No default 'N' (GridField.getDefault YesNo ⇒ N; WS inputs added idempotently in `ws_model_ddorder.sql`). Measurement 3: legacy then REFUSES DDO1 at completion — `UserError: Doc Class invalid: …Doc_DDOrder (ClassNotFoundException)`:
+CLIENT_ACCOUNTING=I ⇒ DocumentEngine posts right after completeIt (DocumentEngine.java:350-370 @{u}); DD_Order carries a Posted column (:1441-1442) and DefaultDocumentFactory throws for a missing class (DefaultDocumentFactory.java:87-107; no Doc_DDOrder / Doc_PPOrder / Doc_PPCostCollector / Doc_HRProcess in org.idempiere.acct.doc). SQLite completed it (CO, reservation). Cardinal rule 2 ⇒ SQLite must refuse too.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/doc_poster.js` NEW `immediatePostingRefusal` (+ `LEGACY_DOC_CLASSES`, `legacyDocClassOf` — the factory's naming rule); `scripts/erp_engine.js` NEW `completeDDOrder` (MDDOrder.prepareIt / reserveStock / completeIt; `ctx.postingRefusal` after completion); `witness_m3_gap.js` Distribution Order suite (DDO1, DDO-REJ, `§M3_DDO_NEGATIVE_CONTROL` = the SQLite side read as Q must COMPLETE ⇒ gap);
+`coverage.js` maps GLJ / BS / PJI / DDO; pilot `ws_model_ddorder.sql` + read types QueryDDOrder / QueryDDOrderLine.
+**Proof (`~/.cache/bim_bridge/run_20261010_*` of `scratchpad/runall_f36.out`):** `§SCN DDO1-distribution-order-to-transit MATCH compared=6` (both REJECTED: Doc Class invalid) · `§SCN DDO-REJ-date-without-period MATCH` (both Period Closed — judged, no longer vacuous) · `§M3_DDO_NEGATIVE_CONTROL PASS` · all `_VERDICT` PASS · `§COVERAGE models_with_scenarios=15 of 34`.
+**Regression:** 99 engine witnesses identical except the 4 known-nondeterministic logs. **Residue:** the reservation / volume / weight logic of `completeDDOrder` cannot be judged against this legacy (it never completes a DD order under I; switching the pilot to Q needs a System-level sysconfig change = not a WS operation) — ⏸ until a Q-mode reference exists;
+the same refusal applies to PP_Order, PP_Cost_Collector, HR_Process completions (not ported models).
+
+## §73 LEDGER — 2026-10-10 third resume run (work-to-zero; cardinal rule; every row has a decision record)
+| # | Item | State | Proof / record |
+|---|---|---|---|
+| F32 | AD_SysConfig mirrored (posting db + seed) + `sysConfig` reader with legacy defaults; cash-journal allocation follows CLIENT_ACCOUNTING × transaction shape; **Q-CASH closed by measurement**; CASH1 10/10, CASH1b MATCH | ✅ MATCH | §68 / §68.1 |
+| F33 | GL Journal (model as data + rules + books, suspense balancing) | ✅ MATCH | §69 / §69.1 |
+| F34 | Bank Statement (reconciliation, balances, refusal; the W-POST-TAIL fold judged) | ✅ MATCH | §70 / §70.1 |
+| F35 | Project Issue (stock, Average qty, project balance, books at the costing precision) | ✅ MATCH | §71 / §71.1 |
+| F36 | Distribution Order (legacy refuses on I: no Doc_DDOrder; SQLite refuses the same) | ✅ MATCH (reservation logic ⏸: no Q reference) | §72 / §72.1 |
+| P17 | Bridge delivery shape: one composite ⇒ on an I server a pushed cash journal books suspense where a window user books cash-transfer | ⏸ descriptor/pusher decision (layer frozen) | §68.1 residue |
+| — | M_InOutConfirm / M_MovementConfirm | not cheap: only reachable when the doc type has IsShipConfirm / IsInTransit — a doc-type configuration change on legacy (not a WS-config step) | — |
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

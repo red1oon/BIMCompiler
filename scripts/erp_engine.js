@@ -926,6 +926,28 @@ function completeProjectIssue(issue, ctx) {
   return { ok: true, ops: ops };
 }
 
+// completeDDOrder — Distribution Order (spec §72, F36): MDDOrder.prepareIt (org.eevolution MDDOrder.java:786-849 @{u}) + reserveStock (:857-929) + completeIt (:963-1010). No books, no stock quantity change.
+// order = { dd_order_id, deliveryrule }; lines [{ dd_orderline_id, line, m_product_id, qtyordered, qtyreserved, qtydelivered, m_attributesetinstance_id }]
+// ctx = { periodOpen:{ok} (DateOrdered, DOO), productOf(id) → { isexcludeautodelivery, asimandatory (attribute set MandatoryType 'Y'), volume, weight }, postingRefusal (text or null) }
+function completeDDOrder(order, lines, ctx) {
+  ctx = ctx || {};
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: '@PeriodClosed@' };                       // :795-799
+  if (!lines || !lines.length) return { ok: false, reason: '@NoLines@' };                                          // :802-807
+  var prod = function (id) { return (ctx.productOf && id ? ctx.productOf(id) : null) || {}; };
+  if (order.deliveryrule === 'O') for (var i = 0; i < lines.length; i++) if (prod(lines[i].m_product_id).isexcludeautodelivery === 'Y') return { ok: false, reason: '@M_Product_ID@ @IsExcludeAutoDelivery@' };   // :810-822
+  var noAsi = lines.filter(function (l) { return prod(l.m_product_id).asimandatory && !Number(l.m_attributesetinstance_id); }).length;
+  if (noAsi) return { ok: false, reason: '@LinesWithoutProductAttribute@ (' + noAsi + ')' };                         // :826-839
+  var vol = 0, wt = 0, out = [];
+  lines.forEach(function (l) {                                                                                     // reserveStock :864-920
+    var q = Number(l.qtyordered || 0), res = Number(l.qtyreserved || 0), del = Number(l.qtydelivered || 0), p = prod(l.m_product_id);
+    var add = q - res - del;
+    out.push({ dd_orderline_id: l.dd_orderline_id, m_product_id: l.m_product_id, qtyordered: q, qtyreserved: res + (l.m_product_id ? add : 0), qtydelivered: del });
+    if (l.m_product_id) { vol += Number(p.volume || 0) * q; wt += Number(p.weight || 0) * q; }
+  });
+  if (ctx.postingRefusal) return { ok: false, reason: ctx.postingRefusal };                                       // DocumentEngine postIt after complete (I): no Doc_DDOrder class ⇒ the completion fails (doc_poster.immediatePostingRefusal)
+  return { ok: true, lines: out, volume: vol, weight: wt, ops: [{ op_type: 'SET_STATUS', table: 'DD_Order', id: order.dd_order_id, doc_status: 'CO' }] };
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -1119,7 +1141,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, completeProjectIssue: completeProjectIssue, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, completeProjectIssue: completeProjectIssue, completeDDOrder: completeDDOrder, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

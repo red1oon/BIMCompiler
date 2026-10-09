@@ -167,6 +167,18 @@ function sysConfigBool(db, name, dflt, client, org) {
   if (/^y$/i.test(v)) return true; if (/^n$/i.test(v)) return false;
   return /^true$/i.test(v);
 }
+// §72 (F36) DocumentEngine.processIt → postIt after a completion when CLIENT_ACCOUNTING='I' (DocumentEngine.java:350-370 @{u}) → DocumentEngine.postImmediate only for a table WITH a Posted column (:1441-1442)
+// → DefaultDocumentFactory.getDocument builds the class name Doc_<TableName without '_'> (prefix 'X_' dropped, :87-95) and THROWS AdempiereUserError "Doc Class invalid" when the class
+// does not exist (:97-107) ⇒ the completion itself fails. The core accounting classes (org.idempiere.acct.doc, @{u}) are exactly these:
+var LEGACY_DOC_CLASSES = ['AllocationHdr', 'AssetAddition', 'AssetDisposed', 'AssetReval', 'AssetTransfer', 'BankStatement', 'Cash', 'DepreciationEntry', 'GLJournal', 'InOut', 'Inventory', 'Invoice',
+  'MatchInv', 'MatchPO', 'Movement', 'Order', 'Payment', 'Production', 'ProjectIssue', 'Requisition'];
+function legacyDocClassOf(tableName) { var t = String(tableName); return 'Doc_' + (t.indexOf('_') === 1 ? t.substring(2) : t).replace(/_/g, ''); }
+// → the refusal text legacy gives, or null. hasPostedColumn = the table's AD_Column 'Posted' exists (SQLite dictionary).
+function immediatePostingRefusal(db, tableName, hasPostedColumn, client) {
+  if (!hasPostedColumn || !isClientAccountingImmediate(db, client)) return null;
+  var cls = legacyDocClassOf(tableName);
+  return LEGACY_DOC_CLASSES.indexOf(cls.substring(4)) >= 0 ? null : 'Doc Class invalid: ' + cls;
+}
 // MClient.isClientAccountingImmediate (MClient.java:1094-1100 @{u}): CLIENT_ACCOUNTING equalsIgnoreCase 'I', default 'Q'
 function isClientAccountingImmediate(db, client) { return /^i$/i.test(sysConfig(db, 'CLIENT_ACCOUNTING', 'Q', client, 0)); }
 // Fact.balanceAccounting (Fact.java:548-615) — currency-balancing branch: diff = DR−CR; a line on C_AcctSchema_GL.CurrencyBalancing_Acct, CR |diff| when DR exceeds, DR |diff| otherwise,
@@ -1241,7 +1253,7 @@ function derivePostings(db, recordRef, schema, R) {
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
 var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, costQtyUpdatesFor: costQtyUpdatesFor, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
-             glCategoryFor: glCategoryFor, fxRate: fxRate, costUpdatesForMatchPO: costUpdatesForMatchPO, sysConfig: sysConfig, sysConfigBool: sysConfigBool, costAt: costAt, isClientAccountingImmediate: isClientAccountingImmediate };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
+             glCategoryFor: glCategoryFor, fxRate: fxRate, costUpdatesForMatchPO: costUpdatesForMatchPO, sysConfig: sysConfig, sysConfigBool: sysConfigBool, costAt: costAt, immediatePostingRefusal: immediatePostingRefusal, isClientAccountingImmediate: isClientAccountingImmediate };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }
 if (typeof window !== 'undefined') { window.DocPoster = _api; }

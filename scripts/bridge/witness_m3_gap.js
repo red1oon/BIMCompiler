@@ -833,6 +833,50 @@ function localPJI(mut = 0) {
   };
 }
 
+// ================= MODEL: Distribution Order (spec §72) — header + lines + CO; reservation on the line, no stock move, no books =================
+const DDO_DESC = { ddo: { composite: 'SyncOrder',
+  header: { serviceType: 'BridgeCreateDDOrder', table: 'DD_Order', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 50012 }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC[BP] }, M_Warehouse_ID: { const: 50000 },
+    DateOrdered: { path: 'date' }, DatePromised: { path: 'date' }, Description: { path: 'note' },
+    IsInDispute: { const: 'N' }, IsInTransit: { const: 'N' }, IsApproved: { const: 'N' }, IsPrinted: { const: 'N' }, SendEMail: { const: 'N' } } },   // the window's Yes-No default (GridField.getDefault YesNo ⇒ N)
+  lines: { serviceType: 'BridgeCreateDDOrderLine', table: 'DD_OrderLine', parent: 'DD_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
+    fields: { AD_Org_ID: { const: 11 }, M_Product_ID: { path: 'product' }, M_Locator_ID: { path: 'from' }, M_LocatorTo_ID: { path: 'to' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' }, IsInvoiced: { const: 'N' } } },
+  docAction: { serviceType: 'BridgeCompleteDDOrder', table: 'DD_Order', action: 'CO' } } };
+const ddoSpec = { keys: ['outcome', 'docstatus', 'lines', 'volume', 'weight', 'stock_delta'], notCompared: {} };
+let ddoLink = null;
+async function legacyDDO(f) {
+  if (!ddoLink) { let bytes = null; ddoLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: DDO_DESC }); }
+  const locs = [...new Set(f.lines.flatMap(l => [l.from + ':' + l.product, l.to + ':' + l.product]))], s0 = {};
+  for (const k of locs) { const [lo, p] = k.split(':'); s0[k] = await locStock(+p, +lo); }
+  const uid = ddoLink.submit('ddo', { date: (f.date || TODAY) + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines });
+  await ddoLink.drain(); const st = ddoLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const id = ddoLink.store.idmap(uid).find(x => x.tbl === 'DD_Order').server_id;
+  const h = (await query(cfg, 'QueryDDOrder', `DD_Order_ID=${id}`))[0], ls = await query(cfg, 'QueryDDOrderLine', `DD_Order_ID=${id}`);
+  const sd = {}; for (const k of locs) { const [lo, p] = k.split(':'); const d = (await locStock(+p, +lo)) - s0[k]; if (d) sd[k] = d; }
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, lines: ls.map(l => `${l.M_Product_ID}:${Number(l.QtyOrdered)}:${Number(l.QtyReserved)}:${Number(l.QtyDelivered)}`).sort().join('|'),
+    volume: Number(h.Volume || 0), weight: Number(h.Weight || 0), stock_delta: JSON.stringify(sd) };
+}
+const HAS_POSTED = t => !!seed.prepare("SELECT 1 FROM ad_column c JOIN ad_table t ON t.ad_table_id=c.ad_table_id WHERE t.tablename=? AND c.columnname='Posted'").get(t);   // the SQLite dictionary
+function localDDO(mut = 0, mode = null) {
+  return async f => {
+    const was = mode ? (gb.prepare("SELECT value v FROM ad_sysconfig WHERE name='CLIENT_ACCOUNTING'").get() || {}).v : null;
+    if (mode) gb.prepare("UPDATE ad_sysconfig SET value=? WHERE name='CLIENT_ACCOUNTING'").run(mode);
+    try { return await localDDO1(mut, f); } finally { if (mode) gb.prepare("UPDATE ad_sysconfig SET value=? WHERE name='CLIENT_ACCOUNTING'").run(was); }
+  };
+}
+async function localDDO1(mut, f) {
+  {
+    if (typeof E.completeDDOrder !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', lines: 'none', volume: 0, weight: 0, stock_delta: '{}' };
+    const oid = ++seq * 10, d = f.date || TODAY;
+    const r = E.completeDDOrder({ dd_order_id: oid, deliveryrule: null }, f.lines.map((l, i) => ({ dd_orderline_id: oid * 100 + i, line: (i + 1) * 10, m_product_id: l.product, qtyordered: l.qty + (i === 0 ? mut : 0), qtyreserved: 0, qtydelivered: 0 })),
+      { periodOpen: E.periodOpen(periodData, d, 'DOO', TODAY), productOf: id => { const p = lc(seed.prepare('SELECT p.isexcludeautodelivery, p.volume, p.weight, a.mandatorytype FROM m_product p LEFT JOIN m_attributeset a ON a.m_attributeset_id=p.m_attributeset_id WHERE p.m_product_id=?').get(id)) || {}; return { ...p, asimandatory: p.mandatorytype === 'Y' }; },
+        postingRefusal: DP.immediatePostingRefusal(gb, 'DD_Order', HAS_POSTED('DD_Order'), 11) });
+    if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    return { outcome: 'COMPLETED', docstatus: 'CO', lines: r.lines.map(l => `${l.m_product_id}:${l.qtyordered}:${l.qtyreserved}:${l.qtydelivered}`).sort().join('|'), volume: r.volume, weight: r.weight, stock_delta: '{}' };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -970,6 +1014,11 @@ const quirks = [
     { id: 'PJI-REJ-no-product', facts: { id: 'PJIR', project: 100, product: 137, loc: 101, qty: 1, noProduct: true }, legacy: legacyPJI, local: localPJI(0) }]), pjiSpec, quirks, { log }));
   if (!only) { const jneg = await R.run([{ id: 'NEG-pji-control', facts: { id: 'PJIN', project: 100, product: 137, loc: 101, qty: 1 }, legacy: legacyPJI, local: localPJI(1) }], pjiSpec, quirks, { log });
     out('§M3_PJI_NEGATIVE_CONTROL', jneg[0].verdict === 'SQLITE-GAP' && ['stock_delta', 'cost_qty_delta', 'postings'].every(k => jneg[0].gaps.some(g => g.key === k)), `+1 qty on the SQLite issue ⇒ verdict=${jneg[0].verdict} gaps=${jneg[0].gaps.map(g => g.key).join(',')}`); }
+  // MODEL Distribution Order (spec §72)
+  rows.push(...await R.run(keepOnly([{ id: 'DDO1-distribution-order-to-transit', facts: { id: 'DDO1', lines: [{ product: 137, qty: 2, from: 101, to: 50000 }] }, legacy: legacyDDO, local: localDDO(0) },
+    { id: 'DDO-REJ-date-without-period', facts: { id: 'DDOR', date: '2000-06-01', lines: [{ product: 137, qty: 2, from: 101, to: 50000 }] }, legacy: legacyDDO, local: localDDO(0) }]), ddoSpec, quirks, { log }));
+  if (!only) { const dneg = await R.run([{ id: 'NEG-ddo-control', facts: { id: 'DDON', lines: [{ product: 137, qty: 2, from: 101, to: 50000 }] }, legacy: legacyDDO, local: localDDO(0, 'Q') }], ddoSpec, quirks, { log });
+    out('§M3_DDO_NEGATIVE_CONTROL', dneg[0].verdict === 'SQLITE-GAP' && dneg[0].gaps.some(g => g.key === 'outcome'), `the SQLite side read as Q (legacy I refuses: no Doc_DDOrder class) ⇒ verdict=${dneg[0].verdict} gaps=${dneg[0].gaps.map(g => g.key).join(',')}`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
