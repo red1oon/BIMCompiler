@@ -4,8 +4,12 @@
 const PATH = '/ADInterface/services/rest/model_adservice/';
 
 function cfgFromEnv(env = process.env) {
+  const base = env.BRIDGE_BASE || 'http://localhost:8088';
+  const local = /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(base);
+  // P11: no credential defaults except for the localhost pilot (GardenWorld seed login)
+  if (!local && !(env.BRIDGE_USER && env.BRIDGE_PASS)) throw new Error('§CFG BRIDGE_USER/BRIDGE_PASS required for non-localhost base');
   return {
-    base: env.BRIDGE_BASE || 'http://localhost:8088',
+    base,
     login: {
       user: env.BRIDGE_USER || 'GardenAdmin', pass: env.BRIDGE_PASS || 'GardenAdmin', lang: 'en_US',
       ClientID: +(env.BRIDGE_CLIENT || 11), RoleID: +(env.BRIDGE_ROLE || 102),

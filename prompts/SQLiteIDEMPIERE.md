@@ -1,7 +1,7 @@
 # ⚠ DO NOT REMOVE
 **Scope:** a SYNC + PLUGIN LAYER between a local-first SQLite UI (ERP kernel: ThaiGoldPawn Flutter first, any
-later module after) and a LEGACY iDempiere server, talking ONLY through iDempiere's stock WebServices, ONLY in
-documents + doc-actions. **HIGH-LEVEL ARCHITECTURE DRAFT (2026-10-09) — no code. Iterate from here.**
+later module after) and a LEGACY iDempiere server, talking ONLY through iDempiere's stock WebServices (§2 vocabulary), writing ONLY as documents + doc-actions
+(reads for snapshots/log). **ARCHITECTURE DRAFT, HARDENED 2026-10-09 (§P principles, §Q pre-mortem). Built so far: change-log tracker only.**
 Spec-first: every §Wx witness below is named before any implementation. Read the log after every run.
 Never touch a real server without an explicit GO. EXTRACT/COMPILE ONLY — nothing here is invented; every
 unknown is a ⛔ in §9, not a guess. Honour until DONE.
@@ -11,8 +11,8 @@ unknown is a ⛔ in §9, not a guess. Honour until DONE.
 ## §000 SCOPE (user, 2026-10-09) — the limit
 **IN SCOPE (normal-user lane):** an ordinary user's work in the SQLite UI syncs to legacy as docs + doc-actions (§3 UP),
 and legacy users' doc work comes back through the change log and is replayed locally (§4 DOWN). Role = a normal
-WebService user. Built + witnessed so far: the §4 tracker (W10, §13). Next in this lane: UP path, id map, outbox,
-local replay, posting reconcile (W1–W7).
+WebService user. Built + witnessed so far: the §4 tracker (W10, §13). First reference flow = §16 (order lines up, ProductQty down);
+the document-DOWN replay (§4.3) is for later plugins.
 **Model sync happens ONCE, together, at handover (user 2026-10-09)** — the SQLite side and legacy start from the same
 model. After handover the Bridge exchanges DATA only, like a layman's integration (user's prior art: Unicenta POS ⇄ iDempiere).
 Any later model change is the superior-role extra below, not part of routine sync.
@@ -22,11 +22,52 @@ model (AD) sync itself. A normal user's sync never depends on them; they must no
 Only two lane-relevant facts from the extras apply to normal users: F1 (draft inserts invisible unless
 `SYSTEM_INSERT_CHANGELOG=Y`) and the per-component list of logged columns.
 
+## §P PRINCIPLES (invariants) — every section above and below must obey these; a PR that breaks one is rejected
+Each principle: rule · where it comes from · how it is ENFORCED (not just stated) · witness.
+| # | Principle | Source | Enforced by | Witness |
+|---|---|---|---|---|
+| P1 | **Legacy untouched.** Bridge uses only the 9 stock WS ops (§2) + AD config the admin chooses. No SQL, no schema/column, no custom table on legacy. | user D1, CLAUDE.md DB rule | transport has an allow-list of ops (anything else throws); Bridge code has no postgres client (grep gate) | W-P1 |
+| P2 | **Look like a normal user; never write derived data.** Writes are documents + doc-actions only. Server owns numbering, posting, totals, stock. Never write `Fact_Acct`, `M_Storage`, `M_Cost*`, `GrandTotal`. | user §0 | descriptor validator rejects derived tables/columns as write targets | W6, W-P2 |
+| P3 | **Layer is plugin-agnostic.** No plugin table/column names inside the layer; a plugin = descriptor + rules + UI. | user §00 | grep gate (no `C_Order`/`M_Product`… literals in layer code); W8 diff is descriptor-only | W8 |
+| P4 | **Local-first.** UI never waits on the network; offline = fully working; sync is a background worker. | user §0 | UI path has no sync call; W5 with network killed | W5 |
+| P5 | **Extract / never invent.** Context (Org, PriceList, warehouse, customer, doctype) comes from config inferred from the user's Unicenta project. Missing context ⇒ sync REFUSES (`BLOCKED_NO_CONTEXT`), never defaults. | PRIME RULE | context completeness check before first push | W-P5 |
+| P6 | **Server is authority; no silent fix.** A mismatch becomes a visible state (`REJECTED` / `DIVERGED`), never an automatic correction or drop. | §6 | state machine has no auto-resolve transition | W4, W7 |
+| P7 | **Idempotent + resumable.** Kill at any step ⇒ re-run gives no duplicate and no loss. An undecidable case PARKS, it does not guess. | user | W5 kill-points: before header / between header & lines / before CO / after CO | W5 |
+| P8 | **No poison.** One bad ticket never blocks the others; it is parked with the server's reason and stays visible to a manager. | pre-mortem | queue is per-ticket, not per-batch | W4 |
+| P9 | **Scope lock.** Only flows the user described (§16: order lines up, ProductQty down). A new flow needs a dated user quote in §9 first. | user 2026-10-09 ("do not drift") | review checklist; §16 is the only flow list | review |
+| P10 | **Witnesses can fail.** Each names its falsifier, prints `INCONCLUSIVE` when nothing was judged, carries a negative control, and logs `§` lines read before conclusions. | CLAUDE.md WITNESS law | W10 is the template | all |
+| P11 | **Credentials only in the Bridge, secure store, per device; no defaults in code for non-localhost.** | §7 | `cfgFromEnv` refuses missing creds unless base is localhost pilot | W-P11 |
+| P12 | **Deterministic numbers.** Money as integer minor units, quantities as decimal strings; no float arithmetic on amounts. | feedback_numbers_via_bigdecimal | mappers unit-witnessed | W-P12 |
+| P13 | **Bounded.** Every read pages (or fails loudly); every retry has a cap + backoff; auth faults stop immediately (no retry — account lockout). | pre-mortem G9/G15 | `§AD_PAGED` throw (exists); retry policy in outbox | W-P13 |
+| P14 | **Claims cite evidence.** Any statement about iDempiere behaviour cites source `file:line` or a pilot measurement; unknown ⇒ ⛔ not a guess. | CLAUDE.md | review | review |
+Witness ids W-P1/P2/P5/P11/P12/P13 are small structural/unit checks, to be written before the module they guard.
+
+## §Q PRE-MORTEM — what we had missed (found 2026-10-09 by re-reading the spec against the pilot; each has an owner)
+| # | Gap | Evidence | Resolution / status |
+|---|---|---|---|
+| G1 | **Idempotency vs F1.** After a timeout post-create, the change log cannot tell us whether the order exists (inserts unlogged by default). My earlier §3.5 relied on it. | W10 `§W10_INSERT_MODE` | Proposal: carry the POS ticket key in a standard free-text field a normal user also fills (e.g. order `POReference`/`Description`) and check existence with a read of that field. Zero schema change, but it IS a convention on legacy data ⇒ ⛔ user decides field; until then ambiguous failure PARKS (P7). |
+| G2 | **Partial documents.** Header and each line are separate `create_data` calls with no shared transaction ⇒ crash between them leaves an orphan DR header. | ModelADService: one op per call | Probe stock `composite` WS (CompositeInterface, present in pilot) as one transaction (W1); else compensate: find orphan by the G1 key and void/complete. Kill-point test in W5. |
+| G3 | **Server effects are larger than "order lines" — MEASURED.** DocType 'POS Order' (WR) auto-creates shipment + invoice at CO; Store Central Oak Tree on-hand 4→3, shipments=1, invoices=1 on order 80005. A 'Standard Order' would NOT drop stock. | pilot probe 2026-10-09 | Context doctype must be the POS one; legacy users will see shipment+invoice appear ⇒ tell the admin. Confirms §16 rule 2 (stock falls at CO). |
+| G4 | **Rejected sale.** POS already handed goods over; legacy CO may fail (stock/period/credit). A rejected sale cannot be "un-sold". | policy | Never dropped: stays `REJECTED` with reason, visible to a manager role; ⛔ business rule for resolution (user). |
+| G5 | **Price.** Server accepted the POS's `PriceActual` (10) without recomputing from PriceList. | probe: line price 10, GrandTotal 10 | Bridge does not validate price; read-back compares local total vs `GrandTotal`; mismatch ⇒ DIVERGED (P6). |
+| G6 | **Unknown product / master drift.** Product missing on server ⇒ the ticket rejects; new legacy products never reach POS (masters sync only at handover). | §000 | Per-ticket reject (P8). Product/price DOWN is NOT in the described flows ⇒ out of scope until user adds it (P9). |
+| G7 | **Several POS devices, one warehouse.** Snapshot contains other devices' sales. | design | Rule 2 subtracts only THIS device's unconfirmed lines ⇒ correct; document it. |
+| G8 | **Snapshot race.** A snapshot read mid-batch can double-count (line confirmed on server, not yet marked locally). | design | Apply a snapshot only when the outbox has no PUSHED-but-unconfirmed lines; otherwise defer to next cycle. Witness in W16. |
+| G9 | **Account lockout.** Login is repeated on EVERY call; retrying a wrong password can lock the user (`USER_LOCKING_MAX_LOGIN_ATTEMPT`; pilot value 0 = off, real server unknown). | `ad_sysconfig` pilot; stateless auth §2 | Auth fault ⇒ stop, no retry (P13). Ask admin the lockout setting (⛔ P1 list). |
+| G10 | **Session-table growth.** Every WS call creates an `AD_Session` row (pilot ids 1000105–107 for 3 calls) — a real footprint on legacy. | pilot `ad_session` | Batch via composite where possible; tell the admin; measure rows/ticket in W15. |
+| G11 | **Sale date.** An offline sale synced next day gets the server's date unless `DateOrdered` is sent ⇒ wrong period / closed period rejects CO. | iDempiere period control (not yet probed) | Descriptor must map the sale date; W15 probes a past-dated order. ⛔ unverified. |
+| G12 | **Receipt numbers.** POS prints a ticket before server numbering. | §3.3 | Provisional local number printed; mapping to server DocumentNo kept; ⛔ whether the paper receipt must carry the server number (user). |
+| G13 | **Paging.** Tracker throws (`§AD_PAGED`) if server paginates; a large backlog would stall it. | `ad_client.js` | Must page by id range before any large log; build item (P13). |
+| G14 | **Pilot credentials in code.** `cfgFromEnv` defaults to GardenAdmin/GardenAdmin. | `ad_client.js` | Fixed now: defaults only for a localhost base (P11). |
+| G15 | **Org/warehouse consistency.** Login org must own the warehouse ("warehouse not allowed for this org" seen). | pilot probe | Context validated at setup (P5). |
+| G16 | **Version drift.** Local source is 278 commits behind upstream; PO now batches change-log writes. | §15.1 | Re-run W10 on the target server version before relying on it. |
+**Rule going forward:** a new gap goes into this table with evidence and an owner the same day it is found.
+
 ## §00 Principle (user, 2026-10-09)
 The Bridge is the ONE place for all sync scaffolding — transport, change-log tracking, id map, replay, verify, outbox,
 reconcile. A plugin/module (Fixed Assets, pawn, loans, …) contributes ONLY a descriptor (§5) + its local rules.
 Nothing plugin-specific is allowed inside the Bridge; the next plugin must not redo any scaffolding. Build order is
-therefore: change-log tracker FIRST (§4, §12), then UP path, then any component.
+therefore (superseded by §17 needed-now list): tracker built first; the POS-minimal flow (§16) drives what is built next.
 
 ## §0 Why (user directive, 2026-10-09)
 - New UI = SQLite, local first (Flutter desktop/mobile). New addons, changes, validation rules are tried HERE.
@@ -47,7 +88,7 @@ therefore: change-log tracker FIRST (§4, §12), then UP path, then any componen
  │  DOWN folder  : query_data since watermark → local doc engine replay    │
  │  Id map       : local uuid/provisional DocNo ⇄ server C_*_ID/DocumentNo │
  │  Verifier     : per-doc round-trip check + periodic reconcile           │
- │  Transport    : ADInterface client (XML, stateless login per call)      │
+ │  Transport    : ADInterface client (JSON, stateless login per call)     │
  └──────────────────────────────────────────────────────────────────────────┘
         │
  ERP kernel (SQLite): docstatus FSM · op-log · posting engine · rules DB
@@ -72,10 +113,11 @@ Newer REST (`/api/v1`) exists only if the target runs the REST plugin — NOT as
    Batch = many docs per sync run; order across docs follows the component's declared dependency order.
 3. **Server is the authority for numbering + posting.** DocumentNo, C_*_ID come back and go to the Id map.
    Local provisional numbers (own prefix) are shown until mapped; printed documents wait for the real number.
-4. **Verify after push, per doc:** `readData` the doc → compare header/lines/docstatus to local → compare
-   server Fact_Acct to the locally computed postings (§W3). Mismatch = doc marked `SYNC_DIVERGED`, never silently fixed.
-5. Idempotency: **no marker on the server** (nothing disturbed). The Bridge keeps the op_uuid ⇄ server id map locally and
-   confirms via AD_ChangeLog (§4) that a doc exists before re-sending after an ambiguous failure. Our pushes appear in
+4. **Verify after push, per doc:** `readData` the doc → compare header/lines/docstatus/GrandTotal to local → (plugins that
+   post locally) compare server Fact_Acct to the locally computed postings (§W3; not needed for POS-minimal §16). Mismatch = doc marked `SYNC_DIVERGED`, never silently fixed.
+5. Idempotency: **no new column/marker structure on the server.** The Bridge keeps the op_uuid ⇄ server id map locally.
+   ⚠ Re-sending after an AMBIGUOUS failure (timeout after create) cannot be decided from AD_ChangeLog in default config —
+   inserts are not logged (F1). See §Q G1 for the proposed natural-key check; until ratified, an ambiguous failure PARKS the ticket. Our pushes appear in
    the change log as a normal WS session = "another legitimate client posting work" (verify §W6: session attribution).
 6. Failure of a doc-action (e.g. server validation rejects CO) = the op is REJECTED on the server's say-so:
    local doc rolls to a visible `REJECTED` state with the server's message. Local rule must then be fixed or the
@@ -109,7 +151,7 @@ masters    : which tables are server-owned (down only) vs local-authored (up)
 mappers    : field/enum maps (pure, deterministic, unit-witnessed)
 verify     : which postings/totals must reconcile
 ```
-First components: **Fixed Assets depreciation** (§11, the pilot), then **core trade** (C_Order, M_InOut, C_Invoice,
+First component: **POS-minimal** (§16, user's Unicenta pattern). Examples only: Fixed Assets (§11), then **core trade** (C_Order, M_InOut, C_Invoice,
 C_Payment — CORE per AD-LAYER LAW §6). Pawn/loan-installment = AD-model tables per D3, after the pilot. Everything else = later descriptors, zero Bridge change.
 Check before designing further: `feat/erp-odoo-descriptor` in bim-ootb and `prompts/PLUGIN_SYSTEM_LANE.md` —
 existing descriptor/plugin work that may already fix the shape.
@@ -141,7 +183,7 @@ apply before any push. Bridge is the ONLY component that holds server credential
 | W5 OFFLINE→ONLINE | N docs created offline, drained in order, ids mapped, count equal | kill network mid-batch, resume = no dup |
 | W6 LEGACY-LOOKS-NATIVE | a legacy user's view (windows/records via query) of pushed docs == a hand-keyed doc | field-by-field diff vs a doc created through the ZK UI |
 | W7 DIVERGENCE | both sides act on same draft → DIVERGED, nothing lost | |
-| W9 PARALLEL-RUN (§11) | local FA rules == server plugin == Fact_Acct, maxDiff 0; diffs → §FLASH | |
+| W9 PARALLEL-RUN (§11, extra) | local FA rules == server plugin == Fact_Acct, maxDiff 0; diffs → §FLASH | |
 | W8 COMPONENT-PLUG | a second descriptor (non-pawn) plugs in with zero Bridge code change | diff shows descriptor-only |
 Real server for W3/W6 = the local iDempiere dev setup (`~/idempiere-dev-setup`, postgres `idempiere`), never a client box.
 
