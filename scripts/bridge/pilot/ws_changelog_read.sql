@@ -94,7 +94,10 @@ BEGIN
       ('QueryCProject','C_Project',NULL::text[]),
       -- §72 Distribution Order model (read-only)
       ('QueryDDOrder','DD_Order',NULL::text[]),
-      ('QueryDDOrderLine','DD_OrderLine',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryDDOrderLine','DD_OrderLine',NULL::text[]),
+      -- §74 Asset Disposal model (read-only)
+      ('QueryAAssetDisposed','A_Asset_Disposed',NULL::text[]),
+      ('QueryAAssetChange','A_Asset_Change',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

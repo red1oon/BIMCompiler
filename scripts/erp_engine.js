@@ -1140,9 +1140,41 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
   return { ok: true, docstatus: 'CO', rows: R, workfiles: W, selected: sel.length };
 }
 
+// faCompleteDisposal — Asset Disposal (spec §74, F37): MAssetDisposed.beforeSave / prepareIt / updateFromAsset / completeIt / createDisposal (MAssetDisposed.java:181-305, 383-430, 477-521 @{u}).
+// disp = { a_asset_disposed_id, a_asset_id, dateacct, a_disposed_method, postingtype }; asset = { a_asset_status, isdisposed }; workfiles = the asset's workfiles (minor units); rows = the asset's expense rows
+// ctx = { periodOpen:{ok} (GLD), primarySchema, primaryCurrency, currencyOf(schema) }. → asset status, disposal amounts, change rows per schema, workfiles after, ids of the expense rows deleted.
+function faCompleteDisposal(disp, asset, workfiles, rows, ctx) {
+  ctx = ctx || {};
+  var pt = disp.postingtype || 'A';
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'PeriodClosed' };                                                    // prepareIt :189
+  var prim = workfiles.filter(function (w) { return Number(w.c_acctschema_id) === Number(ctx.primarySchema) && (w.postingtype || 'A') === pt; })[0];   // updateFromAsset :413-428
+  var cost = prim ? Number(prim.a_asset_cost) : 0, accum = prim ? Number(prim.a_accumulated_depr) : 0;
+  if (prim && prim.dateacct && String(disp.dateacct).slice(0, 10) <= _faMonthEnd(prim.dateacct, -1)) return { ok: false, reason: 'AssetAlreadyDepreciatedException' };   // isDepreciated :385-402
+  var m0 = _faMonth(disp.dateacct);
+  if ((rows || []).some(function (r) { return Number(r.a_asset_id) === Number(disp.a_asset_id) && (r.postingtype || 'A') === pt && r.processed !== 'Y' && _faMonth(r.dateacct) < m0; }))
+    return { ok: false, reason: 'There are unprocessed records to date' };                                                                  // checkExistsNotProcessedEntries :312-327
+  if (asset.isdisposed === 'Y') return { ok: false, reason: 'asset re-activation not ported' };                                              // isDisposal() false ⇒ A_Activation_Method branch
+  var method = disp.a_disposed_method, a = {}; for (var k in asset) a[k] = asset[k];
+  if (method === 'PR') { a.a_asset_status = 'PR'; return { ok: true, docstatus: 'CO', asset: a, disposalAmt: 0, accumDelta: 0, expense: 0, changes: [], workfiles: workfiles, deleteExp: [] }; }
+  if (method !== 'S' && method !== 'T1') return { ok: false, reason: 'AssetNotSupportedException A_Disposed_Method=' + method + ' (PD not ported)' };
+  a.a_asset_status = 'DI';
+  var disposalAmt = cost, delta = accum, expense = cost - accum, changes = [], W = [];
+  workfiles.forEach(function (w0) {                                                                                                       // createDisposal :479-513
+    var w = {}; for (var c in w0) w[c] = w0[c];
+    var other = Number(ctx.currencyOf(w.c_acctschema_id)) !== Number(ctx.primaryCurrency);
+    var dAmt = other ? Number(w.a_asset_cost) : disposalAmt, acc = other ? Number(w.a_accumulated_depr) : delta;
+    changes.push({ c_acctschema_id: w.c_acctschema_id, postingtype: w.postingtype, changetype: 'DIS', assetvalueamt: dAmt, assetbookvalueamt: Number(w.a_asset_remaining), assetaccumdepreciationamt: acc, isdisposed: 'Y', assetdisposaldate: String(disp.dateacct).slice(0, 10) });
+    w.a_asset_cost = Number(w.a_asset_cost) - dAmt; w.a_accumulated_depr = Number(w.a_accumulated_depr) - acc; w.a_accumulated_depr_f = Number(w.a_accumulated_depr_f) - acc;   // adjustCost / adjustAccumulatedDepr
+    w.a_asset_remaining = w.a_asset_cost - w.a_accumulated_depr; w.a_asset_remaining_f = w.a_asset_cost - w.a_accumulated_depr_f;            // workfile beforeSave :168-172
+    W.push(w);
+  });
+  var del = (rows || []).filter(function (r) { return Number(r.a_asset_id) === Number(disp.a_asset_id) && (r.postingtype || 'A') === pt && r.processed !== 'Y'; }).map(function (r) { return r.a_depreciation_exp_id; });   // :515-520
+  return { ok: true, docstatus: 'CO', asset: a, disposalAmt: disposalAmt, accumDelta: delta, expense: expense, changes: changes, workfiles: W, deleteExp: del };
+}
+
 return {
   completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, completeProjectIssue: completeProjectIssue, completeDDOrder: completeDDOrder, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
-  faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
+  faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faCompleteDisposal: faCompleteDisposal, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
