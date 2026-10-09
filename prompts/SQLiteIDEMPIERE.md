@@ -1368,4 +1368,11 @@ NEW `scripts/bridge/cycle_o2c.js` (the cycle, legacy + SQLite sides) wired into 
 Reverse steps (O2C5/O2C6) still differ by design of the sequence: they need the reversal verbs (F22, F23); the quantity rules above already cover reversals (a reversal completes with negated quantities).
 **Regression:** 99 engine witnesses identical to the F19 run (the verbs are new; nothing existing calls them).
 
+### §64.2 DECISION RECORD F21 — BP open item (TotalOpenBalance / SO_CreditUsed) like legacy (2026-10-10)
+**Evidence (`o2c2.log`):** `bp_delta` (cents, TotalOpenBalance/SO_CreditUsed vs the cycle start) legacy `0/0 → 0/0 → 600/600 → 0/0 → −600/0`, SQLite `none` (no rule).
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW `bpOpenBalance` — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) with the DB functions it calls, read from the pilot (read-only): `invoiceopen` (GrandTotal of C_Invoice_v — credit memo negated —
+minus ACTIVE allocation lines × MultiplierAP) and `paymentavailable` (0 with a charge, else C_Payment_v.PayAmt — payment negated — minus ACTIVE allocation amounts); currency conversion is the host's (`toBase`), absent ⇒ base. The cycle derives it from the SQLite side's OWN documents.
+**Proof (`o2c3.log`):** `§SCN O2C1-SO MATCH compared=9` · `O2C2-SHIP MATCH 9` · `O2C3-INV MATCH 12` (bp 600/600) · `O2C4-PAY MATCH 13` (bp 0/0) — steps 1-4 of the cycle fully MATCH on every key, both schemas.
+**Regression:** additive verb; covered by the F22 regression run (no existing witness calls it). **Residue:** ActualLifeTimeValue and SOCreditStatus re-evaluation (MBPartner.setSOCreditStatus, called at :756) not compared here (credit status is F5's rule on the order side).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

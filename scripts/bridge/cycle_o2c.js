@@ -176,7 +176,7 @@ module.exports = function makeO2C(X) {
       const ah = r.ops.find(o => o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr'), al = r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine');
       inv.ispaid = flag('C_Invoice', 'ispaid');
       S.payments.push({ c_payment_id: S.pay, c_bpartner_id: BP, payamt: cents(pay.payamt), isreceipt: 'Y', docstatus: status('C_Payment'), isallocated: flag('C_Payment', 'isallocated') });
-      if (ah) { S.alloc = ah.c_allocationhdr_id; S.allocations.push({ c_allocationhdr_id: ah.c_allocationhdr_id, docstatus: status('C_AllocationHdr'), lines: al.map(l => ({ c_invoice_id: l.c_invoice_id, c_payment_id: l.c_payment_id, amount: cents(l.amount) })) }); }
+      if (ah) { S.alloc = ah.c_allocationhdr_id; S.allocations.push({ c_allocationhdr_id: ah.c_allocationhdr_id, docstatus: status('C_AllocationHdr'), isactive: 'Y', lines: al.map(l => ({ c_allocationline_id: l.c_allocationline_id, c_invoice_id: l.c_invoice_id, c_payment_id: l.c_payment_id, amount: cents(l.amount) })) }); }
       gb.prepare('INSERT INTO c_payment(c_payment_id,c_bpartner_id,c_invoice_id,payamt,isreceipt,c_currency_id,c_bankaccount_id,tendertype,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)')
         .run(S.pay, BP, S.inv, pay.payamt, 'Y', 100, 100, 'X', TODAY + ' 00:00:00', status('C_Payment'), 11, 11);
       if (ah) { gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id, TODAY + ' 00:00:00', status('C_AllocationHdr'), 11, 11);
@@ -187,7 +187,17 @@ module.exports = function makeO2C(X) {
     }
     if (step === 'RC-INV') {
       if (typeof E.reverseInvoice !== 'function') return { outcome: 'COMPLETED', inv_statuses: 'CO/none', rev_total: 'none', ispaid: 'Y/-', rev_tax: 'none', books: 'none', books_euro: 'none', allocations: allocS(), pay_isallocated: 'Y', ...commonS() };
-      return E.reverseInvoiceHost ? E.reverseInvoiceHost(S) : { outcome: 'ERROR', error: 'reverseInvoice host adapter missing' };
+      const inv = S.invoices.find(i => i.c_invoice_id === S.inv);
+      const r = E.reverseInvoice({ ...inv, c_order_id: S.order, dateacct: TODAY, c_currency_id: PL_CURRENCY }, { allocations: S.allocations, payments: S.payments }, { newId: () => nid(), orderLines: S.lines });
+      if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+      S.rev = r.reversalId; applyDocOps(r.ops);
+      const rv = S.invoices.find(i => i.c_invoice_id === S.rev);
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id,c_order_id,docstatus,reversal_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(S.rev, BP, rv.grandtotal / 100, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', 11, 11, S.order, rv.docstatus, S.inv);
+      rv.lines.forEach((l, i) => gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt,qtyinvoiced,c_orderline_id) VALUES(?,?,?,?,?,?)').run(S.rev * 100 + i, S.rev, l.m_product_id, l.linenetamt, l.qtyinvoiced, l.c_orderline_id));
+      rv.taxes.forEach(t => gb.prepare('INSERT INTO c_invoicetax(c_invoice_id,c_tax_id,taxamt) VALUES(?,?,?)').run(S.rev, t.c_tax_id, t.taxamt / 100));
+      const p = S.payments.find(x => x.c_payment_id === S.pay);
+      return { outcome: 'COMPLETED', inv_statuses: `${inv.docstatus}/${rv.docstatus}`, rev_total: rv.grandtotal, ispaid: `${inv.ispaid}/${rv.ispaid}`, rev_tax: rv.taxes.map(t => `${t.c_tax_id}:${t.taxbaseamt}:${t.taxamt}`).sort().join('|') || 'none',
+        books: fold('C_Invoice', S.rev, SCHEMA), books_euro: fold('C_Invoice', S.rev, SCHEMA2), allocations: allocS(), pay_isallocated: p.isallocated, ...commonS() };
     }
     if (step === 'RC-SHIP') {
       if (typeof E.reverseInOut !== 'function') return { outcome: 'COMPLETED', ship_statuses: 'CO/none', rev_lines: 'none', books: 'none', books_euro: 'none', ...commonS() };
@@ -195,6 +205,21 @@ module.exports = function makeO2C(X) {
     }
     throw new Error('unknown step ' + step);
   }
+  // apply the kernel's document ops to the SQLite cycle state (statuses, flags, reversal documents, allocations) — the state a committing host keeps
+  const applyDocOps = ops => { ap(ops); for (const o of ops) {
+    const inv = id => S.invoices.find(i => i.c_invoice_id === id), hdr = id => S.allocations.find(a => a.c_allocationhdr_id === id);
+    if (o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_Invoice') S.invoices.push({ c_invoice_id: o.c_invoice_id, c_bpartner_id: BP, issotrx: 'Y', docstatus: 'DR', grandtotal: o.grandtotal, ispaid: 'N', reversal_id: o.reversal_id, lines: [], taxes: [] });
+    else if (o.op_type === 'CREATE_LINE' && o.table === 'C_InvoiceLine') inv(o.c_invoice_id).lines.push({ m_product_id: o.m_product_id, qtyinvoiced: o.qtyinvoiced, linenetamt: o.linenetamt, c_orderline_id: o.c_orderline_id });
+    else if (o.op_type === 'CREATE_LINE' && o.table === 'C_InvoiceTax') inv(o.c_invoice_id).taxes.push({ c_tax_id: o.c_tax_id, taxbaseamt: o.taxbaseamt, taxamt: o.taxamt });
+    else if (o.op_type === 'SET_STATUS' && o.table === 'C_Invoice') inv(o.id).docstatus = o.doc_status;
+    else if (o.op_type === 'UPDATE_FIELD' && o.table === 'C_Invoice') inv(o.id)[o.field] = o.value;
+    else if (o.op_type === 'UPDATE_FIELD' && o.table === 'C_Payment') S.payments.find(x => x.c_payment_id === o.id)[o.field] = o.value;
+    else if (o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr') S.allocations.push({ c_allocationhdr_id: o.c_allocationhdr_id, docstatus: 'DR', isactive: 'Y', lines: [] });
+    else if (o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine') hdr(o.c_allocationhdr_id).lines.push({ c_allocationline_id: o.c_allocationline_id, c_invoice_id: o.c_invoice_id, c_payment_id: o.c_payment_id, amount: o.amount });
+    else if (o.op_type === 'SET_STATUS' && o.table === 'C_AllocationHdr') hdr(o.id).docstatus = o.doc_status;
+    else if (o.op_type === 'UPDATE_FIELD' && o.table === 'C_AllocationHdr') hdr(o.id)[o.field] = o.value;
+    else if (o.op_type === 'UPDATE_LINE' && o.table === 'C_AllocationLine') for (const h of S.allocations) { const l = h.lines.find(x => x.c_allocationline_id === o.id); if (l) Object.assign(l, { amount: o.amount, isactive: o.isactive }); }
+  } };
   const allocS = () => (S.allocations || []).flatMap(a => a.lines.map(l => `${a.docstatus}:${l.amount}:${l.c_invoice_id === S.inv ? 'inv' : l.c_invoice_id === S.rev ? 'rev' : '-'}:${l.c_payment_id ? 'pay' : '-'}`)).sort().join('|') || 'none';
 
   const KEYS = {

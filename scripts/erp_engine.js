@@ -647,6 +647,38 @@ function invoiceOrderLineEffects(invoice, iLines, orderLines) {
   return { ok: true, ops: ops };
 }
 
+// ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
+// bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
+// (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
+//   SO_CreditUsed   = Σ invoiceOpen(i)               over IsSOTrx='Y', IsPaid='N', DocStatus CO/CL
+//   TotalOpenBalance = Σ invoiceOpen(i) × MultiplierAP over IsPaid='N', DocStatus CO/CL  −  Σ paymentAvailable(p) over IsAllocated='N', no charge, DocStatus CO/CL
+// invoiceOpen (DB function invoiceopen): C_Invoice_v.GrandTotal (credit memo ⇒ negated: 3rd DocBaseType letter 'C') − Σ ACTIVE allocation lines (Amount+Discount+WriteOff) × MultiplierAP
+// (AP ⇒ −1: 2nd letter 'P'); paymentAvailable (DB function paymentavailable): 0 with a charge, else C_Payment_v.PayAmt (payment ⇒ negated) − Σ ACTIVE allocation line Amount.
+//   st = { invoices:[{c_invoice_id, issotrx, docbasetype, docstatus, ispaid, grandtotal}], payments:[{c_payment_id, isreceipt, payamt, isallocated, docstatus, c_charge_id}],
+//          allocations:[{isactive, lines:[{c_invoice_id, c_payment_id, amount, discountamt, writeoffamt}]}] }
+function bpOpenBalance(st, opts) {
+  opts = opts || {}; var toBase = opts.toBase || function (a) { return a; };
+  var live = { CO: 1, CL: 1 }, lines = [];
+  (st.allocations || []).forEach(function (h) { if (h.isactive === 'N') return; (h.lines || []).forEach(function (l) { lines.push(l); }); });
+  var dbt = function (i) { return i.docbasetype || (String(i.issotrx) === 'N' ? 'API' : 'ARI'); };
+  var credit = 0, open = 0;
+  (st.invoices || []).forEach(function (i) {
+    if (!live[i.docstatus] || String(i.ispaid) === 'Y') return;
+    var t = dbt(i), cm = t.charAt(2) === 'C' ? -1 : 1, ap = t.charAt(1) === 'P' ? -1 : 1;
+    var paid = 0; lines.forEach(function (l) { if (Number(l.c_invoice_id) === Number(i.c_invoice_id)) paid += (Number(l.amount || 0) + Number(l.discountamt || 0) + Number(l.writeoffamt || 0)) * ap; });
+    var o = toBase(Number(i.grandtotal) * cm - paid, i);
+    if (String(i.issotrx) === 'Y') credit += o;
+    open += o * ap;
+  });
+  (st.payments || []).forEach(function (p) {
+    if (!live[p.docstatus] || String(p.isallocated) === 'Y' || Number(p.c_charge_id || 0) > 0) return;
+    var av = Number(p.payamt) * (String(p.isreceipt) === 'N' ? -1 : 1);
+    lines.forEach(function (l) { if (Number(l.c_payment_id) === Number(p.c_payment_id)) av -= Number(l.amount || 0); });
+    open -= toBase(av, p);
+  });
+  return { open: open, credit: credit };
+}
+
 // ── FIXED ASSETS (prompts/SQLiteIDEMPIERE.md §63, F19) — Witness: scripts/bridge/witness_fa_gap.js (FA1, FA0, FA-REJ*, NEG) ──────────────────
 // Pure ports of the legacy asset lifecycle. Amounts are integers in MINOR units (cents, precision 2 — MDepreciation.m_precision=2, MDepreciation.java:103);
 // dates are 'YYYY-MM-DD' strings. The host supplies the rows and persists what comes back (no DB binding here).
@@ -808,7 +840,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
