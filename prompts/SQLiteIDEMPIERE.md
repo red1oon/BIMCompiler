@@ -2,6 +2,8 @@
 **Scope:** a SYNC + PLUGIN LAYER between a local-first SQLite UI (ERP kernel: ThaiGoldPawn Flutter first, any
 later module after) and a LEGACY iDempiere server, talking ONLY through iDempiere's stock WebServices (§2 vocabulary), writing ONLY as documents + doc-actions
 (reads for snapshots/log). **ARCHITECTURE DRAFT, HARDENED 2026-10-09 (§P principles, §Q pre-mortem). Built so far: change-log tracker only.**
+READ FIRST for the POS flow (do not ask what these already answer): `docs/internal/POSLens.md` §1-4 and
+`docs/internal/POS_ADDON_SPEC.md` §1-3 — the user's Unicenta⇄iDempiere concept. (The wiki pages 403 to WebFetch.)
 Spec-first: every §Wx witness below is named before any implementation. Read the log after every run.
 Never touch a real server without an explicit GO. EXTRACT/COMPILE ONLY — nothing here is invented; every
 unknown is a ⛔ in §9, not a guess. Honour until DONE.
@@ -40,7 +42,8 @@ Each principle: rule · where it comes from · how it is ENFORCED (not just stat
 | P12 | **Deterministic numbers.** Money as integer minor units, quantities as decimal strings; no float arithmetic on amounts. | feedback_numbers_via_bigdecimal | mappers unit-witnessed | W-P12 |
 | P13 | **Bounded.** Every read pages (or fails loudly); every retry has a cap + backoff; auth faults stop immediately (no retry — account lockout). | pre-mortem G9/G15 | `§AD_PAGED` throw (exists); retry policy in outbox | W-P13 |
 | P14 | **Claims cite evidence.** Any statement about iDempiere behaviour cites source `file:line` or a pilot measurement; unknown ⇒ ⛔ not a guess. | CLAUDE.md | review | review |
-Witness ids W-P1/P2/P5/P11/P12/P13 are small structural/unit checks, to be written before the module they guard.
+| P15 | **Dumb terminal, no free numbers.** POS sends orderlines (product ref, qty, station); price = PriceList master reference; stock/replenishment/backflush are ERP-side results the POS only receives. The layer never computes them for the POS. | POSLens §1-4, user 2026-10-09 | descriptor validator: a UP line may carry no price/amount field; unknown product ⇒ refuse | W-P15 |
+Witness ids W-P1/P2/P5/P11/P12/P13/P15 are small structural/unit checks, to be written before the module they guard.
 
 ## §Q PRE-MORTEM — what we had missed (found 2026-10-09 by re-reading the spec against the pilot; each has an owner)
 | # | Gap | Evidence | Resolution / status |
@@ -49,7 +52,7 @@ Witness ids W-P1/P2/P5/P11/P12/P13 are small structural/unit checks, to be writt
 | G2 | **Partial documents.** Header and each line are separate `create_data` calls with no shared transaction ⇒ crash between them leaves an orphan DR header. | ModelADService: one op per call | Probe stock `composite` WS (CompositeInterface, present in pilot) as one transaction (W1); else compensate: find orphan by the G1 key and void/complete. Kill-point test in W5. |
 | G3 | **Server effects are larger than "order lines" — MEASURED.** DocType 'POS Order' (WR) auto-creates shipment + invoice at CO; Store Central Oak Tree on-hand 4→3, shipments=1, invoices=1 on order 80005. A 'Standard Order' would NOT drop stock. | pilot probe 2026-10-09 | Context doctype must be the POS one; legacy users will see shipment+invoice appear ⇒ tell the admin. Confirms §16 rule 2 (stock falls at CO). |
 | G4 | **Rejected sale.** POS already handed goods over; legacy CO may fail (stock/period/credit). A rejected sale cannot be "un-sold". | policy | Never dropped: stays `REJECTED` with reason, visible to a manager role; ⛔ business rule for resolution (user). |
-| G5 | **Price.** Server accepted the POS's `PriceActual` (10) without recomputing from PriceList. | probe: line price 10, GrandTotal 10 | Bridge does not validate price; read-back compares local total vs `GrandTotal`; mismatch ⇒ DIVERGED (P6). |
+| G5 | **Price must not be a keyed number.** My pilot probe sent a made-up `PriceActual=10` and the server accepted it (line 10, GrandTotal 10) — iDempiere does not stop a client from supplying price, so the discipline must live in the Bridge. | probe order 80005; POSLens §4 'no free numbers' | Bridge sends product ref + qty; price comes from the PriceList master row only (P15). Read-back compares local line amounts vs server `LineNetAmt`/`GrandTotal`; mismatch ⇒ DIVERGED (P6). The probe's price was a test artefact, not a design. |
 | G6 | **Unknown product / master drift.** Product missing on server ⇒ the ticket rejects; new legacy products never reach POS (masters sync only at handover). | §000 | Per-ticket reject (P8). Product/price DOWN is NOT in the described flows ⇒ out of scope until user adds it (P9). |
 | G7 | **Several POS devices, one warehouse.** Snapshot contains other devices' sales. | design | Rule 2 subtracts only THIS device's unconfirmed lines ⇒ correct; document it. |
 | G8 | **Snapshot race.** A snapshot read mid-batch can double-count (line confirmed on server, not yet marked locally). | design | Apply a snapshot only when the outbox has no PUSHED-but-unconfirmed lines; otherwise defer to next cycle. Witness in W16. |
@@ -338,6 +341,15 @@ alarm fires; the same change via WS → no alarm; INCONCLUSIVE if hash unchanged
 - 200 new migration scripts upstream (iD14 line). Only 6910 touches the change log. Migrations remain raw SQL (B1).
 
 ## §16 Reference scenario: POS, Unicenta-minimal (user's own prior integration; CORRECTED 2026-10-09 — earlier draft drifted)
+**Concept digest (from POSLens.md / POS_ADDON_SPEC.md — read 2026-10-09, quote not paraphrase where it matters):**
+- *"the POS should be dumb — record the sale, take payment, send the order; let the ERP hold the intelligence."*
+- *"The terminal does not send a 'sale.' It sends **orderlines** — the irreducible facts: this item, this quantity, this
+  station."* An order/invoice/movement/replenishment PO are **views computed** from orderlines (POSLens §2).
+- **No free numbers (POSLens §4):** price is a *reference that resolves to a sealed master price* (never keyed at sale time);
+  quantity from the scan; on-hand from the fold; replenishment from the fold. You key the master, never the sale.
+- Station = `AD_Org` / POS locator config (`c_pos` row: doctype 135 'POS Order' WR, warehouse, pricelist, cash BP) — set up once.
+- ERP side (the 2012 plugins) did the intelligence: AutoBOMOrder backflush, ReplenishReport → PO. The POS only receives the result
+  as stock quantity.
 **Exactly two flows, nothing else** (no payment, no requisition, no inventory-move, no receive step — those were my additions
 and are withdrawn):
 | Dir | What | Shape |
@@ -353,8 +365,11 @@ Design consequences to review (not decisions):
    NOT needed for this POS flow; it stays in the layer for plugins whose DOWN is documents (§4).
 2. **Local qty rule (one rule, so sales between syncs don't flicker):** shown qty = last server qty − qty of lines still in the
    outbox (not yet confirmed). When a line is CONFIRMED, the next snapshot already includes it.
-3. **UP unit = a batch of order lines** under the fixed context. Whether one POS ticket = one server order, or lines are grouped,
-   is inferred from the Unicenta project later.
+3. **UP unit = the orderline** (product ref, qty, station, ticket ref) — per POSLens §2, not a 'sale'. The Bridge ASSEMBLES the server
+   order: lines sharing a ticket ref → one `C_Order` (doctype from the station's `c_pos`) + its lines + `CO`. The order is a view the
+   server builds from orderlines; there is no separate 'sale' object to sync. **Price is never sent as a keyed value:** the line
+   carries the product reference; price = the PriceList master row (context, set once) read on both sides. An unknown product or a
+   product absent from the PriceList REFUSES (no invented price) — POS_ADDON_SPEC §P-1 falsifier.
 Witnesses (spec): W15 POS-UP (N offline order lines drained in order, none lost/duplicated on retry, server line count/qty ==
 local); W16 QTY-DOWN (server qty snapshot → POS qty equals server, outbox-pending subtracted per rule 2).
 
