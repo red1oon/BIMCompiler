@@ -778,7 +778,7 @@ Reason text for a refusal is taken from the read-only psql oracle (`AD_Issue`), 
   `IsDisallowNegativeInv='N'`, SQLite's verbs never consult on-hand. **The one difference is the books of the shipment:** legacy `REFUSED:Posted=E` — AD_Issue 1000287 `AverageCostingNegativeQtyException: Product=Azalea Bush,
   Current Qty=5.0, New Current Qty=-1.0, CostElement=Average PO` (the WHOLE shipment is refused, not just the uncosted part); SQLite books `430 Dr 14250 / 742 Cr 14250` (6 × 23.75).
   **Verdict: LEGACY-QUIRK, registered with evidence** — per the §30 record ("a legacy trap SQLite deliberately does not reproduce … if a scenario ever needs 'legacy refuses', record it as LEGACY-QUIRK"): SQLite keeps no
-  costed-quantity state (`m_cost.currentqty` absent, §29) so it cannot refuse on it without a costing ledger. Because this is a books difference the user may want closed instead, it is ALSO raised as question **Q-S7** (§33).
+  costed-quantity state (`m_cost.currentqty` absent, §29) so it cannot refuse on it without a costing ledger. Because this is a books difference the user may want closed instead, it is ALSO raised as question **Q-S7** (§34).
 - **Not measured (stated):** a warehouse with `IsDisallowNegativeInv='Y'` — SQLite's POS verbs ignore that flag (only `ad_modelval.js:315-319` reads it, for the delivery-rule default). Measuring legacy needs a warehouse master change, which is
   admin configuration, not a normal user's document ⇒ INCONCLUSIVE, not a gap. Also: every S7a run leaves one more `Posted=E` shipment on the pilot (harmless; reset by importiDempiere).
 
@@ -796,9 +796,30 @@ hold when `TotalOpenBalance > SO_CreditLimit − additionalAmt`. POS (WR) orders
 Expected legacy: REJECTED (both). SQLite: COMPLETED ⇒ SQLITE-GAP, class MISSING. Fixing it changes what the POS counter does (a sale refused for credit) ⇒ that is a user call (brief rule 6), recorded as ⛔ below, not built.
 **RESULT (measured 2026-10-09):** harness on BP 112: W10 PASS, M1 PASS-with-INCONCLUSIVE (W6 as before), M2 PASS, M3 S1/S2/S4/S6/S11 MATCH, S3 QUIRK — unchanged verdicts, receivable still 518 (the switch changed no meaning).
 **S13a/S13b: legacy REJECTED** `Business Partner with this Order over Credit Hold - Open`; **SQLite COMPLETED** (POS: CO + shipment + invoice; SO: CO) ⇒ **SQLITE-GAP, class MISSING** (order credit check). Stays in `§TRIAGE RULE_queue`
-as the failing regression until decided — question **Q-S13** (§33). Fix sketch for whoever builds it (not built): a `C_Order` prepare/complete validator reading bill-BP `socreditstatus`, `so_creditlimit`, `totalopenbalance`
+as the failing regression until decided — question **Q-S13** (§34). Fix sketch for whoever builds it (not built): a `C_Order` prepare/complete validator reading bill-BP `socreditstatus`, `so_creditlimit`, `totalopenbalance`
 (columns present in `ad_seed_fullwidth.db`) with the exact branches of CreditManagerOrder.java:52-95 incl. the two sysconfig exemptions; the SQLite open balance is its OWN state, so the S13 facts were chosen to hold whatever the balance.
 **Pilot facts recorded (P17):** S11 consumes Fertilizer #50's Average-PO costed qty by 1 per run (28 left at 2026-10-09 14:40) — after ~28 more runs legacy will refuse S11's shipment posting (S7a's rule) and S11 turns into a
 `postings_shipment` difference; a legacy material receipt (or importiDempiere) resets it. Same mechanism made Oak Tree (S1) INCONCLUSIVE.
+
+## §33 S12 — VOID a completed POS sale (2026-10-09, backlog item 2) — SPEC written before the scenario code
+**Facts.** POS Order (135), BP 112, product **136 Fertilizer #50 × 1** (costed, so the shipment books exist; the reversal gives the costed qty back, so the scenario is cost-neutral on the pilot) → CO → **VO** on the order.
+**Legacy rule (read first):** `MOrder.voidIt` (MOrder.java:2680-2760): SO ⇒ `createReversals` (2766-2840): every CO shipment `reverseCorrectIt` ⇒ status RE, every CO invoice `reverseCorrectIt` ⇒ RE; then each order line
+`setQty(0)` + `LineNetAmt 0` (2701-2713), reservations cleared, order `TotalLines=GrandTotal=0`, status VO. Legal: VO is offered on a CO order (DocumentEngine.getValidActions, ported in `ad_docfsm.legalActionsOrder`).
+**Route on legacy:** stock `setDocAction` method with a FREE `docAction` parameter (the stock `CompleteOrder` type has docAction constant `CO`): bridge fixture `scripts/bridge/pilot/ws_docaction.sql` registers
+`BridgeDocActionCOrder` (idempotent, role 102). A normal user voiding an order in the ZK window does the same doc-action.
+**SQLite side (existing verbs only = the W-POS-VOID recipe, `scripts/poc_pos_void.js`):** sale = `pos_core.buildSaleGroup` (as S1); void = `ad_docfsm.dispatchOrder(CO,'VO')` for the order, `ad_docfsm.dispatchFor(319|318, CO,'VO')` for the shipment / invoice,
+books = forward fold (`doc_poster.derivePostings`) + `erp_engine.reversePosting`, stock = the sale's C− legs negated.
+**Keys compared (after the void):** order docstatus · order line qty · order TotalLines (¢) · shipment status(es) · invoice status(es) · count of shipment / invoice documents (original + reversal) · stock net delta (sale + void) ·
+invoice books NET per account (original + reversal) · shipment books NET per account. Expected legacy: VO · 0 · 0 · RE · RE · 2 · 2 · {} · all 0 · all 0. Unknown before measuring: whether the reversal docs carry the order link.
+**⏸ PAUSED 2026-10-09 (user pause request).** Done: spec above; fixture `scripts/bridge/pilot/ws_docaction.sql` written and APPLIED to the pilot (idempotent, applied twice, `BridgeDocActionCOrder|setDocAction|3 params`).
+NOT done: server restart (the new type is not live until `~/idempiere-pilot/stop.sh; sleep 8; start.sh`, wait for /webui/ 200 + 10 s); no scenario code yet. **Resume:** restart the server → add an S12 adapter pair to `witness_m3_gap.js`
+(legacy: push the S1-style sale for product 136, then `call(cfg,'set_docaction',{ModelSetDocAction:{serviceType:'BridgeDocActionCOrder',tableName:'C_Order',recordID:id,docAction:'VO'}})`, read back order/lines/M_InOut/C_Invoice/
+storage/Fact_Acct for the original AND the reversal docs; SQLite: the W-POS-VOID recipe listed above) → measure legacy first → classify → run_all → decision record. Backlog items 3-8 not started.
+
+## §34 OPEN QUESTIONS for the user (P16: each is IN concept §21 twin principle; the record does not settle it)
+- **Q-S7** (§31): when stock goes below the Average-costed quantity, legacy refuses to book the shipment (it stays `Posted=E`), but SQLite books COGS at current cost. Keep this as an accepted LEGACY-QUIRK (that is how it is registered now, per §30),
+  or have SQLite copy legacy? Copying it means SQLite would need a running costed-quantity ledger (MCost.currentqty upkeep), which it does not have today.
+- **Q-S13** (§32): legacy refuses an order when the customer goes over their credit limit (CreditManagerOrder.java:48-98, including POS orders while `CHECK_CREDIT_ON_CASH_POS_ORDER=Y`). SQLite has no credit check.
+  Should SQLite add it? That would mean the POS counter can refuse a sale for credit — a POS UX change, so it is your call (brief rule 6).
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

@@ -1,0 +1,24 @@
+-- PILOT-ONLY (idempiere_pilot, local copy). Spec: prompts/SQLiteIDEMPIERE.md §33 (S12 void). Idempotent.
+-- Registers a stock setDocAction WS type with a FREE docAction (the stock 'CompleteOrder' type fixes docAction='CO'),
+-- so the Bridge can perform the doc-actions a normal user performs in the ZK window (VO, RC, CL, ...) on C_Order.
+-- This file IS the proposal text for the legacy admin. Restart the server (stop.sh; start.sh) after applying.
+SET search_path=adempiere;
+DO $$
+DECLARE d record; tid int;
+BEGIN
+  FOR d IN SELECT * FROM (VALUES ('BridgeDocActionCOrder','C_Order')) AS v(val,tbl) LOOP
+    IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
+    tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);
+    INSERT INTO ws_webservicetype(ad_client_id,ad_org_id,created,createdby,updated,updatedby,isactive,name,value,
+        ws_webservice_id,ws_webservicemethod_id,ws_webservicetype_id,ws_webservicetype_uu,ad_table_id,description)
+    VALUES (11,0,now(),100,now(),100,'Y',d.val,d.val,50001,
+        (SELECT ws_webservicemethod_id FROM ws_webservicemethod WHERE value='setDocAction'),tid,gen_random_uuid(),
+        (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl),'Bridge: doc-action on '||d.tbl);
+    INSERT INTO ws_webservicetypeaccess(ad_client_id,ad_org_id,ad_role_id,created,createdby,updated,updatedby,isactive,isreadwrite,ws_webservicetype_id,ws_webservicetypeaccess_uu)
+    VALUES (11,0,102,now(),100,now(),100,'Y','Y',tid,gen_random_uuid());
+    INSERT INTO ws_webservice_para(ad_client_id,ad_org_id,constantvalue,created,createdby,isactive,parametername,parametertype,updated,updatedby,ws_webservice_para_id,ws_webservicetype_id,ws_webservice_para_uu)
+    SELECT 11,0,v.cv,now(),100,'Y',v.pn,v.pt,now(),100,
+           nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebService_Para')::int,'N'::varchar),tid,gen_random_uuid()
+    FROM (VALUES ('tableName','C',d.tbl),('recordID','F',NULL),('docAction','F',NULL)) AS v(pn,pt,cv);
+  END LOOP;
+END $$;
