@@ -852,11 +852,11 @@ UNCHANGED code (`poc_ad_oplog_distrib`, `poc_genesis_minimal`, `poc_opgroup`, `p
 **Honest residue:** a void of an order whose shipment was never posted (legacy refuses: "Original Shipment/Receipt not posted yet") is only covered by the `absent` path, not by a scenario; `IsAllowNegativePosting='N'` schemas (legacy flips negative amounts to the other side,
 FactLine.java:237-250) are not handled — the SQLite posting db lacks that column (pilot schemas are 'Y', so no scenario can expose it now); RC (reverse-correct) on an order = voidIt (MOrder.java:3016) — same verb, not separately scenario-tested; the POS lens UI does not call `voidOrder` yet (it still uses its own recipe) — UX lane, queued with F2.
 
-## §34 OPEN QUESTIONS for the user (P16: each is IN concept §21 twin principle; the record does not settle it)
-- **Q-S7** (§31): when stock goes below the Average-costed quantity, legacy refuses to book the shipment (it stays `Posted=E`), but SQLite books COGS at current cost. Keep this as an accepted LEGACY-QUIRK (that is how it is registered now, per §30),
-  or have SQLite copy legacy? Copying it means SQLite would need a running costed-quantity ledger (MCost.currentqty upkeep), which it does not have today.
-- **Q-S13** (§32): legacy refuses an order when the customer goes over their credit limit (CreditManagerOrder.java:48-98, including POS orders while `CHECK_CREDIT_ON_CASH_POS_ORDER=Y`). SQLite has no credit check.
-  Should SQLite add it? That would mean the POS counter can refuse a sale for credit — a POS UX change, so it is your call (brief rule 6).
+## §34 OPEN QUESTIONS for the user (P16)
+- ~~Q-S7~~ / ~~Q-S13~~ — answered by the CARDINAL RULE (copy legacy); closed by F6 (§38.1) and F5 (§36.1).
+- **Q-OOTB (concept source: CLAUDE.md AD-LAYER LAW + CARDINAL RULE; this lane's brief forbids touching ~/bim-ootb):** the SQLite Sales Order WINDOW runs `~/bim-ootb/erp/model_order.js`, where three legacy rules are missing:
+  S2b price-list check on save (MOrderLine.java:842-849), server-side default pricing (MOrderLine.java:824-827), and the void reversals of shipments/invoices (MOrder.java:2766-2840; F4 ported it into `scripts/erp_engine.js voidOrder`, not into that layer).
+  **May this lane edit `~/bim-ootb/erp/model_order.js` (in a /tmp/wt-* worktree, PR not pushed), or will another session own it?** Everything is measured and specified (§33, §39); only the permission is missing.
 
 ## §35 CARDINAL RULE APPLIED (2026-10-09) — what it changes, enforced in code, backlog for the resume
 **Enforced structurally (not just written):** `reconcile.js` `classify()` honours a quirk only when it carries `evidence` AND `exemption` (user's words + date); otherwise logs `§QUIRK_REFUSED` and the diff stays SQLITE-GAP.
@@ -941,5 +941,21 @@ for EVERY scenario (the old Oak-Tree INCONCLUSIVE excuse goes: legacy refuses �
 **Honest residue:** the drop-ship exemption (MCostDetail.java:1487-1494) is not ported (no drop-ship in SQLite POS); costing level Organization/BatchLot rows are not modelled (SQLite m_cost has no org/ASI — client level only, like the pilot);
 the cost-qty WRITE happens in the harness (`applyCostQty`) because no SQLite host commits postings yet — a committing host must apply `costQtyUpdates` in the same group as the posting (same as legacy) — queued with the loader item;
 the cost PRICE update of average costing on receipts/invoices (weighted average) is not ported (no purchase scenario yet). S11 keeps consuming 136's costed qty by 1 per run on both sides; at 0 both sides refuse (still MATCH, but the COGS amount stops being exercised) — pick another costed product then.
+
+## §39 S3 / S2b on the AD-WINDOW path (2026-10-09, backlog item 4) — SPEC + measurement
+**Which SQLite engine is the twin of a keyed-price order?** A WS order (S3) is what a normal user keys in the Sales Order WINDOW, not the POS lens (P15 "no free numbers" is the POS-lens surface: the lens has no price field). The SQLite Sales Order window
+runs the AD model layer `~/bim-ootb/erp/model_order.js` (`MOrderLine.beforeSave`, loaded as `global.ModelLayer` by `build/erp/crud_overlay.js:1642-1646`) — a SECOND SQLite implementation, separate from this repo's POS kernel verbs. This lane may READ it
+(node `require`, no edits) but not change it (brief: do not touch ~/bim-ootb).
+**Measured (read-only, scratch copy of `ad_seed_demo.db`, draft order 990001):** a line with keyed PriceEntered=PriceActual=10, qty 1 ⇒ `ok, linenetamt=10`, PriceList untouched, no discount — equal to the legacy line (oracle: PriceEntered 10, PriceActual 10,
+PriceList 0, PriceLimit 0, Discount null, LineNetAmt 10). ⇒ **S3 on the AD path: MATCH at line level.** S3 in the M3 corpus is re-pointed: SQLite side = AD-model-layer `beforeSave` for the line + the kernel completion/posting fold for the documents
+(`localRunAD`); the old POS-lens adapter for S3 compared the wrong surface.
+**Gaps found on the AD path (they live in `~/bim-ootb`, so this lane cannot fix them → ⛔ with one question, §34):**
+- **S2b — product NOT on the price list with a keyed price:** legacy refuses (`ProductNotOnPriceListException`, MOrderLine.java:842-849 runs even when the price is keyed); the AD model layer has no price-list check in `beforeSave` (its own comment: "Pricing … stays with the callout
+  layer"), so a non-UI save (import, process, sync) accepts it. Scenario S2b added (legacy measured; SQLite AD side measured via the same read-only require).
+- **Default pricing:** legacy prices an unpriced line server-side (`setPrice` when PriceActual = PriceList = 0, MOrderLine.java:824-827); the AD model layer leaves it to the UI callout ⇒ a line saved without the callout keeps price 0.
+- **S12 on the AD path:** `model_order.js` `voidIt` refuses an order that has shipments/invoices ("createReversals … not ported"); legacy reverses them (§33). F4 fixed the kernel verb (`erp_engine.voidOrder`), not this layer.
+- **`MOrderLine.qtyPositive`** (this repo's `build/erp/ad_modelval.js:50-57`) refuses qty ≤ 0; legacy `MOrderLine.beforeSave` (790-917) has no such rule ⇒ measure S14 (negative-qty line) before deciding.
+**RESULT §39 (M3, 2026-10-09):** `§SCN S3-client-keyed-price MATCH compared=10` (AD path: line 123:1:1000, total 1000, 1 shipment CO, 1 invoice, invoice books 518 Dr 1000 / 758 Cr 1000, shipment REFUSED both sides on Oak Tree's costed qty 0) — the S3 quirk entries are deleted, LEGACY-QUIRK count 0.
+`§SCN S2b-keyed-price-product-not-on-pricelist SQLITE-GAP` (legacy `Cannot save record in C_OrderLine: Product is not on Price List`; SQLite AD layer COMPLETED) — stays in `§TRIAGE RULE_queue` as the failing regression; fix location `~/bim-ootb/erp/model_order.js` ⇒ ⛔ Q-OOTB (§34).
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

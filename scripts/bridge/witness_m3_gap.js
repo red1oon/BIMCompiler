@@ -51,6 +51,12 @@ function localRun(mut = 0) {
     const g = dt.docsubtypeso === 'WR' ? POS.buildSaleGroup(ctx, cart, opts)
       : POS.buildDeliverLaterGroup(ctx, cart, { ...opts, doctype: dt, invoiceRule: 'I' });
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
+    return foldLocal(g, f, opts, mut);
+  };
+}
+// fold a SQLite group (ops + soLines) into the comparable result; materialises its invoice/shipment into the scratch posting db (shared by the POS and AD adapters)
+function foldLocal(g, f, opts, mut) {
+  {
     const st = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'C_Order').pop();
     const shipDone = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'M_InOut' && x.doc_status === 'CO').length;
     let postings = 'none';
@@ -81,6 +87,39 @@ function localRun(mut = 0) {
       invoices: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice').length,
       stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _refused: refusedWhy,
     };
+  }
+}
+// ===== AD-WINDOW path (spec §39): the line goes through the AD model layer the SQLite Sales Order window runs (~/bim-ootb/erp/model_order.js MOrderLine.beforeSave,
+// READ-ONLY require), then the kernel completes the draft order (pos_core.buildRecallCompleteGroup) and the books are folded as above.
+const OOTB = process.env.BRIDGE_OOTB || path.join(os.homedir(), 'bim-ootb');
+let ADML = null, adDb = null, adWhy = null;
+try {
+  ADML = require(path.join(OOTB, 'erp/model_layer.js')); require(path.join(OOTB, 'erp/model_order.js'));
+  const f0 = path.join(os.tmpdir(), 'm3-ad-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'ad_seed_demo.db'), f0); adDb = new Database(f0);
+} catch (e) { adWhy = e.message; }
+const adQ = (sql, p) => { try { return adDb.prepare(sql).all(...(p || [])); } catch (e) { return []; } };
+function localRunAD() {
+  return async f => {
+    if (!ADML) return Object.fromEntries(spec.keys.map(k => [k, 'INCONCLUSIVE:AD model layer not loadable (' + adWhy + ')']));
+    const dt = dtOf(f.doctype), o = ++seq * 10, bp = f.bp || BP;
+    const tpl = adDb.prepare("SELECT * FROM c_order WHERE issotrx='Y' ORDER BY c_order_id LIMIT 1").get();
+    Object.assign(tpl, { c_order_id: o, docstatus: 'DR', processed: 'N', c_currency_id: 100, c_bpartner_id: bp, c_bpartner_location_id: LOC[bp], bill_bpartner_id: bp, bill_location_id: LOC[bp], m_warehouse_id: 103, c_doctype_id: 0, c_doctypetarget_id: f.doctype, ad_org_id: 11 });
+    adDb.prepare('INSERT INTO c_order(' + Object.keys(tpl).join(',') + ') VALUES(' + Object.keys(tpl).map(() => '?').join(',') + ')').run(...Object.values(tpl));
+    const held = [];
+    for (const [i, l] of f.lines.entries()) {
+      const price = f.keyedPrice != null ? f.keyedPrice : 0;
+      const rec = { c_order_id: o, m_product_id: l.product, qtyentered: l.qty, qtyordered: l.qty, priceentered: price, priceactual: price, pricelist: 0, ad_client_id: 11, ad_org_id: 11 };
+      const r = ADML.run(adQ, { client: 11, org: 11 }, { table: 'C_OrderLine', timing: 'BEFORE_SAVE', record: rec, old: null, isNew: true });
+      if (!r.ok) return { outcome: 'REJECTED', reason: r.error || r.msg };
+      const d = Object.assign({}, rec, r.derived || {});
+      held.push({ c_orderline_id: o * 100 + i, m_product_id: l.product, qtyordered: l.qty, priceactual: String(d.priceactual), linenetamt: String(d.linenetamt) });
+    }
+    const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
+      wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' }, docsubtypeso: dt.docsubtypeso, creditOf };
+    const opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: bp, warehouseId: 103 };
+    const g = POS.buildRecallCompleteGroup(ctx, { c_order_id: o, docstatus: 'DR', c_bpartner_id: bp, m_warehouse_id: 103 }, held, opts);
+    if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
+    return foldLocal(g, f, opts, 0);
   };
 }
 // §38: the costed-qty deltas a committing host applies after a successful shipment post (legacy: same transaction) — keeps the scratch state moving like legacy's
@@ -238,7 +277,8 @@ const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) })
 const corpus = [
   sc('S1-pos-sale', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }),
   sc('S2-product-not-on-pricelist', { doctype: POSDT, lines: [{ product: 122, qty: 1 }] }),
-  sc('S3-client-keyed-price', { doctype: POSDT, lines: [{ product: 123, qty: 1 }], keyedPrice: 10 }),
+  { id: 'S3-client-keyed-price', facts: { doctype: POSDT, lines: [{ product: 123, qty: 1 }], keyedPrice: 10 }, legacy: legacyRun, local: localRunAD() },   // spec §39: the AD-window path is the twin of a keyed order
+  { id: 'S2b-keyed-price-product-not-on-pricelist', facts: { doctype: POSDT, lines: [{ product: 122, qty: 1 }], keyedPrice: 10 }, legacy: legacyRun, local: localRunAD() },
   sc('S11-pos-sale-costed-product', { doctype: POSDT, lines: [{ product: 136, qty: 1 }] }),
   sc('S4-unknown-product', { doctype: POSDT, lines: [{ product: 999999, qty: 1 }] }),
   sc('S6-standard-order', { doctype: STDDT, lines: [{ product: 123, qty: 1 }] }),
@@ -249,9 +289,7 @@ const corpus = [
 const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment'],
   notCompared: { fact_acct_secondary_schema: 'legacy also posts to a second accounting schema (Euro, 200000); only the primary schema is compared', tax_and_grandtotal: 'tax was 0 on every scenario document' } };
 const quirks = [
-  { scenario: 'S3-client-keyed-price', key: 'lines', evidence: 'legacy accepted client PriceActual=10 with no PriceList recompute (pilot order 80005, 2026-10-09); SQLite refuses keyed prices by design (P15, POSLens §4)' },
-  { scenario: 'S3-client-keyed-price', key: 'total_cents', evidence: 'same as lines: total follows the keyed price' },
-  { scenario: 'S3-client-keyed-price', key: 'postings', evidence: 'same as lines: the books follow the keyed price (legacy posts 1000c, SQLite 6175c)' },
+  // S3 quirk entries REMOVED 2026-10-09 (§39): S3 is now compared on the AD-window path, where SQLite accepts the keyed price like legacy.
   // S7a quirk REMOVED 2026-10-09 (user: SQLite cannot differ from legacy ops, incl. L&F): legacy refuses the shipment posting below costed qty 0 (MCost.java:1919-1930) ⇒ SQLite must refuse too. Now a SQLITE-GAP, spec §35.
 ];
 
