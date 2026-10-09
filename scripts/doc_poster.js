@@ -117,7 +117,7 @@ function currentCost(db, productId, schema) {
   var c = getRow(db, 'SELECT currentcostprice FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?', [num(productId), num(schema), num(as.m_costtype_id), num(el.m_costelement_id)]);
   return c ? { price: Number(c.currentcostprice), method: cm, element: el.m_costelement_id } : { price: null, why: 'no-m_cost-row' };
 }
-function deriveInOut(db, R, ioId, schema) {
+function deriveInOut(db, R, ioId, schema, opt) {
   var hdr = getRow(db, 'SELECT m_inout_id,issotrx,movementtype FROM m_inout WHERE m_inout_id=?', num(ioId));
   if (!hdr) return null;
   if (!(String(hdr.issotrx) === 'Y' && String(hdr.movementtype) === 'C-')) return null;       // only the sales-shipment class is built
@@ -133,7 +133,7 @@ function deriveInOut(db, R, ioId, schema) {
   if (rev && num(rev.reversal_id) && _hasCol(db, 'm_inoutline', 'reversalline_id')) {
     var rl = allRows(db, 'SELECT reversalline_id FROM m_inoutline WHERE m_inout_id=?', num(ioId));
     if (rl.length && rl.every(function (x) { return num(x.reversalline_id); })) {
-      var orig = deriveInOut(db, R, num(rev.reversal_id), schema);
+      var orig = deriveInOut(db, R, num(rev.reversal_id), schema, { amountsOnly: true });   // the original's AMOUNTS (legacy reads its posted books); no qty re-check (MCostDetail.java:1482-1485)
       if (!orig || orig.absent.length) { absent.push('Original Shipment/Receipt not posted yet (' + rev.reversal_id + ')'); return { by: by, absent: absent }; }
       Object.keys(orig.by).forEach(function (k) { var a = orig.by[k]; by[k] = { account_id: a.account_id, value: a.value, name: a.name, dr: a.cr, cr: a.dr }; });
       return { by: by, absent: absent };
@@ -141,7 +141,7 @@ function deriveInOut(db, R, ioId, schema) {
   }
   // §38 (F6): the Average costed-qty refusal — whole document refused, nothing posted (MCost.java:1919-1930 via MCostDetail.process). Only when the posting db carries
   // m_cost.currentqty (schema patch §37); otherwise unchanged. Reversal shipments skip the check (MCostDetail.java:1482-1485) — they returned above.
-  var neg = costQtyRefusal(db, lines);
+  var neg = (opt && opt.amountsOnly) ? null : costQtyRefusal(db, lines);
   if (neg) { absent.push(neg); return { by: by, absent: absent }; }
   lines.forEach(function (l) {
     // IsStocked decides service-vs-item ONLY when the cost is missing; a seed without the column cannot tell, so it is treated as an item and reported (never guessed)

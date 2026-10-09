@@ -626,7 +626,7 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 | S11a | POS sale **shipment postings** on Oak Tree (COGS/Inventory) | legacy posting **errors** (`Posted=E`, `AverageCostingNegativeQtyException`: Oak Tree costed qty 0 although on-hand > 0; ~57 shipments on the pilot) — no legacy books | ⏸ **INCONCLUSIVE** (no oracle). SQLite side: `derivePostings` has no M_InOut class (basis `none`, source comment: "COGS leg is the §8 follow-up") ⇒ probable **MISSING** the day legacy produces books. Needs a pilot costing setup (a receipt giving Oak Tree a costed qty) before it can be judged. |
 | S7 | order with stock below zero after completion | measured on purpose (§31): CO + shipment + invoice, stock −qty; shipment posting refused when the Average costed qty would go < 0 | ✅ S7b **MATCH**; S7a **MATCH after F6** (§38.1) |
 | S13 | order whose GrandTotal exceeds the customer's credit limit (§32) | REJECTED `over Credit Hold` (CreditManagerOrder.java:48-98) | ✅ **MATCH after F5** (§36.1); S13c control (no limit) completes both sides |
-| S12 | void a completed POS sale (§33) | VO, shipment+invoice reversed (RE/RE), books net 0 with legacy's row form | ✅ **MATCH after F4** (§33.1), 14 keys |
+| S12 | void a completed POS sale (§33) | VO, shipment+invoice reversed (RE/RE), books net 0 with legacy's row form | ✅ **MATCH after F4** (§33.1); S12b taxed void MATCH after F14 (§48.1), 16 keys |
 | S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
 | S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
 **Honesty note on what the "bugs" so far were:** the defects found this session were in the pilot data (S5), in my harness (price, stale text), and
@@ -1090,5 +1090,20 @@ The drifted copy `build/erp/ad_modelval.js` and the SHIPPED `~/bim-ootb/erp/ad_m
 **Proof:** `§SCN S14a-pos-order-negative-qty MATCH` · `§SCN S14b-standard-order-negative-qty MATCH` · `§SCN S14c-pos-order-zero-qty MATCH` (17 keys each, incl. books, costed qty, tax, Euro); `§RECON_SUMMARY scenarios=20 MATCH=18 SQLITE-GAP=2` (S2b ⛔ Q-OOTB, S8a F9).
 **Regression:** 99 engine witnesses — exits identical; logs identical except the 4 known-nondeterministic ones and `poc_pos_ring` (exactly the changed assertion: −1 line, +2 lines, shown in the session log).
 **Residue:** the zero-cost-purchase exception of Doc_InOut (:247-251, needs M_CostDetail) still not ported; the AD-path copies of `qtyPositive` (this repo's drifted `build/erp/ad_modelval.js` and the shipped `~/bim-ootb` one) are on Q-OOTB; the POS lens UI does not offer a 0/negative entry (UX lane).
+
+## §48 S12b — VOID of a TAXED sale (2026-10-09; residue of F4 × F11) — SPEC before code
+**Facts:** as S12 but sold from org 12 / warehouse 104 with DeliveryViaRule D to BP 112 (CT Sales 6%, T1), product 136 × 1. **Expected legacy (rule):** the reversal invoice is the original negated INCLUDING its tax lines (MInvoice.reverseCorrectIt copies the document and
+negates quantities; its taxes are recalculated from the negated lines ⇒ negative tax), books = negated on the same side. **SQLite today:** `voidOrder` emits the reversal invoice lines but no `C_InvoiceTax` rows ⇒ expected gap on `post_inv_rev` (missing Tax-Due leg).
+Keys: the S12 set + `invoice_tax_rev`. Fix F14 (if measured so): `voidOrder` takes the original invoice's tax rows and emits them negated on the reversal invoice (additive).
+**MEASURED S12b (legacy first):** reversal invoice `-2120`, books `518 Dr −2120 / 596 Cr −120 / 758 Cr −2000`, reversal InvoiceTax `105:-2000:-120` (and even an untaxed void carries `104:-2000:0`). SQLite: no reversal tax rows ⇒ Tax-Due leg missing (F14).
+**Also found (P17):** (a) a defect in F6×F4: deriving a REVERSAL shipment re-derived the original through the costed-qty check, against the quantity the original's own posting had already consumed ⇒ refused. Legacy copies the original's POSTED books
+(FactLine.updateReverseLine) and skips the qty check for reversals (MCostDetail.java:1482-1485) ⇒ the reversal branch now derives the original's AMOUNTS without the check. (b) Fertilizer #50 (136) costed qty is down to 1 on the pilot (S11 consumed it, as forecast in §32) ⇒
+S11/S12/S12b move to **137 Mulch 10#** (costed qty 50 @ 2.70, price 3.00, already on the pilot; no data change).
+**F14 (spec):** `erp_engine.voidOrder` emits, for each reversed invoice, its tax rows NEGATED on the reversal invoice (`sale.invoices[].taxes`), additive.
+### §48.1 DECISION RECORD F14 — reversal invoice tax rows + reversal-shipment re-derive fix (2026-10-09)
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` `voidOrder` emits the original invoice's tax rows negated on the reversal invoice; `scripts/doc_poster.js` reversal branch derives the original's amounts with `{amountsOnly:true}` (no costed-qty re-check);
+`scripts/bridge/witness_m3_gap.js` S12b, `invoice_tax_rev` + `order_desc` keys (void key set now has NO not-compared item), tax-aware void adapter, S11/S12/S12b on product 137.
+**Proof:** `§SCN S12-void-pos-sale MATCH compared=16` · `§SCN S12b-void-taxed-pos-sale MATCH compared=16` (reversal books `518 Dr −2120 / 596 Cr −120 / 758 Cr −2000`, reversal tax `105:-2000:-120`, shipment reversal swapped, description `** Voided`) · `§M3_VOID_NEGATIVE_CONTROL PASS`.
+**Regression:** 99 engine witnesses identical to the F13 run (exits and logs, except the known-nondeterministic ones).
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

@@ -330,6 +330,9 @@ function voidOrder(sale, opts) {
     (iv.lines || []).forEach(function (l) {
       ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceLine', c_invoice_id: rid, m_product_id: l.m_product_id, qtyinvoiced: neg(l.qtyinvoiced), linenetamt: neg(l.linenetamt), c_orderline_id: l.c_orderline_id, reversalline_id: l.c_invoiceline_id });
     });
+    (iv.taxes || []).forEach(function (t) {   // §48 (F14): the reversal invoice carries the original's tax rows negated (MInvoice.reverseCorrectIt; pilot S12/S12b)
+      ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceTax', c_invoice_id: rid, c_tax_id: t.c_tax_id, taxbaseamt: neg(t.taxbaseamt), taxamt: neg(t.taxamt) });
+    });
     ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: rid, doc_status: 'RE' });
     ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: iv.c_invoice_id, field: 'reversal_id', value: rid });
     ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: iv.c_invoice_id, doc_status: 'RE' });
