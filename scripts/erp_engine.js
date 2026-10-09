@@ -879,6 +879,37 @@ function completeJournal(journal, lines, ctx) {
   return { ok: true, totalDr: dr, totalCr: cr, lines: out, ops: [{ op_type: 'SET_STATUS', table: 'GL_Journal', id: journal.gl_journal_id, doc_status: 'CO' }] };   // completeIt :669-671
 }
 
+// completeBankStatement — Bank Statement (spec §70, F34): MBankStatementLine.beforeSave (MBankStatementLine.java:180-262 @{u}), MBankStatement.beforeSave (:258-275), prepareIt (:322-364), completeIt (:395-460).
+// stmt = { c_bankstatement_id, c_bankaccount_id, dateacct, beginningbalance (decimal; 0/absent ⇒ the bank account's current balance) }; lines [{ c_bankstatementline_id, line, isactive, dateacct, stmtamt, trxamt, interestamt, c_charge_id, c_payment_id }]
+// ctx = { periodOpen:{ok} (DocBaseType CMB), postWithDateFromLine: bool (sysconfig BANK_STATEMENT_POST_WITH_DATE_FROM_LINE, default false), samePeriod(lineDate, headerDate) → bool,
+//         bankBalance (minor units, the account's CurrentBalance), paymentOf(id) → { isreconciled } }. Amounts in minor units out.
+function completeBankStatement(stmt, lines, ctx) {
+  ctx = ctx || {};
+  var m = function (v) { var d = _dec(v == null ? '0' : v); return Number(_rhu(d.n * 100n, 10n ** BigInt(d.k))); };
+  var out = [];
+  for (var i = 0; i < (lines || []).length; i++) {                                                               // line beforeSave (at save time, before any doc-action)
+    var l = lines[i], stmtAmt = m(l.stmtamt), trx = m(l.trxamt), intr = m(l.interestamt), chg = stmtAmt - trx - intr;
+    if (ctx.postWithDateFromLine && ctx.samePeriod && !ctx.samePeriod(l.dateacct || stmt.dateacct, stmt.dateacct)) return { ok: false, reason: 'BankStatementLinePeriodNotSameAsHeader' };
+    if (chg !== 0 && !Number(l.c_charge_id)) return { ok: false, reason: 'FillMandatory C_Charge_ID' };
+    out.push({ c_bankstatementline_id: l.c_bankstatementline_id, isactive: l.isactive || 'Y', stmtamt: stmtAmt, trxamt: trx, interestamt: intr, chargeamt: chg, c_charge_id: l.c_charge_id || null,
+      c_payment_id: trx === 0 ? null : (l.c_payment_id || null) });
+  }
+  var begin = stmt.beginningbalance != null && m(stmt.beginningbalance) !== 0 ? m(stmt.beginningbalance) : Number(ctx.bankBalance || 0);   // header beforeSave :264-269
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'PeriodClosed' };                         // prepareIt :330 MPeriod.testPeriodOpen
+  if (!out.length) return { ok: false, reason: 'NoLines' };                                                        // :332-336
+  var diff = 0; out.forEach(function (x) { if (x.isactive !== 'N') diff += x.stmtamt; });                       // :338-352
+  var ops = [];
+  for (var j = 0; j < out.length; j++) {                                                                          // completeIt :415-430
+    var pid = out[j].c_payment_id; if (!pid) continue;
+    var p = ctx.paymentOf ? ctx.paymentOf(pid) : null;
+    if (p && p.isreconciled === 'Y') return { ok: false, reason: 'PaymentIsAlreadyReconciled' };
+    ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Payment', id: pid, field: 'isreconciled', value: 'Y' });
+  }
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_BankAccount', id: stmt.c_bankaccount_id, field: 'currentbalance', delta: diff });   // :445-449
+  ops.push({ op_type: 'SET_STATUS', table: 'C_BankStatement', id: stmt.c_bankstatement_id, doc_status: 'CO' });
+  return { ok: true, lines: out, beginningBalance: begin, statementDifference: diff, endingBalance: begin + diff, ops: ops };
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -1072,7 +1103,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  completeCash: completeCash, completeJournal: completeJournal, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

@@ -211,7 +211,7 @@ async function legacyFactsOf(table, id, schema) {
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
   if (fa.length) return fmtPostings(Object.values(by));
   // §65 (P17): the posted-without-lines check knew only invoices/shipments; the cycles post orders, matchings, payments and allocations too
-  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'], 702: ['QueryMRequisition', 'M_Requisition_ID'], 407: ['QueryCCash', 'C_Cash_ID'], 224: ['QueryGLJournal', 'GL_Journal_ID'] }[table] || null;
+  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'], 702: ['QueryMRequisition', 'M_Requisition_ID'], 407: ['QueryCCash', 'C_Cash_ID'], 224: ['QueryGLJournal', 'GL_Journal_ID'], 392: ['QueryCBankStatement', 'C_BankStatement_ID'] }[table] || null;
   const posted = tq ? ((await query(cfg, tq[0], `${tq[1]}=${id}`))[0] || {}).Posted : null;
   return posted === 'Y' || posted === true ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
@@ -743,6 +743,57 @@ function localGLJ(mut = 0) {
   };
 }
 
+// ================= MODEL: Bank Statement (spec §70) — a statement line matching a receipt; books Bank Asset / In-Transit; payment reconciled; bank balance =================
+const BS_DESC = {
+  payNoInv: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 119 }, C_BankAccount_ID: { const: 100 }, C_BPartner_ID: { path: 'bp' },
+    C_Currency_ID: { const: 100 }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+    docAction: { serviceType: 'BridgeCompletePayment', table: 'C_Payment', action: 'CO' } },
+  bs: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateBankStatement', table: 'C_BankStatement', fields: { AD_Org_ID: { const: 11 }, C_BankAccount_ID: { const: 100 }, Name: { path: 'name' }, StatementDate: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+    lines: { serviceType: 'BridgeCreateBankStatementLine', table: 'C_BankStatementLine', parent: 'C_BankStatement_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
+      fields: { AD_Org_ID: { const: 11 }, StatementLineDate: { path: 'date' }, ValutaDate: { path: 'date' }, DateAcct: { path: 'date' }, C_Currency_ID: { const: 100 }, StmtAmt: { path: 'amt' }, TrxAmt: { path: 'amt' }, C_Payment_ID: { path: 'pay' } } },
+    docAction: { serviceType: 'BridgeCompleteBankStatement', table: 'C_BankStatement', action: 'CO' } } };
+const bsSpec = { keys: ['outcome', 'docstatus', 'beginning', 'statement_diff', 'ending', 'payment_reconciled', 'bank_balance_delta', 'postings', 'postings_euro'], notCompared: {} };
+let bsLink = null, bsLastPay = null; const bsLocalPay = {};   // the payment of the last statement (BS-REJ re-uses it); SQLite side: its own payment state
+const bankBal = async () => cents(((await query(cfg, 'QueryCBankAccount', 'C_BankAccount_ID=100'))[0] || {}).CurrentBalance);
+async function legacyBS(f) {
+  if (!bsLink) { let bytes = null; bsLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: BS_DESC }); }
+  const d = TODAY + ' 00:00:00';
+  let pay = f.reusePayment ? bsLastPay : null;
+  if (!pay) {
+    const pu = bsLink.submit('payNoInv', { bp: BP, amt: f.amt, date: d, note: 'M3 ' + f.id }); await bsLink.drain(); const pst = bsLink.store.get(pu);
+    if (pst.state !== 'CONFIRMED') return { outcome: 'ERROR', error: 'payment: ' + pst.error };
+    pay = bsLink.store.idmap(pu).find(x => x.tbl === 'C_Payment').server_id; bsLastPay = pay; }
+  const b0 = await bankBal();
+  const uid = bsLink.submit('bs', { name: 'M3 ' + f.id + ' ' + Date.now().toString(36), date: d, note: 'M3 ' + f.id, lines: [{ date: d, amt: f.amt, pay }] });
+  await bsLink.drain(); const st = bsLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const id = bsLink.store.idmap(uid).find(x => x.tbl === 'C_BankStatement').server_id;
+  const h = (await query(cfg, 'QueryCBankStatement', `C_BankStatement_ID=${id}`))[0], p = (await query(cfg, 'QueryCPayment', `C_Payment_ID=${pay}`))[0];
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, beginning: cents(h.BeginningBalance), statement_diff: cents(h.StatementDifference), ending: cents(h.EndingBalance),
+    payment_reconciled: p.IsReconciled === true || p.IsReconciled === 'Y' ? 'Y' : 'N', bank_balance_delta: (await bankBal()) - b0,
+    postings: await legacyFactsOf(392, id, SCHEMA), postings_euro: await legacyFactsOf(392, id, SCHEMA2) };
+}
+function localBS(mut = 0) {
+  return async f => {
+    if (typeof E.completeBankStatement !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', beginning: 0, statement_diff: 0, ending: 0, payment_reconciled: 'N', bank_balance_delta: 0, postings: 'none', postings_euro: 'none' };
+    let pay = f.reusePayment ? bsLocalPay.last : null;
+    if (!pay) { pay = ++seq * 10; bsLocalPay[pay] = { isreconciled: 'N' }; bsLocalPay.last = pay; }
+    const sid = ++seq * 10, amt = (Math.round(f.amt * 100) + mut) / 100, bal0 = cents((gb.prepare('SELECT currentbalance b FROM c_bankaccount WHERE c_bankaccount_id=100').get() || {}).b);
+    const r = E.completeBankStatement({ c_bankstatement_id: sid, c_bankaccount_id: 100, dateacct: TODAY }, [{ c_bankstatementline_id: sid * 100 + 1, line: 10, dateacct: TODAY, stmtamt: String(amt), trxamt: String(amt), c_payment_id: pay }],
+      { periodOpen: E.periodOpen(periodData, TODAY, 'CMB', TODAY), postWithDateFromLine: DP.sysConfigBool(gb, 'BANK_STATEMENT_POST_WITH_DATE_FROM_LINE', false, 11, 0),
+        samePeriod: (a, b) => String(a).slice(0, 7) === String(b).slice(0, 7), bankBalance: bal0, paymentOf: id => bsLocalPay[id] });
+    if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    for (const o of r.ops) { if (o.table === 'C_Payment') bsLocalPay[o.id].isreconciled = o.value; if (o.table === 'C_BankAccount') gb.prepare('UPDATE c_bankaccount SET currentbalance=currentbalance+? WHERE c_bankaccount_id=?').run(o.delta / 100, o.id); }
+    gb.prepare('INSERT INTO c_bankstatement(c_bankstatement_id,docstatus,c_bankaccount_id,ad_org_id,ad_client_id,beginningbalance,endingbalance,statementdifference,dateacct) VALUES(?,?,?,?,?,?,?,?,?)').run(sid, 'CO', 100, 11, 11, r.beginningBalance / 100, r.endingBalance / 100, r.statementDifference / 100, TODAY + ' 00:00:00');
+    r.lines.forEach(l => gb.prepare('INSERT INTO c_bankstatementline(c_bankstatementline_id,c_bankstatement_id,stmtamt,c_payment_id,trxamt,chargeamt,interestamt,c_charge_id,c_currency_id) VALUES(?,?,?,?,?,?,?,?,?)').run(l.c_bankstatementline_id, sid, l.stmtamt / 100, l.c_payment_id, l.trxamt / 100, l.chargeamt / 100, l.interestamt / 100, l.c_charge_id, 100));
+    const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'C_BankStatement', id: sid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    const bal1 = cents((gb.prepare('SELECT currentbalance b FROM c_bankaccount WHERE c_bankaccount_id=100').get() || {}).b);
+    return { outcome: 'COMPLETED', docstatus: 'CO', beginning: r.beginningBalance, statement_diff: r.statementDifference, ending: r.endingBalance, payment_reconciled: bsLocalPay[pay].isreconciled, bank_balance_delta: bal1 - bal0,
+      postings: fold(SCHEMA), postings_euro: fold(SCHEMA2) };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -870,6 +921,11 @@ const quirks = [
     { id: 'GLJ-REJ-doc-controlled-account', facts: { id: 'GLJR', lines: [{ account: 508, dr: 100, cr: 0 }, { account: 484, dr: 0, cr: 100 }] }, legacy: legacyGLJ, local: localGLJ(0) }]), gljSpec, quirks, { log }));
   if (!only) { const gneg = await R.run([{ id: 'NEG-glj-control', facts: { id: 'GLJN', lines: [{ account: 474, dr: 100, cr: 0 }, { account: 484, dr: 0, cr: 100 }] }, legacy: legacyGLJ, local: localGLJ(1) }], gljSpec, quirks, { log });
     out('§M3_GLJ_NEGATIVE_CONTROL', gneg[0].verdict === 'SQLITE-GAP' && ['total_dr', 'lines', 'postings'].every(k => gneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite journal line ⇒ verdict=${gneg[0].verdict} gaps=${gneg[0].gaps.map(g => g.key).join(',')}`); }
+  // MODEL Bank Statement (spec §70)
+  rows.push(...await R.run(keepOnly([{ id: 'BS1-bank-statement-matches-receipt', facts: { id: 'BS1', amt: 7.77 }, legacy: legacyBS, local: localBS(0) },
+    { id: 'BS-REJ-payment-already-reconciled', facts: { id: 'BSR', amt: 7.77, reusePayment: true }, legacy: legacyBS, local: localBS(0) }]), bsSpec, quirks, { log }));
+  if (!only) { const bneg = await R.run([{ id: 'NEG-bs-control', facts: { id: 'BSN', amt: 7.77 }, legacy: legacyBS, local: localBS(1) }], bsSpec, quirks, { log });
+    out('§M3_BS_NEGATIVE_CONTROL', bneg[0].verdict === 'SQLITE-GAP' && ['statement_diff', 'ending', 'postings'].every(k => bneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite statement line ⇒ verdict=${bneg[0].verdict} gaps=${bneg[0].gaps.map(g => g.key).join(',')}`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
