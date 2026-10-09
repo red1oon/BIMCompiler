@@ -211,7 +211,7 @@ async function legacyFactsOf(table, id, schema) {
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
   if (fa.length) return fmtPostings(Object.values(by));
   // §65 (P17): the posted-without-lines check knew only invoices/shipments; the cycles post orders, matchings, payments and allocations too
-  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'], 702: ['QueryMRequisition', 'M_Requisition_ID'], 407: ['QueryCCash', 'C_Cash_ID'], 224: ['QueryGLJournal', 'GL_Journal_ID'], 392: ['QueryCBankStatement', 'C_BankStatement_ID'] }[table] || null;
+  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'], 702: ['QueryMRequisition', 'M_Requisition_ID'], 407: ['QueryCCash', 'C_Cash_ID'], 224: ['QueryGLJournal', 'GL_Journal_ID'], 392: ['QueryCBankStatement', 'C_BankStatement_ID'], 623: ['QueryCProjectIssue', 'C_ProjectIssue_ID'] }[table] || null;
   const posted = tq ? ((await query(cfg, tq[0], `${tq[1]}=${id}`))[0] || {}).Posted : null;
   return posted === 'Y' || posted === true ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
@@ -794,6 +794,45 @@ function localBS(mut = 0) {
   };
 }
 
+// ================= MODEL: Project Issue (spec §71) — header-only document + CO; stock, cost quantity, project balance and books =================
+const PJI_FIELDS = { AD_Org_ID: { const: 11 }, C_Project_ID: { path: 'project' }, Line: { path: 'line' }, M_Locator_ID: { path: 'loc' }, MovementQty: { path: 'qty' }, MovementDate: { path: 'date' }, Description: { path: 'note' } };
+const PJI_DESC = {
+  pji: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateProjectIssue', table: 'C_ProjectIssue', fields: { ...PJI_FIELDS, M_Product_ID: { path: 'product' } } }, docAction: { serviceType: 'BridgeCompleteProjectIssue', table: 'C_ProjectIssue', action: 'CO' } },
+  pjiNoProduct: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateProjectIssue', table: 'C_ProjectIssue', fields: PJI_FIELDS }, docAction: { serviceType: 'BridgeCompleteProjectIssue', table: 'C_ProjectIssue', action: 'CO' } } };
+const pjiSpec = { keys: ['outcome', 'docstatus', 'stock_delta', 'cost_qty_delta', 'project_balance_delta', 'postings', 'postings_euro'], notCompared: {} };
+let pjiLink = null;
+const projBal = async id => String(((await query(cfg, 'QueryCProject', `C_Project_ID=${id}`))[0] || {}).ProjectBalanceAmt);
+const dec4 = v => (Math.round(Number(v) * 10000) / 10000).toFixed(4);
+async function legacyPJI(f) {
+  if (!pjiLink) { let bytes = null; pjiLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: PJI_DESC }); }
+  const line = (await query(cfg, 'QueryCProjectIssue', `C_Project_ID=${f.project}`)).reduce((a, r) => Math.max(a, Number(r.Line)), 0) + 10;   // the window default @SQL MAX(Line)+10
+  const s0 = await locStock(f.product, f.loc), q0 = await legacyCostQty(f.product), b0 = await projBal(f.project);
+  const uid = pjiLink.submit(f.noProduct ? 'pjiNoProduct' : 'pji', { project: f.project, line, product: f.product, loc: f.loc, qty: f.qty, date: TODAY + ' 00:00:00', note: 'M3 ' + f.id });
+  await pjiLink.drain(); const st = pjiLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const id = pjiLink.store.idmap(uid).find(x => x.tbl === 'C_ProjectIssue').server_id, h = (await query(cfg, 'QueryCProjectIssue', `C_ProjectIssue_ID=${id}`))[0];
+  const p1 = await legacyFactsOf(623, id, SCHEMA), p2 = await legacyFactsOf(623, id, SCHEMA2);
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, stock_delta: JSON.stringify({ [`${f.product}@${f.loc}`]: (await locStock(f.product, f.loc)) - s0 }), cost_qty_delta: JSON.stringify({ [f.product]: (await legacyCostQty(f.product)) - q0 }),
+    project_balance_delta: dec4(Number(await projBal(f.project)) - Number(b0)), postings: p1, postings_euro: p2 };
+}
+function localPJI(mut = 0) {
+  return async f => {
+    if (typeof E.completeProjectIssue !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', stock_delta: '{}', cost_qty_delta: '{}', project_balance_delta: dec4(0), postings: 'none', postings_euro: 'none' };
+    const pid = ++seq * 10, qty = f.qty + mut, product = f.noProduct ? 0 : f.product, q0 = localCostQty(f.product);
+    const r = E.completeProjectIssue({ c_projectissue_id: pid, c_project_id: f.project, m_product_id: product, m_locator_id: f.loc, movementqty: qty },
+      { productOf: id => lc(gb.prepare('SELECT isstocked FROM m_product WHERE m_product_id=?').get(id)) || null, disallowNegative: (lc(seed.prepare('SELECT isdisallownegativeinv d FROM m_warehouse WHERE m_warehouse_id=103').get()) || {}).d === 'Y',
+        cost: product ? DP.costAt(gb, product, qty, SCHEMA) : null });
+    if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    gb.prepare('INSERT INTO c_projectissue(c_projectissue_id,ad_client_id,ad_org_id,c_project_id,m_product_id,m_locator_id,movementqty,movementdate,docstatus) VALUES(?,?,?,?,?,?,?,?,?)').run(pid, 11, 11, f.project, product, f.loc, String(qty), TODAY + ' 00:00:00', 'CO');
+    for (const u of DP.costQtyUpdatesFor(gb, 'C_ProjectIssue', pid)) gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+? WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
+    const stock = {}; for (const o of r.ops.filter(o => o.op_type === 'STOCK')) stock[`${o.m_product_id}@${o.m_locator_id}`] = (stock[`${o.m_product_id}@${o.m_locator_id}`] || 0) + o.qty;
+    const bal = r.ops.find(o => o.table === 'C_Project');
+    const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'C_ProjectIssue', id: pid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    return { outcome: 'COMPLETED', docstatus: 'CO', stock_delta: JSON.stringify(stock), cost_qty_delta: JSON.stringify({ [f.product]: localCostQty(f.product) - q0 }), project_balance_delta: dec4(bal ? bal.delta : 0), postings: fold(SCHEMA), postings_euro: fold(SCHEMA2) };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -926,6 +965,11 @@ const quirks = [
     { id: 'BS-REJ-payment-already-reconciled', facts: { id: 'BSR', amt: 7.77, reusePayment: true }, legacy: legacyBS, local: localBS(0) }]), bsSpec, quirks, { log }));
   if (!only) { const bneg = await R.run([{ id: 'NEG-bs-control', facts: { id: 'BSN', amt: 7.77 }, legacy: legacyBS, local: localBS(1) }], bsSpec, quirks, { log });
     out('§M3_BS_NEGATIVE_CONTROL', bneg[0].verdict === 'SQLITE-GAP' && ['statement_diff', 'ending', 'postings'].every(k => bneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite statement line ⇒ verdict=${bneg[0].verdict} gaps=${bneg[0].gaps.map(g => g.key).join(',')}`); }
+  // MODEL Project Issue (spec §71)
+  rows.push(...await R.run(keepOnly([{ id: 'PJI1-project-issue-stocked-item', facts: { id: 'PJI1', project: 100, product: 137, loc: 101, qty: 1 }, legacy: legacyPJI, local: localPJI(0) },
+    { id: 'PJI-REJ-no-product', facts: { id: 'PJIR', project: 100, product: 137, loc: 101, qty: 1, noProduct: true }, legacy: legacyPJI, local: localPJI(0) }]), pjiSpec, quirks, { log }));
+  if (!only) { const jneg = await R.run([{ id: 'NEG-pji-control', facts: { id: 'PJIN', project: 100, product: 137, loc: 101, qty: 1 }, legacy: legacyPJI, local: localPJI(1) }], pjiSpec, quirks, { log });
+    out('§M3_PJI_NEGATIVE_CONTROL', jneg[0].verdict === 'SQLITE-GAP' && ['stock_delta', 'cost_qty_delta', 'postings'].every(k => jneg[0].gaps.some(g => g.key === k)), `+1 qty on the SQLite issue ⇒ verdict=${jneg[0].verdict} gaps=${jneg[0].gaps.map(g => g.key).join(',')}`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);

@@ -250,3 +250,14 @@ ALTER TABLE c_acctschema_default ADD COLUMN realizedgain_acct;
 ALTER TABLE c_acctschema_default ADD COLUMN realizedloss_acct;
 UPDATE c_acctschema_default SET realizedgain_acct=245, realizedloss_acct=246 WHERE c_acctschema_id=101 AND realizedgain_acct IS NULL;
 UPDATE c_acctschema_default SET realizedgain_acct=200027, realizedloss_acct=200028 WHERE c_acctschema_id=200000 AND realizedgain_acct IS NULL;
+-- 2026-10-10 (spec §71, F35): Doc_ProjectIssue / MProjectIssue read the issue, its project (category, balance) and the project accounts; the posting db has none of them.
+-- Tables created with the columns the fold reads; project + project-account rows from the SQLite seed ad_seed_fullwidth.db (client 11), not invented. Idempotent; never deletes.
+CREATE TABLE IF NOT EXISTS c_projectissue(c_projectissue_id INT, ad_client_id INT, ad_org_id INT, c_project_id INT, line INT, m_product_id INT, m_locator_id INT, movementqty TEXT, movementdate TEXT, m_inoutline_id INT, s_timeexpenseline_id INT, docstatus TEXT);
+CREATE TABLE IF NOT EXISTS c_project(c_project_id INT, ad_client_id INT, ad_org_id INT, projectcategory TEXT, projectbalanceamt TEXT);
+CREATE TABLE IF NOT EXISTS c_project_acct(c_project_id INT, c_acctschema_id INT, pj_wip_acct INT, pj_asset_acct INT);
+INSERT INTO c_project(c_project_id,ad_client_id,ad_org_id,projectcategory,projectbalanceamt) SELECT 100,11,11,'N','0' WHERE NOT EXISTS (SELECT 1 FROM c_project WHERE c_project_id=100);
+INSERT INTO c_project(c_project_id,ad_client_id,ad_org_id,projectcategory,projectbalanceamt) SELECT 101,11,11,'N','0' WHERE NOT EXISTS (SELECT 1 FROM c_project WHERE c_project_id=101);
+INSERT INTO c_project_acct(c_project_id,c_acctschema_id,pj_wip_acct,pj_asset_acct) SELECT 100,101,250,250 WHERE NOT EXISTS (SELECT 1 FROM c_project_acct WHERE c_project_id=100 AND c_acctschema_id=101);
+INSERT INTO c_project_acct(c_project_id,c_acctschema_id,pj_wip_acct,pj_asset_acct) SELECT 100,200000,200063,200062 WHERE NOT EXISTS (SELECT 1 FROM c_project_acct WHERE c_project_id=100 AND c_acctschema_id=200000);
+INSERT INTO c_project_acct(c_project_id,c_acctschema_id,pj_wip_acct,pj_asset_acct) SELECT 101,101,251,250 WHERE NOT EXISTS (SELECT 1 FROM c_project_acct WHERE c_project_id=101 AND c_acctschema_id=101);
+INSERT INTO c_project_acct(c_project_id,c_acctschema_id,pj_wip_acct,pj_asset_acct) SELECT 101,200000,200063,200062 WHERE NOT EXISTS (SELECT 1 FROM c_project_acct WHERE c_project_id=101 AND c_acctschema_id=200000);

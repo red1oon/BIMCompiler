@@ -910,6 +910,22 @@ function completeBankStatement(stmt, lines, ctx) {
   return { ok: true, lines: out, beginningBalance: begin, statementDifference: diff, endingBalance: begin + diff, ops: ops };
 }
 
+// completeProjectIssue — Project Issue (spec §71, F35): MProjectIssue.doComplete (MProjectIssue.java:181-289 @{u}) + updateBalanceAmt (:555-590). No C_DocType_ID ⇒ no period test (DocActionDelegate.prepareIt).
+// issue = { c_projectissue_id, c_project_id, m_product_id, m_locator_id, movementqty }; ctx = { productOf(id) → { isstocked }, disallowNegative (the locator warehouse's IsDisallowNegativeInv), onHand (locator qty),
+//         cost → MCost.getCost (qty × current cost, HALF_UP at the costing precision, decimal string; null when no cost) }
+function completeProjectIssue(issue, ctx) {
+  ctx = ctx || {};
+  if (!Number(issue.m_product_id)) return { ok: false, reason: 'No Product' };                                       // :184-188
+  var prod = ctx.productOf ? ctx.productOf(issue.m_product_id) : null, ops = [], qty = Number(issue.movementqty || 0);
+  if (prod && prod.isstocked !== 'N') {                                                                            // :200-283 stocked: W+ transaction, storage −qty at the locator
+    if (ctx.disallowNegative && Number(ctx.onHand || 0) - qty < 0) return { ok: false, reason: 'NegativeInventoryDisallowed' };
+    ops.push({ op_type: 'STOCK', table: 'M_Transaction', movementtype: 'W+', m_locator_id: issue.m_locator_id, m_product_id: issue.m_product_id, qty: -qty });
+  }
+  if (ctx.cost != null) ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Project', id: issue.c_project_id, field: 'projectbalanceamt', delta: String(ctx.cost) });   // updateBalanceAmt
+  ops.push({ op_type: 'SET_STATUS', table: 'C_ProjectIssue', id: issue.c_projectissue_id, doc_status: 'CO' });
+  return { ok: true, ops: ops };
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -1103,7 +1119,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, completeProjectIssue: completeProjectIssue, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

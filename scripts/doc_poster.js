@@ -443,8 +443,21 @@ function _avgUpdate(db, state, out, pid, sc, e, delta, amtDecOf) {
   c.qty += delta;
   out.push(u);
 }
+// §71 (F35) MCost.getCurrentCost (MCost.java:286-330 @{u}): current cost × qty, HALF_UP at the schema COSTING precision — decimal string, null without a cost (the host's MCost.getCost)
+function costAt(db, productId, qty, schema) {
+  var cc = currentCost(db, productId, schema), prec = _costingPrecision(db, schema);
+  if (cc.price == null || prec == null || Number(cc.price) === 0) return null;
+  var pd = _bigDec(cc.price), qd = _bigDec(qty);
+  return _fmtDec(_rhuB(pd.n * qd.n * 10n ** BigInt(prec), 10n ** BigInt(pd.k + qd.k)), prec);
+}
 function costQtyUpdatesFor(db, table, id) {
   if (table === 'M_InOut') return costQtyUpdates(db, id);
+  if (table === 'C_ProjectIssue' && _hasCol(db, 'm_cost', 'currentqty')) {   // §71 (F35): MCostDetail.createProjectIssue, qty −MovementQty ⇒ a decrease changes only CurrentQty (MCostDetail.process)
+    var els0 = _costingElements(db), sch0 = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out0 = [], st0 = {};
+    var pi = getRow(db, 'SELECT m_product_id, movementqty FROM c_projectissue WHERE c_projectissue_id=?', num(id));
+    if (pi && Number(pi.movementqty) && _isStocked(db, pi.m_product_id)) sch0.forEach(function (sc) { els0.forEach(function (e) { _avgUpdate(db, st0, out0, pi.m_product_id, sc, e, -Number(pi.movementqty), function () { return null; }); }); });
+    return out0;
+  }
   if (table !== 'M_Inventory' || !_hasCol(db, 'm_cost', 'currentqty')) return [];
   var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out = [], state = {};
   allRows(db, 'SELECT m_product_id, qtybook, qtycount FROM m_inventoryline WHERE m_inventory_id=?', num(id)).forEach(function (l) {
@@ -838,7 +851,10 @@ function deriveProjectIssue(db, id, schema) {
     "SELECT c.currentcostprice AS p FROM m_cost c JOIN m_costelement e ON e.m_costelement_id=c.m_costelement_id" +
     " AND e.costelementtype='M' AND e.costingmethod=? WHERE c.m_product_id=? AND c.c_acctschema_id=? AND c.m_costtype_id=?",
     [as ? String(as.costingmethod) : '', num(hdr.m_product_id), num(schema), as ? num(as.m_costtype_id) : 0]);
-  var amt = Math.round(cents(cost ? cost.p : 0) * Number(hdr.movementqty));
+  // §71 (F35): Doc_ProjectIssue cost = MCost.getCurrentCost (MCost.java:286-330 @{u}) = price × qty HALF_UP at the schema COSTING precision, then the fact line HALF_UP to the currency precision (FactLine)
+  var cprec = _costingPrecision(db, schema), amt;
+  if (cost && cprec != null) { var pd = _bigDec(cost.p), qd = _bigDec(hdr.movementqty), c4 = _rhuB(pd.n * qd.n * 10n ** BigInt(cprec), 10n ** BigInt(pd.k + qd.k)); amt = Number(_rhuB(c4 * 100n, 10n ** BigInt(cprec))); }
+  else amt = Math.round(cents(cost ? cost.p : 0) * Number(hdr.movementqty));   // no costing precision in this db: the earlier fold, unchanged
   var prj = getRow(db, 'SELECT projectcategory FROM c_project WHERE c_project_id=?', num(hdr.c_project_id));
   var col = (prj && prj.projectcategory === 'A') ? 'pj_asset_acct' : 'pj_wip_acct';
   var pa = getRow(db, 'SELECT ' + col + ' AS acct FROM c_project_acct WHERE c_project_id=? AND c_acctschema_id=?', [num(hdr.c_project_id), num(schema)]);
@@ -1225,7 +1241,7 @@ function derivePostings(db, recordRef, schema, R) {
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
 var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, costQtyUpdatesFor: costQtyUpdatesFor, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
-             glCategoryFor: glCategoryFor, fxRate: fxRate, costUpdatesForMatchPO: costUpdatesForMatchPO, sysConfig: sysConfig, sysConfigBool: sysConfigBool, isClientAccountingImmediate: isClientAccountingImmediate };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
+             glCategoryFor: glCategoryFor, fxRate: fxRate, costUpdatesForMatchPO: costUpdatesForMatchPO, sysConfig: sysConfig, sysConfigBool: sysConfigBool, costAt: costAt, isClientAccountingImmediate: isClientAccountingImmediate };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }
 if (typeof window !== 'undefined') { window.DocPoster = _api; }
