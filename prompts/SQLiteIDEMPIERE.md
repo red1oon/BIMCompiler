@@ -1003,4 +1003,16 @@ M3 adapter builds `periodCheck` from the seed (ad_clientinfo → primary schema 
 all other scenarios unchanged. Regression: exits identical, logs identical except the 4 known-nondeterministic ones.
 **Residue:** org-specific calendars (AD_OrgInfo.C_Calendar_ID) are not read (client calendar only; GardenWorld has one); the lens host passes no date (always today ⇒ open); the SQLite seed's periods end 2030-12-31 vs legacy 2042 (DATA difference, irrelevant inside the 100-day window, reported for dict_diff).
 
+## §43 S5 — stray active accounting schema without product-category accounting: SAME OUTCOME (2026-10-09, cardinal rule 2) — SPEC before code
+**Legacy path (read):** `MOrder.prepareIt` "Mandatory Product Attribute Set Instance" loop (MOrder.java:1633-1637) → `MProduct.isASIMandatoryFor` iterates EVERY active client schema (MProduct.java:1028-1037) → `getCostingLevel(as)` →
+`MProductCategoryAcct.get(category, schema)` = null for 'CP Copy Target' (1009800) → `pca.getCostingLevel()` NPE (MProduct.java:1066-1067) ⇒ any SO with a product line (no ASI) cannot be prepared/completed while that schema is active.
+**Measurement route:** the schema toggle is admin configuration, not a document, and the server caches accounting schemas ⇒ a one-shot witness `scripts/bridge/witness_s5_stray_schema.js` (NOT in the routine run): pilot fixture `pilot/s5_schema_on.sql` → restart →
+legacy POS sale → SQLite sale on a state-synced scratch posting db → pilot fixture `pilot/s5_schema_off.sql` (the same statement `ws_test_access.sql` already carries) → restart → control sale must complete again (pilot never left broken; restore runs in `finally`).
+**SQLite rule (F10):** pure `erp_engine.acctSetupGap(categoryId, activeSchemaIds, categoryAcctRows)` → the schemas with no category-accounting row; a gate in the POS completion verbs (after the period gate, before the credit gate — MOrder.java order :1544 → :1633 → :1689) when the host supplies
+`ctx.acctSetupOf(productId)`; refusal `{ok:false, reason:'no-product-category-acct', schemas:[…]}` — a NAMED error where legacy throws an NPE (cardinal rule 2: same outcome, clearer message allowed).
+**Data:** `c_acctschema` joins dict_spec (glassbowl, +`isactive`), so the scratch posting db carries the legacy schema rows and their active flag; `doc_poster` cost-qty helpers then consider ACTIVE schemas only (an inactive schema is not posted by legacy either).
+**Acceptance:** `§S5_LEGACY` REJECTED (NPE text recorded) and `§S5_SQLITE` REJECTED (named) ⇒ `§S5_VERDICT MATCH`; `§S5_RESTORED` the control sale completes after the restore; routine M3 unchanged.
+**dict_diff bug found by §DD_SCHEMA_IDEMPOTENT (P17, 2026-10-09):** many SQLite seed tables (glassbowl `c_acctschema`, …) have no PRIMARY KEY, so the generated `INSERT OR IGNORE` never ignored — a legacy-only row was inserted twice (once by the schema patch, once by the data patch)
+and every re-apply added another copy. Fixed: inserts are generated as `INSERT … SELECT … WHERE NOT EXISTS (<key match>)`; DETECT/PATCH_FIX/IDEMPOTENT/SCHEMA_PATCH/SCHEMA_IDEMPOTENT/COMPOSITE_DETECT all PASS again.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

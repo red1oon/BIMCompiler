@@ -48,14 +48,20 @@ function compare(legacyRows, db, spec) {
 
 const q = v => (v === null || v === undefined || v === '') ? 'NULL' : (typeof v === 'number' ? String(v) : v === true ? "'Y'" : v === false ? "'N'" : `'${String(v).replace(/'/g, "''")}'`);
 
-// Patch text from legacy values only. INSERT OR IGNORE (idempotent) for rows legacy has; UPDATE for changed cells. NEVER DELETE.
+// Patch text from legacy values only. INSERT … WHERE NOT EXISTS (idempotent even on keyless tables) for rows legacy has; UPDATE for changed cells. NEVER DELETE.
 function toPatch(res, spec) {
   const out = [`-- dict_diff patch for ${spec.table} (generated from legacy values; review before applying; never deletes)`];
   for (const r of res.onlyLegacy) {
-    const cs = res._common; out.push(`INSERT OR IGNORE INTO ${spec.table}(${cs.join(',')}) VALUES(${cs.map(c => q(r[c])).join(',')});`);
+    const cs = res._common; out.push(insertIfAbsent(spec, cs, r));
   }
   for (const c of res.changed) out.push(`UPDATE ${spec.table} SET ${c.col}=${q(c.legacy)} WHERE ${whereOf(spec, c.id)};`);
   return out.join('\n') + '\n';
+}
+// insert a legacy row only when no row with the same key exists. NOT `INSERT OR IGNORE`: many SQLite seed tables have no PRIMARY KEY, so OR IGNORE never
+// ignores and a re-apply duplicates the row (found by §DD_SCHEMA_IDEMPOTENT on c_acctschema, 2026-10-09).
+function insertIfAbsent(spec, cs, row) {
+  const ks = keysOf(spec);
+  return `INSERT INTO ${spec.table}(${cs.join(',')}) SELECT ${cs.map(c => q(row[c])).join(',')} WHERE NOT EXISTS (SELECT 1 FROM ${spec.table} WHERE ${ks.map(k => `${k}=${q(row[k])}`).join(' AND ')});`;
 }
 // composite-aware WHERE from the joined key value
 function whereOf(spec, id) {
@@ -72,7 +78,7 @@ function toSchemaPatch(res, spec) {
   for (const lr of res._legacy || []) {
     const id = keyVal(lr, ks);
     if (res._localKeys && res._localKeys.has(id)) out.push(`UPDATE ${spec.table} SET ${add.map(c => `${c}=${q(lr[c])}`).join(', ')} WHERE ${whereOf(spec, id)};`);
-    else out.push(`INSERT OR IGNORE INTO ${spec.table}(${cs.join(',')}) VALUES(${cs.map(c => q(lr[c])).join(',')});`);
+    else out.push(insertIfAbsent(spec, cs, lr));
   }
   return out.join('\n') + '\n';
 }
