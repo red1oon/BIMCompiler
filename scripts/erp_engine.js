@@ -306,6 +306,66 @@ function completeInvoice(invoice, lines, policy) {
 //            shipments:[{m_inout_id, docstatus, movementtype, lines:[{m_inoutline_id, m_product_id, movementqty, c_orderline_id}]}],
 //            invoices:[{c_invoice_id, docstatus, grandtotal, lines:[{c_invoiceline_id, m_product_id, qtyinvoiced, linenetamt, c_orderline_id}]}] }
 //   opts = { voidedMsg, newId: function(table) -> id }
+// _reversalInvoiceDocOps — the reversal DOCUMENT of a completed invoice (MInvoice.reverse :2690-2760: deep copy, quantities / amounts / tax NEGATED, both 'RE', Reversal_ID both ways).
+// Shared by voidOrder (POS void, F4/F14) and reverseInvoice (Reverse-Correct, F22) — one implementation (AD-LAYER rule 5).
+function _neg(v) { return v == null ? v : -Number(v); }
+function _reversalInvoiceDocOps(iv, orderId, rid) {
+  var ops = [];
+  ops.push({ op_type: 'CREATE_DOCUMENT', table: 'C_Invoice', source_id: orderId, c_invoice_id: rid, grandtotal: _neg(iv.grandtotal), reversal_id: iv.c_invoice_id });
+  (iv.lines || []).forEach(function (l) {
+    ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceLine', c_invoice_id: rid, m_product_id: l.m_product_id, qtyinvoiced: _neg(l.qtyinvoiced), linenetamt: _neg(l.linenetamt), c_orderline_id: l.c_orderline_id, reversalline_id: l.c_invoiceline_id });
+  });
+  (iv.taxes || []).forEach(function (t) {   // §48 (F14): the reversal invoice carries the original's tax rows negated (MInvoice.reverseCorrectIt; pilot S12/S12b)
+    ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceTax', c_invoice_id: rid, c_tax_id: t.c_tax_id, taxbaseamt: _neg(t.taxbaseamt), taxamt: _neg(t.taxamt) });
+  });
+  ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: rid, doc_status: 'RE' });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: iv.c_invoice_id, field: 'reversal_id', value: rid });
+  ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: iv.c_invoice_id, doc_status: 'RE' });
+  return ops;
+}
+// reverseInvoice — Reverse-Correct of a COMPLETED invoice (MInvoice.reverseCorrectIt :2599-2619 → reverse(accrual=false) :2627-2815). Implementing prompts/SQLiteIDEMPIERE.md §64.3 (F22) — Witness: M3 O2C5-RC-INV.
+//   1. the invoice's ACTIVE allocations are reversed first (reverseAllocations :2821-2833 → MAllocationHdr.reverseIt non-accrual :845-935): header inactive + 'RE', every line amount /
+//      discount / write-off 0 and inactive (its books are deleted, MFactAcct.deleteEx :906); the payments on those lines are re-tested (MPayment.testAllocation: allocated = payamt ⇒ Y);
+//   2. the reversal document (_reversalInvoiceDocOps), completed — its lines carry negated quantities, so the order-line rule (invoiceOrderLineEffects) undoes QtyInvoiced;
+//   3. reversal IsPaid=Y (:2754), original IsPaid=Y (:2788), shipment lines un-invoiced (:2765-2775);
+//   4. a NEW allocation (:2785-2812) at the original's DateAcct: original line GrandTotal (purchase: negated), reversal line −GrandTotal, completed.
+// iv = { c_invoice_id, c_order_id, issotrx, grandtotal, dateacct, c_currency_id, c_bpartner_id, lines:[{c_invoiceline_id, m_product_id, qtyinvoiced, linenetamt, c_orderline_id, m_inoutline_id}], taxes }
+// st = { allocations:[{c_allocationhdr_id, isactive, lines:[{c_allocationline_id, c_invoice_id, c_payment_id, amount}]}], payments:[{c_payment_id, payamt}] } (amounts in the units the host stores)
+// opts = { newId(table), orderLines (optional, for the quantity rule), periodOpen:{ok} (optional, :2633) }
+function reverseInvoice(iv, st, opts) {
+  opts = opts || {};
+  if (iv.docstatus && iv.docstatus !== 'CO' && iv.docstatus !== 'CL') return { ok: false, reason: 'not-completed', docstatus: iv.docstatus };
+  if (opts.periodOpen && !opts.periodOpen.ok) return { ok: false, reason: 'period-closed' };
+  var ops = [], touched = {};
+  (st.allocations || []).forEach(function (h) {
+    if (h.isactive === 'N' || !(h.lines || []).some(function (l) { return Number(l.c_invoice_id) === Number(iv.c_invoice_id); })) return;
+    ops.push({ op_type: 'UPDATE_FIELD', table: 'C_AllocationHdr', id: h.c_allocationhdr_id, field: 'isactive', value: 'N' });
+    ops.push({ op_type: 'SET_STATUS', table: 'C_AllocationHdr', id: h.c_allocationhdr_id, doc_status: 'RE' });
+    h.lines.forEach(function (l) {
+      ops.push({ op_type: 'UPDATE_LINE', table: 'C_AllocationLine', id: l.c_allocationline_id, amount: 0, discountamt: 0, writeoffamt: 0, overunderamt: 0, isactive: 'N' });
+      if (l.c_payment_id) touched[l.c_payment_id] = true;
+    });
+  });
+  var inactive = {}; ops.forEach(function (o) { if (o.table === 'C_AllocationHdr' && o.field === 'isactive') inactive[o.id] = true; });
+  (st.payments || []).forEach(function (p) {
+    if (!touched[p.c_payment_id]) return;
+    var alloc = 0; (st.allocations || []).forEach(function (h) { if (h.isactive === 'N' || inactive[h.c_allocationhdr_id]) return; (h.lines || []).forEach(function (l) { if (Number(l.c_payment_id) === Number(p.c_payment_id)) alloc += Number(l.amount || 0); }); });
+    ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Payment', id: p.c_payment_id, field: 'isallocated', value: Math.abs(alloc) === Math.abs(Number(p.payamt)) ? 'Y' : 'N' });
+  });
+  var rid = opts.newId('C_Invoice');
+  ops = ops.concat(_reversalInvoiceDocOps(iv, iv.c_order_id, rid));
+  var rLines = (iv.lines || []).map(function (l) { return { m_product_id: l.m_product_id, qtyinvoiced: _neg(l.qtyinvoiced), c_orderline_id: l.c_orderline_id }; });
+  if (opts.orderLines) ops = ops.concat(invoiceOrderLineEffects({ issotrx: iv.issotrx, iscreditmemo: 'N' }, rLines, opts.orderLines).ops);
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: rid, field: 'ispaid', value: 'Y' });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: iv.c_invoice_id, field: 'ispaid', value: 'Y' });
+  (iv.lines || []).forEach(function (l) { if (l.m_inoutline_id) ops.push({ op_type: 'UPDATE_LINE', table: 'M_InOutLine', id: l.m_inoutline_id, isinvoiced: 'N' }); });
+  var gt = Number(iv.grandtotal) * (String(iv.issotrx) === 'N' ? -1 : 1), hid = opts.newId('C_AllocationHdr');
+  ops.push({ op_type: 'CREATE_DOCUMENT', table: 'C_AllocationHdr', c_allocationhdr_id: hid, c_currency_id: iv.c_currency_id, dateacct: iv.dateacct });
+  ops.push({ op_type: 'CREATE_LINE', table: 'C_AllocationLine', c_allocationline_id: hid * 10 + 1, c_allocationhdr_id: hid, c_invoice_id: iv.c_invoice_id, c_bpartner_id: iv.c_bpartner_id, amount: gt, discountamt: 0, writeoffamt: 0, overunderamt: 0 });
+  ops.push({ op_type: 'CREATE_LINE', table: 'C_AllocationLine', c_allocationline_id: hid * 10 + 2, c_allocationhdr_id: hid, c_invoice_id: rid, c_bpartner_id: iv.c_bpartner_id, amount: -gt, discountamt: 0, writeoffamt: 0, overunderamt: 0 });
+  ops.push({ op_type: 'SET_STATUS', table: 'C_AllocationHdr', id: hid, doc_status: 'CO' });
+  return { ok: true, ops: ops, reversalId: rid, allocationId: hid };
+}
 function voidOrder(sale, opts) {
   var ops = [], skip = { CL: 1, RE: 1, VO: 1 };
   function neg(v) { return v == null ? v : -Number(v); }
@@ -325,17 +385,7 @@ function voidOrder(sale, opts) {
   (sale.invoices || []).forEach(function (iv) {
     if (skip[iv.docstatus]) return;
     if (iv.docstatus !== 'CO') { ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: iv.c_invoice_id, doc_status: 'VO' }); return; }
-    var rid = opts.newId('C_Invoice');
-    ops.push({ op_type: 'CREATE_DOCUMENT', table: 'C_Invoice', source_id: sale.order.c_order_id, c_invoice_id: rid, grandtotal: neg(iv.grandtotal), reversal_id: iv.c_invoice_id });
-    (iv.lines || []).forEach(function (l) {
-      ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceLine', c_invoice_id: rid, m_product_id: l.m_product_id, qtyinvoiced: neg(l.qtyinvoiced), linenetamt: neg(l.linenetamt), c_orderline_id: l.c_orderline_id, reversalline_id: l.c_invoiceline_id });
-    });
-    (iv.taxes || []).forEach(function (t) {   // §48 (F14): the reversal invoice carries the original's tax rows negated (MInvoice.reverseCorrectIt; pilot S12/S12b)
-      ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceTax', c_invoice_id: rid, c_tax_id: t.c_tax_id, taxbaseamt: neg(t.taxbaseamt), taxamt: neg(t.taxamt) });
-    });
-    ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: rid, doc_status: 'RE' });
-    ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: iv.c_invoice_id, field: 'reversal_id', value: rid });
-    ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: iv.c_invoice_id, doc_status: 'RE' });
+    ops = ops.concat(_reversalInvoiceDocOps(iv, sale.order.c_order_id, opts.newId('C_Invoice')));   // §64.3: shared with reverseInvoice (same ops, same order)
   });
   (sale.lines || []).forEach(function (l) {
     if (Number(l.qtyordered) === 0) return;
@@ -840,7 +890,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

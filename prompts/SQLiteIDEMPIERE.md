@@ -1375,4 +1375,13 @@ minus ACTIVE allocation lines × MultiplierAP) and `paymentavailable` (0 with a 
 **Proof (`o2c3.log`):** `§SCN O2C1-SO MATCH compared=9` · `O2C2-SHIP MATCH 9` · `O2C3-INV MATCH 12` (bp 600/600) · `O2C4-PAY MATCH 13` (bp 0/0) — steps 1-4 of the cycle fully MATCH on every key, both schemas.
 **Regression:** additive verb; covered by the F22 regression run (no existing witness calls it). **Residue:** ActualLifeTimeValue and SOCreditStatus re-evaluation (MBPartner.setSOCreditStatus, called at :756) not compared here (credit status is F5's rule on the order side).
 
+### §64.3 DECISION RECORD F22 — Reverse-Correct of a PAID invoice like legacy (2026-10-10)
+**Evidence (`o2c3.log`):** O2C5-RC-INV legacy: original + reversal `RE/RE`, reversal GrandTotal −600, both IsPaid `Y/Y`, reversal tax `104:−600:0`, reversal books `518 Dr −600 / 758 Cr −600` (Euro −510), allocations `RE:0:inv:pay | CO:600:inv:- | CO:−600:rev:-`
+(the receipt's allocation de-activated with zero lines, a new invoice-vs-reversal allocation), receipt IsAllocated `N`, order line QtyInvoiced back to 0, BP `−600/0`. SQLite: no Reverse-Correct for a stand-alone invoice.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW `reverseInvoice` (MInvoice.reverseCorrectIt :2599-2619 → reverse :2627-2815, reverseAllocations :2821-2833 → MAllocationHdr.reverseIt non-accrual :845-935, MPayment.testAllocation) and
+NEW `_reversalInvoiceDocOps` = the reversal-document block that `voidOrder` already had (F4/F14), moved out VERBATIM so both verbs share one implementation (`voidOrder` output byte-identical: S12/S12b MATCH, regression identical); `cycle_o2c.js` applies the kernel ops to its state (`applyDocOps`).
+**Proof (`o2c4.log`):** `§SCN O2C5-RC-INV MATCH compared=13` (all keys above, both schemas, bp `−600/0`); O2C1-4 still MATCH; `M3_ONLY=S12` ⇒ `S12-void-pos-sale MATCH 16`, `S12b-void-taxed-pos-sale MATCH 16`.
+**Regression:** 99 engine witnesses vs the F20 run: identical except the 4 known-nondeterministic logs; exit codes identical (this run also covers F21's additive verb).
+**Residue (P17, new ledger row):** legacy's POS void (MOrder.voidIt → invoice reverseCorrectIt) ALSO creates the invoice-vs-reversal allocation and re-tests the BP open item; `voidOrder` does not emit them and S12 does not compare allocations / bp — measured next as S12c (or closed by `voidOrder` calling `reverseInvoice` for paid/unpaid invoices).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
