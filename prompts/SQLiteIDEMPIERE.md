@@ -317,4 +317,35 @@ Witnesses (spec, not built): W15 POS-UP (N offline sales drained in order, ids m
 == legacy GrandTotal); W16 REPLENISH-DOWN (legacy movement CO'd → arrives via change log → store stock == legacy store stock);
 W14 STOCK-RECONCILE.
 
+## §17 What the layer must give a plugin (the common base) — draft, derived from §16 POS + what is built
+**Principle:** the contract between a UI plugin and the Bridge is **SQLite tables + the kernel doc API**, not an RPC.
+A Flutter (or any) UI already reads/writes the local SQLite; the Bridge is a separate worker that moves rows. So a plugin
+UI needs no Bridge SDK to render sync state — it queries tables. (Fits local-first and AD-LAYER LAW: generic, no per-plugin code.)
+**Layer provides (build once):**
+| # | Service | Plugin sees it as | Status |
+|---|---|---|---|
+| 1 | Change-log tracker (watermark, window, dedupe, own-echo) | feeds `inbox` | ✅ built, W10 |
+| 2 | Transport (ADInterface, stateless login, errors → §-lines) | invisible | ✅ `ad_client.js` |
+| 3 | **Outbox**: ordered, batched, idempotent, retry/backoff | kernel ops flagged `to_sync`; plugin just does normal doc ops | ⛔ not built |
+| 4 | **Doc sync state** per doc: `LOCAL → QUEUED → PUSHED → CONFIRMED / REJECTED(msg) / DIVERGED` | table `sync_doc_state(doc,state,msg,server_id,server_docno)` — UI shows badges/“3 pending” | ⛔ |
+| 5 | **Id map** local uuid/provisional no ⇄ server `C_*_ID`/DocumentNo | `sync_idmap`; helper `resolve()` | ⛔ |
+| 6 | **Inbox + replay**: remote events replayed through the local doc engine (create+DocAction) | rows in normal doc tables + `inbox_event` log for UI notifications | ⛔ |
+| 7 | **Descriptor loader/validator** (§5) + mapper helpers (field/enum maps, dependency order) | a JSON file + small pure fns | ⛔ |
+| 8 | **Reconcile runner**: runs component-declared checks (posting equals, stock recompute) and writes results | `sync_reconcile` rows; UI warns on mismatch | ⛔ |
+| 9 | **Connection + settings**: base URL, per-device login in secure store, test-connection, schedule, “Sync now”, offline detect | `sync_config`, `sync_run` rows | ⛔ |
+| 10 | **Handover wizard** (one-time model sync, §000) | generic screen/command | ⛔ |
+| 11 | **Generic UI parts**: sync status bar, Rejected/Diverged inbox, settings screen, run log — plugin embeds, never rewrites | embeddable widgets (reuse theme tokens) | ⛔ |
+| 12 | **Witness kit**: mock ADInterface server, pilot fixtures, W1–W8 parametrised by the descriptor | plugin gets its tests by supplying a descriptor | partly (pilot SQL, W10) |
+| 13 | Standard `§` log lines for every step | read the log | ✅ pattern set |
+| 14 | Rule hook: local validation may only be stricter than legacy (§6) | plugin registers rules; layer checks | ⛔ |
+**Plugin supplies (and ONLY this):** (a) a descriptor: tables, doc types + FSM map, directions UP/DOWN, field/enum mappers,
+order, reconcile checks; (b) its local rules / decision tables; (c) its UI screens (POS: ticket, tender, receive-stock).
+**Acceptance for "minimal":** W8 — a second plugin's diff contains a descriptor + rules + UI and **zero** change to the
+layer. If a plugin needs a Bridge change, that item goes into this table (the layer was missing a common service).
+**Plugin-facing commands (the only imperative API; everything else is table reads):** `sync.now()`, `sync.retry(doc)`,
+`sync.discard(doc)` (REJECTED only, with reason), `sync.status()`; implemented as rows in a `sync_command` table so any UI tech
+can issue them.
+**Next build order (core lane):** 3 outbox → 4 state → 5 id map → UP for one POS sale vs pilot (W15) → 6 inbox/replay (W16) →
+7 descriptor loader (extract POS descriptor from the working code, not before) → 8/9/11.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
