@@ -28,7 +28,7 @@ Only two lane-relevant facts from the extras apply to normal users: F1 (draft in
 Each principle: rule · where it comes from · how it is ENFORCED (not just stated) · witness.
 | # | Principle | Source | Enforced by | Witness |
 |---|---|---|---|---|
-| P1 | **Legacy untouched.** Bridge uses only the 9 stock WS ops (§2) + AD config the admin chooses. No SQL, no schema/column, no custom table on legacy. | user D1, CLAUDE.md DB rule | transport has an allow-list of ops (anything else throws); Bridge code has no postgres client (grep gate) | W-P1 |
+| P1 | **Legacy untouched (Mode A, default; Mode B plugin = explicit admin-approved add-on, §18).** Bridge uses only the 9 stock WS ops (§2) + AD config the admin chooses. No SQL, no schema/column, no custom table on legacy. | user D1, CLAUDE.md DB rule | transport has an allow-list of ops (anything else throws); Bridge code has no postgres client (grep gate) | W-P1 |
 | P2 | **Look like a normal user; never write derived data.** Writes are documents + doc-actions only. Server owns numbering, posting, totals, stock. Never write `Fact_Acct`, `M_Storage`, `M_Cost*`, `GrandTotal`. | user §0 | descriptor validator rejects derived tables/columns as write targets | W6, W-P2 |
 | P3 | **Layer is plugin-agnostic.** No plugin table/column names inside the layer; a plugin = descriptor + rules + UI. | user §00 | grep gate (no `C_Order`/`M_Product`… literals in layer code); W8 diff is descriptor-only | W8 |
 | P4 | **Local-first.** UI never waits on the network; offline = fully working; sync is a background worker. | user §0 | UI path has no sync call; W5 with network killed | W5 |
@@ -403,5 +403,48 @@ layer. If a plugin needs a Bridge change, that item goes into this table (the la
 `sync.discard(doc)` (REJECTED only, with reason), `sync.status()`; implemented as rows in a `sync_command` table so any UI tech
 can issue them.
 **Build order — NOT started; this section is design under review.**
+
+## §18 TWO-PART LAYER (user 2026-10-09, still crystallising — DRAFT; IN concept: it is the user's own 2012 architecture minus the broker)
+User framing: the Unicenta⇄iDempiere plugin was *server-side integration that merges POS orderlines into the central DB, runs
+replenishment, and forwards results back, with ActiveMQ as the broker between.* New idea: **drop the broker; go asynchronous via
+direct WebService, or via email.**
+```
+  PART 2: SQLite-side layer (the Bridge, §1/§17)            PART 1: server-side OSGi plugin (the old plugin's job, no broker)
+  outbox of signed orderline batches  ──── WS push ───────▶  ingest(batch)  : verify sig · dedupe · assemble orders ·
+  qty snapshot apply, id map, state   ◀─── WS pull ────────  outbound(station): ProductQty for the station
+                                      ─── email (store&fwd)▶  mail adapter → same ingest(batch)
+                                      ◀── email ───────────  mail adapter ← outbound(station)
+```
+**Two deployment modes (so D1/P1 "legacy untouched" stays true by default):**
+- **Mode A — no server plugin.** Part 2 alone, stock WS only (what is built: transport + tracker). Legacy untouched. Costs: the gaps
+  below must be handled client-side.
+- **Mode B — + Part 1 plugin.** One admin-approved OSGi bundle on the server (the user's established pattern). It is optional;
+  Mode A must keep working without it. Anything Mode B adds must be an AD-model/OSGi component (D3), never a side store.
+**What Part 1 (plugin) does — only what the 2012 plugin did, minus MQ** (each row is a Mode-A gap it closes):
+| Plugin function | Closes | Notes |
+|---|---|---|
+| `ingest(batch)`: ONE call carries all orderlines of a batch → plugin creates order+lines+CO in one server transaction | G2 partial docs, G10 session growth (1 call, not N) | Batch signed by the station (op-log signature); plugin verifies against a pinned station key (pattern: `erp_snapshot_sign.js`) |
+| Idempotency inside the plugin (batch id + station seq → ignore repeats, return the same ack) | G1 (no guessing from the change log) | Needs a small inbox record — as an **AD-model table** via 2Pack (admin-approved); the only legacy schema addition, Mode B only |
+| Assemble orders from orderlines under the station's `c_pos` context; price from PriceList master server-side | G5 / P15 (price can't be client-supplied at all) | station = `c_pos`/Org (POS_ADDON_SPEC §2) |
+| Run replenishment after merge (existing `ReplenishReport` process via a scheduler/after-complete hook) | — | ERP-side intelligence stays ERP-side (P15) |
+| `outbound(station)`: ProductQty rows for the station's warehouse | the snapshot read (§16.1) without opening `M_Storage` to a generic WS type | one narrow endpoint instead of broad read access |
+| Mail adapter (both directions) | offline/NAT stations | thin: decode mail → call the same `ingest`/`outbound` |
+**Transport rule (the broker's replacement):** the plugin core is transport-agnostic — `ingest(batch)` / `outbound(station)` are the
+only entry points; **WS** and **email** are adapters in front. Same for Part 2: one outbox, two senders.
+| | Direct WS | Email |
+|---|---|---|
+| Direction | station→server push; station pulls qty (server cannot reach a phone/NAT) | store-and-forward both ways, works when either end is offline |
+| Latency | seconds | minutes+ |
+| Needs | server reachable, login | outbound mail from station; **inbound mailbox the plugin can read** — core has outbound (`MClient.sendEMail`, `MMailText`) but a grep of `org.adempiere.base` finds NO IMAP/POP3 reader ⇒ the plugin must bring its own mail reader (or a tiny forwarder turns mail into a WS call) |
+| Integrity | login + signature | **signature is mandatory** (mail is spoofable); ack by reply mail; size cap per batch; ordering by station sequence |
+| Order/dupes | server dedupe by batch id | mail can duplicate/reorder ⇒ same dedupe + seq gap detection |
+**What Part 2 (SQLite side) must have in either mode** (= §17 needed-now list, restated for the split): outbox of signed batches ·
+per-station sequence + batch id · transport senders (WS, email) with retry/backoff · ack handling → id map/sync state · qty snapshot
+apply with the §16 rule 2 (+G8 deferral) · station context (Org, PriceList, c_pos…) · offline-first (P4).
+**Impact on existing spec:** P1 "legacy untouched" = Mode A default; Mode B is an explicit, admin-approved add-on. The change-log tracker
+(§4/§13) stays for Mode A / document-DOWN plugins; Mode B's `outbound` replaces it for the POS flow. §5 descriptor gains
+`mode: A|B` and the transport list per component. Nothing in §16's two flows changes.
+**Not decided (user is drafting):** whether Mode B is the target or Mode A is enough for the first release; how the station key is
+enrolled on the server; plugin packaging/naming. Not asked — noted here so they are not invented.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
