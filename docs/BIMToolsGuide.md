@@ -15,6 +15,10 @@ command-line kit) and the result is saved next to it.
 | **K** | Split by storey | One IFC file per building storey | in the background |
 | **6** | Health report | Counts what your model has and what it is missing | in the background |
 
+![BIM Tools with the Duplex building loaded: file name, schema and item count at the top-left, the tool buttons with their key letters down the right edge, the model standing upright on a ground grid](assets/bim_tools_screenshot.png)
+
+*A model loaded: the label at the top-left names the file, its schema and item count; the buttons down the right edge are the tools (U upgrade, E extract, K split, 6 health report, F search, 9 toolkit zip). At the bottom-right, out of this shot's way, a faint **light bulb** opens this manual and a red-and-blue **pill** leads to the Red Pill page, where BIM Tools comes from.*
+
 Other keys: **F** search · **O** show / hide the model · **9** download the toolkit zip · **?** list the keys · **Esc** close a panel.
 
 ---
