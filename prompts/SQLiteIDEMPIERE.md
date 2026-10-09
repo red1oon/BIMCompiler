@@ -1439,4 +1439,21 @@ called from `deriveAllocation` for AP invoice lines (the AR branch is untouched)
 **Regression:** 99 engine witnesses vs the F25 run: identical except the 4 known-nondeterministic logs; exit codes identical.
 **Residue:** AP discounts (discount-revenue account), charge / prepayment payments, cash-journal AP allocations, cash-based accounting — named absent in the fold.
 
+### §65.4 DECISION RECORD F27 — second-currency books converted per FACT LINE, like FactLine.convert (2026-10-10, P17 from F25)
+**Evidence (captured-books oracle over EVERY invoice in the shared posting db, scratch copy + patch + seed product types; `scratchpad/inv_oracle.js`):** ARI `MATCH 7 / DIFF 1` (invoice 103 @ 200000: legacy `758 Cr 129.21 + 724 Cr −0.01`, SQLite `758 Cr 129.20`);
+API `MATCH 7 / DIFF 1` (invoice 106 @ 200000: legacy `780 Dr 3108.87 + 724 Dr 0.01`, SQLite `780 Dr 3108.88`); ARC / APC: none captured (vacuous, stated). Cause: `convertToSchema` converted the per-ACCOUNT sum; legacy converts each fact line (FactLine.convert FactLine.java:819-900) and then
+balances the currency difference on the CurrencyBalancing account (Fact.balanceAccounting) — every multi-line document in a second-currency schema could differ by a cent.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/doc_poster.js` — the invoice folds (AR `deriveInvoice`, AP `deriveAPInvoice`) keep each fact line's source amount (`_part`), `convertToSchema` converts line by line when the parts exist (other folds unchanged: one fact line per account);
+`witness_m3_gap.js` runs the captured-books oracle for AR and AP invoices as `§M3_F27_ORACLE2` (0 DIFF allowed).
+**Proof (`scratchpad/m3_f27.log`, full M3 run):** `§M3_F27_ORACLE2 PASS captured invoice books ARI:MATCH=8/ABSENT=0/DIFF=0 API:MATCH=8/ABSENT=0/DIFF=0 ARC/APC: none captured` (was ARI 7/1, API 7/1); `§M3_F12_ORACLE2 PASS`, `§M3_F16_ORACLE2 PASS` unchanged; every model suite and both cycles still MATCH; `§M3_VERDICT HARNESS-PASS fails=0`.
+**Regression:** 99 engine witnesses vs the F26 run: identical except the 4 known-nondeterministic logs; exit codes identical.
+
+## §66 MODELS — Purchase Requisition and Cash Journal (backlog item 2, 2026-10-10) — SPEC before code
+**Cost check (the brief: "only if the dictionary/WS shows them cheap"):** both are header + lines + doc-action documents (the frozen layer's shape) with WS config only. Requisition: no stock, no books (Doc_Requisition posts only with commitment accounting; the pilot schemas use CommitmentType N),
+legacy rules = MRequisition.prepareIt (MRequisition.java:260-310: user / price list / warehouse required ⇒ Invalid; @NoLines@; period; LineNetAmt = Qty × PriceActual HALF_UP at the price-list precision; TotalLines) + MRequisitionLine.setPrice (:234-267, the price list's standard price).
+Cash Journal: MCash.completeIt (MCash.java) — an Invoice cash line creates and completes an allocation (cash line ↔ invoice); books Doc_Cash + Doc_AllocationHdr cash-line branch (`deriveCash` exists, never judged against legacy).
+**Model as data (D6):** `pilot/ws_model_requisition.sql` (create header, create line, complete) + read types QueryMRequisition / QueryMRequisitionLine; `pilot/ws_model_cash.sql` (create C_Cash, create C_CashLine, complete) + read types QueryCCash / QueryCCashLine.
+**Scenarios:** REQ1 = requisition (doctype 127, user = the login user, price list 102, warehouse 103, product 139 × 3, today) CO; REQ-REJ = no AD_User_ID ⇒ legacy Invalid; NEG +1¢. CASH1 = a direct AR invoice (the §58 path) settled by a cash journal (cash book 101) Invoice line for its GrandTotal; CASH-REJ = an Invoice line on a DRAFTED invoice (InvoiceCreateDocNotCompleted).
+**Keys:** REQ: outcome, docstatus, lines `product:qty:price¢:net¢`, total; CASH: outcome, docstatus, statement difference / ending balance, allocation `status:amount¢:inv:cash`, invoice IsPaid, cash books + allocation books (both schemas), BP open-item delta.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

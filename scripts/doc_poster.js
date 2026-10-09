@@ -54,6 +54,7 @@ function deriveInvoice(db, R, invId, schema) {
     var k = el.id;
     if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 };
     if (side === 'DR') by[k].dr += cents(amt); else by[k].cr += cents(amt);
+    _part(by[k], side, cents(amt));   // §65.4 (F27): each fact line is converted on its own (FactLine.convert)
   }
   function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
   var rcv = el(R.resolve(db, '{BPartner.Receivable}', num(hdr.c_bpartner_id), schema));
@@ -76,7 +77,7 @@ function _apInvoiceBuilt(db, invId) {
 function deriveAPInvoice(db, R, invId, schema) {
   var hdr = getRow(db, 'SELECT * FROM c_invoice WHERE c_invoice_id=?', num(invId));
   var by = {}, absent = [];
-  function add(side, el, amt) { if (!el) return; var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += cents(amt); else by[k].cr += cents(amt); }
+  function add(side, el, amt) { if (!el) return; var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += cents(amt); else by[k].cr += cents(amt); _part(by[k], side, cents(amt)); }
   function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
   if (num(hdr.reversal_id)) { absent.push('AP invoice reversal not ported'); return { by: by, absent: absent }; }
   if (Number(hdr.chargeamt || 0) !== 0) { absent.push('AP invoice header charge not ported'); return { by: by, absent: absent }; }
@@ -98,6 +99,9 @@ function deriveAPInvoice(db, R, invId, schema) {
 // Unbalanced after conversion ⇒ legacy Fact.balanceAccounting (Fact.java:548-630) — NOT ported: reported absent, never invented.
 function _bigDec(v) { var t = String(v).trim(); if (/e/i.test(t)) t = Number(t).toFixed(20).replace(/0+$/, '').replace(/\.$/, ''); var neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
 function _rhuB(n, d) { var neg = n < 0n, a = neg ? -n : n, q = a / d; if ((a % d) * 2n >= d) q += 1n; return neg ? -q : q; }
+// §65.4 (F27): FactLine.convert works per FACT LINE (FactLine.java:819-900); the fold keeps each line's source amount next to the per-account sum so a second-currency schema
+// converts line by line (legacy) instead of converting the sum (rounding differs on multi-line documents — found by the captured-books oracle, invoices 103 / 106 schema 200000).
+function _part(acc, side, amt) { (acc.parts || (acc.parts = [])).push({ side: side, amt: amt }); }
 function convertToSchema(db, by, absent, invId, schema, table) {
   table = table || 'c_invoice';
   // table/column-guarded like every §29-§38 addition: a posting db without c_currency/c_conversion_rate/c_acctschema keeps the old (unconverted) fold; the
@@ -120,7 +124,12 @@ function convertToSchema(db, by, absent, invId, schema, table) {
   var conv = function (cents) { return Number(_rhuB(BigInt(cents) * r.n, 10n ** BigInt(r.k)) ); };   // cents × rate, HALF_UP at precision 2
   if (prec !== 2) { absent.push('currency precision ' + prec + ' not ported'); return; }
   var dr = 0, crs = 0;
-  Object.keys(by).forEach(function (k) { by[k].dr = conv(by[k].dr); by[k].cr = conv(by[k].cr); dr += by[k].dr; crs += by[k].cr; });
+  Object.keys(by).forEach(function (k) {
+    var x = by[k];
+    if (x.parts && x.parts.length) { var d0 = 0, c0 = 0; x.parts.forEach(function (p) { if (p.side === 'DR') d0 += conv(p.amt); else c0 += conv(p.amt); }); x.dr = d0; x.cr = c0; }   // §65.4 (F27) per fact line
+    else { x.dr = conv(x.dr); x.cr = conv(x.cr); }
+    dr += x.dr; crs += x.cr;
+  });
   if (dr !== crs && table === 'c_allocationhdr') absent.push('allocation rounding correction not ported (Doc_AllocationHdr.java:1147-1900 runs before balanceAccounting; diff=' + (dr - crs) + ')');
   else if (dr !== crs) balanceAccounting(db, by, absent, schema, dr - crs);
 }

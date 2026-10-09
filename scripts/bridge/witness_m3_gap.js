@@ -740,6 +740,19 @@ const quirks = [
       const v = d.absent && d.absent.length ? 'ABSENT' : fmtPostings(d.lines) === o ? 'MATCH' : 'DIFF'; t[v]++; if (v !== 'MATCH') notes.push(`${tb}#${id}@${sc2}:${v}${d.absent.length ? '(' + d.absent[0].slice(0, 60) + ')' : ''}`); }
     out('§M3_F16_ORACLE2', t.DIFF === 0 && t.MATCH >= 7, `captured legacy books: MATCH=${t.MATCH} ABSENT=${t.ABSENT} DIFF=${t.DIFF} ${notes.join(' ')}`);
     g3.close(); fs.unlinkSync(f3); }
+  // §65.4 F27 second oracle: legacy's captured books of EVERY AR and AP invoice in the shared posting db, both schemas (per-fact-line conversion) — 0 DIFF allowed, a type with none captured is printed as such
+  { const f4 = path.join(os.tmpdir(), 'm3-gbinv-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), f4);
+    const g4 = new Database(f4); require('./dict_diff').applyPatch(g4, GB_PATCH);
+    if (!g4.prepare("SELECT 1 FROM pragma_table_info('m_product') WHERE name='producttype'").get()) g4.exec('ALTER TABLE m_product ADD COLUMN producttype');
+    for (const r of seed.prepare('SELECT M_Product_ID id, ProductType t FROM m_product WHERE ad_client_id=11').all()) g4.prepare('UPDATE m_product SET producttype=? WHERE m_product_id=?').run(r.t, r.id);   // the SQLite seed's product types (the §59 state sync does the same)
+    const t = {}, notes = [];
+    for (const dbt of ['ARI', 'API', 'ARC', 'APC']) { t[dbt] = { MATCH: 0, ABSENT: 0, DIFF: 0 };
+      for (const sc2 of [SCHEMA, SCHEMA2]) for (const id of g4.prepare("SELECT DISTINCT f.record_id r FROM fact_acct f JOIN c_invoice i ON i.c_invoice_id=f.record_id JOIN c_doctype d ON d.c_doctype_id=i.c_doctype_id WHERE f.ad_table_id=318 AND d.docbasetype=? AND f.c_acctschema_id=?").all(dbt, sc2).map(r => r.r)) {
+        const d = DP.derivePostings(g4, { table: 'C_Invoice', id }, sc2), o = fmtPostings(g4.prepare('SELECT account_id, SUM(amtacctdr) amtacctdr, SUM(amtacctcr) amtacctcr FROM fact_acct WHERE ad_table_id=318 AND record_id=? AND c_acctschema_id=? GROUP BY account_id').all(id, sc2));
+        const v = d.absent && d.absent.length ? 'ABSENT' : fmtPostings(d.lines) === o ? 'MATCH' : 'DIFF'; t[dbt][v]++; if (v !== 'MATCH') notes.push(`${dbt}#${id}@${sc2}:${v}`); } }
+    const dif = Object.values(t).reduce((a, x) => a + x.DIFF, 0), m = t.ARI.MATCH + t.API.MATCH;
+    out('§M3_F27_ORACLE2', dif === 0 && t.ARI.MATCH > 0 && t.API.MATCH > 0, `captured invoice books ${Object.entries(t).map(([k, x]) => `${k}:MATCH=${x.MATCH}/ABSENT=${x.ABSENT}/DIFF=${x.DIFF}${x.MATCH + x.ABSENT + x.DIFF ? '' : '(none captured)'}`).join(' ')} ${notes.join(' ')}`);
+    g4.close(); fs.unlinkSync(f4); }
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
   out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a quirk entry with no evidence is refused');
