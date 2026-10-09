@@ -2,12 +2,15 @@
 // States: QUEUED → SENDING (persisted BEFORE the call) → CONFIRMED | REJECTED | DIVERGED | PARKED.
 // SENDING found at open() = a crash/ambiguity after the call began ⇒ PARKED (P7: undecidable ⇒ park, never guess).
 'use strict';
-const fs = require('fs');
-const initSqlJs = require('sql.js');
-
-async function open(file) {
+// Isomorphic persistence: pass a file path (Node) OR an adapter { load(): Uint8Array|null, save(Uint8Array) } (browser: IndexedDB/OPFS).
+// sql.js is taken from the page global when present (browser), else required (Node). `fs` is required lazily and only for the file path.
+async function open(fileOrAdapter) {
+  const initSqlJs = (typeof globalThis !== 'undefined' && globalThis.initSqlJs) ? globalThis.initSqlJs : require('sql.js');
   const SQL = await initSqlJs();
-  const db = file && fs.existsSync(file) ? new SQL.Database(fs.readFileSync(file)) : new SQL.Database();
+  const adapter = (fileOrAdapter && typeof fileOrAdapter === 'object') ? fileOrAdapter
+    : (typeof fileOrAdapter === 'string' ? (() => { const fs = require('fs'); return { load: () => (fs.existsSync(fileOrAdapter) ? fs.readFileSync(fileOrAdapter) : null), save: b => fs.writeFileSync(fileOrAdapter, Buffer.from(b)) }; })() : null);
+  const bytes = adapter && adapter.load();
+  const db = bytes ? new SQL.Database(bytes) : new SQL.Database();
   db.run(`CREATE TABLE IF NOT EXISTS bridge_outbox(
     id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT UNIQUE NOT NULL, seq INTEGER NOT NULL, descriptor TEXT NOT NULL,
     payload TEXT NOT NULL, state TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0, error TEXT, refs TEXT,
@@ -15,7 +18,7 @@ async function open(file) {
   db.run(`CREATE TABLE IF NOT EXISTS bridge_idmap(uid TEXT NOT NULL, tbl TEXT NOT NULL, server_id INTEGER NOT NULL, docno TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS bridge_inbox(tbl TEXT NOT NULL, server_id INTEGER NOT NULL, status TEXT NOT NULL, local_ref TEXT, error TEXT, at TEXT NOT NULL, PRIMARY KEY(tbl,server_id))`);
   db.run(`CREATE TABLE IF NOT EXISTS bridge_kv(k TEXT PRIMARY KEY, v TEXT)`);
-  const persist = () => { if (file) fs.writeFileSync(file, Buffer.from(db.export())); };
+  const persist = () => { if (adapter) adapter.save(db.export()); };
   const now = () => new Date().toISOString();
   const all = (sql, p = []) => { const st = db.prepare(sql); st.bind(p); const o = []; while (st.step()) o.push(st.getAsObject()); st.free(); return o; };
 
