@@ -794,6 +794,28 @@ function matchFromInvoice(invoice, iLines, opts) {
   return { ok: true, ops: ops, absent: absent };
 }
 
+// prepareRequisition — MRequisition.prepareIt (MRequisition.java:260-310) + MRequisitionLine.setPrice/setLineNetAmt (MRequisitionLine.java:234-276). Implementing prompts/SQLiteIDEMPIERE.md §66.1 (F29) — Witness: M3 REQ1/REQ-REJ.
+// No requester, price list or warehouse ⇒ Invalid (:269-274); no lines ⇒ @NoLines@ (:276-279); period open (:282, host-supplied); line price = the price list's standard price at DateRequired when PriceActual is 0
+// (MProductPricing via setRequisitionLine — host-supplied priceOf(pid, date)); LineNetAmt = Qty × PriceActual HALF_UP at the price list's standard precision (:290-291); TotalLines = Σ.
+// completion (MRequisition.completeIt :342-377) sets CO and posts nothing here (Doc_Requisition books only with commitment accounting — the posting fold decides).
+// hdr = { m_requisition_id, ad_user_id, m_pricelist_id, m_warehouse_id, daterequired }; lines [{m_requisitionline_id, m_product_id, qty, priceactual}]; ctx = { priceOf(pid, date) → {pricestd}|null, precision (default 2), periodOpen:{ok} }
+function prepareRequisition(hdr, lines, ctx) {
+  ctx = ctx || {};
+  if (!Number(hdr.ad_user_id) || !Number(hdr.m_pricelist_id) || !Number(hdr.m_warehouse_id)) return { ok: false, reason: 'Invalid' };
+  if (!lines || !lines.length) return { ok: false, reason: 'NoLines' };
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'PeriodClosed' };
+  var prec = ctx.precision == null ? 2 : Number(ctx.precision), total = 0, out = [];
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i], price = l.priceactual != null && Number(l.priceactual) !== 0 ? String(l.priceactual) : null;
+    if (price == null && l.m_product_id) { var p = ctx.priceOf ? ctx.priceOf(l.m_product_id, hdr.daterequired) : null; price = p && p.pricestd != null ? String(p.pricestd) : '0'; }
+    if (price == null) price = '0';
+    var pd = _dec(price), qd = _dec(l.qty), net = Number(_rhu(pd.n * qd.n * 10n ** BigInt(prec), 10n ** BigInt(pd.k + qd.k)));   // minor units at the price-list precision
+    total += net;
+    out.push({ m_requisitionline_id: l.m_requisitionline_id, m_product_id: l.m_product_id, qty: l.qty, priceactual: price, linenetamt: net });
+  }
+  return { ok: true, lines: out, totalLines: total, ops: [{ op_type: 'SET_STATUS', table: 'M_Requisition', id: hdr.m_requisition_id, doc_status: 'CO' }] };
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -987,7 +1009,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

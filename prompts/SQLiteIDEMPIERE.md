@@ -1464,4 +1464,12 @@ marks both paid and allocates the original against the reversal (MInvoice.java:2
 **Proof (`s12_after_f28.log`):** `§SCN S12-void-pos-sale MATCH compared=18`, `§SCN S12b-void-taxed-pos-sale MATCH compared=18` (was SQLITE-GAP on the 2 new keys). **Regression:** 99 engine witnesses vs the F27 run: identical except the 4 known-nondeterministic logs (no engine witness calls `voidOrder`).
 **Residue:** the delivery copy of `voidOrder` in ~/bim-ootb (Q-OOTB) does not have it.
 
+### §66.1 DECISION RECORD F29 — Purchase Requisition priced, totalled and completed like legacy (2026-10-10)
+**Evidence (`scratchpad/req1.log`):** REQ1 legacy CO, line `139:3:765:2295` (price-list 102 standard price, net HALF_UP), TotalLines 22.95, no books (posted Y, no facts — Doc_Requisition books only with commitment accounting); REQ-REJ (no requester) legacy refuses
+(`null value in column ad_user_id` — the column is mandatory). SQLite: no requisition verb (DR, nothing).
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW `prepareRequisition` (MRequisition.prepareIt :260-310, MRequisitionLine.setPrice / setLineNetAmt :234-276; completion :342-377); `witness_m3_gap.js` requisition suite (REQ1, REQ-REJ, `§M3_REQ_NEGATIVE_CONTROL`),
+`legacyFactsOf` knows tables 702 / 407; pilot `ws_model_requisition.sql` + read types QueryMRequisition / QueryMRequisitionLine / QueryADUser (the requester = the login user, what the window defaults to).
+**Proof (`req3.log`):** `§SCN REQ1-purchase-requisition MATCH compared=6` · `§SCN REQ-REJ-no-requester MATCH` (the negative control runs in the full M3 run). **Regression:** 99 engine witnesses vs the F28 run: identical except the 4 known-nondeterministic logs.
+**Residue:** charge lines, requisition → purchase order (RequisitionPOCreate process) and commitment accounting are not exercised.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

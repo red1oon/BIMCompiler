@@ -73,7 +73,13 @@ BEGIN
       -- §65 Purchase-to-Pay cycle: matching + cost history (read-only)
       ('QueryMMatchPO','M_MatchPO',NULL::text[]),
       ('QueryMMatchInv','M_MatchInv',NULL::text[]),
-      ('QueryMCostDetail','M_CostDetail',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryMCostDetail','M_CostDetail',NULL::text[]),
+      -- §66 Requisition + Cash Journal models (read-only)
+      ('QueryMRequisition','M_Requisition',NULL::text[]),
+      ('QueryMRequisitionLine','M_RequisitionLine',NULL::text[]),
+      ('QueryCCash','C_Cash',NULL::text[]),
+      ('QueryCCashLine','C_CashLine',NULL::text[]),
+      ('QueryADUser','AD_User',ARRAY['AD_User_ID','Name'])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

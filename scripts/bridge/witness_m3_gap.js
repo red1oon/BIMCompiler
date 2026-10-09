@@ -211,7 +211,7 @@ async function legacyFactsOf(table, id, schema) {
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
   if (fa.length) return fmtPostings(Object.values(by));
   // §65 (P17): the posted-without-lines check knew only invoices/shipments; the cycles post orders, matchings, payments and allocations too
-  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'] }[table] || null;
+  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'], 702: ['QueryMRequisition', 'M_Requisition_ID'], 407: ['QueryCCash', 'C_Cash_ID'] }[table] || null;
   const posted = tq ? ((await query(cfg, tq[0], `${tq[1]}=${id}`))[0] || {}).Posted : null;
   return posted === 'Y' || posted === true ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
@@ -592,6 +592,43 @@ function localInventory(mut = 0) {
   };
 }
 
+// ================= MODEL: Purchase Requisition (spec §66) — legacy through the frozen link (descriptor = test data) =================
+const REQ_FIELDS = { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 127 }, M_PriceList_ID: { const: 102 }, M_Warehouse_ID: { const: 103 }, DateDoc: { path: 'date' }, DateRequired: { path: 'date' }, PriorityRule: { const: '5' }, Description: { path: 'note' } };
+const REQ_LINES = { serviceType: 'BridgeCreateRequisitionLine', table: 'M_RequisitionLine', parent: 'M_Requisition_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, M_Product_ID: { path: 'product' }, Qty: { path: 'qty' } } };
+const REQ_DESC = {
+  req: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateRequisition', table: 'M_Requisition', fields: { ...REQ_FIELDS, AD_User_ID: { path: 'user' } } }, lines: REQ_LINES, docAction: { serviceType: 'BridgeCompleteRequisition', table: 'M_Requisition', action: 'CO' } },
+  reqNoUser: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateRequisition', table: 'M_Requisition', fields: REQ_FIELDS }, lines: REQ_LINES, docAction: { serviceType: 'BridgeCompleteRequisition', table: 'M_Requisition', action: 'CO' } } };
+const reqSpec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'postings', 'postings_euro'], notCompared: {} };
+let reqLink = null, LOGIN_USER = null;
+async function legacyReq(f) {
+  if (!reqLink) { let bytes = null; reqLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: REQ_DESC }); }
+  if (LOGIN_USER == null) LOGIN_USER = Number(((await query(cfg, 'QueryADUser', `Name='${cfg.login.user}'`))[0] || {}).AD_User_ID || 0);   // the requester a user's window defaults to: the login user
+  const uid = reqLink.submit(f.noUser ? 'reqNoUser' : 'req', { user: LOGIN_USER, date: (f.date || TODAY) + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines });
+  await reqLink.drain(); const st = reqLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const id = reqLink.store.idmap(uid).find(x => x.tbl === 'M_Requisition').server_id;
+  const h = (await query(cfg, 'QueryMRequisition', `M_Requisition_ID=${id}`))[0], ls = await query(cfg, 'QueryMRequisitionLine', `M_Requisition_ID=${id}`);
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, lines: ls.map(l => `${l.M_Product_ID}:${Number(l.Qty)}:${cents(l.PriceActual)}:${cents(l.LineNetAmt)}`).sort().join('|'), total_cents: cents(h.TotalLines),
+    postings: await legacyFactsOf(702, id, SCHEMA), postings_euro: await legacyFactsOf(702, id, SCHEMA2) };
+}
+const plRows = (pl, pid) => seed.prepare("SELECT v.validfrom, pp.pricestd, pp.pricelist, pp.pricelimit FROM m_productprice pp JOIN m_pricelist_version v ON v.m_pricelist_version_id=pp.m_pricelist_version_id WHERE v.m_pricelist_id=? AND pp.m_product_id=? AND v.isactive='Y' AND pp.isactive='Y'").all(pl, pid).map(lc);
+function localReq(mut = 0) {
+  return async f => {
+    if (typeof E.prepareRequisition !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', lines: 'none', total_cents: 0, postings: 'none', postings_euro: 'none' };
+    const rid = ++seq * 10; const prec = (lc(seed.prepare('SELECT c.stdprecision p FROM m_pricelist l JOIN c_currency c ON c.c_currency_id=l.c_currency_id WHERE l.m_pricelist_id=102').get()) || {}).p;   // MPriceList.getStandardPrecision = the currency's (MPriceList.java:356-364)
+    const r = E.prepareRequisition({ m_requisition_id: rid, ad_user_id: f.noUser ? 0 : 101, m_pricelist_id: 102, m_warehouse_id: 103, daterequired: f.date || TODAY },
+      f.lines.map((l, i) => ({ m_requisitionline_id: rid * 100 + i, m_product_id: l.product, qty: l.qty })),
+      { priceOf: (pid, d) => { const x = E.priceAt(plRows(102, pid), d); return x ? { pricestd: mut ? (Number(x.pricestd) + mut / 100).toFixed(2) : x.pricestd } : null; }, precision: prec, periodOpen: E.periodOpen(periodData, f.date || TODAY, 'POR', TODAY) });
+    if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    gb.prepare('INSERT INTO m_requisition(m_requisition_id,docstatus,m_pricelist_id,m_warehouse_id,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(rid, 'CO', 102, 103, 11, 11);   // the posting db's own m_requisition shape
+    r.lines.forEach(l => gb.prepare('INSERT INTO m_requisitionline(m_requisitionline_id,m_requisition_id,m_product_id,qty,linenetamt) VALUES(?,?,?,?,?)').run(l.m_requisitionline_id, rid, l.m_product_id, l.qty, l.linenetamt / 100));
+    const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'M_Requisition', id: rid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    return { outcome: 'COMPLETED', docstatus: (r.ops.find(o => o.op_type === 'SET_STATUS') || {}).doc_status, lines: r.lines.map(l => `${l.m_product_id}:${Number(l.qty)}:${cents(l.priceactual)}:${l.linenetamt}`).sort().join('|'), total_cents: r.totalLines,
+      postings: fold(SCHEMA), postings_euro: fold(SCHEMA2) };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -697,6 +734,11 @@ const quirks = [
     `+1¢ on the SQLite AP invoice price ⇒ PO=${p2pNeg[0].verdict} RCPT=${p2pNeg[1].verdict} INV=${p2pNeg[2].verdict} gaps=${p2pNeg[2].gaps.map(g => g.key).join(',')}`);
   if (o2cNeg) out('§M3_O2C_NEGATIVE_CONTROL', o2cNeg[0].verdict === 'MATCH' && o2cNeg[1].verdict === 'MATCH' && o2cNeg[2].verdict === 'SQLITE-GAP' && ['inv_lines', 'grand_total', 'books', 'bp_delta'].every(k => o2cNeg[2].gaps.some(g => g.key === k)),
     `+1¢ on the SQLite invoice price ⇒ SO=${o2cNeg[0].verdict} SHIP=${o2cNeg[1].verdict} INV=${o2cNeg[2].verdict} gaps=${o2cNeg[2].gaps.map(g => g.key).join(',')}`);
+  // MODEL Purchase Requisition (spec §66)
+  rows.push(...await R.run(keepOnly([{ id: 'REQ1-purchase-requisition', facts: { id: 'REQ1', lines: [{ product: 139, qty: 3 }] }, legacy: legacyReq, local: localReq(0) },
+    { id: 'REQ-REJ-no-requester', facts: { id: 'REQR', noUser: true, lines: [{ product: 139, qty: 3 }] }, legacy: legacyReq, local: localReq(0) }]), reqSpec, quirks, { log }));
+  if (!only) { const rneg = await R.run([{ id: 'NEG-req-control', facts: { id: 'REQN', lines: [{ product: 139, qty: 3 }] }, legacy: legacyReq, local: localReq(1) }], reqSpec, quirks, { log });
+    out('§M3_REQ_NEGATIVE_CONTROL', rneg[0].verdict === 'SQLITE-GAP' && ['lines', 'total_cents'].every(k => rneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite requisition price ⇒ verdict=${rneg[0].verdict} gaps=${rneg[0].gaps.map(g => g.key).join(',')}`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
