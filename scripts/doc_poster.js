@@ -208,6 +208,17 @@ function costQtyRefusal(db, lines) {
   return null;
 }
 // the CurrentQty deltas a committing host applies after the shipment posted (legacy: same transaction). Shipment C- ⇒ −qty, reversal (qty already negated) ⇒ +qty.
+// §59 (F18): the same CurrentQty upkeep for a Physical Inventory line (cost detail qty = QtyCount − QtyBook, every active costing element × schema)
+function costQtyUpdatesFor(db, table, id) {
+  if (table === 'M_InOut') return costQtyUpdates(db, id);
+  if (table !== 'M_Inventory' || !_hasCol(db, 'm_cost', 'currentqty')) return [];
+  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out = [];
+  allRows(db, 'SELECT m_product_id, qtybook, qtycount FROM m_inventoryline WHERE m_inventory_id=?', num(id)).forEach(function (l) {
+    var d = Number(l.qtycount) - Number(l.qtybook); if (!d || !_isStocked(db, l.m_product_id)) return;
+    schemas.forEach(function (sc) { els.forEach(function (e) { out.push({ m_product_id: num(l.m_product_id), c_acctschema_id: sc.id, m_costtype_id: sc.ct, m_costelement_id: e.id, delta: d }); }); });
+  });
+  return out;
+}
 function costQtyUpdates(db, ioId) {
   if (!_hasCol(db, 'm_cost', 'currentqty')) return [];
   var lines = allRows(db, 'SELECT m_product_id, movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId));
@@ -305,8 +316,10 @@ function deriveMovement(db, R, movId, schema) {
     var asset = el(R.resolve(db, '{Product.Asset}', num(l.m_product_id), schema)); if (!asset) return;
     var fromOrg = _orgOfLocator(db, l.m_locator_id), toOrg = _orgOfLocator(db, l.m_locatorto_id);
     if (fromOrg == null || toOrg == null) { absent.push('locator org unknown'); return; }
-    add('CR', asset, amt, fromOrg);
-    add('DR', asset, amt, toOrg);
+    // Fact.createLine single-amount form (Fact.java:206-212): from-line Amt = −costs, to-line Amt = +costs; negative ⇒ CREDIT side as the absolute value
+    var single = function (a, org) { if (a < 0) add('CR', asset, -a, org); else if (a > 0) add('DR', asset, a, org); };
+    single(-amt, fromOrg);
+    single(amt, toOrg);
   });
   var orgs = Object.keys(orgBal).filter(function (o) { return orgBal[o] !== 0; });
   if (orgs.length) {
@@ -764,23 +777,27 @@ function deriveInventory(db, id, schema) {
         " AND (c_orderline_id>0 OR c_invoiceline_id>0)", num(l.m_product_id));
       if (!bless || Number(bless.n) === 0) { d.absent.push('{Product.NoCosts}#' + l.m_product_id); return; }  // :332-335 refusal
     }
-    var amt = Math.round(costCents * qtyDiff);
+    // §59 (F18): the LINE is rounded, not the unit cost (Doc_Inventory costs = ProductCost qty × current cost; same rule as poc_movement_fx) — exact HALF_UP
+    var amt = cost ? (function () { var pd = _bigDec(cost.p), qd = _bigDec(qtyDiff); return Number(_rhuB(pd.n * qd.n * 100n, 10n ** BigInt(pd.k + qd.k))); })() : 0;
     var prod = getRow(db, 'SELECT producttype, m_product_category_id FROM m_product WHERE m_product_id=?', num(l.m_product_id));
     var isService = prod && prod.producttype === 'S';
     var pcol = isService ? 'p_expense_acct' : 'p_asset_acct';
     var pacct = prod ? getRow(db, 'SELECT ' + pcol + ' AS acct FROM m_product_category_acct WHERE m_product_category_id=? AND c_acctschema_id=?', [num(prod.m_product_category_id), num(schema)]) : null;
     var drEl = elOf(db, vcAcct(db, pacct && pacct.acct), d.absent, '{Product.' + (isService ? 'Expense' : 'Asset') + '}');
-    if (drEl) d.add('DR', drEl, amt);
+    // Fact.createLine(docLine, acct, cur, Amt) single-amount form (Fact.java:206-212): a NEGATIVE amount goes to the CREDIT side as its absolute value (§59, PI2 loss)
+    // a ZERO amount keeps its line on the intended side (Fact.createLine keeps a zero line when the doc line has a quantity — the poc_post_tail blessing-flip falsifier)
+    var single = function (el, a, zeroSide) { if (!el) return; if (a < 0) d.add('CR', el, -a); else if (a > 0) d.add('DR', el, a); else d.add(zeroSide, el, 0); };
+    single(drEl, amt, 'DR');
     // CR: line.getChargeAccount if C_Charge_ID≠0, else M_Warehouse_Acct.W_Differences_Acct (:1505-1509)
     if (num(l.c_charge_id) > 0) {
       var chg = getRow(db, 'SELECT ch_expense_acct AS acct FROM c_charge_acct WHERE c_charge_id=? AND c_acctschema_id=?', [num(l.c_charge_id), num(schema)]);
       var chgEl = elOf(db, vcAcct(db, chg && chg.acct), d.absent, '{Charge.Expense}');
-      if (chgEl) d.add('CR', chgEl, amt);
+      single(chgEl, -amt, 'CR');
     } else {
       var loc = getRow(db, 'SELECT m_warehouse_id FROM m_locator WHERE m_locator_id=?', num(l.m_locator_id));
       var wa = loc ? getRow(db, 'SELECT w_differences_acct AS acct FROM m_warehouse_acct WHERE m_warehouse_id=? AND c_acctschema_id=?', [num(loc.m_warehouse_id), num(schema)]) : null;
       var crEl = elOf(db, vcAcct(db, wa && wa.acct), d.absent, '{Warehouse.Differences}');
-      if (crEl) d.add('CR', crEl, amt);
+      single(crEl, -amt, 'CR');
     }
   });
   return d;
@@ -903,7 +920,7 @@ function derivePostings(db, recordRef, schema, R) {
 
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
-var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
+var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, costQtyUpdatesFor: costQtyUpdatesFor, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
              glCategoryFor: glCategoryFor };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }

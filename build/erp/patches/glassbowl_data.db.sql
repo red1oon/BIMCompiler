@@ -191,3 +191,28 @@ UPDATE c_acctschema_gl SET usecurrencybalancing='Y' WHERE c_acctschema_id=101;
 UPDATE c_acctschema_gl SET usecurrencybalancing='Y' WHERE c_acctschema_id=200000;
 UPDATE c_allocationhdr SET c_currency_id=100 WHERE c_allocationhdr_id=100 AND c_currency_id IS NULL;
 UPDATE c_allocationhdr SET c_currency_id=100 WHERE c_allocationhdr_id=101 AND c_currency_id IS NULL;
+
+-- 2026-10-10 (spec §59): M_Warehouse_Acct (Inventory Differences account per warehouse/schema) — Doc_Inventory credits it; values from the SQLite seed.
+CREATE TABLE IF NOT EXISTS m_warehouse_acct(m_warehouse_id INT, c_acctschema_id INT, w_differences_acct INT);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 103,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=103 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 104,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=104 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50000,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50000 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50001,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50001 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50002,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50002 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50003,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50003 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50004,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50004 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50005,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50005 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50006,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50006 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50007,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50007 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50008,101,227 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50008 AND c_acctschema_id=101);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50004,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50004 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50006,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50006 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50002,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50002 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50007,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50007 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50003,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50003 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 104,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=104 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50000,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50000 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50005,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50005 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 103,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=103 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50001,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50001 AND c_acctschema_id=200000);
+INSERT INTO m_warehouse_acct(m_warehouse_id,c_acctschema_id,w_differences_acct) SELECT 50008,200000,200051 WHERE NOT EXISTS (SELECT 1 FROM m_warehouse_acct WHERE m_warehouse_id=50008 AND c_acctschema_id=200000);

@@ -412,6 +412,22 @@ function prepareInvoice(hdr, lines, ctx) {
   return { ok: true, ops: ops, lines: out, taxes: r.rows, totalLines: r.totalLines, grandTotal: r.grandTotal };
 }
 
+// completeInventory — M_Inventory CO as ops. Implementing prompts/SQLiteIDEMPIERE.md §59 (F18) — Witness: M3 PI1/PI2.
+// MInventory.completeIt (MInventory.java:525-540): per line qtyDiff = QtyCount − QtyBook (Physical Inventory) or −QtyInternalUse (Internal Use); 0 ⇒ no movement (:587);
+// storage at the line locator += qtyDiff. No lines ⇒ @NoLines@ (prepareIt). inventory = { m_inventory_id, docsubtypeinv 'PI'|'IU' }.
+function completeInventory(inventory, lines, opts) {
+  opts = opts || {};
+  if (!lines || !lines.length) return { ok: false, reason: 'NoLines' };
+  var ops = [];
+  lines.forEach(function (l) {
+    var diff = inventory.docsubtypeinv === 'IU' ? -Number(l.qtyinternaluse || 0) : Number(l.qtycount || 0) - Number(l.qtybook || 0);
+    if (diff === 0 || (opts.isStocked && !opts.isStocked(l.m_product_id))) return;
+    ops.push({ op_type: 'MOVE_STOCK', table: 'M_Storage', m_product_id: l.m_product_id, m_locator_id: l.m_locator_id, qty: diff });
+  });
+  ops.push({ op_type: 'SET_STATUS', table: 'M_Inventory', id: inventory.m_inventory_id, doc_status: 'CO' });
+  return { ok: true, ops: ops };
+}
+
 // ── TAX (prompts/SQLiteIDEMPIERE.md §45, F11) — Witness: M3 T1 + the tax keys of every scenario ─────────────────────────────────────
 // Integer-exact decimal helpers (BigInt): amounts in minor units (cents at precision 2); rates as decimal strings.
 function _dec(str) { var t = String(str == null ? '0' : str).trim(), neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
@@ -579,7 +595,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,

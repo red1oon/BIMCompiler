@@ -33,7 +33,9 @@ const plv = lc(seed.prepare('SELECT m_pricelist_version_id v FROM m_pricelist_ve
 const priceStmt = seed.prepare('SELECT pricestd FROM m_productprice WHERE m_pricelist_version_id=? AND m_product_id=?');
 // §41 F8: every active version's active price for (price list, product) — the rows erp_engine.priceAt walks by date
 const priceRowsStmt = seed.prepare("SELECT v.validfrom, pp.pricestd, pp.pricelist, pp.pricelimit FROM m_productprice pp JOIN m_pricelist_version v ON v.m_pricelist_version_id=pp.m_pricelist_version_id WHERE v.m_pricelist_id=? AND pp.m_product_id=? AND v.isactive='Y' AND pp.isactive='Y'");
-const TODAY = new Date().toISOString().slice(0, 10);
+// the legacy server's calendar day (it runs on this host's local time zone); NOT toISOString() — that is the UTC day, which before 08:00 local
+// is "yesterday" for legacy and silently sent every dated document down legacy's back-date costing path (found by PI1, 2026-10-10, P17)
+const TODAY = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
 const PL_CURRENCY = (lc(seed.prepare('SELECT c_currency_id FROM m_pricelist WHERE m_pricelist_id=?').get(pos.m_pricelist_id)) || {}).c_currency_id;
 // §46: currency precision table from the SQLite seed (the production posting db is the bundle that carries it; the scratch posting db lacks the table)
 const GB_PATCH = fs.readFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'patches', 'glassbowl_data.db.sql'), 'utf8');
@@ -530,6 +532,52 @@ function localInvoice(mut = 0) {
   };
 }
 
+// ================= MODEL: Physical Inventory (spec §59) — legacy through the frozen link (descriptor = test data) =================
+const PI_DESC = { pi: { composite: 'SyncOrder',
+  header: { serviceType: 'BridgeCreateInventory', table: 'M_Inventory', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 144 }, M_Warehouse_ID: { const: 103 }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
+  lines: { serviceType: 'BridgeCreateInventoryLine', table: 'M_InventoryLine', parent: 'M_Inventory_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
+    fields: { AD_Org_ID: { const: 11 }, AD_Client_ID: { const: 11 }, M_Locator_ID: { path: 'loc' }, M_Product_ID: { path: 'product' }, QtyBook: { path: 'book' }, QtyCount: { path: 'count' }, InventoryType: { const: 'D' } } },
+  docAction: { serviceType: 'BridgeCompleteInventory', table: 'M_Inventory', action: 'CO' } } };
+const piSpec = { keys: ['outcome', 'docstatus', 'lines', 'stock_delta', 'postings', 'postings_euro', 'cost_qty_delta'], notCompared: {} };
+let piLink = null;
+async function legacyInventory(f) {
+  if (!piLink) { let bytes = null; piLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: PI_DESC }); }
+  const before = {}; for (const l of f.lines) before[l.product + '@' + l.loc] = await locStock(l.product, l.loc);
+  const cq0 = {}; for (const l of f.lines) cq0[l.product] = await legacyCostQty(l.product);
+  const uid = piLink.submit('pi', { date: (f.date || TODAY) + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines });
+  await piLink.drain(); const st = piLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const id = piLink.store.idmap(uid).find(x => x.tbl === 'M_Inventory').server_id;
+  const h = (await query(cfg, 'QueryMInventory', `M_Inventory_ID=${id}`))[0], ls = await query(cfg, 'QueryMInventoryLine', `M_Inventory_ID=${id}`);
+  for (let i = 0; i < 8 && !['Y', 'E'].includes(h.Posted); i++) { await new Promise(r => setTimeout(r, 1500)); h.Posted = (await query(cfg, 'QueryMInventory', `M_Inventory_ID=${id}`))[0].Posted; }
+  const stock = {}; for (const k of Object.keys(before)) { const [p, loc] = k.split('@'); const d = (await locStock(+p, +loc)) - before[k]; if (d) stock[k] = d; }
+  const cq = {}; for (const p of Object.keys(cq0)) cq[p] = await legacyCostQty(+p);
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, lines: ls.map(l => `${l.M_Product_ID}:${Number(l.QtyBook)}:${Number(l.QtyCount)}`).sort().join('|'), stock_delta: JSON.stringify(stock),
+    postings: h.Posted === 'E' ? 'REFUSED:Posted=E' : await legacyFactsOf(321, id, SCHEMA), postings_euro: h.Posted === 'E' ? 'REFUSED:Posted=E' : await legacyFactsOf(321, id, SCHEMA2), cost_qty_delta: deltaStr(Object.keys(cq0), cq0, p => cq[p]) };
+}
+gb.exec('CREATE TABLE IF NOT EXISTS m_inventory(m_inventory_id INT, m_warehouse_id INT, docstatus TEXT, c_doctype_id INT, movementdate TEXT)');   // test materialisation (the bundle carries these tables)
+gb.exec('CREATE TABLE IF NOT EXISTS m_inventoryline(m_inventoryline_id INT, m_inventory_id INT, m_locator_id INT, m_product_id INT, qtybook REAL, qtycount REAL, c_charge_id INT, isactive TEXT)');
+function localInventory(mut = 0) {
+  return async f => {
+    for (const l of f.lines) if (!lc(seed.prepare('SELECT m_product_id FROM m_product WHERE m_product_id=?').get(l.product))) return { outcome: 'REJECTED', reason: 'unknown product' };
+    const iid = ++seq * 10, lines = f.lines.map((l, i) => ({ m_inventoryline_id: iid * 100 + i, m_locator_id: l.loc, m_product_id: l.product, qtybook: l.book, qtycount: l.count + mut }));
+    const cq0 = {}; for (const l of f.lines) cq0[l.product] = localCostQty(l.product);
+    if (typeof E.completeInventory !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', lines: lines.map(l => `${l.m_product_id}:${l.qtybook}:${l.qtycount}`).sort().join('|'), stock_delta: '{}', postings: 'none', postings_euro: 'none', cost_qty_delta: '{}' };
+    const r = E.completeInventory({ m_inventory_id: iid, docsubtypeinv: 'PI' }, lines); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    const status = (r.ops.filter(o => o.op_type === 'SET_STATUS').pop() || {}).doc_status;
+    const stock = {}; r.ops.filter(o => o.op_type === 'MOVE_STOCK').forEach(o => { const k = o.m_product_id + '@' + o.m_locator_id; stock[k] = (stock[k] || 0) + Number(o.qty); });
+    Object.keys(stock).forEach(k => { if (!stock[k]) delete stock[k]; });
+    gb.prepare('INSERT INTO m_inventory(m_inventory_id,m_warehouse_id,docstatus,c_doctype_id,movementdate) VALUES(?,?,?,?,?)').run(iid, 103, status, 144, (f.date || TODAY) + ' 00:00:00');
+    for (const l of lines) gb.prepare('INSERT INTO m_inventoryline(m_inventoryline_id,m_inventory_id,m_locator_id,m_product_id,qtybook,qtycount,c_charge_id,isactive) VALUES(?,?,?,?,?,?,?,?)').run(l.m_inventoryline_id, iid, l.m_locator_id, l.m_product_id, l.qtybook, l.qtycount, null, 'Y');
+    const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'M_Inventory', id: iid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    const res = { outcome: 'COMPLETED', docstatus: status, lines: lines.map(l => `${l.m_product_id}:${l.qtybook}:${l.qtycount}`).sort().join('|'), stock_delta: JSON.stringify(stock), postings: fold(SCHEMA), postings_euro: fold(SCHEMA2) };
+    if (typeof DP.costQtyUpdatesFor === 'function') for (const u of DP.costQtyUpdatesFor(gb, 'M_Inventory', iid)) gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+? WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
+    res.cost_qty_delta = deltaStr(Object.keys(cq0), cq0, p => localCostQty(+p));
+    return res;
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -603,6 +651,13 @@ const quirks = [
     { id: 'INV2-ar-invoice-product-not-on-pricelist', facts: { id: 'INV2', org: 12, wh: 104, lines: [{ product: 122, qty: 1 }] }, legacy: legacyInvoice, local: localInvoice(0) },
     { id: 'INV-REJ-unknown-product', facts: { id: 'INVR', org: 12, wh: 104, lines: [{ product: 999999, qty: 1 }] }, legacy: legacyInvoice, local: localInvoice(0) }]), invSpec, quirks, { log });
   rows.push(...irows);
+  // MODEL Physical Inventory (spec §59): QtyBook = legacy on-hand at locator 101 now; the same book/count facts go to both sides
+  const book137 = await locStock(137, 101);
+  log(`§PI_FACTS product=137 locator=101 qtybook=${book137}`);
+  const pirows = await R.run(keepOnly([{ id: 'PI1-physical-inventory-gain', facts: { id: 'PI1', lines: [{ product: 137, loc: 101, book: book137, count: book137 + 2 }] }, legacy: legacyInventory, local: localInventory(0) },
+    { id: 'PI2-physical-inventory-loss', facts: { id: 'PI2', lines: [{ product: 137, loc: 101, book: book137 + 2, count: book137 + 1 }] }, legacy: legacyInventory, local: localInventory(0) },
+    { id: 'PI-REJ-unknown-product', facts: { id: 'PIR', lines: [{ product: 999999, loc: 101, book: 0, count: 1 }] }, legacy: legacyInventory, local: localInventory(0) }]), piSpec, quirks, { log });
+  rows.push(...pirows);
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
@@ -631,6 +686,10 @@ const quirks = [
   // §58 negative control for the direct-invoice key set: +1¢ on the SQLite line MUST surface (totals, tax base, books)
   const ineg = await R.run([{ id: 'NEG-inv-control', facts: { id: 'INVN', org: 12, wh: 104, lines: [{ product: 137, qty: 2 }] }, legacy: legacyInvoice, local: localInvoice(1) }], invSpec, quirks, { log });
   out('§M3_INV_NEGATIVE_CONTROL', ineg[0].verdict === 'SQLITE-GAP' && ['total_cents', 'grand_total_cents', 'postings'].every(k => ineg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite invoice line ⇒ verdict=${ineg[0].verdict} gaps=${ineg[0].gaps.map(g => g.key).join(',')}`);
+  // §59 negative control for the inventory key set: +1 counted on the SQLite side MUST surface (lines, stock, books, costed qty)
+  const b0 = await locStock(137, 101);
+  const pineg = await R.run([{ id: 'NEG-pi-control', facts: { id: 'PIN', lines: [{ product: 137, loc: 101, book: b0, count: b0 + 1 }] }, legacy: legacyInventory, local: localInventory(1) }], piSpec, quirks, { log });
+  out('§M3_PI_NEGATIVE_CONTROL', pineg[0].verdict === 'SQLITE-GAP' && ['lines', 'stock_delta', 'postings'].every(k => pineg[0].gaps.some(g => g.key === k)), `+1 counted on the SQLite side ⇒ verdict=${pineg[0].verdict} gaps=${pineg[0].gaps.map(g => g.key).join(',')}`);
   // §42 F7 rule branches the corpus cannot reach (S8b/S8d stop at the price rule first, like legacy): no period, before history, inside window, standard control
   { const P = (dt, data) => E.periodOpen(data || periodData, dt, 'SOO', TODAY);
     const std = { schema: { autoperiodcontrol: 'N' }, periods: periodData.periods };
