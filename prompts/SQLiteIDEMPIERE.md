@@ -191,4 +191,23 @@ and write the local rule spec from it. Which "new rules" (user: "whatever it may
 - New witness W10 CHANGELOG-TAIL: read since watermark, window re-read, no row lost/duplicated across an interleaved
   long transaction; prints INCONCLUSIVE when the window held zero rows.
 
+## §13 BUILT + WITNESSED 2026-10-09 — change-log tracker (first Bridge module)
+Code: `scripts/bridge/ad_client.js` (transport; throws on `IsError`), `changelog_tracker.js` (watermark + 200-id trailing
+window + dedupe on (id,column) + per-save events + DocStatus transitions + own/foreign tag), witness
+`witness_changelog_tail.js` (W10). Pilot fixtures: `pilot/ws_changelog_read.sql` (QueryChangeLog/QueryADColumn/QueryADTable),
+`pilot/ws_test_access.sql` (role 102 on stock order WS types; deactivates leftover acct schema 'CP Copy Target' that made
+CompleteOrder NPE). Run: `node scripts/bridge/witness_changelog_tail.js` → read the `§W10_*` lines.
+Result (both modes): `§W10_VERDICT PASS` — COMPLETE (tracker rows == DB rows: 9 / 94), DOCACTION (real WS order created,
+line added, `setDocAction CO` → event `DocStatus DR→CO` on the right record, trx `ws_modelSetDocAction_*`), OWN (own vs
+foreign tagged), IDEMPOTENT (re-poll fresh=0), LATE (window=200 catches a lower id committing after a higher one;
+window=0 negative control MISSES it — the witness can fail).
+**Flashpoint F1 (for the legacy admin):** vanilla `SYSTEM_INSERT_CHANGELOG=N` → document/draft CREATION is invisible in the
+log; only updates (DR→CO etc.) show. Measured: N → 0 insert events; Y → 2 (order + line). To see new drafts the admin must
+set it to Y (an AD_SysConfig value, no code) — or we accept seeing a doc only when it is first updated/completed. Add to §9 P1.
+**Flashpoint F2:** a WS type added in the DB is invisible until server restart / cache reset.
+**Flashpoint F3:** the change log carries no line items' inserts when F1=N, so a completed doc's lines must be fetched
+with `readData` after the DocStatus event (§4.2) — the log alone cannot rebuild a doc in default config.
+**Window cost:** a 200-id window re-reads ~380 rows per poll on this small copy (dense ids) — fine here; tune per volume.
+Not yet built: UP path (§3), local replay of DOWN events through the doc engine (§4.3), Id map, outbox.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
