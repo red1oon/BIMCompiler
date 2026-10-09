@@ -10,3 +10,9 @@ AND NOT EXISTS (SELECT 1 FROM ws_webservicetypeaccess a WHERE a.ws_webservicetyp
 -- CompleteOrder NPEs in costing (MProductCategoryAcct pca null) with it active. Deactivate for witnesses (reversible; a
 -- clean importiDempiere restores the seed).
 UPDATE c_acctschema SET isactive='N' WHERE c_acctschema_id=1009800 AND name='CP Copy Target';
+
+-- Stock composite type 'SyncOrder' (one-transaction header+lines+docaction): give role 102 access for the composite probe.
+INSERT INTO ws_webservicetypeaccess(ad_client_id,ad_org_id,ad_role_id,created,createdby,updated,updatedby,isactive,isreadwrite,ws_webservicetype_id,ws_webservicetypeaccess_uu)
+SELECT 11,0,102,now(),100,now(),100,'Y','Y',t.ws_webservicetype_id,gen_random_uuid()
+FROM ws_webservicetype t WHERE t.value='SyncOrder'
+AND NOT EXISTS (SELECT 1 FROM ws_webservicetypeaccess a WHERE a.ws_webservicetype_id=t.ws_webservicetype_id AND a.ad_role_id=102);

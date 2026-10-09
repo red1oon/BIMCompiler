@@ -19,6 +19,37 @@ function cfgFromEnv(env = process.env) {
 }
 
 // method: query_data | create_data | update_data | read_data | set_docaction | run_process
+// typed failure: kind = NOT_SENT (provably never reached the server) | AMBIGUOUS (may have been processed) | AUTH | FAULT
+function bridgeError(kind, msg) { const e = new Error(msg); e.kind = kind; return e; }
+const NOT_SENT_CODES = new Set(['ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN', 'ECONNRESET_BEFORE']);
+
+async function post(cfg, path, payload, timeoutMs = 30000) {
+  const ac = new AbortController(); const t = setTimeout(() => ac.abort(), timeoutMs);
+  let res, txt;
+  try {
+    res = await fetch(cfg.base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload), signal: ac.signal });
+    txt = await res.text();
+  } catch (e) {
+    const code = e.cause && e.cause.code;
+    const never = NOT_SENT_CODES.has(code) || /bad port/i.test(String(e.cause && e.cause.message));
+    throw bridgeError(never ? 'NOT_SENT' : 'AMBIGUOUS', `§AD_NET ${code || e.name}: ${e.message}`);
+  } finally { clearTimeout(t); }
+  let j; try { j = JSON.parse(txt); } catch { throw bridgeError('AMBIGUOUS', `§AD_HTTP ${res.status} non-JSON: ${txt.slice(0, 200)}`); }
+  return j;
+}
+
+// Composite = ONE server transaction (verified on pilot: failure ⇒ @IsRolledBack, nothing persisted). operations: [{TargetPort, ModelCRUD|ModelSetDocAction|ModelRunProcess}]
+async function composite(cfg, serviceType, operations) {
+  const j = await post(cfg, '/ADInterface/services/rest/composite_service/composite_operation',
+    { CompositeRequest: { ADLoginRequest: cfg.login, serviceType, operations: { operation: operations } } });
+  if (j.status === '500' || j.message) throw bridgeError('FAULT', `§AD_FAULT composite: ${j.message}`);
+  const r = [].concat((j.CompositeResponses && j.CompositeResponses.CompositeResponse && j.CompositeResponses.CompositeResponse.StandardResponse) || []);
+  const bad = r.find(x => x['@IsError']);
+  if (bad && /Error log(ging )?in/i.test(bad.Error || '')) throw bridgeError('AUTH', `§AD_AUTH ${bad.Error}`);
+  return { ok: !bad, rolledBack: r.some(x => x['@IsRolledBack']), error: bad && bad.Error, ids: r.map(x => x['@RecordID']).filter(x => x != null), raw: r };
+}
+
 async function call(cfg, method, body) {
   const key = method === 'set_docaction' ? 'ModelSetDocActionRequest' : 'ModelCRUDRequest';
   const payload = { [key]: { ...body, ADLoginRequest: cfg.login } };
@@ -57,4 +88,4 @@ async function query(cfg, serviceType, filter) {
   return r;
 }
 
-module.exports = { cfgFromEnv, call, rows, query };
+module.exports = { cfgFromEnv, call, rows, query, composite, bridgeError };

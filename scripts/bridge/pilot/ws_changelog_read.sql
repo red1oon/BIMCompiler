@@ -3,6 +3,7 @@
 -- Role: GardenWorld Admin (102), read-only. This file IS the proposal text for the legacy admin. Restart/cache-reset after apply.
 --   QueryChangeLog : AD_ChangeLog (all columns)       QueryADColumn : AD_Column (id, name, table)
 --   QueryADTable   : AD_Table (id, name)
+--   QueryCOrder / QueryCOrderLine : read-back of pushed documents (M1 verify)
 SET search_path=adempiere;
 DO $$
 DECLARE d record; tid int; t int; c record;
@@ -10,7 +11,9 @@ BEGIN
   FOR d IN SELECT * FROM (VALUES
       ('QueryChangeLog','AD_ChangeLog',NULL::text[]),
       ('QueryADColumn','AD_Column',ARRAY['AD_Column_ID','ColumnName','AD_Table_ID']),
-      ('QueryADTable','AD_Table',ARRAY['AD_Table_ID','TableName'])) AS v(val,tbl,cols) LOOP
+      ('QueryADTable','AD_Table',ARRAY['AD_Table_ID','TableName']),
+      ('QueryCOrder','C_Order',NULL::text[]),
+      ('QueryCOrderLine','C_OrderLine',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

@@ -50,7 +50,7 @@ Witness ids W-P1/P2/P5/P11/P12/P13/P15 are small structural/unit checks, to be w
 | # | Gap | Evidence | Resolution / status |
 |---|---|---|---|
 | G1 | **Idempotency vs F1.** After a timeout post-create, the change log cannot tell us whether the order exists (inserts unlogged by default). My earlier §3.5 relied on it. | W10 `§W10_INSERT_MODE` | Proposal: carry the POS ticket key in a standard free-text field a normal user also fills (e.g. order `POReference`/`Description`) and check existence with a read of that field. Zero schema change, but it IS a convention on legacy data IN concept (idempotent op, POSLens §3 'dupe refused'), but WHICH field = a Unicenta-project fact ⇒ DEFERRED to inference from that project, not asked now; until then ambiguous failure PARKS (P7). |
-| G2 | **Partial documents.** Header and each line are separate `create_data` calls with no shared transaction ⇒ crash between them leaves an orphan DR header. | ModelADService: one op per call | Probe stock `composite` WS (CompositeInterface, present in pilot) as one transaction (W1); else compensate: find orphan by the G1 key and void/complete. Kill-point test in W5. |
+| G2 ✅ RESOLVED 2026-10-09 | **Partial documents.** Header and each line are separate `create_data` calls with no shared transaction ⇒ crash between them leaves an orphan DR header. | ModelADService: one op per call | MEASURED: stock `composite_service/composite_operation` runs header+lines+DocAction in ONE transaction; a failing line returned `@IsRolledBack:true` and the pilot order count was unchanged (no orphan header). Header id is referenced by later ops as `@C_Order.C_Order_ID` / `recordIDVariable`. Needs a composite WS type + role access (pilot: stock type `SyncOrder`). Built into `doc_writer.js`/`pusher.js`. |
 | G3 | **Server effects are larger than "order lines" — MEASURED.** DocType 'POS Order' (WR) auto-creates shipment + invoice at CO; Store Central Oak Tree on-hand 4→3, shipments=1, invoices=1 on order 80005. A 'Standard Order' would NOT drop stock. | pilot probe 2026-10-09 | Context doctype must be the POS one; legacy users will see shipment+invoice appear ⇒ tell the admin. Confirms §16 rule 2 (stock falls at CO). |
 | G4 | **Rejected sale.** POS already handed goods over; legacy CO may fail (stock/period/credit). A rejected sale cannot be "un-sold". | policy | Never dropped: stays `REJECTED` with reason, visible. The resolution policy is ERP-side business, OUT of the layer's concept (dumb terminal, P15) ⇒ not asked. |
 | G5 | **Price must not be a keyed number.** My pilot probe sent a made-up `PriceActual=10` and the server accepted it (line 10, GrandTotal 10) — iDempiere does not stop a client from supplying price, so the discipline must live in the Bridge. | probe order 80005; POSLens §4 'no free numbers' | Bridge sends product ref + qty; price comes from the PriceList master row only (P15). Read-back compares local line amounts vs server `LineNetAmt`/`GrandTotal`; mismatch ⇒ DIVERGED (P6). The probe's price was a test artefact, not a design. |
@@ -570,5 +570,27 @@ ways; but the *judge* of correctness is equivalence of results, not who wrote fi
    are legacy's own computation and are *compared*, never written (P2).
 **Exit criterion (what "convinced" can be measured by):** over a stated period and volume of real documents, the `§GAP` list is empty or contains only
 accepted exclusions. That list is the evidence the legacy admin is shown.
+
+## §22 M1 BUILT + WITNESSED 2026-10-09 (SQLite-side outbox · state · idmap · descriptor doc writer · pusher) — vs the local pilot
+Code (all in `scripts/bridge/`, app-agnostic; `check_genericity.sh` = P3 gate, PASS): `store.js` (sql.js: outbox/state/idmap, crash recovery),
+`doc_writer.js` (descriptor → composite operations), `pusher.js` (drain), `ad_client.js` (+`composite`, typed errors NOT_SENT/AMBIGUOUS/AUTH/FAULT),
+witness `witness_m1_outbox.js` (descriptor there is TEST DATA). Pilot fixtures added: `QueryCOrder`/`QueryCOrderLine` read types, role access to `SyncOrder`.
+Result `§M1_VERDICT PASS-with-INCONCLUSIVE` (0 fails; W6 INCONCLUSIVE by design):
+| Line | Proved |
+|---|---|
+| `§M1_W1_ONECALL` | N documents ⇒ exactly N composite calls; server orders +N (psql oracle) |
+| `§M1_W1_IDEMPOTENT` | second drain: 0 calls, 0 orders |
+| `§M1_P15_PRICE` | payload carries no price; server priced the line from the PriceList master (61.75 == `M_ProductPrice` oracle) |
+| `§M1_IDMAP` | header row carries legacy `DocumentNo`; each side keeps its own numbers (twin §21) |
+| `§M1_W4_REJECT` | unknown product ⇒ REJECTED with the server's text, rolled back, later documents still flow (no poison) |
+| `§M1_W5_BEFORE` | crash before send ⇒ resume sends exactly one |
+| `§M1_W5_AFTER` | server committed, local store lost the answer ⇒ PARKED on recovery, 0 resends, 0 duplicates (G1 behaviour is now measured, not assumed) |
+| `§M1_NOTSENT_*` | unreachable server ⇒ stays QUEUED, attempts capped then PARKED, nothing lost; reconnect sends once |
+| `§M1_AUTH` | bad password ⇒ drain stops after ONE login attempt (no lockout loop) |
+| `§M1_W6` | INCONCLUSIVE — the pilot has no hand-keyed POS document to diff against; needs one keyed in the ZK UI (not faked) |
+Found while building (kept as facts): login failure text is `Error login - User invalid`; undici refuses "bad" ports like 1 (classified NOT_SENT);
+composite JSON shape is `{CompositeRequest:{ADLoginRequest,serviceType,operations:{operation:[{TargetPort,ModelCRUD|ModelSetDocAction}]}}}`.
+Still open in M1: G1 (an ambiguous PARKED ticket needs a way to be *resolved* — the ticket-key convention, deferred to the Unicenta project), W6 reference doc.
+Next: M2 DOWN replay, then M3 parallel-run `§GAP` report.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
