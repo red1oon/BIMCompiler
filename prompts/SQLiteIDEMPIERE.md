@@ -606,12 +606,12 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 **Seed corpus — behaviours already measured on the pilot this session (each becomes a runnable scenario in M3):**
 | # | Scenario (facts) | Legacy result (measured) | First verdict to establish on SQLite |
 |---|---|---|---|
-| S1 | POS-type order, 1 line, complete | 1 shipment + 1 invoice auto-created; store on-hand 4→3; GrandTotal 10 (priced 10 as supplied) | MATCH expected (W-POS-WR already green locally) — confirm to the cent |
-| S2 | line sent WITHOUT price | server priced from PriceList: 61.75 (std) | SQLite `ringLine` refuses when absent from list; present ⇒ same price |
-| S3 | line with a price the client invented (10) | legacy ACCEPTED it (no recompute) | **LEGACY-QUIRK candidate**: SQLite must not accept a keyed price (P15) — record as accepted exclusion |
-| S4 | unknown product on a line | whole document rejected + rolled back: `Foreign ID 999999 not found in M_Product_ID` | SQLite must also reject the document atomically |
+| S1 | POS-type order, 1 line, complete | 1 shipment + 1 invoice auto-created; on-hand −1; priced from PriceList 61.75 | ✅ **MATCH** (M3, 2026-10-09: docstatus, line, total 6175c, 1 shipment CO, 1 invoice, stock −1 all equal) |
+| S2 | product NOT on the PriceList (122) | document rejected: `Product is not on Price List` | ✅ **MATCH** (SQLite `ringLine` refuses `no-price`) |
+| S3 | line with a price the client invented (10) | legacy ACCEPTED it (line 1000c) | ✅ **LEGACY-QUIRK** registered with evidence (SQLite 6175c by design, P15) |
+| S4 | unknown product on a line | whole document rejected + rolled back: `Foreign ID 999999 not found in M_Product_ID` | ✅ **MATCH** (SQLite refuses the line, no document) |
 | S5 | complete while an extra active accounting schema has no product-category acct ('CP Copy Target') | NPE `MProductCategoryAcct … pca is null`, CO fails | **LEGACY-QUIRK** (data accident + unguarded code): SQLite should fail *clearly* (named error), not NPE; record |
-| S6 | Standard Order complete vs POS Order complete | Standard: no stock drop; POS(WR): stock drops + shipment + invoice | MATCH expected (dictionary-driven `docsubtypeso`) |
+| S6 | Standard Order (132) complete | CO, no shipment, no invoice, no stock move | ⚠ **SQLITE-GAP** (M3): SQLite `buildDeliverLaterGroup` also creates a **DR shipment at order time**; legacy creates none until a shipment is generated. Everything else equal. |
 | S7 | order with stock below zero after completion | to be measured (store had 4→3→2, negative not yet tried) | unknown — measure first |
 | S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
 | S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
@@ -636,5 +636,24 @@ duplicated legacy history into SQLite in production.
 Limits stated, not hidden: totals compared are LINES only (tax/GrandTotal and Fact_Acct are M3 `§GAP` territory); baseline reads the whole change log once
 (server-side max-id read = G13/paging, not built); a document that reached CO and was later reversed is not replayed as a reversal yet (VO seen, skipped — `now VO, not replayed`).
 Next: M3 parallel-run reconcile + `§GAP` report seeded with the §23 corpus (S1,S2,S4,S6 first).
+
+## §25 M3 BUILT + WITNESSED 2026-10-09 — parallel-run reconcile + `§GAP` report (first differential run, legacy vs SQLite)
+Code: `reconcile.js` (app-agnostic: normalised result diff, MATCH / SQLITE-GAP / LEGACY-QUIRK classification, quirk needs evidence, not-compared keys are LISTED),
+witness `witness_m3_gap.js` (legacy side = Bridge push + read-back over read WS types; SQLite side = the EXISTING kernel verbs `pos_core.js` on `ad_seed_fullwidth.db`;
+both adapters are test data). Pilot fixtures: 6 more read-only WS types (`QueryCInvoice(+Line)`, `QueryMInOut(+Line)`, `QueryStorage`, `QueryFactAcct`).
+Gate `check_genericity.sh` (7 files) PASS; W10, M1, M2 re-run green.
+**Two verdicts, kept apart:** `§M3_VERDICT HARNESS-PASS` (machinery works: no ERROR, not vacuous, negative control +1¢ caught as SQLITE-GAP, registered quirk classed
+LEGACY-QUIRK, quirk without evidence refused) and `§M3_FINDINGS` (the product).
+**Result of the first run — 5 scenarios, 8 keys each (outcome, docstatus, lines, total¢, shipments, shipments done, invoices, stock delta):**
+`MATCH=3` (S1 POS sale · S2 product not on PriceList · S4 unknown product) · `LEGACY-QUIRK=1` (S3 client-keyed price) · `SQLITE-GAP=1` (S6).
+S1 is the headline: a POS sale produced by the SQLite kernel verbs equals the legacy result to the cent, including the auto-created shipment/invoice and the stock move.
+**First true SQLITE-GAP (finding F1, from S6 Standard Order):** SQLite's deliver-later path (`pos_core.buildDeliverLaterGroup`, POS_ADDON_SPEC §P-12 "the pickable shipment")
+creates a DR `M_InOut` the moment the order completes; legacy creates none (a shipment appears only when generated later; `IsAutoGenerateInout='N'`). Default remedy per §21:
+change SQLite — OR record it as an accepted exclusion with the §P-12 reason. That is an engine-lane decision (`pos_core.js` is the POS engine); NOT changed here. Needs the user's call.
+**Bug found in my own fixture (P17):** a read WS type that lists a table's VIRTUAL (SQL) columns fails at query time (`The column name DocBaseType was not found in this ResultSet`);
+the pilot SQL now excludes `ColumnSQL` columns. Anyone writing the admin proposal list must do the same.
+**Not compared yet (listed in the log as `§SCN_NOT_COMPARED`):** `fact_acct` — legacy side is readable now; the SQLite posting fold (`doc_poster.derivePostings`) needs the new document rows
+in a local db (next increment S10); GrandTotal/tax (legacy tax was 0 on these docs). Also unmeasured: S5 (stray accounting schema), S7 (negative stock), S8 (past-dated).
+Run: `node scripts/bridge/witness_m3_gap.js` → read the `§GAP`, `§SCN`, `§RECON_SUMMARY`, `§M3_*` lines.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

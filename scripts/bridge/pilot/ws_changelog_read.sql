@@ -4,6 +4,7 @@
 --   QueryChangeLog : AD_ChangeLog (all columns)       QueryADColumn : AD_Column (id, name, table)
 --   QueryADTable   : AD_Table (id, name)
 --   QueryCOrder / QueryCOrderLine : read-back of pushed documents (M1 verify)
+--   QueryCInvoice(+Line) / QueryMInOut(+Line) / QueryStorage / QueryFactAcct : read-only comparison inputs for the parallel-run reconcile (M3)
 SET search_path=adempiere;
 DO $$
 DECLARE d record; tid int; t int; c record;
@@ -13,7 +14,13 @@ BEGIN
       ('QueryADColumn','AD_Column',ARRAY['AD_Column_ID','ColumnName','AD_Table_ID']),
       ('QueryADTable','AD_Table',ARRAY['AD_Table_ID','TableName']),
       ('QueryCOrder','C_Order',NULL::text[]),
-      ('QueryCOrderLine','C_OrderLine',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryCOrderLine','C_OrderLine',NULL::text[]),
+      ('QueryCInvoice','C_Invoice',NULL::text[]),
+      ('QueryCInvoiceLine','C_InvoiceLine',NULL::text[]),
+      ('QueryMInOut','M_InOut',NULL::text[]),
+      ('QueryMInOutLine','M_InOutLine',NULL::text[]),
+      ('QueryStorage','M_Storage',NULL::text[]),
+      ('QueryFactAcct','Fact_Acct',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);
@@ -27,6 +34,7 @@ BEGIN
            nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebService_Para')::int,'N'::varchar),tid,gen_random_uuid()
     FROM (VALUES ('TableName','C',d.tbl),('Action','C','Read'),('RecordID','F',NULL),('Filter','F',NULL)) AS v(pn,pt,cv);
     FOR c IN SELECT ad_column_id FROM ad_column WHERE ad_table_id=t AND isactive='Y'
+             AND columnsql IS NULL      -- virtual (SQL) columns are not in the table: WS query fails on them (found by M3: 'DocBaseType not found in ResultSet')
              AND (d.cols IS NULL OR columnname = ANY(d.cols)) LOOP
       INSERT INTO ws_webservicefieldoutput(ad_client_id,ad_column_id,ad_org_id,created,createdby,isactive,updated,updatedby,ws_webservicefieldoutput_id,ws_webservicetype_id,ws_webservicefieldoutput_uu)
       VALUES (11,c.ad_column_id,0,now(),100,'Y',now(),100,
