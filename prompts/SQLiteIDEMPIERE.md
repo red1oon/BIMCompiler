@@ -856,7 +856,8 @@ FactLine.java:237-250) are not handled — the SQLite posting db lacks that colu
 - ~~Q-S7~~ / ~~Q-S13~~ — answered by the CARDINAL RULE (copy legacy); closed by F6 (§38.1) and F5 (§36.1).
 - **Q-OOTB (concept source: CLAUDE.md AD-LAYER LAW + CARDINAL RULE; this lane's brief forbids touching ~/bim-ootb):** the SQLite Sales Order WINDOW runs `~/bim-ootb/erp/model_order.js`, where three legacy rules are missing:
   S2b price-list check on save (MOrderLine.java:842-849), server-side default pricing (MOrderLine.java:824-827), the void reversals of shipments/invoices (MOrder.java:2766-2840; F4 ported it into `scripts/erp_engine.js voidOrder`, not into that layer),
-  and the invented `MOrderLine/MInvoiceLine.qtyPositive` validators (legacy accepts 0 and negative quantities, S14 §47).
+  the invented `MOrderLine/MInvoiceLine.qtyPositive` validators (legacy accepts 0 and negative quantities, S14 §47), and loading the L&F dictionary patches (`scripts/bridge/out/lf_patch_*.sql`, 350→370 of 370 windows, §49)
+  plus the posting-db patch `build/erp/patches/glassbowl_data.db.sql` (§46.1) through a self-heal loader in the ERP host.
   **May this lane edit `~/bim-ootb/erp/model_order.js` (in a /tmp/wt-* worktree, PR not pushed), or will another session own it?** Everything is measured and specified (§33, §39); only the permission is missing.
 
 ## §35 CARDINAL RULE APPLIED (2026-10-09) — what it changes, enforced in code, backlog for the resume
@@ -1105,5 +1106,20 @@ S11/S12/S12b move to **137 Mulch 10#** (costed qty 50 @ 2.70, price 3.00, alread
 `scripts/bridge/witness_m3_gap.js` S12b, `invoice_tax_rev` + `order_desc` keys (void key set now has NO not-compared item), tax-aware void adapter, S11/S12/S12b on product 137.
 **Proof:** `§SCN S12-void-pos-sale MATCH compared=16` · `§SCN S12b-void-taxed-pos-sale MATCH compared=16` (reversal books `518 Dr −2120 / 596 Cr −120 / 758 Cr −2000`, reversal tax `105:-2000:-120`, shipment reversal swapped, description `** Voided`) · `§M3_VOID_NEGATIVE_CONTROL PASS`.
 **Regression:** 99 engine witnesses identical to the F13 run (exits and logs, except the known-nondeterministic ones).
+
+## §49 LOOK & FEEL PARITY — AD metadata dict_diff + "X of N windows" (2026-10-09, backlog item 7, cardinal rule 3) — SPEC before code
+**What the user sees is generated from the dictionary (AD-LAYER LAW).** The live SQLite window engine reads `~/bim-ootb/erp/ad_seed.db` (`erp/idempiere.html`); this repo's `build/erp/ad_seed.db` is an empty LFS stub. Measurement uses a SCRATCH COPY of the shipped file (read-only; nothing in ~/bim-ootb changes).
+**Step 1 — dict_diff over the UI dictionary:** AD_Window, AD_Tab, AD_Field, AD_Column, AD_Menu, AD_Message, AD_Ref_List, AD_Val_Rule, AD_Process, AD_Process_Para — legacy over the read types registered in §37 (whole tables in one read each; AD_Field 21,432 rows in 5.3 s), keys = the table ids,
+`keyBelow 1000000` (pilot customisations excluded). Output: per table `§DD_TABLE` + `§DICT_GAP` samples + reviewable `out/lf_patch_<table>.sql` / `lf_schema_<table>.sql` (legacy values, never delete). Columns legacy has and the SQLite UI lacks are SCHEMA gaps (reported).
+**Step 2 — structural witness `witness_lf_windows.js` ("X of N windows", ERP_IDEMPIERE_UX_PARITY.md style, numbers only):** N = legacy windows (dictionary denominator, not hand-picked). A window PASSES when, on both sides: the same tabs (ordered by SeqNo: name, TabLevel, AD_Table_ID, IsReadOnly,
+WhereClause) and, per tab, the same fields in the same order (SeqNo, Name, IsDisplayed, IsReadOnly, DisplayLogic, IsSameLine, AD_Column_ID → ColumnName, column IsMandatory, AD_Reference_ID, DefaultValue). Prints `§LF_WINDOWS pass=X of N`, the worst windows with the first differing attribute, and a
+NEGATIVE CONTROL (one field label changed on the scratch copy must turn its window to FAIL). Honest bound: this is DICTIONARY-level parity — what the renderer COMPUTES from it (callouts, display-logic evaluation, defaults at runtime) is the next layer and is not claimed.
+**RESULT §49 (2026-10-09, `scripts/bridge/witness_lf_parity.js`, in `run_all.sh`):** `§LF_WINDOWS pass=350 of N=370` legacy (active) windows have an identical dictionary structure in the SQLite UI today; `§LF_PATCHED … pass=370 of N=370` after the generated patches
+are applied to the scratch copy (`§LF_PATCH_EFFECT PASS`) — i.e. the whole look-and-feel gap at dictionary level is DATA/SCHEMA class, closable mechanically. `§LF_NEG PASS` (a relabelled field fails its window). Table findings:
+AD_Window 85 missing (+3 isactive cells), AD_Tab 38, AD_Field 521 (+49 help texts: legacy EMPTY where SQLite carries old text), AD_Column 375 (+41 help), AD_Menu 239, **AD_Message missing entirely (2,099 rows: every message text/translation key the UI shows)**, AD_Ref_List 46,
+AD_Val_Rule 0, AD_Process 0 (+2 help; run counters `statistic_*` excluded as runtime data), AD_Process_Para 0. The 20 failing windows fail on fields whose AD_Column is missing in SQLite (e.g. GL Category → DocBaseType, the four processor windows → Frequency/FrequencyType).
+SQLite-only rows (reported, never deleted): windows 7100000 "C Attendance", 7800000 "Construction" + 6 tabs + 3 menus — SQLite add-on modules (AD-LAYER LAW 6: non-core arrives as plugins).
+**Harness defect found (P17):** `keyBelow 1000000` (meant for pilot TEST documents) also hid real dictionary rows with ids ≥ 1,000,000 on the legacy side only (Asset ▸ Meter Log looked like 9 vs 11 fields) — removed for the AD specs.
+**Delivery (not done here):** the patches `scripts/bridge/out/lf_patch_*.sql` target the SHIPPED UI dictionary `~/bim-ootb/erp/ad_seed.db` ⇒ applying them = a loader / patch in ~/bim-ootb ⇒ part of Q-OOTB (§34). Renderer-level parity (runtime display logic, callouts, defaults) is the next layer, not claimed.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

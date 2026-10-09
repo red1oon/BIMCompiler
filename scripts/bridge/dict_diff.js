@@ -23,9 +23,13 @@ async function discover(cfg, spec) {
 }
 
 function compare(legacyRows, db, spec) {
+  if (typeof spec.skip === 'string') spec = Object.assign({}, spec, { skip: new RegExp(spec.skip, 'i') });   // JSON specs carry the pattern as a string
   const ks = keysOf(spec), k = ks[0];
   const cols = db.prepare(`PRAGMA table_info(${spec.table})`).all().map(c => c.name.toLowerCase());
-  const lcols = legacyRows.length ? Object.keys(legacyRows[0]) : [];
+  const lcols = legacyRows.length ? [...new Set(legacyRows.flatMap(r => Object.keys(r)))] : [];
+  if (!cols.length) {   // §49: the SQLite db has no such table at all — every legacy row is missing; only a CREATE TABLE (schema patch) can fix it
+    return { table: spec.table, legacy: legacyRows.length, local: 0, columns: 0, onlyLegacy: legacyRows, onlyLocal: [], changed: [], missingCols: lcols, missingTable: true, _common: [], _legacy: legacyRows, _localKeys: new Set(), _lcols: lcols };
+  }
   const common = cols.filter(c => lcols.includes(c) && !AUDIT.test(c) && !(spec.skip && spec.skip.test(c)));
   const missingCols = lcols.filter(c => !cols.includes(c) && !AUDIT.test(c) && !(spec.skip && spec.skip.test(c)));
   if (spec.columnsOnly) return { table: spec.table, legacy: legacyRows.length, local: null, columns: common.length, onlyLegacy: [], onlyLocal: [], changed: [], missingCols, _common: common, columnsOnly: true };
@@ -50,6 +54,7 @@ const q = v => (v === null || v === undefined || v === '') ? 'NULL' : (typeof v 
 
 // Patch text from legacy values only. INSERT … WHERE NOT EXISTS (idempotent even on keyless tables) for rows legacy has; UPDATE for changed cells. NEVER DELETE.
 function toPatch(res, spec) {
+  if (res.missingTable) return `-- dict_diff patch for ${spec.table}: table missing — see the SCHEMA patch\n`;
   const out = [`-- dict_diff patch for ${spec.table} (generated from legacy values; review before applying; never deletes)`];
   for (const r of res.onlyLegacy) {
     const cs = res._common; out.push(insertIfAbsent(spec, cs, r));
@@ -70,6 +75,13 @@ function whereOf(spec, id) {
 }
 // SCHEMA patch (spec §37): ADD the listed legacy-only columns, then fill them from LEGACY values (rows present locally) and insert legacy-only rows.
 function toSchemaPatch(res, spec) {
+  if (res.missingTable) {   // §49: CREATE the table with the legacy columns (untyped, like the seed tables) and load every legacy row
+    const cs = res._lcols.filter(c => !AUDIT.test(c));
+    const out = [`-- dict_diff SCHEMA patch for ${spec.table}: table MISSING in the SQLite db — created from the legacy columns, filled with legacy rows (spec §49; never deletes/drops)`,
+      `CREATE TABLE IF NOT EXISTS ${spec.table}(${cs.join(',')});`];
+    for (const lr of res._legacy) out.push(insertIfAbsent(spec, cs, lr));
+    return out.join('\n') + '\n';
+  }
   const add = (spec.addColumns || []).map(c => c.toLowerCase()).filter(c => (res.missingCols || []).includes(c));
   const out = [`-- dict_diff SCHEMA patch for ${spec.table} (spec §37; generated from legacy values; ALTERs are guarded by dict_diff.applyPatch; never deletes/drops)`];
   if (!add.length) return out.concat(['-- nothing to add']).join('\n') + '\n';

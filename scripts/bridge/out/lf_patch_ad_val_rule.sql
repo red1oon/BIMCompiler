@@ -1,0 +1,1 @@
+-- dict_diff patch for ad_val_rule (generated from legacy values; review before applying; never deletes)
