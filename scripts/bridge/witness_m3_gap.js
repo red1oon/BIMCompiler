@@ -187,7 +187,7 @@ function localRunAD() {
 // §38: the costed-qty deltas a committing host applies after a successful shipment post (legacy: same transaction) — keeps the scratch state moving like legacy's
 function applyCostQty(ioId) {
   for (const u of DP.costQtyUpdates(gb, ioId)) {
-    const r = gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+? WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
+    const r = gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+?, currentcostprice=COALESCE(?, currentcostprice) WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.currentcostprice == null ? null : u.currentcostprice, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);   // §67.1: the price moves on additions
     if (!r.changes) gb.prepare('INSERT INTO m_cost(m_product_id,c_acctschema_id,m_costtype_id,m_costelement_id,currentcostprice,cumulatedamt,cumulatedqty,currentqty) VALUES(?,?,?,?,0,0,0,?)').run(u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id, u.delta);
   }
 }
@@ -586,7 +586,7 @@ function localInventory(mut = 0) {
     for (const l of lines) gb.prepare('INSERT INTO m_inventoryline(m_inventoryline_id,m_inventory_id,m_locator_id,m_product_id,qtybook,qtycount,c_charge_id,isactive) VALUES(?,?,?,?,?,?,?,?)').run(l.m_inventoryline_id, iid, l.m_locator_id, l.m_product_id, l.qtybook, l.qtycount, null, 'Y');
     const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'M_Inventory', id: iid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
     const res = { outcome: 'COMPLETED', docstatus: status, lines: lines.map(l => `${l.m_product_id}:${l.qtybook}:${l.qtycount}`).sort().join('|'), stock_delta: JSON.stringify(stock), postings: fold(SCHEMA), postings_euro: fold(SCHEMA2) };
-    if (typeof DP.costQtyUpdatesFor === 'function') for (const u of DP.costQtyUpdatesFor(gb, 'M_Inventory', iid)) gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+? WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
+    if (typeof DP.costQtyUpdatesFor === 'function') for (const u of DP.costQtyUpdatesFor(gb, 'M_Inventory', iid)) gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+?, currentcostprice=COALESCE(?, currentcostprice) WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.currentcostprice == null ? null : u.currentcostprice, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
     res.cost_qty_delta = deltaStr(Object.keys(cq0), cq0, p => localCostQty(+p));
     return res;
   };

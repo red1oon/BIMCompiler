@@ -1499,6 +1499,7 @@ the captured GardenWorld books show for cash allocation 100 (`516 Dr 50.35 / 518
 | F28 | POS void reverses its invoice in full (IsPaid + allocation) — S12/S12b gained 2 keys | ✅ MATCH | §66.3 |
 | F29 | Purchase Requisition (model + rules) | ✅ MATCH | §66.1 |
 | F30 | Cash Journal (model + rules; cash books both schemas incl. suspense; DATA gap: cash-book accounts swapped) | ✅ 8/10 keys | §66.2 — allocation books ⛔ Q-CASH |
+| F31 | Average cost PRICE on stock-increasing details (shipment reversal, inventory gain) — found by the final run (PI1/O2C Euro drift) | ✅ MATCH | §67.1 |
 | F9 | back-date costing (S8a) | ⏸ | plan refined below; S8a observed flipping MATCH↔GAP between runs (state-dependent re-processing of the polluted Oak Tree history) |
 | S2b, F2, DELIVERY | | ⛔ Q-OOTB (unchanged) | |
 **Q-CASH (concept §52 4 — legacy's own result is the oracle; undecidable from the record because legacy itself gives TWO results):** a cash-journal invoice settlement is booked **Dr Suspense / Cr Receivable** when the allocation is posted immediately inside the cash journal's completion (the pilot; server log
@@ -1508,5 +1509,14 @@ SQLite then reproduces that one.
 (MatchPO, invoice, shipment, MatchInv, inventory, movement, production, project issue), within C_AcctSchema.BackDateDay. Port = (1) read types QueryMCostDetail (exists) + the cost-detail history into the scratch posting db for the product (handover); (2) `costFold(details)` = MCostDetail.process per element
 in DateAcct order (Average PO: setWeightedAverage — exists since F24; shipment / inventory qty — exist since F6/F18); (3) a back-dated detail re-folds the tail; (4) judge on a CLEAN product with a receipt interleaved (P2P receipt today, then a sale back-dated before it) — NOT on Oak Tree, whose
 history holds hundreds of refused harness shipments.
+
+### §67.1 DECISION RECORD F31 — the Average cost PRICE moves on stock-increasing cost details (shipment reversal, inventory gain), like legacy (2026-10-10, P17 from the final run)
+**Evidence (final `run_all`, PI1):** `postings_euro legacy 439 Cr 460 / 742 Dr 460, sqlite 459` — legacy's Euro Average-PO price of 137 had crept to 2.2978 while SQLite stayed at the synced 2.2976. Legacy cost history (M_CostHistory, read-only): every shipment REVERSAL (S12, O2C6) re-adds its quantity at the
+reversal's posted amount (1 × 2.30 EUR, a cent-rounded amount) and every inventory GAIN adds at qty × current cost rounded to the costing precision (2 × 2.29763318 = 4.5953) — both through MCost.setWeightedAverage, so the price moves by rounding; decreases change only the quantity.
+Rule: MCostDetail.process (MCostDetail.java:1700-1765): Average PO / Average Invoice element, `addition` (qty > 0) ⇒ setWeightedAverage(amt, qty) — for a customer shipment reversal the cumulated qty/amt are restored (no accumulation); qty < 0 ⇒ CurrentQty only.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/doc_poster.js` — `costQtyUpdates` (shipments) and `costQtyUpdatesFor` (inventory) return the new CurrentCostPrice for an addition on an Average element (shared `_weightedAverage`, the F24 arithmetic), amount = the reversal line's posted amount per schema / the
+gain × current cost at the costing precision; `witness_m3_gap.js` hosts apply the price when given.
+**Proof (`scratchpad/m3_f31.log`, full M3):** `§SCN PI1-physical-inventory-gain MATCH compared=7` (was Euro 459 vs 460), `O2C2-SHIP` / `O2C6-RC-SHIP` MATCH again (they had drifted the same way in the F30 run), `§M3_O2C_NEGATIVE_CONTROL PASS` (it had failed at SHIP from the drift), every other suite unchanged,
+`§M3_VERDICT HARNESS-PASS fails=0`. Open gaps in that run: S2b (Q-OOTB), S8a (F9 ⏸), CASH1 allocation books (Q-CASH) — nothing else. **Regression:** 99 engine witnesses vs F30: identical except the 4 known-nondeterministic logs.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

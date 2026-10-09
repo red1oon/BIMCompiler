@@ -376,24 +376,58 @@ function costQtyRefusal(db, lines) {
 }
 // the CurrentQty deltas a committing host applies after the shipment posted (legacy: same transaction). Shipment C- ⇒ −qty, reversal (qty already negated) ⇒ +qty.
 // §59 (F18): the same CurrentQty upkeep for a Physical Inventory line (cost detail qty = QtyCount − QtyBook, every active costing element × schema)
+// §67.1 (F31) MCostDetail.process (MCostDetail.java:1700-1765), Average PO / Average Invoice element: a stock-INCREASING detail (qty > 0) goes through MCost.setWeightedAverage(amt, qty)
+// (MCost.java:1696-1742 — the F24 arithmetic) so the PRICE moves; a decrease changes CurrentQty only. A customer-shipment reversal restores the cumulated qty/amt (no accumulation) — the host keeps them.
+// Returned: the NEW CurrentCostPrice next to the qty delta; `state` chains several lines of one call.
+function _costingPrecision(db, schema) {
+  var as = schemaRow(db, schema); if (!as) return null;
+  var r = _hasCol(db, 'c_currency', 'costingprecision') ? getRow(db, 'SELECT costingprecision AS p FROM c_currency WHERE c_currency_id=?', num(as.c_currency_id)) : null;
+  return r && r.p != null ? num(r.p) : null;
+}
+function _wavg(price, curQty, amtDec, qtyDec, prec) {   // all decimal strings/numbers; returns the new price as a Number (2 × prec decimals max)
+  var S = 12, cq = _scaleTo(_bigDec(curQty), S), q = _scaleTo(_bigDec(qtyDec), S), sum = cq + q;
+  if (sum === 0n) return Number(price);
+  var oldCost = _rhuB(_scaleTo(_bigDec(price), S) * cq, sum), newCost = _rhuB(_scaleTo(_bigDec(amtDec), S) * 10n ** 12n, sum), p = oldCost + newCost;
+  if (S > prec * 2) p = _rhuB(p, 10n ** BigInt(S - prec * 2)) * 10n ** BigInt(S - prec * 2);
+  return Number(_fmtDec(p, S));
+}
+function _costRow(db, state, pid, sch, ct, el) {
+  var k = [pid, sch, ct, el].join('|');
+  if (!state[k]) { var r = getRow(db, 'SELECT currentqty, currentcostprice FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?', [num(pid), num(sch), num(ct), num(el)]);
+    state[k] = { qty: r && r.currentqty != null ? Number(r.currentqty) : 0, price: r && r.currentcostprice != null ? String(r.currentcostprice) : '0' }; }
+  return state[k];
+}
+function _avgUpdate(db, state, out, pid, sc, e, delta, amtDecOf) {
+  var u = { m_product_id: num(pid), c_acctschema_id: sc.id, m_costtype_id: sc.ct, m_costelement_id: e.id, delta: delta };
+  var c = _costRow(db, state, pid, sc.id, sc.ct, e.id);
+  if (delta > 0 && (e.cm === 'A' || e.cm === 'I')) {
+    var prec = _costingPrecision(db, sc.id), amt = prec == null ? null : amtDecOf(c, prec);
+    if (amt != null) { u.currentcostprice = _wavg(c.price, c.qty, amt, delta, prec); c.price = String(u.currentcostprice); }
+  }
+  c.qty += delta;
+  out.push(u);
+}
 function costQtyUpdatesFor(db, table, id) {
   if (table === 'M_InOut') return costQtyUpdates(db, id);
   if (table !== 'M_Inventory' || !_hasCol(db, 'm_cost', 'currentqty')) return [];
-  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out = [];
+  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out = [], state = {};
   allRows(db, 'SELECT m_product_id, qtybook, qtycount FROM m_inventoryline WHERE m_inventory_id=?', num(id)).forEach(function (l) {
     var d = Number(l.qtycount) - Number(l.qtybook); if (!d || !_isStocked(db, l.m_product_id)) return;
-    schemas.forEach(function (sc) { els.forEach(function (e) { out.push({ m_product_id: num(l.m_product_id), c_acctschema_id: sc.id, m_costtype_id: sc.ct, m_costelement_id: e.id, delta: d }); }); });
+    // inventory gain: the cost detail amount = qty × current cost, HALF_UP at the costing precision (pilot history: 2 × 2.29763318 ⇒ 4.5953)
+    schemas.forEach(function (sc) { els.forEach(function (e) { _avgUpdate(db, state, out, l.m_product_id, sc, e, d, function (c, prec) { var pr = _bigDec(c.price), q = _bigDec(d); return _fmtDec(_rhuB(pr.n * q.n * 10n ** BigInt(prec), 10n ** BigInt(pr.k + q.k)), prec); }); }); });
   });
   return out;
 }
 function costQtyUpdates(db, ioId) {
   if (!_hasCol(db, 'm_cost', 'currentqty')) return [];
   var lines = allRows(db, 'SELECT m_product_id, movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId));
-  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out = [];
+  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out = [], state = {};
   lines.forEach(function (l) {
     if (!_isStocked(db, l.m_product_id)) return;
     schemas.forEach(function (sc) { els.forEach(function (e) {
-      out.push({ m_product_id: num(l.m_product_id), c_acctschema_id: sc.id, m_costtype_id: sc.ct, m_costelement_id: e.id, delta: -Number(l.movementqty) });
+      // a reversal line (qty already negated ⇒ +qty) re-adds at its POSTED amount = the original line's cost amount in this schema, cent-rounded (Doc_InOut reversal facts; pilot history 1 × 2.2976 ⇒ 2.30)
+      _avgUpdate(db, state, out, l.m_product_id, sc, e, -Number(l.movementqty), function () { var cc = currentCost(db, l.m_product_id, sc.id); if (cc.price == null) return null;
+        var pd = _bigDec(cc.price), qd = _bigDec(Math.abs(Number(l.movementqty))); return _fmtDec(_rhuB(pd.n * qd.n * 100n, 10n ** BigInt(pd.k + qd.k)), 2); });
     }); });
   });
   return out;
