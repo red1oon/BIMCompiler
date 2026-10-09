@@ -33,7 +33,7 @@ Each principle: rule · where it comes from · how it is ENFORCED (not just stat
 | P3 | **Layer is plugin-agnostic.** No plugin table/column names inside the layer; a plugin = descriptor + rules + UI. | user §00 | grep gate (no `C_Order`/`M_Product`… literals in layer code); W8 diff is descriptor-only | W8 |
 | P4 | **Local-first.** UI never waits on the network; offline = fully working; sync is a background worker. | user §0 | UI path has no sync call; W5 with network killed | W5 |
 | P5 | **Extract / never invent.** Context (Org, PriceList, warehouse, customer, doctype) comes from config inferred from the user's Unicenta project. Missing context ⇒ sync REFUSES (`BLOCKED_NO_CONTEXT`), never defaults. | PRIME RULE | context completeness check before first push | W-P5 |
-| P6 | **Server is authority; no silent fix.** A mismatch becomes a visible state (`REJECTED` / `DIVERGED`), never an automatic correction or drop. | §6 | state machine has no auto-resolve transition | W4, W7 |
+| P6 | **Twin, no silent override (§21).** SQLite is the working world; legacy is its twin. When they disagree, neither side silently overrides the other: the mismatch becomes a visible state (`REJECTED` / `DIVERGED` / `§GAP`), never an automatic correction or drop. During the parallel run the default remedy is to fix the SQLite rule. | user 2026-10-09 | state machine has no auto-resolve transition | W4, W7 |
 | P7 | **Idempotent + resumable.** Kill at any step ⇒ re-run gives no duplicate and no loss. An undecidable case PARKS, it does not guess. | user | W5 kill-points: before header / between header & lines / before CO / after CO | W5 |
 | P8 | **No poison.** One bad ticket never blocks the others; it is parked with the server's reason and stays visible to a manager. | pre-mortem | queue is per-ticket, not per-batch | W4 |
 | P9 | **Scope lock.** Only flows the user described (§16: order lines up, ProductQty down). A new flow needs a dated user quote in §9 first. | user 2026-10-09 ("do not drift") | review checklist; §16 is the only flow list | review |
@@ -115,7 +115,7 @@ Newer REST (`/api/v1`) exists only if the target runs the REST plugin — NOT as
    `synced=0`). Local posting happens immediately so the UI works offline.
 2. Pusher replays per document, in causal order: `createData(header)` → `createData(lines)` → `setDocAction(DR→CO…)`.
    Batch = many docs per sync run; order across docs follows the component's declared dependency order.
-3. **Server is the authority for numbering + posting.** DocumentNo, C_*_ID come back and go to the Id map.
+3. **Legacy issues its own identifiers** (DocumentNo, C_*_ID) for the docs it holds; they come back into the Id map. SQLite keeps its own numbers. "Same result" excludes identifiers (§21).
    Local provisional numbers (own prefix) are shown until mapped; printed documents wait for the real number.
 4. **Verify after push, per doc:** `readData` the doc → compare header/lines/docstatus/GrandTotal to local → (plugins that
    post locally) compare server Fact_Acct to the locally computed postings (§W3; not needed for POS-minimal §16). Mismatch = doc marked `SYNC_DIVERGED`, never silently fixed.
@@ -161,7 +161,7 @@ Check before designing further: `feat/erp-odoo-descriptor` in bim-ootb and `prom
 existing descriptor/plugin work that may already fix the shape.
 
 ## §6 Conflict + ownership rules (draft, to be ratified)
-- **Masters:** server wins (legacy still the book of record).
+- **Masters:** aligned once at baseline (§19 C5); a later master change is a model/superior-role matter (§14), not routine sync. (Old line "server wins" withdrawn — twin model, §21.)
 - **Docs:** immutable once CO. A change = reverse/new doc, never an edit — this is what makes sync conflict-free
   for completed docs. Only DR docs can conflict; local-authored drafts are never touched by DOWN.
 - **Same-doc race** (both sides acted): the server's docstatus wins; local doc becomes `REJECTED/DIVERGED` with both
@@ -548,5 +548,27 @@ layer is proven app-free first (M5 would otherwise bend it).
 **Decisions this proposal assumes (all already in the record, none new):** stock WS only (§19 C1–C4); vanilla server config (C7); price never
 keyed (P15); pilot only, reset by importiDempiere when needed. **Open, deferred to the Unicenta project (not asked):** the exact `c_pos`
 defaults and the ticket-key field (G1).
+
+## §21 TWIN PRINCIPLE (user 2026-10-09: "my world is actually just SQLite throughout; legacy is just a twin where it sees the same result")
+**Statement.** SQLite is the working world and the place where rules live and change. Legacy iDempiere is a **twin**: it must end up showing
+the **same result** for the same facts. During the parallel run both sides are live (legacy users still key documents there), so facts flow both
+ways; but the *judge* of correctness is equivalence of results, not who wrote first.
+**"Same result" — defined, not felt (compared per document by the reconcile, M3):**
+| Compared (must be equal) | Excluded (may differ) |
+|---|---|
+| docstatus · line product and qty · line and header amounts in minor units · tax · Fact_Acct per account (debit/credit) · stock effect per product/warehouse · business dates | internal ids · DocumentNo · created/updated stamps · createdby/session · row order |
+**Consequences (what changes in the design — and what does not):**
+1. **Authority wording.** Earlier "server is authority / server wins" is withdrawn (P6, §3.3, §6 edited). Neither side silently overrides; a difference is a
+   `§GAP` with the rule that produced it. While SQLite is still learning, the default remedy is to **fix the SQLite rule** (that is the stated purpose of the
+   parallel run). Legacy data is never edited by the Bridge to "make it match".
+2. **Direction.** UP = SQLite facts as normal docs (§3). DOWN = what legacy users keyed, absorbed as facts (§4) — until cutover. After cutover (legacy switched
+   off) DOWN simply stops; nothing else changes — that is the reason the layer has no dependency on legacy-side installs.
+3. **Identity.** The Id map links the twins' records; each keeps its own number. A printed document carries the SQLite number during the parallel run.
+4. **Failure meaning.** A legacy REJECT of a doc SQLite accepted = a SQLite gap (a legacy rule SQLite lacks). Legacy accepts but totals differ = a calculation gap.
+   Both are the *expected output* of the run, not errors in the layer.
+5. **Not implied.** "Twin" does not mean legacy mirrors every table: only the documents/facts of the apps in play (M5, M6). Derived tables (Fact_Acct, M_Storage)
+   are legacy's own computation and are *compared*, never written (P2).
+**Exit criterion (what "convinced" can be measured by):** over a stated period and volume of real documents, the `§GAP` list is empty or contains only
+accepted exclusions. That list is the evidence the legacy admin is shown.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
