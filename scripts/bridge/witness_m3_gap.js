@@ -636,6 +636,8 @@ const CASH_DESC = {
   cash: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateCash', table: 'C_Cash', fields: { AD_Org_ID: { const: 11 }, C_CashBook_ID: { const: 101 }, Name: { path: 'name' }, StatementDate: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
     lines: { serviceType: 'BridgeCreateCashLine', table: 'C_CashLine', parent: 'C_Cash_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, CashType: { const: 'I' }, C_Invoice_ID: { path: 'inv' }, Amount: { path: 'amt' }, C_Currency_ID: { const: 100 } } },
     docAction: { serviceType: 'BridgeCompleteCash', table: 'C_Cash', action: 'CO' } } };
+// §68 (F32) the window shape: the cash journal is SAVED (committed) first, completed by a separate doc-action call — same descriptor without the doc-action
+CASH_DESC.cashSaved = Object.fromEntries(Object.entries(CASH_DESC.cash).filter(([k]) => k !== 'docAction'));
 const cashSpec = { keys: ['outcome', 'cash_status', 'statement_diff', 'allocation', 'ispaid', 'books_cash', 'books_cash_euro', 'books_alloc', 'books_alloc_euro', 'bp_delta'], notCompared: {} };
 let cashLink = null;
 const bpOf = async () => { const b = (await query(cfg, 'QueryCBPartner', `C_BPartner_ID=${BP}`))[0]; return { open: cents(b.TotalOpenBalance), credit: cents(b.SO_CreditUsed) }; };
@@ -645,11 +647,14 @@ async function legacyCash(f) {
   const iu = cashLink.submit(f.draft ? 'invDraft' : 'inv', { org: 11, bp: BP, loc: LOC[BP], date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines.map(l => ({ ...l, org: 11 })) });
   await cashLink.drain(); const ist = cashLink.store.get(iu); if (ist.state !== 'CONFIRMED') return { outcome: 'ERROR', error: 'invoice: ' + ist.error };
   const invId = cashLink.store.idmap(iu).find(x => x.tbl === 'C_Invoice').server_id, inv = (await query(cfg, 'QueryCInvoice', `C_Invoice_ID=${invId}`))[0];
-  const cu = cashLink.submit('cash', { name: 'M3 ' + f.id + ' ' + Date.now().toString(36), date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: [{ inv: invId, amt: Number(inv.GrandTotal) }] });
+  const cu = cashLink.submit(f.split ? 'cashSaved' : 'cash', { name: 'M3 ' + f.id + ' ' + Date.now().toString(36), date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: [{ inv: invId, amt: Number(inv.GrandTotal) }] });
   await cashLink.drain(); const cst = cashLink.store.get(cu);
   if (cst.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(cst.error || '')) throw new Error('§WS_CONFIG ' + cst.error);
   if (cst.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (cst.error || '').slice(0, 120) };
   const cashId = cashLink.store.idmap(cu).find(x => x.tbl === 'C_Cash').server_id;
+  if (f.split) {   // §68: the separate Complete (its own server transaction, the journal already committed)
+    try { await call_(cfg, 'set_docaction', { ModelSetDocAction: { serviceType: 'BridgeCompleteCash', tableName: 'C_Cash', recordID: cashId, docAction: 'CO' } }); }
+    catch (e) { return { outcome: 'REJECTED', reason: String(e.message).slice(0, 120) }; } }
   let h; for (let i = 0; i < 10; i++) { h = (await query(cfg, 'QueryCCash', `C_Cash_ID=${cashId}`))[0]; if (['Y', 'E'].includes(h.Posted) || h.Posted === true) break; await new Promise(r => setTimeout(r, 1500)); }
   const al = await query(cfg, 'QueryCAllocationLine', `C_Invoice_ID=${invId}`); const hid = al[0] && al[0].C_AllocationHdr_ID;
   const ah = hid ? (await query(cfg, 'QueryCAllocationHdr', `C_AllocationHdr_ID=${hid}`))[0] : null;
@@ -660,8 +665,15 @@ async function legacyCash(f) {
   return { outcome: 'COMPLETED', cash_status: h.DocStatus, statement_diff: cents(h.StatementDifference), allocation: al.map(a => `${ah.DocStatus}:${cents(a.Amount)}:${a.C_CashLine_ID ? 'cash' : '-'}`).join('|') || 'none',
     ispaid: inv2.IsPaid === true || inv2.IsPaid === 'Y' ? 'Y' : 'N', books_cash: c1, books_cash_euro: c2, books_alloc: a1, books_alloc_euro: a2, bp_delta: `${bp1.open - bp0.open}/${bp1.credit - bp0.credit}` };
 }
-function localCash(mut = 0) {
+function localCash(mut = 0, mode = null) {
   return async f => {
+    const was = mode ? (gb.prepare("SELECT value v FROM ad_sysconfig WHERE name='CLIENT_ACCOUNTING'").get() || {}).v : null;
+    if (mode) gb.prepare("UPDATE ad_sysconfig SET value=? WHERE name='CLIENT_ACCOUNTING'").run(mode);   // §68 mode control: the SQLite side flipped, legacy unchanged
+    try { return await localCash1(mut, f); } finally { if (mode) gb.prepare("UPDATE ad_sysconfig SET value=? WHERE name='CLIENT_ACCOUNTING'").run(was); }
+  };
+}
+async function localCash1(mut, f) {
+  {
     if (typeof E.completeCash !== 'function') return { outcome: 'COMPLETED', cash_status: 'DR', statement_diff: 0, allocation: 'none', ispaid: 'N', books_cash: 'none', books_cash_euro: 'none', books_alloc: 'none', books_alloc_euro: 'none', bp_delta: 'none' };
     const iid = ++seq * 10;
     const r = E.prepareInvoice({ c_invoice_id: iid, issotrx: 'Y', c_bpartner_id: BP, dateinvoiced: TODAY }, f.lines.map((l, i) => ({ c_invoiceline_id: iid * 100 + i, m_product_id: l.product, qtyinvoiced: l.qty })),
@@ -684,7 +696,8 @@ function localCash(mut = 0) {
     lines.forEach(l => gb.prepare('INSERT INTO c_cashline(c_cashline_id,c_cashbook_id,c_cash_id,amount,cashtype,c_invoice_id,c_currency_id) VALUES(?,?,?,?,?,?,?)').run(l.c_cashline_id, 101, cid, l.amount, l.cashtype, l.c_invoice_id, l.c_currency_id));
     if (ah) { gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id, TODAY + ' 00:00:00', 'CO', 11, 11);
       for (const l of al) gb.prepare('INSERT INTO c_allocationline(c_allocationline_id,c_allocationhdr_id,c_payment_id,c_cashline_id,c_invoice_id,c_bpartner_id,amount,writeoffamt,discountamt) VALUES(?,?,?,?,?,?,?,?,?)').run(l.c_allocationline_id, ah.c_allocationhdr_id, null, l.c_cashline_id, l.c_invoice_id, l.c_bpartner_id, l.amount, 0, 0); }
-    const fold = (t, id, sc2) => { if (!id) return 'none'; const d = DP.derivePostings(gb, { table: t, id }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    // §68 (F32): the transaction shape is part of the operation — composite create+complete (CASH1) vs saved first, completed later (CASH1b, f.split)
+    const fold = (t, id, sc2) => { if (!id) return 'none'; const d = DP.derivePostings(gb, { table: t, id, cashJournalSameTrx: !f.split }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
     return { outcome: 'COMPLETED', cash_status: 'CO', statement_diff: cents(c.statementDifference), allocation: al.map(l => `CO:${cents(l.amount)}:cash`).join('|') || 'none', ispaid: paid,
       books_cash: fold('C_Cash', cid, SCHEMA), books_cash_euro: fold('C_Cash', cid, SCHEMA2), books_alloc: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA), books_alloc_euro: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA2),
       bp_delta: `${b1.open - b0.open}/${b1.credit - b0.credit}` };
@@ -803,9 +816,15 @@ const quirks = [
     out('§M3_REQ_NEGATIVE_CONTROL', rneg[0].verdict === 'SQLITE-GAP' && ['lines', 'total_cents'].every(k => rneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite requisition price ⇒ verdict=${rneg[0].verdict} gaps=${rneg[0].gaps.map(g => g.key).join(',')}`); }
   // MODEL Cash Journal (spec §66)
   rows.push(...await R.run(keepOnly([{ id: 'CASH1-cash-journal-settles-invoice', facts: { id: 'CASH1', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) },
+    { id: 'CASH1b-cash-journal-saved-then-completed', facts: { id: 'CASH1b', split: true, lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) },
     { id: 'CASH-REJ-invoice-not-completed', facts: { id: 'CASHR', draft: true, lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) }]), cashSpec, quirks, { log }));
   if (!only) { const cneg = await R.run([{ id: 'NEG-cash-control', facts: { id: 'CASHN', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(1) }], cashSpec, quirks, { log });
-    out('§M3_CASH_NEGATIVE_CONTROL', cneg[0].verdict === 'SQLITE-GAP' && ['statement_diff', 'ispaid'].every(k => cneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite cash line ⇒ verdict=${cneg[0].verdict} gaps=${cneg[0].gaps.map(g => g.key).join(',')}`); }
+    out('§M3_CASH_NEGATIVE_CONTROL', cneg[0].verdict === 'SQLITE-GAP' && ['statement_diff', 'ispaid'].every(k => cneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite cash line ⇒ verdict=${cneg[0].verdict} gaps=${cneg[0].gaps.map(g => g.key).join(',')}`);
+    // §68 (F32) mode control: the SQLite side read with CLIENT_ACCOUNTING flipped to Q (legacy stays I) MUST differ on the allocation books — proves the mirrored setting governs the rule
+    const mode = (gb.prepare("SELECT value v FROM ad_sysconfig WHERE name='CLIENT_ACCOUNTING'").get() || {}).v;
+    const cmode = await R.run([{ id: 'NEG-cash-mode-control', facts: { id: 'CASHM', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0, 'Q') }], cashSpec, quirks, { log });
+    out('§M3_CASH_MODE_CONTROL', mode === 'I' && cmode[0].verdict === 'SQLITE-GAP' && ['books_alloc', 'books_alloc_euro'].every(k => cmode[0].gaps.some(g => g.key === k)) && cmode[0].gaps.length === 2,
+      `synced CLIENT_ACCOUNTING=${mode}; SQLite read as Q on the CASH1 shape ⇒ verdict=${cmode[0].verdict} gaps=${cmode[0].gaps.map(g => g.key).join(',')} (must be exactly the 2 allocation-book keys)`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
@@ -875,6 +894,22 @@ const quirks = [
     const dif = Object.values(t).reduce((a, x) => a + x.DIFF, 0), m = t.ARI.MATCH + t.API.MATCH;
     out('§M3_F27_ORACLE2', dif === 0 && t.ARI.MATCH > 0 && t.API.MATCH > 0, `captured invoice books ${Object.entries(t).map(([k, x]) => `${k}:MATCH=${x.MATCH}/ABSENT=${x.ABSENT}/DIFF=${x.DIFF}${x.MATCH + x.ABSENT + x.DIFF ? '' : '(none captured)'}`).join(' ')} ${notes.join(' ')}`);
     g4.close(); fs.unlinkSync(f4); }
+  // §68 (F32) posting-mode oracle on the CAPTURED GardenWorld books: cash allocation(s) in the shared posting db were posted by the accounting processor (committed journal).
+  // Q (any shape) and I with a committed journal ⇒ fold == captured; I + same-transaction ⇒ the fold MUST differ (suspense / realized loss) — the rule is keyed on the mirrored setting.
+  { const f5 = path.join(os.tmpdir(), 'm3-gbmode-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), f5);
+    const g5 = new Database(f5); require('./dict_diff').applyPatch(g5, GB_PATCH);
+    const sp = require('./dict_spec.json').find(x => x.table === 'ad_sysconfig' && x.db === 'glassbowl'), DD = require('./dict_diff'), L = await DD.discover(cfg, sp), r0 = DD.compare(L, g5, sp);
+    DD.applyPatch(g5, DD.toSchemaPatch(r0, sp) + DD.toPatch(r0, sp));
+    const ids = g5.prepare('SELECT DISTINCT al.c_allocationhdr_id h FROM c_allocationline al JOIN fact_acct f ON f.ad_table_id=735 AND f.record_id=al.c_allocationhdr_id WHERE CAST(COALESCE(NULLIF(al.c_cashline_id, \'\'), 0) AS INTEGER) > 0').all().map(r => r.h);
+    const res = [];
+    for (const [mode, same, expect] of [['Q', true, 'MATCH'], ['I', false, 'MATCH'], ['I', true, 'DIFF']]) {
+      g5.prepare("UPDATE ad_sysconfig SET value=? WHERE name='CLIENT_ACCOUNTING'").run(mode);
+      for (const id of ids) for (const sc2 of [SCHEMA, SCHEMA2]) {
+        const d = DP.derivePostings(g5, { table: 'C_AllocationHdr', id, cashJournalSameTrx: same }, sc2), o = fmtPostings(g5.prepare('SELECT account_id, SUM(amtacctdr) amtacctdr, SUM(amtacctcr) amtacctcr FROM fact_acct WHERE ad_table_id=735 AND record_id=? AND c_acctschema_id=? GROUP BY account_id').all(id, sc2));
+        const got = d.absent.length ? 'ABSENT' : fmtPostings(d.lines) === o ? 'MATCH' : 'DIFF'; res.push({ mode, same, id, sc2, got, expect, fold: fmtPostings(d.lines), o }); } }
+    const ok = ids.length > 0 && res.every(x => x.got === x.expect);
+    out('§CASH_MODE_ORACLE', ids.length ? ok : 'INCONCLUSIVE', `captured cash allocations=${ids.join(',') || 'none'}; ` + res.map(x => `${x.mode}/${x.same ? 'sameTrx' : 'committed'} #${x.id}@${x.sc2}:${x.got}(want ${x.expect})${x.got === 'DIFF' ? ' fold=' + x.fold + ' captured=' + x.o : ''}`).join(' ; '));
+    g5.close(); fs.unlinkSync(f5); }
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
   out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a quirk entry with no evidence is refused');

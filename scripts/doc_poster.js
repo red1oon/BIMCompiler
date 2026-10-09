@@ -102,7 +102,7 @@ function _rhuB(n, d) { var neg = n < 0n, a = neg ? -n : n, q = a / d; if ((a % d
 // §65.4 (F27): FactLine.convert works per FACT LINE (FactLine.java:819-900); the fold keeps each line's source amount next to the per-account sum so a second-currency schema
 // converts line by line (legacy) instead of converting the sum (rounding differs on multi-line documents — found by the captured-books oracle, invoices 103 / 106 schema 200000).
 function _part(acc, side, amt) { (acc.parts || (acc.parts = [])).push({ side: side, amt: amt }); }
-function convertToSchema(db, by, absent, invId, schema, table) {
+function convertToSchema(db, by, absent, invId, schema, table, opts) {
   table = table || 'c_invoice';
   // table/column-guarded like every §29-§38 addition: a posting db without c_currency/c_conversion_rate/c_acctschema keeps the old (unconverted) fold; the
   // c_currency table for the shared posting db ships as build/erp/patches/glassbowl_data.db.sql (patch text; host loader = open item, spec §46.1)
@@ -130,9 +130,45 @@ function convertToSchema(db, by, absent, invId, schema, table) {
     else { x.dr = conv(x.dr); x.cr = conv(x.cr); }
     dr += x.dr; crs += x.cr;
   });
-  if (dr !== crs && table === 'c_allocationhdr') absent.push('allocation rounding correction not ported (Doc_AllocationHdr.java:1147-1900 runs before balanceAccounting; diff=' + (dr - crs) + ')');
+  if (dr !== crs && table === 'c_allocationhdr' && opts && opts.allocBalance) _allocBalanceAccounting(db, by, absent, schema, dr - crs);   // §68 (F32): the clearing leg is missing (getCashAcct NONE)
+  else if (dr !== crs && table === 'c_allocationhdr') absent.push('allocation rounding correction not ported (Doc_AllocationHdr.java:1147-1900 runs before balanceAccounting; diff=' + (dr - crs) + ')');
   else if (dr !== crs) balanceAccounting(db, by, absent, schema, dr - crs);
 }
+// §68 (F32) Doc_AllocationHdr.balanceAccounting (Doc_AllocationHdr.java:1807-1828 @{u}; runs inside createFacts when the allocation currency ≠ the schema currency, :548-549):
+// diff = ΣAmtAcctDr − ΣAmtAcctCr; currency balancing on and |diff| < TOLERANCE 0.02 (:78) ⇒ createLine(null, CurrencyBalancing_Acct, −diff) (negative ⇒ CR, Fact.java:206-212);
+// else createLine(null, RealizedLoss, RealizedGain, schema currency, −diff): positive ⇒ DR loss, negative ⇒ CR gain (Fact.java:186-193); accounts from C_AcctSchema_Default. Missing config ⇒ absent by name.
+function _allocBalanceAccounting(db, by, absent, schema, diff) {
+  var R = _R(), amt = -diff, acct = null;
+  var gl = _hasCol(db, 'c_acctschema_gl', 'usecurrencybalancing') ? getRow(db, 'SELECT usecurrencybalancing AS u, currencybalancing_acct AS a FROM c_acctschema_gl WHERE c_acctschema_id=?', num(schema)) : null;
+  if (gl && String(gl.u) === 'Y' && Math.abs(diff) < 2) acct = R && R.elementOf ? R.elementOf(db, gl.a) : null;
+  else {
+    var dft = _hasCol(db, 'c_acctschema_default', 'realizedloss_acct') ? getRow(db, 'SELECT realizedgain_acct AS g, realizedloss_acct AS l FROM c_acctschema_default WHERE c_acctschema_id=?', num(schema)) : null;
+    if (!dft) { absent.push('C_AcctSchema_Default.RealizedGain/Loss_Acct'); return; }
+    acct = R && R.elementOf ? R.elementOf(db, amt > 0 ? dft.l : dft.g) : null;
+  }
+  if (!acct) { absent.push('allocation balanceAccounting account unresolved'); return; }
+  var k = acct.id; if (!by[k]) by[k] = { account_id: acct.id, value: acct.value, name: acct.name, dr: 0, cr: 0 };
+  if (amt > 0) by[k].dr += amt; else by[k].cr += -amt;
+}
+// §68 (F32): MSysConfig.getValue(Name, default, AD_Client_ID, AD_Org_ID) (MSysConfig.java:595-640 @{u}) over the MIRRORED ad_sysconfig (state-synced from legacy, dict_spec):
+// WHERE Name=? AND AD_Client_ID IN (0,?) AND AD_Org_ID IN (0,?) AND IsActive='Y' ORDER BY AD_Client_ID DESC, AD_Org_ID DESC; no table / no row ⇒ the caller's LEGACY default.
+// Column-guarded: a posting db that has not been synced yet (name/value/ad_client_id only) is read as it is (no org / active filter it cannot express).
+function sysConfig(db, name, dflt, client, org) {
+  if (!_hasCol(db, 'ad_sysconfig', 'value')) return dflt;
+  var hasOrg = _hasCol(db, 'ad_sysconfig', 'ad_org_id'), hasAct = _hasCol(db, 'ad_sysconfig', 'isactive');
+  var r = getRow(db, 'SELECT value FROM ad_sysconfig WHERE name=? AND ad_client_id IN (0,?)' + (hasOrg ? ' AND COALESCE(ad_org_id,0) IN (0,?)' : '') + (hasAct ? " AND COALESCE(isactive,'Y')='Y'" : '') +
+    ' ORDER BY ad_client_id DESC' + (hasOrg ? ', COALESCE(ad_org_id,0) DESC' : ''), hasOrg ? [name, num(client) || 0, num(org) || 0] : [name, num(client) || 0]);
+  return r && r.value != null ? String(r.value) : dflt;
+}
+// MSysConfig.getBooleanValue (MSysConfig.java:452-464): empty ⇒ default; Y/N (any case); else Boolean.valueOf (only "true" is true)
+function sysConfigBool(db, name, dflt, client, org) {
+  var v = sysConfig(db, name, null, client, org);
+  if (v == null || v === '') return dflt;
+  if (/^y$/i.test(v)) return true; if (/^n$/i.test(v)) return false;
+  return /^true$/i.test(v);
+}
+// MClient.isClientAccountingImmediate (MClient.java:1094-1100 @{u}): CLIENT_ACCOUNTING equalsIgnoreCase 'I', default 'Q'
+function isClientAccountingImmediate(db, client) { return /^i$/i.test(sysConfig(db, 'CLIENT_ACCOUNTING', 'Q', client, 0)); }
 // Fact.balanceAccounting (Fact.java:548-615) — currency-balancing branch: diff = DR−CR; a line on C_AcctSchema_GL.CurrencyBalancing_Acct, CR |diff| when DR exceeds, DR |diff| otherwise,
 // with sides switched (negative amount) when the biggest balance-sheet line's source balance is on the same side (:600-610). The "correct the biggest line" branch (no currency
 // balancing) is not ported ⇒ absent by name.
@@ -442,7 +478,7 @@ function derivePayment(db, R, payId, schema) {
   var by = {}, absent = [];
   function add(side, el, amt) { var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
   function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
-  if (String(p.tendertype) === 'X' && _hasCol(db, 'ad_sysconfig', 'value')) { var sc = getRow(db, "SELECT value FROM ad_sysconfig WHERE name='CASH_AS_PAYMENT'", []); if (sc && String(sc.value) === 'N') return { by: by, absent: absent }; }
+  if (String(p.tendertype) === 'X' && !sysConfigBool(db, 'CASH_AS_PAYMENT', true, _clientOf(db, 'c_payment', payId), 0)) return { by: by, absent: absent };   // Doc_Payment.java:114 via the mirrored sysconfig (§68)
   if (num(p.c_charge_id)) { absent.push('payment charge not ported'); return { by: by, absent: absent }; }
   if (String(p.isprepayment) === 'Y') { absent.push('prepayment not ported'); return { by: by, absent: absent }; }
   var amt = cents(p.payamt);
@@ -476,9 +512,15 @@ function _apAllocLine(db, R, l, schema, pice, add, el, absent) {
   if (wo) add('CR', el(R.resolve(db, '{BPGroup.WriteOff}', num(l.c_bpartner_id), schema)), -wo);
   if (clearing && num(l.c_payment_id)) add('CR', pay, -amount);
 }
-function deriveAllocation(db, R, hdrId, schema) {
+function _clientOf(db, table, id) { return _hasCol(db, table, 'ad_client_id') ? num((getRow(db, 'SELECT ad_client_id AS c FROM ' + table + ' WHERE ' + table + '_id=?', num(id)) || {}).c) || 0 : 0; }
+// §68 (F32): ref.cashJournalSameTrx = the cash journal of a cash line is created in the SAME transaction that completes it (one composite / one op-group). Legacy
+// Doc_AllocationHdr.getCashAcct reads the cash book OUTSIDE the transaction (DB.getSQLValue(null, …), Doc_AllocationHdr.java:732-745 @{u}); the allocation is posted INSIDE that
+// transaction only when CLIENT_ACCOUNTING='I' (DocumentEngine.java:350-370) ⇒ NONE ⇒ no clearing leg (Fact.createLine null account, Fact.java:116-122), then Doc.post balanceSource
+// (same currency: SuspenseBalancing, Fact.java:298-322) or Doc_AllocationHdr.balanceAccounting (foreign schema). Measured: CASH1 (same trx) vs CASH1b (saved first) on the pilot, spec §68.
+function deriveAllocation(db, R, hdrId, schema, ref) {
   var lines = allRows(db, 'SELECT * FROM c_allocationline WHERE c_allocationhdr_id=? ORDER BY c_allocationline_id', num(hdrId));
   if (!lines.length) return null;
+  var cashNone = !!(ref && ref.cashJournalSameTrx) && isClientAccountingImmediate(db, _clientOf(db, 'c_allocationhdr', hdrId)), noCashAcct = false;
   var sch = getRow(db, 'SELECT taxcorrectiontype, ispostifclearingequal FROM c_acctschema WHERE c_acctschema_id=?', num(schema)) || {};
   var tcD = sch.taxcorrectiontype === 'B' || sch.taxcorrectiontype === 'D', tcW = sch.taxcorrectiontype === 'B' || sch.taxcorrectiontype === 'W', pice = sch.ispostifclearingequal === 'Y';
   var by = {}, absent = [];
@@ -491,6 +533,7 @@ function deriveAllocation(db, R, hdrId, schema) {
     var receivable = el(R.resolve(db, '{BPartner.Receivable}', num(l.c_bpartner_id), schema));
     var clearing = null;
     if (num(l.c_payment_id)) { var p = getRow(db, 'SELECT c_bankaccount_id FROM c_payment WHERE c_payment_id=?', num(l.c_payment_id)); clearing = p ? el(R.resolve(db, '{Bank.UnallocatedCash}', num(p.c_bankaccount_id), schema)) : null; }
+    else if (num(l.c_cashline_id) && cashNone) noCashAcct = true;   // §68 (F32): getCashAcct NONE for C_CashLine_ID (server log line), clearing stays null
     else if (num(l.c_cashline_id)) { var cl = (_hasCol(db, 'c_cash', 'c_cashbook_id') ? getRow(db, 'SELECT h.c_cashbook_id AS c_cashbook_id FROM c_cashline c JOIN c_cash h ON h.c_cash_id=c.c_cash_id WHERE c.c_cashline_id=?', num(l.c_cashline_id)) : null) || (_hasCol(db, 'c_cashline', 'c_cashbook_id') ? getRow(db, 'SELECT c_cashbook_id FROM c_cashline WHERE c_cashline_id=?', num(l.c_cashline_id)) : null); /* the cash JOURNAL's cash book */ clearing = cl ? el(R.resolve(db, '{CashBook.CashTransfer}', num(cl.c_cashbook_id), schema)) : null; }
     if (!pice && clearing && receivable && clearing.id === receivable.id) src = disc + wo; else add('DR', clearing, amount);
     if (disc) add('DR', el(R.resolve(db, '{BPGroup.PayDiscount}', num(l.c_bpartner_id), schema)), disc);
@@ -507,6 +550,20 @@ function deriveAllocation(db, R, hdrId, schema) {
       });
     }
   });
+  if (noCashAcct) {   // §68 (F32): the source is unbalanced by the missing clearing leg
+    var bal = 0; Object.keys(by).forEach(function (k) { bal += by[k].dr - by[k].cr; });
+    var hc = _hasCol(db, 'c_allocationhdr', 'c_currency_id') ? getRow(db, 'SELECT c_currency_id FROM c_allocationhdr WHERE c_allocationhdr_id=?', num(hdrId)) : null, scc = schemaRow(db, schema);
+    var foreign = hc && hc.c_currency_id != null && scc && scc.c_currency_id != null && num(hc.c_currency_id) !== num(scc.c_currency_id);
+    if (bal !== 0 && !foreign) {   // Doc.post → Fact.balanceSource (single-currency fact; multi-currency docs are balanced by definition, Fact.java:246-263)
+      var gl = _hasCol(db, 'c_acctschema_gl', 'usesuspensebalancing') ? getRow(db, 'SELECT usesuspensebalancing AS u, suspensebalancing_acct AS a FROM c_acctschema_gl WHERE c_acctschema_id=?', num(schema)) : null;
+      var sus = gl && String(gl.u) === 'Y' && R.elementOf ? R.elementOf(db, gl.a) : null;
+      if (!gl || String(gl.u) !== 'Y') absent.push('NotBalanced (no suspense balancing, Doc.java:852-856)');
+      else if (!sus) absent.push('SuspenseBalancing_Acct');
+      else add(bal < 0 ? 'DR' : 'CR', { id: sus.id, value: sus.value, name: sus.name }, Math.abs(bal));
+    }
+    convertToSchema(db, by, absent, hdrId, schema, 'c_allocationhdr', { allocBalance: foreign });
+    return { by: by, absent: absent };
+  }
   convertToSchema(db, by, absent, hdrId, schema, 'c_allocationhdr');
   return { by: by, absent: absent };
 }
@@ -1124,7 +1181,7 @@ function derivePostings(db, recordRef, schema, R) {
   if (table === 'M_InOut') return finish(deriveInOut(db, R, id, schema), 'inout', glOf('m_inout', id));
   if (table === 'M_Movement') return finish(deriveMovement(db, R, id, schema), 'movement', glOf('m_movement', id));
   if (table === 'C_Payment') return finish(derivePayment(db, R, id, schema), 'payment', glOf('c_payment', id));
-  if (table === 'C_AllocationHdr') return finish(deriveAllocation(db, R, id, schema), 'allocation', glOf('c_allocationhdr', id));
+  if (table === 'C_AllocationHdr') return finish(deriveAllocation(db, R, id, schema, recordRef), 'allocation', glOf('c_allocationhdr', id));
   if (table === 'A_Asset_Addition') return finish(deriveAssetAddition(db, id, schema), 'fa-addition', glOf('a_asset_addition', id));
   if (table === 'A_Depreciation_Entry') return finish(deriveDepreciationEntry(db, id, schema), 'fa-depreciation', glOf('a_depreciation_entry', id));
   if (table === 'A_Asset_Reval') return finish(deriveAssetReval(db, id, schema), 'fa-reval', glOf('a_asset_reval', id));
@@ -1144,7 +1201,7 @@ function derivePostings(db, recordRef, schema, R) {
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
 var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, costQtyUpdatesFor: costQtyUpdatesFor, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
-             glCategoryFor: glCategoryFor, fxRate: fxRate, costUpdatesForMatchPO: costUpdatesForMatchPO };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
+             glCategoryFor: glCategoryFor, fxRate: fxRate, costUpdatesForMatchPO: costUpdatesForMatchPO, sysConfig: sysConfig, sysConfigBool: sysConfigBool, isClientAccountingImmediate: isClientAccountingImmediate };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }
 if (typeof window !== 'undefined') { window.DocPoster = _api; }

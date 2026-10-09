@@ -1,0 +1,1 @@
+-- dict_diff patch for ad_sysconfig: table missing — see the SCHEMA patch

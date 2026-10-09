@@ -19,7 +19,8 @@ const keyVal = (row, ks) => ks.map(k => norm(row[k])).join('|');
 async function discover(cfg, spec) {
   const k0 = [].concat(spec.key)[0];
   const below = spec.keyBelow ? ` AND ${k0} < ${spec.keyBelow}` : '';
-  return (await query(cfg, spec.readType, `${k0} > 0${below}${spec.where ? ' AND ' + spec.where : ''}`)).map(lc);
+  // spec §68: a STRING natural key (AD_SysConfig: client, org, name) cannot be lower-bounded by `k0 > 0` ⇒ the spec gives its own keyFilter
+  return (await query(cfg, spec.readType, `${spec.keyFilter || k0 + ' > 0'}${below}${spec.where ? ' AND ' + spec.where : ''}`)).map(lc);
 }
 
 function compare(legacyRows, db, spec) {

@@ -25,16 +25,17 @@ const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUS
 
   // ---- real findings
   const legacy = {}; let total = 0;
+  const lk = sp => sp.out || sp.table;   // spec §68: the same legacy table may be synced into two SQLite dbs (posting db + seed) ⇒ own patch name
   for (const sp of specs) {
-    legacy[sp.table] = await D.discover(cfg, sp);
-    const r = D.compare(legacy[sp.table], dbFor(sp), sp); total += r.legacy;
+    legacy[lk(sp)] = await D.discover(cfg, sp);
+    const r = D.compare(legacy[lk(sp)], dbFor(sp), sp); total += r.legacy;
     if (r.missingCols.length) log(`§DD_COLUMNS ${sp.table} legacy-has-but-sqlite-lacks=[${r.missingCols.join(',')}] (needs ALTER via patch+loader, not a data patch)`);
     if (r.columnsOnly) { log(`§DD_TABLE ${sp.table} legacy_sample=${r.legacy} cols_compared=${r.columns} (columns-only: composite key)`); continue; }
     log(`§DD_TABLE ${sp.table} legacy=${r.legacy} local=${r.local} cols_compared=${r.columns} onlyLegacy=${r.onlyLegacy.length} onlyLocal=${r.onlyLocal.length} changed_cells=${r.changed.length}${r.onlyLocal.length ? ' onlyLocal_ids=' + r.onlyLocal.slice(0, 8).join(',') : ''}`);
     for (const c of r.changed.slice(0, 12)) log(`§DICT_GAP ${sp.table}#${c.id}.${c.col} legacy=${JSON.stringify(c.legacy)} sqlite=${JSON.stringify(c.local)}`);
-    for (const row of r.onlyLegacy.slice(0, 5)) log(`§DICT_GAP ${sp.table}#${row[sp.key.toLowerCase()]} missing in SQLite`);
-    fs.writeFileSync(path.join(__dirname, 'out', `dict_patch_${sp.table}.sql`), D.toPatch(r, sp));
-    if (sp.addColumns) fs.writeFileSync(path.join(__dirname, 'out', `dict_schema_${sp.table}.sql`), D.toSchemaPatch(r, sp));
+    for (const row of r.onlyLegacy.slice(0, 5)) log(`§DICT_GAP ${sp.table}#${[].concat(sp.key).map(k => row[k.toLowerCase()]).join('|')} missing in SQLite`);
+    fs.writeFileSync(path.join(__dirname, 'out', `dict_patch_${lk(sp)}.sql`), D.toPatch(r, sp));
+    if (sp.addColumns || r.missingTable) fs.writeFileSync(path.join(__dirname, 'out', `dict_schema_${lk(sp)}.sql`), D.toSchemaPatch(r, sp));
   }
   if (!total) out('§DD_FINDINGS', 'INCONCLUSIVE', 'legacy returned 0 dictionary rows — nothing judged');
   else log(`§DD_FINDINGS (see §DD_TABLE/§DICT_GAP above; patches written to scripts/bridge/out/dict_patch_*.sql, NOT applied to any shared seed)`);
@@ -61,18 +62,28 @@ const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUS
   const before = JSON.stringify(db.prepare('SELECT * FROM c_doctype ORDER BY c_doctype_id').all());
   db.exec(patch);
   out('§DD_IDEMPOTENT', before === JSON.stringify(db.prepare('SELECT * FROM c_doctype ORDER BY c_doctype_id').all()), 'second apply of the same patch changed nothing');
-  out('§DD_NO_DELETE', !/\bDELETE\b/i.test(patch) && !specs.filter(s => !s.columnsOnly).some(s => /\bDELETE\b/i.test(D.toPatch(D.compare(legacy[s.table], dbFor(s), s), s))), `generated patches contain no DELETE (onlyLocal rows: ${specs.filter(s => !s.columnsOnly).map(s => D.compare(legacy[s.table], dbFor(s), s).onlyLocal.length).join('/')} reported only)`);
+  out('§DD_NO_DELETE', !/^\s*DELETE\b/im.test(patch) && !specs.filter(s => !s.columnsOnly).some(s => /^\s*DELETE\b/im.test(D.toPatch(D.compare(legacy[lk(s)], dbFor(s), s), s) + D.toSchemaPatch(D.compare(legacy[lk(s)], dbFor(s), s), s))), `generated patches contain no DELETE (onlyLocal rows: ${specs.filter(s => !s.columnsOnly).map(s => D.compare(legacy[lk(s)], dbFor(s), s).onlyLocal.length).join('/')} reported only)`);
   // ---- spec §37: SCHEMA patch (ALTER + legacy values) on the scratch glassbowl copy, loader-guarded, idempotent; composite-key negative control
   const schemaSpecs = specs.filter(x => x.addColumns && x.db === 'glassbowl');
   const applied = [];
-  for (const x of schemaSpecs) { const r = D.compare(legacy[x.table], gdb, x); const st = D.applyPatch(gdb, D.toSchemaPatch(r, x) + D.toPatch(r, x)); applied.push(`${x.table}:+${st.altered}col/${st.ran}stmt`); }
-  const after = schemaSpecs.map(x => { const r = D.compare(legacy[x.table], gdb, x); return { t: x.table, missingAdded: x.addColumns.filter(c => r.missingCols.includes(c.toLowerCase())), changed: r.changed.length, onlyLegacy: r.onlyLegacy.length }; });
+  for (const x of schemaSpecs) { const r = D.compare(legacy[lk(x)], gdb, x); const st = D.applyPatch(gdb, D.toSchemaPatch(r, x) + D.toPatch(r, x)); applied.push(`${x.table}:+${st.altered}col/${st.ran}stmt`); }
+  const after = schemaSpecs.map(x => { const r = D.compare(legacy[lk(x)], gdb, x); return { t: x.table, missingAdded: x.addColumns.filter(c => r.missingCols.includes(c.toLowerCase())), changed: r.changed.length, onlyLegacy: r.onlyLegacy.length }; });
   out('§DD_SCHEMA_PATCH', schemaSpecs.length > 0 && after.every(a => !a.missingAdded.length && !a.changed && !a.onlyLegacy),
     `applied ${applied.join(' ')}; re-diff: ${after.map(a => `${a.t} stillMissing=[${a.missingAdded}] changed=${a.changed} onlyLegacy=${a.onlyLegacy}`).join('; ')}`);
   const snap = () => JSON.stringify(schemaSpecs.map(x => gdb.prepare(`SELECT * FROM ${x.table}`).all()));
   const s1 = snap(); let reErr = null, st2 = [];
-  try { for (const x of schemaSpecs) { const r0 = D.compare(legacy[x.table], gdb, x); st2.push(D.applyPatch(gdb, D.toSchemaPatch(Object.assign({}, r0, { missingCols: x.addColumns.map(c => c.toLowerCase()) }), x))); } } catch (e) { reErr = e.message; }
+  try { for (const x of schemaSpecs) { const r0 = D.compare(legacy[lk(x)], gdb, x); st2.push(D.applyPatch(gdb, D.toSchemaPatch(Object.assign({}, r0, { missingCols: x.addColumns.map(c => c.toLowerCase()) }), x))); } } catch (e) { reErr = e.message; }
   out('§DD_SCHEMA_IDEMPOTENT', !reErr && s1 === snap() && st2.every(t => t.altered === 0 && t.skipped > 0), `second apply (ALTERs forced into the text): error=${reErr || 'none'} altered=${st2.map(t => t.altered).join('/')} skipped=${st2.map(t => t.skipped).join('/')} rows unchanged=${s1 === snap()}`);
+  // spec §68: a table MISSING in a SQLite db (the seed has no ad_sysconfig) — the §49 CREATE patch on the scratch copy, re-diff clean, re-apply idempotent
+  const createSpecs = specs.filter(x => x.db !== 'glassbowl' && !x.columnsOnly && D.compare(legacy[lk(x)], dbFor(x), x).missingTable);
+  if (!createSpecs.length) out('§DD_CREATE_TABLE', 'INCONCLUSIVE', 'no spec table is missing in its SQLite db — nothing to create');
+  else {
+    const res = createSpecs.map(x => { const r = D.compare(legacy[lk(x)], db, x); const st = D.applyPatch(db, D.toSchemaPatch(r, x)); const r2 = D.compare(legacy[lk(x)], db, x);
+      const snap1 = JSON.stringify(db.prepare(`SELECT * FROM ${x.table}`).all()); D.applyPatch(db, D.toSchemaPatch(r, x)); const same = snap1 === JSON.stringify(db.prepare(`SELECT * FROM ${x.table}`).all());
+      return { t: lk(x), legacy: r.legacy, ran: st.ran, local: r2.local, gaps: r2.changed.length + r2.onlyLegacy.length, missingCols: r2.missingCols.length, same }; });
+    out('§DD_CREATE_TABLE', res.every(a => a.legacy > 0 && a.local === a.legacy && !a.gaps && !a.missingCols && a.same),
+      res.map(a => `${a.t}: legacy=${a.legacy} created+inserted stmts=${a.ran} local_after=${a.local} gaps_after=${a.gaps} missing_cols_after=${a.missingCols} reapply_unchanged=${a.same}`).join('; '));
+  }
   const mc = specs.find(x => x.table === 'm_cost'), lrow = legacy.m_cost.find(r => Number(r.currentqty) > 0);
   if (mc && lrow) {
     gdb.prepare('UPDATE m_cost SET currentqty=currentqty+999 WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(lrow.m_product_id, lrow.c_acctschema_id, lrow.m_costtype_id, lrow.m_costelement_id);

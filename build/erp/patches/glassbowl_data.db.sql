@@ -244,3 +244,9 @@ ALTER TABLE c_acctschema_gl ADD COLUMN usesuspensebalancing;
 ALTER TABLE c_acctschema_gl ADD COLUMN suspensebalancing_acct;
 UPDATE c_acctschema_gl SET usesuspensebalancing='Y', suspensebalancing_acct=219 WHERE c_acctschema_id=101 AND usesuspensebalancing IS NULL;
 UPDATE c_acctschema_gl SET usesuspensebalancing='Y', suspensebalancing_acct=200019 WHERE c_acctschema_id=200000 AND usesuspensebalancing IS NULL;
+-- 2026-10-10 (spec §68, F32): Doc_AllocationHdr.balanceAccounting books the accounted difference of a foreign-currency allocation on C_AcctSchema_Default.RealizedLoss/Gain_Acct
+-- (Doc_AllocationHdr.java:1807-1828); the posting db's c_acctschema_default lacks them. Guarded ALTERs; values from the SQLite seed ad_seed_fullwidth.db (= pilot).
+ALTER TABLE c_acctschema_default ADD COLUMN realizedgain_acct;
+ALTER TABLE c_acctschema_default ADD COLUMN realizedloss_acct;
+UPDATE c_acctschema_default SET realizedgain_acct=245, realizedloss_acct=246 WHERE c_acctschema_id=101 AND realizedgain_acct IS NULL;
+UPDATE c_acctschema_default SET realizedgain_acct=200027, realizedloss_acct=200028 WHERE c_acctschema_id=200000 AND realizedgain_acct IS NULL;
