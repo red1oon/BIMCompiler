@@ -346,8 +346,29 @@ function voidOrder(sale, opts) {
   return ops;
 }
 
+// creditCheckOrder — the SO credit gate of MOrder.prepareIt. Implementing prompts/SQLiteIDEMPIERE.md §36 (S13, fix F5) — Witness: M3 S13a/b/c.
+// Port of CreditManagerOrder.checkCreditStatus (CreditManagerOrder.java:48-98) + MBPartner.getSOCreditStatus(additionalAmt) (MBPartner.java:826-850).
+//   order = { issotrx, docsubtypeso, paymentrule, grandtotal (base currency) }, bp = { socreditstatus, so_creditlimit, totalopenbalance },
+//   sys = { CHECK_CREDIT_ON_CASH_POS_ORDER, CHECK_CREDIT_ON_PREPAY_ORDER } ('Y'|'N'; absent ⇒ true, MSysConfig.getBooleanValue default).
+// Returns { ok:true } or { ok:false, reason:'credit-stop'|'credit-hold'|'credit-over-hold', msg, … } — the LAST matching branch wins, as in the Java (errorMsg overwritten).
+function creditCheckOrder(order, bp, sys) {
+  sys = sys || {};
+  var on = function (k) { return sys[k] == null ? true : String(sys[k]) === 'Y'; };
+  if (String(order.issotrx) !== 'Y') return { ok: true };
+  if (order.docsubtypeso === 'WR' && order.paymentrule === 'B' && !on('CHECK_CREDIT_ON_CASH_POS_ORDER')) return { ok: true, skipped: 'cash-pos' };
+  if (order.docsubtypeso === 'PR' && !on('CHECK_CREDIT_ON_PREPAY_ORDER')) return { ok: true, skipped: 'prepay' };
+  var gt = Number(order.grandtotal || 0);
+  if (!(gt > 0) || !bp) return { ok: true };
+  var st = bp.socreditstatus, lim = Number(bp.so_creditlimit || 0), open = Number(bp.totalopenbalance || 0), err = null;
+  if (st === 'S') err = { reason: 'credit-stop', msg: 'BPartnerCreditStop' };
+  if (st === 'H') err = { reason: 'credit-hold', msg: 'BPartnerCreditHold' };
+  var withAdd = (st === 'X' || st === 'S' || lim === 0) ? st : ((lim - gt) < open ? 'H' : st);
+  if (withAdd === 'H') err = { reason: 'credit-over-hold', msg: 'BPartnerOverOCreditHold' };
+  return err ? { ok: false, reason: err.reason, msg: err.msg, totalOpenBalance: open, grandTotal: gt, creditLimit: lim } : { ok: true };
+}
+
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,

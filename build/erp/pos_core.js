@@ -133,9 +133,20 @@
     return { ops: ops, consumed: consumed };
   }
 
+  // §36 (F5): the SO credit gate legacy runs in MOrder.prepareIt (CreditManagerOrder.java:48-98) — active when the host supplies ctx.creditOf(bpId)
+  // → { bp, sys }; refusal happens before any op is emitted (legacy: STATUS_Invalid, nothing completes). No creditOf ⇒ unchanged behaviour.
+  function creditGate(ctx, soLines, bpId, docsubtypeso, paymentrule) {
+    if (!ctx || typeof ctx.creditOf !== 'function') return { ok: true };
+    var c = ctx.creditOf(bpId) || {};
+    var gt = 0; soLines.forEach(function (l) { gt += Math.round(Number(l.linenetamt || 0) * 100); });
+    var r = E.creditCheckOrder({ issotrx: 'Y', docsubtypeso: docsubtypeso, paymentrule: paymentrule, grandtotal: gt / 100 }, c.bp, c.sys);
+    return r.ok ? r : { ok: false, reason: r.reason, msg: r.msg, credit: r };
+  }
   function buildSaleGroup(ctx, cart, opts) {
     var built = buildOrderOps(ctx, cart, opts);
     if (!built.ok) return built;
+    var cg = creditGate(ctx, built.soLines, opts.c_bpartner_id, ctx.docsubtypeso || 'WR', opts.paymentrule);
+    if (!cg.ok) return cg;
     var tail = completionOps(ctx, built.order, built.soLines, opts);
     return { ok: true, ops: built.ops.concat(tail.ops), order: built.order, soLines: built.soLines, consumed: tail.consumed, newVerbs: [], verbsUsed: ALLOWED_VERBS.slice(0, 2).concat(['completeOrder', 'completeInvoice']) };
   }
@@ -159,6 +170,8 @@
       return { ok: false, reason: 'not-draft', docstatus: heldOrder.docstatus };   // only a DR order recalls
     }
     if (!heldLines || !heldLines.length) return { ok: false, reason: 'no-held-lines' };
+    var cg = creditGate(ctx, heldLines, heldOrder.c_bpartner_id, ctx.docsubtypeso || 'WR', opts && opts.paymentrule);
+    if (!cg.ok) return cg;
     var tail = completionOps(ctx, heldOrder, heldLines, opts);
     return { ok: true, ops: tail.ops, order: heldOrder, soLines: heldLines, consumed: tail.consumed, newVerbs: [], verbsUsed: ['completeOrder', 'completeInvoice'] };
   }
@@ -206,6 +219,8 @@
     if (!pol.ok) return pol;
     var built = buildOrderOps(ctx, cart, Object.assign({}, opts, { doctypeId: opts.doctype.c_doctype_id }));
     if (!built.ok) return built;
+    var cg = creditGate(ctx, built.soLines, opts.c_bpartner_id, opts.doctype.docsubtypeso, opts.paymentrule);
+    if (!cg.ok) return cg;
     // complete the ORDER with the dictionary flags VERBATIM (N/N ⇒ the bare SET_STATUS C_Order CO)
     var ops = built.ops.concat(E.completeOrder(built.order, built.soLines, pol));
     return {

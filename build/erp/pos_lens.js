@@ -434,6 +434,12 @@
     var ctx = {
       pos: pos,
       priceOf: function (pid) { return q1(b3, 'SELECT pricestd FROM m_productprice WHERE m_pricelist_version_id=? AND m_product_id=?', plv.v, pid) || null; },
+      // §36 F5 (prompts/SQLiteIDEMPIERE.md): the SO credit gate inputs — bill-BP credit row + sysconfig (absent table/row ⇒ legacy default true)
+      creditOf: function (bpId) {
+        var sys = {};
+        ['CHECK_CREDIT_ON_CASH_POS_ORDER', 'CHECK_CREDIT_ON_PREPAY_ORDER'].forEach(function (k) { try { var r = q1(b3, 'SELECT value AS v FROM ad_sysconfig WHERE name=?', k); if (r) sys[k] = r.v; } catch (e) { /* no ad_sysconfig in this db ⇒ default */ } });
+        return { bp: q1(b3, 'SELECT socreditstatus, so_creditlimit, totalopenbalance FROM c_bpartner WHERE c_bpartner_id=?', bpId), sys: sys };
+      },
       bomOf: function (pid) { return qa(b3, 'SELECT bl.m_product_id AS comp_id, bl.qtybom AS qtybom FROM pp_product_bomline bl JOIN pp_product_bom b ON b.pp_product_bom_id=bl.pp_product_bom_id WHERE b.m_product_id=? ORDER BY bl.m_product_id', pid); },
       wrPolicy: (function () {
         var dt = q1(b3, 'SELECT docsubtypeso AS s FROM c_doctype WHERE c_doctype_id=?', pos.c_doctype_id);

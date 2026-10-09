@@ -625,7 +625,8 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 | S10 | POS sale **invoice postings** (Fact_Acct, primary schema) | Dr 518 6175 / Cr 758 6175 (receivable / revenue), no tax | ✅ **MATCH** (M3 `postings`, 2026-10-09): SQLite's own invoice folded by `doc_poster.derivePostings` equals the legacy books to the cent on a FRESH document |
 | S11a | POS sale **shipment postings** on Oak Tree (COGS/Inventory) | legacy posting **errors** (`Posted=E`, `AverageCostingNegativeQtyException`: Oak Tree costed qty 0 although on-hand > 0; ~57 shipments on the pilot) — no legacy books | ⏸ **INCONCLUSIVE** (no oracle). SQLite side: `derivePostings` has no M_InOut class (basis `none`, source comment: "COGS leg is the §8 follow-up") ⇒ probable **MISSING** the day legacy produces books. Needs a pilot costing setup (a receipt giving Oak Tree a costed qty) before it can be judged. |
 | S7 | order with stock below zero after completion | measured on purpose (§31): CO + shipment + invoice, stock −qty; shipment posting refused when the Average costed qty would go < 0 | ✅ S7b **MATCH**; S7a **LEGACY-QUIRK** on `postings_shipment` only (registered, §31), all other keys MATCH |
-| S13 | order whose GrandTotal exceeds the customer's credit limit (§32) | REJECTED `over Credit Hold` (CreditManagerOrder.java:48-98) | ⛔ **SQLITE-GAP MISSING** (no credit check in SQLite) — Q-S13 |
+| S13 | order whose GrandTotal exceeds the customer's credit limit (§32) | REJECTED `over Credit Hold` (CreditManagerOrder.java:48-98) | ✅ **MATCH after F5** (§36.1); S13c control (no limit) completes both sides |
+| S12 | void a completed POS sale (§33) | VO, shipment+invoice reversed (RE/RE), books net 0 with legacy's row form | ✅ **MATCH after F4** (§33.1), 14 keys |
 | S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
 | S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
 **Honesty note on what the "bugs" so far were:** the defects found this session were in the pilot data (S5), in my harness (price, stale text), and
@@ -871,5 +872,29 @@ Witness control both ways: `§M3_QUIRK_NEEDS_EXEMPTION PASS` (no exemption ⇒ S
 | LEGACY-QUIRK count in the corpus | 1-2 accepted | **0 until the user exempts something.** |
 **New backlog item (L&F parity, the user's "even L&F"):** extend `dict_diff` (composite keys + the §29 ALTER generator first) to the UI metadata tables and compare legacy vs SQLite seed; then a structural UI witness in the style of `prompts/ERP_IDEMPIERE_UX_PARITY.md` ("X of N AD windows pass": for every AD window/tab/field the SQLite renderer's computed field list, order, labels, read-only/mandatory/display logic and default values equal the legacy window read via WS) — numbers and `§` lines, never screenshots.
 **Resume brief for the paused agent (also usable by any session):** (1) restart pilot server, finish S12 void (resume point in §33); (2) S13 credit check in SQLite; (3) S7a costed-qty (schema patch first: `m_cost.currentqty` + cost detail semantics); (4) S3 on the AD-window path; (5) S8 past-dated, S5 same-outcome, tax, Euro schema; (6) dict_diff composite keys + ALTER generator; (7) L&F parity over the AD metadata tables; (8) F2 UX parity last. Every item: cardinal rule first, no exemption without the user's words.
+
+## §36 F5 — S13 order credit check in SQLite (2026-10-09, cardinal rule: refuse like legacy) — SPEC before code
+**Rule to port (verbatim branches):** called from `MOrder.prepareIt` (MOrder.java:1688-1697, also on the CO path) → `CreditManagerOrder.checkCreditStatus(PR)` (CreditManagerOrder.java:48-98):
+SO only; skip when DocSubTypeSO=WR AND PaymentRule=B(cash) AND sysconfig `CHECK_CREDIT_ON_CASH_POS_ORDER`=N; skip when DocSubTypeSO=PR(prepay) AND `CHECK_CREDIT_ON_PREPAY_ORDER`=N (both default **true** when absent — `MSysConfig.getBooleanValue(…, true, …)`);
+only when GrandTotal > 0: bill-BP status S ⇒ error `BPartnerCreditStop`; status H ⇒ `BPartnerCreditHold`; `getSOCreditStatus(grandTotal)` = H ⇒ `BPartnerOverOCreditHold`.
+`MBPartner.getSOCreditStatus(add)` (MBPartner.java:826-850): add 0/null ⇒ stored status; status X or S, or `SO_CreditLimit`=0 ⇒ stored status; `SO_CreditLimit − add < TotalOpenBalance` ⇒ H; else watch/OK (not refusing).
+**Where in SQLite:** a pure kernel verb `erp_engine.creditCheckOrder(order, bp, sys)` (generic, not POS words) + a gate in the three POS verbs that complete an SO (`buildSaleGroup`, `buildDeliverLaterGroup`, `buildRecallCompleteGroup`) that runs
+when the host supplies `ctx.creditOf(bpId) → { bp row, sysconfig }`; refusal = `{ok:false, reason:'credit-<stop|hold|over-hold>'}` before any op is emitted (legacy: STATUS_Invalid, nothing completes). The POS lens host supplies `creditOf` from its own db
+(`c_bpartner` + `ad_sysconfig` when present, legacy default otherwise). Callers that do not pass `creditOf` behave exactly as before (regression byte-identical) — the M3 adapter and the lens pass it.
+**Data:** inputs present in `ad_seed_fullwidth.db` (`c_bpartner.socreditstatus/so_creditlimit/totalopenbalance`, `c_doctype.docsubtypeso`); sysconfig in `ad_full.db` (both 'Y', like the pilot). The BP open balance is each side's own STATE; S13's facts hold either way.
+**Acceptance:** S13a + S13b MATCH (outcome REJECTED both sides); S1-S11 unchanged; a new control S13c = same order for BP 112 (limit 0 ⇒ no check) COMPLETES on both sides.
+### §36.1 DECISION RECORD F5 — SQLite refuses an over-credit order like legacy (2026-10-09)
+**Evidence:** `§SCN S13a/S13b … SQLITE-GAP` (legacy REJECTED `over Credit Hold`, SQLite COMPLETED). **Changed (one commit, backtrack = `git revert <sha>`):**
+| File | Change |
+|---|---|
+| `scripts/erp_engine.js` | NEW pure verb `creditCheckOrder(order, bp, sys)` — branches of CreditManagerOrder.java:52-95 + MBPartner.getSOCreditStatus(add) :826-850, sysconfig default true. Additive. |
+| `build/erp/pos_core.js` | `creditGate` in `buildSaleGroup`, `buildDeliverLaterGroup`, `buildRecallCompleteGroup` — runs only when the host passes `ctx.creditOf`; refusal `{ok:false, reason:'credit-…'}` before any op. Doc subtype: `ctx.docsubtypeso` (default 'WR' on the cash-and-carry verbs, which ARE the WR path) or the deliver-later doctype row. |
+| `build/erp/pos_lens.js` | host supplies `creditOf` (bill-BP credit row from its db; `ad_sysconfig` when present, else legacy default). Existing refusal path shows `refused: credit-over-hold`. |
+| `scripts/bridge/witness_m3_gap.js` | adapter passes `creditOf` (seed `c_bpartner` + `ad_full.db` sysconfig); control S13c. |
+**Proof:** `§SCN S13a-pos-sale-over-credit-limit MATCH` · `§SCN S13b-standard-order-over-credit-limit MATCH` (both REJECTED both sides) · `§SCN S13c-pos-sale-large-no-credit-limit MATCH` (BP 112, limit 0 ⇒ completes both sides) · S1-S12 unchanged.
+**Regression:** the 99 non-browser engine witnesses: exit codes identical, logs identical except the 4 known-nondeterministic ones (group ids).
+**Honest residue:** the refusal TEXT differs (legacy `Business Partner with this Order over Credit Hold - Open …`, SQLite reason code) — message L&F belongs to item 7 (AD_Message parity); GrandTotal used = sum of line nets
+(no tax on these documents — revisit with the tax item); currency conversion to base (`MConversionRate.convertBase`) is not done (same currency on the pilot); the lens does not pass the order's PaymentRule, so the cash-POS
+exemption can only trigger with sysconfig N + PaymentRule B (both 'Y'/unset here); the browser lens path is not executed by any witness (no browsers in this lane) — its wiring is a 6-line host change reviewed by reading.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
