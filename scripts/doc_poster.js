@@ -788,6 +788,9 @@ function deriveAssetReval(db, id, schema) {
   var d = b3New();
   var acct = assetAcctFor(db, hdr.a_asset_id, schema, hdr.dateacct);
   if (!acct) { d.absent.push('a_asset_acct#' + hdr.a_asset_id + '/' + schema); return d; }
+  // §75 (F38): Doc_AssetReval takes MAccount.get(ctx, id) of the asset-acct columns; for an EMPTY column (id 0) MAccount.get returns an empty account, not null (MAccount.java:369-381 @{u}),
+  // Fact.checkAccounts finds no element value (Fact.java:641-664) ⇒ Doc.postLogic STATUS_InvalidAccount 'i' (Doc.java:762-764): the WHOLE document gets no facts (measured: pilot reval, Posted=i).
+  if (![acct.a_asset_acct, acct.a_reval_cost_offset_acct, acct.a_accumdepreciation_acct].every(function (c) { return c != null && c !== '' && num(c) !== 0; })) { d.postStatus = 'i'; return d; }
   var costDelta = cents(hdr.a_asset_cost_change) - cents(hdr.a_asset_cost);
   var acumDelta = cents(hdr.a_change_acumulated_depr) - cents(hdr.a_accumulated_depr);
   var assetEl = elOf(db, vcAcct(db, acct.a_asset_acct), d.absent, '{AssetAcct.Asset}');
@@ -1205,7 +1208,7 @@ function finish(d, basis, glCat) {
   var sumDr = 0, sumCr = 0;
   Object.keys(d.by).forEach(function (k) { sumDr += d.by[k].dr; sumCr += d.by[k].cr; });
   return { lines: lines, balanced: lines.length > 0 && sumDr === sumCr, sumDr: sumDr, sumCr: sumCr, absent: d.absent, basis: basis,
-           gl_category_id: gl.id, gl_category_stage: gl.stage };
+           gl_category_id: gl.id, gl_category_stage: gl.stage, postStatus: d.postStatus };   // §75: a legacy Doc status other than posted ('i' InvalidAccount), when the fold knows it
 }
 
 /**

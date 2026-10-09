@@ -1172,9 +1172,28 @@ function faCompleteDisposal(disp, asset, workfiles, rows, ctx) {
   return { ok: true, docstatus: 'CO', asset: a, disposalAmt: disposalAmt, accumDelta: delta, expense: expense, changes: changes, workfiles: W, deleteExp: del };
 }
 
+// faCompleteReval — Asset Revaluation (spec §75, F38): MAssetReval.prepareIt / isLastDepreciated / completeIt (MAssetReval.java @{u}). wk = the PRIMARY workfile (minor units); amounts in minor units.
+// reval = { a_asset_reval_id, dateacct, a_asset_cost, a_accumulated_depr, a_asset_cost_change, a_change_acumulated_depr }; ctx = { periodOpen:{ok} (GLJ) }
+function faCompleteReval(reval, wk, ctx) {
+  ctx = ctx || {};
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'PeriodClosed' };
+  if (!wk) return { ok: false, reason: '@NotFound@ @A_Asset_ID@' };
+  var last = wk.dateacct ? _faMonthEnd(wk.dateacct, -1) : null, d = String(reval.dateacct).slice(0, 10);
+  if (!last || d > last) return { ok: false, reason: 'Asset is not depreciated at this moment' };                       // isDepreciated
+  var cEq = Number(wk.a_asset_cost) === Number(reval.a_asset_cost_change), aEq = Number(wk.a_accumulated_depr) === Number(reval.a_change_acumulated_depr);
+  if (cEq && aEq) return { ok: false, reason: 'Nothing has changed' };
+  if (cEq && !aEq) return { ok: false, reason: 'It has changed the cost of Asset' };
+  if (!cEq && aEq) return { ok: false, reason: 'It has changed the cumulative depreciation' };
+  if (_faMonthEnd(d) !== last) return { ok: false, reason: 'It can only review the last month processed' };            // isLastDepreciated
+  var w = {}; for (var k in wk) w[k] = wk[k];
+  w.a_asset_cost = Number(reval.a_asset_cost_change); w.a_accumulated_depr = Number(reval.a_change_acumulated_depr);
+  w.a_asset_remaining = w.a_asset_cost - w.a_accumulated_depr; w.a_asset_remaining_f = w.a_asset_cost - Number(w.a_accumulated_depr_f);   // workfile beforeSave :168-172
+  return { ok: true, docstatus: 'CO', workfile: w, revaldate: d };
+}
+
 return {
   completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, completeProjectIssue: completeProjectIssue, completeDDOrder: completeDDOrder, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
-  faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faCompleteDisposal: faCompleteDisposal, faMonthEnd: _faMonthEnd,
+  faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faCompleteDisposal: faCompleteDisposal, faCompleteReval: faCompleteReval, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,

@@ -17,7 +17,7 @@ const cents = v => Math.round(Number(v) * 100);
 const lc = r => { if (!r) return r; const o = {}; for (const k in r) o[k.toLowerCase()] = r[k]; return o; };
 const TODAY = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();   // legacy server's local day (§59 P17)
 const day = v => (v == null ? null : String(v).slice(0, 10));
-const SCHEMAS = [101, 200000], T_ADD = 53137, T_DEP = 53121, T_DIS = 53127, DT_ADD = 200001, DT_DEP = 200002, PRODUCT = 145;
+const SCHEMAS = [101, 200000], T_ADD = 53137, T_DEP = 53121, T_DIS = 53127, T_REV = 53275, DT_ADD = 200001, DT_DEP = 200002, PRODUCT = 145;
 const fmtPostings = lines => lines.map(l => ({ a: l.account_id, dr: cents(l.amtacctdr), cr: cents(l.amtacctcr) })).filter(x => x.dr || x.cr)
   .sort((x, y) => x.a - y.a).map(x => `${x.a}:DR${x.dr}/CR${x.cr}`).join('|') || 'none';
 
@@ -43,7 +43,9 @@ CREATE TABLE a_asset_addition(a_asset_addition_id INT, a_asset_id INT, ad_client
 CREATE TABLE a_depreciation_entry(a_depreciation_entry_id INT, ad_client_id INT, ad_org_id INT, c_acctschema_id INT, dateacct TEXT, docstatus TEXT);
 CREATE TABLE a_asset_disposed(a_asset_disposed_id INT, a_asset_id INT, ad_client_id INT, ad_org_id INT, dateacct TEXT, postingtype TEXT, docstatus TEXT);
 CREATE TABLE a_asset_change(a_asset_change_id INTEGER PRIMARY KEY, a_asset_id INT, c_acctschema_id INT, postingtype TEXT, changetype TEXT, assetvalueamt REAL, assetbookvalueamt REAL, assetaccumdepreciationamt REAL);
-ALTER TABLE a_asset_acct ADD COLUMN a_disposal_loss_acct INT;`);
+ALTER TABLE a_asset_acct ADD COLUMN a_disposal_loss_acct INT;
+ALTER TABLE a_asset_acct ADD COLUMN a_reval_cost_offset_acct INT;
+CREATE TABLE a_asset_reval(a_asset_reval_id INT, a_asset_id INT, ad_client_id INT, ad_org_id INT, dateacct TEXT, postingtype TEXT, a_asset_cost REAL, a_accumulated_depr REAL, a_asset_cost_change REAL, a_change_acumulated_depr REAL, docstatus TEXT);`);
 const wkGet = (a, s) => { const r = gb.prepare("SELECT j FROM a_depreciation_workfile WHERE a_asset_id=? AND c_acctschema_id=? AND postingtype='A'").get(a, s); return r ? JSON.parse(r.j) : null; };
 const wkPut = w => { gb.prepare("DELETE FROM a_depreciation_workfile WHERE a_asset_id=? AND c_acctschema_id=? AND postingtype=?").run(w.a_asset_id, w.c_acctschema_id, w.postingtype);
   gb.prepare('INSERT INTO a_depreciation_workfile(j,a_asset_id,c_acctschema_id,postingtype) VALUES(?,?,?,?)').run(JSON.stringify(w), w.a_asset_id, w.c_acctschema_id, w.postingtype); };
@@ -93,6 +95,11 @@ const FA_DESC = {
     header: { serviceType: 'BridgeCreateAssetDisposed', table: 'A_Asset_Disposed', fields: { AD_Org_ID: { const: 11 }, A_Asset_ID: { path: 'asset' }, DateDoc: { path: 'date' }, DateAcct: { path: 'date' },
       A_Disposed_Date: { path: 'date' }, A_Disposed_Method: { const: 'S' }, PostingType: { const: 'A' }, A_Activation_Method: { const: 'AA' }, Description: { path: 'note' } } },
     docAction: { serviceType: 'BridgeCompleteAssetDisposed', table: 'A_Asset_Disposed', action: 'CO' } } };
+FA_DESC.rev = { composite: 'SyncOrder',   // §75: header-only revaluation + CO (the window's callout fills the current values from the primary workfile)
+  header: { serviceType: 'BridgeCreateAssetReval', table: 'A_Asset_Reval', fields: { AD_Org_ID: { const: 11 }, A_Asset_ID: { path: 'asset' }, DateDoc: { path: 'date' }, DateAcct: { path: 'date' }, PostingType: { const: 'A' },
+    A_Asset_Cost: { path: 'cost' }, A_Accumulated_Depr: { path: 'accum' }, A_Asset_Cost_Change: { path: 'cost2' }, A_Change_Acumulated_Depr: { path: 'accum2' } } },   // A_Asset_Reval has no Description column
+  docAction: { serviceType: 'BridgeCompleteAssetReval', table: 'A_Asset_Reval', action: 'CO' } };
+const REV_NA = Object.fromEntries(['rev'].concat(...SCHEMAS.map(s => ['rev_wk_' + s, 'books_rev_' + s])).map(k => [k, 'n/a']));
 const DISP_NA = Object.fromEntries(['disp', 'disp_open_exp'].concat(...SCHEMAS.map(s => ['disp_change_' + s, 'disp_wk_' + s, 'books_dis_' + s])).map(k => [k, 'n/a']));
 let link = null;
 const L = async () => { if (!link) { let bytes = null; link = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: FA_DESC }); } return link; };
@@ -146,6 +153,16 @@ async function legacyFA(f) {
     res['wk_after_' + s] = w2 ? fmtWkAfter(w2) : 'none';
     log(`§FA_LEGACY_ENTRY ${f.id} schema=${s} entry=${eid} pending_other_assets=${others.join(',') || 'none'} lines=${lines.length}`);
   }
+  if (f.reval) {   // §75 revaluation of the same asset, today; current values = the primary workfile as the window's callout reads it
+    const w0 = lc((await query(cfg, 'QueryADepreciationWorkfile', `A_Asset_ID=${aid} AND C_AcctSchema_ID=101 AND PostingType='A'`))[0]) || {};
+    const ru = lk.submit('rev', { asset: aid, date: TODAY + ' 00:00:00', note: 'FA ' + f.id, cost: Number(w0.a_asset_cost || 0), accum: Number(w0.a_accumulated_depr || 0), cost2: f.reval.cost, accum2: f.reval.accum });
+    await lk.drain(); const rst = lk.store.get(ru); let rid = null;
+    if (rst.state === 'CONFIRMED') { rid = lk.store.idmap(ru).find(x => x.tbl === 'A_Asset_Reval').server_id; const rv = await postedOf('QueryAAssetReval', 'A_Asset_Reval_ID', rid); res.rev = `${rv.DocStatus}:posted=${rv.Posted === true ? 'Y' : rv.Posted}`; }
+    else res.rev = 'REJECTED';
+    log(`§FA_LEGACY_REVAL ${f.id} asset=${aid} reval=${rid} ${res.rev} ${rst.state !== 'CONFIRMED' ? (rst.error || '').slice(0, 140) : ''}`);
+    const wks3 = (await query(cfg, 'QueryADepreciationWorkfile', `A_Asset_ID=${aid}`)).map(lc);
+    for (const s of SCHEMAS) { const w = wks3.find(x => +x.c_acctschema_id === s); res['rev_wk_' + s] = w ? `${cents(w.a_asset_cost)}:${cents(w.a_accumulated_depr)}:${cents(w.a_asset_remaining)}` : 'none'; res['books_rev_' + s] = rid ? await legacyBooks(T_REV, rid, s) : 'none'; }
+  } else Object.assign(res, REV_NA);
   if (!f.dispose) return Object.assign(res, DISP_NA);
   // §74 disposal of the same asset, today
   const du = lk.submit('dis', { asset: aid, date: TODAY + ' 00:00:00', note: 'FA ' + f.id }); await lk.drain(); const dst = lk.store.get(du);
@@ -179,14 +196,15 @@ const loadHandover = ho => {   // §FA_PENDING_SYNC: legacy facts that pre-date 
 };
 const toDec = w => ({ ...w, a_asset_cost: w.a_asset_cost / 100, a_accumulated_depr: w.a_accumulated_depr / 100, a_accumulated_depr_f: w.a_accumulated_depr_f / 100 });
 const toDecRow = r => ({ ...r, expense: r.expense / 100, expense_f: r.expense_f / 100 });
-function localFA(mut = 0) {
+function localFA(mutAdd = 0, mutRev = 0) {
   return async f => {
+    const mut = mutRev;   // §75 control: +1¢ on the revalued cost only
     const aid = ++seq, addId = ++seq;
     const group = lc(gb.prepare('SELECT * FROM a_asset_group WHERE a_asset_group_id=?').get(f.group));
     const gaccts = gb.prepare('SELECT * FROM a_asset_group_acct WHERE a_asset_group_id=?').all(f.group).map(lc);
     const reg = E.faRegisterAsset({ a_asset_id: aid, ad_client_id: 11, ad_org_id: 11, a_asset_group_id: f.group, m_product_id: PRODUCT, uselifemonths: 12 }, group, gaccts);
     if (!reg.ok) return { outcome: 'REJECTED', reason: reg.reason };
-    const amtC = cents(f.amt) + mut;
+    const amtC = cents(f.amt) + mutAdd;
     const add = { a_asset_addition_id: addId, a_asset_id: aid, ad_client_id: 11, ad_org_id: 11, a_sourcetype: 'MAN', a_capvsexp: 'Cap', c_currency_id: 100, assetsourceamt: amtC / 100, datedoc: TODAY, dateacct: TODAY, a_qty_current: 1, m_product_id: PRODUCT };
     const rateTo = s => { const to = schemaCur(s); return to === 100 ? '1' : DP.fxRate(gb, 100, to, TODAY + ' 00:00:00', 11, 11); };
     const accts = Object.fromEntries(reg.accts.map(a => [+a.c_acctschema_id, a]));
@@ -199,7 +217,7 @@ function localFA(mut = 0) {
       .run(aid, 11, 11, f.id, f.group, PRODUCT, r.asset.a_asset_status, r.asset.isdepreciated, r.asset.isowned, 12, r.asset.assetservicedate, r.asset.assetactivationdate);
     for (const a of reg.accts) gb.prepare('INSERT INTO a_asset_acct(a_asset_id,ad_client_id,ad_org_id,c_acctschema_id,postingtype,validfrom,a_depreciation_id,a_depreciation_f_id,a_asset_acct,a_depreciation_acct,a_accumdepreciation_acct) VALUES(?,?,?,?,?,?,?,?,?,?,?)')
       .run(aid, 11, 11, a.c_acctschema_id, a.postingtype, a.validfrom || null, a.a_depreciation_id, a.a_depreciation_f_id, a.a_asset_acct, a.a_depreciation_acct, a.a_accumdepreciation_acct);
-    for (const a of reg.accts) gb.prepare('UPDATE a_asset_acct SET a_disposal_loss_acct=? WHERE a_asset_id=? AND c_acctschema_id=?').run(a.a_disposal_loss_acct == null ? null : a.a_disposal_loss_acct, aid, a.c_acctschema_id);   // §74
+    for (const a of reg.accts) gb.prepare('UPDATE a_asset_acct SET a_disposal_loss_acct=?, a_reval_cost_offset_acct=? WHERE a_asset_id=? AND c_acctschema_id=?').run(a.a_disposal_loss_acct == null ? null : a.a_disposal_loss_acct, a.a_reval_cost_offset_acct == null ? null : a.a_reval_cost_offset_acct, aid, a.c_acctschema_id);   // §74 §75
     gb.prepare('INSERT INTO a_asset_addition(a_asset_addition_id,a_asset_id,ad_client_id,ad_org_id,a_sourcetype,a_capvsexp,c_currency_id,assetsourceamt,dateacct,c_charge_id,m_product_id,c_project_id,docstatus,a_createasset) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
       .run(addId, aid, 11, 11, 'MAN', r.a_capvsexp, 100, amtC / 100, TODAY + ' 00:00:00', null, PRODUCT, null, 'CO', r.createAsset ? 'Y' : 'N');
     r.workfiles.forEach(wkPut);
@@ -231,6 +249,19 @@ function localFA(mut = 0) {
       res['books_dep_' + s] = fold('A_Depreciation_Entry', eid, s);
       const w2 = wkGet(aid, s); res['wk_after_' + s] = w2 ? fmtWkAfter(toDec(w2)) : 'none';
     }
+    if (f.reval) {   // §75 (F38) revaluation today, the engine under test (current values = the SQLite primary workfile, the callout's analogue)
+      const rid = ++seq, w0 = wkGet(aid, 101), rv = { a_asset_reval_id: rid, dateacct: TODAY, a_asset_cost: w0 ? w0.a_asset_cost : 0, a_accumulated_depr: w0 ? w0.a_accumulated_depr : 0,
+        a_asset_cost_change: Math.round(f.reval.cost * 100) + mut, a_change_acumulated_depr: Math.round(f.reval.accum * 100) };
+      const rr = E.faCompleteReval(rv, w0, { periodOpen: E.periodOpen(periodData, TODAY, 'GLJ', TODAY) });
+      if (!rr.ok) res.rev = 'REJECTED';
+      else {
+        wkPut(rr.workfile);
+        gb.prepare('INSERT INTO a_asset_reval(a_asset_reval_id,a_asset_id,ad_client_id,ad_org_id,dateacct,postingtype,a_asset_cost,a_accumulated_depr,a_asset_cost_change,a_change_acumulated_depr,docstatus) VALUES(?,?,?,?,?,?,?,?,?,?,?)')
+          .run(rid, aid, 11, 11, TODAY + ' 00:00:00', 'A', rv.a_asset_cost / 100, rv.a_accumulated_depr / 100, rv.a_asset_cost_change / 100, rv.a_change_acumulated_depr / 100, 'CO');
+        const dd = DP.derivePostings(gb, { table: 'A_Asset_Reval', id: rid }, 101); res.rev = `CO:posted=${dd.postStatus || (dd.absent && dd.absent.length ? 'E' : 'Y')}`;
+      }
+      for (const s of SCHEMAS) { const w = wkGet(aid, s); res['rev_wk_' + s] = w ? `${w.a_asset_cost}:${w.a_accumulated_depr}:${w.a_asset_remaining}` : 'none'; res['books_rev_' + s] = rr.ok ? fold('A_Asset_Reval', rid, s) : 'none'; }
+    } else Object.assign(res, REV_NA);
     if (!f.dispose) return Object.assign(res, DISP_NA);
     // §74 (F37) disposal today, the engine under test
     const did = ++seq, disp = { a_asset_disposed_id: did, a_asset_id: aid, dateacct: TODAY, a_disposed_method: 'S', postingtype: 'A' };
@@ -258,7 +289,7 @@ function localFA(mut = 0) {
 }
 
 // ================= corpus (spec §63) =================
-const KEYS = ['outcome', 'asset', 'addition'].concat(...SCHEMAS.map(s => ['wk_' + s, 'sched_' + s, 'books_add_' + s, 'entry_' + s, 'books_dep_' + s, 'wk_after_' + s]), Object.keys(DISP_NA));
+const KEYS = ['outcome', 'asset', 'addition'].concat(...SCHEMAS.map(s => ['wk_' + s, 'sched_' + s, 'books_add_' + s, 'entry_' + s, 'books_dep_' + s, 'wk_after_' + s]), Object.keys(REV_NA), Object.keys(DISP_NA));
 const spec = { keys: KEYS, notCompared: {} };
 (async () => {
   let fails = 0, incon = 0;
@@ -275,7 +306,8 @@ const spec = { keys: KEYS, notCompared: {} };
   const only = process.env.FA_ONLY;
   const corpus = [sc('FA1-equipment-60m', { group: 50007, amt: 1200 }), sc('FA0-vehicles-zero-c-life', { group: 50006, amt: 1200 }),
     sc('FA-REJ-unknown-group', { group: 999999, amt: 1200 }), sc('FA-REJ2-zero-amount', { group: 50007, amt: 0 }),
-    sc('FAD1-disposal-simple', { group: 50007, amt: 1200, noDep: true, dispose: true }), sc('FAD-REJ-already-depreciated', { group: 50007, amt: 1200, dispose: true })].filter(c => !only || c.id.startsWith(only));
+    sc('FAD1-disposal-simple', { group: 50007, amt: 1200, noDep: true, dispose: true }), sc('FAD-REJ-already-depreciated', { group: 50007, amt: 1200, dispose: true }),
+    sc('FAR1-revaluation', { group: 50007, amt: 1200, reval: { cost: 1500, accum: 25 } }), sc('FAR-REJ-not-depreciated', { group: 50007, amt: 1200, noDep: true, reval: { cost: 1500, accum: 25 } })].filter(c => !only || c.id.startsWith(only));
   const rows = await R.run(corpus, spec, [], { log });
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify(r.legacy)} sqlite=${JSON.stringify(r.sqlite)}`);
   out('§FA_NO_ERROR', rows.every(r => r.legacy.outcome !== 'ERROR' && r.sqlite.outcome !== 'ERROR'), `errors=${rows.filter(r => r.legacy.outcome === 'ERROR' || r.sqlite.outcome === 'ERROR').map(r => r.id + ':' + (r.legacy.error || r.sqlite.error)).join(',') || 'none'}`);
@@ -284,6 +316,9 @@ const spec = { keys: KEYS, notCompared: {} };
   if (!only) {
     const neg = await R.run([sc('NEG-fa-control', { group: 50007, amt: 1200 }, 1)], spec, [], { log });
     out('§FA_NEGATIVE_CONTROL', neg[0].verdict === 'SQLITE-GAP' && ['wk_101', 'sched_101', 'books_add_101'].every(k => neg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite addition ⇒ verdict=${neg[0].verdict} gaps=${neg[0].gaps.map(g => g.key).join(',')}`);
+    const rneg = await R.run([sc('NEG-far-control', { group: 50007, amt: 1200, reval: { cost: 1500, accum: 25 } }, 0)].map(x => ({ ...x, local: localFA(0, 1) })), spec, [], { log });
+    // the books cannot carry the +1¢: GardenWorld has no reval cost offset account ⇒ both sides post nothing (Posted=i, §75); the revalued workfile must carry it
+    out('§FAR_NEGATIVE_CONTROL', rneg[0].verdict === 'SQLITE-GAP' && rneg[0].gaps.some(g => g.key === 'rev_wk_101'), `+1¢ on the SQLite revalued cost ⇒ verdict=${rneg[0].verdict} gaps=${rneg[0].gaps.map(g => g.key).join(',')}`);
     const dneg = await R.run([sc('NEG-fad-control', { group: 50007, amt: 1200, noDep: true, dispose: true }, 1)], spec, [], { log });
     out('§FAD_NEGATIVE_CONTROL', dneg[0].verdict === 'SQLITE-GAP' && ['disp', 'disp_change_101', 'books_dis_101'].every(k => dneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite addition before the disposal ⇒ verdict=${dneg[0].verdict} gaps=${dneg[0].gaps.map(g => g.key).join(',')}`);
   }
