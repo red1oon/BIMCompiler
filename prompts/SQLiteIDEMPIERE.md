@@ -38,7 +38,7 @@ Only two lane-relevant facts from the extras apply to normal users: F1 (draft in
 Each principle: rule · where it comes from · how it is ENFORCED (not just stated) · witness.
 | # | Principle | Source | Enforced by | Witness |
 |---|---|---|---|---|
-| P1 | **Legacy sees a normal client (§19): no SQLite-specific footprint — no plugin, table, column, protocol or marker on legacy.** (Mode B plugin = PARKED, §19.) Bridge uses only the 9 stock WS ops (§2) + AD config the admin chooses. No SQL, no schema/column, no custom table on legacy. | user D1, CLAUDE.md DB rule | transport has an allow-list of ops (anything else throws); Bridge code has no postgres client (grep gate) | W-P1 |
+| P1 | **Legacy sees a normal client (§19, D6 §51): the only legacy-side setup is WebService configuration (WS types, whitelists, role access) — the legal door; no plugin, table, column, protocol or marker.** (Mode B plugin = PARKED, §19.) Bridge uses only the 9 stock WS ops (§2) + AD config the admin chooses. No SQL, no schema/column, no custom table on legacy. | user D1, CLAUDE.md DB rule | transport has an allow-list of ops (anything else throws); Bridge code has no postgres client (grep gate) | W-P1 |
 | P2 | **Look like a normal user; never write derived data.** Writes are documents + doc-actions only. Server owns numbering, posting, totals, stock. Never write `Fact_Acct`, `M_Storage`, `M_Cost*`, `GrandTotal`. | user §0 | descriptor validator rejects derived tables/columns as write targets | W6, W-P2 |
 | P3 | **Layer is plugin-agnostic.** No plugin table/column names inside the layer; a plugin = descriptor + rules + UI. | user §00 | grep gate (no `C_Order`/`M_Product`… literals in layer code); W8 diff is descriptor-only | W8 |
 | P4 | **Local-first.** UI never waits on the network; offline = fully working; sync is a background worker. | user §0 | UI path has no sync call; W5 with network killed | W5 |
@@ -1145,5 +1145,12 @@ SQLite-only rows (reported, never deleted): windows 7100000 "C Attendance", 7800
 **F9 resume point (⏸, spec only):** legacy re-processes cost details dated after a back-dated transaction (`MCostDetail.beforeSave` IsBackDate MCostDetail.java:1241-1267 → DocManager.java:620-900 re-posts later documents; MCost history MCost.java:113-146). SQLite has no `M_CostDetail` / `M_CostHistory` at all.
 Steps: (1) read types `QueryMCostDetail`/`QueryMCostHistory` + dict_spec rows (composite keys) so the scratch posting db carries the history; (2) port `MCostDetail.process` for shipments (per costing element, qty adjust; average cost unchanged on issue) as a pure fold over the detail rows ordered by DateAcct;
 (3) port the back-date re-processing (DocManager.java:620-900) incl. `BackDateDay` (c_acctschema, already synced); (4) measure on a CLEAN product first (141 Weeder: costed 30, no harness history) with an interleaved receipt, then re-judge S8a. The pilot's Oak Tree history is polluted by hundreds of refused harness shipments — keep S8a as the failing regression, judge F9 on the clean product.
+
+## §51 DECISION D6 — WebService setup on legacy is the legal door (user 2026-10-09: "setting up WebServices eventually if needed is OK as that is the legal door into the legacy")
+**Settled.** Registering WS types, field whitelists, role access and read-only query types on the legacy side (everything in `scripts/bridge/pilot/*.sql`, i.e. the proposal list for the admin) is an ACCEPTED, legitimate step —
+it is the same door any integration client uses. This resolves the tension in P1 and §19 ("honest bound"): the admin provisioning an integration user + WS types is expected, not a violation.
+**Still forbidden** (unchanged): direct SQL into legacy, custom tables/columns/plugins as a dependency (Mode B stays parked), schema changes, markers, forged identity. Posture: WS config only, as AD configuration done by the legacy admin on their say-so;
+on the local pilot we apply the same SQL ourselves. Read-only query types are preferred over write types; each write type is listed with its field whitelist in the admin handover list (§9 P1).
+**Not decided by this note:** Q-OOTB (editing `~/bim-ootb/erp` to deliver the SQLite-side fixes) — still waiting for the user.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
