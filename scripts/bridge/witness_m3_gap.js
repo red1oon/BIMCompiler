@@ -629,6 +629,68 @@ function localReq(mut = 0) {
   };
 }
 
+// ================= MODEL: Cash Journal (spec §66) — an AR invoice settled by a cash journal Invoice line; legacy through the frozen link =================
+const CASH_DESC = {
+  inv: INV_DESC.inv,
+  invDraft: Object.fromEntries(Object.entries(INV_DESC.inv).filter(([k]) => k !== 'docAction')),   // the same invoice, NOT completed (CASH-REJ)
+  cash: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateCash', table: 'C_Cash', fields: { AD_Org_ID: { const: 11 }, C_CashBook_ID: { const: 101 }, Name: { path: 'name' }, StatementDate: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+    lines: { serviceType: 'BridgeCreateCashLine', table: 'C_CashLine', parent: 'C_Cash_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, CashType: { const: 'I' }, C_Invoice_ID: { path: 'inv' }, Amount: { path: 'amt' }, C_Currency_ID: { const: 100 } } },
+    docAction: { serviceType: 'BridgeCompleteCash', table: 'C_Cash', action: 'CO' } } };
+const cashSpec = { keys: ['outcome', 'cash_status', 'statement_diff', 'allocation', 'ispaid', 'books_cash', 'books_cash_euro', 'books_alloc', 'books_alloc_euro', 'bp_delta'], notCompared: {} };
+let cashLink = null;
+const bpOf = async () => { const b = (await query(cfg, 'QueryCBPartner', `C_BPartner_ID=${BP}`))[0]; return { open: cents(b.TotalOpenBalance), credit: cents(b.SO_CreditUsed) }; };
+async function legacyCash(f) {
+  if (!cashLink) { let bytes = null; cashLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: CASH_DESC }); }
+  const bp0 = await bpOf();
+  const iu = cashLink.submit(f.draft ? 'invDraft' : 'inv', { org: 11, bp: BP, loc: LOC[BP], date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines.map(l => ({ ...l, org: 11 })) });
+  await cashLink.drain(); const ist = cashLink.store.get(iu); if (ist.state !== 'CONFIRMED') return { outcome: 'ERROR', error: 'invoice: ' + ist.error };
+  const invId = cashLink.store.idmap(iu).find(x => x.tbl === 'C_Invoice').server_id, inv = (await query(cfg, 'QueryCInvoice', `C_Invoice_ID=${invId}`))[0];
+  const cu = cashLink.submit('cash', { name: 'M3 ' + f.id + ' ' + Date.now().toString(36), date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: [{ inv: invId, amt: Number(inv.GrandTotal) }] });
+  await cashLink.drain(); const cst = cashLink.store.get(cu);
+  if (cst.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(cst.error || '')) throw new Error('§WS_CONFIG ' + cst.error);
+  if (cst.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (cst.error || '').slice(0, 120) };
+  const cashId = cashLink.store.idmap(cu).find(x => x.tbl === 'C_Cash').server_id;
+  let h; for (let i = 0; i < 10; i++) { h = (await query(cfg, 'QueryCCash', `C_Cash_ID=${cashId}`))[0]; if (['Y', 'E'].includes(h.Posted) || h.Posted === true) break; await new Promise(r => setTimeout(r, 1500)); }
+  const al = await query(cfg, 'QueryCAllocationLine', `C_Invoice_ID=${invId}`); const hid = al[0] && al[0].C_AllocationHdr_ID;
+  const ah = hid ? (await query(cfg, 'QueryCAllocationHdr', `C_AllocationHdr_ID=${hid}`))[0] : null;
+  const inv2 = (await query(cfg, 'QueryCInvoice', `C_Invoice_ID=${invId}`))[0], bp1 = await bpOf();
+  const books = async (t, id, posted) => posted === 'E' ? 'REFUSED:Posted=E' : [await legacyFactsOf(t, id, SCHEMA), await legacyFactsOf(t, id, SCHEMA2)];
+  const [c1, c2] = h.Posted === 'E' ? ['REFUSED:Posted=E', 'REFUSED:Posted=E'] : await books(407, cashId);
+  const [a1, a2] = hid ? await books(735, hid) : ['none', 'none'];
+  return { outcome: 'COMPLETED', cash_status: h.DocStatus, statement_diff: cents(h.StatementDifference), allocation: al.map(a => `${ah.DocStatus}:${cents(a.Amount)}:${a.C_CashLine_ID ? 'cash' : '-'}`).join('|') || 'none',
+    ispaid: inv2.IsPaid === true || inv2.IsPaid === 'Y' ? 'Y' : 'N', books_cash: c1, books_cash_euro: c2, books_alloc: a1, books_alloc_euro: a2, bp_delta: `${bp1.open - bp0.open}/${bp1.credit - bp0.credit}` };
+}
+function localCash(mut = 0) {
+  return async f => {
+    if (typeof E.completeCash !== 'function') return { outcome: 'COMPLETED', cash_status: 'DR', statement_diff: 0, allocation: 'none', ispaid: 'N', books_cash: 'none', books_cash_euro: 'none', books_alloc: 'none', books_alloc_euro: 'none', bp_delta: 'none' };
+    const iid = ++seq * 10;
+    const r = E.prepareInvoice({ c_invoice_id: iid, issotrx: 'Y', c_bpartner_id: BP, dateinvoiced: TODAY }, f.lines.map((l, i) => ({ c_invoiceline_id: iid * 100 + i, m_product_id: l.product, qtyinvoiced: l.qty })),
+      { priceOf: priceOfAt, taxOf: taxOfFor({ org: 11, bp: BP, invoice: true, date: TODAY }), taxById, taxChildren, taxIncluded: TAX_INCLUDED });
+    if (!r.ok) return { outcome: 'ERROR', error: 'invoice ' + r.reason };
+    const ist = f.draft ? 'DR' : 'CO';
+    const st = { invoices: [{ c_invoice_id: iid, issotrx: 'Y', docstatus: ist, grandtotal: r.grandTotal, ispaid: 'N' }], payments: [], allocations: [] };
+    const b0 = E.bpOpenBalance({ invoices: [], payments: [], allocations: [] });
+    gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id,docstatus) VALUES(?,?,?,?,?,?,?,?,?)').run(iid, BP, r.grandTotal / 100, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', 11, 11, ist);
+    const cid = ++seq * 10, amt = (r.grandTotal + mut) / 100;
+    const lines = [{ c_cashline_id: cid * 100 + 1, cashtype: 'I', c_invoice_id: iid, amount: amt, c_currency_id: PL_CURRENCY }];
+    const c = E.completeCash({ c_cash_id: cid, dateacct: TODAY }, lines, { invoiceOf: id => ({ docstatus: ist, grandtotal: r.grandTotal / 100, allocated: 0, c_bpartner_id: BP }), newId: () => ++seq * 10,
+      periodOpen: E.periodOpen(periodData, TODAY, 'CMC', TODAY) });
+    if (!c.ok) return { outcome: 'REJECTED', reason: c.reason };
+    const ah = c.ops.find(o => o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr'), al = c.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine');
+    const paid = (c.ops.find(o => o.op_type === 'UPDATE_FIELD' && o.table === 'C_Invoice' && o.field === 'ispaid') || {}).value || 'N';
+    st.invoices[0].ispaid = paid; if (ah) st.allocations.push({ isactive: 'Y', lines: al.map(l => ({ c_invoice_id: l.c_invoice_id, amount: cents(l.amount), discountamt: 0, writeoffamt: 0 })) });
+    const b1 = E.bpOpenBalance(st);
+    gb.prepare('INSERT INTO c_cash(c_cash_id,c_cashbook_id,docstatus,ad_org_id,ad_client_id,dateacct,statementdifference) VALUES(?,?,?,?,?,?,?)').run(cid, 101, 'CO', 11, 11, TODAY + ' 00:00:00', c.statementDifference);
+    lines.forEach(l => gb.prepare('INSERT INTO c_cashline(c_cashline_id,c_cashbook_id,c_cash_id,amount,cashtype,c_invoice_id,c_currency_id) VALUES(?,?,?,?,?,?,?)').run(l.c_cashline_id, 101, cid, l.amount, l.cashtype, l.c_invoice_id, l.c_currency_id));
+    if (ah) { gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id, TODAY + ' 00:00:00', 'CO', 11, 11);
+      for (const l of al) gb.prepare('INSERT INTO c_allocationline(c_allocationline_id,c_allocationhdr_id,c_payment_id,c_cashline_id,c_invoice_id,c_bpartner_id,amount,writeoffamt,discountamt) VALUES(?,?,?,?,?,?,?,?,?)').run(l.c_allocationline_id, ah.c_allocationhdr_id, null, l.c_cashline_id, l.c_invoice_id, l.c_bpartner_id, l.amount, 0, 0); }
+    const fold = (t, id, sc2) => { if (!id) return 'none'; const d = DP.derivePostings(gb, { table: t, id }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    return { outcome: 'COMPLETED', cash_status: 'CO', statement_diff: cents(c.statementDifference), allocation: al.map(l => `CO:${cents(l.amount)}:cash`).join('|') || 'none', ispaid: paid,
+      books_cash: fold('C_Cash', cid, SCHEMA), books_cash_euro: fold('C_Cash', cid, SCHEMA2), books_alloc: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA), books_alloc_euro: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA2),
+      bp_delta: `${b1.open - b0.open}/${b1.credit - b0.credit}` };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -739,6 +801,11 @@ const quirks = [
     { id: 'REQ-REJ-no-requester', facts: { id: 'REQR', noUser: true, lines: [{ product: 139, qty: 3 }] }, legacy: legacyReq, local: localReq(0) }]), reqSpec, quirks, { log }));
   if (!only) { const rneg = await R.run([{ id: 'NEG-req-control', facts: { id: 'REQN', lines: [{ product: 139, qty: 3 }] }, legacy: legacyReq, local: localReq(1) }], reqSpec, quirks, { log });
     out('§M3_REQ_NEGATIVE_CONTROL', rneg[0].verdict === 'SQLITE-GAP' && ['lines', 'total_cents'].every(k => rneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite requisition price ⇒ verdict=${rneg[0].verdict} gaps=${rneg[0].gaps.map(g => g.key).join(',')}`); }
+  // MODEL Cash Journal (spec §66)
+  rows.push(...await R.run(keepOnly([{ id: 'CASH1-cash-journal-settles-invoice', facts: { id: 'CASH1', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) },
+    { id: 'CASH-REJ-invoice-not-completed', facts: { id: 'CASHR', draft: true, lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) }]), cashSpec, quirks, { log }));
+  if (!only) { const cneg = await R.run([{ id: 'NEG-cash-control', facts: { id: 'CASHN', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(1) }], cashSpec, quirks, { log });
+    out('§M3_CASH_NEGATIVE_CONTROL', cneg[0].verdict === 'SQLITE-GAP' && ['statement_diff', 'ispaid'].every(k => cneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite cash line ⇒ verdict=${cneg[0].verdict} gaps=${cneg[0].gaps.map(g => g.key).join(',')}`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);

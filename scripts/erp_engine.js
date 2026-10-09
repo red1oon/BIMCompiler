@@ -816,6 +816,35 @@ function prepareRequisition(hdr, lines, ctx) {
   return { ok: true, lines: out, totalLines: total, ops: [{ op_type: 'SET_STATUS', table: 'M_Requisition', id: hdr.m_requisition_id, doc_status: 'CO' }] };
 }
 
+// completeCash — MCash.completeIt (MCash.java:completeIt): per Invoice cash line the invoice must be CO/CL/RE/VO (else @InvoiceCreateDocNotCompleted@, whole journal refused), and a NEW allocation
+// (cash DateAcct, the line currency) with one line (Amount, Discount, WriteOff; invoice + cash line) is created and completed; the invoice IsPaid follows MInvoice.testAllocation (allocated = GrandTotal).
+// Bank-transfer lines (a payment) and the other cash types' side documents are not ported ⇒ refused by name. Implementing §66.2 (F30) — Witness: M3 CASH1/CASH-REJ.
+// cash = { c_cash_id, dateacct }; lines [{c_cashline_id, cashtype, c_invoice_id, amount, discountamt, writeoffamt, c_currency_id}]; ctx = { invoiceOf(id) → {docstatus, grandtotal, allocated}, newId(table) }
+function completeCash(cash, lines, ctx) {
+  ctx = ctx || {};
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'PeriodClosed' };     // MCash.prepareIt: Cash Journal period open
+  if (!lines || !lines.length) return { ok: false, reason: 'NoLines' };
+  var ops = [], diff = 0;
+  for (var i = 0; i < (lines || []).length; i++) {
+    var l = lines[i];
+    if (l.c_currency_id != null && cash.c_currency_id != null && Number(l.c_currency_id) !== Number(cash.c_currency_id)) return { ok: false, reason: 'foreign-currency cash line not ported (MCash.prepareIt conversion)' };
+    diff += Number(l.amount || 0);   // StatementDifference = Σ line amounts (MCash.prepareIt)
+    if (l.cashtype === 'T') return { ok: false, reason: 'bank-transfer cash line not ported' };
+    if (l.cashtype !== 'I') continue;
+    var inv = ctx.invoiceOf(l.c_invoice_id);
+    if (!inv || ['CO', 'CL', 'RE', 'VO'].indexOf(inv.docstatus) < 0) return { ok: false, reason: 'InvoiceCreateDocNotCompleted' };
+    var hid = ctx.newId('C_AllocationHdr');
+    ops.push({ op_type: 'CREATE_DOCUMENT', table: 'C_AllocationHdr', c_allocationhdr_id: hid, c_currency_id: l.c_currency_id, dateacct: cash.dateacct });
+    ops.push({ op_type: 'CREATE_LINE', table: 'C_AllocationLine', c_allocationline_id: hid * 10 + 1, c_allocationhdr_id: hid, c_invoice_id: l.c_invoice_id, c_cashline_id: l.c_cashline_id, c_bpartner_id: inv.c_bpartner_id,
+      amount: Number(l.amount || 0), discountamt: Number(l.discountamt || 0), writeoffamt: Number(l.writeoffamt || 0), overunderamt: 0 });
+    ops.push({ op_type: 'SET_STATUS', table: 'C_AllocationHdr', id: hid, doc_status: 'CO' });
+    var allocated = Math.round((Number(inv.allocated || 0) + Number(l.amount || 0) + Number(l.discountamt || 0) + Number(l.writeoffamt || 0)) * 100);
+    if (allocated === Math.round(Number(inv.grandtotal) * 100)) ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: l.c_invoice_id, field: 'ispaid', value: 'Y' });
+  }
+  ops.push({ op_type: 'SET_STATUS', table: 'C_Cash', id: cash.c_cash_id, doc_status: 'CO' });
+  return { ok: true, ops: ops, statementDifference: diff };
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -1009,7 +1038,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  completeCash: completeCash, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

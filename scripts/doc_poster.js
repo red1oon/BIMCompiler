@@ -883,53 +883,55 @@ function deriveRequisition(db, id, schema) {
 // the real line data, proving the ∅ is an IsActive-gate fact (Doc.postIt, outside createFacts), not a
 // dead/no-op verb or a manifest bug. NEVER invents: IsActive is read, never flipped, on the real rows.
 function deriveCash(db, id, schema) {
+  // §66.2 (F30) — Doc_Cash.createFacts (Doc_Cash.java:150-249) as legacy posts it: a leg whose cash-book account is NOT configured is not created (Fact.createLine returns null for a null
+  // account, Fact.java:116-122) — it is no longer reported absent; an unbalanced source is then balanced on the schema's SuspenseBalancing account (Doc.post → Fact.balanceSource
+  // Fact.java:298-322, only when UseSuspenseBalancing='Y', else NotBalanced ⇒ absent); each line is converted to the schema currency on its own (FactLine.convert), then the currency
+  // difference is balanced (Fact.balanceAccounting, the F16 helper). Lines carry the cash BOOK currency (DocLine_Cash: the line currency for invoice / transfer lines).
   var hdr = getRow(db, 'SELECT * FROM c_cash WHERE c_cash_id=?', num(id));
   if (!hdr) return null;
   var cb = getRow(db, 'SELECT * FROM c_cashbook WHERE c_cashbook_id=?', num(hdr.c_cashbook_id));
   var cbAcct = getRow(db, 'SELECT * FROM c_cashbook_acct WHERE c_cashbook_id=? AND c_acctschema_id=?', [num(hdr.c_cashbook_id), num(schema)]);
-  var docCur = cb ? num(cb.c_currency_id) : null;
-  var d = b3New();
+  var docCur = cb && cb.c_currency_id != null ? num(cb.c_currency_id) : null;
+  var d = b3New(), parts = [];   // {el, side, src, cur}
   if (!cbAcct) { d.absent.push('c_cashbook_acct#' + hdr.c_cashbook_id + '/' + schema); return d; }
   var lines = allRows(db, 'SELECT * FROM c_cashline WHERE c_cash_id=? ORDER BY c_cashline_id', num(id));
   var assetAmt = 0;
-  function cbEl(col, token) { return elOf(db, vcAcct(db, cbAcct[col]), d.absent, token); }
+  function acct(combo) { var a = vcAcct(db, combo); if (a == null) return null; return elOf(db, a, d.absent, 'acct'); }
+  function line(el, amt, cur) { if (!el || !amt) return; parts.push({ el: el, side: amt > 0 ? 'DR' : 'CR', src: Math.abs(amt), cur: cur }); }   // single-amount createLine: negative ⇒ CR (Fact.java:206-212)
+  function line2(el, dr, cr, cur) { if (!el) return; if (dr) parts.push({ el: el, side: 'DR', src: dr, cur: cur }); if (cr) parts.push({ el: el, side: 'CR', src: cr, cur: cur }); }
   lines.forEach(function (l) {
-    var amt = cents(l.amount);
-    var lineCur = num(l.c_currency_id);
-    if (l.cashtype === 'E') {                                              // Expense :174-181
-      var expEl = cbEl('cb_expense_acct', '{CashBook.CashExpense}');
-      if (expEl) d.add('DR', expEl, -amt);
-      assetAmt -= -amt;
-    } else if (l.cashtype === 'R') {                                       // Receipt :182-189
-      assetAmt += amt;
-      var rcvEl = cbEl('cb_receipt_acct', '{CashBook.CashReceipt}');
-      if (rcvEl) d.add('CR', rcvEl, amt);
-    } else if (l.cashtype === 'C') {                                       // Charge :190-197
+    var amt = cents(l.amount), lineCur = l.c_currency_id != null ? num(l.c_currency_id) : docCur;
+    if (l.cashtype === 'E') { line2(acct(cbAcct.cb_expense_acct), -amt, 0, docCur); assetAmt -= -amt; }                 // Expense :174-181
+    else if (l.cashtype === 'R') { assetAmt += amt; line2(acct(cbAcct.cb_receipt_acct), 0, amt, docCur); }             // Receipt :182-189
+    else if (l.cashtype === 'C') {                                                                                  // Charge :190-197
       var chg = getRow(db, 'SELECT ch_expense_acct AS acct FROM c_charge_acct WHERE c_charge_id=? AND c_acctschema_id=?', [num(l.c_charge_id), num(schema)]);
-      var chgEl = elOf(db, vcAcct(db, chg && chg.acct), d.absent, '{Charge.Expense}');
-      if (chgEl) d.add('DR', chgEl, -amt);
-      assetAmt -= -amt;
-    } else if (l.cashtype === 'D') {                                       // Difference :198-205
-      var diffEl = cbEl('cb_differences_acct', '{CashBook.CashDifference}');
-      if (diffEl) d.add('DR', diffEl, -amt);
-      assetAmt += amt;
-    } else if (l.cashtype === 'I') {                                       // Invoice :206-219
-      if (lineCur === docCur) assetAmt += amt;
-      else { var caEl = cbEl('cb_asset_acct', '{CashBook.CashAsset}'); if (caEl) d.add('DR', caEl, amt); }
-      var trEl = cbEl('cb_cashtransfer_acct', '{CashBook.CashTransfer}');
-      if (trEl) d.add('CR', trEl, amt);                                    // amount.negate() → CR |amt|
-    } else if (l.cashtype === 'T') {                                       // Transfer :220-236
+      line(acct(chg && chg.acct), -amt, docCur); assetAmt -= -amt;
+    } else if (l.cashtype === 'D') { line(acct(cbAcct.cb_differences_acct), -amt, docCur); assetAmt += amt; }           // Difference :198-205
+    else if (l.cashtype === 'I') {                                                                                  // Invoice :206-219
+      if (lineCur === docCur) assetAmt += amt; else line(acct(cbAcct.cb_asset_acct), amt, lineCur);
+      line(acct(cbAcct.cb_cashtransfer_acct), -amt, lineCur);
+    } else if (l.cashtype === 'T') {                                                                                // Transfer :220-236
       var ba = getRow(db, 'SELECT * FROM c_bankaccount_acct WHERE c_bankaccount_id=? AND c_acctschema_id=?', [num(l.c_bankaccount_id), num(schema)]);
-      var itEl = elOf(db, vcAcct(db, ba && ba.b_intransit_acct), d.absent, '{BankAccount.InTransit}');
-      if (itEl) d.add('DR', itEl, -amt);
-      if (lineCur === docCur) assetAmt += amt;
-      else { var caEl2 = cbEl('cb_asset_acct', '{CashBook.CashAsset}'); if (caEl2) d.add('DR', caEl2, amt); }
+      line(acct(ba && ba.b_intransit_acct), -amt, lineCur);
+      if (lineCur === docCur) assetAmt += amt; else line(acct(cbAcct.cb_asset_acct), amt, lineCur);
     }
   });
-  if (assetAmt !== 0) {                                                    // header close :239-243
-    var assetEl = cbEl('cb_asset_acct', '{CashBook.CashAsset}');
-    if (assetEl) d.add(assetAmt > 0 ? 'DR' : 'CR', assetEl, Math.abs(assetAmt));
+  if (assetAmt !== 0) line(acct(cbAcct.cb_asset_acct), assetAmt, docCur);                                           // header close :239-243
+  var bal = 0; parts.forEach(function (p) { bal += p.side === 'DR' ? p.src : -p.src; });
+  var curs = {}; parts.forEach(function (p) { curs[p.cur] = 1; });
+  if (bal !== 0 && Object.keys(curs).length <= 1) {                                                                  // Fact.isSourceBalanced / balanceSource
+    var gl = _hasCol(db, 'c_acctschema_gl', 'usesuspensebalancing') ? getRow(db, 'SELECT usesuspensebalancing AS u, suspensebalancing_acct AS a FROM c_acctschema_gl WHERE c_acctschema_id=?', num(schema)) : null;
+    if (!gl || String(gl.u) !== 'Y') { d.absent.push('NotBalanced (no suspense balancing, Doc.java:852-856)'); return d; }
+    var sus = acct(gl.a); if (!sus) { d.absent.push('SuspenseBalancing_Acct'); return d; }
+    parts.push({ el: sus, side: bal < 0 ? 'DR' : 'CR', src: Math.abs(bal), cur: docCur });
   }
+  var as = schemaRow(db, schema), dr = 0, cr = 0;
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i], amt = p.cur == null || !as || num(p.cur) === num(as.c_currency_id) ? p.src : _fxConvertCents(db, p.src, p.cur, schema, hdr.dateacct, hdr.ad_client_id, hdr.ad_org_id, d.absent);
+    if (amt == null) return d;
+    d.add(p.side, p.el, amt); if (p.side === 'DR') dr += amt; else cr += amt;
+  }
+  if (dr !== cr) balanceAccounting(db, d.by, d.absent, schema, dr - cr);
   return d;
 }
 

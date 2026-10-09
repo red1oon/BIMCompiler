@@ -230,3 +230,17 @@ INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 106,7,'N',108 WH
 INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 107,7.5,'N',108 WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=107);
 INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 108,14.5,'Y',NULL WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=108);
 INSERT INTO c_tax(c_tax_id,rate,issummary,parent_tax_id) SELECT 109,0,'N',NULL WHERE NOT EXISTS (SELECT 1 FROM c_tax WHERE c_tax_id=109);
+-- 2026-10-10 (spec §66.2, F30): Doc_Cash / MCash read the cash line's type, invoice and currency and the cash book currency; the posting db's c_cashline / c_cashbook lack them.
+-- Guarded ALTERs; cash book currencies from the SQLite seed ad_seed_fullwidth.db (101/102 → USD 100).
+ALTER TABLE c_cashline ADD COLUMN cashtype;
+ALTER TABLE c_cashline ADD COLUMN c_invoice_id;
+ALTER TABLE c_cashline ADD COLUMN c_currency_id;
+ALTER TABLE c_cashline ADD COLUMN c_charge_id;
+ALTER TABLE c_cashline ADD COLUMN c_bankaccount_id;
+ALTER TABLE c_cashbook ADD COLUMN c_currency_id;
+UPDATE c_cashbook SET c_currency_id=100 WHERE c_cashbook_id IN (101,102) AND c_currency_id IS NULL;
+-- 2026-10-10 (spec §66.2, F30): Doc.post → Fact.balanceSource books an unbalanced source on C_AcctSchema_GL.SuspenseBalancing_Acct when UseSuspenseBalancing='Y'; values from the SQLite seed.
+ALTER TABLE c_acctschema_gl ADD COLUMN usesuspensebalancing;
+ALTER TABLE c_acctschema_gl ADD COLUMN suspensebalancing_acct;
+UPDATE c_acctschema_gl SET usesuspensebalancing='Y', suspensebalancing_acct=219 WHERE c_acctschema_id=101 AND usesuspensebalancing IS NULL;
+UPDATE c_acctschema_gl SET usesuspensebalancing='Y', suspensebalancing_acct=200019 WHERE c_acctschema_id=200000 AND usesuspensebalancing IS NULL;

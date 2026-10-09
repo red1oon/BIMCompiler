@@ -1472,4 +1472,41 @@ marks both paid and allocates the original against the reversal (MInvoice.java:2
 **Proof (`req3.log`):** `§SCN REQ1-purchase-requisition MATCH compared=6` · `§SCN REQ-REJ-no-requester MATCH` (the negative control runs in the full M3 run). **Regression:** 99 engine witnesses vs the F28 run: identical except the 4 known-nondeterministic logs.
 **Residue:** charge lines, requisition → purchase order (RequisitionPOCreate process) and commitment accounting are not exercised.
 
+### §66.2 DECISION RECORD F30 — Cash Journal settling an invoice like legacy; ONE key blocked on a legacy posting-timing question (Q-CASH) (2026-10-10)
+**Evidence (`scratchpad/cash1.log`):** CASH1 legacy CO, StatementDifference 3.00, allocation `CO:300:cash`, invoice IsPaid Y, cash books **515 Dr 300 / 516 Cr 300** (schema 101) and **516 Cr 255 / 698 Dr 255** (schema 200000: the cash book has NO asset account there, so the asset leg is not
+created and the source is balanced on Suspense Balancing 698), BP 0/0; CASH-REJ (invoice not completed) `Document must be completed first`. SQLite: no cash verb. A DATA gap surfaced too: the posting db had the cash book's asset and transfer accounts SWAPPED vs legacy (101/101: 288↔273; 101/200000) — now in `dict_spec.json`
+(`c_cashbook_acct`, state-synced at handover, patch generated).
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW `completeCash` (MCash.prepareIt period / @NoLines@ / StatementDifference, MCash.completeIt invoice lines ⇒ completed allocation, InvoiceCreateDocNotCompleted); `scripts/doc_poster.js` `deriveCash` ported as legacy
+posts it (missing account ⇒ no leg, Fact.balanceSource suspense balancing Fact.java:298-322, per-line conversion, currency balancing); patch: c_cashline type / invoice / currency columns, c_cashbook currency, C_AcctSchema_GL suspense balancing (seed values); `witness_m3_gap.js` cash suite (CASH1, CASH-REJ, `§M3_CASH_NEGATIVE_CONTROL`); pilot `ws_model_cash.sql`, read types.
+**Proof (`cash2.log`):** CASH1 MATCH on 8 of 10 keys (status, statement difference, allocation, IsPaid, cash books BOTH schemas incl. the suspense leg, BP); `§SCN CASH-REJ-invoice-not-completed MATCH`.
+**The 2 remaining keys — `books_alloc` / `books_alloc_euro` — ⛔ Q-CASH (a legacy fact, not a SQLite choice):** the pilot books the cash-journal allocation as **Dr 698 Suspense / Cr 518 Receivable** (Euro: Dr 723 Realized loss / Cr 518), because Doc_AllocationHdr.getCashAcct reads the cash book with a NULL transaction
+(Doc_AllocationHdr.java:791-803) while the allocation is posted INSIDE the still-uncommitted cash journal ⇒ the server logs `Doc_AllocationHdr.getCashAcct: NONE for C_CashLine_ID=…` and the clearing leg is missing. The SAME legacy, posting later (accounting processor), books **Dr 516 Cash transfer / Cr 518** — exactly what
+the captured GardenWorld books show for cash allocation 100 (`516 Dr 50.35 / 518 Cr 50.35`) and what SQLite does today. Which posting mode is the reference for the twin is a configuration fact of the production server — see the question in the ledger.
+**Regression:** 99 engine witnesses vs the F29 run: identical except the 4 known-nondeterministic logs (the `poc_post_tail` cash falsifier unchanged); exit codes identical.
+
+## §67 LEDGER — 2026-10-10 second resume run (work-to-zero; cardinal rule; every row has a decision record)
+| # | Item | State | Proof / record |
+|---|---|---|---|
+| F19 | Fixed Assets: registration, addition, SL schedule, depreciation entry (both schemas) | ✅ MATCH | §63.1 — FA1, FA0 (zero C life), FA-REJ, FA-REJ2, negative control; group life set through the WS (Q-FA answered) |
+| F20 | order-line reserved / delivered / invoiced | ✅ MATCH | §64.1 |
+| F21 | BP open item (TotalOpenBalance / SO_CreditUsed) | ✅ MATCH | §64.2 |
+| F22 | Reverse-Correct of a PAID invoice (allocations) | ✅ MATCH | §64.3 |
+| F23 | Reverse-Correct of a shipment; **O2C cycle 6/6 steps MATCH** + cycle negative control; `§COVERAGE` line | ✅ MATCH | §64.4 |
+| F24 | vendor receipt, MatchPO, Average-PO weighted cost | ✅ MATCH | §65.1 |
+| F25 | AP invoice books, MatchInv, MatchPO invoice link | ✅ MATCH | §65.2 |
+| F26 | AP payment + allocation books; **P2P cycle 4/4 steps MATCH** + negative control | ✅ MATCH | §65.3 |
+| F27 | second-currency books converted per fact line (latent F12 defect, captured-books oracle AR 8/8, AP 8/8) | ✅ MATCH | §65.4 |
+| F28 | POS void reverses its invoice in full (IsPaid + allocation) — S12/S12b gained 2 keys | ✅ MATCH | §66.3 |
+| F29 | Purchase Requisition (model + rules) | ✅ MATCH | §66.1 |
+| F30 | Cash Journal (model + rules; cash books both schemas incl. suspense; DATA gap: cash-book accounts swapped) | ✅ 8/10 keys | §66.2 — allocation books ⛔ Q-CASH |
+| F9 | back-date costing (S8a) | ⏸ | plan refined below; S8a observed flipping MATCH↔GAP between runs (state-dependent re-processing of the polluted Oak Tree history) |
+| S2b, F2, DELIVERY | | ⛔ Q-OOTB (unchanged) | |
+**Q-CASH (concept §52 4 — legacy's own result is the oracle; undecidable from the record because legacy itself gives TWO results):** a cash-journal invoice settlement is booked **Dr Suspense / Cr Receivable** when the allocation is posted immediately inside the cash journal's completion (the pilot; server log
+`getCashAcct: NONE for C_CashLine_ID`), and **Dr Cash transfer / Cr Receivable** when it is posted later by the accounting processor (the captured GardenWorld books). Which posting mode does the production legacy server run — immediate (client "Post Immediate") or the accounting processor?
+SQLite then reproduces that one.
+**F9 resume plan (refined, ⏸):** legacy back-date costing = MCostDetail.beforeSave IsBackDate (MCostDetail.java:1241-1267) + DocManager.startBackDateProcess (DocManager.java:534-900): every later processed cost detail of the product/schema (by DateAcct, Ref_CostDetail_ID, id) is set unprocessed and its document RE-POSTED in order
+(MatchPO, invoice, shipment, MatchInv, inventory, movement, production, project issue), within C_AcctSchema.BackDateDay. Port = (1) read types QueryMCostDetail (exists) + the cost-detail history into the scratch posting db for the product (handover); (2) `costFold(details)` = MCostDetail.process per element
+in DateAcct order (Average PO: setWeightedAverage — exists since F24; shipment / inventory qty — exist since F6/F18); (3) a back-dated detail re-folds the tail; (4) judge on a CLEAN product with a receipt interleaved (P2P receipt today, then a sale back-dated before it) — NOT on Oak Tree, whose
+history holds hundreds of refused harness shipments.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
