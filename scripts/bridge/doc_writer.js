@@ -3,7 +3,7 @@
 //   { composite:'<registered composite WS type>',
 //     header:{ serviceType, table, fields:{COL:{const:v}|{path:'a.b'}} },
 //     lines:{ serviceType, table, parent:'<ParentColumn>', from:'<payload array path>', lineNo:{col:'Line',step:10}, fields:{...} },
-//     docAction:{ serviceType, table, action:'CO' },
+//     docAction:{ serviceType, table, action:'CO' },             // optional (create-only masters); may target a CHILD table (spec §60)
 //     expect:{ table, serviceType, cols:{COL:{const:v}|{path}} }   // read-back check (optional)
 //   }
 'use strict';
@@ -16,7 +16,8 @@ const val = (spec, payload, ctx) => {
 const F = o => ({ field: Object.entries(o).map(([k, v]) => ({ '@column': k, val: v })) });
 
 function validate(d) {
-  for (const k of ['composite', 'header', 'docAction']) if (!d[k]) throw new Error(`§DW descriptor missing '${k}'`);
+  for (const k of ['composite', 'header']) if (!d[k]) throw new Error(`§DW descriptor missing '${k}'`);   // docAction optional: create-only descriptors (masters) — spec §60
+  if (d.docAction && !(d.docAction.serviceType && d.docAction.table && d.docAction.action)) throw new Error('§DW docAction needs serviceType,table,action');
   if (d.lines && !(d.lines.parent && d.lines.from && d.lines.serviceType)) throw new Error('§DW lines needs serviceType,parent,from');
   return d;
 }
@@ -38,8 +39,8 @@ function build(d, payload) {
     }
   }
   const a = d.docAction;
-  ops.push({ TargetPort: 'setDocAction', ModelSetDocAction: { serviceType: a.serviceType, tableName: a.table,
-    recordIDVariable: `@${h.table}.${h.table}_ID`, docAction: a.action } });
+  if (a) ops.push({ TargetPort: 'setDocAction', ModelSetDocAction: { serviceType: a.serviceType, tableName: a.table,
+    recordIDVariable: `@${a.table}.${a.table}_ID`, docAction: a.action } });   // the doc-action's OWN table (== header table for every document descriptor) — spec §60
   return { serviceType: d.composite, operations: ops, nLines: n };
 }
 module.exports = { build, validate };

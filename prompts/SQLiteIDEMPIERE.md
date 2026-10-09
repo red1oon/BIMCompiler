@@ -1267,4 +1267,11 @@ single-amount `Fact.createLine` rule (Fact.java:206-212: a negative amount is bo
 **Regression:** identical except the 4 known-nondeterministic logs. (A first cut dropped zero-amount lines and broke `poc_post_tail`'s blessing-flip falsifier — caught by the regression check, fixed before commit.)
 **Residue:** Internal-Use (IU) and Cost-Adjustment (CA) inventories, charge lines and the zero-cost-purchase blessing in a live scenario not measured; the costed-qty refusal for a loss below 0 is not applied to inventories (no scenario reaches it); `deriveMovement` still drops a zero-cost line.
 
+## §60 LAYER REOPENED (P17, §54 rule) — header-only masters + a doc-action on a CHILD table (2026-10-10, needed by Fixed Assets, work list item 6/7)
+**Evidence (failing first, log `scratchpad/layer_gap.log`):** Fixed Assets needs an A_Asset (status New) before the Asset Addition can register + activate it (MAssetAddition.java:112-118 `setA_CreateAsset`, prepareIt :573-590); A_Asset is a master WITHOUT DocAction. The frozen `doc_writer`:
+`§LAYER_GAP header-only master: §DW descriptor missing 'docAction'`, and for asset + addition in ONE composite (header A_Asset, line A_Asset_Addition, doc-action on the addition) it sent `recordIDVariable "@A_Asset.A_Asset_ID"` — the doc-action would target the WRONG record.
+**Change (generic, app-word-free; one commit):** `doc_writer.validate` — `docAction` optional (a descriptor without it = create only, e.g. a master); `doc_writer.build` — the doc-action's record variable is `@<docAction.table>.<docAction.table>_ID` (identical output whenever the doc-action is on the header table, i.e. every existing descriptor).
+**Proof required:** `§LAYER_FIX` both gap probes pass after the change; every existing descriptor builds byte-identical operations (W10/M1/M2/LINK/MODEL/M3 unchanged); genericity gate PASS; FA scenario uses it (§61).
+**RESULT §60:** `§LAYER_FIX header-only PASS ["createData"]` · `§LAYER_FIX child doc-action PASS @A_Asset_Addition.A_Asset_Addition_ID` · `§LAYER_IDENTICAL order/pay/move PASS` (old vs new `doc_writer` build byte-identical operations for existing descriptors) · `§GENERICITY PASS`. Backtrack = `git revert <sha>`.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
