@@ -14,6 +14,13 @@ const { drain } = require('./pusher');
 const R = require('./reconcile');
 const E = require('../erp_engine');
 const POS = require('../../build/erp/pos_core.js');
+const DP = require('../doc_poster');                // SQLite posting fold (derivePostings) — the engine under test for Fact_Acct
+// scratch copy of the acct-linked GardenWorld db: the SQLite side's OWN computed invoice rows are materialised here so the SAME
+// derivePostings the product uses can fold them (test adapter; never touches the shared db)
+const gbFile = path.join(os.tmpdir(), 'm3-gb-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), gbFile);
+const gb = new Database(gbFile); const SCHEMA = gb.prepare('SELECT c_acctschema_id s FROM c_acctschema ORDER BY c_acctschema_id LIMIT 1').get().s;
+const fmtPostings = lines => lines.map(l => ({ a: l.account_id, dr: cents(l.amtacctdr), cr: cents(l.amtacctcr) })).filter(x => x.dr || x.cr)
+  .sort((x, y) => x.a - y.a).map(x => `${x.a}:DR${x.dr}/CR${x.cr}`).join('|') || 'none';
 
 const log = l => console.log(l);
 const cents = v => Math.round(Number(v) * 100);
@@ -39,6 +46,20 @@ function localRun(mut = 0) {
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
     const st = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'C_Order').pop();
     const shipDone = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'M_InOut' && x.doc_status === 'CO').length;
+    let postings = 'none';
+    const invOp = g.ops.find(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice');
+    if (invOp) {                                                                   // materialise SQLite's own invoice, fold with the product's derivePostings
+      const iid = opts.invoiceId, total = (g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0) + mut) / 100;   // mut = negative-control cents, applied to the REAL invoice rows
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx) VALUES(?,?,?,?)').run(iid, 118, total, 'Y');
+      for (const l of g.soLines) gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt) VALUES(?,?,?,?)').run(iid * 100 + l.c_orderline_id % 100, iid, l.m_product_id, mut ? (cents(l.linenetamt) + mut) / 100 : l.linenetamt);
+      const d = DP.derivePostings(gb, { table: 'C_Invoice', id: iid }, SCHEMA);
+      postings = (d.absent && d.absent.length) ? 'ABSENT:' + d.absent.join(',') : fmtPostings(d.lines);
+    }
+    let postingsShipment = 'none';
+    if (shipDone) {
+      const dsh = DP.derivePostings(gb, { table: 'M_InOut', id: opts.inoutId }, SCHEMA);          // the product's own fold; unimplemented class ⇒ basis 'none', lines []
+      postingsShipment = dsh.lines && dsh.lines.length ? fmtPostings(dsh.lines) : 'none';
+    }
     const stock = {}; if (shipDone) g.soLines.forEach(l => { stock[l.m_product_id] = (stock[l.m_product_id] || 0) - l.qtyordered; });
     return {
       outcome: 'COMPLETED', docstatus: st && st.doc_status,
@@ -46,7 +67,7 @@ function localRun(mut = 0) {
       total_cents: g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0) + mut,
       shipments: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'M_InOut').length, shipments_completed: shipDone,
       invoices: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice').length,
-      stock_delta: JSON.stringify(stock),
+      stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment,
     };
   };
 }
@@ -75,11 +96,27 @@ async function legacyRun(f) {
   const io = await query(cfg, 'QueryMInOut', `C_Order_ID=${id}`);
   const inv = await query(cfg, 'QueryCInvoice', `C_Order_ID=${id}`);
   const stock = {}; for (const p of Object.keys(before)) { const d = (await stockOf(p)) - before[p]; if (d) stock[p] = d; }
+  let postings = 'none';
+  if (inv.length) {                                                              // legacy books: Fact_Acct of the invoice, primary schema, folded per account
+    let fa = [];
+    for (let i = 0; i < 6 && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=318 AND Record_ID=${inv[0].C_Invoice_ID} AND C_AcctSchema_ID=${SCHEMA}`); if (!fa.length) await new Promise(r => setTimeout(r, 1500)); }
+    const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
+    postings = fa.length ? fmtPostings(Object.values(by)) : 'NO_FACT_ACCT_ROWS';
+  }
+  let postingsShipment = 'none';
+  const doneShip = io.find(x => x.DocStatus === 'CO');
+  if (doneShip) {
+    let fs2 = [];
+    for (let i = 0; i < 6 && !fs2.length && doneShip.Posted !== 'E'; i++) { fs2 = await query(cfg, 'QueryFactAcct', `AD_Table_ID=319 AND Record_ID=${doneShip.M_InOut_ID} AND C_AcctSchema_ID=${SCHEMA}`); if (!fs2.length) await new Promise(r => setTimeout(r, 1500)); }
+    const by2 = {}; for (const f of fs2) { const a = f.Account_ID; by2[a] = by2[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by2[a].amtacctdr += Number(f.AmtAcctDr); by2[a].amtacctcr += Number(f.AmtAcctCr); }
+    postingsShipment = fs2.length ? fmtPostings(Object.values(by2))
+      : (doneShip.Posted === 'E' ? 'INCONCLUSIVE:legacy shipment posting Posted=E (pilot AD_Issue 2026-10-09: AverageCostingNegativeQtyException Oak Tree, cost qty 0) — no legacy books to compare' : 'NO_FACT_ACCT_ROWS');
+  }
   return {
     outcome: 'COMPLETED', docstatus: h.DocStatus,
     lines: ls.map(l => `${l.M_Product_ID}:${l.QtyOrdered}:${cents(l.PriceActual)}`).sort().join('|'),
     total_cents: cents(h.TotalLines), shipments: io.length, shipments_completed: io.filter(x => x.DocStatus === 'CO').length, invoices: inv.length,
-    stock_delta: JSON.stringify(stock), _order: id,
+    stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _order: id,
   };
 }
 
@@ -93,11 +130,12 @@ const corpus = [
   sc('S4-unknown-product', { doctype: POSDT, lines: [{ product: 999999, qty: 1 }] }),
   sc('S6-standard-order', { doctype: STDDT, lines: [{ product: 123, qty: 1 }] }),
 ];
-const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta'],
-  notCompared: { fact_acct: 'SQLite posting fold (doc_poster.derivePostings) needs the new document rows in a local db; legacy side readable via QueryFactAcct. Next increment (S10).' } };
+const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment'],
+  notCompared: { fact_acct_secondary_schema: 'legacy also posts to a second accounting schema (Euro, 200000); only the primary schema is compared', tax_and_grandtotal: 'tax was 0 on every scenario document' } };
 const quirks = [
   { scenario: 'S3-client-keyed-price', key: 'lines', evidence: 'legacy accepted client PriceActual=10 with no PriceList recompute (pilot order 80005, 2026-10-09); SQLite refuses keyed prices by design (P15, POSLens §4)' },
   { scenario: 'S3-client-keyed-price', key: 'total_cents', evidence: 'same as lines: total follows the keyed price' },
+  { scenario: 'S3-client-keyed-price', key: 'postings', evidence: 'same as lines: the books follow the keyed price (legacy posts 1000c, SQLite 6175c)' },
 ];
 
 (async () => {
@@ -115,13 +153,16 @@ const quirks = [
   out('§M3_QUIRK_CLASS', by['S3-client-keyed-price'].verdict === 'LEGACY-QUIRK' && by['S3-client-keyed-price'].gaps.every(g => g.evidence), `S3 verdict=${by['S3-client-keyed-price'].verdict} (registered quirk with evidence)`);
   // negative control: a SQLite side that is off by one cent MUST be reported as a gap
   const neg = await R.run([{ id: 'NEG-control', facts: { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }, legacy: legacyRun, local: localRun(1) }], spec, quirks, { log });
-  out('§M3_NEGATIVE_CONTROL', neg[0].verdict === 'SQLITE-GAP' && neg[0].gaps.some(g => g.key === 'total_cents'), `+1 cent on the SQLite side ⇒ verdict=${neg[0].verdict} (must be SQLITE-GAP on total_cents)`);
+  out('§M3_NEGATIVE_CONTROL', neg[0].verdict === 'SQLITE-GAP' && neg[0].gaps.some(g => g.key === 'total_cents') && neg[0].gaps.some(g => g.key === 'postings'), `+1 cent on the SQLite side ⇒ verdict=${neg[0].verdict} (must be SQLITE-GAP on total_cents AND postings)`);
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
   out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a LEGACY-QUIRK entry with no evidence is refused');
 
   const gaps = rows.flatMap(r => r.gaps).filter(g => g.verdict === 'SQLITE-GAP');
+  const incKeys = rows.flatMap(r => r.inconclusive.map(i => r.id + '/' + i.key));
+  if (incKeys.length) incon++;
+  log(`§M3_INCONCLUSIVE_KEYS ${incKeys.join(',') || 'none'}`);
   log(`§M3_FINDINGS sqlite_gaps=${gaps.length} (${[...new Set(rows.filter(r => r.verdict === 'SQLITE-GAP').map(r => r.id))].join(',') || 'none'}) — these are the parallel-run product, not harness failures`);
-  log(`§M3_VERDICT HARNESS-${fails ? 'FAIL' : incon ? 'PASS-with-INCONCLUSIVE' : 'PASS'} fails=${fails} inconclusive=${incon} findings=${gaps.length}`);
+  log(`§M3_VERDICT HARNESS-${fails ? 'FAIL' : incon ? 'PASS-with-INCONCLUSIVE' : 'PASS'} fails=${fails} inconclusive=${incon} findings=${gaps.length} inconclusive_keys=${incKeys.length}`);
   process.exit(fails ? 1 : 0);
 })().catch(e => { log('§M3_VERDICT HARNESS-FAIL exception ' + e.stack); process.exit(2); });

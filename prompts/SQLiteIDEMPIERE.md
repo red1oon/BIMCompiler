@@ -612,6 +612,8 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 | S4 | unknown product on a line | whole document rejected + rolled back: `Foreign ID 999999 not found in M_Product_ID` | ✅ **MATCH** (SQLite refuses the line, no document) |
 | S5 | complete while an extra active accounting schema has no product-category acct ('CP Copy Target') | NPE `MProductCategoryAcct … pca is null`, CO fails | **LEGACY-QUIRK** (data accident + unguarded code): SQLite should fail *clearly* (named error), not NPE; record |
 | S6 | Standard Order (132) complete | CO, no shipment, no invoice, no stock move | ✅ **MATCH after fix F1** (2026-10-09, §27): was SQLITE-GAP (SQLite also birthed a DR shipment at order time); `buildDeliverLaterGroup` is now the order half only. |
+| S10 | POS sale **invoice postings** (Fact_Acct, primary schema) | Dr 518 6175 / Cr 758 6175 (receivable / revenue), no tax | ✅ **MATCH** (M3 `postings`, 2026-10-09): SQLite's own invoice folded by `doc_poster.derivePostings` equals the legacy books to the cent on a FRESH document |
+| S11 | POS sale **shipment postings** (COGS/Inventory) | legacy posting **errors** (`Posted=E`, `AverageCostingNegativeQtyException`: Oak Tree costed qty 0 although on-hand > 0; ~57 shipments on the pilot) — no legacy books | ⏸ **INCONCLUSIVE** (no oracle). SQLite side: `derivePostings` has no M_InOut class (basis `none`, source comment: "COGS leg is the §8 follow-up") ⇒ probable **MISSING** the day legacy produces books. Needs a pilot costing setup (a receipt giving Oak Tree a costed qty) before it can be judged. |
 | S7 | order with stock below zero after completion | to be measured (store had 4→3→2, negative not yet tried) | unknown — measure first |
 | S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
 | S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
@@ -709,5 +711,16 @@ oplog_clipboard 11🟢, 0🔴 — and their logs are identical after masking ran
 "sent to kitchen" and "ready to pick" ARE that shipment. For those flows SQLite is still not twin-equal at the moment of sale. Closing it = those UIs commit the two halves as
 two groups (order CO now; Generate Shipment when sent/picked) — a UX-lane follow-up that changes their witnesses' group shape. Not done here; listed as F2.
 **Rule for future gaps (P17):** every fix gets a row like this — evidence, files, proof, residue, one-commit backtrack.
+
+## §28 M3 POSTINGS INCREMENT BUILT + WITNESSED 2026-10-09 — Fact_Acct compared (SQLite fold vs legacy books)
+Change: `witness_m3_gap.js` gains keys `postings` (invoice, primary schema) and `postings_shipment`; legacy side reads `QueryFactAcct` (waits for async posting, honours `Posted=E`);
+SQLite side materialises ITS OWN computed invoice rows into a scratch copy of `glassbowl_data.db` and folds them with the product's `doc_poster.derivePostings` (test adapter; shared db untouched).
+`reconcile.js` learns **INCONCLUSIVE keys** (`§SCN_INCONCLUSIVE`, scenario printed `PARTIAL`): a side that cannot produce its reference result is neither MATCH nor gap.
+Result: `MATCH=4 LEGACY-QUIRK=1 SQLITE-GAP=0 inconclusive_keys=2`. **The headline:** invoice postings for a fresh POS sale — SQLite fold == legacy Fact_Acct, 518 Dr 6175 / 758 Cr 6175. Negative control (+1¢ on the invoice rows)
+is caught on both `total_cents` and `postings`. S3's keyed price flows into the books on legacy (1000¢) — covered by the registered quirk.
+**Honest limits:** the posting compared is the simple one (receivable/revenue, tax 0, one line, one currency, primary schema; the Euro schema is listed as not compared); the shipment/COGS leg is
+UNJUDGED (S11) — legacy's own posting fails on the pilot's cost data, so the probable SQLite gap there (no M_InOut posting class) stays a hypothesis until a reference exists.
+**Bug in my first cut (P17):** I first scored the shipment key as SQLITE-GAP from "no legacy rows"; the pilot's `Posted=E` + AD_Issue showed legacy had no books at all. Absence of a reference is INCONCLUSIVE, not a gap — now enforced by the runner.
+Next candidates: give Oak Tree a costed quantity on the pilot (legacy material receipt) to unlock S11; more postings classes (payment, allocation); tax (a taxed product).
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
