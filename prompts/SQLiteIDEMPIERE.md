@@ -1631,9 +1631,9 @@ the same refusal applies to PP_Order, PP_Cost_Collector, HR_Process completions 
 | — | M_InOutConfirm / M_MovementConfirm | not cheap: only reachable when the doc type has IsShipConfirm / IsInTransit — a doc-type configuration change on legacy (not a WS-config step) | — |
 | F37 | Asset Disposal (Simple; already-depreciated refusal; books both schemas) | ✅ MATCH | §74 / §74.1 |
 | F38 | Asset Revaluation (rules + workfile; legacy posts InvalidAccount 'i' on GardenWorld — SQLite the same) | ✅ MATCH (books formula ⏸: no offset account on the pilot) | §75 / §75.1 |
-|| F40 | Asset Transfer (A_Asset_Transfer) | ⏸ | plan below ||
+| F40 | Asset Transfer (A_Asset_Transfer) | ⏸ | plan below |
 | F9 | back-date costing (S8a) | ⏸ (plan §67 unchanged) | §67 |
-| I_* | import tables | not started: an import is a process (load + run_process), not a document; next after F39 | — |
+| I_* | import tables | not started: an import is a process (load + run_process), not a document; next after F40 | — |
 **F40 resume plan (⏸, exact):** legacy rules MAssetTransfer.java @{u}: prepareIt — period GLJ; workfile isDepreciated(DateAcct) ⇒ AssetAlreadyDepreciatedException; the document's CURRENT accounts must equal the asset acct valid at DateAcct (else "The accounts have been changed"); all NEW accounts equal to the current ⇒ "An account has been changed"; workfile DateAcct = document DateAcct ⇒ "Last day of month…";
 unprocessed earlier rows ⇒ refused; completeIt — a NEW A_Asset_Acct row (copy of the current, ValidFrom = DateAcct) with A_Asset_Acct / A_Accumdepreciation_Acct := the new ones (only those two). Window: CalloutA_Asset_Transfer.asset fills current AND new (5 pairs) from the asset acct of the document's C_AcctSchema_ID; the user changes the new ones.
 The three mandatory columns without a default that the callout does not fill are RESOLVED from the dictionary (read 2026-10-10): A_Period_Start / A_Period_End are displayed read-only Integer fields ⇒ GridField.defaultFromDatatype numbers ⇒ 0; A_Transfer_Balance_IS is a Yes-No ⇒ 'N' (GridField.java:1029-1056 @{u}); A_Transfer_Balance default Y; A_Split_Percent default 1 — the descriptor passes exactly these. Then: pilot `ws_model_fa_transfer.sql`, read type QueryAAssetTransfer + QueryAAssetAcct,
