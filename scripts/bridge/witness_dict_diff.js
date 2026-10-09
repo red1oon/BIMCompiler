@@ -19,13 +19,17 @@ const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUS
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'dd-')); const scratch = path.join(tmp, 'seed.db');
   fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'ad_seed_fullwidth.db'), scratch);
   const db = new Database(scratch);
+  const gbScratch = path.join(tmp, 'gb.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), gbScratch); const gdb = new Database(gbScratch);
+  const dbFor = sp => (sp.db === 'glassbowl' ? gdb : db);
   fs.mkdirSync(path.join(__dirname, 'out'), { recursive: true });
 
   // ---- real findings
   const legacy = {}; let total = 0;
   for (const sp of specs) {
     legacy[sp.table] = await D.discover(cfg, sp);
-    const r = D.compare(legacy[sp.table], db, sp); total += r.legacy;
+    const r = D.compare(legacy[sp.table], dbFor(sp), sp); total += r.legacy;
+    if (r.missingCols.length) log(`§DD_COLUMNS ${sp.table} legacy-has-but-sqlite-lacks=[${r.missingCols.join(',')}] (needs ALTER via patch+loader, not a data patch)`);
+    if (r.columnsOnly) { log(`§DD_TABLE ${sp.table} legacy_sample=${r.legacy} cols_compared=${r.columns} (columns-only: composite key)`); continue; }
     log(`§DD_TABLE ${sp.table} legacy=${r.legacy} local=${r.local} cols_compared=${r.columns} onlyLegacy=${r.onlyLegacy.length} onlyLocal=${r.onlyLocal.length} changed_cells=${r.changed.length}${r.onlyLocal.length ? ' onlyLocal_ids=' + r.onlyLocal.slice(0, 8).join(',') : ''}`);
     for (const c of r.changed.slice(0, 12)) log(`§DICT_GAP ${sp.table}#${c.id}.${c.col} legacy=${JSON.stringify(c.legacy)} sqlite=${JSON.stringify(c.local)}`);
     for (const row of r.onlyLegacy.slice(0, 5)) log(`§DICT_GAP ${sp.table}#${row[sp.key.toLowerCase()]} missing in SQLite`);
@@ -35,7 +39,7 @@ const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUS
   else log(`§DD_FINDINGS (see §DD_TABLE/§DICT_GAP above; patches written to scripts/bridge/out/dict_patch_*.sql, NOT applied to any shared seed)`);
 
   // ---- negative control on the doctype table: corrupt one cell, delete one row
-  const sp = specs[0], k = sp.key.toLowerCase();
+  const sp = specs[0], k = sp.key.toLowerCase();   // negative control runs on c_doctype (first spec)
   const base = D.compare(legacy[sp.table], db, sp);
   const baseKeys = new Set(base.changed.map(c => c.id + '.' + c.col)); const baseOnly = base.onlyLegacy.length;
   const pick = legacy[sp.table].find(r => String(r[k]) === '135');
@@ -56,7 +60,7 @@ const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUS
   const before = JSON.stringify(db.prepare('SELECT * FROM c_doctype ORDER BY c_doctype_id').all());
   db.exec(patch);
   out('§DD_IDEMPOTENT', before === JSON.stringify(db.prepare('SELECT * FROM c_doctype ORDER BY c_doctype_id').all()), 'second apply of the same patch changed nothing');
-  out('§DD_NO_DELETE', !/\bDELETE\b/i.test(patch) && !specs.some(s => /\bDELETE\b/i.test(D.toPatch(D.compare(legacy[s.table], db, s), s))), `generated patches contain no DELETE (onlyLocal rows: ${specs.map(s => D.compare(legacy[s.table], db, s).onlyLocal.length).join('/')} reported only)`);
+  out('§DD_NO_DELETE', !/\bDELETE\b/i.test(patch) && !specs.filter(s => !s.columnsOnly).some(s => /\bDELETE\b/i.test(D.toPatch(D.compare(legacy[s.table], dbFor(s), s), s))), `generated patches contain no DELETE (onlyLocal rows: ${specs.filter(s => !s.columnsOnly).map(s => D.compare(legacy[s.table], dbFor(s), s).onlyLocal.length).join('/')} reported only)`);
   log(`§DD_VERDICT ${fails ? 'FAIL' : incon ? 'PASS-with-INCONCLUSIVE' : 'PASS'} fails=${fails} inconclusive=${incon}`);
   process.exit(fails ? 1 : 0);
 })().catch(e => { log('§DD_VERDICT FAIL exception ' + e.stack); process.exit(2); });

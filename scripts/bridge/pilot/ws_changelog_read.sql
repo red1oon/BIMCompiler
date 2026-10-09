@@ -24,7 +24,10 @@ BEGIN
       ('QueryFactAcct','Fact_Acct',NULL::text[]),
       ('QueryCDocType','C_DocType',NULL::text[]),
       ('QueryCTax','C_Tax',NULL::text[]),
-      ('QueryMPriceList','M_PriceList',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryMPriceList','M_PriceList',NULL::text[]),
+      ('QueryMProdCatAcct','M_Product_Category_Acct',NULL::text[]),
+      ('QueryMCostElement','M_CostElement',NULL::text[]),
+      ('QueryMCost','M_Cost',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

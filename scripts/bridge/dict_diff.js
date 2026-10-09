@@ -24,6 +24,8 @@ function compare(legacyRows, db, spec) {
   const cols = db.prepare(`PRAGMA table_info(${spec.table})`).all().map(c => c.name.toLowerCase());
   const lcols = legacyRows.length ? Object.keys(legacyRows[0]) : [];
   const common = cols.filter(c => lcols.includes(c) && !AUDIT.test(c) && !(spec.skip && spec.skip.test(c)));
+  const missingCols = lcols.filter(c => !cols.includes(c) && !AUDIT.test(c) && !(spec.skip && spec.skip.test(c)));
+  if (spec.columnsOnly) return { table: spec.table, legacy: legacyRows.length, local: null, columns: common.length, onlyLegacy: [], onlyLocal: [], changed: [], missingCols, _common: common, columnsOnly: true };
   const below = spec.keyBelow ? ` WHERE ${k} < ${spec.keyBelow}` : '';
   const local = new Map(db.prepare(`SELECT * FROM ${spec.table}${below}`).all().map(r => { const l = lc(r); return [String(l[k]), l]; }));
   const res = { table: spec.table, legacy: legacyRows.length, local: local.size, columns: common.length, onlyLegacy: [], onlyLocal: [], changed: [] };
@@ -36,6 +38,8 @@ function compare(legacyRows, db, spec) {
   }
   for (const id of local.keys()) if (!seen.has(id)) res.onlyLocal.push(id);
   res._common = common;
+  // columns legacy has but the SQLite table lacks: invisible to a shared-column compare, and NOT fixable by a data patch (needs ALTER via patch+loader)
+  res.missingCols = missingCols;
   return res;
 }
 

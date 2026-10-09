@@ -1,5 +1,8 @@
 [
   { "table": "c_doctype",   "key": "C_DocType_ID",   "readType": "QueryCDocType",  "keyBelow": 1000000 },
   { "table": "c_tax",       "key": "C_Tax_ID",       "readType": "QueryCTax",      "keyBelow": 1000000 },
-  { "table": "m_pricelist", "key": "M_PriceList_ID", "readType": "QueryMPriceList","keyBelow": 1000000 }
+  { "table": "m_pricelist", "key": "M_PriceList_ID", "readType": "QueryMPriceList","keyBelow": 1000000 },
+  { "table": "m_product_category_acct", "key": "M_Product_Category_ID", "readType": "QueryMProdCatAcct", "keyBelow": 1000000, "db": "glassbowl", "columnsOnly": true, "note": "posting accounts + CostingMethod per category/schema" },
+  { "table": "m_costelement", "key": "M_CostElement_ID", "readType": "QueryMCostElement", "keyBelow": 1000000, "db": "glassbowl", "columnsOnly": true },
+  { "table": "m_cost", "key": "M_Product_ID", "readType": "QueryMCost", "keyBelow": 1000000, "db": "glassbowl", "where": "M_Product_ID IN (123,136,137)", "columnsOnly": true, "note": "composite key (product+schema+type+element): columns only for now" }
 ]

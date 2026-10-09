@@ -613,8 +613,8 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 | S5 | complete while an extra active accounting schema has no product-category acct ('CP Copy Target') | NPE `MProductCategoryAcct … pca is null`, CO fails | **LEGACY-QUIRK** (data accident + unguarded code): SQLite should fail *clearly* (named error), not NPE; record |
 | S6 | Standard Order (132) complete | CO, no shipment, no invoice, no stock move | ✅ **MATCH after fix F1** (2026-10-09, §27): was SQLITE-GAP (SQLite also birthed a DR shipment at order time); `buildDeliverLaterGroup` is now the order half only. |
 | S10 | POS sale **invoice postings** (Fact_Acct, primary schema) | Dr 518 6175 / Cr 758 6175 (receivable / revenue), no tax | ✅ **MATCH** (M3 `postings`, 2026-10-09): SQLite's own invoice folded by `doc_poster.derivePostings` equals the legacy books to the cent on a FRESH document |
-| S11 | POS sale **shipment postings** (COGS/Inventory) | legacy posting **errors** (`Posted=E`, `AverageCostingNegativeQtyException`: Oak Tree costed qty 0 although on-hand > 0; ~57 shipments on the pilot) — no legacy books | ⏸ **INCONCLUSIVE** (no oracle). SQLite side: `derivePostings` has no M_InOut class (basis `none`, source comment: "COGS leg is the §8 follow-up") ⇒ probable **MISSING** the day legacy produces books. Needs a pilot costing setup (a receipt giving Oak Tree a costed qty) before it can be judged. |
-| S7 | order with stock below zero after completion | to be measured (store had 4→3→2, negative not yet tried) | unknown — measure first |
+| S11a | POS sale **shipment postings** on Oak Tree (COGS/Inventory) | legacy posting **errors** (`Posted=E`, `AverageCostingNegativeQtyException`: Oak Tree costed qty 0 although on-hand > 0; ~57 shipments on the pilot) — no legacy books | ⏸ **INCONCLUSIVE** (no oracle). SQLite side: `derivePostings` has no M_InOut class (basis `none`, source comment: "COGS leg is the §8 follow-up") ⇒ probable **MISSING** the day legacy produces books. Needs a pilot costing setup (a receipt giving Oak Tree a costed qty) before it can be judged. |
+| S7 | order with stock below zero after completion | **measured by accident**: legacy let HQ Oak Tree on-hand go 23 → −10 across the test sales (CO succeeded; only the later COGS posting failed on costed qty 0) | SQLite side not yet run with negative stock — add a scenario |
 | S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
 | S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
 **Honesty note on what the "bugs" so far were:** the defects found this session were in the pilot data (S5), in my harness (price, stale text), and
@@ -722,5 +722,25 @@ is caught on both `total_cents` and `postings`. S3's keyed price flows into the 
 UNJUDGED (S11) — legacy's own posting fails on the pilot's cost data, so the probable SQLite gap there (no M_InOut posting class) stays a hypothesis until a reference exists.
 **Bug in my first cut (P17):** I first scored the shipment key as SQLITE-GAP from "no legacy rows"; the pilot's `Posted=E` + AD_Issue showed legacy had no books at all. Absence of a reference is INCONCLUSIVE, not a gap — now enforced by the runner.
 Next candidates: give Oak Tree a costed quantity on the pilot (legacy material receipt) to unlock S11; more postings classes (payment, allocation); tax (a taxed product).
+
+## §29 S11 — shipment COGS/Inventory posting: first real MISSING gap, and why it is data first (2026-10-09, user: "Oak Tree")
+**What I did and where I deviated.** Oak Tree cannot be judged: legacy's costed quantity is 0 (so its shipment posting errors, S11a above). Fixing that needs a legacy material receipt / inventory document with
+its own WS types and costing side effects — more fixture than the question warrants. The pilot already has costed products, so S11 now runs on **Fertilizer #50 (product 136; costed qty 40 @ 18.00, on PriceList 101 at 20.00,
+in the SQLite seed at 20)**. Oak Tree stays an open fixture task if you specifically want it.
+**Result `S11-pos-sale-costed-product`:** everything MATCHes (docstatus, line 136:1:2000¢, total, 1 shipment CO, 1 invoice, stock −1, **invoice postings 518 Dr 2000 / 758 Cr 2000**) EXCEPT
+`postings_shipment`: legacy `430 Dr 1800 / 742 Cr 1800` (= Product CoGs / Product asset at cost 18.00 × 1), SQLite `none` ⇒ **SQLITE-GAP, class MISSING** (the SQLite posting fold has no `M_InOut` class;
+`doc_poster.js` header says the COGS leg is "§8 follow-up, cost data named-deferred in seed").
+**Blind spot found in my own tool (P17):** `dict_diff` compared only columns BOTH sides have, so a column legacy has and SQLite lacks was invisible. It now reports `§DD_COLUMNS … legacy-has-but-sqlite-lacks=[…]`.
+Run on the posting tables it shows exactly what the missing rule needs and the SQLite seed (`glassbowl_data.db`) does not carry:
+`m_product_category_acct`: **`costingmethod`, `costinglevel`**, p_costadjustment/ratevariance/landedcostclearing/invoicepricevariance/tradediscount accts ·
+`m_costelement`: **`name`**, iscalculated · `m_cost`: **`currentqty`**, futurecostprice, iscostfrozen, … (list in the log).
+**So the S11 fix is two steps, in this order (nothing built yet):**
+1. **DATA/schema (scriptable):** extend `dict_diff` to emit `ALTER TABLE … ADD COLUMN` + the legacy values for those columns (patch + self-heal loader, never a binary commit) — composite-key tables need a key list in `dict_spec.json`
+   (`m_product_category_acct`: category+schema; `m_cost`: product+schema+type+element).
+2. **RULE (engine lane, spec first):** `doc_poster.deriveInOut` — Dr `{Product.Cogs}` / Cr `{Product.Asset}` = qty × current cost price of the cost element selected by the category's `CostingMethod`
+   for the schema (resolver tokens already exist in `post_resolver.js`); sales-shipment polarity from `movementtype C-`. Acceptance = S11 `postings_shipment` MATCH to the cent; do NOT pick a cost element by guesswork
+   before `costingmethod` is in the seed (that would be inventing).
+**Other facts surfaced:** legacy lets on-hand go negative (S7); legacy shipment posting depends on the *costed* quantity, not on-hand (S11a) — a legacy trap SQLite should not replicate silently.
+Run: `scripts/bridge/run_all.sh` (S11 shows as SQLITE-GAP; `§TRIAGE` will list it in the RULE queue once the data step is done).
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

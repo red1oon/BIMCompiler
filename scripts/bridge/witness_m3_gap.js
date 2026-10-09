@@ -127,6 +127,7 @@ const corpus = [
   sc('S1-pos-sale', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }),
   sc('S2-product-not-on-pricelist', { doctype: POSDT, lines: [{ product: 122, qty: 1 }] }),
   sc('S3-client-keyed-price', { doctype: POSDT, lines: [{ product: 123, qty: 1 }], keyedPrice: 10 }),
+  sc('S11-pos-sale-costed-product', { doctype: POSDT, lines: [{ product: 136, qty: 1 }] }),
   sc('S4-unknown-product', { doctype: POSDT, lines: [{ product: 999999, qty: 1 }] }),
   sc('S6-standard-order', { doctype: STDDT, lines: [{ product: 123, qty: 1 }] }),
 ];
