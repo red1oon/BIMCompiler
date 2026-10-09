@@ -8,6 +8,17 @@ unknown is a ⛔ in §9, not a guess. Honour until DONE.
 
 # SQLite ⇄ iDempiere — the Bridge
 
+## §000 SCOPE (user, 2026-10-09) — the limit
+**IN SCOPE (normal-user lane):** an ordinary user's work in the SQLite UI syncs to legacy as docs + doc-actions (§3 UP),
+and legacy users' doc work comes back through the change log and is replayed locally (§4 DOWN). Role = a normal
+WebService user. Built + witnessed so far: the §4 tracker (W10, §13). Next in this lane: UP path, id map, outbox,
+local replay, posting reconcile (W1–W7).
+**OUT OF THE CORE (extra, SUPERIOR ROLE only — admin/SuperUser lane, built later, never needed for a user to sync):**
+§14 model-drift sentinel (AD_Field/AD_Column, W11), §15 hard rule + backdoor register (W12/W13), §11 plugin example,
+model (AD) sync itself. A normal user's sync never depends on them; they must not gate or slow it.
+Only two lane-relevant facts from the extras apply to normal users: F1 (draft inserts invisible unless
+`SYSTEM_INSERT_CHANGELOG=Y`) and the per-component list of logged columns.
+
 ## §00 Principle (user, 2026-10-09)
 The Bridge is the ONE place for all sync scaffolding — transport, change-log tracking, id map, replay, verify, outbox,
 reconcile. A plugin/module (Fixed Assets, pawn, loans, …) contributes ONLY a descriptor (§5) + its local rules.
@@ -151,7 +162,7 @@ Real server for W3/W6 = the local iDempiere dev setup (`~/idempiere-dev-setup`, 
 Start local vanilla iDempiere → W6/P2 probe (login via WS, create one doc, read the AD_ChangeLog rows) → descriptor schema
 (§5) → UP/DOWN for ONE doc type → §11 Fixed Assets parallel run.
 
-## §11 Example component: Fixed Assets depreciation (illustration only — the Bridge is plugin-agnostic)
+## §11 [EXTRA] Example component: Fixed Assets depreciation (illustration only — the Bridge is plugin-agnostic)
 Why: a real feature that on iDempiere normally needs a **new plugin** (DocValidator + event/process). Parallel run:
 - Legacy side: the traditional plugin is installed on the pilot server (DocValidate/ModelValidator hooks fire in
   `MDepreciationEntry.prepareIt/completeIt` — `MDepreciationEntry.java:254,264,343`; posting in
@@ -210,7 +221,7 @@ with `readData` after the DocStatus event (§4.2) — the log alone cannot rebui
 **Window cost:** a 200-id window re-reads ~380 rows per poll on this small copy (dense ids) — fine here; tune per volume.
 Not yet built: UP path (§3), local replay of DOWN events through the doc engine (§4.3), Id map, outbox.
 
-## §14 Model-drift sentinel (user idea, 2026-10-09) — spec only, not built
+## §14 [EXTRA — superior role] Model-drift sentinel (user idea, 2026-10-09) — spec only, not built
 Goal: know "the model changed in a way that matters" from the change log alone, without tracking the whole dictionary.
 - **AD_Field = the user-visible sentinel.** A field edit/insert means something a user sees changed. AD_Tab / AD_Menu /
   AD_Window changes alone are not usable signals (no field behind them) → NOT tracked.
@@ -232,7 +243,7 @@ over the existing read-only WS types, hashes the rows locally (kernel side store
 Zero legacy footprint. It is the safety net for what the change log cannot see (direct SQL, logging flags off), and the
 same hash is the `sentinel_hash` both sides can show to prove "model aligned". Change log = fast path; hash = audit.
 
-## §15 HARD RULE + backdoor register (user directive 2026-10-09; audited against source + pilot DB)
+## §15 [EXTRA — superior role] HARD RULE + backdoor register (user directive 2026-10-09; audited against source + pilot DB)
 **HARD RULE: no direct SQL change on either side outside the framework.** Allowed write paths = (1) the doc/PO path
 (UI, WebService, doc-action), (2) 2Pack, (3) a reviewed migration script (`migration/*.sql` / `AD_MigrationScript`).
 Anything else is a defect to detect, not to tolerate.
