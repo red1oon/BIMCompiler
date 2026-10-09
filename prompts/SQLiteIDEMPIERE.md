@@ -404,47 +404,68 @@ layer. If a plugin needs a Bridge change, that item goes into this table (the la
 can issue them.
 **Build order — NOT started; this section is design under review.**
 
-## §18 TWO-PART LAYER (user 2026-10-09, still crystallising — DRAFT; IN concept: it is the user's own 2012 architecture minus the broker)
-User framing: the Unicenta⇄iDempiere plugin was *server-side integration that merges POS orderlines into the central DB, runs
-replenishment, and forwards results back, with ActiveMQ as the broker between.* New idea: **drop the broker; go asynchronous via
-direct WebService, or via email.**
+## §18 THE COMMON LAYER, two halves — app-agnostic (user 2026-10-09: "both are just common layers with no app in particular";
+## DRAFT, still crystallising; IN concept). Earlier §18 text put POS functions inside the layer — withdrawn.
+**Answer to "can a common layer be extracted?" — yes.** What the user's 2012 plugin + ActiveMQ did is, stripped of POS, a
+**reliable message exchange with a handler registry**: carry an opaque payload from A to B exactly once, in order, authenticated,
+acknowledged, and hand it to the application's handler. That part never mentions orders, products or stock. What stays app-specific
+is only (1) the payload meaning and (2) the handler that applies it. Everything else is the layer.
 ```
-  PART 2: SQLite-side layer (the Bridge, §1/§17)            PART 1: server-side OSGi plugin (the old plugin's job, no broker)
-  outbox of signed orderline batches  ──── WS push ───────▶  ingest(batch)  : verify sig · dedupe · assemble orders ·
-  qty snapshot apply, id map, state   ◀─── WS pull ────────  outbound(station): ProductQty for the station
-                                      ─── email (store&fwd)▶  mail adapter → same ingest(batch)
-                                      ◀── email ───────────  mail adapter ← outbound(station)
+ SQLite side (Half S)                                         Server side (Half V = OSGi plugin, optional)
+ app handlers  ◀─ register(type) ─┐                      ┌─ register(type) ─▶  app handlers (call PO/doc-actions)
+ ┌──────────────────────────────┐ │                      │ ┌──────────────────────────────────────┐
+ │ outbox · inbox · state · ack │ │   ENVELOPES (signed) │ │ station registry · inbox · outbox ·  │
+ │ idmap · config · retry       │◀┴──── transports ──────┴▶│ dedupe · dispatch · ack · scheduler  │
+ └──────────────────────────────┘   WS push/pull · email    └──────────────────────────────────────┘
 ```
-**Two deployment modes (so D1/P1 "legacy untouched" stays true by default):**
-- **Mode A — no server plugin.** Part 2 alone, stock WS only (what is built: transport + tracker). Legacy untouched. Costs: the gaps
-  below must be handled client-side.
-- **Mode B — + Part 1 plugin.** One admin-approved OSGi bundle on the server (the user's established pattern). It is optional;
-  Mode A must keep working without it. Anything Mode B adds must be an AD-model/OSGi component (D3), never a side store.
-**What Part 1 (plugin) does — only what the 2012 plugin did, minus MQ** (each row is a Mode-A gap it closes):
-| Plugin function | Closes | Notes |
-|---|---|---|
-| `ingest(batch)`: ONE call carries all orderlines of a batch → plugin creates order+lines+CO in one server transaction | G2 partial docs, G10 session growth (1 call, not N) | Batch signed by the station (op-log signature); plugin verifies against a pinned station key (pattern: `erp_snapshot_sign.js`) |
-| Idempotency inside the plugin (batch id + station seq → ignore repeats, return the same ack) | G1 (no guessing from the change log) | Needs a small inbox record — as an **AD-model table** via 2Pack (admin-approved); the only legacy schema addition, Mode B only |
-| Assemble orders from orderlines under the station's `c_pos` context; price from PriceList master server-side | G5 / P15 (price can't be client-supplied at all) | station = `c_pos`/Org (POS_ADDON_SPEC §2) |
-| Run replenishment after merge (existing `ReplenishReport` process via a scheduler/after-complete hook) | — | ERP-side intelligence stays ERP-side (P15) |
-| `outbound(station)`: ProductQty rows for the station's warehouse | the snapshot read (§16.1) without opening `M_Storage` to a generic WS type | one narrow endpoint instead of broad read access |
-| Mail adapter (both directions) | offline/NAT stations | thin: decode mail → call the same `ingest`/`outbound` |
-**Transport rule (the broker's replacement):** the plugin core is transport-agnostic — `ingest(batch)` / `outbound(station)` are the
-only entry points; **WS** and **email** are adapters in front. Same for Part 2: one outbox, two senders.
-| | Direct WS | Email |
-|---|---|---|
-| Direction | station→server push; station pulls qty (server cannot reach a phone/NAT) | store-and-forward both ways, works when either end is offline |
-| Latency | seconds | minutes+ |
-| Needs | server reachable, login | outbound mail from station; **inbound mailbox the plugin can read** — core has outbound (`MClient.sendEMail`, `MMailText`) but a grep of `org.adempiere.base` finds NO IMAP/POP3 reader ⇒ the plugin must bring its own mail reader (or a tiny forwarder turns mail into a WS call) |
-| Integrity | login + signature | **signature is mandatory** (mail is spoofable); ack by reply mail; size cap per batch; ordering by station sequence |
-| Order/dupes | server dedupe by batch id | mail can duplicate/reorder ⇒ same dedupe + seq gap detection |
-**What Part 2 (SQLite side) must have in either mode** (= §17 needed-now list, restated for the split): outbox of signed batches ·
-per-station sequence + batch id · transport senders (WS, email) with retry/backoff · ack handling → id map/sync state · qty snapshot
-apply with the §16 rule 2 (+G8 deferral) · station context (Org, PriceList, c_pos…) · offline-first (P4).
-**Impact on existing spec:** P1 "legacy untouched" = Mode A default; Mode B is an explicit, admin-approved add-on. The change-log tracker
-(§4/§13) stays for Mode A / document-DOWN plugins; Mode B's `outbound` replaces it for the POS flow. §5 descriptor gains
-`mode: A|B` and the transport list per component. Nothing in §16's two flows changes.
-**Not decided (user is drafting):** whether Mode B is the target or Mode A is enough for the first release; how the station key is
-enrolled on the server; plugin packaging/naming. Not asked — noted here so they are not invented.
+**The seams (the whole contract; nothing app-shaped crosses them):**
+1. **Envelope:** `{station, stream, seq, id, type, ver, payload(opaque bytes), created, sig}`. `type` is namespaced by the app
+   (`pos.orderlines`, `fa.entry`, `pawn.ticket`…); the layer never parses `payload`.
+2. **Guarantee:** at-least-once delivery + idempotent dispatch (record `(station,id)` + its result in the SAME transaction as the
+   handler's writes) ⇒ effectively once. Order is per `(station, stream)` by `seq`; a gap parks the stream until filled.
+3. **Ack:** per envelope `{id, status: OK|REJECTED|PARKED, refs{…opaque…}, message}`. The layer stores and returns it; the handler fills it.
+4. **Handler registry** (both halves): `register(type, ver, handler)`; handler = `handle(envelope, ctx) → result`. Same shape on S and V,
+   so a message can flow either way (up = S→V, down = V→S).
+5. **Station identity:** registry of stations + pinned public keys; sign on send, verify on receive; replay window by `seq`.
+6. **Transport adapter interface:** `send(envelopes) → acks`, `poll(station, afterSeq) → envelopes`. Adapters: WS, email, loopback (tests).
+7. **Scheduler hook:** `schedule(name, cron, handler)` — apps can ask the server half to run a job (e.g. a nightly process) with no scheduler code of their own.
+8. **Config store (set once):** key→value per station/app (context such as Org, PriceList…). The layer stores and serves it; it never interprets it (P5: missing ⇒ refuse).
+9. **State + observability:** per-envelope state `QUEUED→SENT→ACKED / REJECTED / PARKED`; tables the UI reads; `§` log line per transition.
+10. **Faults are first-class:** retry with cap + backoff; auth failure stops (no lockout, P13); poison envelope parks, never blocks the stream's siblings in other streams (P8).
+11. **Versioning:** `ver` per type; unknown type/ver ⇒ REJECTED with reason (never guessed).
+**Server half V** is the only half that touches iDempiere, and only through the OSGi/PO path (so everything it writes is a normal
+logged change). Its own storage = AD-model tables (station registry, inbox/dedupe) installed by 2Pack — the sole legacy addition, and only
+in Mode B. **Half V is optional** (Mode A below).
+**Mode A / Mode B:**
+- **Mode B (V present):** S speaks envelopes to V. App handlers on V write documents natively (atomic, deduped, server-side pricing).
+- **Mode A (no V; legacy untouched):** S uses a different transport adapter: an **ADInterface adapter** that plays the *handler* role
+  client-side — a stock, descriptor-driven handler turns an envelope into `create_data/set_docaction` calls (§3), and the **change-log
+  tracker** (§4/§13) is the polling source for DOWN. Above the adapter line (outbox, state, idmap, ack, app handlers on S) nothing changes.
+  Mode A is weaker only where §Q says (G1, G2, G10): V's single transaction and dedupe are what Mode A lacks.
+**Stock handlers (shared library, still app-agnostic — what makes an app "smaller"):** a descriptor-driven `doc.write` handler
+(header+lines+docaction from a descriptor, §5), a `doc.read`/`snapshot.read` handler (read named columns/aggregates for a station),
+and an `ad.config` handler. An app that only moves documents/quantities writes **no handler code**, just a descriptor + type names.
+**What an app supplies:** type names + payload schema, a descriptor (or custom handlers where the stock ones don't fit), its context
+keys, its local rules, its UI. The three examples are exercises of this, not part of it:
+| App | Up messages | Down messages | Needs beyond stock handlers |
+|---|---|---|---|
+| POS (Unicenta pattern, §16) | `pos.orderline` batches | `pos.qty` snapshot | grouping rule lines→order; price-from-master (P15); trigger a ReplenishReport run |
+| Fixed Assets (§11) | `fa.entry` | status of the entry | its own rules/plugin on V (parallel run) |
+| Pawn / loans | `pawn.ticket`, `pawn.payment` | ticket status | AD-model tables for the ticket (D3) |
+**Honest limits of the common layer (where the user's doubt could be right):** (a) *semantic mapping* — turning a payload into the right
+AD columns — cannot be generic beyond what a descriptor expresses; the stock `doc.write` covers header/lines/docaction, not bespoke
+rules. (b) *verification* — "is the result right?" (totals, postings, stock) is the app's reconcile, the layer only schedules/records it.
+(c) *exactly-once* needs the dedupe write to share the transaction with the handler's write — easy on V (same JDBC trx), only
+approximated in Mode A (ambiguous failure PARKS, §Q G1). (d) email as a transport inherits reordering/duplication/spoofing — covered by
+`seq` + signature, but latency is minutes.
+**Mapping of earlier lists onto this design:** §17 items 2,3,4,5,9,12,13 = Half S core; 7 = descriptor for the stock handlers; 6 = S inbox
++ handler; 8 = app reconcile run by the layer; 1 = Mode A DOWN source; 10,11,14 = generic UI/rule hooks. §16/§Q POS statements are the
+POS *example*; P15 ("no free numbers") is a POS-handler rule, not a layer rule.
+**Test of genericity (acceptance):** the layer's code + tests must contain NO app words (order, product, price, stock, asset, ticket);
+a loopback harness runs a toy `echo`/`counter` app through every guarantee (dupes, reorder, drop, kill-points, forged signature, unknown
+type) — if that passes, POS/FA/pawn only add handlers and descriptors. W-L1..W-L8 (spec only): dedupe · order+gap park · signature/replay ·
+kill-point resume (before send / after send before ack / after handler before ack-store) · poison isolation · transport swap (WS↔email↔loopback
+with identical results) · Mode A≡B above the adapter line · app-word grep gate.
+**Not asked (user is drafting):** Mode B as target vs Mode A first; station key enrolment; naming/packaging.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
