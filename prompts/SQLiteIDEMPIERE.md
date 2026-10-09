@@ -419,11 +419,12 @@ is only (1) the payload meaning and (2) the handler that applies it. Everything 
  └──────────────────────────────┘   WS push/pull · email    └──────────────────────────────────────┘
 ```
 **The seams (the whole contract; nothing app-shaped crosses them):**
-1. **Envelope:** `{station, stream, seq, id, type, ver, payload(opaque bytes), created, sig}`. `type` is namespaced by the app
+1. **Envelope:** `{station, stream, seq, id, type, ver, payload(opaque bytes), created, ackThrough, sig}`. `ackThrough` (down envelopes): the highest up-`seq` of that station the sender had already processed when it built this envelope — generic, found by the POS dry-run below. `type` is namespaced by the app
    (`pos.orderlines`, `fa.entry`, `pawn.ticket`…); the layer never parses `payload`.
 2. **Guarantee:** at-least-once delivery + idempotent dispatch (record `(station,id)` + its result in the SAME transaction as the
    handler's writes) ⇒ effectively once. Order is per `(station, stream)` by `seq`; a gap parks the stream until filled.
 3. **Ack:** per envelope `{id, status: OK|REJECTED|PARKED, refs{…opaque…}, message}`. The layer stores and returns it; the handler fills it.
+3b. **Stream mode** (declared per stream): `queue` (every envelope delivered, in order — documents) or `latest` (a newer envelope supersedes older undelivered ones — state snapshots such as stock). Found by the POS dry-run below.
 4. **Handler registry** (both halves): `register(type, ver, handler)`; handler = `handle(envelope, ctx) → result`. Same shape on S and V,
    so a message can flow either way (up = S→V, down = V→S).
 5. **Station identity:** registry of stations + pinned public keys; sign on send, verify on receive; replay window by `seq`.
@@ -472,6 +473,18 @@ approximated in Mode A (ambiguous failure PARKS, §Q G1). (d) email as a transpo
 **Mapping of earlier lists onto this design:** §17 items 2,3,4,5,9,12,13 = Half S core; 7 = descriptor for the stock handlers; 6 = S inbox
 + handler; 8 = app reconcile run by the layer; 1 = Mode A DOWN source; 10,11,14 = generic UI/rule hooks. §16/§Q POS statements are the
 POS *example*; P15 ("no free numbers") is a POS-handler rule, not a layer rule.
+### §18.1 POS dry-run on the common layer (can it carry the Unicenta-pattern info? — walked 2026-10-09)
+| Step | Layer does (generic) | POS supplies | Fits? |
+|---|---|---|---|
+| Enrol | `sys.hello` (station = the `c_pos` terminal), `sys.handover` (masters/model hash aligned), `sys.config` {Org, PriceList, warehouse, doctype, cash BP — inferred from the Unicenta project} | the key list only | ✅ |
+| Sell | kernel op → outbox envelope, stream `pos.up` (`queue`), **one envelope per ticket** (its orderlines = payload: product ref, qty, station, time; NO price) | the payload schema | ✅ |
+| Merge | V: verify sig, dedupe `(station,id)`, dispatch `pos.orderline` handler in one trx: group → `C_Order`+lines, price from PriceList master, `CO`; ack `{c_order_id, documentno}` | the handler (≈ grouping + master price lookup) | ✅ Mode B. Mode A: stock `doc.write` from a descriptor; price is looked up from the sealed master on S (not keyed) and verified by read-back — weaker (G1/G2) |
+| Unknown product | handler returns REJECTED + reason; ticket parked, other tickets flow | the check | ✅ (envelope = atomic unit, hence one per ticket) |
+| Replenish | scheduler hook / handler continuation runs the ERP's own `ReplenishReport` | which process, when | ✅ Mode B hook; Mode A stock `process.run` via `runProcess` |
+| Qty back | V producer enqueues `pos.qty` (stream `latest`) with `ackThrough` = last ticket merged; S pulls | the producer query | ✅ **needed two generic additions**: `latest` stream mode and `ackThrough` |
+| Show stock | S applies snapshot; shown = snapshot − up-lines with `seq > ackThrough` still unconfirmed (replaces the G8 "defer" rule — precise, no deferral) | the display rule | ✅ |
+**Verdict:** the layer carries the POS flow with NO POS words inside it. The dry-run exposed exactly two generic gaps (snapshot streams, `ackThrough`), now in the seams. POS-only parts are small: payload schema, two handlers (`pos.orderline`, `pos.qty` producer), config keys, display rule.
+
 **Test of genericity (acceptance):** the layer's code + tests must contain NO app words (order, product, price, stock, asset, ticket);
 `sys.hello` → `sys.handover` → `sys.config` run first on the same harness (W-L9: app op before handover is refused; mismatched hash ⇒ handover FAILS, no silent continue); a loopback harness runs a toy `echo`/`counter` app through every guarantee (dupes, reorder, drop, kill-points, forged signature, unknown
 type) — if that passes, POS/FA/pawn only add handlers and descriptors. W-L1..W-L8 (spec only): dedupe · order+gap park · signature/replay ·
