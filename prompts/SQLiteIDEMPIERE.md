@@ -1174,4 +1174,12 @@ PULL (another legacy user's document applied once; own document not echoed) · R
 **What is NOT done (honest):** the files are still CommonJS — dropping them into `idempiere.html` needs the repo's UMD wrapper or a bundler step (mechanical, per file); the browser must be allowed by the legacy WS (CORS on the ADInterface servlet — a WS-config item under D6, untested here); the SQLite UI's own windows do not call `link` yet (that is the delivery work behind Q-OOTB).
 Next uses of the same facade: Fixed Assets (3b, §52) and the integration flows (3a).
 
+## §54 THE LAYER IS AN ADAPTER — freeze the code, add models as data (user 2026-10-09: "we may not need to code anything further as that layer will be an adapter of sort")
+**Rule.** `legacy_link` and its modules are FROZEN. Testing "any model" means writing a **descriptor** (header table, optional lines, optional doc-action, field mappings, read-back expectation) plus the **WebService configuration** for that model (D6) — data, not code.
+No sweep tool, WS-type generator or per-model code is built now (I had started to scope one — stopped, not needed).
+**Reopen the code only if a real model proves a missing capability**, and then through the usual loop (P17: evidence, failing scenario first, one commit). Known candidates, NOT built: a header-only descriptor (a master with no lines and no doc-action — `doc_writer.validate` currently requires `docAction`);
+three-level documents (batch → journal → line, e.g. GL_Journal); models whose create needs values the descriptor cannot express (unique keys, sequences).
+**Checklist to add a model (no code):** (1) pick the legacy table + doc type from the dictionary; (2) register the WS types for it on the pilot (SQL in `scripts/bridge/pilot/`, the same text goes to the admin); (3) write the descriptor; (4) one scenario in the corpus (facts → legacy via the link → SQLite engine result → `compare`); (5) read the `§GAP` lines; (6) fix SQLite per the CARDINAL RULE.
+Candidate first models by the dictionary (34 doc tables carry `DocAction` on the pilot): C_Payment, C_Invoice, M_Inventory, M_Movement, C_Cash, M_Requisition, GL_Journal, and Fixed Assets (A_Asset, A_Asset_Addition, A_Depreciation_Entry).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
