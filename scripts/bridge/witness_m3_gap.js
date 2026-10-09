@@ -44,6 +44,24 @@ const periodData = (() => {
   return { schema, periods };
 })();
 const periodCheck = (date, dbt) => E.periodOpen(periodData, date, dbt, TODAY);
+// §45 F11: tax inputs the SQLite side owns (seed): client taxes, product tax category, org/warehouse/BP locations, BP exemption, price list tax-included,
+// the order's DeliveryViaRule = BP's rule else the C_Order.DeliveryViaRule dictionary default (MOrder.setBPartner :737-739 / AD_Column default)
+const taxRows = seed.prepare('SELECT * FROM c_tax WHERE ad_client_id=11').all().map(lc);
+const taxById = id => taxRows.find(t => Number(t.c_tax_id) === Number(id));
+const taxChildren = id => taxRows.filter(t => Number(t.parent_tax_id) === Number(id) && t.isactive === 'Y');
+const locOf = id => lc(seed.prepare('SELECT c_country_id, c_region_id, postal FROM c_location WHERE c_location_id=?').get(id));
+const DVR_DEFAULT = (seed.prepare("SELECT c.defaultvalue d FROM ad_column c JOIN ad_table t ON t.ad_table_id=c.ad_table_id WHERE t.tablename='C_Order' AND c.columnname='DeliveryViaRule'").get() || {}).d;
+const TAX_INCLUDED = (lc(seed.prepare('SELECT istaxincluded FROM m_pricelist WHERE m_pricelist_id=?').get(pos.m_pricelist_id)) || {}).istaxincluded === 'Y';
+function taxOfFor(f) {
+  const bp = f.bp || BP, org = f.org || 11, wh = f.wh || 103;
+  const b = lc(seed.prepare('SELECT istaxexempt, deliveryviarule FROM c_bpartner WHERE c_bpartner_id=?').get(bp)) || {};
+  const dvr = f.deliveryVia || b.deliveryviarule || DVR_DEFAULT;
+  const orgLoc = locOf((lc(seed.prepare('SELECT c_location_id FROM ad_orginfo WHERE ad_org_id=?').get(org)) || {}).c_location_id);
+  const whLoc = locOf((lc(seed.prepare('SELECT c_location_id FROM m_warehouse WHERE m_warehouse_id=?').get(wh)) || {}).c_location_id);
+  const bpLoc = locOf((lc(seed.prepare('SELECT c_location_id FROM c_bpartner_location WHERE c_bpartner_location_id=?').get(LOC[bp])) || {}).c_location_id);
+  return pid => E.taxLookup({ taxes: taxRows, taxCategoryId: (lc(seed.prepare('SELECT c_taxcategory_id FROM m_product WHERE m_product_id=?').get(pid)) || {}).c_taxcategory_id,
+    isSOTrx: true, billDate: f.date || TODAY, billFrom: orgLoc, billTo: bpLoc, warehouse: whLoc, deliveryViaRule: dvr, bpTaxExempt: b.istaxexempt });
+}
 // §43 F10: product-category accounting per ACTIVE schema, read from the (state-synced) scratch posting db
 const acctSetupOf = pid => {
   const has = c => gb.prepare('SELECT 1 FROM pragma_table_info(?) WHERE name=?').get('c_acctschema', c);
@@ -64,12 +82,13 @@ const BP = 112, LOC = { 112: 108, 118: 113 };
 function localRun(mut = 0) {
   return async f => {
     const dt = dtOf(f.doctype);
-    const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: priceOfAt, priceDate: f.date || TODAY, bomOf: () => [],
+    const ctx = { pos: { ...pos, m_warehouse_id: f.wh || 103, c_doctype_id: f.doctype }, priceOf: priceOfAt, priceDate: f.date || TODAY, bomOf: () => [],
+      taxOf: taxOfFor(f), taxById, taxChildren, taxIncluded: TAX_INCLUDED,
       wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' },
       docsubtypeso: dt.docsubtypeso, docbasetype: dt.docbasetype, creditOf, periodCheck, acctSetupOf };
     const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty));       // P15: no price is ever passed in; keyed price f.keyedPrice is ignored by design
     if (cart.some(l => !l.ok)) return { outcome: 'REJECTED' };
-    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: 103, dateAcct: f.date || TODAY };
+    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: f.wh || 103, dateAcct: f.date || TODAY };
     const g = dt.docsubtypeso === 'WR' ? POS.buildSaleGroup(ctx, cart, opts)
       : POS.buildDeliverLaterGroup(ctx, cart, { ...opts, doctype: dt, invoiceRule: 'I' });
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
@@ -85,8 +104,9 @@ function foldLocal(g, f, opts, mut) {
     let postings = 'none';
     const invOp = g.ops.find(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice');
     if (invOp) {                                                                   // materialise SQLite's own invoice, fold with the product's derivePostings
-      const iid = opts.invoiceId, total = (g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0) + mut) / 100;   // mut = negative-control cents, applied to the REAL invoice rows
+      const iid = opts.invoiceId, total = ((g.grandTotal != null ? g.grandTotal : g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0)) + mut) / 100;   // mut = negative-control cents, applied to the REAL invoice rows
       gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx) VALUES(?,?,?,?)').run(iid, f.bp || BP, total, 'Y');
+      for (const t of g.ops.filter(x => x.op_type === 'CREATE_LINE' && x.table === 'C_InvoiceTax')) gb.prepare('INSERT INTO c_invoicetax(c_invoice_id,c_tax_id,taxamt) VALUES(?,?,?)').run(iid, t.c_tax_id, t.taxamt);
       for (const l of g.soLines) gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt) VALUES(?,?,?,?)').run(iid * 100 + l.c_orderline_id % 100, iid, l.m_product_id, mut ? (cents(l.linenetamt) + mut) / 100 : l.linenetamt);
       const d = DP.derivePostings(gb, { table: 'C_Invoice', id: iid }, SCHEMA);
       postings = (d.absent && d.absent.length) ? 'ABSENT:' + d.absent.join(',') : fmtPostings(d.lines);
@@ -110,6 +130,10 @@ function foldLocal(g, f, opts, mut) {
       invoices: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice').length,
       stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _refused: refusedWhy,
       cost_qty_delta: deltaStr(Object.keys(cqBefore), cqBefore, p => localCostQty(Number(p))),
+      line_tax: g.soLines.map(l => `${l.m_product_id}:${l.c_tax_id}`).sort().join('|'),
+      order_tax: g.ops.filter(x => x.op_type === 'CREATE_LINE' && x.table === 'C_OrderTax').map(t => `${t.c_tax_id}:${cents(t.taxbaseamt)}:${cents(t.taxamt)}`).sort().join('|') || 'none',
+      grand_total_cents: (g.grandTotal != null ? g.grandTotal : g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0)) + mut,
+      invoice_tax: g.ops.filter(x => x.op_type === 'CREATE_LINE' && x.table === 'C_InvoiceTax').map(t => `${t.c_tax_id}:${cents(t.taxbaseamt)}:${cents(t.taxamt)}`).sort().join('|') || 'none',
     };
   }
 }
@@ -139,7 +163,8 @@ function localRunAD() {
       held.push({ c_orderline_id: o * 100 + i, m_product_id: l.product, qtyordered: l.qty, priceactual: String(d.priceactual), linenetamt: String(d.linenetamt) });
     }
     const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
-      wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' }, docsubtypeso: dt.docsubtypeso, creditOf, acctSetupOf };
+      wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' }, docsubtypeso: dt.docsubtypeso, creditOf, acctSetupOf,
+      taxOf: taxOfFor(f), taxById, taxChildren, taxIncluded: TAX_INCLUDED };
     const opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: bp, warehouseId: 103 };
     const g = POS.buildRecallCompleteGroup(ctx, { c_order_id: o, docstatus: 'DR', c_bpartner_id: bp, m_warehouse_id: 103 }, held, opts);
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
@@ -156,14 +181,16 @@ function applyCostQty(ioId) {
 
 // ================= Legacy side: push via the Bridge (composite) + read-back over read WS types =================
 const cfg = cfgFromEnv(); cfg.login.OrgID = 11; cfg.login.WarehouseID = 103;
+// §44: a scenario may sell from another org/warehouse (T1: org 12 Store Central, CT) — the login follows, like a user logged into that org
+const cfgFor = f => ({ ...cfg, login: { ...cfg.login, OrgID: f.org || 11, WarehouseID: f.wh || 103 } });
 const descFor = f => ({ composite: 'SyncOrder',
-  header: { serviceType: f.date ? 'BridgeCreateOrder' : 'createOrderRecord', table: 'C_Order', fields: Object.assign({ M_Warehouse_ID: { const: 103 }, C_BPartner_ID: { const: f.bp || BP }, C_BPartner_Location_ID: { const: LOC[f.bp || BP] }, Bill_BPartner_ID: { const: f.bp || BP }, Bill_Location_ID: { const: LOC[f.bp || BP] }, C_DocTypeTarget_ID: { const: f.doctype } }, f.date ? { DateOrdered: { const: f.date + ' 00:00:00' }, DateAcct: { const: f.date + ' 00:00:00' } } : {}) },
+  header: { serviceType: (f.date || f.deliveryVia) ? 'BridgeCreateOrder' : 'createOrderRecord', table: 'C_Order', fields: Object.assign(f.deliveryVia ? { DeliveryViaRule: { const: f.deliveryVia } } : {}, { M_Warehouse_ID: { const: f.wh || 103 }, C_BPartner_ID: { const: f.bp || BP }, C_BPartner_Location_ID: { const: LOC[f.bp || BP] }, Bill_BPartner_ID: { const: f.bp || BP }, Bill_Location_ID: { const: LOC[f.bp || BP] }, C_DocTypeTarget_ID: { const: f.doctype } }, f.date ? { DateOrdered: { const: f.date + ' 00:00:00' }, DateAcct: { const: f.date + ' 00:00:00' } } : {}) },
   lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-    fields: Object.assign({ AD_Org_ID: { const: 11 }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } },
+    fields: Object.assign({ AD_Org_ID: { const: f.org || 11 }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } },
       f.keyedPrice != null ? { PriceEntered: { path: 'price' }, PriceActual: { path: 'price' } } : {}) },
   docAction: { serviceType: 'CompleteOrder', table: 'C_Order', action: 'CO' } });
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'm3-'));
-const stockOf = async p => (await query(cfg, 'QueryStorage', `M_Product_ID=${p} AND M_Locator_ID IN (SELECT M_Locator_ID FROM M_Locator WHERE M_Warehouse_ID=103)`)).reduce((a, r) => a + Number(r.QtyOnHand), 0);
+const stockOf = async (p, wh) => (await query(cfg, 'QueryStorage', `M_Product_ID=${p} AND M_Locator_ID IN (SELECT M_Locator_ID FROM M_Locator WHERE M_Warehouse_ID=${wh || 103})`)).reduce((a, r) => a + Number(r.QtyOnHand), 0);
 let uidN = 0;
 // §41/F9: costed quantity (Average PO element, primary schema) — derived cost STATE, compared as a delta so back-date re-processing cannot hide behind the start-of-run sync
 const AVG_EL = 103;
@@ -171,11 +198,11 @@ const legacyCostQty = async p => { const r = await query(cfg, 'QueryMCost', `M_P
 const localCostQty = p => { try { const r = gb.prepare('SELECT currentqty q FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costelement_id=?').get(p, SCHEMA, AVG_EL); return r ? Number(r.q || 0) : 0; } catch (e) { return 0; } };
 const deltaStr = (ps, before, now) => JSON.stringify(Object.fromEntries(ps.map(p => [p, now(p) - before[p]]).filter(x => x[1])));
 async function legacyRun(f) {
-  const before = {}; for (const l of f.lines) if (!(l.product in before)) before[l.product] = await stockOf(l.product);
+  const before = {}; for (const l of f.lines) if (!(l.product in before)) before[l.product] = await stockOf(l.product, f.wh);
   const cqBefore = {}; for (const l of f.lines) cqBefore[l.product] = await legacyCostQty(l.product);
   const s = await store.open(); const uid = 'm3-' + (++uidN);
   s.enqueue(uid, 'doc', { lines: f.lines.map(l => ({ product: l.product, qty: l.qty, price: f.keyedPrice })) });
-  await drain(cfg, s, { doc: descFor(f) }, { log: () => {} });
+  await drain(cfgFor(f), s, { doc: descFor(f) }, { log: () => {} });
   const st = s.get(uid);
   // a refusal by the WS CONFIGURATION (type/column/role) is a harness fault, never a legacy business verdict (P17, found by S8 2026-10-09)
   if (st.state !== 'CONFIRMED' && /Web service type .* not allowed|No permission|not allowed for (this )?role|Unknown web service type/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
@@ -185,7 +212,7 @@ async function legacyRun(f) {
   const ls = await query(cfg, 'QueryCOrderLine', `C_Order_ID=${id}`);
   const io = await query(cfg, 'QueryMInOut', `C_Order_ID=${id}`);
   const inv = await query(cfg, 'QueryCInvoice', `C_Order_ID=${id}`);
-  const stock = {}; for (const p of Object.keys(before)) { const d = (await stockOf(p)) - before[p]; if (d) stock[p] = d; }
+  const stock = {}; for (const p of Object.keys(before)) { const d = (await stockOf(p, f.wh)) - before[p]; if (d) stock[p] = d; }
   let postings = 'none';
   if (inv.length) {                                                              // legacy books: Fact_Acct of the invoice, primary schema, folded per account
     let fa = [];
@@ -210,6 +237,11 @@ async function legacyRun(f) {
     lines: ls.map(l => `${l.M_Product_ID}:${l.QtyOrdered}:${cents(l.PriceActual)}`).sort().join('|'),
     total_cents: cents(h.TotalLines), shipments: io.length, shipments_completed: io.filter(x => x.DocStatus === 'CO').length, invoices: inv.length,
     stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _order: id,
+    // §44 tax keys
+    line_tax: ls.map(l => `${l.M_Product_ID}:${l.C_Tax_ID}`).sort().join('|'),
+    order_tax: (await query(cfg, 'QueryCOrderTax', `C_Order_ID=${id}`)).map(t => `${t.C_Tax_ID}:${cents(t.TaxBaseAmt)}:${cents(t.TaxAmt)}`).sort().join('|') || 'none',
+    grand_total_cents: cents(h.GrandTotal),
+    invoice_tax: inv.length ? (await query(cfg, 'QueryCInvoiceTax', `C_Invoice_ID=${inv[0].C_Invoice_ID}`)).map(t => `${t.C_Tax_ID}:${cents(t.TaxBaseAmt)}:${cents(t.TaxAmt)}`).sort().join('|') || 'none' : 'none',
     cost_qty_delta: await (async () => { const n = {}; for (const p of Object.keys(cqBefore)) n[p] = await legacyCostQty(Number(p)); return deltaStr(Object.keys(cqBefore), cqBefore, p => n[p]); })(),
   };
 }
@@ -317,10 +349,11 @@ const corpus = [
   sc('S6-standard-order', { doctype: STDDT, lines: [{ product: 123, qty: 1 }] }),
   sc('S13a-pos-sale-over-credit-limit', { doctype: POSDT, bp: 118, lines: [{ product: 123, qty: 200 }] }),     // spec §32: 12350 > SO_CreditLimit 10000
   sc('S13b-standard-order-over-credit-limit', { doctype: STDDT, bp: 118, lines: [{ product: 123, qty: 200 }] }),
+  sc('T1-pos-sale-taxed-org12-ct', { doctype: POSDT, org: 12, wh: 104, deliveryVia: 'D', lines: [{ product: 123, qty: 1 }] }),   // spec §44: org 12 (CT) → BP 112 (CT), Delivery ⇒ CT Sales 6%
   sc('S13c-pos-sale-large-no-credit-limit', { doctype: POSDT, lines: [{ product: 123, qty: 200 }] }),         // control: BP 112 limit 0 ⇒ no check (MBPartner.java:833-836) ⇒ completes
 ];
-const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment', 'cost_qty_delta'],
-  notCompared: { fact_acct_secondary_schema: 'legacy also posts to a second accounting schema (Euro, 200000); only the primary schema is compared', tax_and_grandtotal: 'tax was 0 on every scenario document' } };
+const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment', 'cost_qty_delta', 'line_tax', 'order_tax', 'grand_total_cents', 'invoice_tax'],
+  notCompared: { fact_acct_secondary_schema: 'legacy also posts to a second accounting schema (Euro, 200000); only the primary schema is compared' } };
 const quirks = [
   // S3 quirk entries REMOVED 2026-10-09 (§39): S3 is now compared on the AD-window path, where SQLite accepts the keyed price like legacy.
   // S7a quirk REMOVED 2026-10-09 (user: SQLite cannot differ from legacy ops, incl. L&F): legacy refuses the shipment posting below costed qty 0 (MCost.java:1919-1930) ⇒ SQLite must refuse too. Now a SQLITE-GAP, spec §35.

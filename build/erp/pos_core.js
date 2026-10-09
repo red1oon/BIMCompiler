@@ -155,6 +155,33 @@
     }
     return { ok: true };
   }
+  // §45 (F11): line tax + C_OrderTax rows + GrandTotal (+ the same on the in-group invoice), only when the host supplies ctx.taxOf(productId) → C_Tax_ID
+  // (erp_engine.taxLookup), ctx.taxById(id) → c_tax row, ctx.taxIncluded, ctx.taxChildren(id). Legacy: MOrderLine.beforeSave setTax (:866-867) → StandardTaxProvider.
+  function applyTax(ctx, g, opts) {
+    if (!ctx || typeof ctx.taxOf !== 'function' || !g.ok) return g;
+    for (var i = 0; i < g.soLines.length; i++) {
+      var l = g.soLines[i];
+      if (l.c_tax_id == null) { var t = ctx.taxOf(l.m_product_id); if (!t || !t.ok) return { ok: false, reason: 'tax-not-found', m_product_id: l.m_product_id, detail: t && t.reason }; l.c_tax_id = t.c_tax_id; }
+    }
+    var byLine = {}; g.soLines.forEach(function (l) { byLine[l.c_orderline_id] = l.c_tax_id; });
+    var olIdx = 0;
+    g.ops.forEach(function (op) {
+      if (op.op_type === 'CREATE_LINE' && op.table === 'C_OrderLine') { var sl = g.soLines[olIdx++]; if (sl) op.c_tax_id = sl.c_tax_id; }
+      if (op.op_type === 'CREATE_LINE' && op.table === 'C_InvoiceLine') { var tid = byLine[op.source_line_id]; if (tid != null) op.c_tax_id = tid; }
+    });
+    var r = E.orderTaxes(g.soLines, ctx.taxById, !!ctx.taxIncluded, ctx.taxChildren);
+    var bad = r.rows.filter(function (x) { return x.error; })[0]; if (bad) return { ok: false, reason: 'tax-error', detail: bad.error };
+    var oid = g.order.c_order_id;
+    r.rows.forEach(function (x) { g.ops.push({ op_type: 'CREATE_LINE', table: 'C_OrderTax', c_order_id: oid, c_tax_id: x.c_tax_id, taxbaseamt: x.taxbaseamt / 100, taxamt: x.taxamt / 100 }); });
+    g.ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Order', id: oid, field: 'grandtotal', value: r.grandTotal / 100 });
+    var inv = g.ops.filter(function (op) { return op.op_type === 'CREATE_DOCUMENT' && op.table === 'C_Invoice'; })[0];
+    if (inv) {   // invoice lines = the order lines (WR on-the-fly invoice) ⇒ StandardTaxProvider.calculateInvoiceTaxTotal gives the same rows
+      r.rows.forEach(function (x) { g.ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceTax', c_invoice_id: inv.c_invoice_id, c_tax_id: x.c_tax_id, taxbaseamt: x.taxbaseamt / 100, taxamt: x.taxamt / 100 }); });
+      g.ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: inv.c_invoice_id, field: 'grandtotal', value: r.grandTotal / 100 });
+    }
+    g.orderTax = r.rows; g.grandTotal = r.grandTotal;
+    return g;
+  }
   function creditGate(ctx, soLines, bpId, docsubtypeso, paymentrule) {
     if (!ctx || typeof ctx.creditOf !== 'function') return { ok: true };
     var c = ctx.creditOf(bpId) || {};
@@ -172,7 +199,7 @@
     var cg = creditGate(ctx, built.soLines, opts.c_bpartner_id, ctx.docsubtypeso || 'WR', opts.paymentrule);
     if (!cg.ok) return cg;
     var tail = completionOps(ctx, built.order, built.soLines, opts);
-    return { ok: true, ops: built.ops.concat(tail.ops), order: built.order, soLines: built.soLines, consumed: tail.consumed, newVerbs: [], verbsUsed: ALLOWED_VERBS.slice(0, 2).concat(['completeOrder', 'completeInvoice']) };
+    return applyTax(ctx, { ok: true, ops: built.ops.concat(tail.ops), order: built.order, soLines: built.soLines, consumed: tail.consumed, newVerbs: [], verbsUsed: ALLOWED_VERBS.slice(0, 2).concat(['completeOrder', 'completeInvoice']) }, opts);
   }
 
   // ── §P-13 hold: park the in-progress cart as a real DR C_Order — the ORDER half alone ──────────
@@ -201,7 +228,7 @@
     var cg = creditGate(ctx, heldLines, heldOrder.c_bpartner_id, ctx.docsubtypeso || 'WR', opts && opts.paymentrule);
     if (!cg.ok) return cg;
     var tail = completionOps(ctx, heldOrder, heldLines, opts);
-    return { ok: true, ops: tail.ops, order: heldOrder, soLines: heldLines, consumed: tail.consumed, newVerbs: [], verbsUsed: ['completeOrder', 'completeInvoice'] };
+    return applyTax(ctx, { ok: true, ops: tail.ops, order: heldOrder, soLines: heldLines, consumed: tail.consumed, newVerbs: [], verbsUsed: ['completeOrder', 'completeInvoice'] }, opts);
   }
 
   // ── §P-12 deliver-later sale — the PICKABLE variant (engine note banked TWICE 2026-06-12:
@@ -255,12 +282,12 @@
     if (!cg.ok) return cg;
     // complete the ORDER with the dictionary flags VERBATIM (N/N ⇒ the bare SET_STATUS C_Order CO)
     var ops = built.ops.concat(E.completeOrder(built.order, built.soLines, pol));
-    return {
+    return applyTax(ctx, {
       ok: true, ops: ops, order: built.order, soLines: built.soLines,
       shipment: null, shipmentDeferred: true, shipDoctypeId: pol.shipDoctypeId,
       invoiceTiming: { inGroup: false, rule: opts.invoiceRule != null ? opts.invoiceRule : null, source: 'C_Order.InvoiceRule dictionary default' },
       newVerbs: [], verbsUsed: ['buildDoc', 'completeOrder']
-    };
+    }, opts);
   }
 
   // The "Generate Shipments" act for an already-completed deliver-later order: the pickable DR shipment, via the SAME buildDoc spec the

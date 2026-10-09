@@ -1022,4 +1022,39 @@ and every re-apply added another copy. Fixed: inserts are generated as `INSERT �
 `§S5_RESTORED PASS` (schema back to N, control sale MATCH) · `§S5_WITNESS_VERDICT PASS`. Routine run_all unchanged (the synced schema row is inactive). Regression: 99 engine witnesses, exits identical, logs identical except the 4 known-nondeterministic ones.
 **Residue:** the gate checks the product's category accounting row only; legacy fails the same way for any other `getCostingLevel/Method` caller (movements, inventory) — those documents have no SQLite twin scenario yet. `ws_test_access.sql` keeps the schema inactive for every routine witness.
 
+## §44 TAX — determination, order tax, invoice tax, Tax.Due books (2026-10-09, backlog item 5c) — SPEC before code
+**Found without inventing data:** every legacy SO line carries a tax and every order an Order-Tax row; with org 11 (Portland, region 142) the lookup falls to `104 Standard 0%`, but **org 12 Store Central is in Connecticut (region 102)** like BP 112 (Monroe CT) ⇒ legacy's own rule
+gives `105 CT Sales 6%` for a POS sale from org 12 / warehouse 104 — a normal user's sale, no data change.
+**Legacy rules (read):** line tax when `C_Tax_ID=0` (MOrderLine.java:866-867) via `Tax.getProduct` (Tax.java:475-600: product tax category; bill-from = `AD_OrgInfo.C_Location_ID` of the line's org, bill-to = the BP bill location; BP `IsTaxExempt` ⇒ exempt tax)
+→ `Tax.get` (Tax.java:723-840): taxes of the client ordered `C_CountryGroupFrom_ID, C_Country_ID, C_Region_ID, C_CountryGroupTo_ID, To_Country_ID, To_Region_ID, ValidFrom DESC` (MTax.java:78-80; NULLs last), first ACTIVE non-child tax of the category, right SO/PO type, whose
+from/to country/region match (0 = any) and `ValidFrom ≤ billDate` (postal ranges when `IsPostal`); else the category's DEFAULT tax. Amount: `MTax.calculateTax` (MTax.java:340-367) per tax (summary ⇒ children), `base × rate/100` rounded HALF_UP to the currency precision
+(tax-included variant). Order tax = per tax id: base = Σ LineNetAmt, amount = Σ per-line tax (non-document-level), GrandTotal = TotalLines + Σ tax (StandardTaxProvider). Invoice: same on the invoice lines; books Dr Receivable GrandTotal / Cr Revenue per line / Cr `{Tax.Due}` per tax (Doc_Invoice).
+**Facts:** T1 = POS order 135, org 12, warehouse 104, BP 112 (loc 108), Oak Tree × 1. Expected legacy: line tax 105, OrderTax `105:6175:371` (6.175% → 3.705 → 3.71), GrandTotal 6546, invoice tax equal, books 518 Dr 6546 / 758 Cr 6175 / Tax-Due Cr 371.
+**New compared keys (all scenarios):** `line_tax` (C_Tax_ID per line), `order_tax` (`taxid:base¢:amt¢` per C_OrderTax row), `grand_total_cents`, `invoice_tax` (per C_InvoiceTax row).
+**SQLite before:** the kernel POS verbs set no tax, write no order/invoice tax, GrandTotal = TotalLines ⇒ expected SQLITE-GAP on the new keys for EVERY scenario (an honest wall: the Order-Tax tab of every SQLite order differs from legacy today). Fix F11 follows the measurement.
+**MEASURED T1 (legacy first):** first attempt gave tax 104 Standard — explained by the rule, not a defect: the orders default to `DeliveryViaRule='P'` (Pickup) and for Pickup the tax bill-to is the WAREHOUSE location (Tax.java:550-553); warehouse 104 is in MA.
+With `DeliveryViaRule='D'` (a header field the user sets; `BridgeCreateOrder` now accepts it — fixture, idempotent): line tax **105**, OrderTax **`105:6175:371`**, GrandTotal **6546**, InvoiceTax `105:6175:371`, books **518 Dr 6546 / 596 Cr 371 / 758 Cr 6175** — exactly as predicted.
+Every other scenario (org 11, Pickup): line tax 104, OrderTax `104:<base>:0`, GrandTotal = TotalLines.
+
+## §45 F11 — SQLite tax: determination + order tax + invoice tax + GrandTotal (2026-10-09) — SPEC before code
+**Port:** `erp_engine.taxLookup` = Tax.getProduct + Tax.get (Tax.java:475-600, 723-840: exempt BP ⇒ `getExemptTax` :679-697 = highest-rate active `IsTaxExempt` tax; SO + Pickup ⇒ bill-to = warehouse location; ordered loop + default fallback);
+`erp_engine.calcTax` = MTax.calculateTax (MTax.java:340-367; integer-exact, HALF_UP at the currency precision; summary ⇒ children; tax-included variant); `erp_engine.orderTaxes` = StandardTaxProvider.calculateOrderTaxTotal (StandardTaxProvider.java:38-110) + MOrderTax.calculateTaxFromLines
+(MOrderTax.java:312-372): per tax id base = Σ LineNetAmt (a child line also counts for its parent), amount = Σ per-line tax unless document-level; summary rows are replaced by one row per child; GrandTotal = TotalLines + Σ tax (not when tax-included).
+**Wiring:** POS verbs, when the host supplies `ctx.taxOf(productId)` (+ `ctx.taxById`, `ctx.taxIncluded`): each line carries `c_tax_id`, the group gets `C_OrderTax` rows + order GrandTotal and, when the invoice is in the group, `C_InvoiceTax` rows + invoice GrandTotal (same lines, same amounts).
+Without `taxOf` nothing changes (regression byte-identical). M3 adapter: `taxOf` from the seed (c_tax, m_product.c_taxcategory_id, ad_orginfo/m_warehouse/c_bpartner_location → c_location), with the order's org, warehouse, BP location, date and DeliveryViaRule; books folded with `c_invoicetax` rows (deriveInvoice already credits `{Tax.Due}`).
+**Acceptance:** T1 MATCH on all 15 keys incl. books; every other scenario's tax keys MATCH (104 / 0).
+### §45.1 DECISION RECORD F11 — SQLite taxes a sale exactly like legacy (2026-10-09)
+**Evidence:** T1 legacy `line_tax 123:105 · order_tax 105:6175:371 · grand_total 6546 · invoice_tax 105:6175:371 · books 518 Dr 6546 / 596 Cr 371 / 758 Cr 6175`; SQLite had no tax at all (and no Order-Tax row on ANY order).
+**Changed (one commit, backtrack = `git revert <sha>`):**
+| File | Change |
+|---|---|
+| `scripts/erp_engine.js` | NEW pure `taxLookup` (Tax.java:475-600, 679-697, 723-840), `calcTax` (MTax.java:340-367, BigInt-exact HALF_UP), `orderTaxes` (StandardTaxProvider.java:38-110 + MOrderTax.java:312-372). Additive. |
+| `build/erp/pos_core.js` | `applyTax` on buildSaleGroup / buildDeliverLaterGroup / buildRecallCompleteGroup when the host passes `ctx.taxOf`: line `c_tax_id` (order + invoice lines), `C_OrderTax` / `C_InvoiceTax` rows, GrandTotal updates; no tax found ⇒ refused `tax-not-found` (legacy TaxNotFound). |
+| `build/erp/pos_lens.js` | per-sale `lensTaxOf(bp)` from its own db + `taxById/taxChildren/taxIncluded`; `§POS-TAX` log line per lookup |
+| `scripts/bridge/witness_m3_gap.js` | four tax keys on every scenario, T1 (org 12 / wh 104 / Delivery), adapter tax inputs from the seed, invoice tax rows folded into the books |
+**Proof:** `§SCN T1-pos-sale-taxed-org12-ct MATCH compared=15` and every other scenario MATCH on `line_tax/order_tax/grand_total_cents/invoice_tax` (104 / base / 0); `§RECON_SUMMARY scenarios=17 MATCH=15 SQLITE-GAP=2` (S2b ⛔ Q-OOTB, S8a F9).
+Regression: 99 engine witnesses — exits identical, logs identical except the 4 known-nondeterministic ones (no existing caller passes `taxOf`).
+**Residue (stated):** country-group taxes need a host `groupHas` (none on the pilot); tax postal ranges: the seed has no `c_taxpostal` table (legacy has 0 rows); external tax providers refused by name; the lens path is reviewed by reading only (no browser in this lane);
+the S12 void key set does not include tax keys yet (void of a TAXED sale not scenario-tested); org-12 sale stock comes from warehouse 104 (stock key compares deltas only).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

@@ -346,6 +346,102 @@ function voidOrder(sale, opts) {
   return ops;
 }
 
+// ── TAX (prompts/SQLiteIDEMPIERE.md §45, F11) — Witness: M3 T1 + the tax keys of every scenario ─────────────────────────────────────
+// Integer-exact decimal helpers (BigInt): amounts in minor units (cents at precision 2); rates as decimal strings.
+function _dec(str) { var t = String(str == null ? '0' : str).trim(), neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
+function _rhu(n, d) { // HALF_UP (away from zero on .5), d > 0
+  var neg = n < 0n, a = neg ? -n : n, q = a / d, r = a % d; if (r * 2n >= d) q += 1n; return neg ? -q : q;
+}
+// calcTax — MTax.calculateTax (MTax.java:340-367). tax {rate, issummary, c_tax_id}; children(taxId) → child taxes (summary). amount in minor units at `scale`.
+function calcTax(tax, amountMinor, included, children) {
+  var list = String(tax.issummary) === 'Y' ? (children ? children(tax.c_tax_id) : []) : [tax];
+  var a = BigInt(amountMinor), total = 0n;
+  list.forEach(function (t) {
+    var r = _dec(t.rate); if (r.n === 0n) return;                       // isZeroTax ⇒ 0 (per child too: 0 adds nothing)
+    var den = 100n * (10n ** BigInt(r.k));                              // rate/100 = r.n / den
+    if (!included) total += _rhu(a * r.n, den);                         // amount × rate/100, HALF_UP at scale (:355-358)
+    else {                                                              // base = amount / (1+rate/100) at 12 decimals, tax = amount − base, HALF_UP at scale (:360-365)
+      var S = 10n ** 10n, base12 = _rhu(a * S * den, den + r.n); total += _rhu(a * S - base12, S);
+    }
+  });
+  return Number(total);
+}
+// taxLookup — Tax.getProduct + Tax.get (Tax.java:475-600, 679-697, 723-840). Pure: the host passes every row.
+//   inp = { taxes:[c_tax rows of the client], postalsOf(taxId)→[{postal,postal_to,isactive}] (optional), groupHas(groupId,countryId)→bool (optional),
+//           taxCategoryId, isSOTrx, billDate 'YYYY-MM-DD', billFrom/billTo/warehouse: {c_country_id,c_region_id,postal}, deliveryViaRule, bpTaxExempt }
+function taxLookup(inp) {
+  var z = function (v) { return v == null || v === '' ? 0 : Number(v); };
+  var taxes = inp.taxes || [];
+  if (String(inp.bpTaxExempt) === 'Y') {                               // getExemptTax :679-697 — active IsTaxExempt, highest rate first
+    var ex = taxes.filter(function (t) { return String(t.istaxexempt) === 'Y' && String(t.isactive) === 'Y'; })
+      .sort(function (a, b) { return Number(b.rate) - Number(a.rate); })[0];
+    return ex ? { ok: true, c_tax_id: ex.c_tax_id, via: 'exempt' } : { ok: false, reason: 'TaxNoExemptFound' };
+  }
+  var from = inp.billFrom, to = inp.billTo;
+  if (!inp.isSOTrx) { var tmp = from; from = to; to = tmp; }          // :541-549
+  else if (inp.deliveryViaRule === 'P') to = inp.warehouse;            // :550-553 Pickup ⇒ warehouse location
+  if (!from || !to) return { ok: false, reason: 'TaxCriteriaNotFound' };
+  var keys = ['c_countrygroupfrom_id', 'c_country_id', 'c_region_id', 'c_countrygroupto_id', 'to_country_id', 'to_region_id'];
+  var sorted = taxes.slice().sort(function (a, b) {                    // MTax.getAll ORDER BY … ValidFrom DESC (MTax.java:78-80), NULLs last (postgres ASC)
+    for (var i = 0; i < keys.length; i++) {
+      var x = a[keys[i]], y = b[keys[i]], xn = x == null || x === '', yn = y == null || y === '';
+      if (xn && yn) continue; if (xn) return 1; if (yn) return -1; if (Number(x) !== Number(y)) return Number(x) - Number(y);
+    }
+    return String(b.validfrom || '').localeCompare(String(a.validfrom || ''));
+  });
+  var sopoOk = function (t) { return !((inp.isSOTrx && t.sopotype === 'P') || (!inp.isSOTrx && t.sopotype === 'S')); };
+  var bd = String(inp.billDate).slice(0, 10);
+  for (var i = 0; i < sorted.length; i++) {
+    var t = sorted[i];
+    if (z(t.c_taxcategory_id) !== z(inp.taxCategoryId) || String(t.isactive) !== 'Y' || z(t.parent_tax_id) !== 0) continue;
+    if (!sopoOk(t)) continue;
+    var grpOk = function (g, c) { return z(g) === 0 || (inp.groupHas ? inp.groupHas(z(g), z(c)) : false); };
+    if (grpOk(t.c_countrygroupfrom_id, from.c_country_id) && (z(t.c_country_id) === z(from.c_country_id) || z(t.c_country_id) === 0)
+      && (z(t.c_region_id) === z(from.c_region_id) || z(t.c_region_id) === 0)
+      && grpOk(t.c_countrygroupto_id, to.c_country_id) && (z(t.to_country_id) === z(to.c_country_id) || z(t.to_country_id) === 0)
+      && (z(t.to_region_id) === z(to.c_region_id) || z(t.to_region_id) === 0)
+      && !(String(t.validfrom || '').slice(0, 10) > bd)) {
+      var post = inp.postalsOf ? (inp.postalsOf(t.c_tax_id) || []) : [];
+      if (!post.length) return { ok: true, c_tax_id: t.c_tax_id, via: 'match' };
+      for (var j = 0; j < post.length; j++) {
+        var pp = post[j];
+        if (String(pp.isactive) === 'Y' && String(pp.postal || '').indexOf(String(from.postal || '')) === 0
+          && (pp.postal_to == null || String(pp.postal_to).indexOf(String(to.postal || '')) === 0)) return { ok: true, c_tax_id: t.c_tax_id, via: 'postal' };
+      }
+    }
+  }
+  for (var d = 0; d < sorted.length; d++) {                            // default tax (:820-832) — NOT filtered by category, exactly as the Java
+    var u = sorted[d];
+    if (String(u.isdefault) !== 'Y' || String(u.isactive) !== 'Y' || z(u.parent_tax_id) !== 0 || !sopoOk(u)) continue;
+    return { ok: true, c_tax_id: u.c_tax_id, via: 'default' };
+  }
+  return { ok: false, reason: 'TaxNotFound' };
+}
+// orderTaxes — StandardTaxProvider.calculateOrderTaxTotal (StandardTaxProvider.java:38-110) + MOrderTax.calculateTaxFromLines (MOrderTax.java:312-372).
+//   lines [{c_tax_id, linenetamt (decimal string)}], taxById(id) → c_tax row, included = price list IsTaxIncluded. Amounts out in minor units (precision 2).
+function orderTaxes(lines, taxById, included, children) {
+  var c = function (v) { var r = _dec(v); return Number(r.k <= 2 ? r.n * (10n ** BigInt(2 - r.k)) : _rhu(r.n, 10n ** BigInt(r.k - 2))); };
+  var totalLines = 0, seen = [], rows = [];
+  lines.forEach(function (l) { totalLines += c(l.linenetamt); var id = Number(l.c_tax_id); if (seen.indexOf(id) < 0) seen.push(id); });
+  seen.forEach(function (id) {
+    var t = taxById(id); if (!t) { rows.push({ c_tax_id: id, error: 'tax not found' }); return; }
+    if (Number(t.c_taxprovider_id || 0)) { rows.push({ c_tax_id: id, error: 'external tax provider not ported' }); return; }
+    var parent = Number(t.parent_tax_id || 0), base = 0, amt = 0, doc = String(t.isdocumentlevel) === 'Y';
+    lines.forEach(function (l) { if (Number(l.c_tax_id) === id || (parent > 0 && Number(l.c_tax_id) === parent)) { base += c(l.linenetamt); if (!doc) amt += calcTax(t, c(l.linenetamt), included, children); } });
+    if (doc) amt = calcTax(t, base, included, children);
+    rows.push({ c_tax_id: id, taxbaseamt: included ? base - amt : base, taxamt: amt });
+  });
+  var out = [], grand = totalLines;
+  rows.forEach(function (r) {
+    if (r.error) { out.push(r); return; }
+    var t = taxById(r.c_tax_id);
+    if (String(t.issummary) === 'Y') {                                  // :75-99 one row per child, the summary row deleted
+      (children ? children(r.c_tax_id) : []).forEach(function (ch) { var a = calcTax(ch, r.taxbaseamt, false, children); out.push({ c_tax_id: ch.c_tax_id, taxbaseamt: r.taxbaseamt, taxamt: a }); if (!included) grand += a; });
+    } else { out.push(r); if (!included) grand += r.taxamt; }
+  });
+  return { rows: out, totalLines: totalLines, grandTotal: grand };
+}
+
 // acctSetupGap — which ACTIVE accounting schemas have no product-category accounting row for a category. Implementing prompts/SQLiteIDEMPIERE.md §43 (S5, F10).
 // Legacy: MOrder.prepareIt ASI loop (MOrder.java:1633-1637) → MProduct.isASIMandatoryFor over every active client schema (MProduct.java:1028-1037) → getCostingLevel →
 // MProductCategoryAcct.get(...) null ⇒ NPE (MProduct.java:1066-1067): the order cannot be prepared. SQLite refuses with a NAMED error instead (same outcome). Pure.
@@ -417,7 +513,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,
