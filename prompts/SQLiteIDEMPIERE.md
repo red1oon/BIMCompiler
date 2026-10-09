@@ -8,6 +8,12 @@ unknown is a ⛔ in §9, not a guess. Honour until DONE.
 
 # SQLite ⇄ iDempiere — the Bridge
 
+## §00 Principle (user, 2026-10-09)
+The Bridge is the ONE place for all sync scaffolding — transport, change-log tracking, id map, replay, verify, outbox,
+reconcile. A plugin/module (Fixed Assets, pawn, loans, …) contributes ONLY a descriptor (§5) + its local rules.
+Nothing plugin-specific is allowed inside the Bridge; the next plugin must not redo any scaffolding. Build order is
+therefore: change-log tracker FIRST (§4, §12), then UP path, then any component.
+
 ## §0 Why (user directive, 2026-10-09)
 - New UI = SQLite, local first (Flutter desktop/mobile). New addons, changes, validation rules are tried HERE.
 - Legacy iDempiere stays until everyone is convinced it is redundant. So both must live side by side, possibly years.
@@ -137,15 +143,15 @@ Real server for W3/W6 = the local iDempiere dev setup (`~/idempiere-dev-setup`, 
 **Open (⛔):**
 - P1 Proposal list to the legacy admin: which tables get `IsChangeLog` + which columns `IsAllowLogging`; confirm the
   `AD_ChangeLog` WS type is acceptable. (Derive the minimum list from the pilot's flashpoint notes, §11.)
-- P2 Does a WebService login create an `AD_Session` whose id lands on change-log rows? Decides own-echo dedupe (§4.4).
-  Answer by running it on the local server — W6.
-- P3 Local postgres `idempiere` is DOWN right now (port 5432 refused); starting it is a user call (no autonomous starts).
+- ~~P2~~ ANSWERED 2026-10-09 on the pilot (§12): WS calls create an `AD_Session` (`WebSession='WebService'`) and every
+  change-log row carries `TrxName = ws_<service>_<uuid>`. Own-echo = `CreatedBy` is the Bridge user AND trxname `ws_*`.
+- ~~P3~~ pilot stack is up (§12).
 
 ## §10 Next
 Start local vanilla iDempiere → W6/P2 probe (login via WS, create one doc, read the AD_ChangeLog rows) → descriptor schema
 (§5) → UP/DOWN for ONE doc type → §11 Fixed Assets parallel run.
 
-## §11 Pilot: Fixed Assets depreciation (the first component)
+## §11 Example component: Fixed Assets depreciation (illustration only — the Bridge is plugin-agnostic)
 Why: a real feature that on iDempiere normally needs a **new plugin** (DocValidator + event/process). Parallel run:
 - Legacy side: the traditional plugin is installed on the pilot server (DocValidate/ModelValidator hooks fire in
   `MDepreciationEntry.prepareIt/completeIt` — `MDepreciationEntry.java:254,264,343`; posting in
@@ -159,5 +165,30 @@ Fact_Acct, maxDiff 0. Any difference is logged as a FLASHPOINT (rule differs, ro
 resolution) into a `§FLASH` list — that list is the deliverable to the legacy admin before going out (D4).
 Needs first: read the stock FA code path (`MDepreciationEntry`, `MDepreciationExp`, `MDepreciationWorkfile`, `Doc_DepreciationEntry`)
 and write the local rule spec from it. Which "new rules" (user: "whatever it may be") is NOT assumed — to be supplied.
+
+## §12 Pilot stack + first measured facts (2026-10-09, local vanilla copy — nothing on a real server)
+- Postgres: docker `postgres` (5432), DB `idempiere_pilot` (copy). Server: `~/idempiere-pilot/start.sh|stop.sh`, http **:8088**.
+- Proposal applied on the PILOT only: `scripts/bridge/pilot/ws_changelog_read.sql` — one read-only WS type `QueryChangeLog`
+  (AD_ChangeLog, all 22 columns output, role 102 read-only; params TableName/Action constant, Filter/RecordID free).
+  This file IS the proposal text for the legacy admin (§9 P1).
+- Wire: JSON works at `/ADInterface/services/rest/model_adservice/query_data` (body `{"ModelCRUDRequest":{"ModelCRUD":{
+  "serviceType":"QueryChangeLog","Filter":"AD_ChangeLog_ID > N"},"ADLoginRequest":{…,"OrgID":11,"WarehouseID":103}}}`).
+  Do NOT send TableName/Action when the type fixes them as constants (server faults "invalid parameter"). XML with the
+  namespace I tried returned null request; JSON is the working form — supersedes §3 of the BIM integration note.
+- A WS type created in the DB after server start is NOT seen until the server is restarted / AD cache reset (cache hit
+  of the failed first lookup). Bridge setup docs must say so.
+- **Vanilla already logs a lot:** 723 tables `IsChangeLog=Y`, 23,185 columns `IsAllowLogging=Y` — the legacy admin may
+  need to change little or nothing; P1 becomes "confirm which of the existing set we rely on", not "turn it all on".
+- **Change-log shape (measured):** one `AD_ChangeLog_ID` covers ONE record save, with one row PER COLUMN → key is
+  (AD_ChangeLog_ID, AD_Column_ID), not the id alone. Rows carry `Record_ID`, `OldValue/NewValue`, `EventChangeLog`
+  (I/U/D), `AD_Session_ID`, `TrxName`. Seed rows 1000198–1000200: a WS `setDocAction` DR→CO on C_Order(318) record 1000005
+  shows `DocStatus DR→CO`, `Processed`, `DocAction` in order — a doc-action IS reconstructable from the log.
+- **Watermark risk to witness:** ids are allocated at save but rows commit with the transaction → a long transaction can
+  commit a LOWER id after a higher one was already read. Reader must re-read a trailing window and dedupe by
+  (id, column) (§W10).
+- Remaining unseen: the log holds only changes on tables/columns with logging on; not witnessed yet for a given component.
+- Also present in stock: `CompositeInterface` WS (`composite` method) — candidate for the UP batch (§3), not yet probed.
+- New witness W10 CHANGELOG-TAIL: read since watermark, window re-read, no row lost/duplicated across an interleaved
+  long transaction; prints INCONCLUSIVE when the window held zero rows.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
