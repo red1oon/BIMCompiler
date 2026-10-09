@@ -48,7 +48,9 @@ Press **E** (or click its button) with a model dropped. The model opens in 3D.
 
 * **Hover** an element: a tip shows `Class · Name — click to select`.
 * **Click** to select it (click again to deselect). Selected items turn amber. Drag to orbit — a drag is not a click.
-* **F** opens the search panel. Type a name, class (for example `ifcdoor`) or GlobalId. Click a row to select it and fly to it. **Select all matches** adds everything in the list.
+* **F** opens the search panel (and brings the model back if a background tool had hidden it). Type a name, class (for example `ifcdoor`) or GlobalId. **Click a row to select it — the view does not move**, so you never lose your place. A selected item is drawn on top, so you can see it even behind a wall. Click the **⌖** button on a row to fly the camera to that item when you want to. **Select all matches** adds everything in the list.
+* **Moving around:** drag to orbit (all the way over the top and under — there is no stop), right-drag or two-finger drag to pan, **scroll to zoom toward whatever the pointer is on** (aim at a selected item and you can zoom right up to it, even through walls). **Reset view** puts the camera back where it started. The model stands upright on a faint ground grid.
+* The file you have loaded is named at the top-left of the canvas, for example `Duplex_ARC.ifc · IFC2X3 · 307 items`. **Close file** empties the page.
 * Press **E** again, or the **Export** button, to save `yourfile_extract.ifc`. If nothing is selected, the page tells you what to do.
 
 What goes into the new file: the selected items with their geometry, type, properties and materials; the building → storey chain they sit in (so the file stands on its own); and the openings of any selected wall. A door or window you did **not** pick is not included. GlobalIds are kept, so your other software can match them back to the originals.
@@ -62,7 +64,7 @@ You get a short message and `yourfile_health.json`. **Counts only — it does no
 ---
 
 ## 3. If you reload the page
-The page keeps your last file and your selection inside your browser, so a refresh brings them back. (If your browser blocks storage — a private window, for example — you simply start empty.) To clear it, drop a different file.
+The page keeps your last file and your selection inside your browser, so a refresh brings them back and shows the model. **A refresh never re-runs a tool or saves files again.** Press **Close file** to clear it. (If your browser blocks storage — a private window, for example — you simply start empty.) To clear it, drop a different file.
 
 ---
 
