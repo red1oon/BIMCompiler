@@ -28,7 +28,7 @@ Only two lane-relevant facts from the extras apply to normal users: F1 (draft in
 Each principle: rule · where it comes from · how it is ENFORCED (not just stated) · witness.
 | # | Principle | Source | Enforced by | Witness |
 |---|---|---|---|---|
-| P1 | **Legacy untouched (Mode A, default; Mode B plugin = explicit admin-approved add-on, §18).** Bridge uses only the 9 stock WS ops (§2) + AD config the admin chooses. No SQL, no schema/column, no custom table on legacy. | user D1, CLAUDE.md DB rule | transport has an allow-list of ops (anything else throws); Bridge code has no postgres client (grep gate) | W-P1 |
+| P1 | **Legacy sees a normal client (§19): no SQLite-specific footprint — no plugin, table, column, protocol or marker on legacy.** (Mode B plugin = PARKED, §19.) Bridge uses only the 9 stock WS ops (§2) + AD config the admin chooses. No SQL, no schema/column, no custom table on legacy. | user D1, CLAUDE.md DB rule | transport has an allow-list of ops (anything else throws); Bridge code has no postgres client (grep gate) | W-P1 |
 | P2 | **Look like a normal user; never write derived data.** Writes are documents + doc-actions only. Server owns numbering, posting, totals, stock. Never write `Fact_Acct`, `M_Storage`, `M_Cost*`, `GrandTotal`. | user §0 | descriptor validator rejects derived tables/columns as write targets | W6, W-P2 |
 | P3 | **Layer is plugin-agnostic.** No plugin table/column names inside the layer; a plugin = descriptor + rules + UI. | user §00 | grep gate (no `C_Order`/`M_Product`… literals in layer code); W8 diff is descriptor-only | W8 |
 | P4 | **Local-first.** UI never waits on the network; offline = fully working; sync is a background worker. | user §0 | UI path has no sync call; W5 with network killed | W5 |
@@ -404,7 +404,7 @@ layer. If a plugin needs a Bridge change, that item goes into this table (the la
 can issue them.
 **Build order — NOT started; this section is design under review.**
 
-## §18 THE COMMON LAYER, two halves — app-agnostic (user 2026-10-09: "both are just common layers with no app in particular";
+## §18 [PARTLY SUPERSEDED BY §19 — read §19 first] THE COMMON LAYER, two halves — app-agnostic (user 2026-10-09: "both are just common layers with no app in particular";
 ## DRAFT, still crystallising; IN concept). Earlier §18 text put POS functions inside the layer — withdrawn.
 **Answer to "can a common layer be extracted?" — yes.** What the user's 2012 plugin + ActiveMQ did is, stripped of POS, a
 **reliable message exchange with a handler registry**: carry an opaque payload from A to B exactly once, in order, authenticated,
@@ -491,5 +491,40 @@ type) — if that passes, POS/FA/pawn only add handlers and descriptors. W-L1..W
 kill-point resume (before send / after send before ack / after handler before ack-store) · poison isolation · transport swap (WS↔email↔loopback
 with identical results) · Mode A≡B above the adapter line · app-word grep gate.
 **Not asked (user is drafting):** Mode B as target vs Mode A first; station key enrolment; naming/packaging.
+
+## §19 HARDENING CUTS (user 2026-10-09: legacy is wary of SQLite replacing iDempiere; the SQLite UI is used, syncs behind the scenes, and
+## when legacy checks, the work does not look like it came from the SQLite UI; the legacy-side plugins — Unicenta, Fixed Assets, … — are
+## interacting plugins that the user prefers to MOVE onto the SQLite kernel; run PARALLEL side by side until the gaps show). IN concept.
+**What the concept is, restated so every cut can be checked against it:**
+1. SQLite UI = the daily tool. Legacy keeps running. Sync is invisible plumbing.
+2. To legacy, SQLite work = **a normal user's documents** (real docs, real doc-actions, real numbers, real postings) via the stock WebServices.
+3. The legacy-side plugins are NOT part of this layer. Each one is **re-implemented on the SQLite kernel and run in parallel** with the
+   legacy plugin; the layer's job is to feed both the same facts and **surface every difference** (gap list).
+4. So the layer is ONE thing: a **legacy-client emulator + parallel-run harness on the SQLite side.**
+**Honest bound on "legacy does not know":** the admin must still create one integration user/role and register the WS types (§12 SQL is
+exactly that) — so legacy cannot be literally unaware that *a client exists*. What the layer can guarantee is that the DATA is
+indistinguishable from a hand-keyed document (W6) and that nothing special is installed. We do not forge identity; we add no markers.
+Known tells in the data, measured on the pilot, to be listed to the admin, not hidden: one `AD_Session` row (`WebSession='WebService'`) per
+call, a client-identifying string in `AD_Session.Description`, `CreatedBy` = the integration user.
+| # | Item in the spec | Verdict | Why (against the restated concept) |
+|---|---|---|---|
+| C1 | **Half V — server OSGi plugin (Mode B)**, its inbox/station-registry AD tables | **PARK** (out of the core, kept only as a later option) | Installs a SQLite-specific bundle + schema on legacy ⇒ the opposite of "behind the scenes"; it is also exactly what a wary admin would reject. Revisit only if legacy later chooses to host it. |
+| C2 | **Envelope wire protocol** (`seq`, `stream`, `ackThrough`, signatures, station keys, `sys.hello/handover/config/resync/ping` as WIRE messages) | **CUT from the wire; KEEP locally** | Legacy cannot parse or store them without Half V. Keep only as the LOCAL outbox record (id, order, state). `ackThrough`/`latest`-stream found in §18.1 exist only because of Half V ⇒ PARKED with it; Mode A uses the local rule instead (snapshot applied after the read-back confirms the lines; unconfirmed lines subtracted). |
+| C3 | **Email transport** | **CUT** | Needs a mailbox reader on the server (none in core, §18) ⇒ footprint. Offline tolerance comes from the local outbox + retry over WS, which is enough ("remote offline POS" is the familiar pattern). |
+| C4 | **Signing of batches sent to legacy** | **CUT from the wire; KEEP in the local op-log** | Legacy cannot verify it. Integrity of local truth stays (kernel chain); the wire is protected by the normal login. |
+| C5 | **`sys.handover` as a wire op** | **REPLACE by a local procedure** | One-time baseline = load the same model package on both sides (each by its own route), compare the client-side sentinel hash through the read WS types (§14 hash), set the DOWN watermark. No wire message needed. |
+| C6 | **ExternalTraceId hook** (§15.1) | **PARK** | Needs a server-side filter. Own-echo already works from user + `ws_*` trxname on a stock server (W10). |
+| C7 | **Admin flipping `SYSTEM_INSERT_CHANGELOG=Y`** and broad logging flags | **MAKE OPTIONAL, not a dependency** | A global setting an admin would notice. Core DOWN must work on a **vanilla** config: completions are UPDATEs and are logged by default (W10 proves DR→CO is seen with the setting at N). Draft creation staying invisible is acceptable — drafts are not shared work. |
+| C8 | **Posting-side/plugin assumptions inside the layer** (assemble orders, ReplenishReport, price rules, ProductQty producer on the server) | **OUT of the layer** — they are the *interacting plugins* | Per user: these are legacy plugins being re-implemented on the SQLite kernel, not layer features. The layer only supplies transport, outbox/state/idmap, descriptor-driven doc write, DOWN tracker + replay, snapshot read, reconcile, config. |
+| C9 | **Superior-role extras** (§14 sentinel, §15 backdoor register) | **KEEP, narrowed** | Still the way we notice *drift* between the two sides during the parallel run; but run by the SQLite side only, read-only against legacy. |
+| C10 | **Parallel-run reconcile (W3/W9, §FLASH list)** | **PROMOTE to the core purpose** (I had demoted it) | The user's stated aim: run side by side until the gaps are noticed. Every doc written/seen on both sides is compared: local result vs legacy result (docstatus, totals, Fact_Acct); every difference is a logged `§GAP` with the rule that differs. That list IS the product of the parallel run. |
+**What remains in the core layer (all SQLite-side, nothing installed on legacy):**
+`Transport` (ADInterface only, 9 ops) · `Outbox/State/IdMap` · `Descriptor-driven doc writer` (UP) · `Tracker` (DOWN, built, W10) ·
+`Replay through the local doc engine` · `Snapshot reader` (read WS) · `Reconcile/GAP report` (parallel run) · `Config store` · `Baseline (C5)` ·
+`Witness kit` (mock ADInterface server + pilot fixtures). Plugins (POS, FA, pawn, …) are the apps that sit ON this layer on the SQLite side,
+each shadowing a legacy plugin during the parallel run.
+**Residual risks to harden next (not solved by cutting):** G1 idempotency after an ambiguous failure and G2 partial documents remain
+(no server dedupe/transaction now that Half V is parked) ⇒ rely on the `composite` WS probe (W1) and on parking + read-back; G10 session
+growth stays a visible footprint ⇒ batch calls. These are the honest cost of "legacy installs nothing".
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
