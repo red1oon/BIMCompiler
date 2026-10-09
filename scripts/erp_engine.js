@@ -295,8 +295,59 @@ function completeInvoice(invoice, lines, policy) {
   return ops;
 }
 
+// voidOrder — the C_Order VO doc-action of a SALES order, as ops. Implementing prompts/SQLiteIDEMPIERE.md §33 (S12, fix F4) — Witness: M3 S12.
+// Port of MOrder.voidIt (MOrder.java:2680-2760) + createReversals (:2766-2840) + the reversal DOCUMENT shape of MInOut/MInvoice.reverseCorrectIt
+// (measured on the legacy pilot 2026-10-09: reversal doc = same type, same order link, quantities/amounts NEGATED, both original and reversal 'RE').
+//   per shipment / invoice: CL|RE|VO ⇒ skipped (:2780-2783 / :2810-2813); not CO ⇒ SET_STATUS VO (:2785-2789); CO ⇒ reversal doc + both RE (:2790-2794).
+//   per order line with qty≠0: qty 0, linenetamt 0, description += msg + " (" + old + ")" (:2701-2713, line :2709; MOrderLine.addDescription ' | ' join :632-639).
+//   order: description += msg (:2733), totallines = grandtotal = 0 (:2745-2746), status VO.
+// PURE: the host passes the completed sale (docs with their lines), the AD_Message 'Voided' text (dictionary, never hard-coded) and an id allocator.
+//   sale = { order:{c_order_id, description}, lines:[{c_orderline_id, qtyordered, description}],
+//            shipments:[{m_inout_id, docstatus, movementtype, lines:[{m_inoutline_id, m_product_id, movementqty, c_orderline_id}]}],
+//            invoices:[{c_invoice_id, docstatus, grandtotal, lines:[{c_invoiceline_id, m_product_id, qtyinvoiced, linenetamt, c_orderline_id}]}] }
+//   opts = { voidedMsg, newId: function(table) -> id }
+function voidOrder(sale, opts) {
+  var ops = [], skip = { CL: 1, RE: 1, VO: 1 };
+  function neg(v) { return v == null ? v : -Number(v); }
+  function addDesc(old, txt) { return old == null || old === '' ? txt : old + ' | ' + txt; }
+  (sale.shipments || []).forEach(function (s) {
+    if (skip[s.docstatus]) return;
+    if (s.docstatus !== 'CO') { ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: s.m_inout_id, doc_status: 'VO' }); return; }
+    var rid = opts.newId('M_InOut');
+    ops.push({ op_type: 'CREATE_DOCUMENT', table: 'M_InOut', source_id: sale.order.c_order_id, m_inout_id: rid, movementtype: s.movementtype, reversal_id: s.m_inout_id });
+    (s.lines || []).forEach(function (l) {
+      ops.push({ op_type: 'CREATE_LINE', table: 'M_InOutLine', m_inout_id: rid, m_product_id: l.m_product_id, movementqty: neg(l.movementqty), c_orderline_id: l.c_orderline_id, reversalline_id: l.m_inoutline_id });
+    });
+    ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: rid, doc_status: 'RE' });
+    ops.push({ op_type: 'UPDATE_FIELD', table: 'M_InOut', id: s.m_inout_id, field: 'reversal_id', value: rid });
+    ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: s.m_inout_id, doc_status: 'RE' });
+  });
+  (sale.invoices || []).forEach(function (iv) {
+    if (skip[iv.docstatus]) return;
+    if (iv.docstatus !== 'CO') { ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: iv.c_invoice_id, doc_status: 'VO' }); return; }
+    var rid = opts.newId('C_Invoice');
+    ops.push({ op_type: 'CREATE_DOCUMENT', table: 'C_Invoice', source_id: sale.order.c_order_id, c_invoice_id: rid, grandtotal: neg(iv.grandtotal), reversal_id: iv.c_invoice_id });
+    (iv.lines || []).forEach(function (l) {
+      ops.push({ op_type: 'CREATE_LINE', table: 'C_InvoiceLine', c_invoice_id: rid, m_product_id: l.m_product_id, qtyinvoiced: neg(l.qtyinvoiced), linenetamt: neg(l.linenetamt), c_orderline_id: l.c_orderline_id, reversalline_id: l.c_invoiceline_id });
+    });
+    ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: rid, doc_status: 'RE' });
+    ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Invoice', id: iv.c_invoice_id, field: 'reversal_id', value: rid });
+    ops.push({ op_type: 'SET_STATUS', table: 'C_Invoice', id: iv.c_invoice_id, doc_status: 'RE' });
+  });
+  (sale.lines || []).forEach(function (l) {
+    if (Number(l.qtyordered) === 0) return;
+    ops.push({ op_type: 'UPDATE_LINE', table: 'C_OrderLine', id: l.c_orderline_id, qtyordered: 0, linenetamt: 0,
+      description: addDesc(l.description, opts.voidedMsg + ' (' + l.qtyordered + ')') });
+  });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Order', id: sale.order.c_order_id, field: 'description', value: addDesc(sale.order.description, opts.voidedMsg) });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Order', id: sale.order.c_order_id, field: 'totallines', value: 0 });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'C_Order', id: sale.order.c_order_id, field: 'grandtotal', value: 0 });
+  ops.push({ op_type: 'SET_STATUS', table: 'C_Order', id: sale.order.c_order_id, doc_status: 'VO' });
+  return ops;
+}
+
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,

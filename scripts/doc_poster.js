@@ -95,6 +95,19 @@ function deriveInOut(db, R, ioId, schema) {
   var by = {}, absent = [];
   function add(side, el, amt) { var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
   function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  // REVERSAL shipment (prompts/SQLiteIDEMPIERE.md §33, F4): Doc_InOut.isReversal (Doc_InOut.java:1143-1145: header Reversal_ID AND line ReversalLine_ID) ⇒ each line takes
+  // the ORIGINAL line's amounts with Dr/Cr swapped (FactLine.updateReverseLine, FactLine.java:1357-1359, called at Doc_InOut.java:288-296 / 317-325). Original not
+  // derivable ⇒ legacy errors "Original Shipment/Receipt not posted yet" ⇒ reported absent, never invented.
+  var rev = _hasCol(db, 'm_inout', 'reversal_id') ? getRow(db, 'SELECT reversal_id FROM m_inout WHERE m_inout_id=?', num(ioId)) : null;
+  if (rev && num(rev.reversal_id) && _hasCol(db, 'm_inoutline', 'reversalline_id')) {
+    var rl = allRows(db, 'SELECT reversalline_id FROM m_inoutline WHERE m_inout_id=?', num(ioId));
+    if (rl.length && rl.every(function (x) { return num(x.reversalline_id); })) {
+      var orig = deriveInOut(db, R, num(rev.reversal_id), schema);
+      if (!orig || orig.absent.length) { absent.push('Original Shipment/Receipt not posted yet (' + rev.reversal_id + ')'); return { by: by, absent: absent }; }
+      Object.keys(orig.by).forEach(function (k) { var a = orig.by[k]; by[k] = { account_id: a.account_id, value: a.value, name: a.name, dr: a.cr, cr: a.dr }; });
+      return { by: by, absent: absent };
+    }
+  }
   lines.forEach(function (l) {
     // IsStocked decides service-vs-item ONLY when the cost is missing; a seed without the column cannot tell, so it is treated as an item and reported (never guessed)
     var prod = _hasCol(db, 'm_product', 'isstocked') ? getRow(db, 'SELECT isstocked FROM m_product WHERE m_product_id=?', num(l.m_product_id)) : null;

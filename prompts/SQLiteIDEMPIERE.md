@@ -826,6 +826,31 @@ NOT done: server restart (the new type is not live until `~/idempiere-pilot/stop
 (legacy: push the S1-style sale for product 136, then `call(cfg,'set_docaction',{ModelSetDocAction:{serviceType:'BridgeDocActionCOrder',tableName:'C_Order',recordID:id,docAction:'VO'}})`, read back order/lines/M_InOut/C_Invoice/
 storage/Fact_Acct for the original AND the reversal docs; SQLite: the W-POS-VOID recipe listed above) → measure legacy first → classify → run_all → decision record. Backlog items 3-8 not started.
 
+**▶ RESUMED 2026-10-09 (server restarted, `BridgeDocActionCOrder` live).** Legacy MEASURED first (probe order 1000725, psql oracle read-only):
+order `VO`, TotalLines 0, line `QtyOrdered 0 · LineNetAmt 0 · Description "** Voided (1)"` (AD_Message `Voided`='** Voided'); shipments 1000291 (orig, qty 1) + 1000292 (reversal, qty −1, SAME movementtype C−, carries C_Order_ID) both `RE`;
+invoices 1000276 (20.00) + 1000277 (−20.00) both `RE`. Books (schema 101): invoice orig `518 Dr 20 / 758 Cr 20`, reversal `518 Dr −20 / 758 Cr −20` (NEGATIVE on the SAME side: the reversal invoice is negated and posted as-is,
+FactLine.setAmtSource flips sides only when `IsAllowNegativePosting='N'` — FactLine.java:237-250; pilot schemas are 'Y'); shipment orig `430 Dr 18 / 742 Cr 18`, reversal `430 Cr 18 / 742 Dr 18` (sides SWAPPED: `FactLine.updateReverseLine`
+FactLine.java:1357-1359 via Doc_InOut.java:288-296, 317-325). Costed qty of 136 went back +1 (cost-neutral as designed).
+**SQLite before the fix:** `ad_docfsm` knows VO is legal and the outcome status, `reversePosting` swaps sides, `deriveInvoice` keeps negatives on their side — but NO verb performs the void: nothing zeroes the lines/totals, nothing creates the
+reversal shipment/invoice or sets RE. ⇒ **SQLITE-GAP class MISSING.** Fix F4 = NEW pure verb `erp_engine.voidOrder` (port of MOrder.voidIt 2680-2760 + createReversals 2766-2840 + MInOut/MInvoice.reverseCorrectIt document shape), additive,
+host supplies new ids and the `Voided` message text (read from the SQLite dictionary `ad_full.db` AD_Message — note: `ad_seed_fullwidth.db` has NO ad_message table; L&F item 7). Witnessed by S12 keys below.
+
+### §33.1 DECISION RECORD F4 — S12 void: SQLite now voids a completed sale exactly like legacy (2026-10-09, cardinal rule: copy legacy)
+**Evidence it was missing:** legacy measured above; SQLite had the legality (`ad_docfsm.dispatchOrder` CO→VO) but no verb that performs `MOrder.voidIt`. Reversal shipment books would also have come out as negative costs instead of legacy's swapped sides.
+**What changed (one commit; `git revert <sha>` restores the old behaviour):**
+| File | Change |
+|---|---|
+| `scripts/erp_engine.js` | NEW pure verb `voidOrder(sale, {voidedMsg,newId})` — port of MOrder.voidIt 2680-2760 / createReversals 2766-2840: per CO shipment/invoice a reversal doc (same type, same order link, negated qty/amount, `reversal_id` both ways), both `RE`; non-CO ⇒ `VO`; CL/RE/VO skipped; order lines qty 0 / LineNetAmt 0 / description `<Voided> (<old qty>)` (:2709, ' \| ' join MOrderLine.java:632-639); order description, TotalLines = GrandTotal = 0, status VO. Additive (new export only). |
+| `scripts/doc_poster.js` | `deriveInOut` REVERSAL branch: header `reversal_id` + every line `reversalline_id` (Doc_InOut.isReversal :1143-1145) ⇒ the ORIGINAL shipment's books with Dr/Cr swapped (FactLine.updateReverseLine :1357-1359); original not derivable ⇒ absent "Original Shipment/Receipt not posted yet" (Doc_InOut.java:293). Column-guarded (`_hasCol`), so dbs without the columns behave as before. |
+| `scripts/bridge/witness_m3_gap.js` | S12 scenario (legacy: sale → wait for shipment posting → `BridgeDocActionCOrder` VO → read back; SQLite: sale → `dispatchOrder` → `voidOrder` → fold every doc with `derivePostings`), 14 keys, + `§M3_VOID_NEGATIVE_CONTROL`. Message text read from `ad_full.db` AD_Message. |
+| `scripts/bridge/run_all.sh` | triage excludes every `NEG-*` control (was only `NEG-control`) |
+**Proof:** `§SCN S12-void-pos-sale MATCH compared=14 inconclusive=0` — VO · line qty 0 · "** Voided (1)" · total 0 · shipments RE,RE (qty 1,−1) · invoices RE,RE (2000,−2000) · stock net {} · invoice books orig `518 Dr 2000 / 758 Cr 2000`, reversal `518 Dr −2000 / 758 Cr −2000` ·
+shipment books orig `430 Dr 1800 / 742 Cr 1800`, reversal `430 Cr 1800 / 742 Dr 1800` — equal to legacy to the cent and to the side. `§M3_VOID_NEGATIVE_CONTROL PASS` (+1¢ ⇒ SQLITE-GAP on post_inv_orig).
+**Regression:** 99 non-browser witnesses that load erp_engine/pos_core/doc_poster/ad_docfsm/crud_overlay/ad_modelval run before (twice) and after: exit codes identical; logs identical after masking UUID/timestamps except the 5 that differ between two runs of the
+UNCHANGED code (`poc_ad_oplog_distrib`, `poc_genesis_minimal`, `poc_opgroup`, `poc_oplog_clipboard` group ids; `poc_bench_fold_curve` timings). (Two browser-driven `*_live` witnesses ran once by mistake in the first baseline; excluded since.)
+**Honest residue:** a void of an order whose shipment was never posted (legacy refuses: "Original Shipment/Receipt not posted yet") is only covered by the `absent` path, not by a scenario; `IsAllowNegativePosting='N'` schemas (legacy flips negative amounts to the other side,
+FactLine.java:237-250) are not handled — the SQLite posting db lacks that column (pilot schemas are 'Y', so no scenario can expose it now); RC (reverse-correct) on an order = voidIt (MOrder.java:3016) — same verb, not separately scenario-tested; the POS lens UI does not call `voidOrder` yet (it still uses its own recipe) — UX lane, queued with F2.
+
 ## §34 OPEN QUESTIONS for the user (P16: each is IN concept §21 twin principle; the record does not settle it)
 - **Q-S7** (§31): when stock goes below the Average-costed quantity, legacy refuses to book the shipment (it stays `Posted=E`), but SQLite books COGS at current cost. Keep this as an accepted LEGACY-QUIRK (that is how it is registered now, per §30),
   or have SQLite copy legacy? Copying it means SQLite would need a running costed-quantity ledger (MCost.currentqty upkeep), which it does not have today.

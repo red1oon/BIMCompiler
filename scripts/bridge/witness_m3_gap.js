@@ -129,6 +129,95 @@ async function legacyRun(f) {
   };
 }
 
+// ================= S12 VOID of a completed POS sale (spec §33) — own key set =================
+const voidSpec = { keys: ['outcome', 'docstatus', 'line_qty', 'line_desc', 'total_cents', 'shipments', 'ship_qtys', 'invoices', 'invoice_totals', 'stock_delta',
+  'post_inv_orig', 'post_inv_rev', 'post_ship_orig', 'post_ship_rev'], notCompared: { order_description: 'header description text: legacy order header read type not yet compared for text keys' } };
+const call_ = require('./ad_client').call;
+const sortStr = a => a.map(String).sort().join(',');
+async function legacyFacts(table, id, wantRows) {                               // wait for the async poster: rows (or Posted=E) before folding
+  let fa = [];
+  for (let i = 0; i < 8; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${SCHEMA}`); if (fa.length || !wantRows) break; await new Promise(r => setTimeout(r, 1500)); }
+  const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
+  return fa.length ? fmtPostings(Object.values(by)) : 'NO_FACT_ACCT_ROWS';
+}
+async function legacyVoid(f) {
+  const before = {}; for (const l of f.lines) if (!(l.product in before)) before[l.product] = await stockOf(l.product);
+  const s = await store.open(); const uid = 'm3v-' + (++uidN);
+  s.enqueue(uid, 'doc', { lines: f.lines.map(l => ({ product: l.product, qty: l.qty })) });
+  await drain(cfg, s, { doc: descFor(f) }, { log: () => {} });
+  const st = s.get(uid); if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 90) };
+  const id = JSON.parse(st.refs).header;
+  // the shipment must be posted before it can be reversed (Doc_InOut.java:293 'Original Shipment/Receipt not posted yet') — wait like a user would
+  for (const io of await query(cfg, 'QueryMInOut', `C_Order_ID=${id}`)) await legacyFacts(319, io.M_InOut_ID, true);
+  try { await call_(cfg, 'set_docaction', { ModelSetDocAction: { serviceType: 'BridgeDocActionCOrder', tableName: 'C_Order', recordID: id, docAction: f.action } }); }
+  catch (e) { return { outcome: 'REJECTED', reason: e.message.slice(0, 120) }; }
+  const h = (await query(cfg, 'QueryCOrder', `C_Order_ID=${id}`))[0];
+  const ls = await query(cfg, 'QueryCOrderLine', `C_Order_ID=${id}`);
+  const io = (await query(cfg, 'QueryMInOut', `C_Order_ID=${id}`)).sort((a, b) => a.M_InOut_ID - b.M_InOut_ID);
+  const inv = (await query(cfg, 'QueryCInvoice', `C_Order_ID=${id}`)).sort((a, b) => a.C_Invoice_ID - b.C_Invoice_ID);
+  const shipQ = []; for (const x of io) shipQ.push((await query(cfg, 'QueryMInOutLine', `M_InOut_ID=${x.M_InOut_ID}`)).reduce((a, l) => a + Number(l.MovementQty), 0));
+  const stock = {}; for (const p of Object.keys(before)) { const d = (await stockOf(p)) - before[p]; if (d) stock[p] = d; }
+  const orig = (arr, k) => arr.find(x => !x.Reversal_ID || x[k] < x.Reversal_ID), revd = (arr, k) => arr.find(x => x.Reversal_ID && x[k] > x.Reversal_ID);
+  const oi = orig(inv, 'C_Invoice_ID'), ri = revd(inv, 'C_Invoice_ID'), os = orig(io, 'M_InOut_ID'), rs = revd(io, 'M_InOut_ID');
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, line_qty: sortStr(ls.map(l => Number(l.QtyOrdered))), line_desc: ls.map(l => l.Description).join('|'),
+    total_cents: cents(h.TotalLines), shipments: sortStr(io.map(x => x.DocStatus)), ship_qtys: sortStr(shipQ), invoices: sortStr(inv.map(x => x.DocStatus)),
+    invoice_totals: sortStr(inv.map(x => cents(x.GrandTotal))), stock_delta: JSON.stringify(stock),
+    post_inv_orig: oi ? await legacyFacts(318, oi.C_Invoice_ID, true) : 'none', post_inv_rev: ri ? await legacyFacts(318, ri.C_Invoice_ID, true) : 'none',
+    post_ship_orig: os ? await legacyFacts(319, os.M_InOut_ID, true) : 'none', post_ship_rev: rs ? await legacyFacts(319, rs.M_InOut_ID, true) : 'none', _order: id };
+}
+const adFull = new Database(path.join(__dirname, '..', '..', 'build', 'erp', 'ad_full.db'), { readonly: true });
+const VOIDED_MSG = adFull.prepare("SELECT msgtext FROM ad_message WHERE value='Voided'").get().msgtext;   // dictionary text, never hard-coded
+const FSM = require('../../build/erp/ad_docfsm.js');
+function localVoid(mut = 0) {
+  return async f => {
+    const dt = dtOf(f.doctype);
+    const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
+      wrPolicy: { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } };
+    const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty)); if (cart.some(l => !l.ok)) return { outcome: 'REJECTED' };
+    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: 103 };
+    const g = POS.buildSaleGroup(ctx, cart, opts); if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
+    const d = FSM.dispatchOrder(seed, { docStatus: 'CO', isSOTrx: 'Y', doctypeId: f.doctype, processing: 'N' }, f.action);
+    if (!d.ok) return { outcome: 'REJECTED', reason: d.reason };
+    const lineOf = l => ({ c_orderline_id: l.c_orderline_id, m_product_id: l.m_product_id, qtyordered: l.qtyordered, linenetamt: l.linenetamt });
+    const sl = g.soLines.map(lineOf);
+    const sale = { order: { c_order_id: o, description: null }, lines: sl.map(l => ({ ...l, description: null })),
+      shipments: [{ m_inout_id: opts.inoutId, docstatus: 'CO', movementtype: 'C-', lines: sl.map((l, i) => ({ m_inoutline_id: opts.inoutId * 100 + i, m_product_id: l.m_product_id, movementqty: l.qtyordered, c_orderline_id: l.c_orderline_id })) }],
+      invoices: [{ c_invoice_id: opts.invoiceId, docstatus: 'CO', grandtotal: sl.reduce((a, l) => a + cents(l.linenetamt), 0) / 100,
+        lines: sl.map((l, i) => ({ c_invoiceline_id: opts.invoiceId * 100 + i, m_product_id: l.m_product_id, qtyinvoiced: l.qtyordered, linenetamt: l.linenetamt, c_orderline_id: l.c_orderline_id })) }] };
+    let nid = o + 5; const ops = E.voidOrder(sale, { voidedMsg: VOIDED_MSG, newId: () => ++nid });
+    // fold the op stream into final document state (statuses, lines) — the same state a kernel apply would leave
+    const status = { ['C_Order:' + o]: 'CO', ['M_InOut:' + opts.inoutId]: 'CO', ['C_Invoice:' + opts.invoiceId]: 'CO' }, docs = { M_InOut: [opts.inoutId], C_Invoice: [opts.invoiceId] };
+    const ioLines = { [opts.inoutId]: sale.shipments[0].lines }, ivLines = { [opts.invoiceId]: sale.invoices[0].lines }, ivTot = { [opts.invoiceId]: sale.invoices[0].grandtotal }, revOf = {};
+    const oLines = {}; sl.forEach(l => { oLines[l.c_orderline_id] = { qty: l.qtyordered, desc: null }; }); let total = sl.reduce((a, l) => a + cents(l.linenetamt), 0);
+    for (const op of ops) {
+      if (op.op_type === 'SET_STATUS') status[op.table + ':' + op.id] = op.doc_status;
+      else if (op.op_type === 'CREATE_DOCUMENT') { const id = op.m_inout_id || op.c_invoice_id; docs[op.table].push(id); revOf[op.table + ':' + id] = op.reversal_id; if (op.table === 'C_Invoice') ivTot[id] = op.grandtotal; }
+      else if (op.op_type === 'CREATE_LINE' && op.table === 'M_InOutLine') (ioLines[op.m_inout_id] = ioLines[op.m_inout_id] || []).push(op);
+      else if (op.op_type === 'CREATE_LINE' && op.table === 'C_InvoiceLine') (ivLines[op.c_invoice_id] = ivLines[op.c_invoice_id] || []).push(op);
+      else if (op.op_type === 'UPDATE_LINE' && op.table === 'C_OrderLine') oLines[op.id] = { qty: op.qtyordered, desc: op.description };
+      else if (op.op_type === 'UPDATE_FIELD' && op.table === 'C_Order' && op.field === 'totallines') total = cents(op.value);
+    }
+    // materialise every document into the scratch posting db and fold with the PRODUCT's derivePostings (orig + reversal)
+    const post = {};
+    for (const id of docs.C_Invoice) {
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx) VALUES(?,?,?,?)').run(id, f.bp || BP, (cents(ivTot[id]) + (revOf['C_Invoice:' + id] ? 0 : mut)) / 100, 'Y');
+      ivLines[id].forEach((l, i) => gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt) VALUES(?,?,?,?)').run(id * 100 + i, id, l.m_product_id, l.linenetamt));
+      const dd = DP.derivePostings(gb, { table: 'C_Invoice', id }, SCHEMA); post['inv:' + (revOf['C_Invoice:' + id] ? 'rev' : 'orig')] = dd.absent && dd.absent.length ? 'ABSENT:' + dd.absent.join(',') : fmtPostings(dd.lines);
+    }
+    for (const id of docs.M_InOut) {
+      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,reversal_id) VALUES(?,?,?,?,?)').run(id, 'Y', 'C-', status['M_InOut:' + id], revOf['M_InOut:' + id] || null);
+      ioLines[id].forEach((l, i) => gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty,reversalline_id) VALUES(?,?,?,?,?)').run(l.m_inoutline_id || id * 100 + i, id, l.m_product_id, l.movementqty, l.reversalline_id || null));
+      const dd = DP.derivePostings(gb, { table: 'M_InOut', id }, SCHEMA); post['ship:' + (revOf['M_InOut:' + id] ? 'rev' : 'orig')] = dd.absent && dd.absent.length ? 'ABSENT:' + dd.absent.join(',') : (dd.lines.length ? fmtPostings(dd.lines) : 'none');
+    }
+    const stock = {}; for (const id of docs.M_InOut) ioLines[id].forEach(l => { stock[l.m_product_id] = (stock[l.m_product_id] || 0) - Number(l.movementqty); });
+    Object.keys(stock).forEach(k => { if (!stock[k]) delete stock[k]; });
+    return { outcome: 'COMPLETED', docstatus: status['C_Order:' + o], line_qty: sortStr(Object.values(oLines).map(x => Number(x.qty))), line_desc: Object.values(oLines).map(x => x.desc).join('|'),
+      total_cents: total, shipments: sortStr(docs.M_InOut.map(id => status['M_InOut:' + id])), ship_qtys: sortStr(docs.M_InOut.map(id => ioLines[id].reduce((a, l) => a + Number(l.movementqty), 0))),
+      invoices: sortStr(docs.C_Invoice.map(id => status['C_Invoice:' + id])), invoice_totals: sortStr(docs.C_Invoice.map(id => cents(ivTot[id]))), stock_delta: JSON.stringify(stock),
+      post_inv_orig: post['inv:orig'] || 'none', post_inv_rev: post['inv:rev'] || 'none', post_ship_orig: post['ship:orig'] || 'none', post_ship_rev: post['ship:rev'] || 'none' };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -164,6 +253,9 @@ const quirks = [
   corpus.push(sc('S7a-pos-sale-beyond-onhand', { doctype: POSDT, lines: [{ product: 128, qty: q7 }], judgePostingRefusal: true }),
     sc('S7b-standard-order-beyond-onhand', { doctype: STDDT, lines: [{ product: 128, qty: q7 }] }));
   const rows = await R.run(corpus, spec, quirks, { log });
+  // S12 void (spec §33): product 136 (costed, reversal is cost-neutral), BP 112
+  const vrows = await R.run([{ id: 'S12-void-pos-sale', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 136, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) }], voidSpec, quirks, { log });
+  rows.push(...vrows);
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
 
@@ -179,6 +271,9 @@ const quirks = [
   // negative control: a SQLite side that is off by one cent MUST be reported as a gap
   const neg = await R.run([{ id: 'NEG-control', facts: { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }, legacy: legacyRun, local: localRun(1) }], spec, quirks, { log });
   out('§M3_NEGATIVE_CONTROL', neg[0].verdict === 'SQLITE-GAP' && neg[0].gaps.some(g => g.key === 'total_cents') && neg[0].gaps.some(g => g.key === 'postings'), `+1 cent on the SQLite side ⇒ verdict=${neg[0].verdict} (must be SQLITE-GAP on total_cents AND postings)`);
+  // negative control for the void key set: +1 cent on the SQLite original invoice MUST surface as a gap on post_inv_orig
+  const vneg = await R.run([{ id: 'NEG-void-control', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 136, qty: 1 }] }, legacy: legacyVoid, local: localVoid(1) }], voidSpec, quirks, { log });
+  out('§M3_VOID_NEGATIVE_CONTROL', vneg[0].verdict === 'SQLITE-GAP' && vneg[0].gaps.some(g => g.key === 'post_inv_orig'), `+1 cent on the SQLite invoice ⇒ verdict=${vneg[0].verdict} (must be SQLITE-GAP on post_inv_orig)`);
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
   out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a quirk entry with no evidence is refused');
