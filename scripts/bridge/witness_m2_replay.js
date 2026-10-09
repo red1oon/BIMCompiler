@@ -27,7 +27,7 @@ const cents = v => Math.round(Number(v) * 100);
 // legacy user = a second, ordinary WS login keying a document step by step (create → line → complete)
 async function legacyKeys(product, qty) {
   const lc = { ...cfgFromEnv(), login: { ...cfgFromEnv().login, user: 'GardenUser', pass: 'GardenUser', RoleID: 103, OrgID: 11, WarehouseID: 103 } };
-  const id = (await call(lc, 'create_data', { ModelCRUD: { serviceType: 'createOrderRecord', DataRow: F({ M_Warehouse_ID: 103, C_BPartner_ID: 118, C_BPartner_Location_ID: 113, Bill_BPartner_ID: 118, Bill_Location_ID: 113, C_DocTypeTarget_ID: 132 }) } })).StandardResponse['@RecordID'];
+  const id = (await call(lc, 'create_data', { ModelCRUD: { serviceType: 'createOrderRecord', DataRow: F({ M_Warehouse_ID: 103, C_BPartner_ID: 112, C_BPartner_Location_ID: 108, Bill_BPartner_ID: 112, Bill_Location_ID: 108, C_DocTypeTarget_ID: 132 }) } })).StandardResponse['@RecordID'];
   await call(lc, 'create_data', { ModelCRUD: { serviceType: 'CreateOrderLine', DataRow: F({ AD_Org_ID: 11, AD_Client_ID: 11, M_Product_ID: product, QtyEntered: qty, QtyOrdered: qty, C_Order_ID: id, Line: 10 }) } });
   await call(lc, 'set_docaction', { ModelSetDocAction: { serviceType: 'CompleteOrder', tableName: 'C_Order', recordID: id, docAction: 'CO' } });
   return id;
@@ -57,7 +57,7 @@ async function applyViaEngine(doc) {
 
   // --- traffic: one legacy-keyed doc, one Bridge-pushed doc
   const L1 = await legacyKeys(123, 1);
-  const D = { composite: 'SyncOrder', header: { serviceType: 'createOrderRecord', table: 'C_Order', fields: { M_Warehouse_ID: { const: 104 }, C_BPartner_ID: { const: 118 }, C_BPartner_Location_ID: { const: 113 }, Bill_BPartner_ID: { const: 118 }, Bill_Location_ID: { const: 113 }, C_DocTypeTarget_ID: { const: 135 } } },
+  const D = { composite: 'SyncOrder', header: { serviceType: 'createOrderRecord', table: 'C_Order', fields: { M_Warehouse_ID: { const: 104 }, C_BPartner_ID: { const: 112 }, C_BPartner_Location_ID: { const: 108 }, Bill_BPartner_ID: { const: 112 }, Bill_Location_ID: { const: 108 }, C_DocTypeTarget_ID: { const: 135 } } },
     lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 12 }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } } },
     docAction: { serviceType: 'CompleteOrder', table: 'C_Order', action: 'CO' } };
   s.enqueue('mine', 'sale', { lines: [{ product: 123, qty: 1 }] });

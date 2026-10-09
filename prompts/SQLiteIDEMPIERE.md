@@ -614,7 +614,8 @@ free oracle for the SQLite rule set. Every discrepancy is one of three verdicts 
 | S6 | Standard Order (132) complete | CO, no shipment, no invoice, no stock move | ✅ **MATCH after fix F1** (2026-10-09, §27): was SQLITE-GAP (SQLite also birthed a DR shipment at order time); `buildDeliverLaterGroup` is now the order half only. |
 | S10 | POS sale **invoice postings** (Fact_Acct, primary schema) | Dr 518 6175 / Cr 758 6175 (receivable / revenue), no tax | ✅ **MATCH** (M3 `postings`, 2026-10-09): SQLite's own invoice folded by `doc_poster.derivePostings` equals the legacy books to the cent on a FRESH document |
 | S11a | POS sale **shipment postings** on Oak Tree (COGS/Inventory) | legacy posting **errors** (`Posted=E`, `AverageCostingNegativeQtyException`: Oak Tree costed qty 0 although on-hand > 0; ~57 shipments on the pilot) — no legacy books | ⏸ **INCONCLUSIVE** (no oracle). SQLite side: `derivePostings` has no M_InOut class (basis `none`, source comment: "COGS leg is the §8 follow-up") ⇒ probable **MISSING** the day legacy produces books. Needs a pilot costing setup (a receipt giving Oak Tree a costed qty) before it can be judged. |
-| S7 | order with stock below zero after completion | **measured by accident**: legacy let HQ Oak Tree on-hand go 23 → −10 across the test sales (CO succeeded; only the later COGS posting failed on costed qty 0) | SQLite side not yet run with negative stock — add a scenario |
+| S7 | order with stock below zero after completion | measured on purpose (§31): CO + shipment + invoice, stock −qty; shipment posting refused when the Average costed qty would go < 0 | ✅ S7b **MATCH**; S7a **LEGACY-QUIRK** on `postings_shipment` only (registered, §31), all other keys MATCH |
+| S13 | order whose GrandTotal exceeds the customer's credit limit (§32) | REJECTED `over Credit Hold` (CreditManagerOrder.java:48-98) | ⛔ **SQLITE-GAP MISSING** (no credit check in SQLite) — Q-S13 |
 | S8 | document keyed past-dated (period/date handling) | to be measured (G11) | unknown — measure first |
 | S9 | login failure text / lockout behaviour | `Error login - User invalid`; lockout off on pilot | out of SQLite scope; transport only |
 **Honesty note on what the "bugs" so far were:** the defects found this session were in the pilot data (S5), in my harness (price, stale text), and
@@ -757,5 +758,47 @@ the SQLite posting db lacks `m_product.isstocked`, `m_cost.currentqty`, category
 Oak Tree (costed qty 0) still posts an error on legacy — a legacy trap SQLite deliberately does not reproduce (it would post COGS from `m_cost` regardless of costed quantity; if a scenario ever needs "legacy refuses", record it as LEGACY-QUIRK).
 **Harness hardening in the same pass (P17):** a crashed side is now `§SCN_ERROR` / verdict `ERROR`, never counted as a SQLite gap (an earlier run mislabelled one transient legacy error as SQLITE-GAP S2; three reruns were clean, cause unrecorded).
 **Gap ledger so far (all numbered, all backtrackable):** F1 deliver-later shipment → fixed (§27) · F2 UI lanes still bundle the DR shipment (open, UX lane) · F3 shipment posting → fixed (§30) · S3 keyed price → LEGACY-QUIRK · S5/S7/S8 unmeasured on SQLite.
+
+## §31 S7 — NEGATIVE STOCK, measured on purpose (2026-10-09, backlog item 1) — SPEC written before the scenario code
+**Facts.** HQ warehouse 103 (`IsDisallowNegativeInv='N'` on legacy AND in `ad_seed_fullwidth.db`). Product **128 Azalea Bush** (not used by any other scenario; on PriceList 23.75 both sides;
+legacy on-hand 5, Average-PO costed qty 5 @ 23.75 at spec time). Quantity = **legacy on-hand at run time (floored at 0) + 1**, read over `QueryStorage` just before the run, so every run sells beyond on-hand
+(first run crosses 5 → −1; later runs sell into already-negative stock). Two variants: **S7a POS Order (135)**, **S7b Standard Order (132)**.
+**Legacy rules read before measuring (P14):** on-hand may go negative unless the warehouse disallows it — `MStorageOnHand.addQtyOnHand` (MStorageOnHand.java:860-866, throws `NegativeInventoryDisallowedException` only when
+`wh.isDisallowNegativeInv()`); a WR order forces delivery when negative stock is allowed (MOrder.java:2181-2185, `DELIVERYRULE_Force`); average costing refuses a costed quantity below zero —
+`MCost.add`/`setWeightedAverage`/`setCurrentQty` (MCost.java:1670-1682, 1715-1722, 1919-1930: `AverageCostingNegativeQtyException`), which runs at POSTING time, not at completion.
+**Expected (hypothesis only, to be measured):** S7a CO + shipment CO + invoice, stock −qty, invoice books normal; the SHIPMENT posting crosses the costed qty ⇒ legacy `Posted=E` (no COGS books).
+S7b CO, no shipment, no stock move. SQLite verbs (`pos_core.buildSaleGroup` / `buildDeliverLaterGroup`) take no on-hand input at all (no stock check), so SQLite completes too.
+**How measured:** corpus rows in `witness_m3_gap.js` (same 10 keys). For S7a the shipment posting key is judged with `judgePostingRefusal` = the legacy adapter re-reads the shipment's `Posted` until Y/E and reports
+a refusal as the result `REFUSED:Posted=E` (here the refusal IS the rule under test; for S1/Oak Tree, whose costed-qty-0 state is a pilot accident, `Posted=E` stays INCONCLUSIVE — unchanged).
+Reason text for a refusal is taken from the read-only psql oracle (`AD_Issue`), never guessed.
+
+**RESULT (measured 2026-10-09, `witness_m3_gap.js`, log `~/.cache/bim_bridge/run_20261009_143948.log` + rerun):** `§S7_FACTS product=128 legacy_onhand_before=5 … qty=6` (first crossing), later runs `onhand_before=-1/-7, avg_costed_qty=5, qty=6`.
+- **S7b Standard Order beyond on-hand: MATCH** (10/10 keys: CO, no shipment, no invoice, no stock move — neither side checks availability on an SO).
+- **S7a POS sale beyond on-hand:** docstatus CO, 1 shipment CO, 1 invoice, `stock_delta {"128":-6}`, invoice books 518 Dr 14250 / 758 Cr 14250 — **all equal**. Negative stock itself is a MATCH: legacy allows it on a warehouse with
+  `IsDisallowNegativeInv='N'`, SQLite's verbs never consult on-hand. **The one difference is the books of the shipment:** legacy `REFUSED:Posted=E` — AD_Issue 1000287 `AverageCostingNegativeQtyException: Product=Azalea Bush,
+  Current Qty=5.0, New Current Qty=-1.0, CostElement=Average PO` (the WHOLE shipment is refused, not just the uncosted part); SQLite books `430 Dr 14250 / 742 Cr 14250` (6 × 23.75).
+  **Verdict: LEGACY-QUIRK, registered with evidence** — per the §30 record ("a legacy trap SQLite deliberately does not reproduce … if a scenario ever needs 'legacy refuses', record it as LEGACY-QUIRK"): SQLite keeps no
+  costed-quantity state (`m_cost.currentqty` absent, §29) so it cannot refuse on it without a costing ledger. Because this is a books difference the user may want closed instead, it is ALSO raised as question **Q-S7** (§33).
+- **Not measured (stated):** a warehouse with `IsDisallowNegativeInv='Y'` — SQLite's POS verbs ignore that flag (only `ad_modelval.js:315-319` reads it, for the delivery-rule default). Measuring legacy needs a warehouse master change, which is
+  admin configuration, not a normal user's document ⇒ INCONCLUSIVE, not a gap. Also: every S7a run leaves one more `Posted=E` shipment on the pilot (harmless; reset by importiDempiere).
+
+## §32 FOUND WHILE MEASURING S7 (P17, 2026-10-09): CREDIT HOLD — a new legacy rule, and a harness that was drifting into it
+**Fact (measured, run 2 of S7):** both S7 orders came back `REJECTED: Failed when processing document: Business Partner with this Order over Credit Hold - Open`. psql oracle: BP 118 Joe Block
+`SO_CreditLimit=10000`, `TotalOpenBalance=9967.73`, `SOCreditStatus=W`. Every witness (W10, M1, M2, M3) sells to BP 118 and nothing ever pays those invoices, so the harness itself was
+consuming the credit line: headroom is now 32.27, i.e. the NEXT run would have rejected every legacy order (S1, S3, S6, S11, M1, M2) and the corpus would have reported a wall of false gaps.
+**Legacy rule (extracted):** `CreditManagerOrder.checkCreditStatus` (CreditManagerOrder.java:48-98) — on DocAction PR of an SO with GrandTotal > 0, bill-BP `SOCreditStatus` S (stop) or H (hold) ⇒ refuse;
+and `bp.getSOCreditStatus(grandTotal)` = H ⇒ refuse `@BPartnerOverOCreditHold@`. `MBPartner.getSOCreditStatus(additionalAmt)` (MBPartner.java:826-850): no check when status X/S or `SO_CreditLimit=0`;
+hold when `TotalOpenBalance > SO_CreditLimit − additionalAmt`. POS (WR) orders are checked too while sysconfig `CHECK_CREDIT_ON_CASH_POS_ORDER='Y'` (pilot value Y).
+**SQLite:** no order credit check anywhere in the kernel/POS verbs (grep `creditlimit|creditstatus` in `build/erp` finds only a default in `ad_process.js:881`); the seed carries the data (BP 118 limit 10000, status O, balance 269.23 — a different STATE, same rule inputs).
+**Decision (harness fault, not a verdict):** the routine corpus and the W10/M1/M2 witnesses move to BP **112 'Standard'** (location 108): `SO_CreditLimit=0` ⇒ the credit check is a no-op by the rule above
+(MBPartner.java:833-836), receivable account 518 like 118 on both sides, so no scenario's meaning changes. BP 118 is KEPT as the deliberate credit-hold customer:
+**S13a** POS Order / **S13b** Standard Order, BP 118, Oak Tree × 200 (GrandTotal 12350 > limit 10000 ⇒ hold whatever the open balance, as long as it is ≥ −2350; deterministic across runs).
+Expected legacy: REJECTED (both). SQLite: COMPLETED ⇒ SQLITE-GAP, class MISSING. Fixing it changes what the POS counter does (a sale refused for credit) ⇒ that is a user call (brief rule 6), recorded as ⛔ below, not built.
+**RESULT (measured 2026-10-09):** harness on BP 112: W10 PASS, M1 PASS-with-INCONCLUSIVE (W6 as before), M2 PASS, M3 S1/S2/S4/S6/S11 MATCH, S3 QUIRK — unchanged verdicts, receivable still 518 (the switch changed no meaning).
+**S13a/S13b: legacy REJECTED** `Business Partner with this Order over Credit Hold - Open`; **SQLite COMPLETED** (POS: CO + shipment + invoice; SO: CO) ⇒ **SQLITE-GAP, class MISSING** (order credit check). Stays in `§TRIAGE RULE_queue`
+as the failing regression until decided — question **Q-S13** (§33). Fix sketch for whoever builds it (not built): a `C_Order` prepare/complete validator reading bill-BP `socreditstatus`, `so_creditlimit`, `totalopenbalance`
+(columns present in `ad_seed_fullwidth.db`) with the exact branches of CreditManagerOrder.java:52-95 incl. the two sysconfig exemptions; the SQLite open balance is its OWN state, so the S13 facts were chosen to hold whatever the balance.
+**Pilot facts recorded (P17):** S11 consumes Fertilizer #50's Average-PO costed qty by 1 per run (28 left at 2026-10-09 14:40) — after ~28 more runs legacy will refuse S11's shipment posting (S7a's rule) and S11 turns into a
+`postings_shipment` difference; a legacy material receipt (or importiDempiere) resets it. Same mechanism made Oak Tree (S1) INCONCLUSIVE.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

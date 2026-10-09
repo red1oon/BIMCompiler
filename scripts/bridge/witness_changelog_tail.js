@@ -32,7 +32,7 @@ const out = (tag, ok, msg) => { console.log(`${tag} ${ok === 'INCONCLUSIVE' ? 'I
 
   // --- real WS traffic as a legitimate client: order -> line -> complete
   const ord = (await call(cfg, 'create_data', { ModelCRUD: { serviceType: 'createOrderRecord', DataRow: F({
-    M_Warehouse_ID: 103, C_BPartner_ID: 118, C_BPartner_Location_ID: 113, Bill_BPartner_ID: 118, Bill_Location_ID: 113, C_DocTypeTarget_ID: 132 }) } })).StandardResponse['@RecordID'];
+    M_Warehouse_ID: 103, C_BPartner_ID: 112, C_BPartner_Location_ID: 108, Bill_BPartner_ID: 112, Bill_Location_ID: 108, C_DocTypeTarget_ID: 132 }) } })).StandardResponse['@RecordID'];
   await call(cfg, 'create_data', { ModelCRUD: { serviceType: 'CreateOrderLine', DataRow: F({
     AD_Org_ID: 11, AD_Client_ID: 11, M_Product_ID: 123, QtyEntered: 1, QtyOrdered: 1, PriceEntered: 10, PriceActual: 10, C_Order_ID: ord, Line: 10 }) } });
   await call(cfg, 'set_docaction', { ModelSetDocAction: { serviceType: 'CompleteOrder', tableName: 'C_Order', recordID: ord, docAction: 'CO' } });

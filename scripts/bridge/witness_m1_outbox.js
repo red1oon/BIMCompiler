@@ -27,8 +27,8 @@ const log = l => console.log(l);
 const D = { sale: {
   composite: 'SyncOrder',
   header: { serviceType: 'createOrderRecord', table: 'C_Order', fields: {
-    M_Warehouse_ID: { const: 104 }, C_BPartner_ID: { const: 118 }, C_BPartner_Location_ID: { const: 113 },
-    Bill_BPartner_ID: { const: 118 }, Bill_Location_ID: { const: 113 }, C_DocTypeTarget_ID: { const: 135 } } },
+    M_Warehouse_ID: { const: 104 }, C_BPartner_ID: { const: 112 }, C_BPartner_Location_ID: { const: 108 },
+    Bill_BPartner_ID: { const: 112 }, Bill_Location_ID: { const: 108 }, C_DocTypeTarget_ID: { const: 135 } } },
   lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: {
     AD_Org_ID: { const: 12 }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } } },
   docAction: { serviceType: 'CompleteOrder', table: 'C_Order', action: 'CO' },
