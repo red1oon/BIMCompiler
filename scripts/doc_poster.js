@@ -59,7 +59,37 @@ function deriveInvoice(db, R, invId, schema) {
   if (rcv) add('DR', rcv, hdr.grandtotal);
   lines.forEach(function (l) { var e = el(R.resolve(db, '{Product.Revenue}', num(l.m_product_id), schema)); if (e) add('CR', e, l.linenetamt); });
   taxes.forEach(function (t) { var e = el(R.resolve(db, '{Tax.Due}', num(t.c_tax_id), schema)); if (e) add('CR', e, t.taxamt); });
+  convertToSchema(db, by, absent, invId, schema);
   return { by: by, absent: absent };
+}
+
+// §46 (F12): FactLine.convert (FactLine.java:819-900) — each line's Dr/Cr × MConversionRate.getRate (MConversionRate.java:237-252) rounded HALF_UP to the schema currency's
+// StdPrecision (:126-147). A document without currency is posted in the schema currency (:821-823) — so nothing happens unless the invoice row carries c_currency_id.
+// Unbalanced after conversion ⇒ legacy Fact.balanceAccounting (Fact.java:548-630) — NOT ported: reported absent, never invented.
+function _bigDec(v) { var t = String(v).trim(), neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
+function _rhuB(n, d) { var neg = n < 0n, a = neg ? -n : n, q = a / d; if ((a % d) * 2n >= d) q += 1n; return neg ? -q : q; }
+function convertToSchema(db, by, absent, invId, schema) {
+  // table/column-guarded like every §29-§38 addition: a posting db without c_currency/c_conversion_rate/c_acctschema keeps the old (unconverted) fold; the
+  // c_currency table for the shared posting db ships as build/erp/patches/glassbowl_data.db.sql (patch text; host loader = open item, spec §46.1)
+  if (!_hasCol(db, 'c_invoice', 'c_currency_id') || !_hasCol(db, 'c_acctschema', 'c_currency_id') || !_hasCol(db, 'c_currency', 'stdprecision') || !_hasCol(db, 'c_conversion_rate', 'multiplyrate')) return;
+  var h = getRow(db, 'SELECT c_currency_id, dateacct, c_conversiontype_id, ad_client_id, ad_org_id FROM c_invoice WHERE c_invoice_id=?', num(invId));
+  var sc = getRow(db, 'SELECT c_currency_id FROM c_acctschema WHERE c_acctschema_id=?', num(schema));
+  if (!h || h.c_currency_id == null || !sc || num(h.c_currency_id) === num(sc.c_currency_id)) return;
+  var ct = num(h.c_conversiontype_id);
+  if (!ct) { var dt = getRow(db, "SELECT c_conversiontype_id FROM c_conversiontype WHERE isdefault='Y' ORDER BY c_conversiontype_id", []); ct = dt ? num(dt.c_conversiontype_id) : 0; }
+  var date = String(h.dateacct || '').slice(0, 10);
+  var rates = allRows(db, "SELECT multiplyrate, validfrom, validto, ad_client_id, ad_org_id FROM c_conversion_rate WHERE c_currency_id=? AND c_currency_id_to=? AND c_conversiontype_id=? AND isactive='Y'", [num(h.c_currency_id), num(sc.c_currency_id), ct])
+    .filter(function (r) { return String(r.validfrom).slice(0, 10) <= date && date <= String(r.validto).slice(0, 10) && [0, num(h.ad_client_id || 0)].indexOf(num(r.ad_client_id)) >= 0 && [0, num(h.ad_org_id || 0)].indexOf(num(r.ad_org_id || 0)) >= 0; })
+    .sort(function (a, b) { return (num(b.ad_client_id) - num(a.ad_client_id)) || (num(b.ad_org_id || 0) - num(a.ad_org_id || 0)) || String(b.validfrom).localeCompare(String(a.validfrom)); });
+  if (!rates.length) { absent.push('NoCurrencyConversion ' + h.c_currency_id + '->' + sc.c_currency_id + ' type=' + ct + ' date=' + date); return; }
+  var cr = getRow(db, 'SELECT stdprecision FROM c_currency WHERE c_currency_id=?', num(sc.c_currency_id)), prec = cr ? num(cr.stdprecision) : null;
+  if (prec == null) { absent.push('NoCurrencyPrecision ' + sc.c_currency_id); return; }
+  var r = _bigDec(rates[0].multiplyrate);
+  var conv = function (cents) { return Number(_rhuB(BigInt(cents) * r.n, 10n ** BigInt(r.k)) ); };   // cents × rate, HALF_UP at precision 2
+  if (prec !== 2) { absent.push('currency precision ' + prec + ' not ported'); return; }
+  var dr = 0, crs = 0;
+  Object.keys(by).forEach(function (k) { by[k].dr = conv(by[k].dr); by[k].cr = conv(by[k].cr); dr += by[k].dr; crs += by[k].cr; });
+  if (dr !== crs) absent.push('currency balancing not ported (Fact.balanceAccounting, diff=' + (dr - crs) + ')');
 }
 
 // ── SALES SHIPMENT (MMS, IsSOTrx=Y) manifest — gap S11 (prompts/SQLiteIDEMPIERE.md §29/§30), EXTRACTED from org.compiere.acct.Doc_InOut.createFacts

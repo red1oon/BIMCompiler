@@ -34,6 +34,10 @@ const priceStmt = seed.prepare('SELECT pricestd FROM m_productprice WHERE m_pric
 // §41 F8: every active version's active price for (price list, product) — the rows erp_engine.priceAt walks by date
 const priceRowsStmt = seed.prepare("SELECT v.validfrom, pp.pricestd, pp.pricelist, pp.pricelimit FROM m_productprice pp JOIN m_pricelist_version v ON v.m_pricelist_version_id=pp.m_pricelist_version_id WHERE v.m_pricelist_id=? AND pp.m_product_id=? AND v.isactive='Y' AND pp.isactive='Y'");
 const TODAY = new Date().toISOString().slice(0, 10);
+const PL_CURRENCY = (lc(seed.prepare('SELECT c_currency_id FROM m_pricelist WHERE m_pricelist_id=?').get(pos.m_pricelist_id)) || {}).c_currency_id;
+// §46: currency precision table from the SQLite seed (the production posting db is the bundle that carries it; the scratch posting db lacks the table)
+const GB_PATCH = fs.readFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'patches', 'glassbowl_data.db.sql'), 'utf8');
+gb.exec(GB_PATCH); gb.exec(GB_PATCH);   // patch + loader in miniature: applied twice (idempotent by construction)
 // §42 F7: the period data the SQLite side owns (seed): client primary schema + its calendar's periods with their control rows
 const periodData = (() => {
   const ci = lc(seed.prepare('SELECT c_acctschema1_id s, c_calendar_id c FROM ad_clientinfo WHERE ad_client_id=11').get());
@@ -101,23 +105,28 @@ function foldLocal(g, f, opts, mut) {
   {
     const st = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'C_Order').pop();
     const shipDone = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'M_InOut' && x.doc_status === 'CO').length;
-    let postings = 'none';
+    let postings = 'none', postingsEuro = 'none';
     const invOp = g.ops.find(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice');
     if (invOp) {                                                                   // materialise SQLite's own invoice, fold with the product's derivePostings
       const iid = opts.invoiceId, total = ((g.grandTotal != null ? g.grandTotal : g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0)) + mut) / 100;   // mut = negative-control cents, applied to the REAL invoice rows
-      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx) VALUES(?,?,?,?)').run(iid, f.bp || BP, total, 'Y');
+      // §46: the invoice carries the price-list currency (MOrder.currencyFromPriceList :1292-1300 → invoice), its DateAcct and org — needed to convert into a second schema
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?)').run(iid, f.bp || BP, total, 'Y', PL_CURRENCY, (f.date || TODAY) + ' 00:00:00', 11, f.org || 11);
       for (const t of g.ops.filter(x => x.op_type === 'CREATE_LINE' && x.table === 'C_InvoiceTax')) gb.prepare('INSERT INTO c_invoicetax(c_invoice_id,c_tax_id,taxamt) VALUES(?,?,?)').run(iid, t.c_tax_id, t.taxamt);
       for (const l of g.soLines) gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt) VALUES(?,?,?,?)').run(iid * 100 + l.c_orderline_id % 100, iid, l.m_product_id, mut ? (cents(l.linenetamt) + mut) / 100 : l.linenetamt);
       const d = DP.derivePostings(gb, { table: 'C_Invoice', id: iid }, SCHEMA);
       postings = (d.absent && d.absent.length) ? 'ABSENT:' + d.absent.join(',') : fmtPostings(d.lines);
+      const d2 = DP.derivePostings(gb, { table: 'C_Invoice', id: iid }, SCHEMA2);
+      postingsEuro = (d2.absent && d2.absent.length) ? 'ABSENT:' + d2.absent.join(',') : fmtPostings(d2.lines);
     }
-    let postingsShipment = 'none', refusedWhy;
+    let postingsShipment = 'none', refusedWhy, postingsShipmentEuro = 'none';
     if (shipDone) {                                                                // materialise SQLite's own completed shipment, fold with the product's derivePostings
       const sid = opts.inoutId;
       gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus) VALUES(?,?,?,?)').run(sid, 'Y', 'C-', 'CO');
       for (const l of g.soLines) gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty) VALUES(?,?,?,?)').run(sid * 100 + l.c_orderline_id % 100, sid, l.m_product_id, l.qtyordered);
       const dsh = DP.derivePostings(gb, { table: 'M_InOut', id: sid }, SCHEMA);
       // legacy has ONE state for any posting error (Posted=E, no books) ⇒ a refused SQLite fold is reported the same way; the reason is kept for the log (§38)
+      const dsh2 = DP.derivePostings(gb, { table: 'M_InOut', id: sid }, SCHEMA2);
+      postingsShipmentEuro = (dsh.absent && dsh.absent.length) ? 'REFUSED:Posted=E' : ((dsh2.absent && dsh2.absent.length) ? 'ABSENT:' + dsh2.absent.join(',') : (dsh2.lines.length ? fmtPostings(dsh2.lines) : 'none'));
       if (dsh.absent && dsh.absent.length) { postingsShipment = 'REFUSED:Posted=E'; refusedWhy = dsh.absent.join(','); }
       else { postingsShipment = dsh.lines && dsh.lines.length ? fmtPostings(dsh.lines) : 'none'; applyCostQty(sid); }
     }
@@ -130,6 +139,7 @@ function foldLocal(g, f, opts, mut) {
       invoices: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice').length,
       stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _refused: refusedWhy,
       cost_qty_delta: deltaStr(Object.keys(cqBefore), cqBefore, p => localCostQty(Number(p))),
+      postings_euro: postingsEuro, postings_shipment_euro: postingsShipmentEuro,
       line_tax: g.soLines.map(l => `${l.m_product_id}:${l.c_tax_id}`).sort().join('|'),
       order_tax: g.ops.filter(x => x.op_type === 'CREATE_LINE' && x.table === 'C_OrderTax').map(t => `${t.c_tax_id}:${cents(t.taxbaseamt)}:${cents(t.taxamt)}`).sort().join('|') || 'none',
       grand_total_cents: (g.grandTotal != null ? g.grandTotal : g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0)) + mut,
@@ -192,6 +202,12 @@ const descFor = f => ({ composite: 'SyncOrder',
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'm3-'));
 const stockOf = async (p, wh) => (await query(cfg, 'QueryStorage', `M_Product_ID=${p} AND M_Locator_ID IN (SELECT M_Locator_ID FROM M_Locator WHERE M_Warehouse_ID=${wh || 103})`)).reduce((a, r) => a + Number(r.QtyOnHand), 0);
 let uidN = 0;
+const SCHEMA2 = 200000;   // §46: legacy's second accounting schema (Euro), active on the pilot
+async function legacyFactsOf(table, id, schema) {
+  let fa = []; for (let i = 0; i < 6 && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${schema}`); if (!fa.length) await new Promise(r => setTimeout(r, 1500)); }
+  const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
+  return fa.length ? fmtPostings(Object.values(by)) : 'NO_FACT_ACCT_ROWS';
+}
 // §41/F9: costed quantity (Average PO element, primary schema) — derived cost STATE, compared as a delta so back-date re-processing cannot hide behind the start-of-run sync
 const AVG_EL = 103;
 const legacyCostQty = async p => { const r = await query(cfg, 'QueryMCost', `M_Product_ID=${p} AND C_AcctSchema_ID=${SCHEMA} AND M_CostElement_ID=${AVG_EL} AND AD_Org_ID=0 AND M_AttributeSetInstance_ID=0`); return r.length ? Number(r[0].CurrentQty) : 0; };
@@ -237,6 +253,9 @@ async function legacyRun(f) {
     lines: ls.map(l => `${l.M_Product_ID}:${l.QtyOrdered}:${cents(l.PriceActual)}`).sort().join('|'),
     total_cents: cents(h.TotalLines), shipments: io.length, shipments_completed: io.filter(x => x.DocStatus === 'CO').length, invoices: inv.length,
     stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _order: id,
+    // §46 second schema (Euro 200000): the same documents' books, folded per account
+    postings_euro: inv.length ? await legacyFactsOf(318, inv[0].C_Invoice_ID, SCHEMA2) : 'none',
+    postings_shipment_euro: doneShip ? (doneShip.Posted === 'E' ? 'REFUSED:Posted=E' : await legacyFactsOf(319, doneShip.M_InOut_ID, SCHEMA2)) : 'none',
     // §44 tax keys
     line_tax: ls.map(l => `${l.M_Product_ID}:${l.C_Tax_ID}`).sort().join('|'),
     order_tax: (await query(cfg, 'QueryCOrderTax', `C_Order_ID=${id}`)).map(t => `${t.C_Tax_ID}:${cents(t.TaxBaseAmt)}:${cents(t.TaxAmt)}`).sort().join('|') || 'none',
@@ -352,8 +371,8 @@ const corpus = [
   sc('T1-pos-sale-taxed-org12-ct', { doctype: POSDT, org: 12, wh: 104, deliveryVia: 'D', lines: [{ product: 123, qty: 1 }] }),   // spec §44: org 12 (CT) → BP 112 (CT), Delivery ⇒ CT Sales 6%
   sc('S13c-pos-sale-large-no-credit-limit', { doctype: POSDT, lines: [{ product: 123, qty: 200 }] }),         // control: BP 112 limit 0 ⇒ no check (MBPartner.java:833-836) ⇒ completes
 ];
-const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment', 'cost_qty_delta', 'line_tax', 'order_tax', 'grand_total_cents', 'invoice_tax'],
-  notCompared: { fact_acct_secondary_schema: 'legacy also posts to a second accounting schema (Euro, 200000); only the primary schema is compared' } };
+const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment', 'cost_qty_delta', 'line_tax', 'order_tax', 'grand_total_cents', 'invoice_tax', 'postings_euro', 'postings_shipment_euro'],
+  notCompared: {} };
 const quirks = [
   // S3 quirk entries REMOVED 2026-10-09 (§39): S3 is now compared on the AD-window path, where SQLite accepts the keyed price like legacy.
   // S7a quirk REMOVED 2026-10-09 (user: SQLite cannot differ from legacy ops, incl. L&F): legacy refuses the shipment posting below costed qty 0 (MCost.java:1919-1930) ⇒ SQLite must refuse too. Now a SQLITE-GAP, spec §35.
@@ -417,6 +436,14 @@ const quirks = [
       stdControl: inPer ? P(TODAY, std).ok + '/' + (inPer.control.SOO || 'none') : 'n/a' };
     out('§M3_PERIOD_RULE', r.noPeriod === false && r.beforeHistory === false && r.today === true && r.future200 === false && (!inPer || String(r.stdControl) === String((inPer.control.SOO === 'O')) + '/' + inPer.control.SOO),
       `noPeriod=${r.noPeriod} beforeHistory=${r.beforeHistory} today=${r.today} today+200=${r.future200} standardControl(open?/status)=${r.stdControl}`); }
+  // §46.1 second oracle for F12: the captured legacy books inside the shared posting db (invoice 109, EUR document, both schemas) — on a patched scratch copy the fold must equal them
+  { const f2 = path.join(os.tmpdir(), 'm3-gb109-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), f2);
+    const g2 = new Database(f2); g2.exec(GB_PATCH);
+    const res = [101, 200000].map(sc2 => { const d = DP.derivePostings(g2, { table: 'C_Invoice', id: 109 }, sc2);
+      const fa = g2.prepare('SELECT account_id, SUM(amtacctdr) amtacctdr, SUM(amtacctcr) amtacctcr FROM fact_acct WHERE ad_table_id=318 AND record_id=109 AND c_acctschema_id=? GROUP BY account_id').all(sc2);
+      return { sc2, mine: fmtPostings(d.lines), oracle: fmtPostings(fa), absent: d.absent.length }; });
+    out('§M3_F12_ORACLE2', res.every(r => r.mine === r.oracle && !r.absent && r.oracle !== 'none'), res.map(r => `schema ${r.sc2}: fold=${r.mine} captured=${r.oracle}`).join(' ; '));
+    g2.close(); fs.unlinkSync(f2); }
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
   out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a quirk entry with no evidence is refused');
