@@ -21,9 +21,9 @@ Other keys: **F** search · **O** show / hide the model · **9** download the to
 
 ## 1. The 30-second version
 
-1. Open the page. On the right edge is a column of round buttons — one per tool.
-2. Click a tool (or press its key). The highlighted button is the tool that will run; the page remembers your choice.
-3. **Drop an `.ifc` file anywhere on the page.** The tool runs straight away. A one-line message tells you what happened, and the result downloads beside your other downloads.
+1. Open the page. On the right edge is a column of round buttons — one per tool. **Nothing is lit when you arrive** (a refresh clears it too), so nothing runs by surprise.
+2. Click a tool (or press its key). The lit button is the tool that will run. **Click it again, or press Esc, to clear it.**
+3. **Drop an `.ifc` file anywhere on the page.** With a tool lit, it runs straight away; a one-line message tells you what happened, and the result downloads beside your other downloads. With nothing lit, the file just opens and the page tells you which keys to press. The loaded model stays on the canvas while background tools run.
 
 Your original file is never changed.
 
