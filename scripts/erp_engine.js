@@ -594,7 +594,168 @@ function creditCheckOrder(order, bp, sys) {
   return err ? { ok: false, reason: err.reason, msg: err.msg, totalOpenBalance: open, grandTotal: gt, creditLimit: lim } : { ok: true };
 }
 
+// ── FIXED ASSETS (prompts/SQLiteIDEMPIERE.md §63, F19) — Witness: scripts/bridge/witness_fa_gap.js (FA1, FA0, FA-REJ*, NEG) ──────────────────
+// Pure ports of the legacy asset lifecycle. Amounts are integers in MINOR units (cents, precision 2 — MDepreciation.m_precision=2, MDepreciation.java:103);
+// dates are 'YYYY-MM-DD' strings. The host supplies the rows and persists what comes back (no DB binding here).
+function _faMonthEnd(date, addMonths) {   // TimeUtil.getMonthLastDay(TimeUtil.addMonths(date, n)) — the day never matters after the month end
+  var d = String(date).slice(0, 10), y = +d.slice(0, 4), m = +d.slice(5, 7) + (addMonths || 0);
+  y += Math.floor((m - 1) / 12); m = ((m - 1) % 12 + 12) % 12 + 1;
+  return y + '-' + (m < 10 ? '0' : '') + m + '-' + new Date(Date.UTC(y, m, 0)).getUTCDate();
+}
+function _faMonth(date) { return String(date).slice(0, 7); }
+function _faDiv(numMinor, periods) {      // BigDecimal.divide(periods, 2, HALF_UP) on a minor-unit amount
+  var n = BigInt(numMinor), d = BigInt(periods); if (d < 0n) { n = -n; d = -d; } return Number(_rhu(n, d));
+}
+// MDepreciation.invoke (MDepreciation.java:222-279) for the types ported here; anything else is refused by NAME (never guessed).
+// SL = apply_SL (:330-341): (cost − salvage − accum) / (life − (period − 1)), 0 when no remaining periods. ARH_ZERO = apply_ARH_ZERO (:316-320) = 0.
+var _FA_TYPES = { SL: true, ARH_ZERO: true };
+function _faInvoke(type, life, period, costMinor, accumMinor) {
+  if (type === 'ARH_ZERO') return 0;
+  var rp = life - (period - 1);
+  return rp !== 0 ? _faDiv(costMinor - accumMinor, rp) : 0;
+}
+function _faRequireLast(type) { return type !== 'ARH_ZERO'; }   // MDepreciation.requireLastPeriodAdjustment (:196-199)
+
+// faRegisterAsset — MAsset.afterSave new record (MAsset.java:426-456). group = A_Asset_Group row, groupAccts = ALL its A_Asset_Group_Acct rows
+// (MAssetGroupAcct.forA_Asset_Group_ID :78-90, no active filter). Per row with org 0 or the asset org: an A_Asset_Acct copy (MAssetAcct(asset, grpacct)
+// MAssetAcct.java:194-211: all group values, A_Period_Start 1, A_Period_End = asset UseLifeMonths) and a workfile whose use life is the GROUP's
+// (:446-449 overwrite the asset's own life), A_Life_Period = UseLifeMonths (MDepreciationWorkfile.beforeSave :146-151), cost/accum/period 0.
+function faRegisterAsset(asset, group, groupAccts) {
+  if (!group) return { ok: false, reason: 'unknown-asset-group' };
+  var a = {}; for (var k in asset) a[k] = asset[k];
+  a.a_asset_status = 'NW'; a.isdepreciated = group.isdepreciated; a.isowned = group.isowned;   // :430-436
+  var accts = [], workfiles = [];
+  (groupAccts || []).forEach(function (g) {
+    if (!(Number(g.ad_org_id) === 0 || Number(g.ad_org_id) === Number(asset.ad_org_id))) return;
+    var acct = {}; for (var c in g) acct[c] = g[c];
+    acct.a_asset_id = asset.a_asset_id; acct.ad_org_id = asset.ad_org_id; acct.a_period_start = 1; acct.a_period_end = Number(asset.uselifemonths || 0);
+    accts.push(acct);
+    workfiles.push({ a_asset_id: asset.a_asset_id, ad_org_id: asset.ad_org_id, c_acctschema_id: g.c_acctschema_id, postingtype: g.postingtype || 'A', isdepreciated: group.isdepreciated,
+      a_asset_cost: 0, a_qty_current: 0, a_accumulated_depr: 0, a_accumulated_depr_f: 0, a_salvage_value: 0, a_current_period: 0, dateacct: null, assetdepreciationdate: null,
+      uselifemonths: Number(g.uselifemonths || 0), uselifemonths_f: Number(g.uselifemonths_f || 0), a_life_period: Number(g.uselifemonths || 0), a_life_period_f: Number(g.uselifemonths_f || 0),
+      a_asset_remaining: 0, a_asset_remaining_f: 0, processed: 'N' });
+  });
+  return { ok: true, asset: a, accts: accts, workfiles: workfiles };
+}
+
+// faBuildDepreciation — MDepreciationWorkfile.buildDepreciation (MDepreciationWorkfile.java:649-785) with NO IDepreciationMethod factory (none ships in
+// core: Core.getDepreciationMethod returns null, Core.java:811-838). The host deletes the workfile's UNPROCESSED rows with A_Period >= current first
+// (truncDepreciation :791-808). acct = the asset acct of the workfile's schema; typeOf(a_depreciation_id) → DepreciationType.
+function faBuildDepreciation(wk, acct, typeOf) {
+  if (String(wk.isdepreciated) !== 'Y') return { ok: true, rows: [] };
+  var tC = typeOf(acct.a_depreciation_id), tF = typeOf(acct.a_depreciation_f_id);
+  if (!_FA_TYPES[tC] || !_FA_TYPES[tF]) return { ok: false, reason: 'depreciation-type-not-ported:' + (!_FA_TYPES[tC] ? tC : tF) };
+  var cost = Number(wk.a_asset_cost) - Number(wk.a_salvage_value || 0);   // getActualCost
+  var accC = Number(wk.a_accumulated_depr || 0), accF = Number(wk.a_accumulated_depr_f || 0);
+  var lifeC = Number(wk.uselifemonths || 0), lifeF = Number(wk.uselifemonths_f || 0), life = lifeC > lifeF ? lifeC : lifeF;
+  var cur = Number(wk.a_current_period || 0), start = wk.dateacct, dd = wk.assetdepreciationdate;
+  if (dd && String(dd).slice(0, 10) >= String(wk.dateacct).slice(0, 10)) {   // :706-717
+    if (_faMonthEnd(start) === String(dd).slice(0, 10)) { start = _faMonthEnd(dd, 1); ++cur; } else start = dd;
+  }
+  var rows = [];
+  for (var p = cur; p <= life; p++) {
+    var eC = 0, eF = 0;
+    if (lifeC > p || !_faRequireLast(tC)) { eC = _faInvoke(tC, lifeC, p, cost, accC); accC += eC; }
+    else if (lifeC === p) { eC = cost - accC; accC = cost; }
+    if (lifeF > p || !_faRequireLast(tF)) { eF = _faInvoke(tF, lifeF, p, cost, accF); accF += eF; }
+    else if (lifeF === p) { eF = cost - accF; accF = cost; }
+    rows.push({ a_asset_id: wk.a_asset_id, ad_org_id: wk.ad_org_id, c_acctschema_id: wk.c_acctschema_id, postingtype: wk.postingtype, a_entry_type: 'DEP',
+      a_period: p, dateacct: _faMonthEnd(start, p - cur), expense: eC, expense_f: eF, a_accumulated_depr: accC, a_accumulated_depr_f: accF,
+      a_accumulated_depr_delta: eC, a_accumulated_depr_f_delta: eF,   // MDepreciationExp.createDepreciation :167-200
+      dr_account_id: acct.a_depreciation_acct, cr_account_id: acct.a_accumdepreciation_acct,
+      a_asset_cost: Number(wk.a_asset_cost), uselifemonths: lifeC, uselifemonths_f: lifeF, a_asset_remaining: Number(wk.a_asset_remaining), a_asset_remaining_f: Number(wk.a_asset_remaining_f),
+      processed: 'N', a_depreciation_entry_id: null });
+  }
+  return { ok: true, rows: rows };
+}
+
+// faCompleteAddition — MAssetAddition.beforeSave/prepareIt/completeIt (MAssetAddition.java:112-138, 559-640, 659-800) for a non-imported addition.
+// ctx = { periodOpen:{ok}, baseAmount (AssetValueAmt = AssetSourceAmt in the client base currency, minor units), priorCreateAdditions (count, :1199-1230),
+//         amountFor(schema) → AssetSourceAmt converted to the schema currency at DateAcct (minor units; MConversionRate.convert HALF_UP at std precision),
+//         acctOf(schema) → asset acct row, typeOf(id) → DepreciationType, unprocessedBefore(assetId, date, postingType) → bool (MDepreciationExp :312-327) }
+function faCompleteAddition(add, asset, workfiles, ctx) {
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'period-closed' };                         // :570 MPeriod.testPeriodOpen (GL Journal)
+  if (Number(ctx.baseAmount) === 0) return { ok: false, reason: 'Invalid AssetValueAmt=0' };                    // :573-577
+  var createAsset = add.a_sourcetype === 'IMP' || !(ctx.priorCreateAdditions > 0);                             // setA_CreateAsset
+  if (createAsset && Number(ctx.baseAmount) <= 0) return { ok: false, reason: 'New document has nulls' };        // :582-585 hasZeroValues
+  if (createAsset && asset.a_asset_status !== 'NW' && add.a_sourcetype !== 'IMP') return { ok: false, reason: 'Only new assets can be activated' };   // :588-592
+  var qty = Number(add.a_qty_current || 0); if (createAsset && qty === 0) qty = 1;                               // beforeSave :115-118
+  var capex = createAsset ? 'Cap' : (add.a_capvsexp || 'Cap');                                                   // beforeSave :128-131
+  var a = {}; for (var k in asset) a[k] = asset[k];
+  if (createAsset) a.assetservicedate = String(add.datedoc).slice(0, 10);                                        // :699-702
+  a.a_asset_status = 'AC'; a.assetactivationdate = String(add.dateacct).slice(0, 10);                            // changeStatus MAsset.java:541-544
+  var outWk = [], schedules = {};
+  for (var i = 0; i < workfiles.length; i++) {
+    var w = {}; for (var c in workfiles[i]) w[c] = workfiles[i][c];
+    w.dateacct = _faMonthEnd(add.dateacct);                                                                     // :728/:766 + workfile beforeSave month end :163-166
+    var amt = ctx.amountFor(w.c_acctschema_id); if (amt == null) return { ok: false, reason: 'no-conversion-rate' };
+    w.a_asset_cost = (createAsset ? 0 : Number(w.a_asset_cost)) + amt; w.a_qty_current = (createAsset ? 0 : Number(w.a_qty_current)) + qty;   // adjustCost :439-455
+    if (capex === 'Cap') {
+      if (ctx.unprocessedBefore && ctx.unprocessedBefore(a.a_asset_id, add.dateacct, w.postingtype)) return { ok: false, reason: 'There are unprocessed records to date' };
+      if (Number(add.a_salvage_value || 0) > 0) w.a_salvage_value = ctx.salvageFor ? ctx.salvageFor(w.c_acctschema_id) : Number(add.a_salvage_value);
+      w.processed = 'Y';
+    }
+    if (createAsset && Number(w.a_current_period) === 0) w.a_current_period = 1;                                 // :770-777
+    w.a_asset_remaining = w.a_asset_cost - Number(w.a_accumulated_depr); w.a_asset_remaining_f = w.a_asset_cost - Number(w.a_accumulated_depr_f);   // workfile beforeSave :168-172
+    var b = faBuildDepreciation(w, ctx.acctOf(w.c_acctschema_id), ctx.typeOf);
+    if (!b.ok) return b;
+    schedules[w.c_acctschema_id] = b.rows; outWk.push(w);
+  }
+  return { ok: true, asset: a, workfiles: outWk, schedules: schedules, createAsset: createAsset, a_capvsexp: capex };
+}
+
+// _faSetCurrentPeriod — MDepreciationWorkfile.setA_Current_Period (:615-641): the latest PROCESSED active row of the workfile (asset, posting type,
+// schema) by A_Period DESC, DateAcct DESC ⇒ period = its A_Period + 1, DateAcct = month end of its DateAcct + 1 month; none ⇒ unchanged.
+function _faSetCurrentPeriod(w, rows) {
+  var last = null;
+  rows.forEach(function (r) {
+    if (Number(r.a_asset_id) !== Number(w.a_asset_id) || r.postingtype !== w.postingtype || Number(r.c_acctschema_id) !== Number(w.c_acctschema_id) || r.processed !== 'Y' || r.isactive === 'N') return;
+    if (!last || r.a_period > last.a_period || (r.a_period === last.a_period && String(r.dateacct) > String(last.dateacct))) last = r;
+  });
+  if (last) { w.a_current_period = Number(last.a_period) + 1; w.dateacct = _faMonthEnd(last.dateacct, 1); }
+}
+// faCompleteDepreciationEntry — MDepreciationEntry.afterSave selectLines (MDepreciationEntry.java:174-190): unassigned rows of the entry's MONTH, client,
+// org and schema; prepareIt :251-275 period open for its doc type; completeIt :291-340: each unprocessed selected row (ORDER BY asset, posting type, period,
+// entry type) must lie in the entry's period, then MDepreciationExp.process (MDepreciationExp.java:205-253): no unprocessed EARLIER-month row of the asset
+// (any schema, :312-327), asset Activated, workfile accum += Expense / Expense_F, current period + DateAcct (twice, before and after the row is processed),
+// row DateAcct = the workfile's, row refreshed from the workfile (updateFrom :143-152). Any row error ⇒ the whole document fails (AssetArrayException).
+// rows = every exp row the host holds for the client; workfiles = those of the involved assets; assetStatus(id) → status.
+function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
+  ctx = ctx || {};
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'period-closed' };
+  var R = rows.map(function (r) { var o = {}; for (var k in r) o[k] = r[k]; return o; });
+  var W = workfiles.map(function (w) { var o = {}; for (var k in w) o[k] = w[k]; return o; });
+  var sel = R.filter(function (r) { return r.a_depreciation_entry_id == null && _faMonth(r.dateacct) === _faMonth(entry.dateacct) && Number(r.ad_client_id || entry.ad_client_id) === Number(entry.ad_client_id)
+    && Number(r.ad_org_id) === Number(entry.ad_org_id) && Number(r.c_acctschema_id) === Number(entry.c_acctschema_id); });
+  sel.forEach(function (r) { r.a_depreciation_entry_id = entry.a_depreciation_entry_id; });
+  var todo = sel.filter(function (r) { return r.processed !== 'Y'; }).sort(function (x, y) {
+    return (x.a_asset_id - y.a_asset_id) || String(x.postingtype).localeCompare(String(y.postingtype)) || (x.a_period - y.a_period) || String(x.a_entry_type).localeCompare(String(y.a_entry_type)); });
+  var errors = [];
+  todo.forEach(function (r) {
+    var d = String(r.dateacct).slice(0, 10);
+    if (ctx.periodStart && (d < String(ctx.periodStart).slice(0, 10) || d > String(ctx.periodEnd).slice(0, 10))) { errors.push('The date is not within this Period'); return; }
+    var w = W.filter(function (x) { return Number(x.a_asset_id) === Number(r.a_asset_id) && x.postingtype === r.postingtype && Number(x.c_acctschema_id) === Number(r.c_acctschema_id); })[0];
+    if (!w) { errors.push('@NotFound@ @A_Depreciation_Workfile_ID@'); return; }
+    if (r.a_entry_type === 'DEP') {
+      var early = R.some(function (o) { return Number(o.a_asset_id) === Number(r.a_asset_id) && o.postingtype === r.postingtype && o.processed !== 'Y' && _faMonth(o.dateacct) < _faMonth(r.dateacct); });
+      if (early) { errors.push('There are unprocessed records to date'); return; }
+      if (assetStatus(r.a_asset_id) !== 'AC') { errors.push('AssetNotActive ' + r.a_asset_id); return; }
+      w.a_accumulated_depr = Number(w.a_accumulated_depr) + Number(r.expense); w.a_accumulated_depr_f = Number(w.a_accumulated_depr_f) + Number(r.expense_f);
+      _faSetCurrentPeriod(w, R);
+      w.a_asset_remaining = Number(w.a_asset_cost) - w.a_accumulated_depr; w.a_asset_remaining_f = Number(w.a_asset_cost) - w.a_accumulated_depr_f;   // workfile beforeSave :168-172 (cost, not actual cost)
+      r.dateacct = w.dateacct;
+    }
+    r.processed = 'Y';
+    r.a_asset_cost = Number(w.a_asset_cost); r.a_accumulated_depr = w.a_accumulated_depr; r.a_accumulated_depr_f = w.a_accumulated_depr_f;
+    r.uselifemonths = Number(w.uselifemonths); r.uselifemonths_f = Number(w.uselifemonths_f); r.a_asset_remaining = w.a_asset_remaining; r.a_asset_remaining_f = w.a_asset_remaining_f;
+    _faSetCurrentPeriod(w, R);
+  });
+  if (errors.length) return { ok: false, reason: errors.join('; ') };
+  return { ok: true, docstatus: 'CO', rows: R, workfiles: W, selected: sel.length };
+}
+
 return {
+  faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,

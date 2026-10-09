@@ -67,7 +67,9 @@ BEGIN
       ('QueryADepreciationWorkfile','A_Depreciation_Workfile',NULL::text[]),
       ('QueryAAssetAcct','A_Asset_Acct',NULL::text[]),
       ('QueryAAssetGroupAcct','A_Asset_Group_Acct',NULL::text[]),
-      ('QueryADepreciation','A_Depreciation',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryADepreciation','A_Depreciation',NULL::text[]),
+      -- §63: the login role's approve-own-doc flag (an AD default of A_Depreciation_Entry.IsApproved)
+      ('QueryADRole','AD_Role',ARRAY['AD_Role_ID','Name','IsCanApproveOwnDoc'])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

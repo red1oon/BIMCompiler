@@ -32,3 +32,11 @@ BEGIN
     END IF;
   END LOOP;
 END $$;
+-- §63 (P17, measured 2026-10-10): A_Depreciation_Entry.IsApproved is NOT NULL with AD default @#IsCanApproveOwnDoc@ — a context value the
+-- window fills from the login role but createData over the WS leaves null ("null value in column isapproved"). The client therefore sends the
+-- role's own value, exactly what the window would default. Whitelist it (idempotent).
+INSERT INTO ws_webservicefieldinput(ad_client_id,ad_column_id,ad_org_id,created,createdby,isactive,updated,updatedby,ws_webservicefieldinput_id,ws_webservicetype_id,ws_webservicefieldinput_uu)
+SELECT 11,c.ad_column_id,0,now(),100,'Y',now(),100,nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceFieldInput')::int,'N'::varchar),t.ws_webservicetype_id,gen_random_uuid()
+FROM ws_webservicetype t JOIN ad_column c ON c.ad_table_id=t.ad_table_id AND c.columnname='IsApproved'
+WHERE t.value='BridgeCreateDepreciationEntry'
+  AND NOT EXISTS (SELECT 1 FROM ws_webservicefieldinput f WHERE f.ws_webservicetype_id=t.ws_webservicetype_id AND f.ad_column_id=c.ad_column_id);

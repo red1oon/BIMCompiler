@@ -921,7 +921,7 @@ function derivePostings(db, recordRef, schema, R) {
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
 var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, costQtyUpdatesFor: costQtyUpdatesFor, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
-             glCategoryFor: glCategoryFor };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness
+             glCategoryFor: glCategoryFor, fxRate: fxRate };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness; fxRate (MConversionRate.getRate shape) for the FA host, spec §63
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }
 if (typeof window !== 'undefined') { window.DocPoster = _api; }
