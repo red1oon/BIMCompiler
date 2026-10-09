@@ -56,9 +56,12 @@ function localRun(mut = 0) {
       postings = (d.absent && d.absent.length) ? 'ABSENT:' + d.absent.join(',') : fmtPostings(d.lines);
     }
     let postingsShipment = 'none';
-    if (shipDone) {
-      const dsh = DP.derivePostings(gb, { table: 'M_InOut', id: opts.inoutId }, SCHEMA);          // the product's own fold; unimplemented class ⇒ basis 'none', lines []
-      postingsShipment = dsh.lines && dsh.lines.length ? fmtPostings(dsh.lines) : 'none';
+    if (shipDone) {                                                                // materialise SQLite's own completed shipment, fold with the product's derivePostings
+      const sid = opts.inoutId;
+      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus) VALUES(?,?,?,?)').run(sid, 'Y', 'C-', 'CO');
+      for (const l of g.soLines) gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty) VALUES(?,?,?,?)').run(sid * 100 + l.c_orderline_id % 100, sid, l.m_product_id, l.qtyordered);
+      const dsh = DP.derivePostings(gb, { table: 'M_InOut', id: sid }, SCHEMA);
+      postingsShipment = (dsh.absent && dsh.absent.length) ? 'ABSENT:' + dsh.absent.join(',') : (dsh.lines && dsh.lines.length ? fmtPostings(dsh.lines) : 'none');
     }
     const stock = {}; if (shipDone) g.soLines.forEach(l => { stock[l.m_product_id] = (stock[l.m_product_id] || 0) - l.qtyordered; });
     return {

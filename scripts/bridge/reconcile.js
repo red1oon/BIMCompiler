@@ -35,6 +35,10 @@ async function run(scenarios, spec, quirks, opts = {}) {
     let L, S;
     try { L = await sc.legacy(sc.facts); } catch (e) { L = { outcome: 'ERROR', error: e.message }; }
     try { S = await sc.local(sc.facts); } catch (e) { S = { outcome: 'ERROR', error: e.message }; }
+    if (L.outcome === 'ERROR' || S.outcome === 'ERROR') {          // a side crashed: that is a HARNESS fault, never a verdict about SQLite
+      log(`§SCN_ERROR ${sc.id} legacy=${JSON.stringify(L.error || null)} sqlite=${JSON.stringify(S.error || null)}`);
+      rows.push({ id: sc.id, verdict: 'ERROR', gaps: [], inconclusive: [], legacy: L, sqlite: S }); continue;
+    }
     const gaps = classify(sc.id, diff(L, S, spec), quirks);
     const real = gaps.filter(g => g.verdict !== 'INCONCLUSIVE'), inc = gaps.filter(g => g.verdict === 'INCONCLUSIVE');
     const verdict = real.length === 0 ? 'MATCH' : real.every(g => g.verdict === 'LEGACY-QUIRK') ? 'LEGACY-QUIRK' : 'SQLITE-GAP';
@@ -45,7 +49,7 @@ async function run(scenarios, spec, quirks, opts = {}) {
   }
   for (const [k, why] of Object.entries(spec.notCompared || {})) log(`§SCN_NOT_COMPARED key=${k} reason="${why}"`);
   const n = v => rows.filter(r => r.verdict === v).length;
-  log(`§RECON_SUMMARY scenarios=${rows.length} MATCH=${n('MATCH')} LEGACY-QUIRK=${n('LEGACY-QUIRK')} SQLITE-GAP=${n('SQLITE-GAP')} inconclusive_keys=${rows.reduce((a, r) => a + r.inconclusive.length, 0)} notCompared=${Object.keys(spec.notCompared || {}).length}`);
+  log(`§RECON_SUMMARY scenarios=${rows.length} MATCH=${n('MATCH')} LEGACY-QUIRK=${n('LEGACY-QUIRK')} SQLITE-GAP=${n('SQLITE-GAP')} errors=${n('ERROR')} inconclusive_keys=${rows.reduce((a, r) => a + r.inconclusive.length, 0)} notCompared=${Object.keys(spec.notCompared || {}).length}`);
   return rows;
 }
 module.exports = { diff, classify, run };

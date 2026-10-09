@@ -743,4 +743,19 @@ Run on the posting tables it shows exactly what the missing rule needs and the S
 **Other facts surfaced:** legacy lets on-hand go negative (S7); legacy shipment posting depends on the *costed* quantity, not on-hand (S11a) — a legacy trap SQLite should not replicate silently.
 Run: `scripts/bridge/run_all.sh` (S11 shows as SQLITE-GAP; `§TRIAGE` will list it in the RULE queue once the data step is done).
 
+## §30 F3 DONE — SQLite now posts the sales shipment (COGS / Inventory); S11 MATCH to the cent (2026-10-09, user: "yes" to §29 steps)
+**Finding that reordered the plan:** step 1 (schema ALTER patch) is NOT a prerequisite. Reading the legacy source for the exact rule showed the cost method falls back to the schema's:
+`MProduct.getCostingMethod(as)` (MProduct.java:1080-1088) = category `CostingMethod` if set, else `C_AcctSchema.CostingMethod`. Legacy has the category column **empty on every row** (checked on the pilot), the schema is `'A'`
+(Average PO), and the SQLite posting db already carries `c_acctschema.costingmethod` + `m_costelement.costingmethod` + `m_cost.currentcostprice`. So the data needed existed; only the rule was missing.
+**Rule added (engine lane, one commit, spec-first = §29 + the failing S11 scenario):** `scripts/doc_poster.js` — `deriveInOut` + `costingMethodOf` + `currentCost`, wired in `derivePostings` for `table:'M_InOut'`.
+Extracted from `Doc_InOut.createFacts` "Sales - Shipment" (Doc_InOut.java:208-300): per line, costs = qty × current cost (element chosen by costing method; price from `m_cost` for product/schema/cost type/element);
+**Dr `{Product.Cogs}` / Cr `{Product.Asset}`**; zero cost on a stocked item ⇒ reported absent ("No Costs for …", Doc_InOut.java:244-258), never invented; service skipped. Only IsSOTrx=Y, movementtype C- (sales shipment) is built.
+**Proof:** `S11-pos-sale-costed-product` shipment postings legacy `430 Dr 1800 / 742 Cr 1800` == SQLite fold (was `none`). M3 `RECON_SUMMARY MATCH=5 LEGACY-QUIRK=1 SQLITE-GAP=0 errors=0`; `§TRIAGE RULE_queue=[]`.
+Regression: the eight existing posting witnesses (`poc_doc_poster, post_harden, post_glcategory, post_b3, post_tail, postings, post_derive, post`) — green counts 7/4/7/15/12/7/5/3, **logs byte-identical to the pre-change run (diff = 0 lines)**. Logs kept in the session scratchpad. Backtrack = revert the one commit.
+**Honest limits (not hidden):** reversals, returns/receipts, BatchLot costing level, org-specific cost rows, the "zero-cost vendor item is OK" exception (Doc_InOut.java:247-251) and the second (Euro) schema are NOT implemented/compared;
+the SQLite posting db lacks `m_product.isstocked`, `m_cost.currentqty`, category `costingmethod` (the §29 schema gaps — now hygiene, not blockers): the code treats a missing `isstocked` as "item" and says so.
+Oak Tree (costed qty 0) still posts an error on legacy — a legacy trap SQLite deliberately does not reproduce (it would post COGS from `m_cost` regardless of costed quantity; if a scenario ever needs "legacy refuses", record it as LEGACY-QUIRK).
+**Harness hardening in the same pass (P17):** a crashed side is now `§SCN_ERROR` / verdict `ERROR`, never counted as a SQLite gap (an earlier run mislabelled one transient legacy error as SQLITE-GAP S2; three reruns were clean, cause unrecorded).
+**Gap ledger so far (all numbered, all backtrackable):** F1 deliver-later shipment → fixed (§27) · F2 UI lanes still bundle the DR shipment (open, UX lane) · F3 shipment posting → fixed (§30) · S3 keyed price → LEGACY-QUIRK · S5/S7/S8 unmeasured on SQLite.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

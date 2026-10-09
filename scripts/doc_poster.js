@@ -62,6 +62,57 @@ function deriveInvoice(db, R, invId, schema) {
   return { by: by, absent: absent };
 }
 
+// ── SALES SHIPMENT (MMS, IsSOTrx=Y) manifest — gap S11 (prompts/SQLiteIDEMPIERE.md §29/§30), EXTRACTED from org.compiere.acct.Doc_InOut.createFacts
+// (the "Sales - Shipment" branch, Doc_InOut.java:208-300) + MProduct.getCostingMethod (MProduct.java:1080-1088) + ProductCost:
+//   per line (non-reversal): costs = qty × current cost of the product under the schema's costing element;
+//   zero cost & stocked ⇒ posting ERROR "No Costs for <product>" (Doc_InOut.java:244-258 — surfaced as `absent`, never invented); zero cost & service ⇒ skip;
+//   Dr {Product.Cogs} costs / Cr {Product.Asset} costs.
+// Costing method = category's CostingMethod when set, else the schema's (MProduct.getCostingMethod). The cost element is the m_costelement whose
+// costingmethod equals it; the price is m_cost.currentcostprice for (product, schema, schema.m_costtype_id, element). NEVER guessed: when any link is
+// missing the token is reported absent. Reversals / returns / receipts are NOT this slice (null ⇒ basis none).
+function costingMethodOf(db, productId, schema) {
+  var m = null;
+  if (_hasCol(db, 'm_product_category_acct', 'costingmethod')) {
+    var r = getRow(db, 'SELECT a.costingmethod AS cm FROM m_product_category_acct a JOIN m_product p ON p.m_product_category_id=a.m_product_category_id WHERE p.m_product_id=? AND a.c_acctschema_id=?', [num(productId), num(schema)]);
+    if (r && r.cm) m = r.cm;
+  }
+  if (!m) { var as = schemaRow(db, schema); m = as && as.costingmethod ? as.costingmethod : null; }
+  return m;
+}
+function currentCost(db, productId, schema) {
+  var cm = costingMethodOf(db, productId, schema), as = schemaRow(db, schema);
+  if (!cm || !as) return { price: null, why: 'no-costing-method' };
+  var el = getRow(db, 'SELECT m_costelement_id FROM m_costelement WHERE costingmethod=? ORDER BY m_costelement_id LIMIT 1', cm);
+  if (!el) return { price: null, why: 'no-cost-element-for-' + cm };
+  var c = getRow(db, 'SELECT currentcostprice FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?', [num(productId), num(schema), num(as.m_costtype_id), num(el.m_costelement_id)]);
+  return c ? { price: Number(c.currentcostprice), method: cm, element: el.m_costelement_id } : { price: null, why: 'no-m_cost-row' };
+}
+function deriveInOut(db, R, ioId, schema) {
+  var hdr = getRow(db, 'SELECT m_inout_id,issotrx,movementtype FROM m_inout WHERE m_inout_id=?', num(ioId));
+  if (!hdr) return null;
+  if (!(String(hdr.issotrx) === 'Y' && String(hdr.movementtype) === 'C-')) return null;       // only the sales-shipment class is built
+  var lines = allRows(db, 'SELECT m_product_id,movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId));
+  var by = {}, absent = [];
+  function add(side, el, amt) { var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
+  function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  lines.forEach(function (l) {
+    // IsStocked decides service-vs-item ONLY when the cost is missing; a seed without the column cannot tell, so it is treated as an item and reported (never guessed)
+    var prod = _hasCol(db, 'm_product', 'isstocked') ? getRow(db, 'SELECT isstocked FROM m_product WHERE m_product_id=?', num(l.m_product_id)) : null;
+    var cc = currentCost(db, l.m_product_id, schema);
+    var amt = cc.price == null ? 0 : cents(cc.price * Number(l.movementqty));
+    if (cc.price == null || amt === 0) {
+      if (prod && String(prod.isstocked) === 'N') return;                                      // service: ignored (Doc_InOut.java:257)
+      absent.push('No Costs for product ' + l.m_product_id + (cc.why ? ' (' + cc.why + ')' : ''));  // Doc_InOut.java:253 posting error
+      return;
+    }
+    var cogs = el(R.resolve(db, '{Product.Cogs}', num(l.m_product_id), schema));
+    var asset = el(R.resolve(db, '{Product.Asset}', num(l.m_product_id), schema));
+    if (cogs) add('DR', cogs, amt);
+    if (asset) add('CR', asset, amt);
+  });
+  return { by: by, absent: absent };
+}
+
 // the invoice an order generated — linked via the order line (NON-INVENT lineage; poc_fold_complete:75).
 function invoiceForOrder(db, oid) {
   var r = getRow(db, 'SELECT DISTINCT il.c_invoice_id AS id FROM c_invoiceline il JOIN c_orderline ol ON ol.c_orderline_id=il.c_orderline_id WHERE ol.c_order_id=?', num(oid));
@@ -618,6 +669,7 @@ function derivePostings(db, recordRef, schema, R) {
     return finish(deriveOrder(db, R, id, schema), 'order', glOf('c_order', id));   // draft projection — no oracle
   }
   // B-3 0-seed classes (W-POST-B3 §W-3) — these read per-asset/project acct config, not R tokens
+  if (table === 'M_InOut') return finish(deriveInOut(db, R, id, schema), 'inout', glOf('m_inout', id));
   if (table === 'A_Asset_Addition') return finish(deriveAssetAddition(db, id, schema), 'fa-addition', glOf('a_asset_addition', id));
   if (table === 'A_Depreciation_Entry') return finish(deriveDepreciationEntry(db, id, schema), 'fa-depreciation', glOf('a_depreciation_entry', id));
   if (table === 'A_Asset_Reval') return finish(deriveAssetReval(db, id, schema), 'fa-reval', glOf('a_asset_reval', id));
@@ -635,7 +687,7 @@ function derivePostings(db, recordRef, schema, R) {
 
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
-var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
+var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
              glCategoryFor: glCategoryFor };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }
