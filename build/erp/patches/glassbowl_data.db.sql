@@ -165,3 +165,18 @@ INSERT INTO c_currency(c_currency_id,iso_code,stdprecision) SELECT 344,'PYG',0 W
 INSERT INTO c_currency(c_currency_id,iso_code,stdprecision) SELECT 346,'RON',2 WHERE NOT EXISTS (SELECT 1 FROM c_currency WHERE c_currency_id=346);
 INSERT INTO c_currency(c_currency_id,iso_code,stdprecision) SELECT 347,'RSD',2 WHERE NOT EXISTS (SELECT 1 FROM c_currency WHERE c_currency_id=347);
 INSERT INTO c_currency(c_currency_id,iso_code,stdprecision) SELECT 200000,'SSP',2 WHERE NOT EXISTS (SELECT 1 FROM c_currency WHERE c_currency_id=200000);
+
+-- 2026-10-10 (spec §56, F15): C_AcctSchema_Element (element type + IsBalanced) — Fact.balanceSegments posts intercompany Due-To/From only when the Organization element is balanced.
+CREATE TABLE IF NOT EXISTS c_acctschema_element(c_acctschema_element_id INT, c_acctschema_id INT, elementtype TEXT, isbalanced TEXT);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 106,101,'OO','Y' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=106);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 107,101,'PR','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=107);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 108,101,'PJ','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=108);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 109,101,'AC','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=109);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 110,101,'BP','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=110);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 111,101,'MC','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=111);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200000,200000,'OO','Y' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200000);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200001,200000,'AC','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200001);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200002,200000,'PR','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200002);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200003,200000,'BP','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200003);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200004,200000,'PJ','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200004);
+INSERT INTO c_acctschema_element(c_acctschema_element_id,c_acctschema_id,elementtype,isbalanced) SELECT 200005,200000,'MC','N' WHERE NOT EXISTS (SELECT 1 FROM c_acctschema_element WHERE c_acctschema_element_id=200005);

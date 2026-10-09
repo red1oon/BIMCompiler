@@ -1191,4 +1191,22 @@ READBACK (CONFIRMED by the link's own read-back; idmap has header + line ids + l
 (the SQLite engine's movement/inventory rules are the next `§GAP` hunt — that is the normal loop, not layer code).
 Per-model cost to add: ~30 lines of WS configuration SQL + ~10 lines of descriptor. Wired into `run_all.sh`.
 
+## §56 MODEL 1 — Inventory Move (M_Movement): the SQLite side (2026-10-10, resume work list item 1) — SPEC before code
+**Legacy path:** the frozen link + the §55 descriptor/WS config (no layer code). **Facts:** MV1 inter-org move, product 137 × 1, locator 101 (HQ, org 11) → 102 (Store Central, org 12), doc type 143 (MMM), date today; MV2 same-locator-org is not available on the pilot
+(each warehouse has ONE locator) ⇒ only the inter-org case is reachable without data changes (stated); MV-REJ unknown product (rejected, atomic); NEG control = +1 qty on the SQLite side.
+**Keys:** outcome · docstatus · lines `product:qty:from:to` · stock_delta per LOCATOR · postings (schema 101, Fact_Acct AD_Table 323 folded per account) · postings_euro (200000) · cost_qty_delta (Average-PO, client level).
+**Legacy rules to compare against (read):** `MMovement.completeIt` moves storage from → to per line; `Doc_Movement.createFacts` (Doc_Movement.java:128-232): per line CR `{Product.Asset}` at the from-locator org and DR `{Product.Asset}` at the to-locator org for
+`costs = current cost` (the schema's costing element), cost details only for Organization costing level; inter-org lines are then bridged by the intercompany Due-To/Due-From accounts (segment balancing — the seed oracle of `poc_movement.js` shows them).
+**SQLite today (read):** `pos_core.buildReplenishMove` builds the documents; `ad_docfsm` knows DR→CO for table 323; NO verb completes a movement (no stock move) and `doc_poster.derivePostings` has NO `M_Movement` branch — the Doc_Movement fold exists only inside the witness `scripts/poc_movement.js`.
+⇒ expected SQLITE-GAP (MISSING) on docstatus/stock/postings; fix F15 after the measurement: `erp_engine.completeMovement` + `doc_poster.deriveMovement` (port of the proven witness fold into the product, cited).
+**MEASURED MV1 (legacy first, through the frozen link):** CO, lines `137:1:101:102`, stock `{137@101: −1, 137@102: +1}`, books `600 Cr 270 / 741 Dr 270 / 742 Dr 270 / 742 Cr 270` (Euro 230: cost 2.2964 → line 2.30), costed qty unchanged (client-level costing).
+SQLite before: status DR, no stock move, no books ⇒ SQLITE-GAP (MISSING) on 4 keys. MV-REJ MATCH (both refuse an unknown product).
+### §56.1 DECISION RECORD F15 — Inventory Move completes, moves stock and posts like legacy (2026-10-10)
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW `completeMovement` (MMovement.java:290-320 @NoLines@, :455-520 stocked lines: from −qty / to +qty; optional period check); `scripts/doc_poster.js` NEW `deriveMovement` wired in `derivePostings`
+(Doc_Movement.java:128-232 + Fact.balanceSegments Fact.java:405-480; the fold proven in `poc_movement.js`/`poc_movement_fx.js` moved into the product), exact HALF_UP line rounding (also applied to `deriveInOut`, which used float `cents(price × qty)` — no live tie on the pilot, latent),
+`_bigDec` accepts exponent notation; `build/erp/patches/glassbowl_data.db.sql` + `C_AcctSchema_Element` (from the SQLite seed; balancing needs IsBalanced of the Organization element); `scripts/bridge/witness_m3_gap.js` move suite (MV1, MV-REJ, `§M3_MOVE_NEGATIVE_CONTROL`), `M3_ONLY` now filters the extra suites.
+**Proof:** `§SCN MV1-move-inter-org MATCH compared=7` · `§SCN MV-REJ-unknown-product MATCH` · `§M3_MOVE_NEGATIVE_CONTROL PASS` (gaps on lines, stock, both books). Layer files unchanged (`git diff` empty, `§GENERICITY PASS`, `§MODEL_VERDICT PASS`).
+**Regression:** 99 engine witnesses identical to the F14 run except the 4 known-nondeterministic logs.
+**Residue (stated):** same-org move not reachable on the pilot (one locator per warehouse; would need a new locator = master data); reversal of a move, batch-lot and organization costing level (cost details per org) not ported; `isStocked` callback defaults to stocked when the host gives none.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

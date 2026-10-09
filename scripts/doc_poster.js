@@ -66,7 +66,7 @@ function deriveInvoice(db, R, invId, schema) {
 // §46 (F12): FactLine.convert (FactLine.java:819-900) — each line's Dr/Cr × MConversionRate.getRate (MConversionRate.java:237-252) rounded HALF_UP to the schema currency's
 // StdPrecision (:126-147). A document without currency is posted in the schema currency (:821-823) — so nothing happens unless the invoice row carries c_currency_id.
 // Unbalanced after conversion ⇒ legacy Fact.balanceAccounting (Fact.java:548-630) — NOT ported: reported absent, never invented.
-function _bigDec(v) { var t = String(v).trim(), neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
+function _bigDec(v) { var t = String(v).trim(); if (/e/i.test(t)) t = Number(t).toFixed(20).replace(/0+$/, '').replace(/\.$/, ''); var neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
 function _rhuB(n, d) { var neg = n < 0n, a = neg ? -n : n, q = a / d; if ((a % d) * 2n >= d) q += 1n; return neg ? -q : q; }
 function convertToSchema(db, by, absent, invId, schema) {
   // table/column-guarded like every §29-§38 addition: a posting db without c_currency/c_conversion_rate/c_acctschema keeps the old (unconverted) fold; the
@@ -147,7 +147,7 @@ function deriveInOut(db, R, ioId, schema, opt) {
     // IsStocked decides service-vs-item ONLY when the cost is missing; a seed without the column cannot tell, so it is treated as an item and reported (never guessed)
     var prod = _hasCol(db, 'm_product', 'isstocked') ? getRow(db, 'SELECT isstocked FROM m_product WHERE m_product_id=?', num(l.m_product_id)) : null;
     var cc = currentCost(db, l.m_product_id, schema);
-    var amt = cc.price == null ? 0 : cents(cc.price * Number(l.movementqty));
+    var amt = 0; if (cc.price != null) { var pd0 = _bigDec(cc.price), qd0 = _bigDec(l.movementqty); amt = Number(_rhuB(pd0.n * qd0.n * 100n, 10n ** BigInt(pd0.k + qd0.k))); }   // exact HALF_UP (§56.1; float × could misround a .5 tie)
     if (cc.price == null || amt === 0) {
       if (prod && String(prod.isstocked) === 'N') return;                                      // service: ignored (Doc_InOut.java:257)
       absent.push('No Costs for product ' + l.m_product_id + (cc.why ? ' (' + cc.why + ')' : ''));  // Doc_InOut.java:253 posting error
@@ -201,6 +201,52 @@ function costQtyUpdates(db, ioId) {
     }); });
   });
   return out;
+}
+
+// ── INVENTORY MOVE (M_Movement) — §56, F15. Port of Doc_Movement.createFacts (Doc_Movement.java:128-232) + Fact.balanceSegments (Fact.java:405-480);
+// the same fold was proven against the seed's captured books in scripts/poc_movement.js (W-FOLD-MOVEMENT, schema 101) and poc_movement_fx.js (schema 200000).
+//   per line: costs = round(qty × current cost) (cost element per the costing method, full-precision cost, line rounded); CR {Product.Asset} at the FROM-locator org, DR {Product.Asset} at the TO-locator org;
+//   zero cost ⇒ no line (createLine returns null). Organization segment balanced (C_AcctSchema_Element OO IsBalanced) ⇒ per org: credit balance ⇒ DR IntercompanyDueFrom, debit balance ⇒ CR IntercompanyDueTo.
+//   Missing config ⇒ reported absent, never invented. Reversals / batch-lot / org costing level not ported (stated, §56.1).
+function _orgOfLocator(db, loc) {
+  var r = getRow(db, 'SELECT w.ad_org_id AS org FROM m_locator l JOIN m_warehouse w ON w.m_warehouse_id=l.m_warehouse_id WHERE l.m_locator_id=?', num(loc));
+  return r ? num(r.org) : null;
+}
+function deriveMovement(db, R, movId, schema) {
+  var lines = allRows(db, 'SELECT m_product_id,movementqty,m_locator_id,m_locatorto_id FROM m_movementline WHERE m_movement_id=?', num(movId));
+  if (!lines.length && !getRow(db, 'SELECT m_movement_id FROM m_movement WHERE m_movement_id=?', num(movId))) return null;
+  var by = {}, absent = [], orgBal = {};
+  function add(side, el, amt, org) { var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; orgBal[org] = (orgBal[org] || 0) + (side === 'DR' ? amt : -amt); }
+  function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }
+  lines.forEach(function (l) {
+    if (Number(l.movementqty) === 0) return;
+    var cc = currentCost(db, l.m_product_id, schema);
+    if (cc.price == null) { absent.push('No cost for product ' + l.m_product_id + (cc.why ? ' (' + cc.why + ')' : '')); return; }
+    var pd = _bigDec(cc.price), qd = _bigDec(l.movementqty);                       // exact decimal: cost carried at full precision, LINE rounded HALF_UP (poc_movement_fx rule)
+    var amt = Number(_rhuB(pd.n * qd.n * 100n, 10n ** BigInt(pd.k + qd.k)));
+    if (amt === 0) return;
+    var asset = el(R.resolve(db, '{Product.Asset}', num(l.m_product_id), schema)); if (!asset) return;
+    var fromOrg = _orgOfLocator(db, l.m_locator_id), toOrg = _orgOfLocator(db, l.m_locatorto_id);
+    if (fromOrg == null || toOrg == null) { absent.push('locator org unknown'); return; }
+    add('CR', asset, amt, fromOrg);
+    add('DR', asset, amt, toOrg);
+  });
+  var orgs = Object.keys(orgBal).filter(function (o) { return orgBal[o] !== 0; });
+  if (orgs.length) {
+    var bal = _hasCol(db, 'c_acctschema_element', 'isbalanced') ? getRow(db, "SELECT isbalanced FROM c_acctschema_element WHERE c_acctschema_id=? AND elementtype='OO'", num(schema)) : null;
+    if (!bal) absent.push('org segment balancing config absent (c_acctschema_element)');
+    else if (String(bal.isbalanced) === 'Y') {
+      var gl = getRow(db, 'SELECT intercompanydueto_acct AS dt, intercompanyduefrom_acct AS df FROM c_acctschema_gl WHERE c_acctschema_id=?', num(schema));
+      var dueTo = gl && R.elementOf ? R.elementOf(db, gl.dt) : null, dueFrom = gl && R.elementOf ? R.elementOf(db, gl.df) : null;
+      if (!dueTo || !dueFrom) absent.push('intercompany Due-To/Due-From accounts absent');
+      else orgs.forEach(function (o) {
+        var b = orgBal[o];
+        if (b < 0) add('DR', { id: dueFrom.id, value: dueFrom.value, name: dueFrom.name }, -b, o);   // Fact.java: balance < 0 ⇒ DueFrom DR
+        else add('CR', { id: dueTo.id, value: dueTo.value, name: dueTo.name }, b, o);              // balance > 0 ⇒ DueTo CR
+      });
+    }
+  }
+  return { by: by, absent: absent };
 }
 
 // the invoice an order generated — linked via the order line (NON-INVENT lineage; poc_fold_complete:75).
@@ -760,6 +806,7 @@ function derivePostings(db, recordRef, schema, R) {
   }
   // B-3 0-seed classes (W-POST-B3 §W-3) — these read per-asset/project acct config, not R tokens
   if (table === 'M_InOut') return finish(deriveInOut(db, R, id, schema), 'inout', glOf('m_inout', id));
+  if (table === 'M_Movement') return finish(deriveMovement(db, R, id, schema), 'movement', glOf('m_movement', id));
   if (table === 'A_Asset_Addition') return finish(deriveAssetAddition(db, id, schema), 'fa-addition', glOf('a_asset_addition', id));
   if (table === 'A_Depreciation_Entry') return finish(deriveDepreciationEntry(db, id, schema), 'fa-depreciation', glOf('a_depreciation_entry', id));
   if (table === 'A_Asset_Reval') return finish(deriveAssetReval(db, id, schema), 'fa-reval', glOf('a_asset_reval', id));

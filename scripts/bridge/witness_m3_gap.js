@@ -369,6 +369,58 @@ function localVoid(mut = 0) {
   };
 }
 
+// ================= MODEL: Inventory Move (spec §56) — legacy through the FROZEN link with the §55 descriptor (test data), own key set =================
+const { createLink } = require('./legacy_link');
+const MOVE_DESC = { move: { composite: 'SyncOrder',
+  header: { serviceType: 'BridgeCreateMovement', table: 'M_Movement', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 143 }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
+  lines: { serviceType: 'BridgeCreateMovementLine', table: 'M_MovementLine', parent: 'M_Movement_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
+    fields: { AD_Org_ID: { const: 11 }, AD_Client_ID: { const: 11 }, M_Locator_ID: { path: 'from' }, M_LocatorTo_ID: { path: 'to' }, M_Product_ID: { path: 'product' }, MovementQty: { path: 'qty' } } },
+  docAction: { serviceType: 'BridgeCompleteMovement', table: 'M_Movement', action: 'CO' },
+  expect: { serviceType: 'QueryMMovement', cols: { DocStatus: { const: 'CO' } } } } };
+const moveSpec = { keys: ['outcome', 'docstatus', 'lines', 'stock_delta', 'postings', 'postings_euro', 'cost_qty_delta'], notCompared: {} };
+const locStock = async (p, loc) => (await query(cfg, 'QueryStorage', `M_Product_ID=${p} AND M_Locator_ID=${loc}`)).reduce((a, r) => a + Number(r.QtyOnHand), 0);
+let moveLink = null;
+async function legacyMove(f) {
+  if (!moveLink) { let bytes = null; moveLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: MOVE_DESC }); }
+  const locs = [...new Set(f.lines.flatMap(l => [l.from, l.to]))], before = {};
+  for (const l of f.lines) for (const loc of locs) before[l.product + '@' + loc] = await locStock(l.product, loc);
+  const cq0 = {}; for (const l of f.lines) cq0[l.product] = await legacyCostQty(l.product);
+  const uid = moveLink.submit('move', { date: (f.date || TODAY) + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines });
+  await moveLink.drain(); const st = moveLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 90) };
+  const id = moveLink.store.idmap(uid).find(x => x.tbl === 'M_Movement').server_id;
+  const h = (await query(cfg, 'QueryMMovement', `M_Movement_ID=${id}`))[0];
+  const ls = await query(cfg, 'QueryMMovementLine', `M_Movement_ID=${id}`);
+  const stock = {}; for (const k of Object.keys(before)) { const [p, loc] = k.split('@'); const d = (await locStock(+p, +loc)) - before[k]; if (d) stock[k] = d; }
+  for (let i = 0; i < 8 && !['Y', 'E'].includes(h.Posted); i++) { await new Promise(r => setTimeout(r, 1500)); h.Posted = (await query(cfg, 'QueryMMovement', `M_Movement_ID=${id}`))[0].Posted; }
+  const cq = {}; for (const p of Object.keys(cq0)) cq[p] = await legacyCostQty(+p);
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, lines: ls.map(l => `${l.M_Product_ID}:${Number(l.MovementQty)}:${l.M_Locator_ID}:${l.M_LocatorTo_ID}`).sort().join('|'),
+    stock_delta: JSON.stringify(stock), postings: h.Posted === 'E' ? 'REFUSED:Posted=E' : await legacyFactsOf(323, id, SCHEMA), postings_euro: h.Posted === 'E' ? 'REFUSED:Posted=E' : await legacyFactsOf(323, id, SCHEMA2),
+    cost_qty_delta: deltaStr(Object.keys(cq0), cq0, p => cq[p]) };
+}
+// SQLite side: the kernel's own movement verbs (pos_core.buildReplenishMove builds the documents; completion + books per F15)
+const locOrg = loc => (lc(seed.prepare('SELECT ad_org_id FROM m_locator WHERE m_locator_id=?').get(loc)) || {}).ad_org_id;
+function localMove(mut = 0) {
+  return async f => {
+    for (const l of f.lines) if (!lc(seed.prepare('SELECT m_product_id FROM m_product WHERE m_product_id=?').get(l.product))) return { outcome: 'REJECTED', reason: 'unknown product' };
+    const mid = ++seq * 10, lines = f.lines.map((l, i) => ({ m_movementline_id: mid * 100 + i, m_product_id: l.product, movementqty: l.qty + mut, m_locator_id: l.from, m_locatorto_id: l.to }));
+    const cq0 = {}; for (const l of f.lines) cq0[l.product] = localCostQty(l.product);
+    const done = typeof E.completeMovement === 'function'
+      ? E.completeMovement({ m_movement_id: mid, docstatus: 'DR' }, lines) : null;                 // F15 verb (absent before the fix ⇒ the gap is measured, not hidden)
+    if (!done) return { outcome: 'COMPLETED', docstatus: 'DR', lines: lines.map(l => `${l.m_product_id}:${l.movementqty}:${l.m_locator_id}:${l.m_locatorto_id}`).sort().join('|'), stock_delta: '{}', postings: 'none', postings_euro: 'none', cost_qty_delta: '{}' };
+    if (!done.ok) return { outcome: 'REJECTED', reason: done.reason };
+    const status = (done.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'M_Movement').pop() || {}).doc_status;
+    const stock = {}; done.ops.filter(o => o.op_type === 'MOVE_STOCK').forEach(o => { const k = o.m_product_id + '@' + o.m_locator_id; stock[k] = (stock[k] || 0) + Number(o.qty); });
+    Object.keys(stock).forEach(k => { if (!stock[k]) delete stock[k]; });
+    gb.prepare('INSERT INTO m_movement(m_movement_id,docstatus) VALUES(?,?)').run(mid, status);
+    for (const l of lines) gb.prepare('INSERT INTO m_movementline(m_movementline_id,m_movement_id,m_product_id,movementqty,m_locator_id,m_locatorto_id) VALUES(?,?,?,?,?,?)').run(l.m_movementline_id, mid, l.m_product_id, l.movementqty, l.m_locator_id, l.m_locatorto_id);
+    const fold = sch => { const d = DP.derivePostings(gb, { table: 'M_Movement', id: mid }, sch); return d.absent && d.absent.length ? 'REFUSED:Posted=E' : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    return { outcome: 'COMPLETED', docstatus: status, lines: lines.map(l => `${l.m_product_id}:${l.movementqty}:${l.m_locator_id}:${l.m_locatorto_id}`).sort().join('|'),
+      stock_delta: JSON.stringify(stock), postings: fold(SCHEMA), postings_euro: fold(SCHEMA2), cost_qty_delta: deltaStr(Object.keys(cq0), cq0, p => localCostQty(+p)) };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -423,11 +475,17 @@ const quirks = [
   if (process.env.M3_ONLY === 'S5') corpus.push(sc('S5-pos-sale-stray-acct-schema', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }));
   if (process.env.M3_ONLY) { const keep = corpus.filter(c => c.id.startsWith(process.env.M3_ONLY)); corpus.length = 0; corpus.push(...keep); }
   const rows = await R.run(corpus, spec, quirks, { log });
-  if (process.env.M3_ONLY) { for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`); log('§M3_VERDICT ONLY ' + process.env.M3_ONLY); process.exit(0); }
+  const only = process.env.M3_ONLY, keepOnly = list => only ? list.filter(x => x.id.startsWith(only)) : list;
+  const onlyExit = extra => { for (const r of rows.concat(extra || [])) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`); log('§M3_VERDICT ONLY ' + only); process.exit(0); };
   // S12 void (spec §33): product 136 (costed, reversal is cost-neutral), BP 112
-  const vrows = await R.run([{ id: 'S12-void-pos-sale', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 137, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) },
-    { id: 'S12b-void-taxed-pos-sale', facts: { doctype: POSDT, action: 'VO', org: 12, wh: 104, deliveryVia: 'D', lines: [{ product: 137, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) }], voidSpec, quirks, { log });
+  const vrows = await R.run(keepOnly([{ id: 'S12-void-pos-sale', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 137, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) },
+    { id: 'S12b-void-taxed-pos-sale', facts: { doctype: POSDT, action: 'VO', org: 12, wh: 104, deliveryVia: 'D', lines: [{ product: 137, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) }]), voidSpec, quirks, { log });
   rows.push(...vrows);
+  // MODEL Inventory Move (spec §56)
+  const mrows = await R.run(keepOnly([{ id: 'MV1-move-inter-org', facts: { id: 'MV1', lines: [{ product: 137, qty: 1, from: 101, to: 102 }] }, legacy: legacyMove, local: localMove(0) },
+    { id: 'MV-REJ-unknown-product', facts: { id: 'MVR', lines: [{ product: 999999, qty: 1, from: 101, to: 102 }] }, legacy: legacyMove, local: localMove(0) }]), moveSpec, quirks, { log });
+  rows.push(...mrows);
+  if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
 
@@ -446,6 +504,9 @@ const quirks = [
   // negative control for the void key set: +1 cent on the SQLite original invoice MUST surface as a gap on post_inv_orig
   const vneg = await R.run([{ id: 'NEG-void-control', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 137, qty: 1 }] }, legacy: legacyVoid, local: localVoid(1) }], voidSpec, quirks, { log });
   out('§M3_VOID_NEGATIVE_CONTROL', vneg[0].verdict === 'SQLITE-GAP' && vneg[0].gaps.some(g => g.key === 'post_inv_orig'), `+1 cent on the SQLite invoice ⇒ verdict=${vneg[0].verdict} (must be SQLITE-GAP on post_inv_orig)`);
+  // §56 negative control for the movement key set: +1 qty on the SQLite side MUST surface as a gap on lines/stock/books
+  const mneg = await R.run([{ id: 'NEG-move-control', facts: { id: 'MVN', lines: [{ product: 137, qty: 1, from: 101, to: 102 }] }, legacy: legacyMove, local: localMove(1) }], moveSpec, quirks, { log });
+  out('§M3_MOVE_NEGATIVE_CONTROL', mneg[0].verdict === 'SQLITE-GAP' && ['lines', 'stock_delta', 'postings'].every(k => mneg[0].gaps.some(g => g.key === k)), `+1 qty on the SQLite move ⇒ verdict=${mneg[0].verdict} gaps=${mneg[0].gaps.map(g => g.key).join(',')}`);
   // §42 F7 rule branches the corpus cannot reach (S8b/S8d stop at the price rule first, like legacy): no period, before history, inside window, standard control
   { const P = (dt, data) => E.periodOpen(data || periodData, dt, 'SOO', TODAY);
     const std = { schema: { autoperiodcontrol: 'N' }, periods: periodData.periods };

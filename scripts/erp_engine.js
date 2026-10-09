@@ -349,6 +349,23 @@ function voidOrder(sale, opts) {
   return ops;
 }
 
+// completeMovement — the Inventory Move doc-action CO as ops. Implementing prompts/SQLiteIDEMPIERE.md §56 (F15) — Witness: M3 MV1.
+// Port of MMovement.prepareIt/completeIt (MMovement.java:290-320 no lines ⇒ @NoLines@; :455-520 per STOCKED product line: storage FROM locator −qty, TO locator +qty).
+//   movement = { m_movement_id }, lines [{ m_product_id, movementqty, m_locator_id, m_locatorto_id }], opts = { isStocked(pid) → bool (default true), periodCheck() → {ok} (optional, :296-302) }
+function completeMovement(movement, lines, opts) {
+  opts = opts || {};
+  if (opts.periodCheck) { var pc = opts.periodCheck(); if (!pc.ok) return { ok: false, reason: 'PeriodClosed' }; }
+  if (!lines || !lines.length) return { ok: false, reason: 'NoLines' };
+  var ops = [];
+  lines.forEach(function (l) {
+    if (opts.isStocked && !opts.isStocked(l.m_product_id)) return;
+    ops.push({ op_type: 'MOVE_STOCK', table: 'M_Storage', m_product_id: l.m_product_id, m_locator_id: l.m_locator_id, qty: -Number(l.movementqty) });
+    ops.push({ op_type: 'MOVE_STOCK', table: 'M_Storage', m_product_id: l.m_product_id, m_locator_id: l.m_locatorto_id, qty: Number(l.movementqty) });
+  });
+  ops.push({ op_type: 'SET_STATUS', table: 'M_Movement', id: movement.m_movement_id, doc_status: 'CO' });
+  return { ok: true, ops: ops };
+}
+
 // ── TAX (prompts/SQLiteIDEMPIERE.md §45, F11) — Witness: M3 T1 + the tax keys of every scenario ─────────────────────────────────────
 // Integer-exact decimal helpers (BigInt): amounts in minor units (cents at precision 2); rates as decimal strings.
 function _dec(str) { var t = String(str == null ? '0' : str).trim(), neg = t[0] === '-'; if (neg) t = t.slice(1); var p = t.split('.'), f = p[1] || ''; return { n: BigInt((neg ? '-' : '') + (p[0] || '0') + f), k: f.length }; }
@@ -516,7 +533,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,
