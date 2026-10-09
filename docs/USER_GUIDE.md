@@ -27,6 +27,8 @@ Matrix landing (red / blue → round selector). Pick a door, or jump straight to
 **Bookmark any of them**; press **Home** on any surface to come back to the front door. On a return visit
 the landing shows the compact `⋯` launcher; **refresh** for the full round selector again.
 
+**Just need a quick IFC chore?** Upgrade to IFC4.3, pull one item out into its own IFC, split by storey, or check a model's health — drop a file, it runs. **[BIM Tools — User Manual →](BIMToolsGuide.md)**
+
 New here recently? Check **[What's New](WhatsNew.md)** for a running log of shipped changes.
 
 ## Pick a surface
