@@ -210,4 +210,20 @@ with `readData` after the DocStatus event (§4.2) — the log alone cannot rebui
 **Window cost:** a 200-id window re-reads ~380 rows per poll on this small copy (dense ids) — fine here; tune per volume.
 Not yet built: UP path (§3), local replay of DOWN events through the doc engine (§4.3), Id map, outbox.
 
+## §14 Model-drift sentinel (user idea, 2026-10-09) — spec only, not built
+Goal: know "the model changed in a way that matters" from the change log alone, without tracking the whole dictionary.
+- **AD_Field = the user-visible sentinel.** A field edit/insert means something a user sees changed. AD_Tab / AD_Menu /
+  AD_Window changes alone are not usable signals (no field behind them) → NOT tracked.
+- **AD_Column = the rule sentinel.** Mandatory, default, validation rule ref, reference type, length live on the column and
+  can change with NO field edit. A new column with no field yet is invisible to users, but a rule change on an existing
+  column is not → track AD_Column (user-confirmed).
+- Candidate third (to decide by witness, not assume): `AD_Val_Rule` (its code is referenced by a column — the column row
+  does not change when the rule's SQL does) and `AD_Process` params if a component uses them.
+- Use: drift event ⇒ the Bridge does not rebuild the model from log rows; it raises `MODEL_DRIFT(table,column/field,old,new)`,
+  blocks UP for the affected component, and the model is re-synced by the normal AD route (2Pack/AD export ⇄ local ad_seed).
+  Detection from the log, payload from the dictionary.
+- Falsifier W11 MODEL-DRIFT: on the pilot edit (a) an AD_Field attribute, (b) an AD_Column mandatory flag with no field
+  change, (c) an AD_Val_Rule code only, (d) an AD_Tab name only. Expect events for a,b; for c only if AD_Val_Rule is in the
+  set; none for d. Print INCONCLUSIVE if the log shows nothing for a/b (logging flags off).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
