@@ -622,4 +622,19 @@ true SQLITE-GAP will come from running S1/S2/S4/S6 on the SQLite side (M3), not 
 `§GAP` report then runs the whole table every time, so the SQLite side only ever gets more correct.
 **Exit tie-in (§21):** "convinced" = this corpus (grown by real documents too) runs to MATCH or LEGACY-QUIRK-with-evidence for the agreed period.
 
+## §24 M2 BUILT + WITNESSED 2026-10-09 — DOWN replay (legacy-keyed documents → LOCAL engine)
+Code: `replay.js` (app-agnostic; tracker events → read header+lines from legacy → `rules.apply(doc)` = the app's local-engine adapter),
+`store.js` (+`bridge_inbox` exactly-once guard, `bridge_kv`), `changelog_tracker.js` (+`window` exposed). Witness `witness_m2_replay.js`
+(a SECOND legacy login, GardenUser role 103, keys the document step by step — standing in for a ZK user). Gate `check_genericity.sh` (6 files) PASS.
+`§M2_VERDICT PASS fails=0`: REPLAY (legacy doc applied once, lines intact) · ENGINE (`erp_engine.buildDoc` ops CREATE_DOCUMENT+CREATE_LINE+SET_STATUS,
+not a row copy) · TOTAL (local fold 6175c == legacy TotalLines 6175c, psql oracle) · OWN (Bridge's own pushed doc not replayed back) ·
+DEDUPE_RERUN (0) · DEDUPE_RESTART (fresh tracker, state from store ⇒ 0 re-applied) · FAIL (apply throws ⇒ FAILED row with message, sibling applied).
+**Real defects the witness found in my first cut (kept as facts — P17):** (1) "baseline" ran `run()` and replayed 25 historical documents ⇒ added a true
+`baseline()` (advance watermark, apply nothing); (2) after a restart the window re-read surfaced pre-baseline rows as new and re-applied 29 historical
+documents ⇒ the `seen` keys inside the window must be persisted with the watermark (bounded: only ids > wm−window). Both would have silently
+duplicated legacy history into SQLite in production.
+Limits stated, not hidden: totals compared are LINES only (tax/GrandTotal and Fact_Acct are M3 `§GAP` territory); baseline reads the whole change log once
+(server-side max-id read = G13/paging, not built); a document that reached CO and was later reversed is not replayed as a reversal yet (VO seen, skipped — `now VO, not replayed`).
+Next: M3 parallel-run reconcile + `§GAP` report seeded with the §23 corpus (S1,S2,S4,S6 first).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

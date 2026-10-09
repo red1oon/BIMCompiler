@@ -63,7 +63,7 @@ function createTracker(cfg, opts = {}) {
     return { fresh, reread: got.length - fresh.length, events, wm: state.wm };
   }
 
-  return { poll, state, isOwn };
+  return { poll, state, isOwn, window: win };
 }
 
 module.exports = { createTracker };

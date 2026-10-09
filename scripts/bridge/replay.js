@@ -9,7 +9,17 @@ const { query } = require('./ad_client');
 function createReplayer(cfg, store, tracker, rules, opts = {}) {
   const log = opts.log || (() => {});
   const wmKey = `wm:${rules.table}`;
-  if (store.kvGet(wmKey) && !tracker.state.wm) tracker.state.wm = +store.kvGet(wmKey);   // resume after restart (window + inbox dedupe cover the overlap)
+  // resume after restart: watermark AND the 'seen' keys inside the re-read window. Without 'seen', the window re-read would surface
+  // pre-baseline rows as new (found by witness M2 §DEDUPE_RESTART) — baseline history would be replayed after a restart.
+  if (store.kvGet(wmKey) && !tracker.state.wm) {
+    tracker.state.wm = +store.kvGet(wmKey);
+    for (const k of JSON.parse(store.kvGet(wmKey + ':seen') || '[]')) tracker.state.seen.add(k);
+  }
+  const saveState = () => {
+    const floor = tracker.state.wm - tracker.window;
+    const keep = [...tracker.state.seen].filter(k => +k.split(':')[0] > floor);        // only the window is needed ⇒ bounded
+    store.kvSet(wmKey, tracker.state.wm); store.kvSet(wmKey + ':seen', JSON.stringify(keep));
+  };
 
   async function readDoc(id) {
     const header = (await query(cfg, rules.headerRead, `${rules.table}_ID=${id}`))[0];
@@ -38,10 +48,18 @@ function createReplayer(cfg, store, tracker, rules, opts = {}) {
         store.inboxSet(rules.table, e.record, 'FAILED', null, err.message); res.failed++; log(`§REPLAY ${rules.table}#${e.record} FAILED ${err.message}`);
       }
     }
-    store.kvSet(wmKey, tracker.state.wm);
+    saveState();
     log(`§REPLAY_SUMMARY ${JSON.stringify(res)} wm=${tracker.state.wm}`);
     return res;
   }
-  return { run, readDoc };
+  // Baseline (§19 C5): advance the watermark to "now" WITHOUT applying history. Cost note: the tracker reads the whole log once
+  // (a server-side max-id read is the cheaper form for a big log — G13/paging, not built).
+  async function baseline() {
+    const p = await tracker.poll();
+    saveState();
+    log(`§REPLAY_BASELINE wm=${tracker.state.wm} rows_skipped=${p.fresh.length} (history is not replayed)`);
+    return { wm: tracker.state.wm, skipped: p.events.length };
+  }
+  return { run, readDoc, baseline };
 }
 module.exports = { createReplayer };
