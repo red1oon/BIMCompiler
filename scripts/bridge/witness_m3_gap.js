@@ -658,6 +658,12 @@ const quirks = [
     { id: 'PI2-physical-inventory-loss', facts: { id: 'PI2', lines: [{ product: 137, loc: 101, book: book137 + 2, count: book137 + 1 }] }, legacy: legacyInventory, local: localInventory(0) },
     { id: 'PI-REJ-unknown-product', facts: { id: 'PIR', lines: [{ product: 999999, loc: 101, book: 0, count: 1 }] }, legacy: legacyInventory, local: localInventory(0) }]), piSpec, quirks, { log });
   rows.push(...pirows);
+  // FULL CYCLE Order-to-Cash (spec §64): six chained steps, legacy first, compared after EVERY step (each step its own key set)
+  if (!only || 'O2C'.startsWith(only.slice(0, 3)) && only.startsWith('O2C')) {
+    const O2C = require('./cycle_o2c')({ cfg, query, call: call_, createLink, gb, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
+      pos, priceOfAt, taxOfFor, taxById, taxChildren, TAX_INCLUDED, dtOf, creditOf, periodCheck, acctSetupOf, PL_CURRENCY, log });
+    for (const [i, st] of O2C.STEPS.entries()) rows.push(...await R.run([O2C.scenario(st, i)], { keys: O2C.KEYS[st], notCompared: {} }, quirks, { log }));
+  }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);

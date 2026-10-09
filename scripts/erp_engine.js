@@ -594,6 +594,59 @@ function creditCheckOrder(order, bp, sys) {
   return err ? { ok: false, reason: err.reason, msg: err.msg, totalOpenBalance: open, grandTotal: gt, creditLimit: lim } : { ok: true };
 }
 
+// ── ORDER-LINE QUANTITIES (prompts/SQLiteIDEMPIERE.md §64.1, F20) — Witness: M3 cycle O2C1..O2C6 key ol_qty ───────────────────────────
+// Each verb returns UPDATE_LINE ops on C_OrderLine with the new qtyreserved / qtydelivered / qtyinvoiced; lines = the order lines {c_orderline_id, m_product_id, qtyordered,
+// qtyreserved, qtydelivered, qtyinvoiced}. Quantities are plain numbers (UOM precision is the host's).
+// orderReserve — MOrder.reserveStock (MOrder.java:1930-2023): target = QtyOrdered when the document is binding (not a proposal, not being voided) else 0;
+// difference = max(target − QtyDelivered, 0) − QtyReserved; nothing when difference = 0, or when QtyOrdered < 0 and nothing is reserved; QtyOrdered < 0 with a
+// reservation ⇒ release it all; product lines only (charges have no product). order = { binding (default true) }.
+function orderReserve(order, lines) {
+  var ops = [], binding = order.binding !== false;
+  (lines || []).forEach(function (l) {
+    if (!l.m_product_id) return;
+    var ordered = Number(l.qtyordered || 0), res = Number(l.qtyreserved || 0), del = Number(l.qtydelivered || 0);
+    var target = binding ? ordered : 0, diff = (target > del ? target - del : 0) - res;
+    if (diff === 0 || ordered < 0) {
+      if (diff === 0 || res === 0) return;
+      if (ordered < 0 && res > 0) diff = -res;
+    }
+    ops.push({ op_type: 'UPDATE_LINE', table: 'C_OrderLine', id: l.c_orderline_id, qtyreserved: res + diff });
+  });
+  return { ok: true, ops: ops };
+}
+// inoutOrderLineEffects — MInOut.completeIt per line (MInOut.java:1686-1690 Qty = MovementQty, negated for a '-' movement; :1959-1971 reservation; :1973-1985 delivered):
+// QtyOrdered >= 0 ⇒ QtyReserved −= MovementQty, floored at 0, and 0 when QtyDelivered already exceeds QtyOrdered; SO (or no product) ⇒ QtyDelivered −= Qty (SO) / += Qty.
+// The same rule completes a reversal (its lines carry the negated MovementQty), which is how a Reverse-Correct restores the reservation. Closed orders are skipped (opts.orderClosed).
+function inoutOrderLineEffects(inout, sLines, orderLines, opts) {
+  opts = opts || {};
+  var ops = [], by = {};
+  (orderLines || []).forEach(function (l) { by[l.c_orderline_id] = { c_orderline_id: l.c_orderline_id, qtyordered: Number(l.qtyordered || 0), qtyreserved: Number(l.qtyreserved || 0), qtydelivered: Number(l.qtydelivered || 0) }; });
+  (sLines || []).forEach(function (s) {
+    var o = by[s.c_orderline_id]; if (!o) return;
+    var mq = Number(s.movementqty || 0), qty = String(inout.movementtype).charAt(1) === '-' ? -mq : mq;
+    if (s.m_product_id && !opts.orderClosed && o.qtyordered >= 0) {
+      o.qtyreserved -= mq;
+      if (o.qtyreserved < 0) o.qtyreserved = 0; else if (o.qtydelivered > o.qtyordered) o.qtyreserved = 0;
+    }
+    if (String(inout.issotrx) === 'Y' || !s.m_product_id) o.qtydelivered = String(inout.issotrx) === 'Y' ? o.qtydelivered - qty : o.qtydelivered + qty;
+    ops.push({ op_type: 'UPDATE_LINE', table: 'C_OrderLine', id: o.c_orderline_id, qtyreserved: o.qtyreserved, qtydelivered: o.qtydelivered });
+  });
+  return { ok: true, ops: ops };
+}
+// invoiceOrderLineEffects — MInvoice.completeIt (MInvoice.java:2111-2125): an invoice line linked to an order line, on a sales invoice (or without product) ⇒
+// QtyInvoiced += QtyInvoiced (credit memo: −). A reversal invoice completes with negated quantities, so the same rule undoes it. Purchase lines go through MatchPO (not here).
+function invoiceOrderLineEffects(invoice, iLines, orderLines) {
+  var ops = [], by = {};
+  (orderLines || []).forEach(function (l) { by[l.c_orderline_id] = { c_orderline_id: l.c_orderline_id, qtyinvoiced: Number(l.qtyinvoiced || 0) }; });
+  (iLines || []).forEach(function (il) {
+    var o = by[il.c_orderline_id]; if (!o) return;
+    if (!(String(invoice.issotrx) === 'Y' || !il.m_product_id)) return;
+    var q = Number(il.qtyinvoiced || 0); o.qtyinvoiced += String(invoice.iscreditmemo) === 'Y' ? -q : q;
+    ops.push({ op_type: 'UPDATE_LINE', table: 'C_OrderLine', id: o.c_orderline_id, qtyinvoiced: o.qtyinvoiced });
+  });
+  return { ok: true, ops: ops };
+}
+
 // ── FIXED ASSETS (prompts/SQLiteIDEMPIERE.md §63, F19) — Witness: scripts/bridge/witness_fa_gap.js (FA1, FA0, FA-REJ*, NEG) ──────────────────
 // Pure ports of the legacy asset lifecycle. Amounts are integers in MINOR units (cents, precision 2 — MDepreciation.m_precision=2, MDepreciation.java:103);
 // dates are 'YYYY-MM-DD' strings. The host supplies the rows and persists what comes back (no DB binding here).
@@ -755,6 +808,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
+  orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
