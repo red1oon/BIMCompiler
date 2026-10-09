@@ -262,4 +262,23 @@ who holds the SQL Process form role? which plugins/AD_Rule scripts exist? is pga
 New witnesses: W12 CASCADE-DELETE (B12), W13 OUT-OF-BAND (B1/B3: apply a raw UPDATE on the pilot to a tracked table →
 alarm fires; the same change via WS → no alarm; INCONCLUSIVE if hash unchanged).
 
+### §15.1 Re-audit against latest upstream (2026-10-09, read-only `git diff HEAD @{u}`)
+- Local checkout `~/idempiere-dev-setup/idempiere` = master `87968daa73` (2026-01-16); upstream `770ec13ec2` is **278 commits ahead**.
+  `git pull --ff-only` is BLOCKED by 3 locally modified eclipse files (`bundles.info` ×2, `server.product.launch`) — not
+  stashed/discarded (stash is shared across worktrees). Read upstream via `git show @{u}:…` instead; no source was changed.
+- Role fact (user): **SuperUser / System Administrator holds the SQL Process + SQL Query forms** (pilot: role 'System
+  Administrator' on both). So B3 is by-design for the super user: policy = Bridge treats SuperUser DML as `OUT_OF_BAND`
+  unless declared (§15 hard rule applies to SuperUser too).
+- Unchanged upstream: change-log insert rule (`SYSTEM_INSERT_CHANGELOG` default N, `PO.java:3817`), per-column/skip rules,
+  `ApplyMigrationScripts` (raw SQL), `WSQLProcess` allowed-keywords key. All B-rows stand.
+- Changed upstream: PO now writes change-log rows in a **batch** (`BatchInsert<MChangeLog>`, `PO.java:3137-3142, 3758-3763`) —
+  same transaction, same rows; the W10 late-commit window is still required. Re-run W10 after the pilot moves to this build.
+- **NEW upstream hook — IDEMPIERE-6910 (migration `iD12/postgresql/202603261259`, backported to iD12 line): `AD_ChangeLog.ExternalTraceId`**
+  (VARCHAR 100, indexed) filled from thread-local `AuditTraceContext` (`MSession.java:477-479`); also on `AD_PInstance`.
+  This is an official place to stamp "this change came from the Bridge / op_uuid". **Core does not set it from WebService
+  requests** (only `BackgroundJobCallable` propagates it) → using it needs a small server-side hook (request filter that
+  sets `AuditTraceContext` from a header). That is a legacy change → proposal item for later, NOT a dependency. Until then:
+  own-echo = `CreatedBy` + `TrxName ws_*` (W10-proven).
+- 200 new migration scripts upstream (iD14 line). Only 6910 touches the change log. Migrations remain raw SQL (B1).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
