@@ -49,7 +49,10 @@ function createTracker(cfg, opts = {}) {
   // returns { fresh: rows never seen, reread: rows seen again in window, events, wm }
   async function poll() {
     const from = Math.max(0, state.wm - win);
-    const got = await query(cfg, 'QueryChangeLog', `AD_ChangeLog_ID > ${from}`);
+    // spec §76 (P17, P13): the FIRST poll (no watermark) used to read the WHOLE change log in one WS answer — at 79 713 rows the server fails writing it (HTTP 500,
+    // JAXRSUtils "Problem with writing the data", pilot log 07:33:13). A baseline only needs the tail: rows older than (max − window) are consumed, never returned.
+    const filter = state.wm === 0 && !opts.fullHistory ? `AD_ChangeLog_ID > (SELECT COALESCE(MAX(AD_ChangeLog_ID),0) - ${win} FROM AD_ChangeLog)` : `AD_ChangeLog_ID > ${from}`;
+    const got = await query(cfg, 'QueryChangeLog', filter);
     const fresh = [];
     for (const r of got) {
       const k = `${r.AD_ChangeLog_ID}:${r.AD_Column_ID}`;
