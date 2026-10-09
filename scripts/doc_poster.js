@@ -108,6 +108,10 @@ function deriveInOut(db, R, ioId, schema) {
       return { by: by, absent: absent };
     }
   }
+  // §38 (F6): the Average costed-qty refusal — whole document refused, nothing posted (MCost.java:1919-1930 via MCostDetail.process). Only when the posting db carries
+  // m_cost.currentqty (schema patch §37); otherwise unchanged. Reversal shipments skip the check (MCostDetail.java:1482-1485) — they returned above.
+  var neg = costQtyRefusal(db, lines);
+  if (neg) { absent.push(neg); return { by: by, absent: absent }; }
   lines.forEach(function (l) {
     // IsStocked decides service-vs-item ONLY when the cost is missing; a seed without the column cannot tell, so it is treated as an item and reported (never guessed)
     var prod = _hasCol(db, 'm_product', 'isstocked') ? getRow(db, 'SELECT isstocked FROM m_product WHERE m_product_id=?', num(l.m_product_id)) : null;
@@ -124,6 +128,48 @@ function deriveInOut(db, R, ioId, schema) {
     if (asset) add('CR', asset, amt);
   });
   return { by: by, absent: absent };
+}
+
+// ── §38 (F6) costed quantity — MCostDetail.process (MCostDetail.java:1327-1400) + MCostElement.getCostingMethods (MCostElement.java:148-159) + MCost.setCurrentQty (:1919-1930)
+function _costingElements(db) {
+  var act = _hasCol(db, 'm_costelement', 'isactive') ? " AND isactive='Y'" : '';
+  return allRows(db, "SELECT m_costelement_id AS id, costingmethod AS cm FROM m_costelement WHERE costelementtype='M' AND costingmethod IS NOT NULL AND costingmethod<>''" + act, []);
+}
+function _isStocked(db, pid) {
+  if (!_hasCol(db, 'm_product', 'isstocked')) return true;
+  var r = getRow(db, 'SELECT isstocked FROM m_product WHERE m_product_id=?', num(pid));
+  return !r || String(r.isstocked) !== 'N';
+}
+function _curQty(db, pid, sch, ct, el) {
+  var r = getRow(db, 'SELECT currentqty FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?', [num(pid), num(sch), num(ct), num(el)]);
+  return r && r.currentqty != null ? Number(r.currentqty) : 0;     // MCost.get creates a missing row at 0
+}
+// lines = [{m_product_id, movementqty}] of a NON-reversal sales shipment; returns the refusal text or null
+function costQtyRefusal(db, lines) {
+  if (!_hasCol(db, 'm_cost', 'currentqty')) return null;
+  var els = _costingElements(db).filter(function (e) { return e.cm === 'A' || e.cm === 'I'; });
+  var schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema ORDER BY c_acctschema_id', []);
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i]; if (!_isStocked(db, l.m_product_id)) continue;
+    for (var j = 0; j < schemas.length; j++) for (var k = 0; k < els.length; k++) {
+      var cur = _curQty(db, l.m_product_id, schemas[j].id, schemas[j].ct, els[k].id), nq = cur - Number(l.movementqty);
+      if (nq < 0) return 'AverageCostingNegativeQty: Product=' + l.m_product_id + ', Current Qty=' + cur + ', New Current Qty=' + nq + ', CostElement=' + els[k].id + ', Schema=' + schemas[j].id;
+    }
+  }
+  return null;
+}
+// the CurrentQty deltas a committing host applies after the shipment posted (legacy: same transaction). Shipment C- ⇒ −qty, reversal (qty already negated) ⇒ +qty.
+function costQtyUpdates(db, ioId) {
+  if (!_hasCol(db, 'm_cost', 'currentqty')) return [];
+  var lines = allRows(db, 'SELECT m_product_id, movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId));
+  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema ORDER BY c_acctschema_id', []), out = [];
+  lines.forEach(function (l) {
+    if (!_isStocked(db, l.m_product_id)) return;
+    schemas.forEach(function (sc) { els.forEach(function (e) {
+      out.push({ m_product_id: num(l.m_product_id), c_acctschema_id: sc.id, m_costtype_id: sc.ct, m_costelement_id: e.id, delta: -Number(l.movementqty) });
+    }); });
+  });
+  return out;
 }
 
 // the invoice an order generated — linked via the order line (NON-INVENT lineage; poc_fold_complete:75).
@@ -700,7 +746,7 @@ function derivePostings(db, recordRef, schema, R) {
 
 function _R() { try { return (typeof require !== 'undefined') ? require('./post_resolver') : null; } catch (e) { return null; } }
 
-var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
+var _api = { derivePostings: derivePostings, deriveInvoice: deriveInvoice, deriveInOut: deriveInOut, costQtyUpdates: costQtyUpdates, deriveOrder: deriveOrder, invoiceForOrder: invoiceForOrder,
              glCategoryFor: glCategoryFor };   // §P9 (W-POST-GLCATEGORY): the Doc.setDocumentType GL_Category chain, exposed for the witness
 // UMD tail — node (require) + browser live host (window.DocPoster). erp_preview.js injects window.PostResolver as R.
 if (typeof module !== 'undefined' && module.exports) { module.exports = _api; }

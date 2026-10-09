@@ -62,13 +62,15 @@ function localRun(mut = 0) {
       const d = DP.derivePostings(gb, { table: 'C_Invoice', id: iid }, SCHEMA);
       postings = (d.absent && d.absent.length) ? 'ABSENT:' + d.absent.join(',') : fmtPostings(d.lines);
     }
-    let postingsShipment = 'none';
+    let postingsShipment = 'none', refusedWhy;
     if (shipDone) {                                                                // materialise SQLite's own completed shipment, fold with the product's derivePostings
       const sid = opts.inoutId;
       gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus) VALUES(?,?,?,?)').run(sid, 'Y', 'C-', 'CO');
       for (const l of g.soLines) gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty) VALUES(?,?,?,?)').run(sid * 100 + l.c_orderline_id % 100, sid, l.m_product_id, l.qtyordered);
       const dsh = DP.derivePostings(gb, { table: 'M_InOut', id: sid }, SCHEMA);
-      postingsShipment = (dsh.absent && dsh.absent.length) ? 'ABSENT:' + dsh.absent.join(',') : (dsh.lines && dsh.lines.length ? fmtPostings(dsh.lines) : 'none');
+      // legacy has ONE state for any posting error (Posted=E, no books) ⇒ a refused SQLite fold is reported the same way; the reason is kept for the log (§38)
+      if (dsh.absent && dsh.absent.length) { postingsShipment = 'REFUSED:Posted=E'; refusedWhy = dsh.absent.join(','); }
+      else { postingsShipment = dsh.lines && dsh.lines.length ? fmtPostings(dsh.lines) : 'none'; applyCostQty(sid); }
     }
     const stock = {}; if (shipDone) g.soLines.forEach(l => { stock[l.m_product_id] = (stock[l.m_product_id] || 0) - l.qtyordered; });
     return {
@@ -77,9 +79,16 @@ function localRun(mut = 0) {
       total_cents: g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0) + mut,
       shipments: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'M_InOut').length, shipments_completed: shipDone,
       invoices: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice').length,
-      stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment,
+      stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _refused: refusedWhy,
     };
   };
+}
+// §38: the costed-qty deltas a committing host applies after a successful shipment post (legacy: same transaction) — keeps the scratch state moving like legacy's
+function applyCostQty(ioId) {
+  for (const u of DP.costQtyUpdates(gb, ioId)) {
+    const r = gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+? WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
+    if (!r.changes) gb.prepare('INSERT INTO m_cost(m_product_id,c_acctschema_id,m_costtype_id,m_costelement_id,currentcostprice,cumulatedamt,cumulatedqty,currentqty) VALUES(?,?,?,?,0,0,0,?)').run(u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id, u.delta);
+  }
 }
 
 // ================= Legacy side: push via the Bridge (composite) + read-back over read WS types =================
@@ -115,7 +124,7 @@ async function legacyRun(f) {
   }
   let postingsShipment = 'none';
   const doneShip = io.find(x => x.DocStatus === 'CO');
-  if (doneShip && f.judgePostingRefusal) {                                       // spec §31: the refusal itself is the rule under test — wait for the poster's verdict (Y|E)
+  if (doneShip) {                                                                // spec §31/§38: legacy refusing to post IS a result (cardinal rule) — wait for the poster's verdict (Y|E)
     for (let i = 0; i < 8 && !['Y', 'E'].includes(doneShip.Posted); i++) { await new Promise(r => setTimeout(r, 1500)); doneShip.Posted = (await query(cfg, 'QueryMInOut', `M_InOut_ID=${doneShip.M_InOut_ID}`))[0].Posted; }
     if (doneShip.Posted === 'E') postingsShipment = 'REFUSED:Posted=E';
   }
@@ -123,8 +132,7 @@ async function legacyRun(f) {
     let fs2 = [];
     for (let i = 0; i < 6 && !fs2.length && doneShip.Posted !== 'E'; i++) { fs2 = await query(cfg, 'QueryFactAcct', `AD_Table_ID=319 AND Record_ID=${doneShip.M_InOut_ID} AND C_AcctSchema_ID=${SCHEMA}`); if (!fs2.length) await new Promise(r => setTimeout(r, 1500)); }
     const by2 = {}; for (const f of fs2) { const a = f.Account_ID; by2[a] = by2[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by2[a].amtacctdr += Number(f.AmtAcctDr); by2[a].amtacctcr += Number(f.AmtAcctCr); }
-    postingsShipment = fs2.length ? fmtPostings(Object.values(by2))
-      : (doneShip.Posted === 'E' ? 'INCONCLUSIVE:legacy shipment posting Posted=E (pilot AD_Issue 2026-10-09: AverageCostingNegativeQtyException Oak Tree, cost qty 0) — no legacy books to compare' : 'NO_FACT_ACCT_ROWS');
+    postingsShipment = fs2.length ? fmtPostings(Object.values(by2)) : 'NO_FACT_ACCT_ROWS';
   }
   return {
     outcome: 'COMPLETED', docstatus: h.DocStatus,
@@ -212,7 +220,8 @@ function localVoid(mut = 0) {
     for (const id of docs.M_InOut) {
       gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,reversal_id) VALUES(?,?,?,?,?)').run(id, 'Y', 'C-', status['M_InOut:' + id], revOf['M_InOut:' + id] || null);
       ioLines[id].forEach((l, i) => gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty,reversalline_id) VALUES(?,?,?,?,?)').run(l.m_inoutline_id || id * 100 + i, id, l.m_product_id, l.movementqty, l.reversalline_id || null));
-      const dd = DP.derivePostings(gb, { table: 'M_InOut', id }, SCHEMA); post['ship:' + (revOf['M_InOut:' + id] ? 'rev' : 'orig')] = dd.absent && dd.absent.length ? 'ABSENT:' + dd.absent.join(',') : (dd.lines.length ? fmtPostings(dd.lines) : 'none');
+      const dd = DP.derivePostings(gb, { table: 'M_InOut', id }, SCHEMA); post['ship:' + (revOf['M_InOut:' + id] ? 'rev' : 'orig')] = dd.absent && dd.absent.length ? 'REFUSED:Posted=E' : (dd.lines.length ? fmtPostings(dd.lines) : 'none');
+      if (!(dd.absent && dd.absent.length)) applyCostQty(id);
     }
     const stock = {}; for (const id of docs.M_InOut) ioLines[id].forEach(l => { stock[l.m_product_id] = (stock[l.m_product_id] || 0) - Number(l.movementqty); });
     Object.keys(stock).forEach(k => { if (!stock[k]) delete stock[k]; });
@@ -250,13 +259,19 @@ const quirks = [
   let fails = 0, incon = 0;
   const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUSIVE' : ok ? 'PASS' : 'FAIL'} ${msg}`); if (ok === 'INCONCLUSIVE') incon++; else if (!ok) fails++; };
 
+  // §37/§38 C5 handover in miniature: load the generated dict_diff patches (schema + data, legacy values) into the scratch posting db so both sides start from the SAME state
+  { const DD = require('./dict_diff'); const sync = [];
+    for (const sp of require('./dict_spec.json').filter(x => x.db === 'glassbowl')) {
+      const L = await DD.discover(cfg, sp), r = DD.compare(L, gb, sp), st = DD.applyPatch(gb, DD.toSchemaPatch(r, sp) + DD.toPatch(r, sp)), r2 = DD.compare(L, gb, sp);
+      sync.push(`${sp.table}:+${st.altered}col,${st.ran}stmt,left=${r2.changed.length + r2.onlyLegacy.length}`); }
+    log(`§M3_STATE_SYNC ${sync.join(' ')}`); }
   // S7 (spec §31): quantity = legacy on-hand now (floored at 0) + 1 ⇒ every run sells beyond on-hand
   // and beyond the legacy Average-PO costed qty (QueryMCost), so the verdict cannot flip between runs (a refused posting leaves costed qty unchanged)
   const oh128 = await stockOf(128);
   const cq128 = (await query(cfg, 'QueryMCost', `M_Product_ID=128 AND C_AcctSchema_ID=${SCHEMA} AND M_CostElement_ID IN (SELECT M_CostElement_ID FROM M_CostElement WHERE CostingMethod='A')`)).reduce((a, r) => Math.max(a, Number(r.CurrentQty)), 0);
   const q7 = Math.max(oh128, cq128, 0) + 1;
   log(`§S7_FACTS product=128 legacy_onhand_before=${oh128} legacy_avg_costed_qty=${cq128} qty=${q7} warehouse=103`);
-  corpus.push(sc('S7a-pos-sale-beyond-onhand', { doctype: POSDT, lines: [{ product: 128, qty: q7 }], judgePostingRefusal: true }),
+  corpus.push(sc('S7a-pos-sale-beyond-onhand', { doctype: POSDT, lines: [{ product: 128, qty: q7 }] }),
     sc('S7b-standard-order-beyond-onhand', { doctype: STDDT, lines: [{ product: 128, qty: q7 }] }));
   const rows = await R.run(corpus, spec, quirks, { log });
   // S12 void (spec §33): product 136 (costed, reversal is cost-neutral), BP 112
