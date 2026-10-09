@@ -232,4 +232,34 @@ over the existing read-only WS types, hashes the rows locally (kernel side store
 Zero legacy footprint. It is the safety net for what the change log cannot see (direct SQL, logging flags off), and the
 same hash is the `sentinel_hash` both sides can show to prove "model aligned". Change log = fast path; hash = audit.
 
+## §15 HARD RULE + backdoor register (user directive 2026-10-09; audited against source + pilot DB)
+**HARD RULE: no direct SQL change on either side outside the framework.** Allowed write paths = (1) the doc/PO path
+(UI, WebService, doc-action), (2) 2Pack, (3) a reviewed migration script (`migration/*.sql` / `AD_MigrationScript`).
+Anything else is a defect to detect, not to tolerate.
+**Correction to the "exceptions" premise:** only 2Pack is covered by the change log. A migration script is NOT.
+| # | Path | Logged in AD_ChangeLog? | Evidence | Mitigation |
+|---|---|---|---|---|
+| B1 | **Migration scripts** (`ApplyMigrationScripts` / psql of `migration/*.sql`) | **NO** — raw SQL via JDBC, not PO | `ApplyMigrationScripts.java:60-95` | Every script must also be declared to the Bridge (name + hash); sentinel hash (§14) + table count/hash catch its effect; scripts that touch tracked tables = MODEL_DRIFT/RECONCILE event |
+| B2 | 2Pack import | YES (`TrxName=PipoDS_*`, 198 rows on pilot) | pilot `ad_changelog` | none needed; classify `PipoDS_*` as "model change", not user traffic |
+| B3 | **SQL Process form** (`WSQLProcess`) — in-app DML | **NO** | allowed keywords default `ALTER,…,DELETE,DROP,INSERT,UPDATE,TRUNCATE…` (`WSQLProcess.java:235`); granted to 1 role on pilot | legacy admin: remove role access or tighten `FORM_SQL_PROCESS_ALLOWED_KEYWORDS`; Bridge cannot see it |
+| B4 | Direct DB (psql, restore, DB replication) | **NO** | nature | DB-admin policy; detection only via reconcile hash. pgaudit/`log_statement` is DB config, no schema change |
+| B5 | Core code doing bulk SQL | **NO** | ~1,000 `DB.executeUpdate*` calls in 169 core files (602 + 399) — totals, storage, costing, posting | expected & legitimate; their RESULT is derived (GrandTotal, M_Storage, M_Cost). Never sync derived rows; reconcile them by recompute (W3) |
+| B6 | Columns/tables with logging OFF | **NO** | `C_Order`: GrandTotal, ProcessedOn, DocAction unlogged; `Fact_Acct`, `M_Storage`, `M_Cost`, `M_CostDetail` tables `IsChangeLog=N`; 195 base tables N; secure columns forced off (`MColumn.java:524`) | per-component descriptor lists tracked cols; an unlogged col the component needs ⇒ F-flag to admin or hash-audit |
+| B7 | Inserts when `SYSTEM_INSERT_CHANGELOG=N` (vanilla) | **NO** | W10 `§W10_INSERT_MODE` (N→0, Y→2) | F1: admin sets Y, else rely on first update + `readData` |
+| B8 | **Scripted rules** (`AD_Rule`, beanshell/groovy; 4 on pilot; process `@script:beanshell:`) | their PO saves ARE logged; raw `DB.executeUpdate` inside script is NOT | `ad_rule` (4, EventType R), `M_Forecast Calculate` | review/inventory scripts on the legacy side; treat as B5 |
+| B9 | **Change-log UnDo/ReDo process** (`ChangeLogProcess`) | rewrites values; the undo itself goes through PO (logged) — to witness | `AD_ChangeLog_UnDo` | treat as normal events; witness once |
+| B10 | `Fact_Acct_Reset`, `C_Allocation_Reset(_Direct)` | **NO** (bulk) | processes in `ad_process` | derived data; Bridge reconciles postings (W3), never replays these |
+| B11 | PO save with no session / `addSkipChangeLogForUpdate` | **NO** | `PO.java:3290-3294`; MSession skip list (used only by tests today) | server-side Java plugins can set it: plugin inventory is part of the admin handshake |
+| B12 | **Hard DELETE** of children by DB cascade (FK ON DELETE CASCADE) | parent logged, cascaded children **NO** | PG behaviour; not yet witnessed on pilot | W12: delete a parent, compare child rows vs log |
+| B13 | Postgres triggers on legacy | n/a | pilot has only 4 internal-purpose (replica sync verifier, 3 blob cleanup) — no business triggers | re-run this query against the real server before trusting |
+| B14 | Cache lag (`CacheReset`) | n/a | server restart needed for WS type changes (F2) | not a data path; Bridge must not assume instant AD effect |
+**Reading the register:** B1, B3, B4 are the true blind spots (legitimate-looking writes that leave no log). B5/B10 are
+noise by design. The Bridge's answer to every blind spot is the SAME audit already specced (§14): client-side hash per
+tracked table (rows + selected columns), compared each sync — any drift with no matching change-log event, no declared
+script, and no `PipoDS_*` trx = **`OUT_OF_BAND`** alarm, component paused. That event is how the hard rule is enforced.
+**Not claimed:** this list is from source + a vanilla pilot, not the real server. Open for the admin handshake (§9 P1):
+who holds the SQL Process form role? which plugins/AD_Rule scripts exist? is pgaudit available? what migration scripts are pending?
+New witnesses: W12 CASCADE-DELETE (B12), W13 OUT-OF-BAND (B1/B3: apply a raw UPDATE on the pilot to a tracked table →
+alarm fires; the same change via WS → no alarm; INCONCLUSIVE if hash unchanged).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
