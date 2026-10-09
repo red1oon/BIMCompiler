@@ -527,4 +527,26 @@ each shadowing a legacy plugin during the parallel run.
 (no server dedupe/transaction now that Half V is parked) ⇒ rely on the `composite` WS probe (W1) and on parking + read-back; G10 session
 growth stays a visible footprint ⇒ batch calls. These are the honest cost of "legacy installs nothing".
 
+## §20 PROPOSAL (2026-10-09) — build the SQLite-side legacy-client emulator + parallel-run harness, in 6 witnessed steps
+**Reading of the user's "your first part description is correct start":** the original SQLite-side design (§1–§4: documents + doc-actions
+over stock WS, change log for DOWN) is the base; §19 cuts everything that needed a server install. Nothing below touches legacy beyond
+the pilot fixtures already in §12/§13.
+**Shape:** one SQLite-side layer, no app words inside it (P3). Modules: `transport` ✅ · `tracker` ✅ · `outbox+state+idmap` · `doc writer`
+(descriptor-driven) · `replay` · `snapshot reader` · `reconcile/GAP report` · `config+baseline` · `witness kit`.
+| Step | Build | Witness (pilot, real iDempiere) | Falsifier / guard |
+|---|---|---|---|
+| M0 ✅ | transport + change-log tracker | W10 PASS (both insert modes) | window=0 negative control |
+| M1 | **outbox + state + idmap + descriptor doc writer**: one document type end to end (header, lines, DocAction) as a normal user; local rows `QUEUED→PUSHED→CONFIRMED/REJECTED/PARKED` | W1 (calls, order, 2nd run +0) · W5 kill-points (before header / between header & lines / before CO / after CO) · W4 server refusal shows REJECTED · W6 legacy-looks-native (field diff vs a doc already on legacy) | probe stock `composite` WS for one-transaction writes first; if absent, ambiguous failure PARKS (G1/G2). INCONCLUSIVE if nothing judged |
+| M2 | **DOWN replay**: tracker events → `readData` → replay through the LOCAL doc engine; own-echo skipped | W2 (legacy-keyed doc appears locally, totals equal, nothing applied twice) | late-commit control from W10 |
+| M3 | **Parallel-run reconcile + `§GAP` report** — the product: each doc seen on both sides is compared (docstatus, line/total amounts, stock effect, Fact_Acct); every difference is a logged `§GAP` naming the rule | W3: first target = **POS Order**: legacy measured on pilot (CO ⇒ 1 shipment + 1 invoice, store on-hand 4→3), SQLite side = existing `build/erp/pos_core.js` fold (W-POS-WR already green) ⇒ same orderlines to both ⇒ GAP list must be empty or itemised | seeded deliberate difference must be reported (witness can fail) |
+| M4 | **snapshot reader + config store + local baseline** (handover §19 C5): qty read, context set once, sentinel hash compare, watermark | W16-lite: qty after sale == legacy; baseline hash equal or FAILS loudly | missing config ⇒ refuse (P5) |
+| M5 | **first shadow plugin on the layer: POS** (descriptor + payload only, P15 no keyed price) — the Unicenta pattern, orderlines up, ProductQty down | W15/W16 against pilot | layer diff = descriptor-only (W8) |
+| M6 | **second shadow: Fixed Assets** (§11) to prove the layer is not POS-shaped | W9 parallel run vs legacy depreciation code | genericity grep gate (no app words in layer) |
+**Why this order:** M1–M2 make the SQLite UI usable "behind the scenes" (UP/DOWN as a normal user); M3 delivers the user's actual aim
+(see the gaps while running side by side) as early as possible, using a legacy behaviour already measured; apps come last so the
+layer is proven app-free first (M5 would otherwise bend it).
+**Decisions this proposal assumes (all already in the record, none new):** stock WS only (§19 C1–C4); vanilla server config (C7); price never
+keyed (P15); pilot only, reset by importiDempiere when needed. **Open, deferred to the Unicenta project (not asked):** the exact `c_pos`
+defaults and the ticket-key field (G1).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
