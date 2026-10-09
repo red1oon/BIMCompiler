@@ -988,4 +988,19 @@ version row and calls `priceAt`. The lens host keeps its single-version lookup u
 **Harness hardening in the same commit (P17):** new compared key **`cost_qty_delta`** (Average-PO costed qty change of each product, primary schema, read before/after on both sides). Reason: the start-of-run cost-state sync (§38) had made S8a look like a MATCH
 although legacy's back-dated shipment re-processed Oak Tree's cost history (costed qty 0 → 24 between runs; AD_Issue "Oak Tree, Current Qty=24.0, New Current Qty=-176.0"). With the key, S8a shows `legacy {"123":2} sqlite {"123":-1}` ⇒ **F9 back-date costing = open SQLITE-GAP (MISSING)**.
 
+## §42 F7 — period control on the sale, like legacy (S8c) (2026-10-09) — SPEC before code
+**Rule (ported verbatim):** `MPeriod.get(DateAcct, Org)` = the STANDARD period (`PeriodType='S'`) of the org's calendar whose `[TRUNC(StartDate), TRUNC(EndDate)]` contains the date (MPeriod.java:115-195, calendar via `getC_Calendar_ID(org)` → client calendar);
+none or inactive ⇒ closed; Automatic Period Control on the client's primary schema ⇒ open iff today − `Period_OpenHistory` ≤ date ≤ today + `Period_OpenFuture` (MPeriod.java:735-770); otherwise `C_PeriodControl` of the DocBaseType with `PeriodStatus='O'`
+(MPeriodControl.isOpen, :157-164; `forPosting` not used by prepareIt). Order: the period test runs BEFORE the credit test (MOrder.java:1544 vs :1689).
+**SQLite change:** pure `erp_engine.periodOpen(data, dateAcct, docBaseType, today)` (data = primary schema row + the calendar's periods with `{docbasetype: status}`), and a `periodGate` in the three POS completion verbs that runs when the host supplies `ctx.periodCheck(dateAcct, docBaseType)`
+and the order carries `opts.dateAcct`; refusal `{ok:false, reason:'period-closed'}`; the order op carries `dateordered`/`dateacct` when given. The M3 adapter builds `periodCheck` from `ad_seed_fullwidth.db` (c_acctschema, ad_clientinfo, c_year, c_period, c_periodcontrol).
+**Acceptance:** S8c MATCH (REJECTED both); S8a still completes on both sides (its open key is F9 cost state only).
+### §42.1 DECISION RECORD F7 — period control on the sale (2026-10-09)
+**Evidence:** S8c legacy `Failed when processing document: Period Closed`, SQLite COMPLETED. **Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW pure `periodOpen` (MPeriod.java:180-195, 291-314, 726-785; MPeriodControl.java:157-164);
+`build/erp/pos_core.js` `periodGate` before `creditGate` in buildSaleGroup / buildDeliverLaterGroup / buildRecallCompleteGroup (host `ctx.periodCheck` + `opts.dateAcct`), order header carries `dateordered`/`dateacct` when given;
+M3 adapter builds `periodCheck` from the seed (ad_clientinfo → primary schema + calendar → c_year/c_period/c_periodcontrol).
+**Proof:** `§SCN S8c-pos-sale-beyond-open-future MATCH` (REJECTED both) · `§M3_PERIOD_RULE PASS noPeriod=false beforeHistory=false today=true today+200=false standardControl(open?/status)=false/N` (the branches S8b/S8d cannot reach because both sides stop at the price rule first) ·
+all other scenarios unchanged. Regression: exits identical, logs identical except the 4 known-nondeterministic ones.
+**Residue:** org-specific calendars (AD_OrgInfo.C_Calendar_ID) are not read (client calendar only; GardenWorld has one); the lens host passes no date (always today ⇒ open); the SQLite seed's periods end 2030-12-31 vs legacy 2042 (DATA difference, irrelevant inside the 100-day window, reported for dict_diff).
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

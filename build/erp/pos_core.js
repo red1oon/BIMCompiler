@@ -95,7 +95,11 @@
     var POS_ORDER_SPEC = {
       docTable: 'C_Order', lineTable: 'C_OrderLine', parentId: 'c_pos_id', lineParentId: 'c_orderline_id',
       qtyTo: 'qtyordered', qtyFrom: 'qtyordered',
-      header: function () { return { c_order_id: opts.orderId, issotrx: 'Y', c_doctype_id: dtId, m_warehouse_id: wh, c_bpartner_id: bp, c_pos_id: ctx.pos.c_pos_id }; }
+      header: function () {
+        var h = { c_order_id: opts.orderId, issotrx: 'Y', c_doctype_id: dtId, m_warehouse_id: wh, c_bpartner_id: bp, c_pos_id: ctx.pos.c_pos_id };
+        if (opts.dateAcct) { h.dateordered = opts.dateAcct; h.dateacct = opts.dateAcct; }   // §42: business dates ride the order when the host gives one (absent ⇒ op unchanged)
+        return h;
+      }
     };
     var ops = E.buildDoc(POS_ORDER_SPEC, { c_pos_id: ctx.pos.c_pos_id }, soLines);
     // annotate each CREATE_LINE with the sealed master price (annotation of the verb's output, not a verb)
@@ -135,6 +139,12 @@
 
   // §36 (F5): the SO credit gate legacy runs in MOrder.prepareIt (CreditManagerOrder.java:48-98) — active when the host supplies ctx.creditOf(bpId)
   // → { bp, sys }; refusal happens before any op is emitted (legacy: STATUS_Invalid, nothing completes). No creditOf ⇒ unchanged behaviour.
+  // §42 (F7): the period test MOrder.prepareIt runs BEFORE the credit test (MOrder.java:1544-1548) — only when the host supplies ctx.periodCheck AND the order carries a date.
+  function periodGate(ctx, opts) {
+    if (!ctx || typeof ctx.periodCheck !== 'function' || !opts || !opts.dateAcct) return { ok: true };
+    var r = ctx.periodCheck(opts.dateAcct, ctx.docbasetype || 'SOO') || { ok: false, reason: 'period-closed' };
+    return r.ok ? r : { ok: false, reason: r.reason || 'period-closed', why: r.why };
+  }
   function creditGate(ctx, soLines, bpId, docsubtypeso, paymentrule) {
     if (!ctx || typeof ctx.creditOf !== 'function') return { ok: true };
     var c = ctx.creditOf(bpId) || {};
@@ -145,6 +155,8 @@
   function buildSaleGroup(ctx, cart, opts) {
     var built = buildOrderOps(ctx, cart, opts);
     if (!built.ok) return built;
+    var pg = periodGate(ctx, opts);
+    if (!pg.ok) return pg;
     var cg = creditGate(ctx, built.soLines, opts.c_bpartner_id, ctx.docsubtypeso || 'WR', opts.paymentrule);
     if (!cg.ok) return cg;
     var tail = completionOps(ctx, built.order, built.soLines, opts);
@@ -170,6 +182,8 @@
       return { ok: false, reason: 'not-draft', docstatus: heldOrder.docstatus };   // only a DR order recalls
     }
     if (!heldLines || !heldLines.length) return { ok: false, reason: 'no-held-lines' };
+    var pg = periodGate(ctx, opts);
+    if (!pg.ok) return pg;
     var cg = creditGate(ctx, heldLines, heldOrder.c_bpartner_id, ctx.docsubtypeso || 'WR', opts && opts.paymentrule);
     if (!cg.ok) return cg;
     var tail = completionOps(ctx, heldOrder, heldLines, opts);
@@ -219,6 +233,8 @@
     if (!pol.ok) return pol;
     var built = buildOrderOps(ctx, cart, Object.assign({}, opts, { doctypeId: opts.doctype.c_doctype_id }));
     if (!built.ok) return built;
+    var pg = periodGate(ctx, opts);
+    if (!pg.ok) return pg;
     var cg = creditGate(ctx, built.soLines, opts.c_bpartner_id, opts.doctype.docsubtypeso, opts.paymentrule);
     if (!cg.ok) return cg;
     // complete the ORDER with the dictionary flags VERBATIM (N/N ⇒ the bare SET_STATUS C_Order CO)

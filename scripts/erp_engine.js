@@ -346,6 +346,33 @@ function voidOrder(sale, opts) {
   return ops;
 }
 
+// periodOpen — MPeriod.isOpen(DateAcct, DocBaseType, Org) as a pure function. Implementing prompts/SQLiteIDEMPIERE.md §42 (F7) — Witness: M3 S8c.
+// data = { schema: { autoperiodcontrol, period_openhistory, period_openfuture } (client primary schema),
+//          periods: [{ c_period_id, startdate, enddate, isactive, periodtype, control: { <DocBaseType>: <PeriodStatus> } }] (the org calendar's periods) }
+// MPeriod.get (MPeriod.java:180-195): standard ('S') ACTIVE period with TRUNC(StartDate) <= date <= TRUNC(EndDate); none ⇒ closed (:304-308).
+// Auto period control (:735-770): open iff today-history <= date <= today+future. Else C_PeriodControl status 'O' for the DocBaseType (:772-785, MPeriodControl.java:157-164).
+// Dates as 'YYYY-MM-DD…' strings; today supplied by the host (legacy: the server clock).
+function periodOpen(data, dateAcct, docBaseType, today) {
+  var d = String(dateAcct).slice(0, 10);
+  if (!docBaseType) return { ok: false, reason: 'no-docbasetype' };
+  var p = (data.periods || []).filter(function (x) {
+    return String(x.isactive) === 'Y' && String(x.periodtype || 'S') === 'S' && String(x.startdate).slice(0, 10) <= d && d <= String(x.enddate).slice(0, 10);
+  })[0];
+  if (!p) return { ok: false, reason: 'period-closed', why: 'no period for ' + d };
+  var sc = data.schema || {};
+  if (String(sc.autoperiodcontrol) === 'Y') {
+    var t = Date.UTC(+today.slice(0, 4), +today.slice(5, 7) - 1, +today.slice(8, 10)), day = 86400000;
+    var first = new Date(t - Number(sc.period_openhistory || 0) * day).toISOString().slice(0, 10);
+    var last = new Date(t + Number(sc.period_openfuture || 0) * day).toISOString().slice(0, 10);
+    if (d < first) return { ok: false, reason: 'period-closed', why: 'before first day ' + first };
+    if (d > last) return { ok: false, reason: 'period-closed', why: 'after last day ' + last };
+    return { ok: true, c_period_id: p.c_period_id };
+  }
+  var st = p.control && p.control[docBaseType];
+  if (st == null) return { ok: false, reason: 'period-closed', why: 'no period control for ' + docBaseType };
+  return st === 'O' ? { ok: true, c_period_id: p.c_period_id } : { ok: false, reason: 'period-closed', why: 'status ' + st };
+}
+
 // priceAt — the price-list VERSION valid at a date. Implementing prompts/SQLiteIDEMPIERE.md §41 (F8) — Witness: M3 S8b/S8d.
 // Port of MProductPricing.calculatePL (MProductPricing.java:236-300): rows = the product's prices in ACTIVE versions of ONE price list (active price rows),
 // each { validfrom, pricestd, pricelist, pricelimit }; ordered ValidFrom DESC, the first with ValidFrom <= date (null ValidFrom always qualifies) wins; none ⇒ null.
@@ -382,7 +409,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,

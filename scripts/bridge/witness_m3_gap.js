@@ -34,6 +34,16 @@ const priceStmt = seed.prepare('SELECT pricestd FROM m_productprice WHERE m_pric
 // §41 F8: every active version's active price for (price list, product) — the rows erp_engine.priceAt walks by date
 const priceRowsStmt = seed.prepare("SELECT v.validfrom, pp.pricestd, pp.pricelist, pp.pricelimit FROM m_productprice pp JOIN m_pricelist_version v ON v.m_pricelist_version_id=pp.m_pricelist_version_id WHERE v.m_pricelist_id=? AND pp.m_product_id=? AND v.isactive='Y' AND pp.isactive='Y'");
 const TODAY = new Date().toISOString().slice(0, 10);
+// §42 F7: the period data the SQLite side owns (seed): client primary schema + its calendar's periods with their control rows
+const periodData = (() => {
+  const ci = lc(seed.prepare('SELECT c_acctschema1_id s, c_calendar_id c FROM ad_clientinfo WHERE ad_client_id=11').get());
+  const schema = lc(seed.prepare('SELECT autoperiodcontrol, period_openhistory, period_openfuture FROM c_acctschema WHERE c_acctschema_id=?').get(ci.s));
+  const periods = seed.prepare('SELECT p.c_period_id, p.startdate, p.enddate, p.isactive, p.periodtype FROM c_period p JOIN c_year y ON y.c_year_id=p.c_year_id WHERE y.c_calendar_id=?').all(ci.c).map(lc);
+  const ctl = seed.prepare('SELECT docbasetype, periodstatus FROM c_periodcontrol WHERE c_period_id=?');
+  periods.forEach(p => { p.control = Object.fromEntries(ctl.all(p.c_period_id).map(lc).map(r => [r.docbasetype, r.periodstatus])); });
+  return { schema, periods };
+})();
+const periodCheck = (date, dbt) => E.periodOpen(periodData, date, dbt, TODAY);
 const priceOfAt = (pid, date) => { const r = E.priceAt(priceRowsStmt.all(pos.m_pricelist_id, pid).map(lc), date || TODAY); return r ? { pricestd: r.pricestd } : null; };
 const dtOf = id => lc(seed.prepare('SELECT * FROM c_doctype WHERE c_doctype_id=?').get(id));
 let seq = 9100;
@@ -48,10 +58,10 @@ function localRun(mut = 0) {
     const dt = dtOf(f.doctype);
     const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: priceOfAt, priceDate: f.date || TODAY, bomOf: () => [],
       wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' },
-      docsubtypeso: dt.docsubtypeso, creditOf };
+      docsubtypeso: dt.docsubtypeso, docbasetype: dt.docbasetype, creditOf, periodCheck };
     const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty));       // P15: no price is ever passed in; keyed price f.keyedPrice is ignored by design
     if (cart.some(l => !l.ok)) return { outcome: 'REJECTED' };
-    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: 103 };
+    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: 103, dateAcct: f.date || TODAY };
     const g = dt.docsubtypeso === 'WR' ? POS.buildSaleGroup(ctx, cart, opts)
       : POS.buildDeliverLaterGroup(ctx, cart, { ...opts, doctype: dt, invoiceRule: 'I' });
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
@@ -354,6 +364,14 @@ const quirks = [
   // negative control for the void key set: +1 cent on the SQLite original invoice MUST surface as a gap on post_inv_orig
   const vneg = await R.run([{ id: 'NEG-void-control', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 136, qty: 1 }] }, legacy: legacyVoid, local: localVoid(1) }], voidSpec, quirks, { log });
   out('§M3_VOID_NEGATIVE_CONTROL', vneg[0].verdict === 'SQLITE-GAP' && vneg[0].gaps.some(g => g.key === 'post_inv_orig'), `+1 cent on the SQLite invoice ⇒ verdict=${vneg[0].verdict} (must be SQLITE-GAP on post_inv_orig)`);
+  // §42 F7 rule branches the corpus cannot reach (S8b/S8d stop at the price rule first, like legacy): no period, before history, inside window, standard control
+  { const P = (dt, data) => E.periodOpen(data || periodData, dt, 'SOO', TODAY);
+    const std = { schema: { autoperiodcontrol: 'N' }, periods: periodData.periods };
+    const inPer = periodData.periods.find(x => String(x.startdate).slice(0, 10) <= TODAY && TODAY <= String(x.enddate).slice(0, 10));
+    const r = { noPeriod: P('2000-06-01').ok, beforeHistory: P('1999-01-15').ok, today: P(TODAY).ok, future200: P(new Date(Date.now() + 200 * 864e5).toISOString().slice(0, 10)).ok,
+      stdControl: inPer ? P(TODAY, std).ok + '/' + (inPer.control.SOO || 'none') : 'n/a' };
+    out('§M3_PERIOD_RULE', r.noPeriod === false && r.beforeHistory === false && r.today === true && r.future200 === false && (!inPer || String(r.stdControl) === String((inPer.control.SOO === 'O')) + '/' + inPer.control.SOO),
+      `noPeriod=${r.noPeriod} beforeHistory=${r.beforeHistory} today=${r.today} today+200=${r.future200} standardControl(open?/status)=${r.stdControl}`); }
   // quirk without evidence is refused
   let refused = false; try { R.classify('x', [{ key: 'k' }], [{ scenario: 'x', key: 'k' }]); } catch (e) { refused = true; }
   out('§M3_QUIRK_NEEDS_EVIDENCE', refused, 'a quirk entry with no evidence is refused');
