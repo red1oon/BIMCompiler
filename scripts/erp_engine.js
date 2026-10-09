@@ -845,6 +845,40 @@ function completeCash(cash, lines, ctx) {
   return { ok: true, ops: ops, statementDifference: diff };
 }
 
+// completeJournal — GL Journal (spec §69, F33): MJournal.prepareIt (MJournal.java:463-576 @{u}) + MJournalLine.beforeSave (MJournalLine.java:338-347) + completeIt (:640-672).
+// journal = { gl_journal_id, dateacct, postingtype, isactive, controlamt, c_acctschema_id }; lines [{ gl_journalline_id, line, account_id, amtsourcedr, amtsourcecr, currencyrate, dateacct, precision }]
+// ctx = { periodOpen:{ok} (header DateAcct, DocBaseType GLJ), periodOpenAt(date) → {ok} (a line dated otherwise), accountOf(id) → { isactive, isdoccontrolled, postactual, postbudget, poststatistical },
+//         suspenseBalancing: bool (C_AcctSchema_GL.UseSuspenseBalancing of the journal schema) }. Amounts: decimal strings in, minor units (cents) out.
+function completeJournal(journal, lines, ctx) {
+  ctx = ctx || {};
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'PeriodClosed' };                        // validatePeriod(DateAcct) :470-472
+  if (!lines || !lines.length) return { ok: false, reason: 'NoLines' };                                          // :476-480
+  var pt = journal.postingtype || 'A', dr = 0, cr = 0, out = [];
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i];
+    var prec = l.precision == null ? 2 : Number(l.precision), rd = _dec(l.currencyrate == null ? '1' : l.currencyrate);
+    var acct = function (src) { var sd = _dec(src == null ? '0' : src), k = rd.k + sd.k;                         // beforeSave :339-347: rate × source, HALF_UP only when the scale exceeds the precision
+      return k > prec ? Number(_rhu(rd.n * sd.n * 10n ** BigInt(prec), 10n ** BigInt(k))) : Number(rd.n * sd.n * 10n ** BigInt(prec - k)); };
+    var ad = acct(l.amtsourcedr), ac = acct(l.amtsourcecr);
+    out.push({ gl_journalline_id: l.gl_journalline_id, account_id: l.account_id, amtacctdr: ad, amtacctcr: ac });
+    if (journal.isactive === 'N') continue;                                                                      // :488 (the HEADER flag, as legacy reads it)
+    if (l.dateacct && journal.dateacct && String(l.dateacct).slice(0, 10) !== String(journal.dateacct).slice(0, 10) && ctx.periodOpenAt && !ctx.periodOpenAt(l.dateacct).ok) return { ok: false, reason: 'PeriodClosed' };   // :491-495
+    var a = ctx.accountOf ? ctx.accountOf(l.account_id) : null;
+    if (!a) return { ok: false, reason: 'account ' + l.account_id + ' unknown' };
+    var ln = ' - @Line@=' + (l.line == null ? i + 1 : l.line);
+    if (a.isactive === 'N') return { ok: false, reason: '@InActiveAccount@' + ln };                               // :498-503
+    if (a.isdoccontrolled === 'Y' && ['A', 'E', 'R'].indexOf(pt) >= 0) return { ok: false, reason: '@DocControlledError@' + ln };   // :506-516
+    if (pt === 'A' && a.postactual === 'N') return { ok: false, reason: '@PostingTypeActualError@' + ln };         // :520-525
+    if (pt === 'B' && a.postbudget === 'N') return { ok: false, reason: '@PostingTypeBudgetError@' + ln };         // :527-532
+    if (pt === 'S' && a.poststatistical === 'N') return { ok: false, reason: '@PostingTypeStatisticalError@' + ln };   // :534-539
+    dr += ad; cr += ac;                                                                                         // :542-543 (accounted amounts)
+  }
+  var control = journal.controlamt == null ? 0 : Number(_rhu(_dec(journal.controlamt).n * 100n, 10n ** BigInt(_dec(journal.controlamt).k)));
+  if (control !== 0 && control !== dr) return { ok: false, reason: '@ControlAmtError@' };                       // :549-554
+  if (dr !== cr && !ctx.suspenseBalancing) return { ok: false, reason: '@UnbalancedJornal@' };                  // :557-565
+  return { ok: true, totalDr: dr, totalCr: cr, lines: out, ops: [{ op_type: 'SET_STATUS', table: 'GL_Journal', id: journal.gl_journal_id, doc_status: 'CO' }] };   // completeIt :669-671
+}
+
 // ── BP OPEN ITEM (prompts/SQLiteIDEMPIERE.md §64.2, F21) — Witness: M3 cycle O2C key bp_delta ─────────────────────────────────────────
 // bpOpenBalance — MBPartner.setTotalOpenBalance (MBPartner.java:711-757) over the documents the host holds for ONE business partner, amounts in minor units of the base currency
 // (currencyBase is the host's: pass toBase(amount, doc) when a document is not in the base currency; absent ⇒ amounts are taken as base).
@@ -1038,7 +1072,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  completeCash: completeCash, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  completeCash: completeCash, completeJournal: completeJournal, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,

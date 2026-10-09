@@ -81,7 +81,14 @@ BEGIN
       ('QueryCCashLine','C_CashLine',NULL::text[]),
       ('QueryADUser','AD_User',ARRAY['AD_User_ID','Name']),
       ('QueryCCashBookAcct','C_CashBook_Acct',NULL::text[]),
-      ('QueryCCashBook','C_CashBook',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryCCashBook','C_CashBook',NULL::text[]),
+      -- §69/§70 GL Journal + Bank Statement models (read-only)
+      ('QueryGLJournal','GL_Journal',NULL::text[]),
+      ('QueryGLJournalLine','GL_JournalLine',NULL::text[]),
+      ('QueryCElementValue','C_ElementValue',NULL::text[]),
+      ('QueryCBankStatement','C_BankStatement',NULL::text[]),
+      ('QueryCBankStatementLine','C_BankStatementLine',NULL::text[]),
+      ('QueryCBankAccount','C_BankAccount',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

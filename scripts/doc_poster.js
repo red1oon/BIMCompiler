@@ -1026,6 +1026,29 @@ function deriveCash(db, id, schema) {
   return d;
 }
 
+// §69 (F33) Doc_GLJournal.createFacts (Doc_GLJournal.java:118-160 @{u}): ONLY the journal's own schema (another schema ⇒ no facts); per line createLine(account, source Dr/Cr) carrying the
+// line's ACCOUNTED amounts (DocLine.setConvertedAmt, :83-87); then Doc.post → Fact.balanceSource (Fact.java:298-322): an unbalanced single-currency journal ⇒ SuspenseBalancing (diff < 0 ⇒ DR).
+function deriveGLJournal(db, id, schema) {
+  var hdr = getRow(db, 'SELECT * FROM gl_journal WHERE gl_journal_id=?', num(id));
+  if (!hdr) return null;
+  var d = b3New();
+  if (num(hdr.c_acctschema_id) !== num(schema)) return d;
+  var lines = allRows(db, 'SELECT * FROM gl_journalline WHERE gl_journal_id=? ORDER BY line, gl_journalline_id', num(id)), bal = 0;
+  lines.forEach(function (l) {
+    var el = elOf(db, num(l.account_id), d.absent, 'GL_JournalLine.Account_ID'); if (!el) return;
+    var sd = cents(l.amtsourcedr), sc = cents(l.amtsourcecr), ad = cents(l.amtacctdr), ac = cents(l.amtacctcr);
+    if (!sd && !sc) return;                                                                              // Fact.createLine: no amounts ⇒ no line
+    if (ad) d.add('DR', el, ad); if (ac) d.add('CR', el, ac); bal += sd - sc;
+  });
+  if (bal !== 0) {
+    var gl = _hasCol(db, 'c_acctschema_gl', 'usesuspensebalancing') ? getRow(db, 'SELECT usesuspensebalancing AS u, suspensebalancing_acct AS a FROM c_acctschema_gl WHERE c_acctschema_id=?', num(schema)) : null;
+    if (!gl || String(gl.u) !== 'Y') { d.absent.push('NotBalanced (no suspense balancing, Doc.java:852-856)'); return d; }
+    var sus = elOf(db, vcAcct(db, gl.a), d.absent, 'SuspenseBalancing_Acct'); if (!sus) return d;
+    d.add(bal < 0 ? 'DR' : 'CR', sus, Math.abs(bal));
+  }
+  return d;
+}
+
 // Doc_Inventory.createFacts:211-513 (HARDEN_MATRIX.md §W-POST-TAIL-2), physical-inventory branch only
 // (this seed's docs are all DocSubTypeInv=PI). costs = the schema-costingmethod → cost-element →
 // m_cost.currentcostprice hop (same lookup as deriveProjectIssue); if costs resolves to 0 AND no
@@ -1194,6 +1217,7 @@ function derivePostings(db, recordRef, schema, R) {
   if (table === 'M_MatchInv') return finish(deriveMatchInv(db, R, id, schema), 'matchinv', glOf('m_matchinv', id));   // §65.2 (F25)
   if (table === 'M_Requisition') return finish(deriveRequisition(db, id, schema), 'requisition', glOf('m_requisition', id));
   if (table === 'C_Cash') return finish(deriveCash(db, id, schema), 'cash', glOf('c_cash', id));
+  if (table === 'GL_Journal') return finish(deriveGLJournal(db, id, schema), 'gl-journal', glOf('gl_journal', id));   // §69 (F33)
   if (table === 'M_Inventory') return finish(deriveInventory(db, id, schema), 'inventory', glOf('m_inventory', id));
   return { lines: [], balanced: false, sumDr: 0, sumCr: 0, absent: [], basis: 'none' };
 }

@@ -211,7 +211,7 @@ async function legacyFactsOf(table, id, schema) {
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
   if (fa.length) return fmtPostings(Object.values(by));
   // §65 (P17): the posted-without-lines check knew only invoices/shipments; the cycles post orders, matchings, payments and allocations too
-  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'], 702: ['QueryMRequisition', 'M_Requisition_ID'], 407: ['QueryCCash', 'C_Cash_ID'] }[table] || null;
+  const tq = { 318: ['QueryCInvoice', 'C_Invoice_ID'], 319: ['QueryMInOut', 'M_InOut_ID'], 259: ['QueryCOrder', 'C_Order_ID'], 472: ['QueryMMatchInv', 'M_MatchInv_ID'], 473: ['QueryMMatchPO', 'M_MatchPO_ID'], 335: ['QueryCPayment', 'C_Payment_ID'], 735: ['QueryCAllocationHdr', 'C_AllocationHdr_ID'], 702: ['QueryMRequisition', 'M_Requisition_ID'], 407: ['QueryCCash', 'C_Cash_ID'], 224: ['QueryGLJournal', 'GL_Journal_ID'] }[table] || null;
   const posted = tq ? ((await query(cfg, tq[0], `${tq[1]}=${id}`))[0] || {}).Posted : null;
   return posted === 'Y' || posted === true ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
@@ -704,6 +704,45 @@ async function localCash1(mut, f) {
   };
 }
 
+// ================= MODEL: GL Journal (spec §69) — header + lines + CO through the frozen link; books only in the journal's schema =================
+const GLJ_DESC = { glj: { composite: 'SyncOrder',
+  header: { serviceType: 'BridgeCreateGLJournal', table: 'GL_Journal', fields: { AD_Org_ID: { const: 11 }, C_AcctSchema_ID: { const: 101 }, C_DocType_ID: { const: 115 }, GL_Category_ID: { const: 108 }, PostingType: { const: 'A' },
+    C_Currency_ID: { const: 100 }, C_ConversionType_ID: { const: 114 }, CurrencyRate: { const: 1 }, DateDoc: { path: 'date' }, DateAcct: { path: 'date' }, C_Period_ID: { path: 'period' }, Description: { path: 'note' } } },
+  lines: { serviceType: 'BridgeCreateGLJournalLine', table: 'GL_JournalLine', parent: 'GL_Journal_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
+    fields: { AD_Org_ID: { const: 11 }, Account_ID: { path: 'account' }, AmtSourceDr: { path: 'dr' }, AmtSourceCr: { path: 'cr' }, DateAcct: { path: 'date' } } },
+  docAction: { serviceType: 'BridgeCompleteGLJournal', table: 'GL_Journal', action: 'CO' } } };
+const gljSpec = { keys: ['outcome', 'docstatus', 'total_dr', 'total_cr', 'lines', 'postings', 'postings_euro'], notCompared: {} };
+let gljLink = null, GLJ_PERIOD = null;
+async function legacyGLJ(f) {
+  if (!gljLink) { let bytes = null; gljLink = await createLink({ cfg, persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: GLJ_DESC }); }
+  if (GLJ_PERIOD == null) GLJ_PERIOD = Number(((await query(cfg, 'QueryCPeriod', `AD_Client_ID=11 AND PeriodType='S' AND StartDate<='${TODAY}' AND EndDate>='${TODAY}'`))[0] || {}).C_Period_ID || 0);   // the window's @C_Period_ID@ context
+  const d = TODAY + ' 00:00:00';
+  const uid = gljLink.submit('glj', { date: d, period: GLJ_PERIOD, note: 'M3 ' + f.id, lines: f.lines.map(l => ({ account: l.account, dr: l.dr, cr: l.cr, date: d })) });
+  await gljLink.drain(); const st = gljLink.store.get(uid);
+  if (st.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
+  if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 120) };
+  const id = gljLink.store.idmap(uid).find(x => x.tbl === 'GL_Journal').server_id;
+  const h = (await query(cfg, 'QueryGLJournal', `GL_Journal_ID=${id}`))[0], ls = await query(cfg, 'QueryGLJournalLine', `GL_Journal_ID=${id}`);
+  return { outcome: 'COMPLETED', docstatus: h.DocStatus, total_dr: cents(h.TotalDr), total_cr: cents(h.TotalCr), lines: ls.map(l => `${l.Account_ID}:${cents(l.AmtAcctDr)}:${cents(l.AmtAcctCr)}`).sort().join('|'),
+    postings: await legacyFactsOf(224, id, SCHEMA), postings_euro: await legacyFactsOf(224, id, SCHEMA2) };
+}
+const acctFlags = id => lc(seed.prepare('SELECT isactive, isdoccontrolled, postactual, postbudget, poststatistical FROM c_elementvalue WHERE c_elementvalue_id=?').get(id));   // the SQLite dictionary (seed)
+function localGLJ(mut = 0) {
+  return async f => {
+    if (typeof E.completeJournal !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', total_dr: 0, total_cr: 0, lines: 'none', postings: 'none', postings_euro: 'none' };
+    const jid = ++seq * 10, sus = (gb.prepare('SELECT usesuspensebalancing u FROM c_acctschema_gl WHERE c_acctschema_id=101').get() || {}).u === 'Y';
+    const lines = f.lines.map((l, i) => ({ gl_journalline_id: jid * 100 + i, line: (i + 1) * 10, account_id: l.account, amtsourcedr: String(l.dr + (i === 0 && mut ? mut / 100 : 0)), amtsourcecr: String(l.cr), currencyrate: '1', dateacct: TODAY, precision: 2 }));
+    const r = E.completeJournal({ gl_journal_id: jid, dateacct: TODAY, postingtype: 'A', isactive: 'Y', controlamt: 0, c_acctschema_id: 101 }, lines,
+      { periodOpen: E.periodOpen(periodData, TODAY, 'GLJ', TODAY), periodOpenAt: dt => E.periodOpen(periodData, dt, 'GLJ', TODAY), accountOf: acctFlags, suspenseBalancing: sus });
+    if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+    gb.prepare('INSERT INTO gl_journal(gl_journal_id,c_acctschema_id,c_currency_id,dateacct,postingtype,docstatus,c_doctype_id,gl_category_id,ad_org_id,ad_client_id) VALUES(?,?,?,?,?,?,?,?,?,?)').run(jid, 101, 100, TODAY + ' 00:00:00', 'A', 'CO', 115, 108, 11, 11);
+    r.lines.forEach((l, i) => gb.prepare('INSERT INTO gl_journalline(gl_journalline_id,gl_journal_id,line,account_id,ad_org_id,currencyrate,amtsourcedr,amtsourcecr,amtacctdr,amtacctcr) VALUES(?,?,?,?,?,?,?,?,?,?)')
+      .run(l.gl_journalline_id, jid, lines[i].line, l.account_id, 11, '1', Number(lines[i].amtsourcedr), Number(lines[i].amtsourcecr), l.amtacctdr / 100, l.amtacctcr / 100));
+    const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'GL_Journal', id: jid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    return { outcome: 'COMPLETED', docstatus: 'CO', total_dr: r.totalDr, total_cr: r.totalCr, lines: r.lines.map(l => `${l.account_id}:${l.amtacctdr}:${l.amtacctcr}`).sort().join('|'), postings: fold(SCHEMA), postings_euro: fold(SCHEMA2) };
+  };
+}
+
 // ================= corpus (spec §23) =================
 const POSDT = 135, STDDT = 132;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
@@ -825,6 +864,12 @@ const quirks = [
     const cmode = await R.run([{ id: 'NEG-cash-mode-control', facts: { id: 'CASHM', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0, 'Q') }], cashSpec, quirks, { log });
     out('§M3_CASH_MODE_CONTROL', mode === 'I' && cmode[0].verdict === 'SQLITE-GAP' && ['books_alloc', 'books_alloc_euro'].every(k => cmode[0].gaps.some(g => g.key === k)) && cmode[0].gaps.length === 2,
       `synced CLIENT_ACCOUNTING=${mode}; SQLite read as Q on the CASH1 shape ⇒ verdict=${cmode[0].verdict} gaps=${cmode[0].gaps.map(g => g.key).join(',')} (must be exactly the 2 allocation-book keys)`); }
+  // MODEL GL Journal (spec §69)
+  rows.push(...await R.run(keepOnly([{ id: 'GLJ1-gl-journal-balanced', facts: { id: 'GLJ1', lines: [{ account: 474, dr: 100, cr: 0 }, { account: 484, dr: 0, cr: 100 }] }, legacy: legacyGLJ, local: localGLJ(0) },
+    { id: 'GLJ-UNBAL-suspense-balanced', facts: { id: 'GLJU', lines: [{ account: 474, dr: 100, cr: 0 }, { account: 484, dr: 0, cr: 90 }] }, legacy: legacyGLJ, local: localGLJ(0) },
+    { id: 'GLJ-REJ-doc-controlled-account', facts: { id: 'GLJR', lines: [{ account: 508, dr: 100, cr: 0 }, { account: 484, dr: 0, cr: 100 }] }, legacy: legacyGLJ, local: localGLJ(0) }]), gljSpec, quirks, { log }));
+  if (!only) { const gneg = await R.run([{ id: 'NEG-glj-control', facts: { id: 'GLJN', lines: [{ account: 474, dr: 100, cr: 0 }, { account: 484, dr: 0, cr: 100 }] }, legacy: legacyGLJ, local: localGLJ(1) }], gljSpec, quirks, { log });
+    out('§M3_GLJ_NEGATIVE_CONTROL', gneg[0].verdict === 'SQLITE-GAP' && ['total_dr', 'lines', 'postings'].every(k => gneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite journal line ⇒ verdict=${gneg[0].verdict} gaps=${gneg[0].gaps.map(g => g.key).join(',')}`); }
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);
