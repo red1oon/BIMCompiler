@@ -854,7 +854,7 @@ FactLine.java:237-250) are not handled — the SQLite posting db lacks that colu
 
 ## §34 OPEN QUESTIONS for the user (P16)
 - ~~Q-S7~~ / ~~Q-S13~~ — answered by the CARDINAL RULE (copy legacy); closed by F6 (§38.1) and F5 (§36.1).
-- **Q-OOTB (concept source: CLAUDE.md AD-LAYER LAW + CARDINAL RULE; this lane's brief forbids touching ~/bim-ootb):** the SQLite Sales Order WINDOW runs `~/bim-ootb/erp/model_order.js`, where three legacy rules are missing:
+- **Q-OOTB (concept source: CLAUDE.md AD-LAYER LAW + CARDINAL RULE; this lane's brief forbids touching ~/bim-ootb):** the shipped ERP lives in `~/bim-ootb/erp/` with its own copies of the kernel files (§50 DELIVERY) — none of F4-F14 reaches a user until ported there. Also the SQLite Sales Order WINDOW runs `~/bim-ootb/erp/model_order.js`, where these legacy rules are missing:
   S2b price-list check on save (MOrderLine.java:842-849), server-side default pricing (MOrderLine.java:824-827), the void reversals of shipments/invoices (MOrder.java:2766-2840; F4 ported it into `scripts/erp_engine.js voidOrder`, not into that layer),
   the invented `MOrderLine/MInvoiceLine.qtyPositive` validators (legacy accepts 0 and negative quantities, S14 §47), and loading the L&F dictionary patches (`scripts/bridge/out/lf_patch_*.sql`, 350→370 of 370 windows, §49)
   plus the posting-db patch `build/erp/patches/glassbowl_data.db.sql` (§46.1) through a self-heal loader in the ERP host.
@@ -1121,5 +1121,29 @@ AD_Val_Rule 0, AD_Process 0 (+2 help; run counters `statistic_*` excluded as run
 SQLite-only rows (reported, never deleted): windows 7100000 "C Attendance", 7800000 "Construction" + 6 tabs + 3 menus — SQLite add-on modules (AD-LAYER LAW 6: non-core arrives as plugins).
 **Harness defect found (P17):** `keyBelow 1000000` (meant for pilot TEST documents) also hid real dictionary rows with ids ≥ 1,000,000 on the legacy side only (Asset ▸ Meter Log looked like 9 vs 11 fields) — removed for the AD specs.
 **Delivery (not done here):** the patches `scripts/bridge/out/lf_patch_*.sql` target the SHIPPED UI dictionary `~/bim-ootb/erp/ad_seed.db` ⇒ applying them = a loader / patch in ~/bim-ootb ⇒ part of Q-OOTB (§34). Renderer-level parity (runtime display logic, callouts, defaults) is the next layer, not claimed.
+
+## §50 LEDGER + STATE at the end of the 2026-10-09 resume run (work-to-zero; cardinal rule applied to every item)
+| # | Item | State | Proof / record |
+|---|---|---|---|
+| F4 | void a completed sale (reversals, lines 0, description) | ✅ MATCH | §33.1, S12 16 keys |
+| F5 | order credit check | ✅ MATCH | §36.1, S13a/b (+S13c control) |
+| F6 | Average costed-qty refusal + cost-qty updates + state sync | ✅ MATCH | §38.1, S7a, S1 fully judged |
+| F7 | period control | ✅ MATCH | §42.1, S8c + `§M3_PERIOD_RULE` |
+| F8 | price-list version by date | ✅ MATCH | §41.1, S8b/S8d |
+| F10 | stray active schema ⇒ named refusal (legacy NPE) | ✅ MATCH | §43.1, one-shot S5 witness with restore |
+| F11 | tax determination / order+invoice tax / GrandTotal | ✅ MATCH | §45.1, T1 + tax keys on all scenarios |
+| F12 | second (Euro) schema conversion | ✅ MATCH | §46.1, Euro keys + `§M3_F12_ORACLE2` |
+| F13 | 0 / negative quantities accepted | ✅ MATCH | §47.1, S14a/b/c |
+| F14 | reversal invoice tax + reversal-shipment re-derive fix | ✅ MATCH | §48.1, S12b |
+| S3 | keyed price (AD-window path) | ✅ MATCH | §39 (quirk entries deleted; LEGACY-QUIRK count 0) |
+| DD | dict_diff composite keys / ALTER / CREATE / NOT-EXISTS inserts | ✅ witnessed | §37, §49 |
+| L&F | dictionary-level look & feel | ✅ measured 350/370 → 370/370 with patches | §49 |
+| S2b | price-list check on the AD-window path | ⛔ Q-OOTB | §39 (fix lives in ~/bim-ootb/erp/model_order.js) |
+| F2 | deliver-later lanes (kitchen/pick/lens) bundle the DR shipment | ⛔ Q-OOTB | the kernel split exists (F1: `buildDeliverLaterGroup` + `buildGenerateShipmentOps`); what remains is UI in the SHIPPED lens/kitchen/pick files (~/bim-ootb/erp) — the queues must read open order lines instead of DR shipments |
+| DELIVERY | every kernel fix above reaching users | ⛔ Q-OOTB | `~/bim-ootb/erp/` ships its OWN copies of `pos_core.js`, `pos_lens.js`, `erp_engine.js`, `doc_poster.js` — already 46/4/114/58 lines apart from this repo's copies BEFORE this session; F1-F14 are in the bim-compiler copies (what M3 measures). Porting them + the patch loader is ~/bim-ootb work. |
+| F9 | back-date costing (S8a `cost_qty_delta`) | ⏸ PAUSED (scope) | see below |
+**F9 resume point (⏸, spec only):** legacy re-processes cost details dated after a back-dated transaction (`MCostDetail.beforeSave` IsBackDate MCostDetail.java:1241-1267 → DocManager.java:620-900 re-posts later documents; MCost history MCost.java:113-146). SQLite has no `M_CostDetail` / `M_CostHistory` at all.
+Steps: (1) read types `QueryMCostDetail`/`QueryMCostHistory` + dict_spec rows (composite keys) so the scratch posting db carries the history; (2) port `MCostDetail.process` for shipments (per costing element, qty adjust; average cost unchanged on issue) as a pure fold over the detail rows ordered by DateAcct;
+(3) port the back-date re-processing (DocManager.java:620-900) incl. `BackDateDay` (c_acctschema, already synced); (4) measure on a CLEAN product first (141 Weeder: costed 30, no harness history) with an interleaved receipt, then re-judge S8a. The pilot's Oak Tree history is polluted by hundreds of refused harness shipments — keep S8a as the failing regression, judge F9 on the clean product.
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
