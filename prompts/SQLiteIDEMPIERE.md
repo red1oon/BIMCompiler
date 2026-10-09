@@ -433,6 +433,17 @@ is only (1) the payload meaning and (2) the handler that applies it. Everything 
 9. **State + observability:** per-envelope state `QUEUED→SENT→ACKED / REJECTED / PARKED`; tables the UI reads; `§` log line per transition.
 10. **Faults are first-class:** retry with cap + backoff; auth failure stops (no lockout, P13); poison envelope parks, never blocks the stream's siblings in other streams (P8).
 11. **Versioning:** `ver` per type; unknown type/ver ⇒ REJECTED with reason (never guessed).
+**Built-in system ops (namespace `sys.`) — the early-on sync is just one of the ops (user 2026-10-09; IN concept: §000 "model sync ONCE, together, at handover"):**
+the layer ships a few message types of its own, riding the same envelope/ack/dedupe/handler path as any app op — no separate mechanism.
+| Type | When | What it does |
+|---|---|---|
+| `sys.hello` | first contact | enrol a station: id + public key → station registry; both sides record each other |
+| `sys.handover` | ONCE, at start | the early-on sync: carries a **manifest** (what to align: model package id/version + hash, config keys, initial masters) — each side applies it with ITS OWN standard mechanism (server: 2Pack/AD already in place; SQLite: `ad_seed`), then acks with the hash it ended on. Equal hashes ⇒ `handover_done(hash)` stored in the config store; also sets the DOWN baseline (change-log watermark = current max, or snapshot epoch) so later sync is data-only |
+| `sys.config` | set-once context | station/app key→value (P5: refuse to run app ops while required keys are missing) |
+| `sys.resync` | superior role only, rare | re-run a handover step after a deliberate model change (§14/§15 extras) — never part of routine user sync |
+| `sys.ping` | health | liveness + clock/seq check |
+App ops cannot be dispatched until `handover_done` exists for the station (gate, W-L9). The model package itself is out-of-band content (a file the
+admin already produces); the layer only transports its id/hash and records both sides' agreement — it does not interpret the model.
 **Server half V** is the only half that touches iDempiere, and only through the OSGi/PO path (so everything it writes is a normal
 logged change). Its own storage = AD-model tables (station registry, inbox/dedupe) installed by 2Pack — the sole legacy addition, and only
 in Mode B. **Half V is optional** (Mode A below).
@@ -462,7 +473,7 @@ approximated in Mode A (ambiguous failure PARKS, §Q G1). (d) email as a transpo
 + handler; 8 = app reconcile run by the layer; 1 = Mode A DOWN source; 10,11,14 = generic UI/rule hooks. §16/§Q POS statements are the
 POS *example*; P15 ("no free numbers") is a POS-handler rule, not a layer rule.
 **Test of genericity (acceptance):** the layer's code + tests must contain NO app words (order, product, price, stock, asset, ticket);
-a loopback harness runs a toy `echo`/`counter` app through every guarantee (dupes, reorder, drop, kill-points, forged signature, unknown
+`sys.hello` → `sys.handover` → `sys.config` run first on the same harness (W-L9: app op before handover is refused; mismatched hash ⇒ handover FAILS, no silent continue); a loopback harness runs a toy `echo`/`counter` app through every guarantee (dupes, reorder, drop, kill-points, forged signature, unknown
 type) — if that passes, POS/FA/pawn only add handlers and descriptors. W-L1..W-L8 (spec only): dedupe · order+gap park · signature/replay ·
 kill-point resume (before send / after send before ack / after handler before ack-store) · poison isolation · transport swap (WS↔email↔loopback
 with identical results) · Mode A≡B above the adapter line · app-word grep gate.
