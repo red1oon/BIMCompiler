@@ -352,3 +352,11 @@ checked, answer YES (below). User then parked it for a new session. No go yet to
 standards pack rule (cited std_values, SUGGESTED label) · §C site profile · §E industry features · §F length limits · §G / §H Navisworks parity ·
 §I.2 GPS site-walk · §J 100 km roads · §K partner wish-list · §K-6.1 analyst proposal · §MC model check report · §RP road panel · FUTURE list →
 all in `prompts/archive/CIVIL_HIGHWAY_JELAPANG_full_2026-10-08b.md`.
+
+### §MEM_GROWTH M4-A RESULT (2026-10-09, bim-ootb branch `feat/m4-vertex-weld`, worktree /tmp/wt-m4-weld, probe only — NOT wired)
+`scripts/probe_vertex_weld.js` on CivilWorksPath.db (7,839 geometries): `§VERT_WELD vertsBefore=22,048,006 vertsAfter=17,701,565 (−19.7 %) vertex blob 264.6→212.4 MB maxNormalDeltaDeg=0.154`.
+`§VERT_WELD_BENCH` node CPU proxy (derive normals, all geoms): 1818 → 1443 ms (−21 %); weld itself 10.7 s (one-off, import/save time).
+Two findings that shaped the rule (don't re-find): (1) snapping positions to 1e-5 flipped 0.1 mm sliver triangles (180° normal) → merge on EXACT float32 position only; (2) a vertex whose faces differ in normal (crease/smooth mix) is never merged (a+b changes the mix) — only "coherent" vertices (|Σn|/Σ|n| ≥ cos) merge.
+Lamp poles are NOT the big winner in Phase A: they are facet soup (each facet its own normal) → the 4.8× dup there is Phase B (smooth weld) = ⛔ user look ruling. Open: browser witness `§VERT_WELD_LOAD heapMB/loadMs` before/after (needs user OK, GPU); import/save wiring.
+**M4-A WIRED + BROWSER WITNESS (2026-10-09, bim-ootb `feat/m4-vertex-weld`):** civil-only (`_meshSlim` save `§VERT_WELD_SAVE`, import `§VERT_WELD_IMPORT`; buildings untouched). Welded copy of CivilWorksPath.db: 462.9 → 402.6 MB, integrity ok. `witness_vertex_weld_load.js` GPU=real, 5 alternating fresh-browser rounds: scene verts 26,385,546 → 22,182,174 (−15.9 %), JS heap median 2606 → 2326 MB (−10.8 %), load ms 33.4 s → 33.7 s (+0.7 %, no change), frame 16.7 ms both (vsync-capped — no frame gain measurable). 2-round run was too noisy (orig alone 2070–2602 MB): use ≥5.
+**Fleet probe (read-only, buildings have no `normals` column so weld is valid):** Duplex −32.1 % verts (maxΔ0.05°) · Clinic −24.7 % (0.08°) · HHS −17.7 % (0.06°); Terminal/LTU_AHouse are split DBs (no component_geometries) — not probed. Buildings NOT wired: user decides in/out.
