@@ -5,7 +5,8 @@ Small, single-job IFC tools for the chores your own BIM app won't do. **Drop an 
 No account, no upload, no AI — your file is read inside your own browser (or on your own computer, for the
 command-line kit) and the result is saved next to it.
 
-**Open it:** [red1oon.github.io/bim-ootb/bim.html](https://red1oon.github.io/bim-ootb/bim.html)
+**Open it:** [red1oon.github.io/bim-ootb/bim.html](https://red1oon.github.io/bim-ootb/bim.html)  
+**Download the toolkit (zip) for your desktop:** [bim.html?kit=1](https://red1oon.github.io/bim-ootb/bim.html?kit=1) — tick the tools, choose your system, press **Create zip**. See [§4](#4-use-it-without-a-browser-the-toolkit-zip).
 
 | Key | Tool | What it does | Runs |
 |---|---|---|---|
@@ -66,21 +67,27 @@ The page keeps your last file and your selection inside your browser, so a refre
 ---
 
 ## 4. Use it without a browser — the toolkit zip
-For batch work, or if you prefer your own desktop: press **9**, tick the tools, choose Windows / macOS / Linux, and press **Create zip**. The zip holds plain, readable JavaScript, one launcher per tool, a `README.txt`, and a `SHA256SUMS.txt` so you can check nothing was altered. It never connects to the internet.
+Open **[bim.html?kit=1](https://red1oon.github.io/bim-ootb/bim.html?kit=1)** (or press **9** on the page), tick the tools, choose Windows / macOS / Linux, and press **Create zip**. The zip holds plain, readable JavaScript, one launcher per tool, an installer, a `README.txt`, and a `SHA256SUMS.txt` so you can check nothing was altered. It never connects to the internet.
 
 **You need Node.js 18 or newer** ([nodejs.org](https://nodejs.org)).
 
+**Install it once (recommended).** Unzip, then run **`INSTALL.bat`** (Windows) or **`install.sh`** (Linux / macOS). It:
+* copies the tools to a permanent folder (Windows: `%LOCALAPPDATA%\BIM Tools`; Linux: `~/.local/share/bim-tools`; macOS: `~/BIM Tools`),
+* puts **one icon per tool on your Desktop** (Windows and Linux), and on Windows also in **right-click an `.ifc` → Send to** (Linux: file-manager Scripts menu).
+
+After that, drag `.ifc` files onto a Desktop icon, or right-click an `.ifc` → **Send to** → the tool. It changes nothing else on your computer; delete the folder and icons to remove it. You can skip installing and run the launchers straight from the unzipped folder.
+
 **Windows**
 1. Right-click the downloaded `.zip` → **Properties** → tick **Unblock** → OK. *Then* extract it.
-2. Drag one or more `.ifc` files onto `BIM_upgrade.bat` (or the launcher for another tool).
+2. Run `INSTALL.bat` once (or skip this and use the launchers where they are). Then drag one or more `.ifc` files onto the **BIM_upgrade** icon (or the one for another tool).
 3. The result appears next to each file. The launcher also tries to show a desktop notice when it is done (not yet confirmed on a real Windows desktop).
 4. If Windows shows "Windows protected your PC": **More info → Run anyway**. The scripts are unsigned; read them first if you want to be sure.
 
 **macOS**
-1. The first time, right-click the launcher → **Open** → **Open** (or System Settings → Privacy & Security → **Open Anyway**).
-2. macOS cannot take a file dropped on a `.command`; use Terminal: `./BIM_upgrade.command yourfile.ifc`
+1. The first time, right-click `install.sh` / the launcher → **Open** → **Open** (or System Settings → Privacy & Security → **Open Anyway**).
+2. macOS cannot take a file dropped on a launcher, so it gets no Desktop icons; the installer prints the Terminal line for each tool: `"$HOME/BIM Tools/BIM_upgrade.command" yourfile.ifc`
 
-**Linux**: `chmod +x BIM_*.sh`, then `./BIM_upgrade.sh yourfile.ifc`.
+**Linux**: `./install.sh` (if needed, `chmod +x install.sh BIM_*.sh` first), or run `./BIM_upgrade.sh yourfile.ifc` directly.
 
 **Command line (all systems)**
 ```
@@ -103,7 +110,7 @@ Every run prints a result line starting with `§` and exits with 0 on success, s
 * **Size:** the whole file is read into memory. Files over about 100 MB have not been tried.
 * **The 3D view needs WebGL.** On a computer without it, the page tells you and gives you the search list instead — you can still pick and export.
 * **Opened straight from disk (`file://`)** the 3D view and the zip builder cannot work; use the web address, or `node bim-cli.js open model.ifc`.
-* **What the tests cover:** the tools were checked on two sample buildings, on Windows, macOS and Linux test machines, with an independent IFC validator. They were **not** checked by a person on a real Windows or Mac desktop: dragging a file onto an icon in Explorer / Finder, the SmartScreen and Gatekeeper prompts, and a real graphics card are still open. Tell us what you find.
+* **What the tests cover:** the tools were checked on two sample buildings, on Windows, macOS and Linux test machines, with an independent IFC validator. They were **not** checked by a person on a real Windows or Mac desktop: dragging a file onto an icon in Explorer / Finder, the SmartScreen and Gatekeeper prompts, and a real graphics card, and the Desktop / Send-to icons on a real machine (the installer is tested with every target redirected to a temporary folder) are still open. Tell us what you find.
 
 ---
 
@@ -115,4 +122,5 @@ Every run prints a result line starting with `§` and exits with 0 on success, s
 | "The launcher closed…" | You started the page with `node bim-cli.js open` and that window ended. Exports now download as normal files. |
 | Windows warns about the downloaded zip | Unblock the zip (Properties → Unblock) *before* extracting. |
 | Launcher says `node` is not recognised | Install Node.js 18+, then open a new window. |
+| `INSTALL.bat` says it could not create shortcuts | Run it again from a normal (non-restricted) account; or skip installing and use the launchers in the unzipped folder. |
 | Upgrade message says items were left out | See §2 U — they are counted, with the reason. |
