@@ -121,7 +121,8 @@ function deriveInOut(db, R, ioId, schema) {
   var hdr = getRow(db, 'SELECT m_inout_id,issotrx,movementtype FROM m_inout WHERE m_inout_id=?', num(ioId));
   if (!hdr) return null;
   if (!(String(hdr.issotrx) === 'Y' && String(hdr.movementtype) === 'C-')) return null;       // only the sales-shipment class is built
-  var lines = allRows(db, 'SELECT m_product_id,movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId));
+  // Doc_InOut.loadLines (Doc_InOut.java:126-134): lines with no product or MovementQty 0 are not posted (§47, S14c)
+  var lines = allRows(db, 'SELECT m_product_id,movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId)).filter(function (l) { return num(l.m_product_id) && Number(l.movementqty) !== 0; });
   var by = {}, absent = [];
   function add(side, el, amt) { var k = el.id; if (!by[k]) by[k] = { account_id: el.id, value: el.value, name: el.name, dr: 0, cr: 0 }; if (side === 'DR') by[k].dr += amt; else by[k].cr += amt; }
   function el(res) { if (res.acct == null || !res.element) { absent.push(res.token); return null; } return res.element; }

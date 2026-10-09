@@ -131,6 +131,7 @@ function foldLocal(g, f, opts, mut) {
       else { postingsShipment = dsh.lines && dsh.lines.length ? fmtPostings(dsh.lines) : 'none'; applyCostQty(sid); }
     }
     const stock = {}; if (shipDone) g.soLines.forEach(l => { stock[l.m_product_id] = (stock[l.m_product_id] || 0) - l.qtyordered; });
+    Object.keys(stock).forEach(k => { if (!stock[k]) delete stock[k]; });   // a zero move is no move (same representation as the legacy delta)
     return {
       outcome: 'COMPLETED', docstatus: st && st.doc_status,
       lines: g.soLines.map(l => `${l.m_product_id}:${l.qtyordered}:${cents(l.priceactual)}`).sort().join('|'),
@@ -206,7 +207,10 @@ const SCHEMA2 = 200000;   // §46: legacy's second accounting schema (Euro), act
 async function legacyFactsOf(table, id, schema) {
   let fa = []; for (let i = 0; i < 6 && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${schema}`); if (!fa.length) await new Promise(r => setTimeout(r, 1500)); }
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
-  return fa.length ? fmtPostings(Object.values(by)) : 'NO_FACT_ACCT_ROWS';
+  if (fa.length) return fmtPostings(Object.values(by));
+  const tq = table === 318 ? ['QueryCInvoice', 'C_Invoice_ID'] : table === 319 ? ['QueryMInOut', 'M_InOut_ID'] : null;
+  const posted = tq ? ((await query(cfg, tq[0], `${tq[1]}=${id}`))[0] || {}).Posted : null;
+  return posted === 'Y' ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
 // §41/F9: costed quantity (Average PO element, primary schema) — derived cost STATE, compared as a delta so back-date re-processing cannot hide behind the start-of-run sync
 const AVG_EL = 103;
@@ -234,7 +238,7 @@ async function legacyRun(f) {
     let fa = [];
     for (let i = 0; i < 6 && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=318 AND Record_ID=${inv[0].C_Invoice_ID} AND C_AcctSchema_ID=${SCHEMA}`); if (!fa.length) await new Promise(r => setTimeout(r, 1500)); }
     const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
-    postings = fa.length ? fmtPostings(Object.values(by)) : 'NO_FACT_ACCT_ROWS';
+    postings = fa.length ? fmtPostings(Object.values(by)) : ((await query(cfg, 'QueryCInvoice', `C_Invoice_ID=${inv[0].C_Invoice_ID}`))[0].Posted === 'Y' ? 'none' : 'NO_FACT_ACCT_ROWS');   // §47: posted without lines = no books
   }
   let postingsShipment = 'none';
   const doneShip = io.find(x => x.DocStatus === 'CO');
@@ -246,7 +250,7 @@ async function legacyRun(f) {
     let fs2 = [];
     for (let i = 0; i < 6 && !fs2.length && doneShip.Posted !== 'E'; i++) { fs2 = await query(cfg, 'QueryFactAcct', `AD_Table_ID=319 AND Record_ID=${doneShip.M_InOut_ID} AND C_AcctSchema_ID=${SCHEMA}`); if (!fs2.length) await new Promise(r => setTimeout(r, 1500)); }
     const by2 = {}; for (const f of fs2) { const a = f.Account_ID; by2[a] = by2[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by2[a].amtacctdr += Number(f.AmtAcctDr); by2[a].amtacctcr += Number(f.AmtAcctCr); }
-    postingsShipment = fs2.length ? fmtPostings(Object.values(by2)) : 'NO_FACT_ACCT_ROWS';
+    postingsShipment = fs2.length ? fmtPostings(Object.values(by2)) : (doneShip.Posted === 'Y' ? 'none' : 'NO_FACT_ACCT_ROWS');
   }
   return {
     outcome: 'COMPLETED', docstatus: h.DocStatus,
@@ -274,7 +278,10 @@ async function legacyFacts(table, id, wantRows) {                               
   let fa = [];
   for (let i = 0; i < 8; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${SCHEMA}`); if (fa.length || !wantRows) break; await new Promise(r => setTimeout(r, 1500)); }
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
-  return fa.length ? fmtPostings(Object.values(by)) : 'NO_FACT_ACCT_ROWS';
+  if (fa.length) return fmtPostings(Object.values(by));
+  const tq = table === 318 ? ['QueryCInvoice', 'C_Invoice_ID'] : table === 319 ? ['QueryMInOut', 'M_InOut_ID'] : null;
+  const posted = tq ? ((await query(cfg, tq[0], `${tq[1]}=${id}`))[0] || {}).Posted : null;
+  return posted === 'Y' ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
 async function legacyVoid(f) {
   const before = {}; for (const l of f.lines) if (!(l.product in before)) before[l.product] = await stockOf(l.product);
@@ -369,6 +376,9 @@ const corpus = [
   sc('S13a-pos-sale-over-credit-limit', { doctype: POSDT, bp: 118, lines: [{ product: 123, qty: 200 }] }),     // spec §32: 12350 > SO_CreditLimit 10000
   sc('S13b-standard-order-over-credit-limit', { doctype: STDDT, bp: 118, lines: [{ product: 123, qty: 200 }] }),
   sc('T1-pos-sale-taxed-org12-ct', { doctype: POSDT, org: 12, wh: 104, deliveryVia: 'D', lines: [{ product: 123, qty: 1 }] }),   // spec §44: org 12 (CT) → BP 112 (CT), Delivery ⇒ CT Sales 6%
+  sc('S14a-pos-order-negative-qty', { doctype: POSDT, lines: [{ product: 123, qty: -1 }] }),          // spec §47
+  sc('S14b-standard-order-negative-qty', { doctype: STDDT, lines: [{ product: 123, qty: -1 }] }),
+  sc('S14c-pos-order-zero-qty', { doctype: POSDT, lines: [{ product: 123, qty: 0 }] }),
   sc('S13c-pos-sale-large-no-credit-limit', { doctype: POSDT, lines: [{ product: 123, qty: 200 }] }),         // control: BP 112 limit 0 ⇒ no check (MBPartner.java:833-836) ⇒ completes
 ];
 const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment', 'cost_qty_delta', 'line_tax', 'order_tax', 'grand_total_cents', 'invoice_tax', 'postings_euro', 'postings_shipment_euro'],

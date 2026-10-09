@@ -44,7 +44,9 @@
   // Witness W-POS-RING. §FALSIFIER: a product absent from the price list must refuse —
   // "every ringed line traces to a c_poskey→m_product→m_productprice row" (no invented price).
   function ringLine(ctx, productId, qty) {
-    if (!(qty > 0)) return { ok: false, reason: 'bad-qty', m_product_id: productId };
+    // §47 (F13): legacy MOrderLine.beforeSave (MOrderLine.java:790-917) has NO sign check — 0 and negative quantities are accepted and completed (pilot S14a/b/c);
+    // only a non-numeric quantity is refused (it could not even be keyed / parsed).
+    if (qty === null || qty === '' || !isFinite(Number(qty))) return { ok: false, reason: 'bad-qty', m_product_id: productId };
     var p = ctx.priceOf(productId, ctx.priceDate);   // §41 (F8): the host picks the price-list VERSION valid at the order date (erp_engine.priceAt); hosts without a date ignore the 2nd arg
     if (!p || p.pricestd == null) return { ok: false, reason: 'no-price', m_product_id: productId };
     var price = bd(p.pricestd).setScale(2, HALF_UP);

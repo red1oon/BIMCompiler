@@ -855,7 +855,8 @@ FactLine.java:237-250) are not handled — the SQLite posting db lacks that colu
 ## §34 OPEN QUESTIONS for the user (P16)
 - ~~Q-S7~~ / ~~Q-S13~~ — answered by the CARDINAL RULE (copy legacy); closed by F6 (§38.1) and F5 (§36.1).
 - **Q-OOTB (concept source: CLAUDE.md AD-LAYER LAW + CARDINAL RULE; this lane's brief forbids touching ~/bim-ootb):** the SQLite Sales Order WINDOW runs `~/bim-ootb/erp/model_order.js`, where three legacy rules are missing:
-  S2b price-list check on save (MOrderLine.java:842-849), server-side default pricing (MOrderLine.java:824-827), and the void reversals of shipments/invoices (MOrder.java:2766-2840; F4 ported it into `scripts/erp_engine.js voidOrder`, not into that layer).
+  S2b price-list check on save (MOrderLine.java:842-849), server-side default pricing (MOrderLine.java:824-827), the void reversals of shipments/invoices (MOrder.java:2766-2840; F4 ported it into `scripts/erp_engine.js voidOrder`, not into that layer),
+  and the invented `MOrderLine/MInvoiceLine.qtyPositive` validators (legacy accepts 0 and negative quantities, S14 §47).
   **May this lane edit `~/bim-ootb/erp/model_order.js` (in a /tmp/wt-* worktree, PR not pushed), or will another session own it?** Everything is measured and specified (§33, §39); only the permission is missing.
 
 ## §35 CARDINAL RULE APPLIED (2026-10-09) — what it changes, enforced in code, backlog for the resume
@@ -1074,5 +1075,20 @@ NEW patch text `build/erp/patches/glassbowl_data.db.sql` (C_Currency id/ISO/StdP
 That also explains the long-standing `poc_doc_poster` `maxDiff=4039c(AMT-DRIFT)` on order 108: it is this missing conversion; it disappears once the patch is loaded into the shared db (not done here — shared binaries are never modified; loader = open item).
 **Regression:** 99 engine witnesses — exits identical, logs identical except the 4 known-nondeterministic ones (the shared db has no `c_currency`, so their fold is unchanged). (A first cut without the table guard broke 6 witnesses on dbs that lack `c_acctschema` — caught by this check, fixed before commit.)
 **Residue:** `Fact.balanceAccounting` (currency balancing line / biggest-line correction) not ported — an unbalanced converted fact is reported absent by name; per-line `CurrencyRate` overrides (`IsOverrideCurrencyRate`) not ported; shipment/other doc classes post in schema currency (cost) — no conversion needed there; currency precision ≠ 2 reported absent.
+
+## §47 S14 — NEGATIVE quantity on an order line (2026-10-09, found in §39) — SPEC before code
+**Facts:** S14a POS Order 135 / S14b Standard Order 132, BP 112, Oak Tree × −1. **SQLite today:** `pos_core.ringLine` refuses `qty ≤ 0` (`bad-qty`); `build/erp/ad_modelval.js:50-57` `MOrderLine.qtyPositive` refuses on the AD path.
+**Legacy (read):** `MOrderLine.beforeSave` (MOrderLine.java:790-917) has no sign check. Outcome at completion unknown ⇒ MEASURE first (no assumption).
+**MEASURED S14 (legacy first):** S14a POS qty −1 ⇒ CO, shipment CO qty −1 (stock **+1**), invoice −61.75, books `518 Dr −6175 / 758 Cr −6175`, shipment `430 Dr −4869 / 742 Cr −4869`, costed qty +1, Euro converted, OrderTax `104:-6175:0`;
+S14b Standard qty −1 ⇒ CO, no shipment/invoice, OrderTax `104:-6175:0`; **S14c POS qty 0 ⇒ CO** (zero shipment + zero invoice, no fact lines). SQLite refused all three ⇒ SQLITE-GAP (RULE: an invented sign check).
+**F13 (spec):** `pos_core.ringLine` refuses only a non-numeric quantity (legacy would fail to parse it), accepts 0 and negatives with LineNetAmt = qty × price; `poc_pos_ring.js`'s assertion "qty=0 refused" encoded the invented rule ⇒ its expectation becomes
+"qty=0 rings (legacy S14c)" + a new falsifier "non-numeric qty refused". Harness normalisation (both sides one token): a legacy document that is POSTED with no fact lines = `none` (= SQLite's empty fold); unposted stays `NO_FACT_ACCT_ROWS`.
+The drifted copy `build/erp/ad_modelval.js` and the SHIPPED `~/bim-ootb/erp/ad_modelval.js` both register `MOrderLine.qtyPositive` / `MInvoiceLine.qtyPositive` (no legacy counterpart) ⇒ added to Q-OOTB.
+### §47.1 DECISION RECORD F13 — quantities: 0 and negative accepted like legacy (2026-10-09)
+**Changed (one commit, backtrack = `git revert <sha>`):** `build/erp/pos_core.js` `ringLine` refuses only a non-numeric qty; `scripts/doc_poster.js` `deriveInOut` skips lines without product or with MovementQty 0 (Doc_InOut.loadLines :126-134);
+`scripts/poc_pos_ring.js` expectation changed WITH evidence (was "qty=0 refused", a rule legacy does not have) + new falsifier "non-numeric qty refused"; `scripts/bridge/witness_m3_gap.js` S14a/b/c + harness normalisation (posted-without-lines = `none`; zero stock move = no move).
+**Proof:** `§SCN S14a-pos-order-negative-qty MATCH` · `§SCN S14b-standard-order-negative-qty MATCH` · `§SCN S14c-pos-order-zero-qty MATCH` (17 keys each, incl. books, costed qty, tax, Euro); `§RECON_SUMMARY scenarios=20 MATCH=18 SQLITE-GAP=2` (S2b ⛔ Q-OOTB, S8a F9).
+**Regression:** 99 engine witnesses — exits identical; logs identical except the 4 known-nondeterministic ones and `poc_pos_ring` (exactly the changed assertion: −1 line, +2 lines, shown in the session log).
+**Residue:** the zero-cost-purchase exception of Doc_InOut (:247-251, needs M_CostDetail) still not ported; the AD-path copies of `qtyPositive` (this repo's drifted `build/erp/ad_modelval.js` and the shipped `~/bim-ootb` one) are on Q-OOTB; the POS lens UI does not offer a 0/negative entry (UX lane).
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
