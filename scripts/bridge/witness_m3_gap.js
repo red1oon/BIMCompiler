@@ -44,6 +44,14 @@ const periodData = (() => {
   return { schema, periods };
 })();
 const periodCheck = (date, dbt) => E.periodOpen(periodData, date, dbt, TODAY);
+// §43 F10: product-category accounting per ACTIVE schema, read from the (state-synced) scratch posting db
+const acctSetupOf = pid => {
+  const has = c => gb.prepare('SELECT 1 FROM pragma_table_info(?) WHERE name=?').get('c_acctschema', c);
+  const act = gb.prepare('SELECT c_acctschema_id id FROM c_acctschema' + (has('isactive') ? " WHERE isactive='Y'" : '')).all().map(r => r.id);
+  const p = gb.prepare('SELECT m_product_category_id c FROM m_product WHERE m_product_id=?').get(pid);
+  if (!p) return [];
+  return E.acctSetupGap(p.c, act, gb.prepare('SELECT m_product_category_id, c_acctschema_id FROM m_product_category_acct WHERE m_product_category_id=?').all(p.c));
+};
 const priceOfAt = (pid, date) => { const r = E.priceAt(priceRowsStmt.all(pos.m_pricelist_id, pid).map(lc), date || TODAY); return r ? { pricestd: r.pricestd } : null; };
 const dtOf = id => lc(seed.prepare('SELECT * FROM c_doctype WHERE c_doctype_id=?').get(id));
 let seq = 9100;
@@ -58,7 +66,7 @@ function localRun(mut = 0) {
     const dt = dtOf(f.doctype);
     const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: priceOfAt, priceDate: f.date || TODAY, bomOf: () => [],
       wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' },
-      docsubtypeso: dt.docsubtypeso, docbasetype: dt.docbasetype, creditOf, periodCheck };
+      docsubtypeso: dt.docsubtypeso, docbasetype: dt.docbasetype, creditOf, periodCheck, acctSetupOf };
     const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty));       // P15: no price is ever passed in; keyed price f.keyedPrice is ignored by design
     if (cart.some(l => !l.ok)) return { outcome: 'REJECTED' };
     const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: 103, dateAcct: f.date || TODAY };
@@ -131,7 +139,7 @@ function localRunAD() {
       held.push({ c_orderline_id: o * 100 + i, m_product_id: l.product, qtyordered: l.qty, priceactual: String(d.priceactual), linenetamt: String(d.linenetamt) });
     }
     const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
-      wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' }, docsubtypeso: dt.docsubtypeso, creditOf };
+      wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' }, docsubtypeso: dt.docsubtypeso, creditOf, acctSetupOf };
     const opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: bp, warehouseId: 103 };
     const g = POS.buildRecallCompleteGroup(ctx, { c_order_id: o, docstatus: 'DR', c_bpartner_id: bp, m_warehouse_id: 103 }, held, opts);
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
@@ -342,7 +350,11 @@ const quirks = [
     sc('S8b-pos-sale-date-without-period', { doctype: POSDT, date: '2000-06-01', lines: [{ product: 123, qty: 1 }] }),
     sc('S8c-pos-sale-beyond-open-future', { doctype: POSDT, date: plus(200), lines: [{ product: 123, qty: 1 }] }),
     sc('S8d-pos-sale-before-open-history', { doctype: POSDT, date: '1999-01-15', lines: [{ product: 123, qty: 1 }] }));
+  // M3_ONLY=<prefix>: run only the corpus rows whose id starts with it (used by the one-shot S5 witness, spec §43); the S5 row exists only in that mode
+  if (process.env.M3_ONLY === 'S5') corpus.push(sc('S5-pos-sale-stray-acct-schema', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }));
+  if (process.env.M3_ONLY) { const keep = corpus.filter(c => c.id.startsWith(process.env.M3_ONLY)); corpus.length = 0; corpus.push(...keep); }
   const rows = await R.run(corpus, spec, quirks, { log });
+  if (process.env.M3_ONLY) { for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`); log('§M3_VERDICT ONLY ' + process.env.M3_ONLY); process.exit(0); }
   // S12 void (spec §33): product 136 (costed, reversal is cost-neutral), BP 112
   const vrows = await R.run([{ id: 'S12-void-pos-sale', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 136, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) }], voidSpec, quirks, { log });
   rows.push(...vrows);

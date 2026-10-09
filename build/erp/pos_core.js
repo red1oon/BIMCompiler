@@ -145,6 +145,16 @@
     var r = ctx.periodCheck(opts.dateAcct, ctx.docbasetype || 'SOO') || { ok: false, reason: 'period-closed' };
     return r.ok ? r : { ok: false, reason: r.reason || 'period-closed', why: r.why };
   }
+  // §43 (F10): every active accounting schema must carry product-category accounting for each line's product (legacy NPEs otherwise, MProduct.java:1066-1067);
+  // runs between the period and the credit test (MOrder.java:1544 → 1633 → 1689) when the host supplies ctx.acctSetupOf(productId) → [missing schema ids].
+  function acctGate(ctx, lines) {
+    if (!ctx || typeof ctx.acctSetupOf !== 'function') return { ok: true };
+    for (var i = 0; i < lines.length; i++) {
+      var miss = ctx.acctSetupOf(lines[i].m_product_id) || [];
+      if (miss.length) return { ok: false, reason: 'no-product-category-acct', m_product_id: lines[i].m_product_id, schemas: miss };
+    }
+    return { ok: true };
+  }
   function creditGate(ctx, soLines, bpId, docsubtypeso, paymentrule) {
     if (!ctx || typeof ctx.creditOf !== 'function') return { ok: true };
     var c = ctx.creditOf(bpId) || {};
@@ -157,6 +167,8 @@
     if (!built.ok) return built;
     var pg = periodGate(ctx, opts);
     if (!pg.ok) return pg;
+    var ag = acctGate(ctx, built.soLines);
+    if (!ag.ok) return ag;
     var cg = creditGate(ctx, built.soLines, opts.c_bpartner_id, ctx.docsubtypeso || 'WR', opts.paymentrule);
     if (!cg.ok) return cg;
     var tail = completionOps(ctx, built.order, built.soLines, opts);
@@ -184,6 +196,8 @@
     if (!heldLines || !heldLines.length) return { ok: false, reason: 'no-held-lines' };
     var pg = periodGate(ctx, opts);
     if (!pg.ok) return pg;
+    var ag = acctGate(ctx, heldLines);
+    if (!ag.ok) return ag;
     var cg = creditGate(ctx, heldLines, heldOrder.c_bpartner_id, ctx.docsubtypeso || 'WR', opts && opts.paymentrule);
     if (!cg.ok) return cg;
     var tail = completionOps(ctx, heldOrder, heldLines, opts);
@@ -235,6 +249,8 @@
     if (!built.ok) return built;
     var pg = periodGate(ctx, opts);
     if (!pg.ok) return pg;
+    var ag = acctGate(ctx, built.soLines);
+    if (!ag.ok) return ag;
     var cg = creditGate(ctx, built.soLines, opts.c_bpartner_id, opts.doctype.docsubtypeso, opts.paymentrule);
     if (!cg.ok) return cg;
     // complete the ORDER with the dictionary flags VERBATIM (N/N ⇒ the bare SET_STATUS C_Order CO)

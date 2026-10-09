@@ -346,6 +346,14 @@ function voidOrder(sale, opts) {
   return ops;
 }
 
+// acctSetupGap — which ACTIVE accounting schemas have no product-category accounting row for a category. Implementing prompts/SQLiteIDEMPIERE.md §43 (S5, F10).
+// Legacy: MOrder.prepareIt ASI loop (MOrder.java:1633-1637) → MProduct.isASIMandatoryFor over every active client schema (MProduct.java:1028-1037) → getCostingLevel →
+// MProductCategoryAcct.get(...) null ⇒ NPE (MProduct.java:1066-1067): the order cannot be prepared. SQLite refuses with a NAMED error instead (same outcome). Pure.
+function acctSetupGap(categoryId, activeSchemaIds, categoryAcctRows) {
+  var have = {}; (categoryAcctRows || []).forEach(function (r) { if (String(r.m_product_category_id) === String(categoryId)) have[String(r.c_acctschema_id)] = true; });
+  return (activeSchemaIds || []).filter(function (sid) { return !have[String(sid)]; });
+}
+
 // periodOpen — MPeriod.isOpen(DateAcct, DocBaseType, Org) as a pure function. Implementing prompts/SQLiteIDEMPIERE.md §42 (F7) — Witness: M3 S8c.
 // data = { schema: { autoperiodcontrol, period_openhistory, period_openfuture } (client primary schema),
 //          periods: [{ c_period_id, startdate, enddate, isactive, periodtype, control: { <DocBaseType>: <PeriodStatus> } }] (the org calendar's periods) }
@@ -409,7 +417,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,

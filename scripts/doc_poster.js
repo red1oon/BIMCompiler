@@ -148,7 +148,7 @@ function _curQty(db, pid, sch, ct, el) {
 function costQtyRefusal(db, lines) {
   if (!_hasCol(db, 'm_cost', 'currentqty')) return null;
   var els = _costingElements(db).filter(function (e) { return e.cm === 'A' || e.cm === 'I'; });
-  var schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema ORDER BY c_acctschema_id', []);
+  var schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []);
   for (var i = 0; i < lines.length; i++) {
     var l = lines[i]; if (!_isStocked(db, l.m_product_id)) continue;
     for (var j = 0; j < schemas.length; j++) for (var k = 0; k < els.length; k++) {
@@ -162,7 +162,7 @@ function costQtyRefusal(db, lines) {
 function costQtyUpdates(db, ioId) {
   if (!_hasCol(db, 'm_cost', 'currentqty')) return [];
   var lines = allRows(db, 'SELECT m_product_id, movementqty FROM m_inoutline WHERE m_inout_id=?', num(ioId));
-  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema ORDER BY c_acctschema_id', []), out = [];
+  var els = _costingElements(db), schemas = allRows(db, 'SELECT c_acctschema_id AS id, m_costtype_id AS ct FROM c_acctschema' + (_hasCol(db, 'c_acctschema', 'isactive') ? " WHERE isactive='Y'" : '') + ' ORDER BY c_acctschema_id', []), out = [];
   lines.forEach(function (l) {
     if (!_isStocked(db, l.m_product_id)) return;
     schemas.forEach(function (sc) { els.forEach(function (e) {
