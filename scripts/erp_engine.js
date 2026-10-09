@@ -346,6 +346,20 @@ function voidOrder(sale, opts) {
   return ops;
 }
 
+// priceAt — the price-list VERSION valid at a date. Implementing prompts/SQLiteIDEMPIERE.md §41 (F8) — Witness: M3 S8b/S8d.
+// Port of MProductPricing.calculatePL (MProductPricing.java:236-300): rows = the product's prices in ACTIVE versions of ONE price list (active price rows),
+// each { validfrom, pricestd, pricelist, pricelimit }; ordered ValidFrom DESC, the first with ValidFrom <= date (null ValidFrom always qualifies) wins; none ⇒ null.
+// date: 'YYYY-MM-DD…' (the order's DateOrdered; the caller passes today when the order has none, :262-263). Pure.
+function priceAt(rows, date) {
+  var d = String(date).slice(0, 10);
+  var sorted = (rows || []).slice().sort(function (a, b) { return String(b.validfrom || '').localeCompare(String(a.validfrom || '')); });
+  for (var i = 0; i < sorted.length; i++) {
+    var vf = sorted[i].validfrom;
+    if (vf == null || String(vf).slice(0, 10) <= d) return sorted[i];
+  }
+  return null;
+}
+
 // creditCheckOrder — the SO credit gate of MOrder.prepareIt. Implementing prompts/SQLiteIDEMPIERE.md §36 (S13, fix F5) — Witness: M3 S13a/b/c.
 // Port of CreditManagerOrder.checkCreditStatus (CreditManagerOrder.java:48-98) + MBPartner.getSOCreditStatus(additionalAmt) (MBPartner.java:826-850).
 //   order = { issotrx, docsubtypeso, paymentrule, grandtotal (base currency) }, bp = { socreditstatus, so_creditlimit, totalopenbalance },
@@ -368,7 +382,7 @@ function creditCheckOrder(order, bp, sys) {
 }
 
 return {
-  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder,
+  resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, creditCheckOrder: creditCheckOrder, priceAt: priceAt,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
   qtyRollup: qtyRollup,

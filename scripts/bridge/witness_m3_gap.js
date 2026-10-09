@@ -31,6 +31,10 @@ const seed = new Database(path.join(__dirname, '..', '..', 'build', 'erp', 'ad_s
 const pos = lc(seed.prepare('SELECT * FROM c_pos WHERE c_pos_id=100').get());
 const plv = lc(seed.prepare('SELECT m_pricelist_version_id v FROM m_pricelist_version WHERE m_pricelist_id=?').get(pos.m_pricelist_id));
 const priceStmt = seed.prepare('SELECT pricestd FROM m_productprice WHERE m_pricelist_version_id=? AND m_product_id=?');
+// §41 F8: every active version's active price for (price list, product) — the rows erp_engine.priceAt walks by date
+const priceRowsStmt = seed.prepare("SELECT v.validfrom, pp.pricestd, pp.pricelist, pp.pricelimit FROM m_productprice pp JOIN m_pricelist_version v ON v.m_pricelist_version_id=pp.m_pricelist_version_id WHERE v.m_pricelist_id=? AND pp.m_product_id=? AND v.isactive='Y' AND pp.isactive='Y'");
+const TODAY = new Date().toISOString().slice(0, 10);
+const priceOfAt = (pid, date) => { const r = E.priceAt(priceRowsStmt.all(pos.m_pricelist_id, pid).map(lc), date || TODAY); return r ? { pricestd: r.pricestd } : null; };
 const dtOf = id => lc(seed.prepare('SELECT * FROM c_doctype WHERE c_doctype_id=?').get(id));
 let seq = 9100;
 // §36 F5: the credit inputs the SQLite side owns — bill-BP row (seed) + sysconfig (dictionary db ad_full.db)
@@ -42,7 +46,7 @@ const BP = 112, LOC = { 112: 108, 118: 113 };
 function localRun(mut = 0) {
   return async f => {
     const dt = dtOf(f.doctype);
-    const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
+    const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: priceOfAt, priceDate: f.date || TODAY, bomOf: () => [],
       wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' },
       docsubtypeso: dt.docsubtypeso, creditOf };
     const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty));       // P15: no price is ever passed in; keyed price f.keyedPrice is ignored by design
@@ -56,6 +60,7 @@ function localRun(mut = 0) {
 }
 // fold a SQLite group (ops + soLines) into the comparable result; materialises its invoice/shipment into the scratch posting db (shared by the POS and AD adapters)
 function foldLocal(g, f, opts, mut) {
+  const cqBefore = {}; for (const l of f.lines) cqBefore[l.product] = localCostQty(l.product);
   {
     const st = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'C_Order').pop();
     const shipDone = g.ops.filter(x => x.op_type === 'SET_STATUS' && x.table === 'M_InOut' && x.doc_status === 'CO').length;
@@ -86,6 +91,7 @@ function foldLocal(g, f, opts, mut) {
       shipments: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'M_InOut').length, shipments_completed: shipDone,
       invoices: g.ops.filter(x => x.op_type === 'CREATE_DOCUMENT' && x.table === 'C_Invoice').length,
       stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _refused: refusedWhy,
+      cost_qty_delta: deltaStr(Object.keys(cqBefore), cqBefore, p => localCostQty(Number(p))),
     };
   }
 }
@@ -133,7 +139,7 @@ function applyCostQty(ioId) {
 // ================= Legacy side: push via the Bridge (composite) + read-back over read WS types =================
 const cfg = cfgFromEnv(); cfg.login.OrgID = 11; cfg.login.WarehouseID = 103;
 const descFor = f => ({ composite: 'SyncOrder',
-  header: { serviceType: 'createOrderRecord', table: 'C_Order', fields: { M_Warehouse_ID: { const: 103 }, C_BPartner_ID: { const: f.bp || BP }, C_BPartner_Location_ID: { const: LOC[f.bp || BP] }, Bill_BPartner_ID: { const: f.bp || BP }, Bill_Location_ID: { const: LOC[f.bp || BP] }, C_DocTypeTarget_ID: { const: f.doctype } } },
+  header: { serviceType: f.date ? 'BridgeCreateOrder' : 'createOrderRecord', table: 'C_Order', fields: Object.assign({ M_Warehouse_ID: { const: 103 }, C_BPartner_ID: { const: f.bp || BP }, C_BPartner_Location_ID: { const: LOC[f.bp || BP] }, Bill_BPartner_ID: { const: f.bp || BP }, Bill_Location_ID: { const: LOC[f.bp || BP] }, C_DocTypeTarget_ID: { const: f.doctype } }, f.date ? { DateOrdered: { const: f.date + ' 00:00:00' }, DateAcct: { const: f.date + ' 00:00:00' } } : {}) },
   lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
     fields: Object.assign({ AD_Org_ID: { const: 11 }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } },
       f.keyedPrice != null ? { PriceEntered: { path: 'price' }, PriceActual: { path: 'price' } } : {}) },
@@ -141,12 +147,20 @@ const descFor = f => ({ composite: 'SyncOrder',
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'm3-'));
 const stockOf = async p => (await query(cfg, 'QueryStorage', `M_Product_ID=${p} AND M_Locator_ID IN (SELECT M_Locator_ID FROM M_Locator WHERE M_Warehouse_ID=103)`)).reduce((a, r) => a + Number(r.QtyOnHand), 0);
 let uidN = 0;
+// §41/F9: costed quantity (Average PO element, primary schema) — derived cost STATE, compared as a delta so back-date re-processing cannot hide behind the start-of-run sync
+const AVG_EL = 103;
+const legacyCostQty = async p => { const r = await query(cfg, 'QueryMCost', `M_Product_ID=${p} AND C_AcctSchema_ID=${SCHEMA} AND M_CostElement_ID=${AVG_EL} AND AD_Org_ID=0 AND M_AttributeSetInstance_ID=0`); return r.length ? Number(r[0].CurrentQty) : 0; };
+const localCostQty = p => { try { const r = gb.prepare('SELECT currentqty q FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costelement_id=?').get(p, SCHEMA, AVG_EL); return r ? Number(r.q || 0) : 0; } catch (e) { return 0; } };
+const deltaStr = (ps, before, now) => JSON.stringify(Object.fromEntries(ps.map(p => [p, now(p) - before[p]]).filter(x => x[1])));
 async function legacyRun(f) {
   const before = {}; for (const l of f.lines) if (!(l.product in before)) before[l.product] = await stockOf(l.product);
+  const cqBefore = {}; for (const l of f.lines) cqBefore[l.product] = await legacyCostQty(l.product);
   const s = await store.open(); const uid = 'm3-' + (++uidN);
   s.enqueue(uid, 'doc', { lines: f.lines.map(l => ({ product: l.product, qty: l.qty, price: f.keyedPrice })) });
   await drain(cfg, s, { doc: descFor(f) }, { log: () => {} });
   const st = s.get(uid);
+  // a refusal by the WS CONFIGURATION (type/column/role) is a harness fault, never a legacy business verdict (P17, found by S8 2026-10-09)
+  if (st.state !== 'CONFIRMED' && /Web service type .* not allowed|No permission|not allowed for (this )?role|Unknown web service type/i.test(st.error || '')) throw new Error('§WS_CONFIG ' + st.error);
   if (st.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (st.error || '').slice(0, 90) };
   const id = s.idmap(uid).find(x => x.tbl === 'C_Order').server_id;
   const h = (await query(cfg, 'QueryCOrder', `C_Order_ID=${id}`))[0];
@@ -178,6 +192,7 @@ async function legacyRun(f) {
     lines: ls.map(l => `${l.M_Product_ID}:${l.QtyOrdered}:${cents(l.PriceActual)}`).sort().join('|'),
     total_cents: cents(h.TotalLines), shipments: io.length, shipments_completed: io.filter(x => x.DocStatus === 'CO').length, invoices: inv.length,
     stock_delta: JSON.stringify(stock), postings, postings_shipment: postingsShipment, _order: id,
+    cost_qty_delta: await (async () => { const n = {}; for (const p of Object.keys(cqBefore)) n[p] = await legacyCostQty(Number(p)); return deltaStr(Object.keys(cqBefore), cqBefore, p => n[p]); })(),
   };
 }
 
@@ -286,7 +301,7 @@ const corpus = [
   sc('S13b-standard-order-over-credit-limit', { doctype: STDDT, bp: 118, lines: [{ product: 123, qty: 200 }] }),
   sc('S13c-pos-sale-large-no-credit-limit', { doctype: POSDT, lines: [{ product: 123, qty: 200 }] }),         // control: BP 112 limit 0 ⇒ no check (MBPartner.java:833-836) ⇒ completes
 ];
-const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment'],
+const spec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'shipments', 'shipments_completed', 'invoices', 'stock_delta', 'postings', 'postings_shipment', 'cost_qty_delta'],
   notCompared: { fact_acct_secondary_schema: 'legacy also posts to a second accounting schema (Euro, 200000); only the primary schema is compared', tax_and_grandtotal: 'tax was 0 on every scenario document' } };
 const quirks = [
   // S3 quirk entries REMOVED 2026-10-09 (§39): S3 is now compared on the AD-window path, where SQLite accepts the keyed price like legacy.
@@ -311,6 +326,12 @@ const quirks = [
   log(`§S7_FACTS product=128 legacy_onhand_before=${oh128} legacy_avg_costed_qty=${cq128} qty=${q7} warehouse=103`);
   corpus.push(sc('S7a-pos-sale-beyond-onhand', { doctype: POSDT, lines: [{ product: 128, qty: q7 }] }),
     sc('S7b-standard-order-beyond-onhand', { doctype: STDDT, lines: [{ product: 128, qty: q7 }] }));
+  // S8 (spec §40): period control — dates relative to the legacy server's today where the rule is relative
+  const today = new Date(); const iso = d => d.toISOString().slice(0, 10); const plus = n => iso(new Date(today.getTime() + n * 86400000));
+  corpus.push(sc('S8a-pos-sale-past-dated-open-period', { doctype: POSDT, date: '2026-09-15', lines: [{ product: 123, qty: 1 }] }),
+    sc('S8b-pos-sale-date-without-period', { doctype: POSDT, date: '2000-06-01', lines: [{ product: 123, qty: 1 }] }),
+    sc('S8c-pos-sale-beyond-open-future', { doctype: POSDT, date: plus(200), lines: [{ product: 123, qty: 1 }] }),
+    sc('S8d-pos-sale-before-open-history', { doctype: POSDT, date: '1999-01-15', lines: [{ product: 123, qty: 1 }] }));
   const rows = await R.run(corpus, spec, quirks, { log });
   // S12 void (spec §33): product 136 (costed, reversal is cost-neutral), BP 112
   const vrows = await R.run([{ id: 'S12-void-pos-sale', facts: { doctype: POSDT, action: 'VO', lines: [{ product: 136, qty: 1 }] }, legacy: legacyVoid, local: localVoid(0) }], voidSpec, quirks, { log });

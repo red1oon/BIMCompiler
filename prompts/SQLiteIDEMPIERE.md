@@ -958,4 +958,34 @@ PriceList 0, PriceLimit 0, Discount null, LineNetAmt 10). ⇒ **S3 on the AD pat
 **RESULT §39 (M3, 2026-10-09):** `§SCN S3-client-keyed-price MATCH compared=10` (AD path: line 123:1:1000, total 1000, 1 shipment CO, 1 invoice, invoice books 518 Dr 1000 / 758 Cr 1000, shipment REFUSED both sides on Oak Tree's costed qty 0) — the S3 quirk entries are deleted, LEGACY-QUIRK count 0.
 `§SCN S2b-keyed-price-product-not-on-pricelist SQLITE-GAP` (legacy `Cannot save record in C_OrderLine: Product is not on Price List`; SQLite AD layer COMPLETED) — stays in `§TRIAGE RULE_queue` as the failing regression; fix location `~/bim-ootb/erp/model_order.js` ⇒ ⛔ Q-OOTB (§34).
 
+## §40 S8 — PAST/FUTURE-DATED document, period control (G11) (2026-10-09, backlog item 5a) — SPEC before code
+**Legacy rule (read):** `MOrder.prepareIt` (MOrder.java:1544-1548) refuses with `@PeriodClosed@` unless `MPeriod.isOpen(DateAcct, DocBaseType, Org)` (MPeriod.java:291-314): a period must exist for the date in the org's calendar, it must be active, and
+under **Automatic Period Control** of the client's primary schema (MPeriod.java:735-770, pilot schema 101: `AutoPeriodControl=Y`, `Period_OpenHistory=10000`, `Period_OpenFuture=100` days) the date must lie in [today − history, today + future];
+without auto control the period's `C_PeriodControl` status for the DocBaseType decides (MPeriod.java:772-785). "today" = the server's clock.
+**Facts (POS order 135 = DocBaseType SOO, BP 112, Oak Tree × 1, DateOrdered = DateAcct = the date):** S8a 2026-09-15 (past, inside window) · S8b 2000-06-01 (inside the history window but NO period: periods start 2001-01-01) ·
+S8c today + 200 days (beyond Period_OpenFuture) · S8d 1999-01-15 (before the history window). Expected legacy: S8a CO; S8b/S8c/S8d REJECTED `Period Closed`.
+**SQLite before:** the POS verbs carry no date at all and never test a period ⇒ S8b-d expected SQLITE-GAP. Fix F7 (if measured so): pure `erp_engine.periodOpen(data, dateAcct, docBaseType, today)` (port of the two methods above; data = primary schema row + the calendar's
+periods with their control rows, host-read) + a gate in the POS completion verbs when the host supplies `ctx.periodData` and the order carries `opts.dateAcct`; the order op then also carries `dateordered`/`dateacct` (business dates are a §21 compared item).
+Today for both sides = the legacy server date (read from a legacy read; the SQLite host's own clock in production).
+**MEASURED S8 (legacy first, 2026-10-09; route fixed first — see below):** S8a 2026-09-15 ⇒ CO, books like a today-dated sale EXCEPT the shipment: legacy POSTED `430 Dr 4869 / 742 Cr 4869` for Oak Tree although today its costed qty is 0
+(back-date costing: a cost detail dated before the product's last processed one is `IsBackDate`, MCostDetail.java:1241-1267, and is costed/re-processed through cost history, DocManager.java:620-700, MCost.java:113-146);
+S8b 2000-06-01 and S8d 1999-01-15 ⇒ REJECTED **`Product is not on Price List`** (no price-list VERSION valid at that date — the version is chosen by DateOrdered, before any period test); S8c today+200 ⇒ REJECTED **`Period Closed`**.
+SQLite: COMPLETED for all four ⇒ three rules are missing: F8 price-list version by date (S8b/S8d), F7 period control (S8c), F9 back-date costing (S8a shipment books).
+**Harness defect found and fixed (P17):** the stock `createOrderRecord` type refuses `DateOrdered` as input ("input column DateOrdered not allowed"); the first S8 run therefore scored a WS-configuration refusal as a legacy REJECTED. Now (a) a WS-config refusal throws ⇒ `§SCN_ERROR`, never a verdict;
+(b) bridge fixture type `BridgeCreateOrder` (= the stock type's 3 parameters + its 10 input columns + DateOrdered + DateAcct; `scripts/bridge/pilot/ws_docaction.sql`) is used for dated scenarios.
+
+## §41 F8 — price-list VERSION chosen by the order date, like legacy (2026-10-09) — SPEC before code
+**Rule:** `MProductPricing.calculatePL` (MProductPricing.java:236-300): rows = active versions of the order's price list that hold an active price for the product, ordered `ValidFrom DESC`; the first with `ValidFrom ≤ PriceDate` (the order's DateOrdered;
+today when absent, :262-263) gives PriceStd/PriceList/PriceLimit; none ⇒ not calculated ⇒ `ProductNotOnPriceListException` (MOrderLine.java:846-849).
+**SQLite change:** pure `erp_engine.priceAt(rows, date)` (that loop); `pos_core.ringLine` passes `ctx.priceDate` as a second argument to the host's `ctx.priceOf(productId, date)` (hosts that ignore it behave as before); the M3 adapter's `priceOf` reads every
+version row and calls `priceAt`. The lens host keeps its single-version lookup until it is given a date (it has no date field today — L&F item) — stated, not hidden.
+**Acceptance:** S8b and S8d outcome MATCH (REJECTED both sides); all today-dated scenarios unchanged.
+### §41.1 DECISION RECORD F8 — price-list version by date (2026-10-09)
+**Evidence:** S8b/S8d legacy `Product is not on Price List`, SQLite COMPLETED. **Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW pure `priceAt(rows, date)` (MProductPricing.java:236-300);
+`build/erp/pos_core.js` `ringLine` passes `ctx.priceDate` to `ctx.priceOf(productId, date)` (2nd arg ignored by existing hosts); `scripts/bridge/witness_m3_gap.js` adapter prices with `priceAt` over every active version (date = scenario date or today).
+**Proof:** `§SCN S8b-pos-sale-date-without-period MATCH` · `§SCN S8d-pos-sale-before-open-history MATCH` (REJECTED both sides); every today-dated scenario unchanged. Regression: 99 engine witnesses — exits identical, logs identical except the 4 known-nondeterministic ones.
+**Residue:** the POS lens host still prices from one version (it has no order-date field) — a lens sale is always "today", where `priceAt` and the single version agree on this seed; the BPL (base price list) and vendor-break branches of MProductPricing are not ported (no scenario).
+**Harness hardening in the same commit (P17):** new compared key **`cost_qty_delta`** (Average-PO costed qty change of each product, primary schema, read before/after on both sides). Reason: the start-of-run cost-state sync (§38) had made S8a look like a MATCH
+although legacy's back-dated shipment re-processed Oak Tree's cost history (costed qty 0 → 24 between runs; AD_Issue "Oak Tree, Current Qty=24.0, New Current Qty=-176.0"). With the key, S8a shows `legacy {"123":2} sqlite {"123":-1}` ⇒ **F9 back-date costing = open SQLITE-GAP (MISSING)**.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

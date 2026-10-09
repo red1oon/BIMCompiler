@@ -45,7 +45,7 @@
   // "every ringed line traces to a c_poskey→m_product→m_productprice row" (no invented price).
   function ringLine(ctx, productId, qty) {
     if (!(qty > 0)) return { ok: false, reason: 'bad-qty', m_product_id: productId };
-    var p = ctx.priceOf(productId);
+    var p = ctx.priceOf(productId, ctx.priceDate);   // §41 (F8): the host picks the price-list VERSION valid at the order date (erp_engine.priceAt); hosts without a date ignore the 2nd arg
     if (!p || p.pricestd == null) return { ok: false, reason: 'no-price', m_product_id: productId };
     var price = bd(p.pricestd).setScale(2, HALF_UP);
     return {
