@@ -105,7 +105,7 @@ module.exports = function makeO2C(X) {
   }
 
   // ================= SQLite (the engine under test) =================
-  const S = {}; let sq = 97000;
+  const S = {}; let sq = X.idBase || 97000;   // each chain instance owns its id range in the shared scratch db (two chains with one range collided — P17, §64.4)
   const nid = () => ++sq * 10;
   const fold = (t, id, sc) => { if (!id) return 'none'; const d = DP.derivePostings(gb, { table: t, id }, sc); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
   const bpS = () => {   // the BP open item the SQLite side derives from ITS OWN documents (MBPartner.setTotalOpenBalance port); absent verb ⇒ 'none'
@@ -154,7 +154,7 @@ module.exports = function makeO2C(X) {
       const priceOfLine = Object.fromEntries(S.lines.map(l => [l.m_product_id, l.priceactual]));   // CreateFrom copies the ORDER line price
       const r = E.prepareInvoice({ c_invoice_id: S.inv, issotrx: 'Y', c_bpartner_id: BP, dateinvoiced: TODAY },
         S.shipLines.map((l, i) => ({ c_invoiceline_id: S.inv * 100 + i, m_product_id: l.m_product_id, qtyinvoiced: l.movementqty })),
-        { priceOf: pid => ({ pricestd: priceOfLine[pid] }), taxOf: taxOfFor({ bp: BP }), taxById, taxChildren, taxIncluded: TAX_INCLUDED });
+        { priceOf: pid => ({ pricestd: X.mut ? (Number(priceOfLine[pid]) + X.mut / 100).toFixed(2) : priceOfLine[pid] }), taxOf: taxOfFor({ bp: BP }), taxById, taxChildren, taxIncluded: TAX_INCLUDED });   // X.mut = negative-control cents (harness only)
       if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       const ops = r.ops.concat(E.completeInvoice({ c_invoice_id: S.inv, issotrx: 'Y' }, r.lines, {}));
       const status = (ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'C_Invoice').pop() || {}).doc_status;
@@ -201,7 +201,16 @@ module.exports = function makeO2C(X) {
     }
     if (step === 'RC-SHIP') {
       if (typeof E.reverseInOut !== 'function') return { outcome: 'COMPLETED', ship_statuses: 'CO/none', rev_lines: 'none', books: 'none', books_euro: 'none', ...commonS() };
-      return { outcome: 'ERROR', error: 'reverseInOut host adapter missing' };
+      const r = E.reverseInOut({ m_inout_id: S.ship, c_order_id: S.order, movementtype: 'C-', issotrx: 'Y', docstatus: 'CO', lines: S.shipLines }, { newId: () => nid(), orderLines: S.lines });
+      if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+      ap(r.ops); S.shipRev = r.reversalId;
+      const st = {}; r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'M_InOut').forEach(o => { st[o.id] = o.doc_status; });
+      const rl = r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'M_InOutLine');
+      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,c_order_id,ad_client_id,ad_org_id,dateacct,reversal_id) VALUES(?,?,?,?,?,?,?,?,?)').run(S.shipRev, 'Y', 'C-', st[S.shipRev], S.order, 11, 11, TODAY + ' 00:00:00', S.ship);
+      rl.forEach((l, i) => gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty,c_orderline_id,m_locator_id,reversalline_id) VALUES(?,?,?,?,?,?,?)').run(S.shipRev * 100 + i, S.shipRev, l.m_product_id, l.movementqty, l.c_orderline_id, LOCATOR, l.reversalline_id));
+      const b1 = fold('M_InOut', S.shipRev, SCHEMA), b2 = fold('M_InOut', S.shipRev, SCHEMA2);
+      if (!/^ABSENT/.test(b1)) applyCostQty(S.shipRev);
+      return { outcome: 'COMPLETED', ship_statuses: `${st[S.ship]}/${st[S.shipRev]}`, rev_lines: rl.map(l => `${l.m_product_id}:${l.movementqty}`).sort().join('|'), books: /^ABSENT/.test(b1) ? 'REFUSED:Posted=E' : b1, books_euro: /^ABSENT/.test(b1) ? 'REFUSED:Posted=E' : b2, ...commonS() };
     }
     throw new Error('unknown step ' + step);
   }

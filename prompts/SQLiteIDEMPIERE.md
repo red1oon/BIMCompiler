@@ -1384,4 +1384,15 @@ NEW `_reversalInvoiceDocOps` = the reversal-document block that `voidOrder` alre
 **Regression:** 99 engine witnesses vs the F20 run: identical except the 4 known-nondeterministic logs; exit codes identical (this run also covers F21's additive verb).
 **Residue (P17, new ledger row):** legacy's POS void (MOrder.voidIt → invoice reverseCorrectIt) ALSO creates the invoice-vs-reversal allocation and re-tests the BP open item; `voidOrder` does not emit them and S12 does not compare allocations / bp — measured next as S12c (or closed by `voidOrder` calling `reverseInvoice` for paid/unpaid invoices).
 
+### §64.4 DECISION RECORD F23 — Reverse-Correct of a shipment like legacy; the O2C cycle MATCHES end to end (2026-10-10)
+**Evidence (`o2c4.log`):** O2C6-RC-SHIP legacy `RE/RE`, reversal line `137:−2`, books **430 Cr 540 / 742 Dr 540** (the original's facts with sides swapped, Doc_InOut.java:287-300 `updateReverseLine`), Euro 459, stock back (+2 ⇒ delta 0), costed qty back (0),
+order line `2/2/0/0` (reservation restored). SQLite: no Reverse-Correct for a shipment outside the POS void.
+**Changed (one commit, backtrack = `git revert <sha>`):** `scripts/erp_engine.js` NEW `reverseInOut` (MInOut.reverseCorrectIt :2714-2740 → reverse :2743-2880: reversal COMPLETED ⇒ storage, order-line rule; invoice lines lose the link :2812-2836) and NEW `_reversalInOutDocOps` = `voidOrder`'s shipment-reversal block
+moved out VERBATIM (shared; S12/S12b still MATCH); the books come from the existing `deriveInOut` reversal path (F14) and costed qty from `costQtyUpdates`, unchanged. `cycle_o2c.js`: RC-SHIP host + a cycle NEGATIVE CONTROL (`§M3_O2C_NEGATIVE_CONTROL`: a second chain, SQLite invoice price +1¢,
+must MATCH at SO and SHIP and differ at INV on lines, tax, total, books, open item). Harness defect found by that control (P17): two chains shared one id range in the scratch db and double-counted each other's documents — each chain now owns its range (`idBase`).
+NEW `scripts/bridge/coverage.js` + `run_all.sh` prints `§COVERAGE` (models with scenarios N1 of the 34 dictionary doc tables, cycles covered K of M, windows identical X of 370) — no coverage claim without a denominator.
+**Proof (`o2c7.log`):** `§SCN O2C1-SO … O2C6-RC-SHIP` **all MATCH** (9/9/12/13/13/9 keys: statuses, lines, quantities, tax, totals, shipment / invoice / payment / allocation / reversal books on BOTH schemas, stock, costed qty, BP open item) · `§M3_O2C_NEGATIVE_CONTROL PASS` · `M3_ONLY=S12` S12/S12b MATCH.
+**Regression:** 99 engine witnesses vs the F22 run: identical except the 4 known-nondeterministic logs; exit codes identical.
+**Residue:** accrual reversal (RA) and Void (VO) of an invoice/shipment, partial shipments / partial invoices, Generate Shipments/Invoices processes (selection-based), shipment confirmations, a taxed O2C chain (org 12) — not in this cycle; each is a separate step family when needed.
+
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

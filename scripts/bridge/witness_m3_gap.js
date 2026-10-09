@@ -607,6 +607,7 @@ const quirks = [
 (async () => {
   let fails = 0, incon = 0;
   const out = (tag, ok, msg) => { log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUSIVE' : ok ? 'PASS' : 'FAIL'} ${msg}`); if (ok === 'INCONCLUSIVE') incon++; else if (!ok) fails++; };
+  let o2cNeg = null;   // §64 cycle negative control rows
 
   // §37/§38 C5 handover in miniature: load the generated dict_diff patches (schema + data, legacy values) into the scratch posting db so both sides start from the SAME state
   { const DD = require('./dict_diff'); const sync = [];
@@ -663,7 +664,14 @@ const quirks = [
     const O2C = require('./cycle_o2c')({ cfg, query, call: call_, createLink, gb, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
       pos, priceOfAt, taxOfFor, taxById, taxChildren, TAX_INCLUDED, dtOf, creditOf, periodCheck, acctSetupOf, PL_CURRENCY, log });
     for (const [i, st] of O2C.STEPS.entries()) rows.push(...await R.run([O2C.scenario(st, i)], { keys: O2C.KEYS[st], notCompared: {} }, quirks, { log }));
+    // negative control for the cycle: a second chain whose SQLite invoice price is +1¢ MUST surface at the INV step (lines, total, books, open item) and not before
+    const NEG = require('./cycle_o2c')({ cfg, query, call: call_, createLink, gb, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
+      pos, priceOfAt, taxOfFor, taxById, taxChildren, TAX_INCLUDED, dtOf, creditOf, periodCheck, acctSetupOf, PL_CURRENCY, log: () => {}, mut: 1, idBase: 98000 });
+    const nr = []; for (const [i, st] of ['SO', 'SHIP', 'INV'].entries()) nr.push(...await R.run([{ ...NEG.scenario(st, i), id: 'NEG-o2c-' + st }], { keys: NEG.KEYS[st], notCompared: {} }, quirks, { log }));
+    o2cNeg = nr;
   }
+  if (o2cNeg) out('§M3_O2C_NEGATIVE_CONTROL', o2cNeg[0].verdict === 'MATCH' && o2cNeg[1].verdict === 'MATCH' && o2cNeg[2].verdict === 'SQLITE-GAP' && ['inv_lines', 'grand_total', 'books', 'bp_delta'].every(k => o2cNeg[2].gaps.some(g => g.key === k)),
+    `+1¢ on the SQLite invoice price ⇒ SO=${o2cNeg[0].verdict} SHIP=${o2cNeg[1].verdict} INV=${o2cNeg[2].verdict} gaps=${o2cNeg[2].gaps.map(g => g.key).join(',')}`);
   if (only) onlyExit();
   const by = Object.fromEntries(rows.map(r => [r.id, r]));
   for (const r of rows) log(`§SCN_DETAIL ${r.id} legacy=${JSON.stringify({ ...r.legacy, _order: undefined })} sqlite=${JSON.stringify(r.sqlite)}`);

@@ -366,6 +366,37 @@ function reverseInvoice(iv, st, opts) {
   ops.push({ op_type: 'SET_STATUS', table: 'C_AllocationHdr', id: hid, doc_status: 'CO' });
   return { ok: true, ops: ops, reversalId: rid, allocationId: hid };
 }
+// _reversalInOutDocOps — the reversal DOCUMENT of a completed shipment/receipt (MInOut.reverse :2743-2880: copy, QtyEntered / MovementQty NEGATED, ReversalLine_ID, both 'RE', Reversal_ID both ways).
+// Shared by voidOrder (POS void, F4) and reverseInOut (Reverse-Correct, F23).
+function _reversalInOutDocOps(s, orderId, rid) {
+  var ops = [];
+  ops.push({ op_type: 'CREATE_DOCUMENT', table: 'M_InOut', source_id: orderId, m_inout_id: rid, movementtype: s.movementtype, reversal_id: s.m_inout_id });
+  (s.lines || []).forEach(function (l) {
+    ops.push({ op_type: 'CREATE_LINE', table: 'M_InOutLine', m_inout_id: rid, m_product_id: l.m_product_id, movementqty: _neg(l.movementqty), c_orderline_id: l.c_orderline_id, reversalline_id: l.m_inoutline_id });
+  });
+  ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: rid, doc_status: 'RE' });
+  ops.push({ op_type: 'UPDATE_FIELD', table: 'M_InOut', id: s.m_inout_id, field: 'reversal_id', value: rid });
+  ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: s.m_inout_id, doc_status: 'RE' });
+  return ops;
+}
+// reverseInOut — Reverse-Correct of a COMPLETED shipment/receipt (MInOut.reverseCorrectIt :2714-2740 → reverse(accrual=false) :2743-2880). Implementing prompts/SQLiteIDEMPIERE.md §64.4 (F23) — Witness: M3 O2C6-RC-SHIP.
+// The reversal is COMPLETED (:2851) — completeIt with negated MovementQty: storage at the line locator −= signed qty (a C- reversal puts goods back), the order-line rule
+// (inoutOrderLineEffects: delivered back, reservation restored); invoice lines pointing at the original lines lose the link (:2812-2836); both 'RE'.
+// Costs/books are the posting layer's (Doc_InOut reversal copies the original's facts swapped, :287-300; cost quantities follow the posted reversal).
+// io = { m_inout_id, c_order_id, movementtype, issotrx, docstatus, lines:[{m_inoutline_id, m_product_id, movementqty, c_orderline_id, m_locator_id}] }
+// opts = { newId(table), orderLines (optional), invoiceLines (optional [{c_invoiceline_id, m_inoutline_id}]), periodOpen:{ok} (optional, :2750) }
+function reverseInOut(io, opts) {
+  opts = opts || {};
+  if (io.docstatus && io.docstatus !== 'CO' && io.docstatus !== 'CL') return { ok: false, reason: 'not-completed', docstatus: io.docstatus };
+  if (opts.periodOpen && !opts.periodOpen.ok) return { ok: false, reason: 'PeriodClosed' };
+  var rid = opts.newId('M_InOut'), ops = _reversalInOutDocOps(io, io.c_order_id, rid), out = String(io.movementtype).charAt(1) === '-';
+  var rLines = (io.lines || []).map(function (l) { return { m_product_id: l.m_product_id, movementqty: _neg(l.movementqty), c_orderline_id: l.c_orderline_id, m_locator_id: l.m_locator_id }; });
+  rLines.forEach(function (l) { if (l.m_product_id) ops.push({ op_type: 'MOVE_STOCK', table: 'M_Storage', m_product_id: l.m_product_id, m_locator_id: l.m_locator_id, qty: out ? -Number(l.movementqty) : Number(l.movementqty) }); });
+  if (opts.orderLines) ops = ops.concat(inoutOrderLineEffects({ issotrx: io.issotrx, movementtype: io.movementtype }, rLines, opts.orderLines).ops);
+  var orig = {}; (io.lines || []).forEach(function (l) { orig[l.m_inoutline_id] = true; });
+  (opts.invoiceLines || []).forEach(function (il) { if (orig[il.m_inoutline_id]) ops.push({ op_type: 'UPDATE_LINE', table: 'C_InvoiceLine', id: il.c_invoiceline_id, m_inoutline_id: null }); });
+  return { ok: true, ops: ops, reversalId: rid };
+}
 function voidOrder(sale, opts) {
   var ops = [], skip = { CL: 1, RE: 1, VO: 1 };
   function neg(v) { return v == null ? v : -Number(v); }
@@ -373,14 +404,7 @@ function voidOrder(sale, opts) {
   (sale.shipments || []).forEach(function (s) {
     if (skip[s.docstatus]) return;
     if (s.docstatus !== 'CO') { ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: s.m_inout_id, doc_status: 'VO' }); return; }
-    var rid = opts.newId('M_InOut');
-    ops.push({ op_type: 'CREATE_DOCUMENT', table: 'M_InOut', source_id: sale.order.c_order_id, m_inout_id: rid, movementtype: s.movementtype, reversal_id: s.m_inout_id });
-    (s.lines || []).forEach(function (l) {
-      ops.push({ op_type: 'CREATE_LINE', table: 'M_InOutLine', m_inout_id: rid, m_product_id: l.m_product_id, movementqty: neg(l.movementqty), c_orderline_id: l.c_orderline_id, reversalline_id: l.m_inoutline_id });
-    });
-    ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: rid, doc_status: 'RE' });
-    ops.push({ op_type: 'UPDATE_FIELD', table: 'M_InOut', id: s.m_inout_id, field: 'reversal_id', value: rid });
-    ops.push({ op_type: 'SET_STATUS', table: 'M_InOut', id: s.m_inout_id, doc_status: 'RE' });
+    ops = ops.concat(_reversalInOutDocOps(s, sale.order.c_order_id, opts.newId('M_InOut')));   // §64.4: shared with reverseInOut (same ops, same order)
   });
   (sale.invoices || []).forEach(function (iv) {
     if (skip[iv.docstatus]) return;
@@ -890,7 +914,7 @@ function faCompleteDepreciationEntry(entry, rows, workfiles, assetStatus, ctx) {
 }
 
 return {
-  reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
+  reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
   faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
