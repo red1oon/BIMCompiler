@@ -20,8 +20,27 @@ const PRE = path.join(SCR, 'prestate.db');
 if (!fs.existsSync(PRE) || process.env.REDUMP) cp.execFileSync('python3', [path.join(__dirname, 'model_oracle/dump_prestate.py'), PRE], { stdio: 'ignore' });
 
 const db = new Database(fs.readFileSync(PRE));
+// §FIXTURE-SHIPPED-SEED-2026-10-11 (prompts/SQLiteIDEMPIERE.md): the closure-derived prestate carries only the document footprint, so the model layer's server-side
+// pricing (MOrderLine ProductNotOnPriceList) and role checks found NO price/role tables => every order refused for a FIXTURE reason. Bring the missing REFERENCE tables
+// from the shipped seed + its self-heal patch (same loader as scripts/bridge/witness_m3_gap.js); a table the prestate already has is never overwritten.
+{
+  const FX = require('./bridge/ad_shipped_fixture.js').loadShipped(OOTB, m => console.log(m));
+  const have = new Set(db.prepare("SELECT lower(name) n FROM sqlite_master WHERE type='table'").all().map(r => r.n));
+  const added = [];
+  for (const t of ['m_productprice', 'm_productpricevendorbreak', 'm_pricelist', 'm_pricelist_version', 'm_discountschema', 'm_discountschemaline', 'm_discountschemabreak', 'ad_role', 'ad_role_orgaccess', 'ad_user_roles']) {
+    if (have.has(t)) continue;
+    const cs = FX.db.prepare('PRAGMA table_info(' + t + ')').all(); if (!cs.length) continue;
+    db.exec('CREATE TABLE ' + t + ' (' + cs.map(c => '"' + c.name.toLowerCase() + '"').join(',') + ')');
+    const rows = FX.db.prepare('SELECT * FROM ' + t).all(), ks = cs.map(c => c.name), ins = db.prepare('INSERT INTO ' + t + ' VALUES (' + ks.map(() => '?').join(',') + ')');
+    db.transaction(() => rows.forEach(r => ins.run(...ks.map(k => r[k] == null ? null : r[k]))))(); added.push(t + ':' + rows.length);
+  }
+  const U = require('./bridge/ad_shipped_fixture.js').registerUdfs(OOTB, db); console.log(`§FIXTURE_ORACLE_UDF registered=${U.n}${U.why ? ' INCONCLUSIVE:' + U.why : ''}`);
+  let pp = 0; try { pp = db.prepare('SELECT COUNT(*) n FROM m_productprice').get().n; } catch (e) {}
+  console.log(`§FIXTURE_ORACLE_PRESTATE reference tables added=[${added.join(' ') || 'none'}] product_prices=${pp} ${pp > 0 ? 'FIXTURE_HAS_PRICES' : 'INCONCLUSIVE:fixture has no product prices'}`);
+}
 const cols = {}; function colsOf(t) { if (!cols[t]) cols[t] = db.prepare('PRAGMA table_info(' + t + ')').all().map(c => c.name); return cols[t]; }
-const query = (sql, params) => db.prepare(sql).all(...(params || []).map(v => v == null ? null : v));
+const _rq = require('./bridge/ad_shipped_fixture.js').reentrant(db, OOTB);
+const query = (sql, params) => _rq(sql, (params || []).map(v => v == null ? null : v));   // re-entrant-safe (pricing UDFs query inside a statement)
 function pg(sql) { const r = cp.execFileSync('psql', ['-h', 'localhost', '-U', 'adempiere', '-d', 'idempiere_pilot', '-At', '-c', 'set search_path=adempiere; select coalesce(json_agg(t),\'[]\') from (' + sql + ') t'], { env: Object.assign({}, process.env, { PGPASSWORD: 'adempiere' }), maxBuffer: 1 << 26 }).toString().trim().split('\n').filter(x => x !== 'SET').join(''); return JSON.parse(r); }
 function oracle(root, stop) { const out = cp.execFileSync('python3', [path.join(__dirname, 'model_oracle/closure.py'), root], { env: Object.assign({}, process.env, { DB: 'idempiere_pilot', ROWS: '1', STOP: (stop || []).join(',') }), maxBuffer: 1 << 26 }).toString().trim().split('\n'); return JSON.parse(out[out.length - 1]); }
 

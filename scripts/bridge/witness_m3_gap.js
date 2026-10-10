@@ -152,18 +152,23 @@ function foldLocal(g, f, opts, mut) {
 }
 // ===== AD-WINDOW path (spec §39): the line goes through the AD model layer the SQLite Sales Order window runs (~/bim-ootb/erp/model_order.js MOrderLine.beforeSave,
 // READ-ONLY require), then the kernel completes the draft order (pos_core.buildRecallCompleteGroup) and the books are folded as above.
-const OOTB = process.env.BRIDGE_OOTB || path.join(os.homedir(), 'bim-ootb');
-let ADML = null, adDb = null, adWhy = null;
+const OOTB = process.env.BRIDGE_OOTB || (fs.existsSync('/tmp/wt-ootb-erp-port/erp/model_layer.js') ? '/tmp/wt-ootb-erp-port' : path.join(os.homedir(), 'bim-ootb'));   // default = the ported engine worktree (branch port/sqlite-parity-erp)
+let ADML = null, adDb = null, adWhy = null, adQ0 = null, adPrices = 0;
 try {
   ADML = require(path.join(OOTB, 'erp/model_layer.js')); require(path.join(OOTB, 'erp/model_order.js'));
-  const f0 = path.join(os.tmpdir(), 'm3-ad-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'ad_seed_demo.db'), f0); adDb = new Database(f0);
+  // §FIXTURE-SHIPPED-SEED-2026-10-11: the SHIPPED seed + its self-heal patch + SQL functions (was build/erp/ad_seed_demo.db: no product prices ⇒ false S3 gap)
+  const FX = require('./ad_shipped_fixture.js').loadShipped(OOTB, m => console.log(m)); adDb = FX.db; adQ0 = FX.q; adPrices = FX.prices;
 } catch (e) { adWhy = e.message; }
-const adQ = (sql, p) => { try { return adDb.prepare(sql).all(...(p || [])); } catch (e) { return []; } };
+const adQ = (sql, p) => adQ0 ? adQ0(sql, p) : [];
+const todayStr = new Date().toISOString().slice(0, 10) + ' 00:00:00';
 function localRunAD() {
   return async f => {
     if (!ADML) return Object.fromEntries(spec.keys.map(k => [k, 'INCONCLUSIVE:AD model layer not loadable (' + adWhy + ')']));
     const dt = dtOf(f.doctype), o = ++seq * 10, bp = f.bp || BP;
-    const tpl = adDb.prepare("SELECT * FROM c_order WHERE issotrx='Y' ORDER BY c_order_id LIMIT 1").get();
+    const tpl = {}; { const r0 = adDb.prepare("SELECT * FROM c_order WHERE issotrx='Y' ORDER BY c_order_id LIMIT 1").get(); for (const k in r0) tpl[k.toLowerCase()] = r0[k]; }
+    if (!adPrices) return Object.fromEntries(spec.keys.map(k => [k, 'INCONCLUSIVE:AD fixture has no product prices']));
+    const bpr = adQ('SELECT m_pricelist_id FROM c_bpartner WHERE c_bpartner_id=?', [bp])[0]; if (bpr && bpr.m_pricelist_id) tpl.m_pricelist_id = bpr.m_pricelist_id;
+    tpl.dateordered = todayStr; tpl.dateacct = todayStr;
     Object.assign(tpl, { c_order_id: o, docstatus: 'DR', processed: 'N', c_currency_id: 100, c_bpartner_id: bp, c_bpartner_location_id: LOC[bp], bill_bpartner_id: bp, bill_location_id: LOC[bp], m_warehouse_id: 103, c_doctype_id: 0, c_doctypetarget_id: f.doctype, ad_org_id: 11 });
     adDb.prepare('INSERT INTO c_order(' + Object.keys(tpl).join(',') + ') VALUES(' + Object.keys(tpl).map(() => '?').join(',') + ')').run(...Object.values(tpl));
     const held = [];
