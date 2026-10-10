@@ -47,15 +47,11 @@
 
   // installDefaultHooks — faithful ports of real M*.beforeSave / completeIt invariants.
   function installDefaultHooks() {
-    // F13 (prompts/SQLiteIDEMPIERE.md §47.1, 2026-10-10): the earlier MOrderLine.qtyPositive / MInvoiceLine.qtyPositive hooks were INVENTED —
-    // legacy has no such check (pilot S14a/b/c complete qty -1 / qty 0 orders, grand total -61.75). Removed; backtrack = git revert of this commit.
-
     // MOrder.completeIt precondition: the document must have at least one line (docValidate BEFORE_COMPLETE).
     registerValidator('C_Order', 'BEFORE_COMPLETE', 'MOrder.hasLines', function (ctx, info) {
       var n = ctx.lineCount ? ctx.lineCount(info) : (info.lineCount || 0);
       return n > 0 ? null : 'Cannot complete an order with no lines';
     });
-    // MOrder.totalNonNegative removed with the above (also invented; legacy completes an order whose grand total is negative).
   }
 
   // installMOrderSaveHooks(db) — faithful port of MOrder.beforeSave (MOrder.java:1183-1396), the H-1.3
