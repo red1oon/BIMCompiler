@@ -16,14 +16,14 @@ function verdict(sec, judged) { if (!judged) { incs++; log('§SR2 ' + sec + ' IN
 
 // ---- R2.2: Doc_InOut.createFacts:719-783 per-unit receipt cost of an order line ----
 (function () {
-  if (typeof DP.poLineCost !== 'function') { check('R2.2', 'poLineCost exported', typeof DP.poLineCost, 'function'); return verdict('R2.2', 0); }
+  if (typeof (DP._test && DP._test.poLineCost) !== 'function') { check('R2.2', 'poLineCost exported', typeof DP._test.poLineCost, 'function'); return verdict('R2.2', 0); }
   var db = new Database(':memory:');
   db.exec("CREATE TABLE c_tax(c_tax_id INTEGER, rate NUMERIC, issummary TEXT, taxpostingindicator TEXT, parent_tax_id INTEGER, isactive TEXT);" +
     "CREATE TABLE c_order(c_order_id INTEGER, m_pricelist_id INTEGER, c_currency_id INTEGER, istaxincluded TEXT);" +
     "CREATE TABLE m_pricelist(m_pricelist_id INTEGER, istaxincluded TEXT);CREATE TABLE c_currency(c_currency_id INTEGER, stdprecision INTEGER);" +
     "INSERT INTO c_currency VALUES(100,2);INSERT INTO m_pricelist VALUES(1,'N'),(2,'Y');INSERT INTO c_order VALUES(1,1,100,'N'),(2,2,100,'Y');" +
     "INSERT INTO c_tax VALUES(10,10,'N','N',NULL,'Y'),(11,10,'N','1',NULL,'Y'),(20,10,'Y','N',NULL,'Y'),(21,5,'N','N',20,'Y'),(22,5,'N','1',20,'Y');");
-  var n = 0, c = function (name, ol, want) { var ab = []; var got = DP.poLineCost(db, ol, ab); n++; check('R2.2', name, got == null ? { absent: ab } : Number(got), want); };
+  var n = 0, c = function (name, ol, want) { var ab = []; var got = DP._test.poLineCost(db, ol, ab); n++; check('R2.2', name, got == null ? { absent: ab } : Number(got), want); };
   c('excluded 10%, not distributed: tax is NOT in the cost (price 30 -> 30)', { c_order_id: 1, c_currency_id: 100, priceactual: 30, pricecost: 0, c_tax_id: 10 }, 30);
   c('excluded 10%, distributed (TaxPostingIndicator 1): +tax at scale 12 (30 -> 33)', { c_order_id: 1, c_currency_id: 100, priceactual: 30, pricecost: 0, c_tax_id: 11 }, 33);
   c('included 10%, not distributed: tax taken OUT (33 - (33-33/1.1) = 30)', { c_order_id: 2, c_currency_id: 100, priceactual: 33, pricecost: 0, c_tax_id: 10 }, 30);
@@ -37,7 +37,7 @@ function verdict(sec, judged) { if (!judged) { incs++; log('§SR2 ' + sec + ' IN
 
 // ---- R2.1: Doc_Inventory.createFacts:300-335 "No Costs" refusal leaves the cost state untouched; R2.1b: PI gain accumulates CumulatedAmt/Qty (MCost.setWeightedAverage) ----
 (function () {
-  if (typeof DP.inventoryPostRefused !== 'function') { check('R2.1', 'inventoryPostRefused exported', typeof DP.inventoryPostRefused, 'function'); return verdict('R2.1', 0); }
+  if (typeof (DP._test && DP._test.inventoryPostRefused) !== 'function') { check('R2.1', 'inventoryPostRefused exported', typeof DP._test.inventoryPostRefused, 'function'); return verdict('R2.1', 0); }
   function mk(cost, bless) {
     var db = new Database(':memory:');
     db.exec("CREATE TABLE c_acctschema(c_acctschema_id INTEGER, m_costtype_id INTEGER, costingmethod TEXT, c_currency_id INTEGER, isactive TEXT);" +
@@ -53,10 +53,10 @@ function verdict(sec, judged) { if (!judged) { incs++; log('§SR2 ' + sec + ' IN
     return db;
   }
   var n = 0;
-  var z = mk(0, false); n++; check('R2.1', 'zero cost, no blessing: PI refused', DP.inventoryPostRefused(z, 9), true);
+  var z = mk(0, false); n++; check('R2.1', 'zero cost, no blessing: PI refused', DP._test.inventoryPostRefused(z, 9), true);
   n++; check('R2.1', 'refused PI changes NO cost state (costQtyUpdatesFor -> [])', DP.costQtyUpdatesFor(z, 'M_Inventory', 9).length, 0);
-  var b = mk(0, true); n++; check('R2.1', 'zero cost WITH a processed zero-amount order/invoice cost detail: not refused (Doc_Inventory.java:319-331)', DP.inventoryPostRefused(b, 9), false);
-  var ok = mk(60, false); n++; check('R2.1', 'cost 60: not refused', DP.inventoryPostRefused(ok, 9), false);
+  var b = mk(0, true); n++; check('R2.1', 'zero cost WITH a processed zero-amount order/invoice cost detail: not refused (Doc_Inventory.java:319-331)', DP._test.inventoryPostRefused(b, 9), false);
+  var ok = mk(60, false); n++; check('R2.1', 'cost 60: not refused', DP._test.inventoryPostRefused(ok, 9), false);
   var u = DP.costQtyUpdatesFor(ok, 'M_Inventory', 9); n++; check('R2.1', 'cost 60: one cost update (1 schema x 1 element)', u.length, 1);
   if (u.length) {
     n++; check('R2.1b', 'PI gain 20 @60: CurrentQty 20', u[0].set.currentqty, 20);

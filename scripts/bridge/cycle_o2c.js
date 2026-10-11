@@ -174,7 +174,7 @@ module.exports = function makeO2C(X) {
     if (step === 'PAY') {
       const inv = S.invoices.find(i => i.c_invoice_id === S.inv); S.pay = nid();
       const pay = { c_payment_id: S.pay, c_bpartner_id: BP, c_invoice_id: S.inv, payamt: inv.grandtotal / 100, isreceipt: 'Y', c_currency_id: 100, dateacct: TODAY };
-      const r = E.completePayment(pay, { c_invoice_id: S.inv, grandtotal: inv.grandtotal / 100, issotrx: 'Y', dateacct: TODAY }, { newId: nid, ...(periodCheck ? { periodOpen: periodCheck(TODAY, 'ARR') } : {}) }); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+      const pc = periodCheck ? periodCheck(TODAY, 'ARR') : null; /* MPayment.prepareIt:1917-1923 / MInOut.prepareIt:1453-1457 @PeriodClosed@ -- the period test sits at the caller (the shipped ERP does it in model_order/model_invoice via T.periodOpen), not in the engine verb */ const r = pc && !pc.ok ? { ok: false, reason: 'PeriodClosed' } : E.completePayment(pay, { c_invoice_id: S.inv, grandtotal: inv.grandtotal / 100, issotrx: 'Y', dateacct: TODAY }, { newId: nid }); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       const status = t => (r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === t).pop() || {}).doc_status;
       const flag = (t, f2) => { const u = r.ops.filter(o => o.op_type === 'UPDATE_FIELD' && o.table === t && o.field === f2).pop(); return u ? u.value : 'N'; };
       const ah = r.ops.find(o => o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr'), al = r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine');
