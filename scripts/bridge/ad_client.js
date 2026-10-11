@@ -62,6 +62,7 @@ async function docAction(cfg, serviceType, tableName, recordID, action) {
 // Stock run_process (ModelRunProcess). params = {Column: value}; recordId -> AD_Record_ID. Returns {ok, error, summary, raw}. Spec §SHOPDAY-RUN-1.
 async function runProcess(cfg, serviceType, params, recordId) {
   const field = Object.entries(params || {}).map(([k, v]) => ({ '@column': k, val: String(v) }));
+  if (recordId != null) field.push({ '@column': 'AD_Record_ID', val: String(recordId) });   // Process.runProcess reads the record id from the ParamValues field AD_Record_ID (Process.java:236-258)
   const body = { serviceType, ParamValues: { field } };
   if (recordId != null) body.AD_Record_ID = recordId;
   const j = await post(cfg, PATH + 'run_process', { ModelRunProcessRequest: { ModelRunProcess: body, ADLoginRequest: cfg.login } }, 300000);

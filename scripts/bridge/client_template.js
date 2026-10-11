@@ -14,8 +14,8 @@ function pg(sql) {
   if (r.status !== 0) throw new Error('§TPL psql failed: ' + (r.stderr || '').slice(0, 300));
   return r.stdout.split('\n').filter(l => l && l !== 'SET');
 }
-function extract(clientId) {
-  const tabs = pg(`select table_name from information_schema.columns where table_schema='adempiere' and column_name='ad_client_id' and table_name in (select tablename from pg_tables where schemaname='adempiere') order by 1`).filter(t => !DENY.test(t));
+function extract(clientId, only) {
+  const tabs = pg(`select table_name from information_schema.columns where table_schema='adempiere' and column_name='ad_client_id' and table_name in (select tablename from pg_tables where schemaname='adempiere') order by 1`).filter(t => !DENY.test(t) && (!only || only.includes(t)));
   const out = { clientId, tables: {} };
   const counts = pg(tabs.map(t => `select '${t}', count(*) from ${t} where ad_client_id=${clientId}`).join(' union all ')).map(l => l.split('|'));
   for (const [t, n] of counts) {
@@ -86,6 +86,7 @@ const ALIAS = { m_productfreight_id: 'm_product', invoice_printformat_id: 'ad_pr
   ad_tree_menu_id: 'ad_tree', ad_tree_org_id: 'ad_tree', ad_tree_bpartner_id: 'ad_tree', ad_tree_product_id: 'ad_tree', ad_tree_project_id: 'ad_tree', ad_tree_salesregion_id: 'ad_tree', ad_tree_activity_id: 'ad_tree', ad_tree_campaign_id: 'ad_tree',
   c_bpartnercashtrx_id: 'c_bpartner', c_bpartner_id: 'c_bpartner', salesrep_id: 'ad_user', ad_user_id: 'ad_user', createdby: null, updatedby: null, m_warehouse_id: 'm_warehouse', c_acctschema1_id: 'c_acctschema', c_acctschema_id: 'c_acctschema',
   c_elementvalue_id: 'c_elementvalue', node_id: null, parent_id: null, c_period_id: 'c_period', c_year_id: 'c_year', c_calendar_id: 'c_calendar', m_locator_id: 'm_locator', m_product_category_id: 'm_product_category', c_bp_group_id: 'c_bp_group', c_tax_id: 'c_tax', ad_role_id: 'ad_role', ad_tree_id: 'ad_tree', m_costelement_id: 'm_costelement', m_costtype_id: 'm_costtype', c_element_id: 'c_element', gl_category_id: 'gl_category', m_discountschema_id: 'm_discountschema', c_cashbook_id: 'c_cashbook', ad_printform_id: 'ad_printform', c_location_id: 'c_location', ad_sequence_id: 'ad_sequence', c_doctype_id: 'c_doctype', c_taxcategory_id: 'c_taxcategory', m_pricelist_id: 'm_pricelist', m_pricelist_version_id: 'm_pricelist_version', c_paymentterm_id: 'c_paymentterm' };
+const LCACHE = new WeakMap();
 const ALIAS_T = { 'ad_treenodebp.node_id': 'c_bpartner', 'ad_treenodebp.parent_id': 'c_bpartner', 'ad_treenodepr.node_id': 'm_product', 'ad_treenodepr.parent_id': 'm_product', 'ad_treenode.node_id': 'ad_menu', 'ad_treenode.parent_id': 'ad_menu' };
 const TREE_TABLE = { EV: 'c_elementvalue', OO: 'ad_org', BP: 'c_bpartner', PR: 'm_product', AY: 'c_activity', MC: 'c_campaign', PJ: 'c_project', SR: 'c_salesregion', MM: 'ad_menu', U1: null, U2: null, U3: null, U4: null };
 function treeTypes(tpl) { const d = tpl.tables.ad_tree; if (!d) return new Map(); const ci = d.cols.map(c => c.toLowerCase()), a = ci.indexOf('ad_tree_id'), b = ci.indexOf('treetype'); return new Map(d.rows.map(r => [String(r[a]), r[b]])); }
@@ -108,7 +109,7 @@ function labels(tpl) {
   return L;
 }
 function canon(tpl, t, drop, unresolved) {
-  const d = tpl.tables[t], L = labels(tpl), ci = d.cols.map(c => c.toLowerCase()), TT = treeTypes(tpl);
+  const d = tpl.tables[t], L = LCACHE.get(tpl) || (LCACHE.set(tpl, labels(tpl)), LCACHE.get(tpl)), ci = d.cols.map(c => c.toLowerCase()), TT = treeTypes(tpl);
   return d.rows.map(r => {
     const parts = [];
     ci.forEach((c, i) => {
@@ -128,8 +129,8 @@ function canon(tpl, t, drop, unresolved) {
     return parts.join('|');
   }).sort();
 }
-function compareTemplates(a, b, drop) {   // a = SQLite-side (instantiated), b = legacy-extracted
-  const res = [], unresolved = new Set(); const names = [...new Set([...Object.keys(a.tables), ...Object.keys(b.tables)])].sort();
+function compareTemplates(a, b, drop, only) {   // a = SQLite-side (instantiated), b = legacy-extracted
+  const res = [], unresolved = new Set(); const names = [...new Set([...Object.keys(a.tables), ...Object.keys(b.tables)])].filter(t => !only || only.includes(t)).sort();
   for (const t of names) {
     const A = a.tables[t], B = b.tables[t];
     if (!A || !B) { res.push({ table: t, a: A ? A.rows.length : 0, b: B ? B.rows.length : 0, only: !A ? 'legacy' : 'local' }); continue; }
@@ -142,4 +143,5 @@ function compareTemplates(a, b, drop) {   // a = SQLite-side (instantiated), b =
   res.unresolved = [...unresolved].sort();
   return res;
 }
-module.exports = { extract, instantiate, fold, compareTemplates, pg };
+const LABEL_TABLES = ['c_validcombination', 'c_elementvalue', 'c_bp_group', 'c_bpartner', 'c_location', 'c_bank', 'c_bankaccount', 'c_taxcategory', 'c_tax', 'm_product', 'm_product_category', 'ad_tree', 'ad_user', 'ad_org', 'c_doctype', 'm_pricelist', 'm_pricelist_version', 'm_costelement', 'm_costtype', 'c_acctschema', 'm_warehouse', 'm_locator', 'ad_sequence', 'gl_category', 'c_year', 'c_calendar', 'c_period', 'c_paymentterm', 'ad_role', 'ad_printformat', 'c_element', 'm_discountschema', 'c_cashbook', 'ad_printform'];
+module.exports = { LABEL_TABLES, extract, instantiate, fold, compareTemplates, pg };
