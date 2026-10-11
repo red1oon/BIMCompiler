@@ -59,6 +59,18 @@ async function docAction(cfg, serviceType, tableName, recordID, action) {
   return { ok: !sr['@IsError'], error: sr['@IsError'] ? sr.Error : null, raw: sr };
 }
 
+// Stock run_process (ModelRunProcess). params = {Column: value}; recordId -> AD_Record_ID. Returns {ok, error, summary, raw}. Spec §SHOPDAY-RUN-1.
+async function runProcess(cfg, serviceType, params, recordId) {
+  const field = Object.entries(params || {}).map(([k, v]) => ({ '@column': k, val: String(v) }));
+  const body = { serviceType, ParamValues: { field } };
+  if (recordId != null) body.AD_Record_ID = recordId;
+  const j = await post(cfg, PATH + 'run_process', { ModelRunProcessRequest: { ModelRunProcess: body, ADLoginRequest: cfg.login } }, 300000);
+  if (j.status === '500' || j.message) throw bridgeError('FAULT', `§AD_FAULT run_process: ${j.message}`);
+  const r = j.RunProcessResponse || {};
+  if (r['@IsError'] && /Error log(ging )?in/i.test(r.Error || '')) throw bridgeError('AUTH', `§AD_AUTH ${r.Error}`);
+  return { ok: !r['@IsError'], error: r['@IsError'] ? r.Error : null, summary: r.Summary, logs: r.LogInfo, raw: r };
+}
+
 async function call(cfg, method, body) {
   const key = method === 'set_docaction' ? 'ModelSetDocActionRequest' : 'ModelCRUDRequest';
   const payload = { [key]: { ...body, ADLoginRequest: cfg.login } };
@@ -97,4 +109,4 @@ async function query(cfg, serviceType, filter) {
   return r;
 }
 
-module.exports = { cfgFromEnv, call, rows, query, composite, docAction, bridgeError };
+module.exports = { cfgFromEnv, runProcess, call, rows, query, composite, docAction, bridgeError };

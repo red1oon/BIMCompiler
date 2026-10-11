@@ -127,7 +127,7 @@ function scopeSpec(spec, clientId, opts = {}) {
   else if (reEq.test(w)) w = w.replace(reEq, `AD_Client_ID=${clientId}`);
   else w = (w ? w + ' AND ' : '') + (spec.clientIn0 ? `AD_Client_ID IN (0,${clientId})` : `AD_Client_ID=${clientId}`);
   s.where = w;
-  if (opts.natural) { const k0 = [].concat(spec.key)[0]; s.keyFilter = spec.keyFilter || `${k0} > 0`; if (spec.keyBelow) { s.where = (s.where ? s.where + ' AND ' : '') + `${k0} < ${spec.keyBelow}`; delete s.keyBelow; } }
+  if (opts.natural) { const k0 = [].concat(spec.key)[0]; s.keyFilter = spec.keyFilter || `${k0} > 0`; if (opts.newClient) delete s.keyBelow; else if (spec.keyBelow) { s.where = (s.where ? s.where + ' AND ' : '') + `${k0} < ${spec.keyBelow}`; delete s.keyBelow; } }
   if (opts.natural) { if (!spec.natural) throw new Error(`§DD_SCOPE ${spec.table} has no natural key`); s.key = spec.natural; s.naturalMode = true; }
   return s;
 }
