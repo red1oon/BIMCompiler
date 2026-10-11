@@ -128,7 +128,10 @@ async function main() {
   await run('SD-04a', async () => {
     const ce = await both({ t: 'M_CostElement', key: ['Name', 'Average PO'], fields: { Name: 'Average PO', CostingMethod: 'A', CostElementType: 'M', IsCalculated: 'N' } });
     const asId = await lrefId('c_acctschema', 'AD_Client_ID', ids.clientId), sAs = tw.db.prepare('SELECT c_acctschema_id id FROM c_acctschema WHERE ad_client_id=?').get(tw.client).id;
-    await lupdate('C_AcctSchema', asId, { CostingMethod: 'A' }); tw.db.prepare("UPDATE c_acctschema SET costingmethod='A' WHERE c_acctschema_id=?").run(sAs);
+    // AutoPeriodControl='N' as well: with it on, MPeriod.isOpen (MPeriod.java:735-770) IGNORES C_PeriodControl and opens only [today-OpenHistory, today+OpenFuture] (2 days here), so a back-dated
+    // sale into last month is refused and a period "close" has no effect (measured, run11: SD-21 'Period Closed' although the past period was opened by SD-01). A shop that opens and closes
+    // periods runs the explicit period control; the MClient-cached schema is refreshed by the SD-04c restart.
+    await lupdate('C_AcctSchema', asId, { CostingMethod: 'A', AutoPeriodControl: 'N' }); tw.db.prepare("UPDATE c_acctschema SET costingmethod='A', autoperiodcontrol='N' WHERE c_acctschema_id=?").run(sAs);
     await compareStep('SD-04a', ['m_costelement', 'c_acctschema'], 'Q5: costing method Average set through the WS (update_data C_AcctSchema)');
   });
   await run('SD-04', async () => {
@@ -178,6 +181,14 @@ async function main() {
       if (!ex.length) await lcreate('M_ProductPrice', { M_PriceList_Version_ID: lv, M_Product_ID: lp, PriceList: cost, PriceStd: cost, PriceLimit: cost });
       tw.insert('m_productprice', { m_pricelist_version_id: sv, m_product_id: sp, pricelist: cost, pricestd: cost, pricelimit: cost });
     }
+    // an OLDER sales version (valid from 1 January): MSetup's own version starts on the client's creation day, so a sale dated in the open PAST period (SD-21) would die with
+    // "Product is not on Price List" (measured, run10). The shop keeps last year's list version for exactly that.
+    { const vO = { Name: 'Standard ' + TODAY.slice(0, 4) + '-01', ValidFrom: TODAY.slice(0, 4) + '-01-01 00:00:00' };
+      let lo = await ad.query(cfg, 'QueryMPriceListVersion', `M_PriceList_ID=${salesPL} AND Name=${q(vO.Name)}`); lo = lo.length ? +lo[0].M_PriceList_Version_ID : await lcreate('M_PriceList_Version', { ...vO, M_PriceList_ID: salesPL, M_DiscountSchema_ID: lds });
+      const so = tw.insert('m_pricelist_version', { name: vO.Name, validfrom: vO.ValidFrom, m_pricelist_id: sSalesPL, m_discountschema_id: sds }, { pk: lo });
+      for (const [v, pl_, ps, lim] of prices) { const lp = await lrefId('m_product', 'Value', v), sp = sref('m_product', 'value', v);
+        if (!(await ad.query(cfg, 'QueryMProductPrice', `M_PriceList_Version_ID=${lo} AND M_Product_ID=${lp}`)).length) await lcreate('M_ProductPrice', { M_PriceList_Version_ID: lo, M_Product_ID: lp, PriceList: pl_, PriceStd: ps, PriceLimit: lim });
+        tw.insert('m_productprice', { m_pricelist_version_id: so, m_product_id: sp, pricelist: pl_, pricestd: ps, pricelimit: lim }); } }
     await compareStep('SD-05', ['m_pricelist', 'm_pricelist_version', 'm_productprice']);
     // ids EQUAL across sides (so later document keys need no id translation): products, taxes, accounts, partners, price list versions
     const chk = [['m_product', 'value', 'SD-GOOD1'], ['m_product', 'value', 'SD-SERV1'], ['c_tax', 'name', 'SD 10%'], ['c_bpartner', 'value', 'SD-CUST1'], ['c_bankaccount', 'accountno', 'SD-001'], ['c_elementvalue', 'value', 'C_RECEIVABLE'], ['c_acctschema', 'name', `${F.client.name} UN/38 US Dollar`]];
@@ -217,6 +228,7 @@ async function main() {
   // ---- steps 11..24 (shopday_more.js): same facts to both sides, judged by reconcile keys ----
   const MORE = require('./shopday_more')({ docEnv, rrun, R, log, out, TODAY, tw, cfg, ids, ad, T, F, compareStep, lrefId, lfind, lcreate, lupdate, sref, run });
   await run('SD-13a', MORE.sd13a);
+  MORE.installRecorder();
   // --- SD-06 opening stock: physical inventory (count > book 0) at the default locator, same descriptor/verbs as the PI1 model scenario (m3 §59), re-hosted on the twin ---
   const runPI = async (stepId, scenId, mkLines, iidP) => {
     const x = docEnv(), C = x.C, { E, DP, lc: lc_, cents } = x;
@@ -295,6 +307,12 @@ async function main() {
   await run('SD-17', MORE.sd17);
   await run('SD-18', () => runPI('SD-18', 'SD18-count-loss-gain', async (C, x) => { const b1 = await x.locStock(C.prod.mulch, C.locator), b2 = await x.locStock(C.prod.rake, C.locator);
     log(`§SHOPDAY_LEGACY SD-18 book qty: product ${C.prod.mulch}=${b1} product ${C.prod.rake}=${b2}`); return [{ product: C.prod.mulch, loc: C.locator, book: b1, count: b1 - 2 }, { product: C.prod.rake, loc: C.locator, book: b2, count: b2 + 3 }]; }, 3000030));
+  await run('SD-19', MORE.sd19);
+  await run('SD-20', MORE.sd20);
+  await run('SD-21', MORE.sd21);
+  await run('SD-22', MORE.sd22);
+  await run('SD-23', MORE.sd23);
+  await run('SD-24', MORE.sd24);
   // --- NEGATIVE CONTROL (the m3 pattern): a SECOND order chain whose SQLite invoice price is +1 cent must differ from the control chain (SD-12) at the invoice step in price-bearing keys
   // (lines, totals, tax, books, open item) (extra keys the control chain lacks). Control = the SD-12 chain. ---
   await run('SD-NEG', async () => {
@@ -312,7 +330,7 @@ async function main() {
     'SD-21': 'back-dated sale (F9) not re-hosted', 'SD-22': 'period close verb exists legacy-side only (G-SD1 harness verb) -- scenario not written', 'SD-23': 'post-close refusals (F7) not re-hosted', 'SD-24': 'trial balance: the twin does not persist fact_acct (no posting host)' };
   const PLAN = ['SD-00', 'SD-01', 'SD-02', 'SD-03', 'SD-04', 'SD-05', 'SD-06', 'SD-07', 'SD-08', 'SD-09', 'SD-10', 'SD-11', 'SD-12', 'SD-13', 'SD-14', 'SD-15', 'SD-16', 'SD-17', 'SD-18', 'SD-19', 'SD-20', 'SD-21', 'SD-22', 'SD-23', 'SD-24'];
   const worst = ids2 => { const vs = out.steps.filter(s => ids2.includes(s.id)).map(s => s.verdict); return !vs.length ? 'NOT_RUN' : vs.includes('BLOCKED') ? 'BLOCKED' : vs.includes('DIFF') ? 'DIFF' : vs.includes('INCONCLUSIVE') ? 'INCONCLUSIVE' : 'MATCH'; };
-  const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b', 'SD-04c'], 'SD-06': ['SD-06', 'SD-06z'], 'SD-12': ['SD-12', 'SD-12z'], 'SD-13': ['SD-13a', 'SD-13'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
+  const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b', 'SD-04c'], 'SD-06': ['SD-06', 'SD-06z'], 'SD-12': ['SD-12', 'SD-12z'], 'SD-13': ['SD-13a', 'SD-13'], 'SD-22': ['SD-22a', 'SD-22'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
   const cnt = v => PLAN.filter(id => per[id] === v).length;
   log(`§SHOPDAY_COVERAGE steps_match=${cnt('MATCH')} of ${PLAN.length} diff=${cnt('DIFF')} blocked=${cnt('BLOCKED')} inconclusive=${cnt('INCONCLUSIVE')} not_run=${cnt('NOT_RUN')} :: ${PLAN.map(id => id + '=' + per[id]).join(' ')}`);
   for (const id of PLAN) if (per[id] === 'NOT_RUN' && NOT_RUN_WHY[id]) log(`§SHOPDAY_NOT_RUN ${id} ${NOT_RUN_WHY[id]}`);

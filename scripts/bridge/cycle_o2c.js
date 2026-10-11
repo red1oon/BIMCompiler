@@ -174,7 +174,7 @@ module.exports = function makeO2C(X) {
     if (step === 'PAY') {
       const inv = S.invoices.find(i => i.c_invoice_id === S.inv); S.pay = nid();
       const pay = { c_payment_id: S.pay, c_bpartner_id: BP, c_invoice_id: S.inv, payamt: inv.grandtotal / 100, isreceipt: 'Y', c_currency_id: 100, dateacct: TODAY };
-      const r = E.completePayment(pay, { c_invoice_id: S.inv, grandtotal: inv.grandtotal / 100, issotrx: 'Y', dateacct: TODAY }, { newId: nid }); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+      const r = E.completePayment(pay, { c_invoice_id: S.inv, grandtotal: inv.grandtotal / 100, issotrx: 'Y', dateacct: TODAY }, { newId: nid, ...(periodCheck ? { periodOpen: periodCheck(TODAY, 'ARR') } : {}) }); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       const status = t => (r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === t).pop() || {}).doc_status;
       const flag = (t, f2) => { const u = r.ops.filter(o => o.op_type === 'UPDATE_FIELD' && o.table === t && o.field === f2).pop(); return u ? u.value : 'N'; };
       const ah = r.ops.find(o => o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr'), al = r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine');
@@ -195,6 +195,15 @@ module.exports = function makeO2C(X) {
       const r = E.reverseInvoice({ ...inv, c_order_id: S.order, dateacct: TODAY, c_currency_id: PL_CURRENCY }, { allocations: S.allocations, payments: S.payments }, { newId: () => nid(), orderLines: S.lines });
       if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       S.rev = r.reversalId; applyDocOps(r.ops);
+      // the allocation documents the reversal touched (MInvoice.reverseCorrectIt -> reverseAllocations :2821-2833 and the NEW allocation :2785-2812): the reversed allocation's books are
+      // DELETED (MAllocationHdr.reverseIt :906 MFactAcct.deleteEx), the new allocation POSTS (orig line +amt, reversal line -amt). Found by the shop-day trial balance (SD-24, run11).
+      { const stOf = {}; r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'C_AllocationHdr').forEach(o => { stOf[o.id] = o.doc_status; });
+        for (const id of Object.keys(stOf)) if (stOf[id] === 'RE' && X.onAllocReversed) X.onAllocReversed(+id);
+        for (const ah of r.ops.filter(o => o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr')) {
+          gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id || C.cur, TODAY + ' 00:00:00', stOf[ah.c_allocationhdr_id] || 'CO', C.client, C.org);
+          for (const l of r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine' && o.c_allocationhdr_id === ah.c_allocationhdr_id))
+            gb.prepare('INSERT INTO c_allocationline(c_allocationline_id,c_allocationhdr_id,c_payment_id,c_invoice_id,c_bpartner_id,amount,writeoffamt,discountamt) VALUES(?,?,?,?,?,?,?,?)').run(l.c_allocationline_id, ah.c_allocationhdr_id, l.c_payment_id || null, l.c_invoice_id, l.c_bpartner_id || BP, l.amount, l.writeoffamt || 0, l.discountamt || 0);
+          if (X.onAllocReversed) fold('C_AllocationHdr', ah.c_allocationhdr_id, SCHEMA); } }
       const rv = S.invoices.find(i => i.c_invoice_id === S.rev);
       gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id,c_order_id,docstatus,reversal_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(S.rev, BP, rv.grandtotal / 100, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', C.client, C.org, S.order, rv.docstatus, S.inv);
       rv.lines.forEach((l, i) => gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt,qtyinvoiced,c_orderline_id) VALUES(?,?,?,?,?,?)').run(S.rev * 100 + i, S.rev, l.m_product_id, l.linenetamt, l.qtyinvoiced, l.c_orderline_id));

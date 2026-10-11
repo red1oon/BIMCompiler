@@ -36,9 +36,10 @@ async function run(scenarios, spec, quirks, opts = {}) {
   for (const sc of scenarios) {
     let L, S;
     try { L = await sc.legacy(sc.facts); } catch (e) { L = { outcome: 'ERROR', error: e.message }; }
-    try { S = await sc.local(sc.facts); } catch (e) { S = { outcome: 'ERROR', error: e.message }; }
+    try { S = await sc.local(sc.facts); } catch (e) { S = { outcome: 'ERROR', error: e.message, stack: e.stack }; }
     if (L.outcome === 'ERROR' || S.outcome === 'ERROR') {          // a side crashed: that is a HARNESS fault, never a verdict about SQLite
       log(`§SCN_ERROR ${sc.id} legacy=${JSON.stringify(L.error || null)} sqlite=${JSON.stringify(S.error || null)}`);
+      if (process.env.SHOPDAY_VERBOSE && (S.stack || L.stack)) log(`§SCN_ERROR_STACK ${sc.id} ${String(S.stack || L.stack).split('\n').slice(0, 4).join(' <- ').slice(0, 400)}`);
       rows.push({ id: sc.id, verdict: 'ERROR', gaps: [], inconclusive: [], legacy: L, sqlite: S }); continue;
     }
     const gaps = classify(sc.id, diff(L, S, spec), quirks);

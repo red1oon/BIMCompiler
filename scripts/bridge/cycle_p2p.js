@@ -49,7 +49,7 @@ module.exports = function makeP2P(X) {
     if (!L.order) return { outcome: 'ERROR', error: 'no legacy order (step PO failed)' };
     if (step === 'RCPT') {
       const ol = await olL();
-      const r = await push('rcpt', { order: L.order, date: TODAY + ' 00:00:00', lines: ol.map(l => ({ ol: l.c_orderline_id, product: l.m_product_id, qty: Number(l.qtyordered) })) });
+      const r = await push('rcpt', { order: L.order, date: (X.rcptDate || TODAY) + ' 00:00:00', lines: ol.map(l => ({ ol: l.c_orderline_id, product: l.m_product_id, qty: Number(l.qtyordered) })) });
       if (!r.ok) return { outcome: 'REJECTED', reason: (r.error || '').slice(0, 120) };
       L.rcpt = r.idmap.find(x => x.tbl === 'M_InOut').server_id; log(`§P2P_STEP legacy RCPT inout=${L.rcpt}`);
       const h = await postedWait('QueryMInOut', 'M_InOut_ID', L.rcpt), ls = (await query(cfg, 'QueryMInOutLine', `M_InOut_ID=${L.rcpt}`)).map(lc); L.rLines = ls;
@@ -124,7 +124,7 @@ module.exports = function makeP2P(X) {
       S.rcpt = nid();
       S.rLines = S.lines.map((l, i) => ({ m_inoutline_id: S.rcpt * 100 + i, m_product_id: l.m_product_id, movementqty: l.qtyordered, c_orderline_id: l.c_orderline_id, m_locator_id: LOCATOR }));
       if (typeof E.completeInOut !== 'function') return { outcome: 'COMPLETED', rcpt_status: 'DR', rcpt_lines: S.rLines.map(l => `${l.m_product_id}:${l.movementqty}`).join('|'), books: 'none', books_euro: 'none', match_po: 'none', ...commonS() };
-      const r = E.completeInOut({ m_inout_id: S.rcpt, issotrx: 'N', movementtype: 'V+', docstatus: 'DR' }, S.rLines, { orderLines: S.lines, newId: () => nid() }); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+      const r = E.completeInOut({ m_inout_id: S.rcpt, issotrx: 'N', movementtype: 'V+', docstatus: 'DR' }, S.rLines, { orderLines: S.lines, newId: () => nid(), ...(X.rcptDate && X.periodCheck ? { periodOpen: X.periodCheck(X.rcptDate, 'MMR') } : {}) }); /* SD-23: a receipt dated in a closed period (MInOut.prepareIt period test) */ if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       ap(r.ops); const status = (r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'M_InOut').pop() || {}).doc_status;
       gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,c_order_id,c_bpartner_id,ad_client_id,ad_org_id,dateacct) VALUES(?,?,?,?,?,?,?,?,?)').run(S.rcpt, 'N', 'V+', status, S.order, VBP, C.client, ORG, TODAY + ' 00:00:00');
       S.rLines.forEach(l => gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty,c_orderline_id,m_locator_id) VALUES(?,?,?,?,?,?)').run(l.m_inoutline_id, S.rcpt, l.m_product_id, l.movementqty, l.c_orderline_id, LOCATOR));
@@ -156,7 +156,7 @@ module.exports = function makeP2P(X) {
     if (step === 'PAY') {
       const inv = S.invoices.find(i => i.c_invoice_id === S.inv); S.pay = nid();
       const pay = { c_payment_id: S.pay, c_bpartner_id: VBP, c_invoice_id: S.inv, payamt: inv.grandtotal / 100, isreceipt: 'N', c_currency_id: 100, dateacct: TODAY };
-      const r = E.completePayment(pay, { c_invoice_id: S.inv, grandtotal: inv.grandtotal / 100, issotrx: 'N', dateacct: TODAY }, { newId: nid }); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
+      const r = E.completePayment(pay, { c_invoice_id: S.inv, grandtotal: inv.grandtotal / 100, issotrx: 'N', dateacct: TODAY }, { newId: nid, ...(X.periodCheck ? { periodOpen: X.periodCheck(TODAY, 'APP') } : {}) }); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       const status = t => (r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === t).pop() || {}).doc_status;
       const flag = (t, f2) => { const u = r.ops.filter(o => o.op_type === 'UPDATE_FIELD' && o.table === t && o.field === f2).pop(); return u ? u.value : 'N'; };
       const ah = r.ops.find(o => o.op_type === 'CREATE_DOCUMENT' && o.table === 'C_AllocationHdr'), al = r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'C_AllocationLine');
