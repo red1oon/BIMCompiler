@@ -1,0 +1,51 @@
+═══ W-POST-TAIL — the last Doc_* posters vs the REAL seed oracle (HARDEN_MATRIX §W-POST-TAIL) ═══
+
+── C_BankStatement (392) — REAL fact oracle, maxDiff=0c gate ──
+§TAIL-POST class=C_BankStatement docs=1 cells=2 oracle_rows=13 maxDiff=0c oracle=real-fact_acct(392)
+   🟢 C_BankStatement derivePostings == the REAL posted journal (maxDiff=0c, 13 oracle rows)
+
+── M_MatchPO (473) — config-gated ∅ over the REAL posted population ──
+§TAIL-POST class=M_MatchPO docs=37 oracle_rows=0 engine_nonempty=0 maxDiff=0c basis=∅-by-config (Doc_MatchPO.java:429, costingmethod=A)
+   🟢 M_MatchPO: engine ∅ == the REAL engine's ∅ across all 37 posted docs (StandardCosting gate closed under Average)
+
+── M_Requisition (702) — config-gated ∅ (isCreateReservation, seed commitmenttype=N) ──
+§TAIL-POST class=M_Requisition docs=1 oracle_rows=0 engine_nonempty=0 maxDiff=0c basis=∅-by-config (MAcctSchema.java:662-669, commitmenttype=N)
+   🟢 M_Requisition: engine ∅ == the REAL engine's ∅ (reservation gate closed)
+
+── C_Cash (407) / M_Inventory (321) — REAL engine run, both ∅-by-data-state ──
+§TAIL-POST2 C_Cash docs=2 isactive_N=2 oracle_rows=0 basis=∅-by-data-state (Doc.java:591-605 CannotPostInactiveDocument)
+   🟢 C_Cash: both real CO docs are IsActive=N → the REAL engine's lock-UPDATE never fires, ∅ oracle confirmed — docs=100,101
+   🟢 §FALSIFIER C_Cash manifest is LIVE (non-empty legs from the real line data) — the ∅ is IsActive-gate-derived, not dead — doc100 lines=2 doc101 lines=4
+§TAIL-FALSIFIER cash-live doc100_lines=2 doc101_lines=4 (must be >0)
+§TAIL-POST2 M_Inventory noLines_docs=2 doc100_lines=1 nonzero_cost_rows=0 zero_cost_blessing_rows=0 oracle_rows=0 basis=∅-by-data-state (MInventory.java:401-406 @NoLines@ + Doc_Inventory.java:319-336 No-Costs)
+   🟢 M_Inventory: 2 docs cannot even complete (@NoLines@), the 1 completable doc has zero cost data anywhere → ∅ oracle confirmed — noLines=200000,200001
+   🟢 M_Inventory doc 100: manifest ALSO refuses (0 lines, {Product.NoCosts} named absent) — matches the real engine's refusal exactly — lines=0 absent=[{Product.NoCosts}#147]
+   🟢 §FALSIFIER M_Inventory blessing-flip: adding a qualifying zero-cost M_CostDetail row opens the gate (0 → a real DR/CR pair at cost=0) — lines=2 absent=[]
+§TAIL-FALSIFIER inv-bless-flip doc=100 before_lines=0 after_lines=2 (must open)
+
+── §FALSIFIERS (in-memory copy; the oracle db stays read-only) ──
+   🟢 §FALSIFIER requisition gate-flip N→B: manifest OPENS (zero is CONFIG-derived, not hardcoded) — lines=1 absent=[{Schema.CommitmentOffset}]
+§TAIL-FALSIFIER req-flip commitmenttype N→B lines=1 absent=1
+   🟢 §FALSIFIER matchpo gate-flip A→S (+cost≠price): the PPV path opens (Doc_MatchPO.java:429 gate is live) — doc=100 lines=0 absent=[{Schema.PPVOffset}]
+§TAIL-FALSIFIER mpo-flip costingmethod A→S doc=100 lines=0 absent=1
+   🟢 §FALSIFIER scale-one-line: doubling stmtamt breaks the bank-statement diff (metric load-bearing) — oracle ΣDR=14850c scaled ΣDR=24650c
+§TAIL-FALSIFIER bs-scale line=100 oracleΣDR=14850c scaledΣDR=24650c (must differ)
+
+§TAIL-SKIPS C_Cash (407): drove the REAL engine on scratch idempiere_tail (generate_post_tail_oracle.sh)
+§TAIL-SKIPS   over the 2 real CO docs — BOTH are IsActive=N, DocManager.postDocument refuses
+§TAIL-SKIPS   ("CannotPostInactiveDocument", Doc.java:591-605) → ⛔ BY THE ENGINE'S OWN ERROR.
+§TAIL-SKIPS   NOT worked around: flipping IsActive on an existing document is out of the
+§TAIL-SKIPS   seed-prep ruling's scope (same boundary as the Inventory @NoLines@ docs below).
+§TAIL-SKIPS M_Inventory (321): drove processIt(CO) on all 3 real drafts on the same scratch —
+§TAIL-SKIPS   200000/200001 have ZERO lines each, MInventory.prepareIt refuses BEFORE completion
+§TAIL-SKIPS   (@NoLines@, MInventory.java:401-406); doc 100 (1 line, product 147) DOES complete
+§TAIL-SKIPS   but the REAL engine then REFUSES to post it ("No Costs for TShirt - Red Large",
+§TAIL-SKIPS   Doc_Inventory.java:319-336 — product 147 has currentcostprice=0 everywhere and
+§TAIL-SKIPS   zero M_CostDetail rows, so the zero-cost-blessing check fails) → ⛔, 0/3 posted.
+§TAIL-SKIPS M_Production (325): 0 docs + component m_cost absent (W-FOLD-PRODUCTION deferral) → ⛔
+§TAIL-SKIPS   until a costed BOM seed exists; costs are NOT synthesized.
+§TAIL-SKIPS Matrix ledger stays 52 oracle-equivalent / 17-of-20 posters — Cash+Inventory join
+§TAIL-SKIPS   Production as named ⛔, each for a DIFFERENT, precisely-cited engine-level reason.
+
+🟢 W-POST-TAIL PASS — BankStatement folds the REAL journal to the cent; MatchPO(37)+Requisition ∅==∅ config-derived; Cash+Inventory ∅==∅ data-state-derived (REAL scratch-clone run); 3 named ⛔ (Cash/Inventory/Production).
+exit=0

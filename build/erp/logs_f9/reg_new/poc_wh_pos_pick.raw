@@ -1,0 +1,34 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+═══ W-WH-POS-PICK — §S-2b: the walk OFFERS the live POS shipment, routes it, and the pick-complete moves on-hand ═══
+
+   🟢 deliver-later group built (W-POS-DELIVERLATER engine, newVerbs=[]) — ops=7
+§KRN_GROUP committed gid=pos-dl-1 ops=7 groupHash=b1dbdd6e75ea… tip=d9e401ba38c1… sealed=7 (WHOLE — all-or-none)
+§KRN_GROUP committed gid=pos-wr-1 ops=9 groupHash=635976493976… tip=1824e52a8226… sealed=9 (WHOLE — all-or-none)
+   🟢 both sales committed as signed groups — gids=pos-dl-1,pos-wr-1
+   🟢 SIDECAR FOLD: exactly the deliver-later shipment surfaces (910002 DR, src=oplog) — the WR sale (920002, CO in-group) self-filters — ["910002:DR"]
+   🟢 fold lines trace to CREATE_LINE ops: 2 lines, qtys 2/1, line key = source_line_id (the deterministic c_orderline_id) — [{"m_inoutline_id":91000110,"m_product_id":128,"movementqty":2},{"m_inoutline_id":91000120,"m_product_id":123,"movementqty":1}]
+§WH SRC pos-docs=1 src=oplog inout=910002 lines=2
+   🟢 TWO HONEST SOURCES: seeded DR 930002 (witnessed SQL) + op-log 910002 — merged, disjoint ids, source labelled — merged=930002(seed),910002(oplog)
+   🟢 ROUTE COVERS THE SALE: both lines routed (bins resolved from m_storageonhand, tree-ordered) — order=[101,101]
+   🟢 §FALSIFIER 2: no m_storageonhand row → explicit unroutable step (surfaced, never dropped/invented) — "null"
+   🟢 completeShipmentOps ok on doctype 120 (direct path) — ops=2
+§KRN_GROUP committed gid=wh-pos-910002-complete ops=2 groupHash=837116085bcf… tip=bc3dd808f9d3… sealed=2 (WHOLE — all-or-none)
+§KRN_CHAIN verify OK len=18 tip=bc3dd808f9d3…
+   🟢 pick group sealed, chain holds across sale+pick — gid=wh-pos-910002-complete len=18
+   🟢 ON-HAND MOVES BY PICKED (line0 short 2→1): fold of the op log == expected per-product deltas — fold={"123":-1,"128":-1} expected={"123":-1,"128":-1}
+§WH PICK-COMPLETE inout=910002 CO picked=2/3 (short-pick line0 2→1) foldDiffs=0 gid=wh-pos-910002-complete chainOk=Y
+   🟢 after the pick the sidecar fold is EMPTY — CO shipment leaves the route source — open=0
+   🟢 §FALSIFIER 1: double-complete REFUSED (not-open, docstatus=CO) — {"ok":false,"reason":"not-open","docstatus":"CO"}
+§FALSIFIER double-complete refused reason=not-open
+   🟢 doctype 148 REFUSES the direct path (confirm-gated → W-WH-CONFIRM) — inout_confirm.createConfirmationOps/completeConfirmOps (W-WH-CONFIRM)
+§KRN_GROUP committed gid=wh-pos-930002-confirm-spawn ops=2 groupHash=d4e8bf6b6ada… tip=92d4abccd355… sealed=2 (WHOLE — all-or-none)
+   🟢 confirm-complete with PICKED qty (2 of 3): MovementQty reduced, no difference doc (SO-side) — ops=3
+§KRN_GROUP committed gid=wh-pos-930002-confirm-done ops=3 groupHash=1ca1cec927cf… tip=717a56d454ca… sealed=3 (WHOLE — all-or-none)
+   🟢 gate re-check after confirm-complete → the InOut may complete — ok=true
+§KRN_GROUP committed gid=wh-pos-930002-complete ops=1 groupHash=ee87bbd3eb29… tip=df826d433c2d… sealed=1 (WHOLE — all-or-none)
+§KRN_CHAIN verify OK len=24 tip=df826d433c2d…
+   🟢 confirm-gated sequence sealed: spawn → confirm(picked) → gate → CO; chain holds end to end — len=24
+§WH PICK-COMPLETE inout=930002 CO via=confirm-gate picked=2/3 chainOk=Y
+
+🟢 W-WH-POS-PICK PASS — the walk selector folds the live op-log sale honestly (WR self-filters) and merges the seeded source; bins resolve from m_storageonhand; pick-complete moves on-hand by the PICKED qty (direct AND confirm-gated); double-complete and unroutable falsifiers hold.
+exit=0

@@ -1,0 +1,18 @@
+═══ W-FOLD-BACKFLUSH — recursive BOM explosion (AutoBOMOrder) on real GardenWorld recipe + sale ═══
+    verb = erp_engine.explodeBOM · oracle = independent path-enumeration · recipe = pp_product_bom (client 11)
+
+§BACKFLUSH-SALES sold BOM products = [Patio Chair(133)×30, Fertilizer #50(136)×40]
+
+   🟢 ring Patio Chair ×30 → explodeBOM == independent path-enumeration (NESTED, recursion fires) — leaves=6
+§FOLD-BACKFLUSH parent=Patio Chair(133) ringQty=30 nested=Y leaves=6 consumed=[#6-32 x 3/8 Socket Head Cap Screw×480, Ultra Glue×34500, Seat×30, Back Support×30, Front Leg×60, Back Leg×60]
+   🟢 ring Fertilizer #50 ×40 → explodeBOM == independent path-enumeration (NESTED, recursion fires) — leaves=5
+§FOLD-BACKFLUSH parent=Fertilizer #50(136) ringQty=40 nested=Y leaves=5 consumed=[Nitrogen×0, Phosphorus×0, Potassium×0, Bag 50 Kg×40, Water×0]
+   🟢 multi-path accumulation: #6-32 x 3/8 Socket Head Cap Screw summed across BOTH leg assemblies = 16/chair — got=480 want=480 (16×30)
+§BACKFLUSH-INVARIANT screw(50002)=480 == 16×30 (accumulates over 2 paths — a single-path walk would give 8×30)
+   🟢 §FALSIFIER flat (non-recursive) explosion ≠ recursive AND omits the screw → recursion is load-bearing — flatLeaves=4 recursiveLeaves=6 flatHasScrew=false
+§FALSIFIER flat=[Assembly Back Leg×30, Assembly Front Leg×30, Seat×30, Back Support×30] vs recursive omits-none — flat misses sub-assembly leaves
+
+§FOLD-DEFERRED the StorageOnHand DECREMENT (consume leaves → on-hand) rides the qty-fold spine (task #2); the replenishment PO (onhand<min) is Δ-B (task #6). This witness proves the EXPLOSION — the AutoBOMOrder core.
+
+🟢 W-FOLD-BACKFLUSH PASS — recursive BOM backflush reproduces the real recipe (two independent impls agree, multi-path accumulation correct, flat-explosion falsifier fires). The AutoBOMOrder explosion is one engine verb (explodeBOM), fold-not-fork.
+exit=0

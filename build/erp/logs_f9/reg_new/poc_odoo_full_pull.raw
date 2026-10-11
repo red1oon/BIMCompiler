@@ -1,0 +1,18 @@
+
+══ POC-ODOO-FULL-PULL — every Odoo order folds through the frozen engine (12-odoo.db) ══
+
+   emitted: orders=27 orderlines=56 invoices=4 invoicelines=8
+   (odoodemo down — §EXTRACT skipped, run live to assert non-invent)
+§FOLD-COVERAGE orders=27 complete=27 (oracle=4 projection=23) partial=0 foldGap=0
+  ✓ ≥25 of 27 orders fold to coverage:complete after full pull (got 27, was 1 header-only before)
+  ✓ every invoiced order folds via its invoice (oracle path) = 4 == 4 invoices
+   GAP SPLIT (non-invent enumeration):
+     · extraction-gap: 0 — all 56 live order lines are pulled (== live search_count)
+     · source-fact (NOT a gap): 23 orders are un-invoiced in Odoo (draft/sent/sale state) → they PROJECT from their own lines (basis=order, no oracle), not header-only
+     · fold-gap: 0 orders the engine cannot fold complete
+   (odoodemo down — §S00023 oracle-diff skipped)
+§S00023 doc=C_Order id=1200001 basis=invoice coverage=complete balanced=Y oracle-maxDiff=-1c
+  ✓ S00023 still folds coverage:complete + balanced (regression)
+
+🟢 POC-ODOO-FULL-PULL PASS — full pull: all order lines extracted (== live), 27/27 orders fold complete (was 1).
+exit=0

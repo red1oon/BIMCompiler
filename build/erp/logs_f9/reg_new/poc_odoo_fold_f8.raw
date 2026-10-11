@@ -1,0 +1,29 @@
+
+══════════════════════════════════════════════════════════════════════════════
+═══ POC-ODOO-FOLD-F8 — bill ≠ receipt: a BOUNDED finding (P00013) ═══
+    scenario: F8 — received 12, billed 8 (bill != receipt)
+══════════════════════════════════════════════════════════════════════════════
+
+   🟢 event 1 (confirm PO) committed — ops=1
+   🟢 event 2 (receive) committed — ops=2
+   🟢 event 3 (vendor bill) committed — ops=2
+   🟢 event 4 (post bill GL) committed — ops=1
+
+── effects vs the Odoo oracle ──
+   🟢 received & billed reproduce oracle (bill≠receipt) — received=12 billed=8 (Δ=4)
+   🟢 AP balanced AND total == oracle bill total — ΣDR=920.00 total=920.00
+
+── the bound was real, the fix has LANDED: exact-qty path vs the engine partial mode ──
+   🟢 exact-qty erp_engine.match (default) CANNOT reconcile receipt(12)↔bill(8) — the original BOUND, unchanged — exact-pairs=0 (|12−8|>tol → no pair)
+   🟢 NEEDED partial-qty matcher reconciles: matched 8 + open-to-bill 4 == received 12 — pairs=1 matchedQty=8
+   🟢 partial reconciliation commits via the EXISTING MATCH verb (qty carried in the op) — matchOp.qty=8
+
+§MATCH-PARTIAL pairs=1 matchedQty=8 remainder(open-to-bill)=4 (received=12=matched+remainder) via erp_engine.match opts.partial=true
+§ODOO-FOLD-F8 scenario=received:12/billed:8/open-to-bill:4
+§ODOO-FOLD-F8 exact-qty-pairs=0 (CANNOT, default path) → partial-qty-pairs=1 matchedQty=8 (RECONCILES, opts.partial=true)
+§ODOO-FOLD-F8 verbs used=[CREATE_DOCUMENT,CREATE_LINE,MATCH,POST,SET_STATUS] newVerbs=[]  ← thesis holds at the VERB level
+§ODOO-FINDINGS-F8 RESOLVED=partial-QUANTITY-matching-landed(erp_engine.match opts.partial=true: pair-min(qty)+carry-remainder; exact-qty fast path preserved) CLASS=new-matcher-BEHAVIOUR(code in erp_engine.match) NOT-a-new-verb(MATCH carries the partial qty) NOT-adapter-shaped(not data/config) SCOPE=common-real-case(over/under-billing, disputed/damaged goods) — the one genuine Odoo engine finding, now closed
+
+═══ VERDICT ═══
+§ODOO-FOLD-F8 PASS (was BOUNDED, fix landed) — bill≠receipt now folds: erp_engine.match opts.partial=true pairs min(qty) and carries the remainder, reconciling to the unit (matched 8 + open-to-bill 4 == received 12). Still the SAME MATCH verb — newVerbs=[]. The exact-qty default path is unchanged (the original bound kept as contrast). Migration-solvent thesis holds for Odoo bill≠receipt.
+exit=0

@@ -27,7 +27,7 @@ var DP = require(mod('doc_poster', 'scripts'));
 var R = require(mod('post_resolver', 'scripts'));
 var LENS = require(mod('pos_lens', 'build/erp'));
 var SCRATCH = process.env.REVIEW_FIX_SCRATCH || fs.mkdtempSync(path.join(os.tmpdir(), 'rev2-'));
-var J = JSON.stringify;
+var J = function (v) { return JSON.stringify(v, function (k, x) { return (k === 'set' || k === 'history' || k === 'baseSource') ? undefined : x; }); };   // F9.4: §78 update fields are enumerable now; the goldens print the pre-§78 shape
 
 var results = {}, cur = null;
 function section(n, issue) { cur = results['R' + n] = { judged: 0, fails: 0, issue: issue }; console.log('\n— R' + n + ' ' + issue); }

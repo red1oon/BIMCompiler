@@ -1,0 +1,41 @@
+═══ W-STOCK-MOVE — a completed M_InOut moves stock (E-4) over the REAL erp_engine ═══
+
+── ARM 1 · movementTypeOf == MInOut.getMovementType (oracle = the seed's own column) ──
+§STOCK-MOVETYPE docsJudged=9 combos={"MMS/Y→C-":4,"MMR/N→V+":5} mismatches=0
+   🟢 NOT VACUOUS — the seed carries documents with a stored movementtype to judge against — docs=9
+   🟢 every derived movement type equals the seed's own stored movementtype — mismatches=0
+   🟢 an unknown DocBaseType yields NULL, never a defaulted polarity — XXX→null
+§STOCK-FIXTURE receipt=105 docbasetype=MMR issotrx=N lines=10 | shipment=100 docbasetype=MMS issotrx=Y lines=1
+
+── ARM 2 · a receipt ADDS and a shipment SUBTRACTS the same positive line qty ──
+§STOCK-SIGN receipt type=V+ ops=10 net=237 signMismatches=0 | shipment type=C- ops=1 net=-1 signMismatches=0
+   🟢 receipt (V+) emits POSITIVE movementqty on every line — ops=10
+   🟢 shipment (C-) emits NEGATIVE movementqty on every line — ops=1
+   🟢 every movementqty == movementSign(type) × |line qty| — the sign comes from the code, not a pre-signed column — mismatches=0
+
+── ARM 3 · one M_Transaction per stockable line, fields carried verbatim ──
+§STOCK-LINES stockable=10 ops=10 fieldMismatches=0 skipTest: ops=9 skipped=1
+   🟢 N stockable lines → N M_Transaction ops — ops=10 stockable=10
+   🟢 locator/product/ASI/inoutline/date carried verbatim from the source line — mismatches=0
+   🟢 a line with no locator is SKIPPED AND COUNTED, never silently dropped — ops=9 skipped=1
+
+── ARM 4 · baseline m_storageonhand + the emitted transactions == baseline ± qty ──
+§STOCK-ONHAND-FOLD rows=10 mismatches=0 sample=["p136@l101 40→80 (+40)","p125@l101 12→24 (+12)","p138@l101 20→40 (+20)"]
+   🟢 on-hand after = baseline + the folded signed movement, for every emitted line — mismatches=0
+   🟢 NOT VACUOUS — at least one movement is non-zero (a fold of zeros would prove nothing) — nonZero=10/10
+
+── ARM 5 · an unmappable DocBaseType emits NOTHING and says why ──
+§STOCK-GATE docBaseType=GLJ ops=0 skipped=10 reason="DocBaseType \"GLJ\" is neither MMS nor MMR — no movement type, so NO ops (a guessed polarity would be a wrong inventory sign)"
+   🟢 DocBaseType GLJ → zero ops, all lines counted as skipped, reason named — DocBaseType "GLJ" is neither MMS nor MMR — no movement type, so NO ops (a guessed polarity would be a wrong inventory sign)
+
+── ARM 6 · completeReceipt now carries the stock effect beside M_MatchPO ──
+§STOCK-FANOUT ops=21 matchPO=10 mTransaction=10 | noPolicyCaller ops=11 mTransaction=0
+   🟢 completeReceipt emits BOTH the M_MatchPO junctions and the M_Transaction movements — matchPO=10 mTransaction=10
+   🟢 a caller that passes no DocBaseType is byte-identical to before (no guessed sign) — legacyOps=11
+
+── ARM 7 · out-of-scope branches are DECLARED ──
+§STOCK-DEFERRED ["costing(M_CostDetail)","reservation(MStorageReservation MInOut.completeIt:1919-1935)","asi-material-policy(dateMPolicy allocation loop MInOut.completeIt:1771-1830)"]
+   🟢 costing, reservation and the ASI material-policy loop are named, not silently absent — ["costing(M_CostDetail)","reservation(MStorageReservation MInOut.completeIt:1919-1935)","asi-material-policy(dateMPolicy allocation loop MInOut.completeIt:1771-1830)"]
+
+🟢 W-STOCK-MOVE PASS — 15 PASS / 0 FAIL — a completed M_InOut now moves stock
+exit=0

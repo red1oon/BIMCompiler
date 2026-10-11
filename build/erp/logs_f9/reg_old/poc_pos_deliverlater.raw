@@ -1,0 +1,42 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+═══ W-POS-DELIVERLATER — §P-12/§S-2 seam: sale completes the ORDER, the shipment stays DR until the pick ═══
+
+   🟢 doctype 132 "Standard Order" = SOO/SO, IsAutoGenerateInout=N, IsAutoGenerateInvoice=N (dictionary verbatim) — docsubtypeso=SO inout=N invoice=N
+   🟢 deliverLaterPolicy DERIVED from the row: flags verbatim + shipment doctype = the dictionary link C_DocTypeShipment_ID — shipDoctypeId=120
+   🟢 the WR doctype REFUSES the deliver-later path (cash-and-carry → buildSaleGroup) — dispatch is data, not code — cash-and-carry
+   🟢 C_Order.InvoiceRule dictionary default EXTRACTED = I (Immediate) — the named invoice-timing source — AD_Column.DefaultValue
+   🟢 ad_docfsm.dispatchOrder DR --CO--> CO for doctype 132 (FSM gates Complete) — {"ok":true,"from":"DR","action":"CO","to":"CO","legalActions":["CO","PR","VO"]}
+   🟢 buildDeliverLaterGroup ok, newVerbs=[] (rides buildDoc + completeOrder only) — verbs=buildDoc,completeOrder
+   🟢 the order is on doctype 132 (NOT the station's WR 135) — the sale doctype is the policy key — c_doctype_id=132
+   🟢 EXACTLY ONE status walk in the group: C_Order→CO (the shipment is born DR by absence of SET_STATUS) — C_Order→CO
+   🟢 NO invoice in the group (IsAutoGenerateInvoice=N); timing NAMED from the dictionary: InvoiceRule=I — C_Order.InvoiceRule dictionary default
+   🟢 NO backflush in the sale group (§P-3 CONSUME belongs to the act that moves goods — the pick)
+   🟢 shipment ops == E.createShipment(order, lines) — REPLAY EQUAL (same buildDoc spec as WR, movementtype C-) — ops=3
+   🟢 the shipment doc rides the DICTIONARY link doctype 120 (132→C_DocTypeShipment_ID), not a POS choice — c_doctype_id=120
+§KRN_GROUP committed gid=77f969a4-d7e0-484c-a99f-cf3331568cbb ops=7 groupHash=3bda92b1aee8… tip=10ff553f1fa4… sealed=7 (WHOLE — all-or-none)
+§KRN_CHAIN verify OK len=7 tip=10ff553f1fa4…
+   🟢 commitGroup: 7 ops sealed atomically under ONE gid, chainOk=Y — gid=77f969a4-d7e0-484c-a99f-cf3331568cbb
+§POS-DELIVERLATER sale order=950001 doctype=132(SO) ops=7 statuses=[C_Order→CO] inout=950002 born=DR invoice=none(InvoiceRule=I named) gid=77f969a4-d7e0-484c-a99f-cf3331568cbb chainOk=Y
+§POS-DELIVERLATER onhand after-sale fold(completed-docs)={"123":24,"128":5} — the DR shipment moved NOTHING
+   🟢 on-hand UNMOVED after the sale: the 950002 shipment is DR — zero completed-doc movement events from this sale — completedLines=0
+   🟢 the shipment SURFACES in the §S-2 selector (docstatus IN ('DR','IP'), POS-generated via c_order.c_pos_id) — rows=[{"m_inout_id":950002,"docstatus":"DR"}]
+§S-2 selector open-pos-docs=[{"m_inout_id":950002,"docstatus":"DR"}] (the walk's honest source — wh route reads THIS)
+   🟢 a confirm-demanding doctype (148 IsPickQAConfirm=Y) REFUSES the direct path → routes to inout_confirm (the W-WH-CONFIRM gate) — inout_confirm.createConfirmationOps/completeConfirmOps (W-WH-CONFIRM)
+   🟢 scan-commit group ok on doctype 120 (no confirm demanded) — ops=2
+   🟢 short-pick REDUCES MovementQty (2→1, the extracted SO-side rule — no difference doc) then M_InOut→CO — [{"op_type":"UPDATE_LINE","table":"M_InOutLine","id":950021,"movementqty":1}]
+§KRN_GROUP committed gid=daeb1f8f-778b-4697-bb2a-a64745109e8c ops=2 groupHash=19176ab7e892… tip=872dda981d4c… sealed=2 (WHOLE — all-or-none)
+§KRN_CHAIN verify OK len=9 tip=872dda981d4c…
+   🟢 pick group sealed; chain holds across BOTH groups (sale + pick = two signed acts, one ledger) — gid=daeb1f8f-778b-4697-bb2a-a64745109e8c len=9
+   🟢 on-hand moves by the PICKED qty (2), not the asked qty (3) — the C- spine folds what actually left the bin — moved=2 picked=2 asked=3
+§POS-DELIVERLATER pick inout=950002 CO picked=2/3 (short-pick line0 2→1) onhand-delta=-2 gid=daeb1f8f-778b-4697-bb2a-a64745109e8c chainOk=Y
+   🟢 after the pick the §S-2 selector is EMPTY — a completed shipment never routes twice — rows=0
+   🟢 §FALSIFIER 1: the WR sale (doctype 135) completes ALL THREE docs in-group — ZERO open docs, nothing for the walk to double-move — C_Order→CO,M_InOut→CO,C_Invoice→CO
+   🟢 §FALSIFIER 1: WR order doctype = the station's (no doctypeId leak from the deliver-later path) — c_doctype_id=135
+§FALSIFIER wr-regression statuses=[C_Order→CO,M_InOut→CO,C_Invoice→CO] open-docs=0 (W-POS-WR shape unchanged)
+   🟢 §FALSIFIER 2: double-complete REFUSED (FSM not-open — a CO shipment cannot complete again) — {"ok":false,"reason":"not-open","docstatus":"CO"}
+§FALSIFIER double-complete refused reason=not-open docstatus=CO
+   🟢 §FALSIFIER 3: every line = qty × SEALED master price to the cent; grandtotal 109.25 = the BigDecimal fold of the lines — cartTotal=109.25
+§FALSIFIER cents linenet=sealed×qty grandtotal=109.25 maxDiff=0c
+
+🟢 W-POS-DELIVERLATER PASS — the deliver-later sale (doctype 132, policy from the dictionary) completes the ORDER and births a DR shipment the §S-2 selector routes; the pick (confirm-gated when the doctype demands it) is what moves on-hand, by the picked qty; WR regression, double-complete and cent falsifiers hold.
+exit=0

@@ -1,0 +1,29 @@
+═══ W-GENESIS-RESIDENT — a born tenant becomes a RESIDENT client of the live ad_seed (login-able, posts to the cent, 0 bleed) ═══
+    birthTenant → rebandGenesis(17) → mergeGenesisInto(copy of REAL ad_seed.db) → listClients + post + scope + 0-bleed
+
+§GENESIS-RESIDENT seed=/home/red1/bim-ootb/erp/ad_seed.db copy=/tmp/wgenresident_ad_seed.db
+§GENESIS-RESIDENT before=[GardenWorld(11):4,Odoo(12):1,iDempiere(13):4,SAP Flights(14):1,Oracle Scott(15):1,Dynamics Cronus(16):1]
+§GENESIS-RESIDENT born client=AcmeCo groups=7 (G1..G7) head=2be82429f302
+  ✓ nextClientId floors at 17 (skips the 12-16 demo band)  → 17
+§GENESIS-RESIDENT reband client=17 bp=1000510→1700510 inv=9000001→9700001
+  ✓ data id banded to clientNum*100000  → 1700510
+  ✓ G7 invoice pk re-banded automatically (*_id > base)  → 9700001
+  ✓ no re-banded id collides with a resident PK (the crux)  → 0 collisions
+§GENESIS-RESIDENT merged rows=530 into resident schema
+  ✓ merged the born tenant (chart + masters + invoice) into the resident DB  → 530 rows
+§GENESIS-RESIDENT grant role=1700003 windowAccess 0→373 (system windows=373)
+  ✓ born admin role granted access to the full shared dictionary (workable menu)  → 373 windows
+  ✓ born admin role has org access (can transact in its org)  → 1
+§GENESIS-RESIDENT after=[GardenWorld(11):4,Odoo(12):1,iDempiere(13):4,SAP Flights(14):1,Oracle Scott(15):1,Dynamics Cronus(16):1,AcmeCo(17):1]
+  ✓ login switcher would list the born tenant (SES.listClients)  → AcmeCo(17)
+  ✓ born tenant has a login-able user (role+user+user_roles, IsActive=Y injected)  → 1
+  ✓ 0 bleed: GardenWorld(11) row counts + PK unchanged  → bp 24→24 ev 379→379
+  ✓ GardenWorld still listed, user count unchanged  → 4
+  ✓ born BP scoped to its own client  → 17
+  ✓ the full chart is scoped to the born client  → 311 accounts @ client 17
+§GENESIS-RESIDENT post basis=invoice balanced=true absent=[] DR12110=109 CR41000=100 CR21610=9
+  ✓ resident born-tenant invoice posts == oracle, to the cent  → cent=true balanced=true
+  ✓ idempotent re-merge adds 0 dup rows (INSERT OR IGNORE + PK)  → 1→1
+
+═══ W-GENESIS-RESIDENT RESULT=PASS  (15 pass / 0 fail) ═══
+exit=0

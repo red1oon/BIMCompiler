@@ -1,0 +1,40 @@
+
+══ W-IDMP-REBAND — re-banded iDempiere shard installs beside GardenWorld (ad_seed_fullwidth.db) ══
+
+§A shard-in tables=23 rows=2145 base-skips=[fact_acct] (fact_acct skip = by design, base carries no fact table)
+  §A ad_client client13 landed=1/1 ✓
+  §A ad_org client13 landed=9/9 ✓
+  §A ad_role client13 landed=4/4 ✓
+  §A ad_role_orgaccess client13 landed=17/17 ✓
+  §A ad_user client13 landed=6/6 ✓
+  §A ad_user_roles client13 landed=9/9 ✓
+  §A ad_window_access client13 landed=1080/1080 ✓
+  §A c_acctschema_default SHARED-CONFIG expected-drop landed=0/2 seed-config-rows=2
+  §A c_bp_customer_acct client13 landed=36/36 ✓
+  §A c_bpartner client13 landed=18/18 ✓
+  §A c_elementvalue client13 landed=379/379 ✓
+  §A c_invoice client13 landed=8/8 ✓
+  §A c_invoiceline client13 landed=24/24 ✓
+  §A c_invoicetax client13 landed=8/8 ✓
+  §A c_order client13 landed=8/8 ✓
+  §A c_orderline client13 landed=27/27 ✓
+  §A c_ordertax client13 landed=8/8 ✓
+  §A c_tax client13 landed=6/6 ✓
+  §A c_tax_acct client13 landed=12/12 ✓
+  §A c_validcombination client13 landed=158/158 ✓
+  §A m_product client13 landed=55/55 ✓
+  §A m_product_category client13 landed=14/14 ✓
+  §A m_product_category_acct client13 landed=28/28 ✓
+§A PASS — 0 PK collisions, every client-13 row landed (shared-config drop §-named)
+§B re-install rows=0 c_ordertax 8→8 c_invoicetax 8→8
+§B PASS — substrate dedup holds (PK-carrying seed), re-install is a no-op
+§C client13 invoice 1300100 (merged db) coverage=complete balanced=Y oracle=fact_acct(3) maxDiff=0c
+§C GardenWorld order 100 (same merged db) basis=invoice coverage=complete balanced=Y — no cross-contamination check
+§C shard TB client13 ΣDR=46574.97 ΣCR=46574.97 balanced=Y
+§D referential — 12 offset FK families checked, dangles only flagged above (none = silent pass)
+§E login-able client13 active user+role grants=9
+§F FALSIFIER un-banded shard → client13 orders landed=0 (the original #5-install bug, reproduced)
+
+§W-IDMP-REBAND PASS
+
+exit=0

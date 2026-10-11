@@ -1,0 +1,26 @@
+
+══ W-FREE-SLOT — gen_ad_odoo assigns a free AD_Client id; two Odoo tenants coexist collision-free ══
+
+§FREE-SLOT base=/home/red1/bim-ootb/erp/ad_seed.db
+  gen → (no ALLOC)  exit=2
+  ✗ FAIL gen with NO CLIENT_ID succeeds (next-free default)
+  gen → (no ALLOC)  exit=2
+  ✗ FAIL gen with CLIENT_ID=14 succeeds
+
+/home/red1/bim-compiler/node_modules/better-sqlite3/lib/database.js:69
+		[util.cppdb]: { value: new addon.Database(filename, filenameGiven, anonymous, readonly, fileMustExist, timeout, verbose || null, buffer || null) },
+		                       ^
+SqliteError: unable to open database file
+    at new Database (/home/red1/bim-compiler/node_modules/better-sqlite3/lib/database.js:69:26)
+    at Object.<anonymous> (/home/red1/bim-compiler/scripts/poc_free_slot.js:46:11)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'SQLITE_CANTOPEN'
+}
+
+Node.js v18.19.1
+exit=1

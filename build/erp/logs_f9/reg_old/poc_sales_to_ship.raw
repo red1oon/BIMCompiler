@@ -1,0 +1,25 @@
+═══ POC — Sales→Ship, hard parts first, diff vs the GardenWorld oracle ═══
+
+── GAP. Close the engine gaps (ctx resolver + dialect shim) ──
+   🟢 PG→SQLite dialect shim runs — least→min/greatest→max: lo=3 hi=5
+   🟢 Validation @ctx@ resolved — unresolved=0
+   ℹ️  finding: AccountingRule bodies are correlated fragments (need a host query) — deferred, out of Sales→Ship scope
+
+── S1. SETTLEMENT (the hell): match = JOIN + balance, vs oracle rows ──
+   🟢 M_MatchInv (vendor receipt↔invoice) constraint reproduces oracle — oracle=18 mine=18 matched=18 missed=0 extra=0
+   🟢 M_MatchPO (PO line↔vendor invoice) constraint reproduces oracle — oracle=18 mine=18 matched=18 missed=0 extra=0
+
+── S2. DERIVATION: completeOrder via decision-table + verbs, ops vs oracle ──
+   🟢 order 60000 createShipment ops == oracle lines — mine=1 oracle=1
+   🟢 order 80000 createShipment ops == oracle lines — mine=1 oracle=1
+   🟢 order 80001 createShipment ops == oracle lines — mine=1 oracle=1
+   🟢 order 80002 createShipment ops == oracle lines — mine=3 oracle=3
+
+── S3. FROZEN EFFECTS: edit decision-table, replay old order unchanged ──
+   🟢 old order under rule v1 shipped — ship lines=1
+   🟢 NEW order under rule v2 does NOT ship (rule change took effect forward) — ship lines=0
+   🟢 REPLAY of old order reproduces original shipment (frozen) — replay=1 original=1
+
+═══ VERDICT ═══
+§POC PASS — all hard-part checks green
+exit=0

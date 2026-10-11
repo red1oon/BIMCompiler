@@ -1,0 +1,19 @@
+═══ W-FOLD-QTYONHAND — on-hand = Σ(sign(MovementType)×|qty|) == iDempiere m_storageonhand ═══
+    fold = erp_engine.qtyOnHand + movementSign · ledger = m_transaction(28) · oracle = m_storageonhand(20)
+
+   🟢 (a) SIGN RULE — sign(MovementType)×|qty| reproduces the stored signed ledger for every event — events=28 mismatches=0
+   🟢 (b) ACCUMULATION — Σ signed movement per (product,locator,asi) == qtyonhand — cells=20 maxDiff=0
+§FOLD-COMPLETE doc=M_StorageOnHand deltaFrom=MOrder cells=20 events=28 Σqty=386 oracle=iDempiere maxDiff=0
+
+   source decomposition (Σ on-hand by movement origin):
+     shipment(C-)   events=5 Σ=-15
+     receipt(V+)    events=21 Σ=401
+     movement(M±)   events=2 Σ=0
+   §SOURCE-DEFERRED inventory(I±) + production(P±) absent in seed (m_production=0) — the backflush DECREMENT and replenishment trigger ride THIS spine; named, not folded.
+   🟢 §FALSIFIER-A flip one C- shipment to C+ (wrong polarity) → on-hand diverges — maxDiff=2 at=130/101/0
+§FALSIFIER doc=M_StorageOnHand mutation=flip-shipment-polarity maxDiff=2 (must be >0)
+   🟢 §FALSIFIER-B drop the internal M- movement → the source locator over-counts — maxDiff=4 at=123/101/0
+§FALSIFIER doc=M_StorageOnHand mutation=drop-internal-movement maxDiff=4 (must be >0)
+
+🟢 W-FOLD-QTYONHAND PASS — on-hand qty folds from the movement ledger (sign rule + accumulation) == iDempiere m_storageonhand to the unit. The inventory spine is GREEN; backflush/replenishment deltas ride it.
+exit=0

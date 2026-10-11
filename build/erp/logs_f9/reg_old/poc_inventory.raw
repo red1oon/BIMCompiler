@@ -1,0 +1,26 @@
+═══ W-FOLD-INVENTORY — MInventory physical count (I± rides the qty spine; GL valued at cost) — RULE-CONSISTENT ═══
+    verbs = movementSign + qtyOnHand + cost-selection + {Product.Asset} (all PROVEN) · NO fact_acct oracle (no I± in seed) · enact-only
+    costingmethod=A → costElem=103
+
+   🟢 Oak Tree @loc101 book 20 → count 23 (+3, I+) — anchor=true sign=true newOnHand=23==counted=23 adjVal=154.35 (=|3|×51.45) balanced=true
+§FOLD-INVENTORY product=123 loc=101 type=I+ book=20 counted=23 newOnHand=23 assetAcct=742 adjValue=154.35c ΣDR=ΣCR=Y tier=RULE-CONSISTENT(no-oracle)
+   🟢 Oak Tree @loc102 book 4 → count 2 (-2, I-) — anchor=true sign=true newOnHand=2==counted=2 adjVal=102.9 (=|2|×51.45) balanced=true
+§FOLD-INVENTORY product=123 loc=102 type=I- book=4 counted=2 newOnHand=2 assetAcct=742 adjValue=102.9c ΣDR=ΣCR=Y tier=RULE-CONSISTENT(no-oracle)
+   🟢 Elm Tree @loc101 book 15 → count 20 (+5, I+) — anchor=true sign=true newOnHand=20==counted=20 adjVal=285 (=|5|×57) balanced=true
+§FOLD-INVENTORY product=124 loc=101 type=I+ book=15 counted=20 newOnHand=20 assetAcct=742 adjValue=285c ΣDR=ΣCR=Y tier=RULE-CONSISTENT(no-oracle)
+   🟢 Grass Seed Container @loc101 book 12 → count 8 (-4, I-) — anchor=true sign=true newOnHand=8==counted=8 adjVal=192 (=|4|×48) balanced=true
+§FOLD-INVENTORY product=125 loc=101 type=I- book=12 counted=8 newOnHand=8 assetAcct=742 adjValue=192c ΣDR=ΣCR=Y tier=RULE-CONSISTENT(no-oracle)
+   🟢 Rose Bush @loc101 book 20 → count 21 (+1, I+) — anchor=true sign=true newOnHand=21==counted=21 adjVal=28.5 (=|1|×28.5) balanced=true
+§FOLD-INVENTORY product=127 loc=101 type=I+ book=20 counted=21 newOnHand=21 assetAcct=742 adjValue=28.5c ΣDR=ΣCR=Y tier=RULE-CONSISTENT(no-oracle)
+   🟢 Azalea Bush @loc101 book 5 → count 2 (-3, I-) — anchor=true sign=true newOnHand=2==counted=2 adjVal=71.25 (=|3|×23.75) balanced=true
+§FOLD-INVENTORY product=128 loc=101 type=I- book=5 counted=2 newOnHand=2 assetAcct=742 adjValue=71.25c ΣDR=ΣCR=Y tier=RULE-CONSISTENT(no-oracle)
+   🟢 6/6 enacted counts: on-hand folds to counted + GL valued-at-cost balances — ok=6
+   🟢 §FALSIFIER-A post a gain as I- (wrong polarity) → folded on-hand ≠ counted — newOnHand=17 counted=23
+§FALSIFIER-A doc=M_Inventory mutation=wrong-polarity newOnHand=17 counted=23 (must differ)
+   🟢 §FALSIFIER-B value the adjustment with the Material/Standard cost element → value diverges from the schema Average — rightCost=51.45 wrongCost=24
+§FALSIFIER-B doc=M_Inventory mutation=wrong-cost-element rightCost=51.45 wrongCost=24 (must differ — cost selection load-bearing)
+
+§GL-OFFSET-DEFERRED the Inventory-Gain/Loss OFFSET account number (Doc.ACCTTYPE_InvDifferences) has no extractable column in this seed → named-deferred; the inventory leg {Product.Asset}, the value (|adjQty|×cost via the proven cost rule), and the BALANCE invariant are proven. Multi-locator + ASI cells fold identically (per-cell).
+
+🟢 W-FOLD-INVENTORY PASS — RULE-CONSISTENT: enacted physical count folds I± through the proven qty spine (on-hand→counted), GL valued at cost via the proven cost rule + balances; closes the MInventory I± rider qtyonhand deferred. Offset account named-deferred. NOT claimed == iDempiere.
+exit=0

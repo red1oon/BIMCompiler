@@ -1,0 +1,28 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+═══ W-POS-WR — Complete = ONE signed group; WR fan-out from the dictionary; tamper breaks the chain ═══
+
+   🟢 station doctype 135 is the dictionary POS order (SOO / DocSubTypeSO=WR) — fan-out comes from DATA — docbasetype=SOO docsubtypeso=WR
+   🟢 buildSaleGroup ok, newVerbs=[] (rides buildDoc/completeOrder/completeInvoice only) — verbs=buildDoc,explodeBOM,completeOrder,completeInvoice
+   🟢 shipment ops == E.createShipment(order, lines) — REPLAY EQUAL (movementtype C-) — ops=3
+   🟢 invoice ops == E.createInvoice(order, lines) — REPLAY EQUAL — ops=3
+   🟢 all three docs complete in the SAME group (WR on-the-fly) — C_Order→CO,M_InOut→CO,C_Invoice→CO
+§POS-SALE lines=2 dispatch=SALE newVerbs=[] ops=12 total=109.25 bp=112(explicit — seed c_bpartnercashtrx is NULL, named)
+§POS-DOC order=9001 completeIt ok (SET_STATUS CO ×3: C_Order, M_InOut, C_Invoice)
+§POS-DOC inout lines=2 onhand-delta=-3 (C- polarity, movementSign spine)
+   🟢 ad_docfsm: CO is legal from DR for the WR doctype (the FSM gates Complete, not POS code) — legal=[CO,PR,VO]
+   🟢 ad_docfsm.dispatchOrder DR --CO--> CO — {"ok":true,"from":"DR","action":"CO","to":"CO","legalActions":["CO","PR","VO"]}
+§KRN_GROUP committed gid=cbad0daf-fdbd-4668-a7bf-647cb2422608 ops=12 groupHash=6d31030609c1… tip=0fe6dcf43872… sealed=12 (WHOLE — all-or-none)
+§KRN_CHAIN verify OK len=12 tip=0fe6dcf43872…
+   🟢 commitGroup: 12 ops sealed atomically under ONE gid — gid=cbad0daf-fdbd-4668-a7bf-647cb2422608 sealed=12
+   🟢 verifyChain holds over the sealed group — len=12
+§POS-SALE chainOk=Y gid=cbad0daf-fdbd-4668-a7bf-647cb2422608 ops=12 sealed=12
+§KRN_CHAIN group-torn gid=cbad0daf-fdbd-4668-a7bf-647cb2422608 failAt id=2 why=payload altered brokeAt(group)=1
+   🟢 §FALSIFIER tampered op (qty 2→99) breaks verifyChain — provenance is load-bearing — brokeAt=1 why=group torn
+§FALSIFIER pos=wr mutation=tamper-qty verifyChain.ok=false (must be false)
+   🟢 POS-shaped invoice for REAL order 80000 == engine createInvoice spec (1 lines) — ops=2
+   🟢 derivePostings(invoice 100) == real fact_acct(318) per account — Dr==Cr, maxDiff=0c — accounts=3 maxDiff=0c
+§POS-DOC invoice posted Dr==Cr (derivePostings==fact_acct(318) accounts=3 maxDiff=0c)
+§POS-REPORT remote read posted Dr==Cr coverage=fact_acct(318) doc=80000 — a report is a FOLD of the same signed sequence, not an authority fetch
+
+🟢 W-POS-WR PASS — one signed group carries order+ship+invoice+CO (replay-equal to the engine verbs, WR policy from the dictionary), tampering breaks the chain, and the invoice posting equals the books to the cent.
+exit=0

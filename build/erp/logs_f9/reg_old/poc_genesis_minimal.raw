@@ -1,0 +1,38 @@
+═══ W-GENESIS-MINIMAL — a tenant BORN from an op-log posts a sales invoice == oracle to the cent ═══
+    genesis.birthTenant -> foldGenesis -> CREATE -> completeInvoice -> doc_poster.derivePostings
+
+§GENESIS born: 6 groups, 527 CREATE ops, head=2be82429f302…
+  · G1 identity — 8 ops
+  · G2 calendar — 14 ops
+  · G3 chart — 312 ops
+  · G4 acctschema — 83 ops
+  · G5 doctypes — 91 ops
+  · G6 base ops — 19 ops
+  ✓ G1..G6 all present  → 6 groups
+  ✓ G3 folded the full default chart of accounts  → 311 accounts
+  ✓ op-log hash-chain verifies (git-for-a-tenant)  → 2be82429f302…
+  ✓ c_receivable_acct wired to oracle 12110 (Accounts Receivable - Trade)  → 12110
+  ✓ p_revenue_acct wired to oracle 41000 (Trade Revenue)  → 41000
+  ✓ t_due_acct wired to oracle 21610 (Tax due)  → 21610
+
+§CREATE invoice 9000001: BP=1000510 net=100.00 tax=9.00 grandtotal=109.00
+  ✓ completeInvoice -> signed state op DR→CO  → CO
+
+§POST derivePostings (basis=invoice, balanced=true, absent=[]):
+   12110 Accounts Receivable - Trade  DR    109.00  CR      0.00
+   21610 Tax due                      DR      0.00  CR      9.00
+   41000 Trade Revenue                DR      0.00  CR    100.00
+  ✓ posted off the invoice (oracle basis)  → invoice
+  ✓ no absent accounts — every token resolved from genesis rows  → []
+  ✓ journal balances  → Dr=109.00 Cr=109.00
+  ✓ DR 12110 Receivable = 109.00 (== oracle)  → 109
+  ✓ CR 41000 Revenue = 100.00 (== oracle)  → 100
+  ✓ CR 21610 Tax due = 9.00 (== oracle)  → 9
+§SNAP_SIGN_LOADED v1 (ECDSA P-256, pinned controller key)
+  ✓ genesis head tip ECDSA-signed (signed bundle)  → b3c0eeb5cf92fcac…
+  ✓ signature verifies against the controller key  → true
+  ✓ a tampered tip is REJECTED (provenance holds)  → false
+
+═══ W-GENESIS-MINIMAL: 16 PASS / 0 FAIL ═══
+✅ A tenant born from a signed op-log posts a sales invoice to the cent == iDempiere oracle. Initial Client Setup IS expressible as git-for-a-tenant — no accounting loss. Layer-1 minimal genesis WITNESSED.
+exit=0
