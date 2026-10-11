@@ -214,8 +214,11 @@ async function main() {
   };
   const rrun = async (id, scenarios, spec) => { const rows = await R.run(scenarios, spec, [], { log }); const bad = rows.filter(r => r.verdict !== 'MATCH'); const v = rows.length === 0 ? 'INCONCLUSIVE' : bad.length ? (bad.some(r => r.verdict === 'ERROR') ? 'BLOCKED' : 'DIFF') : 'MATCH';
     log(`§SHOPDAY_STEP ${id} ${v} scenarios=${rows.length} match=${rows.length - bad.length} gaps=${bad.map(r => r.id + ':' + r.verdict).join(',') || '-'}`); out.steps.push({ id, verdict: v }); return rows; };
+  // ---- steps 11..24 (shopday_more.js): same facts to both sides, judged by reconcile keys ----
+  const MORE = require('./shopday_more')({ docEnv, rrun, R, log, out, TODAY, tw, cfg, ids, ad, T, F, compareStep, lrefId, lfind, lcreate, lupdate, sref, run });
+  await run('SD-13a', MORE.sd13a);
   // --- SD-06 opening stock: physical inventory (count > book 0) at the default locator, same descriptor/verbs as the PI1 model scenario (m3 §59), re-hosted on the twin ---
-  const runPI = async (stepId, scenId, mkLines, iid) => {
+  const runPI = async (stepId, scenId, mkLines, iidP) => {
     const x = docEnv(), C = x.C, { E, DP, lc: lc_, cents } = x;
     const PI_DESC = { pi: { composite: 'SyncOrder',
       header: { serviceType: 'BridgeCreateInventory', table: 'M_Inventory', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.physInv }, M_Warehouse_ID: { const: C.wh }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
@@ -238,7 +241,7 @@ async function main() {
         postings: h.Posted === 'E' ? 'REFUSED:Posted=E' : await x.legacyFactsOf(321, id, x.SCHEMA), postings_euro: h.Posted === 'E' ? 'REFUSED:Posted=E' : await x.legacyFactsOf(321, id, x.SCHEMA2), cost_qty_delta: deltaStr(Object.keys(cq0), cq0, p => cq[p]) };
     };
     const local = async f => {
-      const iid = stepId === 'SD-06' ? 3000010 : 3000020, lines = f.lines.map((l, i) => ({ m_inventoryline_id: iid * 100 + i, m_locator_id: l.loc, m_product_id: l.product, qtybook: l.book, qtycount: l.count }));
+      const iid = iidP, lines = f.lines.map((l, i) => ({ m_inventoryline_id: iid * 100 + i, m_locator_id: l.loc, m_product_id: l.product, qtybook: l.book, qtycount: l.count }));
       const cq0 = {}; for (const l of f.lines) cq0[l.product] = x.localCostQty(l.product);
       const r = E.completeInventory({ m_inventory_id: iid, docsubtypeinv: 'PI' }, lines); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       const status = (r.ops.filter(o => o.op_type === 'SET_STATUS').pop() || {}).doc_status, stock = {};
@@ -250,7 +253,7 @@ async function main() {
       if (typeof DP.costQtyUpdatesFor === 'function') for (const u of DP.costQtyUpdatesFor(tw.db, 'M_Inventory', iid)) DP.applyCostUpdate(tw.db, u, TODAY);
       res.cost_qty_delta = deltaStr(Object.keys(cq0), cq0, p => x.localCostQty(+p)); return res;
     };
-    await rrun(stepId, [{ id: scenId, facts: { id: stepId, lines: mkLines(C) }, legacy, local }],
+    await rrun(stepId, [{ id: scenId, facts: { id: stepId, lines: await mkLines(C, x) }, legacy, local }],
       { keys: ['outcome', 'docstatus', 'lines', 'stock_delta', 'postings', 'postings_euro', 'cost_qty_delta'], notCompared: {} });
   };
   await run('SD-06', () => runPI('SD-06', 'SD06-opening-stock', C => [{ product: C.prod.mulch, loc: C.locator, book: 0, count: 20 }, { product: C.prod.rake, loc: C.locator, book: 0, count: 20 }], 3000010));
@@ -263,6 +266,7 @@ async function main() {
     const names = { PO: 'SD-07', RCPT: 'SD-08', INV: 'SD-09', PAY: 'SD-10' };
     for (const [i, st] of P2P.STEPS.entries()) await rrun(names[st], [P2P.scenario(st, i)], { keys: P2P.KEYS[st], notCompared: {} });
   });
+  await run('SD-11', MORE.sd11);
   // --- SD-12z (§SHOPDAY-RUN-2 R2.4, G-SD6): the first order of the fresh client WITHOUT an explicit price list. MSetup's only sales list ('Standard') has IsSOPriceList='N', so
   // MOrder.beforeSave:1282-1291 finds no SO price list, DB.getSQLValueEx returns -1, setM_PriceList_ID(-1) NPEs (MOrder.java:910-911) => the save is refused. SQLite must refuse too. ---
   await run('SD-12z', async () => {
@@ -286,6 +290,11 @@ async function main() {
     for (const [id, rows] of Object.entries(acc)) { const bad = rows.filter(r => r.verdict !== 'MATCH'); const v = bad.length ? (bad.some(r => r.verdict === 'ERROR') ? 'BLOCKED' : 'DIFF') : 'MATCH';
       log(`§SHOPDAY_STEP ${id} ${v} scenarios=${rows.length} match=${rows.length - bad.length} gaps=${bad.map(r => r.id + ':' + r.verdict).join(',') || '-'}`); out.steps.push({ id, verdict: v }); }
   });
+  await run('SD-13', MORE.sd13);
+  // SD-18 end-of-day count: a loss on one product and a gain on another against the BOOK quantity both sides read (legacy QueryStorage), Physical Inventory = Doc_Inventory I+/I-
+  await run('SD-17', MORE.sd17);
+  await run('SD-18', () => runPI('SD-18', 'SD18-count-loss-gain', async (C, x) => { const b1 = await x.locStock(C.prod.mulch, C.locator), b2 = await x.locStock(C.prod.rake, C.locator);
+    log(`§SHOPDAY_LEGACY SD-18 book qty: product ${C.prod.mulch}=${b1} product ${C.prod.rake}=${b2}`); return [{ product: C.prod.mulch, loc: C.locator, book: b1, count: b1 - 2 }, { product: C.prod.rake, loc: C.locator, book: b2, count: b2 + 3 }]; }, 3000030));
   // --- NEGATIVE CONTROL (the m3 pattern): a SECOND order chain whose SQLite invoice price is +1 cent must differ from the control chain (SD-12) at the invoice step in price-bearing keys
   // (lines, totals, tax, books, open item) (extra keys the control chain lacks). Control = the SD-12 chain. ---
   await run('SD-NEG', async () => {
@@ -303,7 +312,7 @@ async function main() {
     'SD-21': 'back-dated sale (F9) not re-hosted', 'SD-22': 'period close verb exists legacy-side only (G-SD1 harness verb) -- scenario not written', 'SD-23': 'post-close refusals (F7) not re-hosted', 'SD-24': 'trial balance: the twin does not persist fact_acct (no posting host)' };
   const PLAN = ['SD-00', 'SD-01', 'SD-02', 'SD-03', 'SD-04', 'SD-05', 'SD-06', 'SD-07', 'SD-08', 'SD-09', 'SD-10', 'SD-11', 'SD-12', 'SD-13', 'SD-14', 'SD-15', 'SD-16', 'SD-17', 'SD-18', 'SD-19', 'SD-20', 'SD-21', 'SD-22', 'SD-23', 'SD-24'];
   const worst = ids2 => { const vs = out.steps.filter(s => ids2.includes(s.id)).map(s => s.verdict); return !vs.length ? 'NOT_RUN' : vs.includes('BLOCKED') ? 'BLOCKED' : vs.includes('DIFF') ? 'DIFF' : vs.includes('INCONCLUSIVE') ? 'INCONCLUSIVE' : 'MATCH'; };
-  const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b', 'SD-04c'], 'SD-06': ['SD-06', 'SD-06z'], 'SD-12': ['SD-12', 'SD-12z'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
+  const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b', 'SD-04c'], 'SD-06': ['SD-06', 'SD-06z'], 'SD-12': ['SD-12', 'SD-12z'], 'SD-13': ['SD-13a', 'SD-13'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
   const cnt = v => PLAN.filter(id => per[id] === v).length;
   log(`§SHOPDAY_COVERAGE steps_match=${cnt('MATCH')} of ${PLAN.length} diff=${cnt('DIFF')} blocked=${cnt('BLOCKED')} inconclusive=${cnt('INCONCLUSIVE')} not_run=${cnt('NOT_RUN')} :: ${PLAN.map(id => id + '=' + per[id]).join(' ')}`);
   for (const id of PLAN) if (per[id] === 'NOT_RUN' && NOT_RUN_WHY[id]) log(`§SHOPDAY_NOT_RUN ${id} ${NOT_RUN_WHY[id]}`);

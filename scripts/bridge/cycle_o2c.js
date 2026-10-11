@@ -6,7 +6,8 @@ module.exports = function makeO2C(X) {
   const C = require('./client_ctx').ctx;   // §SHOPDAY-BUILD-1: GardenWorld defaults unless SHOPDAY_CLIENT re-resolved them
   const { cfg, query, call, createLink, gb, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
     pos, priceOfAt, taxOfFor, taxById, taxChildren, TAX_INCLUDED, dtOf, creditOf, periodCheck, acctSetupOf, PL_CURRENCY, log } = X;
-  const BP = C.customer, LOC = C.customerLoc, WH = C.wh, LOCATOR = C.locator, PRODUCT = C.prod.mulch, QTY = 2, SODT = C.dt.std;
+  const O = X.o2c || {};   // §SHOPDAY-RUN-2: per-call overrides (SD-13 credit customer, SD-11 POS doctype); absent => the GardenWorld/shop defaults below
+  const BP = O.bp || C.customer, LOC = O.bpLoc || C.customerLoc, WH = C.wh, LOCATOR = C.locator, PRODUCT = O.product || C.prod.mulch, QTY = O.qty || 2, SODT = O.sodt || C.dt.std;
   const DESC = {
     so: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateOrder', table: 'C_Order', fields: { ...(X.soPriceList ? { M_PriceList_ID: { const: X.soPriceList } } : {}), M_Warehouse_ID: { const: WH }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC }, Bill_BPartner_ID: { const: BP }, Bill_Location_ID: { const: LOC }, C_DocTypeTarget_ID: { const: SODT }, DateOrdered: { path: 'date' }, DateAcct: { path: 'date' } } },
       lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: C.org }, AD_Client_ID: { const: C.client }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } } },
