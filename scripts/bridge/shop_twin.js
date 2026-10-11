@@ -39,7 +39,7 @@ class ShopTwin {
     if (hook.defaults) hook.defaults(row);
     for (const k in g) { if (!have.has(k)) throw new Error(`§TWIN ${t}.${k} is not a physical column`); row[k] = g[k]; }
     // saveNew
-    const pk = cs.find(c => c.pk); if (pk && !(pk.name in g)) row[pk.name] = this.nid();
+    const pk = cs.find(c => c.pk); if (pk && !(pk.name in g)) row[pk.name] = extra.pk != null ? extra.pk : this.nid();
     const uu = cs.find(c => /_uu$/.test(c.name)); if (uu) row[uu.name] = 'uu-' + (pk ? row[pk.name] : this.nid()) + '-' + t;
     if (have.has('documentno') && (row.documentno == null || row.documentno === '') && !/^t_/.test(tn)) { row.documentno = this.docNoOf(row, TN); }
     if (have.has('value') && (row.value == null || row.value === '') && !/^(t_.*|ad_sysconfig|m_attributeinstance|ad_tableattribute)$/.test(tn)) row.value = this.seqNext('DocumentNo_' + TN);
@@ -48,7 +48,7 @@ class ShopTwin {
     const al = DICT.prepare('SELECT accesslevel a FROM ad_table WHERE upper(tablename)=upper(?)').get(t); if (al && String(al.a) === '4' && row.ad_org_id) row.ad_org_id = 0;
     // DB DEFAULT for what is still unset
     for (const c of cs) if (row[c.name] == null && c.name in ddl) row[c.name] = ddl[c.name] === '@NOW' ? this.stamp : ddl[c.name];
-    for (const k in extra) row[k] = extra[k];
+    for (const k in extra) if (k !== 'pk') row[k] = extra[k];
     this.db.prepare(`INSERT INTO ${t}(${Object.keys(row).join(',')}) VALUES (${Object.keys(row).map(() => '?').join(',')})`).run(Object.values(row).map(v => v === undefined ? null : v));
     const id = pk ? row[pk.name] : null; if (hook.after) hook.after(this, id, row);
     return id;

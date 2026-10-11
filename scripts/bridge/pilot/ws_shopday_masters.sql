@@ -20,7 +20,8 @@ BEGIN
       ('M_PriceList_Version'),
       ('M_ProductPrice'),
       ('C_AcctSchema'),
-      ('M_CostElement')) AS v(tbl) LOOP
+      ('M_CostElement'),
+      ('M_Cost')) AS v(tbl) LOOP
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     IF t IS NULL THEN RAISE NOTICE 'skip % (no AD_Table)', d.tbl; CONTINUE; END IF;
     FOREACH m IN ARRAY ARRAY['createData','updateData'] LOOP

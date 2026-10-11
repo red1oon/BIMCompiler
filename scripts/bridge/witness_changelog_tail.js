@@ -16,7 +16,7 @@ const { createTracker } = require('./changelog_tracker');
 
 const cfg = cfgFromEnv();
 const pg = sql => execFileSync('docker', ['exec', 'postgres', 'psql', '-U', 'postgres', '-d', 'idempiere_pilot', '-Atc',
-  'set search_path=adempiere; ' + sql]).toString().split('\n').filter(l => l && l !== 'SET');
+  'set search_path=adempiere; ' + sql], { maxBuffer: 1 << 28 }).toString().split('\n').filter(l => l && l !== 'SET');
 const F = o => ({ field: Object.entries(o).map(([k, v]) => ({ '@column': k, val: v })) });
 let fails = 0, inconcl = 0;
 const out = (tag, ok, msg) => { console.log(`${tag} ${ok === 'INCONCLUSIVE' ? 'INCONCLUSIVE' : ok ? 'PASS' : 'FAIL'} ${msg}`); if (ok === 'INCONCLUSIVE') inconcl++; else if (!ok) fails++; };

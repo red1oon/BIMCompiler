@@ -27,9 +27,9 @@ function extract(clientId, only) {
   return out;
 }
 // facts = { clientId, name, orgValue, orgName, adminUser, normalUser, currencyId, countryId, regionId, address1, city, postal, today(YYYY-MM-DD), year, currencyDesc? }
-function instantiate(tpl, from, to) {
+function instantiate(tpl, from, to, shifts) {   // shifts = { table: id delta } aligning the twin's ids with a legacy run's per-table sequences (default: one uniform delta)
   if (from.year !== to.year) throw new Error(`§TPL REFUSED: template year ${from.year} != target year ${to.year} (periods/year rows are year-specific; re-extract)`);
-  const delta = to.clientId - from.clientId;
+  const delta0 = to.clientId - from.clientId, dl = tb => (shifts && tb in shifts) ? shifts[tb] : delta0;
   const lower8 = u => u.toLowerCase().slice(0, 8);
   const subs = new Map([[from.adminUser, to.adminUser], [from.normalUser, to.normalUser], [lower8(from.adminUser), lower8(to.adminUser)], [lower8(from.normalUser), lower8(to.normalUser)],
     [from.name, to.name], [from.orgName, to.orgName], [from.orgValue, to.orgValue], [from.address1, to.address1], [from.city, to.city], [from.postal, to.postal]]);
@@ -48,9 +48,9 @@ function instantiate(tpl, from, to) {
         s = s.split(`** ${from.clientId} **`).join(`** ${to.clientId} **`);                      // print formats are named '<format> ** <AD_Client_ID> ** - Copy Record'
         if (t === 'ad_preference' && c === 'value') {                                               // (attribute,value) polymorphic table: the value of an *_ID attribute is a key
           const at = String(row[ci.indexOf('attribute')]).toLowerCase();
-          if (/^\d+$/.test(s)) { if (at === 'c_country_id' && +s === from.countryId) return String(to.countryId); if (at === 'c_currency_id' && +s === from.currencyId) return String(to.currencyId); if (/_id$/.test(at) && OWN[refTable('ad_preference', at)] && OWN[refTable('ad_preference', at)].has(s)) return String(+s + delta); }
+          if (/^\d+$/.test(s)) { if (at === 'c_country_id' && +s === from.countryId) return String(to.countryId); if (at === 'c_currency_id' && +s === from.currencyId) return String(to.currencyId); if (/_id$/.test(at) && OWN[refTable('ad_preference', at)] && OWN[refTable('ad_preference', at)].has(s)) return String(+s + dl(refTable('ad_preference', at))); }
         }
-        if (ci.indexOf(t + '_id') >= 0 && s === String(row[ci.indexOf(t + '_id')]) && /^\d+$/.test(s)) return String(+s + delta);
+        if (ci.indexOf(t + '_id') >= 0 && s === String(row[ci.indexOf(t + '_id')]) && /^\d+$/.test(s)) return String(+s + dl(t));
         if (t === 'ad_user' && c === 'value') return lower8(row[ci.indexOf('name')].replace(re, m => subs.get(m)));   // MUser derives Value from the name (validated on 3 users, 2 clients)
         if ((t === 'c_taxcategory' || t === 'c_taxcategory_trl') && c === 'name' && TAXCAT_RULE.test(v)) return to.countryId === 100 ? 'Sales Tax' : 'Standard';   // MSetup.java:1233-1235: COUNTRY_US => 'Sales Tax' else the translated 'Standard'
         return s;
@@ -58,7 +58,7 @@ function instantiate(tpl, from, to) {
       if (typeof v === 'number') {
         if (numMap[c] && v === numMap[c][0]) return numMap[c][1];
         if (c === 'ad_client_id') return to.clientId;
-        if ((c === t + '_id' || /_id$|_acct$/.test(c)) && OWN[refTable(t, c, row, ci, TT)] && OWN[refTable(t, c, row, ci, TT)].has(String(v))) return v + delta;   // an OWNED row (own pk or a reference to one) => shift; system dictionary keys stay
+        if ((c === t + '_id' || /_id$|_acct$/.test(c)) && OWN[refTable(t, c, row, ci, TT)] && OWN[refTable(t, c, row, ci, TT)].has(String(v))) return v + dl(c === t + '_id' ? t : refTable(t, c, row, ci, TT));   // an OWNED row (own pk or a reference to one) => shift; system dictionary keys stay
       }
       if (v === null && numMap[c] && from[{ c_region_id: 'regionId' }[c] || ''] === null && to.regionId) return to.regionId;
       return v;
