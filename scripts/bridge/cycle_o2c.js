@@ -123,6 +123,8 @@ module.exports = function makeO2C(X) {
       const f = { doctype: SODT, bp: BP, lines: [{ product: PRODUCT, qty: QTY }] }, dt = sodt;
       const ctx = { pos: { ...pos, m_warehouse_id: WH, c_doctype_id: SODT }, priceOf: priceOfAt, priceDate: TODAY, bomOf: () => [], taxOf: taxOfFor(f), taxById, taxChildren, taxIncluded: TAX_INCLUDED,
         wrPolicy: { isautogenerateinout: 'N', isautogenerateinvoice: 'N' }, docsubtypeso: dt.docsubtypeso, docbasetype: dt.docbasetype, creditOf, periodCheck, acctSetupOf };
+      // G-SD6: an order without an explicit price list takes the client's default SO list, or is refused (MOrder.beforeSave:1282-1291); hosts without a price-list source (GardenWorld suites) skip it
+      if (X.priceListRows && !X.soPriceList) { const d = E.orderPriceListDefault({ m_pricelist_id: 0, issotrx: 'Y', ad_client_id: C.client }, X.priceListRows()); if (!d.ok) return { outcome: 'REJECTED', reason: d.msg }; }
       const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty)); if (cart.some(l => !l.ok)) return { outcome: 'REJECTED' };
       S.order = nid();
       const g = POS.buildDeliverLaterGroup(ctx, cart, { orderId: S.order, inoutId: S.order + 1, invoiceId: S.order + 2, c_bpartner_id: BP, warehouseId: WH, dateAcct: TODAY, doctype: dt, invoiceRule: 'I' });

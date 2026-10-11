@@ -92,6 +92,7 @@ function buildX({ tw, cfg, ids, C, log, TODAY }) {
   const locStock = async (p, loc) => (await query(cfg, 'QueryStorage', `M_Product_ID=${p} AND M_Locator_ID=${loc}`)).reduce((a, r) => a + Number(r.QtyOnHand), 0);
   function applyCostQty(ioId) { const h = db.prepare('SELECT dateacct FROM m_inout WHERE m_inout_id=?').get(ioId), date = (h && h.dateacct) || TODAY; for (const u of DP.costQtyUpdates(db, ioId)) DP.applyCostUpdate(db, u, date); }
   return { cfg, query, call, createLink, gb: db, seed: db, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
-    pos, priceOfAt, taxOfFor, taxById, taxChildren, taxRows, TAX_INCLUDED, dtOf, creditOf, periodCheck: periodCheckLive, acctSetupOf, PL_CURRENCY, log, AVG_EL };
+    pos, priceOfAt, taxOfFor, taxById, taxChildren, taxRows, TAX_INCLUDED, dtOf, creditOf, periodCheck: periodCheckLive, acctSetupOf, PL_CURRENCY, log, AVG_EL,
+    priceListRows: () => db.prepare('SELECT m_pricelist_id, issopricelist, isactive, isdefault, ad_client_id FROM m_pricelist WHERE ad_client_id=?').all(C.client) };   // G-SD6: the shop twin's price lists
 }
 module.exports = { buildX, loadSystemTables };
