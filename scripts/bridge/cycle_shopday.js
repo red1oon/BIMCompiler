@@ -19,6 +19,13 @@ const RT = { c_bp_group: 'QueryCBPGroup', c_taxcategory: 'QueryCTaxCategory', m_
   m_product: 'QueryMProduct', m_pricelist: 'QueryMPriceList', m_pricelist_version: 'QueryMPriceListVersion', c_tax: 'QueryCTax', m_discountschema: 'QueryMDiscountSchema', c_acctschema: 'QueryCAcctSchema', c_bankaccount: 'QueryCBankAccount', m_costelement: 'QueryMCostElement' };
 const q = v => `'${String(v).replace(/'/g, "''")}'`;
 
+async function restartPilot(probe) {
+  const cp = require('child_process'); cp.spawnSync(process.env.HOME + '/idempiere-pilot/stop.sh', { stdio: 'ignore' }); cp.spawnSync('sleep', ['6']); cp.spawnSync(process.env.HOME + '/idempiere-pilot/start.sh', { stdio: 'ignore' });
+  for (let i = 0; i < 60; i++) { const c = cp.spawnSync('curl', ['-s', '-o', '/dev/null', '-w', '%{http_code}', 'http://localhost:8088/webui/']).stdout.toString(); if (c === '200') break; cp.spawnSync('sleep', ['5']); }
+  cp.spawnSync('sleep', ['10']);
+  for (let i = 0; i < 40; i++) { try { await probe(); return; } catch (e) { cp.spawnSync('sleep', ['5']); } }   // WS bundle can lag the web UI: wait until a stock read answers
+  throw new Error('pilot WS did not come back after restart');
+}
 async function main() {
   const out = { steps: [], neg: null };
   let ids = F.resolveIds();
@@ -126,7 +133,7 @@ async function main() {
   });
   await run('SD-04', async () => {
     const P = (v, n, type, stocked) => ({ t: 'M_Product', key: ['Value', v], fields: { Value: v, Name: n, M_Product_Category_ID: { ref: ['m_product_category', 'Value', 'Standard'] }, C_UOM_ID: 100, C_TaxCategory_ID: { ref: ['c_taxcategory', 'Name', 'SD Taxed'] }, ProductType: type, IsStocked: stocked, IsSold: 'Y', IsPurchased: 'Y' } });
-    await both(P('SD-GOOD1', 'SD Good One', 'I', 'Y')); await both(P('SD-GOOD2', 'SD Good Two', 'I', 'Y')); await both(P('SD-SERV1', 'SD Service One', 'S', 'N'));
+    await both(P('SD-GOOD1', 'SD Good One', 'I', 'Y')); await both(P('SD-GOOD2', 'SD Good Two', 'I', 'Y')); await both(P('SD-GOOD3', 'SD Good Three (no cost)', 'I', 'Y')); await both(P('SD-SERV1', 'SD Service One', 'S', 'N'));
     await compareStep('SD-04', ['m_product', 'm_product_acct', 'm_cost', 'ad_treenodepr']);
   });
   // SD-04b: Average PO has no cost record until the first costed event, and legacy REFUSES to post a receipt of a product without one ("Doc_InOut.createFacts: Resubmit - No
@@ -142,6 +149,10 @@ async function main() {
     }
     await compareStep('SD-04b', ['m_cost'], 'starting average cost set in Product Costs (M_Cost) through the WS');
   });
+  // SD-04c (§SHOPDAY-RUN-2 R2.1): MAcctSchema.getClientAcctSchema serves the posting schema from s_schema, a CCache keyed on AD_ClientInfo (MAcctSchema.java:189), which a
+  // C_AcctSchema.CostingMethod update does NOT reset => the server keeps costing with the old method ('S', cost 0 => "No Costs", Posted=E) until it restarts. Measured: same PI
+  // posts DR/CR 1800.00 after a restart. An operator restarts after a costing-method change; so does the harness (admin lane, no data change).
+  await run('SD-04c', async () => { await restartPilot(() => ad.query(cfg, 'QueryCPeriod', 'C_Period_ID>0')); log('§SHOPDAY_ADMIN_LANE pilot restarted after the costing-method change (schema cache s_schema, MAcctSchema.java:189) -- no data written'); out.steps.push({ id: 'SD-04c', verdict: 'MATCH' }); });
   await run('SD-05', async () => {
     const pl = n => `Name=${q(n)}`;
     // sales: MSetup's 'Standard' price list + its version (valid from the client's creation day) get prices; purchase: a new list + version + prices
@@ -192,7 +203,7 @@ async function main() {
     const dt = n => g1('c_doctype', 'name', n), bpl = bpId => +T.pg(`select c_bpartner_location_id from c_bpartner_location where c_bpartner_id=${bpId} order by 1 limit 1`)[0];
     Object.assign(C, { clientName: F.client.name, client: ids.clientId, org: ids.orgId, org2: ids.orgId, role: ids.adminRoleId, user: userId, wh: ids.whId, wh2: ids.whId, locator: g1('m_locator', 'value', 'Standard'),
       customer: g1('c_bpartner', 'value', 'SD-CUST1'), customer2: g1('c_bpartner', 'value', 'SD-CUST2'), vendor: g1('c_bpartner', 'value', 'SD-VEND1'), customerStd: g1('c_bpartner', 'value', 'Standard'),
-      prod: { oak: g1('m_product', 'value', 'SD-GOOD1'), mulch: g1('m_product', 'value', 'SD-GOOD1'), rake: g1('m_product', 'value', 'SD-GOOD2'), weeder: g1('m_product', 'value', 'SD-GOOD2'), azalea: g1('m_product', 'value', 'SD-GOOD2'), fertilizer: g1('m_product', 'value', 'SD-GOOD2'), patioSet: g1('m_product', 'value', 'SD-GOOD2'), standard: g1('m_product', 'value', 'Standard') },
+      prod: { oak: g1('m_product', 'value', 'SD-GOOD1'), mulch: g1('m_product', 'value', 'SD-GOOD1'), rake: g1('m_product', 'value', 'SD-GOOD2'), weeder: g1('m_product', 'value', 'SD-GOOD2'), azalea: g1('m_product', 'value', 'SD-GOOD2'), fertilizer: g1('m_product', 'value', 'SD-GOOD2'), patioSet: g1('m_product', 'value', 'SD-GOOD2'), standard: g1('m_product', 'value', 'Standard'), nocost: g1('m_product', 'value', 'SD-GOOD3') },
       dt: { std: dt('Standard Order'), pos: dt('POS Order'), po: dt('Purchase Order'), mmReceipt: dt('MM Receipt'), mmShipment: dt('MM Shipment'), arInvoice: dt('AR Invoice'), arReceipt: dt('AR Receipt'), apPayment: dt('AP Payment'), requisition: dt('Purchase Requisition'), movement: dt('Material Movement'), physInv: dt('Physical Inventory'), glJournal: dt('GL Journal'), apInvoice: dt('AP Invoice') },
       pl: { sales: g1('m_pricelist', 'name', 'Standard'), purchase: g1('m_pricelist', 'name', 'SD Purchase') }, costElement: { avgPO: g1('m_costelement', 'name', 'Average PO') },
       schema: { primary: tw.db.prepare('SELECT c_acctschema_id id FROM c_acctschema WHERE ad_client_id=?').get(tw.client).id, second: tw.db.prepare('SELECT c_acctschema_id id FROM c_acctschema WHERE ad_client_id=?').get(tw.client).id },
@@ -204,7 +215,7 @@ async function main() {
   const rrun = async (id, scenarios, spec) => { const rows = await R.run(scenarios, spec, [], { log }); const bad = rows.filter(r => r.verdict !== 'MATCH'); const v = rows.length === 0 ? 'INCONCLUSIVE' : bad.length ? (bad.some(r => r.verdict === 'ERROR') ? 'BLOCKED' : 'DIFF') : 'MATCH';
     log(`§SHOPDAY_STEP ${id} ${v} scenarios=${rows.length} match=${rows.length - bad.length} gaps=${bad.map(r => r.id + ':' + r.verdict).join(',') || '-'}`); out.steps.push({ id, verdict: v }); return rows; };
   // --- SD-06 opening stock: physical inventory (count > book 0) at the default locator, same descriptor/verbs as the PI1 model scenario (m3 §59), re-hosted on the twin ---
-  await run('SD-06', async () => {
+  const runPI = async (stepId, scenId, mkLines, iid) => {
     const x = docEnv(), C = x.C, { E, DP, lc: lc_, cents } = x;
     const PI_DESC = { pi: { composite: 'SyncOrder',
       header: { serviceType: 'BridgeCreateInventory', table: 'M_Inventory', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.physInv }, M_Warehouse_ID: { const: C.wh }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
@@ -227,21 +238,24 @@ async function main() {
         postings: h.Posted === 'E' ? 'REFUSED:Posted=E' : await x.legacyFactsOf(321, id, x.SCHEMA), postings_euro: h.Posted === 'E' ? 'REFUSED:Posted=E' : await x.legacyFactsOf(321, id, x.SCHEMA2), cost_qty_delta: deltaStr(Object.keys(cq0), cq0, p => cq[p]) };
     };
     const local = async f => {
-      const iid = 3000000 + 10, lines = f.lines.map((l, i) => ({ m_inventoryline_id: iid * 100 + i, m_locator_id: l.loc, m_product_id: l.product, qtybook: l.book, qtycount: l.count }));
+      const iid = stepId === 'SD-06' ? 3000010 : 3000020, lines = f.lines.map((l, i) => ({ m_inventoryline_id: iid * 100 + i, m_locator_id: l.loc, m_product_id: l.product, qtybook: l.book, qtycount: l.count }));
       const cq0 = {}; for (const l of f.lines) cq0[l.product] = x.localCostQty(l.product);
       const r = E.completeInventory({ m_inventory_id: iid, docsubtypeinv: 'PI' }, lines); if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       const status = (r.ops.filter(o => o.op_type === 'SET_STATUS').pop() || {}).doc_status, stock = {};
       r.ops.filter(o => o.op_type === 'MOVE_STOCK').forEach(o => { const k = o.m_product_id + '@' + o.m_locator_id; stock[k] = (stock[k] || 0) + Number(o.qty); }); Object.keys(stock).forEach(k => { if (!stock[k]) delete stock[k]; });
       tw.db.prepare('INSERT INTO m_inventory(m_inventory_id,m_warehouse_id,docstatus,c_doctype_id,movementdate,ad_client_id,ad_org_id,dateacct) VALUES(?,?,?,?,?,?,?,?)').run(iid, C.wh, status, C.dt.physInv, TODAY + ' 00:00:00', tw.client, C.org, TODAY + ' 00:00:00');
       for (const l of lines) tw.db.prepare('INSERT INTO m_inventoryline(m_inventoryline_id,m_inventory_id,m_locator_id,m_product_id,qtybook,qtycount,isactive) VALUES(?,?,?,?,?,?,?)').run(l.m_inventoryline_id, iid, l.m_locator_id, l.m_product_id, l.qtybook, l.qtycount, 'Y');
-      const fold = sc => { const d = DP.derivePostings(tw.db, { table: 'M_Inventory', id: iid }, sc); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? x.fmtPostings(d.lines) : 'none'); };
+      const fold = sc => { const d = DP.derivePostings(tw.db, { table: 'M_Inventory', id: iid }, sc); return d.absent && d.absent.length ? (d.absent.every(a => /^\{Product\.NoCosts\}/.test(a)) ? 'REFUSED:Posted=E' : 'ABSENT:' + d.absent.join(',')) : (d.lines.length ? x.fmtPostings(d.lines) : 'none'); };   // {Product.NoCosts} = Doc_Inventory.createFacts:332 "No Costs for" => Posted=E
       const res = { outcome: 'COMPLETED', docstatus: status, lines: lines.map(l => `${l.m_product_id}:${l.qtybook}:${l.qtycount}`).sort().join('|'), stock_delta: JSON.stringify(stock), postings: fold(x.SCHEMA), postings_euro: fold(x.SCHEMA2) };
       if (typeof DP.costQtyUpdatesFor === 'function') for (const u of DP.costQtyUpdatesFor(tw.db, 'M_Inventory', iid)) DP.applyCostUpdate(tw.db, u, TODAY);
       res.cost_qty_delta = deltaStr(Object.keys(cq0), cq0, p => x.localCostQty(+p)); return res;
     };
-    await rrun('SD-06', [{ id: 'SD06-opening-stock', facts: { id: 'SD06', lines: [{ product: C.prod.mulch, loc: C.locator, book: 0, count: 20 }, { product: C.prod.rake, loc: C.locator, book: 0, count: 20 }] }, legacy, local }],
+    await rrun(stepId, [{ id: scenId, facts: { id: stepId, lines: mkLines(C) }, legacy, local }],
       { keys: ['outcome', 'docstatus', 'lines', 'stock_delta', 'postings', 'postings_euro', 'cost_qty_delta'], notCompared: {} });
-  });
+  };
+  await run('SD-06', () => runPI('SD-06', 'SD06-opening-stock', C => [{ product: C.prod.mulch, loc: C.locator, book: 0, count: 20 }, { product: C.prod.rake, loc: C.locator, book: 0, count: 20 }], 3000010));
+  // SD-06z (§SHOPDAY-RUN-2 R2.1): opening stock of a stocked product that has NO cost => legacy Doc_Inventory.createFacts:300-335 "No Costs", Posted=E, no cost detail (cost qty unchanged)
+  await run('SD-06z', () => runPI('SD-06z', 'SD06z-opening-stock-no-cost', C => [{ product: C.prod.nocost, loc: C.locator, book: 0, count: 5 }], 3000020));
   // --- P2P: SD-07 PO, SD-08 receipt, SD-09 vendor invoice, SD-10 AP payment ---
   await run('SD-07', async () => {
     const x = docEnv(); x.product = x.C.prod.rake; x.qty = 10; x.price = 30; x.idBase = 91000;
@@ -249,12 +263,25 @@ async function main() {
     const names = { PO: 'SD-07', RCPT: 'SD-08', INV: 'SD-09', PAY: 'SD-10' };
     for (const [i, st] of P2P.STEPS.entries()) await rrun(names[st], [P2P.scenario(st, i)], { keys: P2P.KEYS[st], notCompared: {} });
   });
+  // --- SD-12z (§SHOPDAY-RUN-2 R2.4, G-SD6): the first order of the fresh client WITHOUT an explicit price list. MSetup's only sales list ('Standard') has IsSOPriceList='N', so
+  // MOrder.beforeSave:1282-1291 finds no SO price list, DB.getSQLValueEx returns -1, setM_PriceList_ID(-1) NPEs (MOrder.java:910-911) => the save is refused. SQLite must refuse too. ---
+  await run('SD-12z', async () => {
+    const x = docEnv(); x.idBase = 94000; x.soPriceList = undefined;
+    const O2C = require('./cycle_o2c')(x);
+    const rows = await R.run([{ ...O2C.scenario('SO', 0), id: 'O2C-NOPL-SO' }], { keys: ['outcome'], notCompared: {} }, [], { log });
+    const r = rows[0] || {}, lg = r.legacy || {}, sq = r.sqlite || r.local || {};
+    log(`§SHOPDAY_OUTCOME SD-12z legacy=${JSON.stringify(lg).slice(0, 260)} sqlite=${JSON.stringify(sq).slice(0, 260)}`);
+    const vacuous = lg.outcome !== 'REJECTED' && sq.outcome !== 'REJECTED';   // both completing would prove nothing about the refusal
+    const reasonOk = sq.outcome !== 'REJECTED' || /price ?list/i.test(sq.reason || '');   // clearer message allowed; a refusal for an unrelated reason is not this rule
+    const v = r.verdict === 'MATCH' && lg.outcome === 'REJECTED' && reasonOk ? 'MATCH' : vacuous ? 'INCONCLUSIVE' : 'DIFF';
+    log(`§SHOPDAY_STEP SD-12z ${v} legacy=${lg.outcome} sqlite=${sq.outcome} reason_is_pricelist=${reasonOk}`); out.steps.push({ id: 'SD-12z', verdict: v });
+  });
   // --- O2C: SD-12 credit sale on account (order -> shipment -> invoice), SD-14 receipt, SD-15 reversals (invoice, shipment) ---
   await run('SD-12', async () => {
-    const x = docEnv(); x.idBase = 95000; x.soPriceList = x.C.pl.sales;   // legacy NPEs on a new client's first order without an explicit price list (G-SD6; ws_shopday_orderpl.sql allows the column)
+    const x = docEnv(); x.idBase = 95000; x.soPriceList = process.env.SHOPDAY_NO_SO_PL ? undefined : x.C.pl.sales;   // legacy NPEs on a new client's first order without an explicit price list (G-SD6; ws_shopday_orderpl.sql allows the column)
     const O2C = require('./cycle_o2c')(x);
     const grp = { SO: 'SD-12', SHIP: 'SD-12', INV: 'SD-12', PAY: 'SD-14', 'RC-INV': 'SD-15', 'RC-SHIP': 'SD-15' }, acc = {};
-    for (const [i, st] of O2C.STEPS.entries()) { const rows = await R.run([O2C.scenario(st, i)], { keys: O2C.KEYS[st], notCompared: {} }, [], { log }); for (const r of rows) if (r.verdict !== 'MATCH' && r.legacy && r.legacy.outcome !== 'COMPLETED') log(`§SHOPDAY_LEGACY_RESULT ${r.id} ${JSON.stringify(r.legacy).slice(0, 400)}`); (acc[grp[st]] = acc[grp[st]] || []).push(...rows); }
+    for (const [i, st] of O2C.STEPS.entries()) { const rows = await R.run([O2C.scenario(st, i)], { keys: O2C.KEYS[st], notCompared: {} }, [], { log }); for (const r of rows) if (process.env.SHOPDAY_VERBOSE) log(`§SHOPDAY_OUTCOME ${r.id} legacy=${JSON.stringify(r.legacy).slice(0, 300)} sqlite=${JSON.stringify(r.sqlite || r.local).slice(0, 300)}`); for (const r of rows) if (r.verdict !== 'MATCH' && r.legacy && r.legacy.outcome !== 'COMPLETED') log(`§SHOPDAY_LEGACY_RESULT ${r.id} ${JSON.stringify(r.legacy).slice(0, 400)}`); (acc[grp[st]] = acc[grp[st]] || []).push(...rows); }
     out.o2cRows = Object.values(acc).flat();
     for (const [id, rows] of Object.entries(acc)) { const bad = rows.filter(r => r.verdict !== 'MATCH'); const v = bad.length ? (bad.some(r => r.verdict === 'ERROR') ? 'BLOCKED' : 'DIFF') : 'MATCH';
       log(`§SHOPDAY_STEP ${id} ${v} scenarios=${rows.length} match=${rows.length - bad.length} gaps=${bad.map(r => r.id + ':' + r.verdict).join(',') || '-'}`); out.steps.push({ id, verdict: v }); }
@@ -276,7 +303,7 @@ async function main() {
     'SD-21': 'back-dated sale (F9) not re-hosted', 'SD-22': 'period close verb exists legacy-side only (G-SD1 harness verb) -- scenario not written', 'SD-23': 'post-close refusals (F7) not re-hosted', 'SD-24': 'trial balance: the twin does not persist fact_acct (no posting host)' };
   const PLAN = ['SD-00', 'SD-01', 'SD-02', 'SD-03', 'SD-04', 'SD-05', 'SD-06', 'SD-07', 'SD-08', 'SD-09', 'SD-10', 'SD-11', 'SD-12', 'SD-13', 'SD-14', 'SD-15', 'SD-16', 'SD-17', 'SD-18', 'SD-19', 'SD-20', 'SD-21', 'SD-22', 'SD-23', 'SD-24'];
   const worst = ids2 => { const vs = out.steps.filter(s => ids2.includes(s.id)).map(s => s.verdict); return !vs.length ? 'NOT_RUN' : vs.includes('BLOCKED') ? 'BLOCKED' : vs.includes('DIFF') ? 'DIFF' : vs.includes('INCONCLUSIVE') ? 'INCONCLUSIVE' : 'MATCH'; };
-  const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
+  const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b', 'SD-04c'], 'SD-06': ['SD-06', 'SD-06z'], 'SD-12': ['SD-12', 'SD-12z'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
   const cnt = v => PLAN.filter(id => per[id] === v).length;
   log(`§SHOPDAY_COVERAGE steps_match=${cnt('MATCH')} of ${PLAN.length} diff=${cnt('DIFF')} blocked=${cnt('BLOCKED')} inconclusive=${cnt('INCONCLUSIVE')} not_run=${cnt('NOT_RUN')} :: ${PLAN.map(id => id + '=' + per[id]).join(' ')}`);
   for (const id of PLAN) if (per[id] === 'NOT_RUN' && NOT_RUN_WHY[id]) log(`§SHOPDAY_NOT_RUN ${id} ${NOT_RUN_WHY[id]}`);
