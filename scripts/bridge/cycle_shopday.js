@@ -315,6 +315,7 @@ async function main() {
   await run('SD-24', MORE.sd24);
   // --- NEGATIVE CONTROL (the m3 pattern): a SECOND order chain whose SQLite invoice price is +1 cent must differ from the control chain (SD-12) at the invoice step in price-bearing keys
   // (lines, totals, tax, books, open item) (extra keys the control chain lacks). Control = the SD-12 chain. ---
+  await run('SD-NEGPOS', MORE.sd11neg);
   await run('SD-NEG', async () => {
     if (!out.o2cRows) throw new Error('no control chain (SD-12 did not run)');
     const x = { ...docEnv(), idBase: 98000, mut: 1, log: () => {} }; const N = require('./cycle_o2c')(x), ctl = id => (out.o2cRows.find(r => r.id === id) || { gaps: [] }).gaps.map(g => g.key);
@@ -325,9 +326,7 @@ async function main() {
     out.neg = priced.length > 0;   // extras BEFORE the invoice are state drift of a second chain on the same stock (listed, not required to be empty)
     log(`§SHOPDAY_NEG ${out.neg ? 'PASS' : 'FAIL'} SQLite invoice +1 cent: extra gap keys at INV=[${extra('INV').join(',')}] (price-bearing: [${priced.join(',')}]); extra before INV=[${before.join(',')}]`);
   });
-  const NOT_RUN_WHY = { 'SD-11': 'POS cash sale: the m3 POS scenario (legacyRun/localRun, c_pos terminal) is not re-hosted on the twin yet', 'SD-13': 'credit refusal (S13) not re-hosted; SD-CUST2 carries SO_CreditLimit=500 for it', 'SD-16': 'M_RMA not covered (COVERAGE_NOT_COVERED)',
-    'SD-17': 'void (S12) not re-hosted', 'SD-18': 'count: the PI scenario runs as SD-06; a second count (loss+gain) not re-hosted', 'SD-19': 'cash journal (CASH1/D7) not re-hosted', 'SD-20': 'bank statement (BS1) not re-hosted',
-    'SD-21': 'back-dated sale (F9) not re-hosted', 'SD-22': 'period close verb exists legacy-side only (G-SD1 harness verb) -- scenario not written', 'SD-23': 'post-close refusals (F7) not re-hosted', 'SD-24': 'trial balance: the twin does not persist fact_acct (no posting host)' };
+  const NOT_RUN_WHY = { 'SD-16': 'M_RMA is not covered (COVERAGE_NOT_COVERED): no WS type, descriptor or SQLite verb for a customer return / RMA document -- blocked, not trivial' };
   const PLAN = ['SD-00', 'SD-01', 'SD-02', 'SD-03', 'SD-04', 'SD-05', 'SD-06', 'SD-07', 'SD-08', 'SD-09', 'SD-10', 'SD-11', 'SD-12', 'SD-13', 'SD-14', 'SD-15', 'SD-16', 'SD-17', 'SD-18', 'SD-19', 'SD-20', 'SD-21', 'SD-22', 'SD-23', 'SD-24'];
   const worst = ids2 => { const vs = out.steps.filter(s => ids2.includes(s.id)).map(s => s.verdict); return !vs.length ? 'NOT_RUN' : vs.includes('BLOCKED') ? 'BLOCKED' : vs.includes('DIFF') ? 'DIFF' : vs.includes('INCONCLUSIVE') ? 'INCONCLUSIVE' : 'MATCH'; };
   const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b', 'SD-04c'], 'SD-06': ['SD-06', 'SD-06z'], 'SD-12': ['SD-12', 'SD-12z'], 'SD-13': ['SD-13a', 'SD-13'], 'SD-22': ['SD-22a', 'SD-22'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
@@ -335,7 +334,7 @@ async function main() {
   log(`§SHOPDAY_COVERAGE steps_match=${cnt('MATCH')} of ${PLAN.length} diff=${cnt('DIFF')} blocked=${cnt('BLOCKED')} inconclusive=${cnt('INCONCLUSIVE')} not_run=${cnt('NOT_RUN')} :: ${PLAN.map(id => id + '=' + per[id]).join(' ')}`);
   for (const id of PLAN) if (per[id] === 'NOT_RUN' && NOT_RUN_WHY[id]) log(`§SHOPDAY_NOT_RUN ${id} ${NOT_RUN_WHY[id]}`);
   const judged = PLAN.length - cnt('NOT_RUN');
-  log(`§SHOPDAY_VERDICT ${out.neg === false ? 'HARNESS-FAIL' : judged === 0 ? 'INCONCLUSIVE' : (cnt('DIFF') || cnt('BLOCKED') || cnt('INCONCLUSIVE')) ? 'DIFF' : (cnt('NOT_RUN') ? 'PARTIAL' : 'PASS')} judged=${judged} of ${PLAN.length} negative_control=${out.neg === true ? 'PASS' : out.neg === false ? 'FAIL' : 'NOT_RUN'}`);
+  log(`§SHOPDAY_VERDICT ${(out.neg === false || out.posNeg === false || out.tbNeg === false) ? 'HARNESS-FAIL' : judged === 0 ? 'INCONCLUSIVE' : (cnt('DIFF') || cnt('BLOCKED') || cnt('INCONCLUSIVE')) ? 'DIFF' : (cnt('NOT_RUN') ? 'PARTIAL' : 'PASS')} judged=${judged} of ${PLAN.length} negative_control=${out.neg === true ? 'PASS' : out.neg === false ? 'FAIL' : 'NOT_RUN'} neg_pos=${out.posNeg === true ? 'PASS' : out.posNeg === false ? 'FAIL' : 'NOT_RUN'} neg_tb=${out.tbNeg === true ? 'PASS' : out.tbNeg === false ? 'FAIL' : 'NOT_RUN'}`);
   log(`§SHOPDAY_SUMMARY ` + out.steps.map(s => `${s.id}=${s.verdict}`).join(' ') + (tw.unsupported.size ? `\n§SHOPDAY_UNSUPPORTED_DEFAULTS ${[...tw.unsupported].join(' ; ')}` : ''));
   return 0;
 }

@@ -468,8 +468,23 @@ module.exports = function makeSteps(env) {
         sr = x.gb.prepare('SELECT SUM(amtacctdr) d FROM fact_acct WHERE c_acctschema_id=? AND ad_table_id=? GROUP BY record_id').all(sch, +t).map(r => r.d).sort((a, b) => a - b);
       if (JSON.stringify(lr) !== JSON.stringify(sr)) log(`§SHOPDAY_TB_DOCDIFF ad_table_id=${t} legacy_docs_Dr=[${lr.join(',')}] sqlite_docs_Dr=[${sr.join(',')}]`); }
     log(`§SHOPDAY_TB legacy: accounts=${L.size} rows=${tl.n} Dr=${tl.dr} Cr=${tl.cr} balanced=${tl.dr === tl.cr} | sqlite: accounts=${S.size} rows=${ts.n} Dr=${ts.dr} Cr=${ts.cr} balanced=${ts.dr === ts.cr} | accounts_differing=${diff}`);
+    // negative control: +1 cent on one SQLite fact row must surface as a differing account (a trial balance that cannot fail proves nothing), then it is reverted
+    const probe = x.gb.prepare('SELECT rowid r, amtacctdr d FROM fact_acct WHERE c_acctschema_id=? AND amtacctdr>0 ORDER BY rowid LIMIT 1').get(sch);
+    if (probe) { x.gb.prepare('UPDATE fact_acct SET amtacctdr=amtacctdr+0.01 WHERE rowid=?').run(probe.r);
+      const s2 = x.gb.prepare('SELECT e.value v, SUM(f.amtacctdr) dr, SUM(f.amtacctcr) cr FROM fact_acct f JOIN c_elementvalue e ON e.c_elementvalue_id=f.account_id WHERE f.c_acctschema_id=? GROUP BY e.value').all(sch);
+      const nd = s2.filter(r => { const a = L.get(r.v) || { dr: 0, cr: 0 }; return Math.round(r.dr * 100) !== a.dr || Math.round(r.cr * 100) !== a.cr; }).length;
+      x.gb.prepare('UPDATE fact_acct SET amtacctdr=? WHERE rowid=?').run(probe.d, probe.r); env.out.tbNeg = diff === 0 ? nd > 0 : null;
+      log(`§SHOPDAY_TB_NEG ${diff !== 0 ? 'NOT_JUDGED (real diff present)' : nd > 0 ? 'PASS' : 'FAIL'} +1 cent on one SQLite fact row => differing accounts=${nd}`); }
     const v = (L.size === 0 && S.size === 0) ? 'INCONCLUSIVE' : (diff === 0 && tl.dr === tl.cr && ts.dr === ts.cr) ? 'MATCH' : 'DIFF';
     log(`§SHOPDAY_STEP SD-24 ${v} accounts=${keys.length} differing=${diff} legacy_fact_rows=${tl.n} sqlite_fact_rows=${ts.n}${(REC.folds === 0) ? ' VACUOUS(no folds recorded)' : ''}`); out.steps.push({ id: 'SD-24', verdict: REC.folds === 0 ? 'INCONCLUSIVE' : v });
+  };
+
+  // negative control for the POS family (SD-11/SD-17 use the same fold): a SQLite sale whose invoice is +1 cent must differ from legacy's on price-bearing keys
+  steps.sd11neg = async () => {
+    const C = posEnv().C, lines = [{ product: C.prod.mulch, qty: 1 }];
+    const rows = await R.run([{ id: 'NEG-sd11-pos-sale', facts: { lines }, legacy: legacySale, local: f => localSale(f, 1) }], { keys: POSKEYS, notCompared: {} }, [], { log: () => {} });
+    const r = rows[0] || {}, keys = (r.gaps || []).map(g => g.key), priced = keys.filter(k => /total_cents|grand_total_cents|postings/.test(k));
+    env.out.posNeg = r.verdict === 'SQLITE-GAP' && priced.length > 0; log(`§SHOPDAY_NEG_POS ${env.out.posNeg ? 'PASS' : 'FAIL'} SQLite POS invoice +1 cent => ${r.verdict} price-bearing gap keys=[${priced.join(',')}]`);
   };
   return steps;
 };
