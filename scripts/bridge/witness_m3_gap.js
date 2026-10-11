@@ -643,6 +643,9 @@ const CASH_DESC = {
     docAction: { serviceType: 'BridgeCompleteCash', table: 'C_Cash', action: 'CO' } } };
 // §68 (F32) the window shape: the cash journal is SAVED (committed) first, completed by a separate doc-action call — same descriptor without the doc-action
 CASH_DESC.cashSaved = Object.fromEntries(Object.entries(CASH_DESC.cash).filter(([k]) => k !== 'docAction'));
+// §D7: 'cash' (what the Bridge pushes) = save, then complete in a second call (window shape); 'cashComposite' = the old one-transaction shape, kept as the F32 control
+CASH_DESC.cashComposite = JSON.parse(JSON.stringify(CASH_DESC.cash));
+if (process.env.D7_OPTION !== 'off') CASH_DESC.cash.docAction.separateCall = true;
 const cashSpec = { keys: ['outcome', 'cash_status', 'statement_diff', 'allocation', 'ispaid', 'books_cash', 'books_cash_euro', 'books_alloc', 'books_alloc_euro', 'bp_delta'], notCompared: {} };
 let cashLink = null;
 const bpOf = async () => { const b = (await query(cfg, 'QueryCBPartner', `C_BPartner_ID=${BP}`))[0]; return { open: cents(b.TotalOpenBalance), credit: cents(b.SO_CreditUsed) }; };
@@ -652,7 +655,7 @@ async function legacyCash(f) {
   const iu = cashLink.submit(f.draft ? 'invDraft' : 'inv', { org: 11, bp: BP, loc: LOC[BP], date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines.map(l => ({ ...l, org: 11 })) });
   await cashLink.drain(); const ist = cashLink.store.get(iu); if (ist.state !== 'CONFIRMED') return { outcome: 'ERROR', error: 'invoice: ' + ist.error };
   const invId = cashLink.store.idmap(iu).find(x => x.tbl === 'C_Invoice').server_id, inv = (await query(cfg, 'QueryCInvoice', `C_Invoice_ID=${invId}`))[0];
-  const cu = cashLink.submit(f.split ? 'cashSaved' : 'cash', { name: 'M3 ' + f.id + ' ' + Date.now().toString(36), date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: [{ inv: invId, amt: Number(inv.GrandTotal) }] });
+  const cu = cashLink.submit(f.split ? 'cashSaved' : f.composite ? 'cashComposite' : 'cash', { name: 'M3 ' + f.id + ' ' + Date.now().toString(36), date: TODAY + ' 00:00:00', note: 'M3 ' + f.id, lines: [{ inv: invId, amt: Number(inv.GrandTotal) }] });
   await cashLink.drain(); const cst = cashLink.store.get(cu);
   if (cst.state !== 'CONFIRMED' && /not allowed|No permission|Unknown web service/i.test(cst.error || '')) throw new Error('§WS_CONFIG ' + cst.error);
   if (cst.state !== 'CONFIRMED') return { outcome: 'REJECTED', reason: (cst.error || '').slice(0, 120) };
@@ -702,7 +705,7 @@ async function localCash1(mut, f) {
     if (ah) { gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id, TODAY + ' 00:00:00', 'CO', 11, 11);
       for (const l of al) gb.prepare('INSERT INTO c_allocationline(c_allocationline_id,c_allocationhdr_id,c_payment_id,c_cashline_id,c_invoice_id,c_bpartner_id,amount,writeoffamt,discountamt) VALUES(?,?,?,?,?,?,?,?,?)').run(l.c_allocationline_id, ah.c_allocationhdr_id, null, l.c_cashline_id, l.c_invoice_id, l.c_bpartner_id, l.amount, 0, 0); }
     // §68 (F32): the transaction shape is part of the operation — composite create+complete (CASH1) vs saved first, completed later (CASH1b, f.split)
-    const fold = (t, id, sc2) => { if (!id) return 'none'; const d = DP.derivePostings(gb, { table: t, id, cashJournalSameTrx: !f.split }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
+    const fold = (t, id, sc2) => { if (!id) return 'none'; const d = DP.derivePostings(gb, { table: t, id, cashJournalSameTrx: !!f.composite }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
     return { outcome: 'COMPLETED', cash_status: 'CO', statement_diff: cents(c.statementDifference), allocation: al.map(l => `CO:${cents(l.amount)}:cash`).join('|') || 'none', ispaid: paid,
       books_cash: fold('C_Cash', cid, SCHEMA), books_cash_euro: fold('C_Cash', cid, SCHEMA2), books_alloc: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA), books_alloc_euro: fold('C_AllocationHdr', ah && ah.c_allocationhdr_id, SCHEMA2),
       bp_delta: `${b1.open - b0.open}/${b1.credit - b0.credit}` };
@@ -994,13 +997,14 @@ const quirks = [
     out('§M3_REQ_NEGATIVE_CONTROL', rneg[0].verdict === 'SQLITE-GAP' && ['lines', 'total_cents'].every(k => rneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite requisition price ⇒ verdict=${rneg[0].verdict} gaps=${rneg[0].gaps.map(g => g.key).join(',')}`); }
   // MODEL Cash Journal (spec §66)
   rows.push(...await R.run(keepOnly([{ id: 'CASH1-cash-journal-settles-invoice', facts: { id: 'CASH1', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) },
+    { id: 'CASH1c-cash-journal-composite-control', facts: { id: 'CASH1c', composite: true, lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) },
     { id: 'CASH1b-cash-journal-saved-then-completed', facts: { id: 'CASH1b', split: true, lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) },
     { id: 'CASH-REJ-invoice-not-completed', facts: { id: 'CASHR', draft: true, lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0) }]), cashSpec, quirks, { log }));
   if (!only) { const cneg = await R.run([{ id: 'NEG-cash-control', facts: { id: 'CASHN', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(1) }], cashSpec, quirks, { log });
     out('§M3_CASH_NEGATIVE_CONTROL', cneg[0].verdict === 'SQLITE-GAP' && ['statement_diff', 'ispaid'].every(k => cneg[0].gaps.some(g => g.key === k)), `+1¢ on the SQLite cash line ⇒ verdict=${cneg[0].verdict} gaps=${cneg[0].gaps.map(g => g.key).join(',')}`);
     // §68 (F32) mode control: the SQLite side read with CLIENT_ACCOUNTING flipped to Q (legacy stays I) MUST differ on the allocation books — proves the mirrored setting governs the rule
     const mode = (gb.prepare("SELECT value v FROM ad_sysconfig WHERE name='CLIENT_ACCOUNTING'").get() || {}).v;
-    const cmode = await R.run([{ id: 'NEG-cash-mode-control', facts: { id: 'CASHM', lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0, 'Q') }], cashSpec, quirks, { log });
+    const cmode = await R.run([{ id: 'NEG-cash-mode-control', facts: { id: 'CASHM', composite: true, lines: [{ product: 137, qty: 1 }] }, legacy: legacyCash, local: localCash(0, 'Q') }], cashSpec, quirks, { log });
     out('§M3_CASH_MODE_CONTROL', mode === 'I' && cmode[0].verdict === 'SQLITE-GAP' && ['books_alloc', 'books_alloc_euro'].every(k => cmode[0].gaps.some(g => g.key === k)) && cmode[0].gaps.length === 2,
       `synced CLIENT_ACCOUNTING=${mode}; SQLite read as Q on the CASH1 shape ⇒ verdict=${cmode[0].verdict} gaps=${cmode[0].gaps.map(g => g.key).join(',')} (must be exactly the 2 allocation-book keys)`); }
   // MODEL GL Journal (spec §69)

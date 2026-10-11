@@ -3,7 +3,8 @@
 //   { composite:'<registered composite WS type>',
 //     header:{ serviceType, table, fields:{COL:{const:v}|{path:'a.b'}} },
 //     lines:{ serviceType, table, parent:'<ParentColumn>', from:'<payload array path>', lineNo:{col:'Line',step:10}, fields:{...} },
-//     docAction:{ serviceType, table, action:'CO' },             // optional (create-only masters); may target a CHILD table (spec §60)
+//     docAction:{ serviceType, table, action:'CO', separateCall:true },   // optional (create-only masters); may target a CHILD table (spec §60)
+//                                    // separateCall (spec §D7): save in call 1, run the doc-action as its own transaction in call 2 (pusher)
 //     expect:{ table, serviceType, cols:{COL:{const:v}|{path}} }   // read-back check (optional)
 //   }
 'use strict';
@@ -18,6 +19,7 @@ const F = o => ({ field: Object.entries(o).map(([k, v]) => ({ '@column': k, val:
 function validate(d) {
   for (const k of ['composite', 'header']) if (!d[k]) throw new Error(`§DW descriptor missing '${k}'`);   // docAction optional: create-only descriptors (masters) — spec §60
   if (d.docAction && !(d.docAction.serviceType && d.docAction.table && d.docAction.action)) throw new Error('§DW docAction needs serviceType,table,action');
+  if (d.docAction && d.docAction.separateCall && d.docAction.table !== d.header.table) throw new Error('§DW separateCall needs docAction.table == header.table');
   if (d.lines && !(d.lines.parent && d.lines.from && d.lines.serviceType)) throw new Error('§DW lines needs serviceType,parent,from');
   return d;
 }
@@ -39,8 +41,8 @@ function build(d, payload) {
     }
   }
   const a = d.docAction;
-  if (a) ops.push({ TargetPort: 'setDocAction', ModelSetDocAction: { serviceType: a.serviceType, tableName: a.table,
+  if (a && !a.separateCall) ops.push({ TargetPort: 'setDocAction', ModelSetDocAction: { serviceType: a.serviceType, tableName: a.table,
     recordIDVariable: `@${a.table}.${a.table}_ID`, docAction: a.action } });   // the doc-action's OWN table (== header table for every document descriptor) — spec §60
-  return { serviceType: d.composite, operations: ops, nLines: n };
+  return { serviceType: d.composite, operations: ops, nLines: n, followUp: a && a.separateCall ? { serviceType: a.serviceType, table: a.table, action: a.action } : null };
 }
 module.exports = { build, validate };

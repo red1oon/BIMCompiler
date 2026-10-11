@@ -50,6 +50,15 @@ async function composite(cfg, serviceType, operations) {
   return { ok: !bad, rolledBack: r.some(x => x['@IsRolledBack']), error: bad && bad.Error, ids: r.map(x => x['@RecordID']).filter(x => x != null), raw: r };
 }
 
+// Stock set_docaction as its own server transaction, classified like composite (NOT_SENT | AMBIGUOUS | AUTH | FAULT); spec §D7. ok=false carries the server's text.
+async function docAction(cfg, serviceType, tableName, recordID, action) {
+  const j = await post(cfg, PATH + 'set_docaction', { ModelSetDocActionRequest: { ModelSetDocAction: { serviceType, tableName, recordID, docAction: action }, ADLoginRequest: cfg.login } });
+  if (j.status === '500' || j.message) throw bridgeError('FAULT', `§AD_FAULT set_docaction: ${j.message}`);
+  const sr = j.StandardResponse || {};
+  if (sr['@IsError'] && /Error log(ging )?in/i.test(sr.Error || '')) throw bridgeError('AUTH', `§AD_AUTH ${sr.Error}`);
+  return { ok: !sr['@IsError'], error: sr['@IsError'] ? sr.Error : null, raw: sr };
+}
+
 async function call(cfg, method, body) {
   const key = method === 'set_docaction' ? 'ModelSetDocActionRequest' : 'ModelCRUDRequest';
   const payload = { [key]: { ...body, ADLoginRequest: cfg.login } };
@@ -88,4 +97,4 @@ async function query(cfg, serviceType, filter) {
   return r;
 }
 
-module.exports = { cfgFromEnv, call, rows, query, composite, bridgeError };
+module.exports = { cfgFromEnv, call, rows, query, composite, docAction, bridgeError };
