@@ -3,7 +3,7 @@
 'use strict';
 module.exports = function makeP2P(X) {
   const { cfg, query, createLink, gb, seed, E, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, locStock, taxRows, taxById, taxChildren, log } = X;
-  const VBP = 120, VLOC = 114, WH = 103, LOCATOR = 101, PRODUCT = 139, QTY = 2, PRICE = 8, PODT = 126, PL = 102, ORG = 11, AVG = 103;
+  const VBP = 120, VLOC = 114, WH = 103, LOCATOR = 101, PRODUCT = X.product || 139, QTY = X.qty || 2, PRICE = X.price || 8, PODT = 126, PL = 102, ORG = 11, AVG = 103;
   const DESC = {
     po: { composite: 'SyncOrder', header: { serviceType: 'Pilot_createData_C_Order', table: 'C_Order', fields: { AD_Org_ID: { const: ORG }, IsSOTrx: { const: 'N' }, C_DocTypeTarget_ID: { const: PODT }, M_Warehouse_ID: { const: WH }, C_BPartner_ID: { const: VBP }, C_BPartner_Location_ID: { const: VLOC }, Bill_BPartner_ID: { const: VBP }, Bill_Location_ID: { const: VLOC }, M_PriceList_ID: { const: PL }, DateOrdered: { path: 'date' }, DateAcct: { path: 'date' }, DatePromised: { path: 'date' } } },
       lines: { serviceType: 'Pilot_createData_C_OrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: ORG }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' }, PriceEntered: { path: 'price' }, PriceActual: { path: 'price' } } },

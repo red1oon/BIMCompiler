@@ -989,6 +989,22 @@ const quirks = [
     const nr = []; for (const [i, st] of ['SO', 'SHIP', 'INV'].entries()) nr.push(...await R.run([{ ...NEG.scenario(st, i), id: 'NEG-o2c-' + st }], { keys: NEG.KEYS[st], notCompared: {} }, quirks, { log }));
     o2cNeg = nr;
   }
+  // F9 BACK-DATE COSTING (spec §78): CLEAN product 141 (Weeder, costed 30, no harness history). Receipt TODAY, then sales dated BEFORE it. Run alone: M3_ONLY=F9
+  if (only && only.startsWith('F9')) {
+    const F9P = 141, ctxF = { cfg, query, createLink, gb, seed, E, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, locStock, taxRows, taxById, taxChildren, log, product: F9P, qty: 2, price: 8, idBase: 94000 };
+    const P2F = require('./cycle_p2p')(ctxF);
+    for (const [i, st] of ['PO', 'RCPT'].entries()) rows.push(...await R.run([{ ...P2F.scenario(st, i), id: 'F9-' + st }], { keys: P2F.KEYS[st], notCompared: {} }, quirks, { log }));
+    const costFmtF = rs => rs.map(c => `${c.c_acctschema_id}:${Number(c.currentcostprice)}@${Number(c.currentqty)}/${Number(c.cumulatedamt)}`).sort().join('|') || 'none';
+    const costStateL = async () => costFmtF((await query(cfg, 'QueryMCost', `M_Product_ID=${F9P} AND C_AcctSchema_ID IN (${SCHEMA},${SCHEMA2}) AND AD_Org_ID=0 AND M_AttributeSetInstance_ID=0 AND M_CostElement_ID=${AVG_EL}`)).map(lc));
+    const costStateS = () => costFmtF(gb.prepare('SELECT c_acctschema_id, currentcostprice, currentqty, cumulatedamt FROM m_cost WHERE m_product_id=? AND m_costelement_id=? AND c_acctschema_id IN (?,?)').all(F9P, AVG_EL, SCHEMA, SCHEMA2));
+    const rcptL = async () => P2F.L.rcpt ? await legacyFactsOf(319, P2F.L.rcpt, SCHEMA) : 'none';
+    const f9Spec = { keys: [...spec.keys, 'cost_state', 'books_receipt_after'], notCompared: {} };
+    const f9sale = (id, date, qty) => ({ id, facts: { doctype: POSDT, date, lines: [{ product: F9P, qty }] },
+      legacy: async f => { const r = await legacyRun(f); if (r.outcome === 'COMPLETED') { r.cost_state = await costStateL(); r.books_receipt_after = await rcptL(); } return r; },
+      local: async f => { const r = await localRun(0)(f); if (r.outcome === 'COMPLETED') { r.cost_state = costStateS(); r.books_receipt_after = P2F.S.rcpt ? (fmtPostings(DP.derivePostings(gb, { table: 'M_InOut', id: P2F.S.rcpt }, SCHEMA).lines)) : 'none'; } return r; } });
+    rows.push(...await R.run([f9sale('F9a-sale-backdated-before-receipt', '2026-09-15', 1)], f9Spec, quirks, { log }));
+    log(`§F9_STATE legacy_cost=${await costStateL()} sqlite_cost=${costStateS()}`);
+  }
   // FULL CYCLE Purchase-to-Pay (spec §65)
   let p2pNeg = null;
   if (!only || only.startsWith('P2P')) {
