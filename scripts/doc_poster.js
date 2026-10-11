@@ -234,9 +234,12 @@ function _dayOf(d) { return String(d).slice(0, 10); }
 function costHistoryAt(db, productId, schema, costType, element, dateAcct) {
   if (!dateAcct || !_hasCol(db, 'm_costhistory', 'm_costhistory_id')) return null;
   var k = [num(productId), num(schema), num(costType), num(element)], day = _dayOf(dateAcct);
-  var h = getRow(db, 'SELECT * FROM m_costhistory WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=? AND COALESCE(m_attributesetinstance_id,0)=0 AND substr(dateacct,1,10)<=? ORDER BY m_costhistory_id DESC LIMIT 1', k.concat([day]));
+  // F9.4: the shipped ad_seed m_costhistory (model layer, erp/model_cost.js) has no c_acctschema_id column — the schema is that of its cost detail (MCostHistory.get "of the detail", spec §78 rule 3).
+  var T = 'm_costhistory';
+  if (!_hasCol(db, 'm_costhistory', 'c_acctschema_id')) { if (!_hasCol(db, 'm_costdetail', 'c_acctschema_id')) return null; T = '(SELECT x.*, d.c_acctschema_id AS c_acctschema_id FROM m_costhistory x JOIN m_costdetail d ON d.m_costdetail_id=x.m_costdetail_id)'; }
+  var h = getRow(db, 'SELECT * FROM ' + T + ' WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=? AND COALESCE(m_attributesetinstance_id,0)=0 AND substr(dateacct,1,10)<=? ORDER BY m_costhistory_id DESC LIMIT 1', k.concat([day]));
   if (!h) {
-    h = getRow(db, 'SELECT * FROM m_costhistory WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=? AND COALESCE(m_attributesetinstance_id,0)=0 ORDER BY substr(dateacct,1,10) ASC, m_costhistory_id ASC LIMIT 1', k);
+    h = getRow(db, 'SELECT * FROM ' + T + ' WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=? AND COALESCE(m_attributesetinstance_id,0)=0 ORDER BY substr(dateacct,1,10) ASC, m_costhistory_id ASC LIMIT 1', k);
     if (!h) return null;
     h.newqty = h.oldqty; h.newcostprice = h.oldcostprice; h.newcamt = h.oldcamt; h.newcqty = h.oldcqty;   // "simulate": the first record after the date, before its own effect
   }
@@ -265,7 +268,7 @@ function applyCostUpdate(db, u, dateAcct) {
     .run([w.currentqty, w.currentcostprice].concat(hasCostCols ? [w.cumulatedqty, w.cumulatedamt] : [], key));
   else db.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+?, currentcostprice=COALESCE(?, currentcostprice) WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run([u.delta, u.currentcostprice == null ? null : u.currentcostprice].concat(key));
   var h = u.history;
-  if (h && dateAcct && _hasCol(db, 'm_costhistory', 'm_costhistory_id')) {
+  if (h && dateAcct && _hasCol(db, 'm_costhistory', 'm_costhistory_id') && _hasCol(db, 'm_costhistory', 'c_acctschema_id')) {   // F9.4: the model-layer host appends its own history rows (model_cost.js :507)
     var id = (getRow(db, 'SELECT COALESCE(MAX(m_costhistory_id),0) AS m FROM m_costhistory', []) || { m: 0 }).m + 1;
     db.prepare('INSERT INTO m_costhistory(m_costhistory_id,m_costdetail_id,c_acctschema_id,m_product_id,m_costtype_id,m_costelement_id,m_attributesetinstance_id,ad_org_id,dateacct,oldqty,newqty,oldcostprice,newcostprice,oldcamt,newcamt,oldcqty,newcqty) VALUES(?,?,?,?,?,?,0,0,?,?,?,?,?,?,?,?,?)')
       .run([id, 0, num(u.c_acctschema_id), num(u.m_product_id), num(u.m_costtype_id), num(u.m_costelement_id), _dayOf(dateAcct) + ' 00:00:00', h.oldqty, h.newqty, h.oldcostprice, h.newcostprice, h.oldcamt, h.newcamt, h.oldcqty, h.newcqty]);
