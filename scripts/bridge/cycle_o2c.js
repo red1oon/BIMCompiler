@@ -3,20 +3,21 @@
 // that the M3 witness already has. READ THE LOG: §O2C_STEP lines carry the ids; §SCN/§GAP lines are the product.
 'use strict';
 module.exports = function makeO2C(X) {
+  const C = require('./client_ctx').ctx;   // §SHOPDAY-BUILD-1: GardenWorld defaults unless SHOPDAY_CLIENT re-resolved them
   const { cfg, query, call, createLink, gb, E, POS, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, legacyCostQty, localCostQty, locStock, applyCostQty,
     pos, priceOfAt, taxOfFor, taxById, taxChildren, TAX_INCLUDED, dtOf, creditOf, periodCheck, acctSetupOf, PL_CURRENCY, log } = X;
-  const BP = 112, LOC = 108, WH = 103, LOCATOR = 101, PRODUCT = 137, QTY = 2, SODT = 132;
+  const BP = C.customer, LOC = C.customerLoc, WH = C.wh, LOCATOR = C.locator, PRODUCT = C.prod.mulch, QTY = 2, SODT = C.dt.std;
   const DESC = {
     so: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateOrder', table: 'C_Order', fields: { M_Warehouse_ID: { const: WH }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC }, Bill_BPartner_ID: { const: BP }, Bill_Location_ID: { const: LOC }, C_DocTypeTarget_ID: { const: SODT }, DateOrdered: { path: 'date' }, DateAcct: { path: 'date' } } },
-      lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } } },
+      lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: C.org }, AD_Client_ID: { const: C.client }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } } },
       docAction: { serviceType: 'CompleteOrder', table: 'C_Order', action: 'CO' } },
-    ship: { composite: 'SyncOrder', header: { serviceType: 'Pilot_createData_M_InOut', table: 'M_InOut', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { path: 'dt' }, MovementType: { const: 'C-' }, IsSOTrx: { const: 'Y' }, C_Order_ID: { path: 'order' }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC }, M_Warehouse_ID: { const: WH }, MovementDate: { path: 'date' }, DateAcct: { path: 'date' } } },
-      lines: { serviceType: 'Pilot_createData_M_InOutLine', table: 'M_InOutLine', parent: 'M_InOut_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, C_OrderLine_ID: { path: 'ol' }, M_Product_ID: { path: 'product' }, M_Locator_ID: { const: LOCATOR }, MovementQty: { path: 'qty' }, QtyEntered: { path: 'qty' } } },
+    ship: { composite: 'SyncOrder', header: { serviceType: 'Pilot_createData_M_InOut', table: 'M_InOut', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { path: 'dt' }, MovementType: { const: 'C-' }, IsSOTrx: { const: 'Y' }, C_Order_ID: { path: 'order' }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC }, M_Warehouse_ID: { const: WH }, MovementDate: { path: 'date' }, DateAcct: { path: 'date' } } },
+      lines: { serviceType: 'Pilot_createData_M_InOutLine', table: 'M_InOutLine', parent: 'M_InOut_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: C.org }, C_OrderLine_ID: { path: 'ol' }, M_Product_ID: { path: 'product' }, M_Locator_ID: { const: LOCATOR }, MovementQty: { path: 'qty' }, QtyEntered: { path: 'qty' } } },
       docAction: { serviceType: 'Pilot_setDocAction_M_InOut', table: 'M_InOut', action: 'CO' } },
-    inv: { composite: 'SyncOrder', header: { serviceType: 'Pilot_createData_C_Invoice', table: 'C_Invoice', fields: { AD_Org_ID: { const: 11 }, C_DocTypeTarget_ID: { path: 'dt' }, IsSOTrx: { const: 'Y' }, C_Order_ID: { path: 'order' }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC }, M_PriceList_ID: { path: 'pl' }, DateInvoiced: { path: 'date' }, DateAcct: { path: 'date' } } },
-      lines: { serviceType: 'Pilot_createData_C_InvoiceLine', table: 'C_InvoiceLine', parent: 'C_Invoice_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, C_OrderLine_ID: { path: 'ol' }, M_InOutLine_ID: { path: 'iol' }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyInvoiced: { path: 'qty' }, PriceEntered: { path: 'price' }, PriceActual: { path: 'price' } } },
+    inv: { composite: 'SyncOrder', header: { serviceType: 'Pilot_createData_C_Invoice', table: 'C_Invoice', fields: { AD_Org_ID: { const: C.org }, C_DocTypeTarget_ID: { path: 'dt' }, IsSOTrx: { const: 'Y' }, C_Order_ID: { path: 'order' }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC }, M_PriceList_ID: { path: 'pl' }, DateInvoiced: { path: 'date' }, DateAcct: { path: 'date' } } },
+      lines: { serviceType: 'Pilot_createData_C_InvoiceLine', table: 'C_InvoiceLine', parent: 'C_Invoice_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: C.org }, C_OrderLine_ID: { path: 'ol' }, M_InOutLine_ID: { path: 'iol' }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyInvoiced: { path: 'qty' }, PriceEntered: { path: 'price' }, PriceActual: { path: 'price' } } },
       docAction: { serviceType: 'Pilot_setDocAction_C_Invoice', table: 'C_Invoice', action: 'CO' } },
-    pay: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 119 }, C_BankAccount_ID: { const: 100 }, C_BPartner_ID: { const: BP }, C_Invoice_ID: { path: 'inv' }, C_Currency_ID: { const: 100 }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' } } },
+    pay: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.arReceipt }, C_BankAccount_ID: { const: C.bank }, C_BPartner_ID: { const: BP }, C_Invoice_ID: { path: 'inv' }, C_Currency_ID: { const: C.cur }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' } } },
       docAction: { serviceType: 'BridgeCompletePayment', table: 'C_Payment', action: 'CO' } } };
   const sodt = dtOf(SODT), SHIPDT = Number(sodt.c_doctypeshipment_id), INVDT = Number(sodt.c_doctypeinvoice_id);   // the dictionary links of the order type (132 → 120 / 116)
   const yn = v => (v === true || v === 'Y' ? 'Y' : 'N');
@@ -143,7 +144,7 @@ module.exports = function makeO2C(X) {
       const status = (c.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'M_InOut').pop() || {}).doc_status;
       c.movements.forEach(m => { if (m.m_product_id === PRODUCT) S.stock += (m.movementtype[1] === '-' ? -1 : 1) * Number(m.movementqty); });
       if (typeof E.inoutOrderLineEffects === 'function') ap(E.inoutOrderLineEffects({ issotrx: 'Y', movementtype: 'C-' }, S.shipLines, S.lines).ops);
-      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,c_order_id,ad_client_id,ad_org_id,dateacct) VALUES(?,?,?,?,?,?,?,?)').run(S.ship, 'Y', 'C-', status, S.order, 11, 11, TODAY + ' 00:00:00');
+      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,c_order_id,ad_client_id,ad_org_id,dateacct) VALUES(?,?,?,?,?,?,?,?)').run(S.ship, 'Y', 'C-', status, S.order, C.client, C.org, TODAY + ' 00:00:00');
       S.shipLines.forEach(l => gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty,c_orderline_id,m_locator_id) VALUES(?,?,?,?,?,?)').run(l.m_inoutline_id, S.ship, l.m_product_id, l.movementqty, l.c_orderline_id, LOCATOR));
       const b1 = fold('M_InOut', S.ship, SCHEMA), b2 = fold('M_InOut', S.ship, SCHEMA2);
       if (!/^ABSENT/.test(b1)) applyCostQty(S.ship);
@@ -161,7 +162,7 @@ module.exports = function makeO2C(X) {
       const invLines = r.lines.map((l, i) => ({ ...l, c_orderline_id: S.shipLines[i].c_orderline_id, m_inoutline_id: S.shipLines[i].m_inoutline_id }));
       if (typeof E.invoiceOrderLineEffects === 'function') ap(E.invoiceOrderLineEffects({ issotrx: 'Y', iscreditmemo: 'N' }, invLines, S.lines).ops);
       S.invoices.push({ c_invoice_id: S.inv, c_bpartner_id: BP, issotrx: 'Y', docstatus: status, grandtotal: r.grandTotal, ispaid: 'N', taxes: r.taxes, lines: invLines });
-      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id,c_order_id,docstatus) VALUES(?,?,?,?,?,?,?,?,?,?)').run(S.inv, BP, r.grandTotal / 100, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', 11, 11, S.order, status);
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id,c_order_id,docstatus) VALUES(?,?,?,?,?,?,?,?,?,?)').run(S.inv, BP, r.grandTotal / 100, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', C.client, C.org, S.order, status);
       invLines.forEach(l => gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt,qtyinvoiced,c_orderline_id,m_inoutline_id) VALUES(?,?,?,?,?,?,?)').run(l.c_invoiceline_id, S.inv, l.m_product_id, l.linenetamt, l.qtyinvoiced, l.c_orderline_id, l.m_inoutline_id));
       r.taxes.forEach(t => gb.prepare('INSERT INTO c_invoicetax(c_invoice_id,c_tax_id,taxamt) VALUES(?,?,?)').run(S.inv, t.c_tax_id, t.taxamt / 100));
       return { outcome: 'COMPLETED', inv_status: status, inv_lines: r.lines.map(l => `${l.m_product_id}:${l.qtyinvoiced}:${cents(l.priceactual)}:${l.c_tax_id}`).sort().join('|'),
@@ -178,8 +179,8 @@ module.exports = function makeO2C(X) {
       S.payments.push({ c_payment_id: S.pay, c_bpartner_id: BP, payamt: cents(pay.payamt), isreceipt: 'Y', docstatus: status('C_Payment'), isallocated: flag('C_Payment', 'isallocated') });
       if (ah) { S.alloc = ah.c_allocationhdr_id; S.allocations.push({ c_allocationhdr_id: ah.c_allocationhdr_id, docstatus: status('C_AllocationHdr'), isactive: 'Y', lines: al.map(l => ({ c_allocationline_id: l.c_allocationline_id, c_invoice_id: l.c_invoice_id, c_payment_id: l.c_payment_id, amount: cents(l.amount) })) }); }
       gb.prepare('INSERT INTO c_payment(c_payment_id,c_bpartner_id,c_invoice_id,payamt,isreceipt,c_currency_id,c_bankaccount_id,tendertype,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)')
-        .run(S.pay, BP, S.inv, pay.payamt, 'Y', 100, 100, 'X', TODAY + ' 00:00:00', status('C_Payment'), 11, 11);
-      if (ah) { gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id, TODAY + ' 00:00:00', status('C_AllocationHdr'), 11, 11);
+        .run(S.pay, BP, S.inv, pay.payamt, 'Y', C.cur, C.bank, 'X', TODAY + ' 00:00:00', status('C_Payment'), C.client, C.org);
+      if (ah) { gb.prepare('INSERT INTO c_allocationhdr(c_allocationhdr_id,c_currency_id,dateacct,docstatus,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?)').run(ah.c_allocationhdr_id, ah.c_currency_id, TODAY + ' 00:00:00', status('C_AllocationHdr'), C.client, C.org);
         for (const l of al) gb.prepare('INSERT INTO c_allocationline(c_allocationline_id,c_allocationhdr_id,c_payment_id,c_invoice_id,c_bpartner_id,amount,writeoffamt,discountamt) VALUES(?,?,?,?,?,?,?,?)')
           .run(l.c_allocationline_id, ah.c_allocationhdr_id, l.c_payment_id, l.c_invoice_id, l.c_bpartner_id, l.amount, l.writeoffamt || 0, l.discountamt || 0); }
       return { outcome: 'COMPLETED', pay_status: status('C_Payment'), isallocated: flag('C_Payment', 'isallocated'), ispaid: inv.ispaid, allocations: allocS(),
@@ -192,7 +193,7 @@ module.exports = function makeO2C(X) {
       if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
       S.rev = r.reversalId; applyDocOps(r.ops);
       const rv = S.invoices.find(i => i.c_invoice_id === S.rev);
-      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id,c_order_id,docstatus,reversal_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(S.rev, BP, rv.grandtotal / 100, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', 11, 11, S.order, rv.docstatus, S.inv);
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id,c_order_id,docstatus,reversal_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(S.rev, BP, rv.grandtotal / 100, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', C.client, C.org, S.order, rv.docstatus, S.inv);
       rv.lines.forEach((l, i) => gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt,qtyinvoiced,c_orderline_id) VALUES(?,?,?,?,?,?)').run(S.rev * 100 + i, S.rev, l.m_product_id, l.linenetamt, l.qtyinvoiced, l.c_orderline_id));
       rv.taxes.forEach(t => gb.prepare('INSERT INTO c_invoicetax(c_invoice_id,c_tax_id,taxamt) VALUES(?,?,?)').run(S.rev, t.c_tax_id, t.taxamt / 100));
       const p = S.payments.find(x => x.c_payment_id === S.pay);
@@ -206,7 +207,7 @@ module.exports = function makeO2C(X) {
       ap(r.ops); S.shipRev = r.reversalId;
       const st = {}; r.ops.filter(o => o.op_type === 'SET_STATUS' && o.table === 'M_InOut').forEach(o => { st[o.id] = o.doc_status; });
       const rl = r.ops.filter(o => o.op_type === 'CREATE_LINE' && o.table === 'M_InOutLine');
-      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,c_order_id,ad_client_id,ad_org_id,dateacct,reversal_id) VALUES(?,?,?,?,?,?,?,?,?)').run(S.shipRev, 'Y', 'C-', st[S.shipRev], S.order, 11, 11, TODAY + ' 00:00:00', S.ship);
+      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,c_order_id,ad_client_id,ad_org_id,dateacct,reversal_id) VALUES(?,?,?,?,?,?,?,?,?)').run(S.shipRev, 'Y', 'C-', st[S.shipRev], S.order, C.client, C.org, TODAY + ' 00:00:00', S.ship);
       rl.forEach((l, i) => gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty,c_orderline_id,m_locator_id,reversalline_id) VALUES(?,?,?,?,?,?,?)').run(S.shipRev * 100 + i, S.shipRev, l.m_product_id, l.movementqty, l.c_orderline_id, LOCATOR, l.reversalline_id));
       const b1 = fold('M_InOut', S.shipRev, SCHEMA), b2 = fold('M_InOut', S.shipRev, SCHEMA2);
       if (!/^ABSENT/.test(b1)) applyCostQty(S.shipRev);

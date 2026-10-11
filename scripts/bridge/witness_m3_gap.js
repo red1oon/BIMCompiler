@@ -22,6 +22,7 @@ const gb = new Database(gbFile); const SCHEMA = gb.prepare('SELECT c_acctschema_
 const fmtPostings = lines => lines.map(l => ({ a: l.account_id, dr: cents(l.amtacctdr), cr: cents(l.amtacctcr) })).filter(x => x.dr || x.cr)
   .sort((x, y) => x.a - y.a).map(x => `${x.a}:DR${x.dr}/CR${x.cr}`).join('|') || 'none';
 
+const C = require('./client_ctx').ctx;   // §SHOPDAY-BUILD-1: GardenWorld defaults; SHOPDAY_CLIENT re-resolves by natural key
 const log = l => console.log(l);
 const cents = v => Math.round(Number(v) * 100);
 const lc = r => { if (!r) return r; const o = {}; for (const k in r) o[k.toLowerCase()] = r[k]; return o; };
@@ -42,7 +43,7 @@ const GB_PATCH = fs.readFileSync(path.join(__dirname, '..', '..', 'build', 'erp'
 require('./dict_diff').applyPatch(gb, GB_PATCH); require('./dict_diff').applyPatch(gb, GB_PATCH);   // patch + GUARDED loader in miniature (ALTERs skipped when present): applied twice
 // §42 F7: the period data the SQLite side owns (seed): client primary schema + its calendar's periods with their control rows
 const periodData = (() => {
-  const ci = lc(seed.prepare('SELECT c_acctschema1_id s, c_calendar_id c FROM ad_clientinfo WHERE ad_client_id=11').get());
+  const ci = lc(seed.prepare('SELECT c_acctschema1_id s, c_calendar_id c FROM ad_clientinfo WHERE ad_client_id='+C.client).get());
   const schema = lc(seed.prepare('SELECT autoperiodcontrol, period_openhistory, period_openfuture FROM c_acctschema WHERE c_acctschema_id=?').get(ci.s));
   const periods = seed.prepare('SELECT p.c_period_id, p.startdate, p.enddate, p.isactive, p.periodtype FROM c_period p JOIN c_year y ON y.c_year_id=p.c_year_id WHERE y.c_calendar_id=?').all(ci.c).map(lc);
   const ctl = seed.prepare('SELECT docbasetype, periodstatus FROM c_periodcontrol WHERE c_period_id=?');
@@ -52,14 +53,14 @@ const periodData = (() => {
 const periodCheck = (date, dbt) => E.periodOpen(periodData, date, dbt, TODAY);
 // §45 F11: tax inputs the SQLite side owns (seed): client taxes, product tax category, org/warehouse/BP locations, BP exemption, price list tax-included,
 // the order's DeliveryViaRule = BP's rule else the C_Order.DeliveryViaRule dictionary default (MOrder.setBPartner :737-739 / AD_Column default)
-const taxRows = seed.prepare('SELECT * FROM c_tax WHERE ad_client_id=11').all().map(lc);
+const taxRows = seed.prepare('SELECT * FROM c_tax WHERE ad_client_id=' + C.client).all().map(lc);
 const taxById = id => taxRows.find(t => Number(t.c_tax_id) === Number(id));
 const taxChildren = id => taxRows.filter(t => Number(t.parent_tax_id) === Number(id) && t.isactive === 'Y');
 const locOf = id => lc(seed.prepare('SELECT c_country_id, c_region_id, postal FROM c_location WHERE c_location_id=?').get(id));
 const DVR_DEFAULT = (seed.prepare("SELECT c.defaultvalue d FROM ad_column c JOIN ad_table t ON t.ad_table_id=c.ad_table_id WHERE t.tablename='C_Order' AND c.columnname='DeliveryViaRule'").get() || {}).d;
 const TAX_INCLUDED = (lc(seed.prepare('SELECT istaxincluded FROM m_pricelist WHERE m_pricelist_id=?').get(pos.m_pricelist_id)) || {}).istaxincluded === 'Y';
 function taxOfFor(f) {
-  const bp = f.bp || BP, org = f.org || 11, wh = f.wh || 103;
+  const bp = f.bp || BP, org = f.org || C.org, wh = f.wh || C.wh;
   const b = lc(seed.prepare('SELECT istaxexempt, deliveryviarule FROM c_bpartner WHERE c_bpartner_id=?').get(bp)) || {};
   const dvr = f.invoice ? null : (f.deliveryVia || b.deliveryviarule || DVR_DEFAULT);   // §58: a direct invoice carries no DeliveryViaRule (MInvoiceLine.setTax :504-520)
   const orgLoc = locOf((lc(seed.prepare('SELECT c_location_id FROM ad_orginfo WHERE ad_org_id=?').get(org)) || {}).c_location_id);
@@ -84,17 +85,17 @@ const sysStmt = new Database(path.join(__dirname, '..', '..', 'build', 'erp', 'a
 const creditOf = bpId => ({ bp: lc(seed.prepare('SELECT socreditstatus, so_creditlimit, totalopenbalance FROM c_bpartner WHERE c_bpartner_id=?').get(bpId)),
   sys: Object.fromEntries(['CHECK_CREDIT_ON_CASH_POS_ORDER', 'CHECK_CREDIT_ON_PREPAY_ORDER'].map(k => [k, (sysStmt.get(k) || {}).value])) });
 // customer: 112 'Standard' (SO_CreditLimit=0 ⇒ no credit check, MBPartner.java:833-836) for the routine corpus; 118 Joe Block only for the deliberate credit-hold rows (spec §32)
-const BP = 112, LOC = { 112: 108, 118: 113 };
+const BP = C.customer, LOC = { [C.customer]: C.customerLoc, [C.customer2]: C.customer2Loc };
 function localRun(mut = 0) {
   return async f => {
     const dt = dtOf(f.doctype);
-    const ctx = { pos: { ...pos, m_warehouse_id: f.wh || 103, c_doctype_id: f.doctype }, priceOf: priceOfAt, priceDate: f.date || TODAY, bomOf: () => [],
+    const ctx = { pos: { ...pos, m_warehouse_id: f.wh || C.wh, c_doctype_id: f.doctype }, priceOf: priceOfAt, priceDate: f.date || TODAY, bomOf: () => [],
       taxOf: taxOfFor(f), taxById, taxChildren, taxIncluded: TAX_INCLUDED,
       wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' },
       docsubtypeso: dt.docsubtypeso, docbasetype: dt.docbasetype, creditOf, periodCheck, acctSetupOf };
     const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty));       // P15: no price is ever passed in; keyed price f.keyedPrice is ignored by design
     if (cart.some(l => !l.ok)) return { outcome: 'REJECTED' };
-    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: f.wh || 103, dateAcct: f.date || TODAY };
+    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: f.wh || C.wh, dateAcct: f.date || TODAY };
     const g = dt.docsubtypeso === 'WR' ? POS.buildSaleGroup(ctx, cart, opts)
       : POS.buildDeliverLaterGroup(ctx, cart, { ...opts, doctype: dt, invoiceRule: 'I' });
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
@@ -112,7 +113,7 @@ function foldLocal(g, f, opts, mut) {
     if (invOp) {                                                                   // materialise SQLite's own invoice, fold with the product's derivePostings
       const iid = opts.invoiceId, total = ((g.grandTotal != null ? g.grandTotal : g.soLines.reduce((a, l) => a + cents(l.linenetamt), 0)) + mut) / 100;   // mut = negative-control cents, applied to the REAL invoice rows
       // §46: the invoice carries the price-list currency (MOrder.currencyFromPriceList :1292-1300 → invoice), its DateAcct and org — needed to convert into a second schema
-      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?)').run(iid, f.bp || BP, total, 'Y', PL_CURRENCY, (f.date || TODAY) + ' 00:00:00', 11, f.org || 11);
+      gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?)').run(iid, f.bp || BP, total, 'Y', PL_CURRENCY, (f.date || TODAY) + ' 00:00:00', 11, f.org || C.org);
       for (const t of g.ops.filter(x => x.op_type === 'CREATE_LINE' && x.table === 'C_InvoiceTax')) gb.prepare('INSERT INTO c_invoicetax(c_invoice_id,c_tax_id,taxamt) VALUES(?,?,?)').run(iid, t.c_tax_id, t.taxamt);
       for (const l of g.soLines) gb.prepare('INSERT INTO c_invoiceline(c_invoiceline_id,c_invoice_id,m_product_id,linenetamt) VALUES(?,?,?,?)').run(iid * 100 + l.c_orderline_id % 100, iid, l.m_product_id, mut ? (cents(l.linenetamt) + mut) / 100 : l.linenetamt);
       const d = DP.derivePostings(gb, { table: 'C_Invoice', id: iid }, SCHEMA);
@@ -181,21 +182,21 @@ function localRunAD() {
     if (!adPrices) return Object.fromEntries(spec.keys.map(k => [k, 'INCONCLUSIVE:AD fixture has no product prices']));
     const bpr = adQ('SELECT m_pricelist_id FROM c_bpartner WHERE c_bpartner_id=?', [bp])[0]; if (bpr && bpr.m_pricelist_id) tpl.m_pricelist_id = bpr.m_pricelist_id;
     tpl.dateordered = todayStr; tpl.dateacct = todayStr;
-    Object.assign(tpl, { c_order_id: o, docstatus: 'DR', processed: 'N', c_currency_id: 100, c_bpartner_id: bp, c_bpartner_location_id: LOC[bp], bill_bpartner_id: bp, bill_location_id: LOC[bp], m_warehouse_id: 103, c_doctype_id: 0, c_doctypetarget_id: f.doctype, ad_org_id: 11 });
+    Object.assign(tpl, { c_order_id: o, docstatus: 'DR', processed: 'N', c_currency_id: 100, c_bpartner_id: bp, c_bpartner_location_id: LOC[bp], bill_bpartner_id: bp, bill_location_id: LOC[bp], m_warehouse_id: C.wh, c_doctype_id: 0, c_doctypetarget_id: f.doctype, ad_org_id: 11 });
     adDb.prepare('INSERT INTO c_order(' + Object.keys(tpl).join(',') + ') VALUES(' + Object.keys(tpl).map(() => '?').join(',') + ')').run(...Object.values(tpl));
     const held = [];
     for (const [i, l] of f.lines.entries()) {
       const price = f.keyedPrice != null ? f.keyedPrice : 0;
-      const rec = { c_order_id: o, m_product_id: l.product, qtyentered: l.qty, qtyordered: l.qty, priceentered: price, priceactual: price, pricelist: 0, ad_client_id: 11, ad_org_id: 11 };
-      const r = ADML.run(adQ, { client: 11, org: 11 }, { table: 'C_OrderLine', timing: 'BEFORE_SAVE', record: rec, old: null, isNew: true });
+      const rec = { c_order_id: o, m_product_id: l.product, qtyentered: l.qty, qtyordered: l.qty, priceentered: price, priceactual: price, pricelist: 0, ad_client_id: C.client, ad_org_id: C.org };
+      const r = ADML.run(adQ, { client: C.client, org: C.org }, { table: 'C_OrderLine', timing: 'BEFORE_SAVE', record: rec, old: null, isNew: true });
       if (!r.ok) return { outcome: 'REJECTED', reason: r.error || r.msg };
       const d = Object.assign({}, rec, r.derived || {});
       held.push({ c_orderline_id: o * 100 + i, m_product_id: l.product, qtyordered: l.qty, priceactual: String(d.priceactual), linenetamt: String(d.linenetamt) });
     }
-    const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
+    const ctx = { pos: { ...pos, m_warehouse_id: C.wh, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
       wrPolicy: dt.docsubtypeso === 'WR' ? { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' } : { isautogenerateinout: 'N', isautogenerateinvoice: 'N' }, docsubtypeso: dt.docsubtypeso, creditOf, acctSetupOf,
       taxOf: taxOfFor(f), taxById, taxChildren, taxIncluded: TAX_INCLUDED };
-    const opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: bp, warehouseId: 103 };
+    const opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: bp, warehouseId: C.wh };
     const g = POS.buildRecallCompleteGroup(ctx, { c_order_id: o, docstatus: 'DR', c_bpartner_id: bp, m_warehouse_id: 103 }, held, opts);
     if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
     return foldLocal(g, f, opts, 0);
@@ -208,19 +209,19 @@ function applyCostQty(ioId) {
 }
 
 // ================= Legacy side: push via the Bridge (composite) + read-back over read WS types =================
-const cfg = cfgFromEnv(); cfg.login.OrgID = 11; cfg.login.WarehouseID = 103;
+const cfg = cfgFromEnv(); cfg.login.OrgID = C.org; cfg.login.WarehouseID = C.wh;
 // §44: a scenario may sell from another org/warehouse (T1: org 12 Store Central, CT) — the login follows, like a user logged into that org
-const cfgFor = f => ({ ...cfg, login: { ...cfg.login, OrgID: f.org || 11, WarehouseID: f.wh || 103 } });
+const cfgFor = f => ({ ...cfg, login: { ...cfg.login, OrgID: f.org || C.org, WarehouseID: f.wh || C.wh } });
 const descFor = f => ({ composite: 'SyncOrder',
-  header: { serviceType: (f.date || f.deliveryVia) ? 'BridgeCreateOrder' : 'createOrderRecord', table: 'C_Order', fields: Object.assign(f.deliveryVia ? { DeliveryViaRule: { const: f.deliveryVia } } : {}, { M_Warehouse_ID: { const: f.wh || 103 }, C_BPartner_ID: { const: f.bp || BP }, C_BPartner_Location_ID: { const: LOC[f.bp || BP] }, Bill_BPartner_ID: { const: f.bp || BP }, Bill_Location_ID: { const: LOC[f.bp || BP] }, C_DocTypeTarget_ID: { const: f.doctype } }, f.date ? { DateOrdered: { const: f.date + ' 00:00:00' }, DateAcct: { const: f.date + ' 00:00:00' } } : {}) },
+  header: { serviceType: (f.date || f.deliveryVia) ? 'BridgeCreateOrder' : 'createOrderRecord', table: 'C_Order', fields: Object.assign(f.deliveryVia ? { DeliveryViaRule: { const: f.deliveryVia } } : {}, { M_Warehouse_ID: { const: f.wh || C.wh }, C_BPartner_ID: { const: f.bp || BP }, C_BPartner_Location_ID: { const: LOC[f.bp || BP] }, Bill_BPartner_ID: { const: f.bp || BP }, Bill_Location_ID: { const: LOC[f.bp || BP] }, C_DocTypeTarget_ID: { const: f.doctype } }, f.date ? { DateOrdered: { const: f.date + ' 00:00:00' }, DateAcct: { const: f.date + ' 00:00:00' } } : {}) },
   lines: { serviceType: 'CreateOrderLine', table: 'C_OrderLine', parent: 'C_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-    fields: Object.assign({ AD_Org_ID: { const: f.org || 11 }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } },
+    fields: Object.assign({ AD_Org_ID: { const: f.org || C.org }, AD_Client_ID: { const: C.client }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' } },
       f.keyedPrice != null ? { PriceEntered: { path: 'price' }, PriceActual: { path: 'price' } } : {}) },
   docAction: { serviceType: 'CompleteOrder', table: 'C_Order', action: 'CO' } });
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'm3-'));
 const stockOf = async (p, wh) => (await query(cfg, 'QueryStorage', `M_Product_ID=${p} AND M_Locator_ID IN (SELECT M_Locator_ID FROM M_Locator WHERE M_Warehouse_ID=${wh || 103})`)).reduce((a, r) => a + Number(r.QtyOnHand), 0);
 let uidN = 0;
-const SCHEMA2 = 200000;   // §46: legacy's second accounting schema (Euro), active on the pilot
+const SCHEMA2 = C.schema.second;   // §46: legacy's second accounting schema (Euro), active on the pilot
 async function legacyFactsOf(table, id, schema) {
   let fa = []; for (let i = 0; i < 6 && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${schema}`); if (!fa.length) await new Promise(r => setTimeout(r, 1500)); }
   const by = {}; for (const f of fa) { const a = f.Account_ID; by[a] = by[a] || { account_id: a, amtacctdr: 0, amtacctcr: 0 }; by[a].amtacctdr += Number(f.AmtAcctDr); by[a].amtacctcr += Number(f.AmtAcctCr); }
@@ -231,7 +232,7 @@ async function legacyFactsOf(table, id, schema) {
   return posted === 'Y' || posted === true ? 'none' : 'NO_FACT_ACCT_ROWS';   // §47: posted without lines = no books
 }
 // §41/F9: costed quantity (Average PO element, primary schema) — derived cost STATE, compared as a delta so back-date re-processing cannot hide behind the start-of-run sync
-const AVG_EL = 103;
+const AVG_EL = C.costElement.avgPO;
 const legacyCostQty = async p => { const r = await query(cfg, 'QueryMCost', `M_Product_ID=${p} AND C_AcctSchema_ID=${SCHEMA} AND M_CostElement_ID=${AVG_EL} AND AD_Org_ID=0 AND M_AttributeSetInstance_ID=0`); return r.length ? Number(r[0].CurrentQty) : 0; };
 const localCostQty = p => { try { const r = gb.prepare('SELECT currentqty q FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costelement_id=?').get(p, SCHEMA, AVG_EL); return r ? Number(r.q || 0) : 0; } catch (e) { return 0; } };
 const deltaStr = (ps, before, now) => JSON.stringify(Object.fromEntries(ps.map(p => [p, now(p) - before[p]]).filter(x => x[1])));
@@ -337,10 +338,10 @@ const FSM = require('../../build/erp/ad_docfsm.js');
 function localVoid(mut = 0) {
   return async f => {
     const dt = dtOf(f.doctype);
-    const ctx = { pos: { ...pos, m_warehouse_id: f.wh || 103, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
+    const ctx = { pos: { ...pos, m_warehouse_id: f.wh || C.wh, c_doctype_id: f.doctype }, priceOf: pid => lc(priceStmt.get(plv.v, pid)) || null, bomOf: () => [],
       wrPolicy: { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' }, taxOf: taxOfFor(f), taxById, taxChildren, taxIncluded: TAX_INCLUDED };
     const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty)); if (cart.some(l => !l.ok)) return { outcome: 'REJECTED' };
-    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: f.wh || 103 };
+    const o = ++seq * 10, opts = { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: f.wh || C.wh };
     const g = POS.buildSaleGroup(ctx, cart, opts); if (!g.ok) return { outcome: 'REJECTED', reason: g.reason };
     const d = FSM.dispatchOrder(seed, { docStatus: 'CO', isSOTrx: 'Y', doctypeId: f.doctype, processing: 'N' }, f.action);
     if (!d.ok) return { outcome: 'REJECTED', reason: d.reason };
@@ -403,9 +404,9 @@ function localVoid(mut = 0) {
 // ================= MODEL: Inventory Move (spec §56) — legacy through the FROZEN link with the §55 descriptor (test data), own key set =================
 const { createLink } = require('./legacy_link');
 const MOVE_DESC = { move: { composite: 'SyncOrder',
-  header: { serviceType: 'BridgeCreateMovement', table: 'M_Movement', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 143 }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
+  header: { serviceType: 'BridgeCreateMovement', table: 'M_Movement', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.movement }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
   lines: { serviceType: 'BridgeCreateMovementLine', table: 'M_MovementLine', parent: 'M_Movement_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-    fields: { AD_Org_ID: { const: 11 }, AD_Client_ID: { const: 11 }, M_Locator_ID: { path: 'from' }, M_LocatorTo_ID: { path: 'to' }, M_Product_ID: { path: 'product' }, MovementQty: { path: 'qty' } } },
+    fields: { AD_Org_ID: { const: C.org }, AD_Client_ID: { const: C.client }, M_Locator_ID: { path: 'from' }, M_LocatorTo_ID: { path: 'to' }, M_Product_ID: { path: 'product' }, MovementQty: { path: 'qty' } } },
   docAction: { serviceType: 'BridgeCompleteMovement', table: 'M_Movement', action: 'CO' },
   expect: { serviceType: 'QueryMMovement', cols: { DocStatus: { const: 'CO' } } } } };
 const moveSpec = { keys: ['outcome', 'docstatus', 'lines', 'stock_delta', 'postings', 'postings_euro', 'cost_qty_delta'], notCompared: {} };
@@ -454,8 +455,8 @@ function localMove(mut = 0) {
 
 // ================= MODEL: AR Receipt settling an invoice (spec §57) — legacy through the frozen link (descriptor = test data), own key set =================
 const PAY_DESC = { pay: { composite: 'SyncOrder',
-  header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 119 }, C_BankAccount_ID: { const: 100 }, C_BPartner_ID: { path: 'bp' },
-    C_Invoice_ID: { path: 'invoice' }, C_Currency_ID: { const: 100 }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+  header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.arReceipt }, C_BankAccount_ID: { const: C.bank }, C_BPartner_ID: { path: 'bp' },
+    C_Invoice_ID: { path: 'invoice' }, C_Currency_ID: { const: C.cur }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
   docAction: { serviceType: 'BridgeCompletePayment', table: 'C_Payment', action: 'CO' } } };
 const paySpec = { keys: ['outcome', 'docstatus', 'isallocated', 'invoice_paid', 'allocation', 'postings_payment', 'postings_alloc', 'postings_payment_euro', 'postings_alloc_euro'], notCompared: {} };
 let payLink = null;
@@ -487,10 +488,10 @@ function localPay(mut = 0) {
   return async f => {
     let inv = null;
     if (f.invoice == null) {
-      const ctx = { pos: { ...pos, m_warehouse_id: 103, c_doctype_id: POSDT }, priceOf: priceOfAt, priceDate: TODAY, bomOf: () => [], wrPolicy: { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' },
+      const ctx = { pos: { ...pos, m_warehouse_id: C.wh, c_doctype_id: POSDT }, priceOf: priceOfAt, priceDate: TODAY, bomOf: () => [], wrPolicy: { isautogenerateinout: 'Y', isautogenerateinvoice: 'Y' },
         taxOf: taxOfFor({}), taxById, taxChildren, taxIncluded: TAX_INCLUDED };
       const cart = f.lines.map(l => POS.ringLine(ctx, l.product, l.qty));
-      const o = ++seq * 10, g = POS.buildSaleGroup(ctx, cart, { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: 103 });
+      const o = ++seq * 10, g = POS.buildSaleGroup(ctx, cart, { orderId: o, inoutId: o + 1, invoiceId: o + 2, c_bpartner_id: f.bp || BP, warehouseId: C.wh });
       if (!g.ok) return { outcome: 'ERROR', error: 'sale ' + g.reason };
       inv = { c_invoice_id: o + 2, c_bpartner_id: f.bp || BP, grandtotal: g.grandTotal / 100, ispaid: 'N', docstatus: 'CO' };
       gb.prepare('INSERT INTO c_invoice(c_invoice_id,c_bpartner_id,grandtotal,issotrx,c_currency_id,dateacct,ad_client_id,ad_org_id) VALUES(?,?,?,?,?,?,?,?)').run(inv.c_invoice_id, inv.c_bpartner_id, inv.grandtotal, 'Y', PL_CURRENCY, TODAY + ' 00:00:00', 11, 11);
@@ -520,15 +521,15 @@ function localPay(mut = 0) {
 
 // ================= MODEL: AR Invoice created directly (spec §58) — legacy through the frozen link (descriptor = test data) =================
 const INV_DESC = { inv: { composite: 'SyncOrder',
-  header: { serviceType: 'BridgeCreateInvoice', table: 'C_Invoice', fields: { AD_Org_ID: { path: 'org' }, C_DocTypeTarget_ID: { const: 116 }, C_BPartner_ID: { path: 'bp' }, C_BPartner_Location_ID: { path: 'loc' },
-    M_PriceList_ID: { const: 101 }, IsSOTrx: { const: 'Y' }, DateInvoiced: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+  header: { serviceType: 'BridgeCreateInvoice', table: 'C_Invoice', fields: { AD_Org_ID: { path: 'org' }, C_DocTypeTarget_ID: { const: C.dt.arInvoice }, C_BPartner_ID: { path: 'bp' }, C_BPartner_Location_ID: { path: 'loc' },
+    M_PriceList_ID: { const: C.pl.sales }, IsSOTrx: { const: 'Y' }, DateInvoiced: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
   lines: { serviceType: 'BridgeCreateInvoiceLine', table: 'C_InvoiceLine', parent: 'C_Invoice_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-    fields: { AD_Org_ID: { path: 'org' }, AD_Client_ID: { const: 11 }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyInvoiced: { path: 'qty' } } },
+    fields: { AD_Org_ID: { path: 'org' }, AD_Client_ID: { const: C.client }, M_Product_ID: { path: 'product' }, QtyEntered: { path: 'qty' }, QtyInvoiced: { path: 'qty' } } },
   docAction: { serviceType: 'BridgeCompleteInvoice', table: 'C_Invoice', action: 'CO' } } };
 const invSpec = { keys: ['outcome', 'docstatus', 'lines', 'total_cents', 'invoice_tax', 'grand_total_cents', 'postings', 'postings_euro', 'ispaid'], notCompared: {} };
 const invLinks = {};
 async function legacyInvoice(f) {
-  const org = f.org || 11;
+  const org = f.org || C.org;
   if (!invLinks[org]) { let bytes = null; invLinks[org] = await createLink({ cfg: cfgFor(f), persistence: { load: () => bytes, save: b => { bytes = Uint8Array.from(b); } }, descriptors: INV_DESC }); }
   const L = invLinks[org], bp = f.bp || BP;
   const uid = L.submit('inv', { org, bp, loc: LOC[bp], date: (f.date || TODAY) + ' 00:00:00', note: 'M3 ' + f.id, lines: f.lines.map(l => ({ ...l, org })) });
@@ -543,7 +544,7 @@ async function legacyInvoice(f) {
 }
 function localInvoice(mut = 0) {
   return async f => {
-    const org = f.org || 11, bp = f.bp || BP, date = f.date || TODAY;
+    const org = f.org || C.org, bp = f.bp || BP, date = f.date || TODAY;
     for (const l of f.lines) if (!lc(seed.prepare('SELECT m_product_id FROM m_product WHERE m_product_id=?').get(l.product))) return { outcome: 'REJECTED', reason: 'unknown product' };
     if (typeof E.prepareInvoice !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', lines: 'none', total_cents: 0, invoice_tax: 'none', grand_total_cents: 0, postings: 'none', postings_euro: 'none', ispaid: 'N' };
     const iid = ++seq * 10;
@@ -563,9 +564,9 @@ function localInvoice(mut = 0) {
 
 // ================= MODEL: Physical Inventory (spec §59) — legacy through the frozen link (descriptor = test data) =================
 const PI_DESC = { pi: { composite: 'SyncOrder',
-  header: { serviceType: 'BridgeCreateInventory', table: 'M_Inventory', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 144 }, M_Warehouse_ID: { const: 103 }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
+  header: { serviceType: 'BridgeCreateInventory', table: 'M_Inventory', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.physInv }, M_Warehouse_ID: { const: C.wh }, MovementDate: { path: 'date' }, Description: { path: 'note' } } },
   lines: { serviceType: 'BridgeCreateInventoryLine', table: 'M_InventoryLine', parent: 'M_Inventory_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-    fields: { AD_Org_ID: { const: 11 }, AD_Client_ID: { const: 11 }, M_Locator_ID: { path: 'loc' }, M_Product_ID: { path: 'product' }, QtyBook: { path: 'book' }, QtyCount: { path: 'count' }, InventoryType: { const: 'D' } } },
+    fields: { AD_Org_ID: { const: C.org }, AD_Client_ID: { const: C.client }, M_Locator_ID: { path: 'loc' }, M_Product_ID: { path: 'product' }, QtyBook: { path: 'book' }, QtyCount: { path: 'count' }, InventoryType: { const: 'D' } } },
   docAction: { serviceType: 'BridgeCompleteInventory', table: 'M_Inventory', action: 'CO' } } };
 const piSpec = { keys: ['outcome', 'docstatus', 'lines', 'stock_delta', 'postings', 'postings_euro', 'cost_qty_delta'], notCompared: {} };
 let piLink = null;
@@ -608,8 +609,8 @@ function localInventory(mut = 0) {
 }
 
 // ================= MODEL: Purchase Requisition (spec §66) — legacy through the frozen link (descriptor = test data) =================
-const REQ_FIELDS = { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 127 }, M_PriceList_ID: { const: 102 }, M_Warehouse_ID: { const: 103 }, DateDoc: { path: 'date' }, DateRequired: { path: 'date' }, PriorityRule: { const: '5' }, Description: { path: 'note' } };
-const REQ_LINES = { serviceType: 'BridgeCreateRequisitionLine', table: 'M_RequisitionLine', parent: 'M_Requisition_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, M_Product_ID: { path: 'product' }, Qty: { path: 'qty' } } };
+const REQ_FIELDS = { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.requisition }, M_PriceList_ID: { const: C.pl.purchase }, M_Warehouse_ID: { const: C.wh }, DateDoc: { path: 'date' }, DateRequired: { path: 'date' }, PriorityRule: { const: '5' }, Description: { path: 'note' } };
+const REQ_LINES = { serviceType: 'BridgeCreateRequisitionLine', table: 'M_RequisitionLine', parent: 'M_Requisition_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: C.org }, M_Product_ID: { path: 'product' }, Qty: { path: 'qty' } } };
 const REQ_DESC = {
   req: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateRequisition', table: 'M_Requisition', fields: { ...REQ_FIELDS, AD_User_ID: { path: 'user' } } }, lines: REQ_LINES, docAction: { serviceType: 'BridgeCompleteRequisition', table: 'M_Requisition', action: 'CO' } },
   reqNoUser: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateRequisition', table: 'M_Requisition', fields: REQ_FIELDS }, lines: REQ_LINES, docAction: { serviceType: 'BridgeCompleteRequisition', table: 'M_Requisition', action: 'CO' } } };
@@ -632,7 +633,7 @@ function localReq(mut = 0) {
   return async f => {
     if (typeof E.prepareRequisition !== 'function') return { outcome: 'COMPLETED', docstatus: 'DR', lines: 'none', total_cents: 0, postings: 'none', postings_euro: 'none' };
     const rid = ++seq * 10; const prec = (lc(seed.prepare('SELECT c.stdprecision p FROM m_pricelist l JOIN c_currency c ON c.c_currency_id=l.c_currency_id WHERE l.m_pricelist_id=102').get()) || {}).p;   // MPriceList.getStandardPrecision = the currency's (MPriceList.java:356-364)
-    const r = E.prepareRequisition({ m_requisition_id: rid, ad_user_id: f.noUser ? 0 : 101, m_pricelist_id: 102, m_warehouse_id: 103, daterequired: f.date || TODAY },
+    const r = E.prepareRequisition({ m_requisition_id: rid, ad_user_id: f.noUser ? 0 : 101, m_pricelist_id: C.pl.purchase, m_warehouse_id: C.wh, daterequired: f.date || TODAY },
       f.lines.map((l, i) => ({ m_requisitionline_id: rid * 100 + i, m_product_id: l.product, qty: l.qty })),
       { priceOf: (pid, d) => { const x = E.priceAt(plRows(102, pid), d); return x ? { pricestd: mut ? (Number(x.pricestd) + mut / 100).toFixed(2) : x.pricestd } : null; }, precision: prec, periodOpen: E.periodOpen(periodData, f.date || TODAY, 'POR', TODAY) });
     if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
@@ -648,8 +649,8 @@ function localReq(mut = 0) {
 const CASH_DESC = {
   inv: INV_DESC.inv,
   invDraft: Object.fromEntries(Object.entries(INV_DESC.inv).filter(([k]) => k !== 'docAction')),   // the same invoice, NOT completed (CASH-REJ)
-  cash: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateCash', table: 'C_Cash', fields: { AD_Org_ID: { const: 11 }, C_CashBook_ID: { const: 101 }, Name: { path: 'name' }, StatementDate: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
-    lines: { serviceType: 'BridgeCreateCashLine', table: 'C_CashLine', parent: 'C_Cash_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: 11 }, CashType: { const: 'I' }, C_Invoice_ID: { path: 'inv' }, Amount: { path: 'amt' }, C_Currency_ID: { const: 100 } } },
+  cash: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateCash', table: 'C_Cash', fields: { AD_Org_ID: { const: C.org }, C_CashBook_ID: { const: C.cashbook }, Name: { path: 'name' }, StatementDate: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+    lines: { serviceType: 'BridgeCreateCashLine', table: 'C_CashLine', parent: 'C_Cash_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: C.org }, CashType: { const: 'I' }, C_Invoice_ID: { path: 'inv' }, Amount: { path: 'amt' }, C_Currency_ID: { const: C.cur } } },
     docAction: { serviceType: 'BridgeCompleteCash', table: 'C_Cash', action: 'CO' } } };
 // §68 (F32) the window shape: the cash journal is SAVED (committed) first, completed by a separate doc-action call — same descriptor without the doc-action
 CASH_DESC.cashSaved = Object.fromEntries(Object.entries(CASH_DESC.cash).filter(([k]) => k !== 'docAction'));
@@ -724,10 +725,10 @@ async function localCash1(mut, f) {
 
 // ================= MODEL: GL Journal (spec §69) — header + lines + CO through the frozen link; books only in the journal's schema =================
 const GLJ_DESC = { glj: { composite: 'SyncOrder',
-  header: { serviceType: 'BridgeCreateGLJournal', table: 'GL_Journal', fields: { AD_Org_ID: { const: 11 }, C_AcctSchema_ID: { const: 101 }, C_DocType_ID: { const: 115 }, GL_Category_ID: { const: 108 }, PostingType: { const: 'A' },
-    C_Currency_ID: { const: 100 }, C_ConversionType_ID: { const: 114 }, CurrencyRate: { const: 1 }, DateDoc: { path: 'date' }, DateAcct: { path: 'date' }, C_Period_ID: { path: 'period' }, Description: { path: 'note' } } },
+  header: { serviceType: 'BridgeCreateGLJournal', table: 'GL_Journal', fields: { AD_Org_ID: { const: C.org }, C_AcctSchema_ID: { const: C.schema.primary }, C_DocType_ID: { const: C.dt.glJournal }, GL_Category_ID: { const: C.glcat }, PostingType: { const: 'A' },
+    C_Currency_ID: { const: C.cur }, C_ConversionType_ID: { const: 114 }, CurrencyRate: { const: 1 }, DateDoc: { path: 'date' }, DateAcct: { path: 'date' }, C_Period_ID: { path: 'period' }, Description: { path: 'note' } } },
   lines: { serviceType: 'BridgeCreateGLJournalLine', table: 'GL_JournalLine', parent: 'GL_Journal_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-    fields: { AD_Org_ID: { const: 11 }, Account_ID: { path: 'account' }, AmtSourceDr: { path: 'dr' }, AmtSourceCr: { path: 'cr' }, DateAcct: { path: 'date' } } },
+    fields: { AD_Org_ID: { const: C.org }, Account_ID: { path: 'account' }, AmtSourceDr: { path: 'dr' }, AmtSourceCr: { path: 'cr' }, DateAcct: { path: 'date' } } },
   docAction: { serviceType: 'BridgeCompleteGLJournal', table: 'GL_Journal', action: 'CO' } } };
 const gljSpec = { keys: ['outcome', 'docstatus', 'total_dr', 'total_cr', 'lines', 'postings', 'postings_euro'], notCompared: {} };
 let gljLink = null, GLJ_PERIOD = null;
@@ -763,12 +764,12 @@ function localGLJ(mut = 0) {
 
 // ================= MODEL: Bank Statement (spec §70) — a statement line matching a receipt; books Bank Asset / In-Transit; payment reconciled; bank balance =================
 const BS_DESC = {
-  payNoInv: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 119 }, C_BankAccount_ID: { const: 100 }, C_BPartner_ID: { path: 'bp' },
-    C_Currency_ID: { const: 100 }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+  payNoInv: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreatePayment', table: 'C_Payment', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.arReceipt }, C_BankAccount_ID: { const: C.bank }, C_BPartner_ID: { path: 'bp' },
+    C_Currency_ID: { const: C.cur }, PayAmt: { path: 'amt' }, TenderType: { const: 'X' }, DateTrx: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
     docAction: { serviceType: 'BridgeCompletePayment', table: 'C_Payment', action: 'CO' } },
-  bs: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateBankStatement', table: 'C_BankStatement', fields: { AD_Org_ID: { const: 11 }, C_BankAccount_ID: { const: 100 }, Name: { path: 'name' }, StatementDate: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
+  bs: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateBankStatement', table: 'C_BankStatement', fields: { AD_Org_ID: { const: C.org }, C_BankAccount_ID: { const: C.bank }, Name: { path: 'name' }, StatementDate: { path: 'date' }, DateAcct: { path: 'date' }, Description: { path: 'note' } } },
     lines: { serviceType: 'BridgeCreateBankStatementLine', table: 'C_BankStatementLine', parent: 'C_BankStatement_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-      fields: { AD_Org_ID: { const: 11 }, StatementLineDate: { path: 'date' }, ValutaDate: { path: 'date' }, DateAcct: { path: 'date' }, C_Currency_ID: { const: 100 }, StmtAmt: { path: 'amt' }, TrxAmt: { path: 'amt' }, C_Payment_ID: { path: 'pay' } } },
+      fields: { AD_Org_ID: { const: C.org }, StatementLineDate: { path: 'date' }, ValutaDate: { path: 'date' }, DateAcct: { path: 'date' }, C_Currency_ID: { const: C.cur }, StmtAmt: { path: 'amt' }, TrxAmt: { path: 'amt' }, C_Payment_ID: { path: 'pay' } } },
     docAction: { serviceType: 'BridgeCompleteBankStatement', table: 'C_BankStatement', action: 'CO' } } };
 const bsSpec = { keys: ['outcome', 'docstatus', 'beginning', 'statement_diff', 'ending', 'payment_reconciled', 'bank_balance_delta', 'postings', 'postings_euro'], notCompared: {} };
 let bsLink = null, bsLastPay = null; const bsLocalPay = {};   // the payment of the last statement (BS-REJ re-uses it); SQLite side: its own payment state
@@ -813,7 +814,7 @@ function localBS(mut = 0) {
 }
 
 // ================= MODEL: Project Issue (spec §71) — header-only document + CO; stock, cost quantity, project balance and books =================
-const PJI_FIELDS = { AD_Org_ID: { const: 11 }, C_Project_ID: { path: 'project' }, Line: { path: 'line' }, M_Locator_ID: { path: 'loc' }, MovementQty: { path: 'qty' }, MovementDate: { path: 'date' }, Description: { path: 'note' } };
+const PJI_FIELDS = { AD_Org_ID: { const: C.org }, C_Project_ID: { path: 'project' }, Line: { path: 'line' }, M_Locator_ID: { path: 'loc' }, MovementQty: { path: 'qty' }, MovementDate: { path: 'date' }, Description: { path: 'note' } };
 const PJI_DESC = {
   pji: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateProjectIssue', table: 'C_ProjectIssue', fields: { ...PJI_FIELDS, M_Product_ID: { path: 'product' } } }, docAction: { serviceType: 'BridgeCompleteProjectIssue', table: 'C_ProjectIssue', action: 'CO' } },
   pjiNoProduct: { composite: 'SyncOrder', header: { serviceType: 'BridgeCreateProjectIssue', table: 'C_ProjectIssue', fields: PJI_FIELDS }, docAction: { serviceType: 'BridgeCompleteProjectIssue', table: 'C_ProjectIssue', action: 'CO' } } };
@@ -853,11 +854,11 @@ function localPJI(mut = 0) {
 
 // ================= MODEL: Distribution Order (spec §72) — header + lines + CO; reservation on the line, no stock move, no books =================
 const DDO_DESC = { ddo: { composite: 'SyncOrder',
-  header: { serviceType: 'BridgeCreateDDOrder', table: 'DD_Order', fields: { AD_Org_ID: { const: 11 }, C_DocType_ID: { const: 50012 }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC[BP] }, M_Warehouse_ID: { const: 50000 },
+  header: { serviceType: 'BridgeCreateDDOrder', table: 'DD_Order', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: 50012 }, C_BPartner_ID: { const: BP }, C_BPartner_Location_ID: { const: LOC[BP] }, M_Warehouse_ID: { const: 50000 },
     DateOrdered: { path: 'date' }, DatePromised: { path: 'date' }, Description: { path: 'note' },
     IsInDispute: { const: 'N' }, IsInTransit: { const: 'N' }, IsApproved: { const: 'N' }, IsPrinted: { const: 'N' }, SendEMail: { const: 'N' } } },   // the window's Yes-No default (GridField.getDefault YesNo ⇒ N)
   lines: { serviceType: 'BridgeCreateDDOrderLine', table: 'DD_OrderLine', parent: 'DD_Order_ID', from: 'lines', lineNo: { col: 'Line', step: 10 },
-    fields: { AD_Org_ID: { const: 11 }, M_Product_ID: { path: 'product' }, M_Locator_ID: { path: 'from' }, M_LocatorTo_ID: { path: 'to' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' }, IsInvoiced: { const: 'N' } } },
+    fields: { AD_Org_ID: { const: C.org }, M_Product_ID: { path: 'product' }, M_Locator_ID: { path: 'from' }, M_LocatorTo_ID: { path: 'to' }, QtyEntered: { path: 'qty' }, QtyOrdered: { path: 'qty' }, IsInvoiced: { const: 'N' } } },
   docAction: { serviceType: 'BridgeCompleteDDOrder', table: 'DD_Order', action: 'CO' } } };
 const ddoSpec = { keys: ['outcome', 'docstatus', 'lines', 'volume', 'weight', 'stock_delta'], notCompared: {} };
 let ddoLink = null;
@@ -896,7 +897,7 @@ async function localDDO1(mut, f) {
 }
 
 // ================= corpus (spec §23) =================
-const POSDT = 135, STDDT = 132;
+const POSDT = C.dt.pos, STDDT = C.dt.std;
 const sc = (id, facts) => ({ id, facts, legacy: legacyRun, local: localRun(0) });
 const corpus = [
   sc('S1-pos-sale', { doctype: POSDT, lines: [{ product: 123, qty: 1 }] }),
@@ -1134,7 +1135,7 @@ const quirks = [
   { const f4 = path.join(os.tmpdir(), 'm3-gbinv-' + process.pid + '.db'); fs.copyFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'glassbowl_data.db'), f4);
     const g4 = new Database(f4); require('./dict_diff').applyPatch(g4, GB_PATCH);
     if (!g4.prepare("SELECT 1 FROM pragma_table_info('m_product') WHERE name='producttype'").get()) g4.exec('ALTER TABLE m_product ADD COLUMN producttype');
-    for (const r of seed.prepare('SELECT M_Product_ID id, ProductType t FROM m_product WHERE ad_client_id=11').all()) g4.prepare('UPDATE m_product SET producttype=? WHERE m_product_id=?').run(r.t, r.id);   // the SQLite seed's product types (the §59 state sync does the same)
+    for (const r of seed.prepare('SELECT M_Product_ID id, ProductType t FROM m_product WHERE ad_client_id=' + C.client).all()) g4.prepare('UPDATE m_product SET producttype=? WHERE m_product_id=?').run(r.t, r.id);   // the SQLite seed's product types (the §59 state sync does the same)
     const t = {}, notes = [];
     for (const dbt of ['ARI', 'API', 'ARC', 'APC']) { t[dbt] = { MATCH: 0, ABSENT: 0, DIFF: 0 };
       for (const sc2 of [SCHEMA, SCHEMA2]) for (const id of g4.prepare("SELECT DISTINCT f.record_id r FROM fact_acct f JOIN c_invoice i ON i.c_invoice_id=f.record_id JOIN c_doctype d ON d.c_doctype_id=i.c_doctype_id WHERE f.ad_table_id=318 AND d.docbasetype=? AND f.c_acctschema_id=?").all(dbt, sc2).map(r => r.r)) {
