@@ -152,7 +152,19 @@ function foldLocal(g, f, opts, mut) {
 }
 // ===== AD-WINDOW path (spec §39): the line goes through the AD model layer the SQLite Sales Order window runs (~/bim-ootb/erp/model_order.js MOrderLine.beforeSave,
 // READ-ONLY require), then the kernel completes the draft order (pos_core.buildRecallCompleteGroup) and the books are folded as above.
-const OOTB = process.env.BRIDGE_OOTB || (fs.existsSync('/tmp/wt-ootb-erp-port/erp/model_layer.js') ? '/tmp/wt-ootb-erp-port' : path.join(os.homedir(), 'bim-ootb'));   // default = the ported engine worktree (branch port/sqlite-parity-erp)
+// BRIDGE_OOTB = a CURRENT bim-ootb checkout with erp/model_layer.js (e.g. a worktree of origin/main). No silent fallback to a stale tree (it false-GAPped S2b, 2026-10-11): without it, use an existing worktree from `git worktree list` whose HEAD is origin/main, else refuse.
+const OOTB = (() => {
+  if (process.env.BRIDGE_OOTB) return process.env.BRIDGE_OOTB;
+  const cp = require('child_process'), home = path.join(os.homedir(), 'bim-ootb');
+  try {
+    const main = cp.execFileSync('git', ['-C', home, 'rev-parse', 'origin/main']).toString().trim();
+    for (const l of cp.execFileSync('git', ['-C', home, 'worktree', 'list', '--porcelain']).toString().split('\n\n')) {
+      const wt = (l.match(/^worktree (.+)$/m) || [])[1], head = (l.match(/^HEAD (\w+)$/m) || [])[1];
+      if (wt && head === main && fs.existsSync(path.join(wt, 'erp/model_layer.js'))) return wt;
+    }
+  } catch (e) { /* fall through */ }
+  throw new Error('§OOTB_STALE set BRIDGE_OOTB to a current bim-ootb worktree (git -C ~/bim-ootb worktree list; add one off origin/main if none) — the default checkout is stale and false-GAPs S2b');
+})();
 let ADML = null, adDb = null, adWhy = null, adQ0 = null, adPrices = 0;
 try {
   ADML = require(path.join(OOTB, 'erp/model_layer.js')); require(path.join(OOTB, 'erp/model_order.js'));
