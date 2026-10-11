@@ -99,7 +99,9 @@ BEGIN
       ('QueryAAssetDisposed','A_Asset_Disposed',NULL::text[]),
       ('QueryAAssetChange','A_Asset_Change',NULL::text[]),
       -- §75 Asset Revaluation model (read-only)
-      ('QueryAAssetReval','A_Asset_Reval',NULL::text[])) AS v(val,tbl,cols) LOOP
+      ('QueryAAssetReval','A_Asset_Reval',NULL::text[]),
+      -- §77 Asset Transfer model (read-only)
+      ('QueryAAssetTransfer','A_Asset_Transfer',NULL::text[])) AS v(val,tbl,cols) LOOP
     IF EXISTS (SELECT 1 FROM ws_webservicetype WHERE value=d.val) THEN CONTINUE; END IF;
     t := (SELECT ad_table_id FROM ad_table WHERE tablename=d.tbl);
     tid := nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceType')::int,'N'::varchar);

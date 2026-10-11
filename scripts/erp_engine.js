@@ -1042,7 +1042,7 @@ function faRegisterAsset(asset, group, groupAccts) {
   (groupAccts || []).forEach(function (g) {
     if (!(Number(g.ad_org_id) === 0 || Number(g.ad_org_id) === Number(asset.ad_org_id))) return;
     var acct = {}; for (var c in g) acct[c] = g[c];
-    acct.a_asset_id = asset.a_asset_id; acct.ad_org_id = asset.ad_org_id; acct.a_period_start = 1; acct.a_period_end = Number(asset.uselifemonths || 0);
+    acct.a_asset_id = asset.a_asset_id; acct.ad_org_id = asset.ad_org_id; if (!acct.validfrom) acct.validfrom = '1970-01-01'; /* MAssetAcct.beforeSave :242-244 (spec §77) */ acct.a_period_start = 1; acct.a_period_end = Number(asset.uselifemonths || 0);
     accts.push(acct);
     workfiles.push({ a_asset_id: asset.a_asset_id, ad_org_id: asset.ad_org_id, c_acctschema_id: g.c_acctschema_id, postingtype: g.postingtype || 'A', isdepreciated: group.isdepreciated,
       a_asset_cost: 0, a_qty_current: 0, a_accumulated_depr: 0, a_accumulated_depr_f: 0, a_salvage_value: 0, a_current_period: 0, dateacct: null, assetdepreciationdate: null,
@@ -1219,9 +1219,34 @@ function faCompleteReval(reval, wk, ctx) {
   return { ok: true, docstatus: 'CO', workfile: w, revaldate: d };
 }
 
+// faCompleteTransfer — Asset Transfer (spec §77, F40): MAssetTransfer.prepareIt / completeIt (MAssetTransfer.java:162-261 @{u}), the rules in THAT order.
+// tr = { a_asset_id, c_acctschema_id, postingtype, dateacct, a_asset_acct, a_accumdepreciation_acct, a_depreciation_acct, a_disposal_revenue_acct, a_disposal_loss_acct, and the same five *_new_acct };
+// accts = the asset's A_Asset_Acct rows (schema + posting type of the document); wk = the PRIMARY workfile (minor units, dateacct); rows = the asset's expense rows;
+// ctx = { periodOpen:{ok} (GLJ) }. → { ok, docstatus, newAcct } — newAcct = copy of the row valid at DateAcct with the asset + accumulated accounts replaced and ValidFrom = DateAcct. Reasons are legacy's messages.
+function faCompleteTransfer(tr, accts, wk, rows, ctx) {
+  ctx = ctx || {};
+  var n = function (v) { return v == null || v === '' ? 0 : Number(v); }, d = String(tr.dateacct).slice(0, 10), pt = tr.postingtype || 'A';
+  if (ctx.periodOpen && !ctx.periodOpen.ok) return { ok: false, reason: 'Period Closed' };                                                    // :170
+  if (!wk) return { ok: false, reason: '@NotFound@ @A_Asset_ID@' };
+  if (wk.dateacct && d <= _faMonthEnd(wk.dateacct, -1)) return { ok: false, reason: 'AssetAlreadyDepreciatedException' };                     // :173-176 isDepreciated
+  var cur = (accts || []).filter(function (a) { return Number(a.c_acctschema_id) === Number(tr.c_acctschema_id) && (a.postingtype || 'A') === pt && a.validfrom && String(a.validfrom).slice(0, 10) <= d; })
+    .sort(function (x, y) { return String(y.validfrom) < String(x.validfrom) ? -1 : String(y.validfrom) > String(x.validfrom) ? 1 : 0; })[0];   // MAssetAcct.forA_Asset_ID :161-187
+  if (!cur) return { ok: false, reason: '@NoAccountOrgCurrency@' };
+  var K = ['a_asset_acct', 'a_accumdepreciation_acct', 'a_depreciation_acct', 'a_disposal_revenue_acct', 'a_disposal_loss_acct'];
+  if (K.some(function (k) { return n(cur[k]) !== n(tr[k]); })) return { ok: false, reason: 'The accounts have been changed' };                // :180-188
+  if (K.every(function (k) { return n(cur[k]) === n(tr[k.replace('_acct', '_new_acct')]); })) return { ok: false, reason: 'An account has been changed' };   // :192-200 (sic)
+  if (wk.dateacct && String(wk.dateacct).slice(0, 10) === d) return { ok: false, reason: 'Last day of month. Accounts will be changed next month' };   // :203-206
+  var m0 = _faMonth(d);
+  if ((rows || []).some(function (r) { return Number(r.a_asset_id) === Number(tr.a_asset_id) && (r.postingtype || 'A') === pt && r.processed !== 'Y' && _faMonth(r.dateacct) < m0; }))
+    return { ok: false, reason: 'There are unprocessed records to date' };                                                                  // :209 checkExistsNotProcessedEntries
+  var na = {}; for (var c in cur) na[c] = cur[c];                                                                                          // completeIt :239-245 PO.copyValues + the two accounts
+  na.a_asset_acct = tr.a_asset_new_acct; na.a_accumdepreciation_acct = tr.a_accumdepreciation_new_acct; na.validfrom = d;
+  return { ok: true, docstatus: 'CO', newAcct: na };
+}
+
 return {
   completeCash: completeCash, completeJournal: completeJournal, completeBankStatement: completeBankStatement, completeProjectIssue: completeProjectIssue, completeDDOrder: completeDDOrder, prepareRequisition: prepareRequisition, matchFromInvoice: matchFromInvoice, completeInOut: completeInOut, reverseInOut: reverseInOut, reverseInvoice: reverseInvoice, bpOpenBalance: bpOpenBalance, orderReserve: orderReserve, inoutOrderLineEffects: inoutOrderLineEffects, invoiceOrderLineEffects: invoiceOrderLineEffects,
-  faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faCompleteDisposal: faCompleteDisposal, faCompleteReval: faCompleteReval, faMonthEnd: _faMonthEnd,
+  faRegisterAsset: faRegisterAsset, faCompleteAddition: faCompleteAddition, faBuildDepreciation: faBuildDepreciation, faCompleteDepreciationEntry: faCompleteDepreciationEntry, faCompleteDisposal: faCompleteDisposal, faCompleteReval: faCompleteReval, faCompleteTransfer: faCompleteTransfer, faMonthEnd: _faMonthEnd,
   resolveCtx: resolveCtx, dialectShim: dialectShim, evalGuard: evalGuard, voidOrder: voidOrder, completeMovement: completeMovement, completePayment: completePayment, prepareInvoice: prepareInvoice, completeInventory: completeInventory, creditCheckOrder: creditCheckOrder, priceAt: priceAt, periodOpen: periodOpen, acctSetupGap: acctSetupGap, calcTax: calcTax, taxLookup: taxLookup, orderTaxes: orderTaxes,
   match: match, buildDoc: buildDoc, DOC_SPECS: DOC_SPECS, explodeBOM: explodeBOM,
   movementSign: movementSign, qtyOnHand: qtyOnHand, reversePosting: reversePosting,
