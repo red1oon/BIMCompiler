@@ -31,11 +31,14 @@ function compare(legacyRows, db, spec) {
   if (!cols.length) {   // §49: the SQLite db has no such table at all — every legacy row is missing; only a CREATE TABLE (schema patch) can fix it
     return { table: spec.table, legacy: legacyRows.length, local: 0, columns: 0, onlyLegacy: legacyRows, onlyLocal: [], changed: [], missingCols: lcols, missingTable: true, _common: [], _legacy: legacyRows, _localKeys: new Set(), _lcols: lcols };
   }
-  const common = cols.filter(c => lcols.includes(c) && !AUDIT.test(c) && !(spec.skip && spec.skip.test(c)));
+  const natKeys = spec.naturalMode ? new Set(keysOf(spec)) : null;   // §SHOPDAY-BUILD-1: ids differ across systems for a new client => *_id columns (other than the natural key) are not compared by value
+  const common = cols.filter(c => lcols.includes(c) && !AUDIT.test(c) && !(spec.skip && spec.skip.test(c)) && !(natKeys && /_id$/.test(c) && !natKeys.has(c)));
   const missingCols = lcols.filter(c => !cols.includes(c) && !AUDIT.test(c) && !(spec.skip && spec.skip.test(c)));
   if (spec.columnsOnly) return { table: spec.table, legacy: legacyRows.length, local: null, columns: common.length, onlyLegacy: [], onlyLocal: [], changed: [], missingCols, _common: common, columnsOnly: true };
   const below = spec.keyBelow ? ` WHERE ${k} < ${spec.keyBelow}` : '';
-  const local = new Map(db.prepare(`SELECT * FROM ${spec.table}${below}`).all().map(r => { const l = lc(r); return [keyVal(l, ks), l]; }));
+  // scoped run (scopeSpec): only this client's local rows, when the local table carries ad_client_id
+  const lw = spec.localClient && cols.includes('ad_client_id') ? (below ? ' AND ' : ' WHERE ') + (spec.clientIn0 ? `ad_client_id IN (0,${spec.localClient})` : `ad_client_id=${spec.localClient}`) : '';
+  const local = new Map(db.prepare(`SELECT * FROM ${spec.table}${below}${lw}`).all().map(r => { const l = lc(r); return [keyVal(l, ks), l]; }));
   const res = { table: spec.table, legacy: legacyRows.length, local: local.size, columns: common.length, onlyLegacy: [], onlyLocal: [], changed: [] };
   const seen = new Set();
   for (const lr of legacyRows) {
@@ -114,4 +117,18 @@ function applyPatch(db, sqlText) {
   } catch (e) { db.exec('ROLLBACK'); throw e; }
   return { altered, skipped, ran };
 }
-module.exports = { discover, compare, toPatch, toSchemaPatch, applyPatch };
+// Client scope (spec §SHOPDAY-BUILD-1 (c)): the same spec aimed at ONE client id. Rewrites the client filters of `where` (AD_Client_ID=<n> / IN (0,<n>)),
+// ADDS AD_Client_ID=<id> when the spec has none, and tells compare() to read only that client's local rows. opts.natural => key = spec.natural (ids are never compared).
+function scopeSpec(spec, clientId, opts = {}) {
+  const s = Object.assign({}, spec, { localClient: clientId });
+  let w = spec.where || '';
+  const reIn = /AD_Client_ID\s+IN\s*\(\s*0\s*,\s*\d+\s*\)/i, reEq = /AD_Client_ID\s*=\s*\d+/i;
+  if (reIn.test(w)) { w = w.replace(reIn, `AD_Client_ID IN (0,${clientId})`); s.clientIn0 = true; }
+  else if (reEq.test(w)) w = w.replace(reEq, `AD_Client_ID=${clientId}`);
+  else w = (w ? w + ' AND ' : '') + (spec.clientIn0 ? `AD_Client_ID IN (0,${clientId})` : `AD_Client_ID=${clientId}`);
+  s.where = w;
+  if (opts.natural) { const k0 = [].concat(spec.key)[0]; s.keyFilter = spec.keyFilter || `${k0} > 0`; if (spec.keyBelow) { s.where = (s.where ? s.where + ' AND ' : '') + `${k0} < ${spec.keyBelow}`; delete s.keyBelow; } }
+  if (opts.natural) { if (!spec.natural) throw new Error(`§DD_SCOPE ${spec.table} has no natural key`); s.key = spec.natural; s.naturalMode = true; }
+  return s;
+}
+module.exports = { scopeSpec, discover, compare, toPatch, toSchemaPatch, applyPatch };
