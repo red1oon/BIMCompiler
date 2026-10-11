@@ -123,7 +123,7 @@ function foldLocal(g, f, opts, mut) {
     let postingsShipment = 'none', refusedWhy, postingsShipmentEuro = 'none';
     if (shipDone) {                                                                // materialise SQLite's own completed shipment, fold with the product's derivePostings
       const sid = opts.inoutId;
-      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus) VALUES(?,?,?,?)').run(sid, 'Y', 'C-', 'CO');
+      gb.prepare('INSERT INTO m_inout(m_inout_id,issotrx,movementtype,docstatus,dateacct) VALUES(?,?,?,?,?)').run(sid, 'Y', 'C-', 'CO', (f.date || TODAY) + ' 00:00:00');   // §78: the shipment carries its DateAcct (legacy cost history is read at it)
       for (const l of g.soLines) gb.prepare('INSERT INTO m_inoutline(m_inoutline_id,m_inout_id,m_product_id,movementqty) VALUES(?,?,?,?)').run(sid * 100 + l.c_orderline_id % 100, sid, l.m_product_id, l.qtyordered);
       const dsh = DP.derivePostings(gb, { table: 'M_InOut', id: sid }, SCHEMA);
       // legacy has ONE state for any posting error (Posted=E, no books) ⇒ a refused SQLite fold is reported the same way; the reason is kept for the log (§38)
@@ -203,10 +203,8 @@ function localRunAD() {
 }
 // §38: the costed-qty deltas a committing host applies after a successful shipment post (legacy: same transaction) — keeps the scratch state moving like legacy's
 function applyCostQty(ioId) {
-  for (const u of DP.costQtyUpdates(gb, ioId)) {
-    const r = gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+?, currentcostprice=COALESCE(?, currentcostprice) WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.currentcostprice == null ? null : u.currentcostprice, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);   // §67.1: the price moves on additions
-    if (!r.changes) gb.prepare('INSERT INTO m_cost(m_product_id,c_acctschema_id,m_costtype_id,m_costelement_id,currentcostprice,cumulatedamt,cumulatedqty,currentqty) VALUES(?,?,?,?,0,0,0,?)').run(u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id, u.delta);
-  }
+  const h = gb.prepare('SELECT dateacct FROM m_inout WHERE m_inout_id=?').get(ioId), date = (h && h.dateacct) || TODAY;
+  for (const u of DP.costQtyUpdates(gb, ioId)) DP.applyCostUpdate(gb, u, date);   // §78: absolute new state + the MCostHistory row, one shared helper
 }
 
 // ================= Legacy side: push via the Bridge (composite) + read-back over read WS types =================
@@ -603,7 +601,7 @@ function localInventory(mut = 0) {
     for (const l of lines) gb.prepare('INSERT INTO m_inventoryline(m_inventoryline_id,m_inventory_id,m_locator_id,m_product_id,qtybook,qtycount,c_charge_id,isactive) VALUES(?,?,?,?,?,?,?,?)').run(l.m_inventoryline_id, iid, l.m_locator_id, l.m_product_id, l.qtybook, l.qtycount, null, 'Y');
     const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'M_Inventory', id: iid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
     const res = { outcome: 'COMPLETED', docstatus: status, lines: lines.map(l => `${l.m_product_id}:${l.qtybook}:${l.qtycount}`).sort().join('|'), stock_delta: JSON.stringify(stock), postings: fold(SCHEMA), postings_euro: fold(SCHEMA2) };
-    if (typeof DP.costQtyUpdatesFor === 'function') for (const u of DP.costQtyUpdatesFor(gb, 'M_Inventory', iid)) gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+?, currentcostprice=COALESCE(?, currentcostprice) WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.currentcostprice == null ? null : u.currentcostprice, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
+    if (typeof DP.costQtyUpdatesFor === 'function') for (const u of DP.costQtyUpdatesFor(gb, 'M_Inventory', iid)) DP.applyCostUpdate(gb, u, TODAY);
     res.cost_qty_delta = deltaStr(Object.keys(cq0), cq0, p => localCostQty(+p));
     return res;
   };
@@ -845,7 +843,7 @@ function localPJI(mut = 0) {
         cost: product ? DP.costAt(gb, product, qty, SCHEMA) : null });
     if (!r.ok) return { outcome: 'REJECTED', reason: r.reason };
     gb.prepare('INSERT INTO c_projectissue(c_projectissue_id,ad_client_id,ad_org_id,c_project_id,m_product_id,m_locator_id,movementqty,movementdate,docstatus) VALUES(?,?,?,?,?,?,?,?,?)').run(pid, 11, 11, f.project, product, f.loc, String(qty), TODAY + ' 00:00:00', 'CO');
-    for (const u of DP.costQtyUpdatesFor(gb, 'C_ProjectIssue', pid)) gb.prepare('UPDATE m_cost SET currentqty=COALESCE(currentqty,0)+? WHERE m_product_id=? AND c_acctschema_id=? AND m_costtype_id=? AND m_costelement_id=?').run(u.delta, u.m_product_id, u.c_acctschema_id, u.m_costtype_id, u.m_costelement_id);
+    for (const u of DP.costQtyUpdatesFor(gb, 'C_ProjectIssue', pid)) DP.applyCostUpdate(gb, u, TODAY);
     const stock = {}; for (const o of r.ops.filter(o => o.op_type === 'STOCK')) stock[`${o.m_product_id}@${o.m_locator_id}`] = (stock[`${o.m_product_id}@${o.m_locator_id}`] || 0) + o.qty;
     const bal = r.ops.find(o => o.table === 'C_Project');
     const fold = sc2 => { const d = DP.derivePostings(gb, { table: 'C_ProjectIssue', id: pid }, sc2); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? fmtPostings(d.lines) : 'none'); };
@@ -934,6 +932,13 @@ const quirks = [
       const L = await DD.discover(cfg, sp), r = DD.compare(L, gb, sp), st = DD.applyPatch(gb, DD.toSchemaPatch(r, sp) + DD.toPatch(r, sp)), r2 = DD.compare(L, gb, sp);
       sync.push(`${sp.table}:+${st.altered}col,${st.ran}stmt,left=${r2.changed.length + r2.onlyLegacy.length}`); }
     log(`§M3_STATE_SYNC ${sync.join(' ')}`); }
+  // §78 F9 handover: the legacy cost HISTORY (+ the schema of its cost detail) into the scratch posting db — the rows costHistoryAt reads. Dropped and re-created every run (legacy is the source).
+  { const det = new Map((await query(cfg, 'QueryMCostDetail', "AD_Client_ID=11 AND Processed='Y'")).map(lc).map(d => [Number(d.m_costdetail_id), d.c_acctschema_id]));
+    const hist = (await query(cfg, 'QueryMCostHistory', 'AD_Client_ID=11')).map(lc).filter(h => det.has(Number(h.m_costdetail_id)));
+    gb.exec('DROP TABLE IF EXISTS m_costhistory'); gb.exec('CREATE TABLE m_costhistory(m_costhistory_id INTEGER PRIMARY KEY, m_costdetail_id INTEGER, c_acctschema_id INTEGER, m_product_id INTEGER, m_costtype_id INTEGER, m_costelement_id INTEGER, m_attributesetinstance_id INTEGER, ad_org_id INTEGER, dateacct TEXT, oldqty NUMERIC, newqty NUMERIC, oldcostprice TEXT, newcostprice TEXT, oldcamt TEXT, newcamt TEXT, oldcqty NUMERIC, newcqty NUMERIC)');
+    const ins = gb.prepare('INSERT INTO m_costhistory VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+    gb.transaction(() => { for (const h of hist) ins.run(Number(h.m_costhistory_id), Number(h.m_costdetail_id), Number(det.get(Number(h.m_costdetail_id))), Number(h.m_product_id), Number(h.m_costtype_id), Number(h.m_costelement_id), Number(h.m_attributesetinstance_id || 0), Number(h.ad_org_id || 0), String(h.dateacct), Number(h.oldqty), Number(h.newqty), String(h.oldcostprice), String(h.newcostprice), String(h.oldcamt), String(h.newcamt), Number(h.oldcqty), Number(h.newcqty)); })();
+    log(`§F9_HISTORY_SYNC rows=${hist.length} of ${'legacy'} (details processed=${det.size})`); }
   // S7 (spec §31): quantity = legacy on-hand now (floored at 0) + 1 ⇒ every run sells beyond on-hand
   // and beyond the legacy Average-PO costed qty (QueryMCost), so the verdict cannot flip between runs (a refused posting leaves costed qty unchanged)
   const oh128 = await stockOf(128);
@@ -990,7 +995,7 @@ const quirks = [
     o2cNeg = nr;
   }
   // F9 BACK-DATE COSTING (spec §78): CLEAN product 141 (Weeder, costed 30, no harness history). Receipt TODAY, then sales dated BEFORE it. Run alone: M3_ONLY=F9
-  if (only && only.startsWith('F9')) {
+  if (!only || only.startsWith('F9')) {
     const F9P = 141, ctxF = { cfg, query, createLink, gb, seed, E, DP, SCHEMA, SCHEMA2, TODAY, cents, lc, fmtPostings, legacyFactsOf, locStock, taxRows, taxById, taxChildren, log, product: F9P, qty: 2, price: 8, idBase: 94000 };
     const P2F = require('./cycle_p2p')(ctxF);
     for (const [i, st] of ['PO', 'RCPT'].entries()) rows.push(...await R.run([{ ...P2F.scenario(st, i), id: 'F9-' + st }], { keys: P2F.KEYS[st], notCompared: {} }, quirks, { log }));
@@ -1002,8 +1007,21 @@ const quirks = [
     const f9sale = (id, date, qty) => ({ id, facts: { doctype: POSDT, date, lines: [{ product: F9P, qty }] },
       legacy: async f => { const r = await legacyRun(f); if (r.outcome === 'COMPLETED') { r.cost_state = await costStateL(); r.books_receipt_after = await rcptL(); } return r; },
       local: async f => { const r = await localRun(0)(f); if (r.outcome === 'COMPLETED') { r.cost_state = costStateS(); r.books_receipt_after = P2F.S.rcpt ? (fmtPostings(DP.derivePostings(gb, { table: 'M_InOut', id: P2F.S.rcpt }, SCHEMA).lines)) : 'none'; } return r; } });
-    rows.push(...await R.run([f9sale('F9a-sale-backdated-before-receipt', '2026-09-15', 1)], f9Spec, quirks, { log }));
-    log(`§F9_STATE legacy_cost=${await costStateL()} sqlite_cost=${costStateS()}`);
+    // §F9_NOT_VACUOUS: the history price of the back-date must differ from the current m_cost price, else the scenario cannot tell history from current cost
+    { const mc = gb.prepare('SELECT currentcostprice p FROM m_cost WHERE m_product_id=? AND c_acctschema_id=? AND m_costelement_id=?').get(F9P, SCHEMA, AVG_EL), ct = gb.prepare('SELECT m_costtype_id t FROM c_acctschema WHERE c_acctschema_id=?').get(SCHEMA).t;
+      const h = DP.costHistoryAt(gb, F9P, SCHEMA, ct, AVG_EL, '2026-09-15');
+      out('§F9_NOT_VACUOUS', h && Number(h.newcostprice) !== Number(mc.p) ? true : 'INCONCLUSIVE', `history price at 2026-09-15 = ${h && h.newcostprice} (hid ${h && h.hid}) vs m_cost price now = ${mc.p}`); }
+    const f9rows = [];
+    for (const [id, date, qty] of [['F9a-sale-backdated-before-receipt', '2026-09-15', 1], ['F9b-second-sale-same-backdate', '2026-09-15', 1], ['F9c-sale-today-after-backdated', TODAY, 1], ['F9d-backdated-sale-beyond-history-qty', '2026-09-15', 1000]])
+      f9rows.push(...await R.run([f9sale(id, date, qty)], f9Spec, quirks, { log }));
+    rows.push(...f9rows);
+    out('§F9_COMPLETED', f9rows.slice(0, 3).every(r => r.legacy.outcome === 'COMPLETED' && r.legacy.postings_shipment !== 'REFUSED:Posted=E') && f9rows[3].legacy.postings_shipment === 'REFUSED:Posted=E' ? true : 'INCONCLUSIVE',
+      `legacy: a/b/c completed+posted, d refused ⇒ shipments ${f9rows.map(r => r.legacy.postings_shipment).join(' ; ')}`);
+    // negative control: perturb the SQLite history price (+0.01) — the SAME sale must surface as a SQLITE-GAP on the shipment books and the cost state
+    gb.prepare('UPDATE m_costhistory SET newcostprice = CAST(newcostprice AS REAL) + 0.01 WHERE m_product_id=?').run(F9P);
+    const fneg = await R.run([{ ...f9sale('NEG-f9-history-price', '2026-09-15', 1) }], f9Spec, quirks, { log });
+    out('§F9_NEGATIVE_CONTROL', fneg[0].verdict === 'SQLITE-GAP' && ['postings_shipment', 'cost_state'].every(k => fneg[0].gaps.some(g => g.key === k)), `+0.01 on the SQLite history price ⇒ ${fneg[0].verdict} gaps=${fneg[0].gaps.map(g => g.key).join(',')}`);
+    log(`§F9_STATE legacy_cost=${await costStateL()}`);
   }
   // FULL CYCLE Purchase-to-Pay (spec §65)
   let p2pNeg = null;
