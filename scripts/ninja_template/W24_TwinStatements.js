@@ -1,7 +1,7 @@
 // W24 — stone 2b: for every statement ninja_template.js builds, compare the PG clone result with the SQLite twin-snapshot result (same rows, dialect adapter on).
 // Verdicts per statement: SAME | SQLITE_ERROR | ROWCOUNT | VALUES ; statements where PG returned nothing are counted as NOT-JUDGED (INCONCLUSIVE for value parity).
 const X=require('/home/red1/bim-compiler/node_modules/xlsx'),cp=require('child_process'),T=require('/home/red1/bim-compiler/build/erp/ninja_template.js'),D=require('/home/red1/bim-compiler/node_modules/better-sqlite3');
-const L='/home/red1/Projects/LaosExpenseReport/'; const db=new D(L+'legacy/twin_snapshot.db',{readonly:true}); T.registerPgBuiltins((n,f)=>db.function(n,{varargs:true},f));
+const L=(process.env.NT_DATA||'/home/red1/Projects/LaosExpenseReport')+'/'; const db=new D(L+'legacy/twin_snapshot.db',{readonly:true}); T.registerPgBuiltins((n,f)=>db.function(n,{varargs:true},f));
 function pg(sql){ const r=cp.spawnSync('python3',[L+'witness/pg_exec.py'],{input:sql,encoding:'utf8',maxBuffer:1<<28}); const j=JSON.parse(r.stdout); if(j.error) throw new Error('PG: '+j.error); return j.rows; }
 const EX=T.sqliteExecutor(db);
 function lite(sql){ if(process.env.NEG==='noscale'){ const rows=db.prepare(T.pgToSqlite(sql)).raw().all(); return rows.map(r=>r.map(v=>T.typedFromSqlite(v))); } return EX(sql); }   // NEG=noscale = the old scale-blind adapter (must FAIL on parity_v2)

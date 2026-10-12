@@ -1,0 +1,299 @@
+#merged	10
+#col	0	1393	true
+#col	1	1380	false
+#col	2	2802	false
+#col	3	10848	false
+#col	4	4143	false
+#col	5	4143	false
+#col	6	4143	false
+#col	7	4143	false
+#col	8	3612	false
+#col	9	3612	false
+#row	0	320
+E1	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	1	320
+B2	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	CENTER/CENTER/false
+#row	2	320
+B3	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	CENTER/CENTER/false
+#row	3	320
+#row	4	320
+B5	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	LEFT/CENTER/false
+F5	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+G5	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	5	320
+B6	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	LEFT/CENTER/false
+#row	6	320
+B7	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	LEFT/CENTER/false
+H7	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	RIGHT/CENTER/false
+#row	7	320
+H8	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	RIGHT/CENTER/false
+#row	8	320
+B9	Phetsarath OT/12/btrue/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	CENTER/CENTER/false
+#row	9	320
+B10	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	General	CENTER/CENTER/false
+I10	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	10	440
+B11	Phetsarath OT/11/bfalse/ifalse/u0	-	none	NONE,THIN,NONE,NONE	General	CENTER/CENTER/false
+C11	Phetsarath OT/11/bfalse/ifalse/u0	-	none	NONE,THIN,NONE,NONE	General	CENTER/CENTER/false
+D11	Phetsarath OT/11/bfalse/ifalse/u0	-	none	NONE,THIN,NONE,NONE	General	CENTER/CENTER/false
+E11	Phetsarath OT/11/bfalse/ifalse/u0	-	none	NONE,THIN,NONE,NONE	General	CENTER/CENTER/false
+F11	Phetsarath OT/11/bfalse/ifalse/u0	-	none	NONE,THIN,NONE,NONE	General	CENTER/CENTER/false
+G11	Phetsarath OT/11/bfalse/ifalse/u0	-	none	NONE,THIN,NONE,NONE	General	CENTER/CENTER/false
+H11	Phetsarath OT/11/bfalse/ifalse/u0	-	none	NONE,THIN,NONE,NONE	General	CENTER/CENTER/false
+I11	Phetsarath OT/12/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	@	RIGHT/CENTER/false
+#row	11	270
+B12	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,NONE,THIN,THIN	General	CENTER/CENTER/false
+C12	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,NONE,THIN,THIN	General	CENTER/CENTER/true
+D12	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,NONE,THIN,THIN	General	CENTER/CENTER/false
+E12	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,THIN,THIN,NONE	General	CENTER/CENTER/false
+F12	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,THIN,NONE,THIN	General	CENTER/CENTER/false
+G12	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,NONE,THIN,THIN	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+H12	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,NONE,THIN,THIN	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+I12	Phetsarath OT/9/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	12	270
+B13	Phetsarath OT/9/btrue/ifalse/u0	-	none	NONE,THIN,THIN,THIN	General	CENTER/CENTER/false
+C13	Phetsarath OT/9/btrue/ifalse/u0	-	none	NONE,THIN,THIN,THIN	General	CENTER/CENTER/false
+D13	Phetsarath OT/9/btrue/ifalse/u0	-	none	NONE,THIN,THIN,THIN	General	CENTER/CENTER/false
+E13	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+F13	Phetsarath OT/9/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+G13	Phetsarath OT/9/btrue/ifalse/u0	-	none	NONE,THIN,THIN,THIN	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+H13	Phetsarath OT/9/btrue/ifalse/u0	-	none	NONE,THIN,THIN,THIN	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+I13	Phetsarath OT/9/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	13	255
+B14	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+C14	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+D14	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E14	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F14	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G14	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H14	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I14	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	14	255
+B15	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C15	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	@	LEFT/CENTER/false
+D15	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E15	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F15	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G15	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H15	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I15	Phetsarath OT/8/btrue/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	15	255
+B16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	RIGHT/CENTER/false
+C16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I16	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	16	255
+A17	Phetsarath OT/8/btrue/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B17	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C17	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D17	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E17	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F17	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G17	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H17	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I17	Phetsarath OT/8/btrue/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	17	255
+B18	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C18	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	@	LEFT/CENTER/false
+D18	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E18	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F18	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G18	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H18	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I18	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	18	255
+A19	Phetsarath OT/8/btrue/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B19	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C19	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D19	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E19	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F19	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G19	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H19	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I19	Phetsarath OT/8/btrue/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	19	255
+B20	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C20	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D20	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E20	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F20	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G20	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H20	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I20	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	20	255
+A21	Phetsarath OT/8/btrue/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B21	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C21	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D21	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E21	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F21	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G21	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H21	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I21	Phetsarath OT/8/btrue/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	21	255
+B22	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C22	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D22	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E22	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F22	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G22	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H22	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I22	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	22	255
+A23	Phetsarath OT/8/bfalse/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B23	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+C23	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D23	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E23	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F23	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G23	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H23	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I23	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	23	255
+B24	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C24	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D24	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E24	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F24	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G24	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H24	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I24	Phetsarath OT/8/btrue/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	24	255
+B25	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	RIGHT/CENTER/false
+C25	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D25	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E25	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F25	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G25	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H25	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+I25	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	25	255
+A26	Phetsarath OT/8/btrue/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B26	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C26	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D26	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E26	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F26	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G26	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H26	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	26	255
+B27	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C27	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D27	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E27	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F27	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G27	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H27	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	27	255
+A28	Phetsarath OT/8/btrue/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B28	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C28	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D28	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E28	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F28	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G28	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H28	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	28	255
+B29	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C29	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D29	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E29	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F29	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G29	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H29	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	29	255
+A30	Phetsarath OT/8/btrue/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B30	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C30	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D30	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E30	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F30	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G30	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H30	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	30	255
+B31	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+C31	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+D31	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E31	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F31	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G31	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H31	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	31	255
+A32	Phetsarath OT/8/bfalse/ifalse/u0	000000	none	NONE,NONE,NONE,NONE	General	GENERAL/BOTTOM/false
+B32	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+C32	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+D32	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	LEFT/CENTER/false
+E32	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F32	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G32	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H32	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	32	255
+B33	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	RIGHT/CENTER/false
+C33	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+D33	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E33	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F33	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G33	Phetsarath OT/8/btrue/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H33	Phetsarath OT/8/btrue/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	33	255
+B34	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	RIGHT/CENTER/false
+C34	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+D34	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E34	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F34	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G34	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H34	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	34	255
+B35	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	RIGHT/CENTER/false
+C35	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	CENTER/CENTER/false
+D35	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	General	GENERAL/CENTER/false
+E35	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+F35	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+G35	Phetsarath OT/8/bfalse/ifalse/u0	-	none	THIN,THIN,THIN,THIN	_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-	RIGHT/CENTER/false
+H35	Phetsarath OT/8/bfalse/ifalse/u0	-	SOLID_FOREGROUND/FFFFFF	THIN,THIN,THIN,THIN	#,##0.00_);(#,##0.00)	GENERAL/CENTER/false
+#row	35	255
+E36	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+F36	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+G36	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+H36	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	GENERAL/CENTER/false
+#row	36	255
+B37	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+C37	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	000	CENTER/CENTER/false
+D37	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+E37	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	@	CENTER/CENTER/false
+F37	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	@	CENTER/CENTER/false
+G37	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/CENTER/false
+H37	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	RIGHT/CENTER/false
+#row	37	381
+G38	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/BOTTOM/false
+#row	38	2124
+E39	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/BOTTOM/false
+H39	Phetsarath OT/8/bfalse/ifalse/u0	-	none	NONE,NONE,NONE,NONE	_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)	CENTER/BOTTOM/false
+#row	39	381
+#row	40	381
+#row	41	381
+#row	42	381
+#row	43	381
+#row	44	381
+#row	45	381
+#row	46	381
+#row	47	381
+#row	48	381
+#row	49	381
+#row	50	381
+#row	51	381
+#row	52	381
+#row	53	381
+#row	54	381
+#row	55	381
+#row	56	381
+#row	57	381
+#row	58	381
+#row	59	381
+#row	60	381
+#row	61	381
+#row	62	381

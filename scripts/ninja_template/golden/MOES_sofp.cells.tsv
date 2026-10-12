@@ -1,0 +1,903 @@
+Output	B2	s	ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ
+Output	B3	s	ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ
+Output	B5	s	Stores
+Output	B6	s	Stores
+Output	B7	s	Stores
+Output	H7	s	ເລກທີ...................
+Output	H8	s	,ວັນທີ....................
+Output	B9	s	ໃບລາຍງານພື້ນຖານຂໍ້ມູນຖານະການເງິນ 
+Output	B10	s	ປະຈໍາ
+Output	B13	s	ລ/ດ
+Output	C13	s	ເນື້ອໃນລາຍການ
+Output	E13	s	ຍອດ
+Output	F13	s	ລາຍການເຄື່ອນໄຫວ
+Output	H13	s	ຍອດເຫລືອ
+Output	E14	s	ຍົກມາ
+Output	F14	s	ເກີດຂຶ້ນ
+Output	G14	s	ຊຳລະ
+Output	B15	s	ຍອດເຫຼືອງົບປະມານ
+Output	H15	f	F15-G15
+Output	B16	s	I.
+Output	D16	s	ໜີ້ຕ້ອງຮັບ (ມອບງົບປະມານ )
+Output	E16	f	SUM(E17:E18)
+Output	F16	f	SUM(F17:F18)
+Output	G16	f	SUM(G17:G18)
+Output	H16	f	E16+F16-G16
+Output	D17	s	   • ລາຍການຈ່າຍ ລໍຖ້າຈັດສັນ ແລະ ສະສາງ (ລາຍຈ່າຍລ່ວງໜ້າຄ່າບໍລິການ)
+Output	D18	s	   • ໜີ້ຕ້ອງຮັບອື່ນໆ
+Output	B19	s	II.
+Output	D19	s	ໜີ້ຕ້ອງສົ່ງ
+Output	B20	s	II.1
+Output	D20	s	ລາຍຈ່າຍງົບປະມານ (ໃນປີ)
+Output	E20	f	SUM(E21:E27)
+Output	F20	f	SUM(F21:F27)
+Output	G20	f	SUM(G21:G27)
+Output	H20	f	E20+F20-G20
+Output	D21	s	   • ລາຍຈ່າຍ ເງິນເດືອນ ແລະ ເງິນອຸດຫນູນ ( 4110 )
+Output	H21	f	+E21+F21-G21
+Output	D22	s	   • ລາຍຈ່າຍ ເງິນນະໂຍບາຍ ແລະ ເງິນຊ່ວຍຫນູນຕ່າງໆ ( 4111 )
+Output	H22	f	+E22+F22-G22
+Output	D23	s	   • ລາຍຈ່າຍ ບໍລິຫານປົກກະຕິ ( 4112 )
+Output	H23	f	+E23+F23-G23
+Output	D24	s	   • ລາຍຈ່າຍ ເງິນດັດສົມ ສົ່ງເສີມ ແລະ ເງິນບຳລຸງ ( 4113 )
+Output	H24	f	+E24+F24-G24
+Output	D25	s	   • ລາຍຈ່າຍ ອື່ນໆ ( 4115 )
+Output	H25	f	+E25+F25-G25
+Output	D26	s	   • ລາຍຈ່າຍ ຊື້ຊັບສົມບັດຄົງທີ ຮັບໃຊ້ບໍລິຫານ ( 4116 )
+Output	H26	f	+E26+F26-G26
+Output	D27	s	   • ລາຍຈ່າຍ ລົງທຶນຂອງລັດ  (4117 )
+Output	H27	f	+E27+F27-G27
+Output	B28	s	II.2
+Output	D28	s	ຊໍາລະໜີ້ສິນປີເກົ່າ (ໃບຂໍຖອນຄ້າງຈ່າຍ)
+Output	E28	f	SUM(E29:E34)
+Output	F28	f	SUM(F29:F34)
+Output	G28	f	SUM(G29:G34)
+Output	H28	f	E28+F28-G28
+Output	D29	s	   • ລາຍຈ່າຍ ບໍລິຫານປົກກະຕິ (412001)
+Output	H29	f	E29+F29-G29
+Output	D30	s	   • ລາຍຈ່າຍ ດັດສົມ ແລະ ສົ່ງເສີມ (412002)
+Output	H30	f	E30+F30-G30
+Output	D31	s	   • ລາຍຈ່າຍ ລົງທຶນຂອງລັດ (412003)
+Output	H31	f	E31+F31-G31
+Output	D32	s	   • ລາຍຈ່າຍ ເງິນເດືອນ ແລະ ເງິນອຸດໜູນ (412004)
+Output	H32	f	E32+F32-G32
+Output	D33	s	   • ລາຍຈ່າຍ ເງິນນະໂຍບາຍ ແລະ ເງິນຊ່ວຍໜູນຕ່າງໆ (412005)
+Output	H33	f	E33+F33-G33
+Output	D34	s	   • ລາຍຈ່າຍ ຊື້ຊັບສົມບັດ ຮັບໃຊ້ບໍລິຫານ (412006)
+Output	H34	f	E34+F34-G34
+Output	B35	s	II.3
+Output	D35	s	ໜີ້ຕ້ອງສົ່ງອື່ນໆ
+Output	D36	s	   • ການຮັບເງິນ - ຈາກຄັງເງິນແຫ່ງຊາດ
+Output	E36	f	E37-E38-E39
+Output	F36	f	SUM(F37:F39)
+Output	G36	f	SUM(G37:G39)
+Output	H36	f	E36+F36-G36
+Output	D37	s	   - ງົບປະມານໃນປີ
+Output	D38	s	   - ການຫັກປະກັນສັງຄົມ (12901)
+Output	D39	s	   - ການຫັກອາກອນລາຍໄດ້ ( 12902 )
+Output	D40	s	   •  ໜີ້ຕ້ອງສົ່ງ-ລາຍຈ່າຍ ຊໍາລະໜີ້ສິນປີເກົ່າ (ໃບຂໍຖອນຄ້າງຈ່າຍ)
+Output	H40	f	E40+F40-G40
+Output	D41	s	   • ການຮັບເງິນ - ຄ່າທຳນຽມ ແລະ ຄ່າບໍລິການ
+Output	H41	f	E41+F41-G41
+Output	B42	s	III.
+Output	D42	s	ລາຍຈ່າຍລ່ວງໜ້າລໍຖ້າສະສາງ (5460)
+Output	H42	f	E42+F42-G42
+Output	D43	s	   • ລາຍການຈ່າຍ ລໍຖ້າຈັດສັນ ແລະ ສະສາງ ( ວິຊາການ ) (54600000.01)
+Output	H43	f	E43+F43-G43
+Output	D44	s	   • ລາຍການຈ່າຍ ລໍຖ້າຈັດສັນ ແລະ ສະສາງ ( ງົບປະມານລັດ ) (54600000.02)
+Output	H44	f	E44+F44-G44
+Output	D45	s	   • ລາຍການຈ່າຍ ລໍຖ້າຈັດສັນ ແລະ ສະສາງ ອື່ນໆ (54600000.03)
+Output	H45	f	E45+F45-G45
+Output	B46	s	IV.
+Output	D46	s	ຍອດເຫລືອຄັງເງິນລວມ
+Output	E46	f	SUM(E47:E48)
+Output	F46	f	SUM(F47:F48)
+Output	G46	f	SUM(G47:G48)
+Output	H46	f	SUM(H47:H48)
+Output	D47	s	   • ເງິນສົດໃນຄັງ ( ກີບ )
+Output	H47	f	+E47+F47-G47
+Output	D48	s	   • ບັນຊີເງິນຝາກຄັງເງິນແຫ່ງຊາດ
+Output	H48	f	+E48+F48-G48
+Process	A1	s	ANNOTATION
+Process	B1	s	ROW
+Process	C1	s	SELECT
+Process	D1	s	TABLE
+Process	E1	s	JOIN
+Process	F1	s	WHERE  
+Process	G1	s	ADDRESS
+Process	H1	s	Direction
+Process	I1	s	VALUES
+Process	K1	s	WILL CLEAN ITSELF DURING EXECUTION
+Process	N1	s	END
+Process	A2	f	CONCATENATE("@",C2,"@",B2)
+Process	B2	f	ROW()
+Process	C2	s	op.orgname1
+Process	D2	s	ad_org a
+Process	G2	s	B5
+Process	H2	s	S
+Process	I2	s	HQ
+Process	J2	s	Furniture
+Process	K2	s	Fertilizer
+Process	L2	s	Store North
+Process	M2	s	Store South
+Process	N2	s	Store East
+Process	O2	s	Store West
+Process	P2	s	Store Central
+Process	Q2	s	Stores
+Process	A3	f	CONCATENATE("@",C3,"@",B3)
+Process	B3	f	ROW()
+Process	C3	s	op.orgname2
+Process	D3	s	INNER JOIN AD_OrgPosition op ON a.ad_org_id=op.ad_org_id
+Process	G3	s	B6
+Process	H3	s	S
+Process	I3	s	HQ
+Process	J3	s	Furniture
+Process	K3	s	Fertilizer
+Process	L3	s	Store North
+Process	M3	s	Store South
+Process	N3	s	Store East
+Process	O3	s	Store West
+Process	P3	s	Store Central
+Process	Q3	s	Stores
+Process	A4	f	CONCATENATE("@",C4,"@",B4)
+Process	B4	f	ROW()
+Process	C4	s	op.orgname3
+Process	G4	s	B7
+Process	H4	s	S
+Process	I4	s	HQ
+Process	J4	s	Furniture
+Process	K4	s	Fertilizer
+Process	L4	s	Store North
+Process	M4	s	Store South
+Process	N4	s	Store East
+Process	O4	s	Store West
+Process	P4	s	Store Central
+Process	Q4	s	Stores
+Process	A5	f	CONCATENATE("@",C5,"@",B5)
+Process	B5	f	ROW()
+Process	C5	s	op.orglocation
+Process	G5	s	G8
+Process	H5	s	S
+Process	I5	s	NULL
+Process	J5	s	NULL
+Process	K5	s	NULL
+Process	L5	s	NULL
+Process	M5	s	NULL
+Process	N5	s	NULL
+Process	O5	s	NULL
+Process	P5	s	NULL
+Process	Q5	s	NULL
+Process	A6	f	CONCATENATE("@",C6,"@",B6)
+Process	B6	f	ROW()
+Process	C6	s	org.name
+Process	D6	s	fact_acct a
+Process	F6	s	a.dateacct between #1 and #2
+Process	H6	s	S
+Process	J6	s	END
+Process	A7	f	CONCATENATE("@",C7,"@",B7)
+Process	B7	f	ROW()
+Process	C7	s	#1
+Process	D7	s	INNER JOIN ad_org org ON org.ad_org_id=a.ad_org_id
+Process	H7	s	S
+Process	J7	s	END
+Process	A8	f	CONCATENATE("@",C8,"@",B8)
+Process	B8	f	ROW()
+Process	C8	s	CONCAT(to_char(DATE #1, 'DD/MM/YYYY'),' - ',to_char(DATE #2, 'DD/MM/YYYY'))
+Process	G8	s	B11
+Process	H8	s	S
+Process	J8	s	END
+Process	A9	f	CONCATENATE("@",C9,"@",B9)
+Process	B9	f	ROW()
+Process	C9	s	op.position1
+Process	D9	s	ad_org a
+Process	H9	s	S
+Process	I9	s	NULL
+Process	J9	s	NULL
+Process	K9	s	NULL
+Process	L9	s	NULL
+Process	M9	s	NULL
+Process	N9	s	END
+Process	A10	f	CONCATENATE("@",C10,"@",B10)
+Process	B10	f	ROW()
+Process	C10	s	op.position2
+Process	D10	s	INNER JOIN AD_OrgPosition op ON a.ad_org_id=op.ad_org_id
+Process	G10	s	H51
+Process	H10	s	S
+Process	I10	s	NULL
+Process	J10	s	NULL
+Process	K10	s	NULL
+Process	L10	s	NULL
+Process	M10	s	NULL
+Process	A11	f	CONCATENATE("@",C11,"@",B11)
+Process	B11	f	ROW()
+Process	C11	s	op.position3
+Process	G11	s	E51
+Process	H11	s	S
+Process	I11	s	NULL
+Process	J11	s	NULL
+Process	K11	s	NULL
+Process	L11	s	NULL
+Process	M11	s	NULL
+Process	A12	f	CONCATENATE("@",C12,"@",B12)
+Process	B12	f	ROW()
+Process	C12	s	op.position4
+Process	G12	s	B51
+Process	H12	s	S
+Process	I12	s	NULL
+Process	J12	s	NULL
+Process	K12	s	NULL
+Process	L12	s	NULL
+Process	M12	s	NULL
+Process	A13	f	CONCATENATE("@",C13,"@",B13)
+Process	B13	f	ROW()
+Process	C13	s	op.position5
+Process	H13	s	S
+Process	I13	s	NULL
+Process	J13	s	NULL
+Process	K13	s	NULL
+Process	L13	s	NULL
+Process	M13	s	NULL
+Process	A14	f	CONCATENATE("@",C14,"@",B14)
+Process	B14	f	ROW()
+Process	C14	s	op.name
+Process	H14	s	S
+Process	I14	s	HQ
+Process	J14	s	Furniture
+Process	K14	s	Fertilizer
+Process	L14	s	Store North
+Process	M14	s	Store South
+Process	A15	f	CONCATENATE("@",C15,"@",B15)
+Process	B15	f	ROW()
+Process	C15	s	op.name2
+Process	G15	s	H52
+Process	H15	s	S
+Process	I15	s	NULL
+Process	J15	s	NULL
+Process	K15	s	NULL
+Process	L15	s	NULL
+Process	M15	s	NULL
+Process	A16	f	CONCATENATE("@",C16,"@",B16)
+Process	B16	f	ROW()
+Process	C16	s	op.name3
+Process	G16	s	E52
+Process	H16	s	S
+Process	I16	s	NULL
+Process	J16	s	NULL
+Process	K16	s	NULL
+Process	L16	s	NULL
+Process	M16	s	NULL
+Process	A17	f	CONCATENATE("@",C17,"@",B17)
+Process	B17	f	ROW()
+Process	C17	s	op.name4
+Process	G17	s	B52
+Process	H17	s	S
+Process	I17	s	NULL
+Process	J17	s	NULL
+Process	K17	s	NULL
+Process	L17	s	NULL
+Process	M17	s	NULL
+Process	A18	f	CONCATENATE("@",C18,"@",B18)
+Process	B18	f	ROW()
+Process	C18	s	op.name5
+Process	H18	s	S
+Process	I18	s	NULL
+Process	J18	s	NULL
+Process	K18	s	NULL
+Process	L18	s	NULL
+Process	M18	s	NULL
+Process	A19	f	CONCATENATE("@",C19,"@",B19)
+Process	B19	f	ROW()
+Process	C19	s	DISTINCT left(el.value,4)
+Process	D19	s	ad_org a
+Process	F19	s	 LEFT(el.value,4) IN ('4110' , '4111', '4112', '4113', '4115', '4116', '4117')
+Process	G19	s	A21
+Process	H19	s	V
+Process	D20	s	INNER JOIN c_elementvalue el ON el.AD_Client_ID= a.AD_Client_ID
+Process	A21	f	CONCATENATE("@",C21,"@",B21)
+Process	B21	f	ROW()
+Process	C21	s	DISTINCT left(el.value,6)
+Process	D21	s	ad_org a
+Process	F21	s	 LEFT(el.value,6) IN ('412001' , '412002', '412003', '412004', '412005', '412006')
+Process	G21	s	A29
+Process	H21	s	V
+Process	D22	s	INNER JOIN c_elementvalue el ON el.AD_Client_ID= a.AD_Client_ID
+Process	A23	f	CONCATENATE("@",C23,"@",B23)
+Process	B23	f	ROW()
+Process	C23	s	DISTINCT el.value
+Process	D23	s	ad_org a
+Process	F23	s	el.value IN ('54600000.01' , '54600000.02', '54600000.03')
+Process	G23	s	A43
+Process	H23	s	V
+Process	D24	s	INNER JOIN c_elementvalue el ON el.AD_Client_ID= a.AD_Client_ID
+Process	A25	f	CONCATENATE("@",C25,"@",B25)
+Process	B25	f	ROW()
+Process	C25	s	el.value
+Process	D25	s	fact_acct a
+Process	F25	s	vdoc.docname <> 'ການປິດປີ'  AND el.value='14100000' AND (a.dateacct between #1 and #2 ) 
+Process	H25	s	S
+Process	M25	s	END
+Process	A26	f	CONCATENATE("@",C26,"@",B26)
+Process	B26	f	ROW()
+Process	C26	s	sum(a.amtacctcr)
+Process	D26	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F26	s	GROUP BY el.value
+Process	G26	s	F15
+Process	H26	s	S
+Process	M26	s	END
+Process	D27	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F27	s	ORDER BY  el.value
+Process	A28	f	CONCATENATE("@",C28,"@",B28)
+Process	B28	f	ROW()
+Process	C28	s	el.value
+Process	D28	s	fact_acct a
+Process	F28	s	 vdoc.docname <> 'ການປິດປີ'  AND el.value='14100000' AND (a.dateacct between #1 and #2 ) 
+Process	H28	s	S
+Process	A29	f	CONCATENATE("@",C29,"@",B29)
+Process	B29	f	ROW()
+Process	C29	s	sum(a.amtacctdr)
+Process	D29	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F29	s	GROUP BY el.value
+Process	G29	s	G15
+Process	H29	s	S
+Process	D30	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F30	s	ORDER BY  el.value
+Process	A31	f	CONCATENATE("@",C31,"@",B31)
+Process	B31	f	ROW()
+Process	C31	s	el.value
+Process	D31	s	fact_acct a
+Process	F31	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND el.value='54600000.01' AND  a.dateacct < #1
+Process	H31	s	S
+Process	A32	f	CONCATENATE("@",C32,"@",B32)
+Process	B32	f	ROW()
+Process	C32	s	sum(a.amtacctdr - a.amtacctcr)
+Process	D32	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F32	s	GROUP BY el.value
+Process	G32	s	E17
+Process	H32	s	S
+Process	D33	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F33	s	ORDER BY  el.value
+Process	A34	f	CONCATENATE("@",C34,"@",B34)
+Process	B34	f	ROW()
+Process	C34	s	el.value
+Process	D34	s	fact_acct a
+Process	F34	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND el.value='54600000.01' AND (a.dateacct between #1 and #2 ) 
+Process	H34	s	S
+Process	A35	f	CONCATENATE("@",C35,"@",B35)
+Process	B35	f	ROW()
+Process	C35	s	sum(a.amtacctdr)
+Process	D35	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F35	s	GROUP BY el.value
+Process	G35	s	F17
+Process	H35	s	S
+Process	D36	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F36	s	ORDER BY  el.value
+Process	A37	f	CONCATENATE("@",C37,"@",B37)
+Process	B37	f	ROW()
+Process	C37	s	el.value
+Process	D37	s	fact_acct a
+Process	F37	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND el.value='54600000.01' AND (a.dateacct between #1 and #2 )
+Process	H37	s	S
+Process	A38	f	CONCATENATE("@",C38,"@",B38)
+Process	B38	f	ROW()
+Process	C38	s	sum(a.amtacctcr) 
+Process	D38	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F38	s	GROUP BY el.value
+Process	G38	s	G17
+Process	H38	s	S
+Process	D39	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F39	s	ORDER BY  el.value
+Process	A40	f	CONCATENATE("@",C40,"@",B40)
+Process	B40	f	ROW()
+Process	C40	s	left(el.value,4)
+Process	D40	s	fact_acct a
+Process	F40	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='411' AND EXTRACT(YEAR FROM a.dateacct) = EXTRACT(YEAR FROM CAST(#1 AS TIMESTAMP))  AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H40	s	V
+Process	A41	f	CONCATENATE("@",C41,"@",B41)
+Process	B41	f	ROW()
+Process	C41	s	sum(a.amtacctcr-a.amtacctdr)
+Process	D41	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F41	s	GROUP BY  left(el.value,4)
+Process	G41	s	E21
+Process	H41	s	A21+
+Process	A42	f	CONCATENATE("@",C42,"@",B42)
+Process	B42	f	ROW()
+Process	C42	s	EXTRACT(YEAR FROM CAST(#1 AS TIMESTAMP))
+Process	D42	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F42	s	ORDER BY  left(el.value,4)
+Process	A43	f	CONCATENATE("@",C43,"@",B43)
+Process	B43	f	ROW()
+Process	C43	s	left(el.value,4)
+Process	D43	s	fact_acct a
+Process	F43	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='411' AND (a.dateacct between #1 and #2 ) AND  a.postingtype = 'A'
+Process	H43	s	V
+Process	A44	f	CONCATENATE("@",C44,"@",B44)
+Process	B44	f	ROW()
+Process	C44	s	sum(a.amtacctcr)
+Process	D44	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F44	s	GROUP BY  left(el.value,4)
+Process	G44	s	F21
+Process	H44	s	A21+
+Process	B45	f	ROW()
+Process	D45	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F45	s	ORDER BY  left(el.value,4)
+Process	A46	f	CONCATENATE("@",C46,"@",B46)
+Process	B46	f	ROW()
+Process	C46	s	left(el.value,4)
+Process	D46	s	fact_acct a
+Process	F46	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND  left(el.value,3)='411' AND (a.dateacct between #1 and #2 ) AND  a.postingtype = 'A'
+Process	H46	s	V
+Process	A47	f	CONCATENATE("@",C47,"@",B47)
+Process	B47	f	ROW()
+Process	C47	s	sum(a.amtacctdr)
+Process	D47	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F47	s	GROUP BY  left(el.value,4)
+Process	G47	s	G21
+Process	H47	s	A21+
+Process	B48	f	ROW()
+Process	D48	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F48	s	ORDER BY   left(el.value,4)
+Process	A49	f	CONCATENATE("@",C49,"@",B49)
+Process	B49	f	ROW()
+Process	C49	s	left(el.value,6)
+Process	D49	s	fact_acct a
+Process	F49	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' )  AND  left(el.value,3)='412' AND a.dateacct < #1 AND  a.postingtype = 'A'
+Process	H49	s	V
+Process	A50	f	CONCATENATE("@",C50,"@",B50)
+Process	B50	f	ROW()
+Process	C50	s	ABS(sum(a.amtacctdr-a.amtacctcr))
+Process	D50	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F50	s	GROUP BY left(el.value,6)
+Process	G50	s	E29
+Process	H50	s	A29+
+Process	B51	f	ROW()
+Process	D51	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F51	s	ORDER BY  left(el.value,6)
+Process	A52	f	CONCATENATE("@",C52,"@",B52)
+Process	B52	f	ROW()
+Process	C52	s	left(el.value,6)
+Process	D52	s	fact_acct a
+Process	F52	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND  left(el.value,3)='412' AND (a.dateacct between #1 and #2 ) AND  a.postingtype = 'A'
+Process	H52	s	V
+Process	A53	f	CONCATENATE("@",C53,"@",B53)
+Process	B53	f	ROW()
+Process	C53	s	sum(a.amtacctdr)
+Process	D53	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F53	s	GROUP BY left(el.value,6)
+Process	G53	s	G29
+Process	H53	s	A29+
+Process	B54	f	ROW()
+Process	D54	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F54	s	ORDER BY  left(el.value,6)
+Process	A55	f	CONCATENATE("@",C55,"@",B55)
+Process	B55	f	ROW()
+Process	C55	s	sum(a.amtacctdr-a.amtacctcr)
+Process	D55	s	fact_acct a
+Process	F55	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND ( left(el.value,1)='6'  OR left(el.value,5)='12101' ) AND EXTRACT(YEAR FROM a.dateacct) = EXTRACT(YEAR FROM CAST(#1 AS TIMESTAMP))  AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H55	s	S
+Process	I55	s	NULL
+Process	M55	s	END
+Process	A56	f	CONCATENATE("@",C56,"@",B56)
+Process	B56	f	ROW()
+Process	C56	s	sum(a.amtacctdr-a.amtacctcr)
+Process	D56	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	G56	s	E37
+Process	H56	s	S
+Process	I56	s	NULL
+Process	M56	s	END
+Process	D57	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	A58	f	CONCATENATE("@",C58,"@",B58)
+Process	B58	f	ROW()
+Process	C58	s	left(el.value,1)
+Process	D58	s	fact_acct a
+Process	F58	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,1)='6' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H58	s	S
+Process	M58	s	END
+Process	A59	f	CONCATENATE("@",C59,"@",B59)
+Process	B59	f	ROW()
+Process	C59	s	sum(a.amtacctdr)
+Process	D59	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F59	s	GROUP BY left(el.value,1)
+Process	G59	s	F37
+Process	H59	s	S
+Process	M59	s	END
+Process	D60	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	A61	f	CONCATENATE("@",C61,"@",B61)
+Process	B61	f	ROW()
+Process	C61	s	left(el.value,5)
+Process	D61	s	fact_acct a
+Process	F61	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,5)='12101' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H61	s	S
+Process	M61	s	END
+Process	A62	f	CONCATENATE("@",C62,"@",B62)
+Process	B62	f	ROW()
+Process	C62	s	sum(a.amtacctcr)
+Process	D62	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F62	s	GROUP BY left(el.value,5)
+Process	G62	s	G37
+Process	H62	s	S
+Process	M62	s	END
+Process	D63	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F63	s	ORDER BY  left(el.value,5)
+Process	A64	f	CONCATENATE("@",C64,"@",B64)
+Process	B64	f	ROW()
+Process	C64	s	left(el.value,5)
+Process	D64	s	fact_acct a
+Process	F64	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,5)='12901'  AND EXTRACT(YEAR FROM a.dateacct) = EXTRACT(YEAR FROM CAST(#1 AS TIMESTAMP))  AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H64	s	S
+Process	M64	s	END
+Process	A65	f	CONCATENATE("@",C65,"@",B65)
+Process	B65	f	ROW()
+Process	C65	s	sum(a.amtacctcr)
+Process	D65	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F65	s	GROUP BY left(el.value,5)
+Process	G65	s	E38
+Process	H65	s	S
+Process	M65	s	END
+Process	D66	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F66	s	ORDER BY  left(el.value,5)
+Process	A67	f	CONCATENATE("@",C67,"@",B67)
+Process	B67	f	ROW()
+Process	C67	s	left(el.value,5)
+Process	D67	s	fact_acct a
+Process	F67	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,5)='12901' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H67	s	S
+Process	M67	s	END
+Process	A68	f	CONCATENATE("@",C68,"@",B68)
+Process	B68	f	ROW()
+Process	C68	s	sum(a.amtacctcr)
+Process	D68	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F68	s	GROUP BY left(el.value,5)
+Process	G68	s	G38
+Process	H68	s	S
+Process	M68	s	END
+Process	D69	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F69	s	ORDER BY  left(el.value,5)
+Process	A70	f	CONCATENATE("@",C70,"@",B70)
+Process	B70	f	ROW()
+Process	C70	s	left(el.value,5)
+Process	D70	s	fact_acct a
+Process	F70	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,5)='12902'  AND EXTRACT(YEAR FROM a.dateacct) = EXTRACT(YEAR FROM CAST(#1 AS TIMESTAMP))  AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H70	s	S
+Process	M70	s	END
+Process	A71	f	CONCATENATE("@",C71,"@",B71)
+Process	B71	f	ROW()
+Process	C71	s	sum(a.amtacctcr)
+Process	D71	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F71	s	GROUP BY left(el.value,5)
+Process	G71	s	E39
+Process	H71	s	S
+Process	M71	s	END
+Process	D72	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F72	s	ORDER BY  left(el.value,5)
+Process	A73	f	CONCATENATE("@",C73,"@",B73)
+Process	B73	f	ROW()
+Process	C73	s	left(el.value,5)
+Process	D73	s	fact_acct a
+Process	F73	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,5)='12902' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H73	s	S
+Process	M73	s	END
+Process	A74	f	CONCATENATE("@",C74,"@",B74)
+Process	B74	f	ROW()
+Process	C74	s	sum(a.amtacctcr)
+Process	D74	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F74	s	GROUP BY left(el.value,5)
+Process	G74	s	G39
+Process	H74	s	S
+Process	M74	s	END
+Process	D75	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F75	s	ORDER BY  left(el.value,5)
+Process	A76	f	CONCATENATE("@",C76,"@",B76)
+Process	B76	f	ROW()
+Process	C76	s	left(el.value,3)
+Process	D76	s	fact_acct a
+Process	F76	s	(vdoc.docname <> 'ລາຍການປັບປຸງ'AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='412' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H76	s	S
+Process	M76	s	END
+Process	A77	f	CONCATENATE("@",C77,"@",B77)
+Process	B77	f	ROW()
+Process	C77	s	sum(a.amtacctcr)
+Process	D77	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F77	s	GROUP BY left(el.value,3)
+Process	H77	s	S
+Process	M77	s	END
+Process	D78	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F78	s	ORDER BY  left(el.value,3)
+Process	A79	f	CONCATENATE("@",C79,"@",B79)
+Process	B79	f	ROW()
+Process	C79	s	left(el.value,3)
+Process	D79	s	fact_acct a
+Process	F79	s	 left(el.value,3)='412' AND a.dateacct < #1 AND  a.postingtype = 'A'
+Process	H79	s	S
+Process	M79	s	END
+Process	A80	f	CONCATENATE("@",C80,"@",B80)
+Process	B80	f	ROW()
+Process	C80	s	sum(a.amtacctcr-a.amtacctdr)
+Process	D80	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F80	s	GROUP BY left(el.value,3)
+Process	H80	s	S
+Process	M80	s	END
+Process	D81	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F81	s	ORDER BY  left(el.value,3)
+Process	A82	f	CONCATENATE("@",C82,"@",B82)
+Process	B82	f	ROW()
+Process	C82	s	sum(glr.Amount)
+Process	D82	s	GL_Journal a
+Process	F82	s	a.PostingType='A' AND a.DateAcct <#1  AND  dt.Name='E ຮັບຮູ້ລາຍຈ່າຍ'  AND glp.GL_JournalRef_ID ISNULL
+Process	G82	s	E40
+Process	H82	s	S
+Process	I82	s	NULL
+Process	D83	s	INNER JOIN GL_JournalRef glr ON glr.GL_Journal_ID=a.GL_Journal_ID
+Process	D84	s	INNER JOIN C_DocType dt ON dt.C_DocType_ID=a.C_DocType_ID
+Process	D85	s	LEFT JOIN (SELECT adc.gl_journal_id, adc.gl_journalpay_id as pay_id, adc.gl_journalref_id, adc.amount, adc.ref_no, adc.DateTreasury FROM GL_JournalPay adc UNION SELECT pd.gl_journal_id, pd.gl_journalpay_pd_id as pay_id, pd.gl_journalref_id, pd.amount, pd.ref_no, pd.DateTreasury  FROM GL_JournalPay_PD pd UNION SELECT r.gl_journal_id, r.gl_journalpay_r_id as pay_id, r.gl_journalref_id, r.amount, r.ref_no, r.DateTreasury  FROM GL_JournalPay_R r) glp ON glp.GL_JournalRef_ID =glr.GL_JournalRef_ID
+Process	D86	s	LEFT JOIN GL_Journal gp ON gp.GL_Journal_ID=glp.GL_Journal_ID
+Process	D87	s	INNER JOIN AD_Org org ON org.AD_Org_ID= a.AD_Org_ID
+Process	D88	s	LEFT JOIN AD_OrgPosition op ON org.AD_Org_ID=op.AD_Org_ID
+Process	A89	f	CONCATENATE("@",C89,"@",B89)
+Process	B89	f	ROW()
+Process	C89	s	left(el.value,5)
+Process	D89	s	fact_acct a
+Process	F89	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,5)='12102' AND (a.dateacct between #1 and #2 ) AND  a.postingtype = 'A'
+Process	H89	s	S
+Process	M89	s	END
+Process	A90	f	CONCATENATE("@",C90,"@",B90)
+Process	B90	f	ROW()
+Process	C90	s	sum(a.amtacctcr)
+Process	D90	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F90	s	GROUP BY left(el.value,5)
+Process	G90	s	G40
+Process	H90	s	S
+Process	M90	s	END
+Process	D91	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F91	s	ORDER BY  left(el.value,5)
+Process	A92	f	CONCATENATE("@",C92,"@",B92)
+Process	B92	f	ROW()
+Process	C92	s	left(el.value,1)
+Process	D92	s	fact_acct a
+Process	F92	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,1)='8'  AND EXTRACT(YEAR FROM a.dateacct) = EXTRACT(YEAR FROM CAST(#1 AS TIMESTAMP))  AND a.dateacct < #1 AND  a.postingtype = 'A'
+Process	H92	s	S
+Process	M92	s	END
+Process	A93	f	CONCATENATE("@",C93,"@",B93)
+Process	B93	f	ROW()
+Process	C93	s	sum(a.amtacctdr - a.amtacctcr)
+Process	D93	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F93	s	GROUP BY left(el.value,1)
+Process	G93	s	E41
+Process	H93	s	S
+Process	M93	s	END
+Process	D94	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F94	s	ORDER BY  left(el.value,1)
+Process	A95	f	CONCATENATE("@",C95,"@",B95)
+Process	B95	f	ROW()
+Process	C95	s	sum(a.amtacctdr)
+Process	D95	s	fact_acct a
+Process	F95	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND (left(el.value,3)='131' )  AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	G95	s	G41
+Process	H95	s	S
+Process	I95	s	NULL
+Process	M95	s	END
+Process	B96	f	ROW()
+Process	D96	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H96	s	S
+Process	M96	s	END
+Process	D97	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	A98	f	CONCATENATE("@",C98,"@",B98)
+Process	B98	f	ROW()
+Process	C98	s	left(el.value,1)
+Process	D98	s	fact_acct a
+Process	F98	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,1)='8' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H98	s	S
+Process	M98	s	END
+Process	A99	f	CONCATENATE("@",C99,"@",B99)
+Process	B99	f	ROW()
+Process	C99	s	sum(a.amtacctcr)
+Process	D99	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F99	s	GROUP BY left(el.value,1)
+Process	G99	s	F41
+Process	H99	s	S
+Process	M99	s	END
+Process	D100	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F100	s	ORDER BY  left(el.value,1)
+Process	A101	f	CONCATENATE("@",C101,"@",B101)
+Process	B101	f	ROW()
+Process	C101	s	left(el.value,3)
+Process	D101	s	fact_acct a
+Process	F101	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='546' AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H101	s	S
+Process	M101	s	END
+Process	A102	f	CONCATENATE("@",C102,"@",B102)
+Process	B102	f	ROW()
+Process	C102	s	sum(a.amtacctdr-a.amtacctcr)
+Process	D102	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F102	s	GROUP BY left(el.value,3)
+Process	G102	s	E42
+Process	H102	s	S
+Process	M102	s	END
+Process	D103	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F103	s	ORDER BY  left(el.value,3)
+Process	A104	f	CONCATENATE("@",C104,"@",B104)
+Process	B104	f	ROW()
+Process	C104	s	left(el.value,3)
+Process	D104	s	fact_acct a
+Process	F104	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='546' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H104	s	S
+Process	M104	s	END
+Process	A105	f	CONCATENATE("@",C105,"@",B105)
+Process	B105	f	ROW()
+Process	C105	s	sum(a.amtacctdr)
+Process	D105	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F105	s	GROUP BY left(el.value,3)
+Process	G105	s	F42
+Process	H105	s	S
+Process	M105	s	END
+Process	D106	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F106	s	ORDER BY  left(el.value,3)
+Process	A107	f	CONCATENATE("@",C107,"@",B107)
+Process	B107	f	ROW()
+Process	C107	s	left(el.value,3)
+Process	D107	s	fact_acct a
+Process	F107	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='546' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H107	s	S
+Process	M107	s	END
+Process	A108	f	CONCATENATE("@",C108,"@",B108)
+Process	B108	f	ROW()
+Process	C108	s	sum(a.amtacctcr)
+Process	D108	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F108	s	GROUP BY left(el.value,3)
+Process	G108	s	G42
+Process	H108	s	S
+Process	M108	s	END
+Process	D109	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F109	s	ORDER BY  left(el.value,3)
+Process	A110	f	CONCATENATE("@",C110,"@",B110)
+Process	B110	f	ROW()
+Process	C110	s	el.value
+Process	D110	s	fact_acct a
+Process	F110	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='546' AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H110	s	V
+Process	M110	s	END
+Process	A111	f	CONCATENATE("@",C111,"@",B111)
+Process	B111	f	ROW()
+Process	C111	s	sum(a.amtacctdr-a.amtacctcr)
+Process	D111	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F111	s	GROUP BY el.value
+Process	G111	s	E43
+Process	H111	s	A43+
+Process	M111	s	END
+Process	D112	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F112	s	ORDER BY  el.value
+Process	A113	f	CONCATENATE("@",C113,"@",B113)
+Process	B113	f	ROW()
+Process	C113	s	el.value
+Process	D113	s	fact_acct a
+Process	F113	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='546' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H113	s	V
+Process	M113	s	END
+Process	A114	f	CONCATENATE("@",C114,"@",B114)
+Process	B114	f	ROW()
+Process	C114	s	sum(a.amtacctdr)
+Process	D114	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F114	s	GROUP BY el.value
+Process	G114	s	F43
+Process	H114	s	A43+
+Process	M114	s	END
+Process	D115	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F115	s	ORDER BY el.value
+Process	A116	f	CONCATENATE("@",C116,"@",B116)
+Process	B116	f	ROW()
+Process	C116	s	el.value
+Process	D116	s	fact_acct a
+Process	F116	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='546' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H116	s	V
+Process	M116	s	END
+Process	A117	f	CONCATENATE("@",C117,"@",B117)
+Process	B117	f	ROW()
+Process	C117	s	sum(a.amtacctcr)
+Process	D117	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F117	s	GROUP BY el.value
+Process	G117	s	G43
+Process	H117	s	A43+
+Process	M117	s	END
+Process	D118	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F118	s	ORDER BY el.value
+Process	A119	f	CONCATENATE("@",C119,"@",B119)
+Process	B119	f	ROW()
+Process	C119	s	left(el.value,3)
+Process	D119	s	fact_acct a
+Process	F119	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='571' AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H119	s	S
+Process	M119	s	END
+Process	A120	f	CONCATENATE("@",C120,"@",B120)
+Process	B120	f	ROW()
+Process	C120	s	sum(a.amtacctdr-a.amtacctcr)
+Process	D120	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F120	s	GROUP BY left(el.value,3)
+Process	G120	s	E47
+Process	H120	s	S
+Process	M120	s	END
+Process	D121	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F121	s	ORDER BY  left(el.value,3)
+Process	A122	f	CONCATENATE("@",C122,"@",B122)
+Process	B122	f	ROW()
+Process	C122	s	left(el.value,3)
+Process	D122	s	fact_acct a
+Process	F122	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='571' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H122	s	S
+Process	M122	s	END
+Process	A123	f	CONCATENATE("@",C123,"@",B123)
+Process	B123	f	ROW()
+Process	C123	s	sum(a.amtacctdr)
+Process	D123	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F123	s	GROUP BY left(el.value,3)
+Process	G123	s	F47
+Process	H123	s	S
+Process	M123	s	END
+Process	D124	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F124	s	ORDER BY  left(el.value,3)
+Process	A125	f	CONCATENATE("@",C125,"@",B125)
+Process	B125	f	ROW()
+Process	C125	s	left(el.value,3)
+Process	D125	s	fact_acct a
+Process	F125	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='571' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H125	s	S
+Process	M125	s	END
+Process	A126	f	CONCATENATE("@",C126,"@",B126)
+Process	B126	f	ROW()
+Process	C126	s	sum(a.amtacctcr)
+Process	D126	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F126	s	GROUP BY left(el.value,3)
+Process	G126	s	G47
+Process	H126	s	S
+Process	M126	s	END
+Process	D127	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F127	s	ORDER BY  left(el.value,3)
+Process	A128	f	CONCATENATE("@",C128,"@",B128)
+Process	B128	f	ROW()
+Process	C128	s	left(el.value,3)
+Process	D128	s	fact_acct a
+Process	F128	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='551' AND a.dateacct < #1  AND  a.postingtype = 'A'
+Process	H128	s	S
+Process	M128	s	END
+Process	A129	f	CONCATENATE("@",C129,"@",B129)
+Process	B129	f	ROW()
+Process	C129	s	sum(a.amtacctdr-a.amtacctcr)
+Process	D129	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F129	s	GROUP BY left(el.value,3)
+Process	G129	s	E48
+Process	H129	s	S
+Process	M129	s	END
+Process	D130	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F130	s	ORDER BY  left(el.value,3)
+Process	A131	f	CONCATENATE("@",C131,"@",B131)
+Process	B131	f	ROW()
+Process	C131	s	left(el.value,3)
+Process	D131	s	fact_acct a
+Process	F131	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='551' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H131	s	S
+Process	M131	s	END
+Process	A132	f	CONCATENATE("@",C132,"@",B132)
+Process	B132	f	ROW()
+Process	C132	s	sum(a.amtacctdr)
+Process	D132	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F132	s	GROUP BY left(el.value,3)
+Process	G132	s	F48
+Process	H132	s	S
+Process	M132	s	END
+Process	D133	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F133	s	ORDER BY  left(el.value,3)
+Process	A134	f	CONCATENATE("@",C134,"@",B134)
+Process	B134	f	ROW()
+Process	C134	s	left(el.value,3)
+Process	D134	s	fact_acct a
+Process	F134	s	(vdoc.docname <> 'ລາຍການປັບປຸງ' AND vdoc.docname <> 'ການປິດປີ')  AND left(el.value,3)='551' AND (a.dateacct between #1 and #2 )  AND  a.postingtype = 'A'
+Process	H134	s	S
+Process	M134	s	END
+Process	A135	f	CONCATENATE("@",C135,"@",B135)
+Process	B135	f	ROW()
+Process	C135	s	sum(a.amtacctcr)
+Process	D135	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F135	s	GROUP BY left(el.value,3)
+Process	G135	s	G48
+Process	H135	s	S
+Process	M135	s	END
+Process	D136	s	INNER JOIN v_docno vdoc ON vdoc.doc_id=a.record_id AND vdoc.table_id=a.ad_table_id
+Process	F136	s	ORDER BY  left(el.value,3)

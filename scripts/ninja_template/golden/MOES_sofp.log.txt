@@ -1,0 +1,90 @@
+I2 Address is String HQ
+I3 Address is String HQ
+I4 Address is String HQ
+I5 Address is String NULL
+J2 Address is String Furniture
+J3 Address is String Furniture
+J4 Address is String Furniture
+J5 Address is String NULL
+K2 Address is String Fertilizer
+K3 Address is String Fertilizer
+K4 Address is String Fertilizer
+K5 Address is String NULL
+L2 Address is String Store North
+L3 Address is String Store North
+L4 Address is String Store North
+L5 Address is String NULL
+M2 Address is String Store South
+M3 Address is String Store South
+M4 Address is String Store South
+M5 Address is String NULL
+N2 Address is String Store East
+N3 Address is String Store East
+N4 Address is String Store East
+N5 Address is String NULL
+O2 Address is String Store West
+O3 Address is String Store West
+O4 Address is String Store West
+O5 Address is String NULL
+P2 Address is String Store Central
+P3 Address is String Store Central
+P4 Address is String Store Central
+P5 Address is String NULL
+Q2 Address is String Stores
+Q3 Address is String Stores
+Q4 Address is String Stores
+Q5 Address is String NULL
+I9 Address is String NULL
+I10 Address is String NULL
+I11 Address is String NULL
+I12 Address is String NULL
+I13 Address is String NULL
+I14 Address is String HQ
+I15 Address is String NULL
+I16 Address is String NULL
+I17 Address is String NULL
+I18 Address is String NULL
+J9 Address is String NULL
+J10 Address is String NULL
+J11 Address is String NULL
+J12 Address is String NULL
+J13 Address is String NULL
+J14 Address is String Furniture
+J15 Address is String NULL
+J16 Address is String NULL
+J17 Address is String NULL
+J18 Address is String NULL
+K9 Address is String NULL
+K10 Address is String NULL
+K11 Address is String NULL
+K12 Address is String NULL
+K13 Address is String NULL
+K14 Address is String Fertilizer
+K15 Address is String NULL
+K16 Address is String NULL
+K17 Address is String NULL
+K18 Address is String NULL
+L9 Address is String NULL
+L10 Address is String NULL
+L11 Address is String NULL
+L12 Address is String NULL
+L13 Address is String NULL
+L14 Address is String Store North
+L15 Address is String NULL
+L16 Address is String NULL
+L17 Address is String NULL
+L18 Address is String NULL
+M9 Address is String NULL
+M10 Address is String NULL
+M11 Address is String NULL
+M12 Address is String NULL
+M13 Address is String NULL
+M14 Address is String Store South
+M15 Address is String NULL
+M16 Address is String NULL
+M17 Address is String NULL
+M18 Address is String NULL
+I55 Address is String NULL
+I56 Address is String NULL
+I82 Address is String NULL
+I95 Address is String NULL

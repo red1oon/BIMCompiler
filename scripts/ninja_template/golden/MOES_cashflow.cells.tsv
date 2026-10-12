@@ -1,0 +1,761 @@
+Output	B2	s	ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ
+Output	B3	s	ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ
+Output	B5	s	Stores
+Output	B6	s	Stores
+Output	B7	s	Stores
+Output	H7	s	ເລກທີ...................
+Output	H8	s	,ວັນທີ...................
+Output	B9	s	ໃບລາຍງານ ກະແສເງິນສົດ
+Output	B10	s	ປະຈໍາ
+Output	B12	s	ລ/ດ
+Output	C12	s	ເລກ
+Output	D12	s	ເນື້ອໃນລາຍການ
+Output	E12	s	ລາຍການຊໍາລະສະສາງຕົວຈິງ
+Output	G12	s	ລວມທັງໝົດ
+Output	H12	s	ໝາຍເຫດ
+Output	C13	s	ບັນຊີ
+Output	E13	s	ໂດຍກົງ
+Output	F13	s	ພາກສ່ວນອື່ນ
+Output	B14	s	I.
+Output	D14	s	 ລວມຍອດລາຍຮັບທັງໝົດ ( I.1 + I.2 + I.3 + I.4 )
+Output	E14	f	E15+E17+E19+E21
+Output	F14	f	F15+F17+F19
+Output	G14	f	SUM(E14:F14)
+Output	B15	s	I.1
+Output	C15	s	 
+Output	D15	s	ລາຍຮັບວິຊາການ
+Output	G15	f	SUM(E15:F15)
+Output	G16	f	SUM(E16:F16)
+Output	A17	s	 
+Output	B17	s	I.2
+Output	C17	f	A17
+Output	D17	s	 ລາຍການຮັບເງິນ ຈາກຄັງເງິນແຫ່ງຊາດ
+Output	G17	f	SUM(E17:F17)
+Output	H17	f	A17
+Output	G18	f	SUM(E18:F18)
+Output	A19	s	 
+Output	B19	s	I.3
+Output	C19	f	A19
+Output	D19	s	ການຫັກປະກັນສັງຄົມ 8% ແລະ ການຫັກອາກອນລາຍໄດ້ 5%
+Output	G19	f	SUM(E19:F19)
+Output	H19	f	A19
+Output	G20	f	SUM(E20:F20)
+Output	A21	s	 
+Output	B21	s	I.4
+Output	C21	f	A21
+Output	D21	s	ລາຍການຮັບ ລໍຖ້າຈັດສັນ ແລະ ສະສາງ
+Output	G21	f	SUM(E21:F21)
+Output	H21	f	A21
+Output	G22	f	SUM(E22:F22)
+Output	A23	s	 
+Output	B23	s	II.
+Output	C23	f	A23
+Output	D23	s	 ລວມຍອດລາຍຈ່າຍທັງໝົດ ( II.1 + II.2 + II.3 +II.4 )
+Output	E23	f	E24+E26+E28+E30
+Output	F23	f	F24+F26+F28+F30
+Output	G23	f	SUM(E23:F23)
+Output	H23	f	A23
+Output	B24	s	II.1
+Output	D24	s	 ລາຍຈ່າຍງົບປະມານ
+Output	G24	f	SUM(E24:F24)
+Output	G25	f	SUM(E25:F25)
+Output	A26	s	 
+Output	B26	s	II.2
+Output	C26	f	A26
+Output	D26	s	ໜີ້ຕ້ອງສົ່ງ-ລາຍຈ່າຍ ຊໍາລະໜີ້ສິນປີເກົ່າ
+Output	G26	f	SUM(E26:F26)
+Output	H26	f	A26
+Output	G27	f	SUM(E27:F27)
+Output	A28	s	 
+Output	B28	s	II.3
+Output	C28	f	A28
+Output	D28	s	 ລາຍການຈ່າຍອື່ນໆ
+Output	G28	f	SUM(E28:F28)
+Output	H28	f	A28
+Output	G29	f	SUM(E29:F29)
+Output	A30	s	 
+Output	B30	s	II.4
+Output	C30	f	A30
+Output	D30	s	ລາຍການຈ່າຍ ລໍຖ້າຈັດສັນ ແລະ ສະສາງ
+Output	G30	f	SUM(E30:F30)
+Output	H30	f	A30
+Output	G31	f	SUM(E31:F31)
+Output	A32	s	 
+Output	B32	s	III.
+Output	C32	f	A32
+Output	D32	s	 ກະແສເງິນສຸດທິ
+Output	E32	f	E14-E23
+Output	F32	f	F14-F23
+Output	G32	f	SUM(E32:F32)
+Output	H32	f	A32
+Output	B33	n	1.0
+Output	D33	s	   • ສ່ວນປ່ຽນແປງກະແສເງິນ ( + ເພີ້ມຂື້ນ / - ຫຼຸດລົງ )
+Output	E33	f	E35-E34
+Output	F33	f	F35-F34
+Output	G33	f	SUM(E33:F33)
+Output	B34	n	2.0
+Output	C34	s	55,57
+Output	D34	s	   • ຍອດເຫຼືອເງິນສົດໃນຄັງ ຕົ້ນສະໃໝ
+Output	F34	n	0.0
+Output	G34	f	SUM(E34:F34)
+Output	B35	n	3.0
+Output	C35	s	55,57
+Output	D35	s	   • ຍອດເຫຼືອເງິນສົດໃນຄັງ ທ້າຍສະໃໝ
+Output	F35	n	0.0
+Output	G35	f	SUM(E35:F35)
+Process	A1	s	ANNOTATION
+Process	B1	s	ROW
+Process	C1	s	SELECT
+Process	D1	s	TABLE
+Process	E1	s	JOIN
+Process	F1	s	WHERE  
+Process	G1	s	ADDRESS
+Process	H1	s	Direction
+Process	I1	s	VALUES
+Process	K1	s	WILL CLEAN ITSELF DURING EXECUTION
+Process	N1	s	END
+Process	A2	f	CONCATENATE("@",C2,"@",B2)
+Process	B2	f	ROW()
+Process	C2	s	op.orgname1
+Process	D2	s	ad_org a
+Process	G2	s	B5
+Process	H2	s	S
+Process	I2	s	HQ
+Process	J2	s	Furniture
+Process	K2	s	Fertilizer
+Process	L2	s	Store North
+Process	M2	s	Store South
+Process	N2	s	Store East
+Process	O2	s	Store West
+Process	P2	s	Store Central
+Process	Q2	s	Stores
+Process	A3	f	CONCATENATE("@",C3,"@",B3)
+Process	B3	f	ROW()
+Process	C3	s	op.orgname2
+Process	D3	s	INNER JOIN AD_OrgPosition op ON a.ad_org_id=op.ad_org_id
+Process	G3	s	B6
+Process	H3	s	S
+Process	I3	s	HQ
+Process	J3	s	Furniture
+Process	K3	s	Fertilizer
+Process	L3	s	Store North
+Process	M3	s	Store South
+Process	N3	s	Store East
+Process	O3	s	Store West
+Process	P3	s	Store Central
+Process	Q3	s	Stores
+Process	A4	f	CONCATENATE("@",C4,"@",B4)
+Process	B4	f	ROW()
+Process	C4	s	op.orgname3
+Process	G4	s	B7
+Process	H4	s	S
+Process	I4	s	HQ
+Process	J4	s	Furniture
+Process	K4	s	Fertilizer
+Process	L4	s	Store North
+Process	M4	s	Store South
+Process	N4	s	Store East
+Process	O4	s	Store West
+Process	P4	s	Store Central
+Process	Q4	s	Stores
+Process	A5	f	CONCATENATE("@",C5,"@",B5)
+Process	B5	f	ROW()
+Process	C5	s	op.orglocation
+Process	G5	s	G8
+Process	H5	s	S
+Process	I5	s	NULL
+Process	J5	s	NULL
+Process	K5	s	NULL
+Process	L5	s	NULL
+Process	M5	s	NULL
+Process	N5	s	NULL
+Process	O5	s	NULL
+Process	P5	s	NULL
+Process	Q5	s	NULL
+Process	A6	f	CONCATENATE("@",C6,"@",B6)
+Process	B6	f	ROW()
+Process	C6	s	org.name
+Process	D6	s	fact_acct a
+Process	F6	s	a.dateacct between #1 and #2
+Process	H6	s	S
+Process	J6	s	END
+Process	A7	f	CONCATENATE("@",C7,"@",B7)
+Process	B7	f	ROW()
+Process	C7	s	#1
+Process	D7	s	INNER JOIN ad_org org ON org.ad_org_id=a.ad_org_id
+Process	H7	s	S
+Process	J7	s	END
+Process	A8	f	CONCATENATE("@",C8,"@",B8)
+Process	B8	f	ROW()
+Process	C8	s	CONCAT(to_char(DATE #1, 'DD/MM/YYYY'),' - ',to_char(DATE #2, 'DD/MM/YYYY'))
+Process	G8	s	B11
+Process	H8	s	S
+Process	J8	s	END
+Process	A9	f	CONCATENATE("@",C9,"@",B9)
+Process	B9	f	ROW()
+Process	C9	s	op.position1
+Process	D9	s	ad_org a
+Process	H9	s	S
+Process	I9	s	NULL
+Process	J9	s	NULL
+Process	K9	s	NULL
+Process	L9	s	NULL
+Process	M9	s	NULL
+Process	N9	s	END
+Process	A10	f	CONCATENATE("@",C10,"@",B10)
+Process	B10	f	ROW()
+Process	C10	s	op.position2
+Process	D10	s	INNER JOIN AD_OrgPosition op ON a.ad_org_id=op.ad_org_id
+Process	G10	s	G38
+Process	H10	s	S
+Process	I10	s	NULL
+Process	J10	s	NULL
+Process	K10	s	NULL
+Process	L10	s	NULL
+Process	M10	s	NULL
+Process	A11	f	CONCATENATE("@",C11,"@",B11)
+Process	B11	f	ROW()
+Process	C11	s	op.position3
+Process	G11	s	E38
+Process	H11	s	S
+Process	I11	s	NULL
+Process	J11	s	NULL
+Process	K11	s	NULL
+Process	L11	s	NULL
+Process	M11	s	NULL
+Process	A12	f	CONCATENATE("@",C12,"@",B12)
+Process	B12	f	ROW()
+Process	C12	s	op.position4
+Process	G12	s	C38
+Process	H12	s	S
+Process	I12	s	NULL
+Process	J12	s	NULL
+Process	K12	s	NULL
+Process	L12	s	NULL
+Process	M12	s	NULL
+Process	A13	f	CONCATENATE("@",C13,"@",B13)
+Process	B13	f	ROW()
+Process	C13	s	op.position5
+Process	H13	s	S
+Process	I13	s	NULL
+Process	J13	s	NULL
+Process	K13	s	NULL
+Process	L13	s	NULL
+Process	M13	s	NULL
+Process	A14	f	CONCATENATE("@",C14,"@",B14)
+Process	B14	f	ROW()
+Process	C14	s	op.name
+Process	H14	s	S
+Process	I14	s	HQ
+Process	J14	s	Furniture
+Process	K14	s	Fertilizer
+Process	L14	s	Store North
+Process	M14	s	Store South
+Process	A15	f	CONCATENATE("@",C15,"@",B15)
+Process	B15	f	ROW()
+Process	C15	s	op.name2
+Process	G15	s	G39
+Process	H15	s	S
+Process	I15	s	NULL
+Process	J15	s	NULL
+Process	K15	s	NULL
+Process	L15	s	NULL
+Process	M15	s	NULL
+Process	A16	f	CONCATENATE("@",C16,"@",B16)
+Process	B16	f	ROW()
+Process	C16	s	op.name3
+Process	G16	s	E39
+Process	H16	s	S
+Process	I16	s	NULL
+Process	J16	s	NULL
+Process	K16	s	NULL
+Process	L16	s	NULL
+Process	M16	s	NULL
+Process	A17	f	CONCATENATE("@",C17,"@",B17)
+Process	B17	f	ROW()
+Process	C17	s	op.name4
+Process	G17	s	C39
+Process	H17	s	S
+Process	I17	s	NULL
+Process	J17	s	NULL
+Process	K17	s	NULL
+Process	L17	s	NULL
+Process	M17	s	NULL
+Process	A18	f	CONCATENATE("@",C18,"@",B18)
+Process	B18	f	ROW()
+Process	C18	s	op.name5
+Process	H18	s	S
+Process	I18	s	NULL
+Process	J18	s	NULL
+Process	K18	s	NULL
+Process	L18	s	NULL
+Process	M18	s	NULL
+Process	A19	f	CONCATENATE("@",C19,"@",B19)
+Process	B19	f	ROW()
+Process	C19	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D19	s	fact_acct a
+Process	F19	s	left(el.value,1)='8' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,1)='8' ) t2\tON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )\t\t\t\t\t\t\t 
+Process	G19	s	E15
+Process	H19	s	V
+Process	I19	s	NULL
+Process	B20	f	ROW()
+Process	D20	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H20	s	V
+Process	A21	f	CONCATENATE("@",C21,"@",B21)
+Process	B21	f	ROW()
+Process	C21	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D21	s	fact_acct a
+Process	F21	s	left(el.value,3)='121' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121') t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='131' ) t2\tON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G21	s	E17
+Process	H21	s	V
+Process	I21	s	NULL
+Process	O21	s	END
+Process	B22	f	ROW()
+Process	D22	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	O22	s	END
+Process	B23	f	ROW()
+Process	A24	f	CONCATENATE("@",C24,"@",B24)
+Process	B24	f	ROW()
+Process	C24	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D24	s	fact_acct a
+Process	F24	s	left(el.value,3)='121' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121') t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='411' OR LEFT(el.value,3)='412' ) t2\tON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G24	s	F17
+Process	H24	s	V
+Process	I24	s	NULL
+Process	O24	s	END
+Process	B25	f	ROW()
+Process	D25	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	O25	s	END
+Process	B26	f	ROW()
+Process	A27	f	CONCATENATE("@",C27,"@",B27)
+Process	B27	f	ROW()
+Process	C27	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D27	s	fact_acct a
+Process	F27	s	left(el.value,3)='129' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='129') t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' ) t2\tON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	G27	s	E19
+Process	H27	s	V
+Process	I27	s	NULL
+Process	B28	f	ROW()
+Process	D28	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H28	s	V
+Process	A29	f	CONCATENATE("@",C29,"@",B29)
+Process	B29	f	ROW()
+Process	C29	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D29	s	fact_acct a
+Process	F29	s	left(el.value,3)='129' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='129') t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='411' ) t2\tON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	G29	s	F19
+Process	H29	s	V
+Process	I29	s	NULL
+Process	B30	f	ROW()
+Process	D30	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H30	s	V
+Process	A31	f	CONCATENATE("@",C31,"@",B31)
+Process	B31	f	ROW()
+Process	C31	s	sum(a.amtacctcr-a.amtacctdr) as amt
+Process	D31	s	fact_acct a
+Process	F31	s	left(el.value,3)='547' AND a.postingtype='A' AND (a.dateacct between #1 and #2 )  AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='547') t1 )
+Process	G31	s	E21
+Process	H31	s	V
+Process	I31	s	NULL
+Process	B32	f	ROW()
+Process	D32	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H32	s	V
+Process	A33	f	CONCATENATE("@",C33,"@",B33)
+Process	B33	f	ROW()
+Process	C33	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D33	s	fact_acct a
+Process	F33	s	left(el.value,3)='411' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='411') t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='546') t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	G33	s	E24
+Process	H33	s	V
+Process	I33	s	NULL
+Process	O33	s	END
+Process	B34	f	ROW()
+Process	D34	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	O34	s	END
+Process	A35	f	CONCATENATE("@",C35,"@",B35)
+Process	B35	f	ROW()
+Process	C35	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D35	s	fact_acct a
+Process	F35	s	left(el.value,3)='411' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' OR LEFT(el.value,3)='129') t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='411' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G35	s	F24
+Process	H35	s	V
+Process	I35	s	NULL
+Process	O35	s	END
+Process	B36	f	ROW()
+Process	D36	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H36	s	C22+
+Process	O36	s	END
+Process	A37	f	CONCATENATE("@",C37,"@",B37)
+Process	B37	f	ROW()
+Process	C37	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D37	s	fact_acct a
+Process	F37	s	left(el.value,3)='412' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='412' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='546' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G37	s	E26
+Process	H37	s	V
+Process	I37	s	NULL
+Process	O37	s	END
+Process	B38	f	ROW()
+Process	D38	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H38	s	C24+
+Process	O38	s	END
+Process	A39	f	CONCATENATE("@",C39,"@",B39)
+Process	B39	f	ROW()
+Process	C39	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D39	s	fact_acct a
+Process	F39	s	left(el.value,3)='412' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='412' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	G39	s	F26
+Process	H39	s	V
+Process	I39	s	NULL
+Process	O39	s	END
+Process	B40	f	ROW()
+Process	D40	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	O40	s	END
+Process	A41	f	CONCATENATE("@",C41,"@",B41)
+Process	B41	f	ROW()
+Process	C41	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D41	s	fact_acct a
+Process	F41	s	left(el.value,3)='131' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='131' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='121' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G41	s	E28
+Process	H41	s	V
+Process	I41	s	NULL
+Process	B42	f	ROW()
+Process	D42	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H42	s	V
+Process	A43	f	CONCATENATE("@",C43,"@",B43)
+Process	B43	f	ROW()
+Process	C43	s	sum(a.amtacctdr-a.amtacctcr) as amt
+Process	D43	s	fact_acct a
+Process	F43	s	left(el.value,3)='546' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 )  AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='546' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR  LEFT(el.value,3)='411' OR LEFT(el.value,3)='412' OR  LEFT(el.value,3)='547'   ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G43	s	E30
+Process	H43	s	V
+Process	I43	s	NULL
+Process	B44	f	ROW()
+Process	D44	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H44	s	V
+Process	A45	f	CONCATENATE("@",C45,"@",B45)
+Process	B45	f	ROW()
+Process	C45	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D45	s	fact_acct a
+Process	F45	s	left(el.value,3)='546' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 )  AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='546' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G45	s	F30
+Process	H45	s	V
+Process	I45	s	NULL
+Process	B46	f	ROW()
+Process	D46	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	H46	s	V
+Process	A47	f	CONCATENATE("@",C47,"@",B47)
+Process	B47	f	ROW()
+Process	C47	s	SUM (a.amtacctdr-a.amtacctcr) AS amount
+Process	D47	s	fact_acct a
+Process	F47	s	a.dateacct <#1 AND a.postingtype = 'A'  AND (LEFT(el.value, 2)= '55' OR LEFT(el.value, 2)= '57')
+Process	G47	s	E34
+Process	H47	s	S
+Process	I47	s	NULL
+Process	D48	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	A49	f	CONCATENATE("@",C49,"@",B49)
+Process	B49	f	ROW()
+Process	C49	s	SUM (a.amtacctdr-a.amtacctcr) AS amount
+Process	D49	s	fact_acct a
+Process	F49	s	a.dateacct <=#2 AND a.postingtype = 'A'  AND (LEFT(el.value, 2)= '55' OR LEFT(el.value, 2)= '57')
+Process	G49	s	E35
+Process	H49	s	S
+Process	I49	s	NULL
+Process	D50	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	A51	f	CONCATENATE("@",C51,"@",B51)
+Process	B51	f	ROW()
+Process	C51	s	el.value as acctno
+Process	D51	s	fact_acct a
+Process	F51	s	left(el.value,3)='546' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='546') t1 )
+Process	G51	s	C31
+Process	H51	s	V
+Process	A52	f	CONCATENATE("@",C52,"@",B52)
+Process	B52	f	ROW()
+Process	C52	s	MAX(el.name)
+Process	D52	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F52	s	GROUP BY el.value
+Process	G52	s	D31
+Process	H52	s	V
+Process	A53	f	CONCATENATE("@",C53,"@",B53)
+Process	B53	f	ROW()
+Process	C53	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	F53	s	ORDER BY  el.value
+Process	H53	s	V
+Process	A54	f	CONCATENATE("@",C54,"@",B54)
+Process	B54	f	ROW()
+Process	C54	s	el.value as acctno
+Process	D54	s	fact_acct a
+Process	F54	s	left(el.value,3)='546' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='546' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='411' OR LEFT(el.value,3)='412' OR LEFT(el.value,3)='547' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	H54	s	V
+Process	A55	f	CONCATENATE("@",C55,"@",B55)
+Process	B55	f	ROW()
+Process	C55	s	sum(a.amtacctdr-a.amtacctcr) as amt
+Process	D55	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F55	s	GROUP BY el.value
+Process	G55	s	E31
+Process	H55	s	C31+
+Process	B56	f	ROW()
+Process	F56	s	ORDER BY  el.value
+Process	A57	f	CONCATENATE("@",C57,"@",B57)
+Process	B57	f	ROW()
+Process	C57	s	el.value as acctno
+Process	D57	s	fact_acct a
+Process	F57	s	left(el.value,3)='546' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='546' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	H57	s	V
+Process	A58	f	CONCATENATE("@",C58,"@",B58)
+Process	B58	f	ROW()
+Process	C58	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D58	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F58	s	GROUP BY el.value
+Process	G58	s	F31
+Process	H58	s	C31+
+Process	B59	f	ROW()
+Process	F59	s	ORDER BY  el.value
+Process	A60	f	CONCATENATE("@",C60,"@",B60)
+Process	B60	f	ROW()
+Process	C60	s	el.value as acctno
+Process	D60	s	fact_acct a
+Process	F60	s	left(el.value,3)='131' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='131' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='121' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G60	s	C29
+Process	H60	s	V
+Process	A61	f	CONCATENATE("@",C61,"@",B61)
+Process	B61	f	ROW()
+Process	C61	s	MAX(el.name)
+Process	D61	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F61	s	GROUP BY el.value
+Process	G61	s	D29
+Process	H61	s	V
+Process	A62	f	CONCATENATE("@",C62,"@",B62)
+Process	B62	f	ROW()
+Process	C62	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	F62	s	ORDER BY  el.value
+Process	G62	s	E29
+Process	H62	s	V
+Process	A63	f	CONCATENATE("@",C63,"@",B63)
+Process	B63	f	ROW()
+Process	C63	s	el.value as acctno
+Process	D63	s	fact_acct a
+Process	F63	s	left(el.value,3)='412' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='412' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' OR LEFT(el.value,3)='546' OR  LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G63	s	C27
+Process	H63	s	V
+Process	O63	s	END
+Process	A64	f	CONCATENATE("@",C64,"@",B64)
+Process	B64	f	ROW()
+Process	C64	s	MAX(el.name)
+Process	D64	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F64	s	GROUP BY  el.value
+Process	H64	s	V
+Process	O64	s	END
+Process	B65	f	ROW()
+Process	F65	s	ORDER BY  el.value
+Process	A66	f	CONCATENATE("@",C66,"@",B66)
+Process	B66	f	ROW()
+Process	C66	s	el.value as acctno
+Process	D66	s	fact_acct a
+Process	F66	s	left(el.value,3)='412' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='412' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='546' OR LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	H66	s	V
+Process	O66	s	END
+Process	A67	f	CONCATENATE("@",C67,"@",B67)
+Process	B67	f	ROW()
+Process	C67	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D67	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F67	s	GROUP BY  el.value
+Process	G67	s	E27
+Process	H67	s	C27+
+Process	O67	s	END
+Process	B68	f	ROW()
+Process	F68	s	ORDER BY  el.value
+Process	A69	f	CONCATENATE("@",C69,"@",B69)
+Process	B69	f	ROW()
+Process	C69	s	el.value as acctno
+Process	D69	s	fact_acct a
+Process	F69	s	left(el.value,3)='412' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='412') t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	H69	s	V
+Process	A70	f	CONCATENATE("@",C70,"@",B70)
+Process	B70	f	ROW()
+Process	C70	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D70	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F70	s	GROUP BY  el.value
+Process	G70	s	F27
+Process	H70	s	C27+
+Process	B71	f	ROW()
+Process	F71	s	ORDER BY  el.value
+Process	A72	f	CONCATENATE("@",C72,"@",B72)
+Process	B72	f	ROW()
+Process	C72	s	el.value as acctno
+Process	D72	s	fact_acct a
+Process	F72	s	left(el.value,3)='411' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='411' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' OR LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='546' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G72	s	C25
+Process	H72	s	V
+Process	A73	f	CONCATENATE("@",C73,"@",B73)
+Process	B73	f	ROW()
+Process	C73	s	MAX(el.name)
+Process	D73	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F73	s	GROUP BY  el.value
+Process	G73	s	D25
+Process	H73	s	V
+Process	B74	f	ROW()
+Process	F74	s	ORDER BY  el.value
+Process	A75	f	CONCATENATE("@",C75,"@",B75)
+Process	B75	f	ROW()
+Process	C75	s	el.value as acctno
+Process	D75	s	fact_acct a
+Process	F75	s	left(el.value,3)='411' AND a.postingtype='A' AND  (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='411' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='551' OR LEFT(el.value,3)='571' OR LEFT(el.value,3)='546' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	H75	s	V
+Process	A76	f	CONCATENATE("@",C76,"@",B76)
+Process	B76	f	ROW()
+Process	C76	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D76	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F76	s	GROUP BY  el.value
+Process	G76	s	E25
+Process	H76	s	C25+
+Process	B77	f	ROW()
+Process	F77	s	ORDER BY  el.value
+Process	A78	f	CONCATENATE("@",C78,"@",B78)
+Process	B78	f	ROW()
+Process	C78	s	el.value as acctno
+Process	D78	s	fact_acct a
+Process	F78	s	left(el.value,3)='411' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='411' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='121' OR LEFT(el.value,3)='129'  ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	H78	s	V
+Process	A79	f	CONCATENATE("@",C79,"@",B79)
+Process	B79	f	ROW()
+Process	C79	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D79	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F79	s	GROUP BY  el.value
+Process	G79	s	F25
+Process	H79	s	C25+
+Process	B80	f	ROW()
+Process	F80	s	ORDER BY  el.value
+Process	A81	f	CONCATENATE("@",C81,"@",B81)
+Process	B81	f	ROW()
+Process	C81	s	el.value as acctno
+Process	D81	s	fact_acct a
+Process	F81	s	left(el.value,3)='547' AND a.postingtype='A' AND (a.dateacct between #1 and #2 )  AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='547') t1  )
+Process	G81	s	C22
+Process	H81	s	V
+Process	A82	f	CONCATENATE("@",C82,"@",B82)
+Process	B82	f	ROW()
+Process	C82	s	MAX(el.name)
+Process	D82	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F82	s	GROUP BY el.value
+Process	G82	s	D22
+Process	H82	s	V
+Process	A83	f	CONCATENATE("@",C83,"@",B83)
+Process	B83	f	ROW()
+Process	C83	s	sum(a.amtacctcr-a.amtacctdr) as amt
+Process	F83	s	ORDER BY  el.value
+Process	G83	s	E22
+Process	H83	s	V
+Process	A84	f	CONCATENATE("@",C84,"@",B84)
+Process	B84	f	ROW()
+Process	C84	s	el.value as acctno
+Process	D84	s	fact_acct a
+Process	F84	s	left(el.value,3)='129' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='129') t1 )
+Process	G84	s	C20
+Process	H84	s	V
+Process	A85	f	CONCATENATE("@",C85,"@",B85)
+Process	B85	f	ROW()
+Process	C85	s	MAX(el.name)
+Process	D85	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F85	s	GROUP BY el.value
+Process	G85	s	D20
+Process	H85	s	V
+Process	B86	f	ROW()
+Process	F86	s	ORDER BY  el.value
+Process	H86	s	V
+Process	A87	f	CONCATENATE("@",C87,"@",B87)
+Process	B87	f	ROW()
+Process	C87	s	el.value as acctno
+Process	D87	s	fact_acct a
+Process	F87	s	left(el.value,3)='129' AND a.postingtype='A'  AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='129' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='551'  ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	H87	s	V
+Process	A88	f	CONCATENATE("@",C88,"@",B88)
+Process	B88	f	ROW()
+Process	C88	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D88	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F88	s	GROUP BY el.value
+Process	G88	s	E20
+Process	H88	s	C20+
+Process	B89	f	ROW()
+Process	F89	s	ORDER BY  el.value
+Process	A90	f	CONCATENATE("@",C90,"@",B90)
+Process	B90	f	ROW()
+Process	C90	s	el.value as acctno
+Process	D90	s	fact_acct a
+Process	F90	s	left(el.value,3)='129' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT  DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='129' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='411'  ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id )
+Process	H90	s	V
+Process	A91	f	CONCATENATE("@",C91,"@",B91)
+Process	B91	f	ROW()
+Process	C91	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D91	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F91	s	GROUP BY el.value
+Process	G91	s	F20
+Process	H91	s	C20+
+Process	B92	f	ROW()
+Process	F92	s	ORDER BY  el.value
+Process	A93	f	CONCATENATE("@",C93,"@",B93)
+Process	B93	f	ROW()
+Process	C93	s	el.value as acctno
+Process	D93	s	fact_acct a
+Process	F93	s	left(el.value,3)='121' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='571' OR LEFT(el.value,3)='551' OR LEFT(el.value,3)='411' OR LEFT(el.value,3)='412' OR LEFT(el.value,3)='131'  ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G93	s	C18
+Process	H93	s	V
+Process	A94	f	CONCATENATE("@",C94,"@",B94)
+Process	B94	f	ROW()
+Process	C94	s	MAX(el.name)
+Process	D94	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F94	s	GROUP BY  el.value
+Process	G94	s	D18
+Process	H94	s	V
+Process	B95	f	ROW()
+Process	F95	s	ORDER BY  el.value
+Process	A96	f	CONCATENATE("@",C96,"@",B96)
+Process	B96	f	ROW()
+Process	C96	s	el.value as acctno
+Process	D96	s	fact_acct a
+Process	F96	s	left(el.value,3)='121' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT  t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='551' OR LEFT(el.value,3)='571'   OR LEFT(el.value,3)='131' ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	H96	s	V
+Process	A97	f	CONCATENATE("@",C97,"@",B97)
+Process	B97	f	ROW()
+Process	C97	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D97	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F97	s	GROUP BY  el.value
+Process	G97	s	E18
+Process	H97	s	C18+
+Process	B98	f	ROW()
+Process	F98	s	ORDER BY  el.value
+Process	A99	f	CONCATENATE("@",C99,"@",B99)
+Process	B99	f	ROW()
+Process	C99	s	el.value as acctno
+Process	D99	s	fact_acct a
+Process	F99	s	left(el.value,3)='121' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,3)='121' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='411' OR LEFT(el.value,3)='412'  ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	H99	s	V
+Process	A100	f	CONCATENATE("@",C100,"@",B100)
+Process	B100	f	ROW()
+Process	C100	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	D100	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F100	s	GROUP BY  el.value
+Process	G100	s	F18
+Process	H100	s	C18+
+Process	B101	f	ROW()
+Process	F101	s	ORDER BY  el.value
+Process	A102	f	CONCATENATE("@",C102,"@",B102)
+Process	B102	f	ROW()
+Process	C102	s	el.value as acctno
+Process	D102	s	fact_acct a
+Process	F102	s	left(el.value,1)='8' AND a.postingtype='A' AND (a.dateacct between #1 and #2 ) AND a.record_id IN (SELECT DISTINCT t1.record_id FROM (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa  INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE LEFT(el.value,1)='8' ) t1 INNER JOIN (SELECT fa.record_id,fa.ad_client_id , fa.ad_org_id,LEFT(el.value,3) AS value FROM fact_acct fa INNER JOIN c_elementvalue el ON el.c_elementvalue_id=fa.account_id WHERE  LEFT(el.value,3)='571' OR LEFT(el.value,3)='551'  ) t2 ON t1.record_id=t2.record_id AND t1.ad_client_id =t2.ad_client_id AND t1.ad_org_id =t2.ad_org_id)
+Process	G102	s	C16
+Process	H102	s	V
+Process	A103	f	CONCATENATE("@",C103,"@",B103)
+Process	B103	f	ROW()
+Process	C103	s	MAX(el.name)
+Process	D103	s	INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id
+Process	F103	s	GROUP BY el.value
+Process	G103	s	D16
+Process	H103	s	V
+Process	A104	f	CONCATENATE("@",C104,"@",B104)
+Process	B104	f	ROW()
+Process	C104	s	ABS(sum(a.amtacctdr-a.amtacctcr)) as amt
+Process	F104	s	ORDER BY  el.value
+Process	G104	s	E16
+Process	H104	s	V
+Process	I105	s	END
