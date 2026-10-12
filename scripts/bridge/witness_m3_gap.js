@@ -41,6 +41,9 @@ const PL_CURRENCY = (lc(seed.prepare('SELECT c_currency_id FROM m_pricelist WHER
 // §46: currency precision table from the SQLite seed (the production posting db is the bundle that carries it; the scratch posting db lacks the table)
 const GB_PATCH = fs.readFileSync(path.join(__dirname, '..', '..', 'build', 'erp', 'patches', 'glassbowl_data.db.sql'), 'utf8');
 require('./dict_diff').applyPatch(gb, GB_PATCH); require('./dict_diff').applyPatch(gb, GB_PATCH);   // patch + GUARDED loader in miniature (ALTERs skipped when present): applied twice
+// §SD16 baseline repair: since the shipped receipt-cost rule (twin sync 13d92606d: doc_poster._poLineCost, MOrderLine.isTaxIncluded:697-707) the posting db must carry m_pricelist.istaxincluded; the scratch
+// posting db was cut before that column existed => P2P/F9/PJI receipts read ABSENT:order price list (reproduced with the PRE-SD16 engine, logs_sd16/m3_p2p_old.log). The values are the legacy ones, read from the seed.
+for (const dbx of [gb]) { try { dbx.exec('ALTER TABLE m_pricelist ADD COLUMN istaxincluded TEXT'); } catch (e) { /* present */ } for (const r of seed.prepare('SELECT m_pricelist_id, istaxincluded FROM m_pricelist').all()) dbx.prepare('UPDATE m_pricelist SET istaxincluded=? WHERE m_pricelist_id=?').run(r.istaxincluded, r.m_pricelist_id); }
 // §42 F7: the period data the SQLite side owns (seed): client primary schema + its calendar's periods with their control rows
 const periodData = (() => {
   const ci = lc(seed.prepare('SELECT c_acctschema1_id s, c_calendar_id c FROM ad_clientinfo WHERE ad_client_id='+C.client).get());
