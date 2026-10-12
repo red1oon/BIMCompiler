@@ -21,6 +21,11 @@ for t in TABLES:
         if dt in ('numeric','double precision','real'): return 'REAL'
         if dt in ('integer','bigint','smallint'): return 'INTEGER'
         return 'TEXT'
+    lite.execute('create table if not exists _scale (tbl TEXT, col TEXT, scale INTEGER)'); lite.execute('create table if not exists _coltype (tbl TEXT, col TEXT, dt TEXT)')
+    for c, d in cols: lite.execute('insert into _coltype values (?,?,?)', (t, c, d))
+    for c, d in cols:
+        if d == 'numeric':
+            cur.execute('select coalesce(max(scale("%s")),0) from adempiere.%s' % (c, t)); lite.execute('insert into _scale values (?,?,?)', (t, c, cur.fetchone()[0]))
     lite.execute('create table %s (%s)' % (t, ','.join('"%s" %s' % (c, aff(d)) for c, d in cols)))
     cur.execute('select %s from adempiere.%s' % (','.join('"%s"' % c for c, _ in cols), t)); n = 0
     while True:

@@ -5,7 +5,8 @@ const name=process.argv[2]||'MOES_sofp'; const L='/home/red1/Projects/LaosExpens
 const OPT={cellFormula:true,cellStyles:true,sheetStubs:true,cellDates:false,raw:false};
 const tpl=X.readFile(process.env.TPL||(L+'source/'+name+'.xls'),OPT), oracle=X.readFile(L+'legacy/oracle_fork_'+name+'.xls',OPT);
 const NEG=process.env.NEG||'';
-function exec(sql){ if(NEG==='client'&&sql.includes('AD_Client_ID=11')) sql=sql.replace('AD_Client_ID=11','AD_Client_ID=12'); const r=cp.spawnSync('python3',[L+'witness/pg_exec.py'],{input:sql,encoding:'utf8',maxBuffer:1<<28}); if(r.status!==0) throw new Error('pg_exec: '+r.stderr); const j=JSON.parse(r.stdout); if(j.error) throw new Error('SQL error: '+j.error+' | '+sql.slice(0,300)); let rows=j.rows; if(NEG==='droprow'&&rows.length>3&&/c_elementvalue a/.test(sql)) rows=rows.slice(1); return rows; }
+let SQ=null; if(process.env.EXEC==='sqlite'){ const D=require('/home/red1/bim-compiler/node_modules/better-sqlite3'); const db=new D(L+'legacy/twin_snapshot.db',{readonly:true}); T.registerPgBuiltins((n,f)=>db.function(n,{varargs:true},f)); SQ=T.sqliteExecutor(db); }   // EXEC=sqlite: engine runs on the SQLite twin snapshot, judged against the SAME Postgres-run oracle
+function exec(sql){ if(SQ) return SQ(sql); if(NEG==='client'&&sql.includes('AD_Client_ID=11')) sql=sql.replace('AD_Client_ID=11','AD_Client_ID=12'); const r=cp.spawnSync('python3',[L+'witness/pg_exec.py'],{input:sql,encoding:'utf8',maxBuffer:1<<28}); if(r.status!==0) throw new Error('pg_exec: '+r.stderr); const j=JSON.parse(r.stdout); if(j.error) throw new Error('SQL error: '+j.error+' | '+sql.slice(0,300)); let rows=j.rows; if(NEG==='droprow'&&rows.length>3&&/c_elementvalue a/.test(sql)) rows=rows.slice(1); return rows; }
 const S=T.runTemplate(tpl,exec,{XLSX:X,clientId:11,orgId:0,from:process.env.FROM||'2026-05-01 00:00:00.0',to:process.env.TO||'2026-05-31 00:00:00.0'});
 function norm(c){ if(!c) return null; if(c.t==='z') return {t:'z'}; return {t:c.t,v:c.t==='n'?Number(c.v):String(c.v),f:c.f||null}; }
 let tot=0,bad=0,shown=0,painted=0; const rep={};
@@ -15,6 +16,7 @@ let tot=0,bad=0,shown=0,painted=0; const rep={};
 const olog=require('fs').readFileSync(L+'legacy/server_fork_'+name+'.log','utf8').split('\n').filter(l=>/ Address is | CROSSTAB |>>formula>>|CANNOT SHIFT|CROSS TAB CANVAS/.test(l)).map(l=>l.trim());
 const jlog=S.log.filter(l=>/ Address is | CROSSTAB |>>formula>>|CANNOT SHIFT|CROSS TAB CANVAS/.test(l));
 let logSame=olog.length===jlog.length&&olog.every((l,i)=>l===jlog[i]);
+console.log(`§PARITY executor=${SQ?'SQLITE-TWIN':'POSTGRES'}`);
 console.log(`§PARITY ${name} statements=${S.sqlcount} nothing=${S.nothingReturned} jsLogLines=${jlog.length} oracleLogLines=${olog.length} logIdentical=${logSame}`);
 console.log(`§PARITY ${name} Process cells=${rep.Process.cells} diff=${rep.Process.diff} | Output cells=${rep.Output.cells} diff=${rep.Output.diff}`);
 const verdict=olog.length===0?'INCONCLUSIVE (oracle wrote 0 values)':(bad===0&&logSame?'PASS':'FAIL');

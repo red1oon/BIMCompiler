@@ -529,6 +529,65 @@
     return { k: 's', s: String(v) };
   }
 
-  var API = { runTemplate: runTemplate, registerPgBuiltins: registerPgBuiltins, pgToSqlite: pgToSqlite, typedFromSqlite: typedFromSqlite, toChar: toChar, parseA1: parseA1, addrOf: addrOf, physRows: physRows, toStr: toStr, javaDouble: javaDouble, tsSerial: tsSerial, ctype: ctype };
+  // ── SQLite executor with Java-equivalent result typing (closes D1: BigDecimal scale) ────────────────
+  // The original reads JDBC BigDecimal/Timestamp/String; SQLite returns bare REAL/TEXT. The legacy rule `[0.00]` = "RETURNS NOTHING" depends on SCALE,
+  // so each output column's type is derived from its SQL: column refs -> source column type + max scale (PG numeric rule for + - SUM ABS MAX MIN),
+  // COUNT -> integer, string/CASE/function -> text. Scale/type metadata comes from the twin's dictionary side tables _scale(tbl,col,scale) and
+  // _coltype(tbl,col,dt) (snapshot: max PG scale per numeric column). Unknown -> no scale (honest default), never guessed.
+  function splitTopCommas(txt) {
+    var parts = [], d = 0, q = false, cur = '';
+    for (var i = 0; i < txt.length; i++) { var ch = txt[i]; if (ch === "'") q = !q; if (!q) { if (ch === '(') d++; else if (ch === ')') d--; else if (ch === ',' && d === 0) { parts.push(cur); cur = ''; continue; } } cur += ch; }
+    parts.push(cur); return parts;
+  }
+  var SQLKW = /^(INNER|LEFT|RIGHT|OUTER|FULL|CROSS|JOIN|ON|WHERE|GROUP|ORDER|HAVING|UNION|AS|SELECT|AND|OR|NOT|IN|LIMIT)$/i;
+  function aliasMap(sql) {
+    var fr = topLevelSplit(sql, ' FROM '); if (!fr) return {};
+    var rest = fr[1], cut = rest.search(/\s(WHERE|GROUP\s+BY|ORDER\s+BY|HAVING)\s/i); if (cut >= 0) rest = rest.slice(0, cut);
+    var map = {}, re = /(?:^|\bJOIN\b|,)\s*([A-Za-z_][A-Za-z0-9_]*)(?:\s+(?:AS\s+)?([A-Za-z_][A-Za-z0-9_]*))?/gi, m;
+    rest = rest.replace(/\bON\b[^,]*?(?=\b(?:INNER|LEFT|RIGHT|OUTER|FULL|CROSS|JOIN)\b|$)/gi, ' ');   // drop ON clauses so their words are not read as tables
+    while ((m = re.exec(rest))) { if (SQLKW.test(m[1])) continue; var tbl = m[1].toLowerCase(), al = (m[2] && !SQLKW.test(m[2])) ? m[2].toLowerCase() : tbl; map[al] = tbl; map[tbl] = map[tbl] || tbl; }
+    return map;
+  }
+  function selectItemMeta(sql, lookup) {                      // -> [{kind:'num'|'str'|'ts'|'int'|'unknown', scale}]
+    var body = sql.replace(/^\s*SELECT\s+(DISTINCT\s+)?/i, ''), sp = topLevelSplit(body, ' FROM '); if (!sp) return [];
+    var amap = aliasMap(sql);
+    return splitTopCommas(sp[0]).map(function (item) {
+      var asp = topLevelSplit(item, ' AS '); var expr = (asp ? asp[0] : item).trim();
+      if (/^count\s*\(/i.test(expr)) return { kind: 'int' };
+      if (/'|\bCASE\b|\bleft\s*\(|\bright\s*\(|\bto_char\s*\(|\bconcat\s*\(/i.test(expr)) return { kind: 'str' };
+      var refs = [], re = /\b([A-Za-z_]\w*)\.([A-Za-z_]\w*)\b/g, m; while ((m = re.exec(expr))) refs.push([m[1].toLowerCase(), m[2].toLowerCase()]);
+      if (!refs.length) return { kind: 'unknown' };
+      var metas = refs.map(function (r) { return lookup(amap[r[0]] || r[0], r[1]); }).filter(Boolean);
+      if (!metas.length) return { kind: 'unknown' };
+      if (/^[A-Za-z_]\w*\.[A-Za-z_]\w*$/.test(expr)) { var one = metas[0]; if (/timestamp|date/.test(one.dt)) return { kind: 'ts' }; if (one.dt === 'numeric') return { kind: 'num', scale: one.scale }; if (/int/.test(one.dt)) return { kind: 'int' }; return { kind: 'str' }; }
+      var sc = -1; metas.forEach(function (x) { if (x.dt === 'numeric' && x.scale > sc) sc = x.scale; });
+      return sc >= 0 ? { kind: 'num', scale: sc } : { kind: 'unknown' };
+    });
+  }
+  function sqliteExecutor(db) {                               // exec(sql) -> typed rows; db = better-sqlite3 / sql.js-compatible via .prepare(sql).raw().all()
+    var cache = {};
+    function lookup(tbl, col) {
+      var k = tbl + '.' + col; if (k in cache) return cache[k];
+      var dt = db.prepare('select dt from _coltype where lower(tbl)=? and lower(col)=?').raw().get(tbl, col), sc = db.prepare('select scale from _scale where lower(tbl)=? and lower(col)=?').raw().get(tbl, col);
+      return (cache[k] = dt ? { dt: dt[0], scale: sc ? sc[0] : 0 } : null);
+    }
+    return function exec(sql) {
+      var q = pgToSqlite(sql), rows = db.prepare(q).raw().all(), meta = selectItemMeta(sql, lookup);
+      return rows.map(function (r) {
+        return r.map(function (v, i) {
+          var m = meta[i] || { kind: 'unknown' };
+          if (v == null) return null;
+          if (typeof v === 'number' || typeof v === 'bigint') {
+            if (m.kind === 'num' && m.scale > 0) return { k: 'n', s: Number(v).toFixed(m.scale) };
+            return typedFromSqlite(v);
+          }
+          if (m.kind === 'ts') { var t = String(v); return { k: 't', s: /\.\d+$/.test(t) ? t : t + '.0' }; }
+          return { k: 's', s: String(v) };
+        });
+      });
+    };
+  }
+
+  var API = { runTemplate: runTemplate, sqliteExecutor: sqliteExecutor, selectItemMeta: selectItemMeta, aliasMap: aliasMap, registerPgBuiltins: registerPgBuiltins, pgToSqlite: pgToSqlite, typedFromSqlite: typedFromSqlite, toChar: toChar, parseA1: parseA1, addrOf: addrOf, physRows: physRows, toStr: toStr, javaDouble: javaDouble, tsSerial: tsSerial, ctype: ctype };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else global.NinjaTemplate = API;
 })(typeof self !== 'undefined' ? self : this);
