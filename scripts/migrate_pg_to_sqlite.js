@@ -252,6 +252,7 @@ function main() {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   if (fs.existsSync(OUT)) fs.unlinkSync(OUT);
   var sqlite = new Database(OUT);
+  if (process.env.ERP_PAGE_SIZE) sqlite.pragma('page_size = ' + (+process.env.ERP_PAGE_SIZE)); // before first table; match httpvfs requestChunkSize
   sqlite.pragma('journal_mode = OFF');
   sqlite.pragma('synchronous = OFF');
 
@@ -370,6 +371,26 @@ function main() {
       } else { restTables++; restRows += n; }
     }
   });
+
+  // ERP_INDEX=1 — recreate PG index column-lists (PK + every plain index) AFTER load. Range-read (httpvfs) needs them:
+  // without an index a keyed lookup scans the whole table (GBs over HTTP). Off by default (dictionary DBs ship unindexed).
+  if (process.env.ERP_INDEX) {
+    var t0 = Date.now(), nIdx = 0, loaded = {}; tables.forEach(function (t) { loaded[t] = true; });
+    pgMeta("SELECT c.relname, ic.relname, string_agg(a.attname, ',' ORDER BY k.ord) FROM pg_index i " +
+      "JOIN pg_class c ON c.oid=i.indrelid JOIN pg_class ic ON ic.oid=i.indexrelid " +
+      "JOIN pg_namespace n ON n.oid=c.relnamespace " +
+      "CROSS JOIN LATERAL unnest(i.indkey) WITH ORDINALITY k(attnum,ord) " +
+      "JOIN pg_attribute a ON a.attrelid=c.oid AND a.attnum=k.attnum " +
+      "WHERE n.nspname='" + SCHEMA + "' AND i.indexprs IS NULL AND i.indpred IS NULL AND k.attnum>0 " +
+      "GROUP BY c.relname, ic.relname").forEach(function (r) {
+      if (!loaded[r[0]]) return;
+      sqlite.exec('CREATE INDEX ' + q('ix_' + r[1]) + ' ON ' + q(r[0]) + ' (' +
+        r[2].split(',').map(q).join(',') + ')');
+      nIdx++;
+    });
+    console.log('§MIGRATE_INDEX created=' + nIdx + (nIdx ? '' : ' INCONCLUSIVE') + ' sec=' + Math.round((Date.now() - t0) / 1000) +
+      ' pageSize=' + sqlite.pragma('page_size', { simple: true }));
+  }
 
   // 3) Flagged subset — explicit, loud.
   var seqCount = +pgMeta("SELECT count(*) FROM information_schema.sequences " +

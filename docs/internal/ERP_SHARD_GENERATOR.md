@@ -243,3 +243,32 @@ emulation cannot reproduce the iOS ~500 MB tab kill; that limit stays a cited fi
   (b) replicated rows repeat 300–300 real rows, so numeric-width coverage = GardenWorld's, not a real client's; (c) shard stage
   (`build_erp_shard.js` T0/T1/T2 split) NOT run on this DB; (d) browser/mobile measurement (httpvfs range bytes, heap, cold start) NOT run;
   (e) BLOB-table exclusion (item 4) and index-after-load (item 2: the loader creates no indexes at all) not applicable/implemented.
+
+### §9.2 Range-read witness (SPEC, 2026-10-13 — written before the script)
+**Issue it proves/disproves:** "a 9.6 GB SQLite on a dumb static host can serve keyed ERP queries to a browser reading only the
+pages it needs." **Found while specifying:** `ad_full.db` and `bloat10.db` carry ZERO indexes (`sqlite_master type=index` = 0) —
+so a keyed lookup would scan the table; at 12.7 M `fact_acct` rows that is GBs over HTTP. Hence loader flags `ERP_INDEX=1`
+(recreate PG index column-lists after load) and `ERP_PAGE_SIZE` (match httpvfs `requestChunkSize`).
+**Arms:** A = `bloat10.db` (no index, 4 KB pages) · B = `bloat10_idx.db` (PG indexes, 16 KB pages).
+**Rig:** `scripts/range_read_witness.js` — Node static server with `Range` support that COUNTS bytes+requests per query window;
+headless Chromium (puppeteer, CPU only, `Emulation.setCPUThrottlingRate(4)` as the mobile proxy) loads
+`bim-ootb/viewer/lib/httpvfs.js` (`createDbWorker`, `serverMode:'full'`). Numbers only; no screenshots.
+**Queries (each reports `§RANGE q=<name> ms bytes requests rows`):**
+ Q1 `SELECT count(*) FROM ad_window` (dictionary) · Q2 `SELECT * FROM fact_acct WHERE fact_acct_id=?` (PK point lookup, 12.7 M rows) ·
+ Q3 `SELECT * FROM c_orderline WHERE c_order_id=?` (master→detail drill) · Q4 `SELECT * FROM c_order WHERE c_order_id=?`.
+**Asserts (VACUOUS-guarded):** rows>0 for every query else `INCONCLUSIVE`; arm B Q2 bytes < 1 % of table bytes (`§RANGE_RATIO`);
+arm A Q2 bytes reported as-is (expected ≈ whole-table scan = the failure this witness exists to expose).
+**Honest bound:** desktop Chromium + CPU throttle ≠ a phone; iOS ~500 MB tab kill stays a cited figure, not measured here.
+
+### §9.3 RESULT 2026-10-13 — range-read witness (logs: `build/erp/logs/range_armA.log`, `range_armB.log`, `migrate_bloat10_idx.log`)
+Rig: headless Chromium, CPU-only, 4× CPU throttle, `httpvfs` `serverMode:'full'`, Node static server with Range, bytes counted server-side (HEAD excluded).
+| query | A: no index, 4 KB pages (9.85 GB file) | B: PG indexes, 16 KB pages (10.2 GB file) |
+|---|---|---|
+| Q1 dictionary count | 127 KB · 5 reqs | 16 KB · 1 req |
+| Q2 `fact_acct` by PK (12.7 M rows) | **3.12 GB · 611 reqs · 14.6 s** (30 % of file) | **49 KB · 3 reqs · 11 ms** (`§RANGE_RATIO pct=0.0005`) |
+| Q4 `c_order` by PK (2.1 M rows) | 711 MB · 146 reqs · 4.2 s | 131 KB · 6 reqs · 188 ms |
+| Q3 `c_orderline` by `c_order_id` | invalid (0 rows: key came from a replicated order whose lines keep old FKs) | 1.37 GB · 317 reqs · 6.1 s · 16 587 rows — **no FK index in the bed**: `build_bloat_pg.js` drops all non-PK indexes on replicated tables |
+- **Finding 1 (decisive):** unindexed, one keyed lookup moves GBs; indexed, it moves tens of KB. The loader now takes `ERP_INDEX=1` (`§MIGRATE_INDEX created=2047 sec=10`) and `ERP_PAGE_SIZE`. Any shipped large DB MUST use them; dictionary-size DBs ship unindexed today (`ad_full.db` indexes=0).
+- **Finding 2:** FK indexes matter as much as PKs — master→detail drill is the AD engine's core move; Q3 shows the cost of missing one (a real PG client has them; the bed removed them).
+- **Indexed migration:** `§MIGRATE_VERDICT PASS` 925 tables, 16 m 31 s, max RSS 231 MB, output 9.95 GB.
+- **Gaps:** arm A used 4 KB chunks and B 16 KB (page size confounded with index; the 3.1 GB vs 49 KB gap is index-dominated). Arm A `open` line is invalid (HEAD was counted; fixed after). Q3 not re-run on A or B-with-FK-index. Not a phone: desktop Chromium + CPU throttle. Shard stage (T0/T1/T2 split) and cold-start under network throttle still NOT run.
