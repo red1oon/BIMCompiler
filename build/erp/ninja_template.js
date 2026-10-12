@@ -131,8 +131,9 @@
             var cv = strVal(cin);
             if (cv === annotateValue) {
               nothing = false;
-              mkC(outs, inRows[ii], cols[cj]);
-              mkC(prs, r, 8);
+              var oc0 = mkC(outs, inRows[ii], cols[cj]);
+              var val0 = mkC(prs, r, 8);
+              if (oc0.s != null) { val0.s = oc0.s; ad.s = oc0.s; } if (oc0.z) { val0.z = oc0.z; ad.z = oc0.z; }     // value.setCellStyle(outcell.getCellStyle()); addressPr.setCellStyle(...)
               setStr(ad, addrOf(inRows[ii], cols[cj]));                   // last match wins (the Java `break` leaves only the cell loop)
               break;
             }
@@ -304,6 +305,7 @@
       touch(ws);
       Object.keys(ws).forEach(function (k) { if (k[0] === '!') return; var c = ws[k]; if (c && c.f) c.f = shiftRefs(c.f, 0, 0, start, n); });
       if (ws['!merges']) ws['!merges'].forEach(function (mg) { if (mg.s.r >= start) { mg.s.r += n; mg.e.r += n; } });
+      if (ws['!rows']) { var rh = ws['!rows'], nr = []; for (var ri2 in rh) { var rr = +ri2; nr[rr >= start && rr <= end ? rr + n : rr] = rh[ri2]; } ws['!rows'] = nr; }
       growRef(ws, end + n, 0);
     }
     function copyover(ws, from, to) {
@@ -435,7 +437,7 @@
           if (toStr(prValue) === END) break;
           if (toStr(prValue) === 'NULL') { nc++; prValue = getC(prs, r, nc); continue; }
           if (ctype(prValue) === 'BLANK' || ctype(prValue) === 'FORMULA') { nc++; prValue = getC(prs, r, nc); continue; }
-          if (ctype(prValue) === 'NUMERIC') { setNum(outcell, prValue.v); if (prValue.z) outcell.z = prValue.z; } else setStr(outcell, strVal(prValue));
+          if (ctype(prValue) === 'NUMERIC') setNum(outcell, prValue.v); else setStr(outcell, strVal(prValue));      // outcell keeps ITS OWN style/format (Java: outcell.setCellValue only)
           if (annotation.slice(-1) === DOWN) {
             downrow++;
             oR = downrow;

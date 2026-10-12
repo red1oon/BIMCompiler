@@ -1,0 +1,28 @@
+// One-time TEMPLATE MIGRATION tool (dev machine only, not shipped): .xls (HSSF) -> .xlsx (XSSF) keeping what the Laos templates use:
+// fonts, bold, fills, borders, number formats, alignment, merges, hidden columns, column widths, row heights, print setup, cached formula results.
+import java.io.*; import java.util.*; import org.apache.poi.hssf.usermodel.*; import org.apache.poi.hssf.util.HSSFColor; import org.apache.poi.ss.usermodel.*; import org.apache.poi.ss.util.CellRangeAddress; import org.apache.poi.xssf.usermodel.*;
+public class Xls2Xlsx {
+ static XSSFColor col(HSSFWorkbook w, short idx){ if(idx<=0||idx==64) return null; HSSFColor c=w.getCustomPalette().getColor(idx); if(c==null) return null; short[] t=c.getTriplet(); return new XSSFColor(new byte[]{(byte)t[0],(byte)t[1],(byte)t[2]},null); }
+ static CellStyle copyStyle(HSSFWorkbook sw, HSSFCellStyle s, XSSFWorkbook dw, Map<Integer,XSSFFont> fm){
+  XSSFCellStyle d=dw.createCellStyle(); HSSFFont f=s.getFont(sw); XSSFFont df=fm.get((int)f.getIndex());
+  if(df==null){ df=dw.createFont(); df.setFontName(f.getFontName()); df.setFontHeightInPoints(f.getFontHeightInPoints()); df.setBold(f.getBold()); df.setItalic(f.getItalic()); df.setUnderline(f.getUnderline()); df.setStrikeout(f.getStrikeout()); XSSFColor fc=col(sw,f.getColor()); if(fc!=null) df.setColor(fc); fm.put((int)f.getIndex(),df); }
+  d.setFont(df); d.setDataFormat(dw.createDataFormat().getFormat(s.getDataFormatString()));
+  d.setFillPattern(s.getFillPattern()); XSSFColor fg=col(sw,s.getFillForegroundColor()); if(fg!=null) d.setFillForegroundColor(fg); XSSFColor bg=col(sw,s.getFillBackgroundColor()); if(bg!=null) d.setFillBackgroundColor(bg);
+  d.setBorderTop(s.getBorderTop()); d.setBorderBottom(s.getBorderBottom()); d.setBorderLeft(s.getBorderLeft()); d.setBorderRight(s.getBorderRight());
+  XSSFColor c; if((c=col(sw,s.getTopBorderColor()))!=null) d.setTopBorderColor(c); if((c=col(sw,s.getBottomBorderColor()))!=null) d.setBottomBorderColor(c); if((c=col(sw,s.getLeftBorderColor()))!=null) d.setLeftBorderColor(c); if((c=col(sw,s.getRightBorderColor()))!=null) d.setRightBorderColor(c);
+  d.setAlignment(s.getAlignment()); d.setVerticalAlignment(s.getVerticalAlignment()); d.setWrapText(s.getWrapText()); d.setIndention(s.getIndention()); d.setRotation(s.getRotation()); d.setLocked(s.getLocked()); d.setHidden(s.getHidden()); return d; }
+ public static void main(String[] a) throws Exception {
+ HSSFWorkbook src; try(FileInputStream in=new FileInputStream(a[0])){ src=new HSSFWorkbook(in);} XSSFWorkbook dst=new XSSFWorkbook(); { HSSFFont d0=src.getFontAt(0); XSSFFont f0=dst.getFontAt(0); f0.setFontName(d0.getFontName()); f0.setFontHeightInPoints(d0.getFontHeightInPoints()); }   /* unstyled cells keep the template's default font (HSSF default is Arial 10, XSSF Calibri 11) */
+ Map<Short,CellStyle> sm=new HashMap<>(); Map<Integer,XSSFFont> fm=new HashMap<>(); int cells=0,styles=0,ext=0;
+ for(int si=0;si<src.getNumberOfSheets();si++){ HSSFSheet s=src.getSheetAt(si); XSSFSheet d=dst.createSheet(s.getSheetName());
+  d.setDefaultColumnWidth(s.getDefaultColumnWidth()); d.setDefaultRowHeight(s.getDefaultRowHeight());
+  int maxc=0; for(Row r:s) if(r.getLastCellNum()>maxc) maxc=r.getLastCellNum();
+  for(int c=0;c<=maxc;c++){ if(s.getColumnWidth(c)!=s.getDefaultColumnWidth()*256) d.setColumnWidth(c,s.getColumnWidth(c)); if(s.isColumnHidden(c)) d.setColumnHidden(c,true); }
+  for(int m=0;m<s.getNumMergedRegions();m++) d.addMergedRegion(s.getMergedRegion(m));
+  for(Row r:s){ Row dr=d.createRow(r.getRowNum()); dr.setHeight(r.getHeight()); if(r.getZeroHeight()) dr.setZeroHeight(true);
+   for(Cell c:r){ Cell dc=dr.createCell(c.getColumnIndex()); cells++; HSSFCellStyle ss=(HSSFCellStyle)c.getCellStyle(); CellStyle ds=sm.get(ss.getIndex()); if(ds==null){ ds=copyStyle(src,ss,dst,fm); sm.put(ss.getIndex(),ds); styles++; } dc.setCellStyle(ds);
+    switch(c.getCellType()){ case STRING: dc.setCellValue(c.getStringCellValue()); break; case NUMERIC: dc.setCellValue(c.getNumericCellValue()); break; case BOOLEAN: dc.setCellValue(c.getBooleanCellValue()); break; case FORMULA: try{ dc.setCellFormula(c.getCellFormula()); }catch(Exception ex){ ext++; if(ext<=3) System.out.println("§CONVERT_EXTERNAL_REF "+s.getSheetName()+"!"+c.getAddress()+" kept CACHED value (formula not representable): "+c.getCellFormula().substring(0,Math.min(70,c.getCellFormula().length()))); switch(c.getCachedFormulaResultType()){ case NUMERIC: dc.setCellValue(c.getNumericCellValue()); break; case STRING: dc.setCellValue(c.getStringCellValue()); break; case BOOLEAN: dc.setCellValue(c.getBooleanCellValue()); break; default: break; } } break; default: break; } } }
+  PrintSetup ps=s.getPrintSetup(), pd=d.getPrintSetup(); pd.setLandscape(ps.getLandscape()); pd.setPaperSize(ps.getPaperSize()); pd.setFitWidth(ps.getFitWidth()); pd.setFitHeight(ps.getFitHeight()); d.setFitToPage(s.getFitToPage()); d.setDisplayGridlines(s.isDisplayGridlines());
+  d.setMargin(Sheet.LeftMargin,s.getMargin(Sheet.LeftMargin)); d.setMargin(Sheet.RightMargin,s.getMargin(Sheet.RightMargin)); d.setMargin(Sheet.TopMargin,s.getMargin(Sheet.TopMargin)); d.setMargin(Sheet.BottomMargin,s.getMargin(Sheet.BottomMargin)); }
+ try{ dst.getCreationHelper().createFormulaEvaluator().evaluateAll(); }catch(Exception e){ System.out.println("§CONVERT evaluateAll warning: "+e); }
+ try(FileOutputStream o=new FileOutputStream(a[1])){ dst.write(o);} System.out.println("§CONVERT "+new File(a[0]).getName()+" -> "+new File(a[1]).getName()+" cells="+cells+" distinctStyles="+styles+" externalRefFormulas="+ext); }}
