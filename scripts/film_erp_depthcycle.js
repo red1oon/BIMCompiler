@@ -11,6 +11,8 @@ const http = require('http'), fs = require('fs'), path = require('path'), { exec
 
 const REPO = process.env.ERP_REPO || path.join(require('os').homedir(), 'bim-ootb');   // ERP_REPO = a worktree, to film a fix before it merges
 const OUT = path.resolve(process.argv[2] || '.'); const FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
+const ONLY = process.env.ONLY_LANG || '';   // ONLY_LANG=th_TH: Thai narration + Thai UI through login and the first panel; UI → English when the first panel (Sales Order window) is on screen
+let curLang = ONLY || 'en_US';
 const LOG = [], PAGELOG = [];
 const say = (s) => { LOG.push(s); console.log(s); };
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.db': 'application/octet-stream',
@@ -56,7 +58,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   await page.goto(base + '/idempiere.html', { waitUntil: 'networkidle' });
   await page.evaluate(() => new Promise(r => { const q = indexedDB.deleteDatabase('erp_cache'); q.onsuccess = q.onerror = q.onblocked = () => r(); }));
   await page.evaluate(() => { try { localStorage.removeItem('erp.lang'); } catch (e) {} });
-  await page.goto(base + '/idempiere.html?lang=en_US', { waitUntil: 'networkidle' });
+  await page.goto(base + '/idempiere.html?lang=' + (ONLY || 'en_US'), { waitUntil: 'networkidle' });
   await page.waitForFunction(() => !!window.__idmpDb && !!window.ErpI18n, null, { timeout: 30000 });
   await page.evaluate(() => window.ErpI18n.preload && window.ErpI18n.preload());
   await page.waitForFunction(() => document.querySelector('#idmp-login-clients') && document.querySelector('#idmp-login-clients').children.length > 0, null, { timeout: 20000 });
@@ -134,6 +136,13 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     if (!(await page.locator('#pill-' + id).first().isVisible().catch(() => false))) { await hclick('#idmp-pill-trigger'); await page.waitForTimeout(450); }
     await hclick('#pill-' + id); await page.waitForTimeout(700);
   }
+  async function setLang(code, where) {      // the in-app picker; waits for its §I18N line (ERP_UI_LOCALES.md)
+    if (code === curLang) return; curLang = code;
+    const sel = where === 'login' ? '#idmp-login-lang' : '#idmp-lang';
+    const n0 = PAGELOG.length; await hclick(sel); await page.selectOption(sel, code);
+    for (let i = 0; i < 40 && !last(n0, new RegExp('§I18N lang=' + code)); i++) await page.waitForTimeout(50);
+    fact('i18n.' + code, last(n0, /§I18N lang=/) || 'NO §I18N LINE'); await hold(250);
+  }
   const hselect = async (sel, val) => { await glide(sel); await page.selectOption(sel, val); await hold(500); };
   const htype = async (sel, text) => { await glide(sel); await page.click(sel); await page.fill(sel, ''); await page.type(sel, text, { delay: 90 }); await page.locator(sel).first().blur().catch(() => {}); await hold(350); };
   const opts = (col) => page.$$eval('#idmp-inline-mount select[data-col="' + col + '"] option', o => o.map(x => ({ v: x.value, t: x.text }))).catch(() => []);
@@ -171,12 +180,14 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
 
   try {
     await page.mouse.move(720, 600);
-    await beat('s01', 'en', 'Info Product before the sale');
+    if (ONLY) { await beat('s00', ONLY, 'login card in ' + ONLY); await hold(2500); }
+    await beat('s01', ONLY || 'en', ONLY ? 'login + open the first panel (Sales Order), UI still ' + ONLY : 'Info Product before the sale');
     await hclick("#idmp-login-clients .idmp-login-user:has(.nm:text-is('GardenWorld'))"); await page.waitForSelector('#idmp-login-step1:visible'); await hold(400);
     await hclick("#idmp-login-users .idmp-login-user:has(.nm:text-is('GardenAdmin'))"); await page.waitForSelector('#idmp-login-step2:visible'); await hold(500);
     await hclick('#idmp-login-ok');
     await page.waitForFunction(() => document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0, null, { timeout: 10000 }); await hold(500);
     await openWinById(143);
+    if (ONLY) { await beat('s01b', ONLY, 'first panel on screen → UI back to English'); await setLang('en_US', 'session'); await hold(800); }
     const ohBefore = await tip('SELECT COALESCE(SUM(qtyonhand),0) AS n FROM m_storageonhand WHERE m_product_id=' + PROD); fact('onhand.before', ohBefore[0].n);
     await infoProduct('before'); await closeInfo();
 
