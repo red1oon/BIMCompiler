@@ -1,0 +1,17 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT s01 cue=0.00 room=16.70 dur=13.38 -> DETAIL slack=+3.32 words=39
+§NARR_TONE s01#0 F YN rose=5.0st endDelta=+4.4st want=rise OK "Legacy users ask one thing first: is there real depth behind the screen?"
+§NARR_FIT s02 cue=17.00 room=13.70 dur=9.70 -> DETAIL slack=+4.00 words=30
+§NARR_FIT s03 cue=31.00 room=10.48 dur=6.83 -> DETAIL slack=+3.65 words=21
+§NARR_FIT s04 cue=41.78 room=13.13 dur=12.73 -> DETAIL slack=+0.40 words=33
+§NARR_FIT s05 cue=55.21 room=9.79 dur=5.51 -> DETAIL slack=+4.28 words=17
+§NARR_TONE s05#0 F WH rose=0st endDelta=-4.6st want=fall OK "So where did they go?"
+§NARR_FIT s06 cue=65.30 room=7.15 dur=6.75 -> DETAIL slack=+0.40 words=19
+§NARR_FIT s07 cue=72.75 room=19.55 dur=15.44 -> DETAIL slack=+4.11 words=41
+§NARR_FIT s08 cue=92.60 room=14.59 dur=9.48 -> DETAIL slack=+5.11 words=24
+§NARR_FIT s09 cue=107.49 room=16.35 dur=12.19 -> DETAIL slack=+4.16 words=32
+§NARR_TONE s09#0 F YN rose=5.0st endDelta=+3.1st want=rise OK "Changed our mind?"
+§NARR_TONE s09#2 F YN rose=5.0st endDelta=+3.1st want=rise OK "And the stock?"
+§NARR_FIT s10 cue=124.14 room=6.63 dur=6.23 -> DETAIL slack=+0.40 words=17
