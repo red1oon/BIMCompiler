@@ -54,11 +54,12 @@ def tts(txt,voice,sp):
     rate=f'{round((sp-1)*100):+d}%'; h=hashlib.sha1(f'{txt}|{voice}|{rate}'.encode()).hexdigest(); w=f'{CACHE}/{h}.wav'
     if not os.path.exists(w):
         mp=w[:-4]+'.mp3'
-        for attempt in range(3):   # cloud service: transient NoAudioReceived seen once; 3 tries then fail loud
-            try: asyncio.run(edge_tts.Communicate(txt,voice,rate=rate).save(mp)); break
-            except edge_tts.exceptions.NoAudioReceived as e:
+        for attempt in range(8):   # cloud service: NoAudioReceived/hangs are intermittent (Thai 2026-10-13: 2 lines needed up to 6 tries); 30 s timeout per try, then fail loud
+            try: asyncio.run(asyncio.wait_for(edge_tts.Communicate(txt,voice,rate=rate).save(mp),30)); break
+            except (edge_tts.exceptions.NoAudioReceived,asyncio.TimeoutError) as e:
                 print(f'§EDGE_RETRY attempt={attempt+1} voice={voice} text="{txt}"',flush=True)
-                if attempt==2: raise
+                if attempt==7: raise
+                __import__('time').sleep(2)
         subprocess.run(['ffmpeg','-v','error','-y','-i',mp,'-ac','1','-ar','24000',w],check=True); os.remove(mp)
         print(f'§EDGE_CALL voice={voice} rate={rate} chars={len(txt)} -> {h[:10]}',flush=True)
     a,_=sf.read(w,dtype='float32')

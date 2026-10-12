@@ -159,12 +159,12 @@ let curLang = 'en_US';
     if (!(await page.locator('#pill-' + id).first().isVisible().catch(() => false))) { await hclick('#idmp-pill-trigger'); await page.waitForTimeout(450); }
     await hclick('#pill-' + id); await page.waitForTimeout(700);
   }
-  let li = 0; const nextLang = () => ONLY ? 'en_US' : LANGS[(li++) % LANGS.length];   // ONLY_LANG cut: that language for the opening ~10 s only, English after
+  let li = 0; const nextLang = () => ONLY ? (++li <= 5 ? ONLY : 'en_US') : LANGS[(li++) % LANGS.length];   // ONLY_LANG cut: UI stays in that language through s05 (the Sales Order window opens), s06 on the UI is English; the narration stays in ONLY_LANG throughout
 
   try {
     await page.mouse.move(720, 600);
     for (const L of LANGS) { await beat('g_' + L, L, 'greeting'); await setLang(L, 'login'); }
-    if (ONLY) { await beat('s00', ONLY, 'opening in ' + ONLY + ' on the login card, then back to English'); await hold(1500); }
+    if (ONLY) { await beat('s00', ONLY, 'opening in ' + ONLY + ' on the login card'); await hold(1500); }
     let L, n1;
     // s01 System Monitor, from the login card
     L = nextLang(); await beat('s01', L, 'System Monitor'); await setLang(L, 'login');
