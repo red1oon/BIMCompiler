@@ -564,8 +564,9 @@
       return sc >= 0 ? { kind: 'num', scale: sc } : { kind: 'unknown' };
     });
   }
-  function sqliteExecutor(db) {                               // exec(sql) -> typed rows; db = better-sqlite3 / sql.js-compatible via .prepare(sql).raw().all()
+  function sqliteExecutor(db, BD) {                           // exec(sql) -> typed rows; db = better-sqlite3 / sql.js-compatible via .prepare(sql).raw().all(); BD = the twin's BigDecimal (build/erp/bigdecimal.js)
     var cache = {};
+    BD = BD || (typeof require !== 'undefined' ? (function () { try { return require('./bigdecimal.js'); } catch (e) { return null; } })() : global.BigDecimal);
     function lookup(tbl, col) {
       var k = tbl + '.' + col; if (k in cache) return cache[k];
       var dt = db.prepare('select dt from _coltype where lower(tbl)=? and lower(col)=?').raw().get(tbl, col), sc = db.prepare('select scale from _scale where lower(tbl)=? and lower(col)=?').raw().get(tbl, col);
@@ -578,7 +579,10 @@
           var m = meta[i] || { kind: 'unknown' };
           if (v == null) return null;
           if (typeof v === 'number' || typeof v === 'bigint') {
-            if (m.kind === 'num' && m.scale > 0) return { k: 'n', s: Number(v).toFixed(m.scale) };
+            if (m.kind === 'num' && m.scale > 0) {                    // Java BigDecimal scale via the twin's own BigDecimal (decimals enter as STRINGS, per its contract)
+              var dec = typeof v === 'bigint' ? v.toString() : String(parseFloat(Number(v).toPrecision(12)));
+              return { k: 'n', s: BD ? BD.of(dec).setScale(m.scale, BD.RoundingMode.HALF_UP).toString() : Number(v).toFixed(m.scale) };
+            }
             return typedFromSqlite(v);
           }
           if (m.kind === 'ts') { var t = String(v); return { k: 't', s: /\.\d+$/.test(t) ? t : t + '.0' }; }
