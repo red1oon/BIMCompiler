@@ -15,7 +15,7 @@ const DROP = /^(datelastrun|datenextrun|datepasswordchanged|datelastlogin)$/;
 const args = process.argv.slice(2), SKIP = (args.includes('--skip') ? args[args.indexOf('--skip') + 1] : '').split(',').filter(Boolean), ONLY = (args.includes('--only') ? args[args.indexOf('--only') + 1] : '').split(',').filter(Boolean);
 
 // natural-key read types for resolving a reference on the legacy side (WS reads only)
-const RT = { c_bp_group: 'QueryCBPGroup', c_taxcategory: 'QueryCTaxCategory', m_product_category: 'QueryMProductCategory', c_bank: 'QueryCBank', c_bpartner: 'QueryCBPartner', c_location: 'QueryCLocation',
+const RT = { c_bp_group: 'QueryCBPGroup', c_taxcategory: 'QueryCTaxCategory', m_product_category: 'QueryMProductCategory', c_bank: 'QueryCBank', m_rmatype: 'QueryMRMAType', c_bpartner: 'QueryCBPartner', c_location: 'QueryCLocation',
   m_product: 'QueryMProduct', m_pricelist: 'QueryMPriceList', m_pricelist_version: 'QueryMPriceListVersion', c_tax: 'QueryCTax', m_discountschema: 'QueryMDiscountSchema', c_acctschema: 'QueryCAcctSchema', c_bankaccount: 'QueryCBankAccount', m_costelement: 'QueryMCostElement' };
 const q = v => `'${String(v).replace(/'/g, "''")}'`;
 
@@ -304,6 +304,8 @@ async function main() {
   });
   await run('SD-13', MORE.sd13);
   // SD-18 end-of-day count: a loss on one product and a gain on another against the BOOK quantity both sides read (legacy QueryStorage), Physical Inventory = Doc_Inventory I+/I-
+  const RET = require('./shopday_return')({ docEnv, R, log, out, TODAY, tw, T, F, ids, lrefId, lfind, lcreate, sref, compareStep }, MORE);
+  await run('SD-16', RET.sd16);   // §SD16: customer return (RMA -> return receipt -> credit memo), spec prompts/SQLiteIDEMPIERE.md §SD16
   await run('SD-17', MORE.sd17);
   await run('SD-18', () => runPI('SD-18', 'SD18-count-loss-gain', async (C, x) => { const b1 = await x.locStock(C.prod.mulch, C.locator), b2 = await x.locStock(C.prod.rake, C.locator);
     log(`§SHOPDAY_LEGACY SD-18 book qty: product ${C.prod.mulch}=${b1} product ${C.prod.rake}=${b2}`); return [{ product: C.prod.mulch, loc: C.locator, book: b1, count: b1 - 2 }, { product: C.prod.rake, loc: C.locator, book: b2, count: b2 + 3 }]; }, 3000030));
@@ -326,7 +328,7 @@ async function main() {
     out.neg = priced.length > 0;   // extras BEFORE the invoice are state drift of a second chain on the same stock (listed, not required to be empty)
     log(`§SHOPDAY_NEG ${out.neg ? 'PASS' : 'FAIL'} SQLite invoice +1 cent: extra gap keys at INV=[${extra('INV').join(',')}] (price-bearing: [${priced.join(',')}]); extra before INV=[${before.join(',')}]`);
   });
-  const NOT_RUN_WHY = { 'SD-16': 'M_RMA is not covered (COVERAGE_NOT_COVERED): no WS type, descriptor or SQLite verb for a customer return / RMA document -- blocked, not trivial' };
+  const NOT_RUN_WHY = {};   // SD-16 (M_RMA) is built since §SD16
   const PLAN = ['SD-00', 'SD-01', 'SD-02', 'SD-03', 'SD-04', 'SD-05', 'SD-06', 'SD-07', 'SD-08', 'SD-09', 'SD-10', 'SD-11', 'SD-12', 'SD-13', 'SD-14', 'SD-15', 'SD-16', 'SD-17', 'SD-18', 'SD-19', 'SD-20', 'SD-21', 'SD-22', 'SD-23', 'SD-24'];
   const worst = ids2 => { const vs = out.steps.filter(s => ids2.includes(s.id)).map(s => s.verdict); return !vs.length ? 'NOT_RUN' : vs.includes('BLOCKED') ? 'BLOCKED' : vs.includes('DIFF') ? 'DIFF' : vs.includes('INCONCLUSIVE') ? 'INCONCLUSIVE' : 'MATCH'; };
   const fold = { 'SD-04': ['SD-04a', 'SD-04', 'SD-04b', 'SD-04c'], 'SD-06': ['SD-06', 'SD-06z'], 'SD-12': ['SD-12', 'SD-12z'], 'SD-13': ['SD-13a', 'SD-13'], 'SD-22': ['SD-22a', 'SD-22'] }, per = Object.fromEntries(PLAN.map(id => [id, worst(fold[id] || [id])]));
@@ -334,7 +336,7 @@ async function main() {
   log(`§SHOPDAY_COVERAGE steps_match=${cnt('MATCH')} of ${PLAN.length} diff=${cnt('DIFF')} blocked=${cnt('BLOCKED')} inconclusive=${cnt('INCONCLUSIVE')} not_run=${cnt('NOT_RUN')} :: ${PLAN.map(id => id + '=' + per[id]).join(' ')}`);
   for (const id of PLAN) if (per[id] === 'NOT_RUN' && NOT_RUN_WHY[id]) log(`§SHOPDAY_NOT_RUN ${id} ${NOT_RUN_WHY[id]}`);
   const judged = PLAN.length - cnt('NOT_RUN');
-  log(`§SHOPDAY_VERDICT ${(out.neg === false || out.posNeg === false || out.tbNeg === false) ? 'HARNESS-FAIL' : judged === 0 ? 'INCONCLUSIVE' : (cnt('DIFF') || cnt('BLOCKED') || cnt('INCONCLUSIVE')) ? 'DIFF' : (cnt('NOT_RUN') ? 'PARTIAL' : 'PASS')} judged=${judged} of ${PLAN.length} negative_control=${out.neg === true ? 'PASS' : out.neg === false ? 'FAIL' : 'NOT_RUN'} neg_pos=${out.posNeg === true ? 'PASS' : out.posNeg === false ? 'FAIL' : 'NOT_RUN'} neg_tb=${out.tbNeg === true ? 'PASS' : out.tbNeg === false ? 'FAIL' : 'NOT_RUN'}`);
+  log(`§SHOPDAY_VERDICT ${(out.neg === false || out.posNeg === false || out.tbNeg === false || out.rtNeg === false) ? 'HARNESS-FAIL' : judged === 0 ? 'INCONCLUSIVE' : (cnt('DIFF') || cnt('BLOCKED') || cnt('INCONCLUSIVE')) ? 'DIFF' : (cnt('NOT_RUN') ? 'PARTIAL' : 'PASS')} judged=${judged} of ${PLAN.length} negative_control=${out.neg === true ? 'PASS' : out.neg === false ? 'FAIL' : 'NOT_RUN'} neg_pos=${out.posNeg === true ? 'PASS' : out.posNeg === false ? 'FAIL' : 'NOT_RUN'} neg_tb=${out.tbNeg === true ? 'PASS' : out.tbNeg === false ? 'FAIL' : 'NOT_RUN'} neg_sd16=${out.rtNeg === true ? 'PASS' : out.rtNeg === false ? 'FAIL' : 'NOT_RUN'}`);
   log(`§SHOPDAY_SUMMARY ` + out.steps.map(s => `${s.id}=${s.verdict}`).join(' ') + (tw.unsupported.size ? `\n§SHOPDAY_UNSUPPORTED_DEFAULTS ${[...tw.unsupported].join(' ; ')}` : ''));
   return 0;
 }

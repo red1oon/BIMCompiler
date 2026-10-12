@@ -77,7 +77,7 @@ module.exports = function makeSteps(env) {
     return { g, opts, o };
   }
   async function localSale(f, mut = 0) {
-    const P = posEnv(), x = P.x, C = P.C, gb = x.gb, cents = x.cents, grp = localSaleGroup(f); if (grp.reject) return grp.reject;
+    const P = posEnv(), x = P.x, C = P.C, gb = x.gb, cents = x.cents, grp = localSaleGroup(f); if (grp.reject) return grp.reject; P.lastLocal = grp;   // §SD16: the return fixture reads the ids/prices of the sale it just made
     const { g, opts } = grp, D = f.date || TODAY, cqBefore = {}; for (const l of f.lines) cqBefore[l.product] = x.localCostQty(l.product);
     const st = g.ops.filter(y => y.op_type === 'SET_STATUS' && y.table === 'C_Order').pop(), shipDone = g.ops.filter(y => y.op_type === 'SET_STATUS' && y.table === 'M_InOut' && y.doc_status === 'CO').length;
     const fold = (t, id, sc) => { const d = x.DP.derivePostings(gb, { table: t, id }, sc); return d.absent && d.absent.length ? 'ABSENT:' + d.absent.join(',') : (d.lines.length ? x.fmtPostings(d.lines) : 'none'); };
@@ -486,5 +486,6 @@ module.exports = function makeSteps(env) {
     const r = rows[0] || {}, keys = (r.gaps || []).map(g => g.key), priced = keys.filter(k => /total_cents|grand_total_cents|postings/.test(k));
     env.out.posNeg = r.verdict === 'SQLITE-GAP' && priced.length > 0; log(`§SHOPDAY_NEG_POS ${env.out.posNeg ? 'PASS' : 'FAIL'} SQLite POS invoice +1 cent => ${r.verdict} price-bearing gap keys=[${priced.join(',')}]`);
   };
+  steps.sale = { posEnv, legacySale, localSale, POSKEYS };   // §SD16 (shopday_return.js): the cash-sale fixture of the customer-return step
   return steps;
 };
