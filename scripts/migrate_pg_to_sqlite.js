@@ -105,6 +105,36 @@ function pgCopy(sql) {
     { maxBuffer: MAXBUF, encoding: 'utf8' });
 }
 
+// Streamed COPY: spool psql stdout to a file (fd handed to the child — no JS buffer), return its path.
+var SPOOL_DIR = path.join(path.dirname(OUT), '.migrate_spool');
+var BATCH = +process.env.ERP_BATCH || 50000;          // rows per SQLite transaction
+var VERBOSE_ROWS = +process.env.ERP_VERBOSE_ROWS || 100000; // log §MIGRATE_ROWS ok for tables this big
+var rowMismatch = 0;
+function pgCopyToFile(sql) {
+  fs.mkdirSync(SPOOL_DIR, { recursive: true });
+  var f = path.join(SPOOL_DIR, 'copy_' + process.pid + '.txt');
+  var fd = fs.openSync(f, 'w');
+  try {
+    execFileSync('docker', ['exec', CONTAINER, 'psql', '-U', PGUSER, '-d', DB, '-c', sql],
+      { stdio: ['ignore', fd, 'inherit'] });
+  } finally { fs.closeSync(fd); }
+  return f;
+}
+// Read a file in 8 MB chunks, call fn(line) per line (carry the partial tail; utf8-safe via StringDecoder).
+function forEachLine(file, fn) {
+  var SD = require('string_decoder').StringDecoder, dec = new SD('utf8');
+  var fd = fs.openSync(file, 'r'), buf = Buffer.allocUnsafe(8 * 1048576), tail = '', got;
+  try {
+    while ((got = fs.readSync(fd, buf, 0, buf.length, null)) > 0) {
+      var parts = (tail + dec.write(buf.slice(0, got))).split('\n');
+      tail = parts.pop();
+      for (var i = 0; i < parts.length; i++) if (parts[i].length) fn(parts[i]);
+    }
+    tail += dec.end();
+    if (tail.length) fn(tail);
+  } finally { fs.closeSync(fd); }
+}
+
 // ── COPY TEXT unescape (PostgreSQL copy.c rules) ─────────────────────────────
 // A bare field "\N" is NULL. Else decode C-escapes in a single left-to-right
 // pass so a literal backslash (emitted as "\\") is never mis-read.
@@ -279,38 +309,55 @@ function main() {
       .filter(function (i) { return i >= 0; });
     if (blobIdx.length) blobTables++;
 
-    // COPY data out (explicit column list = guaranteed order match).
+    // COPY data out (explicit column list = guaranteed order match). Spec: ERP_SHARD_GENERATOR.md §9.
+    // Streamed: psql stdout is spooled to a file (never held in a JS string), then read in chunks and
+    // inserted in batches — heap is bounded by chunk+batch, not by table size.
     var collist = cs.map(function (c) { return q(c.name); }).join(',');
-    var payload = pgCopy('COPY (SELECT ' + collist + ' FROM ' + q(SCHEMA) + '.' + q(tn) +
+    var spool = pgCopyToFile('COPY (SELECT ' + collist + ' FROM ' + q(SCHEMA) + '.' + q(tn) +
       ') TO STDOUT');
 
     var ins = sqlite.prepare('INSERT INTO ' + q(tn) + ' VALUES (' +
       cs.map(function () { return '?'; }).join(',') + ')');
 
-    // payload ends with a trailing newline; split and drop the empty tail.
-    var lines = payload.length ? payload.split('\n') : [];
-    if (lines.length && lines[lines.length - 1] === '') lines.pop();
-
-    var n = 0;
-    var tx = sqlite.transaction(function () {
-      for (var li = 0; li < lines.length; li++) {
-        var fields = lines[li].split('\t');
-        var vals = new Array(cs.length);
-        for (var fi = 0; fi < cs.length; fi++) {
-          var v = unescape(fields[fi]);
-          if (v !== null && blobIdx.indexOf(fi) >= 0) {
-            // bytea TEXT output is "\x<hex>"; decode to a real BLOB.
-            v = (v.slice(0, 2) === '\\x')
-              ? Buffer.from(v.slice(2), 'hex')
-              : Buffer.from(v, 'binary');
-          }
-          vals[fi] = v;
+    var n = 0, inTx = false;
+    function onLine(line) {
+      var fields = line.split('\t');
+      var vals = new Array(cs.length);
+      for (var fi = 0; fi < cs.length; fi++) {
+        var v = unescape(fields[fi]);
+        if (v !== null && blobIdx.indexOf(fi) >= 0) {
+          // bytea TEXT output is "\x<hex>"; decode to a real BLOB.
+          v = (v.slice(0, 2) === '\\x')
+            ? Buffer.from(v.slice(2), 'hex')
+            : Buffer.from(v, 'binary');
         }
-        ins.run(vals);
-        n++;
+        vals[fi] = v;
       }
+      if (!inTx) { sqlite.exec('BEGIN'); inTx = true; }
+      ins.run(vals);
+      n++;
+      if (n % BATCH === 0) { sqlite.exec('COMMIT'); inTx = false; }
+    }
+    forEachLine(spool, onLine);
+    if (inTx) sqlite.exec('COMMIT');
+    fs.unlinkSync(spool);
+
+    // §MIGRATE_ROWS — silent row loss check: SQLite count vs PG count(*) (independent of the COPY stream).
+    var pgN = +pgMeta('SELECT count(*) FROM ' + q(SCHEMA) + '.' + q(tn))[0][0];
+    var sqN = sqlite.prepare('SELECT count(*) AS c FROM ' + q(tn)).get().c;
+    if (pgN !== sqN || pgN !== n) {
+      rowMismatch++;
+      console.log('§MIGRATE_ROWS FAIL table=' + tn + ' pg=' + pgN + ' streamed=' + n + ' sqlite=' + sqN);
+    } else if (n >= VERBOSE_ROWS) {
+      console.log('§MIGRATE_ROWS ok table=' + tn + ' rows=' + n + ' rssMB=' +
+        Math.round(process.memoryUsage().rss / 1048576));
+    }
+    // §MIGRATE_NUMERIC_WIDE — NUMERIC values SQLite kept as TEXT (lossless-reversible rule) i.e. wider than a double.
+    cs.forEach(function (c) {
+      if (affinity(c.type) !== 'NUMERIC' || !n) return;
+      var w = sqlite.prepare('SELECT count(*) AS c FROM ' + q(tn) + ' WHERE typeof(' + q(c.name) + ")='text'").get().c;
+      if (w) console.log('§MIGRATE_NUMERIC_WIDE table=' + tn + ' col=' + c.name + ' textRows=' + w);
     });
-    tx();
     totalRows += n;
     doneTables++;
 
@@ -394,6 +441,10 @@ function main() {
   sqlite.close();
 
   // ── §-log acceptance ────────────────────────────────────────────────────
+  console.log('§MIGRATE_VERDICT ' + (doneTables === 0 ? 'INCONCLUSIVE (no tables judged)' :
+    rowMismatch === 0 ? 'PASS rows-match-all-tables' : 'FAIL rowMismatch=' + rowMismatch) +
+    ' tables=' + doneTables + ' peakRssMB=' + Math.round(process.resourceUsage().maxRSS / 1024));
+  try { fs.rmdirSync(SPOOL_DIR); } catch (e) { /* non-empty/absent */ }
   console.log('§MIGRATE tables=' + doneTables + ' rows=' + totalRows +
     ' blobTables=' + blobTables);
   if (ruleLine) console.log(ruleLine);

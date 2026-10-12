@@ -191,3 +191,55 @@ deliberately NOT bundled — the witness is the access surface (roles + windows)
 - Cross-check: client 11 intact (4 roles); client-12 role ids = src+10M (10000102/103, 10050004, 10200001);
   0 orphans on `ur→role` / `oa→org` / `role→client`; client-12 access-row content hash STABLE across reruns.
 - Renderer untouched; output local only. STOP — no deploy without explicit GO.
+
+## §9 Large-client PG→SQLite migration (SPEC, 2026-10-13 — no code yet)
+> Question (user): can a ~10 GB client PG DB migrate to SQLite and shard into the browser? Sharding tiers
+> (§1–§8, `IDEMPIERE_DATA_STREAMING_SPEC.md`, `ACCESS_FREQUENCY_SHARDING.md`) are designed and witnessed ONLY on the
+> 45 MB `ad_full.db`. The gap is the front-end `scripts/migrate_pg_to_sqlite.js`, which was sized for the dictionary.
+
+**Measured from the code (not assumed):**
+- `pgCopy()` (`migrate_pg_to_sqlite.js:94-99`) uses `execFileSync` with `maxBuffer = 512 MB` (`:46`, comment: "largest
+  table is ~11MB"), then `payload.split('\n')` (`:291`) → the WHOLE table's text sits in RAM, twice. Any table whose COPY
+  text exceeds 512 MB throws `ENOBUFS`; below that it still costs ~2× table size in heap.
+- Values are bound as TEXT into `NUMERIC`-affinity columns (`affinity()` `:134-140`) → SQLite coerces to INTEGER/REAL
+  (IEEE double). Exact for amounts ≤15 significant digits; NOT proven for wider NUMERIC. Twin rule requires exact books.
+
+**Unmeasured, industry-typical (labelled ESTIMATE; replace with `pg_total_relation_size` on the real client):**
+largest iDempiere tables in a mature client: `fact_acct`, `m_transaction`, `m_costdetail`, `c_orderline`,
+`c_invoiceline`, `m_storageonhand`, `ad_changelog`, `ad_pinstance*`, `ad_session`, `ad_attachment`/`ad_archive` (BLOB).
+Expect `fact_acct` + `ad_changelog` + BLOB tables to dominate; each can individually exceed 512 MB at 10 GB total.
+
+**Changes (≈ few dozen lines, same script — do NOT fork):**
+1. Stream COPY: psql stdout is handed to a spool FILE (`execFileSync … stdio:[ignore,fd,inherit]`, stays synchronous), read back in
+   8 MB chunks (utf8-safe, partial tail carried), inserted in transactions of `ERP_BATCH` rows (default 50 000). Heap bounded by chunk.
+2. Build indexes AFTER load; `PRAGMA journal_mode=OFF; synchronous=OFF` during bulk load (rebuildable output).
+3. NUMERIC: per column, read PG `numeric_precision/scale`; where a value does not round-trip through a double
+   (`String(Number(s)) !== normalised(s)`), store TEXT/scaled-integer and log `§MIGRATE_NUMERIC_WIDE table col n`.
+4. BLOB columns (`ad_attachment`, `ad_archive`, `ad_image`): out of the SQLite shard set; keep as content-addressed objects.
+5. Cold set (policy §2 of `ACCESS_FREQUENCY_SHARDING.md`) is written to separate T2 files at load time, not post-split.
+
+**Witnesses (each names the issue it proves):**
+- `§MIGRATE_ROWS table rows_pg rows_sqlite` equal for EVERY table (silent row loss).
+- `§MIGRATE_SUM table col sum_pg sum_sqlite` exact string match over all NUMERIC cols (float drift).
+- `§MIGRATE_MEM peakRssMB` while migrating the largest table stays under a stated cap (proves streaming, not buffering).
+- `§MIGRATE_VACUOUS` if a table/col set judged is empty → INCONCLUSIVE, never PASS.
+- Shard stage: `§SHARD-SET` T0 ≤ 13 MB and `§SHARD-CLOSURE dangling=0` on the scaled DB.
+
+**Bloat test bed (non-invent):** scale by REPLICATING real GardenWorld rows with re-keyed ids (same method as
+`--rekey-client`, offset-asserted) into a SCRATCH PG database — never the working `idempiere` DB. Target ≥10 GB with
+the real column shapes and index set. Browser side: headless Chromium, numeric readouts only (heap, OPFS bytes,
+range-bytes-per-query, cold-start ms) vs the 200 MB mobile ceiling (`FoldEngineConstraints.md` §2 #1). Desktop
+emulation cannot reproduce the iOS ~500 MB tab kill; that limit stays a cited figure, not a measured one.
+
+### §9.1 RESULT 2026-10-13 — built + run (log: `build/erp/logs/{bloat10_build,migrate_bloat10}.log`)
+- **Equivalence:** old vs streaming loader on GardenWorld, per-table sha256 over all rows: `§MIGRATE_EQUIV tables=925 differing=0`.
+- **Bed:** `scripts/build_bloat_pg.js` → scratch PG `bloat10`: `§BLOAT_VERDICT PASS tablesOk=11 replicatedHeapGB=9.32 dbSize=11 GB`
+  (fact_acct 12.7 M rows, m_costdetail 6.6 M, c_orderline 5.5 M …). Own PK re-keyed densely (`max + (g-1)*n0 + rank`, stays int4);
+  FKs dropped, NOT re-keyed → tests size/memory/fidelity, NOT closure. Working `idempiere` DB untouched.
+- **Migration of the 45.8 M-row, 9.3 GB-heap DB:** `§MIGRATE_VERDICT PASS rows-match-all-tables tables=925 peakRssMB=237`;
+  `/usr/bin/time`: 23 m 18 s wall, max RSS 243 MB; SQLite output 9.62 GB. `§MIGRATE_ROWS FAIL` count = 0. `§MIGRATE_NUMERIC_WIDE` lines = 0.
+- **Old loader, same job:** would throw at the 512 MB `maxBuffer` on any table whose COPY text exceeds it (fact_acct here ≈ 2.9 GB heap) — by code reading, not re-run.
+- **NOT done / gaps (named):** (a) per-column exact SUM witness (`§MIGRATE_SUM`) not implemented — only row counts + wide-NUMERIC text count;
+  (b) replicated rows repeat 300–300 real rows, so numeric-width coverage = GardenWorld's, not a real client's; (c) shard stage
+  (`build_erp_shard.js` T0/T1/T2 split) NOT run on this DB; (d) browser/mobile measurement (httpvfs range bytes, heap, cold start) NOT run;
+  (e) BLOB-table exclusion (item 4) and index-after-load (item 2: the loader creates no indexes at all) not applicable/implemented.
