@@ -6,7 +6,7 @@ cd "$(dirname "$0")"; D=$PWD; fail=0; NT_DATA=${NT_DATA:-/home/red1/Projects/Lao
 M=/home/red1/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar; JCP=$(ls /home/red1/Projects/red1-ninja-roundtrip/lib/*.jar | tr '\n' ':')$M:.
 OUT=${OUT:-/tmp/ninja_template_out}; mkdir -p $OUT
 javac -nowarn -cp "$JCP" -d . W27_StyleParity.java W32_GoldenStyle.java GoldenDump.java Xls2Xlsx.java 2>&1 | grep -v '^Note:' | head -5
-chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
+chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
 # ── [A] engine on the SQLite twin vs the frozen goldens (no PG, no legacy) ──
 export EXEC=sqlite
 FROM='2026-05-01 00:00:00.0' TO='2026-05-31 00:00:00.0'; export FROM TO
@@ -31,6 +31,20 @@ for spec in "MOES_sofp|2026-05-01|2026-05-31" "MOES_cashflow|2026-05-01|2026-05-
   chk C_style_$n PASS java -cp "$JCP" W32_GoldenStyle golden/$n $OUT/$n.twin.xlsx
 done
 chk C_NEG_style FAIL java -cp "$JCP" W32_GoldenStyle golden/MOES_sofp $OUT/MOES_cashflow.twin.xlsx     # other template's output must not match this golden
+# ── [D] PDF without Spire: own renderer (pdfkit) vs the Spire reference GEOMETRY goldens (page size, edges, fills, word anchors; same font as Spire used on that host) + content completeness ──
+export SAME_FONT_AS_SPIRE=1 FROM='2006-12-01 00:00:00.0' TO='2006-12-31 00:00:00.0'
+for spec in "geom|parity_geom|" "xtab|parity_xtab|" "v2|parity_v2|21,4"; do
+  IFS='|' read n f known <<< "$spec"
+  node W33_PdfRender.js $L/legacy/xlsx/$f.xlsx $OUT/$n.ours.pdf spire-local > logs/D_render_$n.log 2>&1; python3 pdf_geom.py $OUT/$n.ours.pdf > $OUT/$n.ours.json 2>/dev/null
+  chk D_geom_$n PASS env KNOWN_EDGE_DEVIATION=$known node W34_PdfCompare.js golden/pdf/$n.spire.geom.json $OUT/$n.ours.json
+done
+chk D_NEG_geom FAIL node W34_PdfCompare.js golden/pdf/xtab.spire.geom.json $OUT/geom.ours.json      # another document's PDF must not match
+unset SAME_FONT_AS_SPIRE
+for spec in "MOES_sofp|2026-05-01|2026-05-31" "MOES_cashflow|2026-05-01|2026-05-31"; do
+  IFS='|' read n a b <<< "$spec"
+  FROM="$a 00:00:00.0" TO="$b 00:00:00.0" node W33_PdfRender.js $L/legacy/xlsx/$n.xlsx $OUT/$n.laos.pdf excel > logs/D_render_$n.log 2>&1
+  FROM="$a 00:00:00.0" TO="$b 00:00:00.0" chk D_content_$n PASS node W36_PdfContent.js $L/legacy/xlsx/$n.xlsx $OUT/$n.laos.pdf
+done
 # ── [P] live Postgres clone gates (optional: PG=1) ──
 if [ "$PG" = 1 ]; then
   export FROM='2006-12-01 00:00:00.0' TO='2006-12-31 00:00:00.0'
