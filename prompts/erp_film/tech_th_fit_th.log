@@ -1,0 +1,6 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT g_th_TH cue=0.00 room=1.60 dur=0.92 -> DETAIL slack=+0.68 detailDur=0.92 words=1
+§NARR_TONE g_th_TH#0 F ! own=+0.7st rose=0st endDelta=+0.7st want=report OK "สวัสดีค่ะ!"
+§NARR_FIT s00 cue=1.90 room=7.88 dur=7.47 -> DETAIL slack=+0.41 detailDur=7.47 words=6

@@ -55,7 +55,9 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
 
 
 
-const LANGS = ['en_US', 'fr_FR', 'es_ES', 'de_DE', 'ar', 'zh_CN', 'ja_JP', 'ms_MY', 'th_TH'];
+const ONLY = process.env.ONLY_LANG || '';   // ONLY_LANG=th_TH → single-language cut: ONE greeting, UI stays in that language (FILM_NARRATION.md §7 Thai)
+const LANGS = ONLY ? [ONLY] : ['en_US', 'fr_FR', 'es_ES', 'de_DE', 'ar', 'zh_CN', 'ja_JP', 'ms_MY', 'th_TH'];
+let curLang = 'en_US';
 (async () => {
   await new Promise(r => server.listen(0, r));
   const base = 'http://localhost:' + server.address().port + '/erp';
@@ -116,6 +118,7 @@ const LANGS = ['en_US', 'fr_FR', 'es_ES', 'de_DE', 'ar', 'zh_CN', 'ja_JP', 'ms_M
     await page.mouse.down(); await hold(60); await page.mouse.up(); await hold(280);
   }
   async function setLang(code, where) {
+    if (code === curLang) return; curLang = code;
     const sel = where === 'login' ? '#idmp-login-lang' : '#idmp-lang';
     const n0 = PAGELOG.length; await hclick(sel); await page.selectOption(sel, code);
     for (let i = 0; i < 40 && !last(n0, new RegExp('§I18N lang=' + code)); i++) await page.waitForTimeout(50);
@@ -156,11 +159,12 @@ const LANGS = ['en_US', 'fr_FR', 'es_ES', 'de_DE', 'ar', 'zh_CN', 'ja_JP', 'ms_M
     if (!(await page.locator('#pill-' + id).first().isVisible().catch(() => false))) { await hclick('#idmp-pill-trigger'); await page.waitForTimeout(450); }
     await hclick('#pill-' + id); await page.waitForTimeout(700);
   }
-  let li = 0; const nextLang = () => LANGS[(li++) % LANGS.length];
+  let li = 0; const nextLang = () => ONLY ? 'en_US' : LANGS[(li++) % LANGS.length];   // ONLY_LANG cut: that language for the opening ~10 s only, English after
 
   try {
     await page.mouse.move(720, 600);
     for (const L of LANGS) { await beat('g_' + L, L, 'greeting'); await setLang(L, 'login'); }
+    if (ONLY) { await beat('s00', ONLY, 'opening in ' + ONLY + ' on the login card, then back to English'); await hold(1500); }
     let L, n1;
     // s01 System Monitor, from the login card
     L = nextLang(); await beat('s01', L, 'System Monitor'); await setLang(L, 'login');
