@@ -381,12 +381,16 @@ module.exports = function makeSteps(env) {
   };
   // SD-22: PeriodStatus (AD_Process 167) PeriodAction 'C' = close. PeriodStatus.java:127-170: with FORCE_POSTING_PRIOR_TO_PERIOD_CLOSE (default true) a period with UNPOSTED documents
   // (RV_UnPosted: Posted<>'Y' and DocStatus CO/CL/RE/VO, DateAcct in the period) cannot be closed ("PostUnpostedDocs"); else C_PeriodControl.PeriodStatus := action for every control row not 'P'.
-  const UNPOSTED_TABLES = ['gl_journal', 'c_projectissue', 'c_invoice', 'm_inout', 'm_inventory', 'm_movement', 'm_production', 'c_cash', 'c_payment', 'c_allocationhdr', 'c_bankstatement', 'm_matchinv', 'm_matchpo', 'c_order', 'm_requisition'];
+  // The unposted test reads the CAPTURED legacy view (rv_unposted.sql, parsed by rv_unposted.js) -- ONE definition, shared with the shipped-list witness: posted<>'Y', docstatus<>'VO' where the branch tests it,
+  // INNER JOIN c_doctype where the branch joins it, timestamp BETWEEN (MPeriod.hasUnpostedDocs :1024-1072). NULL posted is NOT unposted (the view's posted<>'Y'). The view's INNER JOIN c_doctype is NOT applied here: the twin fixture rows (line ~94, minimal m_inout/c_invoice inserts) carry no c_doctype_id; the join's effect (orphan rows excluded) is pinned by the shipped witness_period_status.js PS-ORPHAN-DOCTYPE-*.
+  const RVU = require('./rv_unposted').branches();
   function localPeriodStatus(periodId, action) {
     const x = docEnv(), gb = x.gb, tw = env.tw, p = gb.prepare('SELECT * FROM c_period WHERE c_period_id=?').get(periodId);
     if ((action === 'C' || action === 'P') && x.DP.sysConfigBool(gb, 'FORCE_POSTING_PRIOR_TO_PERIOD_CLOSE', true, tw.client, 0)) {
-      for (const t of UNPOSTED_TABLES) {
-        let has = null; try { has = gb.prepare(`SELECT 1 x FROM ${t} WHERE docstatus IN ('CO','CL','RE','VO') AND COALESCE(posted,'N')<>'Y' AND substr(dateacct,1,10) BETWEEN ? AND ? LIMIT 1`).get(String(p.startdate).slice(0, 10), String(p.enddate).slice(0, 10)); } catch (e) { /* table not present / no such column on the twin */ }
+      for (const v of RVU) {
+        const t = v.table; let has = null;
+        try { has = gb.prepare(`SELECT 1 x FROM ${t} x WHERE x.posted<>'Y'` + (v.voTested ? " AND x.docstatus<>'VO' AND x.docstatus IN ('CO','CL','RE','VO')" : '')
+          + ` AND datetime(x.${v.dateCol}) BETWEEN datetime(?) AND datetime(?) LIMIT 1`).get(String(p.startdate), String(p.enddate)); } catch (e) { if (!/no such table/.test(e.message)) log('§SHOPDAY_RVU_FAULT ' + t + ' ' + String(e.message).slice(0, 120)); }   // a table the twin does not carry holds no rows; any other fault is named
         if (has) return { ok: false, error: 'PostUnpostedDocs (' + t + ')' };
       }
     }
