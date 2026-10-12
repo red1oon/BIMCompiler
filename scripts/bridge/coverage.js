@@ -8,6 +8,7 @@ const log = fs.readFileSync(process.argv[2], 'utf8').split('\n');
 const DRIVES = {   // scenario id prefix → document tables it completes on both sides (witness_m3_gap.js / witness_fa_gap.js / cycle_o2c.js descriptors)
   S: ['C_Order', 'M_InOut', 'C_Invoice'], T1: ['C_Order', 'M_InOut', 'C_Invoice'], MV: ['M_Movement'], PAY: ['C_Payment', 'C_AllocationHdr'], INV: ['C_Invoice'], PI: ['M_Inventory'],
   FA: ['A_Asset_Addition', 'A_Depreciation_Entry'], REQ: ['M_Requisition'], CASH: ['C_Cash', 'C_Invoice', 'C_AllocationHdr'], O2C: ['C_Order', 'M_InOut', 'C_Invoice', 'C_Payment', 'C_AllocationHdr'], P2P: ['C_Order', 'M_InOut', 'C_Invoice', 'C_Payment', 'C_AllocationHdr'],
+  SD16: ['M_RMA', 'M_InOut', 'C_Invoice', 'C_AllocationHdr'],   // §SD16 customer return (shop-day step SD-16, SHOPDAY=1 runs): RMA, return receipt, AR credit memo, allocation
   GLJ: ['GL_Journal'], BS: ['C_BankStatement'], PJI: ['C_ProjectIssue'], DDO: ['DD_Order'], FAD: ['A_Asset_Addition', 'A_Asset_Disposed'], FAR: ['A_Asset_Addition', 'A_Depreciation_Entry', 'A_Asset_Reval'], FAT: ['A_Asset_Addition', 'A_Asset_Transfer'] };   // §69-§72, §74, §75, §77
 const CYCLES = ['O2C', 'P2P'];   // cycles DEFINED in the spec (§64, §65)
 const seed = new Database(path.join(__dirname, '..', '..', 'build', 'erp', 'ad_seed_fullwidth.db'), { readonly: true });

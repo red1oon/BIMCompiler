@@ -79,7 +79,7 @@ module.exports = function makeReturn(env, M) {
     }
 
     // ================= fixture 2: stock up at a different cost (PO 10 x rake at 40 -> receipt) so "current cost" differs from the cost the shipment shipped at =================
-    x.product = PRODUCT; x.qty = 10; x.price = 40; x.idBase = 92000;
+    x.product = PRODUCT; x.qty = 10; x.price = 40; x.idBase = 99000;   // own id range: 91000 SD-07, 92000 SD-21 (shopday_more), 93000 this file's nid(), 94000-98000 the O2C chains
     const P2P = require('./cycle_p2p')(x);
     for (const [i, st] of P2P.STEPS.slice(0, 2).entries()) {
       const rows = await R.run([P2P.scenario(st, i)], { keys: P2P.KEYS[st], notCompared: {} }, [], { log });
@@ -131,12 +131,12 @@ module.exports = function makeReturn(env, M) {
       return { outcome: 'COMPLETED', docstatus: c.docstatus, rma_issotrx: 'Y', rma_amt: c.amt, rma_lines: `${ln.m_product_id}:${Number(ln.qty)}:${cents(ln.amt)}:${ln.c_tax_id}:${ln.linenetamt}`, rma_books: 'none', ...dS(s0) };
     };
     // r1 first (qty 4 > shipped 3: refused at the line save, nothing created), then the real RMA of 2, then r2 (2 more > 3 - 2)
-    let rows = await R.run([{ id: 'SD16r1-over-shipped', facts: { id: 'r1', qty: 4 }, legacy: rmaLegacy, local: rmaLocal }], { keys: ['outcome', 'reason_code'], notCompared: {} }, [], { log });
+    let rows = await R.run([{ id: 'SD16-r1-over-shipped', facts: { id: 'r1', qty: 4 }, legacy: rmaLegacy, local: rmaLocal }], { keys: ['outcome', 'reason_code'], notCompared: {} }, [], { log });
     { const lg = (rows[0] || {}).legacy || {}; log(`§SD16_OUTCOME r1 legacy=${JSON.stringify(lg).slice(0, 300)}`); await resV('SD-16r1', ['outcome', 'reason_code'], rows, 'REJECTED'); }
-    rows = await R.run([{ id: 'SD16a-rma', facts: { id: 'a', qty: 2 }, legacy: rmaLegacy, local: rmaLocal }], { keys: KEYS_RMA, notCompared: {} }, [], { log });
+    rows = await R.run([{ id: 'SD16-a-rma', facts: { id: 'a', qty: 2 }, legacy: rmaLegacy, local: rmaLocal }], { keys: KEYS_RMA, notCompared: {} }, [], { log });
     const aV = await resV('SD-16a', KEYS_RMA, rows, 'COMPLETED');
     if (aV === 'BLOCKED' || !ST.l.rmas) { log('§SHOPDAY_STEP SD-16 BLOCKED RMA step failed'); out.steps.push({ id: 'SD-16', verdict: 'BLOCKED' }); return; }
-    rows = await R.run([{ id: 'SD16r2-cumulative', facts: { id: 'r2', qty: 2 }, legacy: rmaLegacy, local: rmaLocal }], { keys: ['outcome', 'reason_code'], notCompared: {} }, [], { log });
+    rows = await R.run([{ id: 'SD16-r2-cumulative', facts: { id: 'r2', qty: 2 }, legacy: rmaLegacy, local: rmaLocal }], { keys: ['outcome', 'reason_code'], notCompared: {} }, [], { log });
     { const lg = (rows[0] || {}).legacy || {}; log(`§SD16_OUTCOME r2 legacy=${JSON.stringify(lg).slice(0, 300)}`); await resV('SD-16r2', ['outcome', 'reason_code'], rows, 'REJECTED'); }
 
     // ================= SD16b / r3 : the customer return receipt =================
@@ -171,7 +171,7 @@ module.exports = function makeReturn(env, M) {
       return { outcome: 'COMPLETED', ret_status: status, ret_lines: sortJ(lines.map(l => `${l.m_product_id}:${l.movementqty}`)), books: /^ABSENT/.test(b1) ? 'REFUSED:Posted=E' : b1, cost_state: costRowS(PRODUCT),
         rma_delivered: sortJ(rma.lines.map(rl => `${rl.product}:${S.rmaLines.find(y => y.m_rmaline_id === rl.m_rmaline_id).qtydelivered}`)), ...dS(s0) };
     };
-    rows = await R.run([{ id: 'SD16b-return-receipt', facts: { qty: 2 }, legacy: retLegacy, local: retLocal }], { keys: KEYS_RET, notCompared: {} }, [], { log });
+    rows = await R.run([{ id: 'SD16-b-return-receipt', facts: { qty: 2 }, legacy: retLegacy, local: retLocal }], { keys: KEYS_RET, notCompared: {} }, [], { log });
     const bV = await resV('SD-16b', KEYS_RET, rows, 'COMPLETED', `books=${((rows[0] || {}).legacy || {}).books}`);
 
     // ================= SD16c : the AR credit memo from the RMA =================
@@ -208,7 +208,7 @@ module.exports = function makeReturn(env, M) {
       return { outcome: 'COMPLETED', inv_status: status, inv_lines: sortJ(r.lines.map(l => `${l.m_product_id}:${l.qtyinvoiced}:${cents(l.priceactual)}:${l.c_tax_id}`)), invoice_tax: sortJ(r.taxes.map(t => `${t.c_tax_id}:${t.taxbaseamt}:${t.taxamt}`)),
         grand_total: r.grandTotal, books: fold('C_Invoice', id, x.SCHEMA), ispaid: 'N', rma_invoiced: sortJ(rls.map(rl => `${rl.product}:${rl.qtyinvoiced}`)), ...dS(s0) };
     };
-    rows = await R.run([{ id: 'SD16c-credit-memo', facts: {}, legacy: cmLegacy, local: cmLocal }], { keys: KEYS_CM, notCompared: {} }, [], { log });
+    rows = await R.run([{ id: 'SD16-c-credit-memo', facts: {}, legacy: cmLegacy, local: cmLocal }], { keys: KEYS_CM, notCompared: {} }, [], { log });
     const cV = await resV('SD-16c', KEYS_CM, rows, 'COMPLETED', `books=${((rows[0] || {}).legacy || {}).books}`);
     const cmRow = rows[0];
 
@@ -246,11 +246,11 @@ module.exports = function makeReturn(env, M) {
       return { outcome: 'COMPLETED', alloc_status: st, allocations: sortJ(lines.map(l => `${cents(l.amount)}:${l.c_invoice_id === S.sale.inv ? 'inv' : 'cm'}`)), books_alloc_net: net(x.fmtPostings(DP.derivePostings(gb, { table: 'C_AllocationHdr', id }, x.SCHEMA).lines) || 'none'),
         ispaid: `inv:${S.saleInvPaid}/cm:${cm.ispaid}`, ...dS(s0) };
     };
-    rows = await R.run([{ id: 'SD16d-allocation', facts: {}, legacy: allocLegacy, local: allocLocal }], { keys: KEYS_AL, notCompared: {} }, [], { log });
+    rows = await R.run([{ id: 'SD16-d-allocation', facts: {}, legacy: allocLegacy, local: allocLocal }], { keys: KEYS_AL, notCompared: {} }, [], { log });
     await resV('SD-16d', KEYS_AL, rows, 'COMPLETED', `net=${((rows[0] || {}).legacy || {}).books_alloc_net}`);
 
     // ================= r3 : receiving MORE than the RMA qty (3 vs 2) -- measured on legacy, SQLite follows (no rule at MInOutLine) =================
-    rows = await R.run([{ id: 'SD16r3-over-rma-receipt', facts: { qty: 3 }, legacy: retLegacy, local: retLocal }], { keys: KEYS_RET, notCompared: {} }, [], { log });
+    rows = await R.run([{ id: 'SD16-r3-over-rma-receipt', facts: { qty: 3 }, legacy: retLegacy, local: retLocal }], { keys: KEYS_RET, notCompared: {} }, [], { log });
     { const lg = (rows[0] || {}).legacy || {}; log(`§SD16_OUTCOME r3 legacy.outcome=${lg.outcome} reason=${String(lg.reason || '').slice(0, 160)}`); await resV('SD-16r3', KEYS_RET, rows, lg.outcome === 'REJECTED' ? 'REJECTED' : 'COMPLETED', `legacy_${lg.outcome}`); }
 
     // ================= NEGATIVE CONTROL: the SQLite credit-memo line price +1 cent must flip the price-bearing keys against the legacy result (computed only: no document, no posting, no twin row) =================
