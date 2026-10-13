@@ -6,6 +6,8 @@ Scope: storyboard + narration for **Film 3 — "Your Excel, your design"** (Ninj
 **Assets (made 2026-10-14, `~/Projects/ninja-template-data/showcase/`):** `showcase_template.xlsx` (built by `scripts/ninja_template/MakeShowcase.js`), `showcase_output.xlsx`, `showcase_output.pdf`. Input cells are real Excel links (`=Process!A9`), not typed text.
 Facts already measured: `§TWIN_RUN statements=5 addressLines=31`; `§CALC Output formulas=8 errors=0`; `§PDF_RENDER page=696.75x519.75`; `§PDF_CONTENT cells=57 missingFromPdf=0`; KPI 48 / 2,361.14 / 2,606.27; grid 4x3 with 5 filled, 7 empty (`§XTAB2_VERDICT PASS cells=12 diffs=0`, same engine path).
 
+**Positioning line (user, 2026-10-14):** *"mine is more domain specific, embedded rather than a 3rd party integration."* Say it as what it is, from the repo: the engine is inside the ERP kernel, reads the ERP's own ledger through the dictionary, scopes every statement to the company, and arrives as a plug-in extension — no connector, no separate server, no second tool to learn. Claims about other products stay out of the track (not tested).
+
 ## How the machine works (verified in `build/erp/ninja_template.js`: `clean` L95, `setAddress` L117, `paint`, `plusMatrix`)
 1. **BACKUP is the design.** Each run the Output sheet is thrown away and re-cloned from BACKUP (so never type in Output). Colours, bands, boxes, merges, number formats, formulas all live here.
 2. **Process sheet = the rules.** One row per question. Columns: ANNOTATION · ROW · SELECT · TABLE · JOIN · WHERE · ADDRESS · Direction · VALUES.
