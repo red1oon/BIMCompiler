@@ -8,7 +8,13 @@
 # AD-LAYER LAW (CLAUDE.md): port the iDempiere MECHANISM (cite Java file:line), generic layer, delete what you supersede — never a per-window patch.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-# ▶ RESUME HERE — written 2026-10-13 at session close (new session: read this block, then §NEWCLIENT-DEPTH, then CLAUDE.md rules it cites)
+# ▶ RESUME HERE — UPDATED 2026-10-13 end of session 2 (read this, then the dated "RESULT" sections above §1 METHOD; the older block below is cycle-1 state)
+**Cycle 2 status:** NC-1, NC-2 (+2.6 Financial Report), NC-3, NC-9 first slice, WINDOW-SWEEP, BUTTON-SWEEP = DONE and legacy-measured. bim-ootb PR **#1989** (`feat/erp-newclient-nc1`) OPEN — check it merged before starting new work (start follow-ups from fresh origin/main). NOT started: NC-4, 6, 7, 8, 10, 11, 12, film chapters (EN then Thai); NC-5 waits on user Q7 (one currency or many).
+**Method that worked (repeat it):** spec rows -> legacy run on the pilot (WS `scripts/bridge/nc*_legacy.js`, psql reads) -> twin run IN THE UI (`erp/tests/poc_nc*_ui_live.js`) -> diff -> port the Java line -> neighbours. Feed the pilot's OWN data through the twin code when seed != pilot (opts.factRows seam).
+**Standing permissions (user, 2026-10-13):** may inject any new WS type needed on the pilot (config rows + pilot restart; files `scripts/bridge/pilot/ws_nc*.sql`); follow legacy L&F "at least in shape and context" (e.g. modal dialogs).
+**Landmines learned:** (1) the bundle has MIXED-case column names - always alias lowercase in unaliased SELECTs (CamelCase made every Balance Sheet line 0.00); (2) session-created pks are negative; (3) env vars do not persist between shell calls - use absolute paths in witnesses; (4) never `git stash` in the shared tree; (5) PA_ReportColumn amount types: Q = expected sign, R = accounted sign; (6) C_Order unique key is (DocumentNo, C_DocType_ID, C_BPartner_ID); (7) pilot has back-dated shop-day facts the seed lacks - compare logic, not totals.
+**Open structural item (not an NC):** state lives in idempiere.html closure vars; ZK-style `GridTab` owner of current row/query/dirty would remove the bug class behind the "Period tab opens on December" defect; duplicates to retire: genesis.js periods, Reports-pill overlay vs FinReport.
+
 ## State
 - **bim-ootb:** cycle-1 work is ON `main` (PR #1988, squash `814e43ed`; verified 2026-10-13: `_tipSql`, `report_overlay` tip facts, `ad_infowin.js`, `model_post` fix, both witnesses present on main). Branch `feat/erp-depth-cycle` is merged — start new work from FRESH `origin/main`.
 - ⚠ **`erp/sw.js` `CACHE_VERSION` was NOT bumped** while `ad_infowin.js` was added to PRECACHE — check main's value and bump at the next deploy (KEEP BOTH precache hunks on conflict, take the HIGHER version).
