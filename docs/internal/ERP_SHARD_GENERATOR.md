@@ -419,3 +419,16 @@ Cold first window, ms (`totalMs`, click → last query): **monolith 11 GB** (n=4
 **Proxy caveat (stated up front):** this is the browser HTTP cache standing in for the real app's service worker (service workers need a secure context; plain-HTTP LAN has none). Compiled-wasm reuse by Chrome's code cache is possible but not controlled/observed here.
 **Witness:** server log. A repeat run shows a `§DEMO_REPORT` with NO preceding `§DEMO_LIB` lines (engine served from device cache); a primed run shows the 3 lib lines. A repeat run whose lib lines still appear is NOT counted as a repeat (INCONCLUSIVE for that run).
 **Reports:** per link: repeat `totalMs` vs the same link's cold `totalMs` (§11.3), `open` ms, and the delta attributed to the engine download.
+
+### §11.5 RESULT 2026-10-14 — repeat visit on the real phone (same phone/Wi-Fi/plain HTTP; logs `range_demo_server_cached.log`, `range_demo_server_shard_cached.log`)
+Engine files cacheable (`max-age=3600`), reload + tap. Witness: repeat runs have NO `§DEMO_LIB` lines before their report (engine served from device cache) — all counted repeats satisfy this. n = 1 primed + 2 repeat runs per link (3 taps each; 3 repeats were requested).
+| link | primed (engine downloaded) | repeat 1 | repeat 2 | open: primed → repeat |
+|---|---|---|---|---|
+| shard `warm.db` | 2083 ms | 1196 ms | 1406 ms | 1341 → 391 / 449 ms |
+| monolith 11 GB | 5998 ms | 5072 ms | 4201 ms | 2892 → 2226 / 1647 ms |
+- **Returning user, shard: ≈ 1.2–1.4 s** for open + order + lines + postings (24 requests); monolith ≈ 4.2–5.1 s (128 requests) → **≈ 3.5× on repeat medians**.
+- **Repeat saves ~0.7–0.9 s on the shard (−32…−43 %)** and ~0.9–1.8 s on the monolith (−15…−30 %).
+- **The saving is more than the engine DOWNLOAD:** in the shard primed run the engine was served in only 89 ms, yet open fell by ~0.9 s — so the cache also removes engine COMPILE / setup time (likely Chrome code cache); not isolated.
+- **Absolute numbers drift between sessions:** this session's primed shard run (2.1 s) beat §11.3's cold runs (2.8–3.5 s); the engine took 89 ms here vs 1.0–1.8 s earlier. Network state varies a lot; compare ratios WITHIN a session, not across.
+- **Still true on the monolith:** `W3 ad_field` (57 requests) costs ≈ 2.0 s in every run, repeat or not — the dictionary scan is not helped by the engine cache. In the real design the dictionary is the precached T0 and never range-read.
+- **NOT measured:** a true service worker (needs HTTPS), mobile data, other phones, phone memory, writes.
