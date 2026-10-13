@@ -369,3 +369,9 @@ Device: Android 10, Chrome 155, 8 cores, home Wi-Fi to the PC (`navigator.connec
 - **Proxy calibration:** the `wifi` profile (20 ms) predicted 3.1 s for the cold first window — real was 10.1 s (3.3× slower); the `4g` profile (80 ms) predicted 10.9 s — close. Use the `4g` row as the phone-on-Wi-Fi proxy.
 - **Lever = request count, not bytes:** 128 requests → ~7 s of the 10.1 s. W3 alone (57 reqs) is 3.25 s. Dictionary steps W1–W3 (65 reqs ≈ 3.7 s) disappear if the dictionary is the precached T0 seed, as designed.
 - **NOT measured:** phone memory (`deviceMemory` n/a in this browser), repeat-in-session, mobile data, iPhone, secure-context features, more than one run (no variance).
+
+### §10.8 RESULT 2026-10-14 — what the 54-request open actually is (log: `range_read_witness.js` open lines; builder: scratchpad `mk.js`, not committed)
+- **Cause = the schema, not the data.** `bloat10r.db`: 927 tables + 2 057 indexes, `sum(length(sql))` = 613 KB; the open reads that b-tree (54 reqs / 880 KB at 16 KB pages). SQLite parses the whole schema on open.
+- **Controlled test (same GardenWorld rows, 16 KB pages, no indexes):** full 927-table file → open **34 reqs / 573 KB**; slim file with only the 23 document-graph tables → open **3 reqs / 64 KB** (≈ 11× fewer requests, 9× fewer bytes). Data volume is irrelevant to open cost.
+- **Consequence:** per-module / per-tier shard files (the T2 design) are not only about size — a small schema makes each open ~3 requests. At the phone's measured ~55 ms/request (§10.7) the 54-request open (5.9 s) would be ≈ 0.2 s for a 3-request open. ESTIMATE from measured parts; slim file with its indexes and real 10 GB of rows not yet built or phone-tested.
+- **Not tested:** slim file WITH indexes (adds ~38 index rows to the schema; expected small), the schema-heavy `ad_*` dictionary as a shard, any non-GardenWorld schema.
