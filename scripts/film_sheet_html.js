@@ -21,8 +21,9 @@ function sheetHtml(model, name, X, opt) {
   if (opt.maxCol != null) maxc = Math.min(maxc, opt.maxCol); if (opt.maxRow != null) maxr = Math.min(maxr, opt.maxRow);
   const merges = (sh['!merges'] || []).filter(m => m.e.r <= maxr + 50), mastr = {}, slave = {};
   merges.forEach(m => { mastr[colName(m.s.c) + (m.s.r + 1)] = m; for (let r = m.s.r; r <= m.e.r; r++) for (let c = m.s.c; c <= m.e.c; c++) if (r !== m.s.r || c !== m.s.c) slave[colName(c) + (r + 1)] = 1; });
-  const px = w => Math.round((w || 8.43) * 7 + 5), cols = []; for (let c = 0; c <= maxc; c++) cols.push(`<col style="width:${px((sh['!cols'] || [])[c] && sh['!cols'][c].width)}px">`);
-  let h = `<table class="xs" data-sheet="${name}"><colgroup>${cols.join('')}</colgroup>`;
+  const px = w => Math.round((w || 8.43) * 7 + 5), cols = []; for (let c = 0; c <= maxc; c++) cols.push(`<col style="width:${px(opt.colWidths ? opt.colWidths[c] : (sh['!cols'] || [])[c] && sh['!cols'][c].width)}px">`);
+  let tw = 0; for (let c = 0; c <= maxc; c++) tw += px(opt.colWidths ? opt.colWidths[c] : (sh['!cols'] || [])[c] && sh['!cols'][c].width);
+  let h = `<table class="xs" data-sheet="${name}" style="width:${tw}px"><colgroup>${cols.join('')}</colgroup>`;
   for (let r = 0; r <= maxr; r++) {
     const rh = (sh['!rows'] || [])[r] && sh['!rows'][r].h; h += `<tr style="height:${rh ? Math.round(rh * 1.333) : 20}px">`;
     for (let c = 0; c <= maxc; c++) {
