@@ -38,3 +38,10 @@ Facts already measured: `§TWIN_RUN statements=5 addressLines=31`; `§CALC Outpu
 - [ ] Decide `318.0` labels (twin has no `ad_table`; cosmetic — either fix in the template with a dictionary-derived name or leave and say "source table id").
 - [ ] Sheets shown as images rendered by our own code (not a live Excel window) — red1 to confirm.
 - [ ] Narration: write EN dialogue TSV in `prompts/ninjaexcel_series/` (film2 format), voices per PLAYBOOK; witness the track.
+
+## ▶ RESULT (2026-10-14) — raw + English narrated film built
+Files: `~/Videos/NinjaExcelReport_film/film3/NinjaExcel_designer_EN.mp4` (3:42), `_raw.mp4`, `film3.log` (all `§FILM3_*`), `film3_en.tsv`, `f3.fit.log`. Recorder `scripts/film_ninja_designer.js` (+ `scripts/film_sheet_html.js`), TSV builder `prompts/ninjaexcel_series/film3_make_tsv.js` (aborts if a spoken number differs from its `§FILM3_FACT`).
+Re-record: `BEAT_SCALE='{"design":1.75,"rules":2.5,"link":2.4,"sources":2.1,"run":1.3,"edit":1.0}' BEAT_MIN='{"hook":7,"empty":8,"edit":21,"trust":15,"close":6}' RING_PRE='{"a merged":1.6,"SELECT":1.6}' RING_POST='{"three boxes ←":5.5}' node scripts/film_ninja_designer.js <outDir>`, then `node prompts/ninjaexcel_series/film3_make_tsv.js <outDir>/film3.log > film3_en.tsv`, then PLAYBOOK steps 3–5.
+Witness: `§FILM3_RINGS 23 ok=23`; `§NARR_FIT` 28/28 DETAIL, 0 SKIP, 0 `WRONG` tone; frames raw 5343 = narrated 5343; I = −17.1 LUFS; longest silence 7.0 s; 15 spoken numbers checked against `§FILM3_FACT`.
+**Not in the film:** the Excel Report pill inside the ERP (the bim-ootb port is not done) — the run beat shows the engine's real log lines. No Jasper/PALO/PivotTable comparison (untested). Sheets are rendered by our own code from the real files, not a live Excel window. The `318.0` table labels appear as-is.
+Open: Thai/other languages; a native-listener check; the pill-in-ERP version once ported.
