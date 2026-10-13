@@ -22,9 +22,10 @@
     Object.keys(rows).forEach(function (r) { var R = rows[r], an = val(R[1]), sel = val(R[3]), dir = val(R[8]).trim(); if (an && sel && used[an] && !dir) E.push('EMPTY_DIRECTION Process row ' + r + ' is linked from Input!' + used[an] + ' but Direction (col H) is empty - fill S, V, > or X+Y'); });
     // 3. duplicate annotations (two rows with the same SELECT text and row number cannot happen; same text different rows is fine) - none to check
     // 4. BACKUP-vs-Output drift: Output is discarded and re-cloned from BACKUP every run, so hand edits in Output are lost
+    // FORMULAS only are compared: Output legitimately holds the previous run's data values
     var seen = {}, drift = 0, list = [];
-    cells(S.Output).concat(cells(S.BACKUP)).forEach(function (a) { if (seen[a]) return; seen[a] = 1; var o = S.Output[a], b = S.BACKUP[a]; if (val(o) !== val(b) || (o && o.f || '') !== (b && b.f || '')) { drift++; if (list.length < 5) list.push(a); } });
-    if (drift) W.push('BACKUP_DRIFT ' + drift + ' cell(s) differ between Output and BACKUP (first: ' + list.join(', ') + '). Output is erased every run; make layout changes in BACKUP only');
+    cells(S.Output).concat(cells(S.BACKUP)).forEach(function (a) { if (seen[a]) return; seen[a] = 1; var o = S.Output[a], b = S.BACKUP[a]; if (((o && o.f) || '').replace(/\s+/g, '') !== ((b && b.f) || '').replace(/\s+/g, '')) { drift++; if (list.length < 5) list.push(a); } });
+    if (drift) W.push('BACKUP_DRIFT ' + drift + ' formula(s) differ between Output and BACKUP (first: ' + list.join(', ') + '). Output is erased every run; make layout changes in BACKUP only');
     return { errors: E, warnings: W };
   }
   function selectOnly(exec) {
@@ -37,6 +38,8 @@
       return exec(sql);
     };
   }
-  var api = { preflight: preflight, selectOnly: selectOnly };
+  // report(result, log) -> prints one §PREFLIGHT line per finding plus a summary line; returns true when there are no errors. Hosts call it on every run so the log always says what was judged.
+  function report(res, log) { log = log || console.log; res.errors.forEach(function (e) { log('§PREFLIGHT ERROR ' + e); }); res.warnings.forEach(function (w) { log('§PREFLIGHT WARN ' + w); }); log('§PREFLIGHT_SUMMARY errors=' + res.errors.length + ' warnings=' + res.warnings.length + (res.errors.length ? ' - run refused' : ' - run allowed')); return res.errors.length === 0; }
+  var api = { preflight: preflight, selectOnly: selectOnly, report: report };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else g.NinjaPreflight = api;
 })(typeof window !== 'undefined' ? window : globalThis);
