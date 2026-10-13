@@ -1,0 +1,95 @@
+{
+ "cases": {
+  "NC2.1": {
+   "ok": true,
+   "summary": "Updated #32",
+   "states": {
+    "O": 32
+   },
+   "actions": {
+    "N": 32
+   }
+  },
+  "NC2.1-rerun": {
+   "ok": true,
+   "summary": "Updated #0",
+   "states": {
+    "O": 32
+   },
+   "actions": {
+    "N": 32
+   }
+  },
+  "NC2.2": {
+   "ok": true,
+   "summary": "Updated #32",
+   "states": {
+    "C": 32
+   },
+   "actions": {
+    "N": 32
+   }
+  },
+  "NC2.3-P": {
+   "ok": true,
+   "summary": "Updated #32",
+   "states": {
+    "P": 32
+   },
+   "actions": {
+    "N": 32
+   }
+  },
+  "NC2.3-reopen": {
+   "ok": true,
+   "summary": "Updated #0",
+   "states": {
+    "P": 32
+   },
+   "actions": {
+    "N": 32
+   }
+  },
+  "NC2.4-preset": {
+   "actions": {
+    "N": 31,
+    "O": 1
+   }
+  },
+  "NC2.4": {
+   "ok": true,
+   "summary": "@OK",
+   "states": {
+    "N": 31,
+    "O": 1
+   },
+   "actions": {
+    "N": 32
+   },
+   "soo": "O"
+  }
+ },
+ "ref176": [
+  {
+   "v": "C",
+   "n": "Close Period"
+  },
+  {
+   "v": "D",
+   "n": "Document Close Period"
+  },
+  {
+   "v": "N",
+   "n": "<No Action>"
+  },
+  {
+   "v": "O",
+   "n": "Open Period"
+  },
+  {
+   "v": "P",
+   "n": "Permanently Close Period"
+  }
+ ],
+ "dbt": 32
+}
