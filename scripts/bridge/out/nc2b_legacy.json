@@ -1,0 +1,3829 @@
+{
+ "today": {
+  "id": 200177,
+  "name": "Oct-26"
+ },
+ "jan03": 160,
+ "facts": [
+  {
+   "account_id": 508,
+   "amtacctdr": 85,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 508,
+   "amtacctdr": 0,
+   "amtacctcr": 85,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 600,
+   "amtacctdr": 0,
+   "amtacctcr": 85,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 741,
+   "amtacctdr": 85,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 200,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 419,
+   "amtacctdr": 0,
+   "amtacctcr": 200,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 170,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 419,
+   "amtacctdr": 0,
+   "amtacctcr": 170,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 430,
+   "amtacctdr": 30,
+   "amtacctcr": 0,
+   "qty": 1,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 0,
+   "amtacctcr": 30,
+   "qty": -1,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 430,
+   "amtacctdr": 25.5,
+   "amtacctcr": 0,
+   "qty": 1,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 0,
+   "amtacctcr": 25.5,
+   "qty": -1,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0,
+   "amtacctcr": 2.85,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 47.5,
+   "qty": -1,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 50.35,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0,
+   "amtacctcr": 2.42,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 40.38,
+   "qty": -1,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 42.8,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 430,
+   "amtacctdr": 60,
+   "amtacctcr": 0,
+   "qty": 2,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 0,
+   "amtacctcr": 60,
+   "qty": -2,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 430,
+   "amtacctdr": 51,
+   "amtacctcr": 0,
+   "qty": 2,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 0,
+   "amtacctcr": 51,
+   "qty": -2,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0,
+   "amtacctcr": 5.7,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 95,
+   "qty": -2,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 100.7,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0,
+   "amtacctcr": 4.85,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 80.75,
+   "qty": -2,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 85.6,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 300,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 300,
+   "qty": -10,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 255,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 255,
+   "qty": -10,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 300,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 200,
+   "qty": -10,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 50017,
+   "amtacctdr": 0,
+   "amtacctcr": 30,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 0,
+   "amtacctcr": 70,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 255,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 170,
+   "qty": -10,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 50017,
+   "amtacctdr": 0,
+   "amtacctcr": 25.5,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 0,
+   "amtacctcr": 59.5,
+   "qty": 10,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 516,
+   "amtacctdr": 50.35,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 0,
+   "amtacctcr": 50.35,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 516,
+   "amtacctdr": 42.8,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 0,
+   "amtacctcr": 42.8,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 98.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 98.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 83.73,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 83.73,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 98.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 427,
+   "amtacctdr": 1.9,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 765,
+   "amtacctdr": 0.3,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 0,
+   "amtacctcr": 100.7,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0.11,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 427,
+   "amtacctdr": 0,
+   "amtacctcr": 0.11,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0.02,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 765,
+   "amtacctdr": 0,
+   "amtacctcr": 0.02,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 83.73,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 427,
+   "amtacctdr": 1.62,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 765,
+   "amtacctdr": 0.26,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 0,
+   "amtacctcr": 85.6,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 724,
+   "amtacctdr": 0,
+   "amtacctcr": 0.01,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 508,
+   "amtacctdr": 98,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 0,
+   "amtacctcr": 98.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 702,
+   "amtacctdr": 0.25,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 717,
+   "amtacctdr": 0.25,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 508,
+   "amtacctdr": 50,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 0,
+   "amtacctcr": 50,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 508,
+   "amtacctdr": 83.3,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 0,
+   "amtacctcr": 83.73,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 702,
+   "amtacctdr": 0.21,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 717,
+   "amtacctdr": 0.21,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 508,
+   "amtacctdr": 42.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 0,
+   "amtacctcr": 42.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 724,
+   "amtacctdr": 0.01,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 50,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 50,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 42.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 42.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 508,
+   "amtacctdr": 100,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 508,
+   "amtacctdr": 0,
+   "amtacctcr": 100,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 600,
+   "amtacctdr": 0,
+   "amtacctcr": 100,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 741,
+   "amtacctdr": 100,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0,
+   "amtacctcr": 9.12,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 42.75,
+   "qty": -1,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 47.5,
+   "qty": -1,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 61.75,
+   "qty": -1,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 161.12,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 596,
+   "amtacctdr": 0,
+   "amtacctcr": 7.75,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 36.34,
+   "qty": -1,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 40.38,
+   "qty": -1,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 52.49,
+   "qty": -1,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 136.95,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 724,
+   "amtacctdr": 0,
+   "amtacctcr": -0.01,
+   "qty": 0,
+   "c_period_id": 155,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 360,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 156,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 360,
+   "qty": -10,
+   "c_period_id": 156,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 306,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 156,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 306,
+   "qty": -10,
+   "c_period_id": 156,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 360,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 156,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 419,
+   "amtacctdr": 0,
+   "amtacctcr": 360,
+   "qty": 0,
+   "c_period_id": 156,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 306,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 156,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 419,
+   "amtacctdr": 0,
+   "amtacctcr": 306,
+   "qty": 0,
+   "c_period_id": 156,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 360,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 156,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 360,
+   "qty": -10,
+   "c_period_id": 156,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 306,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 156,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 306,
+   "qty": -10,
+   "c_period_id": 156,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 720,
+   "amtacctcr": 0,
+   "qty": 40,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 720,
+   "qty": -40,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 576,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 576,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 255,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 255,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 135,
+   "amtacctcr": 0,
+   "qty": 50,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 135,
+   "qty": -50,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 114.75,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 114.75,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 204,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 204,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 204,
+   "amtacctcr": 0,
+   "qty": 8,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 204,
+   "qty": -8,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 357,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 357,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 89.25,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 89.25,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 76.5,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 76.5,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 612,
+   "amtacctcr": 0,
+   "qty": 40,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 612,
+   "qty": -40,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 489.6,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 489.6,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 216.75,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 216.75,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 114.75,
+   "amtacctcr": 0,
+   "qty": 50,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 114.75,
+   "qty": -50,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 97.54,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 97.54,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 173.4,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 173.4,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 173.4,
+   "amtacctcr": 0,
+   "qty": 8,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 173.4,
+   "qty": -8,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 303.45,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 303.45,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 75.86,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 75.86,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 65.03,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 65.03,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 720,
+   "amtacctcr": 0,
+   "qty": 40,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 576,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 255,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 135,
+   "amtacctcr": 0,
+   "qty": 50,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 114.75,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 204,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 204,
+   "amtacctcr": 0,
+   "qty": 8,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 357,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 89.25,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 76.5,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 749,
+   "amtacctdr": 0,
+   "amtacctcr": 2731.5,
+   "qty": 0,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 612,
+   "amtacctcr": 0,
+   "qty": 40,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 489.6,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 216.75,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 114.75,
+   "amtacctcr": 0,
+   "qty": 50,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 97.54,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 173.4,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 173.4,
+   "amtacctcr": 0,
+   "qty": 8,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 303.45,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 75.86,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 65.03,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 749,
+   "amtacctdr": 0,
+   "amtacctcr": 2321.78,
+   "qty": 0,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 356.25,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 356.25,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 855,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 855,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 380,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 380,
+   "qty": -10,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 926.25,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 926.25,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 570,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 570,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 570,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 570,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 302.81,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 302.81,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 726.75,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 726.75,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 323,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 323,
+   "qty": -10,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 787.31,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 787.31,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 484.5,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 484.5,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 484.5,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 484.5,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 356.25,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 855,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 380,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 926.25,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 570,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 570,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 419,
+   "amtacctdr": 0,
+   "amtacctcr": 3657.5,
+   "qty": 0,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 302.81,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 726.75,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 323,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 787.31,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 484.5,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 484.5,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 419,
+   "amtacctdr": 0,
+   "amtacctcr": 3108.88,
+   "qty": 0,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 724,
+   "amtacctdr": 0.01,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 1012.5,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 1012.5,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 810,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 810,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 337.5,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 337.5,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 860.63,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 860.63,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 688.5,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 688.5,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 742,
+   "amtacctdr": 286.88,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 0,
+   "amtacctcr": 286.88,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 720,
+   "amtacctcr": 0,
+   "qty": 40,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 720,
+   "qty": -40,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 612,
+   "amtacctcr": 0,
+   "qty": 40,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 612,
+   "qty": -40,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 576,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 576,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 489.6,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 489.6,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 255,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 255,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 216.75,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 216.75,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 135,
+   "amtacctcr": 0,
+   "qty": 50,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 135,
+   "qty": -50,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 114.75,
+   "amtacctcr": 0,
+   "qty": 50,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 114.75,
+   "qty": -50,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 114.75,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 114.75,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 97.54,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 97.54,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 204,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 204,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 173.4,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 173.4,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 204,
+   "amtacctcr": 0,
+   "qty": 8,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 204,
+   "qty": -8,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 173.4,
+   "amtacctcr": 0,
+   "qty": 8,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 173.4,
+   "qty": -8,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 357,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 357,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 303.45,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 303.45,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 89.25,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 89.25,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 75.86,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 75.86,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 76.5,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 76.5,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 65.03,
+   "amtacctcr": 0,
+   "qty": 30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 65.03,
+   "qty": -30,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 356.25,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 356.25,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 302.81,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 302.81,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 855,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 855,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 726.75,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 726.75,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 380,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 380,
+   "qty": -10,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 323,
+   "amtacctcr": 0,
+   "qty": 10,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 323,
+   "qty": -10,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 926.25,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 926.25,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 787.31,
+   "amtacctcr": 0,
+   "qty": 15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 787.31,
+   "qty": -15,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 570,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 570,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 484.5,
+   "amtacctcr": 0,
+   "qty": 12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 484.5,
+   "qty": -12,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 570,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 570,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 587,
+   "amtacctdr": 484.5,
+   "amtacctcr": 0,
+   "qty": 20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 780,
+   "amtacctdr": 0,
+   "amtacctcr": 484.5,
+   "qty": -20,
+   "c_period_id": 160,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 60,
+   "qty": -1,
+   "c_period_id": 138,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 60,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 138,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 51,
+   "qty": -1,
+   "c_period_id": 138,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 51,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 138,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 60,
+   "qty": -1,
+   "c_period_id": 138,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 60,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 138,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 758,
+   "amtacctdr": 0,
+   "amtacctcr": 51,
+   "qty": -1,
+   "c_period_id": 138,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 518,
+   "amtacctdr": 51,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 138,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 98.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 98.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 83.73,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 83.73,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 50,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 50,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 42.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 42.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 98.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 98.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 83.73,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 83.73,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 50,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 50,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 42.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 42.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 98.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 98.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 83.73,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 83.73,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 50,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 50,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 42.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 42.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 98.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 98.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 83.73,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 83.73,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 50,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 50,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 42.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 42.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 98.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 98.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 83.73,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 83.73,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 50,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 50,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 101,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 509,
+   "amtacctdr": 42.5,
+   "amtacctcr": 0,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  },
+  {
+   "account_id": 511,
+   "amtacctdr": 0,
+   "amtacctcr": 42.5,
+   "qty": 0,
+   "c_period_id": 149,
+   "c_acctschema_id": 200000,
+   "postingtype": "A"
+  }
+ ],
+ "default": {
+  "ok": true,
+  "summary": "",
+  "pinstance": 1010829,
+  "rows": [
+   {
+    "seq": 10,
+    "name": "1",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 20,
+    "name": "11",
+    "cells": [
+     "481.25",
+     "0.00",
+     "-225.00",
+     "0.00",
+     "-225.00",
+     "256.25"
+    ]
+   },
+   {
+    "seq": 30,
+    "name": "12",
+    "cells": [
+     "28933.46",
+     "27836.30",
+     "787573.70",
+     "0.00",
+     "815410.00",
+     "816507.16"
+    ]
+   },
+   {
+    "seq": 40,
+    "name": "13",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 50,
+    "name": "14",
+    "cells": [
+     "7031.85",
+     "-1437.27",
+     "-7562.56",
+     "30.00",
+     "-8999.83",
+     "-530.71"
+    ]
+   },
+   {
+    "seq": 60,
+    "name": "15",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 70,
+    "name": "15_",
+    "cells": [
+     "36446.56",
+     "26399.03",
+     "779786.14",
+     "30.00",
+     "806185.17",
+     "816232.70"
+    ]
+   },
+   {
+    "seq": 80,
+    "name": "16",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 90,
+    "name": "17",
+    "cells": [
+     "0.00",
+     "0.00",
+     "267268.18",
+     "39.00",
+     "267268.18",
+     "267268.18"
+    ]
+   },
+   {
+    "seq": 100,
+    "name": "18",
+    "cells": [
+     "0.00",
+     "0.00",
+     "-3910.00",
+     "0.00",
+     "-3910.00",
+     "-3910.00"
+    ]
+   },
+   {
+    "seq": 110,
+    "name": "19",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 120,
+    "name": "19_",
+    "cells": [
+     "0.00",
+     "0.00",
+     "263358.18",
+     "39.00",
+     "263358.18",
+     "263358.18"
+    ]
+   },
+   {
+    "seq": 130,
+    "name": "1__",
+    "cells": [
+     "36446.56",
+     "26399.03",
+     "1043144.32",
+     "69.00",
+     "1069543.35",
+     "1079590.88"
+    ]
+   },
+   {
+    "seq": 140,
+    "name": "2",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 150,
+    "name": "21",
+    "cells": [
+     "9647.98",
+     "0.00",
+     "1147.40",
+     "22.00",
+     "1147.40",
+     "10795.38"
+    ]
+   },
+   {
+    "seq": 160,
+    "name": "22",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 170,
+    "name": "23",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 180,
+    "name": "24",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 190,
+    "name": "2__",
+    "cells": [
+     "9647.98",
+     "0.00",
+     "1147.40",
+     "22.00",
+     "1147.40",
+     "10795.38"
+    ]
+   },
+   {
+    "seq": 200,
+    "name": "3",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 210,
+    "name": "31",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 220,
+    "name": "32",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 252,
+    "name": "33",
+    "cells": [
+     "9647.98",
+     "0.00",
+     "1147.40",
+     "22.00",
+     "1147.40",
+     "10795.38"
+    ]
+   }
+  ]
+ },
+ "todayExplicit": {
+  "ok": true,
+  "summary": "",
+  "pinstance": 1010830,
+  "rows": [
+   {
+    "seq": 10,
+    "name": "1",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 20,
+    "name": "11",
+    "cells": [
+     "481.25",
+     "0.00",
+     "-225.00",
+     "0.00",
+     "-225.00",
+     "256.25"
+    ]
+   },
+   {
+    "seq": 30,
+    "name": "12",
+    "cells": [
+     "28933.46",
+     "27836.30",
+     "787573.70",
+     "0.00",
+     "815410.00",
+     "816507.16"
+    ]
+   },
+   {
+    "seq": 40,
+    "name": "13",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 50,
+    "name": "14",
+    "cells": [
+     "7031.85",
+     "-1437.27",
+     "-7562.56",
+     "30.00",
+     "-8999.83",
+     "-530.71"
+    ]
+   },
+   {
+    "seq": 60,
+    "name": "15",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 70,
+    "name": "15_",
+    "cells": [
+     "36446.56",
+     "26399.03",
+     "779786.14",
+     "30.00",
+     "806185.17",
+     "816232.70"
+    ]
+   },
+   {
+    "seq": 80,
+    "name": "16",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 90,
+    "name": "17",
+    "cells": [
+     "0.00",
+     "0.00",
+     "267268.18",
+     "39.00",
+     "267268.18",
+     "267268.18"
+    ]
+   },
+   {
+    "seq": 100,
+    "name": "18",
+    "cells": [
+     "0.00",
+     "0.00",
+     "-3910.00",
+     "0.00",
+     "-3910.00",
+     "-3910.00"
+    ]
+   },
+   {
+    "seq": 110,
+    "name": "19",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 120,
+    "name": "19_",
+    "cells": [
+     "0.00",
+     "0.00",
+     "263358.18",
+     "39.00",
+     "263358.18",
+     "263358.18"
+    ]
+   },
+   {
+    "seq": 130,
+    "name": "1__",
+    "cells": [
+     "36446.56",
+     "26399.03",
+     "1043144.32",
+     "69.00",
+     "1069543.35",
+     "1079590.88"
+    ]
+   },
+   {
+    "seq": 140,
+    "name": "2",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 150,
+    "name": "21",
+    "cells": [
+     "9647.98",
+     "0.00",
+     "1147.40",
+     "22.00",
+     "1147.40",
+     "10795.38"
+    ]
+   },
+   {
+    "seq": 160,
+    "name": "22",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 170,
+    "name": "23",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 180,
+    "name": "24",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 190,
+    "name": "2__",
+    "cells": [
+     "9647.98",
+     "0.00",
+     "1147.40",
+     "22.00",
+     "1147.40",
+     "10795.38"
+    ]
+   },
+   {
+    "seq": 200,
+    "name": "3",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 210,
+    "name": "31",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 220,
+    "name": "32",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 252,
+    "name": "33",
+    "cells": [
+     "9647.98",
+     "0.00",
+     "1147.40",
+     "22.00",
+     "1147.40",
+     "10795.38"
+    ]
+   }
+  ]
+ },
+ "jan03r": {
+  "ok": true,
+  "summary": "",
+  "pinstance": 1010831,
+  "rows": [
+   {
+    "seq": 10,
+    "name": "1",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 20,
+    "name": "11",
+    "cells": [
+     "148.35",
+     "148.35",
+     "0.00",
+     "0.00",
+     "0.00",
+     "148.35"
+    ]
+   },
+   {
+    "seq": 30,
+    "name": "12",
+    "cells": [
+     "381.12",
+     "261.12",
+     "0.00",
+     "0.00",
+     "0.00",
+     "381.12"
+    ]
+   },
+   {
+    "seq": 40,
+    "name": "13",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 50,
+    "name": "14",
+    "cells": [
+     "500.00",
+     "500.00",
+     "8549.00",
+     "381.00",
+     "8549.00",
+     "9049.00"
+    ]
+   },
+   {
+    "seq": 60,
+    "name": "15",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 70,
+    "name": "15_",
+    "cells": [
+     "1029.47",
+     "909.47",
+     "8549.00",
+     "381.00",
+     "8549.00",
+     "9578.47"
+    ]
+   },
+   {
+    "seq": 80,
+    "name": "16",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 90,
+    "name": "17",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 100,
+    "name": "18",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 110,
+    "name": "19",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 120,
+    "name": "19_",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 130,
+    "name": "1__",
+    "cells": [
+     "1029.47",
+     "909.47",
+     "8549.00",
+     "381.00",
+     "8549.00",
+     "9578.47"
+    ]
+   },
+   {
+    "seq": 140,
+    "name": "2",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 150,
+    "name": "21",
+    "cells": [
+     "677.54",
+     "677.54",
+     "8549.00",
+     "57.00",
+     "8549.00",
+     "9226.54"
+    ]
+   },
+   {
+    "seq": 160,
+    "name": "22",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 170,
+    "name": "23",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 180,
+    "name": "24",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 190,
+    "name": "2__",
+    "cells": [
+     "677.54",
+     "677.54",
+     "8549.00",
+     "57.00",
+     "8549.00",
+     "9226.54"
+    ]
+   },
+   {
+    "seq": 200,
+    "name": "3",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 210,
+    "name": "31",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 220,
+    "name": "32",
+    "cells": [
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00",
+     "0.00"
+    ]
+   },
+   {
+    "seq": 252,
+    "name": "33",
+    "cells": [
+     "677.54",
+     "677.54",
+     "8549.00",
+     "57.00",
+     "8549.00",
+     "9226.54"
+    ]
+   }
+  ]
+ },
+ "defaultIsToday": true
+}
