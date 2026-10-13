@@ -7,7 +7,7 @@ cd "$(dirname "$0")"; D=$PWD; fail=0; NT_DATA=${NT_DATA:-$HOME/Projects/ninja-te
 M=$HOME/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar; JCP=$(ls $HOME/Projects/red1-ninja-roundtrip/lib/*.jar | tr '\n' ':')$M:.
 OUT=${OUT:-/tmp/ninja_template_out}; mkdir -p $OUT
 javac -nowarn -cp "$JCP" -d . W27_StyleParity.java W32_GoldenStyle.java GoldenDump.java Xls2Xlsx.java 2>&1 | grep -v '^Note:' | head -5
-chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
+chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|TB_DEMO_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
 gp(){ [ -f golden/$1.styles.tsv ] && echo golden/$1 || echo "$NT_PRIVATE/golden/$1"; }
 # case line:  name|source .xls (rel. to NT_DATA)|migrated .xlsx (rel.)|from|to
 CASES=("parity_v2|legacy/parity_v2.xls|legacy/xlsx/parity_v2.xlsx|2006-12-01|2006-12-31" "parity_xtab|legacy/parity_xtab.xls|legacy/xlsx/parity_xtab.xlsx|2006-12-01|2006-12-31")
@@ -36,6 +36,13 @@ for spec in "geom|parity_geom|" "xtab|parity_xtab|" "v2|parity_v2|21,4"; do IFS=
 done
 chk D_NEG_geom FAIL node W34_PdfCompare.js golden/pdf/xtab.spire.geom.json $OUT/geom.ours.json
 unset SAME_FONT_AS_SPIRE
+# [T] public Thai trial-balance demo (TB-DEMO): every painted number vs an independent SQL aggregate, totals ranges cover the grown list, debits = credits
+export FROM='2006-12-01 00:00:00.0' TO='2006-12-31 00:00:00.0'
+chk T_trialbalance PASS node W37_TrialBalance.js $L/legacy/xlsx/parity_tb.xlsx
+node W33_PdfRender.js $L/legacy/xlsx/parity_tb.xlsx $OUT/tb.content.pdf excel > logs/D_render_tb.log 2>&1
+chk T_pdf_content PASS node W36_PdfContent.js $L/legacy/xlsx/parity_tb.xlsx $OUT/tb.content.pdf                             # Thai text + numbers all present in our PDF
+NEG=wrongrange chk T_NEG_range FAIL node W37_TrialBalance.js $L/legacy/xlsx/parity_tb.xlsx                                            # a totals range that did not grow must be caught
+FROM='1990-01-01 00:00:00.0' TO='1990-01-31 00:00:00.0' chk T_VACUOUS INCONCLUSIVE node W37_TrialBalance.js $L/legacy/xlsx/parity_tb.xlsx   # no postings -> must say INCONCLUSIVE, not PASS
 # [P] live Postgres clone gates (PG=1)
 if [ "$PG" = 1 ]; then for spec in "${CASES[@]}"; do IFS='|' read n xls xlsx a b <<< "$spec"; FROM="$a 00:00:00.0" TO="$b 00:00:00.0" chk P_stmt_$n PASS node W24_TwinStatements.js $L/$xls; done
   FROM="$a1 00:00:00.0" TO="$b1 00:00:00.0" chk P_NEG_stmt_noscale FAIL env NEG=noscale node W24_TwinStatements.js $L/$x1; fi

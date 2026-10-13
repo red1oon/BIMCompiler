@@ -27,7 +27,8 @@
   function hasLao(t) { return /[຀-໿]/.test(t); }
   // split a string into runs by script: Lao letters (U+0E80-0EFF, zero-width joiners) vs everything else, so each run gets a font that actually HAS its glyphs
   // (measured: Noto Sans Lao on the build host has no ASCII punctuation; sending whole mixed strings to it silently drops '/', '.', '(', ')', bullets)
-  function runsOf(t) { var out = [], cur = null; for (var i = 0; i < t.length; i++) { var ch = t[i], lao = /[຀-໿\u200B-\u200D]/.test(ch); if (cur && cur.lao === lao) cur.t += ch; else { cur = { t: ch, lao: lao }; out.push(cur); } } return out; }
+  // Thai letters (U+0E01-0E5B) get their own run too (same reason: the Latin font has no Thai glyphs) - added with the public Thai trial-balance demo (prompts/NINJAEXCEL_TEMPLATE_ENGINE.md §TB-DEMO)
+  function runsOf(t) { var out = [], cur = null; for (var i = 0; i < t.length; i++) { var ch = t[i], lao = /[຀-໿\u200B-\u200D]/.test(ch), th = !lao && /[\u0E01-\u0E5B]/.test(ch); if (cur && cur.lao === lao && cur.th === th) cur.t += ch; else { cur = { t: ch, lao: lao, th: th }; out.push(cur); } } return out; }
 
   // options: { profile, margins:{l,r,t,b}, defaultRowPt, fonts:{resolve(name,bold,italic,text)->path|stdName}, sheet:'Output', formatNumber(fmt,val)->text }
   function renderSheet(PDFDocument, model, opts) {
@@ -101,7 +102,7 @@
       var st = c.s != null ? styles[c.s] : null, b = box(p, mergeOf[k]);
       var text = c.t === 'n' ? fmtNum((st && st.numFmt) || c.z || 'General', c.v) : c.t === 'b' ? (c.v ? 'TRUE' : 'FALSE') : String(c.v);
       var fnt = (st && st.font) || {}, size = fnt.size || 10, fpath = fonts.resolve(fnt.name || 'Arial', !!fnt.bold, !!fnt.italic, 'A');   // vertical metrics from the Latin font
-      function fontFor(run) { return fonts.resolve(fnt.name || 'Arial', !!fnt.bold, !!fnt.italic, run.lao ? 'ກ' : 'A'); }
+      function fontFor(run) { return fonts.resolve(fnt.name || 'Arial', !!fnt.bold, !!fnt.italic, run.lao ? 'ກ' : run.th ? 'ก' : 'A'); }
       function measure(str) { var w = 0; runsOf(str).forEach(function (r) { doc.font(fontFor(r)).fontSize(size); w += doc.widthOfString(r.t); }); return w; }
       doc.font(fpath).fontSize(size); var ascent = doc._font.ascender / 1000 * size, descent = -doc._font.descender / 1000 * size, lh = opts.lineHeightFactor ? size * opts.lineHeightFactor : (ascent + descent + (doc._font.lineGap || 0) / 1000 * size);
       var al = st && st.alignment || {}, h = (al.horizontal && al.horizontal !== 'general') ? al.horizontal : (c.t === 'n' ? 'right' : 'left'), v = al.vertical || 'bottom', wrap = !!al.wrapText;

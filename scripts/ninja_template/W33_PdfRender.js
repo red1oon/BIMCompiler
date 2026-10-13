@@ -5,7 +5,8 @@ const D=require('/home/red1/bim-compiler/node_modules/better-sqlite3'); const L=
 const db=new D(L+'legacy/twin_snapshot.db',{readonly:true}); T.registerPgBuiltins((n,f)=>db.function(n,{varargs:true},f)); const exec=T.sqliteExecutor(db);
 const LIB='/usr/share/fonts/truetype/liberation/LiberationSans-', NOTO='/usr/share/fonts/truetype/noto/NotoSansLao-';
 const FREE='/usr/share/fonts/truetype/freefont/FreeSerif'; const SAME=process.env.SAME_FONT_AS_SPIRE==='1';   /* witness mode: use the font Spire substituted on this host */
-const fonts={resolve(name,bold,italic,text){ if(SAME&&!/[\u0E80-\u0EFF]/.test(text)) return FREE+(bold&&italic?'BoldItalic':bold?'Bold':italic?'Italic':'')+'.ttf'; if(/[຀-໿]/.test(text)) return bold?(process.env.LAO_FONT_BOLD||NOTO+'Bold.ttf'):(process.env.LAO_FONT||NOTO+'Regular.ttf'); return LIB+(bold&&italic?'BoldItalic':bold?'Bold':italic?'Italic':'Regular')+'.ttf'; }};
+const THAI='/usr/share/fonts/truetype/noto/NotoSansThai-';
+const fonts={resolve(name,bold,italic,text){ if(/[\u0E01-\u0E5B]/.test(text)) return bold?(process.env.THAI_FONT_BOLD||THAI+'Bold.ttf'):(process.env.THAI_FONT||THAI+'Regular.ttf'); if(SAME&&!/[\u0E80-\u0EFF]/.test(text)) return FREE+(bold&&italic?'BoldItalic':bold?'Bold':italic?'Italic':'')+'.ttf'; if(/[຀-໿]/.test(text)) return bold?(process.env.LAO_FONT_BOLD||NOTO+'Bold.ttf'):(process.env.LAO_FONT||NOTO+'Regular.ttf'); return LIB+(bold&&italic?'BoldItalic':bold?'Bold':italic?'Italic':'Regular')+'.ttf'; }};
 (async()=>{ const buf=fs.readFileSync(process.argv[2]); const m=await H.loadModel(E,buf);
  if(!process.env.NO_ENGINE) T.runTemplate(m,exec,{XLSX:X,clientId:11,orgId:0,from:process.env.FROM||'2006-12-01 00:00:00.0',to:process.env.TO||'2006-12-31 00:00:00.0'});
  const cs=C.evaluateSheet(m,'Output'); console.log(`§CALC Output formulas=${cs.evaluated} errors=${cs.errors} unsupported=${JSON.stringify(cs.unsupported)}`);
