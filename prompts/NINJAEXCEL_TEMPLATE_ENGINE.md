@@ -51,6 +51,34 @@ Do not confuse with the *authoring* Ninja (`prompts/NINJA_MODE_LANE.md`: Excel d
 **Found by the PDF-content gate (not by eye):** (a) the renderer had no Thai font — 16 of 142 cells (all Thai labels) were absent from the PDF; fixed in `ninja_pdf.js` (Thai letters get their own font run, like Lao) + `W33` resolver (Noto Sans Thai, OFL); (b) long account names were cut by default column widths — fixed in the template (widths A12 B40 C–F16). After both: `§PDF_CONTENT cells=142 missingFromPdf=0`. The 98% PDF-geometry figure still applies only to the 3 reference fixtures — this template has no commercial-converter reference PDF.
 **Oracle decision (user, 2026-10-13):** the legacy ExpenseReport plugin is NOT core and is not to be run again for new fixtures — its input/process/output contract is already known; new work is judged only on its OUTPUT against an independent computation (as W37 does against SQL). The Laos server is not to be started for this. Formula-shifting edge cases (straddling range, absolute, cross-sheet, whole-column) are therefore witnessed against Excel's own documented semantics computed independently, or refused visibly if unsupported. Company name is not in the twin snapshot (`ad_client` absent), so the heading shows only the period. Thai labels are a hand translation; verify with a Thai reader before the film.
 
+## §TB-FILM — plan for the USER film (2026-10-13; user: audience = users, English narration FIRST, Thai second; PLAN ONLY — nothing recorded until red1 approves)
+**Source rules:** `prompts/FILM_NARRATION.md` ▶ PLAYBOOK (two-voice dialogue F/M, Kokoro `af_heart`/`am_michael` for English, Edge `th-TH Premwadee/Niwat` for Thai, subtitles in the audio's own language, steps Facts → Script TSV → Fit → Mux → Witness) and §5 §ERP-FILM (headless browser, CPU only, CDP screencast 24 fps, `§…_BEAT` / `§…_FACT` / `§…_DONE`). Same material as the manual (`docs/NinjaExcelReport_UserManual.md`): the Thai trial-balance template over GardenWorld, period 2006-12-01..31. No customer data anywhere.
+**Hard dependency — decide with red1:** beats 2–3 film the *Excel Report pill running the engine inside the ERP*. That exists only after the bim-ootb port (resume step 1: engine → RUN verb of the pill; risk: ExcelJS + PDFKit must be bundled for the browser — unproven, measure first). Until then there is nothing real to film for those beats. Recommendation: **port first, film second.** The Excel-side shots (template, result, PDF) need no port: they are rendered by our own PDF renderer from the real files.
+**Length ≈ 2:30. Beats, what is on screen, and the log line that supplies every spoken number (new `§TB_FILM_FACT` lines are printed by the recorder from the real run; nothing typed by hand):**
+| # | beat | on screen | spoken numbers ← source |
+|---|---|---|---|
+| 1 | the monthly pain | title card; a pivot-table sketch is NOT used (no invented visuals) — plain card: "Opening, movement, closing — every month" | none |
+| 2 | the template | the five sheets of `parity_tb.xlsx` (Input with tags, Process rows, BACKUP) rendered by our renderer | `sheets=5 processRows=6` ← `§TB_FILM_FACT` from the template file |
+| 3 | run it | ERP → Excel Report pill → choose template → From 2006-12-01 To 2006-12-31 → Run | `statements=2 ms=` ← `§TWIN_RUN` |
+| 4 | the list grows | Output paints; 21 account rows appear; totals row moves down, range becomes C6:C27 | `listRows=21 totalsRow=28` ← `§TB_DEMO_FACT` |
+| 5 | proof | totals and the proof line | `totalDebit=4258.90 totalCredit=4258.90 proof=0.00` ← `§TB_DEMO` |
+| 6 | the one rule | type into Output, run again, text gone → "edit BACKUP, never Output" | none (behaviour shown; gate `CLAIM_BACKUP_RULE`) |
+| 7 | the PDF | one-page PDF, Thai text intact | `cells=142 missingFromPdf=0` ← `§PDF_CONTENT` |
+| 8 | free software | credits: ExcelJS + PDFKit (MIT), no PDF subscription | `about 98.6% of 1,833 items on the reference sheets` ← **new `§PDF_PARITY_FACT`** (computed from W34 output; must exist before the line is spoken; wording keeps "on the reference sheets") |
+| 9 | close | what you keep: your Excel design, your formats; ends on the title card | none |
+**Draft English dialogue (numbers in braces are filled from the facts; TSV `id cue_s end_s §source SHORT DETAIL` written at build time):**
+1 F: "Every month the same job — opening balance, what moved, closing balance — fixed by hand in a spreadsheet." M: "What if the spreadsheet did that itself?"
+2 M: "This is the template. It is a normal Excel workbook with {sheets} sheets. The layout is yours." F: "And how does it know where the numbers come from?" M: "{processRows} short lines on the Process sheet — each one says what to read."
+3 F: "So I pick the template and the dates?" M: "One to thirty-first December two thousand six. Run." … "{statements} queries, {ms} milliseconds."
+4 F: "Look — it added the rows." M: "{listRows} accounts, one row each. The totals moved down and now cover all of them."
+5 M: "Debits {totalDebit}, credits {totalCredit}. The difference is zero — that's the proof line." F: "So it balances." 
+6 M: "One rule. Never type into Output — it is rebuilt every run. Make your edits in BACKUP." F: "Good to know."
+7 M: "And the PDF: one page, every cell present — {cells} of {cells}, Thai text included."
+8 F: "Does this need a PDF subscription?" M: "No. It's free open-source code, end to end. On our reference sheets about ninety-eight point six percent of everything we measured — page size, fills, borders, words — matches the commercial converter."
+9 F: "So I keep my own design." M: "Exactly. You design it in Excel. We fill it in."
+**Witness (numbers, not a listen):** every spoken number has a `§TB_FILM_FACT`; beats in order (`§TB_FILM_BEAT id= t=`); frames = concat output; Fit goal all DETAIL, 0 `§NARR_TONE WRONG`; `silencedetect n=-40dB d=4` longest gap; `ebur128` ≈ −16 LUFS; subtitles font = script's font (English now; Thai: Noto Sans Thai). Thai pass reuses the same ids/cues/sources/turn count and is only started after red1 approves the English film.
+**Build order once approved:** (a) bim-ootb port + pill, (b) `§PDF_PARITY_FACT` script, (c) `scripts/film_ninja_excel.js` (copy of `film_erp_first_setup.js` structure), (d) English TSV → fit → mux, (e) witness log, (f) Thai.
+
 ## Run the gates
 `scripts/ninja_template/run_all.sh` — default run needs **no Postgres and no legacy server** (frozen text goldens of the legacy plugin's output in `golden/`). `PG=1` adds live-Postgres statement comparisons. Inputs live under `$NT_DATA` (default `~/Projects/ninja-template-data`): source templates, migrated `.xlsx` templates, the twin snapshot db (`pg_to_sqlite.py`). Public cases = the GardenWorld fixtures built by `MakeParity*.java`. Verdict lines: `PASS` / `FAIL` / `INCONCLUSIVE` (a witness that judged nothing says so). Every positive gate has a negative control that must FAIL.
 
