@@ -118,7 +118,7 @@ The closing-balance formula in each row (`=C6+D6-E6`) is copied down for every n
 ## 9. Limits
 
 - One page per sheet; no page breaks.
-- Formula shifting is verified for **relative references and ranges** and absolute references moved by row insertion. Cross-sheet references, whole-column references (`A:A`) and named ranges are **not yet verified** — avoid them in grown areas.
+- Formula shifting is verified for **relative references and simple ranges** only. Absolute references (`$A$1`), cross-sheet references, whole-column references (`A:A`) and named ranges are **not yet verified** — avoid them in grown areas.
 - Images are not supported.
 - The PDF layout was measured against a commercial converter's output on three reference sheets: **about 98.6 % of 1,833 checked items (page size, fills, border lines, words) match**; the single known deviation is a few shared vertical borders on the largest sheet [`D_geom_geom`, `D_geom_xtab`, `D_geom_v2`]. This figure is **for those reference sheets**; the trial balance has no commercial reference PDF.
 - Thai labels in the example are a hand translation.
