@@ -78,6 +78,7 @@ nav:
   - Start Here:
       - Home: index.md
       - "📖 User Guide": USER_GUIDE.md
+      - "🧰 BIM Tools — User Manual": BIMToolsGuide.md
       - "🔒 Fully Offline / Air-Gapped Install": OFFLINE_INSTALL_GUIDE.md
       - "🆕 What's New": WhatsNew.md
       - About BIM OOTB: AboutMore.md
