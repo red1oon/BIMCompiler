@@ -23,9 +23,15 @@
     // 3. duplicate annotations (two rows with the same SELECT text and row number cannot happen; same text different rows is fine) - none to check
     // 4. BACKUP-vs-Output drift: Output is discarded and re-cloned from BACKUP every run, so hand edits in Output are lost
     // FORMULAS only are compared: Output legitimately holds the previous run's data values
-    var seen = {}, drift = 0, list = [];
-    cells(S.Output).concat(cells(S.BACKUP)).forEach(function (a) { if (seen[a]) return; seen[a] = 1; var o = S.Output[a], b = S.BACKUP[a]; if (((o && o.f) || '').replace(/\s+/g, '') !== ((b && b.f) || '').replace(/\s+/g, '')) { drift++; if (list.length < 5) list.push(a); } });
-    if (drift) W.push('BACKUP_DRIFT ' + drift + ' formula(s) differ between Output and BACKUP (first: ' + list.join(', ') + '). Output is erased every run; make layout changes in BACKUP only');
+    // Row growth (`+` directions) legitimately inserts rows into Output and shifts every formula below them (W40 replay proved this on MOES cashflow: the saved Output equals BACKUP + growth).
+    // So a formula comparison is only meaningful when Output and BACKUP have the SAME extent; otherwise say it cannot be judged (never a false alarm).
+    function ext(sh) { var r = 0, c = 0; cells(sh).forEach(function (a) { var p = rc(a); if (p.r > r) r = p.r; if (p.c > c) c = p.c; }); return r + 'x' + c; }
+    if (ext(S.Output) !== ext(S.BACKUP)) { W.push('DRIFT_NOT_CHECKABLE Output extent ' + ext(S.Output) + ' differs from BACKUP ' + ext(S.BACKUP) + ' (rows were inserted by a previous run, formulas shifted); hand edits cannot be told apart from growth'); }
+    else {
+      var seen = {}, drift = 0, list = [];
+      cells(S.Output).concat(cells(S.BACKUP)).forEach(function (a) { if (seen[a]) return; seen[a] = 1; var o = S.Output[a], b = S.BACKUP[a]; if (((o && o.f) || '').replace(/\s+/g, '') !== ((b && b.f) || '').replace(/\s+/g, '')) { drift++; if (list.length < 5) list.push(a); } });
+      if (drift) W.push('BACKUP_DRIFT ' + drift + ' formula(s) differ between Output and BACKUP (first: ' + list.join(', ') + '). Output is erased every run; make layout changes in BACKUP only');
+    }
     return { errors: E, warnings: W };
   }
   function selectOnly(exec) {

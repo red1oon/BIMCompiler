@@ -7,7 +7,7 @@ cd "$(dirname "$0")"; D=$PWD; fail=0; NT_DATA=${NT_DATA:-$HOME/Projects/ninja-te
 M=$HOME/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar; JCP=$(ls $HOME/Projects/red1-ninja-roundtrip/lib/*.jar | tr '\n' ':')$M:.
 OUT=${OUT:-/tmp/ninja_template_out}; mkdir -p $OUT
 javac -nowarn -cp "$JCP" -d . W27_StyleParity.java W32_GoldenStyle.java GoldenDump.java Xls2Xlsx.java 2>&1 | grep -v '^Note:' | head -5
-chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|XTAB2_VERDICT|PREFLIGHT_VERDICT|SHOWCASE_EDIT_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
+chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|XTAB2_VERDICT|PREFLIGHT_VERDICT|SHOWCASE_EDIT_VERDICT|REPLAY_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
 gp(){ [ -f golden/$1.styles.tsv ] && echo golden/$1 || echo "$NT_PRIVATE/golden/$1"; }
 # case line:  name|source .xls (rel. to NT_DATA)|migrated .xlsx (rel.)|from|to
 CASES=("parity_v2|legacy/parity_v2.xls|legacy/xlsx/parity_v2.xlsx|2006-12-01|2006-12-31" "parity_xtab|legacy/parity_xtab.xls|legacy/xlsx/parity_xtab.xlsx|2006-12-01|2006-12-31")
@@ -42,6 +42,8 @@ NEG=swap chk X_NEG_xtab2 FAIL node W37_Xtab2.js $L/legacy/parity_xtab2.xls
 # [S] showcase: pre-flight + SELECT-only guard; edit-one-rule proof (Film 3)
 chk S_preflight PASS node W38_Preflight.js $D_SHOW
 chk S_edit PASS node W39_ShowcaseEdit.js $D_SHOW
+# [R] recorded-answer replay of the customer MOES workbooks (private, only when present): addresses + Output cells coverage
+for f in MOES_sofp MOES_cashflow; do [ -f $L/legacy/xlsx/$f.xlsx ] && chk R_replay_$f PASS node W40_Replay.js $L/legacy/xlsx/$f.xlsx; done
 unset SAME_FONT_AS_SPIRE
 # [P] live Postgres clone gates (PG=1)
 if [ "$PG" = 1 ]; then for spec in "${CASES[@]}"; do IFS='|' read n xls xlsx a b <<< "$spec"; FROM="$a 00:00:00.0" TO="$b 00:00:00.0" chk P_stmt_$n PASS node W24_TwinStatements.js $L/$xls; done
