@@ -326,3 +326,31 @@ Same rules R1–R4 as the JS planner, set-based so it runs on the 10 GB file wit
   Stress cold share: `fact_acct` 8.39 M of 8.74 M rows cold; `c_orderline` 758 k of 9.67 M; `m_transaction` 728 k of 816 k.
 - **Range read on the FK-indexed bed** (`range_armC.log`): `fact_acct` PK 49 KB / 3 reqs / 12 ms; `c_orderline` by `c_order_id` **49 KB / 3 reqs / 11 ms** (was 1.37 GB with no FK index); `c_order` PK 98 KB / 185 ms; file 11.7 GB → closes the §9.3 Q3 gap.
 - **Still NOT done:** warm/cold shard FILES are not written (plan only); the cutoff is a stress parameter; replicated data has GardenWorld's mix and decimal widths; no phone run; cold-start under network throttle not run.
+
+### §10.4 Phone-proxy witness (SPEC, 2026-10-14 — written before `scripts/phone_sim_witness.js`)
+**Issue it proves/disproves:** "a COLD start (nothing cached) of the first ERP window over a slow mobile link on the 11 GB file is usable, and the open path
+(54 range requests / 0.9 MB on localhost) is not latency-bound." Estimate to confirm or kill: 54 sequential requests × 150 ms RTT ≥ 8 s.
+**Proxies (NOT a phone; labelled in every log line):** headless Chromium, `Emulation.setCPUThrottlingRate(4)`, touch+phone UA, fresh profile per cold run;
+network shaped SERVER-SIDE (per-request RTT delay + per-connection bytes/s cap) because CDP page throttling does not cover the dedicated worker httpvfs fetches from;
+memory capped with a cgroup (`systemd-run --user --scope -p MemoryMax=…`) as a stand-in for a tab kill; Chromium RSS sampled every 200 ms (`peakRssMB`).
+**Profiles:** `wifi` 20 ms RTT · 6 MB/s · `4g` 80 ms · 1.5 MB/s · `slow4g` 150 ms · 200 KB/s (= 1.6 Mbps, Lighthouse mobile default).
+**First window = Sales Order** (numbers only): W1 `ad_window` by name · W2 `ad_tab` by window · W3 `ad_field` by first tab · W4 `c_order` by PK · W5 `c_orderline` by `c_order_id`.
+**Reports:** `§PHONE profile chunk open{ms,reqs,bytes} W1..W5{ms,reqs,bytes} firstWindowMs totalBytes totalReqs peakRssMB`, cold (new browser) and repeat (same worker, in-session cache).
+**Asserts:** every W* rows>0 else INCONCLUSIVE; `OOM/killed` is reported as FAIL with the cap, never PASS. Chunk 16 KB vs 64 KB compared to test fewer-requests-per-open.
+**Honest bound:** desktop Chromium on this CPU ≠ a phone SoC; cgroup kill ≠ iOS jetsam; server-side shaping has fixed RTT, no loss/jitter.
+
+### §10.5 RESULT 2026-10-14 — phone-proxy witness (`scripts/phone_sim_witness.js`; logs `build/erp/logs/phone_*.log`)
+PROXY, not a phone: headless Chromium, 4× CPU throttle, server-side RTT + per-connection bandwidth shaping, 11.2 GB `bloat10r.db`, 16 KB pages. Fresh browser per cold run.
+| profile | RTT · bandwidth | open (54 reqs, 0.9 MB) | cold first window (128 reqs, 2.1 MB) | repeat (same session) |
+|---|---|---|---|---|
+| none | 0 · off | 0.28 s | **0.53 s** | 9 ms · 0 reqs |
+| wifi | 20 ms · 6 MB/s | 1.4 s | 3.1 s | 12 ms · 0 reqs |
+| 4g | 80 ms · 1.5 MB/s | 4.7 s | 10.9 s | 10 ms · 0 reqs |
+| slow4g | 150 ms · 200 KB/s | 8.6 s | **20.2 s** | 10 ms · 0 reqs |
+| slow4g, 64 KB chunks | 150 ms · 200 KB/s | 21.4 s (3.5 MB) | 46.9 s (7.7 MB) | 10 ms |
+- **Estimate confirmed:** the open is latency-bound — 54 requests × 150 ms ≈ 8.1 s predicted, 8.6 s measured. 64 KB chunks are WORSE (same request count, 4× the bytes): keep `requestChunkSize` = page size.
+- **Memory:** whole-Chromium-tree RSS rose 39–123 MB above an empty page while using the 11 GB file (`dbDeltaMB`; slow4g/16 KB = 101 MB). Tree includes browser+GPU+network processes, so it overstates a single tab. The 200 MB mobile ceiling (FoldEngineConstraints §2) is not exceeded by the DB access itself; the cgroup-cap run was NOT done.
+- **Cold-start dominated by the dictionary, not data:** at slow4g, `W3 ad_field by ad_tab_id` = 8.9 s / 57 reqs / 0.97 MB (≈ 44 % of queries). Real iDempiere's PG has NO index on `ad_field.ad_tab_id` either (only pkey, column, uu) — PG hides it with an in-memory scan; over range reads it costs requests.
+- **NEGATIVE result, root cause UNCONFIRMED:** adding `CREATE INDEX ix_ad_field_tab ON ad_field(ad_tab_id)` (plan verified: `SEARCH … USING INDEX`) made W3 WORSE on slow4g: 45 s / 27 reqs / 8.7 MB. Hypothesis: httpvfs read-ahead grows the fetch on near-sequential page access; not tested. The index was dropped again. Do NOT ship an `ad_field` index on this evidence.
+- **Design consequence (reasoned from the T0/T1/T2 spec, not run here):** the AD dictionary is T0 (precached `ad_seed.db`, 12.7 MB) and never range-read, so W1–W3 are not on the network in production. The network cost of the first DATA drill is the open + W4/W5: measured parts 8.6 s + ~1.4 s ≈ **~10 s on slow4g, first time only**, then 0 requests in-session. That composition is an ESTIMATE from measured parts, not a measured end-to-end run.
+- **Not done:** cgroup memory-cap kill test; real phone; HTTPS/secure-context features (service worker, Web Crypto, OPFS) over LAN; jitter/packet loss; fewer-requests open (e.g. larger first fetch of the DB header + root pages) is an untested idea.
