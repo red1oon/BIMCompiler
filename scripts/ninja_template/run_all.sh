@@ -7,7 +7,7 @@ cd "$(dirname "$0")"; D=$PWD; fail=0; NT_DATA=${NT_DATA:-$HOME/Projects/ninja-te
 M=$HOME/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar; JCP=$(ls $HOME/Projects/red1-ninja-roundtrip/lib/*.jar | tr '\n' ':')$M:.
 OUT=${OUT:-/tmp/ninja_template_out}; mkdir -p $OUT
 javac -nowarn -cp "$JCP" -d . W27_StyleParity.java W32_GoldenStyle.java GoldenDump.java Xls2Xlsx.java 2>&1 | grep -v '^Note:' | head -5
-chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|TB_DEMO_VERDICT|MANUAL_CLAIMS_VERDICT|BROWSER_REPORT_VERDICT|PILL_REPORT_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
+chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|TB_DEMO_VERDICT|MANUAL_CLAIMS_VERDICT|BROWSER_REPORT_VERDICT|PILL_REPORT_VERDICT|REGISTER_VERDICT|UC_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
 gp(){ [ -f golden/$1.styles.tsv ] && echo golden/$1 || echo "$NT_PRIVATE/golden/$1"; }
 # case line:  name|source .xls (rel. to NT_DATA)|migrated .xlsx (rel.)|from|to
 CASES=("parity_v2|legacy/parity_v2.xls|legacy/xlsx/parity_v2.xlsx|2006-12-01|2006-12-31" "parity_xtab|legacy/parity_xtab.xls|legacy/xlsx/parity_xtab.xlsx|2006-12-01|2006-12-31")
@@ -45,10 +45,17 @@ NEG=wrongrange chk T_NEG_range FAIL node W37_TrialBalance.js $L/legacy/xlsx/pari
 FROM='1990-01-01 00:00:00.0' TO='1990-01-31 00:00:00.0' chk T_VACUOUS INCONCLUSIVE node W37_TrialBalance.js $L/legacy/xlsx/parity_tb.xlsx   # no postings -> must say INCONCLUSIVE, not PASS
 chk T_manual_claims PASS node W38_ManualClaims.js $L/legacy/xlsx/parity_tb.xlsx                                                     # claims the user manual makes
 NEG=1 chk T_NEG_manual_claims FAIL node W38_ManualClaims.js $L/legacy/xlsx/parity_tb.xlsx
+# [R] Sales Register (UC-SET): list pushed down to any row count, totals/COUNT ranges grow, every row vs independent SQL. Big case = 1,441 invoices (the legacy .xls host cut lists at 248 silently).
+FROM='2002-01-01' TO='2026-12-31' chk R_register_big PASS node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
+NEG=wrongrange FROM='2002-01-01' TO='2026-12-31' chk R_NEG_register FAIL node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
+FROM='1990-01-01' TO='1990-12-31' chk R_VACUOUS INCONCLUSIVE node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
+[ -n "$OOTB_WT" ] && DB=$OOTB_WT/erp/ad_seed.db FROM='2002-01-01' TO='2003-12-31' chk R_register_erp_seed PASS node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
 # [B] browser gates (need a bim-ootb checkout carrying the port: OOTB_WT=<worktree root>) - real headless Chromium, CPU only
 if [ -n "$OOTB_WT" ]; then
   chk B2_browser_run PASS node W40_BrowserReport.js $OOTB_WT
   NEG=1 chk B2_NEG_browser_run FAIL node W40_BrowserReport.js $OOTB_WT
+  chk U_usecases PASS node ../erp_usecases/run_usecases.js $OOTB_WT 3
+  NEG=1 chk U_NEG_usecases FAIL node ../erp_usecases/run_usecases.js $OOTB_WT 1
   ERP_ROOT=$OOTB_WT chk B2_pill_end_to_end PASS node W41_PillReport.js
   NEG=1 ERP_ROOT=$OOTB_WT chk B2_NEG_pill FAIL node W41_PillReport.js
 fi
