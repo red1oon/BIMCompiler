@@ -1,0 +1,3334 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+      
+        <link rel="prev" href="../ERPUserGuide/">
+      
+      
+        <link rel="next" href="../HRBIMAssetGuide/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>NinjaExcel Report — User Manual - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ninjaexcel-report-user-manual" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              NinjaExcel Report — User Manual
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../ArchitectureOverview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href=".." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What it is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-quick-start-the-trial-balance-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Quick start — the Trial Balance example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-anatomy-of-a-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Anatomy of a template
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Anatomy of a template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-process-sheet-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Process sheet columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-worked-example-process-rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The worked example — Process rows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-directions-how-results-are-painted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Directions — how results are painted
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Directions — how results are painted">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#date-binds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Date binds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-how-rows-grow-and-formulas-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. How rows grow and formulas follow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6a-the-sales-register-a-list-that-grows-as-you-sell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6A. The Sales Register — a list that grows as you sell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-getting-the-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Getting the files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7a-trying-it-safely-the-standard-gardenworld-use-cases-and-reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7A. Trying it safely: the standard GardenWorld use cases and reset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-troubleshooting-real-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Troubleshooting — real messages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-how-this-improves-over-the-legacy-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. How this improves over the legacy plugin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. How this improves over the legacy plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#witnessed-against-the-faults-we-had-in-the-legacy-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Witnessed against the faults we had in the legacy plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planned-not-built-no-claim-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned (not built — no claim made)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host (DIY installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What it is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-quick-start-the-trial-balance-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Quick start — the Trial Balance example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-anatomy-of-a-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Anatomy of a template
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Anatomy of a template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-process-sheet-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Process sheet columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-worked-example-process-rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The worked example — Process rows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-directions-how-results-are-painted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Directions — how results are painted
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Directions — how results are painted">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#date-binds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Date binds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-how-rows-grow-and-formulas-follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. How rows grow and formulas follow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6a-the-sales-register-a-list-that-grows-as-you-sell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6A. The Sales Register — a list that grows as you sell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-getting-the-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Getting the files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7a-trying-it-safely-the-standard-gardenworld-use-cases-and-reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7A. Trying it safely: the standard GardenWorld use cases and reset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-troubleshooting-real-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Troubleshooting — real messages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-how-this-improves-over-the-legacy-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. How this improves over the legacy plugin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. How this improves over the legacy plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#witnessed-against-the-faults-we-had-in-the-legacy-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Witnessed against the faults we had in the legacy plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planned-not-built-no-claim-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned (not built — no claim made)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ninjaexcel-report-user-manual">NinjaExcel Report — User Manual<a class="headerlink" href="#ninjaexcel-report-user-manual" title="Permanent link">&para;</a></h1>
+<p><em>For accountants and report authors. No programming needed beyond writing a SELECT.</em>
+<em>Two films accompany this manual: film 1 (the Trial Balance) and film 2 (the Sales Register that grows), each in English and Thai, plus one long film joining them.</em>
+<em>Every number and claim below was produced by a gate in <code>scripts/ninja_template/run_all.sh</code> (gate names in brackets). Anything not built yet is under </em><em>Planned</em><em>, never stated as fact.</em></p>
+<hr />
+<h2 id="1-what-it-is">1. What it is<a class="headerlink" href="#1-what-it-is" title="Permanent link">&para;</a></h2>
+<p>You design a report <strong>in Excel</strong>, exactly the way you want it to look. You tell the sheet where each number comes from with a short SQL query. NinjaExcel runs the queries against the ERP data, paints the results into your layout, makes the formulas follow, and gives you an <code>.xlsx</code> and a one-page PDF.</p>
+<p>You keep full control of fonts, colours, borders, number formats and column widths. The engine only fills in and grows what you marked.</p>
+<p>Everything runs on free open-source code (ExcelJS and PDFKit, both MIT licence). No PDF-conversion subscription is used.</p>
+<h2 id="2-quick-start-the-trial-balance-example">2. Quick start — the Trial Balance example<a class="headerlink" href="#2-quick-start-the-trial-balance-example" title="Permanent link">&para;</a></h2>
+<p>The example in this manual is a Thai trial balance (<code>งบทดลอง</code>) over the GardenWorld demo company: for each account, the <strong>opening balance</strong>, the <strong>debit and credit movement</strong> in the period, and the <strong>closing balance</strong>, with totals and a proof line. It works <strong>by accounting period</strong>, like the ERP's own trial balance: a period counts by its start date.</p>
+<p><strong>In the ERP:</strong> open the <strong>Excel Report</strong> pill → <strong>sample report: Thai trial balance</strong> → set <strong>From</strong> <code>2003-01-01</code> and <strong>To</strong> <code>2003-12-31</code> → <strong>Run report</strong>. A second sample, the <strong>Thai sales register</strong> (§6A), shows a list that grows as you sell. The panel shows the painted report, with two downloads: the <code>.xlsx</code> and a one-page PDF.</p>
+<p>Result for that period [<code>B2_pill_end_to_end</code>, run in a real headless browser on the ERP's own GardenWorld data]: <strong>21 accounts</strong>, total debit <strong>40,392.44</strong> = total credit <strong>40,392.44</strong>, proof line <strong>0.00</strong>, every account row equal to an independent query, a valid <code>.xlsx</code>, and a <strong>one-page PDF</strong>; 3 queries in about 35 ms.</p>
+<p>Without the ERP, the same engine runs from a command line (developer use):</p>
+<div class="highlight"><pre><span></span><code>FROM=&quot;2003-01-01 00:00:00.0&quot; TO=&quot;2003-12-31 00:00:00.0&quot; \
+  node scripts/ninja_template/W29_TwinXlsx.js parity_tb.xlsx my_report.xlsx
+</code></pre></div>
+<h2 id="3-anatomy-of-a-template">3. Anatomy of a template<a class="headerlink" href="#3-anatomy-of-a-template" title="Permanent link">&para;</a></h2>
+<p>An <code>.xlsx</code> with these sheets:</p>
+<table>
+<thead>
+<tr>
+<th>Sheet</th>
+<th>You put here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Input</strong></td>
+<td>The layout <em>with tags</em>. A tag is text like <code>@el.value@3</code> — "put the values of this query here; the query is on Process row 3".</td>
+</tr>
+<tr>
+<td><strong>Process</strong></td>
+<td>One row per query piece (§4).</td>
+</tr>
+<tr>
+<td><strong>Reference</strong></td>
+<td>Anything you like (notes, a sample result). Not used by the engine.</td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td>The sheet the report is painted on. <strong>Rebuilt on every run from BACKUP.</strong></td>
+</tr>
+<tr>
+<td><strong>BACKUP</strong></td>
+<td>The master copy of Output. <strong>Make all layout edits here.</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-process-sheet-columns">The Process sheet columns<a class="headerlink" href="#the-process-sheet-columns" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ANNOTATION, ROW</td>
+<td>Helper formulas; they show the tag name and row number.</td>
+</tr>
+<tr>
+<td><strong>SELECT</strong></td>
+<td>What to read, e.g. <code>el.value</code>, <code>SUM(a.amtacctdr)</code>.</td>
+</tr>
+<tr>
+<td><strong>TABLE</strong></td>
+<td>The first table of a query must end with the alias <code>a</code> (e.g. <code>fact_acct a</code>). Later rows may add <code>INNER JOIN …</code> here.</td>
+</tr>
+<tr>
+<td><strong>JOIN</strong></td>
+<td>Extra conditions (optional).</td>
+</tr>
+<tr>
+<td><strong>WHERE</strong></td>
+<td>Filters, <code>GROUP BY</code>, <code>ORDER BY</code>.</td>
+</tr>
+<tr>
+<td><strong>Direction</strong></td>
+<td><code>S</code>, <code>V</code>, <code>&gt;</code> or <code>+</code> (§5).</td>
+</tr>
+<tr>
+<td><strong>VALUES</strong></td>
+<td>Filled by the engine with the query results. Put <code>END</code> after the last row.</td>
+</tr>
+</tbody>
+</table>
+<p>Rules the engine applies for you:</p>
+<ul>
+<li><strong>Client scoping is automatic.</strong> Every query is limited to the current client; you never type it.</li>
+<li><strong>Rows that continue a query</strong> (empty TABLE) add their SELECT to the query above them.</li>
+</ul>
+<h2 id="4-the-worked-example-process-rows">4. The worked example — Process rows<a class="headerlink" href="#4-the-worked-example-process-rows" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>SELECT</th>
+<th>TABLE</th>
+<th>WHERE</th>
+<th>Dir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>a.name</code></td>
+<td><code>ad_client a</code></td>
+<td></td>
+<td>S</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>CONCAT(to_char(DATE #1,'DD/MM/YYYY'),' - ',to_char(DATE #2,'DD/MM/YYYY'))</code></td>
+<td><code>ad_org a</code></td>
+<td></td>
+<td>S</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>el.value</code></td>
+<td><code>fact_acct a</code></td>
+<td><code>a.postingtype='A' AND SUBSTR(p.startdate,1,10) &lt;= SUBSTR(#2,1,10) GROUP BY el.value, el.name ORDER BY el.value</code></td>
+<td>V</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>el.name</code></td>
+<td><code>INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id</code></td>
+<td></td>
+<td>V</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>SUM(CASE WHEN SUBSTR(p.startdate,1,10) &lt; SUBSTR(#1,1,10) THEN a.amtacctdr-a.amtacctcr ELSE 0 END)</code></td>
+<td><code>INNER JOIN c_period p ON p.c_period_id=a.c_period_id</code></td>
+<td></td>
+<td>V</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>SUM(CASE WHEN SUBSTR(p.startdate,1,10) &gt;= SUBSTR(#1,1,10) THEN a.amtacctdr ELSE 0 END)</code></td>
+<td></td>
+<td></td>
+<td>V</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>SUM(CASE WHEN SUBSTR(p.startdate,1,10) &gt;= SUBSTR(#1,1,10) THEN a.amtacctcr ELSE 0 END)</code></td>
+<td></td>
+<td></td>
+<td>V</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The trick of this report:</strong> <em>opening</em> is every period that starts <strong>before</strong> <code>#1</code>, <em>movement</em> is the periods that start <strong>inside</strong> the range. One query, three <code>CASE</code> columns. Row 1 is the company name and row 2 the period text, both painted into the heading.</p>
+<h2 id="5-directions-how-results-are-painted">5. Directions — how results are painted<a class="headerlink" href="#5-directions-how-results-are-painted" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Dir</th>
+<th>Meaning</th>
+<th>Example in this manual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>S</strong></td>
+<td>One value into one cell (scalar).</td>
+<td>Rows 1–2: the company name and the period text <code>01/01/2003 - 31/12/2003</code> into the heading.</td>
+</tr>
+<tr>
+<td><strong>V</strong></td>
+<td>A <strong>list downward</strong>; the sheet grows one row per result, formulas below are pushed down and copied.</td>
+<td>Rows 2–6: one line per account. 21 results → 21 rows.</td>
+</tr>
+<tr>
+<td><strong>&gt;</strong></td>
+<td>A <strong>list to the right</strong>; columns are inserted and formulas to the right follow.</td>
+<td>Used in the <code>parity_v2</code> fixture [<code>A_engine_parity_v2</code>].</td>
+</tr>
+<tr>
+<td><strong>+</strong></td>
+<td>A <strong>cross-tab</strong>: one list across, one down, amounts at the crossings (written as <code>C3+</code>, pointing at the axis row).</td>
+<td>The <code>parity_xtab</code> fixture: four accounts across [<code>A_engine_parity_xtab</code>].</td>
+</tr>
+</tbody>
+</table>
+<h3 id="date-binds">Date binds<a class="headerlink" href="#date-binds" title="Permanent link">&para;</a></h3>
+<p><code>#1</code> is the <strong>From</strong> date, <code>#2</code> the <strong>To</strong> date, <code>#3</code> the account-group parameter. They are replaced with quoted values before the query runs.</p>
+<h2 id="6-how-rows-grow-and-formulas-follow">6. How rows grow and formulas follow<a class="headerlink" href="#6-how-rows-grow-and-formulas-follow" title="Permanent link">&para;</a></h2>
+<p>After the last list row there must be a <strong>spacer row</strong>: a row with a formula in the cell under every tag column (the trial balance uses <code>=""</code>). That formula tells the engine "the list ends here"; the list grows into it.</p>
+<p><strong>Totals must include the spacer row.</strong> The template's totals are <code>=SUM(C6:C7)</code> where row 6 is the first account and row 7 the spacer. After 21 accounts were painted they became <code>=SUM(C6:C27)</code> automatically [<code>T_trialbalance</code> checks the range].</p>
+<p>A range that stops <em>above</em> the spacer, such as <code>=SUM(C6:C6)</code>, <strong>does not grow</strong> — the gate catches this on purpose [<code>T_NEG_range</code>].</p>
+<p>The closing-balance formula in each row (<code>=C6+D6-E6</code>) is copied down for every new row, with its references moved one row each time.</p>
+<blockquote>
+<p><strong>Formulas supported:</strong> arithmetic, <code>SUM</code>, <code>COUNT</code>, <code>COUNTA</code>, <code>MIN</code>, <code>MAX</code>, <code>ABS</code>, <code>ROUND</code>, <code>ROW</code>, <code>IF</code>, <code>CONCATENATE</code>. Other functions show <code>#NAME?</code> (§8).</p>
+</blockquote>
+<h2 id="6a-the-sales-register-a-list-that-grows-as-you-sell">6A. The Sales Register — a list that grows as you sell<a class="headerlink" href="#6a-the-sales-register-a-list-that-grows-as-you-sell" title="Permanent link">&para;</a></h2>
+<p>The second sample is a Thai <strong>sales register</strong> (<code>ทะเบียนการขาย</code>): one row per completed sales invoice, a total, and a document count. It is the clearest way to see rows being <strong>pushed down</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>SELECT</th>
+<th>TABLE</th>
+<th>WHERE</th>
+<th>Dir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>a.name</code></td>
+<td><code>ad_client a</code></td>
+<td></td>
+<td>S</td>
+</tr>
+<tr>
+<td>2</td>
+<td>period text (as in §4)</td>
+<td><code>ad_org a</code></td>
+<td></td>
+<td>S</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>a.documentno</code></td>
+<td><code>c_invoice a</code></td>
+<td><code>a.issotrx='Y' AND a.docstatus='CO'</code> and the invoice date between <code>#1</code> and <code>#2</code>, <code>ORDER BY</code> date, number</td>
+<td>V</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>SUBSTR(a.dateinvoiced,1,10)</code></td>
+<td></td>
+<td></td>
+<td>V</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>bp.name</code></td>
+<td><code>INNER JOIN c_bpartner bp ON bp.c_bpartner_id=a.c_bpartner_id</code></td>
+<td></td>
+<td>V</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>a.grandtotal</code></td>
+<td></td>
+<td></td>
+<td>V</td>
+</tr>
+</tbody>
+</table>
+<p>The sheet has the list's first row, a <strong>spacer row</strong>, a <strong>total</strong> <code>=SUM(D6:D7)</code> and a <strong>count</strong> <code>=COUNT(D6:D7)</code>. When the report runs, the list is pushed down to make room for every invoice, the total and the count move down with it, and their ranges grow to cover all the rows.</p>
+<p><strong>Watch it happen</strong> (measured in a real browser on the ERP's own GardenWorld data, with three POS sales entered through the real screens): the register had <strong>4 rows</strong>, total <strong>541.02</strong>; after the three sales it had <strong>7 rows</strong>, total <strong>559.02</strong> (up by exactly the three new invoices, 18.00), and the total's range became <code>SUM(D6:D13)</code> [<code>U_usecases</code>]. The Trial Balance of the same session still balanced (debit = credit = 41,283.78).</p>
+<p><strong>Size:</strong> a list is no longer limited to 248 items. The old <code>.xls</code> format stopped there, silently. The register was tested on <strong>1,441 invoices</strong>: every row equals an independent query, the total and count are right, in 2.8 seconds [<code>R_register_big</code>].</p>
+<h2 id="7-getting-the-files">7. Getting the files<a class="headerlink" href="#7-getting-the-files" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>The <code>.xlsx</code></strong> keeps your fonts, fills, borders, number formats, merged cells, column widths and row heights [<code>B_conv_style_*</code>, <code>B_host_roundtrip_*</code>, <code>C_style_*</code>].</li>
+<li><strong>The PDF</strong> is one page sized to the sheet. Every visible cell's text must be present in the PDF [<code>T_pdf_content</code>: 144 of 144 cells for the trial balance].</li>
+<li><strong>Thai (and Lao) text</strong> is placed with a script-appropriate font so no letters drop out. This was a real defect found by that gate and fixed.</li>
+<li>Your template file is <strong>never changed</strong> by a run — the report is written to a different file [<code>T_manual_claims</code> → <code>CLAIM_NO_OVERWRITE</code>].</li>
+</ul>
+<h2 id="7a-trying-it-safely-the-standard-gardenworld-use-cases-and-reset">7A. Trying it safely: the standard GardenWorld use cases and reset<a class="headerlink" href="#7a-trying-it-safely-the-standard-gardenworld-use-cases-and-reset" title="Permanent link">&para;</a></h2>
+<p>A small standard set of <strong>use cases</strong> enters real documents into the GardenWorld demo company through the ERP's own screens, so a report can be tried on live data. Today it has <strong>UC-1, a POS cash sale</strong> (customer Joe Block, organisation HQ, product × quantity, then <strong>Complete</strong>: the ERP creates the shipment, invoice, stock move and the posting lines in one signed step; 16 posting lines per sale).</p>
+<p><strong>Reset is built in.</strong> Each run starts in a fresh browser session, so GardenWorld reloads clean from its seed and nothing a use case entered survives. This is proved, not assumed: the runner runs the reports before entering, after entering, and in a second fresh session, and the last must equal the first [<code>U_usecases</code>; its negative control <code>U_NEG_usecases</code> must fail]. In the film this is shown by clearing the browser's local data (cache, signer, operation log) — nothing is sent anywhere.</p>
+<p><em>Developer command:</em> <code>node scripts/erp_usecases/run_usecases.js &lt;bim-ootb folder&gt; 3</code> (three sales).</p>
+<h2 id="8-troubleshooting-real-messages">8. Troubleshooting — real messages<a class="headerlink" href="#8-troubleshooting-real-messages" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>You see</th>
+<th>Meaning</th>
+<th>Do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Your hand-typed text in Output is gone after a run</td>
+<td><strong>Output is rebuilt from BACKUP every run.</strong> [<code>CLAIM_BACKUP_RULE</code>]</td>
+<td>Make every layout/text edit in <strong>BACKUP</strong>.</td>
+</tr>
+<tr>
+<td><code>§SHEET_MISSING BACKUP</code></td>
+<td>The template has no BACKUP sheet.</td>
+<td>Copy your finished Output sheet and name it BACKUP.</td>
+</tr>
+<tr>
+<td><code>ROW NO. n .. CHECK &gt;&gt; Direction (Column 8) of Process Sheet is Empty. Fill with S, V or &gt;</code></td>
+<td>A Process row has no Direction.</td>
+<td>Fill column Direction with S, V, &gt; or +.</td>
+</tr>
+<tr>
+<td><code>NO NAME IN SELECT ROW OF PROCESS SHEET</code></td>
+<td>A row has no SELECT.</td>
+<td>Fill SELECT.</td>
+</tr>
+<tr>
+<td><code>NO ' FROM' IN ORIGINAL SQL …</code></td>
+<td>The statement has no table.</td>
+<td>The first row of a query needs a TABLE ending in <code>a</code>.</td>
+</tr>
+<tr>
+<td>A cell shows <code>#NAME?</code></td>
+<td>The formula uses a function the engine does not support. It is shown as an error, <strong>never as a silent 0</strong> [<code>CLAIM_NAME_ERROR</code>].</td>
+<td>Use a supported function (§6) or compute it in the SQL.</td>
+</tr>
+<tr>
+<td>A total did not include all rows</td>
+<td>The range stops above the spacer row.</td>
+<td>Make the range end on the spacer row (§6).</td>
+</tr>
+<tr>
+<td><code>SQL ERROR: &lt;the database's own message&gt;</code> followed by <code>statement: SELECT …</code></td>
+<td>One of your Process-sheet queries failed (for example a misspelled column: <code>no such column: el.valu</code>). You see the <strong>real database message and the exact statement that failed</strong>, so you can fix the cell. The legacy plugin hid the real SQL error.</td>
+<td>Correct the SELECT/TABLE/WHERE text it shows [<code>T_sql_error</code>; its negative control <code>T_NEG_sql_error</code> must fail].</td>
+</tr>
+<tr>
+<td><code>LIST TRUNCATED at Process column …</code></td>
+<td>A list had more values than the sheet can hold (about 16,000). Before this version a list was cut silently at 248.</td>
+<td>Narrow the filter or split the report.</td>
+</tr>
+<tr>
+<td>A query returns no data</td>
+<td>The cell stays empty and the run notes <code>RETURNS NOTHING</code>.</td>
+<td>Check the dates and filters.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-limits">9. Limits<a class="headerlink" href="#9-limits" title="Permanent link">&para;</a></h2>
+<ul>
+<li>One page per sheet; no page breaks.</li>
+<li>A single list can hold about 16,000 values (the <code>.xlsx</code> column limit of the Process sheet), tested to 1,441 rows. Very long lists make a very tall single-page PDF.</li>
+<li>Formula shifting is verified for <strong>relative references and simple ranges</strong> only. Absolute references (<code>$A$1</code>), cross-sheet references, whole-column references (<code>A:A</code>) and named ranges are <strong>not yet verified</strong> — avoid them in grown areas.</li>
+<li>Images are not supported.</li>
+<li>The PDF layout was measured against a commercial converter's output on three reference sheets: <strong>about 98.6 % of 1,833 checked items (page size, fills, border lines, words) match</strong>; the single known deviation is a few shared vertical borders on the largest sheet [<code>D_geom_geom</code>, <code>D_geom_xtab</code>, <code>D_geom_v2</code>]. This figure is <strong>for those reference sheets</strong>; the trial balance has no commercial reference PDF.</li>
+<li>The example works by accounting <strong>period</strong> (a period counts by its start date), not by individual posting date, because the ERP's own database stores the period on each posting.</li>
+<li>Thai labels in the example are a hand translation.</li>
+</ul>
+<h2 id="10-how-this-improves-over-the-legacy-plugin">10. How this improves over the legacy plugin<a class="headerlink" href="#10-how-this-improves-over-the-legacy-plugin" title="Permanent link">&para;</a></h2>
+<p>Each line cites the gate that proves it. The first column says what the user gets.</p>
+<table>
+<thead>
+<tr>
+<th>Improvement</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>No server needed.</strong> The legacy plugin ran inside a running iDempiere/OSGi server; the default gate run needs no server and no Postgres.</td>
+<td><code>scripts/ninja_template/run_all.sh</code> header; all gates run on a local SQLite copy of the data.</td>
+</tr>
+<tr>
+<td><strong>No commercial PDF converter.</strong> The PDF is produced by free code (PDFKit, MIT).</td>
+<td><code>T_pdf_content</code>, <code>D_geom_*</code>.</td>
+</tr>
+<tr>
+<td><strong>Your template is never overwritten.</strong> The legacy plugin rewrote the template file in place (a truncated file was a real customer fault).</td>
+<td><code>T_manual_claims</code> → <code>CLAIM_NO_OVERWRITE</code>.</td>
+</tr>
+<tr>
+<td><strong>Wrong functions are visible.</strong> An unsupported formula shows <code>#NAME?</code>, not a silent 0.</td>
+<td><code>CLAIM_NAME_ERROR</code>.</td>
+</tr>
+<tr>
+<td><strong>Formatting survives growth.</strong> Fonts, fills, borders, number formats, merges, widths and heights kept after rows/columns are inserted.</td>
+<td><code>B_conv_style_*</code>, <code>C_style_*</code> (earlier two-way check: 50,600 cells, 0 differences).</td>
+</tr>
+<tr>
+<td><strong>PDF text is checked cell by cell.</strong></td>
+<td><code>T_pdf_content</code>: missing cells = 0.</td>
+</tr>
+<tr>
+<td><strong>Thai and Lao script render.</strong></td>
+<td><code>T_pdf_content</code> (found and fixed a real drop-out).</td>
+</tr>
+<tr>
+<td><strong>Totals that don't grow are caught.</strong></td>
+<td><code>T_NEG_range</code>.</td>
+</tr>
+<tr>
+<td><strong>Runs inside the ERP, in the browser.</strong> Pill → template → dates → Run, with <code>.xlsx</code> and PDF downloads, no server round trip.</td>
+<td><code>B2_browser_run</code>, <code>B2_pill_end_to_end</code> (21 accounts, 0 differences, one-page PDF).</td>
+</tr>
+<tr>
+<td><strong>Lists are not cut.</strong> The legacy <code>.xls</code> host silently stopped a list at 248 items.</td>
+<td><code>R_register_big</code> (1,441 rows, 0 differences, 2.8 s) and <code>R_NEG_register</code> (a total that does not grow must fail).</td>
+</tr>
+<tr>
+<td><strong>Sees what you just entered.</strong> The report reads the ERP's session, including documents entered a moment ago.</td>
+<td><code>U_usecases</code> (three live sales: 4 → 7 rows, total +18.00).</td>
+</tr>
+<tr>
+<td><strong>Clean reset, proved.</strong></td>
+<td><code>U_usecases</code>: a fresh session equals the baseline; <code>U_NEG_usecases</code> must fail.</td>
+</tr>
+<tr>
+<td><strong>Proof built into the demo.</strong> Debits equal credits, checked against an independent calculation.</td>
+<td><code>T_trialbalance</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="witnessed-against-the-faults-we-had-in-the-legacy-plugin">Witnessed against the faults we had in the legacy plugin<a class="headerlink" href="#witnessed-against-the-faults-we-had-in-the-legacy-plugin" title="Permanent link">&para;</a></h3>
+<p>The old plugin had real faults, and each one now has a <strong>witness</strong> (an automatic check that must pass, plus a negative control that must fail, so the check can say NO). A witness that judged nothing says <code>INCONCLUSIVE</code>, never PASS [<code>R_VACUOUS</code>, <code>T_VACUOUS</code>].</p>
+<table>
+<thead>
+<tr>
+<th>Legacy fault</th>
+<th>What now guards against it</th>
+<th>Witness</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Output out of step with BACKUP</strong> — hand edits typed into Output were lost, or the two sheets drifted apart and gave wrong numbers</td>
+<td>Output is rebuilt from BACKUP on every run. A cell typed into Output, even one outside the layout, is discarded; every run is also compared cell by cell with frozen reference results</td>
+<td><code>CLAIM_BACKUP_RULE</code> in <code>T_manual_claims</code> (negative control <code>T_NEG_manual_claims</code>); <code>A_engine_*</code>, <code>C_cells_*</code></td>
+</tr>
+<tr>
+<td>The template file was overwritten in place (a truncated file was a real customer fault)</td>
+<td>The template is never written to; the report goes to a different file</td>
+<td><code>CLAIM_NO_OVERWRITE</code></td>
+</tr>
+<tr>
+<td>An unsupported formula gave a silent 0</td>
+<td>It shows <code>#NAME?</code></td>
+<td><code>CLAIM_NAME_ERROR</code></td>
+</tr>
+<tr>
+<td>A list was silently cut at 248 items</td>
+<td>No cut; tested to 1,441 rows</td>
+<td><code>R_register_big</code>, <code>R_NEG_register</code></td>
+</tr>
+<tr>
+<td>Totals did not cover rows that were pushed down</td>
+<td>Ranges grow with the list</td>
+<td><code>T_trialbalance</code>, <code>T_NEG_range</code>, <code>U_usecases</code></td>
+</tr>
+<tr>
+<td>Formatting lost after rows or columns were inserted</td>
+<td>Fonts, fills, borders, formats, merges and sizes are kept</td>
+<td><code>B_conv_style_*</code>, <code>C_style_*</code> (50,600 cells, 0 differences)</td>
+</tr>
+<tr>
+<td>The real SQL error was hidden, so a broken query was hard to find</td>
+<td>The database's own message and the failing statement are shown</td>
+<td><code>T_sql_error</code></td>
+</tr>
+<tr>
+<td>Letters missing from the PDF (for example Thai and Lao script)</td>
+<td>Each script gets a font that has its letters</td>
+<td><code>T_pdf_content</code>, <code>D_content_*</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Not yet built (so no claim):</em> a <strong>warning before the run</strong> when Output differs from BACKUP. Today the report is correct because Output is rebuilt; the planned template check would also tell you that your hand edit was discarded.</p>
+<h3 id="planned-not-built-no-claim-made">Planned (not built — no claim made)<a class="headerlink" href="#planned-not-built-no-claim-made" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Template check</strong> before running: missing sheets, Process addresses outside Output, empty Direction, and Output-vs-BACKUP drift (a hand edit in Output is discarded today; this would warn first).</li>
+<li><strong>SELECT-only guard</strong>: a template's SQL is refused unless it is a read-only SELECT.</li>
+<li><strong>Per-run SQL de-duplication with timings.</strong></li>
+<li><strong>Quiet logging.</strong></li>
+<li><strong>Calibrated PDF column widths</strong> from a reference PDF.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>
