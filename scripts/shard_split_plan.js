@@ -13,6 +13,7 @@ var Database = require('better-sqlite3');
 var db = new Database(process.argv[2], { readonly: true });
 var si = process.argv.indexOf('--stress-cutoff'), CUTOFF = si > 0 ? process.argv[si + 1] : null;
 var sti = process.argv.indexOf('--statuses'), STATUSES = (sti > 0 ? process.argv[sti + 1] : 'CL,VO,RE').split(','); // terminal DocStatus (ERP_SHARD_GENERATOR §12.1)
+var pi = process.argv.indexOf('--period-status'), PSTAT = (pi > 0 ? process.argv[pi + 1] : 'P').split(',').filter(function (x) { return x && x !== 'none'; }); // §13
 var di = process.argv.indexOf('--dump-cold'), DUMP = di > 0 ? process.argv[di + 1] : null;   // write sorted cold unit list (for SQL-planner equivalence)
 
 function has(t) { return !!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(t); }
@@ -49,6 +50,25 @@ hdr.forEach(function (h) {
     else if (CUTOFF && d && String(d) < CUTOFF) { cand[u] = 1; candReason[u] = 'stress dateacct<' + CUTOFF; }
   });
 });
+// §13 period-close candidates (JS mirror of the SQL planner)
+var nPeriod = 0;
+if (PSTAT.length && has('c_period') && has('c_periodcontrol') && has('c_doctype')) {
+  var dtBase = {}; all('c_doctype').forEach(function (r) { dtBase[r.c_doctype_id] = r.docbasetype; });
+  var periods = all('c_period'), ctl = {}; all('c_periodcontrol').forEach(function (r) { ctl[r.c_period_id + '|' + r.docbasetype] = r.periodstatus; });
+  hdr.forEach(function (h) {
+    var dtCol = C[h].indexOf('c_doctypetarget_id') >= 0 ? 'c_doctypetarget_id' : C[h].indexOf('c_doctype_id') >= 0 ? 'c_doctype_id' : null;
+    if (!dtCol || C[h].indexOf('dateacct') < 0 || C[h].indexOf('ad_client_id') < 0) return;
+    all(h).forEach(function (r) {
+      if (r.dateacct == null || r[dtCol] == null) return;
+      var u = h + ':' + r[h + '_id'], d = String(r.dateacct).slice(0, 10), base = dtBase[r[dtCol]];
+      periods.forEach(function (p) {
+        if (p.ad_client_id !== r.ad_client_id || d < String(p.startdate).slice(0, 10) || d > String(p.enddate).slice(0, 10)) return;
+        if (PSTAT.indexOf(ctl[p.c_period_id + '|' + base]) >= 0 && !cand[u]) { cand[u] = 1; candReason[u] = 'period-closed'; nPeriod++; }
+      });
+    });
+  });
+}
+console.log('§SPLIT_PERIOD status=[' + PSTAT.join(',') + '] candidatesAdded=' + nPeriod);
 var lineRows = {};
 Object.keys(lineOf).forEach(function (l) {
   var h = lineOf[l]; lineRows[l] = all(l);

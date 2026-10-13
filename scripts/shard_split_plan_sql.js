@@ -13,6 +13,7 @@ var fs = require('fs');
 var SRC = process.argv[2], WORK = process.argv[3];
 var si = process.argv.indexOf('--stress-cutoff'), CUTOFF = si > 0 ? process.argv[si + 1] : null;
 var sti = process.argv.indexOf('--statuses'), STATUSES = (sti > 0 ? process.argv[sti + 1] : 'CL,VO,RE').split(',').filter(Boolean); // terminal DocStatus (§12.1)
+var pi = process.argv.indexOf('--period-status'), PSTAT = (pi > 0 ? process.argv[pi + 1] : 'P').split(',').filter(function (x) { return x && x !== 'none'; }); // §13
 var di = process.argv.indexOf('--dump-cold'), DUMP = di > 0 ? process.argv[di + 1] : null;
 if (!SRC || !WORK) { console.log('usage: shard_split_plan_sql.js <source.db> <work.db>'); process.exit(2); }
 if (fs.existsSync(WORK)) fs.unlinkSync(WORK);
@@ -49,6 +50,22 @@ hdr.forEach(function (h) {
   var cond = "docstatus IN (" + STATUSES.map(function (x) { return "'" + x.replace(/'/g, '') + "'"; }).join(',') + ")" + (CUTOFF && C[h].indexOf('dateacct') >= 0 ? " OR (dateacct IS NOT NULL AND CAST(dateacct AS TEXT) < '" + CUTOFF + "')" : '');
   db.exec('INSERT OR IGNORE INTO cand SELECT ' + ucode(h, q(h + '_id')) + ' FROM src.' + q(h) + ' WHERE ' + cond);
 });
+// §13 period-close candidates: DateAcct in a period whose control row for the doc's DocBaseType is in PSTAT
+var nPeriod = 0;
+if (PSTAT.length && set['c_period'] && set['c_periodcontrol'] && set['c_doctype']) {
+  hdr.forEach(function (h) {
+    var dtCol = C[h].indexOf('c_doctypetarget_id') >= 0 ? 'c_doctypetarget_id' : C[h].indexOf('c_doctype_id') >= 0 ? 'c_doctype_id' : null;
+    if (!dtCol || C[h].indexOf('dateacct') < 0 || C[h].indexOf('ad_client_id') < 0) return;
+    var before = one('SELECT count(*) c FROM cand').c;
+    db.exec('INSERT OR IGNORE INTO cand SELECT ' + ucode(h, 'x.' + q(h + '_id')) + ' FROM src.' + q(h) + ' x ' +
+      'JOIN src.c_doctype dt ON dt.c_doctype_id = x.' + q(dtCol) + ' ' +
+      'JOIN src.c_period p ON p.ad_client_id = x.ad_client_id AND substr(x.dateacct,1,10) BETWEEN substr(p.startdate,1,10) AND substr(p.enddate,1,10) ' +
+      'JOIN src.c_periodcontrol pc ON pc.c_period_id = p.c_period_id AND pc.docbasetype = dt.docbasetype ' +
+      "WHERE x.dateacct IS NOT NULL AND pc.periodstatus IN (" + PSTAT.map(function (x) { return "'" + x.replace(/'/g, '') + "'"; }).join(',') + ')');
+    nPeriod += one('SELECT count(*) c FROM cand').c - before;
+  });
+}
+console.log('§SPLIT_PERIOD status=[' + PSTAT.join(',') + '] candidatesAdded=' + nPeriod + (PSTAT.length && !nPeriod ? ' (no document in such a period — no effect)' : ''));
 db.exec('INSERT INTO cold SELECT u FROM cand');
 var nCand = one('SELECT count(*) c FROM cand').c;
 console.log('§SPLIT_UNITS headers=' + hdr.length + ' lineTables=' + Object.keys(lineOf).length + ' dependents=[' + deps.join(',') +
