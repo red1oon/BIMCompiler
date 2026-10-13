@@ -18,6 +18,9 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 - **Dubai paper** (outside repo): `~/Projects/Dubai/OpenBIM_Paper.docx` = IEEE format, conformed to abstract v4; log in `~/Projects/Dubai/PROMPT.md`.
 - ⛔ user call: 4 zero-byte DBs in bim-ootb/buildings (`city_index`, `city_index_v2`, `Duplex_meta`, `SampleCastle_extracted`).
 
+## ▶ 2026-10-13 — ninja_template (ExpenseReport/NinjaExcel JS port) — PR #175 draft — read `prompts/NINJAEXCEL_TEMPLATE_ENGINE.md` §RESUME HERE
+Done: engine + styles-aware xlsx host + formula evaluator + own PDF renderer, judged against the real legacy plugin's output (19 gates on public fixtures, `scripts/ninja_template/run_all.sh`). Next: bim-ootb port (fresh worktree), unify with `ninja_excel.js`, PDF width profile needs customer-server PDFs. Not deployed. CI `system-is-real` red on master (pre-existing).
+
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
 
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending

@@ -14,6 +14,17 @@ Cardinal rule (prompts/SQLiteIDEMPIERE.md): the SQLite twin must equal legacy �
 | `scripts/ninja_template/` | witnesses, fixtures, frozen goldens, `run_all.sh` |
 `ninja_excel.js` (the read-only RUN verb behind the "Excel Report" pill) is untouched; unify the two before they drift.
 
+## ▶ RESUME HERE (written 2026-10-13 at session close — start with this block)
+**State:** PR #175 (draft, `ninja-template-generic`) holds everything; nothing deployed; `deploy/live` untouched. `scripts/ninja_template/run_all.sh` = 19 gates on the public fixtures, all expected verdicts (+5 with `PG=1`, + more with optional private customer cases). The engine, the styles-aware xlsx host, the formula evaluator and the own PDF renderer are done and witnessed against the legacy plugin; the known gaps are in *Honest limits*.
+**Next, in order:**
+1. **Port to bim-ootb** — start from a FRESH worktree off `origin/main` (`git worktree list` first; `~/bim-ootb` was synced to `origin/main` on 2026-10-13 but is a shared checkout). Add `exceljs` and `pdfkit` (≤0.15, CJS) to bim-ootb `package.json`; engine files go under `erp/`; keep `build/erp/` as source of truth and sync hunks (project rule).
+2. **Unify** `ninja_excel.js` (read-only RUN verb, "Excel Report" pill) with `ninja_template.js` — one engine per responsibility.
+3. **Calibrate the PDF column-width profile** — needs 2–3 PDFs produced by the customer's own server with its converter + the Lao font files (cannot be extracted from the repo). Until then profile `excel` is the default and `spire-local` only reproduces the build host.
+4. **Unwitnessed features** (list in *Honest limits*) — add a fixture per feature BEFORE claiming parity.
+5. Optional: investigate pinned deviation D2 (reference omits some shared vertical borders).
+**Lessons worth keeping:** (a) when cloning an iDempiere server dir, grep it for the ORIGINAL path before the first start — `utils/myEnvironment.sh` hard-codes `IDEMPIERE_HOME`, so the clone silently ran against the pilot database and its 2Pack wrote rows there (reverted, but never repeat); (b) SheetJS CE cannot write `.xls` formulas and drops fonts/fills/borders — use ExcelJS for `.xlsx`; (c) a green witness over a fixture that never exercises the path is vacuous — read the oracle log for the feature's own marker line (`>>formula>>`, `CROSS TAB CANVAS`) before trusting PASS; (d) CI `system-is-real` (browser `test_all.js`) was already red on `master`, unrelated.
+**Private context** (never in git): `$NT_PRIVATE` (default `~/Projects/ninja-template-data/private`) — `cases.txt`, `golden/`, `env.sh`, the full 16-section debug log and its own `RESUME.md`.
+
 ## Run the gates
 `scripts/ninja_template/run_all.sh` — default run needs **no Postgres and no legacy server** (frozen text goldens of the legacy plugin's output in `golden/`). `PG=1` adds live-Postgres statement comparisons. Inputs live under `$NT_DATA` (default `~/Projects/ninja-template-data`): source templates, migrated `.xlsx` templates, the twin snapshot db (`pg_to_sqlite.py`). Public cases = the GardenWorld fixtures built by `MakeParity*.java`. Verdict lines: `PASS` / `FAIL` / `INCONCLUSIVE` (a witness that judged nothing says so). Every positive gate has a negative control that must FAIL.
 
