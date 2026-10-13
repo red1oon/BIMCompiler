@@ -18,7 +18,7 @@ async function open(root, opts) {
   const pg = await ctx.newPage(); const logs = [], errs = [];
   pg.on('console', m => logs.push(m.text())); pg.on('pageerror', e => errs.push(e.message));
   const base = 'http://localhost:' + srv.address().port;
-  const h = { pg, logs, errs, base, close: async () => { await browser.close(); srv.close(); } };
+  const h = { pg, ctx, browser, logs, errs, base, close: async () => { await browser.close(); srv.close(); } };
   h.login = async () => {
     await pg.goto(base + '/erp/idempiere.html?lang=en_US', { waitUntil: 'networkidle' });
     await pg.waitForFunction(() => !!window.__idmpDb, null, { timeout: 30000 });
