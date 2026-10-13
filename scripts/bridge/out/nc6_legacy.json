@@ -1,0 +1,92 @@
+{
+ "tag": "v3bb",
+ "cases": {
+  "CR1": {
+   "ok": true,
+   "multiply": "1.5",
+   "divide": "0.666666666667",
+   "reciprocal": [
+    {
+     "mult": "0.666666666667",
+     "div": "1.5",
+     "org": "0"
+    }
+   ]
+  },
+  "CR2": {
+   "ok": false,
+   "err": "Currency = Currency"
+  },
+  "CR3": {
+   "ok": false,
+   "err": "Multiply Rate <= 0"
+  },
+  "CR4": {
+   "ok": false,
+   "err": "01/01/2041 < 06/30/2041"
+  },
+  "CR5": {
+   "ok": false,
+   "err": "Conversion rate overlaps with: 2040-01-01 00:00:00.0"
+  },
+  "WH1": {
+   "ok": true,
+   "org": "11",
+   "acctRows": 3
+  },
+  "PC1": {
+   "ok": true,
+   "acctRows": 3
+  },
+  "PC2": {
+   "ok": false,
+   "err": "A loop in the product category tree has been detected - the old value will be restored"
+  },
+  "BG1": {
+   "ok": true,
+   "acctRows": 3
+  },
+  "CH1": {
+   "ok": true,
+   "acctRows": 3
+  },
+  "PT1": {
+   "ok": true,
+   "isvalid": "Y"
+  },
+  "PT2": {
+   "ok": false,
+   "err": "Invalid: Fix month day"
+  },
+  "PT3": {
+   "ok": false,
+   "err": "Invalid: Fix month cutoff"
+  },
+  "PT4": {
+   "ok": false,
+   "err": "Net Days Must be a positive number!"
+  },
+  "UC1": {
+   "ok": false,
+   "err": "UOM = UoM To"
+  },
+  "UC2": {
+   "ok": true,
+   "multiply": "3",
+   "divide": "0.333333333333"
+  },
+  "UC3": {
+   "ok": false,
+   "err": "Multiply Rate <= 0"
+  },
+  "PV1": {
+   "ok": true,
+   "name": "03/05/2042"
+  },
+  "YR1": {
+   "ok": false,
+   "err": "Fill mandatory fields: Year"
+  }
+ },
+ "defaultRows": 3
+}
