@@ -1,6 +1,7 @@
 # NinjaExcel Report — User Manual
 
 *For accountants and report authors. No programming needed beyond writing a SELECT.*
+*Two films accompany this manual: film 1 (the Trial Balance) and film 2 (the Sales Register that grows), each in English and Thai, plus one long film joining them.*
 *Every number and claim below was produced by a gate in `scripts/ninja_template/run_all.sh` (gate names in brackets). Anything not built yet is under **Planned**, never stated as fact.*
 
 ---
@@ -17,7 +18,7 @@ Everything runs on free open-source code (ExcelJS and PDFKit, both MIT licence).
 
 The example in this manual is a Thai trial balance (`งบทดลอง`) over the GardenWorld demo company: for each account, the **opening balance**, the **debit and credit movement** in the period, and the **closing balance**, with totals and a proof line. It works **by accounting period**, like the ERP's own trial balance: a period counts by its start date.
 
-**In the ERP:** open the **Excel Report** pill → **sample report template** → set **From** `2003-01-01` and **To** `2003-12-31` → **Run report**. The panel shows the painted report, with two downloads: the `.xlsx` and a one-page PDF.
+**In the ERP:** open the **Excel Report** pill → **sample report: Thai trial balance** → set **From** `2003-01-01` and **To** `2003-12-31` → **Run report**. A second sample, the **Thai sales register** (§6A), shows a list that grows as you sell. The panel shows the painted report, with two downloads: the `.xlsx` and a one-page PDF.
 
 Result for that period [`B2_pill_end_to_end`, run in a real headless browser on the ERP's own GardenWorld data]: **21 accounts**, total debit **40,392.44** = total credit **40,392.44**, proof line **0.00**, every account row equal to an independent query, a valid `.xlsx`, and a **one-page PDF**; 3 queries in about 35 ms.
 
@@ -75,7 +76,7 @@ Rules the engine applies for you:
 
 | Dir | Meaning | Example in this manual |
 |---|---|---|
-| **S** | One value into one cell (scalar). | Row 1: the period text `01/12/2006 - 31/12/2006` into the heading. |
+| **S** | One value into one cell (scalar). | Rows 1–2: the company name and the period text `01/01/2003 - 31/12/2003` into the heading. |
 | **V** | A **list downward**; the sheet grows one row per result, formulas below are pushed down and copied. | Rows 2–6: one line per account. 21 results → 21 rows. |
 | **>** | A **list to the right**; columns are inserted and formulas to the right follow. | Used in the `parity_v2` fixture [`A_engine_parity_v2`]. |
 | **+** | A **cross-tab**: one list across, one down, amounts at the crossings (written as `C3+`, pointing at the axis row). | The `parity_xtab` fixture: four accounts across [`A_engine_parity_xtab`]. |
@@ -96,12 +97,39 @@ The closing-balance formula in each row (`=C6+D6-E6`) is copied down for every n
 
 > **Formulas supported:** arithmetic, `SUM`, `COUNT`, `COUNTA`, `MIN`, `MAX`, `ABS`, `ROUND`, `ROW`, `IF`, `CONCATENATE`. Other functions show `#NAME?` (§8).
 
+## 6A. The Sales Register — a list that grows as you sell
+
+The second sample is a Thai **sales register** (`ทะเบียนการขาย`): one row per completed sales invoice, a total, and a document count. It is the clearest way to see rows being **pushed down**.
+
+| # | SELECT | TABLE | WHERE | Dir |
+|---|---|---|---|---|
+| 1 | `a.name` | `ad_client a` | | S |
+| 2 | period text (as in §4) | `ad_org a` | | S |
+| 3 | `a.documentno` | `c_invoice a` | `a.issotrx='Y' AND a.docstatus='CO'` and the invoice date between `#1` and `#2`, `ORDER BY` date, number | V |
+| 4 | `SUBSTR(a.dateinvoiced,1,10)` | | | V |
+| 5 | `bp.name` | `INNER JOIN c_bpartner bp ON bp.c_bpartner_id=a.c_bpartner_id` | | V |
+| 6 | `a.grandtotal` | | | V |
+
+The sheet has the list's first row, a **spacer row**, a **total** `=SUM(D6:D7)` and a **count** `=COUNT(D6:D7)`. When the report runs, the list is pushed down to make room for every invoice, the total and the count move down with it, and their ranges grow to cover all the rows.
+
+**Watch it happen** (measured in a real browser on the ERP's own GardenWorld data, with three POS sales entered through the real screens): the register had **4 rows**, total **541.02**; after the three sales it had **7 rows**, total **559.02** (up by exactly the three new invoices, 18.00), and the total's range became `SUM(D6:D13)` [`U_usecases`]. The Trial Balance of the same session still balanced (debit = credit = 41,283.78).
+
+**Size:** a list is no longer limited to 248 items. The old `.xls` format stopped there, silently. The register was tested on **1,441 invoices**: every row equals an independent query, the total and count are right, in 2.8 seconds [`R_register_big`].
+
 ## 7. Getting the files
 
 - **The `.xlsx`** keeps your fonts, fills, borders, number formats, merged cells, column widths and row heights [`B_conv_style_*`, `B_host_roundtrip_*`, `C_style_*`].
 - **The PDF** is one page sized to the sheet. Every visible cell's text must be present in the PDF [`T_pdf_content`: 144 of 144 cells for the trial balance].
 - **Thai (and Lao) text** is placed with a script-appropriate font so no letters drop out. This was a real defect found by that gate and fixed.
 - Your template file is **never changed** by a run — the report is written to a different file [`T_manual_claims` → `CLAIM_NO_OVERWRITE`].
+
+## 7A. Trying it safely: the standard GardenWorld use cases and reset
+
+A small standard set of **use cases** enters real documents into the GardenWorld demo company through the ERP's own screens, so a report can be tried on live data. Today it has **UC-1, a POS cash sale** (customer Joe Block, organisation HQ, product × quantity, then **Complete**: the ERP creates the shipment, invoice, stock move and the posting lines in one signed step; 16 posting lines per sale).
+
+**Reset is built in.** Each run starts in a fresh browser session, so GardenWorld reloads clean from its seed and nothing a use case entered survives. This is proved, not assumed: the runner runs the reports before entering, after entering, and in a second fresh session, and the last must equal the first [`U_usecases`; its negative control `U_NEG_usecases` must fail]. In the film this is shown by clearing the browser's local data (cache, signer, operation log) — nothing is sent anywhere.
+
+*Developer command:* `node scripts/erp_usecases/run_usecases.js <bim-ootb folder> 3` (three sales).
 
 ## 8. Troubleshooting — real messages
 
@@ -114,11 +142,13 @@ The closing-balance formula in each row (`=C6+D6-E6`) is copied down for every n
 | `NO ' FROM' IN ORIGINAL SQL …` | The statement has no table. | The first row of a query needs a TABLE ending in ` a`. |
 | A cell shows `#NAME?` | The formula uses a function the engine does not support. It is shown as an error, **never as a silent 0** [`CLAIM_NAME_ERROR`]. | Use a supported function (§6) or compute it in the SQL. |
 | A total did not include all rows | The range stops above the spacer row. | Make the range end on the spacer row (§6). |
+| `LIST TRUNCATED at Process column …` | A list had more values than the sheet can hold (about 16,000). Before this version a list was cut silently at 248. | Narrow the filter or split the report. |
 | A query returns no data | The cell stays empty and the run notes `RETURNS NOTHING`. | Check the dates and filters. |
 
 ## 9. Limits
 
 - One page per sheet; no page breaks.
+- A single list can hold about 16,000 values (the `.xlsx` column limit of the Process sheet), tested to 1,441 rows. Very long lists make a very tall single-page PDF.
 - Formula shifting is verified for **relative references and simple ranges** only. Absolute references (`$A$1`), cross-sheet references, whole-column references (`A:A`) and named ranges are **not yet verified** — avoid them in grown areas.
 - Images are not supported.
 - The PDF layout was measured against a commercial converter's output on three reference sheets: **about 98.6 % of 1,833 checked items (page size, fills, border lines, words) match**; the single known deviation is a few shared vertical borders on the largest sheet [`D_geom_geom`, `D_geom_xtab`, `D_geom_v2`]. This figure is **for those reference sheets**; the trial balance has no commercial reference PDF.
@@ -140,6 +170,9 @@ Each line cites the gate that proves it. The first column says what the user get
 | **Thai and Lao script render.** | `T_pdf_content` (found and fixed a real drop-out). |
 | **Totals that don't grow are caught.** | `T_NEG_range`. |
 | **Runs inside the ERP, in the browser.** Pill → template → dates → Run, with `.xlsx` and PDF downloads, no server round trip. | `B2_browser_run`, `B2_pill_end_to_end` (21 accounts, 0 differences, one-page PDF). |
+| **Lists are not cut.** The legacy `.xls` host silently stopped a list at 248 items. | `R_register_big` (1,441 rows, 0 differences, 2.8 s) and `R_NEG_register` (a total that does not grow must fail). |
+| **Sees what you just entered.** The report reads the ERP's session, including documents entered a moment ago. | `U_usecases` (three live sales: 4 → 7 rows, total +18.00). |
+| **Clean reset, proved.** | `U_usecases`: a fresh session equals the baseline; `U_NEG_usecases` must fail. |
 | **Proof built into the demo.** Debits equal credits, checked against an independent calculation. | `T_trialbalance`. |
 
 ### Planned (not built — no claim made)
