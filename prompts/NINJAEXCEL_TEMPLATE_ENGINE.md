@@ -60,3 +60,9 @@ Customer templates return little data on a GardenWorld clone, so they are weak e
 
 ## Privacy
 Customer templates, their goldens, schema stand-ins and the legacy fork builder are **private**: `$NT_PRIVATE` (default `$NT_DATA/private`: `cases.txt`, `golden/`, `env.sh`) — optional, never committed. `run_all.sh` picks private cases up automatically when present.
+
+## §XTAB2 — two-axis cross-tab ("grid in a grid") fixture (2026-10-14, user request)
+**Issue it proves or disproves:** *Honest limits* lists "two-axis cross-tab" as unwitnessed. The existing `parity_xtab` is ONE axis (accounts across, one measure row). The customer's complaint (user): JasperReports crosstab and Excel PivotTable are not versatile enough for this kind of report. Claim to test: a template with a Direction `X+Y` block (e.g. `C3+B4`) paints a real matrix — x-axis values across, y-axis values down, one SQL measure per (x,y) pair, EMPTY where no rows exist — and every grid cell equals an independent SQL `SUM` for that pair.
+**Fixture:** `MakeParityXtab2.java` → `legacy/parity_xtab2.xls`. GardenWorld rows only: accounts 12110/14120/41000/51100 (x) × source document table (`ad_table_id`, y), `fact_acct` 2006-12. Data is sparse by nature (not all pairs exist) so the empty-cell rule is exercised.
+**Witness `W37_Xtab2.js`:** run the twin engine; for each grid cell compare to `SELECT sum(amtacctdr-amtacctcr)` for that (account, table); print `§XTAB2 cells= filled= empty= diffs=`. Verdicts: `PASS` / `FAIL` / `INCONCLUSIVE` (grid empty, or no pair populated). Negative control: swap two axis values in the Output and it must FAIL.
+**Oracle status:** legacy-plugin golden for this fixture is NOT produced yet (needs the legacy clone run, `forkbuild`). Until then the verdict is "matches independent SQL", not "matches legacy" — stated in the log line.
