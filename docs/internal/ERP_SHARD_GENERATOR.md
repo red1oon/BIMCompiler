@@ -354,3 +354,10 @@ PROXY, not a phone: headless Chromium, 4× CPU throttle, server-side RTT + per-c
 - **NEGATIVE result, root cause UNCONFIRMED:** adding `CREATE INDEX ix_ad_field_tab ON ad_field(ad_tab_id)` (plan verified: `SEARCH … USING INDEX`) made W3 WORSE on slow4g: 45 s / 27 reqs / 8.7 MB. Hypothesis: httpvfs read-ahead grows the fetch on near-sequential page access; not tested. The index was dropped again. Do NOT ship an `ad_field` index on this evidence.
 - **Design consequence (reasoned from the T0/T1/T2 spec, not run here):** the AD dictionary is T0 (precached `ad_seed.db`, 12.7 MB) and never range-read, so W1–W3 are not on the network in production. The network cost of the first DATA drill is the open + W4/W5: measured parts 8.6 s + ~1.4 s ≈ **~10 s on slow4g, first time only**, then 0 requests in-session. That composition is an ESTIMATE from measured parts, not a measured end-to-end run.
 - **Not done:** cgroup memory-cap kill test; real phone; HTTPS/secure-context features (service worker, Web Crypto, OPFS) over LAN; jitter/packet loss; fewer-requests open (e.g. larger first fetch of the DB header + root pages) is an untested idea.
+
+### §10.6 Demo service (2026-10-14) — `scripts/range_demo_server.js`
+Static host with HTTP Range for one big SQLite file + a test page that runs open + W1–W5 in the VIEWER'S browser and POSTs numbers to the server log
+(`§DEMO_REPORT`/`§DEMO_STEP`; the tester only taps a button — numbers, not eyes, are the evidence). Binds 0.0.0.0, URL carries a random token, serves only the page,
+the db (read-only) and three httpvfs lib files; wrong/no token = 404 (checked). Verified end to end with headless Chromium over the LAN IP:
+`open 54 reqs 880 KB · W1..W5 · totalMs=369`, `secureContext=false` (plain HTTP on a LAN address — service worker / Web Crypto / OPFS unavailable there, as predicted).
+Limits: per-process byte counter is shared (one tester at a time); plain HTTP; LAN-only unless tunnelled; this serves the file, it does NOT shard it (shard-file writer not built).
