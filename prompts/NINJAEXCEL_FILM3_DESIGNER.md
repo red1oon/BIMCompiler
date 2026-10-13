@@ -1,0 +1,38 @@
+# ⚠ DO NOT REMOVE
+Scope: storyboard + narration for **Film 3 — "Your Excel, your design"** (NinjaExcel report engine). SPEC ONLY until red1 says go to record. **Read the log after every run.** Every spoken number must come from a `§…` line of a real run (no invented values). GardenWorld data only. Audience: accountants / report authors (user, 2026-10-14). Recorder to write: `scripts/film_ninja_excel.js` pattern per `prompts/FILM_NARRATION.md ## ▶ PLAYBOOK`. English first. No bake beside a live user tab.
+
+**Why this film (user, 2026-10-14):** film 2 ("report grows as you sell") is "a bit tame"; this is more what the pitch should be. Point to land: *Excel is the killer app — here is where we reuse it and integrate it, with nothing new to learn.* Do not name or disparage other tools in the track (no tested comparison exists); the claim is only what the witnesses prove.
+
+**Assets (made 2026-10-14, `~/Projects/ninja-template-data/showcase/`):** `showcase_template.xlsx` (built by `scripts/ninja_template/MakeShowcase.js`), `showcase_output.xlsx`, `showcase_output.pdf`. Input cells are real Excel links (`=Process!A9`), not typed text.
+Facts already measured: `§TWIN_RUN statements=5 addressLines=31`; `§CALC Output formulas=8 errors=0`; `§PDF_RENDER page=696.75x519.75`; `§PDF_CONTENT cells=57 missingFromPdf=0`; KPI 48 / 2,361.14 / 2,606.27; grid 4x3 with 5 filled, 7 empty (`§XTAB2_VERDICT PASS cells=12 diffs=0`, same engine path).
+
+## How the machine works (verified in `build/erp/ninja_template.js`: `clean` L95, `setAddress` L117, `paint`, `plusMatrix`)
+1. **BACKUP is the design.** Each run the Output sheet is thrown away and re-cloned from BACKUP (so never type in Output). Colours, bands, boxes, merges, number formats, formulas all live here.
+2. **Process sheet = the rules.** One row per question. Columns: ANNOTATION · ROW · SELECT · TABLE · JOIN · WHERE · ADDRESS · Direction · VALUES.
+   - ROW is `=ROW()`. ANNOTATION is the formula `=CONCATENATE("@",C2,"@",B2)` → the SELECT text wrapped in `@…@` plus its row number, e.g. `@count(*)@4`. That text is the row's unique name.
+   - A row with no TABLE continues the statement above it (11 rows → 5 SQL statements).
+   - Direction says where the answer goes: `S` one value into one cell · `V` a list downward · `>` a list to the right · `C10+B12` a two-way grid (x-axis row at C10, y-axis row at B12).
+3. **Input sheet = where the answers land, wired by Excel links.** In the cell where a number should appear, type `=Process!A4` — a plain Excel link. The cell now *displays* that row's name `@count(*)@4`. Nothing else to configure.
+4. **The run:** (a) clear ADDRESS and VALUES, rebuild Output from BACKUP; (b) for every Process row find the Input cell whose text equals the row's annotation and write that cell's address into ADDRESS (`§… Address is …` log lines: 31 for this template); (c) assemble the SQL from the rows, add the dates `#1`/`#2` and the company scope, run it; (d) paint each result at its ADDRESS in Output by Direction; (e) Excel formulas (totals) are recalculated; (f) own PDF renderer writes the page.
+5. **Why links matter (the beat to dwell on):** move the cell in Input and the ADDRESS follows on the next run; reword a SELECT in Process and the Input cell updates itself (it is a link); no cell coordinates are typed anywhere by hand. Mismatch = the cell stays blank (found live while building this template: a mistyped tag painted nothing, silently → candidate for the template pre-flight check).
+
+## Storyboard (silent video + dialogue F: = asks, M: = explains)
+| # | beat | on screen | spoken facts from |
+|---|---|---|---|
+| 0 | hook | the finished PDF alone, 3 s | `§PDF_RENDER page=` |
+| 1 | the designer | BACKUP sheet: title band, KPI boxes, zebra grid, totals, signature boxes — "this is Excel, you already know it" | count of merges/fills read from the file (`§FILM3_FACT design.merges= fills=`) |
+| 2 | the rules | Process sheet, row by row: annotation formula, SELECT/TABLE/WHERE, Direction codes | `§FILM3_FACT process.rows=11 statements=5` |
+| 3 | the link | click Input!B7: formula bar shows `=Process!A4`; cell displays `@count(*)@4`; then show Process!A4 is the CONCATENATE | formula text read from the file |
+| 4 | edit proof (no-repeat-typing) | change a Process WHERE (one account) → Input needs no change → re-run → grid changes | before/after `§FILM3_FACT` of the changed cell |
+| 5 | run | Excel Report pill, dates 01/12/2006–31/12/2006 | `§TWIN_RUN statements=5 addressLines=31 ms=` |
+| 6 | where each part came from | PDF regions highlighted one by one: org band ← client table; period ← the two dates; KPI boxes ← three SQL values; grid ← the `C10+B12` rule; totals ← Excel SUM | KPI 48 / 2,361.14 / 2,606.27; grid 5 filled / 7 empty |
+| 7 | the empty cells | "no posting, so blank — not a made-up zero" | `§XTAB2 empty=7` |
+| 8 | trust | grid equals an independent SQL check; every printed cell present in the PDF | `§XTAB2_VERDICT PASS cells=12 diffs=0`; `§PDF_CONTENT missingFromPdf=0` |
+| 9 | close | "Your Excel. Your design. Our data." | — |
+
+## Before recording (all CPU, no GPU)
+- [ ] Beat 4 needs a witnessed second run (edited WHERE) → add `W38_ShowcaseEdit.js` first; the beat is cut if it does not PASS.
+- [ ] `§FILM3_FACT` emitter (design counts, process rows, link formula text) so every number has a line.
+- [ ] Decide `318.0` labels (twin has no `ad_table`; cosmetic — either fix in the template with a dictionary-derived name or leave and say "source table id").
+- [ ] Sheets shown as images rendered by our own code (not a live Excel window) — red1 to confirm.
+- [ ] Narration: write EN dialogue TSV in `prompts/ninjaexcel_series/` (film2 format), voices per PLAYBOOK; witness the track.
