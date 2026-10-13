@@ -1,0 +1,38 @@
+{
+ "tag": "c2j4",
+ "cases": {
+  "A": {
+   "org": "0",
+   "taxcorrectiontype": "N",
+   "costinglevel": "C",
+   "gaap": "UN",
+   "costingmethod": "A",
+   "costtypeName": "NC4-A-c2j4",
+   "costtypeOrg": "0",
+   "costtypeIsSchemaName": true,
+   "newCostTypes": 1,
+   "newCostElements": 0,
+   "avgElements": [
+    [
+     "Average PO",
+     "M",
+     "A",
+     "0"
+    ]
+   ]
+  },
+  "A2": {
+   "taxcorrectiontype": "N"
+  },
+  "B": {
+   "ok": false,
+   "err": "§AD_ERROR create_data: Cannot save record in C_AcctSchema: End Date must be after Start Date"
+  },
+  "C": {
+   "ok": false,
+   "err": "§AD_ERROR update_data: Cannot save record in C_AcctSchema: Costing level can't be changed if there are product cost details created with current costing level. Products: Seeder,Holly Bush,Rose Bush,PTable,Azalea Bush,Tiller,Grass,Mulch,Oak,Rake-Metal,Transplan",
+   "before": "C",
+   "after": "C"
+  }
+ }
+}
