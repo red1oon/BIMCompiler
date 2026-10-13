@@ -12,6 +12,7 @@ var Database = require('better-sqlite3');
 var fs = require('fs');
 var SRC = process.argv[2], WORK = process.argv[3];
 var si = process.argv.indexOf('--stress-cutoff'), CUTOFF = si > 0 ? process.argv[si + 1] : null;
+var sti = process.argv.indexOf('--statuses'), STATUSES = (sti > 0 ? process.argv[sti + 1] : 'CL,VO,RE').split(',').filter(Boolean); // terminal DocStatus (§12.1)
 var di = process.argv.indexOf('--dump-cold'), DUMP = di > 0 ? process.argv[di + 1] : null;
 if (!SRC || !WORK) { console.log('usage: shard_split_plan_sql.js <source.db> <work.db>'); process.exit(2); }
 if (fs.existsSync(WORK)) fs.unlinkSync(WORK);
@@ -45,13 +46,13 @@ db.exec('CREATE TABLE cand(u INTEGER PRIMARY KEY); CREATE TABLE cold(u INTEGER P
 
 // candidates
 hdr.forEach(function (h) {
-  var cond = "docstatus IN ('CL','VO')" + (CUTOFF && C[h].indexOf('dateacct') >= 0 ? " OR (dateacct IS NOT NULL AND CAST(dateacct AS TEXT) < '" + CUTOFF + "')" : '');
+  var cond = "docstatus IN (" + STATUSES.map(function (x) { return "'" + x.replace(/'/g, '') + "'"; }).join(',') + ")" + (CUTOFF && C[h].indexOf('dateacct') >= 0 ? " OR (dateacct IS NOT NULL AND CAST(dateacct AS TEXT) < '" + CUTOFF + "')" : '');
   db.exec('INSERT OR IGNORE INTO cand SELECT ' + ucode(h, q(h + '_id')) + ' FROM src.' + q(h) + ' WHERE ' + cond);
 });
 db.exec('INSERT INTO cold SELECT u FROM cand');
 var nCand = one('SELECT count(*) c FROM cand').c;
 console.log('§SPLIT_UNITS headers=' + hdr.length + ' lineTables=' + Object.keys(lineOf).length + ' dependents=[' + deps.join(',') +
-  '] candidates=' + nCand + ' mode=' + (CUTOFF ? 'stress(<' + CUTOFF + ')' : 'policy(CL,VO)') + ' t=' + sec());
+  '] candidates=' + nCand + ' mode=' + (CUTOFF ? 'stress(<' + CUTOFF + ')' : 'policy(' + STATUSES.join(',') + ')') + ' t=' + sec());
 
 // target unit expression for a FK column value: header stem -> header unit ; line stem -> its header's unit
 function targets(table, own) {                        // returns [{joinSQL, dstExpr}] per FK col

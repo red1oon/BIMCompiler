@@ -12,6 +12,7 @@
 var Database = require('better-sqlite3');
 var db = new Database(process.argv[2], { readonly: true });
 var si = process.argv.indexOf('--stress-cutoff'), CUTOFF = si > 0 ? process.argv[si + 1] : null;
+var sti = process.argv.indexOf('--statuses'), STATUSES = (sti > 0 ? process.argv[sti + 1] : 'CL,VO,RE').split(','); // terminal DocStatus (ERP_SHARD_GENERATOR §12.1)
 var di = process.argv.indexOf('--dump-cold'), DUMP = di > 0 ? process.argv[di + 1] : null;   // write sorted cold unit list (for SQL-planner equivalence)
 
 function has(t) { return !!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(t); }
@@ -44,7 +45,7 @@ hdr.forEach(function (h) {
   all(h).forEach(function (r) {
     var u = h + ':' + r[h + '_id']; unitOf[u] = u; tier[u] = 'warm';
     var st = r.docstatus, d = r.dateacct || null;
-    if (st === 'CL' || st === 'VO') { cand[u] = 1; candReason[u] = 'status=' + st; }
+    if (STATUSES.indexOf(st) >= 0) { cand[u] = 1; candReason[u] = 'status=' + st; }
     else if (CUTOFF && d && String(d) < CUTOFF) { cand[u] = 1; candReason[u] = 'stress dateacct<' + CUTOFF; }
   });
 });
@@ -107,7 +108,7 @@ rows.forEach(function (r) {
 });
 console.log('§SPLIT_UNITS headers=' + hdr.length + ' lineTables=' + Object.keys(lineOf).length + ' dependents=[' + deps.join(',') +
   '] units=' + Object.keys(tier).length + ' rows=' + rows.length + ' candidates=' + nCand +
-  ' mode=' + (CUTOFF ? 'stress(<' + CUTOFF + ')' : 'policy(CL,VO)'));
+  ' mode=' + (CUTOFF ? 'stress(<' + CUTOFF + ')' : 'policy(' + STATUSES.join(',') + ')'));
 
 // R3 fixed point: C = candidates; pin to warm any unit referenced by a warm row
 var cold = {}; Object.keys(cand).forEach(function (u) { cold[u] = 1; });
