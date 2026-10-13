@@ -175,6 +175,22 @@ Each line cites the gate that proves it. The first column says what the user get
 | **Clean reset, proved.** | `U_usecases`: a fresh session equals the baseline; `U_NEG_usecases` must fail. |
 | **Proof built into the demo.** Debits equal credits, checked against an independent calculation. | `T_trialbalance`. |
 
+### Witnessed against the faults we had in the legacy plugin
+
+The old plugin had real faults, and each one now has a **witness** (an automatic check that must pass, plus a negative control that must fail, so the check can say NO). A witness that judged nothing says `INCONCLUSIVE`, never PASS [`R_VACUOUS`, `T_VACUOUS`].
+
+| Legacy fault | What now guards against it | Witness |
+|---|---|---|
+| **Output out of step with BACKUP** — hand edits typed into Output were lost, or the two sheets drifted apart and gave wrong numbers | Output is rebuilt from BACKUP on every run. A cell typed into Output, even one outside the layout, is discarded; every run is also compared cell by cell with frozen reference results | `CLAIM_BACKUP_RULE` in `T_manual_claims` (negative control `T_NEG_manual_claims`); `A_engine_*`, `C_cells_*` |
+| The template file was overwritten in place (a truncated file was a real customer fault) | The template is never written to; the report goes to a different file | `CLAIM_NO_OVERWRITE` |
+| An unsupported formula gave a silent 0 | It shows `#NAME?` | `CLAIM_NAME_ERROR` |
+| A list was silently cut at 248 items | No cut; tested to 1,441 rows | `R_register_big`, `R_NEG_register` |
+| Totals did not cover rows that were pushed down | Ranges grow with the list | `T_trialbalance`, `T_NEG_range`, `U_usecases` |
+| Formatting lost after rows or columns were inserted | Fonts, fills, borders, formats, merges and sizes are kept | `B_conv_style_*`, `C_style_*` (50,600 cells, 0 differences) |
+| Letters missing from the PDF (for example Thai and Lao script) | Each script gets a font that has its letters | `T_pdf_content`, `D_content_*` |
+
+*Not yet built (so no claim):* a **warning before the run** when Output differs from BACKUP. Today the report is correct because Output is rebuilt; the planned template check would also tell you that your hand edit was discarded.
+
 ### Planned (not built — no claim made)
 
 - **Template check** before running: missing sheets, Process addresses outside Output, empty Direction, and Output-vs-BACKUP drift (a hand edit in Output is discarded today; this would warn first).
