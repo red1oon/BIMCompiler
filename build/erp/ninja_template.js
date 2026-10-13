@@ -492,6 +492,7 @@
     reg('left', function (s, n) { return s == null ? null : (n >= 0 ? String(s).substring(0, n) : String(s).substring(0, Math.max(0, String(s).length + n))); });
     reg('right', function (s, n) { return s == null ? null : (n >= 0 ? String(s).slice(Math.max(0, String(s).length - n)) : String(s).substring(-n)); });
     reg('to_char', toChar);
+    reg('concat', function () { var o = ''; for (var i = 0; i < arguments.length; i++) if (arguments[i] != null) o += arguments[i]; return o; });   // PG concat(): NULLs skipped; older sql.js builds have no concat()
   }
   function matchParen(sql, open) {                            // index of the ')' matching sql[open]=='(' (string-literal aware)
     var d = 0, q = false;

@@ -31,6 +31,10 @@
   function runsOf(t) { var out = [], cur = null; for (var i = 0; i < t.length; i++) { var ch = t[i], lao = /[຀-໿\u200B-\u200D]/.test(ch), th = !lao && /[\u0E01-\u0E5B]/.test(ch); if (cur && cur.lao === lao && cur.th === th) cur.t += ch; else { cur = { t: ch, lao: lao, th: th }; out.push(cur); } } return out; }
 
   // options: { profile, margins:{l,r,t,b}, defaultRowPt, fonts:{resolve(name,bold,italic,text)->path|stdName}, sheet:'Output', formatNumber(fmt,val)->text }
+  function concatBytes(chunks) {                                  // Node Buffer.concat does not exist in a plain browser page; pdfkit chunks are Uint8Array-compatible in both
+    if (typeof Buffer !== 'undefined' && Buffer.concat) return Buffer.concat(chunks);
+    var n = 0, i; for (i = 0; i < chunks.length; i++) n += chunks[i].length; var out = new Uint8Array(n), o = 0; for (i = 0; i < chunks.length; i++) { out.set(chunks[i], o); o += chunks[i].length; } return out;
+  }
   function renderSheet(PDFDocument, model, opts) {
     opts = opts || {}; var P = PROFILES[opts.profile || 'excel'], mg = Object.assign({ l: 36, r: 36, t: 72, b: 72 }, opts.margins || {});
     var ws = model.Sheets[opts.sheet || 'Output'], styles = model._styles || {}, defRow = opts.defaultRowPt || 12.75;
@@ -49,7 +53,7 @@
     var pageW = colX[maxC + 1] + mg.r, pageH = rowY[maxR + 1] + mg.b;
     var doc = new PDFDocument({ size: [pageW, pageH], margin: 0, autoFirstPage: true, compress: false }); var chunks = [];
     doc.on('data', function (d) { chunks.push(d); });
-    var done = new Promise(function (res) { doc.on('end', function () { res(Buffer.concat(chunks)); }); });
+    var done = new Promise(function (res) { doc.on('end', function () { res(concatBytes(chunks)); }); });
 
     // merge map: master addr -> box ; slave addrs skipped
     var mergeOf = {}, slave = {};

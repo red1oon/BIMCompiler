@@ -4,12 +4,13 @@
 import java.io.*; import org.apache.poi.hssf.usermodel.*; import org.apache.poi.ss.usermodel.*;
 public class MakeParityTB {
  static String[][] P={
+  {"a.name","ad_client a","","","S"},
   {"CONCAT(to_char(DATE #1, 'DD/MM/YYYY'),' - ',to_char(DATE #2, 'DD/MM/YYYY'))","ad_org a","","","S"},
-  {"el.value","fact_acct a","","a.postingtype='A' AND a.dateacct <= #2 GROUP BY el.value, el.name ORDER BY el.value","V"},
+  {"el.value","fact_acct a","","a.postingtype='A' AND SUBSTR(p.startdate,1,10) <= SUBSTR(#2,1,10) GROUP BY el.value, el.name ORDER BY el.value","V"},
   {"el.name","INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id","","","V"},
-  {"SUM(CASE WHEN a.dateacct < #1 THEN a.amtacctdr-a.amtacctcr ELSE 0 END)","","","","V"},
-  {"SUM(CASE WHEN a.dateacct >= #1 THEN a.amtacctdr ELSE 0 END)","","","","V"},
-  {"SUM(CASE WHEN a.dateacct >= #1 THEN a.amtacctcr ELSE 0 END)","","","","V"} };
+  {"SUM(CASE WHEN SUBSTR(p.startdate,1,10) < SUBSTR(#1,1,10) THEN a.amtacctdr-a.amtacctcr ELSE 0 END)","INNER JOIN c_period p ON p.c_period_id=a.c_period_id","","","V"},
+  {"SUM(CASE WHEN SUBSTR(p.startdate,1,10) >= SUBSTR(#1,1,10) THEN a.amtacctdr ELSE 0 END)","","","","V"},
+  {"SUM(CASE WHEN SUBSTR(p.startdate,1,10) >= SUBSTR(#1,1,10) THEN a.amtacctcr ELSE 0 END)","","","","V"} };
  static void s(Sheet sh,int r,int c,String v){ Row row=sh.getRow(r)==null?sh.createRow(r):sh.getRow(r); row.createCell(c).setCellValue(v);}
  static void f(Sheet sh,int r,int c,String fm){ Row row=sh.getRow(r)==null?sh.createRow(r):sh.getRow(r); row.createCell(c).setCellFormula(fm);}
  static CellStyle[] ST; static void mk(Workbook w){ Font b=w.createFont(); b.setBold(true); b.setFontName("Arial"); b.setFontHeightInPoints((short)10); Font n=w.createFont(); n.setFontName("Arial"); n.setFontHeightInPoints((short)9);
@@ -23,7 +24,7 @@ public class MakeParityTB {
  static void sty(Sheet sh,int r,int c,int k){ Row row=sh.getRow(r)==null?sh.createRow(r):sh.getRow(r); Cell cell=row.getCell(c)==null?row.createCell(c):row.getCell(c); cell.setCellStyle(ST[k]); }
  static void layout(Sheet o){ int[] W={12,40,16,16,16,16}; for(int c=0;c<6;c++) o.setColumnWidth(c,W[c]*256);
   s(o,0,0,"งบทดลอง (Trial Balance)"); sty(o,0,0,4);
-  s(o,2,0,"ช่วงวันที่ : ");
+  s(o,1,0,"บริษัท : "); s(o,2,0,"ช่วงวันที่ : ");
   String[] H={"รหัสบัญชี","ชื่อบัญชี","ยอดยกมา","เดบิต","เครดิต","ยอดคงเหลือ"}; for(int c=0;c<6;c++){ s(o,4,c,H[c]); sty(o,4,c,0);} 
   // list start row (idx 5): token cells A..E + closing formula F. Row under it (idx 6) = totals: a formula in each token column marks where the list stops and is pushed down.
   sty(o,5,0,1); sty(o,5,1,1); for(int c=2;c<=4;c++) sty(o,5,c,2); f(o,5,5,"C6+D6-E6"); sty(o,5,5,2);
@@ -32,7 +33,7 @@ public class MakeParityTB {
   s(o,9,1,"ผลต่างเดบิต - เครดิต (ต้องเป็น 0)"); f(o,9,3,"D8-E8"); sty(o,9,3,2); }
  public static void main(String[] a) throws Exception { HSSFWorkbook w=new HSSFWorkbook();
   Sheet in=w.createSheet("Input"), pr=w.createSheet("Process"), ref=w.createSheet("Reference"), out=w.createSheet("Output"), bak=w.createSheet("BACKUP");
-  s(in,0,0,"Input"); s(in,2,1,"@CONCAT(to_char(DATE #1, 'DD/MM/YYYY'),' - ',to_char(DATE #2, 'DD/MM/YYYY'))@2"); s(in,5,0,"@el.value@3"); s(in,5,1,"@el.name@4"); s(in,5,2,"@SUM(CASE WHEN a.dateacct < #1 THEN a.amtacctdr-a.amtacctcr ELSE 0 END)@5"); s(in,5,3,"@SUM(CASE WHEN a.dateacct >= #1 THEN a.amtacctdr ELSE 0 END)@6"); s(in,5,4,"@SUM(CASE WHEN a.dateacct >= #1 THEN a.amtacctcr ELSE 0 END)@7");
+  s(in,0,0,"Input"); s(in,1,1,"@a.name@2"); s(in,2,1,"@CONCAT(to_char(DATE #1, 'DD/MM/YYYY'),' - ',to_char(DATE #2, 'DD/MM/YYYY'))@3"); s(in,5,0,"@el.value@4"); s(in,5,1,"@el.name@5"); s(in,5,2,"@SUM(CASE WHEN SUBSTR(p.startdate,1,10) < SUBSTR(#1,1,10) THEN a.amtacctdr-a.amtacctcr ELSE 0 END)@6"); s(in,5,3,"@SUM(CASE WHEN SUBSTR(p.startdate,1,10) >= SUBSTR(#1,1,10) THEN a.amtacctdr ELSE 0 END)@7"); s(in,5,4,"@SUM(CASE WHEN SUBSTR(p.startdate,1,10) >= SUBSTR(#1,1,10) THEN a.amtacctcr ELSE 0 END)@8");
   String[] H={"ANNOTATION","ROW","SELECT","TABLE","JOIN","WHERE","ADDRESS","Direction","VALUES"}; for(int c=0;c<H.length;c++) s(pr,0,c,H[c]);
   for(int i=0;i<P.length;i++){ int r=i+1,row=r+1; Row R=pr.createRow(r);
    R.createCell(0).setCellFormula("CONCATENATE(\"@\",C"+row+",\"@\",B"+row+")"); R.createCell(1).setCellFormula("ROW()");
