@@ -567,11 +567,16 @@
     });
   }
   function sqliteExecutor(db, BD) {                           // exec(sql) -> typed rows; db = better-sqlite3 / sql.js-compatible via .prepare(sql).raw().all(); BD = the twin's BigDecimal (build/erp/bigdecimal.js)
-    var cache = {};
+    var cache = {}, noDict = false;
     BD = BD || (typeof require !== 'undefined' ? (function () { try { return require('./bigdecimal.js'); } catch (e) { return null; } })() : global.BigDecimal);
     function lookup(tbl, col) {
       var k = tbl + '.' + col; if (k in cache) return cache[k];
-      var dt = db.prepare('select dt from _coltype where lower(tbl)=? and lower(col)=?').raw().get(tbl, col), sc = db.prepare('select scale from _scale where lower(tbl)=? and lower(col)=?').raw().get(tbl, col);
+      var dt, sc;
+      try { dt = db.prepare('select dt from _coltype where lower(tbl)=? and lower(col)=?').raw().get(tbl, col); sc = db.prepare('select scale from _scale where lower(tbl)=? and lower(col)=?').raw().get(tbl, col); }
+      catch (e) {                                              // db has no dictionary side tables (e.g. the ERP's own client db): say so ONCE, never silently - NUMERIC scale cannot be applied then
+        if (!noDict) { noDict = true; if (typeof console !== 'undefined') console.log('§SCALE_DICT unavailable (no _coltype/_scale in this db): NUMERIC scale not applied, values keep their stored precision'); }
+        return (cache[k] = null);
+      }
       return (cache[k] = dt ? { dt: dt[0], scale: sc ? sc[0] : 0 } : null);
     }
     return function exec(sql) {

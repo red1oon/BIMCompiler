@@ -4,7 +4,7 @@
 import java.io.*; import org.apache.poi.hssf.usermodel.*; import org.apache.poi.ss.usermodel.*;
 public class MakeParityTB {
  static String[][] P={
-  {"CONCAT(to_char(DATE #1, 'DD/MM/YYYY'),' - ',to_char(DATE #2, 'DD/MM/YYYY'))","ad_org a","","a.ad_org_id=11","S"},
+  {"CONCAT(to_char(DATE #1, 'DD/MM/YYYY'),' - ',to_char(DATE #2, 'DD/MM/YYYY'))","ad_org a","","","S"},
   {"el.value","fact_acct a","","a.postingtype='A' AND a.dateacct <= #2 GROUP BY el.value, el.name ORDER BY el.value","V"},
   {"el.name","INNER JOIN c_elementvalue el ON el.c_elementvalue_id=a.account_id","","","V"},
   {"SUM(CASE WHEN a.dateacct < #1 THEN a.amtacctdr-a.amtacctcr ELSE 0 END)","","","","V"},

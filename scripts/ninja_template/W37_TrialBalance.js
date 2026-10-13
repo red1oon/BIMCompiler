@@ -4,12 +4,12 @@
 // Verdicts: PASS | FAIL | INCONCLUSIVE (empty population judged). usage: node W37_TrialBalance.js <parity_tb.xlsx>   env FROM TO NEG=wrongrange
 const E=require(process.env.EXCELJS||'/home/red1/Projects/ninja-template-data/nm/node_modules/exceljs'),X=require('/home/red1/bim-compiler/node_modules/xlsx'),fs=require('fs');
 const H=require(__dirname+'/../../build/erp/ninja_template_xlsx.js'),T=require(__dirname+'/../../build/erp/ninja_template.js'),C=require(__dirname+'/../../build/erp/ninja_calc.js');
-const D=require('/home/red1/bim-compiler/node_modules/better-sqlite3'); const L=(process.env.NT_DATA||'/home/red1/Projects/ninja-template-data')+'/'; const db=new D(L+'legacy/twin_snapshot.db',{readonly:true}); T.registerPgBuiltins((n,f)=>db.function(n,{varargs:true},f));
-const FROM=process.env.FROM||'2006-12-01 00:00:00.0', TO=process.env.TO||'2006-12-31 00:00:00.0';
-(async()=>{ const m=await H.loadModel(E,fs.readFileSync(process.argv[2])); T.runTemplate(m,T.sqliteExecutor(db),{XLSX:X,clientId:11,orgId:0,from:FROM,to:TO}); const ev=C.evaluateSheet(m,'Output'); const ws=m.Sheets.Output; const g=k=>ws[k];
+const D=require('/home/red1/bim-compiler/node_modules/better-sqlite3'); const L=(process.env.NT_DATA||'/home/red1/Projects/ninja-template-data')+'/'; const db=new D(process.env.DB||(L+'legacy/twin_snapshot.db'),{readonly:true}); T.registerPgBuiltins((n,f)=>db.function(n,{varargs:true},f));
+const CL=+(process.env.CLIENT||11); const FROM=process.env.FROM||'2006-12-01 00:00:00.0', TO=process.env.TO||'2006-12-31 00:00:00.0';
+(async()=>{ const m=await H.loadModel(E,fs.readFileSync(process.argv[2])); T.runTemplate(m,T.sqliteExecutor(db),{XLSX:X,clientId:CL,orgId:0,from:FROM,to:TO}); const ev=C.evaluateSheet(m,'Output'); const ws=m.Sheets.Output; const g=k=>ws[k];
  // independent oracle
  const rows=db.prepare(`SELECT e.value v,e.name n,SUM(CASE WHEN a.dateacct<? THEN a.amtacctdr-a.amtacctcr ELSE 0 END) op,SUM(CASE WHEN a.dateacct>=? THEN a.amtacctdr ELSE 0 END) dr,SUM(CASE WHEN a.dateacct>=? THEN a.amtacctcr ELSE 0 END) cr
-   FROM fact_acct a JOIN c_elementvalue e ON e.c_elementvalue_id=a.account_id WHERE a.ad_client_id=11 AND a.postingtype='A' AND a.dateacct<=? GROUP BY e.value,e.name ORDER BY e.value`).all(FROM,FROM,FROM,TO);
+   FROM fact_acct a JOIN c_elementvalue e ON e.c_elementvalue_id=a.account_id WHERE a.ad_client_id=${CL} AND a.postingtype='A' AND a.dateacct<=? GROUP BY e.value,e.name ORDER BY e.value`).all(FROM,FROM,FROM,TO);
  const n=rows.length; let bad=[]; const near=(a,b)=>Math.abs(a-b)<0.005;
  for(let i=0;i<n;i++){ const r=6+i; const v=[g('A'+r),g('B'+r),g('C'+r),g('D'+r),g('E'+r),g('F'+r)]; const o=rows[i];
   if(!v[0]||String(v[0].v)!==String(o.v)||String(v[1].v)!==o.n) bad.push(`row ${r} id/name ${v[0]&&v[0].v}/${v[1]&&v[1].v} vs ${o.v}/${o.n}`);
