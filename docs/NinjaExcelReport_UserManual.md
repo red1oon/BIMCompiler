@@ -142,6 +142,7 @@ A small standard set of **use cases** enters real documents into the GardenWorld
 | `NO ' FROM' IN ORIGINAL SQL …` | The statement has no table. | The first row of a query needs a TABLE ending in ` a`. |
 | A cell shows `#NAME?` | The formula uses a function the engine does not support. It is shown as an error, **never as a silent 0** [`CLAIM_NAME_ERROR`]. | Use a supported function (§6) or compute it in the SQL. |
 | A total did not include all rows | The range stops above the spacer row. | Make the range end on the spacer row (§6). |
+| `SQL ERROR: <the database's own message>` followed by `statement: SELECT …` | One of your Process-sheet queries failed (for example a misspelled column: `no such column: el.valu`). You see the **real database message and the exact statement that failed**, so you can fix the cell. The legacy plugin hid the real SQL error. | Correct the SELECT/TABLE/WHERE text it shows [`T_sql_error`; its negative control `T_NEG_sql_error` must fail]. |
 | `LIST TRUNCATED at Process column …` | A list had more values than the sheet can hold (about 16,000). Before this version a list was cut silently at 248. | Narrow the filter or split the report. |
 | A query returns no data | The cell stays empty and the run notes `RETURNS NOTHING`. | Check the dates and filters. |
 
@@ -187,6 +188,7 @@ The old plugin had real faults, and each one now has a **witness** (an automatic
 | A list was silently cut at 248 items | No cut; tested to 1,441 rows | `R_register_big`, `R_NEG_register` |
 | Totals did not cover rows that were pushed down | Ranges grow with the list | `T_trialbalance`, `T_NEG_range`, `U_usecases` |
 | Formatting lost after rows or columns were inserted | Fonts, fills, borders, formats, merges and sizes are kept | `B_conv_style_*`, `C_style_*` (50,600 cells, 0 differences) |
+| The real SQL error was hidden, so a broken query was hard to find | The database's own message and the failing statement are shown | `T_sql_error` |
 | Letters missing from the PDF (for example Thai and Lao script) | Each script gets a font that has its letters | `T_pdf_content`, `D_content_*` |
 
 *Not yet built (so no claim):* a **warning before the run** when Output differs from BACKUP. Today the report is correct because Output is rebuilt; the planned template check would also tell you that your hand edit was discarded.
