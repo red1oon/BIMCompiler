@@ -412,3 +412,10 @@ Cold first window, ms (`totalMs`, click → last query): **monolith 11 GB** (n=4
 - **Steady-state per-request cost ≈ 45–56 ms** at rtt=50 (monolith query steps 3.6–4.1 s / 74 reqs; shard query steps 0.85–1.06 s / 19 reqs); 72 ms at rtt=100.
 - **Open decomposition (server `§DEMO_LIB`):** the 1.24 MB `httpvfs-sql-wasm.wasm` took 1.0–2.1 s to serve to the phone (shard runs 1.8 / 1.0 / 1.4 s; monolith 1.3 / 2.1 / 1.4 s) — i.e. ~1.4 s of every cold open is the engine download, identical for both. Remainder of open: monolith 3.9–4.2 s for 54 reqs (≈ 74 ms/req incl. wasm compile + schema parse), shard 0.74–0.96 s for 5 reqs.
 - **So the shard cold start ≈ 3.4 s = ~1.4 s engine download + ~0.8 s open + ~1.0 s of 19 query requests.** The demo serves libs `no-store`; in the real app the service worker would cache the engine (not measured here), leaving ≈ 2 s. NOT measured: repeat visit, mobile data, other phones, memory on the phone.
+
+## §11.4 Repeat-visit test (SPEC, 2026-10-14 — written before the server change)
+**Issue it proves/disproves:** how much of the 3.4 s cold shard start (§11.3) is the one-off ~1.4 s engine download, i.e. what a RETURNING user sees when the engine is already on the device.
+**Method:** `range_demo_server.js` with `DEMO_CACHE_LIBS=1` sends `cache-control: public, max-age=3600` on the three lib files (page and db responses stay `no-store`). Tester loads the link, taps once (primes the cache), then reloads and taps again, 3 repeat runs per link.
+**Proxy caveat (stated up front):** this is the browser HTTP cache standing in for the real app's service worker (service workers need a secure context; plain-HTTP LAN has none). Compiled-wasm reuse by Chrome's code cache is possible but not controlled/observed here.
+**Witness:** server log. A repeat run shows a `§DEMO_REPORT` with NO preceding `§DEMO_LIB` lines (engine served from device cache); a primed run shows the 3 lib lines. A repeat run whose lib lines still appear is NOT counted as a repeat (INCONCLUSIVE for that run).
+**Reports:** per link: repeat `totalMs` vs the same link's cold `totalMs` (§11.3), `open` ms, and the delta attributed to the engine download.

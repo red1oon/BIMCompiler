@@ -50,7 +50,7 @@ var server = http.createServer(function (req, res) {
   if (url.indexOf(PREFIX + '/') !== 0 && url !== PREFIX) { res.statusCode = 404; return res.end(); }
   var rest = url.slice(PREFIX.length) || '/';
   var ip = req.socket.remoteAddress;
-  res.setHeader('cache-control', 'no-store');
+  res.setHeader('cache-control', (process.env.DEMO_CACHE_LIBS && rest.indexOf('/lib/') === 0) ? 'public, max-age=3600' : 'no-store');
   if (rest === '/' ) { res.setHeader('content-type', 'text/html'); console.log('§DEMO page ip=' + ip + ' ua=' + (req.headers['user-agent'] || '').slice(0, 90)); return res.end(PAGE); }
   if (rest.indexOf('/mark') === 0) {
     var r = { bytes: tally.bytes, reqs: tally.reqs }; tally.bytes = 0; tally.reqs = 0;
