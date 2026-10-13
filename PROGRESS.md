@@ -11,7 +11,7 @@ It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisio
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
 ## ▶ DEPTH lane (2026-10-13): cycle 1 DONE + merged (bim-ootb #1988; 10 SQLite-lane gaps repaired, 3 witnesses green, 4 films EN+TH). NEXT = §NEWCLIENT-DEPTH — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
-## ▶ DEPTH cycle 2 §NEWCLIENT-DEPTH (2026-10-13): NC-1 calendar, NC-2 period control + Financial Report, NC-3 numbering, NC-9 window access (first slice) DONE vs LEGACY-MEASURED (bim-ootb branch `feat/erp-newclient-nc1`, pushed, NO PR yet). Window sweep 204 of 332 OK / 6,665 of 6,675 fields. NEXT: NC-4/6/7/8/10/11/12 (+ film chapters) — read `prompts/ERP_DEPTH_FILM.md` result sections.
+## ▶ DEPTH cycle 2 §NEWCLIENT-DEPTH (2026-10-13): NC-1..NC-4, NC-5a, NC-6/7/8, NC-9 (window access + new role) DONE vs LEGACY-MEASURED; PRs #1989-#1993 merged, #1994 queued. Window sweep 204 of 332 OK. NEXT: re-run NC-10/11/12 on the new code, film chapters, MUser/new-role login — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
 
 ## ▶ SQLite⇄iDempiere parallel-run lane (2026-10-10): read `prompts/SQLiteIDEMPIERE.md` — CARDINAL RULE block + ▶ RESUME HERE at its top (SQLite must equal legacy incl. L&F; F4–F39 fixed + witnessed; bim-ootb port in progress as a DRAFT PR; method page docs/LegacyOracleAdapterSpec.md is live).
 
