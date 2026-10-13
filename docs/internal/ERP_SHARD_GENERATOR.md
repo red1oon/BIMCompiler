@@ -272,3 +272,34 @@ Rig: headless Chromium, CPU-only, 4× CPU throttle, `httpvfs` `serverMode:'full'
 - **Finding 2:** FK indexes matter as much as PKs — master→detail drill is the AD engine's core move; Q3 shows the cost of missing one (a real PG client has them; the bed removed them).
 - **Indexed migration:** `§MIGRATE_VERDICT PASS` 925 tables, 16 m 31 s, max RSS 231 MB, output 9.95 GB.
 - **Gaps:** arm A used 4 KB chunks and B 16 KB (page size confounded with index; the 3.1 GB vs 49 KB gap is index-dominated). Arm A `open` line is invalid (HEAD was counted; fixed after). Q3 not re-run on A or B-with-FK-index. Not a phone: desktop Chromium + CPU throttle. Shard stage (T0/T1/T2 split) and cold-start under network throttle still NOT run.
+
+## §10 Warm/cold split on RELATED rows — design + first try (2026-10-13, SPEC before script)
+**Issue (found by reading `sharding_boundaries.json` / `gen_sharding_boundaries.js:46-105`):** today the split is per-table and
+header-only. (1) Lines (`c_orderline`, `c_invoiceline`, `m_inoutline`) and dependents (`m_transaction`, `c_allocationline`) are NOT in the
+map → unassigned; a cold header's lines have no tier. (2) `fact_acct` splits by PERIOD, docs by DOCSTATUS — two independent rules that
+disagree (CL doc in an open period; CO doc in a closed period). (3) A warm row can reference a cold row (`c_invoice.c_order_id` → a closed
+order; `c_allocationline` → a closed invoice); `resolveFK` then forces a cold ATTACH on a warm screen, defeating "cold never resident".
+**Rule set (one owner per question, BOM principle — parent + children atomic):**
+ R1 *Aggregate*: a header + all its lines + every dependent row owned by them (via `<hdr>_id`, `ad_table_id+record_id`, `*line_id`) is ONE unit; a unit is never split across tiers.
+ R2 *Candidate*: unit is cold-eligible iff header `DocStatus IN ('CL','VO')` (period-closed `fact_acct` follows its OWNER unit; period only adds candidates for units already complete).
+ R3 *Reverse closure*: cold set = greatest subset C of candidates such that NO row outside C references a unit in C. Computed by fixed point:
+    repeat { pin to warm every candidate unit referenced by any warm row } until no change. Warm→cold edges = 0 by construction; cold→warm and cold→cold are fine (warm is always attached).
+ R4 *Dependent rows* referencing several units are cold iff ALL their units are cold; otherwise warm and they pin the cold ones (via R3).
+ SQL form for scale: each pass is one anti-join `UPDATE cand SET pinned=1 WHERE EXISTS (SELECT 1 FROM refs r JOIN warm w ON … )`; passes = longest chain of warm→cold references (small).
+**Witnesses (INCONCLUSIVE when nothing judged):** `§SPLIT_UNITS`, `§SPLIT_PINNED n reasons`, `§SPLIT_ORPHANS=0` (every line/dependent has an owner unit or is reported),
+`§SPLIT_WARM_TO_COLD=0` (re-checked from scratch after the fixed point), `§SPLIT_EXHAUSTIVE warm+cold == total` per table.
+**Honest bound:** real data = GardenWorld (almost no closed docs) → policy run is mostly INCONCLUSIVE; a labelled STRESS run (extra
+candidates = docs older than a cutoff date — a parameter, not invented rows) exercises the same graph machinery on the same real rows.
+The REAL warm/cold ratio needs a real client's data.
+
+### §10.1 RESULT 2026-10-13 — `scripts/shard_split_plan.js` on REAL GardenWorld rows (`new.db` = full migrate of `idempiere`; logs `build/erp/logs/split_*.log`)
+Graph: 21 header tables, 12 line tables, dependents `fact_acct,m_transaction,m_costdetail,m_matchinv,m_matchpo`; 419 units, 1292 rows.
+| mode | cold candidates | pinned warm by R3 | cold units | warm→cold refs: fixed-point | same under today's per-table rule | verdict |
+|---|---|---|---|---|---|---|
+| policy (DocStatus CL,VO) | 1 | 1 | 0 | 0 | 11 | INCONCLUSIVE (nothing left cold) |
+| stress, dateacct < 2003-01-01 | 25 | 0 | 25 | 0 | 206 | PASS |
+| stress, dateacct < 2004-01-01 | 36 | 2 | 34 | 0 | 763 | PASS |
+- **The problem is real, not hypothetical:** the ONE closed order in GardenWorld (`c_order:102`) is referenced by a live invoice (`c_invoice:103`); R3 pins it warm (`§SPLIT_PINNED_WHY`). Today's per-table rule would have sent it cold and left 11 warm rows pointing at it.
+- **Chains are real:** 2004 run pins `m_inout:108` (a draft `m_inoutconfirm` references it) in pass 1, then `c_order:108` (its shipment line references the order) in pass 2 — `passes=2`.
+- **Postings follow their owner:** after letting `fact_acct` resolve through a dependent owner (`m_matchinv`, 76 rows), `fact_acct` splits 288 cold / 12 warm in the 2004 run; 2 dependents have no owner and stay warm (reported `§SPLIT_ORPHANS`).
+- **Exhaustive:** warm+cold == total for every table. **Honest bound:** the stress cutoff is a parameter on real rows, not a client's real closed-doc share; policy mode shows the closed-doc share in GardenWorld is ~0, so the realistic ratio and chain depth need a real client. Fixed point verified here in JS; the SQL anti-join form for 10 GB is specced (§10) but NOT built/run.
