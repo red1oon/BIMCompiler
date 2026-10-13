@@ -12,6 +12,7 @@
 var Database = require('better-sqlite3');
 var db = new Database(process.argv[2], { readonly: true });
 var si = process.argv.indexOf('--stress-cutoff'), CUTOFF = si > 0 ? process.argv[si + 1] : null;
+var di = process.argv.indexOf('--dump-cold'), DUMP = di > 0 ? process.argv[di + 1] : null;   // write sorted cold unit list (for SQL-planner equivalence)
 
 function has(t) { return !!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(t); }
 function cols(t) { return db.prepare('SELECT name FROM pragma_table_info(?)').all(t).map(function (r) { return r.name.toLowerCase(); }); }
@@ -127,6 +128,7 @@ while (changed) {
   });
 }
 var nCold = Object.keys(cold).length;
+if (DUMP) require('fs').writeFileSync(DUMP, Object.keys(cold).sort().join('\n') + '\n');
 // independent re-check from scratch
 var wtc = 0;
 rows.forEach(function (r) { if (rowWarm(r)) r.refs.forEach(function (u) { if (cold[u]) wtc++; }); });

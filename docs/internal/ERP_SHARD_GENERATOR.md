@@ -303,3 +303,26 @@ Graph: 21 header tables, 12 line tables, dependents `fact_acct,m_transaction,m_c
 - **Chains are real:** 2004 run pins `m_inout:108` (a draft `m_inoutconfirm` references it) in pass 1, then `c_order:108` (its shipment line references the order) in pass 2 — `passes=2`.
 - **Postings follow their owner:** after letting `fact_acct` resolve through a dependent owner (`m_matchinv`, 76 rows), `fact_acct` splits 288 cold / 12 warm in the 2004 run; 2 dependents have no owner and stay warm (reported `§SPLIT_ORPHANS`).
 - **Exhaustive:** warm+cold == total for every table. **Honest bound:** the stress cutoff is a parameter on real rows, not a client's real closed-doc share; policy mode shows the closed-doc share in GardenWorld is ~0, so the realistic ratio and chain depth need a real client. Fixed point verified here in JS; the SQL anti-join form for 10 GB is specced (§10) but NOT built/run.
+
+### §10.2 SQL planner for scale (SPEC, 2026-10-13 — written before `scripts/shard_split_plan_sql.js`)
+Same rules R1–R4 as the JS planner, set-based so it runs on the 10 GB file without loading rows into JS.
+- Work DB `split.db` (writable) with the source ATTACHed read-only-in-practice (SELECT only). Unit code = `tblno*2^32 + id`.
+- Tables: `cand(u)`, `cold(u)` (working set, starts = cand), `ue(src,dst)` distinct unit→unit refs (header/line FK cols; line→its own header excluded),
+  `de(dep,dst)` distinct dependent→unit refs (`fact_acct` via `ad_table_id`+`record_id`, resolved through a dependent owner such as `m_matchinv` when that is the owner).
+- Fixed point per pass: (a) `DELETE FROM cold WHERE u IN (SELECT dst FROM ue WHERE src NOT IN cold)`; (b) `DELETE FROM cold WHERE u IN (SELECT d2.dst FROM de d1 JOIN de d2 USING(dep) WHERE d1.dst NOT IN cold)`; stop when both change 0 rows.
+- Independent re-check: `warm→cold` = count of `ue` rows with warm src / cold dst + dependents with a warm ref and a cold ref; must be 0.
+- **Correctness gate before scale:** on a small re-keyed bed the SQL cold set must EQUAL the JS planner's cold set (`--dump-cold`, diff = empty) in policy and stress modes; only then run on 10 GB. `§SPLIT_EQUIV` reports it.
+- Bed change that makes this meaningful: `build_bloat_pg.js` v2 re-maps every FK into another replicated table with the SAME copy index (copy g of an invoice → copy g of its order); `§BLOAT_FKCHECK … dangling=0`.
+
+### §10.3 RESULT 2026-10-13 — re-keyed 11 GB bed + SQL split planner at scale (logs `build/erp/logs/{bloat10r_build,migrate_bloat10r,split10_*,range_armC}.log`)
+- **Bed v2** (`build_bloat_pg.js`): every FK into another replicated table re-mapped with the SAME copy index; K = 29 138 copies of 23 tables; `§BLOAT_FKCHECK … dangling=0` on 6 edges; PG 12 GB; 8.74 M `fact_acct`, 9.67 M `c_orderline`, 9.12 M `c_order`, 17.5 M dependent→unit edges.
+- **Migration** (`ERP_INDEX=1 ERP_PAGE_SIZE=16384`): `§MIGRATE_VERDICT PASS` 925 tables, 15 m 43 s, max RSS 246 MB, 10.93 GB, `§MIGRATE_INDEX created=2057`.
+- **SQL planner, equivalence first:** on real GardenWorld, SQL cold set == JS cold set in all 3 modes (policy / <2003 / <2004; policy set empty in both).
+- **SQL planner at 10 GB** (`shard_split_plan_sql.js`, max RSS 108 MB, work DB 0.7–0.9 GB):
+| mode | candidates | pinned warm | cold units | warm→cold | wall | verdict |
+|---|---|---|---|---|---|---|
+| policy (CL,VO) | 29 139 | 29 139 | 0 | 0 | 72 s | INCONCLUSIVE (all pinned: each closed order has a live invoice, as in GardenWorld) |
+| stress, dateacct < 2004-01-01 | 932 452 | 58 278 | 874 174 | 0 | 54 s | PASS (3 passes: shipment pinned, then its order) |
+  Stress cold share: `fact_acct` 8.39 M of 8.74 M rows cold; `c_orderline` 758 k of 9.67 M; `m_transaction` 728 k of 816 k.
+- **Range read on the FK-indexed bed** (`range_armC.log`): `fact_acct` PK 49 KB / 3 reqs / 12 ms; `c_orderline` by `c_order_id` **49 KB / 3 reqs / 11 ms** (was 1.37 GB with no FK index); `c_order` PK 98 KB / 185 ms; file 11.7 GB → closes the §9.3 Q3 gap.
+- **Still NOT done:** warm/cold shard FILES are not written (plan only); the cutoff is a stress parameter; replicated data has GardenWorld's mix and decimal widths; no phone run; cold-start under network throttle not run.
