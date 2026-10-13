@@ -52,6 +52,9 @@ Do not confuse with the *authoring* Ninja (`prompts/NINJA_MODE_LANE.md`: Excel d
 - **PDF (own renderer) vs the commercial converter's output (reference geometry goldens):** page = (36 + Σcol + 36) × (72 + Σrow + 72) pt (one page, not A4); row px = floor(pt·96/72); text inset 2 pt; thin border = hairline, medium 2 pt, double = two 1.334 pt lines + white gap. Small fixtures PASS; the 200×204 fixture matches page size, fills and 1,134/1,134 words; **known deviation D2, pinned (21+4 of 622 edge runs: the reference omits some shared vertical borders; the "neighbour decides" hypothesis was tested and rejected)**.
 - **PDF content without a reference:** every visible cell's text must appear in the extracted PDF text (caught a real bug: a Lao-script font without ASCII punctuation silently dropped `/ . ( ) •` → per-run font fallback).
 
+## Pre-flight and guard (2026-10-14, additive - engine untouched)
+`build/erp/ninja_preflight.js`: `preflight(model)` reports SHEET_MISSING / UNMATCHED_TAG / EMPTY_DIRECTION (errors) and BACKUP_DRIFT (warning); `selectOnly(exec)` refuses anything but one SELECT. Witnessed by `W38_Preflight.js` (9 cases incl. negatives) and `W39_ShowcaseEdit.js`. Not yet wired into the host/pill - hosts opt in by wrapping their executor.
+
 ## Honest limits
 Customer templates return little data on a GardenWorld clone, so they are weak evidence; the strong evidence is the fixtures. The reference converter's column-width rule is host-font dependent (profiles `excel` / `spire-local`); a reference PDF from the customer's own server is needed to calibrate. Fonts for Lao script are stand-ins. Not witnessed: two-axis cross-tab, `#?` statements, `[C8]` tags, date bracket values, images, formula shifting beyond simple relative refs/ranges. No page breaks (one page per sheet, as the legacy flow). `exceljs` / `pdfkit` are not yet in `package.json`.
 
