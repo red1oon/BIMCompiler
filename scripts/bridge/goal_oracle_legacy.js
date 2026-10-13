@@ -37,6 +37,21 @@ dump('c_invoicepayschedule', `where ad_client_id in (0,${CLIENT})`, ['c_invoicep
 dump('c_currency', '', ['c_currency_id', 'stdprecision', 'iso_code']); dump('c_conversion_rate', `where ad_client_id in (0,${CLIENT})`, ['c_conversion_rate_id', 'ad_client_id', 'ad_org_id', 'isactive', 'c_currency_id', 'c_currency_id_to', 'c_conversiontype_id', 'validfrom', 'validto', 'multiplyrate']); dump('c_conversiontype', '', ['c_conversiontype_id', 'isdefault']);
 dump('c_acctschema', `where ad_client_id in (0,${CLIENT})`, ['c_acctschema_id', 'ad_client_id', 'c_currency_id']); dump('ad_clientinfo', `where ad_client_id in (0,${CLIENT})`, ['ad_client_id', 'c_acctschema1_id']);
 dump('r_request', `where ad_client_id in (0,${CLIENT})`, ['r_request_id', 'ad_client_id', 'ad_org_id', 'r_requesttype_id', 'processed', 'created']);
+
+// ---- D2b: what the legacy Performance gadget shows per goal (WPAPanel.loadGoal -> MGoal.getUserGoals; WPerformanceIndicator.init title/tooltip; MGoal.getPercent/getColor; MColorSchema.getColor :231-258; MPrintColor.getColor) ----
+const fmtInt = n => { const r = Math.round(Math.abs(n) - ((Math.abs(n) % 1) === 0.5 && Math.floor(Math.abs(n)) % 2 === 0 ? 0.5 : 0)); return (n < 0 ? '-' : '') + String(Math.round(Math.abs(n) * 1e9) / 1e9 === Math.floor(Math.abs(n)) ? Math.abs(n) : r).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };   // DecimalFormat #,##0 (HALF_EVEN)
+out.gadget = pg(`select g.pa_goal_id, g.name, coalesce(g.description,''), g.measuretarget, g.pa_colorschema_id from pa_goal g where g.isactive='Y' and g.ad_client_id=${CLIENT} and ((g.ad_user_id is null and g.ad_role_id is null) or g.ad_user_id=101 or exists (select 1 from ad_user_roles ur where ur.ad_user_id=101 and g.ad_role_id=ur.ad_role_id and ur.isactive='Y')) order by g.seqno, g.pa_goal_id`).map(l => {
+  const a = l.split('|'), id = a[0], target = +a[3], actual = out.goals[id] ? out.goals[id].actual : null;
+  const perf = target ? Math.round(actual / target * 1e6) / 1e6 : 0, percent = Math.trunc(perf * 100);
+  const cs = pg(`select mark1percent, mark2percent, mark3percent, mark4percent, ad_printcolor1_id, ad_printcolor2_id, ad_printcolor3_id, coalesce(ad_printcolor4_id,0) from pa_colorschema where pa_colorschema_id=${a[4]}`)[0].split('|').map(Number);
+  let pc = (percent <= cs[0] || cs[1] === 0) ? cs[4] : (percent <= cs[1] || cs[2] === 0) ? cs[5] : (percent <= cs[2] || cs[3] === 0) ? cs[6] : cs[7];
+  if (!pc) pc = cs[6] || cs[5] || cs[4] || 0;
+  const code = pc ? +pg(`select code from ad_printcolor where ad_printcolor_id=${pc}`)[0] : null, rgb = code == null ? 0 : (code & 0xFFFFFF);
+  const title = a[1] + ': ' + (target ? percent + '%' : fmtInt(actual));
+  const tip = (a[2] ? a[2] + ': ' : '') + fmtInt(actual) + (target ? ' of ' + fmtInt(target) : '');
+  return { id: +id, name: a[1], percent, title, tooltip: tip, color: '#' + ('000000' + rgb.toString(16)).slice(-6) };
+});
+for (const g of out.gadget) console.log(`§GOL gadget ${g.id} "${g.title}" tip="${g.tooltip}" color=${g.color}`);
 fs.mkdirSync(path.join(__dirname, 'out'), { recursive: true });
 fs.writeFileSync(path.join(__dirname, 'out', 'goal_oracle_legacy.json'), JSON.stringify(out));
 console.log(`§GOL today=${today} role=${ROLE} orgs=${orgs ? orgs.join(',') : 'all'} invoices=${out.tables.c_invoice.rows.length} allocLines=${out.tables.c_allocationline.rows.length} requests=${out.tables.r_request.rows.length}`);
