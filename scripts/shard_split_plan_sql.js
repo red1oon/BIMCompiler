@@ -128,6 +128,12 @@ deps.forEach(function (d) {
   var n = nrows(d), c = one('SELECT count(*) c FROM depcold WHERE dep >= ' + (DNO[d] * SH) + ' AND dep < ' + ((DNO[d] + 1) * SH)).c;
   console.log('§SPLIT_TABLE ' + d + ' warm=' + (n - c) + ' cold=' + c + ' total=' + n);
 });
+// persist the table classification so the shard writer never re-derives it (one owner per question)
+db.exec('CREATE TABLE tbls(name TEXT PRIMARY KEY, kind TEXT, tblno INTEGER, hdr TEXT)');
+var ins = db.prepare('INSERT INTO tbls VALUES (?,?,?,?)');
+hdr.forEach(function (h) { ins.run(h, 'H', NO[h], null); });
+Object.keys(lineOf).forEach(function (l) { ins.run(l, 'L', NO[lineOf[l]], lineOf[l]); });
+deps.forEach(function (d) { ins.run(d, 'D', DNO[d], null); });
 console.log('§SPLIT_PINNED candidates=' + nCand + ' pinnedWarm=' + (nCand - nCold) + ' coldUnits=' + nCold + ' passes=' + pass);
 console.log('§SPLIT_WARM_TO_COLD=' + wtc);
 if (DUMP) {

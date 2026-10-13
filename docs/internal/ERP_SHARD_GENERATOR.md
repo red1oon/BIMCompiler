@@ -375,3 +375,21 @@ Device: Android 10, Chrome 155, 8 cores, home Wi-Fi to the PC (`navigator.connec
 - **Controlled test (same GardenWorld rows, 16 KB pages, no indexes):** full 927-table file → open **34 reqs / 573 KB**; slim file with only the 23 document-graph tables → open **3 reqs / 64 KB** (≈ 11× fewer requests, 9× fewer bytes). Data volume is irrelevant to open cost.
 - **Consequence:** per-module / per-tier shard files (the T2 design) are not only about size — a small schema makes each open ~3 requests. At the phone's measured ~55 ms/request (§10.7) the 54-request open (5.9 s) would be ≈ 0.2 s for a 3-request open. ESTIMATE from measured parts; slim file with its indexes and real 10 GB of rows not yet built or phone-tested.
 - **Not tested:** slim file WITH indexes (adds ~38 index rows to the schema; expected small), the schema-heavy `ad_*` dictionary as a shard, any non-GardenWorld schema.
+
+## §11 Shard-file writer (SPEC, 2026-10-14 — written before `scripts/shard_write.js`)
+**Issue it proves/disproves:** the split plan (§10) can be MATERIALISED into two small-schema files — `warm.db` and `cold.db` — that (a) together hold exactly the source rows (no loss, no duplicate),
+(b) open in ~3 range requests each (§10.8) even when 10 GB, (c) answer the same keyed lookups as the monolith.
+**Input:** source SQLite (`bloat10r.db`) + the planner's work DB (`cold(u)` unit set, `depcold(dep)` dependent set) from `shard_split_plan_sql.js` (stress mode — labelled; policy mode leaves cold empty).
+**Output (`outdir/`):** `warm.db`, `cold.db` (16 KB pages) each holding ONLY the split-graph tables (headers, lines, dependents) with their original DDL + PG-derived indexes; `manifest.json`
+{table → warm/cold/source rows, file bytes, sha256}. Row routing: header → by its unit in `cold`; line → by its header's unit; dependent → by membership in `depcold`; dependents with no refs → warm.
+**Witnesses (INCONCLUSIVE if nothing judged):** `§SHARD_ROWS table warm cold source` with `warm+cold==source` for EVERY table; `§SHARD_DISJOINT` (no pk in both); `§SHARD_OPEN file reqs bytes`
+(range_read_witness open line: expect ≈3 reqs, schema ≪ 100 KB); `§SHARD_LOOKUP` sample order+lines+postings found in exactly one file and equal to the source row (sha of row JSON).
+**Honest bound:** stress-mode cold set (date cutoff, parameter on real rows); dictionary/other 880 tables are NOT in these files (they are T0/other shards); one-shot writer, no incremental update.
+
+### §11.1 RESULT 2026-10-14 — shard files written from the 11 GB bed (`scripts/shard_write.js`; logs `build/erp/logs/shard_write10.log`, `split10_for_writer.log`)
+- **Plan:** stress cutoff 2004-01-01 (labelled stress): 932 452 candidates, 58 278 pinned warm, 874 174 cold units, `§SPLIT_VERDICT PASS` (67 s).
+- **Write:** 110 s wall, max RSS 250 MB, 38 split-graph tables → `warm.db` 5.29 GB + `cold.db` 3.86 GB (16 KB pages, 99 indexes each, schema 42 KB each). `§SHARD_ROWS` warm+cold == source for all 38 tables (`mismatches=0`); `§SHARD_UNIT_INTACT lineOrphans=0` measured on the OUTPUT files; `§SHARD_WARM_TO_COLD total=0` over 8 real FK edges; `§SHARD_VERDICT PASS`.
+- **Witness can fail (negative control, GardenWorld):** forcing the pinned `c_order:108` into the cold set made the writer report `warm->cold=1` and `FAIL`.
+- **Open cost:** warm.db opens in **5 reqs / 98 KB**, cold.db **5 reqs / 82 KB** (monolith: 54 reqs / 880 KB). Desktop drill on warm.db (`DEMO_MODE=shard`): open + pick + order + lines + postings = **24 reqs / ~460 KB, 531 ms**.
+- **Phone estimate (NOT measured):** 24 reqs × ~55 ms ≈ 1.3 s vs the monolith's 10.1 s.
+- **Caveats:** stress-mode cold set; only split-graph tables in these files (880 other tables are not); shard-writer is one-shot; `warm.db` still 5.3 GB, so a phone reads it by range, not whole.

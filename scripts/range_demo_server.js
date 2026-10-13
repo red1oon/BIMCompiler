@@ -29,11 +29,16 @@ var PAGE = '<!doctype html><html><head><meta charset=utf-8><meta name=viewport c
   'var w=await window.createDbWorker([{from:"inline",config:{serverMode:"full",requestChunkSize:16384,url:P+"db"}}],P+"lib/sqlite.worker.js",P+"lib/httpvfs-sql-wasm.wasm");' +
   'var m=await mark("open");steps.push({name:"open",ms:Math.round(performance.now()-s),reqs:m.reqs,bytes:m.bytes,rows:1});' +
   'async function q(name,sql,p){var s=performance.now();var r=await w.db.query(sql,p||[]);var m=await mark(name);steps.push({name:name,ms:Math.round(performance.now()-s),reqs:m.reqs,bytes:m.bytes,rows:r.length});return r[0];}' +
+  (process.env.DEMO_MODE === 'shard' ? 
+  'var a=await q("S1_pick_order","SELECT c_order_id AS id FROM c_order WHERE rowid=1000");' +
+  'var b=a&&await q("S2_order","SELECT * FROM c_order WHERE c_order_id=?",[a.id]);' +
+  'if(a)await q("S3_lines","SELECT * FROM c_orderline WHERE c_order_id=?",[a.id]);' +
+  'if(a)await q("S4_postings","SELECT * FROM fact_acct WHERE ad_table_id=319 AND record_id=(SELECT m_inout_id FROM m_inout LIMIT 1 OFFSET 100)");'  : 
   'var a=await q("W1_window","SELECT ad_window_id AS id FROM ad_window WHERE name=\'Sales Order\' AND ad_client_id=0 LIMIT 1");' +
   'var b=a&&await q("W2_tabs","SELECT ad_tab_id AS id FROM ad_tab WHERE ad_window_id=? ORDER BY seqno",[a.id]);' +
   'if(b)await q("W3_fields","SELECT ad_field_id FROM ad_field WHERE ad_tab_id=?",[b.id]);' +
   'var o=await q("W4_order","SELECT c_order_id AS id FROM c_order WHERE rowid=1000000");' +
-  'if(o)await q("W5_orderlines","SELECT * FROM c_orderline WHERE c_order_id=?",[o.id]);' +
+  'if(o)await q("W5_orderlines","SELECT * FROM c_orderline WHERE c_order_id=?",[o.id]);' ) +
   'var total=Math.round(performance.now()-t0);var rep={ua:navigator.userAgent,secure:isSecureContext,net:c.effectiveType||null,rtt:c.rtt||null,downlink:c.downlink||null,cores:navigator.hardwareConcurrency,mem:navigator.deviceMemory||null,totalMs:total,steps:steps};' +
   'await fetch(P+"report",{method:"POST",body:JSON.stringify(rep)});' +
   'out.textContent="done in "+total+" ms\\n"+steps.map(function(x){return x.name+" "+x.ms+"ms reqs="+x.reqs+" KB="+Math.round(x.bytes/1024)+" rows="+x.rows}).join("\\n");' +
