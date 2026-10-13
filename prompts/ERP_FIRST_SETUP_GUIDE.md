@@ -611,3 +611,47 @@ the toolbar is drawn (`!!#idmp-inline-mount`), before the form exists.
 **Fix:** toggle handler = `renderBody(); renderToolbar();` (the tr handler's existing order). **Witness:**
 `erp/tests/poc_toggle_save_live.js` — toggle → Save enabled (by DOM value); tick a checkbox → Save → `§CRUD validate
 key=m_pricelist verb=update ok`; toggling back to grid disables Save (negative control: no form → no save).
+
+## §FS-ERPNEXT (2026-10-14) - ERPNext/Frappe column
+Docs-only comparison, nothing in the ERP changed. Every claim below was fetched 2026-10-14; `docs.erpnext.com/docs/user/manual/en/*`
+now 301s to `docs.frappe.io/erpnext/user/manual/en/*`, so the new host is cited. **Finding: the current official manual has no
+Setup Wizard page** (`.../setting-up/setup-wizard` and `.../setup-wizard` on docs.frappe.io both returned 404; the v12 wizard URL returned a
+generic setup-order page, not wizard steps). Wizard facts therefore come from a THIRD-PARTY mirror and are marked (3P). Legend: **DOC** = official
+page states it; **3P** = non-official mirror only; **UNVERIFIED** = no fetched page says it.
+
+| # | Step | ERPNext expectation | Source | Status |
+|---|---|---|---|---|
+| S01 | Open the app (first load) | first-run Setup Wizard: language + country, then timezone | [mintlify.wiki quickstart](https://mintlify.wiki/frappe/erpnext/quickstart) | 3P |
+| S02 | Company / role / users | Users added by the System Manager (Home > Users and Permissions > User: email + name, save, tick roles, save); "The roles have pre-defined permissions"; Role Profiles bundle roles. No default users/roles from setup are listed | [adding-users](https://docs.frappe.io/erpnext/user/manual/en/adding-users) | DOC (default users: UNVERIFIED) |
+| S03 | Create a company | Company form: name, abbreviation, default currency, Country (+ Is Group, Parent Company, Reporting Currency). "Depending on the selected setup options, ERPNext creates a chart of accounts, root cost center, and default warehouses." Abbreviation is part of generated account/cost-center/warehouse names | [company](https://docs.frappe.io/erpnext/user/manual/en/company), [company-setup](https://docs.frappe.io/erpnext/user/manual/en/company-setup) | DOC |
+| S04 | Company currency | entered on the wizard company step ("Select your default currency") and on the Company form; doc says currency/account structure is hard to change once transactions exist | [quickstart](https://mintlify.wiki/frappe/erpnext/quickstart), [setup order](https://docs.frappe.io/erpnext/user/manual/en/setup) | 3P + DOC |
+| S05 | Chart of accounts | wizard: country "affects tax templates and regional settings"; "creates default accounts, warehouses, and other master data based on your selections" (does NOT list them). Official CoA page: no country-default text, only import guidance + a "Chart of Accounts Importer" link. Account counts / template per country: UNVERIFIED | [quickstart](https://mintlify.wiki/frappe/erpnext/quickstart), [chart-of-accounts](https://docs.frappe.io/erpnext/user/manual/en/chart-of-accounts) | 3P; DOC silent |
+| S05b | Own CoA from a file | "Chart of Accounts Importer" is listed as a related page; the page fetched does not describe it | [chart-of-accounts](https://docs.frappe.io/erpnext/user/manual/en/chart-of-accounts) | UNVERIFIED |
+| S06 | Fiscal year / periods | Home > Accounting > Accounting Masters > Fiscal Year: name + start + end + companies, save; can be set default; "A transaction cannot be posted outside a valid Fiscal Year for its company"; Fiscal Year != Accounting Period (period restricts transaction types for a date range); creating a new year does not close the previous. Doc does NOT mention the wizard creating it; wizard asks only a fiscal-year start date (3P). 12 monthly periods: UNVERIFIED (ERPNext has no per-month period rows in the page) | [fiscal-year](https://docs.frappe.io/erpnext/user/manual/en/fiscal-year), [quickstart](https://mintlify.wiki/frappe/erpnext/quickstart) | DOC + 3P |
+| S07 | Document types exist | UNVERIFIED (no page fetched on doc types / naming-series defaults) | - | UNVERIFIED |
+| S10 | Create a customer | steps: Customer Name; Customer Type, Customer Group, Territory. Page never says "mandatory". "After saving, add at least one billing Address and the primary Contact" | [customer](https://docs.frappe.io/erpnext/user/manual/en/customer) | DOC |
+| S12 | Create a product | Item Code, Item Group, then "opening stock units and standard selling rate". Page does not list UOM in creation steps; recommends Item Group + Warehouse first | [item](https://docs.frappe.io/erpnext/user/manual/en/item) | DOC |
+| S13 | Payment terms | Sales Invoice prerequisite only "if the Customer pays in installments" (not required). A default term: UNVERIFIED | [sales-invoice](https://docs.frappe.io/erpnext/user/manual/en/sales-invoice) | DOC (default: UNVERIFIED) |
+| S20/S23 | First sales invoice / journal | Sales Invoice: Accounting > Sales and Receivables > Sales Invoice > Add; Save, then Submit "when the invoice is ready to affect the books". The ledger-entry (GL) view after submit: UNVERIFIED (not on the page fetched) | [sales-invoice](https://docs.frappe.io/erpnext/user/manual/en/sales-invoice) | DOC (GL view: UNVERIFIED) |
+
+### What ERPNext automates that a legacy-parity iDempiere setup makes the admin do by hand
+- Country drives "tax templates and regional settings" at wizard time (3P: [quickstart](https://mintlify.wiki/frappe/erpnext/quickstart)). iDempiere side (not an ERPNext-doc fact; per §FS1 S12/S13 rows): tax category and payment term are fixed MSetup inserts, no country derivation noted there.
+- Country record supplies ISO code, date format, time format, time zones ([country](https://docs.frappe.io/erpnext/user/manual/en/country)). It does NOT supply currency or taxes per that page.
+- Company save creates chart of accounts, root cost center, default warehouses "depending on the selected setup options" ([company](https://docs.frappe.io/erpnext/user/manual/en/company)). (iDempiere MSetup also makes CoA/cost elements; the warehouse/locator and cost-center equivalents are our comparison to check, not ERPNext-doc facts.)
+- Abbreviation-based naming of generated accounts/cost centers/warehouses ([company-setup](https://docs.frappe.io/erpnext/user/manual/en/company-setup)).
+- Wizard collects fiscal-year start in the same screen as company (3P); official Fiscal Year page describes a separate manual record. Whether the wizard auto-creates the Fiscal Year record: UNVERIFIED.
+- Role Profiles bundle roles into a reusable template ([adding-users](https://docs.frappe.io/erpnext/user/manual/en/adding-users)); iDempiere role = Role window + per-window/process/form access rows.
+- Addresses/contacts are post-save sub-steps on Customer, not required to save ([customer](https://docs.frappe.io/erpnext/user/manual/en/customer)).
+
+### Answers-to-first-posted-invoice (ERPNext), fresh install to submitted Sales Invoice
+The Sales Invoice page "does not explicitly label any field as mandatory"; the list is the fields/steps its text directs you to complete. Prerequisites it names (all "if"-conditioned, so not counted): customer receivable account, item income account + default UOM, selling Price List, tax accounts/template, payment terms, Warehouse + stock.
+1. Wizard: language, country, timezone (3P, [quickstart](https://mintlify.wiki/frappe/erpnext/quickstart)) = 3 answers
+2. Wizard: company name, abbreviation, fiscal-year start date, default currency (3P, same URL) = 4 answers
+3. Customer: Customer Name, Customer Type, Customer Group, Territory ([customer](https://docs.frappe.io/erpnext/user/manual/en/customer)) = 4 answers
+4. Item: Item Code, Item Group ([item](https://docs.frappe.io/erpnext/user/manual/en/item)) = 2 answers (+ "opening stock units and standard selling rate" stated in the same steps, not counted: needed only for stock)
+5. Sales Invoice: Company, Customer, Posting Date, Payment Due Date (the page says "check" the two dates, so defaulted), item row with Quantity + Rate ([sales-invoice](https://docs.frappe.io/erpnext/user/manual/en/sales-invoice)) = **5** answers counted (Company, Customer, Item, Quantity, Rate; the two dates are "check" steps, treated as defaulted)
+6. Save, then Submit = 2 actions
+
+**Count: 3 + 4 + 4 + 2 + 5 = 18 answers + 2 actions = 20 steps** (3P wizard share = 7). Official-docs-only count (excluding the wizard, which the current manual does not document): **11 answers + 2 actions = 13**.
+UNVERIFIED: whether the wizard also asks anything else (e.g. industry/domain, admin name/email/password: a Frappe forum thread shows `setup_complete` taking full name, email, password, but that is community code, not docs); whether the invoice needs a Cost Center / Income Account entered when a fresh company is born (page says only "optionally" set them); whether a default Territory / Customer Group / Item Group exists after the wizard; the exact tax template the wizard picks for a given country.
+Comparison hook for our flow: the iDempiere/our-ERP equivalents are S03 (name + admin, 2 answers) + currency/CoA pick (§FS2g/§FS2p) + S10 + S12 + S15b/S19; a like-for-like count against the 20 above needs the same "defaulted vs asked" rule applied to our rows - not done here.
