@@ -393,3 +393,14 @@ Device: Android 10, Chrome 155, 8 cores, home Wi-Fi to the PC (`navigator.connec
 - **Open cost:** warm.db opens in **5 reqs / 98 KB**, cold.db **5 reqs / 82 KB** (monolith: 54 reqs / 880 KB). Desktop drill on warm.db (`DEMO_MODE=shard`): open + pick + order + lines + postings = **24 reqs / ~460 KB, 531 ms**.
 - **Phone estimate (NOT measured):** 24 reqs × ~55 ms ≈ 1.3 s vs the monolith's 10.1 s.
 - **Caveats:** stress-mode cold set; only split-graph tables in these files (880 other tables are not); shard-writer is one-shot; `warm.db` still 5.3 GB, so a phone reads it by range, not whole.
+
+### §11.2 RESULT 2026-10-14 — shard files on the REAL phone (`range_demo_server_shard.log`, `§DEMO_REPORT ip=192.168.1.14`, ONE run)
+Same Android 10 / Chrome 155 phone, `warm.db` (5.3 GB, 5-request open): `totalMs=4937` — open 2586 ms (5 reqs, 96 KB) · pick order 857 (3) · order 182 (3) · lines 675 (6) · postings 611 (7). 24 requests / 456 KB.
+| | monolith 11 GB (§10.7) | `warm.db` shard | change |
+|---|---|---|---|
+| requests | 128 | 24 | 5.3× fewer |
+| bytes | 2.1 MB | 0.46 MB | 4.6× fewer |
+| total (cold) | 10.1 s | 4.9 s | 2.1× faster |
+- **My estimate was wrong:** §11.1 predicted ≈ 1.3 s (24 reqs × 55 ms). It forgot the fixed start-up cost: 5 requests took 2.6 s to open (≈ 517 ms/req), so ≈ 2.5 s of the open is NOT range requests — most likely worker start + the 1.2 MB sqlite wasm download/compile on the phone (not isolated; `§DEMO_LIB` serve-time logging added to separate it next run).
+- **Per-request cost varied between runs:** monolith queries 4022 ms / 74 reqs = 54 ms/req (browser reported rtt=50); shard queries 2325 ms / 19 reqs = 122 ms/req (browser reported rtt=100). Single samples on home Wi-Fi: network state differed, so the 2.1× is a floor-ish comparison, not a stable ratio. Needs ≥3 runs each.
+- **Implication:** with the start-up cost fixed (~2.5 s, cacheable by the service worker in the real app), the remaining range-read cost is per-request × request count, which shards cut 5.3×.

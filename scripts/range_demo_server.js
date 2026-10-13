@@ -80,6 +80,7 @@ var server = http.createServer(function (req, res) {
   res.setHeader('content-length', b - a + 1);
   if (req.method === 'HEAD') return res.end();
   if (f === DB) { tally.bytes += b - a + 1; tally.reqs++; }
+  if (f !== DB) { var t0 = Date.now(); res.on('finish', function () { console.log('§DEMO_LIB ' + path.basename(f) + ' bytes=' + (b - a + 1) + ' serveMs=' + (Date.now() - t0) + ' ip=' + ip); }); }
   fs.createReadStream(f, { start: a, end: b }).pipe(res);
 });
 server.listen(PORT, '0.0.0.0', function () {
