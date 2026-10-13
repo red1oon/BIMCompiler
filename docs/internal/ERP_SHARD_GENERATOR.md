@@ -361,3 +361,11 @@ Static host with HTTP Range for one big SQLite file + a test page that runs open
 the db (read-only) and three httpvfs lib files; wrong/no token = 404 (checked). Verified end to end with headless Chromium over the LAN IP:
 `open 54 reqs 880 KB · W1..W5 · totalMs=369`, `secureContext=false` (plain HTTP on a LAN address — service worker / Web Crypto / OPFS unavailable there, as predicted).
 Limits: per-process byte counter is shared (one tester at a time); plain HTTP; LAN-only unless tunnelled; this serves the file, it does NOT shard it (shard-file writer not built).
+
+### §10.7 RESULT 2026-10-14 — FIRST REAL PHONE RUN (log `build/erp/logs/range_demo_server.log`, `§DEMO_REPORT ip=192.168.1.14`)
+Device: Android 10, Chrome 155, 8 cores, home Wi-Fi to the PC (`navigator.connection`: net=4g rtt=50 ms down=1.65 Mbps), plain HTTP (`secure=false`), ONE run, cold session.
+`totalMs=10140`: open 5891 ms (54 reqs, 880 KB) · W1 175 (3) · W2 240 (5) · W3 fields 3251 (57) · W4 158 (3) · W5 198 (6). Requests and bytes are IDENTICAL to the desktop proxy (128 reqs, 2.1 MB) — they are deterministic.
+- **Effective cost ≈ 55 ms per range request** on this phone (W1 58, W3 57, W4 53, W5 33 ms/req; open 109 ms/req incl. wasm instantiate). Matches the browser's own rtt=50 ms.
+- **Proxy calibration:** the `wifi` profile (20 ms) predicted 3.1 s for the cold first window — real was 10.1 s (3.3× slower); the `4g` profile (80 ms) predicted 10.9 s — close. Use the `4g` row as the phone-on-Wi-Fi proxy.
+- **Lever = request count, not bytes:** 128 requests → ~7 s of the 10.1 s. W3 alone (57 reqs) is 3.25 s. Dictionary steps W1–W3 (65 reqs ≈ 3.7 s) disappear if the dictionary is the precached T0 seed, as designed.
+- **NOT measured:** phone memory (`deviceMemory` n/a in this browser), repeat-in-session, mobile data, iPhone, secure-context features, more than one run (no variance).
