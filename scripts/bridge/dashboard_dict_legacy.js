@@ -3,7 +3,7 @@
 'use strict';
 const { execFileSync } = require('child_process'), fs = require('fs'), path = require('path');
 const pg = sql => execFileSync('docker', ['exec', '-i', 'postgres', 'psql', '-U', 'postgres', '-d', 'idempiere_pilot', '-tA', '-c', 'set search_path=adempiere;' + sql], { encoding: 'utf8', maxBuffer: 1 << 26 }).split('\n').filter(l => l && l !== 'SET');
-const TABLES = ['pa_dashboardcontent', 'pa_dashboardcontent_access', 'pa_dashboardpreference', 'pa_goal', 'pa_goalrestriction', 'pa_measure', 'pa_measurecalc', 'pa_colorschema', 'pa_ratio', 'ad_note', 'ad_recentitem'];
+const TABLES = ['pa_dashboardcontent', 'pa_dashboardcontent_access', 'pa_dashboardpreference', 'pa_goal', 'pa_goalrestriction', 'pa_measure', 'pa_measurecalc', 'pa_colorschema', 'pa_ratio', 'ad_note', 'ad_recentitem', 'ad_printcolor', 'ad_statusline', 'ad_chart', 'ad_chartdatasource'];
 const out = {};
 for (const t of TABLES) {
   const cols = pg(`select column_name from information_schema.columns where table_schema='adempiere' and table_name='${t}' order by ordinal_position`);
