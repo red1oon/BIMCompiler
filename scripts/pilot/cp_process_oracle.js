@@ -188,7 +188,7 @@ function project(rows, tbl, newIds, keyCol) {
       const match = r.ins === o.ins && r.upd === o.upd && r.del === o.del && !missing.length && !extra.length && !updMiss.length && !updExtra.length;
       if (match) tot.tablesMatch++;
       L('§CP-PROC-TABLE ' + c.name + ' ' + t + ' (ref/ours) ' + counts + ' ' + (match ? 'MATCH' : 'DIFF') +
-        (missing.length ? ' missingRows=' + missing.slice(0, 3).join(' ') : '') + (extra.length ? ' extraRows=' + extra.slice(0, 3).join(' ') : '') +
+        (missing.length ? ' missingRows=' + missing.slice(0, +process.env.CP_DIFF_ROWS || 3).join(' ') : '') + (extra.length ? ' extraRows=' + extra.slice(0, +process.env.CP_DIFF_ROWS || 3).join(' ') : '') +
         (updMiss.length ? ' refUpd=' + updMiss.slice(0, 3).join(' ') : '') + (updExtra.length ? ' oursUpd=' + updExtra.slice(0, 3).join(' ') : ''));
     }
     if (tot.tables === judgedBefore) { tot.vacuous = (tot.vacuous || 0) + 1; L('§CP-PROC-VACUOUS ' + c.name + ' no judged table changed on either side — INCONCLUSIVE (needs a pre-state that gives the process work)'); }
