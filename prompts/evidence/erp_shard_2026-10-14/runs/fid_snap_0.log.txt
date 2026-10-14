@@ -1,0 +1,3 @@
+§FIDELITY start part=0/4 tables=232 of 925 sqlite=pilot_snap.db pgdb=pilot_snap
+§FIDELITY table=ad_changelog rows=212129 pgRows=212129 pg=122370797625575633885814 sq=122370797625575633885814 OK t=3s
+§FIDELITY_VERDICT part=0/4 PASS tables=232 judgedTables=130 judgedRows=288434 totalSec=24s

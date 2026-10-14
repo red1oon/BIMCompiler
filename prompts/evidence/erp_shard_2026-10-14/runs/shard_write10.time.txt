@@ -1,0 +1,23 @@
+	Command being timed: "node scripts/shard_write.js /tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/bloat10r.db /tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/work10.db /tmp/claude-1000/-home-red1-bim-compiler/a4835524-cb34-4812-bf29-2fe73b37ec6e/scratchpad/m/shards10"
+	User time (seconds): 81.03
+	System time (seconds): 14.79
+	Percent of CPU this job got: 87%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:49.84
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 250524
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 56635
+	Voluntary context switches: 119946
+	Involuntary context switches: 4782
+	Swaps: 0
+	File system inputs: 30829440
+	File system outputs: 23848576
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

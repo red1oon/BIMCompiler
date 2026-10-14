@@ -1,0 +1,2 @@
+§FIDELITY start part=3/4 tables=231 of 925 sqlite=pilot_snap.db pgdb=pilot_snap
+§FIDELITY_VERDICT part=3/4 PASS tables=231 judgedTables=130 judgedRows=80565 totalSec=22s
