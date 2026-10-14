@@ -51,11 +51,11 @@ function detail(a, b, res) {
     const t = r.table, k = r.pk ? r.pk.split(',') : [];
     if (k.length) {
       const j = k.map(c => `_a."${c}"=_b."${c}"`).join(' and ');
-      r.insRows = cfg.psql(`select to_jsonb(_b)::text from ${B}."${t}" _b where not exists (select 1 from ${A}."${t}" _a where ${j}) limit 200`).map(x => JSON.parse(x[0]));
-      r.delRows = cfg.psql(`select to_jsonb(_a)::text from ${A}."${t}" _a where not exists (select 1 from ${B}."${t}" _b where ${j}) limit 200`).map(x => JSON.parse(x[0]));
-      r.updRows = cfg.psql(`select to_jsonb(_a)::text, to_jsonb(_b)::text from ${A}."${t}" _a join ${B}."${t}" _b on ${j} where to_jsonb(_a)<>to_jsonb(_b) limit 200`).map(x => { const o = JSON.parse(x[0]), n = JSON.parse(x[1]), ch = {}; for (const c in n) if (JSON.stringify(o[c]) !== JSON.stringify(n[c])) ch[c] = [o[c], n[c]]; return { key: k.map(c => n[c]), changes: ch }; });
+      r.insRows = cfg.psql(`select to_jsonb(_b)::text from ${B}."${t}" _b where not exists (select 1 from ${A}."${t}" _a where ${j}) limit ${+process.env.CP_ROW_LIMIT || 200}`).map(x => JSON.parse(x[0]));
+      r.delRows = cfg.psql(`select to_jsonb(_a)::text from ${A}."${t}" _a where not exists (select 1 from ${B}."${t}" _b where ${j}) limit ${+process.env.CP_ROW_LIMIT || 200}`).map(x => JSON.parse(x[0]));
+      r.updRows = cfg.psql(`select to_jsonb(_a)::text, to_jsonb(_b)::text from ${A}."${t}" _a join ${B}."${t}" _b on ${j} where to_jsonb(_a)<>to_jsonb(_b) limit ${+process.env.CP_ROW_LIMIT || 200}`).map(x => { const o = JSON.parse(x[0]), n = JSON.parse(x[1]), ch = {}; for (const c in n) if (JSON.stringify(o[c]) !== JSON.stringify(n[c])) ch[c] = [o[c], n[c]]; return { key: k.map(c => n[c]), changes: ch }; });
     } else {
-      r.insRows = cfg.psql(`select to_jsonb(_b)::text from (select * from ${B}."${t}" _b where to_jsonb(_b)::text not in (select to_jsonb(_a)::text from ${A}."${t}" _a)) _b limit 200`).map(x => JSON.parse(x[0])); r.updRows = []; r.delRows = [];
+      r.insRows = cfg.psql(`select to_jsonb(_b)::text from (select * from ${B}."${t}" _b where to_jsonb(_b)::text not in (select to_jsonb(_a)::text from ${A}."${t}" _a)) _b limit ${+process.env.CP_ROW_LIMIT || 200}`).map(x => JSON.parse(x[0])); r.updRows = []; r.delRows = [];
     }
   }
   return res;

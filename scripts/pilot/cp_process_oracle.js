@@ -182,12 +182,14 @@ function project(rows, tbl, newIds, keyCol) {
       const keyCol = t + '_id';
       const pr = project(r.rows, t, newIds, keyCol), po = project(o.rows, t, null, keyCol);
       const missing = pr.filter(x => !po.includes(x)), extra = po.filter(x => !pr.includes(x));
+      if (process.env.CP_DUMP) fs.writeFileSync(process.env.CP_DUMP + '.' + c.name + '.' + t + '.json', JSON.stringify({ ref: pr, ours: po }));
+      const truncated = r.ins > (r.rows || []).length || r.upd > (r.updRows || []).length;   // the reference sample is capped (CP_ROW_LIMIT, default 200): rows beyond it are NOT judged
       const counts = 'ins ' + r.ins + '/' + o.ins + ' upd ' + r.upd + '/' + o.upd + ' del ' + r.del + '/' + o.del;
       const updR = project(r.updRows, t, newIds, keyCol), updO = project(o.updRows, t, null, keyCol);
       const updMiss = updR.filter(x => !updO.includes(x)), updExtra = updO.filter(x => !updR.includes(x));
       const match = r.ins === o.ins && r.upd === o.upd && r.del === o.del && !missing.length && !extra.length && !updMiss.length && !updExtra.length;
       if (match) tot.tablesMatch++;
-      L('§CP-PROC-TABLE ' + c.name + ' ' + t + ' (ref/ours) ' + counts + ' ' + (match ? 'MATCH' : 'DIFF') +
+      L('§CP-PROC-TABLE ' + c.name + ' ' + t + ' (ref/ours) ' + counts + ' ' + (match ? (truncated ? 'MATCH(counts; rows truncated at ' + (process.env.CP_ROW_LIMIT || 200) + ')' : 'MATCH') : 'DIFF') +
         (missing.length ? ' missingRows=' + missing.slice(0, +process.env.CP_DIFF_ROWS || 3).join(' ') : '') + (extra.length ? ' extraRows=' + extra.slice(0, +process.env.CP_DIFF_ROWS || 3).join(' ') : '') +
         (updMiss.length ? ' refUpd=' + updMiss.slice(0, 3).join(' ') : '') + (updExtra.length ? ' oursUpd=' + updExtra.slice(0, 3).join(' ') : ''));
     }
