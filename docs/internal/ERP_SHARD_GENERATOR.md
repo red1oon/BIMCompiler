@@ -503,3 +503,24 @@ Engine files cacheable (`max-age=3600`), reload + tap. Witness: repeat runs have
 - 11 GB re-migration with the check added: 21 m 09 s wall, max RSS 285 MB (was 16–23 min / 231–246 MB without the per-value test).
 - **Every value of every table equals PG at the moment of the snapshot** (60-bit-md5 fingerprint per table; negative control proves it detects a 0.01 change, a trailing space and a deleted row).
 - **Still open (handoffs, not done here):** (1) the ERP kernel's currency conversion must prefer `_numeric_exact` over the stored double to be exact end to end; (2) shard files do not yet carry the sidecar rows for their tables; (3) a real client may have more wide values (e.g. computed costs) — the loader now counts them; (4) the check is a point-in-time proof: it does not cover later writes.
+
+## §15 Static-host load + cost test (SPEC, 2026-10-14 — written before `scripts/static_host_load.js`)
+**Issue it proves/disproves:** the claim "a dumb static file host serves many ERP users cheaply". Measures what is MEASURABLE here, host-independent where possible.
+**Method:** (1) record the exact byte-range request sequence of one cold first window from a real browser session (headless Chromium → demo server with `DEMO_TRACE=1`), for the 11 GB monolith (128 requests) and the shard (`warm.db`, 24 requests). (2) Replay that trace from N concurrent virtual users (each: one keep-alive connection, requests strictly sequential like the worker's synchronous reads), 3 sessions per user, N = 1, 10, 50, 100, 200, 400.
+**Metrics (per level):** sessions completed, requests, bytes served, request latency p50/p95/p99, session time p50/p95, requests/s, MB/s, errors, server CPU % and RSS (sampled with `ps`). Replay integrity: Σ bytes received per session must equal Σ of the recorded range lengths.
+**Cost arithmetic (labelled ASSUMPTION, not measurement):** per-session bytes and requests × stated sessions/day → GB and requests per month. No provider price is quoted; a price sheet is needed for dollars. The comparison to the legacy path uses the one thing measured here: the RSS of the running legacy iDempiere JVM on this machine.
+**Honest bounds:** the host is a single Node process on this machine (a stand-in, not OCI/CDN); loopback has no RTT or bandwidth limit, so session times show host contention only, not phone-visible latency (that is §11); virtual users replay a fixed trace and do not model think time, cache hits or mixed workloads.
+**Verdict:** `INCONCLUSIVE` if no sessions completed or replay integrity fails; `FAIL` on errors.
+
+### §15.1 RESULT 2026-10-14 — static host under load (`scripts/static_host_load.js`; logs `load_shard.log`, `load_monolith.log`)
+Trace = one real cold first window recorded from headless Chromium: **shard 24 requests / 464 KB; monolith 128 requests / 2 096 KB.** Replay: N virtual users × 3 sessions, one keep-alive connection per user, requests sequential. Host = one Node process, loopback, same 20-core machine as the load generator (stand-in, NOT OCI). 0 errors and replay integrity exact at every level.
+| users | shard: req/s · MB/s · req p95 · session p95 | monolith: req/s · MB/s · req p95 · session p95 |
+|---|---|---|
+| 10 | 7 129 · 135 · 3 ms · 39 ms | 8 828 · 141 · 3 ms · 197 ms |
+| 100 | 16 438 · 310 · 18 ms · 227 ms | 22 735 · 364 · 11 ms · 712 ms |
+| 400 | 20 253 · 382 · 39 ms · 545 ms | 18 881 · 302 · 39 ms · 2 830 ms |
+- **Host saturates near ~20 k requests/s for both** (server CPU 117 % shard / 175 % monolith at 400 users; RSS 70–122 MB). Because the shard needs 5.3× fewer requests per window, the same host serves ~5× more first windows per second (≈ 20 253/24 ≈ 840/s vs ≈ 18 881/128 ≈ 150/s) — derived arithmetic, loopback-only.
+- **Monolith's session p95 at 400 users = 2.8 s vs shard 0.55 s** on an unconstrained link: pure host contention, not phone latency (§11 has that).
+- **Egress per cold first window (ASSUMPTION table, no prices):** 1 000 sessions/day → shard 13.3 GB/month · 720 k requests; monolith ≈ 60 GB/month · 3.8 M requests; 10 000/day → shard 133 GB · 7.2 M; monolith ≈ 600 GB · 38 M. Repeat visits and any CDN/browser caching of pages would lower these; not modelled.
+- **Legacy comparison, the one measured number:** the live iDempiere server JVM on this machine (`-Xmx2048M`, up since Oct 13) holds ≈ 0.97 GB RSS before serving any load test here; its throughput per core was NOT measured, so no req/s or cost ratio vs the static path is claimed.
+- **Not measured / bounds:** real CDN or OCI behaviour, RTT/bandwidth limits, think time, mixed workloads, cache hits, cost in dollars (needs the provider's current price sheet).

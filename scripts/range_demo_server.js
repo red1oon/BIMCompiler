@@ -61,6 +61,7 @@ var server = http.createServer(function (req, res) {
     req.on('end', function () {
       try { var j = JSON.parse(body); }
       catch (e) { res.statusCode = 400; return res.end(); }
+      if (process.env.DEMO_TRACE) console.log('§TRACE_END');
       if (j.error) console.log('§DEMO_REPORT ERROR ip=' + ip + ' ' + j.error + ' ua=' + (j.ua || '').slice(0, 90));
       else {
         console.log('§DEMO_REPORT ip=' + ip + ' totalMs=' + j.totalMs + ' secure=' + j.secure + ' net=' + j.net + ' rtt=' + j.rtt + ' down=' + j.downlink + ' cores=' + j.cores + ' memGB=' + j.mem + ' ua=' + (j.ua || '').slice(0, 90));
@@ -79,7 +80,7 @@ var server = http.createServer(function (req, res) {
   if (m) { a = m[1] === '' ? Math.max(0, st.size - +m[2]) : +m[1]; b = m[2] === '' || m[1] === '' ? st.size - 1 : Math.min(+m[2], st.size - 1); res.statusCode = 206; res.setHeader('content-range', 'bytes ' + a + '-' + b + '/' + st.size); }
   res.setHeader('content-length', b - a + 1);
   if (req.method === 'HEAD') return res.end();
-  if (f === DB) { tally.bytes += b - a + 1; tally.reqs++; }
+  if (f === DB) { tally.bytes += b - a + 1; tally.reqs++; if (process.env.DEMO_TRACE) console.log('§TRACE ' + a + '-' + b); }
   if (f !== DB) { var t0 = Date.now(); res.on('finish', function () { console.log('§DEMO_LIB ' + path.basename(f) + ' bytes=' + (b - a + 1) + ' serveMs=' + (Date.now() - t0) + ' ip=' + ip); }); }
   fs.createReadStream(f, { start: a, end: b }).pipe(res);
 });
