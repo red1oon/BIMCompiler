@@ -21,7 +21,7 @@ A lens op qualifies when it lowers at least one of G/S/M/R for the same final bo
 Confirm-and-do-next buttons that chain the follow-on documents (ship, invoice) in one step; smart buttons showing counts of related documents; quick-create of a partner or product inside a field; sensible defaults for warehouse, price list and UOM; one-step Produce for a manufacturing order (issue + receive in one go); inline editable lines; chatter-style activity log on a record. The twin already has Zoom Across, Posted view and POS document types, so first check what exists.
 
 ## 5. Status
-- [ ] Spec written (this file).
-- [ ] Odoo 17 container started, login verified, demo data present.
+- [x] Spec written (this file).
+- [x] Odoo 17.0.1.3 started 2026-10-15 (docker `odoo` + `odoo-db`, localhost:8069, db `odoodemo`, admin/admin). Installed: sale_management, purchase, stock, account. **`mrp` is NOT installed**, so flow (c) needs `mrp` installed into this throwaway DB first; start with flows (a) and (b).
 - [ ] Flow (c) measured on both (the Libero flow, since its film already gives the twin side).
 - [ ] FO-n candidate list with numbers.
