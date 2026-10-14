@@ -18,6 +18,8 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 - **Dubai paper** (outside repo): `~/Projects/Dubai/OpenBIM_Paper.docx` = IEEE format, conformed to abstract v4; log in `~/Projects/Dubai/PROMPT.md`.
 - ⛔ user call: 4 zero-byte DBs in bim-ootb/buildings (`city_index`, `city_index_v2`, `Duplex_meta`, `SampleCastle_extracted`).
 
+## ▶ 2026-10-14 — NinjaExcel: branch `ninja-xtab2` pushed (xtab2, pre-flight+SELECT guard, MOES replay W40, Film 3 EN+TH). ⏳ AWAITING Laos reply on the error in their cashflow Excel (our replay does NOT confirm the BACKUP-drift claim — read §RESUME HERE first) + Laos test-server access for SQLite parity. `prompts/NINJAEXCEL_TEMPLATE_ENGINE.md` §RESUME HERE · index `~/Projects/NinjaExcel/`
+
 ## ▶ 2026-10-13 — ninja_template = the user's own NinjaExcel add-on (NOT conventional iDempiere processes) — PR #175 draft — read `prompts/NINJAEXCEL_TEMPLATE_ENGINE.md` §RESUME HERE
 Done: engine + styles-aware xlsx host + formula evaluator + own PDF renderer, regression suite `scripts/ninja_template/run_all.sh` (19 gates, public fixtures). Parity for conventional processes belongs to the `SQLiteIDEMPIERE.md` lane (another session) — do not duplicate. Agreed in principle as a permanent kernel feature (4 conditions in the prompt: SELECT-only safety, template check, dictionary scale, unwitnessed features). Next: port as the NinjaExcel pill's RUN verb in bim-ootb (unify with `ninja_excel.js`); a dedicated USER MANUAL with a witnessed "improves over legacy" section; a NARRATED FILM of the steps (plan first; PLAYBOOK + §ERP-FILM; ask users-vs-developers first); PDF width profile needs customer-server PDFs. Not deployed. CI `system-is-real` red on master (pre-existing).
 
