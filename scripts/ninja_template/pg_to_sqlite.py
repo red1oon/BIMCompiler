@@ -5,7 +5,7 @@ import sys, sqlite3, decimal, datetime, psycopg2, os
 out = sys.argv[1]
 if os.path.exists(out): os.remove(out)
 TABLES = ['fact_acct','c_elementvalue','c_bpartner','ad_org','c_invoice','c_payment','c_doctype','gl_journal','m_inout','c_order'] + [t for t in os.environ.get('NT_EXTRA_TABLES','').split(',') if t]   # extra (customer-specific) tables come from the private env, never from the repo
-pg = psycopg2.connect(host='localhost', port=5432, user='adempiere', password='adempiere', dbname=os.environ.get('NT_PGDB','idempiere_clone')); pg.set_session(readonly=True); cur = pg.cursor()
+pg = psycopg2.connect(host=os.environ.get('NT_PGHOST','localhost'), port=int(os.environ.get('NT_PGPORT','5432')), user=os.environ.get('NT_PGUSER','adempiere'), password=os.environ.get('NT_PGPASS','adempiere'), dbname=os.environ.get('NT_PGDB','idempiere_clone')); pg.set_session(readonly=True); cur = pg.cursor()
 lite = sqlite3.connect(out)
 def conv(v):
     if isinstance(v, decimal.Decimal): return float(v)
@@ -27,17 +27,19 @@ for t in TABLES:
         if d == 'numeric':
             cur.execute('select coalesce(max(scale("%s")),0) from adempiere.%s' % (c, t)); lite.execute('insert into _scale values (?,?,?)', (t, c, cur.fetchone()[0]))
     lite.execute('create table %s (%s)' % (t, ','.join('"%s" %s' % (c, aff(d)) for c, d in cols)))
-    cur.execute('select %s from adempiere.%s' % (','.join('"%s"' % c for c, _ in cols), t)); n = 0
+    cur.execute('select %s from adempiere.%s' % (','.join(('"%s"::text' if d.startswith(('timestamp','date')) else '"%s"') % c for c, d in cols), t)); n = 0   # dates as text: customer data holds out-of-range years (e.g. 20025) that python datetime cannot carry
     while True:
         rows = cur.fetchmany(5000)
         if not rows: break
         lite.executemany('insert into %s values (%s)' % (t, ','.join('?' * len(cols))), [[conv(v) for v in r] for r in rows]); n += len(rows)
     print('§SNAP', t, n)
-# v_docno: SQLite mirror of the PG STAND-IN view (legacy/v_docno_standin.sql)
-lite.execute("""create view v_docno as
- select 318 as table_id, i.c_invoice_id as doc_id, i.documentno, dt.name as docname, i.description from c_invoice i left join c_doctype dt on dt.c_doctype_id=i.c_doctype_id
- union all select 335, p.c_payment_id, p.documentno, dt.name, p.description from c_payment p left join c_doctype dt on dt.c_doctype_id=p.c_doctype_id
- union all select 224, j.gl_journal_id, j.documentno, dt.name, j.description from gl_journal j left join c_doctype dt on dt.c_doctype_id=j.c_doctype_id
- union all select 319, io.m_inout_id, io.documentno, dt.name, io.description from m_inout io left join c_doctype dt on dt.c_doctype_id=io.c_doctype_id
- union all select 259, o.c_order_id, o.documentno, dt.name, o.description from c_order o left join c_doctype dt on dt.c_doctype_id=o.c_doctype_id""")
+if 'v_docno' not in TABLES:
+  # v_docno: SQLite mirror of the PG STAND-IN view (legacy/v_docno_standin.sql)
+  lite.execute("""create view v_docno as
+   select 318 as table_id, i.c_invoice_id as doc_id, i.documentno, dt.name as docname, i.description from c_invoice i left join c_doctype dt on dt.c_doctype_id=i.c_doctype_id
+   union all select 335, p.c_payment_id, p.documentno, dt.name, p.description from c_payment p left join c_doctype dt on dt.c_doctype_id=p.c_doctype_id
+   union all select 224, j.gl_journal_id, j.documentno, dt.name, j.description from gl_journal j left join c_doctype dt on dt.c_doctype_id=j.c_doctype_id
+   union all select 319, io.m_inout_id, io.documentno, dt.name, io.description from m_inout io left join c_doctype dt on dt.c_doctype_id=io.c_doctype_id
+   union all select 259, o.c_order_id, o.documentno, dt.name, o.description from c_order o left join c_doctype dt on dt.c_doctype_id=o.c_doctype_id""")
+  
 lite.commit(); lite.close()
