@@ -25,3 +25,12 @@ Confirm-and-do-next buttons that chain the follow-on documents (ship, invoice) i
 - [x] Odoo 17.0.1.3 started 2026-10-15 (docker `odoo` + `odoo-db`, localhost:8069, db `odoodemo`, admin/admin). Installed: sale_management, purchase, stock, account. **`mrp` is NOT installed**, so flow (c) needs `mrp` installed into this throwaway DB first; start with flows (a) and (b).
 - [ ] Flow (c) measured on both (the Libero flow, since its film already gives the twin side).
 - [ ] FO-n candidate list with numbers.
+
+## 6. Lane split against the ERPNext work (so the two lenses never overlap)
+The ERPNext column already exists in `prompts/ERP_FIRST_SETUP_GUIDE.md §FS-ERPNEXT` (docs-only, first-setup/onboarding, ERP-depth session). Split by **lifecycle phase**, and record the owner on every `FO-n`:
+| Phase | Owner lens | Examples |
+|---|---|---|
+| Setup / onboarding (tenant, company, chart of accounts, fiscal year, users and roles, naming series, form customisation) | **ERPNext/Frappe** (ERP-depth session, §FS-ERPNEXT) | setup wizard, doctype customise, naming series |
+| Day-to-day operations on documents (create, chain, find, correct) | **Odoo** (this lane) | see candidates below |
+Rule: a candidate whose job is "get a new client running" goes to the ERPNext lane; one whose job is "work the documents of an already-running client" goes here. A candidate that fits both is claimed in this table by whoever writes it first; the other session reads the table before starting.
+ERP-wide Odoo candidates beyond Manufacturing (all hypotheses until measured): FO-A next-step buttons that chain follow-on documents; FO-B smart buttons with counts of related records; FO-C quick-create inside a field; FO-D saved filters, group-by and favourites on every list; FO-E bank reconciliation widget for payments vs statement lines; FO-F activity/chatter log with scheduled follow-ups on a record; FO-G defaults and on-change that remove mandatory typing; FO-H pivot/graph views from any list. Unclaimed until measured.
