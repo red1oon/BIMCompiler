@@ -2,7 +2,8 @@
 # Executor for the parity witness: reads SQL on stdin, prints rows as JSON with Java-like typing (n=number,s=string,t=timestamp). DB = local clone idempiere_clone ONLY.
 import sys, json, decimal, datetime, psycopg2
 sql = sys.stdin.read()
-con = psycopg2.connect(host='localhost', port=5432, user='adempiere', password='adempiere', dbname=__import__('os').environ.get('NT_PGDB','idempiere_clone')); con.set_session(readonly=True)
+E = __import__('os').environ   # defaults = the local stock clone (back-compat); NT_PG* point it at another READ-ONLY copy; NT_STMT_MS = server-side statement_timeout (a slow statement fails loudly, §SQL_SLOW)
+con = psycopg2.connect(host=E.get('NT_PGHOST', 'localhost'), port=int(E.get('NT_PGPORT', '5432')), user=E.get('NT_PGUSER', 'adempiere'), password=E.get('NT_PGPASS', 'adempiere'), dbname=E.get('NT_PGDB', 'idempiere_clone'), options='-c search_path=' + E.get('NT_PGSCHEMA', 'adempiere,public') + (' -c statement_timeout=' + E['NT_STMT_MS'] if E.get('NT_STMT_MS') else '')); con.set_session(readonly=True)
 cur = con.cursor()
 try:
     cur.execute(sql); rows = cur.fetchall()

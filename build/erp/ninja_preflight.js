@@ -47,17 +47,20 @@
   // report(result, log) -> prints one §PREFLIGHT line per finding plus a summary line; returns true when there are no errors. Hosts call it on every run so the log always says what was judged.
   function report(res, log) { log = log || console.log; res.errors.forEach(function (e) { log('§PREFLIGHT ERROR ' + e); }); res.warnings.forEach(function (w) { log('§PREFLIGHT WARN ' + w); }); log('§PREFLIGHT_SUMMARY errors=' + res.errors.length + ' warnings=' + res.warnings.length + (res.errors.length ? ' - run refused' : ' - run allowed')); return res.errors.length === 0; }
   // timed(exec, log, opts) -> executor that logs one §SQL_MS line per statement and a §SQL_SUMMARY (statements / distinct / duplicates / total ms) via summary().
+  // opts.slowMs=N flags any statement over N ms (§SQL_SLOW #n ms sql-head) and a statement the DB cancelled for timeout (§SQL_SLOW ... TIMEOUT, then rethrown); verdict() -> PASS / FAIL(slow>0) / INCONCLUSIVE(no statement judged).
   // opts.memo=true answers a repeated IDENTICAL statement from this run's first result (read-only SQL, same text => same rows; templates repeat ~22% of their statements). Off by default.
   function timed(exec, log, opts) {
-    opts = opts || {}; log = log || function () {}; var st = { n: 0, dup: 0, ms: 0, saved: 0, seen: {} };
+    opts = opts || {}; log = log || function () {}; var st = { n: 0, dup: 0, ms: 0, saved: 0, seen: {}, slow: 0, timeouts: 0 }; var head = function (q) { return String(q).replace(/\s+/g, ' ').slice(0, 160); };
     var now = function () { return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now(); };
     var f = function (sql) {
       var key = String(sql); st.n++; var dup = st.seen[key]; if (dup) st.dup++;
       if (opts.memo && dup && dup.rows) { st.saved += dup.ms; log('§SQL_MS #' + st.n + ' ms=0 rows=' + dup.rows.length + ' MEMO(first=' + dup.ms.toFixed(1) + 'ms)'); return dup.rows; }
-      var t0 = now(), rows = exec(sql), ms = now() - t0; st.ms += ms; if (!dup) st.seen[key] = { rows: rows, ms: ms };
+      var t0 = now(), rows; try { rows = exec(sql); } catch (e) { if (/timeout|canceling statement/i.test(String(e && e.message))) { st.slow++; st.timeouts++; log('§SQL_SLOW #' + st.n + ' TIMEOUT after ms=' + (now() - t0).toFixed(1) + ' ' + head(sql)); } throw e; } var ms = now() - t0; st.ms += ms;
+      if (opts.slowMs && ms > opts.slowMs) { st.slow++; log('§SQL_SLOW #' + st.n + ' ms=' + ms.toFixed(1) + ' limit=' + opts.slowMs + ' ' + head(sql)); } if (!dup) st.seen[key] = { rows: rows, ms: ms };
       log('§SQL_MS #' + st.n + ' ms=' + ms.toFixed(1) + ' rows=' + (rows ? rows.length : 0) + (dup ? ' DUPLICATE' : '')); return rows;
     };
-    f.summary = function () { var d = Object.keys(st.seen).length; var line = '§SQL_SUMMARY statements=' + st.n + ' distinct=' + d + ' duplicates=' + st.dup + ' totalMs=' + st.ms.toFixed(1) + (opts.memo ? ' memoSavedMs=' + st.saved.toFixed(1) : ''); log(line); return { statements: st.n, distinct: d, duplicates: st.dup, totalMs: st.ms, memoSavedMs: st.saved }; };
+    f.summary = function () { var d = Object.keys(st.seen).length; var line = '§SQL_SUMMARY statements=' + st.n + ' distinct=' + d + ' duplicates=' + st.dup + ' totalMs=' + st.ms.toFixed(1) + (opts.slowMs ? ' slow=' + st.slow : '') + (opts.memo ? ' memoSavedMs=' + st.saved.toFixed(1) : ''); log(line); return { statements: st.n, distinct: d, duplicates: st.dup, totalMs: st.ms, memoSavedMs: st.saved }; };
+    f.verdict = function () { var v = st.slow ? 'FAIL' : st.n ? 'PASS' : 'INCONCLUSIVE'; log('§SLOW_GUARD_VERDICT ' + v + ' statements=' + st.n + ' slow=' + st.slow + ' timeouts=' + st.timeouts + ' limitMs=' + (opts.slowMs || 0)); return v; };
     return f;
   }
   var api = { preflight: preflight, selectOnly: selectOnly, report: report, timed: timed };
