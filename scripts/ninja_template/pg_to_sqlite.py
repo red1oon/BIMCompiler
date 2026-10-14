@@ -42,4 +42,17 @@ if 'v_docno' not in TABLES:
    union all select 319, io.m_inout_id, io.documentno, dt.name, io.description from m_inout io left join c_doctype dt on dt.c_doctype_id=io.c_doctype_id
    union all select 259, o.c_order_id, o.documentno, dt.name, o.description from c_order o left join c_doctype dt on dt.c_doctype_id=o.c_doctype_id""")
   
+
+# Standard fix (not per-report): the twin mirrors the SOURCE database's own plain-column indexes (what iDempiere/Postgres already has), then ANALYZE, so every report gets the same access paths. Expression/partial indexes are skipped (counted).
+import re
+mir = skip = 0
+for t in [t for t in TABLES if t != 'v_docno' or True]:
+    cur.execute("select indexdef from pg_indexes where schemaname='adempiere' and tablename=%s", (t,))
+    for (d,) in cur.fetchall():
+        m = re.match(r'CREATE (UNIQUE )?INDEX (\S+) ON adempiere\.(\S+) USING btree \(([^()]*)\)$', d)
+        if not m: skip += 1; continue
+        cols = ','.join('"%s"' % c.strip().split()[0].strip('"') + (' DESC' if c.strip().endswith('DESC') else '') for c in m.group(4).split(','))
+        try: lite.execute('create %sindex if not exists "%s" on %s (%s)' % (m.group(1) or '', m.group(2), m.group(3), cols)); mir += 1
+        except Exception as e: skip += 1; print('§SNAP index skip', m.group(2), e)
+lite.execute('analyze'); print('§SNAP_INDEXES mirrored=%d skipped=%d (plain-column btree only) + ANALYZE' % (mir, skip))
 lite.commit(); lite.close()

@@ -527,6 +527,8 @@
     sql = rewriteCalls(sql, 'EXTRACT', function (inner) {                                // EXTRACT(YEAR|MONTH|DAY FROM x)
       var sp = topLevelSplit(inner, ' FROM '); if (!sp) return null; var f = { YEAR: '%Y', MONTH: '%m', DAY: '%d' }[sp[0].trim().toUpperCase()]; if (!f) return null;
       return "CAST(strftime('" + f + "', " + sp[1] + ') AS INTEGER)'; });
+    sql = rewriteCalls(sql, 'LEFT', function (inner) {                                   // LEFT(x, n) -> native substr(x, 1, n): a JS UDF per row made 'LEFT(el.value,3)=...' filters ~10x slower; only a non-negative integer literal n (PG: negative n means 'all but last n') is rewritten
+      var sp = topLevelSplit(inner, ','); if (!sp || !/^\s*\d+\s*$/.test(sp[1])) return null; return 'substr(' + sp[0] + ', 1, ' + sp[1].trim() + ')'; });
     return sql;
   }
   // SQLite value -> typed value as the Java side would see it. REAL results are rendered with the shortest decimal that round-trips at 12 sig. digits
