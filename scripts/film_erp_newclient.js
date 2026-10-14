@@ -10,7 +10,7 @@ const http = require('http'), fs = require('fs'), path = require('path'), { exec
 
 const REPO = process.env.ERP_REPO || path.join(require('os').homedir(), 'bim-ootb');   // ERP_REPO = a worktree, to film a fix before it merges
 const OUT = path.resolve(process.argv[2] || '.'); const FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
-const ONLY = '';   // ONLY_LANG=th_TH: Thai narration + Thai UI through login and the first panel; UI → English when the first panel (Sales Order window) is on screen
+const ONLY = process.env.ONLY_LANG || '';   // ONLY_LANG=th_TH: Thai narration + Thai UI through login and the first panel; UI → English when the first panel (Sales Order window) is on screen
 let curLang = ONLY || 'en_US';
 const LOG = [], PAGELOG = [];
 const say = (s) => { LOG.push(s); console.log(s); };
@@ -185,12 +185,15 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
 
   try {
     await page.mouse.move(720, 600);
-    // ── OFF CAMERA: log in ──
-    await hclick("#idmp-login-clients .idmp-login-user:has(.nm:text-is('GardenWorld'))"); await page.waitForSelector('#idmp-login-step1:visible'); await hold(300);
-    await hclick("#idmp-login-users .idmp-login-user:has(.nm:text-is('GardenAdmin'))"); await page.waitForSelector('#idmp-login-step2:visible'); await hold(300);
-    await hclick('#idmp-login-ok');
-    await page.waitForFunction(() => document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0, null, { timeout: 10000 }); await hold(300);
-    await castOn(page); await page.mouse.move(720, 400); await hold(600);
+    // ── English: log in OFF CAMERA. Thai (ONLY_LANG=th_TH, rule 2026-10-13): the login card + login + the first panel are ON camera in Thai, then the UI goes to English ──
+    const doLogin = async () => {
+      await hclick("#idmp-login-clients .idmp-login-user:has(.nm:text-is('GardenWorld'))"); await page.waitForSelector('#idmp-login-step1:visible'); await hold(300);
+      await hclick("#idmp-login-users .idmp-login-user:has(.nm:text-is('GardenAdmin'))"); await page.waitForSelector('#idmp-login-step2:visible'); await hold(300);
+      await hclick('#idmp-login-ok');
+      await page.waitForFunction(() => document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0, null, { timeout: 10000 }); await hold(300);
+    };
+    if (ONLY) { await castOn(page); await page.mouse.move(720, 400); await beat('n0', ONLY, 'login card in ' + ONLY); await hold(2500); }
+    else { await doLogin(); await castOn(page); await page.mouse.move(720, 400); await hold(600); }
     const TABT = (table) => '#idmp-tabstrip .idmp-adtab[title$="· ' + table + '"]';
     const ensureForm = async () => { if (!(await page.locator('#idmp-inline-mount [data-col]').count())) { await hclick('#idmp-toolbar [data-tb="toggle"]'); await hold(700); } };
     const ensureGrid = async () => { if (!(await page.locator('.idmp-grid tbody tr').count())) { await hclick('#idmp-toolbar [data-tb="toggle"]'); await hold(700); } };
@@ -199,8 +202,13 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     const clickOK = async () => { await page.waitForSelector('[data-procdlg-ok]', { timeout: 20000 }); await hold(2200); await hclick('[data-procdlg-ok]'); await hold(500); };
 
     // n1 the window and its five tabs
-    await beat('n1', 'en', 'Calendar Year and Period window');
-    await openWinById(117); await hold(900);
+    if (ONLY) {
+      await beat('n0b', ONLY, 'login + open the first panel, UI still ' + ONLY); await doLogin(); await openWinById(117); await hold(900);
+      await beat('n0c', ONLY, 'first panel on screen -> UI back to English'); await setLang('en_US', 'session'); await hold(800);
+      await beat('n1', 'en', 'Calendar Year and Period window');
+    } else {
+      await beat('n1', 'en', 'Calendar Year and Period window'); await openWinById(117); await hold(900);
+    }
     const tabNames = await page.$$eval('#idmp-tabstrip .idmp-adtab', e => e.map(x => x.textContent.trim()));
     fact('tabs', tabNames.length + ' ' + JSON.stringify(tabNames));
     for (let i = 0; i < tabNames.length; i++) { await glide('#idmp-tabstrip .idmp-adtab >> nth=' + i); await hold(650); }

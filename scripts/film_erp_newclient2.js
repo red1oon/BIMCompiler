@@ -11,7 +11,7 @@ const http = require('http'), fs = require('fs'), path = require('path'), { exec
 
 const REPO = process.env.ERP_REPO || path.join(require('os').homedir(), 'bim-ootb');   // ERP_REPO = a worktree, to film a fix before it merges
 const OUT = path.resolve(process.argv[2] || '.'); const FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
-const ONLY = '';   // ONLY_LANG=th_TH: Thai narration + Thai UI through login and the first panel; UI → English when the first panel (Sales Order window) is on screen
+const ONLY = process.env.ONLY_LANG || '';   // ONLY_LANG=th_TH: Thai narration + Thai UI through login and the first panel; UI → English when the first panel (Sales Order window) is on screen
 let curLang = ONLY || 'en_US';
 const LOG = [], PAGELOG = [];
 const say = (s) => { LOG.push(s); console.log(s); };
@@ -186,18 +186,27 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
 
   try {
     await page.mouse.move(720, 600);
-    await hclick("#idmp-login-clients .idmp-login-user:has(.nm:text-is('GardenWorld'))"); await page.waitForSelector('#idmp-login-step1:visible'); await hold(300);
-    await hclick("#idmp-login-users .idmp-login-user:has(.nm:text-is('GardenAdmin'))"); await page.waitForSelector('#idmp-login-step2:visible'); await hold(300);
-    await hclick('#idmp-login-ok');
-    await page.waitForFunction(() => document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0, null, { timeout: 10000 }); await hold(300);
-    await castOn(page); await page.mouse.move(720, 400); await hold(600);
+    // English: log in OFF CAMERA. Thai (ONLY_LANG=th_TH, rule 2026-10-13): login card + login + the first panel ON camera in Thai, then the UI goes to English
+    const doLogin = async () => {
+      await hclick("#idmp-login-clients .idmp-login-user:has(.nm:text-is('GardenWorld'))"); await page.waitForSelector('#idmp-login-step1:visible'); await hold(300);
+      await hclick("#idmp-login-users .idmp-login-user:has(.nm:text-is('GardenAdmin'))"); await page.waitForSelector('#idmp-login-step2:visible'); await hold(300);
+      await hclick('#idmp-login-ok');
+      await page.waitForFunction(() => document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0, null, { timeout: 10000 }); await hold(300);
+    };
+    if (ONLY) { await castOn(page); await page.mouse.move(720, 400); await beat('s0', ONLY, 'login card in ' + ONLY); await hold(2500); }
+    else { await doLogin(); await castOn(page); await page.mouse.move(720, 400); await hold(600); }
     const TABT = (table) => '#idmp-tabstrip .idmp-adtab[title$="· ' + table + '"]';
     const ensureGrid = async () => { if (!(await page.locator('.idmp-grid tbody tr').count())) { await hclick('#idmp-toolbar [data-tb="toggle"]'); await hold(700); } };
     const pickText = async (col, re) => { const o = await optBy(col, re); await hselect(F(col, 'select'), o.v); return o.t; };
 
     // s1 a currency rate makes its own reverse
-    await beat('s1', 'en', 'Currency Rate window');
-    await openWinById(116); await hold(900);
+    if (ONLY) {
+      await beat('s0b', ONLY, 'login + open the first panel, UI still ' + ONLY); await doLogin(); await openWinById(116); await hold(900);
+      await beat('s0c', ONLY, 'first panel on screen -> UI back to English'); await setLang('en_US', 'session'); await hold(800);
+      await beat('s1', 'en', 'Currency Rate window');
+    } else {
+      await beat('s1', 'en', 'Currency Rate window'); await openWinById(116); await hold(900);
+    }
     const before = (await tip("SELECT COUNT(*) AS n FROM c_conversion_rate WHERE ad_client_id=11")).pop().n; fact('rates.before', before);
     await beat('s1b', 'en', 'type one rate');
     await hclick(NEWB); await page.waitForSelector('#idmp-inline-mount .cfrow', { timeout: 10000 }); await hold(500);
