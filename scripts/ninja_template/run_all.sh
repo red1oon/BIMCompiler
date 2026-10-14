@@ -7,7 +7,7 @@ cd "$(dirname "$0")"; D=$PWD; fail=0; NT_DATA=${NT_DATA:-$HOME/Projects/ninja-te
 M=$HOME/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar; JCP=$(ls $HOME/Projects/red1-ninja-roundtrip/lib/*.jar | tr '\n' ':')$M:.
 OUT=${OUT:-/tmp/ninja_template_out}; mkdir -p $OUT
 javac -nowarn -cp "$JCP" -d . W27_StyleParity.java W32_GoldenStyle.java GoldenDump.java Xls2Xlsx.java 2>&1 | grep -v '^Note:' | head -5
-chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|XTAB2_VERDICT|PREFLIGHT_VERDICT|SHOWCASE_EDIT_VERDICT|REPLAY_VERDICT|TB_DEMO_VERDICT|MANUAL_CLAIMS_VERDICT|BROWSER_REPORT_VERDICT|PILL_REPORT_VERDICT|REGISTER_VERDICT|UC_VERDICT|SQL_ERROR_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
+chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|XTAB2_VERDICT|PREFLIGHT_VERDICT|SHOWCASE_EDIT_VERDICT|REPLAY_VERDICT|TB_DEMO_VERDICT|MANUAL_CLAIMS_VERDICT|BROWSER_REPORT_VERDICT|PILL_REPORT_VERDICT|REGISTER_VERDICT|UC_VERDICT|SQL_ERROR_VERDICT|PILL_PREFLIGHT_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
 gp(){ [ -f golden/$1.styles.tsv ] && echo golden/$1 || echo "$NT_PRIVATE/golden/$1"; }
 # case line:  name|source .xls (rel. to NT_DATA)|migrated .xlsx (rel.)|from|to
 CASES=("parity_v2|legacy/parity_v2.xls|legacy/xlsx/parity_v2.xlsx|2006-12-01|2006-12-31" "parity_xtab|legacy/parity_xtab.xls|legacy/xlsx/parity_xtab.xlsx|2006-12-01|2006-12-31")
@@ -44,6 +44,8 @@ chk S_preflight PASS node W45_Preflight.js $D_SHOW
 chk S_edit PASS node W46_ShowcaseEdit.js $D_SHOW
 # [R] recorded-answer replay of the customer MOES workbooks (private, only when present): addresses + Output cells coverage
 for f in MOES_sofp MOES_cashflow; do [ -f $L/legacy/xlsx/$f.xlsx ] && chk R_replay_$f PASS node W47_Replay.js $L/legacy/xlsx/$f.xlsx; done
+# [W] wiring in the pill host (real ERP page, headless): needs a bim-ootb worktree carrying erp/ninja_report.js + ninja_preflight.js
+[ -n "$ERP_ROOT" ] && [ -f "$ERP_ROOT/erp/ninja_preflight.js" ] && chk W_pill_preflight PASS node W48_PillPreflight.js
 unset SAME_FONT_AS_SPIRE
 # [T] public Thai trial-balance demo (TB-DEMO): every painted number vs an independent SQL aggregate, totals ranges cover the grown list, debits = credits
 export FROM='2003-01-01 00:00:00.0' TO='2003-12-31 00:00:00.0'
