@@ -6,7 +6,7 @@ const ROOT = process.env.ERP_ROOT; const MIME = { '.html': 'text/html', '.js': '
 const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/erp/idempiere.html'; fs.readFile(path.join(ROOT, p), (e, b) => { if (e) { r.writeHead(404); return r.end('404'); } r.writeHead(200, { 'Content-Type': MIME[path.extname(p)] || 'application/octet-stream' }); r.end(b); }); });
 (async () => {
   await new Promise(r => srv.listen(0, r)); const port = srv.address().port; const br = await chromium.launch({ args: ['--disable-gpu'] }); const pg = await (await br.newContext()).newPage(); const log = [];
-  pg.on('console', m => { const t = m.text(); if (/^§(PREFLIGHT|SQL_REFUSED|NINJA_REPORT)/.test(t)) log.push(t); });
+  pg.on('console', m => { const t = m.text(); if (/^§(PREFLIGHT|SQL_REFUSED|SQL_SUMMARY|NINJA_REPORT)/.test(t)) log.push(t); });
   await pg.goto(`http://localhost:${port}/erp/idempiere.html?login=GardenAdmin`, { waitUntil: 'networkidle' }); await pg.waitForSelector('#idmp-tree .idmp-row.leaf', { state: 'attached', timeout: 25000 });
   const res = await pg.evaluate(async () => {
     const out = {}; const buf = new Uint8Array(await (await fetch('ninja_tb_sample.xlsx')).arrayBuffer()); await window.NinjaReport.ensureLibs(''); if (!window.XLSX) await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'xlsx.mini.min.js?v=1'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
@@ -18,7 +18,7 @@ const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split
     return out;
   });
   await br.close(); srv.close();
-  const has = re => log.some(l => re.test(l)); const checks = { good_runs: res.good === 'RAN', good_logged_clean: has(/§PREFLIGHT_SUMMARY errors=0 warnings=\d+ - run allowed/), tag_mutated: !!res.tagMutated, bad_tag_refused: /TEMPLATE CHECK FAILED/.test(res.badTag) && /UNMATCHED_TAG/.test(res.badTag), bad_tag_logged: has(/§PREFLIGHT ERROR UNMATCHED_TAG/), sql_mutated: !!res.sqlMutated, stacked_refused: /§SQL_REFUSED/.test(res.stacked) };
+  const has = re => log.some(l => re.test(l)); const checks = { good_runs: res.good === 'RAN', good_logged_sql_summary: has(/^§SQL_SUMMARY statements=\d+ distinct=\d+ duplicates=\d+ totalMs=/), good_logged_clean: has(/§PREFLIGHT_SUMMARY errors=0 warnings=\d+ - run allowed/), tag_mutated: !!res.tagMutated, bad_tag_refused: /TEMPLATE CHECK FAILED/.test(res.badTag) && /UNMATCHED_TAG/.test(res.badTag), bad_tag_logged: has(/§PREFLIGHT ERROR UNMATCHED_TAG/), sql_mutated: !!res.sqlMutated, stacked_refused: /§SQL_REFUSED/.test(res.stacked) };
   console.log('§PILL_PREFLIGHT ' + JSON.stringify(res)); Object.keys(checks).forEach(k => console.log(`§PILL_PREFLIGHT_CASE ${k} ${checks[k] ? 'ok' : 'WRONG'}`));
   const bad = Object.values(checks).filter(v => !v).length; console.log(`§PILL_PREFLIGHT_VERDICT ${(!checks.tag_mutated || !checks.sql_mutated) ? 'INCONCLUSIVE (a mutation touched nothing)' : bad ? 'FAIL' : 'PASS'} cases=${Object.keys(checks).length} wrong=${bad}`);
 })().catch(e => { console.log('§PILL_PREFLIGHT ERROR', e.stack); process.exit(1); });

@@ -12,4 +12,6 @@ const E=require('/home/red1/Projects/ninja-template-data/nm/node_modules/exceljs
  m=await fresh(); delete m.Sheets.BACKUP; m.SheetNames=m.SheetNames.filter(n=>n!=='BACKUP'); r=F.preflight(m); t('missing_sheet_flagged', r.errors.some(e=>/^SHEET_MISSING BACKUP/.test(e)));
  const g=F.selectOnly(s=>'ran'); const refuses=s=>{ try{ g(s); return false; }catch(e){ return /§SQL_REFUSED/.test(e.message); } };
  t('guard_allows_select', g('SELECT a FROM t WHERE x=\';\'')==='ran'); t('guard_refuses_delete', refuses('DELETE FROM t')); t('guard_refuses_stacked', refuses('SELECT 1; DROP TABLE t')); t('guard_refuses_update_in_select', refuses('SELECT 1 FROM t WHERE 1=1 UNION SELECT 1; UPDATE t SET a=1'));
- console.log(`§PREFLIGHT_VERDICT ${bad===0&&ok>=11?'PASS':(ok===0?'INCONCLUSIVE':'FAIL')} cases=${ok+bad} wrong=${bad}`); })();
+ { let calls=0; const lines=[]; const ex=F.timed(q=>{ calls++; return [[{k:'s',s:q}]]; },l=>lines.push(l),{}); ex('A'); ex('B'); ex('A'); const sm=ex.summary(); t('timed_counts_duplicates', sm.statements===3&&sm.distinct===2&&sm.duplicates===1&&calls===3&&lines.some(l=>/DUPLICATE/.test(l))&&lines.some(l=>/^§SQL_SUMMARY statements=3 distinct=2 duplicates=1/.test(l)));
+   let c2=0; const ex2=F.timed(q=>{ c2++; return [[{k:'s',s:q}]]; },()=>{},{memo:true}); const r1=ex2('A'), r2=ex2('A'); t('memo_same_rows_fewer_calls', c2===1&&JSON.stringify(r1)===JSON.stringify(r2)); }
+ console.log(`§PREFLIGHT_VERDICT ${bad===0&&ok>=13?'PASS':(ok===0?'INCONCLUSIVE':'FAIL')} cases=${ok+bad} wrong=${bad}`); })();
