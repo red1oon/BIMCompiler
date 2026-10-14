@@ -5,7 +5,9 @@ from PIL import Image, ImageDraw, ImageFont
 out = sys.argv[1]; W, H = 1920, 1080
 A = sys.argv[2:] if len(sys.argv) > 2 else [A[0], A[1], A[2], A[3]]
 TH = any('\u0e00' <= ch <= '\u0e7f' for a in A for ch in a)   # Thai text -> Noto Sans Thai (the Latin face has no Thai glyphs)
+ZH = any('\u4e00' <= ch <= '\u9fff' for a in A for ch in a)   # Chinese text -> Noto Sans CJK (the Latin face has no Han glyphs)
 def f(sz, bold=False):
+    if ZH: return ImageFont.truetype('/usr/share/fonts/opentype/noto/NotoSansCJK-' + ('Bold' if bold else 'Regular') + '.ttc', sz, index=2)  # index 2 = SC
     base = '/usr/share/fonts/truetype/noto/NotoSansThai-' if TH else '/usr/share/fonts/truetype/noto/NotoSans-'
     return ImageFont.truetype(base + ('Bold.ttf' if bold else 'Regular.ttf'), sz)
 im = Image.new('RGB', (W, H), (0, 0, 0)); d = ImageDraw.Draw(im)
