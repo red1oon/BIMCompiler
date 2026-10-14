@@ -281,16 +281,19 @@ function main() {
 
   // 2) All columns for those tables, in ordinal order, with data_type.
   var colRows = pgMeta(
-    "SELECT table_name, column_name, data_type, ordinal_position " +
+    "SELECT table_name, column_name, data_type, ordinal_position, numeric_precision " +
     "FROM information_schema.columns WHERE table_schema='" + SCHEMA + "' " +
     "ORDER BY table_name, ordinal_position");
   var cols = {}; // table -> [{name, type}]
   colRows.forEach(function (r) {
     var tn = r[0];
     if (!cols[tn]) cols[tn] = [];
-    cols[tn].push({ name: r[1], type: r[2] });
+    cols[tn].push({ name: r[1], type: r[2], prec: r[4] === '' ? null : +r[4] });
   });
 
+  sqlite.exec('CREATE TABLE _numeric_exact (tbl TEXT, row_id INTEGER, col TEXT, exact TEXT, PRIMARY KEY (tbl, row_id, col)) WITHOUT ROWID');
+  var insExact = sqlite.prepare('INSERT INTO _numeric_exact VALUES (?,?,?,?)'), lossyTotal = 0;
+  function trimZ(x) { return /\./.test(x) ? x.replace(/0+$/, '').replace(/\.$/, '') : x; }
   var totalRows = 0, doneTables = 0, blobTables = 0;
   console.log('§MIGRATE start tables=' + tables.length + ' out=' + OUT);
 
@@ -320,6 +323,8 @@ function main() {
     var ins = sqlite.prepare('INSERT INTO ' + q(tn) + ' VALUES (' +
       cs.map(function () { return '?'; }).join(',') + ')');
 
+    var numChk = cs.map(function (c, i) { return (c.type === 'numeric' && (c.prec === null || c.prec > 15)) ? i : -1; }).filter(function (i) { return i >= 0; });
+    var lossyCol = {};
     var n = 0, inTx = false;
     function onLine(line) {
       var fields = line.split('\t');
@@ -335,11 +340,18 @@ function main() {
         vals[fi] = v;
       }
       if (!inTx) { sqlite.exec('BEGIN'); inTx = true; }
-      ins.run(vals);
+      var rid = ins.run(vals).lastInsertRowid;
+      for (var ni = 0; ni < numChk.length; ni++) {            // §14.2: keep the exact text of any value a double cannot hold
+        var nv = vals[numChk[ni]];
+        if (nv !== null && /^-?[0-9]+(\.[0-9]+)?$/.test(nv) && String(Number(nv)) !== trimZ(nv)) {
+          insExact.run(tn, Number(rid), cs[numChk[ni]].name, nv); lossyTotal++; lossyCol[cs[numChk[ni]].name] = (lossyCol[cs[numChk[ni]].name] || 0) + 1;
+        }
+      }
       n++;
       if (n % BATCH === 0) { sqlite.exec('COMMIT'); inTx = false; }
     }
     forEachLine(spool, onLine);
+    Object.keys(lossyCol).forEach(function (cn) { console.log('§MIGRATE_NUMERIC_LOSSY table=' + tn + ' col=' + cn + ' n=' + lossyCol[cn]); });
     if (inTx) sqlite.exec('COMMIT');
     fs.unlinkSync(spool);
 
@@ -464,7 +476,7 @@ function main() {
   // ── §-log acceptance ────────────────────────────────────────────────────
   console.log('§MIGRATE_VERDICT ' + (doneTables === 0 ? 'INCONCLUSIVE (no tables judged)' :
     rowMismatch === 0 ? 'PASS rows-match-all-tables' : 'FAIL rowMismatch=' + rowMismatch) +
-    ' tables=' + doneTables + ' peakRssMB=' + Math.round(process.resourceUsage().maxRSS / 1024));
+    ' lossyNumeric=' + lossyTotal + ' tables=' + doneTables + ' peakRssMB=' + Math.round(process.resourceUsage().maxRSS / 1024));
   try { fs.rmdirSync(SPOOL_DIR); } catch (e) { /* non-empty/absent */ }
   console.log('§MIGRATE tables=' + doneTables + ' rows=' + totalRows +
     ' blobTables=' + blobTables);
