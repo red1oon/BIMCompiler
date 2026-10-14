@@ -96,6 +96,14 @@ ps.forEach(x => ['1990-01-01', '2003-11-15', '2026-12-31'].forEach(d => add('inv
 add('invoiceopentodate', 'nnt', [999999999, 0, '2026-12-31'], 'unknown invoice'); add('invoiceopentodate', 'nnt', [invSample[0], 0, null], 'date NULL');
 const evs = rows(`select c_elementvalue_id id from c_elementvalue where isactive='Y' order by accounttype, accountsign, c_elementvalue_id`).map(r => r.id), evSample = [...new Set(evs.filter((_, i) => i % Math.max(1, Math.floor(evs.length / 14)) === 0).slice(0, 14))];
 evSample.forEach(e => [[100, 30], [30, 100], [0, 0], [12.5, null], [null, 5]].forEach(([d, c]) => add('acctbalance', 'nnn', [e, d, c], `account ${e} dr ${d} cr ${c}`))); [0, null, -1, 999999999].forEach(e => add('acctbalance', 'nnn', [e, 100, 30], `account ${e}`));
+// stage 4: a NUMERIC UDF result must COMPARE like a number in SQL (as TEXT it was greater than every number: rv_pp_mrp lost rows)
+addSql('SELECT CASE WHEN bomQtyOnHand(123,104,0) < 0 THEN 1 ELSE 0 END', false, 'bomQtyOnHand negative < 0');
+addSql('SELECT CASE WHEN bomQtyOnHand(133,50001,0) < 40 THEN 1 ELSE 0 END', false, 'bomQtyOnHand 0 < 40');
+addSql('SELECT CASE WHEN bomQtyOnHand(128,103,0) > 100 THEN 1 ELSE 0 END', false, 'bomQtyOnHand > 100');
+addSql("SELECT CASE WHEN paymentTermDiscount(1000,100,106,'2003-01-01','2003-01-02') = 0 THEN 1 ELSE 0 END", false, 'paymentTermDiscount = 0 (no discount term data)');
+addSql('SELECT CASE WHEN currencyRound(2.675,100,NULL) = 2.68 THEN 1 ELSE 0 END', false, 'currencyRound = 2.68');
+addSql('SELECT CASE WHEN currencyConvert(100,100,102,\'2003-12-30\',NULL,11,0) > 80 THEN 1 ELSE 0 END', false, 'currencyConvert > 80');
+addSql('SELECT CASE WHEN invoiceOpen(102,0) = invoiceOpen(102,NULL) THEN 1 ELSE 0 END', false, 'invoiceOpen = invoiceOpen');
 // --- scenarios: the branches the pilot's own data never reaches. PRELUDE runs inside BEGIN..ROLLBACK (the pilot is never changed); the rows are exported AFTER the prelude. ---
 const prod = rows(`select m_product_id id from m_product where isstocked='Y' order by 1 limit 1`)[0].id, prodNS = rows(`select m_product_id id from m_product where isstocked='N' order by 1 limit 1`)[0].id;
 const whs = rows(`select w.m_warehouse_id id, (select min(l.m_locator_id) from m_locator l where l.m_warehouse_id=w.m_warehouse_id) loc from m_warehouse w order by 1 limit 2`);
