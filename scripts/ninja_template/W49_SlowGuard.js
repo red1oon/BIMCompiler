@@ -7,13 +7,13 @@ const E=require('/home/red1/Projects/ninja-template-data/nm/node_modules/exceljs
 const OUT=process.argv[2]||'/tmp/ninja_template_out'; fs.mkdirSync(OUT,{recursive:true});
 const L='/home/red1/Projects/ninja-template-data/legacy/xlsx/', PORT=process.env.NT_PGPORT||'55432', DOCKER='laos-restore';
 if(PORT!=='55432'){ console.log('§SLOW_GUARD_REFUSED this witness drops an index; only the local copy on port 55432 is allowed'); process.exit(2); }
-const BASE={...process.env,NT_PGPORT:PORT,NT_PGUSER:'postgres',NT_PGDB:'leasing',NT_PGPASS:process.env.NT_PGPASS||'',NT_CLIENT:'<CLIENT_ID>',NT_ORG:'<ORG_ID>',EXEC:'pg',FROM:'2025-01-01 00:00:00.0',TO:'2025-12-31 00:00:00.0'};
+const BASE={...process.env,NT_PGPORT:PORT,NT_PGUSER:'postgres',NT_PGDB:'leasing',NT_PGPASS:process.env.NT_PGPASS||'',NT_CLIENT:process.env.NT_CLIENT||'',NT_ORG:process.env.NT_ORG||'',EXEC:'pg',FROM:'2025-01-01 00:00:00.0',TO:'2025-12-31 00:00:00.0'};
 const psql=q=>cp.spawnSync('docker',['exec',DOCKER,'psql','-U','postgres','-d','leasing','-Atc',q],{encoding:'utf8'});
 const hasIdx=()=>psql("select count(*) from pg_indexes where schemaname='adempiere' and tablename='fact_acct' and indexdef ~ '\\(record_id\\)'").stdout.trim()!=='0';
 let ok=0,bad=0; const t=(n,c,extra)=>{ console.log(`§SLOW_GUARD_CASE ${n} ${c?'ok':'WRONG'}${extra?' '+extra:''}`); c?ok++:bad++; };
 const pgexec=(timeoutMs)=>sql=>{ const r=cp.spawnSync('python3',[__dirname+'/pg_exec.py'],{input:sql,encoding:'utf8',maxBuffer:1<<28,env:{...BASE,NT_STMT_MS:String(timeoutMs)}}); const j=JSON.parse(r.stdout); if(j.error) throw new Error(j.error); return j.rows; };
 async function run(name,slowMs,timeoutMs){ const buf=fs.readFileSync(L+name+'.xlsx'),m=await H.loadModel(E,buf); const g=PF.timed(pgexec(timeoutMs),console.log,{slowMs}); let err=null,S=null;
-  try{ S=T.runTemplate(m,PF.selectOnly(g),{XLSX:X,clientId:+process.env.NT_CLIENT,orgId:+process.env.NT_ORG,from:BASE.FROM,to:BASE.TO}); }catch(e){ err=e.message.split('\n')[0]; console.log('§SLOW_GUARD_RUN_STOPPED '+name+' '+err); }
+  try{ S=T.runTemplate(m,PF.selectOnly(g),{XLSX:X,clientId:+BASE.NT_CLIENT,orgId:+BASE.NT_ORG,from:BASE.FROM,to:BASE.TO}); }catch(e){ err=e.message.split('\n')[0]; console.log('§SLOW_GUARD_RUN_STOPPED '+name+' '+err); }
   g.summary(); return {verdict:g.verdict(),err,S}; }
 function pdf(name){ const out=`${OUT}/${name}_Laos_2025.pdf`; try{fs.unlinkSync(out);}catch(e){}
   const r=cp.spawnSync('node',[__dirname+'/W33_PdfRender.js',L+name+'.xlsx',out,'excel'],{encoding:'utf8',env:{...BASE,NT_STMT_MS:'60000'}}); console.log(r.stdout.trim());
