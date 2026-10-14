@@ -1,7 +1,7 @@
 // W40 — RECORDED-ANSWER REPLAY (user, 2026-10-14: "reverse engineer the data values ... as long as it hits all the process and cells"; the MOES workbook is granted correct for Laos, we only test COVERAGE).
 // The workbook's saved Process VALUES are what the customer's server returned; the saved Output is what was painted. A stand-in executor replays those recorded values; the engine does everything else
 // (links Input->Process addresses, paint S/V/>/+, row/column growth, formula shift, recalc). Judged: (1) every saved ADDRESS is re-derived from the Input links, (2) every non-empty saved Output cell is compared.
-// NOT judged: the SQL itself. Verdicts PASS / FAIL / INCONCLUSIVE (coverage below 100% of addressed Process rows or no recorded values). usage: node W40_Replay.js <migrated.xlsx>
+// NOT judged: the SQL itself. Verdicts PASS / FAIL / INCONCLUSIVE (coverage below 100% of addressed Process rows or no recorded values). usage: node W47_Replay.js <migrated.xlsx>
 const E=require('/home/red1/Projects/ninja-template-data/nm/node_modules/exceljs'),X=require('/home/red1/bim-compiler/node_modules/xlsx'),H=require(__dirname+'/../../build/erp/ninja_template_xlsx.js'),T=require(__dirname+'/../../build/erp/ninja_template.js'),C=require(__dirname+'/../../build/erp/ninja_calc.js'),fs=require('fs');
 const VCOL=8, name=process.argv[2].split('/').pop();
 const addr=(r,c)=>{let s='',n=c+1;while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26)}return s+(r+1)};

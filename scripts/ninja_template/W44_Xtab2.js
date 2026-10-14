@@ -1,6 +1,6 @@
 // W37 — TWO-AXIS CROSS-TAB. Issue (NINJAEXCEL_TEMPLATE_ENGINE.md §XTAB2): is a `C3+B4` block a real matrix (x across, y down, empty where no rows)?
 // Judges every grid cell against an INDEPENDENT SQL SUM per (account, source table) pair on the twin snapshot. Not a legacy-oracle comparison (no golden yet) — the verdict line says so.
-// usage: node W37_Xtab2.js <parity_xtab2.xls> [NEG=swap]   INCONCLUSIVE when the grid is empty / no pair populated.
+// usage: node W44_Xtab2.js <parity_xtab2.xls> [NEG=swap]   INCONCLUSIVE when the grid is empty / no pair populated.
 const X=require('/home/red1/bim-compiler/node_modules/xlsx'),D=require('/home/red1/bim-compiler/node_modules/better-sqlite3'),T=require(__dirname+'/../../build/erp/ninja_template.js');
 const db=new D('/home/red1/Projects/ninja-template-data/legacy/twin_snapshot.db',{readonly:true}); T.registerPgBuiltins((n,f)=>db.function(n,{varargs:true},f));
 const tpl=X.readFile(process.argv[2],{cellFormula:true,cellStyles:true,sheetStubs:true});

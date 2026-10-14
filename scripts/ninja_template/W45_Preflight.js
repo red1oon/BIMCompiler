@@ -1,6 +1,6 @@
 // W38 — template pre-flight + SELECT-only guard (build/erp/ninja_preflight.js). Issues proved/disproved:
 //  (a) a clean template is NOT flagged (no false alarm); (b) a mistyped Input tag IS flagged (it paints nothing, silently, in the legacy flow); (c) a hand-edited FORMULA in Output IS flagged (data values in Output are the previous run and are NOT flagged) as BACKUP drift;
-//  (d) an empty Direction IS flagged; (e) a missing sheet IS flagged; (f) the guard passes a SELECT and refuses DELETE / stacked statements / DROP.  usage: node W38_Preflight.js <showcase_template.xlsx>
+//  (d) an empty Direction IS flagged; (e) a missing sheet IS flagged; (f) the guard passes a SELECT and refuses DELETE / stacked statements / DROP.  usage: node W45_Preflight.js <showcase_template.xlsx>
 const E=require('/home/red1/Projects/ninja-template-data/nm/node_modules/exceljs'),H=require(__dirname+'/../../build/erp/ninja_template_xlsx.js'),F=require(__dirname+'/../../build/erp/ninja_preflight.js'),fs=require('fs');
 (async()=>{ const buf=fs.readFileSync(process.argv[2]); const fresh=()=>H.loadModel(E,buf); let ok=0,bad=0; const t=(name,cond)=>{ console.log(`§PREFLIGHT_CASE ${name} ${cond?'ok':'WRONG'}`); cond?ok++:bad++; };
  let m=await fresh(); let r=F.preflight(m); t('clean_template_no_findings', r.errors.length===0&&r.warnings.length===0);

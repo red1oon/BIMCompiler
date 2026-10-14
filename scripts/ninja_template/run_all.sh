@@ -7,7 +7,7 @@ cd "$(dirname "$0")"; D=$PWD; fail=0; NT_DATA=${NT_DATA:-$HOME/Projects/ninja-te
 M=$HOME/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar; JCP=$(ls $HOME/Projects/red1-ninja-roundtrip/lib/*.jar | tr '\n' ':')$M:.
 OUT=${OUT:-/tmp/ninja_template_out}; mkdir -p $OUT
 javac -nowarn -cp "$JCP" -d . W27_StyleParity.java W32_GoldenStyle.java GoldenDump.java Xls2Xlsx.java 2>&1 | grep -v '^Note:' | head -5
-chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|XTAB2_VERDICT|PREFLIGHT_VERDICT|SHOWCASE_EDIT_VERDICT|REPLAY_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
+chk(){ local name=$1 want=$2; shift 2; out=$("$@" 2>&1); echo "$out" > logs/$name.log; got=$(echo "$out" | grep -E "PARITY_VERDICT|TWIN_STMT_VERDICT|STYLE_PARITY_VERDICT|CELL_PARITY_VERDICT|ROUNDTRIP_VERDICT|PDF_GEOM_VERDICT|PDF_CONTENT_VERDICT|XTAB2_VERDICT|PREFLIGHT_VERDICT|SHOWCASE_EDIT_VERDICT|REPLAY_VERDICT|TB_DEMO_VERDICT|MANUAL_CLAIMS_VERDICT|BROWSER_REPORT_VERDICT|PILL_REPORT_VERDICT|REGISTER_VERDICT|UC_VERDICT|SQL_ERROR_VERDICT" | head -1 | grep -oE "PASS|FAIL|INCONCLUSIVE"); [ "$got" = "$want" ] && echo "ok   $name $got" || { echo "BAD  $name want=$want got=$got"; fail=1; }; }
 gp(){ [ -f golden/$1.styles.tsv ] && echo golden/$1 || echo "$NT_PRIVATE/golden/$1"; }
 # case line:  name|source .xls (rel. to NT_DATA)|migrated .xlsx (rel.)|from|to
 CASES=("parity_v2|legacy/parity_v2.xls|legacy/xlsx/parity_v2.xlsx|2006-12-01|2006-12-31" "parity_xtab|legacy/parity_xtab.xls|legacy/xlsx/parity_xtab.xlsx|2006-12-01|2006-12-31")
@@ -37,14 +37,39 @@ done
 chk D_NEG_geom FAIL node W34_PdfCompare.js golden/pdf/xtab.spire.geom.json $OUT/geom.ours.json
 D_SHOW=${D_SHOW:-$L/showcase/showcase_template.xlsx}
 # [X] two-axis cross-tab (§XTAB2): grid cells vs independent SQL; negative control must FAIL
-chk X_xtab2 PASS node W37_Xtab2.js $L/legacy/parity_xtab2.xls
-NEG=swap chk X_NEG_xtab2 FAIL node W37_Xtab2.js $L/legacy/parity_xtab2.xls
+chk X_xtab2 PASS node W44_Xtab2.js $L/legacy/parity_xtab2.xls
+NEG=swap chk X_NEG_xtab2 FAIL node W44_Xtab2.js $L/legacy/parity_xtab2.xls
 # [S] showcase: pre-flight + SELECT-only guard; edit-one-rule proof (Film 3)
-chk S_preflight PASS node W38_Preflight.js $D_SHOW
-chk S_edit PASS node W39_ShowcaseEdit.js $D_SHOW
+chk S_preflight PASS node W45_Preflight.js $D_SHOW
+chk S_edit PASS node W46_ShowcaseEdit.js $D_SHOW
 # [R] recorded-answer replay of the customer MOES workbooks (private, only when present): addresses + Output cells coverage
-for f in MOES_sofp MOES_cashflow; do [ -f $L/legacy/xlsx/$f.xlsx ] && chk R_replay_$f PASS node W40_Replay.js $L/legacy/xlsx/$f.xlsx; done
+for f in MOES_sofp MOES_cashflow; do [ -f $L/legacy/xlsx/$f.xlsx ] && chk R_replay_$f PASS node W47_Replay.js $L/legacy/xlsx/$f.xlsx; done
 unset SAME_FONT_AS_SPIRE
+# [T] public Thai trial-balance demo (TB-DEMO): every painted number vs an independent SQL aggregate, totals ranges cover the grown list, debits = credits
+export FROM='2003-01-01 00:00:00.0' TO='2003-12-31 00:00:00.0'
+chk T_trialbalance PASS node W37_TrialBalance.js $L/legacy/xlsx/parity_tb.xlsx
+node W33_PdfRender.js $L/legacy/xlsx/parity_tb.xlsx $OUT/tb.content.pdf excel > logs/D_render_tb.log 2>&1
+chk T_pdf_content PASS node W36_PdfContent.js $L/legacy/xlsx/parity_tb.xlsx $OUT/tb.content.pdf                             # Thai text + numbers all present in our PDF
+NEG=wrongrange chk T_NEG_range FAIL node W37_TrialBalance.js $L/legacy/xlsx/parity_tb.xlsx                                            # a totals range that did not grow must be caught
+FROM='1990-01-01 00:00:00.0' TO='1990-01-31 00:00:00.0' chk T_VACUOUS INCONCLUSIVE node W37_TrialBalance.js $L/legacy/xlsx/parity_tb.xlsx   # no postings -> must say INCONCLUSIVE, not PASS
+chk T_manual_claims PASS node W38_ManualClaims.js $L/legacy/xlsx/parity_tb.xlsx                                                     # claims the user manual makes
+NEG=1 chk T_NEG_manual_claims FAIL node W38_ManualClaims.js $L/legacy/xlsx/parity_tb.xlsx
+chk T_sql_error PASS node W43_SqlError.js $L/legacy/xlsx/parity_tb.xlsx                                                         # a failing SELECT reaches the user with the real DB message + the statement
+NEG=1 chk T_NEG_sql_error FAIL node W43_SqlError.js $L/legacy/xlsx/parity_tb.xlsx
+# [R] Sales Register (UC-SET): list pushed down to any row count, totals/COUNT ranges grow, every row vs independent SQL. Big case = 1,441 invoices (the legacy .xls host cut lists at 248 silently).
+FROM='2002-01-01' TO='2026-12-31' chk R_register_big PASS node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
+NEG=wrongrange FROM='2002-01-01' TO='2026-12-31' chk R_NEG_register FAIL node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
+FROM='1990-01-01' TO='1990-12-31' chk R_VACUOUS INCONCLUSIVE node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
+[ -n "$OOTB_WT" ] && DB=$OOTB_WT/erp/ad_seed.db FROM='2002-01-01' TO='2003-12-31' chk R_register_erp_seed PASS node W42_Register.js $L/legacy/xlsx/parity_reg.xlsx
+# [B] browser gates (need a bim-ootb checkout carrying the port: OOTB_WT=<worktree root>) - real headless Chromium, CPU only
+if [ -n "$OOTB_WT" ]; then
+  chk B2_browser_run PASS node W40_BrowserReport.js $OOTB_WT
+  NEG=1 chk B2_NEG_browser_run FAIL node W40_BrowserReport.js $OOTB_WT
+  chk U_usecases PASS node ../erp_usecases/run_usecases.js $OOTB_WT 3
+  NEG=1 chk U_NEG_usecases FAIL node ../erp_usecases/run_usecases.js $OOTB_WT 1
+  ERP_ROOT=$OOTB_WT chk B2_pill_end_to_end PASS node W41_PillReport.js
+  NEG=1 ERP_ROOT=$OOTB_WT chk B2_NEG_pill FAIL node W41_PillReport.js
+fi
 # [P] live Postgres clone gates (PG=1)
 if [ "$PG" = 1 ]; then for spec in "${CASES[@]}"; do IFS='|' read n xls xlsx a b <<< "$spec"; FROM="$a 00:00:00.0" TO="$b 00:00:00.0" chk P_stmt_$n PASS node W24_TwinStatements.js $L/$xls; done
   FROM="$a1 00:00:00.0" TO="$b1 00:00:00.0" chk P_NEG_stmt_noscale FAIL env NEG=noscale node W24_TwinStatements.js $L/$x1; fi

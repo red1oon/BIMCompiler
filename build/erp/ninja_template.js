@@ -13,6 +13,7 @@
 // Typed value: {k:'n',s:'123.45'} number | {k:'s',s:'text'} string | {k:'t',s:'2006-12-15 00:00:00.0'} timestamp | null.
 (function (global) {
   'use strict';
+  var MAXC = 16383;   // last usable Process column (.xlsx XFD). The legacy .xls host stopped at column 255, i.e. a V/> list was SILENTLY cut at 248 items; this host does not cut (prompts/NINJAEXCEL_TEMPLATE_ENGINE.md §UC-SET)
   var VCOL = 8, END = 'END', DOWN = 'V', RIGHT = '>', PLUS = '+';
 
   // ── A1 codec ────────────────────────────────────────────────────────────────────────────────────────
@@ -104,7 +105,7 @@
         var ca = getC(pws, r, 6); if (ca) setBlank(ca);
         for (;;) {
           var cp = getC(pws, r, col); col++;
-          if (col > 255) break;
+          if (col > MAXC) break;
           if (!cp) break;
           if (ctype(cp) === 'NUMERIC') setBlank(cp);
           if (strVal(cp) === END) break;
@@ -191,7 +192,11 @@
 
     function executeSQL(sql) {
       S.sqls.push(sql);
-      var res = exec(sql);
+      var res;
+      try { res = exec(sql); }
+      catch (e) {                                                  // the REAL database message goes to the user, with the statement that failed (the legacy plugin's error formatter hid it)
+        var err = new Error('SQL ERROR: ' + (e && e.message ? e.message : e) + '\n  statement: ' + sql); err.cause = e; err.sql = sql; throw err;
+      }
       if (!res || !res.length) { log(sql + ' RETURNS NOTHING'); S.nothingReturned++; return null; }
       if (res.length === 1 && res[0].length === 1 && res[0][0] && res[0][0].k === 'n' && res[0][0].s === '0.00') { log(sql + ' RETURNS NOTHING'); S.nothingReturned++; return null; }
       return res;
@@ -340,10 +345,10 @@
         if (ctype(outcell) === 'FORMULA') {
           var ori = downrow - 1, last = lastRowNum(outs);
           shiftRows(outs, downrow, last, 1);
-          for (var st = 0; st < 255; st++) {
+          rowCells(outs, ori).forEach(function (st) {                // only the columns the source row really has (was: all 255 columns, which made every pushed row create 255 blank cells -> quadratic)
             var o = getC(outs, ori, st), n = mkC(outs, downrow, st);
             if (o) { if (o.s) n.s = o.s; if (ctype(o) === 'FORMULA') setFormula(n, copyFormula(o.f, 0, 1)); }
-          }
+          });
           outcell = getC(outs, downrow, c);
         }
       }
@@ -388,7 +393,7 @@
       for (var x = 0; x < xaxis.length; x++) matrix[x][1] = xaxis[x];
       for (var y = 0; y < yaxis.length; y++) matrix[y][0] = yaxis[y];
       var prValue = getC(prs, r, nc);
-      for (var p = VCOL; p < 255; p++) {
+      for (var p = VCOL; p < MAXC; p++) {
         if (!prValue) break; if (toStr(prValue) === END) break;
         if (toStr(prValue) === 'NULL') setBlank(prValue);
         var intRowNo = rows[rows.indexOf(r)], xm = 0, ym = 0, breakflag = 0;
@@ -434,7 +439,7 @@
         var outcell = mkC(outs, ref.r, ref.c), downrow = ref.r, oR = ref.r, oC = ref.c;
         var prValue = getC(prs, r, nc);
         for (;;) {
-          if (!outcell) break; if (nc > 255) break; if (!prValue) break;
+          if (!outcell) break; if (nc > MAXC) { log('LIST TRUNCATED at Process column ' + nc + ' (more values than the sheet can hold)'); break; } if (!prValue) break;
           if (toStr(prValue) === END) break;
           if (toStr(prValue) === 'NULL') { nc++; prValue = getC(prs, r, nc); continue; }
           if (ctype(prValue) === 'BLANK' || ctype(prValue) === 'FORMULA') { nc++; prValue = getC(prs, r, nc); continue; }
@@ -493,6 +498,7 @@
     reg('left', function (s, n) { return s == null ? null : (n >= 0 ? String(s).substring(0, n) : String(s).substring(0, Math.max(0, String(s).length + n))); });
     reg('right', function (s, n) { return s == null ? null : (n >= 0 ? String(s).slice(Math.max(0, String(s).length - n)) : String(s).substring(-n)); });
     reg('to_char', toChar);
+    reg('concat', function () { var o = ''; for (var i = 0; i < arguments.length; i++) if (arguments[i] != null) o += arguments[i]; return o; });   // PG concat(): NULLs skipped; older sql.js builds have no concat()
   }
   function matchParen(sql, open) {                            // index of the ')' matching sql[open]=='(' (string-literal aware)
     var d = 0, q = false;
@@ -568,11 +574,16 @@
     });
   }
   function sqliteExecutor(db, BD) {                           // exec(sql) -> typed rows; db = better-sqlite3 / sql.js-compatible via .prepare(sql).raw().all(); BD = the twin's BigDecimal (build/erp/bigdecimal.js)
-    var cache = {};
+    var cache = {}, noDict = false;
     BD = BD || (typeof require !== 'undefined' ? (function () { try { return require('./bigdecimal.js'); } catch (e) { return null; } })() : global.BigDecimal);
     function lookup(tbl, col) {
       var k = tbl + '.' + col; if (k in cache) return cache[k];
-      var dt = db.prepare('select dt from _coltype where lower(tbl)=? and lower(col)=?').raw().get(tbl, col), sc = db.prepare('select scale from _scale where lower(tbl)=? and lower(col)=?').raw().get(tbl, col);
+      var dt, sc;
+      try { dt = db.prepare('select dt from _coltype where lower(tbl)=? and lower(col)=?').raw().get(tbl, col); sc = db.prepare('select scale from _scale where lower(tbl)=? and lower(col)=?').raw().get(tbl, col); }
+      catch (e) {                                              // db has no dictionary side tables (e.g. the ERP's own client db): say so ONCE, never silently - NUMERIC scale cannot be applied then
+        if (!noDict) { noDict = true; if (typeof console !== 'undefined') console.log('§SCALE_DICT unavailable (no _coltype/_scale in this db): NUMERIC scale not applied, values keep their stored precision'); }
+        return (cache[k] = null);
+      }
       return (cache[k] = dt ? { dt: dt[0], scale: sc ? sc[0] : 0 } : null);
     }
     return function exec(sql) {

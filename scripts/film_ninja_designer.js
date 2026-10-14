@@ -44,9 +44,9 @@ const CSS = `body{margin:0;background:#12151f;color:#e6ebf5;font-family:'Liberat
   fact('kpi.postings', gv(OM, 'B7')); fact('kpi.debit', gv(OM, 'D7')); fact('kpi.credit', gv(OM, 'F7'));
   const cells = ['C', 'D', 'E', 'F'].flatMap(c => [12, 13, 14].map(r => gv(OM, c + r))); const filled = cells.filter(v => v != null).length; fact('grid.cells', cells.length); fact('grid.filled', filled); fact('grid.empty', cells.length - filled);
   fact('edit.grandTotalBefore', gv(OM, 'G15')); fact('edit.grandTotalAfter', gv(ed.m, 'G15')); fact('edit.accountsAfter', ['C', 'D', 'E', 'F'].map(c => gv(ed.m, c + '10')).filter(Boolean).length);
-  const logs = ['W29_TwinXlsx.js', 'W33_PdfRender.js', 'W36_PdfContent.js', 'W37_Xtab2.js', 'W38_Preflight.js', 'W39_ShowcaseEdit.js'].map(w => {
+  const logs = ['W29_TwinXlsx.js', 'W33_PdfRender.js', 'W36_PdfContent.js', 'W44_Xtab2.js', 'W45_Preflight.js', 'W46_ShowcaseEdit.js'].map(w => {
     const args = { 'W29_TwinXlsx.js': [SHOW + '/showcase_template.xlsx', OUT + '/run.xlsx'], 'W33_PdfRender.js': [SHOW + '/showcase_template.xlsx', OUT + '/showcase.pdf', 'excel'], 'W36_PdfContent.js': [SHOW + '/showcase_template.xlsx', OUT + '/showcase.pdf'],
-      'W37_Xtab2.js': [ND + 'legacy/parity_xtab2.xls'], 'W38_Preflight.js': [SHOW + '/showcase_template.xlsx'], 'W39_ShowcaseEdit.js': [SHOW + '/showcase_template.xlsx'] }[w]; return sh('node', [w, ...args]); });
+      'W44_Xtab2.js': [ND + 'legacy/parity_xtab2.xls'], 'W45_Preflight.js': [SHOW + '/showcase_template.xlsx'], 'W46_ShowcaseEdit.js': [SHOW + '/showcase_template.xlsx'] }[w]; return sh('node', [w, ...args]); });
   const L = logs.join('\n'); const g = re => (re.exec(L) || ['NOT-FOUND'])[0];
   const twin = g(/§TWIN_RUN .*/), pdfr = g(/§PDF_RENDER .*/), pdfc = g(/§PDF_CONTENT_VERDICT \w+/), pdfm = g(/§PDF_CONTENT showcase.*/), x2 = g(/§XTAB2_VERDICT .*/), pfv = g(/§PREFLIGHT_VERDICT .*/), ev = g(/§SHOWCASE_EDIT_VERDICT \w+/);
   [twin, pdfr, pdfm, pdfc, x2, pfv, ev].forEach(l => say('§FILM3_SRC ' + l)); fact('pdf.page', (/page=([\d.x]+)/.exec(pdfr) || [])[1]); fact('pdf.cellsMissing', (/missingFromPdf=(\d+)/.exec(pdfm) || [])[1]);
