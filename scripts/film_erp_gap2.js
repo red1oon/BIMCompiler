@@ -207,18 +207,19 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     };
     const dbq = async (sql) => { const r = await page.evaluate(s => { try { const r = window.__idmpDb.exec(s); return r.length ? r[0].values : []; } catch (e) { return 'ERR ' + e.message; } }, sql); return Array.isArray(r) && r.length && Array.isArray(r[0]) ? r[0][0] : r; };
     // the ledger card REPLACES any card in the same tick (no frame of the screen underneath between two cards)
-    const ledger = async (title, sub, rows) => {
+    const ledger = async (title, sub, rows, heads) => {
       for (const r of rows) fact('ledger.' + r.k, 'legacy=' + r.legacy.v + ' before=' + r.before.v + ' now=' + r.now.v + (r.legacy.rec || r.before.rec || r.now.rec ? ' (recorded: ' + [r.legacy.rec, r.before.rec, r.now.rec].filter(Boolean).join(', ') + ')' : ''));
-      await page.evaluate(({ title, sub, rows }) => {
+      await page.evaluate(({ title, sub, rows, heads }) => {
+        const H = heads || ['Legacy iDempiere', 'SQLite twin · before', 'SQLite twin · now'];
         const old = document.getElementById('__ledger'); if (old) old.remove();
         const d = document.createElement('div'); d.id = '__ledger';
         d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px';
         const cell = (c, tone) => '<td style="padding:14px 22px;text-align:center;font-size:46px;font-weight:700;color:' + tone + '">' + c.v + (c.rec ? '<div style="font-size:15px;font-weight:400;color:#8fa0b3;margin-top:4px">recorded · ' + c.rec + '</div>' : '') + '</td>';
         d.innerHTML = '<div style="font-size:21px;letter-spacing:.14em;color:#8fa0b3;text-transform:uppercase">Closing the gap</div><div style="font-size:50px;font-weight:700;margin:6px 0 4px">' + title + '</div><div style="font-size:23px;color:#b8c4d2;margin-bottom:30px">' + sub + '</div>' +
-          '<table style="border-collapse:collapse;width:100%"><tr style="font-size:20px;color:#8fa0b3"><td style="padding:6px 22px"></td><td style="text-align:center;padding:6px 22px">Legacy iDempiere</td><td style="text-align:center;padding:6px 22px">SQLite twin · before</td><td style="text-align:center;padding:6px 22px">SQLite twin · now</td></tr>' +
+          '<table style="border-collapse:collapse;width:100%"><tr style="font-size:20px;color:#8fa0b3"><td style="padding:6px 22px"></td><td style="text-align:center;padding:6px 22px">' + H[0] + '</td><td style="text-align:center;padding:6px 22px">' + H[1] + '</td><td style="text-align:center;padding:6px 22px">' + H[2] + '</td></tr>' +
           rows.map(r => '<tr style="border-top:1px solid #243040"><td style="padding:14px 22px;font-size:25px;color:#c9d4e0;width:30%">' + r.label + '</td>' + cell(r.legacy, '#7fd1ff') + cell(r.before, '#ff9b8a') + cell(r.now, r.now.v === r.legacy.v ? '#7ee0a0' : '#ffd479') + '</tr>').join('') + '</table>';
         document.body.appendChild(d);
-      }, { title, sub, rows });
+      }, { title, sub, rows, heads });
     };
     const unledger = async () => { await page.evaluate(() => { const d = document.getElementById('__ledger'); if (d) d.remove(); }); };
     const cardFor = async (floorMs) => { const need = ((MIN[prev.id] || 0) - (now() - prev.t)) * 1000; if (need > 0 || floorMs) await hold(Math.max(floorMs || 0, need)); };   // keep the CURRENT card up for its whole narration line (the card stays; the next scene replaces or removes it)
@@ -240,11 +241,16 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     let dds = ''; try { dds = execFileSync('node', [path.join(REPO, 'erp', 'tests', 'witness_dashboard_docstatus.js')], { encoding: 'utf8', env: Object.assign({}, process.env, { DDS_NOGDICT: '1' }), maxBuffer: 1 << 24 }); } catch (e) { dds = String(e.stdout || ''); }
     const ddsLine = dds.split('\n').filter(l => /DDS6/.test(l) && /FAIL/.test(l)).pop() || '', mm = /\{"got":(\[[^\]]*\]),"want":(\[[^\]]*\])\}/.exec(ddsLine);
     fact('activities.beforeProbe', ddsLine.slice(0, 260) || 'NO DDS6 LINE');
+    const dsNow = await page.$$eval('#idmp-home .ds', e => e.map(x => x.querySelector('.dl').textContent + '=' + x.getAttribute('data-ds-count')));   // read from the Home under the card
+    let dst = ''; try { dst = execFileSync('node', [path.join(HOME, 'bim-compiler', 'scripts', 'bridge', 'docstatus_legacy.js')], { encoding: 'utf8', maxBuffer: 1 << 24 }); } catch (e) { dst = String(e.stdout || ''); }
+    const sysLine = dst.split('\n').filter(l => /§DSTL System\//.test(l)).pop() || '', legCounts = (sysLine.match(/(Notice|Request|Workflow Activities)=(\d+)/g) || []).map(x => x.split('=')[1]).join(' · ') || '?';
+    fact('system.legacyCounts', sysLine.slice(0, 200) || 'NO §DSTL System LINE'); fact('system.twinCounts', JSON.stringify(dsNow));
     await ledger('System Administrator', 'Role 0 (System): its access rows, and what the Home Activities gadget can show', [
       { k: 'formaccess', label: 'Form access rows', legacy: C(pgq('select count(*) from ad_form_access where ad_role_id=0')), before: C(seed0('select count(*) from ad_form_access where ad_role_id=0')), now: C(await dbq('SELECT count(*) FROM ad_form_access WHERE ad_role_id=0')) },
       { k: 'processaccess', label: 'Process access rows', legacy: C(pgq('select count(*) from ad_process_access where ad_role_id=0')), before: C(seed0('select count(*) from ad_process_access where ad_role_id=0')), now: C(await dbq('SELECT count(*) FROM ad_process_access WHERE ad_role_id=0')) },
       { k: 'wfaccess', label: 'Workflow access rows', legacy: C(pgq('select count(*) from ad_workflow_access where ad_role_id=0')), before: C(seed0('select count(*) from ad_workflow_access where ad_role_id=0')), now: C(await dbq('SELECT count(*) FROM ad_workflow_access WHERE ad_role_id=0')) },
-      { k: 'indicators', label: 'Activities indicators shown', legacy: C(mm ? JSON.parse(mm[2]).length : '?'), before: C(mm ? JSON.parse(mm[1]).length : '?'), now: C('see the Home') }]);
+      { k: 'indicators', label: 'Activities indicators shown', legacy: C(mm ? JSON.parse(mm[2]).length : '?'), before: C(mm ? JSON.parse(mm[1]).length : '?'), now: C(dsNow.length) },
+      { k: 'indicatorcounts', label: 'Their counts (nothing is waiting for System)', legacy: C(legCounts), before: C('Workflow Activities missing'), now: C(dsNow.map(d => d.split('=')[1]).join(' · ')) }]);
     await cardFor(6500);
     await unledger(); await beat('g1b', 'en', 'live Home Activities');
     await page.waitForSelector('#idmp-home .ds', { timeout: 10000 }); await hold(900);
@@ -253,10 +259,37 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     for (let i = 0; i < dsn.length; i++) { await glide('#idmp-home .ds >> nth=' + i); await hold(1400); }
     await liveFor(2500);
 
+    // g1c/g1d a role WITH documents: GardenAdmin. The pilot's counts, the twin's code run on those same rows (the W-DASH-DOCSTATUS witness, run now), and the browser's own small seed on the live Home
+    const pA = page;
+    const pB = await ctx.newPage(); wire(pB, 'PB '); await pB.addInitScript(CURSOR);
+    await pB.goto(base + '/idempiere.html?lang=en_US', { waitUntil: 'networkidle' });
+    await pB.waitForFunction(() => !!window.__idmpDb && document.querySelector('#idmp-login-clients') && document.querySelector('#idmp-login-clients').children.length > 0, null, { timeout: 30000 });
+    page = pB; await login('GardenWorld', 'GardenAdmin', true); await pB.waitForSelector('#idmp-home .ds', { timeout: 15000 }); await hold(1500);
+    const dsB = await pB.$$eval('#idmp-home .ds', e => e.map(x => [x.querySelector('.dl').textContent, x.getAttribute('data-ds-count')]));
+    page = pA;
+    const parseLine = (txt, re) => { const l = txt.split('\n').filter(x => re.test(x)).pop() || ''; const o = {}; (l.match(/([A-Za-z ]+?)=(\d+)/g) || []).forEach(m => { const k = m.split('=')[0].split(/ OK |: |\| /).pop().trim(); o[k] = m.split('=')[1]; }); return o; };
+    const legA = parseLine(dst, /§DSTL GardenAdmin\//);
+    let ddsOk = ''; try { ddsOk = execFileSync('node', [path.join(REPO, 'erp', 'tests', 'witness_dashboard_docstatus.js')], { encoding: 'utf8', maxBuffer: 1 << 24 }); } catch (e) { ddsOk = String(e.stdout || ''); }
+    const twinPilotRows = parseLine(ddsOk, /DDS-CASE GardenAdmin/);
+    fact('gardenadmin.legacy', JSON.stringify(legA)); fact('gardenadmin.twinOnPilotRows', JSON.stringify(twinPilotRows)); fact('gardenadmin.browserSeed', JSON.stringify(dsB));
+    const names = ['Notice', 'Request', 'Workflow Activities', 'Unprocessed Documents', 'Sales Orders received today', 'Pending Customer Shipments'];
+    await beat('g1c', 'en', 'ledger: a role with documents (GardenAdmin)');
+    await ledger('A role with documents', 'GardenAdmin\'s Home Activities: the pilot\'s counts, the twin\'s code run on the pilot\'s own rows, and the browser\'s small seed', names.map(n => ({ k: 'ga.' + n.replace(/ /g, ''), label: n, legacy: C(legA[n] != null ? legA[n] : '?'), before: C(twinPilotRows[n] != null ? twinPilotRows[n] : '?', 'W-DASH-DOCSTATUS run now'), now: C((dsB.find(d => d[0] === n) || [, '?'])[1]) })), ['Legacy iDempiere (pilot)', 'Twin code on the pilot\'s rows', 'Twin in the browser (its own seed)']);
+    await cardFor(8000);
+    await page.mouse.move(720, 420);
+    page = pB; await castOn(pB); await beat('g1d', 'en', 'live GardenAdmin Home (browser seed)'); await hold(1200);
+    const perfB = await page.$$eval('#idmp-home .pi', e => e.map(x => x.querySelector('.pt').textContent + ' ' + (x.title || '').split(':').slice(-1)[0].trim()));
+    fact('gardenadmin.performance', JSON.stringify(perfB));
+    for (let i = 0; i < dsB.length; i++) { await glide('#idmp-home .ds >> nth=' + i); await hold(900); }
+    for (let i = 0; i < perfB.length; i++) { await glide('#idmp-home .pi >> nth=' + i); await hold(900); }
+    await liveFor(3000);
+    // back to the System page: its next card is put up BEFORE the cast switches, so no frame of anything else is recorded
+    page = pA;
+
     // g2 messages
-    await beat('g2', 'en', 'ledger: messages');
     await ledger('Messages', 'AD_Message rows for System and GardenWorld: the text behind every refusal', [
       { k: 'messages', label: 'Messages', legacy: C(pgq('select count(*) from ad_message where ad_client_id in (0,11)')), before: C(seed0('select count(*) from ad_message where ad_client_id in (0,11)')), now: C(await dbq('SELECT count(*) FROM ad_message')) }]);
+    await castOn(pA); await beat('g2', 'en', 'ledger: messages (back on the System page)');
     await openPlain(104); await cardFor(4500);
     await unledger(); await beat('g2b', 'en', 'live Message window'); await hold(1000);
     fact('win104.status', await status()); fact('dict.noLines', JSON.stringify(await dbq("SELECT msgtext FROM ad_message WHERE value='NoLines'")));
@@ -291,11 +324,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await ledger('Posted books', 'Fact_Acct: the columns every posted line is stored in', [
       { k: 'factcols', label: 'Columns in the books table', legacy: C(pgq("select count(*) from information_schema.columns where table_schema='adempiere' and table_name='fact_acct'")), before: C(seed0("select count(*) from pragma_table_info('fact_acct')")), now: C(await dbq("SELECT count(*) FROM pragma_table_info('fact_acct')")) },
       { k: 'factdated', label: 'Existing book lines with DateAcct', legacy: C('all'), before: C('0 of ' + seed0('select count(*) from fact_acct')), now: C((await dbq('SELECT sum(dateacct IS NOT NULL) FROM fact_acct')) + ' of ' + (await dbq('SELECT count(*) FROM fact_acct'))) }]);
-    const pA = page;
-    const pB = await ctx.newPage(); wire(pB, 'PB '); await pB.addInitScript(CURSOR);
-    await pB.goto(base + '/idempiere.html?lang=en_US', { waitUntil: 'networkidle' });
-    await pB.waitForFunction(() => !!window.__idmpDb && document.querySelector('#idmp-login-clients') && document.querySelector('#idmp-login-clients').children.length > 0, null, { timeout: 30000 });
-    page = pB; await login('GardenWorld', 'GardenAdmin', true); await openPlain(255);
+    page = pB; await openPlain(255);
     await cardFor(6500);
     page = pB; await castOn(pB); await beat('g5b', 'en', 'live Accounting Fact Balances (reads DateAcct)'); await page.mouse.move(720, 420); await hold(1200);
     const fbStatus = await status(); fact('win255.status', fbStatus);
