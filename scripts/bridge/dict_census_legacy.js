@@ -9,8 +9,11 @@ for (const t of tabs) {
   const byC = {};
   if (cols.includes('ad_client_id')) pg(`select ad_client_id, count(*) from ${t} group by 1 order by 1`).forEach(l => { const [c, n] = l.split('|'); byC[c] = +n; });
   else byC['none'] = +pg(`select count(*) from ${t}`)[0];
-  out[t] = { cols, byClient: byC };
+  const byR = {};
+  if (cols.includes('ad_role_id') && cols.includes('ad_client_id')) pg(`select ad_role_id, count(*) from ${t} where ad_client_id in (0,11) group by 1 order by 1`).forEach(l => { const [r, n] = l.split('|'); byR[r] = +n; });   // per-role counts: lets the witness exempt roles that exist on one side only (tenant/harness-created, not dictionary)
+  out[t] = { cols, byClient: byC, byRole: byR };
 }
+out.__roles = pg(`select ad_role_id from ad_role where ad_client_id in (0,11) order by 1`).map(Number);
 fs.mkdirSync(path.join(__dirname, 'out'), { recursive: true });
 fs.writeFileSync(path.join(__dirname, 'out', 'dict_census_legacy.json'), JSON.stringify(out));
-console.log(`§DC-DUMP tables=${tabs.length} withRows=${Object.values(out).filter(o => Object.values(o.byClient).some(n => n)).length}`);
+console.log(`§DC-DUMP tables=${tabs.length} withRows=${Object.values(out).filter(o => o.byClient && Object.values(o.byClient).some(n => n)).length}`);
