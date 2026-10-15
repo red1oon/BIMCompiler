@@ -12,7 +12,7 @@ const G = []; const g = (kind, what) => { G.push(kind + ':' + what); console.log
   await click(p.locator('.o_navbar_apps_menu button, .o_menu_toggle').first(), 'apps-menu');
   await click(p.locator('text=Manufacturing').first(), 'Manufacturing');
   await click(p.locator('button.o_list_button_add:visible').first(), 'New');
-  await p.locator('div[name=product_id] input').fill('Table Top'); g('type', 'product'); await p.waitForTimeout(1500);
+  await p.locator('div[name=product_id] input').fill(process.env.PRODUCT || 'Table Top'); g('type', 'product'); await p.waitForTimeout(1500);
   await click(p.locator('.o-autocomplete--dropdown-item').first(), 'pick product');
   await p.locator('div[name=product_qty] input').fill('100'); g('type', 'qty'); await p.waitForTimeout(800);
   console.log('§ODOO_FACT afterEntry fields=' + JSON.stringify(await p.$$eval('.o_field_widget', e => e.map(x => x.getAttribute('name') + '=' + (x.querySelector('input')?.value ?? x.innerText.trim().slice(0, 30))))));
@@ -22,8 +22,15 @@ const G = []; const g = (kind, what) => { G.push(kind + ':' + what); console.log
   await p.waitForTimeout(2500);
   const facts = async (tag) => console.log('§ODOO_FACT ' + tag + ' ' + JSON.stringify(await p.$$eval('.o_field_widget', e => e.map(x => x.getAttribute('name') + '=' + (x.querySelector('input')?.value ?? x.innerText.trim().replace(/\s+/g, ' ').slice(0, 90))).filter(x => /qty|move_raw|state/.test(x)))));
   await facts('beforeProduce');
+  const MODE = process.env.MODE || 'typed';
+  if (MODE === 'produceall') {
+    const pa = p.locator('button:has-text("Produce All"):visible').first();
+    if (!(await pa.count())) { console.log('§ODOO_VERDICT INCONCLUSIVE no Produce All button'); await b.close(); return; }
+    await click(pa, 'Produce All'); await p.waitForTimeout(2000);
+  } else {
   const qp = p.locator('div[name=qty_producing] input').first();
   await qp.fill('100'); g('type', 'qty_producing'); await qp.press('Tab'); await p.waitForTimeout(1500);
+  }
   await facts('afterQtyProducing');
   console.log('§ODOO_FACT buttons=' + JSON.stringify(await p.$$eval('button:visible', e => e.map(x => x.innerText.trim()).filter(Boolean).slice(7, 20))));
   const md = p.locator('button:has-text("Mark as Done"):visible').first();
@@ -38,6 +45,7 @@ const G = []; const g = (kind, what) => { G.push(kind + ':' + what); console.log
     await click(pri, 'dialog:' + t); await p.waitForTimeout(2000);
   }
   await facts('final');
+  console.log('§ODOO_FACT final id=' + (p.url().match(/[&#]id=(\d+)/) || [])[1]);
   console.log('§ODOO_FACT final url=' + p.url());
   console.log('§ODOO_GESTURES total=' + G.length + ' clicks=' + G.filter(x => x.startsWith('click')).length + ' typed=' + G.filter(x => x.startsWith('type')).length);
   await b.close();
