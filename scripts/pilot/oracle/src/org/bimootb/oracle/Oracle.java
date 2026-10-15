@@ -25,6 +25,7 @@ import org.compiere.process.ProcessInfoLog;
 import org.compiere.util.*;
 import org.adempiere.util.ProcessUtil;
 import org.json.*;
+import org.idempiere.db.util.SQLFragment;
 
 public class Oracle implements Runnable {
 	private ServerSocket server;
@@ -111,6 +112,13 @@ public class Oracle implements Runnable {
 			if ("sql".equals(op)) return sql(req);
 			if ("ctx".equals(op)) return ctxDump(ctx);
 			if ("pinstances".equals(op)) return pinstances(ctx, req);
+			if ("findquery".equals(op)) return findquery(ctx, req);
+			if ("initialquery".equals(op)) return initialquery(ctx, req);
+			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
+				JSONArray a = new JSONArray();
+				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
+				return new JSONObject().put("ok", true).put("list", a);
+			}
 			throw new IllegalArgumentException("unknown op " + op);
 		} finally {
 			ServerContext.dispose();
@@ -123,6 +131,94 @@ public class Oracle implements Runnable {
 		for (MPInstance i : MPInstance.get(ctx, req.getInt("process"), Env.getAD_User_ID(ctx)))
 			a.put(new JSONObject().put("id", i.getAD_PInstance_ID()).put("name", i.getName()));
 		return new JSONObject().put("ok", true).put("list", a);
+	}
+
+	// §UDP-3: a Find query rebuilt through the SAME MQuery overloads FindWindow calls (cmd_saveSimple :2951-3080 / cmd_saveAdvanced
+	// :2507-2840, non-EXISTS rows), the legacy WHERE (getWhereClause(true)) and the record ids it selects on this DB.
+	// rows: [{col (ColumnSQL), op, v, v2, type: int|num|date|yesno|string, andOr, depth, not}], mode: simple|advanced
+	private static Object findVal(String type, Object v) throws Exception {
+		if (v == null || v == JSONObject.NULL) return null;
+		String s = v.toString();
+		if ("int".equals(type)) return Integer.valueOf(new BigDecimal(s).intValue());
+		if ("num".equals(type)) return new BigDecimal(s);
+		if ("date".equals(type)) return Timestamp.valueOf(s.length() == 10 ? s + " 00:00:00" : s);
+		if ("yesno".equals(type)) return Boolean.valueOf("Y".equals(s) || "true".equals(s));
+		return s;
+	}
+	@SuppressWarnings("removal")
+	private static JSONObject findquery(Properties ctx, JSONObject req) throws Exception {
+		String table = req.getString("table"), mode = req.optString("mode", "advanced");
+		MQuery q = new MQuery(table);
+		JSONArray rows = req.getJSONArray("rows");
+		int openBrackets = 0;
+		for (int i = 0; i < rows.length(); i++) {
+			JSONObject r = rows.getJSONObject(i);
+			String col = r.getString("col"), op = r.getString("op"), type = r.optString("type", "string"), andOr = r.optString("andOr", "AND");
+			Object v = findVal(type, r.opt("v")), v2 = findVal(type, r.opt("v2"));
+			int depth = r.optInt("depth", 0);
+			if (r.has("lB") || r.has("rB")) {   // cmd_saveAdvanced :2620-2636: depth = open brackets after this row's left AND right brackets
+				openBrackets += r.optString("lB", "").length(); openBrackets -= r.optString("rB", "").length(); depth = openBrackets;
+			}
+			if ("advanced".equals(mode) && MQuery.ILIKE.equals(op) && v != null) col = "UPPER(" + col + ")";   // :2687-2690
+			if ("simple".equals(mode)) {
+				if (MQuery.BETWEEN.equals(op)) q.addRangeRestriction(col, v, v2, r.optString("name", col), String.valueOf(v), String.valueOf(v2), true, 0);
+				else q.addRestriction(col, op, v, r.optString("name", col), v == null ? null : v.toString());
+			} else if (MQuery.NULL.equals(op) || MQuery.NOT_NULL.equals(op)) {
+				q.addRestriction(col, op, null, r.optString("name", col), null, andOr, depth);
+			} else if (MQuery.BETWEEN.equals(op)) {
+				q.addRangeRestriction(col, v, v2, r.optString("name", col), String.valueOf(v), String.valueOf(v2), andOr, depth);
+			} else {
+				boolean and = i == 0 || !"OR".contains(andOr), not = andOr.contains("NOT");
+				q.addRestriction(col, op, v, r.optString("name", col), v == null ? null : v.toString(), and, not, depth);
+			}
+		}
+		if (req.has("historyDays") && req.getInt("historyDays") > 0)
+			q.addRestriction(new SQLFragment(table + ".Created >= getDate()-?", List.of(req.getInt("historyDays"))));
+		String where = q.getWhereClause(true);
+		JSONArray ids = new JSONArray();
+		String key = req.optString("key", table + "_ID");
+		String sql = "SELECT " + key + " FROM " + table + " WHERE " + where + (req.has("client") ? " AND " + table + ".AD_Client_ID IN (0," + req.getInt("client") + ")" : "") + " ORDER BY 1";
+		SQLFragment sf = q.getSQLFilter(true);
+		String sqlP = "SELECT " + key + " FROM " + table + " WHERE " + sf.sqlClause() + (req.has("client") ? " AND " + table + ".AD_Client_ID IN (0," + req.getInt("client") + ")" : "") + " ORDER BY 1";
+		try (PreparedStatement ps = DB.prepareStatement(sqlP, null)) {
+			int pi = 1; for (Object p : sf.parameters()) ps.setObject(pi++, p);
+			try (ResultSet rs = ps.executeQuery()) { while (rs.next()) ids.put(rs.getObject(1).toString()); }
+		}
+		return new JSONObject().put("ok", true).put("where", where).put("whereP", sf.sqlClause()).put("params", new JSONArray(sf.parameters().stream().map(o -> String.valueOf(o)).toArray())).put("ids", ids).put("n", ids.length());
+	}
+
+	// §UDP-4: what legacy does when a window opens - AbstractADWindowContent :416-422 (isTransaction -> onlyCurrentRows) + initialQuery
+	// :899-991 (IsHighVolume / isQueryRequire) - and the header-tab rows GridTab/GridTable select (GridTable :437-446) through the real classes.
+	private static JSONObject initialquery(Properties ctx, JSONObject req) throws Exception {
+		int wid = req.getInt("window"), windowNo = 9000 + (int) (System.nanoTime() % 900);
+		GridWindow gw = GridWindow.get(ctx, windowNo, wid);
+		if (gw == null) return new JSONObject().put("ok", false).put("error", "no window " + wid);
+		try {
+			gw.initTab(0);
+			GridTab t = gw.getTab(0);
+			boolean tx = gw.isTransaction();
+			JSONObject o = new JSONObject().put("ok", true).put("isTransaction", tx).put("isHighVolume", t.isHighVolume())
+				.put("maxQuery", t.getMaxQueryRecords()).put("confirm", MRole.getDefault().getConfirmQueryRecords()).put("table", t.getTableName());
+			boolean require = t.isHighVolume();
+			if (!require && !tx) {
+				t.query(false, 0, 0);
+				int n = t.getRowCount();
+				o.put("countAll", n);
+				require = t.isQueryRequire(n);
+			}
+			o.put("findFirst", require);
+			if (req.optBoolean("ids", false)) {
+				t.query(tx, 0, 0);
+				int n = t.getRowCount();
+				JSONArray ids = new JSONArray();
+				for (int i = 0; i < n; i++) ids.put(String.valueOf(t.getKeyID(i)));
+				o.put("rows", n).put("ids", ids);
+			}
+			return o;
+		} finally {
+			gw.dispose();
+			Env.clearWinContext(ctx, windowNo);
+		}
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
