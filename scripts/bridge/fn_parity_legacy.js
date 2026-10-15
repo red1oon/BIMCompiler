@@ -74,6 +74,13 @@ const TS3 = ['2003-02-15 13:45:10', '2003-12-31 23:59:59', '2004-02-29 00:00:00'
 TS3.forEach(d => { ['IYYY', 'Y', 'YEAR', 'YYYY', 'Q', 'MONTH', 'MON', 'MM', 'RM', 'IW', 'W', 'DDD', 'DD', 'J', 'DAY', 'DY', 'D', 'HH', 'HH24', 'MI', 'mm', 'XX', null].forEach(f => add('firstof', 'ts', [d, f], `firstof ${d} ${f}`)); [-14, -1, 0, 1, 1.7, -1.7, 13, null].forEach(n => add('add_months', 'tn', [d, n], `add_months ${d} ${n}`)); [0, 5, -3, 1.5, -0.25, null].forEach(n => { add('adddays', 'tn', [d, n], `adddays ${d} ${n}`); add('subtractdays', 'tn', [d, n], `subtractdays ${d} ${n}`); }); TS3.forEach(e => add('daysbetween', 'tt', [d, e], `daysbetween ${d} ${e}`)); });
 add('firstof', 'ts', [null, 'MM'], 'firstof NULL date'); add('add_months', 'tn', [null, 1], 'add_months NULL date'); add('daysbetween', 'tt', [null, '2003-01-01'], 'daysbetween NULL');
 [['hello', 1], ['hello', 5], ['hello', 9], ['hello', 0], ['hello', -1], ['', 1], [null, 1], ['héllo', 2], ['hello', null]].forEach(([a, b]) => add('charat', 'si', [a, b], `charat ${JSON.stringify(a)} ${b}`));
+// instr (Oracle compat, 2/3/4 args): positive/negative/zero start, occurrences, not found, empty needle, NULLs, multibyte
+['CORPORATE FLOOR', 'OR', 'ORA', 'XYZ', '', 'O'].forEach(sub => { add('instr', 'ss', ['CORPORATE FLOOR', sub], `instr2 ${JSON.stringify(sub)}`);
+  [1, 3, 5, 9, 15, 20, 0, -1, -3, -10, -20].forEach(b => { add('instr', 'ssi', ['CORPORATE FLOOR', sub, b], `instr3 ${JSON.stringify(sub)} ${b}`); [1, 2, 3, 4].forEach(o => add('instr', 'ssii', ['CORPORATE FLOOR', sub, b, o], `instr4 ${JSON.stringify(sub)} ${b} ${o}`)); }); });
+add('instr', 'ss', [null, 'A'], 'instr2 null str'); add('instr', 'ss', ['A', null], 'instr2 null sub'); add('instr', 'ssi', ['héllo wörld', 'ö', 2], 'instr3 multibyte'); add('instr', 'ssii', ['héllo wörld wörld', 'ö', 1, 2], 'instr4 multibyte'); add('instr', 'ssii', ['aaaa', 'aa', 1, 2], 'instr4 overlap');
+// generate_uuid: the random half cannot match; the witness compares the 48-bit timestamp prefix + version 7 + variant 10
+['2026-10-15 03:04:05+00', '2000-01-01 00:00:00+00'].forEach(t => add('generate_uuid', 't', [t], 'uuid7 ' + t));
+
 [[2.675, 2], [1.005, 2], [-1.005, 2], [0.5, 0], [1.5, 0], [2.5, 0], [-2.5, 0], [123456.789, -2], [0.125, 2], [1e-7, 6], [null, 2], [5, null]].forEach(([a, b]) => add('round', 'nn', [a, b], `round ${a} ${b}`));
 // stage 3c: SQL-level cases - dictionary SQL executed by legacy (after Convert_PostgreSQL) vs by the twin (after convertSql). clock:true = compare the DATE part (both read their own clock).
 const addSql = (sql, clock, label) => cases.push({ fn: '@sql', types: '', args: [], sql, clock, label });
