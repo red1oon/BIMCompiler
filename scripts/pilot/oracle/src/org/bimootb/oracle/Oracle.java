@@ -110,10 +110,19 @@ public class Oracle implements Runnable {
 			if ("process".equals(op)) return process(ctx, req);
 			if ("sql".equals(op)) return sql(req);
 			if ("ctx".equals(op)) return ctxDump(ctx);
+			if ("pinstances".equals(op)) return pinstances(ctx, req);
 			throw new IllegalArgumentException("unknown op " + op);
 		} finally {
 			ServerContext.dispose();
 		}
+	}
+
+	// §UDP-2: the Saved Parameter / Last Run list the process dialog shows (AbstractProcessDialog.querySaved -> MPInstance.get)
+	private static JSONObject pinstances(Properties ctx, JSONObject req) {
+		JSONArray a = new JSONArray();
+		for (MPInstance i : MPInstance.get(ctx, req.getInt("process"), Env.getAD_User_ID(ctx)))
+			a.put(new JSONObject().put("id", i.getAD_PInstance_ID()).put("name", i.getName()));
+		return new JSONObject().put("ok", true).put("list", a);
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
