@@ -1,0 +1,2714 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>⚠ DO NOT REMOVE - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#do-not-remove" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ⚠ DO NOT REMOVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../ArchitectureOverview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href=".." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host (DIY installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="do-not-remove">⚠ DO NOT REMOVE<a class="headerlink" href="#do-not-remove" title="Permanent link">&para;</a></h1>
+<p>Scope: the basic shapes of the Duplex rebuilt from its 2D set (walls with their openings cut, floor slabs, roof, door/window fills from the LOD400 component library), checked back against the source model. Separate from <code>SPEC.md</code> (another agent appends there; merge later). Spec before code. Read the log after every run; exit code is not evidence. Every value traces to a DXF entity; the source DB is the answer key only; a value the drawings do not carry is a GAP, never a default.</p>
+<h1 id="dxf2bim-basic-shapes-walls-floor-slabs-roof-with-openings-and-fills">DXF2BIM basic shapes: walls, floor slabs, roof (with openings and fills)<a class="headerlink" href="#dxf2bim-basic-shapes-walls-floor-slabs-roof-with-openings-and-fills" title="Permanent link">&para;</a></h1>
+<p>Status: SPEC 2026-10-16 (written before code). Goal (user): "make this a prelim of the basic shapes which has to be accurate first as fundamental of most 2Ds.. ie floor slabs, walls, roof", then "with their openings.. mesh mapping from their LOD400 component library". Full circle: drawings exported from a model we hold, rebuilt, checked against that model. Windows/doors as TYPES are out of scope here except where a bound type is needed to place a fill.</p>
+<h2 id="1-inputs-and-answer-key">1. Inputs and answer key<a class="headerlink" href="#1-inputs-and-answer-key" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Drawings: <code>bim-compiler/2D_Layout/output/DXF/DX_{FLOOR_GF,FLOOR_FF,FRONT,REAR,LEFT,RIGHT,ROOF}_20260428_0636.dxf</code> (units mm). Marked copies from <code>tests/dxf2bim/mark_dx_set.js</code> (<code>out/marked/</code>), plus the shell markings of §5.3 written by the new rosetta script into <code>out/marked_shell/</code> (copies; originals untouched).</li>
+<li>Library (read-only): <code>bim-compiler/deploy/component_library.db</code> (<code>ad_opening_family</code>, <code>ad_geometry_map</code>, <code>component_geometries</code>).</li>
+<li>Answer key only: <code>2D_Layout/input/DX_extracted.db</code> (<code>elements_rtree</code> bboxes, <code>base_geometries</code> meshes + <code>element_transforms</code> centres, <code>rel_fills_host</code>). Never read by any module; read only by the witness script.</li>
+<li>Code: new module <code>deploy/dev/dxf2shell.js</code> (pure). Minimal edits: <code>dxf2bim.js</code> (§2.1, §2.2), <code>dxf2mesh.js</code> (§2.1 mesh of a polygon wall), <code>dxf2marks.js</code> (one key, §5.3). Witness <code>tests/dxf2bim/rosetta_dx_shell.js</code> (log <code>rosetta_dx_shell.log</code>), unit tests <code>tests/dxf2bim/test_shell.js</code> (log <code>test_shell.log</code>). OBJ <code>tests/dxf2bim/out/duplex_basic_shapes.obj</code>.</li>
+</ul>
+<h3 id="11-evidence-measured-before-writing-scripts-in-the-session-scratchpad-2026-10-16">1.1 Evidence measured before writing (scripts in the session scratchpad, 2026-10-16)<a class="headerlink" href="#11-evidence-measured-before-writing-scripts-in-the-session-scratchpad-2026-10-16" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Plans have NO slab, stair, railing or void layer: <code>FLOOR_GF</code>/<code>FLOOR_FF</code> layers are A-WALL-FULL/PRTN/PATT, A-DOOR, A-GLAZ, A-FURN, A-GRID, annotation, title block.</li>
+<li>Level 2 has 8 closed A-WALL-FULL outlines with 45° mitred corners (handles 68, 6E, 78, 81, 8B, 94, 10A, 110): 4 trapezoid-like long pieces and 4 corner triangles (e.g. 110 = (0,0),(417,0),(417,-417)). Source walls 1010-1013 are the 4 Level-2 exterior walls they belong to.</li>
+<li>Level-2 wall 1035 misses 20 mm: piece C2 (2506..2526 x -10094..-9970 mm) is a pier 20 mm along the wall and 124 mm across; <code>wall.min_thickness</code> 0.05 drops it on its SHORT side before stub orientation (§46 of SPEC.md) can turn it.</li>
+<li>R1b sums source opening widths; Level-2 windows are stacked three per plan box (e.g. 81/82/83 share 0.417..1.236), so the sum triple-counts one plan interval.</li>
+<li>Source structural slabs: Level 1 <code>127mm Slab on Grade</code> 1103/1104, z -0.127..0, two L-shaped outlines inside the exterior walls (x 0.417..8.383, y -17.383..-0.417) separated by the party-wall zigzag; Level 2 <code>Wood Joist with Subflooring</code> 1105/1106, z 2.795..3.1, x 0.417..4.125 and 4.675..8.383 (split by party wall 990) with stair notches 0.417..1.471 x -9.725..-6.234 and 7.359..8.383 x -11.566..-8.075; exterior porch slabs 1122/1123 outside the building; 12 thin <code>Finish Floor</code> slabs (13-19 mm). Roof: IfcSlab 1121 <code>Basic Roof:Live Roof over Wood Joist Flat Roof</code>, storey Unknown, z 6.0..6.457, outline x 0.417..8.383, y -17.383..-0.417 with two holes 0.861..1.891 x -11.206..-10.124 and 6.894..7.924 x -7.676..-6.594. Skylights 98/99 (IfcWindow, storey Roof) bbox 0.79..1.962 x -11.277..-10.053 and 6.823..7.995 x -7.747..-6.523, z 6.457..6.635.</li>
+<li>Drawing evidence for slabs/roof: <code>ROOF</code> plan A-ROOF closed polyline 0..8800 x -17800..0 (outer face of the building), two A-GLAZ closed rectangles equal to the skylight bboxes (790..1962 x -11277..-10053; 6823..7995 x -7747..-6523), text <code>BUMBUNG RATA / FLAT ROOF</code>. Elevations: A-ELEV-WALL rects split at y 0 / 3100 / 6000 / 6609, interior wall ends seen at 0..2795 (FRONT 6200..6324; LEFT -10370..-10218 and -10218..-9725; REAR 2476..2600; RIGHT -8075..-7582, -7582..-7430); level markers (A-ANNO-LEVL line + text) <code>GRD. LEVEL -0.150</code>, <code>GRD. FLOOR LEVEL +0.000</code>, <code>SILL LEVEL +3.200</code>, <code>HEAD LEVEL +5.600</code>, <code>BEAM/CEILING LEVEL +6.000</code>, <code>ROOF LEVEL +6.500</code>, dimension <code>500mm</code> between 6000 and 6500. No first-floor level text, no section drawing in the set (plans carry A-ANNO-SECT markers for sections that are not in the set).</li>
+<li>Library: no table links an <code>ad_opening_family</code> id to a geometry. <code>ad_geometry_map</code> holds, for building_type <code>Ifc2x3_Duplex</code>, per-instance EXTRACTED meshes keyed by Revit type name (<code>element_ref</code>, e.g. <code>M_Fixed:4835mm x 2420mm:4835mm x 2420mm</code>), centred, orientation baked (local bbox long side along X or along Y). Windows 56 vertices/108 triangles, doors 40/68 (glass door 56/100). Family descriptions name the type: <code>DUPLEX_LIVING_WINDOW</code> = "M_Fixed 4835×2420mm ...", <code>US_DBL_DOOR_1250</code> = "US double door 1250x2010mm". Each size pair occurs in exactly one Duplex <code>element_ref</code> per family token (checked by SQL).</li>
+</ul>
+<h3 id="12-tolerances-stated-before-any-run">1.2 Tolerances (stated before any run)<a class="headerlink" href="#12-tolerances-stated-before-any-run" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Tolerance</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>plan coordinates, wall pieces vs source walls (R1a)</td>
+<td>1 mm</td>
+<td>drawing coordinates are integer mm</td>
+</tr>
+<tr>
+<td>wall recall R1b-u</td>
+<td>5 mm</td>
+<td>as SPEC.md D-2</td>
+</tr>
+<tr>
+<td>any z (wall top/base, slab top/bottom, roof, opening sill/head, fill z)</td>
+<td>10 mm</td>
+<td>as SPEC.md R5/R6</td>
+</tr>
+<tr>
+<td>slab/roof outline edge vs source outline extreme</td>
+<td>1 mm</td>
+<td>integer mm</td>
+</tr>
+<tr>
+<td>slab/roof footprint area not explained (see §4.4)</td>
+<td>0.01 m²</td>
+<td>float rounding only</td>
+</tr>
+<tr>
+<td>fill placement centre (x, y, z) vs source door/window bbox centre</td>
+<td>10 mm</td>
+<td>as R5</td>
+</tr>
+<tr>
+<td>roof hole centre vs source hole centre</td>
+<td>10 mm</td>
+<td></td>
+</tr>
+<tr>
+<td>void sampling offset above head / below sill</td>
+<td>20 mm</td>
+<td>inside the thinnest infill strip (66 mm between stacked windows)</td>
+</tr>
+<tr>
+<td><code>elev_tol</code> (interval equality in elevations)</td>
+<td>3 mm</td>
+<td>SANDBOX, as rosetta_dx_heights</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-walls">2. Walls<a class="headerlink" href="#2-walls" title="Permanent link">&para;</a></h2>
+<h3 id="21-f9-polygon-footprint-level-2-mitres">2.1 F9 polygon footprint (Level-2 mitres)<a class="headerlink" href="#21-f9-polygon-footprint-level-2-mitres" title="Permanent link">&para;</a></h3>
+<p>Supersedes SPEC.md D-1 for this goal (user 2026-10-16: Level-2 mitred walls must be rebuilt); D-1 forbade a bounding box, and F9 does not use one.
+- F9 <code>config.wall.polygon_footprint: true</code> (opt-in; absent = behaviour unchanged, <code>GAP:wall_footprint_not_rect</code>). In <code>footprint</code> mode a closed outline that is neither a rectangle (F1) nor rectilinear (F6), after dedupe and removal of collinear vertices (within <code>snap_tol</code>), and that is a SIMPLE polygon (no two non-adjacent edges cross) with at least 3 vertices, is emitted as ONE wall: <code>outline</code> = the vertices (metres, CCW), <code>polygon: true</code>, <code>rect</code> = its bounding box, axis along the bbox long side through the bbox centre (F2), <code>thickness</code> = bbox short side, <code>square</code> when equal. F4 (duplicate) and F5 (min_thickness on the bbox short side) apply. Self-crossing → <code>GAP:wall_footprint_not_rect</code> as before.
+- Polygon pieces take no part in the §46 stub pass (neither voters nor subjects).
+- Mesh (<code>dxf2mesh.meshFromOps</code>): a wall with <code>outline</code> is a prism of the outline from <code>level+base</code> to <code>level+base+height</code> (existing ear-clip <code>prism</code>). Openings hosted by a polygon wall are not cut there: <code>GAP:opening_in_polygon_wall</code> (the shell path of §6 handles openings in drawn gaps; nothing is silently cut).
+Tests (test_shell.js): WP1 mitred trapezoid (0,0),(4675,0),(4675,417),(417,417) mm → one polygon wall, outline equals input in m, rect (0,0,4.675,0.417), thickness 0.417 · proves: mitres dropped or bbox-filled · WP2 flag absent → <code>GAP:wall_footprint_not_rect</code> · proves: hidden behaviour change · WP3 self-crossing (bow-tie) → gap · proves: invalid outline accepted · WP4 prism volume = shoelace area x height, watertight, outward · proves: polygon mesh wrong · WP5 rectangle and rectilinear outlines unchanged (same ops as without the flag) · proves: F9 hijacks F1/F6.</p>
+<h3 id="22-f5b-min_thickness-after-orientation">2.2 F5b min_thickness after orientation<a class="headerlink" href="#22-f5b-min_thickness-after-orientation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>F5b When §46 stub orientation is active (<code>opening.gap_max</code> given), <code>wall.min_thickness</code> is checked on the thickness AFTER orientation: a piece below it on its short side is kept as a candidate (not a voter); if a vote turns it so the long side is its thickness, it is emitted; otherwise <code>GAP:wall_below_min_thickness</code> exactly as before. Without <code>gap_max</code> nothing changes (F5).
+Tests: WT1 pier 20 x 124 mm between a wall piece and a gap (same strip, gap 0.762 m ≤ gap_max) → emitted, thickness 0.124, horizontal · proves: real piers dropped as "thin strips" · WT2 thin strip 800 x 19 mm with no voter → still <code>GAP:wall_below_min_thickness</code> · proves: min_thickness disabled · WT3 thin candidate does not vote for another piece · proves: dropped strips steering orientation.</li>
+</ul>
+<h3 id="23-heights-existing-28-h1-h6-and-w-h3-slab-above-convention">2.3 Heights (existing §28 H1-H6) and W-H3 slab-above convention<a class="headerlink" href="#23-heights-existing-28-h1-h6-and-w-h3-slab-above-convention" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Elevation heights per SPEC.md §28 (unchanged). The plan <code>@LEVEL</code> markings (0, 3.1) were set FROM_SOURCE_MODEL by <code>mark_dx_set.js</code>; here each is accepted only if an elevation wall rect of the set has <code>z0</code> equal to it within <code>elev_tol</code> (check LV, drawing-corroborated), else the run stops.</li>
+<li>W-H3 (convention, labelled, own <code>height_source</code>): a plan wall piece left <code>GAP:no_elevation_height</code> by H4 takes <code>base 0</code>, <code>height = U - level</code>, <code>height_source: 'slab_above'</code>, where U = the underside z of the slab directly above this storey (§4.2 for a floor, §5.2 roof bottom for the top storey). No U → the gap stays. Stated convention (Revit-style "top constraint = underside of floor above"), not a reading of that wall; reported separately from elevation heights.
+Tests: WH1 unseen piece with U given → base 0, height U-level, source <code>slab_above</code> · proves: convention silently used without label or with the wrong storey · WH2 no U → gap kept, wall dropped · proves: default invented · WH3 a piece with an elevation height is untouched · proves: convention overrides a drawn value.</li>
+</ul>
+<h3 id="24-rosetta-wall-checks-in-rosetta_dxjs-and-rosetta_dx_shelljs">2.4 Rosetta wall checks (in rosetta_dx.js and rosetta_dx_shell.js)<a class="headerlink" href="#24-rosetta-wall-checks-in-rosetta_dxjs-and-rosetta_dx_shelljs" title="Permanent link">&para;</a></h3>
+<ul>
+<li>R1b-u (restates SPEC.md D-2, same 5 mm): covered length = length of the UNION of our pieces' intervals (bbox, along the source wall's long axis) inside the source wall rect; expected uncovered = length of the UNION of the source openings' intervals (door interval shrunk by 0.076 at each end, D-2). Union instead of sum because stacked windows share one plan interval and mitre triangles overlap the long pieces' bboxes. For pieces that never overlap (Level 1) union = sum.</li>
+<li>rosetta_dx.js config adds <code>wall.polygon_footprint: true</code> and <code>opening.gap_min 0.3 / gap_max 5</code> (SANDBOX, same values as rosetta_dx_types.js). Expected: R1b-u Level 1 17/17, Level 2 17/17; R1a still 0 stray (polygon pieces' bboxes inside a source wall); R1c 0 unexplained.</li>
+<li>R6-shell (rosetta_dx_shell.js): every piece with <code>height_source: elevation</code> has the z range of the source wall containing it (10 mm), asserted; <code>slab_above</code> pieces: count equal / not equal reported, each mismatch listed (INFO, a convention is not asserted).</li>
+</ul>
+<h2 id="3-shared-rectilinear-shell-solid">3. Shared: rectilinear shell solid<a class="headerlink" href="#3-shared-rectilinear-shell-solid" title="Permanent link">&para;</a></h2>
+<ul>
+<li>SH-M <code>prismRect(outline, holes, z0, z1)</code>: outline and holes rectilinear (every edge axis-aligned within 1e-9 after rounding to 6 dp), holes inside the outline and disjoint. Grid = all distinct x and y of outline and holes; a cell is solid when its centre is inside the outline and inside no hole. Top and bottom = two triangles per solid cell; sides = one quad (two triangles) per cell edge between a solid cell and a non-solid cell or the outside, oriented outward. Result is one closed, outward mesh (each directed edge once, reverse once). Non-rectilinear input → <code>GAP:shell_not_rectilinear</code> (no mesh). Deterministic: cells in (y, x) order.
+Tests: SM1 rectangle 2x3, z 0..0.5 → volume 3.0, watertight · SM2 rectangle with a 1x1 hole → volume (6-1) x 0.5, watertight, the hole has inner side faces · SM3 L-shape (area 12) → 12 x thickness · SM4 diagonal outline → gap, no mesh · proves (all): a slab mesh that is open, inside out, fills holes or invents area.</li>
+</ul>
+<h2 id="4-floor-slabs">4. Floor slabs<a class="headerlink" href="#4-floor-slabs" title="Permanent link">&para;</a></h2>
+<h3 id="41-s-o-outline-convention-on-drawn-walls">4.1 S-O outline (convention on drawn walls)<a class="headerlink" href="#41-s-o-outline-convention-on-drawn-walls" title="Permanent link">&para;</a></h3>
+<ul>
+<li>S-O Only for a storey whose footprint walls form a rectangular envelope E (bbox of all emitted wall pieces of the plan, rect or polygon). For each face F of E: the exterior pieces of F are pieces whose rect touches F's plane (snap_tol) and whose long axis is parallel to F (squares and polygon corner triangles excluded). Their inner edges (the rect side opposite F) must all be equal within <code>snap_tol</code> → inner line of F; zero pieces → <code>GAP:slab_no_exterior_wall</code> (face named); unequal → <code>GAP:slab_inner_face_conflict</code> (values listed). Outline = rectangle of the four inner lines. Convention, stated: "the slab spans between the inner faces of the exterior walls" (the source model's convention, slab-between-walls); NOT read from a slab entity (none exists in the set). <code>outline_source: 'exterior_wall_inner_faces'</code>, <code>members</code> = handles used.</li>
+<li>Not drawn, therefore not built: splits of the slab under party walls, stair voids, exterior porch slabs, finish-floor layers. The pipeline cannot see them; the witness lists the area they account for (§4.4).</li>
+</ul>
+<h3 id="42-s-z-top-and-underside-from-elevation-derived-wall-heights">4.2 S-Z top and underside (from elevation-derived wall heights)<a class="headerlink" href="#42-s-z-top-and-underside-from-elevation-derived-wall-heights" title="Permanent link">&para;</a></h3>
+<ul>
+<li>S-Z1 top T = <code>level + base</code> of the storey's exterior pieces with <code>height_source: 'elevation'</code>; all must agree within <code>elev_tol</code>, else <code>GAP:slab_top_conflict</code>; none → <code>GAP:slab_no_top</code>.</li>
+<li>S-Z2 underside U = the common top <code>level_below + base + height</code> of the pieces of the storey BELOW that have <code>height_source: 'elevation'</code> and end strictly below T (by more than <code>elev_tol</code>). All must agree within <code>elev_tol</code>, else <code>GAP:slab_underside_conflict</code> (values listed); none (no storey below in the set, or no lower piece ends below T) → <code>GAP:slab_no_underside</code>. Convention, stated: a lower wall seen in an elevation that stops below the next floor stops at that floor's underside.</li>
+<li>S-Z3 thickness = T - U &gt; 0, else <code>GAP:slab_bad_thickness</code>. No thickness → the slab op is emitted with <code>thickness: null</code> and NOT meshed (<code>GAP:slab_no_underside</code> carried). Never a default thickness.
+Expected before the run: Level 1 T = 0 (GF exterior rects start at 0), U: no storey below in the set → <code>GAP:slab_no_underside</code> (the foundation is seen only as elevation rects -1250..0, which end AT T, not below; and is not a plan). Level 2 T = 3.1, U = 2.795 (Level-1 interior walls seen in FRONT/REAR/LEFT/RIGHT stop at 2795) → 0.305 m.
+Tests: SZ1 hand: lower pieces end at 2.795 (two) and 3.1 (one, ends at T: excluded) → U 2.795 · SZ2 lower tops 2.795 and 2.6 → conflict gap, no slab thickness · SZ3 no lower storey → <code>slab_no_underside</code>, op has thickness null, not meshed · SZ4 T disagreement → <code>slab_top_conflict</code> · SO1 4-face envelope → inner rectangle (hand) · SO2 inner edges differ on one face → conflict gap · SO3 face without an along-face piece → gap · proves (all): invented thickness, a lower wall that reaches the floor treated as an underside, or a slab outline guessed where walls disagree.</li>
+</ul>
+<h3 id="43-slab-op-and-mesh">4.3 Slab op and mesh<a class="headerlink" href="#43-slab-op-and-mesh" title="Permanent link">&para;</a></h3>
+<p><code>DXF_SLAB</code> params: <code>outline</code>, <code>holes: []</code>, <code>top</code>, <code>bottom</code>, <code>thickness</code>, <code>outline_source</code>, <code>z_source</code> (<code>{top: handles, underside: handles}</code>), <code>storey</code>. Meshed with SH-M from <code>bottom</code> to <code>top</code>. GUID = hash(run ids of the storey | 'slab').</p>
+<h3 id="44-witness-rosetta_dx_shelljs-per-storey">4.4 Witness (rosetta_dx_shell.js), per storey<a class="headerlink" href="#44-witness-rosetta_dx_shelljs-per-storey" title="Permanent link">&para;</a></h3>
+<p>Exact area classification on a compressed grid (all x, y of our outline, the source slabs' projected top triangles, the source walls' rtree rects, the source stair/railing rects of the storey band): every cell centre is classified once.
+- SL-a outline: each edge of our outline equals the corresponding extreme of the union of the storey's structural source slabs (not "Finish Floor", not porch slabs lying outside E) within 1 mm. Asserted.
+- SL-b precision: area in ours and not in a source structural slab = (under a source wall of this or the next storey: convention slab-under-wall) + (inside a source IfcStairFlight/IfcRailing rect: stair void not drawn) + OTHER. Asserted OTHER ≤ 0.01 m².
+- SL-c recall: area in source structural slabs inside E and not in ours = OTHER ≤ 0.01 m² (asserted); slabs outside E (porch) reported as not drawn.
+- SL-d z: our top and bottom vs the source structural slab z range of that storey (10 mm), asserted where we have a thickness; Level 1 reported as GAP (expected <code>slab_no_underside</code>).</p>
+<h2 id="5-roof">5. Roof<a class="headerlink" href="#5-roof" title="Permanent link">&para;</a></h2>
+<h3 id="51-r-o-outline">5.1 R-O outline<a class="headerlink" href="#51-r-o-outline" title="Permanent link">&para;</a></h3>
+<ul>
+<li>R-O1 roof plan check: the ROOF plan (layer type <code>roof</code> in its layer map) must hold exactly one closed outline; it must equal the OUTER envelope E of the top storey's walls within <code>snap_tol</code> (consistency: the roof covers that storey). Else <code>GAP:roof_outline_mismatch</code> (both rects listed), no roof.</li>
+<li>R-O2 slab outline = S-O applied to the top storey's pieces (the roof slab spans between the inner faces of the top storey's exterior walls, the same convention as floors). <code>outline_source: 'top_storey_inner_faces'</code>, plus the A-ROOF handle.</li>
+</ul>
+<h3 id="52-r-z-bottom-and-top">5.2 R-Z bottom and top<a class="headerlink" href="#52-r-z-bottom-and-top" title="Permanent link">&para;</a></h3>
+<ul>
+<li>R-Z1 bottom B = common top (<code>level + base + height</code>) of the top storey's exterior pieces with <code>height_source: 'elevation'</code> (all agree within <code>elev_tol</code>, else <code>GAP:roof_bottom_conflict</code>; none → <code>GAP:roof_no_bottom</code>).</li>
+<li>R-Z2 top = the <code>@ROOF</code> marking (§5.3) of the marked elevations: every elevation that carries it must agree within <code>elev_tol</code> (else <code>GAP:roof_top_conflict</code>), and each value must coincide with a drawn horizontal line of type <code>levelline</code> in that elevation (via the <code>@Z</code> calibration, within <code>elev_tol</code>), else <code>GAP:roof_top_not_drawn</code>. No <code>@ROOF</code> anywhere → <code>GAP:roof_no_top</code>, roof not meshed.</li>
+<li>Expected before the run: B 6.0 (Level-2 exterior rects end at 6000), top 6.5 (<code>ROOF LEVEL +6.500</code> line). The source roof top is 6.457: the witness is EXPECTED TO FAIL on the roof top by 43 mm (the drawing's roof level marker disagrees with the model; reported as a finding, not tuned away).</li>
+</ul>
+<h3 id="53-marking-roof-dxf2marksjs-one-new-key">5.3 Marking <code>@ROOF</code> (dxf2marks.js, one new key)<a class="headerlink" href="#53-marking-roof-dxf2marksjs-one-new-key" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>@ROOF=&lt;metres&gt;</code> (ELEV view, single value, number; malformed/conflict per §24 rules): "the top of the roof structure is at this absolute height". The marker author takes it from the drawing's roof level line; the reader never parses level text (SPEC.md V5). For the Duplex the marking step of rosetta_dx_shell.js reads the A-ANNO-LEVL text <code>ROOF LEVEL  +6.500</code> in each elevation and writes <code>@ROOF=6.5</code> into a COPY (out/marked_shell/); it refuses (no marker) when an elevation has zero or more than one such text.
+Test MK-R (test_shell.js): parse <code>@ROOF=6.5</code> → desc.roof 6.5; <code>@ROOF=abc</code> → <code>MARK:malformed</code>; two different values → <code>MARK:conflict</code> · proves: a roof height read from a bad or contradictory marking.</li>
+</ul>
+<h3 id="54-r-h-roof-openings">5.4 R-H roof openings<a class="headerlink" href="#54-r-h-roof-openings" title="Permanent link">&para;</a></h3>
+<ul>
+<li>R-H Each closed polyline of type <code>glazing</code> in the ROOF plan that lies inside the roof outline is a roof hole equal to that rectangle (the drawn skylight unit). Not rectangular → <code>GAP:roof_hole_not_rect</code>; outside or crossing the outline → <code>GAP:roof_hole_outside</code>. Stated limit: the drawing shows the skylight unit, not the structural opening; the hole is the unit outline.</li>
+<li>Witness RH: hole centre vs source roof-slab hole centre ≤ 10 mm (asserted), our hole contains the source hole (asserted), the size excess per side reported.</li>
+</ul>
+<h3 id="55-witness-roof">5.5 Witness (roof)<a class="headerlink" href="#55-witness-roof" title="Permanent link">&para;</a></h3>
+<p>RF-a outline edges vs source roof slab 1121 extremes (1 mm, asserted) · RF-b area classification as §4.4 (holes compared as RH) · RF-c bottom vs source 6.0 (10 mm, asserted) · RF-d top vs source 6.457 (10 mm, asserted; expected FAIL, see §5.2).
+Not built: parapet walls (source storey Roof, 6.0..6.609: seen only in elevations, no plan), foundation walls (seen only in elevations, no plan), skylight fills (§7.6).</p>
+<h2 id="6-openings-cut-into-walls-drawn-gaps-bridged">6. Openings cut into walls (drawn gaps bridged)<a class="headerlink" href="#6-openings-cut-into-walls-drawn-gaps-bridged" title="Permanent link">&para;</a></h2>
+<p>The Duplex plans split every wall at its openings (drawn gaps). A wall with a window is therefore missing the wall below the sill and above the head. The cut is made by building what the elevation shows around the void, never by guessing it.
+- OP-1 Strip: for an opening O (door with a height, or window with sill/height) its host piece H (<code>host_wall</code>) gives the strip: H's cross range (rect side across the axis) and axis. Pieces of the same storey with the same orientation and the same cross range (within <code>snap_tol</code>) are the strip's pieces, sorted along the axis.
+- OP-2 Gap: O's span centre c along the axis (window: bbox centre; door: midpoint of hinge and the swing end point nearer the host axis, SPEC.md M-c) must lie strictly between two consecutive strip pieces A (before) and B (after): G = [A.end, B.start]. c inside a piece → <code>GAP:opening_inside_piece</code> (needs a true cut; none expected); no piece on one side → <code>GAP:opening_gap_unbounded</code>.
+- OP-3 Height: A and B must have the same <code>level+base</code> and top within <code>elev_tol</code> (else <code>GAP:gap_height_conflict</code>) and a height (else <code>GAP:no_height</code>). Every opening of G must lie inside [zb, zt] (else <code>GAP:opening_outside_wall</code>).
+- OP-4 Infill: G x strip x ([zb, zt] minus the union of the z intervals of all openings whose centre is in G) → one box per remaining interval (sill, between stacked windows, lintel), class IfcWall, <code>infill: true</code>, <code>infill_of: [A.handle, B.handle]</code>, <code>openings: [handles]</code>. The void is G x opening z range: its width is the DRAWN gap, not the arc radius.
+- OP-5 Gaps without an opening (an interior door with no height, an export-defect door arc, see SPEC.md §21) stay full-height slots and are listed <code>NOTE:gap_without_opening</code> with the gap interval.
+Tests: OP1 window 1.0 wide, sill 0.9, height 1.2 in a 1.0 gap between two 3 m pieces → 2 infill boxes (0..0.9, 2.1..3.0), total volume = gap x t x (3-1.2) · OP2 three stacked windows → 4 boxes (sill, two mullion strips, lintel), hand z · OP3 door (sill 0) → lintel only · OP4 A and B with different tops → <code>gap_height_conflict</code>, no infill · OP5 opening centre inside a piece → <code>opening_inside_piece</code> · OP6 gap with no opening → NOTE, no infill · OP7 order independence (20 permutations of ops) · proves: voids not cut, wall above/below a window missing, wall built across a door, invented heights, order dependence.
+Witness OV (rosetta_dx_shell.js), for each source IfcDoor/IfcWindow hosted (rel_fills_host) in an IfcWall of Level 1/2: sample our wall solids (pieces, polygon prisms, infill) at the opening's plan centre: (1) z = centre, z0+20 mm, z1-20 mm → in NO wall solid (void cut); (2) z1+20 mm when the host source wall top is more than 40 mm above z1 → INSIDE a wall solid (wall above present); (3) z0-20 mm when z0 is more than 40 mm above the host wall base → INSIDE (wall below present). Status per opening: ok / explained (a logged gap at that opening: door without height, door_below_min_width) / FAIL. Asserted: FAIL = 0; counts reported.</p>
+<h2 id="7-fills-from-the-lod400-component-library-no-fallback">7. Fills from the LOD400 component library (no fallback)<a class="headerlink" href="#7-fills-from-the-lod400-component-library-no-fallback" title="Permanent link">&para;</a></h2>
+<p>User directive (<code>~/bim-compiler/prompts/RESUME_MODELLER_LOD400_REAL_GEOMETRY.md</code> §LOD400-ENVELOPE): a bound product without real geometry is a HARD FAIL plus a GAP; never a box.
+- GEO-1 Product → type name. From the bound <code>ad_opening_family</code> row: size key = first <code>NNN x NNN</code> pair of its description (digits only; same <code>pairKey</code> as rosetta_dx_types R-T2); family token = the description text before that pair, trimmed. Candidates = distinct <code>ad_geometry_map.element_ref</code> of the same <code>ifc_class</code> whose size key equals it; if some candidates' family part (text before the first <code>:</code>) equals the token, keep only those. Exactly one → that type; zero → <code>GAP:no_lod400_geometry</code>; several → <code>GAP:lod400_ambiguous</code>. FROM_LIBRARY_DESCRIPTION (as SPEC.md §40 WALLMAP).
+- GEO-2 Geometry: rows of that <code>element_ref</code> with their <code>component_geometries</code> mesh and <code>component_definitions</code> local bbox. Keep the rows whose local long horizontal side lies along the opening's axis (window/door axis X: local X extent ≥ local Y extent). None → <code>GAP:lod400_orientation</code>. Several hashes → lowest <code>geometry_hash</code> (string order); handing/mirroring is NOT decided (stated). A mesh with ≤ 12 triangles is an envelope → <code>GAP:lod400_envelope</code>.
+- GEO-3 Placement: translate the local mesh so its bbox centre lands at (cx, cy, cz): window cx, cy = plan bbox centre, door cx, cy = centre of the matched drawn gap G on the strip centreline (OP-2), cz = level + sill + height/2 (door sill 0). No rotation, no scaling (the mesh keeps its authored size). Size delta (mesh bbox vs measured width/height) reported; above <code>bind.size_tol</code> → <code>GAP:fill_size_mismatch</code> (fill still placed: the product is the bound one).
+- GEO-4 Hard fail: after all fills, if any <code>GAP:no_lod400_geometry | lod400_ambiguous | lod400_orientation | lod400_envelope</code> exists, <code>placeFills</code> THROWS an Error listing every one (the GAPs are attached to the error). An opening that is not bound (no type) gets no fill and <code>GAP:fill_unbound</code> (not a hard fail: no product was chosen, so no product geometry is missing).
+- Binding used: the rosetta_dx_types chain (prefer <code>DUPLEX_NOMINAL</code>, SANDBOX sets by id prefix; 819x759 windows labelled from the SOURCE model with <code>z=</code>, as its E7 check: round trip, stated). Doors bind only with an elevation height (4 of 14).
+Tests: GF1 description with token + size → the one element_ref · GF2 size only (US row) → the one element_ref of that size · GF3 no match → throws, error lists <code>GAP:no_lod400_geometry</code> · GF4 two element_refs of the size, no token → throws <code>lod400_ambiguous</code> · GF5 orientation: Y-long opening picks the Y-long mesh; none → throws <code>lod400_orientation</code> · GF6 12-triangle mesh → throws <code>lod400_envelope</code> · GF7 placement: mesh bbox centre lands on the opening centre, z from sill (hand) · GF8 unbound opening → <code>fill_unbound</code>, no throw, no geometry · proves: a box or a wrong product placed, a missing geometry silently skipped, wrong position.
+Witness FL (rosetta_dx_shell.js): for each placed fill, the source IfcDoor/IfcWindow of that storey whose bbox centre is within 10 mm (x, y, z) and whose type size key equals the fill's element_ref key: precision (every fill matches one, one-to-one) and recall (source doors/windows of Level 1/2 with a fill / total, unfilled ones listed with their gap) reported; asserted: 0 unmatched fills, 0 wrong product. Control FLC: the same scorer with fills moved 50 mm along x must report them unmatched.</p>
+<h2 id="8-assembly-obj-determinism">8. Assembly, OBJ, determinism<a class="headerlink" href="#8-assembly-obj-determinism" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Elements: wall pieces (rect boxes, polygon prisms), infill boxes, slabs with a thickness, roof, fills. Classes IfcWall, IfcSlab (floor), IfcRoof (roof slab), IfcDoor, IfcWindow. <code>tests/dxf2bim/out/duplex_basic_shapes.obj</code> via <code>dxf2mesh.toObj</code>.</li>
+<li>Logged: element count by class, triangle count, SHA-256 of the OBJ text; the whole pipeline run twice, hashes equal (MESH-det). Every wall/slab/roof element closed and outward (signed volume &gt; 0, each edge used twice); library fills are reported as-is (their mesh is the library's; closure counted, not asserted).</li>
+</ul>
+<h2 id="9-mutation-controls-each-check-is-broken-on-purpose-the-named-check-must-fail-then-restored">9. Mutation controls (each check is broken on purpose; the named check must FAIL; then restored)<a class="headerlink" href="#9-mutation-controls-each-check-is-broken-on-purpose-the-named-check-must-fail-then-restored" title="Permanent link">&para;</a></h2>
+<p>M-W1 F9 off → R1b-u Level 2 FAIL · M-W2 F5b off → R1b-u Level 2 (1035) FAIL · M-W3 R1b sum instead of union → R1b-u Level 2 FAIL · M-S1 underside taken from all lower pieces (no "ends below T" filter) → SZ1 / SL-d FAIL · M-S2 inner faces replaced by outer envelope → SO1 / SL-a FAIL · M-R1 roof top from <code>@ROOF</code> ignored → RF-d gap path / MK-R · M-O1 infill not built → OV FAIL · M-O2 void filled (infill over the full height) → OV FAIL · M-F1 orientation rule off → GF5 / FL FAIL · M-F2 missing geometry silently skipped (no throw) → GF3 FAIL · M-F3 z from level only (sill ignored) → GF7 / FL FAIL. Results recorded in §10.</p>
+<h2 id="9b-amendments-made-while-coding-2026-10-16-before-the-final-run-each-with-its-test">9b. Amendments made while coding (2026-10-16, before the final run; each with its test)<a class="headerlink" href="#9b-amendments-made-while-coding-2026-10-16-before-the-final-run-each-with-its-test" title="Permanent link">&para;</a></h2>
+<ul>
+<li>W-H3 demoted (coordinator, user rule "a wall without a drawn height = GAP"): the MAIN model (variant A) meshes only walls with an elevation height; pieces no elevation shows stay <code>GAP:no_elevation_height</code>. W-H3 runs only in variant B (<code>out/duplex_basic_shapes_convention.obj</code>), reported as INFO, never asserted.</li>
+<li>OP-1 for windows: axis and strip come from the window's own drawn box, not from <code>host_wall</code> (dxf2bim W8 picks a square corner piece on distance ties, so the strip was wrong). Test OP8.</li>
+<li>OP-1b doors: the strip is the one whose axis line passes through the hinge AND along which one swing end point lies (closed leaf in the wall); exactly one such strip, else <code>GAP:door_host_ambiguous | door_no_strip</code>. Nearest-piece hosting failed at a T-junction (Level-2 door 164 was hosted by partition BC instead of wall 1035). Test DS2.</li>
+<li>§6.1 door swing (coordinator): <code>doorSwing</code> reports <code>opens_to</code> (side of the wall the arc's mid-angle points to) and <code>hinge_jamb</code> (hinge at the -/+ end of the void along the wall axis), read from the arc only. Test DS1. Truth: NOT available in the answer key (<code>element_transforms</code> = centre only; door meshes carry no swing), so swing is reported, not claimed.</li>
+<li>Witness DW (coordinator): ALL 14 source doors and 22 windows of Level 1/2 vs the plan: door = plan arc with hinge in the source bbox (20 mm), width = source bbox long side (2 mm), strip pieces inside the source host wall (rel_fills_host); window = plan box (10 mm) + elevation sill/head (10 mm), strip pieces at its box ends inside the source host wall. A miss must be explained by a logged gap.</li>
+<li>RF-e (added after mutation M-SH survived RF-b/RH, which use the hole rings, not the mesh): roof mesh volume = classified roof area x thickness (1e-4 m3).</li>
+<li>FL also compares the placed fill's bbox with the source bbox (10 mm, all six faces), after mutation M-F1 (orientation rule off) survived a centre-only check.</li>
+<li>SL-d asserted for Level 2 (storey below in the set) instead of only reported, after mutation M-S1 turned it into a silent GAP.</li>
+<li>dxf2bim run extent uses footprint rectangles (a reoriented pier's axis is not its extent): with stub orientation active, Level 1's extent shrank to y -0.2085 and assembly raised a false <code>WARN:storey_extent_mismatch</code>.</li>
+<li>Unit tests added beyond §2-§7: RP1 (roof plan outline/holes), RZ1-RZ2 (roof z rules), OP8, DS1, DS2.</li>
+</ul>
+<h2 id="10-results-2026-10-16">10. Results (2026-10-16)<a class="headerlink" href="#10-results-2026-10-16" title="Permanent link">&para;</a></h2>
+<p>Code: <code>deploy/dev/dxf2shell.js</code> (new); edits: <code>dxf2bim.js</code> (F9 <code>polyOutline</code>, F5b thin candidates, stub pass excludes polygons, extent from rects), <code>dxf2mesh.js</code> (polygon wall prism, <code>GAP:opening_in_polygon_wall</code>), <code>dxf2marks.js</code> (<code>@ROOF</code>). Tests <code>tests/dxf2bim/test_shell.js</code> (44 checks, log <code>test_shell.log</code>), witness <code>tests/dxf2bim/rosetta_dx_shell.js</code> (log <code>rosetta_dx_shell.log</code>), <code>rosetta_dx.js</code> (flags + R1b-u union). Nothing committed.</p>
+<h3 id="101-walls-drawings-only-plan-pieces-elevation-heights-no-height-slab-or-level-value-from-config">10.1 Walls (drawings only: plan pieces + elevation heights; no height, slab or level value from config)<a class="headerlink" href="#101-walls-drawings-only-plan-pieces-elevation-heights-no-height-slab-or-level-value-from-config" title="Permanent link">&para;</a></h3>
+<ul>
+<li>R1b-u recall: Level 1 17/17, Level 2 17/17 (was 12/17) in both <code>rosetta_dx.js</code> and <code>rosetta_dx_shell.js</code>; R1a 0 stray (29 and 37 plan pieces; Level 2 gains 8 polygon pieces and 2 F5b piers: C2 = wall 1035's 20 mm pier, 124 = a 0.6 mm sliver inside wall 1036).</li>
+<li>LV: both plan levels (0, 3.1; markings FROM_SOURCE_MODEL) coincide with drawn elevation rect bottoms (18 / 16 rects).</li>
+<li>R6-shell: every piece with an elevation height equals its source wall's z (L1 18/18, L2 20/20, 10 mm). Meshed (variant A): 18 of 29 and 20 of 37 pieces; the rest <code>GAP:no_elevation_height</code> (interior walls no exterior elevation shows).</li>
+<li>Variant B (W-H3 convention, INFO): L1 10/11 equal (C0 0..2.795 vs source 1029 0..3.1), L2 15/17 equal (116, 119 at 6.0 vs source 1033/1034 5.695).</li>
+<li>Openings cut (OV, sampling our solids at each source opening): L1 10 openings: 8 ok, 2 explained (interior doors without a drawn height); L2 26: 18 ok, 8 explained (6 doors without height, 2 export-defect arcs r 0.174); 0 FAIL. 40 infill boxes (12 + 28) around 18 voids; 0 <code>opening_outside_wall</code> (rosetta_dx's old mesh path still reports 14, it does not bridge).</li>
+<li>DW: doors L1 6/6, L2 6/8 + 2 explained (§21 export defect); windows 4/4 and 18/18 (plan box, sill/head, host). Finding: dxf2bim W8 <code>host_wall</code> is a perpendicular corner piece for windows 76, 81, 82, 83, 88 (not used by the shell, not fixed).</li>
+<li>Door swing read from arcs (12 doors), e.g. 62 opens to -x hinge at -y jamb, 74 opens to +y hinge at -x jamb; not verifiable against the source (no rotation/handing stored).</li>
+</ul>
+<h3 id="102-floor-slabs">10.2 Floor slabs<a class="headerlink" href="#102-floor-slabs" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Level 1: outline 0.417..8.383 x -17.383..-0.417 = source slab extremes (SL-a PASS); area: ours 135.151 m2, explained excess 5.465 m2 under source walls (party-wall gap between 1103/1104), 0 unexplained; source porch slabs 1122/1123 (50.84 m2) outside the building, not drawn. Thickness: <code>GAP:slab_no_underside</code> (no storey below in the set; foundation only as elevation rects ending AT 0): NOT meshed. Source 127 mm (-0.127..0) not reachable from these drawings.</li>
+<li>Level 2: same outline (SL-a PASS); z 2.795..3.1 = source (SL-d PASS): top from the Level-2 exterior rects, underside from Level-1 interior walls seen ending at 2795 (81, 89, C3, C6, C9, CC). Area excess 9.331 m2 under party wall 990 and 7.257 m2 in the two stair voids (not drawn: no stair/void entity in the set), 0 unexplained.</li>
+</ul>
+<h3 id="103-roof">10.3 Roof<a class="headerlink" href="#103-roof" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Outline = Level-2 inner faces, equal to source roof 1121 (RF-a PASS); A-ROOF outline 59 equals the Level-2 envelope (R-O1). Holes: the two drawn skylight units, centres equal to the source holes (RH PASS), each 72 mm larger per side than the structural hole (0.323 m2 each, explained by the skylight unit outline). RF-e mesh volume 66.1396 = area x thickness.</li>
+<li>Bottom 6.000001 (Level-2 exterior rects; source 6.0, RF-c PASS). Top 6.5 from <code>@ROOF</code> (each elevation's <code>ROOF LEVEL +6.500</code> text, line on A-ANNO-LEVL verified): RF-d FAIL by 43 mm (source 6.457). Finding, kept as a failure: the drawing's roof level marker disagrees with the model; nothing else in the set states the roof top.</li>
+</ul>
+<h3 id="104-fills-lod400-library-no-fallback">10.4 Fills (LOD400 library, no fallback)<a class="headerlink" href="#104-fills-lod400-library-no-fallback" title="Permanent link">&para;</a></h3>
+<p>26 fills placed (L1: 2 M_Single-Flush 1250, 2 M_Single-Glass 813, 2 M_Fixed 4835, 2 M_Fixed 750; L2: 4 M_Fixed 2800, 2 M_Fixed 750, 8 M_Fixed 819, 4 M_Casement 819), 0 hard fail, 0 size mismatch; FL: 26/26 match a source door/window of the same product (centre and bbox, 10 mm), 0 wrong; FLC control 26/26 unmatched when moved 50 mm. Not filled: the 10 doors without a drawn height (cannot bind, R-T4), and the 2 skylights (not attempted). Library meshes are per-instance EXTRACTED from this same Duplex IFC (circular for shape; the witness is placement/product).</p>
+<h3 id="105-mesh">10.5 Mesh<a class="headerlink" href="#105-mesh" title="Permanent link">&para;</a></h3>
+<p><code>tests/dxf2bim/out/duplex_basic_shapes.obj</code>: 106 elements (IfcWall 78 incl. 40 infill, IfcDoor 4, IfcWindow 22, IfcSlab 1, IfcRoof 1), 3,792 triangles, z 0..6.5, SHA-256 <code>246ce6f0dd36404bdb33b664ab20dda1fd480ed69d7b37acc82a71b7f5208ecb</code>, identical on a second full run; 80/80 wall/slab/roof elements closed and outward; 26/26 library fills closed (reported). Variant B: 134 elements, <code>70d3f6a81b9a0c02beeb81051479b2e917dfc365674e8681c4ceda22bfe4c4d7</code>.</p>
+<h3 id="106-mutations-broken-on-purpose-restored-re-run-green">10.6 Mutations (broken on purpose, restored, re-run green)<a class="headerlink" href="#106-mutations-broken-on-purpose-restored-re-run-green" title="Permanent link">&para;</a></h3>
+<p>M-W1 F9 off -&gt; WP1, R1b-u L2 FAIL · M-W2 F5b off -&gt; WT1, R1b-u L2 · M-W2b thin pieces vote -&gt; WT3 · M-W3 R1b sum -&gt; R1b-u L2 · M-S1 underside filter off -&gt; SZ1, SL-d L2 · M-S2 outer envelope as outline -&gt; SL-a L1/L2, RF-a · M-SH hole ignored by the mesher -&gt; SM2, RF-e (RF-b/RH survived first; RF-e added) · M-R1 roof marking ignored -&gt; RF-d, RF-e · M-O1 no infill -&gt; OV L1/L2 · M-O2 void filled -&gt; OV L1/L2 · M-O3 first stacked opening only -&gt; OP2, OV L2 · M-D1 door strip first hit -&gt; DS2 · M-D2 swing side flipped -&gt; DS1 · M-F1 orientation rule off -&gt; GF5, FL L2 (FL L1 survives: lowest hash is already the right orientation there) · M-F2 no hard fail -&gt; GF3, GF4, GF6 · M-F3/M-F4 sill ignored -&gt; GF7, FL L1/L2. During the first mutation pass three crashed instead of failing cleanly (null outline paths); guarded, re-run, now clean FAILs.</p>
+<h3 id="107-regression-all-re-run-2026-10-16-after-the-last-change">10.7 Regression (all re-run 2026-10-16 after the last change)<a class="headerlink" href="#107-regression-all-re-run-2026-10-16-after-the-last-change" title="Permanent link">&para;</a></h3>
+<p>15 unit suites <code>SUMMARY fail=0</code> (test_shell 44 new); rosetta_dx 15 PASS / 0 FAIL (was 14 / 1: Level-2 recall); rosetta_dx_elev 3/0, rosetta_dx_types 11/0, rosetta_dx_heights 5/0, verify_marks_dx 22/0 (unchanged); rosetta_dx_shell 33 PASS / 1 FAIL (RF-d, the 43 mm roof-level finding).</p>
+<h3 id="108-not-claimed">10.8 Not claimed<a class="headerlink" href="#108-not-claimed" title="Permanent link">&para;</a></h3>
+<p>Level-1 slab thickness (not in the drawings); stair voids and party-wall slab splits (not drawn); porch slabs; finish floors; parapet and foundation walls (elevation-only, no plan); interior wall heights and interior door heights (no section/interior elevation: variant B is a convention); door swing correctness (no truth); door handing as left/right; skylight fills; 819x759 window types come from labels taken FROM the source model (round trip); library geometry for these products was extracted from this same IFC; markings for levels FROM_SOURCE_MODEL (corroborated by LV only); one building, exported by our own writer (not independent); SampleHouse not run.</p>
+<h2 id="11-shared-configuration-roof-plan-role-run_id-element-summary-2026-10-16-for-the-modeller-import-bim-ootb-promptsdxf2bim_modeller_lanemd-l3">11. Shared configuration, roof-plan role, run_id, element summary (2026-10-16, for the Modeller import, bim-ootb <code>prompts/DXF2BIM_MODELLER_LANE.md</code> §L3)<a class="headerlink" href="#11-shared-configuration-roof-plan-role-run_id-element-summary-2026-10-16-for-the-modeller-import-bim-ootb-promptsdxf2bim_modeller_lanemd-l3" title="Permanent link">&para;</a></h2>
+<p>Why: the Modeller runs the same pipeline in the browser (lane L3). Its numbers must be the witness's numbers, not a copy-paste; its convert must be refused when a sheet has no role marking, and the ROOF plan had none; and its witness C1 needs the Node run's identity and elements.
+- <strong>CF-1 Shared config.</strong> <code>deploy/dev/dxf2shell_config.js</code> (UMD, <code>Dxf2ShellConfig</code>) holds <code>MAP_PLAN/ELEV/LEVL/ROOF</code>, <code>CFG</code>, the type-binding prefs (<code>TYPES</code>: size_tol 0.005, prefer DUPLEX_NOMINAL, SANDBOX sets by id prefix), <code>FILL.size_tol</code> 0.005 and the mark alignment tolerance 0.001: moved verbatim from <code>rosetta_dx_shell.js</code>, which now <code>require</code>s it. The Modeller copies the file verbatim. Proof of no change: the OBJ SHA-256 stays <code>246ce6f0…</code> (§10.5).
+- <strong>CF-2 Roof-plan role marking.</strong> The vocabulary (§24 of SPEC.md) has <code>@VIEW=PLAN|ELEV</code>; a roof plan is a PLAN view that carries <code>@ROOF</code> and no <code>@LEVEL</code> (a stated reading of two existing keys, no new key). The marking step of <code>rosetta_dx_shell.js</code> (the marker, like §5.3) writes into a COPY <code>out/marked_shell/DX_ROOF_shell.dxf</code>: <code>@SET</code> = the plans' set, <code>@VIEW=PLAN</code>, <code>@UNITS=mm</code> from the header <code>$INSUNITS</code> 4 (DXF code table), <code>@NAME=ROOF PLAN</code>, <code>@ROOF</code> = the one value every marked elevation agrees on. It refuses (run stops) when the elevations disagree, the header code is not 4, or there is no A-ROOF outline. The pipeline reads the roof plan from that copy and takes its unit factor from the <code>@UNITS</code> marking (<code>Dxf2Marks.UNITS</code>) instead of the stated literal 0.001. <code>describe</code> still reports <code>MARK:missing LEVEL,GRIDX(&gt;=2),GRIDY(&gt;=2)</code> for it; a reader treats those as expected for the roof role only.
+- <strong>CF-3 run_id.</strong> <code>Dxf2ShellConfig.runId(canon, hashHex, storeyRuns, sheetHashes)</code> = SHA-256 of canon{pipeline, the <code>Dxf2Bim.run</code> run_id of each storey plan in level order, the sorted SHA-256 of every sheet text used (plans, marked elevations, marked roof plan), CFG, the four layer maps}. Identity of the drawing set + config; the library is NOT part of it (fills are a separate, reported input). Logged as check RUN-id (two full runs equal).
+- <strong>CF-4 Element summary.</strong> <code>out/duplex_basic_shapes_elements.json</code> = {run_id, storeys (name, level, run_id), elements: guid, class, storey, handle, layer, bbox [minx,miny,minz,maxx,maxy,maxz], centre, volume, infill flag + infill_of + openings for the §6 infill boxes, element_ref/geometry_hash/family_id for fills}. Check ELEM-dump: every infill box and every element present.
+Result (2026-10-16): OBJ <code>246ce6f0dd36404bdb33b664ab20dda1fd480ed69d7b37acc82a71b7f5208ecb</code> unchanged; RUN-id PASS, ELEM-dump PASS (106 elements, 40 infill); RF-d still the one FAIL (§10.3 finding, unchanged).</p>
+<h2 id="12-library-subset-export-for-the-modeller-fills-2026-10-16-bim-ootb-promptsdxf2bim_modeller_lanemd-l32">12. Library subset export for the Modeller fills (2026-10-16, bim-ootb <code>prompts/DXF2BIM_MODELLER_LANE.md</code> §L3.2)<a class="headerlink" href="#12-library-subset-export-for-the-modeller-fills-2026-10-16-bim-ootb-promptsdxf2bim_modeller_lanemd-l32" title="Permanent link">&para;</a></h2>
+<p>Why: the Modeller import (L3) places no door/window fill because no Modeller source holds the bound LOD400 rows and meshes. User rule: no DB or LFS on GitHub; prototyping stays local, deploy = OCI.
+- <strong>LS-1 Labels written.</strong> <code>rosetta_dx_shell.js</code> also writes <code>out/duplex_basic_shapes_labels.json</code> = {run_id, labels: {storey: [{class, x, y, z, text}]}}: exactly the labels it applied (from the source model, round trip, as before). No other change: OBJ SHA-256 stays <code>246ce6f0…</code>.
+- <strong>LS-2 Export.</strong> <code>scripts/export_library_subset.js --elements &lt;summary.json&gt; [--labels &lt;labels.json&gt;] [--lib &lt;component_library.db&gt;] --out &lt;file.json&gt;</code>: bound = the fills' family_id + geometry_hash in the summary. Rows: all active <code>ad_opening_family</code> and <code>ad_wall_type</code> (the binder chooses among all size candidates); the <code>ad_geometry_map</code> door/window rows whose class and <code>Dxf2Shell.pairKey</code> equal a bound family's (the candidate set <code>familyToRef</code> reads), deduped element_ref|hash; their meshes decoded (vertices float32 LE, faces int32 LE, normals null when NULL — the encoding of <code>GeometryIntegrityChecker.blobToFloats/blobToInts</code>). Header: source DB SHA-256 + bytes, summary SHA-256 + run_id, row counts. No timestamp: same inputs → byte-identical. Refuses when a bound hash is outside the candidate set or a mesh row is absent.
+- <strong>LS-3 Not committed.</strong> The output is library data: it is written to a local, git-ignored path (the Modeller's <code>modeller/dxf2bim/local/</code>). Full-library / OCI loader: open, needs the user.
+Result (2026-10-16, on master 4bb4bf3c0): OBJ <code>246ce6f0…</code> unchanged, run_id <code>501b2d4e…</code>, RF-d still the one FAIL (§10.3). Export: 104,632 bytes, 68 families / 18 wall types / 20 map rows / 20 meshes (normals NULL 20/20) / 12 labels, source sha256 <code>7e5df6e1…</code>; two runs byte-identical. Decoded bbox check: 00b72db6… 0.467 × 1.402 × 2.086 m and 974f0644… 4.835 × 0.417 × 2.420 m equal the source door/window extents in DX_extracted.db. Consumer witnesses: bim-ootb <code>witness_dxf_import_node.js</code> P6/P7, <code>witness_dxf_convert.js</code> C1 FILLS 26/26.</p>
+<h2 id="13-the-std-set-in-the-modeller-2026-10-16-bim-ootb-promptsdxf2bim_modeller_lanemd-l33">13. The std set in the Modeller (2026-10-16, bim-ootb <code>prompts/DXF2BIM_MODELLER_LANE.md</code> §L3.3)<a class="headerlink" href="#13-the-std-set-in-the-modeller-2026-10-16-bim-ootb-promptsdxf2bim_modeller_lanemd-l33" title="Permanent link">&para;</a></h2>
+<p>Why: the Modeller import runs the std set (the film's set) with copies of <code>deploy/dev/</code>; the std layer maps, the qualify settings and the door casing lived in test scripts, so a copy would have been a fork.
+- <strong>SC-1 Moved, verbatim.</strong> <code>STD</code> (MAP_PLAN/ELEV/LEVL/ROOF/SECT, EXCL_ELEV), <code>QUALIFY</code> (was DX_QUALIFY) from <code>tests/dxf2bim/set_configs.js</code> and <code>CASING</code> 0.076 from <code>rosetta_dx_shell.js</code> into <code>deploy/dev/dxf2shell_config.js</code>; set_configs.js re-exports them. Check: every set_configs export JSON-equal before/after; both rosetta logs and rosetta_qualify.log unchanged on master <code>e3e9c70cd</code> (OBJ dx <code>87e410d0…</code>, std <code>ca14e389…</code>; std 36/0; std verdict qualifies, 0 blocking).
+- <strong>SC-2 std run_id.</strong> <code>runId(..., maps)</code> takes the maps the run used (omitted = DX maps, so the DX run_id <code>501b2d4e…</code> is unchanged). The std run passes the STD maps and also hashes its SECTION sheet (the section states the slabs; it was outside the identity). std run_id = <code>0c538552…</code>.
+- <strong>SC-3 std element summary.</strong> <code>out/duplex_basic_shapes_elements_std.json</code> + <code>_labels_std.json</code> (same format as §11 CF-4 / §12 LS-1); checks RUN-id + ELEM-dump now also run for the std set (158 elements, 51 infill).</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>
