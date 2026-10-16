@@ -272,3 +272,32 @@ DocAction workflow as iDempiere's UI does; the reference was driven through ADIn
   (CalloutPayment.amounts input), c4/c6 invoice line `PriceActual=0` and missing `C_OrderLine_ID` link from the invoice window.
 - **model, open:** P2P (c5: MMatchPO.create/afterSave, Doc_InOut receipt, Doc_Invoice API, Doc_MatchPO/MatchInv + AveragePO cost
   from the match); c7 `posted=Y` after Void comes from the server's Accounting Processor (AD_Scheduler), not DocumentEngine.voidIt.
+
+## ▶ RESUME 2026-10-04 (core-model-integrity lane, paused for token shortage)
+**Done (bim-ootb PR #1843, branch `feat/model-p2p`, auto-merge squash set; worktree /tmp/wt-model-core):**
+- MSequence.getDocumentNo verbatim (model_trade.js getDocumentNoFromSeq/ByDocType/ByTable: org-level AD_Sequence_No, Prefix/Suffix
+  @var@ incl. `X_ID.Column` + `<fmt>`, /K keys, DecimalPattern, StartNewYear/Month); PO.saveNew DocumentNo/Value in ModelLayer.save;
+  crud_overlay `_allocDocNo` delegates (bumps ride the doc's group). `build/erp/poc_model_docno_orglevel.log`:
+  `§MODEL-DOCNO-ORG-SUMMARY judged=8 verdict=PASS` (HQ-0001..3, Store Central-0001..3, Store North-0001..2; falsifier one shared run 50305..).
+- M-class ctors `erp/model_ctor.js` → `ModelTrade.ctor.*` (MInOutFromOrder/FromInvoice, MInOutLine+ioSet*, MInvoiceFromOrder/FromInOut,
+  MInvoiceLine+ilSet*, MAllocationHdr/Line+alSet*, MPaySelection/Line/Check+psl*/psc*); createShipment/createInvoice use them.
+- Costing engine `erp/model_cost.js` (MCostDetail create*/process/processProduct, MCost getCostInfo/getCost/setWeightedAverage, MCostHistory,
+  MCostQueue, getSeedCosts); MMatchPO/MatchPOAutoMatch/MMatchInv `erp/model_match.js`; MInOut.completeIt matching block; IDocsPostProcess +
+  repost→T_Fact_Acct_History; Doc_InOut shipment+receipt on faithful Fact/FactLine (model_post.js createLine/updateReverseLine).
+- Oracle (`OOTB=/tmp/wt-model-core node scripts/poc_model_layer_oracle.js`, prestate extended in model_oracle/dump_prestate.py):
+  `§MODEL-ORACLE-SUMMARY docs=15 tablesJudged=139 tablesMatched=123` (was 121; SO docs unchanged 100%; receipt m_inout1000005 5→7/11).
+- UI pilot (ours only vs saved ref): pos_one MATCH=11 PARTIAL=10 MISSING=1 (unchanged); c5 MATCH=6 PARTIAL=11 MISSING=7 (was 6/10/8); pageerrors=0.
+
+**In progress / next, in order:**
+1. Doc_Invoice API/APC + Doc_MatchPO + Doc_MatchInv (createMatchInvCostDetail, IPV) in model_post.js using createLine/updateReverseLine;
+   MInvoice.completeIt matching block (MInvoice.java:2076-2170 → ModelMatch.create(iLine,null)) — replaces the `§MODEL-NAMED MMatchPO.create
+   (invoice-first)` line in model_invoice.js. Target: c_order1000315 / m_inout1000005 / c_invoice1000005 all MATCH (31/31).
+2. Oracle closure: add m_matchpo/m_matchinv to DOCS so their fact_acct is judged (+ closure.py same).
+3. Migrate old Fact.line users (Doc_Invoice ARI, Doc_Payment, Doc_Allocation) to the faithful createLine — one Fact implementation.
+4. Rest of DocAction set (voidIt/reverseCorrectIt/closeIt/reActivateIt) for MOrder/MInOut/MInvoice/MPayment/MAllocationHdr, then MJournal,
+   MMovement, MInventory, MBankStatement, MInOutConfirm, MRMA, MRequisition; hooks X/N; W-MORDER-SAVE PriceList default (item 4).
+5. Reuse the processes lane's verbatim MConversionRate.getRate (erp/callouts/currency.js) in model_trade.rate and delete ours (requested).
+**§MODEL-UNPORTED-DEP named in code:** MNote on posting error; getSeedCostFromPriceList/Product_PO; MWarehouse auto-create locator;
+MInvoiceLine.setPrice/setTax (MProductPricing) in setShipLine without order line; Doc_InOut customer/vendor returns + reversal posting;
+MSequence.createTableSequence; DefaultEvaluatee number/reference formats; back-date re-posting chain (BackDateDay null → not triggered in GardenWorld).
+**Twin:** build/erp/crud_overlay.js NOT mirrored (shared tree has another worker's uncommitted edits) — mirror after #1843 merges.

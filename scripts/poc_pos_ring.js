@@ -80,9 +80,12 @@ verdict(ref.ok === false && ref.reason === 'no-price',
   'reason=' + ref.reason);
 console.log('§FALSIFIER pos=ring product=' + unpriced.m_product_id + ' price-row=absent → ok=' + ref.ok + ' reason=' + ref.reason + ' (must refuse)');
 
-// bad qty refuses too (a 0-qty line is not a sale)
+// qty: legacy accepts 0 and negatives (prompts/SQLiteIDEMPIERE.md §47, pilot S14a/b/c — MOrderLine.beforeSave has no sign check); only a non-number refuses.
+// (Before F13 this witness asserted "qty=0 refused" — a rule legacy does not have; changed WITH that evidence, decision record §47.1.)
 var rq = POS.ringLine(ctx, 124, 0);
-verdict(rq.ok === false && rq.reason === 'bad-qty', 'qty=0 refused (a no-op line never enters the cart)', 'reason=' + rq.reason);
+verdict(rq.ok === true && rq.linenetamt === '0.00', 'qty=0 rings with LineNetAmt 0.00 (legacy S14c completes a zero line)', 'ok=' + rq.ok + ' linenetamt=' + rq.linenetamt);
+var rn = POS.ringLine(ctx, 124, 'x');
+verdict(rn.ok === false && rn.reason === 'bad-qty', '§FALSIFIER non-numeric qty refused', 'reason=' + rn.reason);
 
 console.log('\n' + (fails === 0 ? '🟢 W-POS-RING PASS' : '🔴 W-POS-RING FAIL (' + fails + ')') +
   ' — the POS catalog is the dictionary (c_poskey→m_product→m_productprice), prices are the sealed master to the cent, and an unpriced product refuses to ring.');

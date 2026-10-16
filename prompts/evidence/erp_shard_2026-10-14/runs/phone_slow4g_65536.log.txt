@@ -1,0 +1,14 @@
+§PHONE cold W1_window ms=1531 reqs=3 bytes=262144 rows=1
+§PHONE cold W2_tabs ms=2895 reqs=4 bytes=524288 rows=5
+§PHONE cold W3_fields ms=17445 reqs=43 bytes=2883584 rows=89
+§PHONE cold W4_order ms=1208 reqs=3 bytes=196608 rows=1
+§PHONE cold W5_orderlines ms=2396 reqs=6 bytes=393216 rows=1
+§PHONE repeat W1_window ms=2 reqs=0 bytes=0 rows=1
+§PHONE repeat W2_tabs ms=2 reqs=0 bytes=0 rows=5
+§PHONE repeat W3_fields ms=3 reqs=0 bytes=0 rows=89
+§PHONE repeat W4_order ms=1 reqs=0 bytes=0 rows=1
+§PHONE repeat W5_orderlines ms=2 reqs=0 bytes=0 rows=1
+§PHONE PHONE-PROXY profile=slow4g rtt=150ms bw=200KB/s cpu=4x chunk=65536 dbMB=11195 open ms=21406 reqs=53 bytes=3473408
+§PHONE PHONE-PROXY profile=slow4g rtt=150ms bw=200KB/s cpu=4x chunk=65536 dbMB=11195 COLD firstWindowMs=46881 (open 21406 + queries 25475) totalReqs=112 totalBytes=7733248 | REPEAT queriesMs=10 reqs=0 bytes=0
+§PHONE PHONE-PROXY profile=slow4g rtt=150ms bw=200KB/s cpu=4x chunk=65536 dbMB=11195 baseRssMB=826 peakRssMB=949 dbDeltaMB=123
+§PHONE_VERDICT PASS PHONE-PROXY profile=slow4g rtt=150ms bw=200KB/s cpu=4x chunk=65536 dbMB=11195

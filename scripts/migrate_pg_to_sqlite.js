@@ -57,7 +57,7 @@ var LIST_CLIENTS = !!process.env.ERP_LIST_CLIENTS || argv.indexOf('--list-client
 var MASTERS = !!process.env.ERP_MASTERS || argv.indexOf('--masters') >= 0;
 // Optional explicit target tenant; otherwise auto-seeked from AD_Client (§0.10a).
 var TARGET_CLIENT = process.env.ERP_CLIENT ? +process.env.ERP_CLIENT : null;
-var INSTANCES = path.join(__dirname, '..', 'build', 'erp', 'instances.json');
+var INSTANCES = process.env.ERP_INSTANCES || path.join(__dirname, '..', 'build', 'erp', 'instances.json');
 
 // Headline master allowlist — streamed visibly one §-line each ("watch them land").
 // Canonical AD casing for display; matched case-insensitively against PG table_name.
@@ -76,9 +76,25 @@ var HEADLINE_LC = {}; HEADLINE.forEach(function (n) { HEADLINE_LC[n.toLowerCase(
 // tables are KEPT (they are AD metadata, transaction-free) per the 2026-06-02 decision.
 var DENY_EXACT = ['m_transaction', 'm_storage', 'm_storageonhand', 'm_costdetail',
   'm_cost', 'm_costhistory', 'ad_changelog', 'ad_session', 'ad_accesslog',
-  'ad_pinstance', 'ad_pinstance_para', 'ad_pinstance_log', 'ad_wf_process',
+  'ad_pinstance_log', 'ad_wf_process',
   'ad_wf_processdata', 'ad_wf_activity', 'ad_wf_activityresult', 'ad_wf_eventaudit',
   'ad_recentitem', 'ad_issue', 'ad_ldapaccess'];
+// Runtime tables whose rows are partly USER DATA: in masters mode they are copied with a
+// ROW predicate instead of denied (bim-compiler prompts/ERP_DEPTH_FILM.md §UDP-1).
+// MPInstance.get (org.adempiere.base/.../MPInstance.java:527-585) shows a user every NAMED run
+// (Saved Parameter) plus "Last Run" entries read from at most the 10*LASTRUN_RECORD_COUNT newest
+// active unnamed runs per (process,user,client) (:543-573) - keep exactly those (RANK: ties kept).
+var LASTRUN_N = "COALESCE((SELECT max(s.value) FROM " + q(SCHEMA) + ".ad_sysconfig s WHERE s.name='LASTRUN_RECORD_COUNT'" +
+  " AND s.isactive='Y' AND s.ad_client_id=p.ad_client_id),(SELECT max(s.value) FROM " + q(SCHEMA) +
+  ".ad_sysconfig s WHERE s.name='LASTRUN_RECORD_COUNT' AND s.isactive='Y' AND s.ad_client_id=0),'5')::int";
+var PINSTANCE_KEEP = "SELECT k.ad_pinstance_id FROM (SELECT p.ad_pinstance_id, p.name, p.isactive, " + LASTRUN_N + " n, " +
+  "RANK() OVER (PARTITION BY p.ad_process_id, p.ad_user_id, p.ad_client_id, (p.name IS NULL AND p.isactive='Y') " +
+  "ORDER BY p.created DESC) rk FROM " + q(SCHEMA) + ".ad_pinstance p) k " +
+  "WHERE k.name IS NOT NULL OR (k.isactive='Y' AND k.rk <= 10 * k.n)";
+var ROW_KEEP = {
+  ad_pinstance: 'ad_pinstance_id IN (' + PINSTANCE_KEEP + ')',
+  ad_pinstance_para: 'ad_pinstance_id IN (' + PINSTANCE_KEEP + ')'
+};
 function isDenied(tn, docSet) {
   if (DENY_EXACT.indexOf(tn) >= 0) return true;          // (4)
   if (tn.indexOf('fact_acct') === 0) return true;        // (3)
@@ -103,6 +119,36 @@ function pgCopy(sql) {
   return execFileSync('docker',
     ['exec', CONTAINER, 'psql', '-U', PGUSER, '-d', DB, '-c', sql],
     { maxBuffer: MAXBUF, encoding: 'utf8' });
+}
+
+// Streamed COPY: spool psql stdout to a file (fd handed to the child — no JS buffer), return its path.
+var SPOOL_DIR = path.join(path.dirname(OUT), '.migrate_spool');
+var BATCH = +process.env.ERP_BATCH || 50000;          // rows per SQLite transaction
+var VERBOSE_ROWS = +process.env.ERP_VERBOSE_ROWS || 100000; // log §MIGRATE_ROWS ok for tables this big
+var rowMismatch = 0;
+function pgCopyToFile(sql) {
+  fs.mkdirSync(SPOOL_DIR, { recursive: true });
+  var f = path.join(SPOOL_DIR, 'copy_' + process.pid + '.txt');
+  var fd = fs.openSync(f, 'w');
+  try {
+    execFileSync('docker', ['exec', CONTAINER, 'psql', '-U', PGUSER, '-d', DB, '-c', sql],
+      { stdio: ['ignore', fd, 'inherit'] });
+  } finally { fs.closeSync(fd); }
+  return f;
+}
+// Read a file in 8 MB chunks, call fn(line) per line (carry the partial tail; utf8-safe via StringDecoder).
+function forEachLine(file, fn) {
+  var SD = require('string_decoder').StringDecoder, dec = new SD('utf8');
+  var fd = fs.openSync(file, 'r'), buf = Buffer.allocUnsafe(8 * 1048576), tail = '', got;
+  try {
+    while ((got = fs.readSync(fd, buf, 0, buf.length, null)) > 0) {
+      var parts = (tail + dec.write(buf.slice(0, got))).split('\n');
+      tail = parts.pop();
+      for (var i = 0; i < parts.length; i++) if (parts[i].length) fn(parts[i]);
+    }
+    tail += dec.end();
+    if (tail.length) fn(tail);
+  } finally { fs.closeSync(fd); }
 }
 
 // ── COPY TEXT unescape (PostgreSQL copy.c rules) ─────────────────────────────
@@ -222,6 +268,7 @@ function main() {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   if (fs.existsSync(OUT)) fs.unlinkSync(OUT);
   var sqlite = new Database(OUT);
+  if (process.env.ERP_PAGE_SIZE) sqlite.pragma('page_size = ' + (+process.env.ERP_PAGE_SIZE)); // before first table; match httpvfs requestChunkSize
   sqlite.pragma('journal_mode = OFF');
   sqlite.pragma('synchronous = OFF');
 
@@ -250,16 +297,19 @@ function main() {
 
   // 2) All columns for those tables, in ordinal order, with data_type.
   var colRows = pgMeta(
-    "SELECT table_name, column_name, data_type, ordinal_position " +
+    "SELECT table_name, column_name, data_type, ordinal_position, numeric_precision " +
     "FROM information_schema.columns WHERE table_schema='" + SCHEMA + "' " +
     "ORDER BY table_name, ordinal_position");
   var cols = {}; // table -> [{name, type}]
   colRows.forEach(function (r) {
     var tn = r[0];
     if (!cols[tn]) cols[tn] = [];
-    cols[tn].push({ name: r[1], type: r[2] });
+    cols[tn].push({ name: r[1], type: r[2], prec: r[4] === '' ? null : +r[4] });
   });
 
+  sqlite.exec('CREATE TABLE _numeric_exact (tbl TEXT, row_id INTEGER, col TEXT, exact TEXT, PRIMARY KEY (tbl, row_id, col)) WITHOUT ROWID');
+  var insExact = sqlite.prepare('INSERT INTO _numeric_exact VALUES (?,?,?,?)'), lossyTotal = 0;
+  function trimZ(x) { return /\./.test(x) ? x.replace(/0+$/, '').replace(/\.$/, '') : x; }
   var totalRows = 0, doneTables = 0, blobTables = 0;
   console.log('§MIGRATE start tables=' + tables.length + ' out=' + OUT);
 
@@ -279,38 +329,70 @@ function main() {
       .filter(function (i) { return i >= 0; });
     if (blobIdx.length) blobTables++;
 
-    // COPY data out (explicit column list = guaranteed order match).
+    // COPY data out (explicit column list = guaranteed order match). Spec: ERP_SHARD_GENERATOR.md §9.
+    // Streamed: psql stdout is spooled to a file (never held in a JS string), then read in chunks and
+    // inserted in batches — heap is bounded by chunk+batch, not by table size.
     var collist = cs.map(function (c) { return q(c.name); }).join(',');
-    var payload = pgCopy('COPY (SELECT ' + collist + ' FROM ' + q(SCHEMA) + '.' + q(tn) +
-      ') TO STDOUT');
+    var where = (MASTERS && ROW_KEEP[tn]) ? ' WHERE ' + ROW_KEEP[tn] : '';
+    if (where) {
+      console.log('§MIGRATE-ROWFILTER table=' + tn + ' kept=' +
+        pgMeta('SELECT count(*) FROM ' + q(SCHEMA) + '.' + q(tn) + where)[0][0] + ' of=' +
+        pgMeta('SELECT count(*) FROM ' + q(SCHEMA) + '.' + q(tn))[0][0] + ' (§UDP-1 user-data rows)');
+    }
+    var spool = pgCopyToFile('COPY (SELECT ' + collist + ' FROM ' + q(SCHEMA) + '.' + q(tn) +
+      where + ') TO STDOUT');
 
     var ins = sqlite.prepare('INSERT INTO ' + q(tn) + ' VALUES (' +
       cs.map(function () { return '?'; }).join(',') + ')');
 
-    // payload ends with a trailing newline; split and drop the empty tail.
-    var lines = payload.length ? payload.split('\n') : [];
-    if (lines.length && lines[lines.length - 1] === '') lines.pop();
-
-    var n = 0;
-    var tx = sqlite.transaction(function () {
-      for (var li = 0; li < lines.length; li++) {
-        var fields = lines[li].split('\t');
-        var vals = new Array(cs.length);
-        for (var fi = 0; fi < cs.length; fi++) {
-          var v = unescape(fields[fi]);
-          if (v !== null && blobIdx.indexOf(fi) >= 0) {
-            // bytea TEXT output is "\x<hex>"; decode to a real BLOB.
-            v = (v.slice(0, 2) === '\\x')
-              ? Buffer.from(v.slice(2), 'hex')
-              : Buffer.from(v, 'binary');
-          }
-          vals[fi] = v;
+    var numChk = cs.map(function (c, i) { return (c.type === 'numeric' && (c.prec === null || c.prec > 15)) ? i : -1; }).filter(function (i) { return i >= 0; });
+    var lossyCol = {};
+    var n = 0, inTx = false;
+    function onLine(line) {
+      var fields = line.split('\t');
+      var vals = new Array(cs.length);
+      for (var fi = 0; fi < cs.length; fi++) {
+        var v = unescape(fields[fi]);
+        if (v !== null && blobIdx.indexOf(fi) >= 0) {
+          // bytea TEXT output is "\x<hex>"; decode to a real BLOB.
+          v = (v.slice(0, 2) === '\\x')
+            ? Buffer.from(v.slice(2), 'hex')
+            : Buffer.from(v, 'binary');
         }
-        ins.run(vals);
-        n++;
+        vals[fi] = v;
       }
+      if (!inTx) { sqlite.exec('BEGIN'); inTx = true; }
+      var rid = ins.run(vals).lastInsertRowid;
+      for (var ni = 0; ni < numChk.length; ni++) {            // §14.2: keep the exact text of any value a double cannot hold
+        var nv = vals[numChk[ni]];
+        if (nv !== null && /^-?[0-9]+(\.[0-9]+)?$/.test(nv) && String(Number(nv)) !== trimZ(nv)) {
+          insExact.run(tn, Number(rid), cs[numChk[ni]].name, nv); lossyTotal++; lossyCol[cs[numChk[ni]].name] = (lossyCol[cs[numChk[ni]].name] || 0) + 1;
+        }
+      }
+      n++;
+      if (n % BATCH === 0) { sqlite.exec('COMMIT'); inTx = false; }
+    }
+    forEachLine(spool, onLine);
+    Object.keys(lossyCol).forEach(function (cn) { console.log('§MIGRATE_NUMERIC_LOSSY table=' + tn + ' col=' + cn + ' n=' + lossyCol[cn]); });
+    if (inTx) sqlite.exec('COMMIT');
+    fs.unlinkSync(spool);
+
+    // §MIGRATE_ROWS — silent row loss check: SQLite count vs PG count(*) (independent of the COPY stream).
+    var pgN = +pgMeta('SELECT count(*) FROM ' + q(SCHEMA) + '.' + q(tn))[0][0];
+    var sqN = sqlite.prepare('SELECT count(*) AS c FROM ' + q(tn)).get().c;
+    if (pgN !== sqN || pgN !== n) {
+      rowMismatch++;
+      console.log('§MIGRATE_ROWS FAIL table=' + tn + ' pg=' + pgN + ' streamed=' + n + ' sqlite=' + sqN);
+    } else if (n >= VERBOSE_ROWS) {
+      console.log('§MIGRATE_ROWS ok table=' + tn + ' rows=' + n + ' rssMB=' +
+        Math.round(process.memoryUsage().rss / 1048576));
+    }
+    // §MIGRATE_NUMERIC_WIDE — NUMERIC values SQLite kept as TEXT (lossless-reversible rule) i.e. wider than a double.
+    cs.forEach(function (c) {
+      if (affinity(c.type) !== 'NUMERIC' || !n) return;
+      var w = sqlite.prepare('SELECT count(*) AS c FROM ' + q(tn) + ' WHERE typeof(' + q(c.name) + ")='text'").get().c;
+      if (w) console.log('§MIGRATE_NUMERIC_WIDE table=' + tn + ' col=' + c.name + ' textRows=' + w);
     });
-    tx();
     totalRows += n;
     doneTables++;
 
@@ -323,6 +405,26 @@ function main() {
       } else { restTables++; restRows += n; }
     }
   });
+
+  // ERP_INDEX=1 — recreate PG index column-lists (PK + every plain index) AFTER load. Range-read (httpvfs) needs them:
+  // without an index a keyed lookup scans the whole table (GBs over HTTP). Off by default (dictionary DBs ship unindexed).
+  if (process.env.ERP_INDEX) {
+    var t0 = Date.now(), nIdx = 0, loaded = {}; tables.forEach(function (t) { loaded[t] = true; });
+    pgMeta("SELECT c.relname, ic.relname, string_agg(a.attname, ',' ORDER BY k.ord) FROM pg_index i " +
+      "JOIN pg_class c ON c.oid=i.indrelid JOIN pg_class ic ON ic.oid=i.indexrelid " +
+      "JOIN pg_namespace n ON n.oid=c.relnamespace " +
+      "CROSS JOIN LATERAL unnest(i.indkey) WITH ORDINALITY k(attnum,ord) " +
+      "JOIN pg_attribute a ON a.attrelid=c.oid AND a.attnum=k.attnum " +
+      "WHERE n.nspname='" + SCHEMA + "' AND i.indexprs IS NULL AND i.indpred IS NULL AND k.attnum>0 " +
+      "GROUP BY c.relname, ic.relname").forEach(function (r) {
+      if (!loaded[r[0]]) return;
+      sqlite.exec('CREATE INDEX ' + q('ix_' + r[1]) + ' ON ' + q(r[0]) + ' (' +
+        r[2].split(',').map(q).join(',') + ')');
+      nIdx++;
+    });
+    console.log('§MIGRATE_INDEX created=' + nIdx + (nIdx ? '' : ' INCONCLUSIVE') + ' sec=' + Math.round((Date.now() - t0) / 1000) +
+      ' pageSize=' + sqlite.pragma('page_size', { simple: true }));
+  }
 
   // 3) Flagged subset — explicit, loud.
   var seqCount = +pgMeta("SELECT count(*) FROM information_schema.sequences " +
@@ -394,6 +496,10 @@ function main() {
   sqlite.close();
 
   // ── §-log acceptance ────────────────────────────────────────────────────
+  console.log('§MIGRATE_VERDICT ' + (doneTables === 0 ? 'INCONCLUSIVE (no tables judged)' :
+    rowMismatch === 0 ? 'PASS rows-match-all-tables' : 'FAIL rowMismatch=' + rowMismatch) +
+    ' lossyNumeric=' + lossyTotal + ' tables=' + doneTables + ' peakRssMB=' + Math.round(process.resourceUsage().maxRSS / 1024));
+  try { fs.rmdirSync(SPOOL_DIR); } catch (e) { /* non-empty/absent */ }
   console.log('§MIGRATE tables=' + doneTables + ' rows=' + totalRows +
     ' blobTables=' + blobTables);
   if (ruleLine) console.log(ruleLine);
@@ -404,6 +510,7 @@ function main() {
     reg.push({ instance: instance, source: srcKey, source_client_id: targetClient,
       client_name: clientName, reimport: reimport, out: path.basename(OUT),
       tables: doneTables, rows: totalRows, when: new Date().toISOString() });
+    fs.mkdirSync(path.dirname(INSTANCES), { recursive: true });
     fs.writeFileSync(INSTANCES, JSON.stringify(reg, null, 2));
 
     var head = HEADLINE.filter(function (h) { return headlineRows[h] != null; })

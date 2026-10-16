@@ -1,0 +1,13 @@
+// per named cell: F (G), shell membership + why not, lateral SOLID sides, nearest open cell (lateral, dy 0..4), cap height; exact MC truth
+// (fgeo.js estimator: needs window.__b1bvh from a fgeo.js run on this page) — for the 707f8e cells skycheck sampled before/after
+const LZ = window.LightZones, Z = LZ.get(), nx = Z.nx, ny = Z.ny, nz = Z.nz, nxy = nx * ny, zone = Z.zone, SOLID = 65535, MASK = 0x3FFF, G = Z.field.G, jg = Z.groundJ || 0;
+const B = window.__b1bvh, ray = new THREE.Ray(); let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+function visRay(ox, oy, oz, dx, dy, dz) { let v = 1, t0 = 0, panes = 0; ray.origin.set(ox, oy, oz); ray.direction.set(dx, dy, dz);
+  for (let s = 0; s < 6; s++) { const h = B.geo.boundsTree.raycastFirst(ray, THREE.DoubleSide, t0, 250); if (!h) return v; const tq = B.T[h.faceIndex]; if (!tq) return 0; if (panes === 0 || h.distance - t0 > 0.3) { v *= tq / 255; panes++; } t0 = h.distance + 0.01; } return v; }
+function muOf(u) { let m = Math.sqrt(u); for (let it = 0; it < 12; it++) { const f = (m * m / 2 + 2 * m * m * m / 3) * 6 / 7 - u, df = (m + 2 * m * m) * 6 / 7; m -= f / (df || 1e-6); if (m < 0) m = 0; if (m > 1) m = 1; } return m; }
+return (window.__cells || []).map(c => { const v = zone[c], i = c % nx, j = ((c / nx) | 0) % ny, k = (c / nxy) | 0;
+  const lat = { mx: i > 0 && zone[c - 1] === SOLID, px: i < nx - 1 && zone[c + 1] === SOLID, mz: k > 0 && zone[c - nxy] === SOLID, pz: k < nz - 1 && zone[c + nxy] === SOLID };
+  let nearest = null; for (let r = 1; r <= 8 && nearest == null; r++) for (let dy = 0; dy <= 4 && nearest == null; dy++) for (let dx = -r; dx <= r && nearest == null; dx++) for (let dz = -r; dz <= r; dz++) { if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue; const ii = i + dx, jj = j + dy, kk = k + dz; if (ii < 0 || kk < 0 || ii >= nx || kk >= nz || jj >= ny) continue; const t = zone[ii + jj * nx + kk * nxy]; if (t !== SOLID && (t & MASK) === 0) { nearest = { r, dy }; break; } }
+  let capH = -1; for (let jj = j + 1; jj < ny; jj++) if (zone[i + jj * nx + k * nxy] === SOLID) { capH = jj - j; break; }
+  let mc = null; if (B && v !== SOLID) { const x = Z.org.x + (i + .5) * Z.cell, y = Z.org.y + (j + .5) * Z.cell, z = Z.org.z + (k + .5) * Z.cell; let s = 0; for (let a = 0; a < 16; a++) for (let b = 0; b < 16; b++) { const mu = muOf((a + rnd()) / 16), ph = 2 * Math.PI * (b + rnd()) / 16, r = Math.sqrt(1 - mu * mu); s += visRay(x, y, z, r * Math.cos(ph), mu, r * Math.sin(ph)); } mc = +(s / 256).toFixed(3); }
+  return { c, solid: v === SOLID, zone: v === SOLID ? null : v & MASK, sky: v !== SOLID && !!(v & 0x4000), F: v === SOLID ? null : G[c] / 1e4, j, aboveGround: j >= jg, lat, nearestOpen: nearest, capH, FgeoMC256: mc }; });

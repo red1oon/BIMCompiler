@@ -1,0 +1,93 @@
+{
+ "tag": "k3qg",
+ "levels": [
+  {
+   "v": " C ",
+   "n": "Client"
+  },
+  {
+   "v": " CO",
+   "n": "Client+Organization"
+  },
+  {
+   "v": "  O",
+   "n": "Organization"
+  },
+  {
+   "v": "S  ",
+   "n": "System"
+  }
+ ],
+ "cases": {
+  " C ": {
+   "ok": true,
+   "window": 293,
+   "process": 290,
+   "form": 34,
+   "workflow": 16,
+   "docaction": 840,
+   "info": 10,
+   "userRoles": [
+    100
+   ],
+   "readwrite": "Y:293",
+   "predicate": {
+    "window": 293,
+    "process": 290,
+    "form": 34,
+    "workflow": 16,
+    "docaction": 840,
+    "info": 10
+   },
+   "predicateEqualsMeasured": true
+  },
+  " CO": {
+   "ok": true,
+   "window": 331,
+   "process": 383,
+   "form": 41,
+   "workflow": 40,
+   "docaction": 840,
+   "info": 15,
+   "userRoles": [
+    100
+   ],
+   "readwrite": "Y:331",
+   "predicate": {
+    "window": 331,
+    "process": 383,
+    "form": 41,
+    "workflow": 40,
+    "docaction": 840,
+    "info": 15
+   },
+   "predicateEqualsMeasured": true
+  },
+  "  O": {
+   "ok": true,
+   "window": 195,
+   "process": 334,
+   "form": 32,
+   "workflow": 38,
+   "docaction": 840,
+   "info": 14,
+   "userRoles": [
+    100
+   ],
+   "readwrite": "Y:195",
+   "predicate": {
+    "window": 195,
+    "process": 334,
+    "form": 32,
+    "workflow": 38,
+    "docaction": 840,
+    "info": 14
+   },
+   "predicateEqualsMeasured": true
+  },
+  "S  ": {
+   "ok": false,
+   "err": "§AD_ERROR create_data: Cannot save record in AD_Role: User Level"
+  }
+ }
+}

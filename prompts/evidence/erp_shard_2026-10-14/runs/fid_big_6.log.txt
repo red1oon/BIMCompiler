@@ -1,0 +1,4 @@
+§FIDELITY start part=6/8 tables=115 of 925 sqlite=bloat10r.db pgdb=bloat10r
+§FIDELITY table=m_transaction rows=815892 pgRows=815892 pg=470364265868291018020770 sq=470364265868291018020770 OK t=13s
+§FIDELITY table=c_conversion_rate rows=4 pgRows=4 pg=2847825595151103426 sq=1958347790386141258 MISMATCH t=19s
+§FIDELITY_VERDICT part=6/8 FAIL mismatches=1 colMismatch=0 tables=115 judgedTables=61 judgedRows=914583 totalSec=27s

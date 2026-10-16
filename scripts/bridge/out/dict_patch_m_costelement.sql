@@ -1,0 +1,1 @@
+-- dict_diff patch for m_costelement (generated from legacy values; review before applying; never deletes)

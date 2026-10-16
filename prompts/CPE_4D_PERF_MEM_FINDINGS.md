@@ -577,3 +577,167 @@ discipline as R1's `witness_maxq_stage_keep.js`.
 **sw.js:** bump `CACHE_VERSION` in the same PR (learned twice already — R1/R4's own note above,
 PR #1409's miss) and record the mechanism in a version comment, same convention as every prior
 `§MAXQ_STAGE_KEEP`/`§R6a` entry.
+
+## §8 LTU_AHouse 122,330-ELEMENT LIVE LOG (2026-09-14) — four levers, measured, none applied
+
+Source: the user's live editor console on the OCI viewer (`main.js?v=46`), LTU_AHouse, 122,330 elements,
+4,633 scene objects (`§PERF_TRAVERSE objs=4633`), plus this session's bake logs for the per-frame split.
+Observations only; every number below is a `§` line. Filed here because every cause is Time-Machine /
+editor / bake-loop machinery, not the storey-reveal leg (MEP_CLASH_REVEAL_MOVIE.md §128.10 carries a pointer).
+
+### §8.1 Bake wall time on a large building IS the still-refine budget — 20 renders per captured frame
+`§MAXQ_FRAME_BUDGET taa=8 ao=12` (`cinema_maxq.js:503 MAXQ_STILL_BUDGET`). Hospital fix-bake, 640x360@10,
+412 frames, per frame: `§STILL_REFINE ... elapsedMs` mean 1,160 ms, `§PHOTO_AO done ... totalMs` mean
+510 ms, `§PERF_TRAVERSE` mean 0.8 ms. Frame wall 1.11–1.47 s. So ~1.7 s of every frame is the 8 TAA + 12
+AO re-renders of a 4,899-object scene; the reveal leg and the Time Machine are noise. LTU has 4,633
+objects: a 181 s film at 1080p24 is 4,346 frames — hours, before anything else. **Lever:** the budget is
+not on the CLI (`arg('…')` list has no taa/ao); a `--still-budget taa,ao` for quick-check bakes (and a
+user-chosen delivery budget) is the single biggest wall-time knob for any large building. Witness: the
+existing `§MAXQ_FRAME_BUDGET` + the two mean lines above, before/after. R1 (staging churn) still applies on
+top.
+
+### §8.2 Time Machine activation on LTU: 38 s, of which the kernel_ops write loop is 19.3 s — and it is super-linear
+`§S4_ACTIVATION_TIMING_MID beforeMaterializeNative=718 afterMaterializeNative=10843 afterInjectGantt=37131
+afterLoadOps=37921`; inside injectGantt `§S4_ACTIVATION_TIMING_CAP … capBranchPreWrite=7028 capBranchWrite=26287`
+and `§WRITE_LOOP_TIMING rows=122330 ms=19258.7`. Per-row cost across the corpus:
+
+| rows | ms | µs/row | source |
+|---|---|---|---|
+| 6,880 (HHS) | 153.6 | 22 | `out/fix_hhs.log` 2026-09-14 |
+| 63,415 | 2,372.5 | 37 | CINEMA_PATH_EDITOR.md:3056 |
+| 63,182 | 2,536.4 | 40 | CPE_4D_PERF_MEM_STUDY.md:694 |
+| 63,415 | 7,190 | 113 | 4D_GANTT_TM_REFACTOR archive (one run) |
+| 122,330 (LTU) | 19,258.7 | 157 | live log 2026-09-14 |
+
+Seven times the per-row cost of HHS, four times the 63k buildings. The loop (`time_machine.js
+_writeScheduledChunked`) is one prepared `UPDATE kernel_ops SET timestamp=?, parameters=? WHERE
+op_type='ELEMENT_PLACE' AND output_guid=?` per row, `JSON.stringify(item.params)` per row, 2,500-row
+chunks with `setTimeout(0)` yields; `idx_kernel_ops_guid` is created earlier in injectGantt (:4694), so
+this is not the §SE-7c table scan. What grows with n is unmeasured: the re-serialised `parameters` TEXT
+(three fields `_end_ts/_captured/_task` are added and the WHOLE blob rewritten), and the row rewrite inside
+a 761 MB in-memory DB. **Lever, in order of cheapness:** (a) extend `§WRITE_LOOP_TIMING` with `usPerRow=`,
+`meanParamsBytes=` and `indexPresent=` (PRAGMA index_list) so the next log names the mechanism; (b) stop
+rewriting `parameters`: three real columns instead of re-serialising the blob; (c) one statement per chunk
+(multi-row VALUES into a temp table + one `UPDATE … FROM`) instead of 122,330 statement round-trips.
+Expected: 19 s → low single digits; proof is the same line. This cost is paid on every regenerate, not
+only first activation (`§GANTT_CACHE_HIT` covers only the unchanged case).
+
+### §8.3 Editor frame time on LTU: 110–170 ms, and the viewfinder's second render pass is 60 ms of it
+`§FPS_MODE mean=113–170` (frame ms, `main.js _fpsSample`) while editing; `§CPE_VF_PERF G-PERF-1 frames=151
+avgMs=59.630 maxMs=198.400` — the viewfinder renders the WHOLE scene a second time into a 300x168
+scissor, every frame, draw-call bound so the small viewport saves nothing. `§CPE_PREVIEW done frames=36
+msPerFrame=303.4` — a 10 s preview plays at 3 fps. `dlod=off` on every line: DLOD is disabled under the
+Time Machine (`§DLOD_DISABLE reason=time-machine`), and the large-building proxy toggle exists
+(`§DLOD_TM_GATE … threshold=50000 large=true`, the `tm-lod` button) but was not on. **Levers:** render
+the viewfinder every Nth frame or only on pose change; use the DLOD proxy path for the viewfinder pass
+regardless of the main view's setting. Witness: `§CPE_VF_PERF avgMs` and `§FPS_MODE mean` before/after.
+
+### §8.4 Draw calls: 4,633 objects for 122k elements because the batch key LEADS with storey, and LTU has 18 storey labels
+`streaming.js:2210` bucket key = `storey|disc|rgba|matVariant|mepHint`. LTU's `spatial_structure`
+declares 43 IfcBuildingStorey rows under 18 names (six sub-models each declaring "Plan 1–4", plus
+VÅNING/VÅN/Storey/TAKPLAN/Ref.); `§S18_STOREY_MERGE_FAIL no such column: elevation` — the merge that would
+fold same-elevation storeys cannot run because this DB's `spatial_structure` has no elevation column
+(extraction-side gap). Consequences: 18 Gantt bands, an 18-entry storey-reveal list (`§STOREY_REVEAL_LIST
+n=18`, 14 of them truncated in the deployed build), and the batch population split 18 ways before
+discipline and material even apply. Two levers: (a) DATA — ship `elevation` in `spatial_structure` for
+federated exports so §S18 can merge (5 physical levels, `§STOREY_DATUM ladder=5`); (b) CODE — the storey
+reveal now bands per member by label (MEP_CLASH_REVEAL_MOVIE.md §128.9), so the batch key no longer
+needs storey to lead: dropping it merges batches across storeys within a discipline/material and cuts
+draw calls for every large building. Witness: `renderer.info.render.calls` per frame, before/after, and
+§128.9's `§STOREY_LABEL_WITNESS` must stay PASS (it reads labels per member, not per batch).
+
+### §8.5 Not levers (from this log)
+`§CPM_RUN total=2062`, `§GEO_ORDER orderMs=875`, `§CROSSTASK_JUDGE_PARITY ms=1902`, `§XRAY_EDGES ms=417.9`,
+`§PERF_INCR_INDEX ms=85.9`, `§CINEMA_PLAN_MS 246–521` — each a one-off or cached; together under 6 s of
+the 38 s activation. `§CACHE_PUT … size=50456KB` is async after activation.
+
+### §8.6 THE SAME WRITE LOOP KILLS THE CLASH FILM ON EVERY BUILDING BIG ENOUGH TO YIELD — cause found 2026-09-14, MOOT FOR BAKES since 2026-09-15 (LARGE_DB_BAKE.md L2), LIVE EDITOR STILL BROKEN
+**Symptom (user, eyeballing the full Hospital 1080p24 fix bake):** "the Clash pair animation is missing."
+**Log:** `§CLASH_RTREE table created, populating async...` → 13 ms later `§CLASH_RTREE batch failed at
+offset=0 — cannot start a transaction within a transaction` → `§CLASH_FILM_BUILD INCONCLUSIVE reason=
+elements_rtree not ready after 120s` → `§CLASH_HUD_PAIR_CARDS pairs=0 VACUOUS`. Not a timeout under load:
+the first batch's BEGIN failed instantly because a transaction was already open. The same three lines
+are in the Hospital CLIP bake (`out/fix_hosp.log`), so it is deterministic, not resource pressure, and
+no Hospital log in `out/` has ever carried a per-frame `§CLASH_LABELS` line.
+**Chain, each link a line or a file:line:**
+1. `§KERNEL_OPS_SCHED_VERSION stale … agreementFail=window — cleared 63415 ops, will re-inject` (26.0 s):
+   Hospital's cached schedule disagrees with its window every run, so injectGantt regenerates; the DELETE
+   of the ops is a mutating kernel op, which arms `kernel_ops.js _persistToIdb`'s debounce timer
+   (delay 2000 ms).
+2. The CAP branch runs `_writeScheduledChunked` (`time_machine.js:4651`): ONE prepared `_upd` statement
+   held across 25 macrotask yields on 63,415 rows (2 yields on HHS's 6,880).
+3. The persist timer fires inside a yield: `§KRN_PERSIST url=/buildings/Hospital_silent.db size=308060KB`
+   (`kernel_ops.js:141 db.export()`). sql.js `export` frees EVERY prepared statement
+   (`viewer/lib/sql-wasm-fts5.js`: `"export"]=function(){Object.values(this.fb).forEach(function(l){l.free()`).
+4. The loop resumes: `db.run('BEGIN')` then `_upd.run(...)` on a freed statement → sql.js throws the
+   STRING `Statement closed`, caught only by activate's outer handler: `§GANTT_CACHE_ERR undefined |
+   phase=post-loadOps | stack=(none) | thrown type=string value=Statement closed` (34.7 s). No
+   `§WRITE_LOOP_TIMING`, no `capBranchWrite` mark, no COMMIT, no ROLLBACK — the transaction stays open
+   for the life of the page, and every remaining row of that chunk onward is never written.
+5. 17 s later the clash R-tree's own BEGIN fails inside it. Everything downstream that opens a
+   transaction on `A.db` is dead from then on.
+**Why HHS/Terminal pass and Hospital/LTU cannot:** the exposure window is the loop's yield span —
+~150 ms on HHS, ~8 s on Hospital, ~19 s on LTU (§8.2). LTU will hit it on every regenerate.
+**Fix shape (4D lane, user's call):** (a) `_writeScheduledChunked` must not hold a prepared statement
+across a yield — prepare per chunk, or bind with `db.run(sql, params)`; and wrap BEGIN…COMMIT in
+try/finally with ROLLBACK so a throw can never leave the connection in a transaction; (b) `_persistToIdb`
+must not `export()` while an injectGantt write is in flight — a write-in-progress gate (the same
+"one owner of the connection at a time" rule the R-tree already has to live by). Witness: the three
+Hospital lines above must become `§WRITE_LOOP_TIMING rows=63415` + `§CLASH_RTREE ready 63415 rows` +
+`§CLASH_FILM_BUILD discPairs=…`, and a control that forces a persist mid-loop must reproduce
+`Statement closed`.
+
+**UPDATE 2026-09-15 (Sonnet) — MOOT FOR BAKES, root cause NOT fixed, still live for the editor.**
+`LARGE_DB_BAKE.md`'s L2 (`A._bakeOwned` gate, `viewer/scene.js`+`viewer/kernel_ops.js`+
+`erp/kernel_ops.js`+`viewer/time_machine.js`, worktree `/tmp/wt-storey-cut`) turns `_persistToIdb`'s
+`db.export()` off ENTIRELY during a CLI bake — for a different reason (a bake profile is disposable, no
+persistence is ever read back) than this section's own proposed fix ((a) prepare-per-chunk, (b) a
+write-in-progress gate), but the practical effect is the same: with no export ever firing mid-write-loop,
+the race this section describes cannot trigger during a bake, full stop. **VERIFIED on LTU** (never
+previously observed baking a clash film at all — LTU could not even load until §8.7 shipped):
+`§KRN_PERSIST_SKIP reason=bake` throughout, then cleanly `§CLASH_RTREE ready 122330 rows in 2288ms` →
+`§CLASH_FILM_BUILD discPairs=12 ... trueClash=120` → `§CLASH_HUD_PAIR_CARDS pairs=1 [ARC|STR=120]`, zero
+`§CLASH_RTREE batch failed`/`Statement closed` lines, on two separate bakes
+(`out/l7_fix_final.log`, `out/l7_ltu_fix3.log`, worktree `/tmp/wt-storey-cut`). **NOT re-verified on
+Hospital this session** — the ORIGINAL bug report's building — but the same `A._bakeOwned` gate applies
+identically regardless of which building is loaded, so it is EXPECTED to hold there too; confirm with
+one `--clash` bake before relying on it. **This does NOT fix the bug** — it only removes the ONE trigger
+(`_persistToIdb`'s export) that a bake ever exercises. The LIVE EDITOR still needs to persist a user's
+edits (a bake correctly never does), so `_writeScheduledChunked`'s prepared-statement-across-a-yield
+defect is UNCHANGED there, and LTU (19s yield, §8.2) is the MOST exposed building precisely because it
+is used interactively too. The real fix for that context is `fix/krn-persist-race`
+(worktree `/tmp/wt-krn-persist-race`, `LARGE_DB_BAKE.md` §4) — written, uncommitted, its "fires" proof
+still owed (needs a live-editor run where a persist genuinely lands mid-write-loop, not just a bake).
+
+### §8.7 THE LTU "MEMORY WEDGE" IS A ONE-LINE BUG IN THE SINGLE-DB LOAD PATH, AND EVERY BUILDING PAYS FOR IT — found 2026-09-14, not fixed
+**Symptom:** LTU_AHouse (761 MB `_silent.db`) never reaches `§CLI_BAKE_LOADED`; the page goes quiet right
+after the cache step. Read as "memory pressure" / "needs range streaming". It is neither.
+**Mechanism, verified outside the CLI with a bare headless page and V8's GC trace:**
+1. `viewer/streaming.js` §S281 single-DB path: `var _posUrl = A.DB_URL.replace('_extracted.db', '_positions.bin')`.
+   For any name that is not `*_extracted.db` — every `_silent.db` in the fleet — the replace is a no-op
+   and `_posUrl === A.DB_URL`.
+2. `await A.cachedFetch(_posUrl)` therefore downloads THE WHOLE DB a second time as the "positions
+   sidecar" (this is the download that hits the IndexedDB write, not the real load), then
+   `_posView.getUint32(0, true)` reads the SQLite header `SQLi` = **1,766,609,235** as the row count.
+3. The loop pushes one 16-slot array per "row" (~160 B each) until `getFloat32` runs off the end of
+   the buffer and throws `RangeError: Offset is outside the bounds of the DataView`, which the
+   `catch` turns into `§POSITIONS_SKIP single-DB — … ; full download`. Rows before the throw =
+   `byteLength / 24`: HHS 1.4 M (0.8 s), Terminal 2.6 M (2.6 s), Hospital 13.1 M (3.6–3.9 s, ~2 GB of
+   garbage) — all present in this session's logs as `§DB_SIZE_CHECK → §POSITIONS_SKIP`.
+   LTU: 31.7 M rows ≈ 5 GB of arrays, which exceeds V8's heap limit BEFORE the throw:
+   `V8 javascript OOM (Ineffective mark-compacts near heap limit)` at 4,050 MB, then `Page crashed!`
+   (bare-page probe: usedJSHeapSize 763 → 1,547 MB → … → OOM at ~19–29 s; renderer at 700–790 % CPU
+   the whole time — the earlier "0 % CPU" reading was a different process).
+4. In the CLI the crashed renderer is never reported; `waitForFunction(!APP.streaming)` waits its
+   15 min, so every LTU probe looked like a hang.
+**Controls that pin it:** the same 761 MB file through fetch → arrayBuffer → second fetch → second
+761 MB allocation + copy in a bare page completes in 1.5 s; sql.js opens the file in 1 ms under node
+and exports it in 252 ms. Only the app's sidecar loop is size-limited.
+**Fix (three lines, `viewer/streaming.js` §S281, viewer lane):** derive the sidecar for any `.db`
+name (`A.DB_URL.replace(/\.db(\?.*)?$/, '_positions.bin$1')`), skip the sidecar when it resolves to
+the DB URL itself, and bound the loop by the buffer (`_posCount * 24 + 4 <= byteLength`, else treat
+as no sidecar). Witness: `§POSITIONS_SKIP` must read `no sidecar (404)` on every `_silent.db`, never
+`Offset is outside the bounds`, and LTU must print `§CLI_BAKE_LOADED`. Side effects of the fix on
+every building: one fewer full-DB download per load, 1–4 s and up to ~2 GB of transient garbage
+gone from every bake start.
+**Not needed for this:** range streaming, split DBs, a memory scope, or parking LTU.

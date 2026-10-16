@@ -1,0 +1,4 @@
+§FIDELITY start part=4/8 tables=116 of 925 sqlite=bloat10r_v2.db pgdb=bloat10r
+§FIDELITY table=m_costdetail rows=2505954 pgRows=2505954 pg=1444793763819556894303330 sq=1444793763819556894303330 OK t=74s
+§FIDELITY table=c_invoice rows=233112 pgRows=233112 pg=134550297164824311181529 sq=134550297164824311181529 OK t=81s
+§FIDELITY_VERDICT part=4/8 PASS tables=116 judgedTables=62 judgedRows=2784668 totalSec=102s

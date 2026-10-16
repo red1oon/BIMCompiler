@@ -1,0 +1,32 @@
+═══ W-PROC-SHIP — InOutGenerate (AD_Process 118) folds a CO Sales Order → M_InOut op-group ═══
+
+— §SHIP-DISPATCH (real AD_Process 118 row → classname → registered handler) —
+§SHIP-DISPATCH proc=118 value=M_InOut_Generate classname=org.compiere.process.InOutGenerate isReport=false hasHandler=true
+🟢 AD_Process 118 = InOutGenerate resolves to a registered KIND-2 handler  — value=M_InOut_Generate
+
+— §SHIP-EMPTY (fully-delivered CO order → honest empty, no fabricated shipment) —
+§SHIP-EMPTY order=100 rule=A lines=1 ordered=1 delivered=1 → dispatched=true ok=true lineCount=0 msg="@Created@ = 0 (nothing to deliver — ordered qty already delivered)"
+🟢 fully-delivered order → 0 shipment lines, honest "@Created@ = 0" (no fabricated M_InOut)  — ordered==delivered==1
+
+— §SHIP-FOLD (undelivered qty → M_InOut op-group, MovementQty = min(toDeliver, onHand)) —
+§SHIP-FOLD dispatched=true ok=true rows=1 ops=2 header{table=M_InOut movementtype=C- issotrx=Y wh=103 c_order_id=100}
+🟢 M_InOut header folded from the order (MovementType C- shipment, warehouse + order linked)  — movementtype=C-
+§SHIP-ORACLE independent re-derivation lines=1 (deliver=min(toDeliver,onHand) per line)
+🟢 shipment-line count == independent re-derivation  — eng=1 oracle=1
+§SHIP-FOLD lines=1 fields{movementqty,source_line} mismatches=0 (product 130: toDeliver=1 onHand=18)
+🟢 every shipment line == independent re-derivation, EXACT (MovementQty min(toDeliver,onHand), source link)  — lines=1 mismatches=0
+
+— §SHIP-AVAILABILITY (toDeliver > onHand → deliver clamped to onHand) —
+§SHIP-AVAILABILITY product=130 ordered=25 onHand=18 → MovementQty=18
+🟢 Availability rule CLAMPS deliver to on-hand when demand exceeds stock (not the raw ordered qty)  — deliver=18 == onHand=18 < ordered=25
+
+— §SHIP-FALSIFIER (QtyDelivered == QtyOrdered → toDeliver=0 → no shipment line) —
+§SHIP-FALSIFIER all lines fully delivered → lineCount=0
+🟢 fully-delivering the lines removes them from the fold (toDeliver is load-bearing, not vacuous)
+
+— §SHIP-DEFERRED (DeliveryRule "L" CompleteLine → named-deferred, honest) —
+§SHIP-DEFERRED rule=L → lineCount=0 deferredRule=L msg="@Created@ = 0 (DeliveryRule L is named-deferred)"
+🟢 unported DeliveryRule is named-deferred (flagged in the result), NOT a silent or fabricated shipment  — deferredRule=L
+
+═══ ALL PASS — InOutGenerate folds a CO Sales Order → M_InOut op-group (Availability), oracle-equivalent — W-PROC-SHIP ═══
+exit=0

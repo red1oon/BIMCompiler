@@ -1,0 +1,26 @@
+§FIXTURE_SHIPPED seed=/tmp/wt-ootb-f9/erp/ad_seed.db patch_stmts_ok=2982 failed=0 sql_functions=19 product_prices=149 FIXTURE_HAS_PRICES
+§M3_STATE_SYNC m_product_category_acct:+2col,28stmt,left=0 m_costelement:+2col,9stmt,left=0 m_cost:+1col,408stmt,left=0 m_product:+2col,55stmt,left=0 c_acctschema:+8col,4stmt,left=0 c_cashbook_acct:+2col,4stmt,left=0 ad_sysconfig:+6col,409stmt,left=0 c_bankaccount:+0col,1stmt,left=0
+§F9_HISTORY_SYNC rows=6296 of legacy (details processed=2172)
+§S7_FACTS product=128 legacy_onhand_before=-355 legacy_avg_costed_qty=5 qty=6 warehouse=103
+§SCN S8a-pos-sale-past-dated-open-period MATCH compared=17 inconclusive=0
+§SCN S8b-pos-sale-date-without-period MATCH compared=17 inconclusive=0
+§SCN S8c-pos-sale-beyond-open-future MATCH compared=17 inconclusive=0
+§SCN S8d-pos-sale-before-open-history MATCH compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=4 MATCH=4 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§PI_FACTS product=137 locator=101 qtybook=-110
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§RECON_SUMMARY scenarios=0 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN_DETAIL S8a-pos-sale-past-dated-open-period legacy={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6175/CR0|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","postings_euro":"518:DR5249/CR0|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"104:6175:0","cost_qty_delta":"{}"} sqlite={"outcome":"COMPLETED","docstatus":"CO","lines":"123:1:6175","total_cents":6175,"shipments":1,"shipments_completed":1,"invoices":1,"stock_delta":"{\"123\":-1}","postings":"518:DR6175/CR0|758:DR0/CR6175","postings_shipment":"REFUSED:Posted=E","_refused":"AverageCostingNegativeQty: Product=123, Current Qty=0, New Current Qty=-1, CostElement=103, Schema=101","cost_qty_delta":"{}","postings_euro":"518:DR5249/CR0|758:DR0/CR5249","postings_shipment_euro":"REFUSED:Posted=E","line_tax":"123:104","order_tax":"104:6175:0","grand_total_cents":6175,"invoice_tax":"104:6175:0"}
+§SCN_DETAIL S8b-pos-sale-date-without-period legacy={"outcome":"REJECTED","reason":"Cannot save record in C_OrderLine: Product is not on Price List -> Line No:10, Product: Oa"} sqlite={"outcome":"REJECTED"}
+§SCN_DETAIL S8c-pos-sale-beyond-open-future legacy={"outcome":"REJECTED","reason":"Failed when processing document: Period Closed"} sqlite={"outcome":"REJECTED","reason":"period-closed"}
+§SCN_DETAIL S8d-pos-sale-before-open-history legacy={"outcome":"REJECTED","reason":"Cannot save record in C_OrderLine: Product is not on Price List -> Line No:10, Product: Oa"} sqlite={"outcome":"REJECTED"}
+§M3_VERDICT ONLY S8

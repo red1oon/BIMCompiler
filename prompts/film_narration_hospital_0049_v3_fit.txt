@@ -1,0 +1,48 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT open cue=0.00 room=12.70 dur=12.31 -> DETAIL slack=+0.39 words=35
+§NARR_TONE open#0 F WH rose=Falsest endDelta=-1.8st want=fall OK "what do we have here?"
+§NARR_TONE open#2 F YN rose=5.0st endDelta=+2.4st want=rise OK "Everything?"
+§NARR_FIT inside cue=13.00 room=5.10 dur=4.42 -> DETAIL slack=+0.68 words=13
+§NARR_TONE inside#1 F ! rose=Falsest endDelta=-6.0st want=any OK "While it's still going up!"
+§NARR_FIT hall cue=18.40 room=11.70 dur=9.93 -> DETAIL slack=+1.77 words=30
+§NARR_TONE hall#0 F ! rose=Falsest endDelta=-4.0st want=any OK "Oh, look at this hall!"
+§NARR_TONE hall#2 F YN rose=5.0st endDelta=+3.6st want=rise OK "And the longest walk out?"
+§NARR_FIT days cue=30.40 room=13.10 dur=8.88 -> DETAIL slack=+4.22 words=27
+§NARR_TONE days#0 F ! rose=Falsest endDelta=-1.1st want=any OK "Meanwhile, outside, the calendar is flying!"
+§NARR_FIT checks cue=43.80 room=12.80 dur=10.93 -> DETAIL slack=+1.87 words=31
+§NARR_TONE checks#0 F WH rose=Falsest endDelta=-4.5st want=fall OK "Hey, what's that box popping up?"
+§NARR_TONE checks#2 F WH rose=Falsest endDelta=-2.4st want=fall OK "How many does it catch?"
+§NARR_FIT egress cue=56.90 room=5.70 dur=4.09 -> DETAIL slack=+1.61 words=14
+§NARR_TONE egress#0 F YN rose=5.0st endDelta=+3.6st want=rise OK "And safety means?"
+§NARR_FIT door cue=62.90 room=9.30 dur=5.87 -> DETAIL slack=+3.43 words=20
+§NARR_TONE door#0 F ! rose=Falsest endDelta=-3.8st want=any OK "Even the doors get measured!"
+§NARR_FIT done cue=72.50 room=10.00 dur=6.98 -> DETAIL slack=+3.02 words=18
+§NARR_TONE done#0 F ! rose=Falsest endDelta=-5.3st want=any OK "Day three twenty one!"
+§NARR_FIT loadpath cue=82.80 room=11.90 dur=11.70 -> DETAIL slack=+0.20 words=33
+§NARR_TONE loadpath#0 F WH rose=Falsest endDelta=-5.4st want=fall OK "why did it freeze?"
+§NARR_TONE loadpath#2 F YN rose=5.0st endDelta=+3.6st want=rise OK "And that safety box?"
+§NARR_FIT clash cue=95.00 room=19.70 dur=15.65 -> DETAIL slack=+4.05 words=41
+§NARR_TONE clash#0 F ! rose=Falsest endDelta=-3.0st want=any OK "Oh look, it gives all the clashes!"
+§NARR_TONE clash#2 F YN rose=5.0st endDelta=+2.8st want=rise OK "Does that matter?"
+§NARR_TONE clash#3 M YN rose=5.0st endDelta=+3.4st want=rise OK "Real overlaps?"
+§NARR_TONE clash#4 F ! rose=Falsest endDelta=-0.6st want=any OK "So four in five were false alarms!"
+§NARR_FIT which cue=115.00 room=18.50 dur=17.03 -> DETAIL slack=+1.47 words=51
+§NARR_TONE which#0 F WH rose=Falsest endDelta=-4.5st want=fall OK "So, what clashes the most?"
+§NARR_TONE which#4 F YN rose=5.0st endDelta=+3.2st want=rise OK "And that box?"
+§NARR_TONE which#5 M YN rose=8.0st endDelta=+3.0st want=rise OK "Is each beam deep enough for its reach?"
+§NARR_FIT rules2 cue=133.80 room=14.60 dur=8.54 -> DETAIL slack=+6.06 words=20
+§NARR_TONE rules2#0 F YN rose=5.0st endDelta=+1.9st want=rise OK "Circulation distance?"
+§NARR_FIT datum cue=148.70 room=10.80 dur=3.77 -> DETAIL slack=+7.03 words=12
+§NARR_TONE datum#0 F ! rose=Falsest endDelta=+1.9st want=any OK "Oh, the setting out drawing again!"
+§NARR_FIT parade cue=159.80 room=7.70 dur=6.66 -> DETAIL slack=+1.04 words=17
+§NARR_TONE parade#1 F ! rose=Falsest endDelta=-0.6st want=any OK "Fire protection, thirty eight. Electrical, thirty three. Mechanical, a hundred and thirty three!"
+§NARR_FIT pairs cue=167.80 room=4.50 dur=3.85 -> DETAIL slack=+0.65 words=8
+§NARR_TONE pairs#0 M YN rose=5.0st endDelta=+3.4st want=rise OK "The biggest pair?"
+§NARR_FIT reveal cue=172.60 room=21.00 dur=20.53 -> DETAIL slack=+0.47 words=52
+§NARR_FIT value cue=193.90 room=4.60 dur=4.40 -> DETAIL slack=+0.20 words=15
+§NARR_TONE value#0 F YN rose=11.0st endDelta=+2.2st want=rise OK "And all of it, on the fly?"
+§NARR_FIT cards cue=198.80 room=7.70 dur=4.25 -> DETAIL slack=+3.45 words=12
+§NARR_TONE cards#0 F YN rose=5.0st endDelta=+1.2st want=rise OK "So, the bottom line?"
+§NARR_TONE cards#2 F ! rose=Falsest endDelta=-6.7st want=any OK "Have a nice day!"

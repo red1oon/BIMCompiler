@@ -1,0 +1,4 @@
+[
+ {"name":"cp_inv_pi_line","window":168,"tab":1,"parents":[{"tab":0,"id":100}],"steps":[{"set":"M_Locator_ID","value":101},{"set":"M_Product_ID","value":124},{"set":"M_AttributeSetInstance_ID","value":0},{"set":"M_Product_ID","value":129}]},
+ {"name":"cp_inv_pi_line_noloc","window":168,"tab":1,"parents":[{"tab":0,"id":200000}],"steps":[{"set":"M_Product_ID","value":124}]}
+]

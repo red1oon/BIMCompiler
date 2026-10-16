@@ -680,35 +680,13 @@
   function _agDay(v) { var s = String(v || '').slice(0, 10); var t = Date.parse(s + 'T00:00:00Z'); return isNaN(t) ? null : Math.floor(t / 86400000); }
   function _agIso(d) { return new Date(d * 86400000).toISOString().slice(0, 10); }
   function _agRound(x, p) { var f = Math.pow(10, p == null ? 2 : p); var v = Number(x) || 0; return Math.round(v * f + (v < 0 ? -1e-9 : 1e-9)) / f; }
-  function _agAddMonths(d, n) { var dt = new Date(d * 86400000); var y = dt.getUTCFullYear(), m = dt.getUTCMonth() + Number(n || 0), day = dt.getUTCDate();
-    var last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(); return Math.floor(Date.UTC(y, m, Math.min(day, last)) / 86400000); }
-  function _agMonthStart(d) { var dt = new Date(d * 86400000); return Math.floor(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth(), 1) / 86400000); }
-  function _agMonthLastDay(d) { var dt = new Date(d * 86400000); return new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth() + 1, 0)).getUTCDate(); }
-  // paymenttermduedate(term, DocDate) → day number. IsDueFixed: FirstDay + (FixMonthDay-1) + FixMonthOffset months (+1 when the
-  // day-of-month offset > FixMonthCutoff); else TRUNC(DocDate) + NetDays.
-  function _agDueDate(pt, doc) {
-    if (!pt || doc == null) return doc;
-    if (String(pt.isduefixed || 'N') === 'Y') {
-      var first = _agMonthStart(doc), noDays = doc - first, due = first + (Number(pt.fixmonthday || 0) - 1);
-      due = _agAddMonths(due, Number(pt.fixmonthoffset || 0));
-      if (noDays > Number(pt.fixmonthcutoff || 0)) due = _agAddMonths(due, 1);
-      return due;
-    }
-    return doc + Number(pt.netdays || 0);
-  }
-  // paymenttermduedays(term, DocDate, PayDate) → PayDate - DueDate (the function's own IsDueFixed variant, transcribed).
-  function _agDueDays(pt, doc, pay) {
-    if (!pt || doc == null) return 0;
-    var due;
-    if (String(pt.isduefixed || 'N') === 'Y') {
-      var cal = doc, maxCut = _agMonthLastDay(cal), cut = Number(pt.fixmonthcutoff || 0), off = Number(pt.fixmonthoffset || 0), fmd = Number(pt.fixmonthday || 0);
-      cal = cut > maxCut ? _agMonthStart(cal) + maxCut - 1 : _agMonthStart(cal) + (cut - 1);
-      if (doc > cal) off = off + 1;
-      cal = _agAddMonths(cal, off);
-      var maxDay = _agMonthLastDay(cal);
-      due = (fmd > maxDay || (fmd >= 30 && maxDay > fmd)) ? _agMonthStart(cal) + (maxDay - 1) : _agMonthStart(cal) + (fmd - 1);
-    } else due = doc + Number(pt.netdays || 0);
-    return pay - due;
+  // paymentTermDueDate / paymentTermDueDays: ONE implementation — the PL/pgSQL ports in callouts/sqlfn.js (RUNTIME.M.SqlFn), run over the
+  // aging query's own db (A.bind for the call, previous binding restored). The former JS copies _agDueDate/_agDueDays are deleted.
+  function _agSqlFn(q, fn) {
+    var R = _A().RUNTIME, prevDB = R.DB, prevPO = R.PO;
+    _A().bind(function (sql, params) { return q(sql, params); });
+    try { var F = R.M && R.M.SqlFn; if (!F) throw new Error('Aging: callouts/sqlfn.js (paymenttermduedate/paymenttermduedays) not loaded'); return fn(F); }
+    finally { R.DB = prevDB; R.PO = prevPO; }
   }
   function _agRate(q, from, to, when) {                     // MConversionRate.getRate, same ORDER BY as crud_overlay _rate
     if (!Number(from) || !Number(to) || Number(from) === Number(to)) return 1;
@@ -754,8 +732,9 @@
         var pt = q('SELECT * FROM c_paymentterm WHERE c_paymentterm_id=' + Number(inv.c_paymentterm_id || 0))[0];
         if (!pt) return;
         var open = _agInvoiceOpen(q, inv, 0); if (open === 0) return;
-        var row = Object.assign({}, common, { c_invoicepayschedule_id: 0, netdays: Number(pt.netdays || 0), duedate: _agIso(_agDueDate(pt, doc)),
-          daysdue: _agDueDays(pt, doc, today), grandtotal: Number(inv.grandtotal || 0) * cm, openamt: open });
+        var due = _agSqlFn(q, function (F) { var ptid = pt.c_paymentterm_id; return { dd: String(F.paymenttermduedate(ptid, inv.dateinvoiced)).slice(0, 10), days: Number(F.paymenttermduedays(ptid, inv.dateinvoiced, _agIso(today))) }; });
+        var row = Object.assign({}, common, { c_invoicepayschedule_id: 0, netdays: Number(pt.netdays || 0), duedate: _agIso(_agDay(due.dd)),
+          daysdue: due.days, grandtotal: Number(inv.grandtotal || 0) * cm, openamt: open });
         out.push(row);
       } else {                                                       // branch 2 — one row per valid schedule
         q("SELECT * FROM c_invoicepayschedule WHERE c_invoice_id=" + Number(inv.c_invoice_id) + " AND isvalid='Y' ORDER BY c_invoicepayschedule_id").forEach(function (s) {
@@ -969,6 +948,17 @@
       };
     }
 
+    // §CP — a verbatim SvrProcess port runs inside ONE ModelLayer.Trx the host opens (ctx.runInTrx); its ops are the commit
+    if (classname && JAVA[classname] && typeof ctx.runInTrx === 'function') {
+      var jr = ctx.runInTrx(function (query, env) {
+        return runJava(query, env, { AD_Process_ID: proc.AD_Process_ID, className: classname, title: proc.name,
+          Record_ID: info.Record_ID || 0, Table_ID: info.Table_ID || 0, params: info.params || {} });
+      }) || { ok: false, summary: 'no transaction' , ops: [], logs: [] };
+      (jr.log || []).forEach(function (l) { if (typeof console !== 'undefined') console.log(l); });
+      return { ad_process_id: proc.AD_Process_ID, name: proc.name, classname: classname, kind: 'java', dispatched: true,
+        ok: !!jr.ok, reason: jr.ok ? 'ok' : 'process-error', validate: validate, rows: (jr.ops || []).length, message: jr.summary,
+        result: { commitOps: jr.ops || [], logs: jr.logs || [], summary: jr.summary, isError: !!jr.isError } };
+    }
     // Core.getProcess(className) == null branch (ProcessUtil:166-170): explicit absent-handler, NOT a no-op.
     if (!classname || !hasHandler(classname)) {
       return {
@@ -1037,6 +1027,229 @@
     return { byAccess: byAccess, byWorkflow: byWorkflow, union: union };
   }
 
+  // ══ JAVA PROCESS RUNTIME — SvrProcess ported (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §CP — W-CP-PROC-ORACLE) ═══
+  // Each core AD_Process.Classname is a verbatim SvrProcess port in erp/processes/*.js, registered with defineProcess.
+  // It runs inside ONE ModelLayer.Trx (the Java trxName): reads are SQL over the host query (tip-shadowed) through the
+  // callout runtime's DB/PO (AdCallout.RUNTIME, bound to the Trx's query), writes go through ModelLayer.save/processIt,
+  // and trx.groupOps() is what the host commits as ONE signed group (__crud.applyOpGroup) — the Java commit.
+  //   SvrProcess.startProcess/process   ← org/compiere/process/SvrProcess.java:132-232, :238-330
+  //   ProcessInfoParameter               ← org/compiere/process/ProcessInfoParameter.java:126-275
+  //   ProcessInfoUtil.setParameterFromDB ← P_Number→BigDecimal, P_Date→Timestamp, P_String→String (AD_PInstance_Para)
+  var JAVA = {};
+  function _A() { return (typeof module !== 'undefined' && module.exports) ? require('./ad_callout.js') : global.AdCallout; }
+  function _ML() { return (typeof module !== 'undefined' && module.exports) ? require('./model_layer.js') : global.ModelLayer; }
+  function ProcessInfoParameter(name, p, pTo, info, infoTo) { this.n = name; this.p = p == null ? null : p; this.pt = pTo == null ? null : pTo; this.info = info || null; this.infoTo = infoTo || null; }
+  var PIP = ProcessInfoParameter.prototype;
+  PIP.getParameterName = function () { return this.n; };
+  PIP.getParameter = function () { return this.p; };
+  PIP.getParameter_To = function () { return this.pt; };
+  PIP.getInfo = function () { return this.info; }; PIP.getInfo_To = function () { return this.infoTo; };
+  function _asInt(v) { if (v == null) return 0; if (typeof v === 'number') return Math.trunc(v); var A = _A(); return Number(A.toBD(String(v)).setScale(0, A.RoundingMode.DOWN).toString()); }
+  function _asBool(v) { if (v == null) return false; if (typeof v === 'boolean') return v; return 'Y' === v; }
+  function _asTS(v) { var A = _A(); return v instanceof A.Timestamp ? v : null; }
+  function _asBD(v) { if (v == null) return null; var A = _A(); return v instanceof A.BigDecimal ? v : A.toBD(String(v)); }
+  PIP.getParameterAsInt = function () { return _asInt(this.p); }; PIP.getParameter_ToAsInt = function () { return _asInt(this.pt); };
+  PIP.getParameterAsBoolean = function () { return _asBool(this.p); }; PIP.getParameter_ToAsBoolean = function () { return _asBool(this.pt); };
+  PIP.getParameterAsTimestamp = function () { return _asTS(this.p); }; PIP.getParameter_ToAsTimestamp = function () { return _asTS(this.pt); };
+  PIP.getParameterAsString = function () { return this.p == null ? null : String(_A().stored(this.p)); };
+  PIP.getParameter_ToAsString = function () { return this.pt == null ? null : String(_A().stored(this.pt)); };
+  PIP.getParameterAsBigDecimal = function () { return _asBD(this.p); }; PIP.getParameter_ToAsBigDecimal = function () { return _asBD(this.pt); };
+  PIP.getParameterAsCSVInt = function () { return this.p == null ? null : String(this.p); };
+  PIP.getParameterAsIntArray = function () { return this.p == null ? [] : String(this.p).split(',').map(function (x) { return parseInt(x, 10); }); };
+  // typedParam — AD_PInstance_Para typing: numbers/IDs BigDecimal (P_Number), dates Timestamp (P_Date), else String
+  function typedParam(refId, v) {
+    if (v == null || v === '') return null;
+    var A = _A(), t = refType(refId);
+    if (t === 'integer' || t === 'number') return A.toBD(String(v));
+    if (t === 'date') return A.Timestamp.of(v);
+    if (t === 'yesno') return (v === true || v === 'Y') ? 'Y' : 'N';
+    return String(v);
+  }
+
+  function SvrProcess() { this.m_ctx = null; this.m_pi = null; this.m_trx = null; this.logs = []; }
+  // startProcess + process (SvrProcess.java:132-330): prepare → doIt; an exception's message is the summary; "@Error@" fails
+  SvrProcess.prototype.startProcess = function (ctx, pi, trx) {
+    this.m_ctx = ctx; this.m_pi = pi; this.m_trx = trx;
+    var msg = null, success = true, A = _A();
+    try { this.prepare(); msg = this.doIt(); }
+    catch (e) { msg = (e && e.message) || String(e); success = false; if (trx && trx.say) trx.say('§PROC-EXCEPTION ' + pi.className + ' ' + msg + (e && e.stack ? ' @' + String(e.stack).split('\n')[1] : '')); }
+    if (msg != null && String(msg).indexOf('@Error@') === 0) success = false;
+    msg = A.Msg.parseTranslation(ctx, msg == null ? '' : String(msg));
+    pi.summary = msg; pi.isError = !success;
+    return success;
+  };
+  SvrProcess.prototype.prepare = function () {};
+  SvrProcess.prototype.doIt = function () { throw new Error('doIt not implemented'); };
+  SvrProcess.prototype.getCtx = function () { return this.m_ctx; };
+  SvrProcess.prototype.getProcessInfo = function () { return this.m_pi; };
+  SvrProcess.prototype.getName = function () { return this.m_pi.title; };
+  SvrProcess.prototype.getAD_PInstance_ID = function () { return this.m_pi.AD_PInstance_ID || 0; };
+  SvrProcess.prototype.getTable_ID = function () { return this.m_pi.Table_ID || 0; };
+  SvrProcess.prototype.getRecord_ID = function () { return this.m_pi.Record_ID || 0; };
+  SvrProcess.prototype.getRecord_IDs = function () { return this.m_pi.Record_IDs || []; };
+  SvrProcess.prototype.getAD_User_ID = function () { return this.m_pi.AD_User_ID || _A().Env.getAD_User_ID(this.m_ctx); };
+  SvrProcess.prototype.getAD_Client_ID = function () { return this.m_pi.AD_Client_ID || _A().Env.getAD_Client_ID(this.m_ctx); };
+  SvrProcess.prototype.getParameter = function () { return this.m_pi.parameter || []; };
+  SvrProcess.prototype.get_TrxName = function () { return this.m_trx; };
+  SvrProcess.prototype.addLog = function (id, date, number, msg, tableId, recordId) {
+    if (arguments.length === 1) { msg = id; id = 0; date = null; number = null; }
+    this.logs.push({ id: id, date: date == null ? null : String(date), number: number == null ? null : String(number), msg: msg == null ? null : String(msg), tableId: tableId || 0, recordId: recordId || 0 });
+  };
+  SvrProcess.prototype.addBufferLog = SvrProcess.prototype.addLog;
+  SvrProcess.prototype.statusUpdate = function (m) { if (this.m_trx && this.m_trx.say) this.m_trx.say('§PROC-STATUS ' + m); };
+  SvrProcess.prototype.commitEx = function () {};     // one Trx = one signed group: the host commits at the end
+  SvrProcess.prototype.commit = function () {};
+  SvrProcess.prototype.rollback = function () { if (this.m_trx) { this.m_trx.ops = []; this.m_trx.pend = {}; } };
+
+  // ── DB writes inside a process (DB.executeUpdateEx / getIDsEx) — the Java's raw SQL writes, routed into the Trx as ops.
+  //   UPDATE t SET a=expr,… WHERE w  → SELECT key, expr AS a … FROM t WHERE w (params keep their order: SET first, WHERE next)
+  //   DELETE FROM t WHERE w          → SELECT key … → trx.del
+  //   INSERT INTO t (cols) SELECT …|VALUES (…) → the row(s) → trx.insert
+  //   Named limit: a later raw SELECT in the same process does not see these pending writes (Trx.get/find do).
+  function _splitTop(str) {
+    var out = [], depth = 0, q = false, cur = '';
+    for (var i = 0; i < str.length; i++) { var ch = str.charAt(i);
+      if (ch === "'") q = !q;
+      if (!q) { if (ch === '(') depth++; else if (ch === ')') depth--; else if (ch === ',' && depth === 0) { out.push(cur); cur = ''; continue; } }
+      cur += ch; }
+    if (cur.trim()) out.push(cur);
+    return out;
+  }
+  // index of the first match of re at paren-depth 0 outside quotes (-1 if none)
+  function _topIdx(str, re) {
+    var depth = 0, q = false;
+    for (var i = 0; i < str.length; i++) { var ch = str.charAt(i);
+      if (ch === "'") q = !q;
+      if (q) continue;
+      if (ch === '(') depth++; else if (ch === ')') depth--;
+      else if (depth === 0 && /\s/.test(ch) && re.test(str.slice(i, i + 12))) { var mm = re.exec(str.slice(i)); if (mm && mm.index === 0) return i; } }
+    return -1;
+  }
+  function processDB(trx) {
+    var A = _A(), base = A.RUNTIME.DB;
+    function keyOf(t) { return trx.idCol(t); }
+    function rowsOf(t, where, params) { return trx.q('SELECT * FROM ' + t + (where ? ' WHERE ' + where : ''), params || []); }
+    function plain(v) { return A.stored(v); }
+    var db = Object.create(base);
+    db.getIDsEx = db.getIDs = function (trxName, sql) { var a = Array.prototype.slice.call(arguments, 2); if (a.length === 1 && Array.isArray(a[0])) a = a[0];
+      return base.query(sql, a).map(function (r) { var k = Object.keys(r)[0]; return Math.trunc(Number(r[k])); }); };
+    // DB.executeUpdate (non-Ex) logs and returns -1 on an SQL error (U/DB.java executeUpdate catch → log.SEVERE, no throw)
+    // DB.executeUpdate overloads (DB.java): (sql, trxName) · (sql, param, trxName) · (sql, Object[] params, ignoreError, trxName) · (sql, ignoreError, trxName).
+    //   A Trx object / String trxName / boolean ignoreError is never a bind parameter (pre-fix: FactAcctReset's (sql, trx) bound the Trx as ?).
+    function _updArgs(args) {
+      var rest = Array.prototype.slice.call(args, 1).filter(function (x) { return typeof x !== 'boolean' && !(x && typeof x === 'object' && typeof x.q === 'function' && !Array.isArray(x)); });
+      if (rest.length >= 2) return rest[0];                       // (sql, param, trxName)
+      return rest.length === 1 && typeof rest[0] !== 'string' ? rest[0] : undefined;   // single: Object[]/value is the params; a String is the trxName
+    }
+    db.executeUpdate = function (sql) {
+      var params = _updArgs(arguments);
+      try { return db.executeUpdateEx(sql, params); }
+      catch (e) { trx.say('§PROC-SQL-ERROR executeUpdate → -1: ' + ((e && e.message) || e) + ' :: ' + String(sql).replace(/\s+/g, ' ').slice(0, 160)); return -1; }
+    };
+    db.executeUpdateEx = function (sql) {
+      var params = _updArgs(arguments);
+      if (params === undefined || params === null) params = [];
+      if (!Array.isArray(params)) params = [params];
+      params = params.map(plain);
+      var m, S = String(sql).trim().replace(/\s+/g, ' ');
+      if ((m = /^UPDATE\s+([\w.]+)(?:\s+(?!SET\b)(\w+))?\s+SET\s+(.*)$/i.exec(S))) {
+        // UPDATE t [alias] SET assignments [WHERE w] — the WHERE is the one at paren-depth 0 (a subselect's own WHERE is not it).
+        //   assignment = col=expr | (c1,c2,…)=(SELECT e1,e2 FROM …) | (c1,c2)=(v1,v2)  → one scalar per column, so SQLite (no row-value SET) runs it.
+        var t = m[1].toLowerCase(), al = m[2] || t, wi = _topIdx(m[3], /\sWHERE\s/i), setS = wi < 0 ? m[3] : m[3].slice(0, wi), whereS = wi < 0 ? '' : m[3].slice(wi).replace(/^\s*WHERE\s+/i, '');
+        var sets = [], cur0 = 0, nq = function (z) { return (String(z).match(/\?/g) || []).length; }, take = function (n) { var r = params.slice(cur0, cur0 + n); cur0 += n; return r; };
+        _splitTop(setS).forEach(function (x) {
+          var i = x.indexOf('='), lhs = x.slice(0, i).trim(), rhs = x.slice(i + 1).trim();
+          if (lhs.charAt(0) === '(') {
+            var cs = lhs.slice(1, -1).split(',').map(function (c) { return c.trim().toLowerCase(); }), inner = rhs.replace(/^\(\s*/, '').replace(/\s*\)$/, ''), es;
+            if (/^SELECT\s/i.test(inner)) {
+              var fi = _topIdx(inner, /\sFROM\s/i), lst = _splitTop(inner.slice(6, fi < 0 ? inner.length : fi)), rest = fi < 0 ? '' : inner.slice(fi);
+              var lp = lst.map(function (e) { return take(nq(e)); }), rp = take(nq(rest));      // ?s in select-list order, then the FROM… part (repeated per column)
+              es = lst.map(function (e, j) { return { e: '(SELECT ' + e.trim() + rest + ')', ps: lp[j].concat(rp) }; });
+            } else es = _splitTop(inner).map(function (e) { return { e: e, ps: take(nq(e)) }; });
+            if (es.length !== cs.length) throw new Error('executeUpdate: row-value SET arity ' + cs.length + ' vs ' + es.length);
+            cs.forEach(function (c, j) { sets.push({ c: c, e: es[j].e.trim(), ps: es[j].ps }); });
+          } else sets.push({ c: lhs.toLowerCase(), e: rhs, ps: take(nq(rhs)) });
+        });
+        var k = keyOf(t), rows = trx.q('SELECT ' + al + '.' + k + ' AS __k, ' + sets.map(function (x, i) { return '(' + x.e + ') AS __v' + i; }).join(', ') + ' FROM ' + t + (al !== t ? ' ' + al : '') + (whereS ? ' WHERE ' + whereS : ''), [].concat.apply([], sets.map(function (x) { return x.ps; })).concat(params.slice(cur0)));
+        rows.forEach(function (r) { var cur = trx.get(t, r.__k); if (!cur) return; var ch = {}; sets.forEach(function (x, i) { ch[x.c] = r['__v' + i]; }); trx.update(t, cur, ch); });
+        return rows.length;
+      }
+      if ((m = /^DELETE\s+FROM\s+([\w.]+)(?:\s+(?!WHERE\b)(\w+))?(?:\s+WHERE\s+(.*))?$/i.exec(S))) {
+        var t2 = m[1].toLowerCase(), k2 = keyOf(t2), a2 = m[2] || t2, rs = trx.q('SELECT ' + a2 + '.' + k2 + ' AS __k FROM ' + t2 + (m[2] ? ' ' + m[2] : '') + (m[3] ? ' WHERE ' + m[3] : ''), params);
+        rs.forEach(function (r) { var cur = trx.get(t2, r.__k); if (cur) trx.del(t2, cur); });
+        return rs.length;
+      }
+      if ((m = /^INSERT\s+INTO\s+([\w.]+)\s*\(([^)]*)\)\s*(VALUES\s*\((.*)\)|SELECT .*)$/i.exec(S))) {
+        var t3 = m[1].toLowerCase(), cols = m[2].split(',').map(function (c) { return c.trim().toLowerCase(); }), rs3;
+        if (/^VALUES/i.test(m[3])) rs3 = trx.q('SELECT ' + _splitTop(m[4]).map(function (e, i) { return '(' + e + ') AS __v' + i; }).join(', '), params);
+        else rs3 = trx.q(m[3], params).map(function (r) { var o = {}, ks = Object.keys(r); ks.forEach(function (kk, i) { o['__v' + i] = r[kk]; }); return o; });
+        rs3.forEach(function (r) { var f = {}; cols.forEach(function (c, i) { f[c] = r['__v' + i]; }); trx.insert(t3, f); });
+        return rs3.length;
+      }
+      trx.say('§PROC-UNPORTED-DEP executeUpdate SQL shape not translated: ' + S.slice(0, 160));
+      throw new Error('executeUpdate: unsupported SQL ' + S.slice(0, 80));
+    };
+    return db;
+  }
+  // PO_HELPERS — PO read/write inside the process Trx (PO.java get/set/save via ModelLayer.save; reads see this Trx's writes)
+  //   plain(v): a Java-typed value → the store's value (BigDecimal → Number via ML.N, Timestamp → 'yyyy-MM-dd HH:mm:ss', boolean → Y/N)
+  var PO_HELPERS = {
+    get A() { return _A(); }, get ML() { return _ML(); }, ProcessInfoParameter: ProcessInfoParameter,
+    plain: function (v) { var A = _A(); if (v instanceof A.BigDecimal) return _ML().N(v); if (v instanceof A.Timestamp) return v.toString(); if (typeof v === 'boolean') return v ? 'Y' : 'N'; return v; },
+    plainMap: function (m) { var o = {}; for (var k in m) if (Object.prototype.hasOwnProperty.call(m, k)) o[k.toLowerCase()] = PO_HELPERS.plain(m[k]); return o; },
+    // get(trx, table, id) → Java-shaped getters over the Trx's live row (pending writes included); null if absent
+    get: function (trx, table, id) { var r = trx.get(String(table).toLowerCase(), id); return r ? _A().RUNTIME.PO.wrap(table, r) : null; },
+    find: function (trx, table, where, orderBy) { return trx.find(String(table).toLowerCase(), where || {}, orderBy).map(function (r) { return _A().RUNTIME.PO.wrap(table, r); }); },
+    // save(trx, table, poOrNull, changes) — PO.save: new when po is null; returns {ok,row,error}
+    save: function (trx, table, po, changes) { return _ML().save(trx, String(table).toLowerCase(), po ? (po.row || po) : null, PO_HELPERS.plainMap(changes || {})); },
+    remove: function (trx, table, po) { return _ML().remove(trx, String(table).toLowerCase(), po.row || po); },
+    newPO: function (trx, table, fields) { return _ML().newPO(trx, String(table).toLowerCase(), PO_HELPERS.plainMap(fields || {})); }
+  };
+  function defineProcess(classname, factory) {
+    var C = factory(SvrProcess, PO_HELPERS);
+    JAVA[classname] = C;
+    return C;
+  }
+  // runJava(query, env, pi) — ProcessUtil.startJavaProcess (ProcessUtil.java:145-205) inside one ModelLayer.Trx.
+  //   pi = { AD_Process_ID, className, title, Record_ID, Table_ID, AD_PInstance_ID, params:{name:{v,vTo}|v}, ctx(Ctx) }
+  var proc0db = null;
+  function runJava(query, env, pi) {
+    var A = _A(), ML = _ML(), C = JAVA[pi.className];
+    if (!C) return { ok: false, dispatched: false, summary: 'Failed to create new process instance for ' + pi.className };
+    var trx = new ML.Trx(query, env || {});
+    A.bind(function (sql, params) { return trx.q(sql, params); }, { now: env && env.nowMillis ? function () { return env.nowMillis; } : undefined, log: function (l) { trx.say(l); } });
+    var ctx = pi.ctx || A.loginContext({ client: env.client, org: env.org, role: env.role || 0, user: env.user, wh: env.wh, date: env.date });
+    // ProcessInfoParameter[] from AD_Process_Para (SeqNo order) — the parameter types the UI's AD_PInstance_Para carry
+    var paras = [];
+    try { paras = query('SELECT columnname AS c, ad_reference_id AS r FROM ad_process_para WHERE ad_process_id=? AND isactive=? ORDER BY seqno', [pi.AD_Process_ID, 'Y']) || []; } catch (e) {}
+    // Java: SvrProcess.getParameter:582-589 → ProcessInfoUtil.setParameterFromDB:181-253 reads EVERY AD_PInstance_Para row the caller wrote
+    //   (declared or not — an undeclared one is a "Custom" parameter, MProcess/MProcessPara.validateUnknownParameter:443-457 only logs it),
+    //   plus a NULL entry for each declared AD_Process_Para not passed (the UNION :192-198). Typing: declared → by AD_Reference_ID;
+    //   undeclared → by the caller's type ({type:'date'|'num'|'int'|'str'} or the JS value), as P_Date/P_Number/P_String were written.
+    var given = pi.params || {}, seen = {}, decl = {};
+    paras.forEach(function (pp) { decl[String(pp.c).toLowerCase()] = pp; });
+    pi.parameter = [];
+    function wrap(g) { return (g && typeof g === 'object' && !(g instanceof A.BigDecimal) && !(g instanceof A.Timestamp) && ('v' in g)) ? g : { v: g }; }
+    function byType(t, v) {
+      if (v == null || v === '') return null;
+      if (t === 'date') return A.Timestamp.of(v);
+      if (t === 'num' || t === 'int' || (!t && typeof v === 'number')) return A.toBD(String(v));
+      return v;                                  // BigDecimal / Timestamp / String stay as given
+    }
+    Object.keys(given).forEach(function (k) {
+      var pp = decl[k.toLowerCase()], v = wrap(given[k]); seen[k.toLowerCase()] = 1;
+      if (pp) pi.parameter.push(new ProcessInfoParameter(pp.c, typedParam(pp.r, v.v), typedParam(pp.r, v.vTo), null, null));
+      else { A.RUNTIME.log('§PROC-CUSTOM-PARA ' + pi.className + ' ' + k + ' (not in AD_Process_Para; reaches the process as ProcessInfoUtil does)');
+        pi.parameter.push(new ProcessInfoParameter(k, byType(v.type, v.v), byType(v.type, v.vTo), null, null)); }
+    });
+    paras.forEach(function (pp) { if (!seen[String(pp.c).toLowerCase()]) pi.parameter.push(new ProcessInfoParameter(pp.c, null, null, null, null)); });
+    proc0db = processDB(trx); A.RUNTIME.DB = proc0db;
+    var proc = new C();
+    var ok = proc.startProcess(ctx, pi, trx);
+    var ops = ok ? trx.groupOps() : [];
+    return { ok: ok && !pi.isError, dispatched: true, summary: pi.summary, isError: !!pi.isError, logs: proc.logs, ops: ops, log: trx.log, trx: trx };
+  }
+
   var API = {
     REGISTRY: REGISTRY, registerHandler: registerHandler, hasHandler: hasHandler,
     registeredClassnames: registeredClassnames, installDefaultHandlers: installDefaultHandlers,
@@ -1052,7 +1265,8 @@
     validateParams: validateParams, dispatch: dispatch,
     pickUsedProcesses: pickUsedProcesses,
     refType: refType, typeOk: typeOk, REF_TYPE: REF_TYPE,
-    openItems: openItems, agingFold: agingFold, AGING_BUCKETS: AGING_BUCKETS, importBPartner: importBPartner
+    openItems: openItems, agingFold: agingFold, AGING_BUCKETS: AGING_BUCKETS, importBPartner: importBPartner,
+    SvrProcess: SvrProcess, ProcessInfoParameter: ProcessInfoParameter, defineProcess: defineProcess, runJava: runJava, JAVA: JAVA, typedParam: typedParam, processDB: processDB
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = API;   // node witness

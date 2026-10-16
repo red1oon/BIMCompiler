@@ -1,0 +1,14 @@
+[
+ {
+  "name": "cp_payonline_noprocessor_101",
+  "process": 153,
+  "recordId": 101,
+  "tableId": 335,
+  "tables": [
+   "c_payment"
+  ],
+  "preSql": [
+   "UPDATE c_payment SET isonline='N' WHERE c_payment_id=101"
+  ]
+ }
+]

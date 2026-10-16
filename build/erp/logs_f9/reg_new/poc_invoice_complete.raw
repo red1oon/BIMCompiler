@@ -1,0 +1,40 @@
+═══ W-FOLD-INVOICE — standalone completeIt(C_Invoice): doc-action wiring + complete→posted equivalence ═══
+    wiring = erp_engine.completeInvoice (SET_STATUS CO + gated MatchInv) · posting = post_resolver vs fact_acct(318) · schema=101
+
+   🟢 completeInvoice 100 (SO,from-order) → ops=1 [SET_STATUS CO]
+   🟢 completeInvoice 101 (SO,from-order) → ops=1 [SET_STATUS CO]
+   🟢 completeInvoice 102 (PO,direct) → ops=2 [SET_STATUS CO +1 MatchInv]
+   🟢 completeInvoice 103 (SO,from-order) → ops=1 [SET_STATUS CO]
+   🟢 completeInvoice 104 (PO,direct) → ops=2 [SET_STATUS CO +1 MatchInv]
+   🟢 completeInvoice 105 (PO,direct) → ops=11 [SET_STATUS CO +10 MatchInv]
+   🟢 completeInvoice 106 (PO,direct) → ops=7 [SET_STATUS CO +6 MatchInv]
+   🟢 completeInvoice 109 (SO,from-order) → ops=1 [SET_STATUS CO]
+   🟢 (1) DOC-ACTION — completeInvoice emits SET_STATUS C_Invoice CO for every invoice — invoices=8 wired=8
+
+   🟢 (2) MatchInv 102 emitted set == oracle m_matchinv — emitted=1 oracle=1
+§FOLD-COMPLETE doc=M_MatchInv c_invoice_id=102 junctions=1 oracle=iDempiere match=EXACT
+   🟢 (2) MatchInv 104 emitted set == oracle m_matchinv — emitted=1 oracle=1
+§FOLD-COMPLETE doc=M_MatchInv c_invoice_id=104 junctions=1 oracle=iDempiere match=EXACT
+   🟢 (2) MatchInv 105 emitted set == oracle m_matchinv — emitted=10 oracle=10
+§FOLD-COMPLETE doc=M_MatchInv c_invoice_id=105 junctions=10 oracle=iDempiere match=EXACT
+   🟢 (2) MatchInv 106 emitted set == oracle m_matchinv — emitted=6 oracle=6
+§FOLD-COMPLETE doc=M_MatchInv c_invoice_id=106 junctions=6 oracle=iDempiere match=EXACT
+   🟢 M_MatchInv total junctions == oracle (18 across 4 PO invoices) — total=18
+
+   🟢 (3) sales invoice 100 complete→posted == fact_acct(318) — accts=3 maxDiff=0c
+§FOLD-COMPLETE doc=C_Invoice id=100 status=CO postings=3 oracle=iDempiere maxDiff=0c
+   🟢 (3) sales invoice 101 complete→posted == fact_acct(318) — accts=3 maxDiff=0c
+§FOLD-COMPLETE doc=C_Invoice id=101 status=CO postings=3 oracle=iDempiere maxDiff=0c
+   🟢 (3) sales invoice 103 complete→posted == fact_acct(318) — accts=3 maxDiff=0c
+§FOLD-COMPLETE doc=C_Invoice id=103 status=CO postings=3 oracle=iDempiere maxDiff=0c
+   🟢 (3) sales invoice 109 complete→posted (post-posting drift, named) — accts=3 maxDiff=4039c DRIFT
+§FOLD-COMPLETE doc=C_Invoice id=109 status=CO postings=3 oracle=iDempiere maxDiff=4039c (post-posting-drift)
+
+   §POST-DEFERRED PO-invoice GL posting (V_Liability + charge/expense token set) for invoices [102,104,105,106] — the purchase manifest, a distinct token set (same fold shape). Their doc-action wiring AND the MatchInv fan-out (18 junctions, half (2)) ARE folded above; only the GL value-derivation is deferred.
+   🟢 §FALSIFIER-A corrupt one MatchInv receipt-line ref → emitted set ≠ oracle (the junction is load-bearing) — corruptedTuple → mismatch=true
+§FALSIFIER doc=M_MatchInv id=105 mutation=wrong-inoutline diverged=true (must be true)
+   🟢 §FALSIFIER-B a SALES invoice emits 0 MatchInv (gate=!IsSOTrx) even if its lines had receipt refs — matchOps=0
+§FALSIFIER doc=C_Invoice id=100 check=SO-emits-no-matchinv matchOps=0 (must be 0)
+
+🟢 W-FOLD-INVOICE PASS — standalone completeIt(C_Invoice) doc-action wired (SET_STATUS CO + gated MatchInv, newVerbs=0); 3/4 sales invoices complete→posted oracle-equivalent (1 named post-posting drift); 4 PO-invoice manifests named-deferred.
+exit=0

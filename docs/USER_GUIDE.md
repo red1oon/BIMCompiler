@@ -10,7 +10,10 @@ One browser. **View** a building · **author** geometry · **run** the ERP. Zero
     into the app stays inside your browser's own IndexedDB and kernel, protected by standard browser
     security — and you save it back to your own machine, when and where you choose. Every IFC you drop,
     every building you open, every ERP edit stays client-side on your own device — nothing is uploaded to
-    us, nothing is tracked, nothing phones home, and no model is fed your data. Every result is deterministic
+    us, and no model is fed your data. The landing page and the Viewer page run a simple visit counter
+    (GoatCounter) — it counts page visits (the page address may be included), never reads or sends a file's contents, and does nothing offline; the ERP has none. A few optional features you trigger yourself — share links (TinyURL), QR
+    codes (qrserver.com) and the update check (GitHub) — call that public service and send it only the URL
+    or request that feature needs, never your file. Every result is deterministic
     and traces to a line of open code you can read.
 
     [**Read the full guarantee — how the trust model works →**](EnterpriseAuthentication.md) · want to
@@ -23,6 +26,8 @@ Start at the **[front door → red1oon.github.io/bim-ootb](https://red1oon.githu
 Matrix landing (red / blue → round selector). Pick a door, or jump straight to any app by its URL below.
 **Bookmark any of them**; press **Home** on any surface to come back to the front door. On a return visit
 the landing shows the compact `⋯` launcher; **refresh** for the full round selector again.
+
+**Just need a quick IFC chore?** Upgrade to IFC4.3, pull one item out into its own IFC, split by storey, or check a model's health — drop a file, it runs. **[BIM Tools — User Manual →](BIMToolsGuide.md)**
 
 New here recently? Check **[What's New](WhatsNew.md)** for a running log of shipped changes.
 

@@ -79,7 +79,7 @@ var db = new Database(COPY);
 
   // ── 1. deliver-later sale → EXACTLY ONE open ticket, lines verbatim ──
   var cart1 = [POS.ringLine(ctx, keys[0].m_product_id, 2), POS.ringLine(ctx, keys[1].m_product_id, 1)];
-  var g1 = POS.buildDeliverLaterGroup(ctx, cart1, { orderId: 970001, inoutId: 970002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
+  var g1 = POS.buildDeliverLaterWithShipment(ctx, cart1, { orderId: 970001, inoutId: 970002, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
   if (!g1.ok) { console.log('FATAL sale1 refused: ' + g1.reason); process.exit(1); }
   var r1 = await commit(g1.ops, 1718200000000);
   var q1 = KDS.queue(KDS.foldTickets(opRows()));
@@ -134,8 +134,8 @@ var db = new Database(COPY);
     '§FALSIFIER 1: double-serve REFUSED (FSM not-open — the re-fold carries CO)', JSON.stringify({ reason: again.reason, docstatus: t1co.docstatus }));
 
   // ── §FALSIFIER 3: two open tickets queue OLDEST-FIRST (op-log order = kitchen FIFO) ──
-  var g3 = POS.buildDeliverLaterGroup(ctx, [POS.ringLine(ctx, keys[0].m_product_id, 3)], { orderId: 970201, inoutId: 970202, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
-  var g4 = POS.buildDeliverLaterGroup(ctx, [POS.ringLine(ctx, keys[1].m_product_id, 1)], { orderId: 970301, inoutId: 970302, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
+  var g3 = POS.buildDeliverLaterWithShipment(ctx, [POS.ringLine(ctx, keys[0].m_product_id, 3)], { orderId: 970201, inoutId: 970202, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
+  var g4 = POS.buildDeliverLaterWithShipment(ctx, [POS.ringLine(ctx, keys[1].m_product_id, 1)], { orderId: 970301, inoutId: 970302, c_bpartner_id: BP, doctype: dt132, invoiceRule: invRule });
   await commit(g3.ops, 1718200180000);
   await commit(g4.ops, 1718200240000);
   var q4 = KDS.queue(KDS.foldTickets(opRows()));

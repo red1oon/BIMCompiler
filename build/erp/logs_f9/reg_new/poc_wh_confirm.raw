@@ -1,0 +1,36 @@
+§KERNEL_OPS_LOADED v13 (W-CHAIN/W-SIGN/G-IDENTITY/W-OPGROUP/W-RATE-INPUT/W-BLUE-FUTURE/W-EMIT/T6-persist-guard/T2-content-sign/T7-incremental/W-OPLOG-APPEND)
+═══ W-WH-CONFIRM — §P-12 confirmation fold: doctype 148 spawns PC, InOut waits IP, on-hand moves AT CONFIRM ═══
+
+   🟢 doctype 148 "MM Shipment with Pick": IsPickQAConfirm=Y → the PICK gate comes from the DICTIONARY row — {"pick":true,"ship":false}
+   🟢 spawn: ONE M_InOutConfirm (type PC, DR) + 2 M_InOutLineConfirm — ops=3
+   🟢 confirm lines: TargetQty=MovementQty, ConfirmedQty=TargetQty (the suggestion — setInOutLine, anchored by seed row 100 t=10/c=10) — t/c=3/3,2/2
+   🟢 SEED ANCHOR: GardenWorld confirm line 100 obeys the same seeding (target==confirmed, difference 0) — {"targetqty":10,"confirmedqty":10,"differenceqty":0,"scrappedqty":0}
+   🟢 M_InOutConfirm: ALL dictionary-mandatory cols covered (audit+DocumentNo = named substrate stamps) — 17 mandatory
+   🟢 M_InOutLineConfirm: ALL dictionary-mandatory cols covered (audit+DocumentNo = named substrate stamps) — 13 mandatory
+   🟢 re-spawn with an existing PC confirm → no-op (idempotent, no duplicate confirm) — ops=0
+§WH-CONFIRM spawn doctype=148 type=PC lines=2 suggestion=target idempotent=Y
+   🟢 completeIt GATE: unprocessed PC confirm → "@Open@: @M_InOutConfirm_ID@", InOut answers IP and WAITS (:1648) — {"ok":false,"status":"IP","reason":"@Open@: @M_InOutConfirm_ID@","open":[950201]}
+   🟢 ON-HAND UNMOVED while the InOut waits at IP (the sale moved nothing — the §P-12 honesty) — oak=0 plum=0
+§WH-CONFIRM gate=IP open=950201 onhand-delta=0 (movement sits BELOW the gate)
+   🟢 SEED ANCHOR: GardenWorld shipment 108 is CO with its XC confirm unprocessed — the gate folds the SAME verdict (XC never blocks, :2208) — seed=CO gate.ok=true
+§WH-CONFIRM xc-anchor seed-inout=CO xc-processed=N gate.ok=true (rule == GardenWorld own books)
+§KRN_GROUP committed gid=8235bd10-8467-4e5c-ae55-31cef962a3c4 ops=3 groupHash=a350d14b6265… tip=2aa7ab181d01… sealed=3 (WHOLE — all-or-none)
+   🟢 confirm-complete (full): every line fully confirmed, NO difference docs, newVerbs=[] — ops=5
+   🟢 the confirm walks DR→CO and Processed=Y in the SAME group (:478-479) — {"op_type":"SET_STATUS","table":"M_InOutConfirm","id":950201,"doc_status":"CO","processed":"Y"}
+§KRN_GROUP committed gid=eff4f388-75e8-4b47-b787-fd0190e54d0d ops=5 groupHash=1167726dcc27… tip=96bd6633fb0a… sealed=5 (WHOLE — all-or-none)
+§KRN_CHAIN verify OK len=8 tip=96bd6633fb0a…
+   🟢 spawn + confirm-complete sealed as signed groups, chainOk=Y — len=8
+   🟢 gate re-check after confirm-complete → InOut may complete — ok=true
+   🟢 ON-HAND MOVES AT CONFIRM-COMPLETE: the fold drops 3 Oak + 2 Plum only after the confirm processed — oak=-3 plum=-2
+§WH-CONFIRM onhand-at=confirm-complete oak=-3 plum=-2 chainOk=Y gid=eff4f388-75e8-4b47-b787-fd0190e54d0d
+   🟢 §FALSIFIER short pick (2 of 3, SO-side, no scrap) → NO difference doc; MovementQty REDUCED to 2; DifferenceQty=1 on the confirm line (createDifferenceDoc:611/637 — neither branch fires; EXTRACTED, not invented) — movementqty=2 diffDocs=0
+§FALSIFIER wh=confirm short-pick movementqty=2 differenceqty=1 difference-doc=NONE (SO-side rule, source-cited)
+   🟢 the qty spine moves by the PICKED 2, not the asked 3 (picker truth wins) — delta=-2
+   🟢 scrapped=1 → M_Inventory difference doc + line @ scrappedQty on the shipment warehouse (:637, the real branch) — inv=950401
+   🟢 PO-side linked short-receipt → AP CREDIT MEMO line @ DifferenceQty=1 (:611-634, the other real branch) — cm=950501
+§FALSIFIER wh=confirm scrap→M_Inventory=Y po-diff→creditMemo=Y
+   🟢 §FALSIFIER split-shipment dispute → HONEST refusal (IsSplitWhenDifference path named, not invented — no seed data) — reason=split-when-difference-not-folded
+§FALSIFIER wh=confirm split-dispute reason=split-when-difference-not-folded (named omission, refused not faked)
+
+🟢 W-WH-CONFIRM PASS — doctype 148 spawns the PC confirm from the dictionary, the InOut waits at IP and on-hand moves only at confirm-complete (by the PICKED qty); short-pick reduces MovementQty with NO difference doc (SO-side), scrap creates the M_Inventory doc, PO-side diff creates the AP credit memo, and the split path refuses honestly.
+exit=0

@@ -1,0 +1,30 @@
+§DEMO listening 0.0.0.0:8765 db=bloat10r.db dbMB=11195 token=d10cd4d4b1f8
+§DEMO url http://192.168.1.22:8765/t/d10cd4d4b1f8/
+§DEMO url http://172.17.0.1:8765/t/d10cd4d4b1f8/
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_LIB httpvfs.js bytes=7920 serveMs=6 ip=192.168.1.14
+§DEMO_LIB sqlite.worker.js bytes=83728 serveMs=3 ip=192.168.1.14
+§DEMO_LIB httpvfs-sql-wasm.wasm bytes=1239572 serveMs=890 ip=192.168.1.14
+§DEMO_REPORT ip=192.168.1.14 totalMs=5998 secure=false net=4g rtt=50 down=1.5 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=2892 reqs=54 bytes=901120 rows=1
+§DEMO_STEP W1_window ms=89 reqs=3 bytes=49152 rows=1
+§DEMO_STEP W2_tabs ms=160 reqs=5 bytes=81920 rows=5
+§DEMO_STEP W3_fields ms=2005 reqs=57 bytes=966656 rows=89
+§DEMO_STEP W4_order ms=545 reqs=3 bytes=49152 rows=1
+§DEMO_STEP W5_orderlines ms=186 reqs=6 bytes=98304 rows=1
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_REPORT ip=192.168.1.14 totalMs=5072 secure=false net=4g rtt=50 down=1.75 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=2226 reqs=54 bytes=901120 rows=1
+§DEMO_STEP W1_window ms=159 reqs=3 bytes=49152 rows=1
+§DEMO_STEP W2_tabs ms=194 reqs=5 bytes=81920 rows=5
+§DEMO_STEP W3_fields ms=2025 reqs=57 bytes=966656 rows=89
+§DEMO_STEP W4_order ms=102 reqs=3 bytes=49152 rows=1
+§DEMO_STEP W5_orderlines ms=333 reqs=6 bytes=98304 rows=1
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_REPORT ip=192.168.1.14 totalMs=4201 secure=false net=4g rtt=50 down=1.6 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=1647 reqs=54 bytes=901120 rows=1
+§DEMO_STEP W1_window ms=69 reqs=3 bytes=49152 rows=1
+§DEMO_STEP W2_tabs ms=101 reqs=5 bytes=81920 rows=5
+§DEMO_STEP W3_fields ms=1995 reqs=57 bytes=966656 rows=89
+§DEMO_STEP W4_order ms=165 reqs=3 bytes=49152 rows=1
+§DEMO_STEP W5_orderlines ms=189 reqs=6 bytes=98304 rows=1

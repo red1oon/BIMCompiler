@@ -10,6 +10,16 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
+## ▶ FRIENDLY-OPS + LIBERO-AD lane (2026-10-16): Mfg films Part II EN/ZH/TH + Part III EN done; lens + AD_ToolBarButton + Pack In of real 2Packs (W-PACKIN 6/6) on bim-ootb `feat/libero-backflush` (pushed, NOT merged) - NEXT = §20 slice B, read `prompts/ERP_FRIENDLY_OPS_LENS.md` §13 RESUME
+## ▶ DEPTH lane (2026-10-13): cycle 1 DONE + merged (bim-ootb #1988; 10 SQLite-lane gaps repaired, 3 witnesses green, 4 films EN+TH). NEXT = §NEWCLIENT-DEPTH — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
+## ▶ DEPTH cycle 2 §NEWCLIENT-DEPTH (2026-10-13): NC-1..NC-4, NC-5a, NC-6/7/8, NC-9 (window access + new role) DONE vs LEGACY-MEASURED; PRs #1989-#1995 merged; W-MODEL-ORACLE re-run UNCONFIRMED (timeouts) - see RESUME HERE. Window sweep 204 of 332 OK. NEXT: re-run NC-10/11/12 on the new code, film chapters, MUser/new-role login — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
+## ▶ DEPTH lane 2026-10-15: dictionary census 65->78, 19/19 views, fact_acct parity, CU guard redesign, Dunning fix, 2 raw films in ~/Videos - NEXT/OPEN list in `prompts/ERP_DEPTH_FILM.md` §RESUME HERE FIRST (fourth wrap).
+
+## ▶ ERP LARGE-CLIENT SHARDING lane (2026-10-14): PG→SQLite→phone proven on read path (11 GB bed, 41.3 M rows, fidelity 925/925, real phone cold 3.4 s vs 9.8 s). NEXT = reports/summary shards (§17). Read `prompts/ERP_LARGE_CLIENT_SHARDING.md` ▶ RESUME HERE; spec `docs/internal/ERP_SHARD_GENERATOR.md` §9–§16; scratch data `/home/red1/erp_shard_bed/`.
+
+## ▶ SQLite⇄iDempiere parallel-run lane (2026-10-10): read `prompts/SQLiteIDEMPIERE.md` — CARDINAL RULE block + ▶ RESUME HERE at its top (SQLite must equal legacy incl. L&F; F4–F39 fixed + witnessed; bim-ootb port in progress as a DRAFT PR; method page docs/LegacyOracleAdapterSpec.md is live).
+
+## ▶ LATEST HANDOFF — 2026-10-02: read `prompts/SESSION_HANDOFF_2026-10-02.md` first (films, No-AI witness, IFC export fix, Dubai validity layer, ERP first-setup live v801, local-only items).
 ## ▶ 2026-10-08 — OpenBIM schema + Dubai paper session (close)
 - **Published `ootb-building` v1 target schema** — bim-ootb `schema/` (PR #1934 MERGED): spec + DDL + `migrate_v0_to_v1.py`.
   No live DB touched. W-SCHEMA-V1-MIGRATE on copies of 27 files: 22 + 5 pairs PASS, 0 rows lost, 4 zero-byte INCONCLUSIVE.

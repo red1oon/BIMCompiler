@@ -1,0 +1,6 @@
+§FIDELITY start part=1/4 tables=231 of 925 sqlite=pilot.db pgdb=idempiere_pilot
+§FIDELITY table=c_acctprocessorlog rows=662 pgRows=716 pg=404795721251799254880 sq=373167390542517568578 MISMATCH t=5s
+§FIDELITY table=c_conversion_rate rows=4 pgRows=4 pg=2847825595151103426 sq=1958347790386141258 MISMATCH t=11s
+§FIDELITY table=c_acctprocessor rows=2 pgRows=2 pg=703530514854201763 sq=468932170991779124 MISMATCH t=13s
+§FIDELITY table=i_conversion_rate rows=2 pgRows=2 pg=792998025261673832 sq=971608861018998039 MISMATCH t=14s
+§FIDELITY_VERDICT part=1/4 FAIL mismatches=4 colMismatch=0 tables=231 judgedTables=130 judgedRows=133445 totalSec=28s

@@ -1,0 +1,16 @@
+[
+ {
+  "name": "cp_matchinvdelete_1009700",
+  "process": 300,
+  "recordId": 1009700,
+  "tableId": 472,
+  "tables": [
+   "m_matchinv",
+   "m_costdetail"
+  ],
+  "preSql": [
+   "DELETE FROM m_matchinv WHERE m_matchinv_id=1009700",
+   "INSERT INTO m_matchinv (m_matchinv_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,m_inoutline_id,c_invoiceline_id,m_product_id,datetrx,qty,processing,processed,posted,documentno,dateacct,m_attributesetinstance_id,m_matchinv_uu) VALUES (1009700,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,122,122,127,'2003-01-22 18:09:11',20,'N','Y','N','CP-1009700','2003-01-22 18:09:11',0,'00000000-0000-4000-8000-000001009700')"
+  ]
+ }
+]

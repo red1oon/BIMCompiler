@@ -1,0 +1,10 @@
+{
+  "_provenance": "docs/internal/ERP_EQUIVALENCE_LEDGER.md §PORT-COVERAGE 2026-10-04 (bim-ootb origin/main fcaaa4115b69). Re-derive from the saved ledger scripts when the shipped ERP changes; do not hand-edit without updating that section.",
+  "statusGatedTables": ["c_order","m_inout","c_invoice","c_payment"],
+  "docFanoutTables": ["c_order","c_invoice","m_inout"],
+  "postUiTables": ["c_invoice","c_order"],
+  "postHeadlessTables": ["C_Invoice","C_Order","C_Payment","C_AllocationHdr","M_Movement","M_MatchInv","GL_Journal","M_InOut","C_BankStatement","C_ProjectIssue"],
+  "hookClassesPorted": {"MOrder":"beforeSave","MOrderLine":"beforeSave(qty)","MInvoice":"beforeSave","MInvoiceLine":"beforeSave(qty)","MInOut":"beforeSave","MPayment":"beforeSave","MMovement":"beforeSave","MJournal":"beforeSave","MJournalBatch":"beforeSave","MAllocationHdr":"beforeSave","MCash":"beforeSave","MBankStatement":"beforeSave","MRMA":"beforeSave","MRequisition":"beforeSave","MBPartnerLocation":"beforeSave"},
+  "workflowsWired": 0,
+  "columnSqlWired": 0
+}

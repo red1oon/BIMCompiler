@@ -1,0 +1,11 @@
+// restorecheck.js <port> <bld> : W-LIGHT_FIELD_PATCH. Fresh profile (no IndexedDB), open the LOCAL db; expect §LIGHT_FIELD_PATCH applied,
+// §LIGHT_FIELD_DB restore, then LightZones.build + field report a cache HIT (no sweep). PASS / FAIL / INCONCLUSIVE with the § lines.
+const puppeteer = require('/home/red1/bim-compiler/node_modules/puppeteer'); const sleep = ms => new Promise(r => setTimeout(r, ms));
+const [PORT, bld] = process.argv.slice(2);
+(async () => { const t00 = Date.now(), b = await puppeteer.launch({ headless: true, protocolTimeout: 3600000, env: Object.assign({}, process.env, { __EGL_VENDOR_LIBRARY_FILENAMES: '/usr/share/glvnd/egl_vendor.d/10_nvidia.json' }), args: ['--no-sandbox', '--use-angle=gl-egl', '--ignore-gpu-blocklist'] });
+  const p = await b.newPage(); await p.setViewport({ width: 800, height: 450 }); const L = []; p.on('console', m => { const t = m.text(); if (/§(LIGHT_FIELD|ZONE_IDB|SKY_VIEW_FIELD on|GLASS_REFL_OPEN|SKY_FIELD_EXACT)|PAGEERROR|Uncaptured WebGPU/.test(t)) L.push(t.slice(0, 300)); });
+  await p.goto('http://127.0.0.1:' + PORT + '/viewer/viewer.html?db=../buildings/' + bld + '_extracted.db', { waitUntil: 'domcontentloaded' });
+  { let last = -1, same = 0; for (let i = 0; i < 400 && same < 5; i++) { await sleep(2000); const n = await p.evaluate(() => window.APP && window.APP.guidMap ? Object.keys(window.APP.guidMap).length : 0); if (n > 0 && n === last) same++; else same = 0; last = n; } }
+  const R = await p.evaluate(async () => { const A = window.APP, LZ = window.LightZones; if (LZ.prime) { try { await LZ.prime(A); } catch (e) {} } const t0 = performance.now(), Z = LZ.build(A), F = Z && LZ.field(A); return { ms: Math.round(performance.now() - t0), cached: !!(F && F.cached) }; });
+  const applied = L.some(t => /§LIGHT_FIELD_PATCH applied/.test(t)), hit = R.cached && L.some(t => /§ZONE_IDB_CACHE hit/.test(t));
+  console.log('§W_LIGHT_FIELD_PATCH ' + bld + ' ' + (!applied ? 'INCONCLUSIVE (no sidecar applied)' : hit ? 'PASS' : 'FAIL') + ' build+fieldMs=' + R.ms + ' cached=' + R.cached + ' wallS=' + Math.round((Date.now() - t00) / 1000)); L.forEach(t => console.log('   ' + t)); await b.close(); })().catch(e => { console.log('FATAL ' + e.message); process.exit(1); });

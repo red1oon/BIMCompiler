@@ -1,0 +1,62 @@
+[
+ {
+  "name": "cp_iocc_107_SC",
+  "process": 281,
+  "recordId": 107,
+  "tableId": 319,
+  "params": [
+   {
+    "name": "ConfirmType",
+    "value": "SC"
+   }
+  ],
+  "tables": [
+   "m_inoutconfirm",
+   "m_inoutlineconfirm"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "m_inoutconfirm",
+    "where": "m_inout_id=107"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM m_inoutlineconfirm WHERE m_inoutconfirm_id IN (SELECT m_inoutconfirm_id FROM m_inoutconfirm WHERE m_inout_id=107 AND confirmtype='SC')",
+   "DELETE FROM m_inoutconfirm WHERE m_inout_id=107 AND confirmtype='SC'"
+  ]
+ },
+ {
+  "name": "cp_iocc_106_PC",
+  "process": 281,
+  "recordId": 106,
+  "tableId": 319,
+  "params": [
+   {
+    "name": "ConfirmType",
+    "value": "PC"
+   }
+  ],
+  "tables": [
+   "m_inoutconfirm",
+   "m_inoutlineconfirm"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "m_inoutconfirm",
+    "where": "m_inout_id=106"
+   }
+  ],
+  "preSql": [
+   "DELETE FROM m_inoutlineconfirm WHERE m_inoutconfirm_id IN (SELECT m_inoutconfirm_id FROM m_inoutconfirm WHERE m_inout_id=106 AND confirmtype='PC')",
+   "DELETE FROM m_inoutconfirm WHERE m_inout_id=106 AND confirmtype='PC'"
+  ]
+ }
+]

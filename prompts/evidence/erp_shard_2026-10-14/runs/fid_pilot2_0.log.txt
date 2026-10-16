@@ -1,0 +1,4 @@
+§FIDELITY start part=0/4 tables=232 of 925 sqlite=pilot2.db pgdb=idempiere_pilot
+§FIDELITY table=ad_changelog rows=212129 pgRows=212129 pg=122370797625575633885814 sq=122370797625575633885814 OK t=2s
+§FIDELITY table=r_requestprocessor rows=2 pgRows=2 pg=1039918765533929892 sq=1000276134136614776 MISMATCH t=13s
+§FIDELITY_VERDICT part=0/4 FAIL mismatches=1 colMismatch=0 tables=232 judgedTables=130 judgedRows=288434 totalSec=24s

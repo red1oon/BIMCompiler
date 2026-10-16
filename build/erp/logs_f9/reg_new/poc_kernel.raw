@@ -1,0 +1,36 @@
+═══ POC-KERNEL — op-log kernel, fixture T_ORDER_SHIPMENT_ALLOCATION ═══
+
+── STEP 1. Complete Order 80002 (docType 135, ino=Y) ──
+   🟢 dispatch legal+applied (state DR --CO--> CO) — ops=9
+   🟢 SHIPMENT doc + line per order line — docs=1 shipLines=3 orderLines=3
+   🟢 NO inventory-mutation op (the shipment lines ARE the fact, §18.9) — mutationOps=0
+§KERNEL apply ops=9 committed=9 table=M_InOut shipLines=3
+   🟢 committed op is RICH (payload+actor+before/after+lineage GUIDs) — actor=user:demo out=LINE:M_InOutLine@from104 in=["DOC:M_InOut@from102"]
+§KERNEL rich-op actor=user:demo payload.op=CREATE_LINE before=null after="LINE:M_InOutLine@from104" lineage.out=LINE:M_InOutLine@from104
+
+── STEP 2. StorageOnHand from shipment lines (no view, computed) ──
+   🟢 StorageOnHand deduction == order line qtys — products=3 soh=["123:1","126:1","130:1"]
+
+── STEP 3. Complete Shipment -> status only, no double-count ──
+   🟢 shipment Complete emits ONLY a status op — ops=1
+   🟢 StorageOnHand UNCHANGED after shipment Complete (no double-deduct) — before=after=[1,1,1]
+
+── STEP 4. Allocate Payment -> ALLOCATE edge + journal ──
+   🟢 ALLOCATE links Order/Payment/amount via journal — journalRows=1 source=DOC:C_Order#102
+
+── VIOLATION. Handler writes to db directly -> BLOCKED ──
+   🟢 out-of-log write detected + dispatch rejected — stage=violation reason=out-of-log-write
+§KERNEL violation handler=C_Order:XX_BAD out-of-log-write=BLOCKED sneakyRowsLeft=0
+
+── REPLAY. Rebuild projection from kernel_ops alone ──
+   🟢 replay reproduces the live projection (event sourcing) — live=3b55f60 replay=3b55f60 ops=12
+§KERNEL replay ops=12 projection==committed HASH=3b55f60 (live=3b55f60)
+
+── FROZEN EFFECTS. Edit policy auto_create_shipment -> N (forward-only) ──
+   🟢 NEW order under flipped rule does NOT ship (forward-only) — newShipLines=0
+   🟢 REPLAY of old order STILL produces original shipment (frozen, §18.8) — old=3 replay=3
+§KERNEL frozen old-ship=3 new-ship=0 replay-old-ship=3
+
+═══ VERDICT ═══
+§KERNEL PASS — apply+commit rich ops, violation BLOCKED, replay exact, frozen effects hold
+exit=0

@@ -1,0 +1,36 @@
+═══ W-PROC-INV — InvoiceGenerate (AD_Process 119) folds a CO Sales Order → C_Invoice op-group ═══
+
+— §INV-DISPATCH (real AD_Process 119 row → classname → registered handler) —
+§INV-DISPATCH proc=119 value=C_Invoice_Generate classname=org.compiere.process.InvoiceGenerate isReport=false hasHandler=true
+🟢 AD_Process 119 = InvoiceGenerate resolves to a registered KIND-2 handler  — value=C_Invoice_Generate
+
+— §INV-EMPTY (fully-invoiced CO order → honest empty, no fabricated invoice) —
+§INV-EMPTY order=108 rule=I lines=1 ordered=10 invoiced=10 → dispatched=true ok=true lineCount=0 msg="@Created@ = 0 (nothing to invoice — ordered qty already invoiced)"
+🟢 fully-invoiced order → 0 invoice lines, honest "@Created@ = 0" (no fabricated C_Invoice)  — ordered==invoiced==10
+
+— §INV-FOLD (un-invoiced qty → C_Invoice op-group, QtyInvoiced = QtyOrdered − QtyInvoiced) —
+§INV-FOLD dispatched=true ok=true rows=1 ops=2 header{table=C_Invoice issotrx=Y bp=118 billloc=113 cur=102 pt=108 pl=103 c_order_id=108}
+🟢 C_Invoice header folded from the order (IsSOTrx, Bill_Location, currency, paymentterm, order linked)  — billloc=113 (Bill_Location=113)
+§INV-ORACLE independent re-derivation lines=1 (toInvoice=QtyOrdered−QtyInvoiced per line)
+🟢 invoice-line count == independent re-derivation  — eng=1 oracle=1
+§INV-FOLD lines=1 fields{qtyinvoiced,source_line} mismatches=0
+🟢 every invoice line == independent re-derivation, EXACT (QtyInvoiced = QtyOrdered − QtyInvoiced, source link)  — lines=1 mismatches=0
+
+— §INV-PARTIAL (QtyInvoiced=4 of QtyOrdered=10 → toInvoice=6, the subtraction is load-bearing) —
+§INV-PARTIAL product=128 ordered=10 priorInvoiced=4 → QtyInvoiced=6 (expect 6)
+🟢 Immediate rule invoices only the REMAINING qty (QtyOrdered − prior QtyInvoiced), not the full ordered qty  — toInvoice=6 == 6
+
+— §INV-FALSIFIER (QtyInvoiced == QtyOrdered → toInvoice=0 → no invoice line) —
+§INV-FALSIFIER all lines fully invoiced → lineCount=0
+🟢 fully-invoicing the lines removes them from the fold (toInvoice is load-bearing, not vacuous)
+
+— §INV-DEFERRED (InvoiceRule "D" AfterDelivery → named-deferred, honest) —
+§INV-DEFERRED rule=D → lineCount=0 deferredRule=D msg="@Created@ = 0 (InvoiceRule D invoices from shipments/schedule — named-deferred)"
+🟢 unported InvoiceRule is named-deferred (flagged in the result), NOT a silent or fabricated invoice  — deferredRule=D
+
+— §INV-GATE (DR order or DRaft order → honest rejection, no invoice) —
+§INV-GATE docstatus=DR → dispatched=true ok=false reason=order-not-invoiceable msg="Order is not Completed/Closed (Generate Invoices invoices CO/CL orders only)"
+🟢 a Drafted order is honestly rejected (Generate Invoices invoices CO/CL only), no fabricated invoice  — reason=order-not-invoiceable
+
+═══ ALL PASS — InvoiceGenerate folds a CO Sales Order → C_Invoice op-group (Immediate), oracle-equivalent — W-PROC-INV ═══
+exit=0

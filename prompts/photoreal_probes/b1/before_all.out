@@ -1,0 +1,38 @@
+== hospital_before alts innerroom 01:24:50
+"verdict": "DONE" exposure=95.152 compositeMean=65.61 appMean=106.03 
+== hospital_before alts outsidein 01:25:03
+"verdict": "DONE" exposure=0.383 compositeMean=66.48 appMean=115.37 
+[{"name":"red1aerial","cell":10007498,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1},{"name":"innerroom","cell":7058199,"raw":207,"cls":"COVERED","zone":207,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":1},{"name":"outsidein","cell":4491800,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1}]
+== clinic_before open Clinic %26ghost%3D1 01:25:45
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "elements": 16071, "loadSecs": 31.188}
+
+== clinic_before alts corridor 01:26:17
+"verdict": "DONE" GLARE bld=Clinic PASS stagingTotal=7284 compositeMean=75.5 
+"darkPct": 0.02
+== clinic_before fgeo 01:26:41
+ext {"n":32,"within01":0.375,"bins":{"lt-0.5":1,"-0.5..-0.3":3,"-0.3..-0.1":16,"within0.1":12,"0.1..0.3":0,"gt0.3":0},"dF_minus_geoMC":{"median":-0.151,"mean":-0.166},"dVisibility_F_minus_geoLat":{"median":-0.052,"mean":-0.088},"dQuadrature_geoLat_minus_geoMC":{"median":-0.056,"mean":-0.078},"meanF":0.215,"meanGeoMC":0.381,"meanGeoLat":0.303,"meanFwall":0.4} open 0.2 3156 ms
+== clinic_before cells 01:26:44
+[eval]:1
+const r=JSON.parse(require('fs').readFileSync('/tmp/claude-1000/-home-red1-bim-compiler/cdf78573-99d9-42cf-92e2-f64ba3732e60/scratchpad/clinic_before_cells.log')).result; console.log(JSON.stringify(r.rows))
+                                                                                                                                                                                                        ^
+
+TypeError: Cannot read properties of undefined (reading 'rows')
+    at [eval]:1:201
+    at Script.runInThisContext (node:vm:122:12)
+    at Object.runInThisContext (node:vm:298:38)
+    at node:internal/process/execution:82:21
+    at [eval]-wrapper:6:24
+    at runScript (node:internal/process/execution:81:62)
+    at evalScript (node:internal/process/execution:103:10)
+    at node:internal/main/eval_string:30:3
+
+Node.js v18.19.1
+== clinic_before done 01:26:44
+== terminal_before open Terminal  01:26:44
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48428, "loadSecs": 49.952}
+
+== terminal_before alts inside 01:27:34
+"verdict": "DONE" GLARE bld=TerminalMerged PASS stagingTotal=20190 compositeMean=103.35 
+"darkPct": 0.01
+/tmp/claude-1000/-home-red1-bim-compiler/cdf78573-99d9-42cf-92e2-f64ba3732e60/scratchpad/measure.sh: line 11: syntax error near unexpected token `)'
+/tmp/claude-1000/-home-red1-bim-compiler/cdf78573-99d9-42cf-92e2-f64ba3732e60/scratchpad/measure.sh: line 11: `$CAM | tr -d '[] '); PTS="$PTS['$NAME',$C],"; done'

@@ -1,0 +1,33 @@
+§DEMO listening 0.0.0.0:8766 db=warm.db dbMB=5416 token=6a7cf7e91008
+§DEMO url http://192.168.1.22:8766/t/6a7cf7e91008/
+§DEMO url http://172.17.0.1:8766/t/6a7cf7e91008/
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_LIB httpvfs.js bytes=7920 serveMs=2 ip=192.168.1.14
+§DEMO_LIB sqlite.worker.js bytes=83728 serveMs=2 ip=192.168.1.14
+§DEMO_LIB httpvfs-sql-wasm.wasm bytes=1239572 serveMs=1786 ip=192.168.1.14
+§DEMO_REPORT ip=192.168.1.14 totalMs=3504 secure=false net=4g rtt=50 down=1.5 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=2525 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=84 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=107 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=250 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=410 reqs=7 bytes=147456 rows=4
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_LIB httpvfs.js bytes=7920 serveMs=1 ip=192.168.1.14
+§DEMO_LIB sqlite.worker.js bytes=83728 serveMs=0 ip=192.168.1.14
+§DEMO_LIB httpvfs-sql-wasm.wasm bytes=1239572 serveMs=992 ip=192.168.1.14
+§DEMO_REPORT ip=192.168.1.14 totalMs=2819 secure=false net=4g rtt=50 down=1.45 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=1817 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=67 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=319 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=248 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=358 reqs=7 bytes=147456 rows=4
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_LIB httpvfs.js bytes=7920 serveMs=1 ip=192.168.1.14
+§DEMO_LIB sqlite.worker.js bytes=83728 serveMs=0 ip=192.168.1.14
+§DEMO_LIB httpvfs-sql-wasm.wasm bytes=1239572 serveMs=1381 ip=192.168.1.14
+§DEMO_REPORT ip=192.168.1.14 totalMs=3417 secure=false net=4g rtt=100 down=1.6 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=2340 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=71 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=98 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=337 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=551 reqs=7 bytes=147456 rows=4

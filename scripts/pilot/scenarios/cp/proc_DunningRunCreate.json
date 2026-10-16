@@ -1,0 +1,108 @@
+[
+ {
+  "name": "cp_dunn_bp117",
+  "process": 289,
+  "recordId": 1009800,
+  "tableId": 526,
+  "params": [
+   {
+    "name": "SalesRep_ID",
+    "value": 101
+   },
+   {
+    "name": "C_Currency_ID",
+    "value": 100
+   },
+   {
+    "name": "C_BPartner_ID",
+    "value": 117
+   }
+  ],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "UPDATE ad_sequence SET currentnext=1009950 WHERE name IN ('C_DunningRunLine','C_DunningRunEntry') AND currentnext<1009950",
+   "CREATE TABLE IF NOT EXISTS c_dunningrun (c_dunningrun_id numeric, ad_client_id numeric, ad_org_id numeric, isactive char(1), created timestamp, createdby numeric, updated timestamp, updatedby numeric, dunningdate timestamp, c_dunninglevel_id numeric, processed char(1), processing char(1), sendit char(1), description varchar(255), c_dunning_id numeric, c_dunningrun_uu varchar(36))",
+   "CREATE TABLE IF NOT EXISTS c_dunningrunentry (c_dunningrunentry_id numeric, ad_client_id numeric, ad_org_id numeric, isactive char(1), created timestamp, createdby numeric, updated timestamp, updatedby numeric, c_bpartner_id numeric, c_bpartner_location_id numeric, ad_user_id numeric, c_dunningrun_id numeric, c_currency_id numeric, salesrep_id numeric, amt numeric, qty numeric, note varchar(2000), processed char(1), c_dunninglevel_id numeric, c_dunningrunentry_uu varchar(36))",
+   "CREATE TABLE IF NOT EXISTS c_dunningrunline (c_dunningrunline_id numeric, ad_client_id numeric, ad_org_id numeric, isactive char(1), created timestamp, createdby numeric, updated timestamp, updatedby numeric, c_dunningrunentry_id numeric, c_invoice_id numeric, c_payment_id numeric, amt numeric, convertedamt numeric, daysdue numeric, timesdunned numeric, interestamt numeric, feeamt numeric, totalamt numeric, processed char(1), isindispute char(1), openamt numeric, c_invoicepayschedule_id numeric, c_dunningrunline_uu varchar(36))",
+   "DELETE FROM c_dunningrunline WHERE c_dunningrunentry_id IN (SELECT c_dunningrunentry_id FROM c_dunningrunentry WHERE c_dunningrun_id=1009800)",
+   "DELETE FROM c_dunningrunentry WHERE c_dunningrun_id=1009800",
+   "DELETE FROM c_dunningrun WHERE c_dunningrun_id=1009800",
+   "INSERT INTO c_dunningrun (c_dunningrun_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,dunningdate,processed,c_dunning_id,c_dunningrun_uu) VALUES (1009800,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'2026-10-04 00:00:00','N',100,'a1b2c3d4-0000-4000-8000-000001009800')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Invoice",
+    "where": "C_BPartner_ID=117"
+   },
+   {
+    "table": "C_AllocationLine",
+    "where": "C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE C_BPartner_ID=117)"
+   },
+   {
+    "table": "C_InvoicePaySchedule",
+    "where": "C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE C_BPartner_ID=117)"
+   },
+   {
+    "table": "C_AllocationHdr",
+    "where": "C_AllocationHdr_ID IN (SELECT C_AllocationHdr_ID FROM C_AllocationLine WHERE C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE C_BPartner_ID=117))"
+   }
+  ],
+  "tables": [
+   "c_dunningrunentry",
+   "c_dunningrunline"
+  ]
+ },
+ {
+  "name": "cp_dunn_bp118",
+  "process": 289,
+  "recordId": 1009801,
+  "tableId": 526,
+  "params": [
+   {
+    "name": "SalesRep_ID",
+    "value": 101
+   },
+   {
+    "name": "C_Currency_ID",
+    "value": 100
+   },
+   {
+    "name": "C_BPartner_ID",
+    "value": 118
+   }
+  ],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "UPDATE ad_sequence SET currentnext=1009950 WHERE name IN ('C_DunningRunLine','C_DunningRunEntry') AND currentnext<1009950",
+   "CREATE TABLE IF NOT EXISTS c_dunningrun (c_dunningrun_id numeric, ad_client_id numeric, ad_org_id numeric, isactive char(1), created timestamp, createdby numeric, updated timestamp, updatedby numeric, dunningdate timestamp, c_dunninglevel_id numeric, processed char(1), processing char(1), sendit char(1), description varchar(255), c_dunning_id numeric, c_dunningrun_uu varchar(36))",
+   "CREATE TABLE IF NOT EXISTS c_dunningrunentry (c_dunningrunentry_id numeric, ad_client_id numeric, ad_org_id numeric, isactive char(1), created timestamp, createdby numeric, updated timestamp, updatedby numeric, c_bpartner_id numeric, c_bpartner_location_id numeric, ad_user_id numeric, c_dunningrun_id numeric, c_currency_id numeric, salesrep_id numeric, amt numeric, qty numeric, note varchar(2000), processed char(1), c_dunninglevel_id numeric, c_dunningrunentry_uu varchar(36))",
+   "CREATE TABLE IF NOT EXISTS c_dunningrunline (c_dunningrunline_id numeric, ad_client_id numeric, ad_org_id numeric, isactive char(1), created timestamp, createdby numeric, updated timestamp, updatedby numeric, c_dunningrunentry_id numeric, c_invoice_id numeric, c_payment_id numeric, amt numeric, convertedamt numeric, daysdue numeric, timesdunned numeric, interestamt numeric, feeamt numeric, totalamt numeric, processed char(1), isindispute char(1), openamt numeric, c_invoicepayschedule_id numeric, c_dunningrunline_uu varchar(36))",
+   "DELETE FROM c_dunningrunline WHERE c_dunningrunentry_id IN (SELECT c_dunningrunentry_id FROM c_dunningrunentry WHERE c_dunningrun_id=1009801)",
+   "DELETE FROM c_dunningrunentry WHERE c_dunningrun_id=1009801",
+   "DELETE FROM c_dunningrun WHERE c_dunningrun_id=1009801",
+   "INSERT INTO c_dunningrun (c_dunningrun_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,dunningdate,processed,c_dunning_id,c_dunningrun_uu) VALUES (1009801,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'2026-10-04 00:00:00','N',100,'a1b2c3d4-0000-4000-8000-000001009801')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "C_Invoice",
+    "where": "C_BPartner_ID=118"
+   },
+   {
+    "table": "C_AllocationLine",
+    "where": "C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE C_BPartner_ID=118)"
+   },
+   {
+    "table": "C_InvoicePaySchedule",
+    "where": "C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE C_BPartner_ID=118)"
+   },
+   {
+    "table": "C_AllocationHdr",
+    "where": "C_AllocationHdr_ID IN (SELECT C_AllocationHdr_ID FROM C_AllocationLine WHERE C_Invoice_ID IN (SELECT C_Invoice_ID FROM C_Invoice WHERE C_BPartner_ID=118))"
+   }
+  ],
+  "tables": [
+   "c_dunningrunentry",
+   "c_dunningrunline"
+  ]
+ }
+]

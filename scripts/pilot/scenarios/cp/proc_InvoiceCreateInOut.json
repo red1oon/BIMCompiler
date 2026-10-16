@@ -1,0 +1,66 @@
+[
+ {
+  "name": "cp_invcio_so103",
+  "process": 142,
+  "recordId": 103,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "M_Warehouse_ID",
+    "value": 103
+   }
+  ],
+  "tables": [
+   "m_inout",
+   "m_inoutline",
+   "c_invoiceline",
+   "c_invoice"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "c_invoice",
+    "where": "c_invoice_id=103"
+   },
+   {
+    "table": "c_invoiceline",
+    "where": "c_invoice_id=103"
+   }
+  ]
+ },
+ {
+  "name": "cp_invcio_so109",
+  "process": 142,
+  "recordId": 109,
+  "tableId": 318,
+  "params": [
+   {
+    "name": "M_Warehouse_ID",
+    "value": 103
+   }
+  ],
+  "tables": [
+   "m_inout",
+   "m_inoutline",
+   "c_invoiceline",
+   "c_invoice"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "ad_sequence",
+    "where": "istableid='N' and ad_client_id in (0,11)"
+   },
+   {
+    "table": "c_invoice",
+    "where": "c_invoice_id=109"
+   },
+   {
+    "table": "c_invoiceline",
+    "where": "c_invoice_id=109"
+   }
+  ]
+ }
+]

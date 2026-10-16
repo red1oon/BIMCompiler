@@ -1,0 +1,3 @@
+[
+ {"name":"cp_mv_line","window":170,"tab":1,"parents":[{"tab":0,"id":1005100,"from":"ref"}],"steps":[{"set":"M_Product_ID","value":124},{"set":"QtyEntered","value":"3.3"},{"set":"MovementQty","value":"2.6"},{"set":"M_Locator_ID","value":101},{"set":"C_UOM_ID","value":100},{"set":"QtyEntered","value":"99"},{"set":"M_Product_ID","value":128}]}
+]

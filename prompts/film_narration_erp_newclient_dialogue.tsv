@@ -1,0 +1,15 @@
+r0	en	prompts/film_nc_title_card.py — what the clip is about	F: A new client, in depth.	F: A new client, in depth. | M: Calendar, periods, and the Financial Report, each run beside legacy iDempiere first.
+n1	en	§ERP_FILM_FACT tabs=5 [Calendar, Year, Period, Period Control, Non Business Day]	F: A new shop starts with its calendar.	F: A new shop starts with its calendar. | M: Five tabs, Calendar, Year, Period, Period Control, and Non Business Day, straight from the dictionary.
+n2	en	§ERP_FILM_FACT year (fiscal year 2031 saved)	F: A new fiscal year.	F: A new fiscal year. | M: Twenty thirty-one. The calendar comes from the parent record, so only the year is typed.
+n2b	en	§ERP_FILM_FACT createPeriods.params (StartDate 2031-07-01, DateFormat MMM yyyy)	F: Create Periods asks for a start date and a name format.	F: Create Periods asks for a start date and a name format. | M: July first, month and year. Then we run it.
+n3a	en	§ERP_FILM_FACT periods (12, Jul 2031 .. Jun 2032)	F: Twelve periods appear.	F: Twelve periods appear. | M: July twenty thirty-one, through June twenty thirty-two.
+n3b	en	§ERP_FILM_FACT periodControl (384 = 12 x 32, 384 never opened) · controlRows=32	F: Each one carries its control rows.	F: Each one carries its control rows. | M: Thirty-two document types, three hundred eighty-four in all, and none has been opened yet.
+n4	en	§ERP_FILM_FACT periodActionList (5) · openCloseAll.open (Updated #32)	F: Open the period.	F: Open the period. | M: Open Close All offers the five legacy actions. Open Period updates thirty-two rows.
+n4b	en	§ERP_FILM_FACT states.open {O:32}	F: Every row now reads open.	F: Every row now reads open. | M: In Period Control, one row for each document type.
+n5a	en	§ERP_FILM_FACT openCloseAll.close (Updated #32)	F: Close it.	F: Close it. | M: Thirty-two rows updated, every document type closed.
+n5b	en	§ERP_FILM_FACT openCloseAll.permanent (Updated #32)	F: Close it for good.	F: Close it for good. | M: Thirty-two again, now permanently closed.
+n5c	en	§ERP_FILM_FACT openCloseAll.reopen (Updated #0, states P:32)	F: Now try to open it again.	F: Now try to open it again. | M: Zero updated. Permanent means permanent, and it cannot be reopened here.
+n6a	en	§ERP_FILM_FACT reportRecord=Balance Sheet Current Month	F: The Financial Report, the legacy way.	F: The Financial Report, the legacy way. | M: Pick the report, then Create Report. It takes an optional period.
+n6b	en	§ERP_FILM_FACT finreport.default (Period Oct-26)	F: Left blank, it reports today's period.	F: Left blank, it reports today's period. | M: October twenty twenty-six.
+n6c	en	§ERP_FILM_FACT finreport.jan03.cashLine (148.35)	F: Choose another period.	F: Choose January two thousand three. | M: The same report, a different period. Cash reads one hundred forty-eight dollars thirty-five.
+n7	en	prompts/ERP_DEPTH_FILM.md §NC-1/§NC-2 (W-NC1-CALENDAR 19, W-NC2-UI 9/9, W-NC2B-UI 6/6)	F: Each step was run on legacy first.	F: Each step was run on legacy first. | M: The periods, the open and close states, and the cash line all match.

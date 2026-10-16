@@ -1,0 +1,23 @@
+§WH_TREE bins=11 order=101,50000,50004,50008,50001,50007,102,50002,50003,50005,50006
+   🟢 tree carries all 11 bins — 11/11
+   🟢 walk order rides m_bom_line.ordinal (101 first, 102 at seq 7)
+— T0: draft (buildDoc, real rows only) —
+   🟢 3 real m_storageonhand pick rows — [{"m_product_id":123,"m_locator_id":101,"qtyonhand":20},{"m_product_id":127,"m_locator_id":101,"qtyonhand":20},{"m_product_id":123,"m_locator_id":102,"qtyonhand":4}]
+   🟢 buildDoc spine: 1×CREATE_DOCUMENT(M_Movement,DR,doctype 143) + 3×CREATE_LINE w/ real locator pairs
+§WH_DRAFT doc=M_Movement DR doctype=143 lines=3 qty=[4,4,4] newVerbs=[] (buildDoc archetype)
+— T1: order —
+   🟢 visit order 101,101,102 (walk_seq) despite 102-line fed first — 101,101,102
+   🟢 steps carry rack+aisle from the tree — RACK_HQ,RACK_HQ,RACK_STORE_CENTRAL
+§WH_ROUTE_ORDER input=[102,101,101] → route=[101,101,102] walk_seq=[1,1,7]
+— T2: determinism —
+   🟢 same lines + same tree ⇒ identical route (repeat call)
+   🟢 permuted input array ⇒ SAME route (tiebreak = line key, not position)
+§WH_ROUTE_DET repeat=identical permuted=identical
+— T3: coverage —
+   🟢 steps cover ALL 3 lines exactly once — keys=10,20,30
+§WH_ROUTE_COVER steps=3/3 lineKeys=[10,20,30] each-once=Y
+— T4: falsifier —
+   🟢 off-model locator 102 → ONE explicit unroutable tail step, nothing dropped — steps=3 unroutable=1
+§WH_FALSIFIER off-model locator=102 → step=3/3 unroutable=Y dropped=NONE
+§W-WH-ROUTE PASS — all verdicts green
+exit=0

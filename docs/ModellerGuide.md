@@ -410,19 +410,6 @@ window-frame walls are consumed by their own openings, so they take part as invi
 never drawn or counted), *HHS* (99), *Clinic* (302), *Hospital* (506) and *Garage* (36). *Terminal*
 has none: its source IFC declares no opening/filling relationship at all, so there is nothing to follow.
 
-Since 18 September 2026 four more residents carry it too, so a door or window there holds or rides
-its wall the same way:
-
-| Resident | Doors & windows that hold or ride their wall |
-|---|---:|
-| HHS Office | 99 |
-| Clinic | 302 |
-| Hospital | 506 |
-| HospitalGarage | 36 |
-
-**Terminal is the one exception.** Its source file never says which door or window sits in which wall, so
-there is nothing real to hold or ride — the Modeller leaves it that way rather than guessing.
-
 **A carved hole comes along too.** If the held or ridden opening has a real cut-through void (a door or
 window opening actually subtracted from the wall, not a catalog frame sitting in front of it), the hole
 itself is kept in sync with it — its centre never drifts off the door under a stretch, its width is held

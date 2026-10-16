@@ -1,0 +1,12 @@
+[
+  { "table": "c_elementvalue", "key": "C_ElementValue_ID", "readType": "QueryCElementValue", "natural": ["Value"], "note": "CoA; new client: key by account Value" },
+  { "table": "c_acctschema",   "key": "C_AcctSchema_ID",   "readType": "QueryCAcctSchema",   "natural": ["Name"] },
+  { "table": "c_doctype",      "key": "C_DocType_ID",      "readType": "QueryCDocType",      "natural": ["Name", "DocBaseType", "DocSubTypeSO"], "keyBelow": 1000000 },
+  { "table": "m_pricelist",    "key": "M_PriceList_ID",    "readType": "QueryMPriceList",    "natural": ["Name", "IsSOPriceList"], "keyBelow": 1000000 },
+  { "table": "c_tax",          "key": "C_Tax_ID",          "readType": "QueryCTax",          "natural": ["Name"], "keyBelow": 1000000 },
+  { "table": "c_taxcategory",  "key": "C_TaxCategory_ID",  "readType": "QueryCTaxCategory",  "natural": ["Name"] },
+  { "table": "c_year",         "key": "C_Year_ID",         "readType": "QueryCYear",         "natural": ["FiscalYear"] },
+  { "table": "c_period",       "key": "C_Period_ID",       "readType": "QueryCPeriod",       "natural": ["PeriodNo", "StartDate"] },
+  { "table": "c_periodcontrol","key": "C_PeriodControl_ID","readType": "QueryCPeriodControl", "note": "no natural key without a join to c_period (id map needed): id-keyed on client 11 only" },
+  { "table": "ad_role",        "key": "AD_Role_ID",        "readType": "QueryADRole",        "natural": ["Name"], "keyBelow": 1200000, "note": "QueryADRole exposes only AD_Role_ID/Name/IsCanApproveOwnDoc; ids >= 1200000 are the HARNESS's own admin-lane config rows (system WS role 1200001, ws_shopday_system_role.sql), not a product object" }
+]

@@ -1,0 +1,30 @@
+[
+ {
+  "name": "cp_commap_run_9800",
+  "process": 166,
+  "recordId": 1009800,
+  "tableId": 429,
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "CREATE TABLE IF NOT EXISTS c_commissionrun (c_commissionrun_id numeric, ad_client_id numeric, ad_org_id numeric, isactive char(1), created timestamp, createdby numeric, updated timestamp, updatedby numeric, documentno varchar(30), description varchar(255), c_commission_id numeric, startdate timestamp, grandtotal numeric, processing char(1), processed char(1), c_commissionrun_uu varchar(36), c_invoice_id numeric)",
+   "DELETE FROM c_commissionrun WHERE c_commissionrun_id=1009800",
+   "INSERT INTO c_commissionrun (c_commissionrun_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,documentno,c_commission_id,startdate,grandtotal,processed,c_commissionrun_uu) VALUES (1009800,11,11,'Y','2026-10-04 00:00:00',100,'2026-10-04 00:00:00',100,'CP-CR-1009800',103,'2026-10-01 00:00:00',123.45,'N','a1b2c3d4-0000-4000-8000-000001009800')"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "AD_Sequence",
+    "where": "AD_Client_ID=11 AND Name LIKE 'DocumentNo_%'"
+   },
+   {
+    "table": "C_Commission",
+    "where": "C_Commission_ID=103"
+   }
+  ],
+  "tables": [
+   "c_invoice",
+   "c_invoiceline",
+   "c_commissionrun",
+   "c_invoicetax"
+  ]
+ }
+]

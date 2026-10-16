@@ -1,0 +1,553 @@
+# ALTC FOUNDATION — consolidated state (switched 2026-10-02, red1 go)
+Consolidated from the 641-line original (read in full), 2026-10-02. The full original is archived: prompts/archive/ALTC_FOUNDATION_full_history_2026-09-25_to_2026-10-02.md (grep it by § tag; `Lnnn` refs below point into it).
+Append new dated state to §1 and REPLACE superseded lines; do not let this file regrow into history (git + the archive keep it).
+Every line carries its source section. `Lnnn` = line in the 641-line original (it may have shifted since). §1 top bullet, §2 items 1/2/7, §3 BUILT note and §7 were corrected by the Alt+C session 2026-10-02 03:25 from its live state (logs + git); everything else is as generated.
+Alt+C = film recorder (cinema_maxq.js + cli_silent_bake.js). Alt+S = still. bim-ootb = viewer repo. sw vNNNN = service-worker version.
+
+## 0. RULES THAT GOVERN THIS LANE
+- ARCHITECTURE RULE (red1 2026-09-25) L10-15: Alt+S is the source of truth for lighting; Alt+C only inherits. Every lighting decision lives in ONE Alt+S function of (camera, sun, time, visible geometry). A film may add only continuity (fades, hysteresis, per-shot exposure hold, stable shadow boxes). No new look logic behind `!A._maxqActive`; a film-only branch is allowed only for smoothing and must be named as such. Each Alt+S look commit lists the functions it adds/changes and confirms the film path calls them.
+- RULE ADDENDUM (§ALTC_SHOWSTOPPERS, prompts/ALTC_SHOWSTOPPERS.md) L17-22: write every lighting function as BUILD (per building, cached) + DECIDE (per camera/frame, ray-free, ms-scale). Stoppers S1-S5 (no per-frame function; look gated `!A._maxqActive`; 4D build-up vs timeless zone cache; per-frame cascades unstable; zone lamp pick needs the 84-ray grid) all have remedies; none blocks the rule.
+- STANDING OK (§BAKE_QUEUE, red1 2026-10-02) L53-55: "Both of you have my confidence to proceed working with each other without my further go ahead. I only feedback on exceptional basis." Alt+C and Alt+S sessions (Alt+S = bim-compiler-db) coordinate GPU work, sidecars and merges directly. GPU discipline unchanged: gpu.lock, one headless render at a time, >= 3 GB free before a full bake (red1's Chrome).
+- red1 ruling 2026-09-25 (§F3) L500-506: camera-dependent light is acceptable in a film if it flows. Criterion = CONTINUITY, not camera-independence: max per-frame change per term <= 1/F of its range, 0 one-frame jumps. Per-shot balance is intended.
+- red1 ruling 2026-09-25 (§F3) L507-512: "the steady static control is acceptable; the more dramatic path, that risk must be weighed." F3 default = steady exposure (fixed per film, or per shot from the meter, changes only at cuts). Crossing-ramp is opt-in `--exposure-ramp`, OFF, built LAST, only after the crossing-path witness passes.
+- red1 ruling 2026-10-01 (§RESOLVE_BY_BUILDING) L67: "Hope fixes will abstract able to handle any building IFC set."
+- red1 ruling (§STILL→FILM) L112: authored-model (IFC) defects are not compensated, in films too.
+- red1 ruling 2026-09-30 (§FILM_INHERIT) L190: "not going ahead if there are no new changes from alt-s … U know my direction. See to it."
+- Instrument rule: a record without a § line or a node-maths number is not a claim. Witness is maths on the zone grid/plan or one logged § line per frame, no frame judging, no ray grids (header L1-8).
+
+## 1. LATEST STATE (newest first)
+- ▶ 2026-10-05 §CPE_SEED_FEW REVISED (red1: "OK go with 4-5"): count = floor(0.45 x pathLen / bandLen), >= 2, <= waypoints;
+  middles on the waypoints nearest even arc spacing, ends fixed. Band = 10% of walk unless the screen floor lifts it (max 15%), so the
+  count is 4 on ANY walk at 10% (0.45/0.10 = 4.5) and 3 when the floor binds — NOT building-adaptive (earlier "Hospital 2-3" was wrong).
+  5 does not fit: 5 x 20.7 = 103.5 m > 93.15 m budget on Terminal. bim-ootb fix/fast-bake @28266006 (pushed), sw v1562, effects.js?v=140.
+  Witness 11/11 PASS (Terminal-shaped 21 wp/207 m -> idx [0,7,13,20], min gap 62.1 m >= 20.7 m band). Live proof owed:
+  `§CPE_SEED_FEW wp=21 budgetK=4 seeded=4` + `§CPE_OPEN ... bands=4`. Supersedes the 3-band rule below.
+- ▶ 2026-10-04 22:10 SPEC §CPE_SEED_FEW + §CPE_STICK_CLEAR (red1: "a bug when done with Terminal from the landing page.. which
+  spawned many exit sticks" / "a need to be able to delete such sticks" / "stick to quite the original which was 1 waypoint.. so
+  here perhaps just 2 or 3"). MEASURED from red1's pasted console (Terminal_extracted.db, :8664 = /tmp/wt-fastbake fix/fast-bake v1560):
+  derived route 21 control points, 207.0 m, film 151.1 s. Alt+C open -> `§CPE_OPEN src=seeded bands=21 waypoints=42 bandLen=20.70m`.
+  Cause: effects.js `_cinemaSeedBands` seeds ONE band PER waypoint (its header: written to seed three from three); band len = 10% walk
+  = 20.7 m vs ~10 m waypoint spacing; 21 x 20.7 = 435 m of band > the 207 m route -> bands overlap, the authored walk zig-zags:
+  `§CPE_WALK_BUDGET_NOISE_BLIND totalLen=703.97m`, film 474.1 s. Buildup is default-ON so `_isEdited()` is always true -> an untouched
+  OK bakes the 474 s zig-zag. Second defect: the × button shows only for `_stick` (user-dropped) bands, so the 19 seeded middle bands
+  could not be deleted at all.
+  SPEC: (1) §CPE_SEED_FEW — seed at most 3 bands: first, middle (index floor(n/2)), last derived waypoint (2 if n=2); direction =
+  local tangent from the FULL route's neighbours (unchanged rule); band length rule unchanged (10% walk, screen floor, 15% cap). Log
+  `§CPE_SEED_FEW wp=<n> seeded=<k> idx=[..] bandSum=<m> pathLen=<m>`. Invariant: bandSum <= 0.45 x pathLen (3 x 15% cap) for any n.
+  Known cost (told red1): the authored walk between 3 bands is not the room-graph route, so it can cut a wall; red1 chose it.
+  (2) §CPE_STICK_CLEAR — × on EVERY middle band (settle/stop stay fixed — dive lands on one, orbit stretches off the other); a
+  "clear sticks" button under the band rows removes every middle band in ONE undo step, disabled when there are none. Log
+  `§CPE_STICK_CLEAR removed=<k> remaining=2`.
+  WITNESS viewer/tests/witness_cpe_seed_few.js (node, no browser): runs the shipped `_cinemaSeedBands` source on routes of n=2,3,5,21
+  waypoints -> seeded <= 3, endpoints = route ends, bandSum <= 0.45 pathLen, middle = wp[floor(n/2)]; NO-OP guard: the old
+  one-per-waypoint rule on n=21 must FAIL the bandSum invariant (proves the witness can see the defect); source asserts: × condition no
+  longer reads `b._stick`, clear button + `§CPE_STICK_CLEAR` line present. Live proof on next Alt+C: `§CPE_OPEN ... bands=3`.
+  ✅ BUILT bim-ootb fix/fast-bake @e1f12d9a (pushed), sw v1561, effects.js?v=139 cinema_path_editor.js?v=20. Witness 8/8 PASS
+  (n=21: seeded 3, bandSum 62.10 m vs cap 93.15 m; old rule 434.70 m on a 207 m walk = visible). :8664 serves it. NOT yet live-witnessed:
+  next Alt+C on Terminal must print `§CPE_SEED_FEW wp=21 seeded=3` and `§CPE_OPEN ... bands=3`.
+- ▶▶ RESUME HERE (2026-10-04 11:15, tree line updated 2026-10-05 shutdown) — supersedes every RESUME block below.
+  TREE: /tmp/wt-fastbake = bim-ootb fix/fast-bake @28266006 (sw v1562), PUSHED, clean. :8664 = `node ~/bin/serve_tree.js /tmp/wt-fastbake 8664`;
+  Terminal_* DBs symlinked from ~/bim-ootb/buildings/. OPEN: live proof of §CPE_SEED_FEW (see the 2026-10-05 entry). /tmp dies on reboot — recreate:
+  `git -C ~/bim-ootb worktree add /tmp/wt-fastbake fix/fast-bake`; symlink buildings/{Hospital,Terminal,HHS_Office_Federated}_silent.db ->
+  ~/Downloads/<same>.db and LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db; copy the CURRENT sidecars (key 2bce3c9b:90286) from
+  ~/.cache/bim4d/altc_2026-10-03/sidecars_zonefloor/ into buildings/patches/ (older sets oldbox/truebox are STALE keys — a stale key = a
+  26-min Hospital zone rebuild on first press).
+  SHIPPED 2026-10-03/04 (all witnessed, details in the entries below): W1 pose check (PASS), W2 HUD overlap (PASS: row yield + info panel
+  avoid), zone box = true box + §ZONE_FLOOR (PASS x3 via prompts/photoreal_probes/lightgrid/zonefloor.js), §FLYAROUND_ARC (arc path from
+  two Alt+S stills; poses come from the PNG's own `bim-still-pose` chunk — PIL im.load() then im.text).
+  ✅ 11:13 §FLYAROUND_ARC DELIVERED: ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04.mp4 (40.0 s, 960 fr, 1920x1080@24,
+  49.4 MB). Parts 1-4 each §CLI_BAKE_POSECHECK MATCH 240 fr maxPosErr 0 (part3 855 s, part4 818 s wall); §JOIN ok frames=960; black/freeze
+  0 events. Log: ~/.cache/bim4d/altc_2026-10-03/flyaround/parts34_run.log. ⚠ --sun-date ignored without --sun-compass — the film's own sun
+  arc ran (stills used a fixed 45 deg sun).
+  OPEN: (1) W4 merge brightness residual (max ~3.7 luma indoors, not glass order, not the zone grid; opaque draw order suspected) —
+  &consolidate stays opt-in. (2) Alt+S stills on the new zones not A/B-checked. (3) fixed-sun flag for films (stills use a fixed sun) — not built.
+  RULES: GPU is SHARED with the documentary/trailer sessions — each GPU run needs red1's go and goes through gpu.lock; give way on request.
+- ▶ 2026-10-04 08:23 §FLYAROUND_ARC PART 2/4 DELIVERED: ~/Downloads/Hospital_flyaround_AFTER_1920x1080_24fps_2026-10-04_part2.mp4
+  (frames 240:480 of 960, 1920x1080@24, 240 fr, 12.3 MB, 848 s wall ~2.8 s/frame, still A's pose at frame 298 inside it).
+  §CLI_BAKE_POSECHECK MATCH 240 fr maxPosErr 0 planDurSec 40; §MAXQ_QUALITY 240/240; zone cache HIT; no black/freeze.
+  ⚠ --sun-date 2026-10-04 was NOT applied: cinema_maxq.js ~L3511 calls A.sunCompassSetDate only when --sun-compass is on (no §SUN_DAY line).
+  The film's own sun arc ran anyway: §FILM_PARITY_FRAME sunElev 42.6 -> 31.6 deg across the part (stills: fixed 45 deg). Script/logs:
+  ~/.cache/bim4d/altc_2026-10-03/flyaround/. Parts 1/3/4 + join WAIT on red1's review.
+- ▶ 2026-10-04 07:48 §FLYAROUND_ARC STEPS 1+2 DONE (bim-ootb fix/fast-bake @ce4c706e). Poses EXTRACTED from the stills' own
+  `bim-still-pose` PNG tEXt chunk (§STILL_POSE_PNG; PIL needs im.load() before im.text): A cam [65.892,0.994,-10.905] / B cam
+  [54.843,-3.583,-61.841], tgt [-1.098,4.249,1.455] both, fov 60, stills shot on Hospital_extracted.db (= Hospital_silent.db: 64,150
+  elements, identical centres => same three.js frame). Sun in both stills: fixed vector [0,3535.5,-3535.5] (45 deg), sunI 4.4 — films move
+  the sun by default; a fixed-sun flag is NOT built. Override: ~/.cache/bim4d/altc_2026-10-03/flyaround/arc_hosp.json (sec 40, overshoot 15).
+  Test (480p, --frames 48 = whole sweep in 2 s, overlays off): §FLYAROUND_ARC sweepDeg=68.1 cw rA=68.12 rB=84.47 errA=errB=0.0000 m PASS;
+  §CLI_BAKE_POSECHECK maxPosErr 0 (MATCH) 48 fr; §MAXQ_QUALITY 48/48 converged; 270 s wall; no black/freeze. At 40 s the max step is 0.159 m.
+  WAITING on red1 (GPU shared with the documentary session): full bake 40 s 1080p24 (~35-55 min) or still-res 2776x1440 (~1.5-2 h);
+  sun fixed (needs a flag) or moving (--sun-date).
+- ▶ 2026-10-04 SPEC §FLYAROUND_ARC (red1: "showcase its shadow reflection prowess by baking an adhoc movie ... a fly around slowly";
+  approved steps 1+2 only — spec+code+short test; the full bake WAITS, the documentary session may need the GPU). Building: Hospital
+  (red1: both latest stills, ~/Downloads/bounce_still_1791066612170.png + ..._1791066758986.png, are Hospital).
+  INPUT: `--override arc.json` = { "arc": { "a": {"cam":[x,y,z],"tgt":[x,y,z]}, "b": {...}, "sec": 40, "overshootDeg": 15,
+  "dir": "short"|"cw"|"ccw" } }, three.js world coords exactly as viewer/share.js writes them (cam=, tgt=); the stills carry no pose,
+  so A/B come from red1's Share links (never estimated from the PNG).
+  SEAM: A.cinemaPathPlan(durationSec, ov) returns an ARC plan when ov.arc is set — the bake (cinema_maxq.js) AND the CLI pose check
+  (cli_silent_bake.js) both build through it, so §CLI_BAKE_POSECHECK covers the arc unchanged. Plan fields the bake reads are filled
+  neutrally (beats all 0, reveal {discs:[]}, storeyReveal {on:false}), naturalTotal = sec.
+  MATHS (t = film time 0..1): u = (1 - cos(pi t))/2 (zero speed at both ends). Offsets cam - tgt in cylinder form (r, h, az) for A and B;
+  sweep from azA - d*ov to azB + d*ov (d = direction sign; "short" = the smaller signed angle). az(u) linear in u over the sweep;
+  s = clamp((az - azA)/(azB - azA), 0, 1) drives tgt = lerp(tgtA, tgtB, s), r = lerp(rA, rB, s), h = lerp(hA, hB, s) (held through the
+  overshoot). pose = tgt + (r cos az, h, r sin az).
+  WITNESS: §FLYAROUND_ARC (once, at plan build): azA/azB/sweepDeg/r/h/sec + poseAt at s=0 and s=1 vs A/B (errA/errB m, PASS if < 0.01)
+  + max per-frame step at 24 fps (m); then §CLI_BAKE_POSECHECK MATCH on the test clip. Test = 480p, 2 s (--frames 48), overlays off.
+- ▶ 2026-10-03 22:35 ZONE BOX + ZONE FLOOR SHIPPED on bim-ootb fix/fast-bake @d5b1bf56 (PUSHED; merges fix/zone-truebox @8f6c38aa +
+  §ZONE_FLOOR padding rule). Sidecars rebuilt, key 2bce3c9b:90286, restorecheck PASS x3, in /tmp/wt-fastbake/buildings/patches and
+  ~/.cache/bim4d/altc_2026-10-03/sidecars_zonefloor/ (older sets: sidecars_oldbox/, sidecars_truebox/ = now STALE keys).
+  §ZONE_FLOOR PASS x3: HHS 138x27x115 indoor 81,570 (was 89,757 true-box / 138,704 old box), LTU 372x39x273 indoor 342,608 (old 603,006),
+  Hospital 208x84x243 indoor 867,878 (old 1,531,394); belowLowestGeometry 0 on all. Field build: HHS 107 s, LTU 476 s, Hospital 1,586 s.
+  LTU clip 0:0.15 (V_LTU_ctl9, zone cache HIT): vs true box w/o floor rule mean |d| 0.024 max 0.157 (look-neutral on LTU, as expected);
+  vs the OLD box mean 0.197 max 3.855 @f162, 25 frames > 0.5, signed -0.155 (indoor f156-190 slightly darker: the fake basement zone
+  no longer feeds them). Alt+S stills share light_zones.js and change the same way — NOT re-checked on stills.
+  OPEN: (1) W4 merge residual (max ~3.7 @f163, opaque draw order suspected) — &consolidate stays opt-in; (2) Alt+S still A/B on the new zones.
+- ▶ 2026-10-03 21:00 W2 PASS (V_HOSP_freeze8, fix/fast-bake @932346cf, Hospital 1900:2000 + bake_hires_offline.sh flags): §HUD_OVERLAP_WORST
+  none judgedFrames=311/311 => PASS; §LOADPATH_INFOPANEL_AVOID near moves=[stats-panel>down] final=366,565 418x418; only a CROSSFADE left
+  (hud.status 0.04/1.00 x infopanel, 11 fr = fading, by design). W1 PASS (POSECHECK MATCH 364 fr, LOADPATH_RESUME 0.0000). GPU handed to the
+  audio-voice session (red1); v9.sh NOT started.
+- ▶ 2026-10-03 20:55 PAUSE (red1). fix/fast-bake @932346cf PUSHED: info panel clears solid HUD boxes (W2, UNVERIFIED — run
+  V_HOSP_freeze8 was mid-render, frame 13/364). ZONE CORRECTNESS DECIDED by a new witness, prompts/photoreal_probes/lightgrid/zonefloor.js
+  (+ zonelib.js/zonediff.js; decodes .lightfield.bin offline, CPU only): §ZONE_FLOOR = INDOOR cells below the lowest boundary geometry.
+  OLD box FAIL: LTU 255,790 cells / 31,974 m3 (42% of indoor), Hospital 620,865 / 77,608 m3 (41%), HHS 42,809 / 5,351 m3 — all zone 1,
+  a fake "basement" void under the whole footprint (light_zones.js ~L403 EARTH rule: a covered cell below ground stays empty; only the bottom
+  2 grid layers were forced solid, and the inflated grid reached ~6 m under the foundations). TRUE box (fix/zone-truebox): LTU PASS,
+  Hospital PASS, HHS FAIL 8,187 cells / 1,023 m3 (zone 4) — its ground -6.00 = lowest geometry, so only 1 padding layer was filled.
+  FIX READY (not applied): session scratchpad c/rootfix/light_zones.js = truebox + §ZONE_FLOOR rule (2 padding layers solid: below ground
+  as before, above it covered cells only); copy in ~/.cache/bim4d/altc_2026-10-03/round4to6/rootfix/. RESUME: read freeze8 W2 verdict (or
+  re-run it), then merge fix/zone-truebox, apply rootfix/light_zones.js, run round4to6/v9.sh (rebuilds 3 sidecars + zonefloor witness +
+  LTU clip; ~58 min GPU), expect §ZONE_FLOOR PASS x3.
+- ▶ 2026-10-03 18:50 ROUNDS 4-6 (red1 "proceed, decide for me"). bim-ootb fix/fast-bake @75dae6d4 PUSHED (tree clean, OLD-box sidecars
+  back in /tmp/wt-fastbake/buildings/patches). Runs + logs: session scratchpad c/ (V_*_opq5, *_freeze5/7, *_ctl6/cons6; v5-v7.sh).
+  W2: §HUD_ROW_YIELD — the load-path card (opaque from arm, ruling §129.12/§129.29, ~970 px wide at [30,30]) covers the WHOLE top row:
+  round 4 (path map yield only) moved the f=23 FAIL to suncompass.readout. Now hud.pathmap/daycounter/suncompass.clock/readout skip for the
+  card's window and keep their last box as the row reservation. Hospital 1900:2000: f=23 overlap GONE. Worst now = stats-panel
+  [30,259 389x293] x loadpath.infopanel.near [366,206 418x418] f=211 1.00/1.00 — PRE-EXISTING (round 4: stats-panel y=223, same 53 px x
+  overlap, masked by the larger one; the witness prints only the worst pair). NEXT: why the info panel's avoidRects (_lp.armHudRects,
+  cpe_load_path.js ~L4601) miss stats-panel. W1 PASS again (POSECHECK MATCH 364 fr, LOADPATH_RESUME 0.0000).
+  W4 residual is NOT glass order: &consolidate=opaque (19 transparent batches kept) = mean |d| 0.295 max 3.670 @f163 (full merge 0.296/3.677).
+  Also NOT the zone grid: on the true box, merge vs no-merge = mean 0.319 max 3.791 @f163. Lamp data identical both arms (§LAMP_UNCAPPED
+  ver 1-13 same). Raw scene Lcd differs (f163 -6.8%). Remaining suspects (unmeasured): opaque draw order / coplanar depth ties.
+  ROOT BOX FIX = branch fix/zone-truebox @8f6c38aa (PUSHED, NOT merged): changes zone TOPOLOGY, not just extent — LTU grid 8.98M -> 3.96M
+  cells, indoorCells 603,006 -> 342,608, zones 950 -> 635, largest 44,547 -> 12,159 m3 (59% -> 28% of indoor), zonesWithAperture 109 -> 31,
+  skyLitCells 133,715 -> 31,928, soilCells 2.12M -> 0.43M. Clip luma vs old: mean 0.19 max 3.85 @f162 (indoor f156-190 only). Field build
+  NOT 2.3x cheaper: LTU 437 -> 467 s, HHS 108 s, Hospital 1832 -> 1634 s. Sidecars (key 9f4b8c62:90271, all restorecheck PASS):
+  ~/.cache/bim4d/altc_2026-10-03/sidecars_truebox/; old ones: .../sidecars_oldbox/. Needs a ZONE-CORRECTNESS witness before merge (e.g.
+  zones vs IfcSpace volumes) — which of the two zone sets is right is unmeasured. Sidecar tools with SUF support: c/rootfix/{bake,restorecheck}.js
+  (copies of prompts/photoreal_probes/lightgrid/*.js; SUF= for *_silent.db).
+- ▶ 2026-10-03 16:10 VERIFY ROUND 3 (bim-ootb fix/fast-bake @a1847484, pushed; runs in session scratchpad c/, 1080p24).
+  §ZONE_BOX_TRUE (new, cinema_maxq.js, &zonebox=1, read-only; kept OUT of light_zones.js because its code hash SRC is the zone cache
+  key — any edit there stales every .lightfield.bin sidecar): today's (unmerged) zone grid is 2-2.5x the true building box.
+  Hospital built 141.7x50.2x168.9 m vs true 101.8x39.5x119.3 (extraCells 80,21,99). LTU built 245.5x25.0x162.5 vs true 183.9x17.3x134.4
+  (extraCells 124,16,56; grid 496x55x329 = 8.98M cells vs ~3.96M). Recompute == the builder's stored fp box (-119.614..93.906) = instrument
+  checked. Root fix (per-slot getBoundingBoxAt in light_zones.js) = look-changing + all 3 sidecars rebuilt (Hospital field 30.5 min) -> red1.
+  W4 (LTU clip 0:0.15, &consolidate=1 vs control, same commit): §CONSOLIDATE 5999->558 failed 0, 850 ms; §CONSOLIDATE_ZONES PASS grid kept
+  496x55x329:950; §ZONE_IDB_CACHE HIT (round 2 missed); clip 1051 -> 493 s (2.13x). Luma (ffmpeg YAVG per frame, 242/242): mean |d| 0.296,
+  max 3.677 @f163, 53 frames > 0.5 (round 2: max 27.07). Residual is in the RAW scene (§F Lcd f163 3636 vs 3389, -6.8%), exposure just
+  follows; clustered f156-240 (indoor). Cause NOT measured (untested guess: merged-batch transparent draw order). &consolidate=1 stays opt-in.
+  W1 PASS (Hospital --frame-range 1900:2000 WITH the bake_hires_offline.sh flag set): §LOADPATH_HOLD_INSERT holdFrameStart=23 inserted=264,
+  §LOADPATH_HOLD cameraMoved=false PASS, §LOADPATH_RESUME stepAtResume=0.0000 maxStepElsewhere=0.3118 PASS, §CLI_BAKE_POSECHECK MATCH
+  maxPosErr 0 over 364 frames. ⚠ Rounds 1+3 HOSP runs called cli_silent_bake.js WITHOUT --buildup/--load-path => no freeze ran (0 HOLD lines):
+  always use the bake_hires_offline.sh flag list for a freeze test.
+  W2: §HUD_OVERLAP_CROSSFADE hud.pathmap x loadpath.card 22 frames (alpha 0.46/1.00) = transition, OK; but §HUD_OVERLAP_WORST FAIL f=23
+  (freeze onset) alpha 1.00/1.00 — the card PLATE (cpe_load_path.js _freezePlateDraw, ~L4546) draws opaque from the first hold frame while
+  the path map is still at alpha 1 (its fade starts there); only the card LINES fade in (FREEZE_SCHED). Same FAIL in the 0049 full film
+  (pre-existing, not a W-regression). Fix proposal (HUD look change -> red1): plate alpha = 1 - A._loadPathHudAlpha, register it with that alpha.
+- ▶ 2026-10-03 11:20 RESUME DONE + W4 CAUSE FOUND (no GPU). /tmp/wt-fastbake recreated (DB symlinks + 3 sidecars copied back).
+  CAUSE (code read): light_zones.js:328 build() bounds every BatchedMesh slot with d.geo.boundingBox = the WHOLE batch geometry's
+  box x slot matrix (boundaryDraws L59-67 never sets a per-slot box). 558 merged batches -> each slot gets a bigger box -> grid box
+  grows -> §ZONE_IDB_CACHE fp miss + rebuilt zones -> luma max |d| 27. The SAME error exists in today's unmerged baseline (smaller
+  boxes), so a true per-slot fix (getBoundingBoxAt(gid)) would change every film's zone grid = look-changing + sidecar rebuild ->
+  red1 decision, NOT done.
+  FIX (look-neutral) bim-ootb fix/fast-bake @361349f4 (PUSHED, sw not bumped): cinema_maxq.js runs the &consolidate=1 merge AFTER the
+  stream-wait and AFTER LightZones.prime+build, then build() again; new line §CONSOLIDATE_ZONES PASS grid kept / WRONG grid rebuilt /
+  INCONCLUSIVE. NOT YET RUN. Next GPU runs (need red1 go): (1) verify2.sh 3rd line = HOSP_range 1950:2250 (W1+W2 proof);
+  (2) LTU clip 0:0.15 &consolidate=1 -> expect §CONSOLIDATE_ZONES PASS, §ZONE_IDB_CACHE hit, luma max |d| < 0.5 vs ctl2.
+- ▶ RESUME 2026-10-03 10:25 (red1 closing the machine). Tree bim-ootb fix/fast-bake @d304efd3 sw v1560 (PUSHED, 0 unpushed;
+  W1-W7 + sky-surface @58416ed0 merged). /tmp dies on shutdown — DURABLE COPY in ~/.cache/bim4d/altc_2026-10-03/: sidecars/
+  (Hospital_silent, LTU_AHouse_silent, HHS_Office_Federated_silent .lightfield.bin, key 21324567:90186 — copy back into
+  <tree>/buildings/patches/, no rebake needed while light_zones.js is unchanged), verify*.sh/hhs.sh/ltu_full.sh/bake.js/restorecheck.js/
+  flick.py/phases.py, CODE_REVIEW_ALTC.md, all V_* .out + page logs (.gz), both full-film page logs.
+  RECREATE: `git -C ~/bim-ootb worktree add /tmp/wt-fastbake fix/fast-bake`; symlink buildings/{Hospital,Terminal,HHS_Office_Federated}_silent.db
+  -> ~/Downloads/<same>.db and LTU_AHouse_silent.db -> ~/Downloads/LTU_AHouse.db; copy sidecars in.
+  VERIFY ROUND 2 (v1560, LTU clip 0:0.15 1080p24, &filmlog=compact):
+  - W6 PASS: §F on 242/242 frames, §F_SUMMARY foldedLines=5,154, page log 1,406,223 -> 790,606 B (-44%); look-neutral vs v1558 (max |d| 0.13).
+    First real `renders=` reading: 112 scene renders in one LTU frame (f200) — the per-frame teardown question now has its number.
+  - W4 STILL NOT LOOK-NEUTRAL after the copy-live-slots fix: §CONSOLIDATE 5,999 -> 558, failed 0, mixedFlags 0, 802 ms; clip 1,006 -> 636 s
+    (1.58x); luma mean |d| 3.10, max 27.07 (same as round 1) and §ZONE_IDB_CACHE STILL misses with the same moved box. So positions were
+    never the cause: light_zones.js boundaryDraws() reads a merged BatchedMesh differently (its bounds come out larger with identical
+    counts). NEXT (no GPU): read light_zones.js boundaryDraws() for the isBatchedMesh branch; make it per-slot (slotGeo x getMatrixAt) or
+    run the merge AFTER the zone restore. Keep &consolidate=1 opt-in until a clip shows luma max |d| < 0.5 and §ZONE_IDB_CACHE hit.
+  - NOT RUN (stopped before suspend): HOSP_range (--frame-range 1950:2250 across the load-path freeze) = the W1 non-linear-time + W2
+    CROSSFADE proof. Run it first on resume: verify2.sh's 3rd line alone.
+  - Open for red1 (look-changing, review §5): hidden 13th TAA sample under budget 6/6; previous-frame metering. Layering refactor
+    (decideLamps owner, filmRefineFrame without per-frame teardown — 112 renders/frame says it is worth it) = next build item.
+- ▶ 2026-10-03 09:50 VERIFY ROUND 1 (tree 8c6ebab9 v1558, scratchpad c/V_*.out + V_*_page.log; 1920x1080 24 fps):
+  - W1 PASS: §CLI_BAKE_POSECHECK ref=filmT MATCH maxPosErr 0 on LTU clip x2 + Hospital clip 0.39:0.45 (but that clip held NO load-path
+    freeze — 0 §LOADPATH_HOLD — so the non-linear case is re-run in round 2 with --frame-range 1950:2250). Target err 0.36-0.41 m = gaze blend.
+  - W2: judgedFrames printed (LTU 169/242, Hospital 282/282) PASS; CROSSFADE path not exercised (no hold in clip) -> round 2.
+  - W3 PASS + LOOK-NEUTRAL: LTU §LAMPS_SUMMARY owner data 242/242 lit 122/122, dataSetChanges=112; Hospital §INTERIOR_LIGHTS_WITNESS
+    owner=data PASS (114-122/114-122). §LAMP_CAP_CHURN lines 487 -> 5 (LTU clip); per-frame luma v1558 vs v1555 max |d| 0.09.
+  - W4 SPEED 2.05x (LTU clip 1,221 -> 595 s; §CONSOLIDATE 5,999 -> 531 batches, 1,079 ms) BUT NOT LOOK-NEUTRAL: frames 0-130 equal,
+    from f140 (indoors) up to +26 luma. Cause: §ZONE_IDB_CACHE miss — boundary box x -119.6..125.9 -> -137.4..174.0 (same counts):
+    the re-derive-from-streamQueue merge moved elements placed after streaming -> zones rebuilt (251 vs 219 lit zones). FIX c081302a:
+    merge COPIES live slots (slotGeo + getMatrixAt + visibility + colour + the batch's own material). Re-verified in round 2.
+  - W5: §CLI_BAKE_MEM max cdpHeap 605-1412 MB, performance.memory 3.5-3.9 GB, Chrome tree RSS 8.1-9.7 GB (upper bound, shared pages
+    counted per process), GPU 4.7-5.1 GB of 8 GB.
+  - Merged W6/W7 (328f39d0) + fix/sky-surface @58416ed0 -> fix/fast-bake d304efd3 sw v1560 (pushed).
+- ▶ 2026-10-03 SPEC W-FIX (red1 "proceed with full confidence"), built on fix/fast-bake in /tmp/wt-fastbake, order top->bottom:
+  W1 §CLI_BAKE_POSECHECK: the pose tap records the film time the camera was actually posed at (_poseFilmT) and the bake's own plan duration
+     (window.__maxqPlanDurSec); the check evaluates poseAt(tF) on a plan rebuilt at that duration. Position decides the verdict; target error is
+     printed separately (the §57.5 gaze blend moves it by design). Clips are judged too (tF is whole-film). Witness: MATCH < 0.05 m on a clip;
+     must still say MISMATCH when the override is dropped (control: --plan derived path).
+  W2 §HUD_OVERLAP_WORST: each registered rect carries the alpha it was drawn at; a pair counts as OVERLAP only if both alphas >= 0.5, else as
+     §HUD_OVERLAP_CROSSFADE (worst pair, frame, alphas). The FAIL line names frame + alphas. Frames with < 2 real rects are not "judged"; a
+     film with 0 judged frames prints INCONCLUSIVE (LTU printed PASS with zero rects). Witness: Hospital load-path clip -> CROSSFADE, not FAIL.
+  W3 lamps: (B) hoist the §115/§116 dedupe vars out of the per-call function (tools.js:2295-2296); (A) film frames skip the nav-branch pool
+     rebuild in the still teardown (effects.js:5760-5767); (C) §INTERIOR_LIGHTS_WITNESS judges the lamp OWNER in force (data path: §LAMP_DATA
+     lit vs placed; pool path: poolLit) and prints owner=; one §LAMPS f= owner= dataLit= poolLit= line per frame. Witness: LTU clip shows
+     owner=data dataLit>0 and 0 §INTERIOR_LIGHTS_OFF repeats.
+  W4 draw-call merge for films (speed, look-neutral): A._consolidateBatched (streaming.js:3404, caller removed 2026-05-27 b9b1a816 because it
+     blocked the INTERACTIVE main thread 9.9 s on LTU) is repaired to the current flush contract — same _getMaterial args incl. §WIND_FLIP
+     (A._windFlipAny), A._registerBatchSlot (bx/by/bz from row[13..15]), userData.slotGeo, only BMs that carry _batchMeta, skips any BM with
+     A._dlodSlots — and called ONCE at film start when &consolidate=1 (opt-in until witnessed). Witness: §CONSOLIDATE old_bm/new_bm/ms;
+     §RENDER_INFO sceneCalls before vs after on the same LTU clip; per-frame §FRAME_QA luma within 0.5 of the control on every frame;
+     §WIND_FLIP buckets unchanged; Hospital clip §CPE_REVEAL_LEAK 0 + discKept unchanged (4D wiring). Then default ON for films.
+  W5 §CLI_BAKE_MEM (BUILT 8c6ebab9): every 20 s CDP heap + performance.memory + Chrome process-tree RSS (/proc) + nvidia-smi; max summary.
+  W6 §F per-frame record (review §3): layers write A._fr.{pose,4d,light,render,hud,cap}; cinema_maxq prints ONE `§F i= ...` line after
+     §FRAME_HASH with `renders=` (renderer.info.render.frame delta). The ~30 per-frame repeat lines (§STILL_REFINE x3, §PHOTO_AO x3,
+     §LAMP_ZONE_PICK x2, §SUN_ARC_FILL_PIN, §PHOTO_SHADOW_FORCE_REASSERT, §TRIPLANAR_PERF, §STILL_OVERLAY_GUARD, §PHOTO_STAGING, ...) go
+     behind &verbose=1 in films ONLY (stills unchanged). Witness: Hospital-hold clip page log bytes/frame before vs after; every field of
+     §F non-empty on every frame; phases.py reproduces from §F alone.
+  W7 vacuous witnesses (review §3 items 3,5,6,8): §NIGHT_PL_INTENSITY_HEURISTIC prints once + VACUOUS when min==max; §CPE_PIE_HOLD /
+     §CPE_STATS_TAIL VACUOUS when no resource panel existed; §DLOD_BAKE_PROXY prints NO-OP when boxed stays 0 for the whole film;
+     §FRAME_COST lastRenderCalls dropped (order-dependent) in favour of §RENDER_INFO / §F calls=.
+- ▶ 2026-10-03 09:15 CODE REVIEW (Fable, read-only) — full report prompts/archive/ALTC_CODE_REVIEW_2026-10-03.md. Verified by Alt+C before citing:
+  - RETRACTION: "interior lamps never relit / lamps 0 all film" (07:36 + 08:30 entries) is WRONG. Films light lamps on the DATA path
+    (effects.js:4484 _lampDataOn, tools.js:2528-2552 _filmLD -> pool slots set to 0); LTU log: §LAMP_DATA film=1 lit=50..122, §LAMP_UNCAPPED on
+    lit=122 x500. §INTERIOR_LIGHTS_WITNESS + §LAMP_CAP_CHURN count only the POOL = scope-blind witnesses (law 4).
+  - Real lamp defects: (A) pool toggles 30<->0 every frame via still teardown (effects.js:5760-5767); (B) tools.js:2295-2296 `var` dedupe
+    re-declared per call -> never dedupes (5,530 §INTERIOR_LIGHTS_OFF lines in Hospital, confirmed); (C) data-path lamp set follows the
+    camera (cap 122) -> 648 LTU / 486 Hospital table rebuilds, lamp popping unwitnessed. Fixes ~1.5 h total + one `§LAMPS` line per frame.
+  - SPEED: LTU 3.8 s vs Hospital 2.0 s/frame = 2.1x draw calls (6,349 vs 3,019) for the same ~7.2 M tris; CPU-submission bound
+    (~0.69 ms/call/frame). A._consolidateBatched (streaming.js:3404) is defined with NO caller (confirmed). Wiring it = look-neutral,
+    upper bound -2.3 s/frame on LTU, 1-2 days. Meter render 488/164 ms; hidden 13th TAA sample (look-changing, red1).
+  - MEMORY: heap instruments disagree (CDP 0.3-1.4 GB vs performance.memory 2.0-2.6 GB); light field 99-114 MB resident; 8192² shadow map
+    512 MB; stitch holds all H.264 chunks (245 MB Hospital) in RAM. First step: one §MEM line (2 h).
+  - LAYERING: lamp state decided in 4 files per frame; Alt+S state machine torn down + restarted every frame (cinema_maxq.js:3593/4098);
+    41 `!A._maxqActive` sites in effects.js incl. look-deciding ones. Proposed: one decideLamps() owner (0.5 d), filmRefineFrame() without
+    teardown (1 d), §FILM_GATES census (0.5 d). WITNESS: 11 vacuous/scope-blind witnesses listed; one `§F` record per frame (~2 d) would
+    replace ~30 lines/frame (Hospital page log 27 MB).
+- ▶ 2026-10-03 08:30 WITNESS RE-CHECKS (red1: "map path does not overlap any HUD", "pose check — go back to the code"; path-thru-geometry = user's
+  choice, NOT a bake defect). Both FAILs are WITNESS errors, not film errors:
+  - §HUD_OVERLAP_WORST (cinema_maxq.js:1018-1048) judges every rect registered with alpha > 0 (_drawUnlessHold :1491) and never logs frame or
+    alpha. At load-path hold start the HUD fades OUT over 24 frames (§LOADPATH_HUD_FADE fadeOutFrames=24, alpha 1->0) while the card plate is
+    drawn from holdElapsed 0 (cpe_load_path.js:4569 registers it unconditionally) — a ~1 s cross-fade, both boxes at [30,30]. FIX (not built):
+    carry alpha in _hudLayoutRegister, judge only when both alphas >= 0.5 (else count as CROSSFADE), print frame + alphas in the FAIL line.
+  - §CLI_BAKE_POSECHECK (cli_silent_bake.js ~:910-948) compares flown pose i with plan.poseAt(i/(n-1)), assuming linear film time. The
+    film's real time is not linear: §SUN_ARC_FILL_PIN tNorm vs f/(n-1) differs by up to 0.0316 on Hospital (f2196: 0.411 vs 0.442 —
+    the load-path hold) -> 118 m at orbit speed (up to 5.5 m/frame); LTU (no hold) 0.0011 -> 0.42 m. Band anchors pass at 0.00-0.04 m on both
+    = the stored path WAS flown. FIX (not built, ~15 min): record the actual t in __maxqPoseLog and evaluate poseAt at that t.
+  - HHS full film launched 08:06 then KILLED ~08:35 on red1 ("let alt-s do its work"); HHS sidecar baked, all overlays ON except --no-buildup. Code-read conflict: §SUN_COMPASS without a 4D
+    cursor draws the rose only, sun lines hidden (cpe_sun_compass.js:414-425, §SUN_COMPASS_NO_CURSOR); others to be read from its log.
+  - Fable code-expert review dispatched 08:1x (read-only; lamps-never-relit, layering, per-frame witness record, memory, speed) -> scratchpad
+    c/CODE_REVIEW_ALTC.md.
+- ▶ 2026-10-03 07:36 LTU FULL FILM DELIVERED (red1 "if all is well, do for LTU"): ~/Downloads/LTU_AHouse_silent_full_AFTER_1920x1080_24fps_2026-10-03_0549.mp4,
+  82,991,547 B, 1,612 frames / 67.2 s, wall 6,377 s (3.96 s/frame). Direct cli_silent_bake (NOT bake_hires_offline.sh, which forces --buildup/--reveal
+  etc.; LTU has no 4D tables): saved path settings + recipe + --dlod-proxy; script scratchpad c/ltu_full.sh. Sidecar first: key 21324567:90186,
+  occluderTris 643,805, restorecheck PASS. Test clip (--clip 0:0.15, 242 fr) clean: 0 black/freeze, §HUD_OVERLAP_WORST PASS, errFrames 0.
+  Full film: §LIGHT_FIELD_PATCH applied, §ZONE_IDB_CACHE hit, §GI_FILM errFrames=0 gpuErrors=0, unconverged 0, §HUD_OVERLAP_WORST PASS.
+  DEFECT (authored path, not compensated per §STILL->FILM ruling): 28 frames luma < 40 in 3 bursts — f714-727 (ffmpeg black 29.75-29.96 s),
+  f746-749 (§FILM_BLANK_FRAME i=748 held last good after 3 tries), f781-797. Cause from §FILM_EXPOSURE: metered Lcd 41,574 -> 581 -> 89 in 2
+  frames while cam y descends 0.24 -> 0.12 -> -0.71 -> -2.15 with darkPct 100 = camera passing through solid geometry (slab/stair) on the
+  saved path; exposure rate cap (capped=down) then ramps back over ~15 frames. Fix = re-author those pins (red1) or a camera-in-solid guard (not built).
+  Also: §INTERIOR_LIGHTS_WITNESS poolLit 0/122 = scope-blind witness, lamps WERE lit (see 09:15); §CLI_BAKE_POSECHECK 0.42 m = witness error (08:30).
+  red1 2026-10-03: "done without any buildup or the rest of the overlays. But that is OK as a test film". Overlays need 4D tables (tasks/schedules) in LTU_AHouse.db first.
+  Post-film: merged fix/sky-surface @d3bb44a7 (Alt+S stills-only) into fix/fast-bake = 393e0f0f sw v1556 (pushed). Films above were v1555.
+- ▶ 2026-10-03 03:38 HOSPITAL 24 fps DELIVERED (red1 full mandate 00:16): ~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-03_0049.mp4,
+  244,712,634 B, ffprobe 4,963 frames / 206.8 s, wall 10,070 s (2.03 s/frame). Tree wt-fastbake @35886fab sw v1555, recipe as below.
+  Sidecar rebaked first (scratchpad c/bake.js = photoreal_probes/lightgrid/bake.js + SUF env): key 21324567:90186, occluderTris 5,819,012,
+  restorecheck PASS. Landing checks (page log /tmp/bake_Hospital_silent_2026-10-03_0049.log, scratchpad c/qa.txt):
+  §LIGHT_FIELD_PATCH applied 1, §ZONE_IDB_CACHE hit 1, §GI_FILM done errFrames=0 gpuErrors=0 off=false, 0 §GI_FILM_OFF/Uncaptured/PAGEERROR/
+  §FILM_BLANK_FRAME, §MAXQ_QUALITY unconverged=0, §CPE_REVEAL_LEAK 0, discKept=48 on all 1,578 traversals (door fix holds).
+  ffmpeg: 0 black; 2 freezes 86.1 s + 88.1 s (1.0 s each) = §FRAME_REUSE runs inside the load-path hold (reused 53/4963, cameraMoved=false).
+  Frames 2345-2360 (10-01 flash 105.7->87.8->110): now a monotonic ramp 72.4 -> 131.7, no dip.
+  STILL OPEN (same classes as before): §HUD_OVERLAP_WORST FAIL (now hud.pathmap x loadpath.card 324x163 px); §CLI_BAKE_POSECHECK MISMATCH
+  maxErr 118.1 m; §INTERIOR_LIGHTS_WITNESS 3-4 of 9 samples poolLit 0/122 past topout. NEW, UNEXPLAINED: 114 frame-to-frame luma steps
+  >12 (e.g. f298-303 143.8 -> 83.3, f327 77.5), clustered 10-20 s (34) and 90-100 s (39); no baseline survived the reboot to compare.
+- ▶ 2026-10-03 00:15 RESUME CHECK (Alt+C, after reboot; uptime 4 min). Hospital 24 fps film LOST: no
+  `Hospital_silent_full_AFTER_…24fps_2026-10-02_1138.mp4` in ~/Downloads, /tmp wiped (bake log, ltu.out, all sidecars gone).
+  Rebuilt (no GPU): worktrees /tmp/wt-fastbake @35886fab + /tmp/wt-surf @00524a4f (both = origin, 0 behind), DB symlinks
+  Hospital/Terminal/HHS/LTU _silent -> ~/Downloads in both. `buildings/patches` holds only Hospital_silent.db.sql — every
+  .lightfield.bin + .prebake.json must be rebaked (Alt+S: Hospital 41 min, LTU unknown). GPU free (201 MiB used).
+  red1 go 00:16 (full mandate); chain ran — see 03:38 above.
+- ▶ RESUME 2026-10-02 13:45 (Alt+C session bim-compiler-8e closing; red1 "shutting down, update work") — supersedes the 04:00 to-do.
+  - bim-ootb fix/fast-bake @35886fab (pushed), worktree /tmp/wt-fastbake, sw v1555. Since v1543: v1544 merge sky-surface f78a6579; v1545-1552
+    §SPEED_AB/§SPEED_PAR switches + timers (all OPT-IN, defaults unchanged); v1547 merge §WIND_FLIP; v1553 §RENDER_INFO; v1554 §REVEAL_TRAP
+    (&revealtrap=1); v1555 §REVEAL_DOOR_LEAK FIX (default ON: time_machine renderAtTime honours hiddenDiscs); 35886fab = LTU patch merge.
+  - BAKE RECIPE (proven, use for every film): BAKE_EXTRA="--visual-panel --still-budget 6,6 --url-query &capfmt=jpeg&gi8=1".
+  - DELIVERED: HHS 24 fps 10:41 (~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_24fps_2026-10-02_0934.mp4, 61 min, red1: quality
+    "good enough"; baked BEFORE the door fix -> its reveal shows 17 doors).
+  - RUNNING: Hospital 24 fps started 11:38 (pid 1205250), log /tmp/wt-fastbake/out/Hospital_silent_hires_2026-10-02_1138.log, lands
+    ~/Downloads/Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-02_1138.mp4 ~14:25. At 13:39: frame 3764/4963, 0 GI off / 0 Uncaptured /
+    0 blank, §CPE_REVEAL_LEAK 0 lines, discKept=48 on all 1,323 passes (= Hospital's old leak 48 -> door fix proven on Hospital too).
+    ON RESUME: run the landing checks (§GI_FILM done errFrames, ffmpeg black/freeze to last frame, §FRAME_QA luma 2345-2360, §HUD_OVERLAP_WORST,
+    §CLI_BAKE_POSECHECK, §INTERIOR_LIGHTS_WITNESS) and record them here. If the machine was powered off before ~14:30 the film is lost: re-run
+    the same command (bake_hires_offline.sh Hospital_silent with the recipe).
+  - LTU: ~/Downloads/LTU_AHouse.db = red1's LTU film DB (linked as LTU_AHouse_silent.db in wt-fastbake + wt-surf). Alt+S step (1) DONE
+    (fix/sky-surface @00524a4f: §IFC_SURFACE_NAMES 2 updates + §WIND_FLIP 13,572 geoms; merged here as 35886fab). Alt+S steps (2) sidecar key
+    21324567 + restorecheck hit and (3) Alt+S viewing check run AFTER the Hospital bake exits (red1 go given); Alt+S copies the sidecar into
+    /tmp/wt-fastbake/buildings/patches/ (gitignored). Alt+S closed 13:45: queued DETACHED (waits for pid 1205250), result in
+    /tmp/claude-1000/-home-red1-bim-compiler/4a28e70a-9992-4edd-b7c4-64c2a62ac248/scratchpad/c1/ltu.out (key / occluderTris / hit / COPIED or NOT
+    COPIED) — read it on resume. Then: LTU test clip, then full film. Path is the Aug-03 save (61.2 s,
+    no buildup/reveal flags, no 4D tables).
+  - NEXT speed lever (spec only, not built): Hospital scene renders submit 2,549-3,201 draw calls / 4.4-6.5 M tris (§RENDER_INFO), GPU 36% busy
+    -> CPU/draw-call bound; §BATCHED_FLUSH already merges per flush (2682 -> 238) yet the totals stay ~3k -> first measure what the 3k calls are.
+  - OPEN (unchanged): §HUD_OVERLAP_WORST pathmap x infopanel; §CLI_BAKE_POSECHECK mismatch; §INTERIOR_LIGHTS_WITNESS pool-only; §DOME_GLOW not in
+    films (stills only, effects.js !A._maxqActive gate) — red1 to decide.
+- ▶ 2026-10-02 06:15 (Alt+C session bim-compiler-8e). To-do 1-3 DONE: sky-surface @f78a6579 merged into fix/fast-bake = **sw v1544** (77ace8f3,
+  pushed; both-side files bumped sourced_light 78, tools 73, gi_still 46); HHS/Terminal k21324567 sidecars renamed in (old kept as .k1b214d46);
+  Hospital_silent sidecar released by Alt+S (bim-compiler-72): key 21324567:90186, occluderTris 5,819,012, restorecheck §ZONE_IDB_CACHE hit,
+  names patch md5-identical in wt-surf and wt-fastbake. To-do 4 RUNNING since 04:51: Hospital 24 fps, 4,963 frames, log
+  /tmp/bake_Hospital_silent_2026-10-02_0451.log; boot read: §LIGHT_FIELD_PATCH applied key 21324567:90186, §ZONE_IDB_CACHE hit 56 ms, 0 §GI_FILM_OFF,
+  0 Uncaptured. 06:15 = frame 1,952 (39%), mean 2.40 s/frame. red1: "prepare to pull the plug, but gather all the intel first".
+- §FRAME_PHASES (2026-10-02, measured from the bake logs, no GPU run; scratchpad a0e48414…/phases.py, gaps.py). Per frame, mean ms:
+  | bake | setup (4D tick, staging) | light (lamp/cove/IR + meter) | TAA 8 | AO 8 | capture (HUD + webp + hash) | total |
+  | Hospital 24 fps now (f 50-1924) | 393 | 287 | 547 | 591 | 570 | 2,397 |
+  | Hospital 15 fps 10-01 1417 | 439 | 349 | 695 | 801 | 609 | 2,907 |
+  | HHS 15 fps 10-02 0230 | 186 | 123 | 245 | 279 | 556 | 1,397 |
+  Old Alt+C for scale: Hospital 1.27 s/frame (RESUME_2026-09-02 §MEASURED); per render then AO 27 ms / TAA 49 ms (AGENT_QUEUE U-7), now ~70 ms / ~65 ms.
+  - Item 3 (lamp rebuild) RE-MEASURED: 191 of 1,873 frames rebuild; their light step 922 vs 215 ms -> ~0.7 s x 10% = **~70 ms/frame (~3%)**.
+    Rebuild frames are slow in EVERY phase (TAA 898 vs 507, AO 948 vs 550) = heavy interiors, not the rebuild. The earlier "20-30%" was wrong.
+  - Capture is ~560 ms on every building (resolution-bound): _captureFrame composites HUD then `c.toBlob('image/webp', 0.92)` (cinema_maxq.js:2169),
+    hashed + re-encoded to H.264 anyway. Biggest flat cost: 4,963 x 0.56 s = 46 min of this bake. Not yet split webp vs HUD in the log.
+  - Exposure meter (§SUN_ARC_FILL_PIN -> §FILM_EXPOSURE) 141 ms/frame: SourcedLight.meterRead renders the scene again at 160x90 every frame.
+  - TAA 8 + AO 8 = 16 full renders = 1.14 s (47%). AO legacy mode in films (effects.js:5553, off when A._maxqActive).
+  - MP4 stitch 138 s / 2,937 frames (1417) — small.
+  - SAVING CANDIDATES (to A/B after this bake lands, GPU busy): S-A webp -> jpeg q0.95 at capture (est. -250 ms, look = H.264 anyway; prove by
+    per-frame RMS vs webp); S-B meter on a 1-frame-old capture or every 2nd frame (est. -70..-140 ms; exposure eases, prove §FILM_EXPOSURE EV delta);
+    S-C sample budget taa/ao 8/8 -> 6/6 at 24 fps (est. -285 ms; quality sweep per CPE_4D_PERF_MEM_STUDY RMS rule); S-D fixed lamp set (~-70 ms).
+- 06:25 red1: "stop. we experiment with savings is more crucial" -> Hospital bake KILLED at frame ~1,955 (partial, no film). Alt+S told GPU free.
+- §SPEED_AB SPEC (2026-10-02, red1 go). Goal: cut s/frame with no visible change. All arms opt-in URL switches; defaults unchanged until proven.
+  - S-A `&capfmt=jpeg` (`&capq=` default 0.95): _captureFrame encodes JPEG instead of WebP 0.92 (cinema_maxq.js both toBlob sites). §CAPTURE_ENC logs
+    encode ms + bytes per frame (also on the control arm, so the WebP cost is measured, not estimated).
+  - S-B `&metereach=N`: §FILM_EXPOSURE meters (SourcedLight.meterRead) only every Nth film frame and on a gate snap; between, it eases toward the last
+    target. Log `metered=0|1`.
+  - S-C `--still-budget 6,6` (exists, cli_silent_bake.js:240).
+  - Clip: Hospital_silent, full 24 fps grid, `--frame-range 1880:1940` (heavy interior, 3-5 s/frame in the killed run), 1920x1080, --visual-panel.
+  - Witness (numbers, no eyes): per arm s/frame from §FRAME_HASH spacing + §CAPTURE_ENC/§FILM_EXPOSURE; picture change = ffmpeg PSNR/SSIM of each arm's
+    mp4 vs the control mp4, frame by frame. Pass = SSIM >= 0.99 mean and min >= 0.98 (8-bit H.264 both sides). A run where the clip has <50 frames
+    or any arm's §FRAME_HASH count differs = INCONCLUSIVE.
+- §SPEED_AB RESULT (2026-10-02 08:12, sw v1545 45a7ed7d, Hospital_silent --frame-range 1880:1940 = 324 frames incl. the load-path freeze, 53 reused;
+  logs scratchpad a0e48414…/ab/*.log, phases.py on the 59 rendered heavy-interior frames; ctrl was partly GPU-shared, ctrl2 = the baseline):
+  | arm | setup | light | TAA | AO | capture | total ms | encode ms | luma vs ctrl mean/max | EV vs ctrl max | PSNR vs ctrl dB |
+  | ctrl2 (repeat) | 463 | 838 | 949 | 1044 | 955 | 4,252 | 360 | 0.02/0.12 | 0.000 | 44.9 (noise floor) |
+  | A jpeg | 430 | 724 | 900 | 861 | 433 | 3,350 | 23 | 0.02/0.14 | 0 | 40.0 |
+  | B metereach=4 | 294 | 149 | 1042 | 873 | 719 | 3,078 | 260 | 1.02/**21.0** | **0.710** | 38.2 |
+  | C budget 6/6 | 300 | 527 | 580 | 674 | 824 | 2,906 | 259 | 0.06/1.46 | 0 | 44.1 |
+  | ABC | 401 | 196 | 1060 | 778 | 649 | 3,087 | 34 | 0.98/21.0 | 0.710 | 36.5 |
+  - Pipeline is deterministic before encode (ctrl vs ctrl2: EV identical, luma <= 0.12). SSIM vs ctrl is NOT a usable gate: ctrl2 itself reads mean 0.9885
+    min 0.918 (H.264 noise), every arm sits inside it — judge by pre-encode luma (§FRAME_QA) + EV + PSNR against the ctrl2 floor instead (§SPEED_AB gate amended).
+  - A PASS: pre-encode picture identical, encode 360 -> 23 ms, capture -0.5 s. PSNR 40 dB = encoder difference only.
+  - B FAIL: exposure lags up to 0.71 EV, a 21-level luma jump — the meter must run every frame. But it costs ~0.7 s in heavy frames -> next: a cheaper meter
+    (read the finished frame's 64x36 like §FRAME_QA, or meter at lower res), not a skip.
+  - C PASS: luma max 1.46, PSNR 44.1 ~ noise floor; TAA+AO -0.74 s.
+  - 08:32 red1 ("what if without LoadPath ON? can we leave it to run on its own while Wifi off?"): load path costs ~264 freeze frames x ~0.9 s
+    = ~4 min of ~3 h -> kept ON. FULL Hospital bake QUEUED on gpu.lock (runs after arms AC + M): sw v1546 @5f371412, `BAKE_EXTRA="--visual-panel
+    --still-budget 6,6 --url-query &capfmt=jpeg"`, log /tmp/wt-fastbake/out/Hospital_silent_hires_2026-10-02_0832.log, lands ~/Downloads/
+    Hospital_silent_full_AFTER_1920x1080_24fps_2026-10-02_0832.mp4. Estimate ~2.1 s/frame x 4,963 = ~2.9 h (was ~4 h). Meter fix (&meterprime=auto,
+    arm M) NOT in it — unproven at launch. On landing: §LIGHT_FIELD_DB key 21324567:90186, §ZONE_IDB_CACHE hit, §GI_FILM done errFrames=0, ffmpeg
+    black/freeze scan, §FRAME_QA luma 2345-2360, §CAPTURE_ENC fmt=jpeg, §MAXQ_FRAME_BUDGET taa=6 ao=6.
+  - 08:40 Alt+S fix/sky-surface @436b85cc sw v1546 = §WIND_FLIP (flipped-winding geometries DoubleSide; patches geometry_wind_flip): Hospital 127/20,609
+    flagged, §FAULT identical on/off (their commit) -> queued Hospital bake kept WITHOUT it. MERGE 436b85cc into fix/fast-bake after it lands, before any
+    HHS film (2,801/4,710 flagged); sw clash v1546 both sides -> v1547; check the light-field fingerprint still hits (the names patch moved it).
+  - 08:45 red1: "kill the hospital bake, do these first" -> queued full bake killed (never started). §WIND_FLIP merged = sw v1547 (5f5eeecc).
+  - AC (jpeg + 6/6) PASS: heavy frames 4,252 -> 3,293 ms (-23%), EV identical, luma max 1.45, §GI_FILM errFrames=0. M (&meterprime=auto) NO GAIN:
+    EV identical but prime forced 20/49 frames (new programs keep appearing); run disturbed by an unrelated GPU witness (/tmp/wt-threads-2) -> dropped.
+  - Code read (effects.js ~5160-5510 + lib/TAARenderPass.js): TAA and AO are ALREADY folded — the 8 AO steps continue TAA jitter samples 9-16 (16-entry
+    table) and add N8AO quads (~34 ms) + one depth-prime render; shadow maps already autoUpdate=false. So 6/6 = 12 of 16 jitter samples, 6 AO accumulations.
+- §SPEED_PAR SPEC (2026-10-02, red1 go). Two levers beyond §SPEED_AB.
+  - P1 PARALLEL SPLIT: K=2 cli_silent_bake instances at once on disjoint --frame-range halves, own ports/profiles, one gpu.lock held for the pair;
+    seams are frame-exact by design (cli_silent_bake.js:130). Test on HHS_Office_Federated_silent (smaller VRAM), 24 fps, jpeg + 6/6, frames
+    1800:1920 (away from the load-path freeze at ~26%): single 1800:1920 vs pair 1800:1860 + 1860:1920. Witness: render-span seconds (first->last
+    §FRAME_HASH, boot excluded), VRAM peak (nvidia-smi every 2 s), §GI_FILM errFrames/gpuErrors=0, §FRAME_QA luma per global index pair vs single
+    (must match <= 0.15, the ctrl/ctrl2 floor). Pass = pair span <= 0.65 x single span with 0 GPU errors.
+  - P1 RESULT (09:01, HHS 1800:1920, jpeg + 6/6): FAIL. single = boot 51 s + render 84 s (0.71 s/frame, was 1.40 at webp + 8/8 = HALF);
+    pair = 221 s wall vs 143 s: pb sat ~107 s in boot while pa rendered, then rendered alone — two Chrome bakes do NOT render concurrently on
+    this GPU (VRAM was fine: pair peak 2.4 GB). Seam: pb luma +2.3 at 1860, then ~-1.1 for 30+ frames (pa part 0.057 = floor) -> film state
+    carries history (exposure ease, probably bounce) — any piece split needs >= 1-2 s pre-roll frames discarded. Pieces = resilience only, no speed.
+  - Audit (subagent, verified): L1 _waitFoldDone polls 100 ms (cinema_maxq.js:763, ~50 ms idle/frame); L2 effects.js:6159/6169 env-map/glow safety
+    timers armed EVERY frame (60 s each -> ~25 live); 2x _raf2 per frame (cinema_maxq.js:3592, 4126). §STILL_RES resize: 0 lines -> not firing.
+    HHS capture split (sw v1548): compMs 225 / enc 62 / hash 7 / idb 11 ms — the composite (inside it a composer render + bounce hook) is the cost.
+    §BAKE_LEAN (&bakelean=1, sw v1550) = L1 + L2; §CAPTURE_PARTS (sw v1549) splits composer / draw3d / hud. HHS base vs lean test running.
+  - §CAPTURE_PARTS (sw v1549, HHS): composer 7 / draw3d 222 / hud 8 ms — draw3d = the bounce hook. §BAKE_LEAN (&bakelean=1) NO GAIN (0.725 vs 0.700).
+  - §GI_FILM_PARTS (sw v1551, HHS, ms/frame): grab 86 (WebGL frame -> 2D + blank probe + colour copy) / geom 25 (WebGPU bounce) / read 58 (float
+    33 MB) / loop 49 (JS float->byte) / comp 2. &gifast=1 (no Math.max/min) PASS 0.724 -> 0.686 s/frame, luma 0.071/0.77 (HHS floor 0.069/0.79).
+  - §GI_FILM_8BIT &gi8=1 (sw v1552) PASS: rgba8 bounce target -> HHS 0.724 -> **0.565 s/frame (-22%)**; bounce 220 -> 110 ms (read 25, loop 6);
+    luma vs base 0.060/0.62, compositeMean 116.6 vs 116.5, errFrames=0 gpuErrors=0. Remaining grab ~61 ms is mostly the required WebGL readback.
+  - BAKE RECIPE now (all opt-in, defaults unchanged): `--still-budget 6,6 --url-query &capfmt=jpeg&gi8=1`. HHS 24 fps ~3,275 x 0.565 = ~31 min
+    (was ~76 at webp 8/8). Hospital not yet measured with gi8 (bounce ~179 ms there).
+  - P2 CAPTURE OVERLAP: first SPLIT the remaining capture (jpeg made encode 23 ms, capture still ~430 ms): §CAPTURE_ENC compMs (HUD composite),
+    §CAPTURE_TAIL hashMs + idbMs (sw v1548, logging only). Build the overlap only on the part the split shows is the cost.
+  - ABC did not add up (TAA 1060 with taa=6): with the meter skipped its warm-up work moves into the first TAA render; single run, noisy. AC (A+C) arm queued.
+- ▶ RESUME 2026-10-02 04:00 (Alt+C session closing; red1: "do not start as we resume in new session") — supersedes the 03:25 state + §BAKE_QUEUE blocks.
+  - bim-ootb fix/fast-bake **sw v1543**, pushed, no PR, worktree /tmp/wt-fastbake. Since v1533: v1534 §GI_FILM_CARRY C1-C4 (§3) · v1538 merge
+    fix/sky-surface v1526-1531 (surface names, plaster, furniture polish reach films; §FLOOR_CONTACT/§OBJECT_CONTACT OFF under A._maxqActive) ·
+    §IFC_SURFACE_NAMES patches for the film DBs (HHS_Office_Federated_silent 2,628 names, Hospital_silent 18,841; scripts/ifc_surface_patch.js
+    --db <X>_silent.db; Terminal_silent needs none) · v1539 §FILM_BLANK_FRAME + §FILM_GATE_EXPOSURE_SNAP · v1540 merge feat/freeze-perf-panels
+    (CCTV panel in the load-path freeze, §FREEZE_BANDS) · v1541 §FREEZE_ANIM + plain-English copy · v1542 §FREEZE_PERF_ROOMS · v1543 STALE needs
+    camera motion. bake_hires_offline.sh: gpu.lock + saved day corner (BAKE_DAY overrides). Freeze-panel spec: PERFORMANCE_AS_CLASH.md §19-§19.4.
+  - DELIVERED 2026-10-02: ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_15fps_2026-10-02_0230.mp4 (104.8 MB, 2,047 fr, key
+    1b214d46:90224, §ZONE_IDB_CACHE hit, bounce on all 2,044 frames, 0 blank). Terminal DELIVERED 04:02: ~/Downloads/Terminal_silent_full_AFTER_1920x1080_15fps_2026-10-02_0322.mp4 (69.7 MB, 1,381 fr, 40 min,
+    key 1b214d46, §ZONE_IDB_CACHE hit, bounce 1,374 frames 0 errors/rebuilds, 0 blank, CCTV panel 47 rooms PASS, §FREEZE_ANIM settled once,
+    §CPE_REVEAL_LEAK 47 lines — item 9).
+  - Queue script STOPPED (scratchpad 9e876aa6/queue.sh). Hospital NOT started (red1). TO DO, in order:
+    1. merge origin/fix/sky-surface @f78a6579 into fix/fast-bake (§SKY_FIELD_FURNITURE REVERT -> key 21324567:90186, §DOME_GLOW = red1's wall-lamp
+       half-sphere, §ZONE_EYE_SKIP_OPEN, §LOCAL_EXPOSURE_BILATERAL); sw.js conflict: keep both, higher CACHE_VERSION +1.
+    2. rename patches/HHS_Office_Federated_silent.db.lightfield.bin.k21324567 and Terminal_silent...k21324567 over the 1b214d46 files.
+    3. Hospital_silent sidecar: the Alt+S session (PHOTOREAL_STILL_RENDER.md resume) is rebaking it WITH the 18,841 names (no-names one = STALE,
+       moved aside). Release only on its message: key 21324567:90186, occluderTris ~5.8M, restore = §ZONE_IDB_CACHE hit WITH the names patch.
+    4. Hospital full bake at **24 fps** (red1 2026-10-02: "next bake after this, Hospital should be at full 24fps"; HHS 15 fps took 50.5 min at
+       ~1.45 s/frame, Hospital 15 fps ~2.3 s/frame x 2,937 -> at 24 fps ~4,700 frames, plan ~3 h): BAKE_W=1920 BAKE_H=1080 BAKE_FPS=24 BAKE_TAG=full_AFTER BAKE_EXTRA="--visual-panel" scripts/bake_hires_offline.sh
+       Hospital_silent (saved corner = tl). Read: §LIGHT_FIELD_DB key match, §ZONE_IDB_CACHE hit, §DOME_GLOW, no §GI_FILM_OFF, frames 2345-2360
+       luma (the 10-01 flash: 105.7 -> 87.8 -> 110), §FILM_BLANK_FRAME.
+    5. LTU (red1 2026-10-02 12:40: "it was my silent db but i just didn't save as _silent_"): ~/Downloads/LTU_AHouse.db IS the film DB —
+       cinema_path 3 pins, 61.2 s, OLD schema (no buildup/room_title/reveal/day_counter/clash/measure/storey_reveal -> read as off, effects.js:10512),
+       no 4D tables (tasks/schedules). Linked /tmp/wt-fastbake/buildings/LTU_AHouse_silent.db -> it. patches/LTU_AHouse_silent.db.sql = GEOREF +
+       storey_walkable_raster only (no IFC names, no WIND_FLIP). Asked Alt+S for the sidecar (key 21324567) + whether names/WIND_FLIP blocks are
+       needed — after the Hospital bake, on red1's go.
+  - Coordination: red1 standing OK (2026-10-02) — Alt+C and Alt+S sessions arrange GPU / sidecars / merges directly; red1 only on exceptions.
+    GPU: gpu.lock, one headless render, >= 3 GB free before a full bake. Per-DB artifacts (patches .sql, .lightfield.bin) are keyed on the DB file
+    name AND fingerprinted on geometry/material names — a new patch can stale a sidecar (§4 §RESOLVE_BY_BUILDING).
+  - The 10-01 Hospital film (…_noLoadPath_AFTER_…_1417.mp4) is superseded: occluder defect (in-bake rebuild), no bounce after f=1071, black 2:35.
+- RESOLVED (merged at v1533, then v1538): merge from the stills session (§FROM THE STILLS SESSION 2026-10-01) L24-30 — fix/fast-bake lacked origin/fix/sky-surface after 22a8e253. Includes §MEP_SERVICE_COLOUR v1/v2 (0bd4e6c8, 1a9a7eea; MEP painted by service per BS 1710; canvas, stills AND films; `&mephue=disc` = old), §LAMP_SHADOW_TOPK 81a1b359 (still-only, default off), 6d725a81 (proxies RAL 7035, luminaires RAL 9016 = all views). §GLASS_TONE_STILL, §LAMP_CONTACT_SHADOW, §LAMPS_RATED_DEFAULT are Alt+S only. Dusk (`&dusk=1`) is an Alt+C matter (red1). Procedure: in /tmp/wt-fastbake `git fetch origin && git merge origin/fix/sky-surface`; sw.js conflict = keep BOTH precache additions, take the HIGHER CACHE_VERSION. Witness viewer/tests/witness_mep_service_colour.js PASS 7/7.
+- SUPERSEDED by the 03:25 state above — §RESUME 2026-10-01 08:30 L32-37: fix/fast-bake sw v1533 (pushed, no PR, not on main/OCI) = fix/sky-surface (Alt+S v1516-1525) + Alt+C work: §FAST_BAKE FB1/FB2, §FILM_INHERIT (gate, lamp data, per-shot shadow edge, window pull, glass env/mirrors), §PREBAKE PB1/PB2, §LOADPATH_STACK_ONLY (freeze 13 s -> 0.45 s/frame), §LOADPATH_CLIP_CLOCK/_CLIP_SKIP, §132 twins (none found: signature too strict), §FILM_CAM_LIGHT (eye light back), ADAPT up 6 / down 4, §INTERIOR_LIGHTS_ARC (lamps off only with no ARC). Worktree /tmp/wt-fastbake. Bake tool scripts/bake_hires_offline.sh with BAKE_W/H/FPS/TAG/EXTRA (e.g. `--frame-range 1065:1365 --no-load-path --write-prebake`).
+- Deliverables (~/Downloads) L38: Hospital_silent_ARCfull_long_AFTER_..._0655.mp4 (red1: "looks all good"); ..._ARCfull_lamps_AFTER_..._0733.mp4 (the bad-bounce clip).
+
+- ▶ 2026-10-02 10:41 HHS 24 fps DELIVERED (red1 "Do the HHS then. Let it run"; then "pause after HHS" — nothing queued; review with Alt+S, red1
+  decides next): ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_24fps_2026-10-02_0934.mp4 (164 MB, 3,274 fr, 136.4 s), sw v1552 @7498bb61
+  (§WIND_FLIP rows=2801) + recipe `--still-budget 6,6 --url-query &capfmt=jpeg&gi8=1`. §CLI_BAKE_WALL 3,650 s (est. ~75 min without the recipe;
+  first 40% 0.97 vs 1.41 s/frame at the 02:30 15 fps bake; the 0.565 s/frame slice estimate was a light stretch — corrected).
+  PASS: key 21324567:90186, §ZONE_IDB_CACHE hit, §GI_FILM done 3268 meanMs=100 errFrames=0 gpuErrors=0, unconverged=0, 0 Uncaptured, 0 blank,
+  ffmpeg 0 black / 0 freeze to frame 3274. FAIL (unchanged vs 02:30): §CPE_REVEAL_LEAK ARC:17 (57 lines), §HUD_OVERLAP_WORST 324x216,
+  §INTERIOR_LIGHTS_WITNESS poolLit 0/122, §CLI_BAKE_POSECHECK maxErr 50.1 m. Quality discussion with Alt+S (bim-compiler-72) sent 10:43.
+  Alt+S review (bim-compiler-72, 10:50, numbers/code only): 0934 is the first film on key 21324567 (02:30 used stale 1b214d46) and on
+  §ZONE_EYE_SKIP_OPEN (no counter line — gap). §DOME_GLOW does NOT reach films: §FIXTURE_FACE 0 lines in both film logs; effects.js startStillRefine
+  gates _fixtureFaceApply / lampSync / meterFinal on !A._maxqActive ("Alt+S only (films: uFixFace 0)") = an inheritance gap (§0 rule), red1 to decide.
+  IFC names were in both films (§PATCH_APPLY 2,637 -> 5,440 statements = +2,801 WIND_FLIP rows). Proposed still checks (~10 min GPU each, on red1's
+  go): gi8 banding at HHS …880424616 + …878367234 (|dLf| p50/p99, new edges |dLf|>=15, floor-patchy vs default-twice floor); 6/6 flat-wall local
+  std; §WIND_FLIP film-start line + raycast count of first hits on the 136 flagged FRONT_SIDE elements, default vs &windflip=0.
+  Open: Hospital recipe clip (ACG) INCONCLUSIVE — every phase slower incl. TAA/AO, GI grab 635 ms = GPU contention (an oci_patch_gate.js run
+  outside gpu.lock overlapped the window); re-run with a free GPU when red1 resumes.
+
+- §REVEAL_DOOR_LEAK (2026-10-02 11:05, red1 "bad separation of concern" / "PROCEED"). FOUND by §REVEAL_TRAP (&revealtrap=1, sw v1554, HHS slice
+  1285:1345): the 17 leaked ARC meshes are all IfcDoor plain meshes (guids 3XrBtx9eX7mQE6EqWHP…), re-shown by time_machine.js:1685 renderAtTime
+  `obj.visible = true` (single-mesh showReal branch) <- tmSetCursor <- cinema_maxq.js:3764, every frame. time_machine.js has never consulted
+  hiddenDiscs (its own note :694); the reveal writes once per slot, the 4D tick every frame, so the last writer wins.
+  SPEC: final visibility of a single mesh = built at cursor (4D owner, 4D_MODEL_INTEGRITY §I "is it on screen at cursor?") AND its discipline is
+  shown (discipline filter owner, panels.js _applyDiscVisibility / A.hiddenDiscs). renderAtTime keeps computing "built" and writes visible only
+  through one helper `_discShown(obj)` (false when obj.userData.disc is in app.hiddenDiscs). No change to placed/frontier/staged logic.
+  Witness: the same slice with &revealtrap=1 -> §CPE_REVEAL_LEAK lines = 0 and §REVEAL_TRAP lines = 0; §PERF_TRAVERSE/§GEO_ORDER/§SUPPORT_CYCLE
+  unchanged vs the trap run; outside the round (hiddenDiscs empty) behaviour is identical by construction.
+  WHY NOW (red1: "the 4D never put back before"): renderAtTime has always re-written SINGLE meshes every tick — its delta skip exists only for
+  Batched/Instanced (time_machine.js:1736/:1806). §SURFACE_R10 (735c0dd3, PR #1763, 2026-09-24) splits doors with hardware into 2 materials and
+  a split element never enters a batch (streaming.js:989-1003) -> HHS doors became single meshes -> re-shown every tick. Before 09-24 they were
+  batched and skipped once built (topout 0.26 < reveal 0.40). Option B (single meshes join the delta skip) rejected: changes every single mesh.
+  RESULT sw v1555 a7ebeafd (pushed): trap2 slice — §REVEAL_TRAP 17 -> 0, ARC/STR §CPE_REVEAL_LEAK 2 -> 0 (one pre-hide line at slice start,
+  hiddenDiscs=[], in both runs = slice artifact), §PERF_TRAVERSE discKept=17 hiddenDiscs=[STR,ARC] every pass; §GEO_ORDER/§SUPPORT_CYCLE/
+  §HOSTED_BEFORE_HOST/§DEQ_REPAIR identical; GI errFrames 0; frame 1285 luma equal (doors re-shown after it), 1286+ +1.4..3.2 (doors gone).
+  Not yet re-measured: Hospital 48 / Terminal 74 (expected same cause — their split doors), next full film.
+
+## 1R. REVIEWER TAKE (bim-compiler-19, 2026-10-02; numbers only, no frame judging — PRIMAL LAW)
+Reviewed: ~/Downloads/HHS_Office_Federated_silent_full_AFTER_1920x1080_15fps_2026-10-02_0230.mp4 + /tmp/bake_HHS_Office_Federated_silent_2026-10-02_0230.log. Goal context (red1): the film is a hook for the long tail of DIY BIM users; first look matters, so polish is justified, but it needs a finish line.
+- PASS (measured): 2,047 frames 1920x1080 15 fps 136.5 s 105 MB; §CLI_BAKE_WALL 3029 s aborted=no fileOk=true; §MAXQ_QUALITY unconverged=0; §FRAME_REUSE_TOTAL 3/2047; §GI_FILM done staleFrames=0 errFrames=0 rebuilds=0 gpuErrors=0 (orientation asRead=1.26%, vs 79.88% in the bad 0733 Hospital clip); blankGrabsRecovered=115; ffmpeg blackdetect(d=0.2) 0 segments + freezedetect(d=1.5 s) 0 segments, scan completed over 2047 frames.
+- FAIL lines the bake itself printed (unattributed, need an owner):
+  1. §INTERIOR_LIGHTS_WITNESS poolLit=0/122 past topout (2 samples). Known: this witness counts only the pool, not the data-path lamps (§2 item 3) — so it may be a witness false alarm; not proven either way for HHS.
+  2. §CPE_REVEAL_LEAK LEAKED={"ARC":17} across ~8 slots (tNorm 0.41-0.80; ghost:MEP / tail-one:MEP / tail-all:MEP; hiddenDiscs=[STR,ARC]). A discipline the round did not ask for is visible. Looks real.
+  3. §HUD_OVERLAP_WORST hud.pathmap x loadpath.infopanel.near overlap 324x216 px (rects [1566,30,324,216] [1542,30,355,248]). Also FAILed in the Hospital clips (pre-existing, §FILM_INHERIT mid-clip) — a real on-screen layout defect.
+- NOT MEASURED here: whether any frame is "one look" quality (red1's call; no screenshot as evidence). Light-field sidecar used for this bake = 1b214d46 (stale after the f78a6579 merge, see §1).
+- Verdict: technically clean and deliverable; 3 FAILs open. Finish line proposed (red1 to confirm): film clean = 0 black/frozen, §GI_FILM errFrames=0, and the three FAILs above each either fixed or proven a false alarm. After that, stop tuning the look.
+- TERMINAL (reviewed 2026-10-02 04:03; ~/Downloads/Terminal_silent_full_AFTER_1920x1080_15fps_2026-10-02_0322.mp4, log /tmp/bake_Terminal_silent_2026-10-02_0322.log): PASS = 1381 frames 1920x1080 15 fps 92.1 s 69.7 MB; §CLI_BAKE_WALL 2394 s aborted=no fileOk=true; unconverged=0; §FRAME_REUSE_TOTAL 7/1381; §GI_FILM done staleFrames=0 errFrames=0 rebuilds=0 gpuErrors=0 blankGrabsRecovered=77; ffmpeg 0 black + 0 freeze segments (scan completed). FAILS: (a) §CPE_REVEAL_LEAK LEAKED={"ARC":74} on 39 slots (HHS had ARC:17) — real, scales with the building; (b) §HUD_OVERLAP_WORST same pathmap x infopanel overlap 324x216 px (3rd film in a row); (c) §INTERIOR_LIGHTS_WITNESS PASSED (pool 110->122/122 lit past topout) then FAILed ONCE at +2069 s with poolLit=0/122 — one frame-sample, unattributed; (d) NEW: §CLI_BAKE_POSECHECK maxErrVsOverridePlanM=75.85 (MISMATCH), meanDistVsDerivedPlanM=46.7 "the stored path, not the derived one" — the baked camera path differs from the derived plan by up to 75.9 m; not explained in the log, needs an owner (may be by design for an authored path; unproven).
+- HOSPITAL: NOT baked yet (queue stopped; red1: resume in a new session, "do not start"). Reviewer pick-up when it lands: (1) §GI_FILM done errFrames=0 gpuErrors=0; (2) sidecar occluderTris ~5.8M, NOT 0, key 21324567:90186, §ZONE_IDB_CACHE hit WITH the 18,841 names; (3) same ffmpeg scan: `ffmpeg -nostats -i <mp4> -vf "blackdetect=d=0.2:pix_th=0.10,freezedetect=n=-60dB:d=1.5" -an -f null -` expect 0 black_start / 0 freeze_start, confirm the scan reached the last frame; (4) the FAIL lines below (§2 items 9-11); (5) luma frames 2345-2360 (the 10-01 flash 105.7 -> 87.8 -> 110) via §FRAME_QA, not by eye. Record the numbers here as a new TERMINAL-style bullet.
+- Count note: reviewer grep found 39 §CPE_REVEAL_LEAK lines (all ARC:74) in the Terminal log; the Alt+C resume says 47. Likely counting method (§CLAIM echoes vs [con] lines); the leak size ARC:74 is the same either way — re-count with one stated command before quoting.
+
+## 2. OPEN ITEMS (from §RESUME 08:30 L39-50, status per later sections)
+1. BOUNCE SPLIT: CLOSED. Root cause = GPU out-of-memory (§3); C1-C4 BUILT v1534, STALE rule amended v1543.
+2. LIGHT FIELDS: the furniture change was REVERTED on fix/sky-surface (233b6295, key 21324567:90186) but fix/fast-bake still carries it (key 1b214d46:90224) until the post-Terminal merge. HHS/Terminal _silent sidecars at 1b214d46 exist (Alt+S, 02:0x) and are used by the running queue; the Alt+S session rebakes all three _silent sidecars at 21324567 (Hospital first). Over budget, shellSoup drops ALL occluders (Hospital occluderTris=0) — the 10-01 1417 Hospital film carries it.
+3. LAMP DATA REBUILDS ~every frame (283 x ~220 ms + cove/IR): films feed the frustum-picked `needed`; feed all placed fixtures as Alt+S does. Expected p50 3.3 -> ~2.6 s/frame. §INTERIOR_LIGHTS_WITNESS counts only the pool (FAIL poolLit=0/122 while 122 data lamps lit).
+9. §CPE_REVEAL_LEAK: the reveal round leaks ARC meshes it hid (Hospital 10-01: 48; HHS 10-02: 17, 58 lines; Terminal 10-02: 74) — open, not investigated; grows with building size. Slots seen: ghost:MEP, tail-one:MEP, tail-all:MEP with hiddenDiscs=[STR,ARC].
+10. §HUD_OVERLAP_WORST hud.pathmap [1566,30,324,216] x loadpath.infopanel.near overlap 324x216 px: FAILs in the Hospital 10-01, HHS 10-02 and Terminal 10-02 films — a standing on-screen layout bug in every film; open, not investigated (reviewer take §1R).
+11. §CLI_BAKE_POSECHECK Terminal 10-02: maxErrVsOverridePlanM=75.85 MISMATCH, meanDistVsDerivedPlanM=46.7 ("the stored path, not the derived one") — baked path differs from the derived plan; may be by design for an authored path, UNPROVEN; check HHS's value too before deciding it matters.
+12. Finish line for the showcase film (reviewer proposal, red1 to confirm): per film 0 black/0 frozen, §GI_FILM errFrames=0, and items 9-11 each fixed or proven a false alarm; then stop tuning the look. Audience (red1): long-tail DIY BIM users; first look matters.
+10. §FREEZE_ANIM on short freezes: HHS's 6 s freeze never printed a settle line (two-stack reveal + 0.5 s CCTV stagger); scale the stagger to the hold.
+11. §GI_FILM_CARRY flash check: §FILM_GATE_EXPOSURE_SNAP fired but the 15-frame slice moved the meter only 0.075 EV (full film: 0.81 EV); a 1-frame
+    -4 luma dip stays at the switch (render-level). Prove on the Hospital full bake.
+4. Torch vs eye light: both on; red1 "Keep if the impact is better" — unjudged. Twins: relax signature (class sequence) if wanted.
+5. N1 exterior shadow base gap at the wing: re-judge on a v1530+ whole-building clip (§FILM_SHADOW_EDGE range 917 m, nb 0.22 m). The judged clip was baked at v1527, BEFORE §FILM_SHADOW_EDGE (v1530) L314-315.
+6. §FILM_INHERIT is ON only on whole-building frames; per-zone switch (F5) for build-up not built.
+7. Unbuilt: §RESOLVE_BY_BUILDING (§4), FB3/FB4 (§5), S1 (§6). (§GI_FILM_CARRY C1-C4 BUILT; S4 built per §6.)
+8. Dark passage frames 1106-1136 (red1 asked, study only) L311: torch on (450 lm), exposure adapts ~1 EV/s capped down, passage needs ~7 EV in ~2 s -> luma 3-12; `LightLaw.ADAPT` decides.
+
+## 3. §BOUNCE_SPLIT ROOT CAUSE + §GI_FILM_CARRY SPEC (2026-10-01) L76-96
+- CAUSE (measured, not the lamps): the 0733 bake's bounce renderer ran OUT OF GPU MEMORY. A parallel stills session (scratchpad 4a28e70a/c1, shots.sh, Alt+S bounce stills, same RTX 4060 8 GB) logged at 07:38:17 `§GI_CARRY verdict=FAIL gpuErrors=60781 ... VK_ERROR_OUT_OF_DEVICE_MEMORY`; the bake built its bounce engine 07:37:08-07:38:21.
+- Why it ran together: shots.sh holds /tmp/claude-1000/gpu.lock; scripts/bake_hires_offline.sh does NOT (no flock).
+- Why the film saw nothing: build() replaces renderer.onError (gi_still.js ~621), muting three.js's "Uncaptured WebGPU" line; filmFrame never read the error count; the still's §GI_CARRY has no film twin.
+- Symptoms explained: §GI_ROW_PROBE top=0 bottom=0, texFlip no difference, stale geometry pass = frozen bottom 43% from frame 1. Proof it is the engine: same 30 frames with `&filmbounce=0` -> bottom changes every frame (11.5 luma/frame, 0 frozen) L40-42.
+- v1532 lamps-ON is CLEARED: repro at v1533, frames 1065:1095, lamps ON from f=0: §GI_STILL_ORIENT_GEOM asRead=0.04% (= the good 0655 clip), §GI_FILM_CARRY gpuErrors=0, no STALE. (The bad bake read asRead=79.88% / reversed=77.84%.)
+- BUILT v1534 (gi_still.js filmFrame, bake_hires_offline.sh). Witness: a real OOM at build -> §GI_FILM_CARRY f=1 FAIL gpuErrors=5 -> §GI_FILM_REBUILD -> rebuilt 63 s -> f=2 OK (scratchpad 9e876aa6/bs/st.log). AMENDED v1543: STALE counts only when the camera moved — inside the load-path freeze a frozen camera gives identical passes (HHS 10-02 02:15: 3 false STALEs, 0 GPU errors, bounce OFF for 74%); re-run HHS 02:30 held the bounce through the freeze. Forced-drop rebuild crash seen 10-01 was the test switch left on through the rebuild (fixed, test-only). SPEC as built (each a § line): C1 §GI_FILM_CARRY per frame (WebGPU errors since last frame + pass fingerprint vs last; equal = STALE) + §GI_FILM_CENSUS on frame 1. C2 self-heal: FAIL/STALE frame shows the app frame WITHOUT bounce, disposes and rebuilds next frame; max 2 rebuilds per film, third -> §GI_FILM_OFF reason=gpu-failures; witness = forced-drop run (`__GI_STILL_INJECT_GEOM_DROP`). C3 a §GI_ROW_PROBE that drew nothing is not an answer (not stored in `__giOrientDecided`; no orientation measured with GPU errors goes to §GI_ORIENT_CACHE, since localStorage outlives the page). C4 scripts/bake_hires_offline.sh runs node under `flock /tmp/claude-1000/gpu.lock` (§BAKE_SCRIPT logs the wait).
+
+## 4. §RESOLVE_BY_BUILDING — next abstraction (2026-10-01) L67-74
+- Building-agnostic today: §FILM_BLANK_FRAME, §FILM_GATE_EXPOSURE_SNAP, §GI_FILM_CARRY + gpu.lock, freeze panels (any IfcSpace/compiled room set; INCONCLUSIVE when none), saved day-counter corner.
+- NOT agnostic: per-DB artifacts keyed on the DB FILE NAME: patches/<db>.sql (§IFC_SURFACE_NAMES, georef, raster) and patches/<db>.lightfield.bin.
+- Measured cost: Hospital_meta got the surface names, Hospital_silent film did not (fixed by hand, 18,841 rows); HHS/Terminal _silent had no sidecar; Hospital_silent sidecar went stale silently.
+- SPEC: resolve by building identity (the `bld=` the §LIGHT_FIELD_DB line prints), not file name; the § line names the file taken and why; key mismatch stays a logged rebuild. Owner: scene.js `_applyPendingPatch` + the light-field loader (Alt+S lane) — coordinate.
+- Partial fix already built: §FILM_INHERIT I1 `A._lightFieldByBuilding` (scene.js, main.js) fetches patches/<activeBuilding>_meta.db|_extracted.db.lightfield.bin L193-196. Measured gap before it (§POC_BAKE L131-133): film DB HospitalAjaibPath.db found no sidecar (404, reason=no-table).
+
+## 5. §FILM_INHERIT + FASTER BAKE (2026-09-30 → 10-01)
+### 5a. §FILM_INHERIT (fix/fast-bake, built; sw v1518-1519) L190-209
+- GOAL: film calls the SAME Alt+S SourcedLight; film adds only a per-frame GATE. I1 field by building; I2 stage `(!A._maxqActive || A._filmParity) && SourcedLight.stage` (lifts showstopper S2); I3 per-frame gate (cinema_maxq.js `A._filmGeomWhole` -> effects.js `A._filmParityStep` -> `SourcedLight.filmGate`, uniform uSLParams.x on only while whole building on screen: no build-up, no storey reveal); I4 portals park at intensity 0 under the field. `&filminherit=0` = control.
+- Known kept difference: film uniform budget still reserves portal slots, so its lamp cap is lower than Alt+S's (named, not smoothed).
+- NOT YET: F5 build-up-aware field (per-zone enclosedFrac(t)). On Hospital_silent the gate is ON only from relightFrac 0.959 (last 4%).
+- Witness a90 (2026-09-30 23:05) L210-217: I1 found the sidecar by building (key 21324567:90186) and restored it, BUT §ZONE_IDB_CACHE missed "geometry changed" (path db differs from Hospital_meta by mm in bounds; 20556.206 vs 20581.83 in one sum) -> full build: §SKY_VIEW_FIELD sweepMs=117408, §SOURCED_LIGHT ms=160393. I2/I3/I4 work. 0 WebGPU/pageerror/unconverged. §FILM_INHERIT_GATE logs only a CHANGE, so printed nothing (fix: log the first call).
+- Mid-clip 2026-10-01 01:33 L218-226 + CONTROL L227-235 (Hospital_silent frames 1116:1326, 960x540): gate ON at f=0 (whole=1, topoutU 0.3607), OFF at f=250 (discs-hidden:ARC+STR). RETRACTION: the "x5.5 shader cost" was WRONG; control also runs 13.5 s/frame in that window (pre-existing). Real inheritance cost: Hospital_silent wall 3579 vs 3452 s (+3.7%); HospitalAjaibPath 90 f 3.0-3.6 vs 2.1-2.5 s (+45%, 4.9k meshes). Luma gate-ON window mean 116.6 (inherit) vs 126.4 (control), dark% 23.5 vs 20.4, per-frame |dLuma| up to 105 = Alt+S model visibly changes the film; gate-OFF window 128.5 vs 127.9, max |dLuma| 10.9 = off equals the old film. Dark frame i=1202 dark in BOTH (load-path shot). HUD pathmap x loadpath.card overlap FAILs in BOTH (pre-existing). 1 unconverged frame in the inherit arm (i=242 timeout).
+- Per-path-db sidecars are needed for parity, not only speed: an in-bake rebuild skips EXACT_ALL (160 s) = NOT the Alt+S field. Sidecars baked: HospitalAjaibPath.db (6,930,474 B, 38 min), Hospital_silent.db (6,912,376 B, 39 min, EXACT_ALL) L225-235.
+### 5b. §FAST_BAKE (fix/fast-bake @68771ccf, sw v1517) L135-189
+- A/B v1515 vs v1478, same command (Hospital 90 fr, 1280x720): steady frame ~2.3 s p50 UNCHANGED; wall 442 -> 504 s; nothing broken. ~55% of a bake is setup before frame 1.
+- Setup breakdown (v1515): page load 37.7 s; sky-portal classification 70.8 + 53.0 s (staged twice) = 124 s = 36% of setup; bounce-engine copy 66.3 s (1537 chunks, 40 ms UI budget). No frames-1..16 warm-up exists (correction: §FRAME_COST is a running mean including frame 0).
+- BUILT FB1 (portal cache per BUILDING, `filmCache` keyed on visible glass) + FB2 (`anyHit()` first-hit ray instead of full intersect): Hospital 90 fr 504 -> 385 s. §FAST_BAKE_WITNESS (`&portalwitness=1`) PASS panesJudged=462 mismatches=0 on both arms. WebGPU errors/pageerror/unconverged 0.
+- NOT BUILT: FB3 persist pane sides in the sidecar (-27 s); FB4 bulk bounce-engine compile (64-66 s, measure first); FB5 draft-bake 960x540/taa 4 (look-changing, ask red1).
+### 5c. §IDLE_PREWARM STUDY + §PREBAKE (2026-10-01) L236-272
+- Existing pattern to copy: effects.js:2125 §PHOTO_PREWARM; time_machine.js:9828 tmWarmXrayElements. A headless bake has no idle user, so the same work must come PRE-BAKED (sidecar) or from a persistent browser profile.
+- Setup costs on Hospital_silent (before frame 1 at ~620 s): load-path shot search 155 s (pure data, pre-bakeable); bounce copy 62-66 s (GPU, per page); first bounce frame/shader ~60-75 s (GPU pipeline); window classification 27 s (pre-bakeable); light field <1 s (was 160); page+DB load 38 s.
+- §PREBAKE built (bim-ootb fix/fast-bake sw v1524): sidecar `buildings/patches/<db>.prebake.json` (gitignored). PB1 load-path shot (cpe_load_path.js `loadPathBuild`), PB2 window sides (sky_portal.js). HIT only if key matches and stored winner guid equals items[winner].guid; anything else = compute as today (logged reason). `&prebake=0` ignores; `&prebakecheck=1` compares -> §PREBAKE_CHECK PASS|FAIL. Node witness viewer/tests/witness_prebake_loader.js 8/8 PASS.
+- §CHECKPOINT T1 2026-10-01 06:24 (sw v1530, Hospital_silent 1150:1215 + freeze): PB written (294,359 B); portal recomputed (key mismatch, different visible glass at this tn). First real use of the written file still pending.
+- Still unverified in a browser (header says "NOT run in a browser yet" as of the §PREBAKE entry): the expected next-bake lines `§PREBAKE loadPath src=sidecar`, `§PREBAKE portal src=sidecar`, one `§PREBAKE_CHECK PASS`.
+
+## 6. §FRAME_COST STUDY (2026-10-01) L273-308
+- NORMAL frame (960x540): 1.9 s p50 = still-refine 8 samples 0.76 s + AO fold 12 renders 0.66 s + capture/HUD/encode 0.30 s + ~0.2 s other.
+- FREEZE frame was ~13 s (x8): §LOADPATH_BATCH_UNPACK containers=4872 elements=63059 turned 4,983 held objects into 73,797 (~69k draw calls x 20 renders/frame) — cpe_load_path.js:815-840, §129 FIX 3.
+- BUILT: §LOADPATH_STACK_ONLY (freeze 13 s -> 0.45 s/frame; §FRAME_REUSE_TOTAL 118/230; §LOADPATH_HOLD cameraMoved=false PASS; §LOADPATH_RESUME stepAtResume=0.0000 PASS). S5 AO 12 -> 8 (NOT 6: 8/8 is the measured row in `cinema_maxq.js` §MAXQ_FRAME_BUDGET, RMS 0.37; 6 never measured), ~0.2 s/frame, ~10 min per Hospital film. S4 §LOADPATH_PIXEL_DIAG_PRE_HUD now freeze-frames only.
+- NOT BUILT: S1 (white override pass without un-batching): not built blind because the un-pack exists since container colour changes on BatchedMesh never reached pixels (cause never found). First GPU step: log whitened pixels on 3 freeze frames with un-pack vs container-material white.
+- CHECKPOINT T1 facts: §FILM_SHADOW_EDGE range 916.8 m (was ~19,748 m), normalBias 0.2209 = (R+1.5) texels; §FILM_GLASS_ENV capture#1 405 ms once; §WINDOW_PULL skipped by its own rule (outside 1.156 >= inside 0.47); §MIRROR_OWN_MAT never applied (no mirrors in view); lamps=0 inside the §116 interior-lights-off span (film's own rule).
+
+## 7. CONTRADICTIONS / STALE SPOTS IN THE ORIGINAL — RESOLVED by the Alt+C session 2026-10-02 03:25
+- sw version: v1543 is current; §RESUME 08:30's v1533 is the 10-01 morning state (superseded, §1).
+- §RESUME item 2 (rebake after §SKY_FIELD_FURNITURE): superseded — the change was reverted on fix/sky-surface; see §2 item 2 for which key each branch carries.
+- §RESUME item 1 L43 next-step ("read gi_still.js engine start vs lamp data / glow"): stale — the lamps were cleared by repro; root cause = GPU OOM; item CLOSED (§2 item 1).
+- Line-number inventories (§STILL→FILM table L105-111, §1 inventory L339-375): HISTORICAL — cite trees 5c48105a / v1515; do not use their line numbers. Row 13 "Films have NO zone binding" is superseded by §FILM_INHERIT I2 (films stage SourcedLight on whole-building frames). Current file:line for the `installed()` sites: effects.js:4465 (`_calibOn`), sky_portal.js:116/132/176 (F0 item's effects.js:4167 / sky_portal.js:141 are old).
+- `installed()` leak claim (§2 VERDICT L392-400): STILL UNMEASURED. Code-read 2026-10-02: `SourcedLight.installed()` is true whenever the module is loaded (staged or not), so films reach those four sites; whether a film then takes the physical lamp scale is not shown by any film log. Stays an open F0 item.
+- §MEP_SERVICE_COLOUR in films: applied at material creation (streaming.js:777/847), no film gate, so films get it by default — but it prints NO § line (0 in the 10-01 Hospital and 10-02 HHS film logs): code-read, unwitnessed in films.
+
+## 8. DESIGN SPEC F0-F8 (2026-09-25, UNBUILT unless §1-§6 say otherwise) L412-603
+Frame: bind light to the WORLD (zones/probes/stable cascades), render each film frame like a still. All witnesses are node maths or one § line per frame. F-numbers below are the original's.
+- F0 gate hygiene: a step is `!A._maxqActive` (still only, must not leak) or `(!A._maxqActive || A._filmParity)` (carried). `installed()` tests that decide a LOOK value (effects.js:4167, sky_portal.js:141) become `SourcedLight.isActive()`. Witness `witness_film_gates.js` (STILL_ONLY / CARRIED / LEAK; LEAK target 0).
+- F1 light set as WORLD data (clustered shading, zone = cluster): one LIGHT TABLE per film from the finished building (`§FILM_LIGHT_TABLE`), fixed light-object pool, zone-driven (not frustum-driven) assignment with hysteresis (D_in < D_out) and an F-frame fade (F = 12 at 24 fps, "a choice to log, not a tuned number"); nothing steps 0<->full. Witness `witness_film_light_table.js`: constant point/spot count, max |dw| <= 1/F, crossWall = 0; per-frame `§FILM_LIGHTS` with `programs=` constant after frame 0.
+- F2 shadows (stable CSM, Valient + PSSM): per-shot fixed far box (built: §FILM_FIT_PER_SHOT), per-shot depth range + sphere fit + a second near-cascade light; per-shot `d_ref` for portal bias. WAITS for §STILL_SHADOW_EDGE (same functions). Witness `§FILM_SHADOW` per frame.
+- F3 exposure: fixed 0.383 per film today, or the still's meter once per shot; never per frame. Watchdog add: a continuous outside<->inside shot needs a time-limited ramp at a CITED rate (opt-in `--exposure-ramp`, last). Crossing-shot test path poses (red1 approved 2026-09-25) L513-517: outside `…1790319885328` cam [-5.529,-0.544,-42.321] -> café `…1790320117679` cam [-7.990,-7.785,-24.269], target [4.014,-6.761,2.325]; today it would FAIL (0.383 outdoor exposure holds, café stays at outside look).
+- F4 bounce: N spatial sub-passes per frame (`--bounce-passes N`, cost 53-61 ms/pass HHS 720p, Terminal 1080p +0.13 s/pass; N=4 ~ +0.5 s/frame arithmetic only, not measured); DDGI = later F4b; temporal reprojection rejected (ghosting, warm-up at every cut). Witness `§GI_FILM f= passes=N ms= passVar=`.
+- F5 4D build-up: zones from the FINISHED building; enclosedFrac_z(t) = placed boundary faces / all; lamp on at its placement ts with an F-frame ramp; pane by placed area fraction. Witness `witness_film_buildup_lights.js`. (= the "NOT YET F5" of §5a.)
+- F6 moving sun: per-frame uniforms already; replace the 6° daylight-glow step with a 2° ramp; inside test = zone test with hysteresis, not up-ray. Witness `§FILM_SUN`.
+- F7 determinism: keep the LCG (cinema_maxq.js:700-706), re-seed per frame from (film idx, frame idx), SSGI frame id = frameIdx x N + pass, log `seed` in §STILL_POSE. Witness: bake the same 5 s clip twice, `§FILM_HASH` all pairs equal.
+- F8 shader programs compiled once per film: `renderer.info.programs.length` may change only at frame 0 (111 s first frame).
+- ORDER (§4 of the original L605-633): F0 + leak check -> F8/F7 instruments -> F4 sub-passes -> F1 + F5 -> F3 -> F6 in parallel with Alt+S lanes. WAIT for Alt+S: F2 (§STILL_SHADOW_EDGE), F1 zone BINDING in films (§ZONE_OPEN_SKY + §SOURCED_DAYLIGHT, else films go black indoors as exteriors did at v1337), the fill-default flip (red1's call). Then re-cut parity clips (Terminal facade, Hospital interior, 5 s, 1080p24, control + parity) with per-frame lines and the cost projection before any full film.
+- Open decisions (L635-641): F (12 frames) and D_in/D_out fixed from the first clip's `§FILM_LIGHTS` churn line; film shadow radius (1 vs the still's 1.5) decided with F2; eye light in films (off under parity once F1 binds zones; until then part of the judged eb3a41c1 look).
+- Still-vs-film gaps measured in the old inventory that remain unrecorded as fixed: film ground reads warmer/darker than Alt+S at the same pose/sun (cause not found; 85 ground uniforms equal) L344; frame-reuse key carries no lamp/portal state L370; lights-off window covers 60.6% (Hospital) / 74.5% (Terminal) of the film L372; Alt+S fill default RESTORE flips under red1's principle 1 (red1's decision).

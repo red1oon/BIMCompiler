@@ -1,0 +1,6 @@
+
+══ POC-P4-BUYSIDE-LIVE — fold Odoo P00011 from LIVE odoodemo (W-P4-BUYSIDE-LIVE) ══
+
+§P4-BUYSIDE-LIVE ERROR connect ECONNREFUSED 127.0.0.1:8069 Error: connect ECONNREFUSED 127.0.0.1:8069
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1549:16)
+exit=2

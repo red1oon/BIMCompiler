@@ -1,0 +1,19 @@
+§NARR_FIT day1 cue=0.00 room=2.40 detail=2.46 short=0.60 -> DETAIL x1.024 end=2.40 slack=+0.00
+§NARR_FIT level1 cue=2.70 room=3.40 detail=2.19 short=1.53 -> DETAIL end=4.89 slack=+1.21
+§NARR_FIT steel cue=6.40 room=2.40 detail=1.45 short=1.09 -> DETAIL end=7.85 slack=+0.95
+§NARR_FIT slab cue=9.10 room=3.60 detail=2.48 short=1.30 -> DETAIL end=11.58 slack=+1.12
+§NARR_FIT inside cue=13.00 room=5.10 detail=3.59 short=1.43 -> DETAIL end=16.59 slack=+1.51
+§NARR_FIT hall cue=18.40 room=11.70 detail=8.22 short=1.51 -> DETAIL end=26.62 slack=+3.48
+§NARR_FIT days cue=30.40 room=13.10 detail=6.83 short=2.12 -> DETAIL end=37.23 slack=+6.27
+§NARR_FIT checks cue=43.80 room=12.80 detail=10.21 short=3.04 -> DETAIL end=54.01 slack=+2.59
+§NARR_FIT egress cue=56.90 room=15.30 detail=4.62 short=2.40 -> DETAIL end=61.52 slack=+10.68
+§NARR_FIT done cue=72.50 room=10.00 detail=5.25 short=2.91 -> DETAIL end=77.75 slack=+4.75
+§NARR_FIT loadpath cue=82.80 room=11.90 detail=8.63 short=2.31 -> DETAIL end=91.43 slack=+3.27
+§NARR_FIT clashes cue=95.00 room=19.70 detail=9.06 short=2.68 -> DETAIL end=104.06 slack=+10.64
+§NARR_FIT falsepos cue=115.00 room=33.40 detail=7.95 short=1.74 -> DETAIL end=122.95 slack=+25.45
+§NARR_FIT datum cue=148.70 room=10.80 detail=4.34 short=2.84 -> DETAIL end=153.04 slack=+6.46
+§NARR_FIT parade cue=159.80 room=7.70 detail=7.76 short=1.29 -> DETAIL x1.007 end=167.50 slack=+0.00
+§NARR_FIT pairs cue=167.80 room=4.50 detail=3.08 short=2.05 -> DETAIL end=170.88 slack=+1.42
+§NARR_FIT reveal cue=172.60 room=21.00 detail=5.05 short=2.83 -> DETAIL end=177.65 slack=+15.95
+§NARR_FIT value cue=193.90 room=4.60 detail=4.87 short=2.97 -> DETAIL x1.058 end=198.50 slack=+0.00
+§NARR_FIT cards cue=198.80 room=7.70 detail=5.76 short=1.89 -> DETAIL end=204.56 slack=+1.94

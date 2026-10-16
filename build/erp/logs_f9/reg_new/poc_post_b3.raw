@@ -1,0 +1,65 @@
+═══ W-POST-B3 — 0-seed posting triage (FABLE5_B3_POSTING_ORACLE.md §W-1) — EXTRACT/PROVE, never invent ═══
+    oracle = build/erp/glassbowl_data.db fact_acct (GardenWorld client 11, 300 rows) · source-counts extracted live 2026-07-17
+
+§B3-ORACLE id=200246 C_BankTransfer fact_acct_rows=0 src_docs=0 poster=NONE arm=∅-design
+§B3-ORACLE id=200056 C_DepositBatch fact_acct_rows=0 src_docs=0 poster=NONE arm=∅-design
+§B3-ORACLE id=623 C_ProjectIssue fact_acct_rows=0 src_docs=0 poster=Doc_ProjectIssue arm=G-seed(Fable5)
+§B3-ORACLE id=53137 A_Asset_Addition fact_acct_rows=0 src_docs=0 poster=Doc_AssetAddition arm=G-seed(Fable5)
+§B3-ORACLE id=53127 A_Asset_Disposed fact_acct_rows=0 src_docs=0 poster=Doc_AssetDisposed arm=G-seed(Fable5)
+§B3-ORACLE id=53275 A_Asset_Reval fact_acct_rows=0 src_docs=0 poster=Doc_AssetReval arm=G-seed(Fable5)
+§B3-ORACLE id=53128 A_Asset_Transfer fact_acct_rows=0 src_docs=0 poster=Doc_AssetTransfer arm=G-seed(Fable5)
+§B3-ORACLE id=53121 A_Depreciation_Entry fact_acct_rows=0 src_docs=0 poster=Doc_DepreciationEntry arm=G-seed(Fable5)
+   🟢 all 8 targets have 0 posted fact_acct rows in the captured oracle (300 total) — confirms the 0-seed premise
+
+§B3-TRIAGE C_BankTransfer arm=∅-design createFacts=(none — no Doc_ class; Doc.get has no case for C_BankTransfer)
+§B3-TRIAGE C_DepositBatch arm=∅-design createFacts=(none — no Doc_ class; Doc.get has no case for C_DepositBatch)
+§B3-TRIAGE C_ProjectIssue arm=G-seed(Fable5) createFacts=Doc_ProjectIssue.createFacts:125+ DR getAccount(WIP/asset) / CR m_line.getAccount(inventory), amt=cost (createCostDetail; null cost → return null)
+§B3-TRIAGE A_Asset_Addition arm=G-seed(Fable5) createFacts=Doc_AssetAddition.createFacts:60+ gate A_SourceType=Imported | A_CapvsExp=Expense → empty facts; else DR P_Asset/Charge acct, amt=AssetSourceAmt
+§B3-TRIAGE A_Asset_Disposed arm=G-seed(Fable5) createFacts=Doc_AssetDisposed.createFacts:65+ A_Asset_Acct / A_Accumdepreciation_Acct / A_Disposal_Loss_Acct
+§B3-TRIAGE A_Asset_Reval arm=G-seed(Fable5) createFacts=Doc_AssetReval.createFacts:55+ A_Asset_Acct/A_Reval_Cost_Offset_Acct + Accumdep offset pair
+§B3-TRIAGE A_Asset_Transfer arm=G-seed(Fable5) createFacts=Doc_AssetTransfer.createFacts:44+ A_Asset_New/A_Asset + Accumdepreciation_New/Accumdepreciation pairs
+§B3-TRIAGE A_Depreciation_Entry arm=G-seed(Fable5) createFacts=Doc_DepreciationEntry.createFacts:66+ per depexp line DR getDR_Account_ID / CR getCR_Account_ID, amt=getExpense (other-acctschema → empty)
+   🟢 triage: 2 ∅-by-design (no poster, DONE) + 6 G-seed (poster exists, 0 source docs → GardenWorld-model seed prep, Fable-5 lane) — design=2 g-seed=6
+
+§B3-DERIVE C_BankTransfer derivePostings.lines=0 basis=none
+§B3-DERIVE C_DepositBatch derivePostings.lines=0 basis=none
+   🟢 derivePostings emits ∅ for the 2 ∅-by-design classes (no Doc_ poster → no manifest) — as designed
+
+§B3-GEN class=A_Asset_Addition scratch=idempiere_b3 posted_rows=12 ΣDRc=4995000 ΣCRc=4995000 provenance=compiled-Doc_AssetAddition
+§B3-POST class=A_Asset_Addition arm=G docs=4 cells=8 maxDiff=0c oracle=compiled-Doc_AssetAddition
+   🟢 A_Asset_Addition derivePostings == generated oracle (maxDiff=0c, 4 docs × 2 schemas)
+§B3-GEN class=A_Depreciation_Entry scratch=idempiere_b3 posted_rows=2 ΣDRc=55556 ΣCRc=55556 provenance=compiled-Doc_DepreciationEntry
+§B3-POST class=A_Depreciation_Entry arm=G docs=1 cells=2 maxDiff=0c oracle=compiled-Doc_DepreciationEntry
+   🟢 A_Depreciation_Entry derivePostings == generated oracle (maxDiff=0c, 1 docs × 2 schemas)
+§B3-GEN class=A_Asset_Reval scratch=idempiere_b3 posted_rows=8 ΣDRc=220000 ΣCRc=220000 provenance=compiled-Doc_AssetReval
+§B3-POST class=A_Asset_Reval arm=G docs=1 cells=2 maxDiff=0c oracle=compiled-Doc_AssetReval
+   🟢 A_Asset_Reval derivePostings == generated oracle (maxDiff=0c, 1 docs × 2 schemas)
+§B3-GEN class=A_Asset_Transfer scratch=idempiere_b3 posted_rows=4 ΣDRc=1200000 ΣCRc=1200000 provenance=compiled-Doc_AssetTransfer
+§B3-POST class=A_Asset_Transfer arm=G docs=1 cells=2 maxDiff=0c oracle=compiled-Doc_AssetTransfer
+   🟢 A_Asset_Transfer derivePostings == generated oracle (maxDiff=0c, 1 docs × 2 schemas)
+§B3-GEN class=A_Asset_Disposed scratch=idempiere_b3 posted_rows=4 ΣDRc=1665000 ΣCRc=1665000 provenance=compiled-Doc_AssetDisposed
+§B3-POST class=A_Asset_Disposed arm=G docs=1 cells=2 maxDiff=0c oracle=compiled-Doc_AssetDisposed
+   🟢 A_Asset_Disposed derivePostings == generated oracle (maxDiff=0c, 1 docs × 2 schemas)
+§B3-GEN class=C_ProjectIssue scratch=idempiere_b3 posted_rows=4 ΣDRc=500 ΣCRc=500 provenance=compiled-Doc_ProjectIssue
+§B3-POST class=C_ProjectIssue arm=G docs=1 cells=2 maxDiff=0c oracle=compiled-Doc_ProjectIssue
+   🟢 C_ProjectIssue derivePostings == generated oracle (maxDiff=0c, 1 docs × 2 schemas)
+   🟢 the generated oracle is NON-EMPTY (34 fact rows over 9 seed docs) — a vacuous ∅-vs-∅ pass is refused
+
+   🟢 §FALSIFIER gate-flip: A_CapvsExp Cap→Exp turns the addition manifest ∅ (zero is CONFIG-derived, not hardcoded) — doc=1000000 lines 2→0
+§B3-FALSIFIER gate-flip addition=1000000 lines=2→0 (Doc_AssetAddition.java:67-72)
+   🟢 §FALSIFIER scale-one-line: doubling one depexp expense breaks the diff (maxDiff≠0c — the metric is load-bearing) — oracle ΣDR=55556c vs scaled engine ΣDR=111112c
+§B3-FALSIFIER scale-line depexp=1000000 oracleΣDR=55556c scaledΣDR=111112c (must differ)
+
+   🟢 §FALSIFIER real posting table has rows → the fact_acct=0 check discriminates (not vacuous) — busiest ad_table_id=319 rows=96
+§B3-FALSIFIER discriminates: busiest ad_table_id=319 rows=96 (>0) vs B-3 ids all 0
+   🟢 §FALSIFIER derivePostings(C_Order) is NON-empty → the ∅ for B-3 classes is class-specific, not a dead verb — C_Order 104 lines=1 basis=invoice
+§B3-FALSIFIER live-verb C_Order=104 lines=1 basis=invoice (must be >0)
+
+§B3-DONE ∅-by-design (2): C_BankTransfer, C_DepositBatch — no Doc_ poster in factory; oracle=∅ is CORRECT + structural. CLOSED.
+§B3-SKIPS none deferred: A_Depreciation_Entry is NOT redone from the DepreciationPerf lane (that lane measured the
+§B3-SKIPS   workfile-BUILD cost, docs/DepreciationPerf.md — it never posted fact_acct); the posting oracle is THIS card's.
+§B3-GEN-NOTE oracle generated per the 2026-07-17 USER RULING: GardenWorld-model seed INPUT (PostingOracleTest.java,
+§B3-GEN-NOTE   vendor FixedAssetsTest recipe) → REAL compiled posters on scratch clone → capture. Facts never hand-authored.
+
+🟢 W-POST-B3 PASS — 8 classes: 2 ∅-design (✅ structural) + 6 G-seed oracled against the REAL compiled posters (maxDiff=0c gate above).
+exit=0

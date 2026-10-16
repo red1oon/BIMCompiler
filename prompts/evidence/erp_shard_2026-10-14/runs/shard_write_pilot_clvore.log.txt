@@ -1,0 +1,15 @@
+§SHARD start tables=46 coldUnits=465 t=0s
+§SHARD_ROWS summary tables=46 judged=45 mismatches=0 t=0s
+§SHARD_UNIT_INTACT lineOrphans=0
+§SHARD_WARM_TO_COLD c_invoice.c_order_id -> c_order rows=0
+§SHARD_WARM_TO_COLD c_invoiceline.c_orderline_id -> c_orderline rows=0
+§SHARD_WARM_TO_COLD m_inoutline.c_orderline_id -> c_orderline rows=0
+§SHARD_WARM_TO_COLD m_inoutconfirm.m_inout_id -> m_inout rows=0
+§SHARD_WARM_TO_COLD c_allocationline.c_invoice_id -> c_invoice rows=0
+§SHARD_WARM_TO_COLD m_transaction.m_inoutline_id -> m_inoutline rows=0
+§SHARD_WARM_TO_COLD m_matchinv.m_inoutline_id -> m_inoutline rows=0
+§SHARD_WARM_TO_COLD m_matchpo.c_orderline_id -> c_orderline rows=0
+§SHARD_WARM_TO_COLD total=0 edgesJudged=8 t=0s
+§SHARD_FILE warm.db MB=15 sha256=5b4f73463078facd t=0s
+§SHARD_FILE cold.db MB=4 sha256=9e0d70090f117e93 t=0s
+§SHARD_VERDICT PASS rows-exhaustive units-intact warm->cold=0 (edgesJudged=8) totalSec=0s

@@ -1,0 +1,19 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell=0", "elements": 63182, "loadS
+
+w2ab_sh0_r1 §SKY_SHELL_RAYS bld=Hospital cache=built off stagingTotal=11187 compositeMean=71.14 
+{"result":{"w":1666,"h":864,"compositeDarkPct":1.614,"appDarkPct":2.965}}
+skycheck 707f8e rows 23 F 0.37 0.09 0.24 0.10 0.19 0.37 0.26 0.07 0.10 0.13 0.24 0.29 0.10 0.08 0.11 0.46 0.09 1.00 0.09 0.16 0.08 0.23 0.09 geom 0.46 0.38 0.48 0.44 0.46 0.31 0.52 0.44 0.46 0.46 0.42 0.42 0.46 0.52 0.46 0.4 0.44 0.06 0.48 0.35 0.4 0.23 0.42
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.40
+
+w2ab_sh1_r1 §SKY_SHELL_RAYS bld=Hospital cache=built on stagingTotal=20533 compositeMean=70.12 
+{"result":{"w":1666,"h":864,"compositeDarkPct":1.465,"appDarkPct":2.323}}
+skycheck 707f8e rows 5 F 1.00 0.19 0.09 0.07 0.17 geom 0.02 0.33 0.44 0.31 0.52
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell=0", "elements": 63182, "loadS
+
+w2ab_sh0_r2 §SKY_SHELL_RAYS bld=Hospital cache=built off stagingTotal=10952 compositeMean=72.06 
+{"result":{"w":1666,"h":864,"compositeDarkPct":1.627,"appDarkPct":2.959}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.86
+
+w2ab_sh1_r2 §SKY_SHELL_RAYS bld=Hospital cache=built on stagingTotal=20631 compositeMean=70.16 
+{"result":{"w":1666,"h":864,"compositeDarkPct":1.475,"appDarkPct":2.339}}
+== w2ab done 03:34:49

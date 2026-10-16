@@ -1,0 +1,11 @@
+§LOAD trace label=monolith mode=monolith requests=128 bytes=2146304 (KB 2096)
+§LOAD users=1 sessions=3 reqs=384 MB=6.1 wallSec=0.1 req/s=3398 MB/s=54.3 reqMs p50/p95/p99=0/1/1 sessionMs p50/p95=35/50 errors=0 integrityFail=0 serverCpu%=0 serverRssMB=0
+§LOAD users=10 sessions=30 reqs=3840 MB=61.4 wallSec=0.4 req/s=8828 MB/s=141.2 reqMs p50/p95/p99=1/3/4 sessionMs p50/p95=155/197 errors=0 integrityFail=0 serverCpu%=52.2 serverRssMB=70
+§LOAD users=50 sessions=150 reqs=19200 MB=307.0 wallSec=1.0 req/s=19733 MB/s=315.6 reqMs p50/p95/p99=2/6/15 sessionMs p50/p95=326/396 errors=0 integrityFail=0 serverCpu%=88.7 serverRssMB=78
+§LOAD users=100 sessions=300 reqs=38400 MB=614.1 wallSec=1.7 req/s=22735 MB/s=363.6 reqMs p50/p95/p99=3/11/21 sessionMs p50/p95=516/712 errors=0 integrityFail=0 serverCpu%=117 serverRssMB=99
+§LOAD users=200 sessions=600 reqs=76800 MB=1228.1 wallSec=3.8 req/s=19984 MB/s=319.6 reqMs p50/p95/p99=9/16/30 sessionMs p50/p95=1290/1401 errors=0 integrityFail=0 serverCpu%=151 serverRssMB=107
+§LOAD users=400 sessions=1200 reqs=153600 MB=2456.3 wallSec=8.1 req/s=18881 MB/s=301.9 reqMs p50/p95/p99=20/39/50 sessionMs p50/p95=2645/2830 errors=0 integrityFail=0 serverCpu%=175 serverRssMB=116
+§LOAD_COST (assumption) sessions/day=100 -> per month: requests=384000 egress GB=6.00 (cold first window, 2096 KB each, no cache)
+§LOAD_COST (assumption) sessions/day=1000 -> per month: requests=3840000 egress GB=59.97 (cold first window, 2096 KB each, no cache)
+§LOAD_COST (assumption) sessions/day=10000 -> per month: requests=38400000 egress GB=599.67 (cold first window, 2096 KB each, no cache)
+§LOAD_VERDICT PASS label=monolith (host = one Node process on loopback; stand-in, not OCI)

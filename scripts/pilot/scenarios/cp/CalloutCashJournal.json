@@ -1,0 +1,7 @@
+[
+ {"name":"cp_cash_line_invoice","window":198,"tab":1,"parents":[{"tab":0,"id":102,"from":"ref"}],"steps":[
+   {"set":"CashType","value":"I"},{"set":"C_Invoice_ID","value":103},{"set":"Amount","value":"150"},{"set":"DiscountAmt","value":"2"},{"set":"WriteOffAmt","value":"4"}]},
+ {"name":"cp_cash_line_apinvoice","window":198,"tab":1,"parents":[{"tab":0,"id":102,"from":"ref"}],"steps":[
+   {"set":"CashType","value":"I"},{"set":"C_Invoice_ID","value":104},{"set":"Amount","value":"-300"},{"set":"C_Invoice_ID","value":null}]},
+ {"name":"cp_cash_header_date","window":198,"tab":0,"steps":[{"set":"StatementDate","value":"2006-12-20"}]}
+]

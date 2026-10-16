@@ -1,0 +1,51 @@
+§DEMO listening 0.0.0.0:8766 db=warm.db dbMB=5416 token=6a7cf7e91008
+§DEMO url http://192.168.1.22:8766/t/6a7cf7e91008/
+§DEMO url http://172.17.0.1:8766/t/6a7cf7e91008/
+§DEMO page ip=192.168.1.22 ua=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.
+§DEMO_LIB httpvfs.js bytes=7920 serveMs=4 ip=192.168.1.22
+§DEMO_LIB sqlite.worker.js bytes=83728 serveMs=1 ip=192.168.1.22
+§DEMO_LIB httpvfs-sql-wasm.wasm bytes=1239572 serveMs=4 ip=192.168.1.22
+§DEMO_REPORT ip=192.168.1.22 totalMs=149 secure=false net=4g rtt=100 down=1.5 cores=20 memGB=null ua=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.
+§DEMO_STEP open ms=81 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=13 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=13 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=16 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=20 reqs=7 bytes=147456 rows=4
+§DEMO page ip=192.168.1.22 ua=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.
+§DEMO_REPORT ip=192.168.1.22 totalMs=151 secure=false net=4g rtt=100 down=1.5 cores=20 memGB=null ua=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.
+§DEMO_STEP open ms=71 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=13 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=15 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=20 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=20 reqs=7 bytes=147456 rows=4
+§DEMO page ip=192.168.1.22 ua=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.
+§DEMO_REPORT ip=192.168.1.22 totalMs=150 secure=false net=4g rtt=100 down=1.5 cores=20 memGB=null ua=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.
+§DEMO_STEP open ms=67 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=12 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=14 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=19 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=22 reqs=7 bytes=147456 rows=4
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_LIB httpvfs.js bytes=7920 serveMs=2 ip=192.168.1.14
+§DEMO_LIB sqlite.worker.js bytes=83728 serveMs=2 ip=192.168.1.14
+§DEMO_LIB httpvfs-sql-wasm.wasm bytes=1239572 serveMs=89 ip=192.168.1.14
+§DEMO_REPORT ip=192.168.1.14 totalMs=2083 secure=false net=4g rtt=50 down=1.75 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=1341 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=69 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=75 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=293 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=102 reqs=7 bytes=147456 rows=4
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_REPORT ip=192.168.1.14 totalMs=1196 secure=false net=4g rtt=200 down=1.75 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=391 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=62 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=86 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=294 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=228 reqs=7 bytes=147456 rows=4
+§DEMO page ip=192.168.1.14 ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_REPORT ip=192.168.1.14 totalMs=1406 secure=false net=4g rtt=50 down=1.75 cores=8 memGB=null ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0
+§DEMO_STEP open ms=449 reqs=5 bytes=98304 rows=1
+§DEMO_STEP S1_pick_order ms=142 reqs=3 bytes=49152 rows=1
+§DEMO_STEP S2_order ms=98 reqs=3 bytes=65536 rows=1
+§DEMO_STEP S3_lines ms=219 reqs=6 bytes=114688 rows=1
+§DEMO_STEP S4_postings ms=209 reqs=7 bytes=147456 rows=4

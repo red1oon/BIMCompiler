@@ -1,0 +1,24 @@
+{
+ "closed": true
+}
+== open Clinic %26ghost%3D1 02:50:47
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "elements": 16071, "loadSecs": 16.749}
+
+== noise_clinic_corridor_r2 alts 02:51:04
+"verdict": "DONE" stagingTotal=2831 compositeMean=78.2 appMean=83.24 
+== open Hospital %26ghost%3D1 02:51:16
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 29.359}
+
+== noise_hospital_innerroom_r2 alts 02:51:45
+"verdict": "DONE" stagingTotal=10970 compositeMean=99.84 appMean=104.19 
+== open Hospital %26ghost%3D1 02:53:11
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 29.627}
+
+== noise_hospital_outsidein_r2 alts 02:53:41
+"verdict": "DONE" stagingTotal=11252 compositeMean=130.04 appMean=132.73 
+== open Terminal  02:55:28
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48428, "loadSecs": 27.03}
+
+== noise_terminal_inside_r2 alts 02:55:55
+"verdict": "DONE" stagingTotal=8547 compositeMean=103.45 appMean=108.44 
+== noise done 02:56:13

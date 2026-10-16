@@ -1,0 +1,70 @@
+06:18:34.286 +    0.0s §CLI_BAKE_ENV root=/tmp/wt-film2 commit=931882df sw=v1473 db=HospitalAjaibPath gpu=real out=/tmp/film_law_v2.mp4
+06:18:34.501 +    0.2s §CLI_BAKE_FILM_PARITY parity=1 fill=law exposure=meter bounce=1
+06:18:34.502 +    0.2s §CLI_BAKE_NAV http://127.0.0.1:8662/viewer/viewer.html?db=/buildings/HospitalAjaibPath.db
+06:18:34.780 +    0.5s §CLI_BAKE_SW_PURGE unregistered=0 cachesDeleted=0 — reloading so the bake runs THIS build, not the precached one
+06:19:18.006 +   43.7s §CLI_BAKE_LOADED building=Hospital meshes=4863
+06:19:18.189 +   43.9s §CLI_BAKE_OPENING kept=saved-view cam={"x":135.8,"y":181,"z":135.8} bubbles=36/36 overalls=3/3 drawn=72 FULL — the whole datum is legible from the saved view (§33)
+06:19:18.490 +   44.2s §CLI_BAKE_PREWARM_SEEN §PHOTO_PREWARM ms=2560 did=[mepSmooth,hdri,groundTex] — this work is now OFF the first Alt+S press (measured 8,923.6 ms of it on Hospital)
+06:19:18.545 +   44.3s §CLI_BAKE_GL vendor="Google Inc. (NVIDIA Corporation)" renderer="ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL ES 3.2)"
+06:19:20.188 +   45.9s §CLI_BAKE_BUILDUP_RESOLVED on=0 source=stored-path — decides whether the Time Machine is primed before the bake asks for a timeline
+06:19:20.796 +   46.5s §CLI_BAKE_FRAME_RANGE a=0 b=90 (frame-exact subset of the FULL film)
+06:23:30.133 +  295.9s §CLI_BAKE_PROGRESS frame=1/90 1.1% rate=27.677s/frame (trailing 2) elapsed=2m43s eta=41m3s (89 frames left) — early estimate runs LOW; frames get heavier as the model fills in
+06:24:00.429 +  326.2s §CLI_BAKE_PROGRESS frame=16/90 17.8% rate=3.632s/frame (trailing 7) elapsed=3m14s eta=4m29s (74 frames left) — early estimate runs LOW; frames get heavier as the model fills in
+06:24:30.633 +  356.4s §CLI_BAKE_PROGRESS frame=31/90 34.4% rate=2.058s/frame (trailing 10) elapsed=3m45s eta=2m1s (59 frames left)
+06:25:00.864 +  386.6s §CLI_BAKE_PROGRESS frame=46/90 51.1% rate=2.068s/frame (trailing 10) elapsed=4m16s eta=1m31s (44 frames left)
+06:25:31.102 +  416.8s §CLI_BAKE_PROGRESS frame=62/90 68.9% rate=1.894s/frame (trailing 10) elapsed=4m44s eta=53s (28 frames left)
+06:26:01.493 +  447.2s §CLI_BAKE_PROGRESS frame=81/90 90.0% rate=1.658s/frame (trailing 10) elapsed=5m15s eta=15s (9 frames left)
+06:26:15.594 +  461.3s §CLI_BAKE_SINK begin name=BIM_MaxQ_Hospital_1790490375589.mp4 type=video/mp4 totalBytes=2068305 → /tmp/film_law_v2.mp4
+06:26:15.681 +  461.4s §CLI_BAKE_SINK end bytes=2068305
+06:26:16.540 +  462.3s §CLI_BAKE_RESULT {"ok":true,"r":{"source":"db:cinema_path","deliveredBytes":2068305}}
+06:26:16.543 +  462.3s §CLI_BAKE_FRAMES poses=90 meanMs=3621.9 p50Ms=1985.6 worstMs=149420.7
+06:26:17.271 +  463.0s §CLI_BAKE_POSECHECK frames=90 maxErrVsOverridePlanM=284.6402 (⚠ MISMATCH) meanDistVsDerivedPlanM=151.29 (differs — the stored path, not the derived one) bandAnchorMinDistM=[44.07,43.48,51.19]
+06:26:17.272 +  463.0s §CLI_BAKE_HEAP samples=20 minMB=184 maxMB=535 lastMB=279
+06:26:17.272 +  463.0s §CLI_BAKE_FILE path=/tmp/film_law_v2.mp4 bytes=2068305
+06:26:17.555 +  463.3s §CLI_BAKE_FFPROBE codec=h264 1280x720 frames=90 fps=15/1 durationSec=6.000000 bitrate=2757740
+06:26:17.555 +  463.3s §CLAIM §LEDGER_TICKER_INIT wired gate=measure (§129.2 v2 — gate requires ALL rows sealed, build runs one FULL verifyChain (never incremental/cached) against the live A.db, buildup paints the count-up, topout locks 2s; control: window.__ledgerFlipByte=<id>)
+06:26:17.555 +  463.3s §CLAIM §SUN_PATH ready — NOAA low-precision solar position, offline, no network
+06:26:17.555 +  463.3s §CLAIM §PHOTO_PREWARM ms=2560 did=[mepSmooth,hdri,groundTex] — this work is now OFF the first Alt+S press (measured 8,923.6 ms of it on Hospital)
+06:26:17.555 +  463.3s §CLAIM §FLYTHRU_DATUM_BUILT columns=604 groundGrid=15x14 medianBay=6.48m upright=1(plane) storeyRules=7 src=center_z rawStoreyRows=7 segs=36
+06:26:17.555 +  463.3s §CLAIM §CINEMA_PATH_RESTORE bands=3 total=81.9s holdCol=false holds=0 flagCol=false — §CPE_FLAGS_PORTABLE: this .db predates the flag columns, so every film flag stays at its consumer default (all off); the path itself is unaffected — authored path in force
+06:26:17.555 +  463.3s §CLAIM §CLI_BAKE_RESOLVED source=db:cinema_path bands=3 total=81.9s buildup=0 roomTitle=1 reveal=0 dayCounter=tr clash=1 escapeRoute=0 storeyReveal=0 measure=1 loadPath=0 ledger=0 cost=0 sunCompass=0 sunDate=-
+06:26:17.555 +  463.3s §CLAIM §MAXQ_FRAME_BUDGET taa=8 ao=12 renders/frame=20 (was 16+24=40) — bake only, Alt+S stills keep the full fold
+06:26:17.555 +  463.3s §CLAIM §STILL_REFINE start samples=8 triplanarMaterials=12 §MAXQ_FRAME_BUDGET taa=8 ao=12 (bake budget — Alt+S stills are unaffected)
+06:26:17.555 +  463.3s §CLAIM §STILL_REFINE start samples=8 triplanarMaterials=12 §MAXQ_FRAME_BUDGET taa=8 ao=12 (bake budget — Alt+S stills are unaffected)
+06:26:17.555 +  463.3s §CLAIM §STILL_REFINE start samples=8 triplanarMaterials=12 §MAXQ_FRAME_BUDGET taa=8 ao=12 (bake budget — Alt+S stills are unaffected)
+06:26:17.555 +  463.3s §CLAIM §STILL_REFINE start samples=8 triplanarMaterials=12 §MAXQ_FRAME_BUDGET taa=8 ao=12 (bake budget — Alt+S stills are unaffected)
+06:26:17.555 +  463.3s §CLAIM §STILL_REFINE start samples=8 triplanarMaterials=12 §MAXQ_FRAME_BUDGET taa=8 ao=12 (bake budget — Alt+S stills are unaffected)
+06:26:17.555 +  463.3s §CLAIM_SUPPRESSED §MAXQ_FRAME_BUDGET fired 92x — 85 identical-tag lines omitted, last one follows
+06:26:17.555 +  463.3s §CLAIM §STILL_REFINE start samples=8 triplanarMaterials=12 §MAXQ_FRAME_BUDGET taa=8 ao=12 (bake budget — Alt+S stills are unaffected)
+06:26:17.555 +  463.3s §CLAIM §MAXQ_START frames=1230 fps=15 path=cinema radius=192.0 height=181.0 size=1280x720
+06:26:17.555 +  463.3s §CLAIM §MAXQ_OVERRIDE_IN source=db:cinema_path bands=3 hoseOps=0 buildup=0 roomTitle=1 reveal=0 durationSec=82.0
+06:26:17.555 +  463.3s §CLAIM §CPE_APPLIED total=82.0s frames=90 waypoints=6 saved=false
+06:26:17.555 +  463.3s §CLAIM §MAXQ_START_REVISED frames=1230→90 (path edited; §MAXQ_START above is superseded)
+06:26:17.556 +  463.3s §CLAIM §MAXQ_HDRI_RACE waitedMs=0
+06:26:17.556 +  463.3s §CLAIM §LOADPATH_BUILD INCONCLUSIVE reason=no-topout (no buildup on this bake)
+06:26:17.556 +  463.3s §CLAIM §SUN_COMPASS off — not requested for this bake
+06:26:17.556 +  463.3s §CLAIM §RULE_TINT_ENTER elements=595 colors=2 guidsAsked=601 meshesHidden=0 shineThrough=true renderOrder=900 depthTest=false
+06:26:17.556 +  463.3s §CLAIM §FILM_LAYER registered layer="clash.labels" object="clashFilm:A" — its 2D half and its geometry now cease on one rule
+06:26:17.556 +  463.3s §CLAIM §FILM_LAYER registered layer="clash.labels" object="clashFilm:B" — its 2D half and its geometry now cease on one rule
+06:26:17.556 +  463.3s §CLAIM §FILM_LAYER registered layer="measure.cues" object="flythruCue" — its 2D half and its geometry now cease on one rule
+06:26:17.556 +  463.3s §CLAIM §INTERIOR_LIGHTS_BOUNDARY lastStickFrac=0.6122 relightFrac=0.9130 src=plan.beats.rise (orbit start = storey reveal end) offWindowPctOfFilm=30.1% (§129.41 — fixtures ON before the last stick, OFF through the pull-out while the building is still rising, and ON AGAIN from topout to the end so the windows are lit at dusk; a bake clipped entirely below the first boundary must show no §INTERIOR_LIGHTS_OFF line at all)
+06:26:17.556 +  463.3s §CLAIM §STOREY_REVEAL_MODE tint — the section cut stands down; the beat is carried by the whole-storey tint (§129.59, scope=storey)
+06:26:17.556 +  463.3s §CLAIM §FRAME_COST i=0/90 perFrameMs=135790 held=4900 visible=4898 inFrustum=4877 frustumPct=99.6%ofVisible instancedMeshes=2891 instances=26159 lastRenderCalls=1 lastRenderTris=1 — frustumPct is the number that decides LARGE_DB_BAKE.md §8: high means the renderer is already submitting most of the model every frame and culling is worth building; low means it is culling well already and the cost is elsewhere.
+06:26:17.556 +  463.3s §CLAIM §FRAME_COST i=1/90 perFrameMs=81733 held=4900 visible=4898 inFrustum=4877 frustumPct=99.6%ofVisible instancedMeshes=2891 instances=26159 lastRenderCalls=1 lastRenderTris=1 — frustumPct is the number that decides LARGE_DB_BAKE.md §8: high means the renderer is already submitting most of the model every frame and culling is worth building; low means it is culling well already and the cost is elsewhere.
+06:26:17.556 +  463.3s §CLAIM §FRAME_COST i=4/90 perFrameMs=33904 held=4900 visible=4898 inFrustum=4876 frustumPct=99.6%ofVisible instancedMeshes=2891 instances=26159 lastRenderCalls=1 lastRenderTris=1 — frustumPct is the number that decides LARGE_DB_BAKE.md §8: high means the renderer is already submitting most of the model every frame and culling is worth building; low means it is culling well already and the cost is elsewhere.
+06:26:17.556 +  463.3s §CLAIM §FRAME_COST i=7/90 perFrameMs=21963 held=4900 visible=4898 inFrustum=4876 frustumPct=99.6%ofVisible instancedMeshes=2891 instances=26159 lastRenderCalls=1 lastRenderTris=1 — frustumPct is the number that decides LARGE_DB_BAKE.md §8: high means the renderer is already submitting most of the model every frame and culling is worth building; low means it is culling well already and the cost is elsewhere.
+06:26:17.556 +  463.3s §CLAIM §FRAME_COST i=10/90 perFrameMs=16521 held=4900 visible=4898 inFrustum=4876 frustumPct=99.6%ofVisible instancedMeshes=2891 instances=26159 lastRenderCalls=1 lastRenderTris=1 — frustumPct is the number that decides LARGE_DB_BAKE.md §8: high means the renderer is already submitting most of the model every frame and culling is worth building; low means it is culling well already and the cost is elsewhere.
+06:26:17.556 +  463.3s §CLAIM §FRAME_COST i=13/90 perFrameMs=13409 held=4900 visible=4898 inFrustum=4876 frustumPct=99.6%ofVisible instancedMeshes=2891 instances=26159 lastRenderCalls=1 lastRenderTris=1 — frustumPct is the number that decides LARGE_DB_BAKE.md §8: high means the renderer is already submitting most of the model every frame and culling is worth building; low means it is culling well already and the cost is elsewhere.
+06:26:17.556 +  463.3s §CLAIM_SUPPRESSED §FRAME_COST fired 30x — 23 identical-tag lines omitted, last one follows
+06:26:17.556 +  463.3s §CLAIM §FRAME_COST i=89/90 perFrameMs=1779 held=4900 visible=4898 inFrustum=86 frustumPct=1.8%ofVisible instancedMeshes=2891 instances=26159 lastRenderCalls=1 lastRenderTris=1 — frustumPct is the number that decides LARGE_DB_BAKE.md §8: high means the renderer is already submitting most of the model every frame and culling is worth building; low means it is culling well already and the cost is elsewhere.
+06:26:17.556 +  463.3s §CLAIM §STOREY_REVEAL_TINT_RESTORE tNorm=0.0000 touched=0 restored=0 (mesh=0 instanced=0 batched=0) clonesDisposed=0 — nothing was tinted at this call
+06:26:17.556 +  463.3s §CLAIM §STOREY_REVEAL_TINT_RESTORE tNorm=0.0000 touched=0 restored=0 (mesh=0 instanced=0 batched=0) clonesDisposed=0 — nothing was tinted at this call
+06:26:17.556 +  463.3s §CLAIM §FRAME_REUSE_TOTAL reused=0/90 runs=0 rendered=90 disabled=0 — INCONCLUSIVE: nothing was reused — no load-path hold in this film, or the key moved every frame
+06:26:17.556 +  463.3s §CLAIM §CPE_PIE_HOLD heldFrames=0/90 (0% of the film) — trades were active for every frame, the pie was never held
+06:26:17.556 +  463.3s §CLAIM §CPE_STATS_TAIL revolvedFrames=0/90 (0% of the film) — the Reveal round never revolved: no topout on the plan and the ops never froze
+06:26:17.556 +  463.3s §CLAIM §HUD_OVERLAP_WORST none — checked EVERY frame, not a sample => PASS
+06:26:17.556 +  463.3s §CLAIM §MAXQ_QUALITY frames=90 unconverged=0 (every frame converged) hiddenPauses=0 totalHiddenMs=0
+06:26:17.556 +  463.3s §CLAIM §MAXQ_DELIVERED bytes=2068305 name=BIM_MaxQ_Hospital_1790490375589.mp4
+06:26:17.556 +  463.3s §CLAIM §MAXQ_DONE frames=90 bytes=2068305 type=video/mp4 codec=avc1.640034
+06:26:17.556 +  463.3s §CLI_BAKE_WALL totalSec=416 aborted=no fileOk=true
+EXIT 0

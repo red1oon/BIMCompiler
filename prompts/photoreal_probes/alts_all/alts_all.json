@@ -1,0 +1,5100 @@
+{
+ "tree": {
+  "tree": "/tmp/wt-all",
+  "commit": "1bf2831f",
+  "sw": "v1474",
+  "versions": {
+   "light_law.js": "6",
+   "sourced_light.js": "59",
+   "effects.js": "115",
+   "gi_still.js": "30",
+   "light_zones.js": "17",
+   "cinema_maxq.js": "11"
+  },
+  "hashes": {
+   "light_law.js": "c02317f4",
+   "sourced_light.js": "4767d8a3",
+   "effects.js": "85c239e4",
+   "gi_still.js": "d266e893",
+   "light_zones.js": "2302f249",
+   "cinema_maxq.js": "57a2396b"
+  },
+  "lawHash": "dc0e8638",
+  "lzSrc": "567a94fc:97712"
+ },
+ "rows": [
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=52 | saved bld=Hospital MB=82.7 field=1 ms=80",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-44.334,20.357,48.696] tgt [-2.924,-11.908,7.912]",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-44.334,20.357,48.696]",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=13.17 skyPx=293/7201",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=34149 (frozen — stays until inte",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1205677",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 387 first meter line 419",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 12.81 -> 13.17 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36 | groundShare -3.909 -> -2.782",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "PASS",
+   "detail": "p5/p50/p95 70.7/139.9/238.6 le15 0.065% clip 1.52% [composite]",
+   "metrics": {
+    "p5": 70.7,
+    "p50": 139.9,
+    "p95": 238.6,
+    "mean": 153.64,
+    "ge250pct": 1.52,
+    "le15pct": 0.065,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=129 pressSecs=118.8 stageTotal=31858",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs B1 RESULT W2 (le15 only)",
+   "state": "WARN",
+   "detail": "p50 139.9 (-) le15 0.065 (-1.41) clip 1.52 (-)",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z8 facade cells 9911662/3 F >= 0.33 (truth 0.43/0.40)",
+   "state": "PASS",
+   "detail": "[{\"cell\":9911662,\"zone\":16385,\"F\":0.4063},{\"cell\":9911663,\"zone\":16385,\"F\":0.4375}]",
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "5.351 (n=359208)",
+   "steps": 5.351,
+   "pose": "a202",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=86",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-44.334,20.357,48.696] tgt [-2.924,-11.908,7.912]",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-44.334,20.357,48.696]",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=13.18 skyPx=293/7201",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=29606 (frozen — stays until inte",
+   "pose": "a202",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=77",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-44.334,20.357,48.696] tgt [-2.924,-11.908,7.912]",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-44.334,20.357,48.696]",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=13.18 skyPx=293/7201",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=23712 (frozen — stays until inte",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=87",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-44.334,20.357,48.696] tgt [-2.924,-11.908,7.912]",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-44.334,20.357,48.696]",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=13.17 skyPx=293/7201",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=14741 (frozen — stays until inte",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=87",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [26.431,36.87,42.209] tgt [-4.751,-4.707,11.027]",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [26.431,36.87,42.209]",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=15.33 skyPx=0/7201",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=30367 (frozen — stays until inte",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1331812",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 387 first meter line 419",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 14.86 -> 15.33 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36 | groundShare -1.146 -> -0.496",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "PASS",
+   "detail": "p5/p50/p95 29.8/112.6/170.3 le15 2.702% clip 0% [composite]",
+   "metrics": {
+    "p5": 29.8,
+    "p50": 112.6,
+    "p95": 170.3,
+    "mean": 98.6,
+    "ge250pct": 0,
+    "le15pct": 2.702,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=129 pressSecs=115.3 stageTotal=27874",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs ALTS_COMBINED",
+   "state": "WARN",
+   "detail": "p50 112.6 (+69.50) le15 2.702 (-12.51) clip 0 (+0.00)",
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "3.446 (n=359208)",
+   "steps": 3.446,
+   "pose": "a616",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Clinic none readMs=5 | saved bld=Clinic MB=15.2 field=1 ms=713",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [21.243,-0.606,-1.261] tgt [1.197,-4.155,-2.608]",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [21.243,-0.606,-1.261]",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=8.79 skyPx=0/7201",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=12074 (frozen — stays until inte",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=110",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=64",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=957",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=65",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1401864",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=60295 junctionTested=43598",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 361 first meter line 396",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 8.79 -> 8.79 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->38",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "FAIL",
+   "detail": "p5/p50/p95 12.3/23.1/90.9 le15 18.657% clip 2.32% [composite]",
+   "metrics": {
+    "p5": 12.3,
+    "p50": 23.1,
+    "p95": 90.9,
+    "mean": 34.12,
+    "ge250pct": 2.32,
+    "le15pct": 18.657,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=94 pressSecs=25.1 stageTotal=10705",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs ALTS_COMBINED",
+   "state": "WARN",
+   "detail": "p50 23.1 (-40.20) le15 18.657 (+18.59) clip 2.32 (+2.32)",
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "0.735 (n=359208)",
+   "steps": 0.735,
+   "pose": "clinic",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=HHS_Office_Federated none read | saved bld=HHS_Office_Federated MB=19.1 f",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-10.011,-4.496,-21.246] tgt [0.306,-2.129,0.238]",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-10.011,-4.496,-21.246]",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=12.22 skyPx=1370/8351",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=7359 (frozen — stays until inter",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=29",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=32",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=8753",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=33",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1095598",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=69260 junctionTested=42259",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 358 first meter line 391",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 12.32 -> 12.22 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "PASS",
+   "detail": "p5/p50/p95 0/119.4/233.1 le15 22.778% clip 0.86% [composite]",
+   "metrics": {
+    "p5": 0,
+    "p50": 119.4,
+    "p95": 233.1,
+    "mean": 112.01,
+    "ge250pct": 0.86,
+    "le15pct": 22.778,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=89 pressSecs=14.3 stageTotal=6661",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta",
+   "state": "WARN",
+   "detail": "no recorded ref for hhs_z18",
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "3.633 (n=359208)",
+   "steps": 3.633,
+   "pose": "hhs_z18",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=HHS_Office_Federated none read | saved bld=HHS_Office_Federated MB=19.1 f",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-10.011,-4.496,-21.246] tgt [0.306,-2.129,0.238]",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-10.011,-4.496,-21.246]",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=12.22 skyPx=1370/8351",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=7910 (frozen — stays until inter",
+   "pose": "hhs_z18",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=HHS_Office_Federated none read | saved bld=HHS_Office_Federated MB=19.1 f",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-10.011,-4.496,-21.246] tgt [0.306,-2.129,0.238]",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-10.011,-4.496,-21.246]",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=12.22 skyPx=1370/8351",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=7599 (frozen — stays until inter",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=HHS_Office_Federated none read | saved bld=HHS_Office_Federated MB=19.1 f",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-10.011,-4.496,-21.246] tgt [0.306,-2.129,0.238]",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-10.011,-4.496,-21.246]",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=12.23 skyPx=1370/8383",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=7447 (frozen — stays until inter",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=29",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [9.947,-7.699,0.098] tgt [14.735,-8.114,2.081]",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [9.947,-7.699,0.098]",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.68 skyPx=0/7203",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=50841 (frozen — stays until inte",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=5 | saved bld=Hospital MB=82.7 field=1 ms=17",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [9.947,-7.699,0.098] tgt [14.735,-8.114,2.081]",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [9.947,-7.699,0.098]",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.68 skyPx=0/7203",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=60397 (frozen — stays until inte",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1439424",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 391 first meter line 423",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 9.68 -> 9.68 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "FAIL",
+   "detail": "p5/p50/p95 3.2/36.1/58.1 le15 20.272% clip 0% [composite]",
+   "metrics": {
+    "p5": 3.2,
+    "p50": 36.1,
+    "p95": 58.1,
+    "mean": 31.88,
+    "ge250pct": 0,
+    "le15pct": 20.272,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=122 pressSecs=146.4 stageTotal=57341",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs ALTS_COMBINED",
+   "state": "WARN",
+   "detail": "p50 36.1 (-95.30) le15 20.272 (+20.25) clip 0 (+0.00)",
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "0.365 (n=359208)",
+   "steps": 0.365,
+   "pose": "inner",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=72",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [9.947,-7.699,0.098] tgt [14.735,-8.114,2.081]",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [9.947,-7.699,0.098]",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.68 skyPx=0/7203",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=28586 (frozen — stays until inte",
+   "pose": "inner",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=64",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [9.947,-7.699,0.098] tgt [14.735,-8.114,2.081]",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [9.947,-7.699,0.098]",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.68 skyPx=0/7203",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=27772 (frozen — stays until inte",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=3 | saved bld=Hospital MB=82.7 field=1 ms=65",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [9.947,-7.699,0.098] tgt [14.735,-8.114,2.081]",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [9.947,-7.699,0.098]",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.97 skyPx=0/3601",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=27934 (frozen — stays until inte",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=63",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [9.947,-7.699,0.098] tgt [14.735,-8.114,2.081]",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [9.947,-7.699,0.098]",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.68 skyPx=0/7202",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=27254 (frozen — stays until inte",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=7 | saved bld=Hospital MB=82.7 field=1 ms=27",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [9.947,-7.699,0.098] tgt [14.735,-8.114,2.081]",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [9.947,-7.699,0.098]",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.68 skyPx=0/7206",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=49929 (frozen — stays until inte",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=3 | saved bld=Hospital MB=82.7 field=1 ms=69",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [33.5,8.121,11.498] tgt [0,0,0]",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [33.5,8.121,11.498]",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=10 skyPx=0/7201",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=42899 (frozen — stays until inte",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=919160",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 390 first meter line 422",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 10.06 -> 10 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36 | groundShare -14.086 -> -14.652",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "FAIL",
+   "detail": "p5/p50/p95 216.4/238.1/255 le15 0.377% clip 21.72% [composite]",
+   "metrics": {
+    "p5": 216.4,
+    "p50": 238.1,
+    "p95": 255,
+    "mean": 236.76,
+    "ge250pct": 21.72,
+    "le15pct": 0.377,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=128 pressSecs=129.3 stageTotal=40810",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs ALTS_COMBINED",
+   "state": "WARN",
+   "detail": "p50 238.1 (+162.00) le15 0.377 (-0.66) clip 21.72 (+21.72)",
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "5.802 (n=359208)",
+   "steps": 5.802,
+   "pose": "night",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=74",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [33.5,8.121,11.498] tgt [0,0,0]",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [33.5,8.121,11.498]",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=10 skyPx=0/7201",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=30147 (frozen — stays until inte",
+   "pose": "night",
+   "arm": "base_r2"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=6 | saved bld=Hospital MB=82.7 field=1 ms=77",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [33.5,8.121,11.498] tgt [0,0,0]",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [33.5,8.121,11.498]",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=10 skyPx=0/7201",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=29241 (frozen — stays until inte",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=100 | saved bld=Hospital MB=82.7 field=1 ms=84",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [33.5,8.121,11.498] tgt [0,0,0]",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [33.5,8.121,11.498]",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=10.79 skyPx=0/3601",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=31741 (frozen — stays until inte",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=13",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [33.5,8.121,11.498] tgt [0,0,0]",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [33.5,8.121,11.498]",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=10 skyPx=0/7202",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=31459 (frozen — stays until inte",
+   "pose": "night",
+   "arm": "torch0"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=4 | saved bld=Hospital MB=82.7 field=1 ms=76",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-7.307,-6.507,12.017] tgt [-2.403,-7.682,3.378]",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-7.307,-6.507,12.017]",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.71 skyPx=32/7201",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=28893 (frozen — stays until inte",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1422618",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 387 first meter line 419",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 9.71 -> 9.71 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "PASS",
+   "detail": "p5/p50/p95 45.9/92.3/156.2 le15 0.13% clip 0.76% [composite]",
+   "metrics": {
+    "p5": 45.9,
+    "p50": 92.3,
+    "p95": 156.2,
+    "mean": 98.43,
+    "ge250pct": 0.76,
+    "le15pct": 0.13,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=128 pressSecs=105 stageTotal=26967",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs METER_EV v2 40/90",
+   "state": "WARN",
+   "detail": "p50 92.3 (+36.70) le15 0.13 (-0.68) clip 0.76 (+0.49)",
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "5.579 (n=359208)",
+   "steps": 5.579,
+   "pose": "p2",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=3 | saved bld=Hospital MB=82.7 field=1 ms=10",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-23.76,3.076,-4.558] tgt [-20.601,1.748,-1.316]",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-23.76,3.076,-4.558]",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=13.3 skyPx=0/7201",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=43948 (frozen — stays until inte",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=707681",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 390 first meter line 422",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 13.54 -> 13.3 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36 | groundShare -1.087 -> -1.308",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "PASS",
+   "detail": "p5/p50/p95 65.6/115.1/207.2 le15 0.001% clip 0.03% [composite]",
+   "metrics": {
+    "p5": 65.6,
+    "p50": 115.1,
+    "p95": 207.2,
+    "mean": 133.4,
+    "ge250pct": 0.03,
+    "le15pct": 0.001,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=129 pressSecs=149.1 stageTotal=41308",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs METER_EV v2 40/90",
+   "state": "WARN",
+   "detail": "p50 115.1 (+47.70) le15 0.001 (-0.41) clip 0.03 (+0.03)",
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "4.062 (n=359208)",
+   "steps": 4.062,
+   "pose": "p614",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=3 | saved bld=Hospital MB=82.7 field=1 ms=71",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-13.552,1.366,-1.289] tgt [-10.764,0.228,1.354]",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-13.552,1.366,-1.289]",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=9.2 skyPx=56/7201",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=31222 (frozen — stays until inte",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1378739",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 387 first meter line 419",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 9.2 -> 9.2 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "FAIL",
+   "detail": "p5/p50/p95 69.5/137.1/243.2 le15 0% clip 3.15% [composite]",
+   "metrics": {
+    "p5": 69.5,
+    "p50": 137.1,
+    "p95": 243.2,
+    "mean": 142.08,
+    "ge250pct": 3.15,
+    "le15pct": 0,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=128 pressSecs=108.3 stageTotal=29277",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs ALTS_COMBINED",
+   "state": "WARN",
+   "detail": "p50 137.1 (+60.60) le15 0 (-1.36) clip 3.15 (+3.03)",
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "5.763 (n=359208)",
+   "steps": 5.763,
+   "pose": "p672",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=3 | saved bld=Hospital MB=82.7 field=1 ms=12",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-5.864,-6.079,16.896] tgt [-5.384,-6.921,12.025]",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-5.864,-6.079,16.896]",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=10.23 skyPx=6/7201",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=46351 (frozen — stays until inte",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1438418",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 390 first meter line 422",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 10.23 -> 10.23 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "PASS",
+   "detail": "p5/p50/p95 42.6/66.9/119.2 le15 0.032% clip 0.21% [composite]",
+   "metrics": {
+    "p5": 42.6,
+    "p50": 66.9,
+    "p95": 119.2,
+    "mean": 71.36,
+    "ge250pct": 0.21,
+    "le15pct": 0.032,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=128 pressSecs=132.1 stageTotal=43726",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs METER_EV v2 40/90",
+   "state": "WARN",
+   "detail": "p50 66.9 (+24.80) le15 0.032 (-1.63) clip 0.21 (+0.17)",
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "2.063 (n=359208)",
+   "steps": 2.063,
+   "pose": "p698",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=Hospital none readMs=3 | saved bld=Hospital MB=82.7 field=1 ms=69",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [-20.496,-5.619,-34.439] tgt [-23.527,-6.051,-22.952]",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [-20.496,-5.619,-34.439]",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=11.93 skyPx=0/7201",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=27211 (frozen — stays until inte",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=358",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=108",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=22154",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=109",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1439424",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=146293 junctionTested=192987",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 387 first meter line 419",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "FAIL",
+   "detail": "EV 9.38 -> 11.93 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->36",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "FAIL",
+   "detail": "p5/p50/p95 0.9/88.9/253.6 le15 25.174% clip 9.25% [composite]",
+   "metrics": {
+    "p5": 0.9,
+    "p50": 88.9,
+    "p95": 253.6,
+    "mean": 111.32,
+    "ge250pct": 9.25,
+    "le15pct": 25.174,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=126 pressSecs=103 stageTotal=25555",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs ALTS_COMBINED",
+   "state": "WARN",
+   "detail": "p50 88.9 (+19.50) le15 25.174 (+4.94) clip 9.25 (+8.99)",
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "2.631 (n=359208)",
+   "steps": 2.631,
+   "pose": "plenum",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "sw version served == tree",
+   "state": "PASS",
+   "detail": "served v1474 tree v1474",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "edited files ?v= in DOM",
+   "state": "PASS",
+   "detail": "light_law.js?v=6 sourced_light.js?v=59 effects.js?v=115 gi_still.js?v=30 light_zones.js?v=17 cinema_maxq.js?v=11",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "served file bytes == tree",
+   "state": "PASS",
+   "detail": "all 6 match",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "lawHash page == node",
+   "state": "PASS",
+   "detail": "page dc0e8638 node dc0e8638",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "LightZones SRC page == node",
+   "state": "PASS",
+   "detail": "page 567a94fc:97712 node 567a94fc:97712",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zero page errors / §LOAD_FAIL",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "BVH loaded (no §BVH_INIT_FAIL: shell pass needs it)",
+   "state": "PASS",
+   "detail": "ok",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "fresh profile (no SW controller at load)",
+   "state": "PASS",
+   "detail": "controllerAtLoad=false",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "zone/field cache",
+   "state": "PASS",
+   "detail": "shell built | prime bld=TerminalMerged none readMs=4 | saved bld=TerminalMerged MB=33.9 field=1",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "staged pose == requested",
+   "state": "PASS",
+   "detail": "cam [7.473,-7.532,1.036] tgt [6.397,-8.016,3.054]",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "PNG tEXt pose == requested",
+   "state": "PASS",
+   "detail": "png cam [7.473,-7.532,1.036]",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "meter readback finite, non-empty, not all sky",
+   "state": "PASS",
+   "detail": "EV100=10.31 skyPx=170/7202",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G1",
+   "id": "press finished",
+   "state": "PASS",
+   "detail": "§STILL_REFINE done accumulateIndex=16 elapsedMs=21552 (frozen — stays until inte",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§COVE_QUAL qualified > 0",
+   "state": "PASS",
+   "detail": "qualified=54",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§ALBEDO_SRGB converted > 0",
+   "state": "PASS",
+   "detail": "converted=95",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "shell cells recomputed > 0",
+   "state": "PASS",
+   "detail": "recomputed=15111",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "AO bound materials > 0",
+   "state": "PASS",
+   "detail": "boundMats=96",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "receiver albedo real px > 0",
+   "state": "PASS",
+   "detail": "real=1367428",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "§GLARE populations",
+   "state": "PASS",
+   "detail": "exteriorFaces=44228 junctionTested=63120",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "no inside §METER reads an all-sky frame",
+   "state": "PASS",
+   "detail": "2 meter lines, none all-sky",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "torch staged before the stage meter (one meter sees it)",
+   "state": "PASS",
+   "detail": "torch line 395 first meter line 425",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G3",
+   "id": "stage -> final remeter EV jump <= 1 EV",
+   "state": "PASS",
+   "detail": "EV 10.31 -> 10.31 | state changed: ground 555566->ffffff point 0/0.000->1/0.000 hidden 1->38",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "p50 40..200 & clipped < 2%",
+   "state": "FAIL",
+   "detail": "p5/p50/p95 10/20/174.8 le15 33.04% clip 0.66% [composite]",
+   "metrics": {
+    "p5": 10,
+    "p50": 20,
+    "p95": 174.8,
+    "mean": 35.48,
+    "ge250pct": 0.66,
+    "le15pct": 33.04,
+    "w": 1666,
+    "h": 864
+   },
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "§GLARE 0/0/0",
+   "state": "PASS",
+   "detail": "0/0/0",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G4",
+   "id": "programs / press time",
+   "state": "WARN",
+   "detail": "programs=114 pressSecs=31.6 stageTotal=20198",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G5",
+   "id": "ref delta vs ALTS_COMBINED",
+   "state": "WARN",
+   "detail": "p50 20 (-120.40) le15 33.04 (+32.70) clip 0.66 (+0.21)",
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "GZ",
+   "id": "Z18 step proxy (isolated >=4-code jumps per 1000 px, lower half)",
+   "state": "WARN",
+   "detail": "13.925 (n=359208)",
+   "steps": 13.925,
+   "pose": "term",
+   "arm": "base"
+  },
+  {
+   "group": "G2",
+   "id": "Z8 radius-free reach (&shellreach=2)",
+   "state": "PASS",
+   "detail": "mean 153.64 vs 153.24 p50 139.9 vs 141.2 EV 13.17 vs 13.18 tol 0.860 (noise 0.43)",
+   "pose": "a202",
+   "arm": "shellreach2"
+  },
+  {
+   "group": "G2",
+   "id": "B1 sky shell rays (&skyshell=0)",
+   "state": "PASS",
+   "detail": "mean 153.64 vs 152.58 p50 139.9 vs 138.4 EV 13.17 vs 13.17 tol 0.860 (noise 0.43)",
+   "pose": "a202",
+   "arm": "skyshell0"
+  },
+  {
+   "group": "G2",
+   "id": "Z18 grid blend (arm = ON) (&gridblend=1)",
+   "state": "SCOPE-BLIND",
+   "detail": "mean 112.01 vs 112.02 p50 119.4 vs 118.6 EV 12.22 vs 12.22 tol 1.000 (noise 0.5)",
+   "pose": "hhs_z18",
+   "arm": "gridblend1"
+  },
+  {
+   "group": "G2",
+   "id": "Z18 spec smooth (mirror gate) (&specsmooth=0)",
+   "state": "PASS",
+   "detail": "mean 112.01 vs 111.82 p50 119.4 vs 119 EV 12.22 vs 12.23 tol 1.000 (noise 0.5)",
+   "pose": "hhs_z18",
+   "arm": "specsmooth0"
+  },
+  {
+   "group": "G2",
+   "id": "Z10 AO indirect (&aoindirect=0)",
+   "state": "PASS",
+   "detail": "mean 31.88 vs 31.08 p50 36.1 vs 35 EV 9.68 vs 9.68 tol 0.080 (noise 0.04)",
+   "pose": "inner",
+   "arm": "aoindirect0"
+  },
+  {
+   "group": "G2",
+   "id": "Z11 receiver albedo (&gialb=0)",
+   "state": "PASS",
+   "detail": "mean 31.88 vs 31.38 p50 36.1 vs 34.9 EV 9.68 vs 9.68 tol 0.080 (noise 0.04)",
+   "pose": "inner",
+   "arm": "gialb0"
+  },
+  {
+   "group": "G2",
+   "id": "meter band 40/90 vs 70/95 (&meterband=70,95)",
+   "state": "PASS",
+   "detail": "mean 31.88 vs 26.28 p50 36.1 vs 30 EV 9.68 vs 9.97 tol 0.080 (noise 0.04)",
+   "pose": "inner",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G2",
+   "id": "Z9 albedo sRGB (&srgbfix=0)",
+   "state": "PASS",
+   "detail": "mean 31.88 vs 43.34 p50 36.1 vs 48 EV 9.68 vs 9.68 tol 0.080 (noise 0.04)",
+   "pose": "inner",
+   "arm": "srgbfix0"
+  },
+  {
+   "group": "G2",
+   "id": "L1b camera torch (&torch=0)",
+   "state": "NO-OP",
+   "detail": "mean 31.88 vs 31.85 p50 36.1 vs 36.1 EV 9.68 vs 9.68 tol 0.080 (noise 0.04)",
+   "pose": "inner",
+   "arm": "torch0"
+  },
+  {
+   "group": "G2",
+   "id": "Z12 ground half (&groundlaw=0)",
+   "state": "PASS",
+   "detail": "mean 236.76 vs 230.99 p50 238.1 vs 232.3 EV 10 vs 10 tol 1.400 (noise 0.7)",
+   "pose": "night",
+   "arm": "groundlaw0"
+  },
+  {
+   "group": "G2",
+   "id": "meter band 40/90 vs 70/95 (&meterband=70,95)",
+   "state": "PASS",
+   "detail": "mean 236.76 vs 220.2 p50 238.1 vs 220.4 EV 10 vs 10.79 tol 1.400 (noise 0.7)",
+   "pose": "night",
+   "arm": "meterband7095"
+  },
+  {
+   "group": "G2",
+   "id": "L1b camera torch (&torch=0)",
+   "state": "NO-OP",
+   "detail": "mean 236.76 vs 236.84 p50 238.1 vs 237.9 EV 10 vs 10 tol 1.400 (noise 0.7)",
+   "pose": "night",
+   "arm": "torch0"
+  }
+ ],
+ "filmRows": [
+  {
+   "group": "F-G1",
+   "id": "SW purge / reload race",
+   "state": "WARN",
+   "detail": "unregistered=1 pre-purge _INIT also after: none",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G1",
+   "id": "bake env sw == tree",
+   "state": "PASS",
+   "detail": "§CLI_BAKE_ENV root=/tmp/wt-all commit=f49048f2 sw=v1474 db=HospitalAjaibPath gpu=real out=/tmp/alts_all/film/A.mp4",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: edited files ?v= in the baked page",
+   "state": "PASS",
+   "detail": "all present",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: page lawHash == node",
+   "state": "PASS",
+   "detail": "dc0e8638 vs dc0e8638",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G1",
+   "id": "zero page errors",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G3",
+   "id": "frames judged > 0",
+   "state": "PASS",
+   "detail": "MAXQ_DONE frames=90 FRAME_HASH=90 FRAME_QA=90",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "§FILM_EXPOSURE on every frame",
+   "state": "PASS",
+   "detail": "lines=90 frames=90 vacuous=0",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "exposure step within +3/-1 stops/s",
+   "state": "PASS",
+   "detail": "maxUp 0.0200 maxDown -0.0670 capped up 0 down 6",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "no overshoot",
+   "state": "PASS",
+   "detail": "none",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "programs constant after warm-up (f>=2)",
+   "state": "PASS",
+   "detail": "f0 110 f1 149 f>=2 149",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "torch: one §CAM_TORCH film line per captured staging, torch= constant == it",
+   "state": "PASS",
+   "detail": "all film lines 2, in the captured staging 1, during capture 0, torch values 3.960000e-2",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "fill: ambient 0, §FILM_FILL_CHECK drift=none",
+   "state": "PASS",
+   "detail": "ambient 0.000 drift lines 0",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "lawHash film == still/node",
+   "state": "PASS",
+   "detail": "film dc0e8638 node dc0e8638",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "frame luma: none < 5 / > 250 / NaN",
+   "state": "PASS",
+   "detail": "in-page 90 frames, flagged  | file 90 frames, flagged ",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F",
+   "id": "no byte-identical consecutive frames while the camera moved",
+   "state": "PASS",
+   "detail": "unexpected reuse at none; intentional/static 0",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G2",
+   "id": "film exposure + fill law vs control (--film-exposure 0 --film-fill restore)",
+   "state": "PASS",
+   "detail": "mean luma A 93.63 vs C 139.44",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G2",
+   "id": "film parity vs --film-parity 0",
+   "state": "PASS",
+   "detail": "mean luma A 93.63 vs E 149.93",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G2",
+   "id": "film torch vs --url-query &torch=0",
+   "state": "PASS",
+   "detail": "mean luma A 93.63 vs T 93.62",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G2",
+   "id": "overlay identity vs base tree",
+   "state": "PASS",
+   "detail": "lines A 394 ref 394 EXCLUDED: §CLASH_MEM (heap), §LOADPATH_PIXEL_DIAG* (scene pixels before the HUD: exposure-dependent); timings stripped (ms/secs/t/elapsed/time)",
+   "pose": "film",
+   "arm": "A"
+  },
+  {
+   "group": "F-G1",
+   "id": "SW purge / reload race",
+   "state": "WARN",
+   "detail": "unregistered=1 pre-purge _INIT also after: none",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F-G1",
+   "id": "bake env sw == tree",
+   "state": "PASS",
+   "detail": "§CLI_BAKE_ENV root=/tmp/wt-all commit=f49048f2 sw=v1474 db=HospitalAjaibPath gpu=real out=/tmp/alts_all/film/C.mp4",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: edited files ?v= in the baked page",
+   "state": "PASS",
+   "detail": "all present",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: page lawHash == node",
+   "state": "PASS",
+   "detail": "dc0e8638 vs dc0e8638",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F-G1",
+   "id": "zero page errors",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F-G3",
+   "id": "frames judged > 0",
+   "state": "PASS",
+   "detail": "MAXQ_DONE frames=90 FRAME_HASH=90 FRAME_QA=90",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F",
+   "id": "frame luma: none < 5 / > 250 / NaN",
+   "state": "PASS",
+   "detail": "in-page 90 frames, flagged  | file 90 frames, flagged ",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F",
+   "id": "no byte-identical consecutive frames while the camera moved",
+   "state": "PASS",
+   "detail": "unexpected reuse at none; intentional/static 0",
+   "pose": "film",
+   "arm": "C"
+  },
+  {
+   "group": "F-G1",
+   "id": "SW purge / reload race",
+   "state": "WARN",
+   "detail": "unregistered=1 pre-purge _INIT also after: none",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F-G1",
+   "id": "bake env sw == tree",
+   "state": "PASS",
+   "detail": "§CLI_BAKE_ENV root=/tmp/wt-all commit=ad6e40aa sw=v1474 db=HospitalAjaibPath gpu=real out=/tmp/alts_all/film/E.mp4",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: edited files ?v= in the baked page",
+   "state": "PASS",
+   "detail": "all present",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: page lawHash == node",
+   "state": "PASS",
+   "detail": "dc0e8638 vs dc0e8638",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F-G1",
+   "id": "zero page errors",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F-G3",
+   "id": "frames judged > 0",
+   "state": "PASS",
+   "detail": "MAXQ_DONE frames=90 FRAME_HASH=90 FRAME_QA=90",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F",
+   "id": "frame luma: none < 5 / > 250 / NaN",
+   "state": "PASS",
+   "detail": "in-page 90 frames, flagged  | file 0 frames, flagged ",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F",
+   "id": "no byte-identical consecutive frames while the camera moved",
+   "state": "PASS",
+   "detail": "unexpected reuse at none; intentional/static 0",
+   "pose": "film",
+   "arm": "E"
+  },
+  {
+   "group": "F-G1",
+   "id": "SW purge / reload race",
+   "state": "WARN",
+   "detail": "unregistered=1 pre-purge _INIT also after: none",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F-G1",
+   "id": "bake env sw == tree",
+   "state": "PASS",
+   "detail": "§CLI_BAKE_ENV root=/tmp/wt-all commit=ad6e40aa sw=v1474 db=HospitalAjaibPath gpu=real out=/tmp/alts_all/film/T.mp4",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: edited files ?v= in the baked page",
+   "state": "PASS",
+   "detail": "all present",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: page lawHash == node",
+   "state": "PASS",
+   "detail": "dc0e8638 vs dc0e8638",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F-G1",
+   "id": "zero page errors",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F-G3",
+   "id": "frames judged > 0",
+   "state": "PASS",
+   "detail": "MAXQ_DONE frames=90 FRAME_HASH=90 FRAME_QA=90",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "§FILM_EXPOSURE on every frame",
+   "state": "PASS",
+   "detail": "lines=90 frames=90 vacuous=0",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "exposure step within +3/-1 stops/s",
+   "state": "PASS",
+   "detail": "maxUp 0.0200 maxDown -0.0670 capped up 0 down 6",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "no overshoot",
+   "state": "PASS",
+   "detail": "none",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "programs constant after warm-up (f>=2)",
+   "state": "PASS",
+   "detail": "f0 110 f1 149 f>=2 149",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "torch off arm: torch=off every frame",
+   "state": "PASS",
+   "detail": "torch values off",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "fill: ambient 0, §FILM_FILL_CHECK drift=none",
+   "state": "PASS",
+   "detail": "ambient 0.000 drift lines 0",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "lawHash film == still/node",
+   "state": "PASS",
+   "detail": "film dc0e8638 node dc0e8638",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "frame luma: none < 5 / > 250 / NaN",
+   "state": "PASS",
+   "detail": "in-page 90 frames, flagged  | file 90 frames, flagged ",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F",
+   "id": "no byte-identical consecutive frames while the camera moved",
+   "state": "PASS",
+   "detail": "unexpected reuse at none; intentional/static 0",
+   "pose": "film",
+   "arm": "T"
+  },
+  {
+   "group": "F-G1",
+   "id": "SW purge / reload race",
+   "state": "WARN",
+   "detail": "unregistered=1 pre-purge _INIT also after: none",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F-G1",
+   "id": "bake env sw == tree",
+   "state": "PASS",
+   "detail": "§CLI_BAKE_ENV root=/tmp/wt-film2 commit=931882df sw=v1473 db=HospitalAjaibPath gpu=real out=/tmp/alts_all/film/B.mp4",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: edited files ?v= in the baked page",
+   "state": "PASS",
+   "detail": "all present",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: page lawHash == node",
+   "state": "PASS",
+   "detail": "918804c2 vs 918804c2",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F-G1",
+   "id": "zero page errors",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F-G3",
+   "id": "frames judged > 0",
+   "state": "PASS",
+   "detail": "MAXQ_DONE frames=90 FRAME_HASH=90 FRAME_QA=0",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F",
+   "id": "frame luma: none < 5 / > 250 / NaN",
+   "state": "PASS",
+   "detail": "in-page 0 frames, flagged  | file 90 frames, flagged ",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F",
+   "id": "no byte-identical consecutive frames while the camera moved",
+   "state": "PASS",
+   "detail": "unexpected reuse at none; intentional/static 0",
+   "pose": "film",
+   "arm": "B"
+  },
+  {
+   "group": "F-G1",
+   "id": "SW purge / reload race",
+   "state": "PASS",
+   "detail": "in-browser channel, fresh profile, no purge: 21 _INIT tags, duplicated: none",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: edited files ?v= in the baked page",
+   "state": "PASS",
+   "detail": "all present",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F-G1",
+   "id": "tap: page lawHash == node",
+   "state": "PASS",
+   "detail": "dc0e8638 vs dc0e8638",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F-G1",
+   "id": "zero page errors",
+   "state": "PASS",
+   "detail": "0",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F-G3",
+   "id": "frames judged > 0",
+   "state": "PASS",
+   "detail": "MAXQ_DONE frames=90 FRAME_HASH=90 FRAME_QA=90",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "§FILM_EXPOSURE on every frame",
+   "state": "PASS",
+   "detail": "lines=90 frames=90 vacuous=0",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "exposure step within +3/-1 stops/s",
+   "state": "PASS",
+   "detail": "maxUp 0.2000 maxDown -0.0670 capped up 3 down 33",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "no overshoot",
+   "state": "PASS",
+   "detail": "none",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "programs constant after warm-up (f>=2)",
+   "state": "FAIL",
+   "detail": "f0 103 f1 137 f>=2 137,139",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "torch: one §CAM_TORCH film line per captured staging, torch= constant == it",
+   "state": "PASS",
+   "detail": "all film lines 2, in the captured staging 1, during capture 0, torch values 3.960000e-2",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "fill: ambient 0, §FILM_FILL_CHECK drift=none",
+   "state": "PASS",
+   "detail": "ambient 0.000 drift lines 0",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "lawHash film == still/node",
+   "state": "PASS",
+   "detail": "film dc0e8638 node dc0e8638",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "frame luma: none < 5 / > 250 / NaN",
+   "state": "PASS",
+   "detail": "in-page 90 frames, flagged  | file 90 frames, flagged ",
+   "pose": "film",
+   "arm": "altc"
+  },
+  {
+   "group": "F",
+   "id": "no byte-identical consecutive frames while the camera moved",
+   "state": "PASS",
+   "detail": "unexpected reuse at none; intentional/static 0",
+   "pose": "film",
+   "arm": "altc"
+  }
+ ],
+ "stillGate": "FAIL",
+ "filmGate": "FAIL",
+ "when": "2026-09-27T09:17:56.038Z"
+}

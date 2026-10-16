@@ -1,0 +1,9 @@
+§RANGE open label=armC_fkindex_16k dbMB=11195 chunk=16384 openMs=822 openBytes=901120 openReqs=54 ready=true
+§RANGE q=key_fact_acct_mid ms=16 bytes=49152 reqs=3 rows=1
+§RANGE q=key_c_order_mid ms=7 bytes=49152 reqs=3 rows=1
+§RANGE q=Q1_dict_count ms=18 bytes=16384 reqs=1 rows=1
+§RANGE q=Q2_fact_acct_pk ms=12 bytes=49152 reqs=3 rows=1
+§RANGE q=Q3_orderline_by_order ms=11 bytes=49152 reqs=3 rows=1
+§RANGE q=Q4_order_pk ms=185 bytes=98304 reqs=6 rows=1
+§RANGE_RATIO q=Q2 bytes=49152 fileBytes=11738480640 pct=0.0004
+§RANGE_VERDICT PASS label=armC_fkindex_16k

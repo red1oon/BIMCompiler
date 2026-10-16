@@ -5,6 +5,12 @@
 
 **NEVER TOUCH PRODUCTION.** `deploy/live/` is the production snapshot — do not edit directly. All dev work goes to `deploy/dev/` ONLY. Read `deploy/OCI_UPLOAD.md` §RULES before any OCI upload.
 
+## ⚖ TWIN CARDINAL RULE — SQLite == legacy iDempiere, incl. L&F (2026-10-09, user directive)
+> *"SQLite cannot be diff from legacy ops."* · *"Even L&F — this is the whole idea for zero impact on users."* · *"Ensure this cardinal rule throughout."*
+The SQLite ERP kernel/UI is a TWIN of legacy iDempiere: same operations, results, books, look & feel. **No accepted divergence**: a difference found by the parallel run
+(`scripts/bridge/run_all.sh`, `prompts/SQLiteIDEMPIERE.md`) is fixed on the SQLite side; a `LEGACY-QUIRK` exemption exists only in the user's own words (the runner refuses it otherwise).
+Never ask the user to approve a divergence. Full text: top of `prompts/SQLiteIDEMPIERE.md`.
+
 ## ⚖ PRIMAL LAW — WITNESS REPLACES EVERY HUMAN VISUAL CHECK (2026-08-26, user directive)
 > **USER, 2026-08-26:** *"Can u make it primal law now that WITNESS is to replace all human visual
 > checks"* … *"till Gantt chart editor to successfully edit the bars and it correctly works"*
@@ -134,6 +140,28 @@ A BOM is a recipe: one parent, N children, each with a quantity. Each child can 
 ## ERP Blueprint
 ERP / secured-distributed / serverless work → **`docs/ERP.md`** is the overarching blueprint; its Companion-docs map fans out to `docs/DistributedERP.md` (the doctrine + edge suite) + the `scripts/poc_*.js` witnesses. Read it first for ERP-side sessions.
 
+## ⚖ AD-LAYER LAW — ERP UI is ONE generic AD engine, never per-window code (2026-10-04, user directive)
+> *"must follow the AD layer of window grid handling abstract and not custom to each window. So that any new
+> model will be handled without further custom code as how iDempiere dealt with such."* … *"do watch that no
+> drift from such may occur again."* Cause: `prompts/ERP_IDEMPIERE_UX_PARITY.md §MD` — a "fully tested" sales
+> cycle shipped with master→detail broken on EVERY window, because lanes walked ONE path and patched symptoms.
+1. **Port the iDempiere mechanism, not the symptom.** A fault on one window = find the owning class
+   (`GridWindow/GridTab/GridTable/GridField`, `AbstractADWindowContent/ADTabpanel`, source under
+   `~/idempiere-dev-setup/idempiere/`), cite its file:line, fix it in the generic JS layer. A `if table==='c_order'`
+   branch (or a hand table list) for window behaviour is a defect, not a fix.
+2. **Goal = invariant × denominator.** ERP UI claims are "X of N AD windows/processes/doctypes pass", N taken from
+   the dictionary (`ad_seed.db`), never a hand-picked route. "Sales Order works end to end" is not a done-claim.
+3. **Witness what the USER sees, sweep the dictionary.** Count grid rows + parent id per row, switch tabs WITHOUT
+   Save, return to the parent — not "§CRUD validate ok". A witness over a scripted happy path is scope-blind.
+4. **Deletion budget.** A generic-layer PR states lines +/−; it deletes the special cases it supersedes. Add-only = not done.
+5. **One implementation per responsibility** (no second master-detail engine in `ad_ui.js` beside `idempiere.html`).
+6. **Scope of "complete" (user, 2026-10-04):** CORE = trade cycle + accounting (orders, purchasing, inventory,
+   invoices, payments, posting, costing). Everything else (manufacturing, HR, assets, …) is NOT core — it arrives
+   like any other extra module through Ninja/plugins. **Ninja/plugin handling is the ONE core extension enabler:**
+   a staged module must get full window, model and doc-action behaviour with zero host code.
+7. **Real iDempiere is the oracle** where behaviour is in doubt (local source + `idempiere` postgres DB) — read
+   or run it, never guess. Fix history goes in the prompts file, not in code comments.
+
 ## Walker Doctrine (ANTI-DRIFT — read before ANY disc-walker / MEP-walk / rules-DB work)
 **`docs/internal/WalkerDoctrine.md`** is the LOCKED core doc. The settled fundamentals (do NOT re-litigate or override): small/residential
 buildings (SH/DX/**SC**) walk **`duplex_rules.db`** — they do NOT use Terminal rules in production; the walk axis is BUILDING-CLASS,
@@ -228,6 +256,13 @@ Before ending, update PROGRESS.md with:
 - **Pre-Flight Citation:** Before code changes, cite the spec: `// Implementing BBC.md §X.Y — Witness: W-NAME`
 - **Traceability:** Check `TestArchitecture.md` §Traceability Matrix before and after changes
 
+## ⛔ NO-LFS HARD STOP (2026-10-07, user: "Hard stop. Let a workaround happen by necessity.")
+GitHub LFS bandwidth 10/10 GB used; resets 2026-11-01. LFS is OFF: global + repo config skip all LFS
+downloads (`smudge --skip`, `lfs.fetchexclude=*`), and `~/.config/git/no-lfs/guard.sh` (pre-commit +
+pre-push in bim-compiler and bim-ootb) rejects any LFS pointer or `filter=lfs` rule. Pushes no longer
+call `git lfs pre-push`. LFS files in a checkout are now small pointer stubs, not data. Do NOT undo
+this or `--no-verify` past it; get DBs via OCI / migration SQL instead.
+
 ## DB CHANGES = MIGRATION SCRIPT + SELF-HEAL LOADER, ALWAYS (hardened 2026-07-11 — read this FIRST)
 **This is the PERMANENT architecture, not a workaround for LFS bandwidth.** Every DB content change —
 schema/rules DB or a shipped extracted/library DB — ships as a small SQL script (`migration/*.sql`, or
@@ -302,6 +337,19 @@ confirmed clean + 100+ commits stale first). Rules going forward:
   done | grep '^/tmp/wt-'` and skip any path that shows up live, even if git-clean (a concurrent session may
   be mid-command there — pulling the directory out from under them is disruptive even when no data is at
   risk). Prune everything else that qualifies; leave dirty/unpushed/actively-occupied ones alone and move on.
+
+## ⚡ PERF BUDGET — consider while coding (proposed 2026-10-06; data: `docs/BrowserScaleBenchmark.md`)
+Measured, not guessed: in one tab the binding limit is **memory, not draw speed**. Heap ≈ **0.17 GB per million vertices** (fit over
+HHS / Hospital / JELAPANG bake logs); JELAPANG (22 M verts) peaks 3.4–3.8 GB while a render pass costs ~6 ms on an RTX 4060 laptop.
+- **Count vertices, not elements.** Before adding geometry (welds, clones, silhouettes, prewarm meshes) state its vertex/heap cost;
+  `§DUCT_SILHOUETTE`/`§MEP_SMOOTH_NORMALS` style passes must log verts added.
+- **Release what is off screen.** DLOD saves draws but disposes nothing — new geometry paths should support evict-behind; streaming
+  (httpvfs range reads, chainage tiles §J) is the growth path, not more RAM.
+- **Never duplicate big buffers** (a second copy of vertices/normals in JS = +heap); prefer typed-array views and on-demand reads.
+- **Save deltas, not the DB** — whole-DB rewrites (KRN_PERSIST) scale with model size.
+- **Occlusion helps draws only** (dlod_nav OCCL, > 20k elements) — it does not move the memory threshold.
+- **Log the cost:** heap (performance.memory) and verts in a `§` line at the end of any heavy pass, so the bake log keeps the benchmark current.
+Phones (~0.6 GB per tab, unverified) fit only ~4 M verts as a whole model — design new features so they degrade, not crash.
 
 ## Sacred Files (edit with extreme care)
 - `deploy/live/*` — PRODUCTION snapshot, never edit (see PRIME RULE)

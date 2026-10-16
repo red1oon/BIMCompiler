@@ -1,0 +1,12 @@
+[
+  {"table": "ad_window", "key": "AD_Window_ID", "readType": "QueryADWindow", "db": "ui"},
+  {"table": "ad_tab", "key": "AD_Tab_ID", "readType": "QueryADTab", "db": "ui"},
+  {"table": "ad_field", "key": "AD_Field_ID", "readType": "QueryADField", "db": "ui"},
+  {"table": "ad_column", "key": "AD_Column_ID", "readType": "QueryADColumnAll", "db": "ui"},
+  {"table": "ad_menu", "key": "AD_Menu_ID", "readType": "QueryADMenu", "db": "ui"},
+  {"table": "ad_message", "key": "AD_Message_ID", "readType": "QueryADMessage", "db": "ui"},
+  {"table": "ad_ref_list", "key": "AD_Ref_List_ID", "readType": "QueryADRefList", "db": "ui"},
+  {"table": "ad_val_rule", "key": "AD_Val_Rule_ID", "readType": "QueryADValRule", "db": "ui"},
+  {"table": "ad_process", "key": "AD_Process_ID", "readType": "QueryADProcess", "db": "ui", "skip": "^statistic_"},
+  {"table": "ad_process_para", "key": "AD_Process_Para_ID", "readType": "QueryADProcessPara", "db": "ui"}
+]

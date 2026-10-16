@@ -1,0 +1,2 @@
+[ {"name":"cp_olcprod_shipped121","process":200006,"recordId":121,"tableId":260,"params":[],"tables":["m_production","m_productionline","m_productionplan","c_orderline"],
+   "alignFromSeed":[{"table":"c_order","where":"c_order_id=106"},{"table":"c_orderline","where":"c_order_id=106"},{"table":"c_doctype","where":"c_doctype_id in (select c_doctype_id from c_order where c_order_id=106)"}]} ]

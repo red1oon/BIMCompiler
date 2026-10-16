@@ -1,0 +1,3 @@
+§FIDELITY start part=0/4 tables=232 of 925 sqlite=new.db pgdb=idempiere
+§FIDELITY table=c_conversion_rate rows=4 pgRows=4 pg=2847825595151103426 sq=1958347790386141258 MISMATCH t=8s
+§FIDELITY_VERDICT part=0/4 FAIL mismatches=1 colMismatch=0 tables=232 judgedTables=124 judgedRows=58442 totalSec=27s

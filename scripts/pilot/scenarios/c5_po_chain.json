@@ -1,0 +1,178 @@
+{
+ "_doc": "Purchase Order -> Material Receipt -> AP Invoice (the P2P chain).",
+ "steps": [
+  {
+   "op": "create",
+   "table": "C_Order",
+   "as": "po",
+   "fields": {
+    "AD_Org_ID": 11,
+    "C_DocTypeTarget_ID": 126,
+    "IsSOTrx": "N",
+    "DateOrdered": "2006-12-15",
+    "DateAcct": "2006-12-15",
+    "DatePromised": "2006-12-15",
+    "C_BPartner_ID": 120,
+    "C_BPartner_Location_ID": 114,
+    "Bill_BPartner_ID": 120,
+    "Bill_Location_ID": 114,
+    "M_Warehouse_ID": 103,
+    "M_PriceList_ID": 102,
+    "C_Currency_ID": 100,
+    "C_PaymentTerm_ID": 107,
+    "PaymentRule": "P",
+    "InvoiceRule": "D",
+    "DeliveryRule": "A",
+    "DeliveryViaRule": "P",
+    "FreightCostRule": "I",
+    "PriorityRule": "5",
+    "SalesRep_ID": 101
+   },
+   "ui": {
+    "window": 181
+   }
+  },
+  {
+   "op": "create",
+   "table": "C_OrderLine",
+   "as": "po_l1",
+   "fields": {
+    "AD_Org_ID": 11,
+    "C_Order_ID": "@po",
+    "Line": 10,
+    "M_Product_ID": 123,
+    "QtyEntered": 5,
+    "QtyOrdered": 5,
+    "C_UOM_ID": 100,
+    "PriceEntered": 36,
+    "PriceActual": 36,
+    "PriceList": 60,
+    "C_Tax_ID": 104
+   },
+   "ui": {
+    "window": 181,
+    "tab": "PO Line",
+    "parent": "po"
+   }
+  },
+  {
+   "op": "docaction",
+   "table": "C_Order",
+   "ref": "po",
+   "action": "CO",
+   "ui": {
+    "window": 181
+   }
+  },
+  {
+   "op": "create",
+   "table": "M_InOut",
+   "as": "rc",
+   "fields": {
+    "AD_Org_ID": 11,
+    "C_DocType_ID": 122,
+    "IsSOTrx": "N",
+    "MovementType": "V+",
+    "MovementDate": "2006-12-15",
+    "DateAcct": "2006-12-15",
+    "C_BPartner_ID": 120,
+    "C_BPartner_Location_ID": 114,
+    "M_Warehouse_ID": 103,
+    "C_Order_ID": "@po",
+    "DeliveryRule": "A",
+    "DeliveryViaRule": "P",
+    "FreightCostRule": "I",
+    "PriorityRule": "5"
+   },
+   "ui": {
+    "window": 184
+   }
+  },
+  {
+   "op": "create",
+   "table": "M_InOutLine",
+   "as": "rc_l1",
+   "fields": {
+    "AD_Org_ID": 11,
+    "M_InOut_ID": "@rc",
+    "Line": 10,
+    "M_Product_ID": 123,
+    "C_OrderLine_ID": "@po_l1",
+    "C_UOM_ID": 100,
+    "QtyEntered": 5,
+    "MovementQty": 5,
+    "M_Locator_ID": 101
+   },
+   "ui": {
+    "window": 184,
+    "tab": "Receipt Line",
+    "parent": "rc"
+   }
+  },
+  {
+   "op": "docaction",
+   "table": "M_InOut",
+   "ref": "rc",
+   "action": "CO",
+   "ui": {
+    "window": 184
+   }
+  },
+  {
+   "op": "create",
+   "table": "C_Invoice",
+   "as": "ap",
+   "fields": {
+    "AD_Org_ID": 11,
+    "C_DocTypeTarget_ID": 123,
+    "IsSOTrx": "N",
+    "DateInvoiced": "2006-12-15",
+    "DateAcct": "2006-12-15",
+    "C_Order_ID": "@po",
+    "C_BPartner_ID": 120,
+    "C_BPartner_Location_ID": 114,
+    "C_Currency_ID": 100,
+    "M_PriceList_ID": 102,
+    "C_PaymentTerm_ID": 107,
+    "PaymentRule": "P"
+   },
+   "ui": {
+    "window": 183
+   }
+  },
+  {
+   "op": "create",
+   "table": "C_InvoiceLine",
+   "as": "ap_l1",
+   "fields": {
+    "AD_Org_ID": 11,
+    "C_Invoice_ID": "@ap",
+    "Line": 10,
+    "M_Product_ID": 123,
+    "C_OrderLine_ID": "@po_l1",
+    "M_InOutLine_ID": "@rc_l1",
+    "C_UOM_ID": 100,
+    "QtyEntered": 5,
+    "QtyInvoiced": 5,
+    "PriceEntered": 36,
+    "PriceActual": 36,
+    "PriceList": 60,
+    "C_Tax_ID": 104
+   },
+   "ui": {
+    "window": 183,
+    "tab": "Invoice Line",
+    "parent": "ap"
+   }
+  },
+  {
+   "op": "docaction",
+   "table": "C_Invoice",
+   "ref": "ap",
+   "action": "CO",
+   "ui": {
+    "window": 183
+   }
+  }
+ ]
+}

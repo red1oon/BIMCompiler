@@ -1,0 +1,21 @@
+§POLY_FIT lang=en id=s01 dur=13.38 pick=DETAIL
+§POLY_FIT lang=en id=s02 dur=9.70 pick=DETAIL
+§POLY_FIT lang=en id=s03 dur=6.83 pick=DETAIL
+§POLY_FIT lang=en id=s04 dur=12.73 pick=DETAIL
+§POLY_FIT lang=en id=s05 dur=5.51 pick=DETAIL
+§POLY_FIT lang=en id=s06 dur=6.75 pick=DETAIL
+§POLY_FIT lang=en id=s07 dur=15.44 pick=DETAIL
+§POLY_FIT lang=en id=s08 dur=9.48 pick=DETAIL
+§POLY_FIT lang=en id=s09 dur=12.19 pick=DETAIL
+§POLY_FIT lang=en id=s10 dur=6.23 pick=DETAIL
+§POLY_TONE lang=en wrong=0 rc=0
+§POLY_DUR id=s01 dur=13.38
+§POLY_DUR id=s02 dur=9.70
+§POLY_DUR id=s03 dur=6.83
+§POLY_DUR id=s04 dur=12.73
+§POLY_DUR id=s05 dur=5.51
+§POLY_DUR id=s06 dur=6.75
+§POLY_DUR id=s07 dur=15.44
+§POLY_DUR id=s08 dur=9.48
+§POLY_DUR id=s09 dur=12.19
+§POLY_DUR id=s10 dur=6.23

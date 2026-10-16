@@ -1,0 +1,103 @@
+§BLOAT start src=idempiere dst=bloat_smoke2 targetGB=0.1
+NOTICE:  database "bloat_smoke2" does not exist, skipping
+ERROR:  cannot drop index c_order_uu_idx because constraint c_order_uu_idx on table c_order requires it
+HINT:  You can drop constraint c_order_uu_idx on table c_order instead.
+ERROR:  cannot drop index c_orderline_uu_idx because constraint c_orderline_uu_idx on table c_orderline requires it
+HINT:  You can drop constraint c_orderline_uu_idx on table c_orderline instead.
+ERROR:  cannot drop index c_invoice_uu_idx because constraint c_invoice_uu_idx on table c_invoice requires it
+HINT:  You can drop constraint c_invoice_uu_idx on table c_invoice instead.
+ERROR:  cannot drop index c_invoiceline_uu_idx because constraint c_invoiceline_uu_idx on table c_invoiceline requires it
+HINT:  You can drop constraint c_invoiceline_uu_idx on table c_invoiceline instead.
+ERROR:  cannot drop index m_inout_uu_idx because constraint m_inout_uu_idx on table m_inout requires it
+HINT:  You can drop constraint m_inout_uu_idx on table m_inout instead.
+ERROR:  cannot drop index m_inoutline_uu_idx because constraint m_inoutline_uu_idx on table m_inoutline requires it
+HINT:  You can drop constraint m_inoutline_uu_idx on table m_inoutline instead.
+ERROR:  cannot drop index m_inoutconfirm_uu_idx because constraint m_inoutconfirm_uu_idx on table m_inoutconfirm requires it
+HINT:  You can drop constraint m_inoutconfirm_uu_idx on table m_inoutconfirm instead.
+ERROR:  cannot drop index m_matchinv_uu_idx because constraint m_matchinv_uu_idx on table m_matchinv requires it
+HINT:  You can drop constraint m_matchinv_uu_idx on table m_matchinv instead.
+ERROR:  cannot drop index m_matchpo_uu_idx because constraint m_matchpo_uu_idx on table m_matchpo requires it
+HINT:  You can drop constraint m_matchpo_uu_idx on table m_matchpo instead.
+ERROR:  cannot drop index c_payment_uu_idx because constraint c_payment_uu_idx on table c_payment requires it
+HINT:  You can drop constraint c_payment_uu_idx on table c_payment instead.
+ERROR:  cannot drop index c_allocationhdr_uu_idx because constraint c_allocationhdr_uu_idx on table c_allocationhdr requires it
+HINT:  You can drop constraint c_allocationhdr_uu_idx on table c_allocationhdr instead.
+ERROR:  cannot drop index c_allocationline_uu_idx because constraint c_allocationline_uu_idx on table c_allocationline requires it
+HINT:  You can drop constraint c_allocationline_uu_idx on table c_allocationline instead.
+ERROR:  cannot drop index gl_journal_uu_idx because constraint gl_journal_uu_idx on table gl_journal requires it
+HINT:  You can drop constraint gl_journal_uu_idx on table gl_journal instead.
+ERROR:  cannot drop index gl_journalline_uu_idx because constraint gl_journalline_uu_idx on table gl_journalline requires it
+HINT:  You can drop constraint gl_journalline_uu_idx on table gl_journalline instead.
+ERROR:  cannot drop index c_bankstatement_uu_idx because constraint c_bankstatement_uu_idx on table c_bankstatement requires it
+HINT:  You can drop constraint c_bankstatement_uu_idx on table c_bankstatement instead.
+ERROR:  cannot drop index c_bankstatementline_uu_idx because constraint c_bankstatementline_uu_idx on table c_bankstatementline requires it
+HINT:  You can drop constraint c_bankstatementline_uu_idx on table c_bankstatementline instead.
+ERROR:  cannot drop index m_movement_uu_idx because constraint m_movement_uu_idx on table m_movement requires it
+HINT:  You can drop constraint m_movement_uu_idx on table m_movement instead.
+ERROR:  cannot drop index m_movementline_uu_idx because constraint m_movementline_uu_idx on table m_movementline requires it
+HINT:  You can drop constraint m_movementline_uu_idx on table m_movementline instead.
+ERROR:  cannot drop index m_transaction_uu_idx because constraint m_transaction_uu_idx on table m_transaction requires it
+HINT:  You can drop constraint m_transaction_uu_idx on table m_transaction instead.
+ERROR:  cannot drop index m_costdetail_uu_idx because constraint m_costdetail_uu_idx on table m_costdetail requires it
+HINT:  You can drop constraint m_costdetail_uu_idx on table m_costdetail instead.
+ERROR:  cannot drop index fact_acct_uu_idx because constraint fact_acct_uu_idx on table fact_acct requires it
+HINT:  You can drop constraint fact_acct_uu_idx on table fact_acct instead.
+ERROR:  cannot drop index ad_changelog_uu_idx because constraint ad_changelog_uu_idx on table ad_changelog requires it
+HINT:  You can drop constraint ad_changelog_uu_idx on table ad_changelog instead.
+ERROR:  cannot drop index ad_session_uu_idx because constraint ad_session_uu_idx on table ad_session requires it
+HINT:  You can drop constraint ad_session_uu_idx on table ad_session instead.
+§BLOAT plan tables=23 perCopyKB=360 K=292
+NOTICE:  table "_src_c_order" does not exist, skipping
+NOTICE:  table "_src_c_orderline" does not exist, skipping
+NOTICE:  table "_src_c_invoice" does not exist, skipping
+NOTICE:  table "_src_c_invoiceline" does not exist, skipping
+NOTICE:  table "_src_m_inout" does not exist, skipping
+NOTICE:  table "_src_m_inoutline" does not exist, skipping
+NOTICE:  table "_src_m_inoutconfirm" does not exist, skipping
+NOTICE:  table "_src_m_matchinv" does not exist, skipping
+NOTICE:  table "_src_m_matchpo" does not exist, skipping
+NOTICE:  table "_src_c_payment" does not exist, skipping
+NOTICE:  table "_src_c_allocationhdr" does not exist, skipping
+NOTICE:  table "_src_c_allocationline" does not exist, skipping
+NOTICE:  table "_src_gl_journal" does not exist, skipping
+NOTICE:  table "_src_gl_journalline" does not exist, skipping
+NOTICE:  table "_src_c_bankstatement" does not exist, skipping
+NOTICE:  table "_src_c_bankstatementline" does not exist, skipping
+NOTICE:  table "_src_m_movement" does not exist, skipping
+NOTICE:  table "_src_m_movementline" does not exist, skipping
+NOTICE:  table "_src_m_transaction" does not exist, skipping
+NOTICE:  table "_src_m_costdetail" does not exist, skipping
+NOTICE:  table "_src_fact_acct" does not exist, skipping
+NOTICE:  table "_src_ad_changelog" does not exist, skipping
+NOTICE:  table "_src_ad_session" does not exist, skipping
+§BLOAT table=c_order srcRows=313 copies=292 rows=91709 heapMB=27 fkRemapped=1
+§BLOAT table=c_orderline srcRows=332 copies=292 rows=97276 heapMB=24 fkRemapped=1
+§BLOAT table=c_invoice srcRows=8 copies=292 rows=2344 heapMB=1 fkRemapped=2
+§BLOAT table=c_invoiceline srcRows=24 copies=292 rows=7032 heapMB=1 fkRemapped=3
+§BLOAT table=m_inout srcRows=9 copies=292 rows=2637 heapMB=1 fkRemapped=2
+§BLOAT table=m_inoutline srcRows=27 copies=292 rows=7911 heapMB=1 fkRemapped=2
+§BLOAT table=m_inoutconfirm srcRows=1 copies=292 rows=293 heapMB=0 fkRemapped=2
+§BLOAT table=m_matchinv srcRows=18 copies=292 rows=5274 heapMB=1 fkRemapped=2
+§BLOAT table=m_matchpo srcRows=37 copies=292 rows=10841 heapMB=2 fkRemapped=3
+§BLOAT table=c_payment srcRows=2 copies=292 rows=586 heapMB=0 fkRemapped=2
+§BLOAT table=c_allocationhdr srcRows=2 copies=292 rows=586 heapMB=0 fkRemapped=0
+§BLOAT table=c_allocationline srcRows=2 copies=292 rows=586 heapMB=0 fkRemapped=4
+§BLOAT table=gl_journal srcRows=2 copies=292 rows=586 heapMB=0 fkRemapped=0
+§BLOAT table=gl_journalline srcRows=4 copies=292 rows=1172 heapMB=0 fkRemapped=1
+§BLOAT table=c_bankstatement srcRows=2 copies=292 rows=586 heapMB=0 fkRemapped=0
+§BLOAT table=c_bankstatementline srcRows=2 copies=292 rows=586 heapMB=0 fkRemapped=3
+§BLOAT table=m_movement srcRows=1 copies=292 rows=293 heapMB=0 fkRemapped=0
+§BLOAT table=m_movementline srcRows=1 copies=292 rows=293 heapMB=0 fkRemapped=1
+§BLOAT table=m_transaction srcRows=28 copies=292 rows=8204 heapMB=1 fkRemapped=2
+§BLOAT table=m_costdetail srcRows=86 copies=292 rows=25198 heapMB=4 fkRemapped=5
+§BLOAT table=fact_acct srcRows=300 copies=292 rows=87900 heapMB=20 fkRemapped=22
+§BLOAT table=ad_changelog srcRows=198 copies=292 rows=58014 heapMB=14 fkRemapped=1
+§BLOAT table=ad_session srcRows=12 copies=292 rows=3516 heapMB=1 fkRemapped=0
+§BLOAT fkIndexes=38
+§BLOAT_FKCHECK c_orderline.c_order_id -> c_order dangling=0
+§BLOAT_FKCHECK c_invoice.c_order_id -> c_order dangling=0
+§BLOAT_FKCHECK c_invoiceline.c_invoice_id -> c_invoice dangling=0
+§BLOAT_FKCHECK m_inoutline.m_inout_id -> m_inout dangling=0
+§BLOAT_FKCHECK m_inoutline.c_orderline_id -> c_orderline dangling=0
+§BLOAT_FKCHECK m_transaction.m_inoutline_id -> m_inoutline dangling=0
+§BLOAT_VERDICT PASS tablesOk=23 K=292 dbSize=265 MB

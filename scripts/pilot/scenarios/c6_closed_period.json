@@ -1,0 +1,59 @@
+{
+ "_doc": "PROBE trap 6: manual AR Invoice dated 2001-03-15. C_PeriodControl says ARI period Mar-01 = Closed, but the reference's C_AcctSchema.AutoPeriodControl=Y (OpenHistory=10000d) makes it open (MPeriod.java:735-760) -> iDempiere completes + posts. Ours reads C_PeriodControl directly.",
+ "steps": [
+  {
+   "op": "create",
+   "table": "C_Invoice",
+   "as": "inv",
+   "fields": {
+    "AD_Org_ID": 11,
+    "C_DocTypeTarget_ID": 116,
+    "IsSOTrx": "Y",
+    "DateInvoiced": "2001-03-15",
+    "DateAcct": "2001-03-15",
+    "C_BPartner_ID": 118,
+    "C_BPartner_Location_ID": 113,
+    "C_Currency_ID": 100,
+    "M_PriceList_ID": 101,
+    "C_PaymentTerm_ID": 106,
+    "PaymentRule": "P",
+    "SalesRep_ID": 101
+   },
+   "ui": {
+    "window": 167
+   }
+  },
+  {
+   "op": "create",
+   "table": "C_InvoiceLine",
+   "as": "inv_l1",
+   "fields": {
+    "AD_Org_ID": 11,
+    "C_Invoice_ID": "@inv",
+    "Line": 10,
+    "M_Product_ID": 134,
+    "C_UOM_ID": 100,
+    "QtyEntered": 1,
+    "QtyInvoiced": 1,
+    "PriceEntered": 60,
+    "PriceActual": 60,
+    "PriceList": 60,
+    "C_Tax_ID": 104
+   },
+   "ui": {
+    "window": 167,
+    "tab": "Invoice Line",
+    "parent": "inv"
+   }
+  },
+  {
+   "op": "docaction",
+   "table": "C_Invoice",
+   "ref": "inv",
+   "action": "CO",
+   "ui": {
+    "window": 167
+   }
+  }
+ ]
+}

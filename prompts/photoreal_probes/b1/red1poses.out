@@ -1,0 +1,25 @@
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell=0", "elements": 63182, "loadS
+
+red1p1_sh0 §SKY_SHELL_RAYS bld=Hospital cache=built off stagingTotal=10787 §FAULT OK expStep=0 blown=0% compositeMean=68.02 appMean=69.49 
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.83,"appDarkPct":1.104}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 27.80
+
+red1p1_sh1 §SKY_SHELL_RAYS bld=Hospital cache=built on stagingTotal=20594 §FAULT OK expStep=0 blown=0% compositeMean=67.9 appMean=69.31 
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.729,"appDarkPct":0.939}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell=0", "elements": 63182, "loadS
+
+red1p2_sh0_r1 §SKY_SHELL_RAYS bld=Hospital cache=built off stagingTotal=11638 §FAULT OK expStep=0 blown=0.27% compositeMean=111.68 appMean=120.94 
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.019,"appDarkPct":0.036}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&skyshell=0", "elements": 63182, "loadS
+
+red1p2_sh0_r2 §SKY_SHELL_RAYS bld=Hospital cache=built off stagingTotal=11526 §FAULT OK expStep=0 blown=0.27% compositeMean=111.5 appMean=120.51 
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.02,"appDarkPct":0.036}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 29.00
+
+red1p2_sh1_r1 §SKY_SHELL_RAYS bld=Hospital cache=built on stagingTotal=22529 §FAULT OK expStep=0 blown=0.27% compositeMean=111.62 appMean=120.83 
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.019,"appDarkPct":0.037}}
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 29.05
+
+red1p2_sh1_r2 §SKY_SHELL_RAYS bld=Hospital cache=built on stagingTotal=21217 §FAULT OK expStep=0 blown=0.27% compositeMean=111.61 appMean=120.8 
+{"result":{"w":1666,"h":864,"compositeDarkPct":0.021,"appDarkPct":0.036}}
+== red1poses done 03:55:36

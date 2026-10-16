@@ -1,0 +1,40 @@
+== open Hospital %26ghost%3D1%26capcentre%3D0 03:34:49
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1&capcentre=0", "elements": 63182, "loadSecs": 28.
+
+== abcap0_hospital_aerial alts 03:35:18
+"verdict": "DONE" GLARE bld=Hospital PASS stagingTotal=21275 compositeMean=69.38 
+"darkPct": 1.87
+abcap0_hospital cells [{"name":"red1aerial","cell":10007498,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1},{"name":"innerroom","cell":7058199,"raw":291,"cls":"COVERED","zone":291,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":1},{"name":"outsidein","cell":4491800,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1}]
+== open Clinic %26ghost%3D1%26capcentre%3D0 03:37:26
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1&capcentre=0", "elements": 16071, "loadSecs": 16.59
+
+== abcap0_clinic_corridor alts 03:37:43
+"verdict": "DONE" GLARE bld=Clinic PASS stagingTotal=3743 
+abcap0_clinic cells [{"name":"corridor","cell":797874,"raw":27,"cls":"COVERED","zone":27,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":11}]
+== open Terminal %26capcentre%3D0 03:37:50
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db&capcentre=0", "elements": 48428, "loadSecs": 27.395}
+
+== abcap0_terminal_inside alts 03:38:17
+"verdict": "DONE" GLARE bld=TerminalMerged PASS stagingTotal=10774 
+abcap0_terminal cells [{"name":"inside","cell":1825936,"raw":17,"cls":"COVERED","zone":17,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":2}]
+== open Hospital %26ghost%3D1 03:38:31
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.383}
+
+== abcap1_hospital_aerial alts 03:39:00
+"verdict": "DONE" GLARE bld=Hospital PASS stagingTotal=20313 compositeMean=70.74 
+"darkPct": 1.49
+abcap1_hospital cells [{"name":"red1aerial","cell":10007498,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1},{"name":"innerroom","cell":7058199,"raw":207,"cls":"COVERED","zone":207,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":1},{"name":"outsidein","cell":4491800,"raw":0,"cls":"OPEN","zone":0,"skyBit":0,"Fcell":1,"Fread":1,"capCellsAbove":-1}]
+== open Clinic %26ghost%3D1 03:41:07
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Clinic_extracted.db&ghost=1", "elements": 16071, "loadSecs": 16.723}
+
+== abcap1_clinic_corridor alts 03:41:24
+"verdict": "DONE" GLARE bld=Clinic PASS stagingTotal=3591 
+abcap1_clinic cells [{"name":"corridor","cell":797874,"raw":27,"cls":"COVERED","zone":27,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":11}]
+== open Terminal  03:41:32
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Terminal_extracted.db", "elements": 48428, "loadSecs": 35.269}
+
+== abcap1_terminal_inside alts 03:42:07
+"verdict": "DONE" GLARE bld=TerminalMerged PASS stagingTotal=10666 
+abcap1_terminal cells [{"name":"inside","cell":1825936,"raw":16,"cls":"COVERED","zone":16,"skyBit":0,"Fcell":0,"Fread":0,"capCellsAbove":2}]
+== abcap done 03:42:21
+ALLDONE

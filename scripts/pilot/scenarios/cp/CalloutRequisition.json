@@ -1,0 +1,3 @@
+[
+ {"name":"cp_req_line","window":322,"tab":1,"parents":[{"tab":0,"id":1005100,"from":"ref"}],"steps":[{"set":"M_Product_ID","value":124},{"set":"Qty","value":"3"},{"set":"PriceActual","value":"11.125"},{"set":"Qty","value":"2.5"},{"set":"M_Product_ID","value":130}]}
+]

@@ -1,0 +1,29 @@
+═══ W-FOLD-REPLENISH — ReplenishReport QtyToOrder (movement-folded on-hand) == iDempiere formula ═══
+    engine = erp_engine.qtyOnHand(m_transaction) → JS formula → buildDoc · oracle = iDempiere formula-SQL over m_storageonhand · warehouse=103
+
+   🟢 QtyToOrder list (movement-folded on-hand → JS formula) == iDempiere formula over m_storageonhand — products=8 maxDiff=0
+   🟢 product 127 QtyToOrder engine=5 oracle=5 (on-hand-folded=20)
+   🟢 product 128 QtyToOrder engine=25 oracle=25 (on-hand-folded=5)
+   🟢 product 135 QtyToOrder engine=5 oracle=5 (on-hand-folded=15)
+   🟢 product 138 QtyToOrder engine=5 oracle=5 (on-hand-folded=20)
+   🟢 product 139 QtyToOrder engine=5 oracle=5 (on-hand-folded=15)
+   🟢 product 140 QtyToOrder engine=5 oracle=5 (on-hand-folded=20)
+   🟢 product 141 QtyToOrder engine=10 oracle=10 (on-hand-folded=30)
+   🟢 product 142 QtyToOrder engine=10 oracle=10 (on-hand-folded=30)
+§FOLD-COMPLETE doc=ReplenishReport deltaFrom=MOrder products=8 oracle=iDempiere maxDiff=0
+   🟢 PO emitted via buildDoc (newVerbs=[]) — 1 CREATE_DOCUMENT(C_Order,PO) + 8 CREATE_LINE — ops=9
+   §PO-OP-GROUP header={"op_type":"CREATE_DOCUMENT","table":"C_Order","source_id":103,"issotrx":"N","m_warehouse_id":103}
+     line={"op_type":"CREATE_LINE","table":"C_OrderLine","source_line_id":127,"m_product_id":127,"qtyordered":5}
+     line={"op_type":"CREATE_LINE","table":"C_OrderLine","source_line_id":128,"m_product_id":128,"qtyordered":25}
+     line={"op_type":"CREATE_LINE","table":"C_OrderLine","source_line_id":135,"m_product_id":135,"qtyordered":5}
+     … (5 more)
+§FOLD-COMPLETE doc=C_Order(PO) deltaFrom=MOrder lines=8 Σqty=70 verb=buildDoc newVerbs=0
+   🟢 §FALSIFIER-A order up to Level_Min (not Max) → diverges from oracle — maxDiff=20 at=128
+§FALSIFIER doc=ReplenishReport mutation=max-to-min maxDiff=20 (must be >0)
+   🟢 §FALSIFIER-B type-1 always-order (drop the below-min gate) → spurious products appear — oracle-products=8 falsified-products=16
+§FALSIFIER doc=ReplenishReport mutation=type1-always-order products=16 (must be > 8)
+
+   §SOURCE-NOTE QtyReserved/QtyOrdered ride M_StorageReservation (2 rows, qty 0 in seed); Order_Min/Order_Pack adjustments absent on these rows — named, not exercised. All 8 triggered are type-2 (maintain-max).
+
+🟢 W-FOLD-REPLENISH PASS — replenishment QtyToOrder folds from the movement-derived on-hand (rides W-FOLD-QTYONHAND) == iDempiere ReplenishReport to the unit, and emits the PO through the existing buildDoc archetype (newVerbs=0).
+exit=0

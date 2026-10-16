@@ -78,6 +78,7 @@ nav:
   - Start Here:
       - Home: index.md
       - "📖 User Guide": USER_GUIDE.md
+      - "🧰 BIM Tools — User Manual": BIMToolsGuide.md
       - "🔒 Fully Offline / Air-Gapped Install": OFFLINE_INSTALL_GUIDE.md
       - "🆕 What's New": WhatsNew.md
       - About BIM OOTB: AboutMore.md
@@ -97,6 +98,7 @@ nav:
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
       - "2D Drawings → BIM (DXF2BIM)": DXF2BIMGuide.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
+      - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
       - "Civil Works — Step by Step": CivilWorksGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md

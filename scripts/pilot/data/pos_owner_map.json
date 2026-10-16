@@ -1,0 +1,127 @@
+{
+ "_provenance": "Java file:line verified by grep against ~/idempiere-dev-setup/idempiere/org.adempiere.base/src/org/compiere on 2026-10-04; trap # = docs/internal/ERP_EQUIVALENCE_LEDGER.md \u00a7PORT-COVERAGE (b).",
+ "c_payment": {
+  "java": "model/MInvoice.java:2009-2062 (completeIt: PaymentRule=Cash -> new MPayment, saveEx, processIt)",
+  "trap": "5 (+2: DocAction runs real model code)"
+ },
+ "c_allocationhdr": {
+  "java": "model/MPayment.java:966 testAllocation / :2298 allocateIt (auto-allocate payment to invoice)",
+  "trap": "5"
+ },
+ "c_allocationline": {
+  "java": "model/MPayment.java:2298 allocateIt",
+  "trap": "5"
+ },
+ "c_ordertax": {
+  "java": "model/MOrderLine.java:999 afterSave -> :1070 updateHeaderTax -> calculator.updateOrderTax",
+  "trap": "1 (0/100 afterSave hooks fired)"
+ },
+ "m_storageonhand": {
+  "java": "model/MInOut.java:1785,1874,1907 MStorageOnHand.add (completeIt)",
+  "trap": "3"
+ },
+ "m_transaction": {
+  "java": "model/MInOut.java:1798,1939 new MTransaction (completeIt)",
+  "trap": "3"
+ },
+ "m_inoutlinema": {
+  "java": "model/MInOut.java:1766-1770 MInOutLineMA (material-policy allocation, completeIt)",
+  "trap": "3"
+ },
+ "m_costdetail": {
+  "java": "acct/Doc_InOut.java:363-424 MCostDetail.createShipment (at post time)",
+  "trap": "4"
+ },
+ "m_cost": {
+  "java": "acct/DocLine.java:791-831 getProductCosts / model/MCost.java (queue+average update)",
+  "trap": "4"
+ },
+ "m_costhistory": {
+  "java": "model/MCost.java / MCostDetail.process (history row per cost change)",
+  "trap": "4"
+ },
+ "m_costqueue": {
+  "java": "model/MCostQueue.java via MCostDetail.createShipment (FIFO/LIFO queue depletion)",
+  "trap": "4"
+ },
+ "c_bpartner": {
+  "java": "model/MBPartner.java:711 setTotalOpenBalance, :762 setActualLifeTimeValue; MAllocationHdr.java:357,963; MOrder.java credit/SO_CreditUsed",
+  "trap": "5"
+ },
+ "ad_sequence": {
+  "java": "model/PO.java:3149-3162,3579-3603 DB.getDocumentNo + :3528 DB.getNextID (nextidfunc) ; MSequence.java:176-188",
+  "trap": "7"
+ },
+ "ad_changelog": {
+  "java": "model/PO.java:3294-3309 session.changeLog (column audit on update)",
+  "trap": "11 (+ ours: op-log is the audit trail, no AD_ChangeLog rows)"
+ },
+ "c_acctprocessor": {
+  "java": "model/MAcctProcessor.java + server AcctProcessor (async post scheduler)",
+  "trap": "9 (scheduler not replaced, ledger 9c)"
+ },
+ "c_acctprocessorlog": {
+  "java": "model/MAcctProcessor.java (processor run log)",
+  "trap": "9 (scheduler)"
+ },
+ "fact_acct": {
+  "java": "acct/Doc.java:246 postImmediate; Doc_Invoice/Doc_InOut/Doc_Payment/Doc_Allocation createFacts",
+  "trap": "9 (2/20 Doc_* on page)"
+ },
+ "ad_session": {
+  "java": "n/a \u2014 web-service login session (harness artifact, not a document effect)",
+  "trap": "n/a"
+ },
+ "ad_user": {
+  "java": "n/a \u2014 DateLastLogin stamp of the WS login (harness artifact)",
+  "trap": "n/a"
+ },
+ "c_order": {
+  "java": "model/MOrder.java:1619,1624 prepareIt copies C_DocTypeTarget_ID->C_DocType_ID; :2180-2184 completeIt forces DeliveryRule=F for POS/WI; model/MOrderLine.java:999->:1070 updateHeaderTax rolls TotalLines/GrandTotal; process/DocumentEngine.java:344 setProcessed + approve/DocAction=CL",
+  "trap": "1 (roll-ups) + 2 (DocAction path)"
+ },
+ "c_orderline": {
+  "java": "model/MOrderLine.java:230-237 setHeaderInfo copies BP/currency; :321,681 setDiscount; QtyDelivered/QtyInvoiced updated by MInOut.completeIt (:1699-1741) and MInvoice.completeIt; Processed by DocumentEngine",
+  "trap": "1 + 3"
+ },
+ "c_invoice": {
+  "java": "model/MInvoice.java:502-503 DateInvoiced/DateAcct from the order's invoice date (ours stamps today); :1449 setIsPaid via MPayment.testAllocation; approveIt",
+  "trap": "5 + 9 (date/period)"
+ },
+ "c_invoiceline": {
+  "java": "model/MInvoiceLine.java:308 setOrderLine copies LineNetAmt; beforeSave computes TaxAmt/LineTotalAmt (calculator); processed via MInvoice.completeIt",
+  "trap": "1"
+ },
+ "c_invoicetax": {
+  "java": "model/MInvoice.java:2030 calculateTaxTotal / MInvoiceTax.get (Processed flag set at completeIt)",
+  "trap": "1"
+ },
+ "m_inout": {
+  "java": "model/MInOut.java:647-648 MovementDate/DateAcct from order (ours stamps today); :652 DeliveryRule copied from order; :1609 approveIt",
+  "trap": "3 + 9"
+ },
+ "m_inoutline": {
+  "java": "model/MInOut.java:2194 setProcessed(true) cascade (completeIt)",
+  "trap": "3"
+ },
+ "m_storagereservation": {
+  "java": "model/MOrder.java:1657 -> :1925-2024 reserveStock -> MStorageReservation.add (MStorageReservation.java:244,263,340); released on VO by MOrder.voidIt",
+  "trap": "3"
+ },
+ "m_storagereservationlog": {
+  "java": "model/MStorageReservation.java:340 add (reservation log row per change)",
+  "trap": "3"
+ },
+ "m_matchpo": {
+  "java": "model/MInOut.java:2083,2113 MMatchPO.create (receipt completeIt); MInvoice.java:2136",
+  "trap": "3"
+ },
+ "m_matchinv": {
+  "java": "model/MInOut.java:2062 / MInvoice.java:2101 new MMatchInv",
+  "trap": "3 (+P2P invoice match lane)"
+ },
+ "t_fact_acct_history": {
+  "java": "model/MFactAcct.java:79-85 (copy of prior Fact_Acct rows before a back-dated re-post)",
+  "trap": "9"
+ }
+}

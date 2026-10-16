@@ -1,0 +1,21 @@
+day1	0.0	2.7	§CPE_DAY_COUNTER day=1	F: Day one.	F: Day one, in Boston.
+level1	2.7	6.4	§FLYTHRU_CUE_ON storey "Level 1"	F: Level one takes shape.	F: Level one starts to take shape.
+steel	6.4	9.1	§LINEAR_BEAT_DRAW IfcBeam	F: Steel goes in.	F: Then the steel goes in.
+slab	9.1	13.0	§SLAB_BEAT_LABEL "Floor plate"	F: Floor plates follow.	F: Then the floor plates, one by one.
+inside	13.0	18.4	§FLYTHRU_DATUM_ENTRY · corridor	F: We step inside.	F: And we step inside, while it's still rising.
+hall	18.4	30.4	§INDOOR_BEAT_DRAW hall 6,239 m² · §RULE_FILM_EXIT_STAT ~217 steps	F: This is the main hall.	F: This is the main hall, over six thousand square metres, five and a half metres clear. And the longest way out? About two hundred and seventeen steps.
+days	30.4	43.8	§CPE_DAY_COUNTER 137→182 · §CPE_BUILDUP · §COST_ODOMETER	F: Outside, the days tick on.	F: Outside, the days fly by. By day one hundred and eighty, nearly two thirds of the pieces are in, each one scheduled and costed straight from the model.
+checks	43.8	56.9	§MEASURE_BOX Structural · §RULE_FILM 384/26	F: The model checks itself.	F: And see these boxes? The model checks itself as it grows. Spans, cantilevers, columns. Three hundred and eighty four structural findings, twenty six on safety.
+egress	56.9	62.9	§MEASURE_BOX common path of egress	F: And for safety, the way out.	F: For safety, how far you walk before you get a choice of exits.
+door	62.9	72.5	§INDOOR_BEAT_DRAW door · §MEASURE_BUILDING_CARD 440 doors	F: Even the doors are measured.	F: Even the doors are measured. Ten eighty by twenty one ten, and four hundred and forty of them.
+done	72.5	82.8	§CPE_BUILDUP 63,418 · day 321 · §COST_ODOMETER_FINAL hours 94,880.8	F: Day three hundred and twenty one. Done.	F: Day three hundred and twenty one, and it's topped out. Sixty three thousand pieces, nearly ninety five thousand work hours.
+loadpath	82.8	95.0	§LOADPATH_STACK · §EGRESS isolated_room=1	F: Now we pause, on the load path.	F: Now we pause. Strip it back, and watch the weight come down, floor by floor. And that safety box? One isolated room. A blind spot.
+clash	95.0	115.0	§CLASH_NARROWPHASE broad=1478 meshTrue=271 FP 79%	F: On the way back, the clashes light up.	F: On the way back, the clashes light up. Not bounding boxes, but real mesh overlap, checked against its tolerance. Boxes flagged almost fifteen hundred. Real overlaps, two hundred and seventy one.
+which	115.0	133.8	§CLASH_LABELS Pipe/Duct 66, Cable Tray/Wall 44	F: Pipes against ducts, mostly.	F: Most of them? Pipes against ducts, and cable trays running into walls. Some are false alarms, but that's the point. If your model has these problems, it will find them.
+rules2	133.8	148.7	§EGRESS circulation_distance=13 · §STRUCT_SANITY column_continuity=15	F: Circulation, then columns.	F: Circulation distance, thirteen walks too long to an exit. Column continuity, fifteen columns flagged.
+datum	148.7	159.8	§FLYTHRU_DATUM_LIFE2	F: The setting out, over the finished building.	F: Here's the setting out drawing again, laid right over the finished building.
+parade	159.8	167.8	§CLASH_DISC_ARRIVAL_HIGHLIGHT	F: Trade by trade.	F: Now trade by trade. Fire protection, electrical, mechanical. Two hundred and four in all.
+pairs	167.8	172.6	§CLASH_HUD_HIGHLIGHT ARC|STR 66	F: Architecture against structure.	F: The biggest group, architecture against structure.
+reveal	172.6	193.9	§FINDINGS_CEASE · §STOREY_REVEAL_TIMING · FP|MEP 81	F: Level by level, the whole hospital.	F: Now the signs step aside. Level by level, colour by colour, the whole hospital. And all of it computed from one IFC file.
+value	193.9	198.8	red1 own narration	F: No installer. No AI call.	F: All on the fly. No installer, no AI call.
+cards	198.8	206.8	§MEASURE_BUILDING_CARD 440 doors · 22,031,100	F: Twenty two million, estimated.	F: Twenty two million, estimated. Have a nice day!

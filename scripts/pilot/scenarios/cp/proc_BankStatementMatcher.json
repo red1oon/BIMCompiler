@@ -1,0 +1,12 @@
+[
+ {
+  "name": "cp_bsmatcher_stmt",
+  "process": 256,
+  "recordId": 100,
+  "tableId": 392,
+  "tables": [
+   "c_bankstatement",
+   "c_bankstatementline"
+  ]
+ }
+]

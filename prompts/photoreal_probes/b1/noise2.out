@@ -1,0 +1,14 @@
+== open Hospital %26ghost%3D1 02:56:19
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.568}
+
+== noise_hospital_aerial_r2 alts 02:56:48
+"verdict": "DONE" stagingTotal=13542 compositeMean=70.36 appMean=70.85 
+"darkPct": 1.64
+{ "result": {  "hs": [   [    0,    5   ],   [    1,    10   ]  ],  "any": true,  "hs2": [   2  ],  "none": false,  "indexAfter": false,  "expect": "hs=[[0,5],[1,10]] any=true hs2=[2] none=false" }}
+== open Hospital %26ghost%3D1 02:58:44
+{ "reused": false, "url": "http://127.0.0.1:8630/viewer/viewer.html?db=/buildings/Hospital_extracted.db&ghost=1", "elements": 63182, "loadSecs": 28.166}
+
+== noise_hospital_warm_aerial alts 02:59:13
+"verdict": "DONE" stagingTotal=4659 compositeMean=69.66 appMean=70.12 
+"darkPct": 2.13
+== noise2 done 03:00:51

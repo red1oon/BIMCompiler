@@ -1,0 +1,3 @@
+§FIDELITY start part=6/8 tables=115 of 925 sqlite=bloat10r_v2.db pgdb=bloat10r
+§FIDELITY table=m_transaction rows=815892 pgRows=815892 pg=470364265868291018020770 sq=470364265868291018020770 OK t=17s
+§FIDELITY_VERDICT part=6/8 PASS tables=115 judgedTables=61 judgedRows=914583 totalSec=43s
