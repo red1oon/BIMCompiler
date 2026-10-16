@@ -368,17 +368,27 @@ ST.forEach(st => {
   });
   dRows.forEach(r => say('  ' + r));
   check('DW-doors ' + st.name, 'a source door has no plan door of its width hosted in its source wall, with no logged gap explaining it', tally.FAIL === 0, 'source doors=' + sd.length + ' ok=' + tally.ok + ' explained=' + tally.explained + ' FAIL=' + tally.FAIL);
-  const wins = st.after.filter(o => o.op_type === 'DXF_OPENING' && o.params.kind === 'window'), sw2 = srcRect("='IfcWindow'", "m.storey='" + st.name + "'");
-  let wok = 0; const wbad = [], w8bad = [];
+  let wins = st.after.filter(o => o.op_type === 'DXF_OPENING' && o.params.kind === 'window'), sw2 = srcRect("='IfcWindow'", "m.storey='" + st.name + "'");
+  let wok = 0, wexp = 0; const wbad = [], w8bad = [], wexpl = [];
+  // L2.5 W2 controls: M-W2 removes the first window op (a window vanishes, no gap: the check must FAIL); M-W2g removes it but logs a gap on its glazing (explained)
+  const wDrop = (MUT === 'M-W2' || MUT === 'M-W2g') && wins.length ? wins.slice().sort((a, b) => parseInt(a.params.handle, 16) - parseInt(b.params.handle, 16))[0] : null;
+  if (wDrop) { wins = wins.filter(o => o.params.handle !== wDrop.params.handle); say('  MUTATION ' + MUT + ': window op ' + wDrop.params.handle + ' removed' + (MUT === 'M-W2g' ? ', GAP:no_elevation_match logged on it' : ', no gap')); }
+  // L2.5 W2: a window that does not match may be explained by a DXF_GAP on the A-GLAZ entity at its plan box (stacked windows share one entity)
+  const glazGaps = st.after.filter(o => o.op_type === 'DXF_GAP' && /GLAZ/.test(o.params.layer || '') && !(wDrop && o.params.handle === wDrop.params.handle)).concat(MUT === 'M-W2g' && wDrop ? [{ op_type: 'DXF_GAP', params: { code: 'GAP:no_elevation_match', handle: wDrop.params.handle, layer: wDrop.params.layer } }] : []).map(o => {
+    const po = st.before.find(q => q.op_type === 'DXF_OPENING' && q.params.handle === o.params.handle && q.params.bbox);   // the plan-stage opening (glazing cluster) of that handle
+    return po ? { code: o.params.code, h: o.params.handle, bb: po.params.bbox } : null; }).filter(Boolean);
   sw2.forEach(x => { const w = wins.find(o => Math.abs(o.params.bbox[0] - x.a) <= 0.01 && Math.abs(o.params.bbox[1] - x.b) <= 0.01 && Math.abs(o.params.bbox[2] - x.c) <= 0.01 && Math.abs(o.params.bbox[3] - x.d) <= 0.01 && Math.abs(st.level + o.params.sill - x.z0) <= 0.01 && Math.abs(st.level + o.params.sill + o.params.height - x.z1) <= 0.01);
     // host = the plan pieces of the window's own strip that touch its box ends (the wall that is cut), not dxf2bim's nearest-rect host (W8 picks corner pieces on ties)
     const hw = allSrcW[hostOf[x.guid]], bb = w && w.params.bbox, hz = bb && (bb[2] - bb[0]) >= (bb[3] - bb[1]), ai = hz ? 0 : 1, ci = 1 - ai;
     const Hs = bb ? plan.filter(o => o.op_type === 'DXF_WALL' && Math.abs(o.params.rect[ci] - bb[ci]) <= 0.001 && Math.abs(o.params.rect[ci + 2] - bb[ci + 2]) <= 0.001 && (Math.abs(o.params.rect[ai + 2] - bb[ai]) <= 0.001 || Math.abs(o.params.rect[ai] - bb[ai + 2]) <= 0.001)) : [];
     const W8 = w && byG[w.params.host_wall]; if (W8 && hw && !inside(W8.params.rect, hw.rect)) w8bad.push(x.id + ':' + W8.params.handle);
-    if (w && hw && Hs.length && Hs.every(o => inside(o.params.rect, hw.rect))) wok++; else wbad.push(x.id + (w ? ' strip pieces ' + Hs.map(o => o.params.handle).join('+') + ' not in src wall ' + (hw && hw.id) : ' no window'));
+    if (w && hw && Hs.length && Hs.every(o => inside(o.params.rect, hw.rect))) wok++;
+    else if (!w) { const g = glazGaps.filter(q => [x.a, x.b, x.c, x.d].every((v, i) => Math.abs(v - q.bb[i]) <= 0.01)); if (g.length) { wexp++; wexpl.push(x.id + ' explained: ' + [...new Set(g.map(q => q.code + ' ' + q.h))].join(', ')); } else wbad.push(x.id + ' no window and no gap (vanished without a trace)'); }
+    else wbad.push(x.id + ' strip pieces ' + Hs.map(o => o.params.handle).join('+') + ' not in src wall ' + (hw && hw.id));
   });
   if (w8bad.length) say('  FINDING dxf2bim W8 host (nearest rect, tie -> lowest handle) is a perpendicular corner piece for: ' + w8bad.join(', ') + ' (not used by the shell; recorded)');
-  check('DW-windows ' + st.name, 'a source window has no window of the same plan box and sill/head (10 mm) hosted in its source wall', wbad.length === 0, 'source windows=' + sw2.length + ' ok=' + wok + (wbad.length ? ' bad: ' + wbad.join('; ') : ''));
+  wexpl.forEach(r => say('  ' + r));
+  check('DW-windows ' + st.name, 'a source window has no window of the same plan box and sill/head (10 mm) hosted in its source wall, and no logged gap explains it', wbad.length === 0, 'source windows=' + sw2.length + ' ok=' + wok + ' explained=' + wexp + (wbad.length ? ' bad: ' + wbad.join('; ') : ''));
 });
 say('door swing truth: NOT CLAIMED. The source gives no rotation or handing (element_transforms holds centre_x/y/z only; door meshes are centred frame+leaf solids with no swing). Swing above is read from the drawn arcs only.');
 
