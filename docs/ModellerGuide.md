@@ -59,6 +59,8 @@ structure, MEP, the 4D schedule, the 5D cost and the ERP auto-complete by *crawl
 
 ---
 
+> **New: 2D drawings → BIM.** Open a set of `.dxf` plans, elevations, roof and section and convert them into a model — see [2D Drawings → BIM (DXF2BIM)](DXF2BIMGuide.md).
+
 ## The workspace
 
 ![The modeller workspace: the Outliner (left) over the BOM tree, the ARC building on the grid, the ⋯ pill toolbar down the right edge, and the history scrubber along the bottom](img/modeller/workspace-open.png)
